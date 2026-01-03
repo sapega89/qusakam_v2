@@ -144,7 +144,7 @@ bg_color = Color(0, 0, 0, 0.752941)
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_xdpfu")
-starting_map = "StartingPoint.tscn"
+starting_map = "Canyon.tscn"
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("2_bam1a")]
 unique_name_in_owner = true
@@ -165,6 +165,7 @@ offset_top = 8.0
 offset_right = -8.0
 offset_bottom = 104.0
 grow_horizontal = 0
+visible = false
 display_player_location = true
 
 [node name="Background" type="Panel" parent="UI/Minimap"]

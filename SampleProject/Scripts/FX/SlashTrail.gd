@@ -17,6 +17,9 @@ func _ready() -> void:
 
 func set_direction(direction: int) -> void:
 	"""Set slash direction (1 = right, -1 = left)"""
+	if not particles:
+		particles = get_node_or_null("CPUParticles2D")
+		
 	if particles:
 		# Flip emission direction based on attack direction
 		if direction < 0:

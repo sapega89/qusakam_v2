@@ -22,11 +22,14 @@ func _initialize() -> void:
 	_connect_events()
 
 	# Show initial movement hint after a short delay
-	await get_tree().create_timer(2.0).timeout
-	_show_movement_hint()
+	if is_inside_tree() and get_tree():
+		await get_tree().create_timer(2.0).timeout
+		_show_movement_hint()
 
 func _find_tutorial_display() -> void:
 	"""Finds TutorialHintDisplay in scene tree"""
+	if not is_inside_tree() or not get_tree():
+		return
 	tutorial_display = get_tree().get_first_node_in_group("tutorial_hint_display")
 	if tutorial_display:
 		DebugLogger.verbose("TutorialManager: Found TutorialHintDisplay", "Tutorial")
@@ -42,46 +45,54 @@ func _connect_events() -> void:
 
 func _show_movement_hint() -> void:
 	"""Shows movement tutorial hint"""
-	if has_shown_movement or not tutorial_display:
+	if has_shown_movement:
 		return
 
 	has_shown_movement = true
+	if not tutorial_display:
+		return
 	tutorial_display.show_hint("movement")
 
 func _on_player_attacked() -> void:
 	"""Player performed an attack"""
-	if has_shown_attack or not tutorial_display:
+	if has_shown_attack:
 		return
 
 	has_shown_attack = true
+	if not tutorial_display:
+		return
 	# Wait a moment, then show attack hint
-	await get_tree().create_timer(1.0).timeout
+	if is_inside_tree() and get_tree():
+		await get_tree().create_timer(1.0).timeout
 	tutorial_display.show_hint("attack")
 
 func _on_enemy_died(enemy_id: String = "") -> void:
 	"""Enemy was killed"""
-	if not tutorial_display:
-		return
-
 	# Show first kill hint
 	if not has_shown_first_kill:
 		has_shown_first_kill = true
-		tutorial_display.show_hint("first_kill")
+		if tutorial_display:
+			tutorial_display.show_hint("first_kill")
 
 	# Show XP bar hint after second kill
 	elif not has_shown_xp_bar:
 		has_shown_xp_bar = true
-		await get_tree().create_timer(2.0).timeout  # Wait for XP animation
-		tutorial_display.show_hint("xp_bar")
+		if tutorial_display:
+			if is_inside_tree() and get_tree():
+				await get_tree().create_timer(2.0).timeout  # Wait for XP animation
+			tutorial_display.show_hint("xp_bar")
 
 func _on_player_leveled_up(new_level: int, old_level: int) -> void:
 	"""Player leveled up"""
-	if has_shown_level_up or not tutorial_display:
+	if has_shown_level_up:
 		return
 
 	has_shown_level_up = true
+	if not tutorial_display:
+		return
 	# Show level up hint after VFX finishes
-	await get_tree().create_timer(3.5).timeout
+	if is_inside_tree() and get_tree():
+		await get_tree().create_timer(3.5).timeout
 	tutorial_display.show_hint("level_up")
 
 func reset_tutorial() -> void:

@@ -67,3 +67,6 @@ REFACTORING_STAGE_3.1_SUMMARY.md
 QUICK_FIX.txt
 README_FIX_CONFLICT.txt
 git_status.txt
+
+# Raw assets
+raw_assets/*

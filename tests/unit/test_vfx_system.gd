@@ -229,9 +229,12 @@ func test_slash_trail_set_direction():
 	var scene = load("res://SampleProject/Scenes/FX/SlashTrail.tscn")
 	var vfx = scene.instantiate()
 
-	# Should not crash
+	# Should not crash and should update internal state
+	add_child_autofree(vfx)
 	vfx.set_direction(1)  # Right
-	vfx.set_direction(-1)  # Left
+	var p = vfx.get_node("CPUParticles2D")
+	assert_eq(p.direction, Vector2.RIGHT, "Particle direction should be RIGHT")
+	assert_true(p.emitting, "Particles should be starting")
 
 	vfx.queue_free()
 

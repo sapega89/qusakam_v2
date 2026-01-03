@@ -58,7 +58,7 @@ class CellData:
 		if MetSys.map_data.exporting_mode:
 			data.append(MetSys.map_data.get_uid_room(assigned_scene))
 		else:
-			data.append(assigned_scene.trim_prefix(MetSys.settings.map_root_folder + "/"))
+			data.append(assigned_scene.trim_prefix(MetSys.settings.map_root_folder))
 		
 		return "|".join(data)
 	
@@ -483,17 +483,28 @@ func get_cells_assigned_to(room: String) -> Array[Vector3i]:
 	
 	if not room in assigned_scenes:
 		if not room.begins_with(":"):
-			room = ":" + ResourceUID.id_to_text(ResourceLoader.get_resource_uid(MetSys.settings.map_root_folder.path_join(room))).trim_prefix("uid://")
+			var full_path = room if room.is_absolute_path() else MetSys.settings.map_root_folder.path_join(room)
+			if full_path in assigned_scenes:
+				room = full_path
+			else:
+				var uid = ResourceLoader.get_resource_uid(full_path)
+				if uid != ResourceUID.INVALID_ID:
+					room = ":" + ResourceUID.id_to_text(uid).trim_prefix("uid://")
 	
 	var ret: Array[Vector3i]
 	ret.assign(assigned_scenes.get(room, []))
 	return ret
 
 func get_cells_assigned_to_path(path: String) -> Array[Vector3i]:
+	if path in assigned_scenes:
+		return get_cells_assigned_to(path)
+		
 	var room := path.trim_prefix(MetSys.settings.map_root_folder)
 	
 	if not assigned_scenes.has(room) and not room in scene_overrides:
-		room = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path)).replace("uid://", ":")
+		var uid = ResourceLoader.get_resource_uid(path)
+		if uid != ResourceUID.INVALID_ID:
+			room = ResourceUID.id_to_text(uid).replace("uid://", ":")
 	
 	return get_cells_assigned_to(room)
 
@@ -536,13 +547,19 @@ func get_uid_room(uid: String) -> String:
 	return ResourceUID.get_id_path(ResourceUID.text_to_id(uid.replace(":", "uid://"))).trim_prefix(MetSys.settings.map_root_folder)
 
 func get_room_from_scene_path(path: String, safe := true) -> String:
+	if path in assigned_scenes:
+		return path
+	
 	var room_name: String = path.trim_prefix(MetSys.settings.map_root_folder)
 	if not room_name in assigned_scenes and not room_name in scene_overrides:
-		room_name = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path)).replace("uid://", ":")
+		var uid = ResourceLoader.get_resource_uid(path)
+		if uid != ResourceUID.INVALID_ID:
+			room_name = ResourceUID.id_to_text(uid).replace("uid://", ":")
 	
 	room_name = scene_overrides.get(room_name, room_name)
-	if safe:
-		assert(room_name in assigned_scenes)
+	if not room_name in assigned_scenes:
+		if safe:
+			return ""
 	return room_name
 
 func get_map_data_path() -> String:

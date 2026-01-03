@@ -34,11 +34,10 @@ func test_add_coins_multiple_times():
 	assert_eq(inventory_manager.get_coins(), 18, "Should have 18 coins total")
 
 func test_add_coins_emits_signal():
-	"""Adding coins should emit coins_changed signal"""
-	watch_signals(inventory_manager)
+	"""Adding coins should emit coins_changed signal via EventBus"""
+	watch_signals(EventBus)
 	inventory_manager.add_coins(5)
-	# Note: EventBus.coins_changed is emitted, not inventory_manager signal
-	# This test verifies the method completes without errors
+	assert_signal_emitted(EventBus, "coins_changed", "Signal should be emitted on EventBus")
 
 func test_spend_coins_success():
 	"""Spending coins when sufficient should succeed"""

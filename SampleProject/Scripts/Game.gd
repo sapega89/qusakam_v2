@@ -6,7 +6,7 @@ const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/Sa
 const SAVE_PATH = "user://example_save_data.sav"
 
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
-@export var starting_map: String
+@export var starting_map: String = "Canyon.tscn"
 
 # Number of collected collectibles. Setting it also updates the counter.
 var collectibles: int:
@@ -106,35 +106,22 @@ func _initialize_save_and_room() -> void:
 		# If save data exists, load it using MetSys SaveManager.
 		var save_manager := SaveManager.new()
 		save_manager.load_from_text(save_file_path)
-		# Assign loaded values with defaults if missing.
+		
+		# Metadata mapping
 		collectibles = save_manager.get_value("collectible_count", 0)
-		var loaded_rooms = save_manager.get_value("generated_rooms", [])
-		if loaded_rooms is Array:
-			generated_rooms.assign(loaded_rooms)
-		else:
-			generated_rooms.clear()
-		var loaded_events = save_manager.get_value("events", [])
-		if loaded_events is Array:
-			events.assign(loaded_events)
-		else:
-			events.clear()
-		var loaded_abilities = save_manager.get_value("abilities", [])
-		if loaded_abilities is Array:
-			player.abilities.assign(loaded_abilities)
-		else:
-			player.abilities.clear()
+		_assign_array(generated_rooms, save_manager.get_value("generated_rooms", []))
+		_assign_array(events, save_manager.get_value("events", []))
+		_assign_array(player.abilities, save_manager.get_value("abilities", []))
 
-		# Восстанавливаем состояние MetSys (карта, предметы на карте и т.д.)
-		# MetSys автоматически восстановит позицию игрока
+		# Restore MetSys state (map, items, position)
 		save_manager.retrieve_game(self)
 
-		# Загружаем данные из SaveSystem (инвентарь, флаги и т.д.)
-		# Позиция игрока уже восстановлена через MetSys
+		# Sync with modular SaveSystem (inventory, flags)
 		_load_full_game_data_from_save_system()
 
 		if not custom_run:
 			var loaded_starting_map: String = save_manager.get_value("current_room")
-			if not loaded_starting_map.is_empty(): # Some compatibility problem.
+			if not loaded_starting_map.is_empty():
 				starting_map = loaded_starting_map
 	else:
 		# If no data exists, set empty one and initialize default values for new game.
@@ -152,7 +139,7 @@ func _initialize_save_and_room() -> void:
 	if not room_loaded.is_connected(init_room):
 		room_loaded.connect(init_room, CONNECT_DEFERRED)
 	# Load the starting room.
-	load_room(starting_map)
+	await load_room(starting_map)
 
 	# ВАЖНО: Для новой игры позиционируем игрока на SavePoint в стартовой комнате
 	# (при загрузке сохранения позиция уже восстановлена через save_manager.retrieve_game выше)
@@ -181,21 +168,46 @@ func _initialize_save_and_room() -> void:
 static func get_singleton() -> Game:
 	return (Game as Script).get_meta(&"singleton") as Game
 
-# Save game using MetSys SaveManager.
+# Unified Save/Load Coordinator
 func save_game():
+	"""Main entry point for saving the game state across all systems."""
+	DebugLogger.info("💾 Game: Starting unified save sequence...", "Game")
+	
+	# 1. MetSys Save (Map, Rooms, Basic Player Props)
 	var save_manager := SaveManager.new()
 	save_manager.set_value("collectible_count", collectibles)
 	save_manager.set_value("generated_rooms", generated_rooms)
 	save_manager.set_value("events", events)
 	save_manager.set_value("current_room", MetSys.get_current_room_name())
 	save_manager.set_value("abilities", player.abilities)
-	# Сохраняем состояние MetSys (карта, предметы и т.д.)
+	
 	save_manager.store_game(self)
 	save_manager.save_as_text(SAVE_PATH)
 	
-	# Сохраняем данные через SaveSystem (инвентарь, позиция, флаги и т.д.)
-	_save_game_flags_to_save_system()
+	# 2. SaveSystem Sync (Inventory, Flags, Quest Progress)
+	# Update player state before full data save
+	_sync_player_state_to_save_system()
 	_save_full_game_data_to_save_system()
+	
+	DebugLogger.info("✅ Game: Unified save completed successfully.", "Game")
+
+func _assign_array(target: Array, source: Variant):
+	if source is Array:
+		target.assign(source)
+	else:
+		target.clear()
+
+func _sync_player_state_to_save_system():
+	var service_locator = ServiceLocator if Engine.has_singleton("ServiceLocator") else null
+	if not service_locator: return
+	
+	var player_state_manager = service_locator.get_player_state_manager()
+	if player_state_manager:
+		player_state_manager.set_player_position(player.global_position)
+	
+	var save_system = service_locator.get_save_system()
+	if save_system and save_system.has("player_data"):
+		save_system.player_data.current_scene = MetSys.get_current_room_name()
 
 func reset_map_starting_coords():
 	$UI/MapWindow.reset_starting_coords()
@@ -213,7 +225,12 @@ func _position_player_at_save_point() -> void:
 		DebugLogger.warning("Game: No SavePoint found in starting room", "Game")
 
 func init_room():
-	MetSys.get_current_room_instance().adjust_camera_limits($Player/Camera2D)
+	var room_instance = MetSys.get_current_room_instance()
+	if is_instance_valid(room_instance):
+		room_instance.adjust_camera_limits($Player/Camera2D)
+	else:
+		push_warning("Game: No RoomInstance found in current room!")
+		
 	player.on_enter()
 
 	# Initializes MetSys.get_current_coords(), so you can use it from the beginning.

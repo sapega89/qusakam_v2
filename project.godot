@@ -40,6 +40,8 @@ SceneLoader="*res://addons/maaacks_menus_template/base/nodes/autoloads/scene_loa
 AppConfig="*res://addons/maaacks_menus_template/base/nodes/autoloads/app_config/app_config.tscn"
 ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoloads/music_controller/project_music_controller.tscn"
 ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
+ModalManager="*res://addons/properUI_modal/ModalManager.gd"
+ToastManager="*res://addons/properUI_toast/ToastManager.gd"
 
 [dialogue_quest]
 

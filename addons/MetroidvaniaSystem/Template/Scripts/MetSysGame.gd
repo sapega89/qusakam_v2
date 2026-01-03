@@ -51,7 +51,12 @@ func load_room(path: String):
 	map = load(path).instantiate()
 	add_child(map)
 	
-	MetSys.current_layer = MetSys.get_current_room_instance().get_layer()
+	var room_instance = MetSys.get_current_room_instance()
+	if is_instance_valid(room_instance):
+		MetSys.current_layer = room_instance.get_layer()
+	else:
+		push_warning("MetSysGame: No RoomInstance found in loaded room: %s" % path)
+		
 	map_changing = false
 	room_loaded.emit()
 

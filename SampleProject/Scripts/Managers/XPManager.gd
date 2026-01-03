@@ -25,6 +25,8 @@ func _initialize():
 
 ## Add XP to player
 func add_xp(amount: int) -> void:
+	if amount < 0:
+		amount = 0 # Ignore negative XP gain to prevent exploits/bugs
 	current_xp += amount
 	xp_gained.emit(amount, current_xp)
 	DebugLogger.verbose("XPManager: Gained %d XP, total: %d/%d" % [amount, current_xp, xp_for_next_level], "XPManager")
