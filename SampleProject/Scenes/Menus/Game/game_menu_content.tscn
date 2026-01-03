@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://uvux58osbrvd"]
+
+[ext_resource type="PackedScene" uid="uid://b5p6p0hjkmgyj" path="res://SampleProject/Scenes/Menus/Game/vertical_menu.tscn" id="1_vertical_menu"]
+[ext_resource type="PackedScene" uid="uid://bq8x7k2m3n4p7" path="res://SampleProject/Scenes/Menus/Game/inventory_component.tscn" id="2_inventory"]
+[ext_resource type="PackedScene" uid="uid://dshid7dx84rt5" path="res://SampleProject/Scenes/Menus/Game/equipment_component.tscn" id="3_equipment"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/metsys_map_component.tscn" id="4_map"]
+[ext_resource type="PackedScene" uid="uid://cvj8rtfs0dj2e" path="res://SampleProject/Scenes/Menus/Game/journal_component.tscn" id="5_journal"]
+[ext_resource type="PackedScene" uid="uid://dves5wvm67pju" path="res://SampleProject/Scenes/Menus/Game/stats_component.tscn" id="6_stats"]
+[ext_resource type="PackedScene" uid="uid://me0dik5yq140" path="res://SampleProject/Scenes/Menus/Game/options_component.tscn" id="7_options"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_ljopj"]
+
+[node name="GameMenuContent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VerticalMenu" parent="." instance=ExtResource("1_vertical_menu")]
+layout_mode = 1
+
+[node name="InventoryButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="0"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="EquipmentButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="1"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="WorldMapButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="2"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="MiscButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="3"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="JournalButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="4"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="SkillsButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="5"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="StatusButton" parent="VerticalMenu/PanelManager/HBoxContainer/TabButtons" index="6"]
+button_group = SubResource("ButtonGroup_ljopj")
+
+[node name="InventoryComponent" parent="VerticalMenu/PanelManager/HBoxContainer/InventoryPanel" index="0" instance=ExtResource("2_inventory")]
+layout_mode = 2
+
+[node name="EquipmentComponent" parent="VerticalMenu/PanelManager/HBoxContainer/EquipmentPanel" index="0" instance=ExtResource("3_equipment")]
+visible = false
+layout_mode = 2
+
+[node name="MetSysMapComponent" parent="VerticalMenu/PanelManager/HBoxContainer/WorldMapPanel" index="0" instance=ExtResource("4_map")]
+visible = false
+layout_mode = 2
+
+[node name="OptionsComponent" parent="VerticalMenu/PanelManager/HBoxContainer/MiscPanel" index="0" instance=ExtResource("7_options")]
+visible = false
+layout_mode = 2
+
+[node name="JournalComponent" parent="VerticalMenu/PanelManager/HBoxContainer/JournalPanel" index="0" instance=ExtResource("5_journal")]
+visible = false
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="VerticalMenu/PanelManager/HBoxContainer/SkillsPanel" index="1"]
+layout_mode = 2
+text = "Skills"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VerticalMenu/PanelManager/HBoxContainer/StatusPanel" index="0"]
+visible = false
+layout_mode = 2
+
+[node name="StatsComponent" parent="VerticalMenu/PanelManager/HBoxContainer/StatusPanel/ScrollContainer" instance=ExtResource("6_stats")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[editable path="VerticalMenu"]

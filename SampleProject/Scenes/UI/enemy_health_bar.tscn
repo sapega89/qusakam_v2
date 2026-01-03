@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8x7k2m3n4p5"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/HealthBar.gd" id="1_health_bar_script"]
+[ext_resource type="PackedScene" uid="uid://c3vb3pwhaablc" path="res://SampleProject/Scenes/UI/health_bar.tscn" id="2_health_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.1, 0.1, 0.1, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.3, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.8, 0.2, 0.2, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="EnemyHealthBar" type="Control"]
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("1_health_bar_script")
+bar_type = 1
+
+[node name="HealthBar" parent="." instance=ExtResource("2_health_bar")]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 155.0
+offset_bottom = 25.0
+
+[node name="ProgressBar" type="ProgressBar" parent="HealthBar"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 155.0
+offset_bottom = 25.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+step = 1.0
+show_percentage = false

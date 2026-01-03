@@ -1,0 +1,148 @@
+[gd_scene load_steps=5 format=3 uid="uid://bq8x7k2m3n4p7"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/panel_manager.gd" id="2_gwvue"]
+[ext_resource type="Script" path="res://addons/godot_tree_table/Table.gd" id="2_table"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_inventory"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_do1gg"]
+bg_color = Color(0.6, 0.6, 0.6, 0.22745098)
+
+[node name="InventoryComponent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_stretch_ratio = 0.0
+
+[node name="PanelManager" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_gwvue")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelManager"]
+layout_mode = 2
+size_flags_stretch_ratio = 0.0
+theme_override_constants/separation = 0
+
+[node name="TabButtons" type="VBoxContainer" parent="PanelManager/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/separation = 1
+
+[node name="AllButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.69
+toggle_mode = true
+button_group = SubResource("ButtonGroup_inventory")
+text = "All"
+icon_alignment = 1
+
+[node name="ArmorButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.69
+toggle_mode = true
+button_group = SubResource("ButtonGroup_inventory")
+text = "Armor"
+icon_alignment = 1
+
+[node name="WeaponButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.69
+toggle_mode = true
+button_group = SubResource("ButtonGroup_inventory")
+text = "Weapon"
+icon_alignment = 1
+
+[node name="MiscButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(35, 35)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.69
+toggle_mode = true
+button_group = SubResource("ButtonGroup_inventory")
+icon_alignment = 1
+
+[node name="AllPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_do1gg")
+
+[node name="InventoryTable" type="PanelContainer" parent="PanelManager/HBoxContainer/AllPanel"]
+layout_mode = 2
+script = ExtResource("2_table")
+header_row = Array[String](["items", "on hand", "price"])
+header_width = Array[int]([0, 0, 0])
+table_allow_reselect = true
+auto_reload = true
+metadata/_custom_type_script = "uid://docg1y8vc4mf2"
+
+[node name="ArmorPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_do1gg")
+
+[node name="InventoryTable" type="PanelContainer" parent="PanelManager/HBoxContainer/ArmorPanel"]
+layout_mode = 2
+script = ExtResource("2_table")
+header_row = Array[String](["items", "on hand", "price"])
+header_width = Array[int]([0, 0, 0])
+metadata/_custom_type_script = "uid://docg1y8vc4mf2"
+
+[node name="WeaponPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_do1gg")
+
+[node name="InventoryTable" type="PanelContainer" parent="PanelManager/HBoxContainer/WeaponPanel"]
+layout_mode = 2
+script = ExtResource("2_table")
+header_row = Array[String](["items", "on hand", "price"])
+header_width = Array[int]([0, 0, 0])
+metadata/_custom_type_script = "uid://docg1y8vc4mf2"
+
+[node name="MiscPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_do1gg")
+
+[node name="InventoryTable" type="PanelContainer" parent="PanelManager/HBoxContainer/MiscPanel"]
+layout_mode = 2
+script = ExtResource("2_table")
+header_row = Array[String](["items", "on hand", "price"])
+header_width = Array[int]([0, 0, 0])
+metadata/_custom_type_script = "uid://docg1y8vc4mf2"
+

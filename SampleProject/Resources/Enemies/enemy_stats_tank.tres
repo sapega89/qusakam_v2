@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="1_tank"]
+
+[resource]
+script = ExtResource("1_tank")
+enemy_type = "tank"
+speed = 50.0
+base_damage = 15.0
+attack_cooldown = 2.0
+detection_range = 300.0
+attack_range = 100.0
+chase_range = 350.0
+max_health = 200

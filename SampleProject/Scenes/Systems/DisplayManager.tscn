@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://display_manager_tscn"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Systems/DisplayManager.gd" id="1_display_manager"]
+
+[node name="DisplayManager" type="Node"]
+script = ExtResource("1_display_manager")
+

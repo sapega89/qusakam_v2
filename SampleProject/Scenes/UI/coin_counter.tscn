@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://c01nc0unt3r01"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/CoinCounter.gd" id="1_coin_counter"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_text_bg"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="CoinCounter" type="HBoxContainer"]
+offset_right = 100.0
+offset_bottom = 30.0
+theme_override_constants/separation = 8
+script = ExtResource("1_coin_counter")
+
+[node name="CoinIcon" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+color = Color(1, 0.9, 0.3, 1)
+
+[node name="CoinLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_text_bg")
+text = "0"
+vertical_alignment = 1

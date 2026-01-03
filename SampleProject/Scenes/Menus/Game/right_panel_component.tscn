@@ -1,0 +1,125 @@
+[gd_scene load_steps=8 format=3 uid="uid://bt75emmk103yk"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/right_panel_component.gd" id="1_right_panel"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/timer_display.tscn" id="2_timer"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/gold_display.tscn" id="3_gold"]
+[ext_resource type="Texture2D" path="res://assets/ChatGPT Image Jul 19, 2025, 12_21_31 PM1.png" id="4_character_sprite"]
+
+[sub_resource type="Theme" id="Theme_right_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_right_panel"]
+bg_color = Color(0.145098, 0.168627, 0.203922, 0.8)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_character"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_character_sprite")
+}],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}]
+
+[node name="RightPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(200, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_right_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_right_panel")
+script = ExtResource("1_right_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TimerDisplay" parent="VBoxContainer" instance=ExtResource("2_timer")]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="GoldDisplay" parent="VBoxContainer" instance=ExtResource("3_gold")]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="TopHUD" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CharacterSprite" type="AnimatedSprite2D" parent="VBoxContainer"]
+position = Vector2(103, 207)
+scale = Vector2(1.266129, 1.266129)
+sprite_frames = SubResource("SpriteFrames_character")
+animation = &"new_animation"
+flip_h = true
+
+[node name="CharacterStats" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HPBar" type="HBoxContainer" parent="VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="HPLabel" type="Label" parent="VBoxContainer/CharacterStats/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "HP:"
+vertical_alignment = 1
+
+[node name="HPValue" type="Label" parent="VBoxContainer/CharacterStats/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "100/100"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="MPBar" type="HBoxContainer" parent="VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="MPLabel" type="Label" parent="VBoxContainer/CharacterStats/MPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "MP:"
+vertical_alignment = 1
+
+[node name="MPValue" type="Label" parent="VBoxContainer/CharacterStats/MPBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "50/50"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LevelBar" type="HBoxContainer" parent="VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="LevelLabel" type="Label" parent="VBoxContainer/CharacterStats/LevelBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "LVL:"
+vertical_alignment = 1
+
+[node name="LevelValue" type="Label" parent="VBoxContainer/CharacterStats/LevelBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1"
+horizontal_alignment = 2
+vertical_alignment = 1
+

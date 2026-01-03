@@ -1,0 +1,17 @@
+{
+	"dirs": [
+		"res://tests/unit",
+		"res://tests/integration"
+	],
+	"include_subdirs": true,
+	"log_level": 1,
+	"ignore_pause": false,
+	"hide_orphans": true,
+	"inner_class_delimiter": ":",
+	"junit_xml_file": "res://tests/results/junit.xml",
+	"junit_xml_timestamp": false,
+	"compact_mode": false,
+	"panel_button_position": "TopRight",
+	"should_exit_on_success": false,
+	"should_exit": false
+}

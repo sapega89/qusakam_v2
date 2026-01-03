@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://lv1upp4rt1c13"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/LevelUpParticles.gd" id="1_lvlup"]
+
+[sub_resource type="Gradient" id="Gradient_levelup"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.95, 0.3, 1, 1, 0.8, 0.1, 1, 1, 1, 0.6, 0)
+
+[node name="LevelUpParticles" type="Node2D"]
+script = ExtResource("1_lvlup")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 40
+lifetime = 1.5
+one_shot = true
+explosiveness = 0.9
+randomness = 0.3
+emission_shape = 1
+emission_sphere_radius = 20.0
+direction = Vector2(0, -1)
+spread = 45.0
+gravity = Vector2(0, -200)
+initial_velocity_min = 200.0
+initial_velocity_max = 300.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+scale_amount_min = 4.0
+scale_amount_max = 8.0
+color_ramp = SubResource("Gradient_levelup")

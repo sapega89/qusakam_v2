@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://item_database_tscn"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Systems/ItemDatabase.gd" id="1_item_database"]
+
+[node name="ItemDatabase" type="Node"]
+script = ExtResource("1_item_database")
+

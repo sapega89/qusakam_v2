@@ -1,0 +1,348 @@
+# This is the main script of the game. It manages the current map and some other stuff.
+extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysGame.gd"
+class_name Game
+
+const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
+const SAVE_PATH = "user://example_save_data.sav"
+
+# The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
+@export var starting_map: String
+
+# Number of collected collectibles. Setting it also updates the counter.
+var collectibles: int:
+	set(count):
+		collectibles = count
+		%CollectibleCount.text = "%d/6" % count
+
+# The coordinates of generated rooms. MetSys does not keep this list, so it needs to be done manually.
+var generated_rooms: Array[Vector3i]
+# The typical array of game events. It's supplementary to the storable objects.
+var events: Array[String]
+# For Custom Runner integration.
+var custom_run: bool
+
+# Флаги квестов, диалогов, катсцен, боссов и локаций
+# Используются для сохранения прогресса игры через SaveSystem
+var quest_flags: Dictionary = {}
+var cutscene_flags: Dictionary = {}
+var boss_flags: Dictionary = {}
+var location_flags: Dictionary = {}
+
+func _ready() -> void:
+	# A trick for static object reference (before static vars were a thing).
+	get_script().set_meta(&"singleton", self)
+	# Make sure MetSys is in initial state.
+	# Does not matter in this project, but normally this ensures that the game works correctly when you exit to menu and start again.
+	MetSys.reset_state()
+	# Assign player for MetSysGame.
+	set_player($Player)
+
+	# ВАЖНО: Гарантуємо, що process_mode встановлено правильно для гравця
+	if $Player:
+		$Player.process_mode = Node.PROCESS_MODE_INHERIT
+		print("🎮 Game: Встановлено process_mode = INHERIT для гравця")
+
+	# FIX: Отложенный вызов инициализации сохранения и комнаты
+	# Это гарантирует, что код выполнится ПОСЛЕ завершения _ready(), но ТОЛЬКО ОДИН РАЗ
+	# (в отличие от оригинального бага, где код выполнялся на каждом input событии)
+	call_deferred("_initialize_save_and_room")
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Обробка Escape для відкриття/закриття game menu через MenuManager
+	# ВАЖНО: Перевіряємо, чи це Escape (KEY_ESCAPE), а не інша клавіша
+	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+		# Перевіряємо, чи меню вже відкрите - якщо так, не обробляємо тут (це зробить game_menu.gd)
+		if ServiceLocator:
+			var menu_manager = ServiceLocator.get_menu_manager()
+			if menu_manager and menu_manager.is_menu_open():
+				# Меню вже відкрите, воно само обробить Escape для закриття
+				return
+
+		print("🎮 Game: Escape натиснуто!")
+		# ServiceLocator - це autoload, доступний напряму через ім'я
+		if ServiceLocator:
+			var menu_manager = ServiceLocator.get_menu_manager()
+			if menu_manager:
+				print("🎮 Game: Відкриваємо меню...")
+				menu_manager.toggle_game_menu()
+				get_viewport().set_input_as_handled()
+				return  # ВАЖНО: повертаємося, щоб не обробляти далі
+		else:
+			print("⚠️ Game: ServiceLocator не знайдено!")
+
+	# Також обробляємо ui_cancel action (якщо він налаштований на Escape)
+	if event.is_action_pressed("ui_cancel"):
+		print("🎮 Game: ui_cancel action натиснуто!")
+		# Перевіряємо, чи це не оброблено вже вище
+		if event is InputEventKey and event.keycode == KEY_ESCAPE:
+			# Вже оброблено вище
+			return
+
+		# ServiceLocator - це autoload, доступний напряму через ім'я
+		if ServiceLocator:
+			var menu_manager = ServiceLocator.get_menu_manager()
+			if menu_manager:
+				menu_manager.toggle_game_menu()
+				get_viewport().set_input_as_handled()
+				return
+
+## FIX: Инициализация сохранения и комнаты
+## Вызывается через call_deferred() из _ready() чтобы выполниться ПОСЛЕ завершения _ready()
+## Это исправляет баг телепортации, при этом сохраняя правильный порядок инициализации
+func _initialize_save_and_room() -> void:
+	# Check if this is a new game (don't load save) or loading from save
+	var start_new_game = get_tree().get_meta("start_new_game", false)
+	# Clear the meta after reading it
+	if get_tree().has_meta("start_new_game"):
+		get_tree().remove_meta("start_new_game")
+
+	# Проверяем, есть ли указанный путь к сохранению (из меню загрузки)
+	var save_file_path = SAVE_PATH
+	if get_tree().has_meta("save_file_path"):
+		save_file_path = get_tree().get_meta("save_file_path")
+		get_tree().remove_meta("save_file_path")
+
+	if not start_new_game and FileAccess.file_exists(save_file_path):
+		# If save data exists, load it using MetSys SaveManager.
+		var save_manager := SaveManager.new()
+		save_manager.load_from_text(save_file_path)
+		# Assign loaded values with defaults if missing.
+		collectibles = save_manager.get_value("collectible_count", 0)
+		var loaded_rooms = save_manager.get_value("generated_rooms", [])
+		if loaded_rooms is Array:
+			generated_rooms.assign(loaded_rooms)
+		else:
+			generated_rooms.clear()
+		var loaded_events = save_manager.get_value("events", [])
+		if loaded_events is Array:
+			events.assign(loaded_events)
+		else:
+			events.clear()
+		var loaded_abilities = save_manager.get_value("abilities", [])
+		if loaded_abilities is Array:
+			player.abilities.assign(loaded_abilities)
+		else:
+			player.abilities.clear()
+
+		# Восстанавливаем состояние MetSys (карта, предметы на карте и т.д.)
+		# MetSys автоматически восстановит позицию игрока
+		save_manager.retrieve_game(self)
+
+		# Загружаем данные из SaveSystem (инвентарь, флаги и т.д.)
+		# Позиция игрока уже восстановлена через MetSys
+		_load_full_game_data_from_save_system()
+
+		if not custom_run:
+			var loaded_starting_map: String = save_manager.get_value("current_room")
+			if not loaded_starting_map.is_empty(): # Some compatibility problem.
+				starting_map = loaded_starting_map
+	else:
+		# If no data exists, set empty one and initialize default values for new game.
+		MetSys.set_save_data()
+		# Initialize collectibles counter to 0 for new game
+		collectibles = 0
+		generated_rooms.clear()
+		events.clear()
+		quest_flags.clear()
+		cutscene_flags.clear()
+		boss_flags.clear()
+		location_flags.clear()
+
+	# Initialize room when it changes.
+	if not room_loaded.is_connected(init_room):
+		room_loaded.connect(init_room, CONNECT_DEFERRED)
+	# Load the starting room.
+	load_room(starting_map)
+
+	# ВАЖНО: Для новой игры позиционируем игрока на SavePoint в стартовой комнате
+	# (при загрузке сохранения позиция уже восстановлена через save_manager.retrieve_game выше)
+	if start_new_game:
+		await get_tree().process_frame  # Ждём загрузки комнаты
+		_position_player_at_save_point()
+
+	# MetSys автоматически устанавливает позицию игрока:
+	# - Из сохранения при загрузке игры (через save_manager.retrieve_game)
+	# - На SavePoint при новой игре (если он есть в комнате)
+	# Не нужно вручную искать SavePoint - MetSys сам это делает!
+
+	# Add module for room transitions.
+	add_module("RoomTransitions.gd")
+	# You can enable alternate transition effect by using this module instead.
+	#add_module("ScrollingRoomTransitions.gd")
+
+	# Reset position tracking (feature specific to this project).
+	await get_tree().physics_frame
+	reset_map_starting_coords.call_deferred()
+
+	# Make sure minimap is at correct position (required for themes to work correctly).
+	%Minimap.set_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 8)
+
+# Returns this node from anywhere.
+static func get_singleton() -> Game:
+	return (Game as Script).get_meta(&"singleton") as Game
+
+# Save game using MetSys SaveManager.
+func save_game():
+	var save_manager := SaveManager.new()
+	save_manager.set_value("collectible_count", collectibles)
+	save_manager.set_value("generated_rooms", generated_rooms)
+	save_manager.set_value("events", events)
+	save_manager.set_value("current_room", MetSys.get_current_room_name())
+	save_manager.set_value("abilities", player.abilities)
+	# Сохраняем состояние MetSys (карта, предметы и т.д.)
+	save_manager.store_game(self)
+	save_manager.save_as_text(SAVE_PATH)
+	
+	# Сохраняем данные через SaveSystem (инвентарь, позиция, флаги и т.д.)
+	_save_game_flags_to_save_system()
+	_save_full_game_data_to_save_system()
+
+func reset_map_starting_coords():
+	$UI/MapWindow.reset_starting_coords()
+
+## Позиционирует игрока на SavePoint в текущей комнате
+func _position_player_at_save_point() -> void:
+	# Ищем SavePoint в текущей комнате
+	var save_points = get_tree().get_nodes_in_group("save_points")
+	if save_points.size() > 0:
+		var save_point = save_points[0]
+		player.global_position = save_point.global_position
+		MetSys.set_player_position(player.global_position)
+		DebugLogger.info("Game: Positioned player at SavePoint for new game: %s" % player.global_position, "Game")
+	else:
+		DebugLogger.warning("Game: No SavePoint found in starting room", "Game")
+
+func init_room():
+	MetSys.get_current_room_instance().adjust_camera_limits($Player/Camera2D)
+	player.on_enter()
+
+	# Initializes MetSys.get_current_coords(), so you can use it from the beginning.
+	if MetSys.last_player_position.x == Vector2i.MAX.x:
+		MetSys.set_player_position(player.position)
+
+# ============================================================================
+# Флаги квестов, диалогов, катсцен, боссов и локаций
+# ============================================================================
+
+## Получает флаги квестов
+func get_quest_flags() -> Dictionary:
+	return quest_flags.duplicate(true)
+
+## Устанавливает флаги квестов
+func set_quest_flags(flags: Dictionary) -> void:
+	quest_flags = flags.duplicate(true)
+
+## Устанавливает флаг квеста
+func set_quest_flag(quest_id: String, value: Variant) -> void:
+	quest_flags[quest_id] = value
+
+## Получает флаг квеста
+func get_quest_flag(quest_id: String, default: Variant = false) -> Variant:
+	return quest_flags.get(quest_id, default)
+
+## Получает флаги катсцен
+func get_cutscene_flags() -> Dictionary:
+	return cutscene_flags.duplicate(true)
+
+## Устанавливает флаги катсцен
+func set_cutscene_flags(flags: Dictionary) -> void:
+	cutscene_flags = flags.duplicate(true)
+
+## Устанавливает флаг катсцены
+func set_cutscene_flag(cutscene_id: String, value: Variant) -> void:
+	cutscene_flags[cutscene_id] = value
+
+## Получает флаг катсцены
+func get_cutscene_flag(cutscene_id: String, default: Variant = false) -> Variant:
+	return cutscene_flags.get(cutscene_id, default)
+
+## Получает флаги боссов
+func get_boss_flags() -> Dictionary:
+	return boss_flags.duplicate(true)
+
+## Устанавливает флаги боссов
+func set_boss_flags(flags: Dictionary) -> void:
+	boss_flags = flags.duplicate(true)
+
+## Устанавливает флаг босса
+func set_boss_flag(boss_id: String, value: Variant) -> void:
+	boss_flags[boss_id] = value
+
+## Получает флаг босса
+func get_boss_flag(boss_id: String, default: Variant = false) -> Variant:
+	return boss_flags.get(boss_id, default)
+
+## Получает флаги локаций
+func get_location_flags() -> Dictionary:
+	return location_flags.duplicate(true)
+
+## Устанавливает флаги локаций
+func set_location_flags(flags: Dictionary) -> void:
+	location_flags = flags.duplicate(true)
+
+## Устанавливает флаг локации
+func set_location_flag(location_id: String, value: Variant) -> void:
+	location_flags[location_id] = value
+
+## Получает флаг локации
+func get_location_flag(location_id: String, default: Variant = false) -> Variant:
+	return location_flags.get(location_id, default)
+
+## Сохраняет флаги в SaveSystem
+func _save_game_flags_to_save_system() -> void:
+	if Engine.has_singleton("ServiceLocator"):
+		var service_locator = Engine.get_singleton("ServiceLocator")
+		if service_locator and service_locator.has_method("get_save_system"):
+			var save_system = service_locator.get_save_system()
+			if save_system and save_system.has_method("save_player_data"):
+				# SaveSystem автоматически получит флаги через методы get_*_flags()
+				save_system.save_player_data()
+
+## Сохраняет полные данные игры в SaveSystem
+func _save_full_game_data_to_save_system() -> void:
+	if Engine.has_singleton("ServiceLocator"):
+		var service_locator = Engine.get_singleton("ServiceLocator")
+		if service_locator and service_locator.has_method("get_save_system"):
+			var save_system = service_locator.get_save_system()
+			if save_system and save_system.has_method("save_player_data"):
+				# FIX: Сохраняем текущую позицию игрока через PlayerStateManager
+				# SaveSystem.save_player_data() читает позицию из game_manager.player_state.player_position,
+				# поэтому нужно обновить её перед сохранением
+				if player and is_instance_valid(player):
+					# Получаем PlayerStateManager
+					var player_state_manager = service_locator.get_player_state_manager()
+					if player_state_manager and player_state_manager.has_method("set_player_position"):
+						# ВАЖНО: Используем global_position, а не position (локальная позиция)!
+						player_state_manager.set_player_position(player.global_position)
+						DebugLogger.info("Game: Saved player global position: %s" % player.global_position, "Game")
+
+					# Обновляем текущую сцену/комнату
+					if save_system.has("player_data"):
+						var current_room = MetSys.get_current_room_name()
+						if not current_room.is_empty():
+							save_system.player_data.current_scene = current_room
+
+				# Сохраняем все данные (инвентарь, позиция, флаги и т.д.)
+				# SaveSystem автоматически определит название локации при сохранении
+				save_system.save_player_data()
+
+## Загружает полные данные игры из SaveSystem (инвентарь, позиция, флаги и т.д.)
+func _load_full_game_data_from_save_system() -> void:
+	# FIX: В Godot 4.5 autoload доступен напрямую, а не через Engine.get_singleton()
+	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
+
+	if save_system and save_system.has_method("load_player_data"):
+		# SaveSystem автоматически загрузит все данные:
+		# - Инвентарь через GameManager
+		# - Позицію игрока через GameManager
+		# - Флаги через методы set_*_flags()
+		save_system.load_player_data()
+
+		# После загрузки данных из SaveSystem, загружаем позицию игрока
+		# если она была сохранена
+		if "player_data" in save_system:
+			var _player_data = save_system.player_data  # Префикс _ - переменная не используется
+
+			# Позиция игрока уже восстановлена через MetSys save_manager.retrieve_game()
+			# SaveSystem используется только для инвентаря и флагов
+			# (позиция хранится в MetSys, не в SaveSystem)

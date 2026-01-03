@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgpocp4yd5wxb"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/GoldDisplay.gd" id="1_gold"]
+
+[sub_resource type="Theme" id="Theme_1"]
+
+[node name="GoldDisplay" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 190.0
+offset_bottom = 28.0
+script = ExtResource("1_gold")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 190.0
+offset_bottom = 28.0
+
+[node name="GoldIcon" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="GoldLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_1")
+text = "0"
+horizontal_alignment = 2
+vertical_alignment = 1

@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://bf8gy32t7bmy8"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd" id="1_merchant"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(64, 64)
+
+[node name="Merchant" type="Area2D"]
+z_index = 10
+script = ExtResource("1_merchant")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.9, 0.8, 0.6, 1)
+z_index = 10
+scale = Vector2(2, 2)
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -24.0
+offset_right = 16.0
+offset_bottom = 24.0
+color = Color(0.9, 0.8, 0.6, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -20.0
+offset_top = -10.0
+offset_right = 20.0
+offset_bottom = 10.0
+theme_override_font_sizes/font_size = 16
+text = "🛒"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 2)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="InteractionLabel" type="Label" parent="."]
+z_index = 11
+offset_left = -100.0
+offset_top = -80.0
+offset_right = 100.0
+offset_bottom = -40.0
+theme_override_font_sizes/font_size = 16
+text = "Press E to open shop"
+horizontal_alignment = 1
+vertical_alignment = 1

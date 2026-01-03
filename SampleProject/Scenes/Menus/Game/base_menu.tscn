@@ -1,0 +1,204 @@
+[gd_scene load_steps=14 format=3 uid="uid://c37ilywk3dk41"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Components/base_menu.gd" id="1_base_menu"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/timer_display.tscn" id="6_timer"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/gold_display.tscn" id="7_gold"]
+
+[sub_resource type="Gradient" id="Gradient_swgay"]
+offsets = PackedFloat32Array(0.42, 1)
+colors = PackedColorArray(0.145098, 0.168627, 0.203922, 1, 1, 1, 1, 0)
+metadata/_snap_enabled = true
+metadata/_snap_count = 100
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_au31d"]
+gradient = SubResource("Gradient_swgay")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2jb5m"]
+content_margin_left = 50.0
+texture = SubResource("GradientTexture1D_au31d")
+
+[sub_resource type="Theme" id="Theme_right_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_right_panel"]
+bg_color = Color(0.145098, 0.168627, 0.203922, 0.8)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rq2nl"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="FontFile" id="FontFile_hrfdy"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+cache/0/20/0/ascent = 0.0
+cache/0/20/0/descent = 0.0
+cache/0/20/0/underline_position = 0.0
+cache/0/20/0/underline_thickness = 0.0
+cache/0/20/0/scale = 1.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sou30"]
+content_margin_left = 50.0
+bg_color = Color(0.145098, 0.168627, 0.203922, 1)
+border_width_top = 1
+
+[node name="BaseMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_base_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.1, 0.95)
+
+[node name="Menu name" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 395.0
+offset_bottom = 35.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_2jb5m")
+text = "Menu"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CentralPanel" type="Control" parent="HBoxContainer"]
+custom_minimum_size = Vector2(600, 500)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="RightPanel" type="PanelContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 3
+theme = SubResource("Theme_right_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_right_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TimerDisplay" parent="HBoxContainer/RightPanel/VBoxContainer" instance=ExtResource("6_timer")]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="GoldDisplay" parent="HBoxContainer/RightPanel/VBoxContainer" instance=ExtResource("7_gold")]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="TopHUD" type="HBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CharacterSprite" type="AnimatedSprite2D" parent="HBoxContainer/RightPanel/VBoxContainer"]
+position = Vector2(103, 207)
+scale = Vector2(1.266129, 1.266129)
+sprite_frames = SubResource("SpriteFrames_rq2nl")
+animation = &"default"
+flip_h = true
+
+[node name="CharacterStats" type="VBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HPBar" type="HBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="HPLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "HP:"
+vertical_alignment = 1
+
+[node name="HPValue" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/HPBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "100/100"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="MPBar" type="HBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="MPLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/MPBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "MP:"
+vertical_alignment = 1
+
+[node name="MPValue" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/MPBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "50/50"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LevelBar" type="HBoxContainer" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="LevelLabel" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/LevelBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "LVL:"
+vertical_alignment = 1
+
+[node name="LevelValue" type="Label" parent="HBoxContainer/RightPanel/VBoxContainer/CharacterStats/LevelBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "1"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="description" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 1.0
+offset_top = 588.0
+offset_right = 1.0
+offset_bottom = 646.0
+grow_horizontal = 2
+theme_override_fonts/font = SubResource("FontFile_hrfdy")
+theme_override_styles/normal = SubResource("StyleBoxFlat_sou30")
+text = "description"

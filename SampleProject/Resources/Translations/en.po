@@ -1,0 +1,54 @@
+# English translations
+# Copyright (C) 2024
+msgid ""
+msgstr ""
+"Project-Id-Version: Demo\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# UI Elements
+msgid "Fire"
+msgstr "Fire"
+
+msgid "Heal"
+msgstr "Heal"
+
+msgid "Shield"
+msgstr "Shield"
+
+msgid "Utility"
+msgstr "Utility"
+
+# Character names
+msgid "Kusakam"
+msgstr "Kusakam"
+
+msgid "Astrid"
+msgstr "Astrid"
+
+msgid "Alicia"
+msgstr "Alicia"
+
+msgid "Urizan"
+msgstr "Urizan"
+
+msgid "Malik"
+msgstr "Malik"
+
+msgid "Guard"
+msgstr "Guard"
+
+msgid "Grandfather"
+msgstr "Grandfather"
+
+# Common phrases
+msgid "Continue"
+msgstr "Continue"
+
+msgid "Skip"
+msgstr "Skip"
+
+msgid "Close"
+msgstr "Close"
+

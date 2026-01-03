@@ -1,0 +1,46 @@
+{
+	"merchants": {
+		"default": {
+			"name": "Default Merchant",
+			"items": [
+				"iron_ore",
+				"copper_ore",
+				"iron_ingot",
+				"copper_ingot",
+				"wood_log",
+				"stone",
+				"herb",
+				"potion",
+				"hi_potion",
+				"ether",
+				"leather",
+				"iron_sword",
+				"copper_sword",
+				"leather_armor",
+				"iron_armor"
+			]
+		},
+		"village_merchant": {
+			"name": "Village Merchant",
+			"items": [
+				"iron_ore",
+				"copper_ore",
+				"wood_log",
+				"stone",
+				"potion",
+				"leather_armor"
+			]
+		},
+		"blacksmith": {
+			"name": "Blacksmith",
+			"items": [
+				"iron_ingot",
+				"copper_ingot",
+				"iron_sword",
+				"copper_sword",
+				"iron_armor"
+			]
+		}
+	}
+}
+

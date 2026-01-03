@@ -1,0 +1,151 @@
+[gd_scene load_steps=16 format=3 uid="uid://ckkogqiocc0pv"]
+
+[ext_resource type="Script" uid="uid://bgn7bc1r8cpp8" path="res://SampleProject/Scripts/Gameplay/DefaultEnemy.gd" id="1_enemy_script"]
+[ext_resource type="Script" uid="uid://bwi4k0bdicpqv" path="res://SampleProject/Scripts/Combat/Components/DamageApplier.gd" id="2_damage_applier"]
+[ext_resource type="Script" uid="uid://d0j3khf1a852u" path="res://SampleProject/Scripts/Combat/Components/HealthComponent.gd" id="3_health_component"]
+[ext_resource type="Script" uid="uid://dyniex6cj1bf1" path="res://SampleProject/Scripts/Combat/Components/HurtboxComponent.gd" id="4_hurtbox_component"]
+[ext_resource type="Texture2D" uid="uid://dlrqakrymlo5q" path="res://SampleProject/Scripts/Systems/character-spritesheet (4).png" id="5_enemy_sprite"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_collision"]
+size = Vector2(32, 32)
+
+[sub_resource type="Animation" id="Animation_attack"]
+resource_name = "attack"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.033333335, 0.13333334, 0.23333333, 0.36666667, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Rect2(51, 3886, 57, 48), Rect2(181, 3886, 57, 48), Rect2(306, 3886, 57, 49), Rect2(435, 3886, 57, 48), Rect2(564, 3886, 57, 49), Rect2(692, 3886, 59, 49)]
+}
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "death"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1.000001),
+"update": 1,
+"values": [Rect2(202, 1867, 35, 48), Rect2(265, 1867, 35, 48)]
+}
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 0.9
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [Rect2(19, 1487, 33, 48), Rect2(19, 1487, 33, 48), Rect2(83, 1487, 33, 48)]
+}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.01666671, 0.1, 0.2, 0.3, 0.4, 0.5, 0.5833333, 0.6833333),
+"transitions": PackedFloat32Array(1.0000001, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(17, 2512, 34, 48), Rect2(81, 2512, 34, 48), Rect2(145, 2513, 34, 48), Rect2(209, 2510, 34, 48), Rect2(273, 2511, 34, 48), Rect2(337, 2511, 34, 48), Rect2(401, 2511, 34, 48), Rect2(475, 2511, 34, 48)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_enemy"]
+_data = {
+&"attack": SubResource("Animation_attack"),
+&"death": SubResource("Animation_death"),
+&"idle": SubResource("Animation_idle"),
+&"walk": SubResource("Animation_walk")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hitbox"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_attack"]
+size = Vector2(40, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hurtbox"]
+size = Vector2(28, 28)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enemy_detection"]
+radius = 300.0
+
+[node name="DefaultEnemy" type="CharacterBody2D"]
+script = ExtResource("1_enemy_script")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health_component")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy_collision")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_enemy_sprite")
+region_enabled = true
+region_rect = Rect2(692, 3886, 59, 49)
+region_filter_clip_enabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_enemy")
+}
+
+[node name="hitbox" type="Area2D" parent="."]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox"]
+shape = SubResource("RectangleShape2D_enemy_hitbox")
+
+[node name="DamageApplier" type="Node" parent="hitbox"]
+script = ExtResource("2_damage_applier")
+
+[node name="AttackArea" type="Area2D" parent="."]
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("RectangleShape2D_enemy_attack")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_enemy_hurtbox")
+
+[node name="HurtboxComponent" type="Node" parent="Hurtbox"]
+script = ExtResource("4_hurtbox_component")
+
+[node name="dettection" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="dettection"]
+shape = SubResource("CircleShape2D_enemy_detection")
+
+[connection signal="body_entered" from="dettection" to="." method="_on_dettection_body_entered"]
+[connection signal="body_exited" from="dettection" to="." method="_on_dettection_body_exited"]

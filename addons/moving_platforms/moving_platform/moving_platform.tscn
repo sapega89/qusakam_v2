@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://d2y3rotqxfgbv"]
+
+[ext_resource type="Script" uid="uid://18khhieov188" path="res://addons/moving_platforms/moving_platform/moving_platform.gd" id="1_kxcon"]
+[ext_resource type="Script" uid="uid://j2auf6fkfj56" path="res://addons/moving_platforms/resources/moving_platform_config.gd" id="2_lnud3"]
+[ext_resource type="Script" uid="uid://da86vu63iaj1f" path="res://addons/tween_resource/tween_resource.gd" id="3_srdxj"]
+
+[sub_resource type="Resource" id="Resource_kxcon"]
+script = ExtResource("2_lnud3")
+metadata/_custom_type_script = "uid://j2auf6fkfj56"
+
+[sub_resource type="Resource" id="Resource_fqmmt"]
+script = ExtResource("3_srdxj")
+duration_mode = 1
+process_mode = 0
+
+[node name="MovingPlatform" type="Node2D" node_paths=PackedStringArray("platform", "platform_line")]
+script = ExtResource("1_kxcon")
+config = SubResource("Resource_kxcon")
+tween_resource = SubResource("Resource_fqmmt")
+platform = NodePath("AnimatableBody2D")
+platform_line = NodePath("Line2D")
+metadata/_custom_type_script = "uid://18khhieov188"
+
+[node name="AnimatableBody2D" type="AnimatableBody2D" parent="."]
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="AnimatableBody2D"]
+polygon = PackedVector2Array(-48, -8, 48, -8, 48, 8, -48, 8)
+
+[node name="Polygon2D" type="Polygon2D" parent="AnimatableBody2D"]
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-48, -8, 48, -8, 48, 8, -48, 8)
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 3.0
+default_color = Color(0, 0, 0, 0.60784316)

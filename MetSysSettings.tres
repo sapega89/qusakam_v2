@@ -1,0 +1,6 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://m0o6pv7hl5u"]
+
+[ext_resource type="Script" uid="uid://orxlanqpgccv" path="res://addons/MetroidvaniaSystem/Scripts/Settings.gd" id="1_ui0vk"]
+
+[resource]
+script = ExtResource("1_ui0vk")

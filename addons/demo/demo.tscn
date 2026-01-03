@@ -1,0 +1,253 @@
+[gd_scene load_steps=15 format=3 uid="uid://dqvcj1tcn5qyc"]
+
+[ext_resource type="PackedScene" uid="uid://s46q806s5ax" path="res://addons/demo/block.tscn" id="1_x7jln"]
+[ext_resource type="PackedScene" uid="uid://bovxhw2y0fy1e" path="res://addons/demo/player.tscn" id="2_0qiwe"]
+[ext_resource type="PackedScene" uid="uid://d2y3rotqxfgbv" path="res://addons/moving_platforms/moving_platform/moving_platform.tscn" id="3_lyusf"]
+[ext_resource type="Script" uid="uid://j2auf6fkfj56" path="res://addons/moving_platforms/resources/moving_platform_config.gd" id="4_pxfym"]
+[ext_resource type="PackedScene" uid="uid://8kf0xovialp1" path="res://addons/demo/platformer_button/platformer_button.tscn" id="5_nquda"]
+[ext_resource type="Script" uid="uid://da86vu63iaj1f" path="res://addons/tween_resource/tween_resource.gd" id="6_kshnu"]
+
+[sub_resource type="Environment" id="Environment_nquda"]
+background_mode = 3
+glow_enabled = true
+glow_intensity = 1.0
+glow_bloom = 0.4
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0qiwe"]
+size = Vector2(1150, 93)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nquda"]
+size = Vector2(264, 24)
+
+[sub_resource type="Resource" id="Resource_pxfym"]
+script = ExtResource("4_pxfym")
+metadata/_custom_type_script = "uid://j2auf6fkfj56"
+
+[sub_resource type="Resource" id="Resource_nquda"]
+script = ExtResource("4_pxfym")
+type = 1
+metadata/_custom_type_script = "uid://j2auf6fkfj56"
+
+[sub_resource type="Resource" id="Resource_kshnu"]
+script = ExtResource("4_pxfym")
+type = 2
+metadata/_custom_type_script = "uid://j2auf6fkfj56"
+
+[sub_resource type="Resource" id="Resource_8wrkk"]
+script = ExtResource("4_pxfym")
+type = 3
+metadata/_custom_type_script = "uid://j2auf6fkfj56"
+
+[sub_resource type="Resource" id="Resource_ha4xs"]
+script = ExtResource("6_kshnu")
+duration = 4.0
+process_mode = 0
+
+[node name="Demo" type="Node2D"]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_nquda")
+
+[node name="Bg" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="ColorRect" type="ColorRect" parent="Bg"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2999997, 0, 1, 1)
+
+[node name="Floor" parent="." instance=ExtResource("1_x7jln")]
+position = Vector2(176, 559)
+
+[node name="CollisionShape2D" parent="Floor" index="0"]
+position = Vector2(400, 39.5)
+shape = SubResource("RectangleShape2D_0qiwe")
+
+[node name="Polygon2D" parent="Floor" index="1"]
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-176, -7, 976, -7, 976, 169, -176, 161)
+
+[node name="FloatingPlatform" parent="." instance=ExtResource("1_x7jln")]
+position = Vector2(184, 496)
+
+[node name="CollisionShape2D" parent="FloatingPlatform" index="0"]
+position = Vector2(60, -4)
+shape = SubResource("RectangleShape2D_nquda")
+
+[node name="Polygon2D" parent="FloatingPlatform" index="1"]
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-72, -16, 192, -16, 192, 8, -72, 8)
+
+[node name="Player" parent="." instance=ExtResource("2_0qiwe")]
+z_index = 1
+position = Vector2(72, 512)
+
+[node name="MovingPlatformTypes" type="Node2D" parent="."]
+
+[node name="Loop" type="Node2D" parent="MovingPlatformTypes"]
+
+[node name="MovingPlatform" parent="MovingPlatformTypes/Loop" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(432, 528)
+config = SubResource("Resource_pxfym")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton")
+
+[node name="Marker2D" type="Marker2D" parent="MovingPlatformTypes/Loop/MovingPlatform"]
+position = Vector2(0, -136)
+
+[node name="PlatformLabel" type="Label" parent="MovingPlatformTypes/Loop"]
+offset_left = 392.0
+offset_top = 336.0
+offset_right = 479.0
+offset_bottom = 359.0
+text = "Loop Mode"
+
+[node name="ActivatorButton" parent="MovingPlatformTypes/Loop" instance=ExtResource("5_nquda")]
+position = Vector2(136, 552)
+
+[node name="OneWay" type="Node2D" parent="MovingPlatformTypes"]
+position = Vector2(216, 0)
+
+[node name="MovingPlatform" parent="MovingPlatformTypes/OneWay" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(432, 528)
+config = SubResource("Resource_nquda")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton")
+
+[node name="Marker2D" type="Marker2D" parent="MovingPlatformTypes/OneWay/MovingPlatform"]
+position = Vector2(0, -136)
+
+[node name="PlatformLabel" type="Label" parent="MovingPlatformTypes/OneWay"]
+offset_left = 360.0
+offset_top = 328.0
+offset_right = 494.0
+offset_bottom = 377.0
+text = "One Way Mode
+(Needs Activator)"
+horizontal_alignment = 1
+
+[node name="ActivatorButton" parent="MovingPlatformTypes/OneWay" instance=ExtResource("5_nquda")]
+position = Vector2(-24, 552)
+
+[node name="Triggered" type="Node2D" parent="MovingPlatformTypes"]
+position = Vector2(416, 0)
+
+[node name="MovingPlatform" parent="MovingPlatformTypes/Triggered" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(432, 528)
+config = SubResource("Resource_kshnu")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton2")
+
+[node name="Marker2D" type="Marker2D" parent="MovingPlatformTypes/Triggered/MovingPlatform"]
+position = Vector2(0, -136)
+
+[node name="PlatformLabel" type="Label" parent="MovingPlatformTypes/Triggered"]
+offset_left = 368.0
+offset_top = 320.0
+offset_right = 502.0
+offset_bottom = 369.0
+text = "Triggered Mode
+(Needs Activator)"
+horizontal_alignment = 1
+
+[node name="ActivatorButton2" parent="MovingPlatformTypes/Triggered" instance=ExtResource("5_nquda")]
+position = Vector2(-152, 552)
+
+[node name="Toggle" type="Node2D" parent="MovingPlatformTypes"]
+position = Vector2(592, 0)
+
+[node name="MovingPlatform" parent="MovingPlatformTypes/Toggle" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(432, 528)
+config = SubResource("Resource_8wrkk")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton3")
+
+[node name="Marker2D" type="Marker2D" parent="MovingPlatformTypes/Toggle/MovingPlatform"]
+position = Vector2(0, -136)
+
+[node name="PlatformLabel" type="Label" parent="MovingPlatformTypes/Toggle"]
+offset_left = 368.0
+offset_top = 320.0
+offset_right = 502.0
+offset_bottom = 369.0
+text = "Toggle Mode
+(Needs Activator)"
+horizontal_alignment = 1
+
+[node name="ActivatorButton3" parent="MovingPlatformTypes/Toggle" instance=ExtResource("5_nquda")]
+position = Vector2(-264, 552)
+
+[node name="ButtonLabel" type="Label" parent="MovingPlatformTypes"]
+offset_left = 64.0
+offset_top = 432.0
+offset_right = 368.0
+offset_bottom = 481.0
+text = "Buttons
+"
+
+[node name="SpeedvsDuration" type="Node2D" parent="."]
+
+[node name="SpeedToggle" type="Node2D" parent="SpeedvsDuration"]
+position = Vector2(592, 0)
+
+[node name="MovingPlatform" parent="SpeedvsDuration/SpeedToggle" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(-80, 168)
+config = SubResource("Resource_8wrkk")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton3")
+
+[node name="Marker2D" type="Marker2D" parent="SpeedvsDuration/SpeedToggle/MovingPlatform"]
+position = Vector2(432, 0)
+
+[node name="PlatformLabel" type="Label" parent="SpeedvsDuration/SpeedToggle"]
+offset_left = -144.0
+offset_top = 88.0
+offset_right = -10.0
+offset_bottom = 137.0
+text = "Toggle Mode:
+Speed"
+horizontal_alignment = 1
+
+[node name="ActivatorButton3" parent="SpeedvsDuration/SpeedToggle" instance=ExtResource("5_nquda")]
+position = Vector2(-352, 480)
+
+[node name="DurationToggle" type="Node2D" parent="SpeedvsDuration"]
+position = Vector2(592, 136)
+
+[node name="MovingPlatform" parent="SpeedvsDuration/DurationToggle" node_paths=PackedStringArray("final_pos_marker", "activator") instance=ExtResource("3_lyusf")]
+position = Vector2(-80, 120)
+config = SubResource("Resource_8wrkk")
+tween_resource = SubResource("Resource_ha4xs")
+final_pos_marker = NodePath("Marker2D")
+activator = NodePath("../ActivatorButton3")
+
+[node name="Marker2D" type="Marker2D" parent="SpeedvsDuration/DurationToggle/MovingPlatform"]
+position = Vector2(432, 0)
+
+[node name="PlatformLabel" type="Label" parent="SpeedvsDuration/DurationToggle"]
+offset_left = -144.0
+offset_top = 40.0
+offset_right = -10.0
+offset_bottom = 89.0
+text = "Toggle Mode:
+Duration"
+horizontal_alignment = 1
+
+[node name="ActivatorButton3" parent="SpeedvsDuration/DurationToggle" instance=ExtResource("5_nquda")]
+position = Vector2(-264, 344)
+
+[node name="Label" type="Label" parent="SpeedvsDuration"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 920.0
+offset_bottom = 73.0
+text = "Speed Mode calculates duration based on distance, making animations consistent regardless of how far they travel. 
+Duration Mode uses a fixed time, making animations take the same amount of time regardless of distance traveled."
+
+[editable path="Floor"]
+[editable path="FloatingPlatform"]

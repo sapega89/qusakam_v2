@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="1_melee"]
+
+[resource]
+script = ExtResource("1_melee")
+enemy_type = "melee"
+speed = 70.0
+base_damage = 10.0
+attack_cooldown = 1.5
+detection_range = 300.0
+attack_range = 100.0
+chase_range = 400.0
+max_health = 100

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Core/ServiceLocator.gd" id="1_service_locator"]
+
+[node name="ServiceLocator" type="Node"]
+script = ExtResource("1_service_locator")
+

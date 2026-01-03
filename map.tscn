@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://2i40l6ds35ry"]
+
+[ext_resource type="Texture2D" uid="uid://ctmmdj1a210jj" path="res://SampleProject/Sprites/download (1).jpg" id="1_e0an3"]
+[ext_resource type="PackedScene" uid="uid://nth4iwob218a" path="res://tile_map_set.tscn" id="1_wijl4"]
+[ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_e0an3"]
+
+[sub_resource type="Gradient" id="Gradient_wijl4"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.36666667, 0.9533333, 0.98)
+colors = PackedColorArray(0, 0, 0, 1, 0.055555556, 0.055555556, 0.055555556, 1, 0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_e0an3"]
+gradient = SubResource("Gradient_wijl4")
+
+[node name="Map" type="Node2D"]
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1568, 531)
+scale = Vector2(6.9714894, 5.9294953)
+texture = ExtResource("1_e0an3")
+
+[node name="TileMap" parent="." instance=ExtResource("1_wijl4")]
+
+[node name="TileMapLayer" parent="TileMap" index="0"]
+position = Vector2(-253, 264)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-33, 1064)
+rotation = -1.5714917
+scale = Vector2(5.2851563, 1232.0654)
+texture = SubResource("GradientTexture1D_e0an3")
+
+[node name="RoomInstance" parent="." instance=ExtResource("2_e0an3")]
+
+[editable path="TileMap"]

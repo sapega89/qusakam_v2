@@ -1,0 +1,97 @@
+[gd_scene load_steps=13 format=3 uid="uid://vin63hfnmuvg"]
+
+[ext_resource type="Script" uid="uid://6v7nibywdm8r" path="res://addons/fsm/FiniteStateMachine.gd" id="1_tain8"]
+[ext_resource type="Script" uid="uid://q70ywqeom5lv" path="res://addons/fsm/example/example_runaround.gd" id="2_msoa3"]
+[ext_resource type="Script" uid="uid://chs6gsx2euj1r" path="res://addons/fsm/example/example_noclip.gd" id="3_6hyqq"]
+
+[sub_resource type="GDScript" id="GDScript_fthqt"]
+script/source = "extends Node2D
+
+func _process(delta: float) -> void: 
+	$Label.text = \"Current State: \" + $CharacterBody2D.fsm.state.name
+"
+
+[sub_resource type="GDScript" id="GDScript_ii2sj"]
+resource_name = "Player"
+script/source = "extends CharacterBody2D
+
+@onready var fsm = $FiniteStateMachine
+@onready var normal_state = $FiniteStateMachine/ExampleRunaround
+@onready var noclip_state = $FiniteStateMachine/ExampleNoclipState
+@onready var hitbox = $CollisionShape2D
+
+func _ready() -> void:
+	fsm.link(normal_state,\"enter_noclip\",noclip_state)
+	fsm.link(noclip_state,\"exited_noclip\",normal_state)
+"
+
+[sub_resource type="Gradient" id="Gradient_ii2sj"]
+colors = PackedColorArray(0, 0, 0.5764706, 1, 0.039812893, 0.42398864, 0.791056, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_fthqt"]
+gradient = SubResource("Gradient_ii2sj")
+width = 58
+height = 126
+fill_from = Vector2(0.566313, 0.94017094)
+fill_to = Vector2(0.60344833, 0.042735044)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xfl8h"]
+size = Vector2(55, 124.16)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_0s5oh"]
+
+[sub_resource type="Gradient" id="Gradient_eo3g3"]
+colors = PackedColorArray(0.75510836, 0.26314396, 0.17934543, 1, 0.58658254, 0.16899493, 0.58364725, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rvjwe"]
+gradient = SubResource("Gradient_eo3g3")
+width = 2000
+fill_from = Vector2(0.24786325, 0.96153843)
+fill_to = Vector2(0.4059829, 0.14102565)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fthqt"]
+font_size = 32
+
+[node name="Example" type="Node2D"]
+script = SubResource("GDScript_fthqt")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(608, 377)
+script = SubResource("GDScript_ii2sj")
+
+[node name="FiniteStateMachine" type="Node" parent="CharacterBody2D"]
+script = ExtResource("1_tain8")
+
+[node name="ExampleRunaround" type="Node" parent="CharacterBody2D/FiniteStateMachine"]
+script = ExtResource("2_msoa3")
+move_speed = 400
+jump_speed = 400
+metadata/_custom_type_script = "uid://q70ywqeom5lv"
+
+[node name="ExampleNoclipState" type="Node" parent="CharacterBody2D/FiniteStateMachine"]
+script = ExtResource("3_6hyqq")
+acceleration = 300
+friction = 300
+metadata/_custom_type_script = "uid://chs6gsx2euj1r"
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+texture = SubResource("GradientTexture2D_fthqt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("RectangleShape2D_xfl8h")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(953, 447)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("WorldBoundaryShape2D_0s5oh")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D"]
+position = Vector2(0, 35)
+texture = SubResource("GradientTexture2D_rvjwe")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Current State:"
+label_settings = SubResource("LabelSettings_fthqt")

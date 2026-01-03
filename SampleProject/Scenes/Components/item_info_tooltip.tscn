@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdi188u8tib86"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Components/ItemInfoTooltip.gd" id="1_item_info_tooltip"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip"]
+bg_color = Color(0.1, 0.1, 0.1, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="ItemInfoTooltip" type="PanelContainer"]
+visible = false
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_tooltip")
+script = ExtResource("1_item_info_tooltip")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ItemName" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 16
+text = "Item Name"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ItemDescription" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "Item description goes here..."
+
+[node name="StatsContainer" type="VBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="StatsSeparator" type="HSeparator" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="PhysDefLabel" type="Label" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Phys. Def. +0"
+
+[node name="ElemDefLabel" type="Label" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Elem. Def. +0"
+
+[node name="AttackLabel" type="Label" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Attack +0"
+
+[node name="MagicLabel" type="Label" parent="VBoxContainer/StatsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Magic +0"
+
+[node name="PriceContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="PriceSeparator" type="HSeparator" parent="VBoxContainer/PriceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BuyPriceLabel" type="Label" parent="VBoxContainer/PriceContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Buy: 0"
+horizontal_alignment = 1
+
+[node name="SellPriceLabel" type="Label" parent="VBoxContainer/PriceContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Sell: 0"
+horizontal_alignment = 1
+

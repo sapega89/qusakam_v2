@@ -1,0 +1,30 @@
+[gd_scene load_steps=4 format=3 uid="uid://b0q1xj5wsb5r5"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/game_menu.gd" id="1_csecd"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/base_menu.tscn" id="2_2rcvi"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/game_menu_content.tscn" id="5_game_content"]
+
+[node name="GameMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_csecd")
+
+[node name="BaseMenu" parent="." instance=ExtResource("2_2rcvi")]
+z_index = 5
+layout_mode = 1
+script = null
+
+[node name="GameMenuContent" parent="BaseMenu/HBoxContainer/CentralPanel" index="0" instance=ExtResource("5_game_content")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[editable path="BaseMenu"]

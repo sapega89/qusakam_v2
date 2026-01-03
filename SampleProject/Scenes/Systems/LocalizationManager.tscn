@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://localization_manager_tscn"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Systems/LocalizationManager.gd" id="1_localization_manager"]
+
+[node name="LocalizationManager" type="Node"]
+script = ExtResource("1_localization_manager")
+

@@ -1,0 +1,376 @@
+{
+	"crafting_recipes": [
+		{
+			"id": "smelt_iron_ingot",
+			"name": "Smelt Iron Ingot",
+			"name_ru": "Выплавить железный слиток",
+			"result": {
+				"item_id": "iron_ingot",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "iron_ore",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 5,
+			"required_station": "furnace",
+			"category": "smithing"
+		},
+		{
+			"id": "smelt_copper_ingot",
+			"name": "Smelt Copper Ingot",
+			"name_ru": "Выплавить медный слиток",
+			"result": {
+				"item_id": "copper_ingot",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "copper_ore",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 5,
+			"required_station": "furnace",
+			"category": "smithing"
+		},
+		{
+			"id": "smelt_silver_ingot",
+			"name": "Smelt Silver Ingot",
+			"name_ru": "Выплавить серебряный слиток",
+			"result": {
+				"item_id": "silver_ingot",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "silver_ore",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 8,
+			"required_station": "furnace",
+			"category": "smithing"
+		},
+		{
+			"id": "smelt_gold_ingot",
+			"name": "Smelt Gold Ingot",
+			"name_ru": "Выплавить золотой слиток",
+			"result": {
+				"item_id": "gold_ingot",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "gold_ore",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 10,
+			"required_station": "furnace",
+			"category": "smithing"
+		},
+		{
+			"id": "craft_wood_plank",
+			"name": "Craft Wood Plank",
+			"name_ru": "Изготовить деревянную доску",
+			"result": {
+				"item_id": "wood_plank",
+				"quantity": 4
+			},
+			"ingredients": [
+				{
+					"item_id": "wood_log",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 2,
+			"required_station": "workbench",
+			"category": "woodworking"
+		},
+		{
+			"id": "craft_copper_sword",
+			"name": "Craft Copper Sword",
+			"name_ru": "Изготовить медный меч",
+			"result": {
+				"item_id": "copper_sword",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "copper_ingot",
+					"quantity": 3
+				},
+				{
+					"item_id": "wood_plank",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 15,
+			"required_station": "anvil",
+			"category": "weapon_crafting"
+		},
+		{
+			"id": "craft_iron_sword",
+			"name": "Craft Iron Sword",
+			"name_ru": "Изготовить железный меч",
+			"result": {
+				"item_id": "iron_sword",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "iron_ingot",
+					"quantity": 3
+				},
+				{
+					"item_id": "wood_plank",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 20,
+			"required_station": "anvil",
+			"category": "weapon_crafting"
+		},
+		{
+			"id": "craft_silver_sword",
+			"name": "Craft Silver Sword",
+			"name_ru": "Изготовить серебряный меч",
+			"result": {
+				"item_id": "silver_sword",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "silver_ingot",
+					"quantity": 3
+				},
+				{
+					"item_id": "wood_plank",
+					"quantity": 1
+				},
+				{
+					"item_id": "mana_crystal",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 30,
+			"required_station": "anvil",
+			"category": "weapon_crafting"
+		},
+		{
+			"id": "craft_potion",
+			"name": "Craft Potion",
+			"name_ru": "Изготовить зелье",
+			"result": {
+				"item_id": "potion",
+				"quantity": 2
+			},
+			"ingredients": [
+				{
+					"item_id": "herb",
+					"quantity": 2
+				},
+				{
+					"item_id": "stone",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 5,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		},
+		{
+			"id": "craft_hi_potion",
+			"name": "Craft Hi-Potion",
+			"name_ru": "Изготовить большое зелье",
+			"result": {
+				"item_id": "hi_potion",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "potion",
+					"quantity": 2
+				},
+				{
+					"item_id": "mana_crystal",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 10,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		},
+		{
+			"id": "craft_ether",
+			"name": "Craft Ether",
+			"name_ru": "Изготовить эфир",
+			"result": {
+				"item_id": "ether",
+				"quantity": 2
+			},
+			"ingredients": [
+				{
+					"item_id": "mana_crystal",
+					"quantity": 1
+				},
+				{
+					"item_id": "herb",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 8,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		},
+		{
+			"id": "craft_leather_armor",
+			"name": "Craft Leather Armor",
+			"name_ru": "Изготовить кожаную броню",
+			"result": {
+				"item_id": "leather_armor",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "leather",
+					"quantity": 5
+				},
+				{
+					"item_id": "wood_plank",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 12,
+			"required_station": "workbench",
+			"category": "armor_crafting"
+		},
+		{
+			"id": "craft_iron_armor",
+			"name": "Craft Iron Armor",
+			"name_ru": "Изготовить железную броню",
+			"result": {
+				"item_id": "iron_armor",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "iron_ingot",
+					"quantity": 5
+				},
+				{
+					"item_id": "leather",
+					"quantity": 3
+				}
+			],
+			"crafting_time": 25,
+			"required_station": "anvil",
+			"category": "armor_crafting"
+		},
+		{
+			"id": "craft_iron_helmet",
+			"name": "Craft Iron Helmet",
+			"name_ru": "Изготовить железный шлем",
+			"result": {
+				"item_id": "iron_helmet",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "iron_ingot",
+					"quantity": 2
+				},
+				{
+					"item_id": "leather",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 15,
+			"required_station": "anvil",
+			"category": "armor_crafting"
+		},
+		{
+			"id": "craft_iron_shield",
+			"name": "Craft Iron Shield",
+			"name_ru": "Изготовить железный щит",
+			"result": {
+				"item_id": "iron_shield",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "iron_ingot",
+					"quantity": 3
+				},
+				{
+					"item_id": "wood_plank",
+					"quantity": 2
+				},
+				{
+					"item_id": "leather",
+					"quantity": 1
+				}
+			],
+			"crafting_time": 18,
+			"required_station": "anvil",
+			"category": "armor_crafting"
+		},
+		{
+			"id": "craft_potion_lesser_chain",
+			"name": "Craft Lesser Potion",
+			"name_ru": "Сотворить меньшее зелье",
+			"result": {
+				"item_id": "potion_lesser",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "potion",
+					"quantity": 2
+				}
+			],
+			"crafting_time": 3,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		},
+		{
+			"id": "craft_potion_medium_chain",
+			"name": "Craft Medium Potion",
+			"name_ru": "Сотворить среднее зелье",
+			"result": {
+				"item_id": "potion_medium",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "potion_lesser",
+					"quantity": 4
+				}
+			],
+			"crafting_time": 5,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		},
+		{
+			"id": "craft_hi_potion_chain",
+			"name": "Craft Large Potion",
+			"name_ru": "Сотворить большое зелье (цепочка)",
+			"result": {
+				"item_id": "hi_potion",
+				"quantity": 1
+			},
+			"ingredients": [
+				{
+					"item_id": "potion_medium",
+					"quantity": 8
+				}
+			],
+			"crafting_time": 8,
+			"required_station": "alchemy_table",
+			"category": "alchemy"
+		}
+	]
+}

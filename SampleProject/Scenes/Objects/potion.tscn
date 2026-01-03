@@ -1,0 +1,41 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Potion.gd" id="1_174ht"]
+
+[sub_resource type="FontFile" id="FontFile_174ht"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+
+[node name="potion" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1102.0
+offset_bottom = -598.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_174ht")
+
+[node name="PotionButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+
+[node name="PotionIcon" type="TextureRect" parent="PotionButton"]
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+expand_mode = 1
+
+[node name="PotionCount" type="Label" parent="PotionButton"]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 30.0
+offset_right = 50.0
+offset_bottom = 50.0
+theme_override_fonts/font = SubResource("FontFile_174ht")
+theme_override_font_sizes/font_size = 14
+text = "x0"
+

@@ -1,0 +1,425 @@
+[gd_scene load_steps=2 format=3 uid="uid://dves5wvm67pju"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/stats_component.gd" id="1_stats"]
+
+[node name="StatsComponent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_stats")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LeftPanel" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="CharacterSelection" type="ScrollContainer" parent="ScrollContainer/HBoxContainer/LeftPanel"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="CharacterGrid" type="GridContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 3
+
+[node name="CharacterButton1" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.6, 0.9, 1)
+
+[node name="CharacterButton2" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.9, 0.3, 0.3, 1)
+
+[node name="CharacterButton3" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.6, 0.3, 0.9, 1)
+
+[node name="CharacterButton4" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton4"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.1, 1)
+
+[node name="CharacterButton5" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton5"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.8, 0.6, 0.4, 1)
+
+[node name="CharacterButton6" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton6"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3, 0.8, 0.3, 1)
+
+[node name="CharacterButton7" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton7"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.9, 0.7, 0.2, 1)
+
+[node name="CharacterButton8" type="Button" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid"]
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+flat = true
+
+[node name="AvatarRect" type="ColorRect" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterSelection/CharacterGrid/CharacterButton8"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.5, 0.5, 0.8, 1)
+
+[node name="HSeparator" type="HSeparator" parent="ScrollContainer/HBoxContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="CharacterInfo" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CharacterNameLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Hero"
+
+[node name="ClassNameLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Champion - Paladin"
+
+[node name="ClassDescLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+clip_contents = true
+layout_mode = 2
+text = "Lawful good champion of justice"
+autowrap_mode = 3
+
+[node name="HSeparator2" type="HSeparator" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+layout_mode = 2
+
+[node name="BaseStatsHeader" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Base Stats"
+
+[node name="BaseStatsContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="StrengthContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer"]
+layout_mode = 2
+
+[node name="StrengthLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/StrengthContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Strength:"
+
+[node name="StrengthValue" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/StrengthContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "10"
+
+[node name="IntelligenceContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer"]
+layout_mode = 2
+
+[node name="IntelligenceLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/IntelligenceContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Intelligence:"
+
+[node name="IntelligenceValue" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/IntelligenceContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "10"
+
+[node name="DexterityContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer"]
+layout_mode = 2
+
+[node name="DexterityLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/DexterityContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Dexterity:"
+
+[node name="DexterityValue" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/DexterityContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "10"
+
+[node name="ConstitutionContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer"]
+layout_mode = 2
+
+[node name="ConstitutionLabel" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/ConstitutionContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Constitution:"
+
+[node name="ConstitutionValue" type="Label" parent="ScrollContainer/HBoxContainer/LeftPanel/CharacterInfo/BaseStatsContainer/ConstitutionContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "10"
+
+[node name="CenterPanel" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="CharacterSpriteContainer" type="Control" parent="ScrollContainer/HBoxContainer/CenterPanel"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="CharacterSprite" type="ColorRect" parent="ScrollContainer/HBoxContainer/CenterPanel/CharacterSpriteContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.2, 0.6, 0.9, 1)
+
+[node name="HSeparator4" type="HSeparator" parent="ScrollContainer/HBoxContainer/CenterPanel"]
+layout_mode = 2
+
+[node name="AttributesHeader" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Attributes"
+horizontal_alignment = 1
+
+[node name="AttributesContainer" type="GridContainer" parent="ScrollContainer/HBoxContainer/CenterPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="MaxHPContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="MaxHPLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/MaxHPContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Max. HP:"
+
+[node name="MaxHPValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/MaxHPContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "100"
+horizontal_alignment = 2
+
+[node name="PhysAtkContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="PhysAtkLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/PhysAtkContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Phys. Atk.:"
+
+[node name="PhysAtkValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/PhysAtkContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "30"
+horizontal_alignment = 2
+
+[node name="PhysDefContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="PhysDefLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/PhysDefContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Phys. Def.:"
+
+[node name="PhysDefValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/PhysDefContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "0"
+horizontal_alignment = 2
+
+[node name="SpeedContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="SpeedLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/SpeedContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Speed:"
+
+[node name="SpeedValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/SpeedContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "1.0x"
+horizontal_alignment = 2
+
+[node name="DodgeContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="DodgeLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/DodgeContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Dodge:"
+
+[node name="DodgeValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/DodgeContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "5%"
+horizontal_alignment = 2
+
+[node name="MagicAtkContainer" type="HBoxContainer" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer"]
+layout_mode = 2
+
+[node name="MagicAtkLabel" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/MagicAtkContainer"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Magic Atk.:"
+
+[node name="MagicAtkValue" type="Label" parent="ScrollContainer/HBoxContainer/CenterPanel/AttributesContainer/MagicAtkContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "25"
+horizontal_alignment = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="SkillsHeader" type="Label" parent="ScrollContainer/HBoxContainer/RightPanel"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Skills"
+horizontal_alignment = 1
+
+[node name="SkillsContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/RightPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="JobSkillsLabel" type="Label" parent="ScrollContainer/HBoxContainer/RightPanel/SkillsContainer"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Job Skills:"
+
+[node name="JobSkillsList" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/RightPanel/SkillsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SupportSkillsLabel" type="Label" parent="ScrollContainer/HBoxContainer/RightPanel/SkillsContainer"]
+clip_contents = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Support Skills:"
+
+[node name="SupportSkillsList" type="VBoxContainer" parent="ScrollContainer/HBoxContainer/RightPanel/SkillsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+

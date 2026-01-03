@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://bylw80sinbpuf"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/TimerDisplay.gd" id="1_timer"]
+
+[sub_resource type="Theme" id="Theme_1"]
+
+[node name="TimerDisplay" type="Control"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 50.0
+offset_right = -10.0
+offset_bottom = 120.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_timer")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 190.0
+offset_bottom = 28.0
+
+[node name="TimerIcon" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+stretch_mode = 5
+
+[node name="TimeLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme = SubResource("Theme_1")
+text = "00:00:00"
+horizontal_alignment = 2
+vertical_alignment = 1

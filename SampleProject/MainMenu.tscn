@@ -1,0 +1,244 @@
+[gd_scene load_steps=10 format=3 uid="uid://cbtmxggtscua3"]
+
+[ext_resource type="Script" uid="uid://bn5434a05ai0y" path="res://SampleProject/Scripts/Menus/MainMenu.gd" id="1_mainmenu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_transparent"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="GDScript" id="GDScript_title"]
+resource_name = "GameTitle"
+script/source = "extends PanelContainer
+
+@export var title_text: String = \"METROIDVANIA\"
+
+@onready var title_label: Label = $VBoxContainer/TitleLabel
+
+func _ready():
+	_update_title_text()
+
+func _update_title_text():
+	if title_label:
+		title_label.text = title_text
+"
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font_size = 72
+shadow_size = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_press_button"]
+bg_color = Color(0, 0, 0, 0)
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+border_blend = true
+
+[sub_resource type="LabelSettings" id="LabelSettings_press_button"]
+font_size = 24
+shadow_size = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+bg_color = Color(0.1, 0.1, 0.1, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.2, 0.2, 0.2, 0.3)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_mainmenu")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GameTitle" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_transparent")
+script = SubResource("GDScript_title")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameTitle"]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLineTop" type="ColorRect" parent="GameTitle/VBoxContainer"]
+custom_minimum_size = Vector2(400, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TitleLabel" type="Label" parent="GameTitle/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_transparent")
+text = "METROIDVANIA"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="TitleLineBottom" type="ColorRect" parent="GameTitle/VBoxContainer"]
+custom_minimum_size = Vector2(400, 2)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PressAnyButtonContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = 100.0
+offset_right = 150.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="PressAnyButtonLabel" type="Label" parent="PressAnyButtonContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_press_button")
+text = "PRESS ANY BUTTON"
+label_settings = SubResource("LabelSettings_press_button")
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="Menu" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = 80.0
+offset_right = 100.0
+offset_bottom = 265.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="continue" type="Button" parent="Menu"]
+modulate = Color(1.3, 1.3, 1.3, 1)
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1.2, 1.2, 1.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Continue"
+
+[node name="load_game" type="Button" parent="Menu"]
+modulate = Color(1.3, 1.3, 1.3, 1)
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1.2, 1.2, 1.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Load Game"
+
+[node name="new_game" type="Button" parent="Menu"]
+modulate = Color(1.3, 1.3, 1.3, 1)
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1.2, 1.2, 1.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "New Game"
+
+[node name="options" type="Button" parent="Menu"]
+modulate = Color(1.3, 1.3, 1.3, 1)
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1.2, 1.2, 1.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Options"
+
+[node name="exit" type="Button" parent="Menu"]
+modulate = Color(1.3, 1.3, 1.3, 1)
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_colors/font_hover_color = Color(1.2, 1.2, 1.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Quit Game"
+
+[node name="CopyrightLabel" type="Label" parent="."]
+modulate = Color(1.2, 1.2, 1.2, 1)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -40.0
+offset_right = 250.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "©2025 Metroidvania Demo. All Rights Reserved."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="button_up" from="Menu/continue" to="." method="load_game_button_up"]
+[connection signal="button_up" from="Menu/load_game" to="." method="load_game_button_up"]
+[connection signal="button_up" from="Menu/new_game" to="." method="new_game_button_up"]
+[connection signal="button_up" from="Menu/options" to="." method="options_button_up"]
+[connection signal="pressed" from="Menu/exit" to="." method="_on_exit_pressed"]

@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://d3ath9art1c13"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/DeathParticles.gd" id="1_death"]
+
+[sub_resource type="Gradient" id="Gradient_death"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.3, 0.2, 1, 1, 0.6, 0.1, 1, 0.3, 0.3, 0.3, 0)
+
+[node name="DeathParticles" type="Node2D"]
+script = ExtResource("1_death")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 25
+lifetime = 1.0
+one_shot = true
+explosiveness = 0.85
+randomness = 0.3
+emission_shape = 1
+emission_sphere_radius = 10.0
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 500)
+initial_velocity_min = 150.0
+initial_velocity_max = 250.0
+angular_velocity_min = -360.0
+angular_velocity_max = 360.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color_ramp = SubResource("Gradient_death")

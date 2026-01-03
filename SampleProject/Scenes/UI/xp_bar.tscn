@@ -1,0 +1,69 @@
+[gd_scene load_steps=5 format=3 uid="uid://d2xp8car4k7m"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/XPBar.gd" id="1_xp_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.1, 0.1, 0.15, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.35, 0.2, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.9, 0.75, 0.2, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_text_bg"]
+bg_color = Color(0, 0, 0, 0)
+
+[node name="XPBar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 260.0
+offset_bottom = 70.0
+script = ExtResource("1_xp_bar")
+
+[node name="LevelLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = -20.0
+offset_right = 100.0
+offset_bottom = 0.0
+theme_override_font_sizes/font_size = 14
+text = "Level 1"
+horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 250.0
+offset_bottom = 20.0
+theme_override_styles/background = SubResource("StyleBoxFlat_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+max_value = 100.0
+step = 0.1
+show_percentage = false
+
+[node name="XPLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 250.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_text_bg")
+text = "0 / 100 XP"
+horizontal_alignment = 1
+vertical_alignment = 1

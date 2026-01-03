@@ -1,0 +1,107 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[addons]
+
+metroidvania_system/settings_file="uid://po1yy1ihchuv"
+
+[application]
+
+config/name="New Game Project"
+run/main_scene="res://SampleProject/MainMenu.tscn"
+config/use_custom_user_dir=true
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+MetSys="*res://addons/MetroidvaniaSystem/Nodes/Singleton.tscn"
+GameManager="*res://SampleProject/Scenes/Managers/Core/GameManager.tscn"
+EventBus="*res://SampleProject/Scenes/EventBus.tscn"
+DialogueQuest="*res://addons/dialogue_quest/scripts/dialogue_quest_interface.gd"
+SaveSystem="*res://SampleProject/Scenes/Systems/SaveSystem.tscn"
+ServiceLocator="*res://SampleProject/Scenes/ServiceLocator.tscn"
+AudioManager="*res://SampleProject/Scenes/Systems/AudioManager.tscn"
+DisplayManager="*res://SampleProject/Scenes/Systems/DisplayManager.tscn"
+MusicManager="*res://SampleProject/Scenes/Systems/MusicManager.tscn"
+ItemDatabase="*res://SampleProject/Scenes/Systems/ItemDatabase.tscn"
+LocalizationManager="*res://SampleProject/Scenes/Systems/LocalizationManager.tscn"
+SettingsData="*res://addons/basic_settings_menu/settings_data.gd"
+ModalDialogGlobal="*res://addons/ModalDialog/scenes/globals/modal_dialog_global.tscn"
+ModalWindowManager="*res://addons/modal_window/modal_window_manager.gd"
+SceneLoader="*res://addons/maaacks_menus_template/base/nodes/autoloads/scene_loader/scene_loader.tscn"
+AppConfig="*res://addons/maaacks_menus_template/base/nodes/autoloads/app_config/app_config.tscn"
+ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoloads/music_controller/project_music_controller.tscn"
+ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
+
+[dialogue_quest]
+
+data_directory=&"res://dialogue_quest/"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/CustomRunner/plugin.cfg", "res://addons/MetroidvaniaSystem/EditorExtension/plugin.cfg", "res://addons/MetroidvaniaSystem/plugin.cfg", "res://addons/ModalDialog/plugin.cfg", "res://addons/basic_settings_menu/plugin.cfg", "res://addons/dialogue_quest/plugin.cfg", "res://addons/dynamic_water_2d/plugin.cfg", "res://addons/godot_tree_table/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/modal_window/plugin.cfg", "res://addons/tree_maps/plugin.cfg")
+
+[input]
+
+move_left={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194319,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_right={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194321,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_up={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_down={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194322,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+jump={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+]
+}
+attack={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":0,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://addons/maaacks_menus_template/base/translations/menus_translations.en.translation", "res://addons/maaacks_menus_template/base/translations/menus_translations.fr.translation")
+
+[maaacks_menus_template]
+
+disable_install_audio_busses=true
+disable_update_check=false
+disable_install_wizard=true
+
+[physics]
+
+2d/physics_engine="Rapier2D"
+
+[rendering]
+
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

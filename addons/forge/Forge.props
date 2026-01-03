@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Gamesmiths.Forge" Version="0.1.2" />
+  </ItemGroup>
+</Project>
