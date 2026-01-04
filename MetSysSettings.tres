@@ -4,3 +4,9 @@
 
 [resource]
 script = ExtResource("1_ui0vk")
+map_root_folder = "res://SampleProject/Maps/"
+map_extents = 100
+scene_template = "res://addons/MetroidvaniaSystem/Template/Nodes/RoomInstance.tscn"
+in_game_cell_size = Vector2(1152, 648)
+discover_whole_rooms = false
+cache_group_reverse_lookup = true

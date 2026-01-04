@@ -36,10 +36,13 @@ LocalizationManager="*res://SampleProject/Scenes/Systems/LocalizationManager.tsc
 SettingsData="*res://addons/basic_settings_menu/settings_data.gd"
 ModalDialogGlobal="*res://addons/ModalDialog/scenes/globals/modal_dialog_global.tscn"
 ModalWindowManager="*res://addons/modal_window/modal_window_manager.gd"
-SceneLoader="*res://addons/maaacks_menus_template/base/nodes/autoloads/scene_loader/scene_loader.tscn"
+ModalManager="*res://addons/properUI_modal/ModalManager.gd"
+ToastManager="*res://addons/properUI_toast/ToastManager.gd"
 AppConfig="*res://addons/maaacks_menus_template/base/nodes/autoloads/app_config/app_config.tscn"
+SceneLoader="*res://addons/maaacks_menus_template/base/nodes/autoloads/scene_loader/scene_loader.tscn"
 ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoloads/music_controller/project_music_controller.tscn"
 ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
+LongSceneManager="*res://addons/long_scene_manager/autoload/long_scene_manager.gd"
 
 [dialogue_quest]
 
@@ -47,7 +50,15 @@ data_directory=&"res://dialogue_quest/"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/CustomRunner/plugin.cfg", "res://addons/MetroidvaniaSystem/EditorExtension/plugin.cfg", "res://addons/MetroidvaniaSystem/plugin.cfg", "res://addons/ModalDialog/plugin.cfg", "res://addons/basic_settings_menu/plugin.cfg", "res://addons/dialogue_quest/plugin.cfg", "res://addons/dynamic_water_2d/plugin.cfg", "res://addons/godot_tree_table/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/modal_window/plugin.cfg", "res://addons/tree_maps/plugin.cfg")
+enabled=PackedStringArray("res://addons/CustomRunner/plugin.cfg", "res://addons/DropShadowCaster2D/plugin.cfg", "res://addons/MetroidvaniaSystem/EditorExtension/plugin.cfg", "res://addons/MetroidvaniaSystem/plugin.cfg", "res://addons/ModalDialog/plugin.cfg", "res://addons/TweenAnimation/plugin.cfg", "res://addons/basic_settings_menu/plugin.cfg", "res://addons/dialogue_quest/plugin.cfg", "res://addons/dynamic_water_2d/plugin.cfg", "res://addons/godot_tree_table/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/input_manager/plugin.cfg", "res://addons/long_scene_manager/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/midi/plugin.cfg", "res://addons/modal_window/plugin.cfg", "res://addons/scatter2d/plugin.cfg", "res://addons/tree_maps/plugin.cfg")
+
+[gut]
+
+config_file="res://.gutconfig.json"
+dirs=["res://tests/unit", "res://tests/integration"]
+include_subdirs=true
+log_level=1
+panel_button_position=0
 
 [input]
 

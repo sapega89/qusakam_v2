@@ -31,20 +31,16 @@ var last_direction: int = 1  # 1 = вправо, -1 = влево
 var jump_direction: int = 1  # Сохраняем направление прыжка для Fall
 var animation_change_cooldown: float = 0.0  # Затримка для переключення анімацій
 
-# Боевые параметры
-var attack_cooldown: float = 0.0
-var attack_cooldown_time: float = 0.5  # Кулдаун между атаками
-var is_attacking: bool = false
-var hitbox: Area2D = null
-var damage_applier: DamageApplier = null
+# HP бар
+var health_bar: HealthBar = null
 
 # Захист від постійного виклику kill()
 var kill_cooldown: float = 0.0
 var kill_cooldown_time: float = 1.0  # Мінімальний час між викликами kill()
 var is_dying: bool = false  # Флаг, що гравець зараз вмирає
 
-# HP бар
-var health_bar: HealthBar = null
+# Components
+var combat: PlayerCombat = null
 
 func _ready() -> void:
 	# Добавляем игрока в группу для боевой системы
@@ -61,11 +57,8 @@ func _ready() -> void:
 	# ВАЖНО: Гарантуємо, що event = false при ініціалізації
 	event = false
 	
-	# Находим hitbox и DamageApplier
-	hitbox = get_node_or_null("Hitbox")
-	damage_applier = get_node_or_null("Hitbox/DamageApplier")
-	if damage_applier:
-		DebugLogger.info("Player: DamageApplier найден", "Player")
+	# Инициализация компонентов
+	_initialize_components()
 	
 	# Создаем HP бар для игрока
 	_initialize_health_bar()
@@ -203,30 +196,16 @@ func _physics_process(delta: float) -> void:
 			DebugLogger.physics_verbose("Player: Emitting player_landed signal with fall_height = %.1f" % fall_height, "player_landing")
 			EventBus.player_landed.emit(fall_height)
 	
-	# Обновляем кулдаун атаки
-	if attack_cooldown > 0:
-		attack_cooldown -= delta
-	
 	# Обновляем кулдаун kill()
 	if kill_cooldown > 0:
 		kill_cooldown -= delta
 	
 	# Обработка атаки (левая кнопка мыши или кнопка X на контроллере)
-	if (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_action_pressed("attack")) and attack_cooldown <= 0 and not is_attacking:
-		perform_attack()
-	
-	# Обновляем позицию hitbox в зависимости от направления (только если не атакуем)
-	if hitbox and not is_attacking:
-		var hitbox_offset = Vector2(20, 0) if last_direction > 0 else Vector2(-20, 0)
-		hitbox.position = hitbox_offset
-	
-	# Обновляем позицию hitbox в зависимости от направления
-	if hitbox:
-		var hitbox_offset = Vector2(20, 0) if last_direction > 0 else Vector2(-20, 0)
-		hitbox.position = hitbox_offset
+	if (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_action_pressed("attack")) and not combat.is_attacking:
+		combat.perform_attack(last_direction)
 	
 	# Не меняем анимацию во время атаки (кроме важных состояний Fall/Jump)
-	if is_attacking and animation == &"Attack":
+	if combat.is_attacking and animation == &"Attack":
 		# Если атака активна, но нужно переключиться на важное состояние (Fall, Jump)
 		# - разрешаем прерывание атаки для этих состояний
 		new_animation = &"Idle"
@@ -237,12 +216,12 @@ func _physics_process(delta: float) -> void:
 		
 		# Прерываем атаку только для важных состояний
 		if new_animation == &"Fall" or new_animation == &"Jump":
-			is_attacking = false
-			if damage_applier:
-				damage_applier.disable_damage()
-			if hitbox:
-				hitbox.monitoring = false
-				hitbox.monitorable = false
+			combat.is_attacking = false
+			if combat.damage_applier:
+				combat.damage_applier.disable_damage()
+			if combat.hitbox:
+				combat.hitbox.monitoring = false
+				combat.hitbox.monitorable = false
 			animation = new_animation
 			if new_animation == &"Jump":
 				jump_direction = last_direction
@@ -345,80 +324,18 @@ func kill():
 		DebugLogger.info("Player: Завантажуємо кімнату: %s (HP відновлено до %d/%d)" % [current_room, current_health, Max_Health], "Player")
 		game.load_room(current_room)
 
+# Combat logic delegates to PlayerCombat component
 func perform_attack():
-	"""Выполняет атаку игрока"""
-	if is_attacking or attack_cooldown > 0:
-		return
-	
-	is_attacking = true
-	attack_cooldown = attack_cooldown_time
-	
-	# Сохраняем текущую анимацию для возврата после атаки
-	var previous_animation = animation
-	
-	# Применяем правильное направление для атаки на основе текущего направления движения
-	# Для атаки нужно ИНВЕРТИРОВАТЬ flip_h по сравнению с обычными анимациями
-	if absf(velocity.x) > 1:
-		# Если движемся - используем текущее направление (инвертированное)
-		if velocity.x > 1:
-			$Sprite2D.flip_h = false  # Движение вправо -> инвертируем для атаки
-		elif velocity.x < -1:
-			$Sprite2D.flip_h = true  # Движение влево -> инвертируем для атаки
-	else:
-		# Если стоим - используем последнее направление (инвертированное)
-		if last_direction > 0:
-			$Sprite2D.flip_h = false  # Последнее направление вправо -> инвертируем
-		else:
-			$Sprite2D.flip_h = true  # Последнее направление влево -> инвертируем
-	
-	# Воспроизводим анимацию атаки
-	if $AnimationPlayer.has_animation("Attack"):
-		$AnimationPlayer.play("Attack")
-		animation = &"Attack"
+	combat.perform_attack(last_direction)
 
-	# Spawn attack VFX
-	_spawn_attack_vfx()
-
-	DebugLogger.info("Player: Атака! Урон: %d, Направление: %s" % [damage_applier.base_damage if damage_applier else 15, "вправо" if last_direction > 0 else "влево"], "Player")
-	
-	# Отправляем сигнал начала атаки для VFX (даже если нет цели)
-	# Позиция эффекта - на кончике копья (впереди игрока)
-	if EventBus and EventBus.has_signal("player_attacked"):
-		EventBus.player_attacked.emit(self, last_direction)
-	
-	# Активируем DamageApplier
-	if damage_applier:
-		damage_applier.enable_damage()
-	
-	# Обновляем позицию hitbox перед атакой
-	if hitbox:
-		var hitbox_offset = Vector2(20, 0) if last_direction > 0 else Vector2(-20, 0)
-		hitbox.position = hitbox_offset
-		hitbox.monitoring = true
-		hitbox.monitorable = true
-	
-	# Ждем завершения анимации атаки
-	if $AnimationPlayer.has_animation("Attack"):
-		await $AnimationPlayer.animation_finished
-	else:
-		# Если анимации нет, ждем стандартное время
-		await get_tree().create_timer(0.2).timeout
-	
-	# Деактивируем DamageApplier
-	if damage_applier:
-		damage_applier.disable_damage()
-	
-	# Выключаем hitbox
-	if hitbox:
-		hitbox.monitoring = false
-		hitbox.monitorable = false
-	
-	is_attacking = false
-	
-	# Возвращаемся к предыдущей анимации
-	if previous_animation and $AnimationPlayer.has_animation(previous_animation):
-		$AnimationPlayer.play(previous_animation)
-		animation = previous_animation
+func _initialize_components():
+	combat = PlayerCombat.new()
+	combat.sprite = $Sprite2D
+	combat.animation_player = $AnimationPlayer
+	combat.hitbox = get_node_or_null("Hitbox")
+	combat.damage_applier = get_node_or_null("Hitbox/DamageApplier")
+	add_child(combat)
+	DebugLogger.info("Player: Components initialized", "Player")
 
 func _initialize_health_bar():
 	"""Находит и настраивает HP бар для игрока (HP бар должен быть в Game.tscn в UI CanvasLayer)"""
@@ -572,17 +489,9 @@ func _on_player_leveled_up(new_level: int, old_level: int) -> void:
 		health_bar.update_health_text()
 		health_bar.update_health_color(current_health)
 
-	# Apply damage bonus to DamageApplier
-	if damage_applier:
-		var old_damage = damage_applier.current_damage
-		damage_applier.current_damage = damage_applier.base_damage + damage_bonus
-		DebugLogger.info("Player: Level %d! HP: %d->%d (+%d), Damage: %d->%d (+%d)" % [
-			new_level, old_max_hp, Max_Health, hp_increase, old_damage, damage_applier.current_damage, damage_bonus
-		], "Player")
-	else:
-		DebugLogger.info("Player: Level %d! HP: %d->%d (+%d)" % [
-			new_level, old_max_hp, Max_Health, hp_increase
-		], "Player")
+	DebugLogger.info("Player: Level %d! HP: %d->%d (+%d)" % [
+		new_level, old_max_hp, Max_Health, hp_increase
+	], "Player")
 
 	# === LEVEL UP VFX ===
 	_spawn_level_up_vfx()

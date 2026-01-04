@@ -11,6 +11,8 @@ var enemy_state_manager: Node = null
 var inventory_manager: Node = null
 var dialogue_manager: Node = null
 var xp_manager: Node = null
+var game_flow: Node = null
+var companion_manager: Node = null
 var _is_registered: bool = false
 
 func register(game_manager: Node) -> void:
@@ -31,6 +33,8 @@ func register(game_manager: Node) -> void:
 	inventory_manager = game_manager.get_node_or_null("InventoryManager")
 	dialogue_manager = game_manager.get_node_or_null("DialogueManager")
 	xp_manager = game_manager.get_node_or_null("XPManager")
+	game_flow = game_manager.get_node_or_null("GameFlow")
+	companion_manager = game_manager.get_node_or_null("CompanionManager")
 
 	print("🎮 GameplayServiceRegistry: Registered gameplay services")
 	_print_service_status("CharacterManager", character_manager)
@@ -40,6 +44,8 @@ func register(game_manager: Node) -> void:
 	_print_service_status("InventoryManager", inventory_manager)
 	_print_service_status("DialogueManager", dialogue_manager)
 	_print_service_status("XPManager", xp_manager)
+	_print_service_status("GameFlow", game_flow)
+	_print_service_status("CompanionManager", companion_manager)
 
 func _print_service_status(name: String, service: Node) -> void:
 	"""Выводит статус сервиса"""
@@ -69,3 +75,9 @@ func get_dialogue_manager() -> Node:
 
 func get_xp_manager() -> Node:
 	return xp_manager
+
+func get_game_flow() -> Node:
+	return game_flow
+
+func get_companion_manager() -> Node:
+	return companion_manager

@@ -227,4 +227,3 @@ func _disconnect_all_signals() -> void:
 		EventBus.scene_transition_completed.disconnect(_on_scene_changed)
 	
 	print("🎨 UIManager: Disconnected from all EventBus signals")
-

@@ -23,6 +23,11 @@ const InventoryManagerScript = preload("res://SampleProject/Scripts/Systems/Inve
 const VFXHooksScript = preload("res://SampleProject/Scripts/Systems/VFXHooks.gd")
 const XPManagerScript = preload("res://SampleProject/Scripts/Managers/XPManager.gd")
 const TutorialManagerScript = preload("res://SampleProject/Scripts/Managers/TutorialManager.gd")
+const GameFlowScript = preload("res://SampleProject/Scripts/Managers/Story/GameFlow.gd")
+const CompanionManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/CompanionManager.gd")
+
+# Signals
+signal managers_ready
 
 # InventoryManager (создается в _initialize_inventory_manager)
 var inventory_manager: InventoryManager = null
@@ -146,6 +151,18 @@ func _create_managers() -> void:
 	add_child(tutorial_manager)
 	print("📚 GameManager: TutorialManager created")
 
+	# GameFlow
+	var game_flow = GameFlowScript.new()
+	game_flow.name = "GameFlow"
+	add_child(game_flow)
+	print("🎭 GameManager: GameFlow created")
+
+	# CompanionManager
+	var companion_manager = CompanionManagerScript.new()
+	companion_manager.name = "CompanionManager"
+	add_child(companion_manager)
+	print("🤝 GameManager: CompanionManager created")
+
 	# VFXHooks
 	print("🔧 GameManager: Creating VFXHooks...")
 	var vfx_hooks = VFXHooksScript.new()
@@ -157,6 +174,9 @@ func _create_managers() -> void:
 	# Регистрируем менеджеры в ServiceLocator сразу после создания
 	# ServiceLocator - это autoload экземпляр, используем call_deferred для безопасности
 	call_deferred("_register_managers_in_service_locator")
+	
+	# Оповещаем о готовности менеджеров
+	managers_ready.emit()
 
 func _register_managers_in_service_locator() -> void:
 	"""DEPRECATED: ServiceLocator теперь автоматически регистрирует менеджеры через Registry систему"""

@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=4]
+
+[ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="1_room"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/SavePoint.gd" id="2_save"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_save"]
+radius = 32.0
+
+[node name="StartingRoom" type="Node2D"]
+
+[node name="RoomInstance" parent="." instance=ExtResource("1_room")]
+
+[node name="SavePoint" type="Area2D" parent="."]
+position = Vector2(576, 324)
+script = ExtResource("2_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Label" type="Label" parent="SavePoint"]
+offset_left = -20.0
+offset_top = -11.0
+offset_right = 20.0
+offset_bottom = 12.0
+text = "S"
+horizontal_alignment = 1

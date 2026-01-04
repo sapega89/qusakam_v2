@@ -23,6 +23,7 @@ func _ready() -> void:
 	if EventBus.has_signal("player_spawned"):
 		EventBus.player_spawned.connect(_on_player_spawned)
 	if EventBus.has_signal("player_died"):
+		
 		EventBus.player_died.connect(_on_player_died)
 
 	# Шукаємо гравця при старті

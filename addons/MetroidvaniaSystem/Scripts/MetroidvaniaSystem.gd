@@ -287,10 +287,14 @@ func get_object_coords(object: Object) -> Vector3i:
 	elif object is Node:
 		var room_name: String = map_data.get_room_from_scene_path(object.owner.scene_file_path)
 		
-		var coords: Vector3i = map_data.assigned_scenes[room_name].front()
-		for vec in map_data.assigned_scenes[room_name]:
-			coords.x = mini(coords.x, vec.x)
-			coords.y = mini(coords.y, vec.y)
+		var coords: Vector3i
+		if map_data.assigned_scenes.has(room_name) and not map_data.assigned_scenes[room_name].is_empty():
+			coords = map_data.assigned_scenes[room_name].front()
+			for vec in map_data.assigned_scenes[room_name]:
+				coords.x = mini(coords.x, vec.x)
+				coords.y = mini(coords.y, vec.y)
+		else:
+			coords = Vector3i.MAX # or handle error/default appropriately
 		
 		if object is CanvasItem:
 			var position: Vector2 = object.position / settings.in_game_cell_size

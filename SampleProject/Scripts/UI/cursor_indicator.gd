@@ -575,4 +575,3 @@ func initialize_buttons(buttons: Array[Button]) -> void:
 ## Очищает сохраненные позиции кнопок (полезно при динамическом изменении кнопок)
 func clear_button_positions() -> void:
 	button_original_positions.clear()
-

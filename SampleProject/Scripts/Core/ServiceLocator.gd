@@ -8,6 +8,9 @@ extends Node
 # Singleton instance (для обратной совместимости)
 static var instance: Node = null
 
+# Signals
+signal services_ready
+
 # Service Registries (категоризация сервисов) - lazy initialization
 var core: CoreServiceRegistry = null
 var ui: UIServiceRegistry = null
@@ -17,8 +20,6 @@ var data: DataServiceRegistry = null
 
 # Временная ссылка на GameManager для регистрации
 var _game_manager: Node = null
-var _registration_retry_count: int = 0
-const MAX_REGISTRATION_RETRIES: int = 10
 
 func _ready() -> void:
 	"""Инициализация ServiceLocator с Registry подсистемой"""
@@ -43,30 +44,42 @@ func _register_all_registries() -> void:
 	core.register()
 	_game_manager = core.get_game_manager()
 
-	# Если GameManager еще не найден, пытаемся еще раз
+	# Если GameManager еще не найден, это критическая ошибка архитектуры (Autoload должен быть выше)
 	if not _game_manager:
-		_registration_retry_count += 1
-		if _registration_retry_count >= MAX_REGISTRATION_RETRIES:
-			push_error("ServiceLocator: GameManager not found after ", MAX_REGISTRATION_RETRIES, " retries!")
-			return
-
-		push_warning("ServiceLocator: GameManager not found, deferring registry registration (attempt ", _registration_retry_count, "/", MAX_REGISTRATION_RETRIES, ")")
-		call_deferred("_register_all_registries")
+		push_error("🔌 ServiceLocator: GameManager not found! Check Autoload order in project settings.")
 		return
 
-	# Регистрируем UI сервисы
+	# Если GameManager еще не проинициализировал менеджеры, ждем сигнала
+	# Проверяем наличие дочерних узлов (менеджеров)
+	if _game_manager.get_child_count() == 0:
+		print("🔌 ServiceLocator: Waiting for GameManager.managers_ready...")
+		if not _game_manager.is_connected("managers_ready", _register_all_registries):
+			_game_manager.connect("managers_ready", _register_all_registries, CONNECT_ONE_SHOT)
+		return
+
+	# Регистрация категорий
 	ui.register(_game_manager)
-
-	# Регистрируем геймплейные сервисы
 	gameplay.register(_game_manager)
-
-	# Регистрируем системные сервисы
 	systems.register(_game_manager)
-
-	# Регистрируем сервисы данных
 	data.register(_game_manager)
 
 	print("🔌 ServiceLocator: All service registries initialized successfully")
+	services_ready.emit()
+
+func _exit_tree() -> void:
+	"""Очистка ресурсов при выходе"""
+	# Отключаем сигнал, если он был подключен (с проверкой на валидность)
+	if _game_manager and is_instance_valid(_game_manager):
+		if _game_manager.has_signal("managers_ready") and _game_manager.is_connected("managers_ready", _register_all_registries):
+			_game_manager.disconnect("managers_ready", _register_all_registries)
+
+	# Очищаем ссылки на менеджеры
+	_game_manager = null
+	if core:
+		core.game_manager = null
+		core.save_system = null
+
+	print("🔌 ServiceLocator: Cleaned up")
 
 ## DEPRECATED: Старые методы регистрации (для обратной совместимости)
 ## Эти методы больше не используются - вся логика перенесена в ServiceRegistry классы
@@ -143,6 +156,14 @@ func get_dialogue_manager() -> GameDialogueManager:
 func get_xp_manager() -> XPManager:
 	"""Получает XPManager из GameplayServiceRegistry"""
 	return gameplay.get_xp_manager()
+
+func get_game_flow() -> GameFlow:
+	"""Получает GameFlow из GameplayServiceRegistry"""
+	return gameplay.get_game_flow()
+
+func get_companion_manager() -> CompanionManager:
+	"""Получает CompanionManager из GameplayServiceRegistry"""
+	return gameplay.get_companion_manager()
 
 ## System Services
 func get_time_manager() -> TimeManager:

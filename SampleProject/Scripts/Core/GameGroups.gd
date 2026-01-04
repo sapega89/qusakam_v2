@@ -352,4 +352,3 @@ static func get_boss_spawn_portals() -> Array[Node]:
 static func get_spawn_portals() -> Array[Node]:
 	"""Получает все порталы спавна через централизованный доступ с кэшированием"""
 	return get_nodes_in_group(SPAWN_PORTALS)
-

@@ -41,11 +41,11 @@ func start_default_music():
 			var music_manager = service_locator.get_music_manager() if service_locator and service_locator.has_method("get_music_manager") else null
 			if music_manager:
 				var scene_name = _get_current_scene_name()
-			if scene_name != "Unknown":
-				music_manager.play_scene_music(scene_name)
-			else:
-				music_manager.play_scene_music("village")
-			return
+				if scene_name != "Unknown":
+					music_manager.play_scene_music(scene_name)
+				else:
+					music_manager.play_scene_music("village")
+		return
 	
 	# Fallback - стара логіка
 	if background_music:

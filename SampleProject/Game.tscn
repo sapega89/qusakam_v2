@@ -47,7 +47,7 @@ func _ready() -> void:
 # Draws the delta vector. Note that TopDraw node is used, to make sure that it appears above cells.
 func _on_top_draw() -> void:
 	# Get the current player coordinates.
-	var coords := MetSys.get_current_flat_coords()
+	var coords: Vector2i = MetSys.get_current_flat_coords()
 	# If the delta vector (D) is enabled and player isn't on the starting position...
 	if show_delta and coords != starting_coords:
 		var start_pos := MetSys.get_cell_position(starting_coords - offset)
@@ -111,7 +111,7 @@ func update_offset():
 
 func reset_starting_coords():
 	# Starting position for the delta vector.
-	var coords := MetSys.get_current_flat_coords()
+	var coords: Vector2i = MetSys.get_current_flat_coords()
 	starting_coords = Vector2i(coords.x, coords.y)
 	top_draw.queue_redraw()
 "
@@ -144,7 +144,6 @@ bg_color = Color(0, 0, 0, 0.752941)
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_xdpfu")
-starting_map = "StartingPoint.tscn"
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("2_bam1a")]
 unique_name_in_owner = true
@@ -157,6 +156,7 @@ position_smoothing_enabled = true
 
 [node name="Minimap" parent="UI" instance=ExtResource("3_a3gfy")]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0

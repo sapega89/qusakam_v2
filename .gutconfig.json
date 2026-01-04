@@ -13,5 +13,6 @@
 	"compact_mode": false,
 	"panel_button_position": "TopRight",
 	"should_exit_on_success": false,
-	"should_exit": false
+	"should_exit": false,
+	"double_it": false
 }

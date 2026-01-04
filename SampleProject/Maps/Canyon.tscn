@@ -1,0 +1,149 @@
+[gd_scene load_steps=9 format=4 uid="uid://d2qxq8pgs28p4"]
+
+[ext_resource type="Script" uid="uid://jwbu3hndfsuh" path="res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd" id="1_canyon"]
+[ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_ctv3h"]
+[ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
+[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_ctv3h"]
+
+[sub_resource type="GDScript" id="GDScript_xu4xw"]
+script/source = "# Ending script. Detects player and shows END.
+extends Area2D
+
+func _ready() -> void:
+	# Remove the blockade on the right when player has all collectibles.
+	# Changed to >= 5 to allow progression if one collectible is missing
+	if Game.get_singleton().collectibles >= 5:
+		%Gate.enabled = false
+
+func _on_body_entered(body: Node2D) -> void:
+	# When player entered the area, show ending screen.
+	if body.is_in_group(&\"player\"):
+		body.event = true
+		$CanvasLayer.show()
+		# Animate victory screen
+		var tween = create_tween()
+		tween.tween_property($CanvasLayer/Panel, \"modulate:a\", 1.0, 0.5)
+
+func _input(event: InputEvent) -> void:
+	if $CanvasLayer.visible:
+		if event.is_action_pressed(\"jump\") or event.is_action_pressed(\"ui_accept\"):
+			_restart_game()
+		elif event.is_action_pressed(\"ui_cancel\"):
+			_goto_menu()
+
+func _restart_game() -> void:
+	get_tree().change_scene_to_file(\"res://SampleProject/Game.tscn\")
+
+func _goto_menu() -> void:
+	get_tree().change_scene_to_file(\"res://SampleProject/MainMenu.tscn\")
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
+size = Vector2(32, 31.9999)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6wo6x"]
+bg_color = Color(0.02, 0.04, 0.08, 0.95)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6wo6x"]
+radius = 32.0
+
+[node name="Canyon" type="Node2D"]
+script = ExtResource("1_canyon")
+
+[node name="TileMap" type="Node2D" parent="."]
+
+[node name="Foreground" type="TileMapLayer" parent="TileMap"]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAAwAAQAIAAYAAAAAAA0AAQAIAAcAAAAAAA4AAQAIAAcAAAABAAwAAQAIAAYAAAABAA0AAQAIAAcAAAABAA4AAQAIAAcAAAA1AAwAAQAIAAYAAAA1AA0AAQAIAAcAAAA1AA4AAQAIAAcAAAA0AAwAAQAIAAYAAAA0AA0AAQAIAAcAAAA0AA4AAQAIAAcAAAACAAwAAQAIAAYAAAACAA0AAQAIAAcAAAACAA4AAQAIAAcAAAADAAwAAQAIAAYAAAADAA0AAQAIAAcAAAADAA4AAQAIAAcAAAAEAAwAAQAIAAYAAAAEAA0AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAAwAAQAIAAYAAAAFAA0AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAAwAAQAIAAYAAAAGAA0AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAAwAAQAIAAYAAAAHAA0AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAAwAAQAIAAYAAAAIAA0AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAAwAAQAIAAYAAAAJAA0AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAAwAAQAIAAYAAAAKAA0AAQAIAAcAAAAKAA4AAQAIAAcAAAALAAwAAQAIAAYAAAALAA0AAQAIAAcAAAALAA4AAQAIAAcAAAAMAAwAAQAIAAYAAAAMAA0AAQAIAAcAAAAMAA4AAQAIAAcAAAANAAwAAQAIAAYAAAANAA0AAQAIAAcAAAANAA4AAQAIAAcAAAAOAAwAAQAIAAYAAAAOAA0AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAAwAAQAIAAYAAAAPAA0AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAAwAAQAIAAYAAAAQAA0AAQAIAAcAAAAQAA4AAQAIAAcAAAARAAwAAQAIAAYAAAARAA0AAQAIAAcAAAARAA4AAQAIAAcAAAASAAwAAQAIAAYAAAASAA0AAQAIAAcAAAASAA4AAQAIAAcAAAATAAwAAQAIAAYAAAATAA0AAQAIAAcAAAATAA4AAQAIAAcAAAAUAAwAAQAIAAYAAAAUAA0AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAAwAAQAIAAYAAAAVAA0AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAAwAAQAIAAYAAAAWAA0AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAAwAAQAIAAYAAAAXAA0AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAAwAAQAIAAYAAAAYAA0AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAAwAAQAIAAYAAAAZAA0AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAAwAAQAIAAYAAAAaAA0AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAAwAAQAIAAYAAAAbAA0AAQAIAAcAAAAbAA4AAQAIAAcAAAAcAAwAAQAIAAYAAAAcAA0AAQAIAAcAAAAcAA4AAQAIAAcAAAAdAAwAAQAIAAYAAAAdAA0AAQAIAAcAAAAdAA4AAQAIAAcAAAAeAAwAAQAIAAYAAAAeAA0AAQAIAAcAAAAeAA4AAQAIAAcAAAAfAAwAAQAIAAYAAAAfAA0AAQAIAAcAAAAfAA4AAQAIAAcAAAAgAAwAAQAIAAYAAAAgAA0AAQAIAAcAAAAgAA4AAQAIAAcAAAAhAAwAAQAIAAYAAAAhAA0AAQAIAAcAAAAhAA4AAQAIAAcAAAAiAAwAAQAIAAYAAAAiAA0AAQAIAAcAAAAiAA4AAQAIAAcAAAAjAAwAAQAIAAYAAAAjAA0AAQAIAAcAAAAjAA4AAQAIAAcAAAAkAAwAAQAIAAYAAAAkAA0AAQAIAAcAAAAkAA4AAQAIAAcAAAAlAAwAAQAIAAYAAAAlAA0AAQAIAAcAAAAlAA4AAQAIAAcAAAAmAAwAAQAIAAYAAAAmAA0AAQAIAAcAAAAmAA4AAQAIAAcAAAAnAAwAAQAIAAYAAAAnAA0AAQAIAAcAAAAnAA4AAQAIAAcAAAAoAAwAAQAIAAYAAAAoAA0AAQAIAAcAAAAoAA4AAQAIAAcAAAApAAwAAQAIAAYAAAApAA0AAQAIAAcAAAApAA4AAQAIAAcAAAAqAAwAAQAIAAYAAAAqAA0AAQAIAAcAAAAqAA4AAQAIAAcAAAArAAwAAQAIAAYAAAArAA0AAQAIAAcAAAArAA4AAQAIAAcAAAAsAAwAAQAIAAYAAAAsAA0AAQAIAAcAAAAsAA4AAQAIAAcAAAAtAAwAAQAIAAYAAAAtAA0AAQAIAAcAAAAtAA4AAQAIAAcAAAAuAAwAAQAIAAYAAAAuAA0AAQAIAAcAAAAuAA4AAQAIAAcAAAAvAAwAAQAIAAYAAAAvAA0AAQAIAAcAAAAvAA4AAQAIAAcAAAAwAAwAAQAIAAYAAAAwAA0AAQAIAAcAAAAwAA4AAQAIAAcAAAAxAAwAAQAIAAYAAAAxAA0AAQAIAAcAAAAxAA4AAQAIAAcAAAAyAAwAAQAIAAYAAAAyAA0AAQAIAAcAAAAyAA4AAQAIAAcAAAAzAAwAAQAIAAYAAAAzAA0AAQAIAAcAAAAzAA4AAQAIAAcAAAA=")
+tile_set = ExtResource("2_ctv3h")
+
+[node name="Gate" type="TileMapLayer" parent="TileMap"]
+unique_name_in_owner = true
+position = Vector2(116, 2)
+tile_map_data = PackedByteArray("AAAAAAkAAQAKAAcAAAAAAAoAAQAKAAcAAAAAAAsAAQAKAAgAAAAAAAYAAQAKAAYAAAAAAAcAAQAKAAcAAAAAAAgAAQAKAAcAAAA=")
+tile_set = ExtResource("2_ctv3h")
+
+[node name="RoomInstance" parent="." instance=ExtResource("3_6wo6x")]
+
+[node name="END" type="Area2D" parent="."]
+position = Vector2(59.00001, 342.99997)
+scale = Vector2(-3.7123058, 1.9976834)
+script = SubResource("GDScript_xu4xw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="END"]
+scale = Vector2(0.9334176, 1.224203)
+shape = SubResource("RectangleShape2D_ctv3h")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="END"]
+
+[node name="Panel" type="Panel" parent="END/CanvasLayer"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6wo6x")
+
+[node name="VBox" type="VBoxContainer" parent="END/CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -150.0
+offset_right = 300.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 30
+
+[node name="Title" type="Label" parent="END/CanvasLayer/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 72
+text = "VICTORY!"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="END/CanvasLayer/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 24
+text = "Congratulations! You completed the game!"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="END/CanvasLayer/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "Press SPACE to play again
+Press ESC for main menu"
+horizontal_alignment = 1
+
+[node name="SavePoint" type="Area2D" parent="."]
+position = Vector2(193, 344)
+script = ExtResource("4_ctv3h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint"]
+shape = SubResource("CircleShape2D_6wo6x")
+
+[node name="Label" type="Label" parent="SavePoint"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -25.0
+offset_right = 29.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="body_entered" from="END" to="END" method="_on_body_entered"]

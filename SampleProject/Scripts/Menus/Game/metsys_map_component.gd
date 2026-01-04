@@ -107,7 +107,7 @@ func update_offset():
 		return
 	
 	# Получаем текущие координаты игрока
-	var coords := MetSys.get_current_flat_coords()
+	var coords: Vector2i = MetSys.get_current_flat_coords()
 	offset = coords - SIZE / 2
 	
 	# Обновляем позицию игрока на карте

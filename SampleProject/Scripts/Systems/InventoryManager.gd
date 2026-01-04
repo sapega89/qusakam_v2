@@ -103,6 +103,8 @@ func get_items_dict() -> Dictionary:
 
 ## Добавить монеты
 func add_coins(amount: int) -> void:
+	if amount < 0:
+		amount = 0
 	coins += amount
 	EventBus.coins_changed.emit(coins)
 	DebugLogger.info("InventoryManager: Added %d coins, total: %d" % [amount, coins], "Inventory")
@@ -113,6 +115,8 @@ func get_coins() -> int:
 
 ## Потратить монеты
 func spend_coins(amount: int) -> bool:
+	if amount < 0:
+		return false # Cannot spend negative amount
 	if coins >= amount:
 		coins -= amount
 		EventBus.coins_changed.emit(coins)

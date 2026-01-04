@@ -29,13 +29,47 @@ func add_module(module_name: String) -> MetSysModule:
 	modules.append(module)
 	return module
 
-func _physics_tick():
-	if can_process():
-		MetSys.set_player_position(player.position)
+func _physics_tick() -> void:
+	if not is_inside_tree():
+		return
+	if player == null or not is_instance_valid(player):
+		return
+	MetSys.set_player_position(player.global_position)
+
+
+func _is_scene_ref_ok(p: String) -> bool:
+	if p.begins_with("res://") and p.ends_with(".tscn"):
+		return true
+	if p.begins_with("uid://"):
+		return true
+	return false
+
 
 ## Loads a map and adds as a child of this node. If a map already exists, it will be removed before the new one is loaded. This method is asynchronous, so you should call it with [code]await[/code] if you want to do something after the map is loaded. Alternatively, you can use [signal room_loaded].
 ## [br][br][b]Note:[/b] If you call this method while a map is being loaded, it will fail silently. The earliest when you can load a map again is after [signal room_loaded] is emitted.
 func load_room(path: String):
+	if map_changing:
+		return
+
+	# Normalize FIRST (важно!)
+	# Если uid:// — не трогаем
+	if not path.begins_with("uid://") and not path.begins_with("res://"):
+		# сюда попадет "Village.tscn" и т.п.
+		path = MetSys.get_full_room_path(path)
+
+	if not _is_scene_ref_ok(path):
+		push_error("load_room: invalid scene ref: %s" % path)
+		return
+	if not ResourceLoader.exists(path):
+		push_error("load_room: missing scene: %s" % path)
+		return
+
+	var ps := load(path) as PackedScene
+	if ps == null:
+		push_error("load_room: failed to load PackedScene: %s" % path)
+		return
+
+	var room := ps.instantiate()
 	if map_changing:
 		return
 	
@@ -47,11 +81,16 @@ func load_room(path: String):
 		map.queue_free()
 		await map.tree_exited
 		map = null
-	
+
 	map = load(path).instantiate()
 	add_child(map)
 	
-	MetSys.current_layer = MetSys.get_current_room_instance().get_layer()
+	var room_instance = MetSys.get_current_room_instance()
+	if is_instance_valid(room_instance):
+		MetSys.current_layer = room_instance.get_layer()
+	else:
+		push_warning("MetSysGame: No RoomInstance found in loaded room: %s" % path)
+		
 	map_changing = false
 	room_loaded.emit()
 
