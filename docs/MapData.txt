@@ -1,0 +1,54 @@
+# 🗺️ Map Structure (Metroidvania System)
+
+This file describes the logical flow of the DEMO version as mapped in the MetSys grid.
+
+## 📍 World Path (Coordinates [X, Y, Z])
+
+1. **[0, 0, 0] Canyon.tscn**
+   - Starting point. Intro cutscene and first fight.
+   - Connection: Exit to the Right.
+
+2. **[1, 0, 0] Village.tscn**
+   - Main storytelling hub. Old Man's house.
+   - Connection: Enter from Left, Exit to the Right.
+
+3. **[2, 0, 0] DesertRoad.tscn**
+   - Travelling zone. Combat encounters.
+   - Connection: Linear flow (Left to Right).
+
+4. **[3, 0, 0] CityGates.tscn**
+   - Gatekeeper fight and companion introduction.
+   - Connection: Linear flow (Left to Right).
+
+5. **[4, 0, 0] Laboratory.tscn**
+   - Final dungeon. Companion recruitment and Boss fight.
+   - Connection: Enter from Left, Exit to the Right.
+
+6. **[5, 0, 0] LaboratoryOutside.tscn**
+   - Demo ending scene.
+   - Connection: Final destination.
+
+---
+
+## 🎨 Aesthetic Guide: "Sphere 1" (Sfera: Odin) Vibe
+
+To achieve the look and feel of the classic 2003 RPG "Sphere":
+
+### 1. 🌫️ Fog & Atmosphere
+- Use a **CanvasModulate** node with a desaturated tint (e.g., `#B0B5BB`).
+- Add a **WorldEnvironment** with `Glow` enabled. Set `Bloom` to 0.1-0.2 for that "old-school dreamy" highlight.
+
+### 2. 🟫 Desaturated Palette
+- Avoid saturated colors. Canyon should be dusty grey-orange, and the Laboratory should be cold cyan-grey.
+
+### 3. 🖼️ Parallax Horizons
+- "Sphere" emphasized vast, lonely spaces. Ensure your backgrounds have at least 3 layers:
+  - **Foreground**: High detail, dark silhouettes.
+  - **Middle**: Foggy hills.
+  - **Background**: Distant mountains or the sky, almost white/faded.
+
+### 4. 🕍 Gothic Architecture
+- Use sharp, vertical lines for buildings. Stone textures should look weathered and gritty.
+
+### 5. 🎞️ Vignette Shader
+- Adding a subtle dark vignette to the corners of the screen helps focus the eye on the character, mimicking early 3D RPG camera limits.
