@@ -102,7 +102,7 @@ SampleProject/
 # Use static typing
 var health: int = 100
 func take_damage(amount: int) -> void:
-    health -= amount
+	health -= amount
 
 # Use & for StringNames (performance)
 if body.is_in_group(&"player"):
@@ -123,8 +123,8 @@ signal health_changed(new_health: int)
 ```gdscript
 # In any script
 func _ready():
-    var xp_mgr = ServiceLocator.get_xp_manager()
-    xp_mgr.add_xp(50)
+	var xp_mgr = ServiceLocator.get_xp_manager()
+	xp_mgr.add_xp(50)
 ```
 
 ### Emit Event
@@ -135,7 +135,7 @@ EventBus.xp_gained.emit(amount)
 
 # Listen to events
 func _ready():
-    EventBus.enemy_died.connect(_on_enemy_died)
+	EventBus.enemy_died.connect(_on_enemy_died)
 ```
 
 ### Create New Manager

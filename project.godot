@@ -43,6 +43,7 @@ SceneLoader="*res://addons/maaacks_menus_template/base/nodes/autoloads/scene_loa
 ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoloads/music_controller/project_music_controller.tscn"
 ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
 LongSceneManager="*res://addons/long_scene_manager/autoload/long_scene_manager.gd"
+TrajectoryRegister="*res://addons/easy_trajectory/Trajectory/trajectory_register.gd"
 
 [dialogue_quest]
 
@@ -50,7 +51,7 @@ data_directory=&"res://dialogue_quest/"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/CustomRunner/plugin.cfg", "res://addons/DropShadowCaster2D/plugin.cfg", "res://addons/MetroidvaniaSystem/EditorExtension/plugin.cfg", "res://addons/MetroidvaniaSystem/plugin.cfg", "res://addons/ModalDialog/plugin.cfg", "res://addons/TweenAnimation/plugin.cfg", "res://addons/basic_settings_menu/plugin.cfg", "res://addons/dialogue_quest/plugin.cfg", "res://addons/dynamic_water_2d/plugin.cfg", "res://addons/godot_tree_table/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/input_manager/plugin.cfg", "res://addons/long_scene_manager/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/midi/plugin.cfg", "res://addons/modal_window/plugin.cfg", "res://addons/scatter2d/plugin.cfg", "res://addons/tree_maps/plugin.cfg")
+enabled=PackedStringArray("res://addons/CustomRunner/plugin.cfg", "res://addons/DropShadowCaster2D/plugin.cfg", "res://addons/MetroidvaniaSystem/EditorExtension/plugin.cfg", "res://addons/MetroidvaniaSystem/plugin.cfg", "res://addons/ModalDialog/plugin.cfg", "res://addons/TweenAnimation/plugin.cfg", "res://addons/basic_settings_menu/plugin.cfg", "res://addons/dialogue_quest/plugin.cfg", "res://addons/dynamic_water_2d/plugin.cfg", "res://addons/easy_trajectory/plugin.cfg", "res://addons/godot_tree_table/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/input_manager/plugin.cfg", "res://addons/long_scene_manager/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/midi/plugin.cfg", "res://addons/modal_window/plugin.cfg", "res://addons/py4godot/plugin.cfg", "res://addons/scatter2d/plugin.cfg", "res://addons/tree_maps/plugin.cfg")
 
 [gut]
 

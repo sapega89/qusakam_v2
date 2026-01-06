@@ -1,42 +1,8 @@
-[gd_scene load_steps=9 format=4 uid="uid://d2qxq8pgs28p4"]
+[gd_scene load_steps=7 format=4 uid="uid://d2qxq8pgs28p4"]
 
-[ext_resource type="Script" uid="uid://jwbu3hndfsuh" path="res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd" id="1_canyon"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_ctv3h"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_ctv3h"]
-
-[sub_resource type="GDScript" id="GDScript_xu4xw"]
-script/source = "# Ending script. Detects player and shows END.
-extends Area2D
-
-func _ready() -> void:
-	# Remove the blockade on the right when player has all collectibles.
-	# Changed to >= 5 to allow progression if one collectible is missing
-	if Game.get_singleton().collectibles >= 5:
-		%Gate.enabled = false
-
-func _on_body_entered(body: Node2D) -> void:
-	# When player entered the area, show ending screen.
-	if body.is_in_group(&\"player\"):
-		body.event = true
-		$CanvasLayer.show()
-		# Animate victory screen
-		var tween = create_tween()
-		tween.tween_property($CanvasLayer/Panel, \"modulate:a\", 1.0, 0.5)
-
-func _input(event: InputEvent) -> void:
-	if $CanvasLayer.visible:
-		if event.is_action_pressed(\"jump\") or event.is_action_pressed(\"ui_accept\"):
-			_restart_game()
-		elif event.is_action_pressed(\"ui_cancel\"):
-			_goto_menu()
-
-func _restart_game() -> void:
-	get_tree().change_scene_to_file(\"res://SampleProject/Game.tscn\")
-
-func _goto_menu() -> void:
-	get_tree().change_scene_to_file(\"res://SampleProject/MainMenu.tscn\")
-"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
 size = Vector2(32, 31.9999)
@@ -48,7 +14,6 @@ bg_color = Color(0.02, 0.04, 0.08, 0.95)
 radius = 32.0
 
 [node name="Canyon" type="Node2D"]
-script = ExtResource("1_canyon")
 
 [node name="TileMap" type="Node2D" parent="."]
 
@@ -68,7 +33,6 @@ tile_set = ExtResource("2_ctv3h")
 [node name="END" type="Area2D" parent="."]
 position = Vector2(59.00001, 342.99997)
 scale = Vector2(-3.7123058, 1.9976834)
-script = SubResource("GDScript_xu4xw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="END"]
 scale = Vector2(0.9334176, 1.224203)
