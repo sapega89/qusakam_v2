@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://uvux58osbrvd"]
 
-[ext_resource type="PackedScene" uid="uid://b5p6p0hjkmgyj" path="res://SampleProject/Scenes/Menus/Game/vertical_menu.tscn" id="1_vertical_menu"]
+[ext_resource type="PackedScene" uid="uid://b5p6p0hjkmgyj" path="res://SampleProject/Scenes/UI/vertical_tab_menu.tscn" id="1_vertical_menu"]
 [ext_resource type="PackedScene" uid="uid://bq8x7k2m3n4p7" path="res://SampleProject/Scenes/Menus/Game/inventory_component.tscn" id="2_inventory"]
 [ext_resource type="PackedScene" uid="uid://dshid7dx84rt5" path="res://SampleProject/Scenes/Menus/Game/equipment_component.tscn" id="3_equipment"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/metsys_map_component.tscn" id="4_map"]

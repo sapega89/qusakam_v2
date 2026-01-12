@@ -4,7 +4,7 @@ extends Node
 class_name GameLocalizationManager
 
 ## Поточна мова
-var current_language: String = "en"
+var current_language: String = "uk"
 
 ## Доступні мови
 var available_languages: Array[String] = ["en", "uk"]
@@ -36,11 +36,11 @@ func _load_saved_language() -> void:
 		else:
 			current_language = TranslationServer.get_locale().substr(0, 2)
 			if current_language not in available_languages:
-				current_language = "en"
+				current_language = "uk"
 	else:
 		current_language = TranslationServer.get_locale().substr(0, 2)
 		if current_language not in available_languages:
-			current_language = "en"
+			current_language = "uk"
 
 ## Завантажує переклади
 func _load_translations() -> void:

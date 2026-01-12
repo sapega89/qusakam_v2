@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/States/game_menu_state.gd" id="1_game_menu_state"]
+
+[node name="GameMenuState" type="Node"]
+script = ExtResource("1_game_menu_state")

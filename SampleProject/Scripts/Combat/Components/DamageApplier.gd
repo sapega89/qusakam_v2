@@ -127,4 +127,3 @@ func update_damage() -> void:
 		current_damage = IDamageDealer.safe_get_current_damage(owner_body)
 	else:
 		current_damage = base_damage
-

@@ -9,6 +9,16 @@ var stored_objects: Dictionary[String, bool]
 var custom_markers: Dictionary[Vector3i, int]
 var cell_overrides: Dictionary[MetroidvaniaSystem.MapData.CellData, MetroidvaniaSystem.MapData.CellOverride]
 
+func _init() -> void:
+	_reset_storage()
+
+func _reset_storage() -> void:
+	discovered_cells = {}
+	registered_objects = {}
+	stored_objects = {}
+	custom_markers = {}
+	cell_overrides = {}
+
 func discover_cell(coords: Vector3i):
 	if discovered_cells.get(coords, 0) < 1:
 		discovered_cells[coords] = 1
@@ -88,12 +98,21 @@ func get_data() -> Dictionary:
 	return data
 
 func set_data(data: Dictionary):
+	_reset_storage()
 	if data.is_empty():
 		return
 	
 	for property in SIMPLE_STORABLE_PROPERTIES:
-		set(property, data[property])
+		var value = data.get(property)
+		if value == null:
+			value = data.get(String(property))
+		if not value is Dictionary:
+			value = {}
+		set(property, value)
 	
-	for override_string in data.cell_overrides:
+	var overrides = data.get(&"cell_overrides", data.get("cell_overrides", []))
+	if not overrides is Array:
+		overrides = []
+	for override_string in overrides:
 		var override: MetroidvaniaSystem.MapData.CellOverride = MetroidvaniaSystem.MapData.CellOverride.load_from_line(override_string)
 		cell_overrides[override.original_room] = override

@@ -11,7 +11,7 @@ var default_settings = {
 	"sfx_volume": 0.9,
 	"fullscreen": false,
 	"vsync": true,
-	"language": "en"
+	"language": "uk"
 }
 
 # Текущие настройки

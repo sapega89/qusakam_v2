@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/modal_dialog.gd" id="1_modal_dialog"]
+
+[node name="ModalDialog" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_modal_dialog")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -140.0
+offset_right = 220.0
+offset_bottom = 140.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Panel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 5
+expand_mode = 1
+visible = false
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Title"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Description"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+text = "OK"
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+text = "Cancel"

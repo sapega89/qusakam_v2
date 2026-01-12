@@ -262,10 +262,6 @@ func create_category_row(category: Dictionary, index: int) -> Control:
 	var icon_texture = null
 	if ResourceLoader.exists(category.icon_path):
 		icon_texture = load(category.icon_path)
-	else:
-		# Виводимо попередження тільки в debug режимі, щоб не засмічувати консоль
-		if OS.is_debug_build():
-			push_warning("EquipmentComponent: Icon file not found: " + category.icon_path)
 	if icon_texture:
 		icon_rect.texture = icon_texture
 	hbox.add_child(icon_rect)

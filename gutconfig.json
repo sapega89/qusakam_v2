@@ -1,7 +1,8 @@
 {
 	"dirs": [
-		"res://tests/unit",
-		"res://tests/integration"
+		"res://test/unit",
+		"res://test/integration",
+		"res://tests"
 	],
 	"include_subdirs": true,
 	"log_level": 1,

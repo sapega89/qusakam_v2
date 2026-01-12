@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/States/options_state.gd" id="1_options_state"]
+
+[node name="OptionsState" type="Node"]
+script = ExtResource("1_options_state")

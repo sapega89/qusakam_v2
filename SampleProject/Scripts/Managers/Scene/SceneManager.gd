@@ -19,6 +19,7 @@ var returning_from_menu: bool = false
 var transition_overlay: ColorRect = null
 var transition_canvas_layer: CanvasLayer = null  # CanvasLayer для overlay
 var transition_tween: Tween = null
+var _transition_blocking: bool = false
 
 # Сигналы
 signal scene_changed(scene_path: String)
@@ -42,6 +43,24 @@ func transition_to_scene(scene_path: String, duration: float = 0.2) -> void:
 		var current_scene_name = get_tree().current_scene.scene_file_path if get_tree().current_scene else ""
 		EventBus.scene_transition_started.emit(current_scene_name, scene_path)
 	
+	var use_transition = _should_use_transition(scene_path)
+	if not use_transition:
+		_set_transition_blocking(false)
+		_cleanup_previous_scene()
+		GameGroups.clear_cache()
+		print("🚪 SceneManager: Переход к сцене без затемнения: ", scene_path)
+		get_tree().call_deferred("change_scene_to_file", scene_path)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		await get_tree().process_frame
+		await get_tree().process_frame
+		if Engine.has_singleton("EventBus"):
+			EventBus.scene_loaded.emit(scene_path)
+			EventBus.scene_transition_completed.emit(scene_path)
+		transition_completed.emit()
+		scene_changed.emit(scene_path)
+		return
+	
 	# Принудительно скрываем UI элементы перед переходом
 	hide_ui_elements()
 	
@@ -52,6 +71,8 @@ func transition_to_scene(scene_path: String, duration: float = 0.2) -> void:
 	# Убеждаемся, что overlay начинается с прозрачного состояния и покрывает весь экран
 	if transition_overlay:
 		transition_overlay.modulate.a = 0.0
+		_set_transition_blocking(true)
+		transition_overlay.visible = true
 		# Обновляем размер перед анимацией
 		update_overlay_size()
 		# Ждем один кадр, чтобы размер применился
@@ -145,6 +166,8 @@ func transition_to_scene(scene_path: String, duration: float = 0.2) -> void:
 		# Убеждаемся, что overlay полностью прозрачный
 		if transition_overlay and is_instance_valid(transition_overlay):
 			transition_overlay.modulate.a = 0.0
+			_set_transition_blocking(false)
+			transition_overlay.visible = false
 			print("🚪 SceneManager: Transition overlay fade-in completed, overlay is transparent, alpha: ", transition_overlay.modulate.a)
 		else:
 			print("⚠️ SceneManager: Overlay стал невалидным во время fade-in")
@@ -190,6 +213,7 @@ func create_transition_overlay() -> void:
 	transition_overlay.name = "TransitionOverlay"
 	transition_overlay.color = Color.BLACK
 	transition_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	transition_overlay.visible = false
 	
 	# Добавляем overlay в CanvasLayer
 	transition_canvas_layer.add_child(transition_overlay)
@@ -215,6 +239,8 @@ func create_transition_overlay() -> void:
 		if transition_overlay and is_instance_valid(transition_overlay):
 			transition_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 			transition_overlay.set_offsets_preset(Control.PRESET_FULL_RECT)
+			transition_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if _transition_blocking else Control.MOUSE_FILTER_IGNORE
+			transition_overlay.visible = false
 			transition_overlay.modulate.a = 0.0  # Начинаем прозрачным
 			
 			# Обновляем размер после добавления
@@ -236,12 +262,29 @@ func update_overlay_size() -> void:
 			# Устанавливаем anchors для полного покрытия экрана
 			transition_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 			transition_overlay.set_offsets_preset(Control.PRESET_FULL_RECT)
+			transition_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if _transition_blocking else Control.MOUSE_FILTER_IGNORE
 		else:
 			transition_overlay.call_deferred("set_anchors_preset", Control.PRESET_FULL_RECT)
 			transition_overlay.call_deferred("set_offsets_preset", Control.PRESET_FULL_RECT)
+			var filter_value = Control.MOUSE_FILTER_STOP if _transition_blocking else Control.MOUSE_FILTER_IGNORE
+			transition_overlay.call_deferred("set_mouse_filter", filter_value)
 		
 		var viewport_size = viewport.get_visible_rect().size
 		print("🚪 SceneManager: Overlay size updated to cover full screen: ", viewport_size)
+
+func _set_transition_blocking(blocking: bool) -> void:
+	_transition_blocking = blocking
+	if transition_overlay and is_instance_valid(transition_overlay):
+		transition_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if blocking else Control.MOUSE_FILTER_IGNORE
+
+func _should_use_transition(scene_path: String) -> bool:
+	if scene_path.is_empty():
+		return true
+	if scene_path.find("/Menus/") != -1:
+		return false
+	if scene_path.ends_with("MainMenu.tscn"):
+		return false
+	return true
 
 func hide_ui_elements() -> void:
 	"""Скрывает UI элементы перед переходом"""

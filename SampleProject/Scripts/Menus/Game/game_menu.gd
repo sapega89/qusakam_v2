@@ -8,6 +8,15 @@ extends Control
 @onready var content_container: Control = get_node_or_null("ContentContainer")
 @onready var game_menu_content = get_node_or_null("GameMenuContent")
 @onready var vertical_menu = get_node_or_null("GameMenuContent/VerticalMenu")
+@onready var focus_router = get_node_or_null("GameMenuContent/VerticalMenu/FocusRouter")
+@onready var misc_button: Button = get_node_or_null("GameMenuContent/VerticalMenu/PanelManager/HBoxContainer/TabButtons/MiscButton")
+
+const MiscMenuModalScene = preload("res://SampleProject/Scenes/Menus/Game/misc_menu_modal.tscn")
+const OptionsMenuScene = "res://SampleProject/Scenes/Menus/Game/options_component.tscn"
+const TutorialMenuScene = "res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn"
+const MODAL_TEMPLATES = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
+
+var _pending_exit_action: String = ""
 
 # Масив кнопок та панелей контенту
 var tab_buttons: Array[Button] = []
@@ -77,6 +86,9 @@ func _ready() -> void:
 	# Собираем кнопки и панели из основной структуры
 	_collect_tab_buttons()
 	_collect_content_panels()
+	_connect_ui_refresh()
+	_apply_localized_labels()
+	_connect_misc_button()
 	
 	# ВАЖНО: Убеждаемся, что все панели скрыты перед установкой начального состояния
 	# Но сначала показываем InventoryPanel в VerticalMenu
@@ -103,9 +115,111 @@ func _ready() -> void:
 	current_tab_name = "Inventory"
 	_update_visibility()
 	_update_button_states()
+	if focus_router:
+		focus_router.set_active_tab(current_tab_name)
+		focus_router.focus_tabs()
 	
 	print("🎮 GameMenu: Initialized with ", tab_buttons.size(), " buttons and ", content_panels.size(), " panels")
 	print("🎮 GameMenu: First tab is Inventory")
+
+func _connect_ui_refresh() -> void:
+	var ui_manager = null
+	if Engine.has_singleton("ServiceLocator"):
+		var service_locator = Engine.get_singleton("ServiceLocator")
+		if service_locator and service_locator.has_method("get_ui_manager"):
+			ui_manager = service_locator.get_ui_manager()
+	if ui_manager and ui_manager.has_signal("ui_refresh_requested"):
+		if not ui_manager.ui_refresh_requested.is_connected(_on_ui_refresh_requested):
+			ui_manager.ui_refresh_requested.connect(_on_ui_refresh_requested)
+
+func _on_ui_refresh_requested() -> void:
+	_apply_localized_labels()
+
+func _apply_localized_labels() -> void:
+	if not vertical_menu:
+		return
+	var panel_manager = vertical_menu.get_node_or_null("PanelManager")
+	if not panel_manager:
+		return
+	var buttons_container = panel_manager.get_node_or_null("HBoxContainer/TabButtons")
+	if not buttons_container:
+		return
+	var label_map = {
+		"InventoryButton": "Inventory",
+		"EquipmentButton": "Equipment",
+		"WorldMapButton": "World Map",
+		"MiscButton": "Misc",
+		"JournalButton": "Journal",
+		"SkillsButton": "Skills",
+		"StatusButton": "Status"
+	}
+	for child in buttons_container.get_children():
+		if child is Button and label_map.has(child.name):
+			child.text = tr(label_map[child.name])
+
+func _connect_misc_button() -> void:
+	if misc_button and not misc_button.pressed.is_connected(_on_misc_button_pressed):
+		misc_button.pressed.connect(_on_misc_button_pressed)
+
+func _on_misc_button_pressed() -> void:
+	var ui_manager = null
+	if has_node("/root/ServiceLocator"):
+		var service_locator = get_node("/root/ServiceLocator")
+		if service_locator and service_locator.has_method("get_ui_manager"):
+			ui_manager = service_locator.get_ui_manager()
+	if ui_manager and ui_manager.has_method("get_modal_layer"):
+		var modal_layer = ui_manager.get_modal_layer()
+		if modal_layer and modal_layer.has_method("show_custom_modal"):
+			modal_layer.show_custom_modal(MiscMenuModalScene)
+			var modal = modal_layer.active_modal
+			if modal:
+				if modal.has_signal("settings_selected"):
+					modal.settings_selected.connect(_on_misc_settings_selected, CONNECT_ONE_SHOT)
+				if modal.has_signal("tutorial_selected"):
+					modal.tutorial_selected.connect(_on_misc_tutorial_selected, CONNECT_ONE_SHOT)
+				if modal.has_signal("exit_main_menu_selected"):
+					modal.exit_main_menu_selected.connect(_on_misc_exit_main_menu_selected, CONNECT_ONE_SHOT)
+				if modal.has_signal("exit_game_selected"):
+					modal.exit_game_selected.connect(_on_misc_exit_game_selected, CONNECT_ONE_SHOT)
+
+func _on_misc_settings_selected() -> void:
+	get_tree().change_scene_to_file(OptionsMenuScene)
+
+func _on_misc_tutorial_selected() -> void:
+	get_tree().change_scene_to_file(TutorialMenuScene)
+
+func _on_misc_exit_main_menu_selected() -> void:
+	_pending_exit_action = "exit_main_menu"
+	_show_exit_confirm()
+
+func _on_misc_exit_game_selected() -> void:
+	_pending_exit_action = "exit_game"
+	_show_exit_confirm()
+
+func _show_exit_confirm() -> void:
+	var ui_manager = null
+	if has_node("/root/ServiceLocator"):
+		var service_locator = get_node("/root/ServiceLocator")
+		if service_locator and service_locator.has_method("get_ui_manager"):
+			ui_manager = service_locator.get_ui_manager()
+	if not ui_manager or not ui_manager.has_method("show_modal") or not ui_manager.has_method("get_modal_layer"):
+		return
+	var modal_layer = ui_manager.get_modal_layer()
+	if modal_layer and modal_layer.has_signal("modal_closed"):
+		modal_layer.modal_closed.connect(_on_exit_confirm_closed, CONNECT_ONE_SHOT)
+	var data = MODAL_TEMPLATES.confirm_exit_to_main_menu() if _pending_exit_action == "exit_main_menu" else MODAL_TEMPLATES.confirm_exit_game_unsaved()
+	ui_manager.show_modal(data)
+
+func _on_exit_confirm_closed(result: String) -> void:
+	if result != "confirm":
+		_pending_exit_action = ""
+		return
+	if _pending_exit_action == "exit_main_menu":
+		get_tree().set_meta("show_title_screen", true)
+		get_tree().change_scene_to_file("res://SampleProject/MainMenu.tscn")
+	elif _pending_exit_action == "exit_game":
+		get_tree().quit()
+	_pending_exit_action = ""
 
 func _on_inventory_button_pressed() -> void:
 	"""Обработчик нажатия на кнопку Inventory в VerticalMenu"""
@@ -250,6 +364,9 @@ func _update_visibility() -> void:
 					panel_data.content.update_map_visibility()
 
 ## Оновлює візуальний стан кнопок
+	if focus_router:
+		focus_router.set_active_tab(current_tab_name)
+
 func _update_button_states() -> void:
 	# Маппинг имен кнопок к именам вкладок
 	var button_to_tab = {

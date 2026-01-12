@@ -1,0 +1,198 @@
+[gd_scene load_steps=6 format=3 uid="uid://b5p6p0hjkmgyj"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/panel_manager.gd" id="2_ups86"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/cursor_indicator.gd" id="4_6sxu5"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/focus_router.gd" id="5_focus_router"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_game_menu"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_layk3"]
+bg_color = Color(0.6, 0.6, 0.6, 0.22745098)
+
+[node name="VerticalMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelManager" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_right = -239.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_ups86")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelManager"]
+layout_mode = 2
+size_flags_stretch_ratio = 0.0
+theme_override_constants/separation = 109
+
+[node name="TabButtons" type="VBoxContainer" parent="PanelManager/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+theme_override_constants/separation = 12
+
+[node name="InventoryButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Inventory"
+
+[node name="EquipmentButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Equipment"
+
+[node name="WorldMapButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "World Map"
+
+[node name="MiscButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Misc"
+
+[node name="JournalButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Journal"
+
+[node name="SkillsButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Skills"
+
+[node name="StatusButton" type="Button" parent="PanelManager/HBoxContainer/TabButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_game_menu")
+text = "Status"
+
+[node name="InventoryPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/InventoryPanel"]
+layout_mode = 2
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EquipmentPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/EquipmentPanel"]
+layout_mode = 2
+text = "2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WorldMapPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/WorldMapPanel"]
+layout_mode = 2
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MiscPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/MiscPanel"]
+layout_mode = 2
+text = "4"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="JournalPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/JournalPanel"]
+layout_mode = 2
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkillsPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/SkillsPanel"]
+layout_mode = 2
+text = "6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusPanel" type="PanelContainer" parent="PanelManager/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.99
+theme_override_styles/panel = SubResource("StyleBoxFlat_layk3")
+
+[node name="Label" type="Label" parent="PanelManager/HBoxContainer/StatusPanel"]
+layout_mode = 2
+text = "7"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FocusRouter" type="Node" parent="."]
+script = ExtResource("5_focus_router")
+
+[node name="CursorIndicator" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_6sxu5")
+metadata/_custom_type_script = "uid://c6r20wywgls0i"

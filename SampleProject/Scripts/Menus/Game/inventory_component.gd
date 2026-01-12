@@ -264,7 +264,7 @@ func _create_filter_buttons():
 		if not local_filter_container:
 			local_filter_container = HBoxContainer.new()
 			local_filter_container.name = "FilterContainer"
-		
+
 		# Сохраняем ссылку в переменную класса
 		filter_container = local_filter_container
 		

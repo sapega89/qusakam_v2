@@ -3,7 +3,7 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysGame.gd"
 class_name Game
 
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
-const SAVE_PATH = "user://example_save_data.sav"
+const DEFAULT_SAVE_PATH = "user://saves/slot_01.sav"
 
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
 @export var starting_map: String = "Canyon.tscn"
@@ -149,6 +149,16 @@ func _normalize_room_ref_to_scene_ref(room_ref: String) -> String:
 var _save_room_initialized:=false
 var loaded_from_save = false
 
+func _get_current_save_path() -> String:
+	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
+	if save_system and save_system.has_method("get_slot_path"):
+		var slot_index = 1
+		var slot_value = save_system.get("current_slot")
+		if typeof(slot_value) == TYPE_INT:
+			slot_index = slot_value
+		return save_system.get_slot_path(slot_index)
+	return DEFAULT_SAVE_PATH
+
 func _initialize_save_and_room() -> void:
 	if _save_room_initialized:
 		return
@@ -160,7 +170,7 @@ func _initialize_save_and_room() -> void:
 		get_tree().remove_meta("start_new_game")
 
 	# Проверяем, есть ли указанный путь к сохранению (из меню загрузки)
-	var save_file_path = SAVE_PATH
+	var save_file_path = _get_current_save_path()
 	if get_tree().has_meta("save_file_path"):
 		save_file_path = get_tree().get_meta("save_file_path")
 		get_tree().remove_meta("save_file_path")
@@ -258,8 +268,19 @@ func save_game():
 	save_manager.set_value("abilities", player.abilities)
 	
 	save_manager.store_game(self)
-	save_manager.save_as_text(SAVE_PATH)
-	
+	save_manager.save_as_text(_get_current_save_path())
+
+	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
+	if save_system and save_system.has_method("set_slot_metadata"):
+		var meta = {
+			"timestamp": Time.get_datetime_string_from_system(),
+			"location": room_name
+		}
+		var slot_value = save_system.get("current_slot")
+		var slot_index = slot_value if typeof(slot_value) == TYPE_INT else 1
+		meta["slot"] = slot_index
+		save_system.set_slot_metadata(slot_index, meta)
+
 	# 2. SaveSystem Sync (Inventory, Flags, Quest Progress)
 	# Update player state before full data save
 	_sync_player_state_to_save_system()

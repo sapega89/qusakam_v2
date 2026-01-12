@@ -139,6 +139,8 @@ func get_group_name(idx: int) -> String:
 
 ## Returns a [Dictionary] containing the MetSys' runtime data, like discovered cells or stored objects. You need to serialize it yourself, e.g. using [method FileAccess.store_var].
 func get_save_data() -> Dictionary:
+	if not save_data:
+		return {}
 	return save_data.get_data()
 
 ## Initializes and loads a save data. Pass it the data from [method get_save_data] to restore the saved state of MetSys. Calling this method with the default parameter will clear the data, allowing to start new game session.

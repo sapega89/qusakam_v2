@@ -73,7 +73,8 @@ SavePoint можно найти в следующих локациях:
 
 - **MetSys сохранение**: `user://example_save_data.sav`
 - **SaveSystem сохранение**: `user://savegames/player_data.json`
-- **Настройки игры**: `user://savegames/game_settings.json`
+- **Game settings**: `user://saves/slot_XX.sav` (key `game_settings`)
+- **Save slot profile**: `user://saves/profile.json`
 
 ## Примечания
 

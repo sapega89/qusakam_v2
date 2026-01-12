@@ -1,7 +1,9 @@
 # Godot 4+ specific ignores
-*.godot/*
-*./android/*
-*./test/*
-*./raw_assets/*
-*./tests/*
-*./addons/*
+.godot/**
+android/**
+test/**
+raw_assets/**
+tests/**
+addons/**
+.claude/**
+.vscode/**

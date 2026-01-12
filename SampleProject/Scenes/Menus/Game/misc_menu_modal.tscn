@@ -1,0 +1,55 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/misc_menu_modal.gd" id="1_misc_menu_modal"]
+
+[node name="MiscMenuModal" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_misc_menu_modal")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = -160.0
+offset_right = 240.0
+offset_bottom = 160.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+text = "Menu"
+horizontal_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="SettingsButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 36)
+text = "Settings"
+
+[node name="TutorialButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 36)
+text = "Tutorial"
+
+[node name="ExitMainMenuButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 36)
+text = "Exit to Main Menu"
+
+[node name="ExitGameButton" type="Button" parent="Panel/VBox/Buttons"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 36)
+text = "Exit Game"

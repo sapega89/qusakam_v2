@@ -195,30 +195,30 @@ func _create_simple_load_screen() -> Node:
 	var canvas_layer = CanvasLayer.new()
 	canvas_layer.name = "SimpleLoadScreen"
 	canvas_layer.layer = 1000  # 设置层级为1000，确保显示在最前面
-	                       # Set layer to 1000 to ensure it displays in front
+						   # Set layer to 1000 to ensure it displays in front
 	
 	var color_rect = ColorRect.new()
 	color_rect.color = Color(0, 0, 0, 1)  # 纯黑色不透明
-	                                  # Pure black opaque
+									  # Pure black opaque
 	color_rect.size = get_viewport().get_visible_rect().size  # 设置为视口大小
-	                                                      # Set to viewport size
+														  # Set to viewport size
 	color_rect.anchor_left = 0
 	color_rect.anchor_top = 0
 	color_rect.anchor_right = 1
 	color_rect.anchor_bottom = 1
 	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP  # 阻止鼠标事件穿透
-	                                                # Prevent mouse events from passing through
+													# Prevent mouse events from passing through
 	
 	var label = Label.new()
 	label.text = "Loading..."
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER  # 水平居中
-	                                                     # Horizontal center
+														 # Horizontal center
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER      # 垂直居中
-	                                                     # Vertical center
+														 # Vertical center
 	label.add_theme_font_size_override("font_size", 32)         # 字体大小32
-	                                                        # Font size 32
+															# Font size 32
 	label.add_theme_color_override("font_color", Color.WHITE) # 白色字体
-	                                                     # White font
+														 # White font
 	
 	canvas_layer.add_child(color_rect)
 	color_rect.add_child(label)
@@ -228,7 +228,7 @@ func _create_simple_load_screen() -> Node:
 	label.anchor_right = 0.5
 	label.anchor_bottom = 0.5
 	label.position = Vector2(-50, -16)  # 微调位置
-	                               # Fine-tune position
+								   # Fine-tune position
 	label.size = Vector2(100, 32)
 	
 	return canvas_layer
@@ -371,7 +371,7 @@ func clear_cache() -> void:
 		var cached = scene_cache[scene_path]
 		if is_instance_valid(cached.scene_instance):
 			_cleanup_orphaned_nodes(cached.scene_instance)  # 清理孤立节点
-			                                            # Clean up orphaned nodes
+														# Clean up orphaned nodes
 			cached.scene_instance.queue_free()
 		to_remove.append(scene_path)
 		scene_removed_from_cache.emit(scene_path)

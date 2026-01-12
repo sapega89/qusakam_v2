@@ -304,9 +304,9 @@ func get_language() -> String:
 			var service_locator = Engine.get_singleton("ServiceLocator")
 			if service_locator and service_locator.has_method("get_save_system"):
 				save_system = service_locator.get_save_system()
-	if save_system and save_system.has("game_settings"):
-		return save_system.game_settings.get("language", "en")
-	return "en"
+	if save_system and save_system.has_method("get_language"):
+		return save_system.get_language()
+	return "uk"
 
 func set_language(language: String):
 	"""Устанавливает язык"""
@@ -316,8 +316,6 @@ func set_language(language: String):
 			var service_locator = Engine.get_singleton("ServiceLocator")
 			if service_locator and service_locator.has_method("get_save_system"):
 				save_system = service_locator.get_save_system()
-	if save_system and save_system.has("game_settings"):
-		save_system.game_settings["language"] = language
-		if save_system.has_method("save_game_settings"):
-			save_system.save_game_settings()
+	if save_system and save_system.has_method("set_language"):
+		save_system.set_language(language)
 

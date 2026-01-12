@@ -39,12 +39,12 @@ func _ready():
 	#color_rect = ColorRect.new()
 	
 	color_rect.color = color
-	color_rect.size = get_viewport().get_visible_rect().size
+	color_rect.set_deferred("size", get_viewport().get_visible_rect().size)
 	color_rect.anchor_left = 0
 	color_rect.anchor_top = 0
 	color_rect.anchor_right = 1
 	color_rect.anchor_bottom = 1
-	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	# 初始状态透明
 	color_rect.modulate.a = 0
@@ -60,6 +60,7 @@ func fade_in() -> void:
 	is_transitioning = true
 	fade_in_started.emit()
 	
+	color_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	color_rect.visible = true
 	color_rect.modulate.a = 0
 	
@@ -88,6 +89,7 @@ func fade_out() -> void:
 	
 	await tween.finished
 	color_rect.visible = false
+	color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	is_transitioning = false
 	fade_out_completed.emit()
 	print("黑屏淡出完成")

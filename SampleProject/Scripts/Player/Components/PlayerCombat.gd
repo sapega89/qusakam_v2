@@ -54,6 +54,8 @@ func perform_attack(last_direction: int) -> void:
 	# Play animation
 	if animation_player and animation_player.has_animation("Attack"):
 		animation_player.play("Attack")
+		if player:
+			player.animation = "Attack"
 	
 	# Spawn VFX
 	if player.has_method("_spawn_attack_vfx"):

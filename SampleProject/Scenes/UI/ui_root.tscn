@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/ui_root.gd" id="1_ui_root"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/modal_layer.tscn" id="2_modal_layer"]
+[ext_resource type="Script" path="res://addons/fsm/FiniteStateMachine.gd" id="3_fsm"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/States/null_state.tscn" id="4_null_state"]
+
+[node name="UIRoot" type="Node"]
+script = ExtResource("1_ui_root")
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 12
+
+[node name="StateRoot" type="Control" parent="UILayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("3_fsm")
+
+[node name="NullState" parent="StateMachine" instance=ExtResource("4_null_state")]
+
+[node name="ModalLayer" parent="." instance=ExtResource("2_modal_layer")]

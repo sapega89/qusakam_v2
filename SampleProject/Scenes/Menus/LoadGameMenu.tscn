@@ -79,6 +79,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 80)
 text = "Slot 3: Empty"
 
+[node name="Slot4" type="Button" parent="MainPanel/VBoxContainer/SaveSlotsContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 80)
+text = "Slot 4: Empty"
+
 [node name="ButtonsContainer" type="HBoxContainer" parent="MainPanel/VBoxContainer"]
 layout_mode = 2
 alignment = 1
@@ -87,6 +92,12 @@ alignment = 1
 layout_mode = 2
 custom_minimum_size = Vector2(150, 40)
 text = "Back"
+
+[node name="DeleteButton" type="Button" parent="MainPanel/VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(150, 40)
+text = "Delete"
+disabled = true
 
 [node name="LoadButton" type="Button" parent="MainPanel/VBoxContainer/ButtonsContainer"]
 layout_mode = 2
