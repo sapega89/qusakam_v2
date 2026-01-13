@@ -1,7 +1,7 @@
 extends Node2D
 
 ## 🏘️ Village Scene Manager
-## States: ABDUCTION_CUTSCENE, ARRIVAL, STREET_FIGHT, OLD_MAN_OUTSIDE, OLD_MAN_HEALING, OLD_MAN_DECISION
+## States: ABDUCTION_CUTSCENE, ARRIVAL, STREET_FIGHT, OLD_MAN_OUTSIDE, OLD_MAN_HEALING, OLD_MAN_DECISION, LEAVING_VILLAGE
 ## Follows Robust State-Flow Pattern
 
 enum State {
@@ -10,7 +10,8 @@ enum State {
 	STREET_FIGHT,
 	OLD_MAN_OUTSIDE,
 	OLD_MAN_HEALING,
-	OLD_MAN_DECISION
+	OLD_MAN_DECISION,
+	LEAVING_VILLAGE
 }
 
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
@@ -52,6 +53,9 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			_execute_step(StepType.DIALOGUE, "OldMan_Healing", run_id)
 		State.OLD_MAN_DECISION:
 			_execute_step(StepType.DIALOGUE, "OldMan_Decision", run_id)
+		State.LEAVING_VILLAGE:
+			# Уход из деревни - персонаж покидает деревню
+			_execute_step(StepType.DIALOGUE, "LeavingVillage", run_id)
 
 func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 	match type:
@@ -83,13 +87,13 @@ func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
-	if current_state < State.OLD_MAN_DECISION:
+	if current_state < State.LEAVING_VILLAGE:
 		current_state = (current_state + 1) as State
 	else:
 		_transition_to_next_scene()
 
 func _transition_to_next_scene() -> void:
-	DebugLogger.info("🏘️ Village: Demo flow moving to Desert Road...", "Scene")
+	DebugLogger.info("🏘️ Village: Demo flow moving back to Canyon for relic pickup...", "Scene")
 
 func _get_dialogue_manager() -> Node:
 	if Engine.has_singleton("ServiceLocator"):

@@ -250,6 +250,18 @@ signal scene_transition_completed(scene_name: String)
 @warning_ignore("unused_signal")
 signal scene_loaded(scene_name: String)
 
+## Емітується при зміні стану сцени (наприклад, Canyon, Village).
+##
+## Args:
+##     scene_name (String): Назва сцени (наприклад, "Canyon")
+##     old_state (String): Попередній стан
+##     new_state (String): Новий стан
+##
+## Приклади:
+##     EventBus.scene_state_changed.connect(_on_scene_state_changed)
+##     EventBus.scene_state_changed.emit("Canyon", "INTRO", "MONOLOGUE")
+signal scene_state_changed(scene_name: String, old_state: String, new_state: String)
+
 # ============================================
 # DIALOGUE EVENTS
 # ============================================
