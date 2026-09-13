@@ -1,3 +1,3 @@
 say|KUSAKAM|[PLACEHOLDER] This merchant has interesting goods...
-say|MERCHANT|[PLACEHOLDER] Welcome, traveler! What can I help you with?
+say|Торговец|[PLACEHOLDER] Welcome, traveler! What can I help you with?
 exit|

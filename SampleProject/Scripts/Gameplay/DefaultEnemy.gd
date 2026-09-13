@@ -555,7 +555,9 @@ func _calculate_xp_reward() -> int:
 
 	# Fallback: Calculate based on max health
 	# 1 XP per 4 HP (100 HP = 25 XP, 200 HP = 50 XP, etc.)
-	return max(int(Max_Health / 4), 10)  # Minimum 10 XP
+	# Ділення на 4.0, а не 4: int(...) зовні попередження INTEGER_DIVISION
+	# не знімає, бо Godot дивиться на сам оператор, а не на результат.
+	return max(int(Max_Health / 4.0), 10)  # Minimum 10 XP
 
 func _spawn_coin_drops() -> void:
 	"""Spawns coins on enemy death"""
