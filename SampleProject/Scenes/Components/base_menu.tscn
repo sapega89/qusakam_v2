@@ -1,8 +1,7 @@
-[gd_scene load_steps=14 format=3 uid="uid://3iine2m7e4yt"]
+[gd_scene load_steps=13 format=3 uid="uid://3iine2m7e4yt"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Components/base_menu.gd" id="1_base_menu"]
-[ext_resource type="Theme" uid="uid://c3c6osxmpvjj6" path="res://release/src/resources/themes/default button.tres" id="2_swgay"]
-[ext_resource type="Texture2D" uid="uid://kkoatodj3a3h" path="res://assets/ChatGPT Image Jul 19, 2025, 12_21_31 PM1.png" id="5_5q800"]
+[ext_resource type="Theme" path="res://SampleProject/Resources/Themes/default_button.tres" id="2_swgay"]
 [ext_resource type="PackedScene" uid="uid://bylw80sinbpuf" path="res://SampleProject/Scenes/UI/timer_display.tscn" id="6_timer"]
 [ext_resource type="PackedScene" uid="uid://dgpocp4yd5wxb" path="res://SampleProject/Scenes/UI/gold_display.tscn" id="7_gold"]
 
@@ -29,14 +28,6 @@ animations = [{
 "frames": [],
 "loop": true,
 "name": &"default",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("5_5q800")
-}],
-"loop": true,
-"name": &"new_animation",
 "speed": 5.0
 }]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://d0owehd7i4i04"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/YesNoDialog.gd" id="1_script"]
-[ext_resource type="Theme" uid="uid://c3c6osxmpvjj6" path="res://release/src/resources/themes/default button.tres" id="1_theme"]
+[ext_resource type="Theme" path="res://SampleProject/Resources/Themes/default_button.tres" id="1_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0, 0, 0, 0.50980395)

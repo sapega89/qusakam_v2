@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://3iine2m7e4yt" path="res://SampleProject/Scenes/Components/base_menu.tscn" id="2_base_menu"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Shop/buy_item_list_display.gd" id="4_f0q4t"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Shop/tooltip.gd" id="4_mq3pl"]
-[ext_resource type="Theme" uid="uid://c3c6osxmpvjj6" path="res://release/src/resources/themes/default button.tres" id="5_button_theme"]
+[ext_resource type="Theme" path="res://SampleProject/Resources/Themes/default_button.tres" id="5_button_theme"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Shop/shop_ui.gd" id="6_shop_ui"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Shop/sell_item_list_display.gd" id="8_sell_list"]
 
@@ -220,8 +220,7 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/normal_font_size = 10
 bbcode_enabled = true
-text = "[img]res://assets/editor_icons/OthersIcon.svg[/img]
-[b]Population[/b]
+text = "[b]Population[/b]
 
 Number of items 0"
 fit_content = true

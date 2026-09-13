@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bt75emmk103yk"]
+[gd_scene load_steps=7 format=3 uid="uid://bt75emmk103yk"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/right_panel_component.gd" id="1_right_panel"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/timer_display.tscn" id="2_timer"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/gold_display.tscn" id="3_gold"]
-[ext_resource type="Texture2D" path="res://assets/ChatGPT Image Jul 19, 2025, 12_21_31 PM1.png" id="4_character_sprite"]
 
 [sub_resource type="Theme" id="Theme_right_panel"]
 
@@ -15,14 +14,6 @@ animations = [{
 "frames": [],
 "loop": true,
 "name": &"default",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("4_character_sprite")
-}],
-"loop": true,
-"name": &"new_animation",
 "speed": 5.0
 }]
 
