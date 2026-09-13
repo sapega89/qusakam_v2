@@ -88,7 +88,10 @@ func spawn_all_enemies() -> void:
 	if spawn_in_waves:
 		await _spawn_in_waves()
 	else:
-		await _spawn_immediately()
+		# Без await: _spawn_immediately() не корутина (усередині немає жодного
+		# await), тож Godot сварився REDUNDANT_AWAIT. _spawn_in_waves() корутина —
+		# там await лишається.
+		_spawn_immediately()
 
 	all_enemies_spawned.emit()
 	DebugLogger.info("RoomEnemySpawner: All enemies spawned (%d total)" % spawned_enemies.size(), "RoomEnemySpawner")

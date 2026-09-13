@@ -23,11 +23,9 @@ signal state_complete(state: State)
 var enemy_spawner: RoomEnemySpawner = null
 
 func _ready() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var loc = Engine.get_singleton("ServiceLocator")
-		if not loc.is_node_ready():
-			await loc.ready
-	
+	if ServiceLocator and not ServiceLocator.is_node_ready():
+		await ServiceLocator.ready
+
 	# Находим EnemySpawner
 	enemy_spawner = get_node_or_null("EnemySpawner") as RoomEnemySpawner
 	if enemy_spawner:
@@ -98,15 +96,19 @@ func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 
 	var path = "res://dialogue_quest/" + dialogue_id + ".dqd"
 	dm.start_dialogue(path)
-	
-	if Engine.has_singleton("EventBus"):
-		while true:
-			var finished_id = await EventBus.dialogue_finished
-			if finished_id == path or finished_id == dialogue_id:
-				# Завершуємо квест після діалогу
-				_complete_quest_for_dialogue(dialogue_id)
-				break
-			if run_id != state_run_id: return
+
+	# EventBus — autoload; has_singleton() завжди давав false, тож цикл очікування
+	# не виконувався жодного разу. _play_dialogue() повертався одразу після
+	# start_dialogue(), _execute_step() робив advance_state(), і вся сцена
+	# пролітала TRAVELING -> FIGHT_ENCOUNTER -> TRANSITION_TO_CITY за один кадр,
+	# спавнячи ворогів ще до того, як RoomEnemySpawner знайшов точки спавну.
+	while true:
+		var finished_id = await EventBus.dialogue_finished
+		if finished_id == path or finished_id == dialogue_id:
+			# Завершуємо квест після діалогу
+			_complete_quest_for_dialogue(dialogue_id)
+			break
+		if run_id != state_run_id: return
 
 func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 	"""Встановлює квестові флаги для діалогів"""
@@ -159,8 +161,11 @@ func _set_objective(text: String) -> void:
 		game.set_objective(text)
 
 func _get_dialogue_manager() -> Node:
-	if Engine.has_singleton("ServiceLocator"):
-		return Engine.get_singleton("ServiceLocator").get_dialogue_manager()
+	# ServiceLocator — autoload (/root/ServiceLocator), не Engine-синглтон:
+	# has_singleton() для нього завжди false, тож цей метод ЗАВЖДИ повертав null.
+	if ServiceLocator:
+		return ServiceLocator.get_dialogue_manager()
+	DebugLogger.warning("🌵 DesertRoad: ServiceLocator недоступний", "Scene")
 	return null
 
 func _spawn_enemies_for_fight() -> void:

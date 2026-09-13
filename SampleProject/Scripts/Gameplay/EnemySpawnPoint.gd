@@ -36,7 +36,9 @@ func _ready() -> void:
 	"""Инициализация spawn point"""
 	# Генерируем ID если не задан
 	if spawn_id.is_empty():
-		spawn_id = "%s_%s" % [get_parent().name if get_parent() else "unknown", name]
+		# String(...) навколо обох гілок: Node.name це StringName, а "unknown" —
+		# String, і Godot сварився INCOMPATIBLE_TERNARY на різних типах.
+		spawn_id = "%s_%s" % [String(get_parent().name) if get_parent() else "unknown", String(name)]
 
 	# Добавляем в группу для удобного поиска
 	add_to_group("enemy_spawn_points")
