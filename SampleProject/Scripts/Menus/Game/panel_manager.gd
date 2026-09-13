@@ -202,7 +202,6 @@ func _ready() -> void:
 		await get_tree().process_frame  # Два кадра для надежности
 		
 		# Ищем AllPanel явно, чтобы она всегда открывалась первой
-		var all_panel: PanelContainer = null
 		for panel in panels:
 			if panel and panel.name == "AllPanel":
 				all_panel = panel
@@ -613,7 +612,7 @@ func _validate_arrays() -> bool:
 		if button and is_instance_valid(button):
 			valid_buttons.append(button)
 		elif OS.is_debug_build():
-			print("PanelManager: Кнопка не валідна: ", button, " (is_instance_valid: ", is_instance_valid(button) if button else "null", ")")
+			print("PanelManager: Кнопка не валідна: ", button, " (is_instance_valid: ", str(is_instance_valid(button)) if button else "null", ")")
 	
 	for panel in panels:
 		if panel and is_instance_valid(panel):
@@ -621,7 +620,7 @@ func _validate_arrays() -> bool:
 			if OS.is_debug_build():
 				print("PanelManager: Валідна панель: ", panel.name, " (is_instance_valid: ", is_instance_valid(panel), ")")
 		elif OS.is_debug_build():
-			print("PanelManager: Панель не валідна: ", panel, " (is_instance_valid: ", is_instance_valid(panel) if panel else "null", ")")
+			print("PanelManager: Панель не валідна: ", panel, " (is_instance_valid: ", str(is_instance_valid(panel)) if panel else "null", ")")
 	
 	# Оновлюємо масиви
 	buttons = valid_buttons

@@ -7,3 +7,7 @@ tests/**
 addons/**
 .claude/**
 .vscode/**
+# Великі бінарники: GitHub відхиляє файли >100 МБ
+*.zip
+*.rar
+*.exe

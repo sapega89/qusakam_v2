@@ -14,8 +14,11 @@ var shop_canvas_layer: CanvasLayer = null
 @export var merchant_id: String = "default"
 
 func _ready():
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
+	if not body_exited.is_connected(_on_body_exited):
+		body_exited.connect(_on_body_exited)
 	
 	if interaction_label:
 		interaction_label.visible = false

@@ -1,0 +1,16 @@
+signal|cam_focus|cliff_view
+signal|enable_player_move|false
+
+say|KUSAKAM|Hey, wind... at least you change once in a while, huh?
+say|KUSAKAM|Every day is the same: the same faces, the same chickens screaming, the same stories from grandpa...
+say|KUSAKAM|The whole village already knows he was supposed to pass me his shaman staff a hundred sandstorms ago.
+say|KUSAKAM|But no... the old fool just keeps lecturing. "Kusakam, listen to the spirits", "Kusakam, don't forget the rituals"...
+say|KUSAKAM|I don't need spirits to know I'm meant for more than these three clay huts.
+say|KUSAKAM|You'll see, wind, soon I'll leave this place and become the great shaman of Khalahas.
+say|KUSAKAM|(quieter) Even if... nothing works out yet.
+
+flag|raise|prologue_started
+flag|raise|quest_prologue_1_started
+
+signal|tutorial_move_start
+signal|enable_player_move|true

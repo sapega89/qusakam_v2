@@ -67,15 +67,50 @@ func _find_dialogue_system_in_scene() -> bool:
 		dialogue_system = _find_dialogue_system_recursive(tree.current_scene)
 	
 	if dialogue_system:
+		# Pushing the layer up to ensure visibility over other UI
+		if dialogue_system is CanvasLayer:
+			dialogue_system.layer = 100
+			if "visible" in dialogue_system:
+				dialogue_system.visible = true
+			# Force process mode always to ensure it runs even if game is somehow paused
+			dialogue_system.process_mode = Node.PROCESS_MODE_ALWAYS
+			
+			DebugLogger.info("💬 DialogueManager: DialogueSystem layer set to 100, visible set to true", "DialogueManager")
+
 		# Находим компоненты внутри DialogueSystem
 		current_dialogue_player = dialogue_system.get_node_or_null("DialoguePlayer")
 		current_dialogue_box = dialogue_system.get_node_or_null("DialogueBox")
+		
+		# Fallback StyleBox fix if Theme is broken (UI invisible)
+		if current_dialogue_box and current_dialogue_box.has_method("add_theme_stylebox_override"):
+			var style = StyleBoxFlat.new()
+			style.bg_color = Color(0.1, 0.1, 0.1, 0.9) # Dark grey
+			style.border_width_left = 2
+			style.border_width_top = 2
+			style.border_width_right = 2
+			style.border_width_bottom = 2
+			style.border_color = Color(1, 1, 1, 0.5)
+			current_dialogue_box.add_theme_stylebox_override("panel", style)
+			DebugLogger.info("💬 DialogueManager: Added fallback StyleBox to DialogueBox", "DialogueManager")
 		var choice_menu = dialogue_system.get_node_or_null("ChoiceMenu")
 
 		# Настраиваем DialoguePlayer
-		if current_dialogue_player and current_dialogue_player is DQDialoguePlayer:
-			if current_dialogue_box:
-				current_dialogue_player.dialogue_box = current_dialogue_box
+		if current_dialogue_player:
+			# Перевіряємо наявність властивості dialogue_box через get/set або "in"
+			if "dialogue_box" in current_dialogue_player or current_dialogue_player.get("dialogue_box") != null:
+				if current_dialogue_box:
+					current_dialogue_player.dialogue_box = current_dialogue_box
+					DebugLogger.info("💬 DialogueManager: DialogueBox успішно підключено до DialoguePlayer", "DialogueManager")
+					
+					# ВАЖНО: Приховуємо DialogueBox за замовчуванням
+					current_dialogue_box.visible = false
+					if current_dialogue_box.has_method("set_text"):
+						current_dialogue_box.set_text("")
+						current_dialogue_box.set_name_text("")
+						current_dialogue_box.set_portrait_image(null)
+					print("💬 DialogueManager: DialogueBox знайдено та приховано за замовчуванням")
+			else:
+				DebugLogger.warning("💬 DialogueManager: DialoguePlayer не має властивості dialogue_box!", "DialogueManager")
 			if choice_menu:
 				current_dialogue_player.choice_menu = choice_menu
 
@@ -101,16 +136,29 @@ func _find_dialogue_system_recursive(node: Node) -> Node:
 
 func _connect_dialogue_quest_signals():
 	"""Подключает сигналы DialogueQuest"""
-	if Engine.has_singleton("DialogueQuest"):
-		var dq = Engine.get_singleton("DialogueQuest")
-		if dq and dq.has_method("get") and dq.get("Signals"):
-			var signals = dq.Signals
-			if not signals.dialogue_started.is_connected(_on_dialogue_quest_started):
-				signals.dialogue_started.connect(_on_dialogue_quest_started)
-			if not signals.dialogue_ended.is_connected(_on_dialogue_quest_ended):
-				signals.dialogue_ended.connect(_on_dialogue_quest_ended)
-			if not signals.dialogue_signal.is_connected(_on_dialogue_quest_signal):
-				signals.dialogue_signal.connect(_on_dialogue_quest_signal)
+	# DialogueQuest — autoload (/root/DialogueQuest), а не Engine-синглтон.
+	# Раніше тут стояв Engine.has_singleton() БЕЗ фолбеку (на відміну від
+	# _check_dialogue_quest_availability_deferred), тож жоден із трьох сигналів
+	# не підключався ніколи. Наслідки: гравець міг ходити під час діалогу
+	# (_on_dialogue_quest_started не блокував ввід), а dialogue_finished не
+	# емітився взагалі — Village назавжди зависав в await.
+	var dq = get_tree().root.get_node_or_null("DialogueQuest") if get_tree() else null
+	if not dq:
+		DebugLogger.warning("💬 DialogueManager: DialogueQuest не знайдено — сигнали не підключено", "DialogueManager")
+		return
+
+	var signals = dq.get("Signals")
+	if not signals:
+		DebugLogger.warning("💬 DialogueManager: у DialogueQuest немає Signals", "DialogueManager")
+		return
+
+	if not signals.dialogue_started.is_connected(_on_dialogue_quest_started):
+		signals.dialogue_started.connect(_on_dialogue_quest_started)
+	if not signals.dialogue_ended.is_connected(_on_dialogue_quest_ended):
+		signals.dialogue_ended.connect(_on_dialogue_quest_ended)
+	if not signals.dialogue_signal.is_connected(_on_dialogue_quest_signal):
+		signals.dialogue_signal.connect(_on_dialogue_quest_signal)
+	DebugLogger.info("💬 DialogueManager: ✅ Сигнали DialogueQuest підключено", "DialogueManager")
 
 func start_dialogue(timeline_name: String, _character_name: String = "") -> bool:
 	"""
@@ -150,6 +198,7 @@ func start_dialogue(timeline_name: String, _character_name: String = "") -> bool
 	
 	if not file_exists:
 		push_error("❌ DialogueManager: Файл диалога не найден: " + timeline_name + " (пробовали: " + dialogue_path + ")")
+		DebugLogger.warning("💬 DialogueManager: ❌ Файл диалога не найден: " + dialogue_path, "DialogueManager")
 		return false
 	
 	if dialogue_path != timeline_name:
@@ -158,8 +207,38 @@ func start_dialogue(timeline_name: String, _character_name: String = "") -> bool
 	
 	# Проверяем, не запущен ли уже диалог
 	if is_dialogue_active():
-		push_warning("⚠️ DialogueManager: Диалог уже активен, пропускаем запуск '", timeline_name, "'")
-		return false
+		# FAILSAFE: Если диалог активен, но окно скрыто -> сбросить состояние
+		if current_dialogue_box and not current_dialogue_box.visible:
+			# Suppress engine warning, just log info that we are recovering
+			DebugLogger.info("💬 DialogueManager: ⚠️ Auto-recovering: Dialogue was active but hidden. Resetting state.", "DialogueManager")
+			
+			if current_dialogue_player:
+				current_dialogue_player.stop()
+				# Force proceed to unblock 'await' in DialoguePlayer
+				if current_dialogue_box and current_dialogue_box.has_method("accept"):
+					# Temporarily show box for accept() to work if it checks visibility
+					current_dialogue_box.visible = true 
+					current_dialogue_box.accept()
+					current_dialogue_box.visible = false
+				
+				# Wait for lock to release
+				var attempts = 0
+				while is_dialogue_active() and attempts < 20: # Wait up to ~0.3s
+					await get_tree().process_frame
+					if current_dialogue_box and current_dialogue_box.has_method("accept"):
+						current_dialogue_box.accept() # Spam accept to ensure unblock
+					attempts += 1
+				
+				if is_dialogue_active():
+					DebugLogger.warning("💬 DialogueManager: ❌ Не вдалося розблокувати діалог, примусово скидаємо _lock", "DialogueManager")
+					current_dialogue_player.set("_lock", false)
+					current_dialogue_player.current_dialogue = ""
+			
+			# Продолжаем запуск нового диалога...
+		else:
+			push_warning("⚠️ DialogueManager: Диалог уже активен, пропускаем запуск '", timeline_name, "'")
+			DebugLogger.warning("💬 DialogueManager: ⚠️ Диалог уже активен, пропускаем запуск: " + timeline_name, "DialogueManager")
+			return false
 	
 	# Очищаем DialogueBox перед запуском нового диалога (убираем placeholder "Lorem ipsum")
 	if current_dialogue_box:
@@ -168,6 +247,15 @@ func start_dialogue(timeline_name: String, _character_name: String = "") -> bool
 		current_dialogue_box.set_portrait_image(null)
 		# Показываем DialogueBox - он будет виден во время диалога
 		current_dialogue_box.visible = true
+		
+		# FORCE VISIBILITY Debugging
+		if current_dialogue_box is Control:
+			DebugLogger.info("💬 DialogueManager: Box Rect: %s, Visible: %s, Modulate: %s" % [current_dialogue_box.get_global_rect(), current_dialogue_box.visible, current_dialogue_box.modulate], "DialogueManager")
+			# Force simple positioning if it seems wrong (e.g. size 0)
+			if current_dialogue_box.size.x < 10 or current_dialogue_box.size.y < 10:
+				# current_dialogue_box.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+				DebugLogger.warning("💬 DialogueManager: DialogueBox size small, but NOT forcing presets to avoid layout shift", "DialogueManager")
+		
 		print("💬 DialogueManager: DialogueBox очищен и показан")
 	
 	# Запускаем диалог
@@ -195,7 +283,7 @@ func start_dialogue_with_character(character_name: String, timeline_name: String
 	if timeline_name.is_empty():
 		timeline_name = character_name + "_default.dqd"
 	
-	return start_dialogue(timeline_name, character_name)
+	return await start_dialogue(timeline_name, character_name)
 
 func end_dialogue():
 	"""Завершает текущий диалог"""
@@ -217,6 +305,41 @@ func _on_dialogue_quest_started(dialogue_id: String):
 	"""Обработчик начала диалога из DialogueQuest"""
 	dialogue_started.emit(dialogue_id)
 	print("💬 DialogueManager: DialogueQuest начал диалог '", dialogue_id, "'")
+	
+	# Ставим гравця на паузу під час діалогу
+	_pause_player_for_dialogue()
+
+func _pause_player_for_dialogue():
+	"""Призупиняє управління гравцем під час діалогу"""
+	DebugLogger.info("💬 DialogueManager: Блокування вводу гравця...", "DialogueManager")
+	
+	# Використовуємо call_group для надійності (викличе метод у всіх вузлів в групі PLAYER)
+	get_tree().call_group(GameGroups.PLAYER, "set_movement_enabled", false)
+	
+	# Також пробуємо знайти гравця для fallback (якщо він не в групі або метод не викликався)
+	var player = _find_player_in_scene()
+	if player:
+		if not player.has_method("set_movement_enabled"):
+			# Fallback: відключаємо process_mode
+			player.set_process_input(false)
+			player.set_physics_process(false)
+			DebugLogger.info("💬 DialogueManager: Гравець призупинено (fallback метод set_process)", "DialogueManager")
+	else:
+		DebugLogger.warning("💬 DialogueManager: Гравця не знайдено для fallback блокування", "DialogueManager")
+
+func _find_player_in_scene() -> Node:
+	"""Знаходить гравця в поточній сцені"""
+	var tree = get_tree()
+	if not tree or not tree.current_scene:
+		return null
+	
+	# Шукаємо в групі PLAYER
+	var players = tree.get_nodes_in_group("PLAYER")
+	if players.size() > 0:
+		return players[0]
+	
+	# Або шукаємо по імені
+	return tree.current_scene.find_child("Player", true, false)
 
 func _on_dialogue_quest_ended(dialogue_id: String):
 	"""Обработчик завершения диалога из DialogueQuest"""
@@ -231,9 +354,28 @@ func _on_dialogue_quest_ended(dialogue_id: String):
 	dialogue_finished.emit(dialogue_id)
 	print("💬 DialogueManager: DialogueQuest завершил диалог '", dialogue_id, "'")
 	
-	# Отправляем сигнал через EventBus
-	if Engine.has_singleton("EventBus"):
-		EventBus.dialogue_finished.emit(dialogue_id)
+	# Відновлюємо управління гравцем після діалогу
+	_unpause_player_after_dialogue()
+	
+	# Отправляем сигнал через EventBus (autoload, не Engine-синглтон —
+	# has_singleton() тут теж завжди був false)
+	EventBus.dialogue_finished.emit(dialogue_id)
+
+func _unpause_player_after_dialogue():
+	"""Відновлює управління гравцем після діалогу"""
+	DebugLogger.info("💬 DialogueManager: Відновлення управління гравцем...", "DialogueManager")
+	
+	# Використовуємо call_group для надійності
+	get_tree().call_group(GameGroups.PLAYER, "set_movement_enabled", true)
+	
+	# Fallback (якщо він не в групі або метод не викликався)
+	var player = _find_player_in_scene()
+	if player:
+		if not player.has_method("set_movement_enabled"):
+			player.set_process_input(true)
+			player.set_physics_process(true)
+			DebugLogger.info("💬 DialogueManager: Управління гравцем відновлено (fallback метод set_process)", "DialogueManager")
+
 
 func _on_dialogue_quest_signal(params: Array):
 	"""Обработчик сигналов из DialogueQuest"""
@@ -254,4 +396,3 @@ func is_dialogue_active() -> bool:
 	if current_dialogue_player and is_instance_valid(current_dialogue_player):
 		return current_dialogue_player.current_dialogue != ""
 	return false
-

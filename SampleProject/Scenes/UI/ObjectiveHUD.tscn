@@ -1,0 +1,55 @@
+[gd_scene load_steps=3 format=3 uid="uid://objectivehud001"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/ObjectiveHUD.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0, 0, 0, 0.5)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+content_margin_left = 15.0
+content_margin_top = 8.0
+content_margin_right = 15.0
+content_margin_bottom = 8.0
+
+[node name="ObjectiveHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -64.0
+offset_right = 64.0
+offset_bottom = 40.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "CURRENT OBJECTIVE"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Objective Text"
+horizontal_alignment = 1

@@ -64,8 +64,9 @@ func set_data(data: Dictionary) -> void:
 
 ## Сохраняет флаги квестов/катсцен/боссов/локаций из Game.gd
 func _save_game_flags(data: Dictionary) -> void:
-	# Получаем Game singleton
-	var game = Game.get_singleton() if Game.get_singleton() != null else null
+	# Получаем Game singleton (Godot 4.5: class_name Game доступен глобально)
+	# Використовуємо той самий підхід, що й в інших місцях проекту
+	var game = Game.get_singleton()
 	if not game:
 		log_warning("Game singleton not found, cannot save game flags")
 		return
@@ -82,8 +83,9 @@ func _save_game_flags(data: Dictionary) -> void:
 
 ## Загружает флаги квестов/катсцен/боссов/локаций в Game.gd
 func _load_game_flags(data: Dictionary) -> void:
-	# Получаем Game singleton
-	var game = Game.get_singleton() if Game.get_singleton() != null else null
+	# Получаем Game singleton (Godot 4.5: class_name Game доступен глобально)
+	# Використовуємо той самий підхід, що й в інших місцях проекту
+	var game = Game.get_singleton()
 	if not game:
 		log_warning("Game singleton not found, cannot load game flags")
 		return

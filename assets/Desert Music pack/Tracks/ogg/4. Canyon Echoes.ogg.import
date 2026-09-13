@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://by7bnxe5edmt6"
+path="res://.godot/imported/4. Canyon Echoes.ogg-f4f0d99c0d8e76f7e43693eda1921755.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Desert Music pack/Tracks/ogg/4. Canyon Echoes.ogg"
+dest_files=["res://.godot/imported/4. Canyon Echoes.ogg-f4f0d99c0d8e76f7e43693eda1921755.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

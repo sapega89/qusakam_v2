@@ -11,7 +11,9 @@ var has_triggered: bool = false
 
 func _ready() -> void:
 	"""Setup collision detection"""
-	body_entered.connect(_on_body_entered)
+	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Player entered combat zone"""

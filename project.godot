@@ -12,12 +12,16 @@ config_version=5
 
 metroidvania_system/settings_file="uid://po1yy1ihchuv"
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="New Game Project"
 run/main_scene="res://SampleProject/MainMenu.tscn"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [audio]
@@ -39,7 +43,7 @@ DisplayManager="*res://SampleProject/Scenes/Systems/DisplayManager.tscn"
 MusicManager="*res://SampleProject/Scenes/Systems/MusicManager.tscn"
 ItemDatabase="*res://SampleProject/Scenes/Systems/ItemDatabase.tscn"
 LocalizationManager="*res://SampleProject/Scenes/Systems/LocalizationManager.tscn"
-SettingsData="*res://addons/basic_settings_menu/settings_data.gd"
+SettingsData="*uid://cp8uyyfmtdn6g"
 ModalDialogGlobal="*res://addons/ModalDialog/scenes/globals/modal_dialog_global.tscn"
 ModalWindowManager="*res://addons/modal_window/modal_window_manager.gd"
 AppConfig="*res://addons/maaacks_menus_template/base/nodes/autoloads/app_config/app_config.tscn"
@@ -48,7 +52,7 @@ ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoload
 ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
 LongSceneManager="*res://addons/long_scene_manager/autoload/long_scene_manager.gd"
 TrajectoryRegister="*res://addons/easy_trajectory/Trajectory/trajectory_register.gd"
-DialogueQuest="*res://addons/dialogue_quest/scripts/dialogue_quest_interface.gd"
+DialogueQuest="*uid://dt3pmybyly12b"
 
 [dialogue_quest]
 
@@ -104,7 +108,7 @@ jump={
 }
 attack={
 "deadzone": 0.5,
-"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":0,"canceled":false,"pressed":false,"double_click":false,"script":null)
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
 ]
 }
 

@@ -14,7 +14,9 @@ var target_player: Node2D = null
 func _ready() -> void:
 	"""Initialize coin and start collection"""
 	add_to_group("collectibles")
-	body_entered.connect(_on_body_entered)
+	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
 
 	# Find player
 	var players = get_tree().get_nodes_in_group(GameGroups.PLAYER)

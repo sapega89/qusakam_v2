@@ -260,6 +260,7 @@ signal scene_loaded(scene_name: String)
 ## Приклади:
 ##     EventBus.scene_state_changed.connect(_on_scene_state_changed)
 ##     EventBus.scene_state_changed.emit("Canyon", "INTRO", "MONOLOGUE")
+@warning_ignore("unused_signal")
 signal scene_state_changed(scene_name: String, old_state: String, new_state: String)
 
 # ============================================

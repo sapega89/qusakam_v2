@@ -7,6 +7,10 @@ extends Area2D
 static var last_teleport_time: float = -999.0
 static var cooldown_duration: float = 3.0
 
+func _ready() -> void:
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
+
 func _on_body_entered(body: Node2D) -> void:
 	# Check cooldown before allowing teleport
 	var current_time = Time.get_ticks_msec() / 1000.0

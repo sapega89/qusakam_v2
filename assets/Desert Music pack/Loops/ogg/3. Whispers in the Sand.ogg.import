@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dr6he06ecojdp"
+path="res://.godot/imported/3. Whispers in the Sand.ogg-4407577b30076b205c7f21466b64ccf7.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Desert Music pack/Loops/ogg/3. Whispers in the Sand.ogg"
+dest_files=["res://.godot/imported/3. Whispers in the Sand.ogg-4407577b30076b205c7f21466b64ccf7.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

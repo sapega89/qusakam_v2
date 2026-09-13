@@ -1,0 +1,17 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "wipeout",
+	"version":    1,
+	"background": "#77606b",
+	"border":     "#5f0505",
+	"button":     "#dbd9de",
+	"handle":     "#e0d011",
+	"b_low":      "#dbd9de",
+	"b_med":      "#b7b3b3",
+	"b_high":     "#e0d011",
+	"f_low":      "#615050",
+	"f_med":      "#2f1212",
+	"f_high":     "#1905b3",
+	"select":     "#f90252",
+	"checker":    "#cccbcb"
+}

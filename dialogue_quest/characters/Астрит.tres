@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="DQCharacter" load_steps=2 format=3 uid="uid://dm4pcjjb36q6k"]
+
+[ext_resource type="Script" uid="uid://co7cwxc08de1r" path="res://addons/dialogue_quest/scripts/systems/character/resources/character.gd" id="1_character"]
+
+[resource]
+script = ExtResource("1_character")
+color = Color(0.2, 0.6, 0.9, 1)
+character_id = "Астрит"
+character_name = "Астрит"

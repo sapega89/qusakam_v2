@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DQCharacter" load_steps=3 format=3 uid="uid://bw6giema2q7wv"]
+
+[ext_resource type="Script" uid="uid://co7cwxc08de1r" path="res://addons/dialogue_quest/scripts/systems/character/resources/character.gd" id="1_character"]
+
+[sub_resource type="Theme" id="Theme_mbrtg"]
+
+[resource]
+script = ExtResource("1_character")
+color = Color(0.8, 0.2, 0.2, 1)
+character_id = "BANDIT_LEADER"
+character_name = "Предводитель разбойников"
+custom_theme_name = SubResource("Theme_mbrtg")

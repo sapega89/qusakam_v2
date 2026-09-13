@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://ckkogqiocc0pv"]
+[gd_scene format=3 uid="uid://ckkogqiocc0pv"]
 
 [ext_resource type="Script" uid="uid://bgn7bc1r8cpp8" path="res://SampleProject/Scripts/Gameplay/DefaultEnemy.gd" id="1_enemy_script"]
 [ext_resource type="Script" uid="uid://bwi4k0bdicpqv" path="res://SampleProject/Scripts/Combat/Components/DamageApplier.gd" id="2_damage_applier"]
@@ -95,16 +95,16 @@ size = Vector2(28, 28)
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy_detection"]
 radius = 300.0
 
-[node name="DefaultEnemy" type="CharacterBody2D"]
+[node name="DefaultEnemy" type="CharacterBody2D" unique_id=579402896]
 script = ExtResource("1_enemy_script")
 
-[node name="HealthComponent" type="Node" parent="."]
+[node name="HealthComponent" type="Node" parent="." unique_id=1376665906]
 script = ExtResource("3_health_component")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=722152974]
 shape = SubResource("RectangleShape2D_enemy_collision")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1343955624]
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("5_enemy_sprite")
@@ -112,39 +112,38 @@ region_enabled = true
 region_rect = Rect2(692, 3886, 59, 49)
 region_filter_clip_enabled = true
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_enemy")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=808834931]
+libraries/ = SubResource("AnimationLibrary_enemy")
 
-[node name="hitbox" type="Area2D" parent="."]
+[node name="hitbox" type="Area2D" parent="." unique_id=1700052958]
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox" unique_id=731052803]
 shape = SubResource("RectangleShape2D_enemy_hitbox")
 
-[node name="DamageApplier" type="Node" parent="hitbox"]
+[node name="DamageApplier" type="Node" parent="hitbox" unique_id=188663354]
 script = ExtResource("2_damage_applier")
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="AttackArea" type="Area2D" parent="." unique_id=1808953547]
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=86879248]
 shape = SubResource("RectangleShape2D_enemy_attack")
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1583289023]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1407916102]
 shape = SubResource("RectangleShape2D_enemy_hurtbox")
 
-[node name="HurtboxComponent" type="Node" parent="Hurtbox"]
+[node name="HurtboxComponent" type="Node" parent="Hurtbox" unique_id=350135412]
 script = ExtResource("4_hurtbox_component")
 
-[node name="dettection" type="Area2D" parent="."]
+[node name="dettection" type="Area2D" parent="." unique_id=170583596]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="dettection"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="dettection" unique_id=11066836]
+position = Vector2(-5, -10)
 shape = SubResource("CircleShape2D_enemy_detection")
 
 [connection signal="body_entered" from="dettection" to="." method="_on_dettection_body_entered"]

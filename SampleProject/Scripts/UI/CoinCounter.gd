@@ -27,7 +27,7 @@ func _ready() -> void:
 
 	DebugLogger.info("CoinCounter: Initialized", "UI")
 
-func _on_coins_changed(new_amount: int) -> void:
+func _on_coins_changed(_new_amount: int) -> void:
 	"""Called when coins change"""
 	_update_display()
 	_animate_bounce()

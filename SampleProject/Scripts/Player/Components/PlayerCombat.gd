@@ -48,9 +48,10 @@ func perform_attack(last_direction: int) -> void:
 	is_attacking = true
 	attack_cooldown = attack_cooldown_time
 	
-	# Current direction logic (extracted from Player.gd)
-	_update_attack_direction(last_direction)
-	
+	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
+	# Раніше тут була протилежна домовленість, ніж у Player.gd, тож спрайт під час
+	# атаки дивився не в той бік, що під час бігу.
+
 	# Play animation
 	if animation_player and animation_player.has_animation("Attack"):
 		animation_player.play("Attack")
@@ -82,15 +83,6 @@ func perform_attack(last_direction: int) -> void:
 	
 	# Note: Animating back to Idle/Run is handled by Player's main loop
 	# but we should notify if needed.
-
-func _update_attack_direction(last_direction: int) -> void:
-	if not sprite: return
-	
-	# Logic from Player.gd: attack flips differently than movement
-	if last_direction > 0:
-		sprite.flip_h = false
-	else:
-		sprite.flip_h = true
 
 func _set_hitbox_active(active: bool, last_direction: int) -> void:
 	if hitbox:

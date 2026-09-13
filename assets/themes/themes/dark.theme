@@ -1,0 +1,17 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "dark",
+	"version":    1,
+	"background": "#222323",
+	"border":     "#000000",
+	"button":     "#091115",
+	"handle":     "#03151b",
+	"b_low":      "#181818",
+	"b_med":      "#35352f",
+	"b_high":     "#51524a",
+	"f_low":      "#a4a49d",
+	"f_med":      "#dddddd",
+	"f_high":     "#ffffff",
+	"select":     "#3963da",
+	"checker":    "#565656"
+}

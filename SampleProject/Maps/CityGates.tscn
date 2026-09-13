@@ -1,8 +1,15 @@
-[gd_scene load_steps=4 format=4 uid="uid://clx0l64d6oi0m"]
+[gd_scene load_steps=10 format=4 uid="uid://clx0l64d6oi0m"]
 
 [ext_resource type="Script" uid="uid://bwu7t3prwoom4" path="res://SampleProject/Scripts/Gameplay/Scenes/CityGates.gd" id="1_gates"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_errh4"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_8ucu8"]
+[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
+[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_save"]
+radius = 32.0
 
 [node name="CityGates" type="Node2D"]
 script = ExtResource("1_gates")
@@ -21,3 +28,61 @@ tile_map_data = PackedByteArray("AAAAAAkAAQAIAAEAAAAAAAoAAQAIAAEAAAAAAAsAAQAIAAE
 tile_set = ExtResource("2_errh4")
 
 [node name="RoomInstance" parent="." instance=ExtResource("3_8ucu8")]
+
+[node name="SavePoint" type="Area2D" parent="."]
+position = Vector2(900, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Label" type="Label" parent="SavePoint"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -25.0
+offset_right = 29.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StateChangeTrigger_CityGates" type="Area2D" parent="."]
+position = Vector2(400, 150)
+script = ExtResource("6_trigger")
+dialogue_id = "CityGates"
+action_mode = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_CityGates"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+spawn_in_waves = true
+wave_size = 3
+wave_delay = 2.0
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner"]
+position = Vector2(500, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "melee"
+spawn_on_load = true
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner"]
+position = Vector2(600, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "melee"
+spawn_on_load = true
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner"]
+position = Vector2(700, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "tank"
+spawn_on_load = true

@@ -1,0 +1,615 @@
+═══════════════════════════════════════════════════════════════════════════════
+  ПОЛНАЯ ДОКУМЕНТАЦИЯ МЕТОДОВ ПРОЕКТА - GODOT METROIDVANIA
+═══════════════════════════════════════════════════════════════════════════════
+
+Дата создания: 2026-01-04
+Цель: Анализ всех методов для поиска дубликатов и взаимозаменяемых функций
+
+═══════════════════════════════════════════════════════════════════════════════
+  ЧАСТЬ 1: CORE СИСТЕМЫ И МЕНЕДЖЕРЫ (SampleProject/Scripts/Core/, /Managers/)
+═══════════════════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────────────────
+1.1 CORE/ResourcePaths.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: ResourcePaths (extends RefCounted)
+Назначение: Централизованные пути к ресурсам проекта
+
+КОНСТАНТЫ (27+):
+  - BASE_PATH, SCENES_PATH, RESOURCES_PATH, SCRIPTS_PATH, CHARACTERS_PATH
+  - ENEMIES_PATH, BOSSES_PATH, LEVELS_PATH, MENUS_PATH, DATA_PATH, AUDIO_PATH
+  - И другие специфичные пути
+
+МЕТОДЫ:
+  1. get_enemy_scene_path(enemy_type: String) -> String
+     └→ Возвращает путь к сцене врага с fallback логикой
+
+  2. get_boss_scene_paths() -> Array[String]
+     └→ Возвращает массив путей к боссам в порядке приоритета
+
+  3. resource_exists(path: String) -> bool
+     └→ Проверяет существование ресурса через ResourceLoader
+
+───────────────────────────────────────────────────────────────────────────────
+1.2 CORE/GameSettings.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: GameSettings (extends RefCounted)
+Назначение: Игровые константы и настройки по умолчанию
+
+КОНСТАНТЫ:
+  - DEFAULT_SCENE, DEFAULT_CHARACTER_ID, DEFAULT_CLASS_ID
+  - ENEMY_TYPE_* (8 типов врагов)
+  - DEFAULT_HEALTH, DEFAULT_MAX_HEALTH, DEFAULT_POTIONS
+  - Значения стат, позиции спавна, инвентарь по умолчанию
+
+МЕТОДЫ:
+  1. get_default_enemy_spawn_positions() -> Array[Vector2]
+     └→ Возвращает 8 предзаданных позиций спавна врагов
+
+  2. get_default_inventory_items() -> Dictionary
+     └→ Возвращает стартовый инвентарь (оружие, броня, расходники, ресурсы)
+
+  3. get_merchant_spawn_position(player_position: Vector2 = Vector2.ZERO) -> Vector2
+     └→ Вычисляет позицию спавна торговца относительно игрока
+
+  4. get_enemy_spawn_position() -> Vector2
+     └→ Возвращает позицию спавна врагов по умолчанию
+
+  5. get_player_spawn_position() -> Vector2
+     └→ Возвращает позицию спавна игрока по умолчанию
+
+  6. get_miniboss_spawn_position() -> Vector2
+     └→ Возвращает позицию спавна мини-босса
+
+───────────────────────────────────────────────────────────────────────────────
+1.3 CORE/ServiceLocatorHelper.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: ServiceLocatorHelper (RefCounted)
+Назначение: Безопасный доступ к ServiceLocator
+
+МЕТОДЫ:
+  1. get_service_locator() -> Node
+     └→ Безопасно получает синглтон ServiceLocator через Engine
+
+  2. get_manager(method_name: String) -> Variant
+     └→ Безопасно вызывает getter-метод на ServiceLocator с проверкой null
+
+───────────────────────────────────────────────────────────────────────────────
+1.4 CORE/ServiceLocator.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: ServiceLocator (extends Node)
+Назначение: Центральная точка доступа ко всем менеджерам
+
+СИГНАЛЫ:
+  - services_ready - Испускается когда все регистры сервисов инициализированы
+
+СВОЙСТВА:
+  - core, ui, gameplay, systems, data (экземпляры ServiceRegistry)
+
+МЕТОДЫ:
+  1. _ready() -> void
+     └→ Инициализирует ServiceLocator с подсистемой Registry
+
+  2. _register_all_registries() -> void
+     └→ Регистрирует все категории сервисов, обрабатывает асинхронную загрузку GameManager
+
+  3. _exit_tree() -> void
+     └→ Очистка и отключение сигналов
+
+  4. get_game_manager() -> Node
+     └→ Делегирует в CoreServiceRegistry.get_game_manager()
+
+  5. get_save_system() -> Node
+     └→ Делегирует в CoreServiceRegistry.get_save_system()
+
+  6-27. get_[manager_name]() -> [Type]
+     └→ 22 геттера для различных менеджеров (делегируют в соответствующие Registry)
+     Полный список:
+     - get_ui_manager(), get_ui_update_manager(), get_menu_manager(), get_display_manager()
+     - get_character_manager(), get_equipment_manager(), get_player_state_manager()
+     - get_enemy_state_manager(), get_inventory_manager(), get_dialogue_manager()
+     - get_xp_manager(), get_game_flow(), get_companion_manager()
+     - get_time_manager(), get_audio_manager(), get_music_manager()
+     - get_debug_manager(), get_scene_manager()
+     - get_item_database(), get_settings_manager(), get_localization_manager()
+     - get_dialogue_quest()
+
+───────────────────────────────────────────────────────────────────────────────
+1.5 CORE/DebugLogger.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: DebugLogger
+Назначение: Система логирования с уровнями и throttling
+
+ENUMS:
+  LogLevel: NONE (0), ERROR (1), WARNING (2), INFO (3), VERBOSE (4)
+
+СТАТИЧЕСКИЕ ПЕРЕМЕННЫЕ:
+  - current_level, enable_physics_logs, physics_log_interval
+  - _last_log_times (кеш для throttling), _skipped_logs
+
+МЕТОДЫ:
+  1. error(message: String, context: String = "") -> void
+     └→ Логирует ошибку с поддержкой throttling
+
+  2. warning(message: String, context: String = "") -> void
+     └→ Логирует предупреждение
+
+  3. info(message: String, context: String = "") -> void
+     └→ Логирует информацию
+
+  4. verbose(message: String, context: String = "") -> void
+     └→ Логирует подробную отладочную информацию
+
+  5. physics_verbose(message: String, key: String = "default") -> void
+     └→ Логирует физику с throttling и счётчиком пропущенных
+
+  6. physics_warning(message: String, key: String = "default") -> void
+     └→ Предупреждения физики с throttling
+
+  7. physics_error(message: String, key: String = "default") -> void
+     └→ Ошибки физики с throttling
+
+  8. set_level(level: LogLevel) -> void
+     └→ Устанавливает уровень логирования
+
+  9. enable_physics_logging(enable: bool = true) -> void
+     └→ Включает/отключает логи физики
+
+  10. set_physics_interval(interval: float) -> void
+      └→ Устанавливает интервал throttling для физики
+
+  11. clear_throttle_cache() -> void
+      └→ Очищает кеш throttling
+
+───────────────────────────────────────────────────────────────────────────────
+1.6 CORE/EventBus.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: EventBus (extends Node)
+Назначение: Глобальная система событий
+
+СИГНАЛЫ (25+):
+
+  СОБЫТИЯ ИГРОКА:
+  - player_health_changed(int, int)
+  - player_died()
+  - player_landed(float)
+  - player_attacked(Node, int)
+  - player_leveled_up(int, int)
+  - coins_changed(int)
+
+  СОБЫТИЯ ВРАГОВ:
+  - enemy_spawned(String, Vector2)
+  - enemy_died(String, Vector2)
+  - enemy_health_changed(String, int, int)
+
+  СОБЫТИЯ БОЯ:
+  - damage_dealt(Node, Node, int)
+  - damage_received(Node, Node, int)
+  - attack_started(Node, Node)
+  - attack_finished(Node)
+
+  СОБЫТИЯ ЭКИПИРОВКИ:
+  - equipment_equip_requested(String, String, String, Dictionary)
+  - equipment_equipped(String, String, String)
+  - equipment_unequip_requested(String, String)
+  - equipment_unequipped(String, String)
+
+  СОБЫТИЯ СЦЕН:
+  - scene_transition_started(String, String)
+  - scene_transition_completed(String)
+  - scene_loaded(String)
+
+  СОБЫТИЯ ДИАЛОГОВ:
+  - dialogue_started(String)
+  - dialogue_finished(String)
+
+  СОБЫТИЯ ИНВЕНТАРЯ:
+  - item_added(String, int)
+  - item_removed(String, int)
+  - item_used(String)
+  - inventory_updated()
+  - player_respawned()
+
+МЕТОДЫ:
+  1. _ready() -> void
+     └→ Инициализация
+
+  2. emit_player_health_changed(int, int) -> void
+     └→ Хелпер для испускания события здоровья игрока
+
+  3. emit_enemy_died(String, Vector2 = Vector2.ZERO) -> void
+     └→ Хелпер для испускания события смерти врага
+
+  4. emit_damage_dealt(Node, Node, int) -> void
+     └→ Хелпер для испускания события урона
+
+───────────────────────────────────────────────────────────────────────────────
+1.7 CORE/PlayerTracker.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: PlayerTracker (extends Node)
+Назначение: Отслеживает ссылку на игрока глобально
+
+СВОЙСТВА:
+  - player: Node
+  - _is_player_valid: bool
+  - _last_update_time: float
+  - UPDATE_INTERVAL: 0.1
+
+МЕТОДЫ:
+  1. _ready() -> void
+     └→ Подключается к сигналам EventBus player_spawned/player_died
+
+  2. _process(_delta: float) -> void
+     └→ Периодически обновляет валидность игрока с throttling
+
+  3. get_player() -> Node
+     └→ Получает игрока с авто-повтором если невалиден
+
+  4. is_player_valid() -> bool
+     └→ Проверяет статус валидности игрока
+
+  5. get_player_position() -> Vector2
+     └→ Возвращает позицию игрока или Vector2.ZERO
+
+  6. _find_player() -> void
+     └→ Ищет игрока через GameGroups
+
+  7. _update_player_validity() -> void
+     └→ Обновляет флаг _is_player_valid
+
+  8. _on_player_spawned() -> void
+     └→ Обработчик EventBus для спавна игрока
+
+  9. _on_player_died() -> void
+     └→ Обработчик EventBus для смерти игрока, очищает ссылку
+
+  10. _exit_tree() -> void
+      └→ Отключается от EventBus
+
+───────────────────────────────────────────────────────────────────────────────
+1.8 CORE/GameGroups.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: GameGroups (extends RefCounted)
+Назначение: Централизованный доступ к группам нод с кешированием
+
+КОНСТАНТЫ (14):
+  - PLAYER, ENEMIES, BOSS, MINIBOSS, UI_CANVAS, HEALTH_BAR
+  - POTION_UI, SKILL_POINTS_UI, UI_ELEMENTS, AREA_EXIT
+  - LOCATION_MANAGER, PARALLAX_MANAGER, COMBATANTS, MERCHANT
+  - BOSS_SPAWN_PORTALS, SPAWN_PORTALS
+
+СТАТИЧЕСКИЕ ПЕРЕМЕННЫЕ КЕШИРОВАНИЯ:
+  - _nodes_cache, _first_node_cache, _cache_timestamps
+  - _cache_duration: 0.1s
+
+МЕТОДЫ:
+  1. has_group(group_name: String) -> bool
+     └→ Проверяет существование группы в ProjectSettings
+
+  2. get_nodes_in_group(group_name: String, force_refresh: bool = false) -> Array[Node]
+     └→ Получает все ноды в группе с кешированием и проверками валидности
+
+  3. get_first_node_in_group(group_name: String, force_refresh: bool = false) -> Node
+     └→ Получает первую ноду с кешированием
+
+  4. clear_cache(group_name: String = "") -> void
+     └→ Очищает кеш для конкретной группы или всех
+
+  5. invalidate_cache(group_name: String) -> void
+     └→ Помечает кеш как устаревший
+
+  6-19. get_[group_name]() -> Node/Array[Node]
+     └→ Шорткаты для конкретных групп:
+     - get_player(), get_enemies(), get_boss(), get_miniboss()
+     - get_merchant(), get_ui_canvas(), get_health_bar()
+     - get_potion_ui(), get_skill_points_ui(), get_ui_elements()
+     - get_area_exits(), get_location_manager()
+     - get_boss_spawn_portals(), get_spawn_portals()
+
+───────────────────────────────────────────────────────────────────────────────
+1.9 CORE/Interfaces/ICompanionAssist.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: ICompanionAssist
+Назначение: Интерфейс для компаньонов
+
+МЕТОДЫ:
+  1. is_implemented_by(node: Node) -> bool
+     └→ Проверяет наличие методов assist() и связанных
+
+  2. safe_assist(companion: Node, target: Node) -> void
+     └→ Безопасно вызывает метод assist с валидацией
+
+  3. safe_get_assist_type(companion: Node) -> String
+     └→ Безопасно получает тип помощи
+
+  4. safe_can_assist(companion: Node) -> bool
+     └→ Безопасно проверяет возможность помощи
+
+───────────────────────────────────────────────────────────────────────────────
+1.10 CORE/ServiceRegistry/* (5 файлов)
+───────────────────────────────────────────────────────────────────────────────
+Все Registry классы имеют похожую структуру:
+
+CoreServiceRegistry:
+  - register() -> void
+  - _find_autoload(autoload_name: String) -> Node
+  - get_game_manager() -> Node
+  - get_save_system() -> Node
+
+UIServiceRegistry:
+  - register(game_manager: Node) -> void
+  - _find_autoload(autoload_name: String) -> Node
+  - _print_service_status(name: String, service: Node) -> void
+  - get_ui_manager(), get_ui_update_manager(), get_menu_manager(), get_display_manager()
+
+GameplayServiceRegistry:
+  - register(game_manager: Node) -> void
+  - _print_service_status(name: String, service: Node) -> void
+  - get_character_manager(), get_equipment_manager(), get_player_state_manager()
+  - get_enemy_state_manager(), get_inventory_manager(), get_dialogue_manager()
+  - get_xp_manager(), get_game_flow(), get_companion_manager()
+
+SystemServiceRegistry:
+  - register(game_manager: Node) -> void
+  - _find_autoload(autoload_name: String) -> Node
+  - _print_service_status(name: String, service: Node) -> void
+  - get_time_manager(), get_audio_manager(), get_music_manager()
+  - get_debug_manager(), get_scene_manager()
+
+DataServiceRegistry:
+  - register(game_manager: Node) -> void
+  - _find_autoload(autoload_name: String) -> Node
+  - _print_service_status(name: String, service: Node) -> void
+  - get_item_database(), get_settings_manager(), get_localization_manager()
+
+═══════════════════════════════════════════════════════════════════════════════
+  ЧАСТЬ 2: МЕНЕДЖЕРЫ (SampleProject/Scripts/Managers/)
+═══════════════════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────────────────
+2.1 MANAGERS/Core/ManagerBase.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: ManagerBase (extends Node)
+Назначение: Базовый класс для всех менеджеров
+
+МЕТОДЫ:
+  1. _ready()
+     └→ Откладывает вызов инициализации
+
+  2. _initialize()
+     └→ Абстрактный метод для переопределения в дочерних классах
+
+───────────────────────────────────────────────────────────────────────────────
+2.2 MANAGERS/Core/GameManager.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: GameManager (extends ManagerBase)
+Назначение: Главный координатор всех подсистем
+
+СИГНАЛЫ:
+  - managers_ready - Испускается после создания всех менеджеров
+
+СВОЙСТВА:
+  - inventory_manager: InventoryManager
+
+МЕТОДЫ:
+  1. _initialize() -> void
+     └→ Создаёт все подсистемы менеджеров
+
+  2. _initialize_inventory_manager() -> void
+     └→ Создаёт и добавляет InventoryManager
+
+  3. _create_managers() -> void
+     └→ Создаёт 14 экземпляров менеджеров/систем как детей:
+     LootSystem, ForgeSystem, CharacterManager, EquipmentManager, SceneManager,
+     MenuManager, EnemyStateManager, DialogueManager, UIManager, TimeManager,
+     UIUpdateManager, SettingsManager, PlayerStateManager, DebugManager,
+     XPManager, TutorialManager, GameFlow, CompanionManager, VFXHooks
+
+  4. _register_managers_in_service_locator() -> void
+     └→ Устаревший метод, теперь обрабатывается ServiceLocator registry
+
+───────────────────────────────────────────────────────────────────────────────
+2.3 MANAGERS/TimeManager.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: TimeManager (extends ManagerBase)
+Назначение: Управление временем и паузой игры
+
+СИГНАЛЫ:
+  - game_paused(reason: String)
+  - game_resumed(reason: String)
+  - time_scale_changed(new_scale: float)
+
+СВОЙСТВА:
+  - time_scale: 1.0
+  - is_paused: bool
+  - pause_stack: Array[String]
+
+МЕТОДЫ:
+  1. _initialize()
+     └→ Устанавливает начальный time_scale
+
+  2. pause(reason: String = "unknown") -> void
+     └→ Ставит игру на паузу с поддержкой стека
+
+  3. resume(_reason: String = "unknown") -> void
+     └→ Возобновляет из паузы, извлекает из стека
+
+  4. force_resume() -> void
+     └→ Очищает все причины паузы и возобновляет
+
+  5. is_game_paused() -> bool
+     └→ Возвращает статус паузы
+
+  6. get_pause_reasons() -> Array[String]
+     └→ Возвращает копию стека паузы
+
+  7. set_time_scale(scale: float) -> void
+     └→ Устанавливает масштаб времени (проверяет неотрицательность)
+
+  8. get_time_scale() -> float
+     └→ Возвращает текущий time_scale
+
+  9. slow_motion(factor: float = 0.5, duration: float = 1.0) -> void
+     └→ Создаёт эффект замедления с автовосстановлением
+
+  10. get_delta_time() -> float
+      └→ Возвращает process_delta_time * time_scale
+
+  11. get_unscaled_delta_time() -> float
+      └→ Возвращает сырой process_delta_time
+
+───────────────────────────────────────────────────────────────────────────────
+2.4 MANAGERS/XPManager.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: XPManager (extends ManagerBase)
+Назначение: Управление опытом и прокачкой
+
+СИГНАЛЫ:
+  - xp_gained(amount: int, new_total: int)
+  - level_up(new_level: int, old_level: int)
+
+СВОЙСТВА:
+  - current_xp: 0
+  - current_level: 1
+  - xp_for_next_level: 100
+  - stat_bonuses: {hp_per_level: 20, damage_per_level: 5}
+
+МЕТОДЫ:
+  1. _initialize()
+     └→ Инициализирует XPManager
+
+  2. add_xp(amount: int) -> void
+     └→ Добавляет опыт и проверяет прокачку
+
+  3. _check_level_up() -> void
+     └→ Обрабатывает прокачки в цикле, испускает сигналы
+
+  4. _calculate_xp_requirement(level: int) -> int
+     └→ Линейная прогрессия: level * 100
+
+  5. get_xp_percentage() -> float
+     └→ Возвращает current_xp / xp_for_next_level
+
+  6. get_hp_bonus() -> int
+     └→ Возвращает (level - 1) * hp_per_level
+
+  7. get_damage_bonus() -> int
+     └→ Возвращает (level - 1) * damage_per_level
+
+  8. get_level() -> int
+     └→ Возвращает current_level
+
+  9. reset() -> void
+     └→ Сбрасывает до уровня 1, 0 XP
+
+───────────────────────────────────────────────────────────────────────────────
+2.5 MANAGERS/TutorialManager.gd
+───────────────────────────────────────────────────────────────────────────────
+Класс: TutorialManager (extends ManagerBase)
+Назначение: Система подсказок для игрока
+
+СВОЙСТВА:
+  - tutorial_display: TutorialHintDisplay
+  - has_shown_* флаги (movement, attack, first_kill, level_up, xp_bar)
+
+МЕТОДЫ:
+  1. _initialize() -> void
+     └→ Подключается к сигналам EventBus, показывает подсказку движения через 2с
+
+  2. _get_tutorial_display() -> TutorialHintDisplay
+     └→ Ленивый геттер с кешированием
+
+  3. _connect_events() -> void
+     └→ Подключается к player_attacked, enemy_died, player_leveled_up
+
+  4. _show_movement_hint() -> void
+     └→ Показывает подсказку движения если не показана
+
+  5. _on_player_attacked() -> void
+     └→ Показывает подсказку атаки с задержкой 1с
+
+  6. _on_enemy_died(_enemy_id: String = "") -> void
+     └→ Показывает подсказки убийства/XP последовательно
+
+  7. _on_player_leveled_up(_new_level: int, _old_level: int) -> void
+     └→ Показывает подсказку прокачки с задержкой 3.5с
+
+  8. reset_tutorial() -> void
+     └→ Сбрасывает все флаги и дисплей
+
+[ПРОДОЛЖЕНИЕ СЛЕДУЕТ...
+
+ФАЙЛ БУДЕТ ДОПОЛНЕН РЕЗУЛЬТАТАМИ АНАЛИЗА АДДОНОВ]
+
+═══════════════════════════════════════════════════════════════════════════════
+  АНАЛИЗ ДУБЛИКАТОВ И ВЗАИМОЗАМЕНЯЕМЫХ МЕТОДОВ
+═══════════════════════════════════════════════════════════════════════════════
+
+🔴 КРИТИЧЕСКИЕ ПЕРЕСЕЧЕНИЯ:
+
+1. ДОСТУП К UI ЭЛЕМЕНТАМ (3 реализации):
+   ✗ GameGroups.get_ui_canvas() / get_health_bar() / get_potion_ui()
+   ✗ UIManager._get_ui_element() (универсальный геттер с кешированием)
+   ✗ UIUpdateManager.get_health_bar() / get_potion_ui() (отдельное кеширование)
+   └→ ПРОБЛЕМА: Дублированная логика кеширования и поиска
+
+2. ОБНОВЛЕНИЕ HEALTH BAR (2 реализации):
+   ✗ UIUpdateManager.update_health_bar() (из EventBus player_health_changed)
+   ✗ UIUpdateManager._on_player_health_changed() (обработчик события)
+   └→ ПРОБЛЕМА: Может вызвать двойное обновление если оба подключены
+
+3. ДОСТУП К ИГРОКУ (3 реализации):
+   ✗ GameGroups.get_player() (через группы)
+   ✗ PlayerTracker.get_player() (кешированный синглтон)
+   ✗ DebugManager._get_player() (прямой доступ к группе)
+   └→ ПРОБЛЕМА: Множественные источники истины, несогласованное кеширование
+
+4. УПРАВЛЕНИЕ СЦЕНАМИ (2 реализации):
+   ✗ SceneManager.transition_to_scene() (основная реализация)
+   ✗ SceneManager.get_current_scene_name() (также в EnemyStateManager, GameMusicManager)
+   └→ ПРОБЛЕМА: Дублированная логика get_current_scene_name
+
+5. ОТСЛЕЖИВАНИЕ СОСТОЯНИЯ ВРАГОВ (3 источника):
+   ✗ EnemyStateManager.save_enemy_state() (покомпонентное отслеживание)
+   ✗ EnemyStateManager.load_enemy_states() (загрузка из хранилища)
+   ✗ Сами ноды врагов отслеживают свойство `is_dead`
+   └→ ПРОБЛЕМА: Состояние дублируется между менеджером и нодами
+
+6. УПРАВЛЕНИЕ ПАУЗОЙ (2 реализации):
+   ✗ TimeManager.pause() / resume() (со стеком)
+   ✗ MenuManager.open_game_menu() устанавливает `get_tree().paused = true` напрямую
+   └→ ПРОБЛЕМА: Несогласованные механизмы паузы
+
+7. ДОСТУП К ПЕРСОНАЖУ/ЭКИПИРОВКЕ (3 реализации):
+   ✗ CharacterManager.get_active_character()
+   ✗ EquipmentManager._get_character_manager() (затем доступ)
+   ✗ GameManager.get_character() (если экспортирован)
+   └→ ПРОБЛЕМА: Множественные пути доступа
+
+8. ОТКЛЮЧЕНИЕ СИГНАЛОВ EVENTBUS (2 паттерна):
+   ✗ UIManager._disconnect_all_signals() (явные отключения)
+   ✗ UIUpdateManager._disconnect_all_signals() (другой список сигналов)
+   └→ ПРОБЛЕМА: Дублированная логика очистки
+
+9. ГЕТТЕРЫ SERVICE LOCATOR (дублированный паттерн):
+   ✗ ServiceLocator имеет 27 методов-геттеров
+   ✗ Все делегируют в 5 классов ServiceRegistry
+   └→ ПРОБЛЕМА: Можно унифицировать через единый generic геттер + маппинг
+
+10. ОБНОВЛЕНИЯ ИНВЕНТАРЯ (2 источника):
+    ✗ UIUpdateManager._on_inventory_updated() → update_potion_ui()
+    ✗ MenuManager.save_ui_state() читает состояние UI
+    └→ ПРОБЛЕМА: UI зелий обновляется из инвентаря, но не напрямую из game_manager inventory
+
+═══════════════════════════════════════════════════════════════════════════════
+
+РЕКОМЕНДАЦИИ ПО РЕФАКТОРИНГУ:
+
+✓ Консолидировать геттеры UI элементов в единый метод UIManager
+✓ Унифицировать доступ к игроку (выбрать PlayerTracker ИЛИ GameGroups, не оба)
+✓ Переместить get_current_scene_name в единое место (SceneManager)
+✓ Использовать TimeManager.pause() вместо прямого tree pause
+✓ Рассмотреть generic паттерн геттеров ServiceRegistry
+✓ Дедуплицировать паттерн _disconnect_all_signals
+
+═══════════════════════════════════════════════════════════════════════════════

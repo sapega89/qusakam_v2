@@ -21,6 +21,7 @@ enum StoryState {
 		_on_state_changed(val)
 
 signal state_changed(new_state: StoryState)
+@warning_ignore("unused_signal")
 signal scene_state_changed(scene_name: String, old_state: String, new_state: String)  # Событие смены состояния конкретной сцены
 
 func _initialize() -> void:

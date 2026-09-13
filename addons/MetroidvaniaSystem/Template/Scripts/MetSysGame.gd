@@ -34,6 +34,13 @@ func _physics_tick() -> void:
 		return
 	if player == null or not is_instance_valid(player):
 		return
+	# Поки кімната змінюється, координати гравця ще від СТАРОЇ кімнати, а
+	# MetSys.current_room вже може бути НОВОЮ. Клітинка тоді рахується як
+	# floor(стара_позиція / cell_size) + min_cell нової кімнати і потрапляє в
+	# чужу кімнату — MetSys вирішує, що гравець знову перейшов, і переходи
+	# зациклюються. Позицію повідомляємо лише після завершення завантаження.
+	if map_changing:
+		return
 	MetSys.set_player_position(player.global_position)
 
 

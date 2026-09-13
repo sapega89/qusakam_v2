@@ -1,0 +1,18 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "orange",
+	"version":    1,
+	"background": "#544c49",
+	"border":     "#0c0b0b",
+	"button":     "#949494",
+	"handle":     "#f96700",
+	"handletxt":  "#ffc093",
+	"b_low":      "#cecece",
+	"b_med":      "#b3b3b3",
+	"b_high":     "#989898",
+	"f_low":      "#585454",
+	"f_med":      "#333131",
+	"f_high":     "#313131",
+	"select":     "#ff8100",
+	"checker":    "#9e9d9d"
+}

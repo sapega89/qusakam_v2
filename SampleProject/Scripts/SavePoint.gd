@@ -13,6 +13,10 @@ func _ready() -> void:
 	body_entered.connect(on_body_entered)
 	# Добавляем в группу для поиска SavePoint'ов при загрузке комнаты
 	add_to_group("save_points")
+	
+	# ВАЖЛИВО: Перевіряємо, чи гравець вже всередині Area при завантаженні
+	# Це запобігає попередженню Rapier2D про Exit Event без Entry Event
+	call_deferred("_check_existing_bodies")
 
 # Player enter save point. Note that in a legit code this should check whether body is really a player.
 func on_body_entered(_body: Node2D) -> void:
@@ -32,6 +36,19 @@ func on_body_entered(_body: Node2D) -> void:
 	Game.get_singleton().save_game()
 	# Starting coords for the delta vector feature.
 	Game.get_singleton().reset_map_starting_coords()
+
+func _check_existing_bodies() -> void:
+	"""Перевіряє, чи гравець вже всередині Area при завантаженні"""
+	# Чекаємо один кадр, щоб фізика ініціалізувалася
+	await get_tree().process_frame
+	
+	# Перевіряємо всі тіла, які вже всередині Area
+	var overlapping_bodies = get_overlapping_bodies()
+	for body in overlapping_bodies:
+		if body.is_in_group("player"):
+			# Гравець вже всередині, викликаємо обробник вручну
+			# Це запобігає попередженню Rapier2D про Exit Event без Entry Event
+			on_body_entered(body)
 
 func _draw() -> void:
 	# Draws the circle.

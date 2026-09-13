@@ -1,8 +1,15 @@
-[gd_scene load_steps=4 format=4 uid="uid://csao70e2jutpd"]
+[gd_scene load_steps=10 format=4 uid="uid://csao70e2jutpd"]
 
 [ext_resource type="Script" uid="uid://bwj0i7py3p6dy" path="res://SampleProject/Scripts/Gameplay/Scenes/Laboratory.gd" id="1_lab"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_jajky"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_t6xmk"]
+[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
+[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_save"]
+radius = 32.0
 
 [node name="Laboratory" type="Node2D"]
 script = ExtResource("1_lab")
@@ -21,3 +28,82 @@ tile_map_data = PackedByteArray("AAAAAAkAAQAIAAEAAAAAAAoAAQAIAAEAAAAAAAsAAQAIAAE
 tile_set = ExtResource("2_jajky")
 
 [node name="RoomInstance" parent="." instance=ExtResource("3_t6xmk")]
+
+[node name="SavePoint_Entrance" type="Area2D" parent="."]
+position = Vector2(200, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_Entrance"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Label" type="Label" parent="SavePoint_Entrance"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -25.0
+offset_right = 29.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SavePoint_PreBoss" type="Area2D" parent="."]
+position = Vector2(1500, 344)
+script = ExtResource("5_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_PreBoss"]
+shape = SubResource("CircleShape2D_save")
+
+[node name="Label" type="Label" parent="SavePoint_PreBoss"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -25.0
+offset_right = 29.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+spawn_in_waves = true
+wave_size = 2
+wave_delay = 2.5
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner"]
+position = Vector2(1200, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "tank"
+spawn_on_load = true
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner"]
+position = Vector2(1300, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "melee"
+spawn_on_load = true
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner"]
+position = Vector2(1400, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "fast"
+spawn_on_load = true
+
+[node name="EnemySpawnPoint4" type="Node2D" parent="EnemySpawner"]
+position = Vector2(1500, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "tank"
+spawn_on_load = true

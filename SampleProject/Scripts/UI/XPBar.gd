@@ -46,7 +46,7 @@ func _update_display() -> void:
 	# Update level label
 	level_label.text = "Level %d" % xp_manager.current_level
 
-func _on_xp_gained(amount: int, new_total: int) -> void:
+func _on_xp_gained(amount: int, _new_total: int) -> void:
 	"""Called when player gains XP"""
 	_update_display()
 
@@ -62,7 +62,7 @@ func _on_level_up(new_level: int, old_level: int) -> void:
 
 	DebugLogger.info("XPBar: Player leveled up! %d -> %d" % [old_level, new_level], "UI")
 
-func _play_xp_gain_animation(amount: int) -> void:
+func _play_xp_gain_animation(_amount: int) -> void:
 	"""Plays a visual animation when gaining XP"""
 	# Simple pulse animation
 	var tween = create_tween()
@@ -73,7 +73,7 @@ func _play_xp_gain_animation(amount: int) -> void:
 	tween.tween_property(xp_label, "scale", Vector2(1.0, 1.0), 0.1)
 	tween.tween_property(xp_label, "modulate", Color.WHITE, 0.1)
 
-func _play_level_up_animation(new_level: int) -> void:
+func _play_level_up_animation(_new_level: int) -> void:
 	"""Plays a celebratory animation when leveling up"""
 	# Flash the entire bar
 	var tween = create_tween()

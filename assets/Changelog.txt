@@ -1,0 +1,25 @@
+# [1.2.0 - ALPHA] - [11/08/2023] #major_update:
+#### ADDED:
+- ADDED: Update Checker.
+- ADDED: Support for multi-selection.
+- ADDED: `RGB` support for multi-selection.
+- ADDED: `HSV` support for multi-selection.
+- ADDED: `Flip` support for multi-selection.
+- ADDED: `Rotate` support for multi-selection.
+- ADDED: `Resize` support for multi-selection.
+- ADDED: `Animation` support for multi-selection.
+- ADDED: Dynamic Fetching of supporters and contributors lists.
+
+#### CHANGED:
+- CHANGED: Overhaul UI reworked.
+- CHANGED: Change buttons panel into a Toolbar.
+- CHANGED: Change the editing panel into a Toolbar.
+- CHANGED: Preview Image will now be 300x300 instead of 160x160.
+- CHANGED: Animation Player will now stop when clicking another cell.
+- CHANGED: `Highlight Cell` renamed to `Highlight Cell(s)` and support multi-selection.
+
+#### FIXED:
+- FIXED: `Saving All Together` didn't check for lowest row when saving icons sheet.
+- FIXED: `Format Folder to MZ` which checked for config cell size instead of calculating from the image size.
+- FIXED: `Format Folder to MZ` is now always enable instead of having to select a preset in Holder's Category.
+- FIXED: `mouseReleaseEvent` in `graphics_view` which made grid cells bounds calculation unaccurate and prevent the clickable properties.

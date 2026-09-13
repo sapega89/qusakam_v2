@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://clpihygfoc1ve"
+path="res://.godot/imported/2. Scorchlight Mirage.mp3-1b4e09c6904c8112484e76027550394a.mp3str"
+
+[deps]
+
+source_file="res://assets/Desert Music pack/Tracks/mp3/2. Scorchlight Mirage.mp3"
+dest_files=["res://.godot/imported/2. Scorchlight Mirage.mp3-1b4e09c6904c8112484e76027550394a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

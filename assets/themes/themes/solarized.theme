@@ -1,0 +1,17 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "solarized",
+	"version":    1,
+	"background": "#c9c2a6",
+	"border":     "#9e866d",
+	"button":     "#d4c6aa",
+	"handle":     "#cfc698",
+	"b_low":      "#d6caa8",
+	"b_med":      "#ece4c9",
+	"b_high":     "#fffde9",
+	"f_low":      "#88794a",
+	"f_med":      "#393939",
+	"f_high":     "#423630",
+	"select":     "#f7c81d",
+	"checker":    "#e2d8a7"
+}

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b0dluksbfg3sh"
+path="res://.godot/imported/6. Ash and Oasis.mp3-403e5b6766b53f46b390564f64a6c2a9.mp3str"
+
+[deps]
+
+source_file="res://assets/Desert Music pack/Loops/mp3/6. Ash and Oasis.mp3"
+dest_files=["res://.godot/imported/6. Ash and Oasis.mp3-403e5b6766b53f46b390564f64a6c2a9.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

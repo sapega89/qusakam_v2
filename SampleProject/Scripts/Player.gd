@@ -6,15 +6,6 @@ const SLASH_TRAIL_SCENE = preload("res://SampleProject/Scenes/FX/SlashTrail.tscn
 const LEVEL_UP_FLASH_SCENE = preload("res://SampleProject/Scenes/FX/LevelUpFlash.tscn")
 const LEVEL_UP_PARTICLES_SCENE = preload("res://SampleProject/Scenes/FX/LevelUpParticles.tscn")
 
-const SPEED_MIN = 300.0
-const SPEED_MAX = 400.0
-const ACCEL = 50.0
-const JUMP_VELOCITY = -450.0
-const MAX_FALL_SPEED = 900.0
-const COYOTE_TIME: float = .1
-const SHORT_HOP: float = .5
-
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 var animation: String
 
 var reset_position: Vector2
@@ -22,13 +13,6 @@ var reset_position: Vector2
 var event: bool = false
 
 var abilities: Array[StringName]
-var double_jump: bool
-var prev_on_floor: bool
-var airtime: float = 0
-var fall_start_height: float = 0.0  # Высота Y при начале падения
-var speed: float = SPEED_MIN
-var last_direction: int = 1  # 1 = вправо, -1 = влево
-var jump_direction: int = 1  # Сохраняем направление прыжка для Fall
 var animation_change_cooldown: float = 0.0  # Затримка для переключення анімацій
 
 # HP бар
@@ -39,8 +23,30 @@ var kill_cooldown: float = 0.0
 var kill_cooldown_time: float = 1.0  # Мінімальний час між викликами kill()
 var is_dying: bool = false  # Флаг, що гравець зараз вмирає
 
-# Components
-var combat: PlayerCombat = null
+# Components — дочірні вузли Player.tscn (а не створені через .new()), щоб їхні
+# @export-параметри були доступні для налаштування в інспекторі.
+@onready var combat: PlayerCombat = get_node_or_null("PlayerCombat") as PlayerCombat
+@onready var mover: PlayerMover = get_node_or_null("PlayerMover") as PlayerMover
+
+# Рух винесено в PlayerMover (speed_min/max, jump_velocity, gravity тощо).
+# last_direction лишаємо тут як forwarding-властивість, бо на нього посилаються
+# ззовні (Systems/VFXHooks.gd, save-система через abilities).
+var last_direction: int:
+	get:
+		return mover.last_direction if mover else 1
+
+func set_movement_enabled(enabled: bool) -> void:
+	"""Enable or disable player movement and input"""
+	event = !enabled
+	if not enabled:
+		velocity = Vector2.ZERO # Stop immediately
+		# Reset animation to Idle to improve visual feedback
+		animation = "Idle"
+		if $AnimationPlayer:
+			$AnimationPlayer.play("Idle")
+		# Also reset sprite flipping if needed or keep it
+	
+	DebugLogger.info("Player: Movement enabled = %s (event = %s)" % [enabled, event], "Player")
 
 func _ready() -> void:
 	# Добавляем игрока в группу для боевой системы
@@ -90,120 +96,23 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	var new_animation: String  # Оголошуємо змінну один раз на початку функції
-	
-	if not is_on_floor():
-		velocity.y = min(velocity.y + gravity * delta, MAX_FALL_SPEED)
-		airtime += delta
-		# Сохраняем высоту начала падения (только если начали падать вниз и еще не сохранили)
-		if velocity.y > 50.0 and fall_start_height == 0.0:  # Только если падаем со скоростью > 50
-			fall_start_height = global_position.y
-	elif not prev_on_floor and &"double_jump" in abilities:
-		# Some simple double jump implementation.
-		double_jump = true
-		airtime = 0
-	
-	var on_floor_ct: bool = is_on_floor() or airtime < COYOTE_TIME
-	# Jump with Space or W
-	# ВАЖНО: Перевіряємо, чи не натиснуто Escape (щоб не стрибати при відкритті меню)
-	if Input.is_action_just_pressed("jump") and (on_floor_ct or double_jump) and not Input.is_key_pressed(KEY_ESCAPE):
-		if not on_floor_ct:
-			double_jump = false
-		
-		if Input.is_action_pressed("move_down"):
-			position.y += 8
-		else:
-			velocity.y = JUMP_VELOCITY
-	
-	if Input.is_action_just_released("jump"):
-		if not is_on_floor() and velocity.y < 0:
-			velocity.y = min(0, velocity.y - JUMP_VELOCITY * SHORT_HOP)
-			
-	
-	if is_on_wall():
-		speed = SPEED_MIN
-	
-	# Move with A/D or Arrow keys
-	# ВАЖНО: Пріоритет клавіатурі - перевіряємо джойстик тільки якщо клавіатура не використовується
-	var direction := 0.0
-	
-	# Спочатку перевіряємо клавіатуру (пріоритет)
-	if Input.is_action_pressed("move_left"):
-		direction -= 1.0
-	if Input.is_action_pressed("move_right"):
-		direction += 1.0
-	
-	# Якщо клавіатура не використовується, перевіряємо джойстик (тільки якщо він підключений)
-	if direction == 0.0 and Input.get_connected_joypads().size() > 0:
-		var joypad_direction = Input.get_axis("move_left", "move_right")
-		# Використовуємо джойстик тільки якщо він активний (не в мертвій зоні)
-		if abs(joypad_direction) > 0.1:
-			direction = joypad_direction
-	
-	if direction:
-		speed = min(SPEED_MAX, speed + ACCEL * delta)
-		velocity.x = direction * speed
-	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED_MIN)
-		speed = SPEED_MIN
 
-	# Обновляем последнее направление на основе velocity.x
-	if absf(velocity.x) > 1:
-		last_direction = sign(velocity.x)
+	# Гравітація, стрибок, горизонтальний рух, move_and_slide() та детекція
+	# приземлення тепер живуть у PlayerMover (SRP: Player.gd відповідає лише
+	# за стан здоров'я/анімацію/атаку, PlayerMover — за фізику руху).
+	mover.physics_move(delta)
 
-	# Проверяем приземление: если раньше были в воздухе, а теперь на земле
-	var was_in_air = not prev_on_floor
-	var now_on_floor = is_on_floor()
-	
-	prev_on_floor = is_on_floor()
-	
-	move_and_slide()
-	
-	# Діагностика руху (тільки в debug режимі)
-	if OS.is_debug_build() and absf(velocity.x) > 10:
-		# Перевіряємо, чи рух блокується колізією
-		if is_on_wall() and absf(velocity.x) > 1:
-			DebugLogger.physics_warning("Player: Рух блокується стіною (is_on_wall = true)", "player_wall")
-	
 	# Оновлюємо затримку для переключення анімацій
 	if animation_change_cooldown > 0:
 		animation_change_cooldown -= delta
-	
-	# Отправляем сигнал приземления, если игрок приземлился
-	if was_in_air and now_on_floor:
-		# Вычисляем высоту падения
-		# В Godot Y растет вниз, поэтому конечная позиция больше начальной
-		var fall_height: float = 0.0
-		if fall_start_height > 0.0:
-			fall_height = global_position.y - fall_start_height  # Правильная формула: конечная - начальная
-			DebugLogger.physics_verbose("Player: Landing! Fall height = %.1f pixels (start: %.1f, end: %.1f)" % [fall_height, fall_start_height, global_position.y], "player_landing")
-		else:
-			DebugLogger.physics_verbose("Player: Landing but no fall_start_height recorded (probably small jump)", "player_landing")
-		
-		# Сбрасываем отслеживание высоты
-		fall_start_height = 0.0
-		airtime = 0
-		
-		# Минимальная высота падения для эффекта (игнорируем очень маленькие падения)
-		var min_fall_height = 20.0  # Минимум 20 пикселей
-		
-		# Проверяем, что высота падения достаточна для эффекта
-		if fall_height < min_fall_height:
-			DebugLogger.physics_verbose("Player: Fall height too small (%.1f < %.1f), skipping effect" % [fall_height, min_fall_height], "player_landing")
-			return
 
-		# EventBus доступен напрямую как autoload
-		if EventBus and EventBus.has_signal("player_landed"):
-			DebugLogger.physics_verbose("Player: Emitting player_landed signal with fall_height = %.1f" % fall_height, "player_landing")
-			EventBus.player_landed.emit(fall_height)
-	
 	# Обновляем кулдаун kill()
 	if kill_cooldown > 0:
 		kill_cooldown -= delta
 	
-	# Обработка атаки (левая кнопка мыши или кнопка X на контроллере)
-	if (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or Input.is_action_pressed("attack")) and not combat.is_attacking:
-		combat.perform_attack(last_direction)
-	
+	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
+	# чи клік уже спожив елемент інтерфейсу.
+
 	# Не меняем анимацию во время атаки (кроме важных состояний Fall/Jump)
 	if combat.is_attacking and animation == &"Attack":
 		# Если атака активна, но нужно переключиться на важное состояние (Fall, Jump)
@@ -224,13 +133,9 @@ func _physics_process(delta: float) -> void:
 				combat.hitbox.monitorable = false
 			animation = new_animation
 			if new_animation == &"Jump":
-				jump_direction = last_direction
+				mover.jump_direction = last_direction
 			$AnimationPlayer.play(new_animation)
-			if new_animation == &"Fall":
-				if jump_direction < 0:
-					$Sprite2D.flip_h = true
-				else:
-					$Sprite2D.flip_h = false
+			_update_facing(new_animation)
 		# Если атака активна и не нужно переключаться на Fall/Jump - не меняем анимацию
 		return
 	
@@ -249,40 +154,39 @@ func _physics_process(delta: float) -> void:
 		animation_change_cooldown = 0.05  # Невелика затримка для плавності
 		# При переключении на Jump - сохраняем направление прыжка
 		if new_animation == &"Jump":
-			jump_direction = last_direction
+			mover.jump_direction = last_direction
 		# Використовуємо плавне переключення анімацій
 		if $AnimationPlayer.current_animation != new_animation:
 			$AnimationPlayer.play(new_animation)
-		# Для Fall используем направление из прыжка
-		if new_animation == &"Fall":
-			# Если прыжок был влево - отзеркаливаем Fall (flip_h = true)
-			# Если прыжок был вправо - не отзеркаливаем Fall (flip_h = false)
-			if jump_direction < 0:
-				$Sprite2D.flip_h = true
-			else:
-				$Sprite2D.flip_h = false
 	
-	# Применяем отзеркаливание для Idle, Jump, RESET и Run
-	# Fall НЕ отзеркаливаем - фиксируем flip_h = false
-	if new_animation == &"Run" or new_animation == &"Idle" or new_animation == &"Jump" or new_animation == &"RESET":
-		if absf(velocity.x) > 1:
-			# Во время движения - обновляем по текущему направлению
-			if velocity.x > 1:
-				$Sprite2D.flip_h = true
-			elif velocity.x < -1:
-				$Sprite2D.flip_h = false
-		else:
-			# Во время стояния/прыжка - используем последнее направление
-			if last_direction > 0:
-				$Sprite2D.flip_h = true
-			else:
-				$Sprite2D.flip_h = false
-	elif new_animation == &"Fall":
-		# Фиксируем flip_h для Fall на основе направления прыжка
-		if jump_direction < 0:
-			$Sprite2D.flip_h = true  # Прыжок был влево - отзеркаливаем Fall
-		else:
-			$Sprite2D.flip_h = false  # Прыжок был вправо - не отзеркаливаем Fall
+	_update_facing(new_animation)
+
+func _unhandled_input(ev: InputEvent) -> void:
+	"""Атака.
+
+	Саме _unhandled_input, а не опитування Input.is_mouse_button_pressed() у
+	_physics_process: до цього методу подія доходить ЛИШЕ якщо її не спожив
+	жоден Control. Тому кліки по діалоговому вікну та UI більше не б'ють мечем.
+
+	Ім'я параметра `ev` — бо зайняті обидва очевидні варіанти: `event` — це поле
+	цього класу (ознака катсцени), а `input_event` — сигнал CollisionObject2D.
+	"""
+	if ev.is_action_pressed(&"attack") and not combat.is_attacking:
+		if event:
+			return  # під час катсцени не б'ємо
+		if ev is InputEventMouseButton and get_tree().paused:
+			return
+		combat.perform_attack(last_direction)
+
+func _update_facing(anim: StringName) -> void:
+	"""Єдине місце, де виставляється flip_h.
+
+	Спрайт намальований обличчям ПРАВОРУЧ, тому дзеркалимо лише при русі ліворуч.
+	Для Fall беремо напрямок, зафіксований на момент стрибка, щоб персонаж не
+	розвертався в повітрі.
+	"""
+	var dir: int = mover.jump_direction if anim == &"Fall" else last_direction
+	$Sprite2D.flip_h = dir < 0
 
 func die() -> void:
 	"""Override CombatBody2D.die() to call kill() for player respawn"""
@@ -329,12 +233,23 @@ func perform_attack():
 	combat.perform_attack(last_direction)
 
 func _initialize_components():
-	combat = PlayerCombat.new()
-	combat.sprite = $Sprite2D
-	combat.animation_player = $AnimationPlayer
-	combat.hitbox = get_node_or_null("Hitbox")
-	combat.damage_applier = get_node_or_null("Hitbox/DamageApplier")
-	add_child(combat)
+	# Компоненти тепер є вузлами Player.tscn, тому створювати їх тут не треба:
+	# посилання дає @onready, а @export-поля PlayerCombat (sprite, animation_player,
+	# hitbox, damage_applier) прив'язані NodePath'ами прямо в сцені.
+	# Якщо сцену зібрано без них — падаємо одразу і зрозуміло, бо інакше помилка
+	# спливе аж у _physics_process як "nil value" через кадр після старту.
+	var missing: Array[String] = []
+	if not combat:
+		missing.append("PlayerCombat")
+	if not mover:
+		missing.append("PlayerMover")
+
+	if not missing.is_empty():
+		var msg := "Player: у сцені '%s' бракує обов'язкових компонентів: %s" % [scene_file_path, ", ".join(missing)]
+		push_error(msg)
+		DebugLogger.error(msg, "Player")
+		return
+
 	DebugLogger.info("Player: Components initialized", "Player")
 
 func _initialize_health_bar():
@@ -405,11 +320,21 @@ func on_enter():
 	is_dying = false
 	kill_cooldown = 0.0
 	
-	# ВАЖНО: Скидаємо event = false при вході в нову кімнату, щоб гравець міг рухатися
-	# Якщо event залишився true після переходу через портал, це блокує рух
+	# Страховка від "залипання" event після переходу через портал: якщо блокування
+	# лишилось увімкненим без причини, гравець більше ніколи не зрушить.
+	#
+	# АЛЕ скидати наосліп не можна. Сцена (напр. Village) стартує катсцену вже у
+	# своєму _ready(), тобто ДО init_room() -> on_enter(). Безумовне скидання гасило
+	# щойно поставлене блокування: гравець ходив під час діалогу, йшов з кімнати з
+	# відкритим вікном, діалог не завершувався — і VillageAbduction висів назавжди.
+	# Тому питаємо DialogueManager, чи блокування зараз законне.
 	if event:
-		DebugLogger.warning("Player: on_enter() - event був true, скидаємо до false", "Player")
-		event = false
+		var dm = ServiceLocator.get_dialogue_manager() if ServiceLocator else null
+		if dm and dm.is_dialogue_active():
+			DebugLogger.info("Player: on_enter() - event=true через активний діалог, залишаємо блокування", "Player")
+		else:
+			DebugLogger.warning("Player: on_enter() - event залип без діалогу, скидаємо до false", "Player")
+			event = false
 
 func _spawn_attack_vfx() -> void:
 	"""Spawns slash trail VFX for player attack"""
@@ -458,7 +383,7 @@ func _spawn_level_up_vfx() -> void:
 
 	DebugLogger.verbose("Player: Spawned level up VFX", "Player")
 
-func _on_player_leveled_up(new_level: int, old_level: int) -> void:
+func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 	"""Called when player levels up - applies stat bonuses"""
 	var xp_manager = ServiceLocator.get_xp_manager()
 	if not xp_manager:
@@ -467,7 +392,7 @@ func _on_player_leveled_up(new_level: int, old_level: int) -> void:
 
 	# Get stat bonuses
 	var hp_bonus = xp_manager.get_hp_bonus()
-	var damage_bonus = xp_manager.get_damage_bonus()
+	var _damage_bonus = xp_manager.get_damage_bonus()
 
 	# Calculate old max HP before applying bonus
 	var old_max_hp = Max_Health

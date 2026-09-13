@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b1f3dsvms50i8"
+path="res://.godot/imported/4. Canyon Echoes.wav-a229fe29e1ce1026c737dffbd7876c3a.sample"
+
+[deps]
+
+source_file="res://assets/Desert Music pack/Tracks/wav/4. Canyon Echoes.wav"
+dest_files=["res://.godot/imported/4. Canyon Echoes.wav-a229fe29e1ce1026c737dffbd7876c3a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

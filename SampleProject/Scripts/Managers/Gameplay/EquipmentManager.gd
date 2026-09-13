@@ -14,9 +14,6 @@ const GameCharacterScript = preload("res://SampleProject/Scripts/Systems/Charact
 # Ссылка на ItemDatabase для получения данных предметов
 var item_database: Node = null
 
-# Кэш персонажей для локальных операций (получаем через события)
-var _cached_characters: Dictionary = {}
-
 # Сигналы (DEPRECATED - используем EventBus.equipment_equipped/unequipped)
 signal equipment_changed(character_id: String, slot_id: String)
 signal equipment_updated()
@@ -139,7 +136,7 @@ func _get_character_manager() -> CharacterManager:
 	return null
 
 ## Обработчик успешного экипирования (из EventBus)
-func _on_equipment_equipped(character_id: String, slot_id: String, item_id: String) -> void:
+func _on_equipment_equipped(character_id: String, slot_id: String, _item_id: String) -> void:
 	"""Обрабатывает уведомление об экипировании"""
 	# Эмитируем старые сигналы для обратной совместимости
 	equipment_changed.emit(character_id, slot_id)

@@ -123,4 +123,3 @@ func spend_coins(amount: int) -> bool:
 		DebugLogger.info("InventoryManager: Spent %d coins, remaining: %d" % [amount, coins], "Inventory")
 		return true
 	return false
-

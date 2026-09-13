@@ -1,0 +1,18 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "win31",
+	"version":    1,
+	"background": "#237b80",
+	"border":     "#0d0d25",
+	"button":     "#9e9e9e",
+	"handle":     "#0d12a0",
+	"handletxt":  "#ffffff",
+	"b_low":      "#f9f9f9",
+	"b_med":      "#cdcdcd",
+	"b_high":     "#adadad",
+	"f_low":      "#797979",
+	"f_med":      "#121212",
+	"f_high":     "#000000",
+	"select":     "#ffffff",
+	"checker":    "#ececec"
+}

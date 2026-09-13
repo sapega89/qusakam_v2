@@ -50,6 +50,7 @@ func _ready():
 		push_error("MetSysMapComponent: MetSys still not available after waiting!")
 		return
 	
+	@warning_ignore("integer_division")
 	map_view = MetSys.make_map_view(self, -SIZE / 2, SIZE, 0)
 	player_location = MetSys.add_player_location(self)
 	
@@ -108,6 +109,7 @@ func update_offset():
 	
 	# Получаем текущие координаты игрока
 	var coords: Vector2i = MetSys.get_current_flat_coords()
+	@warning_ignore("integer_division")
 	offset = coords - SIZE / 2
 	
 	# Обновляем позицию игрока на карте

@@ -21,7 +21,7 @@ func _ready() -> void:
 
 	DebugLogger.info("LevelUpNotification: Initialized", "UI")
 
-func _on_player_leveled_up(new_level: int, old_level: int) -> void:
+func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 	"""Called when player levels up"""
 	show_notification(new_level)
 

@@ -50,6 +50,7 @@ func _on_scene_changed(scene_name: String = ""):
 	"""Очищає кеш при зміні сцени"""
 	_ui_elements_cache.clear()
 	print("🎨 UIManager: Scene changed: ", scene_name, ", cache cleared")
+	_ensure_ui_root()
 	_try_connect_localization()
 func _try_connect_localization() -> void:
 	if _localization_connected:
@@ -66,10 +67,6 @@ func _try_connect_localization() -> void:
 			localization_manager.language_changed.connect(_on_language_changed)
 		_localization_connected = true
 
-
-var _last_scene: Node = null
-var _check_timer: float = 0.0
-var _check_interval: float = 0.5  # Перевіряємо зміну сцени кожні 0.5 секунди
 
 func get_potion_ui() -> Control:
 	"""Отримує UI елемент для зілля"""
@@ -232,23 +229,44 @@ func _disconnect_all_signals() -> void:
 
 func _ensure_ui_root() -> void:
 	if _should_skip_ui_root():
-		print("UIManager: _ensure_ui_root skipped for scene=%s" % (get_tree().current_scene.scene_file_path if get_tree() and get_tree().current_scene else "null"))
+		var scene_path = get_tree().current_scene.scene_file_path if get_tree() and get_tree().current_scene else "null"
+		print("UIManager: _ensure_ui_root skipped for scene=%s" % scene_path)
 		return
+		
+	# Перш ніж створювати новий, перевіримо, чи він вже є в сцені
+	if not ui_root or not is_instance_valid(ui_root):
+		var tree = get_tree()
+		if tree and tree.current_scene:
+			ui_root = tree.current_scene.get_node_or_null("UIRoot")
+			if not ui_root:
+				# Шукаємо через групу, якщо назва інша
+				ui_root = tree.get_first_node_in_group(GameGroups.UI_CANVAS)
+	
 	if ui_root and is_instance_valid(ui_root):
+		_initialize_ui_references()
 		return
+		
 	ui_root = UI_ROOT_SCENE.instantiate()
 	ui_root.name = "UIRoot"
 	add_child(ui_root)
 	print("UIManager: UIRoot created for scene=%s" % (get_tree().current_scene.scene_file_path if get_tree() and get_tree().current_scene else "null"))
+	_initialize_ui_references()
+
+func _initialize_ui_references() -> void:
+	if not ui_root: return
+	
 	if ui_root.has_method("get_state_machine"):
 		state_machine = ui_root.get_state_machine()
 	if ui_root.has_method("get_state_root"):
 		state_root = ui_root.get_state_root()
 	if ui_root.has_method("get_modal_layer"):
 		modal_layer = ui_root.get_modal_layer()
+		
 	if state_machine:
-		current_state = state_machine.get("state")
-		current_state_name = current_state.name if current_state else ""
+		var state = state_machine.get("state")
+		if state:
+			current_state = state
+			current_state_name = str(state.name)
 
 func _should_skip_ui_root() -> bool:
 	var tree = get_tree()

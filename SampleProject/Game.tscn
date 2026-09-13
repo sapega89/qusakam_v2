@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c3xqaietfgs7l"]
+[gd_scene load_steps=15 format=3 uid="uid://c3xqaietfgs7l"]
 
 [ext_resource type="Script" uid="uid://btgvo27tngq4o" path="res://SampleProject/Scripts/Game.gd" id="1_xdpfu"]
 [ext_resource type="PackedScene" uid="uid://xpbhai8nlgtx" path="res://SampleProject/Player.tscn" id="2_bam1a"]
@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://c01nc0unt3r01" path="res://SampleProject/Scenes/UI/coin_counter.tscn" id="7_coin_counter"]
 [ext_resource type="PackedScene" uid="uid://c0mb4tc0nt3xt" path="res://SampleProject/Scenes/UI/CombatContextDisplay.tscn" id="8_combat_context"]
 [ext_resource type="PackedScene" uid="uid://tut0r14lh1nt" path="res://SampleProject/Scenes/UI/TutorialHintDisplay.tscn" id="9_tutorial_hint"]
+[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]
+[ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
 resource_name = "MapWindow"
@@ -39,6 +41,7 @@ var offset: Vector2i
 func _ready() -> void:
 	# Cellular size is total size divided by cell size.
 	SIZE = size / MetSys.CELL_SIZE
+	@warning_ignore(\"integer_division\")
 	map_view = MetSys.make_map_view(self, -SIZE / 2, SIZE, 0)
 	
 	# Create player location. We need a reference to update its offset.
@@ -101,6 +104,7 @@ func _input(event: InputEvent) -> void:
 
 # Assigns the initial offset when the map is opened. It centers on the player position.
 func update_offset():
+	@warning_ignore(\"integer_division\")
 	offset = MetSys.get_current_flat_coords() - SIZE / 2
 	# Player position node needs to be moved accordingly.
 	player_location.offset = -Vector2(offset) * MetSys.CELL_SIZE
@@ -278,3 +282,8 @@ unique_name_in_owner = true
 z_index = 150
 
 [connection signal="draw" from="UI/MapWindow/TopDraw" to="UI/MapWindow" method="_on_top_draw"]
+
+[node name="ObjectiveHUD" parent="UICanvas" instance=ExtResource("10_objective")]
+unique_name_in_owner = true
+
+[node name="DialogueSystem" parent="." instance=ExtResource("11_dialogue")]

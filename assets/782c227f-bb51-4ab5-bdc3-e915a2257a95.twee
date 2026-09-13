@@ -1,0 +1,257 @@
+:: StoryTitle
+menu
+
+
+:: StoryData
+{
+  "ifid": "4E92D3F2-0CEE-47AF-9E4E-5C08BB38C70F",
+  "format": "Harlowe",
+  "format-version": "3.3.9",
+  "start": "UI_Settings_FocusTabs",
+  "zoom": 0.6
+}
+
+
+:: UI_Back {"position":"3575,1575","size":"100,100"}
+[[BackToTabs->UI_Settings_FocusTabs]]
+[[Back->UI_confirm_not_save]]
+
+
+:: UI_GameMenu_ExitConfirm {"position":"3675,1375","size":"100,100"}
+\:: UI_GameMenu_ExitConfirm
+<img src="images/ui_game_menu_exit_confirm.png" width="900">
+
+(Выйти из меню?)
+
+[[Yes->UI_Back]]
+[[No->UI_GameMenu_Return]]
+
+
+
+:: UI_GameMenu_FocusCategories {"position":"2975,1000","size":"100,100"}
+\:: UI_GameMenu_FocusCategories
+(Открыто Game Menu. Фокус на списке категорий слева.)
+
+[[Select_WorldMap->UI_GameMenu_WorldMap]]
+[[Select_Journal->UI_GameMenu_Journal]]
+[[Select_Inventory->UI_GameMenu_Inventory]]
+[[Select_Healing->UI_GameMenu_Healing]]
+[[Select_Skills->UI_GameMenu_Skills]]
+[[Select_Misc->UI_GameMenu_Misc]]
+
+[[Back->UI_GameMenu_ExitConfirm]]
+
+
+
+:: UI_GameMenu_Healing {"position":"2800,1250","size":"100,100"}
+\:: UI_GameMenu_Healing
+(Категория выбрана: Healing. Фокус внутри категории.)
+
+[[BackToCategories->UI_GameMenu_FocusCategories]]
+
+
+:: UI_GameMenu_Inventory {"position":"2650,1250","size":"100,100"}
+\:: UI_Inventory_FocusTabs
+(Инвентарь открыт. Фокус на вертикальных табах-иконках слева.)
+
+[[SelectTab_Items->UI_Inventory_Items_FocusList]]
+[[SelectTab_Weapons->UI_Inventory_Weapons_FocusList]]
+[[SelectTab_Armor->UI_Inventory_Armor_FocusList]]
+[[SelectTab_Accessories->UI_Inventory_Accessories_FocusList]]
+[[SelectTab_KeyItems->UI_Inventory_KeyItems_FocusList]]
+[[SelectTab_Misc->UI_Inventory_Misc_FocusList]]
+[[SelectTab_Equipment->UI_Inventory_Equipment_FocusContent]]
+[[SelectTab_Status->UI_Inventory_Status_FocusContent]]
+[[BackToCategories->UI_GameMenu_FocusCategories]]
+
+
+:: UI_GameMenu_Jobs {"position":"2975,1225","size":"100,100"}
+\:: UI_GameMenu_Jobs
+(Категория выбрана: Jobs. Фокус внутри категории.)
+
+[[BackToCategories->UI_GameMenu_FocusCategories]]
+
+
+:: UI_GameMenu_Journal {"position":"2525,1250","size":"100,100"}
+\:: UI_Jornal_FocusList
+(Фокус на списке тем.)
+
+[[Open_Topic->UI_Jornal_TopicDetails]]
+
+[[Back->UI_GameMenu_Misc]]
+
+
+
+:: UI_GameMenu_Misc {"position":"3400,1250","size":"100,100"}
+\:: UI_GameMenu_MiscActions
+(Категория Miscellaneous выбрана. Фокус на действиях справа.)
+
+[[Open_Settings->UI_Settings_FocusTabs]]
+[[Open_Tutorial->UI_Tutorial]]
+[[Return_To_Title->UI_ReturnToTitle_Confirm]]
+[[Quit_Game->UI_QuitGame_Confirm]]
+
+[[BackToCategories->UI_GameMenu_FocusCategories]]
+
+
+:: UI_GameMenu_Return {"position":"3575,1175","size":"100,100"}
+
+
+
+:: UI_GameMenu_Skills {"position":"3125,1225","size":"100,100"}
+\:: UI_Skills_FocusTabs
+(Skills открыт. Фокус на вертикальных табах слева. Справа - контент выбранного таба.)
+
+[[SelectTab_Learn->UI_Skills_Learn_FocusContent]]
+[[SelectTab_Equip->UI_Skills_Equip_FocusContent]]
+[[SelectTab_Profession->UI_Skills_Profession_FocusContent]]
+
+[[Back->UI_GameMenu_FocusCategories]]
+
+
+
+
+:: UI_GameMenu_WorldMap {"position":"2400,1250","size":"100,100"}
+\:: UI_GameMenu_WorldMap
+(Категория выбрана: World Map. Фокус внутри категории.)
+
+[[BackToCategories->UI_GameMenu_FocusCategories]]
+
+
+
+:: UI_Inventory_Accessories_FocusList {"position":"2700,1750","size":"100,100"}
+
+
+
+:: UI_Inventory_Armor_FocusList {"position":"2575,1750","size":"100,100"}
+
+
+
+:: UI_Inventory_Equipment_FocusContent {"position":"2200,1475","size":"100,100"}
+
+
+
+:: UI_Inventory_ItemAction {"position":"2325,1925","size":"100,100"}
+\:: UI_Inventory_ItemAction
+(Выбран предмет, доступно действие "Use/Apply".)
+
+[[Apply->UI_Inventory_Items_FocusList]]
+[[Cancel->UI_Inventory_Items_FocusList]]
+
+
+
+:: UI_Inventory_Items_FocusList {"position":"2325,1750","size":"100,100"}
+(Инвентарь: Items. Фокус на списке справа. Preview/tooltip справа - внутри этого же состояния.)
+
+[[Select_Item->UI_Inventory_ItemAction]]
+
+[[Back->UI_GameMenu_Inventory]]
+
+
+:: UI_Inventory_KeyItems_FocusList {"position":"2825,1750","size":"100,100"}
+
+
+
+:: UI_Inventory_Misc_FocusList {"position":"2950,1750","size":"100,100"}
+
+
+
+:: UI_Inventory_Status_FocusContent {"position":"1925,1475","size":"100,100"}
+
+
+
+:: UI_Inventory_Weapons_FocusList {"position":"2450,1750","size":"100,100"}
+
+
+
+:: UI_Jornal_TopicDetails {"position":"2525,1375","size":"100,100"}
+[[Back->UI_GameMenu_Journal]]
+
+
+
+:: UI_QuitGame_Confirm {"position":"3525,1375","size":"100,100"}
+
+
+
+:: UI_ReturnToTitle_Confirm {"position":"3400,1375","size":"100,100"}
+
+
+
+:: UI_Settings_Audio_FocusContent {"position":"2800,1600","size":"100,100"}
+:UI_Settings_Audio_FocusContent
+[[BackToTabs->UI_Settings_FocusTabs]]
+[[Back->UI_confirm]]
+
+
+:: UI_Settings_Controls_FocusContent {"position":"3000,1600","size":"100,100"}
+:UI_Settings_Controls_FocusContent
+[[BackToTabs->UI_Settings_FocusTabs]]
+[[Back->UI_confirm]]
+
+
+
+:: UI_Settings_FocusTabs {"position":"3100,1400","size":"100,100"}
+\:: UI_Settings_FocusTabs
+(Фокус: Tabs/иконки слева. Второй указатель в контенте не активен.)
+src
+[[SelectTab_Graphics->UI_Settings_Graphics_FocusContent]]
+[[SelectTab_Audio->UI_Settings_Audio_FocusContent]]
+[[SelectTab_Controls->UI_Settings_Controls_FocusContent]]
+[[SelectTab_Game->UI_Settings_Game_FocusContent]]
+
+[[CloseSettings->UI_Back]]
+
+
+
+:: UI_Settings_Game_FocusContent {"position":"3200,1600","size":"100,100"}
+:UI_Settings_Game_FocusContent
+[[BackToTabs->UI_Settings_FocusTabs]]
+[[Back->UI_confirm]]
+
+
+
+:: UI_Settings_Graphics_FocusContent {"position":"2600,1600","size":"100,100"}
+:UI_Settings_Graphics_FocusContent
+[[BackToTabs->UI_Settings_FocusTabs]]
+[[Back->UI_confirm]]
+
+
+:: UI_Skills_Equip_FocusContent {"position":"3400,1000","size":"100,100"}
+
+
+
+:: UI_Skills_Learn_FocusContent {"position":"3200,1000","size":"100,100"}
+
+
+
+:: UI_Skills_Profession_FocusContent {"position":"3300,1000","size":"100,100"}
+
+
+
+:: UI_Tutorial {"position":"3275,1375","size":"100,100"}
+\:: UI_Tutorial_FocusList
+(Туториал. Фокус на списке тем.)
+
+[[Open_Topic->UI_Tutorial_TopicDetails]]
+
+[[Back->UI_GameMenu_Misc]]
+
+
+
+:: UI_Tutorial_TopicDetails {"position":"3325,1500","size":"100,100"}
+\:: UI_Tutorial_TopicDetails
+(Просмотр выбранной темы.)
+
+[[BackToList->UI_Tutorial]]
+
+
+:: UI_confirm {"position":"3200,1800","size":"100,100"}
+[[Yes->UI_Settings_FocusTabs]]
+[[No->UI_Settings_Graphics_FocusContent]]
+[[No->UI_Settings_Audio_FocusContent]]
+[[No->UI_Settings_Controls_FocusContent]]
+[[No->UI_Settings_Game_FocusContent]]
+
+
+:: UI_confirm_not_save {"position":"3400,1800","size":"100,100"}
+[[Yes->UI_Settings_FocusTabs]]

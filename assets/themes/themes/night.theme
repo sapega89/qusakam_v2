@@ -1,0 +1,17 @@
+{
+	"_type":      "Pixelbox color theme",
+	"name":       "night",
+	"version":    1,
+	"background": "#2d2640",
+	"border":     "#0d0d25",
+	"button":     "#231a2b",
+	"handle":     "#10082f",
+	"b_low":      "#212037",
+	"b_med":      "#303b44",
+	"b_high":     "#4e5c62",
+	"f_low":      "#7f949a",
+	"f_med":      "#c2d2da",
+	"f_high":     "#ffffff",
+	"select":     "#6446de",
+	"checker":    "#384858"
+}

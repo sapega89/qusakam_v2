@@ -13,8 +13,15 @@ var dialogue_played: bool = false
 @onready var interaction_label: Label = $InteractionLabel
 
 func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
+	if not body_entered.is_connected(_on_body_entered):
+		body_entered.connect(_on_body_entered)
+	if not body_exited.is_connected(_on_body_exited):
+		body_exited.connect(_on_body_exited)
+	
+	# ВАЖЛИВО: Перевіряємо, чи гравець вже всередині Area при завантаженні
+	# Це запобігає попередженню Rapier2D про Exit Event без Entry Event
+	call_deferred("_check_existing_bodies")
 	
 	# Создаем label если его нет
 	if not interaction_label:
@@ -43,6 +50,19 @@ func _on_body_entered(body: Node2D) -> void:
 		player_nearby = true
 		if interaction_label:
 			interaction_label.visible = true
+
+func _check_existing_bodies() -> void:
+	"""Перевіряє, чи гравець вже всередині Area при завантаженні"""
+	# Чекаємо один кадр, щоб фізика ініціалізувалася
+	await get_tree().process_frame
+	
+	# Перевіряємо всі тіла, які вже всередині Area
+	var overlapping_bodies = get_overlapping_bodies()
+	for body in overlapping_bodies:
+		if body.is_in_group(GameGroups.PLAYER):
+			# Гравець вже всередині, викликаємо обробник вручну
+			# Це запобігає попередженню Rapier2D про Exit Event без Entry Event
+			_on_body_entered(body)
 
 func _on_body_exited(body: Node2D) -> void:
 	if body and body.is_in_group(GameGroups.PLAYER):
