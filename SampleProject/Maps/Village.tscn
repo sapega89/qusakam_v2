@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=4 uid="uid://dbq66sndnfrq7"]
+[gd_scene load_steps=10 format=4 uid="uid://dbq66sndnfrq7"]
 
 [ext_resource type="Script" uid="uid://b8e1sapbwercc" path="res://SampleProject/Scripts/Gameplay/Scenes/Village.gd" id="1_village"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_5gn25"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_7gdem"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
+[ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
+[ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -72,3 +74,12 @@ dialogue_path = "res://dialogue_quest/OldMan_Outside.dqd"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_OldManOutside"]
 shape = SubResource("CircleShape2D_save")
+
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner"]
+position = Vector2(700, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "melee"

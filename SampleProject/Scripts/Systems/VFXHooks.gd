@@ -16,6 +16,17 @@ var attack_effect_cooldown: float = 0.0
 const ATTACK_EFFECT_COOLDOWN_TIME: float = 0.1  # Минимальное время между эффектами атаки
 var active_attack_effects: Array[Node] = []  # Список активных эффектов атаки
 
+const ATTACK_FRAME_COUNT: int = 8
+
+## Кеш кадрів ефекту атаки: напрямок (1/-1) -> SpriteFrames.
+## Текстури залежать ЛИШЕ від номера кадру (фаза хвилі) і напрямку, але раніше
+## будувались наново на КОЖЕН удар: 8 текстур 128x32, малюються попіксельно через
+## set_pixel (~230k операцій), плюс стільки ж на _flip_texture при ударі вліво.
+## Фризу ніхто не бачив тільки тому, що player_attacked не емітився взагалі —
+## PlayerCombat перевіряв Engine.has_singleton("EventBus"), а той для autoload'а
+## завжди false. Після виправлення сигналу кеш став обовʼязковим.
+var _attack_frames_cache: Dictionary = {}
+
 func _init() -> void:
 	print("🔧 VFXHooks: _init() called - VFXHooks instance created!")
 
@@ -86,6 +97,11 @@ func _connect_to_event_bus() -> void:
 	if event_bus.has_signal("skill_used"):
 		event_bus.skill_used.connect(_on_skill_used)
 		print("✅ VFXHooks: Connected to skill_used signal")
+
+	# Прогріваємо кеш кадрів удару зараз, поки сцена ще вантажиться. Інакше перший
+	# у грі удар оплатив би генерацію текстур сам — єдиним, але помітним фризом.
+	_get_attack_sprite_frames(1)
+	_get_attack_sprite_frames(-1)
 
 ## ============================================
 ## ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ ЭФФЕКТОВ
@@ -451,34 +467,34 @@ func _spawn_slash(pos: Vector2) -> void:
 	if is_instance_valid(poly):
 		poly.queue_free()
 
-func _spawn_attack_effect(pos: Vector2, direction: int) -> void:
-	"""Создает эффект стремительного удара копьем - энергетический след с анимацией"""
-	# Создаем несколько кадров анимации с разными фазами волн
-	var frames: Array[Texture2D] = []
-	var frame_count = 8  # Количество кадров для плавной анимации
-	
-	for frame_num in range(frame_count):
-		var phase_offset = float(frame_num) / float(frame_count) * TAU  # Смещение фазы для анимации
-		var texture = _create_energy_wave_texture(128, 32, 15.5, phase_offset)
-		frames.append(texture)
-	
-	# Отзеркаливаем текстуры, если нужно
-	if direction < 0:
-		for i in range(frames.size()):
-			frames[i] = _flip_texture(frames[i])
-	
-	# Используем AnimatedSprite2D для анимации
-	var animated_sprite := AnimatedSprite2D.new()
-	var sprite_frames = SpriteFrames.new()
+func _get_attack_sprite_frames(direction: int) -> SpriteFrames:
+	"""Повертає (і за потреби будує) кадри ефекту атаки для напрямку"""
+	var key: int = -1 if direction < 0 else 1
+	if _attack_frames_cache.has(key):
+		return _attack_frames_cache[key]
+
+	var sprite_frames := SpriteFrames.new()
 	sprite_frames.add_animation("attack_effect")
 	sprite_frames.set_animation_speed("attack_effect", 12.0)  # 12 кадров в секунду
 	sprite_frames.set_animation_loop("attack_effect", true)
-	
-	# Добавляем кадры (duration в секундах, 1/12 для 12 FPS)
-	for frame in frames:
-		sprite_frames.add_frame("attack_effect", frame, 1.0 / 12.0)
-	
-	animated_sprite.sprite_frames = sprite_frames
+
+	for frame_num in ATTACK_FRAME_COUNT:
+		var phase_offset := float(frame_num) / float(ATTACK_FRAME_COUNT) * TAU
+		var texture: Texture2D = _create_energy_wave_texture(128, 32, 15.5, phase_offset)
+		if key < 0:
+			texture = _flip_texture(texture)
+		# duration в секундах, 1/12 для 12 FPS
+		sprite_frames.add_frame("attack_effect", texture, 1.0 / 12.0)
+
+	_attack_frames_cache[key] = sprite_frames
+	return sprite_frames
+
+func _spawn_attack_effect(pos: Vector2, direction: int) -> void:
+	"""Создает эффект стремительного удара копьем - энергетический след с анимацией"""
+	# Используем AnimatedSprite2D для анимации.
+	# SpriteFrames — ресурс, спільний для всіх ударів у цьому напрямку (див. кеш).
+	var animated_sprite := AnimatedSprite2D.new()
+	animated_sprite.sprite_frames = _get_attack_sprite_frames(direction)
 	animated_sprite.play("attack_effect")
 	animated_sprite.z_index = 300
 	animated_sprite.modulate = Color(1.0, 1.0, 1.0, 1.0)

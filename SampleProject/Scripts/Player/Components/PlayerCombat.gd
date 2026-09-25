@@ -20,22 +20,22 @@ var is_attacking: bool = false
 
 func _ready() -> void:
 	_set_hitbox_active(false, 1) # Ensure hitbox is disabled on start
-	if Engine.has_singleton("EventBus"):
-		var bus = Engine.get_singleton("EventBus")
-		if bus.has_signal("player_leveled_up"):
-			bus.player_leveled_up.connect(_on_player_leveled_up)
+	# EventBus і ServiceLocator — autoload'и (/root/EventBus), а не Engine-синглтони.
+	# Engine.has_singleton() для них ЗАВЖДИ повертав false, тож жодна з трьох гілок
+	# у цьому файлі не виконувалась: підписка на левел-ап не ставилась, бонус до
+	# шкоди не застосовувався, а player_attacked не емітився (див. perform_attack).
+	# Та сама бага, що вже виправлена у Village.gd і DesertRoad.gd.
+	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 
 func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 	if not damage_applier: return
-	
-	if Engine.has_singleton("ServiceLocator"):
-		var loc = Engine.get_singleton("ServiceLocator")
-		var xp_manager = loc.get_xp_manager()
-		if xp_manager:
-			var damage_bonus = xp_manager.get_damage_bonus()
-			if "current_damage" in damage_applier and "base_damage" in damage_applier:
-				damage_applier.current_damage = damage_applier.base_damage + damage_bonus
-				DebugLogger.info("PlayerCombat: Applied level %d bonus. Damage: %d" % [new_level, damage_applier.current_damage], "Player")
+
+	var xp_manager = ServiceLocator.get_xp_manager()
+	if xp_manager:
+		var damage_bonus = xp_manager.get_damage_bonus()
+		if "current_damage" in damage_applier and "base_damage" in damage_applier:
+			damage_applier.current_damage = damage_applier.base_damage + damage_bonus
+			DebugLogger.info("PlayerCombat: Applied level %d bonus. Damage: %d" % [new_level, damage_applier.current_damage], "Player")
 
 func _process(delta: float) -> void:
 	if attack_cooldown > 0:
@@ -62,11 +62,8 @@ func perform_attack(last_direction: int) -> void:
 	if player.has_method("_spawn_attack_vfx"):
 		player._spawn_attack_vfx()
 
-	# Signals
-	if Engine.has_singleton("EventBus"):
-		var bus = Engine.get_singleton("EventBus")
-		if bus.has_signal("player_attacked"):
-			bus.player_attacked.emit(player, last_direction)
+	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
+	EventBus.player_attacked.emit(player, last_direction)
 	
 	# Activate Hitbox
 	_set_hitbox_active(true, last_direction)

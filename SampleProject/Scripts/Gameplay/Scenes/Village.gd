@@ -24,6 +24,9 @@ enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 var state_run_id: int = 0
 signal state_complete(state: State)
 
+# Enemy spawner reference
+var enemy_spawner: RoomEnemySpawner = null
+
 # Опціональний Quest Manager для відстеження прогресу
 @onready var quest_manager: SceneQuestManager = get_node_or_null("SceneQuestManager")
 
@@ -36,7 +39,16 @@ func _ready() -> void:
 
 	# Ініціалізуємо Quest Manager (якщо є)
 	_initialize_quest_manager()
-	
+
+	# Спавнер треба знайти ДО _determine_initial_state(): той одразу виставляє
+	# current_state, а STREET_FIGHT у сеттері вже викликає _spawn_enemies_for_fight().
+	enemy_spawner = get_node_or_null("EnemySpawner") as RoomEnemySpawner
+	if enemy_spawner:
+		enemy_spawner.all_enemies_defeated.connect(_on_all_enemies_defeated)
+		DebugLogger.info("🏘️ Village: EnemySpawner found and connected", "Village")
+	else:
+		DebugLogger.warning("🏘️ Village: EnemySpawner not found", "Village")
+
 	# Тільки _determine_initial_state(): присвоєння current_state саме по собі
 	# запускає сеттер → _on_state_changed(). Додатковий ручний виклик стартував
 	# той самий стан ДВІЧІ — другий start_dialogue() перебивав перший і
@@ -123,7 +135,9 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				advance_state()
 				return
 			_set_objective("Перемогти бандита на вулиці")
-			# Бій запускається автоматично або через тригер
+			# Спавнимо бандита перед реплікою — StepType.COMBAT сам нічого не
+			# спавнить, він ідентичний DIALOGUE (див. _execute_step).
+			_spawn_enemies_for_fight()
 			_execute_step(StepType.COMBAT, "FightWithBandit", run_id)
 		State.OLD_MAN_OUTSIDE:
 			_set_objective("Підійти до діда під деревом")
@@ -165,8 +179,16 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 	
 	if run_id != state_run_id: return
 	
-	# Не переходимо автоматично зі стейтів, які чекають на тригер
-	if current_state != State.ARRIVAL and current_state != State.OLD_MAN_OUTSIDE:
+	# Не переходимо автоматично зі стейтів, які чекають на зовнішню подію.
+	# STREET_FIGHT чекає на смерть бандита (_on_all_enemies_defeated) — раніше
+	# його тут не було, тож репліка "Тобі не перемогти!" одразу просувала стан і
+	# бій закінчувався, не почавшись. Але чекаємо лише якщо спавнер реально є:
+	# інакше вороги не зʼявляться, сигнал не прилетить і гравець зависне назавжди.
+	if current_state == State.STREET_FIGHT and enemy_spawner:
+		return
+
+	# ARRIVAL/OLD_MAN_OUTSIDE чекають на тригер у сцені.
+	if current_state not in [State.ARRIVAL, State.OLD_MAN_OUTSIDE]:
 		advance_state()
 
 func _play_dialogue(dialogue_id: String, run_id: int) -> void:
@@ -203,8 +225,9 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 			quest_flag = "village_abduction_complete"
 		"ArrivalToVillage":
 			quest_flag = "village_arrival_complete"
-		"FightWithBandit":
-			quest_flag = "village_fight_complete"
+		# "FightWithBandit" тут свідомо відсутній: це репліка-насмішка ПЕРЕД боєм.
+		# Ставити village_fight_complete по її завершенню означало б зарахувати
+		# бій до того, як бандит зʼявився. Прапорець ставиться після перемоги.
 		"OldMan_Outside":
 			quest_flag = "village_oldman_complete"
 		"LeavingVillage":
@@ -265,6 +288,32 @@ func get_available_scenes_from_quest() -> Array[String]:
 	if quest_manager:
 		return quest_manager.get_available_scenes()
 	return []
+
+func _spawn_enemies_for_fight() -> void:
+	"""Спавнить бандита для вуличного бою"""
+	if enemy_spawner:
+		enemy_spawner.spawn_all_enemies()
+		DebugLogger.info("🏘️ Village: Enemies spawning for street fight", "Village")
+	else:
+		DebugLogger.warning("🏘️ Village: Cannot spawn enemies - spawner not found", "Village")
+
+func _on_all_enemies_defeated() -> void:
+	"""Обробник перемоги над усіма ворогами у вуличному бою"""
+	# Гард по стану: сигнал прилетить з будь-якого стейту, а не лише з бою.
+	if current_state != State.STREET_FIGHT:
+		return
+
+	DebugLogger.info("🏘️ Village: Бандита переможено", "Village")
+
+	# Прапорець ставимо ДО advance_state(): той синхронно запускає сеттер
+	# наступного стану, і якщо гра збережеться всередині цього ланцюга, бій має
+	# бути вже зарахований. Інакше перезахід у село відкине гравця назад у
+	# STREET_FIGHT і бандит відродиться.
+	var game = Game.get_singleton()
+	if game and game.has_method("set_quest_flag"):
+		game.set_quest_flag("village_fight_complete", true)
+
+	advance_state()
 
 func _get_dialogue_manager() -> Node:
 	# ServiceLocator — autoload (/root/ServiceLocator), а не Engine-синглтон.
