@@ -30,6 +30,11 @@ var prerequisites: Array[String] = []
 var sp_cost: int = 0
 var cooldown: float = 0.0
 
+## Пряме ушкодження навички. 0 = навичка не завдає прямого ушкодження.
+## Це КОНФІГУРАЦІЯ, а не формула: застосуванням займається SkillCombatExecutor
+## через наявний HealthComponent.apply_damage().
+var damage: int = 0
+
 ## Посилання на ресурси. Не завантажуються тут — це робота UI/VFX-шарів.
 var icon: String = ""
 var vfx: String = ""
@@ -59,6 +64,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.required_level = maxi(1, int(data.get("required_level", 1)))
 	definition.sp_cost = maxi(0, int(data.get("sp_cost", 0)))
 	definition.cooldown = maxf(0.0, float(data.get("cooldown", 0.0)))
+	definition.damage = maxi(0, int(data.get("damage", 0)))
 
 	for entry in data.get("prerequisites", []):
 		var prerequisite := String(entry).strip_edges()
@@ -72,6 +78,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	if definition.skill_type == Type.PASSIVE:
 		definition.sp_cost = 0
 		definition.cooldown = 0.0
+		definition.damage = 0
 
 	return definition
 
@@ -93,6 +100,7 @@ func to_dict() -> Dictionary:
 		"prerequisites": prerequisites.duplicate(),
 		"sp_cost": sp_cost,
 		"cooldown": cooldown,
+		"damage": damage,
 		"icon": icon,
 		"vfx": vfx,
 	}

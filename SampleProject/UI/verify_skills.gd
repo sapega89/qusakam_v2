@@ -99,8 +99,11 @@ func _initialize() -> void:
 	ck(sm.get_current_sp() == 20, "sp_cost deducted on use (30-10=%d)" % sm.get_current_sp())
 	sm.unlock_skill("test_passive")
 	ck(sm.use_skill("test_passive") == R.NOT_ACTIVE, "passive cannot be used")
+	sm.clear_cooldowns()
 	gm.player_state["current_sp"] = 0
 	ck(sm.use_skill("test_strike") == R.NOT_ENOUGH_SP, "insufficient SP blocks use")
+	sm.clear_cooldowns()
+	ck(sm.is_skill_on_cooldown("test_strike") == false, "cooldown cleared between checks")
 
 	print("[8] signals")
 	# У скрипті-MainLoop автозавантаження не резолвиться як глобальний ідентифікатор.
@@ -113,6 +116,7 @@ func _initialize() -> void:
 	gm.player_state["unlocked_skills"] = []
 	sm.add_job_points(500)
 	sm.restore_sp(10)
+	sm.clear_cooldowns()
 	sm.unlock_skill("test_strike")
 	sm.use_skill("test_strike")
 	await process_frame

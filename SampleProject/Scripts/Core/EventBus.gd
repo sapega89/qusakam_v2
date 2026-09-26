@@ -196,11 +196,20 @@ signal attack_finished(attacker: Node)
 ##     EventBus.skill_unlocked.emit("shadow_strike")
 signal skill_unlocked(skill_id: String)
 
-## Активный навык применён (боевые эффекты подключаются отдельно).
+## Активный навык успешно применён: проверки пройдены, SP списан,
+## боевой эффект выполнен, перезарядка запущена. Ошибочные попытки сюда НЕ попадают.
 ##
 ## Пример:
 ##     EventBus.skill_used.emit("shadow_strike")
 signal skill_used(skill_id: String)
+
+## Навык НЕ был применён. reason — значение SkillManager.Result.
+## Гарантия: при этом событии SP не списан, перезарядка не запущена,
+## урон не нанесён. Предназначено для UI-обратной связи и звука ошибки.
+##
+## Пример:
+##     EventBus.skill_failed.emit("shadow_strike", SkillManager.Result.NOT_ENOUGH_SP)
+signal skill_failed(skill_id: String, reason: int)
 
 ## Изменилось количество Job Points.
 ##

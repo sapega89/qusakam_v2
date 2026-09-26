@@ -7,8 +7,12 @@ class_name SkillManager
 ## який уже зберігається через PlayerDataModule. Свого сховища менеджер не має.
 ##
 ## Traversal-здібності (Player.abilities, MetSys) — окрема система; тут їх немає.
-## Бойових ефектів теж немає: use_skill() лише перевіряє й списує ресурс,
-## а сам ефект підключається в бойовій фазі через EventBus.skill_used.
+##
+## Розподіл відповідальності:
+##   SkillManager      — перевірки (вивчено / SP / перезарядка), витрати, події
+##   SkillCombatExecutor — сам бойовий ефект через наявний HealthComponent
+##   UI                — лише запитує застосування, ушкоджень не рахує
+## Формул ушкоджень у цьому файлі немає і бути не повинно.
 
 ## Причини відмови — щоб UI і тести не розбирали рядки.
 enum Result {
@@ -21,10 +25,22 @@ enum Result {
 	NOT_UNLOCKED,
 	NOT_ACTIVE,
 	NOT_ENOUGH_SP,
+	ON_COOLDOWN,
+	NO_TARGET,
+	EFFECT_FAILED,
 }
 
 var game_manager: Node = null
 var skill_database: Node = null
+
+## Виконавчий шар бою. Замінний — тести підставляють свій.
+## SkillManager сам ушкоджень НЕ рахує і про бій нічого не знає.
+var combat_executor: SkillCombatExecutor = SkillCombatExecutor.new()
+
+## Рантайм-перезарядки: skill_id -> секунд лишилось.
+## Навмисно НЕ зберігається: SkillDefinition.cooldown — це конфігурація,
+## а миттєвий стан не входить у збережений контракт player_state.
+var _cooldowns: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -35,6 +51,48 @@ func _initialize() -> void:
 	skill_database = _resolve_skill_database()
 	if skill_database == null:
 		push_warning("⚠️ SkillManager: SkillDatabase not found")
+
+
+func _process(delta: float) -> void:
+	if _cooldowns.is_empty():
+		return
+	for skill_id in _cooldowns.keys():
+		var remaining: float = _cooldowns[skill_id] - delta
+		if remaining <= 0.0:
+			_cooldowns.erase(skill_id)
+		else:
+			_cooldowns[skill_id] = remaining
+
+
+# ── Перезарядка ─────────────────────────────────────────────────────────────
+
+func is_skill_on_cooldown(skill_id: String) -> bool:
+	return _cooldowns.has(skill_id)
+
+
+func get_remaining_cooldown(skill_id: String) -> float:
+	return float(_cooldowns.get(skill_id, 0.0))
+
+
+## Скидає всі перезарядки (наприклад, при завантаженні збереження).
+func clear_cooldowns() -> void:
+	_cooldowns.clear()
+
+
+## Повна перевірка перед застосуванням — без побічних ефектів.
+func can_use_skill(skill_id: String) -> Result:
+	if skill_database == null or not skill_database.has_skill(skill_id):
+		return Result.UNKNOWN_SKILL
+	if not is_unlocked(skill_id):
+		return Result.NOT_UNLOCKED
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if not definition.is_active():
+		return Result.NOT_ACTIVE
+	if is_skill_on_cooldown(skill_id):
+		return Result.ON_COOLDOWN
+	if definition.sp_cost > 0 and get_current_sp() < definition.sp_cost:
+		return Result.NOT_ENOUGH_SP
+	return Result.OK
 
 
 func _resolve_skill_database() -> Node:
@@ -185,25 +243,50 @@ func unlock_skill(skill_id: String) -> Result:
 
 # ── Застосування ────────────────────────────────────────────────────────────
 
-## Перевіряє доступність активної навички і списує SP.
-## Самого бойового ефекту тут немає — його підключить бойова фаза,
-## підписавшись на EventBus.skill_used.
-func use_skill(skill_id: String) -> Result:
-	if skill_database == null or not skill_database.has_skill(skill_id):
-		return Result.UNKNOWN_SKILL
-	if not is_unlocked(skill_id):
-		return Result.NOT_UNLOCKED
+## Життєвий цикл активної навички:
+##   перевірки → списання SP → бойовий ефект → старт перезарядки → події.
+##
+## Невдала спроба не завдає ушкоджень, не витрачає SP і не запускає перезарядку:
+## усі перевірки виконуються ДО будь-якої зміни стану.
+##
+## [code]target[/code] — ціль бойового ефекту. Якщо навичка має damage > 0,
+## ціль обов'язкова.
+func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Result:
+	var verdict := can_use_skill(skill_id)
+	if verdict != Result.OK:
+		return _fail(skill_id, verdict)
 
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
-	if not definition.is_active():
-		return Result.NOT_ACTIVE
-	if definition.sp_cost > 0 and get_current_sp() < definition.sp_cost:
-		return Result.NOT_ENOUGH_SP
+
+	# Ушкоджувальна навичка без цілі — відмова ще до витрат.
+	if definition.damage > 0 and target == null:
+		return _fail(skill_id, Result.NO_TARGET)
+
+	# Ефект виконуємо до списання SP, щоб невдале застосування нічого не коштувало.
+	if definition.damage > 0:
+		var effect_source: Node = source if source != null else _default_source()
+		if not combat_executor.execute(definition, effect_source, target):
+			return _fail(skill_id, Result.EFFECT_FAILED)
+
 	if definition.sp_cost > 0:
 		spend_sp(definition.sp_cost)
+	if definition.cooldown > 0.0:
+		_cooldowns[skill_id] = definition.cooldown
 
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK
+
+
+func _fail(skill_id: String, reason: Result) -> Result:
+	EventBus.skill_failed.emit(skill_id, int(reason))
+	return reason
+
+
+## Джерело ушкодження за умовчанням — поточний гравець.
+func _default_source() -> Node:
+	if game_manager and game_manager.has_method("get_current_player"):
+		return game_manager.get_current_player()
+	return null
 
 
 func _player_level() -> int:
