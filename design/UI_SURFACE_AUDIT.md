@@ -213,7 +213,8 @@ crafting station → blacksmith NPC menu `176:1357` (D69: separate NPC).
 
 **Designer-requested new design:** a dedicated Enchanting page (D68).
 
-**Figma needs updating:** Equipment slots (D20) · Controls actions (D47) ·
+**Figma needs updating:** Equipment slots (D20) · Controls actions Dash / Special
+Ability / Interact (D66; skill-slot binds deferred, D47) ·
 Journal codex → quest log (D52) · Settings Language must list English +
 Ukrainian (D67) · remove HUD Bag Section
 (D33) · accent-on-accent selected rows in Shop and Crafting (same defect as D26)

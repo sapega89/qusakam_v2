@@ -106,16 +106,74 @@ behind the design, so these are **GAP** entries, not overrides.
 | **D77** | follow-up | **LOAD mode: empty slots are disabled and unselectable.** They may stay visible but must not receive focus or trigger any action. | Figma has no disabled slot state (the empty card `Empty Slot / No save data available` is the visual). |
 | **D78** | follow-up | **No load confirmation.** Main Menu → Continue → Save Slot Selection → selecting an occupied slot loads it directly; the slot screen is the confirmation. The overwrite confirmation (`258:5162`) stays, **SAVE mode only**. | Save flow closed. |
 | **D79** | follow-up | **Modal family for the save flow is settled:** Save Success is covered by reuse of `UI/Modal/Confirm` (D76); save failure uses the same family with an error state; **no new modal scene is needed in Godot** (`ModalLayer.show_modal()` + `modal_dialog.gd`). | Documentation-level decision; nothing implemented. |
+| **D9 — CLOSED** | follow-up | **Inventory `FILTER` cycles forward on each press:** ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL. No popup, dropdown or separate filter menu. The active category is visually indicated. KEY ITEMS stays in the cycle when empty and shows the existing empty state. | Supersedes #4c. Not implemented. |
+| **D38 — DEFERRED** | follow-up | **Skill auto-targeting: skip.** Do not implement auto-targeting; do not invent nearest-enemy or any other targeting system. | Removed from open questions. |
+| **D47 (part) — DEFERRED** | follow-up | **Skill Slot 1–4 bindings: do not add them to the Figma Controls screen now; no new bindings.** Runtime keyboard 1–4 behaviour stays unchanged. | Removed from open questions. |
+| **Closed — do not reopen** | D71–D79 | Save/Load flow and the interaction prompt are closed. `UI/Interaction/Prompt` `461:6479` is the approved prompt for Talk, Pick up, Save, Shop, Craft, Enchant, Fish and other contextual actions. The concept-art fishing-village HUD is not authoritative (D73). | — |
 
 ## 5. Open — still undecided
 
-| ID | Screen | Figma node | Question |
-|---|---|---|---|
-| D9, #4c | Inventory | `46:193` | `FILTER` button has no behaviour defined anywhere |
-| D18, #6 | Status | `58:719` | 8-slot character grid + stat-point buttons absent from Figma — keep in party panel? |
-| D38 | Combat HUD | `434:6556` | Skill auto-targeting rule |
-| D47 (part) | Settings | `17:756` | Figma lacks the four real `skill_slot_*` binds (not covered by D66) |
-| D56 | Journal | — | Quest engine has no data and is never instanced — ship or delete |
+Only two questions remain. Audits below are read-only; nothing was implemented,
+activated or deleted.
+
+| ID | Screen | Question |
+|---|---|---|
+| D18 | Status | Should the game get character selection, and if so, where? |
+| D56 | Journal | Keep the dormant quest engine for a future Journal, or delete it? |
+
+### D18 — Status character grid (audit 2026-09-27)
+
+- **Figma has no character grid.** `menu-status` `58:719` shows a single-character
+  header. The kit component `UI/CharacterSelector` `222:4786` (one character card: avatar,
+  name, class · level, HP/SP) is **not placed in any frame**. `UI/Party Status Panel`
+  `68:1177` shows a fixed list of 4 cards and has no selection state.
+- **The 8-slot grid was runtime-only.** It existed in the original
+  `stats_component.gd` (`CharacterButton1..8` → `_on_character_selected("player_N")`,
+  plus Str/Int/Dex/Con "+" buttons) and was removed in `515bb4f3`.
+- **Runtime today:** Status shows the active character only
+  (`game_manager.get_active_character()`); the party panel is display-only (no input,
+  no signals, max 4 cards). The active character is hard-coded to `player_1`
+  (`CharacterManager.gd:14, :56`). `switch_character()` exists (`CharacterManager.gd:167`)
+  but **nothing calls it**.
+- **Data:** 8 characters are hard-coded defaults (`CharacterManager.gd:66-149`), with
+  per-character attributes, class and equipment. No roster file, no join/leave, no party
+  size concept. Level/XP are global, not per character. **No stat-point pool and no spend
+  API** (deliberately excluded, `GameManager.gd:310-314`).
+- **Decision needed:** (a) Is character switching a planned feature? If yes, which entry
+  point: select from the party panel, a `UI/CharacterSelector` cycler on Status, or
+  something else? (b) Is the 8-character roster real, or should the party be the 4 shown in
+  Figma? (c) Stat-point spending: cut for good, or planned?
+
+### D56 — dormant quest engine (audit 2026-09-27)
+
+- **What exists:** 5 scripts in `SampleProject/Scripts/Quest/` (615 lines, plus 5 `.gd.uid`):
+  `SceneQuestManager` (307, linear per-scene stages advanced by finished dialogues),
+  `SceneQuestConfig` (61), `QuestStageResource` (56), `QuestProgressUI` (152),
+  `QuestDialogueItem` (39). **No authored data** (`.tres`/`.tscn`/`.json`). Unrelated to the
+  `DialogueQuest` dialogue addon.
+- **Use:** never instanced — not an autoload, not in any scene, not loaded, not registered.
+  Only `Canyon.gd:30` and `Village.gd:31` do a `get_node_or_null("SceneQuestManager")` that
+  always returns null.
+- **Cost of keeping it:** negligible at runtime (two dead lookups plus two info logs); no
+  startup parsing, no `_process`, no tests. Maintenance cost: 5 global `class_name`s and
+  dead guarded code in Canyon/Village. Latent bugs: `Engine.has_singleton("EventBus")`
+  (:47) would stop it hearing dialogues; `_restore_progress` is an empty TODO, so progress is
+  never saved.
+- **Journal today:** `journal_component.gd` uses only `Game.objective_updated` /
+  `current_objective`. Its `set_entries()` (id, title, state, objectives, description) is
+  never called.
+- **To use it for the Journal later:** instance a manager per scene; author `.tres`
+  configs; fix the EventBus check; add save/restore; map stages → entries; add
+  player-facing objective text (stages hold raw dialogue IDs); solve the cross-scene log,
+  because each manager covers only one scene.
+- **Deletion list:** the 5 `.gd` + 5 `.gd.uid`; `Canyon.gd:30, :73, :638-673`;
+  `Village.gd:31, :41, :255-290` (lines 30/31 use the type and would break compilation if
+  left); stale comment `journal_component.gd:9-10`; docs
+  `docs/QUEST_SYSTEM_IMPLEMENTATION.md`, `docs/QUEST_SYSTEM_SETUP.md`,
+  `docs/QUEST_SYSTEM_SUMMARY.md`, `design/journal_audit.md:106`, `design/ui_visual_qa.md:1045`.
+  No scenes or tests break.
+- **Decision needed:** keep it dormant as the basis for a future Journal (accepting the
+  rework above), or delete it and design the Journal's data source separately.
 
 ## 6. Stale entries
 
