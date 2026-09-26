@@ -164,6 +164,14 @@ func _setup_label_variations(theme: Theme) -> void:
 		# Figma menu-world-map (94:609)
 		"MapTitle": [_font_bold, UITokens.SIZE_MAP_TITLE, UITokens.ACCENT],
 		"MapSubtitle": [_font_regular, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		# Figma settings-* (17:280 / 17:409 / 17:632 / 17:756)
+		"SettingsSystem": [_font_regular, UITokens.SIZE_CAPTION, UITokens.TEXT_PRIMARY],
+		"SettingsTitle": [_font_bold, UITokens.SIZE_OPTIONS_TITLE, UITokens.TEXT_PRIMARY],
+		"SettingsEyebrow": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"SettingsHeading": [_font_bold, UITokens.SIZE_DISPLAY, UITokens.TEXT_PRIMARY],
+		"SettingsRowLabel": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SettingsValue": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SettingsHint": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_SECONDARY],
 	}
 	for name in roles:
 		var spec: Array = roles[name]
@@ -203,6 +211,69 @@ func _setup_button_variations(theme: Theme) -> void:
 	_filter_button(theme)
 	_list_row(theme)
 	_skill_row(theme)
+	_settings_segment(theme)
+	_settings_stepper(theme)
+	_settings_sidebar_tab(theme)
+
+
+## Figma settings-* сегментований перемикач (17:350).
+## Вибраний сегмент — акцентна заливка з темним текстом; контейнер малює рамку.
+func _settings_segment(theme: Theme) -> void:
+	var pad_h := UITokens.SPACE_3XL
+	var pad_v := UITokens.SPACE_SM
+	for t in ["SettingsSegment", "SettingsSegmentOn"]:
+		var on: bool = t == "SettingsSegmentOn"
+		theme.set_type_variation(t, "Button")
+		theme.set_font("font", t, _font_semibold)
+		theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+		theme.set_color("font_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.TEXT_PRIMARY)
+		theme.set_color("font_hover_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.ACCENT)
+		theme.set_color("font_pressed_color", t, UITokens.SETTINGS_ON_ACCENT)
+		theme.set_color("font_focus_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.TEXT_PRIMARY)
+		var bg := UITokens.ACCENT if on else Color(0, 0, 0, 0)
+		theme.set_stylebox("normal", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("hover", t, _box(bg if on else UITokens.SURFACE_HOVER,
+				Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("focus", t, _box(bg, UITokens.ACCENT,
+				UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+		theme.set_stylebox("disabled", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+
+
+## Figma settings-* стрілки степера (17:546 / 17:549) — 16px, без фону.
+func _settings_stepper(theme: Theme) -> void:
+	var t := "SettingsStepper"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_regular)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_hover_color", t, UITokens.ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
+	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 4, 2))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, 4, 2))
+
+
+## Figma UI/Settings Tab (117:835) — 36×36, активний має акцентну рамку,
+## неактивний іде на 50% прозорості.
+func _settings_sidebar_tab(theme: Theme) -> void:
+	var t := "SettingsSidebarTab"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_semibold)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_hover_color", t, UITokens.ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("pressed", t, _box(Color(0, 0, 0, 0), UITokens.BORDER_STRONG,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, UITokens.SPACE_SM, UITokens.SPACE_SM))
 
 
 ## Figma menu-skills: рядок навички — px16 py10, 1px рамка,
@@ -431,8 +502,10 @@ func _setup_line_edit(theme: Theme) -> void:
 	theme.set_stylebox("read_only", "LineEdit", _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER))
 
 
+## Figma settings-audio 17:465 — доріжка 320×8. Вертикальні поля тримають
+## висоту: з нульовими доріжка схлопувалась і візуально зникала.
 func _setup_slider(theme: Theme) -> void:
-	theme.set_stylebox("slider", "HSlider", _box(Color(UITokens.BACKGROUND, 0.8), UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0))
+	theme.set_stylebox("slider", "HSlider", _box(Color(UITokens.BACKGROUND, 0.8), UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 4))
 	theme.set_stylebox("grabber_area", "HSlider", _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
 	theme.set_stylebox("grabber_area_highlight", "HSlider", _box(UITokens.ACCENT.lightened(0.15), Color(0, 0, 0, 0), 0, 0, 0))
 

@@ -47,10 +47,21 @@ func _initialize() -> void:
 		return
 
 	_audit_shell(menu)
-	for tab in ["Inventory", "Equipment", "Status", "Skills"]:
+	for tab in ["Inventory", "Equipment", "Status", "Skills", "World Map", "Misc"]:
 		menu.switch_to_tab(tab)
 		for i in 6: await process_frame
 		_audit_screen(menu, tab)
+
+	# Settings має ще й власні вкладки — перевіряємо кожну.
+	menu.switch_to_tab("Misc")
+	for i in 6: await process_frame
+	var opts: Node = get_first_node_in_group("settings_screen")
+	if opts:
+		for settings_tab in ["display", "audio", "game", "controls"]:
+			_screen = "Settings/%s" % settings_tab
+			opts.switch_to_tab(settings_tab)
+			for i in 6: await process_frame
+			_audit_control(opts as Control, "settings/%s" % settings_tab)
 
 	# ── Модалка ─────────────────────────────────────────────────────────────
 	_screen = "Modal"
@@ -112,6 +123,8 @@ func _audit_screen(menu: Node, tab: String) -> void:
 		"Equipment": "EquipmentComponent",
 		"Status": "StatsComponent",
 		"Skills": "SkillsComponent",
+		"World Map": "MetSysMapComponent",
+		"Misc": "OptionsComponent",
 	}
 	var node: Node = menu.find_child(String(component_names[tab]), true, false)
 	ck(node != null, "component present")

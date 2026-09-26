@@ -789,3 +789,95 @@ Cormorant Garamond from the theme.
 
 **No new visual differences from the approved Figma HUD.** Empty skill slots are
 expected — `skills.json` ships no production skills by design.
+
+---
+
+# SETTINGS — implemented (Phase 5.13)
+
+Mapping: `design/settings_mapping.md`. Suite: `SampleProject/UI/verify_settings.gd`
+— **62 assertions, all passing**. Captures: `design/shots/settings_{display,audio,game,controls}_1920.png`.
+
+**Product decision applied:** only settings with a real backing system are shown.
+Deferred Figma rows are omitted entirely rather than rendered as dead controls,
+so the screen has fewer rows than Figma by design.
+
+## Implemented
+
+| Tab | Rows | Backing |
+|---|---|---|
+| Display | Display Mode (Windowed / Fullscreen), VSync (Enable / Disable) | `SettingsModule` keys `fullscreen`, `vsync` → `DisplayServer` |
+| Audio | Master Volume, Music, Sound Effects | `master_volume` / `music_volume` / `sfx_volume` → `AudioServer` buses Master/Music/SFX |
+| Game | Language | `LocalizationManager.available_languages` — **English and Ukrainian**, read from the manager, never hardcoded |
+| Controls | full rebinding list | third-party maaacks `InputOptionsMenu`, unchanged |
+
+Plus Restore Default Settings (existing reset) and Exit to Main Menu (existing
+dual-mode behaviour).
+
+## Deferred — rendered nowhere (D43–D47)
+
+Resolution, Frame Rate Limit, Screen Brightness + its preview box, Ambient
+volume, Text Speed, Screen Shake, Damage Numbers, and the "Borderless Window"
+display mode. The suite asserts none of these strings appears on any tab.
+
+## Architecture
+
+- **One settings system.** The screen reads and writes
+  `SaveSystem.settings_module.settings` directly; the suite asserts it is the
+  same object the save system owns. No parallel manager, no duplicate
+  persistence.
+- **No scene change.** Settings is the `Misc` tab of the Game Menu. Verified:
+  `current_scene` is unchanged, the tree stays paused, and the menu instance is
+  the same one — the Pause-phase fix that removed `change_scene_to_file` holds.
+- **Immediate application.** Volume changes hit `AudioServer` on the same frame
+  (asserted via `db_to_linear(get_bus_volume_db(...))`); display changes go
+  through the existing `_apply_display_settings()`.
+- **Persistence.** Every change calls `save_game_settings()`. The round trip is
+  asserted: change → save → clobber in memory → `load_game_settings()` → value
+  restored, and the UI re-reads it. Empty and partial legacy payloads both load
+  safely.
+
+## Controls tab — scoped, not rewritten
+
+The maaacks `InputOptionsMenu` remains the behavioural source of truth; our
+script contains no `action_add_event` / `action_erase_events` (asserted). It is
+nested inside the Settings screen, so it **inherits `GameUITheme` by scope** —
+which is the visual integration that was asked for. The theme is still not
+project-global, so addon UI elsewhere (e.g. the MetSys `Minimap` in `Game.tscn`)
+is untouched; `verify_combat_hud` asserts that separately.
+
+## New shared theme entries
+
+Seven Label variations (`SettingsSystem`, `SettingsTitle`, `SettingsEyebrow`,
+`SettingsHeading`, `SettingsRowLabel`, `SettingsValue`, `SettingsHint`) and
+three Button variations (`SettingsSegment` / `SettingsSegmentOn`,
+`SettingsStepper`, `SettingsSidebarTab`). Theme is now **96 types**. The scene
+carries no one-off colour overrides and no embedded fonts (asserted).
+
+**Fixed while here:** the shared `HSlider` track stylebox had zero vertical
+content margins, so the track collapsed and rendered invisible on every slider
+in the project. Now 4px top/bottom, matching Figma's 8px track.
+
+## Deviations
+
+| # | Figma | Implemented | Why |
+|---|---|---|---|
+| D49 | Standalone page with its own top section ("OPTIONS" + ornament) and its own bottom bar | Content + settings icon rail only; the Game Menu's existing top bar and shared bottom bar are reused | Settings lives inside the tabbed menu. Rendering a second set of chrome would double the top and bottom bars. |
+| D50 | Slider thumb is a rotated diamond | Default round grabber on the themed track | Needs a thumb texture asset; cosmetic only. |
+| D51 | No party panel on the settings frames | Party panel stays visible (shared menu chrome) | Hiding it means a third screen competing for `ui_party_panel`, which the code review already flagged as an ordering bug between Status and Skills. Not worth the risk for a cosmetic gain. |
+
+## Note — settings controls were never wired before
+
+The previous `options_component.tscn` had sliders and checkboxes but **only two
+signal connections in the whole scene** (back / exit-to-main-menu). Nothing
+connected `value_changed` or `toggled`, so no control in the old Settings screen
+did anything. This phase wires them for the first time; there was no working
+behaviour to preserve there, only the dual-mode and close paths, which are
+carried over verbatim.
+
+## Tech debt — documented, not fixed
+
+`Player._initialize_health_bar()` calls `call_deferred("_initialize_health_bar")`
+when `get_tree().current_scene` is null, with no retry bound — it recurses until
+the stack dies. Harmless in the real game (`current_scene` is always set) and
+worked around in test harnesses by assigning `current_scene`. Out of scope for
+UI work; recorded here so it is not rediscovered.

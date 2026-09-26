@@ -120,3 +120,17 @@ const BAR_HEIGHT := 6
 const BAR_WIDTH := 180
 const HP_FILL := Color("2ecc71")
 const SP_FILL := Color("3498db")
+
+# ── Розміри екрана Settings (Figma: settings-* 17:280 / 17:409 / 17:632) ────
+const SIZE_OPTIONS_TITLE := 38  # Bold — "OPTIONS" у верхній секції
+const SETTINGS_SIDEBAR_WIDTH := 56
+const SETTINGS_TAB_HEIGHT := 40
+const SETTINGS_TAB_BOX := 36
+const SETTINGS_POINTER := 16
+const SETTINGS_ROW_PAD_H := 16
+const SETTINGS_ROW_PAD_V := 14
+const SETTINGS_STEPPER_WIDTH := 280
+const SETTINGS_SEGMENT_MIN_WIDTH := 120
+const SETTINGS_SLIDER_WIDTH := 320
+const SETTINGS_HEADER_ICON := 64
+const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
