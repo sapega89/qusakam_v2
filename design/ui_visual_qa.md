@@ -605,3 +605,61 @@ per-resolution offsets anywhere in the UI.
 ## NEEDS DESIGN DECISION
 
 None arising from this pass.
+
+---
+
+# WORLD MAP — approved decisions
+
+Recorded after the World Map phase was approved. Full mapping:
+`design/world_map_mapping.md`.
+
+| ID | Decision |
+|---|---|
+| **D39** | **KEEP** the explored percentage, even though Figma shows no such element. It is real, working `MetSys.get_explored_ratio()` data; restyled with theme tokens, not removed. |
+| **D40** | **DO NOT** implement the map legend until real marker data exists. A legend describing symbols that are not on screen would be actively misleading. |
+| **D41** | **DO NOT** invent named location markers or their coordinates. Figma's 13 fixed-position markers have no backing dataset. |
+| **D42** | **KEEP** the real MetSys exploration map. Do not replace it with a static parchment illustration. The runtime map is authoritative for gameplay state; Figma is authoritative for the surrounding UI/chrome, **not** for invented map data. |
+
+D40 and D41 stay open until a location dataset (id, display name, category,
+map coordinates) exists. D39 and D42 are settled and need no revisit.
+
+---
+
+# PAUSE — architecture verification
+
+**Conclusion: the tabbed Game Menu *is* the pause UI. No separate Pause screen
+exists in Figma, and none was created.**
+
+Pause flow, unchanged: `UIManager.open_game_menu()` → `GameMenuState` →
+`get_tree().paused = true`; the menu runs at
+`PROCESS_MODE_WHEN_PAUSED` so it keeps processing while the tree is frozen.
+
+Regression suite: `SampleProject/UI/verify_pause.gd` — **30 assertions, all
+passing**. It pins the contract so a second pause system cannot be added by
+accident.
+
+## Defects found and fixed
+
+Each was a latent bug in existing code, surfaced by writing the verification —
+not a consequence of the Figma work.
+
+| # | File | Defect | Fix |
+|---|---|---|---|
+| 1 | `game_menu.gd` | Pause close compared `event.keycode == KEY_ESCAPE` directly, so remapping `ui_cancel` did nothing and a gamepad could never close the menu. | Use `event.is_action_pressed(&"ui_cancel")`. Same class of bug as the World Map's raw `KEY_*` panning. |
+| 2 | `game_menu.gd` | The Misc → Settings route called `change_scene_to_file(OptionsMenuScene)`, which **unloaded the running game** to show a settings panel that already lives inside the menu (`MiscPanel/OptionsComponent`). | `switch_to_tab("Misc")`. Gameplay and pause state survive. |
+| 3 | `game_menu.gd` | `@onready` paths for `focus_router` and `misc_button` omitted the real `BaseMenu/HBoxContainer/CentralPanel/` prefix, so both were always `null`. The focus router had therefore never run, and the Misc button's `pressed` signal was never connected. (`vertical_menu` was unaffected — it has a runtime fallback at lines 64–75.) | Resolve by `find_child(...)`. |
+| 4 | `focus_router.gd` | `tabs_container_path` / `panels_container_path` are authored relative to the **menu root**, but were resolved with `get_node_or_null()` on the router itself — a sibling. Every lookup returned null, so `focus_tabs()`, `focus_content()` and both caching passes were silent no-ops. | Added `_menu_node()`, which resolves from `get_parent()`. |
+| 5 | `focus_router.gd` | `focus_tabs()` forced `FOCUS_ALL` on **every** child and grabbed focus on `get_child(0)` — which is `TopSpacer`, a 24px invisible `Control`. Focus also failed outright while the menu was still hidden, since `grab_focus()` is a no-op on a node that is not visible in tree. | Target the first `Button` only; leave spacers unfocusable; await `visibility_changed` before grabbing. |
+| 6 | `UIManager.gd` | `is_ui_active()` / `is_gameplay_input_allowed()` treated any non-empty `current_state_name` as "UI open". After the first close the state is `"NullState"`, so gameplay input read as permanently blocked. Latent only — neither method has a caller yet. | Treat `""` and `"NullState"` alike. |
+
+Net effect: keyboard and gamepad users can now navigate the pause menu at all
+(#3, #4, #5 compounded into complete focus failure), `ui_cancel` is rebindable
+(#1), and opening Settings from pause no longer destroys the session (#2).
+
+## Dead code
+
+`Scripts/UI/PauseMenu.gd` is dead: no `.tscn` instantiates it, no script
+references `class_name PauseMenu`, and it has no runtime owner — the only
+mention anywhere is Godot's generated
+`.godot/global_script_class_cache.cfg`. Removed in a separate commit;
+`verify_pause.gd` §8 guards against a second pause system reappearing.

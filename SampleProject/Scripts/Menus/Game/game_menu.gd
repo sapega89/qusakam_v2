@@ -8,8 +8,10 @@ extends Control
 @onready var content_container: Control = get_node_or_null("ContentContainer")
 @onready var game_menu_content = get_node_or_null("GameMenuContent")
 @onready var vertical_menu = get_node_or_null("GameMenuContent/VerticalMenu")
-@onready var focus_router = get_node_or_null("GameMenuContent/VerticalMenu/FocusRouter")
-@onready var misc_button: Button = get_node_or_null("GameMenuContent/VerticalMenu/PanelManager/HBoxContainer/TabButtons/MiscButton")
+# Реальний шлях — BaseMenu/HBoxContainer/CentralPanel/GameMenuContent/...,
+# тому шукаємо за іменем: vertical_menu має фолбек нижче, а ці два — ні.
+@onready var focus_router = find_child("FocusRouter", true, false)
+@onready var misc_button: Button = find_child("MiscButton", true, false) as Button
 
 const MiscMenuModalScene = preload("res://SampleProject/Scenes/Menus/Game/misc_menu_modal.tscn")
 const OptionsMenuScene = "res://SampleProject/Scenes/Menus/Game/options_component.tscn"
@@ -183,7 +185,9 @@ func _on_misc_button_pressed() -> void:
 					modal.exit_game_selected.connect(_on_misc_exit_game_selected, CONNECT_ONE_SHOT)
 
 func _on_misc_settings_selected() -> void:
-	get_tree().change_scene_to_file(OptionsMenuScene)
+	# Налаштування вже живуть у MiscPanel цього меню. change_scene_to_file()
+	# вивантажував би запущену гру разом із паузою, тому просто вкладка.
+	switch_to_tab("Misc")
 
 func _on_misc_tutorial_selected() -> void:
 	get_tree().change_scene_to_file(TutorialMenuScene)
@@ -453,8 +457,9 @@ func _check_managers() -> void:
 func _input(event: InputEvent) -> void:
 	# Обробка Escape для закриття меню
 	# Оскільки меню має process_mode = PROCESS_MODE_WHEN_PAUSED, воно може обробляти ввід навіть на паузі
-	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
-		print("🎮 GameMenu: Escape натиснуто, закриваємо меню...")
+	# Через InputMap, а не сирий KEY_ESCAPE: щоб працювали ремапінг і геймпад.
+	if event.is_action_pressed(&"ui_cancel"):
+		print("🎮 GameMenu: ui_cancel натиснуто, закриваємо меню...")
 		close_menu()
 		get_viewport().set_input_as_handled()
 		return

@@ -368,11 +368,12 @@ func show_modal(data: Dictionary) -> void:
 	if modal_layer and modal_layer.has_method("show_modal"):
 		modal_layer.show_modal(data)
 
+## "" — UI ще не відкривався, "NullState" — вже закрився. Обидва = UI неактивний.
 func is_ui_active() -> bool:
-	return current_state_name != ""
+	return current_state_name != "" and current_state_name != "NullState"
 
 func is_gameplay_input_allowed() -> bool:
-	if current_state_name != "":
+	if is_ui_active():
 		return false
 	if modal_layer and modal_layer.get("active_modal"):
 		return false
