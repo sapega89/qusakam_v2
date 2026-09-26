@@ -663,3 +663,41 @@ references `class_name PauseMenu`, and it has no runtime owner — the only
 mention anywhere is Godot's generated
 `.godot/global_script_class_cache.cfg`. Removed in a separate commit;
 `verify_pause.gd` §8 guards against a second pause system reappearing.
+
+---
+
+# SETTINGS — audit only, implementation not started
+
+Full mapping: `design/settings_mapping.md`.
+
+The audit is complete for all four Figma settings frames and the existing Godot
+settings system. Implementation was **not** started, because the audit turned up
+a scope question that is the user's to answer, not mine to assume:
+
+**8 of the 19 settings rows Figma specifies have no backing system at all**, and
+6 of the 12 Controls rows name input actions that do not exist.
+
+| Tab | Backed | Unsupported |
+|---|---|---|
+| Audio | Master, Music, Sound Effects | Ambient (no such bus) |
+| Display | VSync, Restore Defaults; Display Mode partially (Windowed ↔ Fullscreen only) | Resolution, Frame Rate Limit, Screen Brightness + its preview |
+| Gameplay | Language (`LocalizationManager`, and it has **two** locales where Figma shows one); Auto-Save has a live flag but no persistence key | Text Speed, Screen Shake, Damage Numbers |
+| Controls | move ×4, jump, attack, Pause (`ui_cancel`) | Dash, Special Ability, Interact/Examine, Open Map, Inventory — and Figma omits the four real `skill_slot_*` binds |
+
+Persistence stores exactly five keys (`master_volume`, `music_volume`,
+`sfx_volume`, `fullscreen`, `vsync`); audio buses are Master/Music/SFX only.
+
+## NEEDS DESIGN DECISION (Settings)
+
+| ID | Question |
+|---|---|
+| **D43** | Resolution, Frame Rate Limit, Screen Brightness: build the backing systems, or cut the rows from Figma? |
+| **D44** | Ambient volume: add an Ambient bus and route ambient audio to it, or cut the row? |
+| **D45** | Text Speed, Screen Shake, Damage Numbers: real features to build, or cut? |
+| **D46** | Display Mode: keep the two real states, or add borderless (needs the persisted `fullscreen` bool to become a mode enum)? |
+| **D47** | Six Controls rows name non-existent actions. Cut them, or are Dash / Special Ability / Interact real planned mechanics? Figma also needs the four real `skill_slot_*` binds added. |
+| **D48** | The Controls tab only works because it instances the third-party maaacks `InputOptionsMenu`, which `ui_theme_scope_audit.md` deliberately isolates from `GameUITheme`. Wrap it in the themed shell and accept unstyled rows (recommended), or own the rebinding UI? |
+
+Answering D43–D48 makes Settings a straightforward build: the shell and row
+archetypes are only three repeated patterns (stepper, segmented toggle, stepper
+slider), all expressible with existing theme tokens.
