@@ -881,3 +881,34 @@ when `get_tree().current_scene` is null, with no retry bound — it recurses unt
 the stack dies. Harmless in the real game (`current_scene` is always set) and
 worked around in test harnesses by assigning `current_scene`. Out of scope for
 UI work; recorded here so it is not rediscovered.
+
+---
+
+# JOURNAL — audit only, not implemented
+
+Full audit: `design/journal_audit.md`.
+
+Despite the name, Figma's `journal-main-story` is a **character codex**, not a
+quest list: four character banners plus a detail page with class/talent stats,
+three prose backstory paragraphs and a 720×820 portrait.
+
+**Backing verdict: essentially none.**
+
+- `journal_component.gd` is 15 lines of `TODO` stubs.
+- `Scripts/Quest/` holds a complete quest engine (`SceneQuestManager`,
+  `QuestStageResource`, `SceneQuestConfig`) that is **entirely inert**: no quest
+  `.tres` data exists anywhere, and no scene instantiates a
+  `SceneQuestManager` node — `Village.gd:31` and `Canyon.gd:30` both resolve to
+  null.
+- Figma's four banner characters (Khalahas, Lyra Ashveil, Valen, Selene) are
+  **not project characters**; the real roster is Астрит, Уризен, Кусакам, …
+  "Khalahas" is the world name, not a person.
+- No backstory text, no portrait or banner art, no chapter/story model, and no
+  `Path Action` or `Talent` concept anywhere in the codebase.
+- Class display names in `pathfinder_classes.json` are still empty.
+
+The only real data — `Game.current_objective`, a single free-text string — is
+already shown on the combat HUD and cannot justify a full-screen journal.
+
+Recorded **D52–D57**. Journal is blocked on content and design decisions, not on
+UI work; building it now would mean fabricating a story codex.
