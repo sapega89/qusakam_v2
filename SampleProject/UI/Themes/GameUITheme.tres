@@ -1,6 +1,6 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" format=3 uid="uid://bc6q5yqctf0j5"]
 
-[ext_resource type="FontFile" path="res://SampleProject/Assets/Fonts/CormorantGaramond.ttf" id="1_4nm7x"]
+[ext_resource type="FontFile" uid="uid://bssrprjxrko3m" path="res://SampleProject/Assets/Fonts/CormorantGaramond.ttf" id="1_4nm7x"]
 
 [sub_resource type="FontVariation" id="FontVariation_4nm7x"]
 base_font = ExtResource("1_4nm7x")
