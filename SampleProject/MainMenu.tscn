@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://cbtmxggtscua3"]
+[gd_scene format=3 uid="uid://cbtmxggtscua3"]
 
 [ext_resource type="Script" uid="uid://bn5434a05ai0y" path="res://SampleProject/Scripts/Menus/MainMenu.gd" id="1_mainmenu"]
 
@@ -6,7 +6,7 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ap8m4"]
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu" type="Control" unique_id=226574043]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mainmenu")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." unique_id=434574552]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,7 +25,7 @@ grow_vertical = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="GameTitle" type="PanelContainer" parent="."]
+[node name="GameTitle" type="PanelContainer" parent="." unique_id=60625531]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -40,16 +40,16 @@ offset_bottom = 323.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameTitle"]
+[node name="VBoxContainer" type="VBoxContainer" parent="GameTitle" unique_id=964111456]
 layout_mode = 2
 alignment = 1
 
-[node name="TitleLineTop" type="ColorRect" parent="GameTitle/VBoxContainer"]
+[node name="TitleLineTop" type="ColorRect" parent="GameTitle/VBoxContainer" unique_id=1947338354]
 custom_minimum_size = Vector2(400, 2)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="TitleLabel" type="Label" parent="GameTitle/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="GameTitle/VBoxContainer" unique_id=12051064]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "Khalahas"
@@ -57,12 +57,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="TitleLineBottom" type="ColorRect" parent="GameTitle/VBoxContainer"]
+[node name="TitleLineBottom" type="ColorRect" parent="GameTitle/VBoxContainer" unique_id=716166795]
 custom_minimum_size = Vector2(400, 2)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="PressAnyButtonContainer" type="HBoxContainer" parent="."]
+[node name="PressAnyButtonContainer" type="HBoxContainer" parent="." unique_id=1594377539]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -78,7 +78,7 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="PressAnyButtonLabel" type="Label" parent="PressAnyButtonContainer"]
+[node name="PressAnyButtonLabel" type="Label" parent="PressAnyButtonContainer" unique_id=1552958932]
 layout_mode = 2
 theme_override_fonts/font = SubResource("FontVariation_ap8m4")
 text = "PRESS ANY BUTTON"
@@ -86,7 +86,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="." unique_id=2140846686]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -101,7 +101,7 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="continue" type="Button" parent="Menu"]
+[node name="continue" type="Button" parent="Menu" unique_id=395809059]
 unique_name_in_owner = true
 modulate = Color(1.3, 1.3, 1.3, 1)
 custom_minimum_size = Vector2(200, 35)
@@ -110,7 +110,7 @@ theme_type_variation = &"FlatButton"
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ap8m4")
 text = "Continue"
 
-[node name="load_game" type="Button" parent="Menu"]
+[node name="load_game" type="Button" parent="Menu" unique_id=863219368]
 unique_name_in_owner = true
 modulate = Color(1.3, 1.3, 1.3, 1)
 custom_minimum_size = Vector2(200, 35)
@@ -118,7 +118,7 @@ layout_mode = 2
 theme_type_variation = &"FlatButton"
 text = "Load Game"
 
-[node name="new_game" type="Button" parent="Menu"]
+[node name="new_game" type="Button" parent="Menu" unique_id=1632561622]
 unique_name_in_owner = true
 modulate = Color(1.3, 1.3, 1.3, 1)
 custom_minimum_size = Vector2(200, 35)
@@ -126,7 +126,7 @@ layout_mode = 2
 theme_type_variation = &"FlatButton"
 text = "New Game"
 
-[node name="options" type="Button" parent="Menu"]
+[node name="options" type="Button" parent="Menu" unique_id=558266107]
 unique_name_in_owner = true
 modulate = Color(1.3, 1.3, 1.3, 1)
 custom_minimum_size = Vector2(200, 35)
@@ -134,7 +134,7 @@ layout_mode = 2
 theme_type_variation = &"FlatButton"
 text = "Options"
 
-[node name="exit" type="Button" parent="Menu"]
+[node name="exit" type="Button" parent="Menu" unique_id=2045331171]
 unique_name_in_owner = true
 modulate = Color(1.3, 1.3, 1.3, 1)
 custom_minimum_size = Vector2(200, 35)
@@ -142,7 +142,7 @@ layout_mode = 2
 theme_type_variation = &"FlatButton"
 text = "Quit Game"
 
-[node name="CopyrightLabel" type="Label" parent="."]
+[node name="CopyrightLabel" type="Label" parent="." unique_id=132605476]
 modulate = Color(1.2, 1.2, 1.2, 1)
 layout_mode = 1
 anchors_preset = 7
