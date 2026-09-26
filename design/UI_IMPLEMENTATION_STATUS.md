@@ -1,11 +1,15 @@
-# UI Implementation Status — **COMPLETE**
+# UI Implementation Status — **IN PROGRESS**
 
-Branch `feature/figma-ui-pipeline` · final UI commit `3ef9bee9`
+Branch `feature/figma-ui-pipeline` · latest UI commit `3ef9bee9`
 
-Every Figma UI surface has been implemented against the shared theme. No UI
-screen remains outstanding. What is still open is **content, product decisions
-and non-UI technical debt** — listed at the end so it is not mistaken for
-unfinished UI work.
+> **Correction (this file previously said COMPLETE — it was wrong).**
+> The original brief scoped the work to nine Game Menu screens, and that scope
+> *is* finished. But the Figma prototype has **8 sections / ~46 frames**, and
+> four sections were never implemented. The Phase 1 audit recorded them as
+> "out of the 9-screen scope" and they were never revisited.
+>
+> **Done: 4 of 8 sections.** Shop, crafting, NPC menus, dialogue UI, main menu
+> and save/load all remain.
 
 ---
 
@@ -26,6 +30,33 @@ unfinished UI work.
 | 10 | Combat HUD | `Game Scene / Combat HUD` `434:6556` | `skill_hotbar`, `player_vitals_panel`, `combat_hud_top` | ✅ |
 | 11 | Pause | — (no separate frame) | the tabbed Game Menu | ✅ verified, not built |
 | 12 | Modals | `UI/Modal` | `modal_layer` | ✅ |
+
+---
+
+## NOT implemented — remaining UI work
+
+| Figma section | Frames | Godot today | State |
+|---|---|---|---|
+| **Splash & Main Menu** `144:1775` | 2 | `SampleProject/MainMenu.tscn` | ❌ untouched by the theme pipeline |
+| **Save / Load** `144:1776` | 3 | `LoadGameMenu.tscn`, `load_game_state.tscn`, `save_game_state.tscn` (wired into `UIManager`) | ❌ untouched |
+| **Dialogues** `144:1800` | 2 | DialogueQuest addon: `dialogue_box.tscn`, `choice_menu.tscn` | ❌ untouched, **third-party** — same ownership question as the Controls tab (D48) |
+| **NPC Interaction** `164:1301` | 6 | only `merchant.tscn` as a gameplay node | ❌ no UI at all |
+| **Modals & Popups** `144:1799` | 5 | `modal_layer` + `modal_dialog.tscn`, `yes_no_dialog.tscn` | ⚠️ generic layer themed; the 5 frames were never compared individually |
+
+### Specific surfaces named as missing
+
+| Surface | Figma | Godot | Notes |
+|---|---|---|---|
+| **Shop / buy** | `shop-buy` `153:1289` | `Scenes/Shop/shop_menu.tscn` + `Scripts/Shop/shop_ui.gd`, `merchants.json` | Exists and is wired, but uses a **different theme** (`Resources/Themes/default_button.tres`), local `StyleBoxFlat`s, hardcoded colours and `theme_override_font_sizes`. Directly violates the CLAUDE.md "no duplicate styling" rule. |
+| **Crafting** | `crafting-list` | `ForgeSystem.gd` + `crafting_recipes.json` (**18 real recipes**) | Data and system exist; **no crafting UI scene exists at all**. |
+| **Enchanting** | `enchant-list` | — | No system, no UI. |
+| **NPC menu (merchant / blacksmith)** | `npc-menu-merchant`, `npc-menu-blacksmith` | — | The radial/list NPC action menu (Talk / Quest / Buy / Craft / Enchant) does not exist. |
+| **NPC speech bubble** | `npc-speech-bubble` | — | Does not exist. |
+| **Full-screen dialogue** | `npc-dialogue-full`, `conversation-dialog-choices` | DialogueQuest balloon | Addon default styling; visibly off-theme in every gameplay screenshot. |
+
+Unlike the deferred Settings/Journal rows, **these are not blocked on missing
+data** — shop and crafting have real backing systems and real content
+(`merchants.json`, 18 crafting recipes). They are simply unimplemented UI.
 
 ---
 
