@@ -151,6 +151,12 @@ func _setup_label_variations(theme: Theme) -> void:
 		"TreeTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.ACCENT],
 		"TooltipTitle": [_font_medium, UITokens.SIZE_LABEL, UITokens.ACCENT],
 		"TooltipBody": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
+		# Figma Game Scene / Combat HUD (434:6556)
+		"BindBadge": [_font_bold, UITokens.SIZE_MICRO, UITokens.TEXT_PRIMARY],
+		"CooldownLabel": [_font_bold, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"VitalsName": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.ACCENT],
+		"VitalsLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"VitalsValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
 	}
 	for name in roles:
 		var spec: Array = roles[name]

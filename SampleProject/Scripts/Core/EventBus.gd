@@ -211,6 +211,13 @@ signal skill_used(skill_id: String)
 ##     EventBus.skill_failed.emit("shadow_strike", SkillManager.Result.NOT_ENOUGH_SP)
 signal skill_failed(skill_id: String, reason: int)
 
+## Изменился боевой лоадаут (equipped_skills). Передаётся копия массива слотов.
+## Прогресс (unlocked_skills) этим сигналом НЕ затрагивается.
+##
+## Пример:
+##     EventBus.equipped_skills_changed.emit(["fireball", "", "dash", ""])
+signal equipped_skills_changed(loadout: Array)
+
 ## Изменилось количество Job Points.
 ##
 ## Пример:

@@ -47,6 +47,7 @@ func save() -> Dictionary:
 	# Прогрес навичок. Схема розширювана: equipped_skills можна додати пізніше,
 	# старі збереження просто не матимуть ключа і отримають значення за умовчанням.
 	data["job_points"] = player_state.get("job_points", 0)
+	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
 	data["current_sp"] = player_state.get("current_sp", 0)
 	data["max_sp"] = player_state.get("max_sp", 0)
 
@@ -118,6 +119,12 @@ func load_data(data: Dictionary) -> void:
 	# Загружаем навыки
 	# Відсутні ключі = старе збереження: беремо поточне значення як типове.
 	player_state.job_points = int(data.get("job_points", player_state.get("job_points", 0)))
+	# Старі збереження не мають equipped_skills — тоді лишаємо поточний лоадаут.
+	if "equipped_skills" in data and data.equipped_skills is Array:
+		var loadout: Array = []
+		for entry in data.equipped_skills:
+			loadout.append(String(entry))
+		player_state.equipped_skills = loadout
 	player_state.max_sp = int(data.get("max_sp", player_state.get("max_sp", 0)))
 	player_state.current_sp = clampi(
 		int(data.get("current_sp", player_state.get("current_sp", 0))), 0, player_state.max_sp)

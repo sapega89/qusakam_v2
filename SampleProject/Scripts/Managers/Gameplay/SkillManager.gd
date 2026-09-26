@@ -28,6 +28,9 @@ enum Result {
 	ON_COOLDOWN,
 	NO_TARGET,
 	EFFECT_FAILED,
+	INVALID_SLOT,
+	NOT_ACTIVE_SKILL,
+	SLOT_EMPTY,
 }
 
 var game_manager: Node = null
@@ -239,6 +242,122 @@ func unlock_skill(skill_id: String) -> Result:
 
 	EventBus.skill_unlocked.emit(skill_id)
 	return Result.OK
+
+
+# ── Бойовий лоадаут ─────────────────────────────────────────────────────────
+#
+# equipped_skills — це СПОРЯДЖЕННЯ (що зараз на панелі), окреме від
+# unlocked_skills (що взагалі вивчено). Зберігається в player_state поруч,
+# тому окремої системи збереження не потрібно.
+#
+# Кількість слотів задана Figma (Game Scene / Combat HUD 434:6556 — чотири
+# Hotbar Bind), а не вигадана. Див. design/combat_hud_mapping.md
+
+const SLOT_COUNT := 4
+
+
+func _loadout() -> Array:
+	var state := _state()
+	if state.is_empty():
+		return []
+	var loadout: Array = state.get("equipped_skills", [])
+	# Нормалізуємо довжину: старі збереження могли мати інший або порожній масив.
+	while loadout.size() < SLOT_COUNT:
+		loadout.append("")
+	if loadout.size() > SLOT_COUNT:
+		loadout = loadout.slice(0, SLOT_COUNT)
+	state["equipped_skills"] = loadout
+	return loadout
+
+
+func is_valid_slot(slot: int) -> bool:
+	return slot >= 0 and slot < SLOT_COUNT
+
+
+func get_equipped_skill(slot: int) -> String:
+	if not is_valid_slot(slot):
+		return ""
+	return String(_loadout()[slot])
+
+
+func get_equipped_skills() -> Array:
+	return _loadout().duplicate()
+
+
+## У якому слоті стоїть навичка, або -1.
+func get_slot_of_skill(skill_id: String) -> int:
+	if skill_id.is_empty():
+		return -1
+	return _loadout().find(skill_id)
+
+
+## Ставить навичку в слот. Дозволені лише вивчені АКТИВНІ навички.
+## Дублікатів не буває: якщо навичка вже в іншому слоті, вона переїжджає
+## (а те, що стояло в цільовому слоті, займає звільнене місце).
+func equip_skill(skill_id: String, slot: int) -> Result:
+	if not is_valid_slot(slot):
+		return Result.INVALID_SLOT
+	if skill_database == null or not skill_database.has_skill(skill_id):
+		return Result.UNKNOWN_SKILL
+	if not is_unlocked(skill_id):
+		return Result.NOT_UNLOCKED
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if not definition.is_active():
+		return Result.NOT_ACTIVE_SKILL
+
+	var loadout := _loadout()
+	var existing := loadout.find(skill_id)
+	if existing == slot:
+		return Result.OK
+	if existing != -1:
+		# Переміщення: міняємо вміст слотів місцями, а не копіюємо навичку.
+		loadout[existing] = loadout[slot]
+	loadout[slot] = skill_id
+	_commit_loadout(loadout)
+	return Result.OK
+
+
+func unequip_skill(slot: int) -> Result:
+	if not is_valid_slot(slot):
+		return Result.INVALID_SLOT
+	var loadout := _loadout()
+	if String(loadout[slot]).is_empty():
+		return Result.SLOT_EMPTY
+	loadout[slot] = ""
+	_commit_loadout(loadout)
+	return Result.OK
+
+
+func swap_equipped_skills(slot_a: int, slot_b: int) -> Result:
+	if not is_valid_slot(slot_a) or not is_valid_slot(slot_b):
+		return Result.INVALID_SLOT
+	if slot_a == slot_b:
+		return Result.OK
+	var loadout := _loadout()
+	var carried = loadout[slot_a]
+	loadout[slot_a] = loadout[slot_b]
+	loadout[slot_b] = carried
+	_commit_loadout(loadout)
+	return Result.OK
+
+
+func _commit_loadout(loadout: Array) -> void:
+	var state := _state()
+	if state.is_empty():
+		return
+	state["equipped_skills"] = loadout
+	EventBus.equipped_skills_changed.emit(loadout.duplicate())
+
+
+## Застосувати навичку зі слота панелі. Слот лише розв'язується в skill_id —
+## усі перевірки й витрати робить use_skill().
+func use_slot(slot: int, target: Node = null, source: Node = null) -> Result:
+	if not is_valid_slot(slot):
+		return Result.INVALID_SLOT
+	var skill_id := get_equipped_skill(slot)
+	if skill_id.is_empty():
+		return Result.SLOT_EMPTY
+	return use_skill(skill_id, target, source)
 
 
 # ── Застосування ────────────────────────────────────────────────────────────

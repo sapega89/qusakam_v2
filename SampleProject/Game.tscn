@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c3xqaietfgs7l"]
+[gd_scene load_steps=17 format=3 uid="uid://c3xqaietfgs7l"]
 
 [ext_resource type="Script" uid="uid://btgvo27tngq4o" path="res://SampleProject/Scripts/Game.gd" id="1_xdpfu"]
 [ext_resource type="PackedScene" uid="uid://xpbhai8nlgtx" path="res://SampleProject/Player.tscn" id="2_bam1a"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://c0mb4tc0nt3xt" path="res://SampleProject/Scenes/UI/CombatContextDisplay.tscn" id="8_combat_context"]
 [ext_resource type="PackedScene" uid="uid://tut0r14lh1nt" path="res://SampleProject/Scenes/UI/TutorialHintDisplay.tscn" id="9_tutorial_hint"]
 [ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/skill_hotbar.tscn" id="12_hotbar"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/player_vitals_panel.tscn" id="13_vitals"]
 [ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
@@ -242,6 +244,7 @@ vertical_alignment = 1
 [node name="UICanvas" type="CanvasLayer" parent="."]
 
 [node name="PlayerHealthBar" parent="UICanvas" instance=ExtResource("4_health_bar")]
+visible = false
 unique_name_in_owner = true
 z_index = 100
 custom_minimum_size = Vector2(150, 20)
@@ -256,6 +259,7 @@ grow_horizontal = 1
 grow_vertical = 1
 
 [node name="PlayerXPBar" parent="UICanvas" instance=ExtResource("5_xp_bar")]
+visible = false
 unique_name_in_owner = true
 z_index = 100
 offset_top = 65.0
@@ -285,5 +289,10 @@ z_index = 150
 
 [node name="ObjectiveHUD" parent="UICanvas" instance=ExtResource("10_objective")]
 unique_name_in_owner = true
+
+
+[node name="SkillHotbar" parent="UICanvas" instance=ExtResource("12_hotbar")]
+
+[node name="PlayerVitalsPanel" parent="UICanvas" instance=ExtResource("13_vitals")]
 
 [node name="DialogueSystem" parent="." instance=ExtResource("11_dialogue")]

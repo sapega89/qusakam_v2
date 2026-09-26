@@ -346,9 +346,68 @@ own verification. Recommended as a dedicated pass.
 
 ---
 
-## ⛔ Blocked — Equipped Skills + Combat Hotbar
+## Combat HUD — `Game Scene / Combat HUD` `434:6556`
 
-**Phase halted at step 3 by design, not by an implementation problem.**
+**Status:** hotbar + vitals implemented and validated (Phase 5.7).
+**Build:** `.figma_tmp/hud_hotbar.png`
+
+The phase was previously halted because the HUD did not exist. Figma has since
+added it; all five blocking questions resolved — see `design/combat_hud_mapping.md`.
+
+### Checklist
+
+| # | Item | Figma | Build | Verdict |
+|---|---|---|---|---|
+| 1 | Hotbar position | bottom-centre, 24px bottom margin | same (anchor bottom-centre, offsets −111/−24) | ✅ |
+| 2 | Hotbar panel | surface bg, **1px accent border**, padding 10, gap 12 | same | ✅ |
+| 3 | Slot count | **4** | 4, from `SkillManager.SLOT_COUNT` | ✅ |
+| 4 | Slot size | 48×48, icon 28 centred | same | ✅ |
+| 5 | Bind badge | Bold 11, px6 py1, below slot, gap 4 | same (`BindBadge`) | ✅ |
+| 6 | Ready/usable state | 2px accent border + glow, accent badge w/ dark text | same | ✅ |
+| 7 | Equipped normal | 1px `#3a3a42`, `#2a2a35` badge | same | ✅ |
+| 8 | Cooldown | icon + `rgba(17,17,24,0.75)` overlay, remaining time Bold 16 accent | same, time from `SkillManager` | ✅ |
+| 9 | Unavailable | whole group at 40% opacity | same | ✅ |
+| 10 | Empty slot | placeholder icon box | same, dimmed placeholder | ✅ |
+| 11 | Vitals panel | 360×162 at (24,24), surface + 1px border, padding 16, gap 12 | same | ✅ |
+| 12 | Vitals header | name Bold 18 accent uppercase + accent LV badge | same | ✅ |
+| 13 | HP / SP / XP rows | label 30 · bar 200×8 · value 80, gap 6 | same | ✅ |
+| 14 | Row fills | HP `#2ecc71`, SP `#3498db`, XP accent (muted text) | same | ✅ |
+| 15 | BAG section | separate, left of the row | **not implemented** — see D33 | ⚠️ |
+
+### Deviations (Combat HUD)
+
+| # | Deviation | Reason |
+|---|---|---|
+| **D33** | **BAG / consumable slots not implemented.** | Figma models it as a separate system (`Bag Section`, its own track). Out of scope for Equipped Skills + Hotbar. |
+| **D34** | **Quest Info Panel and Currency & Settings not implemented.** | Part of the new Figma top row but outside this phase. |
+| **D35** | **Legacy HUD widgets overlap the new vitals panel.** | `PlayerHealthBar` and `PlayerXPBar` are **hidden** (superseded by the vitals panel, not deleted). `CoinCounter`, the collectible counter and an in-world health bar still render at their old positions and visually collide with the panel. Figma now defines replacements (Currency & Settings), but implementing them belongs to D34. **Follow-up HUD phase.** |
+| **D36** | **Skill icons are placeholder boxes.** | Icon set still not exported (D5/D17/D21/D28). |
+| **D37** | **No controller bindings for slots.** | Figma shows numeric badges `1–4` only; keyboard actions `skill_slot_1…4` added. Controller mapping is undesigned — not invented. |
+| **D38** | **No runtime target selection.** | `use_slot()` forwards an explicit target. Auto-targeting remains **GAME DESIGN DECISION REQUIRED**; no nearest-enemy heuristic invented, since none exists elsewhere in combat. |
+
+### Functional verification — 62 assertions, all passing
+
+`godot --headless --path . --script res://SampleProject/UI/verify_hotbar.gd`
+
+4 slots from Figma · slot validation · only unlocked **active** skills equip ·
+passive refused · locked refused · unknown refused · invalid slot refused ·
+**duplicates move rather than duplicate** · swap · unequip · loadout separate
+from progression · empty slot does nothing and spends nothing · equipped slot
+invokes `SkillManager` · exact SP consumed · damage via the existing pipeline ·
+cooldown blocks reuse, spends nothing, expires, restores ready · insufficient SP
+blocks and starts no cooldown · save/load round-trip · **legacy saves without
+`equipped_skills` load safely** · hotbar renders manager state incl. cooldown
+overlay · **hotbar source contains no `player_state`, no `sp_cost`, no `damage`,
+no key polling** · traversal `Player.abilities` unaffected · Equipment stats and
+normal attack intact.
+
+---
+
+## ✅ Resolved — the earlier hotbar block
+
+**Historical record.** The phase was halted at step 3 because the HUD did not
+exist. Figma has since added `Game Scene / Combat HUD` `434:6556` and all five
+questions are answered; the phase shipped. Original finding kept below.
 
 The brief states: *"Use the number of active skill slots defined by the approved
 Figma HUD. Do not invent a slot count. If the current Figma design does not
