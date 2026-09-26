@@ -50,7 +50,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
 | Shop menu (buy/sell/equipment) | MATCH | `153:1289` buy, `153:1523` sell, `153:1760` buy-confirm | Figma sidebar is Buy / Sell / Equipment — same three modes as `shop_ui.gd`. Selected row renders accent-on-accent (invisible name), the same Figma defect D26 fixed for Skills. |
-| Merchant NPC + prompt | PARTIAL | `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Figma routes the shop through an NPC action menu. The approach prompt is **not designed** (the only drawn one is in concept art, D73). |
+| Merchant NPC + prompt | MATCH | `461:6479` UI/Interaction/Prompt, `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Approach prompt → NPC action menu (D74). |
 | Blacksmith | MATCH | `176:1357` npc-menu-blacksmith (Talk / Quest / Craft / Enchant) | **D69: separate NPC**, entry to Crafting/Enchanting. Runtime's blacksmith-as-shop-Equipment-mode is wrong and must change. |
 
 ### C. Crafting / Enchanting
@@ -75,7 +75,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
-| Interaction prompt | NONE | — | The button hint `197:1422` sits in concept art and is **not authoritative** (D73). Needs a real design; D71 also requires it for item pickup. |
+| Interaction prompt | MATCH | `461:6479` UI/Interaction/Prompt (UI KIT) | **Approved generic prompt (D74).** Editable `Action Text` + swappable `Input Badge`; states Default / Focused / Disabled. Not yet placed in any prototype frame. |
 | NPC action menu | MATCH | `164:1302`, `176:1357` | `npc-interaction-menu` with `UI/Menu Item` rows. |
 | NPC speech bubble | MATCH | `164:1318` | Speaker, line, tail, `B Close` hint. |
 | Full-screen NPC dialogue | PARTIAL | `164:1334` | Frame holds only a dim overlay and a `Continue` hint — the dialogue panel is missing. |
@@ -94,7 +94,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Tutorial hints (in-game) | NONE | — | `135:1260` is the menu's tutorial page, not an in-game hint. |
 | ObjectiveHUD | MATCH | `434:6580` (successor) | Orphan; superseded by Quest Info Panel. |
 | Objective notifications | NONE | — | Quest tracker exists, no "objective updated" toast. |
-| Item acquired / loot toast | PARTIAL | `28:5`, `28:25`, `274:5375` / `222:4880` UI/Modal/ItemPickup | **D71: two states.** State 2 (confirmation modal) is designed; state 1 (nearby prompt to choose pickup) is not — see Interaction prompt. |
+| Item acquired / loot toast | MATCH | State 1 `461:6479` (example "Pick up" `461:6486`); state 2 `28:5`, `28:25`, `274:5375` / `222:4880` UI/Modal/ItemPickup | **D71 flow fully covered (D74):** nearby prompt, then the confirmation modal. |
 | Death / respawn UI | MATCH | `41:83` game-over-screen | "Game Over" + two options over a dungeon backdrop. The audit's "needs a design" is wrong. |
 | Demo end screen | NONE | — | — |
 | Prologue scene | NONE | — | Dead. |
@@ -105,7 +105,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | `ui_panel.tscn`, `game_title.tscn` | NONE | — | Dead. (`game_title` function is covered by the title block in `258:5140` / `9:26`.) |
 | `modal_dialog.tscn` | MATCH | `258:5332` UI/Modal/Confirm | — |
 | `yes_no_dialog.tscn` | MATCH | `258:5332` | Dead duplicate of `modal_dialog`. |
-| Save point | NONE | — | No save-point interaction UI. The save-pillar prop appears only in concept art (D73). Saving itself is `17:5`. |
+| Save point | PARTIAL | `461:6479` (example "Save" `461:6490`) | Approach prompt is covered (D74). **Post-interaction behaviour/UI is unconfirmed** — do not assume a separate save screen is required. |
 
 ### G. Main menu / Save / Load
 
@@ -122,22 +122,22 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Label | Count |
 |---|---|
-| FIGMA MATCH EXISTS | 34 |
-| FIGMA PARTIAL | 6 |
-| NO FIGMA DESIGN | 13 |
+| FIGMA MATCH EXISTS | 37 |
+| FIGMA PARTIAL | 5 |
+| NO FIGMA DESIGN | 11 |
 | FIGMA OUTDATED / CONFLICTS | 3 |
 | **Rows** | **56** |
 
 The audit counts 52 *distinct* surfaces; this table has 56 rows because it keeps
 the audit's row split (three HUD parts, legacy widgets, dead scenes) so every row
-gets a label. 5 of the 13 NONE rows are dead code or non-UI; 5 of the 34 MATCH
+gets a label. 5 of the 11 NONE rows are dead code or non-UI; 5 of the 37 MATCH
 rows are dead or superseded widgets whose function Figma covers.
 
-**Real design gaps (NONE on a live surface):** generic interaction prompt, level-up notification, enemy
+**Real design gaps (NONE on a live surface):** level-up notification, enemy
 health bar, combat context display, in-game tutorial hints, objective-updated
 notification, demo end screen. Plus the PARTIAL gaps: enchant list, full-screen
-NPC dialogue panel, dialogue choices in context, merchant approach prompt.
-**Also NONE:** generic interaction prompt (needed by D71 pickup) and save-point UI.
+NPC dialogue panel, dialogue choices in context, save-point post-interaction UI
+(pending confirmation).
 
 **Corrections to `UI_SURFACE_AUDIT.md` §6 "Still need Figma designs":**
 death/respawn screen (`41:83`) and the item-pickup confirmation modal (`28:5`,
@@ -163,7 +163,7 @@ answered by the blacksmith NPC menu (`176:1357`, D69).
 
 ## 4. Designer answers (2026-09-26)
 
-Recorded as D65–D73 in `figma_decision_register.md` §4.
+Recorded as D65–D74 in `figma_decision_register.md` §4.
 
 | # | Answer | Decision |
 |---|---|---|

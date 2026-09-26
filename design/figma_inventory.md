@@ -156,6 +156,7 @@ Largest section (10300×7400). Also contains Shop, Crafting and Enchant flows.
 | `248:75` | UI/Sidebar Tab (60×40) | active/inactive |
 | `386:6642` | UI/Sidebar Tab (270×45) *(same name as 248:75)* | active/inactive |
 | `117:214` | UI/Settings Tab | active/inactive |
+| `461:6479` | UI/Interaction/Prompt *(added after Phase 1; approved generic prompt, D74)* | State Default/Focused/Disabled · props `Action Text` (TEXT), `Input Badge` (INSTANCE_SWAP, default `icon/input/gamepad-button-a`) · examples: "Pick up" `461:6486`, "Save" `461:6490` |
 
 ### 2.3 Single components
 

@@ -93,7 +93,7 @@ themed HUD elements.
 
 | Surface | Scene | Script | Reachable? | Figma | Impl. | Functional | Blockers |
 |---|---|---|---|---|---|---|---|
-| Interaction prompt | inline `Label` in `merchant.tscn` | `Merchant.gd:25` | No (merchant unplaced) | — (only in concept art, D73) | 🟡 | 💀 | one hardcoded English string, no shared prompt component |
+| Interaction prompt | inline `Label` in `merchant.tscn` | `Merchant.gd:25` | No (merchant unplaced) | `UI/Interaction/Prompt` `461:6479` (D74) | 🟡 | 💀 | one hardcoded English string, no shared prompt component |
 | NPC action menu (Talk / Quest / Buy / Craft / Enchant) | — | — | No | `npc-menu-merchant`, `npc-menu-blacksmith` | ❌ | ❌ | does not exist |
 | NPC speech bubble | — | — | No | `npc-speech-bubble` | ❌ | ❌ | does not exist |
 | Full-screen NPC dialogue | addon box | — | Yes | `npc-dialogue-full` | 🟡 | ✅ | addon styling |
@@ -189,18 +189,19 @@ ext_resource) · `PrologueScene` · `yes_no_dialog` · `item_info_tooltip` ·
 `design/figma_coverage.md`. The earlier list wrongly included death/respawn and
 the item-acquired modal: both are designed.*
 
-**No design at all (live surfaces):** generic interaction prompt (needed for
-NPCs and for item pickup, D71) · save-point UI · enemy health bar · level-up notification ·
+**No design at all (live surfaces):** enemy health bar · level-up notification ·
 in-game tutorial hint · combat context display · objective-change notification ·
 demo end screen.
 
 **Design incomplete:** enchant list (`177:1362` is a mislabelled crafting copy) ·
 full-screen NPC dialogue (`164:1334` has no dialogue panel) · dialogue choices
-in context (component `258:5108` only).
+in context (component `258:5108` only) · save-point post-interaction UI
+(behaviour unconfirmed, D74).
 
 **Already designed, previously listed as missing:** death/respawn →
 `game-over-screen` `41:83` · item acquired → `item-pickup-*` `28:5`, `28:25`
-(D71: the confirmation modal; the nearby prompt before it is undesigned) ·
+(D71: the confirmation modal, after the generic prompt) · interaction prompt →
+`UI/Interaction/Prompt` `461:6479` (D74) ·
 crafting station → blacksmith NPC menu `176:1357` (D69: separate NPC).
 
 **Designer-requested new design:** a dedicated Enchanting page (D68).
@@ -212,8 +213,8 @@ Ukrainian (D67) · remove HUD Bag Section
 · duplicate `crafting-confirm` / `crafting-error` frames (`164:1446`,
 `164:1621`).
 
-**Figma coverage totals:** 34 MATCH · 6 PARTIAL · 13 NONE · 3 OUTDATED
-(World Map, Journal, item tooltip). Designer answers are recorded as D65–D73
+**Figma coverage totals:** 37 MATCH · 5 PARTIAL · 11 NONE · 3 OUTDATED
+(World Map, Journal, item tooltip). Designer answers are recorded as D65–D74
 (`figma_decision_register.md` §4).
 
 ## 7. Recommended implementation order
@@ -239,11 +240,11 @@ Ukrainian (D67) · remove HUD Bag Section
    `shop-buy-confirm` `153:1760`. Highest value per effort: data and logic
    already exist.
 6. **NPC interaction prompt + NPC action menu** — prerequisite for reaching the
-   shop, blacksmith and crafting from the world. Designed: menus `164:1302` /
-   `176:1357`, speech bubble `164:1318`. **The prompt itself needs a Figma
-   design** (the only drawn one is concept art, D73).
-7. **Item pickup** — `LootSystem` runs. D71: nearby prompt (needs a
-   design, same as item 6), then the confirmation modal `28:5` / `28:25`.
+   shop, blacksmith and crafting from the world. Designed: prompt
+   `UI/Interaction/Prompt` `461:6479` (D74), menus `164:1302` / `176:1357`,
+   speech bubble `164:1318`.
+7. **Item pickup** — `LootSystem` runs. D71: nearby prompt
+   `461:6479`, then the confirmation modal `28:5` / `28:25`.
 
 **Tier 3 — needs systems built first, not UI work**
 8. **Crafting** — 18 recipes exist but no manager or UI. The full screen flow
@@ -252,8 +253,9 @@ Ukrainian (D67) · remove HUD Bag Section
    blacksmith NPC (D69 — separate from the Shop) before any screen.
 9. **Enchanting** — planned (D68); no system and no data. Wait for the
    dedicated Enchanting page design.
-10. **Save-point prompt** — needs a product decision; only the prop and the
-    generic prompt are drawn.
+10. **Save point** — the approach prompt is `461:6479` (D74). What happens
+    after interacting still needs confirmation; no separate save screen is
+    assumed.
 
 **Cleanup (any time)**
 11. Delete or wire the 12 dead surfaces; remove the orphan `ObjectiveHUD`

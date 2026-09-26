@@ -97,9 +97,10 @@ behind the design, so these are **GAP** entries, not overrides.
 | **D68** | Q3 | **KEEP Enchanting** as a planned system. It needs a **dedicated Enchanting page design**. The current `enchant-list` (`177:1362`) is not final. Duplicate `crafting-confirm` / `crafting-error` frames may be cleaned up if they are true duplicates. | Designer action. Enchanting stays PARTIAL. |
 | **D69** | Q4 | **The Blacksmith is a SEPARATE NPC** with its own menu (Talk / Quest / Craft / Enchant). It is **not** an Equipment mode inside the Shop. | `176:1357` is authoritative. Runtime `shop_ui._on_blacksmith_pressed()` → `_switch_mode("equipment")` contradicts it. The blacksmith is the crafting/enchanting entry point. |
 | **D70** | Q5 | **`conversation-dialog-choices` (`36:65`) is for SPECIAL STORY SCENES only.** Do not use the ornate two-portrait layout as the default NPC dialogue. | Default NPC dialogue = `36:6`. |
-| **D71** | Q6 | **Item pickup has two UI states:** (1) a nearby/interact prompt letting the player choose to pick the item up, then (2) a pickup confirmation modal after pickup. | State 2 = `28:5` / `28:25` / `274:5375`. State 1 is **not designed** (the only drawn prompt is concept art, D73). |
+| **D71** | Q6 | **Item pickup has two UI states:** (1) a nearby/interact prompt letting the player choose to pick the item up, then (2) a pickup confirmation modal after pickup. | State 1 = `461:6479` (D74). State 2 = `28:5` / `28:25` / `274:5375`. |
 | **D72** | Q7 | **Main menu uses CONTINUE only.** No separate Load Game button. If save-slot selection is needed, it is reached through Continue. | `9:26` is authoritative. Runtime `load_game` button must go; Continue → `150:1278` when slot choice is needed. |
-| **D73** | Q8 | **`desert-oasis-scene` and `fishing-village-scene` are CONCEPT ART / MOOD REFERENCES ONLY.** Their HUD overlays are not authoritative and must not be implemented. | `144:1735`, `197:1392` carry no UI authority — including the button hint `197:1422`. HUD authority is `434:6556`. |
+| **D73** | Q8 | **`desert-oasis-scene` and `fishing-village-scene` are CONCEPT ART / MOOD REFERENCES ONLY.** Their HUD overlays are not authoritative and must not be implemented. | `144:1735`, `197:1392` carry no UI authority — including the button hint `197:1422` (since promoted to `461:6479`, D74). HUD authority is `434:6556`. |
+| **D74** | follow-up | **`UI/Interaction/Prompt` (`461:6479`) is the approved generic interaction prompt.** | Covers the interaction prompt, merchant approach and D71 state 1. Save point: prompt covered; post-interaction behaviour/UI **still needs confirmation** — no separate save screen assumed. |
 
 ## 5. Open — still undecided
 
@@ -110,6 +111,7 @@ behind the design, so these are **GAP** entries, not overrides.
 | D38 | Combat HUD | `434:6556` | Skill auto-targeting rule |
 | D47 (part) | Settings | `17:756` | Figma lacks the four real `skill_slot_*` binds (not covered by D66) |
 | D56 | Journal | — | Quest engine has no data and is never instanced — ship or delete |
+| D74 (part) | Save point | `461:6479` | What happens after interacting with a save point? No separate save screen is assumed yet. |
 
 ## 6. Stale entries
 
