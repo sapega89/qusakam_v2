@@ -1,9 +1,10 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/ui_root.gd" id="1_ui_root"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/modal_layer.tscn" id="2_modal_layer"]
 [ext_resource type="Script" path="res://addons/fsm/FiniteStateMachine.gd" id="3_fsm"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/States/null_state.tscn" id="4_null_state"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="5_game_ui_theme"]
 
 [node name="UIRoot" type="Node"]
 script = ExtResource("1_ui_root")
@@ -16,6 +17,7 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
+theme = ExtResource("5_game_ui_theme")
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("3_fsm")

@@ -18,3 +18,6 @@ assets/**
 # Випадкові експорти/скріншоти в корені
 Untitled.png
 Untitled.png.import
+
+# Temp Figma reference/render captures (regenerable)
+.figma_tmp/

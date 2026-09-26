@@ -183,3 +183,125 @@ func _register_managers_in_service_locator() -> void:
 	# NOTE: ServiceLocator._register_all_registries() вызывается автоматически через call_deferred
 	# Этот метод больше не нужен, но оставлен для совместимости
 	print("🔌 GameManager: Managers will be registered by ServiceLocator automatically")
+
+
+# ── Совместимость: контракт, который ожидают компоненты меню ────────────────
+# InventoryComponent, EquipmentComponent и StatsComponent исторически обращаются
+# к game_manager.player_state / .characters / .active_character. Эти данные
+# давно переехали в PlayerStateManager и CharacterManager, но обращения остались.
+# Раньше ошибки не всплывали, потому что ServiceLocatorHelper всегда возвращал
+# null и game_manager у компонентов был пустым. Тонкие делегаты восстанавливают
+# контракт, не переписывая ни менеджеры, ни компоненты.
+
+var player_state: Dictionary:
+	get:
+		var manager := get_node_or_null(^"PlayerStateManager")
+		return manager.player_state if manager else {}
+
+var characters: Dictionary:
+	get:
+		var manager := get_node_or_null(^"CharacterManager")
+		return manager.get_all_characters() if manager else {}
+
+var active_character_id: String:
+	get:
+		var manager := get_node_or_null(^"CharacterManager")
+		return manager.get_active_character_id() if manager else ""
+
+var active_character:
+	get:
+		var manager := get_node_or_null(^"CharacterManager")
+		return manager.get_active_character() if manager else null
+
+func get_active_character():
+	"""Активный персонаж (делегат к CharacterManager)."""
+	var manager := get_node_or_null(^"CharacterManager")
+	return manager.get_active_character() if manager else null
+
+
+func get_all_characters() -> Dictionary:
+	"""Все персонажи (делегат к CharacterManager)."""
+	var manager := get_node_or_null(^"CharacterManager")
+	return manager.get_all_characters() if manager else {}
+
+# ── Производные статы активного персонажа ──────────────────────────────────
+# Формулы НЕ дублируются: всё считает StatCalculator. Здесь только тонкие
+# обёртки "для активного персонажа", потому что UI вызывает их без аргументов.
+
+func _active_attributes() -> CharacterAttributes:
+	var character = get_active_character()
+	return character.attributes if character else null
+
+
+func _active_equipment_stats() -> Dictionary:
+	var character = get_active_character()
+	return character.get_equipment_stats() if character else {}
+
+
+func calculate_max_health() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_physical_damage() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_magic_damage() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_magic_damage(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_physical_defense() -> int:
+	return StatCalculator.calculate_physical_defense(_active_equipment_stats())
+
+
+func calculate_magic_defense() -> int:
+	return StatCalculator.calculate_magic_defense(_active_equipment_stats())
+
+
+func calculate_attack_speed() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_attack_speed(attributes) if attributes else 1.0
+
+
+func calculate_dodge_chance() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_dodge_chance(attributes) if attributes else 0.0
+
+
+func calculate_accuracy() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_accuracy(attributes) if attributes else 0.0
+
+
+func calculate_critical_chance() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_critical_chance(attributes) if attributes else 0.0
+
+
+# ── Прочие тонкие делегаты для UI ──────────────────────────────────────────
+
+func get_class_data(class_id: String, subclass_id: String = "") -> Dictionary:
+	"""Данные класса (делегат к CharacterManager; определения живут в JSON)."""
+	var manager := get_node_or_null(^"CharacterManager")
+	return manager.get_class_data(class_id, subclass_id) if manager else {}
+
+
+func switch_character(character_id: String) -> bool:
+	"""Смена активного персонажа (делегат к CharacterManager)."""
+	var manager := get_node_or_null(^"CharacterManager")
+	return manager.switch_character(character_id) if manager else false
+
+
+func get_current_player() -> Node:
+	"""Узел игрока в текущей сцене. Единственный владелец — группа GameGroups.PLAYER."""
+	var tree := get_tree()
+	return tree.get_first_node_in_group(GameGroups.PLAYER) if tree else null
+
+# NOTE: add_stat_point() намеренно НЕ добавлен. В этом проекте пул очков
+# характеристик исключён (см. комментарии "Исключены ... stat_points" в
+# CharacterManager/PlayerStateManager), поэтому трата очков не имеет бюджета.
+# Кадр Figma menu-status кнопок траты тоже не содержит.
+# См. design/ui_visual_qa.md → "Данные, которых нет".

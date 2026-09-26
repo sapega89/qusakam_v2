@@ -1,0 +1,84 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/party_status_panel.gd" id="1_party"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
+color = Color(0.22745098, 0.22745098, 0.25882354, 1)
+thickness = 1
+
+[node name="PartyStatusPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SidePanel"
+script = ExtResource("1_party")
+
+[node name="Body" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="HeaderMeta" type="HBoxContainer" parent="Body"]
+layout_mode = 2
+
+[node name="Playtime" type="VBoxContainer" parent="Body/HeaderMeta"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="PlaytimeCaption" type="Label" parent="Body/HeaderMeta/Playtime"]
+layout_mode = 2
+theme_type_variation = &"MicroLabel"
+text = "PLAYTIME"
+
+[node name="PlaytimeValue" type="Label" parent="Body/HeaderMeta/Playtime"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BigValue"
+text = "00:00:00"
+
+[node name="Gold" type="VBoxContainer" parent="Body/HeaderMeta"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 2
+
+[node name="GoldCaption" type="Label" parent="Body/HeaderMeta/Gold"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"MicroLabel"
+text = "GOLD"
+
+[node name="GoldRow" type="HBoxContainer" parent="Body/HeaderMeta/Gold"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 6
+
+[node name="GoldGlyph" type="Label" parent="Body/HeaderMeta/Gold/GoldRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"AccentLabel"
+text = "⬡"
+
+[node name="GoldValue" type="Label" parent="Body/HeaderMeta/Gold/GoldRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BigValueAccent"
+text = "0"
+
+[node name="Rule" type="HSeparator" parent="Body"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_rule")
+
+[node name="CardsScroll" type="ScrollContainer" parent="Body"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Cards" type="VBoxContainer" parent="Body/CardsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16

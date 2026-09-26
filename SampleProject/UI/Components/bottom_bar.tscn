@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/bottom_bar.gd" id="1_bottom_bar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bottom_bar"]
+bg_color = Color(0.06666667, 0.06666667, 0.09411765, 0.85)
+border_width_top = 1
+border_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
+
+[node name="BottomBar" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 64)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bottom_bar")
+script = ExtResource("1_bottom_bar")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_right = 48
+
+[node name="Row" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="HintLabel" type="Label" parent="Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"SmallLabel"
+
+[node name="Actions" type="HBoxContainer" parent="Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_constants/separation = 24

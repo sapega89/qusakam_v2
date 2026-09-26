@@ -1,8 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://c37ilywk3dk41"]
+[gd_scene load_steps=19 format=3 uid="uid://c37ilywk3dk41"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Components/base_menu.gd" id="1_base_menu"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/timer_display.tscn" id="6_timer"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/gold_display.tscn" id="7_gold"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/party_status_panel.tscn" id="8_party"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/bottom_bar.tscn" id="9_bottom_bar"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/menu_map_background.jpg" id="10_map_bg"]
 
 [sub_resource type="Gradient" id="Gradient_swgay"]
 offsets = PackedFloat32Array(0.42, 1)
@@ -61,48 +64,94 @@ grow_vertical = 2
 script = ExtResource("1_base_menu")
 
 [node name="Background" type="ColorRect" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.1, 0.1, 0.1, 0.95)
+color = Color(0.06666667, 0.06666667, 0.09411765, 1)
+
+[node name="MapBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("10_map_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MapDim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.06666667, 0.06666667, 0.09411765, 0.56)
+
+[node name="ScreenOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.56)
+
+[node name="SidebarBackdrop" type="Panel" parent="."]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 320.0
+offset_bottom = -64.0
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SidePanel"
 
 [node name="Menu name" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 395.0
-offset_bottom = 35.0
-theme_override_styles/normal = SubResource("StyleBoxTexture_2jb5m")
-text = "Menu"
+offset_left = 24.0
+offset_right = 320.0
+offset_bottom = 50.0
+theme_type_variation = &"TopBarTitle"
+text = "MENU"
+vertical_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -44.0
+offset_top = 50.0
+offset_bottom = -64.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
 
 [node name="CentralPanel" type="Control" parent="HBoxContainer"]
-custom_minimum_size = Vector2(600, 500)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
+size_flags_vertical = 3
 
 [node name="RightPanel" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 3
-theme = SubResource("Theme_right_panel")
-theme_override_styles/panel = SubResource("StyleBoxFlat_right_panel")
+theme_type_variation = &"PlainPanel"
+
+[node name="PartyStatusPanel" parent="HBoxContainer/RightPanel" instance=ExtResource("8_party")]
+layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -190,7 +239,11 @@ text = "1"
 horizontal_alignment = 2
 vertical_alignment = 1
 
+[node name="BottomBar" parent="." instance=ExtResource("9_bottom_bar")]
+layout_mode = 1
+
 [node name="description" type="Label" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0

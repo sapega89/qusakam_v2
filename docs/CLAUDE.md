@@ -6,7 +6,10 @@ This file provides essential guidance to Claude Code when working with this repo
 
 ## Project Overview
 
-**Godot 4.5** metroidvania-style game with GDScript. Integrates combat, inventory, dialogue, save/load, and MetroidvaniaSystem addon for map management.
+**Godot 4.6** metroidvania-style game with GDScript. Integrates combat, inventory, dialogue, save/load, and MetroidvaniaSystem addon for map management.
+
+> Version is authoritative from `project.godot` → `config/features=PackedStringArray("4.6", ...)`.
+> Running the project on 4.5.x crashes at startup.
 
 ## Quick Commands
 
