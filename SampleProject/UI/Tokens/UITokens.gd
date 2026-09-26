@@ -87,6 +87,7 @@ const SIZE_CAPTION := 12   # Bold    — метадані, теги
 const SIZE_MICRO := 11      # Bold — PLAYTIME / GOLD / бейдж рівня
 const SIZE_ROW_TITLE := 18  # Medium — назва предмета; Bold — таб інвентарю
 const SIZE_TOPBAR := 28     # Bold — заголовок "MENU"
+const SIZE_MAP_TITLE := 44  # Bold — назва світу на карті
 const SIZE_CAPTION_SM := 13 # Regular — підписи секцій ("PRIMARY JOB")
 const SIZE_BODY_SM := 15    # Regular — текст карток талантів
 const SIZE_LEVEL := 22      # Bold — "Lv.46" біля імені

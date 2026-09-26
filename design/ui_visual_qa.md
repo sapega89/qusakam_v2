@@ -247,9 +247,54 @@ traversal `Player.abilities` unaffected · party panel restored on leave.
 
 ---
 
+## World Map — `menu-world-map` `94:609`
+
+**Status:** restyled and validated (Phase 5.10). MetSys behaviour untouched.
+Full element mapping: `design/world_map_mapping.md`.
+
+| # | Item | Figma | Build | Verdict |
+|---|---|---|---|---|
+| 1 | Map viewport | `center-content` 1600×1016 | same, MetSys MapView | ✅ |
+| 2 | Title block | Bold **44** accent uppercase + 32px rules + Regular 18 sub, centred, gap 2/16 | same (`MapTitle`/`MapSubtitle`) | ✅ |
+| 3 | Background | illustrated parchment | shared shell `MapBackground` | ✅ |
+| 4 | Player marker | — | `MetSys.add_player_location()`, real coords | ✅ |
+| 5 | Explored % | **absent from Figma** | kept + restyled (`EXPLORED 020%`) | ⚠️ D39 |
+| 6 | Legend | 208×196 panel, 5 categories | **not built** | ⚠️ D40 |
+| 7 | Named markers | 13 fixed-position markers | **not built** | ⚠️ D41 |
+| 8 | Bottom bar | shared | shared, hints truthful | ✅ |
+| 9 | Local styles | — | duplicate `StyleBoxFlat_bg` removed | ✅ |
+
+### Deviations (World Map)
+
+| # | Deviation | Reason |
+|---|---|---|
+| **D39** | **Explored percentage kept although Figma omits it.** | Working feature (`MetSys.get_explored_ratio()`); removing it would delete functionality. Restyled with theme tokens into an `EXPLORED` panel bottom-left. |
+| **D40** | **Legend not built.** | Its five categories (City/Oasis/Ruins/Camp/Cave) describe the named markers, which have no backing data. A legend explaining absent symbols would mislead. **NEEDS DESIGN DECISION.** |
+| **D41** | **13 named location markers not built.** | Figma places them at fixed pixel positions. The project has **no named-location dataset** — MetSys stores a grid of room cells, not points of interest with display names or world coordinates. Building them means inventing both the data and a world→screen projection, which §2 forbids. **NEEDS DESIGN DECISION.** |
+| **D42** | **Illustrated map vs MetSys grid.** | Figma draws a hand-illustrated world; MetSys renders discovered room cells procedurally. The illustration cannot show real exploration state. Grid kept as the live map, illustration kept as background art. **NEEDS DESIGN DECISION** to resolve properly. |
+
+### Fixed during this phase
+
+`_input()` compared raw `event.keycode == KEY_LEFT/RIGHT/UP/DOWN`, bypassing the
+rebinding system. Replaced with `ui_left/right/up/down` actions; panning is
+otherwise identical and asserted by test.
+
+### Functional verification — 33 assertions, all passing
+
+`godot --headless --path . --script res://SampleProject/UI/verify_world_map.gd`
+
+Opens via tab · previous screen hides · MapView and player marker created ·
+centring and percentage APIs intact · percent matches `MetSys.get_explored_ratio()` ·
+offset centres on the **real** player cell · no hardcoded `KEY_*` · pans on
+`ui_right` · hints truthful and free of unimplemented actions · Figma chrome
+present · duplicate local style gone · menu close/reopen loses no map state ·
+MetSys exploration data unchanged · map survives cycling every tab.
+
+---
+
 ## Not yet implemented
 
-World Map · Journal · HUD · Pause · Settings.
+Journal · Pause · Settings.
 
 ### Pre-existing gaps surfaced during Phase 5
 

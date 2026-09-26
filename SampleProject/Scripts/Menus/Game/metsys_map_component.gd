@@ -26,7 +26,7 @@ func _ready():
 	
 	# Получаем ссылки на узлы
 	top_draw = get_node_or_null("TopDraw")
-	percent_label = get_node_or_null("PercentLabel")
+	percent_label = get_node_or_null("%PercentLabel")
 	
 	# Ждем, пока размер будет установлен
 	await get_tree().process_frame
@@ -77,10 +77,19 @@ func _notification(what: int) -> void:
 				map_view.size = SIZE
 				update_offset()
 
+## Підказки показують тільки те, що справді реалізовано: панорамування і назад.
+func _publish_hints(active: bool) -> void:
+	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar") if get_tree() else null
+	if bar == null or not bar.has_method("set_context_hint"):
+		return
+	bar.set_context_hint("Arrow keys — pan the map." if active else "")
+
+
 func set_map_active(active: bool):
 	"""Устанавливает активность карты"""
 	is_map_active = active
 	visible = active
+	_publish_hints(active)
 	
 	if active:
 		process_mode = Node.PROCESS_MODE_ALWAYS
@@ -123,37 +132,34 @@ func update_offset():
 	if top_draw:
 		top_draw.queue_redraw()
 
+## Панорамування карти. Використовуємо дії InputMap (ui_left/right/up/down),
+## а не сирі keycode — інакше перепризначення клавіш у налаштуваннях не працює.
 func _input(event: InputEvent) -> void:
-	"""Обработка ввода для прокрутки карты"""
 	if not is_map_active or not visible:
 		return
-	
-	if event is InputEventKey and event.pressed:
-		var move_offset: Vector2i = Vector2i.ZERO
-		
-		if event.keycode == KEY_LEFT:
-			move_offset = Vector2i.LEFT
-		elif event.keycode == KEY_RIGHT:
-			move_offset = Vector2i.RIGHT
-		elif event.keycode == KEY_UP:
-			move_offset = Vector2i.UP
-		elif event.keycode == KEY_DOWN:
-			move_offset = Vector2i.DOWN
-		else:
-			return
-		
-		# Перемещаем видимую область карты
-		if map_view:
-			map_view.move(move_offset)
-			offset += move_offset
-			
-			# Обновляем позицию игрока на карте
-			if player_location:
-				player_location.offset = -Vector2(map_view.begin) * MetSys.CELL_SIZE
-			
-			# Обновляем отрисовку
-			if top_draw:
-				top_draw.queue_redraw()
+
+	var move_offset := Vector2i.ZERO
+	if event.is_action_pressed(&"ui_left"):
+		move_offset = Vector2i.LEFT
+	elif event.is_action_pressed(&"ui_right"):
+		move_offset = Vector2i.RIGHT
+	elif event.is_action_pressed(&"ui_up"):
+		move_offset = Vector2i.UP
+	elif event.is_action_pressed(&"ui_down"):
+		move_offset = Vector2i.DOWN
+	else:
+		return
+
+	if map_view == null:
+		return
+	map_view.move(move_offset)
+	offset += move_offset
+	if player_location:
+		player_location.offset = -Vector2(map_view.begin) * MetSys.CELL_SIZE
+	if top_draw:
+		top_draw.queue_redraw()
+	get_viewport().set_input_as_handled()
+
 
 func _draw() -> void:
 	"""Отрисовка дополнительных элементов на карте"""
