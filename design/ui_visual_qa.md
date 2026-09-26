@@ -223,10 +223,10 @@ and the same screen driven by test-only fixtures.
 
 | # | Deviation | Reason |
 |---|---|---|
-| **D26** | **Selected-row JP cost uses dark-on-accent, not accent-on-accent.** | Figma sets accent text on an accent fill (`58:593` on `bg-accent`), which is invisible. Deliberately changed to `ON_ACCENT` for legibility. **→ FIGMA NEEDS UPDATE.** |
-| **D27** | **SP readout added to the header.** | The brief requires SP display; the Skills frame has no SP element. Placed under JP, using the existing `StatValue` style. **→ FIGMA NEEDS UPDATE** if SP belongs on this screen. |
+| **D26** | **Selected-row JP cost uses dark-on-accent, not accent-on-accent.** | ✅ **Approved — keep.** Figma sets accent text on an accent fill (`58:593` on `bg-accent`), which is invisible. Using `ON_ACCENT` for legibility. **→ FIGMA NEEDS CORRECTION.** |
+| **D27** | **SP is NOT shown on the Skills screen.** | ✅ **Approved — removed.** SP stays a real gameplay resource in the data model, but it belongs to the combat HUD, not the progression screen. Re-add only if an approved Figma revision places it here. |
 | **D28** | **Row markers are squares, not check-circle / lock glyphs.** | Those icons are not exported yet (same gap as D5/D17/D21). Learned = filled accent square, locked = outlined, hidden = muted outline. |
-| **D29** | **Skill details render in the bottom bar, not the in-column tooltip panel.** | Consistent with the Inventory decision (D8): one context surface, reachable by keyboard and gamepad. The Figma `UI/Tooltip` sits inside the secondary column only, which cannot serve a selection in the primary column. |
+| **D29** | **Skill details render in the bottom bar, not the in-column tooltip panel.** | ✅ **Approved — keep.** One shared context surface for mouse, keyboard and gamepad, matching Inventory (D8). No second tooltip system. The Figma `UI/Tooltip` sits inside the secondary column only and cannot serve a primary-column selection. |
 | **D30** | **No skill-tree connectors.** | None exist in Figma either — the frame is two flat lists. Confirmed via `get_design_context`; see `design/skills_ui_mapping.md`. **No `ui_position` / `tree_row` field was needed.** |
 | **D31** | **No unlock confirmation modal.** | Figma specifies none for Skills, so none was invented. Unlock is immediate via `SkillManager`. |
 | **D32** | **Production screen is empty.** | `skills.json` intentionally has no content. The screen states this honestly rather than showing fabricated skills. |
@@ -342,3 +342,50 @@ module, where it was aborting player-data save/load outright.
 **The remaining ~90 `Engine.has_singleton` sites are untouched.** Fixing them
 wholesale would activate ~90 dormant code paths simultaneously; each needs its
 own verification. Recommended as a dedicated pass.
+
+
+---
+
+## ⛔ Blocked — Equipped Skills + Combat Hotbar
+
+**Phase halted at step 3 by design, not by an implementation problem.**
+
+The brief states: *"Use the number of active skill slots defined by the approved
+Figma HUD. Do not invent a slot count. If the current Figma design does not
+define a hotbar or slot count, stop and report."*
+
+**The Figma file does not define a combat skill hotbar.**
+
+### Evidence
+
+| Check | Result |
+|---|---|
+| `Game Scene` section (`144:1802`) | **empty** — zero frames |
+| `desert-oasis-scene` (`144:1735`) — the prototype's return target from every menu | one UI element only: the `✦ MENU` pill |
+| `UI/Skills/Slot` component (`222:4839`, states Default/Active/Locked/Cooldown/Disabled) | exists in the kit, **0 instances anywhere in the prototype** |
+| Only HUD slot row in the whole file — `HUD-Top-Left` (`197:1437`) in `fishing-village-scene` | label reads **"BAG"**; 3 × `UI/Potion Slot` 44×44 at 56px pitch, each showing a potion with `×5` |
+| Repo search for existing hotbar/quickslot code | none |
+
+The one slot row that exists is a **consumable quick-bag**, not a skill bar.
+Rendered and visually confirmed.
+
+### What this blocks
+
+Slot count gates everything downstream: the `equipped_skills` model shape (§2),
+the loadout API's valid-slot validation (§4), the hotbar UI (§6), and the number
+of input actions (§8). Building any of it would mean inventing the count.
+
+### Decisions required
+
+1. **Does the game have a combat skill hotbar at all?** The design currently
+   shows a consumables bag instead.
+2. **How many active skill slots?** `UI/Skills/Slot` exists with a `Cooldown`
+   state, which implies intent — but it was never placed.
+3. **Where does it sit** relative to the BAG row, health/XP bars and the
+   `✦ MENU` button?
+4. **Input bindings** — `project.godot` defines only `move_*`, `jump`, `attack`.
+   No skill actions exist and Figma specifies none.
+5. **SP HUD placement** — D27 moved SP off the Skills screen on the
+   understanding it lives on the combat HUD, which is not yet designed.
+
+Until these are answered in Figma, the phase cannot proceed without guessing.

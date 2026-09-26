@@ -9,6 +9,9 @@ extends BaseMenuComponent
 ##
 ## UI НЕ редагує player_state і НЕ дублює правила: чому навичка недоступна —
 ## завжди питаємо в SkillManager.can_unlock().
+##
+## SP тут свідомо НЕ показується (рішення D27): це бойовий ресурс, його місце —
+## бойовий HUD, а не екран прогресії.
 
 const PLACEHOLDER := "—"
 const UNKNOWN_NAME := "???"
@@ -17,7 +20,6 @@ const UNKNOWN_NAME := "???"
 @onready var _char_class: Label = %CharClass
 @onready var _avatar: Panel = %Avatar
 @onready var _jp_value: Label = %JPValue
-@onready var _sp_value: Label = %SPValue
 @onready var _primary_column: VBoxContainer = %PrimaryColumn
 @onready var _secondary_column: VBoxContainer = %SecondaryColumn
 @onready var _empty_label: Label = %EmptyLabel
@@ -49,7 +51,6 @@ func _resolve_database() -> Node:
 func _connect_live_sources() -> void:
 	for pair in [
 		[EventBus.job_points_changed, _on_job_points_changed],
-		[EventBus.sp_changed, _on_sp_changed],
 		[EventBus.skill_unlocked, _on_skill_unlocked],
 	]:
 		if not pair[0].is_connected(pair[1]):
@@ -59,10 +60,6 @@ func _connect_live_sources() -> void:
 func _on_job_points_changed(_current: int, _previous: int) -> void:
 	_refresh_header()
 	_refresh_rows()
-
-
-func _on_sp_changed(_current: int, _max: int) -> void:
-	_refresh_header()
 
 
 func _on_skill_unlocked(_skill_id: String) -> void:
@@ -91,7 +88,6 @@ func _refresh_header() -> void:
 
 	_char_class.text = _class_name(character)
 	_jp_value.text = "%d JP" % _skill_manager.get_job_points()
-	_sp_value.text = "%d / %d" % [_skill_manager.get_current_sp(), _skill_manager.get_max_sp()]
 
 
 ## Назви класів у pathfinder_classes.json поки порожні — показуємо прочерк,

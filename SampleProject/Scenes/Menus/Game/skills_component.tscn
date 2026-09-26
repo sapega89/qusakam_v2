@@ -74,22 +74,6 @@ size_flags_horizontal = 8
 theme_type_variation = &"BigValueAccent"
 text = "0 JP"
 
-[node name="SPRow" type="HBoxContainer" parent="Center/Body/ProfileHeader/Meta"]
-layout_mode = 2
-size_flags_horizontal = 8
-theme_override_constants/separation = 6
-
-[node name="SPCaption" type="Label" parent="Center/Body/ProfileHeader/Meta/SPRow"]
-layout_mode = 2
-theme_type_variation = &"MicroLabel"
-text = "SP"
-
-[node name="SPValue" type="Label" parent="Center/Body/ProfileHeader/Meta/SPRow"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"StatValue"
-text = "0 / 0"
-
 [node name="Columns" type="HBoxContainer" parent="Center/Body"]
 unique_name_in_owner = true
 layout_mode = 2

@@ -141,9 +141,10 @@ func _initialize() -> void:
 	sm.add_job_points(500)
 	await process_frame
 	ck(ui._jp_value.text == "%d JP" % sm.get_job_points(), "job_points_changed refreshes JP")
-	sm.spend_sp(5)
-	await process_frame
-	ck(ui._sp_value.text == "%d / %d" % [sm.get_current_sp(), sm.get_max_sp()], "sp_changed refreshes SP")
+	# D27: SP свідомо прибрано з екрана прогресії — показ належить бойовому HUD.
+	var ui_src: String = FileAccess.open(
+		"res://SampleProject/Scripts/Menus/Game/skills_component.gd", FileAccess.READ).get_as_text()
+	ck(ui_src.find("get_current_sp") == -1, "Skills screen does not display SP (D27)")
 
 	print("[9] save/load preserves presentation")
 	var pdm = root.get_node("SaveSystem").player_data_module
