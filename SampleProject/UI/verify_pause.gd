@@ -101,10 +101,9 @@ func _initialize() -> void:
 	ck(not paused, "returns to gameplay cleanly")
 
 	print("[8] no second pause system")
-	var src: String = FileAccess.open(
-		"res://SampleProject/Scripts/UI/PauseMenu.gd", FileAccess.READ).get_as_text()
-	ck(src.find("class_name PauseMenu") != -1, "legacy PauseMenu.gd still on disk")
-	# Мертвий код: жодна сцена його не інстанціює і жоден скрипт не згадує.
+	ck(not FileAccess.file_exists("res://SampleProject/Scripts/UI/PauseMenu.gd"),
+			"legacy PauseMenu.gd removed")
+	# Жодна сцена не інстанціює другу систему паузи і жоден скрипт не згадує.
 	var referenced := false
 	for path in ["res://SampleProject/Game.tscn",
 			"res://SampleProject/Scenes/UI/ui_root.tscn",
