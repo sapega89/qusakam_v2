@@ -105,16 +105,54 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | `ui_panel.tscn`, `game_title.tscn` | NONE | — | Dead. (`game_title` function is covered by the title block in `258:5140` / `9:26`.) |
 | `modal_dialog.tscn` | MATCH | `258:5332` UI/Modal/Confirm | — |
 | `yes_no_dialog.tscn` | MATCH | `258:5332` | Dead duplicate of `modal_dialog`. |
-| Save point | PARTIAL | `461:6479` (example "Save" `461:6490`) | Approach prompt is covered (D74). **Post-interaction behaviour/UI is unconfirmed** — do not assume a separate save screen is required. |
+| Save point | MATCH | `461:6479` (example "Save" `461:6490`) → Save Slot Selection in SAVE mode | Prompt `[A] Save` opens the shared slot screen (D75). See §G flow. |
 
 ### G. Main menu / Save / Load
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
-| Main menu | MATCH | `9:26` | Figma: New Game / Continue / Settings / Quit Game. **D72: Continue only** — the runtime `load_game` button must go; slot choice is reached via Continue → `150:1278`. |
-| Load game menu | MATCH | `150:1278` | Slot rows: timestamp, location, level, party portraits, playtime; Empty Slot state. |
-| Save game state | MATCH | `17:5`, `258:5162` UI/Save Screen Modal | Includes the "Overwrite Save?" confirm. |
+| Main menu | MATCH | `9:26` | Figma: New Game / Continue / Settings / Quit Game. **D72: Continue only** — the runtime `load_game` button must go. Continue opens Save Slot Selection in LOAD mode (D75). |
+| Load game menu | MATCH | `150:1278` (LOAD mode of Save Slot Selection) | Not a separate screen — merged into Save Slot Selection (D75). |
+| Save game state | MATCH | `17:5` (SAVE mode of Save Slot Selection), `258:5162` overwrite confirm | Not a separate screen — merged into Save Slot Selection (D75). |
 | Splash | MATCH | `258:5141` / `258:5140` | Title + `PRESS ANY BUTTON`. `MainMenu.tscn` already has a hidden `PressAnyButtonContainer`. Display face "Khalahas Heroes" missing (data gap). |
+| Save confirmation (save succeeded) | NONE | — | No "game saved" toast, modal or text anywhere in the file. A text search finds only "Auto-Save", the "Saving Your Progress" tutorial title and "Resume from last save point". |
+
+#### Save / Load flow — one shared surface (D75)
+
+**Save Slot Selection** is ONE runtime surface with two entry points. There are
+no separate Save and Load menus.
+
+| Flow step | Coverage | Figma evidence |
+|---|---|---|
+| Save Point Interaction Prompt | MATCH | `461:6479` — `[A] Save` example `461:6490` |
+| Save Slot Selection | MATCH | `150:1278` load-game-screen (LOAD) · `17:5` save-game-screen (SAVE) |
+| Main Menu → Continue → Save Slot Selection, **LOAD mode** | MATCH | `9:26` → `150:1278` |
+| Save Point → Save Slot Selection, **SAVE mode** | MATCH | `461:6479` → `17:5` |
+| Overwrite confirmation (SAVE mode, occupied slot) | MATCH | `258:5162` UI/Save Screen Modal → `UI/Modal/Confirm` |
+| Save confirmation (save succeeded) | NONE | — |
+
+This flow table restates rows already counted above; it adds nothing to the totals.
+
+**What the existing Figma frames show**
+
+| Aspect | Finding |
+|---|---|
+| Frames | `load-game-screen` `150:1278` and `save-game-screen` `17:5`. Same composition: `UI/Save Load Top Section` `217:1597` + `UI/Save Load List Area` `217:3038` + `UI/Bottom Bar`. |
+| Mode variants | **No variant property.** Mode is set by the Top Section's `title` text property ("Load Game" / "Save Game"). Both frames share the same list component, so the design already treats them as one surface. |
+| Slot structure | 4 cards (1790×176) in a scrollable list with a scrollbar. Each card: cursor column, large slot-number watermark, left block (timestamp, region, location), right block (lead character level + name, 1–3 party avatars, playtime with clock icon). |
+| Occupied slot | Slots 1–3, e.g. "9/23/2026 00:05 · Sunken Ruins · Crystal Sanctum · Lv. 26 Kael · 011:05". |
+| Empty slot | Slot 4: "Empty Slot / No save data available". |
+| Selected slot | Slot 1: gold `#D4AF37` card border, gold avatar borders and the cursor pointer; other slots use white borders. Hand-built, not a component state. No hover or disabled state. |
+| Overwrite confirmation | Present, SAVE mode only: `258:5162` dims the screen and shows `UI/Modal/Confirm` "Overwrite Save? — This will replace the existing save data" with Yes / No. |
+| Back / cancel | Bottom bar `B Return` in both modes. `258:5162` shows keyboard hints `W/S Navigate · Enter Save · ESC Back`. In the modal, **No** cancels. |
+| Timestamp / playtime / location | All present: `save-date`, `region-name` + `location-name`, `time-value`. |
+| Save-success confirmation | **None** in the file. |
+
+**Figma gaps in this flow** (they do not block the MATCH):
+1. LOAD-mode instruction text reads "Select a slot to **save** your game." — copied from SAVE mode.
+2. No LOAD-mode rule for empty slots (disabled look, or not selectable).
+3. No load confirmation ("Load this save?"). May be intentional.
+4. Save-success feedback is not designed (the NONE row).
 
 ---
 
@@ -122,22 +160,21 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Label | Count |
 |---|---|
-| FIGMA MATCH EXISTS | 37 |
-| FIGMA PARTIAL | 5 |
-| NO FIGMA DESIGN | 11 |
+| FIGMA MATCH EXISTS | 38 |
+| FIGMA PARTIAL | 4 |
+| NO FIGMA DESIGN | 12 |
 | FIGMA OUTDATED / CONFLICTS | 3 |
-| **Rows** | **56** |
+| **Rows** | **57** |
 
-The audit counts 52 *distinct* surfaces; this table has 56 rows because it keeps
-the audit's row split (three HUD parts, legacy widgets, dead scenes) so every row
-gets a label. 5 of the 11 NONE rows are dead code or non-UI; 5 of the 37 MATCH
+The audit counts 52 *distinct* surfaces; this table has 57 rows because it keeps
+the audit's row split (three HUD parts, legacy widgets, dead scenes) and adds the
+save-success confirmation. 5 of the 12 NONE rows are dead code or non-UI; 5 of the 38 MATCH
 rows are dead or superseded widgets whose function Figma covers.
 
 **Real design gaps (NONE on a live surface):** level-up notification, enemy
 health bar, combat context display, in-game tutorial hints, objective-updated
-notification, demo end screen. Plus the PARTIAL gaps: enchant list, full-screen
-NPC dialogue panel, dialogue choices in context, save-point post-interaction UI
-(pending confirmation).
+notification, demo end screen, save-success confirmation. Plus the PARTIAL gaps:
+enchant list, full-screen NPC dialogue panel, dialogue choices in context.
 
 **Corrections to `UI_SURFACE_AUDIT.md` §6 "Still need Figma designs":**
 death/respawn screen (`41:83`) and the item-pickup confirmation modal (`28:5`,
@@ -163,7 +200,7 @@ answered by the blacksmith NPC menu (`176:1357`, D69).
 
 ## 4. Designer answers (2026-09-26)
 
-Recorded as D65–D74 in `figma_decision_register.md` §4.
+Recorded as D65–D75 in `figma_decision_register.md` §4.
 
 | # | Answer | Decision |
 |---|---|---|

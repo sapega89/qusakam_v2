@@ -195,8 +195,11 @@ demo end screen.
 
 **Design incomplete:** enchant list (`177:1362` is a mislabelled crafting copy) ·
 full-screen NPC dialogue (`164:1334` has no dialogue panel) · dialogue choices
-in context (component `258:5108` only) · save-point post-interaction UI
-(behaviour unconfirmed, D74).
+in context (component `258:5108` only).
+
+**Save flow (D75):** one shared Save Slot Selection surface — LOAD mode from
+Main Menu → Continue, SAVE mode from a save point. Figma `150:1278` / `17:5` /
+`258:5162` cover it; **save-success confirmation has no design**.
 
 **Already designed, previously listed as missing:** death/respawn →
 `game-over-screen` `41:83` · item acquired → `item-pickup-*` `28:5`, `28:25`
@@ -213,8 +216,8 @@ Ukrainian (D67) · remove HUD Bag Section
 · duplicate `crafting-confirm` / `crafting-error` frames (`164:1446`,
 `164:1621`).
 
-**Figma coverage totals:** 37 MATCH · 5 PARTIAL · 11 NONE · 3 OUTDATED
-(World Map, Journal, item tooltip). Designer answers are recorded as D65–D74
+**Figma coverage totals:** 38 MATCH · 4 PARTIAL · 12 NONE · 3 OUTDATED
+(World Map, Journal, item tooltip). Designer answers are recorded as D65–D75
 (`figma_decision_register.md` §4).
 
 ## 7. Recommended implementation order
@@ -222,9 +225,11 @@ Ukrainian (D67) · remove HUD Bag Section
 **Tier 1 — visible in every session, already backed, pure restyle**
 1. **Dialogue box + choices** — the single most-seen unstyled surface. Decide
    addon ownership first (same question as D48).
-2. **Splash / Main menu / Load / Save** — first thing a player sees; all
-   wired and working, only styling is off. All four are designed
-   (`258:5141`, `9:26`, `150:1278`, `17:5` + `258:5162`). Splash reuses the
+2. **Splash / Main menu / Save Slot Selection** — first thing a player sees;
+   all wired and working, only styling is off. All designed (`258:5141`,
+   `9:26`, `150:1278`, `17:5` + `258:5162`). Load and Save become **one**
+   Save Slot Selection surface with LOAD/SAVE modes (D75); the two runtime
+   scenes merge. Splash reuses the
    hidden `PressAnyButtonContainer` already in `MainMenu.tscn`. Main menu's
    runtime Load Game button must go — slot choice goes through Continue (D72).
 3. **Tutorial hints, combat context, level-up notification, enemy health bar** —
@@ -253,9 +258,8 @@ Ukrainian (D67) · remove HUD Bag Section
    blacksmith NPC (D69 — separate from the Shop) before any screen.
 9. **Enchanting** — planned (D68); no system and no data. Wait for the
    dedicated Enchanting page design.
-10. **Save point** — the approach prompt is `461:6479` (D74). What happens
-    after interacting still needs confirmation; no separate save screen is
-    assumed.
+10. **Save point** — prompt `461:6479` "[A] Save" (D74) → Save Slot
+    Selection in SAVE mode (D75). Save-success feedback is undesigned.
 
 **Cleanup (any time)**
 11. Delete or wire the 12 dead surfaces; remove the orphan `ObjectiveHUD`
