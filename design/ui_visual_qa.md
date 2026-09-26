@@ -912,3 +912,65 @@ already shown on the combat HUD and cannot justify a full-screen journal.
 
 Recorded **D52–D57**. Journal is blocked on content and design decisions, not on
 UI work; building it now would mean fabricating a story codex.
+
+---
+
+# JOURNAL — implemented as a quest-log shell (Phase 5.14)
+
+Product decision (D52 resolved): the Journal is a **quest log**, not a character
+codex. Figma's codex content is treated as outdated placeholder; only its visual
+language is reused. Suite: `SampleProject/UI/verify_journal.gd` — **44
+assertions, all passing**. Captures: `design/shots/journal_production_1920.png`,
+`design/shots/journal_fixtures_1920.png`.
+
+## What was built
+
+A **data-driven shell**. The `.tscn` contains no quest row — the entry list is
+built at runtime from `set_entries()`. The entry contract is
+`id / title / state / objectives / description`, which is what real quest data
+will map onto without touching the scene.
+
+| State | Behaviour |
+|---|---|
+| **Production (today)** | `entries` is empty → honest empty state, *"No journal entries yet."* List and detail columns hidden entirely. |
+| **Current objective** | If `Game.current_objective` is non-empty, a `CURRENT OBJECTIVE` panel shows it, bound live to `Game.objective_updated`. It is **not** promoted into a journal entry — asserted. Empty objective hides the panel rather than rendering a dash. |
+| **With data** | Two columns: selectable entry list (shared `ListRow` variation, one `ButtonGroup`) and a detail pane with title, state, description and objectives. |
+
+## Honesty guarantees (asserted)
+
+- No production quest content exists; `entries` is empty on a freshly opened
+  Journal, even after a previous session loaded fixtures.
+- The rejected Figma names and concepts — Khalahas Heroes, Lyra Ashveil, Valen,
+  Selene, Backstory, Path Action, Talent, All Chapters, Main Story — appear
+  **neither in the scene file nor in any rendered label**.
+- Fixtures live only in `verify_journal.gd`; the production script contains no
+  `FIXTURES` (asserted), so they can never load during gameplay.
+- Empty description, empty state and empty objective list each hide their
+  element instead of printing a placeholder.
+- The dormant quest engine was **not** activated and no `.tres` quest data was
+  authored, per scope.
+
+## Visual language reused
+
+Title block uses the same eyebrow/heading pattern as Settings
+(`SettingsEyebrow` + `SettingsHeading`), rows use `ListRow`, the objective panel
+uses `SidePanel` + `QuestCaption`, and the detail pane uses `PanelHeading`,
+`SectionLabel` and `CardBody`. No new theme entries were needed and the scene
+carries no colour overrides or embedded fonts (asserted).
+
+Character-codex presentation — banners, pedestals, portraits, the chapter
+stepper — was dropped entirely, since none of it has backing.
+
+## Deviations
+
+| # | Figma | Implemented | Why |
+|---|---|---|---|
+| D58 | Four character banners with pedestals and portrait art | Quest entry list | D52: Journal is a quest log. Banner characters are not project characters. |
+| D59 | `◇ All Chapters ◇` chapter stepper | Omitted | No chapter or story-grouping model exists (D52). |
+| D60 | Character-detail page (class/talent stats, backstory prose, 720×820 portrait) | Quest detail pane | No backstory, portrait, Path Action or Talent data exists (D54, D55). |
+| D61 | Page renders over illustrated map art | Solid `#111118` page background | Same fix as Settings: the map art behind the menu made body text unreadable. Matches Figma's own page fill. |
+
+## Note
+
+The bottom-bar hint is applied deferred: the Game Menu writes its own default
+hint *after* the tab switch completes, so a direct call was being overwritten.

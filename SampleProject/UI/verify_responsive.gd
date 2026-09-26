@@ -47,7 +47,7 @@ func _initialize() -> void:
 		return
 
 	_audit_shell(menu)
-	for tab in ["Inventory", "Equipment", "Status", "Skills", "World Map", "Misc"]:
+	for tab in ["Inventory", "Equipment", "Status", "Skills", "World Map", "Journal", "Misc"]:
 		menu.switch_to_tab(tab)
 		for i in 6: await process_frame
 		_audit_screen(menu, tab)
@@ -124,6 +124,7 @@ func _audit_screen(menu: Node, tab: String) -> void:
 		"Status": "StatsComponent",
 		"Skills": "SkillsComponent",
 		"World Map": "MetSysMapComponent",
+		"Journal": "JournalComponent",
 		"Misc": "OptionsComponent",
 	}
 	var node: Node = menu.find_child(String(component_names[tab]), true, false)
