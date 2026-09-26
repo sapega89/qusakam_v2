@@ -475,8 +475,8 @@ func _close_game_menu_mode():
 		get_tree().paused = false
 
 		# Transition to main menu
-		get_tree().change_scene_to_file("res://SampleProject/Scenes/Menus/Main/main_menu.tscn")
+		get_tree().change_scene_to_file("res://SampleProject/MainMenu.tscn")
 	else:
 		# Fallback
 		get_tree().paused = false
-		get_tree().change_scene_to_file("res://SampleProject/Scenes/Menus/Main/main_menu.tscn")
+		get_tree().change_scene_to_file("res://SampleProject/MainMenu.tscn")
