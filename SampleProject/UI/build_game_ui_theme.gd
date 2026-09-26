@@ -157,6 +157,10 @@ func _setup_label_variations(theme: Theme) -> void:
 		"VitalsName": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.ACCENT],
 		"VitalsLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
 		"VitalsValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		"QuestCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"QuestTitle": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"CurrencyGlyph": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"CurrencyValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.ACCENT],
 	}
 	for name in roles:
 		var spec: Array = roles[name]

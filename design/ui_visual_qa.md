@@ -378,12 +378,61 @@ added it; all five blocking questions resolved — see `design/combat_hud_mappin
 
 | # | Deviation | Reason |
 |---|---|---|
-| **D33** | **BAG / consumable slots not implemented.** | Figma models it as a separate system (`Bag Section`, its own track). Out of scope for Equipped Skills + Hotbar. |
-| **D34** | **Quest Info Panel and Currency & Settings not implemented.** | Part of the new Figma top row but outside this phase. |
-| **D35** | **Legacy HUD widgets overlap the new vitals panel.** | `PlayerHealthBar` and `PlayerXPBar` are **hidden** (superseded by the vitals panel, not deleted). `CoinCounter`, the collectible counter and an in-world health bar still render at their old positions and visually collide with the panel. Figma now defines replacements (Currency & Settings), but implementing them belongs to D34. **Follow-up HUD phase.** |
-| **D36** | **Skill icons are placeholder boxes.** | Icon set still not exported (D5/D17/D21/D28). |
+| **D33** | **BAG / consumable slots not implemented.** | ⚠️ **Figma itself does not specify them.** `Bag Section` (`434:6593`) is 101×14 and contains four *empty* 14px bind frames — bind labels with no slots, no icons, no counts. Nothing to match; not invented. **→ FIGMA NEEDS COMPLETION.** |
+| **D34** | ✅ **Resolved.** Quest Info Panel and Currency & Settings implemented. | — |
+| **D35** | ✅ **Resolved.** All HUD overlaps cleared — see "Legacy widget disposition" below. | — |
+| **D36** | **Skill-slot icons remain placeholder boxes.** | Per-skill icon art does not exist in Figma either — `UI/Skills/Slot` ships a plain `#2a2a35` box, and the one real glyph in the HUD (`icon/skills/steal`) belongs to a skill that has no production definition. Shared UI glyphs **are** now imported (below). |
 | **D37** | **No controller bindings for slots.** | Figma shows numeric badges `1–4` only; keyboard actions `skill_slot_1…4` added. Controller mapping is undesigned — not invented. |
 | **D38** | **No runtime target selection.** | `use_slot()` forwards an explicit target. Auto-targeting remains **GAME DESIGN DECISION REQUIRED**; no nearest-enemy heuristic invented, since none exists elsewhere in combat. |
+
+### Visual completion pass (Phase 5.8)
+
+**Implemented to match Figma:** Player Vitals Panel (HP/SP/XP), Quest Info Panel,
+Currency & Settings, MENU entry, Skill Hotbar — all four slot states.
+
+**Shared UI glyphs imported** from Figma into `SampleProject/Assets/UI/Icons/`
+and wired up, closing the long-running icon gap (D5/D17/D21/D28):
+
+| Glyph | Source node | Used by |
+|---|---|---|
+| `check_circle.svg` | `icon/ui/check-circle` `106:661` | Skills — learned row |
+| `lock.svg` | `icon/ui/lock` `106:664` | Skills — locked / `???` row |
+| `chevron.svg` | `chevron` `382:8126` | Sidebar active-tab marker |
+| `quest_marker.svg` | `Quest Icon Box` `434:6581` | HUD quest panel |
+
+**Legacy widget disposition** — bindings preserved, nothing deleted blindly:
+
+| Widget | Action | Why |
+|---|---|---|
+| `PlayerHealthBar`, `PlayerXPBar` | suppressed via `modulate.a = 0`, node kept | `HealthBar.gd` force-sets `visible = true` (lines 174, 339) and `Player.gd:267` **recreates the node if missing** — so scene-level hiding cannot work and deletion would regenerate it |
+| `CoinCounter` | suppressed via `modulate.a = 0` | superseded by Currency Display, same `coins_changed` binding |
+| `ObjectiveHUD` | **node removed** | it animates its own `modulate` via tween, so suppression was impossible. `CombatHudTop` replaces it and subscribes to the *same* `Game.objective_updated` signal; no code referenced the node |
+| `UI/HBoxContainer` collectible counter | hidden | not present in the Figma HUD |
+
+### Resolution validation
+
+| Resolution | Result |
+|---|---|
+| 1920×1080 | ✅ reference |
+| 1600×900 | ✅ identical composition |
+| 1280×720 | ✅ identical composition |
+
+**Root finding:** `project.godot` had **no `[display]` section at all**, so no
+stretch policy existed and the UI would not scale below the design resolution.
+An earlier capture appeared to show an off-centre quest panel; measuring the
+actual rects proved the viewport had never changed — a harness artifact, not a
+layout bug. Added the standard policy:
+
+```
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+```
+
+All three resolutions now resolve to a logical 1920×1080 canvas scaled to the
+window, so every anchor and margin holds. This affects **all** screens, not just
+the HUD — it is the first stretch policy the project has ever had.
 
 ### Functional verification — 62 assertions, all passing
 

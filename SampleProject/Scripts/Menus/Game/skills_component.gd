@@ -14,6 +14,8 @@ extends BaseMenuComponent
 ## бойовий HUD, а не екран прогресії.
 
 const PLACEHOLDER := "—"
+const ICON_CHECK := preload("res://SampleProject/Assets/UI/Icons/check_circle.svg")
+const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
 const UNKNOWN_NAME := "???"
 
 @onready var _char_name: Label = %CharName
@@ -235,11 +237,13 @@ func _make_skill_row(definition: SkillDefinition) -> Button:
 	hbox.add_theme_constant_override("separation", UITokens.SPACE_MD)
 	row.add_child(hbox)
 
-	var marker := Panel.new()
+	var marker := TextureRect.new()
 	marker.name = "Marker"
 	marker.custom_minimum_size = Vector2(14, 14)
 	marker.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	marker.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	marker.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	hbox.add_child(marker)
 
 	var name_label := Label.new()
@@ -267,7 +271,7 @@ func _apply_row_state(definition: SkillDefinition, row: Button) -> void:
 
 	var name_label: Label = row.get_node(^"Row/SkillName")
 	var cost_label: Label = row.get_node(^"Row/Cost")
-	var marker: Panel = row.get_node(^"Row/Marker")
+	var marker: TextureRect = row.get_node(^"Row/Marker")
 
 	if hidden:
 		name_label.text = UNKNOWN_NAME
@@ -289,15 +293,19 @@ func _apply_row_state(definition: SkillDefinition, row: Button) -> void:
 	# Свідомо беремо контрастний колір (див. design/ui_visual_qa.md, D26).
 	cost_label.add_theme_color_override("font_color", UITokens.ON_ACCENT)
 
-	var marker_box := StyleBoxFlat.new()
-	marker_box.set_corner_radius_all(UITokens.RADIUS)
+	# Гліфи з Figma: вивчене — check-circle, приховане — замок.
 	if unlocked:
-		marker_box.bg_color = UITokens.ACCENT
+		marker.texture = ICON_CHECK
+		marker.modulate = UITokens.ACCENT
+		marker.visible = true
+	elif hidden:
+		marker.texture = ICON_LOCK
+		marker.modulate = UITokens.TEXT_MUTED
+		marker.visible = true
 	else:
-		marker_box.bg_color = Color(0, 0, 0, 0)
-		marker_box.set_border_width_all(UITokens.BORDER_WIDTH)
-		marker_box.border_color = UITokens.TEXT_MUTED if hidden else UITokens.BORDER
-	marker.add_theme_stylebox_override("panel", marker_box)
+		marker.texture = ICON_LOCK
+		marker.modulate = UITokens.BORDER
+		marker.visible = true
 
 	row.set_pressed_no_signal(selected)
 

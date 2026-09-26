@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://b5p6p0hjkmgyj"]
+[gd_scene load_steps=7 format=3 uid="uid://b5p6p0hjkmgyj"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/panel_manager.gd" id="2_ups86"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/cursor_indicator.gd" id="4_6sxu5"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/focus_router.gd" id="5_focus_router"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="6_chevron"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_game_menu"]
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_layk3"]
@@ -48,6 +49,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Inventory"
@@ -58,6 +61,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Equipment"
@@ -68,6 +73,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "World Map"
@@ -78,6 +85,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Misc"
@@ -88,6 +97,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Journal"
@@ -98,6 +109,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Skills"
@@ -108,6 +121,8 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_type_variation = &"SidebarTab"
 alignment = 0
+icon = ExtResource("6_chevron")
+expand_icon = true
 toggle_mode = true
 button_group = SubResource("ButtonGroup_game_menu")
 text = "Status"
