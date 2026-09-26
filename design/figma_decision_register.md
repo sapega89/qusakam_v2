@@ -83,24 +83,35 @@ These do **not** make Figma outdated; the game is behind the design.
 | D48 | Settings | Controls tab reuses the maaacks `InputOptionsMenu` |
 | D50 | Settings | Round slider grabber — diamond thumb needs an asset |
 
-## 4. Open — needs Sapega
+## 4. Designer decisions — 2026-09-26
 
-Phase 3 gives these a provisional label and lists them under *Questions for Sapega*.
+Answers from Sapega to the questions in `figma_coverage.md` §4. They resolve
+D6, #10, D43–D47 and Q1–Q8. **Figma stays authoritative for all of them.** The game is
+behind the design, so these are **GAP** entries, not overrides.
+
+| ID | Resolves | Decision | Consequence |
+|---|---|---|---|
+| **D65** | Q1, D6, #10 | **KEEP Healing and Jobs.** Planned future features, not obsolete frames. | `58:230`, `58:947` are authoritative. The 7-vs-9 sidebar is a runtime gap. |
+| **D66** | Q2, D43–D47 | **BUILD all deferred settings:** Resolution, Frame Rate Limit, Screen Brightness, Ambient volume, Text Speed, Screen Shake, Damage Numbers, Borderless mode. Input actions Dash, Special Ability, Interact are planned. **Do not delete these rows from Figma.** | Settings rows are runtime gaps. |
+| **D67** | Q2 | **Figma language options must list English and Ukrainian.** | Figma update (`17:632`). |
+| **D68** | Q3 | **KEEP Enchanting** as a planned system. It needs a **dedicated Enchanting page design**. The current `enchant-list` (`177:1362`) is not final. Duplicate `crafting-confirm` / `crafting-error` frames may be cleaned up if they are true duplicates. | Designer action. Enchanting stays PARTIAL. |
+| **D69** | Q4 | **The Blacksmith is a SEPARATE NPC** with its own menu (Talk / Quest / Craft / Enchant). It is **not** an Equipment mode inside the Shop. | `176:1357` is authoritative. Runtime `shop_ui._on_blacksmith_pressed()` → `_switch_mode("equipment")` contradicts it. The blacksmith is the crafting/enchanting entry point. |
+| **D70** | Q5 | **`conversation-dialog-choices` (`36:65`) is for SPECIAL STORY SCENES only.** Do not use the ornate two-portrait layout as the default NPC dialogue. | Default NPC dialogue = `36:6`. |
+| **D71** | Q6 | **Item pickup has two UI states:** (1) a nearby/interact prompt letting the player choose to pick the item up, then (2) a pickup confirmation modal after pickup. | State 2 = `28:5` / `28:25` / `274:5375`. State 1 is **not designed** (the only drawn prompt is concept art, D73). |
+| **D72** | Q7 | **Main menu uses CONTINUE only.** No separate Load Game button. If save-slot selection is needed, it is reached through Continue. | `9:26` is authoritative. Runtime `load_game` button must go; Continue → `150:1278` when slot choice is needed. |
+| **D73** | Q8 | **`desert-oasis-scene` and `fishing-village-scene` are CONCEPT ART / MOOD REFERENCES ONLY.** Their HUD overlays are not authoritative and must not be implemented. | `144:1735`, `197:1392` carry no UI authority — including the button hint `197:1422`. HUD authority is `434:6556`. |
+
+## 5. Open — still undecided
 
 | ID | Screen | Figma node | Question |
 |---|---|---|---|
-| D6, #10 | Game Menu sidebar | `58:230` menu-healing, `58:947` menu-jobs | Figma has 9 sidebar items, the game 7. Healing and Jobs have no systems. Build them, or are the frames obsolete? |
 | D9, #4c | Inventory | `46:193` | `FILTER` button has no behaviour defined anywhere |
 | D18, #6 | Status | `58:719` | 8-slot character grid + stat-point buttons absent from Figma — keep in party panel? |
 | D38 | Combat HUD | `434:6556` | Skill auto-targeting rule |
-| D43 | Settings | `17:280` | Resolution, Frame Rate Limit, Screen Brightness: build or cut from Figma |
-| D44 | Settings | `17:409` | Ambient volume: add bus or cut row |
-| D45 | Settings | `17:632` | Text Speed, Screen Shake, Damage Numbers: build or cut |
-| D46 | Settings | `17:280` | Display Mode: add Borderless or keep two states |
-| D47 | Settings | `17:756` | Six Controls rows name non-existent actions (Dash, Special Ability, Interact…); Figma lacks the four `skill_slot_*` binds |
+| D47 (part) | Settings | `17:756` | Figma lacks the four real `skill_slot_*` binds (not covered by D66) |
 | D56 | Journal | — | Quest engine has no data and is never instanced — ship or delete |
 
-## 5. Stale entries
+## 6. Stale entries
 
 `ui_implementation_plan.md` §6 still lists #2, #3, #7, #8, #9 and #12 as **Open**, but
 later phases settled them: Equipment was composed from `258:5110` + `258:5111`
@@ -108,7 +119,7 @@ later phases settled them: Equipment was composed from `258:5110` + `258:5111`
 `434:6556` (#8), `PauseMenu.gd` was deleted in `fc56f37b` (#9), and #12 became D1.
 That table should be updated. Not changed here — outside this audit's scope.
 
-## 6. No decisions exist yet for
+## 7. No decisions exist yet for
 
 None of the 28 Figma frames that `figma_inventory.md` lists as never mapped has any
 recorded decision: Splash, Main Menu, Save/Load, Modals & Popups, Dialogues, NPC
