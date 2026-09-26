@@ -10,6 +10,11 @@ Audit only. Nothing was implemented, fixed or redesigned.
 **Legend:** ✅ COMPLETE · 🟡 FUNCTIONAL BUT OLD STYLE · 🟠 PARTIAL ·
 ❌ MISSING UI · 💀 DEAD / UNREACHABLE · ❓ NEEDS DESIGN DECISION
 
+**Figma coverage** (MATCH / PARTIAL / NONE / OUTDATED) for every row below is in
+`design/figma_coverage.md`. The `Figma?` columns here list node IDs only. Supporting
+docs: `figma_inventory.md` (what Figma contains), `figma_decision_register.md`
+(which decisions override Figma).
+
 ---
 
 ## A. Game Menu + HUD (the implemented scope)
@@ -88,7 +93,7 @@ themed HUD elements.
 
 | Surface | Scene | Script | Reachable? | Figma | Impl. | Functional | Blockers |
 |---|---|---|---|---|---|---|---|
-| Interaction prompt | inline `Label` in `merchant.tscn` | `Merchant.gd:25` | No (merchant unplaced) | `npc-speech-bubble` | 🟡 | 💀 | one hardcoded English string, no shared prompt component |
+| Interaction prompt | inline `Label` in `merchant.tscn` | `Merchant.gd:25` | No (merchant unplaced) | `gamepad-prompt` `197:1422` | 🟡 | 💀 | one hardcoded English string, no shared prompt component |
 | NPC action menu (Talk / Quest / Buy / Craft / Enchant) | — | — | No | `npc-menu-merchant`, `npc-menu-blacksmith` | ❌ | ❌ | does not exist |
 | NPC speech bubble | — | — | No | `npc-speech-bubble` | ❌ | ❌ | does not exist |
 | Full-screen NPC dialogue | addon box | — | Yes | `npc-dialogue-full` | 🟡 | ✅ | addon styling |
@@ -180,36 +185,71 @@ ext_resource) · `PrologueScene` · `yes_no_dialog` · `item_info_tooltip` ·
 
 ## 6. Still need Figma designs
 
-Death / respawn screen · item-acquired & loot toasts · objective-change
-notification · save-point prompt · generic interaction prompt · crafting station
-· enemy health bar · level-up notification · tutorial hint · combat context
-display · demo end screen. Figma also needs updating for Equipment slots,
-Controls actions, Journal (codex → quest log) and Settings languages.
+*Revised by the Figma coverage audit — full per-surface labels in
+`design/figma_coverage.md`. The earlier list wrongly included death/respawn,
+item-acquired and the generic interaction prompt: all three are designed.*
+
+**No design at all (live surfaces):** enemy health bar · level-up notification ·
+in-game tutorial hint · combat context display · objective-change notification ·
+demo end screen.
+
+**Design incomplete:** enchant list (`177:1362` is a mislabelled crafting copy) ·
+full-screen NPC dialogue (`164:1334` has no dialogue panel) · dialogue choices
+in context (component `258:5108` only) · save-point interaction · Load Game entry
+on the main menu (`9:26`).
+
+**Already designed, previously listed as missing:** death/respawn →
+`game-over-screen` `41:83` · item acquired → `item-pickup-*` `28:5`, `28:25`
+(a modal, not a toast — open question) · interaction prompt → `197:1422` ·
+crafting station → blacksmith NPC menu `176:1357` (pending confirmation).
+
+**Figma needs updating:** Equipment slots (D20) · Controls actions (D47) ·
+Journal codex → quest log (D52) · Settings languages · remove HUD Bag Section
+(D33) · accent-on-accent selected rows in Shop and Crafting (same defect as D26)
+· duplicate `crafting-confirm` / `crafting-error` frames (`164:1446`,
+`164:1621`).
+
+**Figma coverage totals:** 34 MATCH · 8 PARTIAL · 11 NONE · 3 OUTDATED
+(World Map, Journal, item tooltip). 8 open questions for the designer are listed
+in `figma_coverage.md` §4.
 
 ## 7. Recommended implementation order
 
 **Tier 1 — visible in every session, already backed, pure restyle**
 1. **Dialogue box + choices** — the single most-seen unstyled surface. Decide
    addon ownership first (same question as D48).
-2. **Main menu / Load / Save** — first thing a player sees; all three are
-   wired and working, only styling is off.
+2. **Splash / Main menu / Load / Save** — first thing a player sees; all
+   wired and working, only styling is off. All four are designed
+   (`258:5141`, `9:26`, `150:1278`, `17:5` + `258:5162`). Splash reuses the
+   hidden `PressAnyButtonContainer` already in `MainMenu.tscn`. Main menu's
+   Load Game entry has no Figma counterpart (Q7).
 3. **Tutorial hints, combat context, level-up notification, enemy health bar** —
-   small, live, backed; need Figma designs.
+   small, live, backed; **still need Figma designs** (the only Tier 1 items
+   blocked on design).
 
-**Tier 2 — real systems that are unreachable**
-4. **Shop** — fix the `Engine.has_singleton` bug, place a merchant in a map,
-   then restyle to `shop-buy` `153:1289`. Highest value per effort: data and
-   logic already exist.
-5. **NPC interaction prompt + NPC action menu** — prerequisite for reaching the
-   shop, blacksmith and crafting from the world.
+**Tier 2 — designed and backed, UI missing or unreachable**
+4. **Death / game-over screen** — `EventBus.player_died` / `player_respawned`
+   exist, and `41:83` is designed. Moved up from Tier 3: no longer blocked on
+   design.
+5. **Shop** — fix the `Engine.has_singleton` bug, place a merchant in a map,
+   then restyle to `shop-buy` `153:1289`, `shop-sell` `153:1523`,
+   `shop-buy-confirm` `153:1760`. Highest value per effort: data and logic
+   already exist.
+6. **NPC interaction prompt + NPC action menu** — prerequisite for reaching the
+   shop, blacksmith and crafting from the world. Designed: prompt `197:1422`,
+   menus `164:1302` / `176:1357`, speech bubble `164:1318`.
+7. **Item pickup** — `LootSystem` runs; `28:5` / `28:25` designed. Modal vs
+   toast needs a product call first (Q6).
 
 **Tier 3 — needs systems built first, not UI work**
-6. **Crafting** — 18 recipes exist but no manager, station or UI. Needs a
-   `CraftingManager` decision before any screen.
-7. **Enchanting** — no system and no data.
-8. **Death/respawn, loot toasts, save-point prompt** — need Figma designs and
-   product decisions.
+8. **Crafting** — 18 recipes exist but no manager or UI. The full screen flow
+   is designed (`160:1291` → `164:2326` → `164:2545` / `164:2764`), and Figma
+   puts the station at the blacksmith NPC. Needs a `CraftingManager` and the
+   blacksmith-role decision (Q4) before any screen.
+9. **Enchanting** — no system and no data; design lacks a list screen (Q3).
+10. **Save-point prompt** — needs a product decision; only the prop and the
+    generic prompt are drawn.
 
 **Cleanup (any time)**
-9. Delete or wire the 12 dead surfaces; remove the orphan `ObjectiveHUD`
+11. Delete or wire the 12 dead surfaces; remove the orphan `ObjectiveHUD`
    ext_resource and the superseded hidden HUD widgets.
