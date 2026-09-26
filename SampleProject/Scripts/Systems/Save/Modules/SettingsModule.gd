@@ -58,8 +58,8 @@ func _apply_audio_settings() -> void:
 	var audio_manager = null
 	if Engine.has_singleton("AudioManager"):
 		audio_manager = Engine.get_singleton("AudioManager")
-	elif Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	else:
+		var service_locator = ServiceLocatorHelper.get_service_locator()
 		if service_locator and service_locator.has_method("get_audio_manager"):
 			audio_manager = service_locator.get_audio_manager()
 
@@ -88,8 +88,8 @@ func _apply_display_settings() -> void:
 	var display_manager = null
 	if Engine.has_singleton("DisplayManager"):
 		display_manager = Engine.get_singleton("DisplayManager")
-	elif Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	else:
+		var service_locator = ServiceLocatorHelper.get_service_locator()
 		if service_locator and service_locator.has_method("get_display_manager"):
 			display_manager = service_locator.get_display_manager()
 

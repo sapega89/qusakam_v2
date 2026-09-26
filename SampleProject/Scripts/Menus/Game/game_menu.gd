@@ -124,8 +124,8 @@ func _ready() -> void:
 
 func _connect_ui_refresh() -> void:
 	var ui_manager = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_ui_manager"):
 			ui_manager = service_locator.get_ui_manager()
 	if ui_manager and ui_manager.has_signal("ui_refresh_requested"):

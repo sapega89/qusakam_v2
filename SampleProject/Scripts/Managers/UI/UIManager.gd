@@ -56,8 +56,8 @@ func _try_connect_localization() -> void:
 	if _localization_connected:
 		return
 	var localization_manager = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_localization_manager"):
 			localization_manager = service_locator.get_localization_manager()
 		if service_locator and service_locator.has_signal("services_ready") and not service_locator.services_ready.is_connected(_try_connect_localization):
@@ -381,8 +381,8 @@ func is_gameplay_input_allowed() -> bool:
 func can_open_pause_menu() -> bool:
 	if not allow_pause_during_dialogue:
 		var dialogue_manager = null
-		if Engine.has_singleton("ServiceLocator"):
-			var service_locator = Engine.get_singleton("ServiceLocator")
+		var service_locator = ServiceLocatorHelper.get_service_locator()
+		if service_locator:
 			if service_locator and service_locator.has_method("get_dialogue_manager"):
 				dialogue_manager = service_locator.get_dialogue_manager()
 		if dialogue_manager and dialogue_manager.has_method("is_dialogue_active"):

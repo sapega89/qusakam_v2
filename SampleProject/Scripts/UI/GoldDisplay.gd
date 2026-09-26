@@ -8,8 +8,8 @@ var inventory_manager: InventoryManager = null
 
 func _ready():
 	# Знаходимо InventoryManager
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_inventory_manager"):
 			inventory_manager = service_locator.get_inventory_manager()
 	

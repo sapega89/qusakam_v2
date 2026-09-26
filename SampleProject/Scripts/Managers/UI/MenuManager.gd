@@ -96,8 +96,8 @@ func save_ui_state():
 func hide_ui_elements():
 	"""Скрывает UI элементы"""
 	# Використовуємо UIManager для отримання UI елементів, щоб уникнути рекурсії
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		var ui_manager = service_locator.get_ui_manager() if service_locator and service_locator.has_method("get_ui_manager") else null
 		if ui_manager:
 			var ui_canvas = ui_manager.get_ui_canvas()
@@ -117,7 +117,7 @@ func hide_ui_elements():
 				print("🎮 MenuManager: Hidden UICanvas (skill panel)")
 	
 	# Використовуємо UIManager для отримання UI елементів
-	if Engine.has_singleton("ServiceLocator"):
+	if ServiceLocatorHelper.get_service_locator():
 		var ui_manager = ServiceLocator.get_ui_manager()
 		if ui_manager:
 			var health_bar = ui_manager.get_health_bar()
@@ -140,8 +140,8 @@ func hide_ui_elements():
 func show_ui_elements():
 	"""Показывает UI элементы"""
 	# Використовуємо UIManager для отримання UI елементів, щоб уникнути рекурсії
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		var ui_manager = service_locator.get_ui_manager() if service_locator and service_locator.has_method("get_ui_manager") else null
 		if ui_manager:
 			var ui_canvas = ui_manager.get_ui_canvas()
@@ -161,7 +161,7 @@ func show_ui_elements():
 				print("🎮 MenuManager: Shown UICanvas (skill panel)")
 	
 	# Використовуємо UIManager для отримання UI елементів
-	if Engine.has_singleton("ServiceLocator"):
+	if ServiceLocatorHelper.get_service_locator():
 		var ui_manager = ServiceLocator.get_ui_manager()
 		if ui_manager:
 			var health_bar = ui_manager.get_health_bar()

@@ -65,8 +65,8 @@ func set_data(data: Dictionary) -> void:
 
 ## Получает GameManager через ServiceLocator
 func _get_game_manager():
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_game_manager"):
 			return service_locator.get_game_manager()
 	return null

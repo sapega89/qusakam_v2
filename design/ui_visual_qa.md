@@ -167,7 +167,7 @@ refreshes live · party panel hides and restores · close/unpause.
 
 | # | Deviation | Reason |
 |---|---|---|
-| **D20** | **11 slot rows, Figma shows 8.** | `player_state.equipment` defines 11 slots (adds polearm, axe, staff). Inventing slots is forbidden — and so is hiding real ones. Gameplay wins on *which* slots exist, Figma on *how a row looks*. |
+| **D20** | **11 slot rows, Figma shows 8.** | ✅ **Approved — keep all 11.** `player_state.equipment` defines 11 slots; Figma omits polearm, axe and staff. Working gameplay capability is not hidden to match a frame. **→ FIGMA NEEDS UPDATE:** `UI/Equipment Panel` (258:5110) should gain rows for POLEARMS, AXES and STAVES. |
 | **D21** | **Slot icons are plain squares.** | Icon set not exported yet (same as D5/D17). |
 | **D22** | **No per-slot unequip.** | Figma offers only `UNEQUIP ALL`; the previous build had no per-slot unequip either. Selecting a slot and picking a different item replaces it. |
 | **D23** | **Attributes panel art area is empty.** | Portrait art is an agreed data gap (D16). Frame kept so the layout matches. |

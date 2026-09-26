@@ -5,8 +5,8 @@ var settings_manager: Node = null
 var opened: bool = false
 
 func _enter_state() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_settings_manager"):
 			settings_manager = service_locator.get_settings_manager()
 

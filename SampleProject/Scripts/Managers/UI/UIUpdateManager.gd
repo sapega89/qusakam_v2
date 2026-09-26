@@ -123,8 +123,8 @@ func update_potion_ui():
 	if not potion_ui:
 		return
 	
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		var game_manager = service_locator.get_game_manager() if service_locator and service_locator.has_method("get_game_manager") else null
 		if not game_manager:
 			return
@@ -168,7 +168,7 @@ func get_health_bar() -> Node:
 			return cached
 	
 	# Шукаємо через UIManager
-	if Engine.has_singleton("ServiceLocator"):
+	if ServiceLocatorHelper.get_service_locator():
 		var ui_manager = ServiceLocator.get_ui_manager()
 		if ui_manager:
 			var health_bar_from_manager = ui_manager.get_health_bar()
@@ -192,7 +192,7 @@ func get_potion_ui() -> Node:
 			return cached
 	
 	# Шукаємо через UIManager
-	if Engine.has_singleton("ServiceLocator"):
+	if ServiceLocatorHelper.get_service_locator():
 		var ui_manager = ServiceLocator.get_ui_manager()
 		if ui_manager:
 			var potion_ui_from_manager = ui_manager.get_potion_ui()
