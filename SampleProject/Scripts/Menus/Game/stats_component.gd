@@ -115,14 +115,20 @@ func _update_jobs() -> void:
 
 	var class_data: Dictionary = game_manager.get_class_data(
 			String(character.class_id), String(character.subclass_id))
-	_primary_job.text = String(class_data.get("name", PLACEHOLDER))
+	# Файл класів існує як інфраструктура, але назви поки не заповнені —
+	# порожній рядок показуємо як прочерк, а не як порожнє місце.
+	_primary_job.text = _or_placeholder(String(class_data.get("name", "")))
 	var subclass: Dictionary = class_data.get("subclass", {})
-	_secondary_job.text = String(subclass.get("name", PLACEHOLDER))
+	_secondary_job.text = _or_placeholder(String(subclass.get("name", "")))
 
 	_update_weapon_slots(character)
 
 
 ## Типи зброї беремо з реально екіпірованих слотів.
+func _or_placeholder(value: String) -> String:
+	return value if not value.strip_edges().is_empty() else PLACEHOLDER
+
+
 func _update_weapon_slots(character) -> void:
 	for child in _weapon_slots.get_children():
 		_weapon_slots.remove_child(child)

@@ -7,6 +7,7 @@ extends ManagerBase
 # Preload managers
 const CharacterManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/CharacterManager.gd")
 const EquipmentManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/EquipmentManager.gd")
+const SkillManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd")
 const SceneManagerScript = preload("res://SampleProject/Scripts/Managers/Scene/SceneManager.gd")
 const MenuManagerScript = preload("res://SampleProject/Scripts/Managers/UI/MenuManager.gd")
 const EnemyStateManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/EnemyStateManager.gd")
@@ -73,6 +74,12 @@ func _create_managers() -> void:
 	character_manager.initialize_characters()
 	print("👤 GameManager: CharacterManager created")
 	
+	# SkillManager
+	var skill_manager = SkillManagerScript.new()
+	skill_manager.name = "SkillManager"
+	add_child(skill_manager)
+	print("🎓 GameManager: SkillManager created")
+
 	# EquipmentManager
 	var equipment_manager = EquipmentManagerScript.new()
 	equipment_manager.name = "EquipmentManager"

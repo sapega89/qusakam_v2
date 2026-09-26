@@ -1,0 +1,21 @@
+{
+  "_schema": {
+    "description": "Skill definitions read by SkillDatabase. Intentionally empty: production skills are game-design content and are not invented here. Automated tests use their own fixtures via SkillDatabase.load_from_array().",
+    "entry": {
+      "id": "String, required, unique",
+      "name": "String",
+      "description": "String",
+      "class_id": "String - matches pathfinder_classes.json; empty means any class",
+      "subclass_id": "String",
+      "skill_type": "active | passive",
+      "jp_cost": "int >= 0 - Job Points spent to unlock",
+      "required_level": "int >= 1 - XPManager level gate",
+      "prerequisites": "[skill_id] - must be unlocked first",
+      "sp_cost": "int >= 0 - active only, forced to 0 for passive",
+      "cooldown": "float >= 0 seconds - active only, forced to 0 for passive",
+      "icon": "res:// path",
+      "vfx": "VFXHooks reference"
+    }
+  },
+  "skills": []
+}

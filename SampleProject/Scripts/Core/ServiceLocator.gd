@@ -157,6 +157,10 @@ func get_xp_manager() -> XPManager:
 	"""Получает XPManager из GameplayServiceRegistry"""
 	return gameplay.get_xp_manager()
 
+func get_skill_manager() -> SkillManager:
+	"""Получает SkillManager из GameplayServiceRegistry"""
+	return gameplay.get_skill_manager()
+
 func get_game_flow() -> GameFlow:
 	"""Получает GameFlow из GameplayServiceRegistry"""
 	return gameplay.get_game_flow()

@@ -116,7 +116,7 @@ updates · `set_equipment_selection_mode` preserved · slot filter correct ·
 | **D11** | **`JP Obtained` shows `—`.** | No Job Points system exists anywhere in the project. Not fabricated. |
 | **D12** | **`Max. SP` shows `—` with an empty meter.** | Same missing SP model as the party panel (D3). |
 | **D13** | **Weapon-type slots show one `—` box.** | Derived from actually-equipped weapon slots; nothing is equipped by default. Renders real state, not a fixed pair of icons. |
-| **D14** | **`PRIMARY JOB` / `SECONDARY JOB` show `—`.** | `pathfinder_classes.json` does not exist. Investigated: **never implemented**, not deleted — see `design/investigation_pathfinder_classes.md`. Delegate chain is correct; only the data is absent. |
+| **D14** | **`PRIMARY JOB` / `SECONDARY JOB` show `—`.** | The file was **never implemented** (see `design/investigation_pathfinder_classes.md`). Phase 5.4 created `pathfinder_classes.json` as **schema-only infrastructure** using the class ids CharacterManager already declares; names/descriptions are intentionally empty, so Status renders `—` rather than a blank. Authoring the content is a game-design task. |
 | **D15** | **`Unique Actions & Talents` cards are empty shells.** | No Path Action / Talent system exists. Figma structure kept, content not invented. |
 | **D16** | **Right 640 column is empty.** | Character portrait art does not exist and portraits are an agreed data gap — the Figma portrait was deliberately **not** imported, since it depicts a different character. |
 | **D17** | **Attribute-row icons are plain squares.** | Icon set not yet exported from Figma `🎨 Icons & Assets` (same as D5). |
