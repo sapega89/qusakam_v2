@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://uvux58osbrvd"]
+[gd_scene load_steps=10 format=3 uid="uid://uvux58osbrvd"]
 
 [ext_resource type="PackedScene" uid="uid://b5p6p0hjkmgyj" path="res://SampleProject/Scenes/UI/vertical_tab_menu.tscn" id="1_vertical_menu"]
 [ext_resource type="PackedScene" uid="uid://bq8x7k2m3n4p7" path="res://SampleProject/Scenes/Menus/Game/inventory_component.tscn" id="2_inventory"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cvj8rtfs0dj2e" path="res://SampleProject/Scenes/Menus/Game/journal_component.tscn" id="5_journal"]
 [ext_resource type="PackedScene" uid="uid://dves5wvm67pju" path="res://SampleProject/Scenes/Menus/Game/stats_component.tscn" id="6_stats"]
 [ext_resource type="PackedScene" uid="uid://me0dik5yq140" path="res://SampleProject/Scenes/Menus/Game/options_component.tscn" id="7_options"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/skills_component.tscn" id="8_skills"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_ljopj"]
 
@@ -61,11 +62,9 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="VerticalMenu/PanelManager/HBoxContainer/SkillsPanel" index="1"]
+[node name="SkillsComponent" parent="VerticalMenu/PanelManager/HBoxContainer/SkillsPanel" index="1" instance=ExtResource("8_skills")]
+visible = false
 layout_mode = 2
-text = "Skills"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VerticalMenu/PanelManager/HBoxContainer/StatusPanel" index="0"]
 visible = false

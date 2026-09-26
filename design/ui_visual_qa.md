@@ -188,9 +188,68 @@ inventory counts unchanged · state round-trip rehydrates the character.
 
 ---
 
+## Skills — `menu-skills` `58:453`
+
+**Status:** implemented and validated (Phase 5.6).
+**Reference:** `.figma_tmp/skills.png` ·
+**Build:** `.figma_tmp/skills_empty.png` (production), `.figma_tmp/skills_populated.png` (test fixtures)
+
+Two visual passes were captured, as required: the real empty production database,
+and the same screen driven by test-only fixtures.
+
+### Checklist
+
+| # | Item | Figma | Build | Verdict |
+|---|---|---|---|---|
+| 1 | Layout | sidebar 320 + center-content flex, padding 48, gap 32 | same | ✅ |
+| 2 | Profile header | avatar + name + class + JP OBTAINED | same (+ SP, see D27) | ✅ |
+| 3 | Columns wrapper | 2 equal columns, gap **48** | same | ✅ |
+| 4 | Column panel | surface bg, 1px border, padding **32**, gap 16 | same (`TreePanel`) | ✅ |
+| 5 | Column title | Bold 28 accent | same (`TreeTitle`) | ⚠️ renders `—`, D14 |
+| 6 | Subtitle | "Primary/Secondary Class Tree" | same | ✅ |
+| 7 | NEXT SKILL COST | caption + value, right aligned | same, derived from cheapest unlearned | ✅ |
+| 8 | Section labels | "Job Skills" / "Support Skills", Regular 16 secondary | same (`SectionLabel`) | ✅ |
+| 9 | Row metrics | px 16, py 10, icon→text gap 12, 1px border | same (`SkillRow`) | ✅ |
+| 10 | Learned row | check marker + Medium 18 primary | accent marker + primary | ⚠️ D28 |
+| 11 | Locked row | empty 14px box + Medium 18 secondary | same | ✅ |
+| 12 | Prereq-hidden row | lock glyph + `???` | empty marker + `???` | ⚠️ D28 |
+| 13 | Selected row | accent fill, Bold 18, JP cost right | same | ⚠️ D26 (colour) |
+| 14 | Details surface | `UI/Tooltip` panel inside the column | bottom-bar context line | ⚠️ D29 |
+| 15 | Bottom bar | h 64, px 60 | same | ✅ |
+| 16 | Empty state | not designed | "No skills available yet.", JP still shown | ✅ *(added)* |
+| 17 | Focus state | — | 2px accent focus border | ✅ |
+
+### Deviations (Skills)
+
+| # | Deviation | Reason |
+|---|---|---|
+| **D26** | **Selected-row JP cost uses dark-on-accent, not accent-on-accent.** | Figma sets accent text on an accent fill (`58:593` on `bg-accent`), which is invisible. Deliberately changed to `ON_ACCENT` for legibility. **→ FIGMA NEEDS UPDATE.** |
+| **D27** | **SP readout added to the header.** | The brief requires SP display; the Skills frame has no SP element. Placed under JP, using the existing `StatValue` style. **→ FIGMA NEEDS UPDATE** if SP belongs on this screen. |
+| **D28** | **Row markers are squares, not check-circle / lock glyphs.** | Those icons are not exported yet (same gap as D5/D17/D21). Learned = filled accent square, locked = outlined, hidden = muted outline. |
+| **D29** | **Skill details render in the bottom bar, not the in-column tooltip panel.** | Consistent with the Inventory decision (D8): one context surface, reachable by keyboard and gamepad. The Figma `UI/Tooltip` sits inside the secondary column only, which cannot serve a selection in the primary column. |
+| **D30** | **No skill-tree connectors.** | None exist in Figma either — the frame is two flat lists. Confirmed via `get_design_context`; see `design/skills_ui_mapping.md`. **No `ui_position` / `tree_row` field was needed.** |
+| **D31** | **No unlock confirmation modal.** | Figma specifies none for Skills, so none was invented. Unlock is immediate via `SkillManager`. |
+| **D32** | **Production screen is empty.** | `skills.json` intentionally has no content. The screen states this honestly rather than showing fabricated skills. |
+
+### Functional verification — 44 assertions, all passing
+
+`godot --headless --path . --script res://SampleProject/UI/verify_skills_ui.gd`
+
+Opens/closes · empty production DB does not crash · columns generated from data ·
+**a new skill appears without editing the `.tscn`** · no fixture name is hardcoded
+in the scene · row states match `SkillManager` verdicts (learned / affordable /
+not enough JP / prerequisite / level) · focus updates details identically to click ·
+JP and SP costs shown · refusal reasons come from `SkillManager`, not re-implemented ·
+unlock through UI deducts exact JP and refreshes immediately · duplicate unlock
+refused · **UI source contains no `player_state` or `unlocked_skills` writes** ·
+`job_points_changed` / `sp_changed` refresh live · save/load preserves presentation ·
+traversal `Player.abilities` unaffected · party panel restored on leave.
+
+---
+
 ## Not yet implemented
 
-Skills · World Map · Journal · HUD · Pause · Settings.
+World Map · Journal · HUD · Pause · Settings.
 
 ### Pre-existing gaps surfaced during Phase 5
 

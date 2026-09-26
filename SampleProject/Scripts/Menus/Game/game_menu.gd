@@ -258,7 +258,8 @@ func _collect_content_panels() -> void:
 		"EquipmentComponent": "Equipment",
 		"MetSysMapComponent": "World Map",
 		"ScrollContainer": "Status",  # ScrollContainer содержит StatsComponent
-		"OptionsComponent": "Misc"
+		"OptionsComponent": "Misc",
+		"SkillsComponent": "Skills"
 	}
 	
 	# Ищем компоненты в VerticalMenu через PanelManager
@@ -332,6 +333,8 @@ func _update_visibility() -> void:
 						target_panel_name = "JournalPanel"
 					"Status":
 						target_panel_name = "StatusPanel"
+					"Skills":
+						target_panel_name = "SkillsPanel"
 				
 				# Показываем нужную панель, скрываем остальные
 				for child in hbox.get_children():

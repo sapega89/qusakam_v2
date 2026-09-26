@@ -142,6 +142,15 @@ func _setup_label_variations(theme: Theme) -> void:
 		"PanelEyebrow": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ACCENT],
 		"PanelHeading": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
 		"StatDelta": [_font_regular, UITokens.SIZE_CAPTION, UITokens.HP_FILL],
+		# Figma menu-skills (58:453)
+		"SkillName": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SkillNameLocked": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_SECONDARY],
+		"SkillNameSelected": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SkillCost": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"SectionLabel": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_SECONDARY],
+		"TreeTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.ACCENT],
+		"TooltipTitle": [_font_medium, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"TooltipBody": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
 	}
 	for name in roles:
 		var spec: Array = roles[name]
@@ -180,6 +189,26 @@ func _setup_button_variations(theme: Theme) -> void:
 	_icon_button(theme)
 	_filter_button(theme)
 	_list_row(theme)
+	_skill_row(theme)
+
+
+## Figma menu-skills: рядок навички — px16 py10, 1px рамка,
+## виділений = акцентна заливка (текст лишається світлим).
+func _skill_row(theme: Theme) -> void:
+	var t := "SkillRow"
+	theme.set_type_variation(t, "Button")
+	var pad_h := UITokens.PANEL_PADDING
+	var pad_v := 10
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
 
 
 ## Figma filter-trigger — єдине місце в киті з ненульовим радіусом (3px).
@@ -340,6 +369,11 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_type_variation("ActionCard", "PanelContainer")
 	theme.set_stylebox("panel", "ActionCard", _box(UITokens.SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, 18, 18))
+
+	# Figma menu-skills: колонка класового дерева — surface + 1px рамка, padding 32.
+	theme.set_type_variation("TreePanel", "PanelContainer")
+	theme.set_stylebox("panel", "TreePanel", _box(UITokens.SURFACE, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_2XL, UITokens.SPACE_2XL))
 
 	# Вдавлена панель (Figma: Inner Shadow). У Godot немає inner shadow —
 	# емулюємо темнішим фоном і рамкою. Див. design/ui_implementation_plan.md.

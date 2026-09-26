@@ -1,0 +1,137 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8k2skillsuicmp"]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/skills_component.gd" id="1_skills"]
+
+[node name="SkillsComponent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_skills")
+
+[node name="Center" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="Body" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="ProfileHeader" type="HBoxContainer" parent="Center/Body"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Avatar" type="Panel" parent="Center/Body/ProfileHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="NameBlock" type="VBoxContainer" parent="Center/Body/ProfileHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="CharName" type="Label" parent="Center/Body/ProfileHeader/NameBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TopBarTitle"
+text = "—"
+
+[node name="CharClass" type="Label" parent="Center/Body/ProfileHeader/NameBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SmallLabel"
+text = "—"
+
+[node name="Meta" type="VBoxContainer" parent="Center/Body/ProfileHeader"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="JPCaption" type="Label" parent="Center/Body/ProfileHeader/Meta"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"MicroLabel"
+text = "JP OBTAINED"
+
+[node name="JPValue" type="Label" parent="Center/Body/ProfileHeader/Meta"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"BigValueAccent"
+text = "0 JP"
+
+[node name="SPRow" type="HBoxContainer" parent="Center/Body/ProfileHeader/Meta"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 6
+
+[node name="SPCaption" type="Label" parent="Center/Body/ProfileHeader/Meta/SPRow"]
+layout_mode = 2
+theme_type_variation = &"MicroLabel"
+text = "SP"
+
+[node name="SPValue" type="Label" parent="Center/Body/ProfileHeader/Meta/SPRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StatValue"
+text = "0 / 0"
+
+[node name="Columns" type="HBoxContainer" parent="Center/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 48
+
+[node name="PrimaryPanel" type="PanelContainer" parent="Center/Body/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TreePanel"
+
+[node name="PrimaryScroll" type="ScrollContainer" parent="Center/Body/Columns/PrimaryPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="PrimaryColumn" type="VBoxContainer" parent="Center/Body/Columns/PrimaryPanel/PrimaryScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="SecondaryPanel" type="PanelContainer" parent="Center/Body/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TreePanel"
+
+[node name="SecondaryScroll" type="ScrollContainer" parent="Center/Body/Columns/SecondaryPanel"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="SecondaryColumn" type="VBoxContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="EmptyLabel" type="Label" parent="Center/Body"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_type_variation = &"MutedLabel"
+text = "No skills available yet."
+horizontal_alignment = 1
+vertical_alignment = 1
