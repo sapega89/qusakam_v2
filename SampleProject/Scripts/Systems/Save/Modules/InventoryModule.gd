@@ -23,7 +23,7 @@ func save() -> Dictionary:
 		return data
 
 	# Сохраняем инвентарь через InventoryManager
-	if game_manager.has("inventory_manager") and game_manager.inventory_manager:
+	if "inventory_manager" in game_manager and game_manager.inventory_manager:
 		data = game_manager.inventory_manager.save_to_dict()
 		log_info("Inventory saved: %d items, %d coins, %d potions" % [data.get("items", []).size(), data.get("coins", 0), data.get("potions", 0)])
 	else:
@@ -44,7 +44,7 @@ func load_data(data: Dictionary) -> void:
 		return
 
 	# Загружаем инвентарь через InventoryManager
-	if game_manager.has("inventory_manager") and game_manager.inventory_manager:
+	if "inventory_manager" in game_manager and game_manager.inventory_manager:
 		game_manager.inventory_manager.load_from_dict(data)
 
 		# Для обратной совместимости с старым кодом

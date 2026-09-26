@@ -24,8 +24,8 @@ var game_manager: Node = null
 func _initialize():
 	"""Инициализирует зависимости после того, как ServiceLocator зарегистрирует все сервисы"""
 	# Получаем GameManager через ServiceLocator
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_game_manager"):
 			game_manager = service_locator.get_game_manager()
 		if not game_manager:
@@ -47,7 +47,7 @@ func initialize_characters(character_data_list: Dictionary = {}):
 		var char_data = character_data_list[char_id]
 		char_data["character_id"] = char_id
 		# Копируем equipment slots из player_state если доступен
-		if game_manager and game_manager.has("player_state"):
+		if game_manager and "player_state" in game_manager:
 			char_data["equipment"] = game_manager.player_state.equipment.duplicate()
 		else:
 			char_data["equipment"] = _get_default_equipment_slots()
@@ -247,7 +247,7 @@ func _sync_player_state_from_character():
 	if not active_character or not game_manager:
 		return
 	
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		return
 	
 	var player_state = game_manager.player_state
@@ -266,7 +266,7 @@ func _sync_character_from_player_state():
 	if not active_character or not game_manager:
 		return
 	
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		return
 	
 	var player_state = game_manager.player_state
@@ -297,6 +297,12 @@ func _on_equipment_equip_requested(character_id: String, slot_id: String, item_i
 	# Обновляем бонусы экипировки
 	character.update_equipment_bonuses()
 
+	# SaveSystem (PlayerDataModule) сохраняет player_state.equipment, а не
+	# character.equipment. Без этой синхронизации всё, что надето через
+	# EquipmentManager/EventBus, терялось при сохранении.
+	if character_id == active_character_id:
+		_sync_player_state_from_character()
+
 	# Уведомляем об успешном экипировании
 	EventBus.equipment_equipped.emit(character_id, slot_id, item_id)
 	print("✅ CharacterManager: Equipped ", item_id, " to ", slot_id, " for ", character_id)
@@ -314,6 +320,11 @@ func _on_equipment_unequip_requested(character_id: String, slot_id: String) -> v
 
 	# Обновляем бонусы экипировки
 	character.update_equipment_bonuses()
+
+	# См. комментарий в _on_equipment_equip_requested — синхронизация нужна,
+	# иначе снятие предмета не попадёт в сохранение.
+	if character_id == active_character_id:
+		_sync_player_state_from_character()
 
 	# Уведомляем об успешном снятии
 	EventBus.equipment_unequipped.emit(character_id, slot_id)

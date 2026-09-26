@@ -132,7 +132,7 @@ func update_potion_ui():
 		var potion_count = 0
 		if game_manager.has_method("get_inventory_count"):
 			potion_count = game_manager.get_inventory_count("potion")
-		elif game_manager.has("player_state") and game_manager.player_state.has("current_potions"):
+		elif "player_state" in game_manager and game_manager.player_state.has("current_potions"):
 			potion_count = game_manager.player_state.current_potions
 		
 		if potion_ui.has_method("set_potion_count"):

@@ -18,7 +18,7 @@ func save() -> Dictionary:
 		return data
 
 	# Получаем player_state
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		log_error("player_state not found in GameManager")
 		return data
 
@@ -75,7 +75,7 @@ func load_data(data: Dictionary) -> void:
 		return
 
 	# Получаем player_state
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		log_error("player_state not found in GameManager")
 		return
 

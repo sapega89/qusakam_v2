@@ -310,24 +310,9 @@ func set_equipment_selection_mode(enabled: bool, slot_id: String = "", equipment
 func _filter_by_equipment_slot(slot_id: String) -> void:
 	var filtered: Array = []
 	for item in items:
-		if _can_equip_in_slot(item.get("item_data", {}), slot_id):
+		if InventorySlotRules.fits(item.get("item_data", {}), slot_id):
 			filtered.append(item)
 	items = filtered
-
-
-## Єдине місце, де вирішується сумісність предмета зі слотом.
-func _can_equip_in_slot(item_data: Dictionary, slot_id: String) -> bool:
-	var category := String(item_data.get("category", ""))
-	match slot_id:
-		"sword", "polearm", "dagger", "axe", "bow", "staff", "shield":
-			return category == slot_id
-		"head":
-			return category == "helmet" or category == "hat"
-		"body":
-			return category == "armor" or category == "vest"
-		"accessory_1", "accessory_2":
-			return category == "accessory" or category == "ring"
-	return false
 
 
 func _equip_item(item_id: String) -> void:
@@ -337,19 +322,16 @@ func _equip_item(item_id: String) -> void:
 		return
 
 	var item_data: Dictionary = item_database.get_item(item_id)
-	if item_data.is_empty() or not _can_equip_in_slot(item_data, equipment_slot_id):
+	if item_data.is_empty() or not InventorySlotRules.fits(item_data, equipment_slot_id):
 		return
 
-	game_manager.player_state.equipment[equipment_slot_id] = {
-		"id": item_id,
-		"name": item_database.get_item_name(item_id, "en"),
-		"data": item_data,
-	}
-
-	if game_manager.active_character:
-		game_manager.active_character.equipment[equipment_slot_id] = \
-				game_manager.player_state.equipment[equipment_slot_id]
-		game_manager.active_character.update_equipment_bonuses()
+	# Пишемо через штатний API: EquipmentManager -> EventBus -> CharacterManager.
+	# Той шлях сам оновлює бонуси й синхронізує player_state для збереження.
+	var character = game_manager.get_active_character()
+	var equipment_manager := _get_equipment_manager()
+	if character == null or equipment_manager == null:
+		return
+	equipment_manager.equip_item(String(character.character_id), equipment_slot_id, item_id, item_data)
 
 	emit_item_equipped(item_id, equipment_slot_id)
 
@@ -361,23 +343,18 @@ func _equip_item(item_id: String) -> void:
 	request_tab.emit("equipment")
 
 
+func _get_equipment_manager() -> Node:
+	var service_locator: Node = ServiceLocatorHelper.get_service_locator()
+	if service_locator and service_locator.has_method("get_equipment_manager"):
+		return service_locator.get_equipment_manager()
+	return null
+
+
 func _get_slot_for_item(item: Dictionary) -> String:
-	var item_data: Dictionary = item.get("item_data", {})
-	var item_type := String(item_data.get("type", ""))
-	if item_type != "weapon" and item_type != "armor":
-		return ""
-	match String(item_data.get("category", "")):
-		"sword", "polearm", "dagger", "axe", "bow", "staff", "shield":
-			return String(item_data.get("category", ""))
-		"helmet", "hat":
-			return "head"
-		"armor", "vest":
-			return "body"
-		"accessory", "ring":
-			if not game_manager or not game_manager.player_state.equipment.get("accessory_1", null):
-				return "accessory_1"
-			return "accessory_2"
-	return ""
+	var taken := false
+	if game_manager and game_manager.player_state.get("equipment", {}).get("accessory_1") != null:
+		taken = true
+	return InventorySlotRules.default_slot(item.get("item_data", {}), taken)
 
 
 func _get_slot_display_name(slot_id: String) -> String:

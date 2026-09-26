@@ -116,7 +116,7 @@ updates · `set_equipment_selection_mode` preserved · slot filter correct ·
 | **D11** | **`JP Obtained` shows `—`.** | No Job Points system exists anywhere in the project. Not fabricated. |
 | **D12** | **`Max. SP` shows `—` with an empty meter.** | Same missing SP model as the party panel (D3). |
 | **D13** | **Weapon-type slots show one `—` box.** | Derived from actually-equipped weapon slots; nothing is equipped by default. Renders real state, not a fixed pair of icons. |
-| **D14** | **`PRIMARY JOB` / `SECONDARY JOB` show `—`.** | `CharacterManager.get_class_data()` reads `res://SampleProject/Resources/Data/pathfinder_classes.json`, **which does not exist** (the folder has only `items.json`, `crafting_recipes.json`, `merchants.json`). Delegate works; the data file is missing. |
+| **D14** | **`PRIMARY JOB` / `SECONDARY JOB` show `—`.** | `pathfinder_classes.json` does not exist. Investigated: **never implemented**, not deleted — see `design/investigation_pathfinder_classes.md`. Delegate chain is correct; only the data is absent. |
 | **D15** | **`Unique Actions & Talents` cards are empty shells.** | No Path Action / Talent system exists. Figma structure kept, content not invented. |
 | **D16** | **Right 640 column is empty.** | Character portrait art does not exist and portraits are an agreed data gap — the Figma portrait was deliberately **not** imported, since it depicts a different character. |
 | **D17** | **Attribute-row icons are plain squares.** | Icon set not yet exported from Figma `🎨 Icons & Assets` (same as D5). |
@@ -134,9 +134,63 @@ refreshes live · party panel hides and restores · close/unpause.
 
 ---
 
+## Equipment — `UI/Equipment Panel` `258:5110` + `UI/Attributes Panel` `258:5111`
+
+**Status:** implemented and validated (Phase 5.3).
+**Reference:** `.figma_tmp/eq_panel.png`, `.figma_tmp/eq_attrs.png` ·
+**Build:** `.figma_tmp/equipment_render.png`
+(The `menu-equipment` frame `58:4` itself is an empty shell — see plan §3.2.)
+
+### Checklist
+
+| # | Item | Figma | Build | Verdict |
+|---|---|---|---|---|
+| 1 | Panel split | 1020 / 580 (≈1.76:1) | same via stretch ratio | ✅ |
+| 2 | Eyebrow | "CURRENT CHARACTER", 13 accent | same (`PanelEyebrow`) | ✅ |
+| 3 | Character name | Bold ~24 + small avatar | same (`BigValue`) | ⚠️ avatar is a colour swatch, D4 |
+| 4 | Right heading | "Category" accent + "Manage Hero Loadout" | same (`PanelHeading`) | ✅ |
+| 5 | Rules above/below list | 1px | same | ✅ |
+| 6 | Slot row | icon 40 + caption + item name + accent dot | same | ⚠️ icons D17 |
+| 7 | Caption style | secondary uppercase | same (`SlotCaption`) | ✅ |
+| 8 | Equipped name | Bold 20 primary | same (`SlotItemName`) | ✅ |
+| 9 | Empty state | "(empty)", muted | same (`SlotItemEmpty`) | ✅ |
+| 10 | Accent dot | only when equipped | same | ✅ |
+| 11 | OPTIMIZE | accent-filled | same (`PrimaryButton`) | ✅ |
+| 12 | UNEQUIP ALL | accent outline + ✕ | same (`FilterButton`) | ✅ |
+| 13 | Attributes header | accent | same (`PanelHeading`) | ✅ |
+| 14 | Attribute grid | 2 cols, label + value + green `(+N)` | same | ✅ |
+| 15 | Delta colour | green | `HP_FILL` `#2ecc71` (`StatDelta`) | ✅ |
+| 16 | Character art | full illustration | empty framed area | ⚠️ D16 |
+| 17 | Scrolling | 8 rows fit | 11 rows, vertical scroll | ✅ |
+
+### Deviations (Equipment)
+
+| # | Deviation | Reason |
+|---|---|---|
+| **D20** | **11 slot rows, Figma shows 8.** | `player_state.equipment` defines 11 slots (adds polearm, axe, staff). Inventing slots is forbidden — and so is hiding real ones. Gameplay wins on *which* slots exist, Figma on *how a row looks*. |
+| **D21** | **Slot icons are plain squares.** | Icon set not exported yet (same as D5/D17). |
+| **D22** | **No per-slot unequip.** | Figma offers only `UNEQUIP ALL`; the previous build had no per-slot unequip either. Selecting a slot and picking a different item replaces it. |
+| **D23** | **Attributes panel art area is empty.** | Portrait art is an agreed data gap (D16). Frame kept so the layout matches. |
+| **D24** | **`Max. SP` shows `—` without a delta.** | No SP model (D12). |
+| **D25** | **Party panel stays visible.** | The Figma Equipment frame is empty, so it gives no guidance on the right column. Left as-is rather than guessed. |
+
+### Functional verification — 32 assertions, all passing
+
+`godot --headless --path . --script res://SampleProject/UI/verify_equipment.gd`
+
+Open/close · unpause · **11 rows match `player_state.equipment` exactly** ·
+keyboard-focusable rows + bottom-bar hint · empty vs equipped row state ·
+equipping raises Phys. Atk. by exactly the item's `attack` · `player_state`
+updated (save-visible) · replacement swaps rather than duplicates · incompatible
+item refused · **Status reflects the change with no sync code** · unequip-all
+clears every slot and reverts stats · optimize picks the stronger sword ·
+inventory counts unchanged · state round-trip rehydrates the character.
+
+---
+
 ## Not yet implemented
 
-Equipment · Skills · World Map · Journal · HUD · Pause · Settings.
+Skills · World Map · Journal · HUD · Pause · Settings.
 
 ### Pre-existing gaps surfaced during Phase 5
 
@@ -205,3 +259,27 @@ keeping the old singleton path as a fallback. One function; all callers benefit.
 | Menu open/close/unpause | pass |
 | Third-party UI isolation | pass — addon scenes do not inherit `GameUITheme` |
 | GUT suite | ⚠️ **pre-existing failure.** Segfaults with 19 `An instance of a Double was expected` errors. Verified against a clean `git stash` of all Phase 4–5 work: **identical 19 errors and same segfault**, so this is a GUT/Godot 4.6 incompatibility, not a regression. |
+
+
+---
+
+## Systemic finding — `Engine.has_singleton("ServiceLocator")`
+
+Godot 4 autoloads are **not** Engine singletons, so this check is always `false`.
+The codebase contains **94 such call sites**, every one of them a silently dead
+branch. Phase 5.3 fixed only the three on the equipment path:
+
+| File | Why it had to be fixed |
+|---|---|
+| `ServiceLocatorHelper.gd` | (Phase 5.1) every `BaseMenuComponent` had a null `game_manager` |
+| `CharacterManager.gd` | its `game_manager` was null, so `_sync_player_state_from_character()` returned early and **equipment never reached the save data** |
+| `EquipmentManager.gd` | dependency resolution |
+| `Character.gd` | `item_database` was null, so `get_equipment_stats()` returned all zeros and **equipping changed no stat at all** |
+
+A related defect, `game_manager.has("…")` (`Object` has no `has()` in Godot 4),
+was fixed at 8 call sites — including **both** in `PlayerDataModule`, the save
+module, where it was aborting player-data save/load outright.
+
+**The remaining ~90 `Engine.has_singleton` sites are untouched.** Fixing them
+wholesale would activate ~90 dormant code paths simultaneously; each needs its
+own verification. Recommended as a dedicated pass.

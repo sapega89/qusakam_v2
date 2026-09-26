@@ -20,8 +20,8 @@ signal equipment_updated()
 
 func _initialize():
 	"""Инициализирует зависимости после того, как ServiceLocator зарегистрирует все сервисы"""
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator:
 			# Убрали зависимость от CharacterManager - используем EventBus
 			if service_locator.has_method("get_item_database"):
@@ -129,8 +129,8 @@ func get_all_equipment(character_id: String) -> Dictionary:
 
 func _get_character_manager() -> CharacterManager:
 	"""Получает CharacterManager через ServiceLocator (только для read-операций)"""
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator:
 		if service_locator and service_locator.has_method("get_character_manager"):
 			return service_locator.get_character_manager()
 	return null

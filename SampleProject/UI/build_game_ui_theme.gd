@@ -135,6 +135,13 @@ func _setup_label_variations(theme: Theme) -> void:
 		"CardTitle": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
 		"CardCaption": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ACCENT],
 		"CardBody": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_PRIMARY],
+		# Figma UI/Equipment Panel (258:5110)
+		"SlotCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"SlotItemName": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"SlotItemEmpty": [_font_regular, UITokens.SIZE_HEADING, UITokens.TEXT_MUTED],
+		"PanelEyebrow": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ACCENT],
+		"PanelHeading": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		"StatDelta": [_font_regular, UITokens.SIZE_CAPTION, UITokens.HP_FILL],
 	}
 	for name in roles:
 		var spec: Array = roles[name]

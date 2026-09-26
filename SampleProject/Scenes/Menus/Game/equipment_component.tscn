@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://dshid7dx84rt5"]
+[gd_scene load_steps=3 format=3 uid="uid://dshid7dx84rt5"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/equipment_component.gd" id="1_equipment"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
+color = Color(0.22745098, 0.22745098, 0.25882354, 1)
+thickness = 1
 
 [node name="EquipmentComponent" type="Control"]
 layout_mode = 3
@@ -11,3 +15,145 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_equipment")
 
+[node name="Columns" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="EquipmentPanel" type="PanelContainer" parent="Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.76
+theme_type_variation = &"CenterPanel"
+
+[node name="Body" type="VBoxContainer" parent="Columns/EquipmentPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Header" type="HBoxContainer" parent="Columns/EquipmentPanel/Body"]
+layout_mode = 2
+
+[node name="CharBlock" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Eyebrow" type="Label" parent="Columns/EquipmentPanel/Body/Header/CharBlock"]
+layout_mode = 2
+theme_type_variation = &"PanelEyebrow"
+text = "CURRENT CHARACTER"
+
+[node name="NameRow" type="HBoxContainer" parent="Columns/EquipmentPanel/Body/Header/CharBlock"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Avatar" type="Panel" parent="Columns/EquipmentPanel/Body/Header/CharBlock/NameRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="CharName" type="Label" parent="Columns/EquipmentPanel/Body/Header/CharBlock/NameRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BigValue"
+text = "—"
+
+[node name="CategoryBlock" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/Header"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 2
+
+[node name="Category" type="Label" parent="Columns/EquipmentPanel/Body/Header/CategoryBlock"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"PanelHeading"
+text = "Category"
+
+[node name="Subtitle" type="Label" parent="Columns/EquipmentPanel/Body/Header/CategoryBlock"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"SmallLabel"
+text = "Manage Hero Loadout"
+
+[node name="TopRule" type="HSeparator" parent="Columns/EquipmentPanel/Body"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_rule")
+
+[node name="SlotScroll" type="ScrollContainer" parent="Columns/EquipmentPanel/Body"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SlotList" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="BottomRule" type="HSeparator" parent="Columns/EquipmentPanel/Body"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_rule")
+
+[node name="Actions" type="HBoxContainer" parent="Columns/EquipmentPanel/Body"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OptimizeButton" type="Button" parent="Columns/EquipmentPanel/Body/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"PrimaryButton"
+text = "OPTIMIZE"
+
+[node name="UnequipAllButton" type="Button" parent="Columns/EquipmentPanel/Body/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"FilterButton"
+text = "✕  UNEQUIP ALL"
+
+[node name="AttributesPanel" type="PanelContainer" parent="Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SidePanel"
+
+[node name="Body" type="VBoxContainer" parent="Columns/AttributesPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="ArtFrame" type="Panel" parent="Columns/AttributesPanel/Body"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+theme_type_variation = &"InsetPanel"
+
+[node name="Header" type="Label" parent="Columns/AttributesPanel/Body"]
+layout_mode = 2
+theme_type_variation = &"PanelHeading"
+text = "Attributes"
+
+[node name="AttrColumns" type="HBoxContainer" parent="Columns/AttributesPanel/Body"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="LeftAttrs" type="VBoxContainer" parent="Columns/AttributesPanel/Body/AttrColumns"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="RightAttrs" type="VBoxContainer" parent="Columns/AttributesPanel/Body/AttrColumns"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="Spacer" type="Control" parent="Columns/AttributesPanel/Body"]
+layout_mode = 2
+size_flags_vertical = 3

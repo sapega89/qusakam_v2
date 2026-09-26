@@ -1,742 +1,428 @@
 extends BaseMenuComponent
 
-# Game manager и item_database доступны из BaseMenuComponent
+## ⚔️ EquipmentComponent — екран Equipment.
+## Figma: UI/Equipment Panel (258:5110) + UI/Attributes Panel (258:5111).
+## (Сам кадр menu-equipment 58:4 порожній — дизайн живе в цих двох компонентах.)
+##
+## Запис екіпіровки йде ЛИШЕ через EquipmentManager → EventBus → CharacterManager,
+## тож player_state оновлюється і зберігається штатно. Компонент нічого не пише
+## напряму. Формули стат лишаються в StatCalculator.
+## Повний розбір потоку даних: design/equipment_data_flow.md
 
-# Equipment categories and their display names
-var equipment_categories = [
-	{"id": "sword", "name": "Swords", "icon_path": "res://release/assets/textures/ui/items/lorc/crossed-swords.png"},
-	{"id": "polearm", "name": "Polearms", "icon_path": "res://release/assets/textures/ui/items/lorc/stone-spear.png"},
-	{"id": "dagger", "name": "Daggers", "icon_path": "res://release/assets/textures/ui/items/delapouite/sword-brandish.png"},
-	{"id": "axe", "name": "Axes", "icon_path": "res://release/assets/textures/ui/items/lorc/crossed-swords.png"},
-	{"id": "bow", "name": "Bows", "icon_path": "res://release/assets/textures/ui/items/lorc/crossed-swords.png"},
-	{"id": "staff", "name": "Staves", "icon_path": "res://release/assets/textures/ui/items/lorc/crystal-wand.png"},
-	{"id": "shield", "name": "Shields", "icon_path": "res://release/assets/textures/ui/items/delapouite/armored-boomerang.png"},
-	{"id": "head", "name": "Head", "icon_path": "res://release/assets/textures/ui/items/delapouite/armored-boomerang.png"},
-	{"id": "body", "name": "Body", "icon_path": "res://release/assets/textures/ui/items/delapouite/armored-boomerang.png"},
-	{"id": "accessory_1", "name": "Accessories", "icon_path": "res://release/assets/textures/ui/items/delapouite/mineral-pearls.svg"},
-	{"id": "accessory_2", "name": "Accessories", "icon_path": "res://release/assets/textures/ui/items/delapouite/mineral-pearls.svg"}
+const PLACEHOLDER := "(empty)"
+
+## 11 слотів із player_state.equipment — це і є реальна модель.
+## Figma показує 8 (без polearm/axe/staff); вигадувати слоти не можна,
+## ховати справжні — теж, тому виводимо всі 11.
+const SLOTS: Array[Array] = [
+	["sword", "SWORDS"],
+	["polearm", "POLEARMS"],
+	["dagger", "DAGGERS"],
+	["axe", "AXES"],
+	["bow", "BOWS"],
+	["staff", "STAVES"],
+	["shield", "SHIELDS"],
+	["head", "HEAD"],
+	["body", "BODY"],
+	["accessory_1", "ACCESSORIES"],
+	["accessory_2", "ACCESSORIES"],
 ]
 
-# UI elements
-@onready var character_name_label: Label
-@onready var category_list: VBoxContainer
-@onready var equipped_list: VBoxContainer
-@onready var optimize_button: Button
-@onready var unequip_all_button: Button
-@onready var attributes_panel: Panel
+## Підпис → метод GameManager → чи це частка 0..1.
+const ATTR_ROWS: Array[Array] = [
+	["Max. HP", "calculate_max_health", false],
+	["Phys. Atk.", "calculate_physical_damage", false],
+	["Phys. Def.", "calculate_physical_defense", false],
+	["Accuracy", "calculate_accuracy", true],
+	["Critical", "calculate_critical_chance", true],
+	["Max. SP", "", false],
+	["Elem. Atk.", "calculate_magic_damage", false],
+	["Elem. Def.", "calculate_magic_defense", false],
+	["Speed", "calculate_attack_speed", true],
+	["Evasion", "calculate_dodge_chance", true],
+]
 
-# Selected category
-var selected_category_index: int = 0
-var category_rows: Array[Control] = []
-var equipped_rows: Array[Control] = []
+@onready var _char_name: Label = %CharName
+@onready var _avatar: Panel = %Avatar
+@onready var _slot_list: VBoxContainer = %SlotList
+@onready var _optimize_button: Button = %OptimizeButton
+@onready var _unequip_button: Button = %UnequipAllButton
+@onready var _left_attrs: VBoxContainer = %LeftAttrs
+@onready var _right_attrs: VBoxContainer = %RightAttrs
 
-func _initialize_component():
-	"""Инициализация компонента экипировки (вызывается из BaseMenuComponent._ready)"""
-	# BaseMenuComponent уже получил game_manager и item_database
-	
-	# Create UI structure
-	create_equipment_ui()
-	
-	# Update display
+var _slot_rows: Dictionary = {}  # slot_id -> Button
+
+
+func _initialize_component() -> void:
+	_optimize_button.pressed.connect(_on_optimize_pressed)
+	_unequip_button.pressed.connect(_on_unequip_all_pressed)
+	_connect_live_sources()
+	_build_slot_rows()
 	update_display()
 
-func create_equipment_ui():
-	"""Create the equipment UI structure matching the reference image"""
-	# Main container
-	var main_container = VBoxContainer.new()
-	main_container.name = "MainContainer"
-	main_container.set_anchors_preset(Control.PRESET_FULL_RECT)
-	main_container.set_offsets_preset(Control.PRESET_FULL_RECT)
-	main_container.add_theme_constant_override("separation", 5)
-	add_child(main_container)
-	
-	# Top section: Character name and icon
-	var top_section = HBoxContainer.new()
-	top_section.name = "TopSection"
-	top_section.custom_minimum_size = Vector2(0, 35)
-	
-	character_name_label = Label.new()
-	character_name_label.name = "CharacterNameLabel"
-	character_name_label.text = "Character Name"
-	character_name_label.add_theme_font_size_override("font_size", 20)
-	character_name_label.add_theme_color_override("font_color", Color.WHITE)
-	character_name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_section.add_child(character_name_label)
-	
-	# Equipment icon (shield with sword)
-	var equipment_icon = TextureRect.new()
-	equipment_icon.name = "EquipmentIcon"
-	equipment_icon.custom_minimum_size = Vector2(24, 24)
-	equipment_icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	equipment_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	# Use a simple icon or placeholder
-	var icon_texture = null
-	var icon_path = "res://release/assets/textures/ui/items/delapouite/armored-boomerang.png"
-	if ResourceLoader.exists(icon_path):
-		icon_texture = load(icon_path)
-	else:
-		# Виводимо попередження тільки в debug режимі, щоб не засмічувати консоль
-		if OS.is_debug_build():
-			push_warning("EquipmentComponent: Icon file not found: " + icon_path)
-	if icon_texture:
-		equipment_icon.texture = icon_texture
-	top_section.add_child(equipment_icon)
-	
-	main_container.add_child(top_section)
-	
-	# Middle section: Two columns (Categories left, Equipped items right)
-	var middle_section = HBoxContainer.new()
-	middle_section.name = "MiddleSection"
-	middle_section.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	middle_section.add_theme_constant_override("separation", 10)
-	
-	# Left: Category list
-	var left_panel = Panel.new()
-	left_panel.name = "CategoryPanel"
-	left_panel.custom_minimum_size = Vector2(200, 0)
-	left_panel.size_flags_horizontal = Control.SIZE_SHRINK_END
-	
-	# Remove ScrollContainer - use direct VBoxContainer
-	category_list = VBoxContainer.new()
-	category_list.name = "CategoryList"
-	category_list.set_anchors_preset(Control.PRESET_FULL_RECT)
-	category_list.set_offsets_preset(Control.PRESET_FULL_RECT)
-	category_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	category_list.add_theme_constant_override("separation", 1)
-	
-	left_panel.add_child(category_list)
-	middle_section.add_child(left_panel)
-	
-	# Right: Equipped items list
-	var right_panel = Panel.new()
-	right_panel.name = "EquippedPanel"
-	right_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	
-	# Remove ScrollContainer - use direct VBoxContainer
-	equipped_list = VBoxContainer.new()
-	equipped_list.name = "EquippedList"
-	equipped_list.set_anchors_preset(Control.PRESET_FULL_RECT)
-	equipped_list.set_offsets_preset(Control.PRESET_FULL_RECT)
-	equipped_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	equipped_list.add_theme_constant_override("separation", 1)
-	
-	right_panel.add_child(equipped_list)
-	middle_section.add_child(right_panel)
-	
-	main_container.add_child(middle_section)
-	
-	# Bottom section: Buttons and Attributes
-	var bottom_section = VBoxContainer.new()
-	bottom_section.name = "BottomSection"
-	bottom_section.add_theme_constant_override("separation", 5)
-	
-	# Buttons
-	var buttons_hbox = HBoxContainer.new()
-	buttons_hbox.name = "ButtonsHBox"
-	buttons_hbox.add_theme_constant_override("separation", 5)
-	
-	optimize_button = Button.new()
-	optimize_button.name = "OptimizeButton"
-	optimize_button.text = "Optimize"
-	optimize_button.custom_minimum_size = Vector2(100, 32)
-	optimize_button.pressed.connect(_on_optimize_pressed)
-	buttons_hbox.add_child(optimize_button)
-	
-	unequip_all_button = Button.new()
-	unequip_all_button.name = "UnequipAllButton"
-	unequip_all_button.text = "Unequip All"
-	unequip_all_button.custom_minimum_size = Vector2(100, 32)
-	unequip_all_button.pressed.connect(_on_unequip_all_pressed)
-	buttons_hbox.add_child(unequip_all_button)
-	
-	bottom_section.add_child(buttons_hbox)
-	
-	# Attributes panel
-	attributes_panel = Panel.new()
-	attributes_panel.name = "AttributesPanel"
-	attributes_panel.custom_minimum_size = Vector2(0, 140)
-	
-	var attributes_vbox = VBoxContainer.new()
-	attributes_vbox.name = "AttributesVBox"
-	attributes_vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	attributes_vbox.set_offsets_preset(Control.PRESET_FULL_RECT)
-	attributes_vbox.add_theme_constant_override("separation", 3)
-	
-	var attributes_title = Label.new()
-	attributes_title.name = "AttributesTitle"
-	attributes_title.text = "Attributes"
-	attributes_title.add_theme_font_size_override("font_size", 14)
-	attributes_title.add_theme_color_override("font_color", Color.WHITE)
-	attributes_vbox.add_child(attributes_title)
-	
-	# Attributes in two columns
-	var attributes_columns = HBoxContainer.new()
-	attributes_columns.name = "AttributesColumns"
-	attributes_columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	attributes_columns.add_theme_constant_override("separation", 30)
-	
-	# Left column
-	var left_attributes = VBoxContainer.new()
-	left_attributes.name = "LeftAttributes"
-	left_attributes.add_theme_constant_override("separation", 2)
-	create_attribute_row(left_attributes, "Max. HP", "❤️")
-	create_attribute_row(left_attributes, "Phys. Atk.", "⚔️")
-	create_attribute_row(left_attributes, "Phys. Def.", "🛡️")
-	create_attribute_row(left_attributes, "Accuracy", "🎯")
-	create_attribute_row(left_attributes, "Critical", "⭐")
-	attributes_columns.add_child(left_attributes)
-	
-	# Right column
-	var right_attributes = VBoxContainer.new()
-	right_attributes.name = "RightAttributes"
-	right_attributes.add_theme_constant_override("separation", 2)
-	create_attribute_row(right_attributes, "Max. SP", "💙")
-	create_attribute_row(right_attributes, "Elem. Atk.", "✨")
-	create_attribute_row(right_attributes, "Elem. Def.", "🔰")
-	create_attribute_row(right_attributes, "Speed", "👟")
-	create_attribute_row(right_attributes, "Evasion", "💨")
-	attributes_columns.add_child(right_attributes)
-	
-	attributes_vbox.add_child(attributes_columns)
-	attributes_panel.add_child(attributes_vbox)
-	bottom_section.add_child(attributes_panel)
-	
-	main_container.add_child(bottom_section)
-	
-	# Create category and equipped item rows
-	create_category_and_equipped_rows()
 
-func create_category_and_equipped_rows():
-	"""Create rows for categories and equipped items"""
-	if not category_list or not equipped_list:
-		return
-	
-	# Clear existing rows
-	for row in category_rows:
-		if is_instance_valid(row):
-			row.queue_free()
-	for row in equipped_rows:
-		if is_instance_valid(row):
-			row.queue_free()
-	category_rows.clear()
-	equipped_rows.clear()
-	
-	# Create rows for each category
-	for i in range(equipment_categories.size()):
-		var category = equipment_categories[i]
-		
-		# Create category row (left side)
-		var category_row = create_category_row(category, i)
-		category_list.add_child(category_row)
-		category_rows.append(category_row)
-		
-		# Create equipped item row (right side)
-		var equipped_row = create_equipped_row(category.id, i)
-		equipped_list.add_child(equipped_row)
-		equipped_rows.append(equipped_row)
-	
-	# Select first category
-	if equipment_categories.size() > 0:
-		select_category(0)
+## Оновлюємось із сигналів власників — без ручної синхронізації.
+func _connect_live_sources() -> void:
+	if not EventBus.equipment_equipped.is_connected(_on_equipment_event):
+		EventBus.equipment_equipped.connect(_on_equipment_event)
+	if not EventBus.equipment_unequipped.is_connected(_on_equipment_unequipped):
+		EventBus.equipment_unequipped.connect(_on_equipment_unequipped)
 
-func create_category_row(category: Dictionary, index: int) -> Control:
-	"""Create a row for category list (left side)"""
-	var row = Panel.new()
-	row.name = "CategoryRow_" + category.id
-	row.custom_minimum_size = Vector2(0, 24)
-	row.mouse_filter = Control.MOUSE_FILTER_STOP
-	
-	var hbox = HBoxContainer.new()
-	hbox.name = "HBox"
+
+func _on_equipment_event(_character_id: String, _slot_id: String, _item_id: String) -> void:
+	update_display()
+
+
+func _on_equipment_unequipped(_character_id: String, _slot_id: String) -> void:
+	update_display()
+
+
+# ── Рядки слотів ────────────────────────────────────────────────────────────
+
+func _build_slot_rows() -> void:
+	for child in _slot_list.get_children():
+		_slot_list.remove_child(child)
+		child.queue_free()
+	_slot_rows.clear()
+
+	for entry in SLOTS:
+		var slot_id := String(entry[0])
+		var row := _make_slot_row(slot_id, String(entry[1]))
+		_slot_list.add_child(row)
+		_slot_rows[slot_id] = row
+
+
+func _make_slot_row(slot_id: String, caption: String) -> Button:
+	var row := Button.new()
+	row.name = slot_id
+	row.theme_type_variation = &"ListRow"
+	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size = Vector2(0, 63)
+	row.pressed.connect(_on_slot_pressed.bind(slot_id))
+	row.focus_entered.connect(_on_slot_focused.bind(slot_id))
+
+	var hbox := HBoxContainer.new()
+	hbox.name = "Row"
 	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	hbox.set_offsets_preset(Control.PRESET_FULL_RECT)
-	hbox.add_theme_constant_override("separation", 6)
-	
-	# Icon
-	var icon_rect = TextureRect.new()
-	icon_rect.name = "Icon"
-	icon_rect.custom_minimum_size = Vector2(20, 20)
-	icon_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	# Перевіряємо, чи файл існує перед завантаженням
-	var icon_texture = null
-	if ResourceLoader.exists(category.icon_path):
-		icon_texture = load(category.icon_path)
-	if icon_texture:
-		icon_rect.texture = icon_texture
-	hbox.add_child(icon_rect)
-	
-	# Category name
-	var name_label = Label.new()
-	name_label.name = "NameLabel"
-	name_label.text = category.name
-	name_label.add_theme_font_size_override("font_size", 12)
-	name_label.add_theme_color_override("font_color", Color.WHITE)
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(name_label)
-	
+	hbox.offset_left = UITokens.PANEL_PADDING
+	hbox.offset_right = -UITokens.PANEL_PADDING
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_theme_constant_override("separation", UITokens.SPACE_LG)
 	row.add_child(hbox)
-	
-	# Make clickable
-	row.gui_input.connect(_on_category_row_clicked.bind(index))
-	
+
+	var icon := Panel.new()
+	icon.name = "Icon"
+	icon.custom_minimum_size = Vector2(40, 40)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var icon_box := StyleBoxFlat.new()
+	icon_box.bg_color = UITokens.ICON_SLOT_BG
+	icon_box.set_corner_radius_all(UITokens.RADIUS)
+	icon.add_theme_stylebox_override("panel", icon_box)
+	hbox.add_child(icon)
+
+	var caption_label := Label.new()
+	caption_label.name = "Caption"
+	caption_label.text = caption
+	caption_label.theme_type_variation = &"SlotCaption"
+	caption_label.custom_minimum_size = Vector2(150, 0)
+	caption_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	caption_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(caption_label)
+
+	var item_label := Label.new()
+	item_label.name = "ItemName"
+	item_label.theme_type_variation = &"SlotItemName"
+	item_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	item_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	item_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(item_label)
+
+	var dot := Panel.new()
+	dot.name = "Dot"
+	dot.custom_minimum_size = Vector2(6, 6)
+	dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var dot_box := StyleBoxFlat.new()
+	dot_box.bg_color = UITokens.ACCENT
+	dot_box.set_corner_radius_all(3)
+	dot.add_theme_stylebox_override("panel", dot_box)
+	hbox.add_child(dot)
+
 	return row
 
-func create_equipped_row(slot_id: String, _index: int) -> Control:
-	"""Create a row for equipped item (right side)"""
-	var row = Panel.new()
-	row.name = "EquippedRow_" + slot_id
-	row.custom_minimum_size = Vector2(0, 24)
-	row.mouse_filter = Control.MOUSE_FILTER_STOP
-	
-	var hbox = HBoxContainer.new()
-	hbox.name = "HBox"
-	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	hbox.set_offsets_preset(Control.PRESET_FULL_RECT)
-	hbox.add_theme_constant_override("separation", 6)
-	
-	# Icon (will be updated)
-	var icon_rect = TextureRect.new()
-	icon_rect.name = "Icon"
-	icon_rect.custom_minimum_size = Vector2(20, 20)
-	icon_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	hbox.add_child(icon_rect)
-	
-	# Item name (will be updated)
-	var name_label = Label.new()
-	name_label.name = "NameLabel"
-	name_label.text = "None"
-	name_label.add_theme_font_size_override("font_size", 12)
-	name_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(name_label)
-	
-	row.add_child(hbox)
-	
-	# Make clickable to open inventory
-	row.gui_input.connect(_on_equipped_row_clicked.bind(slot_id))
-	
-	return row
 
-func _on_category_row_clicked(event: InputEvent, index: int):
-	"""Handle click on category row"""
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		select_category(index)
-
-func _on_equipped_row_clicked(event: InputEvent, slot_id: String):
-	"""Handle click on equipped item row"""
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_open_inventory_for_slot(slot_id)
-
-func select_category(index: int):
-	"""Select an equipment category"""
-	if index < 0 or index >= equipment_categories.size():
-		return
-	
-	selected_category_index = index
-	
-	# Update row highlights
-	for i in range(category_rows.size()):
-		var row = category_rows[i]
-		if is_instance_valid(row):
-			if i == index:
-				# Highlight selected row
-				row.modulate = Color(1.0, 1.0, 0.9, 1.0)
-				# Add background color
-				var style_box = StyleBoxFlat.new()
-				style_box.bg_color = Color(0.3, 0.3, 0.3, 0.5)
-				row.add_theme_stylebox_override("panel", style_box)
-			else:
-				# Reset to normal
-				row.modulate = Color.WHITE
-				row.remove_theme_stylebox_override("panel")
-
-func update_equipped_rows():
-	"""Update all equipped item rows"""
-	if not game_manager:
-		return
-	
-	for i in range(equipped_rows.size()):
-		if i >= equipment_categories.size():
-			break
-		
-		var slot_id = equipment_categories[i].id
-		var row = equipped_rows[i]
-		if not is_instance_valid(row):
-			continue
-		
-		var hbox = row.get_node_or_null("HBox")
-		if not hbox:
-			continue
-		
-		var icon_rect = hbox.get_node_or_null("Icon")
-		var name_label = hbox.get_node_or_null("NameLabel")
-		
-		var equipped_item = game_manager.player_state.equipment.get(slot_id, null)
-		
-		if equipped_item and item_database:
-			# Item is equipped
-			var item_id = equipped_item.get("id", "")
-			var item_name = equipped_item.get("name", "Unknown")
-			
-			if name_label:
-				name_label.text = item_name
-				name_label.add_theme_color_override("font_color", Color.WHITE)
-			
-			if icon_rect and item_database:
-				var icon = item_database.get_item_icon(item_id)
-				if icon:
-					icon_rect.texture = icon
-		else:
-			# No item equipped
-			if name_label:
-				name_label.text = "None"
-				name_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
-			
-			if icon_rect:
-				icon_rect.texture = null
-
-func update_display():
-	"""Update all equipment display"""
-	if not game_manager:
-		return
-	
-	# Update character name
-	if character_name_label:
-		var character = game_manager.get_active_character()
-		if character:
-			character_name_label.text = character.name
-		else:
-			character_name_label.text = "Player"
-	
-	# Create rows if not created
-	if category_rows.size() == 0:
-		create_category_and_equipped_rows()
-	
-	# Update equipped items
-	update_equipped_rows()
-	
-	# Update attributes
-	update_attributes()
-
-func update_attributes():
-	"""Update attribute values"""
-	if not game_manager:
-		print("⚠️ EquipmentComponent: game_manager is null in update_attributes")
-		return
-	
-	if not attributes_panel:
-		print("⚠️ EquipmentComponent: attributes_panel is null in update_attributes")
-		return
-	
-	# Get attribute rows
-	var left_attributes = attributes_panel.get_node_or_null("AttributesVBox/AttributesColumns/LeftAttributes")
-	var right_attributes = attributes_panel.get_node_or_null("AttributesVBox/AttributesColumns/RightAttributes")
-	
-	if not left_attributes:
-		print("⚠️ EquipmentComponent: left_attributes not found")
-		return
-	
-	if not right_attributes:
-		print("⚠️ EquipmentComponent: right_attributes not found")
-		return
-	
-	# Calculate values
-	var max_hp = game_manager.calculate_max_health()
-	var phys_atk = game_manager.calculate_physical_damage()
-	var phys_def = game_manager.calculate_physical_defense()
-	var magic_atk = game_manager.calculate_magic_damage()
-	var magic_def = game_manager.calculate_magic_defense()
-	var speed_mult = game_manager.calculate_attack_speed()
-	var dodge_chance = game_manager.calculate_dodge_chance()
-	
-	print("📊 EquipmentComponent: Calculated stats - HP: ", max_hp, ", Phys. Atk: ", phys_atk, ", Phys. Def: ", phys_def)
-	
-	# Left column attributes
-	update_attribute_value(left_attributes, "Max. HP", str(max_hp))
-	update_attribute_value(left_attributes, "Phys. Atk.", str(phys_atk))
-	update_attribute_value(left_attributes, "Phys. Def.", str(phys_def))
-	update_attribute_value(left_attributes, "Accuracy", "88")  # Placeholder
-	update_attribute_value(left_attributes, "Critical", "80")  # Placeholder
-	
-	# Right column attributes
-	update_attribute_value(right_attributes, "Max. SP", "40")  # Placeholder
-	update_attribute_value(right_attributes, "Elem. Atk.", str(magic_atk))
-	update_attribute_value(right_attributes, "Elem. Def.", str(magic_def))
-	update_attribute_value(right_attributes, "Speed", str(int(speed_mult * 100)))
-	update_attribute_value(right_attributes, "Evasion", str(int(dodge_chance * 100)))
-
-func update_attribute_value(container: VBoxContainer, attribute_name: String, value: String):
-	"""Update value for a specific attribute"""
-	# Replace both spaces and dots with underscores to match create_attribute_row
-	var row_name = "AttributeRow_" + attribute_name.replace(" ", "_").replace(".", "_")
-	var row = container.get_node_or_null(row_name)
-	if row:
-		var value_label = row.get_node_or_null("ValueLabel")
-		if value_label:
-			value_label.text = value
-			print("✅ EquipmentComponent: Updated ", attribute_name, " = ", value)
-		else:
-			print("⚠️ EquipmentComponent: ValueLabel not found for ", attribute_name, " (row: ", row_name, ")")
-	else:
-		print("⚠️ EquipmentComponent: Row not found for ", attribute_name, " (looking for: ", row_name, ")")
-		# Debug: list all children
-		for child in container.get_children():
-			print("  - Child: ", child.name)
-
-func create_attribute_row(container: VBoxContainer, label_text: String, icon: String):
-	"""Create a row for an attribute"""
-	var row = HBoxContainer.new()
-	# Replace both spaces and dots with underscores for consistent naming
-	row.name = "AttributeRow_" + label_text.replace(" ", "_").replace(".", "_")
-	row.add_theme_constant_override("separation", 6)
-	
-	var icon_label = Label.new()
-	icon_label.name = "IconLabel"
-	icon_label.text = icon
-	icon_label.custom_minimum_size = Vector2(20, 0)
-	row.add_child(icon_label)
-	
-	var name_label = Label.new()
-	name_label.name = "NameLabel"
-	name_label.text = label_text
-	name_label.custom_minimum_size = Vector2(80, 0)
-	name_label.add_theme_font_size_override("font_size", 11)
-	name_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
-	row.add_child(name_label)
-	
-	var value_label = Label.new()
-	value_label.name = "ValueLabel"
-	value_label.text = "0"
-	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	value_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	value_label.add_theme_font_size_override("font_size", 11)
-	value_label.add_theme_color_override("font_color", Color.WHITE)
-	row.add_child(value_label)
-	
-	container.add_child(row)
-
-func _open_inventory_for_slot(slot_id: String):
-	"""Open inventory in equipment selection mode for specified slot"""
-	print("🎯 EquipmentComponent: Opening inventory for slot: ", slot_id)
-	
-	# Используем группы для поиска game_menu (вместо get_node("../../.."))
-	var game_menu = get_tree().get_first_node_in_group("game_menu")
-	if not game_menu:
-		# Fallback: ищем через owner
-		game_menu = owner
-		if not game_menu:
-			print("⚠️ EquipmentComponent: GameMenu not found!")
-			return
-	
-	# Запрашиваем открытие вкладки inventory через сигнал
+## Клік/Enter по слоту — відкрити інвентар у режимі вибору для цього слота.
+## Це наявна поведінка: InventoryComponent.set_equipment_selection_mode().
+func _on_slot_pressed(slot_id: String) -> void:
 	request_tab.emit("inventory")
-	print("✅ EquipmentComponent: Requested inventory tab via signal")
-	
-	# Wait a frame for inventory to be visible
 	await get_tree().process_frame
-	
-	# Находим inventory component через группы или поиск
-	var inventory_content = game_menu.find_child("InventoryContent", true, false)
-	if not inventory_content:
-		print("⚠️ EquipmentComponent: InventoryContent not found!")
+
+	var game_menu := get_tree().get_first_node_in_group(&"game_menu")
+	if game_menu == null:
 		return
-	
-	var inventory_component = inventory_content.find_child("InventoryComponent", false, false)
-	if not inventory_component:
-		print("⚠️ EquipmentComponent: InventoryComponent not found!")
+	var inventory := game_menu.find_child("InventoryComponent", true, false)
+	if inventory and inventory.has_method("set_equipment_selection_mode"):
+		inventory.set_equipment_selection_mode(true, slot_id, self)
+
+
+## Підказка в нижній панелі — щоб опис працював і з клавіатури.
+func _on_slot_focused(slot_id: String) -> void:
+	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
+	if bar == null or not bar.has_method("set_context_hint"):
 		return
-	
-	# Set equipment selection mode (прямой вызов, но это внутренний метод компонента)
-	if inventory_component.has_method("set_equipment_selection_mode"):
-		inventory_component.set_equipment_selection_mode(true, slot_id, self)
-		print("✅ EquipmentComponent: Set equipment selection mode for slot: ", slot_id)
+	var item := _equipped(slot_id)
+	if item.is_empty():
+		bar.set_context_hint("%s — empty. Press A to choose an item." % _slot_caption(slot_id))
 	else:
-		print("⚠️ EquipmentComponent: set_equipment_selection_mode method not found!")
+		bar.set_context_hint("%s — %s" % [_slot_caption(slot_id), String(item.get("name", ""))])
 
-func _on_optimize_pressed():
-	"""Optimize equipment (auto-equip best items)"""
-	print("⚙️ EquipmentComponent: Optimize pressed")
-	if not game_manager or not item_database:
-		print("⚠️ EquipmentComponent: GameManager or ItemDatabase not found!")
+
+func _slot_caption(slot_id: String) -> String:
+	for entry in SLOTS:
+		if String(entry[0]) == slot_id:
+			return String(entry[1]).capitalize()
+	return slot_id
+
+
+func _equipped(slot_id: String) -> Dictionary:
+	var character = game_manager.get_active_character() if game_manager else null
+	if character == null:
+		return {}
+	var item = character.equipment.get(slot_id)
+	return item if item is Dictionary else {}
+
+
+# ── Оновлення ───────────────────────────────────────────────────────────────
+
+func update_display() -> void:
+	if not is_node_ready() or game_manager == null:
 		return
-	
-	# Get all items from inventory
-	var inventory_items = _get_equipment_from_inventory()
-	if inventory_items.is_empty():
-		print("⚠️ EquipmentComponent: No equipment items in inventory!")
-		return
-	
-	# Find best item for each slot
-	var optimized_equipment = {}
-	var used_items = []  # Track items already equipped to avoid duplicates
-	
-	# First, handle non-accessory slots
-	for category in equipment_categories:
-		var slot_id = category.id
-		
-		# Skip accessories for now - handle them separately
-		if slot_id == "accessory_1" or slot_id == "accessory_2":
+	_update_header()
+	_update_slots()
+	_update_attributes()
+
+
+func _update_header() -> void:
+	var character = game_manager.get_active_character()
+	_char_name.text = String(character.name) if character else "—"
+
+	var box := StyleBoxFlat.new()
+	box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
+	box.set_corner_radius_all(UITokens.RADIUS)
+	box.set_border_width_all(UITokens.BORDER_WIDTH)
+	box.border_color = UITokens.BORDER
+	_avatar.add_theme_stylebox_override("panel", box)
+
+
+func _update_slots() -> void:
+	for entry in SLOTS:
+		var slot_id := String(entry[0])
+		var row: Button = _slot_rows.get(slot_id)
+		if row == null:
 			continue
-		
-		var best_item = _find_best_item_for_slot(slot_id, inventory_items, used_items)
-		
-		if best_item:
-			optimized_equipment[slot_id] = {
-				"id": best_item.id,
-				"name": item_database.get_item_name(best_item.id, "en"),
-				"data": best_item.item_data
-			}
-			used_items.append(best_item.id)
-			print("✅ EquipmentComponent: Best item for ", slot_id, ": ", best_item.id, " (total stats: ", _get_item_total_stats(best_item), ")")
+		var item := _equipped(slot_id)
+		var item_label: Label = row.get_node(^"Row/ItemName")
+		var dot: Panel = row.get_node(^"Row/Dot")
+		if item.is_empty():
+			item_label.text = PLACEHOLDER
+			item_label.theme_type_variation = &"SlotItemEmpty"
+			dot.visible = false
 		else:
-			optimized_equipment[slot_id] = null
-	
-	# Handle accessory slots separately to avoid duplicates
-	var accessory_slots = ["accessory_1", "accessory_2"]
-	for slot_id in accessory_slots:
-		var best_item = _find_best_item_for_slot(slot_id, inventory_items, used_items)
-		
-		if best_item:
-			optimized_equipment[slot_id] = {
-				"id": best_item.id,
-				"name": item_database.get_item_name(best_item.id, "en"),
-				"data": best_item.item_data
-			}
-			used_items.append(best_item.id)
-			print("✅ EquipmentComponent: Best item for ", slot_id, ": ", best_item.id, " (total stats: ", _get_item_total_stats(best_item), ")")
-		else:
-			optimized_equipment[slot_id] = null
-	
-	# Apply optimized equipment
-	game_manager.player_state.equipment = optimized_equipment
-	
-	# Update active character equipment and bonuses
-	if game_manager.active_character:
-		game_manager.active_character.equipment = optimized_equipment.duplicate()
-		game_manager.active_character.update_equipment_bonuses()
-	
-	# Update display
-	update_equipped_rows()
-	update_attributes()
-	
-	# Update player stats in scene if player exists
-	var player = game_manager.get_current_player()
-	if player and player.has_method("apply_stats_from_game_manager"):
-		player.apply_stats_from_game_manager()
-	
-	print("✅ EquipmentComponent: Equipment optimized!")
+			item_label.text = String(item.get("name", ""))
+			item_label.theme_type_variation = &"SlotItemName"
+			dot.visible = true
 
-func _get_equipment_from_inventory() -> Array:
-	"""Get all equipment items from inventory"""
-	var equipment_items = []
-	
-	if not game_manager or not item_database:
-		return equipment_items
-	
-	# Use InventoryManager if available
-	var inventory_manager = game_manager.inventory_manager
-	if not inventory_manager:
-		return equipment_items
-	
-	# Get items from inventory manager
-	var items_dict = inventory_manager.get_items_dict()
-	for item_id in items_dict:
-		var count = items_dict[item_id]
-		if count > 0:
-			var item_data = item_database.get_item(item_id)
-			if not item_data.is_empty():
-				var item_type = item_data.get("type", "")
-				# Only get weapons and armor
-				if item_type == "weapon" or item_type == "armor":
-					equipment_items.append({
-						"id": item_id,
-						"item_data": item_data,
-						"count": count
-					})
-	
-	return equipment_items
 
-func _get_item_total_stats(item: Dictionary) -> int:
-	"""Calculate total stats value for an item (attack + defense + magic)"""
-	var item_data = item.get("item_data", {})
-	var stats = item_data.get("stats", {})
-	
-	var attack = stats.get("attack", 0)
-	var defense = stats.get("defense", 0)
-	var magic = stats.get("magic", 0)
-	
-	return attack + defense + magic
+## Значення беремо з GameManager (делегати до StatCalculator), а дельту — як
+## різницю "зі спорядженням" мінус "без спорядження". Нічого не дублюємо.
+func _update_attributes() -> void:
+	for container in [_left_attrs, _right_attrs]:
+		for child in container.get_children():
+			container.remove_child(child)
+			child.queue_free()
 
-func _find_best_item_for_slot(slot_id: String, items: Array, used_items: Array = []):
-	"""Find the best item for a specific slot based on total stats. Returns Dictionary or null."""
-	var best_item = null
-	var best_stats = -1
-	
-	for item in items:
-		# Skip if item is already used
-		if item.id in used_items:
-			continue
-		
-		var item_data = item.get("item_data", {})
-		var item_category = item_data.get("category", "")
-		
-		# Check if item can be equipped in this slot
-		var can_equip = false
-		match slot_id:
-			"sword":
-				can_equip = (item_category == "sword")
-			"polearm":
-				can_equip = (item_category == "polearm")
-			"dagger":
-				can_equip = (item_category == "dagger")
-			"axe":
-				can_equip = (item_category == "axe")
-			"bow":
-				can_equip = (item_category == "bow")
-			"staff":
-				can_equip = (item_category == "staff")
-			"shield":
-				can_equip = (item_category == "shield")
-			"head":
-				can_equip = (item_category == "helmet" or item_category == "hat")
-			"body":
-				can_equip = (item_category == "armor" or item_category == "vest")
-			"accessory_1", "accessory_2":
-				can_equip = (item_category == "accessory" or item_category == "ring")
-		
-		if can_equip:
-			var total_stats = _get_item_total_stats(item)
-			if total_stats > best_stats:
-				best_stats = total_stats
-				best_item = item
-	
-	return best_item
+	var character = game_manager.get_active_character()
+	var attributes: CharacterAttributes = character.attributes if character else null
+	var equipment_stats: Dictionary = character.get_equipment_stats() if character else {}
 
-func _on_unequip_all_pressed():
-	"""Unequip all items"""
-	print("⚙️ EquipmentComponent: Unequip All pressed")
-	if not game_manager:
+	for i in ATTR_ROWS.size():
+		var row: Array = ATTR_ROWS[i]
+		var container: VBoxContainer = _left_attrs if i < 5 else _right_attrs
+		container.add_child(_make_attr_row(row, attributes, equipment_stats))
+
+
+func _make_attr_row(spec: Array, attributes: CharacterAttributes, equipment_stats: Dictionary) -> Control:
+	var label_text := String(spec[0])
+	var method := String(spec[1])
+	var is_ratio := bool(spec[2])
+
+	var row := PanelContainer.new()
+	var line := StyleBoxFlat.new()
+	line.bg_color = Color(0, 0, 0, 0)
+	line.border_width_bottom = UITokens.BORDER_WIDTH
+	line.border_color = UITokens.BORDER
+	line.content_margin_top = UITokens.SPACE_SM
+	line.content_margin_bottom = UITokens.SPACE_SM
+	row.add_theme_stylebox_override("panel", line)
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", UITokens.SPACE_SM)
+	row.add_child(hbox)
+
+	var name_label := Label.new()
+	name_label.text = label_text
+	name_label.theme_type_variation = &"MetaLabel"
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(name_label)
+
+	# Max. SP не має моделі в проєкті — показуємо прочерк, а не вигадане число.
+	if method == "":
+		var dash := Label.new()
+		dash.text = "—"
+		dash.theme_type_variation = &"AttrValue"
+		hbox.add_child(dash)
+		return row
+
+	var current := _stat_value(method, is_ratio)
+	var value_label := Label.new()
+	value_label.text = str(current)
+	value_label.theme_type_variation = &"AttrValue"
+	hbox.add_child(value_label)
+
+	var delta := current - _stat_without_equipment(method, is_ratio, attributes)
+	if delta != 0 and not equipment_stats.is_empty():
+		var delta_label := Label.new()
+		delta_label.text = "(%s%d)" % ["+" if delta > 0 else "", delta]
+		delta_label.theme_type_variation = &"StatDelta"
+		hbox.add_child(delta_label)
+	return row
+
+
+func _stat_value(method: String, is_ratio: bool) -> int:
+	if not game_manager.has_method(method):
+		return 0
+	var value := float(game_manager.call(method))
+	return roundi(value * 100.0 if is_ratio else value)
+
+
+## Те саме значення, але з порожньою екіпіровкою — щоб отримати внесок речей.
+func _stat_without_equipment(method: String, is_ratio: bool, attributes: CharacterAttributes) -> int:
+	if attributes == null:
+		return 0
+	var bare := {}
+	var value := 0.0
+	match method:
+		"calculate_max_health":
+			value = StatCalculator.calculate_max_health(attributes, bare)
+		"calculate_physical_damage":
+			value = StatCalculator.calculate_physical_damage(attributes, bare)
+		"calculate_magic_damage":
+			value = StatCalculator.calculate_magic_damage(attributes, bare)
+		"calculate_physical_defense":
+			value = StatCalculator.calculate_physical_defense(bare)
+		"calculate_magic_defense":
+			value = StatCalculator.calculate_magic_defense(bare)
+		"calculate_attack_speed":
+			value = StatCalculator.calculate_attack_speed(attributes)
+		"calculate_dodge_chance":
+			value = StatCalculator.calculate_dodge_chance(attributes)
+		"calculate_accuracy":
+			value = StatCalculator.calculate_accuracy(attributes)
+		"calculate_critical_chance":
+			value = StatCalculator.calculate_critical_chance(attributes)
+	return roundi(value * 100.0 if is_ratio else value)
+
+
+# ── Дії ─────────────────────────────────────────────────────────────────────
+
+## Підбирає найкращий предмет у кожен слот за сумою stats. Запис — через API.
+func _on_optimize_pressed() -> void:
+	if game_manager == null or item_database == null:
 		return
-	
-	# Clear all equipment slots
-	for slot_id in game_manager.player_state.equipment.keys():
-		game_manager.player_state.equipment[slot_id] = null
-	
-	# Update active character equipment and bonuses
-	if game_manager.active_character:
-		for slot_id in game_manager.active_character.equipment.keys():
-			game_manager.active_character.equipment[slot_id] = null
-		game_manager.active_character.update_equipment_bonuses()
-	
-	# Update display and attributes
-	update_equipped_rows()
-	update_attributes()
-	
-	# Update player stats in scene if player exists
-	var player = game_manager.get_current_player()
-	if player and player.has_method("apply_stats_from_game_manager"):
-		player.apply_stats_from_game_manager()
-	
-	print("✅ EquipmentComponent: All items unequipped")
+	var character = game_manager.get_active_character()
+	if character == null:
+		return
+
+	var candidates := _equippable_inventory_items()
+	var used: Array[String] = []
+	for entry in SLOTS:
+		var slot_id := String(entry[0])
+		var best := _best_item_for_slot(slot_id, candidates, used)
+		if best.is_empty():
+			continue
+		used.append(String(best.get("id", "")))
+		_equip(slot_id, String(best.get("id", "")), best.get("data", {}))
+
+
+func _on_unequip_all_pressed() -> void:
+	var character = game_manager.get_active_character() if game_manager else null
+	if character == null:
+		return
+	var equipment_manager := _get_equipment_manager()
+	if equipment_manager == null:
+		return
+	for entry in SLOTS:
+		var slot_id := String(entry[0])
+		if not _equipped(slot_id).is_empty():
+			equipment_manager.unequip_item(String(character.character_id), slot_id)
+
+
+func _equip(slot_id: String, item_id: String, item_data: Dictionary) -> void:
+	# Конвеєр CharacterManager -> EventBus нічого не валідує і вдягне що завгодно
+	# у будь-який слот, тому сумісність перевіряємо тут, перед запитом.
+	if not InventorySlotRules.fits(item_data, slot_id):
+		return
+	var character = game_manager.get_active_character()
+	var equipment_manager := _get_equipment_manager()
+	if character == null or equipment_manager == null:
+		return
+	equipment_manager.equip_item(String(character.character_id), slot_id, item_id, item_data)
+
+
+func _get_equipment_manager() -> Node:
+	var service_locator: Node = ServiceLocatorHelper.get_service_locator()
+	if service_locator and service_locator.has_method("get_equipment_manager"):
+		return service_locator.get_equipment_manager()
+	return null
+
+
+## Предмети з сумки, які взагалі можна вдягнути.
+func _equippable_inventory_items() -> Array:
+	var result: Array = []
+	if game_manager == null or item_database == null:
+		return result
+	var inventory_manager = game_manager.inventory_manager if "inventory_manager" in game_manager else null
+	if inventory_manager == null:
+		return result
+	for item_id in inventory_manager.get_items_dict():
+		var data: Dictionary = item_database.get_item(item_id)
+		if data.is_empty():
+			continue
+		var item_type := String(data.get("type", ""))
+		if item_type == "weapon" or item_type == "armor":
+			result.append({"id": item_id, "data": data})
+	return result
+
+
+func _best_item_for_slot(slot_id: String, candidates: Array, used: Array[String]) -> Dictionary:
+	var best: Dictionary = {}
+	var best_score := -1
+	for candidate in candidates:
+		var item_id := String(candidate.get("id", ""))
+		if item_id in used:
+			continue
+		var data: Dictionary = candidate.get("data", {})
+		if not InventorySlotRules.fits(data, slot_id):
+			continue
+		var stats: Dictionary = data.get("stats", {})
+		var score: int = int(stats.get("attack", 0)) + int(stats.get("defense", 0)) + int(stats.get("magic", 0))
+		if score > best_score:
+			best_score = score
+			best = candidate
+	return best
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and is_visible_in_tree():
+		update_display()

@@ -38,11 +38,12 @@ func get_equipment_stats() -> Dictionary:
 	}
 	
 	# Получить ItemDatabase
+	# Автозагрузки Godot 4 не являются Engine-синглтонами: прежняя проверка была
+	# всегда false, item_database оставался null и бонусы экипировки выходили нулевыми.
 	var item_database = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_item_database"):
-			item_database = service_locator.get_item_database()
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator and service_locator.has_method("get_item_database"):
+		item_database = service_locator.get_item_database()
 	if not item_database:
 		return total_stats
 	
