@@ -974,3 +974,81 @@ stepper — was dropped entirely, since none of it has backing.
 
 The bottom-bar hint is applied deferred: the Game Menu writes its own default
 hint *after* the tab switch completes, so a direct call was being overwritten.
+
+---
+
+# FINAL FULL UI REGRESSION (Phase 5.15)
+
+Suite: `SampleProject/UI/verify_full_regression.gd` — **54 assertions, all
+passing**. It does not duplicate the per-screen suites; it checks that every
+surface coexists.
+
+Covered: gameplay scene + combat HUD under the themed wrapper · menu shell
+(pause, bottom bar, focus router, sidebar) · all seven tabs render visible,
+non-zero and inside the canvas · exactly one screen visible at a time · 21
+consecutive tab switches without losing the menu or bottom bar · modal open /
+theme inheritance / close / pause preserved · no deferred or rejected content
+rendered anywhere · `ui_cancel` exit restoring gameplay input with the HUD
+intact.
+
+## Suite status — 15 suites, all green
+
+`core_wiring`, `inventory`, `status`, `equipment`, `skills`, `skills_combat`,
+`skills_ui`, `hotbar`, `world_map`, `journal`, `pause`, `combat_hud`,
+`settings`, `responsive`, `full_regression`.
+
+`verify_game_ui_theme` still segfaults on shutdown after its final section; all
+17 of its assertions pass first and it behaves identically on clean `HEAD`.
+Pre-existing, unrelated to UI work.
+
+## Findings from the regression pass
+
+Both were faults in the regression test itself, not in the UI:
+
+1. **`ModalLayer` has no public close method.** Closing is only possible from
+   inside the modal, via its own `confirmed` / `cancelled` / `chosen` signals;
+   `_clear_modal()` is private. Not changed — no caller needs it today — but
+   worth knowing before anything tries to dismiss a modal programmatically.
+2. **`Path Action` / `Talent` appear on the Status screen.** These are the
+   approved empty structure cards from the Status phase: the Figma layout is
+   kept, with captions only and no invented content. They are *not* fabricated
+   data and were not introduced here. The Journal suite still forbids those
+   terms, because there they would have implied real per-character values.
+
+## Remaining Figma deviations
+
+| # | Screen | Deviation |
+|---|---|---|
+| D26 | Skills | Contrasting selected-row JP text kept |
+| D27 | Skills | SP removed from the progression screen |
+| D29 | Skills | Descriptions in the shared bottom bar, no second tooltip system |
+| D39 | World Map | Explored percentage kept although Figma has no such element |
+| D40 | World Map | Legend not built — no marker data |
+| D41 | World Map | Named location markers not invented |
+| D42 | World Map | Real MetSys grid kept instead of the parchment illustration |
+| D43–D47 | Settings | Resolution, Frame Rate Limit, Screen Brightness, Ambient, Text Speed, Screen Shake, Damage Numbers, Borderless — omitted, no backing |
+| D48 | Settings | Controls tab keeps the third-party maaacks widget, styled only by scoped inheritance |
+| D49 | Settings | No duplicate top/bottom chrome — Settings lives inside the tabbed menu |
+| D50 | Settings | Round slider grabber instead of Figma's diamond (needs a thumb asset) |
+| D51 | Settings | Party panel left visible rather than adding a third competitor for `ui_party_panel` |
+| D52 | Journal | Quest log, not a character codex |
+| D53 | Journal | Figma banner characters are not project characters |
+| D54 | Journal | `Path Action` / `Talent` not given invented values |
+| D55 | Journal | No backstory prose or portraits |
+| D58–D60 | Journal | Banners, chapter stepper and character-detail page dropped — no backing |
+| D61 | Journal | Solid page background for legibility over the map art |
+| — | Equipment | All 11 real slots kept; Figma needs updating for the extra slot types |
+| — | Combat HUD | Controller bindings not invented; Figma shows numeric badges only |
+
+## Still open, not UI work
+
+- **D56** — the quest engine has no authored data and is never instanced. Ship
+  or delete?
+- **D57** — `pathfinder_classes.json` class display names are still empty.
+- Production skill content: `skills.json` ships empty by design.
+- Skill targeting: `use_skill()` takes an explicit target; no auto-targeting
+  heuristic was invented.
+- ~74 remaining `Engine.has_singleton(...)` sites, including the one that makes
+  `EventBus.player_health_changed` dead.
+- `Player._initialize_health_bar()` recursive deferral when `current_scene` is
+  null.
