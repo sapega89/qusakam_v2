@@ -161,8 +161,8 @@ func _initialize() -> void:
 	menu.switch_to_tab("Inventory")
 	for i in 5: await process_frame
 	ck(not ui.is_visible_in_tree(), "leaving Skills hides it")
-	var party: Node = get_first_node_in_group("ui_party_panel")
-	ck(party != null and party.visible, "party panel restored on leave")
+	var party: Node = get_first_node_in_group("ui_party_column")
+	ck(party != null and party.visible, "party column restored on leave")
 	sl.get_ui_manager().close_game_menu()
 	for i in 6: await process_frame
 	ck(get_first_node_in_group("game_menu") == null, "menu closes")

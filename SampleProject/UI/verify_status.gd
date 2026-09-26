@@ -53,12 +53,12 @@ func _initialize() -> void:
 	ck(st._level_label.text != before, "level_up refreshes the screen (%s -> %s)" % [before, st._level_label.text])
 
 	print("[5] party panel swap")
-	var party: Node = get_first_node_in_group("ui_party_panel")
-	ck(party != null, "party panel reachable")
-	ck(party != null and not party.visible, "party panel hidden while Status is open")
+	var party: Node = get_first_node_in_group("ui_party_column")
+	ck(party != null, "party column reachable")
+	ck(party != null and not party.visible, "party column hidden while Status is open")
 	menu.switch_to_tab("Inventory")
 	for i in 6: await process_frame
-	ck(party != null and party.visible, "party panel restored when leaving Status")
+	ck(party != null and party.visible, "party column restored when leaving Status")
 
 	print("[6] back / close")
 	ui.close_game_menu()

@@ -396,7 +396,7 @@ func _gui_input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree():
 		var shown := is_visible_in_tree()
-		var party := get_tree().get_first_node_in_group(&"ui_party_panel")
+		var party := get_tree().get_first_node_in_group(&"ui_party_column")
 		if party:
 			party.visible = not shown
 		if shown:

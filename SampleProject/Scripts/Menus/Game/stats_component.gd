@@ -311,7 +311,7 @@ func _make_action_card(caption: String) -> Control:
 ## Figma menu-status має праву колонку-портрет 640 замість панелі партії.
 ## Ховаємо її на час показу; прибереться на етапі спільного шелу.
 func _set_party_panel_visible(value: bool) -> void:
-	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_panel")
+	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_column")
 	if panel:
 		panel.visible = value
 

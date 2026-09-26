@@ -9,7 +9,7 @@ was empty at the Phase 1 audit, which is why the hotbar phase was halted).
 |---|---|---|---|
 | 1 | Exactly 4 active skill slots? | **Yes — 4** | `Skill Hotbar` `434:6628` contains `Hotbar Bind 1…4`, each a `UI/Skills/Slot` 48×48 |
 | 2 | Position and anchors | **Bottom-centre** | `Bottom HUD Row` at `(24, 969)` 1872×87, `justify-between`. Hotbar at local x 812.5 → absolute 836.5, width 248 ⇒ centre **960.5** = screen centre. Row bottom 1056 ⇒ 24px bottom margin |
-| 3 | BAG a separate system? | **Yes** | `Bag Section` `434:6593` is a distinct sibling on the left of the same row, with its own `Consumable Slots Track` (4 binds, gap 10). No shared component with the skill hotbar |
+| 3 | BAG a separate system? | **Dropped — not built** | Confirmed separate from the hotbar in Figma (`Bag Section` `434:6593`), then **removed from scope by design decision**: this is a metroidvania with a dedicated Inventory screen and no separate consumable quickbar. `Bag Section` is an obsolete design artifact. |
 | 4 | SP placement | **Top-left vitals panel, middle row** | `Player Vitals Panel` `434:6558` at `(24,24)` 360×162 — rows HP / **SP** / XP |
 | 5 | All skill-slot visual states | **4 states shown + empty** | see table below |
 
@@ -59,7 +59,7 @@ Cooldown icon example: `icon/skills/steal` 18×18 at inset 14.
 | `Player Vitals Panel` → SP row | `SkillManager.get_current_sp()/get_max_sp()`, `sp_changed` | event-driven |
 | `Player Vitals Panel` → HP row | existing `HealthComponent` | existing |
 | `Player Vitals Panel` → XP row | existing `XPManager` | existing |
-| `Bag Section` | **out of scope** — consumables, separate system | — |
+| `Bag Section` | **obsolete** — not implemented, will not be | — |
 | `Quest Info Panel`, `Currency & Settings` | **out of scope** this phase | — |
 
 ## Input
@@ -86,5 +86,6 @@ is invented, since none exists elsewhere in the combat architecture.
 In: `equipped_skills` model + loadout API, 4-slot hotbar, slot states, cooldown
 presentation, SP display, input actions.
 
-Out: BAG/consumables, quest panel, currency panel, passive effects, JP rewards,
+Out: BAG/consumables (**dropped by design decision — no quickbar in this game**),
+passive effects, JP rewards,
 production skills, targeting system, controller bindings.

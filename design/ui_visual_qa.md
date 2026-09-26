@@ -372,13 +372,13 @@ added it; all five blocking questions resolved — see `design/combat_hud_mappin
 | 12 | Vitals header | name Bold 18 accent uppercase + accent LV badge | same | ✅ |
 | 13 | HP / SP / XP rows | label 30 · bar 200×8 · value 80, gap 6 | same | ✅ |
 | 14 | Row fills | HP `#2ecc71`, SP `#3498db`, XP accent (muted text) | same | ✅ |
-| 15 | BAG section | separate, left of the row | **not implemented** — see D33 | ⚠️ |
+| 15 | BAG section | present in frame | **intentionally absent** — see D33 | ✅ |
 
 ### Deviations (Combat HUD)
 
 | # | Deviation | Reason |
 |---|---|---|
-| **D33** | **BAG / consumable slots not implemented.** | ⚠️ **Figma itself does not specify them.** `Bag Section` (`434:6593`) is 101×14 and contains four *empty* 14px bind frames — bind labels with no slots, no icons, no counts. Nothing to match; not invented. **→ FIGMA NEEDS COMPLETION.** |
+| **D33** | **BAG removed from scope.** | ✅ **Design decision.** This is a metroidvania with a dedicated Inventory screen; there will be no separate consumable bag/quickbar. `Bag Section` (`434:6593`) is an **obsolete Figma artifact** and is deliberately not implemented — no slots, bindings, save state or logic, and nothing invented in its place. Verified absent from all code, scenes and data. **→ FIGMA: remove Bag Section from the Combat HUD.** |
 | **D34** | ✅ **Resolved.** Quest Info Panel and Currency & Settings implemented. | — |
 | **D35** | ✅ **Resolved.** All HUD overlaps cleared — see "Legacy widget disposition" below. | — |
 | **D36** | **Skill-slot icons remain placeholder boxes.** | Per-skill icon art does not exist in Figma either — `UI/Skills/Slot` ships a plain `#2a2a35` box, and the one real glyph in the HUD (`icon/skills/steal`) belongs to a skill that has no production definition. Shared UI glyphs **are** now imported (below). |
@@ -497,3 +497,66 @@ of input actions (§8). Building any of it would mean inventing the count.
    understanding it lives on the combat HUD, which is not yet designed.
 
 Until these are answered in Figma, the phase cannot proceed without guessing.
+
+
+---
+
+# RESPONSIVE REGRESSION
+
+Project-wide stretch policy (added in Phase 5.8): **base 1920×1080,
+`canvas_items`, `keep`**. The logical canvas is therefore always 1920×1080 and
+the window scales it uniformly — composition is resolution-independent by
+construction, and the meaningful risks are controls escaping the canvas,
+zero-size containers, clipped text and broken centring.
+
+Audited with `SampleProject/UI/verify_responsive.gd`, which **measures real
+control rects** rather than comparing screenshots (an earlier pixel comparison
+produced a false "off-centre" result that turned out to be a capture artifact).
+
+Checks per screen: canvas size · anchors · non-zero sizes · every visible
+descendant inside the viewport · text clipping (labels with no wrap and no
+overrun handling) · scroll containers vertical-only with real height · modal
+centring · sidebar left-anchored · bottom bar full-width and flush to the bottom
+· hotbar horizontally centred.
+
+| Screen | 1920×1080 | 1600×900 | 1280×720 | 2560×1440 | 1920×1200 (16:10) | Verdict |
+|---|---|---|---|---|---|---|
+| Game Menu shell | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+| Inventory | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+| Equipment | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+| Status | ✅ | ✅ | ✅ | ✅ | ✅ | **FIXED** |
+| Skills | ✅ | ✅ | ✅ | ✅ | ✅ | **FIXED** |
+| Modals | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+| Combat HUD | ✅ | ✅ | ✅ | ✅ | ✅ | **PASS** |
+
+## FIXED — Status and Skills lost 400px of width
+
+Both screens hide the party column while open. They were hiding
+`PartyStatusPanel`, the panel *inside* the column — but its parent `RightPanel`
+carries `custom_minimum_size = 400`, so the container kept reserving the space
+and both screens rendered into **1200px instead of 1600px**, leaving a dead
+strip on the right.
+
+Fix is structural, not positional: the `ui_party_column` group now sits on
+`RightPanel` itself, so hiding it lets the `HBoxContainer` reflow. Measured
+before `1200×966` → after `1600×966`.
+
+This was a composition defect present at *every* resolution, surfaced by
+measuring rects during the responsive pass.
+
+## No resolution-specific positioning was introduced
+
+All fixes use anchors, containers, size flags and group visibility. There are no
+per-resolution offsets anywhere in the UI.
+
+## Notes
+
+- **16:10 (1920×1200)** letterboxes under `keep`, as intended; all controls stay
+  within the 1920×1080 canvas.
+- **2560×1440** is the same 16:9 ratio and scales up cleanly.
+- The sidebar VBox hugs its content (`296×451`) rather than filling the column;
+  the full-height look comes from `SidebarBackdrop` behind it. Matches Figma.
+
+## NEEDS DESIGN DECISION
+
+None arising from this pass.
