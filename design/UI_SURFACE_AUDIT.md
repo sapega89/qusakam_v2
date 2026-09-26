@@ -199,7 +199,8 @@ in context (component `258:5108` only).
 
 **Save flow (D75):** one shared Save Slot Selection surface — LOAD mode from
 Main Menu → Continue, SAVE mode from a save point. Figma `150:1278` / `17:5` /
-`258:5162` cover it; **save-success confirmation has no design**.
+`258:5162` cover it. Save-success confirmation is derived from the overwrite
+modal (D76) — no new visual design.
 
 **Already designed, previously listed as missing:** death/respawn →
 `game-over-screen` `41:83` · item acquired → `item-pickup-*` `28:5`, `28:25`
@@ -216,8 +217,8 @@ Ukrainian (D67) · remove HUD Bag Section
 · duplicate `crafting-confirm` / `crafting-error` frames (`164:1446`,
 `164:1621`).
 
-**Figma coverage totals:** 38 MATCH · 4 PARTIAL · 12 NONE · 3 OUTDATED
-(World Map, Journal, item tooltip). Designer answers are recorded as D65–D75
+**Figma coverage totals:** 39 MATCH (1 by reuse) · 4 PARTIAL · 11 NONE · 3 OUTDATED
+(World Map, Journal, item tooltip). Designer answers are recorded as D65–D76
 (`figma_decision_register.md` §4).
 
 ## 7. Recommended implementation order
@@ -259,7 +260,8 @@ Ukrainian (D67) · remove HUD Bag Section
 9. **Enchanting** — planned (D68); no system and no data. Wait for the
    dedicated Enchanting page design.
 10. **Save point** — prompt `461:6479` "[A] Save" (D74) → Save Slot
-    Selection in SAVE mode (D75). Save-success feedback is undesigned.
+    Selection in SAVE mode (D75) → "Game Saved" modal derived from the
+    overwrite confirm (D76) → gameplay.
 
 **Cleanup (any time)**
 11. Delete or wire the 12 dead surfaces; remove the orphan `ObjectiveHUD`

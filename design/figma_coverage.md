@@ -14,6 +14,7 @@ Evidence: section screenshots of all 8 prototype sections, close-ups of
 |---|---|
 | **MATCH** — FIGMA MATCH EXISTS | A frame or component covers the surface's layout. Element-level approved overrides are listed in Notes but do not change the label. |
 | **PARTIAL** — FIGMA PARTIAL | Design exists but is incomplete for this surface: component only, frame empty, missing states or entries. |
+| **MATCH (by reuse)** | No dedicated frame. The designer approved deriving it from an existing, designed pattern (counted as MATCH). |
 | **NONE** — NO FIGMA DESIGN | Nothing in the file covers it. |
 | **OUTDATED** — FIGMA OUTDATED / CONFLICTS WITH APPROVED PRODUCT DECISION | The frame's core layout or content model was rejected by a recorded decision. |
 
@@ -115,7 +116,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Load game menu | MATCH | `150:1278` (LOAD mode of Save Slot Selection) | Not a separate screen — merged into Save Slot Selection (D75). |
 | Save game state | MATCH | `17:5` (SAVE mode of Save Slot Selection), `258:5162` overwrite confirm | Not a separate screen — merged into Save Slot Selection (D75). |
 | Splash | MATCH | `258:5141` / `258:5140` | Title + `PRESS ANY BUTTON`. `MainMenu.tscn` already has a hidden `PressAnyButtonContainer`. Display face "Khalahas Heroes" missing (data gap). |
-| Save confirmation (save succeeded) | NONE | — | No "game saved" toast, modal or text anywhere in the file. A text search finds only "Auto-Save", the "Saving Your Progress" tutorial title and "Resume from last save point". |
+| Save confirmation (save succeeded) | MATCH (by reuse) | Derived from the overwrite-confirm modal `258:5162` / `UI/Modal/Confirm` `258:5332` (D76) | No dedicated frame. Same modal family: "Game Saved" / "Your progress has been saved successfully." / single OK action. Spec in §G flow. |
 
 #### Save / Load flow — one shared surface (D75)
 
@@ -129,7 +130,8 @@ no separate Save and Load menus.
 | Main Menu → Continue → Save Slot Selection, **LOAD mode** | MATCH | `9:26` → `150:1278` |
 | Save Point → Save Slot Selection, **SAVE mode** | MATCH | `461:6479` → `17:5` |
 | Overwrite confirmation (SAVE mode, occupied slot) | MATCH | `258:5162` UI/Save Screen Modal → `UI/Modal/Confirm` |
-| Save confirmation (save succeeded) | NONE | — |
+| Save confirmation (save succeeded) | MATCH (by reuse) | Derived from `258:5162` / `258:5332` (D76) |
+| Save failure error | MATCH (by reuse) | Same modal family (D76); error precedent `UI/Craft Error Modal` `217:2983` |
 
 This flow table restates rows already counted above; it adds nothing to the totals.
 
@@ -146,13 +148,40 @@ This flow table restates rows already counted above; it adds nothing to the tota
 | Overwrite confirmation | Present, SAVE mode only: `258:5162` dims the screen and shows `UI/Modal/Confirm` "Overwrite Save? — This will replace the existing save data" with Yes / No. |
 | Back / cancel | Bottom bar `B Return` in both modes. `258:5162` shows keyboard hints `W/S Navigate · Enter Save · ESC Back`. In the modal, **No** cancels. |
 | Timestamp / playtime / location | All present: `save-date`, `region-name` + `location-name`, `time-value`. |
-| Save-success confirmation | **None** in the file. |
+| Save-success confirmation | No dedicated frame. **Approved derived from the overwrite-confirm modal (D76)** — spec below. |
 
 **Figma gaps in this flow** (they do not block the MATCH):
 1. LOAD-mode instruction text reads "Select a slot to **save** your game." — copied from SAVE mode.
 2. No LOAD-mode rule for empty slots (disabled look, or not selectable).
 3. No load confirmation ("Load this save?"). May be intentional.
-4. Save-success feedback is not designed (the NONE row).
+4. Save-success has no dedicated frame; it is derived by reuse (D76).
+
+**Save Success confirmation — derived spec (D76)**
+
+Reuse the overwrite-confirm modal family. Do not create a new visual style.
+
+| Element | Source | Value |
+|---|---|---|
+| Scrim | `258:5162` `modal-scrim-layer` | Same full-screen dim |
+| Panel | `UI/Modal/Confirm` `258:5332` | Same shape, size, spacing, divider, typography |
+| Title | Panel title text | **Game Saved** |
+| Body | Panel body text | **Your progress has been saved successfully.** |
+| Action | `UI/HexButton` `type=yes` `222:4841` | Single primary action **OK** (or "Continue"). No secondary action. |
+| Focus / navigation | As the overwrite confirm | The one button starts focused; confirm closes. |
+
+Flow: Save Point → Save Slot Selection (SAVE) → save succeeds → **Game Saved** →
+confirm → close the Save UI → return to gameplay. **Never shown when saving fails.**
+
+Save failure uses a separate error state in the same modal family (precedent:
+`UI/Craft Error Modal` `217:2983` — title, divider, description, single close action).
+
+Implementation notes (not implemented):
+- `UI/HexButton` has no label text property (its only property is `type`). "OK" needs a
+  text override in Figma, or a label property added to the component.
+- Runtime already has this modal family: `ModalLayer.show_modal({title, description,
+  confirm_text: "OK", allow_cancel: false})` via `modal_dialog.gd`, so no new scene is needed.
+- `SaveSystem.save_player_data()` returns `false` on a write failure but emits no signal;
+  the success/failure branch must use that return value.
 
 ---
 
@@ -160,20 +189,20 @@ This flow table restates rows already counted above; it adds nothing to the tota
 
 | Label | Count |
 |---|---|
-| FIGMA MATCH EXISTS | 38 |
+| FIGMA MATCH EXISTS | 39 (1 by reuse) |
 | FIGMA PARTIAL | 4 |
-| NO FIGMA DESIGN | 12 |
+| NO FIGMA DESIGN | 11 |
 | FIGMA OUTDATED / CONFLICTS | 3 |
 | **Rows** | **57** |
 
 The audit counts 52 *distinct* surfaces; this table has 57 rows because it keeps
 the audit's row split (three HUD parts, legacy widgets, dead scenes) and adds the
-save-success confirmation. 5 of the 12 NONE rows are dead code or non-UI; 5 of the 38 MATCH
+save-success confirmation. 5 of the 11 NONE rows are dead code or non-UI; 5 of the 39 MATCH
 rows are dead or superseded widgets whose function Figma covers.
 
 **Real design gaps (NONE on a live surface):** level-up notification, enemy
 health bar, combat context display, in-game tutorial hints, objective-updated
-notification, demo end screen, save-success confirmation. Plus the PARTIAL gaps:
+notification, demo end screen. Plus the PARTIAL gaps:
 enchant list, full-screen NPC dialogue panel, dialogue choices in context.
 
 **Corrections to `UI_SURFACE_AUDIT.md` §6 "Still need Figma designs":**
@@ -200,7 +229,7 @@ answered by the blacksmith NPC menu (`176:1357`, D69).
 
 ## 4. Designer answers (2026-09-26)
 
-Recorded as D65–D75 in `figma_decision_register.md` §4.
+Recorded as D65–D76 in `figma_decision_register.md` §4.
 
 | # | Answer | Decision |
 |---|---|---|

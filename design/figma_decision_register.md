@@ -101,7 +101,8 @@ behind the design, so these are **GAP** entries, not overrides.
 | **D72** | Q7 | **Main menu uses CONTINUE only.** No separate Load Game button. If save-slot selection is needed, it is reached through Continue. | `9:26` is authoritative. Runtime `load_game` button must go; Continue → `150:1278` when slot choice is needed. |
 | **D73** | Q8 | **`desert-oasis-scene` and `fishing-village-scene` are CONCEPT ART / MOOD REFERENCES ONLY.** Their HUD overlays are not authoritative and must not be implemented. | `144:1735`, `197:1392` carry no UI authority — including the button hint `197:1422` (since promoted to `461:6479`, D74). HUD authority is `434:6556`. |
 | **D74** | follow-up | **`UI/Interaction/Prompt` (`461:6479`) is the approved generic interaction prompt.** | Covers the interaction prompt, merchant approach and D71 state 1. Save point: prompt covered; what follows is defined by D75. |
-| **D75** | follow-up | **Save Slot Selection is ONE shared runtime surface with two entry points:** Main Menu → Continue → **LOAD mode**; Save Point → `UI/Interaction/Prompt` "[A] Save" → **SAVE mode**. Do not create separate Save Menu and Load Menu screens. Use the existing Figma design; do not design a new one. | Figma: `150:1278` (LOAD) + `17:5` (SAVE) share `UI/Save Load List Area` `217:3038`; overwrite confirm `258:5162`. Runtime currently has two scenes (`LoadGameMenu.tscn`, `save_game_state.tscn`) — to be merged when implemented. Save-success confirmation is not designed (NONE). |
+| **D75** | follow-up | **Save Slot Selection is ONE shared runtime surface with two entry points:** Main Menu → Continue → **LOAD mode**; Save Point → `UI/Interaction/Prompt` "[A] Save" → **SAVE mode**. Do not create separate Save Menu and Load Menu screens. Use the existing Figma design; do not design a new one. | Figma: `150:1278` (LOAD) + `17:5` (SAVE) share `UI/Save Load List Area` `217:3038`; overwrite confirm `258:5162`. Runtime currently has two scenes (`LoadGameMenu.tscn`, `save_game_state.tscn`) — to be merged when implemented. Save-success confirmation: see D76. |
+| **D76** | follow-up | **Save Success confirmation reuses the overwrite-confirm modal family** (`258:5162` / `UI/Modal/Confirm` `258:5332`): same panel, spacing, typography, scrim, button styling, focus/navigation. Title "Game Saved", body "Your progress has been saved successfully.", single primary action OK / Continue. Flow: save succeeds → Game Saved → confirm → close Save UI → gameplay. **Not shown on failure.** Save failure uses a separate error state in the same family. No new visual design. | Coverage: MATCH (by reuse). |
 
 ## 5. Open — still undecided
 
@@ -112,7 +113,7 @@ behind the design, so these are **GAP** entries, not overrides.
 | D38 | Combat HUD | `434:6556` | Skill auto-targeting rule |
 | D47 (part) | Settings | `17:756` | Figma lacks the four real `skill_slot_*` binds (not covered by D66) |
 | D56 | Journal | — | Quest engine has no data and is never instanced — ship or delete |
-| — | Save flow | `150:1278`, `17:5` | Save-success confirmation: none designed. Needed, and if so, toast or modal? LOAD mode: empty slots disabled? Load confirmation wanted? |
+| — | Save flow | `150:1278`, `17:5` | LOAD mode: are empty slots disabled? Is a load confirmation wanted? (Save-success resolved by D76.) |
 
 ## 6. Stale entries
 
