@@ -200,7 +200,10 @@ in context (component `258:5108` only).
 **Save flow (D75):** one shared Save Slot Selection surface — LOAD mode from
 Main Menu → Continue, SAVE mode from a save point. Figma `150:1278` / `17:5` /
 `258:5162` cover it. Save-success confirmation is derived from the overwrite
-modal (D76) — no new visual design.
+modal (D76) — no new visual design. LOAD mode: empty slots disabled (D77),
+occupied slots load directly with no confirmation (D78); overwrite confirm is
+SAVE mode only. Save success and failure reuse the existing modal family — no
+new modal scene in Godot (D79). **All save/load UX questions are closed.**
 
 **Already designed, previously listed as missing:** death/respawn →
 `game-over-screen` `41:83` · item acquired → `item-pickup-*` `28:5`, `28:25`
@@ -218,7 +221,7 @@ Ukrainian (D67) · remove HUD Bag Section
 `164:1621`).
 
 **Figma coverage totals:** 39 MATCH (1 by reuse) · 4 PARTIAL · 11 NONE · 3 OUTDATED
-(World Map, Journal, item tooltip). Designer answers are recorded as D65–D76
+(World Map, Journal, item tooltip). Designer answers are recorded as D65–D79
 (`figma_decision_register.md` §4).
 
 ## 7. Recommended implementation order

@@ -129,7 +129,9 @@ no separate Save and Load menus.
 | Save Slot Selection | MATCH | `150:1278` load-game-screen (LOAD) · `17:5` save-game-screen (SAVE) |
 | Main Menu → Continue → Save Slot Selection, **LOAD mode** | MATCH | `9:26` → `150:1278` |
 | Save Point → Save Slot Selection, **SAVE mode** | MATCH | `461:6479` → `17:5` |
-| Overwrite confirmation (SAVE mode, occupied slot) | MATCH | `258:5162` UI/Save Screen Modal → `UI/Modal/Confirm` |
+| Load an occupied slot (LOAD mode) — loads directly, **no confirmation** (D78) | MATCH | `150:1278` |
+| Empty slot in LOAD mode — visible, **disabled, unselectable, no focus** (D77) | MATCH | `150:1278` slot 4 empty card |
+| Overwrite confirmation (**SAVE mode only**, occupied slot) | MATCH | `258:5162` UI/Save Screen Modal → `UI/Modal/Confirm` |
 | Save confirmation (save succeeded) | MATCH (by reuse) | Derived from `258:5162` / `258:5332` (D76) |
 | Save failure error | MATCH (by reuse) | Same modal family (D76); error precedent `UI/Craft Error Modal` `217:2983` |
 
@@ -152,8 +154,8 @@ This flow table restates rows already counted above; it adds nothing to the tota
 
 **Figma gaps in this flow** (they do not block the MATCH):
 1. LOAD-mode instruction text reads "Select a slot to **save** your game." — copied from SAVE mode.
-2. No LOAD-mode rule for empty slots (disabled look, or not selectable).
-3. No load confirmation ("Load this save?"). May be intentional.
+2. ~~No LOAD-mode rule for empty slots~~ — **resolved (D77):** disabled and unselectable, may stay visible. Figma has no separate disabled look; the empty card is used as-is.
+3. ~~No load confirmation~~ — **resolved (D78):** intentional; selecting an occupied slot loads directly.
 4. Save-success has no dedicated frame; it is derived by reuse (D76).
 
 **Save Success confirmation — derived spec (D76)**
@@ -179,7 +181,8 @@ Implementation notes (not implemented):
 - `UI/HexButton` has no label text property (its only property is `type`). "OK" needs a
   text override in Figma, or a label property added to the component.
 - Runtime already has this modal family: `ModalLayer.show_modal({title, description,
-  confirm_text: "OK", allow_cancel: false})` via `modal_dialog.gd`, so no new scene is needed.
+  confirm_text: "OK", allow_cancel: false})` via `modal_dialog.gd`. **No new modal scene is
+  needed in Godot (D79).**
 - `SaveSystem.save_player_data()` returns `false` on a write failure but emits no signal;
   the success/failure branch must use that return value.
 
@@ -229,7 +232,7 @@ answered by the blacksmith NPC menu (`176:1357`, D69).
 
 ## 4. Designer answers (2026-09-26)
 
-Recorded as D65–D76 in `figma_decision_register.md` §4.
+Recorded as D65–D79 in `figma_decision_register.md` §4.
 
 | # | Answer | Decision |
 |---|---|---|

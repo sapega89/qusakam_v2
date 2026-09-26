@@ -103,6 +103,9 @@ behind the design, so these are **GAP** entries, not overrides.
 | **D74** | follow-up | **`UI/Interaction/Prompt` (`461:6479`) is the approved generic interaction prompt.** | Covers the interaction prompt, merchant approach and D71 state 1. Save point: prompt covered; what follows is defined by D75. |
 | **D75** | follow-up | **Save Slot Selection is ONE shared runtime surface with two entry points:** Main Menu → Continue → **LOAD mode**; Save Point → `UI/Interaction/Prompt` "[A] Save" → **SAVE mode**. Do not create separate Save Menu and Load Menu screens. Use the existing Figma design; do not design a new one. | Figma: `150:1278` (LOAD) + `17:5` (SAVE) share `UI/Save Load List Area` `217:3038`; overwrite confirm `258:5162`. Runtime currently has two scenes (`LoadGameMenu.tscn`, `save_game_state.tscn`) — to be merged when implemented. Save-success confirmation: see D76. |
 | **D76** | follow-up | **Save Success confirmation reuses the overwrite-confirm modal family** (`258:5162` / `UI/Modal/Confirm` `258:5332`): same panel, spacing, typography, scrim, button styling, focus/navigation. Title "Game Saved", body "Your progress has been saved successfully.", single primary action OK / Continue. Flow: save succeeds → Game Saved → confirm → close Save UI → gameplay. **Not shown on failure.** Save failure uses a separate error state in the same family. No new visual design. | Coverage: MATCH (by reuse). |
+| **D77** | follow-up | **LOAD mode: empty slots are disabled and unselectable.** They may stay visible but must not receive focus or trigger any action. | Figma has no disabled slot state (the empty card `Empty Slot / No save data available` is the visual). |
+| **D78** | follow-up | **No load confirmation.** Main Menu → Continue → Save Slot Selection → selecting an occupied slot loads it directly; the slot screen is the confirmation. The overwrite confirmation (`258:5162`) stays, **SAVE mode only**. | Save flow closed. |
+| **D79** | follow-up | **Modal family for the save flow is settled:** Save Success is covered by reuse of `UI/Modal/Confirm` (D76); save failure uses the same family with an error state; **no new modal scene is needed in Godot** (`ModalLayer.show_modal()` + `modal_dialog.gd`). | Documentation-level decision; nothing implemented. |
 
 ## 5. Open — still undecided
 
@@ -113,7 +116,6 @@ behind the design, so these are **GAP** entries, not overrides.
 | D38 | Combat HUD | `434:6556` | Skill auto-targeting rule |
 | D47 (part) | Settings | `17:756` | Figma lacks the four real `skill_slot_*` binds (not covered by D66) |
 | D56 | Journal | — | Quest engine has no data and is never instanced — ship or delete |
-| — | Save flow | `150:1278`, `17:5` | LOAD mode: are empty slots disabled? Is a load confirmation wanted? (Save-success resolved by D76.) |
 
 ## 6. Stale entries
 
