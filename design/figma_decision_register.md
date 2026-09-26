@@ -110,18 +110,15 @@ behind the design, so these are **GAP** entries, not overrides.
 | **D38 — DEFERRED** | follow-up | **Skill auto-targeting: skip.** Do not implement auto-targeting; do not invent nearest-enemy or any other targeting system. | Removed from open questions. |
 | **D47 (part) — DEFERRED** | follow-up | **Skill Slot 1–4 bindings: do not add them to the Figma Controls screen now; no new bindings.** Runtime keyboard 1–4 behaviour stays unchanged. | Removed from open questions. |
 | **Closed — do not reopen** | D71–D79 | Save/Load flow and the interaction prompt are closed. `UI/Interaction/Prompt` `461:6479` is the approved prompt for Talk, Pick up, Save, Shop, Craft, Enchant, Fish and other contextual actions. The concept-art fishing-village HUD is not authoritative (D73). | — |
+| **D18 — DEFERRED (future feature, not cut)** | follow-up | **Character switching is planned, but not in the current scope.** Do not implement switching and do not add a character grid to Status now. **Final roster size is undecided** — neither the 8 hard-coded characters nor Figma's 4 party cards is the roster spec. **Stat Points are planned** for the future: keep them in the product plan, do not implement yet. Status keeps showing the active character only. | Audit kept in §5 for reference. |
+| **D56 — DEFERRED (keep dormant)** | follow-up | **Keep the dormant quest engine; do not delete it.** Do not activate it, build quest content on it, or make the current Journal depend on it. It is **not** the approved architecture for the future quest system. Revisit when quest implementation begins. Known issues stay documented, not fixed: incomplete dialogue-event integration, progress not saved, scene-local architecture may need a redesign for a global Journal. | Audit kept in §5 for reference. |
 
-## 5. Open — still undecided
+## 5. Open — none
 
-Only two questions remain. Audits below are read-only; nothing was implemented,
-activated or deleted.
+No open questions remain. D18 and D56 are deferred (see §4). Their audits are kept
+below as reference for when the features are picked up.
 
-| ID | Screen | Question |
-|---|---|---|
-| D18 | Status | Should the game get character selection, and if so, where? |
-| D56 | Journal | Keep the dormant quest engine for a future Journal, or delete it? |
-
-### D18 — Status character grid (audit 2026-09-27)
+### D18 — Status character grid (audit 2026-09-27, reference — deferred)
 
 - **Figma has no character grid.** `menu-status` `58:719` shows a single-character
   header. The kit component `UI/CharacterSelector` `222:4786` (one character card: avatar,
@@ -139,12 +136,9 @@ activated or deleted.
   per-character attributes, class and equipment. No roster file, no join/leave, no party
   size concept. Level/XP are global, not per character. **No stat-point pool and no spend
   API** (deliberately excluded, `GameManager.gd:310-314`).
-- **Decision needed:** (a) Is character switching a planned feature? If yes, which entry
-  point: select from the party panel, a `UI/CharacterSelector` cycler on Status, or
-  something else? (b) Is the 8-character roster real, or should the party be the 4 shown in
-  Figma? (c) Stat-point spending: cut for good, or planned?
+- **Decided (D18):** switching and Stat Points are future features; roster size undecided.
 
-### D56 — dormant quest engine (audit 2026-09-27)
+### D56 — dormant quest engine (audit 2026-09-27, reference — deferred)
 
 - **What exists:** 5 scripts in `SampleProject/Scripts/Quest/` (615 lines, plus 5 `.gd.uid`):
   `SceneQuestManager` (307, linear per-scene stages advanced by finished dialogues),
@@ -172,8 +166,7 @@ activated or deleted.
   `docs/QUEST_SYSTEM_IMPLEMENTATION.md`, `docs/QUEST_SYSTEM_SETUP.md`,
   `docs/QUEST_SYSTEM_SUMMARY.md`, `design/journal_audit.md:106`, `design/ui_visual_qa.md:1045`.
   No scenes or tests break.
-- **Decision needed:** keep it dormant as the basis for a future Journal (accepting the
-  rework above), or delete it and design the Journal's data source separately.
+- **Decided (D56):** keep dormant; revisit when quest implementation begins.
 
 ## 6. Stale entries
 

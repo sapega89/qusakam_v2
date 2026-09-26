@@ -33,7 +33,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Game Menu shell | MATCH | `316:7708` UI/Game Menu Sidebar, `390:6411` UI/Top Bar | Figma sidebar has 9 items, runtime 7 — Healing/Jobs are planned (D65), runtime gap. Blur not reproduced (D1, tech). |
 | Inventory | MATCH | `46:193` | Overrides D7 (`EQUIPMENT` tab), #4a (`KEY ITEMS` disabled), D8 (details kept). `FILTER` cycles ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS (D9, closed). |
 | Equipment | PARTIAL | `58:4` frame has **no content**; design comes from `258:5110` + `258:5111` | Figma shows 8 slots vs 11 real — D20 approved, **Figma needs updating**. |
-| Status | MATCH | `58:719` | Figma has no character grid; the old 8-slot grid was runtime-only (D18, open — audit in register §5). |
+| Status | MATCH | `58:719` | Figma has no character grid; the old 8-slot grid was runtime-only (D18: switching planned for later; Status shows the active character only). |
 | Skills | MATCH | `58:453` | Overrides D26, D27, D29. |
 | World Map | OUTDATED | `94:609`, `68:1900` | Core content rejected: parchment map → MetSys grid (D42); explored % added (D39). Chrome matches. Legend/markers D40/D41 are data gaps. |
 | Journal | OUTDATED | `192:1529`, `192:1636`, `192:1754` | Codex model rejected → quest log (D52, D53, D58–D60). |
@@ -246,4 +246,4 @@ Recorded as D65–D79 in `figma_decision_register.md` §4.
 | Q8 | Both scene frames are concept art / mood references only; their HUD overlays must not be implemented | D73 |
 
 Closed or deferred later: D9 (FILTER cycle), D38 (auto-targeting, deferred), D47 part
-(skill-slot binds, deferred). **Only D18 (Status grid) and D56 (quest engine) remain open.**
+(skill-slot binds, deferred). D18 (Status grid) and D56 (quest engine) deferred. **No open questions remain.**
