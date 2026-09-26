@@ -134,3 +134,23 @@ const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320
 const SETTINGS_HEADER_ICON := 64
 const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
+
+# ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
+# Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
+const MISC_ROW_WIDTH := 500
+const MISC_ROW_PAD_H := 24
+const MISC_ROW_PAD_V := 14
+const MISC_ROW_GAP := 4
+const MISC_ROW_ON := [
+	Color(0.1216, 0.1216, 0.1412, 0.95),
+	Color(0.1490, 0.1490, 0.1686, 0.85),
+	Color(0.1804, 0.1804, 0.2000, 0.50),
+	Color(0.2000, 0.2000, 0.2196, 0.0),
+]
+const MISC_ROW_OFF := [
+	Color(0.0784, 0.0784, 0.1020, 0.70),
+	Color(0.1020, 0.1020, 0.1216, 0.50),
+	Color(0.1216, 0.1216, 0.1412, 0.25),
+	Color(0.1490, 0.1490, 0.1686, 0.0),
+]
+const MISC_ROW_STOPS := [0.0, 0.5, 0.75, 1.0]

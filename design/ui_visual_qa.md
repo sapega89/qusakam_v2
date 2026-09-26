@@ -1052,3 +1052,64 @@ Both were faults in the regression test itself, not in the UI:
   `EventBus.player_health_changed` dead.
 - `Player._initialize_health_bar()` recursive deferral when `current_scene` is
   null.
+
+---
+
+# MISC MODAL — final UI surface (Phase 5.16)
+
+**Figma:** `menu-miscellaneous` `58:1246` → `misc-sub-menu` `84:589`
+**Godot:** `misc_menu_modal.tscn/.gd`
+Suite: `SampleProject/UI/verify_misc_modal.gd` — **50 assertions, all passing**.
+Capture: `design/shots/misc_modal_1920.png`.
+
+Visual pass only — navigation and destinations are unchanged.
+
+## What changed visually
+
+Figma's submenu is **not a centred dialog box**. It is a left-anchored column of
+four 500px rows sitting beside the sidebar at `(380, 530)`, each with a
+horizontal gradient that fades to transparent on the right. The focused row is
+brighter and carries a `←` prefix; the rest are `text-secondary`.
+
+The old scene was a centred 480×320 `PanelContainer` with four default buttons.
+Replaced with the Figma layout. The gradient lives in the **shared theme** as
+two new Button variations, `MiscRow` / `MiscRowOn`, built from
+`StyleBoxTexture` + `GradientTexture2D` — the scene itself has no styleboxes and
+no colour overrides (asserted). Theme is now **98 types**.
+
+Highlight and arrow follow **focus**, so keyboard, gamepad and mouse all drive
+the same visual state with no separate selection model.
+
+## Two real defects found in `ModalLayer.show_custom_modal()`
+
+Both pre-existing, both fixed in the shared layer rather than worked around:
+
+1. **It never set `visible = true` on the layer.** `show_modal()` does;
+   `show_custom_modal()` did not. The Misc modal was being instantiated and
+   added to the tree while the whole CanvasLayer stayed hidden — it existed but
+   drew nothing.
+2. **It never connected the close signals.** Only `show_modal()` wired
+   `confirmed` / `cancelled` / `chosen`, so a custom modal could never dismiss
+   itself and stayed registered as `active_modal` forever. That in turn left
+   `is_gameplay_input_allowed()` false indefinitely.
+
+`show_custom_modal()` now mirrors `show_modal()`. No second modal system was
+introduced; `_clear_modal()` is still the single teardown path (asserted).
+
+## Behaviour verified
+
+Misc button opens it · gameplay stays paused · the Game Menu stays open behind
+it · `ui_cancel` closes it (via the action, not a raw keycode) · focus returns
+to the Misc button · nothing remains registered as `active_modal` · Settings
+dismisses the modal *first* and then opens the Settings tab, so it is never
+hidden behind the modal · Tutorial route and scene still resolve · Exit to Main
+Menu resolves to `res://SampleProject/MainMenu.tscn` and still goes through the
+confirmation dialog · three open/close cycles leave no residue.
+
+## Deviations
+
+| # | Figma | Implemented | Why |
+|---|---|---|---|
+| D62 | Row labels `Return to Title` / `Quit the Game` | Adopted (was `Exit to Main Menu` / `Exit Game`) | Figma is the visual source of truth and copy is visual. Node names and signals are unchanged, so reverting the labels is a one-line change. |
+| D63 | No dimming scrim over the menu behind the submenu | Shared modal `Blocker` at `Color(0,0,0,0.6)` kept | The brief requires reusing shared modal styling. Changing the scrim would restyle **every** modal in the project, which is out of scope for this commit. |
+| D64 | Rows use Inter | Cormorant Garamond via `MiscRow` | Figma is inconsistent here — every other surface in the kit uses Cormorant. Followed the kit, not the outlier. |

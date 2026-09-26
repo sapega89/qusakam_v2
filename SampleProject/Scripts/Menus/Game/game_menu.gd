@@ -173,6 +173,9 @@ func _on_misc_button_pressed() -> void:
 		var modal_layer = ui_manager.get_modal_layer()
 		if modal_layer and modal_layer.has_method("show_custom_modal"):
 			modal_layer.show_custom_modal(MiscMenuModalScene)
+			# Повертаємо фокус на кнопку Misc, коли модалка зникає.
+			if modal_layer.has_signal("modal_closed"):
+				modal_layer.modal_closed.connect(_on_misc_modal_closed, CONNECT_ONE_SHOT)
 			var modal = modal_layer.active_modal
 			if modal:
 				if modal.has_signal("settings_selected"):
@@ -183,6 +186,12 @@ func _on_misc_button_pressed() -> void:
 					modal.exit_main_menu_selected.connect(_on_misc_exit_main_menu_selected, CONNECT_ONE_SHOT)
 				if modal.has_signal("exit_game_selected"):
 					modal.exit_game_selected.connect(_on_misc_exit_game_selected, CONNECT_ONE_SHOT)
+
+func _on_misc_modal_closed(_result: String) -> void:
+	# Тільки якщо меню ще відкрите — на виході з гри фокусувати нема що.
+	if is_inside_tree() and misc_button and misc_button.is_visible_in_tree():
+		misc_button.grab_focus.call_deferred()
+
 
 func _on_misc_settings_selected() -> void:
 	# Налаштування вже живуть у MiscPanel цього меню. change_scene_to_file()

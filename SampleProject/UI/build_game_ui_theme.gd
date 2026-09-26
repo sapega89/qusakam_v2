@@ -214,6 +214,47 @@ func _setup_button_variations(theme: Theme) -> void:
 	_settings_segment(theme)
 	_settings_stepper(theme)
 	_settings_sidebar_tab(theme)
+	_misc_row(theme)
+
+
+## Figma misc-sub-menu (84:589) — рядок 500px із градієнтом, що згасає вправо.
+## Вибраний світліший; StyleBoxTexture дозволяє віддати градієнт темі,
+## а не малювати його локально в сцені.
+func _misc_row(theme: Theme) -> void:
+	for t in ["MiscRow", "MiscRowOn"]:
+		var on: bool = t == "MiscRowOn"
+		theme.set_type_variation(t, "Button")
+		theme.set_font("font", t, _font_regular)
+		theme.set_font_size("font_size", t, UITokens.SIZE_ROW_TITLE)
+		theme.set_color("font_color", t, UITokens.TEXT_PRIMARY if on else UITokens.TEXT_SECONDARY)
+		theme.set_color("font_hover_color", t, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_pressed_color", t, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_focus_color", t, UITokens.TEXT_PRIMARY)
+		var normal := _gradient_box(UITokens.MISC_ROW_ON if on else UITokens.MISC_ROW_OFF)
+		theme.set_stylebox("normal", t, normal)
+		theme.set_stylebox("hover", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("pressed", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("focus", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("disabled", t, _gradient_box(UITokens.MISC_ROW_OFF))
+
+
+func _gradient_box(colors: Array) -> StyleBoxTexture:
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array(UITokens.MISC_ROW_STOPS)
+	gradient.colors = PackedColorArray(colors)
+	var tex := GradientTexture2D.new()
+	tex.gradient = gradient
+	tex.fill_from = Vector2(0, 0.5)
+	tex.fill_to = Vector2(1, 0.5)
+	tex.width = UITokens.MISC_ROW_WIDTH
+	tex.height = 4
+	var box := StyleBoxTexture.new()
+	box.texture = tex
+	box.content_margin_left = UITokens.MISC_ROW_PAD_H
+	box.content_margin_right = UITokens.MISC_ROW_PAD_H
+	box.content_margin_top = UITokens.MISC_ROW_PAD_V
+	box.content_margin_bottom = UITokens.MISC_ROW_PAD_V
+	return box
 
 
 ## Figma settings-* сегментований перемикач (17:350).

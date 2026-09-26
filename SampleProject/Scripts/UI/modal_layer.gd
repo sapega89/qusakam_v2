@@ -55,6 +55,19 @@ func show_custom_modal(packed_scene: PackedScene) -> void:
 		push_error("ModalLayer: Failed to instantiate modal scene")
 		return
 	container.add_child(active_modal)
+
+	# Те саме підключення, що й у show_modal: інакше кастомна модалка не могла
+	# закрити себе і лишалась зареєстрованою як active_modal назавжди.
+	if active_modal.has_signal("confirmed") and not active_modal.confirmed.is_connected(_on_confirmed):
+		active_modal.confirmed.connect(_on_confirmed)
+	if active_modal.has_signal("cancelled") and not active_modal.cancelled.is_connected(_on_cancelled):
+		active_modal.cancelled.connect(_on_cancelled)
+	if active_modal.has_signal("chosen") and not active_modal.chosen.is_connected(_on_chosen):
+		active_modal.chosen.connect(_on_chosen)
+
+	# visible = true бракувало: шар лишався прихованим, тож кастомна модалка
+	# існувала в дереві, але нічого не малювала.
+	visible = true
 	blocker.visible = true
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	container.visible = true
