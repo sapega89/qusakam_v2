@@ -1,4 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://c3xqaietfgs7l"]
+[gd_scene load_steps=19 format=3 uid="uid://c3xqaietfgs7l"]
+
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="15_gameuitheme"]
 
 [ext_resource type="Script" uid="uid://btgvo27tngq4o" path="res://SampleProject/Scripts/Game.gd" id="1_xdpfu"]
 [ext_resource type="PackedScene" uid="uid://xpbhai8nlgtx" path="res://SampleProject/Player.tscn" id="2_bam1a"]
@@ -291,12 +293,22 @@ z_index = 150
 unique_name_in_owner = true
 z_index = 150
 
+[node name="CombatHUD" type="Control" parent="UICanvas"]
+z_index = 100
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("15_gameuitheme")
+
+[node name="SkillHotbar" parent="UICanvas/CombatHUD" instance=ExtResource("12_hotbar")]
+
+[node name="PlayerVitalsPanel" parent="UICanvas/CombatHUD" instance=ExtResource("13_vitals")]
+
+[node name="CombatHudTop" parent="UICanvas/CombatHUD" instance=ExtResource("14_hudtop")]
+
 [connection signal="draw" from="UI/MapWindow/TopDraw" to="UI/MapWindow" method="_on_top_draw"]
-
-[node name="SkillHotbar" parent="UICanvas" instance=ExtResource("12_hotbar")]
-
-[node name="PlayerVitalsPanel" parent="UICanvas" instance=ExtResource("13_vitals")]
-
-[node name="CombatHudTop" parent="UICanvas" instance=ExtResource("14_hudtop")]
 
 [node name="DialogueSystem" parent="." instance=ExtResource("11_dialogue")]

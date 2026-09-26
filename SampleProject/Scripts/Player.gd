@@ -404,6 +404,10 @@ func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 	var hp_increase = Max_Health - old_max_hp
 	current_health = min(current_health + hp_increase, Max_Health)
 
+	# Контракт CombatBody2D: будь-яка зміна HP/Max_Health емітує health_changed.
+	# Без цього HUD не бачив підвищення максимуму на новому рівні.
+	health_changed.emit(current_health, Max_Health, true)
+
 	# Update HP bar
 	if health_bar:
 		health_bar.max_value = Max_Health

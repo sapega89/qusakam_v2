@@ -701,3 +701,91 @@ Persistence stores exactly five keys (`master_volume`, `music_volume`,
 Answering D43–D48 makes Settings a straightforward build: the shell and row
 archetypes are only three repeated patterns (stepper, segmented toggle, stepper
 slider), all expressible with existing theme tokens.
+
+---
+
+# COMBAT HUD — live-data and theme fixes (post code review)
+
+Three verified defects from the code review, all fixed. Suite:
+`SampleProject/UI/verify_combat_hud.gd` — **46 assertions, all passing**.
+Capture: `design/shots/combat_hud_1920.png`.
+
+## 1. HP data source
+
+`player_vitals_panel` read `player.get_node_or_null("HealthComponent")` then
+`"current_health" in health`. **`Player.tscn` has no `HealthComponent`** — only
+`default_enemy.tscn` does — so both guards failed and `_current_hp()` returned
+`gm.calculate_max_health()`. **The HP bar was always full.**
+
+The authoritative source is the player node itself: `Player.gd extends
+CombatBody2D`, which owns `current_health` / `Max_Health` and clamps all damage
+against them. The panel now binds directly to that node, holds no copy of the
+value, and shows `— / —` with an empty bar when the node cannot be resolved
+rather than faking a full bar.
+
+`gm.calculate_max_health()` is deliberately **not** used for the bar maximum:
+gameplay clamps against `Max_Health`, so using anything else would let the HUD
+and gameplay disagree.
+
+## 2. Live refresh
+
+The panel connected only `EventBus.sp_changed` and was otherwise populated once
+in `_ready()` — while `Game.tscn` had hidden the legacy `PlayerHealthBar` and
+`PlayerXPBar` in the same phase. Net effect: **no HP or XP feedback anywhere
+during gameplay.**
+
+Now event-driven from each real owner, with no per-frame polling:
+
+| Row | Signal | Owner |
+|---|---|---|
+| HP | `health_changed(hp, max, animate)` | player node (`CombatBody2D`) |
+| SP | `EventBus.sp_changed` | `SkillManager` |
+| XP | `xp_gained` | `XPManager` |
+| Level badge / XP threshold | `level_up` | `XPManager` |
+| Rebind after respawn | `EventBus.player_respawned` | — |
+
+`EventBus.player_health_changed` was **not** used: `CombatBody2D` emits it
+inside `if Engine.has_singleton("EventBus")`, which is always false for Godot 4
+autoloads (the known project-wide issue), and `heal_damage()` never emits it at
+all. The node signal `health_changed` is emitted unconditionally on every
+mutation, so it is the reliable path.
+
+**One gameplay fix was required:** `Player._on_level_up()` raised `Max_Health`
+and `current_health` without emitting `health_changed`, breaking the
+`CombatBody2D` contract that every other mutation honours. Added the emit —
+otherwise a level-up maximum increase would never reach the HUD.
+
+## 3. Theme inheritance
+
+`SkillHotbar`, `PlayerVitalsPanel` and `CombatHudTop` were instanced directly
+under `Game.tscn → UICanvas`, which carries no theme, so every
+`theme_type_variation` (`VitalsName`, `BindBadge`, `CooldownLabel`,
+`VitalsValue`, …) silently fell back to default Godot styling.
+
+Fixed with a **scoped wrapper**, not a global theme: a new
+`UICanvas/CombatHUD` `Control` (full-rect, `mouse_filter = ignore`) carries
+`GameUITheme`, and the three HUD scenes are reparented into it. The legacy
+`UICanvas` widgets (`CoinCounter`, `TutorialHintDisplay`,
+`CombatContextDisplay`, hidden bars) stay outside and keep their own look, so
+no unreviewed screen changed appearance. `project.godot` still sets no
+`gui/theme/custom`.
+
+### Testing note — `has_theme_*()` is not a valid probe
+
+`ThemeDB.get_default_theme().has_font_size("font_size", "VitalsName")` returns
+**true** for a type the theme has never heard of, because the default theme
+answers from its fallback. An isolation assertion built on `has_theme_*()`
+passes everywhere and proves nothing. The suite compares **resolved values**
+against `UITokens` instead: the HUD resolves `SIZE_ROW_TITLE` (18) and `ACCENT`,
+while the third-party MetSys `Minimap` resolves 16 and a different colour.
+
+## Visual check
+
+`design/shots/combat_hud_1920.png` at 1920×1080: vitals panel top-left with the
+accent name, `LV.1` badge, HP **78/100** (green, damaged — the fix, visibly not
+full), SP 38/50 (blue), XP muted; quest panel top-centre; currency and menu
+top-right; 4-slot hotbar bottom-centre with bind badges 1–4. Fonts resolve to
+Cormorant Garamond from the theme.
+
+**No new visual differences from the approved Figma HUD.** Empty skill slots are
+expected — `skills.json` ships no production skills by design.

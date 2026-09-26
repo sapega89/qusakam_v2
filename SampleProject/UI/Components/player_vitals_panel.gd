@@ -5,7 +5,7 @@ class_name UIPlayerVitalsPanel
 ## Figma: Game Scene / Combat HUD → Player Vitals Panel (434:6558).
 ##
 ## Три рядки з кадру: HP, SP, XP. Значення беруться з наявних власників —
-## HealthComponent, SkillManager і XPManager. Формул тут немає.
+## вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
 const BAR_WIDTH := 200
 const BAR_HEIGHT := 8
@@ -15,6 +15,8 @@ const BAR_HEIGHT := 8
 @onready var _rows: VBoxContainer = %VitalsBars
 
 var _skill_manager: Node = null
+var _xp_manager: Node = null
+var _player: Node = null
 var _rows_by_id: Dictionary = {}
 
 
@@ -23,14 +25,60 @@ func _ready() -> void:
 	var sl: Node = ServiceLocatorHelper.get_service_locator()
 	if sl:
 		_skill_manager = sl.get_skill_manager()
+		_xp_manager = sl.get_xp_manager()
 	_build_rows()
+	# Подієво, без опитування щокадру: кожне значення має власника з сигналом.
 	if not EventBus.sp_changed.is_connected(_on_sp_changed):
 		EventBus.sp_changed.connect(_on_sp_changed)
+	if not EventBus.player_respawned.is_connected(_on_player_respawned):
+		EventBus.player_respawned.connect(_on_player_respawned)
+	if _xp_manager:
+		if not _xp_manager.xp_gained.is_connected(_on_xp_gained):
+			_xp_manager.xp_gained.connect(_on_xp_gained)
+		if not _xp_manager.level_up.is_connected(_on_level_up):
+			_xp_manager.level_up.connect(_on_level_up)
 	refresh()
 
 
 func _on_sp_changed(_current: int, _max: int) -> void:
 	refresh()
+
+
+func _on_xp_gained(_amount: int, _new_total: int) -> void:
+	refresh()
+
+
+func _on_level_up(_new_level: int, _old_level: int) -> void:
+	refresh()
+
+
+## CombatBody2D емітує це на будь-яку зміну HP або Max_Health.
+func _on_player_health_changed(_hp: int, _max_hp: int, _animate: bool) -> void:
+	refresh()
+
+
+func _on_player_respawned() -> void:
+	_player = null
+	refresh()
+
+
+## Єдине джерело правди — вузол гравця: саме його current_health/Max_Health
+## обмежують урон. Копії значення тут не зберігаємо.
+func _ensure_player() -> Node:
+	if is_instance_valid(_player) and _player.is_inside_tree():
+		return _player
+	_player = null
+	var tree := get_tree()
+	if tree == null:
+		return null
+	var found: Node = tree.get_first_node_in_group(GameGroups.PLAYER)
+	if found == null or not ("current_health" in found):
+		return null
+	_player = found
+	if _player.has_signal(&"health_changed") \
+			and not _player.health_changed.is_connected(_on_player_health_changed):
+		_player.health_changed.connect(_on_player_health_changed)
+	return _player
 
 
 func _build_rows() -> void:
@@ -95,16 +143,25 @@ func refresh() -> void:
 	var character = gm.get_active_character() if gm else null
 	_name_label.text = String(character.name).to_upper() if character else "—"
 
-	var xp_manager = sl.get_xp_manager()
-	_level_label.text = "LV.%d" % (xp_manager.get_level() if xp_manager else 1)
+	if _xp_manager == null:
+		_xp_manager = sl.get_xp_manager()
+	_level_label.text = "LV.%d" % (_xp_manager.get_level() if _xp_manager else 1)
 	_style_level_badge()
 
-	if gm:
-		_set_row("HP", _current_hp(gm), gm.calculate_max_health())
+	var player: Node = _ensure_player()
+	if player:
+		_set_row("HP", int(player.current_health), int(player.Max_Health))
+	else:
+		# Джерело не резолвиться — показуємо це чесно, а не повний бар.
+		_set_row_unknown("HP")
 	if _skill_manager:
 		_set_row("SP", _skill_manager.get_current_sp(), _skill_manager.get_max_sp())
-	if xp_manager:
-		_set_row("XP", xp_manager.current_xp, xp_manager.xp_for_next_level)
+	else:
+		_set_row_unknown("SP")
+	if _xp_manager:
+		_set_row("XP", _xp_manager.current_xp, _xp_manager.xp_for_next_level)
+	else:
+		_set_row_unknown("XP")
 
 
 ## Figma 434:6561 — акцентна заливка, темний текст.
@@ -134,6 +191,17 @@ func _set_row(id: String, current: int, maximum: int) -> void:
 	value.text = "%s / %s" % [_thousands(current), _thousands(maximum)]
 
 
+func _set_row_unknown(id: String) -> void:
+	var row: Control = _rows_by_id.get(id)
+	if row == null:
+		return
+	var bar: ProgressBar = row.get_node(^"Bar")
+	var value: Label = row.get_node(^"Value")
+	bar.max_value = 1.0
+	bar.value = 0.0
+	value.text = "— / —"
+
+
 func _thousands(value: int) -> String:
 	var digits := str(absi(value))
 	var out := ""
@@ -144,12 +212,3 @@ func _thousands(value: int) -> String:
 		if count % 3 == 0 and i > 0:
 			out = "," + out
 	return ("-" if value < 0 else "") + out
-
-
-func _current_hp(gm) -> int:
-	var player: Node = gm.get_current_player()
-	if player:
-		var health: Node = player.get_node_or_null(^"HealthComponent")
-		if health and "current_health" in health:
-			return int(health.current_health)
-	return gm.calculate_max_health()
