@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bf8gy32t7bmy8"]
+[gd_scene format=3 uid="uid://bf8gy32t7bmy8"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd" id="1_merchant"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(64, 64)
@@ -35,13 +36,6 @@ vertical_alignment = 1
 position = Vector2(-2, 2)
 shape = SubResource("RectangleShape2D_1")
 
-[node name="InteractionLabel" type="Label" parent="."]
-z_index = 11
-offset_left = -100.0
-offset_top = -80.0
-offset_right = 100.0
-offset_bottom = -40.0
-theme_override_font_sizes/font_size = 16
-text = "Press E to open shop"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("2_interactable")
+action_text = "Shop"

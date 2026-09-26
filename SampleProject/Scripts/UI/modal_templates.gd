@@ -50,6 +50,10 @@ static func overwrite_save() -> Dictionary:
 		]
 	}
 
+## Figma UI/Modal/ItemPickup (222:4880): "You obtained:" / "<Item> × <N>" (D71).
+static func item_pickup(item_name: String, amount: int) -> Dictionary:
+	return misc_popup("You obtained:", "%s × %d" % [item_name, amount])
+
 static func misc_popup(title: String, description: String, ok_text: String = "OK") -> Dictionary:
 	return {
 		"title": title,

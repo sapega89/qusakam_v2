@@ -500,6 +500,19 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_stylebox("panel", "TreePanel", _box(UITokens.SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_2XL, UITokens.SPACE_2XL))
 
+	# Figma UI/Interaction/Prompt (461:6479): State=Default / Focused / Disabled.
+	theme.set_type_variation("InteractionPrompt", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPrompt", _box(UITokens.PROMPT_BG, UITokens.ACCENT, 0,
+			UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("InteractionPromptFocused", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPromptFocused", _box(UITokens.PROMPT_BG_FOCUSED,
+			UITokens.ACCENT, UITokens.BORDER_WIDTH, UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("InteractionPromptDisabled", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPromptDisabled", _box(UITokens.PROMPT_BG_DISABLED,
+			UITokens.ACCENT, 0, UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("PromptRow", "HBoxContainer")
+	theme.set_constant("separation", "PromptRow", UITokens.ICON_TEXT_GAP)
+
 	# Вдавлена панель (Figma: Inner Shadow). У Godot немає inner shadow —
 	# емулюємо темнішим фоном і рамкою. Див. design/ui_implementation_plan.md.
 	theme.set_type_variation("InsetPanel", "PanelContainer")

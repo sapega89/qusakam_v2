@@ -51,7 +51,16 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
 - Pre-existing failures are recorded, not fixed.
 - Commit: baseline doc only.
 
-## Slice 1a — Interaction Prompt + Item Pickup
+## Slice 1a — Interaction Prompt + Item Pickup — ✅ DONE
+
+> Done: `interaction_prompt.tscn`, `InteractableComponent`, `ItemPickup.tscn`, `interact` action,
+> Merchant + RelicArmor migrated. `verify_interaction.gd` 51/51; full suite matches the baseline
+> (17/18, same `verify_responsive` failure). Shots: `design/shots/interaction_prompt_1920.png`,
+> `item_pickup_modal_1920.png`.
+>
+> Found, not fixed (out of scope): `InventoryManager.add_item()` guards `EventBus.item_added` with
+> `Engine.has_singleton("EventBus")`, so that global signal never fires; `RelicArmor` finds no
+> DialogueManager for the same reason (it is not placed in any scene).
 
 **Figma:** `UI/Interaction/Prompt` `461:6479` (improved variant, D84: hug width,
 14–16 px text, same style); `UI/Modal/ItemPickup` `222:4880`; `28:5`, `28:25`.

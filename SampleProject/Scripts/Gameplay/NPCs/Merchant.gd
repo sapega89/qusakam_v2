@@ -3,9 +3,9 @@ extends Area2D
 # 🛒 Merchant - Merchant NPC
 # Простий NPC для відкриття магазину
 
-@onready var interaction_label = $InteractionLabel
+# Спільна підказка взаємодії UI/Interaction/Prompt (D74) — замість власного Label.
+@onready var interactable: InteractableComponent = $Interactable
 
-var player_nearby = false
 var is_shop_open = false
 var shop_menu_instance: Control = null
 var shop_canvas_layer: CanvasLayer = null
@@ -14,51 +14,27 @@ var shop_canvas_layer: CanvasLayer = null
 @export var merchant_id: String = "default"
 
 func _ready():
-	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
-	if not body_entered.is_connected(_on_body_entered):
-		body_entered.connect(_on_body_entered)
-	if not body_exited.is_connected(_on_body_exited):
-		body_exited.connect(_on_body_exited)
-	
-	if interaction_label:
-		interaction_label.visible = false
-		interaction_label.text = "Press E to open shop"
-	
+	if not interactable.interacted.is_connected(_on_interacted):
+		interactable.interacted.connect(_on_interacted)
+
 	# Додаємо до групи торговців
 	add_to_group(GameGroups.MERCHANT)
 
 	DebugLogger.info("Merchant: Initialized at position %s" % global_position, "Merchant")
 
-func _on_body_entered(body):
-	if body.is_in_group(GameGroups.PLAYER):
-		player_nearby = true
-		if interaction_label:
-			interaction_label.visible = true
-
-func _on_body_exited(body):
-	if body.is_in_group(GameGroups.PLAYER):
-		player_nearby = false
-		if interaction_label:
-			interaction_label.visible = false
+func _on_interacted():
+	if not is_shop_open:
+		open_shop()
 
 func _unhandled_input(event):
 	"""Використовуємо _unhandled_input замість _input для обробки вводу після інших систем"""
 	if is_shop_open and event.is_action_pressed("ui_cancel"):
 		close_shop()
 		get_viewport().set_input_as_handled()
-		return
-	
-	if is_shop_open:
-		return
-	
-	if player_nearby and (event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_E)):
-		DebugLogger.info("Merchant: E key pressed, opening shop...", "Merchant")
-		open_shop()
-		get_viewport().set_input_as_handled()
 
 func open_shop():
 	"""Відкриває магазин"""
-	DebugLogger.info("Merchant: open_shop() called, player_nearby: %s" % player_nearby, "Merchant")
+	DebugLogger.info("Merchant: open_shop() called", "Merchant")
 	
 	if is_shop_open and shop_menu_instance:
 		close_shop()
@@ -111,6 +87,7 @@ func open_shop():
 	if shop_menu_instance.has_method("setup_shop"):
 		shop_menu_instance.setup_shop(shop_items)
 		is_shop_open = true
+		interactable.enabled = false
 		
 		# Переконуємося, що магазин видимий
 		shop_menu_instance.visible = true
@@ -142,7 +119,8 @@ func close_shop():
 		return
 	
 	is_shop_open = false
-	
+	interactable.enabled = true
+
 	if shop_canvas_layer and is_instance_valid(shop_canvas_layer):
 		shop_canvas_layer.queue_free()
 		shop_canvas_layer = null
@@ -196,12 +174,6 @@ func _load_merchant_items() -> Array:
 	return merchant_data.items.duplicate()
 
 func _exit_tree() -> void:
-	"""Відключаємося від сигналів при видаленні"""
-	if body_entered.is_connected(_on_body_entered):
-		body_entered.disconnect(_on_body_entered)
-	if body_exited.is_connected(_on_body_exited):
-		body_exited.disconnect(_on_body_exited)
-
 	# Закриваємо магазин якщо він відкритий
 	if is_shop_open:
 		close_shop()

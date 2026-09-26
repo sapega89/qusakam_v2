@@ -135,6 +135,18 @@ const SETTINGS_SLIDER_WIDTH := 320
 const SETTINGS_HEADER_ICON := 64
 const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
 
+# ── Підказка взаємодії (Figma: UI/Interaction/Prompt 461:6479, D74/D84) ────
+# Покращений варіант (D84): ширина за вмістом, текст 14–16 px (беремо Label 16),
+# стиль як у Figma. Фон — чорний з альфою за станом.
+const PROMPT_BG := Color("000000", 0.56)           # State=Default
+const PROMPT_BG_FOCUSED := Color("000000", 0.72)   # State=Focused (+ рамка accent 1px)
+const PROMPT_BG_DISABLED := Color("000000", 0.32)  # State=Disabled
+const PROMPT_DISABLED_CONTENT_ALPHA := 0.4         # бейдж і текст у Disabled
+const PROMPT_BADGE := 28                           # icon/input/* 28×28
+const PROMPT_PAD_H := 8
+const PROMPT_PAD_V := 4
+const PROMPT_OFFSET_Y := -56                       # над об'єктом взаємодії
+
 # ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
 # Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
 const MISC_ROW_WIDTH := 500

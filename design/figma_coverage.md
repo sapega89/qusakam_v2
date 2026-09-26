@@ -51,7 +51,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
 | Shop menu (buy/sell/equipment) | MATCH | `153:1289` buy, `153:1523` sell, `153:1760` buy-confirm | Figma sidebar is Buy / Sell / Equipment — same three modes as `shop_ui.gd`. Selected row renders accent-on-accent (invisible name), the same Figma defect D26 fixed for Skills. |
-| Merchant NPC + prompt | MATCH | `461:6479` UI/Interaction/Prompt, `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Approach prompt → NPC action menu (D74). |
+| Merchant NPC + prompt | MATCH | `461:6479` UI/Interaction/Prompt, `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Approach prompt → NPC action menu (D74). **Prompt implemented (slice 1a):** the "Press E" label is replaced by the shared prompt "Shop"; NPC menu comes in slice 2. |
 | Blacksmith | MATCH | `176:1357` npc-menu-blacksmith (Talk / Quest / Craft / Enchant) | **D69: separate NPC**, entry to Crafting/Enchanting. Runtime's blacksmith-as-shop-Equipment-mode is wrong and must change. |
 
 ### C. Crafting / Enchanting
@@ -76,7 +76,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
-| Interaction prompt | MATCH | `461:6479` UI/Interaction/Prompt (UI KIT) | **Approved generic prompt (D74).** Editable `Action Text` + swappable `Input Badge`; states Default / Focused / Disabled. Not yet placed in any prototype frame. |
+| Interaction prompt | MATCH | `461:6479` UI/Interaction/Prompt (UI KIT) | **Approved generic prompt (D74).** Editable `Action Text` + swappable `Input Badge`; states Default / Focused / Disabled. Not yet placed in any prototype frame. **Implemented (slice 1a):** `UI/Components/interaction_prompt.tscn` + `InteractableComponent`, improved variant D84 (hug width, 16 px), `interact` action E / gamepad A. |
 | NPC action menu | MATCH | `164:1302`, `176:1357` | `npc-interaction-menu` with `UI/Menu Item` rows. |
 | NPC speech bubble | MATCH | `164:1318` | Speaker, line, tail, `B Close` hint. |
 | Full-screen NPC dialogue | PARTIAL | `164:1334` | Frame holds only a dim overlay and a `Continue` hint — the dialogue panel is missing. |
@@ -95,7 +95,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Tutorial hints (in-game) | NONE | — | `135:1260` is the menu's tutorial page, not an in-game hint. |
 | ObjectiveHUD | MATCH | `434:6580` (successor) | Orphan; superseded by Quest Info Panel. |
 | Objective notifications | NONE | — | Quest tracker exists, no "objective updated" toast. |
-| Item acquired / loot toast | MATCH | State 1 `461:6479` (example "Pick up" `461:6486`); state 2 `28:5`, `28:25`, `274:5375` / `222:4880` UI/Modal/ItemPickup | **D71 flow fully covered (D74):** nearby prompt, then the confirmation modal. |
+| Item acquired / loot toast | MATCH | State 1 `461:6479` (example "Pick up" `461:6486`); state 2 `28:5`, `28:25`, `274:5375` / `222:4880` UI/Modal/ItemPickup | **D71 flow fully covered (D74):** nearby prompt, then the confirmation modal. **Implemented (slice 1a):** `Objects/ItemPickup.tscn` (prompt "Pick up" → InventoryManager → modal). Not placed in any map: no production pickup exists yet (Q2). The modal uses the shared modal family (D79) — larger than the compact Figma card and without its caption/name hierarchy. |
 | Death / respawn UI | MATCH | `41:83` game-over-screen | "Game Over" + two options over a dungeon backdrop. The audit's "needs a design" is wrong. |
 | Demo end screen | NONE | — | — |
 | Prologue scene | NONE | — | Dead. |
