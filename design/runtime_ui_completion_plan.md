@@ -212,13 +212,19 @@ Panel` `217:2189`; `UI/Craft Error Modal` `217:2983`.
    → ALL with an active indicator; KEY ITEMS shows the empty state (D9).
 3. Tests: death → screen → chosen option, the filter cycle and empty state.
 
-## Slice 6 — Standard NPC Dialogue (audit only, D83)
+## Slice 6 — Standard NPC Dialogue (audit only, D83) — ✅ AUDITED
+
+> See `design/dialogue_audit.md`. Recommendation for D83: restyle via project-owned scenes that extend
+> the addon classes (option A); own layer (B) is blocked by the addon not exposing say text. Decision: Q24.
 
 Audit the DialogueQuest box against `36:6` / `UI/Character Dialogue` `127:1087`.
 Document restyle-the-addon vs own-presentation-layer options, costs and risks.
 No implementation.
 
-## Slice 7 — Special Story Dialogue (audit only, D83)
+## Slice 7 — Special Story Dialogue (audit only, D83) — ✅ AUDITED
+
+> See `design/dialogue_audit.md` §4. Not implementable without content: no chapters, portraits or choices
+> exist in data or code, and `CutsceneDialogueStep` is unreachable. Needs Q25–Q27.
 
 Same audit for `36:65` (special story scenes, D70) and the cutscene path.
 
