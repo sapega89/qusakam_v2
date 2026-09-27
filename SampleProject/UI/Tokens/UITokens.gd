@@ -147,6 +147,32 @@ const PROMPT_PAD_H := 8
 const PROMPT_PAD_V := 4
 const PROMPT_OFFSET_Y := -56                       # над об'єктом взаємодії
 
+# ── Save / Load (Figma: load-game-screen 150:1278, save-game-screen 17:5) ─────
+const SAVE_SCREEN_MARGIN_H := 60
+const SAVE_SCREEN_MARGIN_TOP := 40
+const SAVE_OVERLAY := Color("07070b", 0.90)       # поверх карти-фону
+const SAVE_TOP_GAP := 8
+const SAVE_TOP_PAD_BOTTOM := 24
+const SAVE_ORNAMENT_LINE := 100
+const SAVE_ORNAMENT_GAP := 12
+const SAVE_LIST_GAP := 16
+const SAVE_CURSOR_COLUMN := 60
+const SAVE_CARD_HEIGHT := 176
+const SAVE_CARD_PAD_H := 32
+const SAVE_CARD_PAD_V := 20
+const SAVE_CARD_BORDER := Color("ffffff")          # невибраний слот
+const SAVE_INFO_GAP := 4                           # left-info, VERTICAL gap
+const SAVE_RIGHT_GAP := 40                         # right-info, HORIZONTAL gap
+const SAVE_PLAYTIME_GAP := 8
+const SAVE_WATERMARK_SPACE := 80                # місце під номер (Figma: 40–65px + повітря)
+const SAVE_WATERMARK_COLOR := Color(1, 1, 1, 0.08) # номер слота
+const SIZE_SAVE_SYSTEM := 11                       # "SAVE DATA MANAGEMENT"
+const SIZE_SAVE_WATERMARK := 160
+const SIZE_SAVE_LOCATION := 28                     # location-name / "Empty Slot"
+const SIZE_SAVE_LEVEL := 26                        # "Lv. 26"
+const SIZE_SAVE_NAME := 18                         # char-name, time-value
+const SAVE_CLOCK_ICON := 16
+
 # ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
 # Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
 const MISC_ROW_WIDTH := 500

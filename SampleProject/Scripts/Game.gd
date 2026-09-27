@@ -326,8 +326,10 @@ static func get_singleton() -> Game:
 	return null
 
 # Unified Save/Load Coordinator
-func save_game():
-	"""Main entry point for saving the game state across all systems."""
+func save_game() -> bool:
+	"""Main entry point for saving the game state across all systems.
+	Повертає true лише коли і сейв MetSys, і дані гравця записано (D76/D79:
+	модалка успіху показується тільки на true)."""
 	DebugLogger.info("💾 Game: Starting unified save sequence...", "Game")
 	
 	# 1. MetSys Save (Map, Rooms, Basic Player Props)
@@ -344,7 +346,15 @@ func save_game():
 	save_manager.set_value("abilities", player.abilities)
 	
 	save_manager.store_game(self)
-	save_manager.save_as_text(_get_current_save_path())
+	# SaveManager.save_as_text() нічого не повертає — пишемо самі, щоб знати результат.
+	var save_path := _get_current_save_path()
+	DirAccess.make_dir_recursive_absolute(save_path.get_base_dir())
+	var save_file := FileAccess.open(save_path, FileAccess.WRITE)
+	if save_file == null:
+		push_error("Game: failed to write save %s (%s)" % [save_path, error_string(FileAccess.get_open_error())])
+		return false
+	save_file.store_string(var_to_str(save_manager.data))
+	save_file.close()
 
 	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
 	if save_system and save_system.has_method("set_slot_metadata"):
@@ -355,14 +365,26 @@ func save_game():
 		var slot_value = save_system.get("current_slot")
 		var slot_index = slot_value if typeof(slot_value) == TYPE_INT else 1
 		meta["slot"] = slot_index
+		# Картка слота (Figma 150:1278): рівень і ім'я лідера — реальні дані (Q3).
+		var xp = ServiceLocatorHelper.get_manager("get_xp_manager")
+		if xp and xp.has_method("get_level"):
+			meta["level"] = xp.get_level()
+		var chars = ServiceLocatorHelper.get_manager("get_character_manager")
+		if chars and chars.has_method("get_active_character"):
+			var lead = chars.get_active_character()
+			if lead and lead.name != "":
+				meta["character_name"] = lead.name
 		save_system.set_slot_metadata(slot_index, meta)
 
 	# 2. SaveSystem Sync (Inventory, Flags, Quest Progress)
 	# Update player state before full data save
 	_sync_player_state_to_save_system()
-	_save_full_game_data_to_save_system()
-	
+	if not _save_full_game_data_to_save_system():
+		push_error("Game: player data was not saved")
+		return false
+
 	DebugLogger.info("✅ Game: Unified save completed successfully.", "Game")
+	return true
 
 func _assign_array(target: Array, source: Variant):
 	if source is Array:
@@ -751,32 +773,33 @@ func _save_game_flags_to_save_system() -> void:
 				save_system.save_player_data()
 
 ## Сохраняет полные данные игры в SaveSystem
-func _save_full_game_data_to_save_system() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_save_system"):
-			var save_system = service_locator.get_save_system()
-			if save_system and save_system.has_method("save_player_data"):
-				# FIX: Сохраняем текущую позицию игрока через PlayerStateManager
-				# SaveSystem.save_player_data() читает позицию из game_manager.player_state.player_position,
-				# поэтому нужно обновить её перед сохранением
-				if player and is_instance_valid(player):
-					# Получаем PlayerStateManager
-					var player_state_manager = service_locator.get_player_state_manager()
-					if player_state_manager and player_state_manager.has_method("set_player_position"):
-						# ВАЖНО: Используем global_position, а не position (локальная позиция)!
-						player_state_manager.set_player_position(player.global_position)
-						DebugLogger.info("Game: Saved player global position: %s" % player.global_position, "Game")
+func _save_full_game_data_to_save_system() -> bool:
+	# Раніше тут стояв Engine.has_singleton("ServiceLocator") — для autoload це
+	# завжди false, тож інвентар і прапорці НІКОЛИ не зберігались разом зі слотом.
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator == null or not service_locator.has_method("get_save_system"):
+		return false
+	var save_system = service_locator.get_save_system()
+	if save_system == null or not save_system.has_method("save_player_data"):
+		return false
 
-					# Обновляем текущую сцену/комнату
-					if save_system.has("player_data"):
-						var current_room = MetSys.get_current_room_name()
-						if not current_room.is_empty():
-							save_system.player_data.current_scene = current_room
+	# SaveSystem.save_player_data() читает позицию из game_manager.player_state.player_position,
+	# поэтому нужно обновить её перед сохранением
+	if player and is_instance_valid(player):
+		var player_state_manager = service_locator.get_player_state_manager()
+		if player_state_manager and player_state_manager.has_method("set_player_position"):
+			# ВАЖНО: Используем global_position, а не position (локальная позиция)!
+			player_state_manager.set_player_position(player.global_position)
+			DebugLogger.info("Game: Saved player global position: %s" % player.global_position, "Game")
 
-				# Сохраняем все данные (инвентарь, позиция, флаги и т.д.)
-				# SaveSystem автоматически определит название локации при сохранении
-				save_system.save_player_data()
+		# Обновляем текущую сцену/комнату
+		if "player_data" in save_system:
+			var current_room = MetSys.get_current_room_name()
+			if not current_room.is_empty():
+				save_system.player_data["current_scene"] = current_room
+
+	# Сохраняем все данные (инвентарь, позиция, флаги и т.д.) у файл поточного слота
+	return bool(save_system.save_player_data())
 
 ## Загружает полные данные игры из SaveSystem (инвентарь, позиция, флаги и т.д.)
 func _load_full_game_data_from_save_system() -> void:

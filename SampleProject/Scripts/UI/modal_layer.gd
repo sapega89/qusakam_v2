@@ -33,12 +33,7 @@ func show_modal(data: Dictionary) -> void:
 	container.add_child(active_modal)
 	active_modal.setup(data)
 
-	if not active_modal.confirmed.is_connected(_on_confirmed):
-		active_modal.confirmed.connect(_on_confirmed)
-	if not active_modal.cancelled.is_connected(_on_cancelled):
-		active_modal.cancelled.connect(_on_cancelled)
-	if active_modal.has_signal("chosen") and not active_modal.chosen.is_connected(_on_chosen):
-		active_modal.chosen.connect(_on_chosen)
+	_connect_modal(active_modal)
 
 	visible = true
 	blocker.visible = true
@@ -58,12 +53,7 @@ func show_custom_modal(packed_scene: PackedScene) -> void:
 
 	# Те саме підключення, що й у show_modal: інакше кастомна модалка не могла
 	# закрити себе і лишалась зареєстрованою як active_modal назавжди.
-	if active_modal.has_signal("confirmed") and not active_modal.confirmed.is_connected(_on_confirmed):
-		active_modal.confirmed.connect(_on_confirmed)
-	if active_modal.has_signal("cancelled") and not active_modal.cancelled.is_connected(_on_cancelled):
-		active_modal.cancelled.connect(_on_cancelled)
-	if active_modal.has_signal("chosen") and not active_modal.chosen.is_connected(_on_chosen):
-		active_modal.chosen.connect(_on_chosen)
+	_connect_modal(active_modal)
 
 	# visible = true бракувало: шар лишався прихованим, тож кастомна модалка
 	# існувала в дереві, але нічого не малювала.
@@ -72,16 +62,30 @@ func show_custom_modal(packed_scene: PackedScene) -> void:
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP
 	container.visible = true
 
-func _on_confirmed() -> void:
-	_close_with_result("confirm")
+## Кнопка модалки випромінює і chosen, і confirmed/cancelled. Раніше шар закривався
+## двічі й двічі слав modal_closed — друге закриття знищувало модалку, відкриту з
+## обробника першого (напр. "Overwrite Save?" → "Game Saved"). Тепер кожен сигнал
+## прив'язаний до своєї модалки, а сигнали вже закритої ігноруються.
+func _connect_modal(modal: Control) -> void:
+	if modal.has_signal("confirmed"):
+		modal.confirmed.connect(_on_confirmed.bind(modal))
+	if modal.has_signal("cancelled"):
+		modal.cancelled.connect(_on_cancelled.bind(modal))
+	if modal.has_signal("chosen"):
+		modal.chosen.connect(_on_chosen.bind(modal))
 
-func _on_cancelled() -> void:
-	_close_with_result("cancel")
+func _on_confirmed(modal: Control) -> void:
+	_close_with_result("confirm", modal)
 
-func _on_chosen(result: String) -> void:
-	_close_with_result(result)
+func _on_cancelled(modal: Control) -> void:
+	_close_with_result("cancel", modal)
 
-func _close_with_result(result: String) -> void:
+func _on_chosen(result: String, modal: Control) -> void:
+	_close_with_result(result, modal)
+
+func _close_with_result(result: String, modal: Control = null) -> void:
+	if modal != null and modal != active_modal:
+		return
 	_clear_modal()
 	modal_closed.emit(result)
 

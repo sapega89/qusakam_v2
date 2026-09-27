@@ -120,6 +120,14 @@ func _setup_label_variations(theme: Theme) -> void:
 		"CardName": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
 		"BigValue": [_font_bold, UITokens.SIZE_TITLE, UITokens.TEXT_PRIMARY],
 		"BigValueAccent": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		# Figma save/load (150:1278, 17:5)
+		"SaveSystemLabel": [_font_regular, UITokens.SIZE_SAVE_SYSTEM, UITokens.TEXT_PRIMARY],
+		"SlotDate": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_PRIMARY],
+		"SlotLocation": [_font_bold, UITokens.SIZE_SAVE_LOCATION, UITokens.TEXT_PRIMARY],
+		"SlotLevel": [_font_bold, UITokens.SIZE_SAVE_LEVEL, UITokens.ACCENT],
+		"SlotName": [_font_semibold, UITokens.SIZE_SAVE_NAME, UITokens.TEXT_PRIMARY],
+		"SlotWatermark": [_font_bold, UITokens.SIZE_SAVE_WATERMARK, UITokens.SAVE_WATERMARK_COLOR],
+		"SlotEmptyText": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
 		# Figma menu-status (58:719)
 		"StatusName": [_font_bold, UITokens.SIZE_NAME, UITokens.TEXT_PRIMARY],
 		"StatusLevel": [_font_bold, UITokens.SIZE_LEVEL, UITokens.ACCENT],
@@ -512,6 +520,57 @@ func _setup_panels(theme: Theme) -> void:
 			UITokens.ACCENT, 0, UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
 	theme.set_type_variation("PromptRow", "HBoxContainer")
 	theme.set_constant("separation", "PromptRow", UITokens.ICON_TEXT_GAP)
+
+	_save_slots(theme)
+
+
+## Figma load-game-screen 150:1278 / save-game-screen 17:5.
+func _save_slots(theme: Theme) -> void:
+	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent.
+	var t := "SaveSlotCard"
+	theme.set_type_variation(t, "Button")
+	var normal := _box(Color(0, 0, 0, 0), UITokens.SAVE_CARD_BORDER, UITokens.BORDER_WIDTH,
+			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
+	var selected := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH,
+			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
+	for state in ["normal", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, normal)
+	theme.set_stylebox("hover", t, selected)
+	theme.set_stylebox("hover_pressed", t, selected)
+	theme.set_stylebox("focus", t, selected)
+
+	var rows := {
+		"SaveTopSection": ["VBoxContainer", UITokens.SAVE_TOP_GAP],
+		"SaveOrnament": ["HBoxContainer", UITokens.SAVE_ORNAMENT_GAP],
+		"SaveSlotList": ["VBoxContainer", UITokens.SAVE_LIST_GAP],
+		"SlotInfoColumn": ["VBoxContainer", UITokens.SAVE_INFO_GAP],
+		"SlotRightInfo": ["HBoxContainer", UITokens.SAVE_RIGHT_GAP],
+		"SlotPlaytime": ["HBoxContainer", UITokens.SAVE_PLAYTIME_GAP],
+		"SlotRow": ["HBoxContainer", 0],
+	}
+	for name in rows:
+		theme.set_type_variation(name, rows[name][0])
+		theme.set_constant("separation", name, rows[name][1])
+
+	theme.set_type_variation("SaveScreenMargin", "MarginContainer")
+	theme.set_constant("margin_left", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
+	theme.set_constant("margin_right", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
+	theme.set_constant("margin_top", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_TOP)
+
+	# Button не розкладає дочірні вузли — внутрішній відступ картки дає MarginContainer.
+	theme.set_type_variation("SlotCardMargin", "MarginContainer")
+	for side in ["left", "right"]:
+		theme.set_constant("margin_" + side, "SlotCardMargin", UITokens.SAVE_CARD_PAD_H)
+	for side in ["top", "bottom"]:
+		theme.set_constant("margin_" + side, "SlotCardMargin", UITokens.SAVE_CARD_PAD_V)
+
+	# Тонкі білі лінії верхньої секції (Figma: Line, stroke #ffffff 1px).
+	theme.set_type_variation("SaveRule", "HSeparator")
+	var line := StyleBoxLine.new()
+	line.color = UITokens.TEXT_PRIMARY
+	line.thickness = UITokens.BORDER_WIDTH
+	theme.set_stylebox("separator", "SaveRule", line)
+	theme.set_constant("separation", "SaveRule", UITokens.BORDER_WIDTH)
 
 	# Вдавлена панель (Figma: Inner Shadow). У Godot немає inner shadow —
 	# емулюємо темнішим фоном і рамкою. Див. design/ui_implementation_plan.md.

@@ -106,17 +106,17 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | `ui_panel.tscn`, `game_title.tscn` | NONE | — | Dead. (`game_title` function is covered by the title block in `258:5140` / `9:26`.) |
 | `modal_dialog.tscn` | MATCH | `258:5332` UI/Modal/Confirm | — |
 | `yes_no_dialog.tscn` | MATCH | `258:5332` | Dead duplicate of `modal_dialog`. |
-| Save point | MATCH | `461:6479` (example "Save" `461:6490`) → Save Slot Selection in SAVE mode | Prompt `[A] Save` opens the shared slot screen (D75). See §G flow. |
+| Save point | MATCH | `461:6479` (example "Save" `461:6490`) → Save Slot Selection in SAVE mode | Prompt `[A] Save` opens the shared slot screen (D75). See §G flow. **Implemented (slice 1b):** auto-save on touch removed (Q5); prompt "Save" opens SAVE mode. |
 
 ### G. Main menu / Save / Load
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
 | Main menu | MATCH | `9:26` | Figma: New Game / Continue / Settings / Quit Game. **D72: Continue only** — the runtime `load_game` button must go. Continue opens Save Slot Selection in LOAD mode (D75). |
-| Load game menu | MATCH | `150:1278` (LOAD mode of Save Slot Selection) | Not a separate screen — merged into Save Slot Selection (D75). |
-| Save game state | MATCH | `17:5` (SAVE mode of Save Slot Selection), `258:5162` overwrite confirm | Not a separate screen — merged into Save Slot Selection (D75). |
+| Load game menu | MATCH | `150:1278` (LOAD mode of Save Slot Selection) | Not a separate screen — merged into Save Slot Selection (D75). **Implemented (slice 1b):** shared `LoadGameMenu` + `SaveSlotCard` restyled to Figma; LOAD empty slots disabled/unfocusable, occupied loads directly; SAVE overwrite → Game Saved / Save Failed. |
+| Save game state | MATCH | `17:5` (SAVE mode of Save Slot Selection), `258:5162` overwrite confirm | Not a separate screen — merged into Save Slot Selection (D75). **Implemented (slice 1b):** shared `LoadGameMenu` + `SaveSlotCard` restyled to Figma; LOAD empty slots disabled/unfocusable, occupied loads directly; SAVE overwrite → Game Saved / Save Failed. |
 | Splash | MATCH | `258:5141` / `258:5140` | Title + `PRESS ANY BUTTON`. `MainMenu.tscn` already has a hidden `PressAnyButtonContainer`. Display face "Khalahas Heroes" missing (data gap). |
-| Save confirmation (save succeeded) | MATCH (by reuse) | Derived from the overwrite-confirm modal `258:5162` / `UI/Modal/Confirm` `258:5332` (D76) | No dedicated frame. Same modal family: "Game Saved" / "Your progress has been saved successfully." / single OK action. Spec in §G flow. |
+| Save confirmation (save succeeded) | MATCH (by reuse) | Derived from the overwrite-confirm modal `258:5162` / `UI/Modal/Confirm` `258:5332` (D76) | No dedicated frame. Same modal family: "Game Saved" / "Your progress has been saved successfully." / single OK action. Spec in §G flow. **Implemented (slice 1b):** `ModalTemplates.game_saved()`. |
 
 #### Save / Load flow — one shared surface (D75)
 
@@ -157,6 +157,11 @@ This flow table restates rows already counted above; it adds nothing to the tota
 2. ~~No LOAD-mode rule for empty slots~~ — **resolved (D77):** disabled and unselectable, may stay visible. Figma has no separate disabled look; the empty card is used as-is.
 3. ~~No load confirmation~~ — **resolved (D78):** intentional; selecting an occupied slot loads directly.
 4. Save-success has no dedicated frame; it is derived by reuse (D76).
+
+**Implementation deviations (slice 1b):** the LOAD instruction reads "to load" (Figma copy error fixed);
+letter-spacing on the caption/title is not reproduced; party portraits and region name are omitted
+(no data, Q3); the overwrite/success modals use the shared modal family (larger than the compact
+Figma panel, same as Q14). Shots: `design/shots/save_load_*_1920.png`.
 
 **Save Success confirmation — derived spec (D76)**
 

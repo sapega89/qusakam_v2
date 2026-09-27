@@ -81,7 +81,24 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
    `interact` action fires `interacted`, the item lands in the inventory, and the
    modal opens and closes with focus on OK.
 
-## Slice 1b — Save/Load shared logic (two scenes, D80)
+## Slice 1b — Save/Load shared logic (two scenes, D80) — ✅ DONE
+
+> Done: `SaveSlotCard` component + rewritten `LoadGameMenu` (shared by `load_game_state` /
+> `save_game_state`), `SaveSystem` per-slot player data + `get_slot_summary` / `delete_slot`,
+> `Game.save_game() -> bool` (level + lead character in metadata), save point → prompt → SAVE mode,
+> `save_delete` action (Delete / pad Y). `verify_save_load.gd` 55/55; full suite matches the baseline.
+> Defaults applied: Q3 (level + name, no portraits/region), Q4 (per-slot player data), Q5 (no auto-save),
+> Q7 (delete kept).
+>
+> Fixed on the way (blocking this flow):
+> - `Game._save_full_game_data_to_save_system()` and `LoadGameMenu` used `Engine.has_singleton("ServiceLocator")`
+>   → inventory/flags were never saved with a slot, slot metadata was never read, `set_current_slot()` never ran.
+> - `save_system.has("player_data")` (nonexistent method) in the same function.
+> - `ModalLayer` closed twice per button press (`chosen` + `confirmed`), emitting `modal_closed` twice and
+>   destroying any follow-up modal (overwrite → Game Saved).
+>
+> Not migrated: saves made before this change keep their MetSys slot file but have no per-slot player data
+> (it was never written for them anyway).
 
 **Figma:** `17:5` (SAVE), `150:1278` (LOAD), `258:5162` overwrite,
 `UI/Save Load Top Section` `217:1597`, `UI/Save Load List Area` `217:3038`.

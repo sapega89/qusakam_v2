@@ -1,14 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://bb3ybqhm3pvq5"]
+[gd_scene format=3 uid="uid://bb3ybqhm3pvq5"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/LoadGameMenu.gd" id="1_load_menu"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.1, 0.1, 0.1, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.5, 0.5, 0.5, 1)
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/menu_map_background.jpg" id="3_bg"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/bottom_bar.tscn" id="5_bottom_bar"]
 
 [node name="LoadGameMenu" type="Control"]
 layout_mode = 3
@@ -17,91 +13,108 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_load_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.8)
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="MainPanel" type="Panel" parent="."]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -300.0
-offset_right = 400.0
-offset_bottom = 300.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel"]
+[node name="Overlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 20
+mouse_filter = 2
 
-[node name="TitleLabel" type="Label" parent="MainPanel/VBoxContainer"]
+[node name="Content" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SaveScreenMargin"
+
+[node name="Column" type="VBoxContainer" parent="Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
+mouse_filter = 2
+
+[node name="TopSection" type="VBoxContainer" parent="Content/Column"]
+layout_mode = 2
+theme_type_variation = &"SaveTopSection"
+
+[node name="SystemLabel" type="Label" parent="Content/Column/TopSection"]
+layout_mode = 2
+theme_type_variation = &"SaveSystemLabel"
+text = "Save Data Management"
+uppercase = true
+
+[node name="TitleRow" type="HBoxContainer" parent="Content/Column/TopSection"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Content/Column/TopSection/TitleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"DisplayLabel"
 text = "Load Game"
-horizontal_alignment = 1
 
-[node name="SaveSlotsContainer" type="VBoxContainer" parent="MainPanel/VBoxContainer"]
+[node name="Ornament" type="HBoxContainer" parent="Content/Column/TopSection/TitleRow"]
+unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 10
+size_flags_vertical = 4
+theme_type_variation = &"SaveOrnament"
 
-[node name="Slot1" type="Button" parent="MainPanel/VBoxContainer/SaveSlotsContainer"]
+[node name="LineLeft" type="HSeparator" parent="Content/Column/TopSection/TitleRow/Ornament"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 80)
-text = "Slot 1: Empty"
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
 
-[node name="Slot2" type="Button" parent="MainPanel/VBoxContainer/SaveSlotsContainer"]
+[node name="Diamond" type="TextureRect" parent="Content/Column/TopSection/TitleRow/Ornament"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 80)
-text = "Slot 2: Empty"
+size_flags_vertical = 4
+texture = ExtResource("4_diamond")
+stretch_mode = 5
 
-[node name="Slot3" type="Button" parent="MainPanel/VBoxContainer/SaveSlotsContainer"]
+[node name="LineRight" type="HSeparator" parent="Content/Column/TopSection/TitleRow/Ornament"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 80)
-text = "Slot 3: Empty"
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
 
-[node name="Slot4" type="Button" parent="MainPanel/VBoxContainer/SaveSlotsContainer"]
+[node name="Rule" type="HSeparator" parent="Content/Column/TopSection"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 80)
-text = "Slot 4: Empty"
+theme_type_variation = &"SaveRule"
 
-[node name="ButtonsContainer" type="HBoxContainer" parent="MainPanel/VBoxContainer"]
+[node name="TopPad" type="Control" parent="Content/Column"]
+unique_name_in_owner = true
 layout_mode = 2
-alignment = 1
+mouse_filter = 2
 
-[node name="BackButton" type="Button" parent="MainPanel/VBoxContainer/ButtonsContainer"]
+[node name="Slots" type="VBoxContainer" parent="Content/Column"]
+unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(150, 40)
-text = "Back"
+theme_type_variation = &"SaveSlotList"
 
-[node name="DeleteButton" type="Button" parent="MainPanel/VBoxContainer/ButtonsContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(150, 40)
-text = "Delete"
-disabled = true
-
-[node name="LoadButton" type="Button" parent="MainPanel/VBoxContainer/ButtonsContainer"]
-layout_mode = 2
-custom_minimum_size = Vector2(150, 40)
-text = "Load"
-disabled = true
-
+[node name="BottomBar" parent="." instance=ExtResource("5_bottom_bar")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0

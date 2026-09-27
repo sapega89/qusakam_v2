@@ -16,6 +16,8 @@ const SAVE_DIR = "user://saves/"
 const PROFILE_FILE = "profile.json"
 const SLOT_FILE_TEMPLATE = "slot_%02d.sav"
 const SLOT_COUNT = 4
+## Дані гравця (інвентар, прапорці) — окремий файл на кожен слот (Q4).
+const PLAYER_SLOT_TEMPLATE = "player_%02d.json"
 
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
 
@@ -38,6 +40,9 @@ var _session_base_playtime_sec: float = 0.0
 
 # Включено ли автосохранение при переходе между сценами
 var enable_auto_save_on_scene_transition: bool = false
+
+## Тека слотів. Змінюється лише тестами через set_save_dir(), щоб не чіпати справжні сейви.
+var save_dir: String = SAVE_DIR
 
 func _ready():
 	# Создаем папку для сохранений если её нет
@@ -87,6 +92,8 @@ func _create_save_directories():
 		dir.make_dir("savegames")
 	if not dir.dir_exists("saves"):
 		dir.make_dir("saves")
+	if not DirAccess.dir_exists_absolute(save_dir):
+		DirAccess.make_dir_recursive_absolute(save_dir)
 
 func _load_profile() -> void:
 	"""Loads save slot profile data."""
@@ -95,7 +102,7 @@ func _load_profile() -> void:
 		"slots": {}
 	}
 
-	var file_path = SAVE_DIR + PROFILE_FILE
+	var file_path = save_dir + PROFILE_FILE
 	var file = FileAccess.open(file_path, FileAccess.READ)
 	if file:
 		var json_string = file.get_as_text()
@@ -111,7 +118,7 @@ func _load_profile() -> void:
 
 func _save_profile() -> void:
 	"""Saves save slot profile data."""
-	var file_path = SAVE_DIR + PROFILE_FILE
+	var file_path = save_dir + PROFILE_FILE
 	var file = FileAccess.open(file_path, FileAccess.WRITE)
 	if not file:
 		push_error("SaveSystem: Failed to save profile to %s" % file_path)
@@ -122,10 +129,58 @@ func _save_profile() -> void:
 func get_slot_path(slot_index: int) -> String:
 	"""Returns the slot file path."""
 	var index = clamp(slot_index, 1, SLOT_COUNT)
-	return SAVE_DIR + (SLOT_FILE_TEMPLATE % index)
+	return save_dir + (SLOT_FILE_TEMPLATE % index)
+
+func get_player_data_path(slot_index: int) -> String:
+	"""Інвентар / прапорці / стан гравця для конкретного слота."""
+	var index = clamp(slot_index, 1, SLOT_COUNT)
+	return save_dir + (PLAYER_SLOT_TEMPLATE % index)
+
+## Лише для тестів: перенаправляє слоти в окрему теку і перечитує профіль.
+func set_save_dir(dir: String) -> void:
+	save_dir = dir if dir.ends_with("/") else dir + "/"
+	if not DirAccess.dir_exists_absolute(save_dir):
+		DirAccess.make_dir_recursive_absolute(save_dir)
+	_load_profile()
+
+func slot_has_save(slot_index: int) -> bool:
+	return FileAccess.file_exists(get_slot_path(slot_index))
+
+## Спільні дані картки слота для Save і Load (D80). Лише реальні значення:
+## чого немає в сейві — немає в словнику (жодних вигаданих рівнів чи імен).
+func get_slot_summary(slot_index: int) -> Dictionary:
+	var summary := {"slot": slot_index, "exists": slot_has_save(slot_index)}
+	if not summary.exists:
+		return summary
+	summary["file_path"] = get_slot_path(slot_index)
+	var meta := get_slot_metadata(slot_index)
+	for key in ["timestamp", "location", "level", "character_name"]:
+		if meta.has(key) and str(meta[key]) != "":
+			summary[key] = meta[key]
+	summary["playtime_sec"] = float(meta.get("playtime_sec", 0.0))
+	if not summary.has("location"):
+		var sm := SaveManager.new()
+		sm.load_from_text(get_slot_path(slot_index))
+		var room := str(sm.get_value("current_room", ""))
+		if room != "":
+			summary["location"] = room
+	return summary
+
+func delete_slot(slot_index: int) -> bool:
+	"""Видаляє сейв слота, його дані гравця і метадані."""
+	var ok := true
+	for path in [get_slot_path(slot_index), get_player_data_path(slot_index)]:
+		if FileAccess.file_exists(path) and DirAccess.remove_absolute(path) != OK:
+			push_warning("SaveSystem: failed to delete %s" % path)
+			ok = false
+	var slots = profile.get("slots", {})
+	slots.erase(str(slot_index))
+	profile["slots"] = slots
+	_save_profile()
+	return ok
 
 func get_profile_path() -> String:
-	return SAVE_DIR + PROFILE_FILE
+	return save_dir + PROFILE_FILE
 
 func get_slot_count() -> int:
 	return SLOT_COUNT
@@ -204,8 +259,8 @@ func save_player_data():
 	# Обновляем player_data для обратной совместимости
 	player_data = _flatten_data(data)
 
-	# Сохраняем в файл
-	var file_path = SAVE_FILE_PATH + PLAYER_DATA_FILE
+	# Сохраняем в файл поточного слота (раніше — один спільний файл на всі слоти)
+	var file_path = get_player_data_path(current_slot)
 	var file = FileAccess.open(file_path, FileAccess.WRITE)
 
 	if file:
@@ -220,7 +275,7 @@ func save_player_data():
 
 func load_player_data():
 	"""Загружает все данные игрока через модули"""
-	var file_path = SAVE_FILE_PATH + PLAYER_DATA_FILE
+	var file_path = get_player_data_path(current_slot)
 	var file = FileAccess.open(file_path, FileAccess.READ)
 
 	if not file:
@@ -452,9 +507,9 @@ func _flatten_data(data: Dictionary) -> Dictionary:
 func has_save_file() -> bool:
 	"""Проверяет существование файла сохранения"""
 	for i in range(1, SLOT_COUNT + 1):
-		if FileAccess.file_exists(get_slot_path(i)):
+		if slot_has_save(i):
 			return true
-	return FileAccess.file_exists(SAVE_FILE_PATH + PLAYER_DATA_FILE)
+	return false
 
 func delete_save_file():
 	"""Удаляет файл сохранения"""
