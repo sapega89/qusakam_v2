@@ -234,6 +234,26 @@ const SIDEBAR_TAB_WIDTH := 296
 const SIDEBAR_TAB_HEIGHT := 45
 const SIDEBAR_TOP_PAD := 24
 
+# ── Game Over (Figma: game-over-screen 41:83) ─────────────────────────────────
+const GAME_OVER_RED := Color("9e1b1b")
+const GAME_OVER_FRAME := Color("5c5655")
+const GAME_OVER_FRAME_INNER_ALPHA := 0.40
+# Радіальна віньєтка поверх фото: колір@альфа → позиція
+const GAME_OVER_VIGNETTE := [[Color("140a0a", 0.0), 0.10], [Color("090303", 0.85), 0.75], [Color("000000", 1.0), 1.0]]
+const GAME_OVER_INSET := 60        # рамка 1800×960 з відступом 60
+const GAME_OVER_INSET_INNER := 12
+const GAME_OVER_CORNER := 48
+const SIZE_GAME_OVER := 144        # "Game Over" — Bold, червоний, тінь
+const SIZE_GAME_OVER_EYEBROW := 14 # "Khalahas Heroes" — SemiBold, колір рамки
+const GAME_OVER_COLUMN_GAP := 48
+const GAME_OVER_EYEBROW_GAP := 8
+const GAME_OVER_OPTIONS_GAP := 32
+const GAME_OVER_RULE := 320
+const GAME_OVER_RULE_ALPHA := 0.80
+const GAME_OVER_EYEBROW_LINE := 32
+const GAME_OVER_FOOTER_BOTTOM := 100
+const GAME_OVER_SHADOW := Color("000000", 0.40)
+
 # ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
 # Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
 const MISC_ROW_WIDTH := 500

@@ -10,7 +10,7 @@ extends BaseMenuComponent
 const ITEM_ROW_SCENE := preload("res://SampleProject/UI/Components/item_row.tscn")
 
 ## Категорії з Figma. `types` порожній ⇒ показуємо все.
-## KEY ITEMS лишається видимим, але вимикається, поки контенту немає.
+## Порожня категорія (напр. KEY ITEMS) лишається доступною й показує порожній стан (D9).
 const CATEGORIES: Array[Dictionary] = [
 	{"id": &"all", "label": "ALL", "types": []},
 	{"id": &"consumables", "label": "CONSUMABLES", "types": ["consumable"]},
@@ -80,28 +80,11 @@ func _build_tabs() -> void:
 		_tab_buttons[id] = button
 
 
-## Вмикає/вимикає вкладки, для яких немає жодного предмета в базі.
-## Порожня вкладка лишається видимою — так вимагає дизайн.
+## D9 (замінює #4a): жодна вкладка не вимикається — порожня категорія, як-от KEY ITEMS,
+## лишається в циклі FILTER і показує порожній стан замість того, щоб її пропускали.
 func _refresh_tab_availability() -> void:
-	for category in CATEGORIES:
-		var id: StringName = category["id"]
-		var types: Array = category["types"]
-		if types.is_empty():
-			continue
-		var button: Button = _tab_buttons.get(id)
-		if button == null:
-			continue
-		button.disabled = _database_count_for_types(types) == 0
-
-
-## Скільки предметів такого типу взагалі існує в ItemDatabase.
-func _database_count_for_types(types: Array) -> int:
-	if not item_database:
-		return 0
-	var total := 0
-	for type_name in types:
-		total += item_database.get_items_by_type(String(type_name)).size()
-	return total
+	for id in _tab_buttons:
+		(_tab_buttons[id] as Button).disabled = false
 
 
 func _select_category(id: StringName) -> void:
@@ -202,6 +185,9 @@ func _refresh_display() -> void:
 	if not has_items:
 		_empty_label.text = ("No items available for this slot."
 				if equipment_selection_mode else "No items in this category.")
+		# Порожня категорія не повинна показувати опис предмета з попередньої.
+		if is_inside_tree():
+			_clear_description()
 		return
 
 	for i in items.size():
@@ -249,9 +235,15 @@ func _on_inventory_changed() -> void:
 		update_display()
 
 
+## D9: кожне натискання FILTER перемикає на наступну категорію по колу:
+## ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL. Без меню й спливаючих списків.
 func _on_filter_pressed() -> void:
-	# Поведінка кнопки FILTER у Figma не визначена — див. design/ui_visual_qa.md.
-	pass
+	var index := 0
+	for i in CATEGORIES.size():
+		if CATEGORIES[i]["id"] == _current_category:
+			index = i
+			break
+	_select_category(CATEGORIES[(index + 1) % CATEGORIES.size()]["id"])
 
 
 func _on_row_selected(index: int) -> void:

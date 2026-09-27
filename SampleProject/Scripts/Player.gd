@@ -193,6 +193,11 @@ func die() -> void:
 	# Вызываем родительский die() для установки is_dead и эмита сигналов
 	super.die()
 
+	# Figma game-over-screen 41:83: екран Game Over замість миттєвого респавну.
+	# Якщо показати нікуди (немає поточної сцени) — стара поведінка.
+	if GameOverScreen.present(self):
+		return
+
 	# Вызываем kill() для респавна игрока
 	kill()
 

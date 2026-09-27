@@ -36,7 +36,7 @@ func _initialize() -> void:
 	for b in tabs.get_children(): names.append(b.text)
 	ck(names == ["ALL","CONSUMABLES","MATERIALS","EQUIPMENT","KEY ITEMS"], "tab labels match Figma: %s" % str(names))
 	var key_tab: Button = tabs.get_node_or_null("key_items")
-	ck(key_tab != null and key_tab.disabled, "KEY ITEMS visible but disabled")
+	ck(key_tab != null and not key_tab.disabled, "KEY ITEMS selectable even when empty (D9, replaces #4a)")
 	ck(key_tab != null and key_tab.visible, "KEY ITEMS still visible")
 
 	print("[3] switching + counts")
@@ -62,7 +62,8 @@ func _initialize() -> void:
 	print("[5] empty category behaviour")
 	inv._select_category(&"key_items")
 	await process_frame
-	ck(inv._current_category != &"key_items", "disabled tab refuses selection")
+	ck(inv._current_category == &"key_items", "empty KEY ITEMS can be selected (D9)")
+	ck(inv._empty_label.visible and inv._empty_label.text == "No items in this category.", "empty state shown instead")
 
 	print("[6] rows + selection + details")
 	inv._select_category(&"all")
@@ -133,6 +134,31 @@ func _initialize() -> void:
 		ck(bar._hint_label.text == bar.DEFAULT_HINT, "hint restored when inventory hides")
 		inv.visible = true
 		for i in 2: await process_frame
+
+	print("[10b] FILTER cycles categories (D9)")
+	var filter_btn: Button = inv.find_child("FilterButton", true, false)
+	inv._select_category(&"all")
+	await process_frame
+	var seen: Array = []
+	for i in 5:
+		filter_btn.pressed.emit()
+		await process_frame
+		seen.append(String(inv._current_category))
+	ck(seen == ["consumables", "materials", "equipment", "key_items", "all"],
+			"ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL: %s" % str(seen))
+	inv._select_category(&"materials")
+	filter_btn.pressed.emit()
+	await process_frame
+	var active_tab: Button = inv._tab_buttons[&"equipment"]
+	ck(active_tab.button_pressed and not inv._tab_buttons[&"materials"].button_pressed, "active category highlighted")
+	inv._select_category(&"equipment")
+	filter_btn.pressed.emit()
+	await process_frame
+	ck(inv._current_category == &"key_items" and inv._empty_label.visible, "KEY ITEMS kept in the cycle with its empty state")
+	var hint_bar: Node = get_first_node_in_group(&"ui_bottom_bar")
+	ck(hint_bar != null and hint_bar._hint_label.text == hint_bar._default_hint, "empty category clears the previous item description")
+	ck(get_first_node_in_group(&"filter_popup") == null, "no popup or dropdown")
+	inv._select_category(&"all")
 
 	print("[11] close / back")
 	ui.close_game_menu()

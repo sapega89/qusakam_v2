@@ -30,6 +30,7 @@ func _initialize() -> void:
 	_setup_panels(theme)
 	_main_menu(theme)
 	_shop(theme)
+	_game_over(theme)
 	_setup_progress_bar(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
@@ -589,6 +590,58 @@ func _main_menu(theme: Theme) -> void:
 		theme.set_color("icon_disabled_color", t, Color(0, 0, 0, 0))
 		theme.set_constant("h_separation", t, UITokens.MENU_ITEM_GAP)
 		theme.set_constant("icon_max_width", t, UITokens.MENU_ITEM_POINTER)
+
+
+## Figma game-over-screen 41:83. Пункти меню — ті самі NpcMenuItem/On (UI/Menu Item з фоном).
+func _game_over(theme: Theme) -> void:
+	theme.set_type_variation("GameOverTitle", "Label")
+	theme.set_font("font", "GameOverTitle", _font_bold)
+	theme.set_font_size("font_size", "GameOverTitle", UITokens.SIZE_GAME_OVER)
+	theme.set_color("font_color", "GameOverTitle", UITokens.GAME_OVER_RED)
+	theme.set_color("font_shadow_color", "GameOverTitle", UITokens.GAME_OVER_SHADOW)
+	theme.set_constant("shadow_offset_x", "GameOverTitle", 0)
+	theme.set_constant("shadow_offset_y", "GameOverTitle", 3)
+	theme.set_constant("shadow_outline_size", "GameOverTitle", 3)
+
+	var labels := {
+		"GameOverEyebrow": [_font_semibold, UITokens.SIZE_GAME_OVER_EYEBROW, UITokens.GAME_OVER_FRAME],
+		"GameOverHint": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"GameOverKey": [_spaced(_font_bold, 1), UITokens.SIZE_CAPTION, UITokens.TEXT_PRIMARY],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, labels[name][2])
+
+	var clear := Color(0, 0, 0, 0)
+	var inner := Color(UITokens.GAME_OVER_FRAME, UITokens.GAME_OVER_FRAME_INNER_ALPHA)
+	for spec in [["GameOverInset", UITokens.GAME_OVER_FRAME, 0, 0], ["GameOverInsetInner", inner, 0, 0],
+			["GameOverKeycap", inner, UITokens.SPACE_SM, UITokens.SPACE_2XS]]:
+		theme.set_type_variation(spec[0], "PanelContainer")
+		theme.set_stylebox("panel", spec[0], _box(clear, spec[1], UITokens.BORDER_WIDTH, spec[2], spec[3]))
+
+	for pair in [["GameOverRule", Color(UITokens.GAME_OVER_RED, UITokens.GAME_OVER_RULE_ALPHA)],
+			["GameOverFrameRule", UITokens.GAME_OVER_FRAME]]:
+		theme.set_type_variation(pair[0], "HSeparator")
+		var line := StyleBoxLine.new()
+		line.color = pair[1]
+		line.thickness = UITokens.BORDER_WIDTH
+		theme.set_stylebox("separator", pair[0], line)
+		theme.set_constant("separation", pair[0], UITokens.BORDER_WIDTH)
+
+	theme.set_type_variation("GameOverInsetMargin", "MarginContainer")
+	for side in ["left", "right", "top", "bottom"]:
+		theme.set_constant("margin_" + side, "GameOverInsetMargin", UITokens.GAME_OVER_INSET_INNER)
+
+	var cols := {"GameOverColumn": ["VBoxContainer", UITokens.GAME_OVER_COLUMN_GAP],
+		"GameOverEyebrowColumn": ["VBoxContainer", UITokens.GAME_OVER_EYEBROW_GAP],
+		"GameOverOptions": ["VBoxContainer", UITokens.GAME_OVER_OPTIONS_GAP],
+		"GameOverRow": ["HBoxContainer", UITokens.SPACE_MD],
+		"GameOverFooter": ["HBoxContainer", UITokens.SPACE_SM]}
+	for name in cols:
+		theme.set_type_variation(name, cols[name][0])
+		theme.set_constant("separation", name, cols[name][1])
 
 
 ## Figma shop-buy 153:1289 / shop-sell 153:1523; NPC-меню 164:1302 / 176:1357.

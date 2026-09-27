@@ -194,7 +194,15 @@ Panel` `217:2189`; `UI/Craft Error Modal` `217:2983`.
 3. List → detail → confirm → error screens per Figma, reached from the blacksmith.
 4. Tests: can/can't craft, exact consumption, error messages.
 
-## Slice 5 — Game Over + Inventory FILTER (replaces Enchanting in the order)
+## Slice 5 — Game Over + Inventory FILTER (replaces Enchanting in the order) — ✅ DONE
+
+> Done: `game_over_screen.tscn` / `GameOverScreen` to Figma 41:83 (dungeon art, radial vignette, inset frame
+> with `GothicCorner`s, red title, UI/Menu Item options, ENTER footer). `Player.die()` presents it instead of
+> the instant respawn; without a current scene the old respawn runs. Resume → last saved/loaded slot, or
+> the old respawn when no save exists (Q23); Return to title → same path as Misc "Return to Title".
+> Inventory FILTER now cycles the five categories (D9); KEY ITEMS is no longer disabled (supersedes #4a).
+> Fixed: an empty category kept showing the previous item's description in the bottom bar.
+> `verify_game_over.gd` 19/19, `verify_inventory.gd` updated for D9.
 
 **Figma:** `41:83`; `46:193`.
 

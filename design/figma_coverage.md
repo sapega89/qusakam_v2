@@ -31,7 +31,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
 | Game Menu shell | MATCH | `316:7708` UI/Game Menu Sidebar, `390:6411` UI/Top Bar | Figma sidebar has 9 items, runtime 7 — Healing/Jobs are planned (D65), runtime gap. Blur not reproduced (D1, tech). |
-| Inventory | MATCH | `46:193` | Overrides D7 (`EQUIPMENT` tab), #4a (`KEY ITEMS` disabled), D8 (details kept). `FILTER` cycles ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS (D9, closed). |
+| Inventory | MATCH | `46:193` | Overrides D7 (`EQUIPMENT` tab), #4a (`KEY ITEMS` disabled), D8 (details kept). `FILTER` cycles ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS (D9) — **implemented (slice 5)**; KEY ITEMS stays selectable with its empty state (replaces #4a). |
 | Equipment | PARTIAL | `58:4` frame has **no content**; design comes from `258:5110` + `258:5111` | Figma shows 8 slots vs 11 real — D20 approved, **Figma needs updating**. |
 | Status | MATCH | `58:719` | Figma has no character grid; the old 8-slot grid was runtime-only (D18: switching planned for later; Status shows the active character only). |
 | Skills | MATCH | `58:453` | Overrides D26, D27, D29. |
@@ -96,7 +96,7 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 | ObjectiveHUD | MATCH | `434:6580` (successor) | Orphan; superseded by Quest Info Panel. |
 | Objective notifications | NONE | — | Quest tracker exists, no "objective updated" toast. |
 | Item acquired / loot toast | MATCH | State 1 `461:6479` (example "Pick up" `461:6486`); state 2 `28:5`, `28:25`, `274:5375` / `222:4880` UI/Modal/ItemPickup | **D71 flow fully covered (D74):** nearby prompt, then the confirmation modal. **Implemented (slice 1a):** `Objects/ItemPickup.tscn` (prompt "Pick up" → InventoryManager → modal). Not placed in any map: no production pickup exists yet (Q2). The modal uses the shared modal family (D79) — larger than the compact Figma card and without its caption/name hierarchy. |
-| Death / respawn UI | MATCH | `41:83` game-over-screen | "Game Over" + two options over a dungeon backdrop. The audit's "needs a design" is wrong. |
+| Death / respawn UI | MATCH | `41:83` game-over-screen | "Game Over" + two options over a dungeon backdrop. The audit's "needs a design" is wrong. **Implemented (slice 5):** `GameOverScreen` shown by `Player.die()`; Resume loads the last slot (Q6), falls back to the old respawn when no save exists; Return to title. |
 | Demo end screen | NONE | — | — |
 | Prologue scene | NONE | — | Dead. |
 | Tutorial menu | MATCH | `130:1172` menu-tutorial, `135:1260` tutorial-content | List + content page. |
