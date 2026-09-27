@@ -161,7 +161,12 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
 4. Reachable through a test scene or verify script only. No production map.
 5. Tests: buy/sell change gold and inventory, the confirm modal, and category tabs.
 
-## Slice 3 — Blacksmith NPC flow (D69, no map placement)
+## Slice 3 — Blacksmith NPC flow (D69, no map placement) — ✅ DONE
+
+> Done: `NpcBase` (prompt → NPC menu → action, shared with Merchant), `Blacksmith.gd` + `blacksmith.tscn`
+> with Figma art (merchant also switched from a placeholder box to Figma `npc/merchant`). Craft opens the
+> crafting screen in its own CanvasLayer under pause; an NPC with no backed entries shows no prompt.
+> The shop no longer has a blacksmith/equipment mode (Q9, done in slice 2). `verify_blacksmith.gd` 17/17.
 
 **Figma:** `176:1357`.
 

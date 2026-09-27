@@ -1,15 +1,15 @@
-[gd_scene format=3 uid="uid://bf8gy32t7bmy8"]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd" id="1_merchant"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Blacksmith.gd" id="1_blacksmith"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/NPCs/npc_merchant.png" id="3_sprite"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/NPCs/npc_blacksmith.png" id="3_sprite"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(64, 64)
 
-[node name="Merchant" type="Area2D"]
+[node name="Blacksmith" type="Area2D"]
 z_index = 10
-script = ExtResource("1_merchant")
+script = ExtResource("1_blacksmith")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 10
@@ -23,4 +23,4 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="Interactable" type="Node2D" parent="."]
 script = ExtResource("2_interactable")
-action_text = "Shop"
+action_text = "Craft"

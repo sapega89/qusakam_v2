@@ -15,8 +15,8 @@ Answer by number. Answered questions move to `figma_decision_register.md`.
 | Q5 | 1b ✅ default applied | Save points **auto-save on touch** today. After the change (prompt → slot selection), should auto-save on touch be removed, or kept as a silent quick-save? | Remove it. Saving only through the prompt. |
 | Q6 | 5 | **Game Over behaviour.** Today the player is teleported back and healed. What should the Game Over options do: "Resume from last save point" = reload the last saved slot? What is the second option (return to title?)? | Resume = reload the slot last saved or loaded. Second option = return to title. |
 | Q7 | 1b ✅ default applied (Delete / pad Y) | The runtime has a **delete save slot** action that Figma doesn't show. Keep it? | Keep it (no removal of existing functionality). Styled with the same modal family. |
-| Q8 | 3 | Blacksmith menu includes **Enchant**, but Enchanting is out of scope. Hide the entry or show it disabled? | Hide it. |
-| Q9 | 3 | Remove the old "blacksmith = shop Equipment mode" path in slice 3, or keep it until later? | Remove it once the Blacksmith NPC works (D69). |
+| Q8 | 3 ✅ default applied | Blacksmith menu includes **Enchant**, but Enchanting is out of scope. Hide the entry or show it disabled? | Hide it. |
+| Q9 | 3 ✅ default applied | Remove the old "blacksmith = shop Equipment mode" path in slice 3, or keep it until later? | Remove it once the Blacksmith NPC works (D69). |
 | Q10 | 4 | `ForgeSystem.gd` is an 8-line stub. Replace it with the new `CraftingManager`, or keep both? | Replace it. |
 | Q11 | 4 | Recipes need a **gold cost** (D85). If `crafting_recipes.json` has no prices, who sets them? | Slice 4 stops at that point and asks for the price list. No invented numbers. |
 | Q12 | 1a | Prompt input badge: keyboard **E** + gamepad **A**, switching with the last used input device? | Yes. |
@@ -26,4 +26,6 @@ Answer by number. Answered questions move to `figma_decision_register.md`.
 | Q17 | 2 | Figma's shop sidebar has **Equipment** next to Buy/Sell. What does it do in a shop (equip what you just bought)? D69 already says the Blacksmith is not a shop mode. | Hidden until defined. |
 | Q18 | 2 | The Figma buy confirmation shows **Quantity: 4**, but no quantity picker is designed. Buy one at a time, or add a quantity selector? | One at a time (Quantity: 1). |
 | Q19 | 2 | Figma has no "not enough gold" state. We show a modal "Not Enough Gold — You need ₹ N to buy X." from the shared family. OK, or grey out rows you can't afford? | Keep the modal. |
+| Q20 | 3 | `merchants.json` has a **"blacksmith" stock list** (ingots, swords, iron armor), but the Figma blacksmith menu has no Buy. Should the blacksmith also sell, or is that data obsolete? | No Buy on the blacksmith; data left untouched. |
+| Q21 | 3 | The merchant and blacksmith now use the Figma NPC art (`npc/merchant`, `npc/blacksmith`). Is that art final for in-game use, or placeholder? | Use it until replaced. |
 | Q13 | 8 | `CLAUDE.md` says "154 tests (100% pass)", but no GUT tests exist; the real suite is 17 verify scripts. Update `CLAUDE.md`? | Yes, in slice 8. |
