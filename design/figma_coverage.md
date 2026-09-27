@@ -112,10 +112,10 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
-| Main menu | MATCH | `9:26` | Figma: New Game / Continue / Settings / Quit Game. **D72: Continue only** — the runtime `load_game` button must go. Continue opens Save Slot Selection in LOAD mode (D75). |
+| Main menu | MATCH | `9:26` | Figma: New Game / Continue / Settings / Quit Game. **D72: Continue only** — the runtime `load_game` button must go. Continue opens Save Slot Selection in LOAD mode (D75). **Implemented (slice 1c):** Figma layout + forest art from `9:26`, `UI/Menu Item` active/inactive styles, Load Game removed, Continue disabled without saves. |
 | Load game menu | MATCH | `150:1278` (LOAD mode of Save Slot Selection) | Not a separate screen — merged into Save Slot Selection (D75). **Implemented (slice 1b):** shared `LoadGameMenu` + `SaveSlotCard` restyled to Figma; LOAD empty slots disabled/unfocusable, occupied loads directly; SAVE overwrite → Game Saved / Save Failed. |
 | Save game state | MATCH | `17:5` (SAVE mode of Save Slot Selection), `258:5162` overwrite confirm | Not a separate screen — merged into Save Slot Selection (D75). **Implemented (slice 1b):** shared `LoadGameMenu` + `SaveSlotCard` restyled to Figma; LOAD empty slots disabled/unfocusable, occupied loads directly; SAVE overwrite → Game Saved / Save Failed. |
-| Splash | MATCH | `258:5141` / `258:5140` | Title + `PRESS ANY BUTTON`. `MainMenu.tscn` already has a hidden `PressAnyButtonContainer`. Display face "Khalahas Heroes" missing (data gap). |
+| Splash | MATCH | `258:5141` / `258:5140` | Title + `PRESS ANY BUTTON`. `MainMenu.tscn` already has a hidden `PressAnyButtonContainer`. Display face "Khalahas Heroes" missing (data gap). **Implemented (slice 1c):** existing title state restyled to `258:5140`. |
 | Save confirmation (save succeeded) | MATCH (by reuse) | Derived from the overwrite-confirm modal `258:5162` / `UI/Modal/Confirm` `258:5332` (D76) | No dedicated frame. Same modal family: "Game Saved" / "Your progress has been saved successfully." / single OK action. Spec in §G flow. **Implemented (slice 1b):** `ModalTemplates.game_saved()`. |
 
 #### Save / Load flow — one shared surface (D75)

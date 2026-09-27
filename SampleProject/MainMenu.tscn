@@ -1,31 +1,54 @@
 [gd_scene format=3 uid="uid://cbtmxggtscua3"]
 
 [ext_resource type="Script" uid="uid://bn5434a05ai0y" path="res://SampleProject/Scripts/Menus/MainMenu.gd" id="1_mainmenu"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/main_menu_background.jpg" id="3_bg"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="5_chevron"]
 
-[sub_resource type="FontVariation" id="FontVariation_ap8m4"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ap8m4"]
-
-[node name="MainMenu" type="Control" unique_id=226574043]
+[node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_mainmenu")
 
-[node name="Background" type="TextureRect" parent="." unique_id=434574552]
+[node name="SplashBackground" type="ColorRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-expand_mode = 1
-stretch_mode = 5
+mouse_filter = 2
 
-[node name="GameTitle" type="PanelContainer" parent="." unique_id=60625531]
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MenuOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Center" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -33,135 +56,171 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -577.0
-offset_top = -329.0
-offset_right = 571.0
-offset_bottom = 323.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_type_variation = &"SplashCenter"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameTitle" unique_id=964111456]
-layout_mode = 2
-alignment = 1
-
-[node name="TitleLineTop" type="ColorRect" parent="GameTitle/VBoxContainer" unique_id=1947338354]
-custom_minimum_size = Vector2(400, 2)
+[node name="GameTitle" type="VBoxContainer" parent="Center"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"TitleBlock"
 
-[node name="TitleLabel" type="Label" parent="GameTitle/VBoxContainer" unique_id=12051064]
+[node name="TopRule" type="HSeparator" parent="Center/GameTitle"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 48
+size_flags_horizontal = 4
+theme_type_variation = &"TitleRule"
+
+[node name="TitleLabel" type="Label" parent="Center/GameTitle"]
+layout_mode = 2
+theme_type_variation = &"TitleKhalahas"
 text = "Khalahas"
 horizontal_alignment = 1
-vertical_alignment = 1
 uppercase = true
 
-[node name="TitleLineBottom" type="ColorRect" parent="GameTitle/VBoxContainer" unique_id=716166795]
-custom_minimum_size = Vector2(400, 2)
+[node name="MiddleRule" type="HSeparator" parent="Center/GameTitle"]
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"TitleRuleBold"
 
-[node name="PressAnyButtonContainer" type="HBoxContainer" parent="." unique_id=1594377539]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = 100.0
-offset_right = 150.0
-offset_bottom = 150.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="PressAnyButtonLabel" type="Label" parent="PressAnyButtonContainer" unique_id=1552958932]
+[node name="SubtitleLabel" type="Label" parent="Center/GameTitle"]
 layout_mode = 2
-theme_override_fonts/font = SubResource("FontVariation_ap8m4")
-text = "PRESS ANY BUTTON"
+theme_type_variation = &"TitleHeroes"
+text = "Heroes"
 horizontal_alignment = 1
-vertical_alignment = 1
 uppercase = true
 
-[node name="Menu" type="VBoxContainer" parent="." unique_id=2140846686]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = 80.0
-offset_right = 100.0
-offset_bottom = 265.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="continue" type="Button" parent="Menu" unique_id=395809059]
-unique_name_in_owner = true
-modulate = Color(1.3, 1.3, 1.3, 1)
-custom_minimum_size = Vector2(200, 35)
+[node name="BottomRule" type="HSeparator" parent="Center/GameTitle"]
 layout_mode = 2
-theme_type_variation = &"FlatButton"
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ap8m4")
-text = "Continue"
+size_flags_horizontal = 4
+theme_type_variation = &"TitleRule"
 
-[node name="load_game" type="Button" parent="Menu" unique_id=863219368]
-unique_name_in_owner = true
-modulate = Color(1.3, 1.3, 1.3, 1)
-custom_minimum_size = Vector2(200, 35)
+[node name="PressAnyButtonContainer" type="VBoxContainer" parent="Center"]
 layout_mode = 2
-theme_type_variation = &"FlatButton"
-text = "Load Game"
+theme_type_variation = &"SplashPromptColumn"
 
-[node name="new_game" type="Button" parent="Menu" unique_id=1632561622]
-unique_name_in_owner = true
-modulate = Color(1.3, 1.3, 1.3, 1)
-custom_minimum_size = Vector2(200, 35)
+[node name="DividerTop" type="HBoxContainer" parent="Center/PressAnyButtonContainer"]
 layout_mode = 2
-theme_type_variation = &"FlatButton"
+size_flags_horizontal = 4
+theme_type_variation = &"SaveOrnament"
+
+[node name="Line1" type="HSeparator" parent="Center/PressAnyButtonContainer/DividerTop"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="Diamond" type="TextureRect" parent="Center/PressAnyButtonContainer/DividerTop"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_diamond")
+stretch_mode = 5
+
+[node name="Line2" type="HSeparator" parent="Center/PressAnyButtonContainer/DividerTop"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="PressAnyButtonLabel" type="Label" parent="Center/PressAnyButtonContainer"]
+layout_mode = 2
+theme_type_variation = &"SplashPrompt"
+text = "Press Any Button"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="DividerBottom" type="HBoxContainer" parent="Center/PressAnyButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"SaveOrnament"
+
+[node name="Line1" type="HSeparator" parent="Center/PressAnyButtonContainer/DividerBottom"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="Diamond" type="TextureRect" parent="Center/PressAnyButtonContainer/DividerBottom"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_diamond")
+stretch_mode = 5
+
+[node name="Line2" type="HSeparator" parent="Center/PressAnyButtonContainer/DividerBottom"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="Menu" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"MainMenuList"
+
+[node name="new_game" type="Button" parent="Center/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MainMenuItem"
 text = "New Game"
+icon = ExtResource("5_chevron")
+alignment = 0
 
-[node name="options" type="Button" parent="Menu" unique_id=558266107]
+[node name="continue" type="Button" parent="Center/Menu"]
 unique_name_in_owner = true
-modulate = Color(1.3, 1.3, 1.3, 1)
-custom_minimum_size = Vector2(200, 35)
 layout_mode = 2
-theme_type_variation = &"FlatButton"
-text = "Options"
+theme_type_variation = &"MainMenuItem"
+text = "Continue"
+icon = ExtResource("5_chevron")
+alignment = 0
 
-[node name="exit" type="Button" parent="Menu" unique_id=2045331171]
+[node name="options" type="Button" parent="Center/Menu"]
 unique_name_in_owner = true
-modulate = Color(1.3, 1.3, 1.3, 1)
-custom_minimum_size = Vector2(200, 35)
 layout_mode = 2
-theme_type_variation = &"FlatButton"
+theme_type_variation = &"MainMenuItem"
+text = "Settings"
+icon = ExtResource("5_chevron")
+alignment = 0
+
+[node name="exit" type="Button" parent="Center/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MainMenuItem"
 text = "Quit Game"
+icon = ExtResource("5_chevron")
+alignment = 0
 
-[node name="CopyrightLabel" type="Label" parent="." unique_id=132605476]
-modulate = Color(1.2, 1.2, 1.2, 1)
+[node name="MenuDivider" type="HBoxContainer" parent="Center"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"SaveOrnament"
+
+[node name="Line1" type="HSeparator" parent="Center/MenuDivider"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="Diamond" type="TextureRect" parent="Center/MenuDivider"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("4_diamond")
+stretch_mode = 5
+
+[node name="Line2" type="HSeparator" parent="Center/MenuDivider"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SaveRule"
+
+[node name="CopyrightLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 12
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = -40.0
-offset_right = 250.0
-offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "©2025 Metroidvania Demo. All Rights Reserved."
+theme_type_variation = &"CopyrightLabel"
+text = "© 2024-2026 Khalahas Studio. All Rights Reserved."
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[connection signal="button_up" from="Menu/continue" to="." method="load_game_button_up"]
-[connection signal="button_up" from="Menu/load_game" to="." method="load_game_button_up"]
-[connection signal="button_up" from="Menu/new_game" to="." method="new_game_button_up"]
-[connection signal="button_up" from="Menu/options" to="." method="options_button_up"]
-[connection signal="pressed" from="Menu/exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="Center/Menu/new_game" to="." method="new_game_button_up"]
+[connection signal="pressed" from="Center/Menu/continue" to="." method="continue_pressed"]
+[connection signal="pressed" from="Center/Menu/options" to="." method="options_button_up"]
+[connection signal="pressed" from="Center/Menu/exit" to="." method="_on_exit_pressed"]

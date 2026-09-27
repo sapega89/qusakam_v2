@@ -62,6 +62,8 @@ These are baseline noise. A later slice is only responsible for **new** entries.
 2. **`verify_responsive` canvas check fails headless:** the window reports 1868×1051
    instead of 1920×1080. Probably environment-dependent (the headless window size),
    but unconfirmed. All other responsive checks pass.
+   **Update (slice 1c):** it passed in the slice 1c run with no related code change —
+   treat it as flaky/environment-dependent, not as a regression signal.
 3. **`Cannot resolve starting_map to scene ref: res://SampleProject/Maps/:dbq66sndnfrq7`**
    (`Game.gd:274`): the MetSys starting map is stored as a UID that doesn't resolve.
    Appears in scripts that boot `Game.tscn`.

@@ -123,7 +123,14 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
    slots in SAVE, success/failure modal branching, both scenes use the shared
    component.
 
-## Slice 1c — Main Menu Continue + Splash
+## Slice 1c — Main Menu Continue + Splash — ✅ DONE
+
+> Done: `MainMenu.tscn` rebuilt to Figma 9:26 / 258:5140 (title block with letter-spacing, diamond
+> dividers, `UI/Menu Item` styles, forest background exported from Figma, Figma copyright copy).
+> Load Game removed (D72); Continue → Save Slot Selection LOAD, disabled and skipped by focus when no
+> save exists; Options renamed Settings (Figma copy). `verify_main_menu.gd` 29/29; full suite 20/20.
+> Deviations: title rules 1.5/2.5 px → 2/3 px (integer line widths); vertical position of the centre
+> block is centred rather than Figma's exact 267/352 px offsets.
 
 **Figma:** `9:26`, `258:5141`.
 

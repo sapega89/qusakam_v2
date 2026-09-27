@@ -173,6 +173,35 @@ const SIZE_SAVE_LEVEL := 26                        # "Lv. 26"
 const SIZE_SAVE_NAME := 18                         # char-name, time-value
 const SAVE_CLOCK_ICON := 16
 
+# ── Головне меню / Splash (Figma: main-menu 9:26, UI/Splash Screen 258:5140) ─
+const SPLASH_BG := Color("050508")
+const MAIN_MENU_OVERLAY := Color("000000", 0.56)
+const SIZE_TITLE_KHALAHAS := 100   # Bold, UPPER, letter-spacing 6
+const SIZE_TITLE_HEROES := 90      # Bold, UPPER, letter-spacing 8
+const TITLE_SPACING_KHALAHAS := 6
+const TITLE_SPACING_HEROES := 8
+const TITLE_BLOCK_WIDTH := 800
+const TITLE_BLOCK_GAP := 10
+const TITLE_RULE_OUTER := 600      # верхня і нижня лінії
+const TITLE_RULE_MIDDLE := 650
+const TITLE_RULE := 2              # Figma 1.5 → 2 (StyleBoxLine лише цілі)
+const TITLE_RULE_BOLD := 3         # Figma 2.5 → 3
+const MAIN_MENU_CENTER_GAP := 50
+const MAIN_MENU_LIST_GAP := 12
+const MENU_ITEM_WIDTH := 300
+const MENU_ITEM_PAD_H := 16
+const MENU_ITEM_PAD_V := 12
+const MENU_ITEM_GAP := 8           # вказівник → текст
+const MENU_ITEM_POINTER := 12
+const MENU_INACTIVE_ALPHA := 0.70
+const SPLASH_CENTER_GAP := 100
+const SPLASH_PROMPT_GAP := 24
+const SIZE_SPLASH_PROMPT := 18     # SemiBold, UPPER, letter-spacing 4
+const SPLASH_PROMPT_SPACING := 4
+const DIVIDER_LINE := 80           # UI/Diamond Divider
+const COPYRIGHT_SPACING := 1       # Regular 12
+const SCREEN_PAD_BOTTOM := 64
+
 # ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
 # Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
 const MISC_ROW_WIDTH := 500

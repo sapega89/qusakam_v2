@@ -28,6 +28,7 @@ func _initialize() -> void:
 	_setup_button(theme)
 	_setup_button_variations(theme)
 	_setup_panels(theme)
+	_main_menu(theme)
 	_setup_progress_bar(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
@@ -524,8 +525,76 @@ func _setup_panels(theme: Theme) -> void:
 	_save_slots(theme)
 
 
+## Шрифт із міжлітерним інтервалом (Figma letterSpacing у px).
+func _spaced(base: Font, spacing: int) -> FontVariation:
+	var fv := FontVariation.new()
+	fv.base_font = base
+	fv.spacing_glyph = spacing
+	return fv
+
+
+## Figma main-menu 9:26, UI/Splash Screen 258:5140, UI/Menu Item 248:62.
+func _main_menu(theme: Theme) -> void:
+	var labels := {
+		"TitleKhalahas": [_spaced(_font_bold, UITokens.TITLE_SPACING_KHALAHAS), UITokens.SIZE_TITLE_KHALAHAS],
+		"TitleHeroes": [_spaced(_font_bold, UITokens.TITLE_SPACING_HEROES), UITokens.SIZE_TITLE_HEROES],
+		"SplashPrompt": [_spaced(_font_semibold, UITokens.SPLASH_PROMPT_SPACING), UITokens.SIZE_SPLASH_PROMPT],
+		"CopyrightLabel": [_spaced(_font_regular, UITokens.COPYRIGHT_SPACING), UITokens.SIZE_CAPTION],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, UITokens.TEXT_PRIMARY)
+
+	# Лінії титульного блоку: 1.5 / 2.5 px у Figma → 2 / 3 px.
+	for pair in [["TitleRule", UITokens.TITLE_RULE], ["TitleRuleBold", UITokens.TITLE_RULE_BOLD]]:
+		theme.set_type_variation(pair[0], "HSeparator")
+		var line := StyleBoxLine.new()
+		line.color = UITokens.TEXT_PRIMARY
+		line.thickness = pair[1]
+		theme.set_stylebox("separator", pair[0], line)
+		theme.set_constant("separation", pair[0], pair[1])
+
+	var columns := {
+		"TitleBlock": UITokens.TITLE_BLOCK_GAP,
+		"MainMenuCenter": UITokens.MAIN_MENU_CENTER_GAP,
+		"MainMenuList": UITokens.MAIN_MENU_LIST_GAP,
+		"SplashCenter": UITokens.SPLASH_CENTER_GAP,
+		"SplashPromptColumn": UITokens.SPLASH_PROMPT_GAP,
+	}
+	for name in columns:
+		theme.set_type_variation(name, "VBoxContainer")
+		theme.set_constant("separation", name, columns[name])
+
+	# UI/Menu Item: без фону; неактивний — Regular 16, 70%, без вказівника;
+	# активний (фокус) — SemiBold 16, 100%, з вказівником-шевроном.
+	var clear := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0,
+			UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V)
+	var dim := Color(UITokens.TEXT_PRIMARY, UITokens.MENU_INACTIVE_ALPHA)
+	for spec in [["MainMenuItem", _font_regular, dim, Color(0, 0, 0, 0)],
+			["MainMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
+		var t: String = spec[0]
+		theme.set_type_variation(t, "Button")
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			theme.set_stylebox(state, t, clear)
+		theme.set_font("font", t, spec[1])
+		theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+		for c in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			theme.set_color(c, t, spec[2])
+		theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+		for c in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			theme.set_color(c, t, spec[3])
+		theme.set_color("icon_disabled_color", t, Color(0, 0, 0, 0))
+		theme.set_constant("h_separation", t, UITokens.MENU_ITEM_GAP)
+		theme.set_constant("icon_max_width", t, UITokens.MENU_ITEM_POINTER)
+
+
 ## Figma load-game-screen 150:1278 / save-game-screen 17:5.
 func _save_slots(theme: Theme) -> void:
+	# Figma: "Save Data Management" — Regular 11, letter-spacing 3.
+	theme.set_font("font", "SaveSystemLabel", _spaced(_font_regular, 3))
+
 	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent.
 	var t := "SaveSlotCard"
 	theme.set_type_variation(t, "Button")
