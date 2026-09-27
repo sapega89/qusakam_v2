@@ -228,7 +228,14 @@ No implementation.
 
 Same audit for `36:65` (special story scenes, D70) and the cutscene path.
 
-## Slice 8 — Final runtime UI regression and cleanup
+## Slice 8 — Final runtime UI regression and cleanup — ✅ DONE
+
+> Done: full suite 23/23 (baseline 16/17); 1280×720 screenshot pass (`design/shots/*_1280.png`);
+> removed superseded code (`SaveSystem.delete_save_file()` + legacy shared player-data constants,
+> RelicArmor legacy label guard); removed 17 tracked editor `.tmp` backups (incl. 8 `.dqd.tmp`, Q28) and
+> ignored `*.tmp`; `CLAUDE.md` + `docs/CLAUDE.md` test instructions now describe the verify scripts (Q13).
+> Status table appended to `UI_SURFACE_AUDIT.md` and `figma_coverage.md`.
+> Minor: at 1280×720 some 1px card borders drop a row (sub-pixel scaling of the 1920×1080 canvas).
 
 1. Re-run the full verify suite and compare against the slice 0 baseline.
 2. Screenshot pass at 1920×1080 and one smaller resolution for every touched

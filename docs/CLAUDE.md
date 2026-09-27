@@ -21,14 +21,15 @@ godot --path . res://SampleProject/MainMenu.tscn
 
 ### Run Tests
 ```bash
-# GUI: Godot → GUT tab → Run All
-# CLI:
-godot --path . -s addons/gut/gut_cmdln.gd
+# One headless SceneTree script per area; each prints "RESULT: ALL PASS" or "RESULT: N FAIL".
+godot --headless --path . --script res://SampleProject/UI/verify_<area>.gd
 ```
 
-**Test Coverage:** 154 tests (100% pass rate)
-- Unit: 134 tests | Integration: 20 tests
-- See: `docs/TESTS_COMPLETE.md`, `tests/README.md`
+**Test suite:** the `SampleProject/UI/verify_*.gd` scripts (23 as of 2026-09-27).
+There are **no GUT tests** — `tests/` does not exist and GUT runs zero tests.
+- Read the `RESULT:` line, not the exit code: every run of this project segfaults on
+  shutdown (exit 139), see `design/test_baseline.md`.
+- Baseline and known pre-existing issues: `design/test_baseline.md`.
 
 ## Architecture
 
@@ -158,10 +159,8 @@ See `CLAUDE_FULL.md` for detailed examples.
 - See: `docs/DEMO_TEST_PLAN.md`
 
 ### Automated Testing
-- GUT framework with 154 tests
-- Tests in `tests/unit/` and `tests/integration/`
-- Coverage: XP, Coins, Tutorial, VFX, UI, Combat
-- Full guide: `docs/TESTS_COMPLETE.md`
+- `SampleProject/UI/verify_*.gd` headless scripts (see Run Tests above)
+- `SampleProject/UI/capture_*.gd` render screenshots into `design/shots/` (need a window, not `--headless`)
 
 ### Debug Logging
 ```gdscript

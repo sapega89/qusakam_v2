@@ -51,4 +51,6 @@ Existing Godot gameplay code is the behavioral source of truth.
 - **Run Godot:** `godot --path . res://SampleProject/MainMenu.tscn`
   (Godot 4.6 — the binary is not on PATH in this environment.)
 - **Errors:** Godot stderr + `DebugLogger.error(...)` output.
-- **Tests:** `godot --path . -s addons/gut/gut_cmdln.gd`
+- **Tests:** `godot --headless --path . --script res://SampleProject/UI/verify_<area>.gd` for each
+  `verify_*.gd`; read the `RESULT:` line (every run exits 139 — see `design/test_baseline.md`).
+  GUT has no tests in this project.

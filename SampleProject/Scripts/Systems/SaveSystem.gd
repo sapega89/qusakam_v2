@@ -10,8 +10,6 @@ extends Node
 signal load_game(player_data: Dictionary)
 
 # Константы путей
-const SAVE_FILE_PATH = "user://savegames/"
-const PLAYER_DATA_FILE = "player_data.json"
 const SAVE_DIR = "user://saves/"
 const PROFILE_FILE = "profile.json"
 const SLOT_FILE_TEMPLATE = "slot_%02d.sav"
@@ -509,14 +507,6 @@ func has_save_file() -> bool:
 	for i in range(1, SLOT_COUNT + 1):
 		if slot_has_save(i):
 			return true
-	return false
-
-func delete_save_file():
-	"""Удаляет файл сохранения"""
-	var file_path = SAVE_FILE_PATH + PLAYER_DATA_FILE
-	if FileAccess.file_exists(file_path):
-		DirAccess.remove_absolute(file_path)
-		return true
 	return false
 
 # ============================================================================

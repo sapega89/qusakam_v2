@@ -34,8 +34,8 @@ Answer by number. Answered questions move to `figma_decision_register.md`.
 | Q25 | 7 | Which scenes are **special story scenes** (D70), and what are their chapter titles? None exist in data or code. | Slice 7 waits. |
 | Q26 | 6/7 | **Portraits:** no character has portrait art. Figma's standard box has none (fine), but story scenes (`36:65`) need two 160×320 portraits. Who provides them? Also: hide the addon's empty portrait frame in standard dialogue? | Hide the empty frame; story scenes wait for art. |
 | Q27 | 6/7 | No `.dqd` uses **choices** yet, but Figma designs a choice list (`258:5108`) and story scenes rely on it. Are branching dialogues planned for this build? | Style the choice menu with the box (option A); no content work. |
-| Q28 | 6 | Dialogue data cleanup: `KUSAKAM` and `Кусакам` are two IDs for one character; location tags like `[Village]` / `[PLACEHOLDER]` are typed into lines; 8 stray `.dqd.tmp` files. OK to clean up in slice 8? | Yes, in slice 8, no text changes. |
-| Q13 | 8 | `CLAUDE.md` says "154 tests (100% pass)", but no GUT tests exist; the real suite is 17 verify scripts. Update `CLAUDE.md`? | Yes, in slice 8. |
+| Q28 | 6 — partly applied: stray `.dqd.tmp` removed in slice 8; speaker ID merge and text tags untouched | Dialogue data cleanup: `KUSAKAM` and `Кусакам` are two IDs for one character; location tags like `[Village]` / `[PLACEHOLDER]` are typed into lines; 8 stray `.dqd.tmp` files. OK to clean up in slice 8? | Yes, in slice 8, no text changes. |
+| Q13 | 8 ✅ default applied | `CLAUDE.md` says "154 tests (100% pass)", but no GUT tests exist; the real suite is 17 verify scripts. Update `CLAUDE.md`? | Yes, in slice 8. |
 
 ## Q11 price sheet — fill in the gold cost
 

@@ -62,8 +62,11 @@ These are baseline noise. A later slice is only responsible for **new** entries.
 2. **`verify_responsive` canvas check fails headless:** the window reports 1868×1051
    instead of 1920×1080. Probably environment-dependent (the headless window size),
    but unconfirmed. All other responsive checks pass.
-   **Update (slice 1c):** it passed in the slice 1c run with no related code change —
-   treat it as flaky/environment-dependent, not as a regression signal.
+   **Root cause (slice 8):** not flaky — the maaacks menus addon saves the window size to
+   `%APPDATA%/New Game Project/player_config.cfg` (`[VideoSettings] ScreenResolution`) and applies it on
+   every start, headless included. 1868×1051 was a window size saved on this machine earlier; windowed
+   capture runs overwrite it. The test passes when the saved value is 1920×1080. Capture scripts now
+   restore the previous window size; if the test fails with an odd size, reset that value.
 3. **`Cannot resolve starting_map to scene ref: res://SampleProject/Maps/:dbq66sndnfrq7`**
    (`Game.gd:274`): the MetSys starting map is stored as a UID that doesn't resolve.
    Appears in scripts that boot `Game.tscn`.
@@ -76,3 +79,14 @@ These are baseline noise. A later slice is only responsible for **new** entries.
    (`res://release/assets/textures/ui/items/jrpg_icons/potion.png`, 94×), and invalid
    UIDs in `addons/modal_window/default_window.tscn` and the MetSys `Exquisite`
    theme (17× each; Godot falls back to text paths).
+
+## Final comparison — after Runtime UI Completion slice 8
+
+| | Baseline (slice 0) | After slice 8 |
+|---|---|---|
+| Verify scripts | 17 | 23 (+ interaction, save_load, main_menu, shop, blacksmith, game_over) |
+| Passing | 16 | **23** |
+| verify_responsive | 1 FAIL (saved window size) | passes with `ScreenResolution=1920×1080` — see issue 2 |
+| New errors | — | none beyond the known issues above (missing item icons D5 add warnings in shop tests) |
+
+Known issues 1, 3, 4, 5 and 6 are unchanged.

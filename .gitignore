@@ -21,3 +21,6 @@ Untitled.png.import
 
 # Temp Figma reference/render captures (regenerable)
 .figma_tmp/
+
+# Godot editor backup files
+*.tmp

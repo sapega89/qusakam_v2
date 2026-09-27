@@ -12,11 +12,6 @@ var dialogue_played: bool = false
 var interactable: InteractableComponent = null
 
 func _ready() -> void:
-	# Старі сцени могли мати власний InteractionLabel — більше не використовується.
-	var legacy_label := get_node_or_null("InteractionLabel") as CanvasItem
-	if legacy_label:
-		legacy_label.visible = false
-
 	interactable = InteractableComponent.new()
 	interactable.name = "Interactable"
 	interactable.action_text = action_text

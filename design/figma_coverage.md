@@ -252,3 +252,25 @@ Recorded as D65–D79 in `figma_decision_register.md` §4.
 
 Closed or deferred later: D9 (FILTER cycle), D38 (auto-targeting, deferred), D47 part
 (skill-slot binds, deferred). D18 (Status grid) and D56 (quest engine) deferred. **No open questions remain.**
+
+---
+
+## Runtime UI Completion — status after slice 8 (2026-09-27)
+
+Plan: `runtime_ui_completion_plan.md`. Coverage labels above are unchanged by implementation; this table tracks runtime status. Tests: 23 `verify_*.gd` scripts, all passing.
+
+| Surface | Before | Now | Slice |
+|---|---|---|---|
+| Interaction prompt | ❌ one hard-coded label | ✅ shared `UI/Interaction/Prompt` + `interact` action | 1a |
+| Item pickup | ❌ | ✅ `ItemPickup` (prompt → inventory → modal); not placed on maps (Q2) | 1a |
+| Save / Load (two scenes) | 🟡 old style, broken per-slot saves | ✅ shared slot selection, per-slot player data, overwrite / success / failure modals | 1b |
+| Save point | auto-save on touch | ✅ prompt "Save" → SAVE mode | 1b |
+| Main menu + Splash | 🟡 | ✅ Figma 9:26 / 258:5140, Continue only | 1c |
+| Shop | 💀 unreachable, lists were stubs | ✅ rebuilt, buy/sell work; not placed on maps (D81) | 2 |
+| Merchant NPC | 💀 | ✅ Figma art, prompt + NPC menu | 2 |
+| Blacksmith NPC | 💀 shop mode | ✅ separate NPC (D69); Craft waits for slice 4 | 3 |
+| Crafting | ❌ | ⛔ blocked on gold costs (Q11) and station scope (Q22) | 4 |
+| Game Over | ❌ instant respawn | ✅ Figma 41:83; Resume / Return to title | 5 |
+| Inventory FILTER | inert | ✅ cycles five categories (D9) | 5 |
+| Dialogue box / choices / story scenes | 🟡 addon style | audited — waiting for D83 decision (Q24–Q27) | 6–7 |
+| Enchanting | ❌ | out of scope (D82) | — |
