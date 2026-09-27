@@ -1,144 +1,221 @@
 extends Control
 
-# 🛒 ShopUI - Merchant shop interface
+# 🛒 ShopUI — екран магазину. Figma: shop-buy 153:1289, shop-sell 153:1523,
+# shop-buy-confirm 153:1760. Логіка — ShopService; стилі — лише GameUITheme.
+#
+# [SHOP + таби Buy/Sell] [категорії 64px | заголовок · шапка колонок · рядки · опис]
+# [панель партії] · нижня панель підказок.
+#
+# BUY: рядок → "Buy X?" (Quantity · Total Cost) → купівля. SELL: рядок → продаж одразу
+# (у Figma немає підтвердження продажу). Q/E або LB/RB — перемикання категорій.
 
-# Сигнал закриття магазину
 signal shop_closed
 
-# Nodes References (Hardcoded paths from tscn)
-@onready var base_menu: BaseMenu = $BaseMenu
-@onready var item_info_tooltip: PanelContainer = $PanelContainer
+const ROW_SCENE := preload("res://SampleProject/UI/Components/shop_row.tscn")
+const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates.gd")
+const ICON_DIR := "res://SampleProject/Assets/UI/Icons/shop_cat_%s.svg"
 
-# Content Containers
-@onready var buy_content: VBoxContainer = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/BuyContent
-@onready var sell_content: VBoxContainer = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/SellContent
+@onready var base_menu: Control = $BaseMenu
+@onready var _buy_tab: Button = %BuyTab
+@onready var _sell_tab: Button = %SellTab
+@onready var _categories: VBoxContainer = %Categories
+@onready var _title: Label = %Title
+@onready var _price_header: Label = %PriceHeader
+@onready var _rows: VBoxContainer = %Rows
+@onready var _empty: Label = %EmptyLabel
+@onready var _desc_box: PanelContainer = %DescBox
+@onready var _desc_name: Label = %DescName
+@onready var _desc_text: Label = %DescText
 
-# Tables (Table instances – специализированные списки)
-@onready var buy_item_list: BuyItemListDisplay = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/BuyContent/ItemListDisplay
-@onready var sell_item_list: SellItemListDisplay = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/SellContent/ItemListDisplay
-
-# Buttons
-@onready var buy_button: Button = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/VBoxContainer/Buy
-@onready var sell_button: Button = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/VBoxContainer/Sell
-@onready var equipment_button: Button = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/VBoxContainer/Blacksmith
-@onready var exit_button: Button = $BaseMenu/HBoxContainer/CentralPanel/Panel/ContentContainer/VBoxContainer/Exit
-
-# Logic Variables
-var current_menu_mode: String = "" # Initialize empty to force switch on setup
+var service := ShopService.new()
 var shop_items: Array = []
-var current_transition_tween: Tween = null
+var current_menu_mode: String = "buy"
+var category_index: int = 0
+var _category_buttons: Array[Button] = []
+var _focused_id: String = ""
 
-# Dependencies
-var item_database: Node
-var game_manager: Node
-
-# Hover Logic
-var _tree_node: Tree = null
-var _last_hovered_item_index: int = -1
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	
-	# Dependencies
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator:
-			if service_locator.has_method("get_item_database"):
-				item_database = service_locator.get_item_database()
-			if service_locator.has_method("get_game_manager"):
-				game_manager = service_locator.get_game_manager()
-	
-	# Base Menu Setup
-	if base_menu:
-		if base_menu.has_method("set_menu_title"):
-			base_menu.set_menu_title("Shop")
-		if base_menu.has_method("set_menu_description"):
-			base_menu.set_menu_description("Buy and sell items")
-	
-	# Force input pass-through for tooltip and overlays
-	if item_info_tooltip:
-		item_info_tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
-	# Switch to default	
-	# Подписываемся на двойной клик по строке таблицы (покупка / детали)
-	if buy_item_list and not buy_item_list.row_double_clicked.is_connected(_on_buy_row_double_clicked):
-		buy_item_list.row_double_clicked.connect(_on_buy_row_double_clicked)
-	if sell_item_list and not sell_item_list.row_double_clicked.is_connected(_on_sell_row_double_clicked):
-		sell_item_list.row_double_clicked.connect(_on_sell_row_double_clicked)
-	
-	# Test Mode check: If shop is empty, load default items
-	if shop_items.is_empty():
-		var test_items = _load_test_items()
-		if not test_items.is_empty():
-			setup_shop(test_items)
+	if base_menu.has_method("set_menu_title"):
+		base_menu.set_menu_title("SHOP")
+	%TopSpacer.custom_minimum_size.y = UITokens.SIDEBAR_TOP_PAD
+	%Tabs.custom_minimum_size.x = UITokens.SIDEBAR_TAB_WIDTH
+	for tab in [_buy_tab, _sell_tab]:
+		tab.custom_minimum_size.y = UITokens.SIDEBAR_TAB_HEIGHT
+	%CountHeader.custom_minimum_size.x = UITokens.SHOP_COL_COUNT
+	_price_header.custom_minimum_size.x = UITokens.SHOP_COL_PRICE
+	%HeaderEnd.custom_minimum_size.x = UITokens.SHOP_ROW_PAD_H
+	_buy_tab.pressed.connect(_switch_mode.bind("buy"))
+	_sell_tab.pressed.connect(_switch_mode.bind("sell"))
+	_build_categories()
+	_setup_bottom_bar()
+	_apply_mode()
 
-func _input(event):
-	# FIX: Обрабатываем только нужные события (ui_cancel)
-	if event.is_action_pressed("ui_cancel"):
-		close_shop()
-		get_viewport().set_input_as_handled()
-
-# --- Table Hover Logic (удалена из _input) ---
-# Этот код больше не нужен, так как hover обрабатывается через signals
-
-func _on_mouse_exit_table():
-	if _last_hovered_item_index != -1:
-		_last_hovered_item_index = -1
-		if item_info_tooltip:
-			item_info_tooltip.toggle(false)
-
-
-func _switch_mode(new_mode: String):
-	if current_menu_mode == new_mode: return
-	
-	var _old_mode = current_menu_mode
-	current_menu_mode = new_mode
-	
-	# Наполняем соответствующую таблицу данными
-	match new_mode:
-		"buy":
-			if buy_item_list:
-				buy_item_list.show_shop_items(shop_items)
-		"sell":
-			if sell_item_list:
-				sell_item_list.show_inventory_items()
-		"equipment":
-			# TODO: отдельный список экипировки, если понадобится
-			pass
-	
-	_animate_transition()
-	_update_menu_buttons()
-
-func _animate_transition():
-	# Анимация перехода между режимами временно отключена
-	if current_transition_tween:
-		current_transition_tween.kill()
-
-func _on_buy_pressed(): _switch_mode("buy")
-func _on_sell_pressed(): _switch_mode("sell")
-func _on_blacksmith_pressed(): _switch_mode("equipment")
-func _on_exit_pressed(): _animate_exit()
-
-func close_shop():
-	visible = false
-	shop_closed.emit()
-	if get_tree().current_scene == self: queue_free()
 
 func setup_shop(items: Array):
 	shop_items = items
 	visible = true
-	if base_menu: base_menu.visible = true
+	if base_menu:
+		base_menu.visible = true
 	_switch_mode("buy")
-	if base_menu and base_menu.has_method("update_gold_display"):
-		base_menu.update_gold_display()
 
-func _update_menu_buttons():
-	var active = Color.WHITE
-	var inactive = Color(0.7, 0.7, 0.7)
-	
-	if buy_button: buy_button.modulate = active if current_menu_mode == "buy" else inactive
-	if sell_button: sell_button.modulate = active if current_menu_mode == "sell" else inactive
-	if equipment_button: equipment_button.modulate = active if current_menu_mode == "equipment" else inactive
+
+func _build_categories() -> void:
+	for i in ShopService.CATEGORIES.size():
+		var cat: Dictionary = ShopService.CATEGORIES[i]
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(UITokens.SHOP_CATEGORY_SIZE, UITokens.SHOP_CATEGORY_SIZE)
+		b.text = cat.label
+		b.tooltip_text = cat.buy_title
+		if cat.icon != "":
+			b.icon = load(ICON_DIR % cat.icon)
+			b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			b.expand_icon = true
+		b.focus_mode = Control.FOCUS_NONE  # перемикання — Q/E, LB/RB або мишею
+		b.pressed.connect(_set_category.bind(i))
+		_categories.add_child(b)
+		_category_buttons.append(b)
+
+
+func _setup_bottom_bar() -> void:
+	var bar = base_menu.get_node_or_null("BottomBar")
+	if bar and bar.has_method("set_actions"):
+		bar.set_default_hint(tr("Select an item."))
+		bar.set_actions([
+			{"key": "L/R", "label": tr("Switch Category")},
+			{"key": "A", "label": tr("Confirm")},
+			{"key": "B", "label": tr("Back")},
+		])
+
+
+func _input(event):
+	if _modal_open():
+		return
+	if event.is_action_pressed(&"ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_animate_exit()
+	elif event.is_action_pressed(&"menu_prev_tab"):
+		get_viewport().set_input_as_handled()
+		_set_category(wrapi(category_index - 1, 0, ShopService.CATEGORIES.size()))
+	elif event.is_action_pressed(&"menu_next_tab"):
+		get_viewport().set_input_as_handled()
+		_set_category(wrapi(category_index + 1, 0, ShopService.CATEGORIES.size()))
+
+
+func _switch_mode(new_mode: String):
+	current_menu_mode = new_mode
+	_apply_mode()
+
+
+func _set_category(index: int) -> void:
+	category_index = index
+	_apply_mode()
+
+
+func _apply_mode() -> void:
+	var buying := current_menu_mode == "buy"
+	_buy_tab.set_pressed_no_signal(buying)
+	_sell_tab.set_pressed_no_signal(not buying)
+	var cat: Dictionary = ShopService.CATEGORIES[category_index]
+	_title.text = tr(cat.buy_title if buying else cat.sell_title)
+	# Figma: у BUY колонка — ціна торговця, у SELL — ціна викупу.
+	_price_header.text = tr("Selling Price") if buying else tr("Buying Price")
+	for i in _category_buttons.size():
+		_category_buttons[i].theme_type_variation = &"ShopCategoryOn" if i == category_index else &"ShopCategory"
+	refresh()
+
+
+## Перебудовує рядки з поточних даних (після купівлі/продажу теж).
+func refresh() -> void:
+	var cat: StringName = ShopService.CATEGORIES[category_index].id
+	var rows: Array[Dictionary] = service.wares(shop_items, cat) if current_menu_mode == "buy" \
+			else service.possessions(cat)
+	for child in _rows.get_children():
+		_rows.remove_child(child)
+		child.queue_free()
+	var focus_target: ShopRow = null
+	for data in rows:
+		var row: ShopRow = ROW_SCENE.instantiate()
+		_rows.add_child(row)
+		row.setup(data, int(data.price) > 0)
+		row.row_focused.connect(_show_description)
+		row.row_activated.connect(_on_row_activated)
+		if focus_target == null and row.focus_mode != Control.FOCUS_NONE:
+			focus_target = row
+		if data.id == _focused_id and row.focus_mode != Control.FOCUS_NONE:
+			focus_target = row
+	_empty.visible = rows.is_empty()
+	_empty.text = tr("No wares in this category.") if current_menu_mode == "buy" \
+			else tr("You have nothing to sell here.")
+	_desc_box.visible = not rows.is_empty()
+	if focus_target:
+		_focus_row.call_deferred(focus_target)
+	elif not rows.is_empty():
+		_show_description(rows[0])
+
+
+## Відкладений фокус: рядок міг зникнути, якщо refresh() спрацював двічі за кадр.
+func _focus_row(row: ShopRow) -> void:
+	if is_instance_valid(row) and row.is_inside_tree() and not row.is_queued_for_deletion():
+		row.grab_focus()
+
+
+func get_rows() -> Array[ShopRow]:
+	var out: Array[ShopRow] = []
+	for child in _rows.get_children():
+		if child is ShopRow and not child.is_queued_for_deletion():
+			out.append(child)
+	return out
+
+
+func _show_description(data: Dictionary) -> void:
+	_focused_id = str(data.get("id", ""))
+	_desc_name.text = str(data.get("name", ""))
+	_desc_text.text = str(data.get("description", ""))
+
+
+func _on_row_activated(data: Dictionary) -> void:
+	_focused_id = str(data.id)
+	if current_menu_mode == "sell":
+		service.sell(data.id)
+		refresh()
+		return
+	var price := int(data.price)
+	if service.gold() < price:
+		_show_modal(MODAL_TEMPLATES.misc_popup(tr("Not Enough Gold"),
+				tr("You need %s to buy %s.") % [ShopService.format_price(price), data.name]),
+				func(_r): refresh())
+		return
+	_show_modal(MODAL_TEMPLATES.buy_confirm(str(data.name), 1, ShopService.format_price(price)),
+			func(result: String):
+				if result == "confirm":
+					service.buy(data.id, 1)
+				refresh())
+
+
+func _show_modal(data: Dictionary, on_closed: Callable) -> void:
+	var ui = ServiceLocatorHelper.get_manager("get_ui_manager")
+	var layer = ui.get_modal_layer() if ui and ui.has_method("get_modal_layer") else null
+	if ui == null or layer == null:
+		on_closed.call("confirm")
+		return
+	ui.show_modal(data)
+	layer.modal_closed.connect(on_closed, CONNECT_ONE_SHOT)
+
+
+func _modal_open() -> bool:
+	var ui = ServiceLocatorHelper.get_manager("get_ui_manager")
+	var layer = ui.get_modal_layer() if ui and ui.has_method("get_modal_layer") else null
+	return layer != null and layer.get("active_modal") != null
+
+
+func close_shop():
+	visible = false
+	shop_closed.emit()
+	if get_tree().current_scene == self:
+		queue_free()
+
 
 func _animate_exit():
 	var tween = create_tween()
@@ -148,135 +225,3 @@ func _animate_exit():
 		var parent = get_parent()
 		if parent and parent is CanvasLayer: parent.queue_free()
 	)
-
-func _load_test_items() -> Array:
-	# Load items from JSON
-	var f = FileAccess.open("res://SampleProject/Resources/Data/merchants.json", FileAccess.READ)
-	if not f: return []
-	
-	var j = JSON.new()
-	if j.parse(f.get_as_text()) != OK: return []
-	
-	var d = j.data
-	if not d or not d.has("merchants"): return []
-	
-	return d.merchants.default.items if d.merchants.has("default") else []
-
-func _get_item_count(id):
-	var inv = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_inventory_manager"):
-			inv = service_locator.get_inventory_manager()
-	return inv.get_item_count(id) if inv else 0
-
-func _on_item_list_display_row_double_clicked(index: int) -> void:
-	# Двойной клик по строке таблицы покупок (Buy)
-	if current_menu_mode != "buy":
-		return
-	if not buy_item_list:
-		return
-	
-	var item_ids: Array[String] = buy_item_list.get_meta("item_ids", [])
-	if index < 0 or index >= item_ids.size():
-		return
-	
-	var item_id := item_ids[index]
-	if item_id == "" or item_id == null:
-		return
-	
-	_buy_item_confirm(item_id)
-
-
-func _buy_item_confirm(_item_id: String) -> void:
-	_buy_item(_item_id)
-
-func _on_buy_row_double_clicked(index: int) -> void:
-	if current_menu_mode != "buy":
-		return
-	var item_ids: Array[String] = buy_item_list.get_meta("item_ids", [])
-	if index < 0 or index >= item_ids.size():
-		return
-	var item_id := item_ids[index]
-	if item_id == "" or item_id == null:
-		return
-	_buy_item(item_id)
-
-func _on_sell_row_double_clicked(index: int) -> void:
-	if current_menu_mode != "sell":
-		return
-	var item_ids: Array[String] = sell_item_list.get_meta("item_ids", [])
-	if index < 0 or index >= item_ids.size():
-		return
-	var item_id := item_ids[index]
-	if item_id == "" or item_id == null:
-		return
-	_sell_item(item_id)
-
-func _buy_item(item_id: String) -> void:
-	if item_database == null:
-		if Engine.has_singleton("ServiceLocator"):
-			var service_locator = Engine.get_singleton("ServiceLocator")
-			if service_locator and service_locator.has_method("get_item_database"):
-				item_database = service_locator.get_item_database()
-	var inv = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_inventory_manager"):
-			inv = service_locator.get_inventory_manager()
-	if not inv or not item_database:
-		return
-	var item: Dictionary = item_database.get_item(item_id)
-	if item.is_empty():
-		return
-	var price: int = int(item.get("buy_price", 0))
-	if price <= 0:
-		return
-	if inv.get_item_count("coin") < price:
-		print("🛒 ShopUI: Not enough coins to buy ", item_id, " price=", price)
-		return
-	if not inv.remove_item("coin", price):
-		return
-	inv.add_item(item_id, 1)
-	print("🛒 ShopUI: Bought ", item_id, " for ", price, " coins")
-	# Refresh UI
-	if buy_item_list:
-		buy_item_list.show_shop_items(shop_items)
-	if sell_item_list:
-		sell_item_list.show_inventory_items()
-	if base_menu and base_menu.has_method("update_gold_display"):
-		base_menu.update_gold_display()
-
-func _sell_item(item_id: String) -> void:
-	if item_database == null:
-		if Engine.has_singleton("ServiceLocator"):
-			var service_locator = Engine.get_singleton("ServiceLocator")
-			if service_locator and service_locator.has_method("get_item_database"):
-				item_database = service_locator.get_item_database()
-	var inv = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_inventory_manager"):
-			inv = service_locator.get_inventory_manager()
-	if not inv or not item_database:
-		return
-	if inv.get_item_count(item_id) <= 0:
-		return
-	var item: Dictionary = item_database.get_item(item_id)
-	if item.is_empty():
-		return
-	var price: int = int(item.get("sell_price", 0))
-	if price <= 0:
-		return
-	if not inv.remove_item(item_id, 1):
-		return
-	inv.add_item("coin", price)
-	print("🛒 ShopUI: Sold ", item_id, " for ", price, " coins")
-	# Refresh UI
-	if sell_item_list:
-		sell_item_list.show_inventory_items()
-	if buy_item_list:
-		buy_item_list.show_shop_items(shop_items)
-	if base_menu and base_menu.has_method("update_gold_display"):
-		base_menu.update_gold_display()
-

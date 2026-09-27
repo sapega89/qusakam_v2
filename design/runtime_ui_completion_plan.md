@@ -140,7 +140,16 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
 3. Splash: restyle the existing "press any button" title state to `258:5141`.
 4. Tests: Continue state with and without saves, focus order, no Load Game node.
 
-## Slice 2 — Merchant / Shop (UI + logic, no map placement, D81)
+## Slice 2 — Merchant / Shop (UI + logic, no map placement, D81) — ✅ DONE
+
+> Done: `ShopService` (categories, buy, sell, gold = inventory "coin"), `ShopRow`, `NpcActionMenu`,
+> `shop_menu.tscn` / `shop_ui.gd` rebuilt to Figma 153:1289 / 153:1523 / 153:1760, Merchant NPC menu
+> (164:1302), `menu_prev_tab` / `menu_next_tab` actions (Q/E, LB/RB). `verify_shop.gd` 42/42.
+>
+> Found on the way: the old shop lists were stubs (`set_table()` only warned — the shop never showed
+> items), every lookup used `Engine.has_singleton`, and `Merchant.open_shop()` called a nonexistent
+> `Node.has()`. Old `item_list_display` / `buy_…` / `sell_…` / `tooltip` scripts removed.
+> Item icons still fall back to placeholders (D5 — art not in the project).
 
 **Figma:** `153:1289`, `153:1523`, `153:1760`, `164:1302`.
 

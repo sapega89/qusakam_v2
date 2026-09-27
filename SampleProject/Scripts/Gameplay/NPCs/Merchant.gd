@@ -13,18 +13,60 @@ var shop_canvas_layer: CanvasLayer = null
 # ID торговця для завантаження товарів з JSON
 @export var merchant_id: String = "default"
 
+## DQD-діалог для пункту Talk. Порожньо — пункт Talk не показується (без вигаданого вмісту).
+@export var talk_dialogue: String = ""
+
+## Figma npc-menu-merchant 164:1302: Talk / Quest / Buy. Quest приховано — квестовий
+## рушій неактивний (D56).
+var npc_menu: NpcActionMenu = null
+
 func _ready():
 	if not interactable.interacted.is_connected(_on_interacted):
 		interactable.interacted.connect(_on_interacted)
+
+	npc_menu = NpcActionMenu.new()
+	npc_menu.name = "NpcMenu"
+	npc_menu.visible = false
+	npc_menu.z_index = 20
+	npc_menu.position = UITokens.NPC_MENU_OFFSET
+	add_child(npc_menu)
+	npc_menu.chosen.connect(_on_npc_menu_chosen)
+	npc_menu.cancelled.connect(_close_npc_menu)
 
 	# Додаємо до групи торговців
 	add_to_group(GameGroups.MERCHANT)
 
 	DebugLogger.info("Merchant: Initialized at position %s" % global_position, "Merchant")
 
+func menu_entries() -> Array:
+	var entries: Array = []
+	if talk_dialogue != "":
+		entries.append({"id": &"talk", "label": "Talk"})
+	entries.append({"id": &"buy", "label": "Buy"})
+	return entries
+
 func _on_interacted():
-	if not is_shop_open:
-		open_shop()
+	if is_shop_open or npc_menu.visible:
+		return
+	interactable.enabled = false
+	npc_menu.setup(menu_entries())
+	npc_menu.open()
+	get_tree().paused = true
+
+func _close_npc_menu():
+	npc_menu.visible = false
+	get_tree().paused = false
+	interactable.enabled = true
+
+func _on_npc_menu_chosen(id: StringName):
+	_close_npc_menu()
+	match id:
+		&"buy":
+			open_shop()
+		&"talk":
+			var dm = ServiceLocatorHelper.get_manager("get_dialogue_manager")
+			if dm and dm.has_method("start_dialogue"):
+				dm.start_dialogue(talk_dialogue)
 
 func _unhandled_input(event):
 	"""Використовуємо _unhandled_input замість _input для обробки вводу після інших систем"""
@@ -93,11 +135,6 @@ func open_shop():
 		shop_menu_instance.visible = true
 		shop_menu_instance.modulate = Color.WHITE
 		
-		# Також переконуємося, що base_menu видимий
-		if shop_menu_instance.has("base_menu"):
-			var base_menu = shop_menu_instance.get("base_menu")
-			if base_menu and base_menu.has("visible"):
-				base_menu.visible = true
 		
 		# Підключаємо сигнал закриття
 		if shop_menu_instance.has_signal("shop_closed"):

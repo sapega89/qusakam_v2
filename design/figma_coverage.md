@@ -50,8 +50,8 @@ Dead or superseded runtime surfaces are labelled by what Figma offers for their
 
 | Surface | Label | Figma evidence | Notes |
 |---|---|---|---|
-| Shop menu (buy/sell/equipment) | MATCH | `153:1289` buy, `153:1523` sell, `153:1760` buy-confirm | Figma sidebar is Buy / Sell / Equipment — same three modes as `shop_ui.gd`. Selected row renders accent-on-accent (invisible name), the same Figma defect D26 fixed for Skills. |
-| Merchant NPC + prompt | MATCH | `461:6479` UI/Interaction/Prompt, `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Approach prompt → NPC action menu (D74). **Prompt implemented (slice 1a):** the "Press E" label is replaced by the shared prompt "Shop"; NPC menu comes in slice 2. |
+| Shop menu (buy/sell/equipment) | MATCH | `153:1289` buy, `153:1523` sell, `153:1760` buy-confirm | Figma sidebar is Buy / Sell / Equipment — same three modes as `shop_ui.gd`. Selected row renders accent-on-accent (invisible name), the same Figma defect D26 fixed for Skills. **Implemented (slice 2):** rebuilt on `BaseMenu` with `ShopService` + `ShopRow`; Buy/Sell tabs, 6-category column, buy confirm, dark-on-accent selected row. Not placed on a map (D81). Equipment tab and Party Equipment Effects pending (Q17, Q15). |
+| Merchant NPC + prompt | MATCH | `461:6479` UI/Interaction/Prompt, `164:1302` npc-menu-merchant (Talk / Quest / Buy) | Approach prompt → NPC action menu (D74). **Prompt implemented (slice 1a):** the "Press E" label is replaced by the shared prompt "Shop"; NPC menu comes in slice 2. **NPC menu implemented (slice 2):** `NpcActionMenu` — Buy always, Talk only with a dialogue set, Quest hidden (D56). |
 | Blacksmith | MATCH | `176:1357` npc-menu-blacksmith (Talk / Quest / Craft / Enchant) | **D69: separate NPC**, entry to Crafting/Enchanting. Runtime's blacksmith-as-shop-Equipment-mode is wrong and must change. |
 
 ### C. Crafting / Enchanting

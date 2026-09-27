@@ -21,4 +21,9 @@ Answer by number. Answered questions move to `figma_decision_register.md`.
 | Q11 | 4 | Recipes need a **gold cost** (D85). If `crafting_recipes.json` has no prices, who sets them? | Slice 4 stops at that point and asks for the price list. No invented numbers. |
 | Q12 | 1a | Prompt input badge: keyboard **E** + gamepad **A**, switching with the last used input device? | Yes. |
 | Q14 | 1a | The pickup modal reuses the shared modal family (D79), which is larger than Figma's compact `UI/Modal/ItemPickup` card (327×140, small "You obtained:" caption over a larger item name). Build a dedicated compact pickup card, or keep the shared modal? | Keep the shared modal. |
+| Q15 | 2 | The Figma shop replaces the party column with **Party Equipment Effects** (per-character stat changes, e.g. MAX HP 740 → 810). No stat-comparison logic exists yet. Build it (needs equip-slot rules per character), or keep the normal party panel? | Keep the normal party panel for now. |
+| Q16 | 2 | Figma's category icons (sword, shield, helmet, bell, scroll) vs our item data: we map **sword → weapons, shield → shields, helmet → other armor, bell → accessories (none exist yet), scroll → consumables + materials**. OK? | Use this mapping. |
+| Q17 | 2 | Figma's shop sidebar has **Equipment** next to Buy/Sell. What does it do in a shop (equip what you just bought)? D69 already says the Blacksmith is not a shop mode. | Hidden until defined. |
+| Q18 | 2 | The Figma buy confirmation shows **Quantity: 4**, but no quantity picker is designed. Buy one at a time, or add a quantity selector? | One at a time (Quantity: 1). |
+| Q19 | 2 | Figma has no "not enough gold" state. We show a modal "Not Enough Gold — You need ₹ N to buy X." from the shared family. OK, or grey out rows you can't afford? | Keep the modal. |
 | Q13 | 8 | `CLAUDE.md` says "154 tests (100% pass)", but no GUT tests exist; the real suite is 17 verify scripts. Update `CLAUDE.md`? | Yes, in slice 8. |

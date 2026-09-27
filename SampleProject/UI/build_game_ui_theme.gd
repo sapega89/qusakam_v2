@@ -29,6 +29,7 @@ func _initialize() -> void:
 	_setup_button_variations(theme)
 	_setup_panels(theme)
 	_main_menu(theme)
+	_shop(theme)
 	_setup_progress_bar(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
@@ -588,6 +589,114 @@ func _main_menu(theme: Theme) -> void:
 		theme.set_color("icon_disabled_color", t, Color(0, 0, 0, 0))
 		theme.set_constant("h_separation", t, UITokens.MENU_ITEM_GAP)
 		theme.set_constant("icon_max_width", t, UITokens.MENU_ITEM_POINTER)
+
+
+## Figma shop-buy 153:1289 / shop-sell 153:1523; NPC-меню 164:1302 / 176:1357.
+func _shop(theme: Theme) -> void:
+	theme.set_type_variation("ShopPanel", "PanelContainer")
+	theme.set_stylebox("panel", "ShopPanel", _box(UITokens.SHOP_PANEL_BG, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, 0, 0))
+	theme.set_type_variation("ShopDescBox", "PanelContainer")
+	theme.set_stylebox("panel", "ShopDescBox", _box(UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY,
+			UITokens.BORDER_WIDTH, UITokens.SHOP_DESC_PAD, UITokens.SHOP_DESC_PAD))
+	theme.set_type_variation("ShopHeader", "PanelContainer")
+	var header := _box(Color(0, 0, 0, 0), UITokens.TEXT_PRIMARY, 0, 0, UITokens.SHOP_HEADER_PAD_V)
+	header.border_width_bottom = UITokens.BORDER_WIDTH
+	theme.set_stylebox("panel", "ShopHeader", header)
+
+	var labels := {
+		"ShopTitle": [_font_semibold, UITokens.SIZE_SHOP_TITLE, UITokens.ACCENT],
+		"ShopColumnHeader": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		"ShopDescText": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		# Рядок: звичайний — білий текст; вибраний — темний на accent (правило D26).
+		"ShopRowName": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"ShopRowNameOn": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.ON_ACCENT],
+		"ShopRowCount": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"ShopRowCountOn": [_font_regular, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
+		"ShopRowPrice": [_font_semibold, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"ShopRowPriceOn": [_font_semibold, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
+		"ShopRowDisabled": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_MUTED],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, labels[name][2])
+
+	var cols := {"ShopColumn": ["VBoxContainer", UITokens.SHOP_LIST_GAP],
+		"ShopRowList": ["VBoxContainer", UITokens.SHOP_ROW_GAP],
+		"ShopCategories": ["VBoxContainer", UITokens.SHOP_CATEGORY_GAP],
+		"ShopDescColumn": ["VBoxContainer", UITokens.SHOP_DESC_GAP],
+		"ShopRowLine": ["HBoxContainer", UITokens.SPACE_MD],
+		"NpcMenuList": ["VBoxContainer", UITokens.NPC_MENU_GAP],
+		# Як у ігровому меню (vertical_tab_menu): бокові таби 16px, відступ до панелі 24px.
+		"ShopLayout": ["HBoxContainer", UITokens.SECTION_GAP],
+		"ShopTabs": ["VBoxContainer", UITokens.LG_TAB_GAP]}
+	for name in cols:
+		theme.set_type_variation(name, cols[name][0])
+		theme.set_constant("separation", name, cols[name][1])
+	theme.set_type_variation("ShopListMargin", "MarginContainer")
+	for side in ["left", "right", "top", "bottom"]:
+		theme.set_constant("margin_" + side, "ShopListMargin", UITokens.SHOP_LIST_PAD)
+	# Колонка категорій 64px: кнопки 48px по центру, 16px зверху/знизу.
+	theme.set_type_variation("ShopCategoryMargin", "MarginContainer")
+	var side_pad := (UITokens.SHOP_CATEGORY_COLUMN - UITokens.SHOP_CATEGORY_SIZE) / 2
+	theme.set_constant("margin_left", "ShopCategoryMargin", side_pad)
+	theme.set_constant("margin_right", "ShopCategoryMargin", side_pad)
+	theme.set_constant("margin_top", "ShopCategoryMargin", UITokens.SHOP_CATEGORY_PAD_V)
+	theme.set_constant("margin_bottom", "ShopCategoryMargin", UITokens.SHOP_CATEGORY_PAD_V)
+	theme.set_type_variation("ShopRowMargin", "MarginContainer")
+	for side in ["left", "right"]:
+		theme.set_constant("margin_" + side, "ShopRowMargin", UITokens.SHOP_ROW_PAD_H)
+	for side in ["top", "bottom"]:
+		theme.set_constant("margin_" + side, "ShopRowMargin", UITokens.SHOP_ROW_PAD_V)
+
+	# Рядок товару: чорний 56%; вибраний (фокус/наведення) — заливка accent.
+	var t := "ShopRow"
+	theme.set_type_variation(t, "Button")
+	var row := _box(UITokens.SHOP_ROW_BG, UITokens.SHOP_ROW_BG, UITokens.BORDER_WIDTH, 0, 0)
+	var row_on := _box(UITokens.ACCENT, UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0)
+	for state in ["normal", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, row)
+	for state in ["hover", "hover_pressed", "focus"]:
+		theme.set_stylebox(state, t, row_on)
+
+	# Кнопки категорій 48×48: звичайна — чорний 56% + біла рамка; активна — accent.
+	for spec in [["ShopCategory", UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY, UITokens.SHOP_ICON_TINT, UITokens.TEXT_PRIMARY],
+			["ShopCategoryOn", UITokens.ACCENT, UITokens.BORDER, UITokens.ON_ACCENT, UITokens.ON_ACCENT]]:
+		var c: String = spec[0]
+		theme.set_type_variation(c, "Button")
+		var box := _box(spec[1], spec[2], UITokens.BORDER_WIDTH, 0, 0)
+		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+			theme.set_stylebox(state, c, box)
+		var focus := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0)
+		theme.set_stylebox("focus", c, focus)
+		theme.set_font("font", c, _font_bold)
+		theme.set_font_size("font_size", c, UITokens.SIZE_CAPTION)
+		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color"]:
+			theme.set_color(col, c, spec[4])
+		for col in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color"]:
+			theme.set_color(col, c, spec[3])
+		theme.set_constant("icon_max_width", c, UITokens.SHOP_CATEGORY_ICON)
+
+	# NPC-меню: UI/Menu Item зі своїм фоном (#111118) і рамкою (#3a3a42).
+	var npc_box := _box(UITokens.BACKGROUND, UITokens.BORDER, UITokens.BORDER_WIDTH,
+			UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V)
+	var dim := Color(UITokens.TEXT_PRIMARY, UITokens.MENU_INACTIVE_ALPHA)
+	for spec in [["NpcMenuItem", _font_regular, dim, Color(0, 0, 0, 0)],
+			["NpcMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
+		var n: String = spec[0]
+		theme.set_type_variation(n, "Button")
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			theme.set_stylebox(state, n, npc_box)
+		theme.set_font("font", n, spec[1])
+		theme.set_font_size("font_size", n, UITokens.SIZE_LABEL)
+		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			theme.set_color(col, n, spec[2])
+		for col in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			theme.set_color(col, n, spec[3])
+		theme.set_constant("h_separation", n, UITokens.MENU_ITEM_GAP)
+		theme.set_constant("icon_max_width", n, UITokens.MENU_ITEM_POINTER)
 
 
 ## Figma load-game-screen 150:1278 / save-game-screen 17:5.

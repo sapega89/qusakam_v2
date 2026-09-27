@@ -51,6 +51,17 @@ static func overwrite_save() -> Dictionary:
 		]
 	}
 
+## Figma shop-buy-confirm 153:1760: "Buy Circlet?" / "Quantity: 4  •  Total Cost: ₹ 4,200".
+static func buy_confirm(item_name: String, quantity: int, total: String) -> Dictionary:
+	return {
+		"title": "Buy %s?" % item_name,
+		"description": "Quantity: %d  •  Total Cost: %s" % [quantity, total],
+		"buttons": [
+			{"id": "confirm", "text": "Yes", "is_default": true},
+			{"id": "cancel", "text": "No", "is_cancel": true}
+		]
+	}
+
 ## D76: похідна від модалки перезапису — та сама родина, одна дія.
 static func game_saved() -> Dictionary:
 	return misc_popup("Game Saved", "Your progress has been saved successfully.")

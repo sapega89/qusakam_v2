@@ -202,6 +202,38 @@ const DIVIDER_LINE := 80           # UI/Diamond Divider
 const COPYRIGHT_SPACING := 1       # Regular 12
 const SCREEN_PAD_BOTTOM := 64
 
+# ── Магазин (Figma: shop-buy 153:1289, shop-sell 153:1523, shop-buy-confirm 153:1760) ─
+const SHOP_PANEL_BG := Color("161310", 0.90)
+const SHOP_ROW_BG := Color("000000", 0.56)
+const SHOP_ICON_TINT := Color("bfb8a6", 0.70)
+const SHOP_CATEGORY_COLUMN := 64
+const SHOP_CATEGORY_SIZE := 48
+const SHOP_CATEGORY_GAP := 8
+const SHOP_CATEGORY_PAD_V := 16
+const SHOP_CATEGORY_ICON := 18
+const SHOP_LIST_PAD := 24
+const SHOP_LIST_GAP := 12
+const SHOP_HEADER_PAD_V := 8
+const SHOP_ROW_HEIGHT := 44
+const SHOP_ROW_GAP := 2
+const SHOP_ROW_PAD_H := 12
+const SHOP_ROW_PAD_V := 10
+const SHOP_ROW_ICON := 22
+const SHOP_COL_COUNT := 120
+const SHOP_COL_PRICE := 150
+const SHOP_DESC_PAD := 16
+const SHOP_DESC_GAP := 8
+const SIZE_SHOP_TITLE := 22        # "All Wares" — SemiBold, accent
+const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
+# NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
+const NPC_MENU_WIDTH := 200
+const NPC_MENU_GAP := 0
+const NPC_MENU_OFFSET := Vector2(40, -140)  # праворуч над NPC, як у 164:1302
+const LG_TAB_GAP := 16            # UI/Sidebar Tab: gap 16 у category-list
+const SIDEBAR_TAB_WIDTH := 296
+const SIDEBAR_TAB_HEIGHT := 45
+const SIDEBAR_TOP_PAD := 24
+
 # ── Підменю Miscellaneous (Figma: menu-miscellaneous 58:1246 → misc-sub-menu) ─
 # Рядки мають горизонтальний градієнт, що згасає у прозорість праворуч.
 const MISC_ROW_WIDTH := 500

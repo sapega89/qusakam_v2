@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/shop_row.gd" id="1_row"]
+
+[node name="ShopRow" type="Button"]
+theme_type_variation = &"ShopRow"
+script = ExtResource("1_row")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"ShopRowMargin"
+
+[node name="Line" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"ShopRowLine"
+
+[node name="Icon" type="TextureRect" parent="Margin/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="Margin/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopRowName"
+vertical_alignment = 1
+clip_text = true
+
+[node name="CountLabel" type="Label" parent="Margin/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopRowCount"
+vertical_alignment = 1
+
+[node name="PriceLabel" type="Label" parent="Margin/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopRowPrice"
+vertical_alignment = 1
