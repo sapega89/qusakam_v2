@@ -176,7 +176,11 @@ production maps (D81) · choosing the dialogue presentation approach (D83).
    until slice 3 is verified (Q9).
 3. Tests: menu entries, Craft routes to slice 4's screen.
 
-## Slice 4 — Crafting (materials + gold, D85)
+## Slice 4 — Crafting (materials + gold, D85) — ⛔ BLOCKED on data (Q11, Q22)
+
+> Stopped at the pre-slice audit, as planned: `crafting_recipes.json` has **no gold cost** for any recipe.
+> Everything else is ready — all 18 recipes reference items that exist. Waiting for the Q11 price sheet
+> and the station scope (Q22). Slice 5 continues independently.
 
 **Figma:** `160:1291`, `164:2326`, `164:2545`, `164:2764`; `UI/Recipe Confirmation
 Panel` `217:2189`; `UI/Craft Error Modal` `217:2983`.
