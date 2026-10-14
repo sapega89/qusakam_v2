@@ -13,6 +13,7 @@ signal player_entered
 signal player_exited
 
 const PROMPT_SCENE := preload("res://SampleProject/UI/Components/interaction_prompt.tscn")
+const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 const ACTION := &"interact"
 
 @export var action_text: String = "Interact":
@@ -101,7 +102,8 @@ func _place_prompt() -> void:
 	if _prompt == null:
 		return
 	_prompt.reset_size()
-	_prompt.position = prompt_offset - Vector2(_prompt.size.x * 0.5, _prompt.size.y)
+	_prompt.scale = WORLD_UI.screen_scale(self)  # екранний розмір під збільшеною камерою (D170)
+	_prompt.position = prompt_offset - Vector2(_prompt.size.x * 0.5, _prompt.size.y) * _prompt.scale
 
 
 ## Не взаємодіємо, поки відкрите меню чи модалка.

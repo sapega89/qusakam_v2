@@ -152,6 +152,7 @@ content_margin_right = 2.0
 bg_color = Color(0, 0, 0, 0.752941)
 
 [node name="Game" type="Node2D"]
+texture_filter = 1
 script = ExtResource("1_xdpfu")
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("2_bam1a")]
@@ -159,6 +160,7 @@ unique_name_in_owner = true
 position = Vector2(368, 248)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(2.25, 2.25)
 position_smoothing_enabled = true
 
 [node name="UI" type="CanvasLayer" parent="."]

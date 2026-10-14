@@ -200,6 +200,29 @@ func _initialize() -> void:
 	ck(rsrc.find("KEY_E") == -1, "no hard-coded KEY_E in RelicArmor.gd")
 	relic.queue_free()
 
+	print("[10] Zoomed camera: prompt and NPC menu keep their screen size (D170)")
+	var zoom_world := Node2D.new()
+	root.add_child(zoom_world)
+	var cam := Camera2D.new()
+	cam.zoom = Vector2(2.25, 2.25)
+	zoom_world.add_child(cam)
+	cam.make_current()
+	var zp := CharacterBody2D.new()
+	zp.add_to_group(GameGroups.PLAYER)
+	zoom_world.add_child(zp)
+	var zmerchant: Node2D = load("res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn").instantiate()
+	zoom_world.add_child(zmerchant)
+	for i in 3: await process_frame
+	zmerchant.interactable._on_body_entered(zp)
+	await process_frame
+	var zprompt: Control = zmerchant.interactable.get_prompt()
+	ck(zprompt.visible and zprompt.scale.is_equal_approx(Vector2.ONE / 2.25), "prompt scaled back to screen size (%s)" % zprompt.scale)
+	zmerchant.npc_menu.setup([{"id": &"buy", "label": "Buy"}])
+	zmerchant.npc_menu.open()
+	ck(zmerchant.npc_menu.scale.is_equal_approx(Vector2.ONE / 2.25), "NPC menu scaled back to screen size")
+	ck(load("res://SampleProject/Game.tscn").instantiate().get_node("Player/Camera2D").zoom == Vector2(2.25, 2.25),
+			"the game camera is zoomed ×2.25 — one cell fills the screen height (D170)")
+	zoom_world.queue_free()
 	_done()
 
 

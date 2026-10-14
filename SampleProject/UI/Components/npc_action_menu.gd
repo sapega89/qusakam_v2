@@ -12,6 +12,7 @@ signal cancelled
 
 const THEME_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
 const POINTER := preload("res://SampleProject/Assets/UI/Icons/chevron.svg")
+const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
 
 func _ready() -> void:
@@ -45,6 +46,7 @@ func setup(entries: Array) -> void:
 
 
 func open() -> void:
+	scale = WORLD_UI.screen_scale(self)  # екранний розмір під збільшеною камерою (D170)
 	visible = true
 	for child in get_children():
 		if child is Button:
