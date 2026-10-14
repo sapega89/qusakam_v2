@@ -1,10 +1,19 @@
 ---
 type: plan
-status: planned
-blocked-by: [Q38]
+status: done
 ---
 
 # Music — plan
+
+**✅ Built 2026-10-14, differently from the slices below.** The maaacks
+`ProjectMusicController` autoload already plays any autoplay `AudioStreamPlayer` on the
+`Music` bus and blends between scenes — so each room and `MainMenu.tscn` got a `Music`
+node, no `MusicPlayer.gd` and no `music.json`. Six loops copied to
+`SampleProject/Resources/Audio/Music/` (`assets/` is gitignored), imported with
+`loop=true`. Track per room: provisional, see that folder's `README.md` (Q38).
+Test: `verify_music.gd` — every MetSys room and the menu has a looping in-project track.
+
+Original survey, kept for the record:
 
 **Nothing wired.** No scene plays music; the old `MusicManager` autoload was
 fallback-only dead code and is removed (D131). 2026-10-12.

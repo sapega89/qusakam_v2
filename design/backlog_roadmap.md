@@ -34,7 +34,7 @@ soon as Q38 is answered; 2.3 waits on an artist, 2.4 on the next beat being chos
 | # | Item | Source | Waits on |
 |---|---|---|---|
 | 2.1 | Dialogue presentation layer (ours, on DialogueQuest) | D110–D114 · [[dialogue_audit]] | nothing — rewrite the audit §3 to D110, then build |
-| 2.2 | Music player + which track where | [[music_plan]] | Q38 for slice 2 only |
+| 2.2 | ✅ Music plays — provisional track per room | [[music_plan]] | Q38 to pick the final tracks |
 | 2.3 | Kusakam's missing states (Idle, Jump, Fall, Attack, Hurt, Death) in the current 64×64 style | [[character_animation_plan]] · D138 | **the frames** — an artist; enemies/NPCs stay as they are (D139) |
 | 2.4 | Cutscenes beyond the Village | [[cutscene_plan]] · D140 | which beat next — Village is staged (D140), the rest is undecided |
 | 2.5 | Village: more running before the old man | BACKLOG content row | deferred by Sapega until phase 1 is done |

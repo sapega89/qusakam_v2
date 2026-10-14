@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
+[ext_resource type="AudioStream" uid="uid://bta8c32mlb7vw" path="res://SampleProject/Resources/Audio/Music/sunblade_horizon.ogg" id="music_track"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -79,3 +80,8 @@ script = ExtResource("8_spawn_point")
 position = Vector2(700, 300)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("music_track")
+autoplay = true
+bus = &"Music"

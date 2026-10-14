@@ -1,34 +1,20 @@
-# Music Files
+# Music
 
-This folder is for game music files.
+Six looping tracks from the Desert Music pack (AlkaKrab — licence PDF in
+`assets/Desert Music pack/`), copied here because `assets/` is not in git.
+Imported with `loop=true`.
 
-## Expected Files
+Each room scene and `MainMenu.tscn` has a `Music` AudioStreamPlayer (bus `Music`,
+autoplay); the `ProjectMusicController` autoload picks it up and switches tracks
+between scenes. To change a room's track, change that node's `stream` in the editor.
 
-The game looks for these music files:
+| Scene | Track |
+|---|---|
+| Main Menu, Laboratory, Laboratory Outside | dunes_of_silence.ogg |
+| City, Mayor's Hall | scorchlight_mirage.ogg |
+| Desert Road | whispers_in_the_sand.ogg |
+| Canyon | canyon_echoes.ogg |
+| City Gates | sunblade_horizon.ogg |
+| Village | ash_and_oasis.ogg |
 
-### Menu Music
-- `menu.ogg` - Main menu background music
-
-### Gameplay Music
-- `main_theme.ogg` - Default gameplay music
-- `Sands of Serenity.mp3` - Alternative gameplay track
-
-### Boss Music
-- `boss.ogg` - Laboratory/boss fight music
-
-## Notes
-
-- **Current Status:** No music files present - game runs silently
-- **Format:** OGG or MP3
-- **Adding Music:**
-  1. Place your music files in this folder
-  2. Ensure filenames match the list above
-  3. Restart Godot to reload resources
-
-## Music Manager
-
-Music is controlled by:
-- `Scripts/Managers/Audio/GameMusicManager.gd`
-- Global MusicManager autoload
-
-The game will work fine without music files - it just won't play any background music.
+Provisional (Q38 — Sapega: "connect it somehow for now"). Checked by `verify_music.gd`.

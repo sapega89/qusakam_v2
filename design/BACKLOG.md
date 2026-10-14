@@ -57,10 +57,10 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
-### Music — [[music_plan]]
-- **Exists:** 7 imported tracks in `assets/` (Desert Music pack + one Brackeys track), the `Music` bus and its volume row. Nothing plays them; the fallback-only `MusicManager` was removed (D131, D135).
-- **Waits on:** Q38 (which track where) — slice 2 only.
-- **Resume:** slice 1 of [[music_plan]] — `MusicPlayer.gd` + empty `Resources/Data/music.json` + `verify_music.gd`.
+### ✅ Music — built 2026-10-14
+- [[music_plan]]. A `Music` player in every room and the menu, played by the maaacks
+  `ProjectMusicController`; six loops in `Resources/Audio/Music/`. Tracks are provisional (Q38).
+  Test: `verify_music.gd`.
 
 ### ✅ Room state — built 2026-10-14
 - [[room_state_plan]]. `Game.room_state` (saved by `FlagsModule`); `RoomEnemySpawner` remembers
