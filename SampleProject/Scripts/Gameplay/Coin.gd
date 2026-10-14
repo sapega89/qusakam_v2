@@ -4,7 +4,7 @@ class_name Coin
 ## Coin Collectible
 ## Automatically flies toward player and awards coins on collection
 
-var coin_value: int = 1
+@export var coin_value: int = 1
 var collection_speed: float = 300.0
 var is_collected: bool = false
 var collect_distance: float = 50.0  # Distance to trigger collection

@@ -210,7 +210,7 @@ func _initialize() -> void:
 			"no second rebinding implementation in our script")
 	# Стилізація аддона — СКОУПОВАНА: він успадковує тему лише тому, що
 	# вкладений у наш екран. Глобально GameUITheme аддонам не нав'язуємо.
-	ck(input_menu.get_theme_font_size("font_size", "SettingsRowLabel") == tokens.SIZE_ROW_TITLE,
+	ck(input_menu.get_theme_font_size("font_size", "SettingsRowLabel") == tokens.font_px(tokens.SIZE_ROW_TITLE),
 			"addon widget inherits the theme inside Settings (visual integration)")
 	ck(str(ProjectSettings.get_setting("gui/theme/custom", "")) == "",
 			"theme is still not project-global, so addon UI elsewhere is untouched")
@@ -246,7 +246,7 @@ func _initialize() -> void:
 			"restore resets to module defaults")
 
 	print("[12] theme and shared tokens")
-	ck(opts._heading.get_theme_font_size("font_size", "SettingsHeading") == tokens.SIZE_DISPLAY,
+	ck(opts._heading.get_theme_font_size("font_size", "SettingsHeading") == tokens.font_px(tokens.SIZE_DISPLAY),
 			"heading resolves SettingsHeading from the shared theme")
 	ck(opts._eyebrow.get_theme_color("font_color", "SettingsEyebrow") == tokens.ACCENT,
 			"eyebrow colour from tokens")

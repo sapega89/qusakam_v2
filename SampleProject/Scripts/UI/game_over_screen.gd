@@ -6,20 +6,23 @@ class_name GameOverScreen
 ##
 ##   Resume from last save point → завантажити слот, що востаннє зберігався/завантажувався (Q6).
 ##                                  Немає сейва — стара поведінка: респавн біля входу в кімнату.
+##   Load Game                    → наявне меню Load (D92; кнопки немає у Figma).
 ##   Return to title              → титульний екран, як "Return to Title" у меню Misc.
 
 const SCENE_PATH := "res://SampleProject/Scenes/UI/game_over_screen.tscn"
 const GAME_SCENE := "res://SampleProject/Game.tscn"
 const MAIN_MENU := "res://SampleProject/MainMenu.tscn"
+const LOAD_MENU := "res://SampleProject/Scenes/Menus/LoadGameMenu.tscn"
 
 ## Гравець, що загинув (для респавну, якщо сейва немає).
 var player: Node = null
 ## Чи міняти сцену (тести вимикають, щоб перевірити лише рішення).
 var change_scenes := true
-## Що вибрано: "load", "respawn" або "title" — для тестів і логів.
+## Що вибрано: "load", "respawn", "load_menu" або "title" — для тестів і логів.
 var last_action := ""
 
 @onready var _resume: Button = %ResumeButton
+@onready var _load: Button = %LoadButton
 @onready var _title: Button = %TitleButton
 
 
@@ -61,12 +64,13 @@ func _ready() -> void:
 	var footer: Control = %Footer
 	footer.offset_top = -UITokens.GAME_OVER_FOOTER_BOTTOM - footer.get_combined_minimum_size().y
 	footer.offset_bottom = -UITokens.GAME_OVER_FOOTER_BOTTOM
-	for b in [_resume, _title]:
+	for b in [_resume, _load, _title]:
 		b.custom_minimum_size.x = UITokens.MENU_ITEM_WIDTH
 		b.focus_entered.connect(func(): b.theme_type_variation = &"NpcMenuItemOn")
 		b.focus_exited.connect(func(): b.theme_type_variation = &"NpcMenuItem")
 		b.mouse_entered.connect(b.grab_focus)
 	_resume.pressed.connect(resume)
+	_load.pressed.connect(load_game)
 	_title.pressed.connect(return_to_title)
 	_resume.grab_focus.call_deferred()
 
@@ -117,6 +121,13 @@ func resume() -> void:
 	last_action = "respawn"
 	_close()
 	player.kill()
+
+
+## Load Game (D92) — наявне меню Save Slot Selection у режимі LOAD.
+func load_game() -> void:
+	last_action = "load_menu"
+	# Як Continue у MainMenu: окрема сцена; "назад" з неї веде на титульний екран.
+	_leave(LOAD_MENU)
 
 
 ## Return to title — як "Return to Title" у меню Misc (game_menu.gd).

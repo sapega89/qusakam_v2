@@ -173,6 +173,7 @@ shape = SubResource("RectangleShape2D_exit")
 [connection signal="body_entered" from="END" to="END" method="_on_body_entered"]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

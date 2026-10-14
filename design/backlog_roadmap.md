@@ -21,9 +21,9 @@ leftovers that make a playthrough fuller, picked up alongside phase 2, not a gat
 |---|---|---|---|
 | 1.1 | **Playtest the Laboratory to the demo end.** Sapega has not yet seen its fight. Two of nine original cells were drawn; the map now gives it 2. Companion beats run on triggers. | B53 · [[room_state_plan]] | The only stretch nobody has played. Whatever breaks here is phase-1 work. |
 | 1.2 | **Laboratory picks its state from flags** | B53 | Loading a save made inside the lab skips its fight. Fix after 1.1 shows how the triggers chain. |
-| 1.3 | **Merchant on the Desert Road, Blacksmith in the City** | D81, **D154** | Shop and Crafting are built and tested but unreachable in play. |
+| 1.3 | ✅ **Merchant on the Desert Road, Blacksmith in the City** (placed 2026-10-14) | D81, **D154** | Shop and Crafting are built and tested but unreachable in play. |
 | 1.4 | **Something to pick up** — `ItemPickup` and chests placed | D88 · Q2 | Inventory, crafting materials and potions have no source in the world except the first-kill gift. |
-| 1.5 | **Game Over → Load Game** | D92 | Dying sends you to the title; one button. |
+| 1.5 | ✅ **Game Over → Load Game** (built 2026-10-14) | D92 | Dying sends you to the title; one button. |
 | 1.6 | **City has a floor and nothing else**; Mayor's Hall is a copied corridor | map review 2026-10-13 | Not blocking, but the walk to the mayor is empty. Art, not code — Sapega draws. |
 
 ## Phase 2 — the game reads as a game ← **current**
@@ -33,7 +33,7 @@ soon as Q38 is answered; 2.3 waits on an artist, 2.4 on the next beat being chos
 
 | # | Item | Source | Waits on |
 |---|---|---|---|
-| 2.1 | Dialogue presentation layer (ours, on DialogueQuest) | D110–D114 · [[dialogue_audit]] | nothing — rewrite the audit §3 to D110, then build |
+| 2.1 | Dialogue presentation layer (ours, on DialogueQuest) — incl. anime speech bubbles (Q48) and NPC Remind ([[npc_recall_plan]]) | D110–D114 · [[dialogue_audit]] | nothing — rewrite the audit §3 to D110, then build |
 | 2.2 | ✅ Music plays — provisional track per room | [[music_plan]] | Q38 to pick the final tracks |
 | 2.3 | Kusakam's missing states (Idle, Jump, Fall, Attack, Hurt, Death) in the current 64×64 style | [[character_animation_plan]] · D138 | **the frames** — an artist; enemies/NPCs stay as they are (D139) |
 | 2.4 | Cutscenes beyond the Village | [[cutscene_plan]] · D140 | which beat next — Village is staged (D140), the rest is undecided |
@@ -68,6 +68,6 @@ These are not work until someone says they are wanted:
 
 - **Companions** — a 206-line working system was lost in refactoring; no D-ID covers it.
   Sapega, 2026-10-14: leave for now.
-- **Quest engine** — D56 says "ship or delete"; Sapega, 2026-10-14: leave for now.
+- ~~**Quest engine**~~ — closed by **D162** (2026-10-14): delete `Scripts/Quest/`; quests run on `story.json` + `GameFlow` ([[npc_recall_plan]]).
 - **Jobs, Healing sidebar entries, character roster / Stat Points** — D65, D18.
 - **The D1–D115 audit** — decisions never checked against the code.

@@ -28,6 +28,9 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 Runnable specs. One per system, sliced so each slice ships on its own.
 
 - [[character_animation_plan]] — blocked on Q40/Q41: player frames for every state, per-type enemy art, NPC idles
+- [[enchanting_plan]] — D94/D115/D163/D164; slice 1 (rule) built; `+N` lives in the item id
+- [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles wait on Q48
+- [[gamepad_plan]] — D156/D157, ready: hero moves/jumps/attacks on a pad; A/B in every menu; one last-device source
 - [[cutscene_plan]] — blocked on Q42: AnimationPlayer-driven in-world scenes instead of dialogue-only beats
 - [[prologue_journal_plan]] — D120: the Prologue as a journal stage, zones as sub-stages; fixes B43
 - [[game_menu_single_scene_plan]] — D116/D117: Game Menu as one scene, script only shows/hides; row templates in the scene

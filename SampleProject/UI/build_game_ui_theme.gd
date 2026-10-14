@@ -37,6 +37,8 @@ func _initialize() -> void:
 	_setup_slider(theme)
 	_setup_tooltip(theme)
 
+	_scale_fonts(theme)
+
 	var dir := OUT_PATH.get_base_dir()
 	if not DirAccess.dir_exists_absolute(dir):
 		DirAccess.make_dir_recursive_absolute(dir)
@@ -959,3 +961,11 @@ func _setup_tooltip(theme: Theme) -> void:
 	theme.set_font("font", "TooltipLabel", _font_regular)
 	theme.set_font_size("font_size", "TooltipLabel", UITokens.SIZE_SMALL)
 	theme.set_color("font_color", "TooltipLabel", UITokens.TEXT_PRIMARY)
+
+
+## D166: один прохід по всіх розмірах шрифтів теми — жоден тип не пропущено, хоч би як його задали вище.
+func _scale_fonts(theme: Theme) -> void:
+	theme.default_font_size = UITokens.font_px(theme.default_font_size)
+	for type_name in theme.get_font_size_type_list():
+		for size_name in theme.get_font_size_list(type_name):
+			theme.set_font_size(size_name, type_name, UITokens.font_px(theme.get_font_size(size_name, type_name)))

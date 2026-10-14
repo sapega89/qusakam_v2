@@ -113,7 +113,50 @@ func get_item(item_id: String) -> Dictionary:
 	"""
 	if items.has(item_id):
 		return items[item_id].duplicate()
-	return {}
+	return _enchanted_item(item_id)
+
+
+# ── Зачарування (D94, D163): рівень живе в id — "iron_dagger+3" ─────────────
+# Інвентар і сейви зберігають id → кількість, тож "+N" — просто інший id;
+# дані виводяться з базового предмета, нового поля в items.json немає.
+
+const ENCHANT_MAX_LEVEL := 20  # D163
+## Який стат росте на +1 за рівень (D94). Біжутерії в items.json ще немає.
+const ENCHANT_STAT := {"weapon": "attack", "armor": "defense"}
+
+
+func base_id(item_id: String) -> String:
+	return item_id.get_slice("+", 0)
+
+
+## 0 — не зачарований (або id без валідного рівня).
+func enchant_level(item_id: String) -> int:
+	if not "+" in item_id:
+		return 0
+	var suffix := item_id.get_slice("+", 1)
+	return int(suffix) if suffix.is_valid_int() and str(int(suffix)) == suffix else 0
+
+
+func enchanted_id(item_id: String, level: int) -> String:
+	return base_id(item_id) if level == 0 else "%s+%d" % [base_id(item_id), level]
+
+
+func is_enchantable(item_id: String) -> bool:
+	return ENCHANT_STAT.has(items.get(base_id(item_id), {}).get("type", ""))
+
+
+func _enchanted_item(item_id: String) -> Dictionary:
+	var level := enchant_level(item_id)
+	if level < 1 or level > ENCHANT_MAX_LEVEL or not is_enchantable(item_id):
+		return {}
+	var item: Dictionary = items[base_id(item_id)].duplicate(true)
+	item.id = item_id
+	for key in ["name", "name_ru"]:
+		if item.has(key):
+			item[key] = "%s +%d" % [item[key], level]
+	var stat: String = ENCHANT_STAT[item.type]
+	item.stats[stat] = int(item.stats.get(stat, 0)) + level
+	return item
 
 func get_item_data(item_id: String):
 	"""

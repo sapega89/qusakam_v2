@@ -81,7 +81,8 @@ position = Vector2(700, 300)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 
-[node name="Music" type="AudioStreamPlayer" parent="."]
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=760530363]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

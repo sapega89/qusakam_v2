@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://c51rjvjm6tl24" path="res://SampleProject/Assets/UI/main_menu_background.jpg" id="3_bg"]
 [ext_resource type="Texture2D" uid="uid://dhg6aatho4sux" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
 [ext_resource type="Texture2D" uid="uid://d3ydvjex0ur42" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="5_chevron"]
-[ext_resource type="AudioStream" uid="uid://dsd81qi8supim" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
+[ext_resource type="AudioStream" uid="uid://b4poleiv8umrm" path="res://SampleProject/Resources/Audio/Music/time_for_adventure.mp3" id="music_track"]
 
 [node name="MainMenu" type="Control" unique_id=1653698011]
 layout_mode = 3
@@ -232,6 +232,7 @@ horizontal_alignment = 1
 [connection signal="pressed" from="Center/Menu/exit" to="." method="_on_exit_pressed"]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

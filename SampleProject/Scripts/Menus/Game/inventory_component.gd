@@ -160,7 +160,8 @@ func _apply_filter() -> void:
 			for item_id in item_database.get_items_by_type(String(type_name)):
 				allowed[item_id] = true
 		for item in all_items:
-			if allowed.has(item.get("id", "")):
+			# Індекс знає лише базові id; "iron_dagger+2" фільтрується як iron_dagger (D163).
+			if allowed.has(item_database.base_id(item.get("id", ""))):
 				items.append(item)
 
 	# У режимі вибору для слота лишаємо тільки те, що влізе в цей слот.

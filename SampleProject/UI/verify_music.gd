@@ -18,7 +18,8 @@ func _check(path: String) -> void:
 	ck(music != null, "%s has a Music player" % name)
 	if music:
 		ck(music.autoplay and music.bus == &"Music", "%s: autoplay on the Music bus" % name)
-		ck(music.stream is AudioStreamOggVorbis and music.stream.loop, "%s: a looping OGG" % name)
+		ck(music.process_mode == Node.PROCESS_MODE_ALWAYS, "%s: keeps playing under pause — Game Menu, shop" % name)
+		ck((music.stream is AudioStreamOggVorbis or music.stream is AudioStreamMP3) and music.stream.loop, "%s: a looping track" % name)
 		ck(music.stream.resource_path.begins_with("res://SampleProject/Resources/Audio/Music/"), "%s: track is in the project (%s)" % [name, music.stream.resource_path])
 	scene.free()
 

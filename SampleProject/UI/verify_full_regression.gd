@@ -52,7 +52,7 @@ func _initialize() -> void:
 				"%s inside the themed wrapper" % widget)
 	var vitals: Node = get_first_node_in_group("player_vitals_panel")
 	ck(vitals != null and vitals._name_label.get_theme_font_size("font_size", "VitalsName")
-			== tokens.SIZE_ROW_TITLE, "HUD resolves theme variations at runtime")
+			== tokens.font_px(tokens.SIZE_ROW_TITLE), "HUD resolves theme variations at runtime")
 
 	print("[2] menu shell")
 	ui.open_game_menu()
@@ -115,7 +115,7 @@ func _initialize() -> void:
 		ck(active != null, "modal opens over the menu")
 		if active is Control:
 			ck((active as Control).get_theme_font_size("font_size", "TitleLabel")
-					== tokens.SIZE_TITLE, "modal inherits the shared theme")
+					== tokens.font_px(tokens.SIZE_TITLE), "modal inherits the shared theme")
 		# ModalLayer не має публічного close — модалка закривається власними
 		# сигналами (confirmed / cancelled / chosen).
 		if active is Control and active.has_signal(&"cancelled"):

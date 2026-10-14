@@ -74,7 +74,7 @@ func _initialize() -> void:
 	ck(box is StyleBoxTexture, "row background comes from the shared theme")
 	ck(box != null and box.content_margin_left == tokens.MISC_ROW_PAD_H,
 			"row padding from tokens")
-	ck(rows[1].get_theme_font_size("font_size", "MiscRow") == tokens.SIZE_ROW_TITLE,
+	ck(rows[1].get_theme_font_size("font_size", "MiscRow") == tokens.font_px(tokens.SIZE_ROW_TITLE),
 			"row font size from tokens")
 	var scene_text: String = FileAccess.open(
 		"res://SampleProject/Scenes/Menus/Game/misc_menu_modal.tscn", FileAccess.READ).get_as_text()

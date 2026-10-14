@@ -71,6 +71,9 @@ func _initialize() -> void:
 	ck(s.get_node("%TitleLabel").text == "Game Over", "title copy")
 	ck(s.get_node("%ResumeButton").text == "Resume from last save point"
 			and s.get_node("%TitleButton").text == "Return to title", "option copy from Figma")
+	var opts: Array = s.get_node("%ResumeButton").get_parent().get_children().map(func(n: Node) -> String: return n.name)
+	ck(opts == ["ResumeButton", "LoadButton", "TitleButton"] and s.get_node("%LoadButton").text == "Load Game",
+			"third option Load Game between Resume and Return (D92)")
 	ck(s.get_viewport().gui_get_focus_owner() == s.get_node("%ResumeButton"), "Resume focused")
 	ck(s.get_node("%ResumeButton").theme_type_variation == &"NpcMenuItemOn", "focused option uses the active UI/Menu Item style")
 	ck((s.get_node("%Vignette") as TextureRect).texture is GradientTexture2D, "radial vignette built from tokens")
@@ -101,7 +104,16 @@ func _initialize() -> void:
 	s.get_parent().queue_free()
 	await process_frame
 
-	print("[4] Return to title")
+	print("[4] Load Game opens the Load menu (D92)")
+	s = await _open(player)
+	s.get_node("%LoadButton").pressed.emit()
+	await process_frame
+	ck(s.last_action == "load_menu" and not paused, "Load Game leaves for the Load menu, unpaused")
+	if is_instance_valid(s) and s.get_parent():
+		s.get_parent().queue_free()
+	await process_frame
+
+	print("[5] Return to title")
 	s = await _open(player)
 	s.get_node("%TitleButton").pressed.emit()
 	await process_frame
@@ -110,7 +122,7 @@ func _initialize() -> void:
 	remove_meta("show_title_screen")
 	s.get_parent().queue_free()
 
-	print("[5] Player death uses it")
+	print("[6] Player death uses it")
 	var psrc := FileAccess.open("res://SampleProject/Scripts/Player.gd", FileAccess.READ).get_as_text()
 	var i_present := psrc.find("GameOverScreen.present(self)")
 	ck(i_present != -1 and i_present < psrc.find("\tkill()\n", i_present), "Player.die() shows Game Over before the old respawn")

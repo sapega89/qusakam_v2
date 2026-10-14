@@ -56,7 +56,7 @@ func _initialize() -> void:
 	var label: Label = prompt.get_node("%ActionLabel")
 	ck(label.text == "Pick up", "label shows the action text")
 	var fsize := label.get_theme_font_size("font_size")
-	ck(fsize >= 14 and fsize <= 16, "text is 14–16 px (%d, D84)" % fsize)
+	ck(fsize >= UITokens.font_px(14) and fsize <= UITokens.font_px(16), "text is Figma 14–16 px ×D166 (%d, D84)" % fsize)
 	ck(prompt.size.x < 200.0, "width hugs the content (%dpx < Figma's fixed 200)" % int(prompt.size.x))
 	var short_w := prompt.size.x
 	prompt.action_text = "Examine the relic"

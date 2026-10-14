@@ -110,6 +110,7 @@ enemy_type = "tank"
 spawn_on_load = true
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

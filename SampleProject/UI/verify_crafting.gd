@@ -144,11 +144,13 @@ func _initialize() -> void:
 	print("[8] Esc closes the screen")
 	var closed := [false]
 	menu.closed.connect(func(): closed[0] = true)
-	var esc := InputEventAction.new()
-	esc.action = &"ui_cancel"
-	esc.pressed = true
-	menu._input(esc)
-	ck(closed[0], "closed emitted")
+	var esc_key := InputEventKey.new()
+	esc_key.keycode = KEY_ESCAPE
+	esc_key.physical_keycode = KEY_ESCAPE
+	esc_key.pressed = true
+	root.push_input(esc_key)  # справжній шлях клавіші: каркас BaseMenu отримує її першим
+	for i in 3: await process_frame
+	ck(closed[0], "a real Esc key reaches the screen and closes it")
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

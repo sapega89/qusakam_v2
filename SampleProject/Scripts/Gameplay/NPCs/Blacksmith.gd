@@ -4,19 +4,21 @@ class_name Blacksmith
 ## ⚒️ Blacksmith — окремий NPC (D69), не режим магазину.
 ## Figma npc-menu-blacksmith 176:1357: Talk / Quest / Craft / Enchant.
 ##   Craft   → екран крафту (slice 4); показується, лише коли екран існує.
-##   Enchant → приховано: Enchanting поза поточним обсягом (D82, Q8).
+##   Enchant → екран зачарування (D94, D115, design/enchanting_plan.md); так само за наявності.
 ##   Quest   → приховано: квестовий рушій неактивний (D56).
 ##   Talk    → лише з заданим DQD-діалогом (NpcBase).
 
 const CRAFTING_SCENE := "res://SampleProject/Scenes/Crafting/crafting_menu.tscn"
-const ENCHANT_ENABLED := false
+const ENCHANTING_SCENE := "res://SampleProject/Scenes/Enchanting/enchanting_menu.tscn"
 
-## Сцена екрана крафту. Змінна — щоб тести могли підставити свою.
+## Сцени екранів. Змінні — щоб тести могли підставити свої.
 var crafting_scene_path: String = CRAFTING_SCENE
+var enchanting_scene_path: String = ENCHANTING_SCENE
 
-var is_crafting_open := false
-var crafting_instance: Control = null
-var _crafting_layer: CanvasLayer = null
+## Відкритий екран коваля (крафт або зачарування) — одночасно лише один.
+var is_screen_open := false
+var screen_instance: Control = null
+var _screen_layer: CanvasLayer = null
 
 
 func _ready() -> void:
@@ -25,55 +27,66 @@ func _ready() -> void:
 
 
 func crafting_available() -> bool:
-	return crafting_scene_path != "" and ResourceLoader.exists(crafting_scene_path)
+	return _exists(crafting_scene_path)
+
+
+func enchanting_available() -> bool:
+	return _exists(enchanting_scene_path)
+
+
+func _exists(path: String) -> bool:
+	return path != "" and ResourceLoader.exists(path)
 
 
 func menu_entries() -> Array:
 	var entries := super.menu_entries()
 	if crafting_available():
 		entries.append({"id": &"craft", "label": "Craft"})
-	if ENCHANT_ENABLED:
+	if enchanting_available():
 		entries.append({"id": &"enchant", "label": "Enchant"})
 	return entries
 
 
 func _can_open_menu() -> bool:
-	return not is_crafting_open
+	return not is_screen_open
 
 
 func _on_npc_choice(id: StringName) -> void:
-	if id == &"craft":
-		open_crafting()
+	match id:
+		&"craft":
+			open_screen(crafting_scene_path)
+		&"enchant":
+			open_screen(enchanting_scene_path)
 
 
-## Відкриває екран крафту в окремому CanvasLayer під паузою — як магазин у Merchant.
-func open_crafting() -> void:
-	if is_crafting_open or not crafting_available():
+## Відкриває екран коваля в окремому CanvasLayer під паузою — як магазин у Merchant.
+func open_screen(path: String) -> void:
+	if is_screen_open or not _exists(path):
 		return
-	var scene: PackedScene = load(crafting_scene_path)
+	var scene: PackedScene = load(path)
 	var host := get_tree().current_scene
 	if scene == null or host == null:
-		push_error("Blacksmith: cannot open crafting (%s)" % crafting_scene_path)
+		push_error("Blacksmith: cannot open %s" % path)
 		return
-	_crafting_layer = CanvasLayer.new()
-	_crafting_layer.layer = 13
-	_crafting_layer.process_mode = Node.PROCESS_MODE_ALWAYS
-	host.add_child(_crafting_layer)
-	crafting_instance = scene.instantiate()
-	_crafting_layer.add_child(crafting_instance)
-	crafting_instance.closed.connect(close_crafting, CONNECT_ONE_SHOT)
-	is_crafting_open = true
+	_screen_layer = CanvasLayer.new()
+	_screen_layer.layer = 13
+	_screen_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	host.add_child(_screen_layer)
+	screen_instance = scene.instantiate()
+	_screen_layer.add_child(screen_instance)
+	screen_instance.closed.connect(close_screen, CONNECT_ONE_SHOT)
+	is_screen_open = true
 	interactable.enabled = false
 	get_tree().paused = true
 
 
-func close_crafting() -> void:
-	if not is_crafting_open:
+func close_screen() -> void:
+	if not is_screen_open:
 		return
-	is_crafting_open = false
-	if _crafting_layer and is_instance_valid(_crafting_layer):
-		_crafting_layer.queue_free()
-	_crafting_layer = null
-	crafting_instance = null
+	is_screen_open = false
+	if _screen_layer and is_instance_valid(_screen_layer):
+		_screen_layer.queue_free()
+	_screen_layer = null
+	screen_instance = null
 	get_tree().paused = false
 	refresh_availability()

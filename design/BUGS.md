@@ -86,6 +86,18 @@ built*, not here.
 
 ---
 
+### B54 — Load menu opened from the Main Menu asks a modal layer that is never built
+- **Where:** `Scripts/Menus/LoadGameMenu.gd` `_modal_open()` (called from `_restore_focus()` on open and
+  from `_unhandled_input()`) → `UIManager.get_modal_layer()`; `UIManager._should_skip_ui_root()` skips any
+  scene under `/Menus/` and `MainMenu.tscn`.
+- **Expected:** Continue → Load menu → keys work, Delete (Y) shows its modal.
+- **Got (from the code, not reproduced in play):** with the Main Menu → Continue path no UIRoot exists,
+  so `get_modal_layer()` is `null` and `.active_modal` errors — same shape as the Shop crash fixed
+  2026-10-15 (`get_modal_layer()` now builds UIRoot lazily, but not for `/Menus/` scenes).
+  Not hit from Game Over → Load Game: by then the game has built UIRoot.
+- **Check:** play Main Menu → Continue, press ↑/↓ and Y; watch the Godot errors.
+- **Severity:** error spam / possibly broken Delete modal; found 2026-10-15.
+
 ### B53 — Laboratory always restarts from EXPLORE, so a loaded save mid-lab skips its fight
 - **Where:** `SampleProject/Scripts/Gameplay/Scenes/Laboratory.gd` — `_ready()` runs
   `_on_state_changed(current_state)` with the default `State.EXPLORE`; every later state that

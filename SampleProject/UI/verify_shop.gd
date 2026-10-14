@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Самоперевірка slice 2: Merchant / Shop (UI + логіка, без розміщення на мапі — D81).
+## Самоперевірка slice 2: Merchant / Shop (UI + логіка); стоїть на Desert Road (D154).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_shop.gd
 ##
 ## Figma: shop-buy 153:1289, shop-sell 153:1523, shop-buy-confirm 153:1760,
@@ -42,6 +42,16 @@ func _set_gold(value: int) -> void:
 		inv.add_item("coin", value - have)
 
 
+## Чи карта інстансить сцену — читаємо SceneState, скрипти карти не запускаються.
+func _placed_in(map_path: String, scene_path: String) -> bool:
+	var state: SceneState = (load(map_path) as PackedScene).get_state()
+	for i in state.get_node_count():
+		var inst: PackedScene = state.get_node_instance(i)
+		if inst and inst.resource_path == scene_path:
+			return true
+	return false
+
+
 func _merchant_items() -> Array:
 	var j := JSON.new()
 	j.parse(FileAccess.open("res://SampleProject/Resources/Data/merchants.json", FileAccess.READ).get_as_text())
@@ -71,6 +81,7 @@ func _initialize() -> void:
 	ck(theme.get_stylebox("focus", "ShopRow").bg_color == UITokens.ACCENT, "selected row fills accent")
 	ck(theme.get_color("font_color", "ShopRowNameOn") == UITokens.ON_ACCENT, "selected row text is dark on accent (D26)")
 	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Shop/item_list_display.gd"), "stub table scripts removed")
+	ck(_placed_in("res://SampleProject/Maps/DesertRoad.tscn", MERCHANT_SCENE), "Merchant stands on the Desert Road (D154)")
 
 	print("[2] ShopService: real data, buy and sell")
 	var svc := ShopService.new()
@@ -166,7 +177,36 @@ func _initialize() -> void:
 	for i in 20: await process_frame
 	ck(closed[0], "B / Esc closes the shop")
 
+	print("[4b] Started from the Main Menu: the modal layer still exists in the game (crash 2026-10-15)")
+	# Справжня гра стартує з MainMenu: UIManager._initialize() пропускає UIRoot, а scene_loaded
+	# ніхто не шле. Магазин питав get_modal_layer().active_modal і падав на null.
+	var menu_scene := Node.new()
+	menu_scene.scene_file_path = "res://SampleProject/MainMenu.tscn"
+	root.add_child(menu_scene)
+	var prev_scene := current_scene
+	current_scene = menu_scene
+	var fresh_ui: Node = load("res://SampleProject/Scripts/Managers/UI/UIManager.gd").new()
+	root.add_child(fresh_ui)
+	for i in 2: await process_frame
+	ck(fresh_ui.ui_root == null, "precondition: no UIRoot while the Main Menu is the scene")
+	current_scene = prev_scene
+	ck(fresh_ui.get_modal_layer() != null, "get_modal_layer() builds it once in the game")
+	fresh_ui.queue_free()
+	menu_scene.queue_free()
+	await process_frame
+
 	print("[5] Merchant NPC menu (164:1302)")
+	# Вступна розмова гри ще може йти — поверх неї меню NPC не відкривається (NpcBase).
+	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
+	for round in 10:  # розмови в черзі стартують одна за одною — чекаємо, поки стане тихо
+		for i in 200:
+			if not dm.is_dialogue_active():
+				break
+			dm.current_dialogue_player.accept()
+			await process_frame
+		for i in 10: await process_frame
+		if not dm.is_dialogue_active():
+			break
 	var scene_root := Node2D.new()
 	root.add_child(scene_root)
 	current_scene = scene_root
@@ -175,24 +215,43 @@ func _initialize() -> void:
 	await process_frame
 	merchant.interactable.interacted.emit()
 	await process_frame
-	ck(merchant.npc_menu.visible and paused, "interact opens the NPC menu and pauses")
+	ck(merchant.npc_menu.visible and not paused, "interact opens the NPC menu, world keeps running (D155)")
 	var labels: Array = merchant.npc_menu.get_children().map(func(b): return b.text)
 	ck(labels == ["Buy"], "only backed entries: %s (Talk needs a dialogue, Quest is dormant)" % str(labels))
 	merchant.npc_menu.cancelled.emit()
-	ck(not merchant.npc_menu.visible and not paused, "cancel closes the menu and resumes")
+	ck(not merchant.npc_menu.visible, "cancel closes the menu")
+	merchant.interactable.interacted.emit()
+	await process_frame
+	merchant.interactable.player_exited.emit()
+	ck(not merchant.npc_menu.visible, "walking away closes the menu (D155)")
+	ck(merchant.npc_menu.get_children().all(func(b: Control) -> bool: return b.mouse_filter == Control.MOUSE_FILTER_IGNORE),
+			"menu ignores the mouse (D155)")
 	merchant.talk_dialogue = "res://dialogue_quest/any.dqd"
 	ck(merchant.menu_entries().map(func(e): return e.label) == ["Talk", "Buy"], "Talk appears when a dialogue is set")
 	merchant.talk_dialogue = ""
 	merchant.interactable.interacted.emit()
-	await process_frame
-	merchant.npc_menu.chosen.emit(&"buy")
+	for i in 2: await process_frame
+	var stick := InputEventJoypadMotion.new()
+	stick.axis = JOY_AXIS_LEFT_Y
+	stick.axis_value = 1.0
+	merchant.npc_menu.get_viewport().push_input(stick)
+	ck(merchant.npc_menu.get_viewport().is_input_handled(), "left stick is swallowed by the menu, not navigating it (D155)")
+	var press := InputEventAction.new()
+	press.action = &"interact"
+	press.pressed = true
+	merchant.npc_menu._unhandled_input(press)
 	for i in 5: await process_frame
-	ck(merchant.is_shop_open and merchant.shop_menu_instance != null, "Buy opens the shop")
+	ck(merchant.is_shop_open and merchant.shop_menu_instance != null, "interact (E / pad A) picks the focused entry → shop opens (D155)")
 	if merchant.shop_menu_instance:
 		ck(merchant.shop_menu_instance.get_rows().size() > 0, "merchant stock listed")
-	merchant.close_shop()
-	await process_frame
-	ck(not paused, "closing the shop resumes the game")
+	var esc_key := InputEventKey.new()
+	esc_key.keycode = KEY_ESCAPE
+	esc_key.physical_keycode = KEY_ESCAPE
+	esc_key.pressed = true
+	root.push_input(esc_key)  # справжній шлях клавіші: каркас BaseMenu отримує її першим
+	for i in 20: await process_frame
+	ck(not merchant.is_shop_open and not paused, "a real Esc key closes the shop and resumes the game (freeze 2026-10-15)")
+	ck(ui.current_state_name != "GameMenuState", "the same Esc does not open the Game Menu")
 
 	_done()
 

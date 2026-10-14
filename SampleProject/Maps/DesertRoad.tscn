@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="Script" uid="uid://bj4inntnujsms" path="res://SampleProject/Scripts/Gameplay/GateController.gd" id="9_gate"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
 [ext_resource type="AudioStream" uid="uid://by3s2ddywfdti" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="music_track"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
@@ -128,7 +129,11 @@ enemy_type = "fast"
 [node name="Controller_Gate" type="Node2D" parent="." unique_id=1236399617]
 script = ExtResource("9_gate")
 
+[node name="Merchant" parent="." instance=ExtResource("10_merchant")]
+position = Vector2(1350, 352)
+
 [node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

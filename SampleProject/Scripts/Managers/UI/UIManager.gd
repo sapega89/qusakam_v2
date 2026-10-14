@@ -98,10 +98,14 @@ func _should_skip_ui_root() -> bool:
 		return true
 	return false
 
+## UIRoot створюється ліниво: при старті з MainMenu _initialize() його пропускає, а
+## scene_loaded ніхто не шле — тож без цього виклику екрани (магазин, крафт) отримували null.
 func get_state_root() -> Control:
+	_ensure_ui_root()
 	return state_root
 
 func get_modal_layer() -> Node:
+	_ensure_ui_root()
 	return modal_layer
 
 func change_state(state_name: String, payload: Dictionary = {}, return_state_name: String = "", return_payload: Dictionary = {}) -> void:

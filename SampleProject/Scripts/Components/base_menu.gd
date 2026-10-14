@@ -27,12 +27,6 @@ func close_menu() -> void:
 	visible = false
 	menu_closed.emit()
 
-## Обробка вводу (перевизначається в дочірніх класах)
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		close_menu()
-		get_viewport().set_input_as_handled()
-
 ## Методи для налаштування UI (для використання сцени як бази)
 ## Встановлює текст заголовка меню
 func set_menu_title(title: String) -> void:

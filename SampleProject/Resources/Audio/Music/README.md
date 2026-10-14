@@ -2,15 +2,16 @@
 
 Six looping tracks from the Desert Music pack (AlkaKrab — licence PDF in
 `assets/Desert Music pack/`), copied here because `assets/` is not in git.
-Imported with `loop=true`.
+Imported with `loop=true`. (`time_for_adventure.mp3` is MP3 — no converter on hand; also `loop=true`.)
 
 Each room scene and `MainMenu.tscn` has a `Music` AudioStreamPlayer (bus `Music`,
-autoplay); the `ProjectMusicController` autoload picks it up and switches tracks
+autoplay, `process_mode` Always — keeps playing under pause); the `ProjectMusicController` autoload picks it up and switches tracks
 between scenes. To change a room's track, change that node's `stream` in the editor.
 
 | Scene | Track |
 |---|---|
-| Main Menu, Laboratory, Laboratory Outside | dunes_of_silence.ogg |
+| Main Menu | time_for_adventure.mp3 — Brackeys platformer assets (CC0, music by Brackeys, Sofia Thirslund); Sapega, 2026-10-15 |
+| Laboratory, Laboratory Outside | dunes_of_silence.ogg |
 | City, Mayor's Hall | scorchlight_mirage.ogg |
 | Desert Road | whispers_in_the_sand.ogg |
 | Canyon | canyon_echoes.ogg |

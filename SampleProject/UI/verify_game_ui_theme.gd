@@ -36,7 +36,7 @@ func _initialize() -> void:
 
 	print("[1] Theme content")
 	_check(theme.default_font != null, "default_font is set")
-	_check(theme.default_font_size == UITokens.SIZE_BODY, "default_font_size == SIZE_BODY")
+	_check(theme.default_font_size == UITokens.font_px(UITokens.SIZE_BODY), "default_font_size == font_px(SIZE_BODY) (D166)")
 	for variation in ["TitleLabel", "HeadingLabel", "ValueLabel", "CaptionLabel",
 			"PrimaryButton", "TabButton", "SidebarTab", "IconButton", "WindowPanel"]:
 		_check(theme.get_type_variation_base(variation) != &"", "variation %s registered" % variation)
@@ -44,7 +44,8 @@ func _initialize() -> void:
 	print("\n[2] Tokens <-> theme in sync")
 	_check(theme.get_color("font_color", "Label") == UITokens.TEXT_PRIMARY, "Label font_color == TEXT_PRIMARY")
 	_check(theme.get_color("font_color", "TabButton") == UITokens.TEXT_SECONDARY, "TabButton font_color == TEXT_SECONDARY")
-	_check(theme.get_font_size("font_size", "TitleLabel") == UITokens.SIZE_TITLE, "TitleLabel size == SIZE_TITLE")
+	_check(theme.get_font_size("font_size", "SmallLabel") == 18 and theme.get_font_size("font_size", "TitleLabel") == 30, "D166: 14 → 18, 24 → 30")
+	_check(theme.get_font_size("font_size", "TitleLabel") == UITokens.font_px(UITokens.SIZE_TITLE), "TitleLabel size == font_px(SIZE_TITLE) (D166)")
 	var panel := theme.get_stylebox("panel", "PanelContainer") as StyleBoxFlat
 	_check(panel != null and panel.bg_color == UITokens.SURFACE, "PanelContainer bg == SURFACE")
 	_check(panel != null and panel.corner_radius_top_left == UITokens.RADIUS, "PanelContainer radius == 0")

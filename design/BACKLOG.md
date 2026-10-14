@@ -57,6 +57,31 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
+### NPC quests: recall, hints, side quests — [[npc_recall_plan]]
+- **Decided:** D158/D161 (Figma `Quest` entry at the NPC: list, main with a gold diamond), D159 (hint
+  under the objective), D160 (bubble art), D162 (side quests in `story.json` via `GameFlow`; delete
+  `Scripts/Quest/` — closes D56).
+- **Exists:** short objectives in `story.json`, saved `completed_dialogues`, linear `.dqd` files.
+- **Waits on:** hint texts and side-quest content from Sapega (slices ship the format empty); Q48 +
+  bubble PNGs for slice 3.
+- **Resume:** slice 1 of [[npc_recall_plan]].
+
+### Gamepad — [[gamepad_plan]]
+- **Exists:** `interact` (A), tab switch (LB/RB), `save_delete` (Y); menus walk on D-pad/stick;
+  D98 prompt swaps E/A; D155 NPC menu rules.
+- **Missing:** no pad events on move / jump / attack / skills; no pad button confirms or backs out
+  of any menu (`ui_accept` / `ui_cancel` are keys only).
+- **Also:** mouse out of the game (Sapega, 2026-10-14) — slice 1b; `attack` is on the left mouse button today.
+- **Decided:** D156 (pad layout), D157 (mouse: Ctrl toggle, attack stays on LMB).
+- **Resume:** slice 1 of [[gamepad_plan]] — the input map.
+
+### ✅ Merchant & Blacksmith placed — 2026-10-14
+- D154. `Merchant` in `Maps/DesertRoad.tscn` (x 1350, after the fight, before `SavePoint_BeforeCity`);
+  `Blacksmith` in `Maps/City.tscn` (x 1100). (Canyon test copies and `TestGold` from D165 removed 2026-10-15.)
+- **Left as is (Sapega, 2026-10-15):** `Maps/City.tscn` `StateChangeTrigger_Merchant` still auto-plays the
+  `[PLACEHOLDER]` `City_Merchant.dqd` greeting though no Merchant stands in the City. Not to be removed
+  without asking. Tests: `verify_shop.gd`, `verify_blacksmith.gd`.
+
 ### ✅ Music — built 2026-10-14
 - [[music_plan]]. A `Music` player in every room and the menu, played by the maaacks
   `ProjectMusicController`; six loops in `Resources/Audio/Music/`. Tracks are provisional (Q38).
@@ -88,15 +113,13 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
   outdated.
 - **Resume:** update the audit to D110, then build the presentation layer.
 
-### Enchanting — back in scope
-- **Decided:** **D94** supersedes D82. Mechanic: **two identical items → one
-  upgraded item at +1.** Weapon +1 damage, armour +1 defense, jewellery +1 magic
-  defense. Entry point is the Blacksmith menu (D115). **Figma:** `enchant-list`.
-- **State:** no system, no UI, no data field for an item's upgrade level.
-- **Resume:** 🔍 **needs a plan note first** — `design/enchanting_plan.md`. Open
-  design points the mechanic does not settle: where `+1` is stored on an item
-  instance, whether upgrades stack (+2, +3), what "identical" means for two
-  already-upgraded items, and whether `items.json` needs a new field.
+### Enchanting — [[enchanting_plan]]
+- **Decided:** D94 (two identical → +1), D115 (Blacksmith menu). Picked up first (Sapega, 2026-10-14)
+  for the Blacksmith's enchant quest.
+- **Decided:** D163 (cap +20), D164 (cost grows with level). **Slices 1–2 built 2026-10-15** — `+N` ids,
+  `EnchantingService`, Enchant screen at the Blacksmith, `verify_enchanting.gd`.
+- **Resume:** compare the screen with Figma `enchant-list` once MCP is back; slice 3 (the Blacksmith's
+  enchant quest) after the Tasks system in [[npc_recall_plan]].
 
 ### Shop changes
 - **D103** — remove `Equipment` from the Shop **and** the Blacksmith menu.
@@ -111,9 +134,9 @@ the pickup modal · a chest opens on button press, adds contents automatically,
 **then** shows the pickup modal. `ItemPickup.tscn` is built and tested; chests
 are a new case. Map placement still needs named items and places.
 
-### Game Over — third button (D92)
-Add **Load Game**, opening the existing Load menu, next to Resume and Return to
-Title. Not in Figma.
+### ✅ Game Over — Load Game (D92) — built 2026-10-14
+`%LoadButton` between Resume and Return to title opens `LoadGameMenu.tscn` as a scene, like
+Main Menu's Continue; Back from it goes to the title. Not in Figma. Test: `verify_game_over.gd`.
 
 ---
 
@@ -130,7 +153,6 @@ belongs under *Needs a plan*, and the decision still has to be made.
 | Item | Approved by | State |
 |---|---|---|
 | **Game Menu as one scene** (supersedes "Connect `UIMenuShell`") | **D116, D117** | Plan: [[game_menu_single_scene_plan]]. The tree is already static; four scripts each pick the active tab. **B7 is not a missing `ButtonGroup`** — `vertical_tab_menu.tscn` already has one; `focus_router.focus_tabs()` focuses the first button, so Inventory wears the focus border next to the pressed tab. |
-| Merchant / Blacksmith on production maps | **D81, D154** (Merchant → Desert Road, Blacksmith → City) | Both scenes exist and are tested, placed in **no map at all** — corrected 2026-09-29 by [[scene_inventory]] §3. The only `Maps/` match is an inline `Area2D` dialogue trigger, `Maps/City.tscn:46-52` `StateChangeTrigger_Merchant`, which is not the NPC scene. Reported as missing on the desert (P5). |
 | Companion system | — no decision found | `CompanionManager.gd` is **27 lines** (an array with add/remove). The January copy in `raw_assets/qusakam_v2-main/` has a **206-line working version**: summon, per-type cooldowns, HUD button wiring, `companion_summoned` / `companion_cooldown_updated` signals. Lost in refactoring, not superseded. Recover only if companions are still wanted — no D-ID covers them. **Also: no companion `.tscn` exists.** The four `Scripts/Gameplay/Characters/Companions/Companion*.gd` are referenced by nothing outside their own folder ([[scene_inventory]] §6), while `docs/SYSTEMS_OVERVIEW.md:130-134` describes all four as shipping. |
 | `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
 | Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
@@ -168,10 +190,8 @@ No plan note exists for any of these. Write one before writing code.
 
 | System | D-ID | State today |
 |---|---|---|
-| Enchanting | D82 | No system, no UI. Figma `enchant-list` exists. Hidden from the Blacksmith menu (Q8). |
 | Healing · Jobs | D65 | Two Figma sidebar entries with no runtime. Sidebar has 7 of Figma's 9 items. |
 | Character switching · roster · Stat Points | D18 | Status shows the active character only. |
-| Quest engine | D56 | No authored data, never instanced. **Ship or delete** — the decision itself is open. |
 | Skill auto-targeting | D38 | `use_skill()` takes an explicit target. No heuristic invented. |
 | Controller binds, 4 skill slots | D37 | Undefined in Figma. |
 
@@ -192,7 +212,6 @@ D48: keep the third-party maaacks Controls widget or own the rebinding UI.
 
 | Item | Blocker |
 |---|---|
-| Merchant / Blacksmith on production maps | D81 — built and tested, never placed. |
 | `ItemPickup` placement | Q2 — built and tested; no production map gives an inventory item. Needs named items and places. |
 | **Village: more running before the old man** | **Deferred until the game is playable to the end** (Sapega, 2026-10-13: first a whole game, then find out why it is not fun). Today all Village action sits in x 150–1582 of a 3-cell room (3 × 864 = 2592 px; the active MetSys settings are `SampleProject/Resources/Settings.tres`, cell 864×480): bandit fight → old man in ~2–3 s of running. Wanted on the way: more bandits, Kusakam's lines by the ruined houses, a secret or an item. Open when picked up: new MetSys rooms vs. using the room's full width; how many fights; the lines' text; which item. |
 

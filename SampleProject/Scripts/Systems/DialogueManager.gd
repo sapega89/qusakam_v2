@@ -151,6 +151,62 @@ func _on_dialogue_quest_signal(params: Array):
 
 func is_dialogue_active() -> bool:
 	"""Проверяет, активен ли диалог"""
+	if is_replaying():
+		return true
 	if current_dialogue_player and is_instance_valid(current_dialogue_player):
 		return current_dialogue_player.current_dialogue != ""
 	return false
+
+
+# ── Перечитати розмову (D158, D161) ──────────────────────────────────────────
+# Лише показ: те саме вікно й ті самі клавіші (dq_accept), але без DialogueQuest —
+# dialogue_started / dialogue_finished не шлються, і сцени, що слухають кінець розмови,
+# не перемикають свої стани вдруге.
+
+signal replay_finished
+
+## preload, а не class_name: глобальний кеш класів редактора може ще не знати нового скрипта.
+const DQD_READER := preload("res://SampleProject/Scripts/Systems/dqd_reader.gd")
+
+var _replay_lines: Array[Dictionary] = []
+var _replaying := false
+
+
+func is_replaying() -> bool:
+	return _replaying
+
+
+## Показує репліки [param path] і потім [param tail] (напр. поточну ціль). Повертається після останньої.
+func replay(path: String, tail: Array[Dictionary] = []) -> void:
+	_find_dialogue_system_in_scene()
+	_replay_lines = DQD_READER.lines(path) + tail
+	_replaying = true
+	_pause_player_for_dialogue()
+	current_dialogue_box.visible = true
+	DialogueQuest.Inputs.accept_pressed.connect(current_dialogue_box.accept)
+	current_dialogue_box.proceed.connect(_show_next_replay_line)
+	_show_next_replay_line()
+	await replay_finished
+
+
+func _show_next_replay_line() -> void:
+	if _replay_lines.is_empty():
+		_end_replay()
+		return
+	var line: Dictionary = _replay_lines.pop_front()
+	var speaker: DQCharacter = DialogueQuest.CharacterDB.get_character_from_id(line.speaker) if line.speaker != "" else null
+	current_dialogue_box.set_name_text(speaker.character_name if speaker else "")
+	if speaker:
+		current_dialogue_box.set_name_color(speaker.color)
+	current_dialogue_box.set_text(line.text)
+
+
+func _end_replay() -> void:
+	DialogueQuest.Inputs.accept_pressed.disconnect(current_dialogue_box.accept)
+	current_dialogue_box.proceed.disconnect(_show_next_replay_line)
+	current_dialogue_box.visible = false
+	current_dialogue_box.set_text("")
+	current_dialogue_box.set_name_text("")
+	_replaying = false
+	_unpause_player_after_dialogue()
+	replay_finished.emit()

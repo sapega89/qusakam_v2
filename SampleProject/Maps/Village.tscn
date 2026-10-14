@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="Texture2D" uid="uid://bfli58ifaftw6" path="res://SampleProject/Assets/Characters/old_man_idle.png" id="9_oldman"]
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/story_npc.tscn" id="story_npc"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -85,6 +86,11 @@ texture = ExtResource("9_oldman")
 flip_h = true
 hframes = 4
 
+[node name="OldManQuest" parent="." instance=ExtResource("story_npc")]
+position = Vector2(1572, 337)
+quest_flag = "village_oldman_complete"
+quest_dialogue = "OldMan_Decision"
+
 [node name="EnemySpawner" type="Node" parent="."]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
@@ -95,6 +101,7 @@ script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"

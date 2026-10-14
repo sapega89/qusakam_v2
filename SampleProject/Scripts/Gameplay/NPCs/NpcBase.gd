@@ -3,7 +3,8 @@ class_name NpcBase
 
 ## Спільна поведінка NPC з меню дій (Merchant, Blacksmith).
 ## Figma: npc-menu-merchant 164:1302, npc-menu-blacksmith 176:1357.
-##   поруч → UI/Interaction/Prompt → interact → NpcActionMenu (під паузою) → дія.
+##   поруч → UI/Interaction/Prompt → interact → NpcActionMenu → дія.
+## Меню без паузи: світ живе, гравець ходить; відійшов від NPC — меню закрилось (D155).
 ##
 ## Нащадки перевизначають menu_entries() і _on_npc_choice(). Показуються лише пункти
 ## з реальним наповненням; якщо пунктів немає — немає й підказки.
@@ -27,6 +28,7 @@ func _ready() -> void:
 	add_child(npc_menu)
 	npc_menu.chosen.connect(_on_menu_chosen)
 	npc_menu.cancelled.connect(_close_npc_menu)
+	interactable.player_exited.connect(_on_player_left)
 	refresh_availability()
 
 
@@ -44,7 +46,9 @@ func refresh_availability() -> void:
 
 
 func _on_interacted() -> void:
-	if npc_menu.visible or not _can_open_menu():
+	# Під час розмови E не відкриває меню поверх неї.
+	var dialogue_running: bool = ServiceLocatorHelper.get_service_locator().get_dialogue_manager().is_dialogue_active()
+	if npc_menu.visible or not _can_open_menu() or dialogue_running:
 		return
 	var entries := menu_entries()
 	if entries.is_empty():
@@ -52,7 +56,6 @@ func _on_interacted() -> void:
 	interactable.enabled = false
 	npc_menu.setup(entries)
 	npc_menu.open()
-	get_tree().paused = true
 
 
 ## Нащадок може заборонити меню (напр. поки відкритий магазин).
@@ -62,8 +65,12 @@ func _can_open_menu() -> bool:
 
 func _close_npc_menu() -> void:
 	npc_menu.visible = false
-	get_tree().paused = false
 	refresh_availability()
+
+
+func _on_player_left() -> void:
+	if npc_menu.visible:
+		_close_npc_menu()
 
 
 func _on_menu_chosen(id: StringName) -> void:

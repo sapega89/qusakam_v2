@@ -70,6 +70,18 @@ const WEIGHT_MEDIUM := 500
 const WEIGHT_SEMIBOLD := 600
 const WEIGHT_BOLD := 700
 
+# D166 (Sapega, 2026-10-15): увесь текст більший за Figma. Константи SIZE_* нижче лишаються
+# Figma-розмірами; build_game_ui_theme.gd проганяє кожен розмір теми через font_px().
+const FONT_SCALE := 1.25
+## Більші за це — заголовки й дисплейні написи; вони вже великі й не масштабуються.
+const FONT_SCALE_MAX := 28
+
+
+## Розмір, який реально потрапляє в тему, для Figma-розміру.
+static func font_px(figma_size: int) -> int:
+	return figma_size if figma_size > FONT_SCALE_MAX else roundi(figma_size * FONT_SCALE)
+
+
 # Figma type scale: 12 · 14 · 16 · 20 · 24 · 36
 const SIZE_DISPLAY := 36   # Bold    — hero, splash
 const SIZE_TITLE := 24     # Bold    — заголовки екранів

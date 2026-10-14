@@ -79,6 +79,20 @@ static func craft_confirm(item_name: String, materials: PackedStringArray, cost:
 static func cannot_craft(reason: String) -> Dictionary:
 	return misc_popup("Cannot Craft", reason, "Close")
 
+## Зачарування (D94, D163) — та сама родина, що й крафт; Figma enchant-list не звірено (MCP).
+static func enchant_confirm(item_name: String, result_name: String, cost: String) -> Dictionary:
+	return {
+		"title": "Enchant %s?" % item_name,
+		"description": "%s ×2 → %s  •  %s" % [item_name, result_name, cost],
+		"buttons": [
+			{"id": "confirm", "text": "Yes", "is_default": true},
+			{"id": "cancel", "text": "No", "is_cancel": true}
+		]
+	}
+
+static func cannot_enchant(reason: String) -> Dictionary:
+	return misc_popup("Cannot Enchant", reason, "Close")
+
 ## D76: похідна від модалки перезапису — та сама родина, одна дія.
 static func game_saved() -> Dictionary:
 	return misc_popup("Game Saved", "Your progress has been saved successfully.")
