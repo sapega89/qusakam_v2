@@ -1,7 +1,7 @@
 ---
 type: plan
 status: blocked
-blocked-by: [Q40, Q41]
+blocked-by: [D138 frames]
 ---
 
 # Character animations — plan

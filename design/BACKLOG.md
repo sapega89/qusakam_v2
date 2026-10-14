@@ -18,6 +18,8 @@ Last reconciled 2026-09-29.
 
 Vault conventions: [[INDEX]].
 
+**Order of work:** [[backlog_roadmap]] — phase 1 is "playable to the end".
+
 ## States
 
 | State | Meaning | What to do with it |
@@ -40,12 +42,15 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 ### Character animations — [[character_animation_plan]]
 - **Exists:** player Walk/Run frames; Idle/Jump/Fall/Attack show one borrowed frame; one generic
   enemy sheet; static NPCs; many unused packs in `assets/`.
-- **Waits on:** Q40 (Kusakam's art), Q41 (enemy / NPC art).
-- **Resume:** slice 1 of [[character_animation_plan]] once Q40 is answered.
+- **Decided:** D138 — Kusakam keeps the 64×64 art, the missing states are drawn in that style;
+  D139 — enemies and NPCs stay as they are for now.
+- **Waits on:** the frames (an artist), not a decision.
+- **Resume:** slice 1 of [[character_animation_plan]] when the frames exist.
 
 ### Cutscenes — [[cutscene_plan]]
-- **Exists:** every "cutscene" is a dialogue; `CutsceneStep.gd` is an unused stub.
-- **Waits on:** Q42 (what a cutscene shows, which beats get one).
+- **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man);
+  every other "cutscene" is a dialogue.
+- **Waits on:** which beat is next — D140 settled only the Village.
 - **Resume:** slice 1 of [[cutscene_plan]] — `CutscenePlayer.gd` + the first beat.
 
 ---
@@ -125,7 +130,7 @@ belongs under *Needs a plan*, and the decision still has to be made.
 | Item | Approved by | State |
 |---|---|---|
 | **Game Menu as one scene** (supersedes "Connect `UIMenuShell`") | **D116, D117** | Plan: [[game_menu_single_scene_plan]]. The tree is already static; four scripts each pick the active tab. **B7 is not a missing `ButtonGroup`** — `vertical_tab_menu.tscn` already has one; `focus_router.focus_tabs()` focuses the first button, so Inventory wears the focus border next to the pressed tab. |
-| Merchant / Blacksmith on production maps | **D81** | Both scenes exist and are tested, placed in **no map at all** — corrected 2026-09-29 by [[scene_inventory]] §3. The only `Maps/` match is an inline `Area2D` dialogue trigger, `Maps/City.tscn:46-52` `StateChangeTrigger_Merchant`, which is not the NPC scene. Reported as missing on the desert (P5). |
+| Merchant / Blacksmith on production maps | **D81, D154** (Merchant → Desert Road, Blacksmith → City) | Both scenes exist and are tested, placed in **no map at all** — corrected 2026-09-29 by [[scene_inventory]] §3. The only `Maps/` match is an inline `Area2D` dialogue trigger, `Maps/City.tscn:46-52` `StateChangeTrigger_Merchant`, which is not the NPC scene. Reported as missing on the desert (P5). |
 | Companion system | — no decision found | `CompanionManager.gd` is **27 lines** (an array with add/remove). The January copy in `raw_assets/qusakam_v2-main/` has a **206-line working version**: summon, per-type cooldowns, HUD button wiring, `companion_summoned` / `companion_cooldown_updated` signals. Lost in refactoring, not superseded. Recover only if companions are still wanted — no D-ID covers them. **Also: no companion `.tscn` exists.** The four `Scripts/Gameplay/Characters/Companions/Companion*.gd` are referenced by nothing outside their own folder ([[scene_inventory]] §6), while `docs/SYSTEMS_OVERVIEW.md:130-134` describes all four as shipping. |
 | `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
 | Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |

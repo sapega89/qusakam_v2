@@ -36,6 +36,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[skills_system_plan]] — survey + proposal. ⚠️ opens "Nothing implemented"; `SkillManager.gd` now exists — the note predates the build
 - [[skills_combat_plan]] — the combat vertical slice for skills
 - [[inventory_diff_plan]] — inventory delta
+- [[backlog_roadmap]] — the order to work through BACKLOG and BUGS: playable to the end first
 - [[room_state_plan]] — ✅ built; D152: rooms remember enemies and their HP when the player leaves
 - [[music_plan]] — music: tracks exist in `assets/`, nothing plays them; player + table, content waits on Q38
 
