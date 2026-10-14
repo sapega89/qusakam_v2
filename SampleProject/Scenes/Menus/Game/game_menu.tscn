@@ -1,10 +1,22 @@
-[gd_scene load_steps=4 format=3 uid="uid://b0q1xj5wsb5r5"]
+[gd_scene format=3 uid="uid://b0q1xj5wsb5r5"]
 
-[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/game_menu.gd" id="1_csecd"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/base_menu.tscn" id="2_2rcvi"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/game_menu_content.tscn" id="5_game_content"]
+[ext_resource type="Script" uid="uid://dw2m3dos2lpq0" path="res://SampleProject/Scripts/Menus/Game/game_menu.gd" id="1_game_menu"]
+[ext_resource type="Script" uid="uid://dfhpdmpdqfwfq" path="res://SampleProject/Scripts/UI/focus_router.gd" id="2_focus_router"]
+[ext_resource type="PackedScene" uid="uid://c37ilywk3dk41" path="res://SampleProject/Scenes/Menus/Game/base_menu.tscn" id="3_base_menu"]
+[ext_resource type="Texture2D" uid="uid://d3ydvjex0ur42" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="4_chevron"]
+[ext_resource type="PackedScene" uid="uid://bq8x7k2m3n4p7" path="res://SampleProject/Scenes/Menus/Game/inventory_component.tscn" id="5_inventory"]
+[ext_resource type="PackedScene" uid="uid://dshid7dx84rt5" path="res://SampleProject/Scenes/Menus/Game/equipment_component.tscn" id="6_equipment"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/metsys_map_component.tscn" id="7_map"]
+[ext_resource type="PackedScene" uid="uid://me0dik5yq140" path="res://SampleProject/Scenes/Menus/Game/options_component.tscn" id="8_options"]
+[ext_resource type="PackedScene" uid="uid://cvj8rtfs0dj2e" path="res://SampleProject/Scenes/Menus/Game/journal_component.tscn" id="9_journal"]
+[ext_resource type="PackedScene" uid="uid://bfb4wbmdncigd" path="res://SampleProject/Scenes/Menus/Game/skills_component.tscn" id="10_skills"]
+[ext_resource type="PackedScene" uid="uid://dves5wvm67pju" path="res://SampleProject/Scenes/Menus/Game/stats_component.tscn" id="11_stats"]
+[ext_resource type="Theme" uid="uid://bfe1cbr8www03" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="14_theme"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/tutorial_component.tscn" id="15_tutorial"]
 
-[node name="GameMenu" type="Control"]
+[sub_resource type="ButtonGroup" id="ButtonGroup_tabs"]
+
+[node name="GameMenu" type="Control" unique_id=645784495]
 process_mode = 3
 layout_mode = 3
 anchors_preset = 15
@@ -12,19 +24,173 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_csecd")
+theme = ExtResource("14_theme")
+script = ExtResource("1_game_menu")
 
-[node name="BaseMenu" parent="." instance=ExtResource("2_2rcvi")]
+[node name="BaseMenu" parent="." unique_id=1347159511 instance=ExtResource("3_base_menu")]
 z_index = 5
 layout_mode = 1
 script = null
 
-[node name="GameMenuContent" parent="BaseMenu/HBoxContainer/CentralPanel" index="0" instance=ExtResource("5_game_content")]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="InventoryButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="1" unique_id=308875065]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTabOn"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Inventory"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Inventory"
+metadata/unlock_flag = "village_oldman_gift"
+metadata/panel = NodePath("../../Content/ContentRoot/InventoryComponent")
+
+[node name="EquipmentButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="2" unique_id=54231014]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Equipment"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Equipment"
+metadata/unlock_flag = "village_oldman_gift"
+metadata/panel = NodePath("../../Content/ContentRoot/EquipmentComponent")
+
+[node name="WorldMapButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="3" unique_id=916550988]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "World Map"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "World Map"
+metadata/unlock_flag = "village_left_complete"
+metadata/panel = NodePath("../../Content/ContentRoot/MetSysMapComponent")
+
+[node name="MiscButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="4" unique_id=387709923]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Misc"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Misc"
+metadata/panel = NodePath("../../Content/ContentRoot/OptionsComponent")
+
+[node name="JournalButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="5" unique_id=1019945196]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Journal"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Journal"
+metadata/unlock_flag = "village_abduction_complete"
+metadata/panel = NodePath("../../Content/ContentRoot/JournalComponent")
+
+[node name="SkillsButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="6" unique_id=818373462]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Skills"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Skills"
+metadata/unlock_flag = "village_oldman_healed"
+metadata/panel = NodePath("../../Content/ContentRoot/SkillsComponent")
+
+[node name="StatusButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="7" unique_id=637554608]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+theme_type_variation = &"SidebarTab"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+text = "Status"
+icon = ExtResource("4_chevron")
+alignment = 0
+expand_icon = true
+metadata/tab = "Status"
+metadata/unlock_flag = "village_oldman_gift"
+metadata/panel = NodePath("../../Content/ContentRoot/StatusScroll")
+
+[node name="ContentRoot" type="MarginContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content" index="0" unique_id=69993145]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="InventoryComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=167442413 instance=ExtResource("5_inventory")]
+layout_mode = 2
+
+[node name="EquipmentComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=206388368 instance=ExtResource("6_equipment")]
+visible = false
+layout_mode = 2
+
+[node name="MetSysMapComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1172180074 instance=ExtResource("7_map")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="OptionsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=965329663 instance=ExtResource("8_options")]
+visible = false
+layout_mode = 2
+
+[node name="JournalComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1837746188 instance=ExtResource("9_journal")]
+visible = false
+layout_mode = 2
+
+[node name="SkillsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1162974634 instance=ExtResource("10_skills")]
+visible = false
+layout_mode = 2
+
+[node name="StatusScroll" type="ScrollContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1591566730]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="StatsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot/StatusScroll" unique_id=1060168446 instance=ExtResource("11_stats")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TutorialComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1587691992 instance=ExtResource("15_tutorial")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="description" parent="BaseMenu" index="8" unique_id=1122056281]
+offset_top = 1024.0
+offset_bottom = 1082.0
+
+[node name="FocusRouter" type="Node" parent="." unique_id=1547593118]
+script = ExtResource("2_focus_router")
+tabs_container_path = NodePath("BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar")
+panels_container_path = NodePath("BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot")
 
 [editable path="BaseMenu"]

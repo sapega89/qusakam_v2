@@ -1,0 +1,203 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/game_over_screen.gd" id="1_go"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/game_over_background.jpg" id="3_bg"]
+[ext_resource type="Script" path="res://SampleProject/UI/Components/gothic_corner.gd" id="4_corner"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="5_diamond"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="6_chevron"]
+
+[node name="GameOverScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_go")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Vignette" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+
+[node name="Inset" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"GameOverInset"
+
+[node name="InsetMargin" type="MarginContainer" parent="Inset"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"GameOverInsetMargin"
+
+[node name="InsetInner" type="PanelContainer" parent="Inset/InsetMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"GameOverInsetInner"
+
+[node name="Corners" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CornerTL" type="Control" parent="Corners"]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+script = ExtResource("4_corner")
+
+[node name="CornerTR" type="Control" parent="Corners"]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+script = ExtResource("4_corner")
+
+[node name="CornerBL" type="Control" parent="Corners"]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+script = ExtResource("4_corner")
+
+[node name="CornerBR" type="Control" parent="Corners"]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+script = ExtResource("4_corner")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Column" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_type_variation = &"GameOverColumn"
+
+[node name="Eyebrow" type="VBoxContainer" parent="Center/Column"]
+layout_mode = 2
+theme_type_variation = &"GameOverEyebrowColumn"
+
+[node name="EyebrowLabel" type="Label" parent="Center/Column/Eyebrow"]
+layout_mode = 2
+theme_type_variation = &"GameOverEyebrow"
+text = "Khalahas Heroes"
+horizontal_alignment = 1
+
+[node name="EyebrowDivider" type="HBoxContainer" parent="Center/Column/Eyebrow"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"GameOverRow"
+
+[node name="EyebrowLineLeft" type="HSeparator" parent="Center/Column/Eyebrow/EyebrowDivider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"GameOverFrameRule"
+
+[node name="EyebrowDiamond" type="TextureRect" parent="Center/Column/Eyebrow/EyebrowDivider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("5_diamond")
+stretch_mode = 5
+
+[node name="EyebrowLineRight" type="HSeparator" parent="Center/Column/Eyebrow/EyebrowDivider"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"GameOverFrameRule"
+
+[node name="TitleLabel" type="Label" parent="Center/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"GameOverTitle"
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="Rule" type="HSeparator" parent="Center/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"GameOverRule"
+
+[node name="Options" type="VBoxContainer" parent="Center/Column"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"GameOverOptions"
+
+[node name="ResumeButton" type="Button" parent="Center/Column/Options"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NpcMenuItem"
+text = "Resume from last save point"
+icon = ExtResource("6_chevron")
+alignment = 0
+
+[node name="TitleButton" type="Button" parent="Center/Column/Options"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NpcMenuItem"
+text = "Return to title"
+icon = ExtResource("6_chevron")
+alignment = 0
+
+[node name="Footer" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+alignment = 1
+theme_type_variation = &"GameOverFooter"
+
+[node name="Keycap" type="PanelContainer" parent="Footer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"GameOverKeycap"
+
+[node name="KeyLabel" type="Label" parent="Footer/Keycap"]
+layout_mode = 2
+theme_type_variation = &"GameOverKey"
+text = "ENTER"
+
+[node name="HintLabel" type="Label" parent="Footer"]
+layout_mode = 2
+theme_type_variation = &"GameOverHint"
+text = "Select Option"

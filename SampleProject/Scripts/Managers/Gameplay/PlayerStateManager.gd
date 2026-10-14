@@ -14,7 +14,12 @@ var player_state = {
 	"max_potions": 5,
 	"player_position": {"x": 100, "y": 549},
 	"current_scene": "VillageScene",
-	"unlocked_skills": [],
+	"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
+	"job_points": 0,
+	"equipped_skills": ["", "", "", ""],
+	"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
+	"current_sp": 30,  # D146: тимчасовий запас SP
+	"max_sp": 30,
 	"game_time": 0.0,
 	"strength": 10,
 	"intelligence": 10,
@@ -28,6 +33,7 @@ var player_state = {
 		"polearm": null,
 		"dagger": null,
 		"axe": null,
+		"mace": null,
 		"bow": null,
 		"staff": null,
 		"shield": null,
@@ -96,7 +102,12 @@ func reset_player_state():
 		"max_potions": 5,
 		"player_position": {"x": 100, "y": 549},
 		"current_scene": "VillageScene",
-		"unlocked_skills": [],
+		"unlocked_skills": [],  # D148
+		"job_points": 0,
+		"equipped_skills": ["", "", "", ""],
+		"skill_ranks": {},  # D150
+		"current_sp": 30,  # D146
+		"max_sp": 30,
 		"game_time": 0.0,
 		"strength": 10,
 		"intelligence": 10,
@@ -110,6 +121,7 @@ func reset_player_state():
 			"polearm": null,
 			"dagger": null,
 			"axe": null,
+		"mace": null,
 			"bow": null,
 			"staff": null,
 			"shield": null,

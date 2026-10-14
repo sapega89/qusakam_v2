@@ -29,6 +29,12 @@ var spawn_points: Array[EnemySpawnPoint] = []
 ## Список всех заспавненных врагов
 var spawned_enemies: Array[Node] = []
 
+## Бій цієї кімнати в Game.room_state (D152): {spawn_id: HP} живих ворогів; -1 — HP ще
+## невідоме (ворог не встиг зʼявитись). Немає ключа — бій не починали. Вбитих у словнику немає.
+const STATE_KEY := "enemies"
+## Імʼя кімнати MetSys — запамʼятовуємо одразу: під час вивантаження MetSys уже в іншій.
+var _room: String
+
 ## Сигнал: все враги заспавнены
 signal all_enemies_spawned()
 
@@ -40,11 +46,14 @@ signal wave_spawned(wave_index: int, total_waves: int)
 
 func _ready() -> void:
 	"""Инициализация spawner"""
+	# Точки шукаємо одразу: _ready() кімнати (DesertRoad тощо) іде після нашого
+	# і може відразу почати бій. Раніше тут чекали кадр — і бій стартував без точок,
+	# тобто без жодного ворога, але все одно зараховувався.
+	_find_spawn_points()
+	_room = MetSys.map_data.get_room_from_scene_path(get_parent().scene_file_path, false)
+
 	# Ждём следующий кадр чтобы комната полностью загрузилась
 	await get_tree().process_frame
-
-	# Находим все spawn points
-	_find_spawn_points()
 
 	# Автоспавн если включен
 	if auto_spawn_on_ready:
@@ -85,6 +94,19 @@ func spawn_all_enemies() -> void:
 		all_enemies_spawned.emit()
 		return
 
+	# Кого спавнити, вирішуємо до першого ворога: _track() одразу пише стан бою, і без
+	# цього решта точок вважала б себе вже вбитими.
+	var saved = Game.get_singleton().get_room_state(_room, STATE_KEY)
+	var fight := {}
+	for spawn_point in spawn_points:
+		var spawn_now: bool = spawn_point.spawn_on_load if saved == null else saved.has(spawn_point.spawn_id)
+		spawn_point.set_meta(&"spawn_now", spawn_now)
+		if spawn_now:
+			fight[spawn_point.spawn_id] = -1 if saved == null else saved[spawn_point.spawn_id]
+	# Увесь бій — одразу в стан: інакше ворог із хвилі, що не встигла зʼявитись до виходу
+	# з кімнати, вважався б убитим.
+	Game.get_singleton().set_room_state(_room, STATE_KEY, fight)
+
 	if spawn_in_waves:
 		await _spawn_in_waves()
 	else:
@@ -96,14 +118,50 @@ func spawn_all_enemies() -> void:
 	all_enemies_spawned.emit()
 	DebugLogger.info("RoomEnemySpawner: All enemies spawned (%d total)" % spawned_enemies.size(), "RoomEnemySpawner")
 
+## Бій уже йшов і гравець вийшов посеред нього — повертаємось без репліки (D152).
+func fight_in_progress() -> bool:
+	return Game.get_singleton().get_room_state(_room, STATE_KEY) != null
+
+func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
+	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає
+
+func _saved_enemies() -> Dictionary:
+	return Game.get_singleton().get_room_state(_room, STATE_KEY, {})
+
+func _save_hp(spawn_id: String, hp: int) -> void:
+	var saved := _saved_enemies()
+	saved[spawn_id] = hp
+	Game.get_singleton().set_room_state(_room, STATE_KEY, saved)
+
 func _spawn_immediately() -> void:
 	"""Спавнит всех врагов сразу"""
 	for spawn_point in spawn_points:
-		if spawn_point.spawn_on_load:
+		if _should_spawn(spawn_point):
 			var enemy = spawn_point.spawn_enemy()
 			if enemy:
 				spawned_enemies.append(enemy)
 				_connect_enemy_signals(enemy)
+				_track(enemy, spawn_point.spawn_id)
+
+## HP ворога пишемо в стан кімнати при кожній зміні — тоді воно правильне і в сейві посеред
+## бою, і після вивантаження кімнати. Збережене HP ставимо, коли ворог уже готовий
+## (його _ready() виставляє повне HP зі статів).
+func _track(enemy: Node, spawn_id: String) -> void:
+	var hp: int = int(_saved_enemies().get(spawn_id, -1))
+	_save_hp(spawn_id, hp)
+	enemy.ready.connect(func() -> void:
+		if hp > 0:
+			enemy.current_health = hp
+			enemy.health_changed.emit(hp, enemy.Max_Health, false)
+		_save_hp(spawn_id, enemy.current_health)
+		enemy.health_changed.connect(func(new_health: int, _max: int, _animate: bool) -> void:
+			if new_health > 0:
+				_save_hp(spawn_id, new_health))
+		enemy.entity_died.connect(func() -> void:
+			var saved := _saved_enemies()
+			saved.erase(spawn_id)
+			Game.get_singleton().set_room_state(_room, STATE_KEY, saved)),
+		CONNECT_ONE_SHOT)
 
 func _spawn_in_waves() -> void:
 	"""Спавнит врагов волнами"""
@@ -115,11 +173,12 @@ func _spawn_in_waves() -> void:
 		var wave_end = mini(i + wave_size, spawn_points.size())
 		for j in range(i, wave_end):
 			var spawn_point = spawn_points[j]
-			if spawn_point.spawn_on_load:
+			if _should_spawn(spawn_point):
 				var enemy = spawn_point.spawn_enemy()
 				if enemy:
 					spawned_enemies.append(enemy)
 					_connect_enemy_signals(enemy)
+					_track(enemy, spawn_point.spawn_id)
 
 		wave_index += 1
 		wave_spawned.emit(wave_index, total_waves)
@@ -131,12 +190,13 @@ func _spawn_in_waves() -> void:
 
 func _connect_enemy_signals(enemy: Node) -> void:
 	"""Подключается к сигналам врага"""
-	if enemy.has_signal("died"):
-		enemy.died.connect(_on_enemy_died.bind(enemy))
+	# B49: CombatBody2D сигналізує смерть через entity_died, не died
+	enemy.entity_died.connect(_on_enemy_died.bind(enemy))
 
 func _on_enemy_died(enemy: Node) -> void:
 	"""Обработчик смерти врага"""
 	spawned_enemies.erase(enemy)
+	_grant_first_kill_potions()
 	DebugLogger.info("RoomEnemySpawner: Enemy died, %d remaining" % get_alive_enemies_count(), "RoomEnemySpawner")
 
 	# Проверяем все ли враги убиты
@@ -144,14 +204,20 @@ func _on_enemy_died(enemy: Node) -> void:
 		all_enemies_defeated.emit()
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
 
+## Перший убитий ворог за гру завжди дає 5 зілль (Sapega, 2026-10-12).
+func _grant_first_kill_potions() -> void:
+	var game := Game.get_singleton()
+	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
+	if game.get_quest_flag("first_kill_potions"):
+		return
+	inventory.add_item("potion", 5)
+	game.set_quest_flag("first_kill_potions", true)
+
 func get_alive_enemies_count() -> int:
 	"""Возвращает количество живых врагов"""
 	var count = 0
 	for enemy in spawned_enemies:
-		if is_instance_valid(enemy) and enemy.has_method("is_alive"):
-			if enemy.is_alive():
-				count += 1
-		elif is_instance_valid(enemy):
+		if is_instance_valid(enemy) and enemy.is_alive():
 			count += 1
 	return count
 

@@ -19,15 +19,14 @@ func _ready() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if not is_active or not can_trigger:
 		return
-	
+
 	if body.is_in_group(&"player"):
 		# Kill the player
-		if body.has_method("kill"):
-			body.kill()
-			# Start cooldown to prevent multiple triggers
-			can_trigger = false
-			await get_tree().create_timer(cooldown).timeout
-			can_trigger = true
+		body.kill()
+		# Start cooldown to prevent multiple triggers
+		can_trigger = false
+		await get_tree().create_timer(cooldown).timeout
+		can_trigger = true
 
 ## Activate the hazard
 func activate() -> void:

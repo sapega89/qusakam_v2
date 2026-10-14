@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/tutorial_component.gd" id="1_topics"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_topics"]
+
+[node name="TutorialComponent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_topics")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SidePanel"
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Page" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="Header" type="VBoxContainer" parent="Panel/Margin/Page"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Heading" type="Label" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"SettingsHeading"
+text = "Tutorial"
+
+[node name="Caption" type="Label" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "Topic"
+
+[node name="Rule" type="HSeparator" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"FrameRule"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Margin/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="TopicList" type="VBoxContainer" parent="Panel/Margin/Page/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="TopicRow" type="Button" parent="Panel/Margin/Page/Scroll/TopicList"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"ListRow"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_topics")
+text = "—"
+alignment = 0

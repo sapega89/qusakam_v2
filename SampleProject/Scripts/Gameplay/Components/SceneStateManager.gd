@@ -30,8 +30,7 @@ func _ready() -> void:
 	_determine_initial_state()
 	
 	# Підключаємося до EventBus для відстеження діалогів
-	if Engine.has_singleton("EventBus"):
-		EventBus.dialogue_finished.connect(_on_dialogue_finished)
+	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 
 ## Ініціалізація маппінгу стейтів (перевизначається в дочірніх класах)
 func _initialize_state_mapping() -> void:
@@ -112,18 +111,8 @@ func _emit_state_changed_event(old_state: Variant, new_state: Variant) -> void:
 	var old_state_name = _get_state_name(old_state)
 	var new_state_name = _get_state_name(new_state)
 	
-	# Використовуємо GameFlow через ServiceLocator
-	if ServiceLocator and ServiceLocator.has_method("get_game_flow"):
-		var game_flow = ServiceLocator.get_game_flow()
-		if game_flow and game_flow.has_signal("scene_state_changed"):
-			game_flow.scene_state_changed.emit(scene_name, old_state_name, new_state_name)
-			DebugLogger.info("SceneStateManager: Подія зміни стейту емітована через GameFlow: %s -> %s" % [old_state_name, new_state_name], "SceneStateManager")
-			return
-	
-	# Fallback: EventBus
-	if Engine.has_singleton("EventBus"):
-		EventBus.scene_state_changed.emit(scene_name, old_state_name, new_state_name)
-		DebugLogger.info("SceneStateManager: Подія зміни стейту емітована через EventBus: %s -> %s" % [old_state_name, new_state_name], "SceneStateManager")
+	EventBus.scene_state_changed.emit(scene_name, old_state_name, new_state_name)
+	DebugLogger.info("SceneStateManager: Подія зміни стейту емітована через EventBus: %s -> %s" % [old_state_name, new_state_name], "SceneStateManager")
 
 ## Отримує назву стейту (допоміжний метод)
 func _get_state_name(state: Variant) -> String:

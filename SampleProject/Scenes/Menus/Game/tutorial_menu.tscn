@@ -1,20 +1,200 @@
-[gd_scene load_steps=1 format=3]
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/tutorial_menu.gd" id="1_tutorial"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="2_diamond"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/bottom_bar.tscn" id="3_bottom_bar"]
 
 [node name="TutorialMenu" type="Control"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+script = ExtResource("1_tutorial")
 
-[node name="Title" type="Label" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -20.0
-offset_right = 160.0
-offset_bottom = 20.0
-text = "Tutorial"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"ScreenPanel"
+
+[node name="CornerTopLeft" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 44.0
+offset_right = 60.0
+offset_bottom = 60.0
+mouse_filter = 2
+texture = ExtResource("2_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CornerTopRight" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -60.0
+offset_top = 44.0
+offset_right = -44.0
+offset_bottom = 60.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("2_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CornerBottomLeft" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 44.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = -44.0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("2_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CornerBottomRight" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -60.0
+offset_top = -60.0
+offset_right = -44.0
+offset_bottom = -44.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("2_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TopRule" type="HSeparator" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 64.0
+offset_top = 50.0
+offset_right = -64.0
+offset_bottom = 52.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"FrameRule"
+
+[node name="BottomRule" type="HSeparator" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = -54.0
+offset_right = -64.0
+offset_bottom = -52.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"FrameRule"
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 120
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 120
+
+[node name="Page" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="TitleSection" type="VBoxContainer" parent="Margin/Page"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Page/TitleSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StatusName"
+text = "—"
+
+[node name="TitleRule" type="HSeparator" parent="Margin/Page/TitleSection"]
+layout_mode = 2
+theme_type_variation = &"AccentRule"
+
+[node name="Body" type="Label" parent="Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TutorialBody"
+text = "—"
+autowrap_mode = 3
+
+[node name="Columns" type="HBoxContainer" parent="Margin/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ShotFrame" type="PanelContainer" parent="Margin/Page/Columns"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1000, 480)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"TutorialShot"
+
+[node name="Shot" type="TextureRect" parent="Margin/Page/Columns/ShotFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HintBar" type="HBoxContainer" parent="Margin/Page"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="HintPre" type="Label" parent="Margin/Page/HintBar"]
+layout_mode = 2
+theme_type_variation = &"TutorialHint"
+text = "Press the"
+
+[node name="KeyBadge" type="PanelContainer" parent="Margin/Page/HintBar"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"KeyBadge"
+
+[node name="Key" type="Label" parent="Margin/Page/HintBar/KeyBadge"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"KeyBadgeLabel"
+text = "—"
+
+[node name="HintText" type="Label" parent="Margin/Page/HintBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TutorialHint"
+text = "—"
+
+[node name="BottomBar" parent="." instance=ExtResource("3_bottom_bar")]
+unique_name_in_owner = true
+layout_mode = 1

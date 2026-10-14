@@ -226,6 +226,57 @@
 			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/sword.png"
 		},
 		{
+			"id": "iron_halberd",
+			"name": "Iron Halberd",
+			"description": "A long iron halberd. Attack: +18",
+			"type": "weapon",
+			"category": "polearm",
+			"rarity": "common",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 120,
+			"buy_price": 240,
+			"stats": {
+				"attack": 18,
+				"defense": 0,
+				"magic": 0
+			}
+		},
+		{
+			"id": "iron_mace",
+			"name": "Iron Mace",
+			"description": "A heavy iron mace. Attack: +17",
+			"type": "weapon",
+			"category": "mace",
+			"rarity": "common",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 110,
+			"buy_price": 220,
+			"stats": {
+				"attack": 17,
+				"defense": 0,
+				"magic": 0
+			}
+		},
+		{
+			"id": "iron_dagger",
+			"name": "Iron Dagger",
+			"description": "A light iron dagger. Attack: +10",
+			"type": "weapon",
+			"category": "dagger",
+			"rarity": "common",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 60,
+			"buy_price": 120,
+			"stats": {
+				"attack": 10,
+				"defense": 0,
+				"magic": 0
+			}
+		},
+		{
 			"id": "iron_armor",
 			"name": "Iron Armor",
 			"name_ru": "Железная броня",
@@ -262,7 +313,7 @@
 				"type": "heal",
 				"value": 50
 			},
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/potion.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
 		{
 			"id": "hi_potion",
@@ -281,7 +332,7 @@
 				"type": "heal",
 				"value": 200
 			},
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/potion.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
 		{
 			"id": "potion_lesser",
@@ -300,7 +351,7 @@
 				"type": "heal",
 				"value": 75
 			},
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/potion.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
 		{
 			"id": "potion_medium",
@@ -319,7 +370,7 @@
 				"type": "heal",
 				"value": 125
 			},
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/potion.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
 		{
 			"id": "ether",
@@ -338,7 +389,7 @@
 				"type": "mana",
 				"value": 30
 			},
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/potion.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/ether.png"
 		},
 		{
 			"id": "herb",
@@ -353,7 +404,7 @@
 			"max_stack": 99,
 			"sell_price": 3,
 			"buy_price": 6,
-			"icon_path": "res://release/assets/textures/ui/items/lorc/flowers.svg"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/herb.png"
 		},
 		{
 			"id": "mana_crystal",
@@ -368,7 +419,7 @@
 			"max_stack": 99,
 			"sell_price": 20,
 			"buy_price": 40,
-			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/crystal.png"
+			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/crystal.png"
 		},
 		{
 			"id": "leather",

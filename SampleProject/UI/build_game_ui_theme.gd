@@ -1,0 +1,961 @@
+extends SceneTree
+
+## Генератор GameUITheme.tres з UITokens.
+##
+## Запуск:
+##   godot --headless --path . --script res://SampleProject/UI/build_game_ui_theme.gd
+##
+## ⚠️ GameUITheme.tres згенерований. Не редагуй його вручну — зміни токени в
+## UITokens.gd і перезапусти цей скрипт, інакше правки загубляться.
+
+const OUT_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
+
+var _font_regular: FontVariation
+var _font_medium: FontVariation
+var _font_semibold: FontVariation
+var _font_bold: FontVariation
+
+
+func _initialize() -> void:
+	var theme := Theme.new()
+	_make_fonts()
+
+	theme.default_font = _font_regular
+	theme.default_font_size = UITokens.SIZE_BODY
+
+	_setup_label(theme)
+	_setup_label_variations(theme)
+	_setup_button(theme)
+	_setup_button_variations(theme)
+	_setup_panels(theme)
+	_main_menu(theme)
+	_shop(theme)
+	_game_over(theme)
+	_setup_progress_bar(theme)
+	_setup_scrollbars(theme)
+	_setup_line_edit(theme)
+	_setup_slider(theme)
+	_setup_tooltip(theme)
+
+	var dir := OUT_PATH.get_base_dir()
+	if not DirAccess.dir_exists_absolute(dir):
+		DirAccess.make_dir_recursive_absolute(dir)
+
+	# Новий Theme при кожному збереженні отримував новий UID, і сцени, що посилаються
+	# на тему за UID, сипали "invalid UID" — тримаємо той, що вже був у файлі.
+	var uid := ResourceLoader.get_resource_uid(OUT_PATH) if ResourceLoader.exists(OUT_PATH) \
+			else ResourceUID.INVALID_ID
+	var err := ResourceSaver.save(theme, OUT_PATH)
+	if err != OK:
+		printerr("❌ Failed to save theme: %d" % err)
+		quit(1)
+		return
+	if uid != ResourceUID.INVALID_ID:
+		ResourceSaver.set_uid(OUT_PATH, uid)
+
+	print("✅ GameUITheme saved to %s" % OUT_PATH)
+	print("   font=%s  types=%s" % [UITokens.FONT_PATH.get_file(), theme.get_type_list().size()])
+	quit(0)
+
+
+func _make_fonts() -> void:
+	var base: FontFile = load(UITokens.FONT_PATH)
+	if base == null:
+		printerr("❌ Font not found at %s" % UITokens.FONT_PATH)
+		quit(1)
+		return
+	_font_regular = _weight(base, UITokens.WEIGHT_REGULAR)
+	_font_medium = _weight(base, UITokens.WEIGHT_MEDIUM)
+	_font_semibold = _weight(base, UITokens.WEIGHT_SEMIBOLD)
+	_font_bold = _weight(base, UITokens.WEIGHT_BOLD)
+
+
+func _weight(base: FontFile, wght: int) -> FontVariation:
+	var fv := FontVariation.new()
+	fv.base_font = base
+	fv.variation_opentype = {"wght": wght}
+	return fv
+
+
+## Плоский стильбокс за токенами. Радіус завжди 0 (Figma: shape/radius-sm).
+func _box(bg: Color, border_color: Color, border_width: int = UITokens.BORDER_WIDTH,
+		pad_h: int = UITokens.SPACE_MD, pad_v: int = UITokens.SPACE_SM) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.set_border_width_all(border_width)
+	sb.border_color = border_color
+	sb.set_corner_radius_all(UITokens.RADIUS)
+	sb.content_margin_left = pad_h
+	sb.content_margin_right = pad_h
+	sb.content_margin_top = pad_v
+	sb.content_margin_bottom = pad_v
+	return sb
+
+
+func _empty_box() -> StyleBoxEmpty:
+	return StyleBoxEmpty.new()
+
+
+# ── Label ───────────────────────────────────────────────────────────────────
+
+func _setup_label(theme: Theme) -> void:
+	theme.set_font("font", "Label", _font_regular)
+	theme.set_font_size("font_size", "Label", UITokens.SIZE_BODY)
+	theme.set_color("font_color", "Label", UITokens.TEXT_PRIMARY)
+	theme.set_color("font_outline_color", "Label", UITokens.BACKGROUND)
+	theme.set_constant("outline_size", "Label", 0)
+
+
+func _setup_label_variations(theme: Theme) -> void:
+	# Figma typography roles. Body == базовий Label.
+	var roles := {
+		"DisplayLabel": [_font_bold, UITokens.SIZE_DISPLAY, UITokens.TEXT_PRIMARY],
+		"TitleLabel": [_font_bold, UITokens.SIZE_TITLE, UITokens.TEXT_PRIMARY],
+		"HeadingLabel": [_font_semibold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"UILabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"SmallLabel": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"ValueLabel": [_font_semibold, UITokens.SIZE_VALUE, UITokens.TEXT_PRIMARY],
+		"CaptionLabel": [_font_bold, UITokens.SIZE_CAPTION, UITokens.TEXT_SECONDARY],
+		"AccentLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"MutedLabel": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_MUTED],
+		# Виміряні з кадру menu-inventory (46:193) — поза задекларованою шкалою.
+		"TopBarTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.TEXT_PRIMARY],
+		"ListRowTitle": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"ListRowCount": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"ColumnHeader": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"MicroLabel": [_font_bold, UITokens.SIZE_MICRO, UITokens.TEXT_SECONDARY],
+		"StatLabel": [_font_bold, UITokens.SIZE_CAPTION, UITokens.TEXT_SECONDARY],
+		"StatValue": [_font_regular, UITokens.SIZE_CAPTION, UITokens.TEXT_PRIMARY],
+		"CardName": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"BigValue": [_font_bold, UITokens.SIZE_TITLE, UITokens.TEXT_PRIMARY],
+		"BigValueAccent": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		# Figma save/load (150:1278, 17:5)
+		"SaveSystemLabel": [_font_regular, UITokens.SIZE_SAVE_SYSTEM, UITokens.TEXT_PRIMARY],
+		"SlotDate": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_PRIMARY],
+		"SlotLocation": [_font_bold, UITokens.SIZE_SAVE_LOCATION, UITokens.TEXT_PRIMARY],
+		"SlotLevel": [_font_bold, UITokens.SIZE_SAVE_LEVEL, UITokens.ACCENT],
+		"SlotName": [_font_semibold, UITokens.SIZE_SAVE_NAME, UITokens.TEXT_PRIMARY],
+		"SlotWatermark": [_font_bold, UITokens.SIZE_SAVE_WATERMARK, UITokens.SAVE_WATERMARK_COLOR],
+		"SlotEmptyText": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		# Figma menu-status (58:719)
+		"StatusName": [_font_bold, UITokens.SIZE_NAME, UITokens.TEXT_PRIMARY],
+		"StatusLevel": [_font_bold, UITokens.SIZE_LEVEL, UITokens.ACCENT],
+		"SectionCaption": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_SECONDARY],
+		"SectionHeader": [_font_semibold, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"MetaLabel": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"MetaValue": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"MetaValueAccent": [_font_semibold, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"JobName": [_font_semibold, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"AttrLabel": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"AttrValue": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"MeterValue": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"CardTitle": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"CardCaption": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ACCENT],
+		"CardBody": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_PRIMARY],
+		# Figma UI/Equipment Panel (258:5110)
+		"SlotCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"SlotItemName": [_font_bold, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"SlotItemEmpty": [_font_regular, UITokens.SIZE_HEADING, UITokens.TEXT_MUTED],
+		"PanelEyebrow": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ACCENT],
+		"PanelHeading": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		"StatDelta": [_font_regular, UITokens.SIZE_CAPTION, UITokens.HP_FILL],
+		# Figma menu-skills (58:453)
+		"SkillName": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SkillNameLocked": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_SECONDARY],
+		"SkillNameSelected": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SkillCost": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"SectionLabel": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_SECONDARY],
+		"TreeTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.ACCENT],
+		"TooltipTitle": [_font_medium, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"TooltipBody": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
+		# Figma Game Scene / Combat HUD (434:6556)
+		"BindBadge": [_font_bold, UITokens.SIZE_MICRO, UITokens.TEXT_PRIMARY],
+		"CooldownLabel": [_font_bold, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"VitalsName": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.ACCENT],
+		"VitalsLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"VitalsValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		"QuestCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"QuestTitle": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"CurrencyGlyph": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		"CurrencyValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		# Figma menu-world-map (94:609)
+		"MapTitle": [_font_bold, UITokens.SIZE_MAP_TITLE, UITokens.ACCENT],
+		"MapSubtitle": [_font_regular, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		# Figma settings-* (17:280 / 17:409 / 17:632 / 17:756)
+		"SettingsSystem": [_font_regular, UITokens.SIZE_CAPTION, UITokens.TEXT_PRIMARY],
+		"SettingsTitle": [_font_bold, UITokens.SIZE_OPTIONS_TITLE, UITokens.TEXT_PRIMARY],
+		"SettingsEyebrow": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"SettingsHeading": [_font_bold, UITokens.SIZE_DISPLAY, UITokens.TEXT_PRIMARY],
+		"SettingsRowLabel": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"SettingsValue": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SettingsHint": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_SECONDARY],
+	}
+	for name in roles:
+		var spec: Array = roles[name]
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, spec[0])
+		theme.set_font_size("font_size", name, spec[1])
+		theme.set_color("font_color", name, spec[2])
+
+
+# ── Button ──────────────────────────────────────────────────────────────────
+
+## Базова Button == Figma UI/Button Type=Secondary.
+func _setup_button(theme: Theme) -> void:
+	theme.set_font("font", "Button", _font_semibold)
+	theme.set_font_size("font_size", "Button", UITokens.SIZE_LABEL)
+	theme.set_color("font_color", "Button", UITokens.TEXT_PRIMARY)
+	theme.set_color("font_hover_color", "Button", UITokens.ACCENT)
+	theme.set_color("font_pressed_color", "Button", UITokens.ON_ACCENT)
+	theme.set_color("font_focus_color", "Button", UITokens.TEXT_PRIMARY)
+	theme.set_color("font_disabled_color", "Button", UITokens.TEXT_DISABLED)
+	theme.set_constant("h_separation", "Button", UITokens.ICON_TEXT_GAP)
+
+	var pad_h := UITokens.SPACE_LG
+	var pad_v := UITokens.SPACE_MD
+	theme.set_stylebox("normal", "Button", _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("hover", "Button", _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("pressed", "Button", _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", "Button", _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", "Button", _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+
+
+func _setup_button_variations(theme: Theme) -> void:
+	_primary_button(theme)
+	_tab_button(theme)
+	_sidebar_tab(theme)
+	_icon_button(theme)
+	_filter_button(theme)
+	_list_row(theme)
+	_tutorial(theme)
+	_skill_row(theme)
+	_settings_segment(theme)
+	_settings_stepper(theme)
+	_settings_sidebar_tab(theme)
+	_misc_row(theme)
+
+
+## Figma misc-sub-menu (84:589) — рядок 500px із градієнтом, що згасає вправо.
+## Вибраний світліший; StyleBoxTexture дозволяє віддати градієнт темі,
+## а не малювати його локально в сцені.
+func _misc_row(theme: Theme) -> void:
+	for t in ["MiscRow", "MiscRowOn"]:
+		var on: bool = t == "MiscRowOn"
+		theme.set_type_variation(t, "Button")
+		theme.set_font("font", t, _font_regular)
+		theme.set_font_size("font_size", t, UITokens.SIZE_ROW_TITLE)
+		theme.set_color("font_color", t, UITokens.TEXT_PRIMARY if on else UITokens.TEXT_SECONDARY)
+		theme.set_color("font_hover_color", t, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_pressed_color", t, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_focus_color", t, UITokens.TEXT_PRIMARY)
+		var normal := _gradient_box(UITokens.MISC_ROW_ON if on else UITokens.MISC_ROW_OFF)
+		theme.set_stylebox("normal", t, normal)
+		theme.set_stylebox("hover", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("pressed", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("focus", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("disabled", t, _gradient_box(UITokens.MISC_ROW_OFF))
+
+
+func _gradient_box(colors: Array) -> StyleBoxTexture:
+	var gradient := Gradient.new()
+	gradient.offsets = PackedFloat32Array(UITokens.MISC_ROW_STOPS)
+	gradient.colors = PackedColorArray(colors)
+	var tex := GradientTexture2D.new()
+	tex.gradient = gradient
+	tex.fill_from = Vector2(0, 0.5)
+	tex.fill_to = Vector2(1, 0.5)
+	tex.width = UITokens.MISC_ROW_WIDTH
+	tex.height = 4
+	var box := StyleBoxTexture.new()
+	box.texture = tex
+	box.content_margin_left = UITokens.MISC_ROW_PAD_H
+	box.content_margin_right = UITokens.MISC_ROW_PAD_H
+	box.content_margin_top = UITokens.MISC_ROW_PAD_V
+	box.content_margin_bottom = UITokens.MISC_ROW_PAD_V
+	return box
+
+
+## Figma settings-* сегментований перемикач (17:350).
+## Вибраний сегмент — акцентна заливка з темним текстом; контейнер малює рамку.
+func _settings_segment(theme: Theme) -> void:
+	var pad_h := UITokens.SPACE_3XL
+	var pad_v := UITokens.SPACE_SM
+	for t in ["SettingsSegment", "SettingsSegmentOn"]:
+		var on: bool = t == "SettingsSegmentOn"
+		theme.set_type_variation(t, "Button")
+		theme.set_font("font", t, _font_semibold)
+		theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+		theme.set_color("font_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.TEXT_PRIMARY)
+		theme.set_color("font_hover_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.ACCENT)
+		theme.set_color("font_pressed_color", t, UITokens.SETTINGS_ON_ACCENT)
+		theme.set_color("font_focus_color", t, UITokens.SETTINGS_ON_ACCENT if on else UITokens.TEXT_PRIMARY)
+		var bg := UITokens.ACCENT if on else Color(0, 0, 0, 0)
+		theme.set_stylebox("normal", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("hover", t, _box(bg if on else UITokens.SURFACE_HOVER,
+				Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("focus", t, _box(bg, UITokens.ACCENT,
+				UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+		theme.set_stylebox("disabled", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+
+
+## Figma settings-* стрілки степера (17:546 / 17:549) — 16px, без фону.
+func _settings_stepper(theme: Theme) -> void:
+	var t := "SettingsStepper"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_regular)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_hover_color", t, UITokens.ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
+	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 4, 2))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, 4, 2))
+
+
+## Figma UI/Settings Tab (117:835) — 36×36, активний має акцентну рамку,
+## неактивний іде на 50% прозорості.
+func _settings_sidebar_tab(theme: Theme) -> void:
+	var t := "SettingsSidebarTab"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_semibold)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_hover_color", t, UITokens.ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("pressed", t, _box(Color(0, 0, 0, 0), UITokens.BORDER_STRONG,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, UITokens.SPACE_SM, UITokens.SPACE_SM))
+
+
+## Figma menu-skills: рядок навички — px16 py10, 1px рамка,
+## виділений = акцентна заливка (текст лишається світлим).
+func _skill_row(theme: Theme) -> void:
+	var t := "SkillRow"
+	theme.set_type_variation(t, "Button")
+	var pad_h := UITokens.PANEL_PADDING
+	var pad_v := 10
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+
+
+## Figma filter-trigger — єдине місце в киті з ненульовим радіусом (3px).
+func _filter_button(theme: Theme) -> void:
+	var t := "FilterButton"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_regular)
+	theme.set_font_size("font_size", t, UITokens.SIZE_SMALL)
+	theme.set_color("font_color", t, UITokens.ACCENT)
+	theme.set_color("font_hover_color", t, UITokens.ON_ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ON_ACCENT)
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var bg := UITokens.ACCENT if state in ["hover", "pressed"] else Color(0, 0, 0, 0)
+		var sb := _box(bg, UITokens.ACCENT, UITokens.BORDER_WIDTH, UITokens.SPACE_MD, 6)
+		sb.set_corner_radius_all(3)
+		theme.set_stylebox(state, t, sb)
+
+
+## Figma UI/ListRow у кадрі menu-inventory (250:4983 / 250:4988).
+## Рядок — Button, щоб безкоштовно отримати фокус, hover і активацію з клавіатури.
+func _list_row(theme: Theme) -> void:
+	var t := "ListRow"
+	theme.set_type_variation(t, "Button")
+	var pad_h := UITokens.PANEL_PADDING
+	var pad_v := UITokens.LIST_ROW_PADDING
+	# normal: фон = color/background, без рамки
+	theme.set_stylebox("normal", t, _box(UITokens.BACKGROUND, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, pad_h, pad_v))
+	# selected: акцентна заливка + 2px акцентна рамка
+	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.BORDER_STRONG,
+			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(UITokens.BACKGROUND, 0.5),
+			Color(0, 0, 0, 0), 0, pad_h, pad_v))
+
+	# Підпункт списку (ціль під підетапом у журналі, D125): той самий рядок,
+	# дрібніший шрифт і відступ зліва, щоб читалась вкладеність.
+	var sub := "ListSubRow"
+	theme.set_type_variation(sub, t)
+	theme.set_font_size("font_size", sub, UITokens.SIZE_BODY_SM)
+	var sub_pad_v := UITokens.SPACE_SM
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var box := (theme.get_stylebox(state, t) as StyleBoxFlat).duplicate() as StyleBoxFlat
+		box.content_margin_left = pad_h + UITokens.SPACE_XL
+		box.content_margin_top = sub_pad_v
+		box.content_margin_bottom = sub_pad_v
+		theme.set_stylebox(state, sub, box)
+
+
+## Figma tutorial-content 135:1260 — повноекранне вікно туторіалу (D126).
+func _tutorial(theme: Theme) -> void:
+	theme.set_type_variation("ScreenPanel", "Panel")
+	theme.set_stylebox("panel", "ScreenPanel", _box(UITokens.BACKGROUND, Color(0, 0, 0, 0), 0, 0, 0))
+
+	for spec in [["FrameRule", UITokens.BORDER, UITokens.BORDER_WIDTH],
+			["AccentRule", UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED]]:
+		theme.set_type_variation(spec[0], "HSeparator")
+		var rule := StyleBoxLine.new()
+		rule.color = spec[1]
+		rule.thickness = spec[2]
+		theme.set_stylebox("separator", spec[0], rule)
+		theme.set_constant("separation", spec[0], spec[2])
+
+	# Рамка скріншота: 2px color/border, без фону.
+	theme.set_type_variation("TutorialShot", "PanelContainer")
+	theme.set_stylebox("panel", "TutorialShot", _box(Color(0, 0, 0, 0), UITokens.BORDER,
+			UITokens.BORDER_WIDTH_SELECTED, 0, 0))
+	# Бейдж клавіші (Figma UI/RB Controller Button): surface, акцентна рамка, Bold 14.
+	theme.set_type_variation("KeyBadge", "PanelContainer")
+	theme.set_stylebox("panel", "KeyBadge", _box(UITokens.SURFACE, UITokens.ACCENT,
+			UITokens.BORDER_WIDTH_SELECTED, UITokens.SPACE_SM, UITokens.SPACE_2XS))
+
+	var labels := {
+		"TutorialBody": [_font_regular, UITokens.SIZE_TUTORIAL_BODY, UITokens.TEXT_PRIMARY],
+		"TutorialHint": [_font_regular, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"KeyBadgeLabel": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, labels[name][2])
+	theme.set_constant("line_spacing", "TutorialBody", UITokens.SIZE_TUTORIAL_BODY / 2)
+
+
+## Figma UI/Button Type=Primary — акцентна заливка, темний текст.
+func _primary_button(theme: Theme) -> void:
+	var t := "PrimaryButton"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_semibold)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.ON_ACCENT)
+	theme.set_color("font_hover_color", t, UITokens.ON_ACCENT)
+	theme.set_color("font_pressed_color", t, UITokens.ON_ACCENT)
+	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+	var pad_h := UITokens.SPACE_LG
+	var pad_v := UITokens.SPACE_MD
+	theme.set_stylebox("normal", t, _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.ACCENT.lightened(0.12), UITokens.ACCENT.lightened(0.12), UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT.darkened(0.18), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.TEXT_PRIMARY, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(UITokens.ACCENT, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+
+
+## Figma UI/Tab у кадрі menu-inventory: Bold 18, px 20, py 10,
+## виділений = акцентний текст + 2px акцентна нижня межа.
+func _tab_button(theme: Theme) -> void:
+	var t := "TabButton"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_bold)
+	theme.set_font_size("font_size", t, UITokens.SIZE_ROW_TITLE)
+	theme.set_color("font_color", t, UITokens.TEXT_SECONDARY)
+	theme.set_color("font_hover_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
+	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+	var pad_h := 20
+	var pad_v := 10
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, pad_v))
+	# Виділений таб: підкреслення акцентом знизу.
+	var sel := _box(Color(0, 0, 0, 0), UITokens.ACCENT, 0, pad_h, pad_v)
+	sel.border_width_bottom = UITokens.BORDER_WIDTH_SELECTED
+	theme.set_stylebox("pressed", t, sel)
+
+
+## Figma UI/Sidebar Tab — вертикальна навігація ігрового меню.
+func _sidebar_tab(theme: Theme) -> void:
+	var t := "SidebarTab"
+	theme.set_type_variation(t, "Button")
+	theme.set_font("font", t, _font_semibold)
+	theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", t, UITokens.TEXT_SECONDARY)
+	theme.set_color("font_hover_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_pressed_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_focus_color", t, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+	# Вказівник ▶ — як у головному меню: іконка стоїть на кожній вкладці, але
+	# прозора; видима лише у варіації SidebarTabOn (D118). Місце під неї
+	# зарезервоване завжди — текст не стрибає.
+	var icon_states := ["icon_normal_color", "icon_hover_color", "icon_focus_color",
+			"icon_pressed_color", "icon_hover_pressed_color"]
+	for c in icon_states:
+		theme.set_color(c, t, Color(0, 0, 0, 0))
+	# Закрита сюжетом вкладка показує замок (GameMenu._lock_tabs) — він видимий.
+	theme.set_color("icon_disabled_color", t, UITokens.TEXT_DISABLED)
+	theme.set_type_variation("SidebarTabOn", t)
+	for c in icon_states:
+		theme.set_color(c, "SidebarTabOn", UITokens.TEXT_PRIMARY)
+	var pad_h := UITokens.SPACE_LG
+	var pad_v := UITokens.SPACE_MD
+	theme.set_stylebox("normal", t, _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _box(UITokens.SURFACE_HOVER, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("disabled", t, _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	# Активний пункт: акцентна ліва грань.
+	var act := _box(UITokens.SURFACE_HOVER, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v)
+	act.border_width_left = UITokens.SPACE_XS
+	act.border_color = UITokens.ACCENT
+	theme.set_stylebox("pressed", t, act)
+
+
+## Figma UI/IconButton — квадратна кнопка 36×36 з іконкою.
+func _icon_button(theme: Theme) -> void:
+	var t := "IconButton"
+	theme.set_type_variation(t, "Button")
+	var pad := UITokens.SPACE_SM
+	theme.set_stylebox("normal", t, _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad, pad))
+	theme.set_stylebox("disabled", t, _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
+
+
+# ── Панелі ──────────────────────────────────────────────────────────────────
+
+func _setup_panels(theme: Theme) -> void:
+	# Figma UI/Panel
+	var surface := _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH,
+			UITokens.PANEL_PADDING, UITokens.PANEL_PADDING)
+	theme.set_stylebox("panel", "PanelContainer", surface)
+	theme.set_stylebox("panel", "Panel", surface.duplicate())
+
+	# Figma UI/Window — модалки, вікна. Непрозорий фон + тінь замість Panel Glow.
+	theme.set_type_variation("WindowPanel", "PanelContainer")
+	var window := _box(UITokens.BACKGROUND, UITokens.ACCENT, UITokens.BORDER_WIDTH,
+			UITokens.SPACE_XL, UITokens.SPACE_XL)
+	window.shadow_color = Color(0, 0, 0, 0.55)
+	window.shadow_size = UITokens.SPACE_MD
+	theme.set_stylebox("panel", "WindowPanel", window)
+
+	# Без рамки — для контейнерів-обгорток, що не мають малювати межу.
+	theme.set_type_variation("PlainPanel", "PanelContainer")
+	theme.set_stylebox("panel", "PlainPanel", _empty_box())
+
+	# Figma UI/Inventory Center Panel (355:6423) — акцентна рамка, padding 48.
+	theme.set_type_variation("CenterPanel", "PanelContainer")
+	theme.set_stylebox("panel", "CenterPanel", _box(UITokens.SURFACE, UITokens.ACCENT,
+			UITokens.BORDER_WIDTH, UITokens.CENTER_PANEL_PADDING, UITokens.CENTER_PANEL_PADDING))
+
+	# Figma UI/Party Status Panel (104:490) — звичайна рамка, padding 24.
+	theme.set_type_variation("SidePanel", "PanelContainer")
+	theme.set_stylebox("panel", "SidePanel", _box(UITokens.SURFACE, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_XL, UITokens.SPACE_XL))
+
+	# Картка персонажа (Figma UI/Party Character Card 324:6127).
+	theme.set_type_variation("CardPanel", "PanelContainer")
+	theme.set_stylebox("panel", "CardPanel", _box(UITokens.SURFACE, UITokens.ACCENT,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_MD, UITokens.SPACE_MD))
+	# Частини картки — тепер шаблон у сцені (D117), а не StyleBoxFlat.new() у коді.
+	theme.set_type_variation("PortraitFrame", "PanelContainer")
+	# Відступ = товщина рамки, інакше колір портрета лягає поверх неї.
+	theme.set_stylebox("panel", "PortraitFrame", _box(Color(0, 0, 0, 0), UITokens.ACCENT,
+			UITokens.BORDER_WIDTH, UITokens.BORDER_WIDTH, UITokens.BORDER_WIDTH))
+	theme.set_type_variation("LevelBadge", "PanelContainer")
+	theme.set_stylebox("panel", "LevelBadge", _box(UITokens.ACCENT, UITokens.ACCENT, 0,
+			UITokens.SPACE_XS + UITokens.SPACE_2XS, UITokens.SPACE_2XS))
+	theme.set_type_variation("LevelBadgeLabel", "Label")
+	theme.set_font("font", "LevelBadgeLabel", _font_bold)
+	theme.set_font_size("font_size", "LevelBadgeLabel", UITokens.SIZE_MICRO)
+	theme.set_color("font_color", "LevelBadgeLabel", UITokens.ON_ACCENT)
+	for spec in [["HpBar", UITokens.HP_FILL], ["SpBar", UITokens.SP_FILL]]:
+		theme.set_type_variation(spec[0], "ProgressBar")
+		theme.set_stylebox("background", spec[0], _box(UITokens.SURFACE, UITokens.SURFACE, 0, 0, 0))
+		theme.set_stylebox("fill", spec[0], _box(spec[1], spec[1], 0, 0, 0))
+	# Невидима кнопка поверх картки: вибір цілі (D127). Видно лише фокус / наведення.
+	theme.set_type_variation("CardSelect", "Button")
+	var none := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0, 0)
+	var ring := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0)
+	for state in ["normal", "pressed", "disabled"]:
+		theme.set_stylebox(state, "CardSelect", none)
+	for state in ["hover", "hover_pressed", "focus"]:
+		theme.set_stylebox(state, "CardSelect", ring)
+
+	# Figma menu-status: job-box / weapon-box / action-card — surface + 1px рамка.
+	theme.set_type_variation("BoxPanel", "PanelContainer")
+	theme.set_stylebox("panel", "BoxPanel", _box(UITokens.SURFACE, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_MD, UITokens.SPACE_MD))
+
+	theme.set_type_variation("ActionCard", "PanelContainer")
+	theme.set_stylebox("panel", "ActionCard", _box(UITokens.SURFACE, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, 18, 18))
+
+	# Figma menu-skills: колонка класового дерева — surface + 1px рамка, padding 32.
+	theme.set_type_variation("TreePanel", "PanelContainer")
+	theme.set_stylebox("panel", "TreePanel", _box(UITokens.SURFACE, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_2XL, UITokens.SPACE_2XL))
+
+	# Figma UI/Interaction/Prompt (461:6479): State=Default / Focused / Disabled.
+	theme.set_type_variation("InteractionPrompt", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPrompt", _box(UITokens.PROMPT_BG, UITokens.ACCENT, 0,
+			UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("InteractionPromptFocused", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPromptFocused", _box(UITokens.PROMPT_BG_FOCUSED,
+			UITokens.ACCENT, UITokens.BORDER_WIDTH, UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("InteractionPromptDisabled", "PanelContainer")
+	theme.set_stylebox("panel", "InteractionPromptDisabled", _box(UITokens.PROMPT_BG_DISABLED,
+			UITokens.ACCENT, 0, UITokens.PROMPT_PAD_H, UITokens.PROMPT_PAD_V))
+	theme.set_type_variation("PromptRow", "HBoxContainer")
+	theme.set_constant("separation", "PromptRow", UITokens.ICON_TEXT_GAP)
+
+	_save_slots(theme)
+
+
+## Шрифт із міжлітерним інтервалом (Figma letterSpacing у px).
+func _spaced(base: Font, spacing: int) -> FontVariation:
+	var fv := FontVariation.new()
+	fv.base_font = base
+	fv.spacing_glyph = spacing
+	return fv
+
+
+## Figma main-menu 9:26, UI/Splash Screen 258:5140, UI/Menu Item 248:62.
+func _main_menu(theme: Theme) -> void:
+	var labels := {
+		"TitleKhalahas": [_spaced(_font_bold, UITokens.TITLE_SPACING_KHALAHAS), UITokens.SIZE_TITLE_KHALAHAS],
+		"TitleHeroes": [_spaced(_font_bold, UITokens.TITLE_SPACING_HEROES), UITokens.SIZE_TITLE_HEROES],
+		"SplashPrompt": [_spaced(_font_semibold, UITokens.SPLASH_PROMPT_SPACING), UITokens.SIZE_SPLASH_PROMPT],
+		"CopyrightLabel": [_spaced(_font_regular, UITokens.COPYRIGHT_SPACING), UITokens.SIZE_CAPTION],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, UITokens.TEXT_PRIMARY)
+
+	# Лінії титульного блоку: 1.5 / 2.5 px у Figma → 2 / 3 px.
+	for pair in [["TitleRule", UITokens.TITLE_RULE], ["TitleRuleBold", UITokens.TITLE_RULE_BOLD]]:
+		theme.set_type_variation(pair[0], "HSeparator")
+		var line := StyleBoxLine.new()
+		line.color = UITokens.TEXT_PRIMARY
+		line.thickness = pair[1]
+		theme.set_stylebox("separator", pair[0], line)
+		theme.set_constant("separation", pair[0], pair[1])
+
+	var columns := {
+		"TitleBlock": UITokens.TITLE_BLOCK_GAP,
+		"MainMenuCenter": UITokens.MAIN_MENU_CENTER_GAP,
+		"MainMenuList": UITokens.MAIN_MENU_LIST_GAP,
+		"SplashCenter": UITokens.SPLASH_CENTER_GAP,
+		"SplashPromptColumn": UITokens.SPLASH_PROMPT_GAP,
+	}
+	for name in columns:
+		theme.set_type_variation(name, "VBoxContainer")
+		theme.set_constant("separation", name, columns[name])
+
+	# UI/Menu Item: без фону; неактивний — Regular 16, 70%, без вказівника;
+	# активний (фокус) — SemiBold 16, 100%, з вказівником-шевроном.
+	var clear := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0,
+			UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V)
+	var dim := Color(UITokens.TEXT_PRIMARY, UITokens.MENU_INACTIVE_ALPHA)
+	for spec in [["MainMenuItem", _font_regular, dim, Color(0, 0, 0, 0)],
+			["MainMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
+		var t: String = spec[0]
+		theme.set_type_variation(t, "Button")
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			theme.set_stylebox(state, t, clear)
+		theme.set_font("font", t, spec[1])
+		theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
+		for c in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			theme.set_color(c, t, spec[2])
+		theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+		for c in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			theme.set_color(c, t, spec[3])
+		theme.set_color("icon_disabled_color", t, Color(0, 0, 0, 0))
+		theme.set_constant("h_separation", t, UITokens.MENU_ITEM_GAP)
+		theme.set_constant("icon_max_width", t, UITokens.MENU_ITEM_POINTER)
+
+
+## Figma game-over-screen 41:83. Пункти меню — ті самі NpcMenuItem/On (UI/Menu Item з фоном).
+func _game_over(theme: Theme) -> void:
+	theme.set_type_variation("GameOverTitle", "Label")
+	theme.set_font("font", "GameOverTitle", _font_bold)
+	theme.set_font_size("font_size", "GameOverTitle", UITokens.SIZE_GAME_OVER)
+	theme.set_color("font_color", "GameOverTitle", UITokens.GAME_OVER_RED)
+	theme.set_color("font_shadow_color", "GameOverTitle", UITokens.GAME_OVER_SHADOW)
+	theme.set_constant("shadow_offset_x", "GameOverTitle", 0)
+	theme.set_constant("shadow_offset_y", "GameOverTitle", 3)
+	theme.set_constant("shadow_outline_size", "GameOverTitle", 3)
+
+	var labels := {
+		"GameOverEyebrow": [_font_semibold, UITokens.SIZE_GAME_OVER_EYEBROW, UITokens.GAME_OVER_FRAME],
+		"GameOverHint": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"GameOverKey": [_spaced(_font_bold, 1), UITokens.SIZE_CAPTION, UITokens.TEXT_PRIMARY],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, labels[name][2])
+
+	var clear := Color(0, 0, 0, 0)
+	var inner := Color(UITokens.GAME_OVER_FRAME, UITokens.GAME_OVER_FRAME_INNER_ALPHA)
+	for spec in [["GameOverInset", UITokens.GAME_OVER_FRAME, 0, 0], ["GameOverInsetInner", inner, 0, 0],
+			["GameOverKeycap", inner, UITokens.SPACE_SM, UITokens.SPACE_2XS]]:
+		theme.set_type_variation(spec[0], "PanelContainer")
+		theme.set_stylebox("panel", spec[0], _box(clear, spec[1], UITokens.BORDER_WIDTH, spec[2], spec[3]))
+
+	for pair in [["GameOverRule", Color(UITokens.GAME_OVER_RED, UITokens.GAME_OVER_RULE_ALPHA)],
+			["GameOverFrameRule", UITokens.GAME_OVER_FRAME]]:
+		theme.set_type_variation(pair[0], "HSeparator")
+		var line := StyleBoxLine.new()
+		line.color = pair[1]
+		line.thickness = UITokens.BORDER_WIDTH
+		theme.set_stylebox("separator", pair[0], line)
+		theme.set_constant("separation", pair[0], UITokens.BORDER_WIDTH)
+
+	theme.set_type_variation("GameOverInsetMargin", "MarginContainer")
+	for side in ["left", "right", "top", "bottom"]:
+		theme.set_constant("margin_" + side, "GameOverInsetMargin", UITokens.GAME_OVER_INSET_INNER)
+
+	var cols := {"GameOverColumn": ["VBoxContainer", UITokens.GAME_OVER_COLUMN_GAP],
+		"GameOverEyebrowColumn": ["VBoxContainer", UITokens.GAME_OVER_EYEBROW_GAP],
+		"GameOverOptions": ["VBoxContainer", UITokens.GAME_OVER_OPTIONS_GAP],
+		"GameOverRow": ["HBoxContainer", UITokens.SPACE_MD],
+		"GameOverFooter": ["HBoxContainer", UITokens.SPACE_SM]}
+	for name in cols:
+		theme.set_type_variation(name, cols[name][0])
+		theme.set_constant("separation", name, cols[name][1])
+
+
+## Figma shop-buy 153:1289 / shop-sell 153:1523; NPC-меню 164:1302 / 176:1357.
+func _shop(theme: Theme) -> void:
+	theme.set_type_variation("ShopPanel", "PanelContainer")
+	theme.set_stylebox("panel", "ShopPanel", _box(UITokens.SHOP_PANEL_BG, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, 0, 0))
+	theme.set_type_variation("ShopDescBox", "PanelContainer")
+	theme.set_stylebox("panel", "ShopDescBox", _box(UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY,
+			UITokens.BORDER_WIDTH, UITokens.SHOP_DESC_PAD, UITokens.SHOP_DESC_PAD))
+	theme.set_type_variation("ShopHeader", "PanelContainer")
+	var header := _box(Color(0, 0, 0, 0), UITokens.TEXT_PRIMARY, 0, 0, UITokens.SHOP_HEADER_PAD_V)
+	header.border_width_bottom = UITokens.BORDER_WIDTH
+	theme.set_stylebox("panel", "ShopHeader", header)
+
+	var labels := {
+		"ShopTitle": [_font_semibold, UITokens.SIZE_SHOP_TITLE, UITokens.ACCENT],
+		"ShopColumnHeader": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		"ShopDescText": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		# Рядок: звичайний — білий текст; вибраний — темний на accent (правило D26).
+		"ShopRowName": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
+		"ShopRowNameOn": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.ON_ACCENT],
+		"ShopRowCount": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"ShopRowCountOn": [_font_regular, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
+		"ShopRowPrice": [_font_semibold, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"ShopRowPriceOn": [_font_semibold, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
+		"ShopRowDisabled": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_MUTED],
+		# Другий рядок рецепта крафту ("Requires: …").
+		"ShopRowDetail": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
+		"ShopRowDetailOn": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ON_ACCENT],
+		"StatusIncrease": [_font_semibold, UITokens.SIZE_ROW_TITLE, UITokens.STATUS_INCREASE],
+	}
+	for name in labels:
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, labels[name][0])
+		theme.set_font_size("font_size", name, labels[name][1])
+		theme.set_color("font_color", name, labels[name][2])
+
+	var cols := {"ShopColumn": ["VBoxContainer", UITokens.SHOP_LIST_GAP],
+		"ShopRowList": ["VBoxContainer", UITokens.SHOP_ROW_GAP],
+		"ShopCategories": ["VBoxContainer", UITokens.SHOP_CATEGORY_GAP],
+		"ShopDescColumn": ["VBoxContainer", UITokens.SHOP_DESC_GAP],
+		"ShopRowLine": ["HBoxContainer", UITokens.SPACE_MD],
+		"ShopRowNameBlock": ["VBoxContainer", UITokens.CRAFT_ROW_NAME_GAP],
+		"NpcMenuList": ["VBoxContainer", UITokens.NPC_MENU_GAP],
+		# Спільний сайдбар base_menu (Game Menu, Shop): таби через 16px, відступ до вмісту 24px.
+		"MenuLayout": ["HBoxContainer", UITokens.SECTION_GAP],
+		"MenuSidebar": ["VBoxContainer", UITokens.LG_TAB_GAP]}
+	for name in cols:
+		theme.set_type_variation(name, cols[name][0])
+		theme.set_constant("separation", name, cols[name][1])
+	theme.set_type_variation("ShopListMargin", "MarginContainer")
+	for side in ["left", "right", "top", "bottom"]:
+		theme.set_constant("margin_" + side, "ShopListMargin", UITokens.SHOP_LIST_PAD)
+	# Колонка категорій 64px: кнопки 48px по центру, 16px зверху/знизу.
+	theme.set_type_variation("ShopCategoryMargin", "MarginContainer")
+	var side_pad := (UITokens.SHOP_CATEGORY_COLUMN - UITokens.SHOP_CATEGORY_SIZE) / 2
+	theme.set_constant("margin_left", "ShopCategoryMargin", side_pad)
+	theme.set_constant("margin_right", "ShopCategoryMargin", side_pad)
+	theme.set_constant("margin_top", "ShopCategoryMargin", UITokens.SHOP_CATEGORY_PAD_V)
+	theme.set_constant("margin_bottom", "ShopCategoryMargin", UITokens.SHOP_CATEGORY_PAD_V)
+	theme.set_type_variation("ShopRowMargin", "MarginContainer")
+	for side in ["left", "right"]:
+		theme.set_constant("margin_" + side, "ShopRowMargin", UITokens.SHOP_ROW_PAD_H)
+	for side in ["top", "bottom"]:
+		theme.set_constant("margin_" + side, "ShopRowMargin", UITokens.SHOP_ROW_PAD_V)
+
+	# Рядок товару: чорний 56%; вибраний (фокус/наведення) — заливка accent.
+	var t := "ShopRow"
+	theme.set_type_variation(t, "Button")
+	var row := _box(UITokens.SHOP_ROW_BG, UITokens.SHOP_ROW_BG, UITokens.BORDER_WIDTH, 0, 0)
+	var row_on := _box(UITokens.ACCENT, UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0)
+	for state in ["normal", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, row)
+	for state in ["hover", "hover_pressed", "focus"]:
+		theme.set_stylebox(state, t, row_on)
+
+	# Кнопки категорій 48×48: звичайна — чорний 56% + біла рамка; активна — accent.
+	for spec in [["ShopCategory", UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY, UITokens.SHOP_ICON_TINT, UITokens.TEXT_PRIMARY],
+			["ShopCategoryOn", UITokens.ACCENT, UITokens.BORDER, UITokens.ON_ACCENT, UITokens.ON_ACCENT]]:
+		var c: String = spec[0]
+		theme.set_type_variation(c, "Button")
+		var box := _box(spec[1], spec[2], UITokens.BORDER_WIDTH, 0, 0)
+		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+			theme.set_stylebox(state, c, box)
+		var focus := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0)
+		theme.set_stylebox("focus", c, focus)
+		theme.set_font("font", c, _font_bold)
+		theme.set_font_size("font_size", c, UITokens.SIZE_CAPTION)
+		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color"]:
+			theme.set_color(col, c, spec[4])
+		for col in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color"]:
+			theme.set_color(col, c, spec[3])
+		theme.set_constant("icon_max_width", c, UITokens.SHOP_CATEGORY_ICON)
+
+	# NPC-меню: UI/Menu Item зі своїм фоном (#111118) і рамкою (#3a3a42).
+	var npc_box := _box(UITokens.BACKGROUND, UITokens.BORDER, UITokens.BORDER_WIDTH,
+			UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V)
+	var dim := Color(UITokens.TEXT_PRIMARY, UITokens.MENU_INACTIVE_ALPHA)
+	for spec in [["NpcMenuItem", _font_regular, dim, Color(0, 0, 0, 0)],
+			["NpcMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
+		var n: String = spec[0]
+		theme.set_type_variation(n, "Button")
+		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+			theme.set_stylebox(state, n, npc_box)
+		theme.set_font("font", n, spec[1])
+		theme.set_font_size("font_size", n, UITokens.SIZE_LABEL)
+		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			theme.set_color(col, n, spec[2])
+		for col in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			theme.set_color(col, n, spec[3])
+		theme.set_constant("h_separation", n, UITokens.MENU_ITEM_GAP)
+		theme.set_constant("icon_max_width", n, UITokens.MENU_ITEM_POINTER)
+
+
+## Figma load-game-screen 150:1278 / save-game-screen 17:5.
+func _save_slots(theme: Theme) -> void:
+	# Figma: "Save Data Management" — Regular 11, letter-spacing 3.
+	theme.set_font("font", "SaveSystemLabel", _spaced(_font_regular, 3))
+
+	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent.
+	var t := "SaveSlotCard"
+	theme.set_type_variation(t, "Button")
+	var normal := _box(Color(0, 0, 0, 0), UITokens.SAVE_CARD_BORDER, UITokens.BORDER_WIDTH,
+			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
+	var selected := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH,
+			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
+	for state in ["normal", "pressed", "disabled"]:
+		theme.set_stylebox(state, t, normal)
+	theme.set_stylebox("hover", t, selected)
+	theme.set_stylebox("hover_pressed", t, selected)
+	theme.set_stylebox("focus", t, selected)
+
+	var rows := {
+		"SaveTopSection": ["VBoxContainer", UITokens.SAVE_TOP_GAP],
+		"SaveOrnament": ["HBoxContainer", UITokens.SAVE_ORNAMENT_GAP],
+		"SaveSlotList": ["VBoxContainer", UITokens.SAVE_LIST_GAP],
+		"SlotInfoColumn": ["VBoxContainer", UITokens.SAVE_INFO_GAP],
+		"SlotRightInfo": ["HBoxContainer", UITokens.SAVE_RIGHT_GAP],
+		"SlotPlaytime": ["HBoxContainer", UITokens.SAVE_PLAYTIME_GAP],
+		"SlotRow": ["HBoxContainer", 0],
+	}
+	for name in rows:
+		theme.set_type_variation(name, rows[name][0])
+		theme.set_constant("separation", name, rows[name][1])
+
+	theme.set_type_variation("SaveScreenMargin", "MarginContainer")
+	theme.set_constant("margin_left", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
+	theme.set_constant("margin_right", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
+	theme.set_constant("margin_top", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_TOP)
+
+	# Button не розкладає дочірні вузли — внутрішній відступ картки дає MarginContainer.
+	theme.set_type_variation("SlotCardMargin", "MarginContainer")
+	for side in ["left", "right"]:
+		theme.set_constant("margin_" + side, "SlotCardMargin", UITokens.SAVE_CARD_PAD_H)
+	for side in ["top", "bottom"]:
+		theme.set_constant("margin_" + side, "SlotCardMargin", UITokens.SAVE_CARD_PAD_V)
+
+	# Тонкі білі лінії верхньої секції (Figma: Line, stroke #ffffff 1px).
+	theme.set_type_variation("SaveRule", "HSeparator")
+	var line := StyleBoxLine.new()
+	line.color = UITokens.TEXT_PRIMARY
+	line.thickness = UITokens.BORDER_WIDTH
+	theme.set_stylebox("separator", "SaveRule", line)
+	theme.set_constant("separation", "SaveRule", UITokens.BORDER_WIDTH)
+
+	# Вдавлена панель (Figma: Inner Shadow). У Godot немає inner shadow —
+	# емулюємо темнішим фоном і рамкою. Див. design/ui_implementation_plan.md.
+	theme.set_type_variation("InsetPanel", "PanelContainer")
+	theme.set_stylebox("panel", "InsetPanel", _box(Color(UITokens.BACKGROUND, 0.75),
+			UITokens.BORDER, UITokens.BORDER_WIDTH, UITokens.PANEL_PADDING, UITokens.PANEL_PADDING))
+
+
+# ── ProgressBar (Figma UI/ProgressBar, UI/ResourceBar) ──────────────────────
+
+func _setup_progress_bar(theme: Theme) -> void:
+	var bg := _box(Color(UITokens.BACKGROUND, 0.8), UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0)
+	var fill := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)
+	theme.set_stylebox("background", "ProgressBar", bg)
+	theme.set_stylebox("fill", "ProgressBar", fill)
+	theme.set_font("font", "ProgressBar", _font_semibold)
+	theme.set_font_size("font_size", "ProgressBar", UITokens.SIZE_CAPTION)
+	theme.set_color("font_color", "ProgressBar", UITokens.TEXT_PRIMARY)
+
+
+# ── Скролбари (Figma UI/Scrollbar — 10px, без заокруглень) ──────────────────
+
+func _setup_scrollbars(theme: Theme) -> void:
+	for t in ["VScrollBar", "HScrollBar"]:
+		theme.set_stylebox("scroll", t, _box(Color(UITokens.BACKGROUND, 0.6), Color(0, 0, 0, 0), 0, 0, 0))
+		theme.set_stylebox("grabber", t, _box(UITokens.BORDER, Color(0, 0, 0, 0), 0, 0, 0))
+		theme.set_stylebox("grabber_highlight", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
+		theme.set_stylebox("grabber_pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
+
+
+# ── LineEdit / HSlider (потрібні для екрана налаштувань) ────────────────────
+
+func _setup_line_edit(theme: Theme) -> void:
+	theme.set_font("font", "LineEdit", _font_regular)
+	theme.set_font_size("font_size", "LineEdit", UITokens.SIZE_BODY)
+	theme.set_color("font_color", "LineEdit", UITokens.TEXT_PRIMARY)
+	theme.set_color("font_placeholder_color", "LineEdit", UITokens.TEXT_MUTED)
+	theme.set_color("caret_color", "LineEdit", UITokens.ACCENT)
+	theme.set_color("selection_color", "LineEdit", Color(UITokens.ACCENT, 0.35))
+	theme.set_stylebox("normal", "LineEdit", _box(UITokens.SURFACE, UITokens.BORDER))
+	theme.set_stylebox("focus", "LineEdit", _box(UITokens.SURFACE, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED))
+	theme.set_stylebox("read_only", "LineEdit", _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER))
+
+
+## Figma settings-audio 17:465 — доріжка 320×8. Вертикальні поля тримають
+## висоту: з нульовими доріжка схлопувалась і візуально зникала.
+func _setup_slider(theme: Theme) -> void:
+	theme.set_stylebox("slider", "HSlider", _box(Color(UITokens.BACKGROUND, 0.8), UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 4))
+	theme.set_stylebox("grabber_area", "HSlider", _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
+	theme.set_stylebox("grabber_area_highlight", "HSlider", _box(UITokens.ACCENT.lightened(0.15), Color(0, 0, 0, 0), 0, 0, 0))
+
+
+# ── Tooltip (Figma UI/Tooltip) ──────────────────────────────────────────────
+
+func _setup_tooltip(theme: Theme) -> void:
+	theme.set_stylebox("panel", "TooltipPanel", _box(UITokens.BACKGROUND, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, UITokens.SPACE_MD, UITokens.SPACE_SM))
+	theme.set_font("font", "TooltipLabel", _font_regular)
+	theme.set_font_size("font_size", "TooltipLabel", UITokens.SIZE_SMALL)
+	theme.set_color("font_color", "TooltipLabel", UITokens.TEXT_PRIMARY)

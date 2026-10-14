@@ -1,0 +1,121 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Crafting/crafting_ui.gd" id="1_shop"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/base_menu.tscn" id="3_base"]
+
+[node name="CraftingMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_shop")
+
+[node name="BaseMenu" parent="." instance=ExtResource("3_base")]
+layout_mode = 1
+
+[node name="ShopPanel" type="PanelContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopPanel"
+
+[node name="Row" type="HBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel"]
+layout_mode = 2
+theme_type_variation = &"SlotRow"
+
+[node name="CategoryMargin" type="MarginContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row"]
+layout_mode = 2
+theme_type_variation = &"ShopCategoryMargin"
+
+[node name="Categories" type="VBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/CategoryMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopCategories"
+
+[node name="ListMargin" type="MarginContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopListMargin"
+
+[node name="Column" type="VBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin"]
+layout_mode = 2
+theme_type_variation = &"ShopColumn"
+
+[node name="Title" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopTitle"
+text = "Available Recipes"
+
+[node name="Header" type="PanelContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column"]
+layout_mode = 2
+theme_type_variation = &"ShopHeader"
+
+[node name="Line" type="HBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Header"]
+layout_mode = 2
+theme_type_variation = &"ShopRowLine"
+
+[node name="NameHeader" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Header/Line"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopColumnHeader"
+text = "Item Name & Materials"
+
+[node name="CountHeader" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Header/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopColumnHeader"
+text = "On Hand"
+
+[node name="PriceHeader" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Header/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopColumnHeader"
+text = "Crafting Cost"
+
+[node name="HeaderEnd" type="Control" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Header/Line"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ShopRowList"
+
+[node name="EmptyLabel" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "No recipes here."
+
+[node name="DescBox" type="PanelContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDescBox"
+
+[node name="Desc" type="VBoxContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/DescBox"]
+layout_mode = 2
+theme_type_variation = &"ShopDescColumn"
+
+[node name="DescName" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/DescBox/Desc"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+
+[node name="DescText" type="Label" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ShopPanel/Row/ListMargin/Column/DescBox/Desc"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDescText"
+autowrap_mode = 3
+
+[editable path="BaseMenu"]

@@ -6,7 +6,7 @@ class_name BaseOptionsComponent
 
 func _ready() -> void:
 	"""Инициализация компонента опций"""
-	super._ready()
+	await super._ready()
 	_setup_mode()
 
 func _initialize_component() -> void:

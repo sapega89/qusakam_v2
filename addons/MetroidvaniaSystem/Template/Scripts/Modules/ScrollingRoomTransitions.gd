@@ -31,7 +31,10 @@ func _initialize():
 	MetSys.cell_changed.connect(_on_cell_changed)
 
 func _on_room_changed(target_room: String):
-	if target_room == MetSys.get_current_room_name():
+	# room_changed дає шлях ("DesertRoad.tscn"), а get_current_room_name() — ":uid". Без
+	# переведення в один формат рівність не справджувалась ніколи, і після кожного
+	# телепорту кімната вантажилась удруге (B51).
+	if target_room == MetSys.map_data.get_uid_room(MetSys.get_current_room_name()):
 		# This can happen when teleporting to another room.
 		return
 	

@@ -1,0 +1,68 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/recipe_panel.gd" id="1_panel"]
+
+[node name="RecipePanel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_panel")
+
+[node name="Window" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -350.0
+offset_top = -220.0
+offset_right = 350.0
+offset_bottom = 220.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"WindowPanel"
+
+[node name="Column" type="VBoxContainer" parent="Window"]
+layout_mode = 2
+theme_type_variation = &"ShopColumn"
+
+[node name="Title" type="Label" parent="Window/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+text = "Recipe"
+horizontal_alignment = 1
+
+[node name="MaterialsCaption" type="Label" parent="Window/Column"]
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+text = "Required Materials"
+
+[node name="Materials" type="VBoxContainer" parent="Window/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopColumn"
+
+[node name="StatsBox" type="PanelContainer" parent="Window/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InsetPanel"
+
+[node name="StatsColumn" type="VBoxContainer" parent="Window/Column/StatsBox"]
+layout_mode = 2
+theme_type_variation = &"ShopDescColumn"
+
+[node name="StatsCaption" type="Label" parent="Window/Column/StatsBox/StatsColumn"]
+layout_mode = 2
+theme_type_variation = &"AccentLabel"
+text = "Expected Result Stats"
+
+[node name="Stats" type="VBoxContainer" parent="Window/Column/StatsBox/StatsColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"ShopDescColumn"

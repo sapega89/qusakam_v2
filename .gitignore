@@ -18,3 +18,12 @@ assets/**
 # Випадкові експорти/скріншоти в корені
 Untitled.png
 Untitled.png.import
+
+# Temp Figma reference/render captures (regenerable)
+.figma_tmp/
+
+# Godot editor backup files
+*.tmp
+
+# Вивід прогонів verify_*.gd — лише останній запуск, залежить від машини
+logs/

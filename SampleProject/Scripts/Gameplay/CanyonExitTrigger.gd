@@ -1,41 +1,18 @@
 extends Area2D
 class_name CanyonExitTrigger
 
-## 🚪 Триггер выхода из каньона
-## При входе игрока показывает катсцену спуска с каньона, затем переход в пустыню
-
-@export var one_shot: bool = true  # Срабатывает только один раз
-@export var target_room: String = "DesertRoad.tscn"  # Комната для перехода после катсцены
+## 🚪 Тригер спуску з каньйону — посередині сходів у Canyon.tscn.
+## Гравець, що повернувся з села, заходить сюди → кат-сцена Canyon_ExitCutscene → дорога.
 
 var has_triggered: bool = false
 
 func _ready() -> void:
-	"""Настройка обнаружения столкновений"""
-	# Проверяем, не подключен ли сигнал уже (чтобы избежать ошибки при повторном вызове _ready)
-	if not body_entered.is_connected(_on_body_entered):
-		body_entered.connect(_on_body_entered)
+	body_entered.connect(_on_body_entered)
 
 func _on_body_entered(body: Node2D) -> void:
-	"""Игрок вошел в зону выхода"""
-	if has_triggered and one_shot:
+	if has_triggered or not body.is_in_group(GameGroups.PLAYER):
 		return
-
-	# Проверяем, что это игрок
-	if not body.is_in_group(GameGroups.PLAYER):
-		return
-
-	has_triggered = true
-	_trigger_exit_cutscene()
-
-func _trigger_exit_cutscene() -> void:
-	"""Вызывает катсцену спуска через Canyon scene manager"""
-	var canyon_scene = get_tree().current_scene
-	if canyon_scene and canyon_scene.has_method("trigger_exit_cutscene"):
-		canyon_scene.trigger_exit_cutscene(target_room)
-		DebugLogger.info("CanyonExitTrigger: Катсцена спуска активирована", "Scene")
-	else:
-		DebugLogger.warning("CanyonExitTrigger: Canyon scene manager не найден", "Scene")
-
-func reset() -> void:
-	"""Сброс триггера (для тестирования/отладки)"""
-	has_triggered = false
+	# owner — кімната Canyon, у сцені якої стоїть тригер. Раніше тут брали current_scene,
+	# а це завжди Game, тож кат-сцена не запускалась ніколи. Canyon сам вирішує, чи вже час
+	# (до повернення з села спуск — звичайні сходи).
+	has_triggered = owner.trigger_exit_cutscene()

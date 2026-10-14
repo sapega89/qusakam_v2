@@ -5,11 +5,10 @@ extends Node
 ## Согласно DIP и Single Responsibility Principle
 ## РЕФАКТОРИНГ ЭТАП 3.1: Разделен на 5 ServiceRegistry категорий
 
-# Singleton instance (для обратной совместимости)
-static var instance: Node = null
-
 # Signals
 signal services_ready
+## true після services_ready — щоб пізні підписники не чекали сигналу, який уже пролунав.
+var is_ready: bool = false
 
 # Service Registries (категоризация сервисов) - lazy initialization
 var core: CoreServiceRegistry = null
@@ -23,7 +22,6 @@ var _game_manager: Node = null
 
 func _ready() -> void:
 	"""Инициализация ServiceLocator с Registry подсистемой"""
-	instance = self  # Для обратной совместимости
 
 	# Создаем Registry instances
 	core = CoreServiceRegistry.new()
@@ -64,13 +62,14 @@ func _register_all_registries() -> void:
 	data.register(_game_manager)
 
 	print("🔌 ServiceLocator: All service registries initialized successfully")
+	is_ready = true
 	services_ready.emit()
 
 func _exit_tree() -> void:
 	"""Очистка ресурсов при выходе"""
 	# Отключаем сигнал, если он был подключен (с проверкой на валидность)
 	if _game_manager and is_instance_valid(_game_manager):
-		if _game_manager.has_signal("managers_ready") and _game_manager.is_connected("managers_ready", _register_all_registries):
+		if _game_manager.is_connected("managers_ready", _register_all_registries):
 			_game_manager.disconnect("managers_ready", _register_all_registries)
 
 	# Очищаем ссылки на менеджеры
@@ -81,44 +80,18 @@ func _exit_tree() -> void:
 
 	print("🔌 ServiceLocator: Cleaned up")
 
-## DEPRECATED: Старые методы регистрации (для обратной совместимости)
-## Эти методы больше не используются - вся логика перенесена в ServiceRegistry классы
-func _register_autoload_services() -> void:
-	"""DEPRECATED: Используйте core.register() вместо этого"""
-	push_warning("ServiceLocator._register_autoload_services() is deprecated - use core.register()")
-
-func _register_managers() -> void:
-	"""DEPRECATED: Используйте _register_all_registries() вместо этого"""
-	push_warning("ServiceLocator._register_managers() is deprecated - use _register_all_registries()")
-
-## ============================================================================
-## GETTERS - Делегируют вызовы к соответствующим ServiceRegistry
-## Сохраняют обратную совместимость с существующим кодом
-## ============================================================================
-
-## Core Services
 func get_game_manager() -> Node:
 	"""Получает GameManager из CoreServiceRegistry"""
-	if not core:
-		push_error("ServiceLocator: CoreServiceRegistry not initialized!")
-		return null
 	return core.get_game_manager()
 
 func get_save_system() -> Node:
 	"""Получает SaveSystem из CoreServiceRegistry"""
-	if not core:
-		push_error("ServiceLocator: CoreServiceRegistry not initialized!")
-		return null
 	return core.get_save_system()
 
 ## UI Services
 func get_ui_manager() -> UIManager:
 	"""Получает UIManager из UIServiceRegistry"""
 	return ui.get_ui_manager()
-
-func get_ui_update_manager() -> UIUpdateManager:
-	"""Получает UIUpdateManager из UIServiceRegistry"""
-	return ui.get_ui_update_manager()
 
 func get_menu_manager() -> MenuManager:
 	"""Получает MenuManager из UIServiceRegistry"""
@@ -141,10 +114,6 @@ func get_player_state_manager() -> PlayerStateManager:
 	"""Получает PlayerStateManager из GameplayServiceRegistry"""
 	return gameplay.get_player_state_manager()
 
-func get_enemy_state_manager() -> EnemyStateManager:
-	"""Получает EnemyStateManager из GameplayServiceRegistry"""
-	return gameplay.get_enemy_state_manager()
-
 func get_inventory_manager() -> InventoryManager:
 	"""Получает InventoryManager из GameplayServiceRegistry"""
 	return gameplay.get_inventory_manager()
@@ -156,6 +125,10 @@ func get_dialogue_manager() -> GameDialogueManager:
 func get_xp_manager() -> XPManager:
 	"""Получает XPManager из GameplayServiceRegistry"""
 	return gameplay.get_xp_manager()
+
+func get_skill_manager() -> SkillManager:
+	"""Получает SkillManager из GameplayServiceRegistry"""
+	return gameplay.get_skill_manager()
 
 func get_game_flow() -> GameFlow:
 	"""Получает GameFlow из GameplayServiceRegistry"""
@@ -174,14 +147,6 @@ func get_audio_manager() -> Node:
 	"""Получает AudioManager из SystemServiceRegistry"""
 	return systems.get_audio_manager()
 
-func get_music_manager() -> Node:
-	"""Получает MusicManager из SystemServiceRegistry"""
-	return systems.get_music_manager()
-
-func get_debug_manager() -> Node:
-	"""Получает DebugManager из SystemServiceRegistry"""
-	return systems.get_debug_manager()
-
 func get_scene_manager() -> SceneManager:
 	"""Получает SceneManager из SystemServiceRegistry"""
 	return systems.get_scene_manager()
@@ -191,10 +156,6 @@ func get_item_database() -> Node:
 	"""Получает ItemDatabase из DataServiceRegistry"""
 	return data.get_item_database()
 
-func get_settings_manager() -> Node:
-	"""Получает SettingsManager из DataServiceRegistry"""
-	return data.get_settings_manager()
-
 func get_localization_manager() -> GameLocalizationManager:
 	"""Получает LocalizationManager из DataServiceRegistry"""
 	return data.get_localization_manager()
@@ -202,7 +163,4 @@ func get_localization_manager() -> GameLocalizationManager:
 ## Special/Legacy Services
 func get_dialogue_quest() -> Variant:
 	"""Получает DialogueQuest singleton (legacy support)"""
-	if Engine.has_singleton("DialogueQuest"):
-		return Engine.get_singleton("DialogueQuest")
-	push_warning("ServiceLocator: DialogueQuest singleton not found")
-	return null
+	return DialogueQuest

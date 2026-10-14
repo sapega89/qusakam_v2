@@ -117,21 +117,20 @@ func _check_quest_status() -> void:
 	
 	var quest_flag = quest_completion_flag if not quest_completion_flag.is_empty() else required_quest_id
 	var game = Game.get_singleton()
-	if game and game.has_method("get_quest_flag"):
-		var quest_completed = game.get_quest_flag(quest_flag, false)
-		
-		# Додаткова перевірка: якщо гравець повернувся з Village, всі ворота відкриті
-		var village_left_complete = game.get_quest_flag("village_left_complete", false)
-		if village_left_complete:
-			quest_completed = true
-		
-		# Встановлюємо open_by_default на основі quest flag, але НЕ відкриваємо ворота автоматично
-		# Ворота будуть відкриті/закриті на основі open_by_default при ініціалізації
-		# але після ініціалізації керуються тільки через явні виклики open_gate()/close_gate()
-		if quest_completed:
-			open_by_default = true
-		else:
-			open_by_default = false
+	var quest_completed = game.get_quest_flag(quest_flag, false)
+	
+	# Додаткова перевірка: якщо гравець повернувся з Village, всі ворота відкриті
+	var village_left_complete = game.get_quest_flag("village_left_complete", false)
+	if village_left_complete:
+		quest_completed = true
+	
+	# Встановлюємо open_by_default на основі quest flag, але НЕ відкриваємо ворота автоматично
+	# Ворота будуть відкриті/закриті на основі open_by_default при ініціалізації
+	# але після ініціалізації керуються тільки через явні виклики open_gate()/close_gate()
+	if quest_completed:
+		open_by_default = true
+	else:
+		open_by_default = false
 
 # Закоментовано - ворота не реагують автоматично на зміни quest flags
 # func _on_quest_flag_changed(quest_id: String, _value: Variant) -> void:
@@ -175,7 +174,24 @@ func _update_gate_visibility() -> void:
 		gate_layer.enabled = true   # блокують прохід
 		gate_layer.visible = true   # і їх видно, щоб блокування було зрозумілим
 		gate_layer.modulate = Color.WHITE
-	
+	_sync_map_border()
+
 	DebugLogger.info("GateController: Шар '%s' оновлено (is_open=%s, enabled=%s, visible=%s)" % [
 		gate_layer_name, is_open, gate_layer.enabled, gate_layer.visible
 	], "GateController")
+
+func _sync_map_border() -> void:
+	"""Ворота на межі кімнати: на карті MetSys там стіна, поки вони зачинені, і прохід, коли відчинені.
+	Клітинку й бік беремо з положення самих воріт. Override MetSys іде в сейв разом з картою."""
+	var room := MetSys.get_current_room_instance()
+	var cell_size: Vector2 = MetSys.settings.in_game_cell_size
+	var used := gate_layer.get_used_rect()
+	var tile := Vector2(gate_layer.tile_set.tile_size)
+	var center: Vector2 = gate_layer.global_position - room.get_parent().global_position + (Vector2(used.position) + Vector2(used.size) * 0.5) * tile
+	var local := Vector2i((center / cell_size).floor())
+	var coords: Vector3i = Vector3i(room.get_base_coords().x + local.x, room.get_base_coords().y + local.y, room.get_layer())
+	# ponytail: лише бокові межі — усі наші ворота вертикальні; верх/низ додати, коли зʼявляться люки.
+	var side: int = MetSys.R if fmod(center.x, cell_size.x) > cell_size.x * 0.5 else MetSys.L
+	if MetSys.map_data.get_cell_at(coords).borders[side] == -1:
+		return  # ворота всередині кімнати — на карті там межі немає
+	MetSys.get_cell_override(coords).set_border(side, 1 if is_open else 0)

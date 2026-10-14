@@ -6,50 +6,49 @@
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_misc_menu_modal")
 
-[node name="Panel" type="PanelContainer" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -240.0
-offset_top = -160.0
-offset_right = 240.0
-offset_bottom = 160.0
+[node name="Buttons" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+offset_left = 380.0
+offset_top = 530.0
+offset_right = 880.0
+offset_bottom = 730.0
+theme_override_constants/separation = 4
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="SettingsButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 12
-
-[node name="Title" type="Label" parent="Panel/VBox"]
-layout_mode = 2
-text = "Menu"
-horizontal_alignment = 1
-
-[node name="Buttons" type="VBoxContainer" parent="Panel/VBox"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 8
-
-[node name="SettingsButton" type="Button" parent="Panel/VBox/Buttons"]
-layout_mode = 2
-custom_minimum_size = Vector2(220, 36)
+theme_type_variation = &"MiscRow"
 text = "Settings"
+alignment = 0
 
-[node name="TutorialButton" type="Button" parent="Panel/VBox/Buttons"]
+[node name="TutorialButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-custom_minimum_size = Vector2(220, 36)
+theme_type_variation = &"MiscRow"
 text = "Tutorial"
+alignment = 0
 
-[node name="ExitMainMenuButton" type="Button" parent="Panel/VBox/Buttons"]
+[node name="ExitMainMenuButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-custom_minimum_size = Vector2(220, 36)
-text = "Exit to Main Menu"
+theme_type_variation = &"MiscRow"
+text = "Return to Title"
+alignment = 0
 
-[node name="ExitGameButton" type="Button" parent="Panel/VBox/Buttons"]
+[node name="ExitGameButton" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-custom_minimum_size = Vector2(220, 36)
-text = "Exit Game"
+theme_type_variation = &"MiscRow"
+text = "Quit the Game"
+alignment = 0

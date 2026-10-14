@@ -1,0 +1,158 @@
+extends SceneTree
+
+## Карта MetSys ↔ сцени кімнат (B52). Розміри беруться з MapData.txt і налаштувань MetSys:
+##   1. UID кімнати в MapData.txt розпізнається.
+##   2. Тайли Foreground покривають ширину кожного рядка клітинок кімнати.
+##   3. SavePoint / тригери / маркери / точки ворогів лежать у межах клітинок кімнати.
+##   4. На кожному проході між кімнатами ліворуч-праворуч підлога з обох боків на одній висоті.
+##   godot --headless --path . --script res://SampleProject/UI/verify_map_geometry.gd
+
+const SPAWN_POINT := preload("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
+const MAP_DATA := "res://SampleProject/Maps/MapData.txt"
+## Підлога по обидва боки проходу може різнитися не більше ніж на тайл.
+const FLOOR_TOLERANCE := 32.0
+
+var fails: Array[String] = []
+var cell := Vector2.ZERO
+
+func ck(ok: bool, label: String) -> void:
+	print(("  OK  " if ok else "  FAIL ") + label)
+	if not ok: fails.append(label)
+
+
+func _initialize() -> void:
+	await process_frame
+	cell = root.get_node("MetSys").settings.in_game_cell_size
+	print("cell %s" % cell)
+	# {Vector3i клітинка: {borders: [R, D, L, U], uid}}
+	var cells := _read_cells()
+	# {uid: [Vector3i]}
+	var rooms := {}
+	for c in cells:
+		var uid: String = cells[c].uid
+		if not rooms.has(uid):
+			rooms[uid] = []
+		rooms[uid].append(c)
+
+	# Підлога на краях кімнат у світових координатах: {Vector3i клітинка: {"left": y, "right": y}}.
+	var edges := {}
+	for uid in rooms:
+		var path := ResourceUID.get_id_path(ResourceUID.text_to_id("uid://" + uid)) if ResourceUID.has_id(ResourceUID.text_to_id("uid://" + uid)) else ""
+		ck(not path.is_empty(), "uid://%s resolves to a scene (cells %s)" % [uid, rooms[uid]])
+		if path.is_empty():
+			continue
+		_check_room(path, rooms[uid], edges)
+
+	print("[4] floor heights match across passages")
+	for c in cells:
+		var right: int = cells[c].borders[0]
+		var n: Vector3i = c + Vector3i(1, 0, 0)
+		if right <= 0 or not cells.has(n) or cells[n].uid == cells[c].uid:
+			continue
+		var a = edges.get(c, {}).get("right")
+		var b = edges.get(n, {}).get("left")
+		var name_a := _name(cells[c].uid)
+		var name_b := _name(cells[n].uid)
+		if a == null or b == null:
+			ck(false, "%s %s → %s %s: floor at the edge (%s | %s)" % [name_a, c, name_b, n, a, b])
+			continue
+		ck(absf(a - b) <= FLOOR_TOLERANCE, "%s %s → %s %s: floor y %.0f vs %.0f" % [name_a, c, name_b, n, a, b])
+
+	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
+	quit()
+
+
+func _read_cells() -> Dictionary:
+	var lines := FileAccess.get_file_as_string(MAP_DATA).split("\n")
+	var cells := {}
+	for i in lines.size() - 1:
+		if not lines[i].begins_with("["):
+			continue
+		var xyz := lines[i].trim_prefix("[").trim_suffix("]").split(",")
+		var data := lines[i + 1]
+		if not data.contains(":"):
+			continue  # клітинка без сцени (заготовка на карті)
+		var borders: Array = []
+		for b in data.get_slice("|", 0).split(","):
+			borders.append(int(b))
+		cells[Vector3i(int(xyz[0]), int(xyz[1]), int(xyz[2]))] = {"borders": borders, "uid": data.get_slice(":", data.get_slice_count(":") - 1)}
+	return cells
+
+
+func _name(uid: String) -> String:
+	var id := ResourceUID.text_to_id("uid://" + uid)
+	return ResourceUID.get_id_path(id).get_file().get_basename() if ResourceUID.has_id(id) else uid
+
+
+func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
+	var name := path.get_file().get_basename()
+	print("[%s]" % name)
+	var min_c := Vector2i(room_cells[0].x, room_cells[0].y)
+	for c in room_cells:
+		min_c = Vector2i(mini(min_c.x, c.x), mini(min_c.y, c.y))
+	var room: Node = load(path).instantiate()
+	var fg: TileMapLayer = room.find_child("Foreground", true, false)
+	var tile: Vector2 = Vector2(fg.tile_set.tile_size)
+
+	# 2. Покриття: у кожному рядку клітинок тайли доходять від лівої до правої межі.
+	var used := fg.get_used_rect()
+	var tiles_px := Rect2(_origin(fg) + Vector2(used.position) * tile, Vector2(used.size) * tile)
+	var rows := {}
+	for c in room_cells:
+		var x0: float = (c.x - min_c.x) * cell.x
+		rows[c.y] = Vector2(minf(rows.get(c.y, Vector2(x0, x0)).x, x0), maxf(rows.get(c.y, Vector2(x0, x0)).y, x0 + cell.x))
+	var room_w: float = 0.0
+	for y in rows:
+		room_w = maxf(room_w, rows[y].y)
+	ck(tiles_px.end.x >= room_w - tile.x, "%s: tiles reach the right edge (x %.0f of %.0f)" % [name, tiles_px.end.x, room_w])
+
+	# 3. Вузли в межах клітинок кімнати.
+	for n in room.find_children("*", "Node2D", true, false):
+		if not (n is Area2D or n is Marker2D or n.get_script() == SPAWN_POINT):
+			continue
+		var p: Vector2 = n.position
+		var parent := n.get_parent()
+		while parent != room:
+			p += parent.position if parent is Node2D else Vector2.ZERO
+			parent = parent.get_parent()
+		var inside := false
+		for c in room_cells:
+			if Rect2(Vector2(c.x - min_c.x, c.y - min_c.y) * cell, cell).has_point(p):
+				inside = true
+		ck(inside, "%s: %s inside the room (%.0f, %.0f)" % [name, n.name, p.x, p.y])
+
+	# 4. Підлога на лівому/правому краю кожної клітинки: найвищий твердий тайл у крайньому стовпці
+	# нижче першого вільного — це рівень, на який стає герой, що заходить збоку.
+	for c in room_cells:
+		var o := Vector2(c.x - min_c.x, c.y - min_c.y) * cell
+		edges[c] = {
+			"left": _floor_at(fg, tile, o.x + tile.x * 0.5, o.y, o.y + cell.y, min_c),
+			"right": _floor_at(fg, tile, o.x + cell.x - tile.x * 0.5, o.y, o.y + cell.y, min_c),
+		}
+	room.free()
+
+
+## Світова y верху першого твердого тайла під вільним місцем у стовпці x (у межах y0..y1 кімнати).
+func _floor_at(fg: TileMapLayer, tile: Vector2, x: float, y0: float, y1: float, min_c: Vector2i) -> Variant:
+	var col := int(floor((x - _origin(fg).x) / tile.x))
+	var seen_air := false
+	var row := int(floor((y0 - _origin(fg).y) / tile.y))
+	var last := int(floor((y1 - _origin(fg).y) / tile.y))
+	while row < last:
+		var solid := _solid(fg, Vector2i(col, row))
+		if not solid:
+			seen_air = true
+		elif seen_air:
+			return _origin(fg).y + row * tile.y + min_c.y * cell.y
+		row += 1
+	return null
+
+
+func _solid(fg: TileMapLayer, at: Vector2i) -> bool:
+	var data := fg.get_cell_tile_data(at)
+	return data != null and data.get_collision_polygons_count(0) > 0
+
+
+## Зсув шару відносно кімнати (TileMap-батько теж може бути зсунутий, як у City).
+func _origin(fg: TileMapLayer) -> Vector2:
+	return (fg.get_parent() as Node2D).position + fg.position

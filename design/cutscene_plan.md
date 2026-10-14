@@ -1,0 +1,79 @@
+---
+type: plan
+status: planned
+---
+
+# Cutscenes — plan
+
+**Nothing implemented.** Every "cutscene" today is a dialogue in the normal dialogue box while
+the player stands frozen. `CutsceneStep.gd` is an unused stub. 2026-10-13.
+Figma: no design exists (story scenes `36:65` is a dialogue layout, D70/D112).
+
+## What exists today
+
+| Thing | Where | State |
+|---|---|---|
+| Abduction "cutscene" | `Canyon.gd` state `CUTSCENE_ABDUCTION` → `Canyon_AbductionCutscene.dqd` | ⚠️ dialogue only — nobody is seen being abducted |
+| Canyon exit "cutscene" | `Canyon.gd` `EXIT_CUTSCENE` → `Canyon_ExitCutscene.dqd` → teleport to the road (D137) | ⚠️ dialogue + cut; no descent shown |
+| Mayor's Hall "cutscene" | `City_MayorHall.dqd` → teleport to the Laboratory (D130) | ⚠️ dialogue + cut |
+| Village abduction / old man | `Village.gd` `ABDUCTION_CUTSCENE`, `OLD_MAN_*` | ⚠️ dialogue only |
+| Prologue | `Scenes/UI/PrologueScene.tscn`, `Scripts/UI/PrologueScene.gd` | ✅ text intro screen (not in-world) |
+| Step stub | `Scripts/Systems/Cutscenes/CutsceneStep.gd` (57 lines) | ❌ referenced by nothing (`grep CutsceneStep` outside its file → 0) |
+| Building blocks | dialogue queue (`DialogueManager`), `Player.set_movement_enabled`, `Game.teleport_to_room`, Camera2D in `Game.tscn`, `SceneManager` fade layer | ✅ all exist |
+
+## Missing entirely
+
+- A way to script **in-world action**: characters walking, camera pans, fades, sprites appearing,
+  timed waits — interleaved with dialogue lines.
+- A skip control.
+- Actors for the scenes (abductors, the village people, the mayor) — see [[character_animation_plan]].
+
+## Decisions required
+
+1. **Q42 — GAME DESIGN DECISION REQUIRED (blocks everything).** What should a cutscene show, and
+   which story beats get one? Candidates: Canyon abduction, Village abduction, Canyon descent,
+   Mayor's Hall → Laboratory, lab boss intro. Options per beat: dialogue only (today) · dialogue +
+   fade/camera · fully staged (actors move).
+2. **Mechanism** (my call unless you object): one `AnimationPlayer` per cutscene scene, with
+   **method tracks** for dialogue lines (`DialogueManager.start_dialogue`) and waits — Godot's
+   built-in timeline instead of a home-made step system. `CutsceneStep.gd` is deleted.
+3. **Skip** (not blocking): hold B / Esc skips to the end state; recommended yes.
+
+## Decided (2026-10-13)
+
+D140: the **Village** is the first staged sequence — abduction as fade + dialogue → talk with the
+first bandit → fight → "oh no, the house!" → **old man cutscene**: he heals Kusakam, Kusakam heals
+him with **Healing Palm** (player action, D145), first skill learned (D141). Lines are drafts
+marked `[ЧЕРНЕТКА]` for Sapega to edit. Other beats: not decided.
+
+## Built (2026-10-13)
+
+**Village sequence** (D140, D145): `ScreenFade` (`Scripts/Systems/Cutscenes/ScreenFade.gd`) for the
+abduction; Village states drive the rest (`Village.gd`: `_abduction_scene`, `Village_AfterFight`,
+`_talk_to_old_man`, new `OLD_MAN_TREATMENT` → `_teach_healing_palm`). The old man (`OldMan.gd`)
+joins `allies` only for the treatment step, so Healing Palm's normal targeting (D142) heals him.
+Draft lines `// [ЧЕРНЕТКА]` in `dialogue_quest/`. Test: `verify_village_fight` [0]–[7].
+`CutsceneStep.gd` deleted. Scripted with the scene's existing await chain rather than an
+`AnimationPlayer` — enough for fade + dialogue + one player action; revisit when a beat needs
+actors moving.
+
+## Slices
+
+### Slice 1 — Cutscene runner + one beat
+- `Scripts/Systems/Cutscenes/CutscenePlayer.gd`: plays a cutscene scene's `AnimationPlayer`,
+  locks the player, waits on dialogue, supports skip; delete `CutsceneStep.gd`.
+- First beat chosen by Q42 (recommended: Canyon abduction).
+- `UI/verify_cutscene.gd`: starts, locks input, plays lines in order, skip lands in the end state,
+  quest flags match the dialogue-only version.
+
+### Slice 2 — Remaining beats
+- One beat per commit, each keeps today's quest flags and teleports (D130, D137).
+
+## Order and dependencies
+
+`Q42 → 1 → 2`. Staged beats need actor art from [[character_animation_plan]]; a fade/camera-only
+version can ship before the art.
+
+## Out of scope for this pass
+
+Dialogue box redesign (D110), full-body art in dialogue (D112), branching choices (D113).

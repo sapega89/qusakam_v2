@@ -25,15 +25,15 @@ var is_dying: bool = false  # Флаг, що гравець зараз вмир�
 
 # Components — дочірні вузли Player.tscn (а не створені через .new()), щоб їхні
 # @export-параметри були доступні для налаштування в інспекторі.
-@onready var combat: PlayerCombat = get_node_or_null("PlayerCombat") as PlayerCombat
-@onready var mover: PlayerMover = get_node_or_null("PlayerMover") as PlayerMover
+@onready var combat: PlayerCombat = $PlayerCombat
+@onready var mover: PlayerMover = $PlayerMover
 
 # Рух винесено в PlayerMover (speed_min/max, jump_velocity, gravity тощо).
 # last_direction лишаємо тут як forwarding-властивість, бо на нього посилаються
 # ззовні (Systems/VFXHooks.gd, save-система через abilities).
 var last_direction: int:
 	get:
-		return mover.last_direction if mover else 1
+		return mover.last_direction
 
 func set_movement_enabled(enabled: bool) -> void:
 	"""Enable or disable player movement and input"""
@@ -45,30 +45,30 @@ func set_movement_enabled(enabled: bool) -> void:
 		if $AnimationPlayer:
 			$AnimationPlayer.play("Idle")
 		# Also reset sprite flipping if needed or keep it
-	
+
 	DebugLogger.info("Player: Movement enabled = %s (event = %s)" % [enabled, event], "Player")
 
 func _ready() -> void:
 	# Добавляем игрока в группу для боевой системы
 	add_to_group(GameGroups.PLAYER)
-	
+
 	# ВАЖНО: Гарантуємо, що process_mode встановлено правильно
 	process_mode = Node.PROCESS_MODE_INHERIT
-	
+
 	# Инициализация боевых параметров
 	Starting_Health = 100
 	Max_Health = 100
 	current_health = Starting_Health
-	
+
 	# ВАЖНО: Гарантуємо, що event = false при ініціалізації
 	event = false
-	
+
 	# Инициализация компонентов
 	_initialize_components()
-	
+
 	# Создаем HP бар для игрока
 	_initialize_health_bar()
-	
+
 	on_enter()
 
 	# Subscribe to level up events
@@ -94,7 +94,7 @@ func _physics_process(delta: float) -> void:
 		if OS.is_debug_build():
 			DebugLogger.physics_verbose("Player: Рух заблоковано через паузу гри", "player_paused")
 		return
-	
+
 	var new_animation: String  # Оголошуємо змінну один раз на початку функції
 
 	# Гравітація, стрибок, горизонтальний рух, move_and_slide() та детекція
@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 	# Обновляем кулдаун kill()
 	if kill_cooldown > 0:
 		kill_cooldown -= delta
-	
+
 	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
 	# чи клік уже спожив елемент інтерфейсу.
 
@@ -122,15 +122,13 @@ func _physics_process(delta: float) -> void:
 			new_animation = &"Jump"
 		elif velocity.y >= 0 and not is_on_floor():
 			new_animation = &"Fall"
-		
+
 		# Прерываем атаку только для важных состояний
 		if new_animation == &"Fall" or new_animation == &"Jump":
 			combat.is_attacking = false
-			if combat.damage_applier:
-				combat.damage_applier.disable_damage()
-			if combat.hitbox:
-				combat.hitbox.monitoring = false
-				combat.hitbox.monitorable = false
+			combat.damage_applier.disable_damage()
+			combat.hitbox.monitoring = false
+			combat.hitbox.monitorable = false
 			animation = new_animation
 			if new_animation == &"Jump":
 				mover.jump_direction = last_direction
@@ -138,7 +136,7 @@ func _physics_process(delta: float) -> void:
 			_update_facing(new_animation)
 		# Если атака активна и не нужно переключаться на Fall/Jump - не меняем анимацию
 		return
-	
+
 	# Определяем новую анимацию (можем прервать текущую анимацию, если нужно)
 	new_animation = &"Idle"
 	if velocity.y < 0:
@@ -147,7 +145,7 @@ func _physics_process(delta: float) -> void:
 		new_animation = &"Fall"
 	elif absf(velocity.x) > 1:
 		new_animation = &"Run"
-	
+
 	# Переключаем анимацию, если она изменилась (з затримкою для плавності)
 	if new_animation != animation and animation_change_cooldown <= 0:
 		animation = new_animation
@@ -158,7 +156,7 @@ func _physics_process(delta: float) -> void:
 		# Використовуємо плавне переключення анімацій
 		if $AnimationPlayer.current_animation != new_animation:
 			$AnimationPlayer.play(new_animation)
-	
+
 	_update_facing(new_animation)
 
 func _unhandled_input(ev: InputEvent) -> void:
@@ -193,6 +191,11 @@ func die() -> void:
 	# Вызываем родительский die() для установки is_dead и эмита сигналов
 	super.die()
 
+	# Figma game-over-screen 41:83: екран Game Over замість миттєвого респавну.
+	# Якщо показати нікуди (немає поточної сцени) — стара поведінка.
+	if GameOverScreen.present(self):
+		return
+
 	# Вызываем kill() для респавна игрока
 	kill()
 
@@ -207,7 +210,7 @@ func kill():
 	kill_cooldown = kill_cooldown_time
 
 	DebugLogger.info("Player: kill() викликано! reset_position = %s, поточна позиція = %s" % [reset_position, position], "Player")
-	
+
 	# Player dies, reset the position to the entrance.
 	if reset_position != Vector2.ZERO:
 		position = reset_position
@@ -223,10 +226,9 @@ func kill():
 
 	# Викликаємо load_room тільки якщо це не призведе до циклу
 	var game = Game.get_singleton()
-	if game:
-		var current_room = MetSys.get_current_room_name()
-		DebugLogger.info("Player: Завантажуємо кімнату: %s (HP відновлено до %d/%d)" % [current_room, current_health, Max_Health], "Player")
-		game.load_room(current_room)
+	var current_room = MetSys.get_current_room_name()
+	DebugLogger.info("Player: Завантажуємо кімнату: %s (HP відновлено до %d/%d)" % [current_room, current_health, Max_Health], "Player")
+	game.load_room(current_room)
 
 # Combat logic delegates to PlayerCombat component
 func perform_attack():
@@ -260,35 +262,17 @@ func _initialize_health_bar():
 		# Если сцена еще не готова, откладываем поиск
 		call_deferred("_initialize_health_bar")
 		return
-	
+
 	# Ищем HP бар в UICanvas CanvasLayer (специальный CanvasLayer для UI элементов игры)
-	var ui_canvas = scene.get_node_or_null("UICanvas")
-	if ui_canvas:
-		health_bar = ui_canvas.get_node_or_null("PlayerHealthBar") as HealthBar
-	
-	# Если HP бар не найден, создаем его (fallback для совместимости)
-	if not health_bar:
-		push_warning("Player: HP бар не найден в сцене, создаем через скрипт")
-		var health_bar_scene = load("res://SampleProject/Scenes/UI/health_bar.tscn")
-		if health_bar_scene:
-			health_bar = health_bar_scene.instantiate() as HealthBar
-			# Создаем UICanvas если его нет
-			if not ui_canvas:
-				ui_canvas = CanvasLayer.new()
-				ui_canvas.name = "UICanvas"
-				scene.add_child(ui_canvas)
-			if health_bar and ui_canvas:
-				ui_canvas.add_child(health_bar)
-				health_bar.name = "PlayerHealthBar"
-				health_bar.position = Vector2(10, 40)
-				health_bar.custom_minimum_size = Vector2(150, 20)
-	
+	# HP-бар живе в Game.tscn → UICanvas/PlayerHealthBar; без нього — помилка, не запасний бар зі скрипта.
+	health_bar = scene.get_node(^"UICanvas/PlayerHealthBar") as HealthBar
+
 	# Настраиваем HP бар для игрока
 	if health_bar:
 		health_bar.setup_for_entity(self, "Player")
 		health_bar.visible = true
 		health_bar.z_index = 100
-		
+
 		# Обновляем начальные значения
 		await get_tree().process_frame
 		if health_bar.bar:
@@ -308,18 +292,18 @@ func on_enter():
 	# ВАЖНО: Не скидаємо позицію, тільки зберігаємо reset_position
 	var old_reset_position = reset_position
 	reset_position = position
-	
+
 	# Діагностика: перевіряємо, чи не змінилася позиція після встановлення reset_position (DEBUG)
 	# TODO: Remove this diagnostic logging after confirming teleportation bug is fixed
 	if old_reset_position != Vector2.ZERO and old_reset_position.distance_to(reset_position) > 100.0:  # Increased threshold to 100 to reduce noise
 		DebugLogger.info("Player: on_enter() - reset_position changed (room transition): old = %s, new = %s" % [old_reset_position, reset_position], "Player")
 
 	DebugLogger.info("Player: on_enter() викликано, reset_position = %s, поточна позиція = %s" % [reset_position, position], "Player")
-	
+
 	# Скидаємо флаг смерті при вході в нову кімнату
 	is_dying = false
 	kill_cooldown = 0.0
-	
+
 	# Страховка від "залипання" event після переходу через портал: якщо блокування
 	# лишилось увімкненим без причини, гравець більше ніколи не зрушить.
 	#
@@ -353,8 +337,7 @@ func _spawn_attack_vfx() -> void:
 	slash.position = Vector2(offset_x, offset_y)
 
 	# Set slash direction for particle emission
-	if slash.has_method("set_direction"):
-		slash.set_direction(last_direction)
+	slash.set_direction(last_direction)
 
 func _spawn_level_up_vfx() -> void:
 	"""Spawns level up celebration VFX (flash + particles)"""
@@ -363,14 +346,8 @@ func _spawn_level_up_vfx() -> void:
 		var flash = LEVEL_UP_FLASH_SCENE.instantiate()
 		if flash:
 			# Add to UI layer (z_index high to be on top)
-			var ui_root = get_tree().current_scene.get_node_or_null("CanvasLayer")
-			if ui_root:
-				ui_root.add_child(flash)
-				flash.z_index = 300  # Above all other UI
-			else:
-				# Fallback to scene root
-				get_tree().current_scene.add_child(flash)
-				flash.z_index = 300
+			get_tree().current_scene.add_child(flash)
+			flash.z_index = 300  # Above all other UI
 
 	# Spawn golden particle burst from player
 	if LEVEL_UP_PARTICLES_SCENE:
@@ -403,6 +380,10 @@ func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 	# Heal player by the HP increase amount
 	var hp_increase = Max_Health - old_max_hp
 	current_health = min(current_health + hp_increase, Max_Health)
+
+	# Контракт CombatBody2D: будь-яка зміна HP/Max_Health емітує health_changed.
+	# Без цього HUD не бачив підвищення максимуму на новому рівні.
+	health_changed.emit(current_health, Max_Health, true)
 
 	# Update HP bar
 	if health_bar:

@@ -35,7 +35,7 @@ func _process(delta: float) -> void:
 		landing_cooldown -= delta
 	if attack_effect_cooldown > 0:
 		attack_effect_cooldown -= delta
-	
+
 	# Удаляем недействительные эффекты из списка
 	active_attack_effects = active_attack_effects.filter(func(effect): return is_instance_valid(effect))
 
@@ -44,59 +44,16 @@ func _ready() -> void:
 	if not enabled:
 		print("⚠️ VFXHooks: Disabled")
 		return
-	
+
 	# Используем call_deferred для подключения после полной инициализации
 	call_deferred("_connect_to_event_bus")
 
 func _connect_to_event_bus() -> void:
-	print("🔧 VFXHooks: _connect_to_event_bus() called")
-	
-	# EventBus зарегистрирован как autoload через сцену, доступен напрямую
-	# Ждем несколько кадров, чтобы EventBus точно инициализировался
-	for i in range(5):
-		await get_tree().process_frame
-	
-	# Пытаемся получить EventBus через прямой доступ
-	var event_bus = null
-	if has_node("/root/EventBus"):
-		event_bus = get_node("/root/EventBus")
-		print("✅ VFXHooks: EventBus found via /root/EventBus")
-	else:
-		# Пробуем прямой доступ (autoload доступен как глобальная переменная)
-		# В Godot 4 autoload доступен напрямую по имени
-		event_bus = EventBus
-		if event_bus:
-			print("✅ VFXHooks: EventBus found via direct access")
-	
-	if not event_bus:
-		print("❌ VFXHooks: EventBus not found!")
-		return
-	
-	print("✨ VFXHooks: Connecting to EventBus signals...")
-	
-	# Подключаемся к сигналам
-	if event_bus.has_signal("player_landed"):
-		event_bus.player_landed.connect(_on_player_landed)
-		print("✅ VFXHooks: Connected to player_landed signal")
-	else:
-		print("❌ VFXHooks: player_landed signal not found in EventBus!")
-	
-	if event_bus.has_signal("damage_received"):
-		event_bus.damage_received.connect(_on_damage_received)
-		print("✅ VFXHooks: Connected to damage_received signal")
-	
-	if event_bus.has_signal("damage_dealt"):
-		event_bus.damage_dealt.connect(_on_damage_dealt)
-		print("✅ VFXHooks: Connected to damage_dealt signal")
-	
-	if event_bus.has_signal("player_attacked"):
-		event_bus.player_attacked.connect(_on_player_attacked)
-		print("✅ VFXHooks: Connected to player_attacked signal")
-	
-	# Skill VFX (якщо є сигнал skill_used)
-	if event_bus.has_signal("skill_used"):
-		event_bus.skill_used.connect(_on_skill_used)
-		print("✅ VFXHooks: Connected to skill_used signal")
+	EventBus.player_landed.connect(_on_player_landed)
+	EventBus.damage_received.connect(_on_damage_received)
+	EventBus.damage_dealt.connect(_on_damage_dealt)
+	EventBus.player_attacked.connect(_on_player_attacked)
+	EventBus.skill_used.connect(_on_skill_used)
 
 	# Прогріваємо кеш кадрів удару зараз, поки сцена ще вантажиться. Інакше перший
 	# у грі удар оплатив би генерацію текстур сам — єдиним, але помітним фризом.
@@ -118,7 +75,7 @@ func _draw_green_pixel_with_glow(image: Image, x: int, y: int, _center_y: float,
 		else:
 			var alpha = (1.0 - dist / max_dist) * 0.7 * intensity
 			image.set_pixel(x, y, Color(0.15, 0.9, 0.25, clamp(alpha, 0.0, 1.0)))
-	
+
 	# Голубое свечение вокруг
 	if dist <= max_dist + 1.5:
 		var glow_alpha = (1.0 - dist / (max_dist + 1.5)) * 0.3 * intensity
@@ -143,7 +100,7 @@ func _draw_triangular_peak(image: Image, x: int, peak_center: float, height: int
 	"""Рисует треугольный пик с голубым свечением"""
 	if peak_center < 0 or peak_center >= height:
 		return
-	
+
 	for y in range(height):
 		var dist = abs(y - peak_center)
 		if dist <= peak_size:
@@ -183,13 +140,13 @@ func _draw_animated_peaks(image: Image, x: int, center_y: float, height: int, ph
 	var peak1_height = abs(triangle1) * 2.5
 	_draw_triangular_peak(image, x, center_y - peak1_height, height, 1.5, 0.9, 1.5, 0.2)
 	_draw_triangular_peak(image, x, center_y + peak1_height, height, 1.5, 0.9, 1.5, 0.2)
-	
+
 	# Пик 2 - средняя частота, средняя амплитуда
 	var triangle2 = abs(fmod(x * 0.15 + 2.0 + phase_offset * 1.5, 12.0) - 6.0) - 3.0
 	var peak2_height = abs(triangle2) * 3.5
 	_draw_triangular_peak(image, x, center_y - peak2_height, height, 1.2, 0.7, 1.6, 0.18)
 	_draw_triangular_peak(image, x, center_y + peak2_height, height, 1.2, 0.7, 1.6, 0.18)
-	
+
 	# Пик 3 - медленная частота, большая амплитуда
 	var triangle3 = abs(fmod(x * 0.08 + 4.0 + phase_offset * 1.0, 20.0) - 10.0) - 5.0
 	var peak3_height = abs(triangle3) * 4.5
@@ -212,7 +169,7 @@ func _flip_texture(texture: Texture2D) -> Texture2D:
 
 func _create_energy_wave_texture(width: int, height: int, center_y: float, phase_offset: float = 0.0, tip_start: float = 0.15, tip_end: float = 0.85) -> ImageTexture:
 	"""Создает текстуру энергетической волны с треугольными пиками
-	
+
 	Args:
 		width: Ширина текстуры
 		height: Высота текстуры
@@ -223,56 +180,56 @@ func _create_energy_wave_texture(width: int, height: int, center_y: float, phase
 	"""
 	var image = Image.create(width, height, false, Image.FORMAT_RGBA8)
 	image.fill(Color.TRANSPARENT)
-	
+
 	for x in range(width):
 		var progress = float(x) / float(width)
-		
+
 		# Острый наконечник
 		if progress < tip_start:
 			var tip_progress = progress / tip_start
 			_draw_energy_tip(image, x, center_y, height, tip_progress, 6.0, 1.0)
-		
+
 		# Основная часть - треугольные пики
 		elif progress >= tip_start and progress < tip_end:
 			_draw_center_line(image, x, center_y, height, 1.0)
 			_draw_animated_peaks(image, x, center_y, height, phase_offset)
-		
+
 		# Хвост - затухание
 		else:
 			var tail_progress = (progress - tip_end) / (1.0 - tip_end)
 			_draw_tail(image, x, center_y, height, tail_progress)
-	
+
 	var texture = ImageTexture.create_from_image(image)
 	texture.update(image)
 	return texture
 
 func _on_player_landed(fall_height: float) -> void:
 	print("✨ VFXHooks: Player landed signal received! Fall height = ", fall_height, " pixels")
-	
+
 	# Проверяем кулдаун, чтобы не создавать эффекты слишком часто
 	if landing_cooldown > 0:
 		print("⚠️ VFXHooks: Cooldown active (", landing_cooldown, "), skipping effect")
 		return
-	
+
 	# Игнорируем очень маленькие падения
 	if fall_height < MIN_FALL_HEIGHT:
 		print("⚠️ VFXHooks: Fall height too small (", fall_height, " < ", MIN_FALL_HEIGHT, "), skipping effect")
 		return
-	
+
 	print("✅ VFXHooks: Creating dust effect for fall height = ", fall_height, " pixels")
 	landing_cooldown = LANDING_COOLDOWN_TIME
-	
+
 	var player = GameGroups.get_player()
 	if not player or not is_instance_valid(player):
 		return
-	
+
 	# Получаем позицию игрока в глобальных координатах
 	var dust_pos: Vector2
 	if player is Node2D:
 		dust_pos = player.global_position + Vector2(0, 15)  # Немного ниже ног
 	else:
 		return
-	
+
 	# Создаем эффект с учетом высоты падения
 	_spawn_dust(dust_pos, fall_height)
 
@@ -287,14 +244,14 @@ func _on_player_attacked(player: Node, direction: int) -> void:
 	"""Обработчик сигнала player_attacked - когда игрок начинает атаку"""
 	if not player or not is_instance_valid(player):
 		return
-	
+
 	# Проверяем кулдаун, чтобы не создавать эффекты слишком часто
 	if attack_effect_cooldown > 0:
 		return
-	
+
 	# Получаем направление напрямую из персонажа - используем velocity.x для точности
 	var player_direction: int = direction  # По умолчанию используем переданное направление
-	
+
 	# Пытаемся получить направление из velocity персонажа (самое точное)
 	if "velocity" in player and player.velocity is Vector2:
 		var vel = player.velocity as Vector2
@@ -307,7 +264,7 @@ func _on_player_attacked(player: Node, direction: int) -> void:
 	elif "last_direction" in player:
 		# Если velocity недоступен - используем last_direction
 		player_direction = player.last_direction
-	
+
 	# Создаем VFX эффект атаки (стремительный удар копьем) на кончике оружия
 	var attack_pos: Vector2
 	if player is Node2D:
@@ -317,10 +274,10 @@ func _on_player_attacked(player: Node, direction: int) -> void:
 		attack_pos = player.global_position + offset
 	else:
 		return
-	
+
 	# Устанавливаем кулдаун
 	attack_effect_cooldown = ATTACK_EFFECT_COOLDOWN_TIME
-	
+
 	# Создаем эффект стремительного удара копьем с точным направлением движения персонажа
 	_spawn_attack_effect(attack_pos, player_direction)
 
@@ -328,7 +285,7 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	"""Обработчик сигнала damage_dealt - когда игрок наносит урон врагу"""
 	if not target or not source:
 		return
-	
+
 	# Показываем эффект удара только когда игрок бьет врага
 	if source.is_in_group(GameGroups.PLAYER) and target.is_in_group(GameGroups.ENEMIES):
 		var hit_pos: Vector2
@@ -336,7 +293,7 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 			hit_pos = target.global_position
 		else:
 			return
-		
+
 		# Создаем эффект удара (искры/вспышка)
 		_spawn_hit_effect(hit_pos)
 
@@ -344,7 +301,7 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 	# Вычисляем интенсивность эффекта на основе высоты падения
 	# Нормализуем: MIN_FALL_HEIGHT = минимальный эффект, MAX_FALL_HEIGHT = максимальный эффект
 	var intensity = clamp((fall_height - MIN_FALL_HEIGHT) / (MAX_FALL_HEIGHT - MIN_FALL_HEIGHT), 0.0, 1.0)
-	
+
 	# Параметры для реалистичной пыли при приземлении
 	var min_amount = 5  # Еще меньше частиц
 	var max_amount = 12  # Еще меньше частиц
@@ -352,7 +309,7 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 	var max_velocity = 120.0
 	var min_scale = 3.5  # Еще крупнее частицы
 	var max_scale = 7.0  # Еще крупнее частицы
-	
+
 	# Масштабируем параметры в зависимости от интенсивности
 	var amount = int(lerp(min_amount, max_amount, intensity))
 	var velocity_min = lerp(min_velocity, max_velocity, intensity)
@@ -360,11 +317,11 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 	var scale_min = lerp(min_scale, max_scale, intensity)
 	var scale_max = lerp(min_scale * 1.2, max_scale * 1.2, intensity)
 	var lifetime = lerp(0.4, 0.8, intensity)
-	
+
 	# Создаем текстуру для частиц пыли (небольшой серый круг)
 	var image = Image.create(6, 6, false, Image.FORMAT_RGBA8)
 	image.fill(Color.TRANSPARENT)
-	
+
 	# Рисуем серый круг для пыли
 	var center = Vector2(3, 3)
 	var radius = 2.5
@@ -375,9 +332,9 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 				# Градиент от центра к краю для более мягкого вида
 				var alpha = 1.0 - (dist / radius) * 0.3
 				image.set_pixel(x, y, Color(0.7, 0.65, 0.6, alpha))
-	
+
 	var texture = ImageTexture.create_from_image(image)
-	
+
 	var p := CPUParticles2D.new()
 	p.texture = texture
 	p.one_shot = true
@@ -385,33 +342,33 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 	p.amount = amount
 	p.lifetime = lifetime
 	p.speed_scale = 1.0
-	
+
 	# Частицы разлетаются в основном в стороны (горизонтально)
 	p.direction = Vector2(0, 0.05)  # Очень немного вниз, в основном горизонтально
 	p.spread = 200.0  # Очень широкий разброс в стороны (больше по X, меньше по Y)
-	
+
 	p.initial_velocity_min = velocity_min
 	p.initial_velocity_max = velocity_max
 	p.gravity = Vector2(0, 100)  # Гравитация вниз для оседания пыли
-	
+
 	# Цвет пыли - коричневато-серый, более реалистичный
 	var dust_color = Color(0.75, 0.7, 0.65, lerp(0.5, 0.8, intensity))
 	p.color = dust_color
 	p.z_index = 200
-	
+
 	# Размер частиц - небольшие для реалистичности
 	p.scale_amount_min = scale_min
 	p.scale_amount_max = scale_max
-	
+
 	# Добавляем в текущую сцену
 	var scene = get_tree().current_scene
 	if not scene:
 		return
-	
+
 	# Устанавливаем глобальную позицию правильно
 	p.global_position = pos
 	scene.add_child(p)
-	
+
 	# Ждем и удаляем
 	await get_tree().create_timer(lifetime + 0.1).timeout
 	if is_instance_valid(p):
@@ -420,28 +377,28 @@ func _spawn_dust(pos: Vector2, fall_height: float) -> void:
 func _spawn_simple_dust_effect(pos: Vector2) -> void:
 	"""Простой визуальный эффект пыли с помощью спрайтов"""
 	print("✨ VFXHooks: Creating simple dust effect")
-	
+
 	# Создаем несколько простых спрайтов для эффекта пыли
 	for i in range(8):
 		var sprite = Sprite2D.new()
-		
+
 		# Создаем простую текстуру
 		var image = Image.create(4, 4, false, Image.FORMAT_RGBA8)
 		image.fill(Color(0.9, 0.85, 0.7, 0.8))
 		var texture = ImageTexture.create_from_image(image)
 		sprite.texture = texture
-		
+
 		# Случайная позиция вокруг точки приземления
 		var angle = randf() * TAU
 		var distance = randf_range(10.0, 30.0)
 		sprite.global_position = pos + Vector2(cos(angle), sin(angle)) * distance
 		sprite.z_index = 200
 		sprite.scale = Vector2(randf_range(0.5, 1.5), randf_range(0.5, 1.5))
-		
+
 		var scene = get_tree().current_scene
 		if scene:
 			scene.add_child(sprite)
-			
+
 			# Анимация исчезновения
 			var tween = create_tween()
 			tween.set_parallel(true)
@@ -499,38 +456,38 @@ func _spawn_attack_effect(pos: Vector2, direction: int) -> void:
 	animated_sprite.z_index = 300
 	animated_sprite.modulate = Color(1.0, 1.0, 1.0, 1.0)
 	animated_sprite.scale = Vector2(1.5, 1.5)
-	
+
 	# Добавляем пульсацию свечения (ограниченное количество циклов)
 	var tween_glow = create_tween()
 	tween_glow.set_loops(5)  # 5 циклов за время жизни эффекта (~1 секунда)
 	tween_glow.tween_property(animated_sprite, "modulate", Color(1.2, 1.2, 1.2, 1.0), 0.3)
 	tween_glow.tween_property(animated_sprite, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.3)
-	
+
 	# Добавляем в список активных эффектов
 	active_attack_effects.append(animated_sprite)
-	
+
 	var scene = get_tree().current_scene
 	if not scene:
 		return
-	
+
 	# Позиция эффекта
 	animated_sprite.global_position = pos
 	scene.add_child(animated_sprite)
-	
+
 	# Анимация движения вперед
 	var target_pos = pos + Vector2(250.0 * direction, 0)
 	var tween_move = create_tween()
 	tween_move.set_parallel(true)
 	tween_move.tween_property(animated_sprite, "global_position", target_pos, 1.0)
 	tween_move.tween_property(animated_sprite, "modulate:a", 0.0, 1.0)  # Затухание
-	
+
 	# Ждем завершения движения
 	await get_tree().create_timer(1.0).timeout
-	
+
 	# Создаем эффект волн, разлетающихся в разные стороны
 	if is_instance_valid(animated_sprite):
 		_spawn_energy_waves(target_pos)
-	
+
 	# Удаляем анимированный спрайт
 	await get_tree().create_timer(0.1).timeout
 	if is_instance_valid(animated_sprite):
@@ -542,25 +499,25 @@ func _spawn_energy_waves(pos: Vector2) -> void:
 	var scene = get_tree().current_scene
 	if not scene:
 		return
-	
+
 	# Создаем контейнер для всех эффектов волн
 	var waves_container = Node2D.new()
 	waves_container.global_position = pos
 	waves_container.z_index = 350
 	scene.add_child(waves_container)
-	
+
 	# Количество волн в разных направлениях
 	var wave_count = 8
 	var wave_duration = 0.6
-	
+
 	# Создаем волны, расходящиеся в разные стороны
 	for i in range(wave_count):
 		var angle = (TAU / wave_count) * i
 		var direction = Vector2(cos(angle), sin(angle))
-		
+
 		# Создаем текстуру волны используя переиспользуемый метод
 		var wave_texture = _create_energy_wave_texture(64, 16, 7.5, 0.0, 0.2, 0.8)
-		
+
 		# Создаем спрайт для волны
 		var wave_sprite = Sprite2D.new()
 		wave_sprite.texture = wave_texture
@@ -568,7 +525,7 @@ func _spawn_energy_waves(pos: Vector2) -> void:
 		wave_sprite.scale = Vector2(1.5, 1.5)
 		wave_sprite.rotation = angle  # Поворачиваем в направлении движения
 		waves_container.add_child(wave_sprite)
-		
+
 		# Анимация волны - разлетается от центра
 		var wave_distance = 150.0
 		var target_pos = direction * wave_distance
@@ -577,7 +534,7 @@ func _spawn_energy_waves(pos: Vector2) -> void:
 		wave_tween.tween_property(wave_sprite, "position", target_pos, wave_duration)
 		wave_tween.tween_property(wave_sprite, "modulate:a", 0.0, wave_duration)
 		wave_tween.tween_property(wave_sprite, "scale", Vector2(2.5, 2.5), wave_duration)  # Увеличивается при удалении
-	
+
 	# Удаляем контейнер после завершения эффекта
 	await get_tree().create_timer(wave_duration + 0.1).timeout
 	if is_instance_valid(waves_container):
@@ -588,7 +545,7 @@ func _spawn_hit_effect(pos: Vector2) -> void:
 	# Создаем текстуру для искр (маленький желтый/оранжевый круг)
 	var image = Image.create(4, 4, false, Image.FORMAT_RGBA8)
 	image.fill(Color.TRANSPARENT)
-	
+
 	var center = Vector2(2, 2)
 	var radius = 1.5
 	for x in range(4):
@@ -596,9 +553,9 @@ func _spawn_hit_effect(pos: Vector2) -> void:
 			var dist = Vector2(x, y).distance_to(center)
 			if dist <= radius:
 				image.set_pixel(x, y, Color(1.0, 0.8, 0.3, 0.9))  # Желто-оранжевый
-	
+
 	var texture = ImageTexture.create_from_image(image)
-	
+
 	var particles := CPUParticles2D.new()
 	particles.texture = texture
 	particles.one_shot = true
@@ -615,14 +572,14 @@ func _spawn_hit_effect(pos: Vector2) -> void:
 	particles.z_index = 300
 	particles.scale_amount_min = 2.0
 	particles.scale_amount_max = 3.5
-	
+
 	var scene = get_tree().current_scene
 	if not scene:
 		return
-	
+
 	particles.global_position = pos
 	scene.add_child(particles)
-	
+
 	# Ждем и удаляем
 	await get_tree().create_timer(0.4).timeout
 	if is_instance_valid(particles):
@@ -663,7 +620,7 @@ func _spawn_skill_vfx(pos: Vector2) -> void:
 func play_heal_effect(target: Node) -> void:
 	if not target or not is_instance_valid(target):
 		return
-	
+
 	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
 	_spawn_heal_particles(target_pos)
 
@@ -671,7 +628,7 @@ func play_heal_effect(target: Node) -> void:
 func play_shield_effect(target: Node) -> void:
 	if not target or not is_instance_valid(target):
 		return
-	
+
 	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
 	_spawn_shield_particles(target_pos)
 
@@ -679,7 +636,7 @@ func play_shield_effect(target: Node) -> void:
 func play_fire_effect(target: Node) -> void:
 	if not target or not is_instance_valid(target):
 		return
-	
+
 	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
 	_spawn_fire_particles(target_pos)
 
@@ -752,9 +709,9 @@ func _spawn_fire_particles(pos: Vector2) -> void:
 func play_boss_attack_effect(boss: Node, attack_type: String = "normal") -> void:
 	if not boss or not is_instance_valid(boss):
 		return
-	
+
 	var boss_pos = boss.global_position if boss is Node2D else Vector2.ZERO
-	
+
 	match attack_type:
 		"sweep":
 			_play_boss_sweep_vfx(boss_pos)

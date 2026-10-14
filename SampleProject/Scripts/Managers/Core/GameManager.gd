@@ -7,17 +7,13 @@ extends ManagerBase
 # Preload managers
 const CharacterManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/CharacterManager.gd")
 const EquipmentManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/EquipmentManager.gd")
+const SkillManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd")
 const SceneManagerScript = preload("res://SampleProject/Scripts/Managers/Scene/SceneManager.gd")
 const MenuManagerScript = preload("res://SampleProject/Scripts/Managers/UI/MenuManager.gd")
-const EnemyStateManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/EnemyStateManager.gd")
 const UIManagerScript = preload("res://SampleProject/Scripts/Managers/UI/UIManager.gd")
 const TimeManagerScript = preload("res://SampleProject/Scripts/Managers/TimeManager.gd")
-const UIUpdateManagerScript = preload("res://SampleProject/Scripts/Managers/UI/UIUpdateManager.gd")
-const SettingsManagerScript = preload("res://SampleProject/Scripts/Systems/SettingsManager.gd")
 const PlayerStateManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/PlayerStateManager.gd")
-const DebugManagerScript = preload("res://SampleProject/Scripts/Managers/Debug/DebugManager.gd")
 const LootSystemScript = preload("res://SampleProject/Scripts/Systems/LootSystem.gd")
-const ForgeSystemScript = preload("res://SampleProject/Scripts/Systems/ForgeSystem.gd")
 const DialogueManagerScript = preload("res://SampleProject/Scripts/Systems/DialogueManager.gd")
 const InventoryManagerScript = preload("res://SampleProject/Scripts/Systems/InventoryManager.gd")
 const VFXHooksScript = preload("res://SampleProject/Scripts/Systems/VFXHooks.gd")
@@ -55,16 +51,7 @@ func _create_managers() -> void:
 		print("💰 GameManager: LootSystem created")
 	else:
 		push_error("❌ GameManager: LootSystemScript must extend Node, not RefCounted!")
-	
-	# ForgeSystem
-	var forge_system = ForgeSystemScript.new()
-	if forge_system is Node:
-		forge_system.name = "ForgeSystem"
-		add_child(forge_system)
-		print("🔨 GameManager: ForgeSystem created")
-	else:
-		push_error("❌ GameManager: ForgeSystemScript must extend Node, not RefCounted!")
-	
+
 	# CharacterManager
 	var character_manager = CharacterManagerScript.new()
 	character_manager.name = "CharacterManager"
@@ -72,72 +59,56 @@ func _create_managers() -> void:
 	# Инициализируем персонажей после создания менеджера
 	character_manager.initialize_characters()
 	print("👤 GameManager: CharacterManager created")
-	
+
+	# SkillManager
+	var skill_manager = SkillManagerScript.new()
+	skill_manager.name = "SkillManager"
+	add_child(skill_manager)
+	print("🎓 GameManager: SkillManager created")
+
 	# EquipmentManager
 	var equipment_manager = EquipmentManagerScript.new()
 	equipment_manager.name = "EquipmentManager"
 	add_child(equipment_manager)
 	print("⚔️ GameManager: EquipmentManager created")
-	
+
 	# SceneManager
 	var scene_manager = SceneManagerScript.new()
 	scene_manager.name = "SceneManager"
 	add_child(scene_manager)
 	print("🌍 GameManager: SceneManager created")
-	
+
 	# MenuManager
 	var menu_manager = MenuManagerScript.new()
 	menu_manager.name = "MenuManager"
 	add_child(menu_manager)
 	print("📋 GameManager: MenuManager created")
-	
-	# EnemyStateManager
-	var enemy_state_manager = EnemyStateManagerScript.new()
-	enemy_state_manager.name = "EnemyStateManager"
-	add_child(enemy_state_manager)
-	print("👹 GameManager: EnemyStateManager created")
-	
+
+
 	# DialogueManager
 	var dialogue_manager = DialogueManagerScript.new()
 	dialogue_manager.name = "DialogueManager"
 	add_child(dialogue_manager)
 	print("💬 GameManager: DialogueManager created")
-	
+
 	# UIManager
 	var ui_manager = UIManagerScript.new()
 	ui_manager.name = "UIManager"
 	add_child(ui_manager)
 	print("🖥️ GameManager: UIManager created")
-	
+
 	# TimeManager
 	var time_manager = TimeManagerScript.new()
 	time_manager.name = "TimeManager"
 	add_child(time_manager)
 	print("⏰ GameManager: TimeManager created")
-	
-	# UIUpdateManager
-	var ui_update_manager = UIUpdateManagerScript.new()
-	ui_update_manager.name = "UIUpdateManager"
-	add_child(ui_update_manager)
-	print("🔄 GameManager: UIUpdateManager created")
-	
-	# SettingsManager
-	var settings_manager = SettingsManagerScript.new()
-	settings_manager.name = "SettingsManager"
-	add_child(settings_manager)
-	print("⚙️ GameManager: SettingsManager created")
-	
+
 	# PlayerStateManager
 	var player_state_manager = PlayerStateManagerScript.new()
 	player_state_manager.name = "PlayerStateManager"
 	add_child(player_state_manager)
 	print("👤 GameManager: PlayerStateManager created")
-	
-	# DebugManager
-	var debug_manager = DebugManagerScript.new()
-	debug_manager.name = "DebugManager"
-	add_child(debug_manager)
-	print("🐛 GameManager: DebugManager created")
+
 
 	# XPManager
 	var xp_manager = XPManagerScript.new()
@@ -170,16 +141,114 @@ func _create_managers() -> void:
 	add_child(vfx_hooks)
 	print("✨ GameManager: VFXHooks created and added as child")
 	print("🔧 GameManager: VFXHooks enabled = ", vfx_hooks.enabled)
-	
+
 	# Регистрируем менеджеры в ServiceLocator сразу после создания
 	# ServiceLocator - это autoload экземпляр, используем call_deferred для безопасности
-	call_deferred("_register_managers_in_service_locator")
-	
+
 	# Оповещаем о готовности менеджеров
 	managers_ready.emit()
 
-func _register_managers_in_service_locator() -> void:
-	"""DEPRECATED: ServiceLocator теперь автоматически регистрирует менеджеры через Registry систему"""
-	# NOTE: ServiceLocator._register_all_registries() вызывается автоматически через call_deferred
-	# Этот метод больше не нужен, но оставлен для совместимости
-	print("🔌 GameManager: Managers will be registered by ServiceLocator automatically")
+var player_state: Dictionary:
+	get:
+		return get_node(^"PlayerStateManager").player_state
+
+var characters: Dictionary:
+	get:
+		return get_node(^"CharacterManager").get_all_characters()
+
+var active_character_id: String:
+	get:
+		return get_node(^"CharacterManager").get_active_character_id()
+
+var active_character:
+	get:
+		return get_node(^"CharacterManager").get_active_character()
+
+func get_active_character():
+	"""Активный персонаж (делегат к CharacterManager)."""
+	return get_node(^"CharacterManager").get_active_character()
+
+
+func get_all_characters() -> Dictionary:
+	"""Все персонажи (делегат к CharacterManager)."""
+	return get_node(^"CharacterManager").get_all_characters()
+
+# ── Производные статы активного персонажа ──────────────────────────────────
+# Формулы НЕ дублируются: всё считает StatCalculator. Здесь только тонкие
+# обёртки "для активного персонажа", потому что UI вызывает их без аргументов.
+
+func _active_attributes() -> CharacterAttributes:
+	var character = get_active_character()
+	return character.attributes if character else null
+
+
+func _active_equipment_stats() -> Dictionary:
+	var character = get_active_character()
+	return character.get_equipment_stats() if character else {}
+
+
+func calculate_max_health() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_physical_damage() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_magic_damage() -> int:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_magic_damage(attributes, _active_equipment_stats()) if attributes else 0
+
+
+func calculate_physical_defense() -> int:
+	return StatCalculator.calculate_physical_defense(_active_equipment_stats())
+
+
+func calculate_magic_defense() -> int:
+	return StatCalculator.calculate_magic_defense(_active_equipment_stats())
+
+
+func calculate_attack_speed() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_attack_speed(attributes) if attributes else 1.0
+
+
+func calculate_dodge_chance() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_dodge_chance(attributes) if attributes else 0.0
+
+
+func calculate_accuracy() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_accuracy(attributes) if attributes else 0.0
+
+
+func calculate_critical_chance() -> float:
+	var attributes := _active_attributes()
+	return StatCalculator.calculate_critical_chance(attributes) if attributes else 0.0
+
+
+# ── Прочие тонкие делегаты для UI ──────────────────────────────────────────
+
+func get_class_data(class_id: String, subclass_id: String = "") -> Dictionary:
+	"""Данные класса (делегат к CharacterManager; определения живут в JSON)."""
+	return get_node(^"CharacterManager").get_class_data(class_id, subclass_id)
+
+
+func switch_character(character_id: String) -> bool:
+	"""Смена активного персонажа (делегат к CharacterManager)."""
+	return get_node(^"CharacterManager").switch_character(character_id)
+
+
+func get_current_player() -> Node:
+	"""Узел игрока в текущей сцене. Единственный владелец — группа GameGroups.PLAYER."""
+	var tree := get_tree()
+	return tree.get_first_node_in_group(GameGroups.PLAYER) if tree else null
+
+# NOTE: add_stat_point() намеренно НЕ добавлен. В этом проекте пул очков
+# характеристик исключён (см. комментарии "Исключены ... stat_points" в
+# CharacterManager/PlayerStateManager), поэтому трата очков не имеет бюджета.
+# Кадр Figma menu-status кнопок траты тоже не содержит.
+# См. design/ui_visual_qa.md → "Данные, которых нет".

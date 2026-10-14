@@ -6,7 +6,7 @@ class_name EnemySpawnPoint
 ## Используется RoomEnemySpawner для автоматического создания врагов
 
 ## Тип врага для спавна
-@export_enum("melee", "tank", "fast", "ranged") var enemy_type: String = "melee"
+@export_enum("melee", "tank", "fast") var enemy_type: String = "melee"  # ranged не збудовано (Q35)
 
 ## Спавнить при загрузке комнаты (если false, нужно вызвать spawn() вручную)
 @export var spawn_on_load: bool = true
@@ -90,21 +90,8 @@ func spawn_enemy() -> Node:
 		# Используем кастомный ресурс если задан
 		enemy.enemy_stats = custom_enemy_stats
 	else:
-		# Загружаем стандартный ресурс по типу
-		var stats_path := ""
-		match enemy_type:
-			"melee":
-				stats_path = "res://SampleProject/Resources/Enemies/enemy_stats_melee.tres"
-			"tank":
-				stats_path = "res://SampleProject/Resources/Enemies/enemy_stats_tank.tres"
-			"fast":
-				stats_path = "res://SampleProject/Resources/Enemies/enemy_stats_fast.tres"
-			"ranged":
-				# TODO: Create ranged enemy stats
-				stats_path = "res://SampleProject/Resources/Enemies/enemy_stats_melee.tres"
-
-		if ResourceLoader.exists(stats_path):
-			enemy.enemy_stats = load(stats_path)
+		# Стандартний ресурс за типом: Resources/Enemies/enemy_stats_<type>.tres
+		enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % enemy_type)
 
 	# Устанавливаем уникальное имя для отслеживания
 	enemy.name = "Enemy_%s" % spawn_id
@@ -112,15 +99,16 @@ func spawn_enemy() -> Node:
 	# Добавляем врага в сцену
 	var room = get_parent()
 	if room:
-		room.add_child(enemy)
+		# Спавн часто йде з body_entered (StateChangeTrigger) — посеред фізичного
+		# колбеку _ready() ворога не може міняти monitorable, тож додаємо відкладено.
+		room.add_child.call_deferred(enemy)
 	else:
 		DebugLogger.error("EnemySpawnPoint: No parent room found for spawn point %s" % spawn_id, "EnemySpawnPoint")
 		enemy.queue_free()
 		return null
 
 	# Подключаемся к сигналу смерти врага
-	if enemy.has_signal("died"):
-		enemy.died.connect(_on_enemy_died)
+	enemy.entity_died.connect(_on_enemy_died)
 
 	# Сохраняем ссылку и помечаем что заспавнили
 	spawned_enemy = enemy

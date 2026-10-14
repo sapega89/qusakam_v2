@@ -8,7 +8,10 @@ class_name PlayerCombat
 @export var sprite: Sprite2D
 @export var animation_player: AnimationPlayer
 @export var hitbox: Area2D
-@export var damage_applier: Node # DamageApplier
+@export var damage_applier: DamageApplier
+
+## Зсув хітбокса атаки від центру гравця в бік погляду. Ту саму зону б'ють навички (D142).
+const HITBOX_OFFSET_X := 20
 
 # Combat parameters
 @export var attack_cooldown_time: float = 0.5
@@ -28,14 +31,8 @@ func _ready() -> void:
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 
 func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
-	if not damage_applier: return
-
-	var xp_manager = ServiceLocator.get_xp_manager()
-	if xp_manager:
-		var damage_bonus = xp_manager.get_damage_bonus()
-		if "current_damage" in damage_applier and "base_damage" in damage_applier:
-			damage_applier.current_damage = damage_applier.base_damage + damage_bonus
-			DebugLogger.info("PlayerCombat: Applied level %d bonus. Damage: %d" % [new_level, damage_applier.current_damage], "Player")
+	damage_applier.current_damage = damage_applier.base_damage + ServiceLocator.get_xp_manager().get_damage_bonus()
+	DebugLogger.info("PlayerCombat: Applied level %d bonus. Damage: %d" % [new_level, damage_applier.current_damage], "Player")
 
 func _process(delta: float) -> void:
 	if attack_cooldown > 0:
@@ -44,58 +41,46 @@ func _process(delta: float) -> void:
 func perform_attack(last_direction: int) -> void:
 	if is_attacking or attack_cooldown > 0:
 		return
-	
+
 	is_attacking = true
 	attack_cooldown = attack_cooldown_time
-	
+
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	# Раніше тут була протилежна домовленість, ніж у Player.gd, тож спрайт під час
 	# атаки дивився не в той бік, що під час бігу.
 
 	# Play animation
-	if animation_player and animation_player.has_animation("Attack"):
-		animation_player.play("Attack")
-		if player:
-			player.animation = "Attack"
-	
+	animation_player.play("Attack")
+	player.animation = "Attack"
+
 	# Spawn VFX
-	if player.has_method("_spawn_attack_vfx"):
-		player._spawn_attack_vfx()
+	player._spawn_attack_vfx()
 
 	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
 	EventBus.player_attacked.emit(player, last_direction)
-	
+
 	# Activate Hitbox
 	_set_hitbox_active(true, last_direction)
-	
-	# Wait for animation completion
-	if animation_player and animation_player.has_animation("Attack"):
-		await animation_player.animation_finished
-	else:
-		await get_tree().create_timer(0.2).timeout
-	
+
+	# Чекаємо, поки Attack перестане грати — дограла або її перебили (діалог вмикає Idle).
+	# animation_finished на перебиту анімацію не приходить, і is_attacking лишався true назавжди.
+	while animation_player.current_animation == &"Attack":
+		await get_tree().process_frame
+
 	# Cleanup
 	_set_hitbox_active(false, last_direction)
 	is_attacking = false
-	
+
 	# Note: Animating back to Idle/Run is handled by Player's main loop
 	# but we should notify if needed.
 
 func _set_hitbox_active(active: bool, last_direction: int) -> void:
-	if hitbox:
-		if active:
-			var hitbox_offset = Vector2(20, 0) if last_direction > 0 else Vector2(-20, 0)
-			hitbox.position = hitbox_offset
-			hitbox.monitoring = true
-			hitbox.monitorable = true
-		else:
-			hitbox.monitoring = false
-			hitbox.monitorable = false
-			
-	if damage_applier:
-		if active:
-			if damage_applier.has_method("enable_damage"):
-				damage_applier.enable_damage()
-		else:
-			if damage_applier.has_method("disable_damage"):
-				damage_applier.disable_damage()
+	if active:
+		hitbox.position = Vector2(HITBOX_OFFSET_X * signi(last_direction), 0)
+	hitbox.monitoring = active
+	hitbox.monitorable = active
+
+	if active:
+		damage_applier.enable_damage()
+	else:
+		damage_applier.disable_damage()

@@ -16,7 +16,9 @@ const TUTORIAL_HINTS = {
 	"xp_bar": "XP bar fills with each kill • Level up when full",
 	"coins": "Collect coins to buy items and upgrades",
 	"health_low": "Health is low! Avoid damage or find healing",
-	"combo": "Chain attacks for better combat flow"
+	"combo": "Chain attacks for better combat flow",
+	# D148: туторіал у селі — висить, доки гравець не вилікує діда.
+	"healing_palm": "Your grandfather is dying! Stand next to him and press 1 to use Healing Palm."
 }
 
 # Track which hints have been shown
@@ -30,7 +32,8 @@ func _ready() -> void:
 	visible = false
 	is_showing = false
 
-func show_hint(hint_key: String, force: bool = false) -> void:
+## [param sticky] — не ховати за таймером: підказку прибирає force_hide(), коли дію виконано.
+func show_hint(hint_key: String, force: bool = false, sticky: bool = false) -> void:
 	"""Shows tutorial hint if not already shown"""
 	# Skip if already shown (unless forced)
 	if shown_hints.get(hint_key, false) and not force:
@@ -52,6 +55,8 @@ func show_hint(hint_key: String, force: bool = false) -> void:
 	is_showing = true
 	_animate_in()
 
+	if sticky:
+		return
 	# Auto-hide after duration
 	await get_tree().create_timer(display_duration).timeout
 	if is_showing and current_hint == hint_key:  # Check if not already hidden

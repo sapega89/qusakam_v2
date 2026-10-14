@@ -3,7 +3,6 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysGame.gd"
 class_name Game
 
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
-const DEFAULT_SAVE_PATH = "user://saves/slot_01.sav"
 
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
 @export var starting_map: String = "Canyon.tscn"
@@ -27,6 +26,9 @@ var quest_flags: Dictionary = {}
 var cutscene_flags: Dictionary = {}
 var boss_flags: Dictionary = {}
 var location_flags: Dictionary = {}
+## Що сталося в кімнатах: {імʼя кімнати MetSys: {ключ: значення}} (room_state_plan, D152).
+## Кімнату передають явно: стан пишуть і під час вивантаження, коли MetSys уже в новій.
+var room_state: Dictionary = {}
 var _bootstrapped: = false
 var game_instance_id: String = ""  # Унікальний ID екземпляру Game
 static var _last_game_id: int = 0  # Статичний лічильник для генерації унікальних ID
@@ -110,24 +112,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Обробка Escape для відкриття/закриття game menu через MenuManager
 	# ВАЖНО: Перевіряємо, чи це Escape (KEY_ESCAPE), а не інша клавіша
 	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
-		# Перевіряємо, чи меню вже відкрите - якщо так, не обробляємо тут (це зробить game_menu.gd)
-		if ServiceLocator:
-			var menu_manager = ServiceLocator.get_menu_manager()
-			if menu_manager and menu_manager.is_menu_open():
-				# Меню вже відкрите, воно само обробить Escape для закриття
-				return
-
-		print("🎮 Game: Escape натиснуто!")
-		# ServiceLocator - це autoload, доступний напряму через ім'я
-		if ServiceLocator:
-			var menu_manager = ServiceLocator.get_menu_manager()
-			if menu_manager:
-				print("🎮 Game: Відкриваємо меню...")
-				menu_manager.toggle_game_menu()
-				get_viewport().set_input_as_handled()
-				return  # ВАЖНО: повертаємося, щоб не обробляти далі
-		else:
-			print("⚠️ Game: ServiceLocator не знайдено!")
+		var menu_manager: MenuManager = ServiceLocator.get_menu_manager()
+		# Меню вже відкрите — Escape для закриття обробить game_menu.gd.
+		if menu_manager.is_menu_open():
+			return
+		menu_manager.toggle_game_menu()
+		get_viewport().set_input_as_handled()
+		return
 
 	# Також обробляємо ui_cancel action (якщо він налаштований на Escape)
 	if event.is_action_pressed("ui_cancel"):
@@ -137,37 +128,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			# Вже оброблено вище
 			return
 
-		# ServiceLocator - це autoload, доступний напряму через ім'я
-		if ServiceLocator:
-			var menu_manager = ServiceLocator.get_menu_manager()
-			if menu_manager:
-				menu_manager.toggle_game_menu()
-				get_viewport().set_input_as_handled()
-				return
-
-func _normalize_room_ref_to_scene_path(room_ref: String) -> String:
-	var ref := room_ref.strip_edges()
-	if ref.is_empty():
-		return ""
-
-	# Already full scene path
-	if ref.begins_with("res://") and ref.ends_with(".tscn"):
-		return ref
-
-	# File name only, like "Canyon.tscn"
-	if ref.ends_with(".tscn") and not ref.begins_with("res://"):
-		var candidate := "res://SampleProject/Maps/" + ref
-		if ResourceLoader.exists(candidate):
-			return candidate
-		return ""  # unknown file name
-
-	# Looks like MetSys room id (often starts with ":" in your logs)
-	if ref.begins_with(":"):
-		# TODO: resolve id -> scene path using MetSys/MapData API.
-		# If you don't have API, you can fallback to default map (for now).
-		return ""
-
-	return ""  # unsupported format
+		ServiceLocator.get_menu_manager().toggle_game_menu()
+		get_viewport().set_input_as_handled()
 
 func _normalize_room_ref_to_scene_ref(room_ref: String) -> String:
 	var ref := room_ref.strip_edges()
@@ -177,6 +139,11 @@ func _normalize_room_ref_to_scene_ref(room_ref: String) -> String:
 	# Full scene path
 	if ref.begins_with("res://") and ref.ends_with(".tscn"):
 		return ref
+
+	# Already a UID ref — this function returns these itself for ":xxxx" names,
+	# and load_room() normalizes its argument a second time.
+	if ref.begins_with("uid://"):
+		return ref if ResourceLoader.exists(ref) else ""
 
 	# File name only
 	if ref.ends_with(".tscn") and not ref.begins_with("res://"):
@@ -198,14 +165,7 @@ var _save_room_initialized:=false
 var loaded_from_save = false
 
 func _get_current_save_path() -> String:
-	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
-	if save_system and save_system.has_method("get_slot_path"):
-		var slot_index = 1
-		var slot_value = save_system.get("current_slot")
-		if typeof(slot_value) == TYPE_INT:
-			slot_index = slot_value
-		return save_system.get_slot_path(slot_index)
-	return DEFAULT_SAVE_PATH
+	return SaveSystem.get_slot_path(SaveSystem.current_slot)
 
 func _initialize_save_and_room() -> void:
 	if _save_room_initialized:
@@ -245,14 +205,10 @@ func _initialize_save_and_room() -> void:
 		# Это гарантирует что quest flags будут доступны когда сцена загрузится
 		_load_full_game_data_from_save_system()		
 
-		var loaded_scene_path := String(save_manager.get_value("current_room_scene_path", ""))
-		if not loaded_scene_path.is_empty():
-			starting_map = loaded_scene_path
-		else:
-			# fallback на room_name (старые сейвы)
-			var room_name := String(save_manager.get_value("current_room", ""))
-			if not room_name.is_empty():
-				starting_map = room_name
+		# Імʼя кімнати MetSys (":uid") — єдине джерело. Окремий
+		# current_room_scene_path склеював папку з цим імʼям у неіснуючий шлях,
+		# і завантаження мовчки починалось з Canyon.
+		starting_map = String(save_manager.get_value("current_room"))
 	else:
 		# If no data exists, set empty one and initialize default values for new game.
 		MetSys.set_save_data()
@@ -264,6 +220,7 @@ func _initialize_save_and_room() -> void:
 		cutscene_flags.clear()
 		boss_flags.clear()
 		location_flags.clear()
+		room_state.clear()
 
 	# Initialize room when it changes.
 	if not room_loaded.is_connected(init_room):
@@ -272,7 +229,7 @@ func _initialize_save_and_room() -> void:
 	var scene_path := _normalize_room_ref_to_scene_ref(starting_map)
 	if scene_path.is_empty():
 		push_error("Cannot resolve starting_map to scene ref: %s" % starting_map)
-		scene_path = "res://SampleProject/Maps/Canyon.tscn"
+		return
 
 	print("🚪 [Game] Викликаємо load_room() для: %s" % scene_path)
 	load_room(scene_path)  # навмисно без await: нижче є своє очікування кадру
@@ -307,27 +264,21 @@ func _initialize_save_and_room() -> void:
 	# Make sure minimap is at correct position (required for themes to work correctly).
 	%Minimap.set_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 8)
 
+func _exit_tree() -> void:
+	if (Game as Script).get_meta(&"singleton", null) == self:
+		(Game as Script).remove_meta(&"singleton")
+
 # Returns this node from anywhere.
 static func get_singleton() -> Game:
-	var script = Game as Script
-	if script.has_meta(&"singleton"):
-		return script.get_meta(&"singleton") as Game
-	# Fallback: try to find Game in the scene tree
-	var tree = Engine.get_main_loop()
-	if tree and tree is SceneTree:
-		var root = tree.root
-		if root:
-			# Try to find Game node in the scene tree
-			var game_node = root.find_child("Game", true, false)
-			if game_node and game_node is Game:
-				# Cache it for future calls
-				script.set_meta(&"singleton", game_node)
-				return game_node as Game
-	return null
+	# null поза грою (головне меню). Мета знімається в _exit_tree(), тож
+	# видаленого Game тут не буває.
+	return (Game as Script).get_meta(&"singleton", null) as Game
 
 # Unified Save/Load Coordinator
-func save_game():
-	"""Main entry point for saving the game state across all systems."""
+func save_game() -> bool:
+	"""Main entry point for saving the game state across all systems.
+	Повертає true лише коли і сейв MetSys, і дані гравця записано (D76/D79:
+	модалка успіху показується тільки на true)."""
 	DebugLogger.info("💾 Game: Starting unified save sequence...", "Game")
 	
 	# 1. MetSys Save (Map, Rooms, Basic Player Props)
@@ -335,34 +286,49 @@ func save_game():
 	save_manager.set_value("collectible_count", collectibles)
 	save_manager.set_value("generated_rooms", generated_rooms)
 	save_manager.set_value("events", events)
-	var room_name := MetSys.get_current_room_name()
+	var room_name: String = MetSys.get_current_room_name()
 	save_manager.set_value("current_room", room_name)
-
-# Сохраняем полный путь сцены (ГЛАВНОЕ)
-	var room_scene_path := MetSys.get_full_room_path(room_name)
-	save_manager.set_value("current_room_scene_path", room_scene_path)
 	save_manager.set_value("abilities", player.abilities)
+	# Налаштування живуть у файлі слота поруч із грою; без цього кожен сейв гри
+	# перезаписував файл без них, і наступне завантаження скидало налаштування.
+	save_manager.set_value("game_settings", SaveSystem.settings_module.save())
 	
 	save_manager.store_game(self)
-	save_manager.save_as_text(_get_current_save_path())
+	# Відкриті клітинки карти, маркери тощо. SaveManager.save_as_text() додає їх
+	# сам, але ми пишемо файл власноруч — без цього карта після завантаження
+	# була знову порожня (0% explored).
+	save_manager.data.merge(MetSys.get_save_data())
+	# SaveManager.save_as_text() нічого не повертає — пишемо самі, щоб знати результат.
+	var save_path := _get_current_save_path()
+	DirAccess.make_dir_recursive_absolute(save_path.get_base_dir())
+	var save_file := FileAccess.open(save_path, FileAccess.WRITE)
+	if save_file == null:
+		push_error("Game: failed to write save %s (%s)" % [save_path, error_string(FileAccess.get_open_error())])
+		return false
+	save_file.store_string(var_to_str(save_manager.data))
+	save_file.close()
 
-	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
-	if save_system and save_system.has_method("set_slot_metadata"):
-		var meta = {
-			"timestamp": Time.get_datetime_string_from_system(),
-			"location": room_name
-		}
-		var slot_value = save_system.get("current_slot")
-		var slot_index = slot_value if typeof(slot_value) == TYPE_INT else 1
-		meta["slot"] = slot_index
-		save_system.set_slot_metadata(slot_index, meta)
+	# Картка слота (Figma 150:1278): лише реальні дані (Q3); локація — зона журналу (D133).
+	var meta := {
+		"timestamp": Time.get_datetime_string_from_system(),
+		"location": ServiceLocator.get_game_flow().location_title(map.scene_file_path),
+		"slot": SaveSystem.current_slot,
+		"level": ServiceLocator.get_xp_manager().get_level(),
+	}
+	var lead: GameCharacter = ServiceLocator.get_character_manager().get_active_character()
+	if lead.name != "":
+		meta["character_name"] = lead.name
+	SaveSystem.set_slot_metadata(SaveSystem.current_slot, meta)
 
 	# 2. SaveSystem Sync (Inventory, Flags, Quest Progress)
 	# Update player state before full data save
 	_sync_player_state_to_save_system()
-	_save_full_game_data_to_save_system()
-	
+	if not _save_full_game_data_to_save_system():
+		push_error("Game: player data was not saved")
+		return false
+
 	DebugLogger.info("✅ Game: Unified save completed successfully.", "Game")
+	return true
 
 func _assign_array(target: Array, source: Variant):
 	if source is Array:
@@ -371,16 +337,13 @@ func _assign_array(target: Array, source: Variant):
 		target.clear()
 
 func _sync_player_state_to_save_system():
-	var service_locator = ServiceLocator if Engine.has_singleton("ServiceLocator") else null
+	var service_locator = ServiceLocator
 	if not service_locator: return
 	
 	var player_state_manager = service_locator.get_player_state_manager()
 	if player_state_manager:
 		player_state_manager.set_player_position(player.global_position)
 	
-	var save_system = service_locator.get_save_system()
-	if save_system and save_system.has("player_data"):
-		save_system.player_data.current_scene = MetSys.get_current_room_name()
 
 var _load_room_call_count: int = 0
 var _last_load_room_path: String = ""
@@ -422,22 +385,28 @@ func reset_map_starting_coords():
 	$UI/MapWindow.reset_starting_coords()
 
 ## Позиционирует игрока на SavePoint в текущей комнате
+## Телепорт у кімнату, не повʼязану з поточною (кат-сцена, а не прохід по мапі).
+## Як ScrollingRoomTransitions: стару кімнату відʼєднуємо до load_room(), тоді він
+## не чекає її tree_exited і відпрацьовує синхронно — гравця ставимо одразу.
+func teleport_to_room(room_path: String, arrival: NodePath) -> void:
+	var old_map := map
+	var old_room_instance := MetSys.get_current_room_instance()
+	old_room_instance.get_parent().remove_child(old_room_instance)
+	old_room_instance.queue_free()
+	map = null
+	load_room(room_path)
+	old_map.queue_free()
+	var target: Node2D = map.get_node(arrival)
+	player.global_position = target.global_position
+	MetSys.set_player_position(player.position)
+
 func _position_player_at_save_point() -> void:
 	# Ищем SavePoint в текущей комнате
-	var save_points = get_tree().get_nodes_in_group("save_points")
-	if save_points.size() > 0:
-		var save_point = save_points[0]
-		# spawn_offset завжди існує в SavePoint (має значення за замовчуванням Vector2(0, 0))
-		var target_position = save_point.global_position + save_point.spawn_offset
-		print("📍 [Game] Позиціонуємо гравця на SavePoint: %s (offset: %s)" % [target_position, save_point.spawn_offset])
-		player.global_position = target_position
-		MetSys.set_player_position(player.position)
-		print("✅ [Game] Гравець позиціоновано на SavePoint: %s" % player.global_position)
-		DebugLogger.info("Game: Positioned player at SavePoint for new game: %s" % player.global_position, "Game")
-		# НЕ оновлюємо камеру вручну - MetSys обробляє це автоматично через adjust_camera_limits()
-	else:
-		print("⚠️ [Game] SavePoint не знайдено в кімнаті!")
-		DebugLogger.warning("Game: No SavePoint found in starting room", "Game")
+	# Стартова кімната зобовʼязана мати SavePoint — без нього тут помилка, а не тихий пропуск.
+	var save_point: Node2D = get_tree().get_nodes_in_group("save_points")[0]
+	player.global_position = save_point.global_position + save_point.spawn_offset
+	MetSys.set_player_position(player.position)
+	DebugLogger.info("Game: Positioned player at SavePoint for new game: %s" % player.global_position, "Game")
 
 var _init_room_called_for_room: String = ""
 var _init_room_call_count: int = 0
@@ -494,132 +463,11 @@ func init_room():
 	# room_instance.adjust_camera_limits() задає межі, а сама камера — дочірній
 	# вузол гравця, тому слідкує за ним автоматично.
 	
-	# Перевірка дивної позиції - перевіряємо тільки екстремальні значення
-	# Різні сцени мають різні координати, тому не використовуємо жорсткі межі
-	var position_is_extreme = player.global_position.y < -5000 or player.global_position.y > 10000 or \
-							  player.global_position.x < -5000 or player.global_position.x > 10000
-	
-	# Перевіряємо відстань до найближчого SavePoint в ПОТОЧНІЙ кімнаті
-	# ВАЖЛИВО: get_nodes_in_group() може повернути SavePoint з попередньої сцени, якщо вона ще не вивантажена
-	# Тому перевіряємо, чи SavePoint належить до поточної кімнати через MetSys RoomInstance
-	var save_points = get_tree().get_nodes_in_group("save_points")
-	var current_room_instance = MetSys.get_current_room_instance()
-	var valid_save_point = null
-	
-	# Шукаємо SavePoint, який належить до поточної кімнати
-	# ВАЖЛИВО: Використовуємо RoomInstance для перевірки, чи SavePoint належить до поточної кімнати
-	var current_scene = get_tree().current_scene if get_tree() else null
-	
-	for sp in save_points:
-		if not is_instance_valid(sp):
-			continue
-		
-		# Перевіряємо, чи SavePoint знаходиться в поточній сцені
-		if not sp.is_inside_tree():
-			continue
-		
-		# Перевіряємо, чи SavePoint є частиною поточної сцени
-		var sp_scene = sp.get_tree().current_scene if sp.get_tree() else null
-		if sp_scene != current_scene:
-			continue
-		
-		# ДОДАТКОВА ПЕРЕВІРКА: Перевіряємо, чи SavePoint належить до поточної кімнати через RoomInstance
-		# RoomInstance містить всі об'єкти поточної кімнати
-		if is_instance_valid(current_room_instance):
-			# Перевіряємо, чи SavePoint є дочірнім вузлом RoomInstance або його нащадком
-			var room_node = current_room_instance.get_parent() if current_room_instance.get_parent() else current_room_instance
-			if sp.is_ancestor_of(room_node) or room_node.is_ancestor_of(sp) or sp.get_parent() == room_node:
-				valid_save_point = sp
-				break
-			# Альтернативна перевірка: чи SavePoint знаходиться в межах поточної кімнати
-			# Якщо RoomInstance має метод для перевірки, використовуємо його
-			# Але поки що використовуємо простішу перевірку через current_scene
-		
-		# Якщо RoomInstance не знайдено, використовуємо перевірку через current_scene
-		if not is_instance_valid(current_room_instance):
-			if sp_scene == current_scene:
-				valid_save_point = sp
-				break
-	
-	# Якщо не знайшли валідний SavePoint через RoomInstance, використовуємо fallback
-	# але тільки якщо він знаходиться в поточній сцені І близько до гравця
-	if not valid_save_point and save_points.size() > 0:
-		var closest_save_point = null
-		var closest_distance = INF
-		
-		for sp in save_points:
-			if not is_instance_valid(sp) or not sp.is_inside_tree():
-				continue
-			var sp_scene = sp.get_tree().current_scene if sp.get_tree() else null
-			if sp_scene != current_scene:
-				continue
-			
-			# ДОДАТКОВА ПЕРЕВІРКА: перевіряємо, чи SavePoint не з попередньої кімнати
-			# Якщо позиція SavePoint дуже далеко від поточної позиції гравця, це може бути SavePoint з попередньої кімнати
-			var distance = player.global_position.distance_to(sp.global_position)
-			# ВАЖЛИВО: Якщо SavePoint ближче 3000 пікселів, він може бути валідним для поточної кімнати
-			# Зберігаємо найближчий SavePoint
-			if distance < 3000 and distance < closest_distance:
-				closest_save_point = sp
-				closest_distance = distance
-		
-		if closest_save_point:
-			valid_save_point = closest_save_point
-			print("✅ [Game] Знайдено найближчий SavePoint в поточній кімнаті на відстані: %.2f пікселів" % closest_distance)
-	
-	if valid_save_point:
-		var distance_to_save_point = player.global_position.distance_to(valid_save_point.global_position)
-		
-		# Якщо позиція екстремальна АБО гравець дуже далеко від SavePoint (більше 2000 пікселів)
-		# то позиціонуємо на SavePoint
-		if position_is_extreme or distance_to_save_point > 2000:
-			if position_is_extreme:
-				print("⚠️ [Game] УВАГА: Екстремальна позиція гравця: %s" % player.global_position)
-				DebugLogger.warning("Game: Екстремальна позиція гравця: %s" % player.global_position, "Game")
-			else:
-				print("⚠️ [Game] УВАГА: Гравець дуже далеко від SavePoint: %.2f пікселів" % distance_to_save_point)
-				DebugLogger.warning("Game: Гравець дуже далеко від SavePoint: %.2f пікселів" % distance_to_save_point, "Game")
-			
-			# Позиціонуємо на SavePoint
-			var target_position = valid_save_point.global_position + valid_save_point.spawn_offset
-			print("✅ [Game] Виправляємо позицію на SavePoint поточної кімнати: %s (offset: %s)" % [target_position, valid_save_point.spawn_offset])
-			player.global_position = target_position
-			MetSys.set_player_position(player.position)
-			print("✅ [Game] Позиція виправлена: %s" % player.global_position)
-			DebugLogger.info("Game: Позиція виправлена на SavePoint: %s" % player.global_position, "Game")
-	else:
-		if position_is_extreme:
-			print("⚠️ [Game] УВАГА: Екстремальна позиція гравця, але SavePoint не знайдено!")
-			DebugLogger.warning("Game: Екстремальна позиція гравця, але SavePoint не знайдено: %s" % player.global_position, "Game")
-	
+	# Позицію задають MetSys (переходи), retrieve_game() (завантаження) і
+	# _position_player_at_save_point() (нова гра). Евристики «гравець задалеко
+	# від SavePoint — переставити» прибрано: вони ховали помилки позиціонування (D131).
 	player.on_enter()
-	
-	# ВАЖЛИВО: При поверненні до Canyon позиціонуємо гравця на SavePoint
-	# Але тільки якщо це не автоматичний перехід через MetSys room connections
-	if "Canyon" in current_room:
-		# Перевіряємо, чи гравець повернувся з Village
-		var game = Game.get_singleton()
-		if game and game.get_quest_flag("village_left_complete", false):
-			# Перевіряємо, чи MetSys вже позиціонував гравця
-			# Якщо позиція далеко від SavePoint, позиціонуємо на SavePoint
-			var canyon_save_points = get_tree().get_nodes_in_group("save_points")
-			if canyon_save_points.size() > 0:
-				var save_point = canyon_save_points[0]
-				var distance_to_save_point = player.global_position.distance_to(save_point.global_position)
-				print("📍 [Game] Відстань до SavePoint: %.2f пікселів" % distance_to_save_point)
-				DebugLogger.info("Game: Відстань до SavePoint: %.2f пікселів" % distance_to_save_point, "Game")
-				# Якщо гравець далеко від SavePoint (більше 500 пікселів), позиціонуємо на SavePoint
-				if distance_to_save_point > 500:
-					print("✅ [Game] Гравець далеко від SavePoint, позиціонуємо на SavePoint")
-					DebugLogger.info("Game: Гравець далеко від SavePoint, позиціонуємо на SavePoint", "Game")
-					_position_player_at_save_point()
-					# Оновлюємо MetSys позицію
-					MetSys.set_player_position(player.position)
-					print("📍 [Game] Позиція гравця ПІСЛЯ позиціонування на SavePoint: %s" % player.global_position)
-			else:
-				print("⚠️ [Game] SavePoint не знайдено в кімнаті %s" % current_room)
-				DebugLogger.warning("Game: SavePoint не знайдено в кімнаті %s" % current_room, "Game")
-	
+
 	# Initializes MetSys.get_current_coords(), so you can use it from the beginning.
 	if MetSys.last_player_position.x == Vector2i.MAX.x:
 		MetSys.set_player_position(player.position)
@@ -678,6 +526,18 @@ func set_quest_flag(quest_id: String, value: Variant) -> void:
 ## Получает флаг квеста
 func get_quest_flag(quest_id: String, default: Variant = false) -> Variant:
 	return quest_flags.get(quest_id, default)
+
+func get_room_state(room: String, key: String, default: Variant = null) -> Variant:
+	return room_state.get(room, {}).get(key, default)
+
+func set_room_state(room: String, key: String, value: Variant) -> void:
+	room_state.get_or_add(room, {})[key] = value
+
+func get_room_states() -> Dictionary:
+	return room_state.duplicate(true)
+
+func set_room_states(states: Dictionary) -> void:
+	room_state = states.duplicate(true)
 
 ## ТИМЧАСОВО: діагностика. Друкує всі виставлені квестові прапорці.
 ## Разом з game_instance_id видно, чи не читає сцена інший екземпляр Game.
@@ -740,61 +600,12 @@ func set_location_flag(location_id: String, value: Variant) -> void:
 func get_location_flag(location_id: String, default: Variant = false) -> Variant:
 	return location_flags.get(location_id, default)
 
-## Сохраняет флаги в SaveSystem
-func _save_game_flags_to_save_system() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_save_system"):
-			var save_system = service_locator.get_save_system()
-			if save_system and save_system.has_method("save_player_data"):
-				# SaveSystem автоматически получит флаги через методы get_*_flags()
-				save_system.save_player_data()
+## Інвентар, прапорці й позиція гравця — у файл поточного слота (SaveSystem).
+func _save_full_game_data_to_save_system() -> bool:
+	ServiceLocator.get_player_state_manager().set_player_position(player.global_position)
+	return bool(SaveSystem.save_player_data())
 
-## Сохраняет полные данные игры в SaveSystem
-func _save_full_game_data_to_save_system() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_save_system"):
-			var save_system = service_locator.get_save_system()
-			if save_system and save_system.has_method("save_player_data"):
-				# FIX: Сохраняем текущую позицию игрока через PlayerStateManager
-				# SaveSystem.save_player_data() читает позицию из game_manager.player_state.player_position,
-				# поэтому нужно обновить её перед сохранением
-				if player and is_instance_valid(player):
-					# Получаем PlayerStateManager
-					var player_state_manager = service_locator.get_player_state_manager()
-					if player_state_manager and player_state_manager.has_method("set_player_position"):
-						# ВАЖНО: Используем global_position, а не position (локальная позиция)!
-						player_state_manager.set_player_position(player.global_position)
-						DebugLogger.info("Game: Saved player global position: %s" % player.global_position, "Game")
 
-					# Обновляем текущую сцену/комнату
-					if save_system.has("player_data"):
-						var current_room = MetSys.get_current_room_name()
-						if not current_room.is_empty():
-							save_system.player_data.current_scene = current_room
-
-				# Сохраняем все данные (инвентарь, позиция, флаги и т.д.)
-				# SaveSystem автоматически определит название локации при сохранении
-				save_system.save_player_data()
-
-## Загружает полные данные игры из SaveSystem (инвентарь, позиция, флаги и т.д.)
+## Завантажує інвентар і прапорці зі слота (позицію відновлює MetSys через retrieve_game()).
 func _load_full_game_data_from_save_system() -> void:
-	# FIX: В Godot 4.5 autoload доступен напрямую, а не через Engine.get_singleton()
-	var save_system = ServiceLocator.get_save_system() if ServiceLocator else null
-
-	if save_system and save_system.has_method("load_player_data"):
-		# SaveSystem автоматически загрузит все данные:
-		# - Инвентарь через GameManager
-		# - Позицію игрока через GameManager
-		# - Флаги через методы set_*_flags()
-		save_system.load_player_data()
-
-		# После загрузки данных из SaveSystem, загружаем позицию игрока
-		# если она была сохранена
-		if "player_data" in save_system:
-			var _player_data = save_system.player_data  # Префикс _ - переменная не используется
-
-			# Позиция игрока уже восстановлена через MetSys save_manager.retrieve_game()
-			# SaveSystem используется только для инвентаря и флагов
-			# (позиция хранится в MetSys, не в SaveSystem)
+	SaveSystem.load_player_data()

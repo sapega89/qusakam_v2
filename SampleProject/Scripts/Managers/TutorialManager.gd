@@ -57,7 +57,7 @@ func _show_movement_hint() -> void:
 		return
 	display.show_hint("movement")
 
-func _on_player_attacked() -> void:
+func _on_player_attacked(_player: Node = null, _direction: int = 0) -> void:
 	"""Player performed an attack"""
 	if has_shown_attack:
 		return
@@ -71,7 +71,7 @@ func _on_player_attacked() -> void:
 		await get_tree().create_timer(1.0).timeout
 	display.show_hint("attack")
 
-func _on_enemy_died(_enemy_id: String = "") -> void:
+func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 	"""Enemy was killed"""
 	# Show first kill hint
 	if not has_shown_first_kill:

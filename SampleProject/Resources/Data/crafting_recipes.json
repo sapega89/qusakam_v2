@@ -14,6 +14,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 3,
 			"crafting_time": 5,
 			"required_station": "furnace",
 			"category": "smithing"
@@ -32,6 +33,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 2,
 			"crafting_time": 5,
 			"required_station": "furnace",
 			"category": "smithing"
@@ -50,6 +52,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 15,
 			"crafting_time": 8,
 			"required_station": "furnace",
 			"category": "smithing"
@@ -68,6 +71,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 30,
 			"crafting_time": 10,
 			"required_station": "furnace",
 			"category": "smithing"
@@ -86,6 +90,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 4,
 			"crafting_time": 2,
 			"required_station": "workbench",
 			"category": "woodworking"
@@ -108,6 +113,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 10,
 			"crafting_time": 15,
 			"required_station": "anvil",
 			"category": "weapon_crafting"
@@ -130,6 +136,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 20,
 			"crafting_time": 20,
 			"required_station": "anvil",
 			"category": "weapon_crafting"
@@ -156,6 +163,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 60,
 			"crafting_time": 30,
 			"required_station": "anvil",
 			"category": "weapon_crafting"
@@ -178,6 +186,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 4,
 			"crafting_time": 5,
 			"required_station": "alchemy_table",
 			"category": "alchemy"
@@ -200,6 +209,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 10,
 			"crafting_time": 10,
 			"required_station": "alchemy_table",
 			"category": "alchemy"
@@ -222,6 +232,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 6,
 			"crafting_time": 8,
 			"required_station": "alchemy_table",
 			"category": "alchemy"
@@ -244,6 +255,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 16,
 			"crafting_time": 12,
 			"required_station": "workbench",
 			"category": "armor_crafting"
@@ -266,6 +278,7 @@
 					"quantity": 3
 				}
 			],
+			"gold_cost": 30,
 			"crafting_time": 25,
 			"required_station": "anvil",
 			"category": "armor_crafting"
@@ -288,6 +301,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 12,
 			"crafting_time": 15,
 			"required_station": "anvil",
 			"category": "armor_crafting"
@@ -314,6 +328,7 @@
 					"quantity": 1
 				}
 			],
+			"gold_cost": 18,
 			"crafting_time": 18,
 			"required_station": "anvil",
 			"category": "armor_crafting"
@@ -332,6 +347,7 @@
 					"quantity": 2
 				}
 			],
+			"gold_cost": 4,
 			"crafting_time": 3,
 			"required_station": "alchemy_table",
 			"category": "alchemy"
@@ -350,6 +366,7 @@
 					"quantity": 4
 				}
 			],
+			"gold_cost": 7,
 			"crafting_time": 5,
 			"required_station": "alchemy_table",
 			"category": "alchemy"
@@ -368,6 +385,7 @@
 					"quantity": 8
 				}
 			],
+			"gold_cost": 10,
 			"crafting_time": 8,
 			"required_station": "alchemy_table",
 			"category": "alchemy"

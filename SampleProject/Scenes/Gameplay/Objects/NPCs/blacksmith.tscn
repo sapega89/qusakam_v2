@@ -1,0 +1,26 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Blacksmith.gd" id="1_blacksmith"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/NPCs/npc_blacksmith.png" id="3_sprite"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(64, 64)
+
+[node name="Blacksmith" type="Area2D"]
+z_index = 10
+script = ExtResource("1_blacksmith")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 10
+position = Vector2(0, -16)
+scale = Vector2(0.1875, 0.1875)
+texture = ExtResource("3_sprite")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 2)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("2_interactable")
+action_text = "Craft"

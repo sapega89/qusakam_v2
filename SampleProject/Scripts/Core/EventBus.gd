@@ -185,6 +185,53 @@ signal attack_finished(attacker: Node)
 ##     EventBus.equipment_equip_requested.connect(_on_equip_requested)
 ##     EventBus.equipment_equip_requested.emit("player_1", "sword", "iron_sword", {...})
 @warning_ignore("unused_signal")
+# ============================================================================
+# НАВЫКИ (Skills)
+# ============================================================================
+
+## Навык разблокирован.
+##
+## Пример:
+##     EventBus.skill_unlocked.connect(_on_skill_unlocked)
+##     EventBus.skill_unlocked.emit("shadow_strike")
+signal skill_unlocked(skill_id: String)
+## Навичку покращено до рівня rank (D150).
+signal skill_upgraded(skill_id: String, rank: int)
+
+## Активный навык успешно применён: проверки пройдены, SP списан,
+## боевой эффект выполнен, перезарядка запущена. Ошибочные попытки сюда НЕ попадают.
+##
+## Пример:
+##     EventBus.skill_used.emit("shadow_strike")
+signal skill_used(skill_id: String)
+
+## Навык НЕ был применён. reason — значение SkillManager.Result.
+## Гарантия: при этом событии SP не списан, перезарядка не запущена,
+## урон не нанесён. Предназначено для UI-обратной связи и звука ошибки.
+##
+## Пример:
+##     EventBus.skill_failed.emit("shadow_strike", SkillManager.Result.NOT_ENOUGH_SP)
+signal skill_failed(skill_id: String, reason: int)
+
+## Изменился боевой лоадаут (equipped_skills). Передаётся копия массива слотов.
+## Прогресс (unlocked_skills) этим сигналом НЕ затрагивается.
+##
+## Пример:
+##     EventBus.equipped_skills_changed.emit(["fireball", "", "dash", ""])
+signal equipped_skills_changed(loadout: Array)
+
+## Изменилось количество Job Points.
+##
+## Пример:
+##     EventBus.job_points_changed.emit(920, 1000)
+signal job_points_changed(current: int, previous: int)
+
+## Изменился SP активного персонажа.
+##
+## Пример:
+##     EventBus.sp_changed.emit(80, 120)
+signal sp_changed(current_sp: int, max_sp: int)
+
 signal equipment_equip_requested(character_id: String, slot_id: String, item_id: String, item_data: Dictionary)
 
 ## Емітується при успешному экипировании предмета.

@@ -1,12 +1,14 @@
-[gd_scene load_steps=10 format=4 uid="uid://dbq66sndnfrq7"]
+[gd_scene load_steps=12 format=4 uid="uid://dbq66sndnfrq7"]
 
 [ext_resource type="Script" uid="uid://b8e1sapbwercc" path="res://SampleProject/Scripts/Gameplay/Scenes/Village.gd" id="1_village"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_5gn25"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_7gdem"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/OldMan.gd" id="10_oldman"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
+[ext_resource type="Texture2D" uid="uid://wxexm32rfnoj" path="res://assets/bosses/1 Old_man/Old_man_idle.png" id="9_oldman"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -69,11 +71,18 @@ position = Vector2(1582, 344)
 script = ExtResource("6_trigger")
 target_state = "OLD_MAN_HEALING"
 require_state = "OLD_MAN_OUTSIDE"
-dialogue_id = "OldMan_Outside"
-dialogue_path = "res://dialogue_quest/OldMan_Outside.dqd"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_OldManOutside"]
 shape = SubResource("CircleShape2D_save")
+
+[node name="OldMan" type="Sprite2D" parent="StateChangeTrigger_OldManOutside"]
+texture_filter = 1
+script = ExtResource("10_oldman")
+position = Vector2(-10, -7)
+scale = Vector2(2, 2)
+texture = ExtResource("9_oldman")
+flip_h = true
+hframes = 4
 
 [node name="EnemySpawner" type="Node" parent="."]
 script = ExtResource("7_spawner")

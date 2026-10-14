@@ -1,0 +1,64 @@
+{
+  "_schema": {
+    "description": "Class and subclass definitions read by CharacterManager.get_class_data(). Created as infrastructure in Phase 5.4 (Skills Foundation); the class ids below are exactly those already declared by CharacterManager._get_default_character_data(). Names, descriptions and balance are intentionally left empty - authoring them is a game-design task, not an infrastructure one.",
+    "shape": {
+      "classes": {
+        "<class_id>": {
+          "name": "String - display name, shown on Status PRIMARY JOB",
+          "description": "String",
+          "subclasses": {
+            "<subclass_id>": {
+              "name": "String - shown on Status SECONDARY JOB",
+              "description": "String"
+            }
+          }
+        }
+      }
+    }
+  },
+  "classes": {
+    "champion": {
+      "name": "",
+      "description": "",
+      "subclasses": {
+        "paladin": { "name": "", "description": "" },
+        "guardian": { "name": "", "description": "" }
+      }
+    },
+    "fighter": {
+      "name": "",
+      "description": "",
+      "subclasses": {
+        "protector": { "name": "", "description": "" }
+      }
+    },
+    "rogue": {
+      "name": "",
+      "description": "",
+      "subclasses": {
+        "thief": { "name": "", "description": "" },
+        "scoundrel": { "name": "", "description": "" }
+      }
+    },
+    "ranger": {
+      "name": "",
+      "description": "",
+      "subclasses": {
+        "hunter": { "name": "", "description": "" }
+      }
+    },
+    "wizard": {
+      "name": "",
+      "description": "",
+      "subclasses": {
+        "evoker": { "name": "", "description": "" },
+        "necromancer": { "name": "", "description": "" }
+      }
+    },
+    "druid": {
+      "name": "",
+      "description": "",
+      "subclasses": {}
+    }
+  }
+}

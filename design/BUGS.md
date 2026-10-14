@@ -1,0 +1,865 @@
+---
+type: status
+status: reference
+tags: [hub, bugs]
+---
+
+# Bugs — open defects
+
+Things that are **built but wrong**. Unbuilt systems go to [[BACKLOG]] instead;
+vault conventions in [[INDEX]].
+
+Filed by `visual-qa` (see the `ui-screen-pipeline` skill) and by anyone who
+finds a defect while doing something else. A bug found and not filed is a bug
+found twice.
+
+## What belongs here
+
+A mismatch with Figma, or a broken behaviour, **that nobody needs to decide
+about**. Triage every finding three ways before filing:
+
+| Finding | Goes to | Not a bug because |
+|---|---|---|
+| An approved decision covers it | [[figma_decision_register]] — cite the D-ID | The runtime is intentionally right |
+| It needs a product call (a price, a rule, keep-or-cut) | [[questions_for_sapega]] — new Q-ID | Nobody has decided yet |
+| The system does not exist at all | [[BACKLOG]] + a plan note | Nothing to fix |
+| **A decision approved it and nobody built it** | [[BACKLOG]] → Agreed but never built, **citing the D-ID** | Nothing is wrong; the work was dropped |
+| Nothing says it is wrong — you just dislike it | **Parked observations** below, as an **O-ID** | No source to measure it against |
+| **None of the above — it is simply wrong** | **here, as a B-ID** | — |
+
+Pre-existing test failures are **not** bugs: check [[test_baseline]] first, its
+six known issues are baseline noise.
+
+## Row format
+
+Append; never renumber. Delete the row in the commit that fixes it — git keeps
+the history, this note keeps only what is open.
+
+```markdown
+### B<n> — <one-line symptom>
+- **Where:** `path/to/scene.tscn` → `%NodePath` (and the script, if behaviour)
+- **Screen:** [[<screen>_mapping]] · Figma `<frame> <node-id>`
+- **Expected:** <value + its source: Figma variable, UITokens constant, or frame measurement>
+- **Got:** <value as measured>
+- **Evidence:** `design/shots/<file>.png`, or the `RESULT:` line that failed
+- **Severity:** blocker | visual | cosmetic
+- **Found:** <date>, <slice or task>
+```
+
+**Expected** must name its source. "Should be darker" is not a bug report;
+"`UITokens.SURFACE` = `#111118` @56%, node has `#1A1A1E` @100%" is.
+
+## Severity
+
+| | Meaning |
+|---|---|
+| **blocker** | Broken behaviour, a new error in the log, or a screen that cannot be opened. Fix before the slice ships. |
+| **visual** | A real mismatch with Figma: wrong token, wrong size, wrong state styling, wrong layout. |
+| **cosmetic** | Visible only at a non-authoring resolution or in an edge state. |
+
+---
+
+## Open
+
+> Seeded with one real finding as a format example. This list is maintained by
+> whoever runs QA, not compiled in advance.
+
+## Playtest intake — 2026-09-29 (Sapega)
+
+Reported in one pass, terse by design. Each row is **reported, not reproduced**
+unless it says otherwise. Do not fix from these rows alone — they are a queue,
+not a diagnosis. Promote a row to a full B-ID when it has been reproduced.
+
+Before treating any row as a bug, ask whether it was ever built. In play,
+"agreed but never implemented" is indistinguishable from "broken" — and several
+of these turned out to be exactly that. Check [[figma_decision_register]] for a
+D-ID first; if one exists, the row belongs in [[BACKLOG]] → *Agreed but never
+built*, not here.
+
+| ID | Report | Status after a first look |
+|---|---|---|
+| P1 | Attack has no animation and deals no damage; assumed to follow from having no weapon | ⚠️ **cause is not the weapon.** `Player.tscn` already has the `Attack` animation (`:139`), all four `PlayerCombat` exports wired (`:181–184`), `DamageApplier.base_damage = 15`. `perform_attack()` also falls back to a 0.2 s damage window when no animation exists (`PlayerCombat.gd:75`). Needs reproduction — the real cause is elsewhere. |
+| P2 | No weapon in the game | Unverified. Check whether the player is meant to start equipped and whether any map grants a weapon — related to **Q2 / D88** (no production map gives an inventory item). |
+| P3 | Dialogues | Too terse to act on. Needs one sentence: which NPC, what happens instead. Note the dialogue presentation layer is unbuilt — [[BACKLOG]], D110. |
+| P4 | "Дід" NPC never appears; should be a placeholder cube | ✅ **done 2026-10-12.** The story logic and trigger already existed (`Village.gd` `OLD_MAN_*`, `Village.tscn` → `StateChangeTrigger_OldManOutside` at (1582, 344)); only the visual was missing. Added `OldMan` `Sprite2D` under that trigger, frame 0 of `assets/bosses/1 Old_man/Old_man_idle.png`, ×2, facing left. Static — no idle animation. |
+| P5 | No merchant and no blacksmith; should be placeholder cubes somewhere on the desert | ✅ **not a bug — known unbuilt work.** Both scenes exist and are tested but are placed **only in `Maps/City.tscn`**. This is **D81** in [[BACKLOG]] → "Merchant / Blacksmith on production maps". Desert placement was never done. |
+
+---
+
+### B53 — Laboratory always restarts from EXPLORE, so a loaded save mid-lab skips its fight
+- **Where:** `SampleProject/Scripts/Gameplay/Scenes/Laboratory.gd` — `_ready()` runs
+  `_on_state_changed(current_state)` with the default `State.EXPLORE`; every later state that
+  finds its flag set just `return`s without advancing.
+- **Expected:** the starting state is picked from the `lab_*_complete` flags, as
+  `DesertRoad._determine_initial_state()` and (since 2026-10-14) `CityGates._initial_state()` do.
+- **Got:** same defect CityGates had — re-entering after the intro left the guards unspawned
+  forever (fixed there). In the lab, re-entry is only by loading a save (no way back by foot), and
+  the companion beats are trigger-driven, so the right starting state per flag needs reading
+  the triggers first.
+- **Severity:** blocker for loading a save made inside the lab; found 2026-10-14.
+
+### B37 — Plain `HSeparator` has no theme entry, so Journal/HUD rules render engine grey
+- **Root cause (named, not guessed):** `SampleProject/UI/Themes/GameUITheme.tres`
+  defines only *variations* with `base_type = &"HSeparator"` — `TitleRule`,
+  `TitleRuleBold`, `SaveRule`, `GameOverRule`, `GameOverFrameRule` — and **no base
+  `HSeparator` style**. Any separator without a variation falls through to Godot's
+  stock theme.
+- **Evidence:** `journal_fixtures_1920.png` — the rule under the screen title
+  (y=183, x 379–1460) and under `ACTIVE` (y=408, x 979–1460) both measure exactly
+  `#7f7f7f` = `Color(0.5, 0.5, 0.5)`, the engine default.
+- **Expected:** `#3a3a42` — `UITokens.BORDER`, which every other 1px line **on the
+  same screen** uses: the CURRENT OBJECTIVE box, the seven sidebar tab borders, the
+  party panel frame.
+- **Got:** roughly twice the luminance of every neighbouring rule, from an
+  untokened source. Automatic FAIL under the colour rule.
+- **Scope:** also in `journal_production_1920.png` and `combat_hud_1920.png`; **zero**
+  `#7f7f7f` pixels in the shop, settings and misc shots. Adding the base style fixes
+  every occurrence at once.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review (agent pass).
+
+### B38 — Highlighting a sidebar tab moves and shrinks it
+- **Where:** Game Menu left nav.
+- **Evidence:** `journal_fixtures_1920.png` — lit tabs (Inventory y 90–134, Journal
+  y 334–378) carry their accent border at **x = 10 and x = 295** → box 286 wide.
+  Unlit tabs (Equipment, World Map, Misc, Skills, Status) run **x = 0 to 295** →
+  296 wide. Height 45 ✓ and gap 16 ✓ on all seven.
+- **Expected:** one geometry for every row — 296 (`UITokens.SIDEBAR_TAB_WIDTH`) at a
+  single x. Highlighting must not move the row.
+- **Got:** the highlight shifts right 10px and shrinks 10px, so the left edge jumps
+  as the cursor travels.
+- **Related:** same family as **B20** (Settings nav, ~4px), different screen and
+  component. Nothing is clipped here.
+- **Severity:** visual
+
+### B39 — Party cards are 352 wide against a 330 token
+- **Evidence:** `journal_fixtures_1920.png` — panel border x=1520/1919 (400 wide ✓
+  `PARTY_PANEL_WIDTH`), card accent borders at **x=1544 and x=1895 → 352**, i.e.
+  panel minus 24 padding each side.
+- **Expected:** 330 — `UITokens.PARTY_CARD_WIDTH` (Figma `UI/Party Status Panel
+  104:490`).
+- **Got:** 352. +22px, past ±2 and not a scale step — the card is stretching to fill
+  the panel instead of using its own width.
+- **Correct on the same component:** height 107, pitch 123, gap 16, portrait 56 ✓
+  `PORTRAIT_SIZE`, HP fill `#2ecc71` ✓ `HP_FILL`, bar height 6 ✓ `BAR_HEIGHT`.
+- **Severity:** cosmetic
+
+### B40 — NPC action menu's inter-row rule is 2px while its own border is 1px
+- **Evidence:** `npc_menu_merchant_1920.png` — outer border 1px `#3a3a42` on all four
+  sides; the rule between `Talk` and `Buy` measures **2px** of `#3a3a42` — two
+  adjacent row borders with `NPC_MENU_GAP = 0`.
+- **Expected:** 1px (`BORDER_WIDTH`). 2px is `BORDER_WIDTH_SELECTED` and reads as a
+  selected edge between two unselected rows.
+- **Severity:** cosmetic
+
+### B41 — `ResourcePaths.gd` — 14 of its 15 scene constants point at files that do not exist
+- **Where:** `SampleProject/Scripts/Core/ResourcePaths.gd:26-66`, and
+  `get_enemy_scene_path()` at `:127`
+- **Screen:** none — this is the project's only machine-readable "which scenes should
+  exist" registry. See [[scene_inventory]] §7.
+- **Expected:** a path constant resolves to a file. Checked all 15 with `[ -f ]`.
+- **Got:** only `GAME_MENU` (`:66`) resolves. The two that name shipping scenes are
+  wrong by one directory level:
+  - `:26` `ENEMY_DEFAULT` = `Scenes/Characters/default_enemy.tscn`; real file is
+    `Scenes/Characters/**Enemies**/default_enemy.tscn`
+  - `:48` `MERCHANT` = `Scenes/Objects/NPCs/merchant.tscn`; real file is
+    `Scenes/**Gameplay**/Objects/NPCs/merchant.tscn`
+
+  The other 12 (`:27-31` enemy variants, `:34-39` bosses, `:57` `GAME_ROOT` in a
+  `Scenes/Levels/` directory that does not exist) name scenes the project never had.
+  `:74` `MAP_LOCATIONS_CONFIG` → `Resources/Data/map_locations.json` is missing too —
+  that is the dataset D40/D41 wait on.
+- **Second defect in the same file:** `get_enemy_scene_path()`'s `match` has
+  `"miniboss"` twice, `:139` and `:157`. The `:157` arm is unreachable.
+- **Evidence:** `grep -rn "ResourcePaths" SampleProject addons` outside the file
+  itself returns **zero hits**, so nothing calls it and nothing breaks today. It
+  breaks the moment anything does: every `enemy_type` except `default_enemy` returns
+  a dead path, and `ENEMY_DEFAULT` itself is dead. The live spawner
+  (`Scripts/Gameplay/EnemySpawnPoint.gd:74`) hard-codes the correct path instead.
+- **Severity:** blocker — latent. No user-visible symptom while the class is dead;
+  guaranteed failure for any caller. Fix or delete; the 12 never-existing scenes are
+  **not** a backlog (enemy variety is `EnemyStats` resources on one scene,
+  [[scene_inventory]] §1).
+- **Found:** 2026-09-29, scene inventory audit
+
+### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
+- **Where:** `SampleProject/Game.tscn:15` —
+  `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
+- **Screen:** [[figma_coverage]] §F — ObjectiveHUD is superseded by Quest Info Panel
+  `434:6580`, already implemented as `UI/Components/combat_hud_top.tscn`.
+- **Expected:** every declared `ext_resource` is used by a node in the same scene.
+- **Got:** `grep -c 'ExtResource("10_objective")' SampleProject/Game.tscn` = **0**.
+  The scene is parsed and loaded on every `Game.tscn` load and never instantiated.
+- **Evidence:** swept all 121 `.tscn` for this pattern; `10_objective` is the only
+  dangling `PackedScene` `ext_resource` in the project. It is also why a plain
+  path-grep reports `ObjectiveHUD.tscn` as used when it is not.
+- **Severity:** cosmetic — wasted load, no visible effect. Delete the line, and the
+  scene with it unless Q34's answer keeps it.
+- **Found:** 2026-09-29, scene inventory audit
+
+### B31 — Overwrite confirmation never says which save it is about to destroy
+- **Where:** Save mode → overwrite modal, and the slot list behind it.
+- **Evidence:** `save_load_overwrite_1920.png`. Every card border measures
+  `#666666` = `#ffffff × 0.40` (the scrim). Gold under the same scrim would read
+  `#554616` — so slot 1's border is dimmed **white**, not dimmed gold, although it
+  was `#d4af37` in `save_load_load_mode_1920.png`. The cursor chevron at x≈88
+  (present in load mode at y 225) is gone. Modal copy: *"Overwrite Save?" / "This
+  will replace the existing save data."* — no slot number, no location, no date.
+- **Expected:** the target slot keeps its accent border and cursor while the modal
+  is open (load mode renders both), and/or the modal names the slot.
+- **Got:** nothing on screen identifies which save dies.
+- **Severity:** blocker — destructive action with no target shown.
+- **Found:** 2026-09-29, screenshot review (agent pass, pixel-measured).
+
+### B32 — Selected save slot draws a 1px accent border; the token says 2px
+- **Evidence:** `save_load_load_mode_1920.png` — exactly one pixel of
+  `[212,175,55]` at y=141, y=316, x=120, x=1859; rows 140/142 and columns 119/121
+  are background. The focused `Yes` button in the overwrite shot *does* render 2px
+  gold (x 902–903, 952–953).
+- **Expected:** `UITokens.BORDER_WIDTH_SELECTED = 2`.
+- **Got:** 1px — the same weight as the unselected white border, so only hue
+  separates selected from not.
+- **Severity:** visual (zero-tolerance axis)
+
+### B33 — Modal scrim is a `0.60` literal, not the `OVERLAY` token
+- **Evidence:** linear fit of `save_load_overwrite_1920.png` against
+  `save_load_load_mode_1920.png` over 350×600px of identical content
+  (x 1200–1800, y 530–880): slope **0.4001**, intercept 0.02; pure-white card
+  border 255 → 102.
+- **Expected:** `UITokens.OVERLAY = Color("000000", 0.56)` → factor 0.44 → white
+  lands on 112.
+- **Got:** factor 0.40 → 102, i.e. `Color(0, 0, 0, 0.60)`. Matches no token, so it
+  is a literal in the modal scene.
+- **Severity:** visual (colour, zero tolerance)
+
+### B34 — Modal title renders smaller than its own body text
+- **Evidence:** `save_load_overwrite_1920.png`. Cap `O` of "Overwrite Save?" — ink
+  rows 491–500 = **10px**, and a round `O` overshoots, so true cap is ≤10. Cap `T`
+  of "This will replace the existing save data." — rows 522–532 = **11px**. Button
+  labels `Y`/`N` are 10px, same as the title.
+- **Expected:** a dialog title above body on the scale — `SIZE_HEADING 20` or
+  `SIZE_TITLE 24` against `SIZE_BODY 16`.
+- **Got:** title ≈15–16px, measurably smaller than its body copy. Hierarchy inverted.
+- **Severity:** visual
+
+### B35 — Bottom bar sits on 48px margins while the screen uses 60
+- **Evidence:** `save_load_load_mode_1920.png`. Header rule spans x 59–1860,
+  eyebrow ink starts x=61, "Load Game" ink x=63, card right edge 1859. Bottom-left
+  hint ink starts **x=49**; the rightmost hint ends **x=1870**.
+- **Expected:** 60 — `SAVE_SCREEN_MARGIN_H = 60` and `BOTTOM_BAR_PADDING = 60`,
+  corroborated by the header rule at 59/1860.
+- **Got:** ~48 both sides. The hint hangs 11px left of the title column and the
+  right-hand hints overrun the card edge by 10px — a whole scale step, not rounding.
+- **Severity:** visual
+
+### B36 — Overwrite modal is ~2.7× taller than its content
+- **Evidence:** `save_load_overwrite_1920.png` — panel border box x 740–1179,
+  y 400–679 = **440×280**. Content runs title cap-top 491 → button bottom 593
+  ≈102px. Dead space ≈86px above and ≈85px below.
+- **Expected:** padding from the spacing scale; `SPACE_3XL = 48` is the ceiling.
+- **Got:** ~86px, off-scale.
+- **Correct on this modal, for the record:** panel centred at 959.5/539.5 (dead
+  centre of 1920×1080), button pair centred 959.5, buttons 52×44 with a 12px gap
+  = `SPACE_MD`, border `#3a3a42` = `BORDER` at 1px, corners sharp.
+- **Severity:** cosmetic
+
+### B24 — Item detail panel goes stale; the buy confirmation identifies nothing but its own title
+- **Where:** shop item detail bar and inventory description bar — one shared defect.
+- **Evidence:**
+  - `shop_buy_confirm_1920.png` — the modal reads *"Buy Iron Ingot? / Quantity: 1
+    • Total Cost: ₹ 30"*, while the detail panel below still reads *"Potion —
+    Restores 50 HP."*, **and the Iron Ingot row carries no selection fill**. Nothing
+    on screen except the modal title says what is being bought.
+  - `inventory_filter_key_items_1920.png` — the list shows *"No items in this
+    category."* while the description bar still reads *"Iron Ore — Raw iron ore…"*,
+    an item that is not even in the KEY ITEMS filter.
+- **Expected:** the detail panel tracks the acting/selected item, and clears to the
+  placeholder (`shop_sell_1920.png` uses *"Select an item."*) when there is none.
+  The target row stays visibly selected while its modal is open, as in `shop_sell`.
+- **Severity:** blocker
+- **Found:** 2026-09-29, screenshot review (agent pass).
+
+### B25 — Price column is left-aligned, so the digits do not line up
+- **Where:** Shop, "Selling Price" / "Buying Price" column.
+- **Evidence:** `shop_buy_confirm_1920.png` — every price starts at the same left
+  x (~1390): `₹ 10`, `₹ 6`, `₹ 100`, `₹ 200`, `₹ 300`, `₹ 2`, so the units digits
+  land at six different positions. The header starts at ~1376, aligning with
+  neither edge of its own values.
+- **Expected:** right-aligned numerals in a numeric column.
+- **Severity:** visual
+
+### B26 — Buy confirmation modal has no border and ~118px of vertical padding
+- **Where:** Shop → Buy → confirm modal panel.
+- **Evidence:** `shop_buy_confirm_1920.png` — panel 586×371 actual px, content
+  block occupies the middle ~140px, leaving ≈118px empty above and below.
+- **Expected:** a 1px border from the border token — every other surface in these
+  shots has one (detail panel, party cards, nav rows, category rail). Padding from
+  the spacing scale, max 48.
+- **Got:** borderless, padding ≈2.5× the largest scale step. The Yes/No buttons are
+  also unequal (≈51×37 vs ≈54×35), the 3-glyph label in the narrower box, which
+  suggests focus changes the padding. **Verify button sizes in the scene, not the
+  PNG** — measurement precision there is ±2–3px.
+- **Severity:** visual
+
+### B27 — Button normal/focus styling is inconsistent across modals
+- **Where:** shop confirm modal (Yes/No) and the dialogue bar (Auto/Skip).
+- **Evidence:** `shop_buy_confirm_1920.png` — `Yes` = gold 2px border, transparent
+  fill; `No` = grey filled box, no border. `misc_modal_1920.png` — `Auto` = no fill
+  and no border; `Skip` = grey filled box, no gold anywhere.
+- **Expected:** one normal style and one focused style shared by all buttons, with
+  focus marked by the accent, as `Yes` and the left-nav selection do.
+- **Got:** three appearances across two modals, and grey fill means "normal" in one
+  and "focused" in the other.
+- **Severity:** visual
+
+### B28 — Misc submenu selection ignores the accent language used everywhere else
+- **Where:** Menu → Misc submenu (`misc_modal_1920.png`, x 381–846, y 533–580).
+- **Expected:** accent `#d4af37` selection — the left nav in the *same screenshot*
+  marks Inventory with a gold 2px border, and `shop_sell_1920.png` marks the
+  selected row with a gold fill.
+- **Got:** a grey bar fading left-to-right, no accent, and no 1px border on the
+  submenu rows although every left-nav row has one. The selected row's cursor is
+  also `←`, pointing away from its own label, while every nav row uses `❯`.
+- **Severity:** visual
+
+### B29 — Screenshots named `_1920` are mostly 2560×1440, so measurements do not compare
+- **Where:** `design/shots/`.
+- **Evidence:** verified header sizes — `misc_modal_1920.png` is genuinely
+  **1920×1080**, while `shop_sell_1920.png`, `inventory_filter_key_items_1920.png`
+  and `main_menu_1920.png` are **2560×1440**. All four carry the `_1920` suffix.
+- **Consequence:** any spacing or sizing comparison across these files is off by a
+  factor of 1.333, and the filename actively misleads the reader. Every measured
+  finding taken across two differently-sized shots needs re-checking.
+- **Severity:** blocker (it invalidates the evidence base, not the game)
+- **Found:** 2026-09-29, verified by reading the PNG headers.
+- **Corroborated independently:** `splash_1920.png` is also 2560×1440 — the capture
+  run did not honour `--resolution 1920x1080`. `save_load_load_mode_1920.png` and
+  `save_load_overwrite_1920.png` **are** genuinely 1920×1080. So the suffix is
+  unreliable per-file, not uniformly wrong, which is worse: it cannot be corrected
+  by a constant factor. Fix the capture scripts, then re-shoot.
+- **Coverage gap found alongside:** there is **no 1280×720 shot of save/load**, so
+  the responsiveness of a four-row list plus right-hand info column is unverified.
+
+### B30 — Inconsistencies between the two list screens (batch, all cosmetic)
+All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
+`inventory_filter_key_items_1920.png`:
+- **Header case:** Shop uses `Item Name` / `On Hand` / `Buying Price` in Title Case;
+  Inventory uses `ITEM NAME` / `ON HAND` in uppercase.
+- **Panel framing:** Inventory's content column has a continuous gold 1px frame;
+  the Shop's identical three-column layout has none.
+- **`FILTER` button** uses the gold *selection* fill, competing with the actually
+  selected KEY ITEMS tab; gold fill means "current selection" everywhere else.
+- **`Buying Price` is the column label on the Sell tab** — merchant's point of view,
+  while `On Hand` and `All Possessions` on the same screen use the player's.
+- **Inventory tab gaps** measure ≈49 / 54 / 49 / 49 px — one gap past ±2. Verify the
+  container separation in the scene before acting; this is a glyph-extent estimate.
+- **Severity:** cosmetic
+
+### B18 — Controls list is clipped mid-row with ~180px of empty panel below it
+- **Where:** Settings → Controls, the Actions & Inputs table viewport.
+- **Evidence:** `settings_controls_1920.png` — row pitch is a consistent 48px and
+  rows 1–8 render whole, but "Skill Slot 3" (y≈742) is sliced horizontally at
+  y≈752. Reset starts at y≈758; below it the panel is empty to the footer divider
+  at y≈963. No scrollbar is visible.
+- **Expected:** the viewport uses the available panel height, and a row is either
+  fully shown or fully outside it.
+- **Got:** a half-height row stub, and any further bindings unreachable.
+- **Severity:** blocker
+- **Found:** 2026-09-29, screenshot review (agent pass).
+
+### B19 — "Attack" row puts gamepad bindings in the keyboard columns, with two naming schemes
+- **Where:** Settings → Controls, Attack row (y≈598).
+- **Evidence:** `settings_controls_1920.png` — Primary = `Button #0`,
+  Secondary = `Button A`, Tertiary = empty.
+- **Expected:** the pattern every other row follows — keyboard in Primary/Secondary,
+  gamepad in Tertiary (`W`/`Up`/`Dpad Up`, `Space`/`W`/`Left Stick Up`) — and one
+  naming scheme for gamepad buttons.
+- **Got:** gamepad in both keyboard columns, empty gamepad column, and the same
+  input class named two different ways in a single row.
+- **Note:** this is binding data and labels, not maaacks widget styling, so **D48
+  does not cover it**.
+- **Severity:** visual
+
+### B20 — Active nav row's gold caret is clipped by the window edge
+- **Where:** Settings, left nav, the active row (Misc in these shots).
+- **Evidence:** all three settings PNGs, x≈0–11, y≈287 — a gold triangular
+  fragment cut off at x=0. The active row's box also starts ~4px further left
+  (x≈8) than the eight inactive rows (x≈12).
+- **Expected:** nothing cropped by the window edge; the active row shares the left
+  edge of every other row.
+- **Severity:** visual
+
+### B21 — Content column geometry differs between Settings tabs
+- **Where:** Settings → Audio / Game vs Controls.
+- **Evidence:** `settings_audio_1920.png` and `settings_game_1920.png` run rows
+  from label x≈431 to control edge x≈1503; `settings_controls_1920.png` occupies
+  only x≈688–1248 — about 257px more inset on the left. Separately, the first row
+  sits at y≈167 on Audio but y≈175 on Game, ~9px apart, roughly one spacing step,
+  despite identical header geometry (eyebrow y≈58, title y≈96).
+- **Expected:** one shared content column and one shared top padding across tabs.
+- **Severity:** visual
+- **Note:** the horizontal inset may fall under **D48** if that decision is read to
+  cover the third-party widget's layout as well as its paint. The ~9px vertical
+  difference between Audio and Game does not — both are ours.
+
+### B22 — Volume steppers have no control chrome
+- **Where:** Settings → Audio, the `-` / `+` beside each slider (x≈1076, x≈1444).
+- **Evidence:** `settings_audio_1920.png` — bare glyphs directly on the background.
+- **Expected:** a 1px bordered box, matching every other interactive control on
+  these screens (segmented control, Reset, both footer buttons).
+- **Got:** unframed characters with no visible hit target.
+- **Severity:** cosmetic
+
+### B23 — Settings tab titles do not share a naming pattern
+- **Where:** Settings header title (y≈96).
+- **Evidence:** "Audio Settings" / "Game Settings" / **"Controls"**, under
+  consistent eyebrows "SOUND OPTIONS" / "GAME OPTIONS" / "INPUT OPTIONS".
+- **Expected:** one pattern; the eyebrows already follow one.
+- **Severity:** cosmetic
+
+### B16 — Dialogue box stays drawn on top of the open Game Menu
+- **✅ Fixed 2026-10-13 (D136):** the menu no longer opens while a dialogue runs.
+- **Where:** `UIManager.gd:28` — `allow_pause_during_dialogue: bool = true`.
+- **Evidence:** `design/shots/journal_production_1920.png` — the Journal tab is
+  open and the DialogueQuest box ("Цей дід… Він такий дурний", with Auto/Skip and
+  the empty portrait frame) is rendered over it, at the bottom of the menu.
+- **Cause:** the flag deliberately permits opening the menu mid-dialogue, and
+  `:383` only consults it when it is `false`. **Nothing hides or dims the
+  dialogue box once the menu opens** — two UI layers end up live at once.
+- **Undecided, not just broken:** whether the box should hide, dim, or the menu
+  should be blocked during dialogue was never settled. Raise it with D110 (the
+  project-owned presentation layer) rather than patching visibility here.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+- **Side note:** no `capture_*.gd` in the repo references `journal_production` —
+  that screenshot's producing script is gone. Some shots in `design/shots/` are
+  orphaned and cannot be refreshed.
+
+### B14 — Game Over text is unreadable against the stone-wall art
+- **Where:** `Scenes/UI/game_over_screen.tscn`.
+- **Evidence:** `design/shots/game_over_1920.png`.
+- **"Khalahas Heroes"** (`:117`) — small dark-red type on the dark wall, effectively
+  invisible at 1920×1080. *(The name itself is correct — `MainMenu.tscn:77` and the
+  `TitleKhalahas` / `SIZE_TITLE_KHALAHAS` tokens confirm it is the game's title.)*
+- **"Game Over"** — dark red over a high-contrast stone-and-iron-door photo; the
+  letterforms collide with the door bars and lose their edges.
+- **Expected:** a scrim or a darker backdrop behind the type, as every other
+  screen uses (`DimOverlay`), so text reads at a glance.
+- **Related:** this is the same missing-scrim family as **B8** — the background
+  art is intended, the darkening under the text is not there.
+- **Not filed:** the missing third button (Load Game) — that is **D92**, decided
+  2026-09-29, after this screenshot.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+
+### B15 — Blacksmith action menu is not anchored to the NPC
+- **Where:** `UI/Components/npc_action_menu.gd`, in-world placement.
+- **Evidence:** `design/shots/npcs_1920.png` — the merchant's `E Shop` prompt sits
+  directly above the merchant sprite, but the blacksmith's `Talk` panel floats up
+  and to the right, roughly +145 / −108 px off the sprite, with a visible gap and
+  no pointer connecting them.
+- **Expected:** consistent anchoring with the interaction prompt — the two NPCs
+  are side by side on the same screen and are positioned by different rules.
+- **Narrowed by measurement, 2026-09-29.** The **merchant's menu is anchored exactly
+  to the token**: sprite centre-x 899.6, menu top-left (939.75, 459.75) → offset
+  **+40.2 / −139.9** against `UITokens.NPC_MENU_OFFSET = Vector2(40, -140)`. The
+  blacksmith measures **+145 / −108**. Same component, so the offset value is fine —
+  **it is the blacksmith's placement path that never applies it.** Point the fix at
+  the anchor source, not at the offset.
+- **Check against:** Figma `npc-menu-blacksmith` before moving anything.
+- **Not filed:** the menu showing only `Talk` — **D115** (Craft + Enchant) was
+  decided 2026-09-29, after this screenshot.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+
+### B13 — Save slot playtime renders with a padded three-digit hour
+- **Where:** save slot cards, playtime field.
+- **Evidence:** `design/shots/save_load_save_mode_1920.png` — slot 1 shows
+  `011:05`, slot 2 shows `003:59`.
+- **Expected:** `11:05` / `3:59`, or `HH:MM` with two digits.
+- **Got:** hours zero-padded to three digits, which reads as a different unit
+  entirely at a glance.
+- **Severity:** cosmetic
+- **Found:** 2026-09-29, screenshot review.
+- **Also on this screen, not filed:** the lead character reads `Kael` while the
+  party everywhere else is Астрит / Уризен / Кусакам. That is **D89** (mock data
+  in slot cards, decided 2026-09-29), not a defect.
+
+### B12 — Unthemed stock monitor icon in the Settings header
+- **Where:** Settings → Display, header area, top right of the content panel.
+- **Evidence:** `design/shots/settings_display_1920.png` — a large bright
+  blue-and-white monitor glyph, rendered in its stock colours.
+- **Expected:** header iconography in the theme palette (accent `#d4af37` or
+  `text-primary`), like the small monitor/speaker/gear/keyboard glyphs in the
+  left strip of the same screen, which are themed correctly.
+- **Got:** a saturated blue stock icon that matches nothing else on screen.
+  Likely supplied by the maaacks menus addon rather than the project — check
+  before restyling, D48 covers ownership of that widget.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+
+### B10 — Dialogue box shows an empty portrait frame and undesigned Auto/Skip buttons
+- **Where:** DialogueQuest `dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
+- **Evidence:** `design/shots/combat_hud_1920.png`.
+- **Empty portrait frame:** a blank brown square sits on the right of the box.
+  **Q26's applied default was "hide the empty frame"** — it was never applied.
+  D112 later replaced portraits with full-body art, so this frame has no future
+  either way.
+- **Auto / Skip buttons:** present top-left of the box. [[dialogue_audit]] §1
+  records that Figma's `npc-dialog-simple 36:6` has **no Auto/Skip buttons**.
+- **Stray glyph:** an orange `!` floats inside the box next to the portrait
+  frame, matching nothing in the design.
+- **Not duplicated here:** the box being entirely off-theme (no accent border,
+  wrong font, magenta speaker name instead of accent gold) is the known unbuilt
+  presentation layer — [[BACKLOG]], D110.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+
+### B11 — Tutorial hint panel and the skill hotbar overlap
+- **Where:** in-game HUD, bottom centre.
+- **Evidence:** `design/shots/combat_hud_1920.png` — the hint panel
+  *"Use A/D or Arrow Keys to move • Space to jump"* and the 4-slot skill hotbar
+  are drawn on top of each other; the hotbar's box cuts through the hint text.
+- **Expected:** the two HUD elements do not collide at 1920×1080.
+- **Severity:** visual
+- **Found:** 2026-09-29, screenshot review.
+
+### B9 — A whole GUT suite exists on disk, is gitignored, and every doc denies it
+- **Where:** `tests/` (35 files), `test/unit`, `test/integration` (32 files),
+  `.gitignore:4` (`test/**`) and `.gitignore:6` (`tests/**`).
+- **What is actually true:**
+  - ~25 GUT test scripts exist on this machine, including
+    `tests/test_focus_router.gd`, `tests/test_game_menu_misc_modal.gd`,
+    `tests/test_main_menu.gd`, `tests/test_load_game_menu.gd`.
+  - **Both** `gutconfig.json` and `.gutconfig.json` point at exactly
+    `res://test/unit`, `res://test/integration`, `res://tests` — correct,
+    existing paths.
+  - `tests/results/junit.xml` (11 Jan 2026) and `test/results/junit.xml`
+    (3 Jan 2026) — the suite was really run.
+  - Running GUT now **does execute them** and produces many errors and failures.
+    Exact counts unavailable: the process segfaults before GUT prints its summary.
+  - They are **gitignored**, so a fresh clone has zero tests. That is why the
+    repo-level view is "no tests".
+- **What the documents claim, wrongly:**
+  - `design/test_baseline.md`: *"No `tests/` or `test/` folder exists, and both
+    gutconfig files point to missing directories."* **Both halves are false.**
+  - `CLAUDE.md` and `docs/CLAUDE.md`: *"There are no GUT tests"*, *"GUT runs zero
+    tests"*. False on any machine that has these folders.
+  - `docs/TESTS_COMPLETE.md`: *"154 tests, 7 files, FULLY IMPLEMENTED"*, naming
+    `test_xp_manager.gd` etc. Those files exist only under
+    `raw_assets/qusakam_v2-main/qusakam_v2-main/tests/` — a **vendored copy of an
+    older version of this project**. The claim is stale, not invented.
+- **Why it matters beyond bookkeeping:** the hidden suite contains
+  `test_main_menu_buttons_handle_mouse_input` and `test_focus_router.gd` —
+  **real mouse-input and focus coverage**, precisely what the `verify_*` suite
+  lacks (see **B4**, **B6**). The project had the tests that would have caught
+  B6 and ignored them out of the repo.
+- **Decide, do not guess:** either commit these suites and fix them, or delete
+  them and say so. Right now they are in the worst state — present, failing,
+  unversioned, and denied by every document.
+- **Severity:** blocker (process)
+- **Found:** 2026-09-29, **verified on disk and by running GUT.**
+
+### B7 — Two sidebar items stay highlighted at once in every Game Menu tab
+- **Where:** Game Menu sidebar (`VerticalMenu`), the selected-state variation on
+  the tab buttons. The stale one is the **first** item, `Inventory`.
+- **Expected:** exactly one sidebar item carries the selected styling and the
+  `▶` cursor.
+- **Got:** `Inventory` keeps its gold border permanently. Switching to any other
+  tab lights that tab **in addition**, so two items always look selected.
+- **Evidence:** `capture_flow.gd`, run 2026-09-29 with a window — **all seven
+  tabs** report `2 sidebar items lit at once`. Visible in
+  `design/shots/flow/03_tab_equipment.png` (Inventory + Equipment both bordered)
+  and `05_tab_skills.png` (Inventory + Skills, with `▶` on Skills).
+- **This is Sapega's "cursor on every menu item" report**, now reproduced. Note
+  only **one** `CursorIndicator` node exists (`/root/CursorLayer/CursorIndicator`),
+  so it is not node duplication — it is the selected *styling* never clearing on
+  the outgoing tab. B3's "stuck state, not a double signal" reading was right;
+  B3's proposed one-line group fix addresses cleanup on menu close, **not this**.
+- **Root cause, shared with B8:** the Game Menu still runs on the legacy
+  `vertical_menu.tscn` + `panel_manager.gd` path. The correct replacement,
+  `UI/Components/menu_shell.gd` (`UIMenuShell`), was built in Phase 4 and
+  **never connected** — its own header says *"підключення відбудеться у Phase 5"*,
+  and Phase 5 never did it. `grep` finds no screen using it; only
+  `verify_game_ui_theme.gd` renders it to a PNG.
+- **The fix already exists in this repo.** `menu_shell.gd:26/41` puts every
+  sidebar button in a shared `ButtonGroup`. Godot then guarantees **exactly one**
+  pressed button — this bug is structurally impossible there. Patching the
+  legacy path is treating a symptom the replacement was written to remove.
+- **⚠️ Correction 2026-10-12:** the root cause above is wrong. `vertical_tab_menu.tscn` already puts all 7 tabs in one `ButtonGroup`. The second lit row is **focus**, not pressed: `focus_router.gd` `focus_tabs()` always calls `grab_focus()` on the first button (Inventory), and `SidebarTab` draws `focus` with an `ACCENT` border and `pressed` with `BORDER_STRONG` — hence two rows, two border styles. Fix in [[game_menu_single_scene_plan]] slice 1 (D116).
+- **Severity:** visual
+- **Found:** 2026-09-29, **reproduced visually and programmatically.**
+- **Worse than first recorded:** the two lit rows are not even lit the *same way*.
+  In `journal_fixtures_1920.png` Inventory carries a **2px** accent border and
+  Journal a **1px** one — so the screen shows two selected rows in two different
+  selected styles. See also **B38**: the lit state changes the row's geometry.
+
+### B8 — Menu surfaces are transparent; the parchment map bleeds through (systemic)
+- **Where:** not one screen. Confirmed on three so far:
+  - **Skills tab** — no surface at all, "No skills available yet." sits on the map.
+  - **Shop** — parchment visible through the top of the wares panel and the
+    whole left sidebar (`design/shots/shop_buy_1920.png`).
+  - **Save / Load** — all four slot cards are see-through, the map runs straight
+    through the slot text (`design/shots/save_load_save_mode_1920.png`).
+  - **The overwrite confirmation modal** — worst instance found. Panel interior
+    measures `(12,11,15)`→`(15,14,18)` and the map's "Shifting Sands" label crosses
+    it at y≈522, **directly behind the body text**. Verified arithmetically:
+    `0.56×(17,17,24) + 0.44×(12,10,10)` = `(14.8,13.9,17.8)` = the measured value,
+    i.e. `SURFACE` `#111118` @56% is doing exactly what it says. A destructive
+    confirmation is the worst surface in the app to be see-through.
+  - **Inventory empty state** — "No items in this category." sits dead centre over
+    the darkest part of the bleed-through in dim grey; the least legible text found
+    in any shot.
+- **Originally filed as:** `SkillsPanel` in the Game Menu.
+- **Expected:** the menu's opaque surface (`UITokens.SURFACE`, `#111118` @56%
+  over the backdrop) behind the panel content.
+- **Got:** on the Skills tab only `CentralPanel`, `PanelManager` and
+  `SkillsPanel` are visible — no surface panel, no `RightPanel`/`PartyStatusPanel`.
+  The illustrated parchment world map fills the whole content area and the
+  "No skills available yet." text sits directly on it, barely legible.
+- **Evidence:** `design/shots/flow/05_tab_skills.png`; panel-visibility dump in
+  the same run.
+- **Note:** the parchment backdrop is **intended** — `menu_shell.gd:63` documents
+  it as *"у Figma — ілюстрована мапа під затемненням"*. What is missing is the
+  darkening: `menu_shell.tscn` has a `DimOverlay`, and the legacy
+  `vertical_menu.tscn` the Game Menu actually uses has **none** (`grep` → 0).
+- **Root cause, shared with B7:** the Game Menu never migrated to `UIMenuShell`.
+  The shell carries both the `DimOverlay` this tab lacks and the `ButtonGroup`
+  B7 needs. One migration closes both.
+- **Severity:** visual
+- **Found:** 2026-09-29, **reproduced visually.**
+
+### B4 — `verify_misc_modal.gd` asserts navigation by grepping source; one check cannot fail
+- **Where:** `SampleProject/UI/verify_misc_modal.gd:104, 111–120`
+- **Expected:** a test named "Tutorial destination still resolves" presses the
+  button and asserts where the player ends up.
+- **Got:** three of the four Misc destinations are never pressed.
+  - `:111–114` opens `game_menu.gd` with `FileAccess` and asserts
+    `menu_src.find("TutorialMenuScene") != -1` — a **string search of the source
+    file** — plus `ResourceLoader.exists(tutorial_path)`, a file-on-disk check.
+  - `:118` Exit asserts `ResourceLoader.exists("res://SampleProject/MainMenu.tscn")`.
+  - `:104` `ck(current_scene == null or true, "no scene change")` — `X or true`
+    is **always true**. The assertion is incapable of failing.
+- **Consequence:** [[BUGS]] **B2** (Tutorial unloads the game into a dead-end
+  stub) sits directly under a check called "tutorial route still wired" that
+  passes because the *string* is present. The suite cannot catch it, and never
+  could. Only `[5] Settings destination` actually drives the UI.
+- **Evidence:** run 2026-09-29, `RESULT: ALL PASS` (40 checks) on
+  `Godot_v4.6.2-stable_win64_console.exe`. Passing is the problem.
+- **Severity:** blocker — a green suite is the reason these shipped.
+- **Found:** 2026-09-29, **confirmed by running the script.**
+- **Note:** the test otherwise drives the real path (`ServiceLocator` →
+  `UIManager.open_game_menu()` → real modal layer), so its Settings result is
+  trustworthy. Fixing this means pressing the remaining three buttons and
+  asserting the destination, not adding more file-existence checks.
+
+### B3 — Menu cursor stays on every item; accumulates across open/close
+- **Where:** `Scripts/Managers/UI/MenuManager.gd:185` —
+  `get_tree().get_nodes_in_group("cursor_indicators")`
+- **Screen:** any menu built on `Scenes/Menus/Game/vertical_menu.tscn` or
+  `Scenes/UI/vertical_tab_menu.tscn` — both carry a `CursorIndicator` node.
+- **Repro (Sapega, confirmed in play):** open and close the menu a few times.
+  The `▶` cursor ends up on **every** menu item instead of only the selected one.
+- **Expected:** exactly one visible cursor, on the focused item.
+- **Got:** cursors persist after the menu closes and stack up on reopen.
+- **Root cause — the cleanup never matches anything.** Three facts compound:
+  1. `MenuManager.close_game_menu()` calls `_hide_cursor_indicators()` (`:66`),
+     which iterates the group `"cursor_indicators"`. **Nothing is ever added to
+     that group** — the string appears only at `MenuManager.gd:66/184/185` and
+     in no other script or `.tscn`. `cursor_indicator.gd` adds
+     `"cursor_layer"` (`:193`) and nothing else. So the loop always runs over an
+     empty array and `hide_cursor()` is never called by anyone.
+  2. `CursorIndicator` **reparents itself out of its menu** into a global
+     `CursorLayer` at layer 100 (`cursor_indicator.gd:184–201`). Hiding the menu
+     (`game_menu.gd:448` `visible = false`) therefore does not hide the cursor —
+     it no longer belongs to that subtree.
+  3. The menu is hidden, not freed, and two separate scenes each contribute a
+     `CursorIndicator` into that one shared layer.
+- **Confirmed as a refactoring regression.** The January snapshot in
+  `raw_assets/qusakam_v2-main/` has the working version — it finds cursors **by
+  type**, not by group (`MenuManager.gd:276`):
+  ```gdscript
+  cursor_indicators = current_scene.find_children("*", "CursorIndicator", true, false)
+  ```
+  There `cursor_indicators` is a **local variable**. In the rewrite it became a
+  **group name** (`get_nodes_in_group("cursor_indicators")`) and the matching
+  `add_to_group()` was never added. The name survived the refactor; the
+  mechanism did not.
+- **Candidate fix (one line, unverified):** `add_to_group("cursor_indicators")`
+  in `cursor_indicator.gd::_ready()`, which makes the existing cleanup do what
+  it was written to do. Do **not** restore the old code verbatim: it searched
+  `current_scene`, and cursors now reparent to `/root/CursorLayer`, outside it. Worth checking whether the reparent-to-global-layer
+  design should survive at all — that is the deeper issue, and a separate call.
+- **Evidence:** the greps above; `hide_cursor()` (`cursor_indicator.gd:504`) has
+  no caller outside `MenuManager`.
+- **Severity:** visual
+- **Found:** 2026-09-29. Repro from Sapega; root cause traced **statically, not
+  yet reproduced or fixed in a run.**
+
+### B1 — 1px card borders drop a row at 1280×720
+- **Where:** card styleboxes from `GameUITheme.tres` (border width 1, `UITokens.BORDER_WIDTH`)
+- **Screen:** multiple — visible in the slice 8 screenshot pass
+- **Expected:** a continuous 1px border on all four sides at any resolution
+- **Got:** one border row disappears; sub-pixel scaling of the 1920×1080 logical canvas
+- **Evidence:** `design/shots/*_1280.png`
+- **Severity:** cosmetic — **but one instance is worse than the label suggests**
+- **Found:** 2026-09-27, [[runtime_ui_completion_plan]] slice 8
+- **Scoped by pixel scan, 2026-09-29 (agent pass).** Every 1280-only difference
+  across four screen pairs traces to this one bug. Nothing clips, overlaps, leaves
+  the viewport or becomes unreadable. Worst instances, in order:
+  1. **Shop Buy/Sell tabs — a *state* indicator degrades.** At 1920 `Buy` is a
+     closed 2px gold rectangle; at 1280 only one gold row plus the left edge
+     survive, so it reads as an `L`. `Sell` drops to a top hairline. Selected vs
+     default still reads (gold vs grey), but neither reads as a button. This is
+     the one worth fixing first — the rest lose containers, this loses meaning.
+  2. **Save/Load** — 9 horizontal rules at 1920 become 4 at 1280: all four card
+     bottoms and the header rule under the title vanish. Cards read as
+     open-bottomed. Geometry is correct (117px card, 11px gap = exactly 0.667 ×
+     the 1920 values) — only the borders drop.
+  3. **Shop party cards** — bottom borders gone; the empty 4th portrait frame
+     falls to a bare corner and looks cut off, though the card is complete.
+- **Clean at 1280:** main menu and Game Over — pure proportional scaling, all
+  elements present and legible, including the 12px copyright line and the thin red
+  rule under "Game Over" (verified present at RGB 140,31,30, invisible only at
+  thumbnail size).
+
+---
+
+## Parked observations
+
+Things that look wrong to whoever was testing, but that **no source says are
+wrong** — not in Figma, not in a token, not in a mapping, not in a decision.
+
+Parked on purpose. **Do not act on an O-ID.** It does not block a PASS, does not
+become a task, and is not a Q-ID — nobody is being asked anything yet. It sits
+here until Sapega either turns it into a decision (→ D-ID), a question (→ Q-ID)
+or deletes it.
+
+The point: a tester's unsourced opinion is how a screen gets quietly redesigned
+by whoever looked at it last. Writing it down costs one line and keeps the
+option open without acting on it.
+
+```markdown
+### O<n> — <what you noticed>
+- **Where:** <screen / node>
+- **Why it bothered you:** one sentence
+- **No source:** which of Figma / tokens / mapping / decisions you checked
+- **Found:** <date>, <who or which run>
+```
+
+### O16 — Minimap is hidden at game start and overlaps the HUD once shown
+In `shots`-style runs (`capture_tutorial_shots.gd`, 2026-10-12) the minimap is not on
+screen after boot; it appears only after the full map (M) is opened and closed, because
+the map script sets `minimap.visible = not visible`. When it shows, it sits under the
+coin / settings icons of `combat_hud_top` in the top-right corner. The tutorial topic
+"The Map" describes the minimap, so this matters to players. Parked — needs a call on
+where the minimap lives next to the HUD.
+
+### O15 — Map window toggles tracking on raw `KEY_D`, which is also `move_right`
+`Game.tscn` (MapWindow inline script, `_input`): `elif event.keycode == KEY_D: show_delta = not show_delta`
+runs on every D press, map open or not, so walking right flips the tracking arrow.
+Found 2026-10-12 while writing the tutorial ([[tutorial_mapping]]). Parked — no
+visible effect unless the map is open; fix by an InputMap action or a `visible` guard.
+
+### O14 — World Map tab does not read as a map (Sapega, 2026-10-12)
+Sapega: "карта в меню гри поки мені не ясна, але то не критично". Parked, not a
+defect — no expectation was stated. What the tab shows today
+(`shots/flow/06_tab_world map.png`, a fresh game with nothing explored):
+- the whole viewport is a grid of **unexplored MetSys cells** drawn over the
+  illustrated parchment (`menu_map_background.jpg`); the two layers are unrelated —
+  the art's place names are not MetSys rooms ([[world_map_mapping]]: legend and the
+  13 named markers have **no backing data**);
+- `EXPLORED 000%`;
+- the player marker sits at the viewport's top-left corner (x≈318, y≈50), not in a cell.
+Before acting, ask Sapega what the tab is for — a MetSys room map, a world/region
+overview like the Figma `94:609` art, or both — and check the marker position in a
+real save with explored rooms; it may be centring on an empty start.
+
+### O12–O13 — from the scene inventory audit, 2026-09-29
+Both are "code where a scene would be conventional". See [[scene_inventory]].
+- **O12 — save points are 10 hand-built `Area2D` copies and there is no
+  `SavePoint.tscn`.** `Scripts/SavePoint.gd` is attached inline to an `Area2D` +
+  `CollisionShape2D` + `Label` triple in each of the 8 live maps
+  (`Maps/Canyon.tscn:101`, `Maps/City.tscn:22`, `Maps/DesertRoad.tscn` ×2,
+  `Maps/Laboratory.tscn` ×2, `Maps/CityGates.tscn:32`, …) plus
+  `Maps/Legacy/StartingRoom.tscn`. **No source requires a scene:** D75/D74 specify
+  the prompt and the flow, not the object's packaging. Figma has `prop/save-pillar`
+  art, which nothing uses — that is art, not a structural requirement. It bothered
+  the reviewer because 10 copies means 10 places to change when the pillar art or
+  the prompt label lands.
+- **O13 — `NpcActionMenu` is the only `UI/Components/` member with a `.gd` and no
+  `.tscn`.** `Scripts/Gameplay/NPCs/NpcBase.gd:22` does `NpcActionMenu.new()`
+  against `UI/Components/npc_action_menu.gd:2`; the other ten components in that
+  folder are all `.gd` + `.tscn` pairs. `CLAUDE.md` asks for shared reusable
+  components and a common Theme, which the code-built menu satisfies — nothing says
+  a component must be a scene. Parked, not a defect. Related to [[BUGS]] B40, which
+  is a real measurement on this menu.
+
+### O9–O11 — from the NPC / interaction pass, 2026-09-29
+- **O9 — pickup modal is ~440×280 design px for ~90px of content**, leaving 84px
+  above and 86px below. D100 approves *using* the shared modal family but nothing
+  specifies its size. Same family as **B26**; if B26 gets a size rule, this inherits it.
+- **O10 — Journal's two content columns are ~39px apart** (list ends x=939, detail
+  rule starts x=979) — off the 2/4/8/12/16/24/32/48 scale in both directions. No
+  Figma measurement exists for this frame.
+- **O11 — every sidebar tab sits flush at x=0** inside a 320px sidebar, putting all
+  24px of slack on the right. Reads as unpadded against the window edge; no token
+  covers a sidebar left inset.
+
+> **Coverage limit, not a finding:** the NPC menu and prompt fixtures render on flat
+> `#1b1916` / `#111118`, so prompt legibility **over real world art** is untested.
+
+### O4–O8 — from the save/load pass, 2026-09-29
+All measured, none with a source that makes them wrong:
+- **O4 — splash prompt colour.** "PRESS ANY BUTTON" measures `#a4a4a5` = white @64%
+  over `#050508`, not `TEXT_SECONDARY #a1a1a1`. Almost certainly a mid-pulse frame
+  of a fade — its flanking ornaments are pure `#ffffff`.
+- **O5 — no text hierarchy on the slot card.** Timestamp, "Kael", playtime, "No save
+  data available" and the "SAVE DATA MANAGEMENT" eyebrow all resolve to `#ffffff`.
+  `TEXT_SECONDARY` appears only in the bottom hint bar. Needs the frame to call.
+- **O6 — date format.** `9/23/2026 00:05` — unpadded US M/D/YYYY beside a 24h clock.
+  No format token or decision exists.
+- **O7 — modal button voice and default focus.** "Yes"/"No" while the hint bar
+  speaks verbs ("Confirm", "Return", "Delete"); and the **destructive** `Yes` is the
+  default-focused button. No project source for either.
+- **O8 — splash copyright weight.** ~11px legal microcopy renders essentially white
+  (brightest `#eeeeee`).
+
+### O1 — Party portraits are flat colour squares, and the fourth is empty
+- **Where:** party status panel, all menu screens
+- **Why it bothered the reviewer:** three members show flat blue / red / purple
+  squares, the fourth ("Три темніх жреца") an empty black one — so even the
+  placeholders are inconsistent with each other
+- **No source:** placeholder portrait art is a known gap; nothing specifies what
+  a missing portrait should look like
+- **Found:** 2026-09-29, screenshot review (agent pass)
+
+### O2 — Party names are Cyrillic while the UI language is English
+- **Where:** party status panel, visible on every menu screen; the Game tab shows
+  English selected
+- **Why it bothered the reviewer:** mixed scripts in one frame
+- **No source:** character names are content data. `LocalizationManager` ships two
+  languages (D67), but nothing says proper nouns are translated
+- **Found:** 2026-09-29, screenshot review (agent pass)
+
+### O3 — Controls table labels look a step smaller than Audio/Game row labels
+- **Where:** Settings → Controls vs Audio/Game row labels
+- **Why it bothered the reviewer:** "Move Up" reads smaller than "Master Volume"
+- **No source:** font size cannot be measured off a PNG with confidence, and
+  **D48** may cover the widget anyway. Resolve by reading the scene, not the image
+- **Found:** 2026-09-29, screenshot review (agent pass)
+
+> **Resolved during triage, not parked:** the bright green HP bar was queried as
+> off-palette. It is `UITokens.HP_FILL = #2ecc71` — a real token. Not a finding.
+
+---
+
+## Not in this note
+
+- **Technical debt** — known, accepted, not a regression → [[UI_IMPLEMENTATION_STATUS]]
+  § Technical debt (139 `Engine.has_singleton` sites, one of which makes
+  `EventBus.player_health_changed` dead; `Player._initialize_health_bar()`
+  infinite `call_deferred` recursion; `ModalLayer` has no public close method).
+- **Pre-existing test failures** → [[test_baseline]].
+- **Figma frames the designer must update** → [[UI_IMPLEMENTATION_STATUS]].
+  A stale frame is the designer's task, not a code bug.

@@ -75,10 +75,9 @@ func update_gold(value: int) -> void:
 ## Оновлює золото, отримуючи його з GameManager (через ServiceLocator)
 func update_gold_display() -> void:
 	var game_manager = null
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_game_manager"):
-			game_manager = service_locator.get_game_manager()
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator and service_locator.has_method("get_game_manager"):
+		game_manager = service_locator.get_game_manager()
 	if game_manager and game_manager.has_method("get_player_gold"):
 		update_gold(game_manager.get_player_gold())
 

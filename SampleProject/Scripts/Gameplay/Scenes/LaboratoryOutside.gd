@@ -20,18 +20,17 @@ var state_run_id: int = 0
 signal state_complete(state: State)
 
 func _ready() -> void:
-	if Engine.has_singleton("ServiceLocator"):
-		var loc = Engine.get_singleton("ServiceLocator")
-		if not loc.is_node_ready():
-			await loc.ready
-	
+	var loc = ServiceLocator
+	if not loc.is_node_ready():
+		await loc.ready
+
 	_on_state_changed(current_state)
 
 func _on_state_changed(new_state: State) -> void:
 	state_run_id += 1
 	var run_id = state_run_id
 	DebugLogger.info("🌳 LabOutside: Entering state %s (RunID: %d)" % [State.keys()[new_state], run_id], "Scene")
-	
+
 	_apply_state_logic(new_state, run_id)
 
 func _apply_state_logic(state: State, run_id: int) -> void:
@@ -39,19 +38,19 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 	match state:
 		State.EXIT_LAB:
 			# Перевіряємо, чи діалог вже був прочитаний
-			if game and game.get_quest_flag("lab_outside_complete", false):
+			if game.get_quest_flag("lab_outside_complete", false):
 				DebugLogger.info("🌳 LabOutside: ⏭️ Діалог Laboratory_Outside вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Завершити демо")
+				_set_objective("Finish the demo")
 				return
-			_set_objective("Вийти з лабораторії")
+			_set_objective("Leave the laboratory")
 			_execute_step(StepType.DIALOGUE, "Laboratory_Outside", run_id)
 		State.DEMO_CLOSING:
 			# Перевіряємо, чи діалог вже був прочитаний
-			if game and game.get_quest_flag("demo_end_complete", false):
+			if game.get_quest_flag("demo_end_complete", false):
 				DebugLogger.info("🌳 LabOutside: ⏭️ Діалог Demo_End вже був прочитаний, показуємо екран завершення", "Scene")
 				_show_demo_end_screen()
 				return
-			_set_objective("Завершити демо")
+			_set_objective("Finish the demo")
 			_execute_step(StepType.DIALOGUE, "Demo_End", run_id)
 
 func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
@@ -64,9 +63,9 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 			await get_tree().create_timer(1.0).timeout
 		StepType.TRANSITION:
 			await get_tree().create_timer(0.5).timeout
-	
+
 	if run_id != state_run_id: return
-	
+
 	# Після DEMO_CLOSING показуємо екран завершення
 	if current_state == State.DEMO_CLOSING:
 		_show_demo_end_screen()
@@ -84,22 +83,21 @@ func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 	if not started:
 		DebugLogger.warning("🌳 LabOutside: Не вдалося запустити діалог: %s" % dialogue_id, "Scene")
 		return
-	
-	if Engine.has_singleton("EventBus"):
-		while true:
-			var finished_id = await EventBus.dialogue_finished
-			if finished_id == path or finished_id == dialogue_id:
-				DebugLogger.info("🌳 LabOutside: Діалог %s завершено" % dialogue_id, "Scene")
-				# Завершуємо квест після діалогу
-				_complete_quest_for_dialogue(dialogue_id)
-				break
-			if run_id != state_run_id: return
+
+	while true:
+		var finished_id = await EventBus.dialogue_finished
+		if finished_id == path or finished_id == dialogue_id:
+			DebugLogger.info("🌳 LabOutside: Діалог %s завершено" % dialogue_id, "Scene")
+			# Завершуємо квест після діалогу
+			_complete_quest_for_dialogue(dialogue_id)
+			break
+		if run_id != state_run_id: return
 
 func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 	"""Встановлює квестові флаги для діалогів"""
 	var game = Game.get_singleton()
 	if not game: return
-	
+
 	match dialogue_id:
 		"Laboratory_Outside":
 			game.set_quest_flag("lab_outside_complete", true)
@@ -116,16 +114,16 @@ func advance_state() -> void:
 func _show_demo_end_screen() -> void:
 	"""Показує екран завершення демо"""
 	DebugLogger.info("🌳 LabOutside: Показуємо екран завершення демо", "Scene")
-	
+
 	# Оновлюємо GameFlow
-	if Engine.has_singleton("ServiceLocator"):
-		var flow = Engine.get_singleton("ServiceLocator").get_game_flow()
-		if flow:
-			flow.advance_story() # StoryState.DEMO_END
-	
+	# Engine.get_singleton() автозавантажень у Godot 4 не бачить — виклик не спрацьовував ніколи (B43).
+	var flow = ServiceLocatorHelper.get_manager("get_game_flow")
+	if flow:
+		flow.sync_story_state()  # усі підетапи пройдено → StoryState.DEMO_END
+
 	# Завантажуємо екран завершення
 	var demo_end_scene_path = "res://SampleProject/Scenes/UI/DemoEndScreen.tscn"
-	
+
 	# Спробуємо завантажити файл (load() поверне null, якщо файл не існує)
 	var demo_end_scene = load(demo_end_scene_path)
 	if not demo_end_scene:
@@ -133,32 +131,31 @@ func _show_demo_end_screen() -> void:
 		DebugLogger.warning("🌳 LabOutside: Переходимо до головного меню без екрану завершення", "Scene")
 		_transition_to_main_menu()
 		return
-	
+
 	if not demo_end_scene is PackedScene:
 		DebugLogger.error("🌳 LabOutside: Завантажений ресурс не є PackedScene (тип: %s)" % typeof(demo_end_scene), "Scene")
 		_transition_to_main_menu()
 		return
-	
+
 	var demo_end = demo_end_scene.instantiate()
 	if not demo_end:
 		DebugLogger.error("🌳 LabOutside: Не вдалося створити екземпляр DemoEndScreen", "Scene")
 		_transition_to_main_menu()
 		return
-	
+
 	# Додаємо до UI слою
 	var ui_canvas = get_tree().current_scene.get_node_or_null("UICanvas")
 	if not ui_canvas:
 		ui_canvas = CanvasLayer.new()
 		ui_canvas.name = "UICanvas"
 		get_tree().current_scene.add_child(ui_canvas)
-	
+
 	ui_canvas.add_child(demo_end)
 	demo_end.z_index = 1000  # Найвищий z_index
-	
+
 	# Підключаємо сигнал повернення до меню
-	if demo_end.has_signal("return_to_menu"):
-		demo_end.return_to_menu.connect(_on_return_to_menu)
-	
+	demo_end.return_to_menu.connect(_on_return_to_menu)
+
 	DebugLogger.info("🌳 LabOutside: Екран завершення показано", "Scene")
 
 func _on_return_to_menu() -> void:
@@ -174,10 +171,8 @@ func _transition_to_main_menu() -> void:
 func _set_objective(text: String) -> void:
 	"""Встановлює об'єктив для гравця"""
 	var game = Game.get_singleton()
-	if game and game.has_method("set_objective"):
-		game.set_objective(text)
+	game.set_objective(text)
 
 func _get_dialogue_manager() -> Node:
-	if Engine.has_singleton("ServiceLocator"):
-		return Engine.get_singleton("ServiceLocator").get_dialogue_manager()
+	return ServiceLocator.get_dialogue_manager()
 	return null

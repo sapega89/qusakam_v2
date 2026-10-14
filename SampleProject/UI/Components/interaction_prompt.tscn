@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/interaction_prompt.gd" id="1_prompt"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+
+[node name="InteractionPrompt" type="PanelContainer"]
+mouse_filter = 2
+theme = ExtResource("2_theme")
+theme_type_variation = &"InteractionPrompt"
+script = ExtResource("1_prompt")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"PromptRow"
+
+[node name="Badge" type="TextureRect" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ActionLabel" type="Label" parent="Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UILabel"
+text = "Interact"
+vertical_alignment = 1

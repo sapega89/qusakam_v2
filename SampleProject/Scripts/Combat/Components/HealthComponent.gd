@@ -17,13 +17,8 @@ func apply_damage(damage: int, source: Node = null) -> void:
 	if not owner_body.is_alive():
 		return
 	
-	# Використовуємо IDamageable інтерфейс
-	if IDamageable.is_implemented_by(owner_body):
-		IDamageable.safe_take_damage(owner_body, damage, source)
-	else:
-		# Fallback для сумісності
-		if owner_body.has_method("take_damage"):
-			owner_body.take_damage(damage, source)
+	# owner_body — CombatBody2D, тобто IDamageable.
+	IDamageable.safe_take_damage(owner_body, damage, source)
 
 ## Отримує поточне здоров'я
 func get_current_health() -> int:

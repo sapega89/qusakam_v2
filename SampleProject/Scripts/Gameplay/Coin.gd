@@ -66,15 +66,8 @@ func _collect() -> void:
 		return
 
 	# Add coins to inventory
-	var inventory = ServiceLocator.get_inventory_manager()
-	if inventory:
-		inventory.add_coins(coin_value)
-		DebugLogger.verbose("Coin: Collected! Value: %d" % coin_value, "Coin")
-	else:
-		DebugLogger.warning("Coin: InventoryManager not found", "Coin")
-
-	# Emit EventBus signal (InventoryManager should emit, but as fallback)
-	EventBus.coins_changed.emit(inventory.get_coins() if inventory else 0)
+	ServiceLocator.get_inventory_manager().add_coins(coin_value)  # сам шле EventBus.coins_changed
+	DebugLogger.verbose("Coin: Collected! Value: %d" % coin_value, "Coin")
 
 	# Spawn collection particle effect
 	_spawn_collection_particle()

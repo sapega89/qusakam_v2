@@ -18,7 +18,7 @@ func save() -> Dictionary:
 		return data
 
 	# Получаем player_state
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		log_error("player_state not found in GameManager")
 		return data
 
@@ -44,6 +44,14 @@ func save() -> Dictionary:
 	# Сохраняем навыки
 	data["unlocked_skills"] = player_state.get("unlocked_skills", []).duplicate()
 
+	# Прогрес навичок. Схема розширювана: equipped_skills можна додати пізніше,
+	# старі збереження просто не матимуть ключа і отримають значення за умовчанням.
+	data["job_points"] = player_state.get("job_points", 0)
+	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
+	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
+	data["current_sp"] = player_state.get("current_sp", 0)
+	data["max_sp"] = player_state.get("max_sp", 0)
+
 	# Сохраняем экипировку
 	data["equipment"] = player_state.get("equipment", {}).duplicate()
 
@@ -64,10 +72,6 @@ func save() -> Dictionary:
 
 ## Загружает данные игрока
 func load_data(data: Dictionary) -> void:
-	if not validate_data(data):
-		log_error("Invalid player data")
-		return
-
 	# Получаем GameManager через ServiceLocator
 	var game_manager = _get_game_manager()
 	if not game_manager:
@@ -75,7 +79,7 @@ func load_data(data: Dictionary) -> void:
 		return
 
 	# Получаем player_state
-	if not game_manager.has("player_state"):
+	if not "player_state" in game_manager:
 		log_error("player_state not found in GameManager")
 		return
 
@@ -110,6 +114,19 @@ func load_data(data: Dictionary) -> void:
 		player_state.constitution = data.constitution
 
 	# Загружаем навыки
+	# Відсутні ключі = старе збереження: беремо поточне значення як типове.
+	player_state.job_points = int(data.get("job_points", player_state.get("job_points", 0)))
+	# Старі збереження не мають equipped_skills — тоді лишаємо поточний лоадаут.
+	if "equipped_skills" in data and data.equipped_skills is Array:
+		var loadout: Array = []
+		for entry in data.equipped_skills:
+			loadout.append(String(entry))
+		player_state.equipped_skills = loadout
+	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
+	player_state.max_sp = int(data.get("max_sp", player_state.get("max_sp", 0)))
+	player_state.current_sp = clampi(
+		int(data.get("current_sp", player_state.get("current_sp", 0))), 0, player_state.max_sp)
+
 	if "unlocked_skills" in data:
 		var skills_data = data.unlocked_skills
 		if skills_data is Array:
@@ -143,30 +160,6 @@ func load_data(data: Dictionary) -> void:
 
 	log_info("Player data loaded: position=%s, health=%d/%d" % [player_state.player_position, player_state.current_health, player_state.max_health])
 
-## Возвращает данные без сохранения
-func get_data() -> Dictionary:
-	return save()
-
-## Устанавливает данные без загрузки из файла
-func set_data(data: Dictionary) -> void:
-	load_data(data)
-
-## Получает GameManager через ServiceLocator
 func _get_game_manager():
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_game_manager"):
-			return service_locator.get_game_manager()
-	return null
+	return ServiceLocator.get_game_manager()
 
-## Валидация данных
-func validate_data(data: Dictionary) -> bool:
-	if not super.validate_data(data):
-		return false
-
-	# Проверяем обязательные поля
-	if not data.has("player_position"):
-		log_warning("Missing player_position in data")
-		return false
-
-	return true

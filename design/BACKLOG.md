@@ -1,0 +1,203 @@
+---
+type: status
+status: reference
+tags: [hub, backlog]
+---
+
+# Backlog — systems that do not exist yet
+
+The index of unbuilt work. **Look here first** when picking up the project, and
+add a row whenever a session finds a system that is missing — see the
+`plan-missing-system` skill for the procedure.
+
+Consolidated from existing notes only; no new decisions are made here. Sources:
+[[runtime_ui_completion_plan]] · [[figma_coverage]] ·
+[[UI_IMPLEMENTATION_STATUS]] · [[figma_decision_register]] ·
+[[questions_for_sapega]] · [[dialogue_audit]] · [[scene_inventory]].
+Last reconciled 2026-09-29.
+
+Vault conventions: [[INDEX]].
+
+## States
+
+| State | Meaning | What to do with it |
+|---|---|---|
+| ⛔ **BLOCKED** | Plan written, work stopped on a decision or data nobody has given | Do not start. Chase the named Q-ID. |
+| 📋 **PLANNED** | Plan written, nothing blocks it | Ready to run. Pick it up as-is. |
+| 🔍 **NEEDS PLAN** | Known to be missing, no plan written | Write `design/<system>_plan.md` first, then link it here. |
+
+Rule: **no invented values.** A system needing a number nobody decided — a
+price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
+
+---
+
+> **2026-09-29 — Q1–Q28 all answered** (D88–D115, [[figma_decision_register]] §8).
+> Nothing is blocked any more. Two items were unblocked, one system came back
+> into scope, and seven decisions reverse code that is already shipped and green.
+
+## ⛔ Blocked
+
+### Character animations — [[character_animation_plan]]
+- **Exists:** player Walk/Run frames; Idle/Jump/Fall/Attack show one borrowed frame; one generic
+  enemy sheet; static NPCs; many unused packs in `assets/`.
+- **Waits on:** Q40 (Kusakam's art), Q41 (enemy / NPC art).
+- **Resume:** slice 1 of [[character_animation_plan]] once Q40 is answered.
+
+### Cutscenes — [[cutscene_plan]]
+- **Exists:** every "cutscene" is a dialogue; `CutsceneStep.gd` is an unused stub.
+- **Waits on:** Q42 (what a cutscene shows, which beats get one).
+- **Resume:** slice 1 of [[cutscene_plan]] — `CutscenePlayer.gd` + the first beat.
+
+---
+
+## 📋 Planned — ready to run
+
+### Music — [[music_plan]]
+- **Exists:** 7 imported tracks in `assets/` (Desert Music pack + one Brackeys track), the `Music` bus and its volume row. Nothing plays them; the fallback-only `MusicManager` was removed (D131, D135).
+- **Waits on:** Q38 (which track where) — slice 2 only.
+- **Resume:** slice 1 of [[music_plan]] — `MusicPlayer.gd` + empty `Resources/Data/music.json` + `verify_music.gd`.
+
+### ✅ Room state — built 2026-10-14
+- [[room_state_plan]]. `Game.room_state` (saved by `FlagsModule`); `RoomEnemySpawner` remembers
+  each fight's dead and the HP of the living (D152); the fight line is not replayed. Test:
+  `verify_room_state.gd`.
+
+### ✅ Crafting — built 2026-10-13
+- [[crafting_mapping]]. `CraftingService` + `Scenes/Crafting/crafting_menu.tscn`, reached from the
+  Blacksmith's Craft. Four station tabs (D108), recipe panel → "Craft X?" / "Cannot Craft".
+  `ForgeSystem.gd` deleted (D96). Test: `verify_crafting.gd`.
+- **Still mock:** every `gold_cost` (D97: 10 % of the result's buy price) — balance later.
+
+### Dialogue — project-owned presentation layer
+- **Plan:** [[dialogue_audit]] — rewrite §3 against D110 before building; the
+  audit's A/B framing no longer matches the decision.
+- **Decided:** **D110** — DialogueQuest stays as engine, data and branching; we
+  own the presentation, compatible with `DQDialogueBox` / `DQChoiceMenu`, and do
+  **not** restyle the addon prefab. **D111** — story dialogue is in scope; much
+  of the prologue moves onto it. **D112** — full-body art, not portraits;
+  existing assets (Зомбі, Кусакам) are usable now. **D113** — no choice UI yet.
+  **D114** — merge duplicate speaker IDs, do not rewrite lines.
+- **Figma:** `127:1087` box · `36:6` standard NPC · `164:1318` speech bubble ·
+  `164:1334` full-screen · `36:65` story scene. Note `36:65` designs **portraits**
+  at 160×320 — D112 replaces them with full-body art, so that frame is partly
+  outdated.
+- **Resume:** update the audit to D110, then build the presentation layer.
+
+### Enchanting — back in scope
+- **Decided:** **D94** supersedes D82. Mechanic: **two identical items → one
+  upgraded item at +1.** Weapon +1 damage, armour +1 defense, jewellery +1 magic
+  defense. Entry point is the Blacksmith menu (D115). **Figma:** `enchant-list`.
+- **State:** no system, no UI, no data field for an item's upgrade level.
+- **Resume:** 🔍 **needs a plan note first** — `design/enchanting_plan.md`. Open
+  design points the mechanic does not settle: where `+1` is stored on an item
+  instance, whether upgrades stack (+2, +3), what "identical" means for two
+  already-upgraded items, and whether `items.json` needs a new field.
+
+### Shop changes
+- **D103** — remove `Equipment` from the Shop **and** the Blacksmith menu.
+- **D104** — add a **quantity selector** ⚠️ reverses slice 2; undesigned in Figma.
+- **D105** — unaffordable rows **greyed out / disabled**; the "Not Enough Gold"
+  modal stops being mandatory ⚠️ reverses slice 2; no Figma disabled-row state.
+- **D106** — Blacksmith sells nothing; `merchants.json` stock list stays unused.
+
+### Pickups — three paths (D88)
+Enemy loot automatic, no modal · map items need an interaction prompt then show
+the pickup modal · a chest opens on button press, adds contents automatically,
+**then** shows the pickup modal. `ItemPickup.tscn` is built and tested; chests
+are a new case. Map placement still needs named items and places.
+
+### Game Over — third button (D92)
+Add **Load Game**, opening the existing Load menu, next to Resume and Return to
+Title. Not in Figma.
+
+---
+
+## 🤝 Agreed but never built
+
+A decision was approved and the work never happened. **Not bugs** — nothing is
+broken, the code was simply never written. They matter because in play they are
+indistinguishable from bugs, so they get reported over and over as defects.
+
+Rule: a row here **must cite the D-ID or Q-ID that approved it.** If a report
+turns out to be unimplemented and no decision covers it, it is not this — it
+belongs under *Needs a plan*, and the decision still has to be made.
+
+| Item | Approved by | State |
+|---|---|---|
+| **Game Menu as one scene** (supersedes "Connect `UIMenuShell`") | **D116, D117** | Plan: [[game_menu_single_scene_plan]]. The tree is already static; four scripts each pick the active tab. **B7 is not a missing `ButtonGroup`** — `vertical_tab_menu.tscn` already has one; `focus_router.focus_tabs()` focuses the first button, so Inventory wears the focus border next to the pressed tab. |
+| Merchant / Blacksmith on production maps | **D81** | Both scenes exist and are tested, placed in **no map at all** — corrected 2026-09-29 by [[scene_inventory]] §3. The only `Maps/` match is an inline `Area2D` dialogue trigger, `Maps/City.tscn:46-52` `StateChangeTrigger_Merchant`, which is not the NPC scene. Reported as missing on the desert (P5). |
+| Companion system | — no decision found | `CompanionManager.gd` is **27 lines** (an array with add/remove). The January copy in `raw_assets/qusakam_v2-main/` has a **206-line working version**: summon, per-type cooldowns, HUD button wiring, `companion_summoned` / `companion_cooldown_updated` signals. Lost in refactoring, not superseded. Recover only if companions are still wanted — no D-ID covers them. **Also: no companion `.tscn` exists.** The four `Scripts/Gameplay/Characters/Companions/Companion*.gd` are referenced by nothing outside their own folder ([[scene_inventory]] §6), while `docs/SYSTEMS_OVERVIEW.md:130-134` describes all four as shipping. |
+| `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
+| Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
+
+**Worth an audit:** D1–D115 have never been checked against the code. A D-ID
+that asserts runtime behaviour with no implementation and no `verify_*` covering
+it is an entry for this list. Nobody has swept for them — the ones above were
+found by Sapega playing, which is the expensive way to find them.
+
+---
+
+## ⚠️ Rework — decisions that reverse shipped code
+
+Slices 1b, 2 and 8 built the previous defaults and pass their tests. A green
+`verify_*` in these areas reflects the **old** decision. Full table:
+[[figma_decision_register]] §8.
+
+| D-ID | Change | Note |
+|---|---|---|
+| D89 | Save-slot card → mock data matching Figma | `verify_save_load` expectations change |
+| D90 | `player_data.json` back to **shared** across slots | **Knowingly reintroduces the slot-correctness bug** the slice-1b fix removed. Per-slot data returns to this backlog as deferred work. |
+| D91 | Auto-save on touch **restored**, alongside the save prompt | Two save paths to keep consistent |
+| D99 | Revert the `CLAUDE.md` test-instruction fix | The stale "154 GUT tests" claim returns |
+| D104 | Shop quantity selector | New, undesigned UI |
+| D105 | Greyed rows instead of the gold modal | Remove the modal path |
+| D108 | Blacksmith covers all four stations | Slice 4 scope grows |
+
+---
+
+## 🔍 Needs a plan
+
+No plan note exists for any of these. Write one before writing code.
+
+### Deferred by an approved decision — [[figma_decision_register]]
+
+| System | D-ID | State today |
+|---|---|---|
+| Enchanting | D82 | No system, no UI. Figma `enchant-list` exists. Hidden from the Blacksmith menu (Q8). |
+| Healing · Jobs | D65 | Two Figma sidebar entries with no runtime. Sidebar has 7 of Figma's 9 items. |
+| Character switching · roster · Stat Points | D18 | Status shows the active character only. |
+| Quest engine | D56 | No authored data, never instanced. **Ship or delete** — the decision itself is open. |
+| Skill auto-targeting | D38 | `use_skill()` takes an explicit target. No heuristic invented. |
+| Controller binds, 4 skill slots | D37 | Undefined in Figma. |
+
+### Live surfaces with no design and no runtime — [[figma_coverage]] §1
+
+Level-up notification · enemy health bar · combat context display · in-game
+tutorial hints · "objective updated" toast · demo end screen.
+
+Each needs a Figma frame **and** a plan. Raise with Sapega before assuming a design.
+
+### Settings rows with no backing system — [[settings_mapping]]
+
+D43–D47: Resolution, Frame Rate Limit, Screen Brightness, Ambient volume, Text
+Speed, Screen Shake, Damage Numbers. Each is a system to build or a row to cut.
+D48: keep the third-party maaacks Controls widget or own the rebinding UI.
+
+### Content placement, not systems
+
+| Item | Blocker |
+|---|---|
+| Merchant / Blacksmith on production maps | D81 — built and tested, never placed. |
+| `ItemPickup` placement | Q2 — built and tested; no production map gives an inventory item. Needs named items and places. |
+| **Village: more running before the old man** | **Deferred until the game is playable to the end** (Sapega, 2026-10-13: first a whole game, then find out why it is not fun). Today all Village action sits in x 150–1582 of a 3-cell room (3 × 864 = 2592 px; the active MetSys settings are `SampleProject/Resources/Settings.tres`, cell 864×480): bandit fight → old man in ~2–3 s of running. Wanted on the way: more bandits, Kusakam's lines by the ruined houses, a secret or an item. Open when picked up: new MetSys rooms vs. using the room's full width; how many fights; the lines' text; which item. |
+
+---
+
+## Not in this note
+
+- **Bugs and technical debt** → [[UI_IMPLEMENTATION_STATUS]] § Technical debt.
+- **Pre-existing test failures** → [[test_baseline]].
+- **Figma frames the designer must update** → [[UI_IMPLEMENTATION_STATUS]].
+- **Finished work** → [[runtime_ui_completion_plan]] slices 0–8. Skills, shop,
+  blacksmith, save/load, main menu, game over and the combat HUD are **built** —
+  do not re-plan them.

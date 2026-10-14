@@ -12,40 +12,19 @@ var gold_max: int = 20
 var potion_drop_chance: float = 0.3  # 30% шанс випасти банку HP
 var potion_drop_max: int = 1  # Максимум 1 банка за ворога
 
-# Посилання на менеджери
-var inventory_manager: InventoryManager = null
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _ready():
 	print("💰 LootSystem: Initialized")
 	rng.randomize()
 	
-	# Затримка для забезпечення ініціалізації GameManager та InventoryManager
-	await get_tree().process_frame
-	await get_tree().process_frame
-	
-	# Знаходимо InventoryManager через ServiceLocatorHelper
-	inventory_manager = ServiceLocatorHelper.get_service_locator().get_inventory_manager() if ServiceLocatorHelper.get_service_locator() else null
-	
-	# Если не нашли через ServiceLocator, пытаемся найти напрямую в GameManager
-	if not inventory_manager:
-		var game_manager = get_node_or_null("/root/GameManager")
-		if game_manager:
-			inventory_manager = game_manager.get_node_or_null("InventoryManager")
-	
-	if not inventory_manager:
-		push_warning("⚠️ LootSystem: InventoryManager not found")
-	
 	# Підключаємося до сигналу смерті ворогів
-	if Engine.has_singleton("EventBus"):
-		if not EventBus.enemy_died.is_connected(_on_enemy_died):
-			EventBus.enemy_died.connect(_on_enemy_died)
+	if not EventBus.enemy_died.is_connected(_on_enemy_died):
+		EventBus.enemy_died.connect(_on_enemy_died)
 
 func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 	"""Обробляє смерть ворога та генерує лут"""
-	if not inventory_manager:
-		return
-	
+	var inventory_manager: InventoryManager = ServiceLocator.get_inventory_manager()
 	# Генеруємо гроші
 	if rng.randf() < gold_drop_chance:
 		var gold_amount = rng.randi_range(gold_min, gold_max)

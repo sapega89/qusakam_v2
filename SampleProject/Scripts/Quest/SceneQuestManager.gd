@@ -45,16 +45,8 @@ func _ready() -> void:
 
 func _connect_to_event_bus() -> void:
 	"""Підключення до EventBus для відстеження діалогів"""
-	if Engine.has_singleton("EventBus"):
-		var event_bus = Engine.get_singleton("EventBus")
-		if event_bus and event_bus.has_signal("dialogue_finished"):
-			if not event_bus.dialogue_finished.is_connected(_on_dialogue_finished):
-				event_bus.dialogue_finished.connect(_on_dialogue_finished)
-				DebugLogger.info("SceneQuestManager: Підключено до EventBus.dialogue_finished", "Quest")
-		else:
-			DebugLogger.warning("SceneQuestManager: EventBus не має сигналу dialogue_finished", "Quest")
-	else:
-		DebugLogger.warning("SceneQuestManager: EventBus не знайдено", "Quest")
+	if not EventBus.dialogue_finished.is_connected(_on_dialogue_finished):
+		EventBus.dialogue_finished.connect(_on_dialogue_finished)
 
 func _initialize_current_stage() -> void:
 	"""Ініціалізація поточного етапу"""

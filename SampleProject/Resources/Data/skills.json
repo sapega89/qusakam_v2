@@ -1,0 +1,73 @@
+{
+  "_schema": {
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149), upgrade to rank 20 (D150). Numbers are mock.",
+    "entry": {
+      "id": "String, required, unique",
+      "name": "String",
+      "description": "String",
+      "class_id": "String - matches pathfinder_classes.json; empty means any class",
+      "subclass_id": "String",
+      "skill_type": "active | passive",
+      "jp_cost": "int >= 0 - Job Points spent to unlock",
+      "required_level": "int >= 1 - XPManager level gate",
+      "prerequisites": "[skill_id] - must be unlocked first",
+      "sp_cost": "int >= 0 - active only, forced to 0 for passive",
+      "cooldown": "float >= 0 seconds - active only, forced to 0 for passive",
+      "icon": "res:// path",
+      "vfx": "VFXHooks reference",
+      "heal": "int >= 0 - HP restored on the target (D142: an ally next to the hero, else the hero)",
+      "damage": "int >= 0 - damage to everything in front of the hero (D142)",
+      "required_weapons": "[equipment slot] - usable only while one of these slots holds a weapon (D141)"
+    }
+  },
+  "skills": [
+    {
+      "id": "healing_palm",
+      "name": "Healing Palm",
+      "description": "Restores 40 HP to an ally next to you, or to yourself. Taught by the old man.",
+      "class_id": "",
+      "skill_type": "active",
+      "jp_cost": 0,
+      "required_level": 1,
+      "prerequisites": [],
+      "sp_cost": 5,
+      "cooldown": 4.0,
+      "heal": 40,
+      "required_weapons": []
+    },
+    {
+      "id": "fire_strike",
+      "name": "Fire Strike",
+      "description": "A burning strike at everything in front of you. Needs a sword or a dagger.",
+      "class_id": "",
+      "skill_type": "active",
+      "jp_cost": 1,
+      "required_level": 6,
+      "prerequisites": [],
+      "sp_cost": 6,
+      "cooldown": 2.0,
+      "damage": 20,
+      "required_weapons": [
+        "sword",
+        "dagger"
+      ]
+    },
+    {
+      "id": "electric_strike",
+      "name": "Electric Strike",
+      "description": "A crackling strike at everything in front of you. Needs a halberd or a mace.",
+      "class_id": "",
+      "skill_type": "active",
+      "jp_cost": 1,
+      "required_level": 6,
+      "prerequisites": [],
+      "sp_cost": 8,
+      "cooldown": 3.0,
+      "damage": 25,
+      "required_weapons": [
+        "polearm",
+        "mace"
+      ]
+    }
+  ]
+}

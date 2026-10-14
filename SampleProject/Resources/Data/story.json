@@ -1,0 +1,100 @@
+{
+	"stages": [
+		{
+			"id": "prologue",
+			"title": "Prologue",
+			"zones": [
+				{
+					"id": "canyon", "title": "Canyon I", "scene": "Canyon", "story_state": "CANYON",
+					"objectives": [
+						{"flag": "canyon_exploration_complete", "text": "Explore the Canyon"},
+						{"flag": "canyon_abduction_complete", "text": "Find a way forward"}
+					],
+					"chronicle": [
+						{"flag": "canyon_intro_complete", "text": "Kusakam grumbled about the old man and wondered why the spirits would not make him a shaman yet."},
+						{"flag": "canyon_exploration_complete", "text": "He wandered the silent canyon, looking for answers in a dead wind."},
+						{"flag": "canyon_abduction_complete", "text": "From the ridge he saw villagers being led away — and something deep inside told him to run to the village."}
+					]
+				},
+				{
+					"id": "village", "title": "Village", "scene": "Village", "story_state": "VILLAGE",
+					"objectives": [
+						{"flag": "village_abduction_complete", "text": "Head to the village"},
+						{"flag": "village_arrival_complete", "text": "Reach the village center"},
+						{"flag": "village_fight_complete", "text": "Defeat the bandit in the street"},
+						{"flag": "village_oldman_met", "text": "Check on the house"},
+						{"flag": "village_oldman_treated", "text": "Heal the old man"},
+						{"flag": "village_left_complete", "text": "Leave the village"}
+					],
+					"chronicle": [
+						{"flag": "village_abduction_complete", "text": "Bandits had raided the village and were taking everyone away."},
+						{"flag": "village_arrival_complete", "text": "A bandit stopped him in the middle of the village."},
+						{"flag": "village_fight_complete", "text": "Kusakam beat the bandit and went looking for the old man."},
+						{"flag": "village_oldman_complete", "text": "He found the old man by his ruined house. The old man healed him, taught him the Healing Palm, and Kusakam healed him in turn. Then the old man told him the bandits had stolen the relic — the key to everything."},
+						{"flag": "village_left_complete", "text": "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."}
+					]
+				},
+				{
+					"id": "canyon_relic", "title": "Canyon II", "scene": "Canyon", "story_state": "CANYON",
+					"objectives": [
+						{"flag": "canyon_exit_complete", "text": "Descend to the road"}
+					],
+					"chronicle": [
+						{"flag": "canyon_relic_meditation_complete", "text": "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."},
+						{"flag": "canyon_exit_complete", "text": "Armoured and ready, Kusakam began the climb down into the desert."}
+					]
+				},
+				{
+					"id": "desert_road", "title": "Desert Road", "scene": "DesertRoad", "story_state": "DESERT_ROAD",
+					"objectives": [
+						{"flag": "desert_road_monologue_complete", "text": "Continue on to the city"},
+						{"flag": "desert_road_fight_complete", "text": "Defeat the enemies on the road"}
+					],
+					"chronicle": [
+						{"flag": "desert_road_monologue_complete", "text": "The desert road stretched ahead toward the city."},
+						{"flag": "desert_road_fight_complete", "text": "Enemies blocked the road. Kusakam fought his way through."}
+					]
+				},
+				{
+					"id": "city_gates", "title": "City Gates", "scene": "CityGates", "story_state": "CITY_GATES",
+					"objectives": [
+						{"flag": "city_gates_intro_complete", "text": "Approach the city gates"},
+						{"flag": "city_gates_fight_complete", "text": "Defeat the gate guards"},
+						{"flag": "city_gates_after_fight_complete", "text": "Enter the city"}
+					],
+					"chronicle": [
+						{"flag": "city_gates_intro_complete", "text": "He reached the great city gates and found the way barred."},
+						{"flag": "city_gates_fight_complete", "text": "The gate guards would not let him pass, so he made them."},
+						{"flag": "city_gates_after_fight_complete", "text": "Through the gates at last, they set out to find the laboratory."}
+					]
+				},
+				{
+					"id": "laboratory", "title": "Laboratory", "scene": "Laboratory", "story_state": "LABORATORY",
+					"objectives": [
+						{"flag": "lab_companion_01_complete", "text": "Explore the laboratory"},
+						{"flag": "lab_companion_02_complete", "text": "Keep exploring"},
+						{"flag": "lab_companion_03_complete", "text": "Prepare for battle"},
+						{"flag": "lab_limit_test_complete", "text": "Pass the limit test"},
+						{"flag": "lab_boss_fight_complete", "text": "Defeat the laboratory boss"},
+						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory"}
+					],
+					"chronicle": [
+						{"flag": "lab_limit_test_complete", "text": "In the laboratory he learned he could lead no more than three companions at once."},
+						{"flag": "lab_boss_fight_complete", "text": "The master of the laboratory declared it the end of his road."},
+						{"flag": "lab_after_boss_complete", "text": "Kusakam defeated the boss, and the way out lay open."}
+					]
+				},
+				{
+					"id": "lab_outside", "title": "Laboratory — Outside", "scene": "LaboratoryOutside", "story_state": "LAB_OUTSIDE",
+					"objectives": [
+						{"flag": "lab_outside_complete", "text": "Leave the laboratory"},
+						{"flag": "demo_end_complete", "text": "Finish the demo"}
+					],
+					"chronicle": [
+						{"flag": "lab_outside_complete", "text": "They stepped out of the laboratory into the open air. It was a hard journey — but they made it."}
+					]
+				}
+			]
+		}
+	]
+}

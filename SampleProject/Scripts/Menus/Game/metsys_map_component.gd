@@ -20,56 +20,45 @@ var is_map_active: bool = false
 
 func _ready():
 	"""Инициализация компонента карты MetSys"""
-	# Изначально скрываем карту
-	visible = false
-	process_mode = Node.PROCESS_MODE_DISABLED
-	
+	# Видимість задає сцена меню (D116); тут лише підлаштовуємо обробку під неї.
+	process_mode = Node.PROCESS_MODE_ALWAYS if is_visible_in_tree() else Node.PROCESS_MODE_DISABLED
+
 	# Получаем ссылки на узлы
-	top_draw = get_node_or_null("TopDraw")
-	percent_label = get_node_or_null("PercentLabel")
-	
+	top_draw = $TopDraw
+	percent_label = %PercentLabel
+
 	# Ждем, пока размер будет установлен
 	await get_tree().process_frame
-	
+
 	# Инициализируем размер карты в ячейках
 	if size.x > 0 and size.y > 0:
 		SIZE = size / MetSys.CELL_SIZE
 	else:
 		# Значение по умолчанию, если размер еще не установлен
 		SIZE = Vector2i(20, 15)
-	
-	# Создаем MapView для отображения карты
-	if not MetSys:
-		push_error("MetSysMapComponent: MetSys not found! Make sure MetroidvaniaSystem is enabled.")
-		return
-	
+
 	# Ждем еще один кадр, чтобы MetSys был полностью инициализирован
 	await get_tree().process_frame
-	
-	if not MetSys:
-		push_error("MetSysMapComponent: MetSys still not available after waiting!")
-		return
-	
+
 	@warning_ignore("integer_division")
 	map_view = MetSys.make_map_view(self, -SIZE / 2, SIZE, 0)
 	player_location = MetSys.add_player_location(self)
-	
+
 	# Подключаем сигнал обновления карты
 	if MetSys.map_updated.is_connected(_on_map_updated):
 		MetSys.map_updated.disconnect(_on_map_updated)
 	MetSys.map_updated.connect(_on_map_updated)
-	
+
 	# Обновляем процент исследования
 	update_percent()
-	
-	# Подключаем сигнал отрисовки для top_draw
-	if top_draw:
-		# Используем queue_redraw для обновления отрисовки
-		top_draw.queue_redraw()
+
+	top_draw.queue_redraw()
 
 func _notification(what: int) -> void:
 	"""Обработка уведомлений"""
-	if what == NOTIFICATION_RESIZED:
+	if what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready():
+		set_map_active(is_visible_in_tree())
+	elif what == NOTIFICATION_RESIZED:
 		# Обновляем размер при изменении размера компонента
 		if size.x > 0 and size.y > 0:
 			SIZE = size / MetSys.CELL_SIZE
@@ -77,11 +66,17 @@ func _notification(what: int) -> void:
 				map_view.size = SIZE
 				update_offset()
 
+## Підказки показують тільки те, що справді реалізовано: панорамування і назад.
+func _publish_hints(active: bool) -> void:
+	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
+	bar.set_context_hint("Arrow keys — pan the map." if active else "")
+
+
 func set_map_active(active: bool):
 	"""Устанавливает активность карты"""
 	is_map_active = active
-	visible = active
-	
+	_publish_hints(active)
+
 	if active:
 		process_mode = Node.PROCESS_MODE_ALWAYS
 		set_process_input(true)
@@ -98,68 +93,61 @@ func set_map_active(active: bool):
 
 func update_percent():
 	"""Обновляет процент исследования карты"""
-	if percent_label and MetSys:
-		var percent = int(MetSys.get_explored_ratio() * 100)
-		percent_label.text = "%03d%%" % percent
+	percent_label.text = "%03d%%" % int(MetSys.get_explored_ratio() * 100)
 
 func update_offset():
 	"""Обновляет смещение карты, центрируя на позиции игрока"""
-	if not MetSys or not map_view:
+	if not map_view:
 		return
-	
+
 	# Получаем текущие координаты игрока
 	var coords: Vector2i = MetSys.get_current_flat_coords()
 	@warning_ignore("integer_division")
 	offset = coords - SIZE / 2
-	
+
 	# Обновляем позицию игрока на карте
 	if player_location:
 		player_location.offset = -Vector2(offset) * MetSys.CELL_SIZE
-	
+
 	# Обновляем позицию MapView
 	map_view.move_to(Vector3i(offset.x, offset.y, MetSys.current_layer))
-	
-	# Обновляем отрисовку
-	if top_draw:
-		top_draw.queue_redraw()
 
+	# Обновляем отрисовку
+	top_draw.queue_redraw()
+
+## Панорамування карти. Використовуємо дії InputMap (ui_left/right/up/down),
+## а не сирі keycode — інакше перепризначення клавіш у налаштуваннях не працює.
 func _input(event: InputEvent) -> void:
-	"""Обработка ввода для прокрутки карты"""
 	if not is_map_active or not visible:
 		return
-	
-	if event is InputEventKey and event.pressed:
-		var move_offset: Vector2i = Vector2i.ZERO
-		
-		if event.keycode == KEY_LEFT:
-			move_offset = Vector2i.LEFT
-		elif event.keycode == KEY_RIGHT:
-			move_offset = Vector2i.RIGHT
-		elif event.keycode == KEY_UP:
-			move_offset = Vector2i.UP
-		elif event.keycode == KEY_DOWN:
-			move_offset = Vector2i.DOWN
-		else:
-			return
-		
-		# Перемещаем видимую область карты
-		if map_view:
-			map_view.move(move_offset)
-			offset += move_offset
-			
-			# Обновляем позицию игрока на карте
-			if player_location:
-				player_location.offset = -Vector2(map_view.begin) * MetSys.CELL_SIZE
-			
-			# Обновляем отрисовку
-			if top_draw:
-				top_draw.queue_redraw()
+
+	var move_offset := Vector2i.ZERO
+	if event.is_action_pressed(&"ui_left"):
+		move_offset = Vector2i.LEFT
+	elif event.is_action_pressed(&"ui_right"):
+		move_offset = Vector2i.RIGHT
+	elif event.is_action_pressed(&"ui_up"):
+		move_offset = Vector2i.UP
+	elif event.is_action_pressed(&"ui_down"):
+		move_offset = Vector2i.DOWN
+	else:
+		return
+
+	if map_view == null:
+		return
+	map_view.move(move_offset)
+	offset += move_offset
+	if player_location:
+		player_location.offset = -Vector2(map_view.begin) * MetSys.CELL_SIZE
+	top_draw.queue_redraw()
+	get_viewport().set_input_as_handled()
+
 
 func _draw() -> void:
 	"""Отрисовка дополнительных элементов на карте"""
-	if not MetSys or not is_map_active:
+	if not is_map_active:
 		return
-	
+
 	# Здесь можно добавить дополнительную отрисовку, если нужно
 	# Например, линии, стрелки и т.д.
 

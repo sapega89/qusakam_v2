@@ -88,10 +88,10 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 		# Застосовуємо ушкодження через HealthComponent
 		health_component.apply_damage(current_damage, owner_body)
 	elif IDamageable.is_implemented_by(body):
-		# Fallback: використовуємо IDamageable напряму
+		# Гравець — CombatBody2D без HealthComponent: шкода напряму.
 		IDamageable.safe_take_damage(body, current_damage, owner_body)
 	else:
-		# Якщо нічого не знайдено, пропускаємо
+		# Тіло без здоровʼя (стіна, тригер) — не ціль.
 		return
 	
 	# Додаємо до списку вже вражених цілей

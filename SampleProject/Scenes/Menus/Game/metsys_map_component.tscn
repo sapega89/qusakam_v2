@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/metsys_map_component.gd" id="1_metsys_map"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0, 0, 0, 0.8)
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
+color = Color(0.83137256, 0.6862745, 0.21568628, 1)
+thickness = 1
 
 [node name="MetSysMapComponent" type="Control"]
 layout_mode = 3
@@ -12,7 +13,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 script = ExtResource("1_metsys_map")
 
 [node name="TopDraw" type="Control" parent="."]
@@ -23,17 +23,89 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
-[node name="PercentLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = 100.0
-offset_bottom = 33.0
-text = "0%"
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+[node name="TitleBlock" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 50.0
+offset_right = 200.0
+offset_bottom = 127.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="MapTitle" type="Label" parent="TitleBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapTitle"
+text = "KHALAHAS"
+horizontal_alignment = 1
+
+[node name="SubRow" type="HBoxContainer" parent="TitleBlock"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="LineLeft" type="HSeparator" parent="TitleBlock/SubRow"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/separator = SubResource("StyleBoxLine_rule")
+
+[node name="MapSubtitle" type="Label" parent="TitleBlock/SubRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapSubtitle"
+text = "The Desert Kingdoms"
+horizontal_alignment = 1
+
+[node name="LineRight" type="HSeparator" parent="TitleBlock/SubRow"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/separator = SubResource("StyleBoxLine_rule")
+
+[node name="ExploredPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -96.0
+offset_right = 256.0
+offset_bottom = -48.0
+grow_vertical = 0
+theme_type_variation = &"SidePanel"
+
+[node name="Row" type="HBoxContainer" parent="ExploredPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ExploredCaption" type="Label" parent="ExploredPanel/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"MicroLabel"
+text = "EXPLORED"
+
+[node name="PercentLabel" type="Label" parent="ExploredPanel/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"MetaValueAccent"
+text = "000%"
+horizontal_alignment = 2
 
 [node name="InfoLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -42,5 +114,4 @@ offset_left = 10.0
 offset_top = -33.0
 offset_right = 300.0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-text = "Use arrow keys to navigate the map"
+theme_type_variation = &"SmallLabel"

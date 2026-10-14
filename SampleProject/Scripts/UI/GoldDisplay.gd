@@ -8,10 +8,9 @@ var inventory_manager: InventoryManager = null
 
 func _ready():
 	# Знаходимо InventoryManager
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_inventory_manager"):
-			inventory_manager = service_locator.get_inventory_manager()
+	var service_locator = ServiceLocatorHelper.get_service_locator()
+	if service_locator and service_locator.has_method("get_inventory_manager"):
+		inventory_manager = service_locator.get_inventory_manager()
 	
 	# Синхронізуємо з інвентарем
 	if inventory_manager:
@@ -21,10 +20,9 @@ func _ready():
 			inventory_manager.inventory_changed.connect(_on_inventory_changed)
 	
 	# Підписуємося на події EventBus для автоматичного оновлення
-	if Engine.has_singleton("EventBus"):
-		EventBus.item_added.connect(_on_item_added)
-		EventBus.item_removed.connect(_on_item_removed)
-		EventBus.inventory_updated.connect(_on_inventory_updated)
+	EventBus.item_added.connect(_on_item_added)
+	EventBus.item_removed.connect(_on_item_removed)
+	EventBus.inventory_updated.connect(_on_inventory_updated)
 	
 	# Встановлюємо початкову кількість золота
 	update_display()
@@ -84,11 +82,10 @@ func _disconnect_all_signals() -> void:
 	if inventory_manager and inventory_manager.inventory_changed.is_connected(_on_inventory_changed):
 		inventory_manager.inventory_changed.disconnect(_on_inventory_changed)
 	
-	if Engine.has_singleton("EventBus"):
-		if EventBus.item_added.is_connected(_on_item_added):
-			EventBus.item_added.disconnect(_on_item_added)
-		if EventBus.item_removed.is_connected(_on_item_removed):
-			EventBus.item_removed.disconnect(_on_item_removed)
-		if EventBus.inventory_updated.is_connected(_on_inventory_updated):
-			EventBus.inventory_updated.disconnect(_on_inventory_updated)
+	if EventBus.item_added.is_connected(_on_item_added):
+		EventBus.item_added.disconnect(_on_item_added)
+	if EventBus.item_removed.is_connected(_on_item_removed):
+		EventBus.item_removed.disconnect(_on_item_removed)
+	if EventBus.inventory_updated.is_connected(_on_inventory_updated):
+		EventBus.inventory_updated.disconnect(_on_inventory_updated)
 

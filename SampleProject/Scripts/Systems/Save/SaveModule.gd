@@ -16,20 +16,6 @@ func save() -> Dictionary:
 func load_data(_data: Dictionary) -> void:
 	push_error("SaveModule: load_data() must be overridden in %s" % get_script().resource_path)
 
-## Возвращает данные модуля в виде Dictionary (без сохранения в файл)
-func get_data() -> Dictionary:
-	push_error("SaveModule: get_data() must be overridden in %s" % get_script().resource_path)
-	return {}
-
-## Устанавливает данные модуля из Dictionary (без загрузки из файла)
-func set_data(_data: Dictionary) -> void:
-	push_error("SaveModule: set_data() must be overridden in %s" % get_script().resource_path)
-
-## Валидация данных перед загрузкой (опционально переопределить)
-func validate_data(data: Dictionary) -> bool:
-	return data is Dictionary
-
-## Логирование с именем модуля
 func log_info(message: String) -> void:
 	print("💾 [%s] %s" % [module_name, message])
 

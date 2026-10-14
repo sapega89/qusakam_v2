@@ -30,13 +30,7 @@ func register() -> void:
 
 func _find_autoload(autoload_name: String) -> Node:
 	"""Находит autoload по имени через scene tree"""
-	var autoload_path = "/root/" + autoload_name
-	var node = Engine.get_main_loop().root.get_node_or_null(autoload_path)
-	if not node:
-		# Fallback: попробовать через Engine.get_singleton для старых autoload
-		if Engine.has_singleton(autoload_name):
-			node = Engine.get_singleton(autoload_name)
-	return node
+	return Engine.get_main_loop().root.get_node("/root/" + autoload_name)
 
 # Getters
 func get_game_manager() -> Node:

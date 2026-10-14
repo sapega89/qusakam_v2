@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="4_6wo6x"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_ctv3h"]
+[ext_resource type="Script" uid="uid://dj7sghsvl5xdq" path="res://SampleProject/Scripts/Gameplay/CanyonExitTrigger.gd" id="5_exit"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
 size = Vector2(32, 31.9999)
@@ -17,6 +18,9 @@ radius = 32.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xu4xw"]
 size = Vector2(85, 70)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
+size = Vector2(48, 200)
 
 [node name="Canyon" type="Node2D" unique_id=1287215510]
 script = ExtResource("1_canyon")
@@ -156,5 +160,13 @@ action_mode = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger3" unique_id=1209304842]
 position = Vector2(738, -47)
 shape = SubResource("RectangleShape2D_xu4xw")
+
+[node name="CanyonExitTrigger" type="Area2D" parent="."]
+position = Vector2(550, 600)
+monitorable = false
+script = ExtResource("5_exit")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CanyonExitTrigger"]
+shape = SubResource("RectangleShape2D_exit")
 
 [connection signal="body_entered" from="END" to="END" method="_on_body_entered"]

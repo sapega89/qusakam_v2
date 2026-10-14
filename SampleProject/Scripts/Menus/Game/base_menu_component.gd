@@ -15,9 +15,12 @@ func _ready() -> void:
 	"""Инициализация базового компонента"""
 	# Получаем game_manager и item_database через ServiceLocator
 	var service_locator = ServiceLocatorHelper.get_service_locator()
-	if service_locator:
-		game_manager = service_locator.get_game_manager()
-		item_database = service_locator.get_item_database()
+	# Сервіси реєструються відкладено. У грі меню відкривається пізніше, а от сцену,
+	# запущену окремо (F6), створює той самий кадр — тоді чекаємо, інакше тут null.
+	if not service_locator.is_ready:
+		await service_locator.services_ready
+	game_manager = service_locator.get_game_manager()
+	item_database = service_locator.get_item_database()
 	
 	# Вызываем инициализацию компонента
 	_initialize_component()

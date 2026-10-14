@@ -75,11 +75,4 @@ func _transition_to_game() -> void:
 	tween.tween_property(fade_overlay, "modulate", Color.BLACK, 1.0)
 	await tween.finished
 
-	# Load main game scene
-	# Check if Game.tscn exists, otherwise load MainMenu
-	var game_scene = "res://SampleProject/Game.tscn"
-	if ResourceLoader.exists(game_scene):
-		get_tree().change_scene_to_file(game_scene)
-	else:
-		# Fallback to main menu
-		get_tree().change_scene_to_file("res://SampleProject/MainMenu.tscn")
+	get_tree().change_scene_to_file("res://SampleProject/Game.tscn")

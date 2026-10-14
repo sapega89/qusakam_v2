@@ -24,12 +24,7 @@ var game_manager: Node = null
 func _initialize():
 	"""Инициализирует зависимости после того, как ServiceLocator зарегистрирует все сервисы"""
 	# Получаем GameManager через ServiceLocator
-	if Engine.has_singleton("ServiceLocator"):
-		var service_locator = Engine.get_singleton("ServiceLocator")
-		if service_locator and service_locator.has_method("get_game_manager"):
-			game_manager = service_locator.get_game_manager()
-		if not game_manager:
-			push_warning("⚠️ CharacterManager: GameManager not found!")
+	game_manager = ServiceLocator.get_game_manager()
 
 	# Подключаемся к EventBus для обработки экипировки
 	EventBus.equipment_equip_requested.connect(_on_equipment_equip_requested)
@@ -40,26 +35,26 @@ func initialize_characters(character_data_list: Dictionary = {}):
 	if character_data_list.is_empty():
 		# Используем дефолтные данные
 		character_data_list = _get_default_character_data()
-	
+
 	# Convert dictionaries to Character objects
 	characters = {}
 	for char_id in character_data_list.keys():
 		var char_data = character_data_list[char_id]
 		char_data["character_id"] = char_id
 		# Копируем equipment slots из player_state если доступен
-		if game_manager and game_manager.has("player_state"):
+		if game_manager and "player_state" in game_manager:
 			char_data["equipment"] = game_manager.player_state.equipment.duplicate()
 		else:
 			char_data["equipment"] = _get_default_equipment_slots()
 		characters[char_id] = GameCharacterScript.from_dict(char_data)
-	
+
 	active_character_id = "player_1"
 	active_character = characters.get(active_character_id)
-	
+
 	# Синхронизируем с player_state если доступен
 	if game_manager:
 		_sync_player_state_from_character()
-	
+
 	character_initialized.emit()
 	print("✅ CharacterManager: Characters initialized, active: ", active_character_id)
 
@@ -155,6 +150,7 @@ func _get_default_equipment_slots() -> Dictionary:
 		"polearm": null,
 		"dagger": null,
 		"axe": null,
+		"mace": null,
 		"bow": null,
 		"staff": null,
 		"shield": null,
@@ -169,23 +165,23 @@ func switch_character(character_id: String) -> bool:
 	if not characters.has(character_id):
 		print("⚠️ CharacterManager: Character not found: ", character_id)
 		return false
-	
+
 	# Сохраняем состояние текущего персонажа
 	if game_manager:
 		_sync_character_from_player_state()
-	
+
 	# Переключаемся на нового персонажа
 	active_character_id = character_id
 	active_character = characters[character_id]
-	
+
 	# Обновляем бонусы экипировки для нового персонажа
 	if active_character:
 		active_character.update_equipment_bonuses()
-	
+
 	# Синхронизируем player_state с новым персонажем
 	if game_manager:
 		_sync_player_state_from_character()
-	
+
 	# Эмитируем сигнал
 	character_changed.emit(character_id)
 	print("✅ CharacterManager: Switched to character: ", character_id)
@@ -216,40 +212,40 @@ func get_class_data(class_id: String, subclass_id: String = "") -> Dictionary:
 	if not file:
 		print("⚠️ CharacterManager: Could not open classes file: ", file_path)
 		return {}
-	
+
 	var json_string = file.get_as_text()
 	file.close()
-	
+
 	var json = JSON.new()
 	var parse_result = json.parse(json_string)
 	if parse_result != OK:
 		print("⚠️ CharacterManager: Failed to parse classes JSON")
 		return {}
-	
+
 	var data = json.data
 	if not data.has("classes") or not data.classes.has(class_id):
 		return {}
-	
+
 	var class_data = data.classes[class_id]
 	var result = {
 		"name": class_data.name,
 		"description": class_data.description,
 		"subclasses": {}
 	}
-	
+
 	if subclass_id != "" and class_data.subclasses.has(subclass_id):
 		result.subclass = class_data.subclasses[subclass_id]
-	
+
 	return result
 
 func _sync_player_state_from_character():
 	"""Синхронизирует player_state с данными активного персонажа (БЕЗ level/experience)"""
 	if not active_character or not game_manager:
 		return
-	
-	if not game_manager.has("player_state"):
+
+	if not "player_state" in game_manager:
 		return
-	
+
 	var player_state = game_manager.player_state
 	# Исключены: level, experience, experience_to_next_level, stat_points
 	player_state.strength = active_character.attributes.strength
@@ -265,10 +261,10 @@ func _sync_character_from_player_state():
 	"""Синхронизирует данные активного персонажа из player_state (БЕЗ level/experience)"""
 	if not active_character or not game_manager:
 		return
-	
-	if not game_manager.has("player_state"):
+
+	if not "player_state" in game_manager:
 		return
-	
+
 	var player_state = game_manager.player_state
 	# Исключены: level, experience, experience_to_next_level, stat_points
 	active_character.attributes.strength = player_state.strength
@@ -297,6 +293,12 @@ func _on_equipment_equip_requested(character_id: String, slot_id: String, item_i
 	# Обновляем бонусы экипировки
 	character.update_equipment_bonuses()
 
+	# SaveSystem (PlayerDataModule) сохраняет player_state.equipment, а не
+	# character.equipment. Без этой синхронизации всё, что надето через
+	# EquipmentManager/EventBus, терялось при сохранении.
+	if character_id == active_character_id:
+		_sync_player_state_from_character()
+
 	# Уведомляем об успешном экипировании
 	EventBus.equipment_equipped.emit(character_id, slot_id, item_id)
 	print("✅ CharacterManager: Equipped ", item_id, " to ", slot_id, " for ", character_id)
@@ -314,6 +316,11 @@ func _on_equipment_unequip_requested(character_id: String, slot_id: String) -> v
 
 	# Обновляем бонусы экипировки
 	character.update_equipment_bonuses()
+
+	# См. комментарий в _on_equipment_equip_requested — синхронизация нужна,
+	# иначе снятие предмета не попадёт в сохранение.
+	if character_id == active_character_id:
+		_sync_player_state_from_character()
 
 	# Уведомляем об успешном снятии
 	EventBus.equipment_unequipped.emit(character_id, slot_id)

@@ -1,0 +1,140 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/save_slot_card.gd" id="1_card"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="2_chevron"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/alarm_clock.svg" id="3_clock"]
+
+[node name="SaveSlotCard" type="HBoxContainer"]
+theme_type_variation = &"SlotRow"
+script = ExtResource("1_card")
+
+[node name="CursorColumn" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Cursor" type="TextureRect" parent="CursorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_chevron")
+stretch_mode = 5
+
+[node name="Card" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+clip_contents = true
+theme_type_variation = &"SaveSlotCard"
+
+[node name="Watermark" type="Label" parent="Card"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SlotWatermark"
+text = "1"
+vertical_alignment = 1
+
+[node name="Margin" type="MarginContainer" parent="Card"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SlotCardMargin"
+
+[node name="Row" type="HBoxContainer" parent="Card/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SlotRow"
+
+[node name="WatermarkSpace" type="Control" parent="Card/Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Info" type="HBoxContainer" parent="Card/Margin/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_type_variation = &"SlotRightInfo"
+
+[node name="LeftInfo" type="VBoxContainer" parent="Card/Margin/Row/Info"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SlotInfoColumn"
+
+[node name="Date" type="Label" parent="Card/Margin/Row/Info/LeftInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SlotDate"
+
+[node name="Location" type="Label" parent="Card/Margin/Row/Info/LeftInfo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SlotLocation"
+
+[node name="Character" type="VBoxContainer" parent="Card/Margin/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SlotInfoColumn"
+
+[node name="Level" type="Label" parent="Card/Margin/Row/Info/Character"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SlotLevel"
+horizontal_alignment = 2
+
+[node name="CharName" type="Label" parent="Card/Margin/Row/Info/Character"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SlotName"
+horizontal_alignment = 2
+
+[node name="Playtime" type="HBoxContainer" parent="Card/Margin/Row/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SlotPlaytime"
+
+[node name="ClockIcon" type="TextureRect" parent="Card/Margin/Row/Info/Playtime"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_clock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlaytimeValue" type="Label" parent="Card/Margin/Row/Info/Playtime"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SlotName"
+
+[node name="Empty" type="VBoxContainer" parent="Card/Margin/Row"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"SlotInfoColumn"
+
+[node name="EmptyTitle" type="Label" parent="Card/Margin/Row/Empty"]
+layout_mode = 2
+theme_type_variation = &"SlotLocation"
+text = "Empty Slot"
+
+[node name="EmptyText" type="Label" parent="Card/Margin/Row/Empty"]
+layout_mode = 2
+theme_type_variation = &"SlotEmptyText"
+text = "No save data available"

@@ -142,6 +142,5 @@ func _handle_landing(was_in_air: bool, now_on_floor: bool) -> void:
 		DebugLogger.physics_verbose("PlayerMover: Fall height too small (%.1f < %.1f), skipping effect" % [fall_height, min_fall_height_for_event], "player_landing")
 		return
 
-	if EventBus and EventBus.has_signal("player_landed"):
-		DebugLogger.physics_verbose("PlayerMover: Emitting player_landed signal with fall_height = %.1f" % fall_height, "player_landing")
-		EventBus.player_landed.emit(fall_height)
+	DebugLogger.physics_verbose("PlayerMover: Emitting player_landed signal with fall_height = %.1f" % fall_height, "player_landing")
+	EventBus.player_landed.emit(fall_height)

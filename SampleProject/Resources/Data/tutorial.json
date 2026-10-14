@@ -1,0 +1,36 @@
+{
+	"topics": [
+		{
+			"id": "basic_controls",
+			"title": "Basic Controls",
+			"text": "Move with A and D or the arrow keys, and jump with Space or W. Click the left mouse button to attack. When a prompt appears over a person or an object, press E to talk, open or pick it up.",
+			"key": "Esc",
+			"hint": "Button to open the game menu.",
+			"image": "res://SampleProject/Assets/UI/Tutorial/basic_controls.png"
+		},
+		{
+			"id": "the_map",
+			"title": "The Map",
+			"text": "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, the arrow keys move the view and you stand still.",
+			"key": "M",
+			"hint": "Button to open or close the full map.",
+			"image": "res://SampleProject/Assets/UI/Tutorial/the_map.png"
+		},
+		{
+			"id": "saving",
+			"title": "Saving Your Progress",
+			"text": "Look for save points along the way. Step up to one and choose a save slot — there are four. To pick up where you left off, choose Continue on the title screen.",
+			"key": "E",
+			"hint": "Button at a save point to save your game.",
+			"image": "res://SampleProject/Assets/UI/Tutorial/saving.png"
+		},
+		{
+			"id": "journal",
+			"title": "The Journal",
+			"text": "The Journal in the game menu follows the story. Each part of the Prologue lists its objectives as you reach them, and opening a part tells what has happened there so far.",
+			"key": "Esc",
+			"hint": "Button to open the game menu, then choose Journal.",
+			"image": "res://SampleProject/Assets/UI/Tutorial/journal.png"
+		}
+	]
+}
