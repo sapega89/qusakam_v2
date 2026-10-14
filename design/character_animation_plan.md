@@ -18,7 +18,7 @@ Figma: no design exists (Figma covers UI only).
 | Player state → animation | `Scripts/Player.gd:117-135` | ✅ picks Idle / Run / Jump / Fall / Attack correctly — only the frames are missing |
 | Attack VFX | `Scenes/FX/SlashTrail.tscn`, `Systems/VFXHooks.gd` | ✅ particle slash covers for the missing swing |
 | Enemy animations | `Scenes/Characters/Enemies/default_enemy.tscn:13-62` — idle, walk, attack, death | ✅ work, but **one generic sheet** (`Scripts/Systems/character-spritesheet (4).png`) for every enemy (bandit, guards, lab boss) |
-| NPCs | Old Man (`Village.tscn`, static frame of `assets/bosses/1 Old_man/Old_man_idle.png`), Merchant, Blacksmith (Figma NPC art) | ⚠️ static `Sprite2D`, no animation |
+| NPCs | Old Man (`Village.tscn`, static frame of `SampleProject/Assets/Characters/old_man_idle.png`), Merchant, Blacksmith (Figma NPC art) | ⚠️ static `Sprite2D`, no animation |
 | Kusakam art | `assets/QusajamSprite-0001.png`, `-0002.png` (113×127) | ⚠️ two frames, not wired anywhere |
 | Third-party packs | `assets/2D_SL_Knight_v1.0`, `Knight`, `Knight 2D Pixel Art`, `FreeKnight_v1`, `MainCharacter(FreePack)`, `Free Character Sprites/*`, `AntiHero Character`, `GandalfHardcore …`, `Minotaur - Sprite Sheet.png`, `assets/bosses/*` | ⚠️ imported, unused; licences not recorded |
 
