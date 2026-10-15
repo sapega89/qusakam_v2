@@ -34,7 +34,7 @@ func _initialize() -> void:
 	print("[1] Save on the Desert Road with part of the map explored")
 	set_meta("start_new_game", true)
 	var game: Node = await _boot()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_Start")
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 20: await physics_frame
 	var road_room: String = metsys.get_current_room_name()
 	var explored: float = metsys.get_explored_ratio()

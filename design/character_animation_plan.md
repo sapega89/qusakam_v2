@@ -44,6 +44,15 @@ Figma: no design exists (Figma covers UI only).
    `CombatBody2D` (they exist as signals: `damage_token`, `entity_died`).
 4. **Licences** (not blocking, but before release): list each pack's licence in `design/assets_licences.md`.
 
+## Frames from Ludo AI (2026-10-15)
+
+`@ludoai/cli` is installed and its skill is in `.claude/skills/ludo/`; Sapega has **not bought Ludo yet** —
+nothing generated. When he has: `ludo login`, then per missing state (Idle, Jump, Fall, Attack, Hurt,
+Death) `ludo sprite animate --initial-image SampleProject/Sprites/Player/Run/1.png --motion-prompt "<state>"
+--model forge-pixel --frame-size 64 --engine godot` (D138: keep the 64×64 style). Estimate: 3 s ×
+1.5 credits/s ≈ 4.5 credits per state, ≈ 27 for the set (one variation each). Check `ludo account` and
+`--dry-run` first.
+
 ## Slices
 
 ### Slice 1 — Player full set

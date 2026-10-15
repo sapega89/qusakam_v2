@@ -24,7 +24,7 @@ func _initialize() -> void:
 
 	print("[1] Standing in the Mayor's Hall")
 	var loads_before: int = game._load_room_call_count
-	game.teleport_to_room("res://SampleProject/Maps/MayorHall.tscn", ^"SavePoint")
+	game.teleport_to_room("res://SampleProject/Maps/MayorHall.tscn", ^"Arrival")
 	for i in 20: await physics_frame
 	# B51: модуль переходів вантажив кімнату вдруге після кожного телепорту.
 	ck(game._load_room_call_count - loads_before == 1, "one teleport loads the room once (%d)" % (game._load_room_call_count - loads_before))

@@ -236,16 +236,14 @@ func _initialize_save_and_room() -> void:
 	print("🚪 [Game] load_room() викликано для: %s" % scene_path)
 
 
-	# ВАЖНО: Для новой игры позиционируем игрока на SavePoint в стартовой комнате
+	# ВАЖНО: Для новой игры позиционируем игрока на мітці Arrival в стартовой комнате
 	# (при загрузке сохранения позиция уже восстановлена через save_manager.retrieve_game выше)
 	if start_new_game:
 		await get_tree().process_frame  # Ждём загрузки комнаты
-		_position_player_at_save_point()
+		_position_player_at_start()
 
 	# MetSys автоматически устанавливает позицию игрока:
 	# - Из сохранения при загрузке игры (через save_manager.retrieve_game)
-	# - На SavePoint при новой игре (если он есть в комнате)
-	# Не нужно вручную искать SavePoint - MetSys сам это делает!
 
 	# Add module for room transitions.
 	# УВАГА: тільки ScrollingRoomTransitions. Він обнуляє game.map перед
@@ -384,7 +382,6 @@ func load_room(room_ref: String) -> void:
 func reset_map_starting_coords():
 	$UI/MapWindow.reset_starting_coords()
 
-## Позиционирует игрока на SavePoint в текущей комнате
 ## Телепорт у кімнату, не повʼязану з поточною (кат-сцена, а не прохід по мапі).
 ## Як ScrollingRoomTransitions: стару кімнату відʼєднуємо до load_room(), тоді він
 ## не чекає її tree_exited і відпрацьовує синхронно — гравця ставимо одразу.
@@ -400,13 +397,13 @@ func teleport_to_room(room_path: String, arrival: NodePath) -> void:
 	player.global_position = target.global_position
 	MetSys.set_player_position(player.position)
 
-func _position_player_at_save_point() -> void:
-	# Ищем SavePoint в текущей комнате
-	# Стартова кімната зобовʼязана мати SavePoint — без нього тут помилка, а не тихий пропуск.
-	var save_point: Node2D = get_tree().get_nodes_in_group("save_points")[0]
-	player.global_position = save_point.global_position + save_point.spawn_offset
+## Нова гра: гравець на мітці Arrival стартової кімнати. Точки збереження бувають
+## не в кожній кімнаті (до DesertRoad їх немає), тож старт від них не залежить.
+func _position_player_at_start() -> void:
+	var arrival: Node2D = map.get_node(^"Arrival")
+	player.global_position = arrival.global_position
 	MetSys.set_player_position(player.position)
-	DebugLogger.info("Game: Positioned player at SavePoint for new game: %s" % player.global_position, "Game")
+	DebugLogger.info("Game: Positioned player at Arrival for new game: %s" % player.global_position, "Game")
 
 var _init_room_called_for_room: String = ""
 var _init_room_call_count: int = 0
@@ -464,7 +461,7 @@ func init_room():
 	# вузол гравця, тому слідкує за ним автоматично.
 	
 	# Позицію задають MetSys (переходи), retrieve_game() (завантаження) і
-	# _position_player_at_save_point() (нова гра). Евристики «гравець задалеко
+	# _position_player_at_start() (нова гра). Евристики «гравець задалеко
 	# від SavePoint — переставити» прибрано: вони ховали помилки позиціонування (D131).
 	player.on_enter()
 

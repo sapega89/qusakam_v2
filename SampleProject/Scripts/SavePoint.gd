@@ -3,6 +3,8 @@
 # Автозбереження при дотику прибрано (Q5): зберігаємо лише свідомо через підказку.
 extends Area2D
 
+const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
+
 ## Offset для позиции спавна (относительно SavePoint)
 @export var spawn_offset: Vector2 = Vector2(0, 0)
 
@@ -20,6 +22,10 @@ func _ready() -> void:
 	interactable.action_text = "Save"
 	add_child(interactable)
 	interactable.interacted.connect(_on_interacted)
+	# Коло й «S» тримають екранний розмір під збільшеною камерою (D170), як підказка.
+	var label: Label = $Label
+	label.pivot_offset = label.size * 0.5
+	label.scale = WORLD_UI.screen_scale(self)
 
 func _on_interacted() -> void:
 	var player := GameGroups.get_first_node_in_group(GameGroups.PLAYER) as Node2D
@@ -39,4 +45,5 @@ func _on_interacted() -> void:
 
 func _draw() -> void:
 	# Draws the circle.
+	draw_set_transform(Vector2.ZERO, 0.0, WORLD_UI.screen_scale(self))
 	$CollisionShape2D.shape.draw(get_canvas_item(), Color.BLUE)

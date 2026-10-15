@@ -137,21 +137,10 @@ func _update_follow_position():
 	"""Update position to follow target entity"""
 	var enemy_pos = target_entity.global_position
 
-	# Center HP bar above enemy head
+	# Над головою ворога, по центру. Світ → екран через canvas transform: враховує zoom камери (D170).
 	var hp_bar_width = size.x if size.x > 0 else 150.0
-	var centered_offset_x = -hp_bar_width / 2.0
-	var hp_bar_world_pos = enemy_pos + Vector2(centered_offset_x + offset_x, offset_y)
-
-	# Get camera for coordinate transformation
-	var camera = get_viewport().get_camera_2d()
-	if camera:
-		# Transform world coordinates to screen coordinates for CanvasLayer
-		var viewport_size = get_viewport().get_visible_rect().size
-		var camera_center = camera.get_screen_center_position()
-		var screen_pos = (hp_bar_world_pos - camera_center) + viewport_size / 2.0
-		global_position = screen_pos
-	else:
-		global_position = hp_bar_world_pos
+	var anchor: Vector2 = get_viewport().get_canvas_transform() * (enemy_pos + Vector2(offset_x, offset_y))
+	global_position = anchor - Vector2(hp_bar_width / 2.0, 0)
 
 	# Ensure size is correct
 	if size == Vector2.ZERO or size.x > 200:

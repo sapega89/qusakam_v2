@@ -3,11 +3,7 @@
 [ext_resource type="Script" uid="uid://bfsr8ryeko4hh" path="res://SampleProject/Scripts/Gameplay/Scenes/LaboratoryOutside.gd" id="1_lab_out"]
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_4cc3m"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_a6qgq"]
-[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
 [ext_resource type="AudioStream" uid="uid://dsd81qi8supim" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_save"]
-radius = 32.0
 
 [node name="LaboratoryOutside" type="Node2D"]
 script = ExtResource("1_lab_out")
@@ -27,29 +23,8 @@ tile_set = ExtResource("2_4cc3m")
 
 [node name="RoomInstance" parent="." instance=ExtResource("3_a6qgq")]
 
-[node name="SavePoint" type="Area2D" parent="."]
+[node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(400, 344)
-script = ExtResource("5_save")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint"]
-shape = SubResource("CircleShape2D_save")
-
-[node name="Label" type="Label" parent="SavePoint"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -29.0
-offset_top = -25.0
-offset_right = 29.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 40
-text = "S"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

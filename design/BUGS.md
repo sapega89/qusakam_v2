@@ -97,6 +97,9 @@ built*, not here.
   Not hit from Game Over → Load Game: by then the game has built UIRoot.
 - **Check:** play Main Menu → Continue, press ↑/↓ and Y; watch the Godot errors.
 - **Severity:** error spam / possibly broken Delete modal; found 2026-10-15.
+- **✅ Fixed 2026-10-15:** `UIManager` no longer skips UIRoot for `MainMenu.tscn` and `/Menus/` scenes
+  (`_should_skip_ui_root()` removed). UIRoot holds only empty layers + the modal layer, so it is harmless
+  under the menu. `verify_shop.gd` [4b] checks the modal layer exists while the Main Menu is the scene.
 
 ### B53 — Laboratory always restarts from EXPLORE, so a loaded save mid-lab skips its fight
 - **Where:** `SampleProject/Scripts/Gameplay/Scenes/Laboratory.gd` — `_ready()` runs
@@ -109,6 +112,12 @@ built*, not here.
   the companion beats are trigger-driven, so the right starting state per flag needs reading
   the triggers first.
 - **Severity:** blocker for loading a save made inside the lab; found 2026-10-14.
+- **Wider, 2026-10-15:** `Maps/Laboratory.tscn` has **no `StateChangeTrigger` at all**, so nothing ever
+  moves the lab out of `EXPLORE` — Companion 01–03, the limit test and the boss fight are unreachable
+  even on a fresh run. Fixing the load path first needs where each beat fires (trigger x positions) —
+  asked Sapega.
+- **✅ Fixed 2026-10-15 (D174):** triggers added; `Laboratory._initial_state()` reads the flags.
+  `verify_laboratory.gd` walks the beats and reloads mid-lab.
 
 ### B37 — Plain `HSeparator` has no theme entry, so Journal/HUD rules render engine grey
 - **Root cause (named, not guessed):** `SampleProject/UI/Themes/GameUITheme.tres`

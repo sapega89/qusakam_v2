@@ -224,6 +224,9 @@ func _initialize() -> void:
 	shape.name = "CollisionShape2D"
 	shape.shape = CircleShape2D.new()
 	sp.add_child(shape)
+	var s_label := Label.new()
+	s_label.name = "Label"
+	sp.add_child(s_label)
 	root.add_child(sp)
 	await process_frame
 	ck(sp.interactable != null and sp.interactable.action_text == "Save", "prompt reads \"Save\"")

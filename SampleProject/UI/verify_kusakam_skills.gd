@@ -100,7 +100,7 @@ func _initialize() -> void:
 
 	print("[5] Strikes hit everything in front, nothing behind (D142)")
 	game.set_quest_flag("desert_road_monologue_complete", true)
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_Start")
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _drain(dm)
 	await create_timer(2.5).timeout

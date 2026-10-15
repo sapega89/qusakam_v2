@@ -40,29 +40,8 @@ tile_set = ExtResource("2_xkx37")
 
 [node name="RoomInstance" parent="." unique_id=2047758505 instance=ExtResource("3_0gx3l")]
 
-[node name="SavePoint_Start" type="Area2D" parent="." unique_id=1118385843]
+[node name="Arrival_Start" type="Marker2D" parent="." unique_id=1118385843]
 position = Vector2(200, 344)
-script = ExtResource("5_save")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_Start" unique_id=943343114]
-shape = SubResource("CircleShape2D_save")
-
-[node name="Label" type="Label" parent="SavePoint_Start" unique_id=795483875]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -29.0
-offset_top = -25.0
-offset_right = 29.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 40
-text = "S"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ArrivalFromCanyon" type="Marker2D" parent="." unique_id=764455930]
 position = Vector2(80, 344)
@@ -130,7 +109,7 @@ enemy_type = "fast"
 script = ExtResource("9_gate")
 
 [node name="Merchant" parent="." unique_id=890430184 instance=ExtResource("10_merchant")]
-position = Vector2(1350, 352)
+position = Vector2(1350, 396)
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=603862840]
 process_mode = 3

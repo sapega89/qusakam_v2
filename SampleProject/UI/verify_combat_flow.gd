@@ -47,7 +47,7 @@ func _initialize() -> void:
 	var inv: Node = sl.get_inventory_manager()
 
 	game.set_quest_flag("desert_road_monologue_complete", true)
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_Start")
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 10: await process_frame
 	var road: Node = game.map
 	for i in 6: await process_frame

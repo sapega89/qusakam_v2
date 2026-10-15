@@ -9,6 +9,9 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="AudioStream" uid="uid://dsd81qi8supim" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_beat"]
+size = Vector2(32, 480)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
 
@@ -77,6 +80,42 @@ theme_override_font_sizes/font_size = 40
 text = "S"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="StateChangeTrigger_Companion01" type="Area2D" parent="."]
+position = Vector2(430, 240)
+script = ExtResource("6_trigger")
+target_state = "COMPANION_01"
+action_mode = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_Companion01"]
+shape = SubResource("RectangleShape2D_beat")
+
+[node name="StateChangeTrigger_Companion02" type="Area2D" parent="."]
+position = Vector2(860, 240)
+script = ExtResource("6_trigger")
+target_state = "COMPANION_02"
+action_mode = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_Companion02"]
+shape = SubResource("RectangleShape2D_beat")
+
+[node name="StateChangeTrigger_Companion03" type="Area2D" parent="."]
+position = Vector2(1210, 240)
+script = ExtResource("6_trigger")
+target_state = "COMPANION_03"
+action_mode = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_Companion03"]
+shape = SubResource("RectangleShape2D_beat")
+
+[node name="StateChangeTrigger_LimitTest" type="Area2D" parent="."]
+position = Vector2(1600, 240)
+script = ExtResource("6_trigger")
+target_state = "LIMIT_TEST"
+action_mode = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_LimitTest"]
+shape = SubResource("RectangleShape2D_beat")
 
 [node name="EnemySpawner" type="Node" parent="."]
 script = ExtResource("7_spawner")

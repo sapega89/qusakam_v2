@@ -56,7 +56,7 @@ action_mode = 1
 shape = SubResource("CircleShape2D_save")
 
 [node name="Blacksmith" parent="." instance=ExtResource("6_blacksmith")]
-position = Vector2(1100, 352)
+position = Vector2(1100, 396)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

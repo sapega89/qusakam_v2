@@ -11,8 +11,10 @@ z_index = 10
 script = ExtResource("1_story")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
 shape = SubResource("RectangleShape2D_1")
 
 [node name="Interactable" type="Node2D" parent="."]
 script = ExtResource("2_interactable")
+prompt_offset = Vector2(0, -128)
 action_text = "Quest"

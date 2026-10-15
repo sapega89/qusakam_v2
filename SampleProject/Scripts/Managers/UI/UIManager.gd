@@ -61,11 +61,6 @@ func _disconnect_all_signals() -> void:
 # ============================================
 
 func _ensure_ui_root() -> void:
-	if _should_skip_ui_root():
-		var scene_path = get_tree().current_scene.scene_file_path if get_tree() and get_tree().current_scene else "null"
-		print("UIManager: _ensure_ui_root skipped for scene=%s" % scene_path)
-		return
-
 	# UIRoot — завжди нащадок UIManager; створюється один раз.
 	if ui_root:
 		return
@@ -87,19 +82,7 @@ func _initialize_ui_references() -> void:
 			current_state = state
 			current_state_name = str(state.name)
 
-func _should_skip_ui_root() -> bool:
-	var tree = get_tree()
-	if not tree or not tree.current_scene:
-		return false
-	var path = tree.current_scene.scene_file_path
-	if path.ends_with("MainMenu.tscn"):
-		return true
-	if path.find("/Menus/") != -1:
-		return true
-	return false
-
-## UIRoot створюється ліниво: при старті з MainMenu _initialize() його пропускає, а
-## scene_loaded ніхто не шле — тож без цього виклику екрани (магазин, крафт) отримували null.
+## UIRoot будується й у головному меню (B54): Load → Delete там теж показує модалку.
 func get_state_root() -> Control:
 	_ensure_ui_root()
 	return state_root

@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="2_5gn25"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_7gdem"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/OldMan.gd" id="10_oldman"]
-[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
@@ -33,29 +32,8 @@ tile_set = ExtResource("2_5gn25")
 
 [node name="RoomInstance" parent="." instance=ExtResource("3_7gdem")]
 
-[node name="SavePoint" type="Area2D" parent="."]
+[node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(400, 344)
-script = ExtResource("5_save")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint"]
-shape = SubResource("CircleShape2D_save")
-
-[node name="Label" type="Label" parent="SavePoint"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -29.0
-offset_top = -25.0
-offset_right = 29.0
-offset_bottom = 25.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 40
-text = "S"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="StateChangeTrigger_ArrivalToVillage" type="Area2D" parent="."]
 position = Vector2(150, 344)
@@ -80,14 +58,14 @@ shape = SubResource("CircleShape2D_save")
 [node name="OldMan" type="Sprite2D" parent="StateChangeTrigger_OldManOutside"]
 texture_filter = 1
 script = ExtResource("10_oldman")
-position = Vector2(-10, -7)
-scale = Vector2(2, 2)
+position = Vector2(-10, -20)
+scale = Vector2(3, 3)
 texture = ExtResource("9_oldman")
 flip_h = true
 hframes = 4
 
 [node name="OldManQuest" parent="." instance=ExtResource("story_npc")]
-position = Vector2(1572, 337)
+position = Vector2(1572, 396)
 quest_flag = "village_oldman_complete"
 quest_dialogue = "OldMan_Decision"
 

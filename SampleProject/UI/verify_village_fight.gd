@@ -54,7 +54,7 @@ func _initialize() -> void:
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
 	print("[0] The abduction: fade to black, lines over black, light again (D140)")
-	game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"SavePoint")
+	game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"Arrival")
 	await create_timer(1.0).timeout
 	var village: Node = game.map  # після телепорту MetSys підвантажує кімнату вдруге (B51)
 	ck(village.get_current_state_name() == "ABDUCTION_CUTSCENE", "starts with the abduction")

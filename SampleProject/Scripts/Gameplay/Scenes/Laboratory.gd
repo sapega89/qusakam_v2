@@ -37,7 +37,30 @@ func _ready() -> void:
 	enemy_spawner.all_enemies_defeated.connect(_on_all_enemies_defeated)
 	DebugLogger.info("🧪 Laboratory: EnemySpawner found and connected", "Scene")
 
-	_on_state_changed(current_state)
+	current_state = _initial_state()
+
+## Стан при вході — за прапорцями (B53), як CityGates._initial_state(). Сюди потрапляють лише
+## завантаженням сейва: дороги назад у лабораторію немає.
+func _initial_state() -> State:
+	var game := Game.get_singleton()
+	if game.get_quest_flag("lab_boss_fight_complete"):
+		return State.AFTER_BOSS
+	if game.get_quest_flag("lab_limit_test_complete"):
+		return State.BOSS_FIGHT
+	if game.get_quest_flag("lab_companion_03_complete"):
+		return State.COMPANION_03
+	if game.get_quest_flag("lab_companion_02_complete"):
+		return State.COMPANION_02
+	if game.get_quest_flag("lab_companion_01_complete"):
+		return State.COMPANION_01
+	return State.EXPLORE
+
+## Для StateChangeTrigger: розмови компаньйона й тест запускають тригери в кімнаті (D174).
+func get_current_state_name() -> String:
+	return State.keys()[current_state]
+
+func change_state_by_name(state_name: String) -> void:
+	current_state = State[state_name]
 
 func _on_state_changed(new_state: State) -> void:
 	state_run_id += 1
@@ -122,7 +145,9 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 			pass
 
 	if run_id != state_run_id: return
-	advance_state()
+	# Розмови компаньйона чекають наступного тригера; лише тест межі одразу веде в бій.
+	if current_state == State.LIMIT_TEST:
+		advance_state()
 
 func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 	var dm = _get_dialogue_manager()

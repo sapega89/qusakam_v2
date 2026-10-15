@@ -27,3 +27,6 @@ Untitled.png.import
 
 # Вивід прогонів verify_*.gd — лише останній запуск, залежить від машини
 logs/
+
+# Готові збірки (export_presets.cfg → build/windows/)
+build/

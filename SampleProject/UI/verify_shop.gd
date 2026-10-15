@@ -177,9 +177,9 @@ func _initialize() -> void:
 	for i in 20: await process_frame
 	ck(closed[0], "B / Esc closes the shop")
 
-	print("[4b] Started from the Main Menu: the modal layer still exists in the game (crash 2026-10-15)")
-	# Справжня гра стартує з MainMenu: UIManager._initialize() пропускає UIRoot, а scene_loaded
-	# ніхто не шле. Магазин питав get_modal_layer().active_modal і падав на null.
+	print("[4b] Started from the Main Menu: the modal layer exists (crash 2026-10-15, B54)")
+	# Справжня гра стартує з MainMenu. Магазин (і Load → Delete у меню) питав
+	# get_modal_layer().active_modal і падав на null, коли UIRoot у меню не будувався.
 	var menu_scene := Node.new()
 	menu_scene.scene_file_path = "res://SampleProject/MainMenu.tscn"
 	root.add_child(menu_scene)
@@ -188,9 +188,8 @@ func _initialize() -> void:
 	var fresh_ui: Node = load("res://SampleProject/Scripts/Managers/UI/UIManager.gd").new()
 	root.add_child(fresh_ui)
 	for i in 2: await process_frame
-	ck(fresh_ui.ui_root == null, "precondition: no UIRoot while the Main Menu is the scene")
+	ck(fresh_ui.get_modal_layer() != null, "modal layer exists while the Main Menu is the scene")
 	current_scene = prev_scene
-	ck(fresh_ui.get_modal_layer() != null, "get_modal_layer() builds it once in the game")
 	fresh_ui.queue_free()
 	menu_scene.queue_free()
 	await process_frame
