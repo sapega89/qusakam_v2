@@ -53,8 +53,6 @@ func _ready() -> void:
 	# Реєстри ServiceLocator заповнюються відкладено — кадр, щоб DialogueManager уже був зареєстрований.
 	await get_tree().process_frame
 
-
-
 	# Перевіряємо та створюємо GateControllers ПЕРЕД визначенням стейту
 	_ensure_gate_controllers()
 

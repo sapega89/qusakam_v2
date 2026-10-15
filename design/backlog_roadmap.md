@@ -20,7 +20,7 @@ leftovers that make a playthrough fuller, picked up alongside phase 2, not a gat
 | # | Item | Source | Why here |
 |---|---|---|---|
 | 1.1 | **Playtest the Laboratory to the demo end.** Sapega has not yet seen its fight. Two of nine original cells were drawn; the map now gives it 2. Companion beats run on triggers. | B53 · [[room_state_plan]] | The only stretch nobody has played. Whatever breaks here is phase-1 work. |
-| 1.2 | **Laboratory picks its state from flags** | B53 | Loading a save made inside the lab skips its fight. Fix after 1.1 shows how the triggers chain. |
+| 1.2 | ✅ **Laboratory picks its state from flags** (built 2026-10-15, triggers D174) | B53 | Loading a save made inside the lab skips its fight. Fix after 1.1 shows how the triggers chain. |
 | 1.3 | ✅ **Merchant on the Desert Road, Blacksmith in the City** (placed 2026-10-14) | D81, **D154** | Shop and Crafting are built and tested but unreachable in play. |
 | 1.4 | **Something to pick up** — `ItemPickup` and chests placed | D88 · Q2 | Inventory, crafting materials and potions have no source in the world except the first-kill gift. |
 | 1.5 | ✅ **Game Over → Load Game** (built 2026-10-14) | D92 | Dying sends you to the title; one button. |
@@ -43,8 +43,8 @@ soon as Q38 is answered; 2.3 waits on an artist, 2.4 on the next beat being chos
 
 | # | Item | Source |
 |---|---|---|
-| 3.1 | Shop: no Equipment tab, quantity selector, greyed unaffordable rows; Blacksmith sells nothing | D103–D106 |
-| 3.2 | Enchanting — plan note first | D94, D115 |
+| 3.1 | ✅ Shop: no Equipment tab, quantity selector, greyed unaffordable rows; Blacksmith sells nothing | D103–D106 |
+| 3.2 | ✅ Enchanting (built 2026-10-15; Blacksmith task D175) | D94, D115 |
 | 3.3 | Crafting gold costs are mock (10 % of buy price) | D97 |
 
 ## Phase 4 — decisions that reverse shipped code
