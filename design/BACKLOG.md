@@ -133,6 +133,21 @@ Enemy loot automatic, no modal · map items need an interaction prompt then show
 the pickup modal · a chest opens on button press, adds contents automatically,
 **then** shows the pickup modal. `ItemPickup.tscn` is built and tested; chests
 are a new case. Map placement still needs named items and places.
+- **Waits on (Sapega, asked 2026-10-15):** which items lie where, and a chest sprite.
+- **Resume:** place `ItemPickup.tscn` instances by that list; chests as a new `NpcBase`-free interactable.
+
+### Left open on 2026-10-15
+- **Journal side tasks** — Figma `journal-side-stories 192:1636`; read the frame first (Figma MCP is back),
+  then list `quests.json` tasks there ([[npc_recall_plan]] slice 4).
+- **Quest list with the gold diamond (D161)** — `NpcBase._on_task_chosen()` takes one task per NPC
+  (`ponytail:` comment); build the list when an NPC has two open tasks at once, or the old man's main
+  quest and a task meet on one NPC.
+- **Blacksmith task lines are drafts** — `dialogue_quest/Smith_*.dqd`, for Sapega to rewrite.
+- **Figma comparisons owed:** Enchant screen vs `enchant-list`; Shop "Buy X?" with the quantity
+  arrows (D104, undesigned) and the grey unaffordable row (D105, no Figma state).
+- **Laboratory** — trigger positions (D174) are provisional until the lab is playtested (roadmap 1.1);
+  its two save points were not thinned (D173 covered the rooms Sapega named).
+- **NPC size / foot line (D172)** checked only in captures (`capture_npcs_in_world.gd`), not in play.
 
 ### ✅ Game Over — Load Game (D92) — built 2026-10-14
 `%LoadButton` between Resume and Return to title opens `LoadGameMenu.tscn` as a scene, like
