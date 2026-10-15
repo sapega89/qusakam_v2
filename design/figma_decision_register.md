@@ -57,10 +57,10 @@ These do **not** make Figma outdated; the game is behind the design.
 | ID | Screen | Gap |
 |---|---|---|
 | D2 | Party panel | No playtime clock (`GameTimer` missing) |
-| D3, D12, D24 | Party / Status / Equipment | No per-character HP/SP model |
+| D3, D12, D24 | Party / Status / Equipment | ~~No per-character HP/SP model~~ — **gap closed 2026-10-15 (#51)**: active character's SP from `SkillManager` (D146); other cards stay `—/—` (D18) |
 | D4, D16, D23, D55 | Party / Status / Equipment / Journal | No portrait art |
 | D5, D17, D21, D28, D36 | Inventory / Status / Equipment / Skills / HUD | Icons not exported from `🎨 Icons & Assets` |
-| D11 | Status | No Job Points system |
+| D11 | Status | ~~No Job Points system~~ — **gap closed 2026-10-15 (#51)**: `JP Obtained` = `"%d JP" % get_job_points()` (D149), as on Skills |
 | D13 | Status | Nothing equipped by default (renders real state) |
 | D14, D57 | Status / Journal | Class display names empty in `pathfinder_classes.json` |
 | D15, D54 | Status / Journal | No Path Action / Talent system (Figma structure kept) |

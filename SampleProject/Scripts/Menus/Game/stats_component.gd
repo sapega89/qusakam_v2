@@ -59,6 +59,9 @@ func _connect_live_sources() -> void:
 	var xp_manager: XPManager = service_locator.get_xp_manager()
 	if xp_manager and not xp_manager.level_up.is_connected(_on_level_up):
 		xp_manager.level_up.connect(_on_level_up)
+	# JP нараховуються вже після level_up, тож слухаємо самі JP.
+	if not EventBus.job_points_changed.is_connected(_on_job_points_changed):
+		EventBus.job_points_changed.connect(_on_job_points_changed)
 
 
 func _on_character_changed(_character_id: String) -> void:
@@ -66,6 +69,10 @@ func _on_character_changed(_character_id: String) -> void:
 
 
 func _on_level_up(_new_level: int, _old_level: int) -> void:
+	update_display()
+
+
+func _on_job_points_changed(_current: int, _previous: int) -> void:
 	update_display()
 
 
@@ -100,8 +107,8 @@ func _update_header() -> void:
 		_level_label.text = PLACEHOLDER
 		_next_level_value.text = PLACEHOLDER
 
-	# Системи Job Points у проєкті немає — число не вигадуємо.
-	_jp_value.text = PLACEHOLDER
+	# JP (D149) — той самий формат, що й на вкладці Skills.
+	_jp_value.text = "%d JP" % ServiceLocator.get_skill_manager().get_job_points()
 
 
 # ── Робота / зброя ──────────────────────────────────────────────────────────
@@ -163,8 +170,8 @@ func _make_weapon_box(item_name: String) -> Control:
 
 func _update_attributes() -> void:
 	_fill_meter(_hp_meter, "Max. HP", _current_hp(), game_manager.calculate_max_health())
-	# SP-моделі в проєкті немає — смуга лишається порожньою.
-	_fill_meter(_sp_meter, "Max. SP", -1, -1)
+	var sm: SkillManager = ServiceLocator.get_skill_manager()
+	_fill_meter(_sp_meter, "Max. SP", sm.get_current_sp(), sm.get_max_sp())
 	_fill_rows(_left_attrs, LEFT_ROWS)
 	_fill_rows(_right_attrs, RIGHT_ROWS)
 

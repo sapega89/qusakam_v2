@@ -106,10 +106,14 @@ func _fill_card(card: Control, id: String, character: Object, is_active: bool, l
 	# Портрет: справжнього арту ще немає, показуємо avatar_color персонажа.
 	var color = character.get("avatar_color")
 	card.get_node(^"Row/PortraitFrame/Portrait").color = color if color else UITokens.ICON_SLOT_BG
-	# HP лише в активного; SP-моделі ще немає — порожньо, а не вигадані числа.
+	# HP і SP (D146, один пул у player_state) — лише в активного (D18).
 	var hp := _active_hp() if is_active else Vector2i(-1, -1)
 	_fill_stat(card.get_node(^"Row/Info/Bars/Hp"), hp.x, hp.y)
-	_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), -1, -1)
+	var sm: SkillManager = ServiceLocator.get_skill_manager()
+	if is_active:
+		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), sm.get_current_sp(), sm.get_max_sp())
+	else:
+		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), -1, -1)
 	card.set_meta(&"hp", hp)
 	var select: Button = card.get_node(^"Select")
 	if not _wired.has(select):

@@ -36,7 +36,7 @@ const ATTR_ROWS: Array[Array] = [
 	["Phys. Def.", "calculate_physical_defense", false],
 	["Accuracy", "calculate_accuracy", true],
 	["Critical", "calculate_critical_chance", true],
-	["Max. SP", "", false],
+	["Max. SP", "", false],  # SkillManager.get_max_sp() (D146), без дельти
 	["Elem. Atk.", "calculate_magic_damage", false],
 	["Elem. Def.", "calculate_magic_defense", false],
 	["Speed", "calculate_attack_speed", true],
@@ -271,12 +271,12 @@ func _make_attr_row(spec: Array, attributes: CharacterAttributes, equipment_stat
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_child(name_label)
 
-	# Max. SP не має моделі в проєкті — показуємо прочерк, а не вигадане число.
+	# Max. SP — пул SkillManager (D146); жодна екіпіровка SP не змінює, тож без дельти.
 	if method == "":
-		var dash := Label.new()
-		dash.text = "—"
-		dash.theme_type_variation = &"AttrValue"
-		hbox.add_child(dash)
+		var sp_label := Label.new()
+		sp_label.text = str(ServiceLocator.get_skill_manager().get_max_sp())
+		sp_label.theme_type_variation = &"AttrValue"
+		hbox.add_child(sp_label)
 		return row
 
 	var current := _stat_value(method, is_ratio)
