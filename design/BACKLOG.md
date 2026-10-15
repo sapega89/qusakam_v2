@@ -122,12 +122,11 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Resume:** compare the screen with Figma `enchant-list` once MCP is back; slice 3 (the Blacksmith's
   enchant quest) after the Tasks system in [[npc_recall_plan]].
 
-### Shop changes
-- **D103** — remove `Equipment` from the Shop **and** the Blacksmith menu.
-- **D104** — add a **quantity selector** ⚠️ reverses slice 2; undesigned in Figma.
-- **D105** — unaffordable rows **greyed out / disabled**; the "Not Enough Gold"
-  modal stops being mandatory ⚠️ reverses slice 2; no Figma disabled-row state.
-- **D106** — Blacksmith sells nothing; `merchants.json` stock list stays unused.
+### Shop changes — ✅ done 2026-10-15
+- **D103** ✅ no `Equipment` tab; **D106** ✅ the Blacksmith is not a shop.
+- **D104** ✅ quantity in "Buy X?": ←/→, 1 … what gold covers (max 99), total follows (`shop_ui.gd`).
+- **D105** ✅ unaffordable rows grey, still focusable for the description, pressing does nothing;
+  the "Not Enough Gold" modal path is gone. `verify_shop.gd` [4a], [4b2].
 
 ### Pickups — three paths (D88)
 Enemy loot automatic, no modal · map items need an interaction prompt then show

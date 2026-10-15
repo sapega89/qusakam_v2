@@ -55,7 +55,7 @@ static func overwrite_save() -> Dictionary:
 static func buy_confirm(item_name: String, quantity: int, total: String) -> Dictionary:
 	return {
 		"title": "Buy %s?" % item_name,
-		"description": "Quantity: %d  •  Total Cost: %s" % [quantity, total],
+		"description": "Quantity: ◀ %d ▶  •  Total Cost: %s" % [quantity, total],
 		"buttons": [
 			{"id": "confirm", "text": "Yes", "is_default": true},
 			{"id": "cancel", "text": "No", "is_cancel": true}

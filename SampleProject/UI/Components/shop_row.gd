@@ -10,6 +10,8 @@ signal row_activated(data: Dictionary)
 
 var data: Dictionary = {}
 var sellable := true
+## Не вистачає золота (D105): рядок сірий, але фокус лишається — опис видно, купити не можна.
+var affordable := true
 
 @onready var _icon: TextureRect = %Icon
 @onready var _name: Label = %NameLabel
@@ -26,14 +28,15 @@ func _ready() -> void:
 	focus_entered.connect(_on_focus.bind(true))
 	focus_exited.connect(_on_focus.bind(false))
 	mouse_entered.connect(func(): if focus_mode != FOCUS_NONE: grab_focus())
-	pressed.connect(func(): row_activated.emit(data))
+	pressed.connect(func(): if affordable: row_activated.emit(data))
 	_apply_style(false)
 
 
 ## [param price_enabled] = false — ціни немає (не продається): рядок видно, але вимкнено.
-func setup(row: Dictionary, price_enabled: bool = true) -> void:
+func setup(row: Dictionary, price_enabled: bool = true, can_afford: bool = true) -> void:
 	data = row
 	sellable = price_enabled
+	affordable = can_afford
 	_icon.texture = row.get("icon")
 	_name.text = str(row.get("name", ""))
 	# Рецепт крафту: другий рядок "Requires: …" і вищий рядок; у магазині його немає.
@@ -54,7 +57,7 @@ func _on_focus(focused: bool) -> void:
 
 
 func _apply_style(on: bool) -> void:
-	if not sellable:
+	if not sellable or not affordable:
 		_name.theme_type_variation = &"ShopRowDisabled"
 		_count.theme_type_variation = &"ShopRowCount"
 		_price.theme_type_variation = &"ShopRowCount"

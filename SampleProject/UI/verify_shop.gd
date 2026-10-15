@@ -151,7 +151,7 @@ func _initialize() -> void:
 	target.pressed.emit()
 	await process_frame
 	ck(_modal() != null and _modal().title_label.text == "Buy %s?" % tdata.name, "\"Buy X?\" confirmation")
-	ck(_modal() != null and _modal().description_label.text == "Quantity: 1  •  Total Cost: %s" % ShopService.format_price(tdata.price),
+	ck(_modal() != null and _modal().description_label.text == "Quantity: ◀ 1 ▶  •  Total Cost: %s" % ShopService.format_price(tdata.price),
 			"quantity and total cost")
 	_press_modal("No")
 	await process_frame
@@ -162,12 +162,33 @@ func _initialize() -> void:
 	await process_frame
 	ck(inv.get_item_count(id) == before + 1 and svc.gold() == gold_before - int(tdata.price), "Yes buys it")
 	ck(shop.get_rows()[0]._count.text == str(before + 1), "On Hand column refreshes")
-	_set_gold(0)
+
+	print("[4a] Quantity: ←/→ in the confirmation (D104)")
+	_set_gold(int(tdata.price) * 3)
 	shop.get_rows()[0].pressed.emit()
 	await process_frame
-	ck(_modal() != null and _modal().title_label.text == "Not Enough Gold", "not enough gold is explained")
-	_press_modal("OK")
+	for key in [&"ui_right", &"ui_right", &"ui_right", &"ui_right", &"ui_left"]:
+		var ev := InputEventAction.new()
+		ev.action = key
+		ev.pressed = true
+		shop._input(ev)
+	ck(shop._quantity == 2, "→ ×4 stops at what gold covers (3), ← back to 2 (%d)" % shop._quantity)
+	ck(_modal().description_label.text == "Quantity: ◀ 2 ▶  •  Total Cost: %s" % ShopService.format_price(int(tdata.price) * 2),
+			"total follows the quantity (%s)" % _modal().description_label.text)
+	_press_modal("Yes")
 	await process_frame
+	ck(inv.get_item_count(id) == before + 3 and svc.gold() == int(tdata.price), "Yes buys two at once")
+
+	print("[4b2] Unaffordable rows are grey and do nothing (D105)")
+	_set_gold(0)
+	shop.refresh()  # у грі золото під час магазину міняє лише купівля, а за нею refresh()
+	await process_frame
+	var poor: ShopRow = shop.get_rows()[0]
+	ck(not poor.affordable and poor._name.theme_type_variation == &"ShopRowDisabled", "row greyed")
+	ck(poor.focus_mode != Control.FOCUS_NONE, "still focusable — its description stays readable")
+	poor.pressed.emit()
+	await process_frame
+	ck(_modal() == null, "no modal, nothing bought")
 	var cancel := InputEventAction.new()
 	cancel.action = &"ui_cancel"
 	cancel.pressed = true

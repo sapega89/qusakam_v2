@@ -6,7 +6,8 @@ extends Control
 # [SHOP + таби Buy/Sell] [категорії 64px | заголовок · шапка колонок · рядки · опис]
 # [панель партії] · нижня панель підказок.
 #
-# BUY: рядок → "Buy X?" (Quantity · Total Cost) → купівля. SELL: рядок → продаж одразу
+# BUY: рядок → "Buy X?" (Quantity · Total Cost; ←/→ — кількість, D104) → купівля. Рядки, на які
+# не вистачає золота, сірі й не купуються (D105). SELL: рядок → продаж одразу
 # (у Figma немає підтвердження продажу). Q/E або LB/RB — перемикання категорій.
 
 signal shop_closed
@@ -33,6 +34,11 @@ var current_menu_mode: String = "buy"
 var category_index: int = 0
 var _category_buttons: Array[Button] = []
 var _focused_id: String = ""
+## Товар у відкритому "Buy X?" і обрана кількість (D104). Порожньо — модалки купівлі немає.
+var _buying: Dictionary = {}
+var _quantity := 1
+## Більше за раз не купують — щоб ←/→ не крутили сотні.
+const MAX_QUANTITY := 99
 
 
 func _ready():
@@ -87,6 +93,10 @@ func _setup_bottom_bar() -> void:
 
 func _input(event):
 	if _modal_open():
+		# _input іде раніше за фокус кнопок модалки: ←/→ міняють кількість, а не Yes/No.
+		if not _buying.is_empty() and (event.is_action_pressed(&"ui_left") or event.is_action_pressed(&"ui_right")):
+			get_viewport().set_input_as_handled()
+			_set_quantity(_quantity + (1 if event.is_action_pressed(&"ui_right") else -1))
 		return
 	if event.is_action_pressed(&"ui_cancel"):
 		get_viewport().set_input_as_handled()
@@ -134,7 +144,7 @@ func refresh() -> void:
 	for data in rows:
 		var row: ShopRow = ROW_SCENE.instantiate()
 		_rows.add_child(row)
-		row.setup(data, int(data.price) > 0)
+		row.setup(data, int(data.price) > 0, current_menu_mode != "buy" or service.gold() >= int(data.price))
 		row.row_focused.connect(_show_description)
 		row.row_activated.connect(_on_row_activated)
 		if focus_target == null and row.focus_mode != Control.FOCUS_NONE:
@@ -177,17 +187,25 @@ func _on_row_activated(data: Dictionary) -> void:
 		service.sell(data.id)
 		refresh()
 		return
-	var price := int(data.price)
-	if service.gold() < price:
-		_show_modal(MODAL_TEMPLATES.misc_popup(tr("Not Enough Gold"),
-				tr("You need %s to buy %s.") % [ShopService.format_price(price), data.name]),
-				func(_r): refresh())
-		return
-	_show_modal(MODAL_TEMPLATES.buy_confirm(str(data.name), 1, ShopService.format_price(price)),
-			func(result: String):
-				if result == "confirm":
-					service.buy(data.id, 1)
-				refresh())
+	_buying = data
+	_quantity = 1
+	_show_modal(_buy_modal(), func(result: String):
+		if result == "confirm":
+			service.buy(data.id, _quantity)
+		_buying = {}
+		refresh())
+
+
+func _buy_modal() -> Dictionary:
+	return MODAL_TEMPLATES.buy_confirm(str(_buying.name), _quantity,
+			ShopService.format_price(int(_buying.price) * _quantity))
+
+
+## Від 1 до стільки, скільки вистачає золота.
+func _set_quantity(value: int) -> void:
+	var most: int = clampi(service.gold() / int(_buying.price), 1, MAX_QUANTITY)
+	_quantity = clampi(value, 1, most)
+	ServiceLocator.get_ui_manager().get_modal_layer().active_modal.description_label.text = _buy_modal().description
 
 
 func _show_modal(data: Dictionary, on_closed: Callable) -> void:
