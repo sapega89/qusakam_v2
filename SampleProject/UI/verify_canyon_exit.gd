@@ -34,6 +34,7 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var sl: Node = root.get_node("ServiceLocator")
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
@@ -44,13 +45,27 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
+	print("[0] Canyon I: the trigger plays Canyon_Exploration, then the abduction (Sapega, 2026-10-15)")
+	await _enter_canyon(game, {"canyon_intro_complete": true})
+	ck(game.map.get_current_state_name() == "EXPLORATION", "waits in EXPLORATION (%s)" % game.map.get_current_state_name())
+	ck(started.is_empty(), "nothing plays before the trigger (%s)" % [started])
+	var trigger: Area2D = game.map.get_node("StateChangeTrigger2")
+	game.player.global_position = trigger.get_node("CollisionShape2D").global_position
+	for i in 30: await process_frame
+	ck(not started.is_empty() and started[0] == "Canyon_Exploration", "Canyon_Exploration first (%s)" % [started])
+	await _drain(dm)
+	ck(started == ["Canyon_Exploration", "Canyon_AbductionCutscene"], "then the abduction (%s)" % [started])
+	ck(game.get_quest_flag("canyon_exploration_complete") and game.get_quest_flag("canyon_abduction_complete"),
+			"both flags set (journal: Explore the Canyon, Find a way forward)")
+	started.clear()
+
 	print("[1] Before the village the stairs are just stairs")
 	await _enter_canyon(game, {"canyon_intro_complete": true, "canyon_exploration_complete": true})
 	game.player.global_position = STAIRS_MIDDLE
 	for i in 30: await process_frame
 	ck(not started.has("Canyon_ExitCutscene"), "no exit cutscene before the village (%s)" % [started])
 	ck(game.map.scene_file_path.ends_with("Canyon.tscn"), "still in the Canyon")
-	await _drain(dm)  # кат-сцена викрадення з цього кроку
+	await _drain(dm)  # RoadToVillage: після викрадення, до села
 
 	print("[2] After the village the middle of the stairs plays the descent")
 	await _enter_canyon(game, {"canyon_abduction_complete": true, "village_abduction_complete": true,

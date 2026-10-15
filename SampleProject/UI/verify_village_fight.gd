@@ -34,10 +34,17 @@ func _enemy_count(village: Node) -> int:
 			count += 1
 	return count
 
+func _enemies_active(village: Node) -> bool:
+	for n in village.find_children("*", "CharacterBody2D", true, false):
+		if n.is_in_group(&"enemies") and not n.can_process():
+			return false
+	return true
+
 func _initialize() -> void:
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var sl: Node = root.get_node("ServiceLocator")
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
@@ -74,25 +81,27 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("village_arrival_complete"), "village_arrival_complete set (journal: reached the village center)")
 	ck(started == ["ArrivalToVillage"], "the arrival line plays first (%s)" % [started])
 	ck(dm.current_dialogue_box.visible, "the dialogue box is VISIBLE while a dialogue runs")
-	ck(_enemy_count(village) == 0, "no enemy while the player is locked in the dialogue")
+	ck(_enemy_count(village) == 1, "the bandit appears before any line (Sapega, 2026-10-15)")
+	ck(not _enemies_active(village), "…and stands still while the player is locked in the dialogue")
 	var ui: Node = sl.get_ui_manager()
 	ui.open_game_menu()
 	for i in 4: await process_frame
 	ck(get_first_node_in_group("game_menu") == null, "the game menu does not open during a dialogue (B16, D136)")
 
-	print("[2] Arrival line ends → the bandit's taunt, still no enemy")
+	print("[2] Arrival line ends → the bandit's taunt, bandit still frozen")
 	while started.size() < 2:
 		await _press(dm)
 		if not dm.is_dialogue_active():
 			for i in 20: await process_frame
 	ck(started == ["ArrivalToVillage", "FightWithBandit"], "the taunt follows (%s)" % [started])
 	ck(dm.current_dialogue_box.visible, "the box is visible during the taunt")
-	ck(_enemy_count(village) == 0, "still no enemy during the taunt")
+	ck(not _enemies_active(village), "the bandit is still frozen during the taunt")
 
-	print("[3] Taunt ends → the bandit appears and the player can move")
+	print("[3] Taunt ends → the bandit comes alive and the player can move")
 	await _drain(dm)
 	for i in 30: await process_frame
-	ck(_enemy_count(village) == 1, "the bandit appears (%d)" % _enemy_count(village))
+	ck(_enemy_count(village) == 1, "one bandit (%d)" % _enemy_count(village))
+	ck(_enemies_active(village), "the bandit is active")
 	ck(not game.player.event, "the player is unlocked")
 	ck(not paused, "the game is not paused")
 

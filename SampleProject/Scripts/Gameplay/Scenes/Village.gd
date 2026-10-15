@@ -204,16 +204,25 @@ func _teach_healing_palm(run_id: int) -> void:
 	Game.get_singleton().set_quest_flag("village_oldman_treated", true)
 	_execute_step(StepType.DIALOGUE, "OldMan_Treated", run_id)
 
-## Репліка йде ПЕРЕД боєм: поки вона висить, гравець заблокований (DialogueManager), і ворог,
-## що вже зʼявився, бив би його, а гравець не міг би поворухнутись — виглядало як зависання.
-## Бій закінчується лише смертю ворогів (_on_all_enemies_defeated), а не кінцем репліки.
+## Спершу зʼявляється бандит, потім репліки (Sapega, 2026-10-15). Поки діалог тримає гравця
+## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як
+## зависання. Бій закінчується лише смертю ворогів (_on_all_enemies_defeated).
 ## Гравець вийшов посеред бою — повертаємо тих самих ворогів без репліки (D152).
 func _start_fight(dialogue_id: String, run_id: int) -> void:
-	if not enemy_spawner.fight_in_progress():
-		await _play_dialogue(dialogue_id, run_id)
-		if run_id != state_run_id:
-			return
+	var resumed: bool = enemy_spawner.fight_in_progress()
 	_spawn_enemies_for_fight()
+	if resumed:
+		return
+	_set_enemies_active(false)
+	await _play_dialogue(dialogue_id, run_id)
+	if run_id != state_run_id:
+		return
+	_set_enemies_active(true)
+
+## Вимкнений вузол не думає й не має фізики (disable_mode REMOVE) — ні руху, ні удару.
+func _set_enemies_active(active: bool) -> void:
+	for enemy in enemy_spawner.spawned_enemies:
+		enemy.process_mode = Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
 
 func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 	match type:

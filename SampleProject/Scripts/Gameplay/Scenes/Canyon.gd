@@ -275,12 +275,6 @@ func _determine_initial_state() -> void:
 			DebugLogger.info("🏜️ Canyon: ✅ Abduction finished, setting state to TO_VILLAGE", "Canyon")
 			return
 
-	if game.get_quest_flag("canyon_exploration_complete", false):
-		_previous_state = State.EXPLORATION
-		current_state = State.CUTSCENE_ABDUCTION
-		DebugLogger.info("🏜️ Canyon: ✅ Exploration finished, setting state to CUTSCENE_ABDUCTION", "Canyon")
-		return
-
 	if game.get_quest_flag("canyon_intro_complete", false):
 		_previous_state = State.MONOLOGUE
 		current_state = State.EXPLORATION
@@ -579,28 +573,9 @@ func _on_exploration_state(run_id: int) -> void:
 	DebugLogger.info("🏜️ Canyon: ========== СТЕЙТ EXPLORATION ЗАПУЩЕНО (RunID: %d) ==========" % run_id, "Canyon")
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Очікування запуску діалогу Canyon_Exploration через тригер", "Canyon")
 
-	# Не запускаємо автоматично. Чекаємо поки гравець активує тригер.
-	# await _execute_step(StepType.DIALOGUE, "Canyon_Exploration", run_id)
-
-	# Чекаємо завершення діалогу (запущеного тригером)
-	while true:
-		var finished_id = await EventBus.dialogue_finished
-		# Normalize path/id check
-		if "Canyon_Exploration" in finished_id:
-			DebugLogger.info("🏜️ Canyon: ✅ Діалог Canyon_Exploration завершено (через тригер)", "Canyon")
-			# Важливо: позначити квест виконаним, бо _execute_step не викликався!
-			_complete_quest_for_dialogue("Canyon_Exploration")
-			break
-
-		if run_id != state_run_id:
-			return
-
-	# Після діалогу:
-	# - Відкриваємо браму (якщо квест виконано)
-	# - Дозволяємо гравцю вільно досліджувати
-	# - Катсцена спрацює при вході в зону через trigger_abduction_cutscene()
-	Game.get_singleton().set_objective("Find a way forward")
-	_after_exploration_dialogue()
+	# Нічого не запускаємо: StateChangeTrigger2 у Canyon I переводить у CUTSCENE_ABDUCTION,
+	# а той грає Canyon_Exploration і одразу за ним викрадення (Sapega, 2026-10-15).
+	# Раніше тут чекали Canyon_Exploration, якого не запускав жоден тригер.
 
 func _on_abduction_cutscene_state(run_id: int) -> void:
 	"""Обробка стейту CUTSCENE_ABDUCTION - катсцена викрадення"""
@@ -614,7 +589,12 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 		return
 
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск катсцени викрадення Canyon_AbductionCutscene", "Canyon")
-	# Запускаємо катсцену викрадення
+	# Тригер у Canyon I: спершу Canyon_Exploration (пропускається, якщо вже прочитаний), потім
+	# викрадення (Sapega, 2026-10-15).
+	await _execute_step(StepType.DIALOGUE, "Canyon_Exploration", run_id)
+	if run_id != state_run_id:
+		return
+	Game.get_singleton().set_objective("Find a way forward")
 	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id)
 	# Після катсцени:
 	# - Відкриваємо другу браму (якщо квест виконано)
@@ -687,10 +667,6 @@ func _on_to_desert_road_state(run_id: int) -> void:
 # ============================================================================
 # After-dialogue Actions - Дії після діалогів
 # ============================================================================
-
-func _after_exploration_dialogue() -> void:
-	"""Дії після діалогу дослідження"""
-	DebugLogger.info("🏜️ Canyon: Після діалогу дослідження", "Canyon")
 
 func _after_abduction_cutscene() -> void:
 	"""Дії після катсцени викрадення"""
