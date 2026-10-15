@@ -64,8 +64,8 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Exists:** old man's Quest recall (D169), NPC tasks in `quests.json` with the Blacksmith's Helmet and
   Enchantment (D175, `verify_tasks.gd`).
 - **Waits on:** hint texts (D159) from Sapega; Q48 + bubble PNGs for slice 3.
-- **Resume:** delete `Scripts/Quest/` and its `quest_manager` code in `Canyon.gd` / `Village.gd` (D162);
-  side tasks in the Journal.
+- `Scripts/Quest/` and the `quest_manager` code in `Canyon.gd` / `Village.gd` deleted 2026-10-15 (D162).
+- **Resume:** side tasks in the Journal (Figma `journal-side-stories 192:1636`).
 
 ### Gamepad — [[gamepad_plan]]
 - **Exists:** `interact` (A), tab switch (LB/RB), `save_delete` (Y); menus walk on D-pad/stick;

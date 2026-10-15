@@ -95,7 +95,7 @@ Figma: no recall design. `npc-speech-bubble 164:1318` and the box `127:1087` —
 
 ### First Blacksmith tasks (Sapega, 2026-10-14) — ✅ built 2026-10-15 (D175)
 - `quests.json` + `Scripts/Tasks/task_service.gd`, Quest in `NpcBase` (`task_giver`), test `verify_tasks.gd`.
-  Still open from slice 4: Journal side entries, deleting `Scripts/Quest/` (D162), the diamond list.
+  Still open from slice 4: Journal side entries, the diamond list. `Scripts/Quest/` deleted (D162).
 - **Helmet:** craft `iron_helmet` (recipe `craft_iron_helmet`: 2 `iron_ingot` + 1 `leather`, both sold
   by the Desert Road Merchant) and show it. Reward, Sapega's words: "той шолом що ми створили і
   назад золото повертається" — you keep the helmet and get gold back. *Which* gold (the crafting fee,

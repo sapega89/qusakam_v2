@@ -32,9 +32,6 @@ signal state_complete(state: State)
 # Enemy spawner reference
 var enemy_spawner: RoomEnemySpawner = null
 
-# Опціональний Quest Manager для відстеження прогресу
-@onready var quest_manager: SceneQuestManager = get_node_or_null("SceneQuestManager")
-
 func _ready() -> void:
 	# ServiceLocator — autoload, а не Engine-синглтон: has_singleton() тут завжди
 	# давав false, тож очікування не відбувалося взагалі.
@@ -42,8 +39,6 @@ func _ready() -> void:
 		await ServiceLocator.ready
 	DebugLogger.info("🏘️ Village: ServiceLocator готовий", "Village")
 
-	# Ініціалізуємо Quest Manager (якщо є)
-	_initialize_quest_manager()
 
 	# Спавнер треба знайти ДО _determine_initial_state(): той одразу виставляє
 	# current_state, а STREET_FIGHT у сеттері вже викликає _spawn_enemies_for_fight().
@@ -311,43 +306,6 @@ func _set_objective(text: String) -> void:
 	"""Встановлює об'єктив для гравця"""
 	var game = Game.get_singleton()
 	game.set_objective(text)
-
-func _initialize_quest_manager() -> void:
-	"""Ініціалізує Quest Manager (якщо він є в сцені)"""
-	if quest_manager:
-		quest_manager.all_stages_completed.connect(_on_all_quest_stages_completed)
-		quest_manager.scene_unlocked.connect(_on_quest_scene_unlocked)
-		quest_manager.progress_updated.connect(_on_quest_progress_updated)
-		DebugLogger.info("🏘️ Village: Quest Manager ініціалізовано", "Village")
-	else:
-		DebugLogger.info("🏘️ Village: Quest Manager не знайдено (опціональний)", "Village")
-
-func _on_all_quest_stages_completed() -> void:
-	"""Обробник завершення всіх етапів квесту"""
-	DebugLogger.info("🏘️ Village: Всі етапи квесту завершені!", "Village")
-	# Можна додати додаткову логіку, якщо потрібно
-
-func _on_quest_scene_unlocked(scene_name: String) -> void:
-	"""Обробник розблоковування сцени"""
-	DebugLogger.info("🏘️ Village: Сцена '%s' розблокована через Quest Manager" % scene_name, "Village")
-
-func _on_quest_progress_updated(completed: int, total: int) -> void:
-	"""Обробник оновлення прогресу"""
-	if quest_manager and quest_manager.debug_mode:
-		DebugLogger.info("🏘️ Village: Прогрес квесту: %d/%d діалогів" % [completed, total], "Village")
-
-func can_transition_to_scene(scene_name: String) -> bool:
-	"""Перевіряє, чи можна перейти до вказаної сцени"""
-	if quest_manager:
-		return quest_manager.can_transition_to_scene(scene_name)
-	# Якщо Quest Manager немає, використовуємо стару логіку
-	return true
-
-func get_available_scenes_from_quest() -> Array[String]:
-	"""Повертає список доступних сцен з Quest Manager"""
-	if quest_manager:
-		return quest_manager.get_available_scenes()
-	return []
 
 func _spawn_enemies_for_fight() -> void:
 	"""Спавнить бандита для вуличного бою"""

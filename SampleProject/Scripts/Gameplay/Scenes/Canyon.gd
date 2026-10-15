@@ -26,9 +26,6 @@ var state_run_id: int = 0
 var _previous_state: State = State.INTRO  # Предыдущее состояние для события
 signal state_complete(state: State)
 
-# Опціональний Quest Manager для відстеження прогресу
-@onready var quest_manager: SceneQuestManager = get_node_or_null("SceneQuestManager")
-
 var _canyon_ready_called: bool = false
 var _canyon_ready_room: String = ""
 
@@ -57,8 +54,6 @@ func _ready() -> void:
 	await get_tree().process_frame
 
 
-	# Ініціалізуємо Quest Manager (якщо є)
-	_initialize_quest_manager()
 
 	# Перевіряємо та створюємо GateControllers ПЕРЕД визначенням стейту
 	_ensure_gate_controllers()
@@ -541,43 +536,6 @@ func _on_quest_flag_changed(quest_id: String, value: Variant) -> void:
 				DebugLogger.info("🏜️ Canyon: Quest flag 'village_left_complete' встановлено - змінюємо стан на RELIC_PICKUP", "Canyon")
 				current_state = State.RELIC_PICKUP
 				_previous_state = State.TO_VILLAGE
-
-func _initialize_quest_manager() -> void:
-	"""Ініціалізує Quest Manager (якщо він є в сцені)"""
-	if quest_manager:
-		quest_manager.all_stages_completed.connect(_on_all_quest_stages_completed)
-		quest_manager.scene_unlocked.connect(_on_quest_scene_unlocked)
-		quest_manager.progress_updated.connect(_on_quest_progress_updated)
-		DebugLogger.info("🏜️ Canyon: Quest Manager ініціалізовано", "Canyon")
-	else:
-		DebugLogger.info("🏜️ Canyon: Quest Manager не знайдено (опціональний)", "Canyon")
-
-func _on_all_quest_stages_completed() -> void:
-	"""Обробник завершення всіх етапів квесту"""
-	DebugLogger.info("🏜️ Canyon: Всі етапи квесту завершені!", "Canyon")
-	# Можна додати додаткову логіку, якщо потрібно
-
-func _on_quest_scene_unlocked(scene_name: String) -> void:
-	"""Обробник розблоковування сцени"""
-	DebugLogger.info("🏜️ Canyon: Сцена '%s' розблокована через Quest Manager" % scene_name, "Canyon")
-
-func _on_quest_progress_updated(completed: int, total: int) -> void:
-	"""Обробник оновлення прогресу"""
-	if quest_manager and quest_manager.debug_mode:
-		DebugLogger.info("🏜️ Canyon: Прогрес квесту: %d/%d діалогів" % [completed, total], "Canyon")
-
-func can_transition_to_scene(scene_name: String) -> bool:
-	"""Перевіряє, чи можна перейти до вказаної сцени"""
-	if quest_manager:
-		return quest_manager.can_transition_to_scene(scene_name)
-	# Якщо Quest Manager немає, використовуємо стару логіку
-	return true
-
-func get_available_scenes_from_quest() -> Array[String]:
-	"""Повертає список доступних сцен з Quest Manager"""
-	if quest_manager:
-		return quest_manager.get_available_scenes()
-	return []
 
 func _get_dialogue_manager() -> Node:
 	DebugLogger.info("🏜️ Canyon: Отримуємо DialogueManager через ServiceLocator...", "Canyon")
