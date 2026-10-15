@@ -1,0 +1,28 @@
+{
+	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають.",
+	"tasks": [
+		{
+			"id": "smith_helmet",
+			"giver": "blacksmith",
+			"title": "The Helmet",
+			"objective": "Craft an Iron Helmet and show it to the Blacksmith",
+			"give_dialogue": "Smith_Helmet_Give",
+			"done_dialogue": "Smith_Helmet_Done",
+			"gives": {},
+			"needs": {"iron_helmet": 1},
+			"reward": {"coin": 88}
+		},
+		{
+			"id": "smith_enchant",
+			"giver": "blacksmith",
+			"after": "smith_helmet",
+			"title": "The Enchantment",
+			"objective": "Enchant the two Iron Swords into an Iron Sword +1 and show it to the Blacksmith",
+			"give_dialogue": "Smith_Enchant_Give",
+			"done_dialogue": "Smith_Enchant_Done",
+			"gives": {"iron_sword": 2},
+			"needs": {"iron_sword+1": 1},
+			"reward": {"coin": 20}
+		}
+	]
+}

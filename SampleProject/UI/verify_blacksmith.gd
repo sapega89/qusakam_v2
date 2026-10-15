@@ -47,6 +47,8 @@ func _initialize() -> void:
 	var txt := FileAccess.open(SCENE, FileAccess.READ).get_as_text()
 	ck(txt.find("theme_override") == -1 and txt.find("StyleBox") == -1, "no local styles in blacksmith.tscn")
 	var b: Blacksmith = load(SCENE).instantiate()
+	ck(b.task_giver == "blacksmith", "gives the blacksmith's tasks (D175 — Quest itself: verify_tasks.gd)")
+	b.task_giver = ""  # тут без Game: завдання живуть у прапорцях гри
 	world.add_child(b)
 	await process_frame
 	ck(b is NpcBase, "shares NpcBase with the Merchant")
@@ -72,7 +74,7 @@ func _initialize() -> void:
 	b.talk_dialogue = "res://dialogue_quest/any.dqd"
 	b.refresh_availability()
 	ck(_labels(b) == ["Talk"], "Talk appears with a dialogue")
-	ck(not _labels(b).has("Enchant") and not _labels(b).has("Quest"), "no Enchant without its screen; Quest (D56) hidden")
+	ck(not _labels(b).has("Enchant") and not _labels(b).has("Quest"), "no Enchant without its screen; no Quest without tasks")
 	b.talk_dialogue = ""
 
 	print("[3] Craft routes to the crafting screen")

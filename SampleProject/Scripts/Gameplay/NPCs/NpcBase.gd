@@ -9,8 +9,13 @@ class_name NpcBase
 ## Нащадки перевизначають menu_entries() і _on_npc_choice(). Показуються лише пункти
 ## з реальним наповненням; якщо пунктів немає — немає й підказки.
 
+## load(), не preload: сервіс тягне Game, а тест-скрипти компілюють NpcBase ще до автолоадів.
+const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
+
 ## DQD-діалог для пункту Talk. Порожньо — пункту Talk немає (без вигаданого вмісту).
 @export var talk_dialogue: String = ""
+## Хто цей NPC у quests.json (giver). Є відкрите завдання — є пункт Quest (D161, D175).
+@export var task_giver: String = ""
 
 @onready var interactable: InteractableComponent = $Interactable
 
@@ -37,6 +42,8 @@ func menu_entries() -> Array:
 	var entries: Array = []
 	if talk_dialogue != "":
 		entries.append({"id": &"talk", "label": "Talk"})
+	if task_giver != "" and not load(TASKS_PATH).open_tasks(task_giver).is_empty():
+		entries.append({"id": &"task", "label": "Quest"})
 	return entries
 
 
@@ -78,7 +85,31 @@ func _on_menu_chosen(id: StringName) -> void:
 	if id == &"talk":
 		ServiceLocatorHelper.get_service_locator().get_dialogue_manager().start_dialogue(talk_dialogue)
 		return
+	if id == &"task":
+		_on_task_chosen()
+		return
 	_on_npc_choice(id)
+
+
+## Quest: видати завдання → нагадати його з ціллю → здати, коли умову виконано.
+## ponytail: завдання NPC іде по одному (after) — список із ромбиком (D161) тоді, коли їх стане кілька.
+func _on_task_chosen() -> void:
+	var dm: Node = ServiceLocatorHelper.get_service_locator().get_dialogue_manager()
+	var TASKS: GDScript = load(TASKS_PATH)
+	var task: Dictionary = TASKS.open_tasks(task_giver)[0]
+	if TASKS.status(task) != TASKS.ACTIVE:
+		TASKS.take(task)
+		dm.start_dialogue(_dqd(task.give_dialogue))
+	elif TASKS.can_turn_in(task):
+		TASKS.turn_in(task)
+		dm.start_dialogue(_dqd(task.done_dialogue))
+	else:
+		var tail: Array[Dictionary] = [{"speaker": "", "text": tr("Current task: %s") % tr(task.objective)}]
+		dm.replay(_dqd(task.give_dialogue), tail)
+
+
+func _dqd(id: String) -> String:
+	return "res://dialogue_quest/%s.dqd" % id
 
 
 func _on_npc_choice(_id: StringName) -> void:

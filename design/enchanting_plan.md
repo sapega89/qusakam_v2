@@ -72,7 +72,7 @@ unless stacking is refused.
   `Blacksmith.ENCHANT_ENABLED` removed, the entry shown when the screen exists (as Craft is).
 - Capture + compare.
 
-### Slice 3 — the Blacksmith's enchant quest
+### Slice 3 — the Blacksmith's enchant quest — ✅ built 2026-10-15 (D175)
 - Needs the side-quest Tasks system ([[npc_recall_plan]], D162 revised). The Blacksmith hands over
   **two identical items** (Sapega) → enchant → bring back the `+1`. Which item and the reward: ask.
 

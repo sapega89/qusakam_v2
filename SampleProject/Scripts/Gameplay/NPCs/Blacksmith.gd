@@ -5,7 +5,7 @@ class_name Blacksmith
 ## Figma npc-menu-blacksmith 176:1357: Talk / Quest / Craft / Enchant.
 ##   Craft   → екран крафту (slice 4); показується, лише коли екран існує.
 ##   Enchant → екран зачарування (D94, D115, design/enchanting_plan.md); так само за наявності.
-##   Quest   → приховано: квестовий рушій неактивний (D56).
+##   Quest   → завдання коваля з quests.json (NpcBase, D175).
 ##   Talk    → лише з заданим DQD-діалогом (NpcBase).
 
 const CRAFTING_SCENE := "res://SampleProject/Scenes/Crafting/crafting_menu.tscn"

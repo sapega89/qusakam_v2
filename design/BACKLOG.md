@@ -61,10 +61,11 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Decided:** D158/D161 (Figma `Quest` entry at the NPC: list, main with a gold diamond), D159 (hint
   under the objective), D160 (bubble art), D162 (side quests in `story.json` via `GameFlow`; delete
   `Scripts/Quest/` — closes D56).
-- **Exists:** short objectives in `story.json`, saved `completed_dialogues`, linear `.dqd` files.
-- **Waits on:** hint texts and side-quest content from Sapega (slices ship the format empty); Q48 +
-  bubble PNGs for slice 3.
-- **Resume:** slice 1 of [[npc_recall_plan]].
+- **Exists:** old man's Quest recall (D169), NPC tasks in `quests.json` with the Blacksmith's Helmet and
+  Enchantment (D175, `verify_tasks.gd`).
+- **Waits on:** hint texts (D159) from Sapega; Q48 + bubble PNGs for slice 3.
+- **Resume:** delete `Scripts/Quest/` and its `quest_manager` code in `Canyon.gd` / `Village.gd` (D162);
+  side tasks in the Journal.
 
 ### Gamepad — [[gamepad_plan]]
 - **Exists:** `interact` (A), tab switch (LB/RB), `save_delete` (Y); menus walk on D-pad/stick;
