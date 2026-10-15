@@ -502,19 +502,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
-### B13 — Save slot playtime renders with a padded three-digit hour
-- **Where:** save slot cards, playtime field.
-- **Evidence:** `design/shots/save_load_save_mode_1920.png` — slot 1 shows
-  `011:05`, slot 2 shows `003:59`.
-- **Expected:** `11:05` / `3:59`, or `HH:MM` with two digits.
-- **Got:** hours zero-padded to three digits, which reads as a different unit
-  entirely at a glance.
-- **Severity:** cosmetic
-- **Found:** 2026-09-29, screenshot review.
-- **Also on this screen, not filed:** the lead character reads `Kael` while the
-  party everywhere else is Астрит / Уризен / Кусакам. That is **D89** (mock data
-  in slot cards, decided 2026-09-29), not a defect.
-
 ### B12 — Unthemed stock monitor icon in the Settings header
 - **Where:** Settings → Display, header area, top right of the content panel.
 - **Evidence:** `design/shots/settings_display_1920.png` — a large bright
