@@ -47,11 +47,19 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Waits on:** the frames (an artist), not a decision.
 - **Resume:** slice 1 of [[character_animation_plan]] when the frames exist.
 
+### Laboratory boss — [[lab_boss_plan]]
+- **Exists:** `BOSS_FIGHT` state and its win flag; the fight is four ordinary enemies (tank, melee,
+  fast, tank) in two waves. No boss enemy, stats or art.
+- **Waits on:** Q52 — who the boss is, how the fight goes, its numbers and art.
+- **Resume:** answer Q52, then slice 1 of [[lab_boss_plan]].
+
 ### Cutscenes — [[cutscene_plan]]
 - **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man);
   every other "cutscene" is a dialogue.
-- **Waits on:** which beat is next — D140 settled only the Village.
-- **Resume:** slice 1 of [[cutscene_plan]] — `CutscenePlayer.gd` + the first beat.
+- **Decided:** D176 — Canyon abduction, Canyon descent, Mayor's Hall → Lab, fully staged;
+  screenplay [[cutscene_script]] (draft lines for Sapega).
+- **Waits on:** actor art ([[character_animation_plan]]); Q51 (Mayor's Hall story) for scene 3.
+- **Resume:** slice 1 of [[cutscene_plan]] — tween helpers next to `ScreenFade` (D177) + Canyon abduction on placeholder art.
 
 ---
 
@@ -112,6 +120,8 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
   `164:1334` full-screen · `36:65` story scene. Note `36:65` designs **portraits**
   at 160×320 — D112 replaces them with full-body art, so that frame is partly
   outdated.
+- **Built 2026-10-15 (D178):** Kusakam's monologues play as speech bubbles over his head
+  (`speech_bubble.gd`, temporary PNGs). NPC chatter in bubbles is still Q48.
 - **Resume:** update the audit to D110, then build the presentation layer.
 
 ### Enchanting — [[enchanting_plan]]
@@ -171,10 +181,15 @@ belongs under *Needs a plan*, and the decision still has to be made.
 | Companion system | — no decision found | `CompanionManager.gd` is **27 lines** (an array with add/remove). The January copy in `raw_assets/qusakam_v2-main/` has a **206-line working version**: summon, per-type cooldowns, HUD button wiring, `companion_summoned` / `companion_cooldown_updated` signals. Lost in refactoring, not superseded. Recover only if companions are still wanted — no D-ID covers them. **Also: no companion `.tscn` exists.** The four `Scripts/Gameplay/Characters/Companions/Companion*.gd` are referenced by nothing outside their own folder ([[scene_inventory]] §6), while `docs/SYSTEMS_OVERVIEW.md:130-134` describes all four as shipping. |
 | `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
 | Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
+| Party card SP bar | **D3** (GAP — Figma authoritative) | Found by [[decision_audit]] 2026-10-15. `party_status_panel.gd:109-112` draws `—` "no SP model"; the model now exists (`SkillManager.get_current_sp()/get_max_sp()`, D146). Active character only — others still have no vitals (D18). |
+| Status `JP Obtained` | **D11** (GAP) | [[decision_audit]]. `stats_component.gd:103-104` hard-codes `—` "no JP system"; `SkillManager.get_job_points()` exists (D149). `verify_status:52` pins the placeholder — change it with the fix. |
+| Status `Max. SP` meter | **D12** (GAP) | [[decision_audit]]. `stats_component.gd:166-167` fills `-1`; `SkillManager.get_max_sp()` exists (D146). `verify_status:53` pins the placeholder. |
+| Equipment `Max. SP` row | **D24** (GAP) | [[decision_audit]]. `equipment_component.gd:274` prints `—`; same SP model (D146). |
 
-**Worth an audit:** D1–D115 have never been checked against the code. A D-ID
+**Worth an audit:** D41–D115 have never been checked against the code
+(D1–D40 done 2026-10-15 — [[decision_audit]]; resume at D41). A D-ID
 that asserts runtime behaviour with no implementation and no `verify_*` covering
-it is an entry for this list. Nobody has swept for them — the ones above were
+it is an entry for this list. Apart from the D3–D24 rows above, the ones above were
 found by Sapega playing, which is the expensive way to find them.
 
 ---

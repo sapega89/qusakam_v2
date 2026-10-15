@@ -34,9 +34,8 @@ Figma: no design exists (story scenes `36:65` is a dialogue layout, D70/D112).
    which story beats get one? Candidates: Canyon abduction, Village abduction, Canyon descent,
    Mayor's Hall → Laboratory, lab boss intro. Options per beat: dialogue only (today) · dialogue +
    fade/camera · fully staged (actors move).
-2. **Mechanism** (my call unless you object): one `AnimationPlayer` per cutscene scene, with
-   **method tracks** for dialogue lines (`DialogueManager.start_dialogue`) and waits — Godot's
-   built-in timeline instead of a home-made step system. `CutsceneStep.gd` is deleted.
+2. **Mechanism — D177: Tween.** Motion (camera, actors, fades) is `create_tween()` awaited in the
+   room script's state chain, like `ScreenFade` and the Village. No `AnimationPlayer` timeline.
 3. **Skip** (not blocking): hold B / Esc skips to the end state; recommended yes.
 
 ## Decided (2026-10-13)
@@ -44,7 +43,11 @@ Figma: no design exists (story scenes `36:65` is a dialogue layout, D70/D112).
 D140: the **Village** is the first staged sequence — abduction as fade + dialogue → talk with the
 first bandit → fight → "oh no, the house!" → **old man cutscene**: he heals Kusakam, Kusakam heals
 him with **Healing Palm** (player action, D145), first skill learned (D141). Lines are drafts
-marked `[ЧЕРНЕТКА]` for Sapega to edit. Other beats: not decided.
+marked `[ЧЕРНЕТКА]` for Sapega to edit.
+
+D176 (2026-10-15): Canyon abduction, Canyon descent and Mayor's Hall → Laboratory get **fully
+staged** cutscenes. Screenplay with shot lists and draft lines: [[cutscene_script]]. Scene 3 waits on
+Q51 (its story). Lab boss intro: not chosen.
 
 ## Built (2026-10-13)
 
@@ -60,8 +63,9 @@ actors moving.
 ## Slices
 
 ### Slice 1 — Cutscene runner + one beat
-- `Scripts/Systems/Cutscenes/CutscenePlayer.gd`: plays a cutscene scene's `AnimationPlayer`,
-  locks the player, waits on dialogue, supports skip; delete `CutsceneStep.gd`.
+- Next to `ScreenFade.gd`: static tween helpers the beats share — pan camera to a point, move an
+  actor to x, wait — each `await`-able (D177). Locks the player for the beat; skip kills the
+  running tweens and jumps to the end state.
 - First beat chosen by Q42 (recommended: Canyon abduction).
 - `UI/verify_cutscene.gd`: starts, locks input, plays lines in order, skip lands in the end state,
   quest flags match the dialogue-only version.

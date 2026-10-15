@@ -86,6 +86,15 @@ built*, not here.
 
 ---
 
+### B55 — The HUD party card names the player "АСТРИТ", not Kusakam
+- **Where:** `Scripts/Managers/Gameplay/CharacterManager.gd:51` — `active_character_id = "player_1"`,
+  and `player_1` is `"Астрит"` (`:65`); Kusakam is `player_3` (`:85`). The party card reads the active character.
+- **Expected:** the character the player controls — Kusakam (`KUSAKAM.tres`, the whole prologue is his).
+- **Got:** "АСТРИТ  LV.1" on a new game, Canyon start.
+- **Evidence:** `design/shots/speech_bubble_intro.png` (top-left card).
+- **Note:** who Астрит / Уризен are in the story is open (Q51); D18 keeps the roster out for now.
+- **Severity:** visual (wrong name on the main HUD); found 2026-10-15, speech-bubble capture.
+
 ### B54 — Load menu opened from the Main Menu asks a modal layer that is never built
 - **Where:** `Scripts/Menus/LoadGameMenu.gd` `_modal_open()` (called from `_restore_focus()` on open and
   from `_unhandled_input()`) → `UIManager.get_modal_layer()`; `UIManager._should_skip_ui_root()` skips any

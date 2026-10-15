@@ -76,7 +76,8 @@ Figma: no recall design. `npc-speech-bubble 164:1318` and the box `127:1087` —
   `bubble_body.png` — 9-slice, ~96×96, corners inside a 24 px margin, flat fill in the middle;
   `bubble_tail.png` — ~24×24, pointing down, drawn to join the body's bottom edge; flipped in code
   for left/right. Put in `SampleProject/Assets/UI/Dialogue/`. Margins become tokens.
-- No bubble art in the repo (`find -iname '*bubble*'` → nothing usable).
+- **D178 (2026-10-15):** temporary bubble PNGs drawn by Claude to this spec (tail 32² instead of 24²);
+  `UI/Components/speech_bubble.gd` shows Kusakam's monologues. Swap the PNGs when Sapega's art lands.
 - Belongs to the dialogue presentation layer, roadmap **2.1** ([[dialogue_audit]], D110–D114).
   `164:1318`: name SemiBold 12 accent, line Italic 16, tail, close hint. Build it there, then point
   Remind at it.

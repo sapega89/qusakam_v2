@@ -31,7 +31,8 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[enchanting_plan]] — D94/D115/D163/D164; slice 1 (rule) built; `+N` lives in the item id
 - [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles wait on Q48
 - [[gamepad_plan]] — D156/D157, ready: hero moves/jumps/attacks on a pad; A/B in every menu; one last-device source
-- [[cutscene_plan]] — blocked on Q42: AnimationPlayer-driven in-world scenes instead of dialogue-only beats
+- [[cutscene_plan]] — D140/D176/D177: staged scenes on Tween; screenplay in [[cutscene_script]]
+- [[lab_boss_plan]] — blocked on Q52: the lab "boss" is four ordinary enemies; no boss exists
 - [[prologue_journal_plan]] — D120: the Prologue as a journal stage, zones as sub-stages; fixes B43
 - [[game_menu_single_scene_plan]] — D116/D117: Game Menu as one scene, script only shows/hides; row templates in the scene
 - [[runtime_ui_completion_plan]] — slices 0–8, the umbrella pass (1a–5, 8 done; 6–7 audit-only)
