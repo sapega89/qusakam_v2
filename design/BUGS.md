@@ -221,17 +221,6 @@ built*, not here.
   separates selected from not.
 - **Severity:** visual (zero-tolerance axis)
 
-### B33 — Modal scrim is a `0.60` literal, not the `OVERLAY` token
-- **Evidence:** linear fit of `save_load_overwrite_1920.png` against
-  `save_load_load_mode_1920.png` over 350×600px of identical content
-  (x 1200–1800, y 530–880): slope **0.4001**, intercept 0.02; pure-white card
-  border 255 → 102.
-- **Expected:** `UITokens.OVERLAY = Color("000000", 0.56)` → factor 0.44 → white
-  lands on 112.
-- **Got:** factor 0.40 → 102, i.e. `Color(0, 0, 0, 0.60)`. Matches no token, so it
-  is a literal in the modal scene.
-- **Severity:** visual (colour, zero tolerance)
-
 ### B34 — Modal title renders smaller than its own body text
 - **Evidence:** `save_load_overwrite_1920.png`. Cap `O` of "Overwrite Save?" — ink
   rows 491–500 = **10px**, and a round `O` overshoots, so true cap is ≤10. Cap `T`

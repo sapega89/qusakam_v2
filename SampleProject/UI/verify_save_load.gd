@@ -180,6 +180,8 @@ func _initialize() -> void:
 	var m := _modal()
 	ck(m != null and m.title_label.text == "Overwrite Save?", "occupied slot asks to overwrite")
 	ck(m != null and m.description_label.text == "This will replace the existing save data.", "Figma overwrite copy")
+	var scrim: ColorRect = ui.get_modal_layer().get_node("Blocker")
+	ck(scrim.visible and scrim.color == UITokens.OVERLAY, "modal scrim is UITokens.OVERLAY, alpha 0.56 (B33)")
 	_press_modal("No")
 	await process_frame
 	ck(calls[0] == 1 and _modal() == null, "No cancels without saving")
