@@ -182,36 +182,6 @@ built*, not here.
   selected edge between two unselected rows.
 - **Severity:** cosmetic
 
-### B41 — `ResourcePaths.gd` — 14 of its 15 scene constants point at files that do not exist
-- **Where:** `SampleProject/Scripts/Core/ResourcePaths.gd:26-66`, and
-  `get_enemy_scene_path()` at `:127`
-- **Screen:** none — this is the project's only machine-readable "which scenes should
-  exist" registry. See [[scene_inventory]] §7.
-- **Expected:** a path constant resolves to a file. Checked all 15 with `[ -f ]`.
-- **Got:** only `GAME_MENU` (`:66`) resolves. The two that name shipping scenes are
-  wrong by one directory level:
-  - `:26` `ENEMY_DEFAULT` = `Scenes/Characters/default_enemy.tscn`; real file is
-    `Scenes/Characters/**Enemies**/default_enemy.tscn`
-  - `:48` `MERCHANT` = `Scenes/Objects/NPCs/merchant.tscn`; real file is
-    `Scenes/**Gameplay**/Objects/NPCs/merchant.tscn`
-
-  The other 12 (`:27-31` enemy variants, `:34-39` bosses, `:57` `GAME_ROOT` in a
-  `Scenes/Levels/` directory that does not exist) name scenes the project never had.
-  `:74` `MAP_LOCATIONS_CONFIG` → `Resources/Data/map_locations.json` is missing too —
-  that is the dataset D40/D41 wait on.
-- **Second defect in the same file:** `get_enemy_scene_path()`'s `match` has
-  `"miniboss"` twice, `:139` and `:157`. The `:157` arm is unreachable.
-- **Evidence:** `grep -rn "ResourcePaths" SampleProject addons` outside the file
-  itself returns **zero hits**, so nothing calls it and nothing breaks today. It
-  breaks the moment anything does: every `enemy_type` except `default_enemy` returns
-  a dead path, and `ENEMY_DEFAULT` itself is dead. The live spawner
-  (`Scripts/Gameplay/EnemySpawnPoint.gd:74`) hard-codes the correct path instead.
-- **Severity:** blocker — latent. No user-visible symptom while the class is dead;
-  guaranteed failure for any caller. Fix or delete; the 12 never-existing scenes are
-  **not** a backlog (enemy variety is `EnemyStats` resources on one scene,
-  [[scene_inventory]] §1).
-- **Found:** 2026-09-29, scene inventory audit
-
 ### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
 - **Where:** `SampleProject/Game.tscn:15` —
   `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
@@ -351,24 +321,6 @@ built*, not here.
   submenu rows although every left-nav row has one. The selected row's cursor is
   also `←`, pointing away from its own label, while every nav row uses `❯`.
 - **Severity:** visual
-
-### B29 — Screenshots named `_1920` are mostly 2560×1440, so measurements do not compare
-- **Where:** `design/shots/`.
-- **Evidence:** verified header sizes — `misc_modal_1920.png` is genuinely
-  **1920×1080**, while `shop_sell_1920.png`, `inventory_filter_key_items_1920.png`
-  and `main_menu_1920.png` are **2560×1440**. All four carry the `_1920` suffix.
-- **Consequence:** any spacing or sizing comparison across these files is off by a
-  factor of 1.333, and the filename actively misleads the reader. Every measured
-  finding taken across two differently-sized shots needs re-checking.
-- **Severity:** blocker (it invalidates the evidence base, not the game)
-- **Found:** 2026-09-29, verified by reading the PNG headers.
-- **Corroborated independently:** `splash_1920.png` is also 2560×1440 — the capture
-  run did not honour `--resolution 1920x1080`. `save_load_load_mode_1920.png` and
-  `save_load_overwrite_1920.png` **are** genuinely 1920×1080. So the suffix is
-  unreliable per-file, not uniformly wrong, which is worse: it cannot be corrected
-  by a constant factor. Fix the capture scripts, then re-shoot.
-- **Coverage gap found alongside:** there is **no 1280×720 shot of save/load**, so
-  the responsiveness of a four-row list plus right-hand info column is unverified.
 
 ### B30 — Inconsistencies between the two list screens (batch, all cosmetic)
 All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
@@ -541,40 +493,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
-### B7 — Two sidebar items stay highlighted at once in every Game Menu tab
-- **Where:** Game Menu sidebar (`VerticalMenu`), the selected-state variation on
-  the tab buttons. The stale one is the **first** item, `Inventory`.
-- **Expected:** exactly one sidebar item carries the selected styling and the
-  `▶` cursor.
-- **Got:** `Inventory` keeps its gold border permanently. Switching to any other
-  tab lights that tab **in addition**, so two items always look selected.
-- **Evidence:** `capture_flow.gd`, run 2026-09-29 with a window — **all seven
-  tabs** report `2 sidebar items lit at once`. Visible in
-  `design/shots/flow/03_tab_equipment.png` (Inventory + Equipment both bordered)
-  and `05_tab_skills.png` (Inventory + Skills, with `▶` on Skills).
-- **This is Sapega's "cursor on every menu item" report**, now reproduced. Note
-  only **one** `CursorIndicator` node exists (`/root/CursorLayer/CursorIndicator`),
-  so it is not node duplication — it is the selected *styling* never clearing on
-  the outgoing tab. B3's "stuck state, not a double signal" reading was right;
-  B3's proposed one-line group fix addresses cleanup on menu close, **not this**.
-- **Root cause, shared with B8:** the Game Menu still runs on the legacy
-  `vertical_menu.tscn` + `panel_manager.gd` path. The correct replacement,
-  `UI/Components/menu_shell.gd` (`UIMenuShell`), was built in Phase 4 and
-  **never connected** — its own header says *"підключення відбудеться у Phase 5"*,
-  and Phase 5 never did it. `grep` finds no screen using it; only
-  `verify_game_ui_theme.gd` renders it to a PNG.
-- **The fix already exists in this repo.** `menu_shell.gd:26/41` puts every
-  sidebar button in a shared `ButtonGroup`. Godot then guarantees **exactly one**
-  pressed button — this bug is structurally impossible there. Patching the
-  legacy path is treating a symptom the replacement was written to remove.
-- **⚠️ Correction 2026-10-12:** the root cause above is wrong. `vertical_tab_menu.tscn` already puts all 7 tabs in one `ButtonGroup`. The second lit row is **focus**, not pressed: `focus_router.gd` `focus_tabs()` always calls `grab_focus()` on the first button (Inventory), and `SidebarTab` draws `focus` with an `ACCENT` border and `pressed` with `BORDER_STRONG` — hence two rows, two border styles. Fix in [[game_menu_single_scene_plan]] slice 1 (D116).
-- **Severity:** visual
-- **Found:** 2026-09-29, **reproduced visually and programmatically.**
-- **Worse than first recorded:** the two lit rows are not even lit the *same way*.
-  In `journal_fixtures_1920.png` Inventory carries a **2px** accent border and
-  Journal a **1px** one — so the screen shows two selected rows in two different
-  selected styles. See also **B38**: the lit state changes the row's geometry.
-
 ### B8 — Menu surfaces are transparent; the parchment map bleeds through (systemic)
 - **Where:** not one screen. Confirmed on three so far:
   - **Skills tab** — no surface at all, "No skills available yet." sits on the map.
@@ -633,49 +551,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   `UIManager.open_game_menu()` → real modal layer), so its Settings result is
   trustworthy. Fixing this means pressing the remaining three buttons and
   asserting the destination, not adding more file-existence checks.
-
-### B3 — Menu cursor stays on every item; accumulates across open/close
-- **Where:** `Scripts/Managers/UI/MenuManager.gd:185` —
-  `get_tree().get_nodes_in_group("cursor_indicators")`
-- **Screen:** any menu built on `Scenes/Menus/Game/vertical_menu.tscn` or
-  `Scenes/UI/vertical_tab_menu.tscn` — both carry a `CursorIndicator` node.
-- **Repro (Sapega, confirmed in play):** open and close the menu a few times.
-  The `▶` cursor ends up on **every** menu item instead of only the selected one.
-- **Expected:** exactly one visible cursor, on the focused item.
-- **Got:** cursors persist after the menu closes and stack up on reopen.
-- **Root cause — the cleanup never matches anything.** Three facts compound:
-  1. `MenuManager.close_game_menu()` calls `_hide_cursor_indicators()` (`:66`),
-     which iterates the group `"cursor_indicators"`. **Nothing is ever added to
-     that group** — the string appears only at `MenuManager.gd:66/184/185` and
-     in no other script or `.tscn`. `cursor_indicator.gd` adds
-     `"cursor_layer"` (`:193`) and nothing else. So the loop always runs over an
-     empty array and `hide_cursor()` is never called by anyone.
-  2. `CursorIndicator` **reparents itself out of its menu** into a global
-     `CursorLayer` at layer 100 (`cursor_indicator.gd:184–201`). Hiding the menu
-     (`game_menu.gd:448` `visible = false`) therefore does not hide the cursor —
-     it no longer belongs to that subtree.
-  3. The menu is hidden, not freed, and two separate scenes each contribute a
-     `CursorIndicator` into that one shared layer.
-- **Confirmed as a refactoring regression.** The January snapshot in
-  `raw_assets/qusakam_v2-main/` has the working version — it finds cursors **by
-  type**, not by group (`MenuManager.gd:276`):
-  ```gdscript
-  cursor_indicators = current_scene.find_children("*", "CursorIndicator", true, false)
-  ```
-  There `cursor_indicators` is a **local variable**. In the rewrite it became a
-  **group name** (`get_nodes_in_group("cursor_indicators")`) and the matching
-  `add_to_group()` was never added. The name survived the refactor; the
-  mechanism did not.
-- **Candidate fix (one line, unverified):** `add_to_group("cursor_indicators")`
-  in `cursor_indicator.gd::_ready()`, which makes the existing cleanup do what
-  it was written to do. Do **not** restore the old code verbatim: it searched
-  `current_scene`, and cursors now reparent to `/root/CursorLayer`, outside it. Worth checking whether the reparent-to-global-layer
-  design should survive at all — that is the deeper issue, and a separate call.
-- **Evidence:** the greps above; `hide_cursor()` (`cursor_indicator.gd:504`) has
-  no caller outside `MenuManager`.
-- **Severity:** visual
-- **Found:** 2026-09-29. Repro from Sapega; root cause traced **statically, not
-  yet reproduced or fixed in a run.**
 
 ### B1 — 1px card borders drop a row at 1280×720
 - **Where:** card styleboxes from `GameUITheme.tres` (border width 1, `UITokens.BORDER_WIDTH`)
