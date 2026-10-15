@@ -351,3 +351,4 @@ carry that bug.
 | D182 | OVERRIDE | **The controls tab title is «Controls»** (B23, #84). (Sapega, 2026-10-15.) |
 | D183 | OVERRIDE | **Save-slot playtime stays `011:05`** — three-digit hours, as in Figma and `save_slot_card.gd:84`; B13 is not a bug (#87). (Sapega, 2026-10-15.) |
 | D184 | OVERRIDE | **The hidden GUT suites are deleted, not restored** (B9, #91). `tests/` and `test/` are already gone from disk (2026-10-15); the `verify_*.gd` scripts are the only suite, as `CLAUDE.md` says. `gutconfig.json` / `.gutconfig.json` still list those dirs — harmless while GUT is unused. (Sapega, 2026-10-15.) |
+| D185 | OVERRIDE | **Misc submenu keeps the Figma look (`84:589`, grey fading rows), but the cursor is `>` instead of `←`, and only on the focused / hovered row** (B28, #76). Not the left nav's gold style. (Sapega, 2026-10-15.) |
