@@ -37,6 +37,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	# Вступ Canyon — діалог; під час діалогу меню не відкривається (D136).
 	var intro_dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
+	intro_dm.bubble_time_scale = 0.0  # облачка (D178) без очікування
 	for intro_round in 10:
 		for i in 200:
 			if not intro_dm.is_dialogue_active():

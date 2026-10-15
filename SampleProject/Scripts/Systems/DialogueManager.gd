@@ -68,9 +68,12 @@ func start_dialogue(timeline_name: String) -> bool:
 	свій діалог, а стан теж запускає діалог) грають по черзі. Раніше другий запит губився, а
 	перед відмовою ще й ховав і скидав ЖИВЕ вікно першого: гравець бачив порожнечу, лишався
 	заблокованим, а діалог висів. Активний діалог не перебиваємо й не «відновлюємо» силоміць (D131)."""
-	if is_dialogue_active():
+	if is_dialogue_active() or _bubble_playing:
 		if not _queue.has(timeline_name):
 			_queue.append(timeline_name)
+		return true
+	if _is_monologue(timeline_name):
+		_play_bubbles(timeline_name)
 		return true
 	_find_dialogue_system_in_scene()
 	current_dialogue_box.set_text("")
@@ -123,7 +126,7 @@ func _on_dialogue_quest_ended(dialogue_id: String):
 	_start_next_queued.call_deferred()
 
 func _start_next_queued() -> void:
-	if _queue.is_empty() or is_dialogue_active():
+	if _queue.is_empty() or is_dialogue_active() or _bubble_playing:
 		return
 	start_dialogue(_queue.pop_front())
 
@@ -210,3 +213,44 @@ func _end_replay() -> void:
 	_replaying = false
 	_unpause_player_after_dialogue()
 	replay_finished.emit()
+
+
+# ── Монологи облачками (D178) ────────────────────────────────────────────────
+# Розмова, де кожну репліку каже гравець, іде облачком над його головою: репліки міняються
+# самі за часом, гравець ходить, вікно діалогу не відкривається. Для сцен це звичайний діалог:
+# dialogue_started / dialogue_finished з тим самим шляхом, черга та сама.
+
+const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")
+## Мовець-гравець. Два id — дубль одного персонажа, який має злити D114.
+const PLAYER_SPEAKERS: Array[String] = ["KUSAKAM", "Кусакам"]
+
+var _bubble_playing := false
+## Множник часу реплік. Гра — 1.0; verify_*.gd ставлять 0, щоб не чекати секунди на кожну.
+var bubble_time_scale: float = 1.0
+
+
+func is_bubble_playing() -> bool:
+	return _bubble_playing
+
+
+func _is_monologue(path: String) -> bool:
+	var lines: Array[Dictionary] = DQD_READER.lines(path)
+	return not lines.is_empty() and lines.all(func(line: Dictionary) -> bool: return line.speaker in PLAYER_SPEAKERS)
+
+
+func _play_bubbles(path: String) -> void:
+	_bubble_playing = true
+	_find_dialogue_system_in_scene()  # вікно мусить бути підключене й для наступних розмов
+	dialogue_started.emit(path)
+	var bubble: Node2D = SPEECH_BUBBLE.new()
+	Game.get_singleton().player.add_child(bubble)
+	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
+	for line in DQD_READER.lines(path):
+		await bubble.show_line(line.text)
+		# process_always = false: відкрите меню (пауза) тримає репліку.
+		await get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false).timeout
+	bubble.queue_free()
+	_bubble_playing = false
+	dialogue_finished.emit.call_deferred(path)
+	EventBus.dialogue_finished.emit.call_deferred(path)
+	_start_next_queued.call_deferred()

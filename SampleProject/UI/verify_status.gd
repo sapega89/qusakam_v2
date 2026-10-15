@@ -14,6 +14,7 @@ func _initialize() -> void:
 	await process_frame; await process_frame
 	# Меню існує лише в запущеній грі (Game, гравець, нижня панель) — тест відкриває його там само.
 	set_meta("start_new_game", true)
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var boot_game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(boot_game)
 	current_scene = boot_game

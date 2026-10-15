@@ -49,6 +49,7 @@ func _initialize() -> void:
 	# перевірялась по-справжньому, а не падала у null-гілку.
 	# Як кнопка New Game: без цього Game.tscn вантажить справжній сейв гравця.
 	set_meta("start_new_game", true)
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
 	current_scene = game

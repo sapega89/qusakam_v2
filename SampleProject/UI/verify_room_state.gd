@@ -54,6 +54,7 @@ func _initialize() -> void:
 
 	print("[1] A room's state survives leaving it")
 	set_meta("start_new_game", true)
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var game: Node = await _boot()
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 10: await physics_frame

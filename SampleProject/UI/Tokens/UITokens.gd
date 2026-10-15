@@ -241,6 +241,16 @@ const SIZE_SHOP_TITLE := 22        # "All Wares" — SemiBold, accent
 const CRAFT_ROW_HEIGHT := 60
 const CRAFT_ROW_NAME_GAP := 2
 const FADE_TIME := 0.6  # затемнення кат-сцени (ScreenFade), секунд
+# Облачко над головою (D178). Арт тимчасовий: Assets/UI/Dialogue/bubble_*.png (D160).
+const BUBBLE_MARGIN := 24          # поле 9-slice у bubble_body.png
+const BUBBLE_PADDING := 14         # від контуру до тексту
+const BUBBLE_TAIL_OVERLAP := 10    # хвіст заходить на нижній контур тіла
+const BUBBLE_MAX_WIDTH := 360      # ширше — перенос рядка
+const BUBBLE_OFFSET_Y := -56       # над головою гравця, світові px
+const BUBBLE_INK := Color("141018")
+const BUBBLE_SECONDS_MIN := 2.0    # репліка висить: min + довжина × per_char, не довше max
+const BUBBLE_SECONDS_PER_CHAR := 0.05
+const BUBBLE_SECONDS_MAX := 6.0
 const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ матеріалу вистачає
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
