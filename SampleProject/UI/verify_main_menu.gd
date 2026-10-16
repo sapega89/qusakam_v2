@@ -102,6 +102,18 @@ func _initialize() -> void:
 	ck(not cont.disabled and cont.focus_mode == Control.FOCUS_ALL, "a save exists → Continue enabled")
 	ck(menu.menu.visible and menu.background.visible, "returning to the menu skips the splash")
 
+	print("[4b] Esc in Settings closes Settings, not the game (Sapega, 2026-10-16)")
+	menu.options_button_up()
+	await create_timer(1.0).timeout
+	ck(get_first_node_in_group("settings_screen") != null and not menu.menu.visible, "Settings open over the menu")
+	var esc := InputEventKey.new()
+	esc.keycode = KEY_ESCAPE
+	esc.physical_keycode = KEY_ESCAPE
+	esc.pressed = true
+	Input.parse_input_event(esc)
+	await create_timer(1.0).timeout  # якби Esc викликав quit(), процес закінчився б тут без RESULT
+	ck(menu.menu.visible and get_first_node_in_group("settings_screen") == null, "Esc returned to the menu")
+
 	print("[5] Continue → Save Slot Selection in LOAD mode (D75)")
 	cont.pressed.emit()
 	for i in 6: await process_frame

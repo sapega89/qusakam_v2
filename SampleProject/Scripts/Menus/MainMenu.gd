@@ -106,7 +106,9 @@ func _input(event: InputEvent) -> void:
 			if event.pressed:
 				transition_to_main_menu()
 		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	# Лише коли на екрані саме меню: Options — дитина MainMenu, і _input тут іде раніше за
+	# їхній ui_cancel, тож Esc у налаштуваннях закривав гру замість налаштувань (Sapega, 2026-10-16).
+	if menu.visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		get_tree().quit()
 
 func new_game_button_up() -> void:
