@@ -117,5 +117,22 @@ func _initialize() -> void:
 	ck(not dm.is_bubble_playing(), "4 presses → monologue over in %d ms, not ~10 s" % (Time.get_ticks_msec() - t0))
 	dm.bubble_time_scale = 0.0
 
+	print("[5] The scene goes away mid-monologue (menu / new game / load)")
+	dm.bubble_time_scale = 1.0
+	dm.start_dialogue("res://dialogue_quest/Canyon_Exploration.dqd")
+	for i in 3: await process_frame
+	ck(dm.is_bubble_playing(), "a monologue is playing")
+	var player: Node = game.player
+	game.remove_child(player)  # облачко — дитина гравця, йде з ним, як при закритті Game
+	for i in 3: await process_frame
+	ck(not dm.is_bubble_playing(), "the monologue ended with its bubble, no show_line() on a freed node")
+	game.add_child(player)
+	dm.bubble_time_scale = 0.0
+	started.clear()
+	dm.start_dialogue("res://dialogue_quest/VillageAbduction.dqd")
+	for i in 3: await process_frame
+	ck(started == ["VillageAbduction"], "the next dialogue still plays, not stuck in the queue (%s)" % [started])
+	await _drain(dm)
+
 	print("RESULT:" + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

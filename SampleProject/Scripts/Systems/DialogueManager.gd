@@ -232,6 +232,19 @@ var bubble_time_scale: float = 1.0
 ## Enter / клік (dq_accept, як у вікні діалогу) показує наступну репліку облачка одразу —
 ## сцена чекає кінця монологу, тож без цього гравець стояв, доки догорять усі (Sapega, 2026-10-16).
 var _bubble_skip := false
+## Облачко поточного монологу. Воно дочірнє гравцеві, а цикл реплік — тут, в autoload, що
+## переживає сцену: вихід у меню / нова гра / завантаження звільняли облачко посеред монологу,
+## цикл кликав show_line() на звільненому вузлі, а _bubble_playing лишався true назавжди —
+## кожен наступний діалог ставав у чергу й не грав.
+var _bubble: Node2D = null
+
+func _on_bubble_gone(bubble: Node2D) -> void:
+	if bubble != _bubble:
+		return  # монолог закінчився штатно, вузол просто прибирається
+	# Сцена пішла посеред монологу; хто чекав його кінця й діалогів у черзі — пішли з нею.
+	_bubble = null
+	_bubble_playing = false
+	_queue.clear()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _bubble_playing and not get_tree().paused and event.is_action_pressed(&"dq_accept"):
@@ -253,6 +266,8 @@ func _play_bubbles(path: String) -> void:
 	_find_dialogue_system_in_scene()  # вікно мусить бути підключене й для наступних розмов
 	dialogue_started.emit(path)
 	var bubble: Node2D = SPEECH_BUBBLE.new()
+	_bubble = bubble
+	bubble.tree_exiting.connect(_on_bubble_gone.bind(bubble))
 	Game.get_singleton().player.add_child(bubble)
 	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
 	for line in DQD_READER.lines(path):
@@ -260,8 +275,11 @@ func _play_bubbles(path: String) -> void:
 		# process_always = false: відкрите меню (пауза) тримає репліку.
 		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false)
 		_bubble_skip = false
-		while timer.time_left > 0.0 and not _bubble_skip:
+		while timer.time_left > 0.0 and not _bubble_skip and _bubble == bubble:
 			await get_tree().process_frame
+		if _bubble != bubble:
+			return  # облачко пішло разом зі сценою — _on_bubble_gone уже все скинув
+	_bubble = null
 	bubble.queue_free()
 	_bubble_playing = false
 	dialogue_finished.emit.call_deferred(path)
