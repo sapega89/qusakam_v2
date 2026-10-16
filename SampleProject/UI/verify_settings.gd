@@ -260,6 +260,31 @@ func _initialize() -> void:
 		FileAccess.READ).get_as_text()
 	ck(addon_src.find("action_add_event") != -1, "addon still owns rebinding behaviour")
 
+	print("[17] B20: the active tab's pointer does not move its button (#81)")
+	for tab in ids:
+		opts.switch_to_tab(tab)
+		for i in 3: await process_frame
+		var xs: Array = []
+		var left_of_zero: Array = []
+		for id in opts._tab_buttons:
+			var entry: Dictionary = opts._tab_buttons[id]
+			xs.append(entry.button.global_position.x)
+			for part in [entry.row, entry.pointer, entry.button]:
+				if part.global_position.x < 0.0:
+					left_of_zero.append(id)
+		ck(xs.all(func(x: float) -> bool: return x == xs[0]),
+				"%s active: all tab buttons share one x %s" % [tab, str(xs)])
+		ck(left_of_zero.is_empty(), "%s active: nothing left of x=0 %s" % [tab, str(left_of_zero)])
+		var ptr: Control = opts._tab_buttons[tab].pointer
+		ck(ptr.is_visible_in_tree() and ptr.modulate.a == 1.0, "%s active: pointer drawn" % tab)
+		var others_hidden: bool = true
+		for id in opts._tab_buttons:
+			if id != tab and opts._tab_buttons[id].pointer.modulate.a != 0.0:
+				others_hidden = false
+		ck(others_hidden, "%s active: inactive pointers not drawn" % tab)
+
+	opts.switch_to_tab("controls")
+	for i in 3: await process_frame
 	print("[16] B18: controls viewport fills the panel, rows are never half-cut (#79)")
 	var body: Control = opts.get_node(^"%Body")
 	var actions: ScrollContainer = input_menu.get_node(^"%InputActionsList")

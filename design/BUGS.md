@@ -158,7 +158,7 @@ built*, not here.
   single x. Highlighting must not move the row.
 - **Got:** the highlight shifts right 10px and shrinks 10px, so the left edge jumps
   as the cursor travels.
-- **Related:** same family as **B20** (Settings nav, ~4px), different screen and
+- **Related:** same family as **B20** (fixed, #81; Settings nav, ~4px), different screen and
   component. Nothing is clipped here.
 - **Severity:** visual
 
@@ -300,15 +300,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   input class named two different ways in a single row.
 - **Note:** this is binding data and labels, not maaacks widget styling, so **D48
   does not cover it**.
-- **Severity:** visual
-
-### B20 — Active nav row's gold caret is clipped by the window edge
-- **Where:** Settings, left nav, the active row (Misc in these shots).
-- **Evidence:** all three settings PNGs, x≈0–11, y≈287 — a gold triangular
-  fragment cut off at x=0. The active row's box also starts ~4px further left
-  (x≈8) than the eight inactive rows (x≈12).
-- **Expected:** nothing cropped by the window edge; the active row shares the left
-  edge of every other row.
 - **Severity:** visual
 
 ### B21 — Content column geometry differs between Settings tabs

@@ -109,8 +109,9 @@ func switch_to_tab(tab_id: String) -> void:
 		var entry: Dictionary = _tab_buttons[id]
 		var active: bool = id == tab_id
 		entry.button.set_pressed_no_signal(active)
-		# Figma: неактивна вкладка — 50% прозорості, без вказівника.
-		entry.pointer.visible = active
+		# Figma: неактивна вкладка — 50% прозорості, без вказівника. Вказівник лише
+		# ховаємо альфою: його місце в рядку лишається, кнопка не зсувається (B20).
+		entry.pointer.modulate.a = 1.0 if active else 0.0
 		entry.button.modulate.a = 1.0 if active else 0.5
 	for tab in TABS:
 		if tab.id == tab_id:
