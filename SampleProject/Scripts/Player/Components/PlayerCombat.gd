@@ -64,7 +64,9 @@ func perform_attack(last_direction: int) -> void:
 
 	# Чекаємо, поки Attack перестане грати — дограла або її перебили (діалог вмикає Idle).
 	# animation_finished на перебиту анімацію не приходить, і is_attacking лишався true назавжди.
-	while animation_player.current_animation == &"Attack":
+	# Гравець може вийти з дерева посеред атаки (зміна сцени / вихід у меню) — тоді
+	# get_tree() == null, а AnimationPlayer поза деревом не грає, тож чекати нічого.
+	while is_inside_tree() and animation_player.current_animation == &"Attack":
 		await get_tree().process_frame
 
 	# Cleanup

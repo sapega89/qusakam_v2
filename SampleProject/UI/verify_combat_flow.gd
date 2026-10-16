@@ -92,5 +92,16 @@ func _initialize() -> void:
 	await create_timer(1.0).timeout
 	ck(game.get_quest_flag("desert_road_fight_complete"), "all dead → fight complete")
 
+	print("[4] The player leaves the tree mid-attack (scene change)")
+	var player: Node = game.player
+	var combat: Node = player.combat
+	await create_timer(combat.attack_cooldown_time).timeout
+	combat.perform_attack(1)
+	ck(combat.is_attacking, "attack started")
+	game.remove_child(player)
+	for i in 3: await process_frame
+	ck(not combat.is_attacking, "attack ended off-tree, no get_tree() on null")
+	game.add_child(player)
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
