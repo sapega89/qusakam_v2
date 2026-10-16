@@ -314,6 +314,13 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Note:** the horizontal inset may fall under **D48** if that decision is read to
   cover the third-party widget's layout as well as its paint. The ~9px vertical
   difference between Audio and Game does not — both are ours.
+- **Partly fixed 2026-10-16 (#79/#82):** the column is shared — Audio, Game and
+  Controls content runs x 432–1504 and every first row box starts at y 146
+  (`verify_settings.gd` [18]). **Still open:** the first *label* sits at y 160 on
+  Audio and y 168 on Game, because the Language row (segmented control, 74px)
+  is taller than a slider row (57px) and the label is centred in it. Fixing it
+  needs the Figma row height of `settings-audio 17:409` vs `settings-gameplay
+  17:632` (68px or 50/51px) — not read yet.
 
 ### B22 — Volume steppers have no control chrome
 - **Where:** Settings → Audio, the `-` / `+` beside each slider (x≈1076, x≈1444).

@@ -283,6 +283,25 @@ func _initialize() -> void:
 				others_hidden = false
 		ck(others_hidden, "%s active: inactive pointers not drawn" % tab)
 
+	print("[18] B21: one content column on Audio, Game and Controls (#82)")
+	var columns: Dictionary = {}
+	for tab in ["audio", "game", "controls"]:
+		opts.switch_to_tab(tab)
+		for i in 4: await process_frame
+		if tab == "controls":
+			var list_rect: Rect2 = input_menu.get_node(^"%InputActionsList").get_global_rect()
+			var top: float = input_menu.get_node(^"VBoxContainer").global_position.y
+			columns[tab] = [list_rect.position.x, list_rect.end.x, top]
+		else:
+			var first: Control = opts._list.get_child(0)
+			var content: Rect2 = (first.get_child(0) as Control).get_global_rect()
+			columns[tab] = [content.position.x, content.end.x, first.global_position.y]
+	for tab in ["game", "controls"]:
+		for k in 3:
+			ck(absf(columns[tab][k] - columns["audio"][k]) <= 1.0,
+					"%s %s matches audio (%.0f vs %.0f)" % [tab, ["left edge", "right edge", "first-row y"][k],
+					columns[tab][k], columns["audio"][k]])
+
 	opts.switch_to_tab("controls")
 	for i in 3: await process_frame
 	print("[16] B18: controls viewport fills the panel, rows are never half-cut (#79)")
