@@ -58,7 +58,7 @@ func save() -> Dictionary:
 	# Сохраняем информацию о персонаже
 	data["class_id"] = player_state.get("class_id", "champion")
 	data["subclass_id"] = player_state.get("subclass_id", "paladin")
-	data["character_id"] = player_state.get("character_id", "player_1")
+	data["character_id"] = player_state.get("character_id", GameSettings.DEFAULT_CHARACTER_ID)
 
 	# Сохраняем игровое время
 	data["game_time"] = player_state.get("game_time", 0.0)

@@ -33,6 +33,17 @@ const FIXTURES := [
 	 "subclass_id": "paladin", "skill_type": "passive", "jp_cost": 12},
 ]
 
+## Фікстури записані під champion/paladin; екран показує лише дерево активного персонажа,
+## тож переносимо їх на його клас — інакше зміна стартового героя (B55) спустошує екран.
+func _for_active_class(skills: Array, ch) -> Array:
+	var out: Array = []
+	for skill in skills:
+		var copy: Dictionary = skill.duplicate()
+		if copy.has("class_id"): copy["class_id"] = ch.class_id
+		if copy.has("subclass_id"): copy["subclass_id"] = ch.subclass_id
+		out.append(copy)
+	return out
+
 func _initialize() -> void:
 	await process_frame
 	await process_frame
@@ -77,7 +88,8 @@ func _initialize() -> void:
 	ck(ui._jp_value.text.ends_with("JP"), "real JP still displayed (%s)" % ui._jp_value.text)
 
 	print("[2] populated (test fixtures)")
-	db.load_from_array(FIXTURES)
+	var fixtures: Array = _for_active_class(FIXTURES, gm.get_active_character())
+	db.load_from_array(fixtures)
 	sm.skill_database = db
 	gm.player_state["unlocked_skills"] = ["ta_learned"]
 	gm.player_state["job_points"] = 50
@@ -99,14 +111,14 @@ func _initialize() -> void:
 		if scene_text.find(String(fixture["name"])) != -1:
 			leaked = true
 	ck(not leaked, "no fixture names hardcoded in the .tscn")
-	var extended: Array = FIXTURES.duplicate()
+	var extended: Array = fixtures.duplicate()
 	extended.append({"id": "tz_new", "name": "Test Skill Z",
-		"class_id": "champion", "skill_type": "active", "jp_cost": 1})
+		"class_id": gm.get_active_character().class_id, "skill_type": "active", "jp_cost": 1})
 	db.load_from_array(extended)
 	ui.update_display()
 	for i in 2: await process_frame
 	ck(ui._rows.has("tz_new"), "a new skill appears without editing the scene")
-	db.load_from_array(FIXTURES)
+	db.load_from_array(fixtures)
 	ui.update_display()
 	for i in 2: await process_frame
 

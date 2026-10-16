@@ -185,4 +185,3 @@ func get_current_scene_name() -> String:
 	if current_scene:
 		return current_scene.scene_file_path.get_file().get_basename()
 	return "Unknown"
-

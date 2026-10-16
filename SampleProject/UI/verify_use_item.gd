@@ -78,9 +78,9 @@ func _initialize() -> void:
 	await process_frame
 	await _press(&"ui_accept")
 	var focus: Control = root.gui_get_focus_owner()
-	ck(focus != null and focus.name == "Select" and focus.get_parent().get_meta(&"character_id", "") == "player_1",
+	ck(focus != null and focus.name == "Select" and focus.get_parent().get_meta(&"character_id", "") == "player_3",
 			"focus on the active character's card (%s)" % (focus.get_path() if focus else "none"))
-	var others: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != "player_1")
+	var others: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != "player_3")
 	ck(others.all(func(c): return c.modulate.a < 1.0 and c.get_node("Select").focus_mode == Control.FOCUS_NONE),
 			"characters without HP cannot be chosen")
 	ck(bar._hint_label.text.begins_with("Choose who drinks"), "bottom bar asks whom (%s)" % bar._hint_label.text)

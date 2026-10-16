@@ -15,7 +15,7 @@ class_name GameSettings
 const DEFAULT_SCENE = "VillageScene"
 
 ## ID персонажей
-const DEFAULT_CHARACTER_ID = "player_1"
+const DEFAULT_CHARACTER_ID = "player_3"  # Кусакам — головний герой (B55)
 
 ## Классы и подклассы
 const DEFAULT_CLASS_ID = "champion"

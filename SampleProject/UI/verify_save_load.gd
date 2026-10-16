@@ -95,6 +95,10 @@ func _initialize() -> void:
 	ck(ss.save_player_data(), "save_player_data() succeeds")
 	ck(FileAccess.file_exists(ss.get_player_data_path(2)), "slot 2 player data written")
 	ck(not FileAccess.file_exists(ss.get_player_data_path(1)), "slot 1 untouched")
+	# B55: збережений герой — Кусакам (player_3), і після завантаження теж.
+	var ps: Dictionary = sl.get_game_manager().player_state
+	ps.character_id = "overwritten_before_load"
+	ck(ss.load_player_data() and ps.character_id == "player_3", "save round trip keeps player_3 (%s)" % ps.character_id)
 	ck(ss.save_dir == TEST_DIR, "tests write only to %s" % TEST_DIR)
 
 	print("[3] Slot summary carries only real data (Q3)")

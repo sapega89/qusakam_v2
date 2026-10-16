@@ -27,7 +27,7 @@ var player_state = {
 	"constitution": 10,
 	"class_id": "champion",
 	"subclass_id": "paladin",
-	"character_id": "player_1",
+	"character_id": GameSettings.DEFAULT_CHARACTER_ID,
 	"equipment": {
 		"sword": null,
 		"polearm": null,
@@ -115,7 +115,7 @@ func reset_player_state():
 		"constitution": 10,
 		"class_id": "champion",
 		"subclass_id": "paladin",
-		"character_id": "player_1",
+		"character_id": GameSettings.DEFAULT_CHARACTER_ID,
 		"equipment": {
 			"sword": null,
 			"polearm": null,

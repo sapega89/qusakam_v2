@@ -11,7 +11,7 @@ const GameCharacterScript = preload("res://SampleProject/Scripts/Systems/Charact
 
 # Character system - multiple characters support
 var characters: Dictionary[String, GameCharacter] = {}  # Dictionary of character_id -> GameCharacter (Resource)
-var active_character_id: String = "player_1"  # Currently active character
+var active_character_id: String = GameSettings.DEFAULT_CHARACTER_ID  # Currently active character
 var active_character: GameCharacter  # Currently active character object (for quick access)
 
 # Сигналы
@@ -25,6 +25,9 @@ func _initialize():
 	"""Инициализирует зависимости после того, как ServiceLocator зарегистрирует все сервисы"""
 	# Получаем GameManager через ServiceLocator
 	game_manager = ServiceLocator.get_game_manager()
+	# initialize_characters() іде ще до цього, з game_manager == null — синк звідти не спрацьовує,
+	# і player_state лишався з класом за замовчуванням (champion) замість активного персонажа (B55).
+	_sync_player_state_from_character()
 
 	# Подключаемся к EventBus для обработки экипировки
 	EventBus.equipment_equip_requested.connect(_on_equipment_equip_requested)
@@ -48,7 +51,7 @@ func initialize_characters(character_data_list: Dictionary = {}):
 			char_data["equipment"] = _get_default_equipment_slots()
 		characters[char_id] = GameCharacterScript.from_dict(char_data)
 
-	active_character_id = "player_1"
+	active_character_id = GameSettings.DEFAULT_CHARACTER_ID
 	active_character = characters.get(active_character_id)
 
 	# Синхронизируем с player_state если доступен
