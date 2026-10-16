@@ -330,13 +330,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Got:** unframed characters with no visible hit target.
 - **Severity:** cosmetic
 
-### B23 — Settings tab titles do not share a naming pattern
-- **Where:** Settings header title (y≈96).
-- **Evidence:** "Audio Settings" / "Game Settings" / **"Controls"**, under
-  consistent eyebrows "SOUND OPTIONS" / "GAME OPTIONS" / "INPUT OPTIONS".
-- **Expected:** one pattern; the eyebrows already follow one.
-- **Severity:** cosmetic
-
 ### B16 — Dialogue box stays drawn on top of the open Game Menu
 - **✅ Fixed 2026-10-13 (D136):** the menu no longer opens while a dialogue runs.
 - **Where:** `UIManager.gd:28` — `allow_pause_during_dialogue: bool = true`.

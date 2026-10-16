@@ -283,6 +283,16 @@ func _initialize() -> void:
 				others_hidden = false
 		ck(others_hidden, "%s active: inactive pointers not drawn" % tab)
 
+	print("[19] B23: tab titles are the agreed strings (#84, D182)")
+	var titles := {"display": "Display Settings", "audio": "Audio Settings",
+			"game": "Game Settings", "controls": "Controls"}
+	for tab in opts.TABS:
+		opts.switch_to_tab(tab.id)
+		for i in 2: await process_frame
+		ck(tab.heading == titles[tab.id] and opts._heading.text == titles[tab.id]
+				and opts._heading.is_visible_in_tree(),
+				"%s heading reads «%s»" % [tab.id, opts._heading.text])
+
 	print("[18] B21: one content column on Audio, Game and Controls (#82)")
 	var columns: Dictionary = {}
 	for tab in ["audio", "game", "controls"]:
