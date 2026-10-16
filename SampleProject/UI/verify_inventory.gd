@@ -174,6 +174,13 @@ func _initialize() -> void:
 	await process_frame
 	ck(inv._current_category == &"key_items" and inv._empty_label.visible, "KEY ITEMS kept in the cycle with its empty state")
 	var hint_bar: Node = get_first_node_in_group(&"ui_bottom_bar")
+	# B24 (#72): з ALL (опис предмета в рядку підказки) прямо в порожню KEY ITEMS — опис зникає.
+	inv._select_category(&"all")
+	await process_frame
+	ck(not inv.items.is_empty() and hint_bar._hint_label.text.find(String(inv.items[0]["name"])) >= 0,
+			"ALL publishes its first item (%s)" % hint_bar._hint_label.text)
+	inv._select_category(&"key_items")
+	await process_frame
 	ck(hint_bar != null and hint_bar._hint_label.text == hint_bar._default_hint, "empty category clears the previous item description")
 	ck(get_first_node_in_group(&"filter_popup") == null, "no popup or dropdown")
 	inv._select_category(&"all")

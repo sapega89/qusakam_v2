@@ -25,7 +25,10 @@ func _initialize() -> void:
 	await _save("res://design/shots/shop_sell_1920.png")
 	shop._switch_mode("buy")
 	await process_frame
-	shop.get_rows()[2].pressed.emit()
+	var target: Control = shop.get_rows()[2]
+	target.grab_focus()  # як гравець: спершу вибрав рядок, потім натиснув (B24)
+	await process_frame
+	target.pressed.emit()
 	await _save("res://design/shots/shop_buy_confirm_1920.png")
 	shop.queue_free()
 	var layer = sl.get_ui_manager().get_modal_layer()

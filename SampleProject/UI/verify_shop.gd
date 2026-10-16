@@ -167,6 +167,23 @@ func _initialize() -> void:
 				"%s: cost header right-aligned like its rows" % path.get_file())
 		m.free()
 
+	print("[3b] Activating an unfocused row names it in the panel and keeps it selected (B24, #72)")
+	shop._switch_mode("buy")
+	for i in 2: await process_frame
+	var picked: ShopRow = shop.get_rows()[2]
+	ck(shop.get_viewport().gui_get_focus_owner() != picked and shop._desc_name.text != picked.data.name,
+			"precondition: row 3 not focused, panel shows another item")
+	picked.pressed.emit()
+	await process_frame
+	ck(shop._desc_name.text == picked.data.name and shop._desc_text.text == picked.data.description,
+			"detail panel shows the activated item (%s)" % shop._desc_name.text)
+	ck(_modal() != null and _modal().title_label.text == "Buy %s?" % shop._desc_name.text, "modal names the panel's item")
+	ck(shop.get_viewport().gui_get_focus_owner() != picked and picked._name.theme_type_variation == &"ShopRowNameOn"
+			and picked.get_theme_stylebox("normal").bg_color == UITokens.ACCENT,
+			"row keeps its accent fill and dark text while the modal holds focus")
+	_press_modal("No")
+	await process_frame
+
 	print("[4] Buy confirmation (153:1760)")
 	shop._switch_mode("buy")
 	await process_frame

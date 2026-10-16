@@ -12,6 +12,8 @@ var data: Dictionary = {}
 var sellable := true
 ## Не вистачає золота (D105): рядок сірий, але фокус лишається — опис видно, купити не можна.
 var affordable := true
+## Рядок, по якому відкрито модалку: вибраний вигляд лишається, хоч фокус і пішов (B24).
+var _held := false
 
 @onready var _icon: TextureRect = %Icon
 @onready var _name: Label = %NameLabel
@@ -50,8 +52,15 @@ func setup(row: Dictionary, price_enabled: bool = true, can_afford: bool = true)
 	_apply_style(has_focus())
 
 
+## Модалка забирає фокус; рядок лишається вибраним, доки список не перебудують.
+func hold_selected() -> void:
+	_held = true
+	theme_type_variation = &"ShopRowOn"
+	_apply_style(true)
+
+
 func _on_focus(focused: bool) -> void:
-	_apply_style(focused)
+	_apply_style(focused or _held)
 	if focused:
 		row_focused.emit(data)
 

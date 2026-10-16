@@ -181,13 +181,16 @@ func _show_description(data: Dictionary) -> void:
 
 
 func _on_row_activated(data: Dictionary) -> void:
-	_focused_id = str(data.id)
+	_show_description(data)  # клік без фокусу теж показує саме цей товар (B24)
 	if current_menu_mode == "sell":
 		service.sell(data.id)
 		refresh()
 		return
 	_buying = data
 	_quantity = 1
+	for row in get_rows():
+		if row.data.id == data.id:
+			row.hold_selected()
 	_show_modal(_buy_modal(), func(result: String):
 		if result == "confirm":
 			service.buy(data.id, _quantity)

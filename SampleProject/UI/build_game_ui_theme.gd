@@ -819,6 +819,10 @@ func _shop(theme: Theme) -> void:
 		theme.set_stylebox(state, t, row)
 	for state in ["hover", "hover_pressed", "focus"]:
 		theme.set_stylebox(state, t, row_on)
+	# Рядок під відкритою модалкою купівлі: фокус у модалці, рядок лишається вибраним (B24).
+	theme.set_type_variation("ShopRowOn", t)
+	for state in ["normal", "pressed", "disabled", "hover", "hover_pressed", "focus"]:
+		theme.set_stylebox(state, "ShopRowOn", row_on)
 
 	# Кнопки категорій 48×48: звичайна — чорний 56% + біла рамка; активна — accent.
 	for spec in [["ShopCategory", UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY, UITokens.SHOP_ICON_TINT, UITokens.TEXT_PRIMARY],

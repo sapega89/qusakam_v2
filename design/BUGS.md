@@ -229,22 +229,6 @@ built*, not here.
   right-hand hints overrun the card edge by 10px — a whole scale step, not rounding.
 - **Severity:** visual
 
-### B24 — Item detail panel goes stale; the buy confirmation identifies nothing but its own title
-- **Where:** shop item detail bar and inventory description bar — one shared defect.
-- **Evidence:**
-  - `shop_buy_confirm_1920.png` — the modal reads *"Buy Iron Ingot? / Quantity: 1
-    • Total Cost: ₹ 30"*, while the detail panel below still reads *"Potion —
-    Restores 50 HP."*, **and the Iron Ingot row carries no selection fill**. Nothing
-    on screen except the modal title says what is being bought.
-  - `inventory_filter_key_items_1920.png` — the list shows *"No items in this
-    category."* while the description bar still reads *"Iron Ore — Raw iron ore…"*,
-    an item that is not even in the KEY ITEMS filter.
-- **Expected:** the detail panel tracks the acting/selected item, and clears to the
-  placeholder (`shop_sell_1920.png` uses *"Select an item."*) when there is none.
-  The target row stays visibly selected while its modal is open, as in `shop_sell`.
-- **Severity:** blocker
-- **Found:** 2026-09-29, screenshot review (agent pass).
-
 ### B27 — Button normal/focus styling is inconsistent across modals
 - **Where:** shop confirm modal (Yes/No) and the dialogue bar (Auto/Skip).
 - **Evidence:** `shop_buy_confirm_1920.png` — `Yes` = gold 2px border, transparent
