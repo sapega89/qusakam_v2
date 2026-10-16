@@ -51,6 +51,8 @@ func _initialize_component() -> void:
 	add_to_group(&"settings_screen")
 	_settings_module = SaveSystem.settings_module
 	_localization = LocalizationManager
+	# Figma UI/Settings Section Header 218:4264: іконка 64×64 кольору text-primary (B12).
+	_header_icon.modulate = UITokens.TEXT_PRIMARY
 	_build_sidebar()
 	if not _restore_button.pressed.is_connected(_on_restore_pressed):
 		_restore_button.pressed.connect(_on_restore_pressed)

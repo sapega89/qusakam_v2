@@ -293,12 +293,15 @@ func _initialize() -> void:
 				and opts._heading.is_visible_in_tree(),
 				"%s heading reads «%s»" % [tab.id, opts._heading.text])
 
-	print("[20] B12: header icon has no blue stock colours (#88)")
+	print("[20] B12: header icon is TEXT_PRIMARY 64x64, no blue stock colours (#88)")
 	var icon_tints: Array = []
 	for tab in opts.TABS:
 		opts.switch_to_tab(tab.id)
 		for i in 2: await process_frame
 		var tint: Color = opts._header_icon.modulate * opts._header_icon.self_modulate
+		ck(opts._header_icon.modulate == UITokens.TEXT_PRIMARY and opts._header_icon.self_modulate == Color.WHITE
+				and opts._header_icon.size == Vector2(UITokens.SETTINGS_HEADER_ICON, UITokens.SETTINGS_HEADER_ICON),
+				"%s header icon is TEXT_PRIMARY, %s px (Figma 218:4264)" % [tab.id, opts._header_icon.size])
 		icon_tints.append(tint)
 		var img: Image = opts._header_icon.texture.get_image()
 		var blue: int = 0
