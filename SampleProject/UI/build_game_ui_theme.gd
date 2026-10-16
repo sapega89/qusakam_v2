@@ -944,7 +944,8 @@ func _setup_scrollbars(theme: Theme) -> void:
 		var pad_h: int = half if t == "VScrollBar" else 0
 		var pad_v: int = 0 if t == "VScrollBar" else half
 		theme.set_stylebox("scroll", t, _box(Color(UITokens.BACKGROUND, 0.6), Color(0, 0, 0, 0), 0, pad_h, pad_v))
-		theme.set_stylebox("grabber", t, _box(UITokens.BORDER, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		# Figma UI/Scrollbar 222:4768: повзунок — color/accent (сірий BORDER зливався з фоном, #79).
+		theme.set_stylebox("grabber", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 		theme.set_stylebox("grabber_highlight", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 		theme.set_stylebox("grabber_pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 

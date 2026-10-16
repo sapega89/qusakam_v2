@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://bfe1cbr8www03"]
 
-[ext_resource type="FontFile" uid="uid://bssrprjxrko3m" path="res://SampleProject/Assets/Fonts/CormorantGaramond.ttf" id="1_4nm7x"]
+[ext_resource type="FontFile" path="res://SampleProject/Assets/Fonts/CormorantGaramond.ttf" id="1_4nm7x"]
 
 [sub_resource type="FontVariation" id="FontVariation_4nm7x"]
 base_font = ExtResource("1_4nm7x")
@@ -290,7 +290,7 @@ content_margin_left = 0.0
 content_margin_top = 5.0
 content_margin_right = 0.0
 content_margin_bottom = 5.0
-bg_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
+bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kqaw4"]
@@ -1527,7 +1527,7 @@ content_margin_left = 5.0
 content_margin_top = 0.0
 content_margin_right = 5.0
 content_margin_bottom = 0.0
-bg_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
+bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blt53"]

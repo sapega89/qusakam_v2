@@ -374,6 +374,13 @@ func _setup_mode():
 			back_button.focus_mode = Control.FOCUS_NONE
 		if exit_to_main_menu_button:
 			exit_to_main_menu_button.visible = false
+		# У Game Menu компонент сидить у рамці меню; з головного меню він на весь екран, і без
+		# полів заголовок лип до верху, а Restore Default Settings — до нижнього краю (Sapega, 2026-10-16).
+		var layout: Control = $Layout
+		layout.offset_left = UITokens.SCREEN_MARGIN
+		layout.offset_top = UITokens.SCREEN_MARGIN
+		layout.offset_right = -UITokens.SCREEN_MARGIN
+		layout.offset_bottom = -UITokens.SCREEN_MARGIN
 	else:
 		# Hide back button, show exit to main menu button
 		if back_button:

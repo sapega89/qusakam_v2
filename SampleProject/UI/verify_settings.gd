@@ -479,6 +479,20 @@ func _initialize() -> void:
 	var landed: String = current_scene.scene_file_path if current_scene else "<none>"
 	ck(landed.ends_with("MainMenu.tscn"), "landed on MainMenu (%s)" % landed)
 	ck(not paused, "main menu is not frozen")
+
+	print("[17] Main Menu → Options: Controls keeps Restore on screen, the scrollbar is visible (Sapega, 2026-10-16)")
+	current_scene.options_button_up()
+	await create_timer(1.0).timeout
+	opts = get_first_node_in_group("settings_screen")
+	opts.switch_to_tab("controls")
+	for i in 12: await process_frame
+	var screen: Rect2 = root.get_visible_rect().grow(-UITokens.SCREEN_MARGIN)
+	var restore: Control = opts.find_child("RestoreButton", true, false)
+	ck(screen.encloses(restore.get_global_rect()), "Restore Default Settings inside the screen margin (%s)" % restore.get_global_rect())
+	var list_bar: VScrollBar = opts.find_child("InputActionsList", true, false).get_v_scroll_bar()
+	ck(list_bar.is_visible_in_tree(), "Controls list scrolls with a visible scrollbar")
+	var grabber: StyleBoxFlat = list_bar.get_theme_stylebox("grabber")
+	ck(grabber.bg_color == UITokens.ACCENT, "scrollbar grabber is color/accent (Figma 222:4768, #79)")
 	_done()
 
 
