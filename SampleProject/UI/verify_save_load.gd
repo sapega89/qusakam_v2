@@ -180,6 +180,16 @@ func _initialize() -> void:
 	var m := _modal()
 	ck(m != null and m.title_label.text == "Overwrite Save?", "occupied slot asks to overwrite")
 	ck(m != null and m.description_label.text == "This will replace the existing save data.", "Figma overwrite copy")
+	# B36 (#71): панель за вмістом — не більше SPACE_3XL порожнечі з кожного боку, по центру екрана.
+	await process_frame
+	var panel: Control = m.get_node("Panel")
+	var vbox: Control = m.get_node("Panel/VBox")
+	ck(panel.size.y <= vbox.get_combined_minimum_size().y + 2 * UITokens.SPACE_3XL,
+			"overwrite modal hugs its content (panel %d, content %d)" % [int(panel.size.y), int(vbox.get_combined_minimum_size().y)])
+	ck(m.buttons_container.get_theme_constant("separation") == UITokens.SPACE_MD, "modal buttons keep the SPACE_MD gap")
+	var vp_center: Vector2 = m.get_viewport_rect().size / 2.0
+	ck(panel.get_global_rect().get_center().distance_to(vp_center) < 1.0,
+			"overwrite modal centred (%s vs %s)" % [panel.get_global_rect().get_center(), vp_center])
 	_press_modal("No")
 	await process_frame
 	ck(calls[0] == 1 and _modal() == null, "No cancels without saving")
@@ -246,6 +256,18 @@ func _initialize() -> void:
 	ck(save_menu != null and save_menu.mode == "save", "opened in SAVE mode")
 	ui.close_state()
 	sp.queue_free()
+
+	print("[8] Long modal copy wraps inside the 440 width cap (B36, #71)")
+	var layer = ui.get_modal_layer()
+	layer.show_modal(preload("res://SampleProject/Scripts/UI/modal_templates.gd").craft_confirm("Iron Sword",
+			PackedStringArray(["Iron Ingot ×4", "Leather Strip ×2", "Oak Handle ×1", "Fire Essence ×3"]), "₹ 250"))
+	for i in 3: await process_frame
+	var lp: Control = _modal().get_node("Panel")
+	ck(is_equal_approx(lp.size.x, 440.0), "long modal keeps the 440 width (%d)" % int(lp.size.x))
+	ck(_modal().description_label.get_line_count() > 1, "long description wraps (%d lines)" % _modal().description_label.get_line_count())
+	ck(lp.get_global_rect().get_center().distance_to(lp.get_viewport_rect().size / 2.0) < 1.0, "long modal stays centred")
+	layer._close_with_result("cancel")
+	await process_frame
 
 	ss.set_save_dir(ss.SAVE_DIR)
 	_wipe_dir_only()

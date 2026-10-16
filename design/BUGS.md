@@ -252,17 +252,6 @@ built*, not here.
   right-hand hints overrun the card edge by 10px — a whole scale step, not rounding.
 - **Severity:** visual
 
-### B36 — Overwrite modal is ~2.7× taller than its content
-- **Evidence:** `save_load_overwrite_1920.png` — panel border box x 740–1179,
-  y 400–679 = **440×280**. Content runs title cap-top 491 → button bottom 593
-  ≈102px. Dead space ≈86px above and ≈85px below.
-- **Expected:** padding from the spacing scale; `SPACE_3XL = 48` is the ceiling.
-- **Got:** ~86px, off-scale.
-- **Correct on this modal, for the record:** panel centred at 959.5/539.5 (dead
-  centre of 1920×1080), button pair centred 959.5, buttons 52×44 with a 12px gap
-  = `SPACE_MD`, border `#3a3a42` = `BORDER` at 1px, corners sharp.
-- **Severity:** cosmetic
-
 ### B24 — Item detail panel goes stale; the buy confirmation identifies nothing but its own title
 - **Where:** shop item detail bar and inventory description bar — one shared defect.
 - **Evidence:**
