@@ -856,12 +856,12 @@ func _save_slots(theme: Theme) -> void:
 	# Figma: "Save Data Management" — Regular 11, letter-spacing 3.
 	theme.set_font("font", "SaveSystemLabel", _spaced(_font_regular, 3))
 
-	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent.
+	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent 2px (B32).
 	var t := "SaveSlotCard"
 	theme.set_type_variation(t, "Button")
 	var normal := _box(Color(0, 0, 0, 0), UITokens.SAVE_CARD_BORDER, UITokens.BORDER_WIDTH,
 			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
-	var selected := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH,
+	var selected := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED,
 			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
 	for state in ["normal", "pressed", "disabled"]:
 		theme.set_stylebox(state, t, normal)

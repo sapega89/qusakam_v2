@@ -134,6 +134,13 @@ func _initialize() -> void:
 	ck(cards[0]._playtime.text == "001:05", "playtime hhh:mm (%s)" % cards[0]._playtime.text)
 	ck(not cards[2]._character.visible, "no level/name shown when not saved")
 	ck(cards[0].card.size.y == UITokens.SAVE_CARD_HEIGHT, "card height 176 (%d)" % int(cards[0].card.size.y))
+	# B32 (#67): рамка 2px всередині картки — розмір не стрибає між фокусом і без нього.
+	var focused_rect: Rect2 = cards[0].card.get_global_rect()
+	cards[2].card.grab_focus()
+	await process_frame
+	ck(cards[0].card.get_global_rect() == focused_rect, "slot card rect unchanged by losing focus")
+	cards[0].card.grab_focus()
+	await process_frame
 	var closed := [""]
 	menu.menu_closed.connect(func(a): closed[0] = a)
 	menu._on_slot_activated(2)

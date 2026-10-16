@@ -49,6 +49,14 @@ func _initialize() -> void:
 	var panel := theme.get_stylebox("panel", "PanelContainer") as StyleBoxFlat
 	_check(panel != null and panel.bg_color == UITokens.SURFACE, "PanelContainer bg == SURFACE")
 	_check(panel != null and panel.corner_radius_top_left == UITokens.RADIUS, "PanelContainer radius == 0")
+	# B32 (#67): вибраний слот — accent 2px з усіх боків, невибраний — 1px.
+	for state in ["focus", "hover", "hover_pressed"]:
+		var sel: StyleBoxFlat = theme.get_stylebox(state, "SaveSlotCard")
+		_check(sel.border_width_left == UITokens.BORDER_WIDTH_SELECTED and sel.border_width_top == UITokens.BORDER_WIDTH_SELECTED
+				and sel.border_width_right == UITokens.BORDER_WIDTH_SELECTED and sel.border_width_bottom == UITokens.BORDER_WIDTH_SELECTED,
+				"SaveSlotCard/%s border == BORDER_WIDTH_SELECTED" % state)
+	var unsel: StyleBoxFlat = theme.get_stylebox("normal", "SaveSlotCard")
+	_check(unsel.border_width_left == UITokens.BORDER_WIDTH, "SaveSlotCard/normal border == BORDER_WIDTH")
 
 	print("\n[3] Inheritance under StateRoot")
 	var ui_root: Node = (load(UI_ROOT) as PackedScene).instantiate()

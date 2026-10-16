@@ -211,16 +211,6 @@ built*, not here.
 - **Severity:** blocker — destructive action with no target shown.
 - **Found:** 2026-09-29, screenshot review (agent pass, pixel-measured).
 
-### B32 — Selected save slot draws a 1px accent border; the token says 2px
-- **Evidence:** `save_load_load_mode_1920.png` — exactly one pixel of
-  `[212,175,55]` at y=141, y=316, x=120, x=1859; rows 140/142 and columns 119/121
-  are background. The focused `Yes` button in the overwrite shot *does* render 2px
-  gold (x 902–903, 952–953).
-- **Expected:** `UITokens.BORDER_WIDTH_SELECTED = 2`.
-- **Got:** 1px — the same weight as the unselected white border, so only hue
-  separates selected from not.
-- **Severity:** visual (zero-tolerance axis)
-
 ### B33 — Modal scrim is a `0.60` literal, not the `OVERLAY` token
 - **Evidence:** linear fit of `save_load_overwrite_1920.png` against
   `save_load_load_mode_1920.png` over 350×600px of identical content
