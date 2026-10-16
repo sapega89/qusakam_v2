@@ -1,6 +1,9 @@
 extends BaseOptionsComponent
 class_name OptionsComponent
 
+## Режим main_menu: налаштування закрито (Esc). Головне меню саме прибирає компонент і показує себе.
+signal closed
+
 ## Екран налаштувань. Figma: settings-display 17:280, settings-audio 17:409,
 ## settings-gameplay 17:632, settings-controls 17:756.
 ##
@@ -374,13 +377,6 @@ func _setup_mode():
 			back_button.focus_mode = Control.FOCUS_NONE
 		if exit_to_main_menu_button:
 			exit_to_main_menu_button.visible = false
-		# У Game Menu компонент сидить у рамці меню; з головного меню він на весь екран, і без
-		# полів заголовок лип до верху, а Restore Default Settings — до нижнього краю (Sapega, 2026-10-16).
-		var layout: Control = $Layout
-		layout.offset_left = UITokens.SCREEN_MARGIN
-		layout.offset_top = UITokens.SCREEN_MARGIN
-		layout.offset_right = -UITokens.SCREEN_MARGIN
-		layout.offset_bottom = -UITokens.SCREEN_MARGIN
 	else:
 		# Hide back button, show exit to main menu button
 		if back_button:
@@ -416,8 +412,7 @@ func _close_main_menu_mode():
 	"""Close options menu (main menu mode)"""
 	# Save settings when closing options menu
 	SaveSystem.save_game_settings()
-	# У режимі main_menu батько — MainMenu; анімацію повернення робить він.
-	get_parent().show_main_menu()
+	closed.emit()
 
 	# Resume game (if it was paused)
 	if get_tree().paused:

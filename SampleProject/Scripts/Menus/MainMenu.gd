@@ -190,8 +190,10 @@ func show_options_menu() -> void:
 	# Устанавливаем режим "main_menu" ДО добавления в сцену
 	options_component.mode = "main_menu"
 
-	# Добавляем в сцену
-	add_child(options_component)
+	# Рамка з полями екрана — у MainMenu.tscn (OptionsFrame, ScreenMargin): без неї заголовок лип
+	# до верху, а Restore Default Settings — до нижнього краю (Sapega, 2026-10-16).
+	options_component.closed.connect(show_main_menu)
+	%OptionsFrame.add_child(options_component)
 
 	# Ждем, пока компонент будет готов (чтобы @onready переменные инициализировались)
 	await get_tree().process_frame

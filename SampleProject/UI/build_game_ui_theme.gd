@@ -903,6 +903,11 @@ func _save_slots(theme: Theme) -> void:
 		theme.set_type_variation(name, rows[name][0])
 		theme.set_constant("separation", name, rows[name][1])
 
+	# Поле екрана (Figma Semantic Spacing: screen margin) — рамка, у якій головне меню показує Settings.
+	theme.set_type_variation("ScreenMargin", "MarginContainer")
+	for side in ["left", "top", "right", "bottom"]:
+		theme.set_constant("margin_" + side, "ScreenMargin", UITokens.SCREEN_MARGIN)
+
 	theme.set_type_variation("SaveScreenMargin", "MarginContainer")
 	theme.set_constant("margin_left", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
 	theme.set_constant("margin_right", "SaveScreenMargin", UITokens.SAVE_SCREEN_MARGIN_H)
