@@ -14,7 +14,9 @@ extends SceneTree
 const THEME_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
 const UI_ROOT := "res://SampleProject/Scenes/UI/ui_root.tscn"
 const DIALOGUE_SYSTEM := "res://SampleProject/Scenes/DialogueSystem.tscn"
-const ADDON_SCENE := "res://addons/maaacks_menus_template/examples/scenes/windows/pause_menu.tscn"
+# Вікно аддона, яке гра справді показує (підтвердження Reset на Controls). Приклад pause_menu
+# тягнув AppConfig аддона, а той ми замінили своїм InputConfig.
+const ADDON_SCENE := "res://addons/maaacks_menus_template/base/nodes/windows/confirmation_overlaid_window.tscn"
 
 var _failures: Array[String] = []
 
@@ -112,7 +114,7 @@ func _initialize() -> void:
 		var addon: Node = (load(ADDON_SCENE) as PackedScene).instantiate()
 		root.add_child(addon)
 		var leaked := _find_theme_user(addon, theme)
-		_check(leaked == "", "addon pause_menu does not use GameUITheme%s" %
+		_check(leaked == "", "addon confirmation window does not use GameUITheme%s" %
 				("" if leaked == "" else " (leak at %s)" % leaked))
 		addon.queue_free()
 	else:
