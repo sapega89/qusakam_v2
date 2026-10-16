@@ -40,6 +40,9 @@ func _click(node: Control) -> void:
 func _initialize() -> void:
 	await process_frame
 	await process_frame
+	# Headless скидає вікно до 64×64 на першому кадрі, а тест клікає мишею в координатах 1920×1080.
+	# Раніше розмір неявно ставив AppConfig аддона Maaacks із player_config.cfg (замінено InputConfig).
+	root.size = Vector2i(1920, 1080)
 	# Меню існує лише в запущеній грі (Game, гравець, нижня панель) — тест відкриває його там само.
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
