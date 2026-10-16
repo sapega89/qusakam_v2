@@ -27,6 +27,7 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 
 Runnable specs. One per system, sliced so each slice ships on its own.
 
+- [[settings_plan]] — how every Settings row must behave (change at once, persist, restore); Language blocked on Q55; Controls split D193
 - [[character_animation_plan]] — blocked on Q40/Q41: player frames for every state, per-type enemy art, NPC idles
 - [[enchanting_plan]] — D94/D115/D163/D164; slice 1 (rule) built; `+N` lives in the item id
 - [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles wait on Q48

@@ -232,6 +232,13 @@ tutorial hints · "objective updated" toast · demo end screen.
 
 Each needs a Figma frame **and** a plan. Raise with Sapega before assuming a design.
 
+### Settings: behaviour spec — [[settings_plan]]
+
+Every row: changes at once, survives a restart, Restore puts it back. Found 2026-10-16: **Language
+switches nothing** (no translations registered; D194: translate UI + Journal); **Display Mode** works only in a standalone
+window, not embedded in the editor; Controls mixes keyboard and pad (D193, #98); scrollbar too faint (#79).
+**Resume:** slice 1 of [[settings_plan]].
+
 ### Settings rows with no backing system — [[settings_mapping]]
 
 D43–D47: Resolution, Frame Rate Limit, Screen Brightness, Ambient volume, Text
