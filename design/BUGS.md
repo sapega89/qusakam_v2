@@ -318,26 +318,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
-### B15 — Blacksmith action menu is not anchored to the NPC
-- **Where:** `UI/Components/npc_action_menu.gd`, in-world placement.
-- **Evidence:** `design/shots/npcs_1920.png` — the merchant's `E Shop` prompt sits
-  directly above the merchant sprite, but the blacksmith's `Talk` panel floats up
-  and to the right, roughly +145 / −108 px off the sprite, with a visible gap and
-  no pointer connecting them.
-- **Expected:** consistent anchoring with the interaction prompt — the two NPCs
-  are side by side on the same screen and are positioned by different rules.
-- **Narrowed by measurement, 2026-09-29.** The **merchant's menu is anchored exactly
-  to the token**: sprite centre-x 899.6, menu top-left (939.75, 459.75) → offset
-  **+40.2 / −139.9** against `UITokens.NPC_MENU_OFFSET = Vector2(40, -140)`. The
-  blacksmith measures **+145 / −108**. Same component, so the offset value is fine —
-  **it is the blacksmith's placement path that never applies it.** Point the fix at
-  the anchor source, not at the offset.
-- **Check against:** Figma `npc-menu-blacksmith` before moving anything.
-- **Not filed:** the menu showing only `Talk` — **D115** (Craft + Enchant) was
-  decided 2026-09-29, after this screenshot.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review.
-
 ### B10 — Dialogue box shows an empty portrait frame and undesigned Auto/Skip buttons
 - **Where:** DialogueQuest `dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
 - **Evidence:** `design/shots/combat_hud_1920.png`.

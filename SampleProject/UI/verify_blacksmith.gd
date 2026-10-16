@@ -75,6 +75,26 @@ func _initialize() -> void:
 	b.refresh_availability()
 	ck(_labels(b) == ["Talk"], "Talk appears with a dialogue")
 	ck(not _labels(b).has("Enchant") and not _labels(b).has("Quest"), "no Enchant without its screen; no Quest without tasks")
+	# B15 (#86): меню будь-якого NpcBase відкривається на NPC + NPC_MENU_OFFSET (Blacksmith і Merchant).
+	var merchant: NpcBase = load("res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn").instantiate()
+	world.add_child(merchant)
+	merchant.talk_dialogue = "res://dialogue_quest/any.dqd"
+	await process_frame
+	for spot in [[b, Vector2(1200, 620)], [merchant, Vector2(900, 600)]]:
+		var npc: NpcBase = spot[0]
+		npc.position = spot[1]
+		npc.refresh_availability()
+		npc.interactable._on_body_entered(player)
+		npc.interactable.interacted.emit()
+		await process_frame
+		var offset: Vector2 = npc.npc_menu.global_position - npc.global_position
+		ck(npc.npc_menu.visible and offset.is_equal_approx(UITokens.NPC_MENU_OFFSET),
+				"%s menu opens at NPC + NPC_MENU_OFFSET (%s)" % [npc.name, str(offset)])
+		npc.npc_menu.cancelled.emit()
+		npc.interactable._on_body_exited(player)
+		await process_frame
+	merchant.queue_free()
+	b.position = Vector2.ZERO
 	b.talk_dialogue = ""
 
 	print("[3] Craft routes to the crafting screen")
