@@ -190,10 +190,11 @@ func show_options_menu() -> void:
 	# Устанавливаем режим "main_menu" ДО добавления в сцену
 	options_component.mode = "main_menu"
 
-	# Рамка з полями екрана — у MainMenu.tscn (OptionsFrame, ScreenMargin): без неї заголовок лип
-	# до верху, а Restore Default Settings — до нижнього краю (Sapega, 2026-10-16).
+	# Панель — у MainMenu.tscn: OptionsPanel (UI/Window, WindowPanel) дає внутрішній відступ по
+	# периметру. Без неї заголовок лип до верху, а Restore Default Settings — до нижнього краю
+	# (Sapega, 2026-10-16).
 	options_component.closed.connect(show_main_menu)
-	%OptionsFrame.add_child(options_component)
+	%OptionsPanel.add_child(options_component)
 
 	# Ждем, пока компонент будет готов (чтобы @onready переменные инициализировались)
 	await get_tree().process_frame
@@ -201,21 +202,22 @@ func show_options_menu() -> void:
 	# Теперь настраиваем режим (после инициализации @onready переменных)
 	options_component._setup_mode()
 
-	# Анимация появления
-	options_component.modulate.a = 0.0
-	options_component.visible = true
+	# Анимация появления — вся панель разом із рамкою
+	%OptionsPanel.modulate.a = 0.0
+	%OptionsPanel.visible = true
 	var fade_in_tween = create_tween()
-	fade_in_tween.tween_property(options_component, "modulate:a", 1.0, 0.3)
+	fade_in_tween.tween_property(%OptionsPanel, "modulate:a", 1.0, 0.3)
 
 func show_main_menu() -> void:
 	"""Показывает главное меню (возврат из опций)"""
 	# Удаляем меню опций
 	if options_component and is_instance_valid(options_component):
 		var fade_out_tween = create_tween()
-		fade_out_tween.tween_property(options_component, "modulate:a", 0.0, 0.3)
+		fade_out_tween.tween_property(%OptionsPanel, "modulate:a", 0.0, 0.3)
 		await fade_out_tween.finished
 		options_component.queue_free()
 		options_component = null
+	%OptionsPanel.visible = false
 
 	# Показываем главное меню с анимацией
 	menu.visible = true

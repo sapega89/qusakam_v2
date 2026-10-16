@@ -232,8 +232,9 @@ stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
 
-[node name="OptionsFrame" type="MarginContainer" parent="."]
+[node name="OptionsPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -241,7 +242,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_type_variation = &"ScreenMargin"
+theme_type_variation = &"WindowPanel"
 
 [connection signal="pressed" from="Center/Menu/new_game" to="." method="new_game_button_up"]
 [connection signal="pressed" from="Center/Menu/continue" to="." method="continue_pressed"]

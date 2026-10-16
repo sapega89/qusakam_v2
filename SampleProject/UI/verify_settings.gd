@@ -489,9 +489,12 @@ func _initialize() -> void:
 	opts = get_first_node_in_group("settings_screen")
 	opts.switch_to_tab("controls")
 	for i in 12: await process_frame
-	var screen: Rect2 = root.get_visible_rect().grow(-UITokens.SCREEN_MARGIN)
+	# MainMenu.tscn → OptionsPanel (WindowPanel): Restore лежить усередині її внутрішнього відступу.
+	var options_panel: PanelContainer = opts.get_parent()
+	var pad: float = options_panel.get_theme_stylebox("panel").content_margin_bottom
+	var inner: Rect2 = root.get_visible_rect().grow(-pad)
 	var restore: Control = opts.find_child("RestoreButton", true, false)
-	ck(screen.encloses(restore.get_global_rect()), "Restore Default Settings inside the screen margin (%s)" % restore.get_global_rect())
+	ck(pad > 0.0 and inner.encloses(restore.get_global_rect()), "Restore Default Settings inside the panel padding %d (%s)" % [pad, restore.get_global_rect()])
 	var list_bar: VScrollBar = opts.find_child("InputActionsList", true, false).get_v_scroll_bar()
 	ck(list_bar.is_visible_in_tree(), "Controls list scrolls with a visible scrollbar")
 	var grabber: StyleBoxFlat = list_bar.get_theme_stylebox("grabber")
