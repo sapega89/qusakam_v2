@@ -86,6 +86,17 @@ built*, not here.
 
 ---
 
+### B56 — Confirm modal body, divider and spacing differ from Figma 258:5332
+- **Where:** `Scenes/UI/modal_dialog.tscn` → `Panel` (plain `PanelContainer`), `Panel/VBox`, `Description`.
+- **Screen:** Figma `UI/Modal/Confirm 258:5332`.
+- **Expected:** description Regular **14** (`SIZE_SMALL`, through `font_px`); a **1px accent divider 300 wide**
+  under the title; panel padding **40 h / 28 v**; VBox gap **16** (`SPACE_LG`).
+- **Got:** description is base `Label` 16 (→ 20); no divider node; padding `PANEL_PADDING` 16 on all sides;
+  VBox `separation = 12` (`SPACE_MD`).
+- **Note:** found while fixing the title size (#69, B34 — title now `ModalTitle`, 22 → 28). No 40 / 28
+  spacing token exists yet; adding them is part of this fix, not a new decision (values are Figma's).
+- **Severity:** visual; found 2026-10-16, #69.
+
 ### B55 — The HUD party card names the player "АСТРИТ", not Kusakam
 - **Where:** `Scripts/Managers/Gameplay/CharacterManager.gd:51` — `active_character_id = "player_1"`,
   and `player_1` is `"Астрит"` (`:65`); Kusakam is `player_3` (`:85`). The party card reads the active character.
@@ -207,16 +218,6 @@ built*, not here.
 - **Got:** factor 0.40 → 102, i.e. `Color(0, 0, 0, 0.60)`. Matches no token, so it
   is a literal in the modal scene.
 - **Severity:** visual (colour, zero tolerance)
-
-### B34 — Modal title renders smaller than its own body text
-- **Evidence:** `save_load_overwrite_1920.png`. Cap `O` of "Overwrite Save?" — ink
-  rows 491–500 = **10px**, and a round `O` overshoots, so true cap is ≤10. Cap `T`
-  of "This will replace the existing save data." — rows 522–532 = **11px**. Button
-  labels `Y`/`N` are 10px, same as the title.
-- **Expected:** a dialog title above body on the scale — `SIZE_HEADING 20` or
-  `SIZE_TITLE 24` against `SIZE_BODY 16`.
-- **Got:** title ≈15–16px, measurably smaller than its body copy. Hierarchy inverted.
-- **Severity:** visual
 
 ### B35 — Bottom bar sits on 48px margins while the screen uses 60
 - **Evidence:** `save_load_load_mode_1920.png`. Header rule spans x 59–1860,

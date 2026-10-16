@@ -187,6 +187,13 @@ func _initialize() -> void:
 	var m := _modal()
 	ck(m != null and m.title_label.text == "Overwrite Save?", "occupied slot asks to overwrite")
 	ck(m != null and m.description_label.text == "This will replace the existing save data.", "Figma overwrite copy")
+	# B34 (#69): заголовок модалки — ModalTitle (Figma 258:5332, 22 → font_px), більший за опис.
+	var t_px: int = m.title_label.get_theme_font_size("font_size")
+	var d_px: int = m.description_label.get_theme_font_size("font_size")
+	ck(m.title_label.theme_type_variation == &"ModalTitle" and t_px == UITokens.font_px(UITokens.SIZE_MODAL_TITLE)
+			and t_px > d_px, "modal title %d > description %d, from ModalTitle (B34)" % [t_px, d_px])
+	var cb: Button = m.buttons_container.get_child(0)
+	ck(cb.get_theme_font_size("font_size") == UITokens.font_px(UITokens.SIZE_LABEL), "modal buttons keep the Button size (B34)")
 	# B36 (#71): панель за вмістом — не більше SPACE_3XL порожнечі з кожного боку, по центру екрана.
 	await process_frame
 	var panel: Control = m.get_node("Panel")

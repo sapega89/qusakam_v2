@@ -32,6 +32,7 @@ visible = false
 
 [node name="Title" type="Label" parent="Panel/VBox"]
 layout_mode = 2
+theme_type_variation = &"ModalTitle"
 text = "Title"
 horizontal_alignment = 1
 

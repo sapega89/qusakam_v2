@@ -191,6 +191,8 @@ func _setup_label_variations(theme: Theme) -> void:
 		"SettingsRowLabel": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
 		"SettingsValue": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 		"SettingsHint": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_SECONDARY],
+		# Figma UI/Modal/Confirm (258:5332) — заголовок над описом (B34)
+		"ModalTitle": [_font_regular, UITokens.SIZE_MODAL_TITLE, UITokens.TEXT_PRIMARY],
 	}
 	for name in roles:
 		var spec: Array = roles[name]

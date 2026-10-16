@@ -104,6 +104,8 @@ const SIZE_MAP_TITLE := 44  # Bold — назва світу на карті
 const SIZE_CAPTION_SM := 13 # Regular — підписи секцій ("PRIMARY JOB")
 const SIZE_BODY_SM := 15    # Regular — текст карток талантів
 const SIZE_LEVEL := 22      # Bold — "Lv.46" біля імені
+# Figma UI/Modal/Confirm (258:5332): заголовок модалки — Regular 22, text-primary, по центру (B34).
+const SIZE_MODAL_TITLE := 22
 const SIZE_NAME := 48       # Bold — ім'я персонажа на екрані Status
 
 # ── Розміри шелу (Figma: menu-* frames, 1920×1080) ──────────────────────────
