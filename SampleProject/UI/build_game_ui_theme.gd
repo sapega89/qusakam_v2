@@ -545,6 +545,13 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_stylebox("panel", "PanelContainer", surface)
 	theme.set_stylebox("panel", "Panel", surface.duplicate())
 
+	# Модалки (modal_dialog.tscn): той самий UI/Panel, але фон непрозорий — крізь 56% surface
+	# просвічував заголовок головного меню (D195, Sapega 2026-10-16; Figma 258:5332 має surface).
+	theme.set_type_variation("ModalPanel", "PanelContainer")
+	var modal: StyleBoxFlat = surface.duplicate()
+	modal.bg_color = UITokens.BACKGROUND
+	theme.set_stylebox("panel", "ModalPanel", modal)
+
 	# Figma UI/Window — модалки, вікна. Непрозорий фон + тінь замість Panel Glow.
 	theme.set_type_variation("WindowPanel", "PanelContainer")
 	var window := _box(UITokens.BACKGROUND, UITokens.ACCENT, UITokens.BORDER_WIDTH,

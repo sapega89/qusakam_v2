@@ -126,6 +126,8 @@ func _initialize() -> void:
 		ck(modal != null and modal.title_label.text == "Exit Game?", "%s → Exit Game? modal" % way)
 		if modal == null:
 			continue
+		var panel_bg: Color = modal.get_node("Panel").get_theme_stylebox("panel").bg_color
+		ck(panel_bg.a == 1.0, "%s → the modal panel is opaque (D195, alpha %.2f)" % [way, panel_bg.a])
 		for b in modal.buttons_container.get_children():
 			if b is Button and b.text == "Cancel":
 				b.pressed.emit()
