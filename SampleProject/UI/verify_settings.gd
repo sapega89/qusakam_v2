@@ -293,6 +293,24 @@ func _initialize() -> void:
 				and opts._heading.is_visible_in_tree(),
 				"%s heading reads «%s»" % [tab.id, opts._heading.text])
 
+	print("[20] B12: header icon has no blue stock colours (#88)")
+	var icon_tints: Array = []
+	for tab in opts.TABS:
+		opts.switch_to_tab(tab.id)
+		for i in 2: await process_frame
+		var tint: Color = opts._header_icon.modulate * opts._header_icon.self_modulate
+		icon_tints.append(tint)
+		var img: Image = opts._header_icon.texture.get_image()
+		var blue: int = 0
+		for y in img.get_height():
+			for x in img.get_width():
+				var px: Color = img.get_pixel(x, y) * tint
+				if px.a > 0.0 and px.b > px.r and px.b > px.g:
+					blue += 1
+		ck(blue == 0, "%s header icon: %d blue-dominant drawn pixels" % [tab.id, blue])
+	ck(icon_tints.all(func(c: Color) -> bool: return c == icon_tints[0]),
+			"header icon colour identical on all four tabs %s" % str(icon_tints[0]))
+
 	print("[18] B21: one content column on Audio, Game and Controls (#82)")
 	var columns: Dictionary = {}
 	for tab in ["audio", "game", "controls"]:

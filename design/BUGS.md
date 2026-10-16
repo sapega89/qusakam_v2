@@ -397,6 +397,12 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   before restyling, D48 covers ownership of that widget.
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
+- **Re-checked 2026-10-16 (#88): the blue stock icon no longer reproduces.** The
+  header is our `%HeaderIcon` (white-stroke `settings_*.svg`); the re-capture
+  (`capture_settings.gd`) and `verify_settings.gd` [20] find no blue-dominant drawn
+  pixel on any tab. **Still open:** the icon is plain white (default modulate,
+  equal to `TEXT_PRIMARY` today) rather than tinted from a token — which token
+  (`ACCENT` or `TEXT_PRIMARY`) needs Figma `UI/Settings Section Header 218:4264`.
 
 ### B10 — Dialogue box shows an empty portrait frame and undesigned Auto/Skip buttons
 - **Where:** DialogueQuest `dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
