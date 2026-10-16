@@ -226,13 +226,13 @@ theme_type_variation = &"CopyrightLabel"
 text = "© 2024-2026 Khalahas Studio. All Rights Reserved."
 horizontal_alignment = 1
 
-[connection signal="pressed" from="Center/Menu/new_game" to="." method="new_game_button_up"]
-[connection signal="pressed" from="Center/Menu/continue" to="." method="continue_pressed"]
-[connection signal="pressed" from="Center/Menu/options" to="." method="options_button_up"]
-[connection signal="pressed" from="Center/Menu/exit" to="." method="_on_exit_pressed"]
-
-[node name="Music" type="AudioStreamPlayer" parent="."]
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1903105094]
 process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[connection signal="pressed" from="Center/Menu/new_game" to="." method="new_game_button_up"]
+[connection signal="pressed" from="Center/Menu/continue" to="." method="continue_pressed"]
+[connection signal="pressed" from="Center/Menu/options" to="." method="options_button_up"]
+[connection signal="pressed" from="Center/Menu/exit" to="." method="_on_exit_pressed"]

@@ -30,10 +30,20 @@ func _initialize() -> void:
 	await process_frame
 	target.pressed.emit()
 	await _save("res://design/shots/shop_buy_confirm_1920.png")
-	shop.queue_free()
+	# #43: кількість > 1 (D104) — двічі → у модалці.
+	for i in 2:
+		var right := InputEventAction.new()
+		right.action = &"ui_right"
+		right.pressed = true
+		shop._input(right)
+	await _save("res://design/shots/shop_buy_confirm_qty3_1920.png")
 	var layer = sl.get_ui_manager().get_modal_layer()
-	if layer and layer.active_modal:
-		layer._clear_modal()
+	layer._clear_modal()
+	# #43: золота менше за частину цін — сірі рядки (D105).
+	inv.remove_item("coin", inv.get_item_count("coin") - 25)
+	shop.refresh()
+	await _save("res://design/shots/shop_buy_unaffordable_1920.png")
+	shop.queue_free()
 
 	var bg := ColorRect.new()
 	bg.color = UITokens.SHOP_PANEL_BG

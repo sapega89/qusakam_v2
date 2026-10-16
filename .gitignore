@@ -30,3 +30,5 @@ logs/
 
 # Готові збірки (export_presets.cfg → build/windows/)
 build/
+
+graphify-out/
