@@ -245,15 +245,6 @@ built*, not here.
 - **Severity:** blocker
 - **Found:** 2026-09-29, screenshot review (agent pass).
 
-### B25 — Price column is left-aligned, so the digits do not line up
-- **Where:** Shop, "Selling Price" / "Buying Price" column.
-- **Evidence:** `shop_buy_confirm_1920.png` — every price starts at the same left
-  x (~1390): `₹ 10`, `₹ 6`, `₹ 100`, `₹ 200`, `₹ 300`, `₹ 2`, so the units digits
-  land at six different positions. The header starts at ~1376, aligning with
-  neither edge of its own values.
-- **Expected:** right-aligned numerals in a numeric column.
-- **Severity:** visual
-
 ### B27 — Button normal/focus styling is inconsistent across modals
 - **Where:** shop confirm modal (Yes/No) and the dialogue bar (Auto/Skip).
 - **Evidence:** `shop_buy_confirm_1920.png` — `Yes` = gold 2px border, transparent

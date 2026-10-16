@@ -48,7 +48,6 @@ func _ready():
 		tab.custom_minimum_size.y = UITokens.SIDEBAR_TAB_HEIGHT
 	%CountHeader.custom_minimum_size.x = UITokens.SHOP_COL_COUNT
 	_price_header.custom_minimum_size.x = UITokens.SHOP_COL_PRICE
-	%HeaderEnd.custom_minimum_size.x = UITokens.SHOP_ROW_PAD_H
 	_buy_tab.pressed.connect(_switch_mode.bind("buy"))
 	_sell_tab.pressed.connect(_switch_mode.bind("sell"))
 	_build_categories()

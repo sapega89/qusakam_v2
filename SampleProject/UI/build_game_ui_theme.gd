@@ -754,6 +754,8 @@ func _shop(theme: Theme) -> void:
 	theme.set_type_variation("ShopHeader", "PanelContainer")
 	var header := _box(Color(0, 0, 0, 0), UITokens.TEXT_PRIMARY, 0, 0, UITokens.SHOP_HEADER_PAD_V)
 	header.border_width_bottom = UITokens.BORDER_WIDTH
+	# Правий відступ = відступ рядка, щоб колонки заголовка закінчувались там само, де в рядках (B25).
+	header.content_margin_right = UITokens.SHOP_ROW_PAD_H
 	theme.set_stylebox("panel", "ShopHeader", header)
 
 	var labels := {

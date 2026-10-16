@@ -141,6 +141,32 @@ func _initialize() -> void:
 	ck(shop._title.text == "All Possessions" and shop._price_header.text == "Buying Price", "SELL copy from Figma")
 	ck(shop.get_rows().all(func(r): return r.data.id != "coin"), "gold is not listed for sale")
 
+	print("[3a] Price column right-aligned in Buy and Sell, '—' included (B25, #73)")
+	inv.add_item("potion", 1)
+	inv.add_item("iron_ore", 1)
+	for mode in ["sell", "buy"]:
+		shop._switch_mode(mode)
+		await process_frame
+		var prows: Array = shop.get_rows()
+		if mode == "buy":
+			prows[1].setup(prows[1].data, false)  # непродажний рядок показує "—"
+		await process_frame
+		var hdr_right: float = shop._price_header.get_global_rect().end.x
+		ck(shop._price_header.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT, "%s: price header right-aligned" % mode)
+		var ends: Array = []
+		var aligned := prows.size() > 1
+		for r in prows:
+			ends.append(r._price.get_global_rect().end.x)
+			aligned = aligned and r._price.horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT 					and is_equal_approx(r._price.get_global_rect().end.x, hdr_right)
+		ck(aligned, "%s: every price (%s) ends at the header's right edge %.0f (%s)"
+				% [mode, ",".join(prows.map(func(r): return r._price.text)), hdr_right, str(ends)])
+	ck(shop.get_rows()[1]._price.text == "—", "unsellable placeholder is in the checked set")
+	for path in ["res://SampleProject/Scenes/Crafting/crafting_menu.tscn", "res://SampleProject/Scenes/Enchanting/enchanting_menu.tscn"]:
+		var m: Node = load(path).instantiate()
+		ck((m.get_node("%PriceHeader") as Label).horizontal_alignment == HORIZONTAL_ALIGNMENT_RIGHT,
+				"%s: cost header right-aligned like its rows" % path.get_file())
+		m.free()
+
 	print("[4] Buy confirmation (153:1760)")
 	shop._switch_mode("buy")
 	await process_frame

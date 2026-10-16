@@ -29,7 +29,6 @@ func _ready() -> void:
 	base_menu.set_menu_title("ENCHANT")
 	%CountHeader.custom_minimum_size.x = UITokens.SHOP_COL_COUNT
 	%PriceHeader.custom_minimum_size.x = UITokens.SHOP_COL_PRICE
-	%HeaderEnd.custom_minimum_size.x = UITokens.SHOP_ROW_PAD_H
 	var bar = base_menu.get_node("BottomBar")
 	bar.set_default_hint(tr("Two identical items make one a level higher."))
 	bar.set_actions([
