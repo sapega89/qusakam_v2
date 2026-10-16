@@ -104,7 +104,7 @@ func _initialize() -> void:
 	var sp_row: Control = panel._visible_cards()[0].get_node("Row/Info/Bars/Sp")
 	ck(sp_row.get_node("Head/Value").text == "%d/%d" % [sm.get_current_sp(), sm.get_max_sp()], "active card shows SP (D3: %s)" % sp_row.get_node("Head/Value").text)
 	ck(is_equal_approx(sp_row.get_node("Bar").value, float(sm.get_current_sp())), "active card SP bar filled to current")
-	var other_cards: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != "player_1")
+	var other_cards: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != sl.get_character_manager().get_active_character_id())
 	ck(not other_cards.is_empty() and other_cards.all(func(c): return c.get_node("Row/Info/Bars/Sp/Head/Value").text == "—/—" and c.get_node("Row/Info/Bars/Sp/Bar").value == 0.0),
 			"non-active cards keep SP —/— (D18)")
 	ck(not panel.is_selecting(), "party cards back to normal")
