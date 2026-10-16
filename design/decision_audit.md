@@ -24,13 +24,13 @@ Source text for D1–D40 is [[ui_visual_qa]] (the register only summarises them)
 Tests run this pass, all `RESULT: ALL PASS`: `verify_inventory`, `verify_status`,
 `verify_equipment`, `verify_skills_ui`, `verify_world_map`, `verify_hotbar`.
 
-**Counts:** ✅ 11 · 🟡 6 · 🤝 4 · ↩️ 1 · ❓ 0 · non-runtime 18.
+**Counts:** ✅ 15 · 🟡 6 · 🤝 0 · ↩️ 1 · ❓ 0 · non-runtime 18.
 
 | D-ID | Kind | Verdict | Evidence |
 |---|---|---|---|
 | D1 | deferral (TECH: no Control blur) | — | No blur exists (no `BackBufferCopy`/blur shader in `Scenes`, `Scripts`, `UI`), consistent with the decision. |
 | D2 | runtime (GAP: playtime clock) | ✅ | Gap closed since. `UI/Components/party_status_panel.gd:53-55` reads `SaveSystem.get_current_playtime_sec()`. `verify_status` "party panel shows the slot's real play time". |
-| D3 | runtime (GAP: per-character HP/SP) | 🤝 (SP half) | HP: active character only, `party_status_panel.gd:110` (others have no HP — D18). SP: `party_status_panel.gd:109-112` still draws `—` with comment "SP-моделі ще немає", but an SP model now exists — `SkillManager.get_current_sp()/get_max_sp()` (`Scripts/Managers/Gameplay/SkillManager.gd:227-232`), pool from D146. |
+| D3 | runtime (GAP: per-character HP/SP) | ✅ | Gap closed 2026-10-15 (#51). Active card: HP and SP `get_current_sp()/get_max_sp()` (D146) in `party_status_panel.gd` `_fill_card`; other cards `—/—` (D18). `verify_use_item` "active card shows SP", "non-active cards keep SP —/— (D18)". |
 | D4 | GAP (portrait art) | — | Still colour swatches, `party_status_panel.gd:106-108`, `stats_component.gd:88`. Art gap; D112 covers story scenes only. |
 | D5 | GAP (item icons) | — | Partly closed by D128: `Assets/UI/Icons/Items/{potion,ether,herb,crystal}.png`, referenced from `items.json`. Rest still placeholders. |
 | D6 | superseded → D65 | — | D65: keep Healing and Jobs; 7-vs-9 sidebar stays a runtime gap. |
@@ -38,8 +38,8 @@ Tests run this pass, all `RESULT: ALL PASS`: `verify_inventory`, `verify_status`
 | D8 | runtime | ✅ | `inventory_component.gd:259-266` publishes name + description to the bottom bar. `verify_inventory` "keyboard focus publishes description to bottom bar". |
 | D9 | runtime (CLOSED in §4) | ✅ | Register §4 says "Not implemented" — stale. `inventory_component.gd:242-248` cycles `CATEGORIES`. `verify_inventory` "ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL", "KEY ITEMS kept in the cycle with its empty state", "no popup or dropdown". |
 | D10 | design-only (UI KIT doc vs frames) | — | Doc reconciliation, no code. |
-| D11 | runtime (GAP: JP Obtained) | 🤝 | `stats_component.gd:103-104` hard-codes `—` ("Системи Job Points у проєкті немає"), but JP exists: `SkillManager.get_job_points()` (`SkillManager.gd:190`), D149. `verify_status:52` pins the placeholder ("no JP system") and must change with the fix. |
-| D12 | runtime (GAP: Max. SP on Status) | 🤝 | `stats_component.gd:166-167` fills the SP meter with `-1` ("SP-моделі в проєкті немає"); `SkillManager.get_max_sp()` exists (D146). `verify_status:53` pins the placeholder. |
+| D11 | runtime (GAP: JP Obtained) | ✅ | Gap closed 2026-10-15 (#51). `stats_component.gd` `_update_header` shows `"%d JP" % get_job_points()` (D149), refreshed on `EventBus.job_points_changed`. `verify_status` "JP Obtained from SkillManager", "JP follows level-up live". |
+| D12 | runtime (GAP: Max. SP on Status) | ✅ | Gap closed 2026-10-15 (#51). `stats_component.gd` `_update_attributes` fills the SP meter from `SkillManager` (D146). `verify_status` "Max SP meter current/max", "Max SP bar filled to current". |
 | D13 | runtime | 🟡 | `stats_component.gd:132-146` builds weapon boxes from equipped weapon slots, one `—` box when none. No `verify_*` checks `_weapon_slots`. |
 | D14 | GAP (class names content) | — | Content task; Status renders `—` via `_or_placeholder`, `stats_component.gd:120-122`. |
 | D15 | GAP (Path Action / Talent system) | — | No system; shells at `stats_component.gd:260-267`. |
@@ -51,7 +51,7 @@ Tests run this pass, all `RESULT: ALL PASS`: `verify_inventory`, `verify_status`
 | D21 | GAP (slot icons) | — | Still plain `Panel` boxes, `equipment_component.gd:114-123`. |
 | D22 | runtime | ✅ | Only `UNEQUIP ALL` (`equipment_component.gd:351-361`); no per-slot unequip. `verify_equipment` "all slots cleared", "slot replaced, not duplicated". |
 | D23 | GAP (portrait art) | — | Art gap. |
-| D24 | runtime (GAP: Max. SP delta on Equipment) | 🤝 | `equipment_component.gd:274` prints `—` ("Max. SP не має моделі"); the SP model exists (D146). No delta needed until equipment affects SP, but the value itself is available. |
+| D24 | runtime (GAP: Max. SP delta on Equipment) | ✅ | Gap closed 2026-10-15 (#51). `equipment_component.gd` Max. SP row shows `get_max_sp()` (D146), no delta (no equipment changes SP). `verify_equipment` "Max. SP shows the SP pool", "Max. SP has no delta". |
 | D25 | runtime | 🟡 | Equipment never touches `ui_party_column`; the column is visible by default in `base_menu.tscn:154`. No `verify_equipment` check on the party column. (D101 is about the Shop, not this.) |
 | D26 | runtime | 🟡 | `skills_component.gd:301` JP cost uses `UITokens.ON_ACCENT`. No test reads the colour. |
 | D27 | runtime | 🟡 | `skills_component.gd:13` and no SP pool on the Skills screen (`%d SP` at `:357` is the skill's cost, not the pool). The only check, `verify_skills_ui` "Skills screen does not display SP (D27)", greps the source — does not count (B4). |

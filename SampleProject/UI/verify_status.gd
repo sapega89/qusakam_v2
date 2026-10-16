@@ -57,8 +57,12 @@ func _initialize() -> void:
 	ck(st._name_label.text == String(ch.name), "name from CharacterManager (%s)" % st._name_label.text)
 	ck(st._level_label.text == "Lv.%d" % sl.get_xp_manager().get_level(), "level from XPManager (%s)" % st._level_label.text)
 	ck(st._next_level_value.text.ends_with("EXP"), "EXP to next level shown (%s)" % st._next_level_value.text)
-	ck(st._jp_value.text == st.PLACEHOLDER, "JP shown as placeholder (no JP system)")
-	ck(st._sp_meter.get_node("Head/Value").text == st.PLACEHOLDER, "Max SP placeholder (no SP model)")
+	var sm: Node = sl.get_skill_manager()
+	ck(st._jp_value.text == "%d JP" % sm.get_job_points(), "JP Obtained from SkillManager (D11: %s)" % st._jp_value.text)
+	var sp_meter: Control = st._sp_meter
+	ck(sp_meter.get_node("Head/Value").text == str(sm.get_current_sp()), "Max SP meter current (D12: %s)" % sp_meter.get_node("Head/Value").text)
+	ck(sp_meter.get_node("Head/Max").text == " / %d" % sm.get_max_sp(), "Max SP meter max (D12: %s)" % sp_meter.get_node("Head/Max").text)
+	ck(is_equal_approx(sp_meter.get_node("Bar").value, float(sm.get_current_sp())), "Max SP bar filled to current")
 
 	print("[3] attributes come from StatCalculator")
 	ck(st._left_attrs.get_child_count() == 4, "4 left attribute rows")
@@ -74,6 +78,7 @@ func _initialize() -> void:
 	sl.get_xp_manager().add_xp(100000)
 	for i in 4: await process_frame
 	ck(st._level_label.text != before, "level_up refreshes the screen (%s -> %s)" % [before, st._level_label.text])
+	ck(st._jp_value.text == "%d JP" % sm.get_job_points(), "JP follows level-up live (%s)" % st._jp_value.text)
 
 	print("[5] party panel swap")
 	var party: Node = get_first_node_in_group("ui_party_column")

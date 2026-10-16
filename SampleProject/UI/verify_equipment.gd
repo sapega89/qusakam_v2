@@ -84,6 +84,12 @@ func _initialize() -> void:
 	ck(gm.player_state.equipment.sword.id == "copper_sword", "slot replaced, not duplicated")
 	ck(gm.calculate_physical_damage() == before + 10, "stats follow the replacement (+10)")
 
+	print("[6b] Max. SP row (D24)")
+	var sp_line: Node = eq._right_attrs.get_child(0).get_child(0)
+	ck(sp_line.get_child(0).text == "Max. SP", "first right row is Max. SP")
+	ck(sp_line.get_child(1).text == str(sl.get_skill_manager().get_max_sp()), "Max. SP shows the SP pool (%s)" % sp_line.get_child(1).text)
+	ck(sp_line.get_child_count() == 2, "Max. SP has no delta")
+
 	print("[7] incompatible items rejected")
 	eq._equip("head", "iron_sword", db.get_item("iron_sword"))
 	for i in 3: await process_frame

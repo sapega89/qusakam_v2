@@ -113,8 +113,8 @@ updates · `set_equipment_selection_mode` preserved · slot filter correct ·
 
 | # | Deviation | Reason |
 |---|---|---|
-| **D11** | **`JP Obtained` shows `—`.** | No Job Points system exists anywhere in the project. Not fabricated. |
-| **D12** | **`Max. SP` shows `—` with an empty meter.** | Same missing SP model as the party panel (D3). |
+| **D11** | ~~`JP Obtained` shows `—`.~~ **Closed 2026-10-15 (#51)** — shows `<n> JP` from `SkillManager.get_job_points()` (D149). | — |
+| **D12** | ~~`Max. SP` shows `—` with an empty meter.~~ **Closed 2026-10-15 (#51)** — meter reads SP `cur / max` (D146). | — |
 | **D13** | **Weapon-type slots show one `—` box.** | Derived from actually-equipped weapon slots; nothing is equipped by default. Renders real state, not a fixed pair of icons. |
 | **D14** | **`PRIMARY JOB` / `SECONDARY JOB` show `—`.** | The file was **never implemented** (see `design/investigation_pathfinder_classes.md`). Phase 5.4 created `pathfinder_classes.json` as **schema-only infrastructure** using the class ids CharacterManager already declares; names/descriptions are intentionally empty, so Status renders `—` rather than a blank. Authoring the content is a game-design task. |
 | **D15** | **`Unique Actions & Talents` cards are empty shells.** | No Path Action / Talent system exists. Figma structure kept, content not invented. |

@@ -181,10 +181,10 @@ belongs under *Needs a plan*, and the decision still has to be made.
 | Companion system | — no decision found | `CompanionManager.gd` is **27 lines** (an array with add/remove). The January copy in `raw_assets/qusakam_v2-main/` has a **206-line working version**: summon, per-type cooldowns, HUD button wiring, `companion_summoned` / `companion_cooldown_updated` signals. Lost in refactoring, not superseded. Recover only if companions are still wanted — no D-ID covers them. **Also: no companion `.tscn` exists.** The four `Scripts/Gameplay/Characters/Companions/Companion*.gd` are referenced by nothing outside their own folder ([[scene_inventory]] §6), while `docs/SYSTEMS_OVERVIEW.md:130-134` describes all four as shipping. |
 | `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
 | Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
-| Party card SP bar | **D3** (GAP — Figma authoritative) | Found by [[decision_audit]] 2026-10-15. `party_status_panel.gd:109-112` draws `—` "no SP model"; the model now exists (`SkillManager.get_current_sp()/get_max_sp()`, D146). Active character only — others still have no vitals (D18). |
-| Status `JP Obtained` | **D11** (GAP) | [[decision_audit]]. `stats_component.gd:103-104` hard-codes `—` "no JP system"; `SkillManager.get_job_points()` exists (D149). `verify_status:52` pins the placeholder — change it with the fix. |
-| Status `Max. SP` meter | **D12** (GAP) | [[decision_audit]]. `stats_component.gd:166-167` fills `-1`; `SkillManager.get_max_sp()` exists (D146). `verify_status:53` pins the placeholder. |
-| Equipment `Max. SP` row | **D24** (GAP) | [[decision_audit]]. `equipment_component.gd:274` prints `—`; same SP model (D146). |
+| Party card SP bar | **D3** ✅ | Built 2026-10-15 (#51): active card shows `SP cur/max` from `SkillManager` (D146); others `—/—` (D18). |
+| Status `JP Obtained` | **D11** ✅ | Built 2026-10-15 (#51): `"%d JP" % get_job_points()` (D149), live on `job_points_changed`. |
+| Status `Max. SP` meter | **D12** ✅ | Built 2026-10-15 (#51): meter reads `cur / max` from `SkillManager` (D146). |
+| Equipment `Max. SP` row | **D24** ✅ | Built 2026-10-15 (#51): row shows `get_max_sp()`, no delta. |
 
 **Worth an audit:** D41–D115 have never been checked against the code
 (D1–D40 done 2026-10-15 — [[decision_audit]]; resume at D41). A D-ID
