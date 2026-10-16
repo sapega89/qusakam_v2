@@ -6,6 +6,7 @@ extends Control
 ## Continue відкриває Save Slot Selection у режимі LOAD).
 
 const LOAD_MENU_PATH := "res://SampleProject/Scenes/Menus/LoadGameMenu.tscn"
+const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 
 @onready var menu: VBoxContainer = $Center/Menu
 @onready var press_any_button_container: VBoxContainer = $Center/PressAnyButtonContainer
@@ -109,7 +110,10 @@ func _input(event: InputEvent) -> void:
 	# Лише коли на екрані саме меню: Options — дитина MainMenu, і _input тут іде раніше за
 	# їхній ui_cancel, тож Esc у налаштуваннях закривав гру замість налаштувань (Sapega, 2026-10-16).
 	if menu.visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		get_tree().quit()
+		if _exit_modal_open():
+			return  # Esc у відкритому вікні — це його Cancel
+		get_viewport().set_input_as_handled()
+		_confirm_exit()
 
 func new_game_button_up() -> void:
 	# Set flag to indicate this is a new game (don't load save)
@@ -132,7 +136,28 @@ func _check_save_file_exists() -> void:
 	continue_button.focus_mode = Control.FOCUS_ALL if has_any_save else Control.FOCUS_NONE
 
 func _on_exit_pressed() -> void:
-	get_tree().quit()
+	_confirm_exit()
+
+
+## Esc і Exit питають «Exit Game?» (Sapega, 2026-10-16); раніше гра закривалась одразу.
+func _confirm_exit() -> void:
+	_focus_before_exit = get_viewport().gui_get_focus_owner()
+	var ui = ServiceLocator.get_ui_manager()
+	ui.get_modal_layer().modal_closed.connect(_on_exit_confirm_closed, CONNECT_ONE_SHOT)
+	ui.show_modal(MODAL_TEMPLATES.confirm_exit())
+
+
+var _focus_before_exit: Control = null
+
+func _on_exit_confirm_closed(result: String) -> void:
+	if result == "confirm":
+		get_tree().quit()
+	elif _focus_before_exit:
+		_focus_before_exit.grab_focus()
+
+
+func _exit_modal_open() -> bool:
+	return ServiceLocator.get_ui_manager().get_modal_layer().active_modal != null
 
 func options_button_up() -> void:
 	show_options_menu()

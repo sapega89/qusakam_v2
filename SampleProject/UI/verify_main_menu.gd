@@ -114,6 +114,24 @@ func _initialize() -> void:
 	await create_timer(1.0).timeout  # якби Esc викликав quit(), процес закінчився б тут без RESULT
 	ck(menu.menu.visible and get_first_node_in_group("settings_screen") == null, "Esc returned to the menu")
 
+	print("[4c] Esc and Exit on the menu ask \"Exit Game?\" first (Sapega, 2026-10-16)")
+	var layer: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer()
+	for way in ["Esc", "Exit button"]:
+		if way == "Esc":
+			Input.parse_input_event(esc)
+		else:
+			menu.menu.get_node("exit").pressed.emit()
+		for i in 6: await process_frame
+		var modal: Node = layer.active_modal
+		ck(modal != null and modal.title_label.text == "Exit Game?", "%s → Exit Game? modal" % way)
+		if modal == null:
+			continue
+		for b in modal.buttons_container.get_children():
+			if b is Button and b.text == "Cancel":
+				b.pressed.emit()
+		for i in 6: await process_frame
+		ck(layer.active_modal == null and menu.menu.visible, "%s → Cancel keeps the game running" % way)
+
 	print("[5] Continue → Save Slot Selection in LOAD mode (D75)")
 	cont.pressed.emit()
 	for i in 6: await process_frame
