@@ -229,6 +229,16 @@ var _bubble_playing := false
 var bubble_time_scale: float = 1.0
 
 
+## Enter / клік (dq_accept, як у вікні діалогу) показує наступну репліку облачка одразу —
+## сцена чекає кінця монологу, тож без цього гравець стояв, доки догорять усі (Sapega, 2026-10-16).
+var _bubble_skip := false
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _bubble_playing and not get_tree().paused and event.is_action_pressed(&"dq_accept"):
+		_bubble_skip = true
+		get_viewport().set_input_as_handled()
+
+
 func is_bubble_playing() -> bool:
 	return _bubble_playing
 
@@ -248,7 +258,10 @@ func _play_bubbles(path: String) -> void:
 	for line in DQD_READER.lines(path):
 		await bubble.show_line(line.text)
 		# process_always = false: відкрите меню (пауза) тримає репліку.
-		await get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false).timeout
+		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false)
+		_bubble_skip = false
+		while timer.time_left > 0.0 and not _bubble_skip:
+			await get_tree().process_frame
 	bubble.queue_free()
 	_bubble_playing = false
 	dialogue_finished.emit.call_deferred(path)

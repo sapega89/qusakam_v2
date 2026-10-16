@@ -23,6 +23,11 @@ func _drain(dm: Node) -> void:
 		if not dm.is_dialogue_active():
 			return
 
+func _until(cond: Callable, max_s: float) -> void:
+	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
+	while not cond.call() and Time.get_ticks_msec() < deadline:
+		await process_frame
+
 func _enter_canyon(game: Node, flags: Dictionary) -> void:
 	var all: Dictionary = game.get_quest_flags().duplicate()
 	all.merge(flags, true)
@@ -45,7 +50,7 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
-	print("[0] Canyon I: the trigger plays Canyon_Exploration, then the abduction (Sapega, 2026-10-15)")
+	print("[0] Canyon I: the trigger plays Canyon_Exploration, the raid over black, then the ridge (Sapega, 2026-10-16)")
 	await _enter_canyon(game, {"canyon_intro_complete": true})
 	ck(game.map.get_current_state_name() == "EXPLORATION", "waits in EXPLORATION (%s)" % game.map.get_current_state_name())
 	ck(started.is_empty(), "nothing plays before the trigger (%s)" % [started])
@@ -54,7 +59,17 @@ func _initialize() -> void:
 	for i in 30: await process_frame
 	ck(not started.is_empty() and started[0] == "Canyon_Exploration", "Canyon_Exploration first (%s)" % [started])
 	await _drain(dm)
-	ck(started == ["Canyon_Exploration", "Canyon_AbductionCutscene"], "then the abduction (%s)" % [started])
+	# Напад на село — у Canyon, поверх чорного (Sapega, 2026-10-16).
+	await _until(func() -> bool: return started.has("VillageAbduction"), 5.0)
+	var fade: CanvasLayer = root.get_node_or_null(^"ScreenFade")
+	ck(fade != null and fade.get_child(0).color.a > 0.9, "the raid plays over a black screen")
+	ck(dm.current_dialogue_box.is_visible_in_tree() and dm.current_dialogue_box.get_parent().layer > fade.layer,
+			"the dialogue box is shown above the black")
+	await _drain(dm)
+	await _until(func() -> bool: return started.has("Canyon_AbductionCutscene"), 5.0)
+	ck(not root.has_node(^"ScreenFade"), "light again before Kusakam looks from the ridge")
+	await _drain(dm)
+	ck(started == ["Canyon_Exploration", "VillageAbduction", "Canyon_AbductionCutscene"], "raid, then the ridge (%s)" % [started])
 	ck(game.get_quest_flag("canyon_exploration_complete") and game.get_quest_flag("canyon_abduction_complete"),
 			"both flags set (journal: Explore the Canyon, Find a way forward)")
 	started.clear()
@@ -85,5 +100,22 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("canyon_exit_complete"), "canyon_exit_complete set")
 	ck(not game.player.event, "the player can move")
 
-	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
+	print("[4] Enter shows the next bubble line at once (Sapega, 2026-10-16)")
+	await _drain(dm)
+	await _until(func() -> bool: return not dm.is_bubble_playing(), 5.0)
+	dm.bubble_time_scale = 1.0  # справжні 2–6 с на репліку
+	dm.start_dialogue("res://dialogue_quest/Canyon_Exploration.dqd")  # 4 репліки Кусакама
+	for i in 3: await process_frame
+	ck(dm.is_bubble_playing(), "the monologue plays as a bubble")
+	var t0 := Time.get_ticks_msec()
+	for line in 4:
+		var press := InputEventAction.new()
+		press.action = &"dq_accept"
+		press.pressed = true
+		Input.parse_input_event(press)
+		for i in 3: await process_frame
+	ck(not dm.is_bubble_playing(), "4 presses → monologue over in %d ms, not ~10 s" % (Time.get_ticks_msec() - t0))
+	dm.bubble_time_scale = 0.0
+
+	print("RESULT:" + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

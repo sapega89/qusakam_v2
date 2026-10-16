@@ -116,8 +116,9 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				DebugLogger.info("🏘️ Village: Катсцена викрадення вже відбулася, пропускаємо", "Village")
 				advance_state()
 				return
-			_set_objective("Explore the village")
-			_abduction_scene(run_id)
+			# Сам напад показано в Canyon (D191); тут лише відмічаємо, що гравець дійшов до села.
+			game.set_quest_flag("village_abduction_complete", true)
+			advance_state()
 		State.ARRIVAL:
 			_set_objective("Reach the village center")
 			# Очікуємо поки гравець дійде до тригера "ArrivalToVillage"
@@ -163,14 +164,6 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				return  # останній стан, просувати нікуди
 			_set_objective("Leave the village")
 			_execute_step(StepType.DIALOGUE, "LeavingVillage", run_id)
-
-## Викрадення (D140): затемнення → репліки поверх чорного → світло.
-func _abduction_scene(run_id: int) -> void:
-	await ScreenFade.to_black(self)
-	await _play_dialogue("VillageAbduction", run_id)
-	await ScreenFade.from_black(self)
-	if run_id != state_run_id: return
-	advance_state()
 
 ## Тригер біля діда лише перемикає стан; розмову веде сцена, щоб діалоги йшли
 ## по черзі (раніше OldMan_Outside і OldMan_Healing стартували одночасно)
@@ -269,8 +262,6 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 
 	var quest_flag = ""
 	match dialogue_id:
-		"VillageAbduction":
-			quest_flag = "village_abduction_complete"
 		"ArrivalToVillage":
 			quest_flag = "village_arrival_complete"
 		# "FightWithBandit" тут свідомо відсутній: це репліка-насмішка ПЕРЕД боєм.

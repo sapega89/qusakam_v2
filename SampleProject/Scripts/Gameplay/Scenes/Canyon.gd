@@ -595,6 +595,13 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	if run_id != state_run_id:
 		return
 	Game.get_singleton().set_objective("Find a way forward")
+	# Напад на село — затемнення, репліки поверх чорного, світло; потім Кусакам дивиться з
+	# хребта (Sapega, 2026-10-16: «кат сцена має бути не в віледжі а в каньйоні з затемненням»).
+	await ScreenFade.to_black(self)
+	await _play_dialogue("VillageAbduction", run_id)
+	await ScreenFade.from_black(self)
+	if run_id != state_run_id:
+		return
 	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id)
 	# Після катсцени:
 	# - Відкриваємо другу браму (якщо квест виконано)

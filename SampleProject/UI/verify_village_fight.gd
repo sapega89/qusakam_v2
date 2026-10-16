@@ -60,17 +60,13 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
-	print("[0] The abduction: fade to black, lines over black, light again (D140)")
+	print("[0] Entering the village: no cutscene here any more, the raid is in Canyon")
 	game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"Arrival")
 	await create_timer(1.0).timeout
 	var village: Node = game.map  # після телепорту MetSys підвантажує кімнату вдруге (B51)
-	ck(village.get_current_state_name() == "ABDUCTION_CUTSCENE", "starts with the abduction")
-	ck(root.has_node(^"ScreenFade") and root.get_node(^"ScreenFade").get_child(0).color.a > 0.9, "the screen is black")
-	ck(started == ["VillageAbduction"], "abduction lines over black (%s)" % [started])
-	await _drain(dm)
-	await create_timer(1.0).timeout
-	ck(not root.has_node(^"ScreenFade"), "the fade is gone afterwards")
-	ck(village.get_current_state_name() == "ARRIVAL", "waits for the player in ARRIVAL")
+	ck(village.get_current_state_name() == "ARRIVAL", "waits for the player in ARRIVAL (%s)" % village.get_current_state_name())
+	ck(started.is_empty() and not root.has_node(^"ScreenFade"), "no fade, no lines on entry (%s)" % [started])
+	ck(game.get_quest_flag("village_abduction_complete"), "village_abduction_complete marks the visit")
 	started.clear()
 
 	print("[1] Entering the arrival trigger")
