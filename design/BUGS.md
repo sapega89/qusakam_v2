@@ -277,19 +277,6 @@ built*, not here.
 - **Expected:** right-aligned numerals in a numeric column.
 - **Severity:** visual
 
-### B26 — Buy confirmation modal has no border and ~118px of vertical padding
-- **Where:** Shop → Buy → confirm modal panel.
-- **Evidence:** `shop_buy_confirm_1920.png` — panel 586×371 actual px, content
-  block occupies the middle ~140px, leaving ≈118px empty above and below.
-- **Expected:** a 1px border from the border token — every other surface in these
-  shots has one (detail panel, party cards, nav rows, category rail). Padding from
-  the spacing scale, max 48.
-- **Got:** borderless, padding ≈2.5× the largest scale step. The Yes/No buttons are
-  also unequal (≈51×37 vs ≈54×35), the 3-glyph label in the narrower box, which
-  suggests focus changes the padding. **Verify button sizes in the scene, not the
-  PNG** — measurement precision there is ±2–3px.
-- **Severity:** visual
-
 ### B27 — Button normal/focus styling is inconsistent across modals
 - **Where:** shop confirm modal (Yes/No) and the dialogue bar (Auto/Skip).
 - **Evidence:** `shop_buy_confirm_1920.png` — `Yes` = gold 2px border, transparent
@@ -643,7 +630,7 @@ Both are "code where a scene would be conventional". See [[scene_inventory]].
 ### O9–O11 — from the NPC / interaction pass, 2026-09-29
 - **O9 — pickup modal is ~440×280 design px for ~90px of content**, leaving 84px
   above and 86px below. D100 approves *using* the shared modal family but nothing
-  specifies its size. Same family as **B26**; if B26 gets a size rule, this inherits it.
+  specifies its size. Resolved with B26/B36 (#71, #74): the shared modal now sizes to its content.
 - **O10 — Journal's two content columns are ~39px apart** (list ends x=939, detail
   rule starts x=979) — off the 2/4/8/12/16/24/32/48 scale in both directions. No
   Figma measurement exists for this frame.

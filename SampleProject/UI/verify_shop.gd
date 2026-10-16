@@ -154,6 +154,20 @@ func _initialize() -> void:
 	ck(_modal() != null and _modal().title_label.text == "Buy %s?" % tdata.name, "\"Buy X?\" confirmation")
 	ck(_modal() != null and _modal().description_label.text == "Quantity: ◀ 1 ▶  •  Total Cost: %s" % ShopService.format_price(tdata.price),
 			"quantity and total cost")
+	# B26 (#74): Yes і No однакового розміру, хоч би на якій фокус; рамка панелі — токени.
+	await process_frame
+	var mb: Array = _modal().buttons_container.get_children().filter(func(b): return b is Button and b.visible)
+	var sizes: Array = []
+	for b in mb:
+		b.grab_focus()
+		await process_frame
+		sizes.append([mb[0].size, mb[1].size])
+	ck(mb.size() == 2 and sizes[0][0] == sizes[0][1] and sizes[1] == sizes[0],
+			"Yes and No have identical size under either focus (%s)" % str(sizes))
+	var psb: StyleBoxFlat = _modal().get_node("Panel").get_theme_stylebox("panel")
+	ck(psb.border_width_left == UITokens.BORDER_WIDTH and psb.border_width_top == UITokens.BORDER_WIDTH
+			and psb.border_width_right == UITokens.BORDER_WIDTH and psb.border_width_bottom == UITokens.BORDER_WIDTH
+			and psb.border_color == UITokens.BORDER, "modal panel border is BORDER at BORDER_WIDTH")
 	_press_modal("No")
 	await process_frame
 	ck(inv.get_item_count(id) == before, "No cancels the purchase")
