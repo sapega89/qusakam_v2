@@ -22,6 +22,11 @@ done
 **Read the `RESULT:` line, not the exit code.** Every Godot process for this project
 exits with **139 (segfault on shutdown)** — see known issue 1.
 
+**Since 2026-10-16 the suite runs through `Scripts/Tools/run_verify.sh`**, which also fails a
+script whose log contains `SCRIPT ERROR`. `RESULT: ALL PASS` alone missed runtime errors in
+coroutines: `PlayerCombat.perform_attack` hit `get_tree()` on null after the player left the
+tree mid-attack, and no test failed (`verify_combat_flow` [4] now covers it).
+
 ## Results
 
 | Script | Result | Notes |

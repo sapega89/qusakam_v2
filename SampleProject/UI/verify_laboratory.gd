@@ -27,6 +27,15 @@ func _alive(lab: Node) -> Array:
 	return lab.find_children("*", "CharacterBody2D", true, false).filter(
 			func(n): return n.is_in_group(&"enemies") and n.is_alive())
 
+## Чекає, доки cond не стане true, але не довше max_s — далі ck() скаже, чого не дочекались.
+func _until(cond: Callable, max_s: float) -> void:
+	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
+	while not cond.call() and Time.get_ticks_msec() < deadline:
+		await physics_frame
+
+func _fighting(lab: Node) -> bool:
+	return lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty()
+
 ## Гравець проходить крізь тригер на x і дочитує розмову.
 func _walk_to(game: Node, dm: Node, x: float) -> void:
 	game.player.global_position = Vector2(x, 340)
@@ -65,14 +74,16 @@ func _initialize() -> void:
 	await _walk_to(game, dm, 1600.0)
 	for i in 30: await physics_frame
 	await _drain(dm)
-	for i in 240: await physics_frame
+	await _until(func(): return _fighting(lab), 8.0)
 	ck(game.get_quest_flag("lab_limit_test_complete"), "lab_limit_test_complete set")
 	ck(lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty(),
 			"BOSS_FIGHT with enemies (%s, %d)" % [lab.get_current_state_name(), _alive(lab).size()])
-	for round in 4:
+	# Хвилі доспавнюються після смертей — добиваємо, доки бій не завершиться.
+	await _until(func():
 		for e in _alive(lab):
 			e.die()
-		await create_timer(3.0).timeout
+		return game.get_quest_flag("lab_boss_fight_complete"), 15.0)
+	await _until(func(): return dm.is_dialogue_active(), 5.0)
 	await _drain(dm)
 	ck(game.get_quest_flag("lab_boss_fight_complete"), "all dead → lab_boss_fight_complete")
 	ck(game.get_quest_flag("lab_after_boss_complete") and lab.get_current_state_name() == "AFTER_BOSS",
@@ -86,8 +97,8 @@ func _initialize() -> void:
 	game.teleport_to_room(LAB, ^"SavePoint_PreBoss")
 	for i in 20: await physics_frame
 	await _drain(dm)
-	for i in 240: await physics_frame
 	lab = game.map
+	await _until(func(): return _fighting(lab), 8.0)
 	ck(lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty(),
 			"enters in BOSS_FIGHT with enemies (%s, %d)" % [lab.get_current_state_name(), _alive(lab).size()])
 
