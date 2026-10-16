@@ -217,6 +217,8 @@ func _initialize() -> void:
 	for c in cards.slice(1):
 		others_normal = others_normal and not c.is_targeted() and not c._cursor.visible 				and c.card.get_theme_stylebox("normal").border_color == UITokens.SAVE_CARD_BORDER
 	ck(others_normal, "other cards stay normal (white)")
+	var scrim: ColorRect = ui.get_modal_layer().get_node("Blocker")
+	ck(scrim.visible and scrim.color == UITokens.OVERLAY, "modal scrim is UITokens.OVERLAY, alpha 0.56 (B33)")
 	_press_modal("No")
 	await process_frame
 	await process_frame

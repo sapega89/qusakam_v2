@@ -7,14 +7,15 @@ signal modal_closed(result: String)
 
 var active_modal: Control = null
 
-@onready var blocker: Control = $Blocker
+@onready var blocker: ColorRect = $Blocker
 @onready var container: Control = $Container
 
 func _ready() -> void:
 	visible = false
-	if blocker:
-		blocker.visible = false
-		blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Скрим — токен OVERLAY (B33); .tscn не може посилатися на const.
+	blocker.color = UITokens.OVERLAY
+	blocker.visible = false
+	blocker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if container:
 		container.visible = false
 

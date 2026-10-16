@@ -200,16 +200,6 @@ built*, not here.
   scene with it unless Q34's answer keeps it.
 - **Found:** 2026-09-29, scene inventory audit
 
-### B33 — Modal scrim is a `0.60` literal, not the `OVERLAY` token
-- **Evidence:** linear fit of `save_load_overwrite_1920.png` against
-  `save_load_load_mode_1920.png` over 350×600px of identical content
-  (x 1200–1800, y 530–880): slope **0.4001**, intercept 0.02; pure-white card
-  border 255 → 102.
-- **Expected:** `UITokens.OVERLAY = Color("000000", 0.56)` → factor 0.44 → white
-  lands on 112.
-- **Got:** factor 0.40 → 102, i.e. `Color(0, 0, 0, 0.60)`. Matches no token, so it
-  is a literal in the modal scene.
-- **Severity:** visual (colour, zero tolerance)
 
 ### B35 — Bottom bar sits on 48px margins while the screen uses 60
 - **Evidence:** `save_load_load_mode_1920.png`. Header rule spans x 59–1860,
