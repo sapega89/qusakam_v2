@@ -262,7 +262,7 @@ const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ мат
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
-const NPC_MENU_GAP := 0
+const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)
 const NPC_MENU_OFFSET := Vector2(40, -140)  # праворуч над NPC, як у 164:1302
 const LG_TAB_GAP := 16            # UI/Sidebar Tab: gap 16 у category-list
 const SIDEBAR_TAB_HEIGHT := 45

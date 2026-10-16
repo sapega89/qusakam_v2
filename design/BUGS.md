@@ -185,14 +185,6 @@ built*, not here.
   `PORTRAIT_SIZE`, HP fill `#2ecc71` ✓ `HP_FILL`, bar height 6 ✓ `BAR_HEIGHT`.
 - **Severity:** cosmetic
 
-### B40 — NPC action menu's inter-row rule is 2px while its own border is 1px
-- **Evidence:** `npc_menu_merchant_1920.png` — outer border 1px `#3a3a42` on all four
-  sides; the rule between `Talk` and `Buy` measures **2px** of `#3a3a42` — two
-  adjacent row borders with `NPC_MENU_GAP = 0`.
-- **Expected:** 1px (`BORDER_WIDTH`). 2px is `BORDER_WIDTH_SELECTED` and reads as a
-  selected edge between two unselected rows.
-- **Severity:** cosmetic
-
 ### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
 - **Where:** `SampleProject/Game.tscn:15` —
   `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
@@ -527,8 +519,8 @@ Both are "code where a scene would be conventional". See [[scene_inventory]].
   against `UI/Components/npc_action_menu.gd:2`; the other ten components in that
   folder are all `.gd` + `.tscn` pairs. `CLAUDE.md` asks for shared reusable
   components and a common Theme, which the code-built menu satisfies — nothing says
-  a component must be a scene. Parked, not a defect. Related to [[BUGS]] B40, which
-  is a real measurement on this menu.
+  a component must be a scene. Parked, not a defect. (B40, its 2px inter-row rule, fixed
+  2026-10-16 by `NPC_MENU_GAP = -BORDER_WIDTH`, #63.)
 
 ### O9–O11 — from the NPC / interaction pass, 2026-09-29
 - **O9 — pickup modal is ~440×280 design px for ~90px of content**, leaving 84px

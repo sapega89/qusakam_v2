@@ -306,6 +306,19 @@ func _initialize() -> void:
 			"menu ignores the mouse (D155)")
 	merchant.talk_dialogue = "res://dialogue_quest/any.dqd"
 	ck(merchant.menu_entries().map(func(e): return e.label) == ["Talk", "Buy"], "Talk appears when a dialogue is set")
+	# B40 (#63): Talk/Buy ділять одну 1px рамку — нижня лінія Talk і верхня Buy на тому самому пікселі.
+	merchant.interactable.interacted.emit()
+	for i in 2: await process_frame
+	var mrows: Array = merchant.npc_menu.get_children()
+	var talk_rect: Rect2 = (mrows[0] as Control).get_rect()  # у просторі списку: світ масштабує меню
+	var buy_rect: Rect2 = (mrows[1] as Control).get_rect()
+	var row_sb: StyleBoxFlat = (mrows[1] as Control).get_theme_stylebox("normal")
+	ck(mrows.size() == 2 and row_sb.border_width_top == UITokens.BORDER_WIDTH and row_sb.border_color == UITokens.BORDER
+			and is_equal_approx(buy_rect.position.y, talk_rect.end.y - UITokens.BORDER_WIDTH),
+			"Talk/Buy rule is one BORDER_WIDTH line (Talk ends %.3f, Buy starts %.3f)" % [talk_rect.end.y, buy_rect.position.y])
+	ck(is_equal_approx(merchant.npc_menu.size.x, UITokens.NPC_MENU_WIDTH), "menu width stays NPC_MENU_WIDTH")
+	merchant.npc_menu.cancelled.emit()
+	await process_frame
 	merchant.talk_dialogue = ""
 	merchant.interactable.interacted.emit()
 	for i in 2: await process_frame
