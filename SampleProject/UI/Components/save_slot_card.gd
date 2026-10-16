@@ -12,6 +12,7 @@ signal activated(slot: int)
 
 var slot: int = 0
 var summary: Dictionary = {}
+var _targeted: bool = false
 
 @onready var card: Button = %Card
 @onready var _cursor: TextureRect = %Cursor
@@ -67,6 +68,17 @@ func setup(slot_summary: Dictionary, selectable: bool) -> void:
 	_update_cursor()
 
 
+## B31 (#66): поки модалка підтверджує дію над цим слотом, картка тримає вигляд вибраної.
+func set_targeted(on: bool) -> void:
+	_targeted = on
+	card.theme_type_variation = &"SaveSlotCardTargeted" if on else &"SaveSlotCard"
+	_update_cursor()
+
+
+func is_targeted() -> bool:
+	return _targeted
+
+
 func is_selectable() -> bool:
 	return card.focus_mode != Control.FOCUS_NONE
 
@@ -89,4 +101,4 @@ static func format_playtime(seconds: float) -> String:
 
 
 func _update_cursor() -> void:
-	_cursor.visible = card.has_focus()
+	_cursor.visible = card.has_focus() or _targeted

@@ -197,14 +197,26 @@ func _initialize() -> void:
 	var vp_center: Vector2 = m.get_viewport_rect().size / 2.0
 	ck(panel.get_global_rect().get_center().distance_to(vp_center) < 1.0,
 			"overwrite modal centred (%s vs %s)" % [panel.get_global_rect().get_center(), vp_center])
+	# B31 (#66): ціль перезапису лишається вибраною під модалкою, решта — звичайні.
+	var tsb: StyleBoxFlat = cards[0].card.get_theme_stylebox("normal")
+	ck(cards[0].is_targeted() and tsb.border_color == UITokens.ACCENT
+			and tsb.border_width_left == UITokens.BORDER_WIDTH_SELECTED, "overwrite target keeps the accent 2px border while the modal is open")
+	ck(cards[0]._cursor.visible, "overwrite target keeps its cursor while the modal is open")
+	var others_normal := true
+	for c in cards.slice(1):
+		others_normal = others_normal and not c.is_targeted() and not c._cursor.visible 				and c.card.get_theme_stylebox("normal").border_color == UITokens.SAVE_CARD_BORDER
+	ck(others_normal, "other cards stay normal (white)")
 	_press_modal("No")
 	await process_frame
+	await process_frame
 	ck(calls[0] == 1 and _modal() == null, "No cancels without saving")
+	ck(not cards[0].is_targeted() and get_root().gui_get_focus_owner() == cards[0].card, "No returns focus to the target slot, not stuck targeted")
 	menu._on_slot_activated(1)
 	await process_frame
 	_press_modal("Yes")
 	await process_frame
 	ck(calls[0] == 2, "Yes saves")
+	ck(not cards[0].is_targeted(), "Yes clears the target state")
 	ck(_modal() != null and _modal().title_label.text == "Game Saved", "success after overwrite")
 	_press_modal("OK")
 	await process_frame

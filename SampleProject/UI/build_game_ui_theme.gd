@@ -868,6 +868,9 @@ func _save_slots(theme: Theme) -> void:
 	theme.set_stylebox("hover", t, selected)
 	theme.set_stylebox("hover_pressed", t, selected)
 	theme.set_stylebox("focus", t, selected)
+	# B31 (#66): ціль відкритої модалки (Overwrite Save?) лишається вибраною без фокусу.
+	theme.set_type_variation("SaveSlotCardTargeted", t)
+	theme.set_stylebox("normal", "SaveSlotCardTargeted", selected)
 
 	var rows := {
 		"SaveTopSection": ["VBoxContainer", UITokens.SAVE_TOP_GAP],

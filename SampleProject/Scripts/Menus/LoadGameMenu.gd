@@ -126,9 +126,13 @@ func _on_slot_activated(slot: int) -> void:
 	var exists := bool(summary.get("exists", false))
 	if mode == "save":
 		if exists:
+			_cards[slot - 1].set_targeted(true)
 			_show_modal(MODAL_TEMPLATES.overwrite_save(), func(result: String):
+				_cards[slot - 1].set_targeted(false)
 				if result == "confirm":
-					_save_to_slot(slot))
+					_save_to_slot(slot)
+				else:
+					_restore_focus())
 		else:
 			_save_to_slot(slot)
 	elif exists:

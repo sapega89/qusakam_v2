@@ -197,20 +197,6 @@ built*, not here.
   scene with it unless Q34's answer keeps it.
 - **Found:** 2026-09-29, scene inventory audit
 
-### B31 — Overwrite confirmation never says which save it is about to destroy
-- **Where:** Save mode → overwrite modal, and the slot list behind it.
-- **Evidence:** `save_load_overwrite_1920.png`. Every card border measures
-  `#666666` = `#ffffff × 0.40` (the scrim). Gold under the same scrim would read
-  `#554616` — so slot 1's border is dimmed **white**, not dimmed gold, although it
-  was `#d4af37` in `save_load_load_mode_1920.png`. The cursor chevron at x≈88
-  (present in load mode at y 225) is gone. Modal copy: *"Overwrite Save?" / "This
-  will replace the existing save data."* — no slot number, no location, no date.
-- **Expected:** the target slot keeps its accent border and cursor while the modal
-  is open (load mode renders both), and/or the modal names the slot.
-- **Got:** nothing on screen identifies which save dies.
-- **Severity:** blocker — destructive action with no target shown.
-- **Found:** 2026-09-29, screenshot review (agent pass, pixel-measured).
-
 ### B33 — Modal scrim is a `0.60` literal, not the `OVERLAY` token
 - **Evidence:** linear fit of `save_load_overwrite_1920.png` against
   `save_load_load_mode_1920.png` over 350×600px of identical content
