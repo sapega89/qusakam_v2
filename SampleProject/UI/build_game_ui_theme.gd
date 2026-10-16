@@ -927,11 +927,15 @@ func _setup_progress_bar(theme: Theme) -> void:
 # ── Скролбари (Figma UI/Scrollbar — 10px, без заокруглень) ──────────────────
 
 func _setup_scrollbars(theme: Theme) -> void:
+	# Товщину смуги дають поля стилю (B18: з нульовими полями смуга була 0px — невидима).
+	var half: int = int(UITokens.SCROLLBAR_WIDTH / 2.0)
 	for t in ["VScrollBar", "HScrollBar"]:
-		theme.set_stylebox("scroll", t, _box(Color(UITokens.BACKGROUND, 0.6), Color(0, 0, 0, 0), 0, 0, 0))
-		theme.set_stylebox("grabber", t, _box(UITokens.BORDER, Color(0, 0, 0, 0), 0, 0, 0))
-		theme.set_stylebox("grabber_highlight", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
-		theme.set_stylebox("grabber_pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, 0, 0))
+		var pad_h: int = half if t == "VScrollBar" else 0
+		var pad_v: int = 0 if t == "VScrollBar" else half
+		theme.set_stylebox("scroll", t, _box(Color(UITokens.BACKGROUND, 0.6), Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("grabber", t, _box(UITokens.BORDER, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("grabber_highlight", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+		theme.set_stylebox("grabber_pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 
 
 # ── LineEdit / HSlider (потрібні для екрана налаштувань) ────────────────────

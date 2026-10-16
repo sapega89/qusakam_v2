@@ -335,6 +335,29 @@ func _apply_and_save() -> void:
 ## Тему не застосовуємо до нього глобально — лише вирівнюємо межі контейнера.
 func _style_input_menu() -> void:
 	_input_menu.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# B21: та сама колонка, що й у рядків Audio/Game — внутрішній відступ рядка, без зсуву вгорі.
+	for side in ["left", "right"]:
+		_input_menu.add_theme_constant_override("margin_" + side, UITokens.SETTINGS_ROW_PAD_H)
+	for side in ["top", "bottom"]:
+		_input_menu.add_theme_constant_override("margin_" + side, 0)
+	var actions: ScrollContainer = _input_menu.get_node(^"%InputActionsList")
+	if not actions.sort_children.is_connected(_clip_input_rows):
+		actions.sort_children.connect(_clip_input_rows)
+		actions.get_node(^"%ParentBoxContainer").sort_children.connect(_clip_input_rows)
+
+
+## B18: рядок біндингів або видно цілком, або не видно зовсім — половинок на краю вʼюпорта
+## немає. Прихований рядок не ловить мишу, але лишається у фокус-навігації: follow_focus
+## прокручує його у вʼюпорт, і він знову зʼявляється.
+func _clip_input_rows() -> void:
+	var actions: ScrollContainer = _input_menu.get_node(^"%InputActionsList")
+	var view: Rect2 = actions.get_global_rect()
+	for row in actions.get_node(^"%ParentBoxContainer").get_children():
+		var whole: bool = view.encloses(row.get_global_rect())
+		row.modulate.a = 1.0 if whole else 0.0
+		for child in row.get_children():
+			if child is BaseButton:
+				child.mouse_filter = Control.MOUSE_FILTER_STOP if whole else Control.MOUSE_FILTER_IGNORE
 
 
 # ── Mode behaviour (без змін) ───────────────────────────────────────────────

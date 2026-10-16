@@ -57,6 +57,46 @@ func _press(opts: Node, title: String, cell_text: String) -> bool:
 const TEST_DIR := "user://verify_settings/"
 
 
+## Рядки віджета maaacks: заголовок колонок + по рядку на дію (шаблон ActionBoxContainer прихований).
+func _action_rows(actions: Node) -> Array:
+	var out: Array = []
+	for row in actions.get_node(^"%ParentBoxContainer").get_children():
+		if row.visible:
+			out.append(row)
+	return out
+
+
+## Назва першого НАМАЛЬОВАНОГО рядка, що перетинає край вʼюпорта; "" — таких немає.
+func _half_cut_row(actions: Control) -> String:
+	var view: Rect2 = actions.get_global_rect()
+	for row in _action_rows(actions):
+		var r: Rect2 = row.get_global_rect()
+		if row.modulate.a > 0.0 and not view.encloses(r):
+			return row.get_child(0).text if row.get_child(0) is Label else str(row.name)
+	return ""
+
+
+func _wheel(target: Control, button: MouseButton) -> void:
+	var pos: Vector2 = target.get_global_rect().get_center()
+	for pressed in [true, false]:
+		var ev := InputEventMouseButton.new()
+		ev.button_index = button
+		ev.pressed = pressed
+		ev.factor = 1.0
+		ev.position = pos
+		ev.global_position = pos
+		root.push_input(ev)
+
+
+func _key(code: Key) -> void:
+	for pressed in [true, false]:
+		var ev := InputEventKey.new()
+		ev.keycode = code
+		ev.physical_keycode = code
+		ev.pressed = pressed
+		root.push_input(ev)
+
+
 func _initialize() -> void:
 	await process_frame
 	await process_frame
@@ -219,6 +259,59 @@ func _initialize() -> void:
 		"res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_actions_list.gd",
 		FileAccess.READ).get_as_text()
 	ck(addon_src.find("action_add_event") != -1, "addon still owns rebinding behaviour")
+
+	print("[16] B18: controls viewport fills the panel, rows are never half-cut (#79)")
+	var body: Control = opts.get_node(^"%Body")
+	var actions: ScrollContainer = input_menu.get_node(^"%InputActionsList")
+	var mapping: VBoxContainer = actions.get_parent()
+	var used: float = 0.0
+	for child in mapping.get_children():
+		if child != actions and child.visible:
+			used += child.size.y + mapping.get_theme_constant("separation")
+	ck(actions.size.y >= body.size.y - used - 1.0,
+			"viewport %.0fpx fills the panel %.0fpx minus title and Reset %.0fpx" % [actions.size.y, body.size.y, used])
+	var vbar: VScrollBar = actions.get_v_scroll_bar()
+	ck(vbar.max_value > vbar.page, "list is taller than the viewport (%.0f > %.0f)" % [vbar.max_value, vbar.page])
+	ck(vbar.is_visible_in_tree() and vbar.size.x == tokens.SCROLLBAR_WIDTH,
+			"scrollbar visible, %.0fpx wide" % vbar.size.x)
+	var cut: Array = []
+	var offset := 0.0
+	while offset <= vbar.max_value:
+		vbar.value = offset
+		await process_frame
+		await process_frame
+		var bad: String = _half_cut_row(actions)
+		if bad != "":
+			cut.append("%s@%d" % [bad, int(vbar.value)])
+		offset += 7.0
+	ck(cut.is_empty(), "no drawn row crosses the viewport edge at any offset (%s)" % str(cut))
+	var rows: Array = _action_rows(actions)
+	var last_row: Control = rows[-1]
+	vbar.value = 0.0
+	for i in 3: await process_frame
+	ck(last_row.modulate.a == 0.0, "last row starts hidden below the viewport")
+	for i in 40:
+		_wheel(actions, MOUSE_BUTTON_WHEEL_DOWN)
+		await process_frame
+	for i in 3: await process_frame
+	ck(last_row.modulate.a == 1.0 and actions.get_global_rect().encloses(last_row.get_global_rect()),
+			"mouse wheel reaches the last row (%s)" % last_row.get_child(0).text)
+	vbar.value = 0.0
+	for i in 3: await process_frame
+	(rows[1].get_child(1) as Control).grab_focus()
+	await process_frame
+	for i in rows.size() - 2:  # з першої дії до останньої
+		_key(KEY_DOWN)
+		await process_frame
+		await process_frame
+	for i in 3: await process_frame
+	var focused: Control = root.gui_get_focus_owner()
+	ck(focused != null and focused.get_parent() == last_row,
+			"keyboard Down reaches the last row (%s)" % (focused.get_parent().get_child(0).text if focused else "-"))
+	ck(last_row.modulate.a == 1.0 and actions.get_global_rect().encloses(last_row.get_global_rect()),
+			"focused last row is drawn whole")
+	ck(_half_cut_row(actions) == "", "no half-cut row after keyboard scrolling")
+	vbar.value = 0.0
 
 	print("[9] persistence round trip")
 	opts.switch_to_tab("audio")

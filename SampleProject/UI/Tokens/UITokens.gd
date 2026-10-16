@@ -147,6 +147,8 @@ const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320
 const SETTINGS_HEADER_ICON := 64
 const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
+# Figma: UI/Scrollbar 222:4768 — 10px, без заокруглень
+const SCROLLBAR_WIDTH := 10
 
 # ── Підказка взаємодії (Figma: UI/Interaction/Prompt 461:6479, D74/D84) ────
 # Покращений варіант (D84): ширина за вмістом, текст 14–16 px (беремо Label 16),

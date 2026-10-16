@@ -287,33 +287,33 @@ color = Color(0.61960787, 0.105882354, 0.105882354, 0.8)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lemwo"]
 content_margin_left = 0.0
-content_margin_top = 0.0
+content_margin_top = 5.0
 content_margin_right = 0.0
-content_margin_bottom = 0.0
+content_margin_bottom = 5.0
 bg_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kqaw4"]
 content_margin_left = 0.0
-content_margin_top = 0.0
+content_margin_top = 5.0
 content_margin_right = 0.0
-content_margin_bottom = 0.0
+content_margin_bottom = 5.0
 bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sewtk"]
 content_margin_left = 0.0
-content_margin_top = 0.0
+content_margin_top = 5.0
 content_margin_right = 0.0
-content_margin_bottom = 0.0
+content_margin_bottom = 5.0
 bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5ypu5"]
 content_margin_left = 0.0
-content_margin_top = 0.0
+content_margin_top = 5.0
 content_margin_right = 0.0
-content_margin_bottom = 0.0
+content_margin_bottom = 5.0
 bg_color = Color(0.06666667, 0.06666667, 0.09411765, 0.6)
 border_color = Color(0, 0, 0, 0)
 
@@ -1523,33 +1523,33 @@ border_width_bottom = 2
 border_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tj2nq"]
-content_margin_left = 0.0
+content_margin_left = 5.0
 content_margin_top = 0.0
-content_margin_right = 0.0
+content_margin_right = 5.0
 content_margin_bottom = 0.0
 bg_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blt53"]
-content_margin_left = 0.0
+content_margin_left = 5.0
 content_margin_top = 0.0
-content_margin_right = 0.0
+content_margin_right = 5.0
 content_margin_bottom = 0.0
 bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbkih"]
-content_margin_left = 0.0
+content_margin_left = 5.0
 content_margin_top = 0.0
-content_margin_right = 0.0
+content_margin_right = 5.0
 content_margin_bottom = 0.0
 bg_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
 border_color = Color(0, 0, 0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_io3ft"]
-content_margin_left = 0.0
+content_margin_left = 5.0
 content_margin_top = 0.0
-content_margin_right = 0.0
+content_margin_right = 5.0
 content_margin_bottom = 0.0
 bg_color = Color(0.06666667, 0.06666667, 0.09411765, 0.6)
 border_color = Color(0, 0, 0, 0)

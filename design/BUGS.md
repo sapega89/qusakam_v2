@@ -289,18 +289,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   container separation in the scene before acting; this is a glyph-extent estimate.
 - **Severity:** cosmetic
 
-### B18 — Controls list is clipped mid-row with ~180px of empty panel below it
-- **Where:** Settings → Controls, the Actions & Inputs table viewport.
-- **Evidence:** `settings_controls_1920.png` — row pitch is a consistent 48px and
-  rows 1–8 render whole, but "Skill Slot 3" (y≈742) is sliced horizontally at
-  y≈752. Reset starts at y≈758; below it the panel is empty to the footer divider
-  at y≈963. No scrollbar is visible.
-- **Expected:** the viewport uses the available panel height, and a row is either
-  fully shown or fully outside it.
-- **Got:** a half-height row stub, and any further bindings unreachable.
-- **Severity:** blocker
-- **Found:** 2026-09-29, screenshot review (agent pass).
-
 ### B19 — "Attack" row puts gamepad bindings in the keyboard columns, with two naming schemes
 - **Where:** Settings → Controls, Attack row (y≈598).
 - **Evidence:** `settings_controls_1920.png` — Primary = `Button #0`,
