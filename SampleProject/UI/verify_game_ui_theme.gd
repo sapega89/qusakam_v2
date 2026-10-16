@@ -13,6 +13,7 @@ extends SceneTree
 
 const THEME_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
 const UI_ROOT := "res://SampleProject/Scenes/UI/ui_root.tscn"
+const DIALOGUE_SYSTEM := "res://SampleProject/Scenes/DialogueSystem.tscn"
 const ADDON_SCENE := "res://addons/maaacks_menus_template/examples/scenes/windows/pause_menu.tscn"
 
 var _failures: Array[String] = []
@@ -84,6 +85,23 @@ func _initialize() -> void:
 
 	var modal_container: Control = ui_root.get_node("ModalLayer/Container")
 	_check(modal_container.theme == theme, "ModalLayer/Container.theme is GameUITheme")
+
+	print("\n[3b] Dialogue bar Auto/Skip take the shared Button look (B27, #75)")
+	var dsys: Node = (load(DIALOGUE_SYSTEM) as PackedScene).instantiate()
+	root.add_child(dsys)
+	await process_frame
+	var dbox = dsys.get_node("DialogueBox")
+	for on in [false, true]:
+		dbox.set_auto_button_active(on)
+		dbox.set_skip_button_active(on)
+		for b: Button in [dbox.get_auto_button(), dbox.get_skip_button()]:
+			var v: StringName = b.theme_type_variation
+			_check(v == &"" or theme.get_type_variation_base(v) == &"Button",
+					"%s (on=%s) variation '%s' is a Button type in GameUITheme" % [b.name, on, v])
+			for state in ["normal", "focus"]:
+				_check(b.get_theme_stylebox(state) == theme.get_stylebox(state, "Button"),
+						"%s (on=%s) %s == shared Button %s" % [b.name, on, state, state])
+	dsys.queue_free()
 
 	print("\n[4] Third-party UI isolation")
 	var outside := Button.new()

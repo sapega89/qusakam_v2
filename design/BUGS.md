@@ -264,6 +264,11 @@ built*, not here.
 - **Got:** three appearances across two modals, and grey fill means "normal" in one
   and "focused" in the other.
 - **Severity:** visual
+- **Partly fixed 2026-10-16 (#75):** `GameUITheme` now defines `ButtonActivated` (base `Button`, no own
+  values), so the DialogueQuest Auto/Skip buttons resolve the shared `Button` normal / focus styles in both
+  states (`verify_game_ui_theme.gd` [3b]); no addon edit. Modal buttons were already plain `Button`.
+  **Deferred (Sapega, 2026-10-16):** a distinct tokened "on" state for Auto/Skip (criterion 2) moves to the
+  D110 dialogue presentation work (#24); #89 hides those buttons in the meantime.
 
 ### B28 — Misc submenu selection ignores the accent language used everywhere else
 - **Where:** Menu → Misc submenu (`misc_modal_1920.png`, x 381–846, y 533–580).

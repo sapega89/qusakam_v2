@@ -1615,6 +1615,7 @@ Button/styles/focus = SubResource("StyleBoxFlat_oyy7b")
 Button/styles/hover = SubResource("StyleBoxFlat_sadpi")
 Button/styles/normal = SubResource("StyleBoxFlat_wa1c1")
 Button/styles/pressed = SubResource("StyleBoxFlat_xvpkx")
+ButtonActivated/base_type = &"Button"
 CaptionLabel/base_type = &"Label"
 CaptionLabel/colors/font_color = Color(0.6313726, 0.6313726, 0.6313726, 1)
 CaptionLabel/font_sizes/font_size = 15

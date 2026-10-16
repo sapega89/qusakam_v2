@@ -222,6 +222,9 @@ func _setup_button(theme: Theme) -> void:
 	theme.set_stylebox("pressed", "Button", _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
 	theme.set_stylebox("focus", "Button", _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
 	theme.set_stylebox("disabled", "Button", _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
+	# B27 (#75): DialogueQuest Auto/Skip ставлять цю варіацію; без власних значень вона = базова Button.
+	# Окремий стан "увімкнено" відкладено до D110 (#24).
+	theme.set_type_variation("ButtonActivated", "Button")
 
 
 func _setup_button_variations(theme: Theme) -> void:
