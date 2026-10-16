@@ -165,18 +165,18 @@ func _add_separator() -> void:
 	var line := HSeparator.new()
 	var box := StyleBoxLine.new()
 	box.color = UITokens.BORDER
-	box.thickness = UITokens.BORDER_WIDTH
+	box.thickness = UITokens.SETTINGS_ROW_GAP
 	line.add_theme_stylebox_override("separator", box)
+	line.add_theme_constant_override("separation", UITokens.SETTINGS_ROW_GAP)
 	_list.add_child(line)
 
 
-## Figma 17:325 — px16 py14, назва ліворуч, контрол праворуч.
-func _make_row(label_text: String) -> HBoxContainer:
+## Figma 17:325 — px16, назва ліворуч, контрол праворуч; висота рядка з Figma, вміст по центру (B21).
+func _make_row(label_text: String, height: int) -> HBoxContainer:
 	var margin := MarginContainer.new()
+	margin.custom_minimum_size.y = height
 	margin.add_theme_constant_override("margin_left", UITokens.SETTINGS_ROW_PAD_H)
 	margin.add_theme_constant_override("margin_right", UITokens.SETTINGS_ROW_PAD_H)
-	margin.add_theme_constant_override("margin_top", UITokens.SETTINGS_ROW_PAD_V)
-	margin.add_theme_constant_override("margin_bottom", UITokens.SETTINGS_ROW_PAD_V)
 	var row := HBoxContainer.new()
 	row.name = label_text
 	margin.add_child(row)
@@ -193,7 +193,7 @@ func _make_row(label_text: String) -> HBoxContainer:
 ## Figma 17:350 — дві комірки в спільній рамці, вибрана має акцентну заливку.
 func _add_segment_row(label_text: String, options: Array, selected: int,
 		on_change: Callable) -> void:
-	var row := _make_row(label_text)
+	var row := _make_row(label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
 	var frame := PanelContainer.new()
 	frame.name = "Segments"
 	var box := StyleBoxFlat.new()
@@ -220,7 +220,7 @@ func _add_segment_row(label_text: String, options: Array, selected: int,
 
 ## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100.
 func _add_slider_row(label_text: String, key: String) -> void:
-	var row := _make_row(label_text)
+	var row := _make_row(label_text, UITokens.SETTINGS_SLIDER_ROW_HEIGHT)
 	var group := HBoxContainer.new()
 	group.name = "Slider"
 	group.add_theme_constant_override("separation", UITokens.SPACE_LG)

@@ -143,7 +143,10 @@ const SETTINGS_TAB_HEIGHT := 40
 const SETTINGS_TAB_BOX := 36
 const SETTINGS_POINTER := 16
 const SETTINGS_ROW_PAD_H := 16
-const SETTINGS_ROW_PAD_V := 14
+# Figma settings-audio 17:409 / settings-gameplay 17:632: висота рядка, мітка по центру (B21).
+const SETTINGS_SLIDER_ROW_HEIGHT := 50
+const SETTINGS_CHOICE_ROW_HEIGHT := 68
+const SETTINGS_ROW_GAP := 2   # лінія між рядками (крок 52 / 70)
 const SETTINGS_STEPPER_WIDTH := 280
 const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320

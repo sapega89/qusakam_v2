@@ -330,6 +330,26 @@ func _initialize() -> void:
 					"%s %s matches audio (%.0f vs %.0f)" % [tab, ["left edge", "right edge", "first-row y"][k],
 					columns[tab][k], columns["audio"][k]])
 
+	print("[18b] B21: Figma row heights — slider 50 (17:409), choice 68 (17:632), 2px between, label centred (#82)")
+	for spec in [["audio", UITokens.SETTINGS_SLIDER_ROW_HEIGHT], ["game", UITokens.SETTINGS_CHOICE_ROW_HEIGHT],
+			["display", UITokens.SETTINGS_CHOICE_ROW_HEIGHT]]:
+		opts.switch_to_tab(spec[0])
+		for i in 4: await process_frame
+		var rows: Array = []
+		for child in opts._list.get_children():
+			if child is MarginContainer:
+				rows.append(child)
+		for row: Control in rows:
+			var label: Control = row.get_child(0).get_child(0)
+			var row_mid: float = row.get_global_rect().get_center().y
+			ck(is_equal_approx(row.size.y, spec[1]) and absf(label.get_global_rect().get_center().y - row_mid) <= 1.0,
+					"%s row '%s' %.0fpx (want %d), label centre %.0f vs row %.0f" % [spec[0], row.get_child(0).name,
+					row.size.y, spec[1], label.get_global_rect().get_center().y, row_mid])
+		for i in range(1, rows.size()):
+			var pitch: float = rows[i].global_position.y - rows[i - 1].global_position.y
+			ck(is_equal_approx(pitch, spec[1] + UITokens.SETTINGS_ROW_GAP),
+					"%s row pitch %.0f == %d + %d" % [spec[0], pitch, spec[1], UITokens.SETTINGS_ROW_GAP])
+
 	opts.switch_to_tab("controls")
 	for i in 3: await process_frame
 	print("[16] B18: controls viewport fills the panel, rows are never half-cut (#79)")

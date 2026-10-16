@@ -308,26 +308,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   does not cover it**.
 - **Severity:** visual
 
-### B21 — Content column geometry differs between Settings tabs
-- **Where:** Settings → Audio / Game vs Controls.
-- **Evidence:** `settings_audio_1920.png` and `settings_game_1920.png` run rows
-  from label x≈431 to control edge x≈1503; `settings_controls_1920.png` occupies
-  only x≈688–1248 — about 257px more inset on the left. Separately, the first row
-  sits at y≈167 on Audio but y≈175 on Game, ~9px apart, roughly one spacing step,
-  despite identical header geometry (eyebrow y≈58, title y≈96).
-- **Expected:** one shared content column and one shared top padding across tabs.
-- **Severity:** visual
-- **Note:** the horizontal inset may fall under **D48** if that decision is read to
-  cover the third-party widget's layout as well as its paint. The ~9px vertical
-  difference between Audio and Game does not — both are ours.
-- **Partly fixed 2026-10-16 (#79/#82):** the column is shared — Audio, Game and
-  Controls content runs x 432–1504 and every first row box starts at y 146
-  (`verify_settings.gd` [18]). **Still open:** the first *label* sits at y 160 on
-  Audio and y 168 on Game, because the Language row (segmented control, 74px)
-  is taller than a slider row (57px) and the label is centred in it. Fixing it
-  needs the Figma row height of `settings-audio 17:409` vs `settings-gameplay
-  17:632` (68px or 50/51px) — not read yet.
-
 ### B22 — Volume steppers have no control chrome
 - **Where:** Settings → Audio, the `-` / `+` beside each slider (x≈1076, x≈1444).
 - **Evidence:** `settings_audio_1920.png` — bare glyphs directly on the background.
