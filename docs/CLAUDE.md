@@ -25,7 +25,8 @@ godot --path . res://SampleProject/MainMenu.tscn
 godot --headless --path . --script res://SampleProject/UI/verify_<area>.gd
 ```
 
-**Test suite:** the `SampleProject/UI/verify_*.gd` scripts (23 as of 2026-09-27).
+**Test suite:** the `SampleProject/UI/verify_*.gd` scripts, one per area (`ls SampleProject/UI/verify_*.gd`);
+run them all with `Scripts/Tools/run_verify.sh`.
 There are **no GUT tests** — `tests/` does not exist and GUT runs zero tests.
 - Read the `RESULT:` line, not the exit code: every run of this project segfaults on
   shutdown (exit 139), see `design/test_baseline.md`.
@@ -173,7 +174,7 @@ DebugLogger.error("Error", "Category")
 
 ### Critical
 - **MetroidvaniaSystem** - Map/room management
-- **GUT** - Testing framework
+- **GUT** - installed, but the project has no GUT tests (see Run Tests)
 - **DialogueQuest** - Dialogue system
 
 ### Installed
@@ -237,7 +238,7 @@ Key fixes:
 - `SENIOR_DEV_ANALYSIS.md` - Architecture analysis
 
 **Testing:**
-- `tests/README.md` - Test organization
+- `design/test_baseline.md` - Test baseline and known issues
 - `DEMO_TEST_PLAN.md` - Manual test plan
 
 ## Quick Reference

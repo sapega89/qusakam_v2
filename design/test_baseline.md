@@ -101,3 +101,16 @@ These are baseline noise. A later slice is only responsible for **new** entries.
 | New errors | — | none beyond the known issues above (missing item icons D5 add warnings in shop tests) |
 
 Known issues 1, 3, 4, 5 and 6 are unchanged.
+
+## Full run — 2026-10-18, after the combat fixes (B57–B64)
+
+`Scripts/Tools/run_verify.sh` on `feature/backlog`, Godot 4.6.2 console build, headless:
+**45 / 45 PASS, 0 SCRIPT ERROR** (the count of scripts is `ls SampleProject/UI/verify_*.gd`; it grows).
+
+The run before the fixes, same day: 44 pass, `verify_settings` HUNG — B63/B64 (the in-game
+Settings → Exit to Main Menu did nothing, and its stale screen stayed in `UIRoot`).
+
+New coverage: `verify_combat_flow` [0] spawn on the floor and moving with the room, [0b] enemy
+passes through the player (D197), [1] one hit = one damage event, [1b] a miss, [1c] the hit equals
+Phys. Atk. and grows with the weapon (D199), [2b] invulnerability frames, [2c] enemy wind-up /
+facing / height / no friendly fire (D198); `verify_map_geometry` [5] every spawn point stands on a tile.
