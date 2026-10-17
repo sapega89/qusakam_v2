@@ -6,20 +6,11 @@ class_name EnemyWithCollectibleDrop
 @export var collectible_scene_path: String = "res://SampleProject/Objects/Collectible.tscn"
 @export var collectible_node_path: NodePath = NodePath("../EnemyCollectible")
 
-# Посилання на DamageApplier
-var damage_applier: DamageApplier = null
 var collectible: Node2D = null
 
 func _ready():
 	# Вызываем родительский _ready()
 	super._ready()
-	
-	# Находим DamageApplier
-	damage_applier = get_node_or_null("hitbox/DamageApplier")
-	if damage_applier:
-		print("💎 EnemyWithCollectibleDrop: DamageApplier найден")
-	else:
-		print("⚠️ EnemyWithCollectibleDrop: DamageApplier не найден, урон будет через прямые вызовы")
 	
 	# Находим Collectible в сцене
 	if collectible_node_path and not collectible_node_path.is_empty():
@@ -35,24 +26,6 @@ func _ready():
 			collectible = parent.get_node_or_null("EnemyCollectible")
 			if collectible:
 				print("💎 EnemyWithCollectibleDrop: Collectible найден по имени")
-
-func start_attack():
-	# Вызываем родительский метод
-	super.start_attack()
-	
-	# Активируем DamageApplier, если он есть
-	if damage_applier:
-		damage_applier.enable_damage()
-		print("💎 EnemyWithCollectibleDrop: DamageApplier активирован")
-
-func end_attack():
-	# Деактивируем DamageApplier, если он есть
-	if damage_applier:
-		damage_applier.disable_damage()
-		print("💎 EnemyWithCollectibleDrop: DamageApplier деактивирован")
-	
-	# Вызываем родительский метод
-	super.end_attack()
 
 func die():
 	# Вызываем родительский метод die()

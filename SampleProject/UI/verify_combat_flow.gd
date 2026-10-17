@@ -130,6 +130,44 @@ func _initialize() -> void:
 	enemies[2].take_damage(1)
 	enemies[2].take_damage(1)
 	ck(enemies[2].current_health == enemy_hp - 2, "an enemy (no invulnerability) takes both hits (%d → %d)" % [enemy_hp, enemies[2].current_health])
+
+	print("[2c] Enemy attack: wind-up, then the hitbox in front (B59, D198)")
+	var attacker = enemies[1]
+	var buddy = enemies[2]
+	var hits_p: Array = []
+	game.player.damage_token.connect(func(d: int) -> void: hits_p.append(d))
+	var swing: float = attacker.attack_windup + attacker.attack_active_time + 0.15
+	await create_timer(0.6).timeout  # невразливість гравця з [2b] минула
+	game.player.global_position = Vector2(attacker.global_position.x + 40, game.player.global_position.y)
+	await create_timer(0.2).timeout
+	attacker.enemy_logic.last_direction = 1
+	attacker.enemy_logic.perform_attack()
+	await create_timer(attacker.attack_windup * 0.5).timeout
+	ck(hits_p.is_empty(), "no damage during the wind-up (got %s)" % [hits_p])
+	await create_timer(swing).timeout
+	ck(hits_p == [int(attacker.damage)], "the swing hits the player in front once (got %s)" % [hits_p])
+
+	await create_timer(0.6).timeout
+	hits_p.clear()
+	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
+	await create_timer(0.2).timeout
+	attacker.enemy_logic.perform_attack()  # last_direction = 1: гравець за спиною
+	await create_timer(swing).timeout
+	ck(hits_p.is_empty(), "the player behind the enemy is not hit (got %s)" % [hits_p])
+
+	game.player.set_physics_process(false)
+	game.player.global_position = attacker.global_position + Vector2(40, -90)
+	attacker.enemy_logic.perform_attack()
+	await create_timer(swing).timeout
+	ck(hits_p.is_empty(), "the player above the enemy is not hit (got %s)" % [hits_p])
+	game.player.set_physics_process(true)
+
+	game.player.global_position = attacker.global_position + Vector2(-400, 0)
+	buddy.global_position = attacker.global_position + Vector2(40, 0)
+	var buddy_hp: int = buddy.current_health
+	attacker.enemy_logic.perform_attack()
+	await create_timer(swing).timeout
+	ck(buddy.current_health == buddy_hp, "an enemy's swing does not hurt another enemy (%d → %d)" % [buddy_hp, buddy.current_health])
 	for e in enemies:
 		e.set_physics_process(true)
 

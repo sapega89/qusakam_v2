@@ -86,12 +86,6 @@ built*, not here.
 
 ---
 
-### B59 — Enemy attack is an instant distance check
-- **Where:** `Scripts/Gameplay/Components/EnemyLogic.gd` `perform_attack`.
-- **Expected:** D198 — 0.4 s wind-up, then the hitbox in the facing direction for 0.2 s.
-- **Got:** `player.take_damage` the moment the attack starts if within `attack_range × 1.2` — from above, behind or through walls.
-- **Severity:** blocker; found 2026-10-18, combat audit.
-
 ### B62 — Equipped weapon does not change the player's hit
 - **Where:** `Scripts/Player/Components/PlayerCombat.gd` (`base_damage` + level bonus only).
 - **Expected:** D199 — Phys. Atk. from `GameManager.calculate_physical_damage()` + level bonus.

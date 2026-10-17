@@ -13,6 +13,9 @@ class_name EnemyStats
 @export_group("Combat")
 @export var base_damage: float = 10.0
 @export var attack_cooldown: float = 1.5
+## D198 (мок): замах перед ударом, потім хітбокс у бік погляду живий attack_active_time секунд.
+@export var attack_windup: float = 0.4
+@export var attack_active_time: float = 0.2
 
 @export_group("Detection")
 @export var detection_range: float = 300.0

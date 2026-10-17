@@ -25,6 +25,7 @@ var health_bar: HealthBar = null  # Unified HealthBar (ЭТАП 2.2 ✅)
 @onready var anim_player: AnimationPlayer = $AnimationPlayer
 @onready var body_collision: CollisionShape2D = $CollisionShape2D
 @onready var hitbox_collision: CollisionShape2D = $hitbox/CollisionShape2D
+@onready var hitbox_damage: DamageApplier = $hitbox/DamageApplier
 @onready var detection_area: Area2D = $dettection
 @onready var detection_collision: CollisionShape2D = $dettection/CollisionShape2D
 
@@ -34,6 +35,9 @@ var base_damage = 10.0
 var damage = 10.0
 var last_attack_time = 0.0
 var attack_cooldown = 1.5
+## D198: замах і тривалість удару (EnemyStats перезаписує).
+var attack_windup := 0.4
+var attack_active_time := 0.2
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -74,8 +78,9 @@ func _ready():
 	is_invulnerable = false
 	invulnerability_duration = 0.0
 
-	# Скрываем hit area по умолчанию
-	hitbox.visible = false
+	# Хітбокс удару (B59/D198): смуга довжиною attack_range перед ворогом, висота — зі сцени.
+	# Форма local_to_scene: у кожного ворога своя довжина.
+	hitbox_collision.shape.size.x = attack_range
 	hitbox.monitoring = false
 	hitbox.monitorable = false
 
@@ -98,6 +103,8 @@ func _apply_stats(stats: EnemyStats) -> void:
 	base_damage = stats.base_damage
 	damage = stats.base_damage
 	attack_cooldown = stats.attack_cooldown
+	attack_windup = stats.attack_windup
+	attack_active_time = stats.attack_active_time
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range
@@ -292,24 +299,6 @@ func get_base_damage() -> int:
 ## Реалізація IDamageDealer.get_current_damage()
 func get_current_damage() -> int:
 	return int(damage)
-
-func perform_attack():
-	# Не атакуємо під час паузи
-	if get_tree().paused:
-		return
-
-	DebugLogger.verbose("Enemy performing attack! Damage: %d" % damage, "Enemy")
-
-	anim_player.play("attack")
-	start_attack()
-
-	# Альтернативный способ нанесения урона - напрямую
-	if player and global_position.distance_to(player.global_position) <= attack_range * 1.2:
-		player.take_damage(damage)
-		DebugLogger.verbose("Enemy hit player for %d damage! Player health: %d" % [damage, player.current_health], "Enemy")
-
-	await get_tree().create_timer(0.3).timeout
-	end_attack()
 
 # === ПЕРЕВИЗНАЧЕНІ ФУНКЦІЇ ===
 
@@ -585,30 +574,22 @@ func revive(health_amount: int = -1):
 func weapon():
 	pass
 
-func _on_hitbox_body_entered(body: Node2D) -> void:
-	if body.is_in_group(GameGroups.PLAYER) and not is_dead:
-		# Гравець — CombatBody2D
-		body.take_damage(damage)
-		DebugLogger.verbose("Enemy hit player for %d damage! Player health: %d" % [damage, body.current_health], "Enemy")
+## Удар (D198): хітбокс перед ворогом у бік [param direction] (±1) живий, доки не end_attack().
+## Ушкодження — через DamageApplier хітбокса, як у гравця.
+func start_attack(direction: int) -> void:
+	hitbox.position.x = direction * attack_range / 2.0
+	hitbox_damage.update_damage()
+	hitbox_damage.enable_damage()
+	hitbox.monitoring = true
 
-func start_attack():
-	hitbox.visible = true          # Показуємо в редакторі (для дебага)
-	hitbox.monitoring = true       # Починаємо ловити колізії
-	hitbox.monitorable = true
-
-func end_attack():
-	hitbox.visible = false         # Ховаємо
-	hitbox.monitoring = false      # Не ловимо колізії
-	hitbox.monitorable = false
+func end_attack() -> void:
+	hitbox.monitoring = false
+	hitbox_damage.disable_damage()
 
 ## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона виявлення.
 func _set_collisions_disabled(disabled: bool) -> void:
 	for shape in [body_collision, hitbox_collision, detection_collision]:
 		shape.set_deferred(&"disabled", disabled)
-
-func attack():
-	# Ця функція тепер замінена на perform_attack()
-	perform_attack()
 
 func set_dead_state(dead: bool):
 	"""Встановлює стан смерті без виклику die()/revive() для уникнення анімацій при завантаженні"""

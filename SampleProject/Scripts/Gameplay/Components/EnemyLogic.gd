@@ -52,6 +52,8 @@ var base_damage: float = 10.0
 var damage: float = 10.0
 var last_attack_time: float = 0.0
 var attack_cooldown: float = 1.5
+## Іде замах або удар (D198): ворог стоїть, рішень не приймає.
+var is_attacking: bool = false
 
 # Raycast для виявлення гравця
 
@@ -131,6 +133,11 @@ func process_ai(delta: float):
 	# Перевіряємо, чи ворог мертвий
 	if enemy.is_dead:
 		velocity = Vector2.ZERO
+		return
+
+	# Атака вже почалась — доводимо її до кінця на місці
+	if is_attacking:
+		velocity.x = 0
 		return
 
 	# Якщо гравець не знайдений, намагаємося знайти його через GameGroups
@@ -278,24 +285,28 @@ func handle_attack_state(_delta: float):
 	# Атакуємо
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - last_attack_time >= attack_cooldown:
-		perform_attack()
 		last_attack_time = current_time
+		perform_attack()
 
-		# Приймаємо рішення: нападати чи відступати на основі HP
-		var should_retreat = should_retreat_after_attack()
+## Після удару: нападати далі чи відступати на основі HP. Викликається, коли удар закінчився (D198),
+## а не в момент замаху — інакше ворог біг геть посеред замаху й анімація walk перебивала attack.
+func _decide_after_attack() -> void:
+	if current_state != AIState.ATTACK or enemy.is_dead:
+		return
+	var should_retreat = should_retreat_after_attack()
 
-		if should_retreat:
-			# Починаємо відступлення
-			start_retreat()
-			change_state(AIState.RETREAT)
+	if should_retreat:
+		# Починаємо відступлення
+		start_retreat()
+		change_state(AIState.RETREAT)
+	else:
+		# Продовжуємо переслідування (якщо кулдаун пройшов)
+		if chase_cooldown_timer >= chase_cooldown:
+			chase_cooldown_timer = 0.0
+			change_state(AIState.CHASE)
 		else:
-			# Продовжуємо переслідування (якщо кулдаун пройшов)
-			if chase_cooldown_timer >= chase_cooldown:
-				chase_cooldown_timer = 0.0
-				change_state(AIState.CHASE)
-			else:
-				# Якщо кулдаун не пройшов, але не відступаємо - залишаємося в атаці
-				pass
+			# Якщо кулдаун не пройшов, але не відступаємо - залишаємося в атаці
+			pass
 
 func change_state(new_state: AIState):
 	"""Змінює стан AI"""
@@ -309,33 +320,22 @@ func change_state(new_state: AIState):
 	state_changed.emit(new_state)
 
 func perform_attack():
-	"""Виконує атаку"""
-	if not enemy or not is_instance_valid(enemy):
-		return
-
+	"""Замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
+	is_attacking = true
+	var direction := last_direction if last_direction != 0 else 1
 	attack_started.emit()
+	EventBus.attack_started.emit(enemy, player)
 
-	# Емітуємо подію через EventBus
-	if player:
-		EventBus.attack_started.emit(enemy, player)
+	# Замах: гравець бачить attack і встигає відійти або вдарити першим
+	await get_tree().create_timer(enemy.attack_windup).timeout
+	if not enemy.is_dead:
+		enemy.start_attack(direction)
+		await get_tree().create_timer(enemy.attack_active_time).timeout
+		enemy.end_attack()
 
-	# Наносимо ушкодження гравцю (якщо ворог має метод start_attack)
-	enemy.start_attack()
-
-	# Пряме нанесення ушкоджень (якщо гравець близько)
-	if player and is_instance_valid(player):
-		var distance = enemy.global_position.distance_to(player.global_position)
-		if distance <= attack_range * 1.2:
-			player.take_damage(damage)
-
-			# Емітуємо подію через EventBus
-			EventBus.damage_dealt.emit(enemy, player, int(damage))
-
-	# Завершуємо атаку через невелику затримку
-	await get_tree().create_timer(0.3).timeout
+	is_attacking = false
 	attack_ended.emit()
-
-	enemy.end_attack()
+	_decide_after_attack()
 
 func on_player_detected(player_node: Node):
 	"""Обробляє виявлення гравця"""

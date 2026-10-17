@@ -50,18 +50,8 @@ func perform_attack():
 	print("EnemyRanged performing ranged attack!")
 	
 	$AnimatedSprite2D.play("attack")
-	start_attack()
-	
-	# Для дальнего боя можно добавить логику стрельбы снарядами
-	# Пока используем обычную атаку, но на расстоянии
-	if projectile_scene and projectile_spawn_point:
-		# TODO: Реализовать стрельбу снарядами
-		pass
-	else:
-		# Fallback: обычная атака
-		if player and global_position.distance_to(player.global_position) <= attack_range * 1.2:
-			player.take_damage(damage)
-			print("EnemyRanged hit player for ", damage, " damage!")
+	start_attack(signi(player.global_position.x - global_position.x))
+	# Стрільба снарядами не збудована (Q35); до того — удар хітбоксом, як у DefaultEnemy (D198).
 	
 	await get_tree().create_timer(0.5).timeout
 	end_attack()

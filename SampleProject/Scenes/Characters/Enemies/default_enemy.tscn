@@ -83,6 +83,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hitbox"]
+resource_local_to_scene = true
 size = Vector2(28, 28)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_attack"]
@@ -120,6 +121,7 @@ shape = SubResource("RectangleShape2D_enemy_hitbox")
 
 [node name="DamageApplier" type="Node" parent="hitbox" unique_id=188663354]
 script = ExtResource("2_damage_applier")
+target_group = &"player"
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1808953547]
 monitoring = false

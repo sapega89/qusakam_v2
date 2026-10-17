@@ -10,6 +10,9 @@ class_name DamageApplier
 ## Посилання на власника (Node, який атакує)
 @export var owner_body: Node
 
+## Група цілей (напр. &"player" для ворога). Порожньо — будь-яке тіло зі здоровʼям.
+@export var target_group: StringName = &""
+
 ## Базові ушкодження
 @export var base_damage: int = 10
 
@@ -75,6 +78,10 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	
 	# Не атакуємо себе
 	if body == owner_body:
+		return
+
+	# Ворог не бʼє сусіднього ворога
+	if target_group != &"" and not body.is_in_group(target_group):
 		return
 	
 	# Перевіряємо, чи ця ціль вже отримала ушкодження
