@@ -86,7 +86,7 @@ func _initialize() -> void:
 	var hits: Array = []
 	target.damage_token.connect(func(d: int) -> void: hits.append(d))
 	var hp_before: int = target.current_health
-	var dmg: int = game.player.combat.damage_applier.current_damage
+	var dmg: int = game.player.combat.hit_damage()
 	game.player.global_position = target.global_position + Vector2(-26, 0)
 	game.player.velocity = Vector2.ZERO
 	await create_timer(0.05).timeout
@@ -104,6 +104,25 @@ func _initialize() -> void:
 	game.player.combat.perform_attack(-1)
 	await create_timer(0.6).timeout
 	ck(hits.is_empty() and target.current_health == hp_before, "a miss deals no damage (events %s)" % [hits])
+
+	print("[1c] The hit is the menu's Phys. Atk. and grows with the weapon (B62, D199)")
+	var gm: Node = sl.get_game_manager()
+	ck(dmg == gm.calculate_physical_damage(), "unarmed hit %d = Phys. Atk. %d" % [dmg, gm.calculate_physical_damage()])
+	var sword: Dictionary = sl.get_item_database().get_item("iron_sword")
+	var hero: String = gm.get_active_character().character_id
+	sl.get_equipment_manager().equip_item(hero, "sword", "iron_sword", sword)
+	await process_frame
+	var armed: int = game.player.combat.hit_damage()
+	ck(armed == dmg + int(sword.stats.attack), "iron_sword adds its attack %d (%d → %d)" % [int(sword.stats.attack), dmg, armed])
+	hits.clear()
+	hp_before = target.current_health
+	game.player.global_position = target.global_position + Vector2(-26, 0)
+	await create_timer(0.05).timeout
+	game.player.combat.perform_attack(1)
+	await create_timer(0.6).timeout
+	ck(hits == [armed], "the armed hit deals %d (got %s)" % [armed, hits])
+	sl.get_equipment_manager().unequip_item(hero, "sword")
+	await process_frame
 
 	print("[2] Enemies chase and hit the player")
 	game.player.current_health = game.player.Max_Health

@@ -86,12 +86,6 @@ built*, not here.
 
 ---
 
-### B62 — Equipped weapon does not change the player's hit
-- **Where:** `Scripts/Player/Components/PlayerCombat.gd` (`base_damage` + level bonus only).
-- **Expected:** D199 — Phys. Atk. from `GameManager.calculate_physical_damage()` + level bonus.
-- **Got:** 15 + level bonus whatever is equipped; the menus show a different number.
-- **Severity:** blocker; found 2026-10-18, combat audit.
-
 ### B63 — `verify_settings` hangs at step [17]
 - **Where:** `SampleProject/UI/verify_settings.gd:493` expects the options' parent to be `PanelContainer`; since `6aa83055` it is a `MarginContainer`.
 - **Got:** `SCRIPT ERROR` → coroutine aborts → never quits (HUNG).

@@ -309,7 +309,8 @@ func _stat_without_equipment(method: String, is_ratio: bool, attributes: Charact
 		"calculate_max_health":
 			value = StatCalculator.calculate_max_health(attributes, bare)
 		"calculate_physical_damage":
-			value = StatCalculator.calculate_physical_damage(attributes, bare)
+			# Бонус рівня — як у GameManager.calculate_physical_damage(), інакше він рахувався б внеском речей
+			value = StatCalculator.calculate_physical_damage(attributes, bare) + ServiceLocator.get_xp_manager().get_damage_bonus()
 		"calculate_magic_damage":
 			value = StatCalculator.calculate_magic_damage(attributes, bare)
 		"calculate_physical_defense":

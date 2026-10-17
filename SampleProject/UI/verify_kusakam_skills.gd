@@ -125,8 +125,10 @@ func _initialize() -> void:
 	ck(front.current_health == hp_front - 20, "front enemy -20 (%d → %d)" % [hp_front, front.current_health])
 	ck(behind.current_health == hp_behind, "enemy behind untouched")
 	sm.clear_cooldowns()
+	# Усіх ворогів — геть: тіла проходять крізь гравця (D197), і ворог зі спавну на x 1000 лишився б попереду.
+	for e in enemies:
+		e.global_position = player.global_position + Vector2(-400, 0)
 	front.global_position = player.global_position + Vector2(400, 0)
-	behind.global_position = player.global_position + Vector2(-400, 0)
 	ck(sm.use_skill("fire_strike") == R.NO_TARGET, "nothing in front → NO_TARGET, no SP spent")
 
 	print("[6] Upgrades to rank 20, +10% each (D150)")

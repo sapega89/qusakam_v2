@@ -192,9 +192,12 @@ func calculate_max_health() -> int:
 	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) if attributes else 0
 
 
+## Phys. Atk. — і в меню, і в ударі гравця (D199): сила, атака спорядження й бонус рівня.
 func calculate_physical_damage() -> int:
 	var attributes := _active_attributes()
-	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) if attributes else 0
+	if not attributes:
+		return 0
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + ServiceLocator.get_xp_manager().get_damage_bonus()
 
 
 func calculate_magic_damage() -> int:

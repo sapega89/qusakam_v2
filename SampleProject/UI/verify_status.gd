@@ -69,7 +69,8 @@ func _initialize() -> void:
 	ck(st._right_attrs.get_child_count() == 4, "4 right attribute rows")
 	var hp_txt: String = st._hp_meter.get_node("Head/Value").text
 	ck(hp_txt != st.PLACEHOLDER, "Max HP has a real value (%s)" % hp_txt)
-	var expected: int = StatCalculator.calculate_physical_damage(ch.attributes, ch.get_equipment_stats())
+	# D199: Phys. Atk. — сила й спорядження плюс бонус рівня, те саме число, що й удар гравця.
+	var expected: int = StatCalculator.calculate_physical_damage(ch.attributes, ch.get_equipment_stats()) + sl.get_xp_manager().get_damage_bonus()
 	var shown: String = st._left_attrs.get_child(0).get_child(0).get_child(2).text
 	ck(shown == str(expected), "Phys. Atk. matches StatCalculator (%s == %d)" % [shown, expected])
 

@@ -23,16 +23,11 @@ var is_attacking: bool = false
 
 func _ready() -> void:
 	_set_hitbox_active(false, 1) # Ensure hitbox is disabled on start
-	# EventBus і ServiceLocator — autoload'и (/root/EventBus), а не Engine-синглтони.
-	# Engine.has_singleton() для них ЗАВЖДИ повертав false, тож жодна з трьох гілок
-	# у цьому файлі не виконувалась: підписка на левел-ап не ставилась, бонус до
-	# шкоди не застосовувався, а player_attacked не емітився (див. perform_attack).
-	# Та сама бага, що вже виправлена у Village.gd і DesertRoad.gd.
-	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 
-func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
-	damage_applier.current_damage = damage_applier.base_damage + ServiceLocator.get_xp_manager().get_damage_bonus()
-	DebugLogger.info("PlayerCombat: Applied level %d bonus. Damage: %d" % [new_level, damage_applier.current_damage], "Player")
+## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
+## тож зміна спорядження чи рівня діє одразу, без підписок.
+func hit_damage() -> int:
+	return ServiceLocator.get_game_manager().calculate_physical_damage()
 
 func _process(delta: float) -> void:
 	if attack_cooldown > 0:
@@ -44,6 +39,7 @@ func perform_attack(last_direction: int) -> void:
 
 	is_attacking = true
 	attack_cooldown = attack_cooldown_time
+	damage_applier.current_damage = hit_damage()
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	# Раніше тут була протилежна домовленість, ніж у Player.gd, тож спрайт під час
