@@ -117,7 +117,7 @@ action_mode = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_LimitTest"]
 shape = SubResource("RectangleShape2D_beat")
 
-[node name="EnemySpawner" type="Node" parent="."]
+[node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
 spawn_in_waves = true
@@ -125,25 +125,25 @@ wave_size = 2
 wave_delay = 2.5
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1200, 300)
+position = Vector2(1200, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 spawn_on_load = true
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1300, 300)
+position = Vector2(1300, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 spawn_on_load = true
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1400, 300)
+position = Vector2(1400, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 spawn_on_load = true
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="EnemySpawner"]
-position = Vector2(1500, 300)
+position = Vector2(1500, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 spawn_on_load = true

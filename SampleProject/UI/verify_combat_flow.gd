@@ -57,6 +57,17 @@ func _initialize() -> void:
 	var enemies: Array = _enemies(road)
 	ck(enemies.size() == 4, "4 enemies spawned (%d)" % enemies.size())
 
+	print("[0] Enemies appear on the floor at their points and move with the room (B61)")
+	var points: Array = road.get_node("EnemySpawner").get_children().filter(func(p: Node) -> bool: return p.is_in_group(&"enemy_spawn_points"))
+	for e in enemies:
+		var point: Node2D = points.filter(func(p: Node) -> bool: return e.name == "Enemy_%s" % p.spawn_id)[0]
+		ck(e.is_on_floor() and absf(e.global_position.y - point.global_position.y) < 1.0,
+				"%s stands on the floor at its point (y %.1f vs %.1f)" % [e.name, e.global_position.y, point.global_position.y])
+	var x_before: float = enemies[0].global_position.x
+	road.position.x += 100.0
+	ck(is_equal_approx(enemies[0].global_position.x, x_before + 100.0), "an enemy moves with its room (%.1f → %.1f)" % [x_before, enemies[0].global_position.x])
+	road.position.x -= 100.0
+
 	print("[1] The player hits an enemy")
 	var target = enemies[0]
 	var hits: Array = []

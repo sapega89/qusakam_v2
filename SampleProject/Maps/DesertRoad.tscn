@@ -80,7 +80,7 @@ action_mode = 1
 position = Vector2(0, -143)
 shape = SubResource("RectangleShape2D_trigger")
 
-[node name="EnemySpawner" type="Node" parent="." unique_id=1070670507]
+[node name="EnemySpawner" type="Node2D" parent="." unique_id=1070670507]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
 spawn_in_waves = true
@@ -88,20 +88,20 @@ wave_size = 2
 wave_delay = 1.5
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=796924420]
-position = Vector2(800, 300)
+position = Vector2(800, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner" unique_id=1159070821]
-position = Vector2(900, 300)
+position = Vector2(900, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner" unique_id=1992080142]
-position = Vector2(1000, 300)
+position = Vector2(1000, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="EnemySpawner" unique_id=1488247937]
-position = Vector2(1100, 300)
+position = Vector2(1100, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 

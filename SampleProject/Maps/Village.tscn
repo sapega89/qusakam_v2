@@ -69,12 +69,12 @@ position = Vector2(1572, 396)
 quest_flag = "village_oldman_complete"
 quest_dialogue = "OldMan_Decision"
 
-[node name="EnemySpawner" type="Node" parent="."]
+[node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner"]
-position = Vector2(700, 300)
+position = Vector2(700, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 

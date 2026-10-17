@@ -82,8 +82,9 @@ func spawn_enemy() -> Node:
 		DebugLogger.error("EnemySpawnPoint: Failed to instantiate enemy", "EnemySpawnPoint")
 		return null
 
-	# Устанавливаем позицию
-	enemy.global_position = global_position
+	# Ворог стає сусідом точки (той самий батько), тож локальна позиція = позиція точки.
+	# global_position поза деревом — це просто position, і зсув кімнати застосувався б двічі (B61).
+	enemy.position = position
 
 	# Применяем тип врага (загружаем соответствующий EnemyStats ресурс)
 	if custom_enemy_stats:

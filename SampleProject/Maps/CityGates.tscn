@@ -41,21 +41,21 @@ action_mode = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_CityGates" unique_id=1305746090]
 shape = SubResource("CircleShape2D_save")
 
-[node name="EnemySpawner" type="Node" parent="." unique_id=1351945035]
+[node name="EnemySpawner" type="Node2D" parent="." unique_id=1351945035]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
 spawn_in_waves = true
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=747155676]
-position = Vector2(500, 300)
+position = Vector2(500, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner" unique_id=389091756]
-position = Vector2(600, 300)
+position = Vector2(600, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner" unique_id=435723178]
-position = Vector2(700, 300)
+position = Vector2(700, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 

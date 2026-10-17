@@ -5,15 +5,21 @@ extends SceneTree
 ##   2. Тайли Foreground покривають ширину кожного рядка клітинок кімнати.
 ##   3. SavePoint / тригери / маркери / точки ворогів лежать у межах клітинок кімнати.
 ##   4. На кожному проході між кімнатами ліворуч-праворуч підлога з обох боків на одній висоті.
+##   5. Ворог з'являється на підлозі під своєю точкою, а не в повітрі (B61).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_map_geometry.gd
 
 const SPAWN_POINT := preload("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 const MAP_DATA := "res://SampleProject/Maps/MapData.txt"
 ## Підлога по обидва боки проходу може різнитися не більше ніж на тайл.
 const FLOOR_TOLERANCE := 32.0
+const ENEMY_SCENE := "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"
+## Низ тіла ворога може не доходити до підлоги на стільки пікселів.
+const SPAWN_TOLERANCE := 2.0
 
 var fails: Array[String] = []
 var cell := Vector2.ZERO
+## Відстань від центру ворога до низу його колізії.
+var enemy_half_height := 0.0
 
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -23,6 +29,10 @@ func ck(ok: bool, label: String) -> void:
 func _initialize() -> void:
 	await process_frame
 	cell = root.get_node("MetSys").settings.in_game_cell_size
+	var enemy: Node2D = load(ENEMY_SCENE).instantiate()
+	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
+	enemy_half_height = body.position.y + body.shape.get_rect().end.y
+	enemy.free()
 	print("cell %s" % cell)
 	# {Vector3i клітинка: {borders: [R, D, L, U], uid}}
 	var cells := _read_cells()
@@ -120,6 +130,12 @@ func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
 			if Rect2(Vector2(c.x - min_c.x, c.y - min_c.y) * cell, cell).has_point(p):
 				inside = true
 		ck(inside, "%s: %s inside the room (%.0f, %.0f)" % [name, n.name, p.x, p.y])
+		# 5. Ворог стоїть на підлозі під точкою.
+		if n.get_script() == SPAWN_POINT:
+			var floor_y = _floor_below(fg, tile, p)
+			var feet := p.y + enemy_half_height
+			ck(floor_y != null and feet <= floor_y and feet >= floor_y - SPAWN_TOLERANCE,
+					"%s: %s spawns on the floor (feet y %.0f, floor %s)" % [name, n.name, feet, floor_y])
 
 	# 4. Підлога на лівому/правому краю кожної клітинки: найвищий твердий тайл у крайньому стовпці
 	# нижче першого вільного — це рівень, на який стає герой, що заходить збоку.
@@ -145,6 +161,16 @@ func _floor_at(fg: TileMapLayer, tile: Vector2, x: float, y0: float, y1: float, 
 		elif seen_air:
 			return _origin(fg).y + row * tile.y + min_c.y * cell.y
 		row += 1
+	return null
+
+
+## y (у координатах кімнати) верху першого твердого тайла під точкою p, або null.
+func _floor_below(fg: TileMapLayer, tile: Vector2, p: Vector2) -> Variant:
+	var col := int(floor((p.x - _origin(fg).x) / tile.x))
+	var row := int(floor((p.y - _origin(fg).y) / tile.y))
+	for i in 64:
+		if _solid(fg, Vector2i(col, row + i)):
+			return _origin(fg).y + (row + i) * tile.y
 	return null
 
 
