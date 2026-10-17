@@ -31,6 +31,7 @@ func _make_target(name: String) -> Node:
 	var body: Node = BodyScript.new()
 	body.name = name
 	body.Max_Health = 100
+	body.invulnerability_duration = 0.0  # як у DefaultEnemy: вороги без невразливості після удару
 	var health: Node = HealthScript.new()
 	health.owner_body = body
 	body.add_child(health)

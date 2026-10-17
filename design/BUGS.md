@@ -98,12 +98,6 @@ built*, not here.
 - **Got:** `player.take_damage` the moment the attack starts if within `attack_range × 1.2` — from above, behind or through walls.
 - **Severity:** blocker; found 2026-10-18, combat audit.
 
-### B60 — Invulnerability frames never apply
-- **Where:** `Scripts/Combat/CombatBody2D.gd` `take_damage` → `register_damage(damage, true)`.
-- **Expected:** `invulnerability_duration` blocks damage after a hit.
-- **Got:** `ignore_overide = true` skips the invulnerability and `is_dead` checks on every damage path.
-- **Severity:** blocker; found 2026-10-18, combat audit.
-
 ### B61 — Enemies spawn in the air and drop ~70 px
 - **Where:** `Maps/{CityGates,DesertRoad,Laboratory,Village}.tscn` → `EnemySpawner/EnemySpawnPoint*` all at `y = 300`; floor top is `y = 384`. `EnemySpawner` is a plain `Node`, so points and enemies ignore the room transform.
 - **Expected:** enemies appear standing on the floor at their point, moving with their room.

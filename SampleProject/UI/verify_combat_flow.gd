@@ -89,6 +89,26 @@ func _initialize() -> void:
 	ck(game.player.current_health < player_hp, "player lost HP (%d → %d)" % [player_hp, game.player.current_health])
 	ck(enemies[1].enemy_logic.current_state != 0 or enemies[2].enemy_logic.current_state != 0, "enemies left IDLE")
 
+	print("[2b] Invulnerability frames (B60)")
+	for e in enemies:
+		e.set_physics_process(false)  # вороги не бʼють, поки міряємо
+	await create_timer(1.0).timeout
+	game.player.current_health = game.player.Max_Health
+	var player_hits: Array = []
+	game.player.damage_token.connect(func(d: int) -> void: player_hits.append(d))
+	game.player.take_damage(5)
+	game.player.take_damage(5)
+	ck(player_hits == [5], "two hits in one frame on the player count once (got %s)" % [player_hits])
+	await create_timer(game.player.invulnerability_duration + 0.1).timeout
+	game.player.take_damage(5)
+	ck(player_hits == [5, 5], "after the invulnerability window the player is hit again (got %s)" % [player_hits])
+	var enemy_hp: int = enemies[2].current_health
+	enemies[2].take_damage(1)
+	enemies[2].take_damage(1)
+	ck(enemies[2].current_health == enemy_hp - 2, "an enemy (no invulnerability) takes both hits (%d → %d)" % [enemy_hp, enemies[2].current_health])
+	for e in enemies:
+		e.set_physics_process(true)
+
 	print("[3] Enemy death runs to the end")
 	var potions_before: int = inv.get_item_count("potion")
 	var coins_before: int = inv.get_item_count("coin")

@@ -56,10 +56,9 @@ func register_damage(damage: int, ignore_overide: bool = false) -> void:
 			var enemy_id = name  # Використовуємо name замість get_enemy_id()
 			EventBus.enemy_health_changed.emit(enemy_id, current_health, Max_Health)
 
-		# Активація невразливості
-		if not is_invulnerable:
-			is_invulnerable = true
-			invulnerability_timer = invulnerability_duration
+		# Активація невразливості. Тривалість 0 (вороги) — без неї: таймер 0 ніколи не скинув би прапорець.
+		if invulnerability_duration > 0.0:
+			set_invulnerable(true, invulnerability_duration)
 
 		# Перевірка смерті
 		if current_health <= 0 and not is_dead:
@@ -70,7 +69,8 @@ func take_damage(damage: int, source: Node = null) -> void:
 	# Зберігаємо джерело ушкоджень для EventBus
 	if source:
 		set_meta("last_damage_source", source)
-	register_damage(damage, true)
+	# B60: раніше тут було register_damage(damage, true) — обхід невразливості й перевірки смерті на кожному шляху ушкодження.
+	register_damage(damage)
 
 func heal_damage(amount: int) -> void:
 	if is_dead:
