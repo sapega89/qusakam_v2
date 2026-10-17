@@ -86,6 +86,48 @@ built*, not here.
 
 ---
 
+### B57 — One player hit deals damage twice
+- **Where:** `Scripts/Player/Components/PlayerCombat.gd` `_set_hitbox_active` (sets `monitorable`) + `default_enemy.tscn` → `Hurtbox/HurtboxComponent`.
+- **Expected:** one hit = one `apply_damage` of `DamageApplier.current_damage`.
+- **Got:** `DamageApplier` (body_entered) and the enemy's `HurtboxComponent` (area_entered) both apply it: events `[15, 15]`, HP 100 → 70.
+- **Evidence:** audit probe on DesertRoad, 2026-10-18.
+- **Severity:** blocker; found 2026-10-18, combat audit.
+
+### B58 — Enemies stand on the player's head
+- **Where:** `Player.tscn`, `default_enemy.tscn` — every body on layer 1 / mask 1.
+- **Expected:** D197 — bodies pass through each other.
+- **Got:** an enemy dropped above the player rests on it (dy 32, `is_on_floor()` true).
+- **Severity:** blocker; found 2026-10-18, combat audit.
+
+### B59 — Enemy attack is an instant distance check
+- **Where:** `Scripts/Gameplay/Components/EnemyLogic.gd` `perform_attack`.
+- **Expected:** D198 — 0.4 s wind-up, then the hitbox in the facing direction for 0.2 s.
+- **Got:** `player.take_damage` the moment the attack starts if within `attack_range × 1.2` — from above, behind or through walls.
+- **Severity:** blocker; found 2026-10-18, combat audit.
+
+### B60 — Invulnerability frames never apply
+- **Where:** `Scripts/Combat/CombatBody2D.gd` `take_damage` → `register_damage(damage, true)`.
+- **Expected:** `invulnerability_duration` blocks damage after a hit.
+- **Got:** `ignore_overide = true` skips the invulnerability and `is_dead` checks on every damage path.
+- **Severity:** blocker; found 2026-10-18, combat audit.
+
+### B61 — Enemies spawn in the air and drop ~70 px
+- **Where:** `Maps/{CityGates,DesertRoad,Laboratory,Village}.tscn` → `EnemySpawner/EnemySpawnPoint*` all at `y = 300`; floor top is `y = 384`. `EnemySpawner` is a plain `Node`, so points and enemies ignore the room transform.
+- **Expected:** enemies appear standing on the floor at their point, moving with their room.
+- **Got:** spawned at y 328, `on_floor` false, land at 368.
+- **Severity:** visual; found 2026-10-18, combat audit.
+
+### B62 — Equipped weapon does not change the player's hit
+- **Where:** `Scripts/Player/Components/PlayerCombat.gd` (`base_damage` + level bonus only).
+- **Expected:** D199 — Phys. Atk. from `GameManager.calculate_physical_damage()` + level bonus.
+- **Got:** 15 + level bonus whatever is equipped; the menus show a different number.
+- **Severity:** blocker; found 2026-10-18, combat audit.
+
+### B63 — `verify_settings` hangs at step [17]
+- **Where:** `SampleProject/UI/verify_settings.gd:493` expects the options' parent to be `PanelContainer`; since `6aa83055` it is a `MarginContainer`.
+- **Got:** `SCRIPT ERROR` → coroutine aborts → never quits (HUNG).
+- **Severity:** blocker (test); found 2026-10-18, suite run.
+
 ### B56 — Confirm modal body, divider and spacing differ from Figma 258:5332
 - **Where:** `Scenes/UI/modal_dialog.tscn` → `Panel` (plain `PanelContainer`), `Panel/VBox`, `Description`.
 - **Screen:** Figma `UI/Modal/Confirm 258:5332`.
