@@ -68,6 +68,19 @@ func _initialize() -> void:
 	ck(is_equal_approx(enemies[0].global_position.x, x_before + 100.0), "an enemy moves with its room (%.1f → %.1f)" % [x_before, enemies[0].global_position.x])
 	road.position.x -= 100.0
 
+	print("[0b] An enemy dropped onto the player falls through to the floor (B58, D197)")
+	var dropped = enemies[3]
+	dropped.set_physics_process(true)
+	game.player.global_position = Vector2(dropped.global_position.x, game.player.global_position.y)
+	game.player.velocity = Vector2.ZERO
+	await create_timer(0.3).timeout
+	dropped.global_position = game.player.global_position + Vector2(0, -60)
+	dropped.velocity = Vector2.ZERO
+	await create_timer(1.0).timeout
+	ck(dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0,
+			"the enemy stands on the floor, not on the player (enemy y %.1f, floor-level %.1f, player y %.1f)"
+			% [dropped.global_position.y, points[3].global_position.y, game.player.global_position.y])
+
 	print("[1] The player hits an enemy")
 	var target = enemies[0]
 	var hits: Array = []

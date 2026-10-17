@@ -86,12 +86,6 @@ built*, not here.
 
 ---
 
-### B58 — Enemies stand on the player's head
-- **Where:** `Player.tscn`, `default_enemy.tscn` — every body on layer 1 / mask 1.
-- **Expected:** D197 — bodies pass through each other.
-- **Got:** an enemy dropped above the player rests on it (dy 32, `is_on_floor()` true).
-- **Severity:** blocker; found 2026-10-18, combat audit.
-
 ### B59 — Enemy attack is an instant distance check
 - **Where:** `Scripts/Gameplay/Components/EnemyLogic.gd` `perform_attack`.
 - **Expected:** D198 — 0.4 s wind-up, then the hitbox in the facing direction for 0.2 s.

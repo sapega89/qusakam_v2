@@ -66,6 +66,10 @@ func _ready():
 	# Додаємо до групи ворогів
 	add_to_group(GameGroups.ENEMIES)
 
+	# D197: тіла гравця й ворога проходять одне крізь одне — ворог не стає гравцеві на голову (B58).
+	# Виняток на пару тіл: зони, хітбокси й геометрія світу працюють як раніше.
+	add_collision_exception_with(GameGroups.get_player())
+
 	# Налаштовуємо невразливість для ворога (відключаємо)
 	is_invulnerable = false
 	invulnerability_duration = 0.0
