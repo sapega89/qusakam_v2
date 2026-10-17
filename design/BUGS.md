@@ -86,13 +86,6 @@ built*, not here.
 
 ---
 
-### B57 — One player hit deals damage twice
-- **Where:** `Scripts/Player/Components/PlayerCombat.gd` `_set_hitbox_active` (sets `monitorable`) + `default_enemy.tscn` → `Hurtbox/HurtboxComponent`.
-- **Expected:** one hit = one `apply_damage` of `DamageApplier.current_damage`.
-- **Got:** `DamageApplier` (body_entered) and the enemy's `HurtboxComponent` (area_entered) both apply it: events `[15, 15]`, HP 100 → 70.
-- **Evidence:** audit probe on DesertRoad, 2026-10-18.
-- **Severity:** blocker; found 2026-10-18, combat audit.
-
 ### B58 — Enemies stand on the player's head
 - **Where:** `Player.tscn`, `default_enemy.tscn` — every body on layer 1 / mask 1.
 - **Expected:** D197 — bodies pass through each other.

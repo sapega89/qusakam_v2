@@ -59,13 +59,27 @@ func _initialize() -> void:
 
 	print("[1] The player hits an enemy")
 	var target = enemies[0]
+	var hits: Array = []
+	target.damage_token.connect(func(d: int) -> void: hits.append(d))
 	var hp_before: int = target.current_health
+	var dmg: int = game.player.combat.damage_applier.current_damage
 	game.player.global_position = target.global_position + Vector2(-26, 0)
 	game.player.velocity = Vector2.ZERO
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(1)
 	await create_timer(0.6).timeout
-	ck(target.current_health < hp_before, "enemy lost HP (%d → %d)" % [hp_before, target.current_health])
+	# B57: хітбокс бив і через DamageApplier, і через Hurtbox ворога — два ушкодження за удар.
+	ck(hits == [dmg], "one hit = one damage event of %d (got %s)" % [dmg, hits])
+	ck(target.current_health == hp_before - dmg, "enemy lost exactly %d HP (%d → %d)" % [dmg, hp_before, target.current_health])
+
+	print("[1b] An attack facing away misses")
+	hits.clear()
+	hp_before = target.current_health
+	game.player.global_position = target.global_position + Vector2(-26, 0)
+	await create_timer(0.05).timeout
+	game.player.combat.perform_attack(-1)
+	await create_timer(0.6).timeout
+	ck(hits.is_empty() and target.current_health == hp_before, "a miss deals no damage (events %s)" % [hits])
 
 	print("[2] Enemies chase and hit the player")
 	game.player.current_health = game.player.Max_Health
