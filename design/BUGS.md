@@ -86,11 +86,6 @@ built*, not here.
 
 ---
 
-### B63 — `verify_settings` hangs at step [17]
-- **Where:** `SampleProject/UI/verify_settings.gd:493` expects the options' parent to be `PanelContainer`; since `6aa83055` it is a `MarginContainer`.
-- **Got:** `SCRIPT ERROR` → coroutine aborts → never quits (HUNG).
-- **Severity:** blocker (test); found 2026-10-18, suite run.
-
 ### B56 — Confirm modal body, divider and spacing differ from Figma 258:5332
 - **Where:** `Scenes/UI/modal_dialog.tscn` → `Panel` (plain `PanelContainer`), `Panel/VBox`, `Description`.
 - **Screen:** Figma `UI/Modal/Confirm 258:5332`.

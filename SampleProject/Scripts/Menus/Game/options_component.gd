@@ -422,6 +422,8 @@ func _close_main_menu_mode():
 func _close_game_menu_mode():
 	"""Exit to main menu from the in-game Settings tab"""
 	SaveSystem.save_game_settings()
-	# Зміна сцени прибирає меню й UIRoot разом зі сценою, паузу знімає MainMenu._ready().
+	# B64: та сама дорога, що й Misc → Exit to Main Menu — підтвердження, закриття меню, зміна сцени.
+	# Раніше тут лише зберігались налаштування: кнопка нічого не робила.
+	get_tree().get_first_node_in_group(&"game_menu").request_exit_to_main_menu()
 	# (Раніше тут читався GameManager.game_menu_instance — такої властивості немає.)
 	get_tree().change_scene_to_file("res://SampleProject/MainMenu.tscn")

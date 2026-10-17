@@ -150,6 +150,11 @@ func _on_misc_tutorial_selected() -> void:
 
 
 func _on_misc_exit_main_menu_selected() -> void:
+	request_exit_to_main_menu()
+
+
+## Вихід у головне меню з підтвердженням — з Misc і з кнопки на вкладці Settings (B64).
+func request_exit_to_main_menu() -> void:
 	_pending_exit_action = "exit_main_menu"
 	_show_exit_confirm()
 

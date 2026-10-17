@@ -478,9 +478,17 @@ func _initialize() -> void:
 	ck(opts != null and opts.exit_to_main_menu_button != null, "exit button present")
 	if opts:
 		opts.exit_to_main_menu_button.pressed.emit()
+		for i in 10: await process_frame
+	# B64: кнопка раніше лише зберігала налаштування; тепер — як Misc: спершу підтвердження.
+	var confirm: Node = ui.get_modal_layer().active_modal
+	ck(confirm != null, "Exit to Main Menu asks for confirmation")
+	if confirm:
+		confirm.confirmed.emit()
 		for i in 20: await process_frame
 	var landed: String = current_scene.scene_file_path if current_scene else "<none>"
 	ck(landed.ends_with("MainMenu.tscn"), "landed on MainMenu (%s)" % landed)
+	ck(get_nodes_in_group("game_menu").is_empty() and get_nodes_in_group("settings_screen").is_empty(),
+			"no Game Menu or in-game Settings left over the main menu")
 	ck(not paused, "main menu is not frozen")
 
 	print("[17] Main Menu → Options: Controls keeps Restore on screen, the scrollbar is visible (Sapega, 2026-10-16)")
