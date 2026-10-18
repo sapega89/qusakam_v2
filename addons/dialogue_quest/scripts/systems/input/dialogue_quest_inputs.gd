@@ -17,6 +17,10 @@ func _ready() -> void:
 		event = InputEventMouseButton.new()
 		event.button_index = MOUSE_BUTTON_LEFT
 		InputMap.action_add_event(ACTION_ACCEPT, event)
+		# Kusakam: A на паді теж гортає репліки (інакше гравець із падом застрягає в діалозі).
+		event = InputEventJoypadButton.new()
+		event.button_index = JOY_BUTTON_A
+		InputMap.action_add_event(ACTION_ACCEPT, event)
 
 func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed(ACTION_ACCEPT):
