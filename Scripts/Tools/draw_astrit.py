@@ -101,7 +101,7 @@ def astrit(
     head_cx, head_cy = cx + 1, hip_y - 23 + crouch // 2
     # грива: густе волосся спадає по спині до пояса, віється від руху
     for i in range(18):
-        bx = head_cx - 8 - i // 2 - (hair_flow * i) // 8
+        bx = head_cx - 7 - i // 4 - (hair_flow * i) // 10
         by = head_cy - 3 + i
         r = 5.0 - i * 0.14
         c.part(ellipse(bx, by, r, 2.8), lit(bx, by, r, 2.8, HAIR))
