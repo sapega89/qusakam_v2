@@ -38,9 +38,11 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 	match state:
 		State.EXIT_LAB:
 			# Перевіряємо, чи діалог вже був прочитаний
+			# B66: гілка «вже прочитано» мусить вести далі (як у Village): голий return лишав машину в EXIT_LAB,
+			# і після повернення в лабораторію та нового виходу кінця демо не було ніколи.
 			if game.get_quest_flag("lab_outside_complete", false):
 				DebugLogger.info("🌳 LabOutside: ⏭️ Діалог Laboratory_Outside вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Finish the demo")
+				advance_state()
 				return
 			_set_objective("Leave the laboratory")
 			_execute_step(StepType.DIALOGUE, "Laboratory_Outside", run_id)
