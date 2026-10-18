@@ -32,3 +32,6 @@ logs/
 build/
 
 graphify-out/
+
+# Еталон playthrough — локальний, не в репозиторії (Sapega, 2026-10-18)
+design/playthrough/
