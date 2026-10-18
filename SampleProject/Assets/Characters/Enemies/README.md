@@ -1,15 +1,18 @@
-# Enemy art by type (D208, D214, D218)
+# Enemy art by type (D208, D229)
 
 | Type | Sheet | Source |
 |---|---|---|
-| tank | `battle_turtle/sheet.png` | drawn by `Scripts/Tools/draw_enemy_sheets.py` — desert turtle in the hero's style (D218) |
-| fast | `centipede/sheet.png` | drawn by the same script — centipede, rears up like a cobra in the wind-up |
+| tank | `scorpion/sheet.png` | Crusenho desert enemies, `3 Scorpio` (idle, walk, attack, death) |
+| fast | `jackal/sheet.png` | Crusenho desert enemies, `2 Hyena` — the jackal (idle, walk, attack, death) |
 | melee | `Scripts/Systems/character-spritesheet (4).png` (unchanged, `default_enemy.tscn`) | — |
 
-Original work for this project, no third-party licence. Style matched to the hero (`Sprites/Player`): chibi
-proportions, 1-px outline (40, 23, 36), three light bands from the top left, round red eye with a
-white highlight, an angry brow so it reads as an enemy. Grid kept from D214 so the scenes did not change: rows
-idle / walk / attack / death, 96×72 cells, feet on the bottom row, facing right; attack frames match the scene keys.
+**Licence: CC BY 4.0** — art by **Crusenho Agus Hennihuno** (https://crusenho.itch.io), from the pack found in
+`assets/Complete_UI_Essential_Pack_Free/` (`License.txt`, copied here as `CRUSENHO_LICENSE.txt`).
+Changes: frames mirrored to face right and laid into the game's sheet grid. Credit them in the game's credits.
 
-The earlier sheets came from `assets/ChatGPT Image Jul 30, 2025…-autotile/` (origin unknown, D214) —
-`Scripts/Tools/build_enemy_sheets.py` is removed with them.
+Sheets are built by `Scripts/Tools/build_desert_enemy_sheets.py`: rows idle / walk / attack / death, 96×72 cells,
+feet on the bottom row, facing right; frames unscaled (48×48), the scenes scale them ×1.5 like the hero.
+Attack frames: scorpion 1 = tail raised (wind-up), 2 = sting (lands at 0.7 s with the tank's wind-up);
+jackal 2 = crouch, 3 = bite.
+
+The drawn turtle and centipede (D218) are gone; their shared drawing helpers live in `Scripts/Tools/pixel_kit.py`.

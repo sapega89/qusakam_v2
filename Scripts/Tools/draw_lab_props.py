@@ -10,7 +10,7 @@ import sys
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(__file__))
-from draw_enemy_sheets import OUTLINE  # noqa: E402
+from pixel_kit import OUTLINE  # noqa: E402
 
 OUT = "SampleProject/Assets/Laboratory/"
 IRON = [(150, 156, 170), (104, 108, 124), (70, 72, 86)]

@@ -8,7 +8,7 @@ import sys
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(__file__))
-from draw_enemy_sheets import OUTLINE  # noqa: E402
+from pixel_kit import OUTLINE  # noqa: E402
 
 WOOD = [(196, 142, 88), (158, 106, 62), (118, 76, 46)]
 OUT = "SampleProject/Assets/Objects/ladder.png"

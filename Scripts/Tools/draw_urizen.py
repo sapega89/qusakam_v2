@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 from draw_astrit import FEET, S, SKIN, poly, sheet, vgrad  # noqa: E402
-from draw_enemy_sheets import OUTLINE, Canvas, ellipse, lit  # noqa: E402
+from pixel_kit import OUTLINE, Canvas, ellipse, lit  # noqa: E402
 
 OUT = "SampleProject/Assets/Characters/Companions/urizen/"
 FRAMES = 12

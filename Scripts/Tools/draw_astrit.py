@@ -13,7 +13,7 @@ import sys
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(__file__))
-from draw_enemy_sheets import OUTLINE, Canvas, ellipse, flat, lit  # noqa: E402
+from pixel_kit import OUTLINE, Canvas, ellipse, flat, lit  # noqa: E402
 
 OUT = "SampleProject/Assets/Characters/Companions/astrit/"
 S = 64

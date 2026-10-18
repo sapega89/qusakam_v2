@@ -11,7 +11,7 @@ import sys
 from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(__file__))
-from draw_enemy_sheets import OUTLINE  # noqa: E402
+from pixel_kit import OUTLINE  # noqa: E402
 
 OUT = "SampleProject/Assets/Weapons/"
 GRIP = 3

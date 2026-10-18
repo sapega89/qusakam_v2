@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnwd7eeryyvl5"
-path="res://.godot/imported/sheet.png-99975b7f3d44f1368a6b1861c1e8066f.ctex"
+uid="uid://d0j8fkt0r1unw"
+path="res://.godot/imported/sheet.png-cf9fda82caaa45a85ae3b8bb69da6b6a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Characters/Enemies/battle_turtle/sheet.png"
-dest_files=["res://.godot/imported/sheet.png-99975b7f3d44f1368a6b1861c1e8066f.ctex"]
+source_file="res://SampleProject/Assets/Characters/Enemies/scorpion/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-cf9fda82caaa45a85ae3b8bb69da6b6a.ctex"]
 
 [params]
 
