@@ -4,7 +4,6 @@ extends SceneTree
 ## після неї гравець уже на дорозі. До повернення з села сходи — звичайні сходи.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
 
-const STAIRS_MIDDLE := Vector2(550, 590)
 
 var fails: Array[String] = []
 
@@ -76,7 +75,7 @@ func _initialize() -> void:
 
 	print("[1] Before the village the stairs are just stairs")
 	await _enter_canyon(game, {"canyon_intro_complete": true, "canyon_exploration_complete": true})
-	game.player.global_position = STAIRS_MIDDLE
+	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
 	for i in 30: await process_frame
 	ck(not started.has("Canyon_ExitCutscene"), "no exit cutscene before the village (%s)" % [started])
 	ck(game.map.scene_file_path.ends_with("Canyon.tscn"), "still in the Canyon")
@@ -86,7 +85,7 @@ func _initialize() -> void:
 	await _enter_canyon(game, {"canyon_abduction_complete": true, "village_abduction_complete": true,
 			"village_arrival_complete": true, "village_fight_complete": true, "village_left_complete": true})
 	ck(game.map.get_current_state_name() == "RELIC_PICKUP", "Canyon waits in RELIC_PICKUP (%s)" % game.map.get_current_state_name())
-	game.player.global_position = STAIRS_MIDDLE
+	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
 	for i in 30: await process_frame
 	ck(started.has("Canyon_ExitCutscene"), "Canyon_ExitCutscene plays (%s)" % [started])
 

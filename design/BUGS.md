@@ -325,15 +325,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
-### B11 — Tutorial hint panel and the skill hotbar overlap
-- **Where:** in-game HUD, bottom centre.
-- **Evidence:** `design/shots/combat_hud_1920.png` — the hint panel
-  *"Use A/D or Arrow Keys to move • Space to jump"* and the 4-slot skill hotbar
-  are drawn on top of each other; the hotbar's box cuts through the hint text.
-- **Expected:** the two HUD elements do not collide at 1920×1080.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review.
-
 ### B8 — Menu surfaces are transparent; the parchment map bleeds through (systemic)
 - **Where:** not one screen. Confirmed on three so far:
   - **Skills tab** — no surface at all, "No skills available yet." sits on the map.

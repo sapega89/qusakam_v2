@@ -160,6 +160,7 @@ unique_name_in_owner = true
 position = Vector2(368, 248)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+offset = Vector2(0, -64)
 zoom = Vector2(2.25, 2.25)
 position_smoothing_enabled = true
 
