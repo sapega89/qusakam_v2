@@ -1,11 +1,15 @@
-# Enemy art by type (D208, D210, D214)
+# Enemy art by type (D208, D214, D218)
 
-| Type | Sheet | Source | Licence |
-|---|---|---|---|
-| tank | `battle_turtle/sheet.png` | `assets/ChatGPT Image Jul 30, 2025, 06_51_40 PM-autotile/2 Battle turtle/` idle, walk, attack2, death | **not found** in the folder (looks like a craftpix desert-enemies pack) — verify before release |
-| fast | `centipede/sheet.png` | same folder, `1 Centipede/` idle, walk, attack3, death | **not found** — verify |
-| melee | `Scripts/Systems/character-spritesheet (4).png` (unchanged, `default_enemy.tscn`) | — | — |
+| Type | Sheet | Source |
+|---|---|---|
+| tank | `battle_turtle/sheet.png` | drawn by `Scripts/Tools/draw_enemy_sheets.py` — desert turtle in the hero's style (D218) |
+| fast | `centipede/sheet.png` | drawn by the same script — centipede, rears up like a cobra in the wind-up |
+| melee | `Scripts/Systems/character-spritesheet (4).png` (unchanged, `default_enemy.tscn`) | — |
 
-Sheets are built by `Scripts/Tools/build_enemy_sheets.py`: rows idle / walk / attack / death, 96×72 cells,
-frames mirrored (the pack draws them facing left, the game expects right), the idle body centred.
-Unused in the same folder: `3 Big bloated`, the turtle's cannon shot (`attack3`, for a ranged type, Q35).
+Original work for this project, no third-party licence. Style matched to the hero (`Sprites/Player`): chibi
+proportions, 1-px outline (40, 23, 36), three light bands from the top left, round red eye with a
+white highlight, an angry brow so it reads as an enemy. Grid kept from D214 so the scenes did not change: rows
+idle / walk / attack / death, 96×72 cells, feet on the bottom row, facing right; attack frames match the scene keys.
+
+The earlier sheets came from `assets/ChatGPT Image Jul 30, 2025…-autotile/` (origin unknown, D214) —
+`Scripts/Tools/build_enemy_sheets.py` is removed with them.
