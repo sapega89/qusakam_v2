@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drumql6nbgbw2"
-path="res://.godot/imported/1.png-0709b53c0cf69008cdb81e2f8a4437f5.ctex"
+uid="uid://b6r621pfp8rtt"
+path="res://.godot/imported/punch_1.png-fbba769c2786db0aa19f45001b522796.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Sprites/Player/Attack/1.png"
-dest_files=["res://.godot/imported/1.png-0709b53c0cf69008cdb81e2f8a4437f5.ctex"]
+source_file="res://SampleProject/Assets/FX/Smear/punch_1.png"
+dest_files=["res://.godot/imported/punch_1.png-fbba769c2786db0aa19f45001b522796.ctex"]
 
 [params]
 

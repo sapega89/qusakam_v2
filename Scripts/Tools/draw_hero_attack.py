@@ -1,11 +1,12 @@
-"""Кадри удару героя і шлейф замаху (D224). Ритм і форма дуги — за листом атаки
-assets/idle and  alter/itch light atk sheet-Sheet.png: присід-замах, суцільний півмісяць через голову,
-тонкий слід, повернення; другий удар серії — знизу вгору (той самий півмісяць, віддзеркалений).
+"""Шлейфи удару героя (D224, D232). Ритм і форма дуги — за листом атаки
+assets/idle and  alter/itch light atk sheet-Sheet.png: суцільний півмісяць через голову, тонкий слід;
+другий удар серії — знизу вгору (той самий півмісяць, віддзеркалений).
 
-Тіло: з кадру стійки героя (Sprites/Player/Walk/1.png) — верх тіла (вище пояса, рядок SPLIT) зсувається:
-присід назад-униз, нахил уперед, дотягування; ноги на місці. -> Sprites/Player/Attack/1..4.png
+Кадри тіла тут більше не малюються: удар бере кадри художника (Player.tscn → Attack: біг 4 — замах,
+біг 2 — удар з рукою вперед, біг 1 — дотяг, хода 1 — стійка; D232).
 Шлейф: суцільний сіро-блакитний півмісяць (дуга) і пряма смуга (укол) по 3 кадри, центр обертання —
-середина картинки (дуга) / лівий край (укол). -> Assets/FX/Smear/arc_1..3.png, thrust_1..3.png
+середина картинки (дуга) / лівий край (укол). Удар кулаком — короткий «вибух» біля рукавиці.
+-> Assets/FX/Smear/arc_1..3.png, thrust_1..3.png, punch_1..3.png
 Запуск: python Scripts/Tools/draw_hero_attack.py
 """
 
@@ -14,28 +15,11 @@ import os
 
 from PIL import Image
 
-HERO = "SampleProject/Sprites/Player/Walk/1.png"
-BODY_OUT = "SampleProject/Sprites/Player/Attack/"
 FX_OUT = "SampleProject/Assets/FX/Smear/"
-SPLIT = 47  # пояс героя: вище — верх тіла, нижче — ноги
 
 SMEAR = (214, 228, 244, 235)
 SMEAR_EDGE = (255, 255, 255, 255)
 R = 32  # зовнішній радіус дуги, px текстури
-
-
-def body_frames():
-    src = Image.open(HERO).convert("RGBA")
-    legs = src.crop((0, SPLIT, 64, 64))
-    top = src.crop((0, 0, 64, SPLIT))
-    # (зсув верху x, y): присід-замах назад, удар уперед, дотягування, стійка
-    out = []
-    for dx, dy in [(-3, 3), (5, 1), (3, 0), (0, 0)]:
-        f = Image.new("RGBA", (64, 64))
-        f.alpha_composite(legs, (0, SPLIT))
-        f.alpha_composite(top, (dx, dy))
-        out.append(f)
-    return out
 
 
 def arc(start, end, thick, size=72):
@@ -83,14 +67,38 @@ def thrust(length, thick, size=(72, 24)):
     return im
 
 
+def punch(size, rays, core, ring, alpha=255):
+    """«Вибух» удару кулаком: біле ядро, промені різної довжини, тонке кільце (аніме-кадр удару)."""
+    im = Image.new("RGBA", (size, size))
+    px = im.load()
+    c = size / 2
+    for y in range(size):
+        for x in range(size):
+            dx, dy = x + 0.5 - c, y + 0.5 - c
+            r = math.hypot(dx, dy)
+            ang = math.atan2(dy, dx)
+            if r <= core:
+                px[x, y] = (255, 255, 255, alpha)
+                continue
+            if ring and abs(r - ring) < 0.9:
+                px[x, y] = (255, 236, 190, alpha)
+                continue
+            for k in range(8):  # промені: довгі й короткі по черзі
+                a0 = k * math.pi / 4 + 0.2
+                length = rays * (1.0 if k % 2 == 0 else 0.6)
+                if abs(math.atan2(math.sin(ang - a0), math.cos(ang - a0))) < 0.16 * (1 - r / max(length, 1)) + 0.04 and r <= length:
+                    px[x, y] = (255, 230, 160, alpha) if r > core + 2 else (255, 255, 255, alpha)
+    return im
+
+
 if __name__ == "__main__":
-    os.makedirs(BODY_OUT, exist_ok=True)
     os.makedirs(FX_OUT, exist_ok=True)
-    for i, f in enumerate(body_frames()):
-        f.save(BODY_OUT + f"{i + 1}.png")
     # як у референсі: повний півмісяць, той самий пізніше й тонший, тонкий слід
     for i, (s, e, t) in enumerate([(-40, 150, 18), (10, 165, 12), (90, 175, 3)]):
         arc(s, e, t).save(FX_OUT + f"arc_{i + 1}.png")
     for i, (length, t) in enumerate([(72, 12), (60, 8), (44, 3)]):
         thrust(length, t).save(FX_OUT + f"thrust_{i + 1}.png")
-    print("drawn", BODY_OUT, FX_OUT)
+    # кулак: спалах із променями → кільце, що розходиться → згасання
+    for i, (rays, core, ring, alpha) in enumerate([(13, 4, 0, 255), (12, 2, 9, 230), (8, 0, 12, 140)]):
+        punch(28, rays, core, ring, alpha).save(FX_OUT + f"punch_{i + 1}.png")
+    print("drawn", FX_OUT)

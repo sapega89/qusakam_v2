@@ -7,3 +7,5 @@
 Chosen because no licensed pack in `assets/` has hit sparks or a swing streak (searched 2026-10-18).
 
 `Smear/arc_1–3.png`, `Smear/thrust_1–3.png` — swing / thrust smear drawn by `Scripts/Tools/draw_hero_attack.py` (D224), original work; shape after `assets/idle and  alter/itch light atk sheet-Sheet.png`.
+
+`Smear/punch_1–3.png` — the bare-hand punch burst (rays, then a widening ring), drawn by `Scripts/Tools/draw_hero_attack.py` (D232), original work.
