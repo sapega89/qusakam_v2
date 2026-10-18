@@ -1,7 +1,7 @@
 ---
 type: plan
 status: blocked
-blocked-by: [Ludo login (art), Астрит strike]
+blocked-by: [Ludo login (art)]
 ---
 
 # Companion assists — plan
@@ -32,10 +32,9 @@ Figma: no design exists (HUD readiness indicator has no frame — Sapega's call,
 - Real lab dialogue lines naming the three (Sapega writes texts, D159 style).
 
 ## Decisions required
-1. **Астрит's strike** — Sapega (2026-10-18): Астрит is a **warrior-thaumaturge with a shield and a book**.
-   D209's "leap + heavy blow" was proposed before that. Proposal: he charges in behind his shield, bashes the
-   nearest enemy (knockback, breaks a wind-up) and his book **marks** it — the mark makes the next hits on it
-   deal +25 % for 4 s (PF2e Thaumaturge *Exploit Vulnerability*). **GAME DESIGN DECISION REQUIRED**; blocks slice 3.
+1. ~~Астрит's strike~~ — **answered** (Sapega, 2026-10-18, D209): Астрит pounces and hits hard with a
+   spiked shield; Уризен (cleric) smites with a coin; Алісия is a hunter with a cat. Still open, non-blocking:
+   Алісия's exact strike (proposal: the cat leaps on the nearest enemy and claws it).
 2. **Art source** — D196: generate with Ludo in Kusakam's style (his sprite as the reference). Blocks slices 2–4
    until `ludo login`.
 3. Lab beat order (Алісия 01, Астрит 02, Уризен 03) — taken from Sapega's answer; non-blocking.

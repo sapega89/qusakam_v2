@@ -28,9 +28,14 @@ an open question below, never filled in. Used by skills, enemies, companions and
 ## Characters (Sapega, 2026-10-18)
 
 > астріт це воїн талматург з щитом та книгою
+>
+> урізен це клірик з ударом монетою як смайтом тільки у вигляді монети астріт накидується на ворога і
+> жостко наносить урон колучим щитом а алісія охзотник з кішечкою
 
-- **Астрит** — a warrior-thaumaturge with a **shield and a book**; a Laboratory companion (D209).
-- **Алісия**, **Уризен** — Laboratory companions (D209); who they are is still open.
+- **Астрит** — a warrior-thaumaturge with a **shield and a book**; pounces on enemies with a **spiked shield**.
+- **Уризен** — a **cleric**; his smite takes the shape of a **coin**.
+- **Алісия** — a **hunter with a cat**.
+- All three are Laboratory companions (D209).
 - The **City Gates guard** — the first assist, a tutorial (D209).
 
 ## What follows for the game (consequences, not new facts)
@@ -50,4 +55,4 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - Which empire, and is it present in the story (the city, the mayor)?
 - Who the gods are, and what the "three dark priests" (`Три_темніх_жреца`) serve.
 - What the ancient civilisation was, and whether the Laboratory is built on it.
-- Kusakam, Уризен, Алісия, Суан, Гном-механік — who they are (also Q51, Q53); Астрит beyond his class.
+- Kusakam, Суан, Гном-механік — who they are (also Q51, Q53). Which god Уризен serves (the coin?).
