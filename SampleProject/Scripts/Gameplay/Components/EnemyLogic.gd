@@ -61,6 +61,8 @@ var knockback_left: float = 0.0
 var knockback_speed: float = 0.0
 ## Оглушення (D207): ворог стоїть, а замах, що вже йде, не закінчиться ударом.
 var stun_left: float = 0.0
+## Замах зірвано важким ударом (відкидання, D208) — удару не буде.
+var attack_broken: bool = false
 
 # Raycast для виявлення гравця
 
@@ -337,23 +339,33 @@ func change_state(new_state: AIState):
 	state_changed.emit(new_state)
 
 func stun(duration: float) -> void:
+	if enemy.super_armor and is_attacking:
+		return  # броня (tank, D208): замах оглушенням не зірвати
 	stun_left = maxf(stun_left, duration)
 
-func start_knockback(push: float) -> void:
+## Відкидання на [param push] px за KNOCKBACK_TIME. Удар героя ([param breaks_attack]) зриває замах,
+## власний ривок ворога — ні.
+func start_knockback(push: float, breaks_attack: bool = true) -> void:
 	knockback_left = KNOCKBACK_TIME
 	knockback_speed = push / KNOCKBACK_TIME
+	if breaks_attack and is_attacking:
+		attack_broken = true
 
 func perform_attack():
 	"""Замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
 	is_attacking = true
+	attack_broken = false
 	var direction := last_direction if last_direction != 0 else 1
 	attack_started.emit()
 	EventBus.attack_started.emit(enemy, player)
 
 	# Замах: гравець бачить attack і встигає відійти або вдарити першим
 	await get_tree().create_timer(enemy.attack_windup).timeout
-	if not enemy.is_dead and stun_left <= 0.0:  # оглушили посеред замаху — удару немає
+	# Оглушили (якщо без броні) чи збили важким ударом посеред замаху — удару немає (D207, D208)
+	if not enemy.is_dead and stun_left <= 0.0 and not attack_broken:
 		enemy.start_attack(direction)
+		if enemy.lunge > 0.0:
+			start_knockback(direction * enemy.lunge, false)  # ривок разом з ударом (fast)
 		await get_tree().create_timer(enemy.attack_active_time).timeout
 		enemy.end_attack()
 

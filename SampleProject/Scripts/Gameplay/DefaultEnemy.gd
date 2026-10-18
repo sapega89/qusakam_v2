@@ -48,6 +48,9 @@ var attack_cooldown = 1.5
 ## D198: замах і тривалість удару (EnemyStats перезаписує).
 var attack_windup := 0.4
 var attack_active_time := 0.2
+## D208: ривок під час удару (px) і броня від оглушення під час замаху.
+var lunge := 0.0
+var super_armor := false
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -115,6 +118,8 @@ func _apply_stats(stats: EnemyStats) -> void:
 	attack_cooldown = stats.attack_cooldown
 	attack_windup = stats.attack_windup
 	attack_active_time = stats.attack_active_time
+	lunge = stats.lunge
+	super_armor = stats.super_armor
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range

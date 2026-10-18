@@ -261,6 +261,45 @@ func _initialize() -> void:
 	pl._unhandled_input(dodge)
 	ck(mover.is_rolling(), "a roll is possible again after the cooldown")
 	await create_timer(mover.roll_duration + 0.1).timeout
+
+	print("[2e] Enemy types: the tank's long armoured swing, the fast one's lunge (D208)")
+	var type_hits: Array = []
+	pl.damage_token.connect(func(d: int) -> void: type_hits.append(d))
+	for e in enemies:
+		e.global_position.x = pl.global_position.x - 400  # не заважають
+	var tank = enemies[0]
+	tank._apply_stats(load("res://SampleProject/Resources/Enemies/enemy_stats_tank.tres"))
+	tank.current_health = tank.Max_Health
+	tank.global_position = Vector2(pl.global_position.x + 50, tank.global_position.y)
+	await create_timer(0.6).timeout
+	tank.enemy_logic.last_direction = -1
+	tank.enemy_logic.perform_attack()
+	await create_timer(0.5).timeout
+	ck(type_hits.is_empty(), "the tank is still winding up at 0.5 s")
+	tank.stun(0.5)
+	ck(tank.enemy_logic.stun_left <= 0.0, "armour: a stun does not cancel the tank's swing")
+	await create_timer(0.5).timeout
+	ck(type_hits.size() == 1, "the tank's swing lands after its 0.7 s wind-up (%s)" % [type_hits])
+	await create_timer(1.0).timeout
+	type_hits.clear()
+	tank.enemy_logic.perform_attack()
+	await create_timer(0.2).timeout
+	tank.knockback(60.0)  # як удар булавою посеред замаху
+	await create_timer(0.9).timeout
+	ck(type_hits.is_empty(), "a heavy hit (knockback) breaks the tank's swing (%s)" % [type_hits])
+	tank.global_position.x = pl.global_position.x - 400
+	var fast = enemies.filter(func(e: Node) -> bool: return e.enemy_stats.enemy_type == "fast")[0]
+	fast.global_position = Vector2(pl.global_position.x + 110, fast.global_position.y)
+	fast.set_physics_process(true)  # ривок рухає тіло
+	await create_timer(0.6).timeout
+	type_hits.clear()
+	var fast_x0: float = fast.global_position.x
+	fast.enemy_logic.last_direction = -1
+	fast.enemy_logic.perform_attack()
+	await create_timer(0.6).timeout
+	ck(fast_x0 - fast.global_position.x >= 40.0, "the fast enemy lunges forward (%.0f px)" % (fast_x0 - fast.global_position.x))
+	ck(type_hits.size() == 1, "the lunge reaches a hero 110 px away (%s)" % [type_hits])
+	fast.set_physics_process(false)
 	for e in enemies:
 		e.set_physics_process(true)
 

@@ -16,6 +16,9 @@ class_name EnemyStats
 ## D198 (мок): замах перед ударом, потім хітбокс у бік погляду живий attack_active_time секунд.
 @export var attack_windup: float = 0.4
 @export var attack_active_time: float = 0.2
+## D208: ривок уперед під час удару, px (fast); броня — оглушення не зриває замах (tank).
+@export var lunge: float = 0.0
+@export var super_armor: bool = false
 
 @export_group("Detection")
 @export var detection_range: float = 300.0
