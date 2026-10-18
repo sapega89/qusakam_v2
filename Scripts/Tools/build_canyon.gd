@@ -36,6 +36,14 @@ const WALLS_TINT := Color(0.92, 0.92, 0.98)
 ## Тіло плато темнішає з глибиною (множення), щоб верхня лінія плато відділялась від маси.
 const PLATEAU_SHADE_RECT := Rect2(800, 416, 1792, 544)
 const PLATEAU_SHADE_BOTTOM := Color(0.55, 0.5, 0.5)
+## Дорога плато й тіло під нею — картинка з рядка 12 (y 384), D231.
+const PLATEAU_BODY_AT := Vector2(800, 384)
+## Місток (D231): стовпці настилу, стовпи на обох краях, поруччя, де починається обвал.
+const BRIDGE_SCRIPT := "res://SampleProject/Scripts/Gameplay/CanyonBridge.gd"
+const BRIDGE_COLS := Vector2i(1, 24)
+const BRIDGE_POSTS := [26.0, 796.0]
+const BRIDGE_RAIL_Y := 352.0
+const BRIDGE_TRIGGER := Rect2(830, 200, 60, 200)
 
 
 func _initialize() -> void:
@@ -67,10 +75,15 @@ func _initialize() -> void:
 			if gorge[r][c] == "#":
 				rocks.set_cell(cell, SOURCE, SOLID)
 
-	# Стовп Gate2 стоїть на плато (раніше бракувало нижнього тайла)
+	# Gate2 — невидимий настил містка через усю ущелину (D231): колізію відчиняє GateController за
+	# village_left_complete (Canyon.gd), вигляд — вузол Bridge; бруківкового стовпа більше немає.
 	var gate2: TileMapLayer = tilemap.get_node(^"Gate2")
-	# шар зсунутий на y 2: рядки 6–10 закінчувались на y 354, рядок 11 доводить стовп до підлоги (y 384)
-	gate2.set_cell(Vector2i(0, 11), gate2.get_cell_source_id(Vector2i(0, 10)), gate2.get_cell_atlas_coords(Vector2i(0, 10)))
+	gate2.position = Vector2.ZERO
+	gate2.modulate = Color.WHITE
+	gate2.self_modulate = Color(1, 1, 1, 0)  # невидимий настил; modulate скидає GateController
+	gate2.clear()
+	for x in range(BRIDGE_COLS.x, BRIDGE_COLS.y + 1):
+		gate2.set_cell(Vector2i(x, GORGE_ROW0), SOURCE, SOLID)
 
 	# Фон пустелі для каньйону — desert_backdrop_4 без Plan2 (оазис з водою й велика скеля): вода внизу
 	# читалась як безодня, скеля конкурувала зі Скелею Прайду. Окрема сцена, бо зміни у вкладеній не пакуються.
@@ -84,7 +97,7 @@ func _initialize() -> void:
 	backdrop.name = "Backdrop"
 	backdrop.owner = room
 
-	for old_name in ["PrideRock", "CanyonWalls", "Gorge", "CanyonDepths", "DepthUnderlay", "PlateauShade", "PlateauBody"]:
+	for old_name in ["PrideRock", "CanyonWalls", "Gorge", "CanyonDepths", "DepthUnderlay", "PlateauShade", "PlateauBody", "Bridge"]:
 		var old := room.get_node_or_null(NodePath(old_name))
 		if old:
 			room.remove_child(old)
@@ -150,7 +163,7 @@ func _initialize() -> void:
 	room.move_child(gorge_sprite, tilemap.get_index() + 1)  # над тайлами: накриває й праву стіну (тіло плато)
 	gorge_sprite.owner = room
 
-	var body := _sprite("plateau_body", PLATEAU_SHADE_RECT.position)
+	var body := _sprite("plateau_body", PLATEAU_BODY_AT)
 	body.name = "PlateauBody"
 	room.add_child(body)
 	room.move_child(body, gorge_sprite.get_index())  # над тайлами плато, під ущелиною
@@ -176,6 +189,8 @@ func _initialize() -> void:
 	shade.material = multiply
 	room.add_child(shade)
 	shade.owner = room
+
+	_add_bridge(room)
 
 	var exit_trigger: Node2D = room.get_node(^"CanyonExitTrigger")
 	exit_trigger.position = EXIT_AT
@@ -219,3 +234,48 @@ func _read_gorge() -> PackedStringArray:
 			continue
 		rows.append(line)
 	return rows
+
+
+## Місток із дошок, двох стовпів і мотузки-поруччя; дошки й мотузка — у Pieces (падають при обвалі).
+func _add_bridge(room: Node) -> void:
+	var bridge := Node2D.new()
+	bridge.name = "Bridge"
+	bridge.set_script(load(BRIDGE_SCRIPT))
+	room.add_child(bridge)
+	room.move_child(bridge, room.get_node(^"Gorge").get_index() + 1)
+	bridge.owner = room
+	var pieces := Node2D.new()
+	pieces.name = "Pieces"
+	bridge.add_child(pieces)
+	pieces.owner = room
+	for x in range(BRIDGE_COLS.x, BRIDGE_COLS.y + 1):
+		var plank := _sprite("bridge_plank", Vector2(x * TILE + TILE / 2.0, GORGE_ROW0 * TILE))
+		plank.name = "Plank%d" % x
+		plank.centered = true
+		plank.offset = Vector2(0, plank.texture.get_height() / 2.0)  # верх дошки — на рівні дороги
+		pieces.add_child(plank)
+		plank.owner = room
+	var rail := _sprite("bridge_rope", Vector2(BRIDGE_POSTS[0], BRIDGE_RAIL_Y))
+	rail.name = "Rail"
+	rail.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	rail.region_enabled = true
+	rail.region_rect = Rect2(0, 0, (BRIDGE_POSTS[1] - BRIDGE_POSTS[0]) / 1.5, 3)
+	pieces.add_child(rail)
+	rail.owner = room
+	for i in BRIDGE_POSTS.size():
+		var post := _sprite("bridge_post", Vector2(BRIDGE_POSTS[i] - 6, BRIDGE_RAIL_Y - 12))
+		post.name = "Post%d" % (i + 1)
+		bridge.add_child(post)
+		post.owner = room
+	var trigger := Area2D.new()
+	trigger.name = "CollapseTrigger"
+	trigger.position = BRIDGE_TRIGGER.get_center()
+	var shape_node := CollisionShape2D.new()
+	shape_node.name = "CollisionShape2D"
+	var shape := RectangleShape2D.new()
+	shape.size = BRIDGE_TRIGGER.size
+	shape_node.shape = shape
+	trigger.add_child(shape_node)
+	bridge.add_child(trigger)
+	trigger.owner = room
+	shape_node.owner = room

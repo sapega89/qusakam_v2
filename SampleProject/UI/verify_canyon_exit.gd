@@ -78,6 +78,9 @@ func _initialize() -> void:
 	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
 	for i in 30: await process_frame
 	ck(not started.has("Canyon_ExitCutscene"), "no exit cutscene before the village (%s)" % [started])
+	var bridge: Node = game.map.get_node("Bridge")
+	ck(bridge.get_node("Pieces").visible and not game.map.get_node("Gorge").visible, "before the village the bridge stands over a hidden gorge (D231)")
+	ck(game.map.get_node("TileMap/Gate2").enabled, "and its deck is solid")
 	ck(game.map.scene_file_path.ends_with("Canyon.tscn"), "still in the Canyon")
 	await _drain(dm)  # RoadToVillage: після викрадення, до села
 
@@ -85,6 +88,11 @@ func _initialize() -> void:
 	await _enter_canyon(game, {"canyon_abduction_complete": true, "village_abduction_complete": true,
 			"village_arrival_complete": true, "village_fight_complete": true, "village_left_complete": true})
 	ck(game.map.get_current_state_name() == "RELIC_PICKUP", "Canyon waits in RELIC_PICKUP (%s)" % game.map.get_current_state_name())
+	game.player.global_position = game.map.get_node("Bridge/CollapseTrigger").global_position
+	for i in 20: await process_frame
+	ck(game.get_quest_flag("canyon_bridge_collapsed"), "back from the village, the bridge collapses at the edge")
+	await create_timer(1.2).timeout
+	ck(game.map.get_node("Gorge").visible and game.map.get_node("Gorge").modulate.a > 0.99, "the gorge's ledges show")
 	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
 	for i in 30: await process_frame
 	ck(started.has("Canyon_ExitCutscene"), "Canyon_ExitCutscene plays (%s)" % [started])
