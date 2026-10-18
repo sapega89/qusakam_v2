@@ -119,6 +119,15 @@ func _physics_process(delta: float) -> void:
 		return
 	$Sprite2D.modulate.a = 1.0
 
+	# Драбина (D225): кадри лазіння йдуть, лише поки герой рухається по ній
+	if mover.is_climbing():
+		animation = &"Climb"
+		if absf(velocity.y) < 1.0:
+			$AnimationPlayer.pause()
+		elif not $AnimationPlayer.is_playing() or $AnimationPlayer.current_animation != &"Climb":
+			$AnimationPlayer.play(&"Climb")
+		return
+
 	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
 	# чи клік уже спожив елемент інтерфейсу.
 
@@ -181,7 +190,7 @@ func _unhandled_input(ev: InputEvent) -> void:
 			$AnimationPlayer.play(&"Roll")
 			$Sprite2D.modulate.a = ROLL_ALPHA
 		return
-	if ev.is_action_pressed(&"attack") and not combat.is_attacking and not mover.is_rolling():
+	if ev.is_action_pressed(&"attack") and not combat.is_attacking and not mover.is_rolling() and not mover.is_climbing():
 		if event:
 			return  # під час катсцени не б'ємо
 		if ev is InputEventMouseButton and get_tree().paused:
@@ -304,6 +313,7 @@ func on_enter():
 	# ВАЖНО: Не скидаємо позицію, тільки зберігаємо reset_position
 	var old_reset_position = reset_position
 	reset_position = position
+	mover.climbing = null  # драбина лишилась у старій кімнаті (D225)
 
 	# Діагностика: перевіряємо, чи не змінилася позиція після встановлення reset_position (DEBUG)
 	# TODO: Remove this diagnostic logging after confirming teleportation bug is fixed

@@ -28,6 +28,7 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 
 Runnable specs. One per system, sliced so each slice ships on its own.
 
+- [[lab_vertical_plan]] — D225: rooms with floors joined by ladders (Tails of Iron), the Laboratory first
 - [[settings_plan]] — how every Settings row must behave (change at once, persist, restore); Language blocked on Q55; Controls split D193
 - [[companion_assist_plan]] — D201/D209: guard at City Gates, then Алісия / Астрит / Уризен; core needs no art, the rest waits on Ludo
 - [[character_animation_plan]] — blocked on Q40/Q41: player frames for every state, per-type enemy art, NPC idles

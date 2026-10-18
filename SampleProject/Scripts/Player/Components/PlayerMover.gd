@@ -24,6 +24,9 @@ class_name PlayerMover
 @export var roll_duration := 0.30
 @export var roll_distance := 170.0
 @export var roll_cooldown := 0.6
+## Драбини (D225): швидкість лазіння, px/s; стрибок з драбини — така частка звичайного.
+@export var climb_speed := 170.0
+@export var ladder_jump_factor := 0.6
 
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -41,6 +44,8 @@ var fall_start_height: float = 0.0
 var roll_time_left: float = 0.0
 var roll_ready_in: float = 0.0  # до наступного перекату: сам перекат + roll_cooldown
 var roll_direction: int = 1
+## Драбина, по якій зараз лізе герой (Ladder.gd), або null. Скидає Player.on_enter при переході кімнати.
+var climbing: Node2D = null
 
 # Parent reference: the CharacterBody2D that owns this component (the Player).
 @onready var player: CharacterBody2D = get_parent()
@@ -55,10 +60,14 @@ func is_rolling() -> bool:
 	return roll_time_left > 0.0
 
 
+func is_climbing() -> bool:
+	return climbing != null
+
+
 ## Перекат (D200): лише з землі, не частіше за roll_cooldown. Невразливість — на весь перекат.
 ## Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи перекат почався.
 func start_roll() -> bool:
-	if is_rolling() or roll_ready_in > 0.0 or not player.is_on_floor():
+	if is_rolling() or is_climbing() or roll_ready_in > 0.0 or not player.is_on_floor():
 		return false
 	var held := Input.get_axis(&"move_left", &"move_right")
 	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
@@ -73,12 +82,15 @@ func start_roll() -> bool:
 ## move_and_slide() and landing detection. Call once per Player._physics_process.
 func physics_move(delta: float) -> void:
 	roll_ready_in = maxf(0.0, roll_ready_in - delta)
-	_apply_gravity_and_track_fall(delta)
+	if not is_climbing():
+		_apply_gravity_and_track_fall(delta)
 
 	if is_rolling():
 		# Під час перекату — рівна швидкість, без стрибка й керування
 		roll_time_left -= delta
 		player.velocity.x = roll_direction * roll_distance / roll_duration
+	elif is_climbing() or _grab_ladder():
+		_climb()
 	else:
 		_handle_jump()
 		if player.is_on_wall():
@@ -95,6 +107,48 @@ func physics_move(delta: float) -> void:
 			DebugLogger.physics_warning("PlayerMover: Рух блокується стіною (is_on_wall = true)", "player_wall")
 
 	_handle_landing(was_in_air, player.is_on_floor())
+
+
+## Драбина, на якій зараз центр героя, або null.
+func _ladder_at() -> Node2D:
+	for ladder in get_tree().get_nodes_in_group(GameGroups.LADDERS):
+		if ladder.contains(player.global_position):
+			return ladder
+	return null
+
+
+## Ставати на драбину: знизу чи посередині — ↑; стоячи на містку над нею — ↓ (крізь односторонній місток).
+## ↑ має перевагу над стрибком: W — і стрибок, і «вгору».
+func _grab_ladder() -> bool:
+	var ladder := _ladder_at()
+	if ladder == null:
+		return false
+	var on_top: bool = player.is_on_floor() and player.global_position.y < ladder.global_position.y
+	if Input.is_action_pressed(&"move_down") and on_top:
+		player.position.y += 8.0  # під поверхню містка — односторонній більше не тримає
+	elif not (Input.is_action_pressed(&"move_up") and not on_top):
+		return false
+	climbing = ladder
+	player.velocity = Vector2.ZERO
+	airtime = 0.0
+	fall_start_height = 0.0
+	return true
+
+
+## На драбині: ↑/↓ лізе, герой по центру драбини; стрибок без ↑ — зіскок; ↓ на підлозі внизу — зійти;
+## вище верху драбини — сходить на місток.
+func _climb() -> void:
+	if not climbing.contains(player.global_position):
+		climbing = null
+		return
+	var axis := Input.get_axis(&"move_up", &"move_down")
+	player.global_position.x = climbing.global_position.x
+	player.velocity = Vector2(0.0, axis * climb_speed)
+	if Input.is_action_just_pressed(&"jump") and not Input.is_action_pressed(&"move_up"):
+		climbing = null
+		player.velocity.y = jump_velocity * ladder_jump_factor
+	elif axis > 0.0 and player.is_on_floor() and player.global_position.y > climbing.global_position.y:
+		climbing = null  # унизу, на підлозі під драбиною (на містку згори — це ще початок спуску)
 
 
 func _apply_gravity_and_track_fall(delta: float) -> void:

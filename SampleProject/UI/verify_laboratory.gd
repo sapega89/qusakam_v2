@@ -36,9 +36,9 @@ func _until(cond: Callable, max_s: float) -> void:
 func _fighting(lab: Node) -> bool:
 	return lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty()
 
-## Гравець проходить крізь тригер на x і дочитує розмову.
-func _walk_to(game: Node, dm: Node, x: float) -> void:
-	game.player.global_position = Vector2(x, 340)
+## Гравець проходить крізь тригер (лабораторія на три поверхи, D225) і дочитує розмову.
+func _walk_to(game: Node, dm: Node, trigger: Node2D) -> void:
+	game.player.global_position = trigger.global_position
 	for i in 10: await physics_frame
 	await _drain(dm)
 
@@ -61,17 +61,17 @@ func _initialize() -> void:
 	ck(lab.get_current_state_name() == "EXPLORE", "EXPLORE (%s)" % lab.get_current_state_name())
 
 	print("[2] Each trigger plays one companion talk, then the lab waits")
-	var beats := [[430.0, "COMPANION_01", "lab_companion_01_complete"],
-			[860.0, "COMPANION_02", "lab_companion_02_complete"],
-			[1210.0, "COMPANION_03", "lab_companion_03_complete"]]
+	var beats := [["StateChangeTrigger_Companion01", "COMPANION_01", "lab_companion_01_complete"],
+			["StateChangeTrigger_Companion02", "COMPANION_02", "lab_companion_02_complete"],
+			["StateChangeTrigger_Companion03", "COMPANION_03", "lab_companion_03_complete"]]
 	for b in beats:
-		await _walk_to(game, dm, b[0])
+		await _walk_to(game, dm, lab.get_node(b[0]))
 		ck(game.get_quest_flag(b[2]) and lab.get_current_state_name() == b[1],
-				"x=%d → %s, %s set (%s)" % [b[0], b[1], b[2], lab.get_current_state_name()])
+				"%s → %s, %s set (%s)" % [b[0], b[1], b[2], lab.get_current_state_name()])
 	ck(_alive(lab).is_empty(), "no enemies before the limit test")
 
 	print("[3] Limit test → boss fight → after boss")
-	await _walk_to(game, dm, 1600.0)
+	await _walk_to(game, dm, lab.get_node(^"StateChangeTrigger_LimitTest"))
 	for i in 30: await physics_frame
 	await _drain(dm)
 	await _until(func(): return _fighting(lab), 8.0)

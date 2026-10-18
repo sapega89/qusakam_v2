@@ -35,6 +35,8 @@ const UI_ELEMENTS = "ui_elements"
 # Scene groups
 const AREA_EXIT = "area_exit"
 const PARALLAX_MANAGER = "parallax_manager"
+## Драбини (D225): PlayerMover шукає ту, на якій стоїть герой.
+const LADDERS = "ladders"
 
 # Combat groups
 const COMBATANTS = "combatants"

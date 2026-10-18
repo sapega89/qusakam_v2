@@ -65,6 +65,11 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
+### Vertical rooms — Laboratory first — [[lab_vertical_plan]]
+- **Decided:** D225 (Sapega 2026-10-18: Tails of Iron as the reference, Laboratory first, ladders + one-way platforms, no ability locks yet).
+- **Exists:** one-way tiles, drop-through. **Missing:** ladders, a multi-floor Laboratory.
+- **Built 2026-10-18:** slices 1–2 (ladders, three-floor Laboratory). **Resume:** the next room vertical (Sapega picks), climb frames for the hero.
+
 ### NPC quests: recall, hints, side quests — [[npc_recall_plan]]
 - **Decided:** D158/D161 (Figma `Quest` entry at the NPC: list, main with a gold diamond), D159 (hint
   under the objective), D160 (bubble art), D162 (side quests in `story.json` via `GameFlow`; delete
