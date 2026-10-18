@@ -26,12 +26,13 @@ EYE_IRIS = (190, 38, 30, 255)
 
 
 class Canvas:
-    def __init__(self):
-        self.im = Image.new("RGBA", (CW, CH))
+    def __init__(self, w=CW, h=CH):
+        self.im = Image.new("RGBA", (w, h))
         self.px = self.im.load()
+        self.w, self.h = w, h
 
     def put(self, x, y, c):
-        if 0 <= x < CW and 0 <= y < CH:
+        if 0 <= x < self.w and 0 <= y < self.h:
             self.px[x, y] = c if len(c) == 4 else c + (255,)
 
     def part(self, mask, shade, outline=OUTLINE):
@@ -209,8 +210,8 @@ def centipede(pose, t):
 
 
 def _fade(c, alpha):
-    for y in range(CH):
-        for x in range(CW):
+    for y in range(c.h):
+        for x in range(c.w):
             r, g, b, a = c.px[x, y]
             if a:
                 c.px[x, y] = (r, g, b, int(a * alpha))

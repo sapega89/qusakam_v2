@@ -3,7 +3,7 @@
 | Companion | Source | Licence |
 |---|---|---|
 | guard | `assets/Free Character Sprites/knight (old version)/` run, stab | **not found** in the folder — verify before release |
-| Астрит (`astrit`) | `assets/Free Character Sprites/knight/` leap, sword_combo (first 12), run | **not found** — verify |
+| Астрит (`astrit`) | drawn by `Scripts/Tools/draw_astrit.py` (D221) — woman barbarian, huge spiked shield, glowing book; 64×64 frames, hero style, ×1.5 in the scene | original work |
 | Уризен (`urizen`) | `assets/Free Character Sprites/wizard/` run, casting | **not found** — verify |
 | Алісия (`alisia`) | `assets/Free Character Sprites/archer/` run, bow_shoot | **not found** — verify |
 | the cat (`cat`) | craftpix *Free Street Animal* `3 Cat` walk, attack | craftpix free licence (pack `license.txt`) |
