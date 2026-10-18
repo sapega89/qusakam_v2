@@ -178,6 +178,11 @@ func _unhandled_input(ev: InputEvent) -> void:
 	Ім'я параметра `ev` — бо зайняті обидва очевидні варіанти: `event` — це поле
 	цього класу (ознака катсцени), а `input_event` — сигнал CollisionObject2D.
 	"""
+	# D209: асист компаньйона — наступний готовий
+	if ev.is_action_pressed(&"assist"):
+		if not event:
+			ServiceLocator.get_companion_manager().call_next()
+		return
 	# D202: перемкнути зброю в руці (не посеред удару)
 	if ev.is_action_pressed(&"weapon_next") or ev.is_action_pressed(&"weapon_prev"):
 		if not event and not combat.is_attacking:
