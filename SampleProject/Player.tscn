@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bwi4k0bdicpqv" path="res://SampleProject/Scripts/Combat/Components/DamageApplier.gd" id="3_damage_applier"]
 [ext_resource type="Script" uid="uid://h3d7bkg37nqk" path="res://SampleProject/Scripts/Player/Components/PlayerCombat.gd" id="4_combat"]
 [ext_resource type="Script" uid="uid://bqkuvbuwvc351" path="res://SampleProject/Scripts/Player/Components/PlayerMover.gd" id="5_mover"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/WeaponView.gd" id="weapon_view"]
 [ext_resource type="Texture2D" uid="uid://b6ddhedt2v5ut" path="res://SampleProject/Sprites/Player/Run/1.png" id="r1"]
 [ext_resource type="Texture2D" uid="uid://be1t6ppf85jnn" path="res://SampleProject/Sprites/Player/Run/2.png" id="r2"]
 [ext_resource type="Texture2D" uid="uid://k1sjmeart71i" path="res://SampleProject/Sprites/Player/Run/3.png" id="r3"]
@@ -179,6 +180,17 @@ shape = SubResource("RectangleShape2D_yj7bn")
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w1")
+
+[node name="WeaponMount" type="Node2D" parent="."]
+script = ExtResource("weapon_view")
+
+[node name="Pivot" type="Node2D" parent="WeaponMount"]
+position = Vector2(10, 10)
+
+[node name="Weapon" type="Sprite2D" parent="WeaponMount/Pivot"]
+texture_filter = 1
+scale = Vector2(1.5, 1.5)
+centered = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=305643042]
 libraries/ = SubResource("AnimationLibrary_player")

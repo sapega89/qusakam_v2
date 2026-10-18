@@ -23,8 +23,6 @@ class_name PlayerMover
 ## Перекат (D200, мок): тривалість, відстань, пауза після нього.
 @export var roll_duration := 0.30
 @export var roll_distance := 170.0
-## Під час власного удару герой рухається повільніше: удар — рішення, а не біг із мечем.
-@export var attack_move_factor := 0.4
 @export var roll_cooldown := 0.6
 
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -146,7 +144,7 @@ func _handle_horizontal_movement(delta: float) -> void:
 
 	if direction:
 		speed = min(speed_max, speed + accel * delta)
-		player.velocity.x = direction * speed * (attack_move_factor if player.combat.is_attacking else 1.0)
+		player.velocity.x = direction * speed
 	else:
 		player.velocity.x = move_toward(player.velocity.x, 0, speed_min)
 		speed = speed_min
