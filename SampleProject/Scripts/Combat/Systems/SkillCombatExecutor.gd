@@ -33,6 +33,14 @@ func execute(definition: SkillDefinition, source: Node, target: Node, amount: in
 	return true
 
 
+## Стан після влучання (D207): підпал на [param burn_dps] (уже з рангом) і оглушення. Ціль — ворог.
+func apply_status(definition: SkillDefinition, target: Node, burn_dps: int) -> void:
+	if definition.burn_dps > 0:
+		target.apply_burn(burn_dps, definition.burn_duration)
+	if definition.stun > 0.0:
+		target.stun(definition.stun)
+
+
 ## Лікує ціль на SkillDefinition.heal. Ціль — гравець (CombatBody2D) або союзник з heal_damage().
 func heal(definition: SkillDefinition, target: Node, amount: int = -1) -> bool:
 	if not target.has_method(&"heal_damage"):  # тип цілі справді різний: герой або NPC-союзник

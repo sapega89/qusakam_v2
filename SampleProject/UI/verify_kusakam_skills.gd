@@ -156,5 +156,63 @@ func _initialize() -> void:
 	ck(sm.can_upgrade("fire_strike") == R.MAX_RANK, "rank 20 is the cap")
 	ck(sm.scaled("fire_strike", 20) == 58, "rank 20 = ×2.9")
 
+	print("[7] Fire Strike sets the target burning: 4/s for 3 s (D207)")
+	state.skill_ranks.erase("fire_strike")
+	sm.clear_cooldowns()
+	sm.restore_sp(100)
+	for e in enemies:
+		e.global_position = player.global_position + Vector2(-400, 0)
+	front.global_position = player.global_position + Vector2(30, 0)
+	front.set_physics_process(true)  # тики підпалу йдуть у його фізиці
+	front.stun(10.0)  # стоїть на місці, поки горить
+	var hp_burn: int = front.current_health
+	ck(sm.use_skill("fire_strike") == R.OK, "Fire Strike lands again")
+	await create_timer(3.4).timeout
+	ck(front.current_health == hp_burn - 20 - 12, "20 from the strike + 3 burn ticks of 4 (%d → %d)" % [hp_burn, front.current_health])
+	ck(front.burn_left <= 0.0, "the burn is over after 3 s")
+
+	print("[8] Electric Strike jumps to a neighbour and stuns, cancelling a wind-up (D207)")
+	em.cycle_weapon(1)
+	ck(state.weapon_in_hand == "mace", "mace in hand (%s)" % state.weapon_in_hand)
+	sm.clear_cooldowns()
+	sm.restore_sp(100)
+	var second: Node2D = enemies[1]
+	var far: Node2D = enemies[2]
+	front.enemy_logic.stun_left = 0.0
+	front.global_position = player.global_position + Vector2(30, 0)
+	second.global_position = front.global_position + Vector2(90, 0)  # поза зоною удару, у 120 px ланцюга
+	far.global_position = front.global_position + Vector2(300, 0)
+	var player_hits: Array = []
+	player.damage_token.connect(func(d: int) -> void: player_hits.append(d))
+	front.enemy_logic.last_direction = -1
+	front.enemy_logic.perform_attack()  # замах на героя
+	await create_timer(0.1).timeout
+	var hp_f: int = front.current_health
+	var hp_s: int = second.current_health
+	var hp_far: int = far.current_health
+	ck(sm.use_skill("electric_strike") == R.OK, "Electric Strike lands")
+	ck(front.current_health == hp_f - 25, "first target -25 (%d → %d)" % [hp_f, front.current_health])
+	ck(second.current_health == hp_s - 13, "the neighbour takes 50 %% = 13 (%d → %d)" % [hp_s, second.current_health])
+	ck(far.current_health == hp_far, "an enemy 300 px away is untouched")
+	ck(front.enemy_logic.stun_left > 0.0 and second.enemy_logic.stun_left <= 0.0, "the struck enemy is stunned, the chained one is not")
+	await create_timer(0.7).timeout
+	ck(player_hits.is_empty(), "the stun cancelled the wind-up: no hit on the hero (%s)" % [player_hits])
+
+	print("[9] Passives: Max HP is the menu's, Toughness, Shield Block (D205–D207)")
+	var gm: Node = sl.get_game_manager()
+	ck(player.Max_Health == gm.calculate_max_health(), "player Max HP = the menu formula (%d / %d)" % [player.Max_Health, gm.calculate_max_health()])
+	var max_before: int = player.Max_Health
+	sm.add_job_points(2)
+	ck(sm.unlock_skill("toughness") == R.OK and player.Max_Health == max_before + 10, "Toughness: Max HP %d → %d" % [max_before, player.Max_Health])
+	ck(sm.equip_skill("toughness", 0) == R.NOT_ACTIVE_SKILL, "a passive cannot go on the hotbar")
+	var bare_hit: int = player.mitigated_damage(40)
+	em.equip_item(hero, "shield", "iron_shield", db.get_item("iron_shield"))
+	var defense: int = gm.calculate_physical_defense()
+	ck(player.mitigated_damage(40) == roundi(40 * 100.0 / (100 + defense)) and player.mitigated_damage(40) < bare_hit,
+			"the shield's defense %d lowers a 40 hit to %d (was %d)" % [defense, player.mitigated_damage(40), bare_hit])
+	ck(player.Max_Health == gm.calculate_max_health(), "armour defense raises Max HP too (%d)" % player.Max_Health)
+	ck(sm.unlock_skill("shield_block") == R.OK, "Shield Block learned")
+	ck(player.mitigated_damage(40) == roundi(40 * 100.0 / (100 + defense) * 0.8), "Shield Block takes 20 %% more off (%d)" % player.mitigated_damage(40))
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

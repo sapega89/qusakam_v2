@@ -59,6 +59,8 @@ var is_attacking: bool = false
 const KNOCKBACK_TIME := 0.15
 var knockback_left: float = 0.0
 var knockback_speed: float = 0.0
+## Оглушення (D207): ворог стоїть, а замах, що вже йде, не закінчиться ударом.
+var stun_left: float = 0.0
 
 # Raycast для виявлення гравця
 
@@ -143,6 +145,11 @@ func process_ai(delta: float):
 	if knockback_left > 0.0:
 		knockback_left -= delta
 		velocity.x = knockback_speed
+		return
+
+	if stun_left > 0.0:
+		stun_left -= delta
+		velocity.x = 0
 		return
 
 	# Атака вже почалась — доводимо її до кінця на місці
@@ -329,6 +336,9 @@ func change_state(new_state: AIState):
 
 	state_changed.emit(new_state)
 
+func stun(duration: float) -> void:
+	stun_left = maxf(stun_left, duration)
+
 func start_knockback(push: float) -> void:
 	knockback_left = KNOCKBACK_TIME
 	knockback_speed = push / KNOCKBACK_TIME
@@ -342,7 +352,7 @@ func perform_attack():
 
 	# Замах: гравець бачить attack і встигає відійти або вдарити першим
 	await get_tree().create_timer(enemy.attack_windup).timeout
-	if not enemy.is_dead:
+	if not enemy.is_dead and stun_left <= 0.0:  # оглушили посеред замаху — удару немає
 		enemy.start_attack(direction)
 		await get_tree().create_timer(enemy.attack_active_time).timeout
 		enemy.end_attack()

@@ -39,6 +39,15 @@ var heal: int = 0
 ## Слоти зброї, з якими навичка доступна (D141): ["sword", "dagger"] — меч або кинджал.
 ## Порожньо = без вимог.
 var required_weapons: Array[String] = []
+## D207: підпал (ушкодження за секунду, тривалість), ланцюг на сусіда (радіус, частка), оглушення (с).
+var burn_dps: int = 0
+var burn_duration: float = 0.0
+var chain_radius: float = 0.0
+var chain_ratio: float = 0.0
+var stun: float = 0.0
+## Пасивка (D207): який показник підсилює ("max_health", "shield_block") і на скільки на 1-му рангу.
+var passive_stat: String = ""
+var passive_value: float = 0.0
 
 ## Посилання на ресурси. Не завантажуються тут — це робота UI/VFX-шарів.
 var icon: String = ""
@@ -73,6 +82,16 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.heal = maxi(0, int(data.get("heal", 0)))
 	for slot in data.get("required_weapons", []):
 		definition.required_weapons.append(String(slot))
+	var burn: Dictionary = data.get("burn", {})
+	definition.burn_dps = maxi(0, int(burn.get("dps", 0)))
+	definition.burn_duration = maxf(0.0, float(burn.get("duration", 0.0)))
+	var chain: Dictionary = data.get("chain", {})
+	definition.chain_radius = maxf(0.0, float(chain.get("radius", 0.0)))
+	definition.chain_ratio = clampf(float(chain.get("ratio", 0.0)), 0.0, 1.0)
+	definition.stun = maxf(0.0, float(data.get("stun", 0.0)))
+	var passive: Dictionary = data.get("passive", {})
+	definition.passive_stat = String(passive.get("stat", ""))
+	definition.passive_value = float(passive.get("value", 0.0))
 
 	for entry in data.get("prerequisites", []):
 		var prerequisite := String(entry).strip_edges()
@@ -88,6 +107,9 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 		definition.cooldown = 0.0
 		definition.damage = 0
 		definition.heal = 0
+		definition.burn_dps = 0
+		definition.chain_radius = 0.0
+		definition.stun = 0.0
 
 	return definition
 
@@ -112,6 +134,10 @@ func to_dict() -> Dictionary:
 		"damage": damage,
 		"heal": heal,
 		"required_weapons": required_weapons.duplicate(),
+		"burn": {"dps": burn_dps, "duration": burn_duration},
+		"chain": {"radius": chain_radius, "ratio": chain_ratio},
+		"stun": stun,
+		"passive": {"stat": passive_stat, "value": passive_value},
 		"icon": icon,
 		"vfx": vfx,
 	}

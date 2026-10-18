@@ -106,7 +106,22 @@ func upgrade_skill(skill_id: String) -> Result:
 
 ## Ушкодження чи лікування з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший).
 func scaled(skill_id: String, base: int) -> int:
-	return roundi(base * (1.0 + RANK_BONUS * (get_rank(skill_id) - 1)))
+	return roundi(base * _rank_factor(skill_id))
+
+
+func _rank_factor(skill_id: String) -> float:
+	return 1.0 + RANK_BONUS * (get_rank(skill_id) - 1)
+
+
+## Сума вивчених пасивок на показник [param stat] з урахуванням рангу (D207): Toughness → "max_health",
+## Shield Block → "shield_block". Нічого не вивчено — 0.
+func passive_value(stat: String) -> float:
+	var total := 0.0
+	for skill_id in get_unlocked_skills():
+		var definition: SkillDefinition = skill_database.get_skill(skill_id)
+		if not definition.is_active() and definition.passive_stat == stat:
+			total += definition.passive_value * _rank_factor(skill_id)
+	return total
 
 
 func _process(delta: float) -> void:
@@ -451,10 +466,18 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		if targets.is_empty():
 			return _fail(skill_id, Result.NO_TARGET)
 		var hit := false
+		var amount := scaled(skill_id, definition.damage)
 		for each in targets:
-			hit = combat_executor.execute(definition, effect_source, each, scaled(skill_id, definition.damage)) or hit
+			if combat_executor.execute(definition, effect_source, each, amount):
+				hit = true
+				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
 		if not hit:
 			return _fail(skill_id, Result.EFFECT_FAILED)
+		# D207: ланцюг — ще й найближчий інший ворог біля першої цілі, частиною ушкодження
+		if definition.chain_radius > 0.0:
+			var next := SkillTargeting.chain_target(targets[0], targets, definition.chain_radius)
+			if next != null:
+				combat_executor.execute(definition, effect_source, next, roundi(amount * definition.chain_ratio))
 	if definition.heal > 0:
 		var patient: Node = target if target != null else SkillTargeting.heal_target(effect_source)
 		if not combat_executor.heal(definition, patient, scaled(skill_id, definition.heal)):

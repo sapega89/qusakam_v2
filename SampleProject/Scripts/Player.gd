@@ -57,10 +57,11 @@ func _ready() -> void:
 	# ВАЖНО: Гарантуємо, що process_mode встановлено правильно
 	process_mode = Node.PROCESS_MODE_INHERIT
 
-	# Инициализация боевых параметров
-	Starting_Health = 100
-	Max_Health = 100
-	current_health = Starting_Health
+	# Max HP — з GameManager (D205): витривалість, броня, рівень, пасивки
+	Max_Health = ServiceLocator.get_game_manager().calculate_max_health()
+	current_health = Max_Health
+	for changed in [EventBus.equipment_equipped, EventBus.equipment_unequipped, EventBus.skill_unlocked, EventBus.skill_upgraded]:
+		changed.connect(func(_a = null, _b = null, _c = null) -> void: refresh_max_health())
 
 	# ВАЖНО: Гарантуємо, що event = false при ініціалізації
 	event = false
@@ -360,32 +361,12 @@ func _spawn_level_up_vfx() -> void:
 
 	DebugLogger.verbose("Player: Spawned level up VFX", "Player")
 
-func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
-	"""Called when player levels up - applies stat bonuses"""
-	var xp_manager = ServiceLocator.get_xp_manager()
-	if not xp_manager:
-		DebugLogger.warning("Player: XPManager not found, cannot apply level up bonuses", "Player")
-		return
-
-	# Get stat bonuses
-	var hp_bonus = xp_manager.get_hp_bonus()
-	var _damage_bonus = xp_manager.get_damage_bonus()
-
-	# Calculate old max HP before applying bonus
-	var old_max_hp = Max_Health
-
-	# Apply HP bonus (base HP + level bonuses)
-	Max_Health = Starting_Health + hp_bonus
-
-	# Heal player by the HP increase amount
-	var hp_increase = Max_Health - old_max_hp
-	current_health = min(current_health + hp_increase, Max_Health)
-
-	# Контракт CombatBody2D: будь-яка зміна HP/Max_Health емітує health_changed.
-	# Без цього HUD не бачив підвищення максимуму на новому рівні.
+## Max HP за формулою меню (D205). Підвищення лікує на різницю, зниження лише обрізає поточне HP.
+func refresh_max_health() -> void:
+	var old_max := Max_Health
+	Max_Health = ServiceLocator.get_game_manager().calculate_max_health()
+	current_health = clampi(current_health + maxi(0, Max_Health - old_max), 0, Max_Health)
 	health_changed.emit(current_health, Max_Health, true)
-
-	# Update HP bar
 	if health_bar:
 		health_bar.max_value = Max_Health
 		health_bar.current_value = current_health
@@ -395,9 +376,25 @@ func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
 		health_bar.update_health_text()
 		health_bar.update_health_color(current_health)
 
-	DebugLogger.info("Player: Level %d! HP: %d->%d (+%d)" % [
-		new_level, old_max_hp, Max_Health, hp_increase
-	], "Player")
+
+## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
+func take_damage(damage: int, source: Node = null) -> void:
+	super.take_damage(mitigated_damage(damage), source)
+
+
+func mitigated_damage(damage: int) -> int:
+	var gm := ServiceLocator.get_game_manager()
+	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
+	if gm.player_state.equipment.get("shield") != null:
+		result *= 1.0 - ServiceLocator.get_skill_manager().passive_value("shield_block")
+	return maxi(1, roundi(result))
+
+
+func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
+	"""Called when player levels up - applies stat bonuses"""
+	var old_max_hp := Max_Health
+	refresh_max_health()
+	DebugLogger.info("Player: Level %d! HP: %d->%d" % [new_level, old_max_hp, Max_Health], "Player")
 
 	# === LEVEL UP VFX ===
 	_spawn_level_up_vfx()

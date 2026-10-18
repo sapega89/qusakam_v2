@@ -26,6 +26,20 @@ static func enemies_in_front(player: Node2D) -> Array[Node]:
 	return out
 
 
+## Ланцюг (D207): найближчий живий ворог у [param radius] від [param from], крім уже вражених.
+static func chain_target(from: Node2D, exclude: Array[Node], radius: float) -> Node:
+	var best: Node = null
+	var best_distance := radius
+	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy in exclude or not enemy.is_alive():
+			continue
+		var distance: float = from.global_position.distance_to(enemy.global_position)
+		if distance <= best_distance:
+			best = enemy
+			best_distance = distance
+	return best
+
+
 ## Союзник поруч (з будь-якого боку) або сам герой. По висоті — усе тіло героя, а не лише
 ## смужка хітбокса атаки: стоячи на землі, герой на ~23 px нижче за діда, і вузька зона
 ## (±16) лікувала самого героя замість діда.

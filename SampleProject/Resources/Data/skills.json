@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149), upgrade to rank 20 (D150). Numbers are mock.",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149), upgrade to rank 20 (D150). Effects D207. Numbers are mock.",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -17,7 +17,11 @@
       "vfx": "VFXHooks reference",
       "heal": "int >= 0 - HP restored on the target (D142: an ally next to the hero, else the hero)",
       "damage": "int >= 0 - damage to everything in front of the hero (D142)",
-      "required_weapons": "[equipment slot] - usable only while one of these slots holds a weapon (D141)"
+      "required_weapons": "[equipment slot] - usable only while one of these slots holds a weapon (D141)",
+      "burn": "{dps: int, duration: float} - sets the target burning (D207); a new burn refreshes",
+      "chain": "{radius: px, ratio: 0..1} - also hits the nearest other enemy within radius of the first target (D207)",
+      "stun": "float seconds - stuns the first target; cancels a wind-up in progress (D207)",
+      "passive": "{stat: max_health | shield_block, value} - passive only (D207)"
     }
   },
   "skills": [
@@ -38,7 +42,7 @@
     {
       "id": "fire_strike",
       "name": "Fire Strike",
-      "description": "A burning strike at everything in front of you. Needs a sword or a dagger.",
+      "description": "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand.",
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 1,
@@ -50,12 +54,16 @@
       "required_weapons": [
         "sword",
         "dagger"
-      ]
+      ],
+      "burn": {
+        "dps": 4,
+        "duration": 3.0
+      }
     },
     {
       "id": "electric_strike",
       "name": "Electric Strike",
-      "description": "A crackling strike at everything in front of you. Needs a halberd or a mace.",
+      "description": "A crackling strike at everything in front of you; jumps to one more enemy nearby and stuns the first. Needs a halberd or a mace in hand.",
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 1,
@@ -67,7 +75,40 @@
       "required_weapons": [
         "polearm",
         "mace"
-      ]
+      ],
+      "chain": {
+        "radius": 120,
+        "ratio": 0.5
+      },
+      "stun": 0.5
+    },
+    {
+      "id": "toughness",
+      "name": "Toughness",
+      "description": "+10 Max HP.",
+      "class_id": "",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 1,
+      "prerequisites": [],
+      "passive": {
+        "stat": "max_health",
+        "value": 10
+      }
+    },
+    {
+      "id": "shield_block",
+      "name": "Shield Block",
+      "description": "Take 20% less damage while a shield is equipped.",
+      "class_id": "",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 1,
+      "prerequisites": [],
+      "passive": {
+        "stat": "shield_block",
+        "value": 0.2
+      }
     }
   ]
 }

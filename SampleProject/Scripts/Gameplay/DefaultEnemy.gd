@@ -8,6 +8,14 @@ const DEATH_PARTICLES_SCENE = preload("res://SampleProject/Scenes/FX/DeathPartic
 
 ## Скільки труп лежить після анімації смерті, перш ніж зблимнути й зникнути.
 const DEATH_HOLD_TIME := 1.0
+## Відтінок спрайта, поки ворог горить / оглушений (D207) — стан видно без тексту.
+const BURN_TINT := Color(1.0, 0.62, 0.42)
+const STUN_TINT := Color(0.7, 0.85, 1.0)
+
+## Підпал (D207): burn_dps щосекунди, доки не мине burn_left. Новий підпал оновлює, не сумує.
+var burn_dps := 0
+var burn_left := 0.0
+var _burn_tick := 0.0
 
 # === RESOURCE-BASED CONFIGURATION ===
 ## EnemyStats resource для конфігурації ворога
@@ -226,6 +234,9 @@ func _physics_process(delta: float) -> void:
 	if is_dead:
 		detection_collision.disabled = true
 		return
+
+	_tick_burn(delta)
+	sprite.modulate = STUN_TINT if enemy_logic.stun_left > 0.0 else (BURN_TINT if burn_left > 0.0 else Color.WHITE)
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); тут лише X-рух.
 	velocity.x = enemy_logic.process_physics(delta).x
@@ -542,6 +553,25 @@ func start_attack(direction: int) -> void:
 func end_attack() -> void:
 	hitbox.monitoring = false
 	hitbox_damage.disable_damage()
+
+func apply_burn(dps: int, duration: float) -> void:
+	if burn_left <= 0.0:
+		_burn_tick = 1.0  # перший тик — через секунду після удару
+	burn_dps = dps
+	burn_left = duration
+
+func stun(duration: float) -> void:
+	enemy_logic.stun(duration)
+
+## Тики підпалу. Без джерела: це не новий удар героя, тож ефекту влучання немає, лише спалах ушкодження.
+func _tick_burn(delta: float) -> void:
+	if burn_left <= 0.0:
+		return
+	burn_left -= delta
+	_burn_tick -= delta
+	if _burn_tick <= 0.0:
+		_burn_tick += 1.0
+		take_damage(burn_dps)
 
 ## Відкидання від удару (булава, D203): [param push] px, знак — напрямок.
 func knockback(push: float) -> void:

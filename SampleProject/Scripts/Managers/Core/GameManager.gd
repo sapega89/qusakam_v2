@@ -187,9 +187,17 @@ func _active_equipment_stats() -> Dictionary:
 	return character.get_equipment_stats() if character else {}
 
 
+## Max HP — і в меню, і в грі (D205): витривалість, броня, бонус рівня, пасивки (Toughness).
 func calculate_max_health() -> int:
 	var attributes := _active_attributes()
-	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) if attributes else 0
+	if not attributes:
+		return 0
+	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) + level_and_passive_health()
+
+
+## Частина Max HP, що не залежить від речей: бонус рівня й пасивки. Equipment рахує «без речей» з нею ж.
+func level_and_passive_health() -> int:
+	return ServiceLocator.get_xp_manager().get_hp_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("max_health"))
 
 
 ## Phys. Atk. — і в меню, і в ударі гравця (D199): сила, атака спорядження й бонус рівня.
