@@ -174,12 +174,10 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 	if not game: return
 
 	match dialogue_id:
-		"Lab_Companion_01":
-			game.set_quest_flag("lab_companion_01_complete", true)
-		"Lab_Companion_02":
-			game.set_quest_flag("lab_companion_02_complete", true)
-		"Lab_Companion_03":
-			game.set_quest_flag("lab_companion_03_complete", true)
+		"Lab_Companion_01", "Lab_Companion_02", "Lab_Companion_03":
+			var flag := "lab_companion_0%s_complete" % dialogue_id.right(1)
+			game.set_quest_flag(flag, true)
+			ServiceLocator.get_companion_manager().join_on_unlock(flag)  # D220: у загін, якщо є місце
 		"Lab_LimitTest":
 			game.set_quest_flag("lab_limit_test_complete", true)
 		"Laboratory_AfterBoss":

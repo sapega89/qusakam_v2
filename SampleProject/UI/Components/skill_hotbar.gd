@@ -12,7 +12,6 @@ class_name UISkillHotbar
 const SLOT_SIZE := 48
 const ICON_SIZE := 28
 ## Портрет компаньйона — верх першого кадру його забігу (AtlasTexture поруч зі спрайтами).
-const PORTRAIT_PATH := "res://SampleProject/Assets/Characters/Companions/%s/portrait.tres"
 
 @onready var _slots_row: HBoxContainer = %SlotsRow
 
@@ -221,7 +220,7 @@ func _update_assist() -> void:
 		return
 	_assist_shown = shown
 	var badge: PanelContainer = bind.get_node(^"Badge")
-	slot.get_node(^"Portrait").texture = load(PORTRAIT_PATH % id)
+	slot.get_node(^"Portrait").texture = load(CompanionManager.PORTRAIT_PATH % id)
 	overlay.visible = not ready
 	slot.add_theme_stylebox_override("panel", _slot_box(ready))
 	badge.add_theme_stylebox_override("panel", _badge_box(ready))

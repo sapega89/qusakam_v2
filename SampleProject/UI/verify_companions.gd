@@ -67,9 +67,11 @@ func _initialize() -> void:
 	ck(not _hud()[0], "no assist slot on the hotbar")
 
 	print("[2] The Laboratory flags unlock them, in roster order")
-	game.set_quest_flag("lab_companion_02_complete", true)
-	game.set_quest_flag("lab_companion_01_complete", true)
+	for f in ["lab_companion_01_complete", "lab_companion_02_complete"]:  # як Laboratory._complete_quest_for_dialogue
+		game.set_quest_flag(f, true)
+		cm.join_on_unlock(f)
 	ck(cm.get_unlocked() == ["alisia", "astrit"], "Алісия and Астрит unlocked (%s)" % [cm.get_unlocked()])
+	ck(cm.get_party() == ["alisia", "astrit"], "each joins the party as unlocked (%s)" % [cm.get_party()])
 	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
 	ck(_hud() == [true, "alisia", ""], "the hotbar shows Алісия ready (%s)" % [_hud()])
 
@@ -92,6 +94,7 @@ func _initialize() -> void:
 
 	print("[5] Уризен: a coin smite on every enemy in front, with a stun")
 	game.set_quest_flag("lab_companion_03_complete", true)
+	cm.join_on_unlock("lab_companion_03_complete")
 	var before: Array = enemies.map(func(e: Node) -> int: return e.current_health)
 	ck(cm.call_next() == "urizen", "Уризен answers")
 	await create_timer(2.4).timeout
@@ -122,6 +125,26 @@ func _initialize() -> void:
 	ck(_actors().is_empty(), "no companion left behind")
 	# Охоронець б'є кількох одразу → кілька hitstop за кадр; гра мусить повернутись до нормальної швидкості.
 	ck(is_equal_approx(Engine.time_scale, 1.0), "time runs normally after the guard's multi-hit (%.2f)" % Engine.time_scale)
+
+	print("[8] The party (D220): chosen in Status, its order is the assist queue, at most 3")
+	ck(cm.get_party() == ["alisia", "astrit", "urizen"], "all three in the party (%s)" % [cm.get_party()])
+	cm._process(cm.COOLDOWN + 0.1)
+	ck(not cm.toggle_party("alisia") and cm.get_party() == ["astrit", "urizen"], "Алісия stays in camp (%s)" % [cm.get_party()])
+	cm._last_called = ""
+	ck(cm.peek_next() == "astrit", "the queue starts at the first in the party (%s)" % cm.peek_next())
+	ck(cm.toggle_party("alisia") and cm.get_party() == ["astrit", "urizen", "alisia"], "taken back, she goes last (%s)" % [cm.get_party()])
+	var saved: Dictionary = root.get_node("SaveSystem").player_data_module.save()
+	ck(saved.companion_party == cm.get_party(), "the party is saved with the player (%s)" % [saved.companion_party])
+	sl.get_ui_manager().open_game_menu()
+	for i in 14: await process_frame
+	get_first_node_in_group("game_menu").switch_to_tab("Status")
+	for i in 10: await process_frame
+	var cards: Array = get_first_node_in_group("game_menu").find_child("CompanionCards", true, false).get_children().filter(func(c: Control) -> bool: return c.visible)
+	var labels: Array = cards.map(func(c: Control) -> String: return "%s %s" % [c.get_node(^"Row/Info/Name").text, c.get_node(^"Row/Info/Order").text])
+	ck(labels == ["Алісия IN PARTY · 3", "Астрит IN PARTY · 1", "Уризен IN PARTY · 2"], "Status shows each with its place in the queue (%s)" % [labels])
+	cards[0].get_node(^"Select").pressed.emit()
+	await process_frame
+	ck(cards[0].get_node(^"Row/Info/Order").text == "IN CAMP" and not cm.is_in_party("alisia"), "pressing her card sends her to camp")
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()

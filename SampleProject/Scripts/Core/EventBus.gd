@@ -277,6 +277,10 @@ signal assist_called(companion_id: String)
 @warning_ignore("unused_signal")
 signal assist_ready(companion_id: String)
 
+## Склад або порядок загону змінився (Status, лабораторія — D220).
+@warning_ignore("unused_signal")
+signal companion_party_changed()
+
 ## Зброя в руці змінилась (D202): слот зброї або "" — голі руки.
 @warning_ignore("unused_signal")
 signal weapon_in_hand_changed(slot_id: String)

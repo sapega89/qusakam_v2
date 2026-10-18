@@ -290,6 +290,57 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
 
+[node name="CompanionsSection" type="VBoxContainer" parent="Columns/Center/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="Label" parent="Columns/Center/Body/CompanionsSection"]
+layout_mode = 2
+theme_type_variation = &"SectionHeader"
+text = "Companions"
+
+[node name="CompanionCards" type="HBoxContainer" parent="Columns/Center/Body/CompanionsSection"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="CompanionCard" type="PanelContainer" parent="Columns/Center/Body/CompanionsSection/CompanionCards"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ActionCard"
+
+[node name="Row" type="HBoxContainer" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="TextureRect" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard/Row"]
+texture_filter = 1
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="VBoxContainer" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard/Row/Info"]
+layout_mode = 2
+theme_type_variation = &"CardTitle"
+
+[node name="Order" type="Label" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard/Row/Info"]
+layout_mode = 2
+theme_type_variation = &"CardCaption"
+
+[node name="Select" type="Button" parent="Columns/Center/Body/CompanionsSection/CompanionCards/CompanionCard"]
+layout_mode = 2
+theme_type_variation = &"CardSelect"
+
 [node name="Spacer" type="Control" parent="Columns/Center/Body"]
 layout_mode = 2
 size_flags_vertical = 3

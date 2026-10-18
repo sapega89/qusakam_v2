@@ -13,6 +13,8 @@ extends BaseMenuComponent
 ## показу Status панель партії ховається (див. _set_party_panel_visible).
 
 const PLACEHOLDER := "—"
+## Картки компаньйонів — шаблон %CompanionCard зі сцени (D117).
+const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
 @onready var _avatar: Panel = %Avatar
 @onready var _name_label: Label = %NameLabel
@@ -27,6 +29,11 @@ const PLACEHOLDER := "—"
 @onready var _left_attrs: VBoxContainer = %LeftAttrs
 @onready var _right_attrs: VBoxContainer = %RightAttrs
 @onready var _actions_row: HBoxContainer = %ActionsRow
+@onready var _companions: VBoxContainer = %CompanionsSection
+@onready var _companion_cards: HBoxContainer = %CompanionCards
+@onready var _companion_card: PanelContainer = %CompanionCard
+## Кнопки карток, вже під'єднані (duplicate() копіює meta, тож не за meta-прапорцем).
+var _wired: Dictionary = {}
 
 ## Рядки атрибутів з кадру: (підпис, метод GameManager, чи це частка 0..1).
 const LEFT_ROWS: Array[Array] = [
@@ -62,6 +69,8 @@ func _connect_live_sources() -> void:
 	# JP нараховуються вже після level_up, тож слухаємо самі JP.
 	if not EventBus.job_points_changed.is_connected(_on_job_points_changed):
 		EventBus.job_points_changed.connect(_on_job_points_changed)
+	if not EventBus.companion_party_changed.is_connected(_update_companions):
+		EventBus.companion_party_changed.connect(_update_companions)
 
 
 func _on_character_changed(_character_id: String) -> void:
@@ -83,6 +92,7 @@ func update_display() -> void:
 	_update_jobs()
 	_update_attributes()
 	_update_actions()
+	_update_companions()
 
 
 # ── Шапка ───────────────────────────────────────────────────────────────────
@@ -306,6 +316,31 @@ func _make_action_card(caption: String) -> Control:
 	head.add_child(title_label)
 	col.add_child(head)
 	return card
+
+
+# ── Компаньйони (D220) ──────────────────────────────────────────────────────
+
+## Відкриті компаньйони; натискання бере в загін (у кінець черги асисту) або лишає в таборі.
+## Номер — місце в черзі кнопки асисту. Повний загін приглушує решту карток.
+func _update_companions() -> void:
+	var cm: CompanionManager = ServiceLocator.get_companion_manager()
+	var ids := cm.get_unlocked()
+	_companions.visible = not ids.is_empty()
+	var party: Array = cm.get_party()
+	var cards := RowFill.fill(_companion_cards, _companion_card, ids.size())
+	for i in cards.size():
+		var card: Control = cards[i]
+		var id: String = ids[i]
+		var slot := party.find(id)
+		card.set_meta(&"companion_id", id)
+		card.get_node(^"Row/Portrait").texture = load(CompanionManager.PORTRAIT_PATH % id)
+		card.get_node(^"Row/Info/Name").text = cm.NAMES[id]
+		card.get_node(^"Row/Info/Order").text = "IN PARTY · %d" % (slot + 1) if slot >= 0 else "IN CAMP"
+		card.modulate.a = 1.0 if slot >= 0 or party.size() < CompanionManager.PARTY_SIZE else UITokens.MENU_INACTIVE_ALPHA
+		var select: Button = card.get_node(^"Select")
+		if not _wired.has(select):
+			_wired[select] = true
+			select.pressed.connect(func() -> void: cm.toggle_party(card.get_meta(&"companion_id")))
 
 
 # ── Панель партії ───────────────────────────────────────────────────────────
