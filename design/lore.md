@@ -31,7 +31,11 @@ an open question below, never filled in. Used by skills, enemies, companions and
 >
 > урізен це клірик з ударом монетою як смайтом тільки у вигляді монети астріт накидується на ворога і
 > жостко наносить урон колучим щитом а алісія охзотник з кішечкою
+>
+> кусакам це головний герой ящур паладин
 
+- **Kusakam** — the main hero, a **lizardfolk paladin** (matches the code: `class_id` champion, `subclass_id`
+  paladin — in PF2e the paladin is a champion cause; Healing Palm is his Lay on Hands).
 - **Астрит** — a warrior-thaumaturge with a **shield and a book**; pounces on enemies with a **spiked shield**.
 - **Уризен** — a **cleric**; his smite takes the shape of a **coin**.
 - **Алісия** — a **hunter with a cat**.
@@ -55,4 +59,4 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - Which empire, and is it present in the story (the city, the mayor)?
 - Who the gods are, and what the "three dark priests" (`Три_темніх_жреца`) serve.
 - What the ancient civilisation was, and whether the Laboratory is built on it.
-- Kusakam, Суан, Гном-механік — who they are (also Q51, Q53). Which god Уризен serves (the coin?).
+- Суан, Гном-механік — who they are (also Q51, Q53); Kusakam's god/oath as a paladin. Which god Уризен serves (the coin?).
