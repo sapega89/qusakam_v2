@@ -8,6 +8,9 @@ const LEVEL_UP_PARTICLES_SCENE = preload("res://SampleProject/Scenes/FX/LevelUpP
 
 var animation: String
 
+## Прозорість спрайта під час перекату — видно, що герой невразливий (D200).
+const ROLL_ALPHA := 0.55
+
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
 var event: bool = false
@@ -110,6 +113,12 @@ func _physics_process(delta: float) -> void:
 	if kill_cooldown > 0:
 		kill_cooldown -= delta
 
+	# Перекат (D200): анімацію Roll не перебиваємо; напівпрозорість — поки герой невразливий
+	if mover.is_rolling():
+		_update_facing(&"Roll")
+		return
+	$Sprite2D.modulate.a = 1.0
+
 	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
 	# чи клік уже спожив елемент інтерфейсу.
 
@@ -169,7 +178,13 @@ func _unhandled_input(ev: InputEvent) -> void:
 	Ім'я параметра `ev` — бо зайняті обидва очевидні варіанти: `event` — це поле
 	цього класу (ознака катсцени), а `input_event` — сигнал CollisionObject2D.
 	"""
-	if ev.is_action_pressed(&"attack") and not combat.is_attacking:
+	if ev.is_action_pressed(&"dodge") and not event and not combat.is_attacking:
+		if mover.start_roll():
+			animation = &"Roll"
+			$AnimationPlayer.play(&"Roll")
+			$Sprite2D.modulate.a = ROLL_ALPHA
+		return
+	if ev.is_action_pressed(&"attack") and not combat.is_attacking and not mover.is_rolling():
 		if event:
 			return  # під час катсцени не б'ємо
 		if ev is InputEventMouseButton and get_tree().paused:

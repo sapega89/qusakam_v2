@@ -20,6 +20,10 @@ class_name PlayerMover
 @export var coyote_time := 0.1
 @export var short_hop := 0.5
 @export var min_fall_height_for_event := 20.0
+## Перекат (D200, мок): тривалість, відстань, пауза після нього.
+@export var roll_duration := 0.35
+@export var roll_distance := 120.0
+@export var roll_cooldown := 0.6
 
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -34,6 +38,9 @@ var double_jump: bool = false
 var airtime: float = 0.0
 var prev_on_floor: bool = false
 var fall_start_height: float = 0.0
+var roll_time_left: float = 0.0
+var roll_ready_in: float = 0.0  # до наступного перекату: сам перекат + roll_cooldown
+var roll_direction: int = 1
 
 # Parent reference: the CharacterBody2D that owns this component (the Player).
 @onready var player: CharacterBody2D = get_parent()
@@ -44,16 +51,39 @@ func _ready() -> void:
 	# not assigned yet at that point), so seed it here.
 	speed = speed_min
 
+func is_rolling() -> bool:
+	return roll_time_left > 0.0
+
+
+## Перекат (D200): лише з землі, не частіше за roll_cooldown. Невразливість — на весь перекат.
+## Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи перекат почався.
+func start_roll() -> bool:
+	if is_rolling() or roll_ready_in > 0.0 or not player.is_on_floor():
+		return false
+	var held := Input.get_axis(&"move_left", &"move_right")
+	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
+	last_direction = roll_direction
+	roll_time_left = roll_duration
+	roll_ready_in = roll_duration + roll_cooldown
+	player.set_invulnerable(true, roll_duration)
+	return true
+
+
 ## Runs one physics step of movement: gravity, jump, horizontal movement,
 ## move_and_slide() and landing detection. Call once per Player._physics_process.
 func physics_move(delta: float) -> void:
+	roll_ready_in = maxf(0.0, roll_ready_in - delta)
 	_apply_gravity_and_track_fall(delta)
-	_handle_jump()
 
-	if player.is_on_wall():
-		speed = speed_min
-
-	_handle_horizontal_movement(delta)
+	if is_rolling():
+		# Під час перекату — рівна швидкість, без стрибка й керування
+		roll_time_left -= delta
+		player.velocity.x = roll_direction * roll_distance / roll_duration
+	else:
+		_handle_jump()
+		if player.is_on_wall():
+			speed = speed_min
+		_handle_horizontal_movement(delta)
 
 	var was_in_air := not prev_on_floor
 	prev_on_floor = player.is_on_floor()

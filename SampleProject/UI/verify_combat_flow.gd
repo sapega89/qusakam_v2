@@ -187,6 +187,37 @@ func _initialize() -> void:
 	attacker.enemy_logic.perform_attack()
 	await create_timer(swing).timeout
 	ck(buddy.current_health == buddy_hp, "an enemy's swing does not hurt another enemy (%d → %d)" % [buddy_hp, buddy.current_health])
+
+	print("[2d] Roll: distance, invulnerability, cooldown, no attack mid-roll (D200)")
+	var pl = game.player
+	var mover = pl.mover
+	var dodge := InputEventAction.new()
+	dodge.action = &"dodge"
+	dodge.pressed = true
+	var swing_ev := InputEventAction.new()
+	swing_ev.action = &"attack"
+	swing_ev.pressed = true
+	pl.global_position = Vector2(attacker.global_position.x - 500, pl.global_position.y)
+	await create_timer(0.8).timeout  # приземлився, невразливість минула
+	mover.last_direction = 1
+	var x0: float = pl.global_position.x
+	var roll_hits: Array = []
+	pl.damage_token.connect(func(d: int) -> void: roll_hits.append(d))
+	pl._unhandled_input(dodge)
+	ck(mover.is_rolling() and pl.is_invulnerable, "the roll starts and the player is invulnerable")
+	pl.take_damage(5)
+	pl._unhandled_input(swing_ev)
+	ck(roll_hits.is_empty(), "no damage during the roll (got %s)" % [roll_hits])
+	ck(not pl.combat.is_attacking, "no attack mid-roll")
+	await create_timer(mover.roll_duration + 0.1).timeout
+	ck(not mover.is_rolling() and not pl.is_invulnerable, "the roll ends, invulnerability with it")
+	ck(absf(pl.global_position.x - x0 - mover.roll_distance) < 12.0, "rolled ~%.0f px right (%.1f)" % [mover.roll_distance, pl.global_position.x - x0])
+	pl._unhandled_input(dodge)
+	ck(not mover.is_rolling(), "the cooldown blocks an immediate second roll")
+	await create_timer(mover.roll_cooldown).timeout
+	pl._unhandled_input(dodge)
+	ck(mover.is_rolling(), "a roll is possible again after the cooldown")
+	await create_timer(mover.roll_duration + 0.1).timeout
 	for e in enemies:
 		e.set_physics_process(true)
 
