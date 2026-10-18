@@ -1,12 +1,11 @@
 ---
 type: plan
-status: blocked
-blocked-by: [Ludo login (art)]
+status: planned
 ---
 
 # Companion assists — plan
 
-**Decided, not built.** D201 (assists exist), D209 (who, strikes, one button). 2026-10-18.
+**Slices 1–3 built 2026-10-18 (D213)** — guard at City Gates, Алісия / Астрит / Уризен from the Laboratory; slice 4 (HUD readiness) open. D201, D209.
 Figma: no design exists (HUD readiness indicator has no frame — Sapega's call, D209).
 
 ## What exists today
@@ -40,17 +39,17 @@ Figma: no design exists (HUD readiness indicator has no frame — Sapega's call,
 3. Lab beat order (Алісия 01, Астрит 02, Уризен 03) — taken from Sapega's answer; non-blocking.
 
 ## Slices
-### Slice 1 — assist core (no art needed to test)
+### Slice 1 — assist core — ✅ built (D213)
 - `CompanionManager.gd`: roster (unlocked ids, saved in `player_state`), per-companion 15 s cooldown, `call_next()`.
 - `project.godot`: `assist` action (F / pad LT); `Player._unhandled_input` → `call_next()`.
 - `EventBus.assist_called(id)`, `assist_ready(id)`.
 - `verify_companions.gd`: unlock, rotation, cooldown, save round trip.
-### Slice 2 — the guard at City Gates (tutorial)
+### Slice 2 — the guard at City Gates (tutorial) — ✅ built (D213)
 - `Scenes/Characters/Companions/guard_assist.tscn` + script from `CompanionFire.gd`'s flow, fixed (facing,
   monitoring toggle); spear thrust, knockback via `start_knockback`.
 - `CityGates.gd`: the fight ends when the player calls the guard (canvas), hint on screen.
 - `verify_city_gates_assist.gd`.
-### Slice 3 — Алісия, Астрит, Уризен in the Laboratory
+### Slice 3 — Алісия, Астрит, Уризен in the Laboratory — ✅ built (D213; lab dialogue lines still placeholders)
 - three assist scenes; strikes per D209 (+ decision 1); unlock on `lab_companion_0N_complete`.
 - lab dialogues named (Sapega's lines).
 ### Slice 4 — HUD readiness

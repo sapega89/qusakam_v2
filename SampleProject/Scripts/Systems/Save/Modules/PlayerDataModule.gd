@@ -55,7 +55,6 @@ func save() -> Dictionary:
 	# Сохраняем экипировку
 	data["equipment"] = player_state.get("equipment", {}).duplicate()
 	data["weapon_in_hand"] = player_state.get("weapon_in_hand", "")  # D202
-	data["companions"] = player_state.get("companions", []).duplicate()  # D209
 
 	# Сохраняем информацию о персонаже
 	data["class_id"] = player_state.get("class_id", "champion")
@@ -144,7 +143,6 @@ func load_data(data: Dictionary) -> void:
 	if "equipment" in data:
 		player_state.equipment = data.equipment.duplicate() if data.equipment is Dictionary else {}
 	player_state.weapon_in_hand = String(data.get("weapon_in_hand", ""))  # D202
-	player_state.companions = Array(data.get("companions", [])).duplicate()  # D209
 	EventBus.weapon_in_hand_changed.emit(player_state.weapon_in_hand)  # профіль удару й HUD — під завантажену зброю
 
 	# Загружаем информацию о персонаже

@@ -100,9 +100,11 @@ func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
 ## Влучання героя у ворога: ефект на краю тіла цілі з боку удару. damage_dealt приходить лише
 ## з реального ушкодження (B60) — промах і удар у невразливого ефекту не дають.
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
-	if not (source.is_in_group(GameGroups.PLAYER) and target.is_in_group(GameGroups.ENEMIES)):
+	var by_hero: bool = source.is_in_group(GameGroups.PLAYER)
+	if not ((by_hero or source.is_in_group(&"companions")) and target.is_in_group(GameGroups.ENEMIES)):
 		return
-	var heavy: bool = source.combat.knockback > 0.0
+	# Важкий — удар із відкиданням: зброя героя (D203) чи компаньйон (D209)
+	var heavy: bool = (source.combat.knockback if by_hero else source.knockback) > 0.0
 	var side := signf(source.global_position.x - target.global_position.x)
 	var body: CollisionShape2D = target.get_node(^"CollisionShape2D")
 	var half_width: float = body.shape.get_rect().size.x * target.global_scale.x / 2.0
@@ -261,95 +263,6 @@ func _spawn_skill_vfx(pos: Vector2) -> void:
 	particles.z_index = 250
 	get_tree().current_scene.add_child(particles)
 	await get_tree().create_timer(0.5).timeout
-	if is_instance_valid(particles):
-		particles.queue_free()
-
-## VFX для компаньйонів
-
-## Відтворює VFX для лікування
-func play_heal_effect(target: Node) -> void:
-	if not target or not is_instance_valid(target):
-		return
-
-	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
-	_spawn_heal_particles(target_pos)
-
-## Відтворює VFX для щита
-func play_shield_effect(target: Node) -> void:
-	if not target or not is_instance_valid(target):
-		return
-
-	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
-	_spawn_shield_particles(target_pos)
-
-## Відтворює VFX для вогню
-func play_fire_effect(target: Node) -> void:
-	if not target or not is_instance_valid(target):
-		return
-
-	var target_pos = target.global_position if target is Node2D else Vector2.ZERO
-	_spawn_fire_particles(target_pos)
-
-## Створює частинки для лікування
-func _spawn_heal_particles(pos: Vector2) -> void:
-	var particles := CPUParticles2D.new()
-	particles.one_shot = true
-	particles.emitting = true
-	particles.amount = 25
-	particles.lifetime = 0.6
-	particles.speed_scale = 1.2
-	particles.direction = Vector2(0, -1)
-	particles.spread = 30.0
-	particles.initial_velocity_min = 30.0
-	particles.initial_velocity_max = 80.0
-	particles.gravity = Vector2(0, -50)  # Вгору
-	particles.color = Color(0.2, 1.0, 0.3, 0.9)  # Зелений
-	particles.position = pos
-	particles.z_index = 250
-	get_tree().current_scene.add_child(particles)
-	await get_tree().create_timer(0.7).timeout
-	if is_instance_valid(particles):
-		particles.queue_free()
-
-## Створює частинки для щита
-func _spawn_shield_particles(pos: Vector2) -> void:
-	var particles := CPUParticles2D.new()
-	particles.one_shot = true
-	particles.emitting = true
-	particles.amount = 30
-	particles.lifetime = 0.8
-	particles.speed_scale = 0.8
-	particles.direction = Vector2(0, 0)
-	particles.spread = 360.0
-	particles.initial_velocity_min = 20.0
-	particles.initial_velocity_max = 60.0
-	particles.gravity = Vector2(0, -20)  # Легко вгору
-	particles.color = Color(0.3, 0.6, 1.0, 0.8)  # Синій
-	particles.position = pos
-	particles.z_index = 250
-	get_tree().current_scene.add_child(particles)
-	await get_tree().create_timer(0.9).timeout
-	if is_instance_valid(particles):
-		particles.queue_free()
-
-## Створює частинки для вогню
-func _spawn_fire_particles(pos: Vector2) -> void:
-	var particles := CPUParticles2D.new()
-	particles.one_shot = true
-	particles.emitting = true
-	particles.amount = 35
-	particles.lifetime = 0.5
-	particles.speed_scale = 1.5
-	particles.direction = Vector2(0, -1)
-	particles.spread = 45.0
-	particles.initial_velocity_min = 50.0
-	particles.initial_velocity_max = 120.0
-	particles.gravity = Vector2(0, 100)
-	particles.color = Color(1.0, 0.4, 0.1, 0.9)  # Помаранчево-червоний
-	particles.position = pos
-	particles.z_index = 250
-	get_tree().current_scene.add_child(particles)
-	await get_tree().create_timer(0.6).timeout
 	if is_instance_valid(particles):
 		particles.queue_free()
 

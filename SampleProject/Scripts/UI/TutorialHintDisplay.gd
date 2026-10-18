@@ -18,7 +18,9 @@ const TUTORIAL_HINTS = {
 	"health_low": "Health is low! Avoid damage or find healing",
 	"combo": "Chain attacks for better combat flow",
 	# D148: туторіал у селі — висить, доки гравець не вилікує діда.
-	"healing_palm": "Your grandfather is dying! Stand next to him and press 1 to use Healing Palm."
+	"healing_palm": "Your grandfather is dying! Stand next to him and press 1 to use Healing Palm.",
+	# D209: біля воріт міста — перший асист, туторіал.
+	"call_guard": "The guard will help you — press F to call him."
 }
 
 # Track which hints have been shown

@@ -1,5 +1,8 @@
 extends Node2D
 
+## Ключ підказки TutorialHintDisplay для охоронця (D209).
+const CALL_GUARD := "call_guard"
+
 ## 🏰 City Gates Scene Manager
 ## States: INTRO_DIALOGUE, FIGHT_LOOP, AFTER_FIGHT_DIALOGUE, TO_CITY
 
@@ -159,9 +162,24 @@ func _spawn_enemies_for_fight() -> void:
 	"""Спавнить врагов для боя"""
 	enemy_spawner.spawn_all_enemies()
 	DebugLogger.info("🏰 CityGates: Enemies spawning for fight", "Scene")
+	# D209: охоронець — перший асист-туторіал: кнопка асисту кличе його, його удар закінчує бій
+	ServiceLocator.get_companion_manager().offer_guard(true)
+	_hint().show_hint(CALL_GUARD, true, true)
+	if not EventBus.assist_called.is_connected(_on_assist_called):
+		EventBus.assist_called.connect(_on_assist_called)
+
+func _on_assist_called(companion_id: String) -> void:
+	if companion_id == "guard":
+		_hint().force_hide()
+
+func _hint() -> TutorialHintDisplay:
+	return get_tree().get_first_node_in_group(&"tutorial_hint_display")
 
 func _on_all_enemies_defeated() -> void:
 	"""Обработчик когда все враги убиты"""
+	ServiceLocator.get_companion_manager().offer_guard(false)
+	if _hint().current_hint == CALL_GUARD:
+		_hint().force_hide()
 	DebugLogger.info("🏰 CityGates: All enemies defeated, advancing state", "Scene")
 	# Переходим к следующему state после победы
 	if current_state == State.FIGHT_LOOP:

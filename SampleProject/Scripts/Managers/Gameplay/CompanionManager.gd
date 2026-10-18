@@ -2,18 +2,30 @@ extends ManagerBase
 class_name CompanionManager
 
 ## 🤝 Асисти компаньйонів (D201, D209): одна кнопка викликає наступного готового, у кожного свій кулдаун.
-## Хто відкритий — player_state.companions (зберігається, PlayerDataModule). Хто з'являється і як б'є —
-## сцени асистів, зрізи 2–3 [[companion_assist_plan]]. Охоронець біля воріт — разовий туторіал, не в загоні.
+## Хто відкритий — рахується з сюжетних прапорців лабораторії (вони й так у сейві), окремого списку немає.
+## Охоронець біля воріт міста — разовий туторіал: CityGates пропонує його на час бою (offer_guard).
 
 ## Кулдаун кожного компаньйона після виклику, с (мок, D209).
 const COOLDOWN := 15.0
-## Компаньйони лабораторії в порядку черги (D209).
-const ROSTER: Array[String] = ["alisia", "astrit", "urizen"]
+## Компаньйони лабораторії в порядку черги і прапорець, що їх відкриває (D209).
+const UNLOCK_FLAGS := {
+	"alisia": "lab_companion_01_complete",
+	"astrit": "lab_companion_02_complete",
+	"urizen": "lab_companion_03_complete",
+}
+const SCENES := {
+	"guard": preload("res://SampleProject/Scenes/Characters/Companions/companion_guard.tscn"),
+	"alisia": preload("res://SampleProject/Scenes/Characters/Companions/companion_alisia.tscn"),
+	"astrit": preload("res://SampleProject/Scenes/Characters/Companions/companion_astrit.tscn"),
+	"urizen": preload("res://SampleProject/Scenes/Characters/Companions/companion_urizen.tscn"),
+}
 
 ## companion_id -> секунд до готовності. Миттєвий стан, не зберігається (як перезарядки навичок).
 var _cooldowns: Dictionary = {}
 ## Хто був викликаний останнім — черга йде далі від нього.
 var _last_called := ""
+## Охоронець біля воріт зараз доступний (CityGates, на час бою).
+var _guard_offered := false
 
 
 func _initialize() -> void:
@@ -28,20 +40,17 @@ func _process(delta: float) -> void:
 			EventBus.assist_ready.emit(id)
 
 
-func unlock(companion_id: String) -> void:
-	assert(companion_id in ROSTER, "CompanionManager: unknown companion '%s'" % companion_id)
-	var unlocked: Array = _state().companions
-	if companion_id not in unlocked:
-		unlocked.append(companion_id)
-
-
 func is_unlocked(companion_id: String) -> bool:
-	return companion_id in _state().companions
+	return Game.get_singleton().get_quest_flag(UNLOCK_FLAGS[companion_id])
 
 
-## Відкриті компаньйони в порядку черги (ROSTER), а не в порядку відкриття.
+## Відкриті компаньйони лабораторії в порядку черги.
 func get_unlocked() -> Array[String]:
-	return ROSTER.filter(func(id: String) -> bool: return is_unlocked(id))
+	var out: Array[String] = []
+	for id in UNLOCK_FLAGS:
+		if is_unlocked(id):
+			out.append(id)
+	return out
 
 
 func is_ready(companion_id: String) -> bool:
@@ -52,8 +61,22 @@ func get_remaining_cooldown(companion_id: String) -> float:
 	return float(_cooldowns.get(companion_id, 0.0))
 
 
-## Кнопка асисту: наступний за останнім викликаним, хто готовий. Повертає його id або "" — нікого.
+## CityGates: на час бою біля воріт кнопка асисту кличе охоронця (туторіал, D209).
+func offer_guard(offered: bool) -> void:
+	_guard_offered = offered
+
+
+func is_guard_offered() -> bool:
+	return _guard_offered
+
+
+## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний за останнім викликаним, хто готовий.
+## Повертає id того, хто вийшов, або "" — нікого.
 func call_next() -> String:
+	if _guard_offered:
+		_guard_offered = false
+		_send("guard")
+		return "guard"
 	var unlocked := get_unlocked()
 	if unlocked.is_empty():
 		return ""
@@ -63,7 +86,7 @@ func call_next() -> String:
 		if is_ready(id):
 			_cooldowns[id] = COOLDOWN
 			_last_called = id
-			EventBus.assist_called.emit(id)
+			_send(id)
 			return id
 	return ""
 
@@ -72,5 +95,10 @@ func clear_cooldowns() -> void:
 	_cooldowns.clear()
 
 
-func _state() -> Dictionary:
-	return ServiceLocator.get_game_manager().player_state
+## Компаньйон забігає до героя (CompanionAssist.start) і повідомляє всіх через EventBus.
+func _send(companion_id: String) -> void:
+	var hero: Node2D = ServiceLocator.get_game_manager().get_current_player()
+	var actor: Node2D = SCENES[companion_id].instantiate()
+	hero.get_parent().add_child(actor)
+	actor.start(hero)
+	EventBus.assist_called.emit(companion_id)
