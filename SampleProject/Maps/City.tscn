@@ -1,6 +1,9 @@
 [gd_scene format=4 uid="uid://cd2gmmoyuovq8"]
 
-[ext_resource type="TileSet" uid="uid://bwpcg2opya34n" path="res://SampleProject/Resources/Tileset.tres" id="1_tileset"]
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="1_tileset"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_3.tscn" id="backdrop"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Town/city_far.png" id="city_far"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Town/city_near.png" id="city_near"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="5_trigger"]
@@ -11,6 +14,34 @@
 radius = 32.0
 
 [node name="City" type="Node2D" unique_id=1536537228]
+
+[node name="Backdrop" parent="." instance=ExtResource("backdrop")]
+
+[node name="CityFar" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="CityFar"]
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("city_far")
+centered = false
+
+[node name="CityNear" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.85, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="CityNear"]
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("city_near")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="." unique_id=913459423]
 position = Vector2(0, -160)

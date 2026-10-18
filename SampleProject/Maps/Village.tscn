@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://dbq66sndnfrq7"]
+[gd_scene load_steps=13 format=4 uid="uid://dbq66sndnfrq7"]
 
 [ext_resource type="Script" uid="uid://b8e1sapbwercc" path="res://SampleProject/Scripts/Gameplay/Scenes/Village.gd" id="1_village"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="2_5gn25"]
@@ -11,6 +11,7 @@
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/story_npc.tscn" id="story_npc"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_3.tscn" id="backdrop"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Town/village_houses.png" id="houses"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -20,6 +21,19 @@ script = ExtResource("1_village")
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 position = Vector2(0, -3)
+
+[node name="Houses" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.85, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Houses"]
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("houses")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
 
