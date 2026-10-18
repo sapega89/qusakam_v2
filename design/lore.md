@@ -25,6 +25,14 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **There is no day and no night.**
 - **The sky is bright: light comes from the sky itself, with no sun.** (Read with the line above as: a bright, empty sky — no sun, no stars, no heavenly bodies. If "немає небес" meant something else, correct this line.)
 
+## Characters (Sapega, 2026-10-18)
+
+> астріт це воїн талматург з щитом та книгою
+
+- **Астрит** — a warrior-thaumaturge with a **shield and a book**; a Laboratory companion (D209).
+- **Алісия**, **Уризен** — Laboratory companions (D209); who they are is still open.
+- The **City Gates guard** — the first assist, a tutorial (D209).
+
 ## What follows for the game (consequences, not new facts)
 
 - **Visual pass:** one even light from a bright, empty sky — no sun disc, no directional sunlight, no
@@ -42,4 +50,4 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - Which empire, and is it present in the story (the city, the mayor)?
 - Who the gods are, and what the "three dark priests" (`Три_темніх_жреца`) serve.
 - What the ancient civilisation was, and whether the Laboratory is built on it.
-- Kusakam, Астрит, Уризен, Алісия, Суан, Гном-механік — who they are (also Q51, Q53; companions D201).
+- Kusakam, Уризен, Алісия, Суан, Гном-механік — who they are (also Q51, Q53); Астрит beyond his class.
