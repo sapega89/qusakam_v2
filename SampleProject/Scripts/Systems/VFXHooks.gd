@@ -22,9 +22,12 @@ const HEAVY_SCALE := 1.6
 const HEAVY_HITSTOP := 0.07
 const HEAVY_SHAKE := 5.0
 const HEAVY_SHAKE_TIME := 0.15
-## Звуки бою з паку Brackeys (CC0, assets/brackeys_platformer_assets): влучання по ворогу, удар по герою.
-const SFX_HIT := "res://assets/brackeys_platformer_assets/sounds/tap.wav"
-const SFX_HURT := "res://assets/brackeys_platformer_assets/sounds/hurt.wav"
+## Звуки бою (D217) з CC0-паків Kenney (SampleProject/Assets/Audio/SFX, README там): на кожну подію кілька варіантів, грає випадковий.
+const SFX_SWING := ["res://SampleProject/Assets/Audio/SFX/knifeSlice.ogg", "res://SampleProject/Assets/Audio/SFX/knifeSlice2.ogg"]
+const SFX_WINDUP := ["res://SampleProject/Assets/Audio/SFX/drawKnife1.ogg", "res://SampleProject/Assets/Audio/SFX/drawKnife2.ogg", "res://SampleProject/Assets/Audio/SFX/drawKnife3.ogg"]
+const SFX_HIT := ["res://SampleProject/Assets/Audio/SFX/impactPunch_medium_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_medium_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_medium_002.ogg"]
+const SFX_HEAVY_HIT := ["res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_002.ogg"]
+const SFX_HURT := ["res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_002.ogg"]
 
 func _init() -> void:
 	print("🔧 VFXHooks: _init() called - VFXHooks instance created!")
@@ -47,6 +50,7 @@ func _connect_to_event_bus() -> void:
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_attacked.connect(_on_player_attacked)
+	EventBus.attack_started.connect(_on_attack_started)
 	EventBus.skill_used.connect(_on_skill_used)
 
 
@@ -91,6 +95,13 @@ func _on_player_attacked(player: Node, direction: int) -> void:
 	player.get_parent().add_child(trail)
 	trail.global_position = player.global_position + Vector2(reach / 2.0 * direction, -8)
 	trail.set_direction(direction)
+	AudioManager.play_sfx_path(SFX_SWING.pick_random())
+
+
+## Замах ворога чути: половина підказки «зараз ударить» (D215).
+func _on_attack_started(attacker: Node, _target: Node) -> void:
+	if attacker.is_in_group(GameGroups.ENEMIES):
+		AudioManager.play_sfx_path(SFX_WINDUP.pick_random())
 
 
 ## Спалах ушкодження — у кожного, хто справді отримав удар (і ворог, і герой).
@@ -99,7 +110,7 @@ func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
 	sprite.self_modulate = HURT_FLASH
 	target.create_tween().tween_property(sprite, ^"self_modulate", Color.WHITE, HURT_FLASH_TIME)
 	if target.is_in_group(GameGroups.PLAYER):
-		AudioManager.play_sfx_path(SFX_HURT)
+		AudioManager.play_sfx_path(SFX_HURT.pick_random())
 
 
 ## Влучання героя у ворога: ефект на краю тіла цілі з боку удару. damage_dealt приходить лише
@@ -117,7 +128,7 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	target.get_parent().add_child(impact)
 	impact.global_position = body.global_position + Vector2(side * half_width, 0)
 	impact.set_direction(-int(side))
-	AudioManager.play_sfx_path(SFX_HIT)
+	AudioManager.play_sfx_path((SFX_HEAVY_HIT if heavy else SFX_HIT).pick_random())
 	if heavy:
 		impact.scale = Vector2.ONE * HEAVY_SCALE
 		ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP)
