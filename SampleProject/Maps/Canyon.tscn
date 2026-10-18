@@ -1,12 +1,15 @@
 [gd_scene format=4 uid="uid://d2qxq8pgs28p4"]
 
-[ext_resource type="Script" uid="uid://jwbu3hndfsuh" path="res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd" id="1_canyon"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd" id="1_canyon"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="2_ctv3h"]
-[ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
-[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="4_6wo6x"]
-[ext_resource type="Script" uid="uid://dj7sghsvl5xdq" path="res://SampleProject/Scripts/Gameplay/CanyonExitTrigger.gd" id="5_exit"]
-[ext_resource type="AudioStream" uid="uid://eweffejhvan6" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/canyon_walls.png" id="3_fx0co"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="4_6wo6x"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/pride_rock.png" id="4_7fdhy"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/CanyonExitTrigger.gd" id="5_exit"]
+[ext_resource type="Script" path="res://addons/MetroidvaniaSystem/Scripts/RoomInstance.gd" id="7_jxins"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_4.tscn" id="backdrop"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
 size = Vector2(32, 31.9999)
@@ -14,8 +17,14 @@ size = Vector2(32, 31.9999)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6wo6x"]
 bg_color = Color(0.02, 0.04, 0.08, 0.95)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xu4xw"]
-size = Vector2(85, 70)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xvckv"]
+size = Vector2(48, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0wcj6"]
+size = Vector2(48, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mu4p3"]
+size = Vector2(48, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exit"]
 size = Vector2(48, 200)
@@ -23,8 +32,29 @@ size = Vector2(48, 200)
 [node name="Canyon" type="Node2D" unique_id=1287215510]
 script = ExtResource("1_canyon")
 
-[node name="Backdrop" parent="." instance=ExtResource("backdrop")]
+[node name="Backdrop" type="Node2D" parent="." unique_id=1515161581 instance=ExtResource("backdrop")]
+z_index = -10
 position = Vector2(0, -3)
+
+[node name="CanyonWalls" type="Parallax2D" parent="." unique_id=395976478]
+z_index = -9
+scroll_scale = Vector2(0.45, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="CanyonWalls" unique_id=1076101811]
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_fx0co")
+centered = false
+
+[node name="PrideRock" type="Sprite2D" parent="." unique_id=1615227530]
+texture_filter = 1
+position = Vector2(1056, 64)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("4_7fdhy")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1262723541]
 
@@ -43,7 +73,13 @@ position = Vector2(799, 2)
 tile_map_data = PackedByteArray("AAAAAAkAAQAKAAcAAAAAAAoAAQAKAAcAAAAAAAYAAQAKAAYAAAAAAAcAAQAKAAcAAAAAAAgAAQAKAAcAAAA=")
 tile_set = ExtResource("2_ctv3h")
 
-[node name="RoomInstance" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
+[node name="RockCollision" type="TileMapLayer" parent="TileMap" unique_id=2110394780]
+visible = false
+tile_map_data = PackedByteArray("AAAoAAMAAQAIAAcAAAApAAMAAQAIAAcAAAAqAAMAAQAIAAcAAAArAAMAAQAIAAcAAAAsAAMAAQAIAAcAAAAtAAMAAQAIAAcAAAAuAAMAAQAIAAcAAAAvAAMAAQAIAAcAAAAwAAMAAQAIAAcAAAAxAAMAAQAIAAcAAAAjAAQAAQAIAAcAAAAkAAQAAQAIAAcAAAAlAAQAAQAIAAcAAAAmAAQAAQAIAAcAAAAnAAQAAQAIAAcAAAAoAAQAAQAIAAcAAAApAAQAAQAIAAcAAAAqAAQAAQAIAAcAAAArAAQAAQAIAAcAAAAsAAQAAQAIAAcAAAAtAAQAAQAIAAcAAAAuAAQAAQAIAAcAAAAvAAQAAQAIAAcAAAAwAAQAAQAIAAcAAAAxAAQAAQAIAAcAAAAyAAQAAQAIAAcAAAAzAAQAAQAIAAcAAAAlAAUAAQAIAAcAAAAmAAUAAQAIAAcAAAAnAAUAAQAIAAcAAAAoAAUAAQAIAAcAAAApAAUAAQAIAAcAAAAqAAUAAQAIAAcAAAArAAUAAQAIAAcAAAAsAAUAAQAIAAcAAAAtAAUAAQAIAAcAAAAuAAUAAQAIAAcAAAAvAAUAAQAIAAcAAAAwAAUAAQAIAAcAAAAxAAUAAQAIAAcAAAAyAAUAAQAIAAcAAAAzAAUAAQAIAAcAAAA7AAoAAQABAAAAAAA8AAoAAQABAAAAAAA9AAoAAQABAAAAAAA4AAgAAQABAAAAAAA5AAgAAQABAAAAAAA6AAgAAQABAAAAAAA1AAYAAQABAAAAAAA2AAYAAQABAAAAAAA3AAYAAQABAAAAAAA=")
+tile_set = ExtResource("2_ctv3h")
+
+[node name="RoomInstance" type="Node2D" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
+script = ExtResource("7_jxins")
 
 [node name="END" type="Area2D" parent="." unique_id=501952270]
 position = Vector2(59.00001, 342.99997)
@@ -83,22 +119,22 @@ theme_override_constants/separation = 30
 
 [node name="Title" type="Label" parent="END/CanvasLayer/Panel/VBox" unique_id=1199160854]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
 theme_override_font_sizes/font_size = 72
+theme_override_colors/font_color = Color(0.4, 0.8, 0.4, 1)
 text = "VICTORY!"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="END/CanvasLayer/Panel/VBox" unique_id=1134594414]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 text = "Congratulations! You completed the game!"
 horizontal_alignment = 1
 
 [node name="Controls" type="Label" parent="END/CanvasLayer/Panel/VBox" unique_id=1152903186]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.6, 0.7, 1)
 theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.5, 0.6, 0.7, 1)
 text = "Press SPACE to play again
 Press ESC for main menu"
 horizontal_alignment = 1
@@ -114,8 +150,8 @@ require_state = "MONOLOGUE"
 action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger1" unique_id=1427977227]
-position = Vector2(-2, -41)
-shape = SubResource("RectangleShape2D_xu4xw")
+position = Vector2(-2, -141)
+shape = SubResource("RectangleShape2D_xvckv")
 
 [node name="StateChangeTrigger2" type="Area2D" parent="." unique_id=327197236]
 position = Vector2(806, 392)
@@ -125,8 +161,8 @@ require_state = "EXPLORATION"
 action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger2" unique_id=2047262143]
-position = Vector2(418, -52)
-shape = SubResource("RectangleShape2D_xu4xw")
+position = Vector2(418, -152)
+shape = SubResource("RectangleShape2D_0wcj6")
 
 [node name="StateChangeTrigger3" type="Area2D" parent="." unique_id=229650509]
 position = Vector2(180, 392)
@@ -138,21 +174,21 @@ dialogue_path = "res://dialogue_quest/RoadToVillage.dqd"
 action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger3" unique_id=1209304842]
-position = Vector2(738, -47)
-shape = SubResource("RectangleShape2D_xu4xw")
+position = Vector2(738, -152)
+shape = SubResource("RectangleShape2D_mu4p3")
 
-[node name="CanyonExitTrigger" type="Area2D" parent="."]
+[node name="CanyonExitTrigger" type="Area2D" parent="." unique_id=1943234726]
 position = Vector2(550, 600)
 monitorable = false
 script = ExtResource("5_exit")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CanyonExitTrigger"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CanyonExitTrigger" unique_id=1698397028]
 shape = SubResource("RectangleShape2D_exit")
 
-[connection signal="body_entered" from="END" to="END" method="_on_body_entered"]
-
-[node name="Music" type="AudioStreamPlayer" parent="."]
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=307363086]
 process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[connection signal="body_entered" from="END" to="END" method="_on_body_entered"]
