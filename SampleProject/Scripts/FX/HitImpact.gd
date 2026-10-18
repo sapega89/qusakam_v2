@@ -1,22 +1,16 @@
 extends Node2D
 class_name HitImpact
 
-## Hit Impact VFX
-## Particle burst effect when attacks land
+## Іскра влучання (D204): кадри Circle_explosion 1–5 (Assets/FX/HitSpark), зникає з останнім кадром.
 
-@onready var particles: CPUParticles2D = $CPUParticles2D
+@onready var sprite: AnimatedSprite2D = $Sprite
+
 
 func _ready() -> void:
-	"""Start particle emission and auto-cleanup"""
-	if particles:
-		particles.emitting = true
-
-	# Auto-delete after particles finish
-	await get_tree().create_timer(0.6).timeout
-	queue_free()
+	sprite.animation_finished.connect(queue_free)
+	sprite.play(&"hit")
 
 
-## Іскри летять від точки контакту в бік удару (1 — праворуч, -1 — ліворуч).
+## Іскра дивиться в бік удару (1 — праворуч, -1 — ліворуч).
 func set_direction(direction: int) -> void:
-	particles.direction = Vector2(direction, -0.6)
-	particles.spread = 50.0
+	$Sprite.flip_h = direction < 0

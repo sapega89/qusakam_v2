@@ -1,27 +1,16 @@
 extends Node2D
 class_name SlashTrail
 
-## Slash Trail VFX
-## Visual effect for player sword attacks
+## Розчерк замаху (D204): кадри Assets/FX/SwingTrail, зникає з останнім кадром.
 
-@onready var particles: CPUParticles2D = $CPUParticles2D
+@onready var sprite: AnimatedSprite2D = $Sprite
+
 
 func _ready() -> void:
-	"""Start particle emission and auto-cleanup"""
-	particles.emitting = true
+	sprite.animation_finished.connect(queue_free)
+	sprite.play(&"swing")
 
-	# Auto-delete after particles finish
-	await get_tree().create_timer(0.5).timeout
-	queue_free()
 
+## Розчерк летить у бік удару (1 — праворуч, -1 — ліворуч).
 func set_direction(direction: int) -> void:
-	"""Set slash direction (1 = right, -1 = left)"""
-	# Flip emission direction based on attack direction
-	if direction < 0:
-		particles.direction = Vector2.LEFT
-		particles.angle_min = 135
-		particles.angle_max = 135
-	else:
-		particles.direction = Vector2.RIGHT
-		particles.angle_min = 45
-		particles.angle_max = 45
+	$Sprite.flip_h = direction < 0

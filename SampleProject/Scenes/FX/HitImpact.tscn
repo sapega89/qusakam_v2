@@ -1,24 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://h1t1mp4ct001"]
+[gd_scene format=3 uid="uid://h1t1mp4ct001"]
 
-[ext_resource type="Script" path="res://SampleProject/Scripts/FX/HitImpact.gd" id="1_hit"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/HitImpact.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark2.png" id="f2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark4.png" id="f4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark5.png" id="f5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fx"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}, {"duration": 1.0, "texture": ExtResource("f5")}], "loop": false, "name": &"hit", "speed": 30.0}]
 
 [node name="HitImpact" type="Node2D"]
-script = ExtResource("1_hit")
+z_index = 250
+script = ExtResource("1_script")
 
-[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
-emitting = false
-amount = 12
-lifetime = 0.4
-one_shot = true
-explosiveness = 1.0
-randomness = 0.3
-emission_shape = 1
-emission_sphere_radius = 5.0
-direction = Vector2(0, -1)
-spread = 180.0
-gravity = Vector2(0, 400)
-initial_velocity_min = 100.0
-initial_velocity_max = 180.0
-scale_amount_min = 2.0
-scale_amount_max = 4.0
-color = Color(1, 0.9, 0.8, 1)
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_fx")
+animation = &"hit"
