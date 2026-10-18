@@ -21,6 +21,7 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 | [[questions_for_sapega]] | Open **Q-IDs** — decisions waiting on Sapega, each with a provisional default |
 | [[figma_decision_register]] | Approved **D-IDs** — where the runtime intentionally differs from Figma |
 | [[test_baseline]] | Failures that are **not yours** — the pre-existing baseline |
+| [[lore]] | **The world** as Sapega described it — desert, no sun, dragons, gods; and what is still open |
 | [[UI_IMPLEMENTATION_STATUS]] | What **is** built, plus technical debt and Figma frames needing an update |
 
 ## Plans
