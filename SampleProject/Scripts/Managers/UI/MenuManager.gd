@@ -1,7 +1,7 @@
 extends ManagerBase
 class_name MenuManager
 
-## 📋 MenuManager — вхід у Game Menu з гри (Esc / ui_cancel).
+## 📋 MenuManager — вхід у Game Menu з гри (дія game_menu: Esc / Start, D156).
 ## Стан меню живе в UIManager; тут лише точка входу для Game.gd і game_menu.gd.
 
 signal menu_closed()

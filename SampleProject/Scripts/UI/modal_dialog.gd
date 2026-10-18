@@ -12,6 +12,8 @@ signal chosen(result: String)
 @onready var cancel_button: Button = $Panel/VBox/Buttons/CancelButton
 
 var _custom_buttons: Array[Button] = []
+## Власна кнопка скасування (is_cancel) — її натискає B / Esc.
+var _custom_cancel: Button = null
 
 func setup(data: Dictionary) -> void:
 	_apply_icon(data.get("icon", null))
@@ -65,6 +67,8 @@ func _build_custom_buttons(buttons: Array) -> void:
 		buttons_container.add_child(button)
 		button.pressed.connect(_on_button_pressed.bind(id, is_cancel))
 		_custom_buttons.append(button)
+		if is_cancel:
+			_custom_cancel = button
 		if is_default:
 			button.call_deferred("grab_focus")
 
@@ -81,6 +85,19 @@ func _clear_custom_buttons() -> void:
 			continue
 		child.queue_free()
 	_custom_buttons.clear()
+	_custom_cancel = null
+
+## B / Esc (ui_cancel, D156) — як кнопка скасування модалки. Немає її — B нічого не робить, але й не
+## провалюється до меню під модалкою.
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed(&"ui_cancel"):
+		return
+	get_viewport().set_input_as_handled()
+	if _custom_cancel != null:
+		_custom_cancel.pressed.emit()
+	elif cancel_button.visible:
+		_on_cancelled()
+
 
 func _on_confirmed() -> void:
 	chosen.emit("confirm")

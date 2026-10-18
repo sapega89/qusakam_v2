@@ -11,7 +11,7 @@ enum State { DEFAULT, FOCUSED, DISABLED }
 
 const THEME_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
 const BADGE_KEYBOARD := preload("res://SampleProject/Assets/UI/Icons/input_key_e.svg")
-const BADGE_GAMEPAD := preload("res://SampleProject/Assets/UI/Icons/input_gamepad_a.svg")
+const BADGE_GAMEPAD := preload("res://SampleProject/Assets/UI/Icons/input_gamepad_y.svg")  # interact — Y (D156)
 
 const _VARIATIONS := {
 	State.DEFAULT: &"InteractionPrompt",

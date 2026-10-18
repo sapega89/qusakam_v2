@@ -108,27 +108,15 @@ func _ready() -> void:
 	print("=")
 
 
+## Game Menu відкривається дією game_menu — Esc або Start (D156). Не ui_cancel: на ньому кнопка B,
+## а B у грі — «назад», не меню.
 func _unhandled_input(event: InputEvent) -> void:
-	# Обробка Escape для відкриття/закриття game menu через MenuManager
-	# ВАЖНО: Перевіряємо, чи це Escape (KEY_ESCAPE), а не інша клавіша
-	if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+	if event.is_action_pressed(&"game_menu"):
 		var menu_manager: MenuManager = ServiceLocator.get_menu_manager()
-		# Меню вже відкрите — Escape для закриття обробить game_menu.gd.
+		# Меню вже відкрите — закриття обробить game_menu.gd.
 		if menu_manager.is_menu_open():
 			return
 		menu_manager.toggle_game_menu()
-		get_viewport().set_input_as_handled()
-		return
-
-	# Також обробляємо ui_cancel action (якщо він налаштований на Escape)
-	if event.is_action_pressed("ui_cancel"):
-		print("🎮 Game: ui_cancel action натиснуто!")
-		# Перевіряємо, чи це не оброблено вже вище
-		if event is InputEventKey and event.keycode == KEY_ESCAPE:
-			# Вже оброблено вище
-			return
-
-		ServiceLocator.get_menu_manager().toggle_game_menu()
 		get_viewport().set_input_as_handled()
 
 func _normalize_room_ref_to_scene_ref(room_ref: String) -> String:

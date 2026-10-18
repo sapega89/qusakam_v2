@@ -77,7 +77,7 @@ func _initialize() -> void:
 	joy.button_index = JOY_BUTTON_A
 	joy.pressed = true
 	prompt._input(joy)
-	ck(prompt.get_node("%Badge").texture == InteractionPrompt.BADGE_GAMEPAD, "gamepad input → A badge")
+	ck(prompt.get_node("%Badge").texture == InteractionPrompt.BADGE_GAMEPAD, "gamepad input → Y badge (D156)")
 	var key := InputEventKey.new()
 	key.physical_keycode = KEY_W
 	key.pressed = true
@@ -88,12 +88,12 @@ func _initialize() -> void:
 	print("[4] `interact` input action (no hard-coded keys)")
 	ck(InputMap.has_action(&"interact"), "interact action exists")
 	var has_e := false
-	var has_a := false
+	var has_y := false
 	for ev in InputMap.action_get_events(&"interact"):
 		if ev is InputEventKey and ev.physical_keycode == KEY_E: has_e = true
-		if ev is InputEventJoypadButton and ev.button_index == JOY_BUTTON_A: has_a = true
+		if ev is InputEventJoypadButton and ev.button_index == JOY_BUTTON_Y: has_y = true
 	ck(has_e, "bound to keyboard E")
-	ck(has_a, "bound to gamepad A")
+	ck(has_y, "bound to gamepad Y (D156)")
 
 	print("[5] InteractableComponent shows the prompt only near the player")
 	var area := Area2D.new()

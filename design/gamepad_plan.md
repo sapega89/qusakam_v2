@@ -5,7 +5,7 @@ status: planned
 
 # Gamepad — plan
 
-**Partial: menus half-work, gameplay does not.** 2026-10-14. Found while building D155
+**Slice 1 built 2026-10-18 (D211)** — the hero moves, jumps, attacks on a pad; A / B in menus and modals; Start opens the Game Menu. Was: menus half-work, gameplay does not (2026-10-14). Found while building D155
 (NPC menu: arrows / D-pad only, sticks stay on the hero).
 Figma: no gamepad layout exists; `UI/Bottom Bar` `121:1073` has an `input=gamepad` variant
 ([[ui_navigation_map]]). Related: D37, D48, D98, D155, **D156** (layout), **D157** (mouse), Q30.
@@ -48,7 +48,7 @@ Today: `attack` is **left mouse button** (`project.godot`), 6 UI scripts focus o
    usual jump. Recommendation (Xbox names): A jump · X attack · B back/cancel · Y interact in
    the world (save_delete stays Y inside Save/Load only) · Start Game Menu · LB/RB tabs (as now) ·
    skills on LT / RT / LB+RB? — undecided, see 3.
-2. **D-pad outside menus** — moves the hero like the stick, or does nothing? D155 only says
+2. ✅ **D-pad outside menus — settled by D202 / D211:** D-pad ←→ switch the weapon in hand, ↑↓ move up/down; the stick runs. Was: moves the hero like the stick, or does nothing? D155 only says
    the D-pad drives menus and the stick drives the hero *while the NPC menu is open*.
    Recommendation: D-pad also moves the hero (2D platformer convention). Non-blocking.
 2b. ✅ **Mouse — answered: D157.** Ctrl toggles; cursor hidden otherwise; attack stays on LMB.
@@ -60,7 +60,7 @@ Today: `attack` is **left mouse button** (`project.godot`), 6 UI scripts focus o
 
 ## Slices
 
-### Slice 1 — gameplay on a pad
+### Slice 1 — gameplay on a pad — ✅ built 2026-10-18 (D211, `verify_gamepad.gd`)
 - `project.godot`, per D156: left stick + D-pad on `move_*`; A `jump`; X `attack`; Y `interact`
   (off A); A `ui_accept`, B `ui_cancel` (overriding a `ui_*` action replaces Godot's defaults —
   re-list the keys); Start opens the Game Menu.

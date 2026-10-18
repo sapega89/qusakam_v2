@@ -192,7 +192,7 @@ func close_menu() -> void:
 ## _unhandled_input, а не _input: Esc спершу отримує відкрита модалка (Misc,
 ## підтвердження) і закриває себе; меню закривається, лише коли Esc нікому не потрібен.
 func _unhandled_input(event: InputEvent) -> void:
-	# Через InputMap, а не сирий KEY_ESCAPE: щоб працювали ремапінг і геймпад.
-	if event.is_action_pressed(&"ui_cancel"):
+	# Через InputMap, а не сирий KEY_ESCAPE: щоб працювали ремапінг і геймпад. B (ui_cancel) і Start (game_menu).
+	if event.is_action_pressed(&"ui_cancel") or event.is_action_pressed(&"game_menu"):
 		close_menu()
 		get_viewport().set_input_as_handled()
