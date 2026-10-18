@@ -5,6 +5,10 @@
 [ext_resource type="Script" uid="uid://h3d7bkg37nqk" path="res://SampleProject/Scripts/Player/Components/PlayerCombat.gd" id="4_combat"]
 [ext_resource type="Script" uid="uid://bqkuvbuwvc351" path="res://SampleProject/Scripts/Player/Components/PlayerMover.gd" id="5_mover"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/WeaponView.gd" id="weapon_view"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Attack/1.png" id="atk1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Attack/2.png" id="atk2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Attack/3.png" id="atk3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Attack/4.png" id="atk4"]
 [ext_resource type="Texture2D" uid="uid://b6ddhedt2v5ut" path="res://SampleProject/Sprites/Player/Run/1.png" id="r1"]
 [ext_resource type="Texture2D" uid="uid://be1t6ppf85jnn" path="res://SampleProject/Sprites/Player/Run/2.png" id="r2"]
 [ext_resource type="Texture2D" uid="uid://k1sjmeart71i" path="res://SampleProject/Sprites/Player/Run/3.png" id="r3"]
@@ -30,10 +34,10 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [ExtResource("w1")]
+"values": [ExtResource("atk1"), ExtResource("atk2"), ExtResource("atk3"), ExtResource("atk4")]
 }
 
 [sub_resource type="Animation" id="Animation_fall"]

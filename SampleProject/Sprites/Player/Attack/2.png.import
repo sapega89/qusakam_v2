@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c06jc1pc2exlf"
-path="res://.godot/imported/streak3.png-3e99cf042dd5e7049d7f9af50d5a654f.ctex"
+uid="uid://j1ta5aox3crn"
+path="res://.godot/imported/2.png-dc3d22df8984c7095dd614aeb8848dc2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/FX/SwingTrail/streak3.png"
-dest_files=["res://.godot/imported/streak3.png-3e99cf042dd5e7049d7f9af50d5a654f.ctex"]
+source_file="res://SampleProject/Sprites/Player/Attack/2.png"
+dest_files=["res://.godot/imported/2.png-dc3d22df8984c7095dd614aeb8848dc2.ctex"]
 
 [params]
 

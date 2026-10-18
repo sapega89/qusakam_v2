@@ -12,13 +12,13 @@ const LANDING_COOLDOWN_TIME: float = 0.5  # Минимальное время м
 const MIN_FALL_HEIGHT: float = 20.0  # Минимальная высота падения для показа эффекта (в пикселях)
 const MAX_FALL_HEIGHT: float = 200.0  # Высота падения для максимального эффекта (в пикселях)
 
-## Бойові ефекти (6a): слід замаху, ефект влучання в точці контакту, спалах ушкодження.
-## Важкий удар (зброя з відкиданням, D203) — більший ефект, hitstop і тремтіння камери.
-const SLASH_TRAIL_SCENE := preload("res://SampleProject/Scenes/FX/SlashTrail.tscn")
+## Бойові ефекти (6a): ефект влучання в точці контакту, спалах ушкодження (шлейф замаху — WeaponView, D224).
+## Кожне влучання — коротке завмирання (D224); важкий удар (відкидання, D203) — довше, більший ефект і тремтіння камери.
 const HIT_IMPACT_SCENE := preload("res://SampleProject/Scenes/FX/HitImpact.tscn")
 const HURT_FLASH := Color(2.4, 2.4, 2.4)  # self_modulate > 1 — спрайт висвітлюється
 const HURT_FLASH_TIME := 0.08
 const HEAVY_SCALE := 1.6
+const HIT_HITSTOP := 0.035
 const HEAVY_HITSTOP := 0.07
 const HEAVY_SHAKE := 5.0
 const HEAVY_SHAKE_TIME := 0.15
@@ -88,13 +88,8 @@ func _on_player_landed(fall_height: float) -> void:
 	# Создаем эффект с учетом высоты падения
 	_spawn_dust(dust_pos, fall_height)
 
-## Замах — один слід зброї посередині зони удару (довжина — від зброї в руці, D203).
-func _on_player_attacked(player: Node, direction: int) -> void:
-	var reach: float = player.combat.hitbox.get_node(^"CollisionShape2D").shape.size.x
-	var trail: Node2D = SLASH_TRAIL_SCENE.instantiate()
-	player.get_parent().add_child(trail)
-	trail.global_position = player.global_position + Vector2(reach / 2.0 * direction, -8)
-	trail.set_direction(direction)
+## Звук замаху (шлейф малює WeaponView — він знає зброю й вид удару, D224).
+func _on_player_attacked(_player: Node, _direction: int) -> void:
 	AudioManager.play_sfx_path(SFX_SWING.pick_random())
 
 
@@ -129,9 +124,9 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	impact.global_position = body.global_position + Vector2(side * half_width, 0)
 	impact.set_direction(-int(side))
 	AudioManager.play_sfx_path((SFX_HEAVY_HIT if heavy else SFX_HIT).pick_random())
+	ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP if heavy else HIT_HITSTOP)
 	if heavy:
 		impact.scale = Vector2.ONE * HEAVY_SCALE
-		ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP)
 		_shake_camera(HEAVY_SHAKE, HEAVY_SHAKE_TIME)
 
 

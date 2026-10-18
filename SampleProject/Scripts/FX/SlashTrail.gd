@@ -1,16 +1,20 @@
 extends Node2D
 class_name SlashTrail
 
-## Розчерк замаху (D204): кадри Assets/FX/SwingTrail, зникає з останнім кадром.
+## Шлейф удару (D224): суцільний півмісяць замаху (arc) або пряма смуга уколу (thrust), кадри
+## Assets/FX/Smear (Scripts/Tools/draw_hero_attack.py). Зникає з останнім кадром. Ставить і масштабує
+## WeaponView — він знає зброю, вид удару й напрямок.
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 
 
 func _ready() -> void:
 	sprite.animation_finished.connect(queue_free)
-	sprite.play(&"swing")
 
 
-## Розчерк летить у бік удару (1 — праворуч, -1 — ліворуч).
-func set_direction(direction: int) -> void:
-	$Sprite.flip_h = direction < 0
+## [param kind] — &"arc" чи &"thrust"; [param upward] — другий удар серії, дуга знизу вгору.
+func play(kind: StringName, upward: bool) -> void:
+	sprite.centered = kind == &"arc"
+	sprite.offset = Vector2.ZERO if kind == &"arc" else Vector2(0, -sprite.sprite_frames.get_frame_texture(kind, 0).get_height() / 2.0)
+	sprite.flip_v = upward
+	sprite.play(kind)

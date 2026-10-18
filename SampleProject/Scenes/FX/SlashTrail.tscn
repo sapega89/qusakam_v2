@@ -1,12 +1,15 @@
 [gd_scene format=3 uid="uid://s1ash7ra1l001"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/FX/SlashTrail.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/SwingTrail/streak1.png" id="f1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/SwingTrail/streak2.png" id="f2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/SwingTrail/streak3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/arc_1.png" id="arc1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/arc_2.png" id="arc2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/arc_3.png" id="arc3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/thrust_1.png" id="thrust1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/thrust_2.png" id="thrust2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/thrust_3.png" id="thrust3"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fx"]
-animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}], "loop": false, "name": &"swing", "speed": 30.0}]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("arc1")}, {"duration": 1.0, "texture": ExtResource("arc2")}, {"duration": 1.0, "texture": ExtResource("arc3")}], "loop": false, "name": &"arc", "speed": 30.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("thrust1")}, {"duration": 1.0, "texture": ExtResource("thrust2")}, {"duration": 1.0, "texture": ExtResource("thrust3")}], "loop": false, "name": &"thrust", "speed": 30.0}]
 
 [node name="SlashTrail" type="Node2D"]
 z_index = 250
@@ -14,6 +17,5 @@ script = ExtResource("1_script")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.75, 0.75)
 sprite_frames = SubResource("SpriteFrames_fx")
-animation = &"swing"
+animation = &"arc"
