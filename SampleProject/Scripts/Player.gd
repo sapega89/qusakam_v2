@@ -2,7 +2,6 @@
 extends CombatBody2D
 
 # Preloaded VFX scenes
-const SLASH_TRAIL_SCENE = preload("res://SampleProject/Scenes/FX/SlashTrail.tscn")
 const LEVEL_UP_FLASH_SCENE = preload("res://SampleProject/Scenes/FX/LevelUpFlash.tscn")
 const LEVEL_UP_PARTICLES_SCENE = preload("res://SampleProject/Scenes/FX/LevelUpParticles.tscn")
 
@@ -339,25 +338,6 @@ func on_enter():
 		else:
 			DebugLogger.warning("Player: on_enter() - event залип без діалогу, скидаємо до false", "Player")
 			event = false
-
-func _spawn_attack_vfx() -> void:
-	"""Spawns slash trail VFX for player attack"""
-	if not SLASH_TRAIL_SCENE:
-		return
-
-	var slash = SLASH_TRAIL_SCENE.instantiate()
-	if not slash:
-		return
-
-	add_child(slash)
-
-	# Position in front of player based on direction
-	var offset_x = 30 * last_direction
-	var offset_y = -20  # Slightly above center
-	slash.position = Vector2(offset_x, offset_y)
-
-	# Set slash direction for particle emission
-	slash.set_direction(last_direction)
 
 func _spawn_level_up_vfx() -> void:
 	"""Spawns level up celebration VFX (flash + particles)"""

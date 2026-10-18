@@ -104,6 +104,14 @@ func get_time_scale() -> float:
 	"""Отримує поточний time scale"""
 	return time_scale
 
+## Коротка зупинка часу на важкому ударі (6a). Таймер ігнорує масштаб часу — інакше 0.07 с
+## при time_scale 0.05 тривали б 1.4 с.
+func hitstop(duration: float) -> void:
+	var original := time_scale
+	set_time_scale(0.05)
+	await get_tree().create_timer(duration, true, false, true).timeout
+	set_time_scale(original)
+
 func slow_motion(factor: float = 0.5, duration: float = 1.0):
 	"""Запускає slow motion ефект"""
 	if factor <= 0.0 or factor >= 1.0:

@@ -4,8 +4,10 @@ class_name DefaultEnemy
 
 # === PRELOADED SCENES ===
 const COIN_SCENE = preload("res://SampleProject/Scenes/Gameplay/Objects/Coin.tscn")
-const HIT_IMPACT_SCENE = preload("res://SampleProject/Scenes/FX/HitImpact.tscn")
 const DEATH_PARTICLES_SCENE = preload("res://SampleProject/Scenes/FX/DeathParticles.tscn")
+
+## Скільки труп лежить після анімації смерті, перш ніж зблимнути й зникнути.
+const DEATH_HOLD_TIME := 1.0
 
 # === RESOURCE-BASED CONFIGURATION ===
 ## EnemyStats resource для конфігурації ворога
@@ -335,46 +337,6 @@ func _check_existing_player_in_detection_area():
 			_on_dettection_body_entered(body)
 			break
 
-func take_damage(damage_amount: int, source: Node = null) -> void:
-	# Викликаємо батьківську функцію
-	super.take_damage(damage_amount, source)
-
-	# Apply hit VFX
-	_apply_hit_flash()
-	_spawn_hit_impact()
-
-	# Не змінюємо стан під час паузи
-	if get_tree().paused:
-		return
-
-func _apply_hit_flash() -> void:
-	"""Applies white flash effect when enemy is hit"""
-	# Store original modulate
-	var original_modulate = sprite.modulate
-
-	# Flash white
-	sprite.modulate = Color.WHITE
-
-	# Restore original color after 1 frame (0.05s)
-	await get_tree().create_timer(0.05).timeout
-
-	# Check if sprite still exists before restoring
-	if is_instance_valid(sprite):
-		sprite.modulate = original_modulate
-
-func _spawn_hit_impact() -> void:
-	"""Spawns particle burst at hit position"""
-	if not HIT_IMPACT_SCENE:
-		return
-
-	var impact = HIT_IMPACT_SCENE.instantiate()
-	if not impact:
-		return
-
-	# Add to scene root to persist after enemy may be removed
-	get_tree().current_scene.add_child(impact)
-	impact.global_position = global_position
-
 func _award_xp_to_player() -> void:
 	"""Awards XP to player based on enemy type"""
 	var xp_manager = ServiceLocator.get_xp_manager()
@@ -473,6 +435,8 @@ func die():
 
 	# Зупиняємо всі анімації перед програванням смерті
 	anim_player.stop()
+	# Мертвий одразу перестає бути тілом: не блокує героя й не бʼє (F8)
+	_set_collisions_disabled(true)
 
 	# === ENHANCED DEATH SEQUENCE ===
 	# Red flash effect (3 times). Раніше шукався AnimatedSprite2D, якого в сцені нема, — спалаху не було.
@@ -485,22 +449,15 @@ func die():
 	# Spawn explosive death particles
 	_spawn_death_particles()
 
-	# Проигрываем анимацию смерти
-	anim_player.play("death")
-	_set_collisions_disabled(true)
-
-	# Робимо ворога невидимим одразу після смерті
-	visible = false
-	DebugLogger.info("Enemy made invisible immediately after death", "Enemy")
-
-
 	# Видаляємо HP бар при смерті
 	if health_bar and is_instance_valid(health_bar):
 		health_bar.queue_free()
 		health_bar = null
 
-	# Ждем 3 секунды, затем исчезаем с миганием
-	await get_tree().create_timer(3.0).timeout
+	# Анімацію смерті видно до кінця (F8: раніше ворог ховався одразу після її старту)
+	anim_player.play("death")
+	await anim_player.animation_finished
+	await get_tree().create_timer(DEATH_HOLD_TIME).timeout
 
 	# Проверяем, не был ли враг воскрешен во время ожидания
 	if not is_dead:

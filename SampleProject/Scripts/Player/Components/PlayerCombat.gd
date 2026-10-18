@@ -77,9 +77,6 @@ func perform_attack(last_direction: int) -> void:
 	animation_player.play("Attack")
 	player.animation = "Attack"
 
-	# Spawn VFX
-	player._spawn_attack_vfx()
-
 	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
 	EventBus.player_attacked.emit(player, last_direction)
 

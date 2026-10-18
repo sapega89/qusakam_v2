@@ -32,6 +32,9 @@ func _make_target(name: String) -> Node:
 	body.name = name
 	body.Max_Health = 100
 	body.invulnerability_duration = 0.0  # як у DefaultEnemy: вороги без невразливості після удару
+	var sprite := Sprite2D.new()  # як у справжніх тіл: спалах ушкодження (VFXHooks) світить спрайт
+	sprite.name = "Sprite2D"
+	body.add_child(sprite)
 	var health: Node = HealthScript.new()
 	health.owner_body = body
 	body.add_child(health)

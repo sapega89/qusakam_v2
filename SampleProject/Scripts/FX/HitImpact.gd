@@ -14,3 +14,9 @@ func _ready() -> void:
 	# Auto-delete after particles finish
 	await get_tree().create_timer(0.6).timeout
 	queue_free()
+
+
+## Іскри летять від точки контакту в бік удару (1 — праворуч, -1 — ліворуч).
+func set_direction(direction: int) -> void:
+	particles.direction = Vector2(direction, -0.6)
+	particles.spread = 50.0

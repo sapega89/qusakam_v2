@@ -151,6 +151,7 @@ func _initialize() -> void:
 	await create_timer(0.1).timeout
 	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає
 	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
+	var parked_at: Array = parked.map(func(e: Node) -> Vector2: return e.global_position)
 	for e in parked:  # сусіди не впирають відкинутого ворога
 		e.global_position.x = target.global_position.x - 600
 	var x_before_hit: float = target.global_position.x
@@ -158,6 +159,8 @@ func _initialize() -> void:
 	game.player.combat.perform_attack(1)
 	await create_timer(0.3).timeout
 	ck(target.global_position.x - x_before_hit >= 40.0, "the mace knocks the enemy back (%.0f px)" % (target.global_position.x - x_before_hit))
+	for i in parked.size():  # назад на свої місця — наступні кроки ставлять героя відносно них
+		parked[i].global_position = parked_at[i]
 	em.unequip_item(hero, "mace")
 	em.unequip_item(hero, "polearm")
 	await process_frame
@@ -267,7 +270,9 @@ func _initialize() -> void:
 	game.player.current_health = game.player.Max_Health
 	var victim = enemies[1]
 	victim.die()
-	await create_timer(1.5).timeout
+	await create_timer(1.0).timeout
+	ck(victim.visible and victim.anim_player.current_animation == "death", "the death animation is shown, not skipped (F8)")
+	await create_timer(3.0).timeout
 	ck(not victim.visible, "dead enemy is hidden")
 	ck(not victim.is_alive(), "dead enemy is not alive")
 	ck(inv.get_item_count("potion") + inv.get_item_count("coin") > potions_before + coins_before, "death gave loot (first-kill potions or coins)")

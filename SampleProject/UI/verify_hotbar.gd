@@ -25,6 +25,9 @@ func _make_target() -> Node:
 	var BodyScript = load("res://SampleProject/Scripts/Combat/CombatBody2D.gd")
 	var HealthScript = load("res://SampleProject/Scripts/Combat/Components/HealthComponent.gd")
 	var body: Node = BodyScript.new()
+	var sprite := Sprite2D.new()  # як у справжніх тіл: спалах ушкодження (VFXHooks) світить спрайт
+	sprite.name = "Sprite2D"
+	body.add_child(sprite)
 	body.Max_Health = 100
 	var health: Node = HealthScript.new()
 	health.owner_body = body
