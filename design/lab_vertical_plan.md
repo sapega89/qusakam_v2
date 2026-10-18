@@ -32,4 +32,5 @@ map). `MapData.txt` cells and borders updated. Checks: `verify_laboratory` (walk
 `verify_map_geometry`.
 
 ### Later (not now)
+- **Parallax behind the Laboratory** (Sapega, 2026-10-18, «на майбутнє»): today the background is a flat brick tile layer + `BackColumns`; add parallax layers behind it (distant halls, arches, machinery, blurred per D233) — a candidate for ComfyUI backgrounds (D234).
 Other rooms vertical (Canyon, Village, Road), ability-locked ledges (double jump), secrets — after Sapega's call.
