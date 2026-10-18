@@ -106,14 +106,18 @@ func get_soonest_on_cooldown() -> String:
 	return best
 
 
-func clear_cooldowns() -> void:
+## Нова сесія гри (Game): кулдауни, черга й пропозиція охоронця не переходять з минулої.
+func reset() -> void:
 	_cooldowns.clear()
+	_last_called = ""
+	_guard_offered = false
 
 
 ## Компаньйон забігає до героя (CompanionAssist.start) і повідомляє всіх через EventBus.
 func _send(companion_id: String) -> void:
 	var hero: Node2D = ServiceLocator.get_game_manager().get_current_player()
 	var actor: Node2D = SCENES[companion_id].instantiate()
-	hero.get_parent().add_child(actor)
+	# У кімнату, а не до героя (він дитина Game): при переході актор, монети й кішка зникають разом із кімнатою.
+	Game.get_singleton().map.add_child(actor)
 	actor.start(hero)
 	EventBus.assist_called.emit(companion_id)

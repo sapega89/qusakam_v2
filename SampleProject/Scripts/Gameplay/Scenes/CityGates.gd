@@ -175,6 +175,11 @@ func _on_assist_called(companion_id: String) -> void:
 func _hint() -> TutorialHintDisplay:
 	return get_tree().get_first_node_in_group(&"tutorial_hint_display")
 
+## Пішли з воріт посеред бою (смерть, портал) — охоронця більше не пропонують.
+func _exit_tree() -> void:
+	ServiceLocator.get_companion_manager().offer_guard(false)
+
+
 func _on_all_enemies_defeated() -> void:
 	"""Обработчик когда все враги убиты"""
 	ServiceLocator.get_companion_manager().offer_guard(false)

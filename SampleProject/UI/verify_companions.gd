@@ -120,6 +120,8 @@ func _initialize() -> void:
 	ck(called == ["alisia", "astrit", "urizen", "alisia", "guard"], "assist_called for each (%s)" % [called])
 	await create_timer(1.0).timeout
 	ck(_actors().is_empty(), "no companion left behind")
+	# Охоронець б'є кількох одразу → кілька hitstop за кадр; гра мусить повернутись до нормальної швидкості.
+	ck(is_equal_approx(Engine.time_scale, 1.0), "time runs normally after the guard's multi-hit (%.2f)" % Engine.time_scale)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()

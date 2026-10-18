@@ -168,6 +168,9 @@ func _physics_process(delta: float) -> void:
 
 	_update_facing(new_animation)
 
+## Кнопка асисту зараз натиснута (для фронту натискання тригера).
+var _assist_down := false
+
 func _unhandled_input(ev: InputEvent) -> void:
 	"""Атака.
 
@@ -179,9 +182,12 @@ func _unhandled_input(ev: InputEvent) -> void:
 	цього класу (ознака катсцени), а `input_event` — сигнал CollisionObject2D.
 	"""
 	# D209: асист компаньйона — наступний готовий
-	if ev.is_action_pressed(&"assist"):
-		if not event:
+	# Тригер LT — вісь: is_action_pressed true на кожен її рух, тож кличемо лише на переході «відпущено → натиснуто».
+	if ev.is_action(&"assist"):
+		var down := ev.is_action_pressed(&"assist")
+		if down and not _assist_down and not event and ServiceLocator.get_ui_manager().is_gameplay_input_allowed() and not ServiceLocator.get_dialogue_manager().is_dialogue_active():
 			ServiceLocator.get_companion_manager().call_next()
+		_assist_down = down
 		return
 	# D202: перемкнути зброю в руці (не посеред удару)
 	if ev.is_action_pressed(&"weapon_next") or ev.is_action_pressed(&"weapon_prev"):

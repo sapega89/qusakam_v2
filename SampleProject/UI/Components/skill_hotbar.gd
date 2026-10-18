@@ -19,6 +19,8 @@ const PORTRAIT_PATH := "res://SampleProject/Assets/Characters/Companions/%s/port
 var _skill_manager: Node = null
 var _skill_database: Node = null
 var _slots: Array[Control] = []
+## Що зараз намальовано в слоті асисту ("id:готовий").
+var _assist_shown := ""
 
 
 func _ready() -> void:
@@ -211,11 +213,16 @@ func _update_assist() -> void:
 		return
 	var slot: Panel = bind.get_node(^"Slot")
 	var overlay: Label = slot.get_node(^"Cooldown")
+	var ready := ready_id != ""
+	overlay.text = "%ds" % ceili(cm.get_remaining_cooldown(id))
+	# Портрет і стилі — лише коли змінився хто / готовність, не щокадру.
+	var shown := "%s:%s" % [id, ready]
+	if shown == _assist_shown:
+		return
+	_assist_shown = shown
 	var badge: PanelContainer = bind.get_node(^"Badge")
 	slot.get_node(^"Portrait").texture = load(PORTRAIT_PATH % id)
-	overlay.visible = ready_id == ""
-	overlay.text = "%ds" % ceili(cm.get_remaining_cooldown(id))
-	var ready := ready_id != ""
+	overlay.visible = not ready
 	slot.add_theme_stylebox_override("panel", _slot_box(ready))
 	badge.add_theme_stylebox_override("panel", _badge_box(ready))
 	badge.get_node(^"Key").add_theme_color_override("font_color", UITokens.ON_ACCENT if ready else UITokens.TEXT_PRIMARY)

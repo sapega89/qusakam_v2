@@ -17,10 +17,11 @@ class_name EnemySpawnPoint
 ## Ресурс с кастомными настройками врага (опционально)
 @export var custom_enemy_stats: Resource = null
 
+## Шляхи, а не preload: інакше кожен скрипт, що згадує EnemySpawnPoint, компілює сцени ворогів (і їхні автолоади).
 const ENEMY_SCENES := {
-	"melee": preload("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"),
-	"tank": preload("res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn"),
-	"fast": preload("res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn"),
+	"melee": "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn",
+	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
+	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
 }
 
 ## Спавнить только один раз (если true, после смерти врага больше не спавнится)
@@ -77,7 +78,7 @@ func spawn_enemy() -> Node:
 		return null
 
 	# Арт за типом (D208): tank — черепаха, fast — багатоніжка; melee — базова сцена.
-	var enemy_scene: PackedScene = ENEMY_SCENES[enemy_type]
+	var enemy_scene: PackedScene = load(ENEMY_SCENES[enemy_type])
 
 	# Создаём экземпляр
 	var enemy = enemy_scene.instantiate()

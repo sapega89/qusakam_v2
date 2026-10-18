@@ -81,7 +81,7 @@ _data = {
 
 [node name="Sprite2D" parent="." index="2"]
 texture = ExtResource("2_sheet")
-offset = Vector2(0, -25)
+offset = Vector2(0, -17)
 hframes = 6
 vframes = 4
 frame = 0

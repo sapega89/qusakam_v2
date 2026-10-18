@@ -112,6 +112,9 @@ func _ready() -> void:
 ## а B у грі — «назад», не меню.
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(&"game_menu"):
+		# Esc — це й ui_cancel модалки: поки модалка відкрита, вона сама його обробить.
+		if ServiceLocator.get_ui_manager().get_modal_layer().active_modal != null:
+			return
 		var menu_manager: MenuManager = ServiceLocator.get_menu_manager()
 		# Меню вже відкрите — закриття обробить game_menu.gd.
 		if menu_manager.is_menu_open():
@@ -168,6 +171,9 @@ func _initialize_save_and_room() -> void:
 	# Clear the meta after reading it
 	if get_tree().has_meta("start_new_game"):
 		get_tree().remove_meta("start_new_game")
+	# Миттєвий стан минулої гри живе в автолоадах — нова сесія (нова гра чи завантаження) починає з чистого.
+	ServiceLocator.get_companion_manager().reset()
+	ServiceLocator.get_skill_manager().clear_cooldowns()
 
 	# Проверяем, есть ли указанный путь к сохранению (из меню загрузки)
 	var save_file_path = _get_current_save_path()

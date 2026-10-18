@@ -43,11 +43,12 @@ func _ready() -> void:
 
 ## Увесь виступ: забіг → удар → відхід. [param hero] — гравець.
 func start(hero: Node2D) -> void:
-	_dir = hero.last_direction
+	var target := _nearest_enemy(hero)
+	# Б'є в бік ворога, а не туди, куди дивиться герой: інакше ворог за спиною — удар у порожнечу.
+	_dir = hero.last_direction if target == null else (1 if target.global_position.x >= hero.global_position.x else -1)
 	var camera := get_viewport().get_camera_2d()
 	var half_view: float = get_viewport_rect().size.x / camera.zoom.x / 2.0
 	global_position = Vector2(camera.get_screen_center_position().x - _dir * (half_view + 40.0), hero.global_position.y + HERO_FEET)
-	var target := _nearest_enemy(hero)
 	var stand_x: float = hero.global_position.x + _dir * 30.0
 	if mode == Mode.NEAREST and target != null:
 		stand_x = target.global_position.x - _dir * 30.0

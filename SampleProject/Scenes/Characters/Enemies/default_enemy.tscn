@@ -103,6 +103,7 @@ shape = SubResource("RectangleShape2D_enemy_collision")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1343955624]
 texture_filter = 1
+offset = Vector2(0, -5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("5_enemy_sprite")
 region_enabled = true
