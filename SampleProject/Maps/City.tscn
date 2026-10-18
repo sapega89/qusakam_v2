@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="5_trigger"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/blacksmith.tscn" id="6_blacksmith"]
 [ext_resource type="AudioStream" uid="uid://cgp3gqjbkxc7a" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="music_track"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_mid.tres" id="blur_mid"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -24,6 +25,7 @@ repeat_size = Vector2(864, 0)
 repeat_times = 4
 
 [node name="Sprite" type="Sprite2D" parent="CityFar"]
+material = ExtResource("blur_mid")
 texture_filter = 1
 position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)

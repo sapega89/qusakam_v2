@@ -100,6 +100,7 @@ const FG_PIPES := [[0, 700, 92], [800, 1728, 508], [0, 900, 988]]
 const FG_COLUMNS := [[760, 64, 384], [1350, 480, 864], [920, 960, 1344]]
 ## Силуети переднього плану не суцільно чорні — крізь них трохи видно (як туман глибини).
 const FRONT_TINT := Color(1.6, 1.5, 1.7, 0.82)
+const FRONT_BLUR := "res://SampleProject/Resources/Materials/depth_blur_front.tres"
 
 ## Компаньйони чекають біля своїх тригерів (D230): [id, ступні, дивиться ліворуч].
 ## Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
@@ -290,6 +291,7 @@ func _decorate(room: Node) -> void:
 	for i in FG_PIPES.size():
 		var pipe := _sprite("fg_pipe", Vector2(FG_PIPES[i][0], FG_PIPES[i][2]), Vector2(0, -0.5), 0)
 		pipe.name = "Pipe%d" % (i + 1)
+		pipe.material = load(FRONT_BLUR)  # D233: ближній план розмитий, площина героя різка
 		pipe.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 		pipe.region_enabled = true
 		pipe.region_rect = Rect2(0, 0, (FG_PIPES[i][1] - FG_PIPES[i][0]) / 1.5, 14)
@@ -297,6 +299,7 @@ func _decorate(room: Node) -> void:
 	for i in FG_COLUMNS.size():
 		var column := _sprite("fg_column", Vector2(FG_COLUMNS[i][0], FG_COLUMNS[i][1]), Vector2(-0.5, 0), 0)
 		column.name = "Column%d" % (i + 1)
+		column.material = load(FRONT_BLUR)
 		column.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 		column.region_enabled = true
 		column.region_rect = Rect2(0, 0, 28, (FG_COLUMNS[i][2] - FG_COLUMNS[i][1]) / 1.5)

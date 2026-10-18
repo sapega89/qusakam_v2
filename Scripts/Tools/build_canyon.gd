@@ -21,6 +21,7 @@ const ROOM_HEIGHT := 480.0
 
 ## Ущелина (D228): схема — Scripts/Tools/canyon_gorge.txt (стовпці 0–24, рядки 12–29); тайли Foreground там
 ## прибрано, тверде — у RockCollision, вигляд — картинка gorge.png з x 0, y 384.
+const BLUR := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
 const BACKDROP := "res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn"
 const GORGE_LAYOUT := "res://Scripts/Tools/canyon_gorge.txt"
 const GORGE_ROW0 := 12
@@ -32,7 +33,7 @@ const DEPTH_TOP := 380.0
 const DEPTH_UNDERLAY := Color(0.24, 0.15, 0.12)
 ## Далекі стіни: основа сховалась за лінією плато, трохи холодніші (повітряна перспектива).
 const WALLS_Y := 45.0
-const WALLS_TINT := Color(0.92, 0.92, 0.98)
+const WALLS_TINT := Color(1.04, 1.02, 1.12)
 ## Тіло плато темнішає з глибиною (множення), щоб верхня лінія плато відділялась від маси.
 const PLATEAU_SHADE_RECT := Rect2(800, 416, 1792, 544)
 const PLATEAU_SHADE_BOTTOM := Color(0.55, 0.5, 0.5)
@@ -127,6 +128,7 @@ func _initialize() -> void:
 	walls_sprite.scale = Vector2(1.5, 1.5)
 	walls_sprite.position = Vector2(0, WALLS_Y)
 	walls.modulate = WALLS_TINT
+	walls_sprite.material = load(BLUR % "mid")  # D233: дальній план розмитий
 	walls.add_child(walls_sprite)
 	room.add_child(walls)
 	room.move_child(walls, room.get_node(^"Backdrop").get_index() + 1)
@@ -140,6 +142,7 @@ func _initialize() -> void:
 	depths.repeat_size = Vector2(864, 0)
 	depths.repeat_times = 4
 	var depths_sprite := _sprite("canyon_depths", Vector2(0, DEPTH_TOP))
+	depths_sprite.material = load(BLUR % "near")
 	depths.add_child(depths_sprite)
 	room.add_child(depths)
 	room.move_child(depths, walls.get_index() + 1)
