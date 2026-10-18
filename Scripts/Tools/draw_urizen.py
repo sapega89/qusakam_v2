@@ -141,6 +141,11 @@ def urizen(bob=0, stride=0.0, arm=0.0, glow=0.0, dx=0):
     return c.im
 
 
+def idle_cycle():
+    """Спокій (D230 — чекає в лабораторії): дихання; рука з монетою трохи піднята, монета ледь мерехтить."""
+    return [urizen(bob=[0, 0, -1, -1, 0, 0][i], arm=0.15, glow=[0, 0.1, 0.2, 0.1, 0, 0][i]) for i in range(6)]
+
+
 def walk_cycle():
     return [
         urizen(
@@ -164,4 +169,5 @@ def strike_cycle():
 if __name__ == "__main__":
     sheet(walk_cycle()).save(OUT + "enter.png")
     sheet(strike_cycle()).save(OUT + "strike.png")
+    sheet(idle_cycle()).save(OUT + "idle.png")
     print("drawn", OUT)

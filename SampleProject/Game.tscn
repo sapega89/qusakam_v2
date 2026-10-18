@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c3vb3pwhaablc" path="res://SampleProject/Scenes/UI/health_bar.tscn" id="4_health_bar"]
 [ext_resource type="PackedScene" uid="uid://d2xp8car4k7m" path="res://SampleProject/Scenes/UI/xp_bar.tscn" id="5_xp_bar"]
 [ext_resource type="PackedScene" uid="uid://iohtoyiye7q4" path="res://SampleProject/Scenes/UI/level_up_notification.tscn" id="6_level_up"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/companion_joined_notification.tscn" id="6_companion_joined"]
 [ext_resource type="PackedScene" uid="uid://c01nc0unt3r01" path="res://SampleProject/Scenes/UI/coin_counter.tscn" id="7_coin_counter"]
 [ext_resource type="PackedScene" uid="uid://c0mb4tc0nt3xt" path="res://SampleProject/Scenes/UI/CombatContextDisplay.tscn" id="8_combat_context"]
 [ext_resource type="PackedScene" uid="uid://tut0r14lh1nt" path="res://SampleProject/Scenes/UI/TutorialHintDisplay.tscn" id="9_tutorial_hint"]
@@ -277,6 +278,8 @@ offset_bottom = 85.0
 unique_name_in_owner = true
 z_index = 200
 
+
+[node name="CompanionJoinedNotification" parent="UICanvas" instance=ExtResource("6_companion_joined")]
 [node name="CoinCounter" parent="UICanvas" instance=ExtResource("7_coin_counter")]
 modulate = Color(1, 1, 1, 0)
 visible = false

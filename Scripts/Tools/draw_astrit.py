@@ -203,6 +203,12 @@ def astrit(
     return c.im
 
 
+def idle_cycle():
+    """Спокій (D230 — чекає в лабораторії): дихання, грива ледь віється, книга то вище, то нижче."""
+    return [astrit(bob=[0, 0, -1, -1, 0, 0][i], hair_flow=[0, 1, 1, 0, 0, 0][i], book_lift=[0, 1, 1, 0, 0, 0][i])
+            for i in range(6)]
+
+
 def run_cycle():
     return [
         astrit(
@@ -245,4 +251,5 @@ if __name__ == "__main__":
     run.save(OUT + "enter.png")
     run.save(OUT + "run.png")
     sheet(strike_cycle()).save(OUT + "strike.png")
+    sheet(idle_cycle()).save(OUT + "idle.png")
     print("drawn", OUT)

@@ -100,8 +100,11 @@ func toggle_party(companion_id: String) -> bool:
 ## Лабораторія: щойно поставлено прапорець [param flag] — компаньйон, якого він відкриває, стає в загін, якщо є місце.
 func join_on_unlock(flag: String) -> void:
 	var companion_id: Variant = UNLOCK_FLAGS.find_key(flag)
-	if companion_id != null and not is_in_party(companion_id) and get_party().size() < PARTY_SIZE:
+	if companion_id == null:
+		return
+	if not is_in_party(companion_id) and get_party().size() < PARTY_SIZE:
 		toggle_party(companion_id)
+	EventBus.companion_joined.emit(companion_id)  # D230: сповіщення, навіть якщо загін повний (тоді — у таборі)
 
 
 ## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний у загоні за останнім викликаним, хто готовий.

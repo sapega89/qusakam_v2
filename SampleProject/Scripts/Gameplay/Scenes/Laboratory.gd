@@ -178,6 +178,9 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 			var flag := "lab_companion_0%s_complete" % dialogue_id.right(1)
 			game.set_quest_flag(flag, true)
 			ServiceLocator.get_companion_manager().join_on_unlock(flag)  # D220: у загін, якщо є місце
+			# D230: той, з ким говорили, підбігає до героя й зникає
+			var companion_id: String = CompanionManager.UNLOCK_FLAGS.find_key(flag)
+			get_node("CompanionNPC_%s" % companion_id).join(game.player)
 		"Lab_LimitTest":
 			game.set_quest_flag("lab_limit_test_complete", true)
 		"Laboratory_AfterBoss":

@@ -101,11 +101,26 @@ const FG_COLUMNS := [[760, 64, 384], [1350, 480, 864], [920, 960, 1344]]
 ## Силуети переднього плану не суцільно чорні — крізь них трохи видно (як туман глибини).
 const FRONT_TINT := Color(1.6, 1.5, 1.7, 0.82)
 
+## Компаньйони чекають біля своїх тригерів (D230): [id, ступні, дивиться ліворуч].
+## Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
+const NPC_SCRIPT := "res://SampleProject/Scripts/Gameplay/Characters/Companions/CompanionNPC.gd"
+const COMPANIONS := "res://SampleProject/Assets/Characters/Companions/%s/%s.png"
+const NPCS := [["alisia", Vector2(520, 384), true], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]]
+## Розмір кадру й зсув/масштаб — як у сценах асистів (companion_<id>.tscn, assist_cat.tscn).
+const NPC_LOOK := {
+	"alisia": [128, Vector2(-64, -108), 1.0],
+	"astrit": [64, Vector2(-32, -58), 1.5],
+	"urizen": [64, Vector2(-32, -58), 1.5],
+	"cat": [48, Vector2(-24, -48), 1.0],
+}
+const CAT_AT := Vector2(-40, 0)
+
 
 func _initialize() -> void:
 	var room: Node = load(ROOM).instantiate()
 	_paint(room.get_node(^"TileMap/Foreground"), room.get_node(^"TileMap/Bakcground"))
 	_decorate(room)
+	_add_companions(room)
 	for path in PLACES:
 		var node: Node2D = room.get_node(NodePath(path))
 		node.position = PLACES[path]
@@ -186,6 +201,57 @@ func _columns_layer(bg: TileMapLayer) -> TileMapLayer:
 
 
 ## Темрява, лампи й колби зі світлом, ланцюги, передній план — у вузлі Atmosphere (перебудовується щоразу).
+## Компаньйони-NPC (D230): кадри idle (спокій) і run (біг до героя після розмови); в Алісії — кішка.
+func _add_companions(room: Node) -> void:
+	for child in room.get_children():
+		if child.name.begins_with("CompanionNPC_"):
+			room.remove_child(child)
+			child.free()
+	for npc in NPCS:
+		var node := Node2D.new()
+		node.name = "CompanionNPC_%s" % npc[0]
+		node.set_script(load(NPC_SCRIPT))
+		node.set("companion_id", npc[0])
+		node.position = npc[1]
+		room.add_child(node)
+		node.owner = room
+		var sprite := _npc_sprite(npc[0], "enter", npc[2])
+		sprite.name = "Sprite"
+		node.add_child(sprite)
+		sprite.owner = room
+		if npc[0] == "alisia":
+			var cat := _npc_sprite("cat", "run", npc[2])
+			cat.name = "Cat"
+			cat.position = CAT_AT * (-1.0 if npc[2] else 1.0)
+			node.add_child(cat)
+			cat.owner = room
+
+
+func _npc_sprite(who: String, run_sheet: String, face_left: bool) -> AnimatedSprite2D:
+	var look: Array = NPC_LOOK[who]
+	var frames := SpriteFrames.new()
+	frames.remove_animation(&"default")
+	for anim in [["idle", "idle", 8.0, true], ["run", run_sheet, 16.0, true]]:
+		var texture: Texture2D = load(COMPANIONS % [who, anim[1]])
+		frames.add_animation(anim[0])
+		frames.set_animation_speed(anim[0], anim[2])
+		frames.set_animation_loop(anim[0], anim[3])
+		for i in texture.get_width() / look[0]:
+			var atlas := AtlasTexture.new()
+			atlas.atlas = texture
+			atlas.region = Rect2(i * look[0], 0, look[0], look[0])
+			frames.add_frame(anim[0], atlas)
+	var sprite := AnimatedSprite2D.new()
+	sprite.sprite_frames = frames
+	sprite.animation = &"idle"
+	sprite.centered = false
+	sprite.offset = look[1]
+	sprite.scale = Vector2.ONE * look[2]
+	sprite.flip_h = face_left
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	return sprite
+
+
 func _decorate(room: Node) -> void:
 	var old := room.get_node_or_null(^"Atmosphere")
 	if old:

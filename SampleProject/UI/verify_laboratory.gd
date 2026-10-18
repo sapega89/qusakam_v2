@@ -64,10 +64,17 @@ func _initialize() -> void:
 	var beats := [["StateChangeTrigger_Companion01", "COMPANION_01", "lab_companion_01_complete"],
 			["StateChangeTrigger_Companion02", "COMPANION_02", "lab_companion_02_complete"],
 			["StateChangeTrigger_Companion03", "COMPANION_03", "lab_companion_03_complete"]]
-	for b in beats:
+	var notice: Control = game.find_child("CompanionJoinedNotification", true, false)
+	for i in beats.size():
+		var b: Array = beats[i]
+		var npc_name: String = "CompanionNPC_%s" % ["alisia", "astrit", "urizen"][i]
+		ck(lab.has_node(npc_name), "%s waits by the trigger (D230)" % npc_name)
 		await _walk_to(game, dm, lab.get_node(b[0]))
 		ck(game.get_quest_flag(b[2]) and lab.get_current_state_name() == b[1],
 				"%s → %s, %s set (%s)" % [b[0], b[1], b[2], lab.get_current_state_name()])
+		ck(notice.visible and notice.get_node("%NameLabel").text.ends_with("joined the party"), "the 'joined the party' notice shows (%s)" % notice.get_node("%NameLabel").text)
+		await create_timer(1.0).timeout
+		ck(not lab.has_node(npc_name), "%s ran to the hero and left after the talk" % npc_name)
 	ck(_alive(lab).is_empty(), "no enemies before the limit test")
 
 	print("[3] Limit test → boss fight → after boss")
