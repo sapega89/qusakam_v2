@@ -17,6 +17,12 @@ class_name EnemySpawnPoint
 ## Ресурс с кастомными настройками врага (опционально)
 @export var custom_enemy_stats: Resource = null
 
+const ENEMY_SCENES := {
+	"melee": preload("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"),
+	"tank": preload("res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn"),
+	"fast": preload("res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn"),
+}
+
 ## Спавнить только один раз (если true, после смерти врага больше не спавнится)
 @export var spawn_once: bool = true
 
@@ -70,11 +76,8 @@ func spawn_enemy() -> Node:
 		DebugLogger.warning("EnemySpawnPoint: Spawn point %s already spawned and is set to spawn_once" % spawn_id, "EnemySpawnPoint")
 		return null
 
-	# Загружаем сцену врага
-	var enemy_scene = load("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn")
-	if not enemy_scene:
-		DebugLogger.error("EnemySpawnPoint: Failed to load enemy scene", "EnemySpawnPoint")
-		return null
+	# Арт за типом (D208): tank — черепаха, fast — багатоніжка; melee — базова сцена.
+	var enemy_scene: PackedScene = ENEMY_SCENES[enemy_type]
 
 	# Создаём экземпляр
 	var enemy = enemy_scene.instantiate()

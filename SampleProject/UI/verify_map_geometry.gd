@@ -8,7 +8,8 @@ extends SceneTree
 ##   5. Ворог з'являється на підлозі під своєю точкою, а не в повітрі (B61).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_map_geometry.gd
 
-const SPAWN_POINT := preload("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
+## Не const preload: скрипт тягне сцени ворогів, а їм потрібні автолоади, яких під час компіляції тесту ще немає.
+var spawn_point_script: Script
 const MAP_DATA := "res://SampleProject/Maps/MapData.txt"
 ## Підлога по обидва боки проходу може різнитися не більше ніж на тайл.
 const FLOOR_TOLERANCE := 32.0
@@ -28,6 +29,7 @@ func ck(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	await process_frame
+	spawn_point_script = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 	cell = root.get_node("MetSys").settings.in_game_cell_size
 	var enemy: Node2D = load(ENEMY_SCENE).instantiate()
 	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
@@ -118,7 +120,7 @@ func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
 
 	# 3. Вузли в межах клітинок кімнати.
 	for n in room.find_children("*", "Node2D", true, false):
-		if not (n is Area2D or n is Marker2D or n.get_script() == SPAWN_POINT):
+		if not (n is Area2D or n is Marker2D or n.get_script() == spawn_point_script):
 			continue
 		var p: Vector2 = n.position
 		var parent := n.get_parent()
@@ -131,7 +133,7 @@ func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
 				inside = true
 		ck(inside, "%s: %s inside the room (%.0f, %.0f)" % [name, n.name, p.x, p.y])
 		# 5. Ворог стоїть на підлозі під точкою.
-		if n.get_script() == SPAWN_POINT:
+		if n.get_script() == spawn_point_script:
 			var floor_y = _floor_below(fg, tile, p)
 			var feet := p.y + enemy_half_height
 			ck(floor_y != null and feet <= floor_y and feet >= floor_y - SPAWN_TOLERANCE,
