@@ -22,6 +22,14 @@ func _drain(dm: Node) -> void:
 		if not dm.is_dialogue_active():
 			return
 
+## Слот асисту на хотбарі (зріз 4): видно? чий портрет? залишок кулдауну?
+func _hud() -> Array:
+	var bind: Control = get_first_node_in_group(&"skill_hotbar").get_node(^"%SlotsRow/AssistBind")
+	var portrait: Texture2D = bind.get_node(^"Slot/Portrait").texture
+	var overlay: Label = bind.get_node(^"Slot/Cooldown")
+	var who := "" if portrait == null else portrait.resource_path.get_base_dir().get_file()
+	return [bind.is_visible_in_tree(), who, overlay.text if overlay.visible else ""]
+
 func _actors() -> Array:
 	return get_nodes_in_group(&"companions")
 
@@ -55,11 +63,15 @@ func _initialize() -> void:
 
 	print("[1] Nobody unlocked → the button does nothing")
 	ck(cm.get_unlocked().is_empty() and cm.call_next() == "" and _actors().is_empty(), "no companions, no assist")
+	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
+	ck(not _hud()[0], "no assist slot on the hotbar")
 
 	print("[2] The Laboratory flags unlock them, in roster order")
 	game.set_quest_flag("lab_companion_02_complete", true)
 	game.set_quest_flag("lab_companion_01_complete", true)
 	ck(cm.get_unlocked() == ["alisia", "astrit"], "Алісия and Астрит unlocked (%s)" % [cm.get_unlocked()])
+	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
+	ck(_hud() == [true, "alisia", ""], "the hotbar shows Алісия ready (%s)" % [_hud()])
 
 	print("[3] Алісия: her cat claws the nearest enemy 3 times")
 	var hp: int = near.current_health
@@ -74,6 +86,9 @@ func _initialize() -> void:
 	await create_timer(2.0).timeout
 	ck(near.current_health == hp - 40, "Астрит hit for 40 (%d → %d)" % [hp, near.current_health])
 	ck(cm.call_next() == "", "both on cooldown → nobody")
+	for i in 2: await process_frame
+	var hud := _hud()
+	ck(hud[0] and hud[1] == "alisia" and hud[2].ends_with("s"), "the hotbar shows Алісия, soonest back, with seconds left (%s)" % [hud])
 
 	print("[5] Уризен: a coin smite on every enemy in front, with a stun")
 	game.set_quest_flag("lab_companion_03_complete", true)
@@ -97,6 +112,8 @@ func _initialize() -> void:
 
 	print("[7] The City Gates guard: offered for the fight, his thrust ends it")
 	cm.offer_guard(true)
+	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
+	ck(_hud()[1] == "guard", "the hotbar shows the guard while he is offered (%s)" % [_hud()])
 	ck(cm.call_next() == "guard" and not cm.is_guard_offered(), "the button calls the guard once")
 	await create_timer(2.0).timeout
 	ck(enemies.all(func(e: Node) -> bool: return not e.is_alive()), "every enemy in front is down")

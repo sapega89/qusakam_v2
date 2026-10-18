@@ -156,6 +156,7 @@ func _initialize() -> void:
 	var HotbarScene = load("res://SampleProject/UI/Components/skill_hotbar.tscn")
 	var hotbar: Control = HotbarScene.instantiate()
 	root.add_child(hotbar)
+	hotbar.set_process(false)  # слот асисту читає прапорці Game, а тут хотбар без гри
 	for i in 3: await process_frame
 	ck(hotbar._slots.size() == 4, "hotbar renders 4 slots")
 	hotbar.refresh()

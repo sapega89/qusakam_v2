@@ -1,11 +1,11 @@
 ---
 type: plan
-status: planned
+status: done
 ---
 
 # Companion assists — plan
 
-**Slices 1–3 built 2026-10-18 (D213)** — guard at City Gates, Алісия / Астрит / Уризен from the Laboratory; slice 4 (HUD readiness) open. D201, D209.
+**All four slices built 2026-10-18 (D213)** — guard at City Gates, Алісия / Астрит / Уризен from the Laboratory, HUD readiness slot. D201, D209.
 Figma: no design exists (HUD readiness indicator has no frame — Sapega's call, D209).
 
 ## What exists today
@@ -54,6 +54,7 @@ Figma: no design exists (HUD readiness indicator has no frame — Sapega's call,
 - lab dialogues named (Sapega's lines).
 ### Slice 4 — HUD readiness
 - beside the hotbar, same shared slot style as the weapon bind (D202); portrait = the companion sprite.
+- **Built:** `skill_hotbar.gd` `AssistBind` (right of the skills) shows `CompanionManager.peek_next()`; all resting → `get_soonest_on_cooldown()` dimmed with seconds left; nobody unlocked → no slot. Portraits: `Assets/Characters/Companions/<id>/portrait.tres` (top of the first enter frame). Checked in `verify_companions`.
 
 ## Order and dependencies
 `1 → 2 → 3 → 4`. Slice 1 needs nothing; 2–4 need the art (Ludo) — slice 3 also decision 1.

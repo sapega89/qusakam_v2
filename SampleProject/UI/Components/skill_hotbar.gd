@@ -11,6 +11,8 @@ class_name UISkillHotbar
 
 const SLOT_SIZE := 48
 const ICON_SIZE := 28
+## Портрет компаньйона — верх першого кадру його забігу (AtlasTexture поруч зі спрайтами).
+const PORTRAIT_PATH := "res://SampleProject/Assets/Characters/Companions/%s/portrait.tres"
 
 @onready var _slots_row: HBoxContainer = %SlotsRow
 
@@ -66,6 +68,7 @@ func _process(_delta: float) -> void:
 			continue
 		if _skill_manager.is_skill_on_cooldown(skill_id):
 			_update_slot(i)
+	_update_assist()
 
 
 func _build_slots() -> void:
@@ -122,6 +125,7 @@ func _build_slots() -> void:
 
 		_slots_row.add_child(bind)
 		_slots.append(bind)
+	_build_assist_bind()
 
 
 ## Зброя в руці (D202) — ліворуч від навичок: назва й клавіша перемикання з InputMap.
@@ -154,6 +158,67 @@ func _build_weapon_bind() -> void:
 	badge.add_child(key)
 	bind.add_child(badge)
 	_slots_row.add_child(bind)
+
+
+## Асист компаньйона (D209) — праворуч від навичок: портрет того, хто вийде на кнопку асисту;
+## коли всі на кулдауні — того, хто звільниться першим, із залишком. Нікого не відкрито — слота немає.
+func _build_assist_bind() -> void:
+	var bind := VBoxContainer.new()
+	bind.name = "AssistBind"
+	bind.add_theme_constant_override("separation", UITokens.SPACE_XS)
+	var slot := Panel.new()
+	slot.name = "Slot"
+	slot.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
+	var portrait := TextureRect.new()
+	portrait.name = "Portrait"
+	portrait.set_anchors_preset(Control.PRESET_FULL_RECT)
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slot.add_child(portrait)
+	var overlay := Label.new()
+	overlay.name = "Cooldown"
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	overlay.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	overlay.theme_type_variation = &"CooldownLabel"
+	overlay.add_theme_stylebox_override("normal", _overlay_box())
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	slot.add_child(overlay)
+	bind.add_child(slot)
+	var badge := PanelContainer.new()
+	badge.name = "Badge"
+	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var key := Label.new()
+	key.name = "Key"
+	key.theme_type_variation = &"BindBadge"
+	key.text = _key_for(&"assist")
+	badge.add_child(key)
+	bind.add_child(badge)
+	_slots_row.add_child(bind)
+
+
+## Стан бере CompanionManager; панель лише показує. Лише з _process: хто відкритий — це прапорці
+## Game, а хотбар готовий раніше за Game (він його дитина).
+func _update_assist() -> void:
+	var cm := ServiceLocator.get_companion_manager()
+	var bind: Control = _slots_row.get_node(^"AssistBind")
+	var ready_id: String = cm.peek_next()
+	var id: String = ready_id if ready_id != "" else cm.get_soonest_on_cooldown()
+	bind.visible = id != ""
+	if id == "":
+		return
+	var slot: Panel = bind.get_node(^"Slot")
+	var overlay: Label = slot.get_node(^"Cooldown")
+	var badge: PanelContainer = bind.get_node(^"Badge")
+	slot.get_node(^"Portrait").texture = load(PORTRAIT_PATH % id)
+	overlay.visible = ready_id == ""
+	overlay.text = "%ds" % ceili(cm.get_remaining_cooldown(id))
+	var ready := ready_id != ""
+	slot.add_theme_stylebox_override("panel", _slot_box(ready))
+	badge.add_theme_stylebox_override("panel", _badge_box(ready))
+	badge.get_node(^"Key").add_theme_color_override("font_color", UITokens.ON_ACCENT if ready else UITokens.TEXT_PRIMARY)
 
 
 ## Перша клавіша дії з InputMap — бейдж показує справжнє призначення, а не вписане.

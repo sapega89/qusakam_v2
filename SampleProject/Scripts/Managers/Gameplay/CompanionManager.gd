@@ -73,22 +73,37 @@ func is_guard_offered() -> bool:
 ## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний за останнім викликаним, хто готовий.
 ## Повертає id того, хто вийшов, або "" — нікого.
 func call_next() -> String:
-	if _guard_offered:
+	var id := peek_next()
+	if id == "guard":
 		_guard_offered = false
-		_send("guard")
+	elif id != "":
+		_cooldowns[id] = COOLDOWN
+		_last_called = id
+	if id != "":
+		_send(id)
+	return id
+
+
+## Хто вийде на наступне натискання (для HUD), або "" — нікого готового.
+func peek_next() -> String:
+	if _guard_offered:
 		return "guard"
 	var unlocked := get_unlocked()
-	if unlocked.is_empty():
-		return ""
 	var start := unlocked.find(_last_called) + 1
 	for i in unlocked.size():
 		var id: String = unlocked[(start + i) % unlocked.size()]
 		if is_ready(id):
-			_cooldowns[id] = COOLDOWN
-			_last_called = id
-			_send(id)
 			return id
 	return ""
+
+
+## Хто з тих, що на кулдауні, звільниться першим (для HUD), або "".
+func get_soonest_on_cooldown() -> String:
+	var best := ""
+	for id in _cooldowns:
+		if best == "" or _cooldowns[id] < _cooldowns[best]:
+			best = id
+	return best
 
 
 func clear_cooldowns() -> void:
