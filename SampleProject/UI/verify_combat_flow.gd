@@ -105,6 +105,17 @@ func _initialize() -> void:
 	await create_timer(0.6).timeout
 	ck(hits.is_empty() and target.current_health == hp_before, "a miss deals no damage (events %s)" % [hits])
 
+	print("[1e] An attack in the air lands (it used to be cancelled by Jump / Fall)")
+	await create_timer(0.3).timeout
+	hits.clear()
+	game.player.global_position = target.global_position + Vector2(-26, -6)
+	game.player.velocity = Vector2(0, -150)
+	await physics_frame
+	game.player.combat.perform_attack(1)
+	await create_timer(0.6).timeout
+	ck(hits == [dmg], "the airborne swing hits once for %d (got %s)" % [dmg, hits])
+	target.heal_damage(dmg)  # далі цей ворог потрібен з тим самим HP
+
 	print("[1c] The hit is the menu's Phys. Atk. and grows with the weapon (B62, D199)")
 	var gm: Node = sl.get_game_manager()
 	ck(dmg == gm.calculate_physical_damage(), "unarmed hit %d = Phys. Atk. %d" % [dmg, gm.calculate_physical_damage()])
@@ -209,13 +220,29 @@ func _initialize() -> void:
 	await create_timer(swing).timeout
 	ck(hits_p == [int(attacker.damage)], "the swing hits the player in front once (got %s)" % [hits_p])
 
+	# Фізика ворогів вимкнена — крок AI (process_ai) робимо самі: під час замаху він лише розвертає.
+	# Відкидання з попередніх кроків без фізики не спливає — скидаємо, інакше process_ai чекає на нього.
+	attacker.enemy_logic.knockback_left = 0.0
 	await create_timer(0.6).timeout
 	hits_p.clear()
 	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
 	await create_timer(0.2).timeout
-	attacker.enemy_logic.perform_attack()  # last_direction = 1: гравець за спиною
+	attacker.enemy_logic.last_direction = 1
+	attacker.enemy_logic.perform_attack()  # гравець за спиною на початку замаху
+	attacker.enemy_logic.process_ai(0.0)
 	await create_timer(swing).timeout
-	ck(hits_p.is_empty(), "the player behind the enemy is not hit (got %s)" % [hits_p])
+	ck(hits_p.size() == 1, "the enemy turns during the wind-up and hits the player behind (got %s)" % [hits_p])
+
+	await create_timer(0.6).timeout
+	hits_p.clear()
+	game.player.global_position = Vector2(attacker.global_position.x + 40, game.player.global_position.y)
+	attacker.enemy_logic.last_direction = 1
+	attacker.enemy_logic.perform_attack()
+	await create_timer(attacker.attack_windup * (attacker.enemy_logic.TRACK_PART + 0.1)).timeout
+	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
+	attacker.enemy_logic.process_ai(0.0)
+	await create_timer(swing).timeout
+	ck(hits_p.is_empty(), "late in the wind-up the swing is committed: getting behind dodges it (got %s)" % [hits_p])
 
 	game.player.set_physics_process(false)
 	game.player.global_position = attacker.global_position + Vector2(40, -90)
@@ -254,7 +281,8 @@ func _initialize() -> void:
 	ck(not pl.combat.is_attacking, "no attack mid-roll")
 	await create_timer(mover.roll_duration + 0.1).timeout
 	ck(not mover.is_rolling() and not pl.is_invulnerable, "the roll ends, invulnerability with it")
-	ck(absf(pl.global_position.x - x0 - mover.roll_distance) < 12.0, "rolled ~%.0f px right (%.1f)" % [mover.roll_distance, pl.global_position.x - x0])
+	# Допуск — два фізичні кадри перекату.
+	ck(absf(pl.global_position.x - x0 - mover.roll_distance) < mover.roll_distance / mover.roll_duration / 30.0, "rolled ~%.0f px right (%.1f)" % [mover.roll_distance, pl.global_position.x - x0])
 	pl._unhandled_input(dodge)
 	ck(not mover.is_rolling(), "the cooldown blocks an immediate second roll")
 	await create_timer(mover.roll_cooldown).timeout
@@ -287,6 +315,14 @@ func _initialize() -> void:
 	tank.knockback(60.0)  # як удар булавою посеред замаху
 	await create_timer(0.9).timeout
 	ck(type_hits.is_empty(), "a heavy hit (knockback) breaks the tank's swing (%s)" % [type_hits])
+	var tank_hp: int = tank.current_health
+	tank.enemy_logic.last_direction = 1 if pl.global_position.x > tank.global_position.x else -1
+	tank.take_damage(20, pl)
+	ck(tank.current_health == tank_hp - 6, "the tank's shell: a hit from the front deals 30 %% (%d → %d)" % [tank_hp, tank.current_health])
+	tank_hp = tank.current_health
+	tank.enemy_logic.last_direction *= -1
+	tank.take_damage(20, pl)
+	ck(tank.current_health == tank_hp - 20, "from behind, full damage (%d → %d)" % [tank_hp, tank.current_health])
 	tank.global_position.x = pl.global_position.x - 400
 	var fast = enemies.filter(func(e: Node) -> bool: return e.enemy_stats.enemy_type == "fast")[0]
 	fast.global_position = Vector2(pl.global_position.x + 110, fast.global_position.y)

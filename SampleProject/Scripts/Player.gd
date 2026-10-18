@@ -122,28 +122,9 @@ func _physics_process(delta: float) -> void:
 	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
 	# чи клік уже спожив елемент інтерфейсу.
 
-	# Не меняем анимацию во время атаки (кроме важных состояний Fall/Jump)
+	# Удар доходить до кінця і в повітрі (раніше стрибок/падіння скасовували його — у стрибку шкоди не було).
 	if combat.is_attacking and animation == &"Attack":
-		# Если атака активна, но нужно переключиться на важное состояние (Fall, Jump)
-		# - разрешаем прерывание атаки для этих состояний
-		new_animation = &"Idle"
-		if velocity.y < 0:
-			new_animation = &"Jump"
-		elif velocity.y >= 0 and not is_on_floor():
-			new_animation = &"Fall"
-
-		# Прерываем атаку только для важных состояний
-		if new_animation == &"Fall" or new_animation == &"Jump":
-			combat.is_attacking = false
-			combat.damage_applier.disable_damage()
-			combat.hitbox.monitoring = false
-			combat.hitbox.monitorable = false
-			animation = new_animation
-			if new_animation == &"Jump":
-				mover.jump_direction = last_direction
-			$AnimationPlayer.play(new_animation)
-			_update_facing(new_animation)
-		# Если атака активна и не нужно переключаться на Fall/Jump - не меняем анимацию
+		mover.jump_direction = last_direction
 		return
 
 	# Определяем новую анимацию (можем прервать текущую анимацию, если нужно)

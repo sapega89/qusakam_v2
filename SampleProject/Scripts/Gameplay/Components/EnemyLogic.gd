@@ -54,6 +54,10 @@ var last_attack_time: float = 0.0
 var attack_cooldown: float = 1.5
 ## Іде замах або удар (D198): ворог стоїть, рішень не приймає.
 var is_attacking: bool = false
+## Іде саме замах (ще не удар): ворог розвертається за героєм, тож від удару не втекти, просто ступивши за спину.
+var winding_up: bool = false
+## Яку частку замаху ворог ще розвертається (мок).
+const TRACK_PART := 0.6
 
 ## Відкидання (D203): за KNOCKBACK_TIME ворог проїжджає задану відстань, AI чекає.
 const KNOCKBACK_TIME := 0.15
@@ -154,14 +158,16 @@ func process_ai(delta: float):
 		velocity.x = 0
 		return
 
-	# Атака вже почалась — доводимо її до кінця на місці
-	if is_attacking:
-		velocity.x = 0
-		return
-
 	# Якщо гравець не знайдений, намагаємося знайти його через GameGroups
 	if not player or not is_instance_valid(player):
 		player = GameGroups.get_player()
+
+	# Атака вже почалась — доводимо її до кінця на місці
+	if is_attacking:
+		velocity.x = 0
+		if winding_up:
+			_face_player()
+		return
 
 	# Основний AI цикл
 	match current_state:
@@ -355,12 +361,17 @@ func perform_attack():
 	"""Замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
 	is_attacking = true
 	attack_broken = false
-	var direction := last_direction if last_direction != 0 else 1
+	winding_up = true
 	attack_started.emit()
 	EventBus.attack_started.emit(enemy, player)
 
-	# Замах: гравець бачить attack і встигає відійти або вдарити першим
-	await get_tree().create_timer(enemy.attack_windup).timeout
+	# Замах: перші TRACK_PART ворог стежить за героєм, далі напрямок зафіксовано — перекат за спину
+	# саме тоді рятує, а просто відійти на крок — ні.
+	await get_tree().create_timer(enemy.attack_windup * TRACK_PART).timeout
+	winding_up = false
+	await get_tree().create_timer(enemy.attack_windup * (1.0 - TRACK_PART)).timeout
+	# Б'є туди, куди дивиться наприкінці замаху (розвертався за героєм)
+	var direction := last_direction if last_direction != 0 else 1
 	# Оглушили (якщо без броні) чи збили важким ударом посеред замаху — удару немає (D207, D208)
 	if not enemy.is_dead and stun_left <= 0.0 and not attack_broken:
 		enemy.start_attack(direction)
@@ -372,6 +383,15 @@ func perform_attack():
 	is_attacking = false
 	attack_ended.emit()
 	_decide_after_attack()
+
+func _face_player() -> void:
+	if not player or not is_instance_valid(player):
+		return
+	var dx: float = player.global_position.x - enemy.global_position.x
+	var dir := 1 if dx > 0 else -1
+	if absf(dx) > 0.1 and dir != last_direction:
+		direction_changed.emit(dir)
+		last_direction = dir
 
 func on_player_detected(player_node: Node):
 	"""Обробляє виявлення гравця"""

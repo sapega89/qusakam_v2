@@ -51,6 +51,7 @@ var attack_active_time := 0.2
 ## D208: ривок під час удару (px) і броня від оглушення під час замаху.
 var lunge := 0.0
 var super_armor := false
+var front_damage := 1.0
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -120,6 +121,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 	attack_active_time = stats.attack_active_time
 	lunge = stats.lunge
 	super_armor = stats.super_armor
+	front_damage = stats.front_damage
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range
@@ -194,11 +196,8 @@ func _initialize_health_bar():
 	canvas_layer.add_child(health_bar)
 
 	# Настраиваем HP бар для этого врага
+	# Схована до першого ушкодження (HealthBar._configure_enemy_bar)
 	health_bar.setup_for_entity(self, "Enemy")
-
-	# HP бар изначально скрыт (появится при получении урона)
-	health_bar.visible = true  # Для тестирования - видим сразу
-	health_bar.hp_bar_visible = true
 
 func _on_logic_state_changed(new_state: EnemyLogic.AIState):
 	"""Обробляє зміну стану з EnemyLogic"""
@@ -549,6 +548,13 @@ func weapon():
 
 ## Удар (D198): хітбокс перед ворогом у бік [param direction] (±1) живий, доки не end_attack().
 ## Ушкодження — через DamageApplier хітбокса, як у гравця.
+## Удар спереду по панцирю (tank) — front_damage від шкоди. Без джерела (підпал) — повна.
+func take_damage(amount: int, source: Node = null) -> void:
+	var facing := enemy_logic.last_direction
+	if source is Node2D and front_damage < 1.0 and facing != 0 and signf(source.global_position.x - global_position.x) == facing:
+		amount = maxi(1, roundi(amount * front_damage))
+	super.take_damage(amount, source)
+
 func start_attack(direction: int) -> void:
 	hitbox.position.x = direction * attack_range / 2.0
 	hitbox_damage.update_damage()

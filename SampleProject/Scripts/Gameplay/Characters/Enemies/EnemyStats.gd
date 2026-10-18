@@ -19,6 +19,8 @@ class_name EnemyStats
 ## D208: ривок уперед під час удару, px (fast); броня — оглушення не зриває замах (tank).
 @export var lunge: float = 0.0
 @export var super_armor: bool = false
+## Множник шкоди від удару спереду (tank: панцир, бити треба зі спини після перекату).
+@export var front_damage: float = 1.0
 
 @export_group("Detection")
 @export var detection_range: float = 300.0

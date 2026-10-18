@@ -108,8 +108,8 @@ func _configure_enemy_bar():
 	auto_hide = true
 	top_level = true
 	z_index = 100
-	custom_minimum_size = Vector2(150, 20)
-	size = Vector2(150, 20)
+	visible = false  # з'являється з першим ушкодженням (update_health_bar)
+	hp_bar_visible = false
 
 	# Create auto-hide timer
 	hide_timer = Timer.new()
@@ -138,14 +138,9 @@ func _update_follow_position():
 	var enemy_pos = target_entity.global_position
 
 	# Над головою ворога, по центру. Світ → екран через canvas transform: враховує zoom камери (D170).
-	var hp_bar_width = size.x if size.x > 0 else 150.0
+	# Розмір — у сцені смужки.
 	var anchor: Vector2 = get_viewport().get_canvas_transform() * (enemy_pos + Vector2(offset_x, offset_y))
-	global_position = anchor - Vector2(hp_bar_width / 2.0, 0)
-
-	# Ensure size is correct
-	if size == Vector2.ZERO or size.x > 200:
-		size = Vector2(150, 20)
-		custom_minimum_size = Vector2(150, 20)
+	global_position = anchor - Vector2(size.x / 2.0, 0)
 
 func setup_for_entity(entity: CombatBody2D, name_param: String = ""):
 	"""Настройка HP бара для конкретной сущности"""
@@ -160,8 +155,6 @@ func setup_for_entity(entity: CombatBody2D, name_param: String = ""):
 	# For ENEMY type, position above entity
 	if bar_type == HealthBarType.ENEMY and target_entity:
 		_update_follow_position()
-		visible = true
-		hp_bar_visible = true
 
 	# Инициализируем значения
 	initialize_health_values()

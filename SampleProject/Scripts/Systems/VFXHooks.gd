@@ -22,6 +22,9 @@ const HEAVY_SCALE := 1.6
 const HEAVY_HITSTOP := 0.07
 const HEAVY_SHAKE := 5.0
 const HEAVY_SHAKE_TIME := 0.15
+## Звуки бою з паку Brackeys (CC0, assets/brackeys_platformer_assets): влучання по ворогу, удар по герою.
+const SFX_HIT := "res://assets/brackeys_platformer_assets/sounds/tap.wav"
+const SFX_HURT := "res://assets/brackeys_platformer_assets/sounds/hurt.wav"
 
 func _init() -> void:
 	print("🔧 VFXHooks: _init() called - VFXHooks instance created!")
@@ -95,6 +98,8 @@ func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
 	var sprite: CanvasItem = target.get_node(^"Sprite2D")
 	sprite.self_modulate = HURT_FLASH
 	target.create_tween().tween_property(sprite, ^"self_modulate", Color.WHITE, HURT_FLASH_TIME)
+	if target.is_in_group(GameGroups.PLAYER):
+		AudioManager.play_sfx_path(SFX_HURT)
 
 
 ## Влучання героя у ворога: ефект на краю тіла цілі з боку удару. damage_dealt приходить лише
@@ -112,6 +117,7 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	target.get_parent().add_child(impact)
 	impact.global_position = body.global_position + Vector2(side * half_width, 0)
 	impact.set_direction(-int(side))
+	AudioManager.play_sfx_path(SFX_HIT)
 	if heavy:
 		impact.scale = Vector2.ONE * HEAVY_SCALE
 		ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP)
