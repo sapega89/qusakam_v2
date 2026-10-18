@@ -28,6 +28,7 @@ var player_state = {
 	"class_id": "champion",
 	"subclass_id": "paladin",
 	"character_id": GameSettings.DEFAULT_CHARACTER_ID,
+	"weapon_in_hand": "",  # D202: слот зброї в руці, "" — голі руки
 	"equipment": {
 		"sword": null,
 		"polearm": null,
@@ -116,6 +117,7 @@ func reset_player_state():
 		"class_id": "champion",
 		"subclass_id": "paladin",
 		"character_id": GameSettings.DEFAULT_CHARACTER_ID,
+		"weapon_in_hand": "",  # D202: слот зброї в руці, "" — голі руки
 		"equipment": {
 			"sword": null,
 			"polearm": null,

@@ -92,13 +92,20 @@ func _initialize() -> void:
 	print("[2] Player data is per slot (Q4)")
 	ck(ss.get_player_data_path(1) != ss.get_player_data_path(2), "slots have distinct player-data files")
 	ss.set_current_slot(2)
+	var ps_before: Dictionary = sl.get_game_manager().player_state
+	ps_before.equipment.mace = {"id": "iron_mace", "name": "Iron Mace", "icon": ""}
+	ps_before.weapon_in_hand = "mace"  # D202: зброя в руці переживає сейв
 	ck(ss.save_player_data(), "save_player_data() succeeds")
 	ck(FileAccess.file_exists(ss.get_player_data_path(2)), "slot 2 player data written")
 	ck(not FileAccess.file_exists(ss.get_player_data_path(1)), "slot 1 untouched")
 	# B55: збережений герой — Кусакам (player_3), і після завантаження теж.
 	var ps: Dictionary = sl.get_game_manager().player_state
 	ps.character_id = "overwritten_before_load"
+	ps.weapon_in_hand = ""
 	ck(ss.load_player_data() and ps.character_id == "player_3", "save round trip keeps player_3 (%s)" % ps.character_id)
+	ck(ps.weapon_in_hand == "mace", "save round trip keeps the weapon in hand (%s)" % ps.weapon_in_hand)
+	ps.weapon_in_hand = ""
+	ps.equipment.mace = null
 	ck(ss.save_dir == TEST_DIR, "tests write only to %s" % TEST_DIR)
 
 	print("[3] Slot summary carries only real data (Q3)")

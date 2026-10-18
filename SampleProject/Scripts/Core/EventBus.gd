@@ -271,6 +271,10 @@ signal equipment_unequip_requested(character_id: String, slot_id: String)
 @warning_ignore("unused_signal")
 signal equipment_unequipped(character_id: String, slot_id: String)
 
+## Зброя в руці змінилась (D202): слот зброї або "" — голі руки.
+@warning_ignore("unused_signal")
+signal weapon_in_hand_changed(slot_id: String)
+
 # ============================================
 # SCENE EVENTS
 # ============================================

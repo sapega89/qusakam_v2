@@ -586,6 +586,10 @@ func end_attack() -> void:
 	hitbox.monitoring = false
 	hitbox_damage.disable_damage()
 
+## Відкидання від удару (булава, D203): [param push] px, знак — напрямок.
+func knockback(push: float) -> void:
+	enemy_logic.start_knockback(push)
+
 ## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона виявлення.
 func _set_collisions_disabled(disabled: bool) -> void:
 	for shape in [body_collision, hitbox_collision, detection_collision]:

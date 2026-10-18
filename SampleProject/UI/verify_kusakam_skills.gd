@@ -92,12 +92,23 @@ func _initialize() -> void:
 	print("[4] Strikes need the right weapon (D141)")
 	for slot in equipment.keys():
 		equipment[slot] = null
+	var state: Dictionary = sl.get_game_manager().player_state
+	state.weapon_in_hand = ""
 	ck(sm.can_use_skill("fire_strike") == R.WRONG_WEAPON, "Fire Strike refused bare-handed")
-	equipment["dagger"] = "iron_dagger"
-	ck(sm.can_use_skill("fire_strike") == R.OK, "Fire Strike with a dagger")
+	# D202: навички дивляться на зброю в руці. Вдягаємо справжнім шляхом (EquipmentManager → CharacterManager).
+	var em: Node = sl.get_equipment_manager()
+	var hero: String = sl.get_game_manager().get_active_character().character_id
+	em.equip_item(hero, "dagger", "iron_dagger", db.get_item("iron_dagger"))
+	ck(state.weapon_in_hand == "dagger", "equipping a weapon with empty hands draws it (%s)" % state.weapon_in_hand)
+	ck(sm.can_use_skill("fire_strike") == R.OK, "Fire Strike with a dagger in hand")
 	ck(sm.can_use_skill("electric_strike") == R.WRONG_WEAPON, "Electric Strike refused with a dagger")
-	equipment["mace"] = "iron_mace"
-	ck(sm.can_use_skill("electric_strike") == R.OK, "Electric Strike with a mace")
+	em.equip_item(hero, "mace", "iron_mace", db.get_item("iron_mace"))
+	ck(sm.can_use_skill("electric_strike") == R.WRONG_WEAPON, "a mace equipped but not in hand does not count")
+	em.cycle_weapon(1)
+	ck(state.weapon_in_hand == "mace" and sm.can_use_skill("electric_strike") == R.OK, "switched to the mace: Electric Strike works")
+	ck(sm.can_use_skill("fire_strike") == R.WRONG_WEAPON, "…and Fire Strike does not")
+	em.cycle_weapon(1)
+	ck(state.weapon_in_hand == "dagger", "switching wraps around to the dagger")
 
 	print("[5] Strikes hit everything in front, nothing behind (D142)")
 	game.set_quest_flag("desert_road_monologue_complete", true)

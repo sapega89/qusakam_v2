@@ -163,6 +163,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player_hitbox"]
+resource_local_to_scene = true
 size = Vector2(40, 32)
 
 [node name="Player" type="CharacterBody2D" unique_id=227232328]
@@ -191,6 +192,7 @@ shape = SubResource("RectangleShape2D_player_hitbox")
 
 [node name="DamageApplier" type="Node" parent="Hitbox" unique_id=1984172588]
 script = ExtResource("3_damage_applier")
+target_group = &"enemies"
 
 [node name="PlayerCombat" type="Node" parent="." unique_id=840921195 node_paths=PackedStringArray("sprite", "animation_player", "hitbox", "damage_applier")]
 script = ExtResource("4_combat")

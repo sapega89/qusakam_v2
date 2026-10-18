@@ -34,6 +34,7 @@ func _connect_live_sources() -> void:
 		[EventBus.equipped_skills_changed, _on_loadout_changed],
 		[EventBus.sp_changed, _on_sp_changed],
 		[EventBus.skill_used, _on_skill_used],
+		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -49,6 +50,10 @@ func _on_sp_changed(_current: int, _max: int) -> void:
 
 func _on_skill_used(_skill_id: String) -> void:
 	refresh()
+
+
+func _on_weapon_changed(_slot: String) -> void:
+	refresh()  # Fire / Electric Strike залежать від зброї в руці (D202)
 
 
 ## Перезарядка тікає в SkillManager; тут лише перемальовуємо залишок.
@@ -68,6 +73,7 @@ func _build_slots() -> void:
 		_slots_row.remove_child(child)
 		child.queue_free()
 	_slots.clear()
+	_build_weapon_bind()
 
 	var count: int = _skill_manager.SLOT_COUNT if _skill_manager else 4
 	for i in count:
@@ -118,7 +124,51 @@ func _build_slots() -> void:
 		_slots.append(bind)
 
 
+## Зброя в руці (D202) — ліворуч від навичок: назва й клавіша перемикання з InputMap.
+## Іконок зброї ще немає (D128), тож показуємо назву.
+func _build_weapon_bind() -> void:
+	var bind := VBoxContainer.new()
+	bind.name = "WeaponBind"
+	bind.add_theme_constant_override("separation", UITokens.SPACE_XS)
+	var slot := PanelContainer.new()
+	slot.name = "Slot"
+	slot.custom_minimum_size = Vector2(0, SLOT_SIZE)
+	var box := _slot_box(false)
+	box.content_margin_left = UITokens.SPACE_SM
+	box.content_margin_right = UITokens.SPACE_SM
+	slot.add_theme_stylebox_override("panel", box)
+	var name_label := Label.new()
+	name_label.name = "WeaponName"
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	slot.add_child(name_label)
+	bind.add_child(slot)
+	var badge := PanelContainer.new()
+	badge.name = "Badge"
+	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	badge.add_theme_stylebox_override("panel", _badge_box(false))
+	var key := Label.new()
+	key.name = "Key"
+	key.theme_type_variation = &"BindBadge"
+	key.text = _key_for(&"weapon_next")
+	badge.add_child(key)
+	bind.add_child(badge)
+	_slots_row.add_child(bind)
+
+
+## Перша клавіша дії з InputMap — бейдж показує справжнє призначення, а не вписане.
+func _key_for(action: StringName) -> String:
+	for ev in InputMap.action_get_events(action):
+		if ev is InputEventKey:
+			return ev.as_text_physical_keycode()
+	return ""
+
+
 func refresh() -> void:
+	var item: Dictionary = ServiceLocator.get_equipment_manager().get_weapon_item_in_hand()
+	var weapon_label: Label = _slots_row.get_node(^"WeaponBind/Slot/WeaponName")
+	weapon_label.text = item.name if not item.is_empty() else "Unarmed"
+	weapon_label.add_theme_color_override("font_color", UITokens.TEXT_PRIMARY if not item.is_empty() else UITokens.TEXT_SECONDARY)
 	for i in _slots.size():
 		_update_slot(i)
 

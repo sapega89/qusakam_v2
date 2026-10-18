@@ -152,14 +152,11 @@ func can_use_skill(skill_id: String) -> Result:
 	return Result.OK
 
 
+## Зброя саме в руці, а не просто вдягнена (D202).
 func _has_required_weapon(definition: SkillDefinition) -> bool:
 	if definition.required_weapons.is_empty():
 		return true
-	var equipment: Dictionary = _state().get("equipment", {})
-	for slot in definition.required_weapons:
-		if equipment.get(slot) != null:
-			return true
-	return false
+	return String(_state().get("weapon_in_hand", "")) in definition.required_weapons
 
 
 ## SP відновлюється щосекунди (D146), без дробових списань.

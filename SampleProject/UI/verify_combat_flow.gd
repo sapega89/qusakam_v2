@@ -124,6 +124,46 @@ func _initialize() -> void:
 	sl.get_equipment_manager().unequip_item(hero, "sword")
 	await process_frame
 
+	print("[1d] Weapon in hand: reach, switch key, knockback, bare hands (D202, D203)")
+	var em: Node = sl.get_equipment_manager()
+	var items: Node = sl.get_item_database()
+	em.equip_item(hero, "polearm", "iron_halberd", items.get_item("iron_halberd"))
+	await process_frame
+	ck(gm.player_state.weapon_in_hand == "polearm" and is_equal_approx(game.player.combat.attack_cooldown_time, 0.8),
+			"the halberd is drawn: cooldown %.1f" % game.player.combat.attack_cooldown_time)
+	target.current_health = target.Max_Health  # після [1]–[1c] у цілі 25 HP — алебарда (48) її б добила
+	target.set_physics_process(false)  # стоїть на місці, поки міряємо дальність
+	hits.clear()
+	game.player.global_position = target.global_position + Vector2(-70, 0)
+	await create_timer(0.1).timeout
+	game.player.combat.perform_attack(1)
+	await create_timer(0.5).timeout
+	ck(hits.size() == 1, "the halberd reaches an enemy 70 px away (events %s)" % [hits])
+	target.set_physics_process(true)
+	em.equip_item(hero, "mace", "iron_mace", items.get_item("iron_mace"))
+	var next_ev := InputEventAction.new()
+	next_ev.action = &"weapon_next"
+	next_ev.pressed = true
+	await create_timer(0.9).timeout  # кулдаун алебарди
+	game.player._unhandled_input(next_ev)
+	ck(gm.player_state.weapon_in_hand == "mace", "the switch key takes the mace (%s)" % gm.player_state.weapon_in_hand)
+	game.player.global_position = target.global_position + Vector2(-26, 0)
+	await create_timer(0.1).timeout
+	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає
+	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
+	for e in parked:  # сусіди не впирають відкинутого ворога
+		e.global_position.x = target.global_position.x - 600
+	var x_before_hit: float = target.global_position.x
+	hits.clear()
+	game.player.combat.perform_attack(1)
+	await create_timer(0.3).timeout
+	ck(target.global_position.x - x_before_hit >= 40.0, "the mace knocks the enemy back (%.0f px)" % (target.global_position.x - x_before_hit))
+	em.unequip_item(hero, "mace")
+	em.unequip_item(hero, "polearm")
+	await process_frame
+	ck(gm.player_state.weapon_in_hand == "" and is_equal_approx(game.player.combat.attack_cooldown_time, 0.5),
+			"nothing equipped → bare hands (%s, %.1f s)" % [gm.player_state.weapon_in_hand, game.player.combat.attack_cooldown_time])
+
 	print("[2] Enemies chase and hit the player")
 	game.player.current_health = game.player.Max_Health
 	var player_hp: int = game.player.current_health

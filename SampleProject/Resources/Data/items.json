@@ -183,6 +183,7 @@
 				"defense": 0,
 				"magic": 0
 			},
+			"weapon_profile": {"reach": 48, "cooldown": 0.5, "height": 48, "knockback": 0},
 			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/sword.png"
 		},
 		{
@@ -203,6 +204,7 @@
 				"defense": 0,
 				"magic": 0
 			},
+			"weapon_profile": {"reach": 48, "cooldown": 0.5, "height": 48, "knockback": 0},
 			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/sword.png"
 		},
 		{
@@ -223,6 +225,7 @@
 				"defense": 0,
 				"magic": 5
 			},
+			"weapon_profile": {"reach": 48, "cooldown": 0.5, "height": 48, "knockback": 0},
 			"icon_path": "res://release/assets/textures/ui/items/jrpg_icons/sword.png"
 		},
 		{
@@ -240,7 +243,8 @@
 				"attack": 18,
 				"defense": 0,
 				"magic": 0
-			}
+			},
+			"weapon_profile": {"reach": 80, "cooldown": 0.8, "height": 32, "knockback": 0}
 		},
 		{
 			"id": "iron_mace",
@@ -257,7 +261,8 @@
 				"attack": 17,
 				"defense": 0,
 				"magic": 0
-			}
+			},
+			"weapon_profile": {"reach": 40, "cooldown": 0.7, "height": 32, "knockback": 60}
 		},
 		{
 			"id": "iron_dagger",
@@ -274,7 +279,8 @@
 				"attack": 10,
 				"defense": 0,
 				"magic": 0
-			}
+			},
+			"weapon_profile": {"reach": 32, "cooldown": 0.3, "height": 32, "knockback": 0}
 		},
 		{
 			"id": "iron_armor",

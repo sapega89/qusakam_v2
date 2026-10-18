@@ -12,7 +12,7 @@ const ALLIES_GROUP := &"allies"
 ## Прямокутник хітбокса атаки в світових координатах, у бік [param direction] (±1).
 static func attack_area(player: Node2D, direction: int) -> Rect2:
 	var shape: RectangleShape2D = player.get_node(^"Hitbox/CollisionShape2D").shape
-	var offset := Vector2(PlayerCombat.HITBOX_OFFSET_X * direction, 0)
+	var offset := Vector2(shape.size.x / 2.0 * direction, 0)  # як PlayerCombat._set_hitbox_active (D203)
 	return Rect2(player.global_position + offset - shape.size / 2.0, shape.size)
 
 

@@ -55,6 +55,11 @@ var attack_cooldown: float = 1.5
 ## Іде замах або удар (D198): ворог стоїть, рішень не приймає.
 var is_attacking: bool = false
 
+## Відкидання (D203): за KNOCKBACK_TIME ворог проїжджає задану відстань, AI чекає.
+const KNOCKBACK_TIME := 0.15
+var knockback_left: float = 0.0
+var knockback_speed: float = 0.0
+
 # Raycast для виявлення гравця
 
 # Посилання на гравця
@@ -133,6 +138,11 @@ func process_ai(delta: float):
 	# Перевіряємо, чи ворог мертвий
 	if enemy.is_dead:
 		velocity = Vector2.ZERO
+		return
+
+	if knockback_left > 0.0:
+		knockback_left -= delta
+		velocity.x = knockback_speed
 		return
 
 	# Атака вже почалась — доводимо її до кінця на місці
@@ -318,6 +328,10 @@ func change_state(new_state: AIState):
 	state_timer = 0.0
 
 	state_changed.emit(new_state)
+
+func start_knockback(push: float) -> void:
+	knockback_left = KNOCKBACK_TIME
+	knockback_speed = push / KNOCKBACK_TIME
 
 func perform_attack():
 	"""Замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
