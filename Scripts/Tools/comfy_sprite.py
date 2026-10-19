@@ -34,6 +34,23 @@ URIZEN_FRONT = (
 URIZEN_STEP = "walking quickly to the right in the same side view facing right, %s leg stepping forward, %s leg back, the robe swinging"
 URIZEN_RAISE = "in the same side view facing right: raising his right hand to shoulder height in front of him, a small golden coin in his palm"
 URIZEN_SMITE = "in the same side view facing right: his right arm stretched high above his head, a shining golden coin held up in his hand"
+ASTRIT_FRONT = (
+    "turned to face the viewer: a front view of her standing idle, both amber eyes visible, the red bow on her ponytail, "
+    "the huge spiked shield with the flame emblem at her side, the burning spell book in her other hand"
+)
+ASTRIT_STEP = (
+    "running to the right in the same side view facing right, %s leg stepping forward, %s leg back, the ponytail flying "
+    "behind her, the shield held in front of her"
+)
+ASTRIT_CROUCH = (
+    "in the same side view facing right: crouching very low on bent knees, her head down behind the top of her huge "
+    "spiked shield, ready to pounce"
+)
+ASTRIT_LEAP = "in the same side view facing right: leaping forward through the air, her huge spiked shield thrust out in front of her"
+ASTRIT_SLAM = (
+    "in the same side view facing right: slamming her huge spiked shield forward with all her weight, leaning into the "
+    "blow, the flame emblem on the shield blazing"  # «полум'я рветься зі щита» різала межа кадру
+)
 # rows — рядки листа: (анімація, підказки кадрів); None — сам перший кадр (base).
 CHARACTERS = {
     "bandit": dict(
@@ -171,6 +188,49 @@ CHARACTERS = {
                 + [URIZEN_SMITE] * 6
                 + [URIZEN_RAISE] * 2
                 + [None],
+            ),
+        ],
+    ),
+    # Астрит — драконороджена варварка-тауматургиня з величезним шипастим щитом і книгою (lore): символи вогню. Як
+    # Уризен — фас стоїть і портрет, профіль у русі. Листи старих розмірів: забіг (enter) і відхід (run) — той самий
+    # біг, наскок щитом (strike) влучає на кадрі 5 (strike_frame).
+    "astrit": dict(
+        rows_out="SampleProject/Assets/Characters/Companions/astrit",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=43,
+        colors=16,
+        floor=58,
+        who="the same fierce red-haired barbarian woman with the high ponytail and the red bow, the dark steel armour with red "
+        "flame emblems, the huge round spiked shield with the flame emblem and the burning spell book",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, size, chibi proportions, thick "
+        "dark outline and flat shading: a fierce adult barbarian woman with fiery red hair in a high ponytail tied with a big "
+        "red bow, amber eyes, dark steel plate armour with red flame emblems, a huge round spiked shield with a big "
+        "red-and-gold flame emblem held in front of her, and her other hand wreathed in red fire holding a small spell book "
+        "with a golden flame on its cover. Strict side view: her head and body in profile facing right, her eye and nose on "
+        "the right side of her face, looking ahead to the right. Standing idle. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [ASTRIT_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
+            (
+                "enter",
+                [ASTRIT_STEP % ("left", "right")] * 3
+                + [None] * 3
+                + [ASTRIT_STEP % ("right", "left")] * 3
+                + [None] * 3,
+            ),
+            (
+                "run",
+                [ASTRIT_STEP % ("left", "right")] * 3
+                + [None] * 3
+                + [ASTRIT_STEP % ("right", "left")] * 3
+                + [None] * 3,
+            ),
+            (
+                "strike",
+                [ASTRIT_CROUCH] * 2
+                + [ASTRIT_LEAP] * 3
+                + [ASTRIT_SLAM] * 3
+                + [ASTRIT_CROUCH] * 2
+                + [None] * 2,
             ),
         ],
     ),

@@ -40,6 +40,8 @@ an open question below, never filled in. Used by skills, enemies, companions and
   «дід це дід кусакама а кусакам ящур, тобто і дід має бути ящуром»).
 - **Астрит** — a warrior-thaumaturge with a **shield and a book**; pounces on enemies with a **spiked shield**.
   She is a **woman, a barbarian, with a huge shield and a book in her hands** (Sapega, 2026-10-18: «астріт це жінка варвар з огромним щитом і книгою в руках»).
+  She is **dragonborn**, so she carries **fire symbols** (Sapega, 2026-10-19: «вона драконо народжена якщо що тому в
+  неї мають бути символи вогню»). Look from Sapega's references: fiery red hair, amber eyes, dark plate armour.
 - **Уризен** — a **cleric**; his smite takes the shape of a **coin**. He is a **priest who worships the god of
   contracts** (Sapega, 2026-10-19: «це урізен жрець який поклоняється богу контрактів») — the coin is that god's sign.
   Look (Sapega's reference, chosen «A + монета й обруч»): a chubby bald human with a sly smile and a forehead tattoo,
