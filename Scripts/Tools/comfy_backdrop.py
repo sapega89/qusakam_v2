@@ -27,9 +27,14 @@ OUT = "SampleProject/Assets/Backgrounds/"
 CACHE = os.path.join(tempfile.gettempdir(), "comfy_backdrop")
 W, H, SCALE = 576, 324, 3
 GW = W * SCALE
-SEAM = 120  # пів ширини смуги шва, яку перемальовує модель, px генерації
-# Кольори хромакею: зелений; пурпуровий — де є зелень (пальми, кущі), яку зелений ключ вирізав би.
-KEY_RGB = {"green": np.array([0, 255, 0], np.float32), "magenta": np.array([255, 0, 255], np.float32)}
+# Пів ширини смуги шва, px генерації: серцевина (пів смуги) перемальовується, далі маска м'яко спадає;
+# не з нуля (SEAM_DENOISE) — модель бачить обидва боки шва. Жорстка вузька смуга різала пальми й зубці муру.
+SEAM = 200
+SEAM_DENOISE = 0.9
+# Ключ — від кольору, яким модель справді залила фон (верхні рядки): «чистий» #FF00FF у неї (248,75,235), і
+# поріг 170 від номіналу різав фіолетові тіні стін — будинки села світились наскрізь. 75 від виміряного
+# лишає тіні; біля землі фон світлішає до ~55, тож менше не можна.
+KEY_DISTANCE = 75
 # Серпанок далини — колір неба біля обрію (ним же були в серпанку процедурні стіни D227).
 HAZE = np.array([214, 214, 224], np.float32)
 # Без назв ігор і без «сонця» навіть із «no»: модель пише назву текстом просто в небі й малює диск
@@ -97,8 +102,9 @@ LAYERS = {
         key="magenta",
         shade=0,
         fill=False,
-        haze=0.1,
+        haze=0.18,
         colors=16,
+        quant="octree",
         prompt="a row of small desert village houses side by side: flat-roofed adobe and sandstone houses with "
         "wooden roof beams sticking out, arched wooden doors, small shuttered windows, striped red and blue cloth "
         "awnings, clay pots and baskets, a few date palms between the houses, spanning the full width, standing "
@@ -111,17 +117,171 @@ LAYERS = {
         seam="model",
         key="magenta",
         shade=0.6,
-        fill=True,
+        fill=False,
         haze=0,
         colors=6,
         prompt="foreground plants and objects along the bottom edge: dry desert shrubs, tall reeds, spiky agave "
         "plants, a few rocks, big clay jars and a broken wooden fence, with wide gaps between the groups, "
         f"{MAGENTA}",
     ),
+    # Решта кімнат (D237): спільні з каньйоном небо, хмари й мези; свій середній і передній план.
+    "Road/gen_mid": dict(
+        seed=41,
+        rows=200,
+        top=60,
+        seam="model",
+        key="green",
+        shade=0,
+        fill=True,
+        haze=0.2,
+        colors=12,
+        prompt="rolling sand dunes with weathered sandstone rock formations, a natural rock arch and broken ancient stone "
+        f"pillars half buried in the sand, spanning the full width and reaching the bottom edge, {CHROMA}",
+    ),
+    "Road/gen_front": dict(
+        seed=43,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground rocks and desert plants along the bottom edge: boulders, dry thorny shrubs, spiky agave, an "
+        f"animal skull and a toppled stone block, with wide gaps between the groups, {MAGENTA}",
+    ),
+    "Gates/gen_mid": dict(
+        seed=51,
+        rows=200,
+        top=60,
+        seam="model",
+        key="green",
+        shade=0,
+        fill=True,
+        haze=0.15,
+        colors=14,
+        prompt="a massive sandstone city wall with crenellations and two tall square gate towers flanking a big arched "
+        "wooden gate, long red banners with a plain golden disc with a raised rim, the wall stands directly on bare sand, spanning the full width and reaching the bottom "
+        f"edge, {CHROMA}",
+    ),
+    "City/gen_far": dict(
+        seed=61,
+        rows=200,
+        top=40,
+        seam="model",
+        key="green",
+        shade=0,
+        fill=True,
+        haze=0.4,
+        colors=10,
+        prompt="a distant city skyline: sandstone towers, domed palaces and slender minarets behind a long crenellated "
+        f"wall, spanning the full width and reaching the bottom edge, {CHROMA}",
+    ),
+    "City/gen_near": dict(
+        seed=63,
+        rows=190,
+        top=70,
+        seam="model",
+        key="magenta",
+        shade=0,
+        fill=False,
+        haze=0.18,
+        colors=16,
+        quant="octree",
+        prompt="a row of tall city houses side by side: two- and three-storey sandstone and plastered houses with arched "
+        "windows, wooden balconies, colourful striped market awnings, hanging carpets and lanterns, market stalls "
+        f"with clay pots and baskets in front, spanning the full width, standing on the bottom edge, {MAGENTA}",
+    ),
+    "City/gen_front": dict(
+        seed=65,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground market clutter along the bottom edge: wooden crates, grain sacks, big clay jars, baskets of "
+        f"fruit and a wooden cart wheel, with wide gaps between the groups, {MAGENTA}",
+    ),
+    "LabOut/gen_mid": dict(
+        seed=73,
+        rows=220,
+        top=40,
+        seam="model",
+        key="magenta",
+        shade=0,
+        fill=True,
+        haze=0.15,
+        colors=14,
+        quant="octree",
+        prompt="a lush desert oasis: a calm blue pool in the middle ground with reeds along its edge, a grove of date "
+        "palms with bright olive green fronds, a towering sandstone rock pillar behind and a few ruined ancient stone "
+        f"columns, spanning the full width and reaching the bottom edge, {MAGENTA}",
+    ),
+    "Hall/gen_wall": dict(
+        seed=81,
+        rows=H,
+        top=0,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        prompt="the inner wall of a grand sandstone hall seen straight on: tall arched niches between carved columns, long "
+        "red banners with a plain golden disc with a raised rim hanging in the niches, a carved frieze along the top and a stone "
+        "plinth along the bottom, warm lantern light",
+    ),
+    # Задній ряд дахів села (критик: у проміжках між будинками сяяли скелі — «просвічується»); пальми тут.
+    "Village/gen_back": dict(
+        seed=25,
+        rows=170,
+        top=70,
+        seam="model",
+        key="magenta",
+        shade=0,
+        fill=True,
+        haze=0.35,
+        colors=10,
+        quant="octree",
+        prompt="a second row of desert village rooftops seen from the street: flat adobe roofs at different heights, a "
+        "small round dome and a square watchtower, date palms with olive green fronds rising between the roofs, simple "
+        f"shapes with little detail, spanning the full width, standing on the bottom edge, {MAGENTA}",
+    ),
+    # Свій передній план для брами й оази: той самий череп три кімнати поспіль (критик).
+    "Gates/gen_front": dict(
+        seed=53,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground along the bottom edge: boulders, dry thorny shrubs, a toppled carved stone block, broken "
+        f"spears and a fallen wooden barricade, with wide gaps between the groups, {MAGENTA}",
+    ),
+    "LabOut/gen_front": dict(
+        seed=75,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground along the bottom edge: tall reeds and papyrus, broad water plants, smooth river stones and a "
+        f"few small palm shoots, with wide gaps between the groups, {MAGENTA}",
+    ),
 }
 
 
-def graph(text, seed, height, image=None):
+def graph(text, seed, height, image=None, denoise=1.0):
     """Граф API ComfyUI; з image — перемальовує лише прозору смугу цієї картинки."""
     g = {
         "unet": (
@@ -149,7 +309,7 @@ def graph(text, seed, height, image=None):
             },
         ),
         "model": ("ModelSamplingAuraFlow", {"model": ["lora", 0], "shift": 3.1}),
-        "pos": ("CLIPTextEncode", {"clip": ["clip", 0], "text": f"{text}, {STYLE}"}),
+        "pos": ("CLIPTextEncode", {"clip": ["clip", 0], "text": text}),
         "neg": ("CLIPTextEncode", {"clip": ["clip", 0], "text": ""}),  # cfg 1 — не діє
         "latent": (
             "EmptySD3LatentImage",
@@ -167,7 +327,7 @@ def graph(text, seed, height, image=None):
                 "cfg": 1.0,
                 "sampler_name": "euler",
                 "scheduler": "simple",
-                "denoise": 1.0,
+                "denoise": denoise,
             },
         ),
         "decode": ("VAEDecode", {"samples": ["sample", 0], "vae": ["vae", 0]}),
@@ -222,27 +382,44 @@ def upload(rgba, name):
     return f"{r['subfolder']}/{r['name']}"
 
 
+def seam_pass(img, layer, text, height):
+    """Модель перемальовує смугу посередині картинки: серцевина — повністю, далі маска м'яко спадає."""
+    ramp = np.clip((np.abs(np.arange(GW) - GW // 2) - SEAM / 2) / (SEAM / 2), 0, 1)  # 0 — серцевина, 1 — поза смугою
+    alpha = np.repeat((ramp * 255).astype(np.uint8)[None, :, None], height, axis=0)  # прозоре = маска LoadImage
+    name = upload(np.concatenate([img.astype(np.uint8), alpha], 2), "seam.png")
+    fixed = run(graph(text, layer["seed"] + 1, height, name, SEAM_DENOISE))
+    # у пікселях — лише вузька облямівка: м'який перехід дає маска моделі, а широке змішування двох різних
+    # картинок лишало напівпрозорих «привидів» (бліда пальма, зелена смуга в стінах каньйону)
+    w = np.clip((SEAM - np.abs(np.arange(GW) - GW // 2)) / 30, 0, 1)[None, :, None]
+    return fixed * w + img * (1 - w)
+
+
+def cache_path(layer):
+    tag = json.dumps([layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]])
+    return os.path.join(CACHE, hashlib.sha1(tag.encode()).hexdigest()[:16] + ".png")
+
+
+def reseam(layer):
+    """Шов шарів, зроблених першою версією (жорстка вузька смуга), — заново, на схваленій картинці з кешу: її шов уже
+    посередині, тож поза смугою все лишається як було."""
+    path = cache_path(layer)
+    img = np.asarray(Image.open(path).convert("RGB"), dtype=np.float32)
+    height = -(-layer["rows"] * SCALE // 16) * 16
+    padded = np.concatenate([img, np.repeat(img[-1:], height - len(img), axis=0)])
+    img = seam_pass(padded, layer, f"{layer['prompt']}, {STYLE}", height)[: len(img)]
+    Image.fromarray(img.astype(np.uint8)).save(path)
+
+
 def generate(layer):
     """Картинка шару в px генерації, безшовна по горизонталі для seam model / blend."""
-    tag = json.dumps(
-        [layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]]
-    )
-    path = os.path.join(CACHE, hashlib.sha1(tag.encode()).hexdigest()[:16] + ".png")
+    path = cache_path(layer)
     if os.path.exists(path):
         return np.asarray(Image.open(path).convert("RGB"), dtype=np.float32)
     height = -(-layer["rows"] * SCALE // 16) * 16  # сторони латента кратні 16
-    img = run(graph(layer["prompt"], layer["seed"], height))
+    text = f"{layer['prompt']}, {STYLE}"
+    img = run(graph(text, layer["seed"], height))
     if layer["seam"] == "model":
-        # зсув на пів ширини виводить шов у середину, модель перемальовує смугу навколо нього
-        rolled = np.roll(img, GW // 2, axis=1)
-        alpha = np.full((height, GW, 1), 255, np.uint8)
-        alpha[:, GW // 2 - SEAM : GW // 2 + SEAM] = 0  # прозоре = маска LoadImage
-        name = upload(np.concatenate([rolled.astype(np.uint8), alpha], 2), "seam.png")
-        fixed = run(graph(layer["prompt"], layer["seed"] + 1, height, name))
-        w = np.clip((SEAM - np.abs(np.arange(GW) - GW // 2)) / (SEAM / 4), 0, 1)[
-            None, :, None
-        ]
-        img = fixed * w + rolled * (1 - w)
+        img = seam_pass(np.roll(img, GW // 2, axis=1), layer, text, height)  # зсув виводить шов у середину
     elif layer["seam"] == "blend":
         # по краях — зсунута копія, посередині — оригінал: краї сходяться, бо в оригіналі вони сусіди
         w = (1 - np.abs(np.arange(GW) / GW * 2 - 1))[None, :, None]
@@ -254,23 +431,20 @@ def generate(layer):
 
 
 def shrink(img, key):
-    """Фон кольору key — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів."""
+    """Фон — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів."""
     rows = img.shape[0] // SCALE
     a = np.ones(img.shape[:2], np.float32)
     if key:
-        a = (np.linalg.norm(img - KEY_RGB[key], axis=2) > 170).astype(np.float32)
+        bg = np.median(img[:24].reshape(-1, 3), axis=0)
+        a = (np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE).astype(np.float32)
     if key == "green":
-        img[..., 1] = np.minimum(
-            img[..., 1], np.maximum(img[..., 0], img[..., 2])
-        )  # зелений відсвіт країв
+        img[..., 1] = np.minimum(img[..., 1], np.maximum(img[..., 0], img[..., 2]))  # зелений відсвіт країв
 
     def blocks(m):
         return m.reshape(rows, SCALE, W, SCALE, -1).sum(axis=(1, 3))
 
     asum = blocks(a[..., None])
-    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[
-        ..., 0
-    ] >= SCALE * SCALE / 2
+    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[..., 0] >= SCALE * SCALE / 2
 
 
 def drop_edges(opaque):
@@ -299,22 +473,21 @@ def fill_down(rgb, opaque):
     return rgb[np.maximum(last, 0), np.arange(W)[None, :]], last >= 0
 
 
-def quantize(rgb, opaque, colors):
-    """Палітра — лише з непрозорих пікселів; без дизерингу, прозорість — 0 або 255."""
-    pal = Image.fromarray(rgb[opaque].astype(np.uint8)[None]).quantize(
-        colors, Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE
-    )
-    q = (
-        Image.fromarray(rgb.astype(np.uint8))
-        .quantize(palette=pal, dither=Image.Dither.NONE)
-        .convert("RGB")
-    )
+def quantize(rgb, opaque, colors, method="mediancut"):
+    """Палітра — лише з непрозорих пікселів; без дизерингу, прозорість — 0 або 255. octree — де рідкі відтінки
+    (зелене листя, синій тент) мусять уціліти: median-cut на 16 кольорах їх викидав."""
+    how = Image.Quantize.FASTOCTREE if method == "octree" else Image.Quantize.MEDIANCUT
+    pal = Image.fromarray(rgb[opaque].astype(np.uint8)[None]).quantize(colors, how, dither=Image.Dither.NONE)
+    q = Image.fromarray(rgb.astype(np.uint8)).quantize(palette=pal, dither=Image.Dither.NONE).convert("RGB")
     return np.dstack([np.asarray(q), opaque.astype(np.uint8) * 255])
 
 
 if __name__ == "__main__":
-    for name in sys.argv[1:] or LAYERS:
+    names = [a for a in sys.argv[1:] if not a.startswith("--")]
+    for name in names or LAYERS:
         layer = LAYERS[name]
+        if "--reseam" in sys.argv:
+            reseam(layer)
         strip, strip_opaque = shrink(generate(layer), layer["key"])
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
@@ -328,5 +501,9 @@ if __name__ == "__main__":
             rgb, opaque = fill_down(rgb, opaque)
         rgb = (rgb * (1 - layer["haze"]) + HAZE * layer["haze"]) * (1 - layer["shade"])
         os.makedirs(os.path.dirname(OUT + name), exist_ok=True)
-        Image.fromarray(quantize(rgb, opaque, layer["colors"])).save(OUT + name + ".png")
+        Image.fromarray(quantize(rgb, opaque, layer["colors"], layer.get("quant", "mediancut"))).save(OUT + name + ".png")
         print("drawn", OUT + name + ".png", flush=True)
+    # ComfyUI тримає моделі (~30 ГБ ОЗП разом із текстовим енкодером) і після роботи; на 32 ГБ це вичерпало
+    # пам'ять системи — вивантажуємо одразу.
+    urllib.request.urlopen(urllib.request.Request(API + "/free", json.dumps({"unload_models": True, "free_memory": True}).encode(),
+                                                  {"Content-Type": "application/json"}))

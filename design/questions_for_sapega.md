@@ -117,3 +117,15 @@ For reference, `buy_price` of the result item is shown where it exists in `items
 | craft_potion_lesser_chain | Lesser Potion ×1 (buy 40) | Potion ×2 | alchemy_table | ? |
 | craft_potion_medium_chain | Medium Potion ×1 (buy 70) | Lesser Potion ×4 | alchemy_table | ? |
 | craft_hi_potion_chain | Hi-Potion ×1 (buy 100) | Medium Potion ×8 | alchemy_table | ? |
+
+## Opened by the visual critics, 2026-10-19 — the Village (D236, D238)
+
+None blocks; each default is what the game does now.
+
+| # | Area | Question | Default until answered |
+|---|---|---|---|
+| Q56 | Rooms' floor | Under the hero every outdoor room has the Brackeys cobble band (finer pixel than the hero and the layers) and the pack's flat strip stretched ×60 below it. Redraw the ground in the hero's pixel and the Canyon's sandstone (like `PlateauBody`, D231) — by a drawing script, or may it be generated as a background (D234)? | Unchanged. |
+| Q57 | Banners | The coat of arms of the city / the mayor for the banners (Gates, Mayor's hall). «Coin» came out as **$**, «medallion» as a pentagram or a cross. | A plain golden disc with a raised rim. |
+| Q58 | Village framing | The Village is 3×2 MetSys cells with everything in the top row, so the camera keeps the floor at 55 % of the frame (other rooms ~80 %). Make it one cell tall? (touches the map and the transitions) | Unchanged. |
+| Q59 | Village centre | The quest says «Reach the village center» — what is the centre (a well, a square, the old man's house)? Should the old man's house show the bandits' raid (D140)? | No landmark. |
+| Q60 | Canyon cliffs | Caves and carved ancient doorways in the cliffs (the lore has caves and ruins) — yes or no? | No. |

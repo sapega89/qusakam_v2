@@ -14,6 +14,17 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_houses.png" id="houses"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_front.png" id="front"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_front.tres" id="blur_front"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_back.png" id="back"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
+
+[sub_resource type="Gradient" id="Gradient_veil"]
+colors = PackedColorArray(0.839, 0.839, 0.878, 0, 0.839, 0.839, 0.878, 0.4)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_veil"]
+gradient = SubResource("Gradient_veil")
+width = 8
+height = 64
+fill_to = Vector2(0, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -24,8 +35,30 @@ script = ExtResource("1_village")
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 position = Vector2(0, -100)
 
+[node name="Veil" type="Sprite2D" parent="."]
+z_index = -9
+position = Vector2(-400, 96)
+scale = Vector2(425, 4.6)
+texture = SubResource("GradientTexture2D_veil")
+centered = false
+
+[node name="Back" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.6, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Back"]
+material = ExtResource("blur_near")
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("back")
+centered = false
+
 [node name="Houses" type="Parallax2D" parent="."]
 z_index = -9
+modulate = Color(0.9, 0.88, 0.94, 1)
 scroll_scale = Vector2(0.85, 1)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
@@ -39,7 +72,7 @@ centered = false
 
 [node name="Front" type="Parallax2D" parent="."]
 z_index = 20
-modulate = Color(1, 1, 1, 0.94)
+modulate = Color(0.86, 0.8, 1, 0.94)
 scroll_scale = Vector2(1.25, 1)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
@@ -47,7 +80,7 @@ repeat_times = 4
 [node name="Sprite" type="Sprite2D" parent="Front"]
 material = ExtResource("blur_front")
 texture_filter = 1
-position = Vector2(0, 124)
+position = Vector2(0, 160)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("front")
 centered = false

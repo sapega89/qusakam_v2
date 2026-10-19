@@ -6,7 +6,8 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 
 | File | Use |
 |---|---|
-| `gen_houses.png` | Parallax2D ×0.85 behind the hero — adobe houses, awnings, jars, date palms; bases on row 258 (floor y 384) |
+| `gen_back.png` | Parallax2D ×0.6, near blur — the back row of rooftops, a watchtower, a dome, palms (D238) |
+| `gen_houses.png` | Parallax2D ×0.85 behind the hero — adobe houses, awnings, jars, date palms; thresholds on row ~231, a painted pavement down to the floor line (row 258 = y 384) |
 | `gen_front.png` | Parallax2D ×1.25 in front of everything (z 20) — shrubs, reeds, agave, jars, a fence; darkened, `depth_blur_front` |
 
 The backdrop behind them is the Canyon's (`desert_backdrop_canyon.tscn`: the pack's sky, generated clouds, mesas and
