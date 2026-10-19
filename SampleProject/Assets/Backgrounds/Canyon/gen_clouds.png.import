@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cn4dyfbnkh47x"
-path="res://.godot/imported/canyon_walls.png-43c2efba3c7faaf11a1f2c1693d1ed99.ctex"
+uid="uid://boxf3ho2rklfx"
+path="res://.godot/imported/gen_clouds.png-3bf96212e1ebc2c99b6db8de3b3033db.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/Canyon/canyon_walls.png"
-dest_files=["res://.godot/imported/canyon_walls.png-43c2efba3c7faaf11a1f2c1693d1ed99.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png"
+dest_files=["res://.godot/imported/gen_clouds.png-3bf96212e1ebc2c99b6db8de3b3033db.ctex"]
 
 [params]
 

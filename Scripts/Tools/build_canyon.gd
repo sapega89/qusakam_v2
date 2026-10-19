@@ -122,7 +122,7 @@ func _initialize() -> void:
 	walls.repeat_times = 4
 	var walls_sprite := Sprite2D.new()
 	walls_sprite.name = "Sprite"
-	walls_sprite.texture = load(ART % "canyon_walls")
+	walls_sprite.texture = load(ART % "gen_walls")  # D235: згенеровані (comfy_backdrop.py)
 	walls_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	walls_sprite.centered = false
 	walls_sprite.scale = Vector2(1.5, 1.5)

@@ -295,41 +295,6 @@ def bridge():
     line.save(OUT + "bridge_rope.png")
 
 
-def hazed(c, k, sky=(214, 214, 224)):
-    return tuple(round(a * (1 - k) + b * k) for a, b in zip(c, sky))
-
-
-def canyon_walls():
-    """Далекі стіни каньйону: мези й урвища з шарами породи, у серпанку; тайлиться по 576 px."""
-    w, h = 576, 324
-    im = Image.new("RGBA", (w, h))
-    px = im.load()
-    pal = [hazed(c, 0.45) for c in SAND]
-    edge = hazed(EDGE, 0.4)
-    tops = []
-    for x in range(w):
-        t = (
-            150
-            + 40 * math.sin(x / w * math.tau * 2)
-            + 22 * math.sin(x / w * math.tau * 5 + 1.3)
-        )
-        t += [0, -28, 10, -12][(x // 48) % 4]
-        tops.append(int(t))
-    for x in range(w):
-        for y in range(tops[x], h):
-            band = (y + int(2 * math.sin(x / 17.0))) // 9 % 3
-            i = 0 if y < tops[x] + 3 else [1, 2, 1][band]
-            if (x * 7 + y // 30) % 37 == 0 and y > tops[x] + 6:
-                i = 3  # вертикальна тріщина урвища
-            edge_px = (
-                y == tops[x]
-                or (x > 0 and tops[x - 1] > y)
-                or (x < w - 1 and tops[x + 1] > y)
-            )
-            px[x, y] = (edge if edge_px else pal[i]) + (255,)
-    im.save(OUT + "canyon_walls.png")
-
-
 def canyon_depths():
     """Нижні стіни каньйону під плато: та сама порода, темніша з глибиною, вертикальні урвища; тайлиться по 576."""
     w, h = 576, 420
@@ -356,6 +321,5 @@ if __name__ == "__main__":
     gorge()
     plateau_body()
     bridge()
-    canyon_walls()
     canyon_depths()
     print("drawn", OUT)
