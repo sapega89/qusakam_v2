@@ -98,8 +98,10 @@ errors, ~40k lines of other people's code gone (Q61); **phase 2** own fsm, inter
 ## Priorities
 
 1. ~~B73 + `verify_memory.gd`~~ — done.
-2. Remove the dead plugins (Q61) — free and safe.
+2. ~~Remove the dead plugins (Q61)~~ — done (D240). The "unused" `basic_settings_menu` turned out to cap the game at
+   60 FPS and reset the audio buses at every start; the cap is now our own setting.
 3. `RoomStoryFlow` base class — kills the B66 class of bugs.
 4. `print` → `DebugLogger`; prune EventBus.
-5. Repository hygiene: the `addons/**` rule (Q62), the dead folders.
-6. Our own menus instead of Maaack (Q63).
+5. Repository hygiene: ~~the `addons/**` rule (Q62)~~ done (D241); the dead folders, and the root clutter (two C# projects,
+   `test.tscn`, `map.tscn`, `tile_map_set.*`, loose `*.gd.uid` without scripts, `debug_metsys.gd`, `follower_click.gd`).
+6. Our own menus instead of Maaack (D242) — when the menus are next touched.

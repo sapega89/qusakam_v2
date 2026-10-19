@@ -4,8 +4,7 @@ android/**
 test/**
 raw_assets/**
 tests/**
-addons/**
-.claude/**
+.claude/
 .vscode/**
 # Великі бінарники: GitHub відхиляє файли >100 МБ
 *.zip

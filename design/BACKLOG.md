@@ -72,7 +72,7 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ### Plugin cleanup — [[code_review_2026-10-19]] §2
 - **Exists:** 25 addons; ~17 have no reference from the game, 5 of them still start an autoload, godot-rapier2d errors on every start.
-- **Waits on:** Q61 (remove), Q63 (own menus instead of Maaack). **Resume:** after Q61 — delete the unused addons and their autoloads/plugins in one commit, run the suite and the playthrough; then own fsm, interaction_system, ModalDialog.
+- **Done:** phase 1 — 18 unused addons removed (D240), the kept ones tracked fully (D241). **Next:** own fsm, interaction_system, ModalDialog (with its unused `ModalDialogGlobal` autoload); our own menus instead of Maaack when the menus are next touched (D242).
 
 ### Vertical rooms — Laboratory first — [[lab_vertical_plan]]
 - **Decided:** D225 (Sapega 2026-10-18: Tails of Iron as the reference, Laboratory first, ladders + one-way platforms, no ability locks yet).
