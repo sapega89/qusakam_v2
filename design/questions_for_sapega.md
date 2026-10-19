@@ -129,3 +129,11 @@ None blocks; each default is what the game does now.
 | Q58 | Village framing | The Village is 3×2 MetSys cells with everything in the top row, so the camera keeps the floor at 55 % of the frame (other rooms ~80 %). Make it one cell tall? (touches the map and the transitions) | Unchanged. |
 | Q59 | Village centre | The quest says «Reach the village center» — what is the centre (a well, a square, the old man's house)? Should the old man's house show the bandits' raid (D140)? | No landmark. |
 | Q60 | Canyon cliffs | Caves and carved ancient doorways in the cliffs (the lore has caves and ruins) — yes or no? | No. |
+
+## Opened by the code review, 2026-10-19 — [[code_review_2026-10-19]]
+
+| # | Area | Question | Default until answered |
+|---|---|---|---|
+| Q61 | Plugins | Remove the addons the game never references — DropShadowCaster2D, TweenAnimation, basic_settings_menu, demo, dynamic_water_2d, easy_trajectory, godot-rapier2d, godot-triggers, godot_tree_table, gut, input_manager, long_scene_manager, midi, modal_window, moving_platforms, scatter2d, tree_maps, tween_resource (and their autoloads)? Keep CustomRunner (your editor run configs)? | Nothing removed. |
+| Q62 | Repository | `.gitignore` ignores `addons/**` while ~1,400 addon files are tracked, so new addon files go untracked silently. Track the addons we keep fully (drop the rule), or keep them out of git and install them per machine? | Unchanged; edits to tracked addon files go in with `git add -u`. |
+| Q63 | Menus | Replace the Maaack menus template (MainMenu base class, input remapping) with our own code the next time the Figma menus are touched? | Keep Maaack. |

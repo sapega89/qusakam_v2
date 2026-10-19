@@ -65,6 +65,15 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
+### Room story flow — one base class — [[code_review_2026-10-19]] §3.1
+- **Exists:** six copies of the same state flow (`_execute_step`, `_play_dialogue`, `advance_state`, `_complete_quest_for_dialogue`) in Canyon, Village, Laboratory, CityGates, DesertRoad, LaboratoryOutside; the "already done → advance" rule only as a comment (B66 came from a missed copy).
+- **Missing:** a `RoomStoryFlow` base with steps as data and the skip rule in one place.
+- **Resume:** extract it from LaboratoryOutside.gd (the smallest), move one room at a time, each with its own `verify_*`.
+
+### Plugin cleanup — [[code_review_2026-10-19]] §2
+- **Exists:** 25 addons; ~17 have no reference from the game, 5 of them still start an autoload, godot-rapier2d errors on every start.
+- **Waits on:** Q61 (remove), Q63 (own menus instead of Maaack). **Resume:** after Q61 — delete the unused addons and their autoloads/plugins in one commit, run the suite and the playthrough; then own fsm, interaction_system, ModalDialog.
+
 ### Vertical rooms — Laboratory first — [[lab_vertical_plan]]
 - **Decided:** D225 (Sapega 2026-10-18: Tails of Iron as the reference, Laboratory first, ladders + one-way platforms, no ability locks yet).
 - **Exists:** one-way tiles, drop-through. **Missing:** ladders, a multi-floor Laboratory.
