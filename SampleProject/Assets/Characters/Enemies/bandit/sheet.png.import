@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlrqakrymlo5q"
-path="res://.godot/imported/character-spritesheet (4).png-14ddfe59653f29ccb661c3eab1790a97.ctex"
+uid="uid://bin3do0sgwr6a"
+path="res://.godot/imported/sheet.png-c4235be5e46b03c93e5afde39d759c20.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Scripts/Systems/character-spritesheet (4).png"
-dest_files=["res://.godot/imported/character-spritesheet (4).png-14ddfe59653f29ccb661c3eab1790a97.ctex"]
+source_file="res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-c4235be5e46b03c93e5afde39d759c20.ctex"]
 
 [params]
 
