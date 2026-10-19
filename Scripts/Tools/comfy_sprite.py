@@ -51,6 +51,38 @@ ASTRIT_SLAM = (
     "in the same side view facing right: slamming her huge spiked shield forward with all her weight, leaning into the "
     "blow, the flame emblem on the shield blazing"  # «полум'я рветься зі щита» різала межа кадру
 )
+ALISIA_LOOK = (
+    "a cheerful young huntress with long silver-grey hair in a high ponytail, a soft smile, brown leather armour with gold "
+    "trim and a fur collar, a dark tattered cape and a wooden longbow in her hand"
+)
+ALISIA_FRONT = (
+    "turned to face the viewer: a front view of her standing idle, heterochromia — one bright green eye and one bright "
+    "sky-blue eye, clearly different colours, the silver "
+    "ponytail behind her head, the longbow in her hand"
+)
+ALISIA_STEP = (
+    "running to the right in the same side view facing right, %s leg stepping forward, %s leg back, the ponytail flying "
+    "behind her, the longbow in her hand"
+)
+ALISIA_AIM = "in the same side view facing right: raising her longbow in front of her, an arrow nocked"
+ALISIA_DRAW = "in the same side view facing right: drawing the bowstring back to her cheek, the longbow aimed forward"
+ALISIA_RELEASE = (
+    "in the same side view facing right: the arrow just released, her bow arm still stretched forward, her string hand "
+    "pulled back past her ear"
+)
+CAT_LOOK = (
+    "a small white tiger cub with brown stripes, blue eyes and glowing cyan spiral markings on its fur, standing on all "
+    "four paws, about half the height of the picture, at the bottom of the picture"
+)
+CAT_FRONT = "turned to face the viewer: sitting on its haunches, a front view with both blue eyes, its tail curled by its paws"
+CAT_RUN = "in the same side view facing right, running fast: %s"
+CAT_SWIPE = "in the same side view facing right: %s"
+BASE_ALISIA = ("Replace the character in picture 1 with the woman from picture 2 — " + ALISIA_LOOK + " — drawn in exactly the pixel art "
+        "style of the character in picture 1: the same big square pixels, chibi proportions, thick dark outline and flat "
+        "shading. Strict side view: her head and body in profile facing right, her eye and nose on the right side of her face, looking ahead to the right. Standing idle. Keep the plain flat magenta background.")
+BASE_CAT = ("Replace the character in picture 1 with the tiger cub from picture 2 — " + CAT_LOOK + " — drawn in exactly the pixel art "
+        "style of the character in picture 1: the same big square pixels, chibi proportions, thick dark outline and flat "
+        "shading. Strict side view: its head and body in profile facing right. Keep the plain flat magenta background.")
 # rows — рядки листа: (анімація, підказки кадрів); None — сам перший кадр (base).
 CHARACTERS = {
     "bandit": dict(
@@ -232,6 +264,42 @@ CHARACTERS = {
                 + [ASTRIT_CROUCH] * 2
                 + [None] * 2,
             ),
+        ],
+    ),
+    # Алісия — мисливиця з кошеням-тигром (lore): очі різні, праве зелене, ліве синє (Sapega) — видно у фас. Обидві з
+    # референсів Sapega (кандидати 2 і 2). Кадри — у пікселі героя (64 px ×1.5) замість кадрів з паку 128/48 px.
+    "alisia": dict(
+        rows_out="SampleProject/Assets/Characters/Companions/alisia",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/companions/alisia_1_hunter.webp",
+        seed=51,
+        colors=24,  # 16 губили синє око (рідкісний колір)
+        floor=58,
+        who="the same silver-haired huntress with the high ponytail, the brown leather armour with gold trim, the fur collar, "
+        "the dark cape and the wooden longbow",
+        base=BASE_ALISIA,
+        rows=[
+            ("idle", [ALISIA_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
+            ("enter", [ALISIA_STEP % ("left", "right")] * 3 + [None] * 3 + [ALISIA_STEP % ("right", "left")] * 3 + [None] * 3),
+            # кішку посилає на кадрі 4 (strike_frame) — тятива щойно відпущена
+            ("strike", [None, ALISIA_AIM, ALISIA_DRAW, ALISIA_DRAW] + [ALISIA_RELEASE] * 3 + [ALISIA_AIM, None, None]),
+        ],
+    ),
+    "cat": dict(
+        rows_out="SampleProject/Assets/Characters/Companions/cat",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/companions/cat_1_tiger.webp",
+        seed=61,
+        colors=16,
+        floor=58,
+        who="the same small white tiger cub with brown stripes, blue eyes and glowing cyan spiral markings",
+        base=BASE_CAT,
+        rows=[
+            ("idle", [CAT_FRONT] * 2 + ["BOB:48:idle:0"] * 2),
+            ("run", [CAT_RUN % "stretched out mid-leap, front paws reaching forward, hind legs extended behind"] * 3
+             + [CAT_RUN % "body bunched together, all four paws gathered under it"] * 3),
+            ("strike", [CAT_SWIPE % "rearing up on its hind legs, one front paw raised high with claws out"] * 2
+             + [CAT_SWIPE % "pouncing forward and swiping down with its claws"] * 2),
         ],
     ),
     # Нові кадри героя з його ж кадру художника (D239): Idle дихає, Jump/Fall, Roll, Climb — досі позичали біг і ходьбу.
@@ -574,7 +642,9 @@ if __name__ == "__main__":
     if char.get("palette") == "hero":
         pal_rgb = hero_palette()
     else:
-        pim = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(
+        # палітра з усіх кадрів: фас Алісиї має синє око, якого в профілі (першому кадрі) немає — ставало сірим
+        every = np.concatenate([rgb[op] for rgb, op in small.values()])
+        pim = Image.fromarray(every.astype(np.uint8)[None]).quantize(
             char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
         )
         pal_rgb = np.array(

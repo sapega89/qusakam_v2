@@ -46,7 +46,7 @@ an open question below, never filled in. Used by skills, enemies, companions and
   contracts** (Sapega, 2026-10-19: «це урізен жрець який поклоняється богу контрактів») — the coin is that god's sign.
   Look (Sapega's reference, chosen «A + монета й обруч»): a chubby bald human with a sly smile and a forehead tattoo,
   a brown robe over a dark tunic, a golden coin amulet and an iron circlet of contracts.
-- **Алісия** — a **hunter with a cat**.
+- **Алісия** — a **hunter with a cat** (a white tiger cub); she has **one green and one blue eye** (Sapega, 2026-10-19).
 - All three are Laboratory companions (D209).
 - The **City Gates guard** — the first assist, a tutorial (D209).
 

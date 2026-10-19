@@ -109,10 +109,10 @@ const COMPANIONS := "res://SampleProject/Assets/Characters/Companions/%s/%s.png"
 const NPCS := [["alisia", Vector2(520, 384), true], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]]
 ## Розмір кадру й зсув/масштаб — як у сценах асистів (companion_<id>.tscn, assist_cat.tscn).
 const NPC_LOOK := {
-	"alisia": [128, Vector2(-64, -108), 1.0],
+	"alisia": [64, Vector2(-32, -58), 1.5],
 	"astrit": [64, Vector2(-32, -58), 1.5],
 	"urizen": [64, Vector2(-32, -58), 1.5],
-	"cat": [48, Vector2(-24, -48), 1.0],
+	"cat": [64, Vector2(-32, -58), 1.5],
 }
 const CAT_AT := Vector2(-40, 0)
 
