@@ -1,7 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DesertOasis/bg4/plan1.png" id="plan1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DesertOasis/bg4/plan2.png" id="plan2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_far.png" id="plan3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png" id="plan4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DesertOasis/bg4/plan5.png" id="plan5"]

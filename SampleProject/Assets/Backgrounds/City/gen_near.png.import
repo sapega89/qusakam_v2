@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ca6rl7cw6qvnl"
-path="res://.godot/imported/mayor_hall_wall.png-52212507b284850ac62c34e6c9ca73d1.ctex"
+uid="uid://1vsqwhrlf3lf"
+path="res://.godot/imported/gen_near.png-cd6873775c9522698fbc8ce191ec462e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/Town/mayor_hall_wall.png"
-dest_files=["res://.godot/imported/mayor_hall_wall.png-52212507b284850ac62c34e6c9ca73d1.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/City/gen_near.png"
+dest_files=["res://.godot/imported/gen_near.png-cd6873775c9522698fbc8ce191ec462e.ctex"]
 
 [params]
 

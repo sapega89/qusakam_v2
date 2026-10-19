@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvygwvqkuejca"
-path="res://.godot/imported/city_far.png-56077723caa18c961c3f922b2128b670.ctex"
+uid="uid://njwu51ddg8jh"
+path="res://.godot/imported/gen_far.png-b7a1461f40a7d5685c756cf7e5ee3c00.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/Town/city_far.png"
-dest_files=["res://.godot/imported/city_far.png-56077723caa18c961c3f922b2128b670.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/City/gen_far.png"
+dest_files=["res://.godot/imported/gen_far.png-b7a1461f40a7d5685c756cf7e5ee3c00.ctex"]
 
 [params]
 

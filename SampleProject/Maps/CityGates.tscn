@@ -7,7 +7,9 @@
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="AudioStream" uid="uid://bta8c32mlb7vw" path="res://SampleProject/Resources/Audio/Music/sunblade_horizon.ogg" id="music_track"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_1.tscn" id="backdrop"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_open.tscn" id="backdrop"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_mid.png" id="gates_mid"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -17,6 +19,20 @@ script = ExtResource("1_gates")
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 position = Vector2(0, -3)
+
+[node name="Mid" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.7, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Mid"]
+material = ExtResource("blur_near")
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("gates_mid")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1306653119]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://675xvvqrpil5"
-path="res://.godot/imported/city_near.png-5cb3edfde9ad73ec530aaaa17453e1ac.ctex"
+uid="uid://ioge5cbkphph"
+path="res://.godot/imported/gen_wall.png-899f254b262a171b85ccdd9cd8072a23.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/Town/city_near.png"
-dest_files=["res://.godot/imported/city_near.png-5cb3edfde9ad73ec530aaaa17453e1ac.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/Hall/gen_wall.png"
+dest_files=["res://.godot/imported/gen_wall.png-899f254b262a171b85ccdd9cd8072a23.ctex"]
 
 [params]
 

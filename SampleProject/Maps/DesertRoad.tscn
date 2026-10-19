@@ -9,8 +9,10 @@
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="Script" uid="uid://bj4inntnujsms" path="res://SampleProject/Scripts/Gameplay/GateController.gd" id="9_gate"]
 [ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_2.tscn" id="11_backdrop"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_open.tscn" id="11_backdrop"]
 [ext_resource type="AudioStream" uid="uid://by3s2ddywfdti" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="music_track"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_mid.png" id="road_mid"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -23,6 +25,20 @@ script = ExtResource("1_desert")
 
 [node name="Backdrop" parent="." instance=ExtResource("11_backdrop")]
 position = Vector2(0, -3)
+
+[node name="Mid" type="Parallax2D" parent="."]
+z_index = -9
+scroll_scale = Vector2(0.6, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Mid"]
+material = ExtResource("blur_near")
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("road_mid")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="." unique_id=857881542]
 

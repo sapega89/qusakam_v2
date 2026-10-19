@@ -1,9 +1,9 @@
 [gd_scene format=4 uid="uid://cd2gmmoyuovq8"]
 
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="1_tileset"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_3.tscn" id="backdrop"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Town/city_far.png" id="city_far"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Town/city_near.png" id="city_near"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_open.tscn" id="backdrop"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_far.png" id="city_far"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_near.png" id="city_near"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="5_trigger"]
@@ -34,6 +34,7 @@ centered = false
 
 [node name="CityNear" type="Parallax2D" parent="."]
 z_index = -9
+modulate = Color(0.9, 0.88, 0.94, 1)
 scroll_scale = Vector2(0.85, 1)
 repeat_size = Vector2(864, 0)
 repeat_times = 4

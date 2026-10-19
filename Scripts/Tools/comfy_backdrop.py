@@ -124,7 +124,8 @@ LAYERS = {
         "plants, a few rocks, big clay jars and a broken wooden fence, with wide gaps between the groups, "
         f"{MAGENTA}",
     ),
-    # Решта кімнат (D237): спільні з каньйоном небо, хмари й мези; свій середній і передній план.
+    # Решта кімнат (D237): спільні з каньйоном небо, хмари й мези; свій середній план. Переднього плану в кімнатах
+    # заввишки в одну клітинку немає: камера показує рівно до низу бруківки, нижче місця нема.
     "Road/gen_mid": dict(
         seed=41,
         rows=200,
@@ -137,19 +138,6 @@ LAYERS = {
         colors=12,
         prompt="rolling sand dunes with weathered sandstone rock formations, a natural rock arch and broken ancient stone "
         f"pillars half buried in the sand, spanning the full width and reaching the bottom edge, {CHROMA}",
-    ),
-    "Road/gen_front": dict(
-        seed=43,
-        rows=110,
-        top=H - 110,
-        seam="model",
-        key="magenta",
-        shade=0.6,
-        fill=False,
-        haze=0,
-        colors=6,
-        prompt="foreground rocks and desert plants along the bottom edge: boulders, dry thorny shrubs, spiky agave, an "
-        f"animal skull and a toppled stone block, with wide gaps between the groups, {MAGENTA}",
     ),
     "Gates/gen_mid": dict(
         seed=51,
@@ -192,19 +180,6 @@ LAYERS = {
         prompt="a row of tall city houses side by side: two- and three-storey sandstone and plastered houses with arched "
         "windows, wooden balconies, colourful striped market awnings, hanging carpets and lanterns, market stalls "
         f"with clay pots and baskets in front, spanning the full width, standing on the bottom edge, {MAGENTA}",
-    ),
-    "City/gen_front": dict(
-        seed=65,
-        rows=110,
-        top=H - 110,
-        seam="model",
-        key="magenta",
-        shade=0.6,
-        fill=False,
-        haze=0,
-        colors=6,
-        prompt="foreground market clutter along the bottom edge: wooden crates, grain sacks, big clay jars, baskets of "
-        f"fruit and a wooden cart wheel, with wide gaps between the groups, {MAGENTA}",
     ),
     "LabOut/gen_mid": dict(
         seed=73,
@@ -250,33 +225,6 @@ LAYERS = {
         prompt="a second row of desert village rooftops seen from the street: flat adobe roofs at different heights, a "
         "small round dome and a square watchtower, date palms with olive green fronds rising between the roofs, simple "
         f"shapes with little detail, spanning the full width, standing on the bottom edge, {MAGENTA}",
-    ),
-    # Свій передній план для брами й оази: той самий череп три кімнати поспіль (критик).
-    "Gates/gen_front": dict(
-        seed=53,
-        rows=110,
-        top=H - 110,
-        seam="model",
-        key="magenta",
-        shade=0.6,
-        fill=False,
-        haze=0,
-        colors=6,
-        prompt="foreground along the bottom edge: boulders, dry thorny shrubs, a toppled carved stone block, broken "
-        f"spears and a fallen wooden barricade, with wide gaps between the groups, {MAGENTA}",
-    ),
-    "LabOut/gen_front": dict(
-        seed=75,
-        rows=110,
-        top=H - 110,
-        seam="model",
-        key="magenta",
-        shade=0.6,
-        fill=False,
-        haze=0,
-        colors=6,
-        prompt="foreground along the bottom edge: tall reeds and papyrus, broad water plants, smooth river stones and a "
-        f"few small palm shoots, with wide gaps between the groups, {MAGENTA}",
     ),
 }
 
