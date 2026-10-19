@@ -1,4 +1,4 @@
-"""Малює шари фону для поселень (D219): будинки села, мур і забудова міста, стіна зали мера.
+"""Малює шари фону для поселень (D219): мур і забудова міста, стіна зали мера (будинки села — згенеровані, D236).
 
 Піксель-арт у масштабі фону Desert Oasis (текстура 576 px завширшки, у грі ×1.5 = 864 = клітинка MetSys).
 Світло рівне, згори, без сонця й довгих тіней ([[lore]]). Низ будівель — на рядку 256 текстури (= підлога
@@ -133,37 +133,6 @@ def house(p, rng, x0, w, h, pal=ADOBE, storeys=1):
         beams(p, ux, uw, y0 - uh + 4, rng)
         window(p, ux + uw // 2 - 2, y0 - uh + 8, 5, 6, WOOD)
     return y0
-
-
-def village():
-    rng = random.Random(7)
-    p = Pix(W, 324)
-    x = 10
-    plan = [
-        (64, 42, ADOBE, 1),
-        (0, 0, None, 0),
-        (78, 52, ADOBE_RED, 2),
-        (56, 38, ADOBE, 1),
-        (0, 0, None, 0),
-        (90, 46, ADOBE, 2),
-        (60, 40, ADOBE_RED, 1),
-        (0, 0, None, 0),
-    ]
-    for w, h, pal, st in plan:
-        if pal is None:
-            x += 26  # прогалина — там видно пальми оазису з фону
-            continue
-        y0 = house(p, rng, x, w, h, pal, st)
-        awning(p, x + 6, min(24, w - 12), y0 + h - 22, rng.choice(CLOTH))
-        x += w + rng.randrange(6, 14)
-    # глеки й низький тин між будинками
-    for _ in range(9):
-        jx = rng.randrange(8, W - 8)
-        for y in range(BASE - 7, BASE):
-            for xx in range(jx - 3, jx + 4):
-                if (xx - jx) ** 2 / 9 + (y - BASE + 4) ** 2 / 12 <= 1:
-                    p.put(xx, y, ADOBE_RED[2] if xx > jx else ADOBE_RED[1])
-    p.im.save(OUT + "village_houses.png")
 
 
 def haze(c, k=0.45, sky=(206, 214, 226)):
@@ -310,7 +279,6 @@ if __name__ == "__main__":
     import os
 
     os.makedirs(OUT, exist_ok=True)
-    village()
     city_far()
     city_near()
     mayor_hall()

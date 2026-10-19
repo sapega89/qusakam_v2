@@ -4,7 +4,7 @@
 W×H (864×486 світу при ×1.5); шар, що стоїть на землі, генерується смугою висотою rows від рядка top.
 Пікселі робить зменшення, не модель: її «піксель-арт» не збігається з сіткою гри.
 Генерації кешуються в CACHE (за підказкою, зерном, висотою): зміна обробки не кличе модель знову.
-Потрібен запущений ComfyUI з API і моделі з graph(). Шари — LAYERS, кладе в OUT.
+Потрібен запущений ComfyUI з API і моделі з graph(). Шари — LAYERS: назва = <кімната>/<файл> у OUT.
 Запуск: python Scripts/Tools/comfy_backdrop.py [шар ...]
 """
 
@@ -23,12 +23,13 @@ import numpy as np
 from PIL import Image
 
 API = "http://127.0.0.1:8000"
-OUT = "SampleProject/Assets/Backgrounds/Canyon/"
+OUT = "SampleProject/Assets/Backgrounds/"
 CACHE = os.path.join(tempfile.gettempdir(), "comfy_backdrop")
 W, H, SCALE = 576, 324, 3
 GW = W * SCALE
 SEAM = 120  # пів ширини смуги шва, яку перемальовує модель, px генерації
-GREEN = np.array([0, 255, 0], np.float32)
+# Кольори хромакею: зелений; пурпуровий — де є зелень (пальми, кущі), яку зелений ключ вирізав би.
+KEY_RGB = {"green": np.array([0, 255, 0], np.float32), "magenta": np.array([255, 0, 255], np.float32)}
 # Серпанок далини — колір неба біля обрію (ним же були в серпанку процедурні стіни D227).
 HAZE = np.array([214, 214, 224], np.float32)
 # Без назв ігор і без «сонця» навіть із «no»: модель пише назву текстом просто в небі й малює диск
@@ -39,49 +40,83 @@ STYLE = (
     "soft painterly shading, warm highlights and cool violet shadows"
 )
 CHROMA = "on a solid flat chroma key green (#00FF00) background"
+MAGENTA = "on a solid flat magenta (#FF00FF) background"
 # Неба тут немає: модель домальовує в ньому промені, землю й текст, тож небо — градієнт із паку (plan5).
 # seam — як шар стає безшовним: model — модель перемальовує смугу шва (суцільний краєвид), blend —
 # перехресне змішування з собою, зсунутим на пів ширини (плавний градієнт без деталей), drop — прибирається все,
-# що торкається бічних і нижнього країв (окремі предмети в повітрі: хмари). key — зелений фон
-# прозорий; fill — під силуетом суцільно до низу (шар стоїть на землі); haze — частка серпанку
-# (модель на «туманне» сірить і фон).
+# що торкається бічних і нижнього країв (окремі предмети в повітрі: хмари). key — колір фону, що стає
+# прозорим (green / magenta, None — без прозорості); fill — під силуетом суцільно до низу (шар стоїть на землі); haze — частка серпанку
+# (модель на «туманне» сірить і фон); shade — затемнення (передній план — майже силует).
 LAYERS = {
-    "gen_clouds": dict(
+    "Canyon/gen_clouds": dict(
         seed=7,
         rows=H,
         top=0,
         seam="drop",
-        key=True,
+        key="green",
+        shade=0,
         fill=False,
         haze=0,
         colors=6,
         prompt="three big soft fluffy cumulus clouds in pale pink and lavender with violet shadows, floating "
         f"in the middle with empty space around them, {CHROMA}",
     ),
-    "gen_far": dict(
+    "Canyon/gen_far": dict(
         seed=11,
         rows=200,
         top=70,
         seam="model",
-        key=True,
+        key="green",
+        shade=0,
         fill=True,
         haze=0.35,
         colors=8,
         prompt="a distant range of flat-topped desert mesas and buttes, sandy beige and dusty violet rock with violet "
         f"shadows, spanning the full width and reaching the bottom edge, {CHROMA}",
     ),
-    "gen_walls": dict(
+    "Canyon/gen_walls": dict(
         seed=5,
         rows=240,
         top=H - 240,
         seam="model",
-        key=True,
+        key="green",
+        shade=0,
         fill=True,
         haze=0.25,
         colors=12,
         prompt="a long wall of steep red-orange sandstone canyon cliffs with horizontal rock strata and jagged flat "
         "mesa tops, spanning the full width and filling the lower part down to the bottom edge, warm light on "
         f"the tops, cool violet shadows in the cracks, {CHROMA}",
+    ),
+    # Село (D236): будинки за площиною героя (основи — рядок 258 = підлога y 384), передній план — внизу кадру.
+    "Village/gen_houses": dict(
+        seed=21,
+        rows=170,
+        top=90,
+        seam="model",
+        key="magenta",
+        shade=0,
+        fill=False,
+        haze=0.1,
+        colors=16,
+        prompt="a row of small desert village houses side by side: flat-roofed adobe and sandstone houses with "
+        "wooden roof beams sticking out, arched wooden doors, small shuttered windows, striped red and blue cloth "
+        "awnings, clay pots and baskets, a few date palms between the houses, spanning the full width, standing "
+        f"on the bottom edge, {MAGENTA}",
+    ),
+    "Village/gen_front": dict(
+        seed=31,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=True,
+        haze=0,
+        colors=6,
+        prompt="foreground plants and objects along the bottom edge: dry desert shrubs, tall reeds, spiky agave "
+        "plants, a few rocks, big clay jars and a broken wooden fence, with wide gaps between the groups, "
+        f"{MAGENTA}",
     ),
 }
 
@@ -219,11 +254,12 @@ def generate(layer):
 
 
 def shrink(img, key):
-    """Зелений фон — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів."""
+    """Фон кольору key — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів."""
     rows = img.shape[0] // SCALE
     a = np.ones(img.shape[:2], np.float32)
     if key:
-        a = (np.linalg.norm(img - GREEN, axis=2) > 170).astype(np.float32)
+        a = (np.linalg.norm(img - KEY_RGB[key], axis=2) > 170).astype(np.float32)
+    if key == "green":
         img[..., 1] = np.minimum(
             img[..., 1], np.maximum(img[..., 0], img[..., 2])
         )  # зелений відсвіт країв
@@ -290,8 +326,7 @@ if __name__ == "__main__":
         opaque[layer["top"] : layer["top"] + len(strip)] = strip_opaque
         if layer["fill"]:
             rgb, opaque = fill_down(rgb, opaque)
-        rgb = rgb * (1 - layer["haze"]) + HAZE * layer["haze"]
-        Image.fromarray(quantize(rgb, opaque, layer["colors"])).save(
-            OUT + name + ".png"
-        )
+        rgb = (rgb * (1 - layer["haze"]) + HAZE * layer["haze"]) * (1 - layer["shade"])
+        os.makedirs(os.path.dirname(OUT + name), exist_ok=True)
+        Image.fromarray(quantize(rgb, opaque, layer["colors"])).save(OUT + name + ".png")
         print("drawn", OUT + name + ".png", flush=True)

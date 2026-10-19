@@ -4,11 +4,9 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="2_ctv3h"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn" id="2_jxins"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_6wo6x"]
-[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_mid.tres" id="3_yl1gb"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="4_6wo6x"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/pride_rock.png" id="4_7fdhy"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png" id="4_jxins"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_walls.png" id="4_yl1gb"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="5_5grvp"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/CanyonExitTrigger.gd" id="5_exit"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gorge.png" id="6_xvckv"]
@@ -20,7 +18,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/bridge_post.png" id="12_5grvp"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5grvp"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6ovr1"]
 size = Vector2(60, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
@@ -29,26 +27,26 @@ size = Vector2(32, 31.9999)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6wo6x"]
 bg_color = Color(0.02, 0.04, 0.08, 0.95)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g66ig"]
+size = Vector2(48, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yl1gb"]
+size = Vector2(48, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5grvp"]
+size = Vector2(48, 480)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_owsp2"]
-size = Vector2(48, 480)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_x588o"]
-size = Vector2(48, 480)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_kfhiv"]
-size = Vector2(48, 480)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_80v2n"]
 size = Vector2(740, 64)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_gw6rw"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x588o"]
 blend_mode = 3
 
-[sub_resource type="Gradient" id="Gradient_g6gx7"]
+[sub_resource type="Gradient" id="Gradient_kfhiv"]
 colors = PackedColorArray(1, 1, 1, 1, 0.55, 0.5, 0.5, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_5y0op"]
-gradient = SubResource("Gradient_g6gx7")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_80v2n"]
+gradient = SubResource("Gradient_kfhiv")
 width = 1792
 height = 544
 fill_to = Vector2(0, 1)
@@ -56,7 +54,7 @@ fill_to = Vector2(0, 1)
 [node name="Canyon" type="Node2D" unique_id=1287215510]
 script = ExtResource("1_canyon")
 
-[node name="DepthUnderlay" type="ColorRect" parent="." unique_id=459016788]
+[node name="DepthUnderlay" type="ColorRect" parent="." unique_id=136586350]
 z_index = -11
 offset_top = 380.0
 offset_right = 2592.0
@@ -64,32 +62,17 @@ offset_bottom = 1024.0
 mouse_filter = 2
 color = Color(0.24, 0.15, 0.12, 1)
 
-[node name="Backdrop" type="Node2D" parent="." unique_id=1631206323 instance=ExtResource("2_jxins")]
+[node name="Backdrop" type="Node2D" parent="." unique_id=566414002 instance=ExtResource("2_jxins")]
 z_index = -10
 position = Vector2(0, -3)
 
-[node name="CanyonWalls" type="Parallax2D" parent="." unique_id=1614819625]
-modulate = Color(1.04, 1.02, 1.12, 1)
+[node name="CanyonDepths" type="Parallax2D" parent="." unique_id=1414490363]
 z_index = -9
 scroll_scale = Vector2(0.45, 1)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
-[node name="Sprite" type="Sprite2D" parent="CanyonWalls" unique_id=869267649]
-texture_filter = 1
-material = ExtResource("3_yl1gb")
-position = Vector2(0, 45)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("4_yl1gb")
-centered = false
-
-[node name="CanyonDepths" type="Parallax2D" parent="." unique_id=1270105245]
-z_index = -9
-scroll_scale = Vector2(0.45, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 4
-
-[node name="Sprite" type="Sprite2D" parent="CanyonDepths" unique_id=1315699775]
+[node name="Sprite" type="Sprite2D" parent="CanyonDepths" unique_id=919936459]
 texture_filter = 1
 material = ExtResource("5_5grvp")
 position = Vector2(0, 380)
@@ -97,7 +80,7 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("4_jxins")
 centered = false
 
-[node name="PrideRock" type="Sprite2D" parent="." unique_id=2041424461]
+[node name="PrideRock" type="Sprite2D" parent="." unique_id=474445831]
 texture_filter = 1
 position = Vector2(1056, 64)
 scale = Vector2(1.5, 1.5)
@@ -126,194 +109,194 @@ visible = false
 tile_map_data = PackedByteArray("AAAoAAMAAQAIAAcAAAApAAMAAQAIAAcAAAAqAAMAAQAIAAcAAAArAAMAAQAIAAcAAAAsAAMAAQAIAAcAAAAtAAMAAQAIAAcAAAAuAAMAAQAIAAcAAAAvAAMAAQAIAAcAAAAwAAMAAQAIAAcAAAAxAAMAAQAIAAcAAAAjAAQAAQAIAAcAAAAkAAQAAQAIAAcAAAAlAAQAAQAIAAcAAAAmAAQAAQAIAAcAAAAnAAQAAQAIAAcAAAAoAAQAAQAIAAcAAAApAAQAAQAIAAcAAAAqAAQAAQAIAAcAAAArAAQAAQAIAAcAAAAsAAQAAQAIAAcAAAAtAAQAAQAIAAcAAAAuAAQAAQAIAAcAAAAvAAQAAQAIAAcAAAAwAAQAAQAIAAcAAAAxAAQAAQAIAAcAAAAyAAQAAQAIAAcAAAAzAAQAAQAIAAcAAAAlAAUAAQAIAAcAAAAmAAUAAQAIAAcAAAAnAAUAAQAIAAcAAAAoAAUAAQAIAAcAAAApAAUAAQAIAAcAAAAqAAUAAQAIAAcAAAArAAUAAQAIAAcAAAAsAAUAAQAIAAcAAAAtAAUAAQAIAAcAAAAuAAUAAQAIAAcAAAAvAAUAAQAIAAcAAAAwAAUAAQAIAAcAAAAxAAUAAQAIAAcAAAAyAAUAAQAIAAcAAAAzAAUAAQAIAAcAAAA7AAoAAQABAAAAAAA8AAoAAQABAAAAAAA9AAoAAQABAAAAAAA4AAgAAQABAAAAAAA5AAgAAQABAAAAAAA6AAgAAQABAAAAAAA1AAYAAQABAAAAAAA2AAYAAQABAAAAAAA3AAYAAQABAAAAAAAAAAwAAQAIAAcAAAAAAA0AAQAIAAcAAAAAAA4AAQAIAAcAAAAAAA8AAQAIAAcAAAAQAA8AAQAIAAcAAAARAA8AAQAIAAcAAAASAA8AAQAIAAcAAAATAA8AAQAIAAcAAAAUAA8AAQAIAAcAAAAVAA8AAQAIAAcAAAAWAA8AAQAIAAcAAAAXAA8AAQAIAAcAAAAYAA8AAQAIAAcAAAAAABAAAQAIAAcAAAASABAAAQAIAAcAAAATABAAAQAIAAcAAAAUABAAAQAIAAcAAAAVABAAAQAIAAcAAAAWABAAAQAIAAcAAAAXABAAAQAIAAcAAAAYABAAAQAIAAcAAAAAABEAAQAIAAcAAAAAABIAAQAIAAcAAAABABIAAQAIAAcAAAACABIAAQAIAAcAAAADABIAAQAIAAcAAAAEABIAAQAIAAcAAAAFABIAAQAIAAcAAAAGABIAAQAIAAcAAAAHABIAAQAIAAcAAAAIABIAAQAIAAcAAAAAABMAAQAIAAcAAAABABMAAQAIAAcAAAACABMAAQAIAAcAAAADABMAAQAIAAcAAAAEABMAAQAIAAcAAAAFABMAAQAIAAcAAAAGABMAAQAIAAcAAAAAABQAAQAIAAcAAAAAABUAAQAIAAcAAAANABUAAQAIAAcAAAAOABUAAQAIAAcAAAAPABUAAQAIAAcAAAAQABUAAQAIAAcAAAARABUAAQAIAAcAAAASABUAAQAIAAcAAAATABUAAQAIAAcAAAAUABUAAQAIAAcAAAAVABUAAQAIAAcAAAAWABUAAQAIAAcAAAAXABUAAQAIAAcAAAAYABUAAQAIAAcAAAAAABYAAQAIAAcAAAAPABYAAQAIAAcAAAAQABYAAQAIAAcAAAARABYAAQAIAAcAAAASABYAAQAIAAcAAAATABYAAQAIAAcAAAAUABYAAQAIAAcAAAAVABYAAQAIAAcAAAAWABYAAQAIAAcAAAAXABYAAQAIAAcAAAAYABYAAQAIAAcAAAAAABcAAQAIAAcAAAAAABgAAQAIAAcAAAABABgAAQAIAAcAAAACABgAAQAIAAcAAAADABgAAQAIAAcAAAAEABgAAQAIAAcAAAAFABgAAQAIAAcAAAAGABgAAQAIAAcAAAAHABgAAQAIAAcAAAAAABkAAQAIAAcAAAABABkAAQAIAAcAAAACABkAAQAIAAcAAAADABkAAQAIAAcAAAAEABkAAQAIAAcAAAAFABkAAQAIAAcAAAAAABoAAQAIAAcAAAAAABsAAQAIAAcAAAABABsAAQAIAAcAAAACABsAAQAIAAcAAAADABsAAQAIAAcAAAAEABsAAQAIAAcAAAAFABsAAQAIAAcAAAAGABsAAQAIAAcAAAAHABsAAQAIAAcAAAAIABsAAQAIAAcAAAAJABsAAQAIAAcAAAAKABsAAQAIAAcAAAALABsAAQAIAAcAAAAMABsAAQAIAAcAAAANABsAAQAIAAcAAAAOABsAAQAIAAcAAAAPABsAAQAIAAcAAAAQABsAAQAIAAcAAAARABsAAQAIAAcAAAASABsAAQAIAAcAAAATABsAAQAIAAcAAAAUABsAAQAIAAcAAAAVABsAAQAIAAcAAAAWABsAAQAIAAcAAAAXABsAAQAIAAcAAAAYABsAAQAIAAcAAAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAcAAAADABwAAQAIAAcAAAAEABwAAQAIAAcAAAAFABwAAQAIAAcAAAAGABwAAQAIAAcAAAAHABwAAQAIAAcAAAAIABwAAQAIAAcAAAAJABwAAQAIAAcAAAAKABwAAQAIAAcAAAALABwAAQAIAAcAAAAMABwAAQAIAAcAAAANABwAAQAIAAcAAAAOABwAAQAIAAcAAAAPABwAAQAIAAcAAAAQABwAAQAIAAcAAAARABwAAQAIAAcAAAASABwAAQAIAAcAAAATABwAAQAIAAcAAAAUABwAAQAIAAcAAAAVABwAAQAIAAcAAAAWABwAAQAIAAcAAAAXABwAAQAIAAcAAAAYABwAAQAIAAcAAAAAAB0AAQAIAAcAAAABAB0AAQAIAAcAAAACAB0AAQAIAAcAAAADAB0AAQAIAAcAAAAEAB0AAQAIAAcAAAAFAB0AAQAIAAcAAAAGAB0AAQAIAAcAAAAHAB0AAQAIAAcAAAAIAB0AAQAIAAcAAAAJAB0AAQAIAAcAAAAKAB0AAQAIAAcAAAALAB0AAQAIAAcAAAAMAB0AAQAIAAcAAAANAB0AAQAIAAcAAAAOAB0AAQAIAAcAAAAPAB0AAQAIAAcAAAAQAB0AAQAIAAcAAAARAB0AAQAIAAcAAAASAB0AAQAIAAcAAAATAB0AAQAIAAcAAAAUAB0AAQAIAAcAAAAVAB0AAQAIAAcAAAAWAB0AAQAIAAcAAAAXAB0AAQAIAAcAAAAYAB0AAQAIAAcAAAA=")
 tile_set = ExtResource("2_ctv3h")
 
-[node name="PlateauBody" type="Sprite2D" parent="." unique_id=1004822947]
+[node name="PlateauBody" type="Sprite2D" parent="." unique_id=1647623356]
 texture_filter = 1
 position = Vector2(800, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("7_xvckv")
 centered = false
 
-[node name="Gorge" type="Sprite2D" parent="." unique_id=957326774]
+[node name="Gorge" type="Sprite2D" parent="." unique_id=3929252]
 texture_filter = 1
 position = Vector2(0, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("6_xvckv")
 centered = false
 
-[node name="Bridge" type="Node2D" parent="." unique_id=1613989617]
+[node name="Bridge" type="Node2D" parent="." unique_id=96412185]
 script = ExtResource("9_6ovr1")
 
-[node name="Pieces" type="Node2D" parent="Bridge" unique_id=1036453292]
+[node name="Pieces" type="Node2D" parent="Bridge" unique_id=119283436]
 
-[node name="Plank1" type="Sprite2D" parent="Bridge/Pieces" unique_id=277533949]
+[node name="Plank1" type="Sprite2D" parent="Bridge/Pieces" unique_id=756066688]
 texture_filter = 1
 position = Vector2(48, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank2" type="Sprite2D" parent="Bridge/Pieces" unique_id=2109544629]
+[node name="Plank2" type="Sprite2D" parent="Bridge/Pieces" unique_id=1711692382]
 texture_filter = 1
 position = Vector2(80, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank3" type="Sprite2D" parent="Bridge/Pieces" unique_id=1629565352]
+[node name="Plank3" type="Sprite2D" parent="Bridge/Pieces" unique_id=1291425426]
 texture_filter = 1
 position = Vector2(112, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank4" type="Sprite2D" parent="Bridge/Pieces" unique_id=1822261067]
+[node name="Plank4" type="Sprite2D" parent="Bridge/Pieces" unique_id=73424331]
 texture_filter = 1
 position = Vector2(144, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank5" type="Sprite2D" parent="Bridge/Pieces" unique_id=815873667]
+[node name="Plank5" type="Sprite2D" parent="Bridge/Pieces" unique_id=1281193580]
 texture_filter = 1
 position = Vector2(176, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank6" type="Sprite2D" parent="Bridge/Pieces" unique_id=276650844]
+[node name="Plank6" type="Sprite2D" parent="Bridge/Pieces" unique_id=184108378]
 texture_filter = 1
 position = Vector2(208, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank7" type="Sprite2D" parent="Bridge/Pieces" unique_id=800225235]
+[node name="Plank7" type="Sprite2D" parent="Bridge/Pieces" unique_id=258416596]
 texture_filter = 1
 position = Vector2(240, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank8" type="Sprite2D" parent="Bridge/Pieces" unique_id=762517471]
+[node name="Plank8" type="Sprite2D" parent="Bridge/Pieces" unique_id=844517204]
 texture_filter = 1
 position = Vector2(272, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank9" type="Sprite2D" parent="Bridge/Pieces" unique_id=15860628]
+[node name="Plank9" type="Sprite2D" parent="Bridge/Pieces" unique_id=229655551]
 texture_filter = 1
 position = Vector2(304, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank10" type="Sprite2D" parent="Bridge/Pieces" unique_id=167751160]
+[node name="Plank10" type="Sprite2D" parent="Bridge/Pieces" unique_id=1249699863]
 texture_filter = 1
 position = Vector2(336, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank11" type="Sprite2D" parent="Bridge/Pieces" unique_id=526092392]
+[node name="Plank11" type="Sprite2D" parent="Bridge/Pieces" unique_id=636966255]
 texture_filter = 1
 position = Vector2(368, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank12" type="Sprite2D" parent="Bridge/Pieces" unique_id=1009566947]
+[node name="Plank12" type="Sprite2D" parent="Bridge/Pieces" unique_id=1756521370]
 texture_filter = 1
 position = Vector2(400, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank13" type="Sprite2D" parent="Bridge/Pieces" unique_id=1255133201]
+[node name="Plank13" type="Sprite2D" parent="Bridge/Pieces" unique_id=510146838]
 texture_filter = 1
 position = Vector2(432, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank14" type="Sprite2D" parent="Bridge/Pieces" unique_id=2087099824]
+[node name="Plank14" type="Sprite2D" parent="Bridge/Pieces" unique_id=1553129996]
 texture_filter = 1
 position = Vector2(464, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank15" type="Sprite2D" parent="Bridge/Pieces" unique_id=656589626]
+[node name="Plank15" type="Sprite2D" parent="Bridge/Pieces" unique_id=393796678]
 texture_filter = 1
 position = Vector2(496, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank16" type="Sprite2D" parent="Bridge/Pieces" unique_id=321171894]
+[node name="Plank16" type="Sprite2D" parent="Bridge/Pieces" unique_id=2021464616]
 texture_filter = 1
 position = Vector2(528, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank17" type="Sprite2D" parent="Bridge/Pieces" unique_id=1032159078]
+[node name="Plank17" type="Sprite2D" parent="Bridge/Pieces" unique_id=1110068734]
 texture_filter = 1
 position = Vector2(560, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank18" type="Sprite2D" parent="Bridge/Pieces" unique_id=1474700974]
+[node name="Plank18" type="Sprite2D" parent="Bridge/Pieces" unique_id=630579963]
 texture_filter = 1
 position = Vector2(592, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank19" type="Sprite2D" parent="Bridge/Pieces" unique_id=1945062573]
+[node name="Plank19" type="Sprite2D" parent="Bridge/Pieces" unique_id=2096887813]
 texture_filter = 1
 position = Vector2(624, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank20" type="Sprite2D" parent="Bridge/Pieces" unique_id=1431602045]
+[node name="Plank20" type="Sprite2D" parent="Bridge/Pieces" unique_id=902569805]
 texture_filter = 1
 position = Vector2(656, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank21" type="Sprite2D" parent="Bridge/Pieces" unique_id=427421883]
+[node name="Plank21" type="Sprite2D" parent="Bridge/Pieces" unique_id=913845884]
 texture_filter = 1
 position = Vector2(688, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank22" type="Sprite2D" parent="Bridge/Pieces" unique_id=299327547]
+[node name="Plank22" type="Sprite2D" parent="Bridge/Pieces" unique_id=1511833816]
 texture_filter = 1
 position = Vector2(720, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank23" type="Sprite2D" parent="Bridge/Pieces" unique_id=1671361181]
+[node name="Plank23" type="Sprite2D" parent="Bridge/Pieces" unique_id=1186816182]
 texture_filter = 1
 position = Vector2(752, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Plank24" type="Sprite2D" parent="Bridge/Pieces" unique_id=1881391278]
+[node name="Plank24" type="Sprite2D" parent="Bridge/Pieces" unique_id=1036211924]
 texture_filter = 1
 position = Vector2(784, 384)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_g66ig")
 offset = Vector2(0, 4.5)
 
-[node name="Rail" type="Sprite2D" parent="Bridge/Pieces" unique_id=142243145]
+[node name="Rail" type="Sprite2D" parent="Bridge/Pieces" unique_id=1647185365]
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(26, 352)
@@ -323,25 +306,25 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 513.3333, 3)
 
-[node name="Post1" type="Sprite2D" parent="Bridge" unique_id=1201963698]
+[node name="Post1" type="Sprite2D" parent="Bridge" unique_id=1482668087]
 texture_filter = 1
 position = Vector2(20, 340)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("12_5grvp")
 centered = false
 
-[node name="Post2" type="Sprite2D" parent="Bridge" unique_id=810105247]
+[node name="Post2" type="Sprite2D" parent="Bridge" unique_id=1129231279]
 texture_filter = 1
 position = Vector2(790, 340)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("12_5grvp")
 centered = false
 
-[node name="CollapseTrigger" type="Area2D" parent="Bridge" unique_id=83735437]
+[node name="CollapseTrigger" type="Area2D" parent="Bridge" unique_id=498685720]
 position = Vector2(860, 300)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bridge/CollapseTrigger" unique_id=498168672]
-shape = SubResource("RectangleShape2D_5grvp")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Bridge/CollapseTrigger" unique_id=396110190]
+shape = SubResource("RectangleShape2D_6ovr1")
 
 [node name="RoomInstance" type="Node2D" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
 script = ExtResource("7_jxins")
@@ -416,7 +399,7 @@ action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger1" unique_id=1427977227]
 position = Vector2(-2, -141)
-shape = SubResource("RectangleShape2D_owsp2")
+shape = SubResource("RectangleShape2D_g66ig")
 
 [node name="StateChangeTrigger2" type="Area2D" parent="." unique_id=327197236]
 position = Vector2(806, 392)
@@ -427,7 +410,7 @@ action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger2" unique_id=2047262143]
 position = Vector2(418, -152)
-shape = SubResource("RectangleShape2D_x588o")
+shape = SubResource("RectangleShape2D_yl1gb")
 
 [node name="StateChangeTrigger3" type="Area2D" parent="." unique_id=229650509]
 position = Vector2(180, 392)
@@ -440,7 +423,7 @@ action_mode = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger3" unique_id=1209304842]
 position = Vector2(738, -152)
-shape = SubResource("RectangleShape2D_kfhiv")
+shape = SubResource("RectangleShape2D_5grvp")
 
 [node name="CanyonExitTrigger" type="Area2D" parent="." unique_id=1943234726]
 position = Vector2(400, 830)
@@ -448,7 +431,7 @@ monitorable = false
 script = ExtResource("5_exit")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CanyonExitTrigger" unique_id=1698397028]
-shape = SubResource("RectangleShape2D_80v2n")
+shape = SubResource("RectangleShape2D_owsp2")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=307363086]
 process_mode = 3
@@ -456,11 +439,11 @@ stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
 
-[node name="PlateauShade" type="Sprite2D" parent="." unique_id=213888867]
+[node name="PlateauShade" type="Sprite2D" parent="." unique_id=1728136213]
 z_index = 1
-material = SubResource("CanvasItemMaterial_gw6rw")
+material = SubResource("CanvasItemMaterial_x588o")
 position = Vector2(800, 416)
-texture = SubResource("GradientTexture2D_5y0op")
+texture = SubResource("GradientTexture2D_80v2n")
 centered = false
 
 [connection signal="body_entered" from="END" to="END" method="_on_body_entered"]

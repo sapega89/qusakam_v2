@@ -6,9 +6,10 @@ Desert Oasis backdrop: 576 px wide, ×1.5 in the game = one 864 px MetSys cell; 
 
 | File | Room | Use |
 |---|---|---|
-| `village_houses.png` | Village | Parallax2D ×0.85 over `desert_backdrop_3` — adobe houses with vigas, awnings, jars; gaps show the oasis palms |
 | `city_far.png` | City | Parallax2D ×0.4 — hazy wall with crenellations, towers, domes, minarets |
 | `city_near.png` | City | Parallax2D ×0.85 — dense two-storey houses with market awnings |
 | `mayor_hall_wall.png` | MayorHall | Sprite2D wall — sandstone masonry, arched niches, columns, red banners with a coin |
 
 The painted `assets/The Desert/` set has village / city / palace scenes, but it is not pixel art and draws a sun.
+
+The Village's houses moved to `../Village/` (generated, D236).

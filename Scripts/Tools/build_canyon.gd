@@ -32,8 +32,6 @@ const EXIT_SIZE := Vector2(740, 64)
 const DEPTH_TOP := 380.0
 const DEPTH_UNDERLAY := Color(0.24, 0.15, 0.12)
 ## Далекі стіни: основа сховалась за лінією плато, трохи холодніші (повітряна перспектива).
-const WALLS_Y := 45.0
-const WALLS_TINT := Color(1.04, 1.02, 1.12)
 ## Тіло плато темнішає з глибиною (множення), щоб верхня лінія плато відділялась від маси.
 const PLATEAU_SHADE_RECT := Rect2(800, 416, 1792, 544)
 const PLATEAU_SHADE_BOTTOM := Color(0.55, 0.5, 0.5)
@@ -86,8 +84,8 @@ func _initialize() -> void:
 	for x in range(BRIDGE_COLS.x, BRIDGE_COLS.y + 1):
 		gate2.set_cell(Vector2i(x, GORGE_ROW0), SOURCE, SOLID)
 
-	# Фон пустелі для каньйону — desert_backdrop_4 без Plan2 (оазис з водою й велика скеля): вода внизу
-	# читалась як безодня, скеля конкурувала зі Скелею Прайду. Окрема сцена, бо зміни у вкладеній не пакуються.
+	# Фон каньйону — окрема сцена (зміни у вкладеній не пакуються): небо з паку, згенеровані хмари, далекі
+	# мези й стіни каньйону (D235); той самий фон стоїть і в селі (D236).
 	var old_backdrop: Node2D = room.get_node(^"Backdrop")
 	var backdrop: Node2D = load(BACKDROP).instantiate()
 	backdrop.position = old_backdrop.position
@@ -114,27 +112,6 @@ func _initialize() -> void:
 	room.move_child(rock, tilemap.get_index())  # під тайлами й героєм
 	rock.owner = room
 
-	var walls := Parallax2D.new()
-	walls.name = "CanyonWalls"
-	walls.z_index = -9
-	walls.scroll_scale = Vector2(0.45, 1)
-	walls.repeat_size = Vector2(864, 0)
-	walls.repeat_times = 4
-	var walls_sprite := Sprite2D.new()
-	walls_sprite.name = "Sprite"
-	walls_sprite.texture = load(ART % "gen_walls")  # D235: згенеровані (comfy_backdrop.py)
-	walls_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	walls_sprite.centered = false
-	walls_sprite.scale = Vector2(1.5, 1.5)
-	walls_sprite.position = Vector2(0, WALLS_Y)
-	walls.modulate = WALLS_TINT
-	walls_sprite.material = load(BLUR % "mid")  # D233: дальній план розмитий
-	walls.add_child(walls_sprite)
-	room.add_child(walls)
-	room.move_child(walls, room.get_node(^"Backdrop").get_index() + 1)
-	walls.owner = room
-	walls_sprite.owner = room
-
 	var depths := Parallax2D.new()
 	depths.name = "CanyonDepths"
 	depths.z_index = -9
@@ -145,7 +122,7 @@ func _initialize() -> void:
 	depths_sprite.material = load(BLUR % "near")
 	depths.add_child(depths_sprite)
 	room.add_child(depths)
-	room.move_child(depths, walls.get_index() + 1)
+	room.move_child(depths, room.get_node(^"Backdrop").get_index() + 1)
 	depths.owner = room
 	depths_sprite.owner = room
 
