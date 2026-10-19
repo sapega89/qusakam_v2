@@ -152,7 +152,7 @@ script = ExtResource("10_oldman")
 position = Vector2(-10, -20)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("9_oldman")
-offset = Vector2(0, 6)
+offset = Vector2(0, 4)
 flip_h = true
 hframes = 2
 

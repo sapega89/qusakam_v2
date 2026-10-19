@@ -103,18 +103,72 @@ CHARACTERS = {
         "Keep the plain flat magenta background.",
         rows=[("idle", [None, "breathing, chest and shoulders slightly lower, the same smile"])],
     ),
+    # Дід — дід Кусакама, тож теж ящур (lore, Sapega 2026-10-19): той самий вид, що й герой, тільки старий.
     "old_man": dict(
         out="SampleProject/Assets/Characters/NPCs/old_man/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(64, 96),
-        seed=7,
+        seed=8,
         colors=16,
-        who="the same frail old village elder with the long white beard, the hooded brown robe and the walking staff",
-        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
-        "shading: a frail old village elder, a tall stooped old man filling the whole height of the picture, with a long white "
-        "beard, a hooded brown robe and a wooden walking staff, standing idle facing right. Keep the plain flat magenta "
-        "background.",
-        rows=[("idle", [None, "breathing, leaning a little more on his staff"])],
+        who="the same old lizardfolk grandfather with the faded scales, the hooded brown robe and the walking staff",
+        base="Change this character into his old grandfather: the same lizardfolk species with the same round head shape, big "
+        "eyes and snout, but elderly — paler faded scales, droopy wrinkled eyelids, a slight hunch, a hooded brown robe and a "
+        "gnarled wooden walking staff; taller than the reference character and filling the whole height of the picture; the same "
+        "pixel art style, thick dark outline and flat shading; standing idle facing right. Keep the plain flat magenta background.",
+        rows=[("idle", [None, "BOB:50"])],
+    ),
+    # Нові кадри героя з його ж кадру художника (D239): Idle дихає, Jump/Fall, Roll, Climb — досі позичали біг і ходьбу.
+    "hero_idle": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=11,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[("Idle", [None, "BOB:44"])],  # модель розвертала героя й домальовувала хмарку подиху
+    ),
+    "hero_air": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=12,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            ("Jump", ["crouching with bent knees, about to jump", "in the same side view facing right: jumping up, knees tucked, one arm raised, cape flowing down behind him"]),
+            ("Fall", ["falling down, legs dangling, arms raised above his head, cape flowing up"]),
+        ],
+    ),
+    "hero_roll": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=13,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        # Клубок крутиться поворотами того самого кадру (модель ламала героя догори ногами й домальовувала колоду),
+        # вихід — присід зі стрибка. Спершу hero_air.
+        rows=[("Roll", [
+            "ducking forward into a roll, head tucked, body low",
+            "curled into a tight ball rolling forward, cape wrapped around him",
+            "ROT:Roll:1:90",
+            "ROT:Roll:1:180",
+            "ROT:Roll:1:270",
+            "FILE:SampleProject/Sprites/Player/Jump/1.png",
+        ])],
+    ),
+    "hero_climb": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=1,
+        palette="hero",
+        floor=56,  # як у кадрів художника: на драбині герой не просідає на 3 px
+        who="the same small lizard knight seen from behind, with the steel armour, dark red cape and tail",
+        base="Keep this exact character: the same small lizard knight with the same steel armour, red cape, tail and colours, the "
+        "same pixel art style with a thick dark outline and flat shading. Change only his pose and view: climbing pose seen from "
+        "behind, both arms raised high as if gripping a ladder rung above his head, one leg lifted; no ladder is drawn. Keep the "
+        "plain flat magenta background.",
+        rows=[("Climb", [None, "the same climbing pose seen from behind, but the other leg lifted and the arms one rung lower"])],
     ),
 }
 
@@ -244,12 +298,59 @@ def feet_row(opaque):
     return int(rows[-1]) if len(rows) else len(opaque) - 1
 
 
+def bob(small, waist):
+    """Дихання: усе вище рядка waist — на піксель нижче (кадр художника лишається його кадром)."""
+    rgb, op = small[0].copy(), small[1].copy()
+    rgb[1:waist], op[1:waist] = rgb[: waist - 1].copy(), op[: waist - 1].copy()
+    op[0] = False
+    return rgb, op
+
+
+def rotate(small, deg):
+    """Поворот на кратний 90° кут за годинниковою стрілкою навколо середини силуету — піксель-арт без втрат."""
+    rgb, op = small
+    ys, xs = np.nonzero(op)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    k = (-deg // 90) % 4
+    crop_rgb, crop_op = np.rot90(rgb[y0:y1, x0:x1], k), np.rot90(op[y0:y1, x0:x1], k)
+    h, w = crop_op.shape
+    ny0, nx0 = int(round((y0 + y1) / 2 - h / 2)), int(round((x0 + x1) / 2 - w / 2))
+    out_rgb, out_op = np.zeros_like(rgb), np.zeros_like(op)
+    ys0, xs0 = max(0, ny0), max(0, nx0)
+    ys1, xs1 = min(op.shape[0], ny0 + h), min(op.shape[1], nx0 + w)
+    out_rgb[ys0:ys1, xs0:xs1] = crop_rgb[ys0 - ny0 : ys1 - ny0, xs0 - nx0 : xs1 - nx0]
+    out_op[ys0:ys1, xs0:xs1] = crop_op[ys0 - ny0 : ys1 - ny0, xs0 - nx0 : xs1 - nx0]
+    return out_rgb, out_op
+
+
+def from_file(path):
+    im = np.asarray(Image.open(path).convert("RGBA"), dtype=np.float32)
+    return im[..., :3], im[..., 3] > 128
+
+
+SPECIAL = ("BOB", "ROT", "FILE")
+
+
+def hero_palette():
+    """Усі кольори кадрів художника — нові кадри героя мають лише їх (28 кольорів)."""
+    cols = set()
+    for path in sorted(os.listdir("SampleProject/Sprites/Player")):
+        folder = os.path.join("SampleProject/Sprites/Player", path)
+        for f in sorted(os.listdir(folder)) if path in ("Run", "Walk") else []:
+            if f.endswith(".png"):
+                px = np.asarray(Image.open(os.path.join(folder, f)).convert("RGBA")).reshape(-1, 4)
+                cols |= {tuple(c[:3]) for c in px if c[3] > 128}
+    return np.array(sorted(cols), dtype=np.float32)
+
+
 if __name__ == "__main__":
     char = CHARACTERS[sys.argv[1]]
     only = sys.argv[2:]
     seed = char["seed"]
     cell = char.get("cell", (CELL, CELL))
-    base = edit(enlarge(char["ref"], cell), char["base"], seed)
+    ref = enlarge(char["ref"], cell)
+    # base=None — перший кадр сам кадр художника (новий кадр героя, D239), інакше модель робить його з референсу
+    base = ref if char["base"] is None else edit(ref, char["base"], seed)
     base_ref = base.copy()
     base_ref[..., 3] = 255
     frames = {}
@@ -258,50 +359,56 @@ if __name__ == "__main__":
             text = KEEP.format(who=char["who"], pose=pose) if pose else None
             if pose is None:
                 frames[(anim, i)] = base
+            elif pose.split(":")[0] in SPECIAL:
+                frames[(anim, i)] = pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
             elif not only or anim in only:
                 frames[(anim, i)] = edit(base_ref, text, seed)
             elif cached(base_ref, text, seed):
                 frames[(anim, i)] = edit(base_ref, text, seed)
     total = sum(len(p) for _, p in char["rows"])
-    urllib.request.urlopen(
-        urllib.request.Request(
-            API + "/free",
-            json.dumps({"unload_models": True, "free_memory": True}).encode(),
-            {"Content-Type": "application/json"},
-        )
-    )
+    urllib.request.urlopen(urllib.request.Request(API + "/free", json.dumps({"unload_models": True, "free_memory": True}).encode(),
+                                                  {"Content-Type": "application/json"}))
     if len(frames) < total:
-        sys.exit(
-            f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built"
-        )
-    small = {k: shrink(v, cell) for k, v in frames.items()}
-    rgb0, op0 = small[(char["rows"][0][0], 0)]
-    pal = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(
-        char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
-    )
-    floor = feet_row(op0)
+        sys.exit(f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built")
+    small = {k: shrink(v, cell) for k, v in frames.items() if not isinstance(v, str)}
+    for k, pose in frames.items():
+        if isinstance(pose, str):
+            kind, *arg = pose.split(":")
+            if kind == "BOB":
+                small[k] = bob(shrink(base, cell), int(arg[0]))
+            elif kind == "ROT":
+                small[k] = rotate(small[(arg[0], int(arg[1]))], int(arg[2]))
+            else:
+                small[k] = from_file(":".join(arg))
+    rgb0, op0 = shrink(base, cell)
+    if char.get("palette") == "hero":
+        pal_rgb = hero_palette()
+    else:
+        pim = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+        pal_rgb = np.array(pim.getpalette()[: 3 * char["colors"]], dtype=np.float32).reshape(-1, 3)
+    floor = char.get("floor", feet_row(op0))  # ступні — на рядок першого кадру; floor — явно (лінія ніг героя 56)
     cols = max(len(p) for _, p in char["rows"])
     cw, ch = cell
     sheet = np.zeros((ch * len(char["rows"]), cw * cols, 4), np.uint8)
     for r, (anim, poses) in enumerate(char["rows"]):
-        for i in range(len(poses)):
+        for i, pose in enumerate(poses):
             rgb, op = small[(anim, i)]
-            q = np.asarray(
-                Image.fromarray(rgb.astype(np.uint8))
-                .quantize(palette=pal, dither=Image.Dither.NONE)
-                .convert("RGB")
-            )
-            frame = np.dstack([q, op.astype(np.uint8) * 255])
-            shift = floor - feet_row(op)  # ступні — на рядок першого кадру
+            q = pal_rgb[np.linalg.norm(rgb[:, :, None, :] - pal_rgb[None, None], axis=3).argmin(axis=2)]
+            frame = np.dstack([q, op * 255.0]).astype(np.uint8)
+            shift = floor - feet_row(op)
             frame = np.roll(frame, shift, axis=0)
             if shift > 0:
                 frame[:shift] = 0
             elif shift < 0:
                 frame[shift:] = 0
             sheet[r * ch : (r + 1) * ch, i * cw : (i + 1) * cw] = frame
+            if char.get("frames_out") and not (pose is None and char["base"] is None):
+                # кадри героя — окремими текстурами, як його кадри художника (Player.tscn міняє Sprite2D:texture)
+                folder = os.path.join(char["frames_out"], anim)
+                os.makedirs(folder, exist_ok=True)
+                Image.fromarray(frame).save(os.path.join(folder, f"{i + 1}.png"))
             print(f"{anim}[{i}] feet row {feet_row(op)} -> {floor}")
-    os.makedirs(os.path.dirname(char["out"]), exist_ok=True)
-    Image.fromarray(sheet).save(char["out"])
-    print(
-        "sheet", char["out"], sheet.shape[1], "x", sheet.shape[0], "| feet row", floor
-    )
+    if "out" in char:  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере
+        os.makedirs(os.path.dirname(char["out"]), exist_ok=True)
+        Image.fromarray(sheet).save(char["out"])
+    print("sheet", char.get("out", char.get("frames_out")), sheet.shape[1], "x", sheet.shape[0], "| feet row", floor)

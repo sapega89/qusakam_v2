@@ -1,0 +1,16 @@
+# Kusakam — the hero's frames
+
+`Walk/` (3) and `Run/` (8) are the **artist's frames** (bought; the artist no longer works on the game) — the style
+reference for everything else (D239).
+
+The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Scripts/Tools/comfy_sprite.py hero_*`
+(D239: the local ComfyUI, **Qwen-Image-Edit-2511**, Apache 2.0, with the artist's frame as the reference), brought to
+64×64 in the artist's 28 colours with the feet on row 56. A Steam release has to disclose AI-generated content.
+
+| Folder | Animation in `Player.tscn` | How |
+|---|---|---|
+| `Idle/2.png` | Idle (with `Walk/1`) | the artist's frame, head and torso one pixel lower — breathing |
+| `Jump/1–2.png` | Jump | generated: the crouch before the take-off, rising in side view |
+| `Fall/1.png` | Fall | generated: arms up, cape up |
+| `Roll/1–6.png` | Roll | generated duck and curled ball; the ball turned 90°/180°/270°; the exit is `Jump/1` |
+| `Climb/1–2.png` | Climb | generated from behind, alternating arm and leg |

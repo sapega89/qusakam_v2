@@ -36,6 +36,8 @@ an open question below, never filled in. Used by skills, enemies, companions and
 
 - **Kusakam** — the main hero, a **lizardfolk paladin** (matches the code: `class_id` champion, `subclass_id`
   paladin — in PF2e the paladin is a champion cause; Healing Palm is his Lay on Hands).
+- **The old man in the Village is Kusakam's grandfather** — so he is a **lizardfolk** too (Sapega, 2026-10-19:
+  «дід це дід кусакама а кусакам ящур, тобто і дід має бути ящуром»).
 - **Астрит** — a warrior-thaumaturge with a **shield and a book**; pounces on enemies with a **spiked shield**.
   She is a **woman, a barbarian, with a huge shield and a book in her hands** (Sapega, 2026-10-18: «астріт це жінка варвар з огромним щитом і книгою в руках»).
 - **Уризен** — a **cleric**; his smite takes the shape of a **coin**.
