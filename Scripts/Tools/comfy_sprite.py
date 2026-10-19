@@ -76,10 +76,50 @@ CHARACTERS = {
             ),
         ],
     ),
+    # NPC: дорослі, на 1,5 вищі за героя (D172) — клітинка 64×96 при його ж пікселі; дихання з двох кадрів.
+    "blacksmith": dict(
+        out="SampleProject/Assets/Characters/NPCs/blacksmith/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=5,
+        colors=16,
+        who="the same burly bearded blacksmith with the leather apron and the smithing hammer",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a burly bearded blacksmith, a tall adult man filling the whole height of the picture, with a leather apron "
+        "over a dark shirt, rolled-up sleeves, thick forearms and a smithing hammer in his right hand, standing idle facing "
+        "right. Keep the plain flat magenta background.",
+        rows=[("idle", [None, "breathing, chest and shoulders slightly lower, the hammer resting at his side"])],
+    ),
+    "merchant": dict(
+        out="SampleProject/Assets/Characters/NPCs/merchant/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=6,
+        colors=16,
+        who="the same cheerful desert merchant in the red turban and the yellow robe with the leather satchel",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a cheerful desert merchant, a tall adult man filling the whole height of the picture, in a red turban and a "
+        "long yellow robe with a big leather satchel over his shoulder, holding a small scroll, standing idle facing right. "
+        "Keep the plain flat magenta background.",
+        rows=[("idle", [None, "breathing, chest and shoulders slightly lower, the same smile"])],
+    ),
+    "old_man": dict(
+        out="SampleProject/Assets/Characters/NPCs/old_man/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=7,
+        colors=16,
+        who="the same frail old village elder with the long white beard, the hooded brown robe and the walking staff",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a frail old village elder, a tall stooped old man filling the whole height of the picture, with a long white "
+        "beard, a hooded brown robe and a wooden walking staff, standing idle facing right. Keep the plain flat magenta "
+        "background.",
+        rows=[("idle", [None, "breathing, leaning a little more on his staff"])],
+    ),
 }
 
 
-def edit_graph(text, seed, ref_name):
+def edit_graph(text, seed, ref_name, megapixels):
     def node(c, **i):
         return {"class_type": c, "inputs": i}
 
@@ -105,7 +145,7 @@ def edit_graph(text, seed, ref_name):
             "ImageScaleToTotalPixels",
             image=["ref", 0],
             upscale_method="nearest-exact",
-            megapixels=1.0,
+            megapixels=megapixels,  # = розмір референсу: блоки 16×16 не перемасштабовуються
             resolution_steps=16,
         ),
         "pos": node(
@@ -143,12 +183,13 @@ def edit_graph(text, seed, ref_name):
     }
 
 
-def enlarge(path):
-    """Кадр 64 px на пурпурі, ×16 найближчим сусідом — для моделі."""
+def enlarge(path, cell):
+    """Кадр героя знизу посередині клітинки cell на пурпурі, ×16 найближчим сусідом — для моделі. Вища клітинка —
+    для дорослих NPC (D172: на 1,5 вищі за героя) при тому ж пікселі."""
     ref = Image.open(path).convert("RGBA")
-    canvas = Image.new("RGBA", ref.size, MAGENTA + (255,))
-    canvas.alpha_composite(ref)
-    return np.asarray(canvas.resize((ref.width * UP, ref.height * UP), Image.NEAREST))
+    canvas = Image.new("RGBA", cell, MAGENTA + (255,))
+    canvas.alpha_composite(ref, ((cell[0] - ref.width) // 2, cell[1] - ref.height))
+    return np.asarray(canvas.resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
 
 
 def edit(ref_rgba, text, seed):
@@ -160,7 +201,8 @@ def edit(ref_rgba, text, seed):
     if not os.path.exists(path):
         name = upload(ref_rgba, "sprite_ref.png")
         os.makedirs(CACHE, exist_ok=True)
-        Image.fromarray(run(edit_graph(text, seed, name)).astype(np.uint8)).save(path)
+        mp = ref_rgba.shape[0] * ref_rgba.shape[1] / 1048576
+        Image.fromarray(run(edit_graph(text, seed, name, mp)).astype(np.uint8)).save(path)
         print("generated", text[:60], flush=True)
     return np.asarray(Image.open(path).convert("RGBA"))
 
@@ -172,9 +214,10 @@ def cached(ref_rgba, text, seed):
     return os.path.exists(os.path.join(CACHE, key + ".png"))
 
 
-def shrink(img):
-    """Фон — виміряний колір рамки (модель малює «#FF00FF» як (244..252, 6..7, 245..247)); ×16 → 64×64."""
-    img = img[: CELL * UP, : CELL * UP, :3].astype(np.float32)
+def shrink(img, cell):
+    """Фон — виміряний колір рамки (модель малює «#FF00FF» як (244..252, 6..7, 245..247)); ×16 → клітинка."""
+    w, h = cell
+    img = img[: h * UP, : w * UP, :3].astype(np.float32)
     border = np.concatenate(
         [
             img[:12].reshape(-1, 3),
@@ -188,7 +231,7 @@ def shrink(img):
     a[(img[..., 0] > img[..., 1] + 60) & (img[..., 2] > img[..., 1] + 60)] = 0
 
     def blocks(m):
-        return m.reshape(CELL, UP, CELL, UP, -1).sum(axis=(1, 3))
+        return m.reshape(h, UP, w, UP, -1).sum(axis=(1, 3))
 
     asum = blocks(a[..., None])
     return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[
@@ -198,14 +241,15 @@ def shrink(img):
 
 def feet_row(opaque):
     rows = np.nonzero(opaque.any(axis=1))[0]
-    return int(rows[-1]) if len(rows) else CELL - 1
+    return int(rows[-1]) if len(rows) else len(opaque) - 1
 
 
 if __name__ == "__main__":
     char = CHARACTERS[sys.argv[1]]
     only = sys.argv[2:]
     seed = char["seed"]
-    base = edit(enlarge(char["ref"]), char["base"], seed)
+    cell = char.get("cell", (CELL, CELL))
+    base = edit(enlarge(char["ref"], cell), char["base"], seed)
     base_ref = base.copy()
     base_ref[..., 3] = 255
     frames = {}
@@ -230,14 +274,15 @@ if __name__ == "__main__":
         sys.exit(
             f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built"
         )
-    small = {k: shrink(v) for k, v in frames.items()}
+    small = {k: shrink(v, cell) for k, v in frames.items()}
     rgb0, op0 = small[(char["rows"][0][0], 0)]
     pal = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(
         char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
     )
     floor = feet_row(op0)
     cols = max(len(p) for _, p in char["rows"])
-    sheet = np.zeros((CELL * len(char["rows"]), CELL * cols, 4), np.uint8)
+    cw, ch = cell
+    sheet = np.zeros((ch * len(char["rows"]), cw * cols, 4), np.uint8)
     for r, (anim, poses) in enumerate(char["rows"]):
         for i in range(len(poses)):
             rgb, op = small[(anim, i)]
@@ -246,14 +291,14 @@ if __name__ == "__main__":
                 .quantize(palette=pal, dither=Image.Dither.NONE)
                 .convert("RGB")
             )
-            cell = np.dstack([q, op.astype(np.uint8) * 255])
+            frame = np.dstack([q, op.astype(np.uint8) * 255])
             shift = floor - feet_row(op)  # ступні — на рядок першого кадру
-            cell = np.roll(cell, shift, axis=0)
+            frame = np.roll(frame, shift, axis=0)
             if shift > 0:
-                cell[:shift] = 0
+                frame[:shift] = 0
             elif shift < 0:
-                cell[shift:] = 0
-            sheet[r * CELL : (r + 1) * CELL, i * CELL : (i + 1) * CELL] = cell
+                frame[shift:] = 0
+            sheet[r * ch : (r + 1) * ch, i * cw : (i + 1) * cw] = frame
             print(f"{anim}[{i}] feet row {feet_row(op)} -> {floor}")
     os.makedirs(os.path.dirname(char["out"]), exist_ok=True)
     Image.fromarray(sheet).save(char["out"])

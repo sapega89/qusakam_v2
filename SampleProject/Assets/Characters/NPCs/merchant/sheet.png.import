@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dn8ai3a8k64du"
-path="res://.godot/imported/npc_merchant.png-29d51d0ed5db6e4edd51b1bc0e71be7a.ctex"
+uid="uid://c02ddojypop64"
+path="res://.godot/imported/sheet.png-e274a94cf5ca9ab7efb0e07f0b4aaa6c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Sprites/NPCs/npc_merchant.png"
-dest_files=["res://.godot/imported/npc_merchant.png-29d51d0ed5db6e4edd51b1bc0e71be7a.ctex"]
+source_file="res://SampleProject/Assets/Characters/NPCs/merchant/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-e274a94cf5ca9ab7efb0e07f0b4aaa6c.ctex"]
 
 [params]
 

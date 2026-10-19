@@ -52,7 +52,7 @@ func _initialize() -> void:
 	world.add_child(b)
 	await process_frame
 	ck(b is NpcBase, "shares NpcBase with the Merchant")
-	ck((b.get_node("Sprite2D") as Sprite2D).texture.resource_path.ends_with("npc_blacksmith.png"), "sprite from Figma npc/blacksmith")
+	ck((b.get_node("Sprite2D") as Sprite2D).texture.resource_path.ends_with("NPCs/blacksmith/sheet.png"), "sprite generated in the hero's style (D239, was Figma npc/blacksmith — D107)")
 	var shop_src := FileAccess.open("res://SampleProject/Scripts/Shop/shop_ui.gd", FileAccess.READ).get_as_text()
 	for map in [["City", "D154"]]:
 		var state: SceneState = (load("res://SampleProject/Maps/%s.tscn" % map[0]) as PackedScene).get_state()

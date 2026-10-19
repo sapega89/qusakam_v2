@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bfli58ifaftw6"
-path="res://.godot/imported/old_man_idle.png-2d476f0b70e282e6b5a0de62f0c5e06d.ctex"
+uid="uid://dfefwngdn6au1"
+path="res://.godot/imported/sheet.png-1edd0477bbc2b957f0b68ecea33f02c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Characters/old_man_idle.png"
-dest_files=["res://.godot/imported/old_man_idle.png-2d476f0b70e282e6b5a0de62f0c5e06d.ctex"]
+source_file="res://SampleProject/Assets/Characters/NPCs/blacksmith/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-1edd0477bbc2b957f0b68ecea33f02c9.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cpuua5sk3buix"
-path="res://.godot/imported/npc_blacksmith.png-7217f45ff9081d52e336d7357d10a9e5.ctex"
+uid="uid://c7ga4n55sor5p"
+path="res://.godot/imported/sheet.png-fe2711953a7ec5f4f2f4b85880d032f1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Sprites/NPCs/npc_blacksmith.png"
-dest_files=["res://.godot/imported/npc_blacksmith.png-7217f45ff9081d52e336d7357d10a9e5.ctex"]
+source_file="res://SampleProject/Assets/Characters/NPCs/old_man/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-fe2711953a7ec5f4f2f4b85880d032f1.ctex"]
 
 [params]
 

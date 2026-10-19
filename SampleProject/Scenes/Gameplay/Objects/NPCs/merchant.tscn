@@ -2,7 +2,29 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd" id="1_merchant"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/NPCs/npc_merchant.png" id="3_sprite"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/merchant/sheet.png" id="3_sprite"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_idle"]
+_data = {
+&"idle": SubResource("Animation_idle")
+}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(64, 64)
@@ -13,9 +35,11 @@ script = ExtResource("1_merchant")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 10
-offset = Vector2(0, -180)
-scale = Vector2(0.28125, 0.28125)
+texture_filter = 1
+offset = Vector2(0, -42)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_sprite")
+hframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -32)
@@ -25,3 +49,9 @@ shape = SubResource("RectangleShape2D_1")
 script = ExtResource("2_interactable")
 prompt_offset = Vector2(0, -128)
 action_text = "Shop"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_idle")
+}
+autoplay = "idle"
