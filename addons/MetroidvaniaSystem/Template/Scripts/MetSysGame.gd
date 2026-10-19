@@ -76,10 +76,8 @@ func load_room(path: String):
 		push_error("load_room: failed to load PackedScene: %s" % path)
 		return
 
-	var room := ps.instantiate()
-	if map_changing:
-		return
-	
+	# Кімната створюється один раз, нижче: зайвий instantiate() тут лишав повну копію кімнати сиротою на кожному
+	# переході — пам'ять росла на ~0,5 МБ за прохід (B73).
 	map_changing = true
 	if not path.is_absolute_path():
 		path = MetSys.get_full_room_path(path)
@@ -89,7 +87,7 @@ func load_room(path: String):
 		await map.tree_exited
 		map = null
 
-	map = load(path).instantiate()
+	map = ps.instantiate()
 	add_child(map)
 	
 	var room_instance = MetSys.get_current_room_instance()
