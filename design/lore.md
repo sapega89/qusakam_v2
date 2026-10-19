@@ -40,7 +40,10 @@ an open question below, never filled in. Used by skills, enemies, companions and
   «дід це дід кусакама а кусакам ящур, тобто і дід має бути ящуром»).
 - **Астрит** — a warrior-thaumaturge with a **shield and a book**; pounces on enemies with a **spiked shield**.
   She is a **woman, a barbarian, with a huge shield and a book in her hands** (Sapega, 2026-10-18: «астріт це жінка варвар з огромним щитом і книгою в руках»).
-- **Уризен** — a **cleric**; his smite takes the shape of a **coin**.
+- **Уризен** — a **cleric**; his smite takes the shape of a **coin**. He is a **priest who worships the god of
+  contracts** (Sapega, 2026-10-19: «це урізен жрець який поклоняється богу контрактів») — the coin is that god's sign.
+  Look (Sapega's reference, chosen «A + монета й обруч»): a chubby bald human with a sly smile and a forehead tattoo,
+  a brown robe over a dark tunic, a golden coin amulet and an iron circlet of contracts.
 - **Алісия** — a **hunter with a cat**.
 - All three are Laboratory companions (D209).
 - The **City Gates guard** — the first assist, a tutorial (D209).
@@ -62,4 +65,4 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - Which empire, and is it present in the story (the city, the mayor)?
 - Who the gods are, and what the "three dark priests" (`Три_темніх_жреца`) serve.
 - What the ancient civilisation was, and whether the Laboratory is built on it.
-- Суан, Гном-механік — who they are (also Q51, Q53); Kusakam's god/oath as a paladin. Which god Уризен serves (the coin?).
+- Суан, Гном-механік — who they are (also Q51, Q53); Kusakam's god/oath as a paladin.

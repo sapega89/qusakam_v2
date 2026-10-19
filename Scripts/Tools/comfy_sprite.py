@@ -27,6 +27,13 @@ KEEP = (
     "Keep this exact character — {who}, the same pixel art style, thick dark outline, flat shading, colours, size "
     "and position. Change only the pose: {pose}. Keep the plain flat magenta background."
 )
+URIZEN_FRONT = (
+    "turned to face the viewer: a front view of him standing idle, the thin dark iron circlet across his forehead above "
+    "the small tattoo, both eyes visible, the coin amulet in the middle of his chest, arms at his sides"
+)
+URIZEN_STEP = "walking quickly to the right in the same side view facing right, %s leg stepping forward, %s leg back, the robe swinging"
+URIZEN_RAISE = "in the same side view facing right: raising his right hand to shoulder height in front of him, a small golden coin in his palm"
+URIZEN_SMITE = "in the same side view facing right: his right arm stretched high above his head, a shining golden coin held up in his hand"
 # rows — рядки листа: (анімація, підказки кадрів); None — сам перший кадр (base).
 CHARACTERS = {
     "bandit": dict(
@@ -88,7 +95,15 @@ CHARACTERS = {
         "shading: a burly bearded blacksmith, a tall adult man filling the whole height of the picture, with a leather apron "
         "over a dark shirt, rolled-up sleeves, thick forearms and a smithing hammer in his right hand, standing idle facing "
         "right. Keep the plain flat magenta background.",
-        rows=[("idle", [None, "breathing, chest and shoulders slightly lower, the hammer resting at his side"])],
+        rows=[
+            (
+                "idle",
+                [
+                    None,
+                    "breathing, chest and shoulders slightly lower, the hammer resting at his side",
+                ],
+            )
+        ],
     ),
     "merchant": dict(
         out="SampleProject/Assets/Characters/NPCs/merchant/sheet.png",
@@ -101,7 +116,12 @@ CHARACTERS = {
         "shading: a cheerful desert merchant, a tall adult man filling the whole height of the picture, in a red turban and a "
         "long yellow robe with a big leather satchel over his shoulder, holding a small scroll, standing idle facing right. "
         "Keep the plain flat magenta background.",
-        rows=[("idle", [None, "breathing, chest and shoulders slightly lower, the same smile"])],
+        rows=[
+            (
+                "idle",
+                [None, "breathing, chest and shoulders slightly lower, the same smile"],
+            )
+        ],
     ),
     # Дід — дід Кусакама, тож теж ящур (lore, Sapega 2026-10-19): той самий вид, що й герой, тільки старий.
     "old_man": dict(
@@ -117,6 +137,43 @@ CHARACTERS = {
         "pixel art style, thick dark outline and flat shading; standing idle facing right. Keep the plain flat magenta background.",
         rows=[("idle", [None, "BOB:50"])],
     ),
+    # Уризен — жрець бога контрактів (lore). Два ракурси (Sapega): фас — стоїть у лабораторії й портрет, профіль —
+    # біг (enter, ним же й тікає) і смайт монетою (strike, монети падають на кадрі 6). Листи — як у старих кадрів
+    # (6/12/12 по 64 px, ступні на рядку 58): сцени й build_laboratory.gd ріжуть їх без змін. Повтор підказки —
+    # той самий кадр з кешу (тримає позу довше). Референс Sapega (обличчя анфас) тягнув профіль у пів-оберта —
+    # опис словами дав чистий профіль.
+    "urizen": dict(
+        rows_out="SampleProject/Assets/Characters/Companions/urizen",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=31,
+        colors=16,
+        floor=58,
+        who="the same chubby bald priest with the thin dark iron circlet, the small forehead tattoo, the golden coin amulet, "
+        "the dark tunic with a belt and the long brown hooded robe",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, size, chibi proportions, thick "
+        "dark outline and flat shading: a chubby bald human priest with a sly smile, a small dark tattoo on his forehead, a "
+        "long brown robe over a dark tunic with a belt, a big round golden coin amulet on his chest and a thin dark iron "
+        "circlet around his bald head. Strict side view: his head and body in profile facing right, his eye, nose and smile "
+        "on the right side of his face, looking ahead to the right. Standing idle. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [URIZEN_FRONT] * 3 + ["BOB:45:idle:0"] * 3),
+            (
+                "enter",
+                [URIZEN_STEP % ("left", "right")] * 3
+                + [None] * 3
+                + [URIZEN_STEP % ("right", "left")] * 3
+                + [None] * 3,
+            ),
+            (
+                "strike",
+                [None]
+                + [URIZEN_RAISE] * 2
+                + [URIZEN_SMITE] * 6
+                + [URIZEN_RAISE] * 2
+                + [None],
+            ),
+        ],
+    ),
     # Нові кадри героя з його ж кадру художника (D239): Idle дихає, Jump/Fall, Roll, Climb — досі позичали біг і ходьбу.
     "hero_idle": dict(
         frames_out="SampleProject/Sprites/Player",
@@ -125,7 +182,9 @@ CHARACTERS = {
         palette="hero",
         base=None,
         who="the same small lizard knight with the steel armour, dark red cape and tail",
-        rows=[("Idle", [None, "BOB:44"])],  # модель розвертала героя й домальовувала хмарку подиху
+        rows=[
+            ("Idle", [None, "BOB:44"])
+        ],  # модель розвертала героя й домальовувала хмарку подиху
     ),
     "hero_air": dict(
         frames_out="SampleProject/Sprites/Player",
@@ -135,8 +194,19 @@ CHARACTERS = {
         base=None,
         who="the same small lizard knight with the steel armour, dark red cape and tail",
         rows=[
-            ("Jump", ["crouching with bent knees, about to jump", "in the same side view facing right: jumping up, knees tucked, one arm raised, cape flowing down behind him"]),
-            ("Fall", ["falling down, legs dangling, arms raised above his head, cape flowing up"]),
+            (
+                "Jump",
+                [
+                    "crouching with bent knees, about to jump",
+                    "in the same side view facing right: jumping up, knees tucked, one arm raised, cape flowing down behind him",
+                ],
+            ),
+            (
+                "Fall",
+                [
+                    "falling down, legs dangling, arms raised above his head, cape flowing up"
+                ],
+            ),
         ],
     ),
     "hero_roll": dict(
@@ -148,14 +218,19 @@ CHARACTERS = {
         who="the same small lizard knight with the steel armour, dark red cape and tail",
         # Клубок крутиться поворотами того самого кадру (модель ламала героя догори ногами й домальовувала колоду),
         # вихід — присід зі стрибка. Спершу hero_air.
-        rows=[("Roll", [
-            "ducking forward into a roll, head tucked, body low",
-            "curled into a tight ball rolling forward, cape wrapped around him",
-            "ROT:Roll:1:90",
-            "ROT:Roll:1:180",
-            "ROT:Roll:1:270",
-            "FILE:SampleProject/Sprites/Player/Jump/1.png",
-        ])],
+        rows=[
+            (
+                "Roll",
+                [
+                    "ducking forward into a roll, head tucked, body low",
+                    "curled into a tight ball rolling forward, cape wrapped around him",
+                    "ROT:Roll:1:90",
+                    "ROT:Roll:1:180",
+                    "ROT:Roll:1:270",
+                    "FILE:SampleProject/Sprites/Player/Jump/1.png",
+                ],
+            )
+        ],
     ),
     "hero_climb": dict(
         frames_out="SampleProject/Sprites/Player",
@@ -168,16 +243,24 @@ CHARACTERS = {
         "same pixel art style with a thick dark outline and flat shading. Change only his pose and view: climbing pose seen from "
         "behind, both arms raised high as if gripping a ladder rung above his head, one leg lifted; no ladder is drawn. Keep the "
         "plain flat magenta background.",
-        rows=[("Climb", [None, "the same climbing pose seen from behind, but the other leg lifted and the arms one rung lower"])],
+        rows=[
+            (
+                "Climb",
+                [
+                    None,
+                    "the same climbing pose seen from behind, but the other leg lifted and the arms one rung lower",
+                ],
+            )
+        ],
     ),
 }
 
 
-def edit_graph(text, seed, ref_name, megapixels):
+def edit_graph(text, seed, ref_name, megapixels, design_name=None):
     def node(c, **i):
         return {"class_type": c, "inputs": i}
 
-    return {
+    g = {
         "unet": node("UnetLoaderGGUF", unet_name="qwen-image-edit-2511-Q5_K_M.gguf"),
         "clip": node(
             "CLIPLoader",
@@ -235,6 +318,18 @@ def edit_graph(text, seed, ref_name, megapixels):
             "SaveImage", images=["decode", 0], filename_prefix="kusakam/sprite"
         ),
     }
+    if design_name:
+        g["design"] = node("LoadImage", image=design_name)
+        g["design_scaled"] = node(
+            "ImageScaleToTotalPixels",
+            image=["design", 0],
+            upscale_method="lanczos",
+            megapixels=1.0,
+            resolution_steps=16,
+        )
+        for k in ("pos", "neg"):
+            g[k]["inputs"]["image2"] = ["design_scaled", 0]
+    return g
 
 
 def enlarge(path, cell):
@@ -246,17 +341,26 @@ def enlarge(path, cell):
     return np.asarray(canvas.resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
 
 
-def edit(ref_rgba, text, seed):
-    """Редагування з кешем: той самий референс, підказка й зерно — та сама картинка без моделі."""
+def edit(ref_rgba, text, seed, design=None):
+    """Редагування з кешем: той самий референс, підказка й зерно — та сама картинка без моделі. design — шлях до
+    картинки з дизайном персонажа (референс Sapega): друга картинка моделі, перша — стиль героя й полотно."""
+    extra = open(design, "rb").read() if design else b""
     key = hashlib.sha1(
-        ref_rgba.tobytes() + text.encode() + str(seed).encode()
+        ref_rgba.tobytes() + text.encode() + str(seed).encode() + extra
     ).hexdigest()[:16]
     path = os.path.join(CACHE, key + ".png")
     if not os.path.exists(path):
         name = upload(ref_rgba, "sprite_ref.png")
+        design_name = (
+            upload(np.asarray(Image.open(design).convert("RGBA")), "sprite_design.png")
+            if design
+            else None
+        )
         os.makedirs(CACHE, exist_ok=True)
         mp = ref_rgba.shape[0] * ref_rgba.shape[1] / 1048576
-        Image.fromarray(run(edit_graph(text, seed, name, mp)).astype(np.uint8)).save(path)
+        Image.fromarray(
+            run(edit_graph(text, seed, name, mp, design_name)).astype(np.uint8)
+        ).save(path)
         print("generated", text[:60], flush=True)
     return np.asarray(Image.open(path).convert("RGBA"))
 
@@ -268,29 +372,33 @@ def cached(ref_rgba, text, seed):
     return os.path.exists(os.path.join(CACHE, key + ".png"))
 
 
-def shrink(img, cell):
-    """Фон — виміряний колір рамки (модель малює «#FF00FF» як (244..252, 6..7, 245..247)); ×16 → клітинка."""
+def shrink(img, cell, k=32):
+    """Фон — виміряний колір рамки (модель малює «#FF00FF» як (244..252, 6..7, 245..247)); ×16 → клітинка
+    кольором, якого в блоці найбільше (з k кольорів кадру). Середнє розмивало дрібні деталі моделі й краї, де її
+    сітка не збігається з нашою, — татуювання Уризена ставало сірою плямою (Sapega: «дуже розмитий»)."""
     w, h = cell
-    img = img[: h * UP, : w * UP, :3].astype(np.float32)
+    rgb = img[: h * UP, : w * UP, :3]
+    f = rgb.astype(np.float32)
     border = np.concatenate(
         [
-            img[:12].reshape(-1, 3),
-            img[-12:].reshape(-1, 3),
-            img[:, :12].reshape(-1, 3),
-            img[:, -12:].reshape(-1, 3),
+            f[:12].reshape(-1, 3),
+            f[-12:].reshape(-1, 3),
+            f[:, :12].reshape(-1, 3),
+            f[:, -12:].reshape(-1, 3),
         ]
     )
-    a = (np.linalg.norm(img - np.median(border, axis=0), axis=2) > 75).astype(np.float32)
+    a = np.linalg.norm(f - np.median(border, axis=0), axis=2) > 75
     # тінь, яку модель кладе під ступні на пурпурі, — теж геть: пурпурових кольорів на персонажах немає
-    a[(img[..., 0] > img[..., 1] + 60) & (img[..., 2] > img[..., 1] + 60)] = 0
-
-    def blocks(m):
-        return m.reshape(h, UP, w, UP, -1).sum(axis=(1, 3))
-
-    asum = blocks(a[..., None])
-    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[
-        ..., 0
-    ] >= UP * UP / 2
+    a &= ~((f[..., 0] > f[..., 1] + 60) & (f[..., 2] > f[..., 1] + 60))
+    pim = Image.fromarray(rgb[a][None].astype(np.uint8)).quantize(
+        k, Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
+    )
+    pal = np.array(pim.getpalette()[: 3 * k], dtype=np.float32).reshape(-1, 3)
+    block = (np.arange(h * UP)[:, None] // UP) * w + np.arange(w * UP)[None] // UP
+    counts = np.bincount(
+        block[a] * k + np.asarray(pim)[0], minlength=h * w * k
+    ).reshape(h, w, k)
+    return pal[counts.argmax(axis=2)], counts.sum(axis=2) >= UP * UP / 2
 
 
 def feet_row(opaque):
@@ -338,7 +446,9 @@ def hero_palette():
         folder = os.path.join("SampleProject/Sprites/Player", path)
         for f in sorted(os.listdir(folder)) if path in ("Run", "Walk") else []:
             if f.endswith(".png"):
-                px = np.asarray(Image.open(os.path.join(folder, f)).convert("RGBA")).reshape(-1, 4)
+                px = np.asarray(
+                    Image.open(os.path.join(folder, f)).convert("RGBA")
+                ).reshape(-1, 4)
                 cols |= {tuple(c[:3]) for c in px if c[3] > 128}
     return np.array(sorted(cols), dtype=np.float32)
 
@@ -350,7 +460,11 @@ if __name__ == "__main__":
     cell = char.get("cell", (CELL, CELL))
     ref = enlarge(char["ref"], cell)
     # base=None — перший кадр сам кадр художника (новий кадр героя, D239), інакше модель робить його з референсу
-    base = ref if char["base"] is None else edit(ref, char["base"], seed)
+    base = (
+        ref
+        if char["base"] is None
+        else edit(ref, char["base"], seed, char.get("design"))
+    )
     base_ref = base.copy()
     base_ref[..., 3] = 255
     frames = {}
@@ -360,22 +474,38 @@ if __name__ == "__main__":
             if pose is None:
                 frames[(anim, i)] = base
             elif pose.split(":")[0] in SPECIAL:
-                frames[(anim, i)] = pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
+                frames[(anim, i)] = (
+                    pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
+                )
             elif not only or anim in only:
                 frames[(anim, i)] = edit(base_ref, text, seed)
             elif cached(base_ref, text, seed):
                 frames[(anim, i)] = edit(base_ref, text, seed)
     total = sum(len(p) for _, p in char["rows"])
-    urllib.request.urlopen(urllib.request.Request(API + "/free", json.dumps({"unload_models": True, "free_memory": True}).encode(),
-                                                  {"Content-Type": "application/json"}))
+    urllib.request.urlopen(
+        urllib.request.Request(
+            API + "/free",
+            json.dumps({"unload_models": True, "free_memory": True}).encode(),
+            {"Content-Type": "application/json"},
+        )
+    )
     if len(frames) < total:
-        sys.exit(f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built")
+        sys.exit(
+            f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built"
+        )
     small = {k: shrink(v, cell) for k, v in frames.items() if not isinstance(v, str)}
     for k, pose in frames.items():
         if isinstance(pose, str):
             kind, *arg = pose.split(":")
-            if kind == "BOB":
-                small[k] = bob(shrink(base, cell), int(arg[0]))
+            if (
+                kind == "BOB"
+            ):  # BOB:<рядок пояса>[:<анімація>:<кадр>] — дихає перший кадр або вказаний
+                small[k] = bob(
+                    small[(arg[1], int(arg[2]))]
+                    if len(arg) > 1
+                    else shrink(base, cell),
+                    int(arg[0]),
+                )
             elif kind == "ROT":
                 small[k] = rotate(small[(arg[0], int(arg[1]))], int(arg[2]))
             else:
@@ -384,16 +514,26 @@ if __name__ == "__main__":
     if char.get("palette") == "hero":
         pal_rgb = hero_palette()
     else:
-        pim = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
-        pal_rgb = np.array(pim.getpalette()[: 3 * char["colors"]], dtype=np.float32).reshape(-1, 3)
-    floor = char.get("floor", feet_row(op0))  # ступні — на рядок першого кадру; floor — явно (лінія ніг героя 56)
+        pim = Image.fromarray(rgb0[op0].astype(np.uint8)[None]).quantize(
+            char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
+        )
+        pal_rgb = np.array(
+            pim.getpalette()[: 3 * char["colors"]], dtype=np.float32
+        ).reshape(-1, 3)
+    floor = char.get(
+        "floor", feet_row(op0)
+    )  # ступні — на рядок першого кадру; floor — явно (лінія ніг героя 56)
     cols = max(len(p) for _, p in char["rows"])
     cw, ch = cell
     sheet = np.zeros((ch * len(char["rows"]), cw * cols, 4), np.uint8)
     for r, (anim, poses) in enumerate(char["rows"]):
         for i, pose in enumerate(poses):
             rgb, op = small[(anim, i)]
-            q = pal_rgb[np.linalg.norm(rgb[:, :, None, :] - pal_rgb[None, None], axis=3).argmin(axis=2)]
+            q = pal_rgb[
+                np.linalg.norm(rgb[:, :, None, :] - pal_rgb[None, None], axis=3).argmin(
+                    axis=2
+                )
+            ]
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floor - feet_row(op)
             frame = np.roll(frame, shift, axis=0)
@@ -402,13 +542,28 @@ if __name__ == "__main__":
             elif shift < 0:
                 frame[shift:] = 0
             sheet[r * ch : (r + 1) * ch, i * cw : (i + 1) * cw] = frame
+            if char.get("rows_out") and i == len(poses) - 1:
+                # компаньйони — лист на анімацію (idle/enter/strike), як їх ріжуть сцени й build_laboratory.gd
+                Image.fromarray(sheet[r * ch : (r + 1) * ch, : len(poses) * cw]).save(
+                    os.path.join(char["rows_out"], anim + ".png")
+                )
             if char.get("frames_out") and not (pose is None and char["base"] is None):
                 # кадри героя — окремими текстурами, як його кадри художника (Player.tscn міняє Sprite2D:texture)
                 folder = os.path.join(char["frames_out"], anim)
                 os.makedirs(folder, exist_ok=True)
                 Image.fromarray(frame).save(os.path.join(folder, f"{i + 1}.png"))
             print(f"{anim}[{i}] feet row {feet_row(op)} -> {floor}")
-    if "out" in char:  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере
+    if (
+        "out" in char
+    ):  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере
         os.makedirs(os.path.dirname(char["out"]), exist_ok=True)
         Image.fromarray(sheet).save(char["out"])
-    print("sheet", char.get("out", char.get("frames_out")), sheet.shape[1], "x", sheet.shape[0], "| feet row", floor)
+    print(
+        "sheet",
+        char.get("out") or char.get("frames_out") or char.get("rows_out"),
+        sheet.shape[1],
+        "x",
+        sheet.shape[0],
+        "| feet row",
+        floor,
+    )
