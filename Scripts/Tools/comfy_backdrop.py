@@ -358,6 +358,23 @@ def reseam(layer):
     Image.fromarray(img.astype(np.uint8)).save(path)
 
 
+def repaint(layer, x0, x1, denoise):
+    """Перемальовує смугу x0..x1 (пікселі шару) схваленої картинки з кешу не з нуля: будова лишається, а
+    напівпрозорі привиди й рвані тіні стають суцільними (будиночок із тентом у селі, D238)."""
+    path = cache_path(layer)
+    img = np.asarray(Image.open(path).convert("RGB"), dtype=np.float32)
+    height = -(-layer["rows"] * SCALE // 16) * 16
+    padded = np.concatenate([img, np.repeat(img[-1:], height - len(img), axis=0)])
+    x = np.arange(GW)
+    edge = 24
+    ramp = np.clip(np.maximum(x0 * SCALE - x, x - x1 * SCALE) / edge, 0, 1)  # 0 — смуга, 1 — поза нею
+    alpha = np.repeat((ramp * 255).astype(np.uint8)[None, :, None], height, axis=0)  # прозоре = маска LoadImage
+    name = upload(np.concatenate([padded.astype(np.uint8), alpha], 2), "repaint.png")
+    fixed = run(graph(f"{layer['prompt']}, {STYLE}", layer["seed"] + 2, height, name, denoise))
+    w = (1 - ramp)[None, :, None]
+    Image.fromarray((fixed * w + padded * (1 - w))[: len(img)].astype(np.uint8)).save(path)
+
+
 def generate(layer):
     """Картинка шару в px генерації, безшовна по горизонталі для seam model / blend."""
     path = cache_path(layer)
@@ -431,11 +448,15 @@ def quantize(rgb, opaque, colors, method="mediancut"):
 
 
 if __name__ == "__main__":
-    names = [a for a in sys.argv[1:] if not a.startswith("--")]
+    names = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and sys.argv[i - 1] not in ("--repaint", "--denoise")]
     for name in names or LAYERS:
         layer = LAYERS[name]
         if "--reseam" in sys.argv:
             reseam(layer)
+        if "--repaint" in sys.argv:  # --repaint X0-X1 [--denoise D]: смуга в пікселях шару
+            x0, x1 = map(int, sys.argv[sys.argv.index("--repaint") + 1].split("-"))
+            d = float(sys.argv[sys.argv.index("--denoise") + 1]) if "--denoise" in sys.argv else 0.6
+            repaint(layer, x0, x1, d)
         strip, strip_opaque = shrink(generate(layer), layer["key"])
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
