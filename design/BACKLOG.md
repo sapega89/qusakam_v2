@@ -140,8 +140,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 21. **Every skill has its own animation** (Sapega 2026-10-20): each skill (Healing Palm, Fire / Electric Strike, … —
     Resources/Data/skills.json) gets a hero pose/cast animation and its effect, not just a number change.
     A cast can be **interrupted** (a hit during the wind-up staggers the hero): the skill's effect does not happen, but
-    its cooldown starts anyway (and the SP is spent — Sapega said cooldown; SP follows the same rule unless he says
-    otherwise). Goes with the stagger system of item 4.
+    its cooldown starts anyway and the SP is spent (D259). Goes with the stagger system of item 4.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
