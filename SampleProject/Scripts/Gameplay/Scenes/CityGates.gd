@@ -2,6 +2,7 @@ extends Node2D
 
 ## Ключ підказки TutorialHintDisplay для охоронця (D209).
 const CALL_GUARD := "call_guard"
+const COMPANIONS_HINT := "companions"
 
 ## 🏰 City Gates Scene Manager
 ## States: INTRO_DIALOGUE, FIGHT_LOOP, AFTER_FIGHT_DIALOGUE, TO_CITY
@@ -171,6 +172,7 @@ func _spawn_enemies_for_fight() -> void:
 func _on_assist_called(companion_id: String) -> void:
 	if companion_id == "guard":
 		_hint().force_hide()
+		_hint().show_hint(COMPANIONS_HINT, true)
 
 func _hint() -> TutorialHintDisplay:
 	return get_tree().get_first_node_in_group(&"tutorial_hint_display")

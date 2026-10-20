@@ -20,7 +20,9 @@ const TUTORIAL_HINTS = {
 	# D148: туторіал у селі — висить, доки гравець не вилікує діда.
 	"healing_palm": "Your grandfather is dying! Stand next to him and press 1 to use Healing Palm.",
 	# D209: біля воріт міста — перший асист, туторіал.
-	"call_guard": "The guard will help you — press F to call him."
+	"call_guard": "Companions fight at your side — press F to call one. Call the guard now!",
+	# Після першого виклику: компаньйони — механіка на всю гру, не лише охоронець (Sapega: «ніде не кажемо»).
+	"companions": "Allies you meet will join your party. F calls the next ready companion — see them in Status."
 }
 
 # Track which hints have been shown
@@ -28,11 +30,14 @@ var shown_hints: Dictionary = {}
 var current_hint: String = ""
 var is_showing: bool = false
 var display_duration: float = 4.0
+## Місце плашки зі сцени (над панеллю навичок); анімація зсуває від нього, а не від нуля — інакше плашка лягала на панель.
+var _panel_y: float
 
 func _ready() -> void:
 	"""Initialize - start hidden"""
 	visible = false
 	is_showing = false
+	_panel_y = panel.position.y
 
 ## [param sticky] — не ховати за таймером: підказку прибирає force_hide(), коли дію виконано.
 func show_hint(hint_key: String, force: bool = false, sticky: bool = false) -> void:
@@ -68,19 +73,19 @@ func _animate_in() -> void:
 	"""Animates hint sliding in from bottom"""
 	visible = true
 	panel.modulate.a = 0.0
-	panel.position.y = 50
+	panel.position.y = _panel_y + 50
 
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 1.0, 0.3)
-	tween.tween_property(panel, "position:y", 0, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "position:y", _panel_y, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _animate_out() -> void:
 	"""Animates hint sliding out"""
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
-	tween.tween_property(panel, "position:y", 50, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(panel, "position:y", _panel_y + 50, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 
 	await tween.finished
 	visible = false
