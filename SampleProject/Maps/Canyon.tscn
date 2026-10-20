@@ -423,7 +423,7 @@ position = Vector2(818, 540)
 [node name="Shrine" type="Sprite2D" parent="Meditation" unique_id=884120375]
 z_index = 1
 texture_filter = 1
-position = Vector2(1120, 150)
+position = Vector2(1097, 154)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("22_shrine")
 centered = false

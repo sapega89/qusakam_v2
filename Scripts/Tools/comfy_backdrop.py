@@ -153,6 +153,28 @@ LAYERS = {
         "wooden gate, long red banners with a plain golden disc with a raised rim, the wall stands directly on bare sand, spanning the full width and reaching the bottom "
         f"edge, {CHROMA}",
     ),
+    # Ворота міста (BACKLOG feedback 18): окремий предмет у кінці дороги — до нього біжать бандити.
+    "Gates/gen_gate": dict(
+        seed=61,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        holes=True,  # прохід за відчиненими стулками ключ вирізав наскрізь
+        cut=(138, 446),  # лише брама з вежами: стіни обабіч обриваються посеред кімнати
+        keep=183,  # нижче — бруківка, яку модель домальовує під брамою
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="one single grand desert city gatehouse: two tall square sandstone towers with crenellated tops flanking "
+        "a high pointed arch, the heavy wooden gate doors standing open showing a dark passage, long red banners with a "
+        "plain golden disc with a raised rim hanging on the towers, carved ornaments around the arch, standing alone in "
+        "the middle of the frame with empty space on both sides, its base resting on the bottom edge, warm light on the "
+        f"top, cool violet shadows in the recesses, {CHROMA}",
+    ),
     "City/gen_far": dict(
         seed=61,
         rows=200,
@@ -314,13 +336,14 @@ LAYERS = {
     ),
     # Місце медитації на вершині скелі Прайду (BACKLOG feedback 8): плаский камінь, на якому сідає Кусакам.
     "Canyon/gen_shrine": dict(
-        seed=105,
+        seed=106,
         rows=120,
         top=0,
         small=2,  # модель малює камінь на пів шару — пікселі гри з блоків 6×6, камінь удвічі менший
         seam="none",
         trim=True,
-        keep=44,  # нижче (у пікселях після small) — смуга землі під каменем
+        spill=12,  # оливкова тінь моделі на зеленому тлі
+        shadow=4,  # своя тінь замість неї
         key="green",
         shade=0,
         fill=False,
@@ -329,8 +352,9 @@ LAYERS = {
         quant="octree",
         prompt="one single small low flat round sandstone slab for meditation, wide and only knee high, with a small "
         "cairn of three smooth stacked flat stones at its back end, an ancient spiral rune carved into its front face "
-        "glowing softly golden, a faint golden shimmer rising above it, standing alone in the middle of the frame and "
-        "filling only a third of its width, empty space on both sides, its base resting on the bottom edge, warm light "
+        "glowing softly golden, a faint golden shimmer rising above it, floating alone in the middle of the frame and "
+        "filling only a third of its width, the whole slab visible with its rounded front side and its bottom edge, "
+        "empty space all around it, no ground beneath it, warm light "
         f"on the top, cool violet shadows in the cracks, {CHROMA}",
     ),
     "Canyon/gen_bridge": dict(
@@ -470,8 +494,12 @@ def upload(rgba, name):
 
 def seam_pass(img, layer, text, height):
     """Модель перемальовує смугу посередині картинки: серцевина — повністю, далі маска м'яко спадає."""
-    ramp = np.clip((np.abs(np.arange(GW) - GW // 2) - SEAM / 2) / (SEAM / 2), 0, 1)  # 0 — серцевина, 1 — поза смугою
-    alpha = np.repeat((ramp * 255).astype(np.uint8)[None, :, None], height, axis=0)  # прозоре = маска LoadImage
+    ramp = np.clip(
+        (np.abs(np.arange(GW) - GW // 2) - SEAM / 2) / (SEAM / 2), 0, 1
+    )  # 0 — серцевина, 1 — поза смугою
+    alpha = np.repeat(
+        (ramp * 255).astype(np.uint8)[None, :, None], height, axis=0
+    )  # прозоре = маска LoadImage
     name = upload(np.concatenate([img.astype(np.uint8), alpha], 2), "seam.png")
     fixed = run(graph(text, layer["seed"] + 1, height, name, SEAM_DENOISE))
     # у пікселях — лише вузька облямівка: м'який перехід дає маска моделі, а широке змішування двох різних
@@ -481,7 +509,9 @@ def seam_pass(img, layer, text, height):
 
 
 def cache_path(layer):
-    tag = json.dumps([layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]])
+    tag = json.dumps(
+        [layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]]
+    )
     return os.path.join(CACHE, hashlib.sha1(tag.encode()).hexdigest()[:16] + ".png")
 
 
@@ -505,12 +535,20 @@ def repaint(layer, x0, x1, denoise):
     padded = np.concatenate([img, np.repeat(img[-1:], height - len(img), axis=0)])
     x = np.arange(GW)
     edge = 24
-    ramp = np.clip(np.maximum(x0 * SCALE - x, x - x1 * SCALE) / edge, 0, 1)  # 0 — смуга, 1 — поза нею
-    alpha = np.repeat((ramp * 255).astype(np.uint8)[None, :, None], height, axis=0)  # прозоре = маска LoadImage
+    ramp = np.clip(
+        np.maximum(x0 * SCALE - x, x - x1 * SCALE) / edge, 0, 1
+    )  # 0 — смуга, 1 — поза нею
+    alpha = np.repeat(
+        (ramp * 255).astype(np.uint8)[None, :, None], height, axis=0
+    )  # прозоре = маска LoadImage
     name = upload(np.concatenate([padded.astype(np.uint8), alpha], 2), "repaint.png")
-    fixed = run(graph(f"{layer['prompt']}, {STYLE}", layer["seed"] + 2, height, name, denoise))
+    fixed = run(
+        graph(f"{layer['prompt']}, {STYLE}", layer["seed"] + 2, height, name, denoise)
+    )
     w = (1 - ramp)[None, :, None]
-    Image.fromarray((fixed * w + padded * (1 - w))[: len(img)].astype(np.uint8)).save(path)
+    Image.fromarray((fixed * w + padded * (1 - w))[: len(img)].astype(np.uint8)).save(
+        path
+    )
 
 
 def generate(layer):
@@ -522,7 +560,9 @@ def generate(layer):
     text = f"{layer['prompt']}, {STYLE}"
     img = run(graph(text, layer["seed"], height))
     if layer["seam"] == "model":
-        img = seam_pass(np.roll(img, GW // 2, axis=1), layer, text, height)  # зсув виводить шов у середину
+        img = seam_pass(
+            np.roll(img, GW // 2, axis=1), layer, text, height
+        )  # зсув виводить шов у середину
     elif layer["seam"] == "blend":
         # по краях — зсунута копія, посередині — оригінал: краї сходяться, бо в оригіналі вони сусіди
         w = (1 - np.abs(np.arange(GW) / GW * 2 - 1))[None, :, None]
@@ -543,16 +583,26 @@ def shrink(img, key, spill=0, block=SCALE):
     if key:
         bg = np.median(img[:24].reshape(-1, 3), axis=0)
         a = (np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE).astype(np.float32)
-    if spill:
+    if spill and key == "green":  # тінь, яку модель кладе на зелене тло (оливкова), — геть
+        a *= img[..., 1] - np.maximum(img[..., 0], img[..., 2]) < spill
+    elif spill:
         a *= np.minimum(img[..., 0], img[..., 2]) - img[..., 1] < spill
     if key == "green":
-        img[..., 1] = np.minimum(img[..., 1], np.maximum(img[..., 0], img[..., 2]))  # зелений відсвіт країв
+        img[..., 1] = np.minimum(
+            img[..., 1], np.maximum(img[..., 0], img[..., 2])
+        )  # зелений відсвіт країв
 
     def blocks(m):
-        return m[: rows * block, : cols * block].reshape(rows, block, cols, block, -1).sum(axis=(1, 3))
+        return (
+            m[: rows * block, : cols * block]
+            .reshape(rows, block, cols, block, -1)
+            .sum(axis=(1, 3))
+        )
 
     asum = blocks(a[..., None])
-    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[..., 0] >= block * block / 2
+    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[
+        ..., 0
+    ] >= block * block / 2
 
 
 def drop_edges(opaque):
@@ -573,6 +623,23 @@ def drop_edges(opaque):
         touch = grown
 
 
+def holes(opaque):
+    """Прозоре, до якого від жодного краю картинки не дійти прозорим: прохід у брамі, вирізаний ключем."""
+    reach = np.zeros_like(opaque)
+    reach[[0, -1]] = ~opaque[[0, -1]]
+    reach[:, [0, -1]] = ~opaque[:, [0, -1]]
+    while True:
+        grown = reach.copy()
+        grown[1:] |= reach[:-1]
+        grown[:-1] |= reach[1:]
+        grown[:, 1:] |= reach[:, :-1]
+        grown[:, :-1] |= reach[:, 1:]
+        grown &= ~opaque
+        if (grown == reach).all():
+            return ~opaque & ~reach
+        reach = grown
+
+
 def fill_down(rgb, opaque):
     """Під силуетом — суцільно до низу, кольором найближчого непрозорого пікселя вище."""
     last = np.maximum.accumulate(
@@ -585,46 +652,99 @@ def quantize(rgb, opaque, colors, method="mediancut"):
     """Палітра — лише з непрозорих пікселів; без дизерингу, прозорість — 0 або 255. octree — де рідкі відтінки
     (зелене листя, синій тент) мусять уціліти: median-cut на 16 кольорах їх викидав."""
     how = Image.Quantize.FASTOCTREE if method == "octree" else Image.Quantize.MEDIANCUT
-    pal = Image.fromarray(rgb[opaque].astype(np.uint8)[None]).quantize(colors, how, dither=Image.Dither.NONE)
-    q = Image.fromarray(rgb.astype(np.uint8)).quantize(palette=pal, dither=Image.Dither.NONE).convert("RGB")
+    pal = Image.fromarray(rgb[opaque].astype(np.uint8)[None]).quantize(
+        colors, how, dither=Image.Dither.NONE
+    )
+    q = (
+        Image.fromarray(rgb.astype(np.uint8))
+        .quantize(palette=pal, dither=Image.Dither.NONE)
+        .convert("RGB")
+    )
     return np.dstack([np.asarray(q), opaque.astype(np.uint8) * 255])
 
 
 if __name__ == "__main__":
-    names = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and sys.argv[i - 1] not in ("--repaint", "--denoise")]
+    names = [
+        a
+        for i, a in enumerate(sys.argv[1:], 1)
+        if not a.startswith("--") and sys.argv[i - 1] not in ("--repaint", "--denoise")
+    ]
     for name in names or LAYERS:
         layer = LAYERS[name]
         if "--reseam" in sys.argv:
             reseam(layer)
-        if "--repaint" in sys.argv:  # --repaint X0-X1 [--denoise D]: смуга в пікселях шару
+        if (
+            "--repaint" in sys.argv
+        ):  # --repaint X0-X1 [--denoise D]: смуга в пікселях шару
             x0, x1 = map(int, sys.argv[sys.argv.index("--repaint") + 1].split("-"))
-            d = float(sys.argv[sys.argv.index("--denoise") + 1]) if "--denoise" in sys.argv else 0.6
+            d = (
+                float(sys.argv[sys.argv.index("--denoise") + 1])
+                if "--denoise" in sys.argv
+                else 0.6
+            )
             repaint(layer, x0, x1, d)
         # small — предмет, який модель малює завеликим: пікселі гри з більшого блоку
-        strip, strip_opaque = shrink(generate(layer), layer["key"], layer.get("spill", 0), SCALE * layer.get("small", 1))
+        strip, strip_opaque = shrink(
+            generate(layer),
+            layer["key"],
+            layer.get("spill", 0),
+            SCALE * layer.get("small", 1),
+        )
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
             strip_opaque = drop_edges(strip_opaque)
             rise = np.argmax(strip_opaque.any(axis=1)) - 6
-            strip, strip_opaque = np.roll(strip, -rise, axis=0), np.roll(strip_opaque, -rise, axis=0)
-        rgb, opaque = np.zeros((H, strip.shape[1], 3)), np.zeros((H, strip.shape[1]), bool)
+            strip, strip_opaque = (
+                np.roll(strip, -rise, axis=0),
+                np.roll(strip_opaque, -rise, axis=0),
+            )
+        rgb, opaque = (
+            np.zeros((H, strip.shape[1], 3)),
+            np.zeros((H, strip.shape[1]), bool),
+        )
         rgb[layer["top"] : layer["top"] + len(strip)] = strip
         opaque[layer["top"] : layer["top"] + len(strip)] = strip_opaque
         if layer["fill"]:
             rgb, opaque = fill_down(rgb, opaque)
+        if layer.get("holes"):  # дірки всередині предмета — найтемнішим його кольором (темний прохід)
+            hole = holes(opaque)
+            rgb[hole] = rgb[opaque][np.argmin(rgb[opaque].sum(axis=1))]
+            opaque = opaque | hole
         rgb = (rgb * (1 - layer["haze"]) + HAZE * layer["haze"]) * (1 - layer["shade"])
         os.makedirs(os.path.dirname(OUT + name), exist_ok=True)
         out = quantize(rgb, opaque, layer["colors"], layer.get("quant", "mediancut"))
-        if layer.get("crop"):  # текстура, а не екран (поверхні лабораторії): лише смуга rows
+        if layer.get(
+            "crop"
+        ):  # текстура, а не екран (поверхні лабораторії): лише смуга rows
             out = out[layer["top"] : layer["top"] + layer["rows"]]
         if layer.get("keep"):  # рядки шару від keep і нижче — прозорі
             out[layer["keep"] :, :, 3] = 0
+        if layer.get("cut"):  # стовпці шару x0..x1 — решта прозора (обрізані стіни обабіч брами)
+            out[:, : layer["cut"][0], 3] = 0
+            out[:, layer["cut"][1] :, 3] = 0
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
             ys, xs = np.nonzero(out[..., 3])
             out = out[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+        if layer.get("shadow"):  # предмет стоїть на землі: власна тінь-овал найтемнішим кольором під його низом
+            h, w = out.shape[:2]
+            sh = layer["shadow"]
+            canvas = np.zeros((h + sh, w + 2 * sh, 4), np.uint8)
+            opaque_px = out[out[..., 3] > 0][:, :3]
+            dark = opaque_px[np.argmin(opaque_px.astype(int).sum(axis=1))]
+            yy, xx = np.mgrid[: h + sh, : w + 2 * sh]
+            ellipse = ((xx - (w + 2 * sh) / 2) / (w * 0.42)) ** 2 + ((yy - (h - 1)) / sh) ** 2 <= 1
+            canvas[ellipse] = (*dark, 255)
+            body = out[..., 3] > 0
+            canvas[:h, sh : sh + w][body] = out[body]
+            out = canvas
         Image.fromarray(out).save(OUT + name + ".png")
         print("drawn", OUT + name + ".png", flush=True)
     # ComfyUI тримає моделі (~30 ГБ ОЗП разом із текстовим енкодером) і після роботи; на 32 ГБ це вичерпало
     # пам'ять системи — вивантажуємо одразу.
-    urllib.request.urlopen(urllib.request.Request(API + "/free", json.dumps({"unload_models": True, "free_memory": True}).encode(),
-                                                  {"Content-Type": "application/json"}))
+    urllib.request.urlopen(
+        urllib.request.Request(
+            API + "/free",
+            json.dumps({"unload_models": True, "free_memory": True}).encode(),
+            {"Content-Type": "application/json"},
+        )
+    )
