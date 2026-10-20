@@ -43,6 +43,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[ui_implementation_plan]] — the original Figma → Godot pass, and the token import table (§1)
 - [[skills_system_plan]] — survey + proposal. ⚠️ opens "Nothing implemented"; `SkillManager.gd` now exists — the note predates the build
 - [[skills_combat_plan]] — the combat vertical slice for skills
+- [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, towns walk, grips, sheathing (D264–D270)
 - [[inventory_diff_plan]] — inventory delta
 - [[backlog_roadmap]] — the order to work through BACKLOG and BUGS: playable to the end first
 - [[room_state_plan]] — ✅ built; D152: rooms remember enemies and their HP when the player leaves

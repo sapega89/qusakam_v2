@@ -89,7 +89,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    B76 fixed on the way: Enter on a Skills row learned nothing.
 4. **Combat, souls-lite** (D250, D251, D253): combos for the hero and enemies, staggers both ways, double dash,
    block/parry, heavy attack, enemies that sometimes freeze the hero, run outside towns, two-handed and dual-wield
-   weapons, harder tuning. Needs a plan first (plan-missing-system).
+   weapons, harder tuning. **Plan: [[souls_combat_plan]]** (D264–D270, slices 1–6).
+   Resume: the first unchecked slice in the plan.
 5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
 6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
 7. **Foreground parallax** — below.
