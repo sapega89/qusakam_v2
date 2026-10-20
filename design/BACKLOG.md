@@ -170,6 +170,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     binding in the InputMap and is reachable with focus navigation only. Hints name the gamepad button when a pad is in
     use. A `verify_gamepad_parity.gd` checks every InputMap action has a joypad event and drives the main menus with
     `InputEventJoypadButton`. Standing rule for every queue item from now on: a new action ships with its pad binding.
+25. **After the meditation: a white speech cloud, Kusakam stands still** (Sapega 2026-10-20 «діалог після медитації має
+    бути в білому облачці мабуть, і Кусакам вже має встати з диску, але не має рухатись»): the talk that follows the
+    summit meditation (item 8, D257) is shown in a white speech cloud over the speaker instead of the dialogue box; by
+    then Kusakam has already risen from the stone disc (stand-up from `Meditate`), and he cannot move or act until the
+    talk ends. Check whether a speech-bubble presentation exists (D110 dialogue layer) before building one.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a

@@ -37,6 +37,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | # | Item | Why here |
 |---|---|---|
 | 1 | **20** smoother hero animations, lighter jump dust | the base the combat and skill animations stand on |
+| 1b | **25** after the meditation: white speech cloud, Kusakam stands up from the disc and stays locked | small, on item 8's code |
 | 2 | **4 + 15** souls-lite combat (combos, staggers, double dash, block/parry, heavy attack, freeze, run outside towns, two-handed + dual-wield) and sheathed weapons with an attack animation per weapon; **D259** interrupts | one system; plan first (plan-missing-system) |
 | 3 | **21** an animation per skill | on top of 20 + 4 |
 | 4 | **22** class path and three skill trees (D260; oath in the City: priest / witch / sand dervish NPCs) | plan first: `design/skill_trees_plan.md` |
