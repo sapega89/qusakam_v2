@@ -107,8 +107,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 15. **Weapons sheathed out of combat; an attack animation per weapon** (Sapega 2026-10-20): the weapon is hidden
     (sheathed/on the back) when no fight is on and drawn when combat starts; each weapon type gets its own attack
     animation (goes with item 4 — D250 two-handed and dual-wield).
-16. **MayorHall cutscene and the "unbeatable" boss** (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит
-    and Уризен stand in a queue (Sapega: «в черзі стоять астріт, кусакам і урізен» — Kusakam joins the queue); a wall
+16. **MayorHall cutscene and the "unbeatable" boss** (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
+    Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
 17. **The Laboratory story, rewritten** (Sapega 2026-10-20) — replaces the current three-storey companion talks:

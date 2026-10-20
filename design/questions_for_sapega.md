@@ -138,4 +138,3 @@ None blocks; each default is what the game does now.
 | Q62 ✅ D241 | Repository | `.gitignore` ignores `addons/**` while ~1,400 addon files are tracked, so new addon files go untracked silently. Track the addons we keep fully (drop the rule), or keep them out of git and install them per machine? | Unchanged; edits to tracked addon files go in with `git add -u`. |
 | Q63 ✅ D242 | Menus | Replace the Maaack menus template (MainMenu base class, input remapping) with our own code the next time the Figma menus are touched? | Keep Maaack. |
 | Q64 | Laboratory story (BACKLOG 17) | The prisoner's shout before the fire djinn bursts out — Sapega said «аллах акбар». It reads as the Muslim-terrorist stereotype (offence, Steam reports). | Until answered: an incantation in an invented language |
-| Q65 | MayorHall queue (BACKLOG 16) | Who stands in the queue — Астрит, Уризен and Kusakam, or Алісия too? | Астрит and Уризен, Kusakam joins |
