@@ -127,6 +127,10 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
       cannot — it is his grandfather's cloak. Fight for the cloak: boss wins → it takes the cloak, game over; boss loses →
       Kusakam: «I don't know whether you would have given the cloak away, but I wouldn't.» The Laboratory gates open,
       we walk out, **the end** of the demo.
+18. **City Gates: open sky, real gates, a bandit raid** (Sapega 2026-10-20): remove the tile ceiling over CityGates — it
+    is the desert, the sky must be overhead (collision change: the ceiling band goes); add gate art — beautiful city
+    gates with guards (generated); a cutscene when Kusakam approaches: bandits attack the gates (then the existing guard
+    assist fight, D209).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
