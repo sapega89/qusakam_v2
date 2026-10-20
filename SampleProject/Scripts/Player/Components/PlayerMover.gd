@@ -33,6 +33,10 @@ class_name PlayerMover
 ## Драбини (D225): швидкість лазіння, px/s; стрибок з драбини — така частка звичайного.
 @export var climb_speed := 170.0
 @export var ladder_jump_factor := 0.6
+## Кроки (D276): крок — кожні стільки px по підлозі (біг / хода в місті) і по драбині; звук — за поверхнею кімнати.
+@export var step_distance := 95.0
+@export var walk_step_distance := 60.0
+@export var ladder_step_distance := 40.0
 
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -57,6 +61,8 @@ var locked: bool = false
 ## Поштовх від удару по герою (D264): швидкість і скільки ще триває.
 var _push_speed: float = 0.0
 var _push_left: float = 0.0
+## Пройдено від останнього кроку, px.
+var _stride: float = 0.0
 
 # Parent reference: the CharacterBody2D that owns this component (the Player).
 @onready var player: CharacterBody2D = get_parent()
@@ -95,6 +101,7 @@ func start_roll() -> bool:
 	dash_charges -= 1
 	roll_ready_in = roll_duration + roll_cooldown
 	player.set_invulnerable(true, roll_duration)
+	AudioManager.play(&"dash")
 	return true
 
 
@@ -143,6 +150,28 @@ func physics_move(delta: float) -> void:
 			DebugLogger.physics_warning("PlayerMover: Рух блокується стіною (is_on_wall = true)", "player_wall")
 
 	_handle_landing(was_in_air, player.is_on_floor())
+	_footsteps(delta)
+
+
+## Крок звучить кожні step_distance px бігу по підлозі (ривок — без кроків), на драбині — кожні ladder_step_distance.
+func _footsteps(delta: float) -> void:
+	var on_ladder := is_climbing()
+	if not (on_ladder or (player.is_on_floor() and not is_rolling())):
+		_stride = 0.0
+		return
+	_stride += absf(player.velocity.y if on_ladder else player.velocity.x) * delta
+	var every: float = ladder_step_distance if on_ladder else (walk_step_distance if is_walking() else step_distance)
+	if _stride < every:
+		return
+	_stride -= every
+	if on_ladder:
+		AudioManager.play(&"ladder")
+		return
+	var map: Node = Game.get_singleton().map
+	if map == null:
+		return  # між кімнатами (teleport_to_room)
+	var room: String = map.scene_file_path.get_file().get_basename()
+	AudioManager.play(StringName("step_" + AudioManager.room(room).surface))
 
 
 ## Драбина, на якій зараз центр героя, або null.
@@ -183,6 +212,7 @@ func _climb() -> void:
 	if Input.is_action_just_pressed(&"jump") and not Input.is_action_pressed(&"move_up"):
 		climbing = null
 		player.velocity.y = jump_velocity * ladder_jump_factor
+		AudioManager.play(&"jump")
 	elif axis > 0.0 and player.is_on_floor() and player.global_position.y > climbing.global_position.y:
 		climbing = null  # унизу, на підлозі під драбиною (на містку згори — це ще початок спуску)
 
@@ -212,6 +242,7 @@ func _handle_jump() -> void:
 			player.position.y += 8
 		else:
 			player.velocity.y = jump_velocity
+			AudioManager.play(&"jump")
 
 	if Input.is_action_just_released("jump"):
 		if not player.is_on_floor() and player.velocity.y < 0:

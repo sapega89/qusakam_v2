@@ -44,6 +44,25 @@ func _ready() -> void:
 
 ## Грає звук події [param event]; [param pitch_scale] множить висоту з таблиці (напр. голос ворога за типом).
 func play(event: StringName, pitch_scale: float = 1.0) -> AudioStreamPlayer:
+	var player := _make_player(event, pitch_scale)
+	add_child(player)
+	player.play()
+	player.finished.connect(player.queue_free)
+	sound_played.emit(event, player.stream, player.bus)
+	return player
+
+
+## Петля події [param event] (атмосфера кімнати) дочірньою [param parent] — живе й зникає разом із ним.
+func play_loop(event: StringName, parent: Node) -> AudioStreamPlayer:
+	var player := _make_player(event, 1.0)
+	player.stream.loop = true
+	parent.add_child(player)
+	player.play()
+	sound_played.emit(event, player.stream, player.bus)
+	return player
+
+
+func _make_player(event: StringName, pitch_scale: float) -> AudioStreamPlayer:
 	assert(_streams.has(event), "AudioManager: unknown sound event '%s'" % event)
 	var entry: Dictionary = events[event]
 	var jitter: float = entry.get("jitter", 0.05)
@@ -52,15 +71,17 @@ func play(event: StringName, pitch_scale: float = 1.0) -> AudioStreamPlayer:
 	player.bus = StringName(entry.bus)
 	player.volume_db = entry.get("volume_db", 0.0)
 	player.pitch_scale = entry.get("pitch", 1.0) * pitch_scale * randf_range(1.0 - jitter, 1.0 + jitter)
-	add_child(player)
-	player.play()
-	player.finished.connect(player.queue_free)
-	sound_played.emit(event, player.stream, player.bus)
 	return player
 
 
 func has_event(event: StringName) -> bool:
 	return _streams.has(event)
+
+
+## Звук кімнати [param room_name] ({ambience, surface, interior}); кімнати без запису в таблиці — помилка.
+func room(room_name: String) -> Dictionary:
+	assert(rooms.has(room_name), "AudioManager: room %s has no entry in sound_events.json → rooms" % room_name)
+	return rooms[room_name]
 
 
 ## Установить громкость Master (0.0 - 1.0)

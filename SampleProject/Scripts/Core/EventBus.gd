@@ -337,6 +337,10 @@ signal scene_transition_completed(scene_name: String)
 @warning_ignore("unused_signal")
 signal scene_loaded(scene_name: String)
 
+## Гравець у новій кімнаті MetSys (Game.init_room): ім'я файлу кімнати без розширення («DesertRoad»). Звук кімнати (D276).
+@warning_ignore("unused_signal")
+signal room_entered(room_name: String)
+
 ## Емітується при зміні стану сцени (наприклад, Canyon, Village).
 ##
 ## Args:

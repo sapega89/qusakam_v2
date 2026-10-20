@@ -33,9 +33,11 @@ def save(x: np.ndarray, path: Path, peak: float = 0.89) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     m = float(np.abs(x).max())
     assert m > 0.0, f"silent output {path}"
-    sf.write(
-        str(path), (x / m * peak).astype(np.float32), SR, format="OGG", subtype="VORBIS"
-    )
+    y = (x / m * peak).astype(np.float32)
+    # libsndfile's Vorbis encoder crashes on one large write — feed it in blocks.
+    with sf.SoundFile(str(path), "w", SR, 1, format="OGG", subtype="VORBIS") as f:
+        for i in range(0, len(y), SR // 4):
+            f.write(y[i : i + SR // 4])
 
 
 def fade(x: np.ndarray, fade_in: float, fade_out: float) -> np.ndarray:
@@ -155,7 +157,76 @@ def stage_combat(dl: Path, repo: Path) -> None:
     shutil.copy(ui / "error_001.ogg", sfx / "cast_interrupt.ogg")
 
 
-STAGES = {"combat": stage_combat}
+def stage_world(dl: Path, repo: Path) -> None:
+    sfx = repo / "SampleProject/Assets/Audio/SFX"
+    ui_dir = repo / "SampleProject/Assets/Audio/UI"
+    amb = repo / "SampleProject/Assets/Audio/Ambience"
+    impact = repo / "assets/kenney_impact-sounds/Audio"
+    rpg = repo / "assets/kenney_rpg-audio/Audio"
+    ui = dl / "dl_kenney_interface-sounds/x/Audio"
+    ui_dir.mkdir(parents=True, exist_ok=True)
+    for surface in ["snow", "concrete", "wood"]:
+        for i in range(5):
+            shutil.copy(
+                impact / f"footstep_{surface}_00{i}.ogg",
+                sfx / f"footstep_{surface}_00{i}.ogg",
+            )
+    for name in [
+        "impactSoft_medium_000",
+        "impactSoft_medium_001",
+        "impactSoft_medium_002",
+        "impactWood_light_000",
+        "impactWood_light_001",
+        "impactWood_light_002",
+    ]:
+        shutil.copy(impact / f"{name}.ogg", sfx / f"{name}.ogg")
+    for name in [
+        "doorOpen_1",
+        "doorOpen_2",
+        "doorClose_1",
+        "doorClose_2",
+        "handleSmallLeather",
+        "handleCoins",
+    ]:
+        shutil.copy(rpg / f"{name}.ogg", sfx / f"{name}.ogg")
+    shutil.copy(ui / "confirmation_001.ogg", sfx / "level_up.ogg")
+    for name in ["tick_002", "click_001", "switch_002", "scroll_001"]:
+        shutil.copy(ui / f"{name}.ogg", ui_dir / f"{name}.ogg")
+
+    # Ambience loops (D276): 30 s, cross-faded into themselves.
+    wind = load(dl / "dl_oga_wind/wind.wav")
+    dungeon = load(dl / "dl_oga_dungeon/dungeon.ogg")
+    crowd = load(dl / "dl_oga_crowd/crowd.ogg")
+    rumble = load(dl / "dl_oga_rumble/rumble.mp3")
+    wind_soft = band(wind, None, 3000)
+    distant = band(crowd, 200, 1800)  # far away: no highs, no rumble
+    murmur = band(crowd, 150, 900)  # behind walls
+    while len(distant) < 32 * SR:
+        distant = np.concatenate([distant, distant])
+        murmur = np.concatenate([murmur, murmur])
+    while len(rumble) < 32 * SR:
+        rumble = np.concatenate([rumble, rumble])
+    save(loop(wind_soft, 30), amb / "amb_desert_wind.ogg", 0.7)
+    save(
+        loop(mix((dungeon[10 * SR :], 0, 1.0), (wind_soft, 0, 0.35)), 30),
+        amb / "amb_canyon_echo.ogg",
+        0.7,
+    )
+    save(
+        loop(mix((wind_soft, 0, 0.8), (distant, 0, 0.25)), 30),
+        amb / "amb_village.ogg",
+        0.7,
+    )
+    save(
+        loop(mix((distant, 0, 0.9), (wind_soft, 0, 0.2)), 30),
+        amb / "amb_city_crowd.ogg",
+        0.7,
+    )
+    save(loop(murmur, 30), amb / "amb_hall.ogg", 0.5)
+    save(loop(band(rumble, None, 400), 30), amb / "amb_lab_hum.ogg", 0.6)
+
+
+STAGES = {"combat": stage_combat, "world": stage_world}
 
 if __name__ == "__main__":
     downloads, repo_dir = Path(sys.argv[1]), Path(sys.argv[2])

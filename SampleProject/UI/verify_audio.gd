@@ -95,7 +95,9 @@ func _initialize() -> void:
 				target = node
 			else:
 				node.global_position.x += 4000
+	await _world()
 	await _combat()
+	await _rooms()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -204,3 +206,86 @@ func _combat() -> void:
 	_mark()
 	await create_timer(4.5).timeout
 	_heard(&"sheathe", &"SFX", "3 s after the fight the sword is put away")
+
+
+func _hooks() -> Node:
+	return am.get_node(^"SoundHooks")
+
+
+func _ambience_is(event: StringName, label: String) -> void:
+	var loop: AudioStreamPlayer = _hooks().ambience
+	var file: String = am.AUDIO_ROOT + am.events[event].files[0]
+	ck(is_instance_valid(loop) and loop.playing and loop.bus == &"Ambience" and loop.stream.resource_path == file
+			and loop.stream.loop and loop.get_parent() == game,
+			"%s: %s loops on Ambience (%s)" % [label, event, loop.stream.resource_path if is_instance_valid(loop) else "none"])
+
+
+func _world() -> void:
+	print("[3] World: room ambience, footsteps by surface, jump, land, dash, pickups, level-up, UI (D276)")
+	_ambience_is(&"amb_desert_wind", "DesertRoad")
+	hero.global_position = target.global_position + Vector2(-500, -10)
+	hero.velocity = Vector2.ZERO
+	for i in 30: await physics_frame
+	_mark()
+	_press(&"move_left")
+	await create_timer(0.7).timeout
+	_press(&"move_left", false)
+	_heard(&"step_sand", &"SFX", "running on DesertRoad sand")
+	ck(played.filter(func(p: Array) -> bool: return p[0] == &"step_sand").size() >= 2, "several steps in 0.7 s of running")
+	await create_timer(0.3).timeout
+	_mark()
+	await _tap(&"jump")
+	await create_timer(1.2).timeout
+	_heard(&"jump", &"SFX", "a jump")
+	_heard(&"land", &"SFX", "landing after the jump")
+	_mark()
+	await _tap(&"dodge")
+	_heard(&"dash", &"SFX", "a dash")
+	await create_timer(0.8).timeout
+	var inventory: Node = sl.get_inventory_manager()
+	_mark()
+	inventory.add_item("coin", 5)
+	_heard(&"coin", &"SFX", "coins picked up")
+	_not_heard(&"pickup", "coins")
+	_mark()
+	inventory.add_item("iron_mace", 1)
+	_heard(&"pickup", &"SFX", "an item picked up")
+	_mark()
+	sl.get_xp_manager().add_xp(1000)
+	_heard(&"level_up", &"SFX", "a level up")
+
+	var ui: Node = root.get_node(^"ProjectUISoundController")
+	ck(ui.process_mode == Node.PROCESS_MODE_ALWAYS, "UI sounds play under pause (menus pause the game)")
+	var button := Button.new()
+	button.text = "probe"
+	game.add_child(button)
+	await process_frame
+	button.grab_focus()
+	await process_frame
+	var focus_player: AudioStreamPlayer = ui.get_node(^"ButtonFocusedAudioStreamPlayer")
+	ck(focus_player.playing and focus_player.bus == &"SFX", "focusing a button (pad navigation) ticks on SFX")
+	button.queue_free()
+
+
+func _rooms() -> void:
+	print("[4] Rooms: a door into and out of an interior, the hall ambience, wooden floor (D276)")
+	var dm: Node = sl.get_dialogue_manager()
+	_mark()
+	game.teleport_to_room("res://SampleProject/Maps/MayorHall.tscn", ^"Arrival")
+	for i in 30: await process_frame
+	await _finish_dialogue(dm)
+	await create_timer(1.0).timeout
+	_heard(&"door", &"SFX", "DesertRoad → MayorHall")
+	_ambience_is(&"amb_hall", "MayorHall")
+	hero = game.player
+	_mark()
+	_press(&"move_right")
+	await create_timer(0.8).timeout
+	_press(&"move_right", false)
+	_heard(&"step_wood", &"SFX", "walking in the Mayor Hall")
+	_mark()
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	for i in 30: await process_frame
+	await _finish_dialogue(dm)
+	_heard(&"door", &"SFX", "MayorHall → DesertRoad")
+	_ambience_is(&"amb_desert_wind", "back on DesertRoad")

@@ -20,7 +20,32 @@
 		"cast_fire_strike_release": {"bus": "SFX", "files": ["SFX/cast_fire_release.ogg"], "volume_db": -3.0, "jitter": 0.0},
 		"cast_electric_strike_windup": {"bus": "SFX", "files": ["SFX/cast_electric_windup.ogg"], "volume_db": -6.0, "jitter": 0.0},
 		"cast_electric_strike_release": {"bus": "SFX", "files": ["SFX/cast_electric_release.ogg"], "volume_db": -4.0, "jitter": 0.0},
-		"cast_interrupt": {"bus": "SFX", "files": ["SFX/cast_interrupt.ogg"], "volume_db": -4.0}
+		"cast_interrupt": {"bus": "SFX", "files": ["SFX/cast_interrupt.ogg"], "volume_db": -4.0},
+		"step_sand": {"bus": "SFX", "files": ["SFX/footstep_snow_000.ogg", "SFX/footstep_snow_001.ogg", "SFX/footstep_snow_002.ogg", "SFX/footstep_snow_003.ogg", "SFX/footstep_snow_004.ogg"], "volume_db": -10.0, "jitter": 0.08},
+		"step_stone": {"bus": "SFX", "files": ["SFX/footstep_concrete_000.ogg", "SFX/footstep_concrete_001.ogg", "SFX/footstep_concrete_002.ogg", "SFX/footstep_concrete_003.ogg", "SFX/footstep_concrete_004.ogg"], "volume_db": -10.0, "jitter": 0.08},
+		"step_wood": {"bus": "SFX", "files": ["SFX/footstep_wood_000.ogg", "SFX/footstep_wood_001.ogg", "SFX/footstep_wood_002.ogg", "SFX/footstep_wood_003.ogg", "SFX/footstep_wood_004.ogg"], "volume_db": -10.0, "jitter": 0.08},
+		"jump": {"bus": "SFX", "files": ["SFX/cloth1.ogg", "SFX/cloth2.ogg", "SFX/cloth3.ogg", "SFX/cloth4.ogg"], "pitch": 1.4, "volume_db": -6.0},
+		"land": {"bus": "SFX", "files": ["SFX/impactSoft_medium_000.ogg", "SFX/impactSoft_medium_001.ogg", "SFX/impactSoft_medium_002.ogg"], "volume_db": -6.0},
+		"ladder": {"bus": "SFX", "files": ["SFX/impactWood_light_000.ogg", "SFX/impactWood_light_001.ogg", "SFX/impactWood_light_002.ogg"], "volume_db": -10.0, "jitter": 0.1},
+		"door": {"bus": "SFX", "files": ["SFX/doorOpen_1.ogg", "SFX/doorOpen_2.ogg", "SFX/doorClose_1.ogg", "SFX/doorClose_2.ogg"], "volume_db": -4.0},
+		"pickup": {"bus": "SFX", "files": ["SFX/handleSmallLeather.ogg"], "volume_db": -4.0},
+		"coin": {"bus": "SFX", "files": ["SFX/handleCoins.ogg"], "volume_db": -4.0},
+		"level_up": {"bus": "SFX", "files": ["SFX/level_up.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"amb_desert_wind": {"bus": "Ambience", "files": ["Ambience/amb_desert_wind.ogg"], "jitter": 0.0},
+		"amb_canyon_echo": {"bus": "Ambience", "files": ["Ambience/amb_canyon_echo.ogg"], "volume_db": 3.0, "jitter": 0.0},
+		"amb_village": {"bus": "Ambience", "files": ["Ambience/amb_village.ogg"], "jitter": 0.0},
+		"amb_city_crowd": {"bus": "Ambience", "files": ["Ambience/amb_city_crowd.ogg"], "volume_db": -6.0, "jitter": 0.0},
+		"amb_hall": {"bus": "Ambience", "files": ["Ambience/amb_hall.ogg"], "volume_db": -6.0, "jitter": 0.0},
+		"amb_lab_hum": {"bus": "Ambience", "files": ["Ambience/amb_lab_hum.ogg"], "volume_db": -8.0, "jitter": 0.0}
 	},
-	"rooms": {}
+	"rooms": {
+		"Canyon": {"ambience": "amb_canyon_echo", "surface": "sand", "interior": false},
+		"DesertRoad": {"ambience": "amb_desert_wind", "surface": "sand", "interior": false},
+		"LaboratoryOutside": {"ambience": "amb_desert_wind", "surface": "sand", "interior": false},
+		"Village": {"ambience": "amb_village", "surface": "sand", "interior": false},
+		"CityGates": {"ambience": "amb_village", "surface": "sand", "interior": false},
+		"City": {"ambience": "amb_city_crowd", "surface": "stone", "interior": false},
+		"MayorHall": {"ambience": "amb_hall", "surface": "wood", "interior": true},
+		"Laboratory": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true}
+	}
 }

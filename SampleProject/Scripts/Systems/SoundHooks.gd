@@ -19,6 +19,10 @@ func _ready() -> void:
 	EventBus.skill_interrupted.connect(func(_id: String) -> void:
 		_casting = ""
 		AudioManager.play(&"cast_interrupt"))
+	EventBus.player_landed.connect(func(_height: float) -> void: AudioManager.play(&"land"))
+	EventBus.item_added.connect(func(id: String, _amount: int) -> void: AudioManager.play(&"coin" if id == "coin" else &"pickup"))
+	EventBus.player_leveled_up.connect(func(_level: int, _old: int) -> void: AudioManager.play(&"level_up"))
+	EventBus.room_entered.connect(_on_room_entered)
 
 
 ## Навичка, чий замах звучить: її вивільнення — свій звук (пасивні й навички без касту — без звуку).
@@ -69,3 +73,30 @@ func _on_combat_state_changed(in_combat: bool) -> void:
 	if GameGroups.get_player().combat.grip == &"bare":
 		return
 	AudioManager.play(&"draw" if in_combat else &"sheathe")
+
+
+# ── Кімната: петля атмосфери й двері (D276) ────────────────────────────────────
+
+## Петля атмосфери поточної кімнати (дочірня Game — іде разом із грою, напр. вихід у меню) і її подія.
+var ambience: AudioStreamPlayer = null
+var _ambience_event: StringName = &""
+var _room: String = ""
+
+
+## Атмосфера кімнати; та сама петля в сусідній кімнаті грає далі без розриву.
+## Двері — коли перехід веде в приміщення або з нього (MayorHall, Laboratory).
+func _on_room_entered(room_name: String) -> void:
+	var entry: Dictionary = AudioManager.room(room_name)
+	if not is_instance_valid(ambience):
+		_room = ""  # гра почалась заново (петля пішла разом зі старою Game)
+	elif AudioManager.room(_room).interior != entry.interior:
+		AudioManager.play(&"door")
+	_room = room_name
+	var event := StringName(entry.ambience)
+	if is_instance_valid(ambience):
+		if _ambience_event == event:
+			return
+		ambience.queue_free()
+	ambience = AudioManager.play_loop(event, Game.get_singleton())
+	ambience.name = "Ambience"
+	_ambience_event = event

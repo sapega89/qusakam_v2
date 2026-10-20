@@ -1,6 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://cc37235kj4384"]
+[gd_scene load_steps=6 format=3 uid="uid://cc37235kj4384"]
 
 [ext_resource type="Script" uid="uid://b5oej1q4h7jvh" path="res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/ui_sound_controller.gd" id="1_dmagn"]
+[ext_resource type="AudioStream" path="res://SampleProject/Assets/Audio/UI/tick_002.ogg" id="2_tick"]
+[ext_resource type="AudioStream" path="res://SampleProject/Assets/Audio/UI/click_001.ogg" id="3_click"]
+[ext_resource type="AudioStream" path="res://SampleProject/Assets/Audio/UI/switch_002.ogg" id="4_switch"]
+[ext_resource type="AudioStream" path="res://SampleProject/Assets/Audio/UI/scroll_001.ogg" id="5_scroll"]
 
 [node name="ProjectUISoundController" type="Node"]
+process_mode = 3
 script = ExtResource("1_dmagn")
+button_focused = ExtResource("2_tick")
+button_pressed = ExtResource("3_click")
+tab_changed = ExtResource("4_switch")
+slider_drag_ended = ExtResource("5_scroll")
+item_list_selected = ExtResource("2_tick")
