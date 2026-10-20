@@ -343,7 +343,6 @@ LAYERS = {
         seam="none",
         trim=True,
         spill=12,  # оливкова тінь моделі на зеленому тлі
-        shadow=4,  # своя тінь замість неї
         key="green",
         shade=0,
         fill=False,
