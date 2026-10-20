@@ -93,7 +93,10 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
 - `items.json`, `EquipmentManager.gd`, `WeaponView.gd`, `Player.tscn`; `verify_souls_combat.gd` [10]–[12].
 ### Slice 5 — hero frames — ✅ built (4 generated, 4 kept)
 - `comfy_sprite.py hero_combat` (Hurt, Heavy wind-up / strike, Block) from `Walk/1`; `Player.tscn` animations.
-### Slice 6 — captures, exe, registers
+### Slice 6 — captures, exe, registers — ✅ done
+- `capture_souls_combat.gd` (window; crops around the hero): sheathed / drawn, combo 1–3, heavy wind-up / strike,
+  block, parry, both staggers, air double dash, dual-wield, mace, halberd. Full suite 53/53 PASS; exe rebuilt.
+- Left: enemy stagger frames (D196), enemy HP/damage retuning, a tutorial hint for heavy / block (BACKLOG 12 batch).
 
 ## Order and dependencies
 

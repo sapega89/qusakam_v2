@@ -87,10 +87,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    level-up, Esc → Skills → Enter; it lands on the first free hotbar slot); the Village old man heals Kusakam and goes
    straight to his decision and gift, no heal request; potions drop from 1 kill in 10 (first-kill 5 potions stay).
    B76 fixed on the way: Enter on a Skills row learned nothing.
-4. **Combat, souls-lite** (D250, D251, D253): combos for the hero and enemies, staggers both ways, double dash,
-   block/parry, heavy attack, enemies that sometimes freeze the hero, run outside towns, two-handed and dual-wield
-   weapons, harder tuning. **Plan: [[souls_combat_plan]]** (D264–D270, slices 1–6).
-   Resume: the first unchecked slice in the plan.
+4. ~~**Combat, souls-lite**~~ — **done 2026-10-20** ([[souls_combat_plan]], D264–D270): a 3-swing light combo
+   (4 with two weapons), a heavy attack (R-click / R / pad B) with a breakable wind-up, block and parry (Ctrl / middle
+   mouse / pad LB), enemy poise and staggers, enemy combos, the hero staggered by every wounding enemy hit — the tank
+   and combo finishers "freeze" him 0.6 s (D253's freeze is this mechanic; no lock bug reproduced), a double dash
+   also in the air, walking in towns out of combat (D251), the halberd two-handed and sword + dagger dual-wield (D250),
+   skill casts interruptible (D259 hook). Open: "harder tuning" beyond combos/staggers (enemy HP/damage untouched);
+   enemies have no stagger frames (tint only); no stamina by design (D264).
 5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
 6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
 7. **Foreground parallax** — below.
@@ -107,9 +110,10 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
     the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
     cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
-15. **Weapons sheathed out of combat; an attack animation per weapon** (Sapega 2026-10-20): the weapon is hidden
-    (sheathed/on the back) when no fight is on and drawn when combat starts; each weapon type gets its own attack
-    animation (goes with item 4 — D250 two-handed and dual-wield).
+15. ~~**Weapons sheathed out of combat; an attack animation per weapon**~~ — **done 2026-10-20** (D268): the weapon
+    rides on the back out of combat and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
+    dagger stabs, halberd thrusts, dual-wield alternating hands, heavy overhead; new hero frames Hurt, Heavy ×2, Block
+    (generated from his artist frame).
 16. **MayorHall cutscene and the "unbeatable" boss** (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
