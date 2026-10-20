@@ -732,7 +732,8 @@ if __name__ == "__main__":
             opaque_px = out[out[..., 3] > 0][:, :3]
             dark = opaque_px[np.argmin(opaque_px.astype(int).sum(axis=1))]
             yy, xx = np.mgrid[: h + sh, : w + 2 * sh]
-            ellipse = ((xx - (w + 2 * sh) / 2) / (w * 0.42)) ** 2 + ((yy - (h - 1)) / sh) ** 2 <= 1
+            # тінь щільно під низом предмета (ледь виглядає з-під нього), а не смугою нижче — інакше він висить
+            ellipse = ((xx - (w + 2 * sh) / 2) / (w * 0.45)) ** 2 + ((yy - (h - sh)) / (sh * 0.75)) ** 2 <= 1
             canvas[ellipse] = (*dark, 255)
             body = out[..., 3] > 0
             canvas[:h, sh : sh + w][body] = out[body]
