@@ -1,8 +1,9 @@
 extends SceneTree
 
-## Скеля Прайду в каньйоні (D227): невидима колізія навісу й уступів (шар RockCollision), картинка скелі
-## (Scripts/Tools/draw_canyon.py), далекі стіни каньйону паралаксом; сюжетні тригери — на всю висоту
-## кімнати, щоб їх не перестрибнути зі скелі. Плато, ущелину, брами й переходи не чіпає.
+## Скеля Прайду в каньйоні (D248): сама земля, якою йде герой, — тераси зі сходу, вершина, ніс над західними
+## сходами (колізія — полігон PRIDE_ROCK, вигляд малює Scripts/Tools/paint_terrain.py разом із плато);
+## далекі стіни каньйону паралаксом; сюжетні тригери — на всю висоту кімнати, щоб їх не перестрибнути
+## зі скелі. Картинки землі й ущелини (Terrain, Gorge) ставить build_terrain.gd, брами й переходи — не тут.
 ## Запуск: godot --headless --path . --script res://Scripts/Tools/build_canyon.gd
 
 const ROOM := "res://SampleProject/Maps/Canyon.tscn"
@@ -10,12 +11,17 @@ const ART := "res://SampleProject/Assets/Backgrounds/Canyon/%s.png"
 const TILE := 32
 const SOURCE := 1
 const SOLID := Vector2i(8, 7)
-const ONE_WAY := Vector2i(1, 0)
-## Ті самі числа, що SHELF / LEDGES у draw_canyon.py: (рядок, перший стовпець, останній стовпець).
-const SHELF := [[3, 40, 49], [4, 35, 51], [5, 37, 51]]
-const LEDGES := [[10, 59, 61], [8, 56, 58], [6, 53, 55]]
-## Лівий верх картинки скелі (стовпець 33, рядок 2).
-const ROCK_AT := Vector2(33 * 32, 2 * 32)
+## Обрис скелі (px кімнати, за годинниковою): західна сходинка y 300 (стрибок 84 від дороги y 384), під носом —
+## ніша, ніс на вершині y 216, тераси на схід y 272 і 328 (стрибок герою — 103 px). Низ полігона — у плато.
+const PRIDE_ROCK := [
+	Vector2(1000, 400), Vector2(1000, 300), Vector2(1196, 300), Vector2(1204, 262), Vector2(1140, 254),
+	Vector2(1080, 244), Vector2(1072, 228), Vector2(1080, 216), Vector2(1250, 214), Vector2(1420, 216),
+	Vector2(1600, 216), Vector2(1606, 272), Vector2(1760, 272), Vector2(1766, 328), Vector2(1920, 328),
+	Vector2(1928, 384), Vector2(1928, 400),
+]
+## Тригер Canyon_Exploration — біля підніжжя скелі, над західною сходинкою: середина тригера (y 240) — у повітрі.
+const RIDGE_TRIGGER := "StateChangeTrigger2"
+const RIDGE_TRIGGER_X := 1040.0
 const TRIGGERS := ["StateChangeTrigger1", "StateChangeTrigger2", "StateChangeTrigger3"]
 const ROOM_HEIGHT := 480.0
 
@@ -31,12 +37,6 @@ const EXIT_SIZE := Vector2(740, 64)
 ## Глибина під плато: нижні стіни каньйону й темна підкладка (сірого clear color не видно ніколи).
 const DEPTH_TOP := 380.0
 const DEPTH_UNDERLAY := Color(0.24, 0.15, 0.12)
-## Далекі стіни: основа сховалась за лінією плато, трохи холодніші (повітряна перспектива).
-## Тіло плато темнішає з глибиною (множення), щоб верхня лінія плато відділялась від маси.
-const PLATEAU_SHADE_RECT := Rect2(800, 416, 1792, 544)
-const PLATEAU_SHADE_BOTTOM := Color(0.55, 0.5, 0.5)
-## Дорога плато й тіло під нею — картинка з рядка 12 (y 384), D231.
-const PLATEAU_BODY_AT := Vector2(800, 384)
 ## Місток (D231): стовпці настилу, стовпи на обох краях, поруччя, де починається обвал.
 const BRIDGE_SCRIPT := "res://SampleProject/Scripts/Gameplay/CanyonBridge.gd"
 const BRIDGE_COLS := Vector2i(1, 24)
@@ -58,12 +58,6 @@ func _initialize() -> void:
 		tilemap.add_child(rocks)
 		rocks.owner = room
 	rocks.clear()
-	for row in SHELF:
-		for x in range(row[1], row[2] + 1):
-			rocks.set_cell(Vector2i(x, row[0]), SOURCE, SOLID)
-	for row in LEDGES:
-		for x in range(row[1], row[2] + 1):
-			rocks.set_cell(Vector2i(x, row[0]), SOURCE, ONE_WAY)
 
 	# Ущелина: тайли Foreground у її межах — у невидиму колізію за схемою
 	var gorge := _read_gorge()
@@ -96,21 +90,21 @@ func _initialize() -> void:
 	backdrop.name = "Backdrop"
 	backdrop.owner = room
 
-	for old_name in ["PrideRock", "CanyonWalls", "Gorge", "CanyonDepths", "DepthUnderlay", "PlateauShade", "PlateauBody", "Bridge"]:
+	for old_name in ["PrideRock", "CanyonWalls", "CanyonDepths", "DepthUnderlay", "PlateauShade", "PlateauBody", "Bridge"]:
 		var old := room.get_node_or_null(NodePath(old_name))
 		if old:
 			room.remove_child(old)
 			old.free()
-	var rock := Sprite2D.new()
+	var rock := StaticBody2D.new()
 	rock.name = "PrideRock"
-	rock.texture = load(ART % "pride_rock")
-	rock.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	rock.centered = false
-	rock.scale = Vector2(1.5, 1.5)
-	rock.position = ROCK_AT
+	var rock_shape := CollisionPolygon2D.new()
+	rock_shape.name = "CollisionPolygon2D"
+	rock_shape.polygon = PackedVector2Array(PRIDE_ROCK)
+	rock.add_child(rock_shape)
 	room.add_child(rock)
-	room.move_child(rock, tilemap.get_index())  # під тайлами й героєм
+	room.move_child(rock, tilemap.get_index() + 1)
 	rock.owner = room
+	rock_shape.owner = room
 
 	var depths := Parallax2D.new()
 	depths.name = "CanyonDepths"
@@ -137,39 +131,6 @@ func _initialize() -> void:
 	room.move_child(underlay, 0)
 	underlay.owner = room
 
-	var gorge_sprite := _sprite("gorge", Vector2(0, GORGE_ROW0 * TILE))
-	gorge_sprite.name = "Gorge"
-	room.add_child(gorge_sprite)
-	room.move_child(gorge_sprite, tilemap.get_index() + 1)  # над тайлами: накриває й праву стіну (тіло плато)
-	gorge_sprite.owner = room
-
-	var body := _sprite("plateau_body", PLATEAU_BODY_AT)
-	body.name = "PlateauBody"
-	room.add_child(body)
-	room.move_child(body, gorge_sprite.get_index())  # над тайлами плато, під ущелиною
-	body.owner = room
-
-	var gradient := Gradient.new()
-	gradient.set_color(0, Color.WHITE)
-	gradient.set_color(1, PLATEAU_SHADE_BOTTOM)
-	var shade_texture := GradientTexture2D.new()
-	shade_texture.gradient = gradient
-	shade_texture.fill_from = Vector2(0, 0)
-	shade_texture.fill_to = Vector2(0, 1)
-	shade_texture.width = int(PLATEAU_SHADE_RECT.size.x)
-	shade_texture.height = int(PLATEAU_SHADE_RECT.size.y)
-	var shade := Sprite2D.new()
-	shade.name = "PlateauShade"
-	shade.texture = shade_texture
-	shade.centered = false
-	shade.position = PLATEAU_SHADE_RECT.position
-	shade.z_index = 1
-	var multiply := CanvasItemMaterial.new()
-	multiply.blend_mode = CanvasItemMaterial.BLEND_MODE_MUL
-	shade.material = multiply
-	room.add_child(shade)
-	shade.owner = room
-
 	_add_bridge(room)
 
 	var exit_trigger: Node2D = room.get_node(^"CanyonExitTrigger")
@@ -186,6 +147,8 @@ func _initialize() -> void:
 		shape.size = Vector2(48, ROOM_HEIGHT)
 		shape_node.shape = shape
 		shape_node.position.y = ROOM_HEIGHT / 2.0 - trigger.position.y
+		if trigger_name == RIDGE_TRIGGER:
+			shape_node.position.x = RIDGE_TRIGGER_X - trigger.position.x
 
 	var uid := ResourceLoader.get_resource_uid(ROOM)
 	var packed := PackedScene.new()
@@ -222,7 +185,7 @@ func _add_bridge(room: Node) -> void:
 	bridge.name = "Bridge"
 	bridge.set_script(load(BRIDGE_SCRIPT))
 	room.add_child(bridge)
-	room.move_child(bridge, room.get_node(^"Gorge").get_index() + 1)
+	room.move_child(bridge, room.get_node(^"Gorge").get_index() + 1)  # Gorge ставить build_terrain.gd
 	bridge.owner = room
 	var pieces := Node2D.new()
 	pieces.name = "Pieces"
