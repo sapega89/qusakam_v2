@@ -38,3 +38,21 @@ bottom-bar description. Removed with D127: party-card target selection (`charact
 `begin_target_select`, the card `Select` button) — nothing else used it.
 
 Verify: `verify_use_item.gd` (keys, double click, pad A/B).
+
+## 11 · Equipment slot picker — D288
+
+Figma: `UI/Equipment Panel` 258:5110 (slot rows) — no picker frame. Godot: `equipment_component.gd` +
+new `UI/Components/equip_picker.tscn/.gd`, shown through `ModalLayer.show_custom_modal()` (as the crafting
+`RecipePanel`).
+
+| Element | Godot | Action |
+|---|---|---|
+| window | `EquipPicker/Window` — `WindowPanel`, `ShopColumn`, `TitleLabel`, `AccentLabel`, `MutedLabel` | reuse the RecipePanel look |
+| item list | `UIItemRow` (`item_row.tscn`) | reuse; subtitle "Equipped" on the worn item |
+| Unequip / Cancel | theme `Button` | ADD; Unequip only when the slot is filled |
+
+Behaviour (D288): a click / Enter / pad A on a slot row opens the window with the bag items that
+`InventorySlotRules.fits()` that slot; a click, Enter / A or a double click on a row equips it through
+`EquipmentManager.equip_item()`; Unequip empties the slot; Cancel / B / Esc closes without change. Focus returns
+to the slot row. Replaces the old jump to the Inventory tab in "selection mode" (removed from
+`inventory_component.gd`). Verify: `verify_equip_picker.gd`.

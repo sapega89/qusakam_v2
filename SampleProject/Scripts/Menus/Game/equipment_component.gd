@@ -10,6 +10,7 @@ extends BaseMenuComponent
 ## Повний розбір потоку даних: design/equipment_data_flow.md
 
 const PLACEHOLDER := "(empty)"
+const EQUIP_PICKER := preload("res://SampleProject/UI/Components/equip_picker.tscn")
 
 ## 12 слотів із player_state.equipment (mace — D147) — це і є реальна модель.
 ## Figma показує 8 (без polearm/axe/staff); вигадувати слоти не можна,
@@ -153,14 +154,38 @@ func _make_slot_row(slot_id: String, caption: String) -> Button:
 	return row
 
 
-## Клік/Enter по слоту — відкрити інвентар у режимі вибору для цього слота.
-## Це наявна поведінка: InventoryComponent.set_equipment_selection_mode().
+## Клік / Enter / A по слоту — вікно з предметами із сумки, що влазять у цей слот (D288).
 func _on_slot_pressed(slot_id: String) -> void:
-	request_tab.emit("inventory")
-	await get_tree().process_frame
+	var layer: ModalLayer = ServiceLocator.get_ui_manager().get_modal_layer()
+	layer.show_custom_modal(EQUIP_PICKER)
+	layer.active_modal.show_slot(_slot_caption(slot_id), _fitting_items(slot_id), not _equipped(slot_id).is_empty())
+	layer.modal_closed.connect(_on_slot_picked.bind(slot_id), CONNECT_ONE_SHOT)
 
-	var game_menu := get_tree().get_first_node_in_group(&"game_menu")
-	game_menu.find_child("InventoryComponent", true, false).set_equipment_selection_mode(true, slot_id, self)
+
+func _on_slot_picked(result: String, slot_id: String) -> void:
+	match result:
+		"cancel":
+			pass
+		"unequip":
+			_get_equipment_manager().unequip_item(String(game_manager.get_active_character().character_id), slot_id)
+		_:
+			_equip(slot_id, result, item_database.get_item(result))
+	(_slot_rows[slot_id] as Control).grab_focus.call_deferred()
+
+
+## Предмети із сумки для слота; вдягнутий зараз позначено.
+func _fitting_items(slot_id: String) -> Array:
+	var worn := String(_equipped(slot_id).get("id", ""))
+	var out: Array = []
+	var bag: Dictionary = game_manager.inventory_manager.get_items_dict()
+	for item_id in bag:
+		var data: Dictionary = item_database.get_item(item_id)
+		if int(bag[item_id]) <= 0 or not InventorySlotRules.fits(data, slot_id):
+			continue
+		out.append({"id": item_id, "name": item_database.get_item_name(item_id, "en"),
+			"icon": item_database.get_item_icon(item_id), "count": bag[item_id],
+			"subtitle": "Equipped" if item_id == worn else ""})
+	return out
 
 
 ## Підказка в нижній панелі — щоб опис працював і з клавіатури.
