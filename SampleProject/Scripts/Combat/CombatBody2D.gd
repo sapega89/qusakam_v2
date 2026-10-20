@@ -66,9 +66,9 @@ func register_damage(damage: int, ignore_overide: bool = false) -> void:
 
 ## Реалізація IDamageable.take_damage()
 func take_damage(damage: int, source: Node = null) -> void:
-	# Зберігаємо джерело ушкоджень для EventBus
-	if source:
-		set_meta("last_damage_source", source)
+	# Зберігаємо джерело ушкоджень для EventBus. Без джерела (пастка, падіння) — скидаємо: інакше лишався
+	# попередній кривдник, часто вже звільнений, і слухачі damage_received падали на ньому (звук, розтин).
+	set_meta("last_damage_source", source)
 	# B60: раніше тут було register_damage(damage, true) — обхід невразливості й перевірки смерті на кожному шляху ушкодження.
 	register_damage(damage)
 

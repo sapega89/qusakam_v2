@@ -72,6 +72,14 @@ the history, this note keeps only what is open.
 - **Severity:** blocker (mouse-only player cannot learn Healing Palm)
 - **Found:** 2026-10-20, backlog item 3
 
+### B78 — A hit with no source after an enemy died broke every damage listener — ✅ fixed 2026-10-21
+- **Where:** `SampleProject/Scripts/Combat/CombatBody2D.gd` `take_damage` (kept `last_damage_source` when `source` was null)
+- **Expected:** a hit without a source (trap, fall, test) reaches `EventBus.damage_received` listeners with `source = null`.
+- **Got:** the previous attacker stayed in the meta; once that enemy was freed, the signal call failed
+  ("Cannot convert argument 2 from Object to Object") — no hurt sound, no cut effect (`VFXHooks`, `SoundHooks`).
+- **Fix:** the meta is always set to the current source (null clears it). Test: `verify_audio` [5] hero hurt.
+- **Found:** 2026-10-21, BACKLOG 26 (audio)
+
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**
