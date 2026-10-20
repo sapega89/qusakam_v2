@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkgigdjfefb6r"
-path="res://.godot/imported/chain.png-b8e908d13090be595c4766a853cf77f3.ctex"
+uid="uid://b0uwcnk7u8nc1"
+path="res://.godot/imported/gen_slab.png-5689ba2d5c2cc194f02c9254b80a3492.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Laboratory/chain.png"
-dest_files=["res://.godot/imported/chain.png-b8e908d13090be595c4766a853cf77f3.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/Lab/gen_slab.png"
+dest_files=["res://.godot/imported/gen_slab.png-5689ba2d5c2cc194f02c9254b80a3492.ctex"]
 
 [params]
 

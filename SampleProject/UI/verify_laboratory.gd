@@ -60,6 +60,29 @@ func _initialize() -> void:
 	var lab: Node = game.map
 	ck(lab.get_current_state_name() == "EXPLORE", "EXPLORE (%s)" % lab.get_current_state_name())
 
+	print("[1b] Hidden tiles still hold the hero on every floor; the far plane moves slower than the room (D246)")
+	ck(not lab.get_node("TileMap/Foreground").visible, "the collision tiles are hidden — the drawn surfaces show")
+	for floor_y in [384.0, 864.0, 1344.0]:
+		game.player.global_position = Vector2(900, floor_y - 40)
+		for i in 30: await physics_frame
+		ck(game.player.is_on_floor() and absf(game.player.global_position.y - floor_y + 24) < 4,
+				"the hero stands on the floor at y %d (%s)" % [floor_y, game.player.global_position])
+	var far: Node2D = lab.get_node("Atmosphere/Far1/Sprite")
+	game.player.global_position = Vector2(300, 344)
+	for i in 60: await physics_frame
+	var camera: Camera2D = root.get_camera_2d()
+	var far_x := far.global_position.x
+	var cam_x := camera.get_screen_center_position().x
+	game.player.global_position = Vector2(1100, 344)
+	for i in 60: await physics_frame
+	var cam_moved := camera.get_screen_center_position().x - cam_x
+	# шар зсувається на (1 − 0.4) руху камери; повтор кожні 864 px перескакує — тому за модулем
+	var off := fposmod(far.global_position.x - far_x - 0.6 * cam_moved, 864.0)
+	ck(cam_moved > 300.0 and minf(off, 864.0 - off) < 4.0,
+			"the far plane follows the camera at 0.6 of its move (camera %.0f, off %.1f)" % [cam_moved, off])
+	game.player.global_position = lab.get_node("SavePoint_Entrance").global_position
+	for i in 10: await physics_frame
+
 	print("[2] Each trigger plays one companion talk, then the lab waits")
 	var beats := [["StateChangeTrigger_Companion01", "COMPANION_01", "lab_companion_01_complete"],
 			["StateChangeTrigger_Companion02", "COMPANION_02", "lab_companion_02_complete"],

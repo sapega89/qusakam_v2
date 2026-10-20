@@ -1,0 +1,12 @@
+# Laboratory planes and surfaces (D246)
+
+**AI-generated.** `Scripts/Tools/comfy_backdrop.py` (layers `Lab/*`) asks the local ComfyUI for them with
+**Qwen-Image** (Alibaba Qwen, Apache 2.0) and the Qwen-Image-Lightning LoRA (lightx2v, Apache 2.0), then brings
+them to the game's pixel (×1.5) and palette. A Steam release has to disclose AI-generated content.
+Placed by `Scripts/Tools/build_laboratory.gd`:
+
+- `gen_far.png` — the far vaulted hall (Parallax2D ×0.4, every storey).
+- `gen_mid.png`, `gen_mid2.png` — the row of lab equipment on the floor (×0.75; storeys 1 and 3 / storey 2).
+- `gen_front.png` — pipes, cables and bulbs hanging from the ceiling in front of the hero (×1.25).
+- `gen_slab.png` — 576×64 slab cross-section (grating walkway, brass edge, riveted plates): the texture of every
+  floor, wall and bridge the hero touches; the collision is the hidden `TileMap/Foreground`.

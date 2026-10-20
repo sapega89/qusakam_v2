@@ -83,30 +83,37 @@ const LADDERS := [[Vector2(1504, 384), 480.0], [Vector2(224, 864), 480.0]]
 const PROPS := "res://SampleProject/Assets/Laboratory/%s.png"
 const DARKNESS := Color(0.36, 0.36, 0.44)
 const LAMP_LIGHT := Color(1.0, 0.82, 0.55)
-const VAT_LIGHT := Color(0.45, 1.0, 0.6)
-## Поверхи: [верх інтер'єру (рядок), низ інтер'єру (рядок)] — для колон фону.
+## Поверхи: [верх інтер'єру (рядок), низ інтер'єру (рядок)] — плани глибини стають на підлогу поверху.
 const FLOORS := [[2, 11], [15, 26], [30, 41]]
-## Колони фону: [стовпець осі, поверх].
-const BG_COLUMNS := [[9, 0], [34, 0], [18, 1], [40, 1], [15, 2], [38, 2]]
-## Лампи на стінах (центр), колби на підлозі (низ), ланцюги [верх, довжина px].
+## Лампи на стінах (центр).
 const LAMPS := [Vector2(140, 214), Vector2(620, 214), Vector2(1150, 214), Vector2(1650, 214),
 		Vector2(330, 694), Vector2(980, 694), Vector2(1560, 694),
 		Vector2(330, 1174), Vector2(760, 1174), Vector2(1180, 1174), Vector2(1620, 1174)]
-const VATS := [Vector2(960, 384), Vector2(1000, 384), Vector2(1630, 864), Vector2(680, 1344)]
-const CHAINS := [[Vector2(300, 64), 120.0], [Vector2(1300, 64), 90.0], [Vector2(600, 480), 140.0],
-		[Vector2(1200, 480), 100.0], [Vector2(900, 960), 150.0], [Vector2(1400, 960), 120.0]]
-## Передній план (перед героєм): труби [від x, до x, y], колони-силуети [x, верх, низ].
-const FG_PIPES := [[0, 700, 92], [800, 1728, 508], [0, 900, 988]]
-const FG_COLUMNS := [[760, 64, 384], [1350, 480, 864], [920, 960, 1344]]
-## Силуети переднього плану не суцільно чорні — крізь них трохи видно (як туман глибини).
-const FRONT_TINT := Color(1.6, 1.5, 1.7, 0.82)
-const FRONT_BLUR := "res://SampleProject/Resources/Materials/depth_blur_front.tres"
+
+## Глибина (D246): на кожному поверсі — далекий зал, ряд обладнання, передній план зі стелі; згенеровані
+## comfy_backdrop.py (Lab/*). Шар — екран 576×324 px ×1.5; по вертикалі прибитий до поверху (scroll 1).
+const BG := "res://SampleProject/Assets/Backgrounds/Lab/%s.png"
+const MATERIALS := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
+const LAYER_SIZE := Vector2(864, 486)
+## [назва, текстура, scroll x, z, низ шару відносно підлоги (px), modulate, розмиття]; текстура поверху — %d.
+const PLANES := [
+	["Far", "gen_far", 0.4, -10, 60.0, Color(0.6, 0.58, 0.72), "far"],
+	["Mid", "gen_mid%s", 0.75, -9, 40.0, Color(0.7, 0.66, 0.8), "near"],
+	["Front", "gen_front", 1.25, 20, -384.0 + LAYER_SIZE.y, Color(0.86, 0.8, 1, 0.94), "front"],
+]
+## Варіант ряду обладнання й зсув шарів по x — щоб поверхи не повторювали один одного.
+const MID_VARIANT := ["", "2", ""]
+const PLANE_SHIFT := [0.0, 288.0, 576.0]
+## Поверхні, по яких ходить герой: текстура перерізу плити (Lab/gen_slab, 576×64): нагорі ґратчастий
+## настил із латунним краєм (до рядка SLAB_PLATES), нижче — клепані плити. Колізія — у прихованому Foreground.
+const SLAB_PLATES := 26
 
 ## Компаньйони чекають біля своїх тригерів (D230): [id, ступні, дивиться ліворуч].
 ## Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
 const NPC_SCRIPT := "res://SampleProject/Scripts/Gameplay/Characters/Companions/CompanionNPC.gd"
 const COMPANIONS := "res://SampleProject/Assets/Characters/Companions/%s/%s.png"
-const NPCS := [["alisia", Vector2(520, 384), true], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]]
+## Кадри спокою — фас, їх не дзеркалимо (у Алісії різні очі, D245); дзеркалиться лише біг (CompanionNPC.join).
+const NPCS := [["alisia", Vector2(520, 384), false], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]]
 ## Розмір кадру й зсув/масштаб — як у сценах асистів (companion_<id>.tscn, assist_cat.tscn).
 const NPC_LOOK := {
 	"alisia": [64, Vector2(-32, -58), 1.5],
@@ -114,12 +121,13 @@ const NPC_LOOK := {
 	"urizen": [64, Vector2(-32, -58), 1.5],
 	"cat": [64, Vector2(-32, -58), 1.5],
 }
-const CAT_AT := Vector2(-40, 0)
+const CAT_AT := Vector2(-64, 0)
 
 
 func _initialize() -> void:
 	var room: Node = load(ROOM).instantiate()
-	_paint(room.get_node(^"TileMap/Foreground"), room.get_node(^"TileMap/Bakcground"))
+	_paint(room.get_node(^"TileMap/Foreground"))
+	_surfaces(room)
 	_decorate(room)
 	_add_companions(room)
 	for path in PLACES:
@@ -149,11 +157,8 @@ func _initialize() -> void:
 	quit()
 
 
-func _paint(fg: TileMapLayer, bg: TileMapLayer) -> void:
+func _paint(fg: TileMapLayer) -> void:
 	fg.clear()
-	bg.clear()
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 4
 	for y in LAYOUT.size():
 		for x in LAYOUT[y].length():
 			var c: String = LAYOUT[y][x]
@@ -163,42 +168,85 @@ func _paint(fg: TileMapLayer, bg: TileMapLayer) -> void:
 				var left := _at(x - 1, y) == "="
 				var right := _at(x + 1, y) == "="
 				fg.set_cell(Vector2i(x, y), SOURCE, Vector2i(1 if left and right else 2 if left else 0, 0))
-			if c != "#" and x > 0:  # і в проході-виході в останньому стовпці
-				# фон-кладка: здебільшого рівна, зрідка з візерунком
-				bg.set_cell(Vector2i(x, y), SOURCE, Vector2i(8, 1) if rng.randf() < 0.85 else Vector2i([7, 9, 12][rng.randi() % 3], 1))
-	# Фон декоративний: колони атласа мають колізію, а в фоні вона не потрібна
-	bg.collision_enabled = false
-	# Колони — окремим шаром поверх кладки: їхні тайли частково прозорі
-	var columns := _columns_layer(bg)
-	columns.clear()
-	for column in BG_COLUMNS:
-		var x: int = column[0]
-		var top: int = FLOORS[column[1]][0]
-		var bottom: int = FLOORS[column[1]][1]
-		for dx in range(-2, 3):
-			columns.set_cell(Vector2i(x + dx, top), SOURCE, Vector2i(3 + dx, 4))  # капітель
-		for dx in range(-1, 2):
-			columns.set_cell(Vector2i(x + dx, top + 1), SOURCE, Vector2i(3 + dx, 5))
-			columns.set_cell(Vector2i(x + dx, top + 2), SOURCE, Vector2i(3 + dx, 6))
-			columns.set_cell(Vector2i(x + dx, bottom - 1), SOURCE, Vector2i(3 + dx, 9))  # база
-			columns.set_cell(Vector2i(x + dx, bottom), SOURCE, Vector2i(3 + dx, 10))
-		for y in range(top + 3, bottom - 1):
-			columns.set_cell(Vector2i(x, y), SOURCE, Vector2i(3, 7 + (y % 2)))  # стовбур
+	# Тайли — лише колізія; видно намальовані поверхні (_surfaces) і плани глибини (D246)
+	fg.visible = false
+	for old in [^"Bakcground", ^"BackColumns"]:  # кладка й колони фону минулої версії (D225)
+		var layer := fg.get_parent().get_node_or_null(old)
+		if layer:
+			layer.get_parent().remove_child(layer)
+			layer.free()
 
 
-## Шар колон фону (поруч із Bakcground, той самий тайлсет, без колізії); створює, якщо ще немає.
-func _columns_layer(bg: TileMapLayer) -> TileMapLayer:
-	var layer := bg.get_parent().get_node_or_null(^"BackColumns") as TileMapLayer
-	if layer == null:
-		layer = TileMapLayer.new()
-		layer.name = "BackColumns"
-		layer.tile_set = bg.tile_set
-		layer.z_index = -1
-		layer.collision_enabled = false
-		bg.get_parent().add_child(layer)
-		bg.get_parent().move_child(layer, bg.get_index() + 1)
-		layer.owner = bg.owner
-	return layer
+## Поверхні з текстури плити: кожен прямокутник суцільних тайлів — спрайт із повтором текстури, x прив'язаний
+## до світу (сусідні шматки стикуються); відкритий згори — з настилом, вузька стіна — та сама плита, повернута.
+## Містки «=» — лише настил. Вузол Surfaces перебудовується щоразу.
+func _surfaces(room: Node) -> void:
+	var old := room.get_node_or_null(^"Surfaces")
+	if old:
+		room.remove_child(old)
+		old.free()
+	var root := Node2D.new()
+	root.name = "Surfaces"
+	room.add_child(root)
+	room.move_child(root, room.get_node(^"TileMap").get_index() + 1)
+	var slab: Texture2D = load(BG % "gen_slab")
+	for r in _runs("#"):
+		var px := Vector2(r.position * TILE)
+		var size := Vector2(r.size * TILE) / 1.5
+		var sprite := _slab_sprite(slab, px)
+		if r.size.x == 1 and r.size.y > 1:
+			sprite.rotation = PI / 2
+			sprite.position.x += TILE
+			sprite.region_rect = Rect2(px.y / 1.5, slab.get_height() - size.x, size.y, size.x)
+		else:
+			var open_top := _at(int(r.position.x + r.size.x * 0.5), r.position.y - 1) != "#"
+			sprite.region_rect = Rect2(px.x / 1.5, 0.0 if open_top else maxf(slab.get_height() - size.y, SLAB_PLATES), size.x, size.y)
+		root.add_child(sprite)
+	for r in _runs("="):
+		var sprite := _slab_sprite(slab, Vector2(r.position * TILE))
+		sprite.region_rect = Rect2(r.position.x * TILE / 1.5, 0, r.size.x * TILE / 1.5, TILE / 1.5)
+		root.add_child(sprite)
+	for node in root.get_children():
+		node.owner = room
+	root.owner = room
+
+
+func _slab_sprite(texture: Texture2D, at: Vector2) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	sprite.region_enabled = true
+	sprite.centered = false
+	sprite.scale = Vector2(1.5, 1.5)
+	sprite.position = at
+	return sprite
+
+
+## Прямокутники з символу [param c]: відрізки рядків, однакові відрізки сусідніх рядків зливаються.
+func _runs(c: String) -> Array[Rect2i]:
+	var rects: Array[Rect2i] = []
+	var open := {}  # Vector2i(x0, x1) відрізка попереднього рядка → індекс у rects
+	for y in LAYOUT.size():
+		var row: String = LAYOUT[y]
+		var next := {}
+		var x := 0
+		while x < row.length():
+			if row[x] != c:
+				x += 1
+				continue
+			var x0 := x
+			while x < row.length() and row[x] == c:
+				x += 1
+			var key := Vector2i(x0, x)
+			if open.has(key):
+				rects[open[key]].size.y += 1
+				next[key] = open[key]
+			else:
+				next[key] = rects.size()
+				rects.append(Rect2i(x0, y, x - x0, 1))
+		open = next
+	return rects
 
 
 ## Темрява, лампи й колби зі світлом, ланцюги, передній план — у вузлі Atmosphere (перебудовується щоразу).
@@ -232,7 +280,7 @@ func _npc_sprite(who: String, run_sheet: String, face_left: bool) -> AnimatedSpr
 	var look: Array = NPC_LOOK[who]
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")
-	for anim in [["idle", "idle", 8.0, true], ["run", run_sheet, 16.0, true]]:
+	for anim in [["idle", "idle", 4.0, true], ["run", run_sheet, 16.0, true]]:
 		var texture: Texture2D = load(COMPANIONS % [who, anim[1]])
 		frames.add_animation(anim[0])
 		frames.set_animation_speed(anim[0], anim[2])
@@ -271,39 +319,26 @@ func _decorate(room: Node) -> void:
 		lamp.name = "Lamp%d" % (i + 1)
 		root.add_child(lamp)
 		lamp.add_child(_light(glow, LAMP_LIGHT, 1.25, 1.6, Vector2(4, 0)))
-	for i in VATS.size():
-		var vat := _sprite("vat", VATS[i], Vector2(0, -1), -1)
-		vat.name = "Vat%d" % (i + 1)
-		root.add_child(vat)
-		vat.add_child(_light(glow, VAT_LIGHT, 0.7, 0.6, Vector2(0, -20)))
-	for i in CHAINS.size():
-		var chain := _sprite("chain", CHAINS[i][0], Vector2(0, 0), -1)
-		chain.name = "Chain%d" % (i + 1)
-		chain.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-		chain.region_enabled = true
-		chain.region_rect = Rect2(0, 0, 6, CHAINS[i][1] / 1.5)
-		root.add_child(chain)
-	var front := Node2D.new()
-	front.name = "Front"
-	front.z_index = 20  # перед героєм і ворогами
-	front.modulate = FRONT_TINT
-	root.add_child(front)
-	for i in FG_PIPES.size():
-		var pipe := _sprite("fg_pipe", Vector2(FG_PIPES[i][0], FG_PIPES[i][2]), Vector2(0, -0.5), 0)
-		pipe.name = "Pipe%d" % (i + 1)
-		pipe.material = load(FRONT_BLUR)  # D233: ближній план розмитий, площина героя різка
-		pipe.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-		pipe.region_enabled = true
-		pipe.region_rect = Rect2(0, 0, (FG_PIPES[i][1] - FG_PIPES[i][0]) / 1.5, 14)
-		front.add_child(pipe)
-	for i in FG_COLUMNS.size():
-		var column := _sprite("fg_column", Vector2(FG_COLUMNS[i][0], FG_COLUMNS[i][1]), Vector2(-0.5, 0), 0)
-		column.name = "Column%d" % (i + 1)
-		column.material = load(FRONT_BLUR)
-		column.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-		column.region_enabled = true
-		column.region_rect = Rect2(0, 0, 28, (FG_COLUMNS[i][2] - FG_COLUMNS[i][1]) / 1.5)
-		front.add_child(column)
+	for storey in FLOORS.size():
+		var floor_y: float = (FLOORS[storey][1] + 1) * TILE
+		for plane in PLANES:
+			var layer := Parallax2D.new()
+			layer.name = "%s%d" % [plane[0], storey + 1]
+			layer.scroll_scale = Vector2(plane[2], 1)
+			layer.repeat_size = Vector2(LAYER_SIZE.x, 0)
+			layer.repeat_times = 4
+			layer.z_index = plane[3]
+			layer.modulate = plane[5]
+			root.add_child(layer)
+			var sprite := Sprite2D.new()
+			sprite.name = "Sprite"
+			sprite.texture = load(BG % (plane[1] % MID_VARIANT[storey] if plane[1].contains("%") else plane[1]))
+			sprite.material = load(MATERIALS % plane[6])
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			sprite.centered = false
+			sprite.scale = Vector2(1.5, 1.5)
+			sprite.position = Vector2(PLANE_SHIFT[storey], floor_y + plane[4] - LAYER_SIZE.y)
+			layer.add_child(sprite)
 	for node in root.find_children("*", "", true, false):
 		node.owner = room
 	root.owner = room

@@ -210,6 +210,90 @@ LAYERS = {
         "red banners with a plain golden disc with a raised rim hanging in the niches, a carved frieze along the top and a stone "
         "plinth along the bottom, warm lantern light",
     ),
+    # Лабораторія (D246): підземний зал без неба — світло лише від колб, ламп і кристалів (лор). Далекий зал
+    # (×0.4), ряд обладнання на підлозі (×0.75, два варіанти на поверхи), передній план звисає зі стелі,
+    # а slab — текстура підлог і стін, по яких ходить герой (crop: зберігається лише смуга).
+    "Lab/gen_far": dict(
+        seed=91,
+        rows=H,
+        top=0,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="the far back wall of a vast dim underground alchemist laboratory hall seen straight on: tall dark stone "
+        "arches with iron beams, giant glass vats filled with glowing green and cyan liquid, brass pipes and copper tubes "
+        "running along the walls, big round boilers with gauges, tall shelves crowded with glass flasks and jars, lit "
+        "only by the glowing vats and hanging oil lamps, dark vaulted ceiling at the top, stone floor along the bottom",
+    ),
+    "Lab/gen_mid": dict(
+        seed=93,
+        rows=200,
+        top=H - 200,
+        seam="model",
+        key="magenta",
+        spill=60,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="a row of alchemist laboratory equipment standing side by side on the floor: tall glass vats with glowing "
+        "green liquid and brass caps, wooden workbenches with retorts, alembics and bubbling flasks, tall wooden shelves "
+        "full of colourful potion bottles and old books, a copper distillation still with coiled tubes, iron cabinets "
+        f"with round gauges, spanning the full width, standing on the bottom edge, {MAGENTA}",
+    ),
+    "Lab/gen_mid2": dict(
+        seed=95,
+        rows=200,
+        top=H - 200,
+        seam="model",
+        key="magenta",
+        spill=60,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="a row of alchemist laboratory machines standing side by side on the floor: a large brass boiler with "
+        "pressure gauges and valves, a big glass sphere on an iron stand with a glowing cyan crystal inside, racks of "
+        "test tubes, an iron furnace with an orange glowing door, thick copper pipes rising from the machines, crates and "
+        f"barrels, spanning the full width, standing on the bottom edge, {MAGENTA}",
+    ),
+    "Lab/gen_front": dict(
+        seed=97,
+        rows=110,
+        top=0,
+        seam="model",
+        key="magenta",
+        spill=60,
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground objects hanging down from the top edge: thick dark iron pipes running along the top with "
+        "valves, drooping black cables, a few hanging glass lamps on chains, with wide empty gaps between the groups, "
+        f"{MAGENTA}",
+    ),
+    "Lab/gen_slab": dict(
+        seed=99,
+        rows=64,
+        top=0,
+        crop=True,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=14,
+        quant="octree",
+        prompt="a side cross-section of a thick laboratory floor slab spanning the full width and filling the frame from "
+        "top to bottom: along the top a dark iron grating walkway with a polished brass edge strip, below it riveted "
+        "dark steel plates with bolts, a horizontal copper pipe running through the middle, seen straight on",
+    ),
     # Задній ряд дахів села (критик: у проміжках між будинками сяяли скелі — «просвічується»); пальми тут.
     "Village/gen_back": dict(
         seed=25,
@@ -395,13 +479,16 @@ def generate(layer):
     return img
 
 
-def shrink(img, key):
-    """Фон — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів."""
+def shrink(img, key, spill=0):
+    """Фон — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів. spill (для magenta) — ще й
+    усе, де червоний і синій обидва більші за зелений на spill: темні пурпурні тіні, що модель кидає на фон."""
     rows = img.shape[0] // SCALE
     a = np.ones(img.shape[:2], np.float32)
     if key:
         bg = np.median(img[:24].reshape(-1, 3), axis=0)
         a = (np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE).astype(np.float32)
+    if spill:
+        a *= np.minimum(img[..., 0], img[..., 2]) - img[..., 1] < spill
     if key == "green":
         img[..., 1] = np.minimum(img[..., 1], np.maximum(img[..., 0], img[..., 2]))  # зелений відсвіт країв
 
@@ -457,7 +544,7 @@ if __name__ == "__main__":
             x0, x1 = map(int, sys.argv[sys.argv.index("--repaint") + 1].split("-"))
             d = float(sys.argv[sys.argv.index("--denoise") + 1]) if "--denoise" in sys.argv else 0.6
             repaint(layer, x0, x1, d)
-        strip, strip_opaque = shrink(generate(layer), layer["key"])
+        strip, strip_opaque = shrink(generate(layer), layer["key"], layer.get("spill", 0))
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
             strip_opaque = drop_edges(strip_opaque)
@@ -470,7 +557,10 @@ if __name__ == "__main__":
             rgb, opaque = fill_down(rgb, opaque)
         rgb = (rgb * (1 - layer["haze"]) + HAZE * layer["haze"]) * (1 - layer["shade"])
         os.makedirs(os.path.dirname(OUT + name), exist_ok=True)
-        Image.fromarray(quantize(rgb, opaque, layer["colors"], layer.get("quant", "mediancut"))).save(OUT + name + ".png")
+        out = quantize(rgb, opaque, layer["colors"], layer.get("quant", "mediancut"))
+        if layer.get("crop"):  # текстура, а не екран (поверхні лабораторії): лише смуга rows
+            out = out[layer["top"] : layer["top"] + layer["rows"]]
+        Image.fromarray(out).save(OUT + name + ".png")
         print("drawn", OUT + name + ".png", flush=True)
     # ComfyUI тримає моделі (~30 ГБ ОЗП разом із текстовим енкодером) і після роботи; на 32 ГБ це вичерпало
     # пам'ять системи — вивантажуємо одразу.

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ne114i0hsj5j"
-path="res://.godot/imported/fg_column.png-859728a037a824864a5627dfe0c63f0e.ctex"
+uid="uid://iib0ybe2ywd3"
+path="res://.godot/imported/gen_mid.png-eb1496a29f3cf2cedbbf09faaa99237e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Laboratory/fg_column.png"
-dest_files=["res://.godot/imported/fg_column.png-859728a037a824864a5627dfe0c63f0e.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/Lab/gen_mid.png"
+dest_files=["res://.godot/imported/gen_mid.png-eb1496a29f3cf2cedbbf09faaa99237e.ctex"]
 
 [params]
 
