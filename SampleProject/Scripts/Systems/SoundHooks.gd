@@ -54,7 +54,7 @@ func _on_player_attacked(player: Node, _direction: int) -> void:
 
 
 ## Замах ворога чути: половина підказки «зараз ударить» (D215).
-## Голос: бос ревe на першому замаху й кричить на кожному другому (D278), решта ворогів гарчить на кожному третьому.
+## Голос: бос реве на першому замаху й кричить на кожному другому (D278), решта ворогів гарчить на кожному третьому.
 func _on_attack_started(attacker: Node, _target: Node) -> void:
 	if not attacker.is_in_group(GameGroups.ENEMIES):
 		return

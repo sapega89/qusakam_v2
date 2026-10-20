@@ -66,7 +66,7 @@ func _on_interacted() -> void:
 	npc_menu.setup(entries)
 	npc_menu.open()
 	# Герой сам підійшов і заговорив — привітання. Катсцену першої зустрічі запускає кімната, не цей шлях.
-	AudioManager.hooks.greet(character_id)
+	get_node(^"/root/AudioManager").hooks.greet(character_id)  # не ідентифікатор: тести компілюють NpcBase до автолоадів
 
 
 ## Нащадок може заборонити меню (напр. поки відкритий магазин).

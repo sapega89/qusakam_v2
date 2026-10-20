@@ -68,8 +68,9 @@ func type_out(seconds: float) -> void:
 	_label.visible_ratio = 1.0
 
 
+## Остання літера з'являється лише з кінцем type_out: is_typed() не має стати true раніше, ніж набір повернувся.
 func _type_to(count: int) -> void:
-	if count > _label.visible_characters:
+	if count > _label.visible_characters and count < _label.text.length():
 		_label.visible_characters = count
 		typed.emit(_label.text, count)
 

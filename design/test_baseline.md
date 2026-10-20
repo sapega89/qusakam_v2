@@ -102,6 +102,14 @@ These are baseline noise. A later slice is only responsible for **new** entries.
 
 Known issues 1, 3, 4, 5 and 6 are unchanged.
 
+## Full run — 2026-10-21, after BACKLOG 26 audio (D274–D278)
+
+`Scripts/Tools/run_verify.sh`: 51 / 55 PASS; the 4 FAILs were this pass's own regressions and are fixed, each re-run
+alone to ALL PASS: `verify_blacksmith`, `verify_enchanting` (NpcBase named the `AudioManager` autoload — test scripts
+compile NpcBase before autoloads; now `get_node("/root/AudioManager")`), `verify_canyon_exit` (the cloud reported
+"typed" one letter before its typing returned, so an Enter was swallowed), `verify_npc_recall` (its test NPC had no
+`character_id` for the greeting). New: `verify_audio` (81 checks).
+
 ## Full run — 2026-10-18, after the combat fixes (B57–B64)
 
 `Scripts/Tools/run_verify.sh` on `feature/backlog`, Godot 4.6.2 console build, headless:

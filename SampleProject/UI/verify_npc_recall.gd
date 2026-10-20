@@ -60,6 +60,7 @@ func _initialize() -> void:
 	var npc: Node = load(STORY_NPC).instantiate()
 	npc.quest_flag = "verify_recall_given"
 	npc.quest_dialogue = "OldMan_Decision"
+	npc.character_id = "GRANDFATHER"  # як OldManQuest у Village (голос привітання, D277)
 	game.add_child(npc)
 	await process_frame
 	ck(_labels(npc).is_empty() and not npc.interactable.enabled, "before: no entries, no prompt")
