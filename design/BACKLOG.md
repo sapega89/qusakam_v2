@@ -70,6 +70,21 @@ All six outdoor rooms walk on painted ground (Canyon earlier; Village, DesertRoa
 now); the checker tile is gone, CityGates' ceiling included; the Canyon's gorge back wall repainted from the same rock.
 Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated yet).
 
+### Sapega's play feedback 2026-10-20 — run one agent at a time, in this order
+1. **Bugs and look:** platforms are not visible (one-way platforms lost their art after the painted terrain?); the Canyon
+   bridge and the pit we fall into look wrong against the background; the fall animation plays one way only (must flip);
+   the dialogue box must be opaque; dialogue text types out slowly and cannot be skipped until done (D254).
+2. **Canyon descent cutscene** (D254): no falling off the bridge — Kusakam climbs down behind a foreground rock, the
+   camera pans smoothly up to a blue sky. Accent on cutscenes in general.
+3. **Healing rework** (D252): Healing Palm at the first level-up; the grandfather does not ask to be healed; potions
+   drop rarely.
+4. **Combat, souls-lite** (D250, D251, D253): combos for the hero and enemies, staggers both ways, double dash,
+   block/parry, heavy attack, enemies that sometimes freeze the hero, run outside towns, two-handed and dual-wield
+   weapons, harder tuning. Needs a plan first (plan-missing-system).
+5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
+6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
+7. **Foreground parallax** — below.
+
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
 near/foreground plane; add one to Canyon, DesertRoad, CityGates, City, LaboratoryOutside — generated with
