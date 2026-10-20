@@ -115,42 +115,28 @@ func _initialize() -> void:
 	ck(game.current_objective == "Check on the house", "objective: Check on the house (%s)" % game.current_objective)
 	await _drain(dm)
 
-	print("[6] The old man heals Kusakam and teaches Healing Palm")
+	print("[6] The old man heals Kusakam and does not ask to be healed (D252, D261)")
 	var sm: Node = sl.get_skill_manager()
-	ck(not sm.is_unlocked("healing_palm"), "Healing Palm is not known before the old man")
+	var hint: Node = get_first_node_in_group("tutorial_hint_display")
 	game.player.take_damage(30)
 	game.player.global_position = Vector2(1582, 344)
 	game.player.velocity = Vector2.ZERO
 	for i in 30: await process_frame
 	ck(village.get_current_state_name() == "OLD_MAN_HEALING", "the tree trigger starts the old man's scene")
+	var healing_lines: Array = DqdReader.lines("res://dialogue_quest/OldMan_Healing.dqd").map(func(l): return l.text)
+	ck(not healing_lines.any(func(t: String) -> bool: return t.contains("Длань") or t.contains("твоя черга")),
+			"OldMan_Healing no longer asks Kusakam to heal him (%s)" % [healing_lines])
 	await _drain(dm)
 	for i in 10: await process_frame
 	ck(started.has("OldMan_Outside") and started.has("OldMan_Healing"), "meeting and healing lines (%s)" % [started])
 	ck(game.player.current_health == game.player.Max_Health, "the old man healed Kusakam to full")
-	ck(village.get_current_state_name() == "OLD_MAN_TREATMENT", "now it is Kusakam's turn (%s)" % village.get_current_state_name())
-	ck(sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "healing_palm", "Healing Palm learned, on hotbar slot 1")
-	var hint: Node = get_first_node_in_group("tutorial_hint_display")
-	ck(hint.visible and hint.hint_label.text.begins_with("Your grandfather is dying"), "tutorial: your grandfather is dying — use Healing Palm (D148)")
-	ck(game.current_objective.begins_with("Heal the old man"), "objective: heal the old man (%s)" % game.current_objective)
+	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "the Village teaches no Healing Palm, slot 1 empty")
+	ck(hint.current_hint != "healing_palm", "no Healing Palm tutorial in the Village (%s)" % hint.current_hint)
 
-	print("[7] The player presses 1 next to the old man (D145)")
-	# Як у грі: герой стоїть НА ЗЕМЛІ поруч із дідом (центр ~23 px нижче за діда), а не на його рівні.
-	game.player.global_position = Vector2(1600, 300)
-	for i in 60: await physics_frame
-	ck(game.player.is_on_floor(), "Kusakam stands on the ground next to him (y=%.0f)" % game.player.global_position.y)
-	for down in [true, false]:
-		var key := InputEventAction.new()
-		key.action = &"skill_slot_1"
-		key.pressed = down
-		root.push_input(key)
-		await process_frame
-	for i in 10: await process_frame
-	ck(game.get_quest_flag("village_oldman_treated"), "the old man is healed — village_oldman_treated")
-	ck(not hint.is_showing, "the tutorial hint goes away once he is healed")
-	ck(started.has("OldMan_Treated"), "his thanks play (%s)" % [started])
-	await _drain(dm)
-	for i in 10: await process_frame
-	ck(started.has("OldMan_Decision"), "then the decision and the gift")
+	print("[7] Straight on to his decision and the gift")
+	ck(not started.has("OldMan_Treated"), "no 'after you healed me' talk (%s)" % [started])
+	ck(started.has("OldMan_Decision"), "then the decision and the gift (%s)" % [started])
+	ck(game.get_quest_flag("village_oldman_healed") and game.get_quest_flag("village_oldman_complete"), "healed → complete flags set")
 	print("[8] The Skills tab lists Kusakam's skills")
 	ui.open_game_menu()
 	for i in 16: await process_frame

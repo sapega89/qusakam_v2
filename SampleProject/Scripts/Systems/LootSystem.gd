@@ -9,7 +9,8 @@ var gold_drop_chance: float = 0.7  # 70% шанс випасти гроші
 var gold_min: int = 5
 var gold_max: int = 20
 
-var potion_drop_chance: float = 0.3  # 30% шанс випасти банку HP
+## D261: банка HP — рідкість (Sapega «банки не мають падати з усіх підряд»), лікування дає Длань із 2-го рівня.
+var potion_drop_chance: float = 0.1  # 10% шанс випасти банку HP
 var potion_drop_max: int = 1  # Максимум 1 банка за ворога
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()

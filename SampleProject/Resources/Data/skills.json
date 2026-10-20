@@ -28,11 +28,11 @@
     {
       "id": "healing_palm",
       "name": "Healing Palm",
-      "description": "Restores 40 HP to an ally next to you, or to yourself. Taught by the old man.",
+      "description": "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2.",
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 0,
-      "required_level": 1,
+      "required_level": 2,
       "prerequisites": [],
       "sp_cost": 5,
       "cooldown": 4.0,

@@ -59,7 +59,7 @@ func _initialize() -> void:
 	print("[2] Quest appears once the quest is given")
 	var npc: Node = load(STORY_NPC).instantiate()
 	npc.quest_flag = "verify_recall_given"
-	npc.quest_dialogue = "OldMan_Treated"
+	npc.quest_dialogue = "OldMan_Decision"
 	game.add_child(npc)
 	await process_frame
 	ck(_labels(npc).is_empty() and not npc.interactable.enabled, "before: no entries, no prompt")
@@ -94,7 +94,7 @@ func _initialize() -> void:
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()  # далі
 		await process_frame
 	ck(typing_holds, "D254: accept while a line is typing neither completes it nor moves on")
-	var expected := DqdReader.lines("res://dialogue_quest/OldMan_Treated.dqd").map(func(l): return l.text)
+	var expected := DqdReader.lines("res://dialogue_quest/OldMan_Decision.dqd").map(func(l): return l.text)
 	ck(shown.slice(0, expected.size()) == expected, "every line, in order (%s)" % str(shown))
 	ck(shown.size() == expected.size() + 1 and shown[-1].begins_with("Current objective: "),
 			"ends on the current objective (%s)" % (shown[-1] if shown else ""))
@@ -107,7 +107,7 @@ func _initialize() -> void:
 	ck(player != null and not player.event, "the player can move again")
 
 	print("[4] E does not open an NPC menu over a running conversation")
-	dm.replay("res://dialogue_quest/OldMan_Treated.dqd")
+	dm.replay("res://dialogue_quest/OldMan_Decision.dqd")
 	await process_frame
 	npc.interactable.interacted.emit()
 	await process_frame

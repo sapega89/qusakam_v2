@@ -4,6 +4,8 @@ class_name TutorialManager
 ## Tutorial Manager
 ## Triggers tutorial hints based on gameplay events
 
+const HEALING_PALM := "healing_palm"
+
 var tutorial_display: TutorialHintDisplay = null
 var has_shown_movement: bool = false
 var has_shown_attack: bool = false
@@ -45,6 +47,7 @@ func _connect_events() -> void:
 	EventBus.enemy_spawned.connect(_on_enemy_spawned)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
+	EventBus.skill_unlocked.connect(_on_skill_unlocked)
 
 func _show_movement_hint() -> void:
 	"""Shows movement tutorial hint"""
@@ -81,19 +84,26 @@ func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 				await get_tree().create_timer(2.0).timeout  # Wait for XP animation
 			display.show_hint("xp_bar")
 
+## D252/D261: Длань лікування відкривається на 2-му рівні — підвищення рівня просить її вивчити;
+## підказка висить, доки Длань не вивчено (Skills у меню гри). Інакше — звичайна підказка першого рівня.
 func _on_player_leveled_up(_new_level: int, _old_level: int) -> void:
-	"""Player leveled up"""
+	# Show the hint after the level-up VFX finishes
+	await get_tree().create_timer(3.5).timeout
+	var display: TutorialHintDisplay = _get_tutorial_display()
+	if display == null:  # поза Game.tscn (меню, тести менеджерів) підказок немає
+		return
+	if ServiceLocator.get_skill_manager().can_unlock(HEALING_PALM) == SkillManager.Result.OK:
+		display.show_hint(HEALING_PALM, true, true)
+		return
 	if has_shown_level_up:
 		return
-
 	has_shown_level_up = true
-	var display = _get_tutorial_display()
-	if not display:
-		return
-	# Show level up hint after VFX finishes
-	if is_inside_tree() and get_tree():
-		await get_tree().create_timer(3.5).timeout
 	display.show_hint("level_up")
+
+func _on_skill_unlocked(skill_id: String) -> void:
+	var display: TutorialHintDisplay = _get_tutorial_display()
+	if skill_id == HEALING_PALM and display != null and display.current_hint == HEALING_PALM:
+		display.force_hide()
 
 func reset_tutorial() -> void:
 	"""Resets all tutorial flags (for testing)"""

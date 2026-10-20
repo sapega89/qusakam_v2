@@ -2,6 +2,7 @@ extends Node2D
 
 ## 🏘️ Village Scene Manager
 ## States: ABDUCTION_CUTSCENE, ARRIVAL, STREET_FIGHT, OLD_MAN_OUTSIDE, OLD_MAN_HEALING, OLD_MAN_DECISION, LEAVING_VILLAGE
+## D252/D261: дід лікує Кусакама, але сам лікування не просить — Длань вивчається на 2-му рівні.
 ## Follows Robust State-Flow Pattern
 
 enum State {
@@ -10,17 +11,13 @@ enum State {
 	STREET_FIGHT,
 	OLD_MAN_OUTSIDE,
 	OLD_MAN_HEALING,
-	OLD_MAN_TREATMENT,  # гравець лікує діда «Дланню лікування» (D145)
 	OLD_MAN_DECISION,
 	LEAVING_VILLAGE
 }
 
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
-const HEALING_PALM := "healing_palm"
 const OLDMAN_GIFT := "oldman_gift"
-
-@onready var old_man: OldMan = $StateChangeTrigger_OldManOutside/OldMan
 
 @export var current_state: State = State.ABDUCTION_CUTSCENE:
 	set(val):
@@ -60,10 +57,8 @@ func _determine_initial_state() -> void:
 	var game = Game.get_singleton()
 	if game.get_quest_flag("village_left_complete"):
 		current_state = State.LEAVING_VILLAGE
-	elif game.get_quest_flag("village_oldman_complete") or game.get_quest_flag("village_oldman_treated"):
+	elif game.get_quest_flag("village_oldman_complete") or game.get_quest_flag("village_oldman_healed"):
 		current_state = State.OLD_MAN_DECISION
-	elif game.get_quest_flag("village_oldman_healed"):
-		current_state = State.OLD_MAN_TREATMENT
 	elif game.get_quest_flag("village_oldman_met"):
 		current_state = State.OLD_MAN_HEALING
 	elif game.get_quest_flag("village_fight_complete"):
@@ -147,13 +142,8 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				DebugLogger.info("🏘️ Village: Гілка діда вже завершена, пропускаємо", "Village")
 				advance_state()
 				return
-			_set_objective("Help the old man")
+			_set_objective("Talk to the old man")
 			_talk_to_old_man(run_id)
-		State.OLD_MAN_TREATMENT:
-			if game.get_quest_flag("village_oldman_treated"):
-				advance_state()
-				return
-			_teach_healing_palm(run_id)
 		State.OLD_MAN_DECISION:
 			if game.get_quest_flag("village_oldman_complete"):
 				advance_state()
@@ -178,25 +168,6 @@ func _talk_to_old_man(run_id: int) -> void:
 	var player: CombatBody2D = Game.get_singleton().player
 	player.heal_damage(player.Max_Health)
 	advance_state()
-
-## D145/D148 — туторіал: дід помирає, Длань лікування вивчається автоматично (без очок) і стає
-## на слот 1; підказка висить, доки гравець клавішею 1 поруч із дідом не вилікує його.
-## Дід на цей крок стає союзником (група allies) — SkillTargeting бере його ціллю (D142).
-func _teach_healing_palm(run_id: int) -> void:
-	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	if not skills.is_unlocked(HEALING_PALM):
-		skills.unlock_skill(HEALING_PALM)
-	skills.equip_skill(HEALING_PALM, 0)
-	_set_objective("Heal the old man")
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	hint.show_hint(HEALING_PALM, true, true)
-	old_man.add_to_group(SkillTargeting.ALLIES_GROUP)
-	await old_man.healed
-	old_man.remove_from_group(SkillTargeting.ALLIES_GROUP)
-	hint.force_hide()
-	if run_id != state_run_id: return
-	Game.get_singleton().set_quest_flag("village_oldman_treated", true)
-	_execute_step(StepType.DIALOGUE, "OldMan_Treated", run_id)
 
 ## Спершу зʼявляється бандит, потім репліки (Sapega, 2026-10-15). Поки діалог тримає гравця
 ## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як

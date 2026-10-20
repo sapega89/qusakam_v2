@@ -317,6 +317,10 @@ func unlock_skill(skill_id: String) -> Result:
 	state["unlocked_skills"] = unlocked
 
 	EventBus.skill_unlocked.emit(skill_id)
+	# D261: окремого екрана призначення слотів немає — вивчена активна навичка стає на перший вільний слот.
+	var free_slot := _loadout().find("")
+	if definition.is_active() and free_slot != -1:
+		equip_skill(skill_id, free_slot)
 	return Result.OK
 
 

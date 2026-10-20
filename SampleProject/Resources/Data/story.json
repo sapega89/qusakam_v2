@@ -23,14 +23,13 @@
 						{"flag": "village_arrival_complete", "text": "Reach the village center"},
 						{"flag": "village_fight_complete", "text": "Defeat the bandit in the street"},
 						{"flag": "village_oldman_met", "text": "Check on the house"},
-						{"flag": "village_oldman_treated", "text": "Heal the old man"},
 						{"flag": "village_left_complete", "text": "Leave the village"}
 					],
 					"chronicle": [
 						{"flag": "village_abduction_complete", "text": "Bandits had raided the village and were taking everyone away."},
 						{"flag": "village_arrival_complete", "text": "A bandit stopped him in the middle of the village."},
 						{"flag": "village_fight_complete", "text": "Kusakam beat the bandit and went looking for the old man."},
-						{"flag": "village_oldman_complete", "text": "He found the old man by his ruined house. The old man healed him, taught him the Healing Palm, and Kusakam healed him in turn. Then the old man told him the bandits had stolen the relic — the key to everything."},
+						{"flag": "village_oldman_complete", "text": "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."},
 						{"flag": "village_left_complete", "text": "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."}
 					]
 				},

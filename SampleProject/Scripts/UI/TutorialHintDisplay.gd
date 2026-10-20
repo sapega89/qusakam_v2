@@ -17,8 +17,8 @@ const TUTORIAL_HINTS = {
 	"coins": "Collect coins to buy items and upgrades",
 	"health_low": "Health is low! Avoid damage or find healing",
 	"combo": "Chain attacks for better combat flow",
-	# D148: туторіал у селі — висить, доки гравець не вилікує діда.
-	"healing_palm": "Your grandfather is dying! Stand next to him and press 1 to use Healing Palm.",
+	# D261: перше підвищення рівня — висить, доки Длань не вивчено.
+	"healing_palm": "Level up! You can learn Healing Palm — press Esc, open Skills, select it and press Enter. Then 1 heals.",
 	# D209: біля воріт міста — перший асист, туторіал.
 	"call_guard": "Companions fight at your side — press F to call one. Call the guard now!",
 	# Після першого виклику: компаньйони — механіка на всю гру, не лише охоронець (Sapega: «ніде не кажемо»).

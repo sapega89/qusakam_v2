@@ -43,6 +43,17 @@ func _initialize() -> void:
 	spawner._on_enemy_died(Node.new())
 	ck(inv.get_item_count("potion") == 5, "still 5 after a second kill (%d)" % inv.get_item_count("potion"))
 
+	print("[2b] Random potions are rare (D261): about 1 kill in 10, not every enemy")
+	var loot: Node = root.get_node("GameManager/LootSystem")
+	ck(is_equal_approx(loot.potion_drop_chance, 0.1), "potion drop chance 10%% (%.2f)" % loot.potion_drop_chance)
+	loot.rng.seed = 259
+	var potions_before: int = inv.get_item_count("potion")
+	for i in 1000:
+		loot._on_enemy_died("verify", Vector2.ZERO)
+	var dropped: int = inv.get_item_count("potion") - potions_before
+	ck(dropped > 60 and dropped < 140, "1000 kills drop ~100 potions, not 1000 (%d)" % dropped)
+	inv.remove_item("potion", dropped)
+
 	print("[3] The old man's gift arrives once")
 	# Справжня кімната: подарунок показує підказку через дерево, а голий скрипт села без кімнати не стартує
 	var village: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
@@ -57,7 +68,7 @@ func _initialize() -> void:
 	spawner.free()
 	village.free()
 
-	print("[4] The old man's three talks play in turn, and the gift comes after the last")
+	print("[4] The old man's talks play in turn, and the gift comes after the last")
 	var flags: Dictionary = game.get_quest_flags().duplicate()
 	for f in ["village_oldman_met", "village_oldman_healed", "village_oldman_complete", "village_left_complete", "village_oldman_gift"]:
 		flags.erase(f)
@@ -90,13 +101,8 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	for i in 4: await process_frame
-	# D145: гравець лікує діда «Дланню» — тут без позиціювання, напряму (повний шлях — verify_village_fight).
-	ck(v2.get_current_state_name() == "OLD_MAN_TREATMENT", "waits for Kusakam to heal the old man")
-	v2.old_man.heal_damage(30)
-	for i in 4: await process_frame
-	await _finish_dialogue(sl.get_dialogue_manager())
-	for i in 4: await process_frame
-	ck(started == ["OldMan_Outside", "OldMan_Healing", "OldMan_Treated", "OldMan_Decision", "LeavingVillage"], "talks in order, once each (%s)" % [started])
+	# D261: дід лікування не просить — після OldMan_Healing одразу рішення й подарунок.
+	ck(started == ["OldMan_Outside", "OldMan_Healing", "OldMan_Decision", "LeavingVillage"], "talks in order, once each, no heal request (%s)" % [started])
 	ck(swords_at_start.get("OldMan_Decision", -1) == 0, "no gift before the last talk starts")
 	ck(swords_at_start.get("LeavingVillage", -1) == 1, "gift is there once the last talk is over")
 	ck(game.get_quest_flag("village_oldman_met") and game.get_quest_flag("village_oldman_healed") and game.get_quest_flag("village_oldman_complete"), "met → healed → complete flags set")

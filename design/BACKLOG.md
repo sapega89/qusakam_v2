@@ -83,8 +83,10 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    `Canyon_ExitCutscene` plays, Kusakam climbs down behind a generated foreground boulder, the camera floats up to a
    blue sky above the room, fade, road. No fall, no damage; flags as before. Bridge art generated (`gen_bridge`).
    [[cutscene_plan]] → "Built". Open: HUD stays on screen in cutscenes; no skip control.
-3. **Healing rework** (D252): Healing Palm at the first level-up; the grandfather does not ask to be healed; potions
-   drop rarely.
+3. ~~**Healing rework**~~ — **done 2026-10-20** (D252, D261): Healing Palm is learned at level 2 (a sticky hint on the
+   level-up, Esc → Skills → Enter; it lands on the first free hotbar slot); the Village old man heals Kusakam and goes
+   straight to his decision and gift, no heal request; potions drop from 1 kill in 10 (first-kill 5 potions stay).
+   B76 fixed on the way: Enter on a Skills row learned nothing.
 4. **Combat, souls-lite** (D250, D251, D253): combos for the hero and enemies, staggers both ways, double dash,
    block/parry, heavy attack, enemies that sometimes freeze the hero, run outside towns, two-handed and dual-wield
    weapons, harder tuning. Needs a plan first (plan-missing-system).

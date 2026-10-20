@@ -233,6 +233,9 @@ func _make_skill_row(definition: SkillDefinition) -> Button:
 	row.focus_mode = Control.FOCUS_ALL
 	row.pressed.connect(_on_row_selected.bind(definition.id))
 	row.focus_entered.connect(_on_row_selected.bind(definition.id))
+	# Сигнал gui_input приходить раніше, ніж Button сам «з'їдає» ui_accept, — інакше вивчити навичку
+	# з виділеного рядка було неможливо (фокус завжди на рядку, а не на компоненті).
+	row.gui_input.connect(_gui_input)
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "Row"

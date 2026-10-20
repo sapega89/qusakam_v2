@@ -53,8 +53,8 @@ Q51 (its story). Lab boss intro: not chosen.
 
 **Village sequence** (D140, D145): `ScreenFade` (`Scripts/Systems/Cutscenes/ScreenFade.gd`) for the
 abduction; Village states drive the rest (`Village.gd`: `_abduction_scene`, `Village_AfterFight`,
-`_talk_to_old_man`, new `OLD_MAN_TREATMENT` → `_teach_healing_palm`). The old man (`OldMan.gd`)
-joins `allies` only for the treatment step, so Healing Palm's normal targeting (D142) heals him.
+`_talk_to_old_man`). The treatment step (`OLD_MAN_TREATMENT`, `OldMan.gd`, `OldMan_Treated`) was removed
+by D261: Healing Palm comes at level 2 and the old man no longer asks to be healed.
 Draft lines `// [ЧЕРНЕТКА]` in `dialogue_quest/`. Test: `verify_village_fight` [0]–[7].
 `CutsceneStep.gd` deleted. Scripted with the scene's existing await chain rather than an
 `AnimationPlayer` — enough for fade + dialogue + one player action; revisit when a beat needs

@@ -60,19 +60,65 @@ func _initialize() -> void:
 	ck(sm.get_current_sp() == 22, "regains 1 SP per second (%d)" % sm.get_current_sp())
 	sm.restore_sp(30)
 
-	print("[2b] Healing Palm comes from the old man; strikes at level 6 for skill points (D148, D149)")
-	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "no skills at New Game — the old man teaches Healing Palm")
-	sm.unlock_skill("healing_palm")  # те, що робить сцена з дідом (verify_village_fight)
-	sm.equip_skill("healing_palm", 0)
-	ck(sm.get_rank("healing_palm") == 1, "rank 1 once learned")
-	ck(sm.can_unlock("fire_strike") == R.LEVEL_TOO_LOW, "Fire Strike locked below level 6")
+	print("[2b] Healing Palm is learned at the first level-up (D252, D261); strikes at level 6 for skill points (D149)")
+	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "no skills at New Game")
+	ck(sm.can_unlock("healing_palm") == R.LEVEL_TOO_LOW, "Healing Palm locked at level 1")
 	var xp: Node = sl.get_xp_manager()
+	xp.add_xp(100)
+	ck(xp.get_level() == 2 and sm.can_unlock("healing_palm") == R.OK, "level 2: Healing Palm can be learned (level %d)" % xp.get_level())
+	await create_timer(4.0).timeout
+	var hint: TutorialHintDisplay = get_first_node_in_group(&"tutorial_hint_display")
+	ck(hint.is_showing and hint.current_hint == "healing_palm" and hint.hint_label.text.contains("Healing Palm"),
+			"the level-up hint asks to learn Healing Palm (%s)" % hint.current_hint)
+	await create_timer(5.0).timeout
+	ck(hint.is_showing and hint.current_hint == "healing_palm", "…and stays until it is learned")
+	# Як гравець: Esc → Skills, клік по рядку Healing Palm, Enter.
+	game.set_quest_flag("village_oldman_healed", true)  # вкладку Skills відкриває сюжет
+	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64 — клік мимо меню
+	var ui: Node = sl.get_ui_manager()
+	ui.open_game_menu()
+	for i in 16: await process_frame
+	var menu: Node = get_first_node_in_group("game_menu")
+	menu.switch_to_tab("Skills")
+	for i in 8: await process_frame
+	var skills_tab: Node = menu.find_child("SkillsComponent", true, false)
+	var row: Control = skills_tab._rows["healing_palm"]
+	var at: Vector2 = row.get_global_rect().get_center()
+	var vp: Viewport = row.get_viewport()  # рядок перебудовується, щойно навичку вивчено
+	var motion := InputEventMouseMotion.new()
+	motion.position = at
+	motion.global_position = at
+	vp.push_input(motion)
+	await process_frame
+	for down in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = down
+		click.position = at
+		click.global_position = at
+		vp.push_input(click)
+		await process_frame
+	ck(skills_tab._selected_id == "healing_palm", "clicking the row selects Healing Palm (%s)" % skills_tab._selected_id)
+	for down in [true, false]:
+		var enter := InputEventAction.new()
+		enter.action = &"ui_accept"
+		enter.pressed = down
+		vp.push_input(enter)
+		await process_frame
+	ck(sm.is_unlocked("healing_palm") and sm.get_rank("healing_palm") == 1, "Enter learns it, rank 1")
+	ck(sm.get_equipped_skill(0) == "healing_palm", "a learned active skill goes on the first free hotbar slot (%s)" % sm.get_equipped_skill(0))
+	ck(not hint.is_showing, "the hint goes away once Healing Palm is learned")
+	ui.close_game_menu()
+	for i in 8: await process_frame
+	ck(sm.can_unlock("fire_strike") == R.LEVEL_TOO_LOW, "Fire Strike locked below level 6")
 	var jp_before: int = sm.get_job_points()
+	var level_before: int = xp.get_level()
 	while xp.get_level() < 6:
 		xp.add_xp(1000)
-	ck(sm.get_job_points() - jp_before == 2 * (xp.get_level() - 1), "2 skill points per level (%d for %d levels)" % [sm.get_job_points() - jp_before, xp.get_level() - 1])
+	var gained: int = xp.get_level() - level_before
+	ck(sm.get_job_points() - jp_before == 2 * gained, "2 skill points per level (%d for %d levels)" % [sm.get_job_points() - jp_before, gained])
 	ck(sm.unlock_skill("fire_strike") == R.OK and sm.unlock_skill("electric_strike") == R.OK, "both strikes learned at level 6")
-	ck(sm.get_job_points() - jp_before == 2 * (xp.get_level() - 1) - 2, "1 point each")
+	ck(sm.get_job_points() - jp_before == 2 * gained - 2, "1 point each")
 
 	print("[3] Healing Palm: an ally next to you, else yourself (D142)")
 	player.take_damage(40)
