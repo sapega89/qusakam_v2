@@ -22,6 +22,8 @@ const TUTORIAL_HINTS = {
 	# D209: біля воріт міста — перший асист, туторіал.
 	"call_guard": "Companions fight at your side — press F to call one. Call the guard now!",
 	# Після першого виклику: компаньйони — механіка на всю гру, не лише охоронець (Sapega: «ніде не кажемо»).
+	# Подарунок діда: зброя лише в інвентарі — гравець має знати, як її вдягти (Sapega: «немає підказки»).
+	"oldman_gift": "Grandfather gave you a sword and armour — press Esc, open Inventory and equip them. Q switches weapons.",
 	"companions": "Allies you meet will join your party. F calls the next ready companion — see them in Status."
 }
 

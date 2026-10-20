@@ -43,11 +43,15 @@ func _initialize() -> void:
 	ck(inv.get_item_count("potion") == 5, "still 5 after a second kill (%d)" % inv.get_item_count("potion"))
 
 	print("[3] The old man's gift arrives once")
-	var village: Node = load("res://SampleProject/Scripts/Gameplay/Scenes/Village.gd").new()
+	# Справжня кімната: подарунок показує підказку через дерево, а голий скрипт села без кімнати не стартує
+	var village: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
+	game.add_child(village)
 	village._give_oldman_gift()
 	village._give_oldman_gift()
 	ck(inv.get_item_count("copper_sword") == 1, "one Copper Sword (%d)" % inv.get_item_count("copper_sword"))
 	ck(inv.get_item_count("leather_armor") == 1, "one Leather Armor (%d)" % inv.get_item_count("leather_armor"))
+	var hint: TutorialHintDisplay = root.get_tree().get_first_node_in_group(&"tutorial_hint_display")
+	ck(hint.current_hint == "oldman_gift", "the gift hint tells how to equip it (%s)" % hint.current_hint)
 
 	spawner.free()
 	village.free()

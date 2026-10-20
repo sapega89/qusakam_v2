@@ -18,6 +18,7 @@ enum State {
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 const HEALING_PALM := "healing_palm"
+const OLDMAN_GIFT := "oldman_gift"
 
 @onready var old_man: OldMan = $StateChangeTrigger_OldManOutside/OldMan
 
@@ -292,6 +293,17 @@ func _give_oldman_gift() -> void:
 	inventory.add_item("copper_sword", 1)
 	inventory.add_item("leather_armor", 1)
 	game.set_quest_flag("village_oldman_gift", true)
+	# Висить, доки не вдягне зброю
+	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
+	EventBus.equipment_equipped.connect(_on_gift_equipped)
+
+func _on_gift_equipped(_character_id: String, slot_id: String, _item_id: String) -> void:
+	if not slot_id in EquipmentManager.WEAPON_SLOTS:
+		return
+	EventBus.equipment_equipped.disconnect(_on_gift_equipped)
+	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
+	if hint.current_hint == OLDMAN_GIFT:
+		hint.force_hide()
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
@@ -336,3 +348,9 @@ func _get_dialogue_manager() -> Node:
 	# _execute_step() одразу викликав advance_state(), і вся машина станів
 	# пролітала до кінця без жодного діалогу і без жодного прапорця.
 	return ServiceLocator.get_dialogue_manager()
+
+## Пішов із села, не вдягнувши подарунок, — підказка йде разом із селом (її ховає лише село).
+func _exit_tree() -> void:
+	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
+	if hint != null and hint.current_hint == OLDMAN_GIFT:
+		hint.force_hide()
