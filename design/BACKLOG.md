@@ -155,12 +155,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     **Dark Knight** (dark) / **Warden of Balance** (neutral) → subclass at 40 → prestige at 70 (names in D260). The oath
     is sworn **in the City** before a thematic NPC: a **priest** (Paladin), a **witch** (Dark Knight), a **sand
     dervish** (Warden) — new NPCs, generated art.
-23. **Bigger existing rooms before the City** (Sapega 2026-10-20 «якщо клятва з 5-го рівня, то персонаж до міста має
-    прийти вже 5-м рівнем, тому треба збільшити локації» → «не треба додавати нові назви, дорога має стати більшою,
-    наприклад»): no new locations — the existing rooms on the route Canyon → Village → DesertRoad → CityGates grow
-    (DesertRoad first: longer, more MetSys cells, more fights and side ledges with pickups), and the XP curve (XPManager)
-    is tuned so level 5 lands at the City. Plan first: `design/world_expansion_plan.md` — which rooms grow by how many
-    cells, enemy counts × XP per kill vs the curve; new parts get the painted terrain and backdrops (D248/D249).
+23. **DesertRoad grows; the Laboratory grows and splits into screens** (Sapega 2026-10-20 «збільшити локації» → «не
+    треба додавати нові назви, дорога має стати більшою» → «місто, брама і село залишаються, каньйон теж, а ось
+    лабораторію треба буде збільшити і розбити на екрани»): City, CityGates, Village and Canyon stay as they are. Before
+    the City only **DesertRoad** grows (longer, more MetSys cells, more fights, side ledges with pickups) and the XP curve
+    (XPManager) is tuned so level 5 lands at the City. The **Laboratory** becomes bigger and is split into several
+    screens (separate MetSys rooms) — fits the rewritten Laboratory story (item 17): the cells floor, the corridors of
+    mobs, the boss room. Plan first: `design/world_expansion_plan.md`; new parts get the painted terrain/backdrops.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
