@@ -24,6 +24,17 @@ func _drain(dm: Node) -> void:
 		if not dm.is_dialogue_active():
 			return
 
+func _press_accept_key() -> void:
+	var key := InputEventKey.new()
+	key.keycode = KEY_ENTER
+	key.pressed = true
+	Input.parse_input_event(key)
+	for i in 3: await process_frame
+	key = key.duplicate()
+	key.pressed = false
+	Input.parse_input_event(key)
+	for i in 3: await process_frame
+
 func _until(cond: Callable, max_s: float) -> void:
 	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
 	while not cond.call() and Time.get_ticks_msec() < deadline:
@@ -98,17 +109,73 @@ func _initialize() -> void:
 	ck(dm.current_dialogue_box.is_visible_in_tree() and dm.current_dialogue_box.get_parent().layer > fade.layer,
 			"the dialogue box is shown above the black")
 	await _drain(dm)
-	await _until(func() -> bool: return started.has("Canyon_AbductionCutscene"), 5.0)
-	for i in 5: await process_frame
-	ck(not root.has_node(^"ScreenFade"), "light again before Kusakam looks from the ridge")
-	ck(anim0.current_animation == "Meditate" and player0.event, "still sitting, still no input while he looks")
-	await _drain(dm)
+	print("[0b] The talk after the meditation: Kusakam already stands, a white cloud over him, no input until it ends (item 25, D263)")
+	dm.bubble_time_scale = 1.0  # перша репліка набирається по-справжньому
+	await _until(func() -> bool: return started.has("Canyon_AbductionCutscene"), 8.0)
+	ck(not root.has_node(^"ScreenFade"), "light again before the talk")
+	ck(not camera0.top_level and camera0.position == Vector2.ZERO, "the camera is back on Kusakam when the talk starts")
+	ck(anim0.current_animation != "Meditate", "he has risen from the disc when the talk starts (%s)" % anim0.current_animation)
+	var cloud: Node2D = null
+	for child in player0.get_children():
+		if child.has_method(&"type_out"):
+			cloud = child
+	ck(cloud != null, "the talk is in a speech cloud over Kusakam")
+	ck(not dm.current_dialogue_box.is_visible_in_tree(), "the dialogue box is not shown")
+	ck(dm.is_dialogue_active() and player0.event, "the talk counts as a dialogue and holds the input")
+	await _until(func() -> bool: return cloud.visible, 2.0)
+	var cloud_label: Label = cloud.get_child(0).get_child(0)
+	ck(cloud_label.text.begins_with("Вдалині видно село"), "the stage tag is not spoken in the cloud ('%s')" % cloud_label.text.left(30))
+	# Набір — як у вікні (24 літери/с) і не пропускається: Enter посеред набору нічого не робить.
+	var first_line := cloud_label.text
+	await _press_accept_key()
+	ck(cloud_label.text == first_line and not cloud.is_typed(), "Enter while the line types does nothing (%.2f typed)" % cloud_label.visible_ratio)
+	var x_talk := player0.global_position.x
+	Input.action_press(&"move_right")
+	Input.action_press(&"attack")
+	for i in 20: await process_frame
+	Input.action_release(&"move_right")
+	Input.action_release(&"attack")
+	ck(absf(player0.global_position.x - x_talk) < 1.0 and anim0.current_animation == "Idle",
+			"move_right / attack do nothing, he stays in Idle (%s, dx %.1f)" % [anim0.current_animation, player0.global_position.x - x_talk])
+	await _until(func() -> bool: return cloud.is_typed(), 6.0)
+	ck(cloud.is_typed(), "the line finishes typing")
+	dm.bubble_time_scale = 0.0  # решта реплік — без очікування набору
+	await _press_accept_key()
+	ck(cloud_label.text != first_line, "Enter after the line is typed shows the next one")
+	# Та сама дія з геймпада (A) і миші (ЛКМ) — пункт 24.
+	var line2 := cloud_label.text
+	var pad := InputEventJoypadButton.new()
+	pad.button_index = JOY_BUTTON_A
+	pad.pressed = true
+	Input.parse_input_event(pad)
+	for i in 3: await process_frame
+	pad = pad.duplicate()
+	pad.pressed = false
+	Input.parse_input_event(pad)
+	for i in 3: await process_frame
+	ck(cloud_label.text != line2, "gamepad A shows the next line")
+	var line3 := cloud_label.text
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.position = Vector2(root.size) * 0.5
+	click.global_position = click.position
+	click.pressed = true
+	Input.parse_input_event(click)
+	for i in 3: await process_frame
+	click = click.duplicate()
+	click.pressed = false
+	Input.parse_input_event(click)
+	for i in 3: await process_frame
+	ck(cloud_label.text != line3, "a mouse click shows the next line")
+	for i in 20:
+		if not dm.is_bubble_playing(): break
+		await _press_accept_key()
+	ck(not dm.is_bubble_playing() and not is_instance_valid(cloud), "the talk ends, the cloud is gone")
+	for i in 10: await process_frame
 	ck(started == ["Canyon_Exploration", "VillageAbduction", "Canyon_AbductionCutscene"], "climb, meditation, raid, ridge (%s)" % [started])
 	ck(game.get_quest_flag("canyon_exploration_complete") and game.get_quest_flag("canyon_abduction_complete"),
 			"both flags set (journal: Explore the Canyon, Find a way forward)")
-	await _until(func() -> bool: return not camera0.top_level, 5.0)
-	for i in 5: await process_frame
-	ck(not player0.event and camera0.position == Vector2.ZERO, "he stands up, the camera follows him again, the input is back")
+	ck(not player0.event and not dm.is_dialogue_active(), "the input is back after the talk")
 	started.clear()
 
 	print("[1] Before the village the edge by the bridge is just an edge")

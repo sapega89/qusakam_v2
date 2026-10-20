@@ -24,6 +24,8 @@ func _ready() -> void:
 	_label.add_theme_font_override(&"font", load(UITokens.FONT_PATH))
 	_label.add_theme_font_size_override(&"font_size", UITokens.font_px(UITokens.SIZE_BODY))
 	_label.add_theme_color_override(&"font_color", UITokens.BUBBLE_INK)
+	# Набір (type_out) лише ховає літери вже розкладеного тексту — облачко не росте посеред репліки.
+	_label.visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING
 	_panel.add_child(_label)
 	_tail.texture = TAIL
 	add_child(_panel)
@@ -53,6 +55,18 @@ func show_line(text: String) -> void:
 	var body_x: float = _panel.size.x * (0.75 if left else 0.25)
 	_panel.position = Vector2(-body_x, -tail.y + UITokens.BUBBLE_TAIL_OVERLAP - _panel.size.y)
 	visible = true
+
+
+## Репліка, показана show_line(), набирається за [param seconds] (розмова в облачку, D263). Пауза тримає набір.
+func type_out(seconds: float) -> void:
+	_label.visible_ratio = 0.0
+	if seconds > 0.0:
+		await create_tween().tween_property(_label, ^"visible_ratio", 1.0, seconds).finished
+	_label.visible_ratio = 1.0
+
+
+func is_typed() -> bool:
+	return _label.visible_ratio >= 1.0
 
 
 static func seconds_for(text: String) -> float:

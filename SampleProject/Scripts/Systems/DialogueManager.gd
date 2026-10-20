@@ -62,15 +62,21 @@ func _connect_dialogue_quest_signals():
 		signals.dialogue_signal.connect(_on_dialogue_quest_signal)
 	DebugLogger.info("💬 DialogueManager: ✅ Сигнали DialogueQuest підключено", "DialogueManager")
 
-func start_dialogue(timeline_name: String) -> bool:
+func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	"""Запускає діалог за повним шляхом res://dialogue_quest/<id>.dqd.
 	Якщо інший діалог ще йде — ставить у чергу: одночасні запити (тригер, що міняє стан І грає
 	свій діалог, а стан теж запускає діалог) грають по черзі. Раніше другий запит губився, а
 	перед відмовою ще й ховав і скидав ЖИВЕ вікно першого: гравець бачив порожнечу, лишався
-	заблокованим, а діалог висів. Активний діалог не перебиваємо й не «відновлюємо» силоміць (D131)."""
+	заблокованим, а діалог висів. Активний діалог не перебиваємо й не «відновлюємо» силоміць (D131).
+	[param in_cloud] — розмова кат-сцени в облачку над героєм замість вікна (D263): набирається, як у вікні,
+	«далі» — dq_accept, герой стоїть і не рухається до кінця."""
 	if is_dialogue_active() or _bubble_playing:
+		assert(not in_cloud, "DialogueManager: a cloud talk cannot be queued (%s)" % timeline_name)
 		if not _queue.has(timeline_name):
 			_queue.append(timeline_name)
+		return true
+	if in_cloud:
+		_play_bubbles(timeline_name, true)
 		return true
 	if _is_monologue(timeline_name):
 		_play_bubbles(timeline_name)
@@ -154,7 +160,7 @@ func _on_dialogue_quest_signal(params: Array):
 
 func is_dialogue_active() -> bool:
 	"""Проверяет, активен ли диалог"""
-	if is_replaying():
+	if is_replaying() or _cloud_talk:
 		return true
 	if current_dialogue_player and is_instance_valid(current_dialogue_player):
 		return current_dialogue_player.current_dialogue != ""
@@ -238,6 +244,10 @@ var _bubble_skip := false
 ## цикл кликав show_line() на звільненому вузлі, а _bubble_playing лишався true назавжди —
 ## кожен наступний діалог ставав у чергу й не грав.
 var _bubble: Node2D = null
+## Йде розмова кат-сцени в облачку (D263): для решти гри це діалог — меню, NPC, асист закриті.
+var _cloud_talk := false
+## Сценічна ремарка на початку репліки («[Катсцена] …») — у вікні її видно, у мовленні облачка їй не місце.
+var _stage_tag := RegEx.create_from_string("^\\[[^\\]]*\\]\\s*")
 
 func _on_bubble_gone(bubble: Node2D) -> void:
 	if bubble != _bubble:
@@ -245,6 +255,7 @@ func _on_bubble_gone(bubble: Node2D) -> void:
 	# Сцена пішла посеред монологу; хто чекав його кінця й діалогів у черзі — пішли з нею.
 	_bubble = null
 	_bubble_playing = false
+	_cloud_talk = false
 	_queue.clear()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -262,17 +273,34 @@ func _is_monologue(path: String) -> bool:
 	return not lines.is_empty() and lines.all(func(line: Dictionary) -> bool: return line.speaker in PLAYER_SPEAKERS)
 
 
-func _play_bubbles(path: String) -> void:
+## [param talk] (D263): репліка набирається з тією ж швидкістю, що й у вікні (D254, не пропускається), далі —
+## лише dq_accept; гравець заблокований. Інакше — монолог D178: репліки міняються за часом, гравець ходить.
+func _play_bubbles(path: String, talk: bool = false) -> void:
 	_bubble_playing = true
+	_cloud_talk = talk
 	_find_dialogue_system_in_scene()  # вікно мусить бути підключене й для наступних розмов
+	if talk:
+		_pause_player_for_dialogue()
 	dialogue_started.emit(path)
 	var bubble: Node2D = SPEECH_BUBBLE.new()
 	_bubble = bubble
 	bubble.tree_exiting.connect(_on_bubble_gone.bind(bubble))
 	Game.get_singleton().player.add_child(bubble)
 	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
+	var letters_per_second: float = current_dialogue_box.settings.letters_per_second
 	for line in DQD_READER.lines(path):
-		await bubble.show_line(line.text)
+		var text: String = _stage_tag.sub(line.text, "")
+		await bubble.show_line(text)
+		if talk:
+			# Облачко висить над героєм — у такій розмові говорить лише він (або ремарка того, що він бачить).
+			assert(line.speaker == "" or line.speaker in PLAYER_SPEAKERS, "DialogueManager: cloud talk %s has speaker %s" % [path, line.speaker])
+			await bubble.type_out(text.length() / letters_per_second * bubble_time_scale)
+			_bubble_skip = false
+			while not _bubble_skip and _bubble == bubble:
+				await get_tree().process_frame
+			if _bubble != bubble:
+				return
+			continue
 		# process_always = false: відкрите меню (пауза) тримає репліку.
 		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false)
 		_bubble_skip = false
@@ -283,6 +311,9 @@ func _play_bubbles(path: String) -> void:
 	_bubble = null
 	bubble.queue_free()
 	_bubble_playing = false
+	_cloud_talk = false
+	if talk:
+		_unpause_player_after_dialogue()
 	dialogue_finished.emit.call_deferred(path)
 	EventBus.dialogue_finished.emit.call_deferred(path)
 	_start_next_queued.call_deferred()

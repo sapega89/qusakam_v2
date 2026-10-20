@@ -395,7 +395,7 @@ func _apply_state_logic(state: Variant, run_id: int) -> void:
 		_:
 			DebugLogger.warning("🏜️ Canyon: Неизвестное состояние: %s" % state, "Canyon")
 
-func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
+func _execute_step(type: StepType, dialogue_id: String, run_id: int, in_cloud: bool = false) -> void:
 	var step_name = StepType.keys()[type]
 	DebugLogger.info("🏜️ Canyon: 🎯 ВИКОНУЄМО ДІЮ: %s (діалог: %s)" % [step_name, dialogue_id if not dialogue_id.is_empty() else "N/A"], "Canyon")
 
@@ -409,7 +409,7 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 				return
 
 			DebugLogger.info("🏜️ Canyon: 💬 ДІЯ: Запуск діалогу %s" % dialogue_id, "Canyon")
-			await _play_dialogue(dialogue_id, run_id)
+			await _play_dialogue(dialogue_id, run_id, in_cloud)
 			# Завершаємо квести після діалогів
 			_complete_quest_for_dialogue(dialogue_id)
 		StepType.COMBAT:
@@ -437,7 +437,7 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 
 var _is_dialogue_playing: bool = false
 
-func _play_dialogue(dialogue_id: String, run_id: int) -> void:
+func _play_dialogue(dialogue_id: String, run_id: int, in_cloud: bool = false) -> void:
 	"""Програє діалог через DialogueManager"""
 	if state_run_id != run_id or dialogue_id.is_empty():
 		return
@@ -471,7 +471,7 @@ func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 
 	DebugLogger.info("🏜️ Canyon: 📂 Шлях до діалогу: %s" % path, "Canyon")
 
-	var started = await dm.start_dialogue(path)
+	var started = await dm.start_dialogue(path, in_cloud)
 	if started:
 		DebugLogger.info("🏜️ Canyon: ✅ Діалог %s успішно запущено, очікуємо завершення..." % dialogue_id, "Canyon")
 
@@ -578,8 +578,8 @@ func _on_exploration_state(run_id: int) -> void:
 
 ## Медитація на вершині скелі (Sapega, 2026-10-20): MeditationTrigger забирає керування, Кусакам підходить до
 ## каменя (Meditation/Seat), Canyon_Exploration, сідає й дихає (Meditate), камера пливе вліво до Meditation/Look,
-## затемнення — напад на село поверх чорного (VillageAbduction), світло, Canyon_AbductionCutscene, камера
-## повертається, він встає. Кожен діалог ставить героя в Idle і віддає керування — поза й блокування вертаються.
+## затемнення — напад на село поверх чорного (VillageAbduction), він встає ще в темряві, світло, камера
+## повертається до нього, Canyon_AbductionCutscene облачком над ним (D263). Кожен діалог ставить героя в Idle і віддає керування — поза й блокування вертаються.
 const MEDITATION_WALK_TIME := 0.6
 const MEDITATION_SIT_HOLD := 1.5
 const MEDITATION_PAN_TIME := 3.5
@@ -633,18 +633,18 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	# (Sapega, 2026-10-16: «кат сцена має бути не в віледжі а в каньйоні з затемненням»).
 	await ScreenFade.to_black(self)
 	await _play_dialogue("VillageAbduction", run_id)
-	hold.call()
-	await ScreenFade.from_black(self)
-	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id)
+	# Встає з диска ще в темряві: коли світло й камера вертаються в каньйон, він уже стоїть (D263).
 	pose[0] = &"Idle"
 	hold.call()
 	dm.dialogue_started.disconnect(hold_later)
-
+	await ScreenFade.from_black(self)
 	var back := create_tween().tween_property(camera, ^"global_position", player.global_position, MEDITATION_RETURN_TIME)
 	await back.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
 	camera.top_level = false
 	camera.position = Vector2.ZERO
 	camera.reset_smoothing()
+	# Розмова — у білому облачці над ним, керування заблоковане до її кінця (D263).
+	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id, true)
 	player.set_movement_enabled(true)
 	game.set_objective("Pursue the kidnappers")
 	_after_abduction_cutscene()

@@ -29,7 +29,7 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
 
 1 bugs and look (B74, B75, D254) · 2 Canyon descent cutscene (D256) · 3 healing at level 2 (D252, D261) ·
 8 meditation on the summit (D257; the stone is a step, no shadow/fringe) · 18 City Gates sky, gates, raid (D258) ·
-20 smoother hero and lighter landing dust (D262).
+20 smoother hero and lighter landing dust (D262) · 25 the talk after the meditation in a white cloud, Kusakam standing and locked (D263).
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
@@ -38,7 +38,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | # | Item | Why here |
 |---|---|---|
 | 1 | ~~**20** smoother hero animations, lighter jump dust~~ — done (D262) | the base the combat and skill animations stand on |
-| 1b | **25** after the meditation: white speech cloud, Kusakam stands up from the disc and stays locked | small, on item 8's code |
+| 1b | ~~**25** after the meditation: white speech cloud, Kusakam stands up from the disc and stays locked~~ — done (D263) | small, on item 8's code |
 | 2 | **4 + 15** souls-lite combat (combos, staggers, double dash, block/parry, heavy attack, freeze, run outside towns, two-handed + dual-wield) and sheathed weapons with an attack animation per weapon; **D259** interrupts | one system; plan first (plan-missing-system) |
 | 3 | **21** an animation per skill | on top of 20 + 4 |
 | 4 | **22** class path and three skill trees (D260; oath in the City: priest / witch / sand dervish NPCs) | plan first: `design/skill_trees_plan.md` |
