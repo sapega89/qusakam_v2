@@ -6,6 +6,9 @@ extends SceneTree
 ##   3. SavePoint / тригери / маркери / точки ворогів лежать у межах клітинок кімнати.
 ##   4. На кожному проході між кімнатами ліворуч-праворуч підлога з обох боків на одній висоті.
 ##   5. Ворог з'являється на підлозі під своєю точкою, а не в повітрі (B61).
+##   6. Кожен верх, на який можна стати, намальований: тайли колізії сховані (D248) — тоді над кожною кромкою
+##      є непрозорий піксель видимого Sprite2D кімнати (Terrain, Gorge, Surfaces, дошки містка). Інакше герой
+##      стоїть на невидимій платформі (Sapega 2026-10-20 «я не бачу платформи»).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_map_geometry.gd
 
 ## Не const preload: скрипт тягне сцени ворогів, а їм потрібні автолоади, яких під час компіляції тесту ще немає.
@@ -147,7 +150,60 @@ func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
 			"left": _floor_at(fg, tile, o.x + tile.x * 0.5, o.y, o.y + cell.y, min_c),
 			"right": _floor_at(fg, tile, o.x + cell.x - tile.x * 0.5, o.y, o.y + cell.y, min_c),
 		}
+	# 6. Верхи невидимих шарів колізії намальовані спрайтами кімнати.
+	var sprites := _drawn_sprites(room)
+	for layer: TileMapLayer in room.find_children("*", "TileMapLayer", true, false):
+		if layer.visible and layer.self_modulate.a > 0.0 or not layer.collision_enabled:
+			continue
+		var bare: Array[Vector2i] = []
+		var tops := 0
+		for c: Vector2i in layer.get_used_cells():
+			if not _solid(layer, c) or _solid(layer, c + Vector2i.UP):
+				continue
+			var at := _origin(layer) + Vector2(c) * tile + Vector2(tile.x * 0.5, 3.0)
+			if not Rect2(Vector2.ZERO, Vector2(room_w, cell.y * rows.size())).has_point(at):
+				continue  # за межею кімнати камера не показує (тайли проходу до сусідньої кімнати)
+			tops += 1
+			if not _drawn_at(sprites, at):
+				bare.append(c)
+		ck(bare.is_empty(), "%s: all %d tops of hidden %s are drawn (bare cells %s)" % [name, tops, layer.name, bare.slice(0, 8)])
 	room.free()
+
+
+## [спрайт, перетворення в координати кімнати, картинка] для кожного видимого Sprite2D кімнати, що рухається разом
+## з нею (під Parallax2D — фон, він не платформа).
+func _drawn_sprites(room: Node) -> Array:
+	var out := []
+	for s: Sprite2D in room.find_children("*", "Sprite2D", true, false):
+		var xf := Transform2D.IDENTITY
+		var shown := true
+		var n: Node = s
+		while n != room:
+			if n is Parallax2D or n is CanvasItem and not (n as CanvasItem).visible:
+				shown = false
+			if n is Node2D:
+				xf = (n as Node2D).transform * xf
+			n = n.get_parent()
+		if shown and s.texture:
+			out.append([s, xf.affine_inverse(), s.texture.get_image()])
+	return out
+
+
+func _drawn_at(sprites: Array, p: Vector2) -> bool:
+	for entry: Array in sprites:
+		var s: Sprite2D = entry[0]
+		var local: Vector2 = entry[1] * p
+		var rect := s.get_rect()
+		if not rect.has_point(local):
+			continue
+		var img: Image = entry[2]
+		var texel := local - rect.position
+		if s.region_enabled:
+			texel += s.region_rect.position
+		var px := Vector2i(posmod(int(texel.x), img.get_width()), posmod(int(texel.y), img.get_height()))
+		if img.get_pixelv(px).a > 0.5:
+			return true
+	return false
 
 
 ## Світова y верху першого твердого тайла під вільним місцем у стовпці x (у межах y0..y1 кімнати).

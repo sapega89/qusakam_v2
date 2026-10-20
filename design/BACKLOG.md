@@ -71,9 +71,14 @@ now); the checker tile is gone, CityGates' ceiling included; the Canyon's gorge 
 Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated yet).
 
 ### Sapega's play feedback 2026-10-20 — run one agent at a time, in this order
-1. **Bugs and look:** platforms are not visible (one-way platforms lost their art after the painted terrain?); the Canyon
-   bridge and the pit we fall into look wrong against the background; the fall animation plays one way only (must flip);
-   the dialogue box must be opaque; dialogue text types out slowly and cannot be skipped until done (D254).
+1. ~~**Bugs and look**~~ — **done 2026-10-20.** No platform had lost its art — `verify_map_geometry` [6] now proves
+   every top of a hidden collision layer is painted in every room; the Canyon gorge's back wall (`canyon_depths.png`)
+   was the same light, contrasty sandstone as its ledges, so they did not read (B75): it is now a far, low-contrast
+   wall sunk in violet shadow, dark at the bottom, with a ragged far rim under the bridge (`paint_terrain.depths()`).
+   Fall faced the direction of the last jump, not of the hero (B74). Dialogue box opaque (`ModalPanel`) and in our
+   own `Scenes/UI/dialogue_box.tscn` (D110); lines type at 24 letters/s and accept is ignored until the line is
+   shown, NPC recall lines too; the DialogueQuest Skip toggle is off (it fast-forwarded text). Speed and Skip are
+   agent calls — Sapega to confirm.
 2. **Canyon descent cutscene** (D254): no falling off the bridge — Kusakam climbs down behind a foreground rock, the
    camera pans smoothly up to a blue sky. Accent on cutscenes in general.
 3. **Healing rework** (D252): Healing Palm at the first level-up; the grandfather does not ask to be healed; potions

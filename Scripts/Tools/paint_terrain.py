@@ -262,23 +262,38 @@ def paint(name, body_name, top_name, colors):
 
 
 def depths(path, body_name, colors):
-    """Задня стіна ущелини каньйону (за ямою під містком, Parallax2D ×0.45): та сама порода, що й земля, темніша з
-    глибиною й притоплена у фіолетову тінь, щоб стояла позаду ігрової площини. 576×420, тайлиться по ширині."""
+    """Задня стіна ущелини каньйону (за ямою під містком, Parallax2D ×0.45): та сама порода, що й земля, але далека —
+    приглушена (контраст шарів утричі менший), утоплена у фіолетову тінь і темніє донизу майже до чорного, щоб
+    уступи й місток читались світлими на темній ямі (Sapega 2026-10-20 «я не бачу платформи»: стіна була такою ж
+    світлою й контрастною, як уступи). Без дзеркала по вертикалі — на шві воно малювало «очі». 576×420, тайлиться
+    по ширині."""
     w, h = 576, 420
     body, _ = material(body_name)
-    body = np.concatenate([body, body[::-1]])
     assert w % body.shape[1] == 0, "ширина стіни — ціле число періодів матеріалу, інакше шов на повторі"
     yy, xx = np.mgrid[0:h, 0:w]
-    rgb = body[yy % len(body), xx % body.shape[1]].astype(np.float32)
-    k = np.clip(yy / h * 1.3, 0, 1)[..., None]
-    shadow = np.array([46, 30, 52], np.float32)  # фіолетова тінь, як тіні породи
-    rgb = rgb * (0.62 - 0.3 * k) + shadow * (0.38 + 0.3 * k)
-    out = cb.quantize(rgb, np.ones((h, w), bool), colors, "octree")
+    # кожен період по y — зі своїм зсувом по x: повтор не читається рядами
+    shift = np.random.default_rng(7).integers(0, body.shape[1], 16)[yy // len(body) % 16]
+    rgb = body[yy % len(body), (xx + shift) % body.shape[1]].astype(np.float32)
+    mean = rgb.reshape(-1, 3).mean(axis=0)
+    rgb = mean + (rgb - mean) * 0.35
+    k = np.clip(yy / h * 1.15, 0, 1)[..., None]
+    haze = np.array([92, 62, 96], np.float32)  # фіолетова тінь угорі, як тіні породи
+    deep = np.array([20, 12, 26], np.float32)  # дно ями
+    shadow = haze * (1 - k) + deep * k
+    rgb = rgb * (0.42 - 0.3 * k) + shadow * (0.58 + 0.3 * k)
+    # верх — нерівна кромка дальнього борту (не рівна лінія під настилом містка), над нею — фон; по кромці світліше
+    t = np.arange(w) / w * 2 * np.pi  # цілі частоти на ширину — кромка безшовна на повторі тайлу
+    wave = sum(np.sin(t * f + p) / f for f, p in ((3, 0.7), (7, 2.1), (13, 4.4), (29, 1.3)))
+    rim = 6 + np.round((wave - wave.min()) / np.ptp(wave) * 18).astype(np.int32)
+    below = yy - rim[None, :]
+    rgb *= np.where((below >= 0) & (below < 3), 1.35, 1.0)[..., None]
+    opaque = below >= 0
+    out = cb.quantize(rgb, opaque, colors, "octree")
     Image.fromarray(out).save(path)
     print("drawn", path, flush=True)
 
 
-DEPTHS = ("SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png", "sandstone", 24)
+DEPTHS = ("SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png", "sandstone", 32)
 
 
 if __name__ == "__main__":
