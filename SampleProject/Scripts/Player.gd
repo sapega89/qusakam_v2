@@ -115,7 +115,7 @@ func _physics_process(delta: float) -> void:
 
 	# Перекат (D200): анімацію Roll не перебиваємо; напівпрозорість — поки герой невразливий
 	if mover.is_rolling():
-		_update_facing(&"Roll")
+		_update_facing()
 		return
 	$Sprite2D.modulate.a = 1.0
 
@@ -133,7 +133,6 @@ func _physics_process(delta: float) -> void:
 
 	# Удар доходить до кінця і в повітрі (раніше стрибок/падіння скасовували його — у стрибку шкоди не було).
 	if combat.is_attacking and animation == &"Attack":
-		mover.jump_direction = last_direction
 		return
 
 	# Определяем новую анимацию (можем прервать текущую анимацию, если нужно)
@@ -149,14 +148,11 @@ func _physics_process(delta: float) -> void:
 	if new_animation != animation and animation_change_cooldown <= 0:
 		animation = new_animation
 		animation_change_cooldown = 0.05  # Невелика затримка для плавності
-		# При переключении на Jump - сохраняем направление прыжка
-		if new_animation == &"Jump":
-			mover.jump_direction = last_direction
 		# Використовуємо плавне переключення анімацій
 		if $AnimationPlayer.current_animation != new_animation:
 			$AnimationPlayer.play(new_animation)
 
-	_update_facing(new_animation)
+	_update_facing()
 
 ## Кнопка асисту зараз натиснута (для фронту натискання тригера).
 var _assist_down := false
@@ -197,15 +193,14 @@ func _unhandled_input(ev: InputEvent) -> void:
 			return
 		combat.perform_attack(last_direction)
 
-func _update_facing(anim: StringName) -> void:
+func _update_facing() -> void:
 	"""Єдине місце, де виставляється flip_h.
 
 	Спрайт намальований обличчям ПРАВОРУЧ, тому дзеркалимо лише при русі ліворуч.
-	Для Fall беремо напрямок, зафіксований на момент стрибка, щоб персонаж не
-	розвертався в повітрі.
+	Усі анімації, Jump і Fall теж, дивляться туди ж, куди герой іде: раніше Fall брав
+	напрямок, зафіксований у момент стрибка, і при сході з краю без стрибка падав обличчям праворуч.
 	"""
-	var dir: int = mover.jump_direction if anim == &"Fall" else last_direction
-	$Sprite2D.flip_h = dir < 0
+	$Sprite2D.flip_h = last_direction < 0
 
 func die() -> void:
 	"""Override CombatBody2D.die() to call kill() for player respawn"""

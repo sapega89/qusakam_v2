@@ -28,6 +28,7 @@ func _finish_dialogue(dm: Node) -> void:
 		for i in 200:
 			if not dm.is_dialogue_active():
 				break
+			dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 			dm.current_dialogue_player.accept()
 			await process_frame
 		for i in 10: await process_frame
@@ -289,6 +290,17 @@ func _initialize() -> void:
 	pl._unhandled_input(dodge)
 	ck(mover.is_rolling(), "a roll is possible again after the cooldown")
 	await create_timer(mover.roll_duration + 0.1).timeout
+
+	print("[2d'] Fall faces where the hero moves, both ways (Sapega 2026-10-20 «анімація падіння в одну сторону»)")
+	for dir: StringName in [&"move_left", &"move_right"]:
+		pl.global_position.y -= 300.0
+		Input.action_press(dir)
+		for i in 8: await physics_frame
+		var falling_left: bool = pl.get_node("Sprite2D").flip_h
+		ck(pl.animation == &"Fall" and falling_left == (dir == &"move_left"),
+				"falling while holding %s: anim %s, flip_h %s" % [dir, pl.animation, falling_left])
+		Input.action_release(dir)
+		await create_timer(0.8).timeout  # приземлився
 
 	print("[2e] Enemy types: the tank's long armoured swing, the fast one's lunge (D208)")
 	var type_hits: Array = []

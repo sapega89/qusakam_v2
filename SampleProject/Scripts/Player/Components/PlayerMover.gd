@@ -4,7 +4,7 @@ class_name PlayerMover
 ## Component handling player movement physics, extracted from Player.gd.
 ## Following SRP: this class only cares about gravity, jumping, horizontal
 ## movement and landing detection. Animation state is decided by Player.gd,
-## which reads `last_direction` / `jump_direction` from this component.
+## which reads `last_direction` from this component.
 ##
 ## Mirrors the PlayerCombat pattern: a plain Node child that operates on
 ## its parent CharacterBody2D.
@@ -31,12 +31,11 @@ class_name PlayerMover
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 # --- Movement state ---
-# Public on purpose: Player.gd reads last_direction/jump_direction to decide
+# Public on purpose: Player.gd reads last_direction to decide
 # which animation/flip to show, and VFX/save code reads last_direction too
 # (via Player's forwarding property).
 var speed: float = 0.0        # seeded from speed_min in _ready()
 var last_direction: int = 1   # 1 = right, -1 = left
-var jump_direction: int = 1   # direction locked at jump time, used for Fall animation
 var double_jump: bool = false
 var airtime: float = 0.0
 var prev_on_floor: bool = false
