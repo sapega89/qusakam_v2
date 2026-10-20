@@ -259,42 +259,6 @@ def plateau_body():
     im.save(OUT + "plateau_body.png")
 
 
-def bridge():
-    """Мотузковий місток над ущелиною (D231): дошка, стовп із вузлом, мотузка-поруччя — окремими картинками,
-    будівельник складає з них місток, а дошки при обвалі падають поодинці."""
-    wood = [(188, 132, 82), (150, 100, 62), (112, 72, 46), (80, 50, 36)]
-    rope = [(214, 186, 140), (168, 138, 98)]
-    plank = Image.new("RGBA", (21, 9))
-    px = plank.load()
-    for y in range(9):
-        for x in range(21):
-            edge = x in (0, 20) or y in (0, 8)
-            i = 0 if y < 3 else 1 if y < 6 else 2
-            if (x * 3 + y) % 11 == 0:
-                i = 3  # волокна дерева
-            px[x, y] = (EDGE if edge else wood[i]) + (255,)
-    for x in (3, 17):  # цвяхи
-        px[x, 2] = (60, 60, 70, 255)
-    plank.save(OUT + "bridge_plank.png")
-    post = Image.new("RGBA", (8, 34))
-    px = post.load()
-    for y in range(34):
-        for x in range(8):
-            edge = x in (0, 7) or y in (0, 33)
-            px[x, y] = (EDGE if edge else wood[1 if x < 4 else 2]) + (255,)
-    for y in range(6, 11):  # вузол мотузки
-        for x in range(1, 7):
-            px[x, y] = rope[0 if y % 2 else 1] + (255,)
-    post.save(OUT + "bridge_post.png")
-    line = Image.new("RGBA", (12, 3))
-    px = line.load()
-    for x in range(12):
-        px[x, 0] = EDGE + (255,)
-        px[x, 1] = rope[0 if (x // 2) % 2 else 1] + (255,)
-        px[x, 2] = EDGE + (255,)
-    line.save(OUT + "bridge_rope.png")
-
-
 if __name__ == "__main__":
     import os
 
@@ -302,5 +266,4 @@ if __name__ == "__main__":
     pride_rock()
     gorge()
     plateau_body()
-    bridge()
     print("drawn", OUT)

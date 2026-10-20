@@ -31,18 +31,21 @@ const BLUR := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
 const BACKDROP := "res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn"
 const GORGE_LAYOUT := "res://Scripts/Tools/canyon_gorge.txt"
 const GORGE_ROW0 := 12
-## Тригер спуску — на дні ущелини (дно — рядок 27, y 864).
-const EXIT_AT := Vector2(400, 830)
-const EXIT_SIZE := Vector2(740, 64)
+## Тригер спуску (D255) — на краю плато біля містка, на всю висоту клітинки: звідти кат-сцена спуску.
+const EXIT_AT := Vector2(860, 240)
+const EXIT_SIZE := Vector2(60, 480)
 ## Глибина під плато: нижні стіни каньйону й темна підкладка (сірого clear color не видно ніколи).
 const DEPTH_TOP := 380.0
 const DEPTH_UNDERLAY := Color(0.24, 0.15, 0.12)
-## Місток (D231): стовпці настилу, стовпи на обох краях, поруччя, де починається обвал.
+## Місток (D231, вигляд — D255): згенерована картинка gen_bridge (comfy_backdrop.py) нарізана на смуги SLICE px шару;
+## крайні смуги зі стовпами стоять, решта — Pieces (падають при обвалі). Середина картинки (CUT) викинута, щоб
+## місток ліг від стіни ущелини (x 0) до краю плато (правий стовп — на плато, x 783–837); настил провисає (рядки 26–32 шару): найнижча точка — на рівні дороги y 384, кінці трохи вище.
 const BRIDGE_SCRIPT := "res://SampleProject/Scripts/Gameplay/CanyonBridge.gd"
 const BRIDGE_COLS := Vector2i(1, 24)
-const BRIDGE_POSTS := [26.0, 796.0]
-const BRIDGE_RAIL_Y := 352.0
-const BRIDGE_TRIGGER := Rect2(830, 200, 60, 200)
+const BRIDGE_AT := Vector2(0, 337)
+const BRIDGE_SLICE := 18
+const BRIDGE_POST := 36
+const BRIDGE_CUT := Vector2i(270, 288)
 
 
 func _initialize() -> void:
@@ -179,7 +182,7 @@ func _read_gorge() -> PackedStringArray:
 	return rows
 
 
-## Місток із дошок, двох стовпів і мотузки-поруччя; дошки й мотузка — у Pieces (падають при обвалі).
+## Місток зі смуг картинки: стовпи по краях лишаються, смуги між ними — у Pieces (падають при обвалі).
 func _add_bridge(room: Node) -> void:
 	var bridge := Node2D.new()
 	bridge.name = "Bridge"
@@ -191,34 +194,25 @@ func _add_bridge(room: Node) -> void:
 	pieces.name = "Pieces"
 	bridge.add_child(pieces)
 	pieces.owner = room
-	for x in range(BRIDGE_COLS.x, BRIDGE_COLS.y + 1):
-		var plank := _sprite("bridge_plank", Vector2(x * TILE + TILE / 2.0, GORGE_ROW0 * TILE))
-		plank.name = "Plank%d" % x
-		plank.centered = true
-		plank.offset = Vector2(0, plank.texture.get_height() / 2.0)  # верх дошки — на рівні дороги
-		pieces.add_child(plank)
-		plank.owner = room
-	var rail := _sprite("bridge_rope", Vector2(BRIDGE_POSTS[0], BRIDGE_RAIL_Y))
-	rail.name = "Rail"
-	rail.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	rail.region_enabled = true
-	rail.region_rect = Rect2(0, 0, (BRIDGE_POSTS[1] - BRIDGE_POSTS[0]) / 1.5, 3)
-	pieces.add_child(rail)
-	rail.owner = room
-	for i in BRIDGE_POSTS.size():
-		var post := _sprite("bridge_post", Vector2(BRIDGE_POSTS[i] - 6, BRIDGE_RAIL_Y - 12))
-		post.name = "Post%d" % (i + 1)
-		bridge.add_child(post)
-		post.owner = room
-	var trigger := Area2D.new()
-	trigger.name = "CollapseTrigger"
-	trigger.position = BRIDGE_TRIGGER.get_center()
-	var shape_node := CollisionShape2D.new()
-	shape_node.name = "CollisionShape2D"
-	var shape := RectangleShape2D.new()
-	shape.size = BRIDGE_TRIGGER.size
-	shape_node.shape = shape
-	trigger.add_child(shape_node)
-	bridge.add_child(trigger)
-	trigger.owner = room
-	shape_node.owner = room
+	var width: int = load(ART % "gen_bridge").get_width()
+	var sources: Array[int] = []
+	for x in range(BRIDGE_POST, BRIDGE_CUT.x, BRIDGE_SLICE):
+		sources.append(x)
+	for x in range(BRIDGE_CUT.y, width - BRIDGE_POST, BRIDGE_SLICE):
+		sources.append(x)
+	var at := BRIDGE_AT
+	_bridge_slice(bridge, "Post1", 0, BRIDGE_POST, at)
+	at.x += BRIDGE_POST * 1.5
+	for i in sources.size():
+		_bridge_slice(pieces, "Piece%d" % (i + 1), sources[i], BRIDGE_SLICE, at)
+		at.x += BRIDGE_SLICE * 1.5
+	_bridge_slice(bridge, "Post2", width - BRIDGE_POST, BRIDGE_POST, at)
+
+
+func _bridge_slice(parent: Node, slice_name: String, source_x: int, width: int, at: Vector2) -> void:
+	var slice := _sprite("gen_bridge", at)
+	slice.name = slice_name
+	slice.region_enabled = true
+	slice.region_rect = Rect2(source_x, 0, width, slice.texture.get_height())
+	parent.add_child(slice)
+	slice.owner = parent.owner

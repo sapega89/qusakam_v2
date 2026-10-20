@@ -13,3 +13,7 @@ mesas (×0.3) — and `gen_walls.png` — the canyon walls (×0.45, replaced the
 **AI-generated**: `Scripts/Tools/comfy_backdrop.py` asks the local ComfyUI for them with **Qwen-Image**
 (Alibaba Qwen, Apache 2.0) and the Qwen-Image-Lightning LoRA (lightx2v, Apache 2.0), then brings them to the
 game's pixel and palette. A Steam release has to disclose AI-generated content. The sky is the pack's `plan5`.
+
+D255 (the descent cutscene): `gen_rock.png` — the foreground boulder Kusakam climbs down behind (`ForegroundRock`,
+z 20) — and `gen_bridge.png` — the rope bridge, cut into slices by `build_canyon.gd` (replaced the procedural
+`bridge_plank/post/rope.png`) — are **AI-generated** the same way (`comfy_backdrop.py`, Qwen-Image, Apache 2.0).

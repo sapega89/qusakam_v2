@@ -294,6 +294,39 @@ LAYERS = {
         "top to bottom: along the top a dark iron grating walkway with a polished brass edge strip, below it riveted "
         "dark steel plates with bolts, a horizontal copper pipe running through the middle, seen straight on",
     ),
+    # Спуск із каньйону (D255): камінь переднього плану, за який злазить Кусакам, і місток над ущелиною —
+    # окремі предмети, не екрани: seam none (без шва), trim — картинка обрізається до самого предмета.
+    "Canyon/gen_rock": dict(
+        seed=101,
+        rows=170,
+        top=0,
+        seam="none",
+        trim=True,
+        keep=131,  # нижче — смуга землі, яку модель домальовує під каменем: її не треба
+        key="green",
+        shade=0.3,
+        fill=False,
+        haze=0,
+        colors=10,
+        prompt="one single big weathered red-orange sandstone boulder with horizontal rock strata and a rounded top, "
+        "standing alone in the middle of the frame with empty space on both sides, its base resting on the bottom edge, "
+        f"warm light on the top, cool violet shadows in the cracks, {CHROMA}",
+    ),
+    "Canyon/gen_bridge": dict(
+        seed=103,
+        rows=48,
+        top=0,
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=10,
+        prompt="a long old rope bridge seen exactly from the side as one thin straight horizontal band spanning the full "
+        "width from the left edge to the right edge: a deck of weathered brown wooden planks side by side, a thick rope "
+        f"handrail running straight above the deck, a short thick wooden post at each end, {CHROMA}",
+    ),
     # Задній ряд дахів села (критик: у проміжках між будинками сяяли скелі — «просвічується»); пальми тут.
     "Village/gen_back": dict(
         seed=25,
@@ -560,6 +593,11 @@ if __name__ == "__main__":
         out = quantize(rgb, opaque, layer["colors"], layer.get("quant", "mediancut"))
         if layer.get("crop"):  # текстура, а не екран (поверхні лабораторії): лише смуга rows
             out = out[layer["top"] : layer["top"] + layer["rows"]]
+        if layer.get("keep"):  # рядки шару від keep і нижче — прозорі
+            out[layer["keep"] :, :, 3] = 0
+        if layer.get("trim"):  # предмет, а не екран: лише його рамка
+            ys, xs = np.nonzero(out[..., 3])
+            out = out[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
         Image.fromarray(out).save(OUT + name + ".png")
         print("drawn", OUT + name + ".png", flush=True)
     # ComfyUI тримає моделі (~30 ГБ ОЗП разом із текстовим енкодером) і після роботи; на 32 ГБ це вичерпало

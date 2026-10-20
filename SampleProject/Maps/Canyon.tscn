@@ -11,14 +11,20 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Canyon_Terrain.png" id="6_gpmlt"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Canyon_Gorge.png" id="7_6ovr1"]
 [ext_resource type="Script" path="res://addons/MetroidvaniaSystem/Scripts/RoomInstance.gd" id="7_jxins"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_bridge.png" id="9_0wcj6"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/CanyonBridge.gd" id="9_6ovr1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/bridge_plank.png" id="10_g66ig"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/bridge_rope.png" id="11_yl1gb"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/bridge_post.png" id="12_5grvp"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="20_rock"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png" id="21_clouds"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mu4p3"]
-size = Vector2(60, 200)
+[sub_resource type="Gradient" id="Gradient_sky"]
+colors = PackedColorArray(0.31, 0.53, 0.86, 1, 0.769, 0.859, 0.906, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_sky"]
+gradient = SubResource("Gradient_sky")
+width = 4
+height = 128
+fill_to = Vector2(0, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ctv3h"]
 size = Vector2(32, 31.9999)
@@ -36,12 +42,12 @@ size = Vector2(48, 480)
 size = Vector2(48, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yl1gb"]
-size = Vector2(740, 64)
+size = Vector2(60, 480)
 
 [node name="Canyon" type="Node2D" unique_id=1287215510]
 script = ExtResource("1_canyon")
 
-[node name="DepthUnderlay" type="ColorRect" parent="." unique_id=30787591]
+[node name="DepthUnderlay" type="ColorRect" parent="." unique_id=1825481335]
 z_index = -11
 offset_top = 380.0
 offset_right = 2592.0
@@ -49,17 +55,39 @@ offset_bottom = 1024.0
 mouse_filter = 2
 color = Color(0.24, 0.15, 0.12, 1)
 
-[node name="Backdrop" type="Node2D" parent="." unique_id=1363646592 instance=ExtResource("2_jxins")]
+[node name="HighSky" type="Sprite2D" parent="." unique_id=364661247]
+z_index = -11
+texture_filter = 2
+position = Vector2(0, -720)
+scale = Vector2(648, 5.625)
+texture = SubResource("GradientTexture2D_sky")
+centered = false
+
+[node name="HighClouds" type="Parallax2D" parent="." unique_id=713266127]
+z_index = -10
+scroll_scale = Vector2(0.1, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="HighClouds" unique_id=425789351]
+modulate = Color(1, 1, 1, 0.9)
+texture_filter = 1
+position = Vector2(0, -600)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("21_clouds")
+centered = false
+
+[node name="Backdrop" type="Node2D" parent="." unique_id=2051782979 instance=ExtResource("2_jxins")]
 z_index = -10
 position = Vector2(0, -3)
 
-[node name="CanyonDepths" type="Parallax2D" parent="." unique_id=24310551]
+[node name="CanyonDepths" type="Parallax2D" parent="." unique_id=412963464]
 z_index = -9
 scroll_scale = Vector2(0.45, 1)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
-[node name="Sprite" type="Sprite2D" parent="CanyonDepths" unique_id=735720683]
+[node name="Sprite" type="Sprite2D" parent="CanyonDepths" unique_id=248663182]
 texture_filter = 1
 material = ExtResource("5_5grvp")
 position = Vector2(0, 380)
@@ -90,16 +118,16 @@ visible = false
 tile_map_data = PackedByteArray("AAAoAAMA//////////8pAAMA//////////8qAAMA//////////8rAAMA//////////8sAAMA//////////8tAAMA//////////8uAAMA//////////8vAAMA//////////8wAAMA//////////8xAAMA//////////8jAAQA//////////8kAAQA//////////8lAAQA//////////8mAAQA//////////8nAAQA//////////8oAAQA//////////8pAAQA//////////8qAAQA//////////8rAAQA//////////8sAAQA//////////8tAAQA//////////8uAAQA//////////8vAAQA//////////8wAAQA//////////8xAAQA//////////8yAAQA//////////8zAAQA//////////8lAAUA//////////8mAAUA//////////8nAAUA//////////8oAAUA//////////8pAAUA//////////8qAAUA//////////8rAAUA//////////8sAAUA//////////8tAAUA//////////8uAAUA//////////8vAAUA//////////8wAAUA//////////8xAAUA//////////8yAAUA//////////8zAAUA//////////87AAoA//////////88AAoA//////////89AAoA//////////84AAgA//////////85AAgA//////////86AAgA//////////81AAYA//////////82AAYA//////////83AAYA//////////8AAAwAAQAIAAcAAAAAAA0AAQAIAAcAAAAAAA4AAQAIAAcAAAAAAA8AAQAIAAcAAAAQAA8AAQAIAAcAAAARAA8AAQAIAAcAAAASAA8AAQAIAAcAAAATAA8AAQAIAAcAAAAUAA8AAQAIAAcAAAAVAA8AAQAIAAcAAAAWAA8AAQAIAAcAAAAXAA8AAQAIAAcAAAAYAA8AAQAIAAcAAAAAABAAAQAIAAcAAAASABAAAQAIAAcAAAATABAAAQAIAAcAAAAUABAAAQAIAAcAAAAVABAAAQAIAAcAAAAWABAAAQAIAAcAAAAXABAAAQAIAAcAAAAYABAAAQAIAAcAAAAAABEAAQAIAAcAAAAAABIAAQAIAAcAAAABABIAAQAIAAcAAAACABIAAQAIAAcAAAADABIAAQAIAAcAAAAEABIAAQAIAAcAAAAFABIAAQAIAAcAAAAGABIAAQAIAAcAAAAHABIAAQAIAAcAAAAIABIAAQAIAAcAAAAAABMAAQAIAAcAAAABABMAAQAIAAcAAAACABMAAQAIAAcAAAADABMAAQAIAAcAAAAEABMAAQAIAAcAAAAFABMAAQAIAAcAAAAGABMAAQAIAAcAAAAAABQAAQAIAAcAAAAAABUAAQAIAAcAAAANABUAAQAIAAcAAAAOABUAAQAIAAcAAAAPABUAAQAIAAcAAAAQABUAAQAIAAcAAAARABUAAQAIAAcAAAASABUAAQAIAAcAAAATABUAAQAIAAcAAAAUABUAAQAIAAcAAAAVABUAAQAIAAcAAAAWABUAAQAIAAcAAAAXABUAAQAIAAcAAAAYABUAAQAIAAcAAAAAABYAAQAIAAcAAAAPABYAAQAIAAcAAAAQABYAAQAIAAcAAAARABYAAQAIAAcAAAASABYAAQAIAAcAAAATABYAAQAIAAcAAAAUABYAAQAIAAcAAAAVABYAAQAIAAcAAAAWABYAAQAIAAcAAAAXABYAAQAIAAcAAAAYABYAAQAIAAcAAAAAABcAAQAIAAcAAAAAABgAAQAIAAcAAAABABgAAQAIAAcAAAACABgAAQAIAAcAAAADABgAAQAIAAcAAAAEABgAAQAIAAcAAAAFABgAAQAIAAcAAAAGABgAAQAIAAcAAAAHABgAAQAIAAcAAAAAABkAAQAIAAcAAAABABkAAQAIAAcAAAACABkAAQAIAAcAAAADABkAAQAIAAcAAAAEABkAAQAIAAcAAAAFABkAAQAIAAcAAAAAABoAAQAIAAcAAAAAABsAAQAIAAcAAAABABsAAQAIAAcAAAACABsAAQAIAAcAAAADABsAAQAIAAcAAAAEABsAAQAIAAcAAAAFABsAAQAIAAcAAAAGABsAAQAIAAcAAAAHABsAAQAIAAcAAAAIABsAAQAIAAcAAAAJABsAAQAIAAcAAAAKABsAAQAIAAcAAAALABsAAQAIAAcAAAAMABsAAQAIAAcAAAANABsAAQAIAAcAAAAOABsAAQAIAAcAAAAPABsAAQAIAAcAAAAQABsAAQAIAAcAAAARABsAAQAIAAcAAAASABsAAQAIAAcAAAATABsAAQAIAAcAAAAUABsAAQAIAAcAAAAVABsAAQAIAAcAAAAWABsAAQAIAAcAAAAXABsAAQAIAAcAAAAYABsAAQAIAAcAAAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAcAAAADABwAAQAIAAcAAAAEABwAAQAIAAcAAAAFABwAAQAIAAcAAAAGABwAAQAIAAcAAAAHABwAAQAIAAcAAAAIABwAAQAIAAcAAAAJABwAAQAIAAcAAAAKABwAAQAIAAcAAAALABwAAQAIAAcAAAAMABwAAQAIAAcAAAANABwAAQAIAAcAAAAOABwAAQAIAAcAAAAPABwAAQAIAAcAAAAQABwAAQAIAAcAAAARABwAAQAIAAcAAAASABwAAQAIAAcAAAATABwAAQAIAAcAAAAUABwAAQAIAAcAAAAVABwAAQAIAAcAAAAWABwAAQAIAAcAAAAXABwAAQAIAAcAAAAYABwAAQAIAAcAAAAAAB0AAQAIAAcAAAABAB0AAQAIAAcAAAACAB0AAQAIAAcAAAADAB0AAQAIAAcAAAAEAB0AAQAIAAcAAAAFAB0AAQAIAAcAAAAGAB0AAQAIAAcAAAAHAB0AAQAIAAcAAAAIAB0AAQAIAAcAAAAJAB0AAQAIAAcAAAAKAB0AAQAIAAcAAAALAB0AAQAIAAcAAAAMAB0AAQAIAAcAAAANAB0AAQAIAAcAAAAOAB0AAQAIAAcAAAAPAB0AAQAIAAcAAAAQAB0AAQAIAAcAAAARAB0AAQAIAAcAAAASAB0AAQAIAAcAAAATAB0AAQAIAAcAAAAUAB0AAQAIAAcAAAAVAB0AAQAIAAcAAAAWAB0AAQAIAAcAAAAXAB0AAQAIAAcAAAAYAB0AAQAIAAcAAAA=")
 tile_set = ExtResource("2_ctv3h")
 
+[node name="PrideRock" type="StaticBody2D" parent="." unique_id=591089647]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PrideRock" unique_id=72532851]
+polygon = PackedVector2Array(1000, 400, 1000, 300, 1196, 300, 1204, 262, 1140, 254, 1080, 244, 1072, 228, 1080, 216, 1250, 214, 1420, 216, 1600, 216, 1606, 272, 1760, 272, 1766, 328, 1920, 328, 1928, 384, 1928, 400)
+
 [node name="Terrain" type="Sprite2D" parent="." unique_id=328152295]
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("6_gpmlt")
 centered = false
-
-[node name="PrideRock" type="StaticBody2D" parent="." unique_id=1783861939]
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PrideRock" unique_id=1767799801]
-polygon = PackedVector2Array(1000, 400, 1000, 300, 1196, 300, 1204, 262, 1140, 254, 1080, 244, 1072, 228, 1080, 216, 1250, 214, 1420, 216, 1600, 216, 1606, 272, 1760, 272, 1766, 328, 1920, 328, 1928, 384, 1928, 400)
 
 [node name="Gorge" type="Sprite2D" parent="." unique_id=3929252]
 texture_filter = 1
@@ -107,208 +135,287 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("7_6ovr1")
 centered = false
 
-[node name="Bridge" type="Node2D" parent="." unique_id=705224641]
+[node name="Bridge" type="Node2D" parent="." unique_id=45493381]
 script = ExtResource("9_6ovr1")
 
-[node name="Pieces" type="Node2D" parent="Bridge" unique_id=1008392060]
+[node name="Pieces" type="Node2D" parent="Bridge" unique_id=1045695004]
 
-[node name="Plank1" type="Sprite2D" parent="Bridge/Pieces" unique_id=1228103719]
+[node name="Piece1" type="Sprite2D" parent="Bridge/Pieces" unique_id=530014191]
 texture_filter = 1
-position = Vector2(48, 384)
+position = Vector2(54, 337)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank2" type="Sprite2D" parent="Bridge/Pieces" unique_id=497592977]
-texture_filter = 1
-position = Vector2(80, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank3" type="Sprite2D" parent="Bridge/Pieces" unique_id=699184727]
-texture_filter = 1
-position = Vector2(112, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank4" type="Sprite2D" parent="Bridge/Pieces" unique_id=1845074333]
-texture_filter = 1
-position = Vector2(144, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank5" type="Sprite2D" parent="Bridge/Pieces" unique_id=804031663]
-texture_filter = 1
-position = Vector2(176, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank6" type="Sprite2D" parent="Bridge/Pieces" unique_id=1555135894]
-texture_filter = 1
-position = Vector2(208, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank7" type="Sprite2D" parent="Bridge/Pieces" unique_id=10934932]
-texture_filter = 1
-position = Vector2(240, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank8" type="Sprite2D" parent="Bridge/Pieces" unique_id=1887572529]
-texture_filter = 1
-position = Vector2(272, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank9" type="Sprite2D" parent="Bridge/Pieces" unique_id=1990511631]
-texture_filter = 1
-position = Vector2(304, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank10" type="Sprite2D" parent="Bridge/Pieces" unique_id=135750025]
-texture_filter = 1
-position = Vector2(336, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank11" type="Sprite2D" parent="Bridge/Pieces" unique_id=651857746]
-texture_filter = 1
-position = Vector2(368, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank12" type="Sprite2D" parent="Bridge/Pieces" unique_id=1185504866]
-texture_filter = 1
-position = Vector2(400, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank13" type="Sprite2D" parent="Bridge/Pieces" unique_id=512871557]
-texture_filter = 1
-position = Vector2(432, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank14" type="Sprite2D" parent="Bridge/Pieces" unique_id=407071584]
-texture_filter = 1
-position = Vector2(464, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank15" type="Sprite2D" parent="Bridge/Pieces" unique_id=1785751796]
-texture_filter = 1
-position = Vector2(496, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank16" type="Sprite2D" parent="Bridge/Pieces" unique_id=409761747]
-texture_filter = 1
-position = Vector2(528, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank17" type="Sprite2D" parent="Bridge/Pieces" unique_id=1001106395]
-texture_filter = 1
-position = Vector2(560, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank18" type="Sprite2D" parent="Bridge/Pieces" unique_id=939354037]
-texture_filter = 1
-position = Vector2(592, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank19" type="Sprite2D" parent="Bridge/Pieces" unique_id=1989027076]
-texture_filter = 1
-position = Vector2(624, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank20" type="Sprite2D" parent="Bridge/Pieces" unique_id=1853476087]
-texture_filter = 1
-position = Vector2(656, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank21" type="Sprite2D" parent="Bridge/Pieces" unique_id=8533339]
-texture_filter = 1
-position = Vector2(688, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank22" type="Sprite2D" parent="Bridge/Pieces" unique_id=931557871]
-texture_filter = 1
-position = Vector2(720, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank23" type="Sprite2D" parent="Bridge/Pieces" unique_id=485207115]
-texture_filter = 1
-position = Vector2(752, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Plank24" type="Sprite2D" parent="Bridge/Pieces" unique_id=370006232]
-texture_filter = 1
-position = Vector2(784, 384)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("10_g66ig")
-offset = Vector2(0, 4.5)
-
-[node name="Rail" type="Sprite2D" parent="Bridge/Pieces" unique_id=1393736199]
-texture_filter = 1
-texture_repeat = 2
-position = Vector2(26, 352)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("11_yl1gb")
+texture = ExtResource("9_0wcj6")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 513.3333, 3)
+region_rect = Rect2(36, 0, 18, 46)
 
-[node name="Post1" type="Sprite2D" parent="Bridge" unique_id=1138949114]
+[node name="Piece2" type="Sprite2D" parent="Bridge/Pieces" unique_id=1770125279]
 texture_filter = 1
-position = Vector2(20, 340)
+position = Vector2(81, 337)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("12_5grvp")
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(54, 0, 18, 46)
+
+[node name="Piece3" type="Sprite2D" parent="Bridge/Pieces" unique_id=1221951800]
+texture_filter = 1
+position = Vector2(108, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(72, 0, 18, 46)
+
+[node name="Piece4" type="Sprite2D" parent="Bridge/Pieces" unique_id=2022588707]
+texture_filter = 1
+position = Vector2(135, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(90, 0, 18, 46)
+
+[node name="Piece5" type="Sprite2D" parent="Bridge/Pieces" unique_id=1973465981]
+texture_filter = 1
+position = Vector2(162, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(108, 0, 18, 46)
+
+[node name="Piece6" type="Sprite2D" parent="Bridge/Pieces" unique_id=274462616]
+texture_filter = 1
+position = Vector2(189, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(126, 0, 18, 46)
+
+[node name="Piece7" type="Sprite2D" parent="Bridge/Pieces" unique_id=485151776]
+texture_filter = 1
+position = Vector2(216, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(144, 0, 18, 46)
+
+[node name="Piece8" type="Sprite2D" parent="Bridge/Pieces" unique_id=1352161404]
+texture_filter = 1
+position = Vector2(243, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(162, 0, 18, 46)
+
+[node name="Piece9" type="Sprite2D" parent="Bridge/Pieces" unique_id=538909548]
+texture_filter = 1
+position = Vector2(270, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(180, 0, 18, 46)
+
+[node name="Piece10" type="Sprite2D" parent="Bridge/Pieces" unique_id=456639875]
+texture_filter = 1
+position = Vector2(297, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(198, 0, 18, 46)
+
+[node name="Piece11" type="Sprite2D" parent="Bridge/Pieces" unique_id=53140285]
+texture_filter = 1
+position = Vector2(324, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(216, 0, 18, 46)
+
+[node name="Piece12" type="Sprite2D" parent="Bridge/Pieces" unique_id=457650454]
+texture_filter = 1
+position = Vector2(351, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(234, 0, 18, 46)
+
+[node name="Piece13" type="Sprite2D" parent="Bridge/Pieces" unique_id=1926989682]
+texture_filter = 1
+position = Vector2(378, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(252, 0, 18, 46)
+
+[node name="Piece14" type="Sprite2D" parent="Bridge/Pieces" unique_id=886447440]
+texture_filter = 1
+position = Vector2(405, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(288, 0, 18, 46)
+
+[node name="Piece15" type="Sprite2D" parent="Bridge/Pieces" unique_id=1343284620]
+texture_filter = 1
+position = Vector2(432, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(306, 0, 18, 46)
+
+[node name="Piece16" type="Sprite2D" parent="Bridge/Pieces" unique_id=966872383]
+texture_filter = 1
+position = Vector2(459, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(324, 0, 18, 46)
+
+[node name="Piece17" type="Sprite2D" parent="Bridge/Pieces" unique_id=2102037883]
+texture_filter = 1
+position = Vector2(486, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(342, 0, 18, 46)
+
+[node name="Piece18" type="Sprite2D" parent="Bridge/Pieces" unique_id=121806474]
+texture_filter = 1
+position = Vector2(513, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(360, 0, 18, 46)
+
+[node name="Piece19" type="Sprite2D" parent="Bridge/Pieces" unique_id=1349018565]
+texture_filter = 1
+position = Vector2(540, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(378, 0, 18, 46)
+
+[node name="Piece20" type="Sprite2D" parent="Bridge/Pieces" unique_id=703722394]
+texture_filter = 1
+position = Vector2(567, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(396, 0, 18, 46)
+
+[node name="Piece21" type="Sprite2D" parent="Bridge/Pieces" unique_id=1789895510]
+texture_filter = 1
+position = Vector2(594, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(414, 0, 18, 46)
+
+[node name="Piece22" type="Sprite2D" parent="Bridge/Pieces" unique_id=1256994829]
+texture_filter = 1
+position = Vector2(621, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(432, 0, 18, 46)
+
+[node name="Piece23" type="Sprite2D" parent="Bridge/Pieces" unique_id=236031303]
+texture_filter = 1
+position = Vector2(648, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(450, 0, 18, 46)
+
+[node name="Piece24" type="Sprite2D" parent="Bridge/Pieces" unique_id=1011337591]
+texture_filter = 1
+position = Vector2(675, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(468, 0, 18, 46)
+
+[node name="Piece25" type="Sprite2D" parent="Bridge/Pieces" unique_id=513371240]
+texture_filter = 1
+position = Vector2(702, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(486, 0, 18, 46)
+
+[node name="Piece26" type="Sprite2D" parent="Bridge/Pieces" unique_id=1972578412]
+texture_filter = 1
+position = Vector2(729, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(504, 0, 18, 46)
+
+[node name="Piece27" type="Sprite2D" parent="Bridge/Pieces" unique_id=376648434]
+texture_filter = 1
+position = Vector2(756, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(522, 0, 18, 46)
+
+[node name="Post1" type="Sprite2D" parent="Bridge" unique_id=1722448949]
+texture_filter = 1
+position = Vector2(0, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 36, 46)
+
+[node name="Post2" type="Sprite2D" parent="Bridge" unique_id=632506959]
+texture_filter = 1
+position = Vector2(783, 337)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("9_0wcj6")
+centered = false
+region_enabled = true
+region_rect = Rect2(540, 0, 36, 46)
+
+[node name="ForegroundRock" type="Sprite2D" parent="." unique_id=1115163560]
+z_index = 20
+texture_filter = 1
+position = Vector2(701, 430)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("20_rock")
 centered = false
 
-[node name="Post2" type="Sprite2D" parent="Bridge" unique_id=953144615]
-texture_filter = 1
-position = Vector2(790, 340)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("12_5grvp")
-centered = false
+[node name="Descent" type="Node2D" parent="." unique_id=1524406494]
 
-[node name="CollapseTrigger" type="Area2D" parent="Bridge" unique_id=821180846]
-position = Vector2(860, 300)
+[node name="Edge" type="Marker2D" parent="Descent" unique_id=1288345141]
+position = Vector2(818, 384)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bridge/CollapseTrigger" unique_id=1946244534]
-shape = SubResource("RectangleShape2D_mu4p3")
+[node name="Below" type="Marker2D" parent="Descent" unique_id=1819415642]
+position = Vector2(818, 540)
 
 [node name="RoomInstance" type="Node2D" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
 script = ExtResource("7_jxins")
@@ -410,7 +517,7 @@ position = Vector2(738, -152)
 shape = SubResource("RectangleShape2D_g66ig")
 
 [node name="CanyonExitTrigger" type="Area2D" parent="." unique_id=1943234726]
-position = Vector2(400, 830)
+position = Vector2(860, 240)
 monitorable = false
 script = ExtResource("5_exit")
 

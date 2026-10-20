@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Спуск з каньйону (Sapega, 2026-10-13): посередині сходів — кат-сцена Canyon_ExitCutscene,
-## після неї гравець уже на дорозі. До повернення з села сходи — звичайні сходи.
+## Спуск з каньйону (D255): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
+## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже на дорозі. До села — просто край.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
 
 
@@ -74,7 +74,7 @@ func _initialize() -> void:
 			"both flags set (journal: Explore the Canyon, Find a way forward)")
 	started.clear()
 
-	print("[1] Before the village the stairs are just stairs")
+	print("[1] Before the village the edge by the bridge is just an edge")
 	await _enter_canyon(game, {"canyon_intro_complete": true, "canyon_exploration_complete": true})
 	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
 	for i in 30: await process_frame
@@ -85,30 +85,75 @@ func _initialize() -> void:
 	ck(game.map.scene_file_path.ends_with("Canyon.tscn"), "still in the Canyon")
 	await _drain(dm)  # RoadToVillage: після викрадення, до села
 
-	print("[2] After the village the middle of the stairs plays the descent")
+	print("[2] After the village, walking to the edge starts the descent cutscene (D255)")
 	await _enter_canyon(game, {"canyon_abduction_complete": true, "village_abduction_complete": true,
 			"village_arrival_complete": true, "village_fight_complete": true, "village_left_complete": true})
 	ck(game.map.get_current_state_name() == "RELIC_PICKUP", "Canyon waits in RELIC_PICKUP (%s)" % game.map.get_current_state_name())
-	game.player.global_position = game.map.get_node("Bridge/CollapseTrigger").global_position
+	var player: Node2D = game.player
+	var hp: int = player.current_health
+	player.global_position = Vector2(1000, 370)
+	for i in 30: await process_frame
+	Input.action_press(&"move_left")  # гравець сам іде до краю
+	await _until(func() -> bool: return player.event, 5.0)
+	Input.action_release(&"move_left")
+	ck(game.map.get_current_state_name() == "EXIT_CUTSCENE", "the edge starts the descent (%s)" % game.map.get_current_state_name())
+	ck(game.get_quest_flag("canyon_bridge_collapsed"), "the bridge collapses as the cutscene opens")
+	var x0: float = player.global_position.x
+	Input.action_press(&"move_right")
 	for i in 20: await process_frame
-	ck(game.get_quest_flag("canyon_bridge_collapsed"), "back from the village, the bridge collapses at the edge")
+	Input.action_release(&"move_right")
+	ck(absf(player.global_position.x - x0) < 1.0, "input is taken: move_right does nothing (dx=%.1f)" % (player.global_position.x - x0))
 	await create_timer(1.2).timeout
 	ck(game.map.get_node("Gorge").visible and game.map.get_node("Gorge").modulate.a > 0.99, "the gorge's ledges show")
-	game.player.global_position = game.map.get_node(^"CanyonExitTrigger/CollisionShape2D").global_position
-	for i in 30: await process_frame
+	await _until(func() -> bool: return started.has("Canyon_ExitCutscene"), 5.0)
 	ck(started.has("Canyon_ExitCutscene"), "Canyon_ExitCutscene plays (%s)" % [started])
-
-	print("[3] The cutscene ends on the road")
 	await _drain(dm)
+	ck(player.event, "the dialogue ends, the cutscene keeps the input")
+
+	print("[3] Kusakam climbs down behind the foreground rock, the camera floats up to the sky")
+	var rock: Sprite2D = game.map.get_node(^"ForegroundRock")
+	var below: Vector2 = game.map.get_node(^"Descent/Below").global_position
+	var falls: Array[String] = []
+	var watch := func() -> void:
+		var anim: String = player.get_node(^"AnimationPlayer").current_animation
+		if anim == "Fall" and not falls.has(anim): falls.append(anim)
+	process_frame.connect(watch)
+	await _until(func() -> bool: return player.global_position.distance_to(below) < 1.0, 10.0)
+	# Кожен кут і середина кадру героя лягають на непрозорий піксель каменя — його не видно.
+	var hero_sprite: Sprite2D = player.get_node(^"Sprite2D")
+	var hero: Rect2 = hero_sprite.get_global_transform() * hero_sprite.get_rect()
+	var rock_image: Image = rock.texture.get_image()
+	var hidden := 0
+	for p in [hero.position, hero.position + Vector2(hero.size.x, 0), hero.position + Vector2(0, hero.size.y), hero.end, hero.get_center()]:
+		var local: Vector2 = rock.get_global_transform().affine_inverse() * p
+		var inside := Rect2(Vector2.ZERO, rock_image.get_size()).has_point(local)
+		if inside and rock_image.get_pixelv(Vector2i(local)).a > 0.5:
+			hidden += 1
+	ck(hidden == 5, "at the bottom the hero is wholly behind the rock (%d/5 points covered, hero %s)" % [hidden, hero])
+	ck(rock.z_index > player.z_index, "the rock is drawn in front of the hero (z %d > %d)" % [rock.z_index, player.z_index])
+	var camera: Camera2D = player.get_node(^"Camera2D")
+	var sky_top: float = game.map.get_node(^"HighSky").global_position.y
+	var half_h: float = camera.get_viewport_rect().size.y / camera.zoom.y / 2.0
+	await _until(func() -> bool: return camera.get_screen_center_position().y - half_h < sky_top + 1.0, 8.0)
+	ck(camera.get_screen_center_position().y < 0.0, "the camera has floated up above the room into the sky (y=%.0f)" % camera.get_screen_center_position().y)
+	var sky_color: Color = game.map.get_node(^"HighSky").texture.gradient.sample(0.0)
+	ck(sky_color.b > sky_color.r + 0.3, "the sky up there is blue (%s)" % sky_color)
+	process_frame.disconnect(watch)
+	ck(falls.is_empty(), "no Fall animation: Kusakam climbs, he does not fall")
+	ck(player.current_health == hp, "no damage (%d → %d)" % [hp, player.current_health])
+
+	print("[4] The cutscene ends on the road")
+	await _until(func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn"), 8.0)
 	for i in 30: await process_frame
 	ck(game.map.scene_file_path.ends_with("DesertRoad.tscn"), "player is on the Desert Road (%s)" % game.map.scene_file_path)
 	var arrival: Node2D = game.map.get_node("ArrivalFromCanyon")
-	ck(absf(game.player.global_position.x - arrival.global_position.x) < 48.0,
-			"player stands at ArrivalFromCanyon (x=%.0f)" % game.player.global_position.x)
+	ck(absf(player.global_position.x - arrival.global_position.x) < 48.0,
+			"player stands at ArrivalFromCanyon (x=%.0f)" % player.global_position.x)
 	ck(game.get_quest_flag("canyon_exit_complete"), "canyon_exit_complete set")
-	ck(not game.player.event, "the player can move")
+	ck(not player.event, "the player can move")
+	ck(not camera.top_level and camera.position == Vector2.ZERO, "the camera follows the hero again")
 
-	print("[4] Enter shows the next bubble line at once (Sapega, 2026-10-16)")
+	print("[5] Enter shows the next bubble line at once (Sapega, 2026-10-16)")
 	await _drain(dm)
 	await _until(func() -> bool: return not dm.is_bubble_playing(), 5.0)
 	dm.bubble_time_scale = 1.0  # справжні 2–6 с на репліку
@@ -125,12 +170,11 @@ func _initialize() -> void:
 	ck(not dm.is_bubble_playing(), "4 presses → monologue over in %d ms, not ~10 s" % (Time.get_ticks_msec() - t0))
 	dm.bubble_time_scale = 0.0
 
-	print("[5] The scene goes away mid-monologue (menu / new game / load)")
+	print("[6] The scene goes away mid-monologue (menu / new game / load)")
 	dm.bubble_time_scale = 1.0
 	dm.start_dialogue("res://dialogue_quest/Canyon_Exploration.dqd")
 	for i in 3: await process_frame
 	ck(dm.is_bubble_playing(), "a monologue is playing")
-	var player: Node = game.player
 	game.remove_child(player)  # облачко — дитина гравця, йде з ним, як при закритті Game
 	for i in 3: await process_frame
 	ck(not dm.is_bubble_playing(), "the monologue ended with its bubble, no show_line() on a freed node")

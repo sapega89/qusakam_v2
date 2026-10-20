@@ -306,7 +306,7 @@ func get_current_state_name() -> String:
 	"""Возвращает имя текущего состояния (для проверки в триггерах)"""
 	return State.keys()[current_state]
 
-## Кат-сцена спуску (CanyonExitTrigger посередині сходів). Лише після повернення з села;
+## Кат-сцена спуску (CanyonExitTrigger на краю плато біля містка, D255). Лише після повернення з села;
 ## повертає, чи запущено.
 func trigger_exit_cutscene() -> bool:
 	if current_state != State.RELIC_PICKUP:
@@ -640,28 +640,61 @@ func _on_relic_pickup_state(run_id: int) -> void:
 	# Не запускаємо автоматично. Чекаємо поки гравець активує тригер біля реліквії.
 	# Коли тригер спрацює, він повинен викликати advance_state() або змінити стейт на EXIT_CUTSCENE
 
+## Кат-сцена спуску (D255, Sapega «я не хочу падати з мосту»): керування забрано, місток падає, Кусакам
+## каже своє, підходить до краю й злазить униз за камінь переднього плану (ForegroundRock), камера пливе
+## вгору до синього неба (HighSky), затемнення — і він на дорозі. Герой не падає й не дістає шкоди: його
+## фізика стоїть (event), рух — твінами між мітками Descent/Edge і Descent/Below. Прочитаний діалог не повторюється.
+const DESCENT_WALK_TIME := 0.7
+const DESCENT_CLIMB_TIME := 2.6
+const DESCENT_PAUSE := 0.5
+const DESCENT_PAN_TIME := 4.0
+const DESCENT_SKY_HOLD := 1.2
+
 func _on_exit_cutscene_state(run_id: int) -> void:
-	"""Обробка стейту EXIT_CUTSCENE - катсцена спуску з каньону"""
-	DebugLogger.info("🏜️ Canyon: ========== СТЕЙТ EXIT_CUTSCENE ЗАПУЩЕНО (RunID: %d) ==========" % run_id, "Canyon")
+	var game := Game.get_singleton()
+	var player: Node2D = game.player
+	player.set_movement_enabled(false)
+	var camera: Camera2D = player.get_node(^"Camera2D")
+	var center := camera.get_screen_center_position()
+	camera.top_level = true  # камера більше не йде за героєм
+	camera.global_position = center
+	camera.reset_smoothing()
+	if not $Bridge.is_collapsed():
+		await $Bridge.collapse()
+	if not _is_dialogue_completed("Canyon_ExitCutscene"):
+		await _play_dialogue("Canyon_ExitCutscene", run_id)
+		player.set_movement_enabled(false)  # кінець діалогу повертає керування — кат-сцена ще йде
+	game.set_objective("Descend to the road")
 
-	# Перевіряємо, чи діалог вже був прочитаний
-	if _is_dialogue_completed("Canyon_ExitCutscene"):
-		DebugLogger.info("🏜️ Canyon: ⏭️ Діалог Canyon_ExitCutscene вже був прочитаний, пропускаємо", "Canyon")
-		Game.get_singleton().set_objective("Descend to the road")
-		_after_exit_cutscene()
-		return
+	var sprite: Sprite2D = player.get_node(^"Sprite2D")
+	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
+	var edge: Vector2 = $Descent/Edge.global_position
+	sprite.flip_h = edge.x < player.global_position.x
+	anim.play(&"Walk")
+	await create_tween().tween_property(player, ^"global_position", edge, DESCENT_WALK_TIME).finished
+	anim.play(&"Climb")
+	var climb := create_tween().tween_property(player, ^"global_position", $Descent/Below.global_position, DESCENT_CLIMB_TIME)
+	await climb.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	anim.play(&"Idle")
+	await get_tree().create_timer(DESCENT_PAUSE).timeout
 
-	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск катсцени спуску Canyon_ExitCutscene", "Canyon")
+	# Небо над кімнатою — лише для цього кадру: камера підіймається до самого верху HighSky.
+	var sky_top: float = $HighSky.global_position.y
+	camera.limit_top = int(sky_top)
+	var sky_center: float = sky_top + get_viewport_rect().size.y / camera.zoom.y / 2.0
+	var pan := create_tween().tween_property(camera, ^"global_position:y", sky_center, DESCENT_PAN_TIME)
+	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	await get_tree().create_timer(DESCENT_SKY_HOLD).timeout
+	await ScreenFade.to_black(self)
 
-	# Запускаємо катсцену спуску до дороги
-	await _execute_step(StepType.DIALOGUE, "Canyon_ExitCutscene", run_id)
-
-	# Після катсцени:
-	# - Встановлюємо об'єктив
-	# - Готуємо перехід до пустельної дороги
-	Game.get_singleton().set_objective("Descend to the road")
-
-	_after_exit_cutscene()
+	# Камера — знову за героєм; межі виставить нова кімната. Після телепорту цієї кімнати вже немає:
+	# далі жодного await на ній — світло повертає ScreenFade від героя.
+	camera.top_level = false
+	camera.position = Vector2.ZERO
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
+	camera.reset_smoothing()
+	player.set_movement_enabled(true)
+	ScreenFade.from_black(player)
 
 func _on_to_desert_road_state(run_id: int) -> void:
 	"""Обробка стейту TO_DESERT_ROAD - перехід до пустельної дороги"""
@@ -683,10 +716,6 @@ func _after_relic_meditation() -> void:
 	"""Дії після медитації біля реліквій"""
 	# Можна додати логіку отримання реліквії
 	DebugLogger.info("🏜️ Canyon: Після медитації - реліквія отримана", "Canyon")
-
-func _after_exit_cutscene() -> void:
-	"""Кат-сцена спуску закінчилась — гравець уже внизу, на дорозі."""
-	Game.get_singleton().teleport_to_room.call_deferred("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
 
 # ============================================================================
 # Helper Functions - Допоміжні функції

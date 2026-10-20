@@ -60,6 +60,19 @@ Draft lines `// [ЧЕРНЕТКА]` in `dialogue_quest/`. Test: `verify_village_
 `AnimationPlayer` — enough for fade + dialogue + one player action; revisit when a beat needs
 actors moving.
 
+## Built (2026-10-20) — Canyon descent, D254/D255
+
+The first fully staged beat. `Canyon.gd` `_on_exit_cutscene_state`: the edge trigger takes the input
+(`set_movement_enabled(false)`, physics stops, so no fall and no damage), `CanyonBridge.collapse()` is awaited,
+the dialogue plays (input re-taken after it, the dialogue manager hands it back), the hero is tweened between
+markers `Descent/Edge` → `Descent/Below` with Walk/Climb frames behind `ForegroundRock` (generated, z 20), the
+camera is detached (`top_level`) and tweened up to `Descent/Sky`, its `limit_top` lifted to the `HighSky`
+plane above the room (blue gradient + clouds), then `ScreenFade` → teleport → light from the hero.
+Motion is Tween in the room's await chain (D177) — no shared tween helpers yet: one beat used them; extract
+when the second staged beat (abduction, Mayor's Hall) needs the same moves. No skip control yet.
+Test: `verify_canyon_exit` [2]–[4] (real `move_left` input, the hero's frame covered by the rock's opaque
+pixels, camera above the room, no Fall, HP unchanged, road arrival).
+
 ## Slices
 
 ### Slice 1 — Cutscene runner + one beat
