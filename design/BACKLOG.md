@@ -155,6 +155,12 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     **Dark Knight** (dark) / **Warden of Balance** (neutral) → subclass at 40 → prestige at 70 (names in D260). The oath
     is sworn **in the City** before a thematic NPC: a **priest** (Paladin), a **witch** (Dark Knight), a **sand
     dervish** (Warden) — new NPCs, generated art.
+23. **Bigger world before the City** (Sapega 2026-10-20 «якщо клятва з 5-го рівня, то персонаж до міста має прийти вже
+    5-м рівнем, тому треба збільшити локації»): the hero must reach level 5 on the way Canyon → Village → DesertRoad →
+    CityGates → City. Add rooms and fights on that route from what the lore offers (oases, caves, ruins of the ancient
+    civilisation — [[lore]]), side paths with pickups and enemies, and tune the XP curve (XPManager) so level 5 lands at
+    the City. Plan first: `design/world_expansion_plan.md` — new rooms on the MetSys map, enemy counts × XP per kill
+    vs the curve, which rooms get generated backdrops/terrain (comfy-backdrop, D248/D249).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
