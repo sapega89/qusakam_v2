@@ -150,6 +150,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     real-time platformer (cooldowns + SP, D259 interrupts), no copied text. First a plan
     (`design/skill_trees_plan.md`): 3 trees × tiers, unlock by level/points, how Healing Palm (D252) and the existing
     5 skills slot in; then data + Skills UI; animations per item 21.
+    Sapega's frame (2026-10-20, D260): level cap 99, one skill point per level (99 total), every skill gated by a level
+    threshold; class path like PF2e archetypes with epic names — **Holy Warrior** (trunk) → oath: **Paladin** (light) /
+    **Dark Knight** (dark) / **Warden of Balance** (neutral) → subclass at 40 → prestige at 70 (names in D260). The oath
+    is sworn **in the City** before a thematic NPC: a **priest** (Paladin), a **witch** (Dark Knight), a **sand
+    dervish** (Warden) — new NPCs, generated art.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
