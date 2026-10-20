@@ -18,3 +18,6 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | `Roll/1–6.png` | Roll | generated duck and curled ball; the ball turned 90°/180°/270°; the exit is `Jump/1` |
 | `Climb/1–2.png` | Climb | generated from behind, alternating arm and leg |
 | `Meditate/1–2.png` | Meditate (Canyon summit cutscene, D257) | generated: sitting cross-legged, eyes closed; frame 2 = BOB breathing (`hero_meditate`) |
+| `Hurt/1.png` | Hurt (stagger, D264) | generated: recoiling from a hit to the chest (`hero_combat`) |
+| `Heavy/1–2.png` | HeavyWindup / HeavyStrike, AttackSmash (mace) | generated: both empty fists raised overhead; crouched, fists swung down low (`hero_combat`) |
+| `Block/1.png` | Block (block and parry, D264) | generated: fists raised before the face, braced (`hero_combat`) |

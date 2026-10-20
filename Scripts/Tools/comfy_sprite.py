@@ -495,6 +495,40 @@ CHARACTERS = {
             ),
         ],
     ),
+    # Souls-lite бій (BACKLOG 4 + 15, D264): збій, важкий удар (замах і удар), блок. Кулаки порожні — зброю малює WeaponView.
+    "hero_combat": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=21,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "Hurt",
+                [
+                    "in the same side view facing right: recoiling from a hard hit to the chest, his body bent backwards, "
+                    "head thrown back, eyes squeezed shut, both arms flung out, staggering back on one foot",
+                ],
+            ),
+            (
+                "Heavy",
+                [
+                    "in the same side view facing right: winding up a heavy overhead blow, both empty fists raised high "
+                    "above his head, leaning back, knees bent, the cape hanging behind him",
+                    "in the same side view facing right: finishing a heavy downward blow, crouched low and leaning far "
+                    "forward, both empty fists swung down low in front of him at knee height, the cape flying up behind him",
+                ],
+            ),
+            (
+                "Block",
+                [
+                    "in the same side view facing right: guarding, both empty fists raised together in front of his face, "
+                    "forearms up, crouched slightly and braced on bent knees, the cape hanging behind him",
+                ],
+            ),
+        ],
+    ),
     # Медитація на вершині скелі в каньйоні (Sapega 2026-10-20, BACKLOG feedback 8): сидить, дихає (BOB).
     "hero_meditate": dict(
         frames_out="SampleProject/Sprites/Player",
