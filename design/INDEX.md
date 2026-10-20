@@ -47,6 +47,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[inventory_diff_plan]] — inventory delta
 - [[backlog_roadmap]] — the order to work through BACKLOG and BUGS: playable to the end first
 - [[room_state_plan]] — ✅ built; D152: rooms remember enemies and their HP when the player leaves
+- [[audio_plan]] — BACKLOG 26: buses, event→sound map, world sound, babble, greetings, boss voices (D274–D278)
 - [[music_plan]] — music: tracks exist in `assets/`, nothing plays them; player + table, content waits on Q38
 
 ## Audits

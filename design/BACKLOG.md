@@ -194,6 +194,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
     non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
     Steam AI-content disclosure. Gamepad rumble on hits goes with item 24.
+    **Plan: [[audio_plan]]** (D274–D278). Resume: slice by slice as listed there.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
