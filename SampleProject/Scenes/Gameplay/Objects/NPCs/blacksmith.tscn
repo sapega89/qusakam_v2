@@ -33,6 +33,7 @@ size = Vector2(64, 64)
 z_index = 10
 script = ExtResource("1_blacksmith")
 task_giver = "blacksmith"
+character_id = "BLACKSMITH"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 10

@@ -18,7 +18,7 @@ var hero: Node
 var sm: Node
 var em: Node
 var target: Node
-## Програні звуки: [event, bus, stream path].
+## Програні звуки: [event, bus, stream path, pitch_scale].
 var played: Array = []
 
 func _finish_dialogue(dm: Node) -> void:
@@ -64,8 +64,8 @@ func _initialize() -> void:
 	sl = root.get_node("ServiceLocator")
 	eb = root.get_node("EventBus")
 	am = root.get_node("AudioManager")
-	am.sound_played.connect(func(event: StringName, stream: AudioStream, bus: StringName) -> void:
-		played.append([event, bus, stream.resource_path]))
+	am.sound_played.connect(func(event: StringName, stream: AudioStream, bus: StringName, pitch: float) -> void:
+		played.append([event, bus, stream.resource_path, pitch]))
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
 
 	_buses()
@@ -83,6 +83,19 @@ func _initialize() -> void:
 	hero = game.player
 	sm = sl.get_skill_manager()
 	em = sl.get_equipment_manager()
+	_setup_enemies()
+	await _world()
+	await _combat()
+	await _rooms()
+	await _voices()
+
+	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
+	quit()
+
+
+## Ворогів зупинено (стоять, не бачать героя, не падають від комбо); перший — ціль, решта далеко.
+func _setup_enemies() -> void:
+	target = null
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group(&"enemies"):
 			node.set_physics_process(false)
@@ -95,12 +108,6 @@ func _initialize() -> void:
 				target = node
 			else:
 				node.global_position.x += 4000
-	await _world()
-	await _combat()
-	await _rooms()
-
-	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
-	quit()
 
 
 func _buses() -> void:
@@ -289,3 +296,139 @@ func _rooms() -> void:
 	await _finish_dialogue(dm)
 	_heard(&"door", &"SFX", "MayorHall → DesertRoad")
 	_ambience_is(&"amb_desert_wind", "back on DesertRoad")
+
+
+func _pitch_of(event: StringName) -> float:
+	for p: Array in played:
+		if p[0] == event:
+			return p[3]
+	return 0.0
+
+
+func _voices() -> void:
+	print("[5] Voices: babble while typing, greetings on a talk the hero starts, enemies, bosses, companions (D277, D278)")
+	var dm: Node = sl.get_dialogue_manager()
+	hero = game.player
+	await create_timer(2.5).timeout  # вороги кімнати з'являються не одразу
+	_setup_enemies()
+	var dq: Node = root.get_node(^"DialogueQuest")
+	var registry: Dictionary = dq.CharacterDB.get_character_registry()
+	var mute: Array = registry.keys().filter(func(id: String) -> bool: return not am.voices.has(id))
+	ck(mute.is_empty(), "every DialogueQuest character has a babble voice (missing: %s)" % [mute])
+	for voice: String in am.voices.values():
+		ck(am.has_event(StringName("babble_" + voice)), "babble_%s exists" % voice)
+
+	# The box: a line types for 0.8 s → the speaker's babble on Voice; narration stays silent.
+	var box: Node = null
+	var replay_done := [false]
+	var run := func() -> void:
+		await dm.replay("res://dialogue_quest/OldMan_Outside.dqd")
+		replay_done[0] = true
+	run.call()
+	box = dm.current_dialogue_box
+	_mark()
+	await create_timer(0.8).timeout
+	ck(played.filter(func(p: Array) -> bool: return String(p[0]).begins_with("babble_")).is_empty(), "narration (no speaker) does not babble")
+	box.finish()
+	box.accept()
+	await process_frame
+	_mark()
+	await create_timer(0.8).timeout
+	_heard(&"babble_kusakam", &"Voice", "Kusakam's line typing")
+	box.finish()
+	box.accept()
+	await process_frame
+	_mark()
+	await create_timer(0.8).timeout
+	_heard(&"babble_grandfather", &"Voice", "the grandfather's line typing")
+	_not_heard(&"greet_grandfather", "a dialogue started by the story (first-meeting cutscene path)")
+	for i in 10:
+		if replay_done[0]:
+			break
+		box.finish()
+		box.accept()
+		await process_frame
+	ck(replay_done[0], "the replay ended")
+
+	# The cloud talk (D263) types at the box speed and babbles in Kusakam's voice.
+	# Three narration lines first (shown at once here), then Kusakam's line types at the box speed.
+	dm.start_dialogue("res://dialogue_quest/Canyon_AbductionCutscene.dqd", true)
+	for i in 3:
+		for f in 6: await process_frame
+		if i == 2:
+			dm.bubble_time_scale = 1.0
+			_mark()
+		_press(&"dq_accept")
+		await process_frame
+		_press(&"dq_accept", false)
+	await create_timer(1.0).timeout
+	_heard(&"babble_kusakam", &"Voice", "Kusakam's cloud talk typing")
+	dm.bubble_time_scale = 0.0
+	for i in 40:
+		if not dm.is_dialogue_active():
+			break
+		_press(&"dq_accept")
+		await process_frame
+		_press(&"dq_accept", false)
+		await create_timer(0.3).timeout
+	ck(not dm.is_dialogue_active(), "the cloud talk ended")
+
+	# The hero walks up to the merchant on DesertRoad and presses interact: the merchant greets him.
+	var merchant: Node2D = game.map.get_node(^"Merchant")
+	hero.global_position = merchant.global_position + Vector2(-40, -10)
+	hero.velocity = Vector2.ZERO
+	for i in 20: await physics_frame
+	_mark()
+	await _tap(&"interact")
+	for i in 4: await process_frame
+	ck(merchant.npc_menu.visible, "interact opens the merchant's menu")
+	_heard(&"greet_merchant", &"Voice", "talking to the merchant")
+	merchant.npc_menu.cancelled.emit()
+
+	# Enemies: a pain grunt per hit, a death cry on the last; the tank's voice is deeper.
+	_mark()
+	target.take_damage(5, hero)
+	_heard(&"enemy_grunt", &"Voice", "an enemy hit")
+	var expected: float = am.enemy_voice_pitch[target.enemy_stats.enemy_type]
+	ck(absf(_pitch_of(&"enemy_grunt") - expected) <= expected * 0.07, "voice pitch of a %s: %.2f (≈ %.2f)" % [target.enemy_stats.enemy_type, _pitch_of(&"enemy_grunt"), expected])
+	_mark()
+	target.current_health = 3
+	target.take_damage(5, hero)
+	_heard(&"enemy_death", &"Voice", "an enemy killed")
+	_not_heard(&"enemy_grunt", "the killing blow")
+
+	# Bosses (D278): no boss stands in a room yet — an enemy in the boss group roars, shouts, dies with a roar.
+	var boss: Node = null
+	for node in game.map.find_children("*", "CharacterBody2D", true, false):
+		if node.is_in_group(&"enemies") and node.is_alive():
+			boss = node
+			break
+	boss.add_to_group(&"boss")
+	boss.Max_Health = 9999
+	boss.current_health = 9999
+	_mark()
+	for i in 3:
+		eb.attack_started.emit(boss, hero)
+	_heard(&"boss_roar", &"Voice", "a boss's first swing")
+	_heard(&"boss_shout", &"Voice", "a boss's later swing")
+	_not_heard(&"enemy_grunt", "a boss")
+	_mark()
+	boss.current_health = 3
+	boss.take_damage(5, hero)
+	_heard(&"boss_death", &"Voice", "a boss killed")
+
+	# Hero: pain voice; heavy attack shout. Companion: the guard's call on assist.
+	await create_timer(1.2).timeout
+	_mark()
+	hero.take_damage(3, null)
+	_heard(&"hero_hurt_voice", &"Voice", "the hero hurt")
+	await create_timer(1.2).timeout
+	_mark()
+	await _tap(&"heavy_attack")
+	_heard(&"hero_effort", &"Voice", "Kusakam's heavy attack")
+	await create_timer(1.5).timeout
+	sl.get_companion_manager().offer_guard(true)
+	_mark()
+	await _tap(&"assist")
+	for i in 4: await process_frame
+	_heard(&"call_guard", &"Voice", "the guard called in")

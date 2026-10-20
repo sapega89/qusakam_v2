@@ -16,6 +16,8 @@ const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 @export var talk_dialogue: String = ""
 ## Хто цей NPC у quests.json (giver). Є відкрите завдання — є пункт Quest (D161, D175).
 @export var task_giver: String = ""
+## Хто це в DialogueQuest (character_id) — його голос вітає героя, коли той сам заговорив (D277).
+@export var character_id: String = ""
 
 @onready var interactable: InteractableComponent = $Interactable
 
@@ -63,6 +65,8 @@ func _on_interacted() -> void:
 	interactable.enabled = false
 	npc_menu.setup(entries)
 	npc_menu.open()
+	# Герой сам підійшов і заговорив — привітання. Катсцену першої зустрічі запускає кімната, не цей шлях.
+	AudioManager.hooks.greet(character_id)
 
 
 ## Нащадок може заборонити меню (напр. поки відкритий магазин).

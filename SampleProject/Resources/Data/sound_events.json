@@ -36,7 +36,38 @@
 		"amb_village": {"bus": "Ambience", "files": ["Ambience/amb_village.ogg"], "jitter": 0.0},
 		"amb_city_crowd": {"bus": "Ambience", "files": ["Ambience/amb_city_crowd.ogg"], "volume_db": -6.0, "jitter": 0.0},
 		"amb_hall": {"bus": "Ambience", "files": ["Ambience/amb_hall.ogg"], "volume_db": -6.0, "jitter": 0.0},
-		"amb_lab_hum": {"bus": "Ambience", "files": ["Ambience/amb_lab_hum.ogg"], "volume_db": -8.0, "jitter": 0.0}
+		"amb_lab_hum": {"bus": "Ambience", "files": ["Ambience/amb_lab_hum.ogg"], "volume_db": -8.0, "jitter": 0.0},
+		"babble_kusakam": {"bus": "Voice", "files": ["Voice/Babble/kusakam_0.wav", "Voice/Babble/kusakam_1.wav", "Voice/Babble/kusakam_2.wav", "Voice/Babble/kusakam_3.wav", "Voice/Babble/kusakam_4.wav", "Voice/Babble/kusakam_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_grandfather": {"bus": "Voice", "files": ["Voice/Babble/grandfather_0.wav", "Voice/Babble/grandfather_1.wav", "Voice/Babble/grandfather_2.wav", "Voice/Babble/grandfather_3.wav", "Voice/Babble/grandfather_4.wav", "Voice/Babble/grandfather_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_blacksmith": {"bus": "Voice", "files": ["Voice/Babble/blacksmith_0.wav", "Voice/Babble/blacksmith_1.wav", "Voice/Babble/blacksmith_2.wav", "Voice/Babble/blacksmith_3.wav", "Voice/Babble/blacksmith_4.wav", "Voice/Babble/blacksmith_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_merchant": {"bus": "Voice", "files": ["Voice/Babble/merchant_0.wav", "Voice/Babble/merchant_1.wav", "Voice/Babble/merchant_2.wav", "Voice/Babble/merchant_3.wav", "Voice/Babble/merchant_4.wav", "Voice/Babble/merchant_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_priest": {"bus": "Voice", "files": ["Voice/Babble/priest_0.wav", "Voice/Babble/priest_1.wav", "Voice/Babble/priest_2.wav", "Voice/Babble/priest_3.wav", "Voice/Babble/priest_4.wav", "Voice/Babble/priest_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_guard": {"bus": "Voice", "files": ["Voice/Babble/guard_0.wav", "Voice/Babble/guard_1.wav", "Voice/Babble/guard_2.wav", "Voice/Babble/guard_3.wav", "Voice/Babble/guard_4.wav", "Voice/Babble/guard_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_villager": {"bus": "Voice", "files": ["Voice/Babble/villager_0.wav", "Voice/Babble/villager_1.wav", "Voice/Babble/villager_2.wav", "Voice/Babble/villager_3.wav", "Voice/Babble/villager_4.wav", "Voice/Babble/villager_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_bandit": {"bus": "Voice", "files": ["Voice/Babble/bandit_0.wav", "Voice/Babble/bandit_1.wav", "Voice/Babble/bandit_2.wav", "Voice/Babble/bandit_3.wav", "Voice/Babble/bandit_4.wav", "Voice/Babble/bandit_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_bandit_leader": {"bus": "Voice", "files": ["Voice/Babble/bandit_leader_0.wav", "Voice/Babble/bandit_leader_1.wav", "Voice/Babble/bandit_leader_2.wav", "Voice/Babble/bandit_leader_3.wav", "Voice/Babble/bandit_leader_4.wav", "Voice/Babble/bandit_leader_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_enemy": {"bus": "Voice", "files": ["Voice/Babble/enemy_0.wav", "Voice/Babble/enemy_1.wav", "Voice/Babble/enemy_2.wav", "Voice/Babble/enemy_3.wav", "Voice/Babble/enemy_4.wav", "Voice/Babble/enemy_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_alisia": {"bus": "Voice", "files": ["Voice/Babble/alisia_0.wav", "Voice/Babble/alisia_1.wav", "Voice/Babble/alisia_2.wav", "Voice/Babble/alisia_3.wav", "Voice/Babble/alisia_4.wav", "Voice/Babble/alisia_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_astrit": {"bus": "Voice", "files": ["Voice/Babble/astrit_0.wav", "Voice/Babble/astrit_1.wav", "Voice/Babble/astrit_2.wav", "Voice/Babble/astrit_3.wav", "Voice/Babble/astrit_4.wav", "Voice/Babble/astrit_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_urizen": {"bus": "Voice", "files": ["Voice/Babble/urizen_0.wav", "Voice/Babble/urizen_1.wav", "Voice/Babble/urizen_2.wav", "Voice/Babble/urizen_3.wav", "Voice/Babble/urizen_4.wav", "Voice/Babble/urizen_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_gnome": {"bus": "Voice", "files": ["Voice/Babble/gnome_0.wav", "Voice/Babble/gnome_1.wav", "Voice/Babble/gnome_2.wav", "Voice/Babble/gnome_3.wav", "Voice/Babble/gnome_4.wav", "Voice/Babble/gnome_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_suan": {"bus": "Voice", "files": ["Voice/Babble/suan_0.wav", "Voice/Babble/suan_1.wav", "Voice/Babble/suan_2.wav", "Voice/Babble/suan_3.wav", "Voice/Babble/suan_4.wav", "Voice/Babble/suan_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_dark_priests": {"bus": "Voice", "files": ["Voice/Babble/dark_priests_0.wav", "Voice/Babble/dark_priests_1.wav", "Voice/Babble/dark_priests_2.wav", "Voice/Babble/dark_priests_3.wav", "Voice/Babble/dark_priests_4.wav", "Voice/Babble/dark_priests_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"greet_grandfather": {"bus": "Voice", "files": ["Voice/Greetings/grandfather_0.ogg", "Voice/Greetings/grandfather_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"greet_blacksmith": {"bus": "Voice", "files": ["Voice/Greetings/blacksmith_0.ogg", "Voice/Greetings/blacksmith_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"greet_merchant": {"bus": "Voice", "files": ["Voice/Greetings/merchant_0.ogg", "Voice/Greetings/merchant_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"call_guard": {"bus": "Voice", "files": ["Voice/Calls/guard_0.ogg", "Voice/Calls/guard_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"call_alisia": {"bus": "Voice", "files": ["Voice/Calls/alisia_0.ogg", "Voice/Calls/alisia_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"call_astrit": {"bus": "Voice", "files": ["Voice/Calls/astrit_0.ogg", "Voice/Calls/astrit_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"call_urizen": {"bus": "Voice", "files": ["Voice/Calls/urizen_0.ogg", "Voice/Calls/urizen_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"hero_effort": {"bus": "Voice", "files": ["Voice/Hero/effort_0.ogg", "Voice/Hero/effort_1.ogg", "Voice/Hero/effort_2.ogg"], "volume_db": -4.0, "jitter": 0.03},
+		"hero_hurt_voice": {"bus": "Voice", "files": ["Voice/Hero/hurt_0.ogg", "Voice/Hero/hurt_1.ogg", "Voice/Hero/hurt_2.ogg", "Voice/Hero/hurt_3.ogg", "Voice/Hero/hurt_4.ogg"], "volume_db": -4.0, "jitter": 0.03},
+		"hero_death": {"bus": "Voice", "files": ["Voice/Hero/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0},
+		"enemy_grunt": {"bus": "Voice", "files": ["Voice/Enemy/grunt_0.ogg", "Voice/Enemy/grunt_1.ogg", "Voice/Enemy/grunt_2.ogg", "Voice/Enemy/grunt_3.ogg", "Voice/Enemy/grunt_4.ogg", "Voice/Enemy/grunt_5.ogg"], "volume_db": -6.0, "jitter": 0.06},
+		"enemy_death": {"bus": "Voice", "files": ["Voice/Enemy/death_0.ogg", "Voice/Enemy/death_1.ogg", "Voice/Enemy/death_2.ogg"], "volume_db": -3.0, "jitter": 0.04},
+		"boss_roar": {"bus": "Voice", "files": ["Voice/Boss/roar_0.ogg", "Voice/Boss/roar_1.ogg", "Voice/Boss/roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
+		"boss_shout": {"bus": "Voice", "files": ["Voice/Boss/shout_0.ogg", "Voice/Boss/shout_1.ogg", "Voice/Boss/shout_2.ogg"], "volume_db": 0.0, "jitter": 0.0},
+		"boss_death": {"bus": "Voice", "files": ["Voice/Boss/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0}
 	},
 	"rooms": {
 		"Canyon": {"ambience": "amb_canyon_echo", "surface": "sand", "interior": false},
@@ -47,5 +78,13 @@
 		"City": {"ambience": "amb_city_crowd", "surface": "stone", "interior": false},
 		"MayorHall": {"ambience": "amb_hall", "surface": "wood", "interior": true},
 		"Laboratory": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true}
-	}
+	},
+	"voices": {
+		"KUSAKAM": "kusakam", "Кусакам": "kusakam", "GRANDFATHER": "grandfather", "BLACKSMITH": "blacksmith",
+		"Торговец": "merchant", "PRIEST": "priest", "GATE_GUARD": "guard", "VILLAGER_1": "villager",
+		"BANDIT_1": "bandit", "BANDIT_2": "bandit", "BANDIT_LEADER": "bandit_leader", "Враг": "enemy",
+		"Алісия": "alisia", "Астрит": "astrit", "Уризен": "urizen", "Гном механник": "gnome", "Суан": "suan",
+		"Три темніх жреца": "dark_priests"
+	},
+	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75}
 }

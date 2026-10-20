@@ -32,6 +32,7 @@ size = Vector2(64, 64)
 [node name="Merchant" type="Area2D"]
 z_index = 10
 script = ExtResource("1_merchant")
+character_id = "Торговец"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 z_index = 10

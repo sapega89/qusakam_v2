@@ -8,6 +8,9 @@ const BODY := preload("res://SampleProject/Assets/UI/Dialogue/bubble_body.png")
 const TAIL := preload("res://SampleProject/Assets/UI/Dialogue/bubble_tail.png")
 const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
+## Набрано [param count] літер репліки (type_out) — бурмотіння голосом мовця (D277).
+signal typed(text: String, count: int)
+
 var _panel := PanelContainer.new()
 var _label := Label.new()
 var _tail := TextureRect.new()
@@ -59,10 +62,16 @@ func show_line(text: String) -> void:
 
 ## Репліка, показана show_line(), набирається за [param seconds] (розмова в облачку, D263). Пауза тримає набір.
 func type_out(seconds: float) -> void:
-	_label.visible_ratio = 0.0
+	_label.visible_characters = 0
 	if seconds > 0.0:
-		await create_tween().tween_property(_label, ^"visible_ratio", 1.0, seconds).finished
+		await create_tween().tween_method(_type_to, 0, _label.text.length(), seconds).finished
 	_label.visible_ratio = 1.0
+
+
+func _type_to(count: int) -> void:
+	if count > _label.visible_characters:
+		_label.visible_characters = count
+		typed.emit(_label.text, count)
 
 
 func is_typed() -> bool:

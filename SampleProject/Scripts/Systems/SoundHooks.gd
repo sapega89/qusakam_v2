@@ -6,7 +6,9 @@ extends Node
 
 func _ready() -> void:
 	EventBus.player_attacked.connect(_on_player_attacked)
-	EventBus.player_heavy_windup.connect(func(_player: Node, _direction: int) -> void: AudioManager.play(&"heavy_windup"))
+	EventBus.player_heavy_windup.connect(func(_player: Node, _direction: int) -> void:
+		AudioManager.play(&"heavy_windup")
+		AudioManager.play(&"hero_effort"))
 	EventBus.attack_started.connect(_on_attack_started)
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
@@ -23,6 +25,8 @@ func _ready() -> void:
 	EventBus.item_added.connect(func(id: String, _amount: int) -> void: AudioManager.play(&"coin" if id == "coin" else &"pickup"))
 	EventBus.player_leveled_up.connect(func(_level: int, _old: int) -> void: AudioManager.play(&"level_up"))
 	EventBus.room_entered.connect(_on_room_entered)
+	EventBus.player_died.connect(func() -> void: AudioManager.play(&"hero_death"))
+	EventBus.assist_called.connect(func(id: String) -> void: AudioManager.play(StringName("call_" + id)))
 
 
 ## Навичка, чий замах звучить: її вивільнення — свій звук (пасивні й навички без касту — без звуку).
@@ -42,19 +46,51 @@ func _on_skill_used(id: String) -> void:
 
 ## Кожен замах чути — і влучний, і промах (D276); важкий — нижчий.
 func _on_player_attacked(player: Node, _direction: int) -> void:
-	var heavy: bool = player.combat.state == PlayerCombat.State.HEAVY_STRIKE
+	var combat: PlayerCombat = player.combat
+	var heavy: bool = combat.state == PlayerCombat.State.HEAVY_STRIKE
 	AudioManager.play(&"swing_heavy" if heavy else &"swing")
+	if not heavy and combat.combo_step == combat.combo_length() - 1:
+		AudioManager.play(&"hero_effort")  # фінішер серії — з вигуком
 
 
 ## Замах ворога чути: половина підказки «зараз ударить» (D215).
+## Голос: бос ревe на першому замаху й кричить на кожному другому (D278), решта ворогів гарчить на кожному третьому.
 func _on_attack_started(attacker: Node, _target: Node) -> void:
-	if attacker.is_in_group(GameGroups.ENEMIES):
-		AudioManager.play(&"enemy_windup")
+	if not attacker.is_in_group(GameGroups.ENEMIES):
+		return
+	AudioManager.play(&"enemy_windup")
+	var swings: int = attacker.get_meta(&"voiced_swings", 0)
+	attacker.set_meta(&"voiced_swings", swings + 1)
+	if _is_boss(attacker):
+		if swings == 0:
+			AudioManager.play(&"boss_roar")
+		elif swings % 2 == 0:
+			AudioManager.play(&"boss_shout")
+	elif swings % 3 == 2:
+		AudioManager.play(&"enemy_grunt", _enemy_pitch(attacker))
 
 
+func _is_boss(enemy: Node) -> bool:
+	return enemy.is_in_group(GameGroups.BOSS) or enemy.is_in_group(GameGroups.MINIBOSS)
+
+
+func _enemy_pitch(enemy: Node) -> float:
+	return AudioManager.enemy_voice_pitch[enemy.enemy_stats.enemy_type]
+
+
+## Удар і голос: біль, а останній удар — смерть (damage_received приходить, коли HP вже 0, перед die()).
 func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
+	var alive: bool = target.current_health > 0
 	if target.is_in_group(GameGroups.PLAYER):
 		AudioManager.play(&"hero_hurt")
+		if alive:
+			AudioManager.play(&"hero_hurt_voice")  # смерть озвучує player_died
+	elif target.is_in_group(GameGroups.ENEMIES):
+		if _is_boss(target):
+			if not alive:
+				AudioManager.play(&"boss_death")
+		else:
+			AudioManager.play(&"enemy_grunt" if alive else &"enemy_death", _enemy_pitch(target))
 
 
 ## damage_dealt приходить лише з реального ушкодження (B60) — промах звуку влучання не дає.
@@ -100,3 +136,40 @@ func _on_room_entered(room_name: String) -> void:
 	ambience = AudioManager.play_loop(event, Game.get_singleton())
 	ambience.name = "Ambience"
 	_ambience_event = event
+
+
+# ── Голоси персонажів (D277) ──────────────────────────────────────────────────
+
+var _letters: int = 0
+
+
+## Набрано літеру [param letter] репліки персонажа [param character_id]: склад його голосом на кожну другу літеру.
+## Пробіли й розділові знаки мовчать; оповідь без мовця ("") — теж.
+func letter(character_id: String, letter_typed: String) -> void:
+	if character_id == "" or letter_typed.to_upper() == letter_typed.to_lower():
+		return
+	_letters += 1
+	if _letters % 2 == 0:
+		AudioManager.play(StringName("babble_" + _voice(character_id)))
+
+
+## Привітання NPC, коли герой сам заговорив до нього (NpcBase). Катсцени першої зустрічі запускають кімнати, не NpcBase.
+func greet(character_id: String) -> void:
+	AudioManager.play(StringName("greet_" + _voice(character_id)))
+
+
+## Мовець вікна діалогу за ім'ям, яке показує вікно (DialogueQuest не каже id мовця).
+func speaker_from_name(character_name: String) -> String:
+	if character_name == "":
+		return ""
+	var registry: Dictionary = DialogueQuest.CharacterDB.get_character_registry()
+	for id: String in registry:
+		if registry[id].character_name == character_name:
+			return id
+	assert(false, "SoundHooks: no DialogueQuest character is named %s" % character_name)
+	return ""
+
+
+func _voice(character_id: String) -> String:
+	assert(AudioManager.voices.has(character_id), "SoundHooks: character %s has no voice in sound_events.json → voices" % character_id)
+	return AudioManager.voices[character_id]

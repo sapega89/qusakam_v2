@@ -80,9 +80,9 @@ def reverb(
         -np.linspace(0, 7, n)
     ).astype(np.float32)
     ir = band(ir, 200, 6000)
-    wet = np.convolve(x, ir)[: len(x) + n]
+    wet = np.convolve(x, ir)[: len(x) + n - 1]
     wet /= np.abs(wet).max() + 1e-9
-    dry = np.concatenate([x, np.zeros(n, np.float32)])
+    dry = np.concatenate([x, np.zeros(n - 1, np.float32)])
     return dry / (np.abs(dry).max() + 1e-9) * (1 - room) + wet * room
 
 

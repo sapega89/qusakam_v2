@@ -41,8 +41,19 @@ func _find_dialogue_system_in_scene() -> bool:
 	current_dialogue_box.set_text("")
 	current_dialogue_box.set_name_text("")
 	current_dialogue_box.set_portrait_image(null)
+	if not current_dialogue_box.text_shown.is_connected(_on_letter_shown):
+		current_dialogue_box.text_shown.connect(_on_letter_shown)
 	_connect_dialogue_quest_signals()
 	return true
+
+
+## Літера репліки з'явилась у вікні — бурмотіння голосом мовця (D277). Мовця вікно знає лише за ім'ям.
+func _on_letter_shown(count: int) -> void:
+	var text: String = current_dialogue_box.get_text()
+	if count < 1 or count > text.length():
+		return  # візуальні символи без літери тексту (BBCode)
+	var hooks: Node = AudioManager.hooks
+	hooks.letter(hooks.speaker_from_name(current_dialogue_box.get_name_text()), text[count - 1])
 
 func _connect_dialogue_quest_signals():
 	"""Подключает сигналы DialogueQuest"""
@@ -288,8 +299,12 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 	Game.get_singleton().player.add_child(bubble)
 	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
 	var letters_per_second: float = current_dialogue_box.settings.letters_per_second
+	var speaker := [""]  # мовець поточної репліки для бурмотіння (лямбда бачить масив, не локальну змінну)
+	bubble.typed.connect(func(typed_text: String, count: int) -> void:
+		AudioManager.hooks.letter(speaker[0], typed_text[count - 1]))
 	for line in DQD_READER.lines(path):
 		var text: String = _stage_tag.sub(line.text, "")
+		speaker[0] = line.speaker
 		await bubble.show_line(text)
 		if talk:
 			# Облачко висить над героєм — у такій розмові говорить лише він (або ремарка того, що він бачить).

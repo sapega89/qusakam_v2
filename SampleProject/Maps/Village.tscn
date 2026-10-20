@@ -173,6 +173,7 @@ autoplay = "idle"
 position = Vector2(1572, 396)
 quest_flag = "village_oldman_complete"
 quest_dialogue = "OldMan_Decision"
+character_id = "GRANDFATHER"
 
 [node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("7_spawner")

@@ -7,7 +7,7 @@ extends Node
 
 signal volume_changed(bus_name: String, volume: float)
 ## Кожен програний звук — для verify_audio.gd і налагодження.
-signal sound_played(event: StringName, stream: AudioStream, bus: StringName)
+signal sound_played(event: StringName, stream: AudioStream, bus: StringName, pitch_scale: float)
 
 const EVENTS_PATH := "res://SampleProject/Resources/Data/sound_events.json"
 const AUDIO_ROOT := "res://SampleProject/Assets/Audio/"
@@ -20,6 +20,12 @@ var _sfx_bus_index: int = -1
 ## Подія → {bus, files, volume_db, pitch, jitter}; кімната → {ambience, surface, interior}.
 var events: Dictionary = {}
 var rooms: Dictionary = {}
+## Персонаж DialogueQuest (character_id) → голос: бурмотіння babble_<голос>, привітання greet_<голос> (D277).
+var voices: Dictionary = {}
+## Тип ворога → висота його голосу (tank нижчий, fast вищий).
+var enemy_voice_pitch: Dictionary = {}
+## Події гри → звуки; сюди ж кличуть діалоги (бурмотіння) і NPC (привітання).
+@onready var hooks: Node = $SoundHooks
 ## Подія → Array[AudioStream], завантажені при старті: відсутній файл — помилка одразу, а не тиша в грі.
 var _streams: Dictionary = {}
 
@@ -33,6 +39,8 @@ func _ready() -> void:
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(EVENTS_PATH))
 	events = data.events
 	rooms = data.rooms
+	voices = data.voices
+	enemy_voice_pitch = data.enemy_voice_pitch
 	for event: String in events:
 		var list: Array[AudioStream] = []
 		for file: String in events[event].files:
@@ -48,7 +56,7 @@ func play(event: StringName, pitch_scale: float = 1.0) -> AudioStreamPlayer:
 	add_child(player)
 	player.play()
 	player.finished.connect(player.queue_free)
-	sound_played.emit(event, player.stream, player.bus)
+	sound_played.emit(event, player.stream, player.bus, player.pitch_scale)
 	return player
 
 
@@ -58,7 +66,7 @@ func play_loop(event: StringName, parent: Node) -> AudioStreamPlayer:
 	player.stream.loop = true
 	parent.add_child(player)
 	player.play()
-	sound_played.emit(event, player.stream, player.bus)
+	sound_played.emit(event, player.stream, player.bus, player.pitch_scale)
 	return player
 
 
