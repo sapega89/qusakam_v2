@@ -167,6 +167,11 @@ signal player_staggered(duration: float)
 @warning_ignore("unused_signal")
 signal player_parried(attacker: Node)
 @warning_ignore("unused_signal")
+signal player_blocked(attacker: Node)
+## Замах важкого удару героя (D264) — WeaponView піднімає зброю.
+@warning_ignore("unused_signal")
+signal player_heavy_windup(player: Node, direction: int)
+@warning_ignore("unused_signal")
 signal skill_interrupted(skill_id: String)
 
 ## Емітується при завершенні атаки.

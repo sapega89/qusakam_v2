@@ -496,6 +496,17 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	return Result.OK
 
 
+## D259: каст зірвано ударом — ефекту немає, але SP списано й кулдаун пішов. Кличе PlayerCombat.stagger
+## для навички, чий каст іде (begin_cast); самі анімації кастів — BACKLOG 21.
+func interrupt_cast(skill_id: String) -> void:
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	assert(definition != null, "SkillManager.interrupt_cast: unknown skill %s" % skill_id)
+	if definition.sp_cost > 0:
+		spend_sp(mini(definition.sp_cost, get_current_sp()))
+	if definition.cooldown > 0.0:
+		_cooldowns[skill_id] = definition.cooldown
+	EventBus.skill_interrupted.emit(skill_id)
+
 func _fail(skill_id: String, reason: Result) -> Result:
 	EventBus.skill_failed.emit(skill_id, int(reason))
 	return reason

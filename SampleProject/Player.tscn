@@ -251,12 +251,63 @@ tracks/0/keys = {
 "values": [ExtResource("fall1")]
 }
 
+[sub_resource type="Animation" id="Animation_heavy_windup"]
+resource_name = "HeavyWindup"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("r4")]
+}
+
+[sub_resource type="Animation" id="Animation_heavy_strike"]
+resource_name = "HeavyStrike"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("r2"), ExtResource("r1")]
+}
+
+[sub_resource type="Animation" id="Animation_block"]
+resource_name = "Block"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("land1")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
 _data = {
 &"Apex": SubResource("Animation_apex"),
 &"Attack": SubResource("Animation_attack"),
+&"Block": SubResource("Animation_block"),
 &"Climb": SubResource("Animation_climb"),
 &"Fall": SubResource("Animation_fall"),
+&"HeavyStrike": SubResource("Animation_heavy_strike"),
+&"HeavyWindup": SubResource("Animation_heavy_windup"),
 &"Hurt": SubResource("Animation_hurt"),
 &"Idle": SubResource("Animation_idle"),
 &"Jump": SubResource("Animation_jump"),

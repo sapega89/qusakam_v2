@@ -73,6 +73,7 @@ func _initialize() -> void:
 				"%s has a keyboard/mouse and a pad binding (%s)" % [action, kinds])
 
 	await _staggers()
+	await _hero_moves(sl)
 	await _freeze_check()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -113,6 +114,7 @@ func _staggers() -> void:
 	target.set_physics_process(true)
 	target.poise_max = 3
 	target.poise = 3
+	target.Max_Health = 9999  # серія героя не вбиває ціль, поки міряємо
 	target.current_health = target.Max_Health
 	target.set_physics_process(false)
 	var staggered: Array = []
@@ -200,3 +202,135 @@ func _staggers() -> void:
 	got.clear()
 	hero.take_damage(5)
 	ck(got.is_empty(), "no stagger without an enemy source")
+
+## Ціль для ударів героя: стоїть, не б'є, не збивається (стійкість велика), повне HP.
+func _dummy() -> Node:
+	_freeze_all()
+	var target: Node = enemies[0]
+	target.poise_max = 99
+	target.poise = 99
+	target.current_health = target.Max_Health
+	target.enemy_logic.stun_left = 0.0
+	return target
+
+func _place_hero(target: Node, dx: float) -> void:
+	hero.global_position = target.global_position + Vector2(dx, 0)
+	hero.velocity = Vector2.ZERO
+	hero.mover.last_direction = 1 if dx < 0 else -1
+	await physics_frame
+
+## [4]–[7] Серія, важкий удар, блок, парирування, зірваний каст (D264, D269).
+func _hero_moves(sl: Node) -> void:
+	await create_timer(1.0).timeout
+	var target := _dummy()
+	var hits: Array = []
+	target.damage_token.connect(func(d: int) -> void: hits.append(d))
+	var d: int = hero.combat.hit_damage()
+
+	print("[4] Light combo: three presses, three hits, the finisher 1.4x, then a recovery")
+	await _place_hero(target, -26)
+	await _tap(&"attack")
+	await create_timer(0.1).timeout
+	await _tap(&"attack")  # посеред удару — у черзі
+	await create_timer(0.35).timeout
+	await _tap(&"attack")
+	await create_timer(0.45).timeout
+	ck(hits == [d, d, roundi(d * 1.4)], "three hits %s (expected %d, %d, %d)" % [hits, d, d, roundi(d * 1.4)])
+	ck(hero.combat.combo_step == 2 and hero.combat.attack_cooldown > 0.0, "the finisher ends the combo with a recovery (step %d, cooldown %.2f)" % [hero.combat.combo_step, hero.combat.attack_cooldown])
+	hits.clear()
+	await _tap(&"attack")
+	await create_timer(0.1).timeout
+	ck(not hero.combat.is_attacking, "no swing during the recovery")
+	print("[4b] The chain expires: a late press starts a new combo")
+	await create_timer(1.0).timeout
+	await _tap(&"attack")
+	await create_timer(0.3 + 0.5).timeout
+	await _tap(&"attack")
+	await create_timer(0.1).timeout
+	ck(hero.combat.combo_step == 0, "after a pause the combo starts over (step %d)" % hero.combat.combo_step)
+	await create_timer(1.0).timeout
+
+	print("[5] Heavy attack: a rooted wind-up, then 2.2x with knockback")
+	hits.clear()
+	target.poise_max = 3
+	target.poise = 3
+	var staggered: Array = []
+	var on_stagger := func(e: Node, _t: float) -> void: staggered.append(e)
+	eb.enemy_staggered.connect(on_stagger)
+	await _place_hero(target, -30)
+	var x0: float = hero.global_position.x
+	Input.action_press(&"move_right")
+	await _tap(&"heavy_attack")
+	await create_timer(0.2).timeout
+	ck(hero.combat.state == hero.combat.State.HEAVY_WINDUP and absf(hero.global_position.x - x0) < 8.0, "wind-up roots the hero (state %d, moved %.0f)" % [hero.combat.state, hero.global_position.x - x0])
+	await create_timer(0.35).timeout
+	Input.action_release(&"move_right")
+	ck(hits == [roundi(d * 2.2)], "one heavy hit %s (expected %d)" % [hits, roundi(d * 2.2)])
+	ck(staggered.has(target), "a heavy hit breaks a melee enemy's poise (3) at once")
+	eb.enemy_staggered.disconnect(on_stagger)
+	await create_timer(1.2).timeout
+
+	print("[5b] A hit during the heavy wind-up staggers the hero and cancels the heavy (D259)")
+	target = _dummy()
+	hits.clear()
+	await _place_hero(target, -30)
+	await _tap(&"heavy_attack")
+	await create_timer(0.1).timeout
+	hero.take_damage(5, target)
+	await create_timer(0.6).timeout
+	ck(hero.combat.state != hero.combat.State.HEAVY_STRIKE and hits.is_empty(), "the heavy never landed (hits %s)" % [hits])
+	await create_timer(0.6).timeout
+
+	print("[6] Block: front hits take 30%, no stagger; a hit from behind is not blocked")
+	var got: Array = []
+	eb.player_staggered.connect(func(t: float) -> void: got.append(t))
+	await _place_hero(target, -30)
+	hero.current_health = hero.Max_Health
+	_press(&"block")
+	await create_timer(0.3).timeout
+	ck(hero.combat.is_blocking(), "holding block blocks")
+	var hp0: int = hero.current_health
+	hero.take_damage(20, target)
+	ck(hp0 - hero.current_health == hero.mitigated_damage(6) and got.is_empty(), "blocked: %d HP lost (expected %d), staggers %s" % [hp0 - hero.current_health, hero.mitigated_damage(6), got])
+	await create_timer(0.6).timeout
+	hero.mover.last_direction = -1  # спиною до ворога
+	hp0 = hero.current_health
+	hero.take_damage(20, target)
+	ck(hp0 - hero.current_health == hero.mitigated_damage(20) and got.size() == 1, "from behind: full %d HP and a stagger" % (hp0 - hero.current_health))
+	_press(&"block", false)
+	await create_timer(0.8).timeout
+
+	print("[6b] Parry: a hit right after pressing block deals nothing and staggers the enemy")
+	var parried: Array = []
+	eb.player_parried.connect(func(a: Node) -> void: parried.append(a))
+	await _place_hero(target, -30)
+	got.clear()
+	hp0 = hero.current_health
+	_press(&"block")
+	await physics_frame
+	await physics_frame
+	hero.take_damage(20, target)
+	ck(hero.current_health == hp0 and got.is_empty() and parried == [target], "parried: no damage, no stagger (%d → %d)" % [hp0, hero.current_health])
+	ck(target.enemy_logic.stun_left >= 0.9, "the attacker is staggered 1 s (%.2f)" % target.enemy_logic.stun_left)
+	print("[6c] A tank-strength hit breaks the guard")
+	await create_timer(0.5).timeout
+	target.stagger_time = 0.6
+	hero.take_damage(20, target)
+	ck(got.size() == 1, "guard broken: staggered (%s)" % [got])
+	target.stagger_time = 0.25
+	_press(&"block", false)
+	await create_timer(1.0).timeout
+
+	print("[7] D259: a hit during a skill cast spends the SP and starts the cooldown, no effect")
+	var sm: Node = sl.get_skill_manager()
+	sm.clear_cooldowns()
+	sm.restore_sp(999)
+	var sp0: int = sm.get_current_sp()
+	var interrupted: Array = []
+	eb.skill_interrupted.connect(func(id: String) -> void: interrupted.append(id))
+	hero.combat.casting_skill = "fire_strike"
+	hero.take_damage(5, target)
+	ck(interrupted == ["fire_strike"] and sm.get_current_sp() == sp0 - 6 and sm.is_skill_on_cooldown("fire_strike"),
+			"interrupted: SP %d → %d, cooldown %s" % [sp0, sm.get_current_sp(), sm.is_skill_on_cooldown("fire_strike")])
+	ck(hero.combat.casting_skill == "", "the cast is over")
+	await create_timer(1.0).timeout

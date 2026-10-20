@@ -199,12 +199,21 @@ func _unhandled_input(ev: InputEvent) -> void:
 			$AnimationPlayer.play(&"Roll")
 			$Sprite2D.modulate.a = ROLL_ALPHA
 		return
-	if ev.is_action_pressed(&"attack") and not combat.owns_animation() and not mover.is_rolling() and not mover.is_climbing():
+	# Блок / парирування (D264): поки кнопку тримають; починається, щойно герой вільний (PlayerCombat).
+	if ev.is_action(&"block"):
+		combat.block_held = ev.is_pressed() and not event
+		return
+	var light := ev.is_action_pressed(&"attack")
+	if (light or ev.is_action_pressed(&"heavy_attack")) and not mover.is_rolling() and not mover.is_climbing():
 		if event:
 			return  # під час катсцени не б'ємо
 		if ev is InputEventMouseButton and get_tree().paused:
 			return
-		combat.perform_attack(last_direction)
+		# Посеред удару натискання лягає в чергу серії — тож тут не перевіряємо, чи бій вільний.
+		if light:
+			combat.perform_attack(last_direction)
+		else:
+			combat.heavy_attack(last_direction)
 
 func _update_facing() -> void:
 	"""Єдине місце, де виставляється flip_h.
@@ -389,11 +398,28 @@ func refresh_max_health() -> void:
 
 ## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
 ## Souls-lite (D264): удар ворога, що справді поранив, збиває героя — на stagger_time ворога, фінішер серії довше.
+## Блок спереду бере block_factor шкоди й не збиває (крім ударів, що збили б на GUARD_BREAK і довше);
+## парирування в перші parry_window с блоку — без шкоди, збиває самого ворога.
 func take_damage(damage: int, source: Node = null) -> void:
+	if is_invulnerable or is_dead:
+		return
+	var guard := combat.guard_against(source)
+	if guard == &"parry":
+		source.parried(self)
+		EventBus.player_parried.emit(source)
+		return
 	var before := current_health
-	super.take_damage(mitigated_damage(damage), source)
-	if current_health < before and not is_dead and source is DefaultEnemy:
-		combat.stagger(source.hit_stagger_time(), source.global_position.x)
+	var amount := damage
+	if guard == &"block":
+		amount = maxi(1, roundi(damage * combat.block_factor))
+		EventBus.player_blocked.emit(source)
+	super.take_damage(mitigated_damage(amount), source)
+	if current_health >= before or is_dead or not source is DefaultEnemy:
+		return
+	var stagger_time: float = source.hit_stagger_time()
+	if guard == &"block" and stagger_time < PlayerCombat.GUARD_BREAK:
+		return
+	combat.stagger(stagger_time, source.global_position.x)
 
 
 func mitigated_damage(damage: int) -> int:

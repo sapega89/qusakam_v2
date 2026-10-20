@@ -85,7 +85,7 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
   `EnemyStats.gd` + `enemy_stats_*.tres`, `Core/CombatInput.gd` (D270), EventBus `enemy_staggered`,
   `player_staggered`, `player_parried`, `skill_interrupted`; `Player.tscn` → `Hurt` (placeholder frame until slice 5).
 - `verify_souls_combat.gd` [0]–[3].
-### Slice 2 — light combo, heavy attack, block, parry, interrupts (D259)
+### Slice 2 — light combo, heavy attack, block, parry, interrupts (D259) — ✅ built
 - `PlayerCombat.gd`, `Player.gd`, `WeaponView.gd`, `SkillManager.interrupt_cast`, `VFXHooks.gd` (parry spark);
   `verify_souls_combat.gd` [4]–[7].
 ### Slice 3 — double dash, walking in towns

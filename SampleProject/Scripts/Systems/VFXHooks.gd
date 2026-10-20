@@ -15,6 +15,9 @@ const LANDING_DUST_SCENE := preload("res://SampleProject/Scenes/FX/LandingDust.t
 ## Бойові ефекти (6a): ефект влучання в точці контакту, спалах ушкодження (шлейф замаху — WeaponView, D224).
 ## Кожне влучання — коротке завмирання (D224); важкий удар (відкидання, D203) — довше, більший ефект і тремтіння камери.
 const HIT_IMPACT_SCENE := preload("res://SampleProject/Scenes/FX/HitImpact.tscn")
+## Іскри парирування / блоку (D264): скриптові частинки між героєм і ворогом; блок — дрібніші.
+const PARRY_SPARK_SCENE := preload("res://SampleProject/Scenes/FX/ParrySpark.tscn")
+const BLOCK_SPARK_SCALE := 0.5
 const HURT_FLASH := Color(2.4, 2.4, 2.4)  # self_modulate > 1 — спрайт висвітлюється
 const HURT_FLASH_TIME := 0.08
 const HEAVY_SCALE := 1.6
@@ -52,6 +55,8 @@ func _connect_to_event_bus() -> void:
 	EventBus.player_attacked.connect(_on_player_attacked)
 	EventBus.attack_started.connect(_on_attack_started)
 	EventBus.skill_used.connect(_on_skill_used)
+	EventBus.player_parried.connect(_on_guard.bind(true))
+	EventBus.player_blocked.connect(_on_guard.bind(false))
 
 
 ## ============================================
@@ -109,6 +114,22 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP if heavy else HIT_HITSTOP)
 	if heavy:
 		impact.scale = Vector2.ONE * HEAVY_SCALE
+		_shake_camera(HEAVY_SHAKE, HEAVY_SHAKE_TIME)
+
+
+## Парирування: великі іскри, дзвін металу, завмирання й тремтіння; блок — дрібні іскри й дзвін.
+func _on_guard(attacker: Node2D, parry: bool) -> void:
+	var hero: Node2D = GameGroups.get_player()
+	var spark: CPUParticles2D = PARRY_SPARK_SCENE.instantiate()
+	spark.finished.connect(spark.queue_free)
+	hero.get_parent().add_child(spark)
+	spark.global_position = hero.global_position.lerp(attacker.global_position, 0.4)
+	spark.scale = Vector2.ONE * (1.0 if parry else BLOCK_SPARK_SCALE)
+	spark.emitting = true
+	AudioManager.play_sfx_path(SFX_WINDUP.pick_random())
+	if parry:
+		AudioManager.play_sfx_path(SFX_HEAVY_HIT.pick_random())
+		ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP)
 		_shake_camera(HEAVY_SHAKE, HEAVY_SHAKE_TIME)
 
 

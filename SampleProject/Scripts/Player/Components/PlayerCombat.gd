@@ -3,9 +3,10 @@ class_name PlayerCombat
 
 ## Component handling player combat logic extracted from Player.gd
 ## Following SRP: This class only cares about attacking and damage state.
-## Стан бою souls-lite (D264): удар, збій від ворожого удару. Таймери — у _physics_process, а не await анімації.
+## Стан бою souls-lite (D264): серія легких ударів, важкий удар, блок і парирування, збій від ворожого удару.
+## Таймери — у _physics_process, а не await анімації.
 
-enum State { READY, SWING, STAGGER }
+enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER }
 
 # External references
 @export var sprite: Sprite2D
@@ -15,14 +16,37 @@ enum State { READY, SWING, STAGGER }
 
 # Combat parameters. Голі руки: кулдаун тут, хітбокс — Player.tscn (Hitbox 40×32); зброя в руці
 # перезаписує обидва своїм weapon_profile з items.json (D203).
+## Відновлення після фінішера серії (у зброї — weapon_profile.cooldown, D203).
 @export var attack_cooldown_time: float = 0.5
 ## Тривалість одного удару — довжина анімації Attack у Player.tscn.
 @export var swing_time: float = 0.3
+## Серія (D264): множники ушкодження ударів; наступний удар — якщо натиснуто під час удару або за chain_window після.
+const COMBO_DAMAGE: Array[float] = [1.0, 1.0, 1.4]
+@export var chain_window: float = 0.35
+## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
+@export var finisher_knockback: float = 40.0
+## Важкий удар (D264): замах (його можна збити), удар, відновлення; множник, відкидання.
+@export var heavy_windup: float = 0.4
+@export var heavy_strike_time: float = 0.25
+@export var heavy_recovery: float = 1.0
+@export var heavy_damage: float = 2.2
+@export var heavy_knockback: float = 70.0
+## Скільки стійкості ворога (D265) забирає удар.
+const POISE_LIGHT := 1
+const POISE_FINISHER := 2
+const POISE_HEAVY := 3
+## Блок (D264): удар спереду — така частка шкоди; парирування — удар у перші parry_window с блоку.
+@export var block_factor: float = 0.3
+@export var parry_window: float = 0.18
+## Удар, що збив би героя на стільки секунд і довше (tank, фінішер серії), пробиває блок.
+const GUARD_BREAK := 0.6
 ## Збій героя (D264): на скільки px його відносить від того, хто вдарив, і за який час.
 @export var stagger_push: float = 50.0
 @export var stagger_push_time: float = 0.15
-## Відкидання ворога від удару, px (булава, D203).
+
+## Відкидання ворога поточним ударом, px (булава D203, фінішер, важкий). VFXHooks: > 0 — важке влучання.
 var knockback: float = 0.0
+var _weapon_knockback: float = 0.0
 var _bare_size: Vector2
 var _bare_cooldown: float
 var attack_cooldown: float = 0.0
@@ -30,10 +54,20 @@ var attack_cooldown: float = 0.0
 var state: State = State.READY
 var _state_left: float = 0.0
 var _direction: int = 1
+## Крок серії, що йде або щойно скінчився (0 — перший); _chain_left — скільки ще чекати наступного.
+var combo_step: int = 0
+var _chain_left: float = 0.0
+var _queued: bool = false
+var _poise: int = POISE_LIGHT
+## Кнопку блоку тримають (Player._unhandled_input); блок починається, щойно герой вільний.
+var block_held: bool = false
+var _block_time: float = 0.0
+## D259: навичка, чий каст зараз іде (анімації кастів — BACKLOG 21); удар зриває каст.
+var casting_skill: String = ""
 
 var is_attacking: bool:
 	get:
-		return state == State.SWING
+		return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE]
 
 # Parent reference (for getting direction and signals)
 @onready var player = get_parent()
@@ -52,65 +86,109 @@ func apply_weapon_profile() -> void:
 	if item.is_empty():
 		_hitbox_shape().size = _bare_size
 		attack_cooldown_time = _bare_cooldown
-		knockback = 0.0
-		return
-	var profile: Dictionary = item.weapon_profile
-	_hitbox_shape().size = Vector2(profile.reach, profile.height)
-	attack_cooldown_time = profile.cooldown
-	knockback = profile.knockback
+		_weapon_knockback = 0.0
+	else:
+		var profile: Dictionary = item.weapon_profile
+		_hitbox_shape().size = Vector2(profile.reach, profile.height)
+		attack_cooldown_time = profile.cooldown
+		_weapon_knockback = profile.knockback
+	knockback = _weapon_knockback
 
 func _hitbox_shape() -> RectangleShape2D:
 	return hitbox.get_node(^"CollisionShape2D").shape
 
-## Влучання: відкидання (булава) і стійкість ворога (D265).
+## Влучання: відкидання і стійкість ворога (D265).
 func _on_damage_applied(target: Node, _damage: int) -> void:
 	if knockback > 0.0:
 		target.knockback(signf(target.global_position.x - player.global_position.x) * knockback)
-	target.take_poise(1, player.global_position.x)
+	target.take_poise(_poise, player.global_position.x)
 
 ## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
 ## тож зміна спорядження чи рівня діє одразу, без підписок.
 func hit_damage() -> int:
 	return ServiceLocator.get_game_manager().calculate_physical_damage()
 
+func combo_length() -> int:
+	return COMBO_DAMAGE.size()
+
 func _process(delta: float) -> void:
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 
 func _physics_process(delta: float) -> void:
+	if _chain_left > 0.0:
+		_chain_left -= delta
+	if state == State.BLOCK:
+		_block_time += delta
+		if not block_held:
+			state = State.READY
+		return
 	if state == State.READY:
+		if block_held:
+			_start_block()
+		elif _queued:
+			# Наступний удар серії — кадром пізніше: хітбокс мусить хоч кадр побути вимкненим,
+			# інакше ворог, що стоїть у ньому, не «увійде» вдруге й не отримає удару.
+			_queued = false
+			perform_attack(_direction)
 		return
 	_state_left -= delta
 	if _state_left > 0.0:
 		return
-	if state == State.SWING:
-		_set_hitbox_active(false, _direction)
-	state = State.READY
+	match state:
+		State.SWING:
+			_set_hitbox_active(false, _direction)
+			state = State.READY
+			if combo_step < combo_length() - 1:
+				_chain_left = chain_window
+		State.HEAVY_WINDUP:
+			_strike_heavy()
+		State.HEAVY_STRIKE:
+			_set_hitbox_active(false, _direction)
+			attack_cooldown = heavy_recovery
+			state = State.READY
+		State.STAGGER:
+			state = State.READY
 
 ## Гравець вийшов з дерева посеред дії (зміна сцени, вихід у меню) — дія скінчилась, а не застигла до повернення.
 func _exit_tree() -> void:
 	damage_applier.disable_damage()
 	state = State.READY
+	_queued = false
+	block_held = false
 
 ## Анімацію героя зараз веде бій, а не рух (Player._physics_process її не перемикає).
 func owns_animation() -> bool:
 	return state != State.READY
 
-## Рух вимкнено: героя збито.
+## Рух вимкнено: збій, важкий удар, блок (герой стоїть). Легкі удари рух не гальмують (D223).
 func locks_movement() -> bool:
-	return state == State.STAGGER
+	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK]
 
 func is_staggered() -> bool:
 	return state == State.STAGGER
 
+func is_blocking() -> bool:
+	return state == State.BLOCK
+
+## Легкий удар (D264): перший серії або наступний, якщо попередній щойно скінчився; натиснутий посеред удару — у черзі.
 func perform_attack(last_direction: int) -> void:
+	if state == State.SWING:
+		_queued = combo_step < combo_length() - 1
+		return
 	if state != State.READY or attack_cooldown > 0:
 		return
+	combo_step = combo_step + 1 if _chain_left > 0.0 else 0
+	_chain_left = 0.0
+	var finisher := combo_step == combo_length() - 1
 	state = State.SWING
 	_state_left = swing_time
 	_direction = last_direction
-	attack_cooldown = attack_cooldown_time
-	damage_applier.current_damage = hit_damage()
+	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
+	_poise = POISE_FINISHER if finisher else POISE_LIGHT
+	if finisher:
+		attack_cooldown = attack_cooldown_time  # відновлення після серії
+	damage_applier.current_damage = roundi(hit_damage() * COMBO_DAMAGE[combo_step])
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	animation_player.play(&"Attack")
@@ -120,13 +198,60 @@ func perform_attack(last_direction: int) -> void:
 	EventBus.player_attacked.emit(player, last_direction)
 	_set_hitbox_active(true, last_direction)
 
+## Важкий удар (D264): замах heavy_windup (удар по героєві його зриває), потім удар ×heavy_damage з відкиданням.
+func heavy_attack(last_direction: int) -> void:
+	if state != State.READY or attack_cooldown > 0:
+		return
+	state = State.HEAVY_WINDUP
+	_state_left = heavy_windup
+	_direction = last_direction
+	_chain_left = 0.0
+	combo_step = 0
+	animation_player.play(&"HeavyWindup")
+	player.animation = &"HeavyWindup"
+	EventBus.player_heavy_windup.emit(player, last_direction)
+
+func _strike_heavy() -> void:
+	state = State.HEAVY_STRIKE
+	_state_left = heavy_strike_time
+	knockback = maxf(_weapon_knockback, heavy_knockback)
+	_poise = POISE_HEAVY
+	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
+	animation_player.play(&"HeavyStrike")
+	player.animation = &"HeavyStrike"
+	EventBus.player_attacked.emit(player, _direction)
+	_set_hitbox_active(true, _direction)
+
+func _start_block() -> void:
+	state = State.BLOCK
+	_block_time = 0.0
+	_chain_left = 0.0
+	animation_player.play(&"Block")
+	player.animation = &"Block"
+
+## Удар по героєві в блоці (D264): &"parry" — у перші parry_window с, &"block" — спереду, &"" — не захищено
+## (не в блоці, удар ззаду, не ворог).
+func guard_against(source: Node) -> StringName:
+	if state != State.BLOCK or not source is DefaultEnemy:
+		return &""
+	var side: float = signf(source.global_position.x - player.global_position.x)
+	if side != 0.0 and side != player.last_direction:
+		return &""
+	return &"parry" if _block_time <= parry_window else &"block"
+
 ## Удар ворога збив героя (D264): дія, що йшла, зірвана, герой відлітає від [param from_x] і [param duration] с
 ## не керується. «Вороги інколи заморожують героя» (D253) — довгий збій від tank і фінішера серії.
+## Каст навички, що йшов, зірвано (D259): SP і кулдаун списуються, ефекту немає.
 func stagger(duration: float, from_x: float) -> void:
-	if state == State.SWING:
+	if state in [State.SWING, State.HEAVY_STRIKE]:
 		_set_hitbox_active(false, _direction)
+	if casting_skill != "":
+		ServiceLocator.get_skill_manager().interrupt_cast(casting_skill)
+		casting_skill = ""
 	state = State.STAGGER
 	_state_left = duration
+	_queued = false
+	_chain_left = 0.0
 	animation_player.play(&"Hurt")
 	player.animation = &"Hurt"
 	var away: float = signf(player.global_position.x - from_x)
