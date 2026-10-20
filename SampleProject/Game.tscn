@@ -351,6 +351,18 @@ mouse_filter = 2
 theme = ExtResource("15_gameuitheme")
 
 [node name="SkillHotbar" parent="UICanvas/CombatHUD" instance=ExtResource("12_hotbar")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -124.0
+offset_top = -111.0
+offset_right = 124.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
 
 [node name="PlayerVitalsPanel" parent="UICanvas/CombatHUD" instance=ExtResource("13_vitals")]
 

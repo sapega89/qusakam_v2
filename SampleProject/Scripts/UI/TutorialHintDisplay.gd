@@ -10,7 +10,7 @@ class_name TutorialHintDisplay
 # Tutorial hints for different gameplay elements
 const TUTORIAL_HINTS = {
 	"movement": "Use A/D or Arrow Keys to move • Space to jump",
-	"attack": "Press J or Z to attack enemies",
+	"attack": "Click the left mouse button to attack enemies",
 	"first_kill": "Defeating enemies grants XP and coins!",
 	"level_up": "Level up to increase HP and damage",
 	"xp_bar": "XP bar fills with each kill • Level up when full",
