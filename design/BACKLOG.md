@@ -183,8 +183,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     hum), footsteps per surface, jump/land, ladder, doors, pickups, UI; **combat** — every swing (hit and miss), impact,
     block/parry clang, dash, hero and enemy grunts / hurt / death, skill casts; **bosses voiced** — roars, attack shouts,
     a few short lines in their cutscenes; **characters** — every speaking character ("всіх") gets a voice: dialogue
-    "babble" blips in their own timbre while text types (Undertale-style), plus short barks (greetings, battle cries,
-    companion calls). Today: `AudioManager.gd`, 21 audio files. Plan first: `design/audio_plan.md` — sources by licence
+    "babble" blips in their own timbre while text types (Undertale-style), plus short **voiced phrases**: each character's own spoken greeting when the hero talks to
+    them (Sapega «так, але короткі фрази — озвучені привітання персонажа»), battle cries, companion calls. Today: `AudioManager.gd`, 21 audio files. Plan first: `design/audio_plan.md` — sources by licence
     (CC0 packs such as Kenney / OpenGameArt first; local generators only with a licence that allows release — TTS:
     Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
     non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
