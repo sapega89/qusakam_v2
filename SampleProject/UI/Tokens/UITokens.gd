@@ -238,6 +238,8 @@ const SHOP_ROW_HEIGHT := 44
 const SHOP_ROW_GAP := 2
 const SHOP_ROW_PAD_H := 12
 const SHOP_ROW_PAD_V := 10
+## Figma menu-skills 58:453: рядок навички — py 10 + Medium 18 (skills_ui_mapping); Button без тексту сам такої висоти не має.
+const SKILL_ROW_HEIGHT := 44
 const SHOP_ROW_ICON := 22
 const SHOP_COL_COUNT := 120
 const SHOP_COL_PRICE := 150

@@ -87,6 +87,7 @@ theme_type_variation = &"TreePanel"
 
 [node name="PrimaryScroll" type="ScrollContainer" parent="Center/Body/Columns/PrimaryPanel"]
 layout_mode = 2
+follow_focus = true
 horizontal_scroll_mode = 0
 
 [node name="PrimaryColumn" type="VBoxContainer" parent="Center/Body/Columns/PrimaryPanel/PrimaryScroll"]
@@ -112,6 +113,7 @@ theme_override_constants/separation = 0
 [node name="SecondaryScroll" type="ScrollContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryBox"]
 layout_mode = 2
 size_flags_vertical = 3
+follow_focus = true
 horizontal_scroll_mode = 0
 
 [node name="SecondaryColumn" type="VBoxContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryBox/SecondaryScroll"]

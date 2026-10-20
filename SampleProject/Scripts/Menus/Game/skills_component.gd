@@ -256,6 +256,7 @@ func _make_skill_row(definition: SkillDefinition) -> Button:
 	row.toggle_mode = true
 	row.button_group = _row_group
 	row.focus_mode = Control.FOCUS_ALL
+	row.custom_minimum_size.y = UITokens.SKILL_ROW_HEIGHT  # назва — дочірня Label, кнопка без тексту була б 20 px
 	row.pressed.connect(_on_row_selected.bind(definition.id))
 	row.focus_entered.connect(_on_row_selected.bind(definition.id))
 	# Сигнал gui_input приходить раніше, ніж Button сам «з'їдає» ui_accept, — інакше вивчити навичку
