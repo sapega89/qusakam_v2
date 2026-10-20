@@ -13,12 +13,21 @@ enum Mode {
 
 const ENTER_TIME := 0.35
 const LEAVE_TIME := 0.4
-## Ступні героя нижче його центру: колізія 40 заввишки з зсувом 4 (Player.tscn).
-const HERO_FEET := 24.0
+## Рядок ступнів героя нижче його центру: Sprite2D по центру, ×1,5, ступні на рядку 56 кадру 64 px — (56 − 32) × 1,5;
+## зсув (-32, -58) компаньйонів ставить їхній рядок ступнів (58) так само на початок вузла. Не низ колізії (24):
+## спрайти героя й ворогів малюють ступні на ~13 px нижче за неї, і компаньйони висіли над дорогою.
+const HERO_FEET := 36.0
+## Де компаньйон стає: позаду героя (монети, кішка) і перед ворогом (наскок) — не на них.
+const STAND_BEHIND := 70.0
+const STAND_BEFORE_TARGET := 55.0
+const STAND_FRONT := 30.0
+## Кішка з'являється позаду Алісиї.
+const PET_SPAWN_BEHIND := 20.0
 const COIN_DROP := 140.0
 const COIN_FALL_TIME := 0.25
 const PET_HITS := 3
-const PET_HIT_GAP := 0.2
+
+signal _landed
 
 @export var mode: Mode = Mode.FRONT
 ## Кадр анімації strike, на якому удар влучає.
@@ -30,11 +39,13 @@ const PET_HIT_GAP := 0.2
 @export var reach := 300.0
 @export var coin_scene: PackedScene
 @export var pet_scene: PackedScene
+## Кадр анімації strike кішки, на якому лапа вдаряє (по удару на кожне коло анімації).
+@export var pet_swipe_frame := 1
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 var _dir := 1
 ## Монети й кішка ще в дорозі — компаньйон не йде, доки вони не вдарять (бʼють від його імені).
-var _pending: Array[Tween] = []
+var _in_flight := 0
 
 
 func _ready() -> void:
@@ -49,11 +60,11 @@ func start(hero: Node2D) -> void:
 	var camera := get_viewport().get_camera_2d()
 	var half_view: float = get_viewport_rect().size.x / camera.zoom.x / 2.0
 	global_position = Vector2(camera.get_screen_center_position().x - _dir * (half_view + 40.0), hero.global_position.y + HERO_FEET)
-	var stand_x: float = hero.global_position.x + _dir * 30.0
+	var stand_x: float = hero.global_position.x + _dir * STAND_FRONT
 	if mode == Mode.NEAREST and target != null:
-		stand_x = target.global_position.x - _dir * 30.0
+		stand_x = target.global_position.x - _dir * STAND_BEFORE_TARGET
 	elif mode == Mode.COINS or mode == Mode.PET:
-		stand_x = hero.global_position.x - _dir * 30.0
+		stand_x = hero.global_position.x - _dir * STAND_BEHIND
 	_face(_dir)
 	sprite.play(&"enter")
 	var run_in := create_tween()
@@ -64,9 +75,8 @@ func start(hero: Node2D) -> void:
 		await sprite.frame_changed
 	_strike(hero, target)
 	await sprite.animation_finished
-	for tween in _pending:
-		if tween.is_running():
-			await tween.finished
+	while _in_flight > 0:
+		await _landed
 	_face(-_dir)
 	sprite.play(&"leave" if sprite.sprite_frames.has_animation(&"leave") else &"enter")
 	var run_out := create_tween()
@@ -108,28 +118,39 @@ func _drop_coin(enemy: Node2D) -> void:
 	coin.global_position = landing - Vector2(0, COIN_DROP)
 	coin.get_node(^"Sprite").play(&"spin")
 	var fall := coin.create_tween()
-	_pending.append(fall)
+	_in_flight += 1
 	fall.tween_property(coin, ^"global_position", landing, COIN_FALL_TIME).set_ease(Tween.EASE_IN)
 	fall.tween_callback(func() -> void:
 		_hit(enemy)
-		coin.queue_free())
+		coin.queue_free()
+		_in_flight -= 1
+		_landed.emit())
 
 
 func _send_pet(enemy: Node2D) -> void:
 	var cat: Node2D = pet_scene.instantiate()
+	# Перед Алісиєю в дереві — малюється під нею; позаду неї, а не в її ступнях.
 	get_parent().add_child(cat)
-	cat.global_position = global_position
+	get_parent().move_child(cat, get_index())
+	cat.global_position = global_position + Vector2(-_dir * PET_SPAWN_BEHIND, 0)
 	var cat_sprite: AnimatedSprite2D = cat.get_node(^"Sprite")
 	cat_sprite.flip_h = enemy.global_position.x < cat.global_position.x
 	cat_sprite.play(&"run")
+	_in_flight += 1
 	var run := cat.create_tween()
-	_pending.append(run)
 	run.tween_property(cat, ^"global_position:x", enemy.global_position.x - signf(enemy.global_position.x - cat.global_position.x) * 18.0, 0.3)
-	run.tween_callback(cat_sprite.play.bind(&"strike"))
-	for i in PET_HITS:
-		run.tween_interval(PET_HIT_GAP)
-		run.tween_callback(_hit.bind(enemy))
-	run.tween_callback(cat.queue_free)
+	await run.finished
+	cat_sprite.play(&"strike")
+	# Удар — на кадрі змаху лапи, як strike_frame у компаньйона, а не за таймером.
+	var hits := 0
+	while hits < PET_HITS:
+		await cat_sprite.frame_changed
+		if cat_sprite.frame == pet_swipe_frame:
+			_hit(enemy)
+			hits += 1
+	cat.queue_free()
+	_in_flight -= 1
+	_landed.emit()
 
 
 func _enemies_in_front(hero: Node2D) -> Array[Node]:

@@ -78,6 +78,15 @@ func _initialize() -> void:
 	print("[3] Алісия: her cat claws the nearest enemy 3 times")
 	var hp: int = near.current_health
 	ck(cm.call_next() == "alisia" and _actors().size() == 1, "Алісия runs in")
+	await process_frame
+	# Ступні — як намальовано: низ непрозорих пікселів поточного кадру героя й компаньйона на екрані.
+	var hs: Sprite2D = hero.get_node(^"Sprite2D")
+	var himg: Image = hs.texture.get_image()
+	var hero_feet: float = hs.to_global(hs.offset + Vector2(0, himg.get_used_rect().end.y - himg.get_height() / 2.0)).y
+	var cs: AnimatedSprite2D = _actors()[0].get_node(^"Sprite")
+	var cimg: Image = cs.sprite_frames.get_frame_texture(cs.animation, cs.frame).get_image()
+	var comp_feet: float = cs.to_global(cs.offset + Vector2(0, cimg.get_used_rect().end.y)).y
+	ck(absf(hero_feet - comp_feet) <= 1.5, "Алісия's feet on the hero's foot line (%.1f vs %.1f)" % [comp_feet, hero_feet])
 	await create_timer(2.5).timeout
 	ck(near.current_health == hp - 3 * 8, "the cat clawed 3 × 8 (%d → %d)" % [hp, near.current_health])
 	ck(_actors().is_empty(), "Алісия left and freed herself")

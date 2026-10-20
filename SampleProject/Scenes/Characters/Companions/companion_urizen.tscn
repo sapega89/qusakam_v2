@@ -107,7 +107,7 @@ animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_1")}, 
 [node name="Companion_urizen" type="Node2D"]
 script = ExtResource("script")
 mode = 2
-strike_frame = 6
+strike_frame = 3
 damage = 30
 stun = 1.0
 reach = 260.0

@@ -47,7 +47,6 @@ region = Rect2(192, 0, 64, 64)
 animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}, {"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}], "loop": true, "name": &"run", "speed": 14}, {"frames": [{"duration": 1.0, "texture": SubResource("Atlas_7")}, {"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}], "loop": true, "name": &"strike", "speed": 12}]
 
 [node name="AssistCat" type="Node2D"]
-z_index = 5
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

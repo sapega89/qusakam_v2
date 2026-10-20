@@ -57,32 +57,52 @@ ALISIA_LOOK = (
 )
 ALISIA_FRONT = (
     "turned to face the viewer: a front view of her standing idle, heterochromia — one bright green eye and one bright "
-    "sky-blue eye, clearly different colours, the silver "
-    "ponytail behind her head, the longbow in her hand"
-)
+    "sky-blue eye, clearly different colours, her long silver high ponytail falling forward over her right shoulder "
+    "down to her chest, clearly visible beside her face, her forehead uncovered, the longbow in her hand"
+)  # хвіст за головою у фас читався як шолом чи гулька
 ALISIA_STEP = (
     "running to the right in the same side view facing right, %s leg stepping forward, %s leg back, the ponytail flying "
     "behind her, the longbow in her hand"
 )
+STEP_B = (
+    "in the same side view facing right, mid-stride with the opposite leg: the far leg, half hidden behind the body, "
+    "reaching forward, the near leg pushed far back behind, the near arm swinging forward"
+)
 ALISIA_AIM = "in the same side view facing right: raising her longbow in front of her, an arrow nocked"
 ALISIA_DRAW = "in the same side view facing right: drawing the bowstring back to her cheek, the longbow aimed forward"
 ALISIA_RELEASE = (
-    "in the same side view facing right: the arrow just released, her bow arm still stretched forward, her string hand "
-    "pulled back past her ear"
+    "in the same side view facing right: the arrow is gone, already flown away — no arrow on the bow; her bow arm "
+    "stretched straight forward holding the empty longbow, the bowstring straight, her string hand open and pulled back "
+    "past her ear"
 )
 CAT_LOOK = (
-    "a small white tiger cub with brown stripes, blue eyes and glowing cyan spiral markings on its fur, standing on all "
-    "four paws, about half the height of the picture, at the bottom of the picture"
+    "a tiny white tiger cub with soft off-white fur, brown stripes, blue eyes and glowing cyan spiral markings on its "
+    "fur, standing on all four paws. It is very small, kitten-sized: the whole cub fits in the bottom third of the picture, "
+    "its ears no higher than the belt of the character in picture 1, a large empty magenta space above it"
+)  # кошеня було ростом з героя — тепер 29 px, ~60 % його 48; референс Sapega тягнув розмір угору — без нього
+CAT_FRONT = (
+    "turned to face the viewer: sitting on its haunches, a front view with both blue eyes, its tail curled by its paws; "
+    "just as tiny as before — the sitting cub fits in the bottom half of the picture, a large empty magenta space above it"
 )
-CAT_FRONT = "turned to face the viewer: sitting on its haunches, a front view with both blue eyes, its tail curled by its paws"
-CAT_RUN = "in the same side view facing right, running fast: %s"
-CAT_SWIPE = "in the same side view facing right: %s"
-BASE_ALISIA = ("Replace the character in picture 1 with the woman from picture 2 — " + ALISIA_LOOK + " — drawn in exactly the pixel art "
-        "style of the character in picture 1: the same big square pixels, chibi proportions, thick dark outline and flat "
-        "shading. Strict side view: her head and body in profile facing right, her eye and nose on the right side of her face, looking ahead to the right. Standing idle. Keep the plain flat magenta background.")
-BASE_CAT = ("Replace the character in picture 1 with the tiger cub from picture 2 — " + CAT_LOOK + " — drawn in exactly the pixel art "
-        "style of the character in picture 1: the same big square pixels, chibi proportions, thick dark outline and flat "
-        "shading. Strict side view: its head and body in profile facing right. Keep the plain flat magenta background.")
+CAT_RUN = (
+    "in the same side view facing right, the same small size, running fast: %s; strict profile, its head in profile "
+    "looking ahead to the right, not at the viewer"
+)
+CAT_SWIPE = "in the same side view facing right, the same small size, its head in profile: %s"
+BASE_ALISIA = (
+    "Replace the character in picture 1 with the woman from picture 2 — "
+    + ALISIA_LOOK
+    + " — drawn in exactly the pixel art "
+    "style of the character in picture 1: the same big square pixels, chibi proportions, thick dark outline and flat "
+    "shading. Strict side view: her head and body in profile facing right, her eye and nose on the right side of her face, looking ahead to the right. Standing idle. Keep the plain flat magenta background."
+)
+BASE_CAT = (
+    "Replace the character in picture 1 with "
+    + CAT_LOOK
+    + " — drawn in exactly the pixel art style of the character in picture 1: the same big square pixels, chibi "
+    "proportions, thick dark outline and flat shading. Strict side view: its head and body in profile facing right, "
+    "its eye and nose on the right side of its face, looking ahead to the right. Keep the plain flat magenta background."
+)
 # rows — рядки листа: (анімація, підказки кадрів); None — сам перший кадр (base).
 CHARACTERS = {
     "bandit": dict(
@@ -208,10 +228,12 @@ CHARACTERS = {
             ("idle", [URIZEN_FRONT] * 3 + ["BOB:45:idle:0"] * 3),
             (
                 "enter",
-                [URIZEN_STEP % ("left", "right")] * 3
-                + [None] * 3
-                + [URIZEN_STEP % ("right", "left")] * 3
-                + [None] * 3,
+                ([URIZEN_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                + [None]
+                + [STEP_B] * 2
+                + [None]
+            )
+            * 2,
             ),
             (
                 "strike",
@@ -244,17 +266,21 @@ CHARACTERS = {
             ("idle", [ASTRIT_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
             (
                 "enter",
-                [ASTRIT_STEP % ("left", "right")] * 3
-                + [None] * 3
-                + [ASTRIT_STEP % ("right", "left")] * 3
-                + [None] * 3,
+                ([ASTRIT_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                + [None]
+                + [STEP_B] * 2
+                + [None]
+            )
+            * 2,
             ),
             (
                 "run",
-                [ASTRIT_STEP % ("left", "right")] * 3
-                + [None] * 3
-                + [ASTRIT_STEP % ("right", "left")] * 3
-                + [None] * 3,
+                ([ASTRIT_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                + [None]
+                + [STEP_B] * 2
+                + [None]
+            )
+            * 2,
             ),
             (
                 "strike",
@@ -280,26 +306,55 @@ CHARACTERS = {
         base=BASE_ALISIA,
         rows=[
             ("idle", [ALISIA_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
-            ("enter", [ALISIA_STEP % ("left", "right")] * 3 + [None] * 3 + [ALISIA_STEP % ("right", "left")] * 3 + [None] * 3),
+            (
+                "enter",
+                (
+                    [ALISIA_STEP % ("left", "right")] * 2
+                    + [None]
+                    + [STEP_B] * 2
+                    + [None]
+                )
+                * 2,
+            ),
             # кішку посилає на кадрі 4 (strike_frame) — тятива щойно відпущена
-            ("strike", [None, ALISIA_AIM, ALISIA_DRAW, ALISIA_DRAW] + [ALISIA_RELEASE] * 3 + [ALISIA_AIM, None, None]),
+            (
+                "strike",
+                [None, ALISIA_AIM, ALISIA_DRAW, ALISIA_DRAW]
+                + [ALISIA_RELEASE] * 3
+                + [ALISIA_AIM, None, None],
+            ),
         ],
     ),
     "cat": dict(
         rows_out="SampleProject/Assets/Characters/Companions/cat",
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        design="assets/references/companions/cat_1_tiger.webp",
-        seed=61,
+        seed=62,
         colors=16,
         floor=58,
-        who="the same small white tiger cub with brown stripes, blue eyes and glowing cyan spiral markings",
+        who="the same small creamy off-white tiger cub with brown stripes, blue eyes and glowing cyan spiral markings",
         base=BASE_CAT,
         rows=[
             ("idle", [CAT_FRONT] * 2 + ["BOB:48:idle:0"] * 2),
-            ("run", [CAT_RUN % "stretched out mid-leap, front paws reaching forward, hind legs extended behind"] * 3
-             + [CAT_RUN % "body bunched together, all four paws gathered under it"] * 3),
-            ("strike", [CAT_SWIPE % "rearing up on its hind legs, one front paw raised high with claws out"] * 2
-             + [CAT_SWIPE % "pouncing forward and swiping down with its claws"] * 2),
+            (
+                "run",
+                [
+                    CAT_RUN
+                    % "stretched out mid-leap, front paws reaching forward, hind legs extended behind"
+                ]
+                * 3
+                + [CAT_RUN % "body bunched together, all four paws gathered under it"]
+                * 3,
+            ),
+            (
+                "strike",
+                # замах / удар витягнутою лапою (кадри 1–2, по ньому б'є pet_swipe_frame) / повернення
+                [
+                    CAT_SWIPE % "winding up, crouched on its hind legs, one front paw drawn back with claws out",
+                    CAT_SWIPE % "swiping forward, one front paw fully extended straight ahead with claws out",
+                    CAT_SWIPE % "swiping forward, one front paw fully extended straight ahead with claws out",
+                    CAT_SWIPE % "recovering, the paw coming back down, standing on all four paws",
+                ],
+            ),
         ],
     ),
     # Нові кадри героя з його ж кадру художника (D239): Idle дихає, Jump/Fall, Roll, Climb — досі позичали біг і ходьбу.
@@ -565,6 +620,41 @@ def from_file(path):
 
 
 SPECIAL = ("BOB", "ROT", "FILE")
+OUTLINE = np.array([0x28, 0x17, 0x2A], np.float32)  # контур героя
+MAX_CHROMA = 0.7 * 255  # найяскравіший колір героя — 171: акценти не перекрикують його
+
+
+def clamp_chroma(pal):
+    """Насиченість (max−min каналів) не вище MAX_CHROMA: тягне мін. канали до макс., яскравість лишається."""
+    hi = pal.max(axis=1, keepdims=True)
+    chroma = hi - pal.min(axis=1, keepdims=True)
+    k = np.minimum(1.0, MAX_CHROMA / np.maximum(chroma, 1.0))
+    return hi - (hi - pal) * k
+
+
+def polish(rgb, op):
+    """Після палітри (не для героя): прибрати поодинокі пікселі (≤1 непрозорий сусід з 8), майже чорний край
+    силуету — у контур героя, і замкнути контур — 1 px OUTLINE зовні там, де край не темний."""
+    rgb, op = rgb.copy(), op.copy()
+
+    def neighbours(m, diag):
+        p = np.pad(m, 1)
+        shifts = [(-1, 0), (1, 0), (0, -1), (0, 1)] + (
+            [(-1, -1), (-1, 1), (1, -1), (1, 1)] if diag else []
+        )
+        return sum(
+            p[1 + dy : 1 + dy + m.shape[0], 1 + dx : 1 + dx + m.shape[1]].astype(int)
+            for dy, dx in shifts
+        )
+
+    op &= neighbours(op, True) > 1
+    dark = rgb.max(axis=2) < 64
+    edge = op & (neighbours(~op, False) > 0)
+    rgb[edge & dark] = OUTLINE
+    outer = ~op & (neighbours(op & ~dark, False) > 0)
+    rgb[outer] = OUTLINE
+    op |= outer
+    return rgb, op
 
 
 def hero_palette():
@@ -650,6 +740,7 @@ if __name__ == "__main__":
         pal_rgb = np.array(
             pim.getpalette()[: 3 * char["colors"]], dtype=np.float32
         ).reshape(-1, 3)
+        pal_rgb = clamp_chroma(pal_rgb)
     floor = char.get(
         "floor", feet_row(op0)
     )  # ступні — на рядок першого кадру; floor — явно (лінія ніг героя 56)
@@ -664,6 +755,8 @@ if __name__ == "__main__":
                     axis=2
                 )
             ]
+            if char.get("palette") != "hero":  # кадри героя — тільки кольори художника, без змін
+                q, op = polish(q, op)
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floor - feet_row(op)
             frame = np.roll(frame, shift, axis=0)
