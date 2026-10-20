@@ -312,6 +312,27 @@ LAYERS = {
         "standing alone in the middle of the frame with empty space on both sides, its base resting on the bottom edge, "
         f"warm light on the top, cool violet shadows in the cracks, {CHROMA}",
     ),
+    # Місце медитації на вершині скелі Прайду (BACKLOG feedback 8): плаский камінь, на якому сідає Кусакам.
+    "Canyon/gen_shrine": dict(
+        seed=105,
+        rows=120,
+        top=0,
+        small=2,  # модель малює камінь на пів шару — пікселі гри з блоків 6×6, камінь удвічі менший
+        seam="none",
+        trim=True,
+        keep=44,  # нижче (у пікселях після small) — смуга землі під каменем
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        prompt="one single small low flat round sandstone slab for meditation, wide and only knee high, with a small "
+        "cairn of three smooth stacked flat stones at its back end, an ancient spiral rune carved into its front face "
+        "glowing softly golden, a faint golden shimmer rising above it, standing alone in the middle of the frame and "
+        "filling only a third of its width, empty space on both sides, its base resting on the bottom edge, warm light "
+        f"on the top, cool violet shadows in the cracks, {CHROMA}",
+    ),
     "Canyon/gen_bridge": dict(
         seed=103,
         rows=48,
@@ -512,10 +533,12 @@ def generate(layer):
     return img
 
 
-def shrink(img, key, spill=0):
-    """Фон — прозорий; зменшення в SCALE разів рахує колір лише з непрозорих пікселів. spill (для magenta) — ще й
-    усе, де червоний і синій обидва більші за зелений на spill: темні пурпурні тіні, що модель кидає на фон."""
-    rows = img.shape[0] // SCALE
+def shrink(img, key, spill=0, block=SCALE):
+    """Фон — прозорий; зменшення в block разів (SCALE, для дрібного предмета — більше) рахує колір лише з непрозорих
+    пікселів. spill (для magenta) — ще й усе, де червоний і синій обидва більші за зелений на spill: темні пурпурні
+    тіні, що модель кидає на фон."""
+    rows = img.shape[0] // block
+    cols = img.shape[1] // block
     a = np.ones(img.shape[:2], np.float32)
     if key:
         bg = np.median(img[:24].reshape(-1, 3), axis=0)
@@ -526,10 +549,10 @@ def shrink(img, key, spill=0):
         img[..., 1] = np.minimum(img[..., 1], np.maximum(img[..., 0], img[..., 2]))  # зелений відсвіт країв
 
     def blocks(m):
-        return m.reshape(rows, SCALE, W, SCALE, -1).sum(axis=(1, 3))
+        return m[: rows * block, : cols * block].reshape(rows, block, cols, block, -1).sum(axis=(1, 3))
 
     asum = blocks(a[..., None])
-    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[..., 0] >= SCALE * SCALE / 2
+    return blocks(img * a[..., None]) / np.maximum(asum, 1e-6), asum[..., 0] >= block * block / 2
 
 
 def drop_edges(opaque):
@@ -555,7 +578,7 @@ def fill_down(rgb, opaque):
     last = np.maximum.accumulate(
         np.where(opaque, np.arange(len(rgb))[:, None], -1), axis=0
     )
-    return rgb[np.maximum(last, 0), np.arange(W)[None, :]], last >= 0
+    return rgb[np.maximum(last, 0), np.arange(rgb.shape[1])[None, :]], last >= 0
 
 
 def quantize(rgb, opaque, colors, method="mediancut"):
@@ -577,13 +600,14 @@ if __name__ == "__main__":
             x0, x1 = map(int, sys.argv[sys.argv.index("--repaint") + 1].split("-"))
             d = float(sys.argv[sys.argv.index("--denoise") + 1]) if "--denoise" in sys.argv else 0.6
             repaint(layer, x0, x1, d)
-        strip, strip_opaque = shrink(generate(layer), layer["key"], layer.get("spill", 0))
+        # small — предмет, який модель малює завеликим: пікселі гри з більшого блоку
+        strip, strip_opaque = shrink(generate(layer), layer["key"], layer.get("spill", 0), SCALE * layer.get("small", 1))
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
             strip_opaque = drop_edges(strip_opaque)
             rise = np.argmax(strip_opaque.any(axis=1)) - 6
             strip, strip_opaque = np.roll(strip, -rise, axis=0), np.roll(strip_opaque, -rise, axis=0)
-        rgb, opaque = np.zeros((H, W, 3)), np.zeros((H, W), bool)
+        rgb, opaque = np.zeros((H, strip.shape[1], 3)), np.zeros((H, strip.shape[1]), bool)
         rgb[layer["top"] : layer["top"] + len(strip)] = strip
         opaque[layer["top"] : layer["top"] + len(strip)] = strip_opaque
         if layer["fill"]:

@@ -28,6 +28,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/6.png" id="roll6"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Climb/1.png" id="climb1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Climb/2.png" id="climb2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/1.png" id="meditate1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/2.png" id="meditate2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yj7bn"]
 size = Vector2(24, 40)
@@ -180,6 +182,23 @@ tracks/0/keys = {
 "values": [ExtResource("climb1"), ExtResource("climb2")]
 }
 
+[sub_resource type="Animation" id="Animation_meditate"]
+resource_name = "Meditate"
+length = 2.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("meditate1"), ExtResource("meditate2")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
 _data = {
 &"Attack": SubResource("Animation_attack"),
@@ -187,6 +206,7 @@ _data = {
 &"Fall": SubResource("Animation_fall"),
 &"Idle": SubResource("Animation_idle"),
 &"Jump": SubResource("Animation_jump"),
+&"Meditate": SubResource("Animation_meditate"),
 &"RESET": SubResource("Animation_reset"),
 &"Roll": SubResource("Animation_roll"),
 &"Run": SubResource("Animation_run"),

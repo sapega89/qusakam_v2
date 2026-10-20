@@ -73,6 +73,16 @@ when the second staged beat (abduction, Mayor's Hall) needs the same moves. No s
 Test: `verify_canyon_exit` [2]–[4] (real `move_left` input, the hero's frame covered by the rock's opaque
 pixels, camera above the room, no Fall, HP unchanged, road arrival).
 
+## Built (2026-10-20) — Meditation on the summit, D257
+
+The abduction beat staged with the same moves as the descent (second use — still inline in `Canyon.gd`, the
+helpers are three tweens; extract when a third beat needs them). `MeditationTrigger` on the Pride Rock summit
+(`EXPLORATION` → `CUTSCENE_ABDUCTION`) — the old full-height trigger at the rock's west foot is gone, so nothing
+fires before the climb. `_on_abduction_cutscene_state`: input taken, walk to `Meditation/Seat`, `Canyon_Exploration`
+(bubble), `Meditate` pose (re-applied after each dialogue start: the dialogue manager resets the hero to Idle),
+camera `top_level` tween to `Meditation/Look`, `ScreenFade` + `VillageAbduction`, light, `Canyon_AbductionCutscene`,
+camera back, control back. Test: `verify_canyon_exit` [0] (real climb with move_left + jump from the east foot).
+
 ## Slices
 
 ### Slice 1 — Cutscene runner + one beat

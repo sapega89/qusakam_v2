@@ -17,3 +17,7 @@ game's pixel and palette. A Steam release has to disclose AI-generated content. 
 D256 (the descent cutscene): `gen_rock.png` — the foreground boulder Kusakam climbs down behind (`ForegroundRock`,
 z 20) — and `gen_bridge.png` — the rope bridge, cut into slices by `build_canyon.gd` (replaced the procedural
 `bridge_plank/post/rope.png`) — are **AI-generated** the same way (`comfy_backdrop.py`, Qwen-Image, Apache 2.0).
+
+D257 (meditation on the summit): `gen_shrine.png` — the meditation stone with a cairn and a glowing rune on top of
+the Pride Rock (`Meditation/Shrine`) — **AI-generated** the same way (`comfy_backdrop.py`, Qwen-Image, Apache 2.0;
+`small=2`: game pixels from 6×6 blocks, the model painted the stone too big).

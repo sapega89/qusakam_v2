@@ -1,5 +1,6 @@
 extends SceneTree
 
+## Медитація на вершині скелі (feedback 8): викрадення — лише після підйому й медитації.
 ## Спуск з каньйону (D256): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
 ## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже на дорозі. До села — просто край.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
@@ -50,28 +51,64 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
-	print("[0] Canyon I: the trigger plays Canyon_Exploration, the raid over black, then the ridge (Sapega, 2026-10-16)")
+	print("[0] The abduction waits for the climb: on the summit Kusakam sits to meditate, the camera drifts left, the raid (Sapega, 2026-10-20)")
 	await _enter_canyon(game, {"canyon_intro_complete": true})
 	ck(game.map.get_current_state_name() == "EXPLORATION", "waits in EXPLORATION (%s)" % game.map.get_current_state_name())
-	ck(started.is_empty(), "nothing plays before the trigger (%s)" % [started])
-	var trigger: Area2D = game.map.get_node("StateChangeTrigger2")
-	game.player.global_position = trigger.get_node("CollisionShape2D").global_position
+	var player0: Node2D = game.player
+	player0.global_position = Vector2(1040, 360)  # біля західного підніжжя скелі, де раніше стояв тригер
 	for i in 30: await process_frame
-	ck(not started.is_empty() and started[0] == "Canyon_Exploration", "Canyon_Exploration first (%s)" % [started])
-	await _drain(dm)
-	# Напад на село — у Canyon, поверх чорного (Sapega, 2026-10-16).
-	await _until(func() -> bool: return started.has("VillageAbduction"), 5.0)
+	ck(started.is_empty() and game.map.get_current_state_name() == "EXPLORATION", "nothing plays at the foot of the rock (%s)" % [started])
+	# Справжній шлях: від східного підніжжя вгору терасами — ліворуч і стрибки.
+	player0.global_position = Vector2(2050, 360)
+	for i in 20: await process_frame
+	var anim0: AnimationPlayer = player0.get_node(^"AnimationPlayer")
+	var camera0: Camera2D = player0.get_node(^"Camera2D")
+	var on_top_before := false
+	Input.action_press(&"move_left")
+	var climb_start := Time.get_ticks_msec()
+	while game.map.get_current_state_name() == "EXPLORATION" and Time.get_ticks_msec() - climb_start < 12000:
+		if player0.global_position.x < 1550 and player0.global_position.y < 200:
+			on_top_before = on_top_before or started.is_empty()
+		Input.action_press(&"jump")
+		for i in 14: await process_frame
+		Input.action_release(&"jump")
+		for i in 14: await process_frame
+	Input.action_release(&"move_left")
+	ck(on_top_before, "on the summit before anything plays: the climb comes first")
+	ck(game.map.get_current_state_name() == "CUTSCENE_ABDUCTION", "the meditation spot on the summit starts the cutscene (%s)" % game.map.get_current_state_name())
+	ck(player0.global_position.y < 216.0, "it fires up on the rock (y=%.0f)" % player0.global_position.y)
+	ck(player0.event, "the cutscene takes the input")
+	var seat: Vector2 = game.map.get_node(^"Meditation/Seat").global_position
+	await _until(func() -> bool: return anim0.current_animation == "Meditate", 10.0)
+	ck(started.size() > 0 and started[0] == "Canyon_Exploration", "Canyon_Exploration first (%s)" % [started])
+	ck(anim0.current_animation == "Meditate" and player0.global_position.distance_to(seat) < 2.0,
+			"Kusakam sits down at the stone (%s at %s)" % [anim0.current_animation, player0.global_position])
+	var x_sit: float = camera0.get_screen_center_position().x
+	var x_seat := player0.global_position.x
+	Input.action_press(&"move_right")
+	for i in 20: await process_frame
+	Input.action_release(&"move_right")
+	ck(absf(player0.global_position.x - x_seat) < 1.0 and anim0.current_animation == "Meditate", "move_right does nothing, he keeps sitting")
+	ck(not started.has("VillageAbduction"), "the raid waits until the camera has drifted")
+	await _until(func() -> bool: return started.has("VillageAbduction"), 10.0)
+	var drift: float = x_sit - camera0.get_screen_center_position().x
+	ck(drift > 200.0, "the camera drifted left before the raid (%.0f px)" % drift)
 	var fade: CanvasLayer = root.get_node_or_null(^"ScreenFade")
 	ck(fade != null and fade.get_child(0).color.a > 0.9, "the raid plays over a black screen")
 	ck(dm.current_dialogue_box.is_visible_in_tree() and dm.current_dialogue_box.get_parent().layer > fade.layer,
 			"the dialogue box is shown above the black")
 	await _drain(dm)
 	await _until(func() -> bool: return started.has("Canyon_AbductionCutscene"), 5.0)
+	for i in 5: await process_frame
 	ck(not root.has_node(^"ScreenFade"), "light again before Kusakam looks from the ridge")
+	ck(anim0.current_animation == "Meditate" and player0.event, "still sitting, still no input while he looks")
 	await _drain(dm)
-	ck(started == ["Canyon_Exploration", "VillageAbduction", "Canyon_AbductionCutscene"], "raid, then the ridge (%s)" % [started])
+	ck(started == ["Canyon_Exploration", "VillageAbduction", "Canyon_AbductionCutscene"], "climb, meditation, raid, ridge (%s)" % [started])
 	ck(game.get_quest_flag("canyon_exploration_complete") and game.get_quest_flag("canyon_abduction_complete"),
 			"both flags set (journal: Explore the Canyon, Find a way forward)")
+	await _until(func() -> bool: return not camera0.top_level, 5.0)
+	for i in 5: await process_frame
+	ck(not player0.event and camera0.position == Vector2.ZERO, "he stands up, the camera follows him again, the input is back")
 	started.clear()
 
 	print("[1] Before the village the edge by the bridge is just an edge")

@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/CanyonBridge.gd" id="9_6ovr1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="20_rock"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png" id="21_clouds"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_shrine.png" id="22_shrine"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
 
 [sub_resource type="Gradient" id="Gradient_sky"]
@@ -36,7 +37,7 @@ bg_color = Color(0.02, 0.04, 0.08, 0.95)
 size = Vector2(48, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6ovr1"]
-size = Vector2(48, 480)
+size = Vector2(48, 466)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g66ig"]
 size = Vector2(48, 480)
@@ -417,6 +418,21 @@ position = Vector2(818, 384)
 [node name="Below" type="Marker2D" parent="Descent" unique_id=1819415642]
 position = Vector2(818, 540)
 
+[node name="Meditation" type="Node2D" parent="." unique_id=1730455821]
+
+[node name="Shrine" type="Sprite2D" parent="Meditation" unique_id=884120375]
+texture_filter = 1
+position = Vector2(1120, 155)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("22_shrine")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="Meditation" unique_id=1566039204]
+position = Vector2(1205, 192)
+
+[node name="Look" type="Marker2D" parent="Meditation" unique_id=402817736]
+position = Vector2(930, 180)
+
 [node name="RoomInstance" type="Node2D" parent="." unique_id=1011878462 instance=ExtResource("3_6wo6x")]
 script = ExtResource("7_jxins")
 
@@ -492,15 +508,15 @@ action_mode = 0
 position = Vector2(-2, -141)
 shape = SubResource("RectangleShape2D_gpmlt")
 
-[node name="StateChangeTrigger2" type="Area2D" parent="." unique_id=327197236]
-position = Vector2(806, 392)
+[node name="MeditationTrigger" type="Area2D" parent="." unique_id=327197236]
+position = Vector2(1172, 210)
 script = ExtResource("4_6wo6x")
 target_state = "CUTSCENE_ABDUCTION"
 require_state = "EXPLORATION"
 action_mode = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger2" unique_id=2047262143]
-position = Vector2(234, -152)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeditationTrigger" unique_id=2047262143]
+position = Vector2(0, -233)
 shape = SubResource("RectangleShape2D_6ovr1")
 
 [node name="StateChangeTrigger3" type="Area2D" parent="." unique_id=229650509]

@@ -573,40 +573,80 @@ func _on_exploration_state(run_id: int) -> void:
 	DebugLogger.info("🏜️ Canyon: ========== СТЕЙТ EXPLORATION ЗАПУЩЕНО (RunID: %d) ==========" % run_id, "Canyon")
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Очікування запуску діалогу Canyon_Exploration через тригер", "Canyon")
 
-	# Нічого не запускаємо: StateChangeTrigger2 у Canyon I переводить у CUTSCENE_ABDUCTION,
-	# а той грає Canyon_Exploration і одразу за ним викрадення (Sapega, 2026-10-15).
-	# Раніше тут чекали Canyon_Exploration, якого не запускав жоден тригер.
+	# Нічого не запускаємо: MeditationTrigger на вершині скелі переводить у CUTSCENE_ABDUCTION —
+	# медитація, а за нею викрадення (Sapega, 2026-10-20: «має бути сенс для того щоб піднятись на гору»).
+
+## Медитація на вершині скелі (Sapega, 2026-10-20): MeditationTrigger забирає керування, Кусакам підходить до
+## каменя (Meditation/Seat), Canyon_Exploration, сідає й дихає (Meditate), камера пливе вліво до Meditation/Look,
+## затемнення — напад на село поверх чорного (VillageAbduction), світло, Canyon_AbductionCutscene, камера
+## повертається, він встає. Кожен діалог ставить героя в Idle і віддає керування — поза й блокування вертаються.
+const MEDITATION_WALK_TIME := 0.6
+const MEDITATION_SIT_HOLD := 1.5
+const MEDITATION_PAN_TIME := 3.5
+const MEDITATION_LOOK_HOLD := 1.0
+const MEDITATION_RETURN_TIME := 1.2
 
 func _on_abduction_cutscene_state(run_id: int) -> void:
-	"""Обробка стейту CUTSCENE_ABDUCTION - катсцена викрадення"""
-	DebugLogger.info("🏜️ Canyon: ========== СТЕЙТ CUTSCENE_ABDUCTION ЗАПУЩЕНО (RunID: %d) ==========" % run_id, "Canyon")
-
-	# Перевіряємо, чи діалог вже був прочитаний
+	var game := Game.get_singleton()
 	if _is_dialogue_completed("Canyon_AbductionCutscene"):
-		DebugLogger.info("🏜️ Canyon: ⏭️ Діалог Canyon_AbductionCutscene вже був прочитаний, пропускаємо", "Canyon")
-		Game.get_singleton().set_objective("Pursue the kidnappers")
+		game.set_objective("Pursue the kidnappers")
 		_after_abduction_cutscene()
 		return
 
-	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск катсцени викрадення Canyon_AbductionCutscene", "Canyon")
-	# Тригер у Canyon I: спершу Canyon_Exploration (пропускається, якщо вже прочитаний), потім
-	# викрадення (Sapega, 2026-10-15).
+	var player: Node2D = game.player
+	var sprite: Sprite2D = player.get_node(^"Sprite2D")
+	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
+	var camera: Camera2D = player.get_node(^"Camera2D")
+	var dm := _get_dialogue_manager()
+	var pose: Array[StringName] = [&"Idle"]
+	var hold := func(_id: String = "") -> void:
+		player.set_movement_enabled(false)
+		anim.play(pose[0])
+	var hold_later := func(_id: String) -> void: hold.call_deferred()
+	dm.dialogue_started.connect(hold_later)
+	hold.call()
+
+	var seat: Vector2 = $Meditation/Seat.global_position
+	sprite.flip_h = seat.x < player.global_position.x
+	anim.play(&"Walk")
+	await create_tween().tween_property(player, ^"global_position", seat, MEDITATION_WALK_TIME).finished
+	anim.play(&"Idle")
 	await _execute_step(StepType.DIALOGUE, "Canyon_Exploration", run_id)
 	if run_id != state_run_id:
 		return
-	Game.get_singleton().set_objective("Find a way forward")
-	# Напад на село — затемнення, репліки поверх чорного, світло; потім Кусакам дивиться з
-	# хребта (Sapega, 2026-10-16: «кат сцена має бути не в віледжі а в каньйоні з затемненням»).
+	game.set_objective("Find a way forward")
+
+	# Сідає обличчям до села (вліво) — туди ж попливе камера.
+	sprite.flip_h = true
+	pose[0] = &"Meditate"
+	hold.call()
+	await get_tree().create_timer(MEDITATION_SIT_HOLD).timeout
+	var center := camera.get_screen_center_position()
+	camera.top_level = true
+	camera.global_position = center
+	camera.reset_smoothing()
+	var pan := create_tween().tween_property(camera, ^"global_position", $Meditation/Look.global_position, MEDITATION_PAN_TIME)
+	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	await get_tree().create_timer(MEDITATION_LOOK_HOLD).timeout
+
+	# Напад на село — затемнення, репліки поверх чорного, світло; потім Кусакам дивиться з хребта
+	# (Sapega, 2026-10-16: «кат сцена має бути не в віледжі а в каньйоні з затемненням»).
 	await ScreenFade.to_black(self)
 	await _play_dialogue("VillageAbduction", run_id)
+	hold.call()
 	await ScreenFade.from_black(self)
-	if run_id != state_run_id:
-		return
 	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id)
-	# Після катсцени:
-	# - Відкриваємо другу браму (якщо квест виконано)
-	# - Готуємо перехід до села
-	Game.get_singleton().set_objective("Pursue the kidnappers")
+	pose[0] = &"Idle"
+	hold.call()
+	dm.dialogue_started.disconnect(hold_later)
+
+	var back := create_tween().tween_property(camera, ^"global_position", player.global_position, MEDITATION_RETURN_TIME)
+	await back.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	camera.top_level = false
+	camera.position = Vector2.ZERO
+	camera.reset_smoothing()
+	player.set_movement_enabled(true)
+	game.set_objective("Pursue the kidnappers")
 	_after_abduction_cutscene()
 
 func _on_to_village_state(run_id: int) -> void:

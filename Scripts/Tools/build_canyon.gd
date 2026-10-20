@@ -19,10 +19,8 @@ const PRIDE_ROCK := [
 	Vector2(1600, 216), Vector2(1606, 272), Vector2(1760, 272), Vector2(1766, 328), Vector2(1920, 328),
 	Vector2(1928, 384), Vector2(1928, 400),
 ]
-## Тригер Canyon_Exploration — біля підніжжя скелі, над західною сходинкою: середина тригера (y 240) — у повітрі.
-const RIDGE_TRIGGER := "StateChangeTrigger2"
-const RIDGE_TRIGGER_X := 1040.0
-const TRIGGERS := ["StateChangeTrigger1", "StateChangeTrigger2", "StateChangeTrigger3"]
+## MeditationTrigger (місце медитації на вершині скелі) стоїть у Canyon.tscn — будівник його не чіпає.
+const TRIGGERS := ["StateChangeTrigger1", "StateChangeTrigger3"]
 const ROOM_HEIGHT := 480.0
 
 ## Ущелина (D228): схема — Scripts/Tools/canyon_gorge.txt (стовпці 0–24, рядки 12–29); тайли Foreground там
@@ -150,8 +148,6 @@ func _initialize() -> void:
 		shape.size = Vector2(48, ROOM_HEIGHT)
 		shape_node.shape = shape
 		shape_node.position.y = ROOM_HEIGHT / 2.0 - trigger.position.y
-		if trigger_name == RIDGE_TRIGGER:
-			shape_node.position.x = RIDGE_TRIGGER_X - trigger.position.x
 
 	var uid := ResourceLoader.get_resource_uid(ROOM)
 	var packed := PackedScene.new()

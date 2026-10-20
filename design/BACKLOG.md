@@ -91,9 +91,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
 6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
 7. **Foreground parallax** — below.
-8. **A reason to climb the Canyon mountain** (Sapega 2026-10-20): at the top a meditation spot — Kusakam sits down, the
-   camera drifts left, then the cutscene of the Village abduction. (Check the existing Canyon_MeditationAtRelic /
-   MeditationAtmosphere work first.)
+8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
+   Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
+   left, then the raid over black and the ridge lines; flags as before. [[cutscene_plan]] → "Built". Open: no skip, HUD stays.
 9. **Inventory actions** (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
    modal "this item cannot be used"; using a potion heals the hero right away.
 10. **Party shows only who is in it**: with one character the Game Menu shows only Kusakam until the party grows.

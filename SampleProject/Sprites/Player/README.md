@@ -14,3 +14,4 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | `Fall/1.png` | Fall | generated: arms up, cape up |
 | `Roll/1–6.png` | Roll | generated duck and curled ball; the ball turned 90°/180°/270°; the exit is `Jump/1` |
 | `Climb/1–2.png` | Climb | generated from behind, alternating arm and leg |
+| `Meditate/1–2.png` | Meditate (Canyon summit cutscene, D257) | generated: sitting cross-legged, eyes closed; frame 2 = BOB breathing (`hero_meditate`) |

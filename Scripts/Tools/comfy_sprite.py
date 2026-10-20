@@ -436,6 +436,21 @@ CHARACTERS = {
             )
         ],
     ),
+    # Медитація на вершині скелі в каньйоні (Sapega 2026-10-20, BACKLOG feedback 8): сидить, дихає (BOB).
+    "hero_meditate": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=14,
+        floor=56,  # як у кадрів художника
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        base="Keep this exact character: the same small lizard knight with the same steel armour, red cape, tail and colours, "
+        "the same pixel art style with a thick dark outline and flat shading, the same size. Change only his pose: in the "
+        "same side view facing right, sitting cross-legged on the ground in a calm meditation pose, back straight, both "
+        "hands resting on his knees, eyes closed, the cape and tail lying on the ground behind him. Keep the plain flat "
+        "magenta background.",
+        rows=[("Meditate", [None, "BOB:40"])],
+    ),
 }
 
 

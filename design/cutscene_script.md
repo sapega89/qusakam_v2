@@ -25,7 +25,7 @@ tags: [cutscene, story]
 | | |
 |---|---|
 | Кімната | `Maps/Canyon.tscn`, стан `CUTSCENE_ABDUCTION` (`Canyon.gd:606`) |
-| Запускається | **тільки коли Кусакам доходить до тригера** `StateChangeTrigger2` у Canyon I (x ≈ 1224, `EXPLORATION` → `CUTSCENE_ABDUCTION`). Діалог і катсцена йдуть після тригера, а не одразу після попереднього стану (Sapega, 2026-10-15) |
+| Запускається | **на вершині скелі Прайду**: `MeditationTrigger` біля каменя медитації (`EXPLORATION` → `CUTSCENE_ABDUCTION`) — Кусакам сідає медитувати, камера пливе вліво, далі викрадення (D257, Sapega 2026-10-20) |
 | Кінцевий стан | `canyon_abduction_complete`, ціль «Pursue the kidnappers», стан `TO_VILLAGE` |
 | Замінює | `Canyon_AbductionCutscene.dqd`, де зараз 3 рядки «[Катсцена]» опису й 6 реплік |
 
