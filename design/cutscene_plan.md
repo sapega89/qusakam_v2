@@ -60,7 +60,7 @@ Draft lines `// [ЧЕРНЕТКА]` in `dialogue_quest/`. Test: `verify_village_
 `AnimationPlayer` — enough for fade + dialogue + one player action; revisit when a beat needs
 actors moving.
 
-## Built (2026-10-20) — Canyon descent, D254/D255
+## Built (2026-10-20) — Canyon descent, D254/D256
 
 The first fully staged beat. `Canyon.gd` `_on_exit_cutscene_state`: the edge trigger takes the input
 (`set_movement_enabled(false)`, physics stops, so no fall and no damage), `CanyonBridge.collapse()` is awaited,

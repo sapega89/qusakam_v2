@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Спуск з каньйону (D255): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
+## Спуск з каньйону (D256): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
 ## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже на дорозі. До села — просто край.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
 
@@ -85,7 +85,7 @@ func _initialize() -> void:
 	ck(game.map.scene_file_path.ends_with("Canyon.tscn"), "still in the Canyon")
 	await _drain(dm)  # RoadToVillage: після викрадення, до села
 
-	print("[2] After the village, walking to the edge starts the descent cutscene (D255)")
+	print("[2] After the village, walking to the edge starts the descent cutscene (D256)")
 	await _enter_canyon(game, {"canyon_abduction_complete": true, "village_abduction_complete": true,
 			"village_arrival_complete": true, "village_fight_complete": true, "village_left_complete": true})
 	ck(game.map.get_current_state_name() == "RELIC_PICKUP", "Canyon waits in RELIC_PICKUP (%s)" % game.map.get_current_state_name())

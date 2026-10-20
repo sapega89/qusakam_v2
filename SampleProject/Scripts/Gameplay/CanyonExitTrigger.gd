@@ -1,7 +1,7 @@
 extends Area2D
 class_name CanyonExitTrigger
 
-## 🚪 Тригер спуску з каньйону — на краю плато біля містка в Canyon.tscn (D255).
+## 🚪 Тригер спуску з каньйону — на краю плато біля містка в Canyon.tscn (D256).
 ## Гравець, що повернувся з села, заходить сюди → кат-сцена спуску (Canyon.gd) → дорога.
 
 var has_triggered: bool = false

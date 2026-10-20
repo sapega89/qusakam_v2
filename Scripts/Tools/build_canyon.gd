@@ -31,13 +31,13 @@ const BLUR := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
 const BACKDROP := "res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn"
 const GORGE_LAYOUT := "res://Scripts/Tools/canyon_gorge.txt"
 const GORGE_ROW0 := 12
-## Тригер спуску (D255) — на краю плато біля містка, на всю висоту клітинки: звідти кат-сцена спуску.
+## Тригер спуску (D256) — на краю плато біля містка, на всю висоту клітинки: звідти кат-сцена спуску.
 const EXIT_AT := Vector2(860, 240)
 const EXIT_SIZE := Vector2(60, 480)
 ## Глибина під плато: нижні стіни каньйону й темна підкладка (сірого clear color не видно ніколи).
 const DEPTH_TOP := 380.0
 const DEPTH_UNDERLAY := Color(0.24, 0.15, 0.12)
-## Місток (D231, вигляд — D255): згенерована картинка gen_bridge (comfy_backdrop.py) нарізана на смуги SLICE px шару;
+## Місток (D231, вигляд — D256): згенерована картинка gen_bridge (comfy_backdrop.py) нарізана на смуги SLICE px шару;
 ## крайні смуги зі стовпами стоять, решта — Pieces (падають при обвалі). Середина картинки (CUT) викинута, щоб
 ## місток ліг від стіни ущелини (x 0) до краю плато (правий стовп — на плато, x 783–837); настил провисає (рядки 26–32 шару): найнижча точка — на рівні дороги y 384, кінці трохи вище.
 const BRIDGE_SCRIPT := "res://SampleProject/Scripts/Gameplay/CanyonBridge.gd"

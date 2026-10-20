@@ -294,7 +294,7 @@ LAYERS = {
         "top to bottom: along the top a dark iron grating walkway with a polished brass edge strip, below it riveted "
         "dark steel plates with bolts, a horizontal copper pipe running through the middle, seen straight on",
     ),
-    # Спуск із каньйону (D255): камінь переднього плану, за який злазить Кусакам, і місток над ущелиною —
+    # Спуск із каньйону (D256): камінь переднього плану, за який злазить Кусакам, і місток над ущелиною —
     # окремі предмети, не екрани: seam none (без шва), trim — картинка обрізається до самого предмета.
     "Canyon/gen_rock": dict(
         seed=101,
