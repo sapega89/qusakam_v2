@@ -147,6 +147,7 @@ func _spawn_immediately() -> void:
 ## бою, і після вивантаження кімнати. Збережене HP ставимо, коли ворог уже готовий
 ## (його _ready() виставляє повне HP зі статів).
 func _track(enemy: Node, spawn_id: String) -> void:
+	EventBus.enemy_spawned.emit(spawn_id, enemy.global_position)  # перший бій — підказка про атаку (TutorialManager)
 	var hp: int = int(_saved_enemies().get(spawn_id, -1))
 	_save_hp(spawn_id, hp)
 	enemy.ready.connect(func() -> void:

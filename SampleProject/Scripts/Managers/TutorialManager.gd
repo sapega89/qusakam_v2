@@ -42,7 +42,7 @@ func _get_tutorial_display() -> TutorialHintDisplay:
 func _connect_events() -> void:
 	"""Connects to relevant EventBus signals"""
 	# Connect to combat/progression events
-	EventBus.player_attacked.connect(_on_player_attacked)
+	EventBus.enemy_spawned.connect(_on_enemy_spawned)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 
@@ -57,19 +57,11 @@ func _show_movement_hint() -> void:
 		return
 	display.show_hint("movement")
 
-func _on_player_attacked(_player: Node = null, _direction: int = 0) -> void:
-	"""Player performed an attack"""
-	if has_shown_attack:
-		return
-
-	has_shown_attack = true
-	var display = _get_tutorial_display()
-	if not display:
-		return
-	# Wait a moment, then show attack hint
-	if is_inside_tree() and get_tree():
-		await get_tree().create_timer(1.0).timeout
-	display.show_hint("attack")
+## Підказка про атаку — коли зʼявились перші вороги, а не після першого кліку: у каньйоні
+## бити нікого, там лише ходять і стрибають (Sapega).
+func _on_enemy_spawned(_enemy_id: String, _position: Vector2) -> void:
+	# show_hint сам показує раз; зайнятий іншою підказкою — спробує на наступному ворогові
+	_get_tutorial_display().show_hint("attack")
 
 func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 	"""Enemy was killed"""
