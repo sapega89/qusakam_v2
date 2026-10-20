@@ -100,11 +100,21 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TreePanel"
 
-[node name="SecondaryScroll" type="ScrollContainer" parent="Center/Body/Columns/SecondaryPanel"]
+[node name="SecondaryBox" type="VBoxContainer" parent="Center/Body/Columns/SecondaryPanel"]
 layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TreeTabs" type="HBoxContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="SecondaryScroll" type="ScrollContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryBox"]
+layout_mode = 2
+size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SecondaryColumn" type="VBoxContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryScroll"]
+[node name="SecondaryColumn" type="VBoxContainer" parent="Center/Body/Columns/SecondaryPanel/SecondaryBox/SecondaryScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

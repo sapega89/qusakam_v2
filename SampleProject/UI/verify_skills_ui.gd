@@ -28,12 +28,12 @@ const FIXTURES := [
 	{"id": "tf_passive", "name": "Test Skill F", "description": "Passive support.",
 	 "class_id": "champion", "skill_type": "passive", "jp_cost": 15},
 	{"id": "tg_sub", "name": "Test Skill G", "description": "Secondary tree.",
-	 "subclass_id": "paladin", "skill_type": "active", "jp_cost": 25, "sp_cost": 3},
+	 "oath": "paladin", "skill_type": "active", "jp_cost": 25, "sp_cost": 3},
 	{"id": "th_sub_passive", "name": "Test Skill H", "description": "Secondary passive.",
-	 "subclass_id": "paladin", "skill_type": "passive", "jp_cost": 12},
+	 "oath": "paladin", "skill_type": "passive", "jp_cost": 12},
 ]
 
-## Фікстури записані під champion/paladin; екран показує лише дерево активного персонажа,
+## Фікстури записані під champion; праве дерево — клятва paladin (D283, перша вкладка); екран показує лише клас активного персонажа,
 ## тож переносимо їх на його клас — інакше зміна стартового героя (B55) спустошує екран.
 func _for_active_class(skills: Array, ch) -> Array:
 	var out: Array = []

@@ -64,13 +64,14 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B77 — A skill cannot be learned with the mouse
+### B77 — A skill cannot be learned with the mouse — ✅ fixed 2026-10-21
 - **Where:** `SampleProject/Scripts/Menus/Game/skills_component.gd` (Skills rows; learning goes through `try_unlock_selected()`)
 - **Expected:** a **double click** on a skill row learns it, like Enter/A on the selected row (Sapega 2026-10-20 «треба дабл клік мишкою»).
 - **Got:** a click only selects the row; learning needs Enter/A (B76 fixed the key path). No Learn button.
 - **Evidence:** D261, item-3 agent report 2026-10-20
 - **Severity:** blocker (mouse-only player cannot learn Healing Palm)
 - **Found:** 2026-10-20, backlog item 3
+- **Fix:** a double click on a row selects and learns / upgrades it (`skills_component.gd` `_on_row_input`, D283). Test: `verify_skill_trees_ui` [4] with real mouse events.
 
 ### B78 — A hit with no source after an enemy died broke every damage listener — ✅ fixed 2026-10-21
 - **Where:** `SampleProject/Scripts/Combat/CombatBody2D.gd` `take_damage` (kept `last_damage_source` when `source` was null)

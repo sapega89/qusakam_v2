@@ -5,6 +5,7 @@ extends BaseMenuComponent
 ##
 ## Повністю data-driven: у сцені немає жодного рядка навички. Колонки, секції
 ## та стани будуються з SkillDatabase + класу активного персонажа + SkillManager.
+## Дерева (D283): ліва колонка — стовбур Holy Warrior, права — дерево клятви під трьома вкладками.
 ## Нова навичка в skills.json з'явиться тут без правок .tscn.
 ##
 ## UI НЕ редагує player_state і НЕ дублює правила: чому навичка недоступна —
@@ -26,10 +27,14 @@ const UNKNOWN_NAME := "???"
 @onready var _secondary_column: VBoxContainer = %SecondaryColumn
 @onready var _empty_label: Label = %EmptyLabel
 @onready var _columns: HBoxContainer = %Columns
+@onready var _tree_tabs: HBoxContainer = %TreeTabs
 
 var _selected_id: String = ""
 var _row_group := ButtonGroup.new()
 var _rows: Dictionary = {}  # skill_id -> Button
+var _tab_group := ButtonGroup.new()
+## Яке дерево клятви показане праворуч (D283); "" — ще не вибрано: присягнуте або перше.
+var _shown_oath: String = ""
 
 var _skill_manager: Node = null
 var _skill_database: Node = null
@@ -40,6 +45,7 @@ func _initialize_component() -> void:
 	_skill_manager = service_locator.get_skill_manager()
 	_skill_database = _resolve_database()
 	_connect_live_sources()
+	_build_tabs()
 	update_display()
 
 
@@ -53,6 +59,8 @@ func _connect_live_sources() -> void:
 		[EventBus.job_points_changed, _on_job_points_changed],
 		[EventBus.skill_unlocked, _on_skill_unlocked],
 		[EventBus.skill_upgraded, _on_skill_upgraded],
+		[EventBus.oath_sworn, _on_oath_sworn],
+		[EventBus.skills_reset, _on_skills_reset],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -71,13 +79,51 @@ func _on_skill_upgraded(_skill_id: String, _rank: int) -> void:
 	update_display()
 
 
+func _on_oath_sworn(oath_id: String) -> void:
+	_shown_oath = oath_id
+	update_display()
+
+
+func _on_skills_reset(_refunded: int) -> void:
+	update_display()
+
+
+## Вкладки дерев клятв — з даних (skills.json → oaths), у порядку файлу.
+func _build_tabs() -> void:
+	for oath_id in _skill_database.oaths:
+		var tab := Button.new()
+		tab.name = oath_id
+		tab.text = String(_skill_database.get_oath(oath_id).name)
+		tab.theme_type_variation = &"TabButton"
+		tab.toggle_mode = true
+		tab.button_group = _tab_group
+		tab.focus_mode = Control.FOCUS_ALL
+		tab.pressed.connect(show_tree.bind(oath_id))
+		_tree_tabs.add_child(tab)
+
+
+## Показати дерево клятви праворуч (вкладка: клавіатура, геймпад, миша).
+func show_tree(oath_id: String) -> void:
+	_shown_oath = oath_id
+	update_display()
+
+
 # ── Побудова ────────────────────────────────────────────────────────────────
 
 func update_display() -> void:
 	if not is_node_ready() or _skill_manager == null:
 		return
+	if _shown_oath.is_empty():
+		_shown_oath = _skill_manager.get_oath() if _skill_manager.get_oath() != "" else String(_skill_database.oaths.keys()[0])
+	for tab in _tree_tabs.get_children():
+		tab.set_pressed_no_signal(tab.name == _shown_oath)
+	# Перебудова звільняє рядки — фокус клавіатури/геймпада повертаємо на вибраний рядок.
+	var focused := get_viewport().gui_get_focus_owner()
+	var had_row_focus := focused != null and focused in _rows.values()
 	_refresh_header()
 	_rebuild_columns()
+	if had_row_focus and _rows.has(_selected_id):
+		_rows[_selected_id].grab_focus()
 
 
 func _refresh_header() -> void:
@@ -91,19 +137,8 @@ func _refresh_header() -> void:
 	box.border_color = UITokens.BORDER
 	_avatar.add_theme_stylebox_override("panel", box)
 
-	_char_class.text = _class_name(character)
+	_char_class.text = _skill_manager.class_title()  # D280: Holy Warrior → назва клятви
 	_jp_value.text = "%d JP" % _skill_manager.get_job_points()
-
-
-## Назви класів у pathfinder_classes.json поки порожні — показуємо прочерк,
-## а не внутрішній id. Та сама домовленість, що й на екрані Status.
-func _class_name(character) -> String:
-	if character == null or game_manager == null:
-		return PLACEHOLDER
-	var data: Dictionary = game_manager.get_class_data(
-			String(character.class_id), String(character.subclass_id))
-	var value := String(data.get("name", "")).strip_edges()
-	return value if not value.is_empty() else PLACEHOLDER
 
 
 func _rebuild_columns() -> void:
@@ -114,40 +149,35 @@ func _rebuild_columns() -> void:
 	_rows.clear()
 
 	var character = game_manager.get_active_character() if game_manager else null
-	var primary_id := String(character.class_id) if character else ""
-	var secondary_id := String(character.subclass_id) if character else ""
-
-	# Загальні навички (без класу — Длань, удари Кусакама) живуть у першій колонці.
-	var primary := _skills_for(primary_id) + _skills_for("")
-	var secondary := _skills_for(secondary_id)
+	var class_id := String(character.class_id) if character else ""
+	var trunk: Array = _skill_database.get_all_skills().filter(
+			func(d): return d.oath == "" and (d.class_id == "" or d.class_id == class_id))
+	var tree: Array = _skill_database.get_all_skills().filter(func(d): return d.oath == _shown_oath)
 
 	# Чесний порожній стан: немає жодної навички для цього героя.
-	var has_any := not primary.is_empty() or not secondary.is_empty()
+	var has_any := not trunk.is_empty() or not tree.is_empty()
 	_columns.visible = has_any
 	_empty_label.visible = not has_any
 	if not has_any:
 		_empty_label.text = "No skills available yet."
 		return
 
-	_build_column(_primary_column, primary_id, "Primary Class Tree", primary)
-	_build_column(_secondary_column, secondary_id, "Secondary Class Tree", secondary)
+	_build_column(_primary_column, _skill_database.class_name_trunk, "Primary Class Tree", trunk)
+	var oath: Dictionary = _skill_database.get_oath(_shown_oath)
+	_build_column(_secondary_column, String(oath.name),
+			"Secondary Class Tree · %s" % String(oath.tree), tree, _tree_status())
 
 
-## Навички колонки: прив'язані до цього class_id/subclass_id плюс загальні.
-## Порожній [param owner_id] — загальні навички (ні класу, ні підкласу).
-func _skills_for(owner_id: String) -> Array:
-	var result: Array = []
-	for definition in _skill_database.get_all_skills():
-		if owner_id.is_empty():
-			if definition.class_id.is_empty() and definition.subclass_id.is_empty():
-				result.append(definition)
-		elif definition.class_id == owner_id or definition.subclass_id == owner_id:
-			result.append(definition)
-	return result
+## Стан правого дерева (D280): клятви ще немає / це клятва героя / чужа клятва.
+func _tree_status() -> String:
+	var sworn: String = _skill_manager.get_oath()
+	if sworn.is_empty():
+		return "Swear an oath in the City (level %d)" % int(_skill_database.get_oath(_shown_oath).level)
+	return "Your oath" if sworn == _shown_oath else "Sworn to another oath"
 
 
-func _build_column(column: VBoxContainer, owner_id: String, subtitle: String, definitions: Array) -> void:
-	column.add_child(_make_column_header(owner_id, subtitle, definitions))
+func _build_column(column: VBoxContainer, title: String, subtitle: String, definitions: Array, status: String = "") -> void:
+	column.add_child(_make_column_header(title, subtitle, definitions, status))
 
 	# Секції з Figma: Job Skills = активні, Support Skills = пасивні.
 	var active: Array = definitions.filter(func(d): return d.is_active())
@@ -162,13 +192,13 @@ func _build_column(column: VBoxContainer, owner_id: String, subtitle: String, de
 			column.add_child(_make_skill_row(definition))
 
 
-func _make_column_header(owner_id: String, subtitle: String, definitions: Array) -> Control:
+func _make_column_header(title_text: String, subtitle: String, definitions: Array, status: String) -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", UITokens.SPACE_2XS)
 
 	var row := HBoxContainer.new()
 	var title := Label.new()
-	title.text = _column_title(owner_id)
+	title.text = title_text if not title_text.is_empty() else PLACEHOLDER
 	title.theme_type_variation = &"TreeTitle"
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(title)
@@ -192,18 +222,13 @@ func _make_column_header(owner_id: String, subtitle: String, definitions: Array)
 	sub.text = subtitle
 	sub.theme_type_variation = &"SmallLabel"
 	box.add_child(sub)
+	if not status.is_empty():
+		var note := Label.new()
+		note.name = "TreeStatus"
+		note.text = status
+		note.theme_type_variation = &"MutedLabel"
+		box.add_child(note)
 	return box
-
-
-func _column_title(owner_id: String) -> String:
-	if game_manager == null or owner_id.is_empty():
-		return PLACEHOLDER
-	var data: Dictionary = game_manager.get_class_data(owner_id, owner_id)
-	var value := String(data.get("name", "")).strip_edges()
-	if value.is_empty():
-		var subclass: Dictionary = data.get("subclass", {})
-		value = String(subclass.get("name", "")).strip_edges()
-	return value if not value.is_empty() else PLACEHOLDER
 
 
 ## Найдешевша ще не вивчена навичка колонки.
@@ -235,7 +260,7 @@ func _make_skill_row(definition: SkillDefinition) -> Button:
 	row.focus_entered.connect(_on_row_selected.bind(definition.id))
 	# Сигнал gui_input приходить раніше, ніж Button сам «з'їдає» ui_accept, — інакше вивчити навичку
 	# з виділеного рядка було неможливо (фокус завжди на рядку, а не на компоненті).
-	row.gui_input.connect(_gui_input)
+	row.gui_input.connect(_on_row_input.bind(definition.id))
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "Row"
@@ -360,6 +385,8 @@ func _describe(definition: SkillDefinition) -> String:
 		parts.append("%d SP" % definition.sp_cost)
 	if definition.required_level > 1:
 		parts.append("Lv.%d" % definition.required_level)
+	if definition.oath != "":
+		parts.append("Oath: %s" % String(_skill_database.get_oath(definition.oath).name))
 	if not definition.prerequisites.is_empty():
 		parts.append("Requires: %s" % ", ".join(definition.prerequisites))
 	if _skill_manager.is_unlocked(definition.id):
@@ -389,6 +416,11 @@ func _reason_text(skill_id: String) -> String:
 			return "Level too low"
 		SkillManager.Result.MISSING_PREREQUISITE:
 			return "Prerequisite not learned"
+		SkillManager.Result.NO_OATH:
+			var oath_id: String = _skill_database.get_skill(skill_id).oath
+			return "Swear an oath in the City (level %d)" % int(_skill_database.get_oath(oath_id).level)
+		SkillManager.Result.OTHER_OATH:
+			return "Sworn to another oath"
 		_:
 			return ""
 
@@ -406,8 +438,13 @@ func try_unlock_selected() -> int:
 	return verdict
 
 
-func _gui_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept") and not _selected_id.is_empty():
+## Enter / геймпад A на рядку — вивчити або покращити; подвійний клік мишею — те саме (B77, D283).
+func _on_row_input(event: InputEvent, skill_id: String) -> void:
+	var mouse := event as InputEventMouseButton
+	var double_click := mouse != null and mouse.double_click and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT
+	if double_click or (event.is_action_pressed("ui_accept") and not _selected_id.is_empty()):
+		if double_click:
+			_on_row_selected(skill_id)
 		try_unlock_selected()
 		accept_event()
 
