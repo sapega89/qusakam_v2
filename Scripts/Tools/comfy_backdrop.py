@@ -721,6 +721,14 @@ if __name__ == "__main__":
         if layer.get("cut"):  # стовпці шару x0..x1 — решта прозора (обрізані стіни обабіч брами)
             out[:, : layer["cut"][0], 3] = 0
             out[:, layer["cut"][1] :, 3] = 0
+        if layer["key"] == "green":  # бірюзова кромка — відсвіт зеленого тла: у найближчий не-зелений колір шару
+            px = out[..., :3].astype(int)
+            tinted = (out[..., 3] > 0) & (px[..., 1] > px[..., 0] + 15) & (px[..., 1] >= px[..., 2] - 10)
+            clean = (out[..., 3] > 0) & ~tinted
+            if tinted.any() and clean.any():
+                pal = np.unique(px[clean], axis=0)
+                d = np.linalg.norm(px[tinted][:, None, :] - pal[None], axis=2)
+                out[tinted, :3] = pal[d.argmin(axis=1)]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
             ys, xs = np.nonzero(out[..., 3])
             out = out[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]

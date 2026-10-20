@@ -42,6 +42,9 @@ size = Vector2(48, 466)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g66ig"]
 size = Vector2(48, 480)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shrine_step"]
+size = Vector2(120, 18)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yl1gb"]
 size = Vector2(60, 480)
 
@@ -421,15 +424,20 @@ position = Vector2(818, 540)
 [node name="Meditation" type="Node2D" parent="." unique_id=1730455821]
 
 [node name="Shrine" type="Sprite2D" parent="Meditation" unique_id=884120375]
-z_index = 1
 texture_filter = 1
 position = Vector2(1103, 170)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("22_shrine")
 centered = false
 
+[node name="Step" type="StaticBody2D" parent="Meditation"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Meditation/Step"]
+position = Vector2(1168, 217)
+shape = SubResource("RectangleShape2D_shrine_step")
+
 [node name="Seat" type="Marker2D" parent="Meditation" unique_id=1566039204]
-position = Vector2(1205, 192)
+position = Vector2(1165, 184)
 
 [node name="Look" type="Marker2D" parent="Meditation" unique_id=402817736]
 position = Vector2(930, 180)
