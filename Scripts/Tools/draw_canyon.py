@@ -295,24 +295,6 @@ def bridge():
     line.save(OUT + "bridge_rope.png")
 
 
-def canyon_depths():
-    """Нижні стіни каньйону під плато: та сама порода, темніша з глибиною, вертикальні урвища; тайлиться по 576."""
-    w, h = 576, 420
-    im = Image.new("RGBA", (w, h))
-    px = im.load()
-    for x in range(w):
-        for y in range(h):
-            k = min(1.0, y / h * 1.3)
-            band = (y + int(3 * math.sin(x / 19.0 + y / 50.0))) // 11 % 3
-            base = SAND[[2, 3, 2][band]]
-            c = tuple(round(v * (0.78 - 0.38 * k)) for v in base)
-            crack = (x * 7919 + (y // 60) * 131) % 211
-            if crack < 2 and math.sin(y / 23.0 + x) > -0.3:
-                c = tuple(round(v * 0.7) for v in c)  # рідкі нерівні тріщини урвищ
-            px[x, y] = c + (255,)
-    im.save(OUT + "canyon_depths.png")
-
-
 if __name__ == "__main__":
     import os
 
@@ -321,5 +303,4 @@ if __name__ == "__main__":
     gorge()
     plateau_body()
     bridge()
-    canyon_depths()
     print("drawn", OUT)

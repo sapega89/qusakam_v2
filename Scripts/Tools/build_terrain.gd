@@ -37,21 +37,14 @@ func _initialize() -> void:
 	for room_name: String in ROOMS:
 		if not only.is_empty() and not only.has(room_name):
 			continue
+		if mode == "place":
+			_place(room_name)
+			continue
 		var room: Node = (load(MAPS % room_name) as PackedScene).instantiate()
 		for node_name: String in ROOMS[room_name]:
-			var spec: Dictionary = ROOMS[room_name][node_name]
-			if mode == "mask":
-				var path: String = out_dir.path_join("%s_%s.png" % [room_name, node_name])
-				_mask(room, spec).save_png(path)
-				print("mask ", path)
-			else:
-				_place(room, room_name, node_name, spec)
-		if mode == "place":
-			var scene_path: String = MAPS % room_name
-			var uid: int = ResourceLoader.get_resource_uid(scene_path)
-			var packed := PackedScene.new()
-			packed.pack(room)
-			print("save %s %d %d" % [room_name, ResourceSaver.save(packed, scene_path), ResourceSaver.set_uid(scene_path, uid)])
+			var path: String = out_dir.path_join("%s_%s.png" % [room_name, node_name])
+			_mask(room, ROOMS[room_name][node_name]).save_png(path)
+			print("mask ", path)
 		room.free()
 	quit()
 
@@ -109,21 +102,48 @@ func _offset(room: Node, node: Node2D) -> Vector2:
 	return at
 
 
-func _place(room: Node, room_name: String, node_name: String, spec: Dictionary) -> void:
-	var sprite := room.get_node_or_null(NodePath(node_name)) as Sprite2D
-	if sprite == null:
-		sprite = Sprite2D.new()
-		sprite.name = node_name
-		room.add_child(sprite)
-		room.move_child(sprite, room.get_node(^"TileMap").get_index() + 1)
-		sprite.owner = room
-	var art: String = ART % ("%s_%s" % [room_name, node_name])
-	assert(ResourceLoader.exists(art), "немає %s — спершу paint_terrain.py" % art)
-	sprite.texture = load(art)
-	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.centered = false
-	sprite.scale = Vector2(PX, PX)
-	sprite.position = Vector2.ZERO
-	sprite.offset = Vector2.ZERO
-	for layer_path: String in spec.layers:
-		(room.get_node(NodePath(layer_path)) as TileMapLayer).visible = false
+## Правка тексту .tscn, а не PackedScene.pack(): pack переписує всю сцену (вшиває скрипти й властивості інстансів
+## як перевизначення). Додає вузол-картинку одразу після піддерева TileMap і ховає шари тайлів; уже доданий — не чіпає.
+func _place(room_name: String) -> void:
+	var scene_path: String = MAPS % room_name
+	var text := FileAccess.get_file_as_string(scene_path)
+	for node_name: String in ROOMS[room_name]:
+		var art: String = ART % ("%s_%s" % [room_name, node_name])
+		assert(ResourceLoader.exists(art), "немає %s — спершу paint_terrain.py" % art)
+		if text.contains('[node name="%s" type="Sprite2D" parent="."' % node_name):
+			continue
+		var id := "terrain_%s" % node_name.to_snake_case()
+		var res_end := text.find("
+
+", text.rfind("[ext_resource "))
+		text = text.insert(res_end, '
+[ext_resource type="Texture2D" path="%s" id="%s"]' % [art, id])
+		for layer_path: String in ROOMS[room_name][node_name].layers:
+			var parts := layer_path.rsplit("/", true, 1)
+			var head := text.find('[node name="%s" type="TileMapLayer" parent="%s"' % [parts[1], parts[0]])
+			assert(head >= 0, "немає шару %s у %s" % [layer_path, room_name])
+			var eol := text.find("
+", head)
+			if not text.substr(eol, 17) == "
+visible = false
+":
+				text = text.insert(eol, "
+visible = false")
+		# перший вузол верхнього рівня після TileMap (його діти мають parent="TileMap…")
+		var tilemap := text.find('[node name="TileMap" ')
+		var next := text.find('parent="."', text.find("
+", tilemap))
+		assert(next >= 0, "у %s після TileMap немає вузлів верхнього рівня" % room_name)
+		next = text.rfind("[node ", next)
+		var block := '[node name="%s" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(%s, %s)
+texture = ExtResource("%s")
+centered = false
+
+' % [node_name, PX, PX, id]
+		text = text.insert(next, block)
+	var f := FileAccess.open(scene_path, FileAccess.WRITE)
+	f.store_string(text)
+	f.close()
+	print("placed ", room_name)

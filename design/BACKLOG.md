@@ -65,11 +65,10 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
-### Painted terrain in the outdoor rooms — D248, D249
-Sapega 2026-10-19: the ground the hero walks on must look hand-made, not procedural. Canyon done; Village,
-DesertRoad, CityGates, City, LaboratoryOutside still show the repeating checker tile (CityGates also on its ceiling).
-**Resume:** `paint_terrain.py --materials earth cobble_top`, then `--materials oasis_top`, then `build_terrain.gd -- mask` →
-`paint_terrain.py <rooms>` → `build_terrain.gd -- place <rooms>`; capture each room.
+### ✅ DONE 2026-10-20 — Painted terrain in the outdoor rooms — D248, D249
+All six outdoor rooms walk on painted ground (Canyon earlier; Village, DesertRoad, CityGates, City, LaboratoryOutside
+now); the checker tile is gone, CityGates' ceiling included; the Canyon's gorge back wall repainted from the same rock.
+Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated yet).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a

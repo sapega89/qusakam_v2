@@ -36,13 +36,13 @@ MATERIALS = {
         "and pale cream, small embedded pebbles and fine hairline cracks, evenly detailed everywhere",
     ),
     "earth": dict(
-        seed=303,
+        seed=341,
         h=1024,
         f=6,
         key=None,
-        prompt="a seamless texture of a cut through packed desert soil, one continuous surface of earth fills the entire image edge to edge, "
-        "thin horizontal layers of compacted sandy soil in warm beige, tan and brown, embedded flat stones, small "
-        "pebbles and thin dry roots, evenly detailed everywhere",
+        prompt="a seamless texture, close-up of a flat smooth packed earth wall surface seen straight on, the soil "
+        "fills the entire image edge to edge with no gaps, many thin wavy horizontal strata in warm tan, ochre, sienna "
+        "brown and pale cream, small embedded pebbles and fine hairline cracks, evenly detailed everywhere",
     ),
     "hall_body": dict(
         seed=313,
@@ -261,6 +261,26 @@ def paint(name, body_name, top_name, colors):
     print("drawn", OUT + name + ".png", flush=True)
 
 
+def depths(path, body_name, colors):
+    """Задня стіна ущелини каньйону (за ямою під містком, Parallax2D ×0.45): та сама порода, що й земля, темніша з
+    глибиною й притоплена у фіолетову тінь, щоб стояла позаду ігрової площини. 576×420, тайлиться по ширині."""
+    w, h = 576, 420
+    body, _ = material(body_name)
+    body = np.concatenate([body, body[::-1]])
+    assert w % body.shape[1] == 0, "ширина стіни — ціле число періодів матеріалу, інакше шов на повторі"
+    yy, xx = np.mgrid[0:h, 0:w]
+    rgb = body[yy % len(body), xx % body.shape[1]].astype(np.float32)
+    k = np.clip(yy / h * 1.3, 0, 1)[..., None]
+    shadow = np.array([46, 30, 52], np.float32)  # фіолетова тінь, як тіні породи
+    rgb = rgb * (0.62 - 0.3 * k) + shadow * (0.38 + 0.3 * k)
+    out = cb.quantize(rgb, np.ones((h, w), bool), colors, "octree")
+    Image.fromarray(out).save(path)
+    print("drawn", path, flush=True)
+
+
+DEPTHS = ("SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png", "sandstone", 24)
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if args and args[0] == "--materials":  # лише згенерувати (шматками по ≤ 2 матеріали — 4 генерації)
@@ -278,3 +298,5 @@ if __name__ == "__main__":
     else:
         for name in [n for n in PAINT if not args or n.split("_")[0] in args]:
             paint(name, *PAINT[name])
+        if not args or "Canyon" in args:
+            depths(*DEPTHS)

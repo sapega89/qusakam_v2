@@ -6,7 +6,7 @@ hidden `RockCollision` tile layer.
 
 D228 (critics' pass): `gorge.png` — the gorge drawn from `Scripts/Tools/canyon_gorge.txt` (same layout as its hidden
 collision), `plateau_body.png` — the plateau's body as the same rock, `canyon_depths.png` — the lower canyon walls
-under the plateau; the Canyon's backdrop is `desert_backdrop_canyon.tscn` (desert_backdrop_4 without the oasis layer).
+under the plateau (since D249 painted by `paint_terrain.py` from the generated sandstone, see `../Terrain/README.md`); the Canyon's backdrop is `desert_backdrop_canyon.tscn` (desert_backdrop_4 without the oasis layer).
 
 D235 (first use of D234): the backdrop planes `gen_clouds.png` (Parallax2D ×0.1), `gen_far.png` — distant
 mesas (×0.3) — and `gen_walls.png` — the canyon walls (×0.45, replaced the procedural `canyon_walls.png`) are
