@@ -52,6 +52,10 @@ var passive_value: float = 0.0
 ## Посилання на ресурси. Не завантажуються тут — це робота UI/VFX-шарів.
 var icon: String = ""
 var vfx: String = ""
+## Каст (D259, D271): замах (удар по героєві його зриває), вивільнення, префікс анімацій тіла в Player.tscn.
+var cast_windup: float = 0.0
+var cast_release: float = 0.0
+var cast_pose: String = ""
 
 
 static func type_from_string(value: String) -> Type:
@@ -100,6 +104,10 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 
 	definition.icon = String(data.get("icon", ""))
 	definition.vfx = String(data.get("vfx", ""))
+	var cast: Dictionary = data.get("cast", {})
+	definition.cast_windup = maxf(0.0, float(cast.get("windup", 0.0)))
+	definition.cast_release = maxf(0.0, float(cast.get("release", 0.0)))
+	definition.cast_pose = String(cast.get("pose", ""))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:

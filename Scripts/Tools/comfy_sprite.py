@@ -388,7 +388,10 @@ CHARACTERS = {
         base=None,
         who="the same small lizard knight with the steel armour, dark red cape and tail",
         rows=[
-            ("Idle", [None, "BOB:44", "BOB:30"])  # BOB:30 — лише голова, проміжний кадр вдиху (feedback 20)
+            (
+                "Idle",
+                [None, "BOB:44", "BOB:30"],
+            )  # BOB:30 — лише голова, проміжний кадр вдиху (feedback 20)
         ],  # модель розвертала героя й домальовувала хмарку подиху
     ),
     "hero_air": dict(
@@ -525,6 +528,48 @@ CHARACTERS = {
                 [
                     "in the same side view facing right: guarding, both empty fists raised together in front of his face, "
                     "forearms up, crouched slightly and braced on bent knees, the cape hanging behind him",
+                ],
+            ),
+        ],
+    ),
+    # Пози кастів навичок (BACKLOG 21, D271): замах і вивільнення для кожної активної навички; зброю малює WeaponView.
+    "hero_cast": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=21,
+        floor=56,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "CastPalm",
+                [
+                    "in the same side view facing right: standing still with his eyes closed, both open palms pressed "
+                    "together in front of his chest as if praying, elbows out, calm, the cape hanging behind him",
+                    "in the same side view facing right: one open palm pushed straight forward at chest height, fingers "
+                    "up, the other hand resting at his hip, feet planted apart, eyes open, the cape hanging behind him",
+                ],
+            ),
+            (
+                "CastFire",
+                [
+                    "in the same side view facing right: crouched very low on bent knees, leaning forward, his front fist "
+                    "drawn far back down behind his hip as if holding a sword low behind him, the other hand forward, "
+                    "the cape hanging behind him",
+                    "in the same side view facing right: a deep lunge forward, the front knee bent and the back leg "
+                    "straight, his empty front fist swept forward and up to shoulder height at the end of a rising "
+                    "slash, no weapon in his hands, the cape flying behind him",
+                ],
+            ),
+            (
+                "CastStorm",
+                [
+                    "in the same side view facing right, the same height and proportions: standing with his feet apart, "
+                    "his empty front fist raised straight up above his head, the other fist clenched at his side, "
+                    "looking ahead to the right, the cape hanging behind him",
+                    "in the same side view facing right: stepping forward, one arm thrust straight forward at shoulder "
+                    "height with the fist clenched, the other arm back, leaning into the thrust, the cape flying behind him",
                 ],
             ),
         ],

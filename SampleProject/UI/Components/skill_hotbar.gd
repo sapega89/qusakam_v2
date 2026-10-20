@@ -326,13 +326,13 @@ func _badge_box(highlighted: bool) -> StyleBoxFlat:
 	return box
 
 
-## Вхід зі слота: розв'язати слот → попросити SkillManager. Нічого не рахуємо.
+## Вхід зі слота: розв'язати слот → попросити SkillManager про каст героя (замах, D271). Нічого не рахуємо.
 func _unhandled_input(event: InputEvent) -> void:
 	if _skill_manager == null:
 		return
 	for i in _slots.size():
 		if event.is_action_pressed("skill_slot_%d" % (i + 1)):
-			_skill_manager.use_slot(i, _resolve_target(), _resolve_source())
+			_skill_manager.cast_slot(i)
 			get_viewport().set_input_as_handled()
 			return
 

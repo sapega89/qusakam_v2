@@ -33,6 +33,7 @@ enum Result {
 	SLOT_EMPTY,
 	WRONG_WEAPON,  # D141: навичка вимагає іншої зброї в руках
 	MAX_RANK,  # D150: навичка вже на найвищому рівні
+	BUSY,  # D271: герой зайнятий іншою дією (удар, блок, збій, інший каст)
 }
 
 ## D149: очки навичок (JP) за кожен рівень персонажа.
@@ -438,6 +439,32 @@ func use_slot(slot: int, target: Node = null, source: Node = null) -> Result:
 	if skill_id.is_empty():
 		return Result.SLOT_EMPTY
 	return use_skill(skill_id, target, source)
+
+
+## Хотбар (D271): навичка зі слота — каст героя з замахом; ефект застосовує PlayerCombat через use_skill().
+func cast_slot(slot: int) -> Result:
+	if not is_valid_slot(slot):
+		return Result.INVALID_SLOT
+	var skill_id := get_equipped_skill(slot)
+	if skill_id.is_empty():
+		return Result.SLOT_EMPTY
+	return cast_skill(skill_id)
+
+
+## Почати каст (D259, D271): ті самі перевірки, що й use_skill, і ціль перед героєм для удару — щоб замах
+## без ворога не починався; поки йде замах, нічого не витрачено. Удар по героєві зриває каст (interrupt_cast).
+func cast_skill(skill_id: String) -> Result:
+	var verdict := can_use_skill(skill_id)
+	if verdict != Result.OK:
+		return _fail(skill_id, verdict)
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	assert(definition.cast_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
+	var player: Node = _default_source()
+	if definition.damage > 0 and SkillTargeting.enemies_in_front(player).is_empty():
+		return _fail(skill_id, Result.NO_TARGET)
+	if not player.combat.begin_cast(definition):
+		return _fail(skill_id, Result.BUSY)
+	return Result.OK
 
 
 # ── Застосування ────────────────────────────────────────────────────────────

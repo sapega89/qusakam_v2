@@ -38,6 +38,12 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/1.png" id="heavy1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/2.png" id="heavy2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Block/1.png" id="block1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastPalm/1.png" id="cast_palm1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastPalm/2.png" id="cast_palm2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastFire/1.png" id="cast_fire1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastFire/2.png" id="cast_fire2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastStorm/1.png" id="cast_storm1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastStorm/2.png" id="cast_storm2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yj7bn"]
 size = Vector2(24, 40)
@@ -335,6 +341,102 @@ tracks/0/keys = {
 "values": [ExtResource("r4"), ExtResource("r2"), ExtResource("w1")]
 }
 
+[sub_resource type="Animation" id="Animation_cast_palm_windup"]
+resource_name = "CastPalmWindup"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_palm1")]
+}
+
+[sub_resource type="Animation" id="Animation_cast_palm_release"]
+resource_name = "CastPalmRelease"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_palm2")]
+}
+
+[sub_resource type="Animation" id="Animation_cast_fire_windup"]
+resource_name = "CastFireWindup"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_fire1")]
+}
+
+[sub_resource type="Animation" id="Animation_cast_fire_release"]
+resource_name = "CastFireRelease"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_fire2")]
+}
+
+[sub_resource type="Animation" id="Animation_cast_storm_windup"]
+resource_name = "CastStormWindup"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_storm1")]
+}
+
+[sub_resource type="Animation" id="Animation_cast_storm_release"]
+resource_name = "CastStormRelease"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("cast_storm2")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
 _data = {
 &"Apex": SubResource("Animation_apex"),
@@ -342,6 +444,12 @@ _data = {
 &"AttackSmash": SubResource("Animation_attack_smash"),
 &"AttackThrust": SubResource("Animation_attack_thrust"),
 &"Block": SubResource("Animation_block"),
+&"CastPalmWindup": SubResource("Animation_cast_palm_windup"),
+&"CastPalmRelease": SubResource("Animation_cast_palm_release"),
+&"CastFireWindup": SubResource("Animation_cast_fire_windup"),
+&"CastFireRelease": SubResource("Animation_cast_fire_release"),
+&"CastStormWindup": SubResource("Animation_cast_storm_windup"),
+&"CastStormRelease": SubResource("Animation_cast_storm_release"),
 &"Climb": SubResource("Animation_climb"),
 &"Fall": SubResource("Animation_fall"),
 &"HeavyStrike": SubResource("Animation_heavy_strike"),

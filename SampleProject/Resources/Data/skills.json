@@ -14,14 +14,15 @@
       "sp_cost": "int >= 0 - active only, forced to 0 for passive",
       "cooldown": "float >= 0 seconds - active only, forced to 0 for passive",
       "icon": "res:// path",
-      "vfx": "VFXHooks reference",
+      "vfx": "res:// .tscn of the cast effect (SkillCastFX: 'charge' during the wind-up, 'release' on completion) - active only (D271)",
       "heal": "int >= 0 - HP restored on the target (D142: an ally next to the hero, else the hero)",
       "damage": "int >= 0 - damage to everything in front of the hero (D142)",
       "required_weapons": "[equipment slot] - usable only while one of these slots holds a weapon (D141)",
       "burn": "{dps: int, duration: float} - sets the target burning (D207); a new burn refreshes",
       "chain": "{radius: px, ratio: 0..1} - also hits the nearest other enemy within radius of the first target (D207)",
       "stun": "float seconds - stuns the first target; cancels a wind-up in progress (D207)",
-      "passive": "{stat: max_health | shield_block, value} - passive only (D207)"
+      "passive": "{stat: max_health | shield_block, value} - passive only (D207)",
+      "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release)} - active only, required; a stagger during the wind-up interrupts (D259, D271)"
     }
   },
   "skills": [
@@ -37,7 +38,13 @@
       "sp_cost": 5,
       "cooldown": 4.0,
       "heal": 40,
-      "required_weapons": []
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.6,
+        "release": 0.35,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn"
     },
     {
       "id": "fire_strike",
@@ -58,7 +65,13 @@
       "burn": {
         "dps": 4,
         "duration": 3.0
-      }
+      },
+      "cast": {
+        "windup": 0.35,
+        "release": 0.3,
+        "pose": "CastFire"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/FireStrike.tscn"
     },
     {
       "id": "electric_strike",
@@ -80,7 +93,13 @@
         "radius": 120,
         "ratio": 0.5
       },
-      "stun": 0.5
+      "stun": 0.5,
+      "cast": {
+        "windup": 0.5,
+        "release": 0.3,
+        "pose": "CastStorm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ElectricStrike.tscn"
     },
     {
       "id": "toughness",

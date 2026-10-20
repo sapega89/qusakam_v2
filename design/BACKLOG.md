@@ -144,7 +144,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 20. ~~**Smoother hero animations; lighter jump dust**~~ — **done 2026-10-20 (D262):** Idle breathes over 4 keys, a jump plays Jump → Apex → Fall → Land, landing dust is 6 small wisps for 0.3 s. Was (Sapega 2026-10-20): the hero's animations must be smoother —
     redo them (more in-betweens, generated from his artist frames with comfy-sprite, D239); the jump/land dust lasts far
     too long and is too dense — shorter, thinner, in the Ender Lilies spirit.
-21. **Every skill has its own animation** (Sapega 2026-10-20): each skill (Healing Palm, Fire / Electric Strike, … —
+21. ~~**Every skill has its own animation**~~ — **done 2026-10-21 (D271, D272):** each active skill is cast with a wind-up pose + charge effect and a release pose + effect (Healing Palm palm glow 0.6 s, Fire Strike flaming blade → fire wave 0.35 s, Electric Strike sky bolt → lightning arc 0.5 s); a staggering hit in the wind-up interrupts (no effect, SP and cooldown spent); hotbar slots on the pad RT/R3/L3/Back. Was (Sapega 2026-10-20): each skill (Healing Palm, Fire / Electric Strike, … —
     Resources/Data/skills.json) gets a hero pose/cast animation and its effect, not just a number change.
     A cast can be **interrupted** (a hit during the wind-up staggers the hero): the skill's effect does not happen, but
     its cooldown starts anyway and the SP is spent (D259). Goes with the stagger system of item 4.

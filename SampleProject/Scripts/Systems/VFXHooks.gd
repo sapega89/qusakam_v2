@@ -54,7 +54,6 @@ func _connect_to_event_bus() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_attacked.connect(_on_player_attacked)
 	EventBus.attack_started.connect(_on_attack_started)
-	EventBus.skill_used.connect(_on_skill_used)
 	EventBus.player_parried.connect(_on_guard.bind(true))
 	EventBus.player_blocked.connect(_on_guard.bind(false))
 
@@ -142,35 +141,6 @@ func _shake_camera(strength: float, duration: float) -> void:
 		tween.tween_property(camera, ^"offset", Vector2(randf_range(-1, 1), randf_range(-1, 1)) * strength * fade, duration / steps)
 	tween.tween_property(camera, ^"offset", Vector2.ZERO, duration / steps)
 
-
-func _on_skill_used(_skill_name: String, pos: Vector2 = Vector2.ZERO) -> void:
-	"""Placeholder VFX для skill"""
-	var player = GameGroups.get_player()
-	if not player:
-		return
-	var skill_pos = pos if pos != Vector2.ZERO else player.global_position
-	_spawn_skill_vfx(skill_pos)
-
-func _spawn_skill_vfx(pos: Vector2) -> void:
-	"""Placeholder skill VFX - енергетичний спалах"""
-	var particles := CPUParticles2D.new()
-	particles.one_shot = true
-	particles.emitting = true
-	particles.amount = 30
-	particles.lifetime = 0.4
-	particles.speed_scale = 1.5
-	particles.direction = Vector2(0, -1)
-	particles.spread = 360.0
-	particles.initial_velocity_min = 80.0
-	particles.initial_velocity_max = 150.0
-	particles.gravity = Vector2(0, 100)
-	particles.color = Color(0.3, 0.7, 1.0, 0.9)  # Синій енергетичний
-	particles.position = pos
-	particles.z_index = 250
-	get_tree().current_scene.add_child(particles)
-	await get_tree().create_timer(0.5).timeout
-	if is_instance_valid(particles):
-		particles.queue_free()
 
 ## VFX для бойових дій босів
 

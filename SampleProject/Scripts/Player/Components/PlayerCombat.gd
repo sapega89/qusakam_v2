@@ -6,7 +6,9 @@ class_name PlayerCombat
 ## Стан бою souls-lite (D264): серія легких ударів, важкий удар, блок і парирування, збій від ворожого удару.
 ## Таймери — у _physics_process, а не await анімації.
 
-enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER }
+const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
+
+enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE }
 
 # External references
 @export var sprite: Sprite2D
@@ -77,8 +79,11 @@ var _block_time: float = 0.0
 const COMBAT_LINGER := 3.0
 var _combat_left: float = 0.0
 var _in_combat: bool = false
-## D259: навичка, чий каст зараз іде (анімації кастів — BACKLOG 21); удар зриває каст.
+## D259: навичка, чий замах зараз іде; удар зриває каст. Каст (D271): <pose>Windup → <pose>Release у Player.tscn,
+## ефект — сцена skills.json → vfx (SkillCastFX) на героєві.
 var casting_skill: String = ""
+var _cast: SkillDefinition
+var _cast_fx: SkillCastFX
 
 var is_attacking: bool:
 	get:
@@ -178,6 +183,10 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 		State.STAGGER:
 			state = State.READY
+		State.CAST_WINDUP:
+			_release_cast()
+		State.CAST_RELEASE:
+			state = State.READY
 
 func in_combat() -> bool:
 	return _in_combat
@@ -204,14 +213,15 @@ func _exit_tree() -> void:
 	state = State.READY
 	_queued = false
 	block_held = false
+	casting_skill = ""  # каст не зірвано ударом — нічого не списано
 
 ## Анімацію героя зараз веде бій, а не рух (Player._physics_process її не перемикає).
 func owns_animation() -> bool:
 	return state != State.READY
 
-## Рух вимкнено: збій, важкий удар, блок (герой стоїть). Легкі удари рух не гальмують (D223).
+## Рух вимкнено: збій, важкий удар, блок, каст навички (герой стоїть). Легкі удари рух не гальмують (D223).
 func locks_movement() -> bool:
-	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK]
+	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE]
 
 func is_staggered() -> bool:
 	return state == State.STAGGER
@@ -271,6 +281,38 @@ func _strike_heavy() -> void:
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
 
+## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
+## вивільнення: SkillManager.use_skill застосовує ефект. false — герой зайнятий.
+func begin_cast(definition: SkillDefinition) -> bool:
+	if state != State.READY:
+		return false
+	state = State.CAST_WINDUP
+	_state_left = definition.cast_windup
+	_direction = player.last_direction
+	_chain_left = 0.0
+	combo_step = 0
+	casting_skill = definition.id
+	_cast = definition
+	_play(StringName(definition.cast_pose + "Windup"))
+	_cast_fx = load(definition.vfx).instantiate()
+	_cast_fx.scale.x = _direction
+	player.add_child(_cast_fx)
+	return true
+
+func _release_cast() -> void:
+	var skill_id := casting_skill
+	casting_skill = ""
+	state = State.CAST_RELEASE
+	_state_left = _cast.cast_release
+	_play(StringName(_cast.cast_pose + "Release"))
+	_cast_fx.release()
+	_cast_fx = null
+	ServiceLocator.get_skill_manager().use_skill(skill_id, null, player)
+
+func _play(animation: StringName) -> void:
+	animation_player.play(animation)
+	player.animation = animation
+
 func _start_block() -> void:
 	state = State.BLOCK
 	_block_time = 0.0
@@ -297,6 +339,8 @@ func stagger(duration: float, from_x: float) -> void:
 	if casting_skill != "":
 		ServiceLocator.get_skill_manager().interrupt_cast(casting_skill)
 		casting_skill = ""
+		_cast_fx.cancel()
+		_cast_fx = null
 	state = State.STAGGER
 	_state_left = duration
 	_queued = false

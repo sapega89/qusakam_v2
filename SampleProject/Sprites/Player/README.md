@@ -21,3 +21,6 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | `Hurt/1.png` | Hurt (stagger, D264) | generated: recoiling from a hit to the chest (`hero_combat`) |
 | `Heavy/1–2.png` | HeavyWindup / HeavyStrike, AttackSmash (mace) | generated: both empty fists raised overhead; crouched, fists swung down low (`hero_combat`) |
 | `Block/1.png` | Block (block and parry, D264) | generated: fists raised before the face, braced (`hero_combat`) |
+| `CastPalm/1–2.png` | CastPalmWindup / CastPalmRelease (Healing Palm, D271) | generated: palms together at the chest, eyes closed; one palm pushed forward (`hero_cast`) |
+| `CastFire/1–2.png` | CastFireWindup / CastFireRelease (Fire Strike, D271) | generated: crouched low; a deep lunge, fist swept up (`hero_cast`) |
+| `CastStorm/1–2.png` | CastStormWindup / CastStormRelease (Electric Strike, D271) | generated: one fist raised to the sky; an arm thrust forward (`hero_cast`) |

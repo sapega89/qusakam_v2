@@ -29,6 +29,13 @@ const HAND_OVERHEAD := Vector2(16, -32)
 const HAND_LOW := Vector2(24, 27)
 const HAND_GUARD := Vector2(25, 3)
 const HAND_HURT := Vector2(28, -10)
+## Каст навички (D271): кулак і кут зброї в кадрах Cast*/1–2; Cast-анімації без запису (долоня) — зброї не видно.
+const CAST_POSES := {
+	"CastFireWindup": [Vector2(21, 9), 230.0],  # лезо відведене низько назад
+	"CastFireRelease": [Vector2(36, -3), 60.0],  # кінець висхідного розтину
+	"CastStormWindup": [Vector2(-7, -33), 0.0],  # вістрям у небо
+	"CastStormRelease": [Vector2(35, 1), 90.0],  # уперед, куди б'є блискавка
+}
 ## Друга рука (дві зброї) — дальня, трохи позаду.
 const OFF_REST := Vector2(7, 21)
 ## Центр дуги шлейфу — на рівні плеча; «вибух» кулака — трохи перед рукавицею.
@@ -87,11 +94,16 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
 	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
-	pivot.visible = not sheathed and not player.mover.is_rolling()
+	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm()
 	off_pivot.visible = _dual and pivot.visible
 	if _tween and _tween.is_running():
 		return
 	_hold_pose()
+
+
+## Каст, де рука відкрита (Healing Palm), — зброю не тримає.
+func _open_palm() -> bool:
+	return String(player.animation).begins_with("Cast") and not CAST_POSES.has(player.animation)
 
 
 func _refresh() -> void:
@@ -133,6 +145,9 @@ func _hold_pose() -> void:
 			_pose(pivot, HAND_HURT, hurt_angle)
 		PlayerCombat.State.HEAVY_WINDUP:
 			_pose(pivot, HAND_OVERHEAD, smash_from)
+		PlayerCombat.State.CAST_WINDUP, PlayerCombat.State.CAST_RELEASE:
+			var cast: Array = CAST_POSES.get(player.animation, [HAND_REST, _rest_angle()])
+			_pose(pivot, cast[0], cast[1])
 		_:
 			_pose(pivot, HAND_REST, _rest_angle())
 	_pose(off_pivot, OFF_REST, _rest_angle())

@@ -332,7 +332,7 @@ func _hero_moves(sl: Node) -> void:
 	var sp0: int = sm.get_current_sp()
 	var interrupted: Array = []
 	eb.skill_interrupted.connect(func(id: String) -> void: interrupted.append(id))
-	hero.combat.casting_skill = "fire_strike"
+	ck(hero.combat.begin_cast(sm.skill_database.get_skill("fire_strike")), "a cast starts")
 	hero.take_damage(5, target)
 	ck(interrupted == ["fire_strike"] and sm.get_current_sp() == sp0 - 6 and sm.is_skill_on_cooldown("fire_strike"),
 			"interrupted: SP %d → %d, cooldown %s" % [sp0, sm.get_current_sp(), sm.is_skill_on_cooldown("fire_strike")])

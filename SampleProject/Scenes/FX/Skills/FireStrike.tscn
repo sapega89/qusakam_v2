@@ -1,0 +1,213 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/SkillCastFX.gd" id="fx"]
+
+[sub_resource type="CanvasItemMaterial" id="Mat_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Grad_glow"]
+offsets = PackedFloat32Array(0, 0.45, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.45, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_glow"]
+gradient = SubResource("Grad_glow")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Grad_fire"]
+offsets = PackedFloat32Array(0, 0.3, 0.7, 1)
+colors = PackedColorArray(1, 0.95, 0.6, 1, 1, 0.62, 0.18, 1, 0.85, 0.22, 0.08, 0.8, 0.3, 0.08, 0.05, 0)
+
+[sub_resource type="Animation" id="A_charge"]
+resource_name = "charge"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Glow:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0.6, 0.6), Vector2(1.6, 1.6)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Glow:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 0.55, 0.15, 0.3), Color(1, 0.55, 0.15, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Flames:emitting")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="A_release"]
+resource_name = "release"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Flames:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Glow:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.08),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(10, 22), Vector2(52, -2)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Glow:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1.6, 1.6), Vector2(4, 3)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Glow:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 0.6, 0.2, 1), Color(1, 0.6, 0.2, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Wave:emitting")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Embers:emitting")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="Lib"]
+_data = {
+&"charge": SubResource("A_charge"),
+&"release": SubResource("A_release"),
+}
+
+[node name="FireStrike" type="Node2D"]
+z_index = 250
+script = ExtResource("fx")
+metadata/_doc = "Fire Strike cast (D271)"
+
+[node name="Glow" type="Sprite2D" parent="."]
+material = SubResource("Mat_add")
+position = Vector2(10, 22)
+modulate = Color(1, 0.55, 0.15, 0)
+scale = Vector2(0.6, 0.6)
+texture = SubResource("Tex_glow")
+
+[node name="Flames" type="CPUParticles2D" parent="."]
+position = Vector2(10, 22)
+emitting = false
+amount = 26
+lifetime = 0.35
+emission_shape = 1
+emission_sphere_radius = 9.0
+direction = Vector2(0, -1)
+spread = 25.0
+gravity = Vector2(0, -160)
+initial_velocity_min = 10.0
+initial_velocity_max = 40.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color_ramp = SubResource("Grad_fire")
+
+[node name="Wave" type="CPUParticles2D" parent="."]
+position = Vector2(30, 0)
+emitting = false
+amount = 48
+lifetime = 0.45
+one_shot = true
+explosiveness = 0.85
+emission_shape = 3
+emission_rect_extents = Vector2(6, 18)
+direction = Vector2(1, -0.35)
+spread = 28.0
+gravity = Vector2(0, -120)
+initial_velocity_min = 120.0
+initial_velocity_max = 230.0
+damping_min = 220.0
+damping_max = 320.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color_ramp = SubResource("Grad_fire")
+
+[node name="Embers" type="CPUParticles2D" parent="."]
+position = Vector2(48, -4)
+emitting = false
+amount = 14
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.6
+emission_shape = 3
+emission_rect_extents = Vector2(24, 14)
+direction = Vector2(0, -1)
+spread = 40.0
+gravity = Vector2(0, -40)
+initial_velocity_min = 15.0
+initial_velocity_max = 50.0
+scale_amount_min = 1.5
+scale_amount_max = 2.5
+color_ramp = SubResource("Grad_fire")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries/ = SubResource("Lib")
