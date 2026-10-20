@@ -184,7 +184,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     block/parry clang, dash, hero and enemy grunts / hurt / death, skill casts; **bosses voiced** — roars, attack shouts,
     a few short lines in their cutscenes; **characters** — every speaking character ("всіх") gets a voice: dialogue
     "babble" blips in their own timbre while text types (Undertale-style), plus short **voiced phrases**: each character's own spoken greeting when the hero talks to
-    them (Sapega «так, але короткі фрази — озвучені привітання персонажа»), battle cries, companion calls. Today: `AudioManager.gd`, 21 audio files. Plan first: `design/audio_plan.md` — sources by licence
+    them (Sapega «так, але короткі фрази — озвучені привітання персонажа») — but **not** on the first meeting when it is
+    a meeting cutscene (Sapega «але якщо це перша зустріч і є катсцена зустрічі, то немає озвучення»), battle cries, companion calls. Today: `AudioManager.gd`, 21 audio files. Plan first: `design/audio_plan.md` — sources by licence
     (CC0 packs such as Kenney / OpenGameArt first; local generators only with a licence that allows release — TTS:
     Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
     non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
