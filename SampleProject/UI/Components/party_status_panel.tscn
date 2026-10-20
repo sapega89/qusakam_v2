@@ -194,9 +194,3 @@ mouse_filter = 2
 theme_type_variation = &"SpBar"
 max_value = 1.0
 show_percentage = false
-
-[node name="Select" type="Button" parent="Body/CardsScroll/Cards/Card"]
-layout_mode = 2
-focus_mode = 0
-mouse_filter = 2
-theme_type_variation = &"CardSelect"

@@ -34,12 +34,6 @@ var _tab_buttons: Dictionary = {}       # StringName -> Button
 var _tab_group := ButtonGroup.new()
 var _row_group := ButtonGroup.new()
 var _selected_index: int = -1
-var _using: Dictionary = {}  # зілля, для якого зараз обирають, кому його дати (D127)
-
-# ── Режим вибору предмета для слота екіпіровки (поведінка збережена) ────────
-var equipment_selection_mode: bool = false
-var equipment_slot_id: String = ""
-var equipment_component: Node = null
 
 
 func _initialize_component() -> void:
@@ -164,10 +158,6 @@ func _apply_filter() -> void:
 			if allowed.has(item_database.base_id(item.get("id", ""))):
 				items.append(item)
 
-	# У режимі вибору для слота лишаємо тільки те, що влізе в цей слот.
-	if equipment_selection_mode and equipment_slot_id != "":
-		_filter_by_equipment_slot(equipment_slot_id)
-
 	_refresh_display()
 
 
@@ -185,8 +175,7 @@ func _refresh_display() -> void:
 	_list_scroll.visible = has_items
 	_empty_label.visible = not has_items
 	if not has_items:
-		_empty_label.text = ("No items available for this slot."
-				if equipment_selection_mode else "No items in this category.")
+		_empty_label.text = "No items in this category."
 		# Порожня категорія не повинна показувати опис предмета з попередньої.
 		if is_inside_tree():
 			_clear_description()
@@ -212,14 +201,19 @@ func _refresh_display() -> void:
 ## Опис предмета показуємо тултипом: у кадрі Figma окремої панелі деталей немає,
 ## але поведінку «побачити опис» втрачати не можна.
 func _tooltip_for(item: Dictionary) -> String:
-	var text := String(item.get("desc", ""))
-	if equipment_selection_mode:
-		text += "\n\nDouble-click or press Enter to equip"
-	else:
-		var slot_id := _get_slot_for_item(item)
-		if slot_id != "":
-			text += "\n\nDouble-click to equip in %s slot" % _get_slot_display_name(slot_id)
-	return text
+	return String(item.get("desc", "")) + "
+
+" + _use_hint(item)
+
+
+## Що зробить подвійний клік / Enter на предметі (D286).
+func _use_hint(item: Dictionary) -> String:
+	if _heal_amount(item) > 0:
+		return "Double-click or Enter to use"
+	var slot_id := _get_slot_for_item(item)
+	if slot_id != "":
+		return "Double-click or Enter to equip (%s)" % _get_slot_display_name(slot_id)
+	return "Cannot be used"
 
 
 func update_display() -> void:
@@ -271,93 +265,64 @@ func _clear_description() -> void:
 	bar.set_context_hint("")
 
 
+## Double click / Enter / pad A on a row — use the item (D286, replaces D127's target choice).
 func _on_row_activated(index: int) -> void:
 	if index < 0 or index >= items.size():
 		return
 	var item: Dictionary = items[index]
-	if equipment_selection_mode:
-		_equip_item(String(item.get("id", "")))
-	elif _heal_amount(item) > 0:
-		_begin_use(item)
+	if _heal_amount(item) > 0:
+		_drink(item)
+	elif _get_slot_for_item(item) != "":
+		_equip(item)
 	else:
-		_try_auto_equip(item)
+		ServiceLocator.get_ui_manager().show_modal(MODAL_TEMPLATES.cannot_use(String(item.get("name", ""))))
+		ServiceLocator.get_ui_manager().get_modal_layer().modal_closed.connect(
+				func(_r: String) -> void: _focus_selected_row(), CONNECT_ONE_SHOT)
 
 
-# ── Випити зілля (D127) ─────────────────────────────────────────────────────
+func _effect(item: Dictionary) -> Dictionary:
+	return item.get("item_data", {}).get("effect", {})
+
 
 func _heal_amount(item: Dictionary) -> int:
-	var effect: Dictionary = item.get("item_data", {}).get("effect", {})
-	return int(effect.get("value", 0)) if effect.get("type", "") == "heal" else 0
+	return int(_effect(item).get("value", 0)) if _effect(item).get("type", "") in ["heal", "mana"] else 0
 
 
-## Предмет обрано — фокус іде на картки партії, гравець обирає, кому дати.
-func _begin_use(item: Dictionary) -> void:
-	_using = item
-	_choose_target()
-
-
-## Вибір цілі для _using. Сюди ж повертає Cancel у підтвердженні (B46).
-func _choose_target() -> void:
-	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_panel")
-	var targets: Array = panel.healable_ids()
-	if targets.is_empty():
-		_using = {}
-		_set_bar_hint("Nobody needs healing right now.")
-		return
-	_set_bar_hint("Choose who drinks the %s." % _using.get("name", ""))
-	# B47: повторна активація під час вибору цілі — лише оновлює _using
-	if not panel.character_chosen.is_connected(_on_target_chosen):
-		panel.character_chosen.connect(_on_target_chosen)
-	if not panel.selection_cancelled.is_connected(_on_target_cancelled):
-		panel.selection_cancelled.connect(_on_target_cancelled)
-	panel.begin_target_select(targets)
-
-
-func _end_target_select() -> void:
-	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_panel")
-	if panel:
-		panel.end_target_select()
-		if panel.character_chosen.is_connected(_on_target_chosen):
-			panel.character_chosen.disconnect(_on_target_chosen)
-		if panel.selection_cancelled.is_connected(_on_target_cancelled):
-			panel.selection_cancelled.disconnect(_on_target_cancelled)
-
-
-func _on_target_cancelled() -> void:
-	_end_target_select()
-	_using = {}
-	_set_bar_hint("")
+## Зілля (HP) чи ефір (SP) діє на героя одразу — без вибору, кому, і без підтвердження (D286).
+func _drink(item: Dictionary) -> void:
+	var hero_name := String(game_manager.get_active_character().name)
+	var value := _heal_amount(item)
+	var now: int
+	var top: int
+	if _effect(item).type == "mana":
+		var sm: SkillManager = ServiceLocator.get_skill_manager()
+		if sm.get_current_sp() >= sm.get_max_sp():
+			_set_bar_hint("%s's SP is already full." % hero_name)
+			return
+		sm.restore_sp(value)
+		now = sm.get_current_sp()
+		top = sm.get_max_sp()
+	else:
+		var player: Node = game_manager.get_current_player()
+		if player.get_current_health() >= player.get_max_health():
+			_set_bar_hint("%s is already at full health." % hero_name)
+			return
+		player.heal_damage(value)
+		now = player.get_current_health()
+		top = player.get_max_health()
+	_get_inventory_manager().remove_item(String(item.get("id", "")), 1)
+	_set_bar_hint("%s — %s %d / %d." % [String(item.get("name", "")), "SP" if _effect(item).type == "mana" else "HP", now, top])
 	_focus_selected_row()
 
 
-## Ціль обрано — підтвердження зі зміною HP.
-func _on_target_chosen(character_id: String) -> void:
-	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_panel")
-	var hp: Vector2i = panel.hp_of(character_id)
-	_end_target_select()
-	var ui = ServiceLocatorHelper.get_manager("get_ui_manager")
-	var characters = ServiceLocatorHelper.get_manager("get_character_manager")
-	if ui == null or hp.x < 0:
-		_using = {}
-		return
-	var who: String = String(characters.get_character(character_id).name) if characters else character_id
-	var after: int = mini(hp.x + _heal_amount(_using), hp.y)
-	ui.get_modal_layer().modal_closed.connect(_on_use_answered, CONNECT_ONE_SHOT)
-	ui.show_modal(MODAL_TEMPLATES.use_item(String(_using.get("name", "")), who, hp.x, after, hp.y))
-
-
-func _on_use_answered(result: String) -> void:
-	# Cancel / Esc у підтвердженні — назад до вибору, кому дати, зілля лишається обраним (B46).
-	if result != "confirm" and not _using.is_empty():
-		_choose_target()
-		return
-	var item := _using
-	_using = {}
-	_set_bar_hint("")
-	if result == "confirm" and not item.is_empty():
-		# Ціль — лише персонаж зі справжнім HP, тобто гравець (D127).
-		game_manager.get_current_player().heal_damage(_heal_amount(item))
-		_get_inventory_manager().remove_item(String(item.get("id", "")), 1)
+## Зброя, броня, прикраса — у свій слот через штатний API (EquipmentManager → EventBus → CharacterManager).
+func _equip(item: Dictionary) -> void:
+	var slot_id := _get_slot_for_item(item)
+	var character = game_manager.get_active_character()
+	_get_equipment_manager().equip_item(String(character.character_id), slot_id,
+			String(item.get("id", "")), item.get("item_data", {}))
+	emit_item_equipped(String(item.get("id", "")), slot_id)
+	_set_bar_hint("%s equipped — %s." % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 	_focus_selected_row()
 
 
@@ -380,49 +345,6 @@ func _notification(what: int) -> void:
 			_clear_description()
 
 
-# ── Режим вибору для екіпіровки (поведінка збережена без змін) ──────────────
-
-func set_equipment_selection_mode(enabled: bool, slot_id: String = "", equipment_comp: Node = null) -> void:
-	equipment_selection_mode = enabled
-	equipment_slot_id = slot_id
-	equipment_component = equipment_comp
-	_select_category(&"all")
-
-
-func _filter_by_equipment_slot(slot_id: String) -> void:
-	var filtered: Array = []
-	for item in items:
-		if InventorySlotRules.fits(item.get("item_data", {}), slot_id):
-			filtered.append(item)
-	items = filtered
-
-
-func _equip_item(item_id: String) -> void:
-	if not equipment_selection_mode or equipment_slot_id == "":
-		return
-	if not game_manager or not item_database:
-		return
-
-	var item_data: Dictionary = item_database.get_item(item_id)
-	if item_data.is_empty() or not InventorySlotRules.fits(item_data, equipment_slot_id):
-		return
-
-	# Пишемо через штатний API: EquipmentManager -> EventBus -> CharacterManager.
-	# Той шлях сам оновлює бонуси й синхронізує player_state для збереження.
-	var character = game_manager.get_active_character()
-	var equipment_manager := _get_equipment_manager()
-	if character == null:
-		return
-	equipment_manager.equip_item(String(character.character_id), equipment_slot_id, item_id, item_data)
-
-	emit_item_equipped(item_id, equipment_slot_id)
-
-	game_manager.get_current_player().apply_stats_from_game_manager()
-
-	set_equipment_selection_mode(false)
-	request_tab.emit("equipment")
-
-
 func _get_equipment_manager() -> Node:
 	return ServiceLocator.get_equipment_manager()
 
@@ -440,31 +362,3 @@ func _get_slot_display_name(slot_id: String) -> String:
 			return "Accessory"
 		_:
 			return slot_id.capitalize()
-
-
-## Автоекіпірування подвійним кліком, коли відкрита вкладка Equipment.
-func _try_auto_equip(item: Dictionary) -> void:
-	if not game_manager or not item_database:
-		return
-	if not _is_equipment_tab_open():
-		return
-	var slot_id := _get_slot_for_item(item)
-	var item_id := String(item.get("id", ""))
-	if slot_id == "" or item_id == "":
-		return
-
-	var previous_mode := equipment_selection_mode
-	var previous_slot := equipment_slot_id
-	equipment_selection_mode = true
-	equipment_slot_id = slot_id
-	_equip_item(item_id)
-	equipment_selection_mode = previous_mode
-	equipment_slot_id = previous_slot
-
-
-func _is_equipment_tab_open() -> bool:
-	var game_menu := get_tree().get_first_node_in_group(&"game_menu")
-	if not game_menu:
-		return false
-	var equipment := game_menu.find_child("EquipmentComponent", true, false)
-	return equipment != null and equipment.visible

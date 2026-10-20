@@ -100,7 +100,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
    Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
    left, then the raid over black and the ridge lines; flags as before. [[cutscene_plan]] → "Built". Open: no skip, HUD stays.
-9. **Inventory actions** (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
+9. ~~**Inventory actions**~~ — **done 2026-10-21 (D286, [[game_menu_batch_mapping]]):** double click / Enter / pad A
+   uses a row — potions heal Kusakam at once, an ether restores SP, weapons / armour / accessories equip into their
+   slot, materials and key items open "Cannot Use". Was (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
    modal "this item cannot be used"; using a potion heals the hero right away.
 10. **Party shows only who is in it**: with one character the Game Menu shows only Kusakam until the party grows.
 11. **Equipment slot picker**: clicking an equipment slot opens a window with the inventory items that fit that slot.

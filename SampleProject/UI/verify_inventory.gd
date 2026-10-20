@@ -98,18 +98,6 @@ func _initialize() -> void:
 		await process_frame
 		ck(inv._selected_index == r1.index, "row selection updates index")
 
-	print("[7] equipment-selection flow")
-	ck(inv.has_method("set_equipment_selection_mode"), "set_equipment_selection_mode preserved")
-	inv.set_equipment_selection_mode(true, "sword", null)
-	for i in 3: await process_frame
-	ck(inv.equipment_selection_mode, "equipment selection mode on")
-	var only_swords := true
-	for it in inv.items:
-		if String(it["item_data"].get("category","")) != "sword": only_swords = false
-	ck(only_swords, "slot filter keeps only matching items")
-	inv.set_equipment_selection_mode(false)
-	await process_frame
-
 	print("[8] save/load")
 	var before: Dictionary = inv_mgr.save_to_dict()
 	inv_mgr.load_from_dict(before)

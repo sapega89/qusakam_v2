@@ -13,17 +13,12 @@ const MAX_CARDS := 4  # стільки карток у кадрі Figma
 ## Картки — шаблон %Card зі сцени (D117).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
-## Вибір цілі (D127): гравець обрав персонажа / скасував вибір (Esc).
-signal character_chosen(character_id: String)
-signal selection_cancelled
-
 @onready var _playtime_value: Label = %PlaytimeValue
 @onready var _gold_value: Label = %GoldValue
 @onready var _cards: VBoxContainer = %Cards
 @onready var _card: PanelContainer = %Card
 
 var _inventory_manager: Node = null
-var _wired: Dictionary = {}  # кнопки вибору, вже під'єднані (duplicate() копіює meta)
 
 
 func _ready() -> void:
@@ -114,12 +109,6 @@ func _fill_card(card: Control, id: String, character: Object, is_active: bool, l
 		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), sm.get_current_sp(), sm.get_max_sp())
 	else:
 		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), -1, -1)
-	card.set_meta(&"hp", hp)
-	var select: Button = card.get_node(^"Select")
-	if not _wired.has(select):
-		_wired[select] = true
-		select.pressed.connect(func() -> void: character_chosen.emit(card.get_meta(&"character_id")))
-		select.gui_input.connect(_on_select_input)
 
 
 ## current < 0 ⇒ даних немає: показуємо "—/—" і порожню смугу.
@@ -128,65 +117,6 @@ func _fill_stat(row: Control, current: int, maximum: int) -> void:
 	var bar: ProgressBar = row.get_node(^"Bar")
 	bar.max_value = maxf(1.0, float(maximum))
 	bar.value = 0.0 if current < 0 else float(current)
-
-
-# ── Вибір цілі (D127) ───────────────────────────────────────────────────────
-
-## Персонажі, яких можна лікувати: є справжнє HP і воно не повне.
-func healable_ids() -> Array:
-	var ids: Array = []
-	for card in _visible_cards():
-		var hp: Vector2i = card.get_meta(&"hp", Vector2i(-1, -1))
-		if hp.x >= 0 and hp.x < hp.y:
-			ids.append(card.get_meta(&"character_id"))
-	return ids
-
-
-func hp_of(character_id: String) -> Vector2i:
-	for card in _visible_cards():
-		if card.get_meta(&"character_id") == character_id:
-			return card.get_meta(&"hp", Vector2i(-1, -1))
-	return Vector2i(-1, -1)
-
-
-## Фокус переходить на картки; вибрати можна лише [param allowed], решта приглушені.
-func begin_target_select(allowed: Array) -> void:
-	var first: Button = null
-	for card in _visible_cards():
-		var ok: bool = card.get_meta(&"character_id") in allowed
-		var select: Button = card.get_node(^"Select")
-		select.focus_mode = Control.FOCUS_ALL if ok else Control.FOCUS_NONE
-		select.mouse_filter = Control.MOUSE_FILTER_STOP if ok else Control.MOUSE_FILTER_IGNORE
-		card.modulate.a = 1.0 if ok else UITokens.MENU_INACTIVE_ALPHA
-		if ok and first == null:
-			first = select
-	if first:
-		first.grab_focus()
-
-
-func end_target_select() -> void:
-	for card in _visible_cards():
-		var select: Button = card.get_node(^"Select")
-		if select.has_focus():
-			select.release_focus()
-		select.focus_mode = Control.FOCUS_NONE
-		select.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.modulate.a = 1.0
-
-
-func is_selecting() -> bool:
-	return _visible_cards().any(func(c: Control) -> bool: return c.get_node(^"Select").focus_mode != Control.FOCUS_NONE)
-
-
-## Esc під час вибору — скасувати, а не закрити все меню.
-func _on_select_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"ui_cancel"):
-		get_viewport().set_input_as_handled()
-		selection_cancelled.emit()
-
-
-func _visible_cards() -> Array:
-	return _cards.get_children().filter(func(c: Control) -> bool: return c.visible)
 
 
 ## HP активного персонажа — з гравця (CombatBody2D). HealthComponent власного

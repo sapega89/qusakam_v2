@@ -1,15 +1,15 @@
 extends SceneTree
 
-## Випити зілля з інвентаря (D127).
+## Inventory actions (BACKLOG 9, D286) with real input — keys, mouse, gamepad:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_use_item.gd
-##
-## Справжні натискання (push_input), а не виклики функцій:
-##   1. Enter на зіллі → фокус на картці партії; приглушено тих, кого лікувати не можна.
-##   2. Enter на картці → підтвердження з HP «до → після».
-##   3. Use → HP росте, зілля на одне менше, фокус назад в інвентар.
-##   3b. Cancel у підтвердженні — назад до вибору персонажа (B46).
-##   4. Esc під час вибору — скасування, нічого не витрачено, меню відкрите.
-##   5. Повне HP — зілля не витрачається, нижня панель пояснює чому.
+##   1. Enter on a potion heals Kusakam at once: no party choice, no confirmation, one potion spent.
+##   2. A double click and pad A do the same; at full HP the potion is kept and the bottom bar says why.
+##   3. An ether restores SP.
+##   4. A material opens the "Cannot Use" modal; pad B closes it, focus back on the row, nothing spent.
+##   5. A weapon, armour and a helmet equip into their slots from the inventory.
+##   6. An empty potion stack leaves the list.
+
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
@@ -17,171 +17,109 @@ func ck(ok: bool, label: String) -> void:
 	if not ok: fails.append(label)
 
 
-func _press(action: StringName) -> void:
-	for down in [true, false]:
-		var ev := InputEventAction.new()
-		ev.action = action
-		ev.pressed = down
-		root.push_input(ev)
-		await process_frame
-	for i in 4: await process_frame
-
-
-func _potion_row(inv: Node) -> Control:
+func _row(inv: Node, id: String) -> Control:
 	for i in inv.items.size():
-		if inv.items[i].get("id", "") == "potion":
+		if inv.items[i].get("id", "") == id:
 			return inv._item_list.get_child(i)
 	return null
 
 
+func _focus_row(inv: Node, id: String) -> Control:
+	var row: Control = _row(inv, id)
+	row.grab_focus()
+	await process_frame
+	return row
+
+
 func _initialize() -> void:
-	await process_frame
-	await process_frame
+	var game: Node = await Kit.boot(self)
 	var sl: Node = root.get_node("ServiceLocator")
 	var ui: Node = sl.get_ui_manager()
-	# Як кнопка New Game: без цього Game.tscn вантажить справжній сейв гравця.
-	set_meta("start_new_game", true)
-	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
-	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
-	root.add_child(game)
-	current_scene = game
-	for i in 40: await process_frame
-	# Вступ Canyon — діалог; під час діалогу меню не відкривається (D136).
-	var intro_dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
-	for intro_round in 10:
-		for i in 200:
-			if not intro_dm.is_dialogue_active():
-				break
-			intro_dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
-			intro_dm.current_dialogue_player.accept()
-			await process_frame
-		for i in 10: await process_frame
-
 	var player: Node = sl.get_game_manager().get_current_player()
 	var inventory: Node = sl.get_inventory_manager()
-	inventory.add_item("potion", 5)
-	player.current_health = 40
-	var start_count: int = inventory.get_item_count("potion")
-
-	# Середина гри: Inventory вже відкрита сюжетом (D151).
-	game.set_quest_flag("village_oldman_gift", true)
-	ui.open_game_menu()
-	for i in 16: await process_frame
-	var inv: Node = get_first_node_in_group("game_menu").find_child("InventoryComponent", true, false)
-	var panel: Node = get_first_node_in_group("ui_party_panel")
-	var bar: Node = get_first_node_in_group("ui_bottom_bar")
-	ck(inv != null and panel != null, "inventory and party panel present")
-
-	print("[1] Enter on a potion moves focus to the party")
-	var row: Control = _potion_row(inv)
-	ck(row != null, "potion row listed")
-	row.grab_focus()
-	await process_frame
-	await _press(&"ui_accept")
-	var focus: Control = root.gui_get_focus_owner()
-	ck(focus != null and focus.name == "Select" and focus.get_parent().get_meta(&"character_id", "") == "player_3",
-			"focus on the active character's card (%s)" % (focus.get_path() if focus else "none"))
-	var others: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != "player_3")
-	ck(others.all(func(c): return c.modulate.a < 1.0 and c.get_node("Select").focus_mode == Control.FOCUS_NONE),
-			"characters without HP cannot be chosen")
-	ck(bar._hint_label.text.begins_with("Choose who drinks"), "bottom bar asks whom (%s)" % bar._hint_label.text)
-
-	print("[2] Enter on the card asks for confirmation")
-	await _press(&"ui_accept")
-	var modal: Node = ui.get_modal_layer().active_modal
-	ck(modal != null, "confirmation open")
-	var texts: String = " ".join(modal.find_children("*", "Label", true, false).map(func(l): return l.text)) if modal else ""
-	ck(texts.contains("Use Potion?") and texts.contains("HP 40 → 90 / 100"), "says what will happen (%s)" % texts)
-
-	print("[3] Use heals and spends one potion")
-	if modal:
-		modal.chosen.emit("confirm")
-	for i in 8: await process_frame
-	ck(player.current_health == 90, "HP 40 → 90 (%d)" % player.current_health)
-	ck(inventory.get_item_count("potion") == start_count - 1, "one potion spent")
-	var hp_label: Label = panel._visible_cards()[0].get_node("Row/Info/Bars/Hp/Head/Value")
-	ck(hp_label.text == "90/100", "party card shows the new HP (%s)" % hp_label.text)
 	var sm: Node = sl.get_skill_manager()
-	var sp_row: Control = panel._visible_cards()[0].get_node("Row/Info/Bars/Sp")
-	ck(sp_row.get_node("Head/Value").text == "%d/%d" % [sm.get_current_sp(), sm.get_max_sp()], "active card shows SP (D3: %s)" % sp_row.get_node("Head/Value").text)
-	ck(is_equal_approx(sp_row.get_node("Bar").value, float(sm.get_current_sp())), "active card SP bar filled to current")
-	var other_cards: Array = panel._visible_cards().filter(func(c): return c.get_meta(&"character_id") != sl.get_character_manager().get_active_character_id())
-	ck(not other_cards.is_empty() and other_cards.all(func(c): return c.get_node("Row/Info/Bars/Sp/Head/Value").text == "—/—" and c.get_node("Row/Info/Bars/Sp/Bar").value == 0.0),
-			"non-active cards keep SP —/— (D18)")
-	ck(not panel.is_selecting(), "party cards back to normal")
-	var back: Control = root.gui_get_focus_owner()
-	ck(back != null and inv.is_ancestor_of(back), "focus back in the inventory (%s)" % (back.get_path() if back else "none"))
-
-	print("[3b] Cancel in the confirmation goes back to choosing whom (B46)")
-	row = _potion_row(inv)
-	row.grab_focus()
-	await process_frame
-	await _press(&"ui_accept")
-	await _press(&"ui_accept")
-	modal = ui.get_modal_layer().active_modal
-	ck(modal != null, "confirmation open again")
-	if modal:
-		modal.chosen.emit("cancel")
-	for i in 6: await process_frame
-	ck(panel.is_selecting(), "back to choosing a character, not to the item")
-	focus = root.gui_get_focus_owner()
-	ck(focus != null and focus.name == "Select", "focus on a party card (%s)" % (focus.get_path() if focus else "none"))
-	ck(bar._hint_label.text.begins_with("Choose who drinks"), "still asking whom")
-	ck(inventory.get_item_count("potion") == start_count - 1, "nothing spent on cancel")
-	print("[3d] Card follows HP changes that are not potions (B45)")
-	player.heal_damage(-20)
-	await process_frame
-	var card_now: String = panel._visible_cards()[0].get_node("Row/Info/Bars/Hp/Head/Value").text
-	ck(card_now == "%d/100" % player.current_health, "card follows a hit with no inventory change (%s vs %d)" % [card_now, player.current_health])
-
-	print("[3c] After a cancel, drinking again still updates the card (B45)")
+	for id in ["potion", "ether", "herb", "iron_sword", "iron_armor", "iron_helmet"]:
+		inventory.add_item(id, 3 if id == "potion" else 1)
 	player.current_health = 30
-	await _press(&"ui_accept")
-	modal = ui.get_modal_layer().active_modal
-	if modal:
-		modal.chosen.emit("confirm")
-	for i in 8: await process_frame
+	var potions: int = inventory.get_item_count("potion")
+
+	game.set_quest_flag("village_oldman_gift", true)  # Inventory відкрита сюжетом (D151)
+	ui.open_game_menu()
+	await Kit.frames(self, 16)
+	var menu: Node = get_first_node_in_group("game_menu")
+	menu.switch_to_tab("Inventory")
+	await Kit.frames(self, 6)
+	var inv: Node = menu.find_child("InventoryComponent", true, false)
+	var bar: Node = get_first_node_in_group("ui_bottom_bar")
+
+	print("[1] Enter on a potion heals right away")
+	await _focus_row(inv, "potion")
+	await Kit.key(self, KEY_ENTER)
+	ck(ui.get_modal_layer().active_modal == null, "no confirmation modal")
 	ck(player.current_health == 80, "HP 30 → 80 (%d)" % player.current_health)
-	var card_hp: String = panel._visible_cards()[0].get_node("Row/Info/Bars/Hp/Head/Value").text
-	ck(card_hp == "80/100", "party card shows 80/100 (%s)" % card_hp)
-	start_count -= 1
-	row = _potion_row(inv)
-	row.grab_focus()
-	await process_frame
-	await _press(&"ui_accept")
-	await _press(&"ui_cancel")
-	ck(not panel.is_selecting(), "Esc on the cards returns to the item list")
-	back = root.gui_get_focus_owner()
-	ck(back != null and inv.is_ancestor_of(back), "focus back on the items")
+	ck(inventory.get_item_count("potion") == potions - 1, "one potion spent")
+	var card_hp: String = get_first_node_in_group("ui_party_panel")._cards.get_child(0).get_node("Row/Info/Bars/Hp/Head/Value").text
+	ck(card_hp == "80/100", "party card follows (%s)" % card_hp)
+	var focus: Control = root.gui_get_focus_owner()
+	ck(focus != null and inv.is_ancestor_of(focus), "focus stays in the item list")
 
-	print("[4] Esc while choosing cancels, nothing spent, menu stays")
-	row = _potion_row(inv)
-	row.grab_focus()
-	await process_frame
-	await _press(&"ui_accept")
-	ck(panel.is_selecting(), "choosing again")
-	await _press(&"ui_cancel")
-	ck(not panel.is_selecting(), "Esc cancelled the choice")
+	print("[2] Double click and pad A; full HP keeps the potion")
+	player.current_health = 10
+	await Kit.mouse(self, _row(inv, "potion"), true)
+	ck(player.current_health == 60, "double click: HP 10 → 60 (%d)" % player.current_health)
+	await _focus_row(inv, "potion")
+	await Kit.pad(self, JOY_BUTTON_A)
+	ck(player.current_health == 100, "pad A: HP 60 → 100 (%d)" % player.current_health)
+	ck(_row(inv, "potion") == null, "last potion left the list")
+	inventory.add_item("potion", 1)
+	await Kit.frames(self, 4)
+	await _focus_row(inv, "potion")
+	await Kit.key(self, KEY_ENTER)
+	ck(inventory.get_item_count("potion") == 1, "full HP: potion kept")
+	ck(bar._hint_label.text.ends_with("is already at full health."), "bottom bar explains (%s)" % bar._hint_label.text)
+
+	print("[3] Ether restores SP")
+	sm.spend_sp(sm.get_current_sp())
+	await _focus_row(inv, "ether")
+	await Kit.key(self, KEY_ENTER)
+	ck(sm.get_current_sp() > 0 and inventory.get_item_count("ether") == 0, "SP restored, ether spent (%d)" % sm.get_current_sp())
+
+	print("[4] A material cannot be used")
+	var herb_row: Control = await _focus_row(inv, "herb")
+	await Kit.key(self, KEY_ENTER)
+	var text: String = Kit.modal_text(self)
+	ck(text.contains("Cannot Use") and text.contains("cannot be used"), "modal says so (%s)" % text)
+	await Kit.pad(self, JOY_BUTTON_B)
+	ck(ui.get_modal_layer().active_modal == null, "pad B closes it")
 	ck(get_first_node_in_group("game_menu") != null, "Game Menu still open")
-	ck(inventory.get_item_count("potion") == start_count - 1, "nothing spent on cancel")
+	ck(inventory.get_item_count("herb") == 1, "nothing spent")
+	await Kit.frames(self, 2)
+	focus = root.gui_get_focus_owner()
+	ck(focus != null and inv.is_ancestor_of(focus), "focus back on the list (%s)" % (focus.get_path() if focus else "none"))
+	await Kit.mouse(self, herb_row, true)
+	ck(Kit.modal_text(self).contains("Cannot Use"), "double click opens it too")
+	var ok_button: Button = ui.get_modal_layer().active_modal.find_children("*", "Button", true, false).filter(func(b: Button) -> bool: return b.visible)[0]
+	await Kit.mouse(self, ok_button)
+	ck(ui.get_modal_layer().active_modal == null, "OK click closes it")
 
-	print("[5] Full HP: nothing to heal")
-	player.current_health = player.Max_Health
-	panel.refresh()
-	await process_frame
-	row = _potion_row(inv)
-	row.grab_focus()
-	await process_frame
-	await _press(&"ui_accept")
-	ck(not panel.is_selecting(), "no card to choose at full HP")
-	ck(bar._hint_label.text == "Nobody needs healing right now.", "bottom bar explains (%s)" % bar._hint_label.text)
-	ck(inventory.get_item_count("potion") == start_count - 1, "potion kept")
-	print("[6] An empty potion stack leaves the list")
+	print("[5] Weapons and armour equip from the inventory")
+	var character: Object = sl.get_game_manager().get_active_character()
+	await _focus_row(inv, "iron_sword")
+	await Kit.key(self, KEY_ENTER)
+	ck(character.equipment.get("sword") is Dictionary and character.equipment["sword"].id == "iron_sword", "sword slot: iron_sword")
+	await Kit.mouse(self, _row(inv, "iron_armor"), true)
+	ck(character.equipment.get("body") is Dictionary and character.equipment["body"].id == "iron_armor", "body slot: iron_armor")
+	await _focus_row(inv, "iron_helmet")
+	await Kit.pad(self, JOY_BUTTON_A)
+	ck(character.equipment.get("head") is Dictionary and character.equipment["head"].id == "iron_helmet", "head slot: iron_helmet")
+	ck(bar._hint_label.text.contains("equipped"), "bottom bar confirms (%s)" % bar._hint_label.text)
+
+	print("[6] An empty stack leaves the list")
 	inventory.remove_item("potion", inventory.get_item_count("potion"))
 	await process_frame
-	ck(_potion_row(inv) == null, "no potion row at zero")
+	ck(_row(inv, "potion") == null, "no potion row at zero")
 
 	ui.close_game_menu()
-	for i in 4: await process_frame
+	await Kit.frames(self, 4)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

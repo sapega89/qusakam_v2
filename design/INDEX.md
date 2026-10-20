@@ -73,7 +73,7 @@ Read-only findings. No decisions made inside them.
 Figma frame → Godot scene, per screen. The format lives in the
 `ui-screen-pipeline` skill.
 
-- [[crafting_mapping]] · [[tutorial_mapping]] · [[combat_hud_mapping]] · [[settings_mapping]] · [[skills_ui_mapping]] · [[world_map_mapping]]
+- [[crafting_mapping]] · [[tutorial_mapping]] · [[combat_hud_mapping]] · [[settings_mapping]] · [[skills_ui_mapping]] · [[world_map_mapping]] · [[game_menu_batch_mapping]]
 - [[equipment_data_flow]] · [[ui_navigation_map]]
 
 ## Screenshots

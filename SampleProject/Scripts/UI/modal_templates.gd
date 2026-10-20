@@ -110,20 +110,14 @@ static func misc_popup(title: String, description: String, ok_text: String = "OK
 		"title": title,
 		"description": description,
 		"buttons": [
-			{"id": "confirm", "text": ok_text, "is_default": true}
+			# Одна кнопка — B / Esc теж її натискає (D286), результат лишається "confirm".
+			{"id": "confirm", "text": ok_text, "is_default": true, "is_cancel": true}
 		]
 	}
 
-## D127: випити зілля — та сама родина модалок, що й купівля.
-static func use_item(item_name: String, character_name: String, hp_from: int, hp_to: int, hp_max: int) -> Dictionary:
-	return {
-		"title": "Use %s?" % item_name,
-		"description": "%s  •  HP %d → %d / %d" % [character_name, hp_from, hp_to, hp_max],
-		"buttons": [
-			{"id": "confirm", "text": "Use", "is_default": true},
-			{"id": "cancel", "text": "Cancel", "is_cancel": true}
-		]
-	}
+## D286: інгредієнт, ключовий предмет — у інвентарі їх не використати. Та сама родина, що й Cannot Craft.
+static func cannot_use(item_name: String) -> Dictionary:
+	return misc_popup("Cannot Use", "%s cannot be used." % item_name)
 
 
 static func confirm_exit_to_main_menu() -> Dictionary:

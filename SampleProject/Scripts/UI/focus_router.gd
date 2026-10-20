@@ -69,7 +69,8 @@ func focus_content() -> void:
 	if not panels_container:
 		return
 	var target = last_focused_by_tab.get(active_tab_name, null)
-	if target and is_instance_valid(target):
+	# Рядки списку перебудовуються (інвентар після «Use») — запам'ятований міг уже вийти з дерева.
+	if target and is_instance_valid(target) and target.is_inside_tree():
 		target.grab_focus()
 		return
 	var focusable = _find_first_focusable(panels_container)
