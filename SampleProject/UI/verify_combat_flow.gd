@@ -147,6 +147,10 @@ func _initialize() -> void:
 			"the halberd is drawn: cooldown %.1f" % game.player.combat.attack_cooldown_time)
 	target.current_health = target.Max_Health  # після [1]–[1c] у цілі 25 HP — алебарда (48) її б добила
 	target.set_physics_process(false)  # стоїть на місці, поки міряємо дальність
+	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
+	var parked_at: Array = parked.map(func(e: Node) -> Vector2: return e.global_position)
+	for e in parked:  # сусіди не під довгою алебардою (134 px, D268) і не впирають відкинутого ворога булавою
+		e.global_position.x = target.global_position.x - 600
 	hits.clear()
 	game.player.global_position = target.global_position + Vector2(-70, 0)
 	await create_timer(0.1).timeout
@@ -164,10 +168,6 @@ func _initialize() -> void:
 	game.player.global_position = target.global_position + Vector2(-26, 0)
 	await create_timer(0.1).timeout
 	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає
-	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
-	var parked_at: Array = parked.map(func(e: Node) -> Vector2: return e.global_position)
-	for e in parked:  # сусіди не впирають відкинутого ворога
-		e.global_position.x = target.global_position.x - 600
 	var x_before_hit: float = target.global_position.x
 	hits.clear()
 	game.player.combat.perform_attack(1)

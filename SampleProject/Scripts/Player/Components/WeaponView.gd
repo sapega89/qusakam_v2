@@ -45,6 +45,9 @@ const HOOK_LIFT := 12.0
 ## Зовнішній радіус дуги шлейфу в текстурі (R у draw_hero_attack.py) і довжина смуги уколу.
 const SMEAR_RADIUS := 32.0
 const SMEAR_LENGTH := 72.0
+## Дуга й «вибух» кулака — на стільки більші за довжину зброї (Sapega 2026-10-21: «аури удару досить маленькі»).
+## Хітбокс зброї (items.json reach) = drawn_reach(), перевіряє verify_souls_combat [12].
+const SMEAR_SCALE := 1.3
 
 ## Кути, градуси: 0 — вістрям угору, більше — вперед за поглядом.
 @export var rest_angle := 135.0
@@ -262,16 +265,24 @@ func _spawn_smear(kind: StringName, upward: bool, size: float) -> void:
 	match kind:
 		&"arc":
 			at = SMEAR_CENTER
-			scale_by = _reach() / SMEAR_RADIUS * size
+			scale_by = _reach() / SMEAR_RADIUS * size * SMEAR_SCALE
 		&"thrust":
 			at = HAND_STRIKE
 			scale_by = size
 		_:
 			at = PUNCH_AT - Vector2(0, HOOK_LIFT if upward else 0.0)
-			scale_by = 1.5 * size  # піксель героя
+			scale_by = 1.5 * size * SMEAR_SCALE  # піксель героя
 	trail.position = Vector2(at.x * scale.x, at.y)
 	trail.scale = Vector2(scale_by * scale.x, scale_by)
 	trail.play(kind, upward and kind == &"arc")
+
+
+## Докуди від центру героя сягає намальований звичайний удар зброї в руці, px: дуга — від плеча на SMEAR_SCALE
+## довжини зброї, укол — кулак на ударі + зброя + випад. Хітбокс (items.json reach) мусить бути таким самим (D268).
+func drawn_reach() -> float:
+	if _thrust():
+		return HAND_STRIKE.x + _reach() + thrust_reach
+	return SMEAR_CENTER.x + _reach() * SMEAR_SCALE
 
 
 ## Довжина зброї в руці, px світу (спрайт ×1.5 — як герой).

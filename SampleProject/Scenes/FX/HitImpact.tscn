@@ -8,14 +8,30 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark5.png" id="f5"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fx"]
-animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}, {"duration": 1.0, "texture": ExtResource("f5")}], "loop": false, "name": &"hit", "speed": 30.0}]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}, {"duration": 1.0, "texture": ExtResource("f5")}], "loop": false, "name": &"hit", "speed": 24.0}]
+
+[sub_resource type="Gradient" id="Grad_flash"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 0.95, 1, 1, 0.95, 0.8, 0.5, 1, 0.9, 0.7, 0)
+
+[sub_resource type="GradientTexture2D" id="Tex_flash"]
+gradient = SubResource("Grad_flash")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
 
 [node name="HitImpact" type="Node2D"]
 z_index = 250
 script = ExtResource("1_script")
 
+[node name="Flash" type="Sprite2D" parent="."]
+scale = Vector2(4, 4)
+texture = SubResource("Tex_flash")
+
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.8, 0.8)
 sprite_frames = SubResource("SpriteFrames_fx")
 animation = &"hit"

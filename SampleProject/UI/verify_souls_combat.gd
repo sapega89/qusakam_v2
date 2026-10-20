@@ -473,6 +473,20 @@ func _weapons(sl: Node) -> void:
 	ck(not wv.sheathed and wv.pivot.visible, "a swing draws it at once")
 	await create_timer(0.8).timeout
 
+	print("[12a] The hitbox reaches as far as the swing is drawn (D268, Sapega 2026-10-21)")
+	var box: RectangleShape2D = hero.get_node("Hitbox/CollisionShape2D").shape
+	for case in [["sword", "iron_sword"], ["mace", "iron_mace"], ["polearm", "iron_halberd"], ["dagger", "iron_dagger"]]:
+		equip.call(case[0], case[1])
+		while gm.player_state.weapon_in_hand != case[0]:
+			em.cycle_weapon(1)
+		await process_frame
+		ck(absf(box.size.x - wv.drawn_reach()) <= 2.0, "%s: hitbox %.0f px, drawn %.0f px" % [case[1], box.size.x, wv.drawn_reach()])
+	em.unequip_item(who, "dagger")
+	em.unequip_item(who, "mace")
+	em.unequip_item(who, "polearm")
+	equip.call("sword", "iron_sword")
+	await process_frame
+
 	print("[12] Each weapon type swings its own way (D268)")
 	var played: Array = []
 	var log_anim := func(name: StringName) -> void: played.append(name)
