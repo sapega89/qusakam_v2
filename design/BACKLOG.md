@@ -89,6 +89,16 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
 6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
 7. **Foreground parallax** — below.
+8. **A reason to climb the Canyon mountain** (Sapega 2026-10-20): at the top a meditation spot — Kusakam sits down, the
+   camera drifts left, then the cutscene of the Village abduction. (Check the existing Canyon_MeditationAtRelic /
+   MeditationAtmosphere work first.)
+9. **Inventory actions** (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
+   modal "this item cannot be used"; using a potion heals the hero right away.
+10. **Party shows only who is in it**: with one character the Game Menu shows only Kusakam until the party grows.
+11. **Equipment slot picker**: clicking an equipment slot opens a window with the inventory items that fit that slot.
+12. **Every hint is a tutorial window**: each hint opens the tutorial window (nothing is missed), and the topic lands in
+    the Tutorial list; a Settings option turns these windows off.
+13. **Journal sections**: choose between Quests and Characters (people we have met); plus a Bestiary.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
