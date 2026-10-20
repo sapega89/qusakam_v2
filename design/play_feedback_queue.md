@@ -32,6 +32,7 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
 20 smoother hero and lighter landing dust (D262) · 25 the talk after the meditation in a white cloud, Kusakam standing and locked (D263) ·
 4 + 15 souls-lite combat and sheathed weapons with a swing per weapon type (D264–D270, [[souls_combat_plan]]).
 21 a cast animation and effect per skill, interruptible (D271, D272).
+26 audio: buses, every combat / world event, ambience, babble, greetings, boss and companion voices (D274–D278, [[audio_plan]] — listening checklist there).
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
@@ -43,7 +44,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 1b | ~~**25** after the meditation: white speech cloud, Kusakam stands up from the disc and stays locked~~ — done (D263) | small, on item 8's code |
 | 2 | ~~**4 + 15** souls-lite combat~~ — done (D264–D270) — (combos, staggers, double dash, block/parry, heavy attack, freeze, run outside towns, two-handed + dual-wield) and sheathed weapons with an attack animation per weapon; **D259** interrupts | one system; plan first (plan-missing-system) |
 | 3 | ~~**21** an animation per skill~~ — done (D271, D272) | on top of 20 + 4 |
-| 3b | **26** audio: world sound, every swing/hit/miss, grunts, voiced bosses, dialogue babble for every character | after combat (4+15) and skill animations (21) give the events; plan first: `design/audio_plan.md` |
+| 3b | ~~**26** audio: world sound, every swing/hit/miss, grunts, voiced bosses, dialogue babble for every character~~ — done (D274–D278, [[audio_plan]]); left: boss cutscene lines with 16/17, rumble with 24 | |
 | 3a | ~~**15 fix** out of combat the weapon vanishes entirely, not on the back (Sapega 2026-10-21)~~ — done (D268 amended) |
 | 3a' | ~~**4 fix** swing and hit effects too small — bigger, sharper slash arcs matching the hitbox; on hit a cut streak + small sparks in the hit direction, NO flashes or bursts — hack'n'slash; anime-style effect sprites generated with ComfyUI (D239) for swings, hits and skills (Sapega 2026-10-21)~~ — done (D268 amended, D273: generated anime crescents ×1.3, a cut streak + shards on a hit instead of a burst, no flashes, hitboxes = drawn reach) |
 | 4 | **22** class path and three skill trees (D260; oath in the City: priest / witch / sand dervish NPCs) | plan first: `design/skill_trees_plan.md` |

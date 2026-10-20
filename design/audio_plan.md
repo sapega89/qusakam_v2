@@ -1,13 +1,16 @@
 ---
 type: plan
-status: active
+status: done
 tags: [audio, feedback]
 ---
 
 # Audio — plan (BACKLOG 26)
 
-**Partial before this pass** (2026-10-21): music per room and 14 combat SFX on 4 events. This plan adds world
-sound, every combat event, character voices (babble + short greetings), companion calls and boss voices.
+**Built 2026-10-21** (slices 1–4, D274–D278; `verify_audio.gd` 81 checks). Before this pass: music per room and
+14 combat SFX on 4 events. Added: world sound, every combat event, character voices (babble + short greetings),
+companion calls and boss voices. Left: see *Out of scope* (boss cutscene lines wait for a boss, rumble for item 24).
+Listening montage (not in git): `%TEMP%/claude/…/scratchpad/shots/fb26_montage.wav`, built by a scratch script from
+the game's own files in event order (combat → casts → steps → world → babble → greetings → calls → hero → enemies → boss → ambience).
 Figma: no design exists (audio is not a screen). Decisions this pass makes: **D274–D278** (agent calls, Sapega to confirm).
 Feedback rules: [[play_feedback_queue]]. Builds on [[souls_combat_plan]] (D264–D270), D271 casts, D254 typing, D263 cloud talk.
 
@@ -94,22 +97,22 @@ stone; MayorHall — interior, crowd low, wood; Laboratory — interior, lab hum
 
 ## Slices
 
-### Slice 1 — buses, one playback path, combat (commit)
+### Slice 1 — buses, one playback path, combat ✅ `597306ca`
 `default_bus_layout.tres`, `AudioManager.gd` (`play`, drop dead code), `Resources/Data/sound_events.json`,
 `Scripts/Systems/SoundHooks.gd` (combat moved out of `VFXHooks.gd`), `EventBus.skill_cast_started`,
 `Assets/Audio/SFX/*` + README; `UI/verify_audio.gd` [1] buses + sliders, [2] each combat event → stream + bus.
 
-### Slice 2 — world (commit)
+### Slice 2 — world ✅ `075ec3b4`
 Footsteps / jump / land / ladder / dash in `PlayerMover`, pickups / coins / level-up / door / ambience in `SoundHooks`,
 UI streams on the Maaacks controller, `Assets/Audio/Ambience/*` + README; `verify_audio` [3].
 
-### Slice 3 — voices (commit)
+### Slice 3 — voices ✅ `271401f4` (+ B78 fix `7c7e2aa2`: a hit without a source broke damage listeners)
 `Scripts/Tools/audio/make_babble.py` (numpy, stdlib wave), `Scripts/Tools/audio/make_voices.py` (Kokoro in a
 scratch venv), grunts / roars cut and processed; `Assets/Audio/Voice/*` + README; babble hook in
 `DialogueManager`, greeting in `NpcBase`, assist calls and boss voice in `SoundHooks`; `verify_audio` [4] babble while
 typing, [5] greeting on a talk the hero starts and none on a cutscene dialogue, [6] boss voice.
 
-### Slice 4 — montage, exe, queue (commit)
+### Slice 4 — montage, exe, queue ✅
 Scratch WAV montage, exe rebuild, BACKLOG / queue update.
 
 ## Listening checklist for Sapega
@@ -144,3 +147,21 @@ Audio cannot be captured as an image. Play the exe (or the montage `fb26_montage
 - Gamepad rumble on hits — item 24.
 - Positional (2D) sound, music ducking under voice — ponytail, add when a room grows past the camera.
 - A separate Voice / Ambience slider — needs a Figma row and Sapega's word (D274).
+- Ukrainian spoken lines (D277 chose English; a Piper voice with a release-clean licence if Sapega wants them).
+- Voiced monologue bubbles (D178 pops a whole line at once, so there is no typing to babble on).
+- Starting items given at a new game play the pickup sound once each (harmless; silence them if it grates).
+
+## As built — where each piece lives
+
+| Piece | File |
+|---|---|
+| Buses | `default_bus_layout.tres` (Master, Music, SFX, Ambience → SFX, Voice → SFX) |
+| Playback, tables | `Scripts/Systems/AudioManager.gd` (`play`, `play_loop`, `room`), `Resources/Data/sound_events.json` (`events`, `rooms`, `voices`, `enemy_voice_pitch`) |
+| Event → sound | `Scripts/Systems/SoundHooks.gd` (child of the AudioManager autoload) |
+| Steps, jump, dash, ladder | `Player/Components/PlayerMover.gd` `_footsteps`, `step_distance` / `walk_step_distance` / `ladder_step_distance` exports |
+| Room change | `EventBus.room_entered` from `Game.init_room` |
+| Cast wind-up | `EventBus.skill_cast_started` from `PlayerCombat.begin_cast` |
+| Babble | `DialogueManager._on_letter_shown` (box), `speech_bubble.typed` (cloud talk) → `SoundHooks.letter` |
+| Greeting | `NpcBase._on_interacted` → `SoundHooks.greet(character_id)`; `character_id` set on blacksmith, merchant, Village `OldManQuest` |
+| UI | `project_ui_sound_controller.tscn` streams, `process_mode` Always (menus pause the game) |
+| Asset builders | `Scripts/Tools/audio/build_audio.py` (combat, world), `make_babble.py`, `make_voices.py` |

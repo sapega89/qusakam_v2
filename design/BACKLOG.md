@@ -181,7 +181,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     then Kusakam has already risen from the stone disc (stand-up from `Meditate`) — he is standing by the time the camera
     has come back to the Canyon after its drift (Sapega «він має стояти, коли вже камера повернулась у каньйон») — and he
     cannot move or act until the talk ends. Check whether a speech-bubble presentation exists (D110 dialogue layer) before building one.
-26. **The world is voiced and sounds alive** (Sapega 2026-10-20 «все підряд озвучувати не треба, але треба весь світ
+26. ~~**The world is voiced and sounds alive**~~ — **done 2026-10-21** ([[audio_plan]], D274–D278): Ambience and Voice buses into SFX (the three sliders keep working), every combat event and skill cast voiced, room ambience loops, footsteps by surface, doors, pickups, UI ticks, babble per character while text types (box and cloud talk), English greetings (Kokoro-82M, Apache 2.0) only when the hero starts the talk, enemy / hero / boss / companion voices; left: boss cutscene lines (16/17), rumble (24). Was: (Sapega 2026-10-20 «все підряд озвучувати не треба, але треба весь світ
     озвучити і всі різні штуки типу намагання вдарити ворога або героя, і босів треба озвучувати» … «всіх»): no full
     voice acting of every line. Needed: **world sound** — ambience per room (desert wind, canyon echo, town crowd, lab
     hum), footsteps per surface, jump/land, ladder, doors, pickups, UI; **combat** — every swing (hit and miss), impact,
@@ -194,7 +194,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
     non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
     Steam AI-content disclosure. Gamepad rumble on hits goes with item 24.
-    **Plan: [[audio_plan]]** (D274–D278). Resume: slice by slice as listed there.
+    **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
