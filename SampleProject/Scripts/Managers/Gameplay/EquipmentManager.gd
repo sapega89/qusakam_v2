@@ -33,6 +33,33 @@ func get_weapon_item_in_hand() -> Dictionary:
 		return {}
 	return ItemDatabase.get_item(_state().equipment[slot].id)
 
+## Хват (D250, D267): &"bare" — голі руки; &"two_handed" — зброя з "grip": "two_handed" (алебарда);
+## &"dual" — одноручна в руці, ще одна одноручна вдягнена і щита немає (друга — у другій руці); інакше &"one_handed".
+const ONE_HANDED_SLOTS: Array[String] = ["sword", "dagger", "axe", "mace"]
+
+func get_grip() -> StringName:
+	var item := get_weapon_item_in_hand()
+	if item.is_empty():
+		return &"bare"
+	if item.get("grip", "") == "two_handed":
+		return &"two_handed"
+	return &"dual" if not get_off_hand_item().is_empty() else &"one_handed"
+
+## Зброя в другій руці (дві зброї, D250) або {}: перша за WEAPON_SLOTS одноручна, крім тієї, що в руці.
+func get_off_hand_item() -> Dictionary:
+	var in_hand := get_weapon_in_hand()
+	var equipment: Dictionary = _state().equipment
+	if in_hand not in ONE_HANDED_SLOTS or equipment.get("shield") != null:
+		return {}
+	if ItemDatabase.get_item(equipment[in_hand].id).get("grip", "") == "two_handed":
+		return {}
+	for slot in ONE_HANDED_SLOTS:
+		if slot != in_hand and equipment.get(slot) != null:
+			var item: Dictionary = ItemDatabase.get_item(equipment[slot].id)
+			if item.get("grip", "") != "two_handed":
+				return item
+	return {}
+
 ## Наступна (step = 1) чи попередня (-1) вдягнена зброя. Без вдягненої зброї — голі руки.
 func cycle_weapon(step: int) -> void:
 	var equipped := _equipped_weapons()

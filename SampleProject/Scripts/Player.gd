@@ -425,7 +425,8 @@ func take_damage(damage: int, source: Node = null) -> void:
 func mitigated_damage(damage: int) -> int:
 	var gm := ServiceLocator.get_game_manager()
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
-	if gm.player_state.equipment.get("shield") != null:
+	# Щит працює, лише якщо в руках не дворучна зброя (D267)
+	if gm.player_state.equipment.get("shield") != null and combat.grip != &"two_handed":
 		result *= 1.0 - ServiceLocator.get_skill_manager().passive_value("shield_block")
 	return maxi(1, roundi(result))
 

@@ -108,6 +108,8 @@ func _initialize() -> void:
 
 	print("[1e] An attack in the air lands (it used to be cancelled by Jump / Fall)")
 	await create_timer(0.3).timeout
+	while game.player.combat.owns_animation():  # удар ворога міг збити героя (D264) — чекаємо, доки оговтається
+		await physics_frame
 	hits.clear()
 	game.player.global_position = target.global_position + Vector2(-26, -6)
 	game.player.velocity = Vector2(0, -150)
@@ -208,6 +210,7 @@ func _initialize() -> void:
 	print("[2c] Enemy attack: wind-up, then the hitbox in front (B59, D198)")
 	var attacker = enemies[1]
 	var buddy = enemies[2]
+	attacker.combo_hits = 1  # тут — один удар D198; серії (D265) — verify_souls_combat
 	var hits_p: Array = []
 	game.player.damage_token.connect(func(d: int) -> void: hits_p.append(d))
 	var swing: float = attacker.attack_windup + attacker.attack_active_time + 0.15
@@ -284,8 +287,12 @@ func _initialize() -> void:
 	ck(not mover.is_rolling() and not pl.is_invulnerable, "the roll ends, invulnerability with it")
 	# Допуск — два фізичні кадри перекату.
 	ck(absf(pl.global_position.x - x0 - mover.roll_distance) < mover.roll_distance / mover.roll_duration / 30.0, "rolled ~%.0f px right (%.1f)" % [mover.roll_distance, pl.global_position.x - x0])
+	# D264: два ривки підряд, третій — після паузи
 	pl._unhandled_input(dodge)
-	ck(not mover.is_rolling(), "the cooldown blocks an immediate second roll")
+	ck(mover.is_rolling(), "a second roll right away (double dash, D264)")
+	await create_timer(mover.roll_duration + 0.05).timeout
+	pl._unhandled_input(dodge)
+	ck(not mover.is_rolling(), "the cooldown blocks a third roll")
 	await create_timer(mover.roll_cooldown).timeout
 	pl._unhandled_input(dodge)
 	ck(mover.is_rolling(), "a roll is possible again after the cooldown")

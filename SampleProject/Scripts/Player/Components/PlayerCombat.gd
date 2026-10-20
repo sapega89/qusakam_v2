@@ -22,6 +22,13 @@ enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER }
 @export var swing_time: float = 0.3
 ## Серія (D264): множники ушкодження ударів; наступний удар — якщо натиснуто під час удару або за chain_window після.
 const COMBO_DAMAGE: Array[float] = [1.0, 1.0, 1.4]
+## Дві зброї (D267): серія з чотирьох ударів, що чергують руки, кожен швидший у DUAL_SWING_SPEED раз.
+const DUAL_COMBO_DAMAGE: Array[float] = [1.0, 1.0, 1.0, 1.4]
+const DUAL_SWING_SPEED := 0.8
+## Дворучна (D267): стійкість ворога б'є в TWO_HANDED_POISE раз сильніше.
+const TWO_HANDED_POISE := 1.5
+## Тіло на ударі — своя анімація для типу зброї (D268), решта — Attack.
+const SWING_ANIMATIONS := {"mace": &"AttackSmash", "polearm": &"AttackThrust"}
 @export var chain_window: float = 0.35
 ## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
 @export var finisher_knockback: float = 40.0
@@ -48,6 +55,9 @@ const GUARD_BREAK := 0.6
 var knockback: float = 0.0
 var _weapon_knockback: float = 0.0
 var _bare_size: Vector2
+## Хват і тип зброї в руці (EquipmentManager.get_grip(), items.json category).
+var grip: StringName = &"bare"
+var _category: String = ""
 var _bare_cooldown: float
 var attack_cooldown: float = 0.0
 
@@ -82,12 +92,18 @@ func _ready() -> void:
 	_bare_cooldown = attack_cooldown_time
 	_set_hitbox_active(false, 1) # Ensure hitbox is disabled on start
 	EventBus.weapon_in_hand_changed.connect(func(_slot: String) -> void: apply_weapon_profile())
+	# Друга зброя (D267) залежить і від того, що вдягнено, а не лише від зброї в руці
+	EventBus.equipment_equipped.connect(func(_c: String, _s: String, _i: String) -> void: apply_weapon_profile())
+	EventBus.equipment_unequipped.connect(func(_c: String, _s: String) -> void: apply_weapon_profile())
 	damage_applier.damage_applied.connect(_on_damage_applied)
 	apply_weapon_profile()
 
 ## Профіль удару зброї в руці (D202/D203): довжина й висота хітбокса, кулдаун, відкидання.
 func apply_weapon_profile() -> void:
-	var item: Dictionary = ServiceLocator.get_equipment_manager().get_weapon_item_in_hand()
+	var equipment := ServiceLocator.get_equipment_manager()
+	var item: Dictionary = equipment.get_weapon_item_in_hand()
+	grip = equipment.get_grip()
+	_category = "" if item.is_empty() else String(item.category)
 	if item.is_empty():
 		_hitbox_shape().size = _bare_size
 		attack_cooldown_time = _bare_cooldown
@@ -103,18 +119,25 @@ func _hitbox_shape() -> RectangleShape2D:
 	return hitbox.get_node(^"CollisionShape2D").shape
 
 ## Влучання: відкидання і стійкість ворога (D265).
+## Стійкість — першою: її збій штовхає ворога на 30 px, а відкидання удару (булава, фінішер, важкий) — далі й перекриває.
 func _on_damage_applied(target: Node, _damage: int) -> void:
+	target.take_poise(_poise, player.global_position.x)
 	if knockback > 0.0:
 		target.knockback(signf(target.global_position.x - player.global_position.x) * knockback)
-	target.take_poise(_poise, player.global_position.x)
 
 ## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
 ## тож зміна спорядження чи рівня діє одразу, без підписок.
 func hit_damage() -> int:
 	return ServiceLocator.get_game_manager().calculate_physical_damage()
 
+func _combo_damage() -> Array[float]:
+	return DUAL_COMBO_DAMAGE if grip == &"dual" else COMBO_DAMAGE
+
 func combo_length() -> int:
-	return COMBO_DAMAGE.size()
+	return _combo_damage().size()
+
+func _poise_of(base: int) -> int:
+	return roundi(base * TWO_HANDED_POISE) if grip == &"two_handed" else base
 
 func _process(delta: float) -> void:
 	if attack_cooldown > 0:
@@ -207,17 +230,18 @@ func perform_attack(last_direction: int) -> void:
 	_chain_left = 0.0
 	var finisher := combo_step == combo_length() - 1
 	state = State.SWING
-	_state_left = swing_time
+	_state_left = swing_time * (DUAL_SWING_SPEED if grip == &"dual" else 1.0)
 	_direction = last_direction
 	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
-	_poise = POISE_FINISHER if finisher else POISE_LIGHT
+	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
-	damage_applier.current_damage = roundi(hit_damage() * COMBO_DAMAGE[combo_step])
+	damage_applier.current_damage = roundi(hit_damage() * _combo_damage()[combo_step])
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
-	animation_player.play(&"Attack")
-	player.animation = &"Attack"
+	var body: StringName = SWING_ANIMATIONS.get(_category, &"Attack")
+	animation_player.play(body, -1, swing_time / _state_left)  # дві зброї — швидше
+	player.animation = body
 
 	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
 	EventBus.player_attacked.emit(player, last_direction)
@@ -240,7 +264,7 @@ func _strike_heavy() -> void:
 	state = State.HEAVY_STRIKE
 	_state_left = heavy_strike_time
 	knockback = maxf(_weapon_knockback, heavy_knockback)
-	_poise = POISE_HEAVY
+	_poise = _poise_of(POISE_HEAVY)
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
 	animation_player.play(&"HeavyStrike")
 	player.animation = &"HeavyStrike"

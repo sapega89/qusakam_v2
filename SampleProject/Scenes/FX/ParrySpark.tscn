@@ -7,7 +7,7 @@ colors = PackedColorArray(1, 1, 0.92, 1, 1, 0.82, 0.35, 1, 1, 0.55, 0.15, 0)
 [node name="ParrySpark" type="CPUParticles2D"]
 z_index = 250
 emitting = false
-amount = 14
+amount = 18
 lifetime = 0.28
 one_shot = true
 explosiveness = 1.0
@@ -18,6 +18,6 @@ initial_velocity_min = 110.0
 initial_velocity_max = 210.0
 damping_min = 80.0
 damping_max = 140.0
-scale_amount_min = 1.5
-scale_amount_max = 3.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
 color_ramp = SubResource("Gradient_spark")

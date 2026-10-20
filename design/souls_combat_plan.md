@@ -1,13 +1,12 @@
 ---
 type: plan
-status: in-progress
+status: done
 tags: [combat, feedback]
 ---
 
 # Souls-lite combat — plan (BACKLOG 4 + 15)
 
-**Partly built before this pass** — one-swing attack, roll, enemy wind-ups; no combos, staggers, block, parry,
-heavy attack, running rule, grips or sheathing. 2026-10-20. Figma: no design exists (combat is not a UI screen).
+**Built 2026-10-20** (slices 1–6, D264–D270). Before this pass: one-swing attack, roll, enemy wind-ups only. Figma: no design exists (combat is not a UI screen).
 Decisions it builds: D250 (two-handed, dual-wield), D251 (no running in towns), D253 (souls-lite), D259
 (interrupts). The calls this pass makes are **D264–D270** (agent calls, Sapega to confirm). The skill execution
 path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame coverage for every state was
@@ -90,9 +89,9 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
   `verify_souls_combat.gd` [4]–[7].
 ### Slice 3 — double dash, walking in towns — ✅ built
 - `PlayerMover.gd`, room `.tscn` metadata; `verify_souls_combat.gd` [8]–[9].
-### Slice 4 — grips, sheathing, per-weapon swings
+### Slice 4 — grips, sheathing, per-weapon swings — ✅ built
 - `items.json`, `EquipmentManager.gd`, `WeaponView.gd`, `Player.tscn`; `verify_souls_combat.gd` [10]–[12].
-### Slice 5 — hero frames
+### Slice 5 — hero frames — ✅ built (4 generated, 4 kept)
 - `comfy_sprite.py hero_combat` (Hurt, Heavy wind-up / strike, Block) from `Walk/1`; `Player.tscn` animations.
 ### Slice 6 — captures, exe, registers
 

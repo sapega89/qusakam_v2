@@ -34,6 +34,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Climb/2.png" id="climb2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/1.png" id="meditate1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/2.png" id="meditate2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Hurt/1.png" id="hurt1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/1.png" id="heavy1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/2.png" id="heavy2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Block/1.png" id="block1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yj7bn"]
 size = Vector2(24, 40)
@@ -248,7 +252,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("fall1")]
+"values": [ExtResource("hurt1")]
 }
 
 [sub_resource type="Animation" id="Animation_heavy_windup"]
@@ -264,7 +268,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("r4")]
+"values": [ExtResource("heavy1")]
 }
 
 [sub_resource type="Animation" id="Animation_heavy_strike"]
@@ -277,10 +281,10 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.12),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("r2"), ExtResource("r1")]
+"values": [ExtResource("heavy2")]
 }
 
 [sub_resource type="Animation" id="Animation_block"]
@@ -296,13 +300,47 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("land1")]
+"values": [ExtResource("block1")]
+}
+
+[sub_resource type="Animation" id="Animation_attack_smash"]
+resource_name = "AttackSmash"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.08, 0.24),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("heavy1"), ExtResource("heavy2"), ExtResource("w1")]
+}
+
+[sub_resource type="Animation" id="Animation_attack_thrust"]
+resource_name = "AttackThrust"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.24),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("r4"), ExtResource("r2"), ExtResource("w1")]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
 _data = {
 &"Apex": SubResource("Animation_apex"),
 &"Attack": SubResource("Animation_attack"),
+&"AttackSmash": SubResource("Animation_attack_smash"),
+&"AttackThrust": SubResource("Animation_attack_thrust"),
 &"Block": SubResource("Animation_block"),
 &"Climb": SubResource("Animation_climb"),
 &"Fall": SubResource("Animation_fall"),
@@ -344,6 +382,15 @@ script = ExtResource("weapon_view")
 position = Vector2(13, 21)
 
 [node name="Weapon" type="Sprite2D" parent="WeaponMount/Pivot"]
+texture_filter = 1
+scale = Vector2(1.5, 1.5)
+centered = false
+
+[node name="OffPivot" type="Node2D" parent="WeaponMount"]
+z_index = -2
+position = Vector2(9, 21)
+
+[node name="OffWeapon" type="Sprite2D" parent="WeaponMount/OffPivot"]
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 centered = false

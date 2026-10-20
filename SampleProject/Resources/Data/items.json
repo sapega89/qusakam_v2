@@ -244,6 +244,7 @@
 				"defense": 0,
 				"magic": 0
 			},
+			"grip": "two_handed",
 			"weapon_profile": {"reach": 80, "cooldown": 0.8, "height": 32, "knockback": 0}
 		},
 		{

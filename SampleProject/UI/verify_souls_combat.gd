@@ -75,6 +75,7 @@ func _initialize() -> void:
 	await _staggers()
 	await _hero_moves(sl)
 	await _movement()
+	await _weapons(sl)
 	await _freeze_check()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -396,3 +397,105 @@ func _movement() -> void:
 	Input.action_release(&"move_left")
 	enemies[0].enemy_logic.current_state = 0
 	game.map.remove_meta(&"town")
+
+## [10]–[12] Хвати, зброя за спиною, удар для кожного типу зброї (D250, D267, D268).
+func _weapons(sl: Node) -> void:
+	var em: Node = sl.get_equipment_manager()
+	var items: Node = sl.get_item_database()
+	var gm: Node = sl.get_game_manager()
+	var who: String = gm.get_active_character().character_id
+	var wv: Node = hero.get_node("WeaponMount")
+	var anim: AnimationPlayer = hero.get_node("AnimationPlayer")
+	var equip := func(slot: String, id: String) -> void:
+		em.equip_item(who, slot, id, items.get_item(id))
+	await create_timer(0.5).timeout
+
+	print("[10] Grips: two-handed halberd, sword + dagger dual-wield, a shield ends dual-wield (D267)")
+	equip.call("polearm", "iron_halberd")
+	await process_frame
+	ck(em.get_grip() == &"two_handed" and hero.combat.grip == &"two_handed", "the halberd is two-handed (%s)" % em.get_grip())
+	equip.call("shield", "iron_shield")
+	sl.get_skill_manager().unlock_skill("shield_block")
+	await process_frame
+	var with_shield: int = hero.mitigated_damage(100)
+	em.cycle_weapon(1)  # щось одноручне? немає — лишається алебарда
+	ck(hero.mitigated_damage(100) == with_shield, "same weapon, same mitigation")
+	em.unequip_item(who, "polearm")
+	equip.call("sword", "iron_sword")
+	await process_frame
+	ck(hero.combat.grip == &"one_handed", "sword + shield is one-handed (%s)" % hero.combat.grip)
+	var one_handed_mitigation: int = hero.mitigated_damage(100)
+	equip.call("polearm", "iron_halberd")
+	while gm.player_state.weapon_in_hand != "polearm":
+		em.cycle_weapon(1)
+	await process_frame
+	ck(hero.mitigated_damage(100) > one_handed_mitigation or sl.get_skill_manager().passive_value("shield_block") == 0.0,
+			"no Shield Block with a two-handed weapon (%d vs %d)" % [hero.mitigated_damage(100), one_handed_mitigation])
+	em.unequip_item(who, "shield")
+	em.unequip_item(who, "polearm")
+	equip.call("dagger", "iron_dagger")
+	while gm.player_state.weapon_in_hand != "sword":
+		em.cycle_weapon(1)
+	await process_frame
+	ck(hero.combat.grip == &"dual" and em.get_off_hand_item().id == "iron_dagger" and wv.off_pivot.visible,
+			"sword in hand + dagger = dual-wield, the dagger shown in the off hand (%s)" % hero.combat.grip)
+	ck(hero.combat.combo_length() == 4, "dual-wield combo has 4 swings (%d)" % hero.combat.combo_length())
+
+	print("[10b] The dual-wield combo: four faster swings, the last 1.4x")
+	var target := _dummy()
+	var hits: Array = []
+	target.damage_token.connect(func(dd: int) -> void: hits.append(dd))
+	var d: int = hero.combat.hit_damage()
+	await _place_hero(target, -26)
+	for i in 4:  # одне натискання на удар — черга тримає одне
+		await _tap(&"attack")
+		await create_timer(0.2).timeout
+	await create_timer(0.6).timeout
+	ck(hits == [d, d, d, roundi(d * 1.4)], "four hits %s" % [hits])
+	em.unequip_item(who, "dagger")
+	em.unequip_item(who, "sword")
+	await process_frame
+
+	print("[11] Sheathed out of combat, drawn when a fight starts or on a swing (D268)")
+	equip.call("sword", "iron_sword")
+	await create_timer(hero.combat.COMBAT_LINGER + 0.3).timeout
+	ck(not hero.combat.in_combat() and wv.sheathed and wv.z_index == -1 and wv.pivot.position == wv.BACK, "no fight: the sword is on the back")
+	enemies[0].enemy_logic.current_state = 1  # CHASE
+	await create_timer(0.4).timeout
+	ck(not wv.sheathed and wv.z_index == 0 and wv.pivot.position.distance_to(wv.HAND_REST) < 1.0, "a fight starts: drawn into the hand (%s)" % wv.pivot.position)
+	enemies[0].enemy_logic.current_state = 0
+	await create_timer(hero.combat.COMBAT_LINGER + 0.4).timeout
+	ck(wv.sheathed, "the fight is over: back on the back")
+	await _tap(&"attack")
+	await physics_frame
+	ck(not wv.sheathed, "a swing draws it at once")
+	await create_timer(0.8).timeout
+
+	print("[12] Each weapon type swings its own way (D268)")
+	var played: Array = []
+	var log_anim := func(name: StringName) -> void: played.append(name)
+	anim.animation_started.connect(log_anim)
+	for case in [["sword", "iron_sword", &"Attack"], ["mace", "iron_mace", &"AttackSmash"], ["polearm", "iron_halberd", &"AttackThrust"]]:
+		em.unequip_item(who, "sword")
+		equip.call(case[0], case[1])
+		while gm.player_state.weapon_in_hand != case[0]:
+			em.cycle_weapon(1)
+		await create_timer(1.2).timeout
+		played.clear()
+		await _tap(&"attack")
+		await physics_frame
+		ck(played.has(case[2]), "%s swings with %s (%s)" % [case[1], case[2], played])
+		em.unequip_item(who, case[0])
+	await create_timer(1.2).timeout
+	played.clear()
+	await _tap(&"heavy_attack")
+	await create_timer(0.6).timeout
+	ck(played.has(&"HeavyWindup") and played.has(&"HeavyStrike"), "heavy: wind-up then strike (%s)" % [played])
+	await create_timer(1.2).timeout
+	played.clear()
+	_press(&"block")
+	await create_timer(0.1).timeout
+	ck(played.has(&"Block"), "block pose (%s)" % [played])
+	_press(&"block", false)
+	anim.animation_started.disconnect(log_anim)
+	await create_timer(0.5).timeout
