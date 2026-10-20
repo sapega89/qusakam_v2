@@ -111,6 +111,22 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     and Уризен stand in a queue (Sapega: «в черзі стоять астріт, кусакам і урізен» — Kusakam joins the queue); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
+17. **The Laboratory story, rewritten** (Sapega 2026-10-20) — replaces the current three-storey companion talks:
+    - Kusakam and his future team are on **one floor**: a room with an operating table and cells; everyone is behind bars.
+    - Cutscene: Алісия is led to the operating table and injected; then an unknown prisoner who looks like a bandit is
+      led in — he shouts and an evil boss bursts out of him, **a fire djinn**, and flees; explosions, an earthquake,
+      Kusakam passes out. (His shout: Sapega said «аллах акбар»; default until confirmed — an incantation in an invented
+      language, see Q in questions_for_sapega.)
+    - Kusakam wakes: all cells open, all belongings in place, every character still in their cell. When he steps out,
+      a cutscene: everyone gets acquainted; **Малік** offers to lead them to his "humble place" where he will give
+      everyone gold, and asks to be led out of the Laboratory. The quest cannot be refused. Малік appears later as an NPC;
+      for now it is only Kusakam and the companions.
+    - All assists are unlocked at once; fight the Laboratory mobs; the boss waits at the end and the Laboratory cannot
+      be left until it is dead.
+    - Boss talk: it asks who they are; Kusakam says he is ready to bargain; the boss says "give me the cloak"; Kusakam
+      cannot — it is his grandfather's cloak. Fight for the cloak: boss wins → it takes the cloak, game over; boss loses →
+      Kusakam: «I don't know whether you would have given the cloak away, but I wouldn't.» The Laboratory gates open,
+      we walk out, **the end** of the demo.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a

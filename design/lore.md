@@ -48,6 +48,9 @@ an open question below, never filled in. Used by skills, enemies, companions and
   a brown robe over a dark tunic, a golden coin amulet and an iron circlet of contracts.
 - **Алісия** — a **hunter with a cat** (a white tiger cub); she has **one green and one blue eye** (Sapega, 2026-10-19).
 - All three are Laboratory companions (D209).
+- **Малік** — a prisoner in the Laboratory; promises everyone gold at his "humble place" if they lead him out; later an NPC (Sapega, 2026-10-20).
+- **The fire djinn** — the evil boss that bursts out of an unknown prisoner in the Laboratory and flees (Sapega, 2026-10-20).
+- **Kusakam's cloak was his grandfather's** — he will not give it up, not even to a boss (Sapega, 2026-10-20).
 - The **City Gates guard** — the first assist, a tutorial (D209).
 
 ## What follows for the game (consequences, not new facts)
