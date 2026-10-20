@@ -134,6 +134,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 19. **A living world** (Sapega 2026-10-20): idle animations on decor (banners and cloth sway, grass and palm fronds
     move, lamps and crystals flicker, dust drifts…) and clouds that drift on their own and with parallax as the hero
     moves (Canyon HighClouds/gen_clouds and the other rooms' sky planes).
+20. **Smoother hero animations; lighter jump dust** (Sapega 2026-10-20): the hero's animations must be smoother —
+    redo them (more in-betweens, generated from his artist frames with comfy-sprite, D239); the jump/land dust lasts far
+    too long and is too dense — shorter, thinner, in the Ender Lilies spirit.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
