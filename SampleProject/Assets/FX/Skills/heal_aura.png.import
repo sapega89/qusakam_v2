@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ta8u7tm4i6ba"
-path="res://.godot/imported/spark4.png-810f43c78b218317fc2d375758e34b87.ctex"
+uid="uid://bpaolr82crpoa"
+path="res://.godot/imported/heal_aura.png-85fa8f983445f446ee196042d2da3663.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/FX/HitSpark/spark4.png"
-dest_files=["res://.godot/imported/spark4.png-810f43c78b218317fc2d375758e34b87.ctex"]
+source_file="res://SampleProject/Assets/FX/Skills/heal_aura.png"
+dest_files=["res://.godot/imported/heal_aura.png-85fa8f983445f446ee196042d2da3663.ctex"]
 
 [params]
 

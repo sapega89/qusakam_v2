@@ -1,37 +1,41 @@
 [gd_scene format=3 uid="uid://h1t1mp4ct001"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/FX/HitImpact.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark1.png" id="f1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark2.png" id="f2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark3.png" id="f3"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark4.png" id="f4"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/HitSpark/spark5.png" id="f5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/cut_1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/cut_2.png" id="f2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/cut_3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/cut_4.png" id="f4"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fx"]
-animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}, {"duration": 1.0, "texture": ExtResource("f5")}], "loop": false, "name": &"hit", "speed": 24.0}]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}], "loop": false, "name": &"hit", "speed": 20.0}]
 
-[sub_resource type="Gradient" id="Grad_flash"]
-offsets = PackedFloat32Array(0, 0.4, 1)
-colors = PackedColorArray(1, 1, 0.95, 1, 1, 0.95, 0.8, 0.5, 1, 0.9, 0.7, 0)
-
-[sub_resource type="GradientTexture2D" id="Tex_flash"]
-gradient = SubResource("Grad_flash")
-width = 32
-height = 32
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
+[sub_resource type="Gradient" id="Grad_shard"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.75, 0.95, 1, 1, 0.55, 0.85, 1, 0)
 
 [node name="HitImpact" type="Node2D"]
 z_index = 250
 script = ExtResource("1_script")
 
-[node name="Flash" type="Sprite2D" parent="."]
-scale = Vector2(4, 4)
-texture = SubResource("Tex_flash")
-
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.8, 0.8)
+scale = Vector2(1.5, 1.5)
 sprite_frames = SubResource("SpriteFrames_fx")
 animation = &"hit"
+
+[node name="Shards" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 5
+lifetime = 0.2
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(1, -0.3)
+spread = 28.0
+gravity = Vector2(0, 300)
+initial_velocity_min = 160.0
+initial_velocity_max = 260.0
+damping_min = 200.0
+damping_max = 300.0
+scale_amount_min = 2.0
+scale_amount_max = 3.0
+color_ramp = SubResource("Grad_shard")

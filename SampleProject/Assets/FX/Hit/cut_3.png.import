@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bvcbvmdxweky7"
-path="res://.godot/imported/spark1.png-6dc4bd5529b46c982568d73444913712.ctex"
+uid="uid://2lmk31euim53"
+path="res://.godot/imported/cut_3.png-fd3df0b028a1c2283ba7b69d401ba8e0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/FX/HitSpark/spark1.png"
-dest_files=["res://.godot/imported/spark1.png-6dc4bd5529b46c982568d73444913712.ctex"]
+source_file="res://SampleProject/Assets/FX/Hit/cut_3.png"
+dest_files=["res://.godot/imported/cut_3.png-fd3df0b028a1c2283ba7b69d401ba8e0.ctex"]
 
 [params]
 

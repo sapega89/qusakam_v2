@@ -12,15 +12,15 @@ const LANDING_COOLDOWN_TIME: float = 0.5  # Минимальное время м
 const MIN_FALL_HEIGHT: float = 20.0  # Минимальная высота падения для показа эффекта (в пикселях)
 const LANDING_DUST_SCENE := preload("res://SampleProject/Scenes/FX/LandingDust.tscn")
 
-## Бойові ефекти (6a): ефект влучання в точці контакту, спалах ушкодження (шлейф замаху — WeaponView, D224).
+## Бойові ефекти (6a): розтин влучання в точці контакту (шлейф замаху — WeaponView, D224; без спалахів, D268).
 ## Кожне влучання — коротке завмирання (D224); важкий удар (відкидання, D203) — довше, більший ефект і тремтіння камери.
 const HIT_IMPACT_SCENE := preload("res://SampleProject/Scenes/FX/HitImpact.tscn")
 ## Іскри парирування / блоку (D264): скриптові частинки між героєм і ворогом; блок — дрібніші.
 const PARRY_SPARK_SCENE := preload("res://SampleProject/Scenes/FX/ParrySpark.tscn")
 const BLOCK_SPARK_SCALE := 0.5
-const HURT_FLASH := Color(2.4, 2.4, 2.4)  # self_modulate > 1 — спрайт висвітлюється
-const HURT_FLASH_TIME := 0.08
 const HEAVY_SCALE := 1.3
+## Розтин по героєві — червонуватий, щоб не плутати з його власними ударами.
+const HERO_CUT_TINT := Color(1.0, 0.45, 0.4)
 const HIT_HITSTOP := 0.035
 const HEAVY_HITSTOP := 0.07
 const HEAVY_SHAKE := 5.0
@@ -85,20 +85,16 @@ func _on_attack_started(attacker: Node, _target: Node) -> void:
 		AudioManager.play_sfx_path(SFX_WINDUP.pick_random())
 
 
-## Спалах ушкодження — у кожного, хто справді отримав удар (і ворог, і герой); герой ще й отримує іскру
-## влучання з боку удару (D268, Sapega 2026-10-21 «аури попадання досить маленькі»).
+## Удар по героєві: звук і розтин з боку удару (D268, Sapega 2026-10-21: без спалахів — розтин, завмирання, відкидання).
 func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
-	var sprite: CanvasItem = target.get_node(^"Sprite2D")
-	sprite.self_modulate = HURT_FLASH
-	target.create_tween().tween_property(sprite, ^"self_modulate", Color.WHITE, HURT_FLASH_TIME)
 	if target.is_in_group(GameGroups.PLAYER):
 		AudioManager.play_sfx_path(SFX_HURT.pick_random())
-		# Без джерела (пастка, падіння) — іскра в центрі тіла
+		# Без джерела (пастка, падіння) — розтин по центру тіла
 		var side: float = 0.0 if source == null else signf(source.global_position.x - target.global_position.x)
-		_spawn_impact(target, side)
+		_spawn_impact(target, side).modulate = HERO_CUT_TINT
 
 
-## Іскра влучання на краю тіла [param target] з боку [param side] (-1 / 1, 0 — центр).
+## Розтин влучання на краю тіла [param target] з боку [param side] (-1 / 1, 0 — центр).
 func _spawn_impact(target: Node2D, side: float) -> HitImpact:
 	var body: CollisionShape2D = target.get_node(^"CollisionShape2D")
 	var half_width: float = body.shape.get_rect().size.x * target.global_scale.x / 2.0

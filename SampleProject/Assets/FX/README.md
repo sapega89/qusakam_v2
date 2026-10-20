@@ -1,11 +1,19 @@
-# Combat effects (D204, D210)
+# Combat effects (D204, D224, D268, D271)
 
-| Folder | Source | Licence |
+All files here are **AI-generated** with **Qwen-Image** (`qwen_image_fp8_e4m3fn` + `Qwen-Image-Lightning-4steps`
+LoRA, **Apache 2.0**) by `Scripts/Tools/comfy_fx.py`: one generated picture per effect on a chroma key,
+keyed out, fitted into the texture at the game's pixel scale (1 texture px = 1.5 world px, like the hero), quantised;
+the animation frames are cut from that one picture (appear → full → thinning). Steam needs the AI-content disclosure.
+
+| File | Effect | Made from |
 |---|---|---|
-| `HitSpark/spark1–5.png` | `assets/5 Eskimo/Circle_explosion/Circle_explosion1–5.png`, centre 160×160 | **not found** — the folder has no licence file and its origin is unknown; verify before release |
+| `Smear/arc_1–3.png` | swing crescent (sword / axe / mace / heavy), `SlashTrail.tscn` | `slash_arc` |
+| `Smear/thrust_1–3.png` | thrust streak (dagger, halberd) | `thrust` |
+| `Smear/punch_1–3.png` | bare-hand punch streak | `thrust` |
+| `Hit/cut_1–4.png` | hit cut across the target, `HitImpact.tscn` | `thrust`, turned 35° |
+| `Skills/fire_arc.png` | Fire Strike crescent | `fire_arc` |
+| `Skills/bolt.png` | Electric Strike bolt (forward and from the sky) | `bolt` |
+| `Skills/heal_aura.png` | Healing Palm ring | `heal_aura` |
 
-Chosen because no licensed pack in `assets/` has hit sparks or a swing streak (searched 2026-10-18).
-
-`Smear/arc_1–3.png`, `Smear/thrust_1–3.png` — swing / thrust smear drawn by `Scripts/Tools/draw_hero_attack.py` (D224), original work; shape after `assets/idle and  alter/itch light atk sheet-Sheet.png`.
-
-`Smear/punch_1–3.png` — the bare-hand punch burst (rays, then a widening ring), drawn by `Scripts/Tools/draw_hero_attack.py` (D232), original work.
+Replaced 2026-10-21 (Sapega: hack'n'slash, anime, generated): the drawn smears of `draw_hero_attack.py` and the
+round hit spark `HitSpark/` (unknown licence).
