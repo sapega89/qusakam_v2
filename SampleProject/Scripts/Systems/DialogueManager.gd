@@ -202,6 +202,7 @@ func _show_next_replay_line() -> void:
 	if speaker:
 		current_dialogue_box.set_name_color(speaker.color)
 	current_dialogue_box.set_text(line.text)
+	current_dialogue_box.start_progressing()  # набирається, як і звичайна репліка (D254)
 
 
 func _end_replay() -> void:

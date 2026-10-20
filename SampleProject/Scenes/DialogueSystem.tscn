@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://ieswd7jymiqi"]
+[gd_scene load_steps=7 format=3 uid="uid://ieswd7jymiqi"]
 
 [ext_resource type="PackedScene" uid="uid://c2yt2j56lo2sv" path="res://addons/dialogue_quest/prefabs/systems/dqd/dialogue_player.tscn" id="1_dialogue_player"]
-[ext_resource type="PackedScene" uid="uid://ttdif58g3l3i" path="res://addons/dialogue_quest/prefabs/ui/dialogue/components/dialogue_box/dialogue_box.tscn" id="2_dialogue_box"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/dialogue_box.tscn" id="2_dialogue_box"]
 [ext_resource type="PackedScene" uid="uid://dye384gy0fmiu" path="res://addons/dialogue_quest/prefabs/ui/dialogue/components/choice_menu/choice_menu.tscn" id="3_choice_menu"]
 [ext_resource type="Script" uid="uid://be4idqpj17toc" path="res://SampleProject/Scripts/Systems/DialogueSystemController.gd" id="4_controller"]
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="5_game_ui_theme"]
+[ext_resource type="Resource" path="res://SampleProject/Resources/Dialogue/dialogue_player_settings.tres" id="8_player_settings"]
 
 [node name="DialogueSystem" type="CanvasLayer"]
 script = ExtResource("4_controller")
@@ -12,6 +13,7 @@ script = ExtResource("4_controller")
 [node name="DialoguePlayer" parent="." node_paths=PackedStringArray("dialogue_box", "choice_menu") instance=ExtResource("1_dialogue_player")]
 dialogue_box = NodePath("../DialogueBox")
 choice_menu = NodePath("../ChoiceMenu")
+settings = ExtResource("8_player_settings")
 
 [node name="DialogueBox" parent="." instance=ExtResource("2_dialogue_box")]
 theme = ExtResource("5_game_ui_theme")

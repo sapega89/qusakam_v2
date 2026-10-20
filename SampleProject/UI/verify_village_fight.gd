@@ -14,6 +14,7 @@ func ck(ok: bool, label: String) -> void:
 
 ## Один «Enter» у діалозі; повертає, чи діалог ще йде.
 func _press(dm: Node) -> void:
+	dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 	dm.current_dialogue_player.accept()
 	for i in 6: await process_frame
 

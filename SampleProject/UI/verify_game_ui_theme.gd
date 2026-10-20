@@ -93,6 +93,9 @@ func _initialize() -> void:
 	root.add_child(dsys)
 	await process_frame
 	var dbox = dsys.get_node("DialogueBox")
+	var dpanel: StyleBox = dbox.get_theme_stylebox("panel")
+	_check(dpanel is StyleBoxFlat and (dpanel as StyleBoxFlat).bg_color.a == 1.0,
+			"dialogue box background is opaque (D254)")
 	for on in [false, true]:
 		dbox.set_auto_button_active(on)
 		dbox.set_skip_button_active(on)

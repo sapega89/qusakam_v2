@@ -20,11 +20,10 @@ func _drain(dm: Node) -> Array[String]:
 				shown.append(dm.current_dialogue_box.text)
 			if dm.is_replaying():
 				var inputs: Object = root.get_node("DialogueQuest").Inputs
-				if not dm.current_dialogue_box.is_finished():
-					inputs.accept_pressed.emit()  # показати весь текст
-					await process_frame
+				dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 				inputs.accept_pressed.emit()
 			else:
+				dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 				dm.current_dialogue_player.accept()
 			for f in 6: await process_frame
 		for i in 10: await process_frame

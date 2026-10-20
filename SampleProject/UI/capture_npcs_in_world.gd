@@ -24,6 +24,7 @@ func _initialize() -> void:
 		for i in 90: await physics_frame
 		for i in 300:
 			if not dm.is_dialogue_active(): break
+			dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 			dm.current_dialogue_player.accept()
 			await process_frame
 		var npc: Node2D = game.map.get_node(spot[1])

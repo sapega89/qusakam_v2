@@ -280,6 +280,7 @@ func _initialize() -> void:
 		for i in 200:
 			if not dm.is_dialogue_active():
 				break
+			dm.current_dialogue_box.finish()  # D254: тест не чекає набору репліки
 			dm.current_dialogue_player.accept()
 			await process_frame
 		for i in 10: await process_frame
