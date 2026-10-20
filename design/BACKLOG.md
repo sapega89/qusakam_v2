@@ -65,6 +65,17 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 
 ## 📋 Planned — ready to run
 
+### Painted terrain in the outdoor rooms — D248, D249
+Sapega 2026-10-19: the ground the hero walks on must look hand-made, not procedural. Canyon done; Village,
+DesertRoad, CityGates, City, LaboratoryOutside still show the repeating checker tile (CityGates also on its ceiling).
+**Resume:** `paint_terrain.py --materials earth cobble_top`, then `--materials oasis_top`, then `build_terrain.gd -- mask` →
+`paint_terrain.py <rooms>` → `build_terrain.gd -- place <rooms>`; capture each room.
+
+### Foreground parallax in every outdoor room
+Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
+near/foreground plane; add one to Canyon, DesertRoad, CityGates, City, LaboratoryOutside — generated with
+`comfy_backdrop.py` (Village/gen_front is the model), depth blur, sparse so gameplay reads. After the terrain.
+
 ### Room story flow — one base class — [[code_review_2026-10-19]] §3.1
 - **Exists:** six copies of the same state flow (`_execute_step`, `_play_dialogue`, `advance_state`, `_complete_quest_for_dialogue`) in Canyon, Village, Laboratory, CityGates, DesertRoad, LaboratoryOutside; the "already done → advance" rule only as a comment (B66 came from a missed copy).
 - **Missing:** a `RoomStoryFlow` base with steps as data and the skip rule in one place.
