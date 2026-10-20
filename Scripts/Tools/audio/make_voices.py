@@ -36,6 +36,10 @@ LINES = {
         0.0,
         ["Welcome, friend!", "Fine wares today!"],
     ),
+    # The oath keepers in the City (BACKLOG 22, D281).
+    "Greetings/oath_priest": ("bf_emma", 0.95, 1.0, 0.15, ["The sky sees you.", "Peace, traveller."]),
+    "Greetings/oath_witch": ("bf_isabella", 0.9, 0.92, 0.0, ["Well, well...", "Looking for power?"]),
+    "Greetings/oath_dervish": ("bm_daniel", 0.9, 1.0, 0.0, ["Be still, child.", "Balance, always."]),
     "Calls/guard": ("am_eric", 1.1, 1.0, 0.0, ["I've got you!", "Hold on!"]),
     "Calls/alisia": ("af_jessica", 1.1, 1.0, 0.0, ["Get them!", "Strike now!"]),
     "Calls/astrit": ("af_kore", 1.05, 0.95, 0.0, ["Out of my way!", "Shields up!"]),

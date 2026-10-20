@@ -1,0 +1,82 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/OathKeeper.gd" id="1_keeper"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/witch/sheet.png" id="3_sprite"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_talk"]
+resource_name = "talk"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_keeper"]
+_data = {
+&"idle": SubResource("Animation_idle"),
+&"talk": SubResource("Animation_talk")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(64, 64)
+
+[node name="OathWitch" type="Area2D"]
+z_index = 10
+script = ExtResource("1_keeper")
+oath_id = "dark_knight"
+sworn_dialogue = "res://dialogue_quest/City_Oath_Witch_Sworn.dqd"
+profile_faces_left = false
+talk_dialogue = "res://dialogue_quest/City_Oath_Witch_Talk.dqd"
+character_id = "OATH_WITCH"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 10
+texture_filter = 1
+offset = Vector2(0, -43)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_sprite")
+hframes = 2
+vframes = 2
+frame = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("2_interactable")
+prompt_offset = Vector2(0, -128)
+action_text = "Talk"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_keeper")
+}
+autoplay = "idle"

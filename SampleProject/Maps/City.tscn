@@ -8,6 +8,9 @@
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_save"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="5_trigger"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/blacksmith.tscn" id="6_blacksmith"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_priest.tscn" id="7_oath_priest"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_witch.tscn" id="8_oath_witch"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_dervish.tscn" id="9_oath_dervish"]
 [ext_resource type="AudioStream" uid="uid://cgp3gqjbkxc7a" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="music_track"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_mid.tres" id="blur_mid"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/City_Terrain.png" id="terrain_terrain"]
@@ -100,6 +103,15 @@ shape = SubResource("CircleShape2D_save")
 
 [node name="Blacksmith" parent="." instance=ExtResource("6_blacksmith")]
 position = Vector2(1100, 396)
+
+[node name="OathPriest" parent="." instance=ExtResource("7_oath_priest")]
+position = Vector2(1500, 396)
+
+[node name="OathWitch" parent="." instance=ExtResource("8_oath_witch")]
+position = Vector2(1850, 396)
+
+[node name="OathDervish" parent="." instance=ExtResource("9_oath_dervish")]
+position = Vector2(2200, 396)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

@@ -12,7 +12,7 @@ character to its babble voice). Plan and listening checklist: `design/audio_plan
 | `Boss/roar_*`, `Boss/death_0` | boss roars | "CC0 Deep Monster Roar" by trazzz123 — https://opengameart.org/content/cc0-deep-monster-roar, layered with `roar_01–03` from "80 CC0 creature SFX" by rubberduck — https://opengameart.org/content/80-cc0-creature-sfx (pitched, layered, reverb) | CC0 |
 
 Voices used: grandfather `bm_george`, blacksmith `am_onyx`, merchant `am_puck`, guard `am_eric`, Алісия `af_jessica`,
-Астрит `af_kore`, Уризен `bm_lewis`, Kusakam `am_liam`, bosses `am_onyx` ×0.72 + reverb. Never XTTS-v2 / F5-TTS or
+Астрит `af_kore`, Уризен `bm_lewis`, the oath keepers (D281) Сестра Ільване `bf_emma`, Морроу `bf_isabella` ×0.92, Кеш `bm_daniel` (their babble reuses Алісия / Астрит / Уризен sets), Kusakam `am_liam`, bosses `am_onyx` ×0.72 + reverb. Never XTTS-v2 / F5-TTS or
 other non-commercial weights (D275).
 
 **Steam:** the store page's "AI Generated Content" disclosure must say: *pre-generated voice lines (short greetings,

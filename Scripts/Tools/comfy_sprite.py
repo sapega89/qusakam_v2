@@ -194,6 +194,86 @@ CHARACTERS = {
             )
         ],
     ),
+    # Хранителі клятв у місті (BACKLOG 22, D281): профіль — коли герой говорить із ними, фас — коли стоять (D243).
+    "priest": dict(
+        out="SampleProject/Assets/Characters/NPCs/priest/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=21,
+        colors=16,
+        who="the same serene priestess of the sky in the long white and pale-blue robes with gold trim, the white hood, "
+        "the gold ring pendant and the slender white staff",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a serene priestess of the sky, a tall adult woman filling the whole height of the picture, in long white "
+        "and pale-blue robes with gold trim, a white hood over her head, a gold ring pendant on her chest and a slender white "
+        "staff topped with a small open gold ring held upright in her right hand. Strict side view: her head and body in "
+        "profile facing right, her eye and nose on the right side of her face, looking ahead to the right. Keep the plain "
+        "flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of her standing idle, both eyes visible, the white hood, the "
+                    "gold ring pendant in the middle of her chest, the slender white staff upright in her hand",
+                    "BOB:56:front:0",
+                ],
+            ),
+        ],
+    ),
+    "witch": dict(
+        out="SampleProject/Assets/Characters/NPCs/witch/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=22,
+        colors=16,
+        who="the same witch with the wide-brimmed pointed dark purple hat, the long black hair, the dark violet dress, the "
+        "tattered black shawl and the gnarled black wand with the violet crystal",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a mysterious witch, a tall adult woman filling the whole height of the picture, with a wide-brimmed pointed "
+        "dark purple hat, long straight black hair, pale skin, a long dark violet dress with a tattered black shawl over her "
+        "shoulders and a gnarled black wand with a small glowing violet crystal in her right hand. Strict side view: her head "
+        "and body in profile facing right, her eye and nose on the right side of her face, looking ahead to the right. Keep "
+        "the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of her standing idle, both eyes visible, the wide-brimmed "
+                    "pointed dark purple hat, the long black hair on both sides of her face, the tattered black shawl, the "
+                    "gnarled black wand with the violet crystal in her hand",
+                    "BOB:56:front:0",
+                ],
+            ),
+        ],
+    ),
+    "dervish": dict(
+        out="SampleProject/Assets/Characters/NPCs/dervish/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=23,
+        colors=16,
+        who="the same sand dervish with the very tall brimless cylindrical camel felt hat, the short dark beard, the long ochre robe with the "
+        "wide flared skirt and the red sash",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a sand dervish, a tall lean adult man filling the whole height of the picture, with a very tall brimless "
+        "cylindrical camel-coloured felt hat with no brim at all (like a tall fez without a tassel), a short dark beard, a long sand-and-ochre robe with a wide flared skirt, a red sash around his waist and "
+        "bare feet, his hands folded calmly in front of him. Strict side view: his head and body in profile facing right, his "
+        "eye and nose on the right side of his face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, both eyes visible, the very tall "
+                    "brimless cylindrical camel felt hat, the short dark beard, the red sash around his waist, the wide flared ochre "
+                    "skirt, his hands folded in front of him",
+                    "BOB:56:front:0",
+                ],
+            ),
+        ],
+    ),
     # Дід — дід Кусакама, тож теж ящур (lore, Sapega 2026-10-19): той самий вид, що й герой, тільки старий.
     # Варта біля воріт міста (BACKLOG feedback 18): двоє стоять обабіч брами й дихають.
     "gate_guard": dict(

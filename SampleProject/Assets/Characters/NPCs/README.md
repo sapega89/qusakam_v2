@@ -12,3 +12,6 @@ to disclose AI-generated content. Replaces the Figma NPC art of D107 and the old
 | `merchant/sheet.png` | `Scenes/Gameplay/Objects/NPCs/merchant.tscn` | idle 0–1, feet row 89 |
 | `old_man/sheet.png` | `Maps/Village.tscn` → OldMan (flipped, faces left) | idle 0–1, feet row 89 |
 | `gate_guard/sheet.png` | `Scenes/Gameplay/Objects/NPCs/gate_guard.tscn` → CityGates GuardLeft/GuardRight (flipped, face the road; D258) | idle 0–1, feet row 91 |
+| `priest/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_priest.tscn` → City OathPriest (D281) | row 0 profile (faces **left**), row 1 front; feet row 90 |
+| `witch/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_witch.tscn` → City OathWitch (D281) | row 0 profile (faces right), row 1 front; feet row 90 |
+| `dervish/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_dervish.tscn` → City OathDervish (D281) | row 0 profile (faces right), row 1 front; feet row 91 |
