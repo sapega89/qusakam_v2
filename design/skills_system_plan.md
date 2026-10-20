@@ -1,5 +1,7 @@
 # Skills — discovery and plan
 
+> Trees, the class path, the oath and respec: [[skill_trees_plan]] (2026-10-21).
+
 **Nothing implemented.** This is a survey plus a proposal.
 No class definitions invented; no JP/SP invented.
 
