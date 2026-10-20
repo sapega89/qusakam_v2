@@ -7,6 +7,7 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 | File | Use |
 |---|---|
 | `gen_mid.png` | CityGates: Parallax2D ×0.7 — the city wall, two gate towers, the arched gate, red banners with a plain golden disc (coat of arms: Q57); near blur |
+| `gen_gate.png` | CityGates → `Gate` (×1.5, at the road's end, D258) — one gatehouse, two towers with banners, the open gate; the passage the key cut through is filled dark (`holes`), the side walls cut off (`cut`) |
 
 Behind them: `desert_backdrop_open.tscn` — the pack's sky, the Canyon's generated clouds and mesas (D235),
 the pack's ground strip.

@@ -83,6 +83,15 @@ fires before the climb. `_on_abduction_cutscene_state`: input taken, walk to `Me
 camera `top_level` tween to `Meditation/Look`, `ScreenFade` + `VillageAbduction`, light, `Canyon_AbductionCutscene`,
 camera back, control back. Test: `verify_canyon_exit` [0] (real climb with move_left + jump from the east foot).
 
+## Built (2026-10-20) — City Gates raid, D258
+
+Third staged beat, still inline (`CityGates.gd` `_raid_cutscene`): `RaidTrigger` on the road (`APPROACH` → `RAID_CUTSCENE`)
+takes the input, the camera goes `top_level` and pans to `Raid/Look`, `CityGates` + `CityGates_Raid` (the line before the run,
+so the dialogue box does not hide the bandits), the `Raid/Bandits` sprites run (`Raid/AnimationPlayer` run/stand) to the
+`EnemySpawner` points, camera back, control back, `FIGHT_LOOP` spawns the real enemies on the same points and hides `Raid`.
+The three tweens are now in three rooms — the shared helpers of slice 1 are due with the next beat.
+Test: `verify_city_gates_raid` (real `move_right` into the trigger, order of lines, bandits on the spawn points, fight start, no replay).
+
 ## Slices
 
 ### Slice 1 — Cutscene runner + one beat

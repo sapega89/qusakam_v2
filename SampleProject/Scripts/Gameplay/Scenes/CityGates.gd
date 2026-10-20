@@ -5,10 +5,13 @@ const CALL_GUARD := "call_guard"
 const COMPANIONS_HINT := "companions"
 
 ## 🏰 City Gates Scene Manager
-## States: INTRO_DIALOGUE, FIGHT_LOOP, AFTER_FIGHT_DIALOGUE, TO_CITY
+## States: APPROACH, RAID_CUTSCENE, FIGHT_LOOP, AFTER_FIGHT_DIALOGUE, TO_CITY
+## Кусакам іде дорогою до брами; RaidTrigger переводить APPROACH → RAID_CUTSCENE (бандити нападають на браму),
+## далі бій з асистом охоронця (D209).
 
 enum State {
-	INTRO_DIALOGUE,
+	APPROACH,
+	RAID_CUTSCENE,
 	FIGHT_LOOP,
 	AFTER_FIGHT_DIALOGUE,
 	TO_CITY
@@ -16,7 +19,7 @@ enum State {
 
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
-@export var current_state: State = State.INTRO_DIALOGUE:
+@export var current_state: State = State.APPROACH:
 	set(val):
 		current_state = val
 		_on_state_changed(val)
@@ -40,7 +43,7 @@ func _ready() -> void:
 	# Присвоєння запускає сеттер → _on_state_changed().
 	current_state = _initial_state()
 
-## Стан при вході — за прапорцями. Раніше завжди стартували з INTRO_DIALOGUE, а він при
+## Стан при вході — за прапорцями. Раніше завжди стартували зі вступу, а він при
 ## прочитаному вступі просто виходив: повернувшись у кімнату, бій не починався ніколи.
 func _initial_state() -> State:
 	var game := Game.get_singleton()
@@ -50,7 +53,14 @@ func _initial_state() -> State:
 		return State.AFTER_FIGHT_DIALOGUE
 	if game.get_quest_flag("city_gates_intro_complete"):
 		return State.FIGHT_LOOP
-	return State.INTRO_DIALOGUE
+	return State.APPROACH
+
+## Для StateChangeTrigger (RaidTrigger: require_state / target_state).
+func get_current_state_name() -> String:
+	return State.keys()[current_state]
+
+func change_state_by_name(state_name: String) -> void:
+	current_state = State[state_name]
 
 func _on_state_changed(new_state: State) -> void:
 	state_run_id += 1
@@ -62,21 +72,18 @@ func _on_state_changed(new_state: State) -> void:
 func _apply_state_logic(state: State, run_id: int) -> void:
 	var game = Game.get_singleton()
 	match state:
-		State.INTRO_DIALOGUE:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("city_gates_intro_complete", false):
-				DebugLogger.info("🏰 CityGates: ⏭️ Діалог CityGates вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Defeat the gate guards")
-				return
+		State.APPROACH:
+			# Нічого не запускаємо: RaidTrigger на дорозі переводить у RAID_CUTSCENE.
 			_set_objective("Approach the city gates")
-			_execute_step(StepType.DIALOGUE, "CityGates", run_id)
+		State.RAID_CUTSCENE:
+			_raid_cutscene(run_id)
 		State.FIGHT_LOOP:
 			# Перевіряємо, чи діалог вже був прочитаний
 			if game.get_quest_flag("city_gates_fight_complete", false):
 				DebugLogger.info("🏰 CityGates: ⏭️ Діалог CityGates_Fight вже був прочитаний, пропускаємо", "Scene")
 				_set_objective("Enter the city")
 				return
-			_set_objective("Defeat the gate guards")
+			_set_objective("Defeat the bandits")
 			_start_fight("CityGates_Fight", run_id)
 		State.AFTER_FIGHT_DIALOGUE:
 			# Перевіряємо, чи діалог вже був прочитаний
@@ -137,10 +144,69 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 	if not game: return
 
 	match dialogue_id:
-		"CityGates":
+		"CityGates_Raid":
 			game.set_quest_flag("city_gates_intro_complete", true)
 		"CityGates_AfterFight":
 			game.set_quest_flag("city_gates_after_fight_complete", true)
+
+## Напад бандитів (BACKLOG feedback 18): RaidTrigger забирає керування, камера пливе до брами, CityGates,
+## CityGates_Raid (варта кличе до зброї), бандити (Raid/Bandits) біжать дорогою до варти й стають на точки спавну
+## бою, камера
+## повертається до героя, керування — назад; далі FIGHT_LOOP (CityGates_Fight, бій, асист охоронця D209).
+## Кожен діалог ставить героя в Idle і віддає керування — блокування вертається після кожного.
+const RAID_PAN_TIME := 1.6
+const RAID_RUN_TIME := 2.0
+const RAID_STAND_HOLD := 0.8
+const RAID_RETURN_TIME := 1.0
+
+func _raid_cutscene(run_id: int) -> void:
+	var player: Node2D = Game.get_singleton().player
+	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
+	var camera: Camera2D = player.get_node(^"Camera2D")
+	var dm := _get_dialogue_manager()
+	var hold := func(_id: String = "") -> void:
+		player.set_movement_enabled(false)
+		anim.play(&"Idle")
+	var hold_later := func(_id: String) -> void: hold.call_deferred()
+	dm.dialogue_started.connect(hold_later)
+	hold.call()
+
+	var center := camera.get_screen_center_position()
+	camera.top_level = true  # камера більше не йде за героєм
+	camera.global_position = center
+	camera.reset_smoothing()
+	var pan := create_tween().tween_property(camera, ^"global_position", $Raid/Look.global_position, RAID_PAN_TIME)
+	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	await _play_dialogue("CityGates", run_id)
+	if run_id != state_run_id:
+		return
+	hold.call()
+
+	# Варта бачить бандитів першою; репліка — до їхнього бігу, щоб вікно діалогу не закрило їх.
+	await _play_dialogue("CityGates_Raid", run_id)
+	if run_id != state_run_id:
+		return
+	hold.call()
+
+	# Бандити вибігають з-за лівого краю кадру — кожен до своєї точки спавну.
+	$Raid.show()
+	$Raid/AnimationPlayer.play(&"run")
+	var run := create_tween().set_parallel()
+	var marks: Array[Node] = enemy_spawner.get_children()
+	for i: int in $Raid/Bandits.get_child_count():
+		run.tween_property($Raid/Bandits.get_child(i), ^"global_position:x", (marks[i] as Node2D).global_position.x, RAID_RUN_TIME)
+	await run.finished
+	$Raid/AnimationPlayer.play(&"stand")
+	await get_tree().create_timer(RAID_STAND_HOLD).timeout
+	dm.dialogue_started.disconnect(hold_later)
+
+	var back := create_tween().tween_property(camera, ^"global_position", player.global_position, RAID_RETURN_TIME)
+	await back.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	camera.top_level = false
+	camera.position = Vector2.ZERO
+	camera.reset_smoothing()
+	player.set_movement_enabled(true)
+	advance_state()
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
@@ -161,6 +227,8 @@ func _get_dialogue_manager() -> Node:
 
 func _spawn_enemies_for_fight() -> void:
 	"""Спавнить врагов для боя"""
+	# Бандити кат-сцени стоять на точках спавну — їх замінюють справжні вороги.
+	$Raid.hide()
 	enemy_spawner.spawn_all_enemies()
 	DebugLogger.info("🏰 CityGates: Enemies spawning for fight", "Scene")
 	# D209: охоронець — перший асист-туторіал: кнопка асисту кличе його, його удар закінчує бій

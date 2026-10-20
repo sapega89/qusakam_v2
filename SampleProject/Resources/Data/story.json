@@ -59,12 +59,12 @@
 					"id": "city_gates", "title": "City Gates", "scene": "CityGates", "story_state": "CITY_GATES",
 					"objectives": [
 						{"flag": "city_gates_intro_complete", "text": "Approach the city gates"},
-						{"flag": "city_gates_fight_complete", "text": "Defeat the gate guards"},
+						{"flag": "city_gates_fight_complete", "text": "Defeat the bandits"},
 						{"flag": "city_gates_after_fight_complete", "text": "Enter the city"}
 					],
 					"chronicle": [
 						{"flag": "city_gates_intro_complete", "text": "He reached the great city gates and found the way barred."},
-						{"flag": "city_gates_fight_complete", "text": "The gate guards would not let him pass, so he made them."},
+						{"flag": "city_gates_fight_complete", "text": "Bandits attacked the gates; he fought them off beside the guards."},
 						{"flag": "city_gates_after_fight_complete", "text": "Through the gates at last, they set out to find the laboratory."}
 					]
 				},

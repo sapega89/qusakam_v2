@@ -193,6 +193,21 @@ CHARACTERS = {
         ],
     ),
     # Дід — дід Кусакама, тож теж ящур (lore, Sapega 2026-10-19): той самий вид, що й герой, тільки старий.
+    # Варта біля воріт міста (BACKLOG feedback 18): двоє стоять обабіч брами й дихають.
+    "gate_guard": dict(
+        out="SampleProject/Assets/Characters/NPCs/gate_guard/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=12,
+        colors=16,
+        who="the same desert city guard with the pointed steel helmet, the red tabard and the long spear",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a desert city gate guard, a tall adult man filling the whole height of the picture, with a pointed steel "
+        "helmet wrapped in a white cloth, a short dark beard, a red tabard with a plain golden disc over a chain shirt, baggy "
+        "sand-coloured trousers, a curved sword at his belt and a long spear held upright in his right hand, standing at "
+        "attention facing right. Keep the plain flat magenta background.",
+        rows=[("idle", [None, "BOB:56"])],
+    ),
     "old_man": dict(
         out="SampleProject/Assets/Characters/NPCs/old_man/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",

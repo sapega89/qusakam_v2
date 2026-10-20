@@ -11,3 +11,4 @@ to disclose AI-generated content. Replaces the Figma NPC art of D107 and the old
 | `blacksmith/sheet.png` | `Scenes/Gameplay/Objects/NPCs/blacksmith.tscn` | idle 0–1, feet row 91 |
 | `merchant/sheet.png` | `Scenes/Gameplay/Objects/NPCs/merchant.tscn` | idle 0–1, feet row 89 |
 | `old_man/sheet.png` | `Maps/Village.tscn` → OldMan (flipped, faces left) | idle 0–1, feet row 89 |
+| `gate_guard/sheet.png` | `Scenes/Gameplay/Objects/NPCs/gate_guard.tscn` → CityGates GuardLeft/GuardRight (flipped, face the road; D258) | idle 0–1, feet row 91 |
