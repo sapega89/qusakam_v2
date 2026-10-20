@@ -67,6 +67,10 @@ var knockback_speed: float = 0.0
 var stun_left: float = 0.0
 ## Замах зірвано важким ударом (відкидання, D208) — удару не буде.
 var attack_broken: bool = false
+## Комбо (D265): наступні удари серії — з коротшим замахом; останній удар серії — фінішер, збиває героя довше.
+const COMBO_WINDUP := 0.25
+const FINISHER_STAGGER := 0.6
+var finisher: bool = false
 
 # Raycast для виявлення гравця
 
@@ -349,6 +353,13 @@ func stun(duration: float) -> void:
 		return  # броня (tank, D208): замах оглушенням не зірвати
 	stun_left = maxf(stun_left, duration)
 
+## Збій (D264): стоїть [param duration] с, замах і серія зірвані, хітбокс гасне — навіть у броні.
+func stagger(duration: float) -> void:
+	stun_left = maxf(stun_left, duration)
+	if is_attacking:
+		attack_broken = true
+		enemy.end_attack()
+
 ## Відкидання на [param push] px за KNOCKBACK_TIME. Удар героя ([param breaks_attack]) зриває замах,
 ## власний ривок ворога — ні.
 func start_knockback(push: float, breaks_attack: bool = true) -> void:
@@ -358,28 +369,37 @@ func start_knockback(push: float, breaks_attack: bool = true) -> void:
 		attack_broken = true
 
 func perform_attack():
-	"""Замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
+	"""Серія з 1–combo_hits ударів (D265): замах, потім удар хітбоксом у бік погляду (D198). Ушкодження — DamageApplier хітбокса."""
 	is_attacking = true
 	attack_broken = false
-	winding_up = true
-	attack_started.emit()
-	EventBus.attack_started.emit(enemy, player)
-
-	# Замах: перші TRACK_PART ворог стежить за героєм, далі напрямок зафіксовано — перекат за спину
-	# саме тоді рятує, а просто відійти на крок — ні.
-	await get_tree().create_timer(enemy.attack_windup * TRACK_PART).timeout
-	winding_up = false
-	await get_tree().create_timer(enemy.attack_windup * (1.0 - TRACK_PART)).timeout
-	# Б'є туди, куди дивиться наприкінці замаху (розвертався за героєм)
-	var direction := last_direction if last_direction != 0 else 1
-	# Оглушили (якщо без броні) чи збили важким ударом посеред замаху — удару немає (D207, D208)
-	if not enemy.is_dead and stun_left <= 0.0 and not attack_broken:
+	var swings := 1
+	while swings < enemy.combo_hits and randf() < enemy.combo_chance:
+		swings += 1
+	for i in swings:
+		if enemy.is_dead or stun_left > 0.0 or attack_broken:
+			break
+		var windup: float = enemy.attack_windup if i == 0 else COMBO_WINDUP
+		finisher = swings > 1 and i == swings - 1
+		winding_up = true
+		attack_started.emit()
+		EventBus.attack_started.emit(enemy, player)
+		# Замах: перші TRACK_PART ворог стежить за героєм, далі напрямок зафіксовано — перекат за спину
+		# саме тоді рятує, а просто відійти на крок — ні.
+		await get_tree().create_timer(windup * TRACK_PART).timeout
+		winding_up = false
+		await get_tree().create_timer(windup * (1.0 - TRACK_PART)).timeout
+		# Оглушили (якщо без броні), збили чи парирували посеред серії — далі ударів немає (D207, D208, D264)
+		if enemy.is_dead or stun_left > 0.0 or attack_broken:
+			break
+		# Б'є туди, куди дивиться наприкінці замаху (розвертався за героєм)
+		var direction := last_direction if last_direction != 0 else 1
 		enemy.start_attack(direction)
 		if enemy.lunge > 0.0:
 			start_knockback(direction * enemy.lunge, false)  # ривок разом з ударом (fast)
 		await get_tree().create_timer(enemy.attack_active_time).timeout
 		enemy.end_attack()
 
+	finisher = false
 	is_attacking = false
 	attack_ended.emit()
 	_decide_after_attack()

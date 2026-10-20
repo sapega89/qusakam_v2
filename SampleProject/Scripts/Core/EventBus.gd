@@ -158,6 +158,17 @@ signal damage_received(target: Node, source: Node, amount: int)
 @warning_ignore("unused_signal")
 signal attack_started(attacker: Node, target: Node)
 
+## Souls-lite (D264): ворога збито (стійкість вичерпано або парировано), героя збито ударом,
+## герой парирував удар, каст навички зірвано ударом (D259 — SP і кулдаун усе одно списано).
+@warning_ignore("unused_signal")
+signal enemy_staggered(enemy: Node, duration: float)
+@warning_ignore("unused_signal")
+signal player_staggered(duration: float)
+@warning_ignore("unused_signal")
+signal player_parried(attacker: Node)
+@warning_ignore("unused_signal")
+signal skill_interrupted(skill_id: String)
+
 ## Емітується при завершенні атаки.
 ##
 ## Args:

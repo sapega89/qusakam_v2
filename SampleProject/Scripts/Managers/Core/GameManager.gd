@@ -30,6 +30,7 @@ var inventory_manager: InventoryManager = null
 
 func _initialize() -> void:
 	"""Инициализация GameManager"""
+	preload("res://SampleProject/Scripts/Core/CombatInput.gd").register()  # D270
 	_initialize_inventory_manager()
 	_create_managers()
 	print("🎮 GameManager: Initialized")

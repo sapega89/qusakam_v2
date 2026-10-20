@@ -79,17 +79,19 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
 
 ## Slices
 
-### Slice 1 — staggers both ways, enemy combos, the freeze check
-- `PlayerCombat.gd` (stagger state, hurt), `Player.gd` (locks input while staggered), `EnemyLogic.gd` (poise, combo),
-  `EnemyStats.gd` + `enemy_stats_*.tres` (poise, combo, stagger power), `CombatInput.gd`, `EventBus` signals.
-- `verify_souls_combat.gd` [1]–[2].
-### Slice 2 — light combo, heavy attack, interrupts (D259)
-- `PlayerCombat.gd`, `WeaponView.gd`, `SkillManager.interrupt_cast`; `verify_souls_combat.gd` [3]–[4].
-### Slice 3 — block, parry, double dash
-- `PlayerCombat.gd`, `PlayerMover.gd`, `VFXHooks.gd` (parry spark); `verify_souls_combat.gd` [5]–[6].
-### Slice 4 — run outside towns, grips, sheathing, per-weapon swings
-- `PlayerMover.gd`, room `.tscn` metadata, `items.json`, `EquipmentManager.gd`, `WeaponView.gd`, `Player.tscn`;
-  `verify_souls_combat.gd` [7]–[9].
+### Slice 1 — staggers both ways, enemy combos, the freeze check — ✅ built
+- `PlayerCombat.gd` (state machine on timers, `stagger`), `Player.gd` (stagger on a wounding enemy hit),
+  `PlayerMover.gd` (`push`, `locked`), `EnemyLogic.gd` (combo loop, `stagger`), `DefaultEnemy.gd` (poise),
+  `EnemyStats.gd` + `enemy_stats_*.tres`, `Core/CombatInput.gd` (D270), EventBus `enemy_staggered`,
+  `player_staggered`, `player_parried`, `skill_interrupted`; `Player.tscn` → `Hurt` (placeholder frame until slice 5).
+- `verify_souls_combat.gd` [0]–[3].
+### Slice 2 — light combo, heavy attack, block, parry, interrupts (D259)
+- `PlayerCombat.gd`, `Player.gd`, `WeaponView.gd`, `SkillManager.interrupt_cast`, `VFXHooks.gd` (parry spark);
+  `verify_souls_combat.gd` [4]–[7].
+### Slice 3 — double dash, walking in towns
+- `PlayerMover.gd`, room `.tscn` metadata; `verify_souls_combat.gd` [8]–[9].
+### Slice 4 — grips, sheathing, per-weapon swings
+- `items.json`, `EquipmentManager.gd`, `WeaponView.gd`, `Player.tscn`; `verify_souls_combat.gd` [10]–[12].
 ### Slice 5 — hero frames
 - `comfy_sprite.py hero_combat` (Hurt, Heavy wind-up / strike, Block) from `Walk/1`; `Player.tscn` animations.
 ### Slice 6 — captures, exe, registers

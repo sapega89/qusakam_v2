@@ -45,6 +45,11 @@ var roll_ready_in: float = 0.0  # до наступного перекату: с
 var roll_direction: int = 1
 ## Драбина, по якій зараз лізе герой (Ladder.gd), або null. Скидає Player.on_enter при переході кімнати.
 var climbing: Node2D = null
+## Рух вимкнено боєм (збій, D264) — Player ставить щокадру з PlayerCombat.locks_movement().
+var locked: bool = false
+## Поштовх від удару по герою (D264): швидкість і скільки ще триває.
+var _push_speed: float = 0.0
+var _push_left: float = 0.0
 
 # Parent reference: the CharacterBody2D that owns this component (the Player).
 @onready var player: CharacterBody2D = get_parent()
@@ -54,6 +59,12 @@ func _ready() -> void:
 	# speed can't be initialised from speed_min at declaration (exported vars are
 	# not assigned yet at that point), so seed it here.
 	speed = speed_min
+
+## Поштовх на [param distance] px за [param duration] с (збій від удару).
+func push(distance: float, duration: float) -> void:
+	_push_speed = distance / duration
+	_push_left = duration
+
 
 func is_rolling() -> bool:
 	return roll_time_left > 0.0
@@ -84,7 +95,12 @@ func physics_move(delta: float) -> void:
 	if not is_climbing():
 		_apply_gravity_and_track_fall(delta)
 
-	if is_rolling():
+	if _push_left > 0.0:
+		_push_left -= delta
+		player.velocity.x = _push_speed
+	elif locked:
+		player.velocity.x = 0.0
+	elif is_rolling():
 		# Під час перекату — рівна швидкість, без стрибка й керування
 		roll_time_left -= delta
 		player.velocity.x = roll_direction * roll_distance / roll_duration

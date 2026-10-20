@@ -52,6 +52,19 @@ var attack_active_time := 0.2
 var lunge := 0.0
 var super_armor := false
 var front_damage := 1.0
+## Souls-lite (D264, D265): стійкість, збій героя від удару, комбо.
+var poise_max := 3
+var poise := 3
+var stagger_time := 0.25
+var combo_hits := 1
+var combo_chance := 0.5
+## Стійкість повертається повністю, якщо стільки секунд ворога ніхто не бив.
+const POISE_RESET_TIME := 2.0
+## Збій від вичерпаної стійкості й від парирування героя, с; відкидання при збої, px.
+const POISE_BREAK_STAGGER := 0.6
+const PARRY_STAGGER := 1.0
+const STAGGER_PUSH := 30.0
+var _poise_reset_left := 0.0
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -122,6 +135,11 @@ func _apply_stats(stats: EnemyStats) -> void:
 	lunge = stats.lunge
 	super_armor = stats.super_armor
 	front_damage = stats.front_damage
+	poise_max = stats.poise
+	poise = poise_max
+	stagger_time = stats.stagger_time
+	combo_hits = stats.combo_hits
+	combo_chance = stats.combo_chance
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range
@@ -240,6 +258,10 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_tick_burn(delta)
+	if _poise_reset_left > 0.0:
+		_poise_reset_left -= delta
+		if _poise_reset_left <= 0.0:
+			poise = poise_max
 	sprite.modulate = STUN_TINT if enemy_logic.stun_left > 0.0 else (BURN_TINT if burn_left > 0.0 else Color.WHITE)
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); тут лише X-рух.
@@ -389,19 +411,14 @@ func _spawn_coin_drops() -> void:
 		if not coin:
 			continue
 
-		# Add coin to parent (scene root)
-		var parent = get_parent()
-		if parent:
-			parent.add_child(coin)
-
-			# Randomize spawn position slightly around enemy
-			var angle = (i / float(coin_count)) * TAU + randf() * 0.5
-			var distance = randf_range(15, 35)
-			var offset = Vector2(cos(angle), sin(angle)) * distance
-
-			coin.global_position = global_position + offset
-
-			DebugLogger.verbose("Enemy: Spawned coin %d/%d at %s" % [i+1, coin_count, coin.global_position], "Enemy")
+		# Монета — сусід ворога в кімнаті. Додаємо відкладено: смерть приходить із body_entered хітбокса
+		# героя, а Area2D монети посеред фізичного запиту не додати (помилка «flushing queries»).
+		var parent: Node2D = get_parent()
+		var angle = (i / float(coin_count)) * TAU + randf() * 0.5
+		var distance = randf_range(15, 35)
+		var offset = Vector2(cos(angle), sin(angle)) * distance
+		coin.position = parent.to_local(global_position + offset)
+		parent.add_child.call_deferred(coin)
 
 func _calculate_coin_drop() -> int:
 	"""Calculates how many coins to drop based on enemy type"""
@@ -562,7 +579,7 @@ func start_attack(direction: int) -> void:
 	hitbox.monitoring = true
 
 func end_attack() -> void:
-	hitbox.monitoring = false
+	hitbox.set_deferred(&"monitoring", false)  # збій (D264) приходить із body_entered хітбокса героя
 	hitbox_damage.disable_damage()
 
 func apply_burn(dps: int, duration: float) -> void:
@@ -583,6 +600,30 @@ func _tick_burn(delta: float) -> void:
 	if _burn_tick <= 0.0:
 		_burn_tick += 1.0
 		take_damage(burn_dps)
+
+## Удар героя відбирає [param amount] стійкості (D265); вичерпана — ворог збитий: замах зірвано, стоїть POISE_BREAK_STAGGER.
+func take_poise(amount: int, from_x: float) -> void:
+	if is_dead:
+		return
+	_poise_reset_left = POISE_RESET_TIME
+	poise -= amount
+	if poise <= 0:
+		poise = poise_max
+		stagger(POISE_BREAK_STAGGER, from_x)
+
+## Збій (D264): удар не відбудеться, ворог стоїть і відлітає трохи від героя. Броня tank тут не рятує.
+func stagger(duration: float, from_x: float) -> void:
+	enemy_logic.stagger(duration)
+	enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
+	EventBus.enemy_staggered.emit(self, duration)
+
+## Герой парирував цей удар (D264).
+func parried(by: Node2D) -> void:
+	stagger(PARRY_STAGGER, by.global_position.x)
+
+## Скільки збиває героя удар, що зараз іде: фінішер серії — довше (D264: «вороги інколи заморожують героя»).
+func hit_stagger_time() -> float:
+	return maxf(stagger_time, EnemyLogic.FINISHER_STAGGER) if enemy_logic.finisher else stagger_time
 
 ## Відкидання від удару (булава, D203): [param push] px, знак — напрямок.
 func knockback(push: float) -> void:

@@ -103,6 +103,7 @@ func _physics_process(delta: float) -> void:
 	# Гравітація, стрибок, горизонтальний рух, move_and_slide() та детекція
 	# приземлення тепер живуть у PlayerMover (SRP: Player.gd відповідає лише
 	# за стан здоров'я/анімацію/атаку, PlayerMover — за фізику руху).
+	mover.locked = combat.locks_movement()
 	mover.physics_move(delta)
 
 	# Оновлюємо затримку для переключення анімацій
@@ -131,8 +132,10 @@ func _physics_process(delta: float) -> void:
 	# Атака обробляється в _unhandled_input(), а не тут: опитування Input.* не знає,
 	# чи клік уже спожив елемент інтерфейсу.
 
-	# Удар доходить до кінця і в повітрі (раніше стрибок/падіння скасовували його — у стрибку шкоди не було).
-	if combat.is_attacking and animation == &"Attack":
+	# Удар доходить до кінця і в повітрі (раніше стрибок/падіння скасовували його — у стрибку шкоди не було);
+	# так само збій, важкий удар, блок (D264) — їхню анімацію веде PlayerCombat.
+	if combat.owns_animation():
+		_update_facing()
 		return
 
 	# Определяем новую анимацию (можем прервать текущую анимацию, если нужно)
@@ -190,13 +193,13 @@ func _unhandled_input(ev: InputEvent) -> void:
 		if not event and not combat.is_attacking:
 			ServiceLocator.get_equipment_manager().cycle_weapon(1 if ev.is_action_pressed(&"weapon_next") else -1)
 		return
-	if ev.is_action_pressed(&"dodge") and not event and not combat.is_attacking:
+	if ev.is_action_pressed(&"dodge") and not event and not combat.owns_animation():
 		if mover.start_roll():
 			animation = &"Roll"
 			$AnimationPlayer.play(&"Roll")
 			$Sprite2D.modulate.a = ROLL_ALPHA
 		return
-	if ev.is_action_pressed(&"attack") and not combat.is_attacking and not mover.is_rolling() and not mover.is_climbing():
+	if ev.is_action_pressed(&"attack") and not combat.owns_animation() and not mover.is_rolling() and not mover.is_climbing():
 		if event:
 			return  # під час катсцени не б'ємо
 		if ev is InputEventMouseButton and get_tree().paused:
@@ -385,8 +388,12 @@ func refresh_max_health() -> void:
 
 
 ## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
+## Souls-lite (D264): удар ворога, що справді поранив, збиває героя — на stagger_time ворога, фінішер серії довше.
 func take_damage(damage: int, source: Node = null) -> void:
+	var before := current_health
 	super.take_damage(mitigated_damage(damage), source)
+	if current_health < before and not is_dead and source is DefaultEnemy:
+		combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
 
 func mitigated_damage(damage: int) -> int:

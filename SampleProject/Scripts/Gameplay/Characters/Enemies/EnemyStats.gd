@@ -21,6 +21,13 @@ class_name EnemyStats
 @export var super_armor: bool = false
 ## Множник шкоди від удару спереду (tank: панцир, бити треба зі спини після перекату).
 @export var front_damage: float = 1.0
+## Souls-lite (D265): стійкість — скільки ударів героя ворог витримує до збою (легкий удар 1, фінішер 2, важкий 3).
+@export var poise: int = 3
+## Скільки секунд збиває героя звичайний удар цього ворога (D264).
+@export var stagger_time: float = 0.25
+## Комбо (D265): найбільше ударів у серії й шанс кожного наступного.
+@export var combo_hits: int = 1
+@export var combo_chance: float = 0.5
 
 @export_group("Detection")
 @export var detection_range: float = 300.0

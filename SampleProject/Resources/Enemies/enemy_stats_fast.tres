@@ -14,3 +14,6 @@ detection_range = 350.0
 attack_range = 80.0
 chase_range = 450.0
 max_health = 60
+poise = 2
+stagger_time = 0.2
+combo_hits = 3
