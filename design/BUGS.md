@@ -315,6 +315,9 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   **Q26's applied default was "hide the empty frame"** — it was never applied.
   D112 later replaced portraits with full-body art, so this frame has no future
   either way.
+  **Fixed 2026-10-20:** `GameDialogueBox.set_portrait_image()` shows the frame only when the speaker has a
+  portrait (none does today); the placeholder `MC.png` is gone from `Scenes/UI/dialogue_box.tscn`.
+  `verify_npc_recall` [5]. Auto/Skip and the `!` glyph are still open.
 - **Auto / Skip buttons:** present top-left of the box. [[dialogue_audit]] §1
   records that Figma's `npc-dialog-simple 36:6` has **no Auto/Skip buttons**.
 - **Stray glyph:** an orange `!` floats inside the box next to the portrait

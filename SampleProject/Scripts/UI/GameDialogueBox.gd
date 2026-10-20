@@ -12,3 +12,10 @@ func accept() -> void:
 	if not is_finished():
 		return
 	super.accept()
+
+
+## Рамка портрета — лише коли в мовця є портрет; без нього порожня рамка праворуч не показується.
+func set_portrait_image(value: Texture2D) -> void:
+	super.set_portrait_image(value)
+	if is_node_ready():
+		%PortraitBackground.visible = value != null
