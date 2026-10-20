@@ -19,6 +19,8 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
   (the freeze cause). Generations in the foreground, ≤4 images per run, models freed after.
 - Never stage `SampleProject/MainMenu.tscn`, `SampleProject/UI/Themes/GameUITheme.tres`, `SampleProject/UI/playthrough.gd`,
   `project.godot` (Sapega's local edits). Commit on `feature/backlog`; **no push / merge to main without his word**.
+- **Gamepad parity (item 24, Sapega: testers will use a gamepad):** every new or changed action gets a joypad binding
+  and works with focus navigation only; check it in each item.
 - Tests call `current_dialogue_box.finish()` before `accept()` — dialogue text types slowly and is unskippable (D254).
 - After visual changes rebuild the exe: `godot --headless --path . --export-release "Windows Desktop" build/windows/Qusakam.exe`
   (data files embedded; templates installed for 4.6.2).
@@ -43,6 +45,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 7 | **5** NPC idle activities | generated frames |
 | 8 | **23** DesertRoad grows; XP curve lands level 5 at the City (Canyon, Village, CityGates, City stay as they are) | plan first: `design/world_expansion_plan.md` |
 | 9 | **16 + 17 + 6 + 23 (Laboratory)** Mayor Hall queue cutscene (D255) → the unbeatable boss → the rewritten Laboratory story split into several screens → the fire-djinn / cloak boss → the end of the demo | one story block |
+| 9b | **24** gamepad parity audit: every action and screen on the pad, `verify_gamepad_parity.gd` | after the Game Menu batch the screens are final; earlier items already follow the rule |
 | 10 | **7 + 19** foreground parallax in every outdoor room; living world (decor idle animations, drifting clouds) | backdrop layers |
 
 ## Open
