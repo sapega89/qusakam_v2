@@ -141,6 +141,15 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Resources/Data/skills.json) gets a hero pose/cast animation and its effect, not just a number change.
     A cast can be **interrupted** (a hit during the wind-up staggers the hero): the skill's effect does not happen, but
     its cooldown starts anyway and the SP is spent (D259). Goes with the stagger system of item 4.
+22. **Three skill trees: Light, Dark, Neutral** (Sapega 2026-10-20 «у кусакама має бути три гілки навичок — темні,
+    світлі і нейтральні; все це можна взяти з навичок чемпіона або паладина з D&D і з Pathfinder, тільки переробити під
+    нашу гру, як це роблять в інших іграх»). Today: 5 skills in Resources/Data/skills.json, no branches
+    ([[skills_system_plan]], [[skills_combat_plan]], [[skills_ui_mapping]]). Source material: PF2e Champion (ORC
+    licence — holy causes ≈ Light, unholy ≈ Dark) and the D&D 5e SRD Paladin (CC BY 4.0) — Lay on Hands, Smites, Auras,
+    Channel Divinity, Oaths; Neutral = martial/defensive (Shield Block, Toughness, stances). Rename and re-shape for a
+    real-time platformer (cooldowns + SP, D259 interrupts), no copied text. First a plan
+    (`design/skill_trees_plan.md`): 3 trees × tiers, unlock by level/points, how Healing Palm (D252) and the existing
+    5 skills slot in; then data + Skills UI; animations per item 21.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
