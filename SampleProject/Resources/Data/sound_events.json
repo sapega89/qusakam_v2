@@ -1,0 +1,26 @@
+{
+	"_comment": "D274/D276, design/audio_plan.md. files are relative to res://SampleProject/Assets/Audio/; one is picked at random. pitch multiplies, jitter is the random ± share (default 0.05). Licences: README.md in each folder.",
+	"events": {
+		"swing": {"bus": "SFX", "files": ["SFX/knifeSlice.ogg", "SFX/knifeSlice2.ogg"]},
+		"swing_heavy": {"bus": "SFX", "files": ["SFX/knifeSlice.ogg", "SFX/knifeSlice2.ogg"], "pitch": 0.75, "volume_db": 2.0},
+		"heavy_windup": {"bus": "SFX", "files": ["SFX/drawKnife1.ogg", "SFX/drawKnife2.ogg", "SFX/drawKnife3.ogg"], "pitch": 0.85},
+		"hit": {"bus": "SFX", "files": ["SFX/impactPunch_medium_000.ogg", "SFX/impactPunch_medium_001.ogg", "SFX/impactPunch_medium_002.ogg"]},
+		"hit_heavy": {"bus": "SFX", "files": ["SFX/impactPunch_heavy_000.ogg", "SFX/impactPunch_heavy_001.ogg", "SFX/impactPunch_heavy_002.ogg"]},
+		"hero_hurt": {"bus": "SFX", "files": ["SFX/impactSoft_heavy_000.ogg", "SFX/impactSoft_heavy_001.ogg", "SFX/impactSoft_heavy_002.ogg"]},
+		"enemy_windup": {"bus": "SFX", "files": ["SFX/drawKnife1.ogg", "SFX/drawKnife2.ogg", "SFX/drawKnife3.ogg"]},
+		"block": {"bus": "SFX", "files": ["SFX/impactMetal_light_000.ogg", "SFX/impactMetal_light_001.ogg", "SFX/impactMetal_light_002.ogg"]},
+		"parry": {"bus": "SFX", "files": ["SFX/impactBell_heavy_000.ogg", "SFX/impactBell_heavy_001.ogg"], "volume_db": -2.0},
+		"stagger": {"bus": "SFX", "files": ["SFX/impactPlate_heavy_000.ogg", "SFX/impactPlate_heavy_001.ogg"], "volume_db": -4.0},
+		"draw": {"bus": "SFX", "files": ["SFX/drawKnife1.ogg", "SFX/drawKnife2.ogg", "SFX/drawKnife3.ogg"], "volume_db": -4.0},
+		"sheathe": {"bus": "SFX", "files": ["SFX/beltHandle1.ogg", "SFX/beltHandle2.ogg"], "volume_db": -4.0},
+		"dash": {"bus": "SFX", "files": ["SFX/cloth1.ogg", "SFX/cloth2.ogg", "SFX/cloth3.ogg", "SFX/cloth4.ogg"], "pitch": 1.2},
+		"cast_healing_palm_windup": {"bus": "SFX", "files": ["SFX/cast_heal_windup.ogg"], "volume_db": -6.0, "jitter": 0.0},
+		"cast_healing_palm_release": {"bus": "SFX", "files": ["SFX/cast_heal_release.ogg"], "volume_db": -4.0, "jitter": 0.0},
+		"cast_fire_strike_windup": {"bus": "SFX", "files": ["SFX/cast_fire_windup.ogg"], "volume_db": -6.0, "jitter": 0.0},
+		"cast_fire_strike_release": {"bus": "SFX", "files": ["SFX/cast_fire_release.ogg"], "volume_db": -3.0, "jitter": 0.0},
+		"cast_electric_strike_windup": {"bus": "SFX", "files": ["SFX/cast_electric_windup.ogg"], "volume_db": -6.0, "jitter": 0.0},
+		"cast_electric_strike_release": {"bus": "SFX", "files": ["SFX/cast_electric_release.ogg"], "volume_db": -4.0, "jitter": 0.0},
+		"cast_interrupt": {"bus": "SFX", "files": ["SFX/cast_interrupt.ogg"], "volume_db": -4.0}
+	},
+	"rooms": {}
+}

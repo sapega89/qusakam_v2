@@ -297,6 +297,7 @@ func begin_cast(definition: SkillDefinition) -> bool:
 	_cast_fx = load(definition.vfx).instantiate()
 	_cast_fx.scale.x = _direction
 	player.add_child(_cast_fx)
+	EventBus.skill_cast_started.emit(definition.id)
 	return true
 
 func _release_cast() -> void:

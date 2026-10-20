@@ -25,12 +25,7 @@ const HIT_HITSTOP := 0.035
 const HEAVY_HITSTOP := 0.07
 const HEAVY_SHAKE := 5.0
 const HEAVY_SHAKE_TIME := 0.15
-## Звуки бою (D217) з CC0-паків Kenney (SampleProject/Assets/Audio/SFX, README там): на кожну подію кілька варіантів, грає випадковий.
-const SFX_SWING := ["res://SampleProject/Assets/Audio/SFX/knifeSlice.ogg", "res://SampleProject/Assets/Audio/SFX/knifeSlice2.ogg"]
-const SFX_WINDUP := ["res://SampleProject/Assets/Audio/SFX/drawKnife1.ogg", "res://SampleProject/Assets/Audio/SFX/drawKnife2.ogg", "res://SampleProject/Assets/Audio/SFX/drawKnife3.ogg"]
-const SFX_HIT := ["res://SampleProject/Assets/Audio/SFX/impactPunch_medium_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_medium_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_medium_002.ogg"]
-const SFX_HEAVY_HIT := ["res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactPunch_heavy_002.ogg"]
-const SFX_HURT := ["res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_000.ogg", "res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_001.ogg", "res://SampleProject/Assets/Audio/SFX/impactSoft_heavy_002.ogg"]
+
 
 func _init() -> void:
 	print("🔧 VFXHooks: _init() called - VFXHooks instance created!")
@@ -52,8 +47,6 @@ func _connect_to_event_bus() -> void:
 	EventBus.player_landed.connect(_on_player_landed)
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
-	EventBus.player_attacked.connect(_on_player_attacked)
-	EventBus.attack_started.connect(_on_attack_started)
 	EventBus.player_parried.connect(_on_guard.bind(true))
 	EventBus.player_blocked.connect(_on_guard.bind(false))
 
@@ -74,21 +67,9 @@ func _on_player_landed(fall_height: float) -> void:
 	dust.emitting = true
 	dust.get_node(^"Left").emitting = true
 
-## Звук замаху (шлейф малює WeaponView — він знає зброю й вид удару, D224).
-func _on_player_attacked(_player: Node, _direction: int) -> void:
-	AudioManager.play_sfx_path(SFX_SWING.pick_random())
-
-
-## Замах ворога чути: половина підказки «зараз ударить» (D215).
-func _on_attack_started(attacker: Node, _target: Node) -> void:
-	if attacker.is_in_group(GameGroups.ENEMIES):
-		AudioManager.play_sfx_path(SFX_WINDUP.pick_random())
-
-
-## Удар по героєві: звук і розтин з боку удару (D268, Sapega 2026-10-21: без спалахів — розтин, завмирання, відкидання).
+## Удар по героєві: розтин з боку удару (D268, Sapega 2026-10-21: без спалахів — розтин, завмирання, відкидання).
 func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
 	if target.is_in_group(GameGroups.PLAYER):
-		AudioManager.play_sfx_path(SFX_HURT.pick_random())
 		# Без джерела (пастка, падіння) — розтин по центру тіла
 		var side: float = 0.0 if source == null else signf(source.global_position.x - target.global_position.x)
 		_spawn_impact(target, side).modulate = HERO_CUT_TINT
@@ -108,20 +89,27 @@ func _spawn_impact(target: Node2D, side: float) -> HitImpact:
 ## Влучання героя у ворога: ефект на краю тіла цілі з боку удару. damage_dealt приходить лише
 ## з реального ушкодження (B60) — промах і удар у невразливого ефекту не дають.
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
-	var by_hero: bool = source.is_in_group(GameGroups.PLAYER)
-	if not ((by_hero or source.is_in_group(&"companions")) and target.is_in_group(GameGroups.ENEMIES)):
+	if not is_hero_side_hit(source, target):
 		return
-	# Важкий — удар із відкиданням: зброя героя (D203) чи компаньйон (D209)
-	var heavy: bool = (source.combat.knockback if by_hero else source.knockback) > 0.0
+	var heavy := is_heavy_hit(source)
 	var impact := _spawn_impact(target, signf(source.global_position.x - target.global_position.x))
-	AudioManager.play_sfx_path((SFX_HEAVY_HIT if heavy else SFX_HIT).pick_random())
 	ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP if heavy else HIT_HITSTOP)
 	if heavy:
 		impact.scale = Vector2.ONE * HEAVY_SCALE
 		_shake_camera(HEAVY_SHAKE, HEAVY_SHAKE_TIME)
 
 
-## Парирування: великі іскри, дзвін металу, завмирання й тремтіння; блок — дрібні іскри й дзвін.
+## Герой чи компаньйон влучив у ворога (ефект і звук влучання — SoundHooks теж питає тут).
+static func is_hero_side_hit(source: Node, target: Node) -> bool:
+	return (source.is_in_group(GameGroups.PLAYER) or source.is_in_group(&"companions")) and target.is_in_group(GameGroups.ENEMIES)
+
+
+## Важкий — удар із відкиданням: зброя героя (D203) чи компаньйон (D209).
+static func is_heavy_hit(source: Node) -> bool:
+	return (source.combat.knockback if source.is_in_group(GameGroups.PLAYER) else source.knockback) > 0.0
+
+
+## Парирування: великі іскри, завмирання й тремтіння; блок — дрібні іскри (дзвін — SoundHooks).
 func _on_guard(attacker: Node2D, parry: bool) -> void:
 	var hero: Node2D = GameGroups.get_player()
 	var spark: CPUParticles2D = PARRY_SPARK_SCENE.instantiate()
@@ -130,9 +118,7 @@ func _on_guard(attacker: Node2D, parry: bool) -> void:
 	spark.global_position = hero.global_position.lerp(attacker.global_position, 0.4)
 	spark.scale = Vector2.ONE * (1.0 if parry else BLOCK_SPARK_SCALE)
 	spark.emitting = true
-	AudioManager.play_sfx_path(SFX_WINDUP.pick_random())
 	if parry:
-		AudioManager.play_sfx_path(SFX_HEAVY_HIT.pick_random())
 		ServiceLocator.get_time_manager().hitstop(HEAVY_HITSTOP)
 		_shake_camera(HEAVY_SHAKE, HEAVY_SHAKE_TIME)
 

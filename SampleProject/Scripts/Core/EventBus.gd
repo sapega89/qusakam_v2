@@ -176,6 +176,9 @@ signal combat_state_changed(in_combat: bool)
 signal player_heavy_windup(player: Node, direction: int)
 @warning_ignore("unused_signal")
 signal skill_interrupted(skill_id: String)
+## Почався замах касту навички (D271) — звук замаху (D276).
+@warning_ignore("unused_signal")
+signal skill_cast_started(skill_id: String)
 
 ## Емітується при завершенні атаки.
 ##

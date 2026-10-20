@@ -1,0 +1,164 @@
+"""Builds the game's sound files from downloaded CC0 packs (BACKLOG 26, audio_plan.md, D275).
+
+Usage (a venv with numpy, scipy, soundfile):
+    python -I build_audio.py <downloads_dir> <repo_dir> <stage> [<stage> ...]
+Stages: combat, world, voices.
+
+<downloads_dir> holds one folder per downloaded archive, unpacked into `x/` (names below, URLs in the
+README of each Assets/Audio/<category>/). Kenney's Impact Sounds and RPG Audio are read from the repo's
+local `assets/kenney_*` copies (not in git). Only the files the game uses are written.
+"""
+
+import shutil
+import sys
+from pathlib import Path
+
+import numpy as np
+import soundfile as sf
+from scipy.signal import butter, resample_poly, sosfilt
+
+SR = 44100
+
+
+def load(path: Path) -> np.ndarray:
+    """Mono float32 at SR."""
+    x, sr = sf.read(str(path), always_2d=True, dtype="float32")
+    x = x.mean(axis=1)
+    if sr != SR:
+        x = resample_poly(x, SR, sr).astype(np.float32)
+    return x
+
+
+def save(x: np.ndarray, path: Path, peak: float = 0.89) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    m = float(np.abs(x).max())
+    assert m > 0.0, f"silent output {path}"
+    sf.write(
+        str(path), (x / m * peak).astype(np.float32), SR, format="OGG", subtype="VORBIS"
+    )
+
+
+def fade(x: np.ndarray, fade_in: float, fade_out: float) -> np.ndarray:
+    x = x.copy()
+    a, b = int(fade_in * SR), int(fade_out * SR)
+    if a:
+        x[:a] *= np.linspace(0.0, 1.0, a)
+    if b:
+        x[-b:] *= np.linspace(1.0, 0.0, b)
+    return x
+
+
+def cut(x: np.ndarray, start: float, length: float) -> np.ndarray:
+    return x[int(start * SR) : int((start + length) * SR)]
+
+
+def pitch(x: np.ndarray, factor: float) -> np.ndarray:
+    """Resample-style pitch shift (also changes length, like a tape)."""
+    up, down = 1000, int(round(1000 * factor))
+    return resample_poly(x, up, down).astype(np.float32)
+
+
+def band(x: np.ndarray, low: float | None, high: float | None) -> np.ndarray:
+    if low and high:
+        sos = butter(4, [low, high], btype="band", fs=SR, output="sos")
+    elif low:
+        sos = butter(4, low, btype="high", fs=SR, output="sos")
+    else:
+        sos = butter(4, high, btype="low", fs=SR, output="sos")
+    return sosfilt(sos, x).astype(np.float32)
+
+
+def reverb(
+    x: np.ndarray, room: float = 0.35, length: float = 1.2, seed: int = 1
+) -> np.ndarray:
+    """Convolution with decaying noise — a cheap hall."""
+    rng = np.random.default_rng(seed)
+    n = int(length * SR)
+    ir = rng.standard_normal(n).astype(np.float32) * np.exp(
+        -np.linspace(0, 7, n)
+    ).astype(np.float32)
+    ir = band(ir, 200, 6000)
+    wet = np.convolve(x, ir)[: len(x) + n]
+    wet /= np.abs(wet).max() + 1e-9
+    dry = np.concatenate([x, np.zeros(n, np.float32)])
+    return dry / (np.abs(dry).max() + 1e-9) * (1 - room) + wet * room
+
+
+def mix(*parts: tuple[np.ndarray, float, float]) -> np.ndarray:
+    """(signal, offset s, gain) → one signal."""
+    end = max(int(o * SR) + len(s) for s, o, _ in parts)
+    out = np.zeros(end, np.float32)
+    for s, o, g in parts:
+        i = int(o * SR)
+        out[i : i + len(s)] += s * g
+    return out
+
+
+def loop(x: np.ndarray, length: float, xfade: float = 1.5) -> np.ndarray:
+    """A seamless loop of `length` s: the tail is cross-faded into the head."""
+    n, f = int(length * SR), int(xfade * SR)
+    assert len(x) >= n + f, "source shorter than the loop"
+    body = x[:n].copy()
+    ramp = np.linspace(0.0, 1.0, f, dtype=np.float32)
+    body[:f] = body[:f] * ramp + x[n : n + f] * (1 - ramp)
+    return body
+
+
+# ── stages ────────────────────────────────────────────────────────────────────
+
+
+def stage_combat(dl: Path, repo: Path) -> None:
+    sfx = repo / "SampleProject/Assets/Audio/SFX"
+    impact = repo / "assets/kenney_impact-sounds/Audio"
+    rpg = repo / "assets/kenney_rpg-audio/Audio"
+    scifi = dl / "dl_kenney_sci-fi-sounds/x/Audio"
+    ui = dl / "dl_kenney_interface-sounds/x/Audio"
+    for name in [
+        "impactMetal_light_000",
+        "impactMetal_light_001",
+        "impactMetal_light_002",
+        "impactBell_heavy_000",
+        "impactBell_heavy_001",
+        "impactPlate_heavy_000",
+        "impactPlate_heavy_001",
+    ]:
+        shutil.copy(impact / f"{name}.ogg", sfx / f"{name}.ogg")
+    for name in ["cloth1", "cloth2", "cloth3", "cloth4", "beltHandle1", "beltHandle2"]:
+        shutil.copy(rpg / f"{name}.ogg", sfx / f"{name}.ogg")
+    # Casts (D271): wind-ups cut to the wind-up length, so the sound ends with the release.
+    save(
+        fade(cut(load(scifi / "forceField_001.ogg"), 0.0, 0.6), 0.15, 0.1),
+        sfx / "cast_heal_windup.ogg",
+    )
+    shutil.copy(ui / "confirmation_002.ogg", sfx / "cast_heal_release.ogg")
+    save(
+        fade(cut(load(scifi / "thrusterFire_003.ogg"), 1.0, 0.35), 0.1, 0.05),
+        sfx / "cast_fire_windup.ogg",
+    )
+    fire = fade(cut(load(scifi / "thrusterFire_001.ogg"), 1.0, 0.45), 0.005, 0.3)
+    boom = fade(
+        cut(load(scifi / "lowFrequency_explosion_000.ogg"), 0.0, 0.6), 0.005, 0.4
+    )
+    save(mix((fire, 0.0, 1.0), (boom, 0.0, 0.6)), sfx / "cast_fire_release.ogg")
+    zaps = [load(scifi / f"laserSmall_00{i}.ogg") for i in range(3)]
+    save(
+        fade(
+            mix((zaps[0], 0.0, 1.0), (zaps[1], 0.16, 0.9), (zaps[2], 0.3, 1.0))[
+                : int(0.5 * SR)
+            ],
+            0.02,
+            0.05,
+        ),
+        sfx / "cast_electric_windup.ogg",
+    )
+    shutil.copy(scifi / "laserLarge_001.ogg", sfx / "cast_electric_release.ogg")
+    shutil.copy(ui / "error_001.ogg", sfx / "cast_interrupt.ogg")
+
+
+STAGES = {"combat": stage_combat}
+
+if __name__ == "__main__":
+    downloads, repo_dir = Path(sys.argv[1]), Path(sys.argv[2])
+    for stage in sys.argv[3:]:
+        STAGES[stage](downloads, repo_dir)
+        print("built", stage)
