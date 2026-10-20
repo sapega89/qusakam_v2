@@ -9,6 +9,8 @@ var animation: String
 
 ## Прозорість спрайта під час перекату — видно, що герой невразливий (D200).
 const ROLL_ALPHA := 0.55
+## D284: пасивки навичок знімають щонайбільше 75 % удару (окремо щит і загальне зниження).
+const MAX_SKILL_REDUCTION := 0.75
 
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
@@ -60,7 +62,7 @@ func _ready() -> void:
 	# Max HP — з GameManager (D205): витривалість, броня, рівень, пасивки
 	Max_Health = ServiceLocator.get_game_manager().calculate_max_health()
 	current_health = Max_Health
-	for changed in [EventBus.equipment_equipped, EventBus.equipment_unequipped, EventBus.skill_unlocked, EventBus.skill_upgraded]:
+	for changed in [EventBus.equipment_equipped, EventBus.equipment_unequipped, EventBus.skill_unlocked, EventBus.skill_upgraded, EventBus.skills_reset]:
 		changed.connect(func(_a = null, _b = null, _c = null) -> void: refresh_max_health())
 
 	# ВАЖНО: Гарантуємо, що event = false при ініціалізації
@@ -425,9 +427,11 @@ func take_damage(damage: int, source: Node = null) -> void:
 func mitigated_damage(damage: int) -> int:
 	var gm := ServiceLocator.get_game_manager()
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
+	var skills: SkillManager = ServiceLocator.get_skill_manager()
 	# Щит працює, лише якщо в руках не дворучна зброя (D267)
 	if gm.player_state.equipment.get("shield") != null and combat.grip != &"two_handed":
-		result *= 1.0 - ServiceLocator.get_skill_manager().passive_value("shield_block")
+		result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("shield_block"))
+	result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("damage_reduction"))  # D284
 	return maxi(1, roundi(result))
 
 

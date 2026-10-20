@@ -34,10 +34,18 @@ enum Result {
 	WRONG_WEAPON,  # D141: навичка вимагає іншої зброї в руках
 	MAX_RANK,  # D150: навичка вже на найвищому рівні
 	BUSY,  # D271: герой зайнятий іншою дією (удар, блок, збій, інший каст)
+	NO_OATH,  # D280: навичка дерева клятви, а клятви ще немає
+	OTHER_OATH,  # D280: навичка іншої клятви
+	UNKNOWN_OATH,
+	OATH_SWORN,  # D280: клятва вже дана — назавжди
+	NOT_ENOUGH_COINS,  # D282: скидання коштує монет
+	NOTHING_TO_RESET,
 }
 
-## D149: очки навичок (JP) за кожен рівень персонажа.
-const JP_PER_LEVEL := 2
+## D260/D279: одне очко навичок (JP) за кожен рівень персонажа (було 2, D149).
+const JP_PER_LEVEL := 1
+## D282: скидання навичок коштує стільки монет за кожен рівень героя.
+const RESPEC_COINS_PER_LEVEL := 10
 ## D150: рівні навички 1..20, кожен понад перший — +10 % ефекту; покращення коштує 1 очко.
 const MAX_RANK := 20
 const RANK_BONUS := 0.10
@@ -102,6 +110,7 @@ func upgrade_skill(skill_id: String) -> Result:
 	ranks[skill_id] = rank
 	state["skill_ranks"] = ranks
 	EventBus.skill_upgraded.emit(skill_id, rank)
+	_announce_max_sp()
 	return Result.OK
 
 
@@ -180,7 +189,7 @@ func _regen_sp(delta: float) -> void:
 	if get_current_sp() >= get_max_sp():
 		_sp_regen_debt = 0.0
 		return
-	_sp_regen_debt += delta * SP_REGEN_PER_SECOND
+	_sp_regen_debt += delta * (SP_REGEN_PER_SECOND + passive_value("sp_regen"))
 	if _sp_regen_debt >= 1.0:
 		restore_sp(int(_sp_regen_debt))
 		_sp_regen_debt -= floorf(_sp_regen_debt)
@@ -241,8 +250,9 @@ func get_current_sp() -> int:
 	return int(_state().get("current_sp", 0))
 
 
+## Базовий запас із player_state + пасивки max_sp (D284).
 func get_max_sp() -> int:
-	return int(_state().get("max_sp", 0))
+	return int(_state().get("max_sp", 0)) + roundi(passive_value("max_sp"))
 
 
 ## Встановлює максимум SP; поточне значення підтягується під нову межу.
@@ -292,6 +302,8 @@ func can_unlock(skill_id: String) -> Result:
 		return Result.ALREADY_UNLOCKED
 
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if definition.oath != "" and definition.oath != get_oath():
+		return Result.NO_OATH if get_oath() == "" else Result.OTHER_OATH
 	if _player_level() < definition.required_level:
 		return Result.LEVEL_TOO_LOW
 	for prerequisite in definition.prerequisites:
@@ -318,11 +330,92 @@ func unlock_skill(skill_id: String) -> Result:
 	state["unlocked_skills"] = unlocked
 
 	EventBus.skill_unlocked.emit(skill_id)
+	_announce_max_sp()
 	# D261: окремого екрана призначення слотів немає — вивчена активна навичка стає на перший вільний слот.
 	var free_slot := _loadout().find("")
 	if definition.is_active() and free_slot != -1:
 		equip_skill(skill_id, free_slot)
 	return Result.OK
+
+
+# ── Клятва і шлях класу (D260, D280) ────────────────────────────────────────
+
+## "" — клятви ще немає.
+func get_oath() -> String:
+	return String(_state().get("oath", ""))
+
+
+func can_swear_oath(oath_id: String) -> Result:
+	if not skill_database.has_oath(oath_id):
+		return Result.UNKNOWN_OATH
+	if get_oath() != "":
+		return Result.OATH_SWORN
+	if _player_level() < int(skill_database.get_oath(oath_id).level):
+		return Result.LEVEL_TOO_LOW
+	return Result.OK
+
+
+## Клятва дається один раз і назавжди (Q66): відкриває дерево клятви.
+func swear_oath(oath_id: String) -> Result:
+	var verdict := can_swear_oath(oath_id)
+	if verdict != Result.OK:
+		return verdict
+	_state()["oath"] = oath_id
+	EventBus.oath_sworn.emit(oath_id)
+	return Result.OK
+
+
+## Holy Warrior до клятви, потім назва клятви. Підклас (40) і престиж (70) — ще не збудовані (skill_trees_plan).
+func class_title() -> String:
+	if get_oath() == "":
+		return skill_database.class_name_trunk
+	return String(skill_database.get_oath(get_oath()).name)
+
+
+# ── Скидання навичок (D282) ─────────────────────────────────────────────────
+
+## Скільки очок вкладено: вартості вивчених навичок + покращення понад перший рівень.
+func spent_points() -> int:
+	var total := 0
+	for skill_id in get_unlocked_skills():
+		total += skill_database.get_skill(skill_id).jp_cost + (get_rank(skill_id) - 1) * UPGRADE_COST
+	return total
+
+
+func respec_price() -> int:
+	return RESPEC_COINS_PER_LEVEL * _player_level()
+
+
+func can_respec() -> Result:
+	if get_unlocked_skills().is_empty():
+		return Result.NOTHING_TO_RESET
+	if ServiceLocator.get_inventory_manager().get_coins() < respec_price():
+		return Result.NOT_ENOUGH_COINS
+	return Result.OK
+
+
+## Забуває все, повертає всі очки, спорожнює хотбар; клятва лишається.
+func respec() -> Result:
+	var verdict := can_respec()
+	if verdict != Result.OK:
+		return verdict
+	ServiceLocator.get_inventory_manager().spend_coins(respec_price())
+	var refund := spent_points()
+	var state := _state()
+	state["unlocked_skills"] = []
+	state["skill_ranks"] = {}
+	_commit_loadout(["", "", "", ""])
+	_cooldowns.clear()
+	add_job_points(refund)
+	_set_current_sp(get_current_sp())
+	EventBus.skills_reset.emit(refund)
+	_announce_max_sp()
+	return Result.OK
+
+
+## Пасивка max_sp змінює межу — HUD дізнається через той самий sp_changed.
+func _announce_max_sp() -> void:
+	EventBus.sp_changed.emit(get_current_sp(), get_max_sp())
 
 
 # ── Бойовий лоадаут ─────────────────────────────────────────────────────────
@@ -511,7 +604,8 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 				combat_executor.execute(definition, effect_source, next, roundi(amount * definition.chain_ratio))
 	if definition.heal > 0:
 		var patient: Node = target if target != null else SkillTargeting.heal_target(effect_source)
-		if not combat_executor.heal(definition, patient, scaled(skill_id, definition.heal)):
+		var heal_amount := roundi(scaled(skill_id, definition.heal) * (1.0 + passive_value("heal_power")))
+		if not combat_executor.heal(definition, patient, heal_amount):
 			return _fail(skill_id, Result.EFFECT_FAILED)
 
 	if definition.sp_cost > 0:

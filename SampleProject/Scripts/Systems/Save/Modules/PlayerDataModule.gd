@@ -50,6 +50,7 @@ func save() -> Dictionary:
 	data["job_points"] = player_state.get("job_points", 0)
 	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
 	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
+	data["oath"] = player_state.oath  # D280
 	data["current_sp"] = player_state.get("current_sp", 0)
 	data["max_sp"] = player_state.get("max_sp", 0)
 
@@ -125,6 +126,7 @@ func load_data(data: Dictionary) -> void:
 			loadout.append(String(entry))
 		player_state.equipped_skills = loadout
 	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
+	player_state.oath = String(data.get("oath", ""))  # D280: сейв без клятви — клятви немає
 	player_state.max_sp = int(data.get("max_sp", player_state.get("max_sp", 0)))
 	player_state.current_sp = clampi(
 		int(data.get("current_sp", player_state.get("current_sp", 0))), 0, player_state.max_sp)

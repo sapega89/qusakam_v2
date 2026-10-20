@@ -19,6 +19,7 @@ var player_state = {
 	"job_points": 0,
 	"equipped_skills": ["", "", "", ""],
 	"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
+	"oath": "",  # D280: клятва героя ("" / paladin / dark_knight / warden), назавжди
 	"current_sp": 30,  # D146: тимчасовий запас SP
 	"max_sp": 30,
 	"game_time": 0.0,
@@ -109,6 +110,7 @@ func reset_player_state():
 		"job_points": 0,
 		"equipped_skills": ["", "", "", ""],
 		"skill_ranks": {},  # D150
+		"oath": "",  # D280
 		"current_sp": 30,  # D146
 		"max_sp": 30,
 		"game_time": 0.0,

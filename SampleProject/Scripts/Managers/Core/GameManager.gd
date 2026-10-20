@@ -206,7 +206,7 @@ func calculate_physical_damage() -> int:
 	var attributes := _active_attributes()
 	if not attributes:
 		return 0
-	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + ServiceLocator.get_xp_manager().get_damage_bonus()
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + ServiceLocator.get_xp_manager().get_damage_bonus() 			+ roundi(ServiceLocator.get_skill_manager().passive_value("attack"))  # D284
 
 
 func calculate_magic_damage() -> int:

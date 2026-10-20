@@ -16,6 +16,8 @@ var description: String = ""
 ## Порожній рядок = навичка доступна будь-якому класу.
 var class_id: String = ""
 var subclass_id: String = ""
+## Дерево (D279): "" — стовбур Holy Warrior, інакше id клятви з skills.json → oaths (D280).
+var oath: String = ""
 
 var skill_type: Type = Type.ACTIVE
 
@@ -75,6 +77,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.description = String(data.get("description", ""))
 	definition.class_id = String(data.get("class_id", ""))
 	definition.subclass_id = String(data.get("subclass_id", ""))
+	definition.oath = String(data.get("oath", ""))
 	definition.skill_type = type_from_string(String(data.get("skill_type", "active")))
 
 	# Від'ємні витрати/рівні — некоректні дані, а не «безкоштовна» навичка.
@@ -133,6 +136,7 @@ func to_dict() -> Dictionary:
 		"description": description,
 		"class_id": class_id,
 		"subclass_id": subclass_id,
+		"oath": oath,
 		"skill_type": "active" if is_active() else "passive",
 		"jp_cost": jp_cost,
 		"required_level": required_level,

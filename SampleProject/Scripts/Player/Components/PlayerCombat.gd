@@ -125,8 +125,12 @@ func _hitbox_shape() -> RectangleShape2D:
 
 ## Влучання: відкидання і стійкість ворога (D265).
 ## Стійкість — першою: її збій штовхає ворога на 30 px, а відкидання удару (булава, фінішер, важкий) — далі й перекриває.
-func _on_damage_applied(target: Node, _damage: int) -> void:
-	target.take_poise(_poise, player.global_position.x)
+func _on_damage_applied(target: Node, damage: int) -> void:
+	var skills: SkillManager = ServiceLocator.get_skill_manager()
+	target.take_poise(roundi(_poise * (1.0 + skills.passive_value("poise"))), player.global_position.x)  # D284
+	var drained := roundi(damage * skills.passive_value("lifesteal"))  # D284: Blood Pact
+	if drained > 0:
+		player.heal_damage(drained)
 	if knockback > 0.0:
 		target.knockback(signf(target.global_position.x - player.global_position.x) * knockback)
 

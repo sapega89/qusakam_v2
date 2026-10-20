@@ -219,6 +219,10 @@ signal attack_finished(attacker: Node)
 signal skill_unlocked(skill_id: String)
 ## Навичку покращено до рівня rank (D150).
 signal skill_upgraded(skill_id: String, rank: int)
+## Герой присягнув клятві (D280): "paladin" / "dark_knight" / "warden". Назавжди.
+signal oath_sworn(oath_id: String)
+## Навички скинуто за монети (D282): усе забуто, refunded очок повернуто, клятва лишилась.
+signal skills_reset(refunded: int)
 
 ## Активный навык успешно применён: проверки пройдены, SP списан,
 ## боевой эффект выполнен, перезарядка запущена. Ошибочные попытки сюда НЕ попадают.

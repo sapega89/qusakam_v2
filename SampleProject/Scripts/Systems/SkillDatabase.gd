@@ -16,6 +16,10 @@ var skills_by_class: Dictionary = {}
 ## "active"/"passive" -> [id]
 var skills_by_type: Dictionary = {}
 
+## Шлях класу (D260, D279): назва стовбура і клятви — oath_id -> {name, tree, level, keeper, subclasses, prestige}.
+var class_name_trunk: String = ""
+var oaths: Dictionary = {}
+
 ## Записи, які не пройшли валідацію (для діагностики й тестів).
 var rejected: Array[String] = []
 
@@ -44,6 +48,8 @@ func load_skills() -> void:
 	file.close()
 
 	var data = json.data
+	class_name_trunk = String(data.get("class", {}).get("name", ""))
+	oaths = data.get("oaths", {})
 	var entries = data.get("skills", []) if data is Dictionary else []
 	load_from_array(entries)
 	print("✅ SkillDatabase: Loaded %d skills (%d rejected)" % [skills.size(), rejected.size()])
@@ -80,6 +86,14 @@ func _index(definition: SkillDefinition) -> void:
 	skills_by_class.get_or_add(class_key, []).append(definition.id)
 	var type_key := "active" if definition.is_active() else "passive"
 	skills_by_type.get_or_add(type_key, []).append(definition.id)
+
+
+func has_oath(oath_id: String) -> bool:
+	return oaths.has(oath_id)
+
+
+func get_oath(oath_id: String) -> Dictionary:
+	return oaths.get(oath_id, {})
 
 
 func has_skill(skill_id: String) -> bool:

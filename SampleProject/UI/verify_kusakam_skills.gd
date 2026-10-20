@@ -116,9 +116,9 @@ func _initialize() -> void:
 	while xp.get_level() < 6:
 		xp.add_xp(1000)
 	var gained: int = xp.get_level() - level_before
-	ck(sm.get_job_points() - jp_before == 2 * gained, "2 skill points per level (%d for %d levels)" % [sm.get_job_points() - jp_before, gained])
+	ck(sm.get_job_points() - jp_before == gained, "1 skill point per level, D279 (%d for %d levels)" % [sm.get_job_points() - jp_before, gained])
 	ck(sm.unlock_skill("fire_strike") == R.OK and sm.unlock_skill("electric_strike") == R.OK, "both strikes learned at level 6")
-	ck(sm.get_job_points() - jp_before == 2 * gained - 2, "1 point each")
+	ck(sm.get_job_points() - jp_before == gained - 2, "1 point each")
 
 	print("[3] Healing Palm: an ally next to you, else yourself (D142)")
 	player.take_damage(40)
