@@ -131,6 +131,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     is the desert, the sky must be overhead (collision change: the ceiling band goes); add gate art — beautiful city
     gates with guards (generated); a cutscene when Kusakam approaches: bandits attack the gates (then the existing guard
     assist fight, D209).
+19. **A living world** (Sapega 2026-10-20): idle animations on decor (banners and cloth sway, grass and palm fronds
+    move, lamps and crystals flicker, dust drifts…) and clouds that drift on their own and with parallax as the hero
+    moves (Canyon HighClouds/gen_clouds and the other rooms' sky planes).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
