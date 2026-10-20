@@ -213,8 +213,8 @@ spread = 180.0
 gravity = Vector2(0, 0)
 initial_velocity_min = 60.0
 initial_velocity_max = 140.0
-scale_amount_min = 1.5
-scale_amount_max = 2.5
+scale_amount_min = 2.0
+scale_amount_max = 3.5
 color_ramp = SubResource("Grad_spark")
 
 [node name="Arc" type="Line2D" parent="."]

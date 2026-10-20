@@ -34,7 +34,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.6),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(0.4, 0.4), Vector2(1.3, 1.3)]
+"values": [Vector2(0.6, 0.6), Vector2(2, 2)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -46,7 +46,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.6),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Color(0.55, 1, 0.5, 0.2), Color(0.55, 1, 0.5, 0.95)]
+"values": [Color(0.55, 1, 0.5, 0.2), Color(0.55, 1, 0.5, 0.8)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -98,7 +98,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.35),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(1.3, 1.3), Vector2(3, 3)]
+"values": [Vector2(2, 2), Vector2(4, 4)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -110,7 +110,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.35),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Color(0.7, 1, 0.6, 1), Color(0.7, 1, 0.6, 0)]
+"values": [Color(0.7, 1, 0.6, 0.85), Color(0.7, 1, 0.6, 0)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -149,7 +149,6 @@ script = ExtResource("fx")
 metadata/_doc = "Healing Palm cast (D271)"
 
 [node name="Glow" type="Sprite2D" parent="."]
-material = SubResource("Mat_add")
 position = Vector2(9, 0)
 modulate = Color(0.55, 1, 0.5, 0)
 scale = Vector2(0.4, 0.4)
@@ -158,22 +157,22 @@ texture = SubResource("Tex_glow")
 [node name="Gather" type="CPUParticles2D" parent="."]
 position = Vector2(9, 0)
 emitting = false
-amount = 14
+amount = 22
 lifetime = 0.45
 emission_shape = 1
-emission_sphere_radius = 26.0
+emission_sphere_radius = 34.0
 gravity = Vector2(0, 0)
-radial_accel_min = -140.0
-radial_accel_max = -100.0
-scale_amount_min = 2.0
-scale_amount_max = 3.0
+radial_accel_min = -180.0
+radial_accel_max = -130.0
+scale_amount_min = 3.0
+scale_amount_max = 4.0
 color_ramp = SubResource("Grad_mote")
 
 [node name="Burst" type="CPUParticles2D" parent="."]
 position = Vector2(30, 0)
 emitting = false
-amount = 22
-lifetime = 0.4
+amount = 30
+lifetime = 0.5
 one_shot = true
 explosiveness = 1.0
 spread = 180.0
@@ -182,24 +181,24 @@ initial_velocity_min = 70.0
 initial_velocity_max = 130.0
 damping_min = 160.0
 damping_max = 220.0
-scale_amount_min = 2.5
-scale_amount_max = 4.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
 color_ramp = SubResource("Grad_mote")
 
 [node name="Rise" type="CPUParticles2D" parent="."]
 position = Vector2(0, 12)
 emitting = false
-amount = 18
-lifetime = 0.7
+amount = 26
+lifetime = 0.8
 emission_shape = 3
-emission_rect_extents = Vector2(20, 24)
+emission_rect_extents = Vector2(24, 30)
 direction = Vector2(0, -1)
 spread = 10.0
 gravity = Vector2(0, -30)
 initial_velocity_min = 20.0
-initial_velocity_max = 45.0
-scale_amount_min = 2.0
-scale_amount_max = 3.0
+initial_velocity_max = 50.0
+scale_amount_min = 3.0
+scale_amount_max = 4.0
 color_ramp = SubResource("Grad_mote")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
