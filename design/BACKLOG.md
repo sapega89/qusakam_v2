@@ -148,7 +148,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Resources/Data/skills.json) gets a hero pose/cast animation and its effect, not just a number change.
     A cast can be **interrupted** (a hit during the wind-up staggers the hero): the skill's effect does not happen, but
     its cooldown starts anyway and the SP is spent (D259). Goes with the stagger system of item 4.
-22. **Three skill trees: Light, Dark, Neutral** — plan: [[skill_trees_plan]] (D279–D285, agent calls). Resume: the first open slice in the plan (Sapega 2026-10-20 «у кусакама має бути три гілки навичок — темні,
+22. ~~**Three skill trees: Light, Dark, Neutral**~~ — **done 2026-10-21 (D279–D285, [[skill_trees_plan]]):** Holy Warrior trunk + Paladin / Dark Knight / Warden of Balance trees (8 skills each to level 20, later tiers outlined), one point per level, level cap 99, the oath sworn in the City before Sister Ilvane (priest), Morrow (witch) or Kesh (sand dervish) — permanent; respec at any of them for 10 coins × level; Skills screen tabs, double click learns (B77). Left: subclass (40) and prestige (70), own cast art for the new actives, the NPCs drawn over the hero (as item 14's blacksmith). Was (Sapega 2026-10-20 «у кусакама має бути три гілки навичок — темні,
     світлі і нейтральні; все це можна взяти з навичок чемпіона або паладина з D&D і з Pathfinder, тільки переробити під
     нашу гру, як це роблять в інших іграх»). Today: 5 skills in Resources/Data/skills.json, no branches
     ([[skills_system_plan]], [[skills_combat_plan]], [[skills_ui_mapping]]). Source material: PF2e Champion (ORC

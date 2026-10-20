@@ -102,6 +102,12 @@ These are baseline noise. A later slice is only responsible for **new** entries.
 
 Known issues 1, 3, 4, 5 and 6 are unchanged.
 
+## Full run — 2026-10-21, after BACKLOG 22 skill trees (D279–D285)
+
+`Scripts/Tools/run_verify.sh`: SUITE ALL PASS. New: `verify_skill_trees` (data, points, oath, passives, save, respec,
+cap 99), `verify_skill_trees_ui` (tabs by mouse and pad, double click learns — B77), `verify_oath` (the City keepers by
+pad and key). `verify_kusakam_skills` now expects one point per level (D279), `verify_skills_ui` fixtures use `oath`.
+
 ## Full run — 2026-10-21, after BACKLOG 26 audio (D274–D278)
 
 `Scripts/Tools/run_verify.sh`: 51 / 55 PASS; the 4 FAILs were this pass's own regressions and are fixed, each re-run

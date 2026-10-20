@@ -33,6 +33,7 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
 4 + 15 souls-lite combat and sheathed weapons with a swing per weapon type (D264–D270, [[souls_combat_plan]]).
 21 a cast animation and effect per skill, interruptible (D271, D272).
 26 audio: buses, every combat / world event, ambience, babble, greetings, boss and companion voices (D274–D278, [[audio_plan]] — listening checklist there).
+22 class path and three skill trees: Holy Warrior → oath at 5 (Paladin / Dark Knight / Warden of Balance) in the City, respec for coins, cap 99 (D279–D285, [[skill_trees_plan]]).
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
@@ -47,7 +48,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 3b | ~~**26** audio: world sound, every swing/hit/miss, grunts, voiced bosses, dialogue babble for every character~~ — done (D274–D278, [[audio_plan]]); left: boss cutscene lines with 16/17, rumble with 24 | |
 | 3a | ~~**15 fix** out of combat the weapon vanishes entirely, not on the back (Sapega 2026-10-21)~~ — done (D268 amended) |
 | 3a' | ~~**4 fix** swing and hit effects too small — bigger, sharper slash arcs matching the hitbox; on hit a cut streak + small sparks in the hit direction, NO flashes or bursts — hack'n'slash; anime-style effect sprites generated with ComfyUI (D239) for swings, hits and skills (Sapega 2026-10-21)~~ — done (D268 amended, D273: generated anime crescents ×1.3, a cut streak + shards on a hit instead of a burst, no flashes, hitboxes = drawn reach) |
-| 4 | **22** class path and three skill trees (D260; oath in the City: priest / witch / sand dervish NPCs) | plan first: `design/skill_trees_plan.md` |
+| 4 | ~~**22** class path and three skill trees~~ — done (D279–D285, [[skill_trees_plan]]); left: subclass at 40 / prestige at 70 (outlined), own cast art for the 18 new actives (they reuse the D271 poses with tinted effects), oath keepers drawn over the hero (fix with item 14's blacksmith) | |
 | 5 | **9–13** Game Menu (+ **B77** double click learns a skill): inventory actions, party of one, equipment slot picker, hints as tutorial windows with an off switch, Journal quests / characters / bestiary | UI batch |
 | 6 | **14** blacksmith and merchant buildings + arrival cutscene with a task (also the blacksmith drawn in front of the hero) | |
 | 7 | **5** NPC idle activities | generated frames |
@@ -59,8 +60,8 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 ## Open
 
 - Q64 — the prisoner's shout before the fire djinn (default: an incantation in an invented language).
-- Q66 — respec rules and class-stage names (defaults in D260).
-- Agent-made calls Sapega has not confirmed: D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects) (combat values, the "freeze" read as a
+- Q66 — respec rules and class-stage names: defaults applied as D280–D282 (oath permanent, respec 10 coins × level, names drafts).
+- Agent-made calls Sapega has not confirmed: D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects), D279–D285 (skill trees, the oath and its keepers, respec price, passive stats, level cap; draft `.dqd` lines `City_Oath_*`) (combat values, the "freeze" read as a
   mechanic, no stamina, bindings R-click/R/pad B heavy and Ctrl/middle mouse/pad LB block registered in code); the gate guard's draft line; text speed 24 letters/s and no Skip.
 - Known leftovers: cutscenes have no skip and keep the HUD; camera/walk cutscene code is inline in room scripts (pull into
   shared helpers with the next cutscene); 12 `.dqd` files tag the speaker in the text instead of the speaker field; the

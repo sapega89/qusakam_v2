@@ -1,13 +1,13 @@
 ---
 type: plan
-status: active
+status: done
 tags: [skills, class-path, feedback]
 figma: "menu-skills 58:453"
 ---
 
 # Skill trees and the class path — plan (BACKLOG 22)
 
-**Planned 2026-10-21.** Sapega's frame is D260 (level cap 99, one point per level, every skill gated by level, Holy
+**Built 2026-10-21** (slices 1–5; tests `verify_skill_trees`, `verify_skill_trees_ui`, `verify_oath`; captures `fb22_*.png` in the session scratchpad, made by `capture_skill_trees.gd`). Left: see *Out of scope*. Sapega's frame is D260 (level cap 99, one point per level, every skill gated by level, Holy
 Warrior → oath at 5 → subclass at 40 → prestige at 70, the oath sworn in the City before a priest / a witch / a sand
 dervish). Q66's defaults apply (points reset for a price, the oath is permanent, names are drafts). Every call this
 plan makes is an **agent call, Sapega to confirm**: D279–D285.
@@ -175,5 +175,8 @@ is automatic. Both wait for a world that reaches level 40 (BACKLOG 23).
 
 ## Out of scope for this pass
 
+Left after the build: the oath keepers stand in front of the hero (z-index, as the Blacksmith — item 14);
+the tinted effects only darken the originals (modulate cannot shift hue) — Searing Hex reads dark red, Balanced
+Strike close to Fire Strike; the Skills right column scrolls (8 rows + tabs), its scrollbar touches NEXT SKILL COST.
 Subclass (40) and prestige (70) content and choice (outline above); new cast poses or effects per new skill (reuse,
 D271/D273 — listed as left); balance (numbers are mock, as D150); a respec without an NPC; Status screen showing the oath.
