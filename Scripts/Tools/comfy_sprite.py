@@ -88,7 +88,9 @@ CAT_RUN = (
     "in the same side view facing right, the same small size, running fast: %s; strict profile, its head in profile "
     "looking ahead to the right, not at the viewer"
 )
-CAT_SWIPE = "in the same side view facing right, the same small size, its head in profile: %s"
+CAT_SWIPE = (
+    "in the same side view facing right, the same small size, its head in profile: %s"
+)
 BASE_ALISIA = (
     "Replace the character in picture 1 with the woman from picture 2 — "
     + ALISIA_LOOK
@@ -243,12 +245,14 @@ CHARACTERS = {
             ("idle", [URIZEN_FRONT] * 3 + ["BOB:45:idle:0"] * 3),
             (
                 "enter",
-                ([URIZEN_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
-                + [None]
-                + [STEP_B] * 2
-                + [None]
-            )
-            * 2,
+                (
+                    [URIZEN_STEP % ("left", "right")]
+                    * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                    + [None]
+                    + [STEP_B] * 2
+                    + [None]
+                )
+                * 2,
             ),
             (
                 "strike",
@@ -281,21 +285,25 @@ CHARACTERS = {
             ("idle", [ASTRIT_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
             (
                 "enter",
-                ([ASTRIT_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
-                + [None]
-                + [STEP_B] * 2
-                + [None]
-            )
-            * 2,
+                (
+                    [ASTRIT_STEP % ("left", "right")]
+                    * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                    + [None]
+                    + [STEP_B] * 2
+                    + [None]
+                )
+                * 2,
             ),
             (
                 "run",
-                ([ASTRIT_STEP % ("left", "right")] * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
-                + [None]
-                + [STEP_B] * 2
-                + [None]
-            )
-            * 2,
+                (
+                    [ASTRIT_STEP % ("left", "right")]
+                    * 2  # A,A,N,B,B,N ×2: стоп-кадр між кроками
+                    + [None]
+                    + [STEP_B] * 2
+                    + [None]
+                )
+                * 2,
             ),
             (
                 "strike",
@@ -323,12 +331,7 @@ CHARACTERS = {
             ("idle", [ALISIA_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
             (
                 "enter",
-                (
-                    [ALISIA_STEP % ("left", "right")] * 2
-                    + [None]
-                    + [STEP_B] * 2
-                    + [None]
-                )
+                ([ALISIA_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
                 * 2,
             ),
             # кішку посилає на кадрі 4 (strike_frame) — тятива щойно відпущена
@@ -364,10 +367,14 @@ CHARACTERS = {
                 "strike",
                 # замах / удар витягнутою лапою (кадри 1–2, по ньому б'є pet_swipe_frame) / повернення
                 [
-                    CAT_SWIPE % "winding up, crouched on its hind legs, one front paw drawn back with claws out",
-                    CAT_SWIPE % "swiping forward, one front paw fully extended straight ahead with claws out",
-                    CAT_SWIPE % "swiping forward, one front paw fully extended straight ahead with claws out",
-                    CAT_SWIPE % "recovering, the paw coming back down, standing on all four paws",
+                    CAT_SWIPE
+                    % "winding up, crouched on its hind legs, one front paw drawn back with claws out",
+                    CAT_SWIPE
+                    % "swiping forward, one front paw fully extended straight ahead with claws out",
+                    CAT_SWIPE
+                    % "swiping forward, one front paw fully extended straight ahead with claws out",
+                    CAT_SWIPE
+                    % "recovering, the paw coming back down, standing on all four paws",
                 ],
             ),
         ],
@@ -381,7 +388,7 @@ CHARACTERS = {
         base=None,
         who="the same small lizard knight with the steel armour, dark red cape and tail",
         rows=[
-            ("Idle", [None, "BOB:44"])
+            ("Idle", [None, "BOB:44", "BOB:30"])  # BOB:30 — лише голова, проміжний кадр вдиху (feedback 20)
         ],  # модель розвертала героя й домальовувала хмарку подиху
     ),
     "hero_air": dict(
@@ -449,6 +456,43 @@ CHARACTERS = {
                     "the same climbing pose seen from behind, but the other leg lifted and the arms one rung lower",
                 ],
             )
+        ],
+    ),
+    # Плавніший стрибок (BACKLOG feedback 20): вершина стрибка, другий кадр падіння (плащ тріпоче), приземлення.
+    # Старі кадри — FILE, щоб їх не перегенерувати.
+    "hero_smooth": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=12,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "Jump",
+                [
+                    "FILE:SampleProject/Sprites/Player/Jump/1.png",
+                    "FILE:SampleProject/Sprites/Player/Jump/2.png",
+                    "in the same side view facing right: at the very top of his jump, floating, both knees tucked up, "
+                    "arms slightly spread, the cape floating out level behind him",
+                ],
+            ),
+            (
+                "Fall",
+                [
+                    "FILE:SampleProject/Sprites/Player/Fall/1.png",
+                    "in the same side view facing right: falling down, legs dangling, arms raised above his head, "
+                    "the cape fluttering up above him",
+                ],
+            ),
+            (
+                "Land",
+                [
+                    # з трьох кандидатів (низький присід / рука в землю / присід з нахилом) узято останній
+                    "in the same side view facing right: absorbing the impact of a landing, squatting low with knees "
+                    "bent wide and torso leaning forward, both arms hanging down in front, the cape falling down behind him",
+                ],
+            ),
         ],
     ),
     # Медитація на вершині скелі в каньйоні (Sapega 2026-10-20, BACKLOG feedback 8): сидить, дихає (BOB).
@@ -785,7 +829,9 @@ if __name__ == "__main__":
                     axis=2
                 )
             ]
-            if char.get("palette") != "hero":  # кадри героя — тільки кольори художника, без змін
+            if (
+                char.get("palette") != "hero"
+            ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floor - feet_row(op)

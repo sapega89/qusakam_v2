@@ -146,10 +146,20 @@ func _physics_process(delta: float) -> void:
 
 	# Переключаем анимацию, если она изменилась (з затримкою для плавності)
 	if new_animation != animation and animation_change_cooldown <= 0:
+		var previous_animation: String = animation
 		animation = new_animation
 		animation_change_cooldown = 0.05  # Невелика затримка для плавності
 		# Використовуємо плавне переключення анімацій
-		if $AnimationPlayer.current_animation != new_animation:
+		# Перехідні кадри (feedback 20): вершина стрибка перед падінням, присід після приземлення
+		var lead_in: StringName = &""
+		if new_animation == &"Fall" and previous_animation == &"Jump":
+			lead_in = &"Apex"
+		elif previous_animation == &"Fall" and new_animation == &"Idle":
+			lead_in = &"Land"
+		if lead_in != &"":
+			$AnimationPlayer.play(lead_in)
+			$AnimationPlayer.queue(new_animation)
+		elif $AnimationPlayer.current_animation != new_animation:
 			$AnimationPlayer.play(new_animation)
 
 	_update_facing()

@@ -10,6 +10,9 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | Folder | Animation in `Player.tscn` | How |
 |---|---|---|
 | `Idle/2.png` | Idle (with `Walk/1`) | the artist's frame, head and torso one pixel lower — breathing |
+| `Idle/3.png` | Idle (between `Walk/1` and `Idle/2`) | the artist's frame, only the head one pixel lower (`BOB:30`, D262) |
+| `Jump/3.png`, `Fall/2.png` | Apex (top of the jump → tipping into the fall) | generated (`hero_smooth`, D262) |
+| `Land/1.png` | Land (after a fall, standing still) | generated: a deep landing squat (`hero_smooth`, D262) |
 | `Jump/1–2.png` | Jump | generated: the crouch before the take-off, rising in side view |
 | `Fall/1.png` | Fall | generated: arms up, cape up |
 | `Roll/1–6.png` | Roll | generated duck and curled ball; the ball turned 90°/180°/270°; the exit is `Jump/1` |

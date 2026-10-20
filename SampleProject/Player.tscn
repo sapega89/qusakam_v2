@@ -17,7 +17,11 @@
 [ext_resource type="Texture2D" uid="uid://6xj07xg7xf8m" path="res://SampleProject/Sprites/Player/Walk/2.png" id="w2"]
 [ext_resource type="Texture2D" uid="uid://byxjr7qv6ksoe" path="res://SampleProject/Sprites/Player/Walk/3.png" id="w3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Idle/2.png" id="idle2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Idle/3.png" id="idle3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Jump/1.png" id="jump1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Jump/3.png" id="jump3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Fall/2.png" id="fall2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Land/1.png" id="land1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Jump/2.png" id="jump2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Fall/1.png" id="fall1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/1.png" id="roll1"]
@@ -69,7 +73,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "Idle"
-length = 1.2
+length = 1.3
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -78,10 +82,10 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.6),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.5, 0.65, 1.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [ExtResource("w1"), ExtResource("idle2")]
+"values": [ExtResource("w1"), ExtResource("idle3"), ExtResource("idle2"), ExtResource("idle3")]
 }
 
 [sub_resource type="Animation" id="Animation_jump"]
@@ -94,7 +98,7 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.07),
+"times": PackedFloat32Array(0, 0.06),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [ExtResource("jump1"), ExtResource("jump2")]
@@ -199,13 +203,47 @@ tracks/0/keys = {
 "values": [ExtResource("meditate1"), ExtResource("meditate2")]
 }
 
+[sub_resource type="Animation" id="Animation_apex"]
+resource_name = "Apex"
+length = 0.18
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("jump3"), ExtResource("fall2")]
+}
+
+[sub_resource type="Animation" id="Animation_land"]
+resource_name = "Land"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("land1")]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
 _data = {
+&"Apex": SubResource("Animation_apex"),
 &"Attack": SubResource("Animation_attack"),
 &"Climb": SubResource("Animation_climb"),
 &"Fall": SubResource("Animation_fall"),
 &"Idle": SubResource("Animation_idle"),
 &"Jump": SubResource("Animation_jump"),
+&"Land": SubResource("Animation_land"),
 &"Meditate": SubResource("Animation_meditate"),
 &"RESET": SubResource("Animation_reset"),
 &"Roll": SubResource("Animation_roll"),

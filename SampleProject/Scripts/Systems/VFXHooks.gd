@@ -2,7 +2,7 @@ extends Node
 class_name VFXHooks
 
 ## Minimal VFX hooks for MVP:
-## - Dust puff on landing (MapleStory-ish placeholder)
+## - Dust puff on landing (LandingDust.tscn)
 ## - Slash pop on hit (placeholder)
 
 @export var enabled: bool = true
@@ -10,7 +10,7 @@ class_name VFXHooks
 var landing_cooldown: float = 0.0
 const LANDING_COOLDOWN_TIME: float = 0.5  # Минимальное время между эффектами приземления
 const MIN_FALL_HEIGHT: float = 20.0  # Минимальная высота падения для показа эффекта (в пикселях)
-const MAX_FALL_HEIGHT: float = 200.0  # Высота падения для максимального эффекта (в пикселях)
+const LANDING_DUST_SCENE := preload("res://SampleProject/Scenes/FX/LandingDust.tscn")
 
 ## Бойові ефекти (6a): ефект влучання в точці контакту, спалах ушкодження (шлейф замаху — WeaponView, D224).
 ## Кожне влучання — коротке завмирання (D224); важкий удар (відкидання, D203) — довше, більший ефект і тремтіння камери.
@@ -59,34 +59,16 @@ func _connect_to_event_bus() -> void:
 ## ============================================
 
 func _on_player_landed(fall_height: float) -> void:
-	print("✨ VFXHooks: Player landed signal received! Fall height = ", fall_height, " pixels")
-
-	# Проверяем кулдаун, чтобы не создавать эффекты слишком часто
-	if landing_cooldown > 0:
-		print("⚠️ VFXHooks: Cooldown active (", landing_cooldown, "), skipping effect")
+	if landing_cooldown > 0 or fall_height < MIN_FALL_HEIGHT:
 		return
-
-	# Игнорируем очень маленькие падения
-	if fall_height < MIN_FALL_HEIGHT:
-		print("⚠️ VFXHooks: Fall height too small (", fall_height, " < ", MIN_FALL_HEIGHT, "), skipping effect")
-		return
-
-	print("✅ VFXHooks: Creating dust effect for fall height = ", fall_height, " pixels")
 	landing_cooldown = LANDING_COOLDOWN_TIME
-
-	var player = GameGroups.get_player()
-	if not player or not is_instance_valid(player):
-		return
-
-	# Получаем позицию игрока в глобальных координатах
-	var dust_pos: Vector2
-	if player is Node2D:
-		dust_pos = player.global_position + Vector2(0, 15)  # Немного ниже ног
-	else:
-		return
-
-	# Создаем эффект с учетом высоты падения
-	_spawn_dust(dust_pos, fall_height)
+	# Пил під ногами (feedback 20, Ender Lilies): кілька дрібних клаптів в обидва боки, ~0.3 с, розмітка — LandingDust.tscn
+	var dust: CPUParticles2D = LANDING_DUST_SCENE.instantiate()
+	dust.finished.connect(dust.queue_free)
+	get_tree().current_scene.add_child(dust)
+	dust.global_position += GameGroups.get_player().global_position  # зсув до ніг — у сцені
+	dust.emitting = true
+	dust.get_node(^"Left").emitting = true
 
 ## Звук замаху (шлейф малює WeaponView — він знає зброю й вид удару, D224).
 func _on_player_attacked(_player: Node, _direction: int) -> void:
@@ -139,115 +121,6 @@ func _shake_camera(strength: float, duration: float) -> void:
 		tween.tween_property(camera, ^"offset", Vector2(randf_range(-1, 1), randf_range(-1, 1)) * strength * fade, duration / steps)
 	tween.tween_property(camera, ^"offset", Vector2.ZERO, duration / steps)
 
-
-func _spawn_dust(pos: Vector2, fall_height: float) -> void:
-	# Вычисляем интенсивность эффекта на основе высоты падения
-	# Нормализуем: MIN_FALL_HEIGHT = минимальный эффект, MAX_FALL_HEIGHT = максимальный эффект
-	var intensity = clamp((fall_height - MIN_FALL_HEIGHT) / (MAX_FALL_HEIGHT - MIN_FALL_HEIGHT), 0.0, 1.0)
-
-	# Параметры для реалистичной пыли при приземлении
-	var min_amount = 5  # Еще меньше частиц
-	var max_amount = 12  # Еще меньше частиц
-	var min_velocity = 40.0
-	var max_velocity = 120.0
-	var min_scale = 3.5  # Еще крупнее частицы
-	var max_scale = 7.0  # Еще крупнее частицы
-
-	# Масштабируем параметры в зависимости от интенсивности
-	var amount = int(lerp(min_amount, max_amount, intensity))
-	var velocity_min = lerp(min_velocity, max_velocity, intensity)
-	var velocity_max = lerp(min_velocity * 1.3, max_velocity * 1.3, intensity)
-	var scale_min = lerp(min_scale, max_scale, intensity)
-	var scale_max = lerp(min_scale * 1.2, max_scale * 1.2, intensity)
-	var lifetime = lerp(0.4, 0.8, intensity)
-
-	# Создаем текстуру для частиц пыли (небольшой серый круг)
-	var image = Image.create(6, 6, false, Image.FORMAT_RGBA8)
-	image.fill(Color.TRANSPARENT)
-
-	# Рисуем серый круг для пыли
-	var center = Vector2(3, 3)
-	var radius = 2.5
-	for x in range(6):
-		for y in range(6):
-			var dist = Vector2(x, y).distance_to(center)
-			if dist <= radius:
-				# Градиент от центра к краю для более мягкого вида
-				var alpha = 1.0 - (dist / radius) * 0.3
-				image.set_pixel(x, y, Color(0.7, 0.65, 0.6, alpha))
-
-	var texture = ImageTexture.create_from_image(image)
-
-	var p := CPUParticles2D.new()
-	p.texture = texture
-	p.one_shot = true
-	p.emitting = true
-	p.amount = amount
-	p.lifetime = lifetime
-	p.speed_scale = 1.0
-
-	# Частицы разлетаются в основном в стороны (горизонтально)
-	p.direction = Vector2(0, 0.05)  # Очень немного вниз, в основном горизонтально
-	p.spread = 200.0  # Очень широкий разброс в стороны (больше по X, меньше по Y)
-
-	p.initial_velocity_min = velocity_min
-	p.initial_velocity_max = velocity_max
-	p.gravity = Vector2(0, 100)  # Гравитация вниз для оседания пыли
-
-	# Цвет пыли - коричневато-серый, более реалистичный
-	var dust_color = Color(0.75, 0.7, 0.65, lerp(0.5, 0.8, intensity))
-	p.color = dust_color
-	p.z_index = 200
-
-	# Размер частиц - небольшие для реалистичности
-	p.scale_amount_min = scale_min
-	p.scale_amount_max = scale_max
-
-	# Добавляем в текущую сцену
-	var scene = get_tree().current_scene
-	if not scene:
-		return
-
-	# Устанавливаем глобальную позицию правильно
-	p.global_position = pos
-	scene.add_child(p)
-
-	# Ждем и удаляем
-	await get_tree().create_timer(lifetime + 0.1).timeout
-	if is_instance_valid(p):
-		p.queue_free()
-
-func _spawn_simple_dust_effect(pos: Vector2) -> void:
-	"""Простой визуальный эффект пыли с помощью спрайтов"""
-	print("✨ VFXHooks: Creating simple dust effect")
-
-	# Создаем несколько простых спрайтов для эффекта пыли
-	for i in range(8):
-		var sprite = Sprite2D.new()
-
-		# Создаем простую текстуру
-		var image = Image.create(4, 4, false, Image.FORMAT_RGBA8)
-		image.fill(Color(0.9, 0.85, 0.7, 0.8))
-		var texture = ImageTexture.create_from_image(image)
-		sprite.texture = texture
-
-		# Случайная позиция вокруг точки приземления
-		var angle = randf() * TAU
-		var distance = randf_range(10.0, 30.0)
-		sprite.global_position = pos + Vector2(cos(angle), sin(angle)) * distance
-		sprite.z_index = 200
-		sprite.scale = Vector2(randf_range(0.5, 1.5), randf_range(0.5, 1.5))
-
-		var scene = get_tree().current_scene
-		if scene:
-			scene.add_child(sprite)
-
-			# Анимация исчезновения
-			var tween = create_tween()
-			tween.set_parallel(true)
-			tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
-			tween.tween_property(sprite, "position", sprite.position + Vector2(randf_range(-20, 20), randf_range(-30, -10)), 0.3)
-			tween.tween_callback(sprite.queue_free).set_delay(0.3)
 
 func _on_skill_used(_skill_name: String, pos: Vector2 = Vector2.ZERO) -> void:
 	"""Placeholder VFX для skill"""

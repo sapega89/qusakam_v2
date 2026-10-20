@@ -136,7 +136,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 19. **A living world** (Sapega 2026-10-20): idle animations on decor (banners and cloth sway, grass and palm fronds
     move, lamps and crystals flicker, dust drifts…) and clouds that drift on their own and with parallax as the hero
     moves (Canyon HighClouds/gen_clouds and the other rooms' sky planes).
-20. **Smoother hero animations; lighter jump dust** (Sapega 2026-10-20): the hero's animations must be smoother —
+20. ~~**Smoother hero animations; lighter jump dust**~~ — **done 2026-10-20 (D262):** Idle breathes over 4 keys, a jump plays Jump → Apex → Fall → Land, landing dust is 6 small wisps for 0.3 s. Was (Sapega 2026-10-20): the hero's animations must be smoother —
     redo them (more in-betweens, generated from his artist frames with comfy-sprite, D239); the jump/land dust lasts far
     too long and is too dense — shorter, thinner, in the Ender Lilies spirit.
 21. **Every skill has its own animation** (Sapega 2026-10-20): each skill (Healing Palm, Fire / Electric Strike, … —
