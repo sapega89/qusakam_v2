@@ -54,8 +54,8 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Resume:** answer Q52, then slice 1 of [[lab_boss_plan]].
 
 ### Cutscenes — [[cutscene_plan]]
-- **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man);
-  every other "cutscene" is a dialogue.
+- **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man); the Canyon descent is
+  fully staged (D255); the abduction and Mayor's Hall are still dialogues.
 - **Decided:** D176 — Canyon abduction, Canyon descent, Mayor's Hall → Lab, fully staged;
   screenplay [[cutscene_script]] (draft lines for Sapega).
 - **Waits on:** actor art ([[character_animation_plan]]); Q51 (Mayor's Hall story) for scene 3.
@@ -79,8 +79,10 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    own `Scenes/UI/dialogue_box.tscn` (D110); lines type at 24 letters/s and accept is ignored until the line is
    shown, NPC recall lines too; the DialogueQuest Skip toggle is off (it fast-forwarded text). Speed and Skip are
    agent calls — Sapega to confirm.
-2. **Canyon descent cutscene** (D254): no falling off the bridge — Kusakam climbs down behind a foreground rock, the
-   camera pans smoothly up to a blue sky. Accent on cutscenes in general.
+2. ~~**Canyon descent cutscene**~~ — **done 2026-10-20** (D254, D255): at the plateau edge the bridge collapses,
+   `Canyon_ExitCutscene` plays, Kusakam climbs down behind a generated foreground boulder, the camera floats up to a
+   blue sky above the room, fade, road. No fall, no damage; flags as before. Bridge art generated (`gen_bridge`).
+   [[cutscene_plan]] → "Built". Open: HUD stays on screen in cutscenes; no skip control.
 3. **Healing rework** (D252): Healing Palm at the first level-up; the grandfather does not ask to be healed; potions
    drop rarely.
 4. **Combat, souls-lite** (D250, D251, D253): combos for the hero and enemies, staggers both ways, double dash,
@@ -102,6 +104,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
     the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
     cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
+15. **Weapons sheathed out of combat; an attack animation per weapon** (Sapega 2026-10-20): the weapon is hidden
+    (sheathed/on the back) when no fight is on and drawn when combat starts; each weapon type gets its own attack
+    animation (goes with item 4 — D250 two-handed and dual-wield).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
