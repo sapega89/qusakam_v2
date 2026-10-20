@@ -111,7 +111,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
     cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
 15. ~~**Weapons sheathed out of combat; an attack animation per weapon**~~ — **done 2026-10-20** (D268): the weapon
-    rides on the back out of combat and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
+    is out of sight out of combat (2026-10-21 fix, Sapega: not on the back) and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
     dagger stabs, halberd thrusts, dual-wield alternating hands, heavy overhead; new hero frames Hurt, Heavy ×2, Block
     (generated from his artist frame).
 16. **MayorHall cutscene and the "unbeatable" boss** (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,

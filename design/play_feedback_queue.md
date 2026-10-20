@@ -43,7 +43,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 2 | ~~**4 + 15** souls-lite combat~~ — done (D264–D270) — (combos, staggers, double dash, block/parry, heavy attack, freeze, run outside towns, two-handed + dual-wield) and sheathed weapons with an attack animation per weapon; **D259** interrupts | one system; plan first (plan-missing-system) |
 | 3 | **21** an animation per skill | on top of 20 + 4 |
 | 3b | **26** audio: world sound, every swing/hit/miss, grunts, voiced bosses, dialogue babble for every character | after combat (4+15) and skill animations (21) give the events; plan first: `design/audio_plan.md` |
-| 3a | **15 fix** out of combat the weapon vanishes entirely, not on the back (Sapega 2026-10-21) — sent to the item-21 run |
+| 3a | ~~**15 fix** out of combat the weapon vanishes entirely, not on the back (Sapega 2026-10-21)~~ — done (D268 amended) |
 | 4 | **22** class path and three skill trees (D260; oath in the City: priest / witch / sand dervish NPCs) | plan first: `design/skill_trees_plan.md` |
 | 5 | **9–13** Game Menu (+ **B77** double click learns a skill): inventory actions, party of one, equipment slot picker, hints as tutorial windows with an off switch, Journal quests / characters / bestiary | UI batch |
 | 6 | **14** blacksmith and merchant buildings + arrival cutscene with a task (also the blacksmith drawn in front of the hero) | |

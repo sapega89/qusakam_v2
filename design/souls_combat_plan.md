@@ -67,7 +67,7 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
    both hands on the shaft. Dual-wield = a one-handed weapon in hand + another equipped one-handed weapon + no
    shield: the second is drawn in the off hand, swings alternate hands, combo of 4 at 0.8× swing time.
 6. **Sheathing and per-weapon swings (D268):** in combat = an enemy chasing / attacking the hero, or the hero hit or
-   struck in the last 3 s. Out of combat the weapon rides on the back; drawn on the first swing or when a fight
+   struck in the last 3 s. Out of combat the weapon is out of sight (amended 2026-10-21, Sapega: not on the back); drawn on the first swing or when a fight
    starts. Swing shape per weapon type: bare hands punch, sword/axe slash arcs (down, up, spin finisher), mace an
    overhead smash, dagger quick stabs, polearm thrusts, heavy = overhead wind-up for all.
 7. **Interrupts (D269):** a hit during the heavy wind-up staggers and cancels it; `SkillManager.interrupt_cast`

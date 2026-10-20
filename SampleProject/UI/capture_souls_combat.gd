@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Кадри souls-lite бою (BACKLOG 4 + 15, D264–D268) у справжньому вікні: серія, важкий, блок, парирування,
-## збій героя й ворога, подвійний ривок, зброя за спиною / в руці, дві зброї, булава, алебарда.
+## збій героя й ворога, подвійний ривок, зброя схована / в руці, дві зброї, булава, алебарда.
 ## Кожен кадр — вирізка 480×320 навколо героя.
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_souls_combat.gd -- <тека>
 
@@ -53,7 +53,7 @@ func _initialize() -> void:
 	var em: Node = sl.get_equipment_manager()
 	var items: Node = sl.get_item_database()
 
-	# Зброя за спиною (поза боєм) і в руці (бій)
+	# Зброї не видно (поза боєм) і в руці (бій)
 	em.equip_item(who, "sword", "iron_sword", items.get_item("iron_sword"))
 	await _place(target, -110)
 	await create_timer(3.5).timeout

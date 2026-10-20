@@ -456,19 +456,21 @@ func _weapons(sl: Node) -> void:
 	em.unequip_item(who, "sword")
 	await process_frame
 
-	print("[11] Sheathed out of combat, drawn when a fight starts or on a swing (D268)")
+	print("[11] Hidden out of combat, drawn when a fight starts or on a swing (D268)")
 	equip.call("sword", "iron_sword")
 	await create_timer(hero.combat.COMBAT_LINGER + 0.3).timeout
-	ck(not hero.combat.in_combat() and wv.sheathed and wv.z_index == -1 and wv.pivot.position == wv.BACK, "no fight: the sword is on the back")
+	ck(not hero.combat.in_combat() and wv.sheathed and not wv.pivot.visible and not wv.off_pivot.visible, "no fight: the sword is out of sight (Sapega 2026-10-21)")
 	enemies[0].enemy_logic.current_state = 1  # CHASE
 	await create_timer(0.4).timeout
-	ck(not wv.sheathed and wv.z_index == 0 and wv.pivot.position.distance_to(wv.HAND_REST) < 1.0, "a fight starts: drawn into the hand (%s)" % wv.pivot.position)
+	ck(not wv.sheathed and wv.pivot.visible and wv.pivot.position.distance_to(wv.HAND_REST) < 1.0, "a fight starts: drawn into the hand (%s)" % wv.pivot.position)
 	enemies[0].enemy_logic.current_state = 0
 	await create_timer(hero.combat.COMBAT_LINGER + 0.4).timeout
-	ck(wv.sheathed, "the fight is over: back on the back")
+	await process_frame
+	ck(wv.sheathed and not wv.pivot.visible, "the fight is over: the sword vanishes")
 	await _tap(&"attack")
 	await physics_frame
-	ck(not wv.sheathed, "a swing draws it at once")
+	await process_frame
+	ck(not wv.sheathed and wv.pivot.visible, "a swing draws it at once")
 	await create_timer(0.8).timeout
 
 	print("[12] Each weapon type swings its own way (D268)")

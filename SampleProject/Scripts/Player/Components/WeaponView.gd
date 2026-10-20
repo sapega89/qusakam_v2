@@ -2,7 +2,8 @@ extends Node2D
 
 ## Зброя героя (D223, D224, D232, D267, D268): спрайт тієї, що в руці (Assets/Weapons/<id>.png, малює
 ## Scripts/Tools/draw_weapons.py), дзеркалиться за поглядом героя й тримається в його кулаці.
-## Поза боєм (PlayerCombat.in_combat) зброя за спиною, у бою — в руці; перший удар дістає її одразу.
+## Поза боєм (PlayerCombat.in_combat) зброї не видно зовсім (D268, Sapega 2026-10-21), у бою — в руці;
+## перший удар дістає її одразу.
 ## Кожен тип зброї має свій удар (D268), за кроком серії PlayerCombat:
 ##   меч / сокира — дуга згори вниз, знизу вгору, фінішер — широка дуга з-за голови;
 ##   булава — удар згори (тіло AttackSmash); кинджал — швидкі уколи, фінішер — дуга;
@@ -28,11 +29,8 @@ const HAND_OVERHEAD := Vector2(16, -32)
 const HAND_LOW := Vector2(24, 27)
 const HAND_GUARD := Vector2(25, 3)
 const HAND_HURT := Vector2(28, -10)
-## Друга рука (дві зброї) — дальня, трохи позаду; за спиною — обидві навхрест.
+## Друга рука (дві зброї) — дальня, трохи позаду.
 const OFF_REST := Vector2(7, 21)
-const BACK := Vector2(-6, 2)
-const BACK_ANGLE := 205.0
-const OFF_BACK_ANGLE := 155.0
 ## Центр дуги шлейфу — на рівні плеча; «вибух» кулака — трохи перед рукавицею.
 const SMEAR_CENTER := Vector2(8, 0)
 const PUNCH_AT := Vector2(40, 6)
@@ -59,8 +57,6 @@ const SMEAR_LENGTH := 72.0
 @export var strike_time := 0.08
 @export var hold_time := 0.05
 @export var recover_time := 0.12
-## Дістати / сховати зброю, с.
-@export var draw_time := 0.15
 
 @onready var player: Node2D = get_parent()
 @onready var pivot: Node2D = $Pivot
@@ -70,7 +66,7 @@ const SMEAR_LENGTH := 72.0
 var _category: String = ""
 var _dual: bool = false
 var _tween: Tween
-## Зброя за спиною (поза боєм, D268).
+## Зброю сховано — не видно (поза боєм, D268).
 var sheathed: bool = true
 
 
@@ -90,8 +86,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
-	# У перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
-	pivot.visible = not player.mover.is_rolling()
+	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
+	pivot.visible = not sheathed and not player.mover.is_rolling()
 	off_pivot.visible = _dual and pivot.visible
 	if _tween and _tween.is_running():
 		return
@@ -127,14 +123,9 @@ func _rest_angle() -> float:
 	return thrust_rest_angle if _thrust() else rest_angle
 
 
-## Поза без удару: за спиною поза боєм; у бою — за станом PlayerCombat (блок, збій, замах важкого) або стійка.
+## Поза без удару — за станом PlayerCombat (блок, збій, замах важкого) або стійка.
 func _hold_pose() -> void:
 	var combat: PlayerCombat = player.combat
-	z_index = -1 if sheathed else 0  # за спиною — позаду тіла
-	if sheathed:
-		_pose(pivot, BACK, BACK_ANGLE)
-		_pose(off_pivot, BACK, OFF_BACK_ANGLE)
-		return
 	match combat.state:
 		PlayerCombat.State.BLOCK:
 			_pose(pivot, HAND_GUARD, guard_angle)
@@ -152,19 +143,9 @@ func _pose(target: Node2D, at: Vector2, angle: float) -> void:
 	target.rotation_degrees = angle
 
 
-## Бій почався — дістати зброю, скінчився — за спину (короткий перехід).
+## Бій почався — зброя в руці, скінчився — зникає.
 func _on_combat_state_changed(in_combat: bool) -> void:
-	if sheathed != in_combat:
-		return
 	sheathed = not in_combat
-	if not visible:
-		return
-	var to: Vector2 = BACK if sheathed else HAND_REST
-	var angle: float = BACK_ANGLE if sheathed else _rest_angle()
-	_restart_tween()
-	_tween.tween_property(pivot, ^"position", to, draw_time)
-	_tween.parallel().tween_property(pivot, ^"rotation_degrees", angle, draw_time)
-	_tween.tween_callback(_hold_pose)
 
 
 func _restart_tween() -> void:
@@ -177,7 +158,6 @@ func _on_player_attacked(attacker: Node, _direction: int) -> void:
 	if attacker != player:
 		return
 	sheathed = false  # удар дістає зброю одразу (D268)
-	z_index = 0
 	var combat: PlayerCombat = player.combat
 	var step: int = combat.combo_step
 	var finisher: bool = step == combat.combo_length() - 1
