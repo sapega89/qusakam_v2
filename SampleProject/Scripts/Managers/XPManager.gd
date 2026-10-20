@@ -4,6 +4,9 @@ class_name XPManager
 ## XP and Level Progression Manager
 ## Manages player experience points, levels, and stat bonuses
 
+## D260/D285: найвищий рівень; на ньому досвід більше не рахується.
+const MAX_LEVEL := 99
+
 # Current XP and level state
 var current_xp: int = 0
 var current_level: int = 1
@@ -27,6 +30,8 @@ func _initialize():
 func add_xp(amount: int) -> void:
 	if amount < 0:
 		amount = 0 # Ignore negative XP gain to prevent exploits/bugs
+	if current_level >= MAX_LEVEL:
+		return
 	current_xp += amount
 	xp_gained.emit(amount, current_xp)
 	DebugLogger.verbose("XPManager: Gained %d XP, total: %d/%d" % [amount, current_xp, xp_for_next_level], "XPManager")
@@ -34,11 +39,14 @@ func add_xp(amount: int) -> void:
 
 ## Check if player should level up
 func _check_level_up() -> void:
-	while current_xp >= xp_for_next_level:
+	while current_level < MAX_LEVEL and current_xp >= xp_for_next_level:
 		var old_level = current_level
 		current_level += 1
 		current_xp -= xp_for_next_level
 		xp_for_next_level = _calculate_xp_requirement(current_level)
+
+		if current_level >= MAX_LEVEL:
+			current_xp = 0
 
 		DebugLogger.info("XPManager: Level up! %d -> %d" % [old_level, current_level], "XPManager")
 
