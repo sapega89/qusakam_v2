@@ -168,6 +168,9 @@ signal player_staggered(duration: float)
 signal player_parried(attacker: Node)
 @warning_ignore("unused_signal")
 signal player_blocked(attacker: Node)
+## Почався / скінчився бій героя (D268): зброя з-за спини в руку й назад.
+@warning_ignore("unused_signal")
+signal combat_state_changed(in_combat: bool)
 ## Замах важкого удару героя (D264) — WeaponView піднімає зброю.
 @warning_ignore("unused_signal")
 signal player_heavy_windup(player: Node, direction: int)

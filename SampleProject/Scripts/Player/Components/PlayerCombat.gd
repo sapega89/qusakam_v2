@@ -62,6 +62,11 @@ var _poise: int = POISE_LIGHT
 ## Кнопку блоку тримають (Player._unhandled_input); блок починається, щойно герой вільний.
 var block_held: bool = false
 var _block_time: float = 0.0
+## Бій триває (D266, D268): ворог женеться за героєм чи б'є, або герой бив / був збитий — і ще COMBAT_LINGER с після.
+## Поза боєм зброя за спиною, а в місті герой іде.
+const COMBAT_LINGER := 3.0
+var _combat_left: float = 0.0
+var _in_combat: bool = false
 ## D259: навичка, чий каст зараз іде (анімації кастів — BACKLOG 21); удар зриває каст.
 var casting_skill: String = ""
 
@@ -116,6 +121,7 @@ func _process(delta: float) -> void:
 		attack_cooldown -= delta
 
 func _physics_process(delta: float) -> void:
+	_track_combat(delta)
 	if _chain_left > 0.0:
 		_chain_left -= delta
 	if state == State.BLOCK:
@@ -149,6 +155,25 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 		State.STAGGER:
 			state = State.READY
+
+func in_combat() -> bool:
+	return _in_combat
+
+func _track_combat(delta: float) -> void:
+	if state not in [State.READY, State.BLOCK] or _enemy_engaged():
+		_combat_left = COMBAT_LINGER
+	else:
+		_combat_left -= delta
+	var now := _combat_left > 0.0
+	if now != _in_combat:
+		_in_combat = now
+		EventBus.combat_state_changed.emit(now)
+
+func _enemy_engaged() -> bool:
+	for enemy in get_tree().get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy.is_alive() and (enemy.enemy_logic.is_attacking or enemy.enemy_logic.current_state in [EnemyLogic.AIState.CHASE, EnemyLogic.AIState.ATTACK]):
+			return true
+	return false
 
 ## Гравець вийшов з дерева посеред дії (зміна сцени, вихід у меню) — дія скінчилась, а не застигла до повернення.
 func _exit_tree() -> void:

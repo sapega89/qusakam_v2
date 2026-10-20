@@ -24,6 +24,12 @@ class_name PlayerMover
 @export var roll_duration := 0.30
 @export var roll_distance := 170.0
 @export var roll_cooldown := 0.6
+## Подвійний ривок (D264): стільки ривків підряд, і в повітрі теж; обидва повертаються через roll_cooldown
+## після останнього. Наступний — не раніше, ніж через dash_chain_after с від початку попереднього.
+@export var dash_charges_max := 2
+@export var dash_chain_after := 0.1
+## У містах (корінь кімнати з metadata/town, D266) поза боєм герой іде, а не біжить.
+@export var walk_speed := 150.0
 ## Драбини (D225): швидкість лазіння, px/s; стрибок з драбини — така частка звичайного.
 @export var climb_speed := 170.0
 @export var ladder_jump_factor := 0.6
@@ -41,7 +47,8 @@ var airtime: float = 0.0
 var prev_on_floor: bool = false
 var fall_start_height: float = 0.0
 var roll_time_left: float = 0.0
-var roll_ready_in: float = 0.0  # до наступного перекату: сам перекат + roll_cooldown
+var roll_ready_in: float = 0.0  # до повернення ривків: останній ривок + roll_cooldown
+var dash_charges: int = 2
 var roll_direction: int = 1
 ## Драбина, по якій зараз лізе герой (Ladder.gd), або null. Скидає Player.on_enter при переході кімнати.
 var climbing: Node2D = null
@@ -74,24 +81,36 @@ func is_climbing() -> bool:
 	return climbing != null
 
 
-## Перекат (D200): лише з землі, не частіше за roll_cooldown. Невразливість — на весь перекат.
-## Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи перекат почався.
+## Перекат-ривок (D200, D264): dash_charges_max підряд, з землі й у повітрі (у повітрі — рівно, без падіння).
+## Невразливість — на весь ривок. Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи ривок почався.
 func start_roll() -> bool:
-	if is_rolling() or is_climbing() or roll_ready_in > 0.0 or not player.is_on_floor():
+	if is_climbing() or dash_charges <= 0:
+		return false
+	if is_rolling() and roll_time_left > roll_duration - dash_chain_after:
 		return false
 	var held := Input.get_axis(&"move_left", &"move_right")
 	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
 	last_direction = roll_direction
 	roll_time_left = roll_duration
+	dash_charges -= 1
 	roll_ready_in = roll_duration + roll_cooldown
 	player.set_invulnerable(true, roll_duration)
 	return true
 
 
+## Іде, а не біжить: місто (D251, D266) і не бій.
+func is_walking() -> bool:
+	var map: Node = Game.get_singleton().map
+	return map != null and map.get_meta(&"town", false) and not player.combat.in_combat()
+
+
 ## Runs one physics step of movement: gravity, jump, horizontal movement,
 ## move_and_slide() and landing detection. Call once per Player._physics_process.
 func physics_move(delta: float) -> void:
-	roll_ready_in = maxf(0.0, roll_ready_in - delta)
+	if roll_ready_in > 0.0:
+		roll_ready_in -= delta
+		if roll_ready_in <= 0.0:
+			dash_charges = dash_charges_max
 	if not is_climbing():
 		_apply_gravity_and_track_fall(delta)
 
@@ -104,6 +123,8 @@ func physics_move(delta: float) -> void:
 		# Під час перекату — рівна швидкість, без стрибка й керування
 		roll_time_left -= delta
 		player.velocity.x = roll_direction * roll_distance / roll_duration
+		if not player.is_on_floor():
+			player.velocity.y = 0.0  # ривок у повітрі — рівно, без падіння
 	elif is_climbing() or _grab_ladder():
 		_climb()
 	else:
@@ -213,7 +234,7 @@ func _handle_horizontal_movement(delta: float) -> void:
 
 	if direction:
 		speed = min(speed_max, speed + accel * delta)
-		player.velocity.x = direction * speed
+		player.velocity.x = direction * (walk_speed if is_walking() else speed)
 	else:
 		player.velocity.x = move_toward(player.velocity.x, 0, speed_min)
 		speed = speed_min

@@ -74,6 +74,7 @@ func _initialize() -> void:
 
 	await _staggers()
 	await _hero_moves(sl)
+	await _movement()
 	await _freeze_check()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -84,6 +85,9 @@ func _freeze_check() -> void:
 	print("[0] A long melee never leaves the hero stuck (D264)")
 	for e in enemies:
 		e.set_physics_process(true)
+		e.detection_area.monitoring = true
+	hero.Max_Health = 9999  # тут міряємо керування, а не смерть
+	hero.current_health = hero.Max_Health
 	hero.global_position = enemies[0].global_position + Vector2(-80, 0)
 	var stuck_seconds := 0
 	var dir := 1
@@ -97,8 +101,7 @@ func _freeze_check() -> void:
 		Input.action_release(act)
 		if absf(hero.global_position.x - x0) < 100.0:
 			stuck_seconds += 1
-		if sec % 3 == 2:
-			dir = -dir
+		dir = -dir  # туди-сюди — не виходить з кімнати
 	ck(stuck_seconds <= 2, "the hero moved in at least 10 of 12 seconds of fighting (%d stuck)" % stuck_seconds)
 	await create_timer(1.0).timeout
 	ck(not hero.event and Engine.time_scale == 1.0 and not paused and not hero.combat.owns_animation() and not hero.mover.locked,
@@ -334,3 +337,62 @@ func _hero_moves(sl: Node) -> void:
 			"interrupted: SP %d → %d, cooldown %s" % [sp0, sm.get_current_sp(), sm.is_skill_on_cooldown("fire_strike")])
 	ck(hero.combat.casting_skill == "", "the cast is over")
 	await create_timer(1.0).timeout
+
+func _root_meta(path: String, key: String) -> Variant:
+	var st: SceneState = load(path).get_state()
+	for i in st.get_node_property_count(0):
+		if st.get_node_property_name(0, i) == "metadata/" + key:
+			return st.get_node_property_value(0, i)
+	return null
+
+## [8] Подвійний ривок, [9] у місті поза боєм — хода (D264, D266).
+func _movement() -> void:
+	_freeze_all()
+	for e in enemies:
+		e.detection_area.monitoring = false  # герой ходитиме поруч — не помічати
+		e.enemy_logic.current_state = 0  # IDLE — ніхто не женеться
+		e.enemy_logic.is_attacking = false
+	var mover: Node = hero.mover
+	await create_timer(1.0).timeout
+	print("[8] Double dash: two in a row, a third waits; the second works in the air")
+	await _place_hero(enemies[1], 0)
+	mover.dash_charges = mover.dash_charges_max
+	mover.roll_ready_in = 0.0
+	await _tap(&"dodge")
+	ck(mover.is_rolling() and mover.dash_charges == 1, "first dash (charges %d)" % mover.dash_charges)
+	await create_timer(0.12).timeout
+	await _tap(&"dodge")
+	ck(mover.is_rolling() and mover.dash_charges == 0, "second dash chained (charges %d)" % mover.dash_charges)
+	await create_timer(0.35).timeout
+	await _tap(&"dodge")
+	ck(not mover.is_rolling(), "a third dash waits for the refill")
+	await create_timer(0.7).timeout
+	ck(mover.dash_charges == 2, "both dashes back 0.6 s after the last (%d)" % mover.dash_charges)
+	hero.velocity = Vector2(0, -350)
+	for i in 8: await physics_frame
+	ck(not hero.is_on_floor(), "in the air")
+	await _tap(&"dodge")
+	var y0: float = hero.global_position.y
+	await create_timer(0.15).timeout
+	ck(mover.is_rolling() and absf(hero.global_position.y - y0) < 2.0, "an air dash is level (dy %.1f)" % (hero.global_position.y - y0))
+	await create_timer(1.5).timeout
+
+	print("[9] Towns: walk out of combat, run in a fight (D251, D266)")
+	for town in ["Village", "City", "CityGates", "MayorHall"]:
+		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % town, "town") == true, "%s is a town" % town)
+	for wild in ["Canyon", "DesertRoad", "Laboratory"]:
+		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % wild, "town") == null, "%s is wild" % wild)
+	await _place_hero(enemies[1], 0)
+	game.map.set_meta(&"town", true)
+	await create_timer(hero.combat.COMBAT_LINGER + 0.2).timeout
+	ck(not hero.combat.in_combat(), "no fight on")
+
+	Input.action_press(&"move_left")
+	await create_timer(0.5).timeout
+	ck(absf(hero.velocity.x) <= mover.walk_speed + 1.0 and hero.animation == &"Walk", "in town: walks %.0f px/s, %s" % [absf(hero.velocity.x), hero.animation])
+	enemies[0].enemy_logic.current_state = 1  # CHASE — бій почався
+	await create_timer(0.3).timeout
+	ck(hero.combat.in_combat() and absf(hero.velocity.x) > mover.walk_speed + 50.0 and hero.animation == &"Run", "in a fight: runs %.0f px/s, %s" % [absf(hero.velocity.x), hero.animation])
+	Input.action_release(&"move_left")
+	enemies[0].enemy_logic.current_state = 0
+	game.map.remove_meta(&"town")

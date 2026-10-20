@@ -88,7 +88,7 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
 ### Slice 2 — light combo, heavy attack, block, parry, interrupts (D259) — ✅ built
 - `PlayerCombat.gd`, `Player.gd`, `WeaponView.gd`, `SkillManager.interrupt_cast`, `VFXHooks.gd` (parry spark);
   `verify_souls_combat.gd` [4]–[7].
-### Slice 3 — double dash, walking in towns
+### Slice 3 — double dash, walking in towns — ✅ built
 - `PlayerMover.gd`, room `.tscn` metadata; `verify_souls_combat.gd` [8]–[9].
 ### Slice 4 — grips, sheathing, per-weapon swings
 - `items.json`, `EquipmentManager.gd`, `WeaponView.gd`, `Player.tscn`; `verify_souls_combat.gd` [10]–[12].
