@@ -177,6 +177,18 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     then Kusakam has already risen from the stone disc (stand-up from `Meditate`) — he is standing by the time the camera
     has come back to the Canyon after its drift (Sapega «він має стояти, коли вже камера повернулась у каньйон») — and he
     cannot move or act until the talk ends. Check whether a speech-bubble presentation exists (D110 dialogue layer) before building one.
+26. **The world is voiced and sounds alive** (Sapega 2026-10-20 «все підряд озвучувати не треба, але треба весь світ
+    озвучити і всі різні штуки типу намагання вдарити ворога або героя, і босів треба озвучувати» … «всіх»): no full
+    voice acting of every line. Needed: **world sound** — ambience per room (desert wind, canyon echo, town crowd, lab
+    hum), footsteps per surface, jump/land, ladder, doors, pickups, UI; **combat** — every swing (hit and miss), impact,
+    block/parry clang, dash, hero and enemy grunts / hurt / death, skill casts; **bosses voiced** — roars, attack shouts,
+    a few short lines in their cutscenes; **characters** — every speaking character ("всіх") gets a voice: dialogue
+    "babble" blips in their own timbre while text types (Undertale-style), plus short barks (greetings, battle cries,
+    companion calls). Today: `AudioManager.gd`, 21 audio files. Plan first: `design/audio_plan.md` — sources by licence
+    (CC0 packs such as Kenney / OpenGameArt first; local generators only with a licence that allows release — TTS:
+    Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
+    non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
+    Steam AI-content disclosure. Gamepad rumble on hits goes with item 24.
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
