@@ -99,6 +99,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 12. **Every hint is a tutorial window**: each hint opens the tutorial window (nothing is missed), and the topic lands in
     the Tutorial list; a Settings option turns these windows off.
 13. **Journal sections**: choose between Quests and Characters (people we have met); plus a Bestiary.
+14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
+    the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
+    cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
 
 ### Foreground parallax in every outdoor room
 Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
