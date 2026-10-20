@@ -64,6 +64,14 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B77 — A skill cannot be learned with the mouse
+- **Where:** `SampleProject/Scripts/Menus/Game/skills_component.gd` (Skills rows; learning goes through `try_unlock_selected()`)
+- **Expected:** a **double click** on a skill row learns it, like Enter/A on the selected row (Sapega 2026-10-20 «треба дабл клік мишкою»).
+- **Got:** a click only selects the row; learning needs Enter/A (B76 fixed the key path). No Learn button.
+- **Evidence:** D261, item-3 agent report 2026-10-20
+- **Severity:** blocker (mouse-only player cannot learn Healing Palm)
+- **Found:** 2026-10-20, backlog item 3
+
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**
