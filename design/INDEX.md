@@ -28,31 +28,32 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 
 Runnable specs. One per system, sliced so each slice ships on its own.
 
-- [[lab_vertical_plan]] — D225: rooms with floors joined by ladders (Tails of Iron), the Laboratory first
-- [[settings_plan]] — how every Settings row must behave (change at once, persist, restore); Language blocked on Q55; Controls split D193
-- [[companion_assist_plan]] — D201/D209: guard at City Gates, then Алісия / Астрит / Уризен; core needs no art, the rest waits on Ludo
-- [[character_animation_plan]] — blocked on Q40/Q41: player frames for every state, per-type enemy art, NPC idles
+- [[lab_vertical_plan]] — ✅ D225 slices 1–2 built (ladders, one-way platforms); superseded by [[lab_story_plan]]
+- [[settings_plan]] — how every Settings row must behave (change at once, persist, restore); Language: Q55 answered (D194), two languages everywhere = BACKLOG 31 / queue 8g; Controls split D193
+- [[companion_assist_plan]] — ✅ built (D213): guard at City Gates, Алісия / Астрит / Уризен; art generated (D243–D245)
+- [[character_animation_plan]] — ✅ Q40/Q41 answered (D138/D139); hero frames for every state exist (D262/D264/D271); enemies/NPCs stay (D139)
 - [[enchanting_plan]] — D94/D115/D163/D164; slice 1 (rule) built; `+N` lives in the item id
-- [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles wait on Q48
+- [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles built (D178/D263), Quest at the old man built (D169); Remind (D158) and hints (D159) not built
 - [[gamepad_plan]] — D156/D157, ready: hero moves/jumps/attacks on a pad; A/B in every menu; one last-device source
-- [[cutscene_plan]] — D140/D176/D177: staged scenes on Tween; screenplay in [[cutscene_script]]
+- [[cutscene_plan]] — ✅ built: staged scenes, shared helper, HUD hidden, hold-to-skip (D308); screenplay in [[cutscene_script]]
 - [[lab_story_plan]] — BACKLOG 16 + 17 + 6 + 23 (Lab): Mayor Hall queue and boss, the Laboratory split into cells / corridors / boss hall, the djinn and the cloak, the demo end (D300–D310)
-- [[lab_boss_plan]] — the two bosses: the Brass Collector (D301) and the fire djinn (D302), move sets on a shared `BossEnemy`
+- [[lab_boss_plan]] — merged into [[lab_story_plan]]; the two bosses (built, row 9.2, D316): the Brass Collector (D301) and the fire djinn (D302), move sets on a shared `BossEnemy`
 - [[prologue_journal_plan]] — D120: the Prologue as a journal stage, zones as sub-stages; fixes B43
-- [[game_menu_single_scene_plan]] — D116/D117: Game Menu as one scene, script only shows/hides; row templates in the scene
+- [[game_menu_single_scene_plan]] — ✅ D116/D117: Game Menu as one scene; later work → [[game_menu_batch_mapping]]
 - [[runtime_ui_completion_plan]] — slices 0–8, the umbrella pass (1a–5, 8 done; 6–7 audit-only)
-- [[ui_implementation_plan]] — the original Figma → Godot pass, and the token import table (§1)
-- [[skills_system_plan]] — survey + proposal. ⚠️ opens "Nothing implemented"; `SkillManager.gd` now exists — the note predates the build
-- [[skills_combat_plan]] — the combat vertical slice for skills
+- [[ui_implementation_plan]] — the original Figma → Godot pass, and the token import table (§1); superseded by [[runtime_ui_completion_plan]]
+- [[skills_system_plan]] — the original survey; superseded by [[skill_trees_plan]] (decisions closed by D279–D285)
+- [[skills_combat_plan]] — ✅ the combat vertical slice for skills (Phase 5.5)
 - [[skill_trees_plan]] — BACKLOG 22: Holy Warrior trunk + Paladin / Dark Knight / Warden trees, the oath in the City, respec, level cap 99 (D279–D285)
 - [[world_expansion_plan]] — BACKLOG 23: DesertRoad 2 → 6 cells, three more fights, ledges with pickups; XP curve in data, level 5 at the City (D296–D299); Laboratory split outlined
 - [[journal_codex_plan]] — BACKLOG 13: Journal sections Quests / Characters / Bestiary (D290)
-- [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, towns walk, grips, sheathing (D264–D270)
+- [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, grips, sheathing (D264–D270); town walking revoked (D266) — the hero runs everywhere
 - [[inventory_diff_plan]] — inventory delta
-- [[backlog_roadmap]] — the order to work through BACKLOG and BUGS: playable to the end first
+- [[backlog_roadmap]] — superseded by [[play_feedback_queue]] (the order work runs in now)
 - [[room_state_plan]] — ✅ built; D152: rooms remember enemies and their HP when the player leaves
+- [[no_fallbacks_pass]] — D131: what the no-fallbacks pass removed and what is left
 - [[audio_plan]] — BACKLOG 26: buses, event→sound map, world sound, babble, greetings, boss voices (D274–D278)
-- [[music_plan]] — music: tracks exist in `assets/`, nothing plays them; player + table, content waits on Q38
+- [[music_plan]] — ✅ music plays: a `Music` node in every room and the Main Menu; Q38 answered 2026-10-21 (keep the tracks)
 
 ## Audits
 
@@ -67,6 +68,7 @@ Read-only findings. No decisions made inside them.
 - [[journal_audit]] — D52–D57
 - [[ui_theme_scope_audit]] — **why `project.godot` sets no global theme.** Read before changing that
 - [[service_locator_audit]]
+- [[decision_audit]] — did the D-IDs become code?
 - [[play_feedback_queue]] — Sapega's play feedback 2026-10-20: the order to run BACKLOG items 1–23, rules, what is open
 - [[code_review_2026-10-19]] — the whole game: the B73 room leak, plugins keep / own / remove, maintainability (Q61–Q63)
 - [[investigation_pathfinder_classes]]
