@@ -50,12 +50,37 @@ bridges 96 px up (x 896–1056, 1376–1536); the exit to the djinn's hall is th
 
 ## New bugs (ready to paste into [[BUGS]])
 
-None found. B83 is fixed for the corridors (the boss hall half was fixed by D307) — its row can be removed:
+- **B-new — the committed `GameUITheme.tres` is stale.** `verify_game_ui_theme` fails on the integration base
+  (`930a584a` + feature/backlog): nine button variations (FilterButton, MainMenuItem(On), MiscRow(On),
+  NpcMenuItem(On), ShopRow(On)) lack the shared focus ring in the committed theme although `UITokens.gd` /
+  `build_game_ui_theme.gd` give it to them. **Fix:** run `build_game_ui_theme.gd` and commit the `.tres` (an
+  integrator step — the file is on the cloud agents' do-not-commit list). Severity: test red / focus ring missing on
+  those rows in game.
+
+B83 is fixed for the corridors (the boss hall half was fixed by D307) — its row can be removed:
 `verify_laboratory` [5] lands one real jump on every corridor bridge.
 
 ## Verifies run (Godot 4.6.2, headless)
 
-_Results pending — the verify run is in progress; this section is filled in by the next commit._
+| Verify | RESULT |
+|---|---|
+| `verify_laboratory` (rewritten) | RESULT: ALL PASS (first run: 2 FAIL, both in the test itself — a floor probe placed on the top storey's block, and a wrong x for the floor-C east bridge in its list; fixed) |
+| `verify_lab_rooms` | RESULT: ALL PASS |
+| `verify_map_geometry` | RESULT: ALL PASS (incl. [6] art on every standable top — the lowered bridges are drawn) |
+| `verify_ladders` | RESULT: ALL PASS |
+| `verify_lab_cells` | RESULT: ALL PASS |
+| `verify_demo_end` | RESULT: ALL PASS |
+| `verify_journal` | RESULT: ALL PASS |
+| `verify_story_journal` | RESULT: ALL PASS |
+
+Before any change: `verify_laboratory`, `verify_lab_rooms`, `verify_map_geometry` — ALL PASS (baseline).
+
+**Full suite** (`Scripts/Tools/run_verify.sh`, 80 verifies): **SUITE: 1 FAIL — 79 PASS.** The one is
+`verify_game_ui_theme` ("every button focus is the shared ring (off: FilterButton, MainMenuItem, MainMenuItemOn,
+MiscRow, MiscRowOn, NpcMenuItem, NpcMenuItemOn, ShopRow, ShopRowOn)"). Not this row's: no UI file is in this diff. Cause
+checked: the committed `GameUITheme.tres` is older than `UITokens.gd` — after regenerating it
+(`build_game_ui_theme.gd`) the verify prints `ALL CHECKS PASSED`; the regenerated `.tres` was restored, not committed
+(do-not-commit list). The integrator should regenerate and commit it.
 
 `verify_laboratory.gd` with real input (`move_right` / `move_left` / `jump` / `move_down`, real F key): [1] three
 spawners with their own zones and keys, no old nodes, objective, hidden tiles hold the hero on every floor, the far plane
