@@ -155,6 +155,25 @@ DAGGER_KEEP = (
     "; the same short dagger as in the picture, exactly the same size and colours, its blade shorter than his "
     "forearm, not longer, only one dagger, facing right"
 )
+# BACKLOG 42, A3: булава — як кинджал, з кадру меча (той самий герой, поза й метал), меч замінено; удари — зверху вниз
+MACE = (
+    "a short one-handed steel mace: a brown wooden handle as long as his forearm and a small round flanged steel head "
+    "on its end, the head the same light grey and white steel as the sword in the picture"
+)
+MACE_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
+    "the picture, only now holding "
+    + MACE
+    + " in his near hand, the handle pointing %s; a small mace, not a sword, no blade"
+    + SWORD_COLOURS
+)
+# у високих позах модель збільшувала булаву до кувалди — довжину названо
+MACE_SHORT = "; the mace small, its handle only as long as his forearm, not a long staff or a sledgehammer"
+# FROM: з кадру, де булава вже вдала, — тримає її розмір і кольори
+MACE_KEEP = (
+    "; the same small mace as in the picture, exactly the same size and colours, a short handle and a small round "
+    "steel head, only one mace, no blade, facing right"
+)
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
     "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
@@ -1118,6 +1137,107 @@ CHARACTERS = {
                     "backwards, head thrown back, eyes squeezed shut, his dagger arm flung back behind him still "
                     "holding the dagger, staggering back on one foot"
                     + DAGGER_SHORT,
+                ],
+            ),
+        ],
+    ),
+    "hero_weapon_mace": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/mace",
+        ref="SampleProject/Sprites/Player/Weapons/sword/CombatIdle/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
+        + MACE
+        + ", exactly as small as in the picture",
+        base="Keep this exact character — the same small lizard knight with the steel armour, dark red cape and tail, "
+        "the same pixel art style, thick dark outline, flat shading, colours, size, pose and position. Change only "
+        "the weapon: the long sword in his hand replaced by "
+        + MACE
+        # ще дві спроби («коротке руків'я», «удвічі коротша за меч») малювали молот — лишено першу, з круглою головою
+        + ", held at his waist in the same hand, the handle pointing forward and up with the round head at its top "
+        "end; no sword, no blade. Keep the plain flat magenta background.",
+        rows=[
+            ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
+            # Run/2 художника пропущено, як у меча (7 кадрів)
+            ("Run", [MACE_ON % ("Run/%d" % n, "forward and up") for n in (1, 3, 4, 5, 6, 7, 8)]),
+            # Air/3 (Fall/2) пропущено: за три спроби руків'я виростало в довгу палицю (список — у README булави)
+            ("Air", [MACE_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")]),
+            (
+                "Attack1",
+                [
+                    # з самого базового кадру двічі вийшло не те (кувалда й велетень; герой обернувся ліворуч)
+                    "FROM:CombatIdle:0:in the same side view facing right, his face and snout still pointing right: "
+                    "winding up an overhead smash, his mace arm raised up beside his head, the mace held up behind "
+                    "his head, the round head above and behind his head, standing on bent knees, the cape hanging "
+                    "behind him" + MACE_KEEP,
+                    "in the same side view facing right: smashing down, his mace arm swung forward at shoulder "
+                    "height, the mace held out in front of him, the round head forward, stepping forward on his "
+                    "front leg, the cape flying behind him" + MACE_KEEP,
+                    "in the same side view facing right: the end of an overhead smash, leaning forward on his bent "
+                    "front leg, the mace swung down low in front of him, its round head just above the ground in "
+                    "front of his front foot, the cape flying behind him" + MACE_KEEP,
+                ],
+            ),
+            (
+                "Attack2",
+                [
+                    "in the same side view facing right: winding up a rising swing, crouched on bent knees, the mace "
+                    "drawn back low behind his hip, the round head pointing back and down, the cape hanging behind "
+                    "him" + MACE_KEEP,
+                    "in the same side view facing right: a rising swing, stepping forward, the mace swung forward and "
+                    "up at chest height, the round head forward and up, the cape flying behind him" + MACE_KEEP,
+                    "in the same side view facing right: the end of a rising swing, standing tall, his mace arm "
+                    "stretched high above his head, the round head pointing straight up, the cape flying behind him"
+                    + MACE_KEEP,
+                ],
+            ),
+            (
+                "Attack3",
+                [
+                    "in the same side view facing right: winding up a big finishing smash, his body twisted back, the "
+                    "mace drawn far back behind his head, his weight on the back leg, the cape hanging behind him"
+                    + MACE_KEEP,
+                    "in the same side view facing right: a big smash, lunging deep on his bent front leg, the back "
+                    "leg straight, his mace arm fully extended straight forward at shoulder height, the round head "
+                    "straight ahead, the cape flying behind him" + MACE_KEEP,
+                    "in the same side view facing right: the follow-through of a big smash, crouched low and leaning "
+                    "forward, the mace slammed down in front of him, its round head on the ground near his front "
+                    "foot, the cape flying up behind him" + MACE_KEEP,
+                ],
+            ),
+            (
+                "Heavy",
+                [
+                    # з першого кадру герой обертався ліворуч — з Attack1/1, як у меча
+                    "FROM:Attack1:0:the same pose facing right, his face and snout still pointing right, now his "
+                    "second hand also gripping the mace handle just below the first, both hands together on the "
+                    "handle raised above his head, knees bent, the cape hanging behind him" + MACE_KEEP,
+                    "in the same side view facing right: swinging a heavy blow down, both hands gripping the mace "
+                    "handle in front of his face, the round head forward and up, stepping forward, the cape flying "
+                    "behind him" + MACE_KEEP,
+                    "in the same side view facing right: finishing a heavy downward blow, crouched low and leaning "
+                    "far forward, both hands gripping the mace handle low in front of him, its round head slammed "
+                    "on the ground in front of his feet, the cape flying up behind him, no motion lines, no dust"
+                    + MACE_KEEP,
+                ],
+            ),
+            (
+                "Block",
+                [
+                    "in the same side view facing right: guarding, crouched and braced on bent knees, the mace held "
+                    "upright in front of his face, the round head at the top, his other forearm raised beside it, "
+                    "the cape hanging behind him" + MACE_KEEP,
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    "in the same side view facing right: recoiling from a hard hit to the chest, his body bent "
+                    "backwards, head thrown back, eyes squeezed shut, his mace arm flung back behind him still "
+                    "holding the mace, staggering back on one foot" + MACE_KEEP,
                 ],
             ),
         ],
