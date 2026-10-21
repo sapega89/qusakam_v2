@@ -117,5 +117,5 @@ corridors.
   the room positions (explosion marks, door scale 0.85 — it slightly overlaps the edge of cell 5's niche) want a look.
 - Boss voices / the incantation via Kokoro (D278 hook) stay with row 9.8.
 - The B-new above; the `verify_audio` focus-tick flake (seen once) if it recurs.
-- Local only, not committed: `chmod +x` on `Scripts/Tools/godot_locked.sh` and `run_verify.sh` (they are 644 in git, so
-  `run_verify.sh` cannot call `godot_locked.sh` on Linux until someone commits the mode change).
+- Committed: `chmod +x` on `Scripts/Tools/godot_locked.sh` and `run_verify.sh` (they were 644 in git, so
+  `run_verify.sh` could not call `godot_locked.sh` on Linux).
