@@ -34,6 +34,10 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
 21 a cast animation and effect per skill, interruptible (D271, D272).
 26 audio: buses, every combat / world event, ambience, babble, greetings, boss and companion voices (D274–D278, [[audio_plan]] — listening checklist there).
 22 class path and three skill trees: Holy Warrior → oath at 5 (Paladin / Dark Knight / Warden of Balance) in the City, respec for coins, cap 99 (D279–D285, [[skill_trees_plan]]).
+9–13 Game Menu batch (D286–D290, [[game_menu_batch_mapping]]): inventory rows are used in place (potion heals at once, gear equips,
+materials "Cannot Use"); the party column lists only the party; an Equipment slot opens a picker; every hint opens the tutorial
+window once (Settings → Game → Tutorial Windows), heavy attack and block/parry topics, button names follow the device; Journal
+tabs Quests / Characters / Bestiary.
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
@@ -49,7 +53,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 3a | ~~**15 fix** out of combat the weapon vanishes entirely, not on the back (Sapega 2026-10-21)~~ — done (D268 amended) |
 | 3a' | ~~**4 fix** swing and hit effects too small — bigger, sharper slash arcs matching the hitbox; on hit a cut streak + small sparks in the hit direction, NO flashes or bursts — hack'n'slash; anime-style effect sprites generated with ComfyUI (D239) for swings, hits and skills (Sapega 2026-10-21)~~ — done (D268 amended, D273: generated anime crescents ×1.3, a cut streak + shards on a hit instead of a burst, no flashes, hitboxes = drawn reach) |
 | 4 | ~~**22** class path and three skill trees~~ — done (D279–D285, [[skill_trees_plan]]); left: subclass at 40 / prestige at 70 (outlined), own cast art for the 18 new actives (they reuse the D271 poses with tinted effects), oath keepers drawn over the hero (fix with item 14's blacksmith) | |
-| 5 | **9–13** Game Menu (+ **B77** double click learns a skill): inventory actions, party of one, equipment slot picker, hints as tutorial windows with an off switch, Journal quests / characters / bestiary | UI batch |
+| 5 | ~~**9–13** Game Menu (+ **B77** double click learns a skill): inventory actions, party of one, equipment slot picker, hints as tutorial windows with an off switch, Journal quests / characters / bestiary~~ — done (D286–D290, [[game_menu_batch_mapping]], [[journal_codex_plan]]); B77 was fixed with item 22 | UI batch |
 | 6 | **14** blacksmith and merchant buildings + arrival cutscene with a task (also the blacksmith drawn in front of the hero) | |
 | 7 | **5** NPC idle activities | generated frames |
 | 8 | **23** DesertRoad grows; XP curve lands level 5 at the City (Canyon, Village, CityGates, City stay as they are) | plan first: `design/world_expansion_plan.md` |
@@ -61,8 +65,9 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 
 - Q64 — the prisoner's shout before the fire djinn (default: an incantation in an invented language).
 - Q66 — respec rules and class-stage names: defaults applied as D280–D282 (oath permanent, respec 10 coins × level, names drafts).
-- Agent-made calls Sapega has not confirmed: D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects), D279–D285 (skill trees, the oath and its keepers, respec price, passive stats, level cap; draft `.dqd` lines `City_Oath_*`) (combat values, the "freeze" read as a
+- Agent-made calls Sapega has not confirmed: D286–D290 (Game Menu batch: potion use without a target choice, party = hero + companions, slot picker, tutorial windows pause the game and are On by default, codex texts / bestiary names are English drafts), D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects), D279–D285 (skill trees, the oath and its keepers, respec price, passive stats, level cap; draft `.dqd` lines `City_Oath_*`) (combat values, the "freeze" read as a
   mechanic, no stamina, bindings R-click/R/pad B heavy and Ctrl/middle mouse/pad LB block registered in code); the gate guard's draft line; text speed 24 letters/s and no Skip.
+- Game Menu batch leftovers: saves made before 2026-10-21 lack `seen_tutorials` / `journal` and fail loudly on load (no-fallback rule; the two local dev saves were migrated, backups `*.bak-before-D289`); codex portraits and the Figma class card not built (no art / data); hint topics have no screenshot; the bottom-bar action badges (LB / A / B) are static pad glyphs — item 24 audit.
 - Known leftovers: cutscenes have no skip and keep the HUD; camera/walk cutscene code is inline in room scripts (pull into
   shared helpers with the next cutscene); 12 `.dqd` files tag the speaker in the text instead of the speaker field; the
   assist guard still uses pack knight art; the old painted gates still show behind the new gatehouse.

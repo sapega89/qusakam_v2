@@ -99,6 +99,8 @@ func _key(code: Key) -> void:
 
 func _initialize() -> void:
 	await process_frame
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	await process_frame
 	await process_frame
 	# Headless скидає вікно до 64×64 на першому кадрі, а тест клікає мишею в координатах 1920×1080.
 	# Раніше розмір неявно ставив AppConfig аддона Maaacks із player_config.cfg (замінено InputConfig).

@@ -21,6 +21,8 @@ func ck(ok: bool, label: String) -> void:
 
 
 func _initialize() -> void:
+	await process_frame
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
 	# [0] «сцена окремо (F6), без гри» прибрано разом із запасними шляхами: меню потребує гру.
 	await process_frame
 	await process_frame

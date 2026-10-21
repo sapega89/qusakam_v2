@@ -30,6 +30,8 @@ func _hold(action: StringName, frames: int) -> void:
 
 func _initialize() -> void:
 	await process_frame
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")

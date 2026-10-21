@@ -49,6 +49,8 @@ func _enter_canyon(game: Node, flags: Dictionary) -> void:
 
 func _initialize() -> void:
 	await process_frame
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
