@@ -76,7 +76,7 @@ lottery, as B82 says.
 | `verify_bosses` | `RESULT: ALL PASS` |
 | `verify_lab_rooms` (updated [3]) | `RESULT: ALL PASS` (before the update: 2 FAIL — the live hall's talk stopped the door walk, as expected) |
 | `verify_map_geometry` (incl. [6] art on every standable top) | `RESULT: ALL PASS` |
-| Full suite `Scripts/Tools/run_verify.sh` | SUITE_RESULT |
+| Full suite `Scripts/Tools/run_verify.sh` | `SUITE: ALL PASS` — 70 / 70 PASS (run with a local `chmod +x` on the two scripts, see the bug below) |
 
 What `verify_lab_boss` checks, with real input:
 1. Arriving: WAIT, the djinn asleep, no bar, the way west open, the gates down.
