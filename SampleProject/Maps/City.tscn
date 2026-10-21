@@ -19,6 +19,9 @@
 [ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/gate_passage.tscn" id="gate_passage"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png" id="anvil"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_chapel.png" id="chapel_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(140, 200)
 
@@ -75,6 +78,27 @@ centered = false
 
 [node name="ForgeDoor" type="Marker2D" parent="." unique_id=1402914102]
 position = Vector2(1230, 396)
+
+[node name="Chapel" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1450, 136)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("chapel_art")
+centered = false
+
+[node name="WitchHut" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(1765, 110)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("hut_art")
+centered = false
+
+[node name="DervishTent" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(2136, 131)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("tent_art")
+centered = false
 
 [node name="Terrain" type="Sprite2D" parent="."]
 texture_filter = 1
@@ -141,13 +165,13 @@ done_flag = "city_blacksmith_met"
 shape = SubResource("RectangleShape2D_arrival")
 
 [node name="OathPriest" parent="." instance=ExtResource("7_oath_priest")]
-position = Vector2(1500, 396)
+position = Vector2(1610, 396)
 
 [node name="OathWitch" parent="." instance=ExtResource("8_oath_witch")]
-position = Vector2(1850, 396)
+position = Vector2(1915, 396)
 
 [node name="OathDervish" parent="." instance=ExtResource("9_oath_dervish")]
-position = Vector2(2200, 396)
+position = Vector2(2330, 396)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
