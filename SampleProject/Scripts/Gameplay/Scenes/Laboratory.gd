@@ -1,15 +1,10 @@
 extends Node2D
 
-## 🧪 Laboratory Scene
-## States: Explore, Companion_01, Companion_02, Companion_03, LimitTest, BossFight, AfterBoss
-## Згідно з ЕТАПОМ 3: КРОК 2
+## 🧪 Laboratory Scene — коридори (D303). States: Explore, BossFight (бій із мобами), AfterBoss.
+## Знайомство з компаньйонами й асисти — у LabCells (D305); тест межі прибрано (row 9.5). Три бої по поверхах — row 9.6.
 
 enum State {
 	EXPLORE,
-	COMPANION_01,
-	COMPANION_02,
-	COMPANION_03,
-	LIMIT_TEST,
 	BOSS_FIGHT,
 	AFTER_BOSS
 }
@@ -45,17 +40,9 @@ func _initial_state() -> State:
 	var game := Game.get_singleton()
 	if game.get_quest_flag("lab_boss_fight_complete"):
 		return State.AFTER_BOSS
-	if game.get_quest_flag("lab_limit_test_complete"):
-		return State.BOSS_FIGHT
-	if game.get_quest_flag("lab_companion_03_complete"):
-		return State.COMPANION_03
-	if game.get_quest_flag("lab_companion_02_complete"):
-		return State.COMPANION_02
-	if game.get_quest_flag("lab_companion_01_complete"):
-		return State.COMPANION_01
 	return State.EXPLORE
 
-## Для StateChangeTrigger: розмови компаньйона й тест запускають тригери в кімнаті (D174).
+## Для StateChangeTrigger: бій запускає тригер на нижньому поверсі (D174).
 func get_current_state_name() -> String:
 	return State.keys()[current_state]
 
@@ -73,43 +60,15 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 	var game = Game.get_singleton()
 	match state:
 		State.EXPLORE:
-			_set_objective("Explore the laboratory")
+			_set_objective("Fight through the laboratory")
 			# EXPLORE не має автоматичного переходу - чекає на тригер
 			DebugLogger.info("🧪 Laboratory: Стейт EXPLORE - очікування тригера", "Scene")
-		State.COMPANION_01:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_companion_01_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Lab_Companion_01 вже був прочитаний, пропускаємо", "Scene")
-				return
-			_set_objective("Explore the laboratory")
-			_execute_step(StepType.DIALOGUE, "Lab_Companion_01", run_id)
-		State.COMPANION_02:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_companion_02_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Lab_Companion_02 вже був прочитаний, пропускаємо", "Scene")
-				return
-			_set_objective("Keep exploring")
-			_execute_step(StepType.DIALOGUE, "Lab_Companion_02", run_id)
-		State.COMPANION_03:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_companion_03_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Lab_Companion_03 вже був прочитаний, пропускаємо", "Scene")
-				return
-			_set_objective("Prepare for battle")
-			_execute_step(StepType.DIALOGUE, "Lab_Companion_03", run_id)
-		State.LIMIT_TEST:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_limit_test_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Lab_LimitTest вже був прочитаний, пропускаємо", "Scene")
-				return
-			_set_objective("Pass the limit test")
-			_execute_step(StepType.DIALOGUE, "Lab_LimitTest", run_id)
 		State.BOSS_FIGHT:
 			# Перевіряємо, чи діалог вже був прочитаний
 			if game.get_quest_flag("lab_boss_fight_complete", false):
 				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Laboratory_BossFight вже був прочитаний, пропускаємо", "Scene")
 				return
-			_set_objective("Defeat the laboratory boss")
+			_set_objective("Fight through the laboratory")
 			_start_fight("Laboratory_BossFight", run_id)
 		State.AFTER_BOSS:
 			# Перевіряємо, чи діалог вже був прочитаний
@@ -145,9 +104,6 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 			pass
 
 	if run_id != state_run_id: return
-	# Розмови компаньйона чекають наступного тригера; лише тест межі одразу веде в бій.
-	if current_state == State.LIMIT_TEST:
-		advance_state()
 
 func _play_dialogue(dialogue_id: String, run_id: int) -> void:
 	var dm = _get_dialogue_manager()
@@ -174,15 +130,6 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 	if not game: return
 
 	match dialogue_id:
-		"Lab_Companion_01", "Lab_Companion_02", "Lab_Companion_03":
-			var flag := "lab_companion_0%s_complete" % dialogue_id.right(1)
-			game.set_quest_flag(flag, true)
-			ServiceLocator.get_companion_manager().join_on_unlock(flag)  # D220: у загін, якщо є місце
-			# D230: той, з ким говорили, підбігає до героя й зникає
-			var companion_id: String = CompanionManager.UNLOCK_FLAGS.find_key(flag)
-			get_node("CompanionNPC_%s" % companion_id).join(game.player)
-		"Lab_LimitTest":
-			game.set_quest_flag("lab_limit_test_complete", true)
 		"Laboratory_AfterBoss":
 			game.set_quest_flag("lab_after_boss_complete", true)
 

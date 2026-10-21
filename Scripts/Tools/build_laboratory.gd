@@ -92,6 +92,8 @@ const ROOMS := {
 			["Scientist", "alchemist", Vector2(790, 384), false, &"idle"],
 			["Prisoner", "prisoner", Vector2(1070, 384), true, &"idle"],
 		],
+		# Супутники — кожен у своїй камері (D305): Астрит, Алісия (ближче до столу, D304), Уризен; кадри спокою — фас.
+		"npcs": [["astrit", Vector2(400, 384), false], ["alisia", Vector2(650, 384), false], ["urizen", Vector2(1200, 384), false]],
 	},
 	# Коридори (D225, D303): три поверхи, драбини; вхід ліворуч на верхньому поверсі з LabCells, вихід праворуч
 	# на нижньому — у LabBoss. Поверхи: A рядки 0–14 (підлога 12), B 15–29 (підлога 27), C 30–44 (підлога 42).
@@ -149,24 +151,17 @@ const ROOMS := {
 		"plane_shift": [0.0, 288.0, 576.0],
 		"places": {
 			"SavePoint_Entrance": Vector2(200, 344),
-			"StateChangeTrigger_Companion01": Vector2(430, 224),
-			"StateChangeTrigger_Companion02": Vector2(1220, 672),
-			"StateChangeTrigger_Companion03": Vector2(700, 672),
 			"SavePoint_PreBoss": Vector2(400, 1304),
-			"StateChangeTrigger_LimitTest": Vector2(560, 1152),
+			"StateChangeTrigger_Fight": Vector2(560, 1152),
 			"EnemySpawner/EnemySpawnPoint1": Vector2(1250, 1328),
 			"EnemySpawner/EnemySpawnPoint2": Vector2(1350, 1328),
 			"EnemySpawner/EnemySpawnPoint3": Vector2(1450, 1328),
 			"EnemySpawner/EnemySpawnPoint4": Vector2(1550, 1328),
 		},
-		"trigger_height": {"StateChangeTrigger_Companion01": 320.0},
 		"ladders": [[Vector2(1504, 384), 480.0], [Vector2(224, 864), 480.0]],
 		"lamps": [Vector2(140, 214), Vector2(620, 214), Vector2(1150, 214), Vector2(1650, 214),
 				Vector2(330, 694), Vector2(980, 694), Vector2(1560, 694),
 				Vector2(330, 1174), Vector2(760, 1174), Vector2(1180, 1174), Vector2(1620, 1174)],
-		# Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
-		# Кадри спокою — фас, їх не дзеркалимо (у Алісії різні очі, D245); дзеркалиться лише біг (CompanionNPC.join).
-		"npcs": [["alisia", Vector2(520, 384), false], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]],
 	},
 	# Зала джина (D303, D307): один поверх, два містки для ухилів; брама праворуч (зачинена до смерті джина — 9.7;
 	# її колізія Gates/Body — вузол сцени, будівник його не чіпає).
