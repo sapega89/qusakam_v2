@@ -64,11 +64,11 @@ func _initialize() -> void:
 
 	print("[2] Figma rows, shared theme")
 	var rows: Array = modal._buttons.get_children()
-	ck(rows.size() == 4, "four rows (%d)" % rows.size())
+	ck(rows.size() == 5, "five rows, Controls included (D-28f) (%d)" % rows.size())
 	var titles: Array = []
 	for row in rows:
 		titles.append(String(row.text).replace(modal.SELECTED_PREFIX, ""))
-	ck(titles == ["Settings", "Tutorial", "Return to Title", "Quit the Game"],
+	ck(titles == ["Settings", "Controls", "Tutorial", "Return to Title", "Quit the Game"],  # Controls — BACKLOG 28, D-28f
 			"Figma labels: %s" % str(titles))
 	for row in rows:
 		ck(row.custom_minimum_size.x == tokens.MISC_ROW_WIDTH,

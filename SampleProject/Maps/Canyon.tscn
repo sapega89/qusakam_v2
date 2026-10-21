@@ -556,3 +556,14 @@ autoplay = true
 bus = &"Music"
 
 [connection signal="body_entered" from="END" to="END" method="_on_body_entered"]
+
+[node name="ObjectiveTargets" type="Node2D" parent="."]
+
+[node name="shrine" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(1165, 184)
+
+[node name="village" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(2570, 344)
+
+[node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(860, 240)

@@ -45,7 +45,9 @@ func _initialize() -> void:
 	for zone in stage.zones:
 		for objective in zone.objectives:
 			ck(source.contains('"%s"' % objective.flag), "%s objective flag %s exists in scene code" % [zone.title, objective.flag])
-			ck(source.contains('set_objective("%s")' % objective.text), "%s objective '%s' is what the game shows" % [zone.title, objective.text])
+			# Друга частина виклику — мітка стрілки (D-28h): set_objective("…", &"id")
+			ck(source.contains('set_objective("%s")' % objective.text) or source.contains('set_objective("%s", &"' % objective.text),
+					"%s objective '%s' is what the game shows" % [zone.title, objective.text])
 		for beat in zone.get("chronicle", []):
 			ck(source.contains('"%s"' % beat.flag), "%s chronicle: %s exists in scene code" % [zone.title, beat.flag])
 		ck(not zone.get("chronicle", []).is_empty(), "%s has a chronicle" % zone.title)

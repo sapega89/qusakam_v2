@@ -243,3 +243,11 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="ObjectiveTargets" type="Node2D" parent="."]
+
+[node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(700, 344)
+
+[node name="city" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(1528, 344)
