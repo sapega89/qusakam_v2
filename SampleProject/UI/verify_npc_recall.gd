@@ -120,12 +120,12 @@ func _initialize() -> void:
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()
 		await process_frame
 
-	print("[5] The old man's decision names its speaker; no empty portrait frame")
+	print("[5] The old man's decision names its speaker and shows his portrait (BACKLOG 36)")
 	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
 	for i in 5: await process_frame
 	var name_label: Label = box.get_node(^"%Name")
 	ck(name_label.is_visible_in_tree() and name_label.text == "Дед", "the box names the grandfather ('%s')" % name_label.text)
-	ck(not box.get_node(^"%PortraitBackground").visible, "a speaker without a portrait shows no portrait frame")
+	ck(box.get_node(^"%PortraitBackground").visible, "the grandfather's portrait frame is shown")
 	await _drain(dm)
 	_done()
 

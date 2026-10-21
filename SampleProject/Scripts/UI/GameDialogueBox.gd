@@ -6,6 +6,8 @@ extends DQDialogueBox
 ## проходять через accept() цього вікна. Швидкість — у dialogue_box_settings.tres.
 ## Сцена — SampleProject/Scenes/UI/dialogue_box.tscn, копія префаба аддона (D110: показ — наш), з непрозорим
 ## фоном ModalPanel (D254).
+## Хто говорить (BACKLOG 36): ім'я — по центру верху вікна (NameMargin поверх рядка кнопок, миша крізь нього), портрет
+## мовця — праворуч; портрети — у персонажах dialogue_quest/characters (Scripts/Tools/build_portraits.gd).
 
 
 func accept() -> void:
