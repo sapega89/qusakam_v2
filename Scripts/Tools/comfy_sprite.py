@@ -981,9 +981,11 @@ CHARACTERS = {
             (
                 "Heavy",
                 [
-                    "in the same side view facing right: winding up a heavy overhead blow, both hands gripping the "
-                    "sword hilt raised high above his head, the blade pointing back behind him, leaning back, knees "
-                    "bent, the cape hanging behind him",
+                    # з самого кадру Attack1/1: замах «з нуля» малював удвічі товстіший і довший меч (арт-директор)
+                    "FROM:Attack1:0:the same pose, now his second hand also gripping the hilt just below the first, "
+                    "both hands together on the hilt raised above his head; the sword itself exactly the same short "
+                    "narrow sword as in the picture, the same thin blade, the same length, the same small cross-guard, "
+                    "not bigger, not wider; leaning back, knees bent, the cape hanging behind him",
                     "in the same side view facing right: swinging a heavy blow down, both hands gripping the sword hilt "
                     "in front of his face, the blade pointing forward and up, stepping forward, the cape flying behind "
                     "him",
