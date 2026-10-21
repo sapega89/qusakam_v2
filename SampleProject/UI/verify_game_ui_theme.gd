@@ -88,7 +88,7 @@ func _initialize() -> void:
 	var modal_container: Control = ui_root.get_node("ModalLayer/Container")
 	_check(modal_container.theme == theme, "ModalLayer/Container.theme is GameUITheme")
 
-	print("\n[3b] Dialogue bar Auto/Skip take the shared Button look (B27, #75)")
+	print("\n[3b] Dialogue box: opaque background, no Auto/Skip buttons (D254, B10)")
 	var dsys: Node = (load(DIALOGUE_SYSTEM) as PackedScene).instantiate()
 	root.add_child(dsys)
 	await process_frame
@@ -96,16 +96,11 @@ func _initialize() -> void:
 	var dpanel: StyleBox = dbox.get_theme_stylebox("panel")
 	_check(dpanel is StyleBoxFlat and (dpanel as StyleBoxFlat).bg_color.a == 1.0,
 			"dialogue box background is opaque (D254)")
-	for on in [false, true]:
-		dbox.set_auto_button_active(on)
-		dbox.set_skip_button_active(on)
-		for b: Button in [dbox.get_auto_button(), dbox.get_skip_button()]:
-			var v: StringName = b.theme_type_variation
-			_check(v == &"" or theme.get_type_variation_base(v) == &"Button",
-					"%s (on=%s) variation '%s' is a Button type in GameUITheme" % [b.name, on, v])
-			for state in ["normal", "focus"]:
-				_check(b.get_theme_stylebox(state) == theme.get_stylebox(state, "Button"),
-						"%s (on=%s) %s == shared Button %s" % [b.name, on, state, state])
+	var dplayer_settings: Resource = dsys.get_node("DialoguePlayer").settings
+	_check(not dplayer_settings.autoplay_enabled and not dplayer_settings.skip_enabled,
+			"dialogue player has autoplay and skip off (B10, D254)")
+	for b: Button in [dbox.get_auto_button(), dbox.get_skip_button()]:
+		_check(not b.visible, "%s is hidden (B10)" % b.name)
 	dsys.queue_free()
 
 	print("\n[4] Third-party UI isolation")
