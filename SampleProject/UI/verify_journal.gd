@@ -80,8 +80,8 @@ func _initialize() -> void:
 	print("[2] production: Prologue items and their objectives on the left, text on the right (D120, D124, D125)")
 	var zone_items: Array = journal.entries.filter(func(e): return e.parent == "")
 	var titles: Array = zone_items.map(func(e): return e.title)
-	ck(titles == ["Canyon I", "Village", "Canyon II", "Desert Road", "City Gates", "Laboratory", "Laboratory — Outside"],
-			"7 quest items, one per sub-stage (%s)" % str(titles))
+	ck(titles == ["Canyon I", "Village", "Canyon II", "Desert Road", "City Gates", "Laboratory — Cells", "Laboratory", "Laboratory — Outside"],
+			"8 quest items, one per sub-stage (%s)" % str(titles))
 	ck(journal._list_header.visible and journal._list_header.text == "PROLOGUE", "stage header above the items")
 	ck(journal._columns.visible and not journal._empty_state.visible, "list/detail shown, empty state hidden")
 	var canyon_row: Button = _row(journal, "canyon")
@@ -246,7 +246,7 @@ func _initialize() -> void:
 	menu2.switch_to_tab("Journal")
 	for i in 8: await process_frame
 	var journal2: Node = get_first_node_in_group("journal_screen")
-	ck(journal2.entries.filter(func(e): return e.parent == "").size() == 7 and journal2.entries[0].id == "canyon",
+	ck(journal2.entries.filter(func(e): return e.parent == "").size() == 8 and journal2.entries[0].id == "canyon",
 			"a fresh Journal shows the Prologue items again, no fixtures (%d)" % journal2.entries.size())
 	ui.close_game_menu()
 	for i in 5: await process_frame

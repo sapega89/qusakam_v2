@@ -34,8 +34,8 @@ func _initialize() -> void:
 	var stage: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(STORY)).stages[0]
 	var titles: Array = stage.zones.map(func(z): return z.title)
 	ck(stage.title == "Prologue", "stage is the Prologue")
-	ck(titles == ["Canyon I", "Village", "Canyon II", "Desert Road", "City Gates", "Laboratory", "Laboratory — Outside"],
-			"7 sub-stages in story order: %s" % str(titles))
+	ck(titles == ["Canyon I", "Village", "Canyon II", "Desert Road", "City Gates", "Laboratory — Cells", "Laboratory", "Laboratory — Outside"],
+			"8 sub-stages in story order: %s" % str(titles))
 
 	print("[2] every done_flag is set by a scene")
 	var source := ""
@@ -53,7 +53,7 @@ func _initialize() -> void:
 	print("[3] states follow the flags")
 	game.set_quest_flags({})
 	game.set_objective("Explore the Canyon")
-	ck(_states(flow) == ["current", "locked", "locked", "locked", "locked", "locked", "locked"], "fresh game: Canyon I current")
+	ck(_states(flow) == ["current", "locked", "locked", "locked", "locked", "locked", "locked", "locked"], "fresh game: Canyon I current")
 	ck(_objectives(flow, 0) == ["current:Explore the Canyon"], "fresh game: only the first objective is visible")
 	ck(_objectives(flow, 1).is_empty(), "locked sub-stage shows no objectives")
 	ck(flow.journal_entries()[0].state == "active", "stage active")

@@ -123,8 +123,9 @@ func _cells_cutscene() -> void:
 	await cs.move(djinn, djinn.global_position + Vector2(0, -40), DJINN_RISE)
 	await cs.say("Lab_Cells_Djinn")
 
-	# Джин тікає крізь стелю; вибухи, землетрус, алхімік утікає на схід
+	# Джин тікає крізь стелю (DjinnUp — під самою стелею, там він і тане); вибухи, землетрус, алхімік утікає на схід
 	cs.move(djinn, ($Marks/DjinnUp as Node2D).global_position, DJINN_FLEE)
+	create_tween().tween_property(djinn, ^"modulate:a", 0.0, DJINN_FLEE).set_ease(Tween.EASE_IN)
 	_walk(scientist, ($Marks/Exit as Node2D).global_position, DJINN_FLEE + BLAST_GAP * BLASTS.size(), cs)
 	for mark in BLASTS:
 		var blast: Node2D = EXPLOSION.instantiate()

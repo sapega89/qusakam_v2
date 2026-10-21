@@ -659,7 +659,7 @@ position = Vector2(1690, 384)
 position = Vector2(1000, 384)
 
 [node name="DjinnUp" type="Marker2D" parent="Marks" unique_id=644511773]
-position = Vector2(1000, -200)
+position = Vector2(1000, 8)
 
 [node name="Blast1" type="Marker2D" parent="Marks" unique_id=1487697328]
 position = Vector2(760, 300)
