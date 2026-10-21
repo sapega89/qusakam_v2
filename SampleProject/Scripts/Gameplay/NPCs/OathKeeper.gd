@@ -48,14 +48,15 @@ func menu_entries() -> Array:
 			if skills.can_respec() == SkillManager.Result.NOT_ENOUGH_COINS:
 				return [{"id": &"not_yet", "label": tr("Not enough coins (%d needed)") % skills.respec_price()}]
 			return [
-				{"id": &"unlearn", "label": tr("Forget every skill for %d coins") % skills.respec_price()},
+				{"id": &"unlearn", "label": tr("Forget every skill and attribute point for %d coins") % skills.respec_price()},
 				{"id": &"not_yet", "label": tr("Not yet")},
 			]
 	var entries := super.menu_entries()
 	if skills.get_oath() == "":
 		entries.append({"id": &"oath", "label": tr("Swear the oath")})
-	if not skills.get_unlocked_skills().is_empty():
-		entries.append({"id": &"respec", "label": tr("Unlearn skills (%d coins)") % skills.respec_price()})
+	# D282 + D335: скидання і навичок, і очок атрибутів — пропонується, коли вкладено хоч щось.
+	if skills.can_respec() != SkillManager.Result.NOTHING_TO_RESET:
+		entries.append({"id": &"respec", "label": tr("Unlearn skills and attributes (%d coins)") % skills.respec_price()})
 	return entries
 
 

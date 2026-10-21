@@ -77,6 +77,8 @@ static func _initial_state() -> Dictionary:
 		"equipped_skills": ["", "", "", ""],
 		"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
 		"oath": "",  # D280: клятва героя ("" / paladin / dark_knight / warden), назавжди
+		"attribute_points": 0,  # D335: невкладені очки атрибутів (5 за рівень)
+		"attributes": {},  # D335: attribute_id → вкладено очок (strength / agility / vitality / wisdom)
 		"current_sp": 30,  # D146: тимчасовий запас SP
 		"max_sp": 30,
 		"game_time": 0.0,

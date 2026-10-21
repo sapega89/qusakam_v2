@@ -336,8 +336,8 @@ func _stat_without_equipment(method: String, is_ratio: bool, attributes: Charact
 			# Рівень і пасивки — як у GameManager.calculate_max_health(), інакше рахувались би внеском речей
 			value = StatCalculator.calculate_max_health(attributes, bare) + game_manager.level_and_passive_health()
 		"calculate_physical_damage":
-			# Бонус рівня — як у GameManager.calculate_physical_damage(), інакше він рахувався б внеском речей
-			value = StatCalculator.calculate_physical_damage(attributes, bare) + ServiceLocator.get_xp_manager().get_damage_bonus()
+			# Рівень, пасивки, Strength — як у GameManager.calculate_physical_damage(), інакше рахувались би внеском речей
+			value = StatCalculator.calculate_physical_damage(attributes, bare) + game_manager.level_and_passive_attack()
 		"calculate_magic_damage":
 			value = StatCalculator.calculate_magic_damage(attributes, bare)
 		"calculate_physical_defense":
@@ -345,13 +345,13 @@ func _stat_without_equipment(method: String, is_ratio: bool, attributes: Charact
 		"calculate_magic_defense":
 			value = StatCalculator.calculate_magic_defense(bare)
 		"calculate_attack_speed":
-			value = StatCalculator.calculate_attack_speed(attributes)
+			value = game_manager.with_attribute_ratio("attack_speed", StatCalculator.calculate_attack_speed(attributes))
 		"calculate_dodge_chance":
-			value = StatCalculator.calculate_dodge_chance(attributes)
+			value = game_manager.with_attribute_ratio("dodge_chance", StatCalculator.calculate_dodge_chance(attributes))
 		"calculate_accuracy":
 			value = StatCalculator.calculate_accuracy(attributes)
 		"calculate_critical_chance":
-			value = StatCalculator.calculate_critical_chance(attributes)
+			value = game_manager.with_attribute_ratio("crit_chance", StatCalculator.calculate_critical_chance(attributes))
 	return roundi(value * 100.0 if is_ratio else value)
 
 

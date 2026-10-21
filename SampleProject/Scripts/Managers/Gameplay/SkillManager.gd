@@ -72,6 +72,13 @@ func _initialize() -> void:
 	game_manager = ServiceLocator.get_game_manager()
 	skill_database = SkillDatabase
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
+	EventBus.attributes_changed.connect(_on_attributes_changed)
+
+
+## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
+func _on_attributes_changed() -> void:
+	_set_current_sp(get_current_sp())
+	_announce_max_sp()
 
 
 func _on_player_leveled_up(new_level: int, old_level: int) -> void:
@@ -88,13 +95,19 @@ func get_rank(skill_id: String) -> int:
 
 
 func can_upgrade(skill_id: String) -> Result:
+	return check_upgrade(skill_id, get_rank(skill_id), get_job_points())
+
+
+## Ті самі правила для уявного стану (SkillPlan, D330): навичка на рівні [param rank] (0 — не вивчена),
+## [param jp] очок лишилось після запланованого.
+func check_upgrade(skill_id: String, rank: int, jp: int) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
-	if not is_unlocked(skill_id):
+	if rank <= 0:
 		return Result.NOT_UNLOCKED
-	if get_rank(skill_id) >= MAX_RANK:
+	if rank >= MAX_RANK:
 		return Result.MAX_RANK
-	if get_job_points() < UPGRADE_COST:
+	if jp < UPGRADE_COST:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
 
@@ -114,9 +127,13 @@ func upgrade_skill(skill_id: String) -> Result:
 	return Result.OK
 
 
-## Ушкодження чи лікування з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший).
+## Ушкодження чи лікування з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший) × сила навичок (Wisdom, D335).
 func scaled(skill_id: String, base: int) -> int:
-	return roundi(base * _rank_factor(skill_id))
+	return roundi(base * _rank_factor(skill_id) * (1.0 + _attributes().bonus("skill_power")))
+
+
+func _attributes() -> AttributeManager:
+	return ServiceLocator.get_attribute_manager()
 
 
 func _rank_factor(skill_id: String) -> float:
@@ -189,7 +206,7 @@ func _regen_sp(delta: float) -> void:
 	if get_current_sp() >= get_max_sp():
 		_sp_regen_debt = 0.0
 		return
-	_sp_regen_debt += delta * (SP_REGEN_PER_SECOND + passive_value("sp_regen"))
+	_sp_regen_debt += delta * (SP_REGEN_PER_SECOND + passive_value("sp_regen") + _attributes().bonus("sp_regen"))
 	if _sp_regen_debt >= 1.0:
 		restore_sp(int(_sp_regen_debt))
 		_sp_regen_debt -= floorf(_sp_regen_debt)
@@ -250,9 +267,9 @@ func get_current_sp() -> int:
 	return int(_state().get("current_sp", 0))
 
 
-## Базовий запас із player_state + пасивки max_sp (D284).
+## Базовий запас із player_state + пасивки max_sp (D284) + Wisdom (D335).
 func get_max_sp() -> int:
-	return int(_state().get("max_sp", 0)) + roundi(passive_value("max_sp"))
+	return int(_state().get("max_sp", 0)) + roundi(passive_value("max_sp")) + roundi(_attributes().bonus("max_sp"))
 
 
 ## Встановлює максимум SP; поточне значення підтягується під нову межу.
@@ -296,9 +313,15 @@ func _set_current_sp(value: int) -> int:
 
 ## Чи можна вивчити навичку зараз. Не змінює стан.
 func can_unlock(skill_id: String) -> Result:
+	return check_unlock(skill_id, get_unlocked_skills(), get_job_points())
+
+
+## Ті самі правила для уявного стану (SkillPlan, D330): [param unlocked] — вивчене разом із запланованим,
+## [param jp] — очок лишилось після запланованого. Не змінює стан.
+func check_unlock(skill_id: String, unlocked: Array, jp: int) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
-	if is_unlocked(skill_id):
+	if skill_id in unlocked:
 		return Result.ALREADY_UNLOCKED
 
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
@@ -307,9 +330,9 @@ func can_unlock(skill_id: String) -> Result:
 	if _player_level() < definition.required_level:
 		return Result.LEVEL_TOO_LOW
 	for prerequisite in definition.prerequisites:
-		if not is_unlocked(prerequisite):
+		if not prerequisite in unlocked:
 			return Result.MISSING_PREREQUISITE
-	if get_job_points() < definition.jp_cost:
+	if jp < definition.jp_cost:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
 
@@ -387,14 +410,14 @@ func respec_price() -> int:
 
 
 func can_respec() -> Result:
-	if get_unlocked_skills().is_empty():
+	if get_unlocked_skills().is_empty() and _attributes().spent_total() == 0:
 		return Result.NOTHING_TO_RESET
 	if ServiceLocator.get_inventory_manager().get_coins() < respec_price():
 		return Result.NOT_ENOUGH_COINS
 	return Result.OK
 
 
-## Забуває все, повертає всі очки, спорожнює хотбар; клятва лишається.
+## Забуває все, повертає всі очки навичок і атрибутів (D335), спорожнює хотбар; клятва лишається.
 func respec() -> Result:
 	var verdict := can_respec()
 	if verdict != Result.OK:
@@ -407,6 +430,7 @@ func respec() -> Result:
 	_commit_loadout(["", "", "", ""])
 	_cooldowns.clear()
 	add_job_points(refund)
+	_attributes().reset()
 	_set_current_sp(get_current_sp())
 	EventBus.skills_reset.emit(refund)
 	_announce_max_sp()

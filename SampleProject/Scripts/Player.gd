@@ -65,7 +65,7 @@ func _ready() -> void:
 	# Max HP — з GameManager (D205): витривалість, броня, рівень, пасивки
 	Max_Health = ServiceLocator.get_game_manager().calculate_max_health()
 	current_health = Max_Health
-	for changed in [EventBus.equipment_equipped, EventBus.equipment_unequipped, EventBus.skill_unlocked, EventBus.skill_upgraded, EventBus.skills_reset]:
+	for changed in [EventBus.equipment_equipped, EventBus.equipment_unequipped, EventBus.skill_unlocked, EventBus.skill_upgraded, EventBus.skills_reset, EventBus.attributes_changed]:
 		changed.connect(func(_a = null, _b = null, _c = null) -> void: refresh_max_health())
 
 	# ВАЖНО: Гарантуємо, що event = false при ініціалізації

@@ -21,6 +21,8 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 @onready var _level_label: Label = %LevelLabel
 @onready var _next_level_value: Label = %NextLevelValue
 @onready var _jp_value: Label = %JPValue
+@onready var _attr_points_value: Label = %AttrPointsValue
+@onready var _point_attrs: HBoxContainer = %PointAttrs
 @onready var _primary_job: Label = %PrimaryJobName
 @onready var _secondary_job: Label = %SecondaryJobName
 @onready var _weapon_slots: HBoxContainer = %WeaponSlots
@@ -66,9 +68,13 @@ func _connect_live_sources() -> void:
 	var xp_manager: XPManager = service_locator.get_xp_manager()
 	if xp_manager and not xp_manager.level_up.is_connected(_on_level_up):
 		xp_manager.level_up.connect(_on_level_up)
-	# JP нараховуються вже після level_up, тож слухаємо самі JP.
+	# JP нараховуються вже після level_up, тож слухаємо самі JP; так само очки атрибутів (D335).
 	if not EventBus.job_points_changed.is_connected(_on_job_points_changed):
 		EventBus.job_points_changed.connect(_on_job_points_changed)
+	if not EventBus.attribute_points_changed.is_connected(_on_job_points_changed):
+		EventBus.attribute_points_changed.connect(_on_job_points_changed)
+	if not EventBus.attributes_changed.is_connected(update_display):
+		EventBus.attributes_changed.connect(update_display)
 	if not EventBus.companion_party_changed.is_connected(_update_companions):
 		EventBus.companion_party_changed.connect(_update_companions)
 
@@ -119,6 +125,7 @@ func _update_header() -> void:
 
 	# JP (D149) — той самий формат, що й на вкладці Skills.
 	_jp_value.text = "%d JP" % ServiceLocator.get_skill_manager().get_job_points()
+	_attr_points_value.text = str(ServiceLocator.get_attribute_manager().get_unspent())  # D335: ще не вкладені
 
 
 # ── Робота / зброя ──────────────────────────────────────────────────────────
@@ -184,6 +191,29 @@ func _update_attributes() -> void:
 	_fill_meter(_sp_meter, "Max. SP", sm.get_current_sp(), sm.get_max_sp())
 	_fill_rows(_left_attrs, LEFT_ROWS)
 	_fill_rows(_right_attrs, RIGHT_ROWS)
+	_fill_point_attrs()
+
+
+## Вкладені очки атрибутів (D335) — назва й число, з даних attributes.json; що вони дають, уже в рядках нижче.
+func _fill_point_attrs() -> void:
+	for child in _point_attrs.get_children():
+		_point_attrs.remove_child(child)
+		child.queue_free()
+	var attributes: AttributeManager = ServiceLocator.get_attribute_manager()
+	for attribute_id in attributes.attribute_ids():
+		var pair := HBoxContainer.new()
+		pair.name = attribute_id
+		pair.add_theme_constant_override("separation", UITokens.SPACE_SM)
+		var caption := Label.new()
+		caption.text = String(attributes.get_definition(attribute_id).name)
+		caption.theme_type_variation = &"AttrLabel"
+		pair.add_child(caption)
+		var value := Label.new()
+		value.name = "Value"
+		value.text = str(attributes.get_points(attribute_id))
+		value.theme_type_variation = &"AttrValue"
+		pair.add_child(value)
+		_point_attrs.add_child(pair)
 
 
 func _fill_rows(container: VBoxContainer, rows: Array[Array]) -> void:
