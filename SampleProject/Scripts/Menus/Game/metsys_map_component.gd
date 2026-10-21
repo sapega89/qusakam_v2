@@ -117,7 +117,9 @@ func update_offset():
 
 ## Панорамування карти. Використовуємо дії InputMap (ui_left/right/up/down),
 ## а не сирі keycode — інакше перепризначення клавіш у налаштуваннях не працює.
-func _input(event: InputEvent) -> void:
+## Лише коли фокус на карті (BACKLOG 24): раніше _input забирав стрілки / D-pad, щойно карту видно, і з вкладки
+## World Map не можна було перейти на іншу. На карту заходять D-pad → / A з вкладки, виходять B (FocusRouter).
+func _gui_input(event: InputEvent) -> void:
 	if not is_map_active or not visible:
 		return
 
@@ -140,7 +142,7 @@ func _input(event: InputEvent) -> void:
 	if player_location:
 		player_location.offset = -Vector2(map_view.begin) * MetSys.CELL_SIZE
 	top_draw.queue_redraw()
-	get_viewport().set_input_as_handled()
+	accept_event()
 
 
 func _draw() -> void:

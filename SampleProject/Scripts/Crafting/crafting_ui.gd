@@ -42,9 +42,9 @@ func _ready() -> void:
 	var bar = base_menu.get_node("BottomBar")
 	bar.set_default_hint(tr("Select a recipe."))
 	bar.set_actions([
-		{"key": "L/R", "label": tr("Switch Station")},
-		{"key": "A", "label": tr("Confirm")},
-		{"key": "B", "label": tr("Back")},
+		{"action": [&"menu_prev_tab", &"menu_next_tab"], "label": tr("Switch Station")},
+		{"action": &"ui_accept", "label": tr("Confirm")},
+		{"action": &"ui_cancel", "label": tr("Back")},
 	])
 	refresh()
 
@@ -78,7 +78,8 @@ func _build_categories() -> void:
 			b.icon = load(ICON_DIR % cat.icon)
 			b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			b.expand_icon = true
-		b.focus_mode = Control.FOCUS_NONE
+		# Категорії — D-pad ліворуч від рядків і A (BACKLOG 24: LB/RB уже перемикають станції).
+		b.focus_mode = Control.FOCUS_ALL
 		b.pressed.connect(_set_category.bind(i))
 		_categories.add_child(b)
 		_category_buttons.append(b)

@@ -32,8 +32,8 @@ func _ready() -> void:
 	var bar = base_menu.get_node("BottomBar")
 	bar.set_default_hint(tr("Two identical items make one a level higher."))
 	bar.set_actions([
-		{"key": "A", "label": tr("Confirm")},
-		{"key": "B", "label": tr("Back")},
+		{"action": &"ui_accept", "label": tr("Confirm")},
+		{"action": &"ui_cancel", "label": tr("Back")},
 	])
 	refresh()
 

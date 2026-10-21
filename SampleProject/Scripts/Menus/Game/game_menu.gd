@@ -70,7 +70,8 @@ func _on_tab_pressed(button: BaseButton) -> void:
 func _update_pointer() -> void:
 	var owner: Control = get_viewport().gui_get_focus_owner()
 	var buttons: Array[BaseButton] = _tabs.get_buttons()
-	var target: BaseButton = owner as BaseButton if owner in buttons else _tabs.get_pressed_button()
+	# Фокус може стояти й на не-кнопці (карта World Map): типізований масив кнопок її не шукає.
+	var target: BaseButton = owner as BaseButton if owner is BaseButton and owner in buttons else _tabs.get_pressed_button()
 	for button in buttons:
 		button.theme_type_variation = &"SidebarTabOn" if button == target else &"SidebarTab"
 
@@ -84,7 +85,8 @@ func switch_to_tab(tab_name: String) -> void:
 	if not buttons.any(func(b: BaseButton) -> bool: return b.get_meta("tab") == tab_name):
 		push_warning("GameMenu: unknown tab '%s'" % tab_name)
 		return
-	var focus_in_tabs: bool = get_viewport().gui_get_focus_owner() in buttons
+	var focus_owner: Control = get_viewport().gui_get_focus_owner()
+	var focus_in_tabs: bool = focus_owner is BaseButton and focus_owner in buttons
 	for button in buttons:
 		var on: bool = button.get_meta("tab") == tab_name
 		button.set_pressed_no_signal(on)

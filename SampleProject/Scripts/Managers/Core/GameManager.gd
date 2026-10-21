@@ -33,6 +33,10 @@ func _initialize() -> void:
 	"""Инициализация GameManager"""
 	preload("res://SampleProject/Scripts/Core/CombatInput.gd").register()  # D270
 	preload("res://SampleProject/Scripts/Core/SkillScreenInput.gd").register()  # D331
+	var watcher := Node.new()  # BACKLOG 24: пристрій вводу для підказок
+	watcher.name = "InputDeviceWatcher"
+	watcher.set_script(preload("res://SampleProject/Scripts/Core/InputDeviceWatcher.gd"))
+	add_child(watcher)
 	_initialize_inventory_manager()
 	_create_managers()
 	print("🎮 GameManager: Initialized")
