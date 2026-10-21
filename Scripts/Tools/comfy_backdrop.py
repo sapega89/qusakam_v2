@@ -608,6 +608,119 @@ LAYERS = {
         "small round dome and a square watchtower, date palms with olive green fronds rising between the roofs, simple "
         f"shapes with little detail, spanning the full width, standing on the bottom edge, {MAGENTA}",
     ),
+    # BACKLOG 29 + 38 (арт A2): будинки NPC-професій у Місті (каплиця жерця, хатина відьми, намет дервіша), дім
+    # діда й дім старости в кінці села — окремі предмети на лінії підлоги, як кузня й крамниця (D292).
+    "City/gen_chapel": dict(
+        seed=291,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(163, 382),  # лише будинок: дюни обабіч модель домальовує
+        keep=205,  # нижче — пісок під ним
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt=(
+            "one single small desert sky chapel: a small one-storey whitewashed sandstone chapel with a flat roof, a small round pale blue dome on top and a slender open bell arch holding a small bronze bell, a tall narrow arched open doorway in its middle showing a dark interior, long pale blue and white cloth ribbons hanging on both sides of the door, a row of small clay oil lamps on the doorstep, a plain round window above the door, standing alone in the middle of the frame and filling half of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            f"{CHROMA}"
+        ),
+    ),
+    "City/gen_witch_hut": dict(
+        seed=293,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(155, 410),  # лише будинок: дюни обабіч модель домальовує
+        keep=207,  # нижче — пісок під ним
+        key="magenta",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt=(
+            "one single small witch's hut: a crooked round mud-brick hut with a pointed thatched roof of dry reeds, bundles of dried herbs and green leafy herbs hanging upside down from the eaves, a low dark open doorway in its middle, clay pots with green herb plants and small glass bottles on a wooden shelf beside the door, a small black iron cauldron on three legs by the wall, standing alone in the middle of the frame and filling half of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            f"{MAGENTA}"
+        ),
+    ),
+    "City/gen_dervish_tent": dict(
+        seed=295,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(144, 448),  # лише будинок: дюни обабіч модель домальовує
+        keep=214,  # нижче — пісок під ним
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt=(
+            "one single round desert dervish tent: a tall round tent of ochre and deep red striped cloth with a pointed top and a small round brass knob on the top, a scalloped fringe along the edge of its roof, its front flaps tied open on both sides showing a dark interior, a rolled carpet and a small brass incense burner beside the entrance, standing alone in the middle of the frame and filling half of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            f"{CHROMA}"
+        ),
+    ),
+    "Village/gen_grandpa_house": dict(
+        seed=381,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(119, 447),  # лише будинок: дюни обабіч модель домальовує
+        keep=204,  # нижче — пісок під ним
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt=(
+            "one single small old village house: a low one-storey adobe house with rounded walls and a flat roof, wooden roof beams sticking out, a small shuttered window, a faded blue cloth awning over a long wooden bench beside a dark open doorway in its middle, a walking staff leaning by the door, clay pots, a woven basket and a string of dried red peppers hanging by the window, standing alone in the middle of the frame and filling half of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            f"{CHROMA}"
+        ),
+    ),
+    "Village/gen_elder_house": dict(
+        seed=383,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(146, 424),  # лише будинок: дюни обабіч модель домальовує
+        keep=211,  # нижче — пісок під ним
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt=(
+            "one single big village elder's house: a wide two-storey adobe and sandstone house with a flat roof terrace and a low parapet, wooden roof beams sticking out, a tall wide arched wooden double door in its middle, small shuttered windows, a wooden balcony on the upper floor under a striped red and blue cloth awning, long red and blue cloth banners on both sides of the door, big clay jars by the stone steps, standing alone in the middle of the frame and filling two thirds of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            f"{CHROMA}"
+        ),
+    ),
+    # Дім старости зсередини (BACKLOG 38): стіна-екран кімнати, як Hall/gen_wall у залі мера.
+    "ElderHouse/gen_wall": dict(
+        seed=385,
+        rows=H,
+        top=0,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        prompt="the inner wall of a village elder's house seen straight on: plastered warm adobe walls with dark wooden "
+        "ceiling beams across the top, two small arched windows with open wooden shutters, woven red and blue carpets "
+        "hanging on the wall, wooden shelves with clay pots, jars and old scrolls, a low clay hearth with a small fire, "
+        "a low stone plinth along the bottom, warm lamp light",
+    ),
 }
 
 
