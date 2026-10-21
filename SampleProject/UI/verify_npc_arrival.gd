@@ -101,7 +101,7 @@ func _arrival(game: Node, sl: Node, room: String, start: NodePath, npc_name: Str
 	ck(game.get_quest_flag("task_%s_taken" % task), "task %s started" % task)
 	ck(game.get_quest_flag(flag), "%s set" % flag)
 	ck(not player.event, "control back")
-	ck(anim.current_animation == "idle" and npc.interactable.enabled, "%s idles at the station with a prompt" % npc_name)
+	ck(anim.current_animation == "work" and npc.interactable.enabled, "%s goes to work at the station, with a prompt (D295)" % npc_name)
 	dm.dialogue_started.disconnect(on_start)
 
 	# Повернувшись у кімнату — NPC уже стоїть, сцена не повторюється.

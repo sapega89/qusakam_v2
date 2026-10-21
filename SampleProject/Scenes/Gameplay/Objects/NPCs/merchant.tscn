@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd" id="1_merchant"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/merchant/sheet.png" id="3_sprite"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd" id="act_script"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -55,8 +56,27 @@ tracks/0/keys = {
 "values": [4, 5, 6, 7]
 }
 
+[sub_resource type="Animation" id="Animation_work"]
+resource_name = "work"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6, 0.9, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [12, 13, 12, 14]
+}
+
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_idle"]
 _data = {
+&"work": SubResource("Animation_work"),
 &"idle": SubResource("Animation_idle"),
 &"talk": SubResource("Animation_talk"),
 &"walk": SubResource("Animation_walk")
@@ -75,7 +95,7 @@ offset = Vector2(0, -42)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_sprite")
 hframes = 4
-vframes = 3
+vframes = 4
 frame = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -92,3 +112,6 @@ libraries = {
 &"": SubResource("AnimationLibrary_idle")
 }
 autoplay = "idle"
+
+[node name="Activity" type="Node" parent="."]
+script = ExtResource("act_script")

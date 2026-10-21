@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/OathKeeper.gd" id="1_keeper"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/dervish/sheet.png" id="3_sprite"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd" id="act_script"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -18,7 +19,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.6),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [2, 3]
+"values": [4, 5]
 }
 
 [sub_resource type="Animation" id="Animation_talk"]
@@ -38,8 +39,27 @@ tracks/0/keys = {
 "values": [0, 1]
 }
 
+[sub_resource type="Animation" id="Animation_work"]
+resource_name = "work"
+length = 1.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11]
+}
+
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_keeper"]
 _data = {
+&"work": SubResource("Animation_work"),
 &"idle": SubResource("Animation_idle"),
 &"talk": SubResource("Animation_talk")
 }
@@ -60,9 +80,9 @@ texture_filter = 1
 offset = Vector2(0, -44)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_sprite")
-hframes = 2
-vframes = 2
-frame = 2
+hframes = 4
+vframes = 3
+frame = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -32)
@@ -78,3 +98,8 @@ libraries = {
 &"": SubResource("AnimationLibrary_keeper")
 }
 autoplay = "idle"
+
+[node name="Activity" type="Node" parent="."]
+script = ExtResource("act_script")
+work_loops_min = 3
+work_loops_max = 6

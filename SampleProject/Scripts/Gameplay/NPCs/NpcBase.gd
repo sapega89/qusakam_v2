@@ -11,6 +11,7 @@ class_name NpcBase
 
 ## load(), не preload: сервіс тягне Game, а тест-скрипти компілюють NpcBase ще до автолоадів.
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
+const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd")
 
 ## DQD-діалог для пункту Talk. Порожньо — пункту Talk немає (без вигаданого вмісту).
 @export var talk_dialogue: String = ""
@@ -19,12 +20,22 @@ const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 ## Хто це в DialogueQuest (character_id) — його голос вітає героя, коли той сам заговорив (D277).
 @export var character_id: String = ""
 
+## Поза розмови (talk) на аркуші дивиться ліворуч — інакше праворуч; NPC повертається нею до героя (D243).
+@export var profile_faces_left: bool = false
+
 @onready var interactable: InteractableComponent = $Interactable
+## Що NPC робить сам (BACKLOG 5, D295) і поза розмови — поки відкрите його меню, екран чи розмова поруч.
+@onready var activity: NpcActivity = $Activity
+@onready var sprite: Sprite2D = $Sprite2D
+
+## Куди NPC дивиться у сцені, коли ні з ким не говорить.
+var _rest_flip: bool = false
 
 var npc_menu: NpcActionMenu = null
 
 
 func _ready() -> void:
+	_rest_flip = sprite.flip_h
 	if not interactable.interacted.is_connected(_on_interacted):
 		interactable.interacted.connect(_on_interacted)
 	npc_menu = NpcActionMenu.new()
@@ -37,6 +48,25 @@ func _ready() -> void:
 	npc_menu.cancelled.connect(_close_npc_menu)
 	interactable.player_exited.connect(_on_player_left)
 	refresh_availability()
+
+
+func _process(_delta: float) -> void:
+	var now := is_talking()
+	if now == activity.talking:
+		return
+	activity.talking = now
+	if now:
+		var hero := get_tree().get_first_node_in_group(GameGroups.PLAYER) as Node2D
+		sprite.flip_h = (hero.global_position.x < global_position.x) != profile_faces_left
+	else:
+		sprite.flip_h = _rest_flip
+
+
+## Говорить: відкрите його меню чи екран (магазин, кузня) або йде розмова, а герой поруч.
+func is_talking() -> bool:
+	if npc_menu.visible or not _can_open_menu():
+		return true
+	return interactable.player_nearby and ServiceLocatorHelper.get_service_locator().get_dialogue_manager().is_dialogue_active()
 
 
 ## Пункти меню: масив {id, label}. База дає лише Talk.

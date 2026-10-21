@@ -4,7 +4,7 @@ extends SceneTree
 ## Розмова перечитується лише для показу — без DialogueQuest, без dialogue_started/finished.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_npc_recall.gd
 
-const STORY_NPC := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/story_npc.tscn"
+const STORY_NPC := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/grandfather.tscn"
 
 var fails: Array[String] = []
 

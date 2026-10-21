@@ -3,18 +3,12 @@ extends NpcBase
 ## Хранитель клятви в місті (BACKLOG 22, D281): жриця Неба — Paladin, відьма — Dark Knight, дервіш — Warden.
 ## Меню: Talk → Swear the oath → друге меню «I swear… (permanent)» / «Not yet» — єдиний вибір у грі, зроблений
 ## тим самим меню дій NPC, а не вікном вибору діалогу (D113). Unlearn skills — скидання навичок за монети (D282).
-## Фас — коли стоїть; профіль, повернутий до героя, — поки відкрите меню (D243).
+## Фас — коли стоїть, молитва / читання / кружляння — коли сам (D295); профіль до героя — поки говорить (NpcBase).
 
 ## Клятва цього хранителя (skills.json → oaths).
 @export var oath_id: String = ""
 ## Розмова після клятви саме йому (замість talk_dialogue).
 @export var sworn_dialogue: String = ""
-## Профіль на аркуші дивиться ліворуч (жриця) — інакше праворуч.
-@export var profile_faces_left: bool = false
-
-@onready var _sprite: Sprite2D = $Sprite2D
-@onready var _animation: AnimationPlayer = $AnimationPlayer
-
 ## Яке підменю підтвердження відкрите: &"oath", &"respec" або &"" — звичайне меню.
 var _confirming: StringName = &""
 var _first_talk: String = ""
@@ -65,17 +59,9 @@ func menu_entries() -> Array:
 	return entries
 
 
-func _on_interacted() -> void:
-	super._on_interacted()
-	if npc_menu.visible:
-		_face_hero()
-
-
 func _close_npc_menu() -> void:
 	_confirming = &""
 	super._close_npc_menu()
-	_sprite.flip_h = false
-	_animation.play(&"idle")
 
 
 func _on_npc_choice(id: StringName) -> void:
@@ -94,12 +80,3 @@ func _open_confirm(kind: StringName) -> void:
 	interactable.enabled = false
 	npc_menu.setup(menu_entries())
 	npc_menu.open()
-	_face_hero()
-
-
-## Профіль до героя: аркуш дивиться праворуч (або ліворуч у жриці) — дзеркалимо, якщо герой з іншого боку.
-func _face_hero() -> void:
-	var hero := get_tree().get_first_node_in_group(GameGroups.PLAYER) as Node2D
-	var hero_on_left := hero.global_position.x < global_position.x
-	_sprite.flip_h = hero_on_left != profile_faces_left
-	_animation.play(&"talk")

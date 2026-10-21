@@ -57,7 +57,7 @@ Figma: no recall design. `npc-speech-bubble 164:1318` and the box `127:1087` —
 ### ✅ Slice 2a — Quest at the old man (D169), built 2026-10-15
 - `Scripts/Systems/dqd_reader.gd` (`DqdReader.lines`), `DialogueManager.replay(path, tail)` — same box and
   keys (`dq_accept`), no DialogueQuest, no `dialogue_started/finished`; `is_dialogue_active()` covers it.
-- `Scripts/Gameplay/NPCs/StoryNpc.gd` + `Scenes/Gameplay/Objects/NPCs/story_npc.tscn` (zone only; the scene
+- `Scripts/Gameplay/NPCs/StoryNpc.gd` + `Scenes/Gameplay/Objects/NPCs/grandfather.tscn` (zone only; the scene
   draws the NPC). `Village.tscn` `OldManQuest` at the old man: `village_oldman_complete` → `OldMan_Decision`,
   then "Current objective: …". Shows up the moment the flag is set (`Game.quest_flag_changed`).
 - `NpcBase`: E does not open an NPC menu while a dialogue runs.

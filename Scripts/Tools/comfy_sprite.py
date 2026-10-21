@@ -118,6 +118,35 @@ WALK = [
     "passing together under his body",
 ]
 
+SAME = ", everything else exactly the same"
+# BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
+SMITH_RAISE = (
+    "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
+    "glowing orange blade lying on the anvil, holding the blade with long tongs in his left hand, the smithing hammer "
+    "raised high above his shoulder in his right hand"
+)
+MERCHANT_COUNT = (
+    "in the same side view facing right, counting money: holding a small open leather coin purse in his left hand and a "
+    "gold coin between the fingers of his right hand, looking down at the coins"
+)
+PRIEST_PRAY = (
+    "in the same side view facing right, praying: her head bowed, eyes closed, both hands pressed together in front of "
+    "her chest, the slender white staff leaning against her shoulder"
+)
+WITCH_READ = (
+    "in the same side view facing right, reading an open old spell book held in her left hand, her head bent over the "
+    "pages, the gnarled black wand in her right hand"
+)
+DERVISH_WHIRL = (
+    "turned to face the viewer: a front view of him whirling in a sacred dance, his right arm raised high with the palm "
+    "up, his left arm stretched out low to the side with the palm down, his head tilted to his right shoulder, eyes "
+    "closed, his wide flared ochre skirt spinning out in a bell shape, the very tall brimless cylindrical camel felt hat"
+)
+OLDMAN_PIPE = (
+    "in the same side view facing right, leaning on his walking staff with one hand and holding a long thin wooden pipe "
+    "to his mouth with the other, his eyes half closed, content"
+)
+
 CHARACTERS = {
     "bandit": dict(
         out="SampleProject/Assets/Characters/Enemies/bandit/sheet.png",
@@ -169,6 +198,7 @@ CHARACTERS = {
     # NPC: дорослі, на 1,5 вищі за героя (D172) — клітинка 64×96 при його ж пікселі; дихання з двох кадрів.
     "blacksmith": dict(
         out="SampleProject/Assets/Characters/NPCs/blacksmith/sheet.png",
+        prop=("work", (34, 62, 64, 92), "SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png"),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(64, 96),
         seed=5,
@@ -194,6 +224,17 @@ CHARACTERS = {
                     "turned to face the viewer: a front view of him standing idle, both eyes visible, the full dark beard, "
                     "the leather apron over the dark shirt, rolled-up sleeves, the smithing hammer hanging in his right hand",
                     "BOB:56:front:0",
+                ],
+            ),
+            # BACKLOG 5 (D295): кує біля ковадла — замах, удар, відскок; іскри — частинки в сцені
+            (
+                "work",
+                [
+                    SMITH_RAISE,
+                    "FROM:work:0:his hammer arm lowered: the hammer head now level with his shoulder, halfway down to the "
+                    "anvil, about to strike; the blade on the anvil still only glowing orange, no flames" + SAME,
+                    "FROM:work:0:the smithing hammer striking the glowing blade on the anvil, his arm swung straight "
+                    "down" + SAME,
                 ],
             ),
         ],
@@ -223,6 +264,17 @@ CHARACTERS = {
                     "BOB:56:front:0",
                 ],
             ),
+            # BACKLOG 5 (D295): лічить монети — кидає в гаманець, підносить одну до очей
+            (
+                "work",
+                [
+                    MERCHANT_COUNT,
+                    "FROM:work:0:dropping the gold coin from his right hand into the open purse, the coin in the air "
+                    "between his hands" + SAME,
+                    "FROM:work:0:his right hand raised, holding the gold coin up in front of his eyes to inspect it, a "
+                    "satisfied smile" + SAME,
+                ],
+            ),
         ],
     ),
     # Хранителі клятв у місті (BACKLOG 22, D281): профіль — коли герой говорить із ними, фас — коли стоять (D243).
@@ -248,6 +300,17 @@ CHARACTERS = {
                     "turned to face the viewer: a front view of her standing idle, both eyes visible, the white hood, the "
                     "gold ring pendant in the middle of her chest, the slender white staff upright in her hand",
                     "BOB:56:front:0",
+                ],
+            ),
+            # BACKLOG 5 (D295): молиться Небу — схилена голова, потім долоні до неба
+            (
+                "work",
+                [
+                    PRIEST_PRAY,
+                    "BOB:56:work:0",
+                    "FROM:work:0:her face lifted up to the sky, eyes closed, both hands raised open in front of her face, "
+                    "palms up, the staff still leaning against her shoulder" + SAME,
+                    "BOB:56:work:2",
                 ],
             ),
         ],
@@ -277,6 +340,17 @@ CHARACTERS = {
                     "BOB:56:front:0",
                 ],
             ),
+            # BACKLOG 5 (D295): читає гримуар — перегортає сторінку, торкається її паличкою
+            (
+                "work",
+                [
+                    WITCH_READ,
+                    "FROM:work:0:turning a page of the open spell book with her right hand, the wand tucked under her "
+                    "arm" + SAME,
+                    "FROM:work:0:tapping the open spell book with the tip of her wand, the violet crystal glowing "
+                    "brightly" + SAME,
+                ],
+            ),
         ],
     ),
     "dervish": dict(
@@ -303,6 +377,19 @@ CHARACTERS = {
                     "BOB:56:front:0",
                 ],
             ),
+            # BACKLOG 5 (D295): повільне кружляння дервіша (сема) — фас, профіль, спина, дзеркальний профіль
+            (
+                "work",
+                [
+                    DERVISH_WHIRL,
+                    "FROM:work:0:the same whirling dance turned a quarter: now in strict side view facing right, his "
+                    "right arm raised high, his left arm stretched out low, the flared skirt spinning out, the very tall "
+                    "brimless felt hat",
+                    "FROM:work:0:the same whirling dance seen from behind: his back to the viewer, his arms raised and "
+                    "stretched the same way, the flared skirt spinning out, the very tall brimless felt hat",
+                    "FLIP:work:1",
+                ],
+            ),
         ],
     ),
     # Дід — дід Кусакама, тож теж ящур (lore, Sapega 2026-10-19): той самий вид, що й герой, тільки старий.
@@ -319,7 +406,20 @@ CHARACTERS = {
         "helmet wrapped in a white cloth, a short dark beard, a red tabard with a plain golden disc over a chain shirt, baggy "
         "sand-coloured trousers, a curved sword at his belt and a long spear held upright in his right hand, standing at "
         "attention facing right. Keep the plain flat magenta background.",
-        rows=[("idle", [None, "BOB:56"])],
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            # BACKLOG 5 (D295): варта переминається — озирається через плече, поправляє пов'язку шолома
+            (
+                "work",
+                [
+                    "only his head turned to look back to the left over his shoulder; his body, legs, sword and the "
+                    "long upright spear exactly where they are now, the spear still on the left side of the picture"
+                    + SAME,
+                    "in the same side view facing right, shifting his weight onto one leg, his free left hand adjusting "
+                    "the white cloth on his helmet, the long spear still upright in his right hand",
+                ],
+            ),
+        ],
     ),
     "old_man": dict(
         out="SampleProject/Assets/Characters/NPCs/old_man/sheet.png",
@@ -332,7 +432,19 @@ CHARACTERS = {
         "eyes and snout, but elderly — paler faded scales, droopy wrinkled eyelids, a slight hunch, a hooded brown robe and a "
         "gnarled wooden walking staff; taller than the reference character and filling the whole height of the picture; the same "
         "pixel art style, thick dark outline and flat shading; standing idle facing right. Keep the plain flat magenta background.",
-        rows=[("idle", [None, "BOB:50"])],
+        rows=[
+            ("idle", [None, "BOB:50"]),
+            # BACKLOG 5 (D295): дід курить довгу люльку біля дверей і дрімає
+            (
+                "work",
+                [
+                    OLDMAN_PIPE,
+                    "FROM:work:0:lowering the long pipe from his mouth to his chest, a small puff of grey smoke in front "
+                    "of his snout" + SAME,
+                    "FROM:work:0:the long pipe held at his chest, his head nodding down, eyes closed, dozing" + SAME,
+                ],
+            ),
+        ],
     ),
     # Уризен — жрець бога контрактів (lore). Два ракурси (Sapega): фас — стоїть у лабораторії й портрет, профіль —
     # біг (enter, ним же й тікає) і смайт монетою (strike, монети падають на кадрі 6). Листи — як у старих кадрів
@@ -883,7 +995,15 @@ def from_file(path):
     return im[..., :3], im[..., 3] > 128
 
 
-SPECIAL = ("BOB", "ROT", "FILE")
+def regrid(img, cell):
+    """Згенерований кадр, зведений до сітки клітинки й знову ×16 на пурпурі — чистий референс для FROM:."""
+    rgb, op = shrink(img, cell)
+    out = np.where(op[..., None], rgb, np.array(MAGENTA, np.float32)).astype(np.uint8)
+    out = np.dstack([out, np.full(op.shape, 255, np.uint8)])
+    return np.asarray(Image.fromarray(out).resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
+
+
+SPECIAL = ("BOB", "ROT", "FILE", "FLIP")
 OUTLINE = np.array([0x28, 0x17, 0x2A], np.float32)  # контур героя
 MAX_CHROMA = 0.7 * 255  # найяскравіший колір героя — 171: акценти не перекрикують його
 
@@ -955,6 +1075,15 @@ if __name__ == "__main__":
             text = KEEP.format(who=char["who"], pose=pose) if pose else None
             if pose is None:
                 frames[(anim, i)] = base
+            elif pose.startswith("FROM:"):
+                # FROM:<анімація>:<кадр>:<поза> — з іншого згенерованого кадру (цикл дії тримає реквізит і позу)
+                _, src_anim, src_i, rest = pose.split(":", 3)
+                src = frames.get((src_anim, int(src_i)))
+                if src is not None:
+                    src_ref = regrid(src, cell)
+                    text = KEEP.format(who=char["who"], pose=rest)
+                    if not only or anim in only or cached(src_ref, text, seed):
+                        frames[(anim, i)] = edit(src_ref, text, seed)
             elif pose.split(":")[0] in SPECIAL:
                 frames[(anim, i)] = (
                     pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
@@ -988,6 +1117,9 @@ if __name__ == "__main__":
                     else shrink(base, cell),
                     int(arg[0]),
                 )
+            elif kind == "FLIP":  # FLIP:<анімація>:<кадр> — дзеркало (дервіш крутиться)
+                rgb, op = small[(arg[0], int(arg[1]))]
+                small[k] = (rgb[:, ::-1].copy(), op[:, ::-1].copy())
             elif kind == "ROT":
                 small[k] = rotate(small[(arg[0], int(arg[1]))], int(arg[2]))
             else:
@@ -1042,6 +1174,15 @@ if __name__ == "__main__":
                 os.makedirs(folder, exist_ok=True)
                 Image.fromarray(frame).save(os.path.join(folder, f"{i + 1}.png"))
             print(f"{anim}[{i}] feet row {feet_row(op)} -> {floor}")
+    if "prop" in char:
+        # реквізит у кадрах дії (ковадло коваля) — з першого кадру окремою текстурою тієї ж клітинки: стоїть і поза
+        # дією, за персонажем (підставки ковадла в кадрах дії збігаються до пікселя — перевірено)
+        anim, (x0, y0, x1, y1), prop_out = char["prop"]
+        r = [a for a, _ in char["rows"]].index(anim)
+        first = sheet[r * ch : (r + 1) * ch, 0:cw]
+        prop = np.zeros((ch, cw, 4), np.uint8)
+        prop[y0:y1, x0:x1] = first[y0:y1, x0:x1]
+        Image.fromarray(prop).save(prop_out)
     if (
         "out" in char
     ):  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере

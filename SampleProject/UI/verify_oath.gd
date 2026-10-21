@@ -83,8 +83,9 @@ func _initialize() -> void:
 	ck([priest.oath_id, witch.oath_id, dervish.oath_id] == ["paladin", "dark_knight", "warden"], "priest → Paladin, witch → Dark Knight, dervish → Warden")
 	for keeper in [priest, witch, dervish]:
 		var sprite: Sprite2D = keeper.get_node("Sprite2D")
-		ck(sprite.hframes == 2 and sprite.vframes == 2 and sprite.texture.get_size() == Vector2(128, 192), "%s: generated sheet, profile + front (D243)" % keeper.name)
-		ck(keeper.get_node("AnimationPlayer").current_animation == "idle" and sprite.frame >= 2, "%s stands in the front view" % keeper.name)
+		ck(sprite.vframes == 3 and sprite.texture.get_size() == Vector2(64 * sprite.hframes, 288), "%s: generated sheet, profile + front + activity (D243, D295)" % keeper.name)
+		var idle: Animation = keeper.get_node("AnimationPlayer").get_animation(&"idle")
+		ck(range(idle.track_get_key_count(0)).all(func(k: int) -> bool: return int(idle.track_get_key_value(0, k)) / sprite.hframes == 1), "%s rests in the front view" % keeper.name)
 	ck(priest.global_position.x > game.map.get_node("Blacksmith").global_position.x, "east of the Blacksmith")
 
 	print("[2] Below level 5 the oath waits (pad)")
@@ -97,7 +98,7 @@ func _initialize() -> void:
 	ck(priest.npc_menu.visible and _labels(priest) == ["Come back at level 5"], "the oath asks for level 5: %s" % [_labels(priest)])
 	await _pad(JOY_BUTTON_Y)
 	ck(not priest.npc_menu.visible and sm.get_oath() == "", "closed, no oath")
-	ck(priest.get_node("AnimationPlayer").current_animation == "idle", "back to the front view")
+	ck(priest.get_node("AnimationPlayer").current_animation == "work", "back to her prayer (D295)")
 
 	print("[3] At level 5: the choice, Not yet, then the oath (key E + pad)")
 	while xp.get_level() < 5:

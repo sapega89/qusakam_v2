@@ -68,6 +68,7 @@ func _play() -> void:
 	_npc.show()
 	_npc.process_mode = Node.PROCESS_MODE_INHERIT
 	_npc.interactable.enabled = false
+	_npc.activity.held = true  # ходу й розмову веде катсцена, не розклад дій (D295)
 	sprite.flip_h = station < door.global_position.x  # кадри ходи дивляться праворуч
 	anim.play(&"walk")
 	var walk := create_tween()
@@ -84,8 +85,8 @@ func _play() -> void:
 	await _say(dm, "res://dialogue_quest/%s.dqd" % task.give_dialogue)
 
 	game.set_quest_flag(done_flag, true)
-	anim.play(&"idle")
 	sprite.flip_h = false
+	_npc.activity.resume()
 	_npc.refresh_availability()
 	player.set_movement_enabled(true)
 	finished.emit()

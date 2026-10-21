@@ -94,7 +94,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    also in the air, walking in towns out of combat (D251), the halberd two-handed and sword + dagger dual-wield (D250),
    skill casts interruptible (D259 hook). Open: "harder tuning" beyond combos/staggers (enemy HP/damage untouched);
    enemies have no stagger frames (tint only); no stamina by design (D264).
-5. **NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.
+5. ~~**NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.~~ — **done 2026-10-21** (D295):
+   all seven NPCs in the maps (Blacksmith, Merchant, Grandfather, three oath keepers, two gate guards) loop a generated
+   activity with random rests and turn to the hero in their talk pose while talking; `verify_npc_activity.gd`.
 6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
 7. **Foreground parallax** — below.
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
