@@ -4,7 +4,7 @@ Open questions from the Runtime UI Completion plan (`runtime_ui_completion_plan.
 None blocks the start of the work. Each has a **default** that will be used until
 answered, and names the slice it affects.
 
-> ## Open now (2026-10-21): **Q66 remainder** (subclass / prestige stage names and oath permanence — defaults applied, D280/D282). Everything else is answered: Q1–Q28 → D88–D115 (2026-09-29), Q29–Q35, Q38, Q39, Q48, Q51, Q53, Q57–Q60, Q2 on 2026-10-21 (summary row D318), Q11 → D97, Q52 → D301/D302, Q56 → D246/D248/D249, Q61–Q63 → D240–D242, Q64, Q65 → D255.
+> ## Open now (2026-10-21): **Q66 remainder** (subclass / prestige stage names only — the oath is permanent ✅ D280, respec ✅ D282). Everything else is answered: Q1–Q28 → D88–D115 (2026-09-29), Q29–Q35, Q38, Q39, Q48, Q51, Q53, Q57–Q60, Q2 on 2026-10-21 (summary row D318), Q11 → D97, Q52 → D301/D302, Q56 → D246/D248/D249, Q61–Q63 → D240–D242, Q64, Q65 → D255.
 >
 > Sapega answered **Q1–Q28** in one pass. The decisions are recorded as
 > **D88–D115** in [[figma_decision_register]] §8. Q1 needed no decision.
