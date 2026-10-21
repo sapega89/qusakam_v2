@@ -1,12 +1,16 @@
 # CLAUDE.md
 
-> **Note:** Full detailed documentation available in `CLAUDE_FULL.md`
-
 This file provides essential guidance to Claude Code when working with this repository.
+
+> **Where the truth lives:** the `design/` Obsidian vault — start at `design/INDEX.md`.
+> Old long-form docs in `docs/` (CLAUDE_FULL.md, README.md, TESTS_COMPLETE.md,
+> DEMO_TEST_PLAN.md, SENIOR_DEV_ANALYSIS.md, ...) are **archived and outdated** —
+> they describe Godot 4.5, GUT tests and a "Dark Realm RPG" that no longer exist.
 
 ## Project Overview
 
-**Godot 4.6** metroidvania-style game with GDScript. Integrates combat, inventory, dialogue, save/load, and MetroidvaniaSystem addon for map management.
+**Kusakam** — a **Godot 4.6** metroidvania in GDScript. Combat, inventory, skills,
+dialogue, save/load, and the MetroidvaniaSystem (MetSys) addon for the map.
 
 > Version is authoritative from `project.godot` → `config/features=PackedStringArray("4.6", ...)`.
 > Running the project on 4.5.x crashes at startup.
@@ -21,72 +25,62 @@ godot --path . res://SampleProject/MainMenu.tscn
 
 ### Run Tests
 ```bash
-# One headless SceneTree script per area; each prints "RESULT: ALL PASS" or "RESULT: N FAIL".
-godot --headless --path . --script res://SampleProject/UI/verify_<area>.gd
+# All verify scripts (fails on a missing green RESULT line or any SCRIPT ERROR):
+Scripts/Tools/run_verify.sh
+# One area / a glob:
+Scripts/Tools/run_verify.sh combat_flow
 ```
 
-**Test suite:** the `SampleProject/UI/verify_*.gd` scripts, one per area (`ls SampleProject/UI/verify_*.gd`);
-run them all with `Scripts/Tools/run_verify.sh`.
-There are **no GUT tests** — `tests/` does not exist and GUT runs zero tests.
+**Test suite:** ~70 headless SceneTree scripts `SampleProject/UI/verify_*.gd`
+(`ls SampleProject/UI/verify_*.gd` for the current count), each prints
+`RESULT: ALL PASS` or `RESULT: N FAIL`.
+- There are **no GUT tests**, and the GUT addon itself was removed (D240).
 - Read the `RESULT:` line, not the exit code: every run of this project segfaults on
   shutdown (exit 139), see `design/test_baseline.md`.
-- Baseline and known pre-existing issues: `design/test_baseline.md`.
+
+### Build
+```bash
+godot --headless --path . --export-release "Windows Desktop" build/windows/Qusakam.exe
+godot --headless --path . --export-release "Linux" build/linux/Qusakam.x86_64
+```
+Presets live in `export_presets.cfg`.
 
 ## Architecture
 
-### Key Autoloads (in order)
+### Autoloads (order from `project.godot` → `[autoload]`)
 ```
-MetSys → GameManager → EventBus → DialogueQuest → SaveSystem
-→ ServiceLocator → Audio/Display/Music Managers → ItemDatabase
+MetSys → GameManager → EventBus → SaveSystem → ServiceLocator
+→ AudioManager → DisplayManager → ItemDatabase → SkillDatabase → LocalizationManager
+→ ModalDialogGlobal → AppConfig → SceneLoader → ProjectMusicController
+→ ProjectUISoundController → DialogueQuest
 ```
 
 ### Service Locator Pattern
 ```gdscript
-# Access managers through ServiceLocator
 var inventory = ServiceLocator.get_inventory_manager()
 var ui = ServiceLocator.get_ui_manager()
 ```
 
 **Service Registries:** 5 categorized registries (Core, UI, Gameplay, System, Data)
-- See: `Scripts/Core/ServiceRegistry/` for implementation
-- Details: `CLAUDE_FULL.md` → Service Registry Architecture
+in `SampleProject/Scripts/Core/ServiceRegistry/`.
 
-### Manager Hierarchy
-```
-GameManager (autoload)
-├── CharacterManager
-├── EquipmentManager
-├── InventoryManager
-├── DialogueManager
-├── XPManager
-├── TutorialManager
-├── UIManager
-├── MenuManager
-├── TimeManager
-└── [+ 10 more managers]
-```
+### Managers created by GameManager
+`SampleProject/Scripts/Managers/Core/GameManager.gd` preloads: CharacterManager,
+EquipmentManager, SkillManager, SceneManager, MenuManager, UIManager, TimeManager,
+PlayerStateManager, DialogueManager, InventoryManager, XPManager, TutorialManager,
+GameFlow, CompanionManager.
 
 All managers extend `ManagerBase` with `_initialize()` pattern.
 
 ## Project Structure
 
-### Key Directories
 ```
 SampleProject/
-├── Scenes/           # Scene files (.tscn)
-│   ├── Gameplay/     # Player, enemies, objects
-│   ├── Menus/        # UI and menus
-│   ├── Managers/     # Manager scene nodes
-│   └── Systems/      # System autoloads
-├── Scripts/          # GDScript files
-│   ├── Core/         # EventBus, ServiceLocator
-│   ├── Managers/     # Manager implementations
-│   ├── Gameplay/     # Gameplay logic
-│   ├── Systems/      # System scripts
-│   └── UI/           # UI scripts
+├── Scenes/           # .tscn: Characters, Gameplay, Menus, UI, Managers, Systems, ...
+├── Scripts/          # .gd: Core, Managers, Combat, Gameplay, Systems, UI, Menus, ...
 ├── Maps/             # MetSys map rooms
-├── Resources/        # Resources (.tres)
-└── Assets/           # Art, audio, fonts
+├── Resources/Data/   # game data JSON (items, skills, quests, story, ...)
+└── UI/               # theme, tokens, verify_*.gd tests, capture_*.gd screenshots
 ```
 
 ### Critical Files
@@ -100,7 +94,7 @@ SampleProject/
 ### Language
 - **Code:** English only
 - **Comments:** Ukrainian preferred, English acceptable
-- **User-facing:** English (future localization)
+- **User-facing:** English and Ukrainian (localization, BACKLOG 31)
 
 ### GDScript Style
 ```gdscript
@@ -124,23 +118,13 @@ signal health_changed(new_health: int)
 
 ## Common Patterns
 
-### Access Manager
 ```gdscript
-# In any script
-func _ready():
-	var xp_mgr = ServiceLocator.get_xp_manager()
-	xp_mgr.add_xp(50)
-```
+# Access a manager
+ServiceLocator.get_xp_manager().add_xp(50)
 
-### Emit Event
-```gdscript
-# Emit global event
+# Emit / listen to global events
 EventBus.player_died.emit()
-EventBus.xp_gained.emit(amount)
-
-# Listen to events
-func _ready():
-	EventBus.enemy_died.connect(_on_enemy_died)
+EventBus.enemy_died.connect(_on_enemy_died)  # (enemy_id: String, position: Vector2)
 ```
 
 ### Create New Manager
@@ -150,125 +134,54 @@ func _ready():
 4. Register in appropriate ServiceRegistry
 5. Add getter to ServiceLocator
 
-See `CLAUDE_FULL.md` for detailed examples.
-
 ## Testing & Debug
 
-### Manual Testing
-- F5: Run game
-- F6: Run current scene
-- See: `docs/DEMO_TEST_PLAN.md`
-
-### Automated Testing
 - `SampleProject/UI/verify_*.gd` headless scripts (see Run Tests above)
 - `SampleProject/UI/capture_*.gd` render screenshots into `design/shots/` (need a window, not `--headless`)
 
-### Debug Logging
 ```gdscript
 DebugLogger.info("Message", "Category")
 DebugLogger.warning("Warning", "Category")
 DebugLogger.error("Error", "Category")
 ```
 
-## Required Addons
+## Addons
 
-### Critical
-- **MetroidvaniaSystem** - Map/room management
-- **GUT** - installed, but the project has no GUT tests (see Run Tests)
-- **DialogueQuest** - Dialogue system
-
-### Installed
-Basic Settings Menu, Modal Dialog, Maaacks Menus Template, Tree Maps, Dynamic Water 2D, properUI (Modal/Toast)
-
-Full list: See `project.godot` → `[editor_plugins]`
+Enabled editor plugins (`project.godot` → `[editor_plugins]`): **CustomRunner**,
+**MetroidvaniaSystem** (+ its EditorExtension), **ModalDialog**, **dialogue_quest**,
+**maaacks_menus_template**. Also in `addons/` without a plugin entry: `fsm`,
+`interaction_system`. Everything else was removed in D240.
 
 ## Important Systems
 
-### Combat System
+### Combat
 - Player: `Scripts/Player.gd`
-- Enemy: `Scripts/Gameplay/Actors/Enemy.gd`
-- Damage: `Scripts/Gameplay/Components/DamageApplier.gd`
-- Health: `Scripts/Gameplay/Components/HealthComponent.gd`
-- Details: `CLAUDE_FULL.md` → Combat System Architecture
+- Enemy: `Scenes/Characters/Enemies/default_enemy.tscn` (script `Scripts/Gameplay/DefaultEnemy.gd`)
+- Damage: `Scripts/Combat/Components/DamageApplier.gd`
+- Health: `Scripts/Combat/Components/HealthComponent.gd`
 
 ### Save System
-- Modular architecture with 4 modules
-- Auto-save on room transitions
-- Manual save via SaveSystem.save_game()
-- Details: `CLAUDE_FULL.md` → Save System
+- `SaveSystem` autoload with 4 modules in `Scripts/Systems/Save/Modules/`
+  (PlayerData, Inventory, Flags, Settings), one file per slot.
+- Saving is manual: a SavePoint opens the save screen → `Game.save_game()`
+  (MetSys data + `SaveSystem.save_player_data()`). There is **no** auto-save on room transitions.
 
 ### Map System (MetSys)
 - Rooms in `SampleProject/Maps/`
-- Player spawn handled by MetSys
-- Portal system for room transitions
-- Config: `MetSysSettings.tres`
+- Live settings: `SampleProject/Resources/Settings.tres` (not the root `MetSysSettings.tres`)
 
-## Known Issues & Fixes
+## Known Issues
 
-### Player Spawning
-⚠️ Player position NOT persisted between sessions
-- Spawns at MetSys starting coords on load
-- Save system tracks last map, not position
-- See: `CLAUDE_FULL.md` → Player Spawning System
-
-### Recent Fixes (ЕТАП 2.x)
-All major refactorings and bug fixes documented in:
-- `CLAUDE_FULL.md` - Full technical details
-- `docs/BUGS_FIXED_SUMMARY.md` - Bug fix summaries
-- `docs/REFACTORING_REPORT.md` - Refactoring history
-
-Key fixes:
-- ✅ Portal infinite loop (static cooldown)
-- ✅ Enemy spawning/physics
-- ✅ ServiceLocator God Object → Registry pattern
-- ✅ HealthBar system consolidation
-- ✅ MetSys integration cleanup
+### Player position on load
+The position **is written** (`PlayerDataModule.gd:32`, from `Game._save_full_game_data_to_save_system()`,
+`Game.gd:600`) but **never read back**: `PlayerStateManager.get_player_position()` has no callers and
+`Game._set_save_data()` is not overridden, so `save_manager.retrieve_game()` (`Game.gd:200`) restores
+MetSys map data only. On load the saved room loads and the player keeps its default position.
+The comment at `Game.gd:239` ("позиція вже відновлена") is wrong. A new game places the player
+at the room's `Arrival` marker (`Game.gd:400`). Tracked in `design/BUGS.md`.
 
 ## Documentation Index
 
-**For Claude Code:**
-- `CLAUDE.md` ← You are here (condensed)
-- `CLAUDE_FULL.md` - Complete detailed documentation
-
-**Technical Documentation:**
-- `DOCUMENTATION.md` - Developer guide
-- `TESTS_COMPLETE.md` - Testing guide
-- `BUGS_FIXED_SUMMARY.md` - Bug fixes
-- `REFACTORING_REPORT.md` - Refactoring history
-- `SENIOR_DEV_ANALYSIS.md` - Architecture analysis
-
-**Testing:**
-- `design/test_baseline.md` - Test baseline and known issues
-- `DEMO_TEST_PLAN.md` - Manual test plan
-
-## Quick Reference
-
-### File an Enemy
-```gdscript
-# In room scene
-var enemy_scene = preload("res://SampleProject/Scenes/Gameplay/Actors/Enemy.tscn")
-var enemy = enemy_scene.instantiate()
-add_child(enemy)
-```
-
-### Save Custom Data
-```gdscript
-# In SaveSystem custom module
-func save_data() -> Dictionary:
-    return {"my_value": 123}
-
-func load_data(data: Dictionary) -> void:
-    my_value = data.get("my_value", 0)
-```
-
-### Add UI Element
-```gdscript
-# Access through UIManager
-var ui_mgr = ServiceLocator.get_ui_manager()
-var health_bar = ui_mgr.get_health_bar()
-health_bar.update_health(current, maximum)
-```
-
----
-
-**For detailed implementation guides, full code examples, and technical deep-dives, see `CLAUDE_FULL.md`**
+- `design/INDEX.md` — the vault hub (backlog, bugs, decisions, questions, plans)
+- `design/test_baseline.md` — test baseline and known pre-existing issues
+- `docs/` — archive only; nothing there is current

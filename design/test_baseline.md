@@ -9,6 +9,22 @@ every later slice compares against.
 - **Suite:** the 17 `SampleProject/UI/verify_*.gd` scripts. There are no GUT tests
   (see below).
 
+## Current state — 2026-10-21
+
+- **Suite:** 69 `SampleProject/UI/verify_*.gd` scripts (`ls SampleProject/UI/verify_*.gd | wc -l`),
+  run with `Scripts/Tools/run_verify.sh`. Godot 4.6.2 console build (`/d/Godot/4.6.2`).
+- **Last logs (`logs/verify_*.log`, 2026-10-21):** every current script green with 0 SCRIPT ERROR,
+  except `verify_souls_combat.log`, which ends mid-run at check [13] with no RESULT line (a run that was
+  interrupted, not a recorded failure — re-run it). The flakes of the last runs were fixed (see the run
+  notes below). `logs/verify_cutscene_old.log` and `logs/verify_verify_*.log` are leftovers of a deleted
+  script and a mistyped glob — ignore them.
+- **GUT:** the addon is gone (D240), together with `godot-rapier2d`, `py4godot` and `modal_window`, so
+  the old GDExtension and invalid-UID noise is gone too. There are no GUT tests.
+- **Known pre-existing issues now: three** — 1 (exit 139), 5 (headless display server), 6 (missing item
+  icons). Issues 2, 3 and 4 are closed. Details below.
+- **Fixed log:** B74–B80 were fixed and their rows removed from `design/BUGS.md`; look them up with
+  `git log --grep "B7[4-9]\|B80"`.
+
 ## How to run
 
 ```bash
@@ -63,8 +79,9 @@ These are baseline noise. A later slice is only responsible for **new** entries.
    `--headless --path . --quit` of this project, after "ServiceLocator: Cleaned up".
    It is project-level and not caused by the tests. The import step shows
    `_exit_tree` script errors in `MetSysPlugin.gd:81` and `gut_plugin.gd:123`
-   (`menu_manager` on Nil). Not investigated further.
-2. **`verify_responsive` canvas check fails headless:** the window reports 1868×1051
+   (`menu_manager` on Nil). Not investigated further. (2026-10-21: neither error appears in the
+   current logs; GUT is gone, D240. The exit 139 itself remains.)
+2. ~~**`verify_responsive` canvas check fails headless**~~ — **closed 2026-10-12** (see below): the window reports 1868×1051
    instead of 1920×1080. Probably environment-dependent (the headless window size),
    but unconfirmed. All other responsive checks pass.
    **Root cause (slice 8):** not flaky — the maaacks menus addon saves the window size to
@@ -81,15 +98,18 @@ These are baseline noise. A later slice is only responsible for **new** entries.
    MetSys room name (`res://SampleProject/Maps/:uid`), loading could not resolve it and
    silently started in Canyon. Loading now uses `current_room`. If this line reappears,
    it is a regression — not baseline.
-4. **Missing GDExtension binaries:** `addons/py4godot/python.gdextension` and
-   `addons/godot-rapier2d/godot-rapier2d.gdextension` fail to load in every run
-   (68 `FileAccess::exists` + 68 load errors across the suite).
-5. **Headless-only:** 960 × `Not supported by this display server`
-   (`keyboard_get_keycode_from_physical`). Not an issue in a windowed run.
-6. **Warnings:** a missing `potion` icon
-   (`res://release/assets/textures/ui/items/jrpg_icons/potion.png`, 94×), and invalid
-   UIDs in `addons/modal_window/default_window.tscn` and the MetSys `Exquisite`
-   theme (17× each; Godot falls back to text paths).
+4. ~~**Missing GDExtension binaries**~~ (`py4godot`, `godot-rapier2d`) — **closed:** both addons were
+   removed in D240.
+5. **Headless-only:** thousands of `Not supported by this display server`
+   (`keyboard_get_keycode_from_physical`) — about 3,700 across the 2026-10-21 logs. Not an issue in a windowed run.
+6. **Missing item icons:** `ItemDatabase: Icon file does not exist for item ...` for items whose icon path
+   points into `res://release/assets/textures/ui/items/...` (iron_ingot, iron_sword, copper_sword,
+   leather_armor, iron_armor, iron_ore, copper_ingot, leather, ...) — icons not exported yet (D5, partly
+   closed by D128). The old `potion.png`, `modal_window` and MetSys `Exquisite` invalid-UID warnings no
+   longer appear (D240 / D128).
+
+Also seen at shutdown in every run, part of issue 1: `ObjectDB instances leaked at exit` and
+`N resources still in use at exit`.
 
 ## Final comparison — after Runtime UI Completion slice 8
 

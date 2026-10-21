@@ -1,3 +1,5 @@
+> **ARCHIVE — outdated, see `design/INDEX.md`.** Kept for history only: it describes Godot 4.5, GUT tests and/or a "Dark Realm RPG" that no longer match this project (Godot 4.6, `SampleProject/UI/verify_*.gd`, GUT removed in D240).
+
 # Senior Developer Analysis: Godot Project Review
 
 **Analyst:** Senior Software Architect (10+ years exp)

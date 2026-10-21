@@ -41,7 +41,7 @@ what *is* built live in `design/BUGS.md` as **B-IDs**.
 
 A visual difference from Figma is triaged, never just mentioned: approved →
 cite the **D-ID**; needs a product call → new **Q-ID**; simply wrong → new
-**B-ID**. Check `design/test_baseline.md` first — its six known issues are noise.
+**B-ID**. Check `design/test_baseline.md` first — its three known issues (exit 139, headless display-server errors, missing item icons) are noise.
 
 **Sapega is the user of this session.** `design/questions_for_sapega.md` is the
 record, not the delivery mechanism. A Q-ID that actually blocks work gets asked
@@ -76,4 +76,4 @@ and do not invent values. Load the `plan-missing-system` skill: write
 - **Errors:** Godot stderr + `DebugLogger.error(...)` output.
 - **Tests:** `godot --headless --path . --script res://SampleProject/UI/verify_<area>.gd` for each
   `verify_*.gd`; read the `RESULT:` line (every run exits 139 — see `design/test_baseline.md`).
-  GUT has no tests in this project.
+  The GUT addon was removed (D240); there are no GUT tests.
