@@ -143,7 +143,15 @@ layouts are described in words, not captured.
 
 Full suite (`Scripts/Tools/run_verify.sh`, regenerated theme in the working tree, not committed):
 
-(full suite still running when this version was committed — results follow in the next commit)
+**69 PASS, 2 FAIL** on the first run (`SUITE: 2 FAIL`), then both fixed / re-run:
+- `verify_full_regression` — `leaked: ["Frame Rate"]`: its forbidden-term list still treated Frame Rate as a deferred
+  Settings row. BACKLOG 41 ships it, so the term was removed (`verify_full_regression.gd:141`) → re-run **ALL PASS**.
+- `verify_audio` — `FAIL focusing a button (pad navigation) ticks on SFX` once; re-run on this branch **ALL PASS**,
+  and **ALL PASS** on `origin/feature/backlog` too. Not reproduced: a one-off timing flake of the focus-tick check
+  (`verify_audio.gd:276` reads `playing` one frame after `grab_focus()`). Worth watching; no code of this branch touches
+  `ProjectUISoundController`.
+
+Every other verify: PASS.
 
 Headless noise seen (test_baseline): `Not supported by this display server` from `keyboard_get_keycode_from_physical`
 when the Controls tab builds; exit 139 / leaks at shutdown.
