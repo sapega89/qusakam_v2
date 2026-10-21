@@ -286,7 +286,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 44. **Attribute points every level** (Sapega 2026-10-21 «треба, мабуть, сила, ловкість, HP і мудрість — навички качати
     кожен рівень, бо я так хочу»): on each level-up the hero also gets attribute points to put into **Strength, Agility,
     HP (Vitality) and Wisdom**, in the same pending/Accept flow as item 43. Today `player_state` already has strength,
-    dexterity, constitution, intelligence (and StatCalculator) — check what they drive. Values to plan (points per level,
+    dexterity, constitution, intelligence (and StatCalculator) — check what they drive. **5 attribute points per level** (Sapega «5 навичок на рівень»; skill points stay 1 per level, D279). Values to plan (
     what each point gives: Strength → physical damage, Agility → crit/dodge/attack speed, HP → max HP, Wisdom → SP, skill
     power, SP regen), respec together with skills (D282). Plan with item 43: `design/skill_screen_rework_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
