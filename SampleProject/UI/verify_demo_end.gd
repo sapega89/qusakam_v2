@@ -37,7 +37,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)
-	for f in ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete", "lab_limit_test_complete", "lab_boss_fight_complete", "lab_after_boss_complete"]:
+	for f in ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete", "lab_cells_cutscene_complete", "lab_acquaintance_complete", "lab_boss_fight_complete", "lab_after_boss_complete"]:
 		game.set_quest_flag(f, true)
 
 	print("[1] First time out of the laboratory: the talks, then the demo end screen")

@@ -138,7 +138,7 @@ func _cells_cutscene() -> void:
 	scientist.hide()
 	await cs.camera_back(PAN_TIME)
 	cs.set_pose(&"Hurt")
-	await cs.say("Lab_Cells_Faint", true)
+	await cs.say("Lab_Cells_Faint")  # монолог героя — облачко за часом (D178)
 
 	# Темрява: прокидається — ґрати зникли, решта на місцях
 	await ScreenFade.to_black(self)
@@ -148,7 +148,7 @@ func _cells_cutscene() -> void:
 	await cs.wait(BLACK_HOLD)
 	cs.set_pose(&"Idle")
 	await ScreenFade.from_black(self)
-	await cs.say("Lab_Cells_Awake", true)
+	await cs.say("Lab_Cells_Awake")
 	cs.end()
 	game.set_objective("Step out of the cell")
 

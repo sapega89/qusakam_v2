@@ -64,6 +64,7 @@ func _pad_y(pressed: bool) -> InputEvent:
 	return ev
 
 func _boot(save_path: String) -> void:
+	started.clear()  # до старту: розмова, що почалась під час завантаження, теж рахується
 	if save_path.is_empty():
 		set_meta("start_new_game", true)
 	else:
@@ -72,7 +73,6 @@ func _boot(save_path: String) -> void:
 	root.add_child(game)
 	current_scene = game
 	for i in 60: await physics_frame
-	started.clear()
 
 func _cells() -> Node:
 	return game.map if game.map != null and game.map.scene_file_path == CELLS else null
@@ -94,7 +94,7 @@ func _settled(state: String) -> bool:
 func _play_to(state: String) -> void:
 	var deadline := Time.get_ticks_msec() + 60000
 	while not _settled(state) and Time.get_ticks_msec() < deadline:
-		if dm.is_dialogue_active():
+		if dm.is_dialogue_active() and not dm.is_bubble_playing():  # облачко гортається саме (bubble_time_scale 0)
 			dm.current_dialogue_box.finish()
 			dm.current_dialogue_player.accept()
 		await process_frame
@@ -131,7 +131,7 @@ func _same(played: Dictionary, skipped: Dictionary, beat: String) -> void:
 	for key in ["state", "flags", "objective", "npcs", "bars", "lock", "door", "scientist", "malik", "prisoner", "djinn", "party"]:
 		ck(str(played[key]) == str(skipped[key]), "%s: skipped %s == played (%s vs %s)" % [beat, key, skipped[key], played[key]])
 	ck((played.hero as Vector2).distance_to(skipped.hero) < 4.0, "%s: hero ends where played (%s vs %s)" % [beat, skipped.hero, played.hero])
-	ck(skipped.hud and skipped.control and is_equal_approx(skipped.speed, 1.0), "%s: HUD, control and normal speed back" % beat)
+	ck(skipped.hud and skipped.control and is_equal_approx(skipped.speed, 1.0), "%s: HUD, control and normal speed back (%s, %s, %.1f)" % [beat, skipped.hud, skipped.control, skipped.speed])
 
 func _awake_ok(s: Dictionary, label: String) -> void:
 	ck(s.state == "AWAKE", "%s: AWAKE (%s)" % [label, s.state])
@@ -198,7 +198,7 @@ func _initialize() -> void:
 	var blasts := 0
 	var deadline := Time.get_ticks_msec() + 60000
 	while not _settled("AWAKE") and Time.get_ticks_msec() < deadline:
-		if dm.is_dialogue_active():
+		if dm.is_dialogue_active() and not dm.is_bubble_playing():  # облачко гортається саме (bubble_time_scale 0)
 			dm.current_dialogue_box.finish()
 			dm.current_dialogue_player.accept()
 		if is_instance_valid(alisia):
