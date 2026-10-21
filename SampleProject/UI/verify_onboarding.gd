@@ -202,9 +202,20 @@ func _dodge_on_glint() -> void:
 	await create_timer(0.4).timeout
 
 
+## Блок, піднятий ще до замаху: герой уже в BLOCK, коли ворог починає замах, тож удар приходить після PARRY_WINDOW.
+## Не посеред серії: блок, піднятий наприкінці чужого замаху, — чесне парирування; так само блок, що встав лише
+## після збою від попереднього удару. Такий замах пропускаємо й пробуємо на наступному.
 func _hold_block() -> void:
-	await _bandit_signal(&"attack_started")
-	_hold("block", true)
+	for i in 12:
+		for f in 400:
+			if not bandit.enemy_logic.is_attacking:
+				break
+			await physics_frame
+		_hold("block", true)
+		await _bandit_signal(&"attack_started")
+		if hero.combat.is_blocking():
+			break
+		_hold("block", false)
 	await create_timer(0.9).timeout
 	_hold("block", false)
 
