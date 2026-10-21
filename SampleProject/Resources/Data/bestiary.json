@@ -1,0 +1,19 @@
+{
+	"enemies": [
+		{
+			"kind": "melee",
+			"name": "Desert Bandit",
+			"text": "Raiders of the desert roads who prey on villages and travellers. A bandit raises his blade before he strikes — step back or roll behind him while it is up, then punish."
+		},
+		{
+			"kind": "fast",
+			"name": "Jackal",
+			"text": "A lean desert hunter that circles and lunges with a quick bite. Its wind-up is short, so watch for the crouch and dash out of the lunge."
+		},
+		{
+			"kind": "tank",
+			"name": "Giant Scorpion",
+			"text": "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
+		}
+	]
+}

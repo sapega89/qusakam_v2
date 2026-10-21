@@ -44,6 +44,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[skills_system_plan]] — survey + proposal. ⚠️ opens "Nothing implemented"; `SkillManager.gd` now exists — the note predates the build
 - [[skills_combat_plan]] — the combat vertical slice for skills
 - [[skill_trees_plan]] — BACKLOG 22: Holy Warrior trunk + Paladin / Dark Knight / Warden trees, the oath in the City, respec, level cap 99 (D279–D285)
+- [[journal_codex_plan]] — BACKLOG 13: Journal sections Quests / Characters / Bestiary (D290)
 - [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, towns walk, grips, sheathing (D264–D270)
 - [[inventory_diff_plan]] — inventory delta
 - [[backlog_roadmap]] — the order to work through BACKLOG and BUGS: playable to the end first

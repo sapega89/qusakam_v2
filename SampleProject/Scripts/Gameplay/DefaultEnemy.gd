@@ -1,5 +1,6 @@
 extends CombatBody2D
 class_name DefaultEnemy
+const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -96,6 +97,9 @@ func _ready():
 
 	# Додаємо до групи ворогів
 	add_to_group(GameGroups.ENEMIES)
+	# Бестіарій (D290): ворог з'явився — його зустріли; загинув — ще одне вбивство.
+	JournalRecords.meet_enemy(enemy_stats.enemy_type)
+	entity_died.connect(func() -> void: JournalRecords.kill_enemy(enemy_stats.enemy_type))
 
 	# D197: тіла гравця й ворога проходять одне крізь одне — ворог не стає гравцеві на голову (B58).
 	# Виняток на пару тіл: зони, хітбокси й геометрія світу працюють як раніше.

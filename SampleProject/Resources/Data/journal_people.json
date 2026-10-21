@@ -1,0 +1,71 @@
+{
+	"not_listed": [
+		"KUSAKAM",
+		"Кусакам",
+		"BANDIT_1",
+		"BANDIT_2",
+		"BANDIT_LEADER",
+		"Враг",
+		"PRIEST",
+		"Гном механник",
+		"Суан",
+		"Три темніх жреца"
+	],
+	"people": [
+		{
+			"id": "GRANDFATHER",
+			"title": "Kusakam's grandfather",
+			"text": "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
+		},
+		{
+			"id": "VILLAGER_1",
+			"title": "Villager",
+			"text": "One of the people of the Village."
+		},
+		{
+			"id": "GATE_GUARD",
+			"title": "City Gates guard",
+			"text": "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
+		},
+		{
+			"id": "BLACKSMITH",
+			"title": "Blacksmith",
+			"text": "Forges and improves weapons and armour."
+		},
+		{
+			"id": "Торговец",
+			"title": "Merchant",
+			"text": "Buys and sells goods for coins."
+		},
+		{
+			"id": "OATH_PRIEST",
+			"title": "Priest of the Sky — oath of the Paladin",
+			"text": "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+		},
+		{
+			"id": "OATH_WITCH",
+			"title": "Witch — oath of the Dark Knight",
+			"text": "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+		},
+		{
+			"id": "OATH_DERVISH",
+			"title": "Sand dervish — oath of the Warden of Balance",
+			"text": "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+		},
+		{
+			"id": "Алісия",
+			"title": "Hunter",
+			"text": "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
+		},
+		{
+			"id": "Астрит",
+			"title": "Warrior-thaumaturge",
+			"text": "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire."
+		},
+		{
+			"id": "Уризен",
+			"title": "Cleric of the god of contracts",
+			"text": "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign."
+		}
+	]
+}

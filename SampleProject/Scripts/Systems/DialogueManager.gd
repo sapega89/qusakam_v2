@@ -1,5 +1,6 @@
 extends Node
 class_name GameDialogueManager
+const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 
 ## 💬 GameDialogueManager - Менеджер диалогов через DialogueQuest
 ## Интегрирует DialogueQuest с игровой системой
@@ -43,6 +44,7 @@ func _find_dialogue_system_in_scene() -> bool:
 	current_dialogue_box.set_portrait_image(null)
 	if not current_dialogue_box.text_shown.is_connected(_on_letter_shown):
 		current_dialogue_box.text_shown.connect(_on_letter_shown)
+		current_dialogue_box.all_text_shown.connect(_on_line_shown)
 	_connect_dialogue_quest_signals()
 	return true
 
@@ -54,6 +56,13 @@ func _on_letter_shown(count: int) -> void:
 		return  # візуальні символи без літери тексту (BBCode)
 	var hooks: Node = AudioManager.hooks
 	hooks.letter(hooks.speaker_from_name(current_dialogue_box.get_name_text()), text[count - 1])
+
+
+## Репліку показано повністю — хто її сказав, того зустріли (журнал → Characters, D290).
+func _on_line_shown() -> void:
+	var speaker: String = AudioManager.hooks.speaker_from_name(current_dialogue_box.get_name_text())
+	if speaker != "":
+		JournalRecords.meet_person(speaker)
 
 func _connect_dialogue_quest_signals():
 	"""Подключает сигналы DialogueQuest"""

@@ -45,6 +45,7 @@ func save() -> Dictionary:
 	data["unlocked_skills"] = player_state.get("unlocked_skills", []).duplicate()
 	data["companion_party"] = player_state.companion_party.duplicate()  # D220
 	data["seen_tutorials"] = player_state.seen_tutorials.duplicate()  # D289
+	data["journal"] = player_state.journal.duplicate(true)  # D290
 
 	# Прогрес навичок. Схема розширювана: equipped_skills можна додати пізніше,
 	# старі збереження просто не матимуть ключа і отримають значення за умовчанням.
@@ -145,6 +146,7 @@ func load_data(data: Dictionary) -> void:
 
 	player_state.companion_party = data.companion_party.duplicate()  # D220
 	player_state.seen_tutorials = data.seen_tutorials.duplicate()  # D289
+	player_state.journal = data.journal.duplicate(true)  # D290
 
 	# Загружаем экипировку
 	if "equipment" in data:

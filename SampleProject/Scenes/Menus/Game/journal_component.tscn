@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cvj8rtfs0dj2e"]
+[gd_scene load_steps=4 format=3 uid="uid://cvj8rtfs0dj2e"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/journal_component.gd" id="1_journal"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_entries"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_sections"]
 
 [node name="JournalComponent" type="Control"]
 layout_mode = 3
@@ -47,13 +49,42 @@ theme_override_constants/separation = 4
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SettingsEyebrow"
-text = "QUEST JOURNAL"
+text = "JOURNAL"
 
 [node name="Heading" type="Label" parent="Margin/Page/TitleBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SettingsHeading"
 text = "Journal"
+
+[node name="SectionTabs" type="HBoxContainer" parent="Margin/Page"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="QuestsTab" type="Button" parent="Margin/Page/SectionTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_sections")
+text = "QUESTS"
+
+[node name="CharactersTab" type="Button" parent="Margin/Page/SectionTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_sections")
+text = "CHARACTERS"
+
+[node name="BestiaryTab" type="Button" parent="Margin/Page/SectionTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_sections")
+text = "BESTIARY"
 
 [node name="Rule" type="HSeparator" parent="Margin/Page"]
 layout_mode = 2

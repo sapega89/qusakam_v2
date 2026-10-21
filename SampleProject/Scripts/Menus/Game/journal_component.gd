@@ -14,7 +14,16 @@ extends BaseMenuComponent
 ## Рядки з шаблону сцени (D117). preload, а не class_name: редактор бачить
 ## новий class_name лише після перескану, і скрипт до того не парсився.
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
+const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const EMPTY_TEXT := "No journal entries yet."
+
+## Розділи журналу (BACKLOG 13, D290): вкладки над списком, ті самі колонки «список + текст».
+## [id, заголовок сторінки, підпис списку, порожній стан]
+const SECTIONS := {
+	"quests": ["Quests", "", "No journal entries yet."],
+	"characters": ["Characters", "PEOPLE MET", "You have not met anyone yet."],
+	"bestiary": ["Bestiary", "ENEMIES MET", "No enemies met yet."],
+}
 const PLACEHOLDER := "—"
 
 ## Мінімальний контракт запису. Реальні дані згодом мапимо сюди,
@@ -40,9 +49,11 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _list_header: Label = %ListHeader
 @onready var _objective_line: Label = %ObjectiveLine
 @onready var _empty_state: Label = %EmptyState
+@onready var _tabs: Dictionary = {"quests": %QuestsTab, "characters": %CharactersTab, "bestiary": %BestiaryTab}
 
 var entries: Array = []
 var selected_id: String = ""
+var section: String = "quests"
 
 var _game: Node = null
 var _wired: Dictionary = {}  # рядки списку, вже під'єднані до сигналів
@@ -50,9 +61,49 @@ var _wired: Dictionary = {}  # рядки списку, вже під'єднан
 
 func _initialize_component() -> void:
 	add_to_group(&"journal_screen")
-	_empty_state.text = EMPTY_TEXT
+	for id: String in _tabs:
+		(_tabs[id] as Button).pressed.connect(select_section.bind(id))
 	_connect_objective()
-	_load_story()
+	select_section("quests")
+
+
+## Вкладка розділу: мишею, Enter / A на вкладці, Q / E або LB / RB звідусіль на екрані.
+func select_section(id: String) -> void:
+	section = id
+	selected_id = ""
+	for tab_id: String in _tabs:
+		(_tabs[tab_id] as Button).set_pressed_no_signal(tab_id == id)
+	_heading.text = SECTIONS[id][0]
+	_empty_state.text = SECTIONS[id][2]
+	_load()
+
+
+func _load() -> void:
+	match section:
+		"quests":
+			_load_story()
+		"characters":
+			set_entries(JournalRecords.people().map(func(p: Dictionary) -> Dictionary:
+				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text}))
+		"bestiary":
+			set_entries(JournalRecords.enemies().map(func(e: Dictionary) -> Dictionary:
+				return {"id": e.kind, "title": e.name, "description": e.text,
+					"group": "Defeated: %d" % e.kills if e.kills > 0 else "Not yet defeated"}))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_visible_in_tree():
+		return
+	var step := 0
+	if event.is_action_pressed(&"menu_prev_tab"):
+		step = -1
+	elif event.is_action_pressed(&"menu_next_tab"):
+		step = 1
+	if step == 0:
+		return
+	var ids: Array = SECTIONS.keys()
+	select_section(ids[posmod(ids.find(section) + step, ids.size())])
+	get_viewport().set_input_as_handled()
 
 
 ## Поточна ціль — реальний сигнал Game, без опитування щокадру.
@@ -65,7 +116,7 @@ func _connect_objective() -> void:
 func _on_objective_updated(_text: String) -> void:
 	if is_node_ready():
 		_refresh_objective()
-		if is_visible_in_tree():
+		if is_visible_in_tree() and section == "quests":
 			_load_story()
 
 
@@ -162,7 +213,7 @@ func update_display() -> void:
 ## а не малюємо прочерк, який виглядав би як дані.
 func _refresh_objective() -> void:
 	var text: String = ""
-	if _game and "current_objective" in _game:
+	if section == "quests":  # ціль — лише на сторінці завдань
 		text = String(_game.current_objective)
 	_objective_panel.visible = not text.strip_edges().is_empty()
 	_objective_text.text = text
@@ -171,7 +222,7 @@ func _refresh_objective() -> void:
 func _rebuild_rows() -> void:
 	# ponytail: один заголовок — етап першого пункту; коли з'явиться другий етап,
 	# заголовки треба вставляти рядками між групами.
-	var group: String = entries[0].group if not entries.is_empty() else ""
+	var group: String = (entries[0].group if not entries.is_empty() else "") if section == "quests" else SECTIONS[section][1]
 	_list_header.text = group.to_upper()
 	_list_header.visible = not group.is_empty()
 	var rows := RowFill.fill(_entry_list, _entry_row, entries.size())
@@ -257,4 +308,4 @@ func _apply_hint() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED and is_node_ready() and is_visible_in_tree():
-		_load_story()
+		_load()

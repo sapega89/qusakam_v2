@@ -89,3 +89,20 @@ Triggers: movement 2 s into the game (the window waits for the intro talk), atta
 parry on the first hit taken (`player_staggered`), first kill (XP and coins — the old xp_bar hint folded in),
 heavy attack on the second kill, level up / Healing Palm, gift, guard, companions as before. Each topic opens a
 window once per game; unused hints (coins, health_low, combo) removed. Verify: `verify_tutorial_hints.gd`.
+
+## 13 · Journal sections — D290, [[journal_codex_plan]]
+
+Figma: `journal-main-story` 192:1529 (eyebrow + heading, the header stepper), `journal-character-detail` 192:1754
+(codex page). Godot: `journal_component.tscn/.gd`.
+
+| Figma layer | Godot node | Action |
+|---|---|---|
+| eyebrow / heading | `%Eyebrow` "JOURNAL", `%Heading` = section name | restyle text |
+| `◇ All Chapters ◇` stepper | `%SectionTabs` — three `TabButton`s QUESTS · CHARACTERS · BESTIARY (as Inventory / Skills tabs) | ADD (the stepper had no data; sections replace it, D290) |
+| codex left column (name, class card, backstory) | `%DetailTitle` (name), `%DetailState` (role / "DEFEATED: N"), `%DetailDescription` (text) | reuse the detail column |
+| 720×820 portrait | — | not built: no portrait art ([[journal_audit]]) |
+
+Behaviour: tabs by mouse, Enter / A on a tab, Q / E and LB / RB anywhere on the page; D-pad up from the list
+reaches the tabs. The objective panel shows on Quests only. Data: `player_state.journal` written by triggers
+(dialogue line shown → speaker met; enemy spawned → met; enemy died → kill). Verify:
+`verify_journal_sections.gd`.

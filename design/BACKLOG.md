@@ -111,7 +111,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Windows turns them into banners; heavy attack and block/parry topics added; button names follow the device.
     Was: each hint opens the tutorial window (nothing is missed), and the topic lands in
     the Tutorial list; a Settings option turns these windows off.
-13. **Journal sections**: choose between Quests and Characters (people we have met); plus a Bestiary.
+13. ~~**Journal sections**~~ — **done 2026-10-21 (D290, [[journal_codex_plan]]):** Quests · Characters · Bestiary tabs; people recorded when they speak, enemies when they appear and die. Was: choose between Quests and Characters (people we have met); plus a Bestiary.
 14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
     the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
     cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
