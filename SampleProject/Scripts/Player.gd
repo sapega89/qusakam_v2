@@ -34,6 +34,9 @@ var defeat_handler: Callable
 # @export-параметри були доступні для налаштування в інспекторі.
 @onready var combat: PlayerCombat = $PlayerCombat
 @onready var mover: PlayerMover = $PlayerMover
+@onready var weapon_view: Node2D = $WeaponMount
+## Бібліотека кадрів зброї, з якої зараз грають анімації тіла (&"" — базові кадри), BACKLOG 42.
+var _body_library: StringName = &""
 
 # Рух винесено в PlayerMover (speed_min/max, jump_velocity, gravity тощо).
 # last_direction лишаємо тут як forwarding-властивість, бо на нього посилаються
@@ -50,7 +53,7 @@ func set_movement_enabled(enabled: bool) -> void:
 		# Reset animation to Idle to improve visual feedback
 		animation = "Idle"
 		if $AnimationPlayer:
-			$AnimationPlayer.play("Idle")
+			play_body(&"Idle")
 		# Also reset sprite flipping if needed or keep it
 
 	DebugLogger.info("Player: Movement enabled = %s (event = %s)" % [enabled, event], "Player")
@@ -139,6 +142,13 @@ func _physics_process(delta: float) -> void:
 
 	# Удар доходить до кінця і в повітрі (раніше стрибок/падіння скасовували його — у стрибку шкоди не було);
 	# так само збій, важкий удар, блок (D264) — їхню анімацію веде PlayerCombat.
+	# Зброю дістали / сховали / змінили (BACKLOG 42) — та сама анімація з іншої бібліотеки кадрів.
+	var library: StringName = weapon_view.body_library()
+	if library != _body_library:
+		_body_library = library
+		if $AnimationPlayer.current_animation != body_animation(animation):
+			play_body(animation)
+
 	if combat.owns_animation():
 		_update_facing()
 		return
@@ -165,10 +175,10 @@ func _physics_process(delta: float) -> void:
 		elif previous_animation == &"Fall" and new_animation == &"Idle":
 			lead_in = &"Land"
 		if lead_in != &"":
-			$AnimationPlayer.play(lead_in)
-			$AnimationPlayer.queue(new_animation)
-		elif $AnimationPlayer.current_animation != new_animation:
-			$AnimationPlayer.play(new_animation)
+			$AnimationPlayer.play(body_animation(lead_in))
+			$AnimationPlayer.queue(body_animation(new_animation))
+		elif $AnimationPlayer.current_animation != body_animation(new_animation):
+			play_body(new_animation)
 
 	_update_facing()
 
@@ -201,7 +211,7 @@ func _unhandled_input(ev: InputEvent) -> void:
 	if ev.is_action_pressed(&"dodge") and not event and not combat.owns_animation():
 		if mover.start_roll():
 			animation = &"Roll"
-			$AnimationPlayer.play(&"Roll")
+			play_body(&"Roll")
 			$Sprite2D.modulate.a = ROLL_ALPHA
 		return
 	# Блок / парирування (D264): поки кнопку тримають; починається, щойно герой вільний (PlayerCombat).
@@ -219,6 +229,23 @@ func _unhandled_input(ev: InputEvent) -> void:
 			combat.perform_attack(last_direction)
 		else:
 			combat.heavy_attack(last_direction)
+
+## Анімація тіла [param base] з кадрів зброї в руці (BACKLOG 42, design/hero_weapon_animation_plan.md):
+## `<бібліотека>/<base>`, удар серії — `<бібліотека>/Attack<крок+1>`; базова, якщо бібліотека її не має
+## (Roll, Climb, Cast*) або зброя схована.
+func body_animation(base: StringName) -> StringName:
+	var library: StringName = weapon_view.body_library()
+	if library == &"":
+		return base
+	var name := StringName("%s/%s" % [library, base])
+	if base == &"Attack":
+		name = StringName("%s/Attack%d" % [library, combat.combo_step + 1])
+	return name if $AnimationPlayer.has_animation(name) else base
+
+## Єдиний вхід для анімацій тіла героя: [param base] — базове ім'я, грає версію зброї в руці.
+func play_body(base: StringName, speed: float = 1.0) -> void:
+	_body_library = weapon_view.body_library()
+	$AnimationPlayer.play(body_animation(base), -1, speed)
 
 func _update_facing() -> void:
 	"""Єдине місце, де виставляється flip_h.
