@@ -15,12 +15,19 @@ var TopicWindow: PackedScene
 const TOPIC_WINDOW := "res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn"
 var TutorialMenu: GDScript
 const TUTORIAL_MENU := "res://SampleProject/Scripts/Menus/Game/tutorial_menu.gd"
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Кнопки уроків: клавіатура / миша (D270, project.godot) і геймпад.
 const KEYBOARD := {"attack": [&"mouse", MOUSE_BUTTON_LEFT], "heavy_attack": [&"key", KEY_R],
 		"block": [&"key", KEY_CTRL], "dodge": [&"key", KEY_SHIFT]}
 const PAD := {"attack": [&"pad", JOY_BUTTON_X], "heavy_attack": [&"pad", JOY_BUTTON_B],
 		"block": [&"pad", JOY_BUTTON_LEFT_SHOULDER], "dodge": [&"pad", JOY_BUTTON_RIGHT_SHOULDER]}
+
+## Дії InputMap, яких немає на сторінці Controls, і чому.
+const NOT_GAMEPLAY := {
+	&"save_delete": "Load Game menu only (delete a save)",
+	&"menu_next_tab": "shares the Previous / next menu tab row with menu_prev_tab",
+}
 
 var fails: Array[String] = []
 var game: Node
@@ -45,6 +52,7 @@ func _initialize() -> void:
 	TutorialMenu = load(TUTORIAL_MENU)
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # уроки плашками, без паузи
 	await process_frame
+	root.size = Vector2i(1920, 1080)  # кліки влучають туди, де намальовано (input_kit)
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
@@ -78,7 +86,6 @@ func _initialize() -> void:
 	ck(TutorialTopics.is_seen("attack") and TutorialTopics.is_seen("block") and TutorialTopics.is_seen("heavy_attack"),
 			"the general combat hints do not pop up during the lessons")
 	bandit = village.enemy_spawner.spawned_enemies[0]
-	hero.combat.damage_applier.damage_applied.connect(func(t: Node, d: int) -> void: print("DBG hit step=%d state=%d len=%d dmg=%d" % [hero.combat.combo_step, hero.combat.state, hero.combat.combo_length(), d]))
 	hero.health_changed.connect(func(h: int, _m: int, _a: bool) -> void: _lowest_hero = mini(_lowest_hero, h))
 	bandit.health_changed.connect(func(h: int, _m: int, _a: bool) -> void: _lowest_bandit = mini(_lowest_bandit, h))
 
@@ -94,7 +101,6 @@ func _initialize() -> void:
 	training = pad_training
 	training.start(village.enemy_spawner.spawned_enemies)
 	for i in 4: await process_frame
-	ck(hint.hint_label.text.contains("X"), "after a pad press the banner names pad buttons (%s)" % hint.hint_label.text)
 	await _run_lessons("pad")
 
 	print("[3] Nobody fell while learning (D-28c); after them the bandit can be killed")
@@ -125,6 +131,10 @@ func _run_lessons(device: String) -> void:
 	await _until(_attack_once, "lesson_attack", device)
 
 	await _wait_lesson("lesson_combo")
+	var hint: Node = get_first_node_in_group("tutorial_hint_display")
+	var glyph: String = "X" if device == "pad" else "Left Mouse"
+	ck(hint.current_hint == "lesson_combo" and hint.hint_label.text.contains("Press %s three times" % glyph),
+			"%s: the banner names the %s button (%s)" % [device, device, hint.hint_label.text])
 	await _tap("heavy_attack")
 	await create_timer(1.6).timeout
 	ck(training.current_id() == "lesson_combo", "%s: a heavy hit does not pass Combo" % device)
@@ -215,7 +225,7 @@ func _wait_lesson(id: String) -> void:
 func _face() -> void:
 	await create_timer(0.3).timeout  # вийти зі збою
 	var side: float = -1.0 if hero.global_position.x < bandit.global_position.x else 1.0
-	hero.global_position = Vector2(bandit.global_position.x + side * 55.0, bandit.global_position.y - 4.0)
+	hero.global_position = Vector2(bandit.global_position.x + side * 30.0, bandit.global_position.y - 4.0)
 	hero.velocity = Vector2.ZERO
 	hero.mover.last_direction = int(-side)
 	for i in 3: await physics_frame
@@ -283,7 +293,7 @@ func _check_frames() -> void:
 	for topic in with_frames:
 		var frames: Array[Texture2D] = TutorialMenu.load_frames(topic.frames)
 		ck(frames.size() >= 6, "%s: %d frames of '%s'" % [topic.id, frames.size(), topic.frames])
-	for id in ["lesson_parry", "healing_palm"]:
+	for id: String in with_frames.map(func(t: Dictionary) -> String: return t.id):
 		layer.show_custom_modal(TopicWindow)
 		var window: Node = layer.active_modal
 		window.open_id(id)
@@ -303,12 +313,10 @@ func _check_controls(sl: Node) -> void:
 	for i in 16: await process_frame
 	var menu: Node = get_first_node_in_group("game_menu")
 	ck(menu != null, "game menu open")
-	print("DBG misc pressed=%s disabled=%s rect=%s" % [menu.misc_button.button_pressed, menu.misc_button.disabled, menu.misc_button.get_global_rect()])
-	await _click(menu.misc_button)
-	print("DBG modal=%s" % sl.get_ui_manager().get_modal_layer().active_modal)
+	await Kit.mouse(self, menu.misc_button)
 	var modal: Node = get_first_node_in_group("misc_menu_modal")
 	ck(modal != null, "Misc opened by a click")
-	await _click(modal.controls_button)
+	await Kit.mouse(self, modal.controls_button)
 	var page: Node = menu.find_child("ControlsComponent", true, false)
 	ck(page.is_visible_in_tree(), "Controls opened by a click")
 	ck(not menu.find_child("TutorialComponent", true, false).is_visible_in_tree(), "only the Controls panel shows")
@@ -318,23 +326,47 @@ func _check_controls(sl: Node) -> void:
 		if texts[1] == "—" or texts[2] == "—":
 			missing.append(texts)
 	ck(missing.is_empty(), "every action has a keyboard and a pad button (%s)" % [missing])
+	var listed: Array = page.ACTIONS.map(func(a: Array) -> StringName: return a[1])
+	var unlisted: Array = []
+	for action: StringName in InputMap.get_actions():
+		if not String(action).begins_with("ui_") and not action in NOT_GAMEPLAY and not action in listed:
+			unlisted.append(action)
+	ck(unlisted.is_empty(), "every gameplay action in the InputMap is listed (missing %s)" % [unlisted])
+	var weapon_prev: Array[String] = page.row_texts(listed.find(&"weapon_prev"))
+	ck(weapon_prev[1] == "Z" and weapon_prev[2] == "D-pad left", "previous weapon: Z / D-pad left (D-28i) (%s)" % [weapon_prev])
 	var block_row: Array[String] = page.row_texts(8)
 	ck(block_row[1].contains("Ctrl") and block_row[2] == "LB", "block: Ctrl / LB (%s)" % [block_row])
 	ck(root.gui_get_focus_owner() == page.get_node(^"%ActionList").get_child(0), "focus on the first row (pad / arrows scroll)")
 	ui.close_game_menu()
+	for i in 16: await process_frame
 
-
-func _click(control: Control) -> void:
-	var at: Vector2 = control.get_global_rect().get_center()
-	for pressed in [true, false]:
-		var ev := InputEventMouseButton.new()
-		ev.button_index = MOUSE_BUTTON_LEFT
-		ev.pressed = pressed
-		ev.position = at
-		ev.global_position = at
-		root.push_input(ev)
-		await process_frame
-	for i in 8: await process_frame
+	print("[6] The same page by gamepad: Start → Misc → Controls")
+	await Kit.pad(self, JOY_BUTTON_START)
+	await Kit.frames(self, 16)
+	menu = get_first_node_in_group("game_menu")
+	ck(menu != null, "Start opens the game menu")
+	for i in 8:
+		if root.gui_get_focus_owner() == menu.misc_button:
+			break
+		await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(root.gui_get_focus_owner() == menu.misc_button, "D-pad reaches Misc")
+	await Kit.pad(self, JOY_BUTTON_A)
+	await Kit.frames(self, 6)
+	modal = get_first_node_in_group("misc_menu_modal")
+	ck(modal != null, "A opens Misc")
+	for i in 6:
+		if root.gui_get_focus_owner() == modal.controls_button:
+			break
+		await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(root.gui_get_focus_owner() == modal.controls_button, "D-pad reaches Controls")
+	await Kit.pad(self, JOY_BUTTON_A)
+	await Kit.frames(self, 6)
+	page = menu.find_child("ControlsComponent", true, false)
+	ck(page.is_visible_in_tree(), "A opens Controls")
+	var rows: Node = page.get_node(^"%ActionList")
+	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(root.gui_get_focus_owner() == rows.get_child(1), "D-pad down scrolls the list")
+	ui.close_game_menu()
 
 
 func _drain(dm: Node) -> void:

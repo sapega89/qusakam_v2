@@ -6,6 +6,9 @@ class_name CombatBody2D
 @export var Max_Health: int = 100
 @export var is_invulnerable: bool = false
 @export var invulnerability_duration: float = 0.5
+## Нижче цього ушкодження здоровʼя не опускає (0 — звичайно, можна загинути). Навчальний бій (D-28c) ставить 1:
+## лікування «нижче 40 %» приходить уже після удару, тож без підлоги фінішер з 45 % убивав би бандита посеред уроку.
+var min_health: int = 0
 
 var current_health: int
 var is_dead: bool = false
@@ -40,7 +43,7 @@ func register_damage(damage: int, ignore_overide: bool = false) -> void:
 
 	if ignore_overide or (!Overide_Damage_Receiving and current_health > 0):
 		var _old_health = current_health
-		current_health = clampi(current_health - damage, 0, Max_Health)
+		current_health = clampi(current_health - damage, mini(min_health, current_health), Max_Health)
 		damage_token.emit(damage)
 		health_changed.emit(current_health, Max_Health, true)
 

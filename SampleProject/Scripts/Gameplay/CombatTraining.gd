@@ -3,7 +3,8 @@ extends Node
 ## Навчальний бій (BACKLOG 28, D-28a…D-28d, design/onboarding_plan.md): перший ворог гри вчить по одному руху —
 ## удар, серія, ривок крізь удар, блок, парирування на червоний відблиск, важкий удар. Кожен урок чекає, доки
 ## гравець зробить рух; урок — тема туторіалу lesson_* (уперше вікно з картинкою, далі плашка до виконання, D289).
-## Поки йдуть уроки, ні ворог, ні герой не гинуть (D-28c): нижче SAFE_FRACTION здоровʼя — назад до повного.
+## Поки йдуть уроки, ні ворог, ні герой не гинуть (D-28c): здоровʼя не падає нижче 1 (min_health), а нижче
+## SAFE_FRACTION — назад до повного.
 ## Village додає вузол перед появою бандита й викликає start(), коли бандит ожив; finished — уроки пройдено.
 
 signal finished
@@ -41,9 +42,9 @@ func start(fight_enemies: Array[Node]) -> void:
 	_link(_combat.damage_applier.damage_applied, _on_hit)
 	_link(EventBus.player_blocked, _on_guard.bind(false))
 	_link(EventBus.player_parried, _on_guard.bind(true))
-	_link(_player.health_changed, _keep_alive.bind(_player))
-	for enemy in enemies:
-		_link(enemy.health_changed, _keep_alive.bind(enemy))
+	for body: CombatBody2D in _bodies():
+		body.min_health = 1
+		_link(body.health_changed, _keep_alive.bind(body))
 	_begin(0)
 
 
@@ -115,8 +116,20 @@ func _keep_alive(health: int, max_health: int, _animate: bool, body: CombatBody2
 		body.heal_damage(max_health)
 
 
+func _bodies() -> Array[CombatBody2D]:
+	var out: Array[CombatBody2D] = []
+	if is_instance_valid(_player):
+		out.append(_player)
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			out.append(enemy)
+	return out
+
+
 func _stop() -> void:
 	set_physics_process(false)
+	for body: CombatBody2D in _bodies():
+		body.min_health = 0
 	for link: Array in _links:
 		var sig: Signal = link[0]
 		if not sig.is_null():

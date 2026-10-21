@@ -6,6 +6,7 @@ extends RefCounted
 ## Подвійний ривок — та сама дія dodge, діставання зброї — автоматичне.
 ## Слоти навичок 1–4 (D271): клавіші 1–4 у project.godot, геймпад — тут: RT, R3, L3, Back (вільні кнопки).
 ## Пропуск кат-сцени (D308): утримання Tab / геймпад Y (Y — ще й interact, але в кат-сцені взаємодії немає).
+## Попередня зброя (BACKLOG 28, D-28i): у project.godot лише D-pad ←, клавіатура — Z (наступна — Q).
 
 static func register() -> void:
 	_add(&"heavy_attack", [_mouse(MOUSE_BUTTON_RIGHT), _key(KEY_R), _pad(JOY_BUTTON_B)])
@@ -17,6 +18,7 @@ static func register() -> void:
 	var pads: Array[InputEvent] = [trigger, _pad(JOY_BUTTON_RIGHT_STICK), _pad(JOY_BUTTON_LEFT_STICK), _pad(JOY_BUTTON_BACK)]
 	for i in pads.size():
 		_add_pad(StringName("skill_slot_%d" % (i + 1)), pads[i])
+	_add_key(&"weapon_prev", _key(KEY_Z))
 
 
 static func _add(action: StringName, events: Array[InputEvent]) -> void:
@@ -30,6 +32,13 @@ static func _add(action: StringName, events: Array[InputEvent]) -> void:
 static func _add_pad(action: StringName, event: InputEvent) -> void:
 	for existing in InputMap.action_get_events(action):
 		assert(not (existing is InputEventJoypadButton or existing is InputEventJoypadMotion), "CombatInput: %s вже має геймпад у project.godot — приберіть звідси." % action)
+	InputMap.action_add_event(action, event)
+
+
+## Дія вже є в project.godot (геймпад) — додати клавішу, якщо клавіатури там ще немає.
+static func _add_key(action: StringName, event: InputEvent) -> void:
+	for existing in InputMap.action_get_events(action):
+		assert(not (existing is InputEventKey or existing is InputEventMouseButton), "CombatInput: %s вже має клавішу в project.godot — приберіть звідси." % action)
 	InputMap.action_add_event(action, event)
 
 
