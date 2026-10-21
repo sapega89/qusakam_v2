@@ -238,6 +238,31 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     tokens HP/SP/XP — Sapega 2026-10-21 «HP, SP, XP так і залиш»). Voices: English greetings via Kokoro (D277), Ukrainian via a Piper voice whose
     licence allows release (check each voice's model card; never non-commercial weights); greeting picked by locale.
     Plan first: `design/localization_plan.md`.
+32. **Ledges you can get back onto** (Sapega 2026-10-21 «уступи мають бути такими, що я можу повернутись на них далі, бо немає
+    в нас подвійного стрибка»): every DesertRoad ledge (D296/D298) reachable again from where the hero ends up — steps within
+    one jump on the way back too; a verify that walks/jumps back up each ledge with real input.
+33. **Chests** (Q2): a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
+    pose, generated from his artist frames), then the obtained-item modal. Also: **a modal when someone gives you items**
+    (the grandfather's gift, quest rewards — today only pickups show it) and **show what you picked up from a mob** (a
+    small loot feed / toast on the HUD).
+34. **Companion lore stubs** (Q51): Астрит, Алісія, Уризен each get a separate description in `lore.md` (stubs marked
+    [ЗАГЛУШКА]) — Sapega takes them to the characters' creators. Figma has the Journal UI for character lore and city
+    flags — build those pages from Figma (ui-screen-pipeline) on top of D290.
+35. **NPC chatter in speech clouds** (Q48): ambient NPC lines use the D263 cloud, not the box.
+36. **Who is speaking** (Q31): the speaker's name centred in the dialogue box with their portrait (e.g. Астрит) so the
+    player knows who she is; name colours don't matter.
+37. **Objective plaque** (Q39): the 'Return to the village'-style objective also in the Journal list; the HUD plaque fades
+    out after a few seconds and shows again after leaving a menu.
+38. **Village centre** (Q59): a separate house at the end of the Village — an interior room like the Mayor Hall (the
+    village elder's house). The Village stays one cell high (Q58).
+39. **Cleanup**: delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
+40. **Ranged weapons** (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
+    the hero's bow plays like Skul: The Hero Slayer (fast aimed shots on the attack button, arrows fly straight, charge
+    for a stronger shot — confirm details with Sapega when planned). Plan first.
+41. **Graphics settings**: resolution and FPS-limit options in Settings (settings_plan.md:58 values — pick common ones:
+    1280×720 … 2560×1440 / 30, 60, 120, 144, unlimited). Skills from slots auto-target the nearest enemy for now (D38).
+    The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** (record as D-IDs,
+    delete the B rows).
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
