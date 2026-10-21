@@ -178,6 +178,14 @@ func _on_dialogue_quest_signal(params: Array):
 				# Другие сигналы можно обработать здесь
 				pass
 
+## Пропуск кат-сцени (D308): cutscene_skip_prompt кличе щокадру — репліка набирається до кінця, наступного кадру
+## йде далі (вікно — accept(), облачко — як dq_accept). Між розмовами пропускати нічого.
+func skip_line() -> void:
+	if _bubble_playing:
+		_bubble_skip = true
+	elif is_dialogue_active():
+		current_dialogue_box.accept()
+
 func is_dialogue_active() -> bool:
 	"""Проверяет, активен ли диалог"""
 	if is_replaying() or _cloud_talk:

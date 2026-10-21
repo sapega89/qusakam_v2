@@ -64,6 +64,14 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B80 — After the City Gates raid and fight start, the hero's physics body stops following his node
+- **Where:** `SampleProject/Scripts/Player.gd` (CharacterBody2D) — cause not found; seen in `CityGates` after `FIGHT_LOOP` spawns the bandits
+- **Expected:** setting `player.global_position` (teleports, `Game.teleport_to_room`) moves the body in the physics server too, as it does before the fight.
+- **Got:** `PhysicsServer2D.body_get_state(rid, TRANSFORM)` stays at the last spot (678, 360) after the node is put at (900, 344) and a physics frame passes; the hero also stops falling. A room re-entered then fires its trigger (`RaidTrigger`) at once although the hero is 200 px away. A few frames of real `move_left` bring the body back. Present before row 9.1 (same result with the pre-9.1 `CityGates.gd`).
+- **Evidence:** `verify_cutscene` workaround `_step_off()`; diagnostic print 2026-10-21 (row 9.1)
+- **Severity:** blocker (teleports mid-fight may misfire triggers) — not yet seen by a player
+- **Found:** 2026-10-21, queue row 9.1
+
 ### B79 — Level and XP were not saved: every loaded save was level 1 — ✅ fixed 2026-10-21
 - **Where:** `SampleProject/Scripts/Systems/Save/Modules/PlayerDataModule.gd` (save / load), `XPManager.gd`
 - **Expected:** loading a save brings back the hero's level and XP (the oath is level 5, D280; skill points and passives follow the level).

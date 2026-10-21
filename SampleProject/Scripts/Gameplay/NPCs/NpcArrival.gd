@@ -5,6 +5,7 @@ extends Area2D
 ## Один раз: прапорець done_flag. Без нього NPC сховано й вимкнено; з ним — стоїть на місці з .tscn.
 ## Привітання голосом тут немає: його грає лише NpcBase._on_interacted, коли герой сам заговорив (D277).
 
+const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 
 ## NPC (NpcBase зі Sprite2D і AnimationPlayer: idle / talk / walk). Його позиція в мапі — місце, куди він іде.
@@ -53,15 +54,14 @@ func _try_start() -> void:
 
 func _play() -> void:
 	var game := Game.get_singleton()
-	var player: Node2D = game.player
 	var dm: Node = ServiceLocatorHelper.get_service_locator().get_dialogue_manager()
 	while dm.is_dialogue_active():  # чужа розмова (тригер кімнати) — спершу вона
 		await dm.dialogue_finished
-	player.set_movement_enabled(false)
+	var cs := Cutscene.new()
 
 	var sprite: Sprite2D = _npc.get_node(^"Sprite2D")
 	var anim: AnimationPlayer = _npc.get_node(^"AnimationPlayer")
-	var station: float = _npc.global_position.x
+	var station: Vector2 = _npc.global_position
 	var door: Node2D = get_node(door_path)
 	_npc.global_position.x = door.global_position.x
 	_npc.modulate.a = 0.0
@@ -69,35 +69,23 @@ func _play() -> void:
 	_npc.process_mode = Node.PROCESS_MODE_INHERIT
 	_npc.interactable.enabled = false
 	_npc.activity.held = true  # ходу й розмову веде катсцена, не розклад дій (D295)
-	sprite.flip_h = station < door.global_position.x  # кадри ходи дивляться праворуч
+	sprite.flip_h = station.x < door.global_position.x  # кадри ходи дивляться праворуч
 	anim.play(&"walk")
-	var walk := create_tween()
-	walk.tween_property(_npc, ^"modulate:a", 1.0, EMERGE_TIME)
-	walk.parallel().tween_property(_npc, ^"global_position:x", station, absf(station - door.global_position.x) / WALK_SPEED)
-	await walk.finished
+	create_tween().tween_property(_npc, ^"modulate:a", 1.0, EMERGE_TIME)
+	await cs.move(_npc, station, absf(station.x - door.global_position.x) / WALK_SPEED)
 
 	anim.play(&"talk")
-	sprite.flip_h = player.global_position.x < station
-	await _say(dm, dialogue)
+	sprite.flip_h = cs.player.global_position.x < station.x
+	await cs.say(dialogue.get_file().get_basename())
 	var TASKS: GDScript = load(TASKS_PATH)
 	var task: Dictionary = TASKS.tasks().filter(func(t: Dictionary) -> bool: return t.id == task_id)[0]
 	TASKS.take(task)
-	await _say(dm, "res://dialogue_quest/%s.dqd" % task.give_dialogue)
+	await cs.say(task.give_dialogue)
 
 	game.set_quest_flag(done_flag, true)
 	sprite.flip_h = false
 	_npc.activity.resume()
 	_npc.refresh_availability()
-	player.set_movement_enabled(true)
+	cs.end()
 	finished.emit()
 	queue_free()
-
-
-## Розмова до кінця. DialogueManager після неї повертає керування — забираємо знову до кінця сцени.
-func _say(dm: Node, path: String) -> void:
-	dm.start_dialogue(path)
-	while true:
-		var id: String = await dm.dialogue_finished
-		if id == path or id == path.get_file().get_basename():
-			break
-	Game.get_singleton().player.set_movement_enabled(false)

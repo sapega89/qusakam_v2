@@ -15,6 +15,8 @@ enum State {
 	TO_DESERT_ROAD
 }
 
+const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
+
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 @export var current_state: State = State.INTRO:
@@ -593,59 +595,31 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 		_after_abduction_cutscene()
 		return
 
-	var player: Node2D = game.player
-	var sprite: Sprite2D = player.get_node(^"Sprite2D")
-	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
-	var camera: Camera2D = player.get_node(^"Camera2D")
-	var dm := _get_dialogue_manager()
-	var pose: Array[StringName] = [&"Idle"]
-	var hold := func(_id: String = "") -> void:
-		player.set_movement_enabled(false)
-		anim.play(pose[0])
-	var hold_later := func(_id: String) -> void: hold.call_deferred()
-	dm.dialogue_started.connect(hold_later)
-	hold.call()
-
-	var seat: Vector2 = $Meditation/Seat.global_position
-	sprite.flip_h = seat.x < player.global_position.x
-	anim.play(&"Walk")
-	await create_tween().tween_property(player, ^"global_position", seat, MEDITATION_WALK_TIME).finished
-	anim.play(&"Idle")
+	var cs := Cutscene.new()
+	await cs.walk_hero($Meditation/Seat.global_position, MEDITATION_WALK_TIME)
 	await _execute_step(StepType.DIALOGUE, "Canyon_Exploration", run_id)
 	if run_id != state_run_id:
 		return
 	game.set_objective("Find a way forward")
 
 	# Сідає обличчям до села (вліво) — туди ж попливе камера.
-	sprite.flip_h = true
-	pose[0] = &"Meditate"
-	hold.call()
-	await get_tree().create_timer(MEDITATION_SIT_HOLD).timeout
-	var center := camera.get_screen_center_position()
-	camera.top_level = true
-	camera.global_position = center
-	camera.reset_smoothing()
-	var pan := create_tween().tween_property(camera, ^"global_position", $Meditation/Look.global_position, MEDITATION_PAN_TIME)
-	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
-	await get_tree().create_timer(MEDITATION_LOOK_HOLD).timeout
+	cs.player.get_node(^"Sprite2D").flip_h = true
+	cs.set_pose(&"Meditate")
+	await cs.wait(MEDITATION_SIT_HOLD)
+	await cs.pan_to($Meditation/Look.global_position, MEDITATION_PAN_TIME)
+	await cs.wait(MEDITATION_LOOK_HOLD)
 
 	# Напад на село — затемнення, репліки поверх чорного, світло; потім Кусакам дивиться з хребта
 	# (Sapega, 2026-10-16: «кат сцена має бути не в віледжі а в каньйоні з затемненням»).
 	await ScreenFade.to_black(self)
 	await _play_dialogue("VillageAbduction", run_id)
 	# Встає з диска ще в темряві: коли світло й камера вертаються в каньйон, він уже стоїть (D263).
-	pose[0] = &"Idle"
-	hold.call()
-	dm.dialogue_started.disconnect(hold_later)
+	cs.set_pose(&"Idle")
 	await ScreenFade.from_black(self)
-	var back := create_tween().tween_property(camera, ^"global_position", player.global_position, MEDITATION_RETURN_TIME)
-	await back.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
-	camera.top_level = false
-	camera.position = Vector2.ZERO
-	camera.reset_smoothing()
+	await cs.camera_back(MEDITATION_RETURN_TIME)
 	# Розмова — у білому облачці над ним, керування заблоковане до її кінця (D263).
 	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id, true)
-	player.set_movement_enabled(true)
+	cs.end()
 	game.set_objective("Pursue the kidnappers")
 	_after_abduction_cutscene()
 
@@ -692,49 +666,34 @@ const DESCENT_SKY_HOLD := 1.2
 
 func _on_exit_cutscene_state(run_id: int) -> void:
 	var game := Game.get_singleton()
-	var player: Node2D = game.player
-	player.set_movement_enabled(false)
-	var camera: Camera2D = player.get_node(^"Camera2D")
-	var center := camera.get_screen_center_position()
-	camera.top_level = true  # камера більше не йде за героєм
-	camera.global_position = center
-	camera.reset_smoothing()
+	var cs := Cutscene.new()
+	cs.detach_camera()
 	if not $Bridge.is_collapsed():
 		await $Bridge.collapse()
 	if not _is_dialogue_completed("Canyon_ExitCutscene"):
 		await _play_dialogue("Canyon_ExitCutscene", run_id)
-		player.set_movement_enabled(false)  # кінець діалогу повертає керування — кат-сцена ще йде
+		cs.hold()
 	game.set_objective("Descend to the road")
 
-	var sprite: Sprite2D = player.get_node(^"Sprite2D")
-	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
-	var edge: Vector2 = $Descent/Edge.global_position
-	sprite.flip_h = edge.x < player.global_position.x
-	anim.play(&"Walk")
-	await create_tween().tween_property(player, ^"global_position", edge, DESCENT_WALK_TIME).finished
-	anim.play(&"Climb")
-	var climb := create_tween().tween_property(player, ^"global_position", $Descent/Below.global_position, DESCENT_CLIMB_TIME)
-	await climb.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
-	anim.play(&"Idle")
-	await get_tree().create_timer(DESCENT_PAUSE).timeout
+	await cs.walk_hero($Descent/Edge.global_position, DESCENT_WALK_TIME)
+	cs.set_pose(&"Climb")
+	await cs.move(cs.player, $Descent/Below.global_position, DESCENT_CLIMB_TIME, Tween.TRANS_SINE)
+	cs.set_pose(&"Idle")
+	await cs.wait(DESCENT_PAUSE)
 
 	# Небо над кімнатою — лише для цього кадру: камера підіймається до самого верху HighSky.
 	var sky_top: float = $HighSky.global_position.y
-	camera.limit_top = int(sky_top)
-	var sky_center: float = sky_top + get_viewport_rect().size.y / camera.zoom.y / 2.0
-	var pan := create_tween().tween_property(camera, ^"global_position:y", sky_center, DESCENT_PAN_TIME)
-	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
-	await get_tree().create_timer(DESCENT_SKY_HOLD).timeout
+	cs.camera.limit_top = int(sky_top)
+	var sky_center: float = sky_top + get_viewport_rect().size.y / cs.camera.zoom.y / 2.0
+	await cs.pan_to(Vector2(cs.camera.global_position.x, sky_center), DESCENT_PAN_TIME)
+	await cs.wait(DESCENT_SKY_HOLD)
 	await ScreenFade.to_black(self)
 
-	# Камера — знову за героєм; межі виставить нова кімната. Після телепорту цієї кімнати вже немає:
+	# Межі камери виставить нова кімната. Після телепорту цієї кімнати вже немає:
 	# далі жодного await на ній — світло повертає ScreenFade від героя.
-	camera.top_level = false
-	camera.position = Vector2.ZERO
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
-	camera.reset_smoothing()
-	player.set_movement_enabled(true)
-	ScreenFade.from_black(player)
+	cs.end()
+	ScreenFade.from_black(cs.player)
 
 func _on_to_desert_road_state(run_id: int) -> void:
 	"""Обробка стейту TO_DESERT_ROAD - перехід до пустельної дороги"""

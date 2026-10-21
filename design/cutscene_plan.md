@@ -92,7 +92,7 @@ so the dialogue box does not hide the bandits), the `Raid/Bandits` sprites run (
 The three tweens are now in three rooms — the shared helpers of slice 1 are due with the next beat.
 Test: `verify_city_gates_raid` (real `move_right` into the trigger, order of lines, bandits on the spawn points, fight start, no replay).
 
-## Shared helpers, HUD and skip — queue row 9 (D308, [[lab_story_plan]])
+## Built (2026-10-21) — shared helpers, HUD and skip, queue row 9.1 (D308, [[lab_story_plan]])
 
 `Scripts/Systems/Cutscenes/Cutscene.gd` — one object per beat: `Cutscene.new()` takes the input (re-taken after every
 dialogue, in the beat's pose), hides the HUD layers (`Game/UI`, `Game/UICanvas`) and shows the skip prompt; then
@@ -100,7 +100,10 @@ dialogue, in the beat's pose), hides the HUD layers (`Game/UI`, `Game/UICanvas`)
 everything back. Tweens and timers live on the tree, so a beat survives a teleport. **Skip**: hold `cutscene_skip`
 (Tab / pad Y) 1 s of real time → the rest of the beat runs at ×8 with every line paged on (`DialogueManager.skip_line()`),
 so flags, teleports and states are exactly those of the unskipped beat. The Canyon meditation and descent, the City
-Gates raid and `NpcArrival` move onto it; the Mayor Hall and Laboratory beats are written on it. Test: `verify_cutscene.gd`.
+Gates raid and `NpcArrival` run on it (the inline camera / hold code in `Canyon.gd`, `CityGates.gd`, `NpcArrival.gd` is gone); the Mayor Hall and Laboratory beats get written on it (rows 9.3–9.7). Test: `verify_cutscene.gd`.
+Test: each beat is played and skipped from the same state and the two end states compared (flags, room states, objective,
+room, hero and actor positions) — the raid with a real Tab hold, the merchant's arrival with a real pad Y hold, the
+descent (ends after a teleport) with Tab; HUD hidden during, back after, normal speed after.
 
 ## Slices
 

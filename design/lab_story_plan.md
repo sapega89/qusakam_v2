@@ -73,7 +73,7 @@ Done and committed: this plan; slice 0 (B79 leftover, `b2f50186`); boss art for 
 `Assets/Characters/Bosses/`); all draft `.dqd` lines of the block and five speakers (`5e79691c`). Written but never run,
 kept in **`git stash` "queue row 9 WIP drafts"**: `Cutscene.gd`, the skip prompt, `BossEnemy` / `BossLogic` / hazards,
 the boss bar, `MayorHall.gd`, `LabCells.gd`, `LabBoss.gd`, and the rewrites of `City_MayorHall.dqd` (the queue talk)
-and `Laboratory_AfterBoss.dqd` (the cloak line). D-IDs written so far: D309 only — D300–D308 and D310 get written by
+and `Laboratory_AfterBoss.dqd` (the cloak line). D-IDs written so far: D308 (row 9.1), D309 — D300–D307 and D310 get written by
 the sub-row that builds them (texts in this note and [[lab_boss_plan]]). The remaining slices are queue rows 9.1–9.8
 in [[play_feedback_queue]].
 

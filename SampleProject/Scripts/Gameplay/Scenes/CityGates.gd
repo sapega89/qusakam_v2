@@ -17,6 +17,8 @@ enum State {
 	TO_CITY
 }
 
+const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
+
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 @export var current_state: State = State.APPROACH:
@@ -160,33 +162,18 @@ const RAID_STAND_HOLD := 0.8
 const RAID_RETURN_TIME := 1.0
 
 func _raid_cutscene(run_id: int) -> void:
-	var player: Node2D = Game.get_singleton().player
-	var anim: AnimationPlayer = player.get_node(^"AnimationPlayer")
-	var camera: Camera2D = player.get_node(^"Camera2D")
-	var dm := _get_dialogue_manager()
-	var hold := func(_id: String = "") -> void:
-		player.set_movement_enabled(false)
-		anim.play(&"Idle")
-	var hold_later := func(_id: String) -> void: hold.call_deferred()
-	dm.dialogue_started.connect(hold_later)
-	hold.call()
-
-	var center := camera.get_screen_center_position()
-	camera.top_level = true  # камера більше не йде за героєм
-	camera.global_position = center
-	camera.reset_smoothing()
-	var pan := create_tween().tween_property(camera, ^"global_position", $Raid/Look.global_position, RAID_PAN_TIME)
-	await pan.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
+	var cs := Cutscene.new()
+	await cs.pan_to($Raid/Look.global_position, RAID_PAN_TIME)
 	await _play_dialogue("CityGates", run_id)
 	if run_id != state_run_id:
 		return
-	hold.call()
+	cs.hold()
 
 	# Варта бачить бандитів першою; репліка — до їхнього бігу, щоб вікно діалогу не закрило їх.
 	await _play_dialogue("CityGates_Raid", run_id)
 	if run_id != state_run_id:
 		return
-	hold.call()
+	cs.hold()
 
 	# Бандити вибігають з-за лівого краю кадру — кожен до своєї точки спавну.
 	$Raid.show()
@@ -197,15 +184,9 @@ func _raid_cutscene(run_id: int) -> void:
 		run.tween_property($Raid/Bandits.get_child(i), ^"global_position:x", (marks[i] as Node2D).global_position.x, RAID_RUN_TIME)
 	await run.finished
 	$Raid/AnimationPlayer.play(&"stand")
-	await get_tree().create_timer(RAID_STAND_HOLD).timeout
-	dm.dialogue_started.disconnect(hold_later)
-
-	var back := create_tween().tween_property(camera, ^"global_position", player.global_position, RAID_RETURN_TIME)
-	await back.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT).finished
-	camera.top_level = false
-	camera.position = Vector2.ZERO
-	camera.reset_smoothing()
-	player.set_movement_enabled(true)
+	await cs.wait(RAID_STAND_HOLD)
+	await cs.camera_back(RAID_RETURN_TIME)
+	cs.end()
 	advance_state()
 
 func advance_state() -> void:
