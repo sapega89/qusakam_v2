@@ -263,6 +263,14 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     1280×720 … 2560×1440 / 30, 60, 120, 144, unlimited). Skills from slots auto-target the nearest enemy for now (D38).
     The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** (record as D-IDs,
     delete the B rows).
+42. **Kusakam animated holding each weapon** (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
+    анімацію, як він тримає меч, і анімацію, як він тримає інші типи зброї»). Today the weapon is a separate sprite
+    (`WeaponView`, D268) pinned to measured hand points on the artist frames, hidden out of combat. Needed: full-body hero
+    frames per weapon grip — sword/axe one-handed, dagger, mace, halberd two-handed, dual-wield, bare hands — for combat
+    idle, run, jump/fall, the light combo, heavy, block, hurt; generated from the artist frames with comfy-sprite (D239),
+    the weapon drawn in the frame, smoother and prettier than now (more in-betweens). Decide with the plan whether the
+    weapon stays a separate sprite on top (cheaper, swaps per item) or is baked per type (prettier). Plan first:
+    `design/hero_weapon_animation_plan.md`; big — slice per weapon type.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
