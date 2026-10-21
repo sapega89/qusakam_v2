@@ -4,15 +4,15 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_settings.gd
 ##
 ## Показуємо лише підтримувані налаштування; відкладені рядки Figma
-## (Resolution, Frame Rate Limit, Screen Brightness, Ambient, Text Speed,
-## Screen Shake, Damage Numbers) не мають бути на екрані взагалі.
+## (Screen Brightness, Ambient, Text Speed, Screen Shake, Damage Numbers) не мають бути
+## на екрані взагалі. Resolution / Frame Rate Limit (BACKLOG 41) — verify_settings_graphics.gd.
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
 	if not ok: fails.append(label)
 
-const DEFERRED := ["Resolution", "Frame Rate", "Brightness", "Ambient",
+const DEFERRED := ["Brightness", "Ambient",
 	"Text Speed", "Screen Shake", "Damage Numbers"]
 
 

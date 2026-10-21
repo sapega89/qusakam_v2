@@ -108,6 +108,28 @@ func _initialize() -> void:
 						"%s (on=%s) %s == shared Button %s" % [b.name, on, state, state])
 	dsys.queue_free()
 
+	print("\n[3c] One focus look in every menu (Q33, BACKLOG 41)")
+	# Кожна кнопкова варіація: focus — StyleBoxFlat з рамкою FOCUS_RING (або білою на акценті)
+	# шириною FOCUS_RING_WIDTH з усіх боків.
+	var off_ring: Array[String] = []
+	var buttons: Array = [&"Button"]
+	for variation in theme.get_type_variation_list(&"Button"):
+		buttons.append(variation)
+	for type in buttons:
+		if not theme.has_stylebox("focus", type):
+			continue
+		var focus := theme.get_stylebox("focus", type) as StyleBoxFlat
+		var ok: bool = focus != null \
+				and (focus.border_color == UITokens.FOCUS_RING or focus.border_color == UITokens.FOCUS_RING_ON_ACCENT) \
+				and focus.border_width_left == UITokens.FOCUS_RING_WIDTH \
+				and focus.border_width_top == UITokens.FOCUS_RING_WIDTH \
+				and focus.border_width_right == UITokens.FOCUS_RING_WIDTH \
+				and focus.border_width_bottom == UITokens.FOCUS_RING_WIDTH
+		if not ok:
+			off_ring.append(String(type))
+	_check(buttons.size() > 20, "%d button types inspected" % buttons.size())
+	_check(off_ring.is_empty(), "every button focus is the shared ring (off: %s)" % str(off_ring))
+
 	print("\n[4] Third-party UI isolation")
 	var outside := Button.new()
 	root.add_child(outside)
