@@ -5,7 +5,9 @@ extends DQDialogueBox
 ## (DialogueQuest.Inputs → DQDialoguePlayer.accept, повтор репліки NPC у DialogueManager.replay)
 ## проходять через accept() цього вікна. Швидкість — у dialogue_box_settings.tres.
 ## Сцена — SampleProject/Scenes/UI/dialogue_box.tscn, копія префаба аддона (D110: показ — наш), з непрозорим
-## фоном ModalPanel (D254).
+## фоном ModalPanel (D254). Кнопок Auto/Skip у грі немає (B10, Figma npc-dialog-simple 36:6): вузли
+## %AutoButton/%SkipButton лишаються прихованими лише тому, що їх вимагає базовий DQDialogueBox і DQDialoguePlayer;
+## autoplay_enabled і skip_enabled вимкнені в Resources/Dialogue/dialogue_player_settings.tres.
 
 
 func accept() -> void:

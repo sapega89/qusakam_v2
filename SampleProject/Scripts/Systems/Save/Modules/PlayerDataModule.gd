@@ -29,7 +29,8 @@ func save() -> Dictionary:
 	data["max_health"] = player_state.get("max_health", 0)
 
 	# Сохраняем позицию
-	var pos = player_state.get("player_position", Vector2(100, 549))
+	# Позицію перед сейвом пише Game._save_full_game_data_to_save_system(); на завантаженні її ставить Game (B82).
+	var pos: Vector2 = player_state.player_position
 	data["player_position"] = {"x": pos.x, "y": pos.y}
 
 	# Сохраняем текущую сцену
@@ -100,12 +101,12 @@ func load_data(data: Dictionary) -> void:
 		player_state.max_health = data.max_health
 
 	# Загружаем позицию
+	# Кожен сейв пише позицію; без неї Game поставив би героя в дефолтну точку — кажемо голосно (B82).
 	if "player_position" in data:
-		var pos_data = data.player_position
-		if pos_data is Dictionary:
-			player_state.player_position = Vector2(pos_data.get("x", 100), pos_data.get("y", 549))
-		else:
-			player_state.player_position = pos_data
+		var pos_data: Dictionary = data.player_position
+		player_state.player_position = Vector2(pos_data.x, pos_data.y)
+	else:
+		log_error("save slot has no player_position")
 
 	# Загружаем текущую сцену
 	if "current_scene" in data:
