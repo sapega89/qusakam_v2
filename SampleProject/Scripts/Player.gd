@@ -407,8 +407,8 @@ func refresh_max_health() -> void:
 
 ## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
 ## Souls-lite (D264): удар ворога, що справді поранив, збиває героя — на stagger_time ворога, фінішер серії довше.
-## Блок спереду бере block_factor шкоди й не збиває (крім ударів, що збили б на GUARD_BREAK і довше);
-## парирування в перші parry_window с блоку — без шкоди, збиває самого ворога.
+## Блок спереду (4b) шкоди не завдає й не збиває; удар, що збив би на GUARD_BREAK і довше (tank, фінішер серії),
+## пробиває блок — повна шкода і збій. Парирування в перші PARRY_WINDOW с блоку — без шкоди, збиває самого ворога.
 func take_damage(damage: int, source: Node = null) -> void:
 	if is_invulnerable or is_dead:
 		return
@@ -417,18 +417,15 @@ func take_damage(damage: int, source: Node = null) -> void:
 		source.parried(self)
 		EventBus.player_parried.emit(source)
 		return
-	var before := current_health
-	var amount := damage
 	if guard == &"block":
-		amount = maxi(1, roundi(damage * combat.block_factor))
 		EventBus.player_blocked.emit(source)
-	super.take_damage(mitigated_damage(amount), source)
+		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
+			return
+	var before := current_health
+	super.take_damage(mitigated_damage(damage), source)
 	if current_health >= before or is_dead or not source is DefaultEnemy:
 		return
-	var stagger_time: float = source.hit_stagger_time()
-	if guard == &"block" and stagger_time < PlayerCombat.GUARD_BREAK:
-		return
-	combat.stagger(stagger_time, source.global_position.x)
+	combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
 
 func mitigated_damage(damage: int) -> int:

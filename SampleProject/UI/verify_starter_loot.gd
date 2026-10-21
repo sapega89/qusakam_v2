@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Стартове спорядження новачка (Sapega, 2026-10-12):
-## гра починається без зілль, перший убитий ворог дає рівно 5, дід — Copper Sword і Leather Armor, один раз.
+## гра починається без зілль і зілль не дає (4b: ні з ворогів, ні в крамницях), дід — Copper Sword і Leather Armor, один раз.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_starter_loot.gd
 
 var fails: Array[String] = []
@@ -37,23 +37,27 @@ func _initialize() -> void:
 	print("[1] A fresh game has no potions")
 	ck(inv.get_item_count("potion") == 0, "0 potions at start (%d)" % inv.get_item_count("potion"))
 
-	print("[2] The first kill gives 5 potions, later kills give none")
+	print("[2] Potions are out for now (Sapega 2026-10-21, D261, 4b): no kill gives one")
 	var spawner: Node = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd").new()
 	spawner._on_enemy_died(Node.new())
-	ck(inv.get_item_count("potion") == 5, "5 potions after the first kill (%d)" % inv.get_item_count("potion"))
 	spawner._on_enemy_died(Node.new())
-	ck(inv.get_item_count("potion") == 5, "still 5 after a second kill (%d)" % inv.get_item_count("potion"))
-
-	print("[2b] Random potions are rare (D261): about 1 kill in 10, not every enemy")
+	ck(inv.get_item_count("potion") == 0, "no potions after the first and second kill (%d)" % inv.get_item_count("potion"))
 	var loot: Node = root.get_node("GameManager/LootSystem")
-	ck(is_equal_approx(loot.potion_drop_chance, 0.1), "potion drop chance 10%% (%.2f)" % loot.potion_drop_chance)
 	loot.rng.seed = 259
-	var potions_before: int = inv.get_item_count("potion")
+	var coins_before: int = inv.get_item_count("coin")
 	for i in 1000:
 		loot._on_enemy_died("verify", Vector2.ZERO)
-	var dropped: int = inv.get_item_count("potion") - potions_before
-	ck(dropped > 60 and dropped < 140, "1000 kills drop ~100 potions, not 1000 (%d)" % dropped)
-	inv.remove_item("potion", dropped)
+	ck(inv.get_item_count("potion") == 0 and inv.get_item_count("hi_potion") == 0, "1000 kills drop no potions (%d)" % inv.get_item_count("potion"))
+	ck(inv.get_item_count("coin") > coins_before, "kills still drop coins (%d → %d)" % [coins_before, inv.get_item_count("coin")])
+
+	print("[2b] No merchant sells potions")
+	var merchants: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/merchants.json")).merchants
+	for id: String in merchants:
+		var merchant: Node = load("res://SampleProject/Scripts/Gameplay/NPCs/Merchant.gd").new()
+		merchant.merchant_id = id
+		var stock: Array = merchant._load_merchant_items()
+		ck(not stock.is_empty() and not stock.has("potion") and not stock.has("hi_potion"), "%s: no potion, no hi_potion (%s)" % [id, stock])
+		merchant.free()
 
 	print("[3] The old man's gift arrives once")
 	# Справжня кімната: подарунок показує підказку через дерево, а голий скрипт села без кімнати не стартує

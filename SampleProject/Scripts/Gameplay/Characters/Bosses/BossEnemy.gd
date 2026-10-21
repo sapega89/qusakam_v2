@@ -60,6 +60,7 @@ func start_attack(direction: int) -> void:
 	hitbox_damage.update_damage()
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true
+	enemy_view.on_strike()
 
 
 ## Замах ходу видно: у сцені боса на кожен свій kind (не combo) дві анімації — "<kind>" (замах) і "<kind>_strike" (удар).
@@ -74,6 +75,7 @@ func strike(move: Dictionary) -> void:
 ## Поза ходу — одразу: стоп-кадр удару (Engine.time_scale = 0) інакше лишав на екрані позу замаху, бо ключ
 ## на 0 с застосовується лише з першим ненульовим кроком анімації.
 func _pose(anim: String) -> void:
+	anim_player.speed_scale = 1.0  # хід боса — у темпі своєї анімації, не розтягнутого замаху (EnemyView)
 	anim_player.play(anim)
 	anim_player.advance(0.0)
 

@@ -79,7 +79,7 @@ func _initialize() -> void:
 
 	print("[3] The dune ledge: jump up, pick up, gone after a reload")
 	var inventory: Node = sl.get_inventory_manager()
-	var before: int = inventory.get_item_count("potion")
+	var before: int = inventory.get_item_count("iron_ingot")
 	# On the floor west of the step (tiles 58–61, top y 320), facing east.
 	player.global_position = Vector2(1800.0, 360.0)
 	player.velocity = Vector2.ZERO
@@ -92,13 +92,13 @@ func _initialize() -> void:
 	await create_timer(0.3).timeout
 	Input.action_release(&"move_right")
 	await create_timer(0.6).timeout
-	if player.global_position.x > 2060.0:  # overshot the potion: a step back west
+	if player.global_position.x > 2060.0:  # overshot the pickup: a step back west
 		await _hold(&"move_left", 0.12)
 		await create_timer(0.3).timeout
 	ck(player.is_on_floor() and player.global_position.y < 260.0 and absf(player.global_position.x - 2048.0) < 30.0,
 			"the hero stands on the ledge (%.0f, %.0f)" % [player.global_position.x, player.global_position.y])
 	var pickup: Node = road.get_node("Pickup_DuneLedge")
-	ck(pickup.get_node("Interactable").enabled, "the potion offers \"Pick up\"")
+	ck(pickup.get_node("Interactable").enabled, "the pickup offers \"Pick up\"")
 	var press := InputEventAction.new()
 	press.action = &"interact"
 	press.pressed = true
@@ -108,14 +108,14 @@ func _initialize() -> void:
 	release.action = &"interact"
 	Input.parse_input_event(release)
 	for i in 6: await process_frame
-	ck(inventory.get_item_count("potion") == before + 1, "a potion in the bag (%d → %d)" % [before, inventory.get_item_count("potion")])
+	ck(inventory.get_item_count("iron_ingot") == before + 1, "an iron ingot in the bag (potions out, 4b) (%d → %d)" % [before, inventory.get_item_count("iron_ingot")])
 	var layer = sl.get_ui_manager().get_modal_layer()
 	if layer.active_modal:
 		layer.active_modal.get_viewport().gui_get_focus_owner().pressed.emit()
 		for i in 4: await process_frame
 	game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
-	ck(game.map.get_node_or_null("Pickup_DuneLedge") == null, "the picked potion does not come back")
+	ck(game.map.get_node_or_null("Pickup_DuneLedge") == null, "the picked ingot does not come back")
 	ck(game.map.get_node_or_null("Pickup_MesaLedge") != null, "the other ledges keep theirs")
 
 	print("[4] The east edge leads to CityGates")

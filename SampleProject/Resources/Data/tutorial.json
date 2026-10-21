@@ -60,9 +60,9 @@
 			"id": "block",
 			"hint_topic": true,
 			"title": "Block and Parry",
-			"text": "Hold {block} to block: blocked hits do far less damage. Press it just as a blow lands to parry — the attacker is staggered and open to a counter.",
+			"text": "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter.",
 			"key": "{block}",
-			"hint": "Button to block; tap it as a hit lands to parry."
+			"hint": "Hold to block; press it when an enemy's weapon glints to parry."
 		},
 		{
 			"id": "first_kill",

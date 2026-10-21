@@ -84,6 +84,14 @@ func _initialize() -> void:
 			% [dropped.global_position.y, points[3].global_position.y, game.player.global_position.y])
 
 	print("[1] The player hits an enemy")
+	# Удари героя міряємо по ворогах, що стоять: живий AI б'є з випадковими серіями (D265), а з D264 кожен
+	# його удар збиває героя й зриває його замах — звідси «то влучив, то ні» (feedback 4b). Бій AI — [2]–[2e].
+	# Вимкнена фізика зупиняє лише нові удари: замах, що вже йде, — корутина на таймерах і б'є до кінця.
+	for e in enemies:
+		e.set_physics_process(false)
+	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking) or game.player.combat.owns_animation():
+		await physics_frame
+	await create_timer(0.6).timeout  # невразливість після останнього удару минула
 	var target = enemies[0]
 	var hits: Array = []
 	target.damage_token.connect(func(d: int) -> void: hits.append(d))
@@ -109,8 +117,6 @@ func _initialize() -> void:
 
 	print("[1e] An attack in the air lands (it used to be cancelled by Jump / Fall)")
 	await create_timer(0.3).timeout
-	while game.player.combat.owns_animation():  # удар ворога міг збити героя (D264) — чекаємо, доки оговтається
-		await physics_frame
 	hits.clear()
 	game.player.global_position = target.global_position + Vector2(-26, -6)
 	game.player.velocity = Vector2(0, -150)
@@ -243,7 +249,7 @@ func _initialize() -> void:
 	game.player.global_position = Vector2(attacker.global_position.x + 40, game.player.global_position.y)
 	attacker.enemy_logic.last_direction = 1
 	attacker.enemy_logic.perform_attack()
-	await create_timer(attacker.attack_windup * (attacker.enemy_logic.TRACK_PART + 0.1)).timeout
+	await create_timer(attacker.attack_windup - 0.25 + 0.05).timeout
 	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
 	attacker.enemy_logic.process_ai(0.0)
 	await create_timer(swing).timeout
@@ -327,7 +333,7 @@ func _initialize() -> void:
 	tank.stun(0.5)
 	ck(tank.enemy_logic.stun_left <= 0.0, "armour: a stun does not cancel the tank's swing")
 	await create_timer(0.5).timeout
-	ck(type_hits.size() == 1, "the tank's swing lands after its 0.7 s wind-up (%s)" % [type_hits])
+	ck(type_hits.size() == 1, "the tank's swing lands after its %.1f s wind-up (%s)" % [tank.attack_windup, type_hits])
 	await create_timer(1.0).timeout
 	type_hits.clear()
 	tank.enemy_logic.perform_attack()
@@ -352,7 +358,7 @@ func _initialize() -> void:
 	var fast_x0: float = fast.global_position.x
 	fast.enemy_logic.last_direction = -1
 	fast.enemy_logic.perform_attack()
-	await create_timer(0.6).timeout
+	await create_timer(fast.attack_windup + fast.attack_active_time + 0.1).timeout
 	ck(fast_x0 - fast.global_position.x >= 40.0, "the fast enemy lunges forward (%.0f px)" % (fast_x0 - fast.global_position.x))
 	ck(type_hits.size() == 1, "the lunge reaches a hero 110 px away (%s)" % [type_hits])
 	fast.set_physics_process(false)
@@ -367,10 +373,12 @@ func _initialize() -> void:
 	victim.die()
 	await create_timer(1.0).timeout
 	ck(victim.visible and victim.anim_player.current_animation == "death", "the death animation is shown, not skipped (F8)")
+	var coins_dropped: int = victim.get_parent().get_children().filter(func(n: Node) -> bool: return n.scene_file_path == "res://SampleProject/Scenes/Gameplay/Objects/Coin.tscn").size()
 	await create_timer(3.0).timeout
 	ck(not victim.visible, "dead enemy is hidden")
 	ck(not victim.is_alive(), "dead enemy is not alive")
-	ck(inv.get_item_count("potion") + inv.get_item_count("coin") > potions_before + coins_before, "death gave loot (first-kill potions or coins)")
+	ck(coins_dropped > 0 or inv.get_item_count("coin") > coins_before, "death gave loot: coins (%d dropped)" % coins_dropped)
+	ck(inv.get_item_count("potion") == potions_before, "no potions from a kill (4b)")
 
 	for enemy in _enemies(road):
 		if enemy.is_alive():

@@ -107,6 +107,7 @@ vframes = 4
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=808834931]
 libraries/ = SubResource("AnimationLibrary_enemy")
+metadata/attack_strike_time = 0.4
 
 [node name="hitbox" type="Area2D" parent="." unique_id=1700052958]
 monitoring = false

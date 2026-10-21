@@ -20,8 +20,8 @@ enum State { QUEUE, BURST, FIGHT, TRANSPORT }
 ## Куди зала переносить героя: його камера в LabCells (D303).
 const LAB_ROOM := "res://SampleProject/Maps/LabCells.tscn"
 const LAB_MARKER := ^"Arrival"
-## Нагорода за перемогу над Збирачем — речі із зали (D300, D301).
-const VICTORY_LOOT := {"hi_potion": 2, "silver_sword": 1, "coin": 60}
+## Нагорода за перемогу над Збирачем — речі із зали (D300, D301); зілля прибрані (4b, D261) — срібло для кузні замість них.
+const VICTORY_LOOT := {"silver_ingot": 2, "silver_sword": 1, "coin": 60}
 const QUEUE_ORDER: Array[String] = ["astrit", "urizen", "alisia"]
 
 const WALK_TIME := 1.6

@@ -89,3 +89,4 @@ region_enabled = false
 
 [node name="AnimationPlayer" parent="." index="3"]
 libraries/ = SubResource("AnimationLibrary_jackal")
+metadata/attack_strike_time = 0.225

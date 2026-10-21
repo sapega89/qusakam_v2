@@ -162,8 +162,32 @@ func _staggers() -> void:
 	target.combo_chance = 1.0
 	var stagger_times: Array = []
 	target.enemy_logic.attack_started.connect(func() -> void: stagger_times.append(target.hit_stagger_time()))
+	# 4b: перед кожним ударом — відблиск (EnemyTell на ворогові) рівно за PARRY_WINDOW до удару
+	var tells: Array = []
+	var tell_nodes: Array = []
+	var on_tell := func() -> void:
+		tells.append(Time.get_ticks_msec())
+		await process_frame
+		tell_nodes.append(target.get_children().filter(func(c: Node) -> bool: return c.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd")).size())
+	target.enemy_logic.attack_telegraphed.connect(on_tell)
+	var strikes: Array = []
 	target.enemy_logic.perform_attack()
-	await create_timer(target.attack_windup + 2 * 0.25 + 3 * target.attack_active_time + 0.3).timeout
+	var swing_end: int = Time.get_ticks_msec() + roundi((target.attack_windup + 2 * target.enemy_logic.COMBO_WINDUP + 3 * target.attack_active_time + 0.3) * 1000)
+	var was_on := false
+	while Time.get_ticks_msec() < swing_end:
+		await physics_frame
+		if target.hitbox.monitoring and not was_on:
+			strikes.append(Time.get_ticks_msec())
+		was_on = target.hitbox.monitoring
+	target.enemy_logic.attack_telegraphed.disconnect(on_tell)
+	var leads: Array = []
+	for i in mini(tells.size(), strikes.size()):
+		leads.append(strikes[i] - tells[i])
+	ck(tells.size() == 3 and strikes.size() == 3 and leads.all(func(ms: int) -> bool: return absi(ms - 250) <= 50),
+			"a tell before each of the three swings, %d ms before the strike (tells %d, strikes %d, leads %s)" % [roundi(hero.combat.PARRY_WINDOW * 1000), tells.size(), strikes.size(), leads])
+	ck(tell_nodes.size() == 3 and tell_nodes.all(func(n: int) -> bool: return n >= 1), "the glint is drawn on the enemy at each tell (%s)" % [tell_nodes])
+	ck(target.attack_windup > hero.combat.PARRY_WINDOW and target.enemy_logic.COMBO_WINDUP > hero.combat.PARRY_WINDOW,
+			"wind-ups longer than the parry window: first %.2f s, combo %.2f s" % [target.attack_windup, target.enemy_logic.COMBO_WINDUP])
 	ck(swings.size() == 3, "three swings in one attack (%d)" % swings.size())
 	ck(stagger_times.size() == 3 and stagger_times[2] >= 0.6 and stagger_times[0] == target.stagger_time,
 			"only the finisher staggers long (%s)" % [stagger_times])
@@ -256,7 +280,7 @@ func _hero_moves(sl: Node) -> void:
 	ck(hero.combat.combo_step == 0, "after a pause the combo starts over (step %d)" % hero.combat.combo_step)
 	await create_timer(1.0).timeout
 
-	print("[5] Heavy attack: a rooted wind-up, then 2.2x with knockback")
+	print("[5] Heavy attack: a rooted wind-up, then 1.5x with knockback (4b: not double)")
 	hits.clear()
 	target.poise_max = 3
 	target.poise = 3
@@ -271,7 +295,7 @@ func _hero_moves(sl: Node) -> void:
 	ck(hero.combat.state == hero.combat.State.HEAVY_WINDUP and absf(hero.global_position.x - x0) < 8.0, "wind-up roots the hero (state %d, moved %.0f)" % [hero.combat.state, hero.global_position.x - x0])
 	await create_timer(0.35).timeout
 	Input.action_release(&"move_right")
-	ck(hits == [roundi(d * 2.2)], "one heavy hit %s (expected %d)" % [hits, roundi(d * 2.2)])
+	ck(is_equal_approx(hero.combat.heavy_damage, 1.5) and hits == [roundi(d * 1.5)], "one heavy hit %s (expected %d)" % [hits, roundi(d * 1.5)])
 	ck(staggered.has(target), "a heavy hit breaks a melee enemy's poise (3) at once")
 	eb.enemy_staggered.disconnect(on_stagger)
 	await create_timer(1.2).timeout
@@ -287,7 +311,7 @@ func _hero_moves(sl: Node) -> void:
 	ck(hero.combat.state != hero.combat.State.HEAVY_STRIKE and hits.is_empty(), "the heavy never landed (hits %s)" % [hits])
 	await create_timer(0.6).timeout
 
-	print("[6] Block: front hits take 30%, no stagger; a hit from behind is not blocked")
+	print("[6] Block: front hits take no damage, no stagger (4b); a hit from behind is not blocked")
 	var got: Array = []
 	eb.player_staggered.connect(func(t: float) -> void: got.append(t))
 	await _place_hero(target, -30)
@@ -297,7 +321,7 @@ func _hero_moves(sl: Node) -> void:
 	ck(hero.combat.is_blocking(), "holding block blocks")
 	var hp0: int = hero.current_health
 	hero.take_damage(20, target)
-	ck(hp0 - hero.current_health == hero.mitigated_damage(6) and got.is_empty(), "blocked: %d HP lost (expected %d), staggers %s" % [hp0 - hero.current_health, hero.mitigated_damage(6), got])
+	ck(hero.current_health == hp0 and got.is_empty(), "blocked: no HP lost (%d → %d), staggers %s" % [hp0, hero.current_health, got])
 	await create_timer(0.6).timeout
 	hero.mover.last_direction = -1  # спиною до ворога
 	hp0 = hero.current_health
@@ -313,16 +337,17 @@ func _hero_moves(sl: Node) -> void:
 	got.clear()
 	hp0 = hero.current_health
 	_press(&"block")
-	await physics_frame
-	await physics_frame
+	await create_timer(hero.combat.PARRY_WINDOW - 0.05).timeout  # 4b: вікно 0.25 с — блок, натиснутий на відблиск, ще встигає
 	hero.take_damage(20, target)
-	ck(hero.current_health == hp0 and got.is_empty() and parried == [target], "parried: no damage, no stagger (%d → %d)" % [hp0, hero.current_health])
+	ck(hero.combat.PARRY_WINDOW >= 0.25 and hero.current_health == hp0 and got.is_empty() and parried == [target],
+			"parried 0.2 s after pressing block: no damage, no stagger (%d → %d)" % [hp0, hero.current_health])
 	ck(target.enemy_logic.stun_left >= 0.9, "the attacker is staggered 1 s (%.2f)" % target.enemy_logic.stun_left)
-	print("[6c] A tank-strength hit breaks the guard")
+	print("[6c] A tank-strength hit breaks the guard: full damage and a stagger")
 	await create_timer(0.5).timeout
 	target.stagger_time = 0.6
+	hp0 = hero.current_health
 	hero.take_damage(20, target)
-	ck(got.size() == 1, "guard broken: staggered (%s)" % [got])
+	ck(got.size() == 1 and hp0 - hero.current_health == hero.mitigated_damage(20), "guard broken: staggered (%s), %d HP lost" % [got, hp0 - hero.current_health])
 	target.stagger_time = 0.25
 	_press(&"block", false)
 	await create_timer(1.0).timeout

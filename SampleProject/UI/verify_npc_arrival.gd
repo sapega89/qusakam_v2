@@ -214,7 +214,7 @@ func _initialize() -> void:
 	await _choose(merchant, "Buy")
 	ck(merchant.is_shop_open, "Buy opens his shop")
 	var stock: Array = merchant.shop_menu_instance.shop_items
-	ck(stock.has("iron_ingot") and stock.has("leather") and stock.has("hi_potion"), "City stock: the helmet's ingots and leather, potions (%s)" % [stock])
+	ck(stock.has("iron_ingot") and stock.has("leather") and not stock.has("hi_potion") and not stock.has("potion"), "City stock: the helmet's ingots and leather, no potions (4b) (%s)" % [stock])
 	merchant.close_shop()
 
 	for i in 4: await process_frame

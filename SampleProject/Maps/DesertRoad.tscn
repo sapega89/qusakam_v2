@@ -310,7 +310,7 @@ enemy_type = "tank"
 
 [node name="Pickup_DuneLedge" parent="." unique_id=284198446 instance=ExtResource("item_pickup")]
 position = Vector2(2048, 232)
-item_id = "potion"
+item_id = "iron_ingot"
 
 [node name="Pickup_MesaLedge" parent="." unique_id=1624730996 instance=ExtResource("item_pickup")]
 position = Vector2(3200, 232)

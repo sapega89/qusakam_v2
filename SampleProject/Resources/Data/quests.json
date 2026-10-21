@@ -12,7 +12,7 @@
 			"gives": {},
 			"needs": {},
 			"needs_flag": "city_gates_fight_complete",
-			"reward": {"potion": 2, "coin": 30}
+			"reward": {"coin": 60}
 		},
 		{
 			"id": "smith_helmet",

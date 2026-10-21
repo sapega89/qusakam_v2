@@ -33,14 +33,11 @@ func perform_attack() -> void:
 		return
 	is_attacking = true
 	attack_broken = false
-	winding_up = true
+	swing_windup = move.windup * enemy.windup_scale
 	attack_started.emit()
 	EventBus.attack_started.emit(enemy, player)
 	enemy.telegraph(move)
-	var windup: float = move.windup * enemy.windup_scale
-	await get_tree().create_timer(windup * TRACK_PART).timeout
-	winding_up = false
-	await get_tree().create_timer(windup * (1.0 - TRACK_PART)).timeout
+	await wind_up(swing_windup)
 	if not (enemy.is_dead or stun_left > 0.0 or attack_broken):
 		enemy.strike(move)
 		match move.kind:

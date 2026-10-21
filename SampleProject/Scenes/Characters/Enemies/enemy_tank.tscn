@@ -90,3 +90,4 @@ region_enabled = false
 
 [node name="AnimationPlayer" parent="." index="3"]
 libraries/ = SubResource("AnimationLibrary_scorpion")
+metadata/attack_strike_time = 0.7

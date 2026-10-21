@@ -56,8 +56,6 @@ var attack_cooldown: float = 1.5
 var is_attacking: bool = false
 ## Іде саме замах (ще не удар): ворог розвертається за героєм, тож від удару не втекти, просто ступивши за спину.
 var winding_up: bool = false
-## Яку частку замаху ворог ще розвертається (мок).
-const TRACK_PART := 0.6
 
 ## Відкидання (D203): за KNOCKBACK_TIME ворог проїжджає задану відстань, AI чекає.
 const KNOCKBACK_TIME := 0.15
@@ -68,9 +66,11 @@ var stun_left: float = 0.0
 ## Замах зірвано важким ударом (відкидання, D208) — удару не буде.
 var attack_broken: bool = false
 ## Комбо (D265): наступні удари серії — з коротшим замахом; останній удар серії — фінішер, збиває героя довше.
-const COMBO_WINDUP := 0.25
+const COMBO_WINDUP := 0.4
 const FINISHER_STAGGER := 0.6
 var finisher: bool = false
+## Замах удару, що зараз іде (EnemyView тягне позу замаху саме на нього).
+var swing_windup: float = 0.0
 
 # Raycast для виявлення гравця
 
@@ -86,6 +86,9 @@ var home_position: Vector2 = Vector2.ZERO
 signal state_changed(new_state: AIState)
 signal direction_changed(direction: int)  # -1 left, 1 right, 0 none
 signal attack_started()
+## Підказка удару (4b): відблиск на зброї рівно за PlayerCombat.PARRY_WINDOW до удару — напрямок уже зафіксовано,
+## блок саме зараз — парирування.
+signal attack_telegraphed()
 signal attack_ended()
 signal player_detected()
 signal player_lost()
@@ -380,14 +383,10 @@ func perform_attack():
 			break
 		var windup: float = enemy.attack_windup if i == 0 else COMBO_WINDUP
 		finisher = swings > 1 and i == swings - 1
-		winding_up = true
+		swing_windup = windup
 		attack_started.emit()
 		EventBus.attack_started.emit(enemy, player)
-		# Замах: перші TRACK_PART ворог стежить за героєм, далі напрямок зафіксовано — перекат за спину
-		# саме тоді рятує, а просто відійти на крок — ні.
-		await get_tree().create_timer(windup * TRACK_PART).timeout
-		winding_up = false
-		await get_tree().create_timer(windup * (1.0 - TRACK_PART)).timeout
+		await wind_up(windup)
 		# Оглушили (якщо без броні), збили чи парирували посеред серії — далі ударів немає (D207, D208, D264)
 		if enemy.is_dead or stun_left > 0.0 or attack_broken:
 			break
@@ -396,13 +395,29 @@ func perform_attack():
 		enemy.start_attack(direction)
 		if enemy.lunge > 0.0:
 			start_knockback(direction * enemy.lunge, false)  # ривок разом з ударом (fast)
-		await get_tree().create_timer(enemy.attack_active_time).timeout
+		await get_tree().create_timer(enemy.attack_active_time, false).timeout
 		enemy.end_attack()
 
 	finisher = false
 	is_attacking = false
 	attack_ended.emit()
 	_decide_after_attack()
+
+## Замах [param windup] с: спершу ворог стежить за героєм, а за PARRY_WINDOW до удару напрямок фіксується
+## й спалахує підказка (перекат за спину саме тоді рятує, а просто відійти на крок — ні). Замах, коротший
+## за вікно, — підказка одразу. Зірваний замах (збій, оглушення) підказки не дає.
+## Таймери замаху й удару стоять, поки гра на паузі (меню, вікно туторіалу D289): інакше замах «минав» під
+## вікном, і удар падав одразу після нього, без підказки.
+func wind_up(windup: float) -> void:
+	winding_up = true
+	var track := windup - PlayerCombat.PARRY_WINDOW
+	if track > 0.0:
+		await get_tree().create_timer(track, false).timeout
+	winding_up = false
+	if enemy.is_dead or stun_left > 0.0 or attack_broken:
+		return
+	attack_telegraphed.emit()
+	await get_tree().create_timer(minf(windup, PlayerCombat.PARRY_WINDOW), false).timeout
 
 func _face_player() -> void:
 	if not player or not is_instance_valid(player):

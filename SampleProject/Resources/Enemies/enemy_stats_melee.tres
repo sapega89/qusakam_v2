@@ -6,7 +6,8 @@
 script = ExtResource("1_melee")
 enemy_type = "melee"
 speed = 70.0
-base_damage = 10.0
+base_damage = 14.0
+attack_windup = 0.6
 attack_cooldown = 1.5
 detection_range = 300.0
 attack_range = 100.0

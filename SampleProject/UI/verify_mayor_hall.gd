@@ -210,7 +210,11 @@ func _initialize() -> void:
 	var inv: Node = sl.get_inventory_manager()
 	var gained: Array = []
 	xp.xp_gained.connect(func(amount: int, _t: int) -> void: gained.append(amount))
-	var before := {"hi_potion": inv.get_item_count("hi_potion"), "silver_sword": inv.get_item_count("silver_sword"), "coin": inv.get_item_count("coin")}
+	var before := {"silver_ingot": inv.get_item_count("silver_ingot"), "silver_sword": inv.get_item_count("silver_sword")}
+	# Монети з убитого боса падають ще й випадково (LootSystem, 70 % по 5–20) — тож рахуємо саме додавання +60 із зали.
+	var coin_adds: Array = []
+	root.get_node("EventBus").item_added.connect(func(id: String, amount: int) -> void:
+		if id == "coin": coin_adds.append(amount))
 	var boss: Node2D = _hall().get_node(^"BrassCollector")
 	game.player.Max_Health = 99999
 	game.player.current_health = 99999
@@ -230,8 +234,10 @@ func _initialize() -> void:
 	ck(started.has("MayorHall_Victory"), "the victory talk (%s)" % [started])
 	ck(gained.has(400), "+400 XP from the boss (%s)" % [gained])
 	for item: String in before:
-		var want: int = {"hi_potion": 2, "silver_sword": 1, "coin": 60}[item]
+		var want: int = {"silver_ingot": 2, "silver_sword": 1}[item]
 		ck(inv.get_item_count(item) == before[item] + want, "%s +%d (%d → %d)" % [item, want, before[item], inv.get_item_count(item)])
+	ck(coin_adds.count(60) == 1, "the hall's 60 coins, once (coin adds %s)" % [coin_adds])
+	ck(inv.get_item_count("hi_potion") == 0 and inv.get_item_count("potion") == 0, "no potions in the loot (4b)")
 	ck(game.get_quest_flag("mayor_boss_defeated"), "mayor_boss_defeated set")
 	await _drain()
 	await _in_lab("win")

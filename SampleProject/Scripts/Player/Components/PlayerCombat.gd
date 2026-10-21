@@ -38,15 +38,15 @@ const SWING_ANIMATIONS := {"mace": &"AttackSmash", "polearm": &"AttackThrust"}
 @export var heavy_windup: float = 0.4
 @export var heavy_strike_time: float = 0.25
 @export var heavy_recovery: float = 1.0
-@export var heavy_damage: float = 2.2
+@export var heavy_damage: float = 1.5
 @export var heavy_knockback: float = 70.0
 ## Скільки стійкості ворога (D265) забирає удар.
 const POISE_LIGHT := 1
 const POISE_FINISHER := 2
 const POISE_HEAVY := 3
-## Блок (D264): удар спереду — така частка шкоди; парирування — удар у перші parry_window с блоку.
-@export var block_factor: float = 0.3
-@export var parry_window: float = 0.18
+## Блок (D264, 4b): удар спереду шкоди не завдає; парирування — удар у перші PARRY_WINDOW с блоку.
+## Ворог показує відблиск рівно за PARRY_WINDOW до удару (EnemyLogic.wind_up): блок на відблиск — парирування.
+const PARRY_WINDOW := 0.25
 ## Удар, що збив би героя на стільки секунд і довше (tank, фінішер серії), пробиває блок.
 const GUARD_BREAK := 0.6
 ## Збій героя (D264): на скільки px його відносить від того, хто вдарив, і за який час.
@@ -325,7 +325,7 @@ func _start_block() -> void:
 	animation_player.play(&"Block")
 	player.animation = &"Block"
 
-## Удар по героєві в блоці (D264): &"parry" — у перші parry_window с, &"block" — спереду, &"" — не захищено
+## Удар по героєві в блоці (D264): &"parry" — у перші PARRY_WINDOW с, &"block" — спереду, &"" — не захищено
 ## (не в блоці, удар ззаду, не ворог).
 func guard_against(source: Node) -> StringName:
 	if state != State.BLOCK or not source is DefaultEnemy:
@@ -333,7 +333,7 @@ func guard_against(source: Node) -> StringName:
 	var side: float = signf(source.global_position.x - player.global_position.x)
 	if side != 0.0 and side != player.last_direction:
 		return &""
-	return &"parry" if _block_time <= parry_window else &"block"
+	return &"parry" if _block_time <= PARRY_WINDOW else &"block"
 
 ## Удар ворога збив героя (D264): дія, що йшла, зірвана, герой відлітає від [param from_x] і [param duration] с
 ## не керується. «Вороги інколи заморожують героя» (D253) — довгий збій від tank і фінішера серії.

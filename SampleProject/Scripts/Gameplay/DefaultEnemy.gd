@@ -169,6 +169,7 @@ func _initialize_components():
 	enemy_logic.direction_changed.connect(_on_logic_direction_changed)
 	enemy_logic.attack_started.connect(_on_logic_attack_started)
 	enemy_logic.attack_ended.connect(_on_logic_attack_ended)
+	enemy_logic.attack_telegraphed.connect(func() -> void: enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, lunge, attack_range))
 
 	enemy_view = EnemyView.new()
 	enemy_view.name = "EnemyView"
@@ -237,7 +238,7 @@ func _on_logic_direction_changed(direction: int):
 
 func _on_logic_attack_started():
 	"""Обробляє початок атаки з EnemyLogic"""
-	enemy_view.on_attack_started()
+	enemy_view.on_attack_started(enemy_logic.swing_windup)
 
 func _on_logic_attack_ended():
 	"""Обробляє завершення атаки з EnemyLogic"""
@@ -566,6 +567,7 @@ func start_attack(direction: int) -> void:
 	hitbox_damage.update_damage()
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true
+	enemy_view.on_strike()
 
 func end_attack() -> void:
 	hitbox.set_deferred(&"monitoring", false)  # збій (D264) приходить із body_entered хітбокса героя

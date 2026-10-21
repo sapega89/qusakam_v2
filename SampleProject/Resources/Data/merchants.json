@@ -10,8 +10,6 @@
 				"wood_log",
 				"stone",
 				"herb",
-				"potion",
-				"hi_potion",
 				"ether",
 				"leather",
 				"iron_sword",
@@ -23,8 +21,6 @@
 		"city_merchant": {
 			"name": "Caravan Merchant (City)",
 			"items": [
-				"potion",
-				"hi_potion",
 				"ether",
 				"herb",
 				"mana_crystal",
@@ -44,7 +40,6 @@
 				"copper_ore",
 				"wood_log",
 				"stone",
-				"potion",
 				"leather_armor"
 			]
 		},

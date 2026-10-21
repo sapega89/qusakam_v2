@@ -205,22 +205,12 @@ func _connect_enemy_signals(enemy: Node) -> void:
 func _on_enemy_died(enemy: Node) -> void:
 	"""Обработчик смерти врага"""
 	spawned_enemies.erase(enemy)
-	_grant_first_kill_potions()
 	DebugLogger.info("RoomEnemySpawner: Enemy died, %d remaining" % get_alive_enemies_count(), "RoomEnemySpawner")
 
 	# Проверяем все ли враги убиты
 	if get_alive_enemies_count() == 0:
 		all_enemies_defeated.emit()
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
-
-## Перший убитий ворог за гру завжди дає 5 зілль (Sapega, 2026-10-12).
-func _grant_first_kill_potions() -> void:
-	var game := Game.get_singleton()
-	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
-	if game.get_quest_flag("first_kill_potions"):
-		return
-	inventory.add_item("potion", 5)
-	game.set_quest_flag("first_kill_potions", true)
 
 func get_alive_enemies_count() -> int:
 	"""Возвращает количество живых врагов"""
