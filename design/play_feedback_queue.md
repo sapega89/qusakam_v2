@@ -86,8 +86,9 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 10 | **7 + 19** foreground parallax in every outdoor room; living world (decor idle animations, drifting clouds) | backdrop layers |
 
 ## Open
+- Names confirmed 2026-10-21: oath keepers (D281), the Brass Collector and the fire djinn (D301/D302). All `[ЧЕРНЕТКА]` dialogue lines get one review pass with Sapega later.
 
-- Q64 — the prisoner's shout before the fire djinn (default: an incantation in an invented language).
+- ~~Q64~~ answered: the invented incantation is OK (Sapega 2026-10-21).
 - Q66 — respec rules and class-stage names: defaults applied as D280–D282 (oath permanent, respec 10 coins × level, names drafts).
 - Agent-made calls Sapega has not confirmed: D303 (the Lab room split, five cells three west + two east of the table, the generated cell/bars/table/boss-hall/portcullis art, the three Lab NPCs), D314, D315 (the gate passage layout, guards and fight spots moved west), D308 (cutscene skip = hold Tab / pad Y 1 s, the beat fast-forwards ×8 with lines paged; HUD hidden in every cutscene), D296–D299 (the 6-cell road and its sections, XP curve 100 + 50 × (level − 1) and rewards melee 30 / fast 25 / tank 70, the three ledge items, the generated landmarks), D295 (the NPC activities, the anvil standing behind the Blacksmith, the grandfather in his own scene), D291–D294 (NPC z, shop/forge art and the Merchant moved to x 1120, the two tasks and
   their draft `.dqd` lines `Merchant_Arrival`, `Merchant_Caravan_*`, `Smith_Arrival`, the arrival cutscene), D286–D290 (Game Menu batch: potion use without a target choice, party = hero + companions, slot picker, tutorial windows pause the game and are On by default, codex texts / bestiary names are English drafts), D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects), D279–D285 (skill trees, the oath and its keepers, respec price, passive stats, level cap; draft `.dqd` lines `City_Oath_*`) (combat values, the "freeze" read as a
