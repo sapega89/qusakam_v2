@@ -15,3 +15,6 @@ to disclose AI-generated content. Replaces the Figma NPC art of D107 and the old
 | `priest/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_priest.tscn` → City OathPriest (D281) | row 0 profile (faces **left**), row 1 front; feet row 90 |
 | `witch/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_witch.tscn` → City OathWitch (D281) | row 0 profile (faces right), row 1 front; feet row 90 |
 | `dervish/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_dervish.tscn` → City OathDervish (D281) | row 0 profile (faces right), row 1 front; feet row 91 |
+| `malik/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_malik.tscn` → LabCells Malik (D303) | row 0 idle profile (faces right), row 1 walk, row 2 front; feet row 91 |
+| `prisoner/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_prisoner.tscn` → LabCells Prisoner (D303) | idle, walk, shout, collapse, front; feet row 91 |
+| `alchemist/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_alchemist.tscn` → LabCells Scientist (D303) | idle, walk, inject, front; feet row 91 |

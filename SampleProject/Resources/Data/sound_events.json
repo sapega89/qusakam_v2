@@ -88,7 +88,9 @@
 		"CityGates": {"ambience": "amb_village", "surface": "sand", "interior": false},
 		"City": {"ambience": "amb_city_crowd", "surface": "stone", "interior": false},
 		"MayorHall": {"ambience": "amb_hall", "surface": "wood", "interior": true},
-		"Laboratory": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true}
+		"LabCells": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true},
+		"Laboratory": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true},
+		"LabBoss": {"ambience": "amb_lab_hum", "surface": "stone", "interior": true}
 	},
 	"voices": {
 		"KUSAKAM": "kusakam", "Кусакам": "kusakam", "GRANDFATHER": "grandfather", "BLACKSMITH": "blacksmith",

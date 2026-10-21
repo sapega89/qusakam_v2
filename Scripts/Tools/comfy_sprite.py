@@ -971,6 +971,15 @@ CHARACTERS = {
             ("shout", ["in the same side view facing right: throwing his head back and shouting up at the ceiling, his "
                        "chained arms raised high, his mouth wide open"]),
             ("collapse", ["lying on his back on the ground, motionless, the chains across his chest"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing hunched, both wild eyes visible, the unkempt "
+                    "black hair and stubble, the dirty red scarf around his neck, the ragged sand-coloured clothes, the iron "
+                    "shackles on both wrists joined by a short chain, barefoot",
+                    "BOB:56:front:0",
+                ],
+            ),
         ],
     ),
     "alchemist": dict(
@@ -991,6 +1000,15 @@ CHARACTERS = {
             ("walk", WALK),
             ("inject", ["in the same side view facing right: thrusting the big glass syringe forward and down in front of "
                         "him with his right hand, injecting, the black mask still over his mouth"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, the round brass goggles over both eyes, the "
+                    "black cloth mask over his mouth and nose, the long stained grey-green coat, the leather apron, dark "
+                    "gloves, the big glass syringe with green liquid in his right hand",
+                    "BOB:56:front:0",
+                ],
+            ),
         ],
     ),
 }

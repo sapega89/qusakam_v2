@@ -103,12 +103,12 @@ func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.objective == "Survive the Brass Collector", "%s: objective (%s)" % [label, s.objective])
 
 func _in_lab(label: String) -> void:
-	await _until(func() -> bool: return game.map != null and game.map.scene_file_path.ends_with("Laboratory.tscn"), 10.0)
-	ck(game.map != null and game.map.scene_file_path.ends_with("Laboratory.tscn"), "%s: transported to the Laboratory (%s)" % [label, game.map.scene_file_path if game.map else "null"])
+	await _until(func() -> bool: return game.map != null and game.map.scene_file_path.ends_with("LabCells.tscn"), 10.0)
+	ck(game.map != null and game.map.scene_file_path.ends_with("LabCells.tscn"), "%s: transported to the Lab cells (%s)" % [label, game.map.scene_file_path if game.map else "null"])
 	for i in 30: await physics_frame
-	var entrance: Node2D = game.map.get_node("SavePoint_Entrance")
+	var entrance: Node2D = game.map.get_node("Arrival")
 	var offset: Vector2 = game.player.global_position - entrance.global_position
-	ck(absf(offset.x) < 1.0 and absf(offset.y) < 32.0, "%s: at the lab entrance (offset %s)" % [label, offset])
+	ck(absf(offset.x) < 1.0 and absf(offset.y) < 32.0, "%s: in his cell (offset %s)" % [label, offset])
 	ck(game.get_quest_flag("city_mayor_hall_complete"), "%s: city_mayor_hall_complete" % label)
 	ck(get_first_node_in_group(&"game_over_screen") == null, "%s: no Game Over screen" % label)
 	ck(not game.player.is_dead and game.player.current_health == game.player.Max_Health, "%s: hero on his feet (%d/%d)" % [label, game.player.current_health, game.player.Max_Health])

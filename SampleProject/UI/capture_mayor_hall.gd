@@ -53,7 +53,7 @@ func _initialize() -> void:
 	await _until(func() -> bool: return dm.is_bubble_playing(), 6.0)
 	await create_timer(1.0).timeout
 	_shot("win_gas")
-	await _until(func() -> bool: return game.map.scene_file_path.ends_with("Laboratory.tscn"), 30.0)
+	await _until(func() -> bool: return game.map.scene_file_path.ends_with("LabCells.tscn"), 30.0)
 	dm.bubble_time_scale = 0.0
 	await _drain()
 	await create_timer(1.5).timeout
@@ -70,7 +70,7 @@ func _initialize() -> void:
 	await _page(1)
 	_shot("lose_dark")
 	await _drain()
-	await _until(func() -> bool: return game.map.scene_file_path.ends_with("Laboratory.tscn"), 10.0)
+	await _until(func() -> bool: return game.map.scene_file_path.ends_with("LabCells.tscn"), 10.0)
 	await create_timer(1.5).timeout
 	_shot("lose_lab")
 	quit()

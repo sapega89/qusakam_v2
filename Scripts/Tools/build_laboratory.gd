@@ -1,120 +1,41 @@
 extends SceneTree
 
-## Будує Laboratory.tscn з ASCII-схеми (D225, [[lab_vertical_plan]]): три поверхи, драбини між ними.
-## Тайли Foreground — з LAYOUT, фон-кладка (без колізії) — на все порожнє всередині; тригери, сейви, точки
-## ворогів і драбини стають на свої поверхи. Решту сцени (скрипт, спавнер, музика, RoomInstance) не чіпає.
+## Будує кімнати лабораторії з ASCII-схем (D225, D303, [[lab_vertical_plan]], [[lab_story_plan]]): LabCells (камери),
+## Laboratory (три поверхи-коридори, драбини між ними), LabBoss (зала джина). Одна схема — одна кімната (ROOMS).
+## Тайли Foreground — зі схеми (сховані, лише колізія), видно намальовані поверхні й плани глибини; тригери, сейви,
+## точки ворогів і драбини стають на свої місця. Решту сцени (скрипт, спавнер, музика, RoomInstance) не чіпає.
 ## Запуск: godot --headless --path . --script res://Scripts/Tools/build_laboratory.gd
-## Клітинки карти — MapData.txt ([14..15, 3..5, 2]); вихід праворуч на нижньому поверсі — у LaboratoryOutside.
+## Клітинки карти — MapData.txt: LabCells [12..13,3,2] → Laboratory [14..15,3..5,2] (вхід ліворуч на верхньому поверсі,
+## вихід праворуч на нижньому) → LabBoss [16..17,5,2] → LaboratoryOutside [18..19,5..6,2].
+## Підлога кожного поверху — рядок 12 клітинки (y 384 від її верху), прохід між кімнатами — рядки 6–11.
 
-const ROOM := "res://SampleProject/Maps/Laboratory.tscn"
 const LADDER_SCENE := "res://SampleProject/Scenes/Gameplay/Objects/Ladder.tscn"
 const TILE := 32
 const SOURCE := 1  # Sprites/Tiles.png — зелені рамкові блоки й місток
 
-## # — стіна/підлога (рамкові блоки 3x3 за сусідами), = — односторонній місток, . — порожньо.
-## Поверхи: A рядки 0–14 (підлога 12), B 15–29 (підлога 27), C 30–44 (підлога 42).
-const LAYOUT := [
-	"######################################################",  # 0  стеля
-	"######################################################",
-	"#....................................................#",  # A
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#.......................======.......................#",
-	"#....................................................#",
-	"#...............######...............................#",
-	"#...............######..............####.............#",
-	"##############################################==######",  # 12 підлога A, місток над драбиною
-	"##############################################..######",
-	"##############################################..######",
-	"#....................................................#",  # B
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#...........................======...................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#.........####............................#####......#",
-	"#.........####............................#####......#",
-	"######==##############################################",  # 27 підлога B
-	"######..##############################################",
-	"######..##############################################",
-	"#....................................................#",  # C
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#....................................................#",
-	"#.....................................................",  # вихід у LaboratoryOutside
-	"#.....................................................",
-	"#...........................=====..........=====......",
-	"#.....................................................",
-	"#.....................................................",
-	"#.....................................................",
-	"######################################################",  # 42 підлога C
-	"######################################################",
-	"######################################################",
-]
-
-## Вузли сцени → позиція (px). Тригери стоять на всю висоту поверху.
-const PLACES := {
-	"SavePoint_Entrance": Vector2(200, 344),
-	"StateChangeTrigger_Companion01": Vector2(430, 224),
-	"StateChangeTrigger_Companion02": Vector2(1220, 672),
-	"StateChangeTrigger_Companion03": Vector2(700, 672),
-	"SavePoint_PreBoss": Vector2(400, 1304),
-	"StateChangeTrigger_LimitTest": Vector2(560, 1152),
-	"EnemySpawner/EnemySpawnPoint1": Vector2(1250, 1328),
-	"EnemySpawner/EnemySpawnPoint2": Vector2(1350, 1328),
-	"EnemySpawner/EnemySpawnPoint3": Vector2(1450, 1328),
-	"EnemySpawner/EnemySpawnPoint4": Vector2(1550, 1328),
-}
-const TRIGGER_HEIGHT := {"StateChangeTrigger_Companion01": 320.0}
-const FLOOR_HEIGHT := 384.0
-## Драбини: верх (місток над нею) і довжина донизу до підлоги наступного поверху.
-const LADDERS := [[Vector2(1504, 384), 480.0], [Vector2(224, 864), 480.0]]
-
 ## Атмосфера (D226): у приміщенні темно, світло — від ламп і колб (лор: сонця немає, вогні — локальні).
-const PROPS := "res://SampleProject/Assets/Laboratory/%s.png"
+const LAMP := "res://SampleProject/Assets/Laboratory/lamp.png"
 const DARKNESS := Color(0.36, 0.36, 0.44)
 const LAMP_LIGHT := Color(1.0, 0.82, 0.55)
-## Поверхи: [верх інтер'єру (рядок), низ інтер'єру (рядок)] — плани глибини стають на підлогу поверху.
-const FLOORS := [[2, 11], [15, 26], [30, 41]]
-## Лампи на стінах (центр).
-const LAMPS := [Vector2(140, 214), Vector2(620, 214), Vector2(1150, 214), Vector2(1650, 214),
-		Vector2(330, 694), Vector2(980, 694), Vector2(1560, 694),
-		Vector2(330, 1174), Vector2(760, 1174), Vector2(1180, 1174), Vector2(1620, 1174)]
 
-## Глибина (D246): на кожному поверсі — далекий зал, ряд обладнання, передній план зі стелі; згенеровані
-## comfy_backdrop.py (Lab/*). Шар — екран 576×324 px ×1.5; по вертикалі прибитий до поверху (scroll 1).
+## Глибина (D246): далекий зал, ряд обладнання, передній план зі стелі; згенеровані comfy_backdrop.py (Lab/*).
+## Шар — екран 576×324 px ×1.5; по вертикалі прибитий до поверху (scroll 1).
 const BG := "res://SampleProject/Assets/Backgrounds/Lab/%s.png"
 const MATERIALS := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
 const LAYER_SIZE := Vector2(864, 486)
-## [назва, текстура, scroll x, z, низ шару відносно підлоги (px), modulate, розмиття]; текстура поверху — %d.
-const PLANES := [
-	["Far", "gen_far", 0.4, -10, 60.0, Color(0.6, 0.58, 0.72), "far"],
-	["Mid", "gen_mid%s", 0.75, -9, 40.0, Color(0.7, 0.66, 0.8), "near"],
-	["Front", "gen_front", 1.25, 20, -384.0 + LAYER_SIZE.y, Color(0.86, 0.8, 1, 0.94), "front"],
-]
-## Варіант ряду обладнання й зсув шарів по x — щоб поверхи не повторювали один одного.
-const MID_VARIANT := ["", "2", ""]
-const PLANE_SHIFT := [0.0, 288.0, 576.0]
+## [назва, текстура, scroll x, z, низ шару відносно підлоги (px), modulate, розмиття]; %s — варіант поверху (mid).
+const FAR := ["Far", "gen_far", 0.4, -10, 60.0, Color(0.6, 0.58, 0.72), "far"]
+const MID := ["Mid", "gen_mid%s", 0.75, -9, 40.0, Color(0.7, 0.66, 0.8), "near"]
+const FRONT := ["Front", "gen_front", 1.25, 20, -384.0 + LAYER_SIZE.y, Color(0.86, 0.8, 1, 0.94), "front"]
+## Зала джина: дальня стіна з печами, світліша — вогонь.
+const BOSS_FAR := ["Far", "gen_boss_far", 0.4, -10, 60.0, Color(0.72, 0.62, 0.66), "far"]
 ## Поверхні, по яких ходить герой: текстура перерізу плити (Lab/gen_slab, 576×64): нагорі ґратчастий
 ## настил із латунним краєм (до рядка SLAB_PLATES), нижче — клепані плити. Колізія — у прихованому Foreground.
 const SLAB_PLATES := 26
 
-## Компаньйони чекають біля своїх тригерів (D230): [id, ступні, дивиться ліворуч].
-## Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
+## Компаньйони-NPC (D230) у коридорах: кадри як у сценах асистів (companion_<id>.tscn, assist_cat.tscn).
 const NPC_SCRIPT := "res://SampleProject/Scripts/Gameplay/Characters/Companions/CompanionNPC.gd"
 const COMPANIONS := "res://SampleProject/Assets/Characters/Companions/%s/%s.png"
-## Кадри спокою — фас, їх не дзеркалимо (у Алісії різні очі, D245); дзеркалиться лише біг (CompanionNPC.join).
-const NPCS := [["alisia", Vector2(520, 384), false], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]]
-## Розмір кадру й зсув/масштаб — як у сценах асистів (companion_<id>.tscn, assist_cat.tscn).
 const NPC_LOOK := {
 	"alisia": [64, Vector2(-32, -58), 1.5],
 	"astrit": [64, Vector2(-32, -58), 1.5],
@@ -122,46 +43,214 @@ const NPC_LOOK := {
 	"cat": [64, Vector2(-32, -58), 1.5],
 }
 const CAT_AT := Vector2(-64, 0)
+const NPC_SCENES := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/lab_%s.tscn"
+
+## # — стіна/підлога (рамкові блоки 3x3 за сусідами), = — односторонній місток, . — порожньо.
+## Кожна кімната:
+##   layout — рядки тайлів; floors — [верх, низ інтер'єру] поверхів (рядки); planes — плани глибини;
+##   mid_variant / plane_shift — варіант ряду обладнання й зсув шарів по x на поверх (щоб не повторювались);
+##   places — наявні вузли сцени → позиція; trigger_height — висота тригера (решта — на всю висоту поверху);
+##   ladders — [верх, довжина]; lamps — центри ламп; npcs — компаньйони [id, ступні, дивиться ліворуч];
+##   props — [вузол, текстура Lab/*, [низ-центр, ...], z, масштаб]: вузол перебудовується, спрайти стоять на точках;
+##   actors — [вузол, сцена NPC (lab_<id>), ступні, дивиться ліворуч, анімація].
+const ROOMS := {
+	# Камери (D303): п'ять камер уздовж задньої стіни, операційний стіл посередині; вихід праворуч у коридори.
+	# Сюди переносить кінець MayorHall (MayorHall.LAB_ROOM / LAB_MARKER → Arrival у першій камері).
+	"res://SampleProject/Maps/LabCells.tscn": {
+		"layout": [
+			"######################################################",  # 0  стеля
+			"######################################################",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#.....................................................",  # прохід у Laboratory
+			"#.....................................................",
+			"#.....................................................",
+			"#.....................................................",
+			"#.....................................................",
+			"#.....................................................",
+			"######################################################",  # 12 підлога
+			"######################################################",
+			"######################################################",
+		],
+		"floors": [[2, 11]],
+		"planes": [FAR, FRONT],
+		"mid_variant": [""],
+		"plane_shift": [0.0],
+		"places": {"Arrival": Vector2(150, 344)},
+		"lamps": [Vector2(275, 150), Vector2(525, 150), Vector2(925, 150), Vector2(1325, 150), Vector2(1600, 150)],
+		# Три камери ліворуч, стіл, дві праворуч; перша — героя (Arrival), остання — Маліка
+		"props": [
+			["Cells", "gen_cell", [Vector2(150, 384), Vector2(400, 384), Vector2(650, 384), Vector2(1200, 384), Vector2(1450, 384)], -3, Vector2(1.5, 1.5)],
+			# Ґрати перед камерами — над героєм у камері; після пробудження зникають (9.5, D304)
+			["Bars", "gen_bars", [Vector2(150, 384), Vector2(400, 384), Vector2(650, 384), Vector2(1200, 384), Vector2(1450, 384)], 5, Vector2(1.5, 1.5)],
+			["Table", "gen_table", [Vector2(925, 384)], -1, Vector2(1.5, 1.5)],
+		],
+		"actors": [
+			["Malik", "malik", Vector2(1450, 384), true, &"idle"],
+			["Scientist", "alchemist", Vector2(790, 384), false, &"idle"],
+			["Prisoner", "prisoner", Vector2(1070, 384), true, &"idle"],
+		],
+	},
+	# Коридори (D225, D303): три поверхи, драбини; вхід ліворуч на верхньому поверсі з LabCells, вихід праворуч
+	# на нижньому — у LabBoss. Поверхи: A рядки 0–14 (підлога 12), B 15–29 (підлога 27), C 30–44 (підлога 42).
+	"res://SampleProject/Maps/Laboratory.tscn": {
+		"layout": [
+			"######################################################",  # 0  стеля
+			"######################################################",
+			"#....................................................#",  # A
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			".....................................................#",  # вхід з LabCells
+			".....................................................#",
+			"........................======.......................#",
+			".....................................................#",
+			"................######...............................#",
+			"................######..............####.............#",
+			"##############################################==######",  # 12 підлога A, місток над драбиною
+			"##############################################..######",
+			"##############################################..######",
+			"#....................................................#",  # B
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#...........................======...................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#.........####............................#####......#",
+			"#.........####............................#####......#",
+			"######==##############################################",  # 27 підлога B
+			"######..##############################################",
+			"######..##############################################",
+			"#....................................................#",  # C
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#.....................................................",  # вихід у LabBoss
+			"#.....................................................",
+			"#...........................=====..........=====......",
+			"#.....................................................",
+			"#.....................................................",
+			"#.....................................................",
+			"######################################################",  # 42 підлога C
+			"######################################################",
+			"######################################################",
+		],
+		"floors": [[2, 11], [15, 26], [30, 41]],
+		"planes": [FAR, MID, FRONT],
+		"mid_variant": ["", "2", ""],
+		"plane_shift": [0.0, 288.0, 576.0],
+		"places": {
+			"SavePoint_Entrance": Vector2(200, 344),
+			"StateChangeTrigger_Companion01": Vector2(430, 224),
+			"StateChangeTrigger_Companion02": Vector2(1220, 672),
+			"StateChangeTrigger_Companion03": Vector2(700, 672),
+			"SavePoint_PreBoss": Vector2(400, 1304),
+			"StateChangeTrigger_LimitTest": Vector2(560, 1152),
+			"EnemySpawner/EnemySpawnPoint1": Vector2(1250, 1328),
+			"EnemySpawner/EnemySpawnPoint2": Vector2(1350, 1328),
+			"EnemySpawner/EnemySpawnPoint3": Vector2(1450, 1328),
+			"EnemySpawner/EnemySpawnPoint4": Vector2(1550, 1328),
+		},
+		"trigger_height": {"StateChangeTrigger_Companion01": 320.0},
+		"ladders": [[Vector2(1504, 384), 480.0], [Vector2(224, 864), 480.0]],
+		"lamps": [Vector2(140, 214), Vector2(620, 214), Vector2(1150, 214), Vector2(1650, 214),
+				Vector2(330, 694), Vector2(980, 694), Vector2(1560, 694),
+				Vector2(330, 1174), Vector2(760, 1174), Vector2(1180, 1174), Vector2(1620, 1174)],
+		# Верхній поверх — герой іде праворуч від входу; середній — ліворуч від драбини.
+		# Кадри спокою — фас, їх не дзеркалимо (у Алісії різні очі, D245); дзеркалиться лише біг (CompanionNPC.join).
+		"npcs": [["alisia", Vector2(520, 384), false], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]],
+	},
+	# Зала джина (D303, D307): один поверх, два містки для ухилів; брама праворуч (зачинена до смерті джина — 9.7).
+	"res://SampleProject/Maps/LabBoss.tscn": {
+		"layout": [
+			"######################################################",  # 0  стеля
+			"######################################################",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"#....................................................#",
+			"......................................................",  # прохід: Laboratory | LaboratoryOutside
+			"......................................................",
+			"...........======....................======...........",
+			"......................................................",
+			"......................................................",
+			"......................................................",
+			"######################################################",  # 12 підлога
+			"######################################################",
+			"######################################################",
+		],
+		"floors": [[2, 11]],
+		"planes": [BOSS_FAR, FRONT],
+		"mid_variant": [""],
+		"plane_shift": [0.0],
+		"places": {"Arrival": Vector2(120, 344)},
+		"lamps": [Vector2(300, 214), Vector2(860, 150), Vector2(1300, 214)],
+		"props": [["Gates", "gen_gates", [Vector2(1560, 384)], -3, Vector2(1.5, 1.5)]],
+	},
+}
+
+## Схема кімнати, яку зараз будуємо (_at, _runs, _block читають її).
+var layout: Array = []
 
 
 func _initialize() -> void:
-	var room: Node = load(ROOM).instantiate()
+	for path: String in ROOMS:
+		_build(path, ROOMS[path])
+	quit()
+
+
+func _build(path: String, spec: Dictionary) -> void:
+	layout = spec.layout
+	var room: Node = load(path).instantiate()
 	_paint(room.get_node(^"TileMap/Foreground"))
 	_surfaces(room)
-	_decorate(room)
-	_add_companions(room)
-	for path in PLACES:
-		var node: Node2D = room.get_node(NodePath(path))
-		node.position = PLACES[path]
-		if path.begins_with("StateChangeTrigger"):
+	_decorate(room, spec)
+	_add_props(room, spec.get("props", []))
+	_add_actors(room, spec.get("actors", []))
+	_add_companions(room, spec.get("npcs", []))
+	var places: Dictionary = spec.places
+	var heights: Dictionary = spec.get("trigger_height", {})
+	var floor_height: float = (spec.floors[0][1] - spec.floors[0][0] + 2) * TILE
+	for node_path: String in places:
+		var node: Node2D = room.get_node(NodePath(node_path))
+		node.position = places[node_path]
+		if node_path.begins_with("StateChangeTrigger"):
 			var shape := RectangleShape2D.new()
-			shape.size = Vector2(32, TRIGGER_HEIGHT.get(path, FLOOR_HEIGHT))
+			shape.size = Vector2(32, heights.get(node_path, floor_height))
 			node.get_node(^"CollisionShape2D").shape = shape
 	for child in room.get_children():
 		if child.name.begins_with("Ladder"):
 			room.remove_child(child)
 			child.free()
-	for i in LADDERS.size():
+	var ladders: Array = spec.get("ladders", [])
+	for i in ladders.size():
 		var ladder: Node2D = load(LADDER_SCENE).instantiate()
 		ladder.name = "Ladder%d" % (i + 1)
-		ladder.position = LADDERS[i][0]
-		ladder.height = LADDERS[i][1]
+		ladder.position = ladders[i][0]
+		ladder.height = ladders[i][1]
 		room.add_child(ladder)
 		ladder.owner = room
 	# UID сцени — за ним MapData.txt знаходить кімнату; ResourceSaver нового PackedScene його не зберігає.
-	var uid := ResourceLoader.get_resource_uid(ROOM)
+	var uid := ResourceLoader.get_resource_uid(path)
 	var packed := PackedScene.new()
 	packed.pack(room)
-	print("save ", ResourceSaver.save(packed, ROOM), " uid ", ResourceSaver.set_uid(ROOM, uid))
+	print("%s save %d uid %d" % [path.get_file(), ResourceSaver.save(packed, path), ResourceSaver.set_uid(path, uid)])
 	room.free()
-	quit()
 
 
 func _paint(fg: TileMapLayer) -> void:
 	fg.clear()
-	for y in LAYOUT.size():
-		for x in LAYOUT[y].length():
-			var c: String = LAYOUT[y][x]
+	for y in layout.size():
+		for x in layout[y].length():
+			var c: String = layout[y][x]
 			if c == "#":
 				fg.set_cell(Vector2i(x, y), SOURCE, _block(x, y))
 			elif c == "=":
@@ -227,8 +316,8 @@ func _slab_sprite(texture: Texture2D, at: Vector2) -> Sprite2D:
 func _runs(c: String) -> Array[Rect2i]:
 	var rects: Array[Rect2i] = []
 	var open := {}  # Vector2i(x0, x1) відрізка попереднього рядка → індекс у rects
-	for y in LAYOUT.size():
-		var row: String = LAYOUT[y]
+	for y in layout.size():
+		var row: String = layout[y]
 		var next := {}
 		var x := 0
 		while x < row.length():
@@ -249,14 +338,51 @@ func _runs(c: String) -> Array[Rect2i]:
 	return rects
 
 
-## Темрява, лампи й колби зі світлом, ланцюги, передній план — у вузлі Atmosphere (перебудовується щоразу).
+## Реквізит кімнати (камери, ґрати, стіл, брама): вузол-група перебудовується, кожен спрайт стоїть низом-центром
+## на своїй точці. Окремі вузли — щоб скрипт кімнати вмикав їх за станом ($Bars після пробудження, 9.5).
+func _add_props(room: Node, props: Array) -> void:
+	for prop: Array in props:
+		var old := room.get_node_or_null(NodePath(prop[0]))
+		if old:
+			room.remove_child(old)
+			old.free()
+		var group := Node2D.new()
+		group.name = prop[0]
+		group.z_index = prop[3]
+		room.add_child(group)
+		group.owner = room
+		var points: Array = prop[2]
+		for i in points.size():
+			var sprite := _sprite(BG % prop[1], points[i], Vector2(-0.5, -1), 0)
+			sprite.name = "%s%d" % [prop[0], i + 1] if points.size() > 1 else "Sprite"
+			sprite.scale = prop[4]
+			group.add_child(sprite)
+			sprite.owner = room
+
+
+## Персонажі сцен лабораторії (lab_<id>.tscn): стоять ступнями на точці; скрипт кімнати керує ними (9.5).
+func _add_actors(room: Node, actors: Array) -> void:
+	for actor: Array in actors:
+		var old := room.get_node_or_null(NodePath(actor[0]))
+		if old:
+			room.remove_child(old)
+			old.free()
+		var node: Node2D = load(NPC_SCENES % actor[1]).instantiate()
+		node.name = actor[0]
+		node.position = actor[2]
+		(node.get_node(^"Sprite2D") as Sprite2D).flip_h = actor[3]
+		(node.get_node(^"AnimationPlayer") as AnimationPlayer).autoplay = actor[4]
+		room.add_child(node)
+		node.owner = room
+
+
 ## Компаньйони-NPC (D230): кадри idle (спокій) і run (біг до героя після розмови); в Алісії — кішка.
-func _add_companions(room: Node) -> void:
+func _add_companions(room: Node, npcs: Array) -> void:
 	for child in room.get_children():
 		if child.name.begins_with("CompanionNPC_"):
 			room.remove_child(child)
 			child.free()
-	for npc in NPCS:
+	for npc: Array in npcs:
 		var node := Node2D.new()
 		node.name = "CompanionNPC_%s" % npc[0]
 		node.set_script(load(NPC_SCRIPT))
@@ -301,7 +427,8 @@ func _npc_sprite(who: String, run_sheet: String, face_left: bool) -> AnimatedSpr
 	return sprite
 
 
-func _decorate(room: Node) -> void:
+## Темрява, лампи зі світлом і плани глибини кожного поверху — у вузлі Atmosphere (перебудовується щоразу).
+func _decorate(room: Node, spec: Dictionary) -> void:
 	var old := room.get_node_or_null(^"Atmosphere")
 	if old:
 		room.remove_child(old)
@@ -314,14 +441,16 @@ func _decorate(room: Node) -> void:
 	dark.color = DARKNESS
 	root.add_child(dark)
 	var glow := _light_texture()
-	for i in LAMPS.size():
-		var lamp := _sprite("lamp", LAMPS[i], Vector2(0, -0.5), -1)
+	var lamps: Array = spec.lamps
+	for i in lamps.size():
+		var lamp := _sprite(LAMP, lamps[i], Vector2(0, -0.5), -1)
 		lamp.name = "Lamp%d" % (i + 1)
 		root.add_child(lamp)
 		lamp.add_child(_light(glow, LAMP_LIGHT, 1.25, 1.6, Vector2(4, 0)))
-	for storey in FLOORS.size():
-		var floor_y: float = (FLOORS[storey][1] + 1) * TILE
-		for plane in PLANES:
+	var floors: Array = spec.floors
+	for storey in floors.size():
+		var floor_y: float = (floors[storey][1] + 1) * TILE
+		for plane: Array in spec.planes:
 			var layer := Parallax2D.new()
 			layer.name = "%s%d" % [plane[0], storey + 1]
 			layer.scroll_scale = Vector2(plane[2], 1)
@@ -332,22 +461,23 @@ func _decorate(room: Node) -> void:
 			root.add_child(layer)
 			var sprite := Sprite2D.new()
 			sprite.name = "Sprite"
-			sprite.texture = load(BG % (plane[1] % MID_VARIANT[storey] if plane[1].contains("%") else plane[1]))
+			var texture: String = plane[1] % spec.mid_variant[storey] if plane[1].contains("%") else plane[1]
+			sprite.texture = load(BG % texture)
 			sprite.material = load(MATERIALS % plane[6])
 			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 			sprite.centered = false
 			sprite.scale = Vector2(1.5, 1.5)
-			sprite.position = Vector2(PLANE_SHIFT[storey], floor_y + plane[4] - LAYER_SIZE.y)
+			sprite.position = Vector2(spec.plane_shift[storey], floor_y + plane[4] - LAYER_SIZE.y)
 			layer.add_child(sprite)
 	for node in root.find_children("*", "", true, false):
 		node.owner = room
 	root.owner = room
 
 
-## Спрайт реквізиту ×1.5; [param anchor] — частка розміру, що лягає в [param at] (0,0 — лівий верх).
-func _sprite(prop: String, at: Vector2, anchor: Vector2, z: int) -> Sprite2D:
+## Спрайт ×1.5 з [param texture_path]; [param anchor] — частка розміру, що лягає в [param at] (0,0 — лівий верх).
+func _sprite(texture_path: String, at: Vector2, anchor: Vector2, z: int) -> Sprite2D:
 	var sprite := Sprite2D.new()
-	sprite.texture = load(PROPS % prop)
+	sprite.texture = load(texture_path)
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.centered = false
 	sprite.scale = Vector2(1.5, 1.5)
@@ -383,9 +513,9 @@ func _light_texture() -> GradientTexture2D:
 
 
 func _at(x: int, y: int) -> String:
-	if y < 0 or y >= LAYOUT.size() or x < 0 or x >= LAYOUT[y].length():
+	if y < 0 or y >= layout.size() or x < 0 or x >= layout[y].length():
 		return "#"
-	return LAYOUT[y][x]
+	return layout[y][x]
 
 
 ## Рамковий блок 3x3 атласа (7..9, 6..8) за тим, чи порожньо зверху / знизу / ліворуч / праворуч.

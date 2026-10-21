@@ -86,7 +86,8 @@ in [[play_feedback_queue]].
 2. **Bosses core** — `BossEnemy` + `BossLogic` (move sets), boss HP bar, `Player.defeat_handler`; `verify_bosses.gd`.
 3. ~~**Mayor Hall** — queue, wall burst, Brass Collector, both outcomes → LabCells; `verify_mayor_hall.gd` (replaces
    `verify_mayor_hall_teleport.gd`).~~ — done (D300, queue row 9.3); the teleport goes to the old Laboratory entrance until 9.4.
-4. **Laboratory split** — `LabCells`, `LabBoss`, MapData, `Laboratory` corridors re-laid; `verify_map_geometry`.
+4. ~~**Laboratory split** — `LabCells`, `LabBoss`, MapData, `Laboratory` corridors re-laid; `verify_map_geometry`.~~ — done (D303, queue row 9.4;
+   `verify_lab_rooms.gd` walks every door). The two new rooms have no script yet; the corridors keep the old story until 5–7.
 5. **Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.
 6. **Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].
 7. **Mob corridors** — three fights; `verify_laboratory.gd` rewritten.

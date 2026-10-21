@@ -17,9 +17,9 @@ const SLEEP_GAS := preload("res://SampleProject/Scenes/FX/Bosses/sleep_gas.tscn"
 
 enum State { QUEUE, BURST, FIGHT, TRANSPORT }
 
-## Куди зала переносить героя. Камер LabCells ще немає (рядок черги 9.4) — поки вхід теперішньої лабораторії.
-const LAB_ROOM := "res://SampleProject/Maps/Laboratory.tscn"
-const LAB_MARKER := ^"SavePoint_Entrance"
+## Куди зала переносить героя: його камера в LabCells (D303).
+const LAB_ROOM := "res://SampleProject/Maps/LabCells.tscn"
+const LAB_MARKER := ^"Arrival"
 ## Нагорода за перемогу над Збирачем — речі із зали (D300, D301).
 const VICTORY_LOOT := {"hi_potion": 2, "silver_sword": 1, "coin": 60}
 const QUEUE_ORDER: Array[String] = ["astrit", "urizen", "alisia"]

@@ -10,3 +10,11 @@ Placed by `Scripts/Tools/build_laboratory.gd`:
 - `gen_front.png` — pipes, cables and bulbs hanging from the ceiling in front of the hero (×1.25).
 - `gen_slab.png` — 576×64 slab cross-section (grating walkway, brass edge, riveted plates): the texture of every
   floor, wall and bridge the hero touches; the collision is the hidden `TileMap/Foreground`.
+
+Laboratory rooms (queue row 9.4, D303) — same model and licence, placed by `build_laboratory.gd`:
+
+- `gen_cell.png` — a prison cell niche (LabCells `Cells`, five of them).
+- `gen_bars.png` — iron bars sized to the niche's opening (LabCells `Bars`, drawn over the hero).
+- `gen_table.png` — the operating table (LabCells `Table`).
+- `gen_boss_far.png` — the fire djinn's hall: furnaces, broken vats, a ring of runes (LabBoss far plane ×0.4).
+- `gen_gates.png` — the portcullis before LabBoss's east exit (LabBoss `Gates`).

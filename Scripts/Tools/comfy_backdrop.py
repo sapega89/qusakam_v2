@@ -340,6 +340,101 @@ LAYERS = {
         "top to bottom: along the top a dark iron grating walkway with a polished brass edge strip, below it riveted "
         "dark steel plates with bolts, a horizontal copper pipe running through the middle, seen straight on",
     ),
+    # Лабораторія на кімнати (черга 9.4, D303): камера-ніша, ґрати перед нею (зникають після пробудження, 9.5),
+    # операційний стіл у LabCells; брама і дальня стіна зали джина в LabBoss. Предмети — trim, без шва.
+    "Lab/gen_cell": dict(
+        seed=111,
+        rows=150,
+        top=0,
+        seam="none",
+        trim=True,
+        block=4,  # ніша в 1.9 зросту героя: в'язень-дорослий (×1.5) вміщається
+        cut=(142, 291),  # лише ніша: смуга підлоги обабіч (пікселі шару після block)
+        keep=95,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=14,
+        quant="octree",
+        prompt="one single small prison cell niche in a dark stone dungeon wall seen straight on as a flat elevation: a "
+        "shallow rectangular alcove of dark grey stone blocks, a heap of yellow straw on its floor, an iron shackle on a "
+        "chain hanging from its back wall, a tiny barred window high up with a faint cold blue light, standing alone in "
+        "the middle of the frame and filling a third of its width, with empty space on both sides, its base resting on "
+        f"the bottom edge, no perspective, {CHROMA}",
+    ),
+    "Lab/gen_bars": dict(
+        seed=113,
+        rows=150,
+        top=0,
+        seam="none",
+        trim=True,
+        block=5,  # ґрати — у отвір ніші Lab/gen_cell
+        cut=(136, 256),  # праві шість прутів із замком: пропорції отвору
+        keep=81,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=8,
+        prompt="one single rectangular frame of thick black iron prison bars seen straight on as a flat elevation: seven "
+        "evenly spaced vertical round bars, two flat horizontal iron bands riveted across them, a small heavy padlock on "
+        "the right band, rust stains, nothing behind the bars, the flat background visible between every bar, standing "
+        f"alone in the middle of the frame and filling a third of its width, its base resting on the bottom edge, {CHROMA}",
+    ),
+    "Lab/gen_table": dict(
+        seed=116,
+        rows=150,
+        top=0,
+        small=2,  # стіл на пів шару — у кімнаті поруч із героєм, не на всю камеру
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=14,
+        quant="octree",
+        prompt="one single alchemist operating table seen exactly from the side: a long flat dark iron table on four "
+        "thick legs with brown leather straps and brass buckles, a small brass tray with surgical tools at one end, "
+        "standing alone in the middle of the frame and filling half of its width, with empty space on both sides, its legs "
+        f"resting on the bottom edge, flat even lighting, cool violet shadows, {CHROMA}",
+    ),
+    "Lab/gen_gates": dict(
+        seed=117,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(185, 410),  # ліворуч — відблиск вогню на тлі
+        keep=193,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        prompt="one single massive closed iron portcullis gate seen straight on as a flat elevation: a tall heavy grid "
+        "of thick dark iron bars with sharp spikes along the bottom, set in a tall rectangular frame of big dark stone "
+        "blocks with brass bolts and a brass plate on the lintel, standing alone in the middle of the frame and filling a "
+        f"third of its width, its base resting on the bottom edge, warm firelight on the left, cool violet shadows, {CHROMA}",
+    ),
+    "Lab/gen_boss_far": dict(
+        seed=119,
+        rows=H,
+        top=0,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="the far back wall of a huge underground furnace hall seen straight on: a giant cracked stone furnace "
+        "with a glowing orange mouth in the middle, huge shattered glass vats broken open from inside, scorched black "
+        "stone walls with soot, thick iron chains hanging from the dark vault, a ring of carved runes on the wall glowing "
+        "faint orange, lit only by firelight and embers, dark vaulted ceiling at the top, stone floor along the bottom",
+    ),
     # Спуск із каньйону (D256): камінь переднього плану, за який злазить Кусакам, і місток над ущелиною —
     # окремі предмети, не екрани: seam none (без шва), trim — картинка обрізається до самого предмета.
     "Canyon/gen_rock": dict(
@@ -810,12 +905,13 @@ if __name__ == "__main__":
                 else 0.6
             )
             repaint(layer, x0, x1, d)
-        # small — предмет, який модель малює завеликим: пікселі гри з більшого блоку
+        # small — предмет, який модель малює завеликим: пікселі гри з більшого блоку; block — сам блок (ціле число
+        # пікселів генерації на піксель гри, SCALE = 3 — без зменшення), коли потрібне не кратне SCALE зменшення
         strip, strip_opaque = shrink(
             generate(layer),
             layer["key"],
             layer.get("spill", 0),
-            SCALE * layer.get("small", 1),
+            layer.get("block", SCALE * layer.get("small", 1)),
         )
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
