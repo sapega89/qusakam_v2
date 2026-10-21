@@ -119,7 +119,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			game.set_quest_flag("village_abduction_complete", true)
 			advance_state()
 		State.ARRIVAL:
-			_set_objective("Reach the village center")
+			_set_objective("Reach the village center", &"village_center")
 			# Очікуємо поки гравець дійде до тригера "ArrivalToVillage"
 			DebugLogger.info("🏘️ Village: Очікуємо тригера прибуття (ARRIVAL)", "Village")
 			pass
@@ -135,7 +135,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			_start_fight("FightWithBandit", run_id)
 		State.OLD_MAN_OUTSIDE:
 			# D140: після бою — «О ні, дім!», далі гравець сам іде до діда (тригер біля дерева).
-			_set_objective("Check on the house")
+			_set_objective("Check on the house", &"house")
 			if not game.get_quest_flag("village_afterfight_complete"):
 				_play_dialogue("Village_AfterFight", run_id)
 		State.OLD_MAN_HEALING:
@@ -144,7 +144,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				DebugLogger.info("🏘️ Village: Гілка діда вже завершена, пропускаємо", "Village")
 				advance_state()
 				return
-			_set_objective("Talk to the old man")
+			_set_objective("Talk to the old man", &"old_man")
 			_talk_to_old_man(run_id)
 		State.OLD_MAN_DECISION:
 			if game.get_quest_flag("village_oldman_complete"):
@@ -155,7 +155,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 		State.LEAVING_VILLAGE:
 			if game.get_quest_flag("village_left_complete"):
 				return  # останній стан, просувати нікуди
-			_set_objective("Leave the village")
+			_set_objective("Leave the village", &"canyon_bridge")
 			_execute_step(StepType.DIALOGUE, "LeavingVillage", run_id)
 
 ## Тригер біля діда лише перемикає стан; розмову веде сцена, щоб діалоги йшли
@@ -296,10 +296,10 @@ func advance_state() -> void:
 		# Перехід до інших сцен обробляється автоматично через MetSys room connections
 		DebugLogger.info("🏘️ Village: Сцена завершена - переходи обробляються через MetSys room connections", "Scene")
 
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
+func _set_objective(text: String, target: StringName = &"") -> void:
+	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
 	var game = Game.get_singleton()
-	game.set_objective(text)
+	game.set_objective(text, target)
 
 func _spawn_enemies_for_fight() -> void:
 	"""Спавнить бандита для вуличного бою"""

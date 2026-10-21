@@ -80,7 +80,7 @@ func _initialize() -> void:
 
 	print("[1] initial state comes from the scene")
 	ck(buttons.size() == 7, "7 tab buttons in one ButtonGroup")
-	ck(content.get_child_count() == 8, "7 tab panels + the Tutorial list in ContentRoot")
+	ck(content.get_child_count() == 9, "7 tab panels + the Tutorial list + the Controls list (D-28f) in ContentRoot")
 	ck(_visible_panels(content) == ["InventoryComponent"], "only Inventory visible on open")
 	ck(_pressed(buttons) == ["InventoryButton"], "only Inventory pressed on open")
 	ck(menu.current_tab_name == "Inventory", "current_tab_name read from the scene")

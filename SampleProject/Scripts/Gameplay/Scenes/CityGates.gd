@@ -76,14 +76,14 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 	match state:
 		State.APPROACH:
 			# Нічого не запускаємо: RaidTrigger на дорозі переводить у RAID_CUTSCENE.
-			_set_objective("Approach the city gates")
+			_set_objective("Approach the city gates", &"city_gates")
 		State.RAID_CUTSCENE:
 			_raid_cutscene(run_id)
 		State.FIGHT_LOOP:
 			# Перевіряємо, чи діалог вже був прочитаний
 			if game.get_quest_flag("city_gates_fight_complete", false):
 				DebugLogger.info("🏰 CityGates: ⏭️ Діалог CityGates_Fight вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Enter the city")
+				_set_objective("Enter the city", &"city")
 				return
 			_set_objective("Defeat the bandits")
 			_start_fight("CityGates_Fight", run_id)
@@ -93,7 +93,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				DebugLogger.info("🏰 CityGates: ⏭️ Діалог CityGates_AfterFight вже був прочитаний, пропускаємо", "Scene")
 				_set_objective("Find the laboratory")
 				return
-			_set_objective("Enter the city")
+			_set_objective("Enter the city", &"city")
 			_execute_step(StepType.DIALOGUE, "CityGates_AfterFight", run_id)
 		State.TO_CITY:
 			_set_objective("Find the laboratory")
@@ -197,10 +197,10 @@ func advance_state() -> void:
 		# Перехід до Laboratory обробляється автоматично через MetSys room connections
 		DebugLogger.info("🏰 CityGates: Стейт TO_CITY досягнуто - перехід обробляється через MetSys", "Scene")
 
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
+func _set_objective(text: String, target: StringName = &"") -> void:
+	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
 	var game = Game.get_singleton()
-	game.set_objective(text)
+	game.set_objective(text, target)
 
 func _get_dialogue_manager() -> Node:
 	return ServiceLocator.get_dialogue_manager()

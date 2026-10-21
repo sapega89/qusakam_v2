@@ -484,16 +484,27 @@ signal quest_completed(quest_id: String)
 signal objective_updated(text: String)
 
 var current_objective: String = ""
+## Куди йти (BACKLOG 28, D-28h): імʼя мітки ObjectiveTargets/<id> у кімнаті. Та сама назва стоїть у кожній кімнаті
+## шляху (у селі «canyon_bridge» — західний край, у каньйоні — сам міст), тож стрілка на плашці веде й крізь кімнати.
+## Порожньо — стрілки немає (бій, розмова, кат-сцена).
+var objective_target: StringName = &""
 
-## Встановлює поточну ціль (відображається в UI)
-func set_objective(text: String) -> void:
+## Встановлює поточну ціль (відображається в UI); [param target] — мітка, на яку вказує стрілка плашки.
+func set_objective(text: String, target: StringName = &"") -> void:
 	current_objective = text
+	objective_target = target
 	objective_updated.emit(text)
 	DebugLogger.info("Game: Нова ціль: %s" % text, "Game")
 
 ## Отримує поточну ціль
 func get_objective() -> String:
 	return current_objective
+
+## Мітка цілі в поточній кімнаті; null — у цієї цілі немає мітки тут.
+func objective_marker() -> Node2D:
+	if objective_target == &"" or map == null:
+		return null
+	return map.get_node_or_null(NodePath("ObjectiveTargets/%s" % objective_target)) as Node2D
 
 ## Получает флаги квестов
 func get_quest_flags() -> Dictionary:

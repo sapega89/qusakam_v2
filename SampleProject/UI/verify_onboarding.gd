@@ -29,6 +29,21 @@ const NOT_GAMEPLAY := {
 	&"menu_next_tab": "shares the Previous / next menu tab row with menu_prev_tab",
 }
 
+## Ранні кроки сюжету (D-28h): кімната → її скрипт. Кожна ціль там або веде на мітку ObjectiveTargets/<id> цієї
+## кімнати, або в NO_WALK — крок, де йти нікуди (бій перед очима, розмова, кат-сцена).
+const EARLY_ROOMS := {
+	"Canyon": "res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd",
+	"Village": "res://SampleProject/Scripts/Gameplay/Scenes/Village.gd",
+	"DesertRoad": "res://SampleProject/Scripts/Gameplay/Scenes/DesertRoad.gd",
+	"CityGates": "res://SampleProject/Scripts/Gameplay/Scenes/CityGates.gd",
+}
+const NO_WALK := ["Find a way forward", "Descend to the road", "Learn to fight: follow the lesson",
+		"Defeat the bandit in the street", "Make a decision", "Defeat the enemies on the road", "Defeat the bandits"]
+## Уже за ранніми кроками: ціль у місті (City), мітки — разом із планом міста.
+const BEYOND_EARLY := ["Find the laboratory"]
+## Цілі, що лишаються в наступній кімнаті: мітка з тим самим id мусить бути і там.
+const CARRIED := {"canyon_bridge": ["Village", "Canyon"], "city_gates": ["DesertRoad", "CityGates"]}
+
 var fails: Array[String] = []
 var game: Node
 var hero: Node
@@ -118,6 +133,10 @@ func _initialize() -> void:
 
 	print("[5] Misc → Controls by real clicks (D-28f)")
 	await _check_controls(sl)
+
+	print("[7] Where to go next: the plaque arrow points at the objective's marker (D-28h)")
+	_check_objective_markers()
+	await _check_arrow(village)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0)
@@ -367,6 +386,55 @@ func _check_controls(sl: Node) -> void:
 	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
 	ck(root.gui_get_focus_owner() == rows.get_child(1), "D-pad down scrolls the list")
 	ui.close_game_menu()
+
+
+func _check_objective_markers() -> void:
+	var calls := RegEx.create_from_string('set_objective\\("([^"]+)"(?:, &"(\\w+)")?\\)')
+	for room: String in EARLY_ROOMS:
+		var markers := _markers("res://SampleProject/Maps/%s.tscn" % room)
+		var source := FileAccess.get_file_as_string(EARLY_ROOMS[room])
+		var seen := {}
+		for m in calls.search_all(source):
+			var text := m.get_string(1)
+			var id := m.get_string(2)
+			if seen.has(text + id):
+				continue
+			seen[text + id] = true
+			if text in BEYOND_EARLY:
+				continue
+			if id == "":
+				ck(text in NO_WALK, "%s: «%s» has no marker and is a fight / talk / cutscene" % [room, text])
+			else:
+				ck(id in markers, "%s: «%s» → ObjectiveTargets/%s (%s)" % [room, text, id, markers])
+	for id: String in CARRIED:
+		for room: String in CARRIED[id]:
+			ck(id in _markers("res://SampleProject/Maps/%s.tscn" % room), "%s is marked in %s too (the route crosses rooms)" % [id, room])
+
+
+## Імена міток ObjectiveTargets/* у сцені кімнати — зі стану сцени, без запуску кімнати.
+func _markers(path: String) -> Array[String]:
+	var state: SceneState = (load(path) as PackedScene).get_state()
+	var out: Array[String] = []
+	for i in state.get_node_count():
+		if String(state.get_node_path(i, true)) == "./ObjectiveTargets":
+			out.append(String(state.get_node_name(i)))
+	return out
+
+
+func _check_arrow(village: Node) -> void:
+	var hud: Node = get_first_node_in_group("combat_hud_top")
+	var arrow: Label = hud.get_node(^"%Direction")
+	game.set_objective("Check on the house", &"house")
+	var house: Vector2 = village.get_node(^"ObjectiveTargets/house").global_position
+	for case: Array in [[-600.0, "→"], [600.0, "←"], [0.0, ""]]:
+		hero.global_position = Vector2(house.x + case[0], house.y - 20.0)
+		hero.velocity = Vector2.ZERO
+		for i in 3: await process_frame
+		var shown: String = arrow.text if arrow.visible else ""
+		ck(shown == case[1], "hero %+d px from the house: arrow «%s» (%s)" % [case[0], case[1], shown])
+	game.set_objective("Make a decision")
+	for i in 3: await process_frame
+	ck(not arrow.visible, "a talk step has no arrow")
 
 
 func _drain(dm: Node) -> void:

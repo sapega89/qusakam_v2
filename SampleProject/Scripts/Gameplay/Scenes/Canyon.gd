@@ -338,7 +338,7 @@ func _on_state_changed(new_state: State) -> void:
 		if game.get_quest_flag("village_abduction_complete", false):
 			DebugLogger.info("🏜️ Canyon: Стан TO_VILLAGE, але гравець вже був у Village - пропускаємо автоматичний перехід", "Canyon")
 			# Встановлюємо об'єктив, але не запускаємо діалог
-			game.set_objective("Return to the village")
+			game.set_objective("Return to the village", &"village")
 			# Емітуємо подію зміни стану
 			_emit_state_changed_event(_previous_state, new_state)
 			_previous_state = new_state
@@ -547,14 +547,14 @@ func _on_intro_state(run_id: int) -> void:
 	# Перевіряємо, чи діалог вже був прочитаний
 	if _is_dialogue_completed("Canyon_Intro"):
 		DebugLogger.info("🏜️ Canyon: ⏭️ Діалог Canyon_Intro вже був прочитаний, пропускаємо", "Canyon")
-		Game.get_singleton().set_objective("Explore the Canyon")
+		Game.get_singleton().set_objective("Explore the Canyon", &"shrine")
 		return
 
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск вступного діалогу Canyon_Intro", "Canyon")
 	# Запускаємо вступний діалог
 	await _execute_step(StepType.DIALOGUE, "Canyon_Intro", run_id)
 	# Після діалогу
-	Game.get_singleton().set_objective("Explore the Canyon")
+	Game.get_singleton().set_objective("Explore the Canyon", &"shrine")
 
 func _on_monologue_state(run_id: int) -> void:
 	"""Обробка стейту MONOLOGUE - монолог про діда та шамана"""
@@ -591,7 +591,7 @@ const MEDITATION_RETURN_TIME := 1.2
 func _on_abduction_cutscene_state(run_id: int) -> void:
 	var game := Game.get_singleton()
 	if _is_dialogue_completed("Canyon_AbductionCutscene"):
-		game.set_objective("Pursue the kidnappers")
+		game.set_objective("Pursue the kidnappers", &"village")
 		_after_abduction_cutscene()
 		return
 
@@ -620,7 +620,7 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	# Розмова — у білому облачці над ним, керування заблоковане до її кінця (D263).
 	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id, true)
 	cs.end()
-	game.set_objective("Pursue the kidnappers")
+	game.set_objective("Pursue the kidnappers", &"village")
 	_after_abduction_cutscene()
 
 func _on_to_village_state(run_id: int) -> void:
@@ -632,7 +632,7 @@ func _on_to_village_state(run_id: int) -> void:
 	if game.get_quest_flag("village_abduction_complete"):
 		DebugLogger.info("🏜️ Canyon: Гравець вже відвідував село, пропускаємо монолог RoadToVillage", "Canyon")
 		# Встановлюємо об'єктив для повернення до Village
-		game.set_objective("Return to the village")
+		game.set_objective("Return to the village", &"village")
 		DebugLogger.info("🏜️ Canyon: Гравець може йти до Village через проходи між сценами (без телепорту)", "Canyon")
 		return
 
@@ -644,7 +644,7 @@ func _on_to_village_state(run_id: int) -> void:
 	DebugLogger.info("🏜️ Canyon: Діалог завершено. Гравець може йти до Village через проходи між сценами (без телепорту)", "Canyon")
 
 	# Встановлюємо об'єктив для переходу до Village
-	game.set_objective("Head to the village")
+	game.set_objective("Head to the village", &"village")
 
 func _on_relic_pickup_state(run_id: int) -> void:
 	"""Обробка стейту RELIC_PICKUP - медитація біля реліквій"""
