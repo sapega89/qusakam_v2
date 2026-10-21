@@ -413,6 +413,66 @@ LAYERS = {
         "middle of the frame and filling half of its width, with empty space on both sides, its base resting on the "
         f"bottom edge, the house stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, {CHROMA}",
     ),
+    # Довша дорога (BACKLOG 23, D299): по орієнтиру на кожну нову ділянку — окремі предмети на лінії підлоги, як крамниця.
+    "Road/gen_tower": dict(
+        seed=231,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(187, 391),  # лише предмет: дюни обабіч модель домальовує
+        keep=202,  # нижче — пісок під предметом
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0.15,
+        colors=14,
+        quant="octree",
+        prompt="one single ruined ancient desert watchtower: a tall square sandstone tower with its top broken off "
+        "jaggedly, a dark empty arched window, crumbling blocks and a few fallen stones at its foot half buried in sand, "
+        "standing alone in the middle of the frame and filling a third of its width, with empty space on both sides, its "
+        f"base resting on the bottom edge, the tower stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, {CHROMA}",
+    ),
+    "Road/gen_wreck": dict(
+        seed=233,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(114, 394),  # лише предмет: дюни обабіч модель домальовує
+        keep=189,  # нижче — пісок під предметом
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0.1,
+        colors=16,
+        quant="octree",
+        prompt="one single abandoned broken wooden merchant caravan wagon tipped on its side with one wheel off and "
+        "lying beside it, a torn red and yellow striped cloth cover hanging loose, smashed wooden crates, spilled clay "
+        "pots and a rolled carpet scattered around it, standing alone in the middle of the frame and filling half of its "
+        "width, with empty space on both sides, resting on the bottom edge, the wreck lies directly on bare sand, warm "
+        f"light on the top, cool violet shadows in the recesses, {CHROMA}",
+    ),
+    "Road/gen_shrine": dict(
+        seed=235,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        cut=(218, 372),  # лише предмет: дюни обабіч модель домальовує
+        keep=198,  # нижче — пісок під предметом
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0.1,
+        colors=14,
+        quant="octree",
+        prompt="one single old wayside shrine of a desert road: a tall narrow sandstone obelisk on a low stepped "
+        "plinth, simple carved spiral runes on its face, a few small votive clay lamps and a faded blue cloth ribbon tied "
+        "around it, standing alone in the middle of the frame and filling a quarter of its width, with empty space on "
+        "both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool "
+        f"violet shadows in the recesses, {CHROMA}",
+    ),
     # Задній ряд дахів села (критик: у проміжках між будинками сяяли скелі — «просвічується»); пальми тут.
     "Village/gen_back": dict(
         seed=25,

@@ -11,3 +11,6 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 
 Behind them: `desert_backdrop_open.tscn` — the pack's sky, the Canyon's generated clouds and mesas (D235),
 the pack's ground strip.
+| `gen_tower.png` | DesertRoad cell 2: a ruined watchtower behind the dunes fight, x 2280 (BACKLOG 23, D299) |
+| `gen_wreck.png` | DesertRoad cell 4: the bandits' broken caravan wagon behind the ambush, x 3540 (D299) |
+| `gen_shrine.png` | DesertRoad cell 5: a wayside shrine before the City Gates, x 4600, by the save point (D299) |

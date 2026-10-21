@@ -16,6 +16,9 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/DesertRoad_Terrain.png" id="terrain_terrain"]
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shop.png" id="shop_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_tower.png" id="tower_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_wreck.png" id="wreck_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shrine.png" id="shrine_art"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="item_pickup"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
@@ -75,6 +78,27 @@ texture_filter = 1
 position = Vector2(1087, 147)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("shop_art")
+centered = false
+
+[node name="Tower" type="Sprite2D" parent="." unique_id=1402914121]
+texture_filter = 1
+position = Vector2(2280, 125)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("tower_art")
+centered = false
+
+[node name="Wreck" type="Sprite2D" parent="." unique_id=1402914122]
+texture_filter = 1
+position = Vector2(3540, 147)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("wreck_art")
+centered = false
+
+[node name="Shrine" type="Sprite2D" parent="." unique_id=1402914123]
+texture_filter = 1
+position = Vector2(4600, 120)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("shrine_art")
 centered = false
 
 [node name="ShopDoor" type="Marker2D" parent="." unique_id=1402914112]
