@@ -281,6 +281,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     the weapon drawn in the frame, smoother and prettier than now (more in-betweens). Decide with the plan whether the
     weapon stays a separate sprite on top (cheaper, swaps per item) or is baked per type (prettier). Plan first:
     `design/hero_weapon_animation_plan.md`; big — slice per weapon type.
+    **Weapon variants** (Sapega 2026-10-22 «меч може бути мідний, а може бути кристалічний — перекрасимо чи як?»): frames
+    are made per weapon TYPE (shape: sword, dagger, mace, halberd…); each ITEM recolours the blade/head in the frames with
+    a palette-swap shader (the generated frames keep a fixed blade palette as the key; copper, iron, silver, crystal — the
+    crystal one also gets a glow/shimmer). A variant whose silhouette differs (a jagged crystal blade, a curved scimitar)
+    gets its own frames as a sub-type. Item data (items.json) names its type + palette; next slice after the sword wiring.
 43. ~~**The Skills screen must be reworked — it is inconvenient**~~ — **done 2026-10-21** (D330–D334, `cloud/skills-screen`) (Sapega 2026-10-21 «меню вивчення скілів треба
     перероблювати, воно не зручне»). Today (D283): two columns (trunk + oath tree under three tabs), rows learned by double
     click / Enter / pad A, the right column scrolls, locked rows show a lock even when learnable. Candidate direction until
