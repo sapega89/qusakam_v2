@@ -159,7 +159,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 func _initialize_components():
 	"""Ініціалізує EnemyLogic та EnemyView"""
 	# Створюємо EnemyLogic
-	enemy_logic = EnemyLogic.new()
+	enemy_logic = _make_logic()
 	enemy_logic.name = "EnemyLogic"
 	add_child(enemy_logic)
 	enemy_logic.initialize(self)
@@ -182,6 +182,10 @@ func _initialize_components():
 
 	# Перевіряємо, чи гравець вже знаходиться в зоні виявлення
 	call_deferred("_check_existing_player_in_detection_area")
+
+## Логіка ворога; бос підставляє свою (BossLogic, D301/D302).
+func _make_logic() -> EnemyLogic:
+	return EnemyLogic.new()
 
 func _initialize_health_bar():
 	"""Создает и настраивает HP бар для врага (только если это не босс)"""

@@ -118,6 +118,103 @@ FX = {
         "four-pointed sparkles and a few small glowing leaf-shaped motes around it, centered, "
         + MAGENTA,
     ),
+    # Бос-ефекти (D301, D302, queue row 9.2): небезпеки боса й сюжетні ефекти Мерії / Лабораторії.
+    "boss_fireball": dict(
+        seed=21,
+        size=(1024, 512),
+        key="green",
+        colors=8,
+        kind="sprite",
+        canvas=(40, 20),
+        box=(0, 1, 40, 19),
+        frames=["Bosses/fireball"],
+        prompt="a single fireball flying to the right, a round white hot core at the right end, orange and red "
+        "flames streaming back to the left into a tapering tail, side view, " + GREEN,
+    ),
+    "boss_pillar": dict(
+        seed=22,
+        size=(512, 1024),
+        key="green",
+        colors=8,
+        kind="sprite",
+        canvas=(48, 104),
+        box=(0, 0, 48, 104),
+        frames=["Bosses/pillar"],
+        prompt="a single tall vertical column of roaring fire rising straight up from the ground, straight sides, "
+        "white hot yellow core, orange flames, red tongues at the edges, flat bottom, front view, " + GREEN,
+    ),
+    "boss_mark": dict(
+        seed=23,
+        size=(1024, 512),
+        key="green",
+        colors=6,
+        kind="sprite",
+        canvas=(48, 10),
+        box=(0, 0, 48, 10),
+        frames=["Bosses/mark"],
+        prompt="a single flat glowing ellipse of red hot embers and cracks on the ground seen from a low side angle, "
+        "a thin wide horizontal oval, orange glow, " + GREEN,
+    ),
+    "boss_shockwave": dict(
+        seed=24,
+        size=(1024, 512),
+        key="magenta",
+        colors=6,
+        kind="sprite",
+        canvas=(56, 28),
+        box=(0, 0, 56, 28),
+        frames=["Bosses/shockwave"],
+        prompt="a single ground shockwave of sandy dust and small rock chunks rolling to the right, a low curling "
+        "wave of beige dust, tallest at its right front edge, flat bottom, side view, " + MAGENTA,
+    ),
+    "explosion": dict(
+        seed=25,
+        size=(1024, 1024),
+        key="green",
+        colors=10,
+        kind="sprite",
+        canvas=(72, 72),
+        box=(0, 0, 72, 72),
+        frames=["Bosses/explosion"],
+        prompt="a single fiery explosion cloud, a billowing ball of orange and yellow fire with dark grey smoke "
+        "puffs at its edges, flat bottom, " + GREEN,
+    ),
+    "wall_burst": dict(
+        seed=26,
+        size=(1024, 1024),
+        key="magenta",
+        colors=8,
+        kind="sprite",
+        canvas=(80, 80),
+        box=(0, 0, 80, 80),
+        frames=["Bosses/wall_burst"],
+        prompt="a single burst of broken sandstone bricks and beige dust flying outward to the right from a wall, "
+        "chunks of stone and a cloud of dust, side view, " + MAGENTA,
+    ),
+    "sleep_gas": dict(
+        seed=27,
+        size=(1024, 1024),
+        key="magenta",
+        colors=6,
+        kind="sprite",
+        canvas=(72, 56),
+        box=(0, 0, 72, 56),
+        frames=["Bosses/sleep_gas"],
+        prompt="a single soft cloud of pale green poison gas, rounded puffy billows, translucent looking, flat "
+        "bottom, " + MAGENTA,
+    ),
+    "wall_hole": dict(
+        seed=28,
+        size=(1024, 1024),
+        key="magenta",
+        colors=8,
+        kind="sprite",
+        canvas=(72, 96),
+        box=(0, 0, 72, 96),
+        frames=["Bosses/wall_hole"],
+        prompt="a single tall ragged hole smashed through a sandstone brick wall, a black dark opening framed by "
+        "broken sandstone bricks with jagged edges, front view, " + MAGENTA,
+    ),
 }
 
 

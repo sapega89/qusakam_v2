@@ -14,6 +14,16 @@
 			"kind": "tank",
 			"name": "Giant Scorpion",
 			"text": "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
+		},
+		{
+			"kind": "brass_collector",
+			"name": "The Brass Collector",
+			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
+		},
+		{
+			"kind": "fire_djinn",
+			"name": "The Fire Djinn",
+			"text": "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."
 		}
 	]
 }

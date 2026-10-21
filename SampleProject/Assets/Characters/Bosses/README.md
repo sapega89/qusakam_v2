@@ -11,4 +11,4 @@ palette per boss, the lowest pixel on row 107/108, facing right. A Steam release
 | `brass_collector/sheet.png` | idle 0–1 · walk 4–7 · attack (sweep) 8–11 · charge 12–13 · slam 16–17 · death 20–22 | the Mayor Hall boss: a brass-and-sandstone golem with a prisoner cage on its back (D301) |
 | `fire_djinn/sheet.png` (3 columns) | idle 0–1 · attack (claws) 3–5 · cast 6–7 · fly 9 · death 12–13 | the Laboratory boss: a fire djinn on a smoke-and-flame tail (D302) |
 
-Not wired into scenes yet (queue row 9.2). `fire_djinn` death 12 reads close to idle — regenerate if it shows.
+Wired into `Scenes/Characters/Bosses/brass_collector.tscn` and `fire_djinn.tscn` (queue row 9.2, D316). `fire_djinn` death 12 reads close to idle — regenerate if it shows.

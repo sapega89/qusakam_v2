@@ -26,6 +26,9 @@ var health_bar: HealthBar = null
 var kill_cooldown: float = 0.0
 var kill_cooldown_time: float = 1.0  # Мінімальний час між викликами kill()
 var is_dying: bool = false  # Флаг, що гравець зараз вмирає
+## Поразка в сюжетному бою (D301/D302): якщо задано, смерть кличе його замість екрана Game Over
+## (програний бій з Brass Collector — у Лабораторію). Кімната ставить і сама ж знімає; оживляє героя теж вона.
+var defeat_handler: Callable
 
 # Components — дочірні вузли Player.tscn (а не створені через .new()), щоб їхні
 # @export-параметри були доступні для налаштування в інспекторі.
@@ -230,6 +233,10 @@ func die() -> void:
 	"""Override CombatBody2D.die() to call kill() for player respawn"""
 	# Вызываем родительский die() для установки is_dead и эмита сигналов
 	super.die()
+
+	if defeat_handler.is_valid():
+		defeat_handler.call()
+		return
 
 	# Figma game-over-screen 41:83: екран Game Over замість миттєвого респавну.
 	# Якщо показати нікуди (немає поточної сцени) — стара поведінка.

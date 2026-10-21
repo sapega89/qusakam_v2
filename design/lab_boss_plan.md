@@ -18,7 +18,7 @@ to be unbeatable, but can be beaten" (item 6 = generate it). The rest (names, nu
 | Enemy base | `DefaultEnemy.gd` + `EnemyLogic.gd` (chase / attack / combo / poise / stagger / knockback), `EnemyStats` resource | ✅ reused |
 | Hero side of a hit | `Player.take_damage(amount, source)`: block / parry / stagger read `source` (a `DefaultEnemy`) | ✅ bosses pass themselves as the source |
 | Boss group + voice | `GameGroups.BOSS`; `SoundHooks` roars on the first wind-up, shouts on every second, death roar (D278) | ✅ |
-| `DemoBoss.gd` | instanced nowhere; damage bypasses the hitbox | ❌ deleted by this pass |
+| `DemoBoss.gd` | instanced nowhere; damage bypasses the hitbox | ✅ deleted (row 9.2) |
 | Boss HP bar | `DefaultEnemy._initialize_health_bar` skips bosses | ❌ → `boss_health_bar.tscn` |
 
 ## The model (built in slice 2)
@@ -55,9 +55,9 @@ in a row, a pillar under the hero and one each side 140 px away.
 
 ## Slices
 
-1. ✅/⏳ see [[lab_story_plan]] slice 2 — `BossEnemy`, `BossLogic`, hazards, boss bar, `defeat_handler`; `verify_bosses.gd`
+1. ✅ (queue row 9.2, D316) see [[lab_story_plan]] slice 2 — `BossEnemy`, `BossLogic`, hazards, boss bar, `defeat_handler`; `verify_bosses.gd`
    (each move hits a hero standing in it and misses one out of it; phase 2 at half HP; the bar follows HP).
-2. The two bosses as scenes with generated art (comfy-sprite, D309) — `brass_collector.tscn`, `fire_djinn.tscn`.
+2. ✅ (queue row 9.2) The two bosses as scenes with generated art (comfy-sprite, D309) — `brass_collector.tscn`, `fire_djinn.tscn`.
 3. Their fights in the rooms — [[lab_story_plan]] slices 3 and 8.
 
 ## Out of scope

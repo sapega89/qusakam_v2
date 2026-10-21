@@ -31,7 +31,7 @@ Feedback rules: [[play_feedback_queue]]. Builds on [[souls_combat_plan]] (D264�
 | Cloud talk typing (D263) | `UI/Components/speech_bubble.gd` `type_out`, `DialogueManager.gd:297` | ✅ no sound |
 | Player-initiated NPC talk | `Gameplay/NPCs/NpcBase.gd:55` `_on_interacted` | ✅ the only path where the hero starts a talk; cutscenes start dialogues from room scripts |
 | Skill cast wind-up / release / interrupt | `PlayerCombat.begin_cast` :286, `SkillManager.use_skill` → `skill_used`, `skill_interrupted` | ⚠️ no event at wind-up start |
-| Bosses | `Characters/Bosses/DemoBoss.gd` (group `boss`) | ❌ instanced nowhere; boss fights are items 16/17 |
+| Bosses | `Characters/Bosses/BossEnemy.gd` (group `boss`; `brass_collector.tscn`, `fire_djinn.tscn`) | ✅ voiced through the D278 hook; placed in rooms by queue rows 9.3 / 9.7 |
 
 ## Missing entirely (how checked)
 

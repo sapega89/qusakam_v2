@@ -360,11 +360,11 @@ func stagger(duration: float) -> void:
 		attack_broken = true
 		enemy.end_attack()
 
-## Відкидання на [param push] px за KNOCKBACK_TIME. Удар героя ([param breaks_attack]) зриває замах,
-## власний ривок ворога — ні.
-func start_knockback(push: float, breaks_attack: bool = true) -> void:
-	knockback_left = KNOCKBACK_TIME
-	knockback_speed = push / KNOCKBACK_TIME
+## Відкидання на [param push] px за [param time] с. Удар героя ([param breaks_attack]) зриває замах,
+## власний ривок ворога — ні. Ривок боса (charge) — довший за звичайне відкидання.
+func start_knockback(push: float, breaks_attack: bool = true, time: float = KNOCKBACK_TIME) -> void:
+	knockback_left = time
+	knockback_speed = push / time
 	if breaks_attack and is_attacking:
 		attack_broken = true
 

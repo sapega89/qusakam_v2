@@ -14,6 +14,10 @@ the animation frames are cut from that one picture (appear → full → thinning
 | `Skills/fire_arc.png` | Fire Strike crescent | `fire_arc` |
 | `Skills/bolt.png` | Electric Strike bolt (forward and from the sky) | `bolt` |
 | `Skills/heal_aura.png` | Healing Palm ring | `heal_aura` |
+| `Bosses/fireball.png` | the fire djinn's fireball, `Scenes/FX/Bosses/boss_fireball.tscn` (D302) | `boss_fireball` |
+| `Bosses/pillar.png`, `Bosses/mark.png` | the djinn's fire pillar and its floor mark, `boss_pillar.tscn` | `boss_pillar`, `boss_mark` |
+| `Bosses/shockwave.png` | the Brass Collector's slam shockwave, `boss_shockwave.tscn` (D301) | `boss_shockwave` |
+| `Bosses/explosion.png`, `wall_burst.png`, `sleep_gas.png`, `wall_hole.png` | story effects for the Mayor Hall / cells (queue rows 9.3, 9.5), not wired yet | same names |
 
 Replaced 2026-10-21 (Sapega: hack'n'slash, anime, generated): the drawn smears of `draw_hero_attack.py` and the
 round hit spark `HitSpark/` (unknown licence).

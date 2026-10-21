@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Bosses/Hazards/BossShockwave.gd" id="1_s"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Bosses/shockwave.png" id="2_t"]
+
+[node name="BossShockwave" type="Node2D"]
+script = ExtResource("1_s")
+
+[node name="Left" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, 16)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_t")
+offset = Vector2(0, -14)
+
+[node name="Right" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, 16)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_t")
+offset = Vector2(0, -14)

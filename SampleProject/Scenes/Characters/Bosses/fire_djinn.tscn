@@ -1,0 +1,183 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://ckkogqiocc0pv" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd" id="2_boss"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="3_stats"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Bosses/fire_djinn/sheet.png" id="4_sheet"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("3_stats")
+enemy_type = "fire_djinn"
+speed = 80.0
+base_damage = 24.0
+attack_cooldown = 1.0
+attack_windup = 0.5
+attack_active_time = 0.2
+super_armor = true
+poise = 10
+stagger_time = 0.4
+combo_hits = 3
+combo_chance = 0.5
+detection_range = 600.0
+attack_range = 500.0
+chase_range = 900.0
+max_health = 1100
+xp_reward = 500
+
+[sub_resource type="RectangleShape2D" id="Shape_body"]
+size = Vector2(40, 100)
+
+[sub_resource type="RectangleShape2D" id="Shape_hitbox"]
+resource_local_to_scene = true
+size = Vector2(130, 80)
+
+[sub_resource type="CircleShape2D" id="Shape_detection"]
+radius = 600.0
+
+[sub_resource type="Animation" id="Anim_idle"]
+resource_name = "idle"
+length = 1.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="Animation" id="Anim_walk"]
+resource_name = "walk"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [9]
+}
+
+[sub_resource type="Animation" id="Anim_attack"]
+resource_name = "attack"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [3, 4, 5]
+}
+
+[sub_resource type="Animation" id="Anim_fireball"]
+resource_name = "fireball"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+
+[sub_resource type="Animation" id="Anim_fireball_strike"]
+resource_name = "fireball_strike"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+
+[sub_resource type="Animation" id="Anim_pillar"]
+resource_name = "pillar"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [7]
+}
+
+[sub_resource type="Animation" id="Anim_pillar_strike"]
+resource_name = "pillar_strike"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+
+[sub_resource type="Animation" id="Anim_death"]
+resource_name = "death"
+length = 0.9
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [12, 13]
+}
+
+[sub_resource type="AnimationLibrary" id="Lib"]
+_data = {
+&"attack": SubResource("Anim_attack"),
+&"death": SubResource("Anim_death"),
+&"fireball": SubResource("Anim_fireball"),
+&"fireball_strike": SubResource("Anim_fireball_strike"),
+&"idle": SubResource("Anim_idle"),
+&"pillar": SubResource("Anim_pillar"),
+&"pillar_strike": SubResource("Anim_pillar_strike"),
+&"walk": SubResource("Anim_walk")
+}
+
+[node name="FireDjinn" instance=ExtResource("1_base")]
+script = ExtResource("2_boss")
+enemy_stats = SubResource("Stats")
+display_name = "The Fire Djinn"
+moves = Array[Dictionary]([{"kind": "combo", "max_range": 120.0, "min_range": 0.0, "weight": 2.0}, {"count_phase2": 2, "damage": 1.0, "kind": "fireball", "recovery": 0.45, "max_range": 700.0, "min_range": 150.0, "weight": 2.0, "windup": 0.6}, {"damage": 1.6, "kind": "pillar", "recovery": 0.45, "max_range": 700.0, "min_range": 0.0, "side": 140.0, "weight": 1.0, "width": 72.0, "windup": 0.9}])
+melee_reach = 120.0
+phase2_windup = 0.8
+phase2_speed = 1.0
+
+[node name="CollisionShape2D" parent="."]
+position = Vector2(0, -34)
+shape = SubResource("Shape_body")
+
+[node name="Sprite2D" parent="."]
+offset = Vector2(0, -40)
+texture = ExtResource("4_sheet")
+hframes = 3
+vframes = 5
+
+[node name="AnimationPlayer" parent="."]
+libraries/ = SubResource("Lib")
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(0, -20)
+shape = SubResource("Shape_hitbox")
+
+[node name="CollisionShape2D" parent="dettection"]
+position = Vector2(0, -20)
+shape = SubResource("Shape_detection")
