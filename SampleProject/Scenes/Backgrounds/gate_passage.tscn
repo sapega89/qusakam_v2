@@ -36,7 +36,6 @@ texture = SubResource("GradientTexture2D_light")
 centered = false
 
 [node name="Front" type="Sprite2D" parent="."]
-z_index = 20
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("front")

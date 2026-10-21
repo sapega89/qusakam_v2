@@ -53,7 +53,7 @@ func _z(item: CanvasItem) -> int:
 		n = n.get_parent()
 	return z
 
-## Чи непрозорий піксель спрайта над героєм: на висоті грудей (chest) або на висоті мосту брами (рядок 70 текстури).
+## Чи непрозорий піксель спрайта там, де стоїть герой: на висоті грудей (chest) або на висоті мосту брами (рядок 70 текстури).
 func _covers(sprite: Sprite2D, player: Node2D, chest: bool) -> bool:
 	var p: Vector2 = sprite.to_local(player.global_position + Vector2(0, -30))
 	var img: Image = sprite.texture.get_image()
@@ -177,7 +177,7 @@ func _initialize() -> void:
 	ck(started.is_empty() and not player.event, "no raid lines, control kept (%s)" % [started])
 	ck(player.global_position.y > y0, "the hero falls after the teleport (y %.1f -> %.1f)" % [y0, player.global_position.y])
 
-	print("[8] 8c: the gatehouse is a passage — towers and bridge over the hero, its wall behind; walking east loads the City inside it")
+	print("[8] 8c/8d: the gatehouse is a passage the hero walks through, every gate layer behind him (D314); walking east loads the City inside it")
 	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
@@ -185,11 +185,13 @@ func _initialize() -> void:
 	room = game.map
 	ck(room.get_current_state_name() == "TO_CITY", "TO_CITY (%s)" % room.get_current_state_name())
 	var front: Sprite2D = room.get_node(^"GatePassage/Front")
-	var back: Sprite2D = room.get_node(^"GatePassage/Back")
-	ck(_z(front) > _z(player) and _z(back) < _z(player), "front z %d over the hero %d, wall z %d behind" % [_z(front), _z(player), _z(back)])
+	var hero_z: int = _z(player.get_node(^"Sprite2D"))
+	for layer: CanvasItem in room.get_node(^"GatePassage").get_children():
+		ck(_z(layer) < hero_z, "gate layer %s z %d below the hero %d (8d: the gate never covers him)" % [layer.name, _z(layer), hero_z])
+	ck(_z(room.get_node(^"GatePassage/Back")) < _z(front), "the dark wall stays behind the towers")
 	player.global_position = Vector2(1100, 360)
 	for i in 30: await physics_frame
-	var behind_tower := false
+	var past_tower := false
 	var under_bridge := false
 	Input.action_press(&"move_right")
 	for i in 600:
@@ -197,18 +199,19 @@ func _initialize() -> void:
 			break
 		var x: float = player.global_position.x
 		if x > 1380.0 and x < 1480.0:
-			behind_tower = behind_tower or _covers(front, player, true)
+			past_tower = past_tower or (_covers(front, player, true) and player.is_visible_in_tree())
 		if x > 1600.0:
 			under_bridge = under_bridge or (not _covers(front, player, true) and _covers(front, player, false))
 		await physics_frame
 	for i in 10: await physics_frame
 	Input.action_release(&"move_right")
-	ck(behind_tower, "the tower is drawn over the hero walking in")
-	ck(under_bridge, "deeper in, the hero shows in the passage with the bridge over him")
+	ck(past_tower, "the hero walks past the tower, drawn in front of it")
+	ck(under_bridge, "deeper in, the hero stands inside the arch, under the bridge")
 	ck(game.map.scene_file_path.ends_with("/City.tscn"), "real move_right east loads the City (%s)" % game.map.scene_file_path)
 	var city_front: Sprite2D = game.map.get_node(^"GatePassage/Front")
 	ck(not _covers(city_front, player, true) and _covers(city_front, player, false),
 			"the City side: the hero arrives inside the same passage (x %.0f)" % player.global_position.x)
+	ck(_z(city_front) < _z(game.player.get_node(^"Sprite2D")), "the City side: the towers are behind the hero too")
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

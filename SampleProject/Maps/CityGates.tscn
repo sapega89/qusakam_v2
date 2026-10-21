@@ -129,9 +129,6 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("gates_mid")
 centered = false
 
-[node name="GatePassage" parent="." unique_id=1846200201 instance=ExtResource("gate_passage")]
-position = Vector2(1321, 115)
-
 [node name="TileMap" type="Node2D" parent="." unique_id=1306653119]
 
 [node name="Foreground" type="TileMapLayer" parent="TileMap" unique_id=1799494126]
@@ -152,6 +149,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("terrain_terrain")
 centered = false
+
+[node name="GatePassage" parent="." unique_id=1846200201 instance=ExtResource("gate_passage")]
+position = Vector2(1321, 115)
 
 [node name="RoomInstance" parent="." unique_id=1188272249 instance=ExtResource("3_8ucu8")]
 
