@@ -6,7 +6,7 @@ tags: [world, map, xp, feedback]
 
 # World expansion — plan (BACKLOG 23)
 
-> **Ledge A's Potion is now an Iron Ingot** (potions removed in 4b, D261): `DesertRoad.tscn` `ItemPickup`s are `iron_ingot`, `herb`, `mana_crystal`. The Laboratory part moved to [[lab_story_plan]] (D303, queue 9.4–9.8).
+> **Ledge A's Potion is now an Iron Ingot** (potions removed in 4b, D261): `DesertRoad.tscn` `ItemPickup`s are `iron_ingot`, `herb`; ledge C holds a **chest** with Mana Crystal × 2 since cloud/chests ([[chests_plan]]). The Laboratory part moved to [[lab_story_plan]] (D303, queue 9.4–9.8).
 
 **Sapega 2026-10-20:** no new location names. City, CityGates, Village and Canyon stay as they are. Before the City
 only **DesertRoad** grows — longer, more MetSys cells, more fights, side ledges with pickups — and the XP curve is
@@ -53,7 +53,7 @@ Hero jump ≈ 103 px (`PlayerMover.jump_velocity` −450, gravity 980), so every
 | 0–1 | 0–1728 | **The descent** (as today) | arrival, monologue, fight 1 (`EnemySpawner`: 2 melee + 2 fast), Merchant shop + arrival |
 | 2 | 1728–2592 | **The dune ledges** | ledge A: a 2-tile step (tiles 58–61) and a 4-tile rock (62–65), **Potion** on top; fight 2 on the floor (`Fight_Dunes`: 2 melee + 2 fast, x 2250–2490); generated ruined watchtower behind it |
 | 3 | 2592–3456 | **The mesa** | a raised plateau (tiles 86–101, top y 320) — fight 3 on it (`Fight_Mesa`: tank + melee + 2 fast); ledge B: a 2-tile rock at its east end (98–101, top y 256), **Herb ×2** on top; drop back to the road at tile 102 |
-| 4 | 3456–4320 | **The broken caravan** | fight 4, the ambush (`Fight_Caravan`: 2 tanks + 2 melee + fast, x 3640–3960); a generated wrecked wagon behind it — the bandits' loot cart (D293's stolen caravan went on to the Gates); ledge C: a step (124–127) and a 4-tile rock (128–130), **Mana Crystal** on top |
+| 4 | 3456–4320 | **The broken caravan** | fight 4, the ambush (`Fight_Caravan`: 2 tanks + 2 melee + fast, x 3640–3960); a generated wrecked wagon behind it — the bandits' loot cart (D293's stolen caravan went on to the Gates); ledge C: a step (124–127) and a 4-tile rock (128–130), **Mana Crystal** on top (a chest with Mana Crystal × 2 since [[chests_plan]]) |
 | 5 | 4320–5184 | **The approach** | `SavePoint_BeforeCity` moves 1500 → 4900; a generated wayside shrine; exit east to CityGates |
 
 Fights 2–4: a `RoomEnemySpawner` each, spawning when the hero walks into its `trigger_area` (a new export), waves of 2

@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shrine.png" id="shrine_art"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="item_pickup"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="chest"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(600, 200)
 
@@ -317,9 +318,11 @@ position = Vector2(3200, 232)
 item_id = "herb"
 amount = 2
 
-[node name="Pickup_CaravanLedge" parent="." unique_id=1169964136 instance=ExtResource("item_pickup")]
-position = Vector2(4144, 232)
-item_id = "mana_crystal"
+[node name="Chest_CaravanLedge" parent="." unique_id=1169964136 instance=ExtResource("chest")]
+position = Vector2(4144, 256)
+contents = Dictionary[String, int]({
+"mana_crystal": 2
+})
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=603862840]
 process_mode = 3

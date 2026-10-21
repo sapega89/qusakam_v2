@@ -1,6 +1,6 @@
 ---
 type: plan
-status: in-progress  # 2026-10-21: plan, B79 leftover, boss art (D309), draft lines done; code WIP in git stash; rest = queue rows 9.1–9.8
+status: in-progress  # 2026-10-21: rows 9.1–9.5 built; rest = queue rows 9.6–9.8
 ---
 
 # The Mayor Hall and the Laboratory story — plan
@@ -88,8 +88,8 @@ in [[play_feedback_queue]].
    `verify_mayor_hall_teleport.gd`).~~ — done (D300, queue row 9.3); the teleport goes to the old Laboratory entrance until 9.4.
 4. ~~**Laboratory split** — `LabCells`, `LabBoss`, MapData, `Laboratory` corridors re-laid; `verify_map_geometry`.~~ — done (D303, queue row 9.4;
    `verify_lab_rooms.gd` walks every door). The two new rooms have no script yet; the corridors keep the old story until 5–7.
-5. **Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.
-6. **Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].
+5. ~~**Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.~~ — done (D304, queue row 9.5, see *Built — slices 5–6*).
+6. ~~**Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].~~ — done (D305, queue row 9.5).
 7. **Mob corridors** — three fights; `verify_laboratory.gd` rewritten.
 8. ~~**Boss hall** — lock, cloak talk, fight, game over / win line, gates; `verify_lab_boss.gd`.~~ — built on `cloud/lab-9-7`
    (queue row 9.7, D307 below; report `cloud_reports/lab-9-7.md`). `LabBoss.gd` WAIT → TALK → FIGHT → CLOAK | OPEN;
@@ -117,6 +117,42 @@ in [[play_feedback_queue]].
    Mayor outcomes, the cloak game over, save/reload mid-Lab — B53).
 10. **Art and voices** — comfy-sprite (Brass Collector, fire djinn, Малік, prisoner, alchemist), comfy-backdrop (cells,
     boss hall), generated effects (D273 practice), Kokoro lines (D278 hook).
+
+## Built — slices 5–6 (queue row 9.5, D304, D305; agent calls, Sapega to confirm)
+
+`SampleProject/Scripts/Gameplay/Scenes/LabCells.gd` (written from this plan — the WIP in `refs/wip/row9^3` was not in
+the cloud clone). States `CUTSCENE → AWAKE → ACQUAINTANCE → FREE`, the entry state from flags (B53):
+none → CUTSCENE, `lab_cells_cutscene_complete` → AWAKE (hero put in his cell), `lab_acquaintance_complete` → FREE.
+
+- **Cells cutscene (D304)**, one `Cutscene` (D308), started deferred so the Mayor Hall's own `cs.end()` after the
+  teleport runs first: the hero is placed in cell 1 (`Arrival`); `Lab_Cells_Arrival`; camera to the table
+  (`Marks/Look`); Алісия's bars (`Bars/Bars3`) open, she runs to the table (`Marks/Table`), the alchemist walks to
+  `Marks/ScientistTable` and plays `inject`; `Lab_Cells_Injection`; she runs back, bars shut. The prisoner walks in
+  from the east door (`Marks/PrisonerEnter` → `Marks/PrisonerTable`); `Lab_Cells_Prisoner` (the Q64 incantation);
+  `shout` + a small shake, `collapse`; the fire djinn — the real `fire_djinn.tscn` instanced as a puppet
+  (process disabled, only its AnimationPlayer runs) — fades in over him and rises; `Lab_Cells_Djinn`; it flies up
+  through the ceiling (`Marks/DjinnUp`) while four generated explosions (`Scenes/FX/Bosses/explosion.tscn`, the D316
+  `explosion.png`) go off at `Marks/Blast1..4` with shakes, then a 1.6 s earthquake shake; the alchemist runs out east;
+  camera back, `Hurt` pose, `Lab_Cells_Faint` (cloud); black; `lab_cells_cutscene_complete`; the room is laid out
+  awake (all bars hidden, `CellLock` off, alchemist gone, the prisoner lying by the table); light; `Lab_Cells_Awake`
+  (cloud); objective "Step out of the cell".
+- **Acquaintance (D305)**: `StepOutTrigger` (x 300, just outside cell 1) in AWAKE → the hero walks to `Marks/Meet`,
+  camera to `Marks/MeetLook`, `Lab_Acquaintance`; Малік walks from cell 5 to `Marks/MalikMeet`; `Lab_Malik_Quest`;
+  task `malik_escort` taken through `task_service.take()` (no menu — it cannot be refused); the three
+  `lab_companion_0N_complete` flags + `CompanionManager.join_on_unlock()` each (D209/D220) and every
+  `CompanionNPC_*` runs to the hero and vanishes (D230); `lab_acquaintance_complete`; Малік walks east and fades out
+  "in the shadows"; the east portcullis (`ExitDoor`, `gen_gates` ×0.85) rises and its collision goes; objective
+  "Fight through the laboratory".
+- **Room nodes** (placed by hand in `LabCells.tscn`; the builder keeps them): `CellLock` (east wall of cell 1),
+  `StepOutTrigger`, `ExitDoor` (+ `Sprite`), `Marks/*`. The three companions stand in their cells via the builder's
+  `npcs` (Астрит cell 2, Алісия + cat cell 3 by the table, Уризен cell 4); Малік stays in cell 5.
+- **Data**: `quests.json` → `malik_escort` "The Humble Place" (giver `malik`, `needs_flag` `lab_outside_complete`,
+  no reward until Малік's place exists); `story.json` → zone `lab_cells` (scene `LabCells`: "Find out where you are",
+  "Step out of the cell") + zone `laboratory` trimmed to "Fight through the laboratory" / "Leave the laboratory".
+- **Retired**: `Lab_Companion_01..03.dqd`, `Lab_LimitTest.dqd`, `lab_limit_test_complete`, the corridor companion
+  triggers and NPCs; `Laboratory.gd` is EXPLORE → (trigger `StateChangeTrigger_Fight`) BOSS_FIGHT → AFTER_BOSS until
+  row 9.6 rewrites it.
+- Test: `SampleProject/UI/verify_lab_cells.gd`.
 
 ## Out of scope for this pass
 

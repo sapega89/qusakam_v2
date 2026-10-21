@@ -68,17 +68,23 @@
 					]
 				},
 				{
+					"id": "lab_cells", "title": "Laboratory — Cells", "scene": "LabCells", "story_state": "LABORATORY",
+					"objectives": [
+						{"flag": "lab_cells_cutscene_complete", "text": "Find out where you are"},
+						{"flag": "lab_acquaintance_complete", "text": "Step out of the cell"}
+					],
+					"chronicle": [
+						{"flag": "lab_cells_cutscene_complete", "text": "He came to in a laboratory cell and watched a fire djinn tear its way out of a prisoner and burst through the ceiling."},
+						{"flag": "lab_acquaintance_complete", "text": "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."}
+					]
+				},
+				{
 					"id": "laboratory", "title": "Laboratory", "scene": "Laboratory", "story_state": "LABORATORY",
 					"objectives": [
-						{"flag": "lab_companion_01_complete", "text": "Explore the laboratory"},
-						{"flag": "lab_companion_02_complete", "text": "Keep exploring"},
-						{"flag": "lab_companion_03_complete", "text": "Prepare for battle"},
-						{"flag": "lab_limit_test_complete", "text": "Pass the limit test"},
-						{"flag": "lab_boss_fight_complete", "text": "Defeat the laboratory boss"},
+						{"flag": "lab_boss_fight_complete", "text": "Fight through the laboratory"},
 						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory"}
 					],
 					"chronicle": [
-						{"flag": "lab_limit_test_complete", "text": "In the laboratory he learned he could lead no more than three companions at once."},
 						{"flag": "lab_boss_fight_complete", "text": "The master of the laboratory declared it the end of his road."},
 						{"flag": "lab_after_boss_complete", "text": "Kusakam defeated the boss, and the way out lay open."}
 					]

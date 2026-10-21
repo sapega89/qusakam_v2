@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Лабораторія (B53, D174): тригери ведуть розмови компаньйона → тест межі → бій; сейв посеред
-## лабораторії стартує зі стану за прапорцями.
+## Коридори лабораторії (B53, D174, D303): тригер на нижньому поверсі веде в бій; сейв посеред
+## лабораторії стартує зі стану за прапорцями. Компаньйони — у LabCells (D305, verify_lab_cells.gd).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_laboratory.gd
 
 const LAB := "res://SampleProject/Maps/Laboratory.tscn"
@@ -86,29 +86,17 @@ func _initialize() -> void:
 	game.player.global_position = lab.get_node("SavePoint_Entrance").global_position
 	for i in 10: await physics_frame
 
-	print("[2] Each trigger plays one companion talk, then the lab waits")
-	var beats := [["StateChangeTrigger_Companion01", "COMPANION_01", "lab_companion_01_complete"],
-			["StateChangeTrigger_Companion02", "COMPANION_02", "lab_companion_02_complete"],
-			["StateChangeTrigger_Companion03", "COMPANION_03", "lab_companion_03_complete"]]
-	var notice: Control = game.find_child("CompanionJoinedNotification", true, false)
-	for i in beats.size():
-		var b: Array = beats[i]
-		var npc_name: String = "CompanionNPC_%s" % ["alisia", "astrit", "urizen"][i]
-		ck(lab.has_node(npc_name), "%s waits by the trigger (D230)" % npc_name)
-		await _walk_to(game, dm, lab.get_node(b[0]))
-		ck(game.get_quest_flag(b[2]) and lab.get_current_state_name() == b[1],
-				"%s → %s, %s set (%s)" % [b[0], b[1], b[2], lab.get_current_state_name()])
-		ck(notice.visible and notice.get_node("%NameLabel").text.ends_with("joined the party"), "the 'joined the party' notice shows (%s)" % notice.get_node("%NameLabel").text)
-		await create_timer(1.0).timeout
-		ck(not lab.has_node(npc_name), "%s ran to the hero and left after the talk" % npc_name)
-	ck(_alive(lab).is_empty(), "no enemies before the limit test")
+	print("[2] The companions met in the cells (D305): no companion talks or limit test in the corridors")
+	for node_name in ["CompanionNPC_alisia", "CompanionNPC_astrit", "CompanionNPC_urizen", "StateChangeTrigger_Companion01",
+			"StateChangeTrigger_Companion02", "StateChangeTrigger_Companion03", "StateChangeTrigger_LimitTest"]:
+		ck(not lab.has_node(node_name), "no %s" % node_name)
+	ck(_alive(lab).is_empty(), "no enemies before the fight trigger")
 
-	print("[3] Limit test → boss fight → after boss")
-	await _walk_to(game, dm, lab.get_node(^"StateChangeTrigger_LimitTest"))
+	print("[3] Fight trigger → fight → after boss")
+	await _walk_to(game, dm, lab.get_node(^"StateChangeTrigger_Fight"))
 	for i in 30: await physics_frame
 	await _drain(dm)
 	await _until(func(): return _fighting(lab), 8.0)
-	ck(game.get_quest_flag("lab_limit_test_complete"), "lab_limit_test_complete set")
 	ck(lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty(),
 			"BOSS_FIGHT with enemies (%s, %d)" % [lab.get_current_state_name(), _alive(lab).size()])
 	# Хвилі доспавнюються після смертей — добиваємо, доки бій не завершиться.
@@ -122,7 +110,7 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("lab_after_boss_complete") and lab.get_current_state_name() == "AFTER_BOSS",
 			"AFTER_BOSS talk read (%s)" % lab.get_current_state_name())
 
-	print("[4] A save made after the limit test restarts the fight (B53)")
+	print("[4] A save made before the fight: the corridors wait, the trigger restarts the fight (B53)")
 	game.set_quest_flag("lab_boss_fight_complete", false)
 	game.set_quest_flag("lab_after_boss_complete", false)
 	var spawner: Node = lab.get_node("EnemySpawner")
@@ -131,6 +119,8 @@ func _initialize() -> void:
 	for i in 20: await physics_frame
 	await _drain(dm)
 	lab = game.map
+	ck(lab.get_current_state_name() == "EXPLORE", "enters in EXPLORE (%s)" % lab.get_current_state_name())
+	await _walk_to(game, dm, lab.get_node(^"StateChangeTrigger_Fight"))
 	await _until(func(): return _fighting(lab), 8.0)
 	ck(lab.get_current_state_name() == "BOSS_FIGHT" and not _alive(lab).is_empty(),
 			"enters in BOSS_FIGHT with enemies (%s, %d)" % [lab.get_current_state_name(), _alive(lab).size()])

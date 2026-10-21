@@ -94,6 +94,22 @@ the history, this note keeps only what is open.
 - **Severity:** cosmetic
 - **Found:** 2026-10-21, `cloud/settings-cleanup`
 
+### B91 — The hero shows `Idle`, not the raise-the-item pose, while a chest opens
+- **Where:** `SampleProject/Scripts/Gameplay/Chest.gd:17` (`HERO_POSE`), `Player.tscn` (no `Raise` animation).
+- **Expected:** Kusakam raises the found item overhead (BACKLOG 33, art A1 `Sprites/Player/Raise/1–3.png`).
+- **Got:** the held pose is `Idle` (D339). The Raise frames have now landed on `feature/backlog` (`b56cbe6a`) but are not wired.
+- **Fix:** add an animation `Raise` (Raise/1–3) to the player's `AnimatedSprite2D` frames and set `Chest.HERO_POSE := &"Raise"`; `verify_chests` follows the constant.
+- **Severity:** visual
+- **Found:** 2026-10-21, `cloud/chests`
+
+### B92 — A `Cutscene` that never reaches `end()` outlives its game
+- **Where:** `SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd` `_init` (connects `_hold_later` to `DialogueManager.dialogue_started`, hides `Game/UI` + `Game/UICanvas`), `Cutscene.gd:54` `hold()`.
+- **Expected:** quitting to the main menu or loading a save mid-cutscene leaves nothing behind (D308).
+- **Got:** the autoload connection survives; the next game's first dialogue calls `hold()` on the freed hero → **segfault**. A second cutscene in the same game sees the HUD already hidden and never shows it again.
+- **Fix:** the cutscene ends itself on `player.tree_exiting` (disconnect, `Engine.time_scale = 1`, restore the HUD).
+- **Severity:** blocker (crash, edge path)
+- **Found:** 2026-10-21, `cloud/lab-9-5`
+
 ### B83 — One-way bridges in the Laboratory corridors are out of jump reach
 - **Where:** `Maps/Laboratory.tscn` floor-B bridge (row 22, 160 px above the floor), floor-C bridges (row 38, 128 px).
   **The boss hall part is fixed** (`cloud/lab-9-7`, D307: `LabBoss.tscn` dodge bridges row 8 → 9, 96 px, `verify_lab_boss` [9]);
@@ -111,6 +127,8 @@ the history, this note keeps only what is open.
 > **Fixed log (integration-1, 2026-10-21):** **B82** fixed by `cloud/b82-b10` (D320, `verify_save_load_room` [1]/[2]) —
 > row removed. **B85** (tools without the exec bit), **B87** (combat training could kill the bandit) and **B88**
 > (`weapon_prev` had no key) were found and fixed on their branches — see [[cloud_reports/integration-1]].
+>
+> **integration-2, 2026-10-21:** no B-rows fixed; B91 (`cloud/chests`) and B92 (`cloud/lab-9-5`) added — see [[cloud_reports/integration-2]].
 
 
 ## Playtest intake — 2026-09-29 (Sapega)

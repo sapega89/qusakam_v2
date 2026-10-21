@@ -113,8 +113,15 @@ func _in_lab(label: String) -> void:
 	ck(get_first_node_in_group(&"game_over_screen") == null, "%s: no Game Over screen" % label)
 	ck(not game.player.is_dead and game.player.current_health == game.player.Max_Health, "%s: hero on his feet (%d/%d)" % [label, game.player.current_health, game.player.Max_Health])
 	ck(game.player.defeat_handler.is_valid() == false, "%s: defeat handler cleared" % label)
-	await _drain()
-	await create_timer(1.0).timeout
+	# Далі — кат-сцена камер (D304, verify_lab_cells.gd): справжнє утримання Tab пропускає її до пробудження.
+	await _until(func() -> bool: return started.has("Lab_Cells_Arrival"), 6.0)
+	ck(started.has("Lab_Cells_Arrival") and game.map.get_current_state_name() == "CUTSCENE", "%s: the cells cutscene starts (%s)" % [label, started])
+	await _until(func() -> bool: return root.get_node_or_null(^"CutsceneSkipPrompt") != null, 5.0)
+	_tab(true)
+	await create_timer(1.2, true, false, true).timeout
+	_tab(false)
+	await _until(func() -> bool: return game.map.get_current_state_name() == "AWAKE" and not game.player.event, 20.0)
+	await create_timer(0.5).timeout
 	ck(not game.player.event and _hud_visible(), "%s: control and HUD back in the lab" % label)
 	ck(root.get_node_or_null(^"ScreenFade") == null, "%s: the black is lifted" % label)
 
