@@ -62,7 +62,7 @@ func row(recipe_id: String) -> Dictionary:
 		"id": recipe_id,
 		"result_id": result_id,
 		"name": name if made == 1 else "%s ×%d" % [name, made],
-		"detail": "Requires: " + ", ".join(parts),
+		"detail": tr("Requires: %s") % ", ".join(parts),
 		"description": db.get_item_description(result_id),
 		"icon": db.get_item_icon(result_id),
 		"count": _inventory().get_item_count(result_id),

@@ -184,6 +184,7 @@ size_flags_vertical = 4
 theme_type_variation = &"KeyBadge"
 
 [node name="Key" type="Label" parent="Margin/Page/HintBar/KeyBadge"]
+auto_translate_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"KeyBadgeLabel"

@@ -194,7 +194,7 @@ func _on_slot_focused(slot_id: String) -> void:
 	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
 	var item := _equipped(slot_id)
 	if item.is_empty():
-		bar.set_context_hint(InputGlyphs.resolve("%s — empty. Press {ui_accept} to choose an item." % _slot_caption(slot_id)))
+		bar.set_context_hint(InputGlyphs.resolve(tr("%s — empty. Press {ui_accept} to choose an item.") % _slot_caption(slot_id)))
 	else:
 		bar.set_context_hint("%s — %s" % [_slot_caption(slot_id), String(item.get("name", ""))])
 

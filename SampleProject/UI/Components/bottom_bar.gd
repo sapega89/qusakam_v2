@@ -96,6 +96,7 @@ func _make_action(key: String, label_text: String) -> Control:
 
 	var key_label := Label.new()
 	key_label.text = key
+	key_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key_label.theme_type_variation = &"CaptionLabel"
 	key_label.add_theme_color_override("font_color", UITokens.ON_ACCENT)
 	key_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

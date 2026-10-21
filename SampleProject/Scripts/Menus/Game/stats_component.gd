@@ -117,14 +117,14 @@ func _update_header() -> void:
 	var service_locator: Node = ServiceLocatorHelper.get_service_locator()
 	var xp_manager: XPManager = service_locator.get_xp_manager() if service_locator else null
 	if xp_manager:
-		_level_label.text = "Lv.%d" % xp_manager.get_level()
-		_next_level_value.text = "%d EXP" % maxi(0, xp_manager.xp_for_next_level - xp_manager.current_xp)
+		_level_label.text = tr("Lv.%d") % xp_manager.get_level()
+		_next_level_value.text = tr("%d EXP") % maxi(0, xp_manager.xp_for_next_level - xp_manager.current_xp)
 	else:
 		_level_label.text = PLACEHOLDER
 		_next_level_value.text = PLACEHOLDER
 
 	# JP (D149) — той самий формат, що й на вкладці Skills.
-	_jp_value.text = "%d JP" % ServiceLocator.get_skill_manager().get_job_points()
+	_jp_value.text = tr("%d JP") % ServiceLocator.get_skill_manager().get_job_points()
 	_attr_points_value.text = str(ServiceLocator.get_attribute_manager().get_unspent())  # D335: ще не вкладені
 
 
@@ -365,7 +365,7 @@ func _update_companions() -> void:
 		card.set_meta(&"companion_id", id)
 		card.get_node(^"Row/Portrait").texture = load(CompanionManager.PORTRAIT_PATH % id)
 		card.get_node(^"Row/Info/Name").text = cm.NAMES[id]
-		card.get_node(^"Row/Info/Order").text = "IN PARTY · %d" % (slot + 1) if slot >= 0 else "IN CAMP"
+		card.get_node(^"Row/Info/Order").text = tr("IN PARTY · %d") % (slot + 1) if slot >= 0 else tr("IN CAMP")
 		card.modulate.a = 1.0 if slot >= 0 or party.size() < CompanionManager.PARTY_SIZE else UITokens.MENU_INACTIVE_ALPHA
 		var select: Button = card.get_node(^"Select")
 		if not _wired.has(select):

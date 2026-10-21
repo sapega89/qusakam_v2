@@ -12,16 +12,8 @@ signal return_to_menu
 
 func _ready() -> void:
 	"""Ініціалізація екрану завершення"""
-	# Налаштування тексту
-	if title_label:
-		title_label.text = "Дякуємо за гру!"
-
-	if message_label:
-		message_label.text = "Ви завершили демо-версію гри.\n\nСподіваємося, вам сподобалося!"
-
-	# Налаштування кнопки
+	# Тексти — у сцені (англійські ключі, переклад — uk.po, BACKLOG 31)
 	if return_button:
-		return_button.text = "Повернутися до головного меню"
 		return_button.pressed.connect(_on_return_button_pressed)
 
 	# Блокуємо ввід гравця
