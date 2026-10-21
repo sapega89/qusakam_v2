@@ -64,6 +64,13 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B81 — The blacksmith walks around carrying his anvil
+- **Where:** `SampleProject/Scenes/Gameplay/Objects/NPCs/blacksmith.tscn` (anvil prop `blacksmith/anvil.png`, D295) and his arrival walk (`NpcArrival.gd`, D294)
+- **Expected:** the anvil stands at his forge station and stays there; only he walks (Sapega 2026-10-21 «коваль ходить з наковальнею — це не добре»).
+- **Got:** the anvil is a child of the NPC, so it moves with him on the walk-out from the forge.
+- **Severity:** visual
+- **Found:** 2026-10-21, Sapega's review of D295
+
 ### B79 — Level and XP were not saved: every loaded save was level 1 — ✅ fixed 2026-10-21
 - **Where:** `SampleProject/Scripts/Systems/Save/Modules/PlayerDataModule.gd` (save / load), `XPManager.gd`
 - **Expected:** loading a save brings back the hero's level and XP (the oath is level 5, D280; skill points and passives follow the level).

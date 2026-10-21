@@ -213,6 +213,19 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Neutral); an oath ceremony cutscene with a visual change on Kusakam (aura, cloak trim, eye glow); the keepers react
     to each other and to the hero's deeds (dialogue that changes with kills, mercy, quests); a first oath skill granted
     at the ceremony; companions comment on the choice. Not queued — waits for Sapega's ideas.
+28. **The game must teach itself — combat first** (Sapega 2026-10-21 «треба буде робити акцент на битві і тому, щоб було
+    зрозуміло що і як — є на роботі хлопці, які не зрозуміли, як грати в гру, значить вона недостатньо пояснила»).
+    Playtesters did not understand how to play. An onboarding pass: a safe first fight that teaches attack → combo →
+    dodge → block → parry → heavy one at a time (do the move to continue), each with its button for keyboard and pad
+    (D289 windows); clear on-screen goals (where to go next), readable enemy tells (4b), the hotbar/skills explained when
+    they unlock, a Controls page in the menu. Plan first (what a new player sees in the first 10 minutes, step by step);
+    then a playtest checklist for Sapega's coworkers. High priority — right after 4b and 8d.
+29. **Buildings for every trade NPC** (Sapega 2026-10-21, after D292 «будівлі тепер треба і для наших NPC професій»): the
+    oath keepers get theirs in the City — a small sky chapel (priest), a witch's hut with herbs (witch), a dervish tent
+    (dervish) — generated like the shop and the forge (D292); others that work somewhere (the grandfather's house in the
+    Village) too. Each NPC works at/in front of its building (D295).
+30. **Effects polish** (Sapega 2026-10-21 on D273 «вже краще, але є над чим працювати»): a later pass over the generated
+    swing, hit and skill effects — collect Sapega's notes first.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
