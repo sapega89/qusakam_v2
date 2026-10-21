@@ -88,7 +88,27 @@ Seen, not mine (pre-existing, every menu test): `WARNING: This control can't gra
 
 ## Verifies
 
-SUITE_RESULTS
+Run headless with Godot 4.6.2 Linux (`$G`), each under `godot_locked.sh`; RESULT lines:
+
+| Verify | RESULT |
+|---|---|
+| `verify_skill_screen.gd` (new: mouse, keys, InputEventJoypadButton) | ALL PASS |
+| `verify_attributes.gd` (new) | ALL PASS |
+| `verify_skill_trees_ui.gd` (Accept flow) | ALL PASS |
+| `verify_skills_ui.gd` (Accept flow, `???` → names) | ALL PASS |
+| `verify_kusakam_skills.gd` (Enter picks, Accept learns) | ALL PASS |
+| `verify_oath.gd` (respec refunds attributes) | ALL PASS |
+| `verify_status.gd` ([3b] attribute points) | ALL PASS |
+| `verify_skill_trees`, `verify_equipment`, `verify_combat_flow`, `verify_save_load`, `verify_hotbar` | ALL PASS |
+
+**Full suite** (`Scripts/Tools/run_verify.sh`, 71 scripts): **69 PASS, 2 FAIL**:
+- `verify_audio` — 1 FAIL "focusing a button (pad navigation) ticks on SFX": **fails the same on the base
+  `origin/feature/backlog`** in this headless Linux container (not this branch).
+- `verify_souls_combat` — 1 FAIL "the hero moved in at least 10 of 12 seconds of fighting (3 stuck)" in the suite run;
+  **ALL PASS on two re-runs** and on the base: a timing flake under load, not a regression.
+
+(`Scripts/Tools/godot_locked.sh` and `run_verify.sh` are committed without the exec bit; here they were run via
+`bash` / a local `chmod +x`, not committed.)
 
 ## Left
 
