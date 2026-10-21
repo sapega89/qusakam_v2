@@ -53,6 +53,11 @@
 		"babble_gnome": {"bus": "Voice", "files": ["Voice/Babble/gnome_0.wav", "Voice/Babble/gnome_1.wav", "Voice/Babble/gnome_2.wav", "Voice/Babble/gnome_3.wav", "Voice/Babble/gnome_4.wav", "Voice/Babble/gnome_5.wav"], "volume_db": -12.0, "jitter": 0.04},
 		"babble_suan": {"bus": "Voice", "files": ["Voice/Babble/suan_0.wav", "Voice/Babble/suan_1.wav", "Voice/Babble/suan_2.wav", "Voice/Babble/suan_3.wav", "Voice/Babble/suan_4.wav", "Voice/Babble/suan_5.wav"], "volume_db": -12.0, "jitter": 0.04},
 		"babble_dark_priests": {"bus": "Voice", "files": ["Voice/Babble/dark_priests_0.wav", "Voice/Babble/dark_priests_1.wav", "Voice/Babble/dark_priests_2.wav", "Voice/Babble/dark_priests_3.wav", "Voice/Babble/dark_priests_4.wav", "Voice/Babble/dark_priests_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_brass_collector": {"bus": "Voice", "files": ["Voice/Babble/brass_collector_0.wav", "Voice/Babble/brass_collector_1.wav", "Voice/Babble/brass_collector_2.wav", "Voice/Babble/brass_collector_3.wav", "Voice/Babble/brass_collector_4.wav", "Voice/Babble/brass_collector_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_fire_djinn": {"bus": "Voice", "files": ["Voice/Babble/fire_djinn_0.wav", "Voice/Babble/fire_djinn_1.wav", "Voice/Babble/fire_djinn_2.wav", "Voice/Babble/fire_djinn_3.wav", "Voice/Babble/fire_djinn_4.wav", "Voice/Babble/fire_djinn_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_malik": {"bus": "Voice", "files": ["Voice/Babble/malik_0.wav", "Voice/Babble/malik_1.wav", "Voice/Babble/malik_2.wav", "Voice/Babble/malik_3.wav", "Voice/Babble/malik_4.wav", "Voice/Babble/malik_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_prisoner": {"bus": "Voice", "files": ["Voice/Babble/prisoner_0.wav", "Voice/Babble/prisoner_1.wav", "Voice/Babble/prisoner_2.wav", "Voice/Babble/prisoner_3.wav", "Voice/Babble/prisoner_4.wav", "Voice/Babble/prisoner_5.wav"], "volume_db": -12.0, "jitter": 0.04},
+		"babble_scientist": {"bus": "Voice", "files": ["Voice/Babble/scientist_0.wav", "Voice/Babble/scientist_1.wav", "Voice/Babble/scientist_2.wav", "Voice/Babble/scientist_3.wav", "Voice/Babble/scientist_4.wav", "Voice/Babble/scientist_5.wav"], "volume_db": -12.0, "jitter": 0.04},
 		"greet_grandfather": {"bus": "Voice", "files": ["Voice/Greetings/grandfather_0.ogg", "Voice/Greetings/grandfather_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
 		"greet_blacksmith": {"bus": "Voice", "files": ["Voice/Greetings/blacksmith_0.ogg", "Voice/Greetings/blacksmith_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
 		"greet_merchant": {"bus": "Voice", "files": ["Voice/Greetings/merchant_0.ogg", "Voice/Greetings/merchant_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
@@ -90,7 +95,8 @@
 		"Торговец": "merchant", "PRIEST": "priest", "OATH_PRIEST": "oath_priest", "OATH_WITCH": "oath_witch", "OATH_DERVISH": "oath_dervish", "GATE_GUARD": "guard", "VILLAGER_1": "villager",
 		"BANDIT_1": "bandit", "BANDIT_2": "bandit", "BANDIT_LEADER": "bandit_leader", "Враг": "enemy",
 		"Алісия": "alisia", "Астрит": "astrit", "Уризен": "urizen", "Гном механник": "gnome", "Суан": "suan",
-		"Три темніх жреца": "dark_priests"
+		"Три темніх жреца": "dark_priests",
+		"BRASS_COLLECTOR": "brass_collector", "FIRE_DJINN": "fire_djinn", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
 	},
 	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75}
 }

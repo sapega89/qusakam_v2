@@ -9,9 +9,26 @@
 		"PRIEST",
 		"Гном механник",
 		"Суан",
-		"Три темніх жреца"
+		"Три темніх жреца",
+		"BRASS_COLLECTOR",
+		"FIRE_DJINN"
 	],
 	"people": [
+		{
+			"id": "MALIK",
+			"title": "Malik",
+			"text": "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out."
+		},
+		{
+			"id": "PRISONER",
+			"title": "Prisoner",
+			"text": "A nameless prisoner held in the Laboratory."
+		},
+		{
+			"id": "SCIENTIST",
+			"title": "Alchemist",
+			"text": "An alchemist who works in the Laboratory."
+		},
 		{
 			"id": "GRANDFATHER",
 			"title": "Kusakam's grandfather",
