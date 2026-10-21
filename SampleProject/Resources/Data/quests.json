@@ -38,6 +38,19 @@
 			"gives": {"iron_sword": 2},
 			"needs": {"iron_sword+1": 1},
 			"reward": {"coin": 20}
+		},
+		{
+			"id": "malik_escort",
+			"giver": "malik",
+			"title": "The Humble Place",
+			"description": "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow.",
+			"objective": "Lead Malik out of the Laboratory",
+			"give_dialogue": "Lab_Malik_Quest",
+			"done_dialogue": "",
+			"gives": {},
+			"needs": {},
+			"needs_flag": "lab_outside_complete",
+			"reward": {}
 		}
 	]
 }
