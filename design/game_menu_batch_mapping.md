@@ -70,3 +70,22 @@ Behaviour (D288): a click / Enter / pad A on a slot row opens the window with th
 `EquipmentManager.equip_item()`; Unequip empties the slot; Cancel / B / Esc closes without change. Focus returns
 to the slot row. Replaces the old jump to the Inventory tab in "selection mode" (removed from
 `inventory_component.gd`). Verify: `verify_equip_picker.gd`.
+
+## 12 · Every hint is a tutorial window — D289
+
+Figma: `menu-tutorial` 130:1172 (list), `tutorial-content` 135:1260 (window) — already built ([[tutorial_mapping]],
+D126). No frame for "a hint opens the window" or for the setting; both reuse what exists.
+
+| Element | Godot | Action |
+|---|---|---|
+| hint → window | `TutorialHintDisplay.gd` queues the topic, opens `tutorial_menu.tscn` through `ModalLayer.show_custom_modal()` when the game is free (not paused, no modal, no dialogue), pauses the tree while it is open | reuse the D126 window |
+| topic data | `Resources/Data/tutorial.json` — every hint is a topic (`hint_topic: true`); texts carry `{action}` | ADD 10 hint topics (incl. **heavy_attack**, **block**) |
+| button names | new `Scripts/UI/input_glyphs.gd` — names from the InputMap for the last device (keyboard / mouse or pad) | ADD; window and banner re-render when the device changes |
+| Tutorial list | `tutorial_component.gd` — general topics + the hints already seen (`player_state.seen_tutorials`, saved) | rebuilt on every show |
+| setting | Settings → Game → **Tutorial Windows** On / Off (`_add_segment_row`, `SettingsModule.tutorial_windows`) | ADD row |
+| banner | the old bottom plate (`TutorialHintDisplay` panel) | kept for: windows Off, forced repeats, sticky reminders after the window |
+
+Triggers: movement 2 s into the game (the window waits for the intro talk), attack on the first enemy, block and
+parry on the first hit taken (`player_staggered`), first kill (XP and coins — the old xp_bar hint folded in),
+heavy attack on the second kill, level up / Healing Palm, gift, guard, companions as before. Each topic opens a
+window once per game; unused hints (coins, health_low, combo) removed. Verify: `verify_tutorial_hints.gd`.

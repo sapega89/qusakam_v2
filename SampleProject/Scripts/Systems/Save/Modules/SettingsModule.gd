@@ -11,7 +11,8 @@ var default_settings = {
 	"sfx_volume": 0.9,
 	"fullscreen": false,
 	"vsync": true,
-	"language": "uk"
+	"language": "uk",
+	"tutorial_windows": true  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
 }
 
 # Текущие настройки
@@ -33,7 +34,8 @@ func save() -> Dictionary:
 
 ## Загружает настройки игры
 func load_data(data: Dictionary) -> void:
-	settings = data.duplicate()
+	# Новий ключ налаштувань, якого ще немає у файлі, бере значення за замовчуванням.
+	settings = default_settings.merged(data, true)
 	apply_settings()
 
 	log_info("Settings loaded: master=%.1f, music=%.1f, fullscreen=%s" % [

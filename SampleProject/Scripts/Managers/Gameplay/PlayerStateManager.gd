@@ -16,6 +16,7 @@ var player_state = {
 	"current_scene": "VillageScene",
 	"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
 	"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
+	"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial)
 	"job_points": 0,
 	"equipped_skills": ["", "", "", ""],
 	"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
@@ -107,6 +108,7 @@ func reset_player_state():
 		"current_scene": "VillageScene",
 		"unlocked_skills": [],  # D148
 		"companion_party": [],  # D220
+		"seen_tutorials": [],  # D289
 		"job_points": 0,
 		"equipped_skills": ["", "", "", ""],
 		"skill_ranks": {},  # D150

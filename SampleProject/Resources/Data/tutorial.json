@@ -3,15 +3,15 @@
 		{
 			"id": "basic_controls",
 			"title": "Basic Controls",
-			"text": "Move with A and D or the arrow keys, and jump with Space or W. Click the left mouse button to attack. When a prompt appears over a person or an object, press E to talk, open or pick it up.",
-			"key": "Esc",
+			"text": "Move with {move} and jump with {jump}. Press {attack} to attack. When a prompt appears over a person or an object, press {interact} to talk, open or pick it up.",
+			"key": "{game_menu}",
 			"hint": "Button to open the game menu.",
 			"image": "res://SampleProject/Assets/UI/Tutorial/basic_controls.png"
 		},
 		{
 			"id": "the_map",
 			"title": "The Map",
-			"text": "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, the arrow keys move the view and you stand still.",
+			"text": "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, {move} moves the view and you stand still.",
 			"key": "M",
 			"hint": "Button to open or close the full map.",
 			"image": "res://SampleProject/Assets/UI/Tutorial/the_map.png"
@@ -20,17 +20,97 @@
 			"id": "saving",
 			"title": "Saving Your Progress",
 			"text": "Look for save points along the way. Step up to one and choose a save slot — there are four. To pick up where you left off, choose Continue on the title screen.",
-			"key": "E",
+			"key": "{interact}",
 			"hint": "Button at a save point to save your game.",
 			"image": "res://SampleProject/Assets/UI/Tutorial/saving.png"
 		},
 		{
 			"id": "journal",
 			"title": "The Journal",
-			"text": "The Journal in the game menu follows the story. Each part of the Prologue lists its objectives as you reach them, and opening a part tells what has happened there so far.",
-			"key": "Esc",
+			"text": "The Journal in the game menu follows the story. Quests lists each part of the Prologue with its objectives; Characters keeps the people you have met; the Bestiary records the enemies you have met and killed.",
+			"key": "{game_menu}",
 			"hint": "Button to open the game menu, then choose Journal.",
 			"image": "res://SampleProject/Assets/UI/Tutorial/journal.png"
+		},
+		{
+			"id": "movement",
+			"hint_topic": true,
+			"title": "Moving and Jumping",
+			"text": "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air.",
+			"key": "{jump}",
+			"hint": "Button to jump."
+		},
+		{
+			"id": "attack",
+			"hint_topic": true,
+			"title": "Attacking",
+			"text": "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers.",
+			"key": "{attack}",
+			"hint": "Button for a light attack."
+		},
+		{
+			"id": "heavy_attack",
+			"hint_topic": true,
+			"title": "Heavy Attack",
+			"text": "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment.",
+			"key": "{heavy_attack}",
+			"hint": "Button for a heavy attack."
+		},
+		{
+			"id": "block",
+			"hint_topic": true,
+			"title": "Block and Parry",
+			"text": "Hold {block} to block: blocked hits do far less damage. Press it just as a blow lands to parry — the attacker is staggered and open to a counter.",
+			"key": "{block}",
+			"hint": "Button to block; tap it as a hit lands to parry."
+		},
+		{
+			"id": "first_kill",
+			"hint_topic": true,
+			"title": "Experience and Coins",
+			"text": "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point.",
+			"key": "",
+			"hint": ""
+		},
+		{
+			"id": "level_up",
+			"hint_topic": true,
+			"title": "Levelling Up",
+			"text": "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills.",
+			"key": "{game_menu}",
+			"hint": "Button to open the game menu, then choose Skills."
+		},
+		{
+			"id": "healing_palm",
+			"hint_topic": true,
+			"title": "Healing Palm",
+			"text": "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal.",
+			"key": "{skill_slot_1}",
+			"hint": "Button for the first skill slot."
+		},
+		{
+			"id": "oldman_gift",
+			"hint_topic": true,
+			"title": "Equipping Gear",
+			"text": "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons.",
+			"key": "{weapon_next}",
+			"hint": "Button to switch weapons."
+		},
+		{
+			"id": "call_guard",
+			"hint_topic": true,
+			"title": "Calling an Ally",
+			"text": "Companions fight at your side — press {assist} to call one. Call the guard now!",
+			"key": "{assist}",
+			"hint": "Button to call the next ready companion."
+		},
+		{
+			"id": "companions",
+			"hint_topic": true,
+			"title": "Companions",
+			"text": "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status.",
+			"key": "{assist}",
+			"hint": "Button to call the next ready companion."
 		}
 	]
 }

@@ -29,7 +29,7 @@ const TABS := [
 const TAB_HINTS := {
 	"display": "Set the display mode.",
 	"audio": "Adjust volume levels.",
-	"game": "Choose the interface language.",
+	"game": "Choose the interface language and whether hints open tutorial windows.",
 	"controls": "Select an action to rebind it.",
 }
 
@@ -164,6 +164,10 @@ func _rebuild_list() -> void:
 			_add_slider_row("Sound Effects", "sfx_volume")
 		"game":
 			_add_language_row()
+			_add_separator()
+			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
+			_add_segment_row("Tutorial Windows", ["On", "Off"],
+					0 if _cfg_get("tutorial_windows") else 1, _on_tutorial_windows_changed)
 
 
 func _add_separator() -> void:
@@ -290,6 +294,12 @@ func _language_name(code: String) -> String:
 
 func _on_display_mode_changed(index: int) -> void:
 	_cfg_set("fullscreen", index == 1)
+	_apply_and_save()
+	_rebuild_list()
+
+
+func _on_tutorial_windows_changed(index: int) -> void:
+	_cfg_set("tutorial_windows", index == 0)
 	_apply_and_save()
 	_rebuild_list()
 

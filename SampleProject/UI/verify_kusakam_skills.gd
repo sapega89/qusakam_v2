@@ -32,6 +32,7 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var sl: Node = root.get_node("ServiceLocator")
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
@@ -67,7 +68,7 @@ func _initialize() -> void:
 	xp.add_xp(100)
 	ck(xp.get_level() == 2 and sm.can_unlock("healing_palm") == R.OK, "level 2: Healing Palm can be learned (level %d)" % xp.get_level())
 	await create_timer(4.0).timeout
-	var hint: TutorialHintDisplay = get_first_node_in_group(&"tutorial_hint_display")
+	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
 	ck(hint.is_showing and hint.current_hint == "healing_palm" and hint.hint_label.text.contains("Healing Palm"),
 			"the level-up hint asks to learn Healing Palm (%s)" % hint.current_hint)
 	await create_timer(5.0).timeout

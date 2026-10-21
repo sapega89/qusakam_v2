@@ -5,10 +5,14 @@ extends Control
 ## вивантажується (B2). Теми — Resources/Data/tutorial.json, тільки про те, що є в грі.
 ## ↑/↓ (←/→, LB/RB) — сусідня тема; B / Esc — закрити.
 
+## Ті самі теми, що й у списку (загальні + побачені підказки, D289); підказка в грі відкриває вікно на своїй темі.
+## Назви кнопок — за пристроєм (клавіатура / геймпад), міняються, щойно гравець змінив пристрій.
+
 ## ModalLayer закриває вікно за цим сигналом (як Misc).
 signal cancelled
 
-const DATA_FILE := "res://SampleProject/Resources/Data/tutorial.json"
+const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 @onready var _title: Label = %Title
 @onready var _body: Label = %Body
@@ -24,8 +28,7 @@ var index := 0
 
 
 func _ready() -> void:
-	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(DATA_FILE))
-	topics = data.get("topics", []) if data is Dictionary else []
+	topics = TutorialTopics.available()
 	_bottom_bar.set_default_hint("Use the arrow keys or the left stick to choose a topic.")
 	_bottom_bar.set_actions([{"key": "LS", "label": "Select"}, {"key": "B", "label": "Close"}])
 	show_topic(0)
@@ -36,7 +39,7 @@ func show_topic(i: int) -> void:
 	if topics.is_empty():
 		return
 	index = clampi(i, 0, topics.size() - 1)
-	var topic: Dictionary = topics[index]
+	var topic: Dictionary = TutorialTopics.resolved(topics[index])
 	_title.text = topic.get("title", "")
 	_body.text = topic.get("text", "")
 	var image: String = topic.get("image", "")
@@ -45,6 +48,17 @@ func show_topic(i: int) -> void:
 	_key.text = topic.get("key", "")
 	_hint_text.text = topic.get("hint", "")
 	_hint_bar.visible = not _key.text.is_empty()
+
+
+## Підказка в грі (D289): вікно на темі [param id]; нижня панель нагадує, де вимкнути такі вікна.
+func open_id(id: String) -> void:
+	show_topic(topics.find(TutorialTopics.by_id(id)))
+	_bottom_bar.set_default_hint("Tutorial windows can be turned off in Settings → Game.")
+
+
+func _input(event: InputEvent) -> void:
+	if InputGlyphs.note_event(event):
+		show_topic(index)
 
 
 func _gui_input(event: InputEvent) -> void:

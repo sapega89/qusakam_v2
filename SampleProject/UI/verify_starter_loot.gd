@@ -26,6 +26,7 @@ func _initialize() -> void:
 	var sl: Node = root.get_node("ServiceLocator")
 	# Як кнопка New Game: без цього Game.tscn вантажить справжній сейв гравця.
 	set_meta("start_new_game", true)
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
@@ -62,7 +63,7 @@ func _initialize() -> void:
 	village._give_oldman_gift()
 	ck(inv.get_item_count("copper_sword") == 1, "one Copper Sword (%d)" % inv.get_item_count("copper_sword"))
 	ck(inv.get_item_count("leather_armor") == 1, "one Leather Armor (%d)" % inv.get_item_count("leather_armor"))
-	var hint: TutorialHintDisplay = root.get_tree().get_first_node_in_group(&"tutorial_hint_display")
+	var hint: Node = root.get_tree().get_first_node_in_group(&"tutorial_hint_display")
 	ck(hint.current_hint == "oldman_gift", "the gift hint tells how to equip it (%s)" % hint.current_hint)
 
 	spawner.free()

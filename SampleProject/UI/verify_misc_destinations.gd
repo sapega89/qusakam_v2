@@ -220,8 +220,9 @@ func _initialize() -> void:
 	ck(topics_panel != null and topics_panel.is_visible_in_tree(), "topic list shown in the centre of the Game Menu")
 	ck(menu != null and menu.current_tab_name == "Misc", "Misc stays the selected tab")
 	var rows: Array = topics_panel.get_node("%TopicList").get_children().filter(func(r): return r.visible) if topics_panel else []
-	ck(rows.map(func(r): return r.text) == ["Basic Controls", "The Map", "Saving Your Progress", "The Journal"],
-			"only topics about real systems (%s)" % str(rows.map(func(r): return r.text)))
+	# Перші чотири — загальні теми; далі — підказки, які гравець уже бачив (D289).
+	ck(rows.map(func(r): return r.text).slice(0, 4) == ["Basic Controls", "The Map", "Saving Your Progress", "The Journal"],
+			"general topics first (%s)" % str(rows.map(func(r): return r.text)))
 	if rows.size() > 1:
 		rows[1].pressed.emit()
 		for i in 8: await process_frame

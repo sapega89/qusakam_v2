@@ -106,7 +106,10 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    modal "this item cannot be used"; using a potion heals the hero right away.
 10. ~~**Party shows only who is in it**~~ — **done 2026-10-21 (D287):** the party column is Kusakam + the companions in the party (D220), one card at the start. Was: with one character the Game Menu shows only Kusakam until the party grows.
 11. ~~**Equipment slot picker**~~ — **done 2026-10-21 (D288):** a slot opens a window with the bag items that fit it (worn one marked), pick equips, Unequip, B cancels. Was: clicking an equipment slot opens a window with the inventory items that fit that slot.
-12. **Every hint is a tutorial window**: each hint opens the tutorial window (nothing is missed), and the topic lands in
+12. ~~**Every hint is a tutorial window**~~ — **done 2026-10-21 (D289):** a hint's first appearance opens the tutorial
+    window (game paused, queued past dialogue / menus), the topic joins the Tutorial list, Settings → Game → Tutorial
+    Windows turns them into banners; heavy attack and block/parry topics added; button names follow the device.
+    Was: each hint opens the tutorial window (nothing is missed), and the topic lands in
     the Tutorial list; a Settings option turns these windows off.
 13. **Journal sections**: choose between Quests and Characters (people we have met); plus a Bestiary.
 14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
