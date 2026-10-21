@@ -119,6 +119,20 @@ WALK = [
 ]
 
 SAME = ", everything else exactly the same"
+# BACKLOG 42 (арт A3): меч героя — той самий у кожному кадрі; ON: — кадр художника, до якого модель лише додає меч
+SWORD = "a short straight steel sword with a simple steel cross-guard and a brown grip"
+# у клітинці 96x96 модель збільшувала героя на ~30 % (заповнювала порожнє місце) — розмір словами, як у кошеняти
+SWORD_SIZE = (
+    "He stays exactly as small as in the picture, not enlarged: his feet on the same spot near the bottom, the top of "
+    "his head just below the middle of the picture, a large empty magenta space above him"
+)
+SWORD_COLOURS = ", his armour the same light steel grey and his cape the same dark red as in the picture, not darker"
+SWORD_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
+    "the picture, only now holding "
+    + SWORD
+    + " in his near hand, the blade pointing %s"
+)
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
     "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
@@ -883,6 +897,119 @@ CHARACTERS = {
             )
         ],
     ),
+    # Герой з одноручним мечем у кадрі (BACKLOG 42, арт A3): клітинка 96x96 (меч виходить за 64x64), піксель — блок
+    # 12, щоб картинка лишилась ~1,3 Мп; кадр художника 64x64 стоїть у ній з (16, 32), ступні на рядку 88 (= 56).
+    # Бойові пози — з першого кадру (той самий меч), біг і стрибок — ON: з кадрів художника (модель лише додає меч).
+    "hero_weapon_sword": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/sword",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
+        + SWORD
+        + ", exactly as small as in the picture, the top of his head below the middle of the picture",
+        base=KEEP.format(
+            who="the same small lizard knight with the steel armour, dark red cape and tail",
+            pose="in the same side view facing right, the same size: standing in a combat stance with his feet apart "
+            "and knees slightly bent, holding "
+            + SWORD
+            + " in his near hand at waist height, the blade pointing "
+            "forward and up at an angle in front of him, his other fist raised near his chest, the cape hanging "
+            "behind him. " + SWORD_SIZE,
+        ),
+        rows=[
+            ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
+            (
+                "Run",
+                # кадри 1–2 модель темнила (броня й плащ майже чорні) — кольори названо; кадр 2 темний і після трьох спроб — без нього
+                [
+                    SWORD_ON % ("Run/%d" % n, "forward and up")
+                    + (SWORD_COLOURS if n == 1 else "")
+                    for n in (1, 3, 4, 5, 6, 7, 8)
+                ],
+            ),
+            (
+                "Air",
+                [
+                    SWORD_ON % ("Jump/2", "forward and up"),
+                    SWORD_ON % ("Jump/3", "forward and up"),
+                    SWORD_ON % ("Fall/2", "forward and up"),
+                ],
+            ),
+            (
+                "Attack1",
+                [
+                    "in the same side view facing right: winding up a downward slash, the sword raised high above and "
+                    "behind his head in his near hand, the blade pointing back, leaning back slightly, knees bent, the "
+                    "cape hanging behind him, no motion lines or sparkles",
+                    "in the same side view facing right: slashing down, his sword arm swung forward at shoulder height, "
+                    "the sword held straight out in front of him pointing forward, stepping forward on his front leg, "
+                    "the cape flying behind him",
+                    "in the same side view facing right: the end of a downward slash, leaning forward on his bent front "
+                    "leg, the sword swung down low in front of him, the blade pointing down and forward, its tip just "
+                    "above the ground, the cape flying behind him",
+                ],
+            ),
+            (
+                "Attack2",
+                [
+                    "in the same side view facing right: winding up a rising slash, crouched on bent knees, the sword "
+                    "drawn back low behind his hip, the blade pointing back and down, the cape hanging behind him",
+                    "in the same side view facing right: a rising slash, stepping forward, the sword swung forward and "
+                    "up at chest height, the blade pointing forward and up, the cape flying behind him",
+                    "in the same side view facing right: the end of a rising slash, standing tall, his sword arm "
+                    "stretched high above his head, the blade pointing straight up, the cape flying behind him",
+                ],
+            ),
+            (
+                "Attack3",
+                [
+                    "in the same side view facing right: winding up a big finishing slash, his body twisted back, the "
+                    "sword drawn far back behind his head, the blade pointing back horizontally behind him, his weight "
+                    "on the back leg, the cape hanging behind him",
+                    "in the same side view facing right: a wide horizontal slash, lunging deep on his bent front leg, "
+                    "the back leg straight, his sword arm fully extended straight forward at shoulder height, the blade "
+                    "pointing straight ahead, the cape flying behind him",
+                    "in the same side view facing right: the follow-through of a big slash, crouched low and leaning "
+                    "forward, the sword swept down in front of him, the blade pointing down near his front foot, the "
+                    "cape flying up behind him",
+                ],
+            ),
+            (
+                "Heavy",
+                [
+                    "in the same side view facing right: winding up a heavy overhead blow, both hands gripping the "
+                    "sword hilt raised high above his head, the blade pointing back behind him, leaning back, knees "
+                    "bent, the cape hanging behind him",
+                    "in the same side view facing right: swinging a heavy blow down, both hands gripping the sword hilt "
+                    "in front of his face, the blade pointing forward and up, stepping forward, the cape flying behind "
+                    "him",
+                    "in the same side view facing right: finishing a heavy downward blow, crouched low and leaning far "
+                    "forward, both hands gripping the sword hilt low in front of him, the blade pointing down, its tip "
+                    "on the ground in front of his feet, the cape flying up behind him",
+                ],
+            ),
+            (
+                "Block",
+                [
+                    "in the same side view facing right: guarding, crouched and braced on bent knees, the sword held "
+                    "upright in front of his face, the blade pointing straight up, his other hand pressed against the "
+                    "flat of the blade, the cape hanging behind him",
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    "in the same side view facing right: recoiling from a hard hit to the chest, his body bent "
+                    "backwards, head thrown back, eyes squeezed shut, his sword arm flung back behind him still holding "
+                    "the sword, staggering back on one foot",
+                ],
+            ),
+        ],
+    ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
     "brass_collector": dict(
@@ -1352,6 +1479,9 @@ if __name__ == "__main__":
     only = sys.argv[2:]
     seed = char["seed"]
     cell = char.get("cell", (CELL, CELL))
+    UP = char.get(
+        "up", UP
+    )  # менший блок для більшої клітинки: картинка моделі лишається ~1 Мп (меч, 96x96)
     ref = enlarge(char["ref"], cell)
     # base=None — перший кадр сам кадр художника (новий кадр героя, D239), інакше модель робить його з референсу
     base = (
@@ -1362,6 +1492,7 @@ if __name__ == "__main__":
     base_ref = base.copy()
     base_ref[..., 3] = 255
     frames = {}
+    floors = {}  # ON: — ступні на рядку кадру-джерела (біг художника підскакує на 1–2 px)
     for anim, poses in char["rows"]:
         for i, pose in enumerate(poses):
             text = KEEP.format(who=char["who"], pose=pose) if pose else None
@@ -1376,6 +1507,15 @@ if __name__ == "__main__":
                     text = KEEP.format(who=char["who"], pose=rest)
                     if not only or anim in only or cached(src_ref, text, seed):
                         frames[(anim, i)] = edit(src_ref, text, seed)
+            elif pose.startswith("ON:"):
+                # ON:<png>:<поза> — з кадру-файлу (кадр художника): модель лише додає зброю, рух лишається його
+                _, path, rest = pose.split(":", 2)
+                src_ref = enlarge(path, cell)
+                text = KEEP.format(who=char["who"], pose=rest)
+                src_op = from_file(path)[1]
+                floors[(anim, i)] = cell[1] - len(src_op) + feet_row(src_op)
+                if not only or anim in only or cached(src_ref, text, seed):
+                    frames[(anim, i)] = edit(src_ref, text, seed)
             elif pose.split(":")[0] in SPECIAL:
                 frames[(anim, i)] = (
                     pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
@@ -1448,7 +1588,7 @@ if __name__ == "__main__":
             ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
-            shift = floor - feet_row(op)
+            shift = floors.get((anim, i), floor) - feet_row(op)
             frame = np.roll(frame, shift, axis=0)
             if shift > 0:
                 frame[:shift] = 0
