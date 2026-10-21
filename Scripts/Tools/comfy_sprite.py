@@ -1079,13 +1079,8 @@ CHARACTERS = {
                 [
                     "in the same side view facing right: crouched low on bent knees, the dagger held low beside his "
                     "knee in his near hand, the short blade pointing forward and up, the cape hanging behind him",
-                    "in the same side view facing right: an upward stab, rising from a crouch, his dagger arm thrust "
-                    "forward and up at shoulder height, the short blade pointing forward and up, the cape flying "
-                    "behind him"
-                    + DAGGER_SHORT,
-                    "FROM:Attack2:1:the end of the upward stab, standing taller, his dagger arm stretched further up "
-                    "and forward above his head, the blade pointing up and forward, the cape flying behind him"
-                    + DAGGER_KEEP,
+                    # Attack2/2-3 пропущено (арт-директор, D-батч dagger): за три спроби кожного (FROM:Attack2:0 — кинджал
+                    # над головою прямим і зворотним хватом) модель малювала меч ~20 px з широкою гардою
                 ],
             ),
             (
@@ -1098,8 +1093,9 @@ CHARACTERS = {
                     "in the same side view facing right: a deep lunging stab, lunging far on his bent front leg, the "
                     "back leg straight, his dagger arm fully extended straight forward at chest height, the short blade "
                     "pointing straight ahead, the cape flying behind him",
-                    "FROM:Attack3:1:recovering from the lunge, crouched lower and leaning forward, his dagger arm "
-                    "lowered to knee height in front of him, the blade pointing forward and down, the cape flying "
+                    "FROM:Attack3:1:recovering after the lunge, knees bent, the same short dagger pulled back close "
+                    "in front of his hip, the short blade pointing forward and a little down, its tip at the height of "
+                    "his knees, far above his feet, the blade the same length as in the picture, the cape flying "
                     "behind him"
                     + DAGGER_KEEP,
                 ],
@@ -1715,6 +1711,17 @@ if __name__ == "__main__":
                 char.get("palette") != "hero"
             ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
+            else:  # лише поодинокі пікселі (жодного з 8 сусідів) — сміття ключування (арт-директор, Hurt кинджала)
+                p = np.pad(op, 1)
+                op = op & (
+                    sum(
+                        p[1 + dy : 1 + dy + op.shape[0], 1 + dx : 1 + dx + op.shape[1]].astype(int)
+                        for dy in (-1, 0, 1)
+                        for dx in (-1, 0, 1)
+                        if dy or dx
+                    )
+                    > 0
+                )
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floors.get((anim, i), floor) - feet_row(op)
             frame = np.roll(frame, shift, axis=0)

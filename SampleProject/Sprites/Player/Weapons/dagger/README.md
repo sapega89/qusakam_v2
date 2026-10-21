@@ -21,10 +21,16 @@ Not wired into `Player.tscn` yet.
 | `Run/1–7` | 7 | the artist's run (no `Run/2`, as for the sword); feet follow his bounce (rows 88–90, same as the sword) |
 | `Air/1–3` | 3 | jump rise, apex, fall (from `Jump/2`, `Jump/3`, `Fall/2`) |
 | `Attack1/1–3` | 3 | dagger drawn back at the hip, quick straight stab, pull back |
-| `Attack2/1–3` | 3 | crouch, upward stab, dagger raised high |
-| `Attack3/1–3` | 3 | coiled, deep lunging stab, low recovery (finisher) |
+| `Attack2/1` | 1 | crouch (the upward stab and the raised dagger are missing, see below) |
+| `Attack3/1–3` | 3 | coiled, deep lunging stab, recovery with the dagger at the hip (finisher) |
 | `Block/1` | 1 | dagger crosswise before the face |
 | `Hurt/1` | 1 | recoil, head thrown back |
 
 **Missing: `Heavy`.** Three attempts (from the first frame, from `Attack1/1`, from `Attack2/3`) all drew a second
 dagger or a sword-length blade.
+
+**Missing: `Attack2/2–3`.** The art director rejected them (the dagger grew into a ~20 px sword with a wide guard,
+the head tipped snout-up). Three more attempts each from `Attack2/1` (straight grip above the head, reverse grip,
+fist in front of the face) drew the same sword, so the frames were removed rather than kept off-style.
+
+Isolated single pixels (no 8-neighbour, keying dirt) are dropped from every frame by the tool (`Hurt/1` had four).
