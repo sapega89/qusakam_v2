@@ -33,6 +33,7 @@ func _initialize() -> void:
 	var tokens = load("res://SampleProject/UI/Tokens/UITokens.gd")
 
 	print("[1] gameplay scene + combat HUD")
+	set_meta("start_new_game", true)  # нова гра, а не slot_01 з user://
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
 	current_scene = game

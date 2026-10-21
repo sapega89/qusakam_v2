@@ -31,6 +31,8 @@ func _initialize() -> void:
 	var tokens = load("res://SampleProject/UI/Tokens/UITokens.gd")
 
 	print("[1] game scene boots with the HUD attached")
+	# Нова гра, а не slot_01 з user:// — інакше герой локального сейву (пасивки, щит) ріже шкоду й SP.
+	set_meta("start_new_game", true)
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)
 	# Player._initialize_health_bar() рекурсивно відкладає себе без current_scene.
