@@ -1,0 +1,69 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Chest.gd" id="1_chest"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
+[ext_resource type="Texture2D" uid="uid://doyoia3pavman" path="res://SampleProject/Assets/Props/Chest/Closed/1.png" id="3_closed"]
+[ext_resource type="Texture2D" uid="uid://uu72wwbi11ym" path="res://SampleProject/Assets/Props/Chest/Opening/1.png" id="4_opening1"]
+[ext_resource type="Texture2D" uid="uid://cxfpo6cwlwg2h" path="res://SampleProject/Assets/Props/Chest/Opening/2.png" id="5_opening2"]
+[ext_resource type="Texture2D" uid="uid://bwvr5bk8sujyk" path="res://SampleProject/Assets/Props/Chest/Opening/3.png" id="6_opening3"]
+[ext_resource type="Texture2D" uid="uid://djmm170vnam1s" path="res://SampleProject/Assets/Props/Chest/Open/1.png" id="7_open"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_chest"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_closed")
+}],
+"loop": false,
+"name": &"closed",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_opening1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_opening2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_opening3")
+}],
+"loop": false,
+"name": &"opening",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_open")
+}],
+"loop": false,
+"name": &"open",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chest"]
+size = Vector2(96, 64)
+
+[node name="Chest" type="Area2D"]
+script = ExtResource("1_chest")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -36)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_chest")
+animation = &"closed"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
+shape = SubResource("RectangleShape2D_chest")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("2_interactable")
+action_text = "Open"
+
+[node name="Found" type="Sprite2D" parent="."]
+top_level = true
+z_index = 20
+texture_filter = 1
+position = Vector2(0, -72)
