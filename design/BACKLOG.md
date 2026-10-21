@@ -272,6 +272,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     the weapon drawn in the frame, smoother and prettier than now (more in-betweens). Decide with the plan whether the
     weapon stays a separate sprite on top (cheaper, swaps per item) or is baked per type (prettier). Plan first:
     `design/hero_weapon_animation_plan.md`; big — slice per weapon type.
+43. **The Skills screen must be reworked — it is inconvenient** (Sapega 2026-10-21 «меню вивчення скілів треба
+    перероблювати, воно не зручне»). Today (D283): two columns (trunk + oath tree under three tabs), rows learned by double
+    click / Enter / pad A, the right column scrolls, locked rows show a lock even when learnable. Candidate direction until
+    Sapega says what bothers him: a real tree view (tiers by level, lines between skills), clear states (learned / can learn
+    now / locked with the reason and level), a detail panel with cost, SP, cooldown and what it does, a visible Learn button
+    (mouse) plus the pad button, assign-to-hotbar from the same screen. Check Figma first (skills frame 58:453); if the
+    redesign departs from Figma it is Sapega's call. Collect his notes, then plan.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
