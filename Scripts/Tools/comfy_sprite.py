@@ -812,6 +812,187 @@ CHARACTERS = {
         "magenta background.",
         rows=[("Meditate", [None, "BOB:40"])],
     ),
+    # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
+    # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
+    "brass_collector": dict(
+        out="SampleProject/Assets/Characters/Bosses/brass_collector/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(96, 112),
+        seed=31,
+        colors=16,
+        who="the same huge brass and sandstone golem with the glowing amber eye slits, the long heavy brass arms and "
+        "the barred iron cage on its back",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a huge hulking golem built of riveted brass plates and cracked sandstone blocks, much taller than the "
+        "reference character and filling the whole height of the picture, broad shoulders, long heavy arms with big brass "
+        "fists hanging to its knees, a small head with two glowing amber eye slits, a barred iron cage strapped to its back. "
+        "Strict side view: its head and body in profile facing right, standing idle. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:62"]),
+            (
+                "walk",
+                [
+                    "stomping heavily to the right in the same side view facing right, its left leg stepping forward and "
+                    "its right leg back, the long arms swinging",
+                    "stomping heavily to the right in the same side view facing right, both legs together under its body",
+                    "stomping heavily to the right in the same side view facing right, its right leg stepping forward and "
+                    "its left leg back, the long arms swinging",
+                    "stomping heavily to the right in the same side view facing right, both legs together under its body",
+                ],
+            ),
+            (
+                "attack",
+                [
+                    "in the same side view facing right: winding up, its right brass fist raised high behind its shoulder, "
+                    "leaning back",
+                    "in the same side view facing right: its huge right arm swung forward and down, the brass fist thrust "
+                    "out in front of its chest; no motion trail, no swoosh line",
+                    "in the same side view facing right: follow-through, its brass fist low in front of it near the ground, "
+                    "leaning forward",
+                    "in the same side view facing right: straightening up again, the fist coming back to its side",
+                ],
+            ),
+            (
+                "charge",
+                [
+                    "in the same side view facing right: lowering its head and shoulders, leaning far forward, ready to "
+                    "charge, the arms pulled back",
+                    "in the same side view facing right: charging forward at full speed, leaning forward shoulder first, "
+                    "one leg stretched far behind",
+                ],
+            ),
+            (
+                "slam",
+                [
+                    "in the same side view facing right: both huge brass fists raised high above its head, about to "
+                    "smash the ground, both feet planted, nothing else on the ground",
+                    "in the same side view facing right: crouching low, both brass fists smashed down onto the ground in "
+                    "front of it",
+                ],
+            ),
+            (
+                "death",
+                [
+                    "in the same side view facing right: staggering backwards, bright cracks across its brass chest",
+                    "in the same side view facing right: fallen to its knees, its arms hanging limp, the eye slits dim",
+                    "lying on its back on the ground, broken, the iron cage crushed beside it, the eye slits dark",
+                ],
+            ),
+        ],
+    ),
+    "fire_djinn": dict(
+        out="SampleProject/Assets/Characters/Bosses/fire_djinn/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(96, 112),
+        seed=33,
+        colors=16,
+        who="the same fire djinn with red-orange skin, burning flame hair rising like horns, glowing yellow eyes, golden "
+        "arm bands and the swirling smoke-and-flame tail instead of legs",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a fearsome fire djinn, a tall muscular spirit with red-orange skin, burning flame hair rising like two "
+        "horns, glowing yellow eyes, golden bands on his wrists and upper arms, a bare chest, his body tapering below the "
+        "waist into a long tail of dark smoke and flame instead of legs that trails straight down to the bottom edge, "
+        "floating; he is big and fills the whole height of the picture from the top edge to the bottom edge. Strict side view: his head and body in profile facing right, his eye on the right side of his face, "
+        "arms crossed. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:50"]),
+            (
+                "attack",
+                [
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: drawing his right clawed hand back behind his shoulder, fingers "
+                    "spread like claws",
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: slashing forward with his right claws in a wide swipe",
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: slashing forward with his left claws, leaning into the blow",
+                ],
+            ),
+            (
+                "cast",
+                [
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: both hands raised above his head, a ball of fire glowing between "
+                    "his palms",
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: both palms thrust forward in front of his chest, his hands "
+                    "blazing with fire",
+                ],
+            ),
+            ("fly", ["he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: flying upward, both arms raised above his head, the flame tail "
+                     "streaming straight down below him"]),
+            (
+                "death",
+                [
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: recoiling, clutching his chest, his flames dim and flickering",
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: his body crumbling into glowing embers and grey smoke, fading",
+                ],
+            ),
+        ],
+    ),
+    "malik": dict(
+        out="SampleProject/Assets/Characters/NPCs/malik/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=35,
+        colors=16,
+        who="the same portly desert merchant in the torn purple silk robe with gold embroidery, the small white turban, "
+        "the trimmed black beard, the gold rings and the iron shackle on his wrist",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a portly middle-aged desert merchant, a tall adult man filling the whole height of the picture, a stained "
+        "and torn deep purple silk robe with gold embroidery, a small white turban, a neatly trimmed black beard, gold rings "
+        "on his fingers, an iron shackle with a broken chain on his left wrist, a sly ingratiating smile, his hands clasped "
+        "together. Strict side view: his head and body in profile facing right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            ("walk", WALK),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing, both eyes visible, a wide sly smile, the small "
+                    "white turban, the torn purple robe with gold embroidery, his hands spread welcomingly, the iron shackle "
+                    "on his wrist",
+                    "BOB:56:front:0",
+                ],
+            ),
+        ],
+    ),
+    "prisoner": dict(
+        out="SampleProject/Assets/Characters/NPCs/prisoner/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=37,
+        colors=16,
+        who="the same gaunt bandit prisoner in ragged sand-coloured clothes with the dirty red neck scarf, the unkempt "
+        "black hair and the chained iron shackles on both wrists",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a gaunt desert bandit prisoner, a tall adult man filling the whole height of the picture, ragged torn "
+        "sand-coloured clothes, a dirty red scarf around his neck, unkempt black hair and stubble, wild eyes, iron shackles "
+        "on both wrists joined by a short chain, barefoot, standing hunched. Strict side view: his head and body in "
+        "profile facing right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            ("walk", WALK),
+            ("shout", ["in the same side view facing right: throwing his head back and shouting up at the ceiling, his "
+                       "chained arms raised high, his mouth wide open"]),
+            ("collapse", ["lying on his back on the ground, motionless, the chains across his chest"]),
+        ],
+    ),
+    "alchemist": dict(
+        out="SampleProject/Assets/Characters/NPCs/alchemist/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=39,
+        colors=16,
+        who="the same thin laboratory alchemist in the long stained grey-green coat, the leather apron, the round brass "
+        "goggles, the black cloth mask over his mouth and the big glass syringe",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a cold laboratory alchemist, a tall thin adult man filling the whole height of the picture, a long stained "
+        "grey-green coat over dark clothes, a leather apron, round brass goggles over his eyes, a black cloth mask over his "
+        "mouth and nose, dark gloves, a big glass syringe with green liquid in his right hand. Strict side view: his head and "
+        "body in profile facing right, standing idle. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            ("walk", WALK),
+            ("inject", ["in the same side view facing right: thrusting the big glass syringe forward and down in front of "
+                        "him with his right hand, injecting, the black mask still over his mouth"]),
+        ],
+    ),
 }
 
 
