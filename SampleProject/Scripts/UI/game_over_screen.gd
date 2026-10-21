@@ -75,7 +75,7 @@ func _ready() -> void:
 	_title.pressed.connect(return_to_title)
 	_resume.grab_focus.call_deferred()
 	_show_accept_key()
-	EventBus.input_device_changed.connect(_show_accept_key.unbind(1))
+	get_node(^"/root/EventBus").input_device_changed.connect(_show_accept_key.unbind(1))  # не ідентифікатор: verify_game_over компілює скрипт до autoload
 
 
 ## Клавіша підтвердження в підвалі — за пристроєм (BACKLOG 24): ENTER з клавіатури, A з геймпада.

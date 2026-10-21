@@ -7,6 +7,8 @@ class_name FocusRouter
 var last_focused_by_tab: Dictionary = {}
 var active_tab_name: String = ""
 var focus_mode: String = "Tabs"
+## Останній ввід — клік миші: фокус, що прийшов кліком, не переводить роутер у вміст (Esc після кліку закриває меню, як раніше).
+var _last_input_mouse: bool = false
 
 ## Шляхи в експортах задані від кореня меню, а роутер — його дитина,
 ## тому резолвимо від батька, інакше всі пошуки повертали null.
@@ -21,6 +23,23 @@ func _ready() -> void:
 	_cache_tabs()
 	_cache_focusables()
 	set_process_unhandled_input(true)
+	# D-pad / стрілки заходять у вміст і геометрією GUI, повз focus_content() (BACKLOG 24) — стежимо за самим фокусом.
+	get_viewport().gui_focus_changed.connect(_on_gui_focus_changed)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		_last_input_mouse = true
+	elif event is InputEventKey or event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		_last_input_mouse = false
+
+
+func _on_gui_focus_changed(node: Control) -> void:
+	var panels := _menu_node(panels_container_path)
+	if panels and panels.is_ancestor_of(node) and not _last_input_mouse:
+		focus_mode = "Content"
+	elif node.get_parent() == _menu_node(tabs_container_path):
+		focus_mode = "Tabs"
 
 func _cache_tabs() -> void:
 	var tabs_container = _menu_node(tabs_container_path)
@@ -107,17 +126,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Стік сюди не йде — його нахил повторюється й перескакував би вкладки.
 	if not ((event is InputEventKey or event is InputEventJoypadButton) and event.pressed):
 		return
-	# Де фокус — за самим фокусом: D-pad / стрілка заходить у вміст і геометрією GUI, повз focus_content().
-	var owner: Control = get_viewport().gui_get_focus_owner()
-	var panels := _menu_node(panels_container_path)
-	if owner and panels and panels.is_ancestor_of(owner):
-		focus_mode = "Content"
+	if focus_mode == "Content":
 		if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_cancel"):
 			focus_tabs()
 			get_viewport().set_input_as_handled()
 		return
-	focus_mode = "Tabs"
 	# A / Enter на іншій вкладці — її кнопка натиснеться на відпусканні й перемкне вкладку; у вміст — лише з активної.
+	var owner: Control = get_viewport().gui_get_focus_owner()
 	var other_tab: bool = owner is Button and owner.get_parent() == _menu_node(tabs_container_path) and not owner.button_pressed
 	if event.is_action_pressed("ui_right") or (event.is_action_pressed("ui_accept") and not other_tab):
 		focus_content()
