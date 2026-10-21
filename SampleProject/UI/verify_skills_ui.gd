@@ -101,8 +101,8 @@ func _initialize() -> void:
 	ck(ui._columns.visible, "columns shown when skills exist")
 	ck(not ui._empty_label.visible, "empty state hidden")
 	ck(ui._rows.size() == 8, "8 rows generated from data (%d)" % ui._rows.size())
-	ck(ui._primary_column.get_child_count() > 0, "primary column populated")
-	ck(ui._secondary_column.get_child_count() > 0, "secondary column populated")
+	ck(ui._rows["ta_learned"].get_parent().get_parent().get_child(1) == ui._rows["ta_learned"].get_parent(), "the trunk lane holds the class skills")
+	ck(ui._rows["tg_sub"].get_parent().get_parent().get_child(2) == ui._rows["tg_sub"].get_parent(), "the oath lane holds the Paladin skills")
 
 	print("[3] data-driven, not hardcoded")
 	var scene_text: String = FileAccess.open(
@@ -129,8 +129,9 @@ func _initialize() -> void:
 	ck(sm.can_unlock("tc_expensive") == R.NOT_ENOUGH_JP, "expensive skill blocked by JP")
 	ck(sm.can_unlock("td_prereq") == R.MISSING_PREREQUISITE, "prerequisite gate reported")
 	ck(sm.can_unlock("te_level") == R.LEVEL_TOO_LOW, "level gate reported")
-	var hidden_row: Button = ui._rows["td_prereq"]
-	ck(hidden_row.get_node("Row/SkillName").text == ui.UNKNOWN_NAME, "prereq-locked row renders ???")
+	# D332: назва видна завжди (раніше «???»), стан — заблоковано, причина — у панелі деталей.
+	var locked_row: Button = ui._rows["td_prereq"]
+	ck(locked_row.get_node("Row/SkillName").text == "Test Skill D" and ui.node_state("td_prereq") == ui.NodeState.LOCKED, "prereq-locked node shows its name, locked")
 	var learned_row: Button = ui._rows["ta_learned"]
 	ck(learned_row.get_node("Row/SkillName").text == "Test Skill A", "learned row shows its name")
 
@@ -149,17 +150,20 @@ func _initialize() -> void:
 	await process_frame
 	ck(bar._hint_label.text.find("Level too low") >= 0, "level reason surfaced")
 
-	print("[6] unlock through the UI")
+	print("[6] unlock through the UI: pick, then Accept (D330)")
 	var jp_before: int = sm.get_job_points()
 	ui._on_row_selected("tb_afford")
-	var verdict: int = ui.try_unlock_selected()
+	var verdict: int = ui.pick_selected()
+	ck(verdict == R.OK and not sm.is_unlocked("tb_afford") and sm.get_job_points() == jp_before, "a pick spends nothing")
+	ui.accept_plan()
 	for i in 3: await process_frame
-	ck(verdict == R.OK, "unlock succeeds via UI")
 	ck(sm.is_unlocked("tb_afford"), "skill recorded as unlocked")
 	ck(sm.get_job_points() == jp_before - 30, "exact JP deducted (%d)" % sm.get_job_points())
 	ck(ui._jp_value.text == "%d JP" % sm.get_job_points(), "JP display refreshed immediately")
 	# D150: A на вивченій навичці — покращення (+1 рівень за 1 очко), а не повторне вивчення.
-	ck(ui.try_unlock_selected() == R.OK and sm.get_rank("tb_afford") == 2, "A on a learned skill upgrades it (rank 2)")
+	ck(ui.pick_selected() == R.OK, "a learned skill can be picked for a rank")
+	ui.accept_plan()
+	ck(sm.get_rank("tb_afford") == 2, "Accept upgrades it (rank 2)")
 	ck(sm.get_job_points() == jp_before - 31, "the upgrade costs 1 point")
 
 	print("[7] UI never writes state directly")

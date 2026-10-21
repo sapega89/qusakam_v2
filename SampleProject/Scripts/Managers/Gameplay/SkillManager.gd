@@ -95,13 +95,19 @@ func get_rank(skill_id: String) -> int:
 
 
 func can_upgrade(skill_id: String) -> Result:
+	return check_upgrade(skill_id, get_rank(skill_id), get_job_points())
+
+
+## Ті самі правила для уявного стану (SkillPlan, D330): навичка на рівні [param rank] (0 — не вивчена),
+## [param jp] очок лишилось після запланованого.
+func check_upgrade(skill_id: String, rank: int, jp: int) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
-	if not is_unlocked(skill_id):
+	if rank <= 0:
 		return Result.NOT_UNLOCKED
-	if get_rank(skill_id) >= MAX_RANK:
+	if rank >= MAX_RANK:
 		return Result.MAX_RANK
-	if get_job_points() < UPGRADE_COST:
+	if jp < UPGRADE_COST:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
 
@@ -307,9 +313,15 @@ func _set_current_sp(value: int) -> int:
 
 ## Чи можна вивчити навичку зараз. Не змінює стан.
 func can_unlock(skill_id: String) -> Result:
+	return check_unlock(skill_id, get_unlocked_skills(), get_job_points())
+
+
+## Ті самі правила для уявного стану (SkillPlan, D330): [param unlocked] — вивчене разом із запланованим,
+## [param jp] — очок лишилось після запланованого. Не змінює стан.
+func check_unlock(skill_id: String, unlocked: Array, jp: int) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
-	if is_unlocked(skill_id):
+	if skill_id in unlocked:
 		return Result.ALREADY_UNLOCKED
 
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
@@ -318,9 +330,9 @@ func can_unlock(skill_id: String) -> Result:
 	if _player_level() < definition.required_level:
 		return Result.LEVEL_TOO_LOW
 	for prerequisite in definition.prerequisites:
-		if not is_unlocked(prerequisite):
+		if not prerequisite in unlocked:
 			return Result.MISSING_PREREQUISITE
-	if get_job_points() < definition.jp_cost:
+	if jp < definition.jp_cost:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
 
