@@ -21,9 +21,9 @@ Routines: https://claude.ai/code/routines
 | 21:31 | 18:31 | Speaker name + portrait, objective plaque, gift/loot popups | cloud/dialogue-ui | 36, 37, 33 (non-art) |
 | 21:31 | 18:31 | Graphics settings, one selection look, cleanup, NPC chatter | cloud/settings-cleanup | 41, 39, 35 |
 | 21:37 | 18:37 | Lab 9.7 boss hall — the fire djinn fight, the cloak | cloud/lab-9-7 | 9.7, B83 |
-| 00:45 | 21:45 | **INTEGRATOR 1** | cloud/integration | merge wave 1 |
-| 01:45 | 22:45 | Lab 9.6 mob corridors | cloud/lab-9-6 | 9.6, B83 |
-| 01:45 | 22:45 | Two languages part 1 | cloud/localization-1 | 31 (UI) |
+| 22:24 | 19:24 | **INTEGRATOR 1** (moved up: 6 of 7 wave-1 branches were done by 22:20) | cloud/integration | merge wave 1 |
+| 23:45 | 20:45 | Lab 9.6 mob corridors | cloud/lab-9-6 | 9.6, B83 |
+| 23:45 | 20:45 | Two languages part 1 | cloud/localization-1 | 31 (UI) |
 | 22:08 | 19:08 | Chests wired (art A1 landed early; started at once) | cloud/chests | 33 |
 | 02:30 | 23:30 | Buildings + village-centre house + lore stubs (needs art A2) | cloud/buildings | 29, 38, 34 |
 | 05:15 | 02:15 | **INTEGRATOR 2** | cloud/integration | merge wave 2 |
