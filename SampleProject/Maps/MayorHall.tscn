@@ -12,7 +12,6 @@ radius = 32.0
 
 [node name="MayorHall" type="Node2D" unique_id=1804178272]
 script = ExtResource("6_mayor_hall")
-metadata/town = true
 
 [node name="Wall" type="Sprite2D" parent="."]
 z_index = -10

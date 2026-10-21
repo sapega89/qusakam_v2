@@ -24,7 +24,6 @@ size = Vector2(140, 200)
 radius = 32.0
 
 [node name="City" type="Node2D" unique_id=1536537228]
-metadata/town = true
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 

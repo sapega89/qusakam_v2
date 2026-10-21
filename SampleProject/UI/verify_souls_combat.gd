@@ -380,25 +380,20 @@ func _movement() -> void:
 	ck(mover.is_rolling() and absf(hero.global_position.y - y0) < 2.0, "an air dash is level (dy %.1f)" % (hero.global_position.y - y0))
 	await create_timer(1.5).timeout
 
-	print("[9] Towns: walk out of combat, run in a fight (D251, D266)")
-	for town in ["Village", "City", "CityGates", "MayorHall"]:
-		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % town, "town") == true, "%s is a town" % town)
-	for wild in ["Canyon", "DesertRoad", "Laboratory"]:
-		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % wild, "town") == null, "%s is wild" % wild)
+	print("[9] Run everywhere, towns too (D266 revoked, Sapega 2026-10-21)")
+	for room in ["Village", "City", "CityGates", "MayorHall", "Canyon", "DesertRoad", "Laboratory"]:
+		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % room, "town") == null, "%s has no town walk" % room)
 	await _place_hero(enemies[1], 0)
-	game.map.set_meta(&"town", true)
 	await create_timer(hero.combat.COMBAT_LINGER + 0.2).timeout
 	ck(not hero.combat.in_combat(), "no fight on")
-
 	Input.action_press(&"move_left")
 	await create_timer(0.5).timeout
-	ck(absf(hero.velocity.x) <= mover.walk_speed + 1.0 and hero.animation == &"Walk", "in town: walks %.0f px/s, %s" % [absf(hero.velocity.x), hero.animation])
-	enemies[0].enemy_logic.current_state = 1  # CHASE — бій почався
+	ck(absf(hero.velocity.x) > 300.0 and hero.animation == &"Run", "out of combat: runs %.0f px/s, %s" % [absf(hero.velocity.x), hero.animation])
+	enemies[0].enemy_logic.current_state = 1  # CHASE — бій почався; [10] чекає видиму зброю (D268)
 	await create_timer(0.3).timeout
-	ck(hero.combat.in_combat() and absf(hero.velocity.x) > mover.walk_speed + 50.0 and hero.animation == &"Run", "in a fight: runs %.0f px/s, %s" % [absf(hero.velocity.x), hero.animation])
+	ck(hero.combat.in_combat() and hero.animation == &"Run", "in a fight: runs, %s" % hero.animation)
 	Input.action_release(&"move_left")
 	enemies[0].enemy_logic.current_state = 0
-	game.map.remove_meta(&"town")
 
 ## [10]–[12] Хвати, зброя за спиною, удар для кожного типу зброї (D250, D267, D268).
 func _weapons(sl: Node) -> void:

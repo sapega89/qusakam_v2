@@ -28,14 +28,11 @@ class_name PlayerMover
 ## після останнього. Наступний — не раніше, ніж через dash_chain_after с від початку попереднього.
 @export var dash_charges_max := 2
 @export var dash_chain_after := 0.1
-## У містах (корінь кімнати з metadata/town, D266) поза боєм герой іде, а не біжить.
-@export var walk_speed := 150.0
 ## Драбини (D225): швидкість лазіння, px/s; стрибок з драбини — така частка звичайного.
 @export var climb_speed := 170.0
 @export var ladder_jump_factor := 0.6
-## Кроки (D276): крок — кожні стільки px по підлозі (біг / хода в місті) і по драбині; звук — за поверхнею кімнати.
+## Кроки (D276): крок — кожні стільки px по підлозі і по драбині; звук — за поверхнею кімнати.
 @export var step_distance := 95.0
-@export var walk_step_distance := 60.0
 @export var ladder_step_distance := 40.0
 
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -105,12 +102,6 @@ func start_roll() -> bool:
 	return true
 
 
-## Іде, а не біжить: місто (D251, D266) і не бій.
-func is_walking() -> bool:
-	var map: Node = Game.get_singleton().map
-	return map != null and map.get_meta(&"town", false) and not player.combat.in_combat()
-
-
 ## Runs one physics step of movement: gravity, jump, horizontal movement,
 ## move_and_slide() and landing detection. Call once per Player._physics_process.
 func physics_move(delta: float) -> void:
@@ -160,7 +151,7 @@ func _footsteps(delta: float) -> void:
 		_stride = 0.0
 		return
 	_stride += absf(player.velocity.y if on_ladder else player.velocity.x) * delta
-	var every: float = ladder_step_distance if on_ladder else (walk_step_distance if is_walking() else step_distance)
+	var every: float = ladder_step_distance if on_ladder else step_distance
 	if _stride < every:
 		return
 	_stride -= every
@@ -265,7 +256,7 @@ func _handle_horizontal_movement(delta: float) -> void:
 
 	if direction:
 		speed = min(speed_max, speed + accel * delta)
-		player.velocity.x = direction * (walk_speed if is_walking() else speed)
+		player.velocity.x = direction * speed
 	else:
 		player.velocity.x = move_toward(player.velocity.x, 0, speed_min)
 		speed = speed_min

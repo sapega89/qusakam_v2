@@ -147,7 +147,7 @@ func _physics_process(delta: float) -> void:
 	elif velocity.y >= 0 and not is_on_floor():
 		new_animation = &"Fall"
 	elif absf(velocity.x) > 1:
-		new_animation = &"Walk" if mover.is_walking() else &"Run"  # у місті поза боєм — іде (D266)
+		new_animation = &"Run"  # біг усюди, і в містах (D266 скасовано, Sapega 2026-10-21)
 
 	# Переключаем анимацию, если она изменилась (з затримкою для плавності)
 	if new_animation != animation and animation_change_cooldown <= 0:
