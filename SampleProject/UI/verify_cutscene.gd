@@ -56,14 +56,6 @@ func _same(played: Dictionary, skipped: Dictionary, beat: String) -> void:
 		var gap: float = (played.positions[actor] as Vector2).distance_to(skipped.positions[actor])
 		ck(gap < 2.0, "%s: %s ends where it does when played (gap %.1f: %s vs %s)" % [beat, actor, gap, skipped.positions[actor], played.positions[actor]])
 
-## B80: після прогону сервер фізики тримає тіло героя там, де він стояв (у тригері), хоч вузол уже деінде, —
-## тригер щойно завантаженої кімнати спрацьовує одразу. Кілька кроків справжнім move_left оновлюють тіло.
-func _step_off() -> void:
-	Input.action_press(&"move_left")
-	for i in 20: await physics_frame
-	Input.action_release(&"move_left")
-	for i in 10: await physics_frame
-
 func _key(pressed: bool) -> InputEvent:
 	var ev := InputEventKey.new()
 	ev.physical_keycode = KEY_TAB
@@ -145,7 +137,6 @@ func _initialize() -> void:
 
 	print("[1] City Gates raid: hold Tab")
 	var raid_start := func() -> void:
-		await _step_off()
 		game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 		for i in 30: await physics_frame
 		game.player.global_position = Vector2(560, 360)
@@ -165,7 +156,6 @@ func _initialize() -> void:
 	for f: String in ["canyon_exit_complete", "desert_road_monologue_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(f, true)
 	var merchant_start := func() -> void:
-		await _step_off()
 		game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 		for i in 30: await physics_frame
 		game.player.global_position = Vector2(700, 360)

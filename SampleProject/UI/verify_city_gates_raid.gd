@@ -141,6 +141,22 @@ func _initialize() -> void:
 	ck(not started.has("CityGates") and not started.has("CityGates_Raid"), "no raid lines (%s)" % [started])
 	ck(not game.map.get_node(^"Raid").visible, "no cutscene bandits")
 
+	print("[7] B80: a teleport from where the new room has a trigger moves the body at once; the trigger stays quiet")
+	player.global_position = Vector2(690, 360)  # у смузі RaidTrigger; у FIGHT_LOOP він не спрацьовує
+	for i in 30: await physics_frame
+	var flags: Dictionary = game.get_quest_flags().duplicate(true)
+	flags.erase("city_gates_intro_complete")  # знову APPROACH — RaidTrigger чатує
+	game.set_quest_flags(flags)
+	started.clear()
+	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	var body: Transform2D = PhysicsServer2D.body_get_state(player.get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM)
+	ck(body.origin.is_equal_approx(player.global_position), "physics body at the arrival right away (%s vs %s)" % [body.origin, player.global_position])
+	var y0: float = player.global_position.y
+	for i in 30: await physics_frame
+	ck(game.map.get_current_state_name() == "APPROACH", "the raid does not re-fire 200 px away (%s)" % game.map.get_current_state_name())
+	ck(started.is_empty() and not player.event, "no raid lines, control kept (%s)" % [started])
+	ck(player.global_position.y > y0, "the hero falls after the teleport (y %.1f -> %.1f)" % [y0, player.global_position.y])
+
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

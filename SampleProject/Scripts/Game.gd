@@ -393,15 +393,13 @@ func teleport_to_room(room_path: String, arrival: NodePath) -> void:
 	load_room(room_path)
 	old_map.queue_free()
 	var target: Node2D = map.get_node(arrival)
-	player.global_position = target.global_position
-	MetSys.set_player_position(player.position)
+	place_player(target.global_position)
 
 ## Нова гра: гравець на мітці Arrival стартової кімнати. Точки збереження бувають
 ## не в кожній кімнаті (до DesertRoad їх немає), тож старт від них не залежить.
 func _position_player_at_start() -> void:
 	var arrival: Node2D = map.get_node(^"Arrival")
-	player.global_position = arrival.global_position
-	MetSys.set_player_position(player.position)
+	place_player(arrival.global_position)
 	DebugLogger.info("Game: Positioned player at Arrival for new game: %s" % player.global_position, "Game")
 
 var _init_room_called_for_room: String = ""

@@ -19,6 +19,21 @@ func set_player(p_player: Node2D):
 	player = p_player
 	player.get_tree().physics_frame.connect(_physics_tick, CONNECT_DEFERRED)
 
+## Ставить гравця в [param global_pos] — і вузол, і тіло в сервері фізики, одразу (B80). Через цю функцію йдуть усі
+## перестановки гравця при зміні кімнати.
+## Гравець — CharacterBody2D, кінематичне тіло: нову позицію вузла сервер застосовує лише на наступному кроці, а
+## Area2D щойно доданої кімнати на цьому кроці бачать тіло ще на СТАРОМУ місці. Тригер нової кімнати, що стоїть там,
+## де гравець був у попередній, спрацьовував одразу (RaidTrigger CityGates). Кінематичне тіло застосовує TRANSFORM
+## негайно лише на першому кроці після переходу в кінематичний режим — тому перемикаємо режим туди й назад.
+func place_player(global_pos: Vector2) -> void:
+	var body := player as CollisionObject2D
+	body.global_position = global_pos
+	var rid := body.get_rid()
+	PhysicsServer2D.body_set_mode(rid, PhysicsServer2D.BODY_MODE_STATIC)
+	PhysicsServer2D.body_set_mode(rid, PhysicsServer2D.BODY_MODE_KINEMATIC)
+	PhysicsServer2D.body_set_state(rid, PhysicsServer2D.BODY_STATE_TRANSFORM, body.global_transform)
+	MetSys.set_player_position(body.global_position)
+
 ## Adds a module. [param module_name] is either a file located in [code]Template/Scripts/Modules[/code] or a full path to the script. The script must extend [code]MetSysModule.gd[/code]. Returns a module object that can be customized if needed.
 func add_module(module_name: String) -> MetSysModule:
 	# If a full path was passed in, use that. Otherwise assume it is a MetSys module.

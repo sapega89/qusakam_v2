@@ -37,7 +37,7 @@ static func move_to_portal():
 
 	# Move the player to portal with configured spawn offset (prevents re-entry loop)
 	var player = Game.get_singleton().player
-	player.position = portal.position + offset
+	Game.get_singleton().place_player(portal.global_position + offset)
 
 	# CRITICAL: Clear event flag IMMEDIATELY after positioning
 	# This allows player to move and use other portals right away

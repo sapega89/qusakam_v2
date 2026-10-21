@@ -22,5 +22,5 @@ func _on_room_changed(target_room: String):
 	await game.load_room(target_room)
 	
 	if prev_room_instance:
-		player.position -= MetSys.get_current_room_instance().get_room_position_offset(prev_room_instance)
+		game.place_player(player.global_position - MetSys.get_current_room_instance().get_room_position_offset(prev_room_instance))
 		prev_room_instance.queue_free()
