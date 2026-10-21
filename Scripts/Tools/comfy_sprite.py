@@ -167,6 +167,20 @@ MACE_ON = (
     + " in his near hand, the handle pointing %s; a small mace, not a sword, no blade"
     + SWORD_COLOURS
 )
+# арт-директор (булава, друга хвиля): «flanged» малював шипи й молот — гладка куля й коротке руків'я, тримане за низ
+MACE_BALL = (
+    "a one-handed mace with a smooth round spherical steel head, a plain ball with no spikes or flanges, on a short "
+    "brown wooden handle as long as his forearm held at its bottom end, the ball the same light grey and white steel "
+    "as the sword in the picture"
+)
+MACE_BALL_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, size and position as in the "
+    "picture, only now holding "
+    + MACE_BALL
+    + " in his near hand, the handle pointing %s; the cape flowing behind him, the same dark maroon cape with the "
+    "dark outline and two-tone shading as in the picture; a small mace, not a sword, no blade"
+    + SWORD_COLOURS
+)
 # у високих позах модель збільшувала булаву до кувалди — довжину названо
 MACE_SHORT = "; the mace small, its handle only as long as his forearm, not a long staff or a sledgehammer"
 # FROM: з кадру, де булава вже вдала, — тримає її розмір і кольори
@@ -1163,8 +1177,8 @@ CHARACTERS = {
             ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
             # Run/2 художника пропущено, як у меча (7 кадрів)
             ("Run", [MACE_ON % ("Run/%d" % n, "forward and up") for n in (1, 3, 4, 5, 6, 7, 8)]),
-            # Air/3 (Fall/2) пропущено: за три спроби руків'я виростало в довгу палицю (список — у README булави)
-            ("Air", [MACE_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")]),
+            # Air/2 і Air/3 — гладка куля й плащ художника (арт-директор: Air/2 мав червону пляму замість плаща)
+            ("Air", [MACE_ON % ("Jump/2", "forward and up")] + [MACE_BALL_ON % (f, "forward and up") for f in ("Jump/3", "Fall/2")]),
             (
                 "Attack1",
                 [
@@ -1212,16 +1226,20 @@ CHARACTERS = {
                 "Heavy",
                 [
                     # з першого кадру герой обертався ліворуч — з Attack1/1, як у меча
-                    "FROM:Attack1:0:the same pose facing right, his face and snout still pointing right, now his "
-                    "second hand also gripping the mace handle just below the first, both hands together on the "
-                    "handle raised above his head, knees bent, the cape hanging behind him" + MACE_KEEP,
+                    # арт-директор: перший варіант був копією Attack1/1 — тепер обидві руки й замах за голову
+                    "FROM:Attack1:0:the same side view facing right, his face and snout still pointing right: a "
+                    "two-handed overhead wind-up, leaning back, both hands gripping the mace handle above and behind "
+                    "his head, both elbows raised high, the round head hanging far behind his back, the steel armour "
+                    "plates on his chest drawn as in the picture, knees bent, the cape hanging behind him" + MACE_KEEP,
                     "in the same side view facing right: swinging a heavy blow down, both hands gripping the mace "
                     "handle in front of his face, the round head forward and up, stepping forward, the cape flying "
                     "behind him" + MACE_KEEP,
-                    "in the same side view facing right: finishing a heavy downward blow, crouched low and leaning "
-                    "far forward, both hands gripping the mace handle low in front of him, its round head slammed "
-                    "on the ground in front of his feet, the cape flying up behind him, no motion lines, no dust"
-                    + MACE_KEEP,
+                    # арт-директор: руків'я виходило за руки до хвоста — з Heavy/2, де руків'я коротке
+                    "FROM:Heavy:1:in the same side view facing right: the end of a heavy downward blow, crouched low "
+                    "and leaning forward, both hands together at the bottom end of the short handle, the mace swung "
+                    "down in front of him, its round head on the ground in front of his front foot, nothing sticking "
+                    "out behind his hands, his tail curled on the ground behind him, the cape flying up behind him, no "
+                    "motion lines, no dust" + MACE_KEEP,
                 ],
             ),
             (
