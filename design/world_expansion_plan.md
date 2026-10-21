@@ -117,7 +117,7 @@ to a fight or a reward re-checks the landing.
 
 Order: 1 → 2 → 3 → 4; 5 is independent.
 
-## The Laboratory — outline only (BACKLOG 16 + 17, queue row 9)
+## The Laboratory — outline only (BACKLOG 16 + 17, queue row 9) → planned in [[lab_story_plan]] (D303)
 
 Today: one room `Laboratory.tscn`, 2×3 cells on layer 2 (`[14..15,3..5,2]`, D225 three floors joined by ladders),
 plus `LaboratoryOutside` `[16..17,5..6,2]`. Item 17 rewrites the story; item 23 splits it into **separate MetSys rooms**:

@@ -31,6 +31,10 @@ places triggers, save points, spawn points and ladders: top floor — entrance, 
 map). `MapData.txt` cells and borders updated. Checks: `verify_laboratory` (walks to the trigger nodes),
 `verify_map_geometry`.
 
+### 2026-10-21 — the storeys become the mob corridors ([[lab_story_plan]], D303)
+The companion talks and the limit test leave the three storeys (BACKLOG 17); the room keeps its geometry, gains three
+trigger-zone fights and a west door to the new `LabCells`; the boss moves to `LabBoss`.
+
 ### Later (not now)
 - ~~**Parallax behind the Laboratory**~~ — done (D246: generated far/mid/front planes per storey and generated walkable surfaces). Was (Sapega, 2026-10-18, «на майбутнє»):  the background is a flat brick tile layer + `BackColumns`; add parallax layers behind it (distant halls, arches, machinery, blurred per D233) — a candidate for ComfyUI backgrounds (D234).
 Other rooms vertical (Canyon, Village, Road), ability-locked ledges (double jump), secrets — after Sapega's call.

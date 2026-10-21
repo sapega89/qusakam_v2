@@ -1,64 +1,65 @@
 ---
 type: plan
-status: blocked
-blocked-by: [Q52]
+status: in-progress  # 2026-10-21, queue row 9; Q52 answered by agent call D301/D302 (Sapega to confirm)
 ---
 
-# Laboratory boss — plan
+# Bosses — the Mayor Hall boss and the Laboratory boss — plan
 
-**Nothing implemented.** The «boss fight» is four ordinary enemies in two waves. 2026-10-15.
-Figma: no design exists.
+Was blocked on Q52 (who the Laboratory boss is). BACKLOG 16 + 17 answered most of it: the Laboratory boss is the
+**fire djinn** that bursts out of the prisoner (item 17), and item 16 adds a second boss in the Mayor Hall — "meant
+to be unbeatable, but can be beaten" (item 6 = generate it). The rest (names, numbers, move sets, art) are agent calls
+**D301 / D302**, Sapega to confirm. Story around them: [[lab_story_plan]]. Combat rules they follow: [[souls_combat_plan]]
+(D264 hero staggers, D265 poise / staggers / combos). Figma: no design exists (no boss bar frame, [[figma_coverage]] §1).
 
-## What exists today
+## What exists today (before this pass)
 
 | Thing | Where | State |
 |---|---|---|
-| Boss state | `Scripts/Gameplay/Scenes/Laboratory.gd:107` `BOSS_FIGHT` → `_start_fight("Laboratory_BossFight")` | ✅ works, but spawns ordinary enemies |
-| The «boss» | `Maps/Laboratory.tscn:127-150` `EnemySpawner`: tank, melee, fast, tank; `spawn_in_waves`, `wave_size = 2` | ⚠️ not a boss |
-| Win condition | `Laboratory.gd:214` `all_enemies_defeated` → `lab_boss_fight_complete` | ✅ works, reusable as is |
-| Enemy types | `Resources/Enemies/enemy_stats_{melee,tank,fast}.tres`; `EnemySpawnPoint.enemy_type` is an `@export_enum` of those three (`EnemySpawnPoint.gd:9`) | ✅ no boss type |
-| Enemy scene | `Scenes/Characters/Enemies/default_enemy.tscn`, one shared sheet (D139) | ✅ |
-| Boss line | `dialogue_quest/Laboratory_BossFight.dqd` — one line, no speaker | ⚠️ placeholder |
-| Boss art | `assets/bosses/Orc_Berserk`, `Orc_Shaman`, `Orc_Warrior` (Attack_1-3 … sheets) | ⚠️ imported, unused, licence not recorded |
-| HP bar over enemies | enemy HP bars exist (D173 keeps them screen-sized) | ✅ no boss-size bar (`figma_coverage` §1: enemy HP bar undesigned) |
+| Enemy base | `DefaultEnemy.gd` + `EnemyLogic.gd` (chase / attack / combo / poise / stagger / knockback), `EnemyStats` resource | ✅ reused |
+| Hero side of a hit | `Player.take_damage(amount, source)`: block / parry / stagger read `source` (a `DefaultEnemy`) | ✅ bosses pass themselves as the source |
+| Boss group + voice | `GameGroups.BOSS`; `SoundHooks` roars on the first wind-up, shouts on every second, death roar (D278) | ✅ |
+| `DemoBoss.gd` | instanced nowhere; damage bypasses the hitbox | ❌ deleted by this pass |
+| Boss HP bar | `DefaultEnemy._initialize_health_bar` skips bosses | ❌ → `boss_health_bar.tscn` |
 
-Checked: `grep -ri boss Scripts/` → only the `Laboratory.gd` state names and the objective text.
+## The model (built in slice 2)
 
-## Missing entirely
+- `Scripts/Gameplay/Characters/Bosses/BossEnemy.gd` (`extends DefaultEnemy`, group `boss`): picks the logic
+  `BossLogic`, shows the boss bar, enters **phase 2 at 50 % HP** (wind-ups × `phase2_windup`, speed × `phase2_speed`).
+- `BossLogic.gd` (`extends EnemyLogic`): `perform_attack()` chooses one **move** from the boss's `moves` (an exported
+  array of dictionaries in the boss scene: `kind`, `min_range`, `max_range`, `windup`, `damage`, `weight`, `phase`) among
+  those whose range holds the hero; `combo` falls back to the shared combo of D265.
+- Move kinds: `combo` (the shared hitbox swing series), `charge` (wind-up, then a dash of `distance` px with the hitbox
+  live), `slam` (a shockwave on the floor on both sides within `radius`, misses a hero in the air), `fireball` (a
+  projectile at the hero's height, `Scenes/FX/boss_fireball.tscn`), `pillar` (a mark on the floor under the hero, then a
+  column of fire `width` px wide). Every hazard hits through `Player.take_damage(…, boss)`, so block, parry, i-frames
+  of the dodge and the hero stagger work unchanged.
+- **Poise**: bosses have high poise (one stagger per long chain), `super_armor` (a stun does not break a wind-up; a
+  poise break still does, D265).
+- `Player.defeat_handler: Callable` — when set, a defeat calls it instead of the Game Over screen (the Mayor Hall: lost
+  fight → the Laboratory; the cloak fight: the djinn takes the cloak → then the Game Over screen).
 
-- A boss enemy: stats resource, type in `EnemySpawnPoint`, its own scene/sprite.
-- Boss behaviour beyond the shared enemy AI (phases, special attacks) — if wanted.
-- Who the boss is: name, speaker for its lines, its place in the story.
+## D301 — the Brass Collector (Mayor Hall)
 
-## Decisions required
+A hulking golem of brass and sandstone with a barred cage on its back — the Laboratory's catcher of people; it breaks
+through the hall's back wall. **HP 1400**, damage 28, speed 55, poise 14, stagger on the hero 0.6 s, XP 400.
+Moves: **Sweep** (≤ 130 px, wind-up 0.7 s, a 2-swing combo), **Charge** (140–460 px, wind-up 0.8 s, a 320 px dash,
+×1.3), **Slam** (≤ 240 px, wind-up 1.0 s, a shockwave 240 px each side, ×1.5, jump over it). Phase 2: wind-ups ×0.75,
+speed ×1.3. Win loot (D300): Hi-Potion ×2, Silver Sword, 60 coins.
 
-1. **Q52 — GAME DESIGN DECISION REQUIRED (blocks slice 1).** Who is the lab boss and how does the
-   fight go? (a) one big enemy on the shared AI with more HP/damage — cheapest; (b) (a) plus a
-   second phase (at 50 % HP: faster, or summons the current small enemies); (c) unique attacks.
-   Also: its name and art — one of the Orc packs in `assets/bosses/`, or the shared sheet
-   scaled up (D139 covers ordinary enemies, not a boss).
-2. **Stats** — HP, damage, speed. Not invented here: Sapega's numbers, or a provisional row
-   recorded as a Q-ID.
-3. Keep the small enemies in the fight (as adds) or remove them — part of Q52.
+## D302 — the fire djinn (Laboratory)
+
+A burning spirit with a smoke tail instead of legs, horns of flame and gold bands on its arms; it floats. **HP 1100**,
+damage 24, speed 80, poise 10, XP 500. Moves: **Claws** (≤ 120 px, wind-up 0.5 s, up to 3 swings), **Fireball** (≥ 150 px,
+wind-up 0.6 s, 360 px/s), **Pillar** (any range, wind-up 0.9 s, 72 px wide, ×1.6). Phase 2: wind-ups ×0.8, two fireballs
+in a row, a pillar under the hero and one each side 140 px away.
 
 ## Slices
 
-### Slice 1 — one boss enemy
-- `Resources/Enemies/enemy_stats_boss.tres` (Q52 numbers); `"boss"` added to `EnemySpawnPoint.enemy_type`.
-- Boss scene/sprite per Q52; `Maps/Laboratory.tscn` spawner: the boss (+ adds per Q52).
-- `Laboratory_BossFight.dqd`: the boss's speaker and lines (drafts `[ЧЕРНЕТКА]` for Sapega).
-- `UI/verify_laboratory.gd`: BOSS_FIGHT spawns exactly the boss (+ adds); killing it sets
-  `lab_boss_fight_complete`; room state remembers its HP (D152).
+1. ✅/⏳ see [[lab_story_plan]] slice 2 — `BossEnemy`, `BossLogic`, hazards, boss bar, `defeat_handler`; `verify_bosses.gd`
+   (each move hits a hero standing in it and misses one out of it; phase 2 at half HP; the bar follows HP).
+2. The two bosses as scenes with generated art (comfy-sprite, D309) — `brass_collector.tscn`, `fire_djinn.tscn`.
+3. Their fights in the rooms — [[lab_story_plan]] slices 3 and 8.
 
-### Slice 2 — phase / special attacks (only if Q52 says b or c)
+## Out of scope
 
-### Slice 3 — boss intro cutscene (needs a beat chosen, [[cutscene_plan]])
-
-## Order and dependencies
-
-`Q52 → 1 → 2`. Slice 3 can go after 1 independently. Playtest 1.1 ([[backlog_roadmap]]) should
-run after slice 1, so the lab is played with its real fight.
-
-## Out of scope for this pass
-
-Per-type art for ordinary enemies (D139). Boss HP bar design (no Figma, [[figma_coverage]] §1).
+A Figma boss bar; boss music of its own (rooms keep their tracks, [[music_plan]]).

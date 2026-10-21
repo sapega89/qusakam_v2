@@ -36,7 +36,8 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[npc_recall_plan]] — D158–D162: NPC `Quest` list (main ◆ gold), hints, side quests on `GameFlow`; bubbles wait on Q48
 - [[gamepad_plan]] — D156/D157, ready: hero moves/jumps/attacks on a pad; A/B in every menu; one last-device source
 - [[cutscene_plan]] — D140/D176/D177: staged scenes on Tween; screenplay in [[cutscene_script]]
-- [[lab_boss_plan]] — blocked on Q52: the lab "boss" is four ordinary enemies; no boss exists
+- [[lab_story_plan]] — BACKLOG 16 + 17 + 6 + 23 (Lab): Mayor Hall queue and boss, the Laboratory split into cells / corridors / boss hall, the djinn and the cloak, the demo end (D300–D310)
+- [[lab_boss_plan]] — the two bosses: the Brass Collector (D301) and the fire djinn (D302), move sets on a shared `BossEnemy`
 - [[prologue_journal_plan]] — D120: the Prologue as a journal stage, zones as sub-stages; fixes B43
 - [[game_menu_single_scene_plan]] — D116/D117: Game Menu as one scene, script only shows/hides; row templates in the scene
 - [[runtime_ui_completion_plan]] — slices 0–8, the umbrella pass (1a–5, 8 done; 6–7 audit-only)

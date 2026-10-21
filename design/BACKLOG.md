@@ -47,11 +47,8 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 - **Waits on:** the frames (an artist), not a decision.
 - **Resume:** slice 1 of [[character_animation_plan]] when the frames exist.
 
-### Laboratory boss — [[lab_boss_plan]]
-- **Exists:** `BOSS_FIGHT` state and its win flag; the fight is four ordinary enemies (tank, melee,
-  fast, tank) in two waves. No boss enemy, stats or art.
-- **Waits on:** Q52 — who the boss is, how the fight goes, its numbers and art.
-- **Resume:** answer Q52, then slice 1 of [[lab_boss_plan]].
+### Laboratory boss — [[lab_boss_plan]] → unblocked 2026-10-21, in progress with queue row 9 ([[lab_story_plan]])
+- Q52 answered by agent calls D301 (the Brass Collector, Mayor Hall) and D302 (the fire djinn, Laboratory), Sapega to confirm.
 
 ### Cutscenes — [[cutscene_plan]]
 - **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man); the Canyon descent is
@@ -97,7 +94,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 5. ~~**NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.~~ — **done 2026-10-21** (D295):
    all seven NPCs in the maps (Blacksmith, Merchant, Grandfather, three oath keepers, two gate guards) loop a generated
    activity with random rests and turn to the hero in their talk pose while talking; `verify_npc_activity.gd`.
-6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]).
+6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]). In progress with 16 + 17 → [[lab_story_plan]].
 7. **Foreground parallax** — below.
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
    Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
@@ -125,11 +122,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     is out of sight out of combat (2026-10-21 fix, Sapega: not on the back) and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
     dagger stabs, halberd thrusts, dual-wield alternating hands, heavy overhead; new hero frames Hurt, Heavy ×2, Block
     (generated from his artist frame).
-16. **MayorHall cutscene and the "unbeatable" boss** (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
+16. **MayorHall cutscene and the "unbeatable" boss** — plan [[lab_story_plan]] (D300, D301) (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
-17. **The Laboratory story, rewritten** (Sapega 2026-10-20) — replaces the current three-storey companion talks:
+17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — replaces the current three-storey companion talks:
     - Kusakam and his future team are on **one floor**: a room with an operating table and cells; everyone is behind bars.
     - Cutscene: Алісия is led to the operating table and injected; then an unknown prisoner who looks like a bandit is
       led in — he shouts and an evil boss bursts out of him, **a fire djinn**, and flees; explosions, an earthquake,
