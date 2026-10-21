@@ -133,6 +133,28 @@ SWORD_ON = (
     + SWORD
     + " in his near hand, the blade pointing %s"
 )
+# BACKLOG 42, A3: кинджал — з кадрів меча (той самий герой, поза й метал), меч замінено; удари — уколи, не дуги
+DAGGER = (
+    "a short steel dagger with a small steel cross-guard and a brown grip, its blade only as long as his forearm, "
+    "the same light grey and white steel as the sword in the picture"
+)
+# з кадрів меча модель лишала довгий клинок — біг і стрибок, як у меча, з кадрів художника
+DAGGER_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
+    "the picture, only now holding "
+    + DAGGER
+    + " in his near hand, the blade pointing %s; the blade shorter than his forearm, a short knife, not a sword"
+    + SWORD_COLOURS
+)
+# кинджал у високих позах модель видовжувала до меча — довжину названо
+DAGGER_SHORT = (
+    "; the dagger exactly as small as in the picture, its blade shorter than his forearm, a short knife, not a sword"
+)
+# FROM: з кадру, де кинджал уже короткий, — інакше в нових позах він росте до меча
+DAGGER_KEEP = (
+    "; the same short dagger as in the picture, exactly the same size and colours, its blade shorter than his "
+    "forearm, not longer, only one dagger, facing right"
+)
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
     "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
@@ -1012,6 +1034,98 @@ CHARACTERS = {
             ),
         ],
     ),
+    "hero_weapon_dagger": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/dagger",
+        ref="SampleProject/Sprites/Player/Weapons/sword/CombatIdle/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
+        + DAGGER
+        + ", exactly as small as in the picture",
+        base="Keep this exact character — the same small lizard knight with the steel armour, dark red cape and tail, "
+        "the same pixel art style, thick dark outline, flat shading, colours, size, pose and position. Change only "
+        "the weapon: the long sword in his hand replaced by "
+        + DAGGER
+        + ", held low in front of his waist in the same hand, the short blade pointing forward and up; no sword. "
+        "Keep the plain flat magenta background.",
+        rows=[
+            ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
+            # Run/2 художника пропущено, як у меча (7 кадрів)
+            ("Run", [DAGGER_ON % ("Run/%d" % n, "forward and up") for n in (1, 3, 4, 5, 6, 7, 8)]),
+            (
+                "Air",
+                [DAGGER_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")]
+                # Fall/2 «вперед і вгору» — кривий клинок і зім'ятий плащ
+                + [DAGGER_ON % ("Fall/2", "straight forward, a straight blade") + ", his head in profile facing right"],
+            ),
+            (
+                "Attack1",
+                [
+                    "in the same side view facing right: drawing back for a quick stab, the dagger pulled back beside "
+                    "his hip in his near hand, the short blade pointing forward, elbow bent back, knees bent, the cape "
+                    "hanging behind him",
+                    "in the same side view facing right: a quick straight stab, his dagger arm thrust straight forward "
+                    "at chest height, the short blade pointing straight ahead, stepping forward on his front leg, the "
+                    "cape flying behind him",
+                    "in the same side view facing right: pulling back after a stab, the dagger drawn back in front of "
+                    "his chest, the short blade pointing forward, standing on bent knees, the cape hanging behind him",
+                ],
+            ),
+            (
+                "Attack2",
+                [
+                    "in the same side view facing right: crouched low on bent knees, the dagger held low beside his "
+                    "knee in his near hand, the short blade pointing forward and up, the cape hanging behind him",
+                    "in the same side view facing right: an upward stab, rising from a crouch, his dagger arm thrust "
+                    "forward and up at shoulder height, the short blade pointing forward and up, the cape flying "
+                    "behind him"
+                    + DAGGER_SHORT,
+                    "FROM:Attack2:1:the end of the upward stab, standing taller, his dagger arm stretched further up "
+                    "and forward above his head, the blade pointing up and forward, the cape flying behind him"
+                    + DAGGER_KEEP,
+                ],
+            ),
+            (
+                "Attack3",
+                [
+                    "FROM:Attack1:0:coiled for a lunging stab, leaning back with his weight on the bent back leg, the "
+                    "dagger pulled further back behind his hip, the blade pointing forward, his other hand stretched "
+                    "forward, the cape hanging behind him"
+                    + DAGGER_KEEP,
+                    "in the same side view facing right: a deep lunging stab, lunging far on his bent front leg, the "
+                    "back leg straight, his dagger arm fully extended straight forward at chest height, the short blade "
+                    "pointing straight ahead, the cape flying behind him",
+                    "FROM:Attack3:1:recovering from the lunge, crouched lower and leaning forward, his dagger arm "
+                    "lowered to knee height in front of him, the blade pointing forward and down, the cape flying "
+                    "behind him"
+                    + DAGGER_KEEP,
+                ],
+            ),
+            # Heavy пропущено: за три спроби (з першого кадру, FROM:Attack1:0, FROM:Attack2:2) модель малювала
+            # другий кинджал або меч-завдовжки лезо (список пропущених — у README кинджала)
+            (
+                "Block",
+                [
+                    "in the same side view facing right: guarding, crouched and braced on bent knees, the dagger held "
+                    "crosswise in front of his face, the short blade pointing forward and up, his other forearm raised "
+                    "beside it, the cape hanging behind him"
+                    + DAGGER_SHORT,
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    "in the same side view facing right: recoiling from a hard hit to the chest, his body bent "
+                    "backwards, head thrown back, eyes squeezed shut, his dagger arm flung back behind him still "
+                    "holding the dagger, staggering back on one foot"
+                    + DAGGER_SHORT,
+                ],
+            ),
+        ],
+    ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
     "brass_collector": dict(
@@ -1319,6 +1433,19 @@ def enlarge(path, cell):
     return np.asarray(canvas.resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
 
 
+GENERATED, MAX_NEW = 0, int(os.environ.get("COMFY_MAX", "1000"))
+
+
+def free():
+    urllib.request.urlopen(
+        urllib.request.Request(
+            API + "/free",
+            json.dumps({"unload_models": True, "free_memory": True}).encode(),
+            {"Content-Type": "application/json"},
+        )
+    )
+
+
 def edit(ref_rgba, text, seed, design=None):
     """Редагування з кешем: той самий референс, підказка й зерно — та сама картинка без моделі. design — шлях до
     картинки з дизайном персонажа (референс Sapega): друга картинка моделі, перша — стиль героя й полотно."""
@@ -1328,6 +1455,11 @@ def edit(ref_rgba, text, seed, design=None):
     ).hexdigest()[:16]
     path = os.path.join(CACHE, key + ".png")
     if not os.path.exists(path):
+        global GENERATED
+        if GENERATED >= MAX_NEW:  # COMFY_MAX=4: не більше 4 картинок за запуск (ОЗП), решта — наступним запуском
+            free()
+            sys.exit(f"{MAX_NEW} new images generated — run again for the rest")
+        GENERATED += 1
         name = upload(ref_rgba, "sprite_ref.png")
         design_name = (
             upload(np.asarray(Image.open(design).convert("RGBA")), "sprite_design.png")
@@ -1527,13 +1659,7 @@ if __name__ == "__main__":
             elif cached(base_ref, text, seed):
                 frames[(anim, i)] = edit(base_ref, text, seed)
     total = sum(len(p) for _, p in char["rows"])
-    urllib.request.urlopen(
-        urllib.request.Request(
-            API + "/free",
-            json.dumps({"unload_models": True, "free_memory": True}).encode(),
-            {"Content-Type": "application/json"},
-        )
-    )
+    free()
     if len(frames) < total:
         sys.exit(
             f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built"
