@@ -64,6 +64,13 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B83 — One-way bridges in the Laboratory and the boss hall are out of jump reach
+- **Where:** `Maps/Laboratory.tscn` floor-B bridge (row 22, 160 px above the floor), floor-C bridges (row 38, 128 px); `Maps/LabBoss.tscn` the two dodge bridges (row 8, 128 px)
+- **Expected:** a bridge meant to be used is reachable with one jump (≈103 px; no double jump) — the LabBoss dodge bridges are part of the djinn fight (D302).
+- **Got:** 128–160 px above anything near them; unreachable.
+- **Severity:** blocker for the boss fight (9.7); visual elsewhere
+- **Found:** 2026-10-21, BACKLOG 32 sweep
+
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
 > rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21

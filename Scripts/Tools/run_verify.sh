@@ -11,8 +11,9 @@ for f in SampleProject/UI/verify_${1:-*}.gd; do
 	name=$(basename "$f" .gd)
 	log=logs/$name.log
 	# Кожен запуск падає з 139 на виході (design/test_baseline.md, issue 1) — ховаємо це повідомлення bash.
+	# Кожен тест — під спільним замком (godot_locked.sh), щоб паралельні worktree не заважали одне одному.
 	# SCRIPT ERROR у _initialize() обриває корутину до quit() — Godot висить вічно. Найдовший тест ~30 с.
-	{ timeout 180 "$G" --headless --path . --script "res://$f" > "$log" 2>&1; } 2>/dev/null
+	{ G="$G" timeout 180 Scripts/Tools/godot_locked.sh --headless --path . --script "res://$f" > "$log" 2>&1; } 2>/dev/null
 	[[ $? -eq 124 ]] && echo "RESULT: HUNG — killed after 180 s" >> "$log"
 	result=$(grep -m1 -E '^RESULT:|^=== ALL CHECKS PASSED' "$log")
 	errors=$(grep -c 'SCRIPT ERROR' "$log")
