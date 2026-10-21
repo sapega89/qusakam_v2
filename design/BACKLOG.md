@@ -34,23 +34,30 @@ price, a stat, a label — is BLOCKED with a Q-ID, not built on a guess.
 ---
 
 > **2026-09-29 — Q1–Q28 all answered** (D88–D115, [[figma_decision_register]] §8).
-> Nothing is blocked any more. Two items were unblocked, one system came back
+> Nothing was blocked after that pass. Two items were unblocked, one system came back
 > into scope, and seven decisions reverse code that is already shipped and green.
+>
+> **2026-10-21:** nothing is blocked. The three entries that used to sit under ⛔ Blocked are resolved below
+> (hero frames exist, the Laboratory boss and the cutscene helpers are built); the heading stays for the next real block.
 
 ## ⛔ Blocked
 
-### Character animations — [[character_animation_plan]]
-- **Exists:** player Walk/Run frames; Idle/Jump/Fall/Attack show one borrowed frame; one generic
+### ~~Character animations~~ — [[character_animation_plan]] → unblocked: the hero's frames exist (2026-10-21)
+- **Now:** every hero state has frames in his own style — Idle, Walk, Run, Jump, Fall, Land, Roll, Climb, Meditate, Hurt,
+  Heavy, Block, CastPalm / CastFire / CastStorm (`SampleProject/Sprites/Player/`; D262, D264, D271). Enemies and NPCs stay
+  as they are by D139 (NPC idle activities came with D295). No hero Death frames.
+- **Was (2026-10-13):** player Walk/Run frames; Idle/Jump/Fall/Attack show one borrowed frame; one generic
   enemy sheet; static NPCs; many unused packs in `assets/`.
 - **Decided:** D138 — Kusakam keeps the 64×64 art, the missing states are drawn in that style;
   D139 — enemies and NPCs stay as they are for now.
 - **Waits on:** the frames (an artist), not a decision.
 - **Resume:** slice 1 of [[character_animation_plan]] when the frames exist.
 
-### Laboratory boss — [[lab_boss_plan]] → unblocked 2026-10-21, in progress with queue row 9 ([[lab_story_plan]])
-- Q52 answered by agent calls D301 (the Brass Collector, Mayor Hall) and D302 (the fire djinn, Laboratory), Sapega to confirm.
+### ~~Laboratory boss~~ — [[lab_boss_plan]] → unblocked 2026-10-21, both bosses built (queue row 9.2, D316)
+- Q52 answered by agent calls D301 (the Brass Collector, Mayor Hall) and D302 (the fire djinn, Laboratory); names confirmed by Sapega.
+  The Mayor Hall fight is live (D300); the djinn's hall is queue row 9.7 ([[lab_story_plan]]).
 
-### Cutscenes — [[cutscene_plan]]
+### ~~Cutscenes~~ — [[cutscene_plan]] → unblocked: built, shared helper + HUD hidden + hold-to-skip (D308, 2026-10-21); Mayor Hall beat D300
 - **Exists:** the Village is a staged sequence (D140 — fade, bandit talk, the old man); the Canyon descent is
   fully staged (D256); the abduction and Mayor's Hall are still dialogues.
 - **Decided:** D176 — Canyon abduction, Canyon descent, Mayor's Hall → Lab, fully staged;
@@ -79,16 +86,17 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 2. ~~**Canyon descent cutscene**~~ — **done 2026-10-20** (D254, D256): at the plateau edge the bridge collapses,
    `Canyon_ExitCutscene` plays, Kusakam climbs down behind a generated foreground boulder, the camera floats up to a
    blue sky above the room, fade, road. No fall, no damage; flags as before. Bridge art generated (`gen_bridge`).
-   [[cutscene_plan]] → "Built". Open: HUD stays on screen in cutscenes; no skip control.
+   [[cutscene_plan]] → "Built". ~~Open: HUD stays on screen in cutscenes; no skip control.~~ Done 2026-10-21 (D308).
 3. ~~**Healing rework**~~ — **done 2026-10-20** (D252, D261): Healing Palm is learned at level 2 (a sticky hint on the
    level-up, Esc → Skills → Enter; it lands on the first free hotbar slot); the Village old man heals Kusakam and goes
-   straight to his decision and gift, no heal request; potions drop from 1 kill in 10 (first-kill 5 potions stay).
+   straight to his decision and gift, no heal request; ~~potions drop from 1 kill in 10 (first-kill 5 potions stay)~~ — **now D261 (4b, 2026-10-21):** enemies drop coins
+   only, the first-kill potions are gone, potions are out of the shops.
    B76 fixed on the way: Enter on a Skills row learned nothing.
 4. ~~**Combat, souls-lite**~~ — **done 2026-10-20** ([[souls_combat_plan]], D264–D270): a 3-swing light combo
    (4 with two weapons), a heavy attack (R-click / R / pad B) with a breakable wind-up, block and parry (Ctrl / middle
    mouse / pad LB), enemy poise and staggers, enemy combos, the hero staggered by every wounding enemy hit — the tank
    and combo finishers "freeze" him 0.6 s (D253's freeze is this mechanic; no lock bug reproduced), a double dash
-   also in the air, walking in towns out of combat (D251), the halberd two-handed and sword + dagger dual-wield (D250),
+   also in the air, ~~walking in towns out of combat (D251)~~ (revoked 2026-10-21, D266: the hero runs everywhere), the halberd two-handed and sword + dagger dual-wield (D250),
    skill casts interruptible (D259 hook). Open: "harder tuning" beyond combos/staggers (enemy HP/damage untouched);
    enemies have no stagger frames (tint only); no stamina by design (D264).
 5. ~~**NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.~~ — **done 2026-10-21** (D295):
@@ -98,7 +106,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 7. **Foreground parallax** — below.
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
    Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
-   left, then the raid over black and the ridge lines; flags as before. [[cutscene_plan]] → "Built". Open: no skip, HUD stays.
+   left, then the raid over black and the ridge lines; flags as before. [[cutscene_plan]] → "Built". ~~Open: no skip, HUD stays.~~ Done (D308).
 9. ~~**Inventory actions**~~ — **done 2026-10-21 (D286, [[game_menu_batch_mapping]]):** double click / Enter / pad A
    uses a row — potions heal Kusakam at once, an ether restores SP, weapons / armour / accessories equip into their
    slot, materials and key items open "Cannot Use". Was (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
@@ -122,7 +130,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     is out of sight out of combat (2026-10-21 fix, Sapega: not on the back) and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
     dagger stabs, halberd thrusts, dual-wield alternating hands, heavy overhead; new hero frames Hurt, Heavy ×2, Block
     (generated from his artist frame).
-16. **MayorHall cutscene and the "unbeatable" boss** — plan [[lab_story_plan]] (D300, D301) (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
+16. ~~**MayorHall cutscene and the "unbeatable" boss**~~ — **done 2026-10-21 (D300, queue row 9.3; boss D301/D316).** Plan [[lab_story_plan]] (D300, D301) (Sapega 2026-10-20): Kusakam enters the Mayor Hall, where Астрит,
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
@@ -178,7 +186,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     screens (separate MetSys rooms) — fits the rewritten Laboratory story (item 17): the cells floor, the corridors of
     mobs, the boss room. Plan: [[world_expansion_plan]] (D296–D299); new parts get the painted terrain/backdrops.
     ~~**DesertRoad part**~~ — **done 2026-10-21** (D296–D299, B79): 2 → 6 cells, three section fights (dunes, mesa,
-    broken caravan) spawning on a trigger zone, three ledges with a Potion / Herb ×2 / Mana Crystal that stay picked,
+    broken caravan) spawning on a trigger zone, three ledges with ~~a Potion~~ an Iron Ingot (4b, D261) / Herb ×2 / Mana Crystal that stay picked,
     generated watchtower / wagon / shrine; XP curve (`xp_curve.json`) and rewards (`EnemyStats.xp_reward`) in data —
     level 2 on the road, 5 on the last City Gates kill (`verify_xp_curve`, `verify_road_sections`); level and XP now
     survive a save (B79). **Laboratory part — open**, with items 16 + 17 (queue row 9; outline in the plan).
@@ -427,9 +435,10 @@ belongs under *Needs a plan*, and the decision still has to be made.
 
 | Item | Approved by | State |
 |---|---|---|
-| **Game Menu as one scene** (supersedes "Connect `UIMenuShell`") | **D116, D117** | Plan: [[game_menu_single_scene_plan]]. The tree is already static; four scripts each pick the active tab. **B7 is not a missing `ButtonGroup`** — `vertical_tab_menu.tscn` already has one; `focus_router.focus_tabs()` focuses the first button, so Inventory wears the focus border next to the pressed tab. |
-| Companion system | **D201, D209** | Decided 2026-10-18: guard at City Gates (tutorial assist), then Алісия / Астрит / Уризен from the Laboratory; one button, per-companion cooldown. Plan: [[companion_assist_plan]]. Manager is a 27-line stub; four unreferenced `Companion*.gd`; no scenes, no art. Built 2026-10-18 (D213): slices 1–4 (HUD slot right of the skills: portrait of who answers next, seconds left when all rest). **Resume:** lab dialogue lines from Sapega. |
-| `ItemPickup` placement | **Q2 / D88** | Built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
+| **Game Menu as one scene** (supersedes "Connect `UIMenuShell`") | **D116, D117** | ✅ **Built:** `menu_shell`, `panel_manager.gd`, `vertical_tab_menu.tscn` are gone, `game_menu.gd` switches tabs, `verify_game_menu.gd`; later work [[game_menu_batch_mapping]]. Was: Plan: [[game_menu_single_scene_plan]]. The tree is already static; four scripts each pick the active tab. **B7 is not a missing `ButtonGroup`** — `vertical_tab_menu.tscn` already has one; `focus_router.focus_tabs()` focuses the first button, so Inventory wears the focus border next to the pressed tab. |
+| Companion system | **D201, D209** | ✅ **Built 2026-10-18 (D213)**, art D243–D245, scenes `Scenes/Characters/Companions/`, `verify_companions.gd`. Was: Decided 2026-10-18: guard at City Gates (tutorial assist), then Алісия / Астрит / Уризен from the Laboratory; one button, per-companion cooldown. Plan: [[companion_assist_plan]]. Manager is a 27-line stub; four unreferenced `Companion*.gd`; no scenes, no art. Built 2026-10-18 (D213): slices 1–4 (HUD slot right of the skills: portrait of who answers next, seconds left when all rest). **Resume:** lab dialogue lines from Sapega. |
+| `ItemPickup` placement | **Q2 / D88** | ✅ **Placed 2026-10-21 (D298):** `DesertRoad.tscn` has three `ItemPickup`s (`iron_ingot`, `herb`, `mana_crystal`) — the rest of this cell is the 2026-10-15 state. Was: built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
+| Journal quests grouped by city (region bar of Figma `192:1636`) | **D181** | Not built: no region in `journal_component.gd` or `story.json` (grep `region` → 0). The city name is Q54 (default *Bab ar-Rimal*). |
 | Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
 | Party card SP bar | **D3** ✅ | Built 2026-10-15 (#51): active card shows `SP cur/max` from `SkillManager` (D146); others `—/—` (D18). |
 | Status `JP Obtained` | **D11** ✅ | Built 2026-10-15 (#51): `"%d JP" % get_job_points()` (D149), live on `job_points_changed`. |
@@ -499,7 +508,7 @@ D48: keep the third-party maaacks Controls widget or own the rebinding UI.
 
 | Item | Blocker |
 |---|---|
-| `ItemPickup` placement | Q2 — built and tested; no production map gives an inventory item. Needs named items and places. |
+| ~~`ItemPickup` placement~~ | Q2 answered 2026-10-21: the three DesertRoad ledges (D298) — placed. |
 | **Village: more running before the old man** | **Deferred until the game is playable to the end** (Sapega, 2026-10-13: first a whole game, then find out why it is not fun). Today all Village action sits in x 150–1582 of a 3-cell room (3 × 864 = 2592 px; the active MetSys settings are `SampleProject/Resources/Settings.tres`, cell 864×480): bandit fight → old man in ~2–3 s of running. Wanted on the way: more bandits, Kusakam's lines by the ruined houses, a secret or an item. Open when picked up: new MetSys rooms vs. using the room's full width; how many fights; the lines' text; which item. |
 
 ---
