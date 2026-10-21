@@ -174,6 +174,11 @@ func _initialize_save_and_room() -> void:
 	# Миттєвий стан минулої гри живе в автолоадах — нова сесія (нова гра чи завантаження) починає з чистого.
 	ServiceLocator.get_companion_manager().reset()
 	ServiceLocator.get_skill_manager().clear_cooldowns()
+	# B79: рівень, досвід, стан героя й речі — теж з чистого; сейв нижче відновить свої (PlayerDataModule, InventoryModule).
+	ServiceLocator.get_xp_manager().reset()
+	ServiceLocator.get_game_manager().get_node(^"PlayerStateManager").reset_player_state()
+	ServiceLocator.get_character_manager().initialize_characters()  # ростер бере чистий стан і синхронізує клас (B55)
+	ServiceLocator.get_inventory_manager().clear()
 
 	# Проверяем, есть ли указанный путь к сохранению (из меню загрузки)
 	var save_file_path = _get_current_save_path()

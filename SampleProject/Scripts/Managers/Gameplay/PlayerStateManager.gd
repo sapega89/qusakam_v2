@@ -6,48 +6,8 @@ class_name PlayerStateManager
 ## Дотримується принципу Single Responsibility
 ## АДАПТИРОВАНО: Исключены level, experience, stat_points (используется система из текущего проекта)
 
-# Локальний стан гравця (зберігається між сценами)
-var player_state = {
-	"current_health": 100,
-	"max_health": 100,
-	"current_potions": 0,
-	"max_potions": 5,
-	"player_position": {"x": 100, "y": 549},
-	"current_scene": "VillageScene",
-	"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
-	"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
-	"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial)
-	"journal": {"people": [], "enemies": {}},  # D290: зустрінуті люди і вороги (kind → вбито)
-	"job_points": 0,
-	"equipped_skills": ["", "", "", ""],
-	"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
-	"oath": "",  # D280: клятва героя ("" / paladin / dark_knight / warden), назавжди
-	"current_sp": 30,  # D146: тимчасовий запас SP
-	"max_sp": 30,
-	"game_time": 0.0,
-	"strength": 10,
-	"intelligence": 10,
-	"dexterity": 10,
-	"constitution": 10,
-	"class_id": "champion",
-	"subclass_id": "paladin",
-	"character_id": GameSettings.DEFAULT_CHARACTER_ID,
-	"weapon_in_hand": "",  # D202: слот зброї в руці, "" — голі руки
-	"equipment": {
-		"sword": null,
-		"polearm": null,
-		"dagger": null,
-		"axe": null,
-		"mace": null,
-		"bow": null,
-		"staff": null,
-		"shield": null,
-		"head": null,
-		"body": null,
-		"accessory_1": null,
-		"accessory_2": null
-	}
-}
+# Локальний стан гравця (зберігається між сценами). Початковий — один: _initial_state() (B79: нова гра його скидає).
+var player_state: Dictionary = _initial_state()
 
 # Сигнали
 signal player_state_changed()
@@ -98,24 +58,29 @@ func get_player_position() -> Vector2:
 		return player_state.player_position
 	return Vector2(100, 549)  # Дефолтная позиция
 
-func reset_player_state():
-	"""Скидає стан гравця до початкових значень"""
-	player_state = {
+func reset_player_state() -> void:
+	"""Скидає стан гравця до початкових значень (нова гра, B79)"""
+	player_state = _initial_state()
+	player_state_changed.emit()
+
+
+static func _initial_state() -> Dictionary:
+	return {
 		"current_health": 100,
 		"max_health": 100,
 		"current_potions": 0,
 		"max_potions": 5,
 		"player_position": {"x": 100, "y": 549},
 		"current_scene": "VillageScene",
-		"unlocked_skills": [],  # D148
-		"companion_party": [],  # D220
-		"seen_tutorials": [],  # D289
-		"journal": {"people": [], "enemies": {}},  # D290
+		"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
+		"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
+		"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial)
+		"journal": {"people": [], "enemies": {}},  # D290: зустрінуті люди і вороги (kind → вбито)
 		"job_points": 0,
 		"equipped_skills": ["", "", "", ""],
-		"skill_ranks": {},  # D150
-		"oath": "",  # D280
-		"current_sp": 30,  # D146
+		"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
+		"oath": "",  # D280: клятва героя ("" / paladin / dark_knight / warden), назавжди
+		"current_sp": 30,  # D146: тимчасовий запас SP
 		"max_sp": 30,
 		"game_time": 0.0,
 		"strength": 10,
@@ -131,7 +96,7 @@ func reset_player_state():
 			"polearm": null,
 			"dagger": null,
 			"axe": null,
-		"mace": null,
+			"mace": null,
 			"bow": null,
 			"staff": null,
 			"shield": null,
@@ -141,6 +106,5 @@ func reset_player_state():
 			"accessory_2": null
 		}
 	}
-	player_state_changed.emit()
-	print("👤 PlayerStateManager: Player state reset")
+
 

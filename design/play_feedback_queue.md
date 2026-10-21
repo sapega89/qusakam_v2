@@ -83,5 +83,5 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 - Known leftovers: cutscenes have no skip and keep the HUD; camera/walk cutscene code is inline in room scripts (pull into
   shared helpers with the next cutscene); 12 `.dqd` files tag the speaker in the text instead of the speaker field; the
   assist guard still uses pack knight art; the old painted gates still show behind the new gatehouse.
-- Item 23 leftovers: a New Game in the same session keeps the XP of the last one (`XPManager.reset()` has no caller, B79 note); the ledge pickups show their icon in a grey frame (the `ItemPickup` look, first ones placed); `verify_combat_flow` [1] failed once and passed on re-run (timing flake).
+- Item 23 leftovers: ~~a New Game in the same session keeps the XP of the last one~~ — fixed 2026-10-21 (B79 note: XP, player state, roster and bag reset at a New Game); the ledge pickups show their icon in a grey frame (the `ItemPickup` look, first ones placed); `verify_combat_flow` [1] failed once and passed on re-run (timing flake).
 - Unpushed: ~92 commits on `feature/backlog` since `origin/main`.

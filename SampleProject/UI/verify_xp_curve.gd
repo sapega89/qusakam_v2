@@ -6,11 +6,13 @@ extends SceneTree
 ##   1. The curve comes from Resources/Data/xp_curve.json.
 ##   2. Level 2 on the Desert Road (Healing Palm there, D252); level < 5 until the City Gates fight is done.
 ##   3. Level 5 on the last City Gates kill — the hero enters the City able to swear the oath (D280).
+##   4. A New Game in the same session starts again at level 1, with an empty bag and a fresh hero (B79).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_xp_curve.gd
 
 ## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates).
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates"]
 const OATH_LEVEL := 5
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 var fails: Array[String] = []
 
@@ -61,6 +63,18 @@ func _initialize() -> void:
 
 	print("[3] at the City")
 	ck(xp.current_level == OATH_LEVEL, "the hero enters the City at level %d (%d XP, expected %d)" % [xp.current_level, total, OATH_LEVEL])
+
+	print("[4] a New Game in the same session starts at level 1 (B79)")
+	var sl: Node = root.get_node("ServiceLocator")
+	xp.add_xp(500)
+	sl.get_inventory_manager().add_item("potion", 3)
+	sl.get_game_manager().player_state.oath = "paladin"
+	ck(xp.current_level > 1, "XP of the last game kept in the autoload (level %d)" % xp.current_level)
+	var game: Node = await Kit.boot(self)
+	ck(xp.current_level == 1 and xp.current_xp == 0, "New Game → level %d, %d XP (expected 1, 0)" % [xp.current_level, xp.current_xp])
+	ck(sl.get_inventory_manager().get_item_count("potion") == 0, "New Game → the last game's potions are gone")
+	ck(sl.get_game_manager().player_state.oath == "", "New Game → no oath (player state reset)")
+	game.queue_free()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
