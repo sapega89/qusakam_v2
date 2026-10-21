@@ -870,11 +870,15 @@ CHARACTERS = {
                 [
                     "in the same side view facing right: bending forward on slightly bent knees, both empty hands "
                     "reaching down and forward in front of him as if picking something up, the cape hanging behind him",
-                    "in the same side view facing right: standing up straight, both empty hands lifted together in "
-                    "front of his chest, palms up, looking at his hands, the cape hanging behind him",
-                    # над головою — кадр Heavy/1 (обидва кулаки над головою, профіль): згенерований «тримає над
-                    # головою» ховав обличчя за рукою, а повтори з уточненнями зависали на зайнятій GPU
-                    "FILE:SampleProject/Sprites/Player/Heavy/1.png",
+                    # кадр 2 (долоні чашею низько перед животом) не вдався за три спроби (арт-директор, artA1A2):
+                    # руки під самою мордою, предмету нема місця, раз — фас. None з base=None — файл не пишеться
+                    None,
+                    # над головою — свій кадр, не Heavy/1 (замах атаки з плащем на вітрі); руки позаду голови, щоб
+                    # обличчя не ховалось
+                    "in the same side view facing right, the same size: standing straight with his feet planted apart, "
+                    "both arms raised straight up behind his big head, his elbows behind the back of his head, his two "
+                    "open empty hands meeting together just above the top of his head, his whole face, eye and snout "
+                    "fully visible and uncovered, looking ahead to the right, the cape hanging straight down behind him",
                 ],
             )
         ],
