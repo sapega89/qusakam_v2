@@ -872,9 +872,9 @@ CHARACTERS = {
                     "reaching down and forward in front of him as if picking something up, the cape hanging behind him",
                     "in the same side view facing right: standing up straight, both empty hands lifted together in "
                     "front of his chest, palms up, looking at his hands, the cape hanging behind him",
-                    "in the same side view facing right: standing tall and proud, both arms stretched straight up "
-                    "above his head, both empty hands open together high overhead as if holding up a treasure, "
-                    "looking up at his hands, the cape hanging behind him",
+                    # над головою — кадр Heavy/1 (обидва кулаки над головою, профіль): згенерований «тримає над
+                    # головою» ховав обличчя за рукою, а повтори з уточненнями зависали на зайнятій GPU
+                    "FILE:SampleProject/Sprites/Player/Heavy/1.png",
                 ],
             )
         ],
