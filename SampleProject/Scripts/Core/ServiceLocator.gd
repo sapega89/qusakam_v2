@@ -130,6 +130,10 @@ func get_skill_manager() -> SkillManager:
 	"""Получает SkillManager из GameplayServiceRegistry"""
 	return gameplay.get_skill_manager()
 
+## Очки атрибутів (D335).
+func get_attribute_manager() -> AttributeManager:
+	return gameplay.get_attribute_manager()
+
 func get_game_flow() -> GameFlow:
 	"""Получает GameFlow из GameplayServiceRegistry"""
 	return gameplay.get_game_flow()

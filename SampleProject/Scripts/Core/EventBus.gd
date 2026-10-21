@@ -223,6 +223,10 @@ signal skill_upgraded(skill_id: String, rank: int)
 signal oath_sworn(oath_id: String)
 ## Навички скинуто за монети (D282): усе забуто, refunded очок повернуто, клятва лишилась.
 signal skills_reset(refunded: int)
+## Невкладених очок атрибутів стало current (D335): рівень, вкладення, скидання.
+signal attribute_points_changed(current: int, previous: int)
+## Змінилось, скільки очок вкладено в атрибути (D335) — Max HP, SP, атака перераховуються.
+signal attributes_changed()
 
 ## Активный навык успешно применён: проверки пройдены, SP списан,
 ## боевой эффект выполнен, перезарядка запущена. Ошибочные попытки сюда НЕ попадают.

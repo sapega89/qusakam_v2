@@ -53,6 +53,8 @@ func save() -> Dictionary:
 	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
 	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
 	data["oath"] = player_state.oath  # D280
+	data["attribute_points"] = player_state.attribute_points  # D335
+	data["attributes"] = player_state.attributes.duplicate()
 	var xp: XPManager = ServiceLocator.get_xp_manager()  # B79: рівень і досвід переживають сейв
 	data["level"] = xp.current_level
 	data["xp"] = xp.current_xp
@@ -133,9 +135,15 @@ func load_data(data: Dictionary) -> void:
 	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
 	player_state.oath = String(data.get("oath", ""))  # D280: сейв без клятви — клятви немає
 	ServiceLocator.get_xp_manager().restore(int(data.level), int(data.xp))  # B79
+	# D335: сейв до очок атрибутів — нічого не вкладено, а невкладених стільки, скільки дали б рівні.
+	var spent_attributes: Dictionary = {}
+	for attribute_id: String in data.get("attributes", {}):
+		spent_attributes[attribute_id] = int(data.attributes[attribute_id])
+	player_state.attributes = spent_attributes
+	player_state.attribute_points = int(data.get("attribute_points",
+			ServiceLocator.get_attribute_manager().points_for_level(int(data.level))))
+	EventBus.attributes_changed.emit()
 	player_state.max_sp = int(data.get("max_sp", player_state.get("max_sp", 0)))
-	player_state.current_sp = clampi(
-		int(data.get("current_sp", player_state.get("current_sp", 0))), 0, player_state.max_sp)
 
 	if "unlocked_skills" in data:
 		var skills_data = data.unlocked_skills
@@ -147,6 +155,10 @@ func load_data(data: Dictionary) -> void:
 			player_state.unlocked_skills = typed_skills
 		else:
 			player_state.unlocked_skills = []
+
+	# Межа SP — з пасивками й Wisdom (D284, D335), тож після навичок і атрибутів.
+	player_state.current_sp = clampi(int(data.get("current_sp", player_state.get("current_sp", 0))),
+			0, ServiceLocator.get_skill_manager().get_max_sp())
 
 	player_state.companion_party = data.companion_party.duplicate()  # D220
 	player_state.seen_tutorials = data.seen_tutorials.duplicate()  # D289

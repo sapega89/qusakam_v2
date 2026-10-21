@@ -8,6 +8,7 @@ extends ManagerBase
 const CharacterManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/CharacterManager.gd")
 const EquipmentManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/EquipmentManager.gd")
 const SkillManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd")
+const AttributeManagerScript = preload("res://SampleProject/Scripts/Managers/Gameplay/AttributeManager.gd")
 const SceneManagerScript = preload("res://SampleProject/Scripts/Managers/Scene/SceneManager.gd")
 const MenuManagerScript = preload("res://SampleProject/Scripts/Managers/UI/MenuManager.gd")
 const UIManagerScript = preload("res://SampleProject/Scripts/Managers/UI/UIManager.gd")
@@ -66,6 +67,12 @@ func _create_managers() -> void:
 	skill_manager.name = "SkillManager"
 	add_child(skill_manager)
 	print("🎓 GameManager: SkillManager created")
+
+	# AttributeManager (D335)
+	var attribute_manager = AttributeManagerScript.new()
+	attribute_manager.name = "AttributeManager"
+	add_child(attribute_manager)
+	print("💪 GameManager: AttributeManager created")
 
 	# EquipmentManager
 	var equipment_manager = EquipmentManagerScript.new()
@@ -196,9 +203,22 @@ func calculate_max_health() -> int:
 	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) + level_and_passive_health()
 
 
-## Частина Max HP, що не залежить від речей: бонус рівня й пасивки. Equipment рахує «без речей» з нею ж.
+## Частина Max HP, що не залежить від речей: бонус рівня, пасивки, Vitality (D335). Equipment рахує «без речей» з нею ж.
 func level_and_passive_health() -> int:
-	return ServiceLocator.get_xp_manager().get_hp_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("max_health"))
+	return ServiceLocator.get_xp_manager().get_hp_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("max_health")) \
+			+ roundi(ServiceLocator.get_attribute_manager().bonus("max_health"))
+
+
+## Частина Phys. Atk., що не залежить від речей: бонус рівня, пасивки (D284), Strength (D335).
+func level_and_passive_attack() -> int:
+	return ServiceLocator.get_xp_manager().get_damage_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("attack")) \
+			+ roundi(ServiceLocator.get_attribute_manager().bonus("attack"))
+
+
+## Частка з StatCalculator + Agility (D335), під стелею з attributes.json.
+func with_attribute_ratio(stat: String, base: float) -> float:
+	var attributes: AttributeManager = ServiceLocator.get_attribute_manager()
+	return attributes.capped(stat, base + attributes.bonus(stat))
 
 
 ## Phys. Atk. — і в меню, і в ударі гравця (D199): сила, атака спорядження й бонус рівня.
@@ -206,7 +226,7 @@ func calculate_physical_damage() -> int:
 	var attributes := _active_attributes()
 	if not attributes:
 		return 0
-	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + ServiceLocator.get_xp_manager().get_damage_bonus() 			+ roundi(ServiceLocator.get_skill_manager().passive_value("attack"))  # D284
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + level_and_passive_attack()
 
 
 func calculate_magic_damage() -> int:
@@ -224,12 +244,12 @@ func calculate_magic_defense() -> int:
 
 func calculate_attack_speed() -> float:
 	var attributes := _active_attributes()
-	return StatCalculator.calculate_attack_speed(attributes) if attributes else 1.0
+	return with_attribute_ratio("attack_speed", StatCalculator.calculate_attack_speed(attributes)) if attributes else 1.0
 
 
 func calculate_dodge_chance() -> float:
 	var attributes := _active_attributes()
-	return StatCalculator.calculate_dodge_chance(attributes) if attributes else 0.0
+	return with_attribute_ratio("dodge_chance", StatCalculator.calculate_dodge_chance(attributes)) if attributes else 0.0
 
 
 func calculate_accuracy() -> float:
@@ -239,7 +259,7 @@ func calculate_accuracy() -> float:
 
 func calculate_critical_chance() -> float:
 	var attributes := _active_attributes()
-	return StatCalculator.calculate_critical_chance(attributes) if attributes else 0.0
+	return with_attribute_ratio("crit_chance", StatCalculator.calculate_critical_chance(attributes)) if attributes else 0.0
 
 
 # ── Прочие тонкие делегаты для UI ──────────────────────────────────────────
