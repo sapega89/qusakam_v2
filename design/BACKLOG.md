@@ -235,7 +235,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     exists? check D-IDs); translations registered without `project.godot` (runtime `TranslationServer`, D270 pattern) or
     in it once Sapega commits it. A verify that walks every screen and every text resource in each locale and fails on
     Cyrillic in EN and on Latin words in UK (allow-list: key/button glyph names like Tab, Esc, LB, RT, A/B/X/Y, and proper
-    tokens like HP/SP/XP if Sapega agrees). Voices: English greetings via Kokoro (D277), Ukrainian via a Piper voice whose
+    tokens HP/SP/XP — Sapega 2026-10-21 «HP, SP, XP так і залиш»). Voices: English greetings via Kokoro (D277), Ukrainian via a Piper voice whose
     licence allows release (check each voice's model card; never non-commercial weights); greeting picked by locale.
     Plan first: `design/localization_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
