@@ -388,6 +388,15 @@ signal dialogue_finished(dialogue_id: String)
 @warning_ignore("unused_signal")
 signal item_added(item_id: String, quantity: int)
 
+## Герой підібрав здобич переможеного моба (монети з ворога, монети LootSystem) — уже в інвентарі.
+## Слухає стрічка здобичі на HUD (BACKLOG 33, loot_feed.gd). Дарунки й нагороди сюди не йдуть — у них модалка.
+##
+## Args:
+##     item_id (String): ID предмета
+##     amount (int): Кількість
+@warning_ignore("unused_signal")
+signal loot_picked_up(item_id: String, amount: int)
+
 ## Емітується при видаленні предмета з інвентаря.
 ##
 ## Args:

@@ -264,6 +264,7 @@ func _give_oldman_gift() -> void:
 	inventory.add_item("copper_sword", 1)
 	inventory.add_item("leather_armor", 1)
 	game.set_quest_flag("village_oldman_gift", true)
+	ServiceLocator.get_ui_manager().show_obtained({"copper_sword": 1, "leather_armor": 1})  # BACKLOG 33
 	# Висить, доки не вдягне зброю
 	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
 	EventBus.equipment_equipped.connect(_on_gift_equipped)

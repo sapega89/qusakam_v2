@@ -105,6 +105,11 @@ static func save_failed() -> Dictionary:
 static func item_pickup(item_name: String, amount: int) -> Dictionary:
 	return misc_popup("You obtained:", "%s × %d" % [item_name, amount])
 
+## Те саме «You obtained:», коли речі ДАЛИ (BACKLOG 33): дарунок діда, нагорода завдання, трофеї зали мера —
+## по рядку «<Item> × <N>» на предмет.
+static func items_obtained(lines: Array[String]) -> Dictionary:
+	return misc_popup("You obtained:", "\n".join(lines))
+
 static func misc_popup(title: String, description: String, ok_text: String = "OK") -> Dictionary:
 	return {
 		"title": title,

@@ -67,6 +67,7 @@ func _collect() -> void:
 
 	# Add coins to inventory
 	ServiceLocator.get_inventory_manager().add_coins(coin_value)  # сам шле EventBus.coins_changed
+	EventBus.loot_picked_up.emit("coin", coin_value)  # стрічка здобичі на HUD (BACKLOG 33): монети — лише з мобів
 	DebugLogger.verbose("Coin: Collected! Value: %d" % coin_value, "Coin")
 
 	# Spawn collection particle effect

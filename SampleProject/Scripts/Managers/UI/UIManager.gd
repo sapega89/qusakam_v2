@@ -21,6 +21,9 @@ var modal_layer: Node = null
 var current_state: Node = null
 var current_state_name: String = ""
 
+## Речі, які герою дали (BACKLOG 33) і ще не показані: {item_id: amount} на кожен дарунок, по черзі.
+var _obtained_queue: Array[Dictionary] = []
+
 # Сигнали для оновлення UI
 signal ui_refresh_requested()
 
@@ -165,6 +168,43 @@ func open_save_game() -> void:
 func show_modal(data: Dictionary) -> void:
 	_ensure_ui_root()
 	modal_layer.show_modal(data)
+
+## Модалка «You obtained:» для речей, які герою ДАЛИ (BACKLOG 33): дарунок діда (D129), нагорода й видача завдання,
+## трофеї зали мера. Речі вже в інвентарі; модалка — та сама, що й у підібраних (ItemPickup, D71). Дарунок приходить
+## посеред розмови чи кат-сцени, тож модалка чекає, доки гра вільна: ні діалогу, ні кат-сцени (героя тримають),
+## ні меню, ні паузи, ні іншої модалки — і йде по одній на дарунок.
+func show_obtained(items: Dictionary) -> void:
+	assert(not items.is_empty(), "UIManager.show_obtained: nothing given")
+	_obtained_queue.append(items)
+	if not get_tree().process_frame.is_connected(_flush_obtained):
+		get_tree().process_frame.connect(_flush_obtained)
+
+
+func has_pending_obtained() -> bool:
+	return not _obtained_queue.is_empty()
+
+
+func _flush_obtained() -> void:
+	if not _can_show_obtained():
+		return
+	var items: Dictionary = _obtained_queue.pop_front()
+	var database: Node = ServiceLocator.get_item_database()
+	var lines: Array[String] = []
+	for item_id: String in items:
+		lines.append("%s × %d" % [database.get_item_name(item_id), int(items[item_id])])
+	show_modal(ModalTemplates.items_obtained(lines))
+	if _obtained_queue.is_empty():
+		get_tree().process_frame.disconnect(_flush_obtained)
+
+
+func _can_show_obtained() -> bool:
+	var game: Game = Game.get_singleton()
+	if game == null or game.player == null or game.player.get(&"event"):  # героя тримає діалог / кат-сцена (Player.event)
+		return false
+	var dialogue: Node = ServiceLocator.get_dialogue_manager()
+	return not get_tree().paused and not is_ui_active() and modal_layer != null and modal_layer.active_modal == null \
+			and not dialogue.is_dialogue_active() and not dialogue.is_bubble_playing()
+
 
 ## "" — UI ще не відкривався, "NullState" — вже закрився. Обидва = UI неактивний.
 func is_ui_active() -> bool:
