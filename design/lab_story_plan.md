@@ -1,6 +1,6 @@
 ---
 type: plan
-status: in-progress  # 2026-10-21, queue row 9 (BACKLOG 16 + 17 + 6 + 23 Laboratory); agent calls D300–D310, Sapega to confirm
+status: in-progress  # 2026-10-21: plan, B79 leftover, boss art (D309), draft lines done; code WIP in git stash; rest = queue rows 9.1–9.8
 ---
 
 # The Mayor Hall and the Laboratory story — plan
@@ -66,6 +66,16 @@ D300 Mayor Hall beat · D301 the Brass Collector · D302 the fire djinn · D303 
 and the Q64 incantation · D305 wake, acquaintance, Малік, assists at once · D306 the mob corridors · D307 the boss hall
 lock, the cloak talk and both endings · D308 shared cutscene helpers, HUD hidden, hold-to-skip · D309 generated art ·
 D310 boss voices and cutscene lines. Text of each: [[figma_decision_register]].
+
+## State (2026-10-21, end of the first agent)
+
+Done and committed: this plan; slice 0 (B79 leftover, `b2f50186`); boss art for both bosses (D309, sheets in
+`Assets/Characters/Bosses/`); all draft `.dqd` lines of the block and five speakers (`5e79691c`). Written but never run,
+kept in **`git stash` "queue row 9 WIP drafts"**: `Cutscene.gd`, the skip prompt, `BossEnemy` / `BossLogic` / hazards,
+the boss bar, `MayorHall.gd`, `LabCells.gd`, `LabBoss.gd`, and the rewrites of `City_MayorHall.dqd` (the queue talk)
+and `Laboratory_AfterBoss.dqd` (the cloak line). D-IDs written so far: D309 only — D300–D308 and D310 get written by
+the sub-row that builds them (texts in this note and [[lab_boss_plan]]). The remaining slices are queue rows 9.1–9.8
+in [[play_feedback_queue]].
 
 ## Slices (each its own commit and verify)
 
