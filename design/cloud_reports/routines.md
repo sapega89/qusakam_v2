@@ -24,7 +24,7 @@ Routines: https://claude.ai/code/routines
 | 00:45 | 21:45 | **INTEGRATOR 1** | cloud/integration | merge wave 1 |
 | 01:45 | 22:45 | Lab 9.6 mob corridors | cloud/lab-9-6 | 9.6, B83 |
 | 01:45 | 22:45 | Two languages part 1 | cloud/localization-1 | 31 (UI) |
-| 02:30 | 23:30 | Chests wired (needs art A1) | cloud/chests | 33 |
+| 22:08 | 19:08 | Chests wired (art A1 landed early; started at once) | cloud/chests | 33 |
 | 02:30 | 23:30 | Buildings + village-centre house + lore stubs (needs art A2) | cloud/buildings | 29, 38, 34 |
 | 05:15 | 02:15 | **INTEGRATOR 2** | cloud/integration | merge wave 2 |
 | 06:15 | 03:15 | Lab 9.8 demo end + full route + boss voices | cloud/lab-9-8 | 9.8 |
