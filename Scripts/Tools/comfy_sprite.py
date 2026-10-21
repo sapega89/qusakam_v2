@@ -198,7 +198,11 @@ CHARACTERS = {
     # NPC: дорослі, на 1,5 вищі за героя (D172) — клітинка 64×96 при його ж пікселі; дихання з двох кадрів.
     "blacksmith": dict(
         out="SampleProject/Assets/Characters/NPCs/blacksmith/sheet.png",
-        prop=("work", (34, 62, 64, 92), "SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png"),
+        prop=(
+            "work",
+            (34, 62, 64, 92),
+            "SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png",
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(64, 96),
         seed=5,
@@ -232,7 +236,8 @@ CHARACTERS = {
                 [
                     SMITH_RAISE,
                     "FROM:work:0:his hammer arm lowered: the hammer head now level with his shoulder, halfway down to the "
-                    "anvil, about to strike; the blade on the anvil still only glowing orange, no flames" + SAME,
+                    "anvil, about to strike; the blade on the anvil still only glowing orange, no flames"
+                    + SAME,
                     "FROM:work:0:the smithing hammer striking the glowing blade on the anvil, his arm swung straight "
                     "down" + SAME,
                 ],
@@ -441,7 +446,8 @@ CHARACTERS = {
                     OLDMAN_PIPE,
                     "FROM:work:0:lowering the long pipe from his mouth to his chest, a small puff of grey smoke in front "
                     "of his snout" + SAME,
-                    "FROM:work:0:the long pipe held at his chest, his head nodding down, eyes closed, dozing" + SAME,
+                    "FROM:work:0:the long pipe held at his chest, his head nodding down, eyes closed, dozing"
+                    + SAME,
                 ],
             ),
         ],
@@ -812,6 +818,67 @@ CHARACTERS = {
         "magenta background.",
         rows=[("Meditate", [None, "BOB:40"])],
     ),
+    # Скриня (BACKLOG 33, арт A1): закрита, відкривається, відкрита; кадри — з закритої (FROM: тримає ту саму скриню).
+    "chest": dict(
+        frames_out="SampleProject/Assets/Props/Chest",  # кадри по теках, як у героя
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=41,
+        colors=16,
+        who="the same small wooden treasure chest with the dark iron bands, the iron corner plates and the small iron lock",
+        base="Replace this character with a small wooden treasure chest drawn in exactly the same pixel art style, thick "
+        "dark outline and flat shading: a sturdy chest of warm brown wooden planks with dark iron bands, iron corner plates "
+        "and a small iron lock plate in the front, a rounded lid, about half as tall as the character was, standing on the "
+        "ground at the bottom of the picture, closed, in a side view slightly from the front. Keep the plain flat magenta "
+        "background.",
+        rows=[
+            ("Closed", [None]),
+            (
+                "Opening",
+                [
+                    # без «золотого сяйва»: модель фарбувала ним усю кришку, кути відкриття не відрізнялись
+                    "FROM:Closed:0:the lid lifted open just a little at the front, a thin dark gap between the lid and "
+                    "the chest body, the lid still the same brown wood with the iron bands, the chest body unchanged",
+                    "FROM:Closed:0:the lid swung half open, tilted back on its hinges at the back of the chest, the dark "
+                    "empty inside of the chest visible in the gap, the lid still brown wood with iron bands, the chest "
+                    "body unchanged",
+                    "FROM:Closed:0:the lid swung almost fully open, nearly upright on its hinges at the back of the "
+                    "chest, the dark empty inside of the chest visible, the lid still brown wood with iron bands, the "
+                    "chest body unchanged",
+                ],
+            ),
+            (
+                "Open",
+                [
+                    "FROM:Closed:0:the lid swung fully open and resting back on its hinges at the back, the inside of "
+                    "the chest dark and empty, the chest body unchanged",
+                ],
+            ),
+        ],
+    ),
+    # Герой піднімає знайдений предмет над головою (BACKLOG 33, арт A1); руки порожні — предмет малює код.
+    "hero_raise": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=22,
+        floor=56,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "Raise",
+                [
+                    "in the same side view facing right: bending forward on slightly bent knees, both empty hands "
+                    "reaching down and forward in front of him as if picking something up, the cape hanging behind him",
+                    "in the same side view facing right: standing up straight, both empty hands lifted together in "
+                    "front of his chest, palms up, looking at his hands, the cape hanging behind him",
+                    "in the same side view facing right: standing tall and proud, both arms stretched straight up "
+                    "above his head, both empty hands open together high overhead as if holding up a treasure, "
+                    "looking up at his hands, the cape hanging behind him",
+                ],
+            )
+        ],
+    ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
     "brass_collector": dict(
@@ -914,8 +981,13 @@ CHARACTERS = {
                     "blazing with fire",
                 ],
             ),
-            ("fly", ["he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: flying upward, both arms raised above his head, the flame tail "
-                     "streaming straight down below him"]),
+            (
+                "fly",
+                [
+                    "he has no legs and no feet: below the waist only the same column of dark smoke ending in a flame, hanging straight down; the whole body in the picture, the same size, in the same side view facing right: flying upward, both arms raised above his head, the flame tail "
+                    "streaming straight down below him"
+                ],
+            ),
             (
                 "death",
                 [
@@ -968,9 +1040,19 @@ CHARACTERS = {
         rows=[
             ("idle", [None, "BOB:56"]),
             ("walk", WALK),
-            ("shout", ["in the same side view facing right: throwing his head back and shouting up at the ceiling, his "
-                       "chained arms raised high, his mouth wide open"]),
-            ("collapse", ["lying on his back on the ground, motionless, the chains across his chest"]),
+            (
+                "shout",
+                [
+                    "in the same side view facing right: throwing his head back and shouting up at the ceiling, his "
+                    "chained arms raised high, his mouth wide open"
+                ],
+            ),
+            (
+                "collapse",
+                [
+                    "lying on his back on the ground, motionless, the chains across his chest"
+                ],
+            ),
             (
                 "front",
                 [
@@ -998,8 +1080,13 @@ CHARACTERS = {
         rows=[
             ("idle", [None, "BOB:56"]),
             ("walk", WALK),
-            ("inject", ["in the same side view facing right: thrusting the big glass syringe forward and down in front of "
-                        "him with his right hand, injecting, the black mask still over his mouth"]),
+            (
+                "inject",
+                [
+                    "in the same side view facing right: thrusting the big glass syringe forward and down in front of "
+                    "him with his right hand, injecting, the black mask still over his mouth"
+                ],
+            ),
             (
                 "front",
                 [
@@ -1199,7 +1286,9 @@ def regrid(img, cell):
     rgb, op = shrink(img, cell)
     out = np.where(op[..., None], rgb, np.array(MAGENTA, np.float32)).astype(np.uint8)
     out = np.dstack([out, np.full(op.shape, 255, np.uint8)])
-    return np.asarray(Image.fromarray(out).resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
+    return np.asarray(
+        Image.fromarray(out).resize((cell[0] * UP, cell[1] * UP), Image.NEAREST)
+    )
 
 
 SPECIAL = ("BOB", "ROT", "FILE", "FLIP")
