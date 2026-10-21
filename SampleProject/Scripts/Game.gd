@@ -196,7 +196,7 @@ func _initialize_save_and_room() -> void:
 		_assign_array(events, save_manager.get_value("events", []))
 		_assign_array(player.abilities, save_manager.get_value("abilities", []))
 
-		# Restore MetSys state (map, items, position)
+		# Restore MetSys state (map, items); позицію гравця ставимо після load_room() нижче (B82)
 		save_manager.retrieve_game(self)
 		loaded_from_save = true
 		
@@ -235,14 +235,15 @@ func _initialize_save_and_room() -> void:
 	print("🚪 [Game] load_room() викликано для: %s" % scene_path)
 
 
-	# ВАЖНО: Для новой игры позиционируем игрока на мітці Arrival в стартовой комнате
-	# (при загрузке сохранения позиция уже восстановлена через save_manager.retrieve_game выше)
-	if start_new_game:
+	# Нова гра — гравець на мітці Arrival стартової кімнати. Завантаження — там, де він зберігся (B82):
+	# позицію пише _save_full_game_data_to_save_system(), читає PlayerDataModule. Кімната вже додана
+	# (load_room() без старої мапи синхронний), тож ставимо одразу, до першого кроку фізики —
+	# тригери кімнати бачать гравця на збереженому місці, а не в дефолтній точці Game.tscn (B80).
+	if loaded_from_save:
+		place_player(ServiceLocator.get_player_state_manager().get_player_position())
+	elif start_new_game:
 		await get_tree().process_frame  # Ждём загрузки комнаты
 		_position_player_at_start()
-
-	# MetSys автоматически устанавливает позицию игрока:
-	# - Из сохранения при загрузке игры (через save_manager.retrieve_game)
 
 	# Add module for room transitions.
 	# УВАГА: тільки ScrollingRoomTransitions. Він обнуляє game.map перед
@@ -457,7 +458,7 @@ func init_room():
 	# room_instance.adjust_camera_limits() задає межі, а сама камера — дочірній
 	# вузол гравця, тому слідкує за ним автоматично.
 	
-	# Позицію задають MetSys (переходи), retrieve_game() (завантаження) і
+	# Позицію задають MetSys (переходи), _initialize_save_and_room() (завантаження, B82) і
 	# _position_player_at_start() (нова гра). Евристики «гравець задалеко
 	# від SavePoint — переставити» прибрано: вони ховали помилки позиціонування (D131).
 	player.on_enter()
@@ -601,6 +602,6 @@ func _save_full_game_data_to_save_system() -> bool:
 	return bool(SaveSystem.save_player_data())
 
 
-## Завантажує інвентар і прапорці зі слота (позицію відновлює MetSys через retrieve_game()).
+## Завантажує інвентар, прапорці й позицію гравця зі слота (позицію застосовує _initialize_save_and_room(), B82).
 func _load_full_game_data_from_save_system() -> void:
 	SaveSystem.load_player_data()
