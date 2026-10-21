@@ -616,6 +616,10 @@ func parried(by: Node2D) -> void:
 func hit_stagger_time() -> float:
 	return maxf(stagger_time, EnemyLogic.FINISHER_STAGGER) if enemy_logic.finisher else stagger_time
 
+## Поштовх легкого удару (4b): [param push] px, замах не зриває.
+func nudge(push: float) -> void:
+	enemy_logic.start_knockback(push, false)
+
 ## Відкидання від удару (булава, D203): [param push] px, знак — напрямок.
 func knockback(push: float) -> void:
 	enemy_logic.start_knockback(push)

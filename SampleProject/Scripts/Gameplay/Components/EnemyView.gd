@@ -10,6 +10,8 @@ const EnemyTell := preload("res://SampleProject/Scripts/FX/EnemyTell.gd")
 ## Замах (4b): поза замаху тягнеться на весь замах — кадр удару анімації attack (час у meta
 ## AnimationPlayer «attack_strike_time», по сцені ворога) припадає рівно на удар; тіло відхиляється назад на WINDUP_LEAN px.
 const WINDUP_LEAN := 4.0
+## Здригання від удару героя (4b «мало відчуття удару»): тіло стискається й відхиляється, за FLINCH_TIME вертається.
+const FLINCH_TIME := 0.16
 
 var enemy: CharacterBody2D = null
 var sprite2d: Sprite2D = null
@@ -71,14 +73,25 @@ func _offset_to(px: float, time: float) -> void:
 func show_tell(life: float, lunge: float, reach: float) -> void:
 	var tell := EnemyTell.new()
 	tell.setup(life)
-	var size: Vector2 = sprite2d.get_rect().size * sprite2d.scale
-	var center: Vector2 = sprite2d.position + sprite2d.get_rect().get_center() * sprite2d.scale
-	tell.glint_at = center + Vector2(facing_direction * size.x * 0.3, -size.y * 0.15)
+	# Де на кадрі замаху зброя (лезо, зуби, жало): meta «tell_at» Sprite2D у сцені ворога, px текстури від центру кадру,
+	# для погляду праворуч.
+	var at: Vector2 = sprite2d.get_meta(&"tell_at")
+	tell.glint_at = sprite2d.position + (sprite2d.offset + Vector2(at.x * facing_direction, at.y)) * _base_scale
 	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
 	tell.feet = body.position + Vector2(0, body.shape.get_rect().end.y)
 	tell.direction = facing_direction
 	tell.line_length = lunge + reach if lunge > 0.0 else 0.0
 	enemy.add_child(tell)
+
+## Удар героя влучив: тіло стискається, відхиляється від удару на [param push] px і вертається.
+func flinch(from_side: float, push: float) -> void:
+	if _lean:
+		_lean.kill()
+	sprite2d.scale = Vector2(_base_scale.x * 1.15, _base_scale.y * 0.85)
+	sprite2d.offset.x = -from_side * push / _base_scale.x
+	_lean = create_tween().set_parallel()
+	_lean.tween_property(sprite2d, ^"scale", _base_scale, FLINCH_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_lean.tween_property(sprite2d, ^"offset:x", 0.0, FLINCH_TIME)
 
 func on_attack_ended() -> void:
 	anim_player.speed_scale = 1.0

@@ -269,6 +269,11 @@ const NPC_MENU_OFFSET := Vector2(40, -140)  # праворуч над NPC, як 
 const LG_TAB_GAP := 16            # UI/Sidebar Tab: gap 16 у category-list
 const SIDEBAR_TAB_HEIGHT := 45
 
+# ── Удар по героєві (4b, Sapega «відчуття, що тебе вдарили»): червона віньєтка лише по краях екрана
+# (центр прозорий — не повноекранний спалах) і короткий червоний спалах рядка HP. Колір@альфа → позиція від центру.
+const HURT_RED := Color("e0281e")
+const HURT_VIGNETTE := [[Color("e0281e", 0.0), 0.72], [Color("e0281e", 0.55), 1.0]]
+
 # ── Game Over (Figma: game-over-screen 41:83) ─────────────────────────────────
 const GAME_OVER_RED := Color("9e1b1b")
 const GAME_OVER_FRAME := Color("5c5655")

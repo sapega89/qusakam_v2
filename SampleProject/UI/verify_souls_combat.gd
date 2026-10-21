@@ -78,10 +78,95 @@ func _initialize() -> void:
 	await _hero_moves(sl)
 	await _movement()
 	await _weapons(sl)
+	await _hit_feel()
 	await _freeze_check()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
+
+## Скільки реальних мс триває завмирання, що почнеться впродовж [param wait_ms] (0 — не почалось).
+func _hitstop_ms(wait_ms: int) -> int:
+	var deadline := Time.get_ticks_msec() + wait_ms
+	while Engine.time_scale >= 1.0 and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if Engine.time_scale >= 1.0:
+		return 0
+	var t0 := Time.get_ticks_msec()
+	while Engine.time_scale < 1.0:
+		await process_frame
+	return Time.get_ticks_msec() - t0
+
+## [13] Відчуття удару (4b): завмирання лише на влучання, ворог здригається, вібрація з геймпадом;
+## удар по героєві — довше завмирання, червоні краї, тряска рядка HP, сильніша вібрація.
+func _hit_feel() -> void:
+	print("[13] Hit feel: hitstop on a hit, not on a miss; the enemy flinches; the pad rumbles (4b)")
+	var glyphs: GDScript = load("res://SampleProject/Scripts/UI/input_glyphs.gd")
+	glyphs.using_gamepad = true
+	glyphs.pad_device = 0
+	await create_timer(1.0).timeout
+	var target := _dummy()
+	var sprite: Sprite2D = target.get_node("Sprite2D")
+	var base_scale: Vector2 = sprite.scale
+	await _place_hero(target, -26)
+	Input.stop_joy_vibration(0)
+	hero.combat.perform_attack(1)
+	await physics_frame
+	var flinched := false
+	var light_ms: int = 0
+	for i in 20:
+		await physics_frame
+		if sprite.scale != base_scale:
+			flinched = true
+			break
+	light_ms = await _hitstop_ms(300)
+	var light_rumble: Vector2 = Input.get_joy_vibration_strength(0)
+	ck(flinched, "the enemy flinches on a light hit (scale %s → %s)" % [base_scale, sprite.scale])
+	ck(light_rumble.x > 0.0, "a connecting hit rumbles the pad (%s)" % light_rumble)
+	await create_timer(0.8).timeout
+	# Промах: спиною до ворога
+	Input.stop_joy_vibration(0)
+	await _place_hero(target, -26)
+	hero.combat.perform_attack(-1)
+	var miss_ms: int = await _hitstop_ms(400)
+	ck(miss_ms == 0 and Input.get_joy_vibration_strength(0) == Vector2.ZERO, "a miss: no hitstop, no rumble (%d ms)" % miss_ms)
+	await create_timer(1.2).timeout
+	await _place_hero(target, -30)
+	await _tap(&"heavy_attack")
+	var heavy_ms: int = await _hitstop_ms(900)
+	var heavy_rumble: Vector2 = Input.get_joy_vibration_strength(0)
+	ck(light_ms >= 40 and heavy_ms > light_ms, "hitstop: light %d ms, heavy %d ms (longer)" % [light_ms, heavy_ms])
+	ck(heavy_rumble.y > light_rumble.y, "the heavy rumbles harder (%s vs %s)" % [heavy_rumble, light_rumble])
+	await create_timer(1.5).timeout
+
+	print("[13b] Getting hit is felt: longer hitstop, red screen edges, the HP row shakes, a strong rumble (4b)")
+	var vignette: CanvasLayer = root.get_node("GameManager/VFXHooks").hurt_vignette
+	var hp_row: Control = get_first_node_in_group("player_vitals_panel")._rows_by_id["HP"]
+	var hp_bar: ProgressBar = hp_row.get_node("Bar")
+	hero.current_health = hero.Max_Health
+	await _place_hero(target, -30)
+	Input.stop_joy_vibration(0)
+	target.stagger_time = 0.25
+	hero.take_damage(5, target)
+	var edge_light: float = vignette.strength()
+	var bar_red: bool = hp_bar.modulate != Color.WHITE
+	var hurt_rumble: Vector2 = Input.get_joy_vibration_strength(0)
+	var hurt_ms: int = await _hitstop_ms(100)
+	ck(hurt_ms > light_ms, "the hero's hitstop is longer than his own light hit (%d vs %d ms)" % [hurt_ms, light_ms])
+	ck(edge_light > 0.0 and vignette.get_child(0).texture is GradientTexture2D, "red vignette at the edges (%.2f)" % edge_light)
+	ck(bar_red, "the HP bar flashes red (%s)" % hp_bar.modulate)
+	await create_timer(0.1).timeout
+	ck(hp_row.position.x != 0.0 or hp_bar.modulate != Color.WHITE, "the HP row shakes (x %.1f)" % hp_row.position.x)
+	ck(hurt_rumble.y > heavy_rumble.y, "getting hit rumbles harder than hitting (%s)" % hurt_rumble)
+	await create_timer(1.5).timeout
+	hero.current_health = hero.Max_Health
+	target.stagger_time = 0.6  # tank / фінішер серії
+	hero.take_damage(5, target)
+	var edge_big: float = vignette.strength()
+	var big_ms: int = await _hitstop_ms(100)
+	ck(edge_big > edge_light and big_ms > hurt_ms, "a tank-sized hit feels bigger: edge %.2f > %.2f, hitstop %d > %d ms" % [edge_big, edge_light, big_ms, hurt_ms])
+	target.stagger_time = 0.25
+	glyphs.using_gamepad = false
+	await create_timer(1.5).timeout
 
 ## [0] «Вороги інколи заморожують героя» (D264): довгий бій ніколи не лишає героя без керування.
 func _freeze_check() -> void:
@@ -106,6 +191,10 @@ func _freeze_check() -> void:
 			stuck_seconds += 1
 		dir = -dir  # туди-сюди — не виходить з кімнати
 	ck(stuck_seconds <= 2, "the hero moved in at least 10 of 12 seconds of fighting (%d stuck)" % stuck_seconds)
+	# Бій скінчився: вороги стоять, а замах, що вже йшов, б'є до кінця (корутина на таймерах) — чекаємо його
+	_freeze_all()
+	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking):
+		await physics_frame
 	await create_timer(1.0).timeout
 	ck(not hero.event and Engine.time_scale == 1.0 and not paused and not hero.combat.owns_animation() and not hero.mover.locked,
 			"after the fight: no event lock, time scale 1, not paused, combat idle (event %s, ts %.2f, state %d)"

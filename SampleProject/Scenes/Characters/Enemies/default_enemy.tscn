@@ -98,6 +98,7 @@ script = ExtResource("3_health_component")
 shape = SubResource("RectangleShape2D_enemy_collision")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1343955624]
+metadata/tell_at = Vector2(3, -26)
 texture_filter = 1
 offset = Vector2(0, -6)
 scale = Vector2(1.5, 1.5)

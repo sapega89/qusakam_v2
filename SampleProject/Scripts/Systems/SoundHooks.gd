@@ -79,10 +79,11 @@ func _enemy_pitch(enemy: Node) -> float:
 
 
 ## Удар і голос: біль, а останній удар — смерть (damage_received приходить, коли HP вже 0, перед die()).
-func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
+func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
 	var alive: bool = target.current_health > 0
 	if target.is_in_group(GameGroups.PLAYER):
 		AudioManager.play(&"hero_hurt")
+		AudioManager.play(&"hit_heavy" if VFXHooks.is_big_hurt(source) else &"hit")  # 4b: удар чути, не лише стогін
 		if alive:
 			AudioManager.play(&"hero_hurt_voice")  # смерть озвучує player_died
 	elif target.is_in_group(GameGroups.ENEMIES):
@@ -93,10 +94,12 @@ func _on_damage_received(target: Node, _source: Node, _amount: int) -> void:
 			AudioManager.play(&"enemy_grunt" if alive else &"enemy_death", _enemy_pitch(target))
 
 
-## damage_dealt приходить лише з реального ушкодження (B60) — промах звуку влучання не дає.
+## damage_dealt приходить лише з реального ушкодження (B60) — промах звуку влучання не дає (свист замаху — так).
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	if VFXHooks.is_hero_side_hit(source, target):
-		AudioManager.play(&"hit_heavy" if VFXHooks.is_heavy_hit(source) else &"hit")
+		AudioManager.play(&"hit_heavy" if VFXHooks.hit_strength(source) > 0 else &"hit")
+		# 4b: шар матеріалу під ударом — панцир (tank, front_damage < 1) дзвенить, решта — плоть
+		AudioManager.play(&"hit_armour" if target.front_damage < 1.0 else &"hit_flesh")
 
 
 func _on_parried(_attacker: Node) -> void:

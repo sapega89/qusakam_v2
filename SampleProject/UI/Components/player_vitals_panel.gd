@@ -9,6 +9,10 @@ class_name UIPlayerVitalsPanel
 
 const BAR_WIDTH := 200
 const BAR_HEIGHT := 8
+## Тряска рядка HP від удару по героєві (4b): px і с.
+const HURT_SHAKE := 4.0
+const HURT_TIME := 0.3
+var _hurt: Tween
 
 @onready var _name_label: Label = %VitalsName
 @onready var _level_label: Label = %LevelValue
@@ -31,6 +35,8 @@ func _ready() -> void:
 		EventBus.sp_changed.connect(_on_sp_changed)
 	if not EventBus.player_respawned.is_connected(_on_player_respawned):
 		EventBus.player_respawned.connect(_on_player_respawned)
+	if not EventBus.damage_received.is_connected(_on_damage_received):
+		EventBus.damage_received.connect(_on_damage_received)
 	if _xp_manager:
 		if not _xp_manager.xp_gained.is_connected(_on_xp_gained):
 			_xp_manager.xp_gained.connect(_on_xp_gained)
@@ -54,6 +60,23 @@ func _on_level_up(_new_level: int, _old_level: int) -> void:
 ## CombatBody2D емітує це на будь-яку зміну HP або Max_Health.
 func _on_player_health_changed(_hp: int, _max_hp: int, _animate: bool) -> void:
 	refresh()
+
+
+## Героя вдарили (4b): рядок HP трясеться й на мить червоніє — лише цей елемент, не екран. Важкий удар — сильніше.
+func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
+	if not target.is_in_group(GameGroups.PLAYER):
+		return
+	var row: Control = _rows_by_id["HP"]
+	var shake: float = HURT_SHAKE * (2.0 if VFXHooks.is_big_hurt(source) else 1.0)
+	if _hurt:
+		_hurt.kill()
+	row.position.x = 0.0
+	var bar: ProgressBar = row.get_node(^"Bar")
+	bar.modulate = UITokens.HURT_RED
+	_hurt = create_tween().set_ignore_time_scale()
+	for k: float in [1.0, -0.7, 0.4, 0.0]:
+		_hurt.tween_property(row, ^"position:x", shake * k, HURT_TIME / 4.0)
+	_hurt.parallel().tween_property(bar, ^"modulate", Color.WHITE, HURT_TIME)
 
 
 func _on_player_respawned() -> void:

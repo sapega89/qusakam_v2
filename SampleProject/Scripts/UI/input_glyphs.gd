@@ -24,6 +24,8 @@ const MOUSE_BUTTONS := {
 }
 
 static var using_gamepad := false
+## Геймпад, з якого прийшов останній ввід — його вібрація (VFXHooks.rumble).
+static var pad_device := 0
 
 
 ## Останній пристрій: кнопка / стік геймпада → геймпад; клавіша / клік → клавіатура.
@@ -36,6 +38,8 @@ static func note_event(event: InputEvent) -> bool:
 		pad = true
 	elif event is InputEventKey or event is InputEventMouseButton:
 		pad = false
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		pad_device = event.device
 	var changed := pad != using_gamepad
 	using_gamepad = pad
 	return changed

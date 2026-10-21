@@ -26,6 +26,8 @@ func _drain(dm: Node) -> void:
 class Dummy extends Node2D:
 	func take_poise(_amount: int, _from_x: float) -> void:
 		pass
+	func nudge(_push: float) -> void:
+		pass
 	func knockback(_force: float) -> void:
 		pass
 

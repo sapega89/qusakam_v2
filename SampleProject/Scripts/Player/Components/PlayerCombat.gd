@@ -32,6 +32,8 @@ const TWO_HANDED_POISE := 1.5
 ## Тіло на ударі — своя анімація для типу зброї (D268), решта — Attack.
 const SWING_ANIMATIONS := {"mace": &"AttackSmash", "polearm": &"AttackThrust"}
 @export var chain_window: float = 0.35
+## Легкий удар без відкидання зброї штовхає ворога на стільки px (4b).
+const HIT_PUSH := 8.0
 ## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
 @export var finisher_knockback: float = 40.0
 ## Важкий удар (D264): замах (його можна збити), удар, відновлення; множник, відкидання.
@@ -131,8 +133,12 @@ func _on_damage_applied(target: Node, damage: int) -> void:
 	var drained := roundi(damage * skills.passive_value("lifesteal"))  # D284: Blood Pact
 	if drained > 0:
 		player.heal_damage(drained)
+	var away: float = signf(target.global_position.x - player.global_position.x)
 	if knockback > 0.0:
-		target.knockback(signf(target.global_position.x - player.global_position.x) * knockback)
+		target.knockback(away * knockback)
+	else:
+		# Легкий удар теж штовхає (4b «мало відчуття удару»), але замаху не зриває — це робить стійкість (D265)
+		target.nudge(away * HIT_PUSH)
 
 ## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
 ## тож зміна спорядження чи рівня діє одразу, без підписок.
