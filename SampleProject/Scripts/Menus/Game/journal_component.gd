@@ -27,6 +27,8 @@ const SECTIONS := {
 	"bestiary": ["Bestiary", "ENEMIES MET", "No enemies met yet."],
 }
 const PLACEHOLDER := "—"
+## Ідентифікатор підпункту поточної цілі з HUD під поточним підетапом (BACKLOG 37).
+const LIVE_OBJECTIVE := "live_objective"
 
 ## Мінімальний контракт запису. Реальні дані згодом мапимо сюди,
 ## не перебудовуючи сцену.
@@ -140,6 +142,7 @@ func _load_story() -> void:
 					"state": objectives[i].state, "group": stage.title, "parent": zone.id})
 			if zone.state == "current":
 				current_id = zone.id
+				_append_live_objective(items, zone, objectives, stage.title)
 	# Завдання NPC (quests.json, D293): кожне взяте — пункт із ціллю; здане — з позначкою.
 	var TASKS: GDScript = load(TASKS_PATH)
 	for task: Dictionary in TASKS.tasks():
@@ -155,6 +158,16 @@ func _load_story() -> void:
 	if not keep:
 		selected_id = current_id
 	set_entries(items)
+
+
+## Поточна ціль з HUD (Game.current_objective, напр. «Return to the village», Q39 → BACKLOG 37) — ще й підпунктом
+## поточного підетапу в списку, якщо серед його цілей зі story.json такого тексту немає.
+func _append_live_objective(items: Array, zone: Dictionary, objectives: Array, group: String) -> void:
+	var text: String = String(_game.current_objective).strip_edges()
+	if text.is_empty() or objectives.any(func(o: Dictionary) -> bool: return String(o.text) == text):
+		return
+	items.append({"id": "%s/%s" % [zone.id, LIVE_OBJECTIVE], "title": text, "state": "current", "group": group,
+		"parent": zone.id})
 
 
 # ── Data API ────────────────────────────────────────────────────────────────

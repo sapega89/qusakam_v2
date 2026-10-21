@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/skill_hotbar.tscn" id="12_hotbar"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/player_vitals_panel.tscn" id="13_vitals"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/combat_hud_top.tscn" id="14_hudtop"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/loot_feed.tscn" id="16_lootfeed"]
 [ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
@@ -367,6 +368,8 @@ grow_vertical = 0
 [node name="PlayerVitalsPanel" parent="UICanvas/CombatHUD" instance=ExtResource("13_vitals")]
 
 [node name="CombatHudTop" parent="UICanvas/CombatHUD" instance=ExtResource("14_hudtop")]
+
+[node name="LootFeed" parent="UICanvas/CombatHUD" instance=ExtResource("16_lootfeed")]
 
 [connection signal="draw" from="UI/MapWindow/TopDraw" to="UI/MapWindow" method="_on_top_draw"]
 

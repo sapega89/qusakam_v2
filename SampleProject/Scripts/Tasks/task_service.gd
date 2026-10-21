@@ -51,6 +51,7 @@ static func take(task: Dictionary) -> void:
 	for item_id in task.gives:
 		_inventory().add_item(item_id, int(task.gives[item_id]))
 	_set_status(task, ACTIVE)
+	_show_given(task.gives)
 
 
 static func can_turn_in(task: Dictionary) -> bool:
@@ -66,3 +67,10 @@ static func turn_in(task: Dictionary) -> void:
 	for item_id in task.reward:
 		_inventory().add_item(item_id, int(task.reward[item_id]))
 	_set_status(task, DONE)
+	_show_given(task.reward)
+
+
+## Видане й нагорода — модалкою «You obtained:» (BACKLOG 33), коли розмова закінчиться.
+static func _show_given(items: Dictionary) -> void:
+	if not items.is_empty():
+		ServiceLocatorHelper.get_service_locator().get_ui_manager().show_obtained(items)

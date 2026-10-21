@@ -51,18 +51,6 @@ layout_mode = 2
 theme_type_variation = &"ButtonActivated"
 text = "Skip"
 
-[node name="NameMargin" type="MarginContainer" parent="Margin/Rows/RowTop"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/margin_right = 10
-
-[node name="Name" type="Label" parent="Margin/Rows/RowTop/NameMargin"]
-unique_name_in_owner = true
-layout_direction = 3
-layout_mode = 2
-theme_override_colors/font_color = Color(0.439216, 0.00392157, 0.737255, 1)
-text = "This is a man with a very long name"
-
 [node name="RowMiddle" type="HBoxContainer" parent="Margin/Rows"]
 layout_mode = 2
 
@@ -98,3 +86,17 @@ custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
+
+[node name="NameMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 10
+
+[node name="Name" type="Label" parent="NameMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "This is a man with a very long name"
+horizontal_alignment = 1
