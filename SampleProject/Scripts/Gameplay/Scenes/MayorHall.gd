@@ -121,6 +121,7 @@ func _on_collector_died() -> void:
 	var inventory := ServiceLocator.get_inventory_manager()
 	for item_id: String in VICTORY_LOOT:
 		inventory.add_item(item_id, VICTORY_LOOT[item_id])
+	ServiceLocator.get_ui_manager().show_obtained(VICTORY_LOOT)  # BACKLOG 33: покажеться в лабораторії, коли кат-сцена відпустить
 	Game.get_singleton().set_quest_flag("mayor_boss_defeated", true)
 	var cs := Cutscene.new()
 	await cs.wait(KNOCKOUT_HOLD)

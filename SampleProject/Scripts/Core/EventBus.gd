@@ -223,6 +223,10 @@ signal skill_upgraded(skill_id: String, rank: int)
 signal oath_sworn(oath_id: String)
 ## Навички скинуто за монети (D282): усе забуто, refunded очок повернуто, клятва лишилась.
 signal skills_reset(refunded: int)
+## Невкладених очок атрибутів стало current (D335): рівень, вкладення, скидання.
+signal attribute_points_changed(current: int, previous: int)
+## Змінилось, скільки очок вкладено в атрибути (D335) — Max HP, SP, атака перераховуються.
+signal attributes_changed()
 
 ## Активный навык успешно применён: проверки пройдены, SP списан,
 ## боевой эффект выполнен, перезарядка запущена. Ошибочные попытки сюда НЕ попадают.
@@ -387,6 +391,15 @@ signal dialogue_finished(dialogue_id: String)
 ##     quantity (int): Кількість предметів
 @warning_ignore("unused_signal")
 signal item_added(item_id: String, quantity: int)
+
+## Герой підібрав здобич переможеного моба (монети з ворога, монети LootSystem) — уже в інвентарі.
+## Слухає стрічка здобичі на HUD (BACKLOG 33, loot_feed.gd). Дарунки й нагороди сюди не йдуть — у них модалка.
+##
+## Args:
+##     item_id (String): ID предмета
+##     amount (int): Кількість
+@warning_ignore("unused_signal")
+signal loot_picked_up(item_id: String, amount: int)
 
 ## Емітується при видаленні предмета з інвентаря.
 ##

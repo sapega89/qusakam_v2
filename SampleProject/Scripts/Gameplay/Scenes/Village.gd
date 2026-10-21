@@ -18,6 +18,7 @@ enum State {
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 const OLDMAN_GIFT := "oldman_gift"
+const CombatTraining = preload("res://SampleProject/Scripts/Gameplay/CombatTraining.gd")
 
 @export var current_state: State = State.ABDUCTION_CUTSCENE:
 	set(val):
@@ -29,6 +30,8 @@ signal state_complete(state: State)
 
 # Enemy spawner reference
 var enemy_spawner: RoomEnemySpawner = null
+## Уроки бою з бандитом (BACKLOG 28, D-28a) — живуть, доки бій не скінчився.
+var training: CombatTraining = null
 
 func _ready() -> void:
 	# ServiceLocator — autoload, а не Engine-синглтон: has_singleton() тут завжди
@@ -116,7 +119,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			game.set_quest_flag("village_abduction_complete", true)
 			advance_state()
 		State.ARRIVAL:
-			_set_objective("Reach the village center")
+			_set_objective("Reach the village center", &"village_center")
 			# Очікуємо поки гравець дійде до тригера "ArrivalToVillage"
 			DebugLogger.info("🏘️ Village: Очікуємо тригера прибуття (ARRIVAL)", "Village")
 			pass
@@ -129,11 +132,10 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			# Репліку прибуття грає тригер, а не сцена, тож прапорець не ставився ніким —
 			# і журнал застрягав на цій цілі.
 			game.set_quest_flag("village_arrival_complete", true)
-			_set_objective("Defeat the bandit in the street")
 			_start_fight("FightWithBandit", run_id)
 		State.OLD_MAN_OUTSIDE:
 			# D140: після бою — «О ні, дім!», далі гравець сам іде до діда (тригер біля дерева).
-			_set_objective("Check on the house")
+			_set_objective("Check on the house", &"house")
 			if not game.get_quest_flag("village_afterfight_complete"):
 				_play_dialogue("Village_AfterFight", run_id)
 		State.OLD_MAN_HEALING:
@@ -142,7 +144,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				DebugLogger.info("🏘️ Village: Гілка діда вже завершена, пропускаємо", "Village")
 				advance_state()
 				return
-			_set_objective("Talk to the old man")
+			_set_objective("Talk to the old man", &"old_man")
 			_talk_to_old_man(run_id)
 		State.OLD_MAN_DECISION:
 			if game.get_quest_flag("village_oldman_complete"):
@@ -153,7 +155,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 		State.LEAVING_VILLAGE:
 			if game.get_quest_flag("village_left_complete"):
 				return  # останній стан, просувати нікуди
-			_set_objective("Leave the village")
+			_set_objective("Leave the village", &"canyon_bridge")
 			_execute_step(StepType.DIALOGUE, "LeavingVillage", run_id)
 
 ## Тригер біля діда лише перемикає стан; розмову веде сцена, щоб діалоги йшли
@@ -173,16 +175,25 @@ func _talk_to_old_man(run_id: int) -> void:
 ## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як
 ## зависання. Бій закінчується лише смертю ворогів (_on_all_enemies_defeated).
 ## Гравець вийшов посеред бою — повертаємо тих самих ворогів без репліки (D152).
+## Бандит — перший ворог гри, тож бій починається з уроків (D-28a): спершу шість рухів, потім «добий його».
+## Повернувся посеред бою — уроки знову з першого (D-28d), вони короткі.
 func _start_fight(dialogue_id: String, run_id: int) -> void:
 	var resumed: bool = enemy_spawner.fight_in_progress()
+	training = CombatTraining.new()  # до появи бандита: загальні підказки бою стають баченими
+	add_child(training)
 	_spawn_enemies_for_fight()
-	if resumed:
-		return
-	_set_enemies_active(false)
-	await _play_dialogue(dialogue_id, run_id)
+	if not resumed:
+		_set_enemies_active(false)
+		await _play_dialogue(dialogue_id, run_id)
+		if run_id != state_run_id:
+			return
+		_set_enemies_active(true)
+	_set_objective("Learn to fight: follow the lesson")
+	training.start(enemy_spawner.spawned_enemies)
+	await training.finished
 	if run_id != state_run_id:
 		return
-	_set_enemies_active(true)
+	_set_objective("Defeat the bandit in the street")
 
 ## Вимкнений вузол не думає й не має фізики (disable_mode REMOVE) — ні руху, ні удару.
 func _set_enemies_active(active: bool) -> void:
@@ -264,6 +275,7 @@ func _give_oldman_gift() -> void:
 	inventory.add_item("copper_sword", 1)
 	inventory.add_item("leather_armor", 1)
 	game.set_quest_flag("village_oldman_gift", true)
+	ServiceLocator.get_ui_manager().show_obtained({"copper_sword": 1, "leather_armor": 1})  # BACKLOG 33
 	# Висить, доки не вдягне зброю
 	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
 	EventBus.equipment_equipped.connect(_on_gift_equipped)
@@ -285,10 +297,10 @@ func advance_state() -> void:
 		# Перехід до інших сцен обробляється автоматично через MetSys room connections
 		DebugLogger.info("🏘️ Village: Сцена завершена - переходи обробляються через MetSys room connections", "Scene")
 
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
+func _set_objective(text: String, target: StringName = &"") -> void:
+	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
 	var game = Game.get_singleton()
-	game.set_objective(text)
+	game.set_objective(text, target)
 
 func _spawn_enemies_for_fight() -> void:
 	"""Спавнить бандита для вуличного бою"""
@@ -309,6 +321,9 @@ func _on_all_enemies_defeated() -> void:
 	# STREET_FIGHT і бандит відродиться.
 	var game = Game.get_singleton()
 	game.set_quest_flag("village_fight_complete", true)
+	if training != null:
+		training.queue_free()
+		training = null
 
 	advance_state()
 

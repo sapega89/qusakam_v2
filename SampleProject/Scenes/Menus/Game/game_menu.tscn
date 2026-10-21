@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://dves5wvm67pju" path="res://SampleProject/Scenes/Menus/Game/stats_component.tscn" id="11_stats"]
 [ext_resource type="Theme" uid="uid://bfe1cbr8www03" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="14_theme"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/tutorial_component.tscn" id="15_tutorial"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/controls_component.tscn" id="16_controls"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_tabs"]
 
@@ -180,6 +181,11 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="TutorialComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1587691992 instance=ExtResource("15_tutorial")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ControlsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1587691993 instance=ExtResource("16_controls")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

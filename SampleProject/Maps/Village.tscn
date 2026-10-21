@@ -149,3 +149,17 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="ObjectiveTargets" type="Node2D" parent="."]
+
+[node name="village_center" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(150, 344)
+
+[node name="house" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(1582, 344)
+
+[node name="old_man" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(1572, 396)
+
+[node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(24, 344)

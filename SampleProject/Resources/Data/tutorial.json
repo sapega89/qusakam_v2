@@ -38,7 +38,62 @@
 			"title": "Moving and Jumping",
 			"text": "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air.",
 			"key": "{jump}",
-			"hint": "Button to jump."
+			"hint": "Button to jump.",
+			"frames": "move_jump"
+		},
+		{
+			"id": "lesson_attack",
+			"hint_topic": true,
+			"title": "Training 1/6 — Attack",
+			"text": "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall.",
+			"key": "{attack}",
+			"hint": "Button for a light attack.",
+			"frames": "combo"
+		},
+		{
+			"id": "lesson_combo",
+			"hint_topic": true,
+			"title": "Training 2/6 — Combo",
+			"text": "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers.",
+			"key": "{attack}",
+			"hint": "Press it three times quickly.",
+			"frames": "combo"
+		},
+		{
+			"id": "lesson_dodge",
+			"hint_topic": true,
+			"title": "Training 3/6 — Dodge",
+			"text": "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched.",
+			"key": "{dodge}",
+			"hint": "Button to dash; twice in a row for a double dash.",
+			"frames": "dodge"
+		},
+		{
+			"id": "lesson_block",
+			"hint_topic": true,
+			"title": "Training 4/6 — Block",
+			"text": "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage.",
+			"key": "{block}",
+			"hint": "Hold it to block.",
+			"frames": "block"
+		},
+		{
+			"id": "lesson_parry",
+			"hint_topic": true,
+			"title": "Training 5/6 — Parry",
+			"text": "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows.",
+			"key": "{block}",
+			"hint": "Tap it on the red glint to parry.",
+			"frames": "parry"
+		},
+		{
+			"id": "lesson_heavy",
+			"hint_topic": true,
+			"title": "Training 6/6 — Heavy Attack",
+			"text": "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you.",
+			"key": "{heavy_attack}",
+			"hint": "Button for a heavy attack.",
+			"frames": "heavy"
 		},
 		{
 			"id": "attack",
@@ -46,7 +101,8 @@
 			"title": "Attacking",
 			"text": "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers.",
 			"key": "{attack}",
-			"hint": "Button for a light attack."
+			"hint": "Button for a light attack.",
+			"frames": "combo"
 		},
 		{
 			"id": "heavy_attack",
@@ -54,7 +110,8 @@
 			"title": "Heavy Attack",
 			"text": "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment.",
 			"key": "{heavy_attack}",
-			"hint": "Button for a heavy attack."
+			"hint": "Button for a heavy attack.",
+			"frames": "heavy"
 		},
 		{
 			"id": "block",
@@ -62,7 +119,8 @@
 			"title": "Block and Parry",
 			"text": "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter.",
 			"key": "{block}",
-			"hint": "Hold to block; press it when an enemy's weapon glints to parry."
+			"hint": "Hold to block; press it when an enemy's weapon glints to parry.",
+			"frames": "parry"
 		},
 		{
 			"id": "first_kill",
@@ -86,7 +144,8 @@
 			"title": "Healing Palm",
 			"text": "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal.",
 			"key": "{skill_slot_1}",
-			"hint": "Button for the first skill slot."
+			"hint": "Button for the first skill slot.",
+			"frames": "heal"
 		},
 		{
 			"id": "oldman_gift",
@@ -102,7 +161,8 @@
 			"title": "Calling an Ally",
 			"text": "Companions fight at your side — press {assist} to call one. Call the guard now!",
 			"key": "{assist}",
-			"hint": "Button to call the next ready companion."
+			"hint": "Button to call the next ready companion.",
+			"frames": "assist"
 		},
 		{
 			"id": "companions",
@@ -110,7 +170,8 @@
 			"title": "Companions",
 			"text": "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status.",
 			"key": "{assist}",
-			"hint": "Button to call the next ready companion."
+			"hint": "Button to call the next ready companion.",
+			"frames": "assist"
 		}
 	]
 }

@@ -55,10 +55,10 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			# Перевіряємо, чи діалог вже був прочитаний
 			if game.get_quest_flag("desert_road_monologue_complete", false):
 				DebugLogger.info("🌵 DesertRoad: ⏭️ Діалог DesertRoad_Monologue вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Continue on to the city")
+				_set_objective("Continue on to the city", &"city_gates")
 				# Не викликаємо advance_state(), щоб не переходити автоматично
 				return
-			_set_objective("Continue on to the city")
+			_set_objective("Continue on to the city", &"city_gates")
 			# Монолог запускає тригер на дорозі (після приземлення), а не вхід у кімнату.
 			await _play_dialogue("DesertRoad_Monologue", run_id, false)
 			if run_id != state_run_id: return
@@ -67,13 +67,13 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			# Перевіряємо, чи діалог вже був прочитаний
 			if game.get_quest_flag("desert_road_fight_complete", false):
 				DebugLogger.info("🌵 DesertRoad: ⏭️ Діалог DesertRoad_Fight вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Reach the city gates")
+				_set_objective("Reach the city gates", &"city_gates")
 				# Не викликаємо advance_state(), щоб не переходити автоматично
 				return
 			_set_objective("Defeat the enemies on the road")
 			_start_fight("DesertRoad_Fight", run_id)
 		State.TRANSITION_TO_CITY:
-			_set_objective("Reach the city gates")
+			_set_objective("Reach the city gates", &"city_gates")
 			# Перехід до CityGates обробляється автоматично через MetSys room connections
 			# Не викликаємо _execute_step(), щоб не переходити автоматично
 			DebugLogger.info("🌵 DesertRoad: Стейт TRANSITION_TO_CITY - перехід обробляється через MetSys", "Scene")
@@ -164,10 +164,10 @@ func _determine_initial_state() -> void:
 		current_state = State.TRAVELING
 		DebugLogger.info("🌵 DesertRoad: ✅ Початок, стейт = TRAVELING", "Scene")
 
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
+func _set_objective(text: String, target: StringName = &"") -> void:
+	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
 	var game = Game.get_singleton()
-	game.set_objective(text)
+	game.set_objective(text, target)
 
 func _get_dialogue_manager() -> Node:
 	# ServiceLocator — autoload (/root/ServiceLocator), не Engine-синглтон:

@@ -125,6 +125,7 @@ func _onmisc_button_pressed() -> void:
 	var modal = modal_layer.active_modal
 	modal.settings_selected.connect(_on_misc_settings_selected, CONNECT_ONE_SHOT)
 	modal.tutorial_selected.connect(_on_misc_tutorial_selected, CONNECT_ONE_SHOT)
+	modal.controls_selected.connect(_on_misc_controls_selected, CONNECT_ONE_SHOT)
 	modal.exit_main_menu_selected.connect(_on_misc_exit_main_menu_selected, CONNECT_ONE_SHOT)
 	modal.exit_game_selected.connect(_on_misc_exit_game_selected, CONNECT_ONE_SHOT)
 
@@ -147,6 +148,12 @@ func _on_misc_settings_selected() -> void:
 func _on_misc_tutorial_selected() -> void:
 	switch_to_tab("Misc")
 	_show_only(%TutorialComponent)
+
+
+## Усі дії з клавішами й кнопками геймпада (D-28f) — у центрі меню, як список тем.
+func _on_misc_controls_selected() -> void:
+	switch_to_tab("Misc")
+	_show_only(%ControlsComponent)
 
 
 func _on_misc_exit_main_menu_selected() -> void:

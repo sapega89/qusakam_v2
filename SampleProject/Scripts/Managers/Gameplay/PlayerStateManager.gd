@@ -53,10 +53,7 @@ func set_player_position(position: Vector2):
 
 func get_player_position() -> Vector2:
 	"""Отримує позицію гравця"""
-	# player_position в PlayerStateResource - это Vector2, не Dictionary
-	if player_state and player_state.player_position != Vector2.ZERO:
-		return player_state.player_position
-	return Vector2(100, 549)  # Дефолтная позиция
+	return player_state.player_position
 
 func reset_player_state() -> void:
 	"""Скидає стан гравця до початкових значень (нова гра, B79)"""
@@ -70,7 +67,7 @@ static func _initial_state() -> Dictionary:
 		"max_health": 100,
 		"current_potions": 0,
 		"max_potions": 5,
-		"player_position": {"x": 100, "y": 549},
+		"player_position": Vector2(100, 549),
 		"current_scene": "VillageScene",
 		"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
 		"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
@@ -80,6 +77,8 @@ static func _initial_state() -> Dictionary:
 		"equipped_skills": ["", "", "", ""],
 		"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)
 		"oath": "",  # D280: клятва героя ("" / paladin / dark_knight / warden), назавжди
+		"attribute_points": 0,  # D335: невкладені очки атрибутів (5 за рівень)
+		"attributes": {},  # D335: attribute_id → вкладено очок (strength / agility / vitality / wisdom)
 		"current_sp": 30,  # D146: тимчасовий запас SP
 		"max_sp": 30,
 		"game_time": 0.0,

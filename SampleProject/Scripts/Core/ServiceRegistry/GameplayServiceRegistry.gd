@@ -11,6 +11,7 @@ var inventory_manager: Node = null
 var dialogue_manager: Node = null
 var xp_manager: Node = null
 var skill_manager: Node = null
+var attribute_manager: Node = null
 var game_flow: Node = null
 var companion_manager: Node = null
 var _is_registered: bool = false
@@ -33,6 +34,7 @@ func register(game_manager: Node) -> void:
 	dialogue_manager = game_manager.get_node("DialogueManager")
 	xp_manager = game_manager.get_node("XPManager")
 	skill_manager = game_manager.get_node("SkillManager")
+	attribute_manager = game_manager.get_node("AttributeManager")
 	game_flow = game_manager.get_node("GameFlow")
 	companion_manager = game_manager.get_node("CompanionManager")
 
@@ -44,6 +46,7 @@ func register(game_manager: Node) -> void:
 	_print_service_status("DialogueManager", dialogue_manager)
 	_print_service_status("XPManager", xp_manager)
 	_print_service_status("SkillManager", skill_manager)
+	_print_service_status("AttributeManager", attribute_manager)
 	_print_service_status("GameFlow", game_flow)
 	_print_service_status("CompanionManager", companion_manager)
 
@@ -81,3 +84,6 @@ func get_companion_manager() -> Node:
 
 func get_skill_manager() -> Node:
 	return skill_manager
+
+func get_attribute_manager() -> Node:
+	return attribute_manager

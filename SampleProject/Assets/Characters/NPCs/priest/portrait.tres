@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/priest/sheet.png" id="1_1w21t"]
+
+[resource]
+atlas = ExtResource("1_1w21t")
+region = Rect2(14, 104, 32, 32)

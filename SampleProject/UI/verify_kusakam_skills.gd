@@ -73,7 +73,7 @@ func _initialize() -> void:
 			"the level-up hint asks to learn Healing Palm (%s)" % hint.current_hint)
 	await create_timer(5.0).timeout
 	ck(hint.is_showing and hint.current_hint == "healing_palm", "…and stays until it is learned")
-	# Як гравець: Esc → Skills, клік по рядку Healing Palm, Enter.
+	# Як гравець: Esc → Skills, клік по вузлу Healing Palm, Enter (позначити), Accept (D330).
 	game.set_quest_flag("village_oldman_healed", true)  # вкладку Skills відкриває сюжет
 	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64 — клік мимо меню
 	var ui: Node = sl.get_ui_manager()
@@ -106,7 +106,14 @@ func _initialize() -> void:
 		enter.pressed = down
 		vp.push_input(enter)
 		await process_frame
-	ck(sm.is_unlocked("healing_palm") and sm.get_rank("healing_palm") == 1, "Enter learns it, rank 1")
+	ck(not sm.is_unlocked("healing_palm") and skills_tab.plan.skill_picks("healing_palm") == 1, "Enter only picks it (D330)")
+	for down in [true, false]:
+		var accept := InputEventAction.new()
+		accept.action = &"skills_accept"
+		accept.pressed = down
+		vp.push_input(accept)
+		await process_frame
+	ck(sm.is_unlocked("healing_palm") and sm.get_rank("healing_palm") == 1, "Accept learns it, rank 1")
 	ck(sm.get_equipped_skill(0) == "healing_palm", "a learned active skill goes on the first free hotbar slot (%s)" % sm.get_equipped_skill(0))
 	ck(not hint.is_showing, "the hint goes away once Healing Palm is learned")
 	ui.close_game_menu()

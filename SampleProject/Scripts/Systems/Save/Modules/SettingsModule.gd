@@ -11,6 +11,10 @@ var default_settings = {
 	"sfx_volume": 0.9,
 	"fullscreen": false,
 	"vsync": true,
+	# BACKLOG 41: розмір вікна (DisplayManager.RESOLUTIONS) і ліміт кадрів (DisplayManager.FPS_LIMITS, 0 = без ліміту).
+	# Значення за замовчуванням = project.godot: вʼюпорт 1920×1080, run/max_fps=60.
+	"resolution": "1920x1080",
+	"fps_limit": 60,
 	"language": "uk",
 	"tutorial_windows": true  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
 }

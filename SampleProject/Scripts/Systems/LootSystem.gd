@@ -26,6 +26,7 @@ func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 	if rng.randf() < gold_drop_chance:
 		var gold_amount = rng.randi_range(gold_min, gold_max)
 		inventory_manager.add_item("coin", gold_amount)
+		EventBus.loot_picked_up.emit("coin", gold_amount)  # стрічка здобичі на HUD (BACKLOG 33)
 
 ## Налаштування параметрів луту
 func set_gold_drop_chance(chance: float):

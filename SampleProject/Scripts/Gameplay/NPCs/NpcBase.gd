@@ -18,6 +18,9 @@ const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActiv
 @export var talk_dialogue: String = ""
 ## Хто цей NPC у quests.json (giver). Є відкрите завдання — є пункт Quest (D161, D175).
 @export var task_giver: String = ""
+## BACKLOG 35 (Q48): .dqd з репліками, які NPC каже мимохідь, коли герой підходить, — облачко над ним,
+## не вікно. Раз за появу NPC у кімнаті. Порожньо — NPC мовчить (реплік мимохідь ще ніхто не написав).
+@export var chatter_dialogue: String = ""
 ## Хто це в DialogueQuest (character_id) — його голос вітає героя, коли той сам заговорив (D277).
 @export var character_id: String = ""
 
@@ -38,6 +41,8 @@ const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActiv
 var _rest_flip: bool = false
 
 var npc_menu: NpcActionMenu = null
+## Репліку мимохідь уже сказано в цій кімнаті.
+var _chatted: bool = false
 
 
 func _ready() -> void:
@@ -57,6 +62,7 @@ func _ready() -> void:
 	npc_menu.chosen.connect(_on_menu_chosen)
 	npc_menu.cancelled.connect(_close_npc_menu)
 	interactable.player_exited.connect(_on_player_left)
+	interactable.player_entered.connect(_on_player_came)
 	refresh_availability()
 
 
@@ -111,6 +117,7 @@ func _on_interacted() -> void:
 	if entries.is_empty():
 		return
 	interactable.enabled = false
+	ServiceLocatorHelper.get_service_locator().get_dialogue_manager().end_chatter(self)
 	npc_menu.setup(entries)
 	npc_menu.open()
 	# Герой сам підійшов і заговорив — привітання. Катсцену першої зустрічі запускає кімната, не цей шлях.
@@ -125,6 +132,20 @@ func _can_open_menu() -> bool:
 func _close_npc_menu() -> void:
 	npc_menu.visible = false
 	refresh_availability()
+
+
+## Герой підійшов — NPC каже своє мимохідь (якщо зараз ніхто не говорить; інакше спробує наступного разу).
+func _on_player_came() -> void:
+	if chatter_dialogue == "" or _chatted or npc_menu.visible:
+		return
+	_chatted = ServiceLocatorHelper.get_service_locator().get_dialogue_manager().say_in_passing(
+			self, chatter_dialogue, chatter_anchor())
+
+
+## Вістря хвоста облачка — над верхнім краєм спрайта NPC, посередині.
+func chatter_anchor() -> Vector2:
+	var rect: Rect2 = sprite.get_rect()
+	return sprite.transform * Vector2(rect.get_center().x, rect.position.y)
 
 
 func _on_player_left() -> void:

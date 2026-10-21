@@ -91,7 +91,28 @@ in [[play_feedback_queue]].
 5. **Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.
 6. **Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].
 7. **Mob corridors** — three fights; `verify_laboratory.gd` rewritten.
-8. **Boss hall** — lock, cloak talk, fight, game over / win line, gates; `verify_lab_boss.gd`.
+8. ~~**Boss hall** — lock, cloak talk, fight, game over / win line, gates; `verify_lab_boss.gd`.~~ — built on `cloud/lab-9-7`
+   (queue row 9.7, D307 below; report `cloud_reports/lab-9-7.md`). `LabBoss.gd` WAIT → TALK → FIGHT → CLOAK | OPEN;
+   B83 fixed for the hall (bridges one row lower, 96 px). Left: `story.json` zone for `LabBoss` (title falls back to
+   "Lab Boss"), the demo end itself (9.8 reads `lab_after_boss_complete`).
+
+   **D307 calls (agent calls, Sapega to confirm):**
+   - The arena locks when the talk starts: `TalkTrigger` at x 400, just inside the west door; the west edge gets an
+     invisible `ArenaWall` (like the Mayor Hall's `BarrierWest`, no art); the gates are down from the start, so the
+     Laboratory cannot be left east until the djinn is dead. Walking back west before the talk is allowed (still the Lab).
+   - The talk is one D308 cutscene: the camera pans to the djinn (`Marks/Look`), `Lab_Boss_Talk`, back; hold Tab / pad Y
+     lands in the same fight state (same flags, positions, objective). The djinn sleeps (no AI, still floats) until then.
+   - In the fight the djinn's detection, chase and leash cover the whole hall: no safe corner in a locked arena.
+   - Re-entry after the talk (a save after it, or the 9.8 route) starts the fight at once, no talk replay; the djinn
+     always starts at full HP.
+   - Djinn wins → it floats up to the hero, `Lab_Boss_TakesCloak`, then the normal Game Over screen. Nothing is removed
+     from the save (there is no cloak item and no hero art without it); "Resume from last save" restores the run.
+   - Djinn loses → +500 XP from its stats, no loot (the Brass Collector's loot is the Mayor Hall's, D300);
+     `Laboratory_AfterBoss` (Kusakam's line + the gates narration), the camera to the gates, the portcullis rises 200 px
+     (its bottom above the hero's head) and its collision goes; objective "Leave the laboratory".
+   - Flags: `lab_boss_talk_complete`, `lab_boss_fight_complete`, `lab_after_boss_complete` — the last is the 9.8 hook
+     (the way east is open).
+   - B83 (hall only): the dodge bridges moved from row 8 to row 9 — 96 px above the floor, a held jump peaks ~107 px.
 9. **Demo end** — the walk out, `verify_demo_end` updated; full route `verify_lab_route.gd` (Mayor Hall → demo end, both
    Mayor outcomes, the cloak game over, save/reload mid-Lab — B53).
 10. **Art and voices** — comfy-sprite (Brass Collector, fire djinn, Малік, prisoner, alchemist), comfy-backdrop (cells,

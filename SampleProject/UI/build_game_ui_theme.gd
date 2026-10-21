@@ -98,6 +98,16 @@ func _empty_box() -> StyleBoxEmpty:
 	return StyleBoxEmpty.new()
 
 
+## Q33 (BACKLOG 41): єдиний стан "focus" для кожної кнопки в кожному меню — 2px рамка FOCUS_RING
+## без заливки. Godot малює focus ПОВЕРХ поточного стану, тож заливка рядка (normal / pressed /
+## варіація ...On) лишається своя, а рамка вибраного однакова всюди. [param on_accent] — кнопка
+## з акцентною заливкою: там рамка біла, інакше її не видно.
+func _focus_ring(pad_h: int = UITokens.SPACE_MD, pad_v: int = UITokens.SPACE_SM,
+		on_accent: bool = false) -> StyleBoxFlat:
+	return _box(Color(0, 0, 0, 0), UITokens.FOCUS_RING_ON_ACCENT if on_accent else UITokens.FOCUS_RING,
+			UITokens.FOCUS_RING_WIDTH, pad_h, pad_v)
+
+
 # ── Label ───────────────────────────────────────────────────────────────────
 
 func _setup_label(theme: Theme) -> void:
@@ -220,7 +230,7 @@ func _setup_button(theme: Theme) -> void:
 	theme.set_stylebox("normal", "Button", _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	theme.set_stylebox("hover", "Button", _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	theme.set_stylebox("pressed", "Button", _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
-	theme.set_stylebox("focus", "Button", _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", "Button", _focus_ring(pad_h, pad_v))
 	theme.set_stylebox("disabled", "Button", _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	# B27 (#75): DialogueQuest Auto/Skip ставлять цю варіацію; без власних значень вона = базова Button.
 	# Окремий стан "увімкнено" відкладено до D110 (#24).
@@ -259,7 +269,7 @@ func _misc_row(theme: Theme) -> void:
 		theme.set_stylebox("normal", t, normal)
 		theme.set_stylebox("hover", t, _gradient_box(UITokens.MISC_ROW_ON))
 		theme.set_stylebox("pressed", t, _gradient_box(UITokens.MISC_ROW_ON))
-		theme.set_stylebox("focus", t, _gradient_box(UITokens.MISC_ROW_ON))
+		theme.set_stylebox("focus", t, _focus_ring(UITokens.MISC_ROW_PAD_H, UITokens.MISC_ROW_PAD_V))
 		theme.set_stylebox("disabled", t, _gradient_box(UITokens.MISC_ROW_OFF))
 
 
@@ -301,8 +311,7 @@ func _settings_segment(theme: Theme) -> void:
 		theme.set_stylebox("hover", t, _box(bg if on else UITokens.SURFACE_HOVER,
 				Color(0, 0, 0, 0), 0, pad_h, pad_v))
 		theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
-		theme.set_stylebox("focus", t, _box(bg, UITokens.ACCENT,
-				UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+		theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v, on))
 		theme.set_stylebox("disabled", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 
 
@@ -318,8 +327,7 @@ func _settings_stepper(theme: Theme) -> void:
 	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		theme.set_stylebox(state, t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 4, 2))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
-			UITokens.BORDER_WIDTH_SELECTED, 4, 2))
+	theme.set_stylebox("focus", t, _focus_ring(4, 2))
 
 
 ## Figma UI/Settings Tab (117:835) — 36×36, активний має акцентну рамку,
@@ -337,8 +345,7 @@ func _settings_sidebar_tab(theme: Theme) -> void:
 			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
 	theme.set_stylebox("pressed", t, _box(Color(0, 0, 0, 0), UITokens.BORDER_STRONG,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_SM, UITokens.SPACE_SM))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
-			UITokens.BORDER_WIDTH_SELECTED, UITokens.SPACE_SM, UITokens.SPACE_SM))
+	theme.set_stylebox("focus", t, _focus_ring(UITokens.SPACE_SM, UITokens.SPACE_SM))
 	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, UITokens.SPACE_SM, UITokens.SPACE_SM))
 
 
@@ -370,11 +377,15 @@ func _filter_button(theme: Theme) -> void:
 	theme.set_color("font_color", t, UITokens.ACCENT)
 	theme.set_color("font_hover_color", t, UITokens.ON_ACCENT)
 	theme.set_color("font_pressed_color", t, UITokens.ON_ACCENT)
-	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+	for state in ["normal", "hover", "pressed", "disabled"]:
 		var bg := UITokens.ACCENT if state in ["hover", "pressed"] else Color(0, 0, 0, 0)
 		var sb := _box(bg, UITokens.ACCENT, UITokens.BORDER_WIDTH, UITokens.SPACE_MD, 6)
 		sb.set_corner_radius_all(3)
 		theme.set_stylebox(state, t, sb)
+	# Раніше фокус = звичайний стан (на геймпаді не видно, де курсор) — тепер спільна рамка (Q33).
+	var focus := _focus_ring(UITokens.SPACE_MD, 6)
+	focus.set_corner_radius_all(3)
+	theme.set_stylebox("focus", t, focus)
 
 
 ## Figma UI/ListRow у кадрі menu-inventory (250:4983 / 250:4988).
@@ -391,8 +402,7 @@ func _list_row(theme: Theme) -> void:
 	# selected: акцентна заливка + 2px акцентна рамка
 	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.BORDER_STRONG,
 			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT,
-			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v))
 	theme.set_stylebox("disabled", t, _box(Color(UITokens.BACKGROUND, 0.5),
 			Color(0, 0, 0, 0), 0, pad_h, pad_v))
 
@@ -461,7 +471,7 @@ func _primary_button(theme: Theme) -> void:
 	theme.set_stylebox("normal", t, _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	theme.set_stylebox("hover", t, _box(UITokens.ACCENT.lightened(0.12), UITokens.ACCENT.lightened(0.12), UITokens.BORDER_WIDTH, pad_h, pad_v))
 	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT.darkened(0.18), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.TEXT_PRIMARY, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v, true))
 	theme.set_stylebox("disabled", t, _box(Color(UITokens.ACCENT, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
 
 
@@ -480,7 +490,7 @@ func _tab_button(theme: Theme) -> void:
 	var pad_v := 10
 	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, pad_v))
 	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, Color(0, 0, 0, 0), 0, pad_h, pad_v))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v))
 	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, pad_v))
 	# Виділений таб: підкреслення акцентом знизу.
 	var sel := _box(Color(0, 0, 0, 0), UITokens.ACCENT, 0, pad_h, pad_v)
@@ -515,7 +525,7 @@ func _sidebar_tab(theme: Theme) -> void:
 	var pad_v := UITokens.SPACE_MD
 	theme.set_stylebox("normal", t, _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad_h, pad_v))
-	theme.set_stylebox("focus", t, _box(UITokens.SURFACE_HOVER, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
+	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v))
 	theme.set_stylebox("disabled", t, _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
 	# Активний пункт: акцентна ліва грань.
 	var act := _box(UITokens.SURFACE_HOVER, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v)
@@ -532,7 +542,7 @@ func _icon_button(theme: Theme) -> void:
 	theme.set_stylebox("normal", t, _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
 	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
 	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad, pad))
-	theme.set_stylebox("focus", t, _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, pad, pad))
+	theme.set_stylebox("focus", t, _focus_ring(pad, pad))
 	theme.set_stylebox("disabled", t, _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
 
 
@@ -600,8 +610,9 @@ func _setup_panels(theme: Theme) -> void:
 	var ring := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0)
 	for state in ["normal", "pressed", "disabled"]:
 		theme.set_stylebox(state, "CardSelect", none)
-	for state in ["hover", "hover_pressed", "focus"]:
+	for state in ["hover", "hover_pressed"]:
 		theme.set_stylebox(state, "CardSelect", ring)
+	theme.set_stylebox("focus", "CardSelect", _focus_ring(0, 0))
 
 	# Figma menu-status: job-box / weapon-box / action-card — surface + 1px рамка.
 	theme.set_type_variation("BoxPanel", "PanelContainer")
@@ -684,8 +695,10 @@ func _main_menu(theme: Theme) -> void:
 			["MainMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
 		var t: String = spec[0]
 		theme.set_type_variation(t, "Button")
-		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 			theme.set_stylebox(state, t, clear)
+		# Q33: шеврон і яскравий текст лишаються (Figma UI/Menu Item), рамка фокусу — спільна.
+		theme.set_stylebox("focus", t, _focus_ring(UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V))
 		theme.set_font("font", t, spec[1])
 		theme.set_font_size("font_size", t, UITokens.SIZE_LABEL)
 		for c in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
@@ -824,12 +837,18 @@ func _shop(theme: Theme) -> void:
 	var row_on := _box(UITokens.ACCENT, UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0)
 	for state in ["normal", "pressed", "disabled"]:
 		theme.set_stylebox(state, t, row)
-	for state in ["hover", "hover_pressed", "focus"]:
+	for state in ["hover", "hover_pressed"]:
 		theme.set_stylebox(state, t, row_on)
+	# Q33: вибраний рядок товару лишається акцентним (темний текст ...On не читається на чорному),
+	# але має ту саму рамку фокусу — білу, бо вона на акцентній заливці.
+	var row_focus := _focus_ring(0, 0, true)
+	row_focus.bg_color = UITokens.ACCENT
+	theme.set_stylebox("focus", t, row_focus)
 	# Рядок під відкритою модалкою купівлі: фокус у модалці, рядок лишається вибраним (B24).
 	theme.set_type_variation("ShopRowOn", t)
-	for state in ["normal", "pressed", "disabled", "hover", "hover_pressed", "focus"]:
+	for state in ["normal", "pressed", "disabled", "hover", "hover_pressed"]:
 		theme.set_stylebox(state, "ShopRowOn", row_on)
+	theme.set_stylebox("focus", "ShopRowOn", row_focus)
 
 	# Кнопки категорій 48×48: звичайна — чорний 56% + біла рамка; активна — accent.
 	for spec in [["ShopCategory", UITokens.SHOP_ROW_BG, UITokens.TEXT_PRIMARY, UITokens.SHOP_ICON_TINT, UITokens.TEXT_PRIMARY],
@@ -839,8 +858,7 @@ func _shop(theme: Theme) -> void:
 		var box := _box(spec[1], spec[2], UITokens.BORDER_WIDTH, 0, 0)
 		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 			theme.set_stylebox(state, c, box)
-		var focus := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0)
-		theme.set_stylebox("focus", c, focus)
+		theme.set_stylebox("focus", c, _focus_ring(0, 0, c == "ShopCategoryOn"))
 		theme.set_font("font", c, _font_bold)
 		theme.set_font_size("font_size", c, UITokens.SIZE_CAPTION)
 		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color"]:
@@ -857,8 +875,10 @@ func _shop(theme: Theme) -> void:
 			["NpcMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
 		var n: String = spec[0]
 		theme.set_type_variation(n, "Button")
-		for state in ["normal", "hover", "pressed", "hover_pressed", "focus", "disabled"]:
+		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 			theme.set_stylebox(state, n, npc_box)
+		# Q33: NPC-меню і Game Over раніше показували фокус лише шевроном і альфою тексту.
+		theme.set_stylebox("focus", n, _focus_ring(UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V))
 		theme.set_font("font", n, spec[1])
 		theme.set_font_size("font_size", n, UITokens.SIZE_LABEL)
 		for col in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
@@ -885,7 +905,7 @@ func _save_slots(theme: Theme) -> void:
 		theme.set_stylebox(state, t, normal)
 	theme.set_stylebox("hover", t, selected)
 	theme.set_stylebox("hover_pressed", t, selected)
-	theme.set_stylebox("focus", t, selected)
+	theme.set_stylebox("focus", t, _focus_ring(UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V))
 	# B31 (#66): ціль відкритої модалки (Overwrite Save?) лишається вибраною без фокусу.
 	theme.set_type_variation("SaveSlotCardTargeted", t)
 	theme.set_stylebox("normal", "SaveSlotCardTargeted", selected)

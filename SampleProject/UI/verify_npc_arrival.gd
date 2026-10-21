@@ -211,6 +211,13 @@ func _initialize() -> void:
 	ck(started.has("Merchant_Caravan_Done"), "Quest hands in the caravan in the City (%s)" % [started])
 	await _drain(dm)
 	ck(game.get_quest_flag("task_merchant_caravan_done"), "caravan task done")
+	# BACKLOG 33: нагорода — модалкою «You obtained:» після розмови; поки вона відкрита, interact не діє.
+	for i in 6: await process_frame
+	var layer: Node = sl.get_ui_manager().get_modal_layer()
+	ck(layer.active_modal != null and layer.active_modal.description_label.text == "Coin × 60", "the reward popup: Coin × 60")
+	await _tap(&"ui_accept")
+	for i in 4: await process_frame
+	ck(layer.active_modal == null, "ui_accept closes the reward popup")
 	await _choose(merchant, "Buy")
 	ck(merchant.is_shop_open, "Buy opens his shop")
 	var stock: Array = merchant.shop_menu_instance.shop_items

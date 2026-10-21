@@ -4,9 +4,7 @@
 
 [resource]
 script = ExtResource("1_player")
-autoplay_enabled = true
-autoplay_delay_sec = 1.0
-autoplay_on_start = false
+autoplay_enabled = false
 skip_enabled = false
 skip_speed = 10
 skip_after_choices = false

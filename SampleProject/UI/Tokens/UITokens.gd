@@ -45,6 +45,14 @@ const BORDER_WIDTH := 1
 # Figma: shape/border-selected
 const BORDER_WIDTH_SELECTED := 2
 
+# ── Фокус (Q33, BACKLOG 41: один вигляд вибраного рядка в кожному меню) ─────
+# Рядок під фокусом (клавіатура, геймпад, наведення мишею) — 2px акцентна рамка без заливки,
+# намальована поверх власного стану кнопки. Будівник теми бере ЛИШЕ ці токени для "focus".
+const FOCUS_RING := ACCENT
+# На акцентній заливці золота рамка зникає — там рамка біла (як у Primary-кнопки).
+const FOCUS_RING_ON_ACCENT := TEXT_PRIMARY
+const FOCUS_RING_WIDTH := BORDER_WIDTH_SELECTED
+
 # ── Відступи ────────────────────────────────────────────────────────────────
 const SPACE_2XS := 2
 const SPACE_XS := 4
@@ -260,6 +268,13 @@ const BUBBLE_INK := Color("141018")
 const BUBBLE_SECONDS_MIN := 2.0    # репліка висить: min + довжина × per_char, не довше max
 const BUBBLE_SECONDS_PER_CHAR := 0.05
 const BUBBLE_SECONDS_MAX := 6.0
+# Плашка цілі на HUD (BACKLOG 37, Q39): з'являється, тримається, гасне; знову — після будь-якого меню.
+const OBJECTIVE_PLAQUE_HOLD := 5.0   # секунд видно після появи / зміни цілі
+const OBJECTIVE_PLAQUE_FADE := 0.6   # згасання і поява, секунд
+# Стрічка здобичі з мобів на HUD (BACKLOG 33): тост «Coin × 7» під валютою; той самий предмет додається до живого тосту.
+const LOOT_TOAST_HOLD := 2.5         # секунд видно після останнього поповнення
+const LOOT_TOAST_FADE := 0.4         # поява і згасання, секунд
+const LOOT_FEED_MAX := 4             # більше тостів — найстаріший іде одразу
 const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ матеріалу вистачає
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)

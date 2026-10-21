@@ -168,7 +168,8 @@ const ROOMS := {
 		# Кадри спокою — фас, їх не дзеркалимо (у Алісії різні очі, D245); дзеркалиться лише біг (CompanionNPC.join).
 		"npcs": [["alisia", Vector2(520, 384), false], ["astrit", Vector2(1140, 864), false], ["urizen", Vector2(620, 864), false]],
 	},
-	# Зала джина (D303, D307): один поверх, два містки для ухилів; брама праворуч (зачинена до смерті джина — 9.7).
+	# Зала джина (D303, D307): один поверх, два містки для ухилів; брама праворуч (зачинена до смерті джина — 9.7;
+	# її колізія Gates/Body — вузол сцени, будівник його не чіпає).
 	"res://SampleProject/Maps/LabBoss.tscn": {
 		"layout": [
 			"######################################################",  # 0  стеля
@@ -179,8 +180,9 @@ const ROOMS := {
 			"#....................................................#",
 			"......................................................",  # прохід: Laboratory | LaboratoryOutside
 			"......................................................",
-			"...........======....................======...........",
 			"......................................................",
+			# Містки для ухилів (D302) — 96 px над підлогою: досяжні одним стрибком (~103 px, без подвійного; B83)
+			"...........======....................======...........",
 			"......................................................",
 			"......................................................",
 			"######################################################",  # 12 підлога
@@ -209,7 +211,8 @@ func _initialize() -> void:
 
 func _build(path: String, spec: Dictionary) -> void:
 	layout = spec.layout
-	var room: Node = load(path).instantiate()
+	# Стан редактора: вкладені сцени (джин у LabBoss) зберігаються посиланням, без запечених властивостей.
+	var room: Node = load(path).instantiate(PackedScene.GEN_EDIT_STATE_MAIN)
 	_paint(room.get_node(^"TileMap/Foreground"))
 	_surfaces(room)
 	_decorate(room, spec)
@@ -338,25 +341,29 @@ func _runs(c: String) -> Array[Rect2i]:
 	return rects
 
 
-## Реквізит кімнати (камери, ґрати, стіл, брама): вузол-група перебудовується, кожен спрайт стоїть низом-центром
+## Реквізит кімнати (камери, ґрати, стіл, брама): спрайти вузла-групи перебудовуються, кожен стоїть низом-центром
 ## на своїй точці. Окремі вузли — щоб скрипт кімнати вмикав їх за станом ($Bars після пробудження, 9.5).
+## Решта дітей групи — зі сцени (колізія брами Gates/Body, 9.7) — лишається.
 func _add_props(room: Node, props: Array) -> void:
 	for prop: Array in props:
-		var old := room.get_node_or_null(NodePath(prop[0]))
-		if old:
-			room.remove_child(old)
-			old.free()
-		var group := Node2D.new()
-		group.name = prop[0]
+		var group: Node2D = room.get_node_or_null(NodePath(prop[0]))
+		if group == null:
+			group = Node2D.new()
+			group.name = prop[0]
+			room.add_child(group)
+			group.owner = room
+		for old in group.get_children():
+			if old is Sprite2D:
+				group.remove_child(old)
+				old.free()
 		group.z_index = prop[3]
-		room.add_child(group)
-		group.owner = room
 		var points: Array = prop[2]
 		for i in points.size():
 			var sprite := _sprite(BG % prop[1], points[i], Vector2(-0.5, -1), 0)
 			sprite.name = "%s%d" % [prop[0], i + 1] if points.size() > 1 else "Sprite"
 			sprite.scale = prop[4]
 			group.add_child(sprite)
+			group.move_child(sprite, i)
 			sprite.owner = room
 
 

@@ -75,12 +75,25 @@ func _initialize() -> void:
 	var shown: String = st._left_attrs.get_child(0).get_child(0).get_child(2).text
 	ck(shown == str(expected), "Phys. Atk. matches StatCalculator (%s == %d)" % [shown, expected])
 
+	print("[3b] attribute points (D335): unspent in the header, spent per attribute")
+	var attrs: Node = sl.get_attribute_manager()
+	ck(st._attr_points_value.text == str(attrs.get_unspent()), "unspent attribute points shown (%s)" % st._attr_points_value.text)
+	ck(st._point_attrs.get_children().map(func(p): return p.get_child(0).text) == ["Strength", "Agility", "Vitality", "Wisdom"], "four attributes from data")
+	var body: Control = st.get_node(^"Columns/Center/Body")
+	ck(body.get_combined_minimum_size().y <= st.size.y, "Status still fits its height (%d of %d)" % [body.get_combined_minimum_size().y, st.size.y])
+
 	print("[4] live refresh")
 	var before: String = st._level_label.text
 	sl.get_xp_manager().add_xp(100000)
 	for i in 4: await process_frame
 	ck(st._level_label.text != before, "level_up refreshes the screen (%s -> %s)" % [before, st._level_label.text])
 	ck(st._jp_value.text == "%d JP" % sm.get_job_points(), "JP follows level-up live (%s)" % st._jp_value.text)
+	ck(st._attr_points_value.text == str(attrs.get_unspent()) and attrs.get_unspent() >= 5, "attribute points follow level-up live (%s)" % st._attr_points_value.text)
+	var atk_before: String = st._left_attrs.get_child(0).get_child(0).get_child(2).text
+	ck(attrs.spend({"strength": 2, "wisdom": 1}) == 0, "spent 2 Strength, 1 Wisdom")
+	for i in 2: await process_frame
+	ck(st._point_attrs.get_node(^"strength/Value").text == "2" and st._point_attrs.get_node(^"wisdom/Value").text == "1", "the spent points show per attribute")
+	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == int(atk_before) + 2, "Phys. Atk. +2 from Strength (%s → %s)" % [atk_before, st._left_attrs.get_child(0).get_child(0).get_child(2).text])
 
 	print("[5] party panel swap")
 	var party: Node = get_first_node_in_group("ui_party_column")
