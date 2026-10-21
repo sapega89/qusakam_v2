@@ -13,4 +13,4 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 The backdrop behind them is the Canyon's (`desert_backdrop_canyon.tscn`: the pack's sky, generated clouds, mesas and
 canyon walls — D235).
 | `gen_grandpa_house.png` | not wired yet (BACKLOG 29, art A2): the grandfather's house — bench, staff, peppers; 328×181, doorway x 141–175 down to row 164, sand to row 180 |
-| `gen_elder_house.png` | not wired yet (BACKLOG 38, art A2): the village elder's two-storey house at the end of the Village; 278×201, closed arched door x 140–172, threshold row 184 on the steps; inside = `../ElderHouse/gen_wall.png` |
+| `gen_elder_house.png` | not wired yet (BACKLOG 38, art A2): the village elder's house at the end of the Village — a wide one-storey house with a crenellated roof terrace, a porch under a red and blue awning, banners and jars (two storeys at the grandfather's-house scale do not fit the one-cell Village, Q58); 468×191, same scale as `gen_grandpa_house` and `Road/gen_shop`: closed arched double door x 163–201, rows 76–167 (threshold row 167 on the steps), windows ~30 px plus shutters; sand to row 190; inside = `../ElderHouse/gen_wall.png` |

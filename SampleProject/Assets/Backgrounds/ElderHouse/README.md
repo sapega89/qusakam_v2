@@ -6,6 +6,6 @@ pixel (576×324, ×1.5 in the game) and 16 colours. A Steam release has to discl
 
 | File | Use |
 |---|---|
-| `gen_wall.png` | not wired yet: the room's wall Sprite2D, like `Hall/gen_wall.png` in the Mayor Hall — adobe walls under dark ceiling beams, two shuttered windows, hanging carpets, shelves with pots and scrolls, a clay hearth with a fire, a stone plinth and floor along the bottom; seamless left–right |
+| `gen_wall.png` | not wired yet: the room's wall Sprite2D, like `Hall/gen_wall.png` in the Mayor Hall — adobe walls under dark ceiling beams, two shuttered windows, hanging carpets and a parchment, shelves with pots, a clay hearth with a fire and a tall clay jar beside it, a stone plinth and floor along the bottom; seamless left–right. x 165–268 repainted (`--repaint`) — the first version had a fabric-shade table lamp on the floor and a dark blob on the floor line |
 
 The outside of the house is `../Village/gen_elder_house.png`.

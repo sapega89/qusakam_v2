@@ -686,14 +686,17 @@ LAYERS = {
             f"{CHROMA}"
         ),
     ),
+    # Масштаб — як дім діда й крамниця (двері ~34×85 px шару): двоповерховий виходив ляльковим будиночком
+    # (двері 32×58), а два поверхи в такому масштабі не влазять в одноклітинне село (Q58) — тож широкий одноповерховий.
     "Village/gen_elder_house": dict(
-        seed=383,
+        seed=387,
         rows=220,
         top=0,
         seam="none",
         trim=True,
-        cut=(146, 424),  # лише будинок: дюни обабіч модель домальовує
-        keep=211,  # нижче — пісок під ним
+        cut=(52, 520),  # лише будинок: дюни обабіч модель домальовує
+        holes=True,  # 2 px шпарина біля цоколя праворуч
+        keep=210,  # нижче — пісок під ним
         key="green",
         shade=0,
         fill=False,
@@ -701,7 +704,7 @@ LAYERS = {
         colors=16,
         quant="octree",
         prompt=(
-            "one single big village elder's house: a wide two-storey adobe and sandstone house with a flat roof terrace and a low parapet, wooden roof beams sticking out, a tall wide arched wooden double door in its middle, small shuttered windows, a wooden balcony on the upper floor under a striped red and blue cloth awning, long red and blue cloth banners on both sides of the door, big clay jars by the stone steps, standing alone in the middle of the frame and filling two thirds of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
+            "one single wide village elder's house: a long one-storey adobe and sandstone house, grander and wider than its neighbours, with a flat roof terrace edged by a low stepped parapet, wooden roof beams sticking out under the parapet, a tall closed arched wooden double door in its middle reaching more than half the height of the wall, a big shuttered window on each side of the door, a covered porch in front of the door under a striped red and blue cloth awning held on two wooden posts, long red and blue cloth banners hanging on the wall, big clay jars beside the low stone step, seen at a slight angle from the left with its left side wall in shadow, standing alone in the middle of the frame and filling two thirds of its width, with empty space on both sides, its base resting on the bottom edge, it stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, "
             f"{CHROMA}"
         ),
     ),
@@ -719,7 +722,11 @@ LAYERS = {
         prompt="the inner wall of a village elder's house seen straight on: plastered warm adobe walls with dark wooden "
         "ceiling beams across the top, two small arched windows with open wooden shutters, woven red and blue carpets "
         "hanging on the wall, wooden shelves with clay pots, jars and old scrolls, a low clay hearth with a small fire, "
-        "a low stone plinth along the bottom, warm lamp light",
+        "a tall plain clay water jar and a round clay pot standing on the bare floor to the right of the hearth, a low "
+        "stone plinth along the bottom, a clean empty floor in front, warm light from the hearth fire",
+        # «warm lamp light» дав торшер з абажуром біля вогнища (технології в лорі немає) і темну пляму на підлозі;
+        # картинка — стара з кешу, перемальована: --repaint 165-255 --denoise 0.9 (арт-директор, artA1A2; на 0.75
+        # абажур ставав жаровнею з другим вогнем)
     ),
 }
 
@@ -1082,7 +1089,9 @@ if __name__ == "__main__":
                 pal = np.unique(px[clean], axis=0)
                 d = np.linalg.norm(px[tinted][:, None, :] - pal[None], axis=2)
                 out[tinted, :3] = pal[d.argmin(axis=1)]
-        for sx, dx, w, y0, y1 in layer.get("patch", []):  # латка: стовпці sx.. на місце dx.. (по колу — шар безшовний)
+        for sx, dx, w, y0, y1 in layer.get(
+            "patch", []
+        ):  # латка: стовпці sx.. на місце dx.. (по колу — шар безшовний)
             out[y0:y1, (dx + np.arange(w)) % W] = out[y0:y1, (sx + np.arange(w)) % W]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
             ys, xs = np.nonzero(out[..., 3])
