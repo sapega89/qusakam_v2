@@ -68,7 +68,21 @@ match `feature/backlog`.
 
 ## Full suite
 
-SUITE_RESULT_PLACEHOLDER
+First run of `Scripts/Tools/run_verify.sh` (78 scripts): **76 PASS, 2 FAIL**.
+
+- **`verify_onboarding`: a regression from the merge, now fixed.** The failure was "every gameplay action in the
+  InputMap is listed (missing skills_accept, skills_unpick)". Onboarding's Controls page check requires every
+  registered action to be listed, and skills-screen registers two new actions (D331). I added both as rows in
+  `controls_component.gd` ("Skills screen: accept the picks" and "Skills screen: undo a pick"), because the page
+  already lists menu actions such as Game menu and the tab row. After the fix these pass:
+  - `verify_onboarding`: ALL PASS
+  - `misc_modal`, `game_menu`, `skill_screen`, `gamepad`: ALL PASS
+- **`verify_game_ui_theme`: expected, waits on Sapega.** It reports "no RESULT line" because this script prints
+  `=== 1 FAILURE(S)`. The cause is the unregenerated `GameUITheme.tres` (D329, see above). It passes with the
+  regenerated theme.
+
+The suite is therefore green except for the theme regeneration, which only Sapega can do. Neither known flake
+(`verify_audio`, `verify_souls_combat`) failed in this run.
 
 ## Registered
 

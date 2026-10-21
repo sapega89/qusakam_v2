@@ -30,6 +30,8 @@ const ACTIONS := [
 	["Previous weapon", &"weapon_prev"],
 	["Game menu", &"game_menu"],
 	["Previous / next menu tab", &"menu_prev_tab"],
+	["Skills screen: accept the picks", &"skills_accept"],
+	["Skills screen: undo a pick", &"skills_unpick"],
 ]
 
 @onready var _list: VBoxContainer = %ActionList
