@@ -1,13 +1,13 @@
 ---
 type: plan
-status: active
+status: done
 tags: [skills, attributes, ui, feedback]
 figma: "menu-skills 58:453"
 ---
 
 # Skills screen rework + attribute points — plan (BACKLOG 43 + 44)
 
-Built by a cloud agent on `cloud/skills-screen` (2026-10-21). D-IDs D330–D336 are provisional (D316–D318 were taken; other branches may take D319+) — the orchestrator renumbers on registration. Figma was not reachable from the cloud session: the
+**Built** by a cloud agent on `cloud/skills-screen` (2026-10-21), slices 1–4; what is left: the report. D-IDs D330–D336 are provisional (D316–D318 were taken; other branches may take D319+) — the orchestrator renumbers on registration. Figma was not reachable from the cloud session: the
 layout follows the existing screens, [[skills_ui_mapping]] and [[skill_trees_plan]]; it **departs from Figma 58:453**
 (two flat lists) on purpose, because BACKLOG 43 asks for a tree — that is Sapega's call (D-IDs below). Every call is an
 **agent call, Sapega to confirm**. Report: `design/cloud_reports/skills-screen.md`.
@@ -42,10 +42,12 @@ layout follows the existing screens, [[skills_ui_mapping]] and [[skill_trees_pla
   Attribute rows have **−** / **+** buttons (mouse and focus). Hotbar: four slot buttons in the detail panel for a
   learned active skill, or the hotbar actions themselves (`skill_slot_1..4`: keys 1–4, pad RT / R3 / L3 / Back) while
   it is selected. Bottom bar shows the button names.
-- **D332 States.** A node is one of: **learned** (check icon, rank `R3`), **pending** (accent `+` icon, "Pending"),
-  **can learn now** (no icon, cost `1 JP` in accent), **locked** (lock icon + the short reason: `Lv 12`,
-  `Needs Radiant Smite`, `Oath`, `Other oath`, `JP`). The full reason sits in the detail panel. Names are always shown
-  (the old `???` for a missing prerequisite hid exactly what the player needs to know).
+- **D332 States.** A node is one of: **learned** (check icon, rank `R3`; `R3 +1` with a picked rank), **picked**
+  (accent diamond, `Picked`), **can learn now** (no icon, the cost `1 JP` / `Free` in accent), **locked** (lock icon +
+  a short note: `Lv 12`, `Oath` before the oath, `Other oath`, `Locked` for a missing prerequisite — the line to it
+  shows which — or the cost when JP is short). The full reason sits in the detail panel ("Level too low: needs
+  level 12.", "Needs Radiant Smite first.", "Not enough JP (2 needed)." …). Names are always shown (the old `???`
+  for a missing prerequisite hid exactly what the player needs to know).
 - **D333 Tree view.** One panel, no scrolling: rows = the level tiers that have skills (trunk ∪ shown oath — 12 tiers
   for levels 1–20), a `Lv N` caption on the left, the **Holy Warrior** lane (up to 2 nodes per tier) and the **oath**
   lane (up to 2 per tier); lines from each prerequisite to its skill (elbow lines, accent when the prerequisite is
@@ -71,14 +73,15 @@ layout follows the existing screens, [[skills_ui_mapping]] and [[skill_trees_pla
   Owner: `AttributeManager` (new manager, `ManagerBase`, ServiceLocator `get_attribute_manager`). Saved / loaded by
   `PlayerDataModule` (old saves: 0 spent, unspent = 5 × (level − 1)). Respec (D282) also refunds attribute points and
   is offered when either skills or attributes were spent. Status shows the four attributes.
-- **D336 Crit hits.** So Agility does something in a fight: a player weapon hit rolls `calculate_critical_chance()`;
-  a crit deals ×1.5 (`PlayerCombat.hit_damage`). Evasion and speed stay shown-only (they never drove combat; wiring
-  them changes the souls-lite feel D264 — left for Sapega, see the report).
+- **D336 Agility stays on the sheet for now.** Agility raises crit, evasion and speed as Status / Equipment show them,
+  but **no combat code reads those three** (true before this work, for the base dexterity too — B-ID in the report).
+  Wiring them is a combat-feel call (random crits and dodges in a souls-lite parry game, D264) and would make the
+  exact-damage combat tests random; left for Sapega.
 
 ## Slices
 
 1. **Attributes model** — `attributes.json`, `AttributeManager.gd`, GameManager / ServiceLocator / registry,
-   `player_state` + `PlayerDataModule`, bonuses wired, crit, respec refund, EventBus signals. `verify_attributes.gd`
+   `player_state` + `PlayerDataModule`, bonuses wired, respec refund, EventBus signals. `verify_attributes.gd`
    (model part). Commit + push.
 2. **Pending model** — `SkillManager.check_unlock` / `check_upgrade` (hypothetical state), `SkillPlan.gd`.
    Checked in `verify_skill_screen.gd`. Commit + push.
