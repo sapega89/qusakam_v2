@@ -36,3 +36,7 @@ class_name EnemyStats
 
 @export_group("Health")
 @export var max_health: int = 100
+
+@export_group("Reward")
+## Досвід за вбивство (D297, design/world_expansion_plan.md): melee 30, fast 25, tank 70.
+@export var xp_reward: int = 0

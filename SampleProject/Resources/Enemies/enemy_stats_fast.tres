@@ -17,3 +17,4 @@ max_health = 60
 poise = 2
 stagger_time = 0.2
 combo_hits = 3
+xp_reward = 25

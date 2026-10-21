@@ -91,12 +91,7 @@ func spawn_enemy() -> Node:
 	enemy.position = position
 
 	# Применяем тип врага (загружаем соответствующий EnemyStats ресурс)
-	if custom_enemy_stats:
-		# Используем кастомный ресурс если задан
-		enemy.enemy_stats = custom_enemy_stats
-	else:
-		# Стандартний ресурс за типом: Resources/Enemies/enemy_stats_<type>.tres
-		enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % enemy_type)
+	enemy.enemy_stats = enemy_stats()
 
 	# Устанавливаем уникальное имя для отслеживания
 	enemy.name = "Enemy_%s" % spawn_id
@@ -142,3 +137,10 @@ func despawn_enemy() -> void:
 func is_enemy_alive() -> bool:
 	"""Проверяет жив ли заспавненный враг"""
 	return spawned_enemy != null and is_instance_valid(spawned_enemy)
+
+
+## Стати ворога цієї точки: кастомний ресурс або стандартний за типом (Resources/Enemies/enemy_stats_<type>.tres).
+func enemy_stats() -> EnemyStats:
+	if custom_enemy_stats:
+		return custom_enemy_stats as EnemyStats
+	return load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % enemy_type) as EnemyStats

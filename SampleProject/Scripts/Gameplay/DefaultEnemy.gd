@@ -379,28 +379,9 @@ func _check_existing_player_in_detection_area():
 			break
 
 func _award_xp_to_player() -> void:
-	"""Awards XP to player based on enemy type"""
-	var xp_manager = ServiceLocator.get_xp_manager()
-	if not xp_manager:
-		DebugLogger.warning("Enemy: XPManager not found, cannot award XP", "Enemy")
-		return
-
-	var xp_amount = _calculate_xp_reward()
-	xp_manager.add_xp(xp_amount)
-	DebugLogger.info("Enemy died, awarded %d XP to player" % xp_amount, "Enemy")
-
-func _calculate_xp_reward() -> int:
-	"""Calculates XP reward based on enemy type"""
-	# enemy_stats задає EnemySpawnPoint завжди; невідомий тип — помилка, не «типова» нагорода.
-	match enemy_stats.enemy_type:
-		"melee":
-			return 25  # Standard melee enemy
-		"tank":
-			return 40  # Tanky enemy - more XP for tougher fight
-		"fast":
-			return 20  # Fast enemy - slightly less XP
-	push_error("DefaultEnemy: unknown enemy_type '%s'" % enemy_stats.enemy_type)
-	return 0
+	"""Awards XP to player — the reward is data (EnemyStats.xp_reward, D297)"""
+	ServiceLocator.get_xp_manager().add_xp(enemy_stats.xp_reward)
+	DebugLogger.info("Enemy died, awarded %d XP to player" % enemy_stats.xp_reward, "Enemy")
 
 func _spawn_coin_drops() -> void:
 	"""Spawns coins on enemy death"""

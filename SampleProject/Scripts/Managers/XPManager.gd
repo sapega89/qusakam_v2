@@ -6,11 +6,14 @@ class_name XPManager
 
 ## D260/D285: найвищий рівень; на ньому досвід більше не рахується.
 const MAX_LEVEL := 99
+## D297: крива досвіду — дані: до наступного рівня first_level + step × (рівень − 1).
+const CURVE_PATH := "res://SampleProject/Resources/Data/xp_curve.json"
 
 # Current XP and level state
 var current_xp: int = 0
 var current_level: int = 1
-var xp_for_next_level: int = 100
+var xp_for_next_level: int = 0
+var _curve: Dictionary
 
 # Stat bonuses per level
 var stat_bonuses: Dictionary = {
@@ -24,6 +27,8 @@ signal level_up(new_level: int, old_level: int)
 
 func _initialize():
 	"""Initialize XPManager"""
+	_curve = JSON.parse_string(FileAccess.get_file_as_string(CURVE_PATH))
+	xp_for_next_level = _calculate_xp_requirement(current_level)
 	DebugLogger.info("XPManager: Initialized", "XPManager")
 
 ## Add XP to player
@@ -56,8 +61,7 @@ func _check_level_up() -> void:
 
 ## Calculate XP requirement for given level
 func _calculate_xp_requirement(level: int) -> int:
-	# Linear progression: 100, 200, 300, 400...
-	return level * 100
+	return int(_curve.first_level) + int(_curve.step) * (level - 1)
 
 ## Get current XP as percentage (0.0 to 1.0)
 func get_xp_percentage() -> float:
@@ -81,5 +85,5 @@ func get_level() -> int:
 func reset() -> void:
 	current_xp = 0
 	current_level = 1
-	xp_for_next_level = 100
+	xp_for_next_level = _calculate_xp_requirement(1)
 	DebugLogger.info("XPManager: Reset to level 1", "XPManager")
