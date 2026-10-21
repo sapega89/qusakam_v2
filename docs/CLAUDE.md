@@ -178,7 +178,7 @@ The position **is written** (`PlayerDataModule.gd:32`, from `Game._save_full_gam
 `Game._set_save_data()` is not overridden, so `save_manager.retrieve_game()` (`Game.gd:200`) restores
 MetSys map data only. On load the saved room loads and the player keeps its default position.
 The comment at `Game.gd:239` ("позиція вже відновлена") is wrong. A new game places the player
-at the room's `Arrival` marker (`Game.gd:400`). Tracked in `design/BUGS.md`.
+at the room's `Arrival` marker (`Game.gd:400`). Tracked as **B82** in `design/BUGS.md`.
 
 ## Documentation Index
 
