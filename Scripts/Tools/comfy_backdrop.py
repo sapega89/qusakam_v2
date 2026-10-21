@@ -149,31 +149,55 @@ LAYERS = {
         fill=True,
         haze=0.15,
         colors=14,
+        # намальовані ворота в мурі — за брамою-проходом (D314) читались як друга брама: замуровані стіною поруч
+        patch=[(333, 253, 78, 146, 238), (180, 538, 92, 146, 238)],
         prompt="a massive sandstone city wall with crenellations and two tall square gate towers flanking a big arched "
         "wooden gate, long red banners with a plain golden disc with a raised rim, the wall stands directly on bare sand, spanning the full width and reaching the bottom "
         f"edge, {CHROMA}",
     ),
-    # Ворота міста (BACKLOG feedback 18): окремий предмет у кінці дороги — до нього біжать бандити.
-    "Gates/gen_gate": dict(
-        seed=61,
+    # Брама як прохід (черга 8c, D314): герой іде крізь неї. Передній шар — дві вежі й міст над проходом, малюється
+    # над героєм; прохід між ними прозорий до самої землі (open). У CityGates і в City стоїть та сама картинка: межа
+    # кімнат — на ~70 % проходу. Замінила gen_gate (D258) — фасад брами, що читався як задник.
+    "Gates/gen_passage_front": dict(
+        seed=83,
         rows=220,
         top=0,
         seam="none",
         trim=True,
-        holes=True,  # прохід за відчиненими стулками ключ вирізав наскрізь
-        cut=(138, 446),  # лише брама з вежами: стіни обабіч обриваються посеред кімнати
-        keep=183,  # нижче — бруківка, яку модель домальовує під брамою
+        open=True,  # прохід під мостом — прозорий до низу: за героєм видно gen_passage_back
+        cut=(57, 521),  # лише вежі й міст: стіни обабіч накривали б бій на дорозі
+        keep=204,  # нижче — пісок, який модель стелить під вежами
         key="green",
         shade=0,
         fill=False,
         haze=0,
         colors=16,
         quant="octree",
-        prompt="one single grand desert city gatehouse: two tall square sandstone towers with crenellated tops flanking "
-        "a high pointed arch, the heavy wooden gate doors standing open showing a dark passage, long red banners with a "
-        "plain golden disc with a raised rim hanging on the towers, carved ornaments around the arch, standing alone in "
-        "the middle of the frame with empty space on both sides, its base resting on the bottom edge, warm light on the "
-        f"top, cool violet shadows in the recesses, {CHROMA}",
+        prompt="one single massive desert city gateway frame seen straight on as a flat elevation with no perspective: two "
+        "thick square sandstone towers with crenellated tops standing at the far left edge and at the far right edge, joined "
+        "high above by a thick straight crenellated stone wall bridge with a row of carved stone blocks along its underside, "
+        "the wide space between the two towers under the bridge completely empty and open down to the ground, showing the "
+        "flat background through it, red banners with a plain golden disc with a raised rim on the towers, filling the full "
+        f"width of the frame, the towers resting on the bottom edge, warm light on the top, cool violet shadows, {CHROMA}",
+    ),
+    # Стіна проходу за героєм: відчинені стулки брами, смолоскип; у сцені темніша (modulate) і обрізана по проходу.
+    "Gates/gen_passage_back": dict(
+        seed=85,
+        rows=220,
+        top=0,
+        seam="none",
+        crop=True,
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="a perfectly flat straight-on swatch of an old sandstone block wall in deep cool violet shadow, large "
+        "rectangular stone blocks laid in even horizontal rows filling the whole frame edge to edge, a heavy brown wooden "
+        "gate door leaf with iron bands standing open and lying flat against the wall on the left third, a small iron wall "
+        "torch with a warm orange flame casting a soft warm glow on the stones in the middle, a strip of flat paving stones "
+        "along the bottom edge, no perspective, no depth, no arches",
     ),
     "City/gen_far": dict(
         seed=61,
@@ -684,7 +708,9 @@ def shrink(img, key, spill=0, block=SCALE):
     if key:
         bg = np.median(img[:24].reshape(-1, 3), axis=0)
         a = (np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE).astype(np.float32)
-    if spill and key == "green":  # тінь, яку модель кладе на зелене тло (оливкова), — геть
+    if (
+        spill and key == "green"
+    ):  # тінь, яку модель кладе на зелене тло (оливкова), — геть
         a *= img[..., 1] - np.maximum(img[..., 0], img[..., 2]) < spill
     elif spill:
         a *= np.minimum(img[..., 0], img[..., 2]) - img[..., 1] < spill
@@ -807,7 +833,15 @@ if __name__ == "__main__":
         opaque[layer["top"] : layer["top"] + len(strip)] = strip_opaque
         if layer["fill"]:
             rgb, opaque = fill_down(rgb, opaque)
-        if layer.get("holes"):  # дірки всередині предмета — найтемнішим його кольором (темний прохід)
+        if layer.get(
+            "open"
+        ):  # прохід, вирізаний ключем, — прозорий і нижче, до низу (там модель домалювала далечінь)
+            hole = holes(opaque)
+            for x in np.nonzero(hole.any(axis=0))[0]:
+                opaque[np.argmax(hole[:, x]) :, x] = False
+        if layer.get(
+            "holes"
+        ):  # дірки всередині предмета — найтемнішим його кольором (темний прохід)
             hole = holes(opaque)
             rgb[hole] = rgb[opaque][np.argmin(rgb[opaque].sum(axis=1))]
             opaque = opaque | hole
@@ -820,21 +854,33 @@ if __name__ == "__main__":
             out = out[layer["top"] : layer["top"] + layer["rows"]]
         if layer.get("keep"):  # рядки шару від keep і нижче — прозорі
             out[layer["keep"] :, :, 3] = 0
-        if layer.get("cut"):  # стовпці шару x0..x1 — решта прозора (обрізані стіни обабіч брами)
+        if layer.get(
+            "cut"
+        ):  # стовпці шару x0..x1 — решта прозора (обрізані стіни обабіч брами)
             out[:, : layer["cut"][0], 3] = 0
             out[:, layer["cut"][1] :, 3] = 0
-        if layer["key"] == "green":  # бірюзова кромка — відсвіт зеленого тла: у найближчий не-зелений колір шару
+        if (
+            layer["key"] == "green"
+        ):  # бірюзова кромка — відсвіт зеленого тла: у найближчий не-зелений колір шару
             px = out[..., :3].astype(int)
-            tinted = (out[..., 3] > 0) & (px[..., 1] > px[..., 0] + 15) & (px[..., 1] >= px[..., 2] - 10)
+            tinted = (
+                (out[..., 3] > 0)
+                & (px[..., 1] > px[..., 0] + 15)
+                & (px[..., 1] >= px[..., 2] - 10)
+            )
             clean = (out[..., 3] > 0) & ~tinted
             if tinted.any() and clean.any():
                 pal = np.unique(px[clean], axis=0)
                 d = np.linalg.norm(px[tinted][:, None, :] - pal[None], axis=2)
                 out[tinted, :3] = pal[d.argmin(axis=1)]
+        for sx, dx, w, y0, y1 in layer.get("patch", []):  # латка: стовпці sx.. на місце dx.. (по колу — шар безшовний)
+            out[y0:y1, (dx + np.arange(w)) % W] = out[y0:y1, (sx + np.arange(w)) % W]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
             ys, xs = np.nonzero(out[..., 3])
             out = out[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
-        if layer.get("shadow"):  # предмет стоїть на землі: власна тінь-овал найтемнішим кольором під його низом
+        if layer.get(
+            "shadow"
+        ):  # предмет стоїть на землі: власна тінь-овал найтемнішим кольором під його низом
             h, w = out.shape[:2]
             sh = layer["shadow"]
             canvas = np.zeros((h + sh, w + 2 * sh, 4), np.uint8)
@@ -842,7 +888,9 @@ if __name__ == "__main__":
             dark = opaque_px[np.argmin(opaque_px.astype(int).sum(axis=1))]
             yy, xx = np.mgrid[: h + sh, : w + 2 * sh]
             # тінь щільно під низом предмета (ледь виглядає з-під нього), а не смугою нижче — інакше він висить
-            ellipse = ((xx - (w + 2 * sh) / 2) / (w * 0.45)) ** 2 + ((yy - (h - sh)) / (sh * 0.75)) ** 2 <= 1
+            ellipse = ((xx - (w + 2 * sh) / 2) / (w * 0.45)) ** 2 + (
+                (yy - (h - sh)) / (sh * 0.75)
+            ) ** 2 <= 1
             canvas[ellipse] = (*dark, 255)
             body = out[..., 3] > 0
             canvas[:h, sh : sh + w][body] = out[body]

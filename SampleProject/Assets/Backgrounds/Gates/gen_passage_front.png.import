@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkrnc683r3058"
-path="res://.godot/imported/gen_gate.png-8bece6d6ec5c5472e3cf54c606b07e10.ctex"
+uid="uid://dsoqsa4e04fln"
+path="res://.godot/imported/gen_passage_front.png-449306bc49dd269d5df70dfb5d434b74.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/Gates/gen_gate.png"
-dest_files=["res://.godot/imported/gen_gate.png-8bece6d6ec5c5472e3cf54c606b07e10.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/Gates/gen_passage_front.png"
+dest_files=["res://.godot/imported/gen_passage_front.png-449306bc49dd269d5df70dfb5d434b74.ctex"]
 
 [params]
 

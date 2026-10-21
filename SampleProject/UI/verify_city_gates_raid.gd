@@ -42,6 +42,26 @@ func _enemies(room: Node) -> Array:
 	return room.find_children("*", "CharacterBody2D", true, false).filter(
 			func(n: Node) -> bool: return n.is_in_group(&"enemies") and n.is_alive())
 
+## Підсумковий z з урахуванням батьків (z_as_relative).
+func _z(item: CanvasItem) -> int:
+	var z := 0
+	var n: Node = item
+	while n is CanvasItem:
+		z += (n as CanvasItem).z_index
+		if not (n as CanvasItem).z_as_relative:
+			break
+		n = n.get_parent()
+	return z
+
+## Чи непрозорий піксель спрайта над героєм: на висоті грудей (chest) або на висоті мосту брами (рядок 70 текстури).
+func _covers(sprite: Sprite2D, player: Node2D, chest: bool) -> bool:
+	var p: Vector2 = sprite.to_local(player.global_position + Vector2(0, -30))
+	var img: Image = sprite.texture.get_image()
+	var px := Vector2i(int(p.x), int(p.y) if chest else 70)
+	if px.x < 0 or px.x >= img.get_width() or px.y < 0 or px.y >= img.get_height():
+		return false
+	return img.get_pixelv(px).a > 0.5
+
 func _initialize() -> void:
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
@@ -156,6 +176,39 @@ func _initialize() -> void:
 	ck(game.map.get_current_state_name() == "APPROACH", "the raid does not re-fire 200 px away (%s)" % game.map.get_current_state_name())
 	ck(started.is_empty() and not player.event, "no raid lines, control kept (%s)" % [started])
 	ck(player.global_position.y > y0, "the hero falls after the teleport (y %.1f -> %.1f)" % [y0, player.global_position.y])
+
+	print("[8] 8c: the gatehouse is a passage — towers and bridge over the hero, its wall behind; walking east loads the City inside it")
+	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:
+		game.set_quest_flag(flag, true)
+	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	for i in 30: await physics_frame
+	room = game.map
+	ck(room.get_current_state_name() == "TO_CITY", "TO_CITY (%s)" % room.get_current_state_name())
+	var front: Sprite2D = room.get_node(^"GatePassage/Front")
+	var back: Sprite2D = room.get_node(^"GatePassage/Back")
+	ck(_z(front) > _z(player) and _z(back) < _z(player), "front z %d over the hero %d, wall z %d behind" % [_z(front), _z(player), _z(back)])
+	player.global_position = Vector2(1100, 360)
+	for i in 30: await physics_frame
+	var behind_tower := false
+	var under_bridge := false
+	Input.action_press(&"move_right")
+	for i in 600:
+		if game.map != room:
+			break
+		var x: float = player.global_position.x
+		if x > 1380.0 and x < 1480.0:
+			behind_tower = behind_tower or _covers(front, player, true)
+		if x > 1600.0:
+			under_bridge = under_bridge or (not _covers(front, player, true) and _covers(front, player, false))
+		await physics_frame
+	for i in 10: await physics_frame
+	Input.action_release(&"move_right")
+	ck(behind_tower, "the tower is drawn over the hero walking in")
+	ck(under_bridge, "deeper in, the hero shows in the passage with the bridge over him")
+	ck(game.map.scene_file_path.ends_with("/City.tscn"), "real move_right east loads the City (%s)" % game.map.scene_file_path)
+	var city_front: Sprite2D = game.map.get_node(^"GatePassage/Front")
+	ck(not _covers(city_front, player, true) and _covers(city_front, player, false),
+			"the City side: the hero arrives inside the same passage (x %.0f)" % player.global_position.x)
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

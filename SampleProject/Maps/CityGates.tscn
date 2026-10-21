@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_mid.png" id="gates_mid"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/CityGates_Terrain.png" id="terrain_terrain"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_gate.png" id="gate_art"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/gate_passage.tscn" id="gate_passage"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="gate_guard"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png" id="bandit_sheet"]
 
@@ -129,13 +129,8 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("gates_mid")
 centered = false
 
-[node name="Gate" type="Sprite2D" parent="." unique_id=1846200201]
-z_index = -1
-texture_filter = 1
-position = Vector2(1290, 146)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("gate_art")
-centered = false
+[node name="GatePassage" parent="." unique_id=1846200201 instance=ExtResource("gate_passage")]
+position = Vector2(1321, 115)
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1306653119]
 
@@ -169,11 +164,11 @@ position = Vector2(900, 344)
 shape = SubResource("WorldBoundary_sky")
 
 [node name="GuardLeft" parent="." unique_id=1846200204 instance=ExtResource("gate_guard")]
-position = Vector2(1418, 384)
+position = Vector2(1200, 384)
 scale = Vector2(-1, 1)
 
 [node name="GuardRight" parent="." unique_id=1846200205 instance=ExtResource("gate_guard")]
-position = Vector2(1628, 384)
+position = Vector2(1270, 384)
 scale = Vector2(-1, 1)
 
 [node name="RaidTrigger" type="Area2D" parent="." unique_id=806456742]
@@ -190,7 +185,7 @@ shape = SubResource("RectangleShape2D_raid")
 visible = false
 
 [node name="Look" type="Marker2D" parent="Raid" unique_id=1846200301]
-position = Vector2(1301, 240)
+position = Vector2(1200, 240)
 
 [node name="Bandits" type="Node2D" parent="Raid" unique_id=1846200302]
 
@@ -232,15 +227,15 @@ auto_spawn_on_ready = false
 spawn_in_waves = true
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=747155676]
-position = Vector2(1180, 368)
+position = Vector2(980, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="EnemySpawner" unique_id=389091756]
-position = Vector2(1260, 368)
+position = Vector2(1060, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner" unique_id=435723178]
-position = Vector2(1340, 368)
+position = Vector2(1140, 368)
 script = ExtResource("8_spawn_point")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=760530363]
