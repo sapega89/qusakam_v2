@@ -84,8 +84,8 @@ in [[play_feedback_queue]].
    `Scenes/UI/cutscene_skip_prompt.tscn`); Canyon meditation/descent, CityGates raid and `NpcArrival` moved onto it;
    `verify_cutscene.gd` (lock, HUD hidden, real hold of Tab / pad Y skips, control and HUD back) + the old verifies.
 2. **Bosses core** — `BossEnemy` + `BossLogic` (move sets), boss HP bar, `Player.defeat_handler`; `verify_bosses.gd`.
-3. **Mayor Hall** — queue, wall burst, Brass Collector, both outcomes → LabCells; `verify_mayor_hall.gd` (replaces
-   `verify_mayor_hall_teleport.gd`).
+3. ~~**Mayor Hall** — queue, wall burst, Brass Collector, both outcomes → LabCells; `verify_mayor_hall.gd` (replaces
+   `verify_mayor_hall_teleport.gd`).~~ — done (D300, queue row 9.3); the teleport goes to the old Laboratory entrance until 9.4.
 4. **Laboratory split** — `LabCells`, `LabBoss`, MapData, `Laboratory` corridors re-laid; `verify_map_geometry`.
 5. **Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.
 6. **Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].

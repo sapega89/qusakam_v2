@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Bosses/sleep_gas.png" id="1_t"]
+
+[sub_resource type="Animation" id="Animation_gas"]
+resource_name = "gas"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:scale")
+tracks/0/interp = 1
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.2, 3.0),
+"transitions": PackedFloat32Array(0.5, 1, 1),
+"update": 0,
+"values": [Vector2(0.6, 0.6), Vector2(2, 2), Vector2(2.6, 2.6)]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Sprite2D:modulate")
+tracks/1/interp = 1
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2.0, 3.0),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath(".")
+tracks/2/keys = {
+"times": PackedFloat32Array(3.0),
+"transitions": PackedFloat32Array(1),
+"values": [{"args": [], "method": &"queue_free"}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gas"]
+_data = {&"gas": SubResource("Animation_gas")}
+
+[node name="SleepGas" type="Node2D"]
+z_index = 5
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("1_t")
+offset = Vector2(0, -28)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {&"": SubResource("AnimationLibrary_gas")}
+autoplay = &"gas"
