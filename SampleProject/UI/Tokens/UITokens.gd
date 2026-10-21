@@ -45,6 +45,14 @@ const BORDER_WIDTH := 1
 # Figma: shape/border-selected
 const BORDER_WIDTH_SELECTED := 2
 
+# ── Фокус (Q33, BACKLOG 41: один вигляд вибраного рядка в кожному меню) ─────
+# Рядок під фокусом (клавіатура, геймпад, наведення мишею) — 2px акцентна рамка без заливки,
+# намальована поверх власного стану кнопки. Будівник теми бере ЛИШЕ ці токени для "focus".
+const FOCUS_RING := ACCENT
+# На акцентній заливці золота рамка зникає — там рамка біла (як у Primary-кнопки).
+const FOCUS_RING_ON_ACCENT := TEXT_PRIMARY
+const FOCUS_RING_WIDTH := BORDER_WIDTH_SELECTED
+
 # ── Відступи ────────────────────────────────────────────────────────────────
 const SPACE_2XS := 2
 const SPACE_XS := 4

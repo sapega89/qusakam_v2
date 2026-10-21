@@ -8,9 +8,9 @@ signal closed
 ## settings-gameplay 17:632, settings-controls 17:756.
 ##
 ## Показуємо ТІЛЬКИ те, що має реальну підсистему. Рядки Figma без бекенду
-## (Resolution, Frame Rate Limit, Screen Brightness, Ambient, Text Speed,
-## Screen Shake, Damage Numbers) свідомо відкладені — див.
-## design/settings_mapping.md, D43–D48. Фейкових контролів тут немає.
+## (Screen Brightness, Ambient, Text Speed, Screen Shake, Damage Numbers) свідомо
+## відкладені — див. design/settings_mapping.md, D43–D48. Фейкових контролів тут немає.
+## Resolution і Frame Rate Limit — BACKLOG 41 (DisplayManager.RESOLUTIONS / FPS_LIMITS).
 ##
 ## Персистенс — існуючий: SaveSystem.settings_module + save_game_settings().
 ## Другої системи налаштувань не заводимо.
@@ -27,7 +27,7 @@ const TABS := [
 
 ## Підказка нижньої панелі для кожної вкладки — лише про реальні дії.
 const TAB_HINTS := {
-	"display": "Set the display mode.",
+	"display": "Set the display mode, window size and frame rate limit.",
 	"audio": "Adjust volume levels.",
 	"game": "Choose the interface language and whether hints open tutorial windows.",
 	"controls": "Select an action to rebind it.",
@@ -154,8 +154,16 @@ func _rebuild_list() -> void:
 			_add_segment_row("Display Mode", ["Windowed", "Fullscreen"],
 					1 if _cfg_get("fullscreen") else 0, _on_display_mode_changed)
 			_add_separator()
+			# BACKLOG 41: Fullscreen завжди в рідній роздільності екрана — розмір вікна лише для Windowed.
+			_add_stepper_row("Resolution", _resolution_names(),
+					DisplayManager.RESOLUTIONS.find(String(_cfg_get("resolution"))),
+					_on_resolution_changed, not bool(_cfg_get("fullscreen")))
+			_add_separator()
 			_add_segment_row("VSync", ["Enable", "Disable"],
 					0 if _cfg_get("vsync") else 1, _on_vsync_changed)
+			_add_separator()
+			_add_stepper_row("Frame Rate Limit", _fps_limit_names(),
+					DisplayManager.FPS_LIMITS.find(int(_cfg_get("fps_limit"))), _on_fps_limit_changed)
 		"audio":
 			_add_slider_row("Master Volume", "master_volume")
 			_add_separator()
@@ -227,6 +235,60 @@ func _add_segment_row(label_text: String, options: Array, selected: int,
 	row.add_child(frame)
 
 
+## Figma 17:280 Stepper — шеврон ліворуч · 280px значення · шеврон праворуч (Resolution, Frame Rate Limit).
+## Крок по колу; рядок не перебудовується, тож фокус клавіатури / геймпада лишається на шевроні.
+func _add_stepper_row(label_text: String, options: Array[String], selected: int,
+		on_change: Callable, enabled: bool = true) -> void:
+	if selected < 0:
+		push_error("OptionsComponent: '%s' holds a value outside its option list" % label_text)
+		return
+	var row := _make_row(label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
+	var group := HBoxContainer.new()
+	group.name = "Stepper"
+	group.add_theme_constant_override("separation", UITokens.SPACE_LG)
+	group.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+	var value := Label.new()
+	value.name = "Value"
+	value.custom_minimum_size = Vector2(UITokens.SETTINGS_STEPPER_WIDTH, 0)
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	value.theme_type_variation = &"SettingsValue"
+	value.text = options[selected]
+	if not enabled:
+		value.add_theme_color_override("font_color", UITokens.TEXT_DISABLED)
+
+	var index: Array[int] = [selected]  # лямбда змінює значення через масив
+	var step := func(delta: int) -> void:
+		index[0] = wrapi(index[0] + delta, 0, options.size())
+		value.text = options[index[0]]
+		on_change.call(index[0])
+	for spec in [["Prev", "‹", -1], ["Next", "›", 1]]:
+		var button := Button.new()
+		button.name = spec[0]
+		button.text = spec[1]
+		button.theme_type_variation = &"SettingsStepper"
+		button.disabled = not enabled
+		button.pressed.connect(step.bind(spec[2]))
+		group.add_child(button)
+	group.add_child(value)
+	group.move_child(value, 1)
+	row.add_child(group)
+
+
+func _resolution_names() -> Array[String]:
+	var names: Array[String] = []
+	for value in DisplayManager.RESOLUTIONS:
+		names.append(value.replace("x", " × "))
+	return names
+
+
+func _fps_limit_names() -> Array[String]:
+	var names: Array[String] = []
+	for fps in DisplayManager.FPS_LIMITS:
+		names.append("Unlimited" if fps == 0 else "%d FPS" % fps)
+	return names
+
+
 ## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100.
 func _add_slider_row(label_text: String, key: String) -> void:
 	var row := _make_row(label_text, UITokens.SETTINGS_SLIDER_ROW_HEIGHT)
@@ -296,6 +358,16 @@ func _on_display_mode_changed(index: int) -> void:
 	_cfg_set("fullscreen", index == 1)
 	_apply_and_save()
 	_rebuild_list()
+
+
+func _on_resolution_changed(index: int) -> void:
+	_cfg_set("resolution", DisplayManager.RESOLUTIONS[index])
+	_apply_and_save()
+
+
+func _on_fps_limit_changed(index: int) -> void:
+	_cfg_set("fps_limit", DisplayManager.FPS_LIMITS[index])
+	_apply_and_save()
 
 
 func _on_tutorial_windows_changed(index: int) -> void:
