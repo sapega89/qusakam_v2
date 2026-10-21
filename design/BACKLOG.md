@@ -179,7 +179,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     the City only **DesertRoad** grows (longer, more MetSys cells, more fights, side ledges with pickups) and the XP curve
     (XPManager) is tuned so level 5 lands at the City. The **Laboratory** becomes bigger and is split into several
     screens (separate MetSys rooms) — fits the rewritten Laboratory story (item 17): the cells floor, the corridors of
-    mobs, the boss room. Plan first: `design/world_expansion_plan.md`; new parts get the painted terrain/backdrops.
+    mobs, the boss room. Plan: [[world_expansion_plan]] (D296–D299); new parts get the painted terrain/backdrops.
+    **Resume:** DesertRoad part — slices 1–5 of the plan; Laboratory part — with items 16 + 17 (outline in the plan).
 24. **Every action works on a gamepad** (Sapega 2026-10-20 «кожна дія дублюється на джойстику — це важливо, будуть
     тестувати на джойстику»): every keyboard/mouse action — movement, combat, skills, calling companions (F), menus and
     every Game Menu screen, dialogue, tutorial windows, the Skills learn (B77), inventory actions, map — has a gamepad
