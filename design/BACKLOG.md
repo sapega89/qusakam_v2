@@ -226,6 +226,18 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Village) too. Each NPC works at/in front of its building (D295).
 30. **Effects polish** (Sapega 2026-10-21 on D273 «вже краще, але є над чим працювати»): a later pass over the generated
     swing, hit and skill effects — collect Sapega's notes first.
+31. **Every text in two languages: English and Ukrainian** (Sapega 2026-10-21 «всі тексти мають мати дві мови і перевірити,
+    що на англійській версії немає кирилиці, щоб не було помилок, і так само на українській не повинно бути англійських
+    текстів — окрім кнопок; назви вкладок теж мають бути перекладені»). Today: `SampleProject/Resources/Translations/en.po`,
+    `uk.po` exist (partial), a few scripts call `tr()`, `.dqd` dialogue is Ukrainian, UI/data text mostly English. Needed:
+    every user-facing string (scenes, data JSON — items, skills, quests, journal, bestiary, tutorials, hints — dialogue
+    `.dqd` in both languages, tab names, menus, modals) through translation keys; a language switch in Settings (it
+    exists? check D-IDs); translations registered without `project.godot` (runtime `TranslationServer`, D270 pattern) or
+    in it once Sapega commits it. A verify that walks every screen and every text resource in each locale and fails on
+    Cyrillic in EN and on Latin words in UK (allow-list: key/button glyph names like Tab, Esc, LB, RT, A/B/X/Y, and proper
+    tokens like HP/SP/XP if Sapega agrees). Voices: English greetings via Kokoro (D277), Ukrainian via a Piper voice whose
+    licence allows release (check each voice's model card; never non-commercial weights); greeting picked by locale.
+    Plan first: `design/localization_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
