@@ -4,7 +4,6 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/sheet.png" id="3_sprite"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd" id="act_script"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png" id="anvil"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -103,12 +102,6 @@ size = Vector2(64, 64)
 script = ExtResource("1_blacksmith")
 task_giver = "blacksmith"
 character_id = "BLACKSMITH"
-
-[node name="Anvil" type="Sprite2D" parent="."]
-texture_filter = 1
-offset = Vector2(0, -44)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("anvil")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1

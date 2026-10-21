@@ -135,5 +135,35 @@ func _initialize() -> void:
 	await process_frame
 	ck(g_anim.current_animation == "work", "grandfather: back to his pipe after the dialogue (%s)" % g_anim.current_animation)
 
+	print("[5] B81: the anvil stands at the forge the whole time, the smith walks out to it without carrying it")
+	world.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	for i in 30: await physics_frame
+	var city: Node = world.map
+	var smith: NpcBase = city.get_node(^"Blacksmith")
+	var anvil: Sprite2D = city.get_node(^"Anvil")
+	var anvil_at: Vector2 = anvil.global_position
+	ck(not smith.is_ancestor_of(anvil) and smith.find_children("*", "Sprite2D", true, false).size() == 1, "the anvil is not part of the smith (only his own sprite moves with him)")
+	ck(not smith.visible and anvil.is_visible_in_tree(), "before the meeting: smith inside, anvil already at the forge")
+	ck(absf(anvil_at.x - smith.global_position.x) < 1.0, "the anvil stands at his station (x %.0f / %.0f)" % [anvil_at.x, smith.global_position.x])
+	player = world.player
+	player.global_position = Vector2(840, 360)
+	for i in 20: await physics_frame
+	var smith_xs: Array[float] = []
+	var anvil_moved := false
+	Input.action_press(&"move_right")
+	for i in 600:
+		if smith.visible and (smith.get_node(^"AnimationPlayer") as AnimationPlayer).current_animation == "walk":
+			Input.action_release(&"move_right")
+			smith_xs.append(smith.global_position.x)
+		anvil_moved = anvil_moved or not anvil.global_position.is_equal_approx(anvil_at) or not anvil.is_visible_in_tree()
+		if dm.is_dialogue_active():
+			break
+		await physics_frame
+	Input.action_release(&"move_right")
+	ck(smith_xs.size() > 10 and absf(smith_xs[-1] - smith_xs[0]) > 50.0, "the smith walks out (%d frames, %.0f px)" % [smith_xs.size(), absf(smith_xs[-1] - smith_xs[0]) if smith_xs.size() > 0 else 0.0])
+	ck(not anvil_moved, "the anvil did not move or vanish while he walked")
+	ck(absf(smith.global_position.x - anvil_at.x) < 1.0, "he arrives at the anvil (x %.0f)" % smith.global_position.x)
+	await _drain(dm)
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()

@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
 [ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/gate_passage.tscn" id="gate_passage"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png" id="anvil"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(140, 200)
 
@@ -116,6 +117,13 @@ talk_dialogue = "res://dialogue_quest/City_Merchant.dqd"
 task_giver = "merchant"
 shown_with_flag = "city_gates_fight_complete"
 merchant_id = "city_merchant"
+
+[node name="Anvil" type="Sprite2D" parent="." unique_id=1402914105]
+texture_filter = 1
+position = Vector2(1100, 396)
+offset = Vector2(0, -44)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("anvil")
 
 [node name="Blacksmith" parent="." instance=ExtResource("6_blacksmith")]
 position = Vector2(1100, 396)
