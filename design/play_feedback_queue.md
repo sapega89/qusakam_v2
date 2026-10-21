@@ -61,6 +61,40 @@ verify_combat_flow flake fixed (live enemies' in-flight swings), verify_mayor_ha
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
+## Two lanes (Sapega 2026-10-21: «арти генерувати поступово, а все інше одним скоупом; якщо арти готові — приступає, якщо ні — чекає»)
+
+The PC must not freeze: ComfyUI runs in **one** lane only; at most two Godot-running agents at once.
+
+**Art lane (main tree, ComfyUI)** — generates assets in this order, commits them, no wiring; each batch reports which items it unblocks:
+
+| # | Art batch | Unblocks |
+|---|---|---|
+| A1 | chest closed / opening / open + Kusakam's raise-the-item pose (edit model) | 33 |
+| A2 | buildings: sky chapel, witch's hut, dervish tent, grandfather's house, village-centre house + its interior backdrop (image model) | 29, 38 |
+| A3 | Kusakam holding each weapon type — sword/axe, dagger, mace, halberd, dual, bare hands: combat idle, run, jump/fall, combo, heavy, block, hurt (edit model; one weapon type per run) | 42 |
+| A4 | bow for the hero (draw, shoot, charged shot), an archer enemy, arrows (edit + image model) | 40 |
+| A5 | foreground parallax for Canyon, DesertRoad, CityGates, City, LaboratoryOutside + decor idle frames (banners, palms, lamps) and drifting clouds (image model) | 7, 19 |
+| A6 | skill-tree active effects that only reuse recoloured ones today (D279 leftover), effect polish notes (BACKLOG 30) when Sapega gives them | 30 |
+
+**Code lane (git worktree, no ComfyUI)** — takes the next item whose art is ready; an item waiting for art is skipped until its batch lands:
+
+| Order | Item | Needs art |
+|---|---|---|
+| 1 | 28 onboarding + pictures in tutorial windows (recorded from the game) | — |
+| 2 | B82 position on load, B10 the Auto button | — |
+| 3 | 43 + 44 Skills screen rework (pending picks + Accept, tree, details, hotbar assign) + 5 attribute points per level | — |
+| 4 | 36 speaker name + portrait, 37 objective plaque, the gift / loot modals of 33 | — |
+| 5 | 31 two languages (EN/UK), Piper greetings | — |
+| 6 | 41 graphics settings + one selection look, 39 cleanup, 35 NPC chatter clouds, 34 lore stubs + Figma lore/flags pages | — |
+| 7 | 9.5 → 9.8 the Laboratory to the demo end | already generated (9.4) |
+| 8 | 33 chests wired | A1 |
+| 9 | 29 + 38 buildings and the village-centre house wired | A2 |
+| 10 | 42 hero weapon animations wired (per weapon type as A3 delivers) | A3 |
+| 11 | 40 bow and archers | A4 |
+| 12 | 7 + 19 foreground parallax, living world | A5 |
+| 13 | 24 gamepad audit (last: every screen final) | — |
+
+The orchestrator merges the code lane, runs the full suite, builds Windows + Linux, and owns the registers.
 ## Next, in this order
 
 **Order from here (2026-10-21, after 8d):** 8h (32 ledges) → 8e (28 onboarding) → 8i (43 + 44 Skills screen + attribute points)
