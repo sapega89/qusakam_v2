@@ -70,7 +70,7 @@ func _initialize() -> void:
 	await _drain(dm)
 	ck(game.get_quest_flag("task_smith_helmet_taken") and not game.get_quest_flag("task_smith_helmet_done"), "task_smith_helmet active")
 	var shown := await _choose_quest(smith, dm)
-	ck(not shown.is_empty() and shown[-1].begins_with("Current task: Craft an Iron Helmet"), "no helmet → reminder ends on the task (%s)" % (shown[-1] if shown else ""))
+	ck(not shown.is_empty() and shown[-1].begins_with("Current task: Buy 2 Iron Ingots and 1 Leather"), "no helmet → reminder ends on the task (%s)" % (shown[-1] if shown else ""))
 	ck(game.get_quest_flag("task_smith_helmet_taken") and not game.get_quest_flag("task_smith_helmet_done"), "still active without a helmet")
 	inv.add_item("iron_helmet", 1)
 	var coins: int = inv.get_item_count("coin")

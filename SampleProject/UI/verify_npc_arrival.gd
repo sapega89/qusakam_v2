@@ -50,6 +50,24 @@ func _z_order() -> void:
 		map.free()
 	ck(checked >= 6, "NPC sprites found in the maps (%d)" % checked)
 
+func _tap(action: StringName) -> void:
+	for pressed: bool in [true, false]:
+		var ev := InputEventAction.new()
+		ev.action = action
+		ev.pressed = pressed
+		Input.parse_input_event(ev)
+		await physics_frame
+
+## Герой підходить до NPC і тисне interact; у меню — справжні ui_down × n і ui_accept.
+func _choose(npc: NpcBase, label: String) -> void:
+	await _tap(&"interact")
+	for i in 4: await process_frame
+	var labels: Array = npc.npc_menu.get_children().map(func(b: Button) -> String: return b.text)
+	for i in labels.find(label):
+		await _tap(&"ui_down")
+	await _tap(&"ui_accept")
+	for i in 4: await process_frame
+
 func _drain(dm: Node) -> void:
 	for round in 10:
 		for i in 200:
@@ -73,7 +91,7 @@ func _arrival(game: Node, sl: Node, room: String, start: NodePath, npc_name: Str
 	var dm: Node = sl.get_dialogue_manager()
 	game.teleport_to_room(room, start)
 	for i in 30: await physics_frame
-	if start_x > 0.0:  # past the room's own dialogue triggers (Road monologue; City [PLACEHOLDER] City_Merchant, left as is)
+	if start_x > 0.0:  # past the room's own dialogue triggers (Road monologue; City_Merchant zone before D311)
 		game.player.global_position = Vector2(start_x, 360)
 		for i in 20: await physics_frame
 	var npc: NpcBase = game.map.get_node(npc_name)
@@ -150,6 +168,11 @@ func _initialize() -> void:
 	var journal: Node = get_first_node_in_group("journal_screen")
 	var titles: Array = journal.entries.map(func(e: Dictionary) -> String: return e.title)
 	ck(titles.has("The Stolen Caravan") and titles.has("The Helmet"), "journal lists the tasks (%s)" % [titles])
+	var helmet: Array = journal.entries.filter(func(e: Dictionary) -> bool: return e.title == "The Helmet")
+	ck(not helmet.is_empty() and "god of deals" in helmet[0].description and "Goal: Buy 2 Iron Ingots and 1 Leather" in helmet[0].description
+			and "anvil" in helmet[0].description, "The Helmet: lore + a clear goal in the Journal (D311) (%s)" % [helmet])
+	sl.get_ui_manager().close_game_menu()
+	for i in 10: await process_frame
 
 	print("[5] The caravan task turns in once the City Gates are cleared")
 	var TASKS: GDScript = load("res://SampleProject/Scripts/Tasks/task_service.gd")
@@ -157,6 +180,42 @@ func _initialize() -> void:
 	ck(not TASKS.can_turn_in(caravan), "not before the gates fight")
 	game.set_quest_flag("city_gates_fight_complete", true)
 	ck(TASKS.can_turn_in(caravan), "after the gates fight")
+
+	print("[6] The caravan merchant has moved on to the City (D311): gone from the road, at work past the City gates")
+	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	for i in 30: await physics_frame
+	ck(game.map.get_node_or_null(^"Merchant") == null, "no merchant on the Desert Road after the gates fight")
+	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	for i in 30: await physics_frame
+	var merchant: NpcBase = game.map.get_node(^"Merchant")
+	var hero: CharacterBody2D = game.player
+	ck(merchant.visible and absf(merchant.global_position.x - 800.0) < 1.0, "the merchant stands at the old City_Merchant spot")
+	ck(_z(merchant.get_node(^"Sprite2D")) < _z(hero.get_node(^"Sprite2D")), "behind the hero (D291)")
+	await _until(func() -> bool: return merchant.get_node(^"AnimationPlayer").current_animation == "work", 8.0)
+	ck(merchant.get_node(^"AnimationPlayer").current_animation == "work", "he counts coins (D295)")
+	hero.global_position = merchant.global_position + Vector2(-40, -10)
+	hero.velocity = Vector2.ZERO
+	for i in 20: await physics_frame
+	var dm: Node = sl.get_dialogue_manager()
+	var started: Array[String] = []
+	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
+	played.clear()
+	await _tap(&"interact")
+	for i in 4: await process_frame
+	var labels: Array = merchant.npc_menu.get_children().map(func(b: Button) -> String: return b.text)
+	ck(labels == ["Talk", "Quest", "Buy"], "his menu: Talk / Quest / Buy (%s)" % [labels])
+	ck(played.has(&"greet_merchant"), "a voiced greeting when the hero starts the talk (D277) (%s)" % [played])
+	merchant.npc_menu.cancelled.emit()
+	for i in 4: await process_frame
+	await _choose(merchant, "Quest")
+	ck(started.has("Merchant_Caravan_Done"), "Quest hands in the caravan in the City (%s)" % [started])
+	await _drain(dm)
+	ck(game.get_quest_flag("task_merchant_caravan_done"), "caravan task done")
+	await _choose(merchant, "Buy")
+	ck(merchant.is_shop_open, "Buy opens his shop")
+	var stock: Array = merchant.shop_menu_instance.shop_items
+	ck(stock.has("iron_ingot") and stock.has("leather") and stock.has("hi_potion"), "City stock: the helmet's ingots and leather, potions (%s)" % [stock])
+	merchant.close_shop()
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

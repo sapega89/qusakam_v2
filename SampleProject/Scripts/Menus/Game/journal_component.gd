@@ -146,7 +146,8 @@ func _load_story() -> void:
 		var status: String = TASKS.status(task)
 		if status != "":
 			items.append({"id": "task/" + task.id, "title": tr(task.title), "group": "Tasks",
-				"state": "done" if status == TASKS.DONE else "current", "description": tr(task.objective)})
+				"state": "done" if status == TASKS.DONE else "current",
+				"description": "%s\n\n%s" % [tr(task.description), tr("Goal: %s") % tr(task.objective)]})
 	# Обраний пункт лишається, поки він доступний; інакше — поточний підетап.
 	var keep := false
 	for item in items:

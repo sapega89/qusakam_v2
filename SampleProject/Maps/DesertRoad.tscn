@@ -183,6 +183,7 @@ script = ExtResource("9_gate")
 [node name="Merchant" parent="." unique_id=890430184 instance=ExtResource("10_merchant")]
 position = Vector2(1120, 396)
 task_giver = "merchant"
+gone_with_flag = "city_gates_fight_complete"
 
 [node name="MerchantArrival" type="Area2D" parent="." unique_id=1402914113]
 position = Vector2(1200, 300)

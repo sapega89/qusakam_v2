@@ -250,9 +250,9 @@ near/foreground plane; add one to Canyon, DesertRoad, CityGates, City, Laborator
 ### ✅ Merchant & Blacksmith placed — 2026-10-14
 - D154. `Merchant` in `Maps/DesertRoad.tscn` (x 1350, moved to 1120 in front of his shop by D292; after the fight, before `SavePoint_BeforeCity`);
   `Blacksmith` in `Maps/City.tscn` (x 1100). (Canyon test copies and `TestGold` from D165 removed 2026-10-15.)
-- **Left as is (Sapega, 2026-10-15):** `Maps/City.tscn` `StateChangeTrigger_Merchant` still auto-plays the
-  `[PLACEHOLDER]` `City_Merchant.dqd` greeting though no Merchant stands in the City. Not to be removed
-  without asking. Tests: `verify_shop.gd`, `verify_blacksmith.gd`.
+- ~~Left as is (Sapega, 2026-10-15): `Maps/City.tscn` `StateChangeTrigger_Merchant` auto-played the
+  `[PLACEHOLDER]` `City_Merchant.dqd` greeting though no Merchant stood in the City.~~ Replaced on Sapega's
+  2026-10-21 request by the caravan merchant himself at that spot (D311); `City_Merchant.dqd` is his Talk draft. Tests: `verify_shop.gd`, `verify_blacksmith.gd`.
 
 ### ✅ Music — built 2026-10-14
 - [[music_plan]]. A `Music` player in every room and the menu, played by the maaacks

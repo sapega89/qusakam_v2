@@ -11,6 +11,7 @@ class_name NpcBase
 
 ## load(), не preload: сервіс тягне Game, а тест-скрипти компілюють NpcBase ще до автолоадів.
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
+const GAME_PATH := "res://SampleProject/Scripts/Game.gd"
 const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd")
 
 ## DQD-діалог для пункту Talk. Порожньо — пункту Talk немає (без вигаданого вмісту).
@@ -22,6 +23,11 @@ const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActiv
 
 ## Поза розмови (talk) на аркуші дивиться ліворуч — інакше праворуч; NPC повертається нею до героя (D243).
 @export var profile_faces_left: bool = false
+
+## Стоїть у мапі лише з цим прапорцем (порожньо — завжди) і зникає з другим (порожньо — ніколи):
+## торговець каравану — на дорозі до бою біля брами, у місті після нього (D311).
+@export var shown_with_flag: String = ""
+@export var gone_with_flag: String = ""
 
 @onready var interactable: InteractableComponent = $Interactable
 ## Що NPC робить сам (BACKLOG 5, D295) і поза розмови — поки відкрите його меню, екран чи розмова поруч.
@@ -35,6 +41,10 @@ var npc_menu: NpcActionMenu = null
 
 
 func _ready() -> void:
+	if not _here():
+		process_mode = Node.PROCESS_MODE_DISABLED
+		queue_free()
+		return
 	_rest_flip = sprite.flip_h
 	if not interactable.interacted.is_connected(_on_interacted):
 		interactable.interacted.connect(_on_interacted)
@@ -48,6 +58,14 @@ func _ready() -> void:
 	npc_menu.cancelled.connect(_close_npc_menu)
 	interactable.player_exited.connect(_on_player_left)
 	refresh_availability()
+
+
+## Чи стоїть NPC у мапі за прапорцями shown_with_flag / gone_with_flag.
+func _here() -> bool:
+	if shown_with_flag == "" and gone_with_flag == "":
+		return true  # Game не питаємо: тести ставлять NPC і без гри
+	var game: Node = load(GAME_PATH).get_singleton()  # load(): Game тягне NpcBase — preload замкнув би коло
+	return (shown_with_flag == "" or game.get_quest_flag(shown_with_flag)) and not (gone_with_flag != "" and game.get_quest_flag(gone_with_flag))
 
 
 func _process(_delta: float) -> void:

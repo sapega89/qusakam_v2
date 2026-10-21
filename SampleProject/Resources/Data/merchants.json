@@ -20,6 +20,23 @@
 				"iron_armor"
 			]
 		},
+		"city_merchant": {
+			"name": "Caravan Merchant (City)",
+			"items": [
+				"potion",
+				"hi_potion",
+				"ether",
+				"herb",
+				"mana_crystal",
+				"iron_ingot",
+				"copper_ingot",
+				"silver_ingot",
+				"leather",
+				"wood_plank",
+				"leather_armor",
+				"iron_shield"
+			]
+		},
 		"village_merchant": {
 			"name": "Village Merchant",
 			"items": [

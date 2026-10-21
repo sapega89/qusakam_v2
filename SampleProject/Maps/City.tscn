@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_near.png" id="city_near"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_save"]
-[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="5_trigger"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/blacksmith.tscn" id="6_blacksmith"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_priest.tscn" id="7_oath_priest"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_witch.tscn" id="8_oath_witch"]
@@ -17,6 +16,7 @@
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_forge.png" id="forge_art"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
+[ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(140, 200)
 
@@ -106,14 +106,12 @@ text = "S"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StateChangeTrigger_Merchant" type="Area2D" parent="." unique_id=174666615]
-position = Vector2(800, 280)
-script = ExtResource("5_trigger")
-dialogue_id = "City_Merchant"
-action_mode = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_Merchant" unique_id=1035189680]
-shape = SubResource("CircleShape2D_save")
+[node name="Merchant" parent="." unique_id=174666615 instance=ExtResource("10_merchant")]
+position = Vector2(800, 396)
+talk_dialogue = "res://dialogue_quest/City_Merchant.dqd"
+task_giver = "merchant"
+shown_with_flag = "city_gates_fight_complete"
+merchant_id = "city_merchant"
 
 [node name="Blacksmith" parent="." instance=ExtResource("6_blacksmith")]
 position = Vector2(1100, 396)
