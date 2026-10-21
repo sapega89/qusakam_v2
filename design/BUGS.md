@@ -28,7 +28,7 @@ about**. Triage every finding three ways before filing:
 | **None of the above — it is simply wrong** | **here, as a B-ID** | — |
 
 Pre-existing test failures are **not** bugs: check [[test_baseline]] first, its
-six known issues are baseline noise.
+three known issues (exit 139, headless display-server errors, missing item icons) are baseline noise.
 
 ## Row format
 
@@ -64,31 +64,23 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B79 — Level and XP were not saved: every loaded save was level 1 — ✅ fixed 2026-10-21
-- **Where:** `SampleProject/Scripts/Systems/Save/Modules/PlayerDataModule.gd` (save / load), `XPManager.gd`
-- **Expected:** loading a save brings back the hero's level and XP (the oath is level 5, D280; skill points and passives follow the level).
-- **Got:** `XPManager.current_level` / `current_xp` were written nowhere except the slot card's `level` (`Game.gd:308`); after a load the hero was level 1 with 0 XP.
-- **Evidence:** `grep xp Save/Modules` → 0 hits; found while tuning the XP curve (BACKLOG 23, [[world_expansion_plan]]).
-- **Severity:** blocker
-- **Found:** 2026-10-21, backlog item 23
-- **Fix:** `level` and `xp` in the player save data, `XPManager.restore()` on load; saves without them fail loudly (no-fallback rule — the two local dev saves got `level` from their slot card, backups `*.bak-before-B79`). Test: `verify_save_load_room` [2]. **Leftover fixed 2026-10-21:** a New Game in the same session kept the last game's level, XP, player state (skills, oath, party, equipment, journal) and bag — the autoload managers outlive the game scene and nothing reset them. `Game._initialize_save_and_room()` now resets them all where the session already reset companions and cooldowns: `XPManager.reset()`, `PlayerStateManager.reset_player_state()` (one initial state, `_initial_state()`), `CharacterManager.initialize_characters()` (the roster takes the clean state and re-syncs the class, B55) and `InventoryManager.clear()`; a loaded save restores its own right after. Test: `verify_xp_curve` [4].
+> **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
+> with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
+> rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21
+> → [[figma_decision_register]] **D317**; their rows are removed too.
 
-### B77 — A skill cannot be learned with the mouse — ✅ fixed 2026-10-21
-- **Where:** `SampleProject/Scripts/Menus/Game/skills_component.gd` (Skills rows; learning goes through `try_unlock_selected()`)
-- **Expected:** a **double click** on a skill row learns it, like Enter/A on the selected row (Sapega 2026-10-20 «треба дабл клік мишкою»).
-- **Got:** a click only selects the row; learning needs Enter/A (B76 fixed the key path). No Learn button.
-- **Evidence:** D261, item-3 agent report 2026-10-20
-- **Severity:** blocker (mouse-only player cannot learn Healing Palm)
-- **Found:** 2026-10-20, backlog item 3
-- **Fix:** a double click on a row selects and learns / upgrades it (`skills_component.gd` `_on_row_input`, D283). Test: `verify_skill_trees_ui` [4] with real mouse events.
-
-### B78 — A hit with no source after an enemy died broke every damage listener — ✅ fixed 2026-10-21
-- **Where:** `SampleProject/Scripts/Combat/CombatBody2D.gd` `take_damage` (kept `last_damage_source` when `source` was null)
-- **Expected:** a hit without a source (trap, fall, test) reaches `EventBus.damage_received` listeners with `source = null`.
-- **Got:** the previous attacker stayed in the meta; once that enemy was freed, the signal call failed
-  ("Cannot convert argument 2 from Object to Object") — no hurt sound, no cut effect (`VFXHooks`, `SoundHooks`).
-- **Fix:** the meta is always set to the current source (null clears it). Test: `verify_audio` [5] hero hurt.
-- **Found:** 2026-10-21, BACKLOG 26 (audio)
+### B82 — A loaded save puts the hero at the scene's default position, not where he saved
+- **Where:** `SampleProject/Scripts/Game.gd:200` (`save_manager.retrieve_game(self)`) and `:239` (comment: "позиція вже
+  відновлена через save_manager.retrieve_game"); `SampleProject/Scripts/Managers/Gameplay/PlayerStateManager.gd:54`
+  (`get_player_position()`).
+- **Expected:** loading a save brings the hero back to the place he saved (the save point he used).
+- **Got (from the code, not reproduced in play):** the position is written — `Game._save_full_game_data_to_save_system()`
+  (`Game.gd:600`) → `PlayerDataModule.gd:32` `player_position` — and read back into `player_state` (`PlayerDataModule.gd:103-108`),
+  but nothing applies it: `get_player_position()` has no callers, `Game` does not override `_set_save_data()`, so
+  `retrieve_game()` restores MetSys map data only. The saved room loads; the hero keeps his default position from `Game.tscn`.
+  A new game is fine (`_position_player_at_start()`, `Game.gd:400`).
+- **Severity:** blocker (a load can drop the hero anywhere in the room, inside a wall or a fight)
+- **Found:** 2026-10-21, documentation cleanup (docs/CLAUDE.md "Player spawning" claim checked against the code)
 
 ## Playtest intake — 2026-09-29 (Sapega)
 
@@ -112,105 +104,6 @@ built*, not here.
 
 ---
 
-### B56 — Confirm modal body, divider and spacing differ from Figma 258:5332
-- **Where:** `Scenes/UI/modal_dialog.tscn` → `Panel` (plain `PanelContainer`), `Panel/VBox`, `Description`.
-- **Screen:** Figma `UI/Modal/Confirm 258:5332`.
-- **Expected:** description Regular **14** (`SIZE_SMALL`, through `font_px`); a **1px accent divider 300 wide**
-  under the title; panel padding **40 h / 28 v**; VBox gap **16** (`SPACE_LG`).
-- **Got:** description is base `Label` 16 (→ 20); no divider node; padding `PANEL_PADDING` 16 on all sides;
-  VBox `separation = 12` (`SPACE_MD`).
-- **Note:** found while fixing the title size (#69, B34 — title now `ModalTitle`, 22 → 28). No 40 / 28
-  spacing token exists yet; adding them is part of this fix, not a new decision (values are Figma's).
-- **Severity:** visual; found 2026-10-16, #69.
-
-### B55 — The HUD party card names the player "АСТРИТ", not Kusakam
-- **Where:** `Scripts/Managers/Gameplay/CharacterManager.gd:51` — `active_character_id = "player_1"`,
-  and `player_1` is `"Астрит"` (`:65`); Kusakam is `player_3` (`:85`). The party card reads the active character.
-- **Expected:** the character the player controls — Kusakam (`KUSAKAM.tres`, the whole prologue is his).
-- **Got:** "АСТРИТ  LV.1" on a new game, Canyon start.
-- **Evidence:** `design/shots/speech_bubble_intro.png` (top-left card).
-- **Note:** who Астрит / Уризен are in the story is open (Q51); D18 keeps the roster out for now.
-- **Severity:** visual (wrong name on the main HUD); found 2026-10-15, speech-bubble capture.
-
-### B54 — Load menu opened from the Main Menu asks a modal layer that is never built
-- **Where:** `Scripts/Menus/LoadGameMenu.gd` `_modal_open()` (called from `_restore_focus()` on open and
-  from `_unhandled_input()`) → `UIManager.get_modal_layer()`; `UIManager._should_skip_ui_root()` skips any
-  scene under `/Menus/` and `MainMenu.tscn`.
-- **Expected:** Continue → Load menu → keys work, Delete (Y) shows its modal.
-- **Got (from the code, not reproduced in play):** with the Main Menu → Continue path no UIRoot exists,
-  so `get_modal_layer()` is `null` and `.active_modal` errors — same shape as the Shop crash fixed
-  2026-10-15 (`get_modal_layer()` now builds UIRoot lazily, but not for `/Menus/` scenes).
-  Not hit from Game Over → Load Game: by then the game has built UIRoot.
-- **Check:** play Main Menu → Continue, press ↑/↓ and Y; watch the Godot errors.
-- **Severity:** error spam / possibly broken Delete modal; found 2026-10-15.
-- **✅ Fixed 2026-10-15:** `UIManager` no longer skips UIRoot for `MainMenu.tscn` and `/Menus/` scenes
-  (`_should_skip_ui_root()` removed). UIRoot holds only empty layers + the modal layer, so it is harmless
-  under the menu. `verify_shop.gd` [4b] checks the modal layer exists while the Main Menu is the scene.
-
-### B53 — Laboratory always restarts from EXPLORE, so a loaded save mid-lab skips its fight
-- **Where:** `SampleProject/Scripts/Gameplay/Scenes/Laboratory.gd` — `_ready()` runs
-  `_on_state_changed(current_state)` with the default `State.EXPLORE`; every later state that
-  finds its flag set just `return`s without advancing.
-- **Expected:** the starting state is picked from the `lab_*_complete` flags, as
-  `DesertRoad._determine_initial_state()` and (since 2026-10-14) `CityGates._initial_state()` do.
-- **Got:** same defect CityGates had — re-entering after the intro left the guards unspawned
-  forever (fixed there). In the lab, re-entry is only by loading a save (no way back by foot), and
-  the companion beats are trigger-driven, so the right starting state per flag needs reading
-  the triggers first.
-- **Severity:** blocker for loading a save made inside the lab; found 2026-10-14.
-- **Wider, 2026-10-15:** `Maps/Laboratory.tscn` has **no `StateChangeTrigger` at all**, so nothing ever
-  moves the lab out of `EXPLORE` — Companion 01–03, the limit test and the boss fight are unreachable
-  even on a fresh run. Fixing the load path first needs where each beat fires (trigger x positions) —
-  asked Sapega.
-- **✅ Fixed 2026-10-15 (D174):** triggers added; `Laboratory._initial_state()` reads the flags.
-  `verify_laboratory.gd` walks the beats and reloads mid-lab.
-
-### B37 — Plain `HSeparator` has no theme entry, so Journal/HUD rules render engine grey
-- **Root cause (named, not guessed):** `SampleProject/UI/Themes/GameUITheme.tres`
-  defines only *variations* with `base_type = &"HSeparator"` — `TitleRule`,
-  `TitleRuleBold`, `SaveRule`, `GameOverRule`, `GameOverFrameRule` — and **no base
-  `HSeparator` style**. Any separator without a variation falls through to Godot's
-  stock theme.
-- **Evidence:** `journal_fixtures_1920.png` — the rule under the screen title
-  (y=183, x 379–1460) and under `ACTIVE` (y=408, x 979–1460) both measure exactly
-  `#7f7f7f` = `Color(0.5, 0.5, 0.5)`, the engine default.
-- **Expected:** `#3a3a42` — `UITokens.BORDER`, which every other 1px line **on the
-  same screen** uses: the CURRENT OBJECTIVE box, the seven sidebar tab borders, the
-  party panel frame.
-- **Got:** roughly twice the luminance of every neighbouring rule, from an
-  untokened source. Automatic FAIL under the colour rule.
-- **Scope:** also in `journal_production_1920.png` and `combat_hud_1920.png`; **zero**
-  `#7f7f7f` pixels in the shop, settings and misc shots. Adding the base style fixes
-  every occurrence at once.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review (agent pass).
-
-### B38 — Highlighting a sidebar tab moves and shrinks it
-- **Where:** Game Menu left nav.
-- **Evidence:** `journal_fixtures_1920.png` — lit tabs (Inventory y 90–134, Journal
-  y 334–378) carry their accent border at **x = 10 and x = 295** → box 286 wide.
-  Unlit tabs (Equipment, World Map, Misc, Skills, Status) run **x = 0 to 295** →
-  296 wide. Height 45 ✓ and gap 16 ✓ on all seven.
-- **Expected:** one geometry for every row — 296 (`UITokens.SIDEBAR_TAB_WIDTH`) at a
-  single x. Highlighting must not move the row.
-- **Got:** the highlight shifts right 10px and shrinks 10px, so the left edge jumps
-  as the cursor travels.
-- **Related:** same family as **B20** (fixed, #81; Settings nav, ~4px), different screen and
-  component. Nothing is clipped here.
-- **Severity:** visual
-
-### B39 — Party cards are 352 wide against a 330 token
-- **Evidence:** `journal_fixtures_1920.png` — panel border x=1520/1919 (400 wide ✓
-  `PARTY_PANEL_WIDTH`), card accent borders at **x=1544 and x=1895 → 352**, i.e.
-  panel minus 24 padding each side.
-- **Expected:** 330 — `UITokens.PARTY_CARD_WIDTH` (Figma `UI/Party Status Panel
-  104:490`).
-- **Got:** 352. +22px, past ±2 and not a scale step — the card is stretching to fill
-  the panel instead of using its own width.
-- **Correct on the same component:** height 107, pitch 123, gap 16, portrait 56 ✓
-  `PORTRAIT_SIZE`, HP fill `#2ecc71` ✓ `HP_FILL`, bar height 6 ✓ `BAR_HEIGHT`.
-- **Severity:** cosmetic
-
 ### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
 - **Where:** `SampleProject/Game.tscn:15` —
   `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
@@ -226,57 +119,6 @@ built*, not here.
   scene with it unless Q34's answer keeps it.
 - **Found:** 2026-09-29, scene inventory audit
 
-
-### B35 — Bottom bar sits on 48px margins while the screen uses 60
-- **Evidence:** `save_load_load_mode_1920.png`. Header rule spans x 59–1860,
-  eyebrow ink starts x=61, "Load Game" ink x=63, card right edge 1859. Bottom-left
-  hint ink starts **x=49**; the rightmost hint ends **x=1870**.
-- **Expected:** 60 — `SAVE_SCREEN_MARGIN_H = 60` and `BOTTOM_BAR_PADDING = 60`,
-  corroborated by the header rule at 59/1860.
-- **Got:** ~48 both sides. The hint hangs 11px left of the title column and the
-  right-hand hints overrun the card edge by 10px — a whole scale step, not rounding.
-- **Severity:** visual
-
-### B27 — Button normal/focus styling is inconsistent across modals
-- **Where:** shop confirm modal (Yes/No) and the dialogue bar (Auto/Skip).
-- **Evidence:** `shop_buy_confirm_1920.png` — `Yes` = gold 2px border, transparent
-  fill; `No` = grey filled box, no border. `misc_modal_1920.png` — `Auto` = no fill
-  and no border; `Skip` = grey filled box, no gold anywhere.
-- **Expected:** one normal style and one focused style shared by all buttons, with
-  focus marked by the accent, as `Yes` and the left-nav selection do.
-- **Got:** three appearances across two modals, and grey fill means "normal" in one
-  and "focused" in the other.
-- **Severity:** visual
-- **Partly fixed 2026-10-16 (#75):** `GameUITheme` now defines `ButtonActivated` (base `Button`, no own
-  values), so the DialogueQuest Auto/Skip buttons resolve the shared `Button` normal / focus styles in both
-  states (`verify_game_ui_theme.gd` [3b]); no addon edit. Modal buttons were already plain `Button`.
-  **Deferred (Sapega, 2026-10-16):** a distinct tokened "on" state for Auto/Skip (criterion 2) moves to the
-  D110 dialogue presentation work (#24); #89 hides those buttons in the meantime.
-
-### B28 — Misc submenu selection ignores the accent language used everywhere else
-- **Where:** Menu → Misc submenu (`misc_modal_1920.png`, x 381–846, y 533–580).
-- **Expected:** accent `#d4af37` selection — the left nav in the *same screenshot*
-  marks Inventory with a gold 2px border, and `shop_sell_1920.png` marks the
-  selected row with a gold fill.
-- **Got:** a grey bar fading left-to-right, no accent, and no 1px border on the
-  submenu rows although every left-nav row has one. The selected row's cursor is
-  also `←`, pointing away from its own label, while every nav row uses `❯`.
-- **Severity:** visual
-
-### B30 — Inconsistencies between the two list screens (batch, all cosmetic)
-All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
-`inventory_filter_key_items_1920.png`:
-- **Header case:** Shop uses `Item Name` / `On Hand` / `Buying Price` in Title Case;
-  Inventory uses `ITEM NAME` / `ON HAND` in uppercase.
-- **Panel framing:** Inventory's content column has a continuous gold 1px frame;
-  the Shop's identical three-column layout has none.
-- **`FILTER` button** uses the gold *selection* fill, competing with the actually
-  selected KEY ITEMS tab; gold fill means "current selection" everywhere else.
-- **`Buying Price` is the column label on the Sell tab** — merchant's point of view,
-  while `On Hand` and `All Possessions` on the same screen use the player's.
-- **Inventory tab gaps** measure ≈49 / 54 / 49 / 49 px — one gap past ±2. Verify the
-  container separation in the scene before acting; this is a glyph-extent estimate.
-- **Severity:** cosmetic
 
 ### B19 — "Attack" row puts gamepad bindings in the keyboard columns, with two naming schemes
 - **Where:** Settings → Controls, Attack row (y≈598).
@@ -298,24 +140,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   these screens (segmented control, Reset, both footer buttons).
 - **Got:** unframed characters with no visible hit target.
 - **Severity:** cosmetic
-
-### B16 — Dialogue box stays drawn on top of the open Game Menu
-- **✅ Fixed 2026-10-13 (D136):** the menu no longer opens while a dialogue runs.
-- **Where:** `UIManager.gd:28` — `allow_pause_during_dialogue: bool = true`.
-- **Evidence:** `design/shots/journal_production_1920.png` — the Journal tab is
-  open and the DialogueQuest box ("Цей дід… Він такий дурний", with Auto/Skip and
-  the empty portrait frame) is rendered over it, at the bottom of the menu.
-- **Cause:** the flag deliberately permits opening the menu mid-dialogue, and
-  `:383` only consults it when it is `false`. **Nothing hides or dims the
-  dialogue box once the menu opens** — two UI layers end up live at once.
-- **Undecided, not just broken:** whether the box should hide, dim, or the menu
-  should be blocked during dialogue was never settled. Raise it with D110 (the
-  project-owned presentation layer) rather than patching visibility here.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review.
-- **Side note:** no `capture_*.gd` in the repo references `journal_production` —
-  that screenshot's producing script is gone. Some shots in `design/shots/` are
-  orphaned and cannot be refreshed.
 
 ### B14 — Game Over text is unreadable against the stone-wall art
 - **Where:** `Scenes/UI/game_over_screen.tscn`.
@@ -344,6 +168,9 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   **Fixed 2026-10-20:** `GameDialogueBox.set_portrait_image()` shows the frame only when the speaker has a
   portrait (none does today); the placeholder `MC.png` is gone from `Scenes/UI/dialogue_box.tscn`.
   `verify_npc_recall` [5]. Auto/Skip and the `!` glyph are still open.
+  **Checked 2026-10-21 (not fixed, row kept):** Skip is hidden (`Resources/Dialogue/dialogue_player_settings.tres`
+  `skip_enabled = false`), but **Auto still shows** (`autoplay_enabled = true`, the addon calls `get_auto_button().show()`);
+  the `!` glyph was not re-checked (no fresh screenshot).
 - **Auto / Skip buttons:** present top-left of the box. [[dialogue_audit]] §1
   records that Figma's `npc-dialog-simple 36:6` has **no Auto/Skip buttons**.
 - **Stray glyph:** an orange `!` floats inside the box next to the portrait
@@ -412,33 +239,6 @@ All from `shop_sell_1920.png`, `shop_buy_confirm_1920.png`,
   `UIManager.open_game_menu()` → real modal layer), so its Settings result is
   trustworthy. Fixing this means pressing the remaining three buttons and
   asserting the destination, not adding more file-existence checks.
-
-### B1 — 1px card borders drop a row at 1280×720
-- **Where:** card styleboxes from `GameUITheme.tres` (border width 1, `UITokens.BORDER_WIDTH`)
-- **Screen:** multiple — visible in the slice 8 screenshot pass
-- **Expected:** a continuous 1px border on all four sides at any resolution
-- **Got:** one border row disappears; sub-pixel scaling of the 1920×1080 logical canvas
-- **Evidence:** `design/shots/*_1280.png`
-- **Severity:** cosmetic — **but one instance is worse than the label suggests**
-- **Found:** 2026-09-27, [[runtime_ui_completion_plan]] slice 8
-- **Scoped by pixel scan, 2026-09-29 (agent pass).** Every 1280-only difference
-  across four screen pairs traces to this one bug. Nothing clips, overlaps, leaves
-  the viewport or becomes unreadable. Worst instances, in order:
-  1. **Shop Buy/Sell tabs — a *state* indicator degrades.** At 1920 `Buy` is a
-     closed 2px gold rectangle; at 1280 only one gold row plus the left edge
-     survive, so it reads as an `L`. `Sell` drops to a top hairline. Selected vs
-     default still reads (gold vs grey), but neither reads as a button. This is
-     the one worth fixing first — the rest lose containers, this loses meaning.
-  2. **Save/Load** — 9 horizontal rules at 1920 become 4 at 1280: all four card
-     bottoms and the header rule under the title vanish. Cards read as
-     open-bottomed. Geometry is correct (117px card, 11px gap = exactly 0.667 ×
-     the 1920 values) — only the borders drop.
-  3. **Shop party cards** — bottom borders gone; the empty 4th portrait frame
-     falls to a bare corner and looks cut off, though the card is complete.
-- **Clean at 1280:** main menu and Game Over — pure proportional scaling, all
-  elements present and legible, including the 12px copyright line and the thin red
-  rule under "Game Over" (verified present at RGB 140,31,30, invisible only at
-  thumbnail size).
 
 ---
 
