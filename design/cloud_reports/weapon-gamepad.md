@@ -146,7 +146,9 @@ these IDs are taken.**
   `journal_sections`, `hotbar`, `combat_hud`, `game_over`, `demo_end`, `crafting`, `shop`, `enchanting`,
   `tutorial_hints`, `equip_picker`, `equipment`, `skill_screen`: RESULT: ALL PASS
 
-**Full suite (`Scripts/Tools/run_verify.sh`):** FULL_SUITE_RESULT
+**Full suite (`Scripts/Tools/run_verify.sh`):** 81 scripts: **80 PASS, 1 FAIL**. The fail is `verify_game_ui_theme`: "every button focus is the shared ring (off: FilterButton, MainMenuItem(On), MiscRow(On), NpcMenuItem(On), ShopRow(On))". It is the same expected failure as integration-1 and integration-2: D329 waits on Sapega regenerating `GameUITheme.tres`. No regressions. Mid-pass, the targeted runs caught three regressions, all fixed before the full run:
+- `verify_game_over`: the `EventBus` identifier in a script that the test compiles before autoload.
+- `verify_journal_sections` and `verify_tutorial_hints`: Esc after a mouse click. This led to the mouse rule in D374.
 
 ## Left
 
