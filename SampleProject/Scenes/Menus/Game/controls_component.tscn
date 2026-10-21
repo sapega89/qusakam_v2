@@ -1,0 +1,139 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/controls_component.gd" id="1_controls"]
+
+[node name="ControlsComponent" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_controls")
+
+[node name="Panel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SidePanel"
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Page" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="VBoxContainer" parent="Panel/Margin/Page"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Heading" type="Label" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"SettingsHeading"
+text = "Controls"
+
+[node name="Caption" type="Label" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "Every action — rebind in Settings → Controls"
+
+[node name="Rule" type="HSeparator" parent="Panel/Margin/Page/Header"]
+layout_mode = 2
+theme_type_variation = &"FrameRule"
+
+[node name="Columns" type="HBoxContainer" parent="Panel/Margin/Page"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Page/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SettingsEyebrow"
+text = "ACTION"
+
+[node name="Keyboard" type="Label" parent="Panel/Margin/Page/Columns"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "KEYBOARD / MOUSE"
+horizontal_alignment = 1
+
+[node name="Pad" type="Label" parent="Panel/Margin/Page/Columns"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "GAMEPAD"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Margin/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="ActionList" type="VBoxContainer" parent="Panel/Margin/Page/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="ActionRow" type="Button" parent="Panel/Margin/Page/Scroll/ActionList"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_type_variation = &"ListRow"
+
+[node name="Cells" type="HBoxContainer" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Action" type="Label" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SettingsRowLabel"
+text = "—"
+vertical_alignment = 1
+
+[node name="Keyboard" type="CenterContainer" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Badge" type="PanelContainer" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells/Keyboard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"KeyBadge"
+
+[node name="Key" type="Label" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells/Keyboard/Badge"]
+layout_mode = 2
+theme_type_variation = &"KeyBadgeLabel"
+text = "—"
+
+[node name="Pad" type="CenterContainer" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Badge" type="PanelContainer" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells/Pad"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"KeyBadge"
+
+[node name="Key" type="Label" parent="Panel/Margin/Page/Scroll/ActionList/ActionRow/Cells/Pad/Badge"]
+layout_mode = 2
+theme_type_variation = &"KeyBadgeLabel"
+text = "—"

@@ -51,12 +51,19 @@ static func label(action: StringName) -> String:
 
 
 static func _names(action: StringName) -> Array[String]:
+	var names := names_for(action, using_gamepad)
+	assert(not names.is_empty(), "InputGlyphs: %s has no %s binding" % [action, "gamepad" if using_gamepad else "keyboard"])
+	return names
+
+
+## Усі назви кнопок дії на пристрої [param pad] (геймпад / клавіатура з мишею), незалежно від останнього вводу —
+## сторінка Controls показує обидва стовпці (D-28f). Порожньо — дії на цьому пристрої немає.
+static func names_for(action: StringName, pad: bool) -> Array[String]:
 	var names: Array[String] = []
 	for event in InputMap.action_get_events(action):
-		var name := _event_name(event)
+		var name := _event_name(event, pad)
 		if name != "" and not name in names:
 			names.append(name)
-	assert(not names.is_empty(), "InputGlyphs: %s has no %s binding" % [action, "gamepad" if using_gamepad else "keyboard"])
 	return names
 
 
@@ -72,8 +79,8 @@ static func resolve(text: String) -> String:
 	return out
 
 
-static func _event_name(event: InputEvent) -> String:
-	if using_gamepad:
+static func _event_name(event: InputEvent, pad: bool) -> String:
+	if pad:
 		if event is InputEventJoypadButton:
 			return PAD_BUTTONS.get(event.button_index, "")
 		if event is InputEventJoypadMotion:

@@ -13,6 +13,10 @@ signal cancelled
 
 const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
+## Кадри руху (BACKLOG 28, D-28e): тема з "frames" крутить 0.png, 1.png… з цієї теки, записані з гри
+## (capture_tutorial_frames.gd); вікно на паузі гри, тож кадри гортає _process цього вікна (ModalLayer — завжди).
+const FRAMES_DIR := "res://SampleProject/Assets/UI/Tutorial/%s/%d.png"
+const FRAME_TIME := 0.1
 
 @onready var _title: Label = %Title
 @onready var _body: Label = %Body
@@ -25,6 +29,9 @@ const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 var topics: Array = []
 var index := 0
+var frames: Array[Texture2D] = []
+var _frame := 0
+var _frame_left := 0.0
 
 
 func _ready() -> void:
@@ -43,11 +50,31 @@ func show_topic(i: int) -> void:
 	_title.text = topic.get("title", "")
 	_body.text = topic.get("text", "")
 	var image: String = topic.get("image", "")
-	_shot.texture = load(image) if ResourceLoader.exists(image) else null
+	frames = load_frames(topic.get("frames", ""))
+	_frame = 0
+	_frame_left = FRAME_TIME
+	_shot.texture = frames[0] if not frames.is_empty() else (load(image) if ResourceLoader.exists(image) else null)
 	_shot_frame.visible = _shot.texture != null
 	_key.text = topic.get("key", "")
 	_hint_text.text = topic.get("hint", "")
 	_hint_bar.visible = not _key.text.is_empty()
+
+
+static func load_frames(set_name: String) -> Array[Texture2D]:
+	var out: Array[Texture2D] = []
+	while set_name != "" and ResourceLoader.exists(FRAMES_DIR % [set_name, out.size()]):
+		out.append(load(FRAMES_DIR % [set_name, out.size()]))
+	return out
+
+
+func _process(delta: float) -> void:
+	if frames.size() < 2:
+		return
+	_frame_left -= delta
+	if _frame_left <= 0.0:
+		_frame_left += FRAME_TIME
+		_frame = (_frame + 1) % frames.size()
+		_shot.texture = frames[_frame]
 
 
 ## Підказка в грі (D289): вікно на темі [param id]; нижня панель нагадує, де вимкнути такі вікна.

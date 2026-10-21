@@ -11,6 +11,8 @@ extends Control
 
 signal settings_selected
 signal tutorial_selected
+## Список усіх дій з клавішами й кнопками геймпада (BACKLOG 28, D-28f).
+signal controls_selected
 signal exit_main_menu_selected
 signal exit_game_selected
 ## ModalLayer слухає саме ці два, щоб прибрати модалку і зняти active_modal.
@@ -22,6 +24,7 @@ const SELECTED_PREFIX := "←  "
 
 @onready var settings_button: Button = %SettingsButton
 @onready var tutorial_button: Button = %TutorialButton
+@onready var controls_button: Button = %ControlsButton
 @onready var exit_main_menu_button: Button = %ExitMainMenuButton
 @onready var exit_game_button: Button = %ExitGameButton
 @onready var _buttons: VBoxContainer = %Buttons
@@ -38,6 +41,7 @@ func _ready() -> void:
 			button.mouse_entered.connect(button.grab_focus)
 	if settings_button and not settings_button.pressed.is_connected(_on_settings_pressed):
 		settings_button.pressed.connect(_on_settings_pressed)
+	controls_button.pressed.connect(_choose.bind("controls", controls_selected))
 	if tutorial_button and not tutorial_button.pressed.is_connected(_on_tutorial_pressed):
 		tutorial_button.pressed.connect(_on_tutorial_pressed)
 	if exit_main_menu_button and not exit_main_menu_button.pressed.is_connected(_on_exit_main_menu_pressed):
