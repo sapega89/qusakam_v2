@@ -257,12 +257,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     village elder's house). The Village stays one cell high (Q58).
 39. **Cleanup**: delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
 40. **Ranged weapons** (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
-    the hero's bow plays like Skul: The Hero Slayer (fast aimed shots on the attack button, arrows fly straight, charge
+    the hero's bow plays like Skul: The Hero Slayer (confirmed by Sapega; fast aimed shots on the attack button, arrows fly straight, charge
     for a stronger shot — confirm details with Sapega when planned). Plan first.
 41. **Graphics settings**: resolution and FPS-limit options in Settings (settings_plan.md:58 values — pick common ones:
     1280×720 … 2560×1440 / 30, 60, 120, 144, unlimited). Skills from slots auto-target the nearest enemy for now (D38).
     The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** (record as D-IDs,
-    delete the B rows).
+    delete the B rows). **One selection look in every menu** (Q33 ✅): the focused/selected row styled the same everywhere
+    (theme tokens, ui-theme-tokens skill).
 42. **Kusakam animated holding each weapon** (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
     анімацію, як він тримає меч, і анімацію, як він тримає інші типи зброї»). Today the weapon is a separate sprite
     (`WeaponView`, D268) pinned to measured hand points on the artist frames, hidden out of combat. Needed: full-body hero
