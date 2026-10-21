@@ -134,7 +134,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
-17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — replaces the current three-storey companion talks:
+17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — *cells cutscene, wake, acquaintance, Малік and the assists done 2026-10-21 (D304, D305, queue row 9.5); boss hall done (D307); the corridors (9.6) and voices / demo end (9.8) are left* — replaces the current three-storey companion talks:
     - Kusakam and his future team are on **one floor**: a room with an operating table and cells; everyone is behind bars.
     - Cutscene: Алісия is led to the operating table and injected; then an unknown prisoner who looks like a bandit is
       led in — he shouts and an evil boss bursts out of him, **a fire djinn**, and flees; explosions, an earthquake,
@@ -250,7 +250,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     dune rock, the mesa end rock and the caravan rock; `verify_road_sections` [5] climbs every top from both sides. (Sapega 2026-10-21 «уступи мають бути такими, що я можу повернутись на них далі, бо немає
     в нас подвійного стрибка»): every DesertRoad ledge (D296/D298) reachable again from where the hero ends up — steps within
     one jump on the way back too; a verify that walks/jumps back up each ledge with real input.
-33. **Chests** (Q2) — *the gift modal and the HUD loot feed are built (D323, `cloud/dialogue-ui`); the chest art and the raise-the-item pose are left (art lane A1; `cloud/chests` in progress)*: a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
+33. ~~**Chests** (Q2)~~ — **done 2026-10-21** (gift modal + loot feed D323; chests D339, D340, `cloud/chests`, integration-2). *Left: wire the landed Raise frames into the player (B91).* a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
     pose, generated from his artist frames), then the obtained-item modal. Also: **a modal when someone gives you items**
     (the grandfather's gift, quest rewards — today only pickups show it) and **show what you picked up from a mob** (a
     small loot feed / toast on the HUD).
