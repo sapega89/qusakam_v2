@@ -221,7 +221,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Neutral); an oath ceremony cutscene with a visual change on Kusakam (aura, cloak trim, eye glow); the keepers react
     to each other and to the hero's deeds (dialogue that changes with kills, mercy, quests); a first oath skill granted
     at the ceremony; companions comment on the choice. Not queued — waits for Sapega's ideas.
-28. **The game must teach itself — combat first** (Sapega 2026-10-21 «треба буде робити акцент на битві і тому, щоб було
+28. ~~**The game must teach itself — combat first**~~ — **built 2026-10-21** (D324–D326, `cloud/onboarding`, [[onboarding_plan]]); left: the coworkers' playtest, a pad column + rebinding parity in Settings → Controls (Sapega 2026-10-21 «треба буде робити акцент на битві і тому, щоб було
     зрозуміло що і як — є на роботі хлопці, які не зрозуміли, як грати в гру, значить вона недостатньо пояснила»).
     Playtesters did not understand how to play. An onboarding pass: a safe first fight that teaches attack → combo →
     dodge → block → parry → heavy one at a time (do the move to continue), each with its button for keyboard and pad
@@ -250,25 +250,25 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     dune rock, the mesa end rock and the caravan rock; `verify_road_sections` [5] climbs every top from both sides. (Sapega 2026-10-21 «уступи мають бути такими, що я можу повернутись на них далі, бо немає
     в нас подвійного стрибка»): every DesertRoad ledge (D296/D298) reachable again from where the hero ends up — steps within
     one jump on the way back too; a verify that walks/jumps back up each ledge with real input.
-33. **Chests** (Q2): a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
+33. **Chests** (Q2) — *the gift modal and the HUD loot feed are built (D323, `cloud/dialogue-ui`); the chest art and the raise-the-item pose are left (art lane A1; `cloud/chests` in progress)*: a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
     pose, generated from his artist frames), then the obtained-item modal. Also: **a modal when someone gives you items**
     (the grandfather's gift, quest rewards — today only pickups show it) and **show what you picked up from a mob** (a
     small loot feed / toast on the HUD).
 34. **Companion lore stubs** (Q51): Астрит, Алісія, Уризен each get a separate description in `lore.md` (stubs marked
     [ЗАГЛУШКА]) — Sapega takes them to the characters' creators. Figma has the Journal UI for character lore and city
     flags — build those pages from Figma (ui-screen-pipeline) on top of D290.
-35. **NPC chatter in speech clouds** (Q48): ambient NPC lines use the D263 cloud, not the box.
-36. **Who is speaking** (Q31): the speaker's name centred in the dialogue box with their portrait (e.g. Астрит) so the
+35. ~~**NPC chatter in speech clouds**~~ — **route built 2026-10-21** (D338, `cloud/settings-cleanup`); no lines yet (Q67). (Q48): ambient NPC lines use the D263 cloud, not the box.
+36. ~~**Who is speaking**~~ — **done 2026-10-21** (D321, `cloud/dialogue-ui`). (Q31): the speaker's name centred in the dialogue box with their portrait (e.g. Астрит) so the
     player knows who she is; name colours don't matter.
-37. **Objective plaque** (Q39): the 'Return to the village'-style objective also in the Journal list; the HUD plaque fades
+37. ~~**Objective plaque**~~ — **done 2026-10-21** (D322, `cloud/dialogue-ui`). (Q39): the 'Return to the village'-style objective also in the Journal list; the HUD plaque fades
     out after a few seconds and shows again after leaving a menu.
 38. **Village centre** (Q59): a separate house at the end of the Village — an interior room like the Mayor Hall (the
     village elder's house). The Village stays one cell high (Q58).
-39. **Cleanup**: delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
+39. ~~**Cleanup**~~ — **done 2026-10-21** (D337, `cloud/settings-cleanup`; the orphan world-object scenes stay as a parts bin): delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
 40. **Ranged weapons** (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
     the hero's bow plays like Skul: The Hero Slayer (confirmed by Sapega; fast aimed shots on the attack button, arrows fly straight, charge
     for a stronger shot — confirm details with Sapega when planned). Plan first.
-41. **Graphics settings**: resolution and FPS-limit options in Settings (settings_plan.md:58 values — pick common ones:
+41. ~~**Graphics settings**~~ — **done 2026-10-21** (D327–D329, `cloud/settings-cleanup`; `GameUITheme.tres` must be regenerated locally): resolution and FPS-limit options in Settings (settings_plan.md:58 values — pick common ones:
     1280×720 … 2560×1440 / 30, 60, 120, 144, unlimited). Skills from slots auto-target the nearest enemy for now (D38).
     The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** — ✅ recorded as
     **D317**, B rows deleted 2026-10-21. **One selection look in every menu** (Q33 ✅): the focused/selected row styled the same everywhere
@@ -281,7 +281,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     the weapon drawn in the frame, smoother and prettier than now (more in-betweens). Decide with the plan whether the
     weapon stays a separate sprite on top (cheaper, swaps per item) or is baked per type (prettier). Plan first:
     `design/hero_weapon_animation_plan.md`; big — slice per weapon type.
-43. **The Skills screen must be reworked — it is inconvenient** (Sapega 2026-10-21 «меню вивчення скілів треба
+43. ~~**The Skills screen must be reworked — it is inconvenient**~~ — **done 2026-10-21** (D330–D334, `cloud/skills-screen`) (Sapega 2026-10-21 «меню вивчення скілів треба
     перероблювати, воно не зручне»). Today (D283): two columns (trunk + oath tree under three tabs), rows learned by double
     click / Enter / pad A, the right column scrolls, locked rows show a lock even when learnable. Candidate direction until
     Sapega says what bothers him: a real tree view (tiers by level, lines between skills), clear states (learned / can learn
@@ -297,7 +297,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
       level gate); (3) the right column scrolls and the tabs eat space — fit without scrolling; (4) no Learn button — Accept
       button + pad button; (5) a list, not a tree — a real tree view by level tiers with links; (6) a skill cannot be put on
       the hotbar from here — assign to a slot in the same screen.
-44. **Attribute points every level** (Sapega 2026-10-21 «треба, мабуть, сила, ловкість, HP і мудрість — навички качати
+44. ~~**Attribute points every level**~~ — **done 2026-10-21** (D335, D336, `cloud/skills-screen`; Agility in combat is B84) (Sapega 2026-10-21 «треба, мабуть, сила, ловкість, HP і мудрість — навички качати
     кожен рівень, бо я так хочу»): on each level-up the hero also gets attribute points to put into **Strength, Agility,
     HP (Vitality) and Wisdom**, in the same pending/Accept flow as item 43. Today `player_state` already has strength,
     dexterity, constitution, intelligence (and StatCalculator) — check what they drive. **5 attribute points per level** (Sapega «5 навичок на рівень»; skill points stay 1 per level, D279). Values to plan (

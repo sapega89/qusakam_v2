@@ -64,30 +64,54 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B83 — One-way bridges in the Laboratory and the boss hall are out of jump reach
-- **Where:** `Maps/Laboratory.tscn` floor-B bridge (row 22, 160 px above the floor), floor-C bridges (row 38, 128 px); `Maps/LabBoss.tscn` the two dodge bridges (row 8, 128 px)
+### B84 — Crit, evasion and attack speed do nothing in a fight
+- **Where:** `GameManager.calculate_critical_chance` / `calculate_dodge_chance` / `calculate_attack_speed`; `PlayerCombat.hit_damage()`, `Player.mitigated_damage()`, swing times.
+- **Expected:** Agility points (D335) and base dexterity change crit, evasion and attack speed in combat.
+- **Got:** only the Status and Equipment screens read them; no crit roll, no evasion roll, speed ignored (D336).
+- **Fix:** crit roll in `hit_damage` (×1.5) and evasion in `mitigated_damage` behind a seedable RNG so `verify_combat_flow` / `verify_souls_combat` stay exact; speed into `swing_time`. Needs Sapega's call on the feel.
+- **Severity:** blocker for Agility being worth a point
+- **Found:** 2026-10-21, `cloud/skills-screen`
+
+### B86 — English UI shows Cyrillic speaker names in the dialogue box
+- **Where:** `dialogue_quest/characters/*.tres` (`Дед`, `Торговец`, `Разбойник`, …).
+- **Expected:** English names in the English locale (BACKLOG 31).
+- **Got:** Russian / Ukrainian names, now centred and prominent (D321).
+- **Severity:** visual (content) — goes with BACKLOG 31
+- **Found:** 2026-10-21, `cloud/dialogue-ui`
+
+### B89 — Settings segment rows lose keyboard / gamepad focus after every toggle
+- **Where:** `Scripts/Menus/Game/options_component.gd` `_on_*_changed` → `_rebuild_list()` (Display Mode, VSync, Language, Tutorial Windows).
+- **Expected:** focus stays on the toggled cell (the new stepper rows, D327/D328, update in place).
+- **Got:** the whole list is rebuilt, the focused cell is freed, focus is lost.
+- **Fix:** update the cells in place or re-grab focus on the same row after the rebuild.
+- **Severity:** blocker for pad play of Settings
+- **Found:** 2026-10-21, `cloud/settings-cleanup`
+
+### B90 — A pressed (selected) `ListRow` shows no focus ring
+- **Where:** `SampleProject/UI/build_game_ui_theme.gd` `ListRow` focus (D329).
+- **Expected:** the cursor is visible on the selected row too.
+- **Got:** the accent ring sits on the accent fill; the `focus` stylebox cannot know the pressed state. Matters where a selected row and the cursor differ (inventory / journal lists).
+- **Severity:** cosmetic
+- **Found:** 2026-10-21, `cloud/settings-cleanup`
+
+### B83 — One-way bridges in the Laboratory corridors are out of jump reach
+- **Where:** `Maps/Laboratory.tscn` floor-B bridge (row 22, 160 px above the floor), floor-C bridges (row 38, 128 px).
+  **The boss hall part is fixed** (`cloud/lab-9-7`, D307: `LabBoss.tscn` dodge bridges row 8 → 9, 96 px, `verify_lab_boss` [9]);
+  the corridors are queue row 9.6.
 - **Expected:** a bridge meant to be used is reachable with one jump (≈103 px; no double jump) — the LabBoss dodge bridges are part of the djinn fight (D302).
 - **Got:** 128–160 px above anything near them; unreachable.
-- **Severity:** blocker for the boss fight (9.7); visual elsewhere
+- **Severity:** visual (corridors; the boss-hall blocker is fixed)
 - **Found:** 2026-10-21, BACKLOG 32 sweep
 
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
 > rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21
 > → [[figma_decision_register]] **D317**; their rows are removed too.
+>
+> **Fixed log (integration-1, 2026-10-21):** **B82** fixed by `cloud/b82-b10` (D320, `verify_save_load_room` [1]/[2]) —
+> row removed. **B85** (tools without the exec bit), **B87** (combat training could kill the bandit) and **B88**
+> (`weapon_prev` had no key) were found and fixed on their branches — see [[cloud_reports/integration-1]].
 
-### B82 — A loaded save puts the hero at the scene's default position, not where he saved
-- **Where:** `SampleProject/Scripts/Game.gd:200` (`save_manager.retrieve_game(self)`) and `:239` (comment: "позиція вже
-  відновлена через save_manager.retrieve_game"); `SampleProject/Scripts/Managers/Gameplay/PlayerStateManager.gd:54`
-  (`get_player_position()`).
-- **Expected:** loading a save brings the hero back to the place he saved (the save point he used).
-- **Got (from the code, not reproduced in play):** the position is written — `Game._save_full_game_data_to_save_system()`
-  (`Game.gd:600`) → `PlayerDataModule.gd:32` `player_position` — and read back into `player_state` (`PlayerDataModule.gd:103-108`),
-  but nothing applies it: `get_player_position()` has no callers, `Game` does not override `_set_save_data()`, so
-  `retrieve_game()` restores MetSys map data only. The saved room loads; the hero keeps his default position from `Game.tscn`.
-  A new game is fine (`_position_player_at_start()`, `Game.gd:400`).
-- **Severity:** blocker (a load can drop the hero anywhere in the room, inside a wall or a fight)
-- **Found:** 2026-10-21, documentation cleanup (docs/CLAUDE.md "Player spawning" claim checked against the code)
 
 ## Playtest intake — 2026-09-29 (Sapega)
 
@@ -112,6 +136,7 @@ built*, not here.
 ---
 
 ### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
+- **Seen again 2026-10-21** (`cloud/dialogue-ui`): the ext_resource `10_objective` is still in `Game.tscn`; `combat_hud_top` replaced it. Delete the line.
 - **Where:** `SampleProject/Game.tscn:15` —
   `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
 - **Screen:** [[figma_coverage]] §F — ObjectiveHUD is superseded by Quest Info Panel
@@ -165,26 +190,13 @@ built*, not here.
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
-### B10 — Dialogue box shows an empty portrait frame and undesigned Auto/Skip buttons
-- **Where:** DialogueQuest `dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
-- **Evidence:** `design/shots/combat_hud_1920.png`.
-- **Empty portrait frame:** a blank brown square sits on the right of the box.
-  **Q26's applied default was "hide the empty frame"** — it was never applied.
-  D112 later replaced portraits with full-body art, so this frame has no future
-  either way.
-  **Fixed 2026-10-20:** `GameDialogueBox.set_portrait_image()` shows the frame only when the speaker has a
-  portrait (none does today); the placeholder `MC.png` is gone from `Scenes/UI/dialogue_box.tscn`.
-  `verify_npc_recall` [5]. Auto/Skip and the `!` glyph are still open.
-  **Checked 2026-10-21 (not fixed, row kept):** Skip is hidden (`Resources/Dialogue/dialogue_player_settings.tres`
-  `skip_enabled = false`), but **Auto still shows** (`autoplay_enabled = true`, the addon calls `get_auto_button().show()`);
-  the `!` glyph was not re-checked (no fresh screenshot).
-- **Auto / Skip buttons:** present top-left of the box. [[dialogue_audit]] §1
-  records that Figma's `npc-dialog-simple 36:6` has **no Auto/Skip buttons**.
-- **Stray glyph:** an orange `!` floats inside the box next to the portrait
-  frame, matching nothing in the design.
-- **Not duplicated here:** the box being entirely off-theme (no accent border,
-  wrong font, magenta speaker name instead of accent gold) is the known unbuilt
-  presentation layer — [[BACKLOG]], D110.
+### B10 — A stray orange `!` glyph inside the dialogue box
+- **Where:** `Scenes/UI/dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
+- **Evidence:** `design/shots/combat_hud_1920.png` (2026-09-29).
+- **Fixed parts:** the empty portrait frame (2026-10-20; now real portraits, D321) and the Auto/Skip buttons (D319,
+  `cloud/b82-b10`, `verify_npc_recall` [5]).
+- **Still open:** an orange `!` floats inside the box next to the portrait frame, matching nothing in the design. Not
+  re-checked since 2026-09-29 (no window in the cloud runs) — capture the box and close the row if it is gone.
 - **Severity:** visual
 - **Found:** 2026-09-29, screenshot review.
 
