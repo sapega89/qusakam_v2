@@ -1,0 +1,50 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/cutscene_skip_prompt.gd" id="1_skip"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+
+[node name="CutsceneSkipPrompt" type="CanvasLayer"]
+process_mode = 3
+layer = 95
+script = ExtResource("1_skip")
+
+[node name="Corner" type="MarginContainer" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = -96.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+theme_type_variation = &"SaveScreenMargin"
+
+[node name="Prompt" type="PanelContainer" parent="Corner"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+mouse_filter = 2
+theme_type_variation = &"InteractionPrompt"
+
+[node name="Column" type="VBoxContainer" parent="Corner/Prompt"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SkipLabel" type="Label" parent="Corner/Prompt/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UILabel"
+text = "Hold Tab to skip"
+horizontal_alignment = 1
+
+[node name="SkipFill" type="ProgressBar" parent="Corner/Prompt/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SpBar"
+max_value = 1.0
+show_percentage = false

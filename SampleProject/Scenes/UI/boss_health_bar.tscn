@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/boss_health_bar.gd" id="1_bar"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+
+[node name="BossHealthBar" type="Control"]
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 96.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_bar")
+
+[node name="Column" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -360.0
+offset_top = 24.0
+offset_right = 360.0
+offset_bottom = 88.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="BossName" type="Label" parent="Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"UILabel"
+text = "Boss"
+horizontal_alignment = 1
+
+[node name="BossHp" type="ProgressBar" parent="Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"HpBar"
+max_value = 100.0
+value = 100.0
+show_percentage = false
