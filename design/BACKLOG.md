@@ -246,7 +246,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     tokens HP/SP/XP — Sapega 2026-10-21 «HP, SP, XP так і залиш»). Voices: English greetings via Kokoro (D277), Ukrainian via a Piper voice whose
     licence allows release (check each voice's model card; never non-commercial weights); greeting picked by locale.
     Plan first: `design/localization_plan.md`.
-32. **Ledges you can get back onto** (Sapega 2026-10-21 «уступи мають бути такими, що я можу повернутись на них далі, бо немає
+32. ~~**Ledges you can get back onto**~~ — **done 2026-10-21** (D296 amended): a 2-tile step on the east side of the
+    dune rock, the mesa end rock and the caravan rock; `verify_road_sections` [5] climbs every top from both sides. (Sapega 2026-10-21 «уступи мають бути такими, що я можу повернутись на них далі, бо немає
     в нас подвійного стрибка»): every DesertRoad ledge (D296/D298) reachable again from where the hero ends up — steps within
     one jump on the way back too; a verify that walks/jumps back up each ledge with real input.
 33. **Chests** (Q2): a generated chest — closed, opening, open frames; opening it Kusakam raises the item overhead (a pickup
