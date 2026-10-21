@@ -122,13 +122,22 @@ and applied on the next start. Cells read `English | Ukrainian` / `Англій�
 
 | Verify | RESULT |
 |---|---|
-| `verify_locale` (new) | (suite run in progress) |
+| `verify_locale` (new) | `RESULT: ALL PASS` — [0] 528 keys, [1] 426 scene texts per locale, [3] 1664 (en) / 1672 (uk) live texts, every walked screen found; 233 data/dialogue occurrences deferred to part 2 |
+| `verify_audio` (alone, 3 runs after the suite) | `PASS` ×3 |
 
-Full suite (`Scripts/Tools/run_verify.sh`): (suite run in progress)
+Full suite (`Scripts/Tools/run_verify.sh`, 81 verifies): **`SUITE: 2 FAIL`** — 79 PASS, including every
+verify of a touched area (settings, settings_graphics, game_menu, skills_ui, skill_screen, skill_trees_ui,
+shop, crafting, enchanting, equip_picker, journal_sections, misc_modal, tutorial_hints, combat_hud, status,
+party_panel, save_load, main_menu, game_over, demo_end, oath, gift_popup, scripts_compile, onboarding).
+- `verify_game_ui_theme` — no RESULT line: **baseline**, same failure before this branch.
+- `verify_audio` — `1 FAIL: focusing a button (pad navigation) ticks on SFX` in the suite run; it passed 3/3
+  run alone right after, and it passed in the baseline suite. The check reads `AudioStreamPlayer.playing` one
+  frame after `grab_focus()` — timing-sensitive under load, nothing in this branch touches UI sounds or focus
+  ticks. Not a regression as far as I can tell; worth a look if it fails again.
 
-Baseline before this branch (same container, same suite): `verify_game_ui_theme` — no RESULT line
-(the headless theme build), `verify_onboarding` — `1 FAIL: pad: a held block does not pass Parry`; all
-other verifies passed.
+Baseline before this branch (same container, same suite, run first): `verify_game_ui_theme` — no RESULT
+line, `verify_onboarding` — `1 FAIL: pad: a held block does not pass Parry` (it passed in this branch's run);
+all other verifies passed.
 
 ## 4. Left for part 2 (the next routine continues from this branch)
 
