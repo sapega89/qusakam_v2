@@ -95,6 +95,8 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 		if not _queue.has(timeline_name):
 			_queue.append(timeline_name)
 		return true
+	# Розмова (вікно, монолог, облачко кат-сцени) перебиває репліки мимохідь (BACKLOG 35).
+	_end_all_chatter()
 	if in_cloud:
 		_play_bubbles(timeline_name, true)
 		return true
@@ -349,3 +351,63 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 	dialogue_finished.emit.call_deferred(path)
 	EventBus.dialogue_finished.emit.call_deferred(path)
 	_start_next_queued.call_deferred()
+
+
+# ── Репліки NPC мимохідь (BACKLOG 35, Q48) ───────────────────────────────────
+# NPC каже щось, коли герой проходить повз: облачко D263 над NPC, не вікно діалогу. Це не діалог —
+# is_dialogue_active() його не бачить, гравець, меню й NPC не блокуються, у чергу не стає.
+# Розмову, яку почав гравець (Talk / Quest / сюжет), і далі веде вікно; вона закриває ці облачка.
+
+## instance_id мовця → його облачко.
+var _chatter: Dictionary = {}
+
+
+## Репліки [param path] над [param speaker] (вістря хвоста — [param anchor] у координатах мовця), кожна
+## на SPEECH_BUBBLE.seconds_for(); пауза тримає. false — зараз іде розмова чи цей NPC уже говорить:
+## мимохідь не перебиває і не чекає.
+func say_in_passing(speaker: Node2D, path: String, anchor: Vector2) -> bool:
+	if is_dialogue_active() or _bubble_playing or _chatter.has(speaker.get_instance_id()):
+		return false
+	var lines: Array[Dictionary] = DQD_READER.lines(path)
+	if lines.is_empty():
+		push_error("DialogueManager: chatter %s has no lines" % path)
+		return false
+	var bubble: Node2D = SPEECH_BUBBLE.new()
+	_chatter[speaker.get_instance_id()] = bubble
+	speaker.add_child(bubble)
+	bubble.position = anchor
+	_run_chatter(speaker.get_instance_id(), bubble, lines)
+	return true
+
+
+func _run_chatter(id: int, bubble: Node2D, lines: Array[Dictionary]) -> void:
+	for line in lines:
+		if not is_instance_valid(bubble) or _chatter.get(id) != bubble:
+			return  # мовець пішов зі сценою або розмова закрила облачко
+		await bubble.show_line(_stage_tag.sub(line.text, ""))
+		# process_always = false: відкрите меню (пауза) тримає репліку.
+		await get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false).timeout
+	if _chatter.get(id) == bubble:
+		_drop_chatter(id)
+
+
+## Облачко мимохідь над [param speaker] або null.
+func chatter_bubble(speaker: Node2D) -> Node2D:
+	return _chatter.get(speaker.get_instance_id())
+
+
+## Мовець заговорив по-справжньому (відкрив меню) — його репліка мимохідь зникає.
+func end_chatter(speaker: Node2D) -> void:
+	_drop_chatter(speaker.get_instance_id())
+
+
+func _end_all_chatter() -> void:
+	for id in _chatter.keys():
+		_drop_chatter(id)
+
+
+func _drop_chatter(id: int) -> void:
+	var bubble: Variant = _chatter.get(id)
+	_chatter.erase(id)
+	if is_instance_valid(bubble):
+		(bubble as Node2D).queue_free()
