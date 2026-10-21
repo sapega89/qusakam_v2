@@ -12,7 +12,7 @@ Sapega 2026-10-21: «треба робити акцент на битві і т�
 Queue row 8e ([[play_feedback_queue]]). Builds on D289 (hints open tutorial windows), D264/D265 (souls-lite combat,
 the red glint tell), D252 (Healing Palm at level 2), D270 (combat input). Figma: no frame for lessons or a controls
 list; the tutorial window is Figma `tutorial-content 135:1260` (D126) and keeps its layout.
-Decisions this pass makes: **D-28a…D-28h** below (agent calls, Sapega to confirm; the orchestrator registers them).
+Decisions this pass makes: **D-28a…D-28i** below (agent calls, Sapega to confirm; the orchestrator registers them).
 
 ## The first ten minutes as a new player (before this pass)
 
@@ -57,6 +57,8 @@ Every window was text only (only four general topics carried a still screenshot)
   `village_fight_complete`).
 - **D-28c — The fight is safe while learning.** During the lessons the bandit cannot die (back to full when below
   40 %) and neither can the hero (healed to full when below 40 %); both stop the moment the last lesson is done.
+  The heal comes after a blow, so health also has a floor of 1 during the lessons (`CombatBody2D.min_health`):
+  without it the 3-hit finisher from 45 % killed the bandit in the middle of a lesson (found by the verify).
   The bandit keeps his real wind-ups, glint and damage — the lesson is the real fight, only without losing.
 - **D-28d — How a lesson is shown.** Each lesson is a tutorial topic (`lesson_*` in `tutorial.json`, «Training N/6 —
   …», button by device). Its first appearance opens the tutorial window (D289) with a looping picture of the move;
@@ -78,16 +80,27 @@ Every window was text only (only four general topics carried a still screenshot)
   `KeyBadge`); no theme regeneration.
 - **D-28g — No skip for the training.** Six lessons take about a minute for someone who knows the moves; a skip
   is easy to add later (hold `cutscene_skip`) if Sapega wants it.
-- **D-28h — Where to go next.** Every story step already sets an objective (plaque top-left + Journal). This pass
-  does not add a waypoint arrow; the playtest checklist below asks where people got lost, and the arrow (pointing at
-  the room's active `StateChangeTrigger`) is slice 5, built only if the playtest shows it is needed.
+- **D-28h — Where to go next (amended by the cloud pass: the arrow is built).** The quest plaque (top centre,
+  `combat_hud_top` → `QuestPanel`) shows an arrow `← → ↑ ↓` after the objective text, pointing from the hero at the
+  objective's marker; it hides within 96 px of it. `Game.set_objective(text, target)` names a marker
+  `ObjectiveTargets/<id>` in the room scene; a goal in another room is a marker with the same id at the edge that
+  leads there (`canyon_bridge`: Village west edge → the Canyon bridge; `city_gates`: DesertRoad east edge → the
+  raid trigger). Fights, talks and cutscenes have no arrow. The markers: Canyon `shrine` (meditation seat),
+  `village` (east gate), `canyon_bridge`; Village `village_center`, `house`, `old_man`, `canyon_bridge`;
+  DesertRoad `city_gates`; CityGates `city_gates`, `city` (the gate passage). "Pursue the kidnappers" points at the
+  village gate directly, so the one-line RoadToVillage monologue (trigger by the bridge) may be skipped.
+- **D-28i — Previous weapon on the keyboard.** `weapon_prev` had only D-pad ←; it gets **Z** (`CombatInput.gd`,
+  next to Q for the next weapon). Found by the Controls page check.
 
 ## Slices
+
+Status after the cloud pass (2026-10-21, `cloud/onboarding`): slices 1–5 built and verified
+(`verify_onboarding.gd` ALL PASS); report in [[cloud_reports/onboarding]].
 
 ### Slice 1 — the plan — ✅
 This note.
 
-### Slice 2 — the six lessons in the street fight
+### Slice 2 — the six lessons in the street fight — ✅
 - `Scripts/Gameplay/CombatTraining.gd` (new, a child node Village adds for the fight): lesson list, done-checks
   (D-28b), safety (D-28c), banners (D-28d), signal `finished`.
 - `Village.gd` `_start_fight` → training first, then "Finish him!"; `tutorial.json` six `lesson_*` topics.
@@ -96,18 +109,21 @@ This note.
   `InputEventMouseButton` / `InputEventJoypadButton`), the bandit and the hero survive the lessons, the bandit can be
   killed after.
 
-### Slice 3 — moving pictures in the tutorial window
+### Slice 3 — moving pictures in the tutorial window — ✅
 - `tutorial_menu.gd` plays `"frames"`; `capture_tutorial_frames.gd` writes the eight sets; `tutorial.json` names them.
 - Test: `verify_onboarding.gd` — every topic with `"frames"` has ≥ 6 frames on disk, the window opened on it shows
   them and the texture changes over time.
 
-### Slice 4 — the Controls page
+### Slice 4 — the Controls page — ✅
 - `Scenes/Menus/Game/controls_component.tscn` + `Scripts/Menus/Game/controls_component.gd`; Misc row; `game_menu.gd`
   `open_controls()`; `input_glyphs.gd` names for a chosen device.
 - Test: `verify_onboarding.gd` — reached by real input (Misc → Controls), every gameplay action has a keyboard and a
   pad name.
 
-### Slice 5 — waypoint arrow (only if the playtest asks for it, D-28h)
+### Slice 5 — waypoint arrow — ✅ (D-28h amended)
+- `Game.set_objective(text, target)`, `Game.objective_marker()`; `combat_hud_top` `%Direction`; markers in the four
+  early rooms. Test: `verify_onboarding.gd` [7] — every early objective names a marker that exists in its room (or
+  is a fight / talk / cutscene), the arrow flips with the hero's side and hides on arrival.
 
 ## Playtest checklist for Sapega's coworkers
 
@@ -116,7 +132,8 @@ Hand them the controller (or keyboard) and a new game. Say nothing about the con
 **Watch (write down the minute):**
 1. Do they find how to advance the first dialogue line? How long does it take?
 2. In the Canyon: do they jump and dash without being told twice? Do they read the movement window or close it at once?
-3. Do they know where to go after the meditation (objective plaque top-left)? Where did they stop and look around?
+3. Do they know where to go after the meditation (objective plaque top centre, the arrow after its text)? Where did
+   they stop and look around? Did anyone follow the arrow into a wall (a ledge, a closed gate)?
 4. The street fight: for each lesson — how many tries until it counts? Which lesson took longest? Did anyone get
    stuck on *Dodge* or *Parry* (the red glint)?
 5. After the lessons, on DesertRoad: do they still block / parry / dodge on their own, or only mash attack?
@@ -131,7 +148,8 @@ Hand them the controller (or keyboard) and a new game. Say nothing about the con
 3. Which move did you not understand or never use?
 4. Was there a moment you did not know where to go? Where?
 5. Were the tutorial pictures helpful, or did you skip them? Too many windows?
-6. Anything you tried to press that did nothing?
+6. Did you notice the arrow on the objective plaque? Did it help or mislead?
+7. Anything you tried to press that did nothing?
 
 Bring the answers back as BACKLOG notes; a confusion that repeats in two people is a B-ID or a new lesson.
 
