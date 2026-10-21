@@ -283,6 +283,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
       натиснув прийняти»): picks are pending — the player marks skills (and attribute points, item 44), can undo/re-pick,
       and only an **Accept** button (and its pad button) spends the points. Cancel/Esc drops the pending picks. Replaces
       the B77 double-click learn (D283).
+    - **All six problems confirmed by Sapega**: (1) a lock shows even on learnable skills — clear learned / can learn now /
+      locked-with-reason states; (2) what a skill does and costs is unclear — a detail panel (effect, cost, SP, cooldown,
+      level gate); (3) the right column scrolls and the tabs eat space — fit without scrolling; (4) no Learn button — Accept
+      button + pad button; (5) a list, not a tree — a real tree view by level tiers with links; (6) a skill cannot be put on
+      the hotbar from here — assign to a slot in the same screen.
 44. **Attribute points every level** (Sapega 2026-10-21 «треба, мабуть, сила, ловкість, HP і мудрість — навички качати
     кожен рівень, бо я так хочу»): on each level-up the hero also gets attribute points to put into **Strength, Agility,
     HP (Vitality) and Wisdom**, in the same pending/Accept flow as item 43. Today `player_state` already has strength,
