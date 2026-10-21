@@ -39,6 +39,20 @@ bottom-bar description. Removed with D127: party-card target selection (`charact
 
 Verify: `verify_use_item.gd` (keys, double click, pad A/B).
 
+## 10 · Party shows only who is in it — D287
+
+Figma: `UI/Party Status Panel` 104:490 / `UI/Party Character Card` 324:6127 (four cards). Godot:
+`UI/Components/party_status_panel.tscn/.gd`.
+
+| Figma layer | Godot node | Action |
+|---|---|---|
+| character card ×4 | `%Card` template, filled by `RowFill` | restyle count: 1 + party size, not the 8-character roster |
+| portrait | `PortraitFrame/Portrait` (colour) + new `PortraitFrame/Art` (TextureRect) | ADD `Art` for companion portraits (`CompanionManager.PORTRAIT_PATH`) |
+
+Behaviour (D287): the cards are Kusakam (the active character) followed by `CompanionManager.get_party()` in queue
+order (D220), refreshed on `EventBus.companion_party_changed`. At the start of the game: one card. Companions show
+the shared level and "—/—" HP / SP (assists, no HP model — D18, D209).
+
 ## 11 · Equipment slot picker — D288
 
 Figma: `UI/Equipment Panel` 258:5110 (slot rows) — no picker frame. Godot: `equipment_component.gd` +

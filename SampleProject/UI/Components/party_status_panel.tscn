@@ -107,6 +107,14 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(0.16470589, 0.16470589, 0.20784314, 1)
 
+[node name="Art" type="TextureRect" parent="Body/CardsScroll/Cards/Card/Row/PortraitFrame"]
+visible = false
+texture_filter = 1
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Info" type="VBoxContainer" parent="Body/CardsScroll/Cards/Card/Row"]
 layout_mode = 2
 size_flags_horizontal = 3

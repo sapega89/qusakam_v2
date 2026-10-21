@@ -9,7 +9,6 @@ class_name UIPartyStatusPanel
 ## показуються лише для активного персонажа, решта отримує "—/—" і порожню
 ## смугу. Вигадані значення не підставляємо. Див. design/ui_visual_qa.md.
 
-const MAX_CARDS := 4  # стільки карток у кадрі Figma
 ## Картки — шаблон %Card зі сцени (D117).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
@@ -28,6 +27,8 @@ func _ready() -> void:
 	_inventory_manager = ServiceLocator.get_inventory_manager()
 	if not _inventory_manager.inventory_changed.is_connected(refresh):
 		_inventory_manager.inventory_changed.connect(refresh)
+	if not EventBus.companion_party_changed.is_connected(refresh):
+		EventBus.companion_party_changed.connect(refresh)
 	# Час гри йде, поки меню відкрите, — оновлюємо раз на секунду (дерево на паузі, панель — ні).
 	var clock := Timer.new()
 	clock.wait_time = 1.0
@@ -74,38 +75,32 @@ func _format_thousands(value: int) -> String:
 	return ("-" if value < 0 else "") + out
 
 
+## Лише ті, хто в загоні (BACKLOG 10, D287): герой і компаньйони з CompanionManager.get_party() (D220).
+## Поки загін не зібрано — одна картка, Кусакам.
 func _refresh_cards() -> void:
-	var character_manager: CharacterManager = ServiceLocator.get_character_manager()
-	var characters: Dictionary = character_manager.get_all_characters()
-	var active_id: String = character_manager.get_active_character_id()
-
-	# Активний персонаж першим — у нього єдиного є реальні HP/SP.
-	var ids: Array = characters.keys()
-	ids.sort()
-	if active_id in ids:
-		ids.erase(active_id)
-		ids.push_front(active_id)
-	ids = ids.slice(0, MAX_CARDS)
-
+	var hero: GameCharacter = ServiceLocator.get_character_manager().get_active_character()
+	var party: Array = ServiceLocator.get_companion_manager().get_party()
 	var level: int = ServiceLocator.get_xp_manager().get_level()
+	var cards := RowFill.fill(_cards, _card, 1 + party.size())
+	_fill_card(cards[0], String(hero.character_id), String(hero.name), null, hero.avatar_color, level, true)
+	for i in party.size():
+		var id: String = party[i]
+		_fill_card(cards[i + 1], id, CompanionManager.NAMES[id], load(CompanionManager.PORTRAIT_PATH % id), UITokens.ICON_SLOT_BG, level, false)
 
-	var cards := RowFill.fill(_cards, _card, ids.size())
-	for i in cards.size():
-		_fill_card(cards[i], ids[i], characters[ids[i]], ids[i] == active_id, level)
 
-
-func _fill_card(card: Control, id: String, character: Object, is_active: bool, level: int) -> void:
+func _fill_card(card: Control, id: String, display_name: String, art: Texture2D, color: Color, level: int, is_hero: bool) -> void:
 	card.set_meta(&"character_id", id)
-	card.get_node(^"Row/Info/Head/Name").text = String(character.get("name"))
+	card.get_node(^"Row/Info/Head/Name").text = display_name
 	card.get_node(^"Row/Info/Head/LevelBadge/Level").text = "Lv.%d" % level
-	# Портрет: справжнього арту ще немає, показуємо avatar_color персонажа.
-	var color = character.get("avatar_color")
-	card.get_node(^"Row/PortraitFrame/Portrait").color = color if color else UITokens.ICON_SLOT_BG
-	# HP і SP (D146, один пул у player_state) — лише в активного (D18).
-	var hp := _active_hp() if is_active else Vector2i(-1, -1)
+	card.get_node(^"Row/PortraitFrame/Portrait").color = color
+	var art_rect: TextureRect = card.get_node(^"Row/PortraitFrame/Art")
+	art_rect.texture = art
+	art_rect.visible = art != null
+	# HP і SP (D146, один пул у player_state) — лише в героя; компаньйони — асисти без власних HP (D18, D209).
+	var hp := _active_hp() if is_hero else Vector2i(-1, -1)
 	_fill_stat(card.get_node(^"Row/Info/Bars/Hp"), hp.x, hp.y)
 	var sm: SkillManager = ServiceLocator.get_skill_manager()
-	if is_active:
+	if is_hero:
 		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), sm.get_current_sp(), sm.get_max_sp())
 	else:
 		_fill_stat(card.get_node(^"Row/Info/Bars/Sp"), -1, -1)

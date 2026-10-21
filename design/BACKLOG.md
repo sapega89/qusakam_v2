@@ -104,7 +104,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    uses a row — potions heal Kusakam at once, an ether restores SP, weapons / armour / accessories equip into their
    slot, materials and key items open "Cannot Use". Was (Game Menu): equip a weapon/armour/other item from the inventory; using an ingredient opens a
    modal "this item cannot be used"; using a potion heals the hero right away.
-10. **Party shows only who is in it**: with one character the Game Menu shows only Kusakam until the party grows.
+10. ~~**Party shows only who is in it**~~ — **done 2026-10-21 (D287):** the party column is Kusakam + the companions in the party (D220), one card at the start. Was: with one character the Game Menu shows only Kusakam until the party grows.
 11. ~~**Equipment slot picker**~~ — **done 2026-10-21 (D288):** a slot opens a window with the bag items that fit it (worn one marked), pick equips, Unequip, B cancels. Was: clicking an equipment slot opens a window with the inventory items that fit that slot.
 12. **Every hint is a tutorial window**: each hint opens the tutorial window (nothing is missed), and the topic lands in
     the Tutorial list; a Settings option turns these windows off.
