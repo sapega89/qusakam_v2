@@ -191,11 +191,15 @@ func _refresh_display() -> void:
 		row.row_activated.connect(_on_row_activated)
 
 	# Перший рядок виділений за замовчуванням, як у Figma.
-	var first := _item_list.get_child(0) as UIItemRow
-	if first:
-		first.set_pressed_no_signal(true)
-		_selected_index = 0
-		_publish_description(0)
+	_select_row(0)
+
+
+func _select_row(index: int) -> void:
+	_selected_index = clampi(index, 0, _item_list.get_child_count() - 1)
+	# set_pressed_no_signal повз ButtonGroup — інші рядки знімаємо самі.
+	for i in _item_list.get_child_count():
+		(_item_list.get_child(i) as UIItemRow).set_pressed_no_signal(i == _selected_index)
+	_publish_description(_selected_index)
 
 
 ## Опис предмета показуємо тултипом: у кадрі Figma окремої панелі деталей немає,
@@ -226,9 +230,13 @@ func update_display() -> void:
 	_apply_filter()
 
 
+## Зміна сумки (випите зілля) — виділення лишається на тому ж місці, а не стрибає на перший рядок.
 func _on_inventory_changed() -> void:
 	if is_inside_tree() and visible:
+		var keep := _selected_index
 		update_display()
+		if not items.is_empty():
+			_select_row(keep)
 
 
 ## D9: кожне натискання FILTER перемикає на наступну категорію по колу:
@@ -311,8 +319,9 @@ func _drink(item: Dictionary) -> void:
 		now = player.get_current_health()
 		top = player.get_max_health()
 	_get_inventory_manager().remove_item(String(item.get("id", "")), 1)
-	_set_bar_hint("%s — %s %d / %d." % [String(item.get("name", "")), "SP" if _effect(item).type == "mana" else "HP", now, top])
 	_focus_selected_row()
+	# Після фокуса: рядок у фокусі публікує свій опис, підсумок має лягти поверх.
+	_set_bar_hint.call_deferred("%s — %s %d / %d." % [String(item.get("name", "")), "SP" if _effect(item).type == "mana" else "HP", now, top])
 
 
 ## Зброя, броня, прикраса — у свій слот через штатний API (EquipmentManager → EventBus → CharacterManager).
@@ -322,8 +331,8 @@ func _equip(item: Dictionary) -> void:
 	_get_equipment_manager().equip_item(String(character.character_id), slot_id,
 			String(item.get("id", "")), item.get("item_data", {}))
 	emit_item_equipped(String(item.get("id", "")), slot_id)
-	_set_bar_hint("%s equipped — %s." % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 	_focus_selected_row()
+	_set_bar_hint.call_deferred("%s equipped — %s." % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 
 
 func _focus_selected_row() -> void:

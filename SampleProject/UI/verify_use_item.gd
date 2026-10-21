@@ -61,7 +61,9 @@ func _initialize() -> void:
 	var card_hp: String = get_first_node_in_group("ui_party_panel")._cards.get_child(0).get_node("Row/Info/Bars/Hp/Head/Value").text
 	ck(card_hp == "80/100", "party card follows (%s)" % card_hp)
 	var focus: Control = root.gui_get_focus_owner()
-	ck(focus != null and inv.is_ancestor_of(focus), "focus stays in the item list")
+	ck(focus == _row(inv, "potion"), "focus stays on the potion row (%s)" % (focus.get_path() if focus else "none"))
+	ck(inv._item_list.get_children().filter(func(r: Button) -> bool: return r.button_pressed).size() == 1, "one row selected")
+	ck(bar._hint_label.text == "Potion — HP 80 / 100.", "bottom bar shows the result (%s)" % bar._hint_label.text)
 
 	print("[2] Double click and pad A; full HP keeps the potion")
 	player.current_health = 10
@@ -101,6 +103,9 @@ func _initialize() -> void:
 	var ok_button: Button = ui.get_modal_layer().active_modal.find_children("*", "Button", true, false).filter(func(b: Button) -> bool: return b.visible)[0]
 	await Kit.mouse(self, ok_button)
 	ck(ui.get_modal_layer().active_modal == null, "OK click closes it")
+	await Kit.mouse(self, herb_row, true)
+	await Kit.key(self, KEY_ENTER)
+	ck(ui.get_modal_layer().active_modal == null, "Enter on OK closes it (focus %s)" % root.gui_get_focus_owner())
 
 	print("[5] Weapons and armour equip from the inventory")
 	var character: Object = sl.get_game_manager().get_active_character()
