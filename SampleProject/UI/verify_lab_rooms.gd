@@ -70,6 +70,10 @@ func _initialize() -> void:
 	await _drain(dm)
 
 	print("[1] The cells: the hero lands in his cell, on the floor")
+	# Тут — лише двері й підлоги: сюжет камер (кат-сцена, знайомство, D304/D305) пройдено — verify_lab_cells.gd.
+	for f in ["lab_cells_cutscene_complete", "lab_acquaintance_complete", "lab_companion_01_complete",
+			"lab_companion_02_complete", "lab_companion_03_complete"]:
+		game.set_quest_flag(f, true)
 	game.teleport_to_room(CELLS, ^"Arrival")
 	for i in 30: await physics_frame
 	ck(_room() == "LabCells" and game.player.is_on_floor(), "in LabCells on the floor (%s, %s)" % [_room(), game.player.global_position])
