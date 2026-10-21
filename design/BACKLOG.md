@@ -180,7 +180,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     (XPManager) is tuned so level 5 lands at the City. The **Laboratory** becomes bigger and is split into several
     screens (separate MetSys rooms) — fits the rewritten Laboratory story (item 17): the cells floor, the corridors of
     mobs, the boss room. Plan: [[world_expansion_plan]] (D296–D299); new parts get the painted terrain/backdrops.
-    **Resume:** DesertRoad part — slices 1–5 of the plan; Laboratory part — with items 16 + 17 (outline in the plan).
+    ~~**DesertRoad part**~~ — **done 2026-10-21** (D296–D299, B79): 2 → 6 cells, three section fights (dunes, mesa,
+    broken caravan) spawning on a trigger zone, three ledges with a Potion / Herb ×2 / Mana Crystal that stay picked,
+    generated watchtower / wagon / shrine; XP curve (`xp_curve.json`) and rewards (`EnemyStats.xp_reward`) in data —
+    level 2 on the road, 5 on the last City Gates kill (`verify_xp_curve`, `verify_road_sections`); level and XP now
+    survive a save (B79). **Laboratory part — open**, with items 16 + 17 (queue row 9; outline in the plan).
 24. **Every action works on a gamepad** (Sapega 2026-10-20 «кожна дія дублюється на джойстику — це важливо, будуть
     тестувати на джойстику»): every keyboard/mouse action — movement, combat, skills, calling companions (F), menus and
     every Game Menu screen, dialogue, tutorial windows, the Skills learn (B77), inventory actions, map — has a gamepad

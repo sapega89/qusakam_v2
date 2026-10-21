@@ -44,6 +44,9 @@ NPC tasks in the Journal.
 5 NPC idle activities (D295): blacksmith hammers (sparks, anvil prop), merchant counts coins, grandfather smokes a pipe,
 priestess prays, witch reads, dervish whirls, guards shift and look around; random rests; talk pose turned to the hero
 while talking, back to work after (`NpcActivity.gd`, `verify_npc_activity.gd`).
+23 (DesertRoad part, D296–D299): the road is 6 cells — dunes, mesa, broken caravan, approach — with three trigger-zone fights,
+three ledge pickups that stay picked, generated landmarks; XP curve and rewards in data, level 5 on the last City Gates kill;
+B79 fixed (level and XP were never saved). Laboratory part open (row 9).
 Also: painted terrain in all outdoor rooms (D248/D249), the four companions in two views (D243–D245),
 companion and gift hints, attack hint on the first fight, the skill bar in the exe.
 
@@ -62,7 +65,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 5 | ~~**9–13** Game Menu (+ **B77** double click learns a skill): inventory actions, party of one, equipment slot picker, hints as tutorial windows with an off switch, Journal quests / characters / bestiary~~ — done (D286–D290, [[game_menu_batch_mapping]], [[journal_codex_plan]]); B77 was fixed with item 22 | UI batch |
 | 6 | ~~**14** blacksmith and merchant buildings + arrival cutscene with a task (also the blacksmith drawn in front of the hero)~~ — done (D291–D294) | |
 | 7 | ~~**5** NPC idle activities~~ — done (D295) | generated frames |
-| 8 | **23** DesertRoad grows; XP curve lands level 5 at the City (Canyon, Village, CityGates, City stay as they are) | plan first: `design/world_expansion_plan.md` |
+| 8 | ~~**23** DesertRoad grows; XP curve lands level 5 at the City~~ — done (D296–D299, B79, [[world_expansion_plan]]); the Laboratory part goes with row 9 | |
 | 9 | **16 + 17 + 6 + 23 (Laboratory)** Mayor Hall queue cutscene (D255) → the unbeatable boss → the rewritten Laboratory story split into several screens → the fire-djinn / cloak boss → the end of the demo | one story block |
 | 9b | **24** gamepad parity audit: every action and screen on the pad, `verify_gamepad_parity.gd` | after the Game Menu batch the screens are final; earlier items already follow the rule |
 | 10 | **7 + 19** foreground parallax in every outdoor room; living world (decor idle animations, drifting clouds) | backdrop layers |
@@ -71,7 +74,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 
 - Q64 — the prisoner's shout before the fire djinn (default: an incantation in an invented language).
 - Q66 — respec rules and class-stage names: defaults applied as D280–D282 (oath permanent, respec 10 coins × level, names drafts).
-- Agent-made calls Sapega has not confirmed: D295 (the NPC activities, the anvil standing behind the Blacksmith, the grandfather in his own scene), D291–D294 (NPC z, shop/forge art and the Merchant moved to x 1120, the two tasks and
+- Agent-made calls Sapega has not confirmed: D296–D299 (the 6-cell road and its sections, XP curve 100 + 50 × (level − 1) and rewards melee 30 / fast 25 / tank 70, the three ledge items, the generated landmarks), D295 (the NPC activities, the anvil standing behind the Blacksmith, the grandfather in his own scene), D291–D294 (NPC z, shop/forge art and the Merchant moved to x 1120, the two tasks and
   their draft `.dqd` lines `Merchant_Arrival`, `Merchant_Caravan_*`, `Smith_Arrival`, the arrival cutscene), D286–D290 (Game Menu batch: potion use without a target choice, party = hero + companions, slot picker, tutorial windows pause the game and are On by default, codex texts / bestiary names are English drafts), D256, D257, D258, D261, D262, D264–D270, D271 (skill wind-ups 0.6/0.35/0.5 s and their looks), D272 (skill slots on pad RT/R3/L3/Back), D273 (generated anime slash/cut/skill effects), D279–D285 (skill trees, the oath and its keepers, respec price, passive stats, level cap; draft `.dqd` lines `City_Oath_*`) (combat values, the "freeze" read as a
   mechanic, no stamina, bindings R-click/R/pad B heavy and Ctrl/middle mouse/pad LB block registered in code); the gate guard's draft line; text speed 24 letters/s and no Skip.
 - Game Menu batch leftovers: saves made before 2026-10-21 lack `seen_tutorials` / `journal` and fail loudly on load (no-fallback rule; the two local dev saves were migrated, backups `*.bak-before-D289`); codex portraits and the Figma class card not built (no art / data); hint topics have no screenshot; the bottom-bar action badges (LB / A / B) are static pad glyphs — item 24 audit.
@@ -80,4 +83,5 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 - Known leftovers: cutscenes have no skip and keep the HUD; camera/walk cutscene code is inline in room scripts (pull into
   shared helpers with the next cutscene); 12 `.dqd` files tag the speaker in the text instead of the speaker field; the
   assist guard still uses pack knight art; the old painted gates still show behind the new gatehouse.
-- Unpushed: ~34 commits on `feature/backlog` since `main`.
+- Item 23 leftovers: a New Game in the same session keeps the XP of the last one (`XPManager.reset()` has no caller, B79 note); the ledge pickups show their icon in a grey frame (the `ItemPickup` look, first ones placed); `verify_combat_flow` [1] failed once and passed on re-run (timing flake).
+- Unpushed: ~92 commits on `feature/backlog` since `origin/main`.

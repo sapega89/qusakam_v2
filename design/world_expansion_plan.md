@@ -1,6 +1,6 @@
 ---
 type: plan
-status: in-progress  # DesertRoad part (BACKLOG 23) — this pass; Laboratory part — with BACKLOG 16 + 17
+status: in-progress  # DesertRoad part done 2026-10-21 (D296–D299, B79); Laboratory part — with BACKLOG 16 + 17
 tags: [world, map, xp, feedback]
 ---
 
