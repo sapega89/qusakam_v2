@@ -7,16 +7,27 @@ class_name UICombatHudTop
 ##
 ## Нових механік немає — прив'язки ті самі, що у віджетів, які цей ряд замінює:
 ## ObjectiveHUD (Game.objective_updated) і CoinCounter (EventBus.coins_changed).
+##
+## Плашка цілі (BACKLOG 37, Q39) не висить постійно: з'являється, коли ціль з'явилась чи змінилась, тримається
+## OBJECTIVE_PLAQUE_HOLD с і гасне. Знову показується, коли гравець виходить із будь-якого меню: Game Menu, магазин,
+## кузня, вікно підказки ставлять дерево на паузу — край «пауза → гра» (SceneTree.process_frame іде й під паузою);
+## діалог паузи не ставить — EventBus.dialogue_finished.
 
 @onready var _quest_panel: PanelContainer = %QuestPanel
 @onready var _quest_title: Label = %QuestTitle
 @onready var _currency_value: Label = %CurrencyValue
 @onready var _menu_button: Button = %MenuButton
 
+var _plaque_tween: Tween = null
+var _was_paused: bool = false
+
 
 func _ready() -> void:
 	add_to_group(&"combat_hud_top")
 	_menu_button.pressed.connect(_on_menu_pressed)
+	_was_paused = get_tree().paused
+	get_tree().process_frame.connect(_on_frame)
+	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 
 	if not EventBus.coins_changed.is_connected(_on_coins_changed):
 		EventBus.coins_changed.connect(_on_coins_changed)
@@ -38,6 +49,34 @@ func _on_objective_updated(text: String) -> void:
 	_quest_title.text = text
 	# Порожній квест — ховаємо панель, як робив ObjectiveHUD.
 	_quest_panel.visible = not text.strip_edges().is_empty()
+	show_plaque()
+
+
+## Плашка з'являється, тримається OBJECTIVE_PLAQUE_HOLD с і гасне (modulate), якщо ціль є.
+func show_plaque() -> void:
+	if _plaque_tween:
+		_plaque_tween.kill()
+	if not _quest_panel.visible:
+		return
+	_plaque_tween = create_tween()  # під паузою (меню) стоїть разом із HUD
+	_plaque_tween.tween_property(_quest_panel, ^"modulate:a", 1.0, UITokens.OBJECTIVE_PLAQUE_FADE)
+	_plaque_tween.tween_interval(UITokens.OBJECTIVE_PLAQUE_HOLD)
+	_plaque_tween.tween_property(_quest_panel, ^"modulate:a", 0.0, UITokens.OBJECTIVE_PLAQUE_FADE)
+
+
+func is_plaque_shown() -> bool:
+	return _quest_panel.visible and _quest_panel.modulate.a > 0.0
+
+
+func _on_frame() -> void:
+	var paused: bool = get_tree().paused
+	if _was_paused and not paused:
+		show_plaque()  # вийшли з меню
+	_was_paused = paused
+
+
+func _on_dialogue_finished(_dialogue_id: String) -> void:
+	show_plaque()
 
 
 func _on_coins_changed(_amount: int) -> void:
