@@ -23,7 +23,8 @@ D250–D261. Questions: [[questions_for_sapega]] Q64, Q66.
   and works with focus navigation only; check it in each item.
 - Tests call `current_dialogue_box.finish()` before `accept()` — dialogue text types slowly and is unskippable (D254).
 - After visual changes rebuild the exe: `godot --headless --path . --export-release "Windows Desktop" build/windows/Qusakam.exe`
-  (data files embedded; templates installed for 4.6.2).
+  (data files embedded; templates installed for 4.6.2). Linux build:
+  `godot --headless --path . --export-release "Linux" build/linux/Qusakam.x86_64` (preset `Linux` in `export_presets.cfg`).
 
 ## Done
 
@@ -62,6 +63,17 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 
 ## Next, in this order
 
+**Order from here (2026-10-21, after 8d):** 8h (32 ledges) → 8e (28 onboarding) → 8i (43 + 44 Skills screen + attribute points)
+→ 8j (36, 37, 33) → 8k (42 weapon animations) → 8f (29) → 8g (31) → 9.5–9.8 (Laboratory) → 10a (35, 34, 38, 39, 40, 41)
+→ 9b (24 gamepad audit) → 10 (7 + 19). Rows 8b, 8c, 8d, 4b and 9.1–9.4 are done (struck below). The table keeps its old
+row order; follow this line.
+
+**Stash `refs/wip/row9` (= `stash@{0}`):** of its untracked drafts (`git show --stat 'refs/wip/row9^3'`) only
+`Scripts/Gameplay/Scenes/LabCells.gd` and `Scripts/Gameplay/Scenes/LabBoss.gd` (+ `.uid`) are not in the tree yet — rows 9.5 and
+9.7 take them. Everything else there (`Cutscene.gd`, skip prompt, `BossEnemy`/`BossLogic`/hazards, boss bar) is already
+committed; the tracked part (`MayorHall.gd`, `City_MayorHall.dqd`, `Laboratory_AfterBoss.dqd`) was used by 9.3 — take only
+`Laboratory_AfterBoss.dqd` for 9.7 after a diff against the tree.
+
 | # | Item | Why here |
 |---|---|---|
 | 1 | ~~**20** smoother hero animations, lighter jump dust~~ — done (D262) | the base the combat and skill animations stand on |
@@ -76,12 +88,16 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 6 | ~~**14** blacksmith and merchant buildings + arrival cutscene with a task (also the blacksmith drawn in front of the hero)~~ — done (D291–D294) | |
 | 7 | ~~**5** NPC idle activities~~ — done (D295) | generated frames |
 | 8 | ~~**23** DesertRoad grows; XP curve lands level 5 at the City~~ — done (D296–D299, B79, [[world_expansion_plan]]); the Laboratory part goes with row 9 | |
-| 9 | **16 + 17 + 6 + 23 (Laboratory)** — split into 9.1–9.8 (Sapega 2026-10-21: too long for one agent). Plan: [[lab_story_plan]] (beats, flags, rooms, slices), bosses [[lab_boss_plan]] (D301/D302), helpers [[cutscene_plan]] (D308). Done: the plan, B79 leftover, boss art (D309), draft `.dqd` lines + speakers. **WIP code is in `git stash` "queue row 9 WIP drafts"** (`git stash list`; apply with `git stash apply stash@{N}` — written, never run: `Cutscene.gd`, skip prompt, `BossEnemy`/`BossLogic`/hazards, boss bar, `MayorHall.gd`/`LabCells.gd`/`LabBoss.gd`, the queue rewrite of `City_MayorHall.dqd` and the cloak line in `Laboratory_AfterBoss.dqd`). Each sub-row: one agent, own commits + verify + captures `fb17_*`. | one story block |
+| 9 | **16 + 17 + 6 + 23 (Laboratory)** — split into 9.1–9.8 (Sapega 2026-10-21: too long for one agent). Plan: [[lab_story_plan]] (beats, flags, rooms, slices), bosses [[lab_boss_plan]] (D301/D302), helpers [[cutscene_plan]] (D308). Done: the plan, B79 leftover, boss art (D309), draft `.dqd` lines + speakers. **WIP code is in `git stash` "queue row 9 WIP drafts"** (`refs/wip/row9`) — as of 2026-10-21 only `LabCells.gd` and `LabBoss.gd` (and the `Laboratory_AfterBoss.dqd` cloak line) are left to take; the rest landed with 9.1–9.4 (see *Order from here* above). Each sub-row: one agent, own commits + verify + captures `fb17_*`. | one story block |
 | 8b | ~~**City merchant + blacksmith task text** (Sapega 2026-10-21 «треба мерчанта додати в місто і текст квеста кузнеця переписати»): a merchant NPC in the City (shop, idle activity D295, arrival like D294 if it fits; the `[PLACEHOLDER]` City_Merchant trigger) and the blacksmith's task text («The Helmet», D175/D293 — quests.json + its .dqd lines) rewritten: clear goal, his voice, the lore.~~ — done (D311–D313: the road merchant follows his caravan into the City and trades there, the caravan task hands in to him; "The Helmet" has a backstory + a clear goal; babble voices and codex for the five Lab speakers) |
 | 8c | ~~**Walking INTO the City Gates** (Sapega 2026-10-21 «треба щоб було враження, що я входжу в браму, а не просто брама»): the gatehouse (D258 `Gates/gen_gate`) must read as a passage the hero walks through — the arch's front pillars/lintel as a foreground layer drawn over the hero, a darker vaulted passage behind him, open gate leaves, light at the far end; the transition to the City happens inside the passage (the City side shows the same gate from within). Generated art (comfy-backdrop), the old painted gates behind the new gatehouse removed (Open leftover).~~ — done (D314, D315: a shared `gate_passage.tscn` — towers + bridge over the hero, the passage wall with open leaves behind him, warm light toward the City; the room edge falls inside the passage, the City shows the same gate from within; painted gates in the wall plane walled up) |
 | 4b | ~~Combat tuning after Sapega's review of D264~~ — **done 2026-10-21**, see Done. |
-| 8e | **BACKLOG 28 — the game teaches itself, combat first** (playtesters did not understand how to play). Plan first: `design/onboarding_plan.md` (the first 10 minutes step by step), then build the teaching fight and goals. High priority: after 8d. |
-| 8f | **BACKLOG 29 — buildings for the oath keepers and the grandfather** (D292 pattern). After 8e. |
+| 8h | **BACKLOG 32 — ledges you can get back onto** (Q2 answer: the three DesertRoad ledges, no double jump). | first after 8d — Sapega hit it in play |
+| 8e | **BACKLOG 28 — the game teaches itself, combat first** (playtesters did not understand how to play). Plan first: `design/onboarding_plan.md` (the first 10 minutes step by step), then build the teaching fight and goals. High priority: after 8h. |
+| 8i | **BACKLOG 43 + 44 — the Skills screen reworked + attribute points every level** (Sapega confirmed all six Skills-screen problems; five points per level into Strength / Agility / HP / Wisdom, picked pending, spent on Accept). Plan first. | after 8e |
+| 8j | **BACKLOG 36 who is speaking (name + portrait), 37 objective plaque, 33 chests + gift / loot modals** (Q31, Q39, Q2). | after 8i |
+| 8k | **BACKLOG 42 — Kusakam animated holding each weapon.** Plan first. | after 8j |
+| 8f | **BACKLOG 29 — buildings for the oath keepers and the grandfather** (D292 pattern). After 8k. |
 | 8g | **BACKLOG 31 — two languages everywhere (EN/UK), no Cyrillic in EN, no English in UK except key names; tab names translated; Ukrainian greetings via a licence-clean Piper voice.** Plan first (`design/localization_plan.md`), then slices (UI, data, dialogue, voices, the locale verify). After 8f. |
 | 9.1 | ~~**Cutscene helper, HUD hidden, hold-to-skip** ([[lab_story_plan]] slice 1, D308). First step: apply the stash, keep only `Cutscene.gd` + `cutscene_skip_prompt.*`; add `cutscene_skip` (Tab / pad Y) in `CombatInput.gd` and `DialogueManager.skip_line()`; move Canyon meditation/descent, CityGates raid and `NpcArrival` onto it; `verify_cutscene.gd` (real hold of Tab and of pad Y) + `verify_canyon_exit`, `verify_city_gates_raid`, `verify_npc_arrival`/`blacksmith`.~~ — done (D308; B80 found on the way) | the base for every beat below |
 | 9.2 | ~~**Bosses core + the two boss scenes** (slice 2, D301/D302). First step: from the stash take `BossEnemy`, `BossLogic`, `Hazards/`, `boss_health_bar.*`; add `DefaultEnemy._make_logic()`, `EnemyLogic.start_knockback(…, time)`, `Player.defeat_handler`; generate the hazard FX with `comfy_fx.py` (fireball, fire pillar + floor mark, slam shockwave, explosion, wall burst, sleep gas, wall hole); scenes `Scenes/Characters/Bosses/brass_collector.tscn`, `fire_djinn.tscn` on the D309 sheets (READMEs list the frame rows); bestiary entries; delete `DemoBoss.gd`; `verify_bosses.gd`.~~ — done (D301, D302, D316; `capture_bosses.gd` → `fb9_2_*`) | needs 9.1 only for nothing — can go first |
@@ -91,6 +107,7 @@ companion and gift hints, attack hint on the first fight, the skill bar in the e
 | 9.6 | **Mob corridors** — three trigger-zone fights, one per storey (slice 7, D306). First step: rewrite `Laboratory.gd` as a plain room (objective), spawners like `DesertRoad` `Fight_*`; rewrite `verify_laboratory.gd`. | after 9.4 |
 | 9.7 | **Boss hall** — talk, arena lock, djinn fight, cloak Game Over / win line, gates (slice 8, D307). First step: take `LabBoss.gd` from the stash; `Laboratory_AfterBoss.dqd` from the stash; `verify_lab_boss.gd`. | after 9.2, 9.4 |
 | 9.8 | **Demo end + full route + voices + exe** (slices 9–10, D310). First step: `verify_lab_route.gd` Mayor Hall → demo end (both Mayor outcomes, the cloak Game Over, save/reload mid-Lab), boss roars / djinn laugh / incantation via Kokoro (D278 hook), gamepad pass, captures `fb17_*` + sheet, rebuild the exe, mark BACKLOG 6/16/17/23 done. | last |
+| 10a | **BACKLOG 35** NPC chatter in clouds, **34** companion lore stubs, **38** Village centre house, **39** cleanup (`Maps/Legacy`, ranged stubs), **40** ranged weapons (plan first), **41** graphics settings + one selection look (Q33) | after 9.8 |
 | 9b | **24** gamepad parity audit: every action and screen on the pad, `verify_gamepad_parity.gd` | after the Game Menu batch the screens are final; earlier items already follow the rule |
 | 10 | **7 + 19** foreground parallax in every outdoor room; living world (decor idle animations, drifting clouds) | backdrop layers |
 
