@@ -35,3 +35,6 @@ graphify-out/
 # Еталон playthrough — локальний, не в репозиторії (Sapega, 2026-10-18)
 design/playthrough/
 Scripts/Tools/graphify_gd.py
+
+# Python bytecode of Scripts/Tools/*.py
+__pycache__/
