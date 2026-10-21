@@ -20,8 +20,12 @@ class_name RoomEnemySpawner
 ## Задержка между волнами (секунды)
 @export var wave_delay: float = 2.0
 
-## Контейнер для spawn points (если не задан, ищет по всей комнате)
-@export var spawn_points_container: Node = null
+## Бій секції (D296): вороги зʼявляються, коли герой заходить у цю зону. Без зони бій запускає кімната
+## (DesertRoad.gd, Village.gd …) або auto_spawn_on_ready.
+@export var trigger_area: Area2D = null
+
+## Ключ бою в Game.room_state (D152): у кімнаті з кількома боями — свій у кожного спавнера.
+@export var state_key: String = "enemies"
 
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
@@ -29,9 +33,8 @@ var spawn_points: Array[EnemySpawnPoint] = []
 ## Список всех заспавненных врагов
 var spawned_enemies: Array[Node] = []
 
-## Бій цієї кімнати в Game.room_state (D152): {spawn_id: HP} живих ворогів; -1 — HP ще
+## Бій цього спавнера в Game.room_state[state_key] (D152): {spawn_id: HP} живих ворогів; -1 — HP ще
 ## невідоме (ворог не встиг зʼявитись). Немає ключа — бій не починали. Вбитих у словнику немає.
-const STATE_KEY := "enemies"
 ## Імʼя кімнати MetSys — запамʼятовуємо одразу: під час вивантаження MetSys уже в іншій.
 var _room: String
 
@@ -51,6 +54,11 @@ func _ready() -> void:
 	# тобто без жодного ворога, але все одно зараховувався.
 	_find_spawn_points()
 	_room = MetSys.map_data.get_room_from_scene_path(get_parent().scene_file_path, false)
+	for other in get_parent().get_children():
+		if other != self and other is RoomEnemySpawner and other.state_key == state_key:
+			push_error("RoomEnemySpawner: %s and %s share state_key '%s' in %s" % [name, other.name, state_key, _room])
+	if trigger_area:
+		trigger_area.body_entered.connect(_on_trigger_body_entered)
 
 	# Ждём следующий кадр чтобы комната полностью загрузилась
 	await get_tree().process_frame
@@ -64,16 +72,9 @@ func _ready() -> void:
 	DebugLogger.info("RoomEnemySpawner: Initialized with %d spawn points" % spawn_points.size(), "RoomEnemySpawner")
 
 func _find_spawn_points() -> void:
-	"""Находит все EnemySpawnPoint в комнате"""
+	"""Точки цього спавнера — його нащадки (у кімнаті може бути кілька боїв, D296)"""
 	spawn_points.clear()
-
-	var search_root = spawn_points_container if spawn_points_container else get_parent()
-	if not search_root:
-		DebugLogger.error("RoomEnemySpawner: No search root found", "RoomEnemySpawner")
-		return
-
-	# Рекурсивный поиск всех spawn points
-	_find_spawn_points_recursive(search_root)
+	_find_spawn_points_recursive(self)
 
 	DebugLogger.info("RoomEnemySpawner: Found %d spawn points" % spawn_points.size(), "RoomEnemySpawner")
 
@@ -96,7 +97,7 @@ func spawn_all_enemies() -> void:
 
 	# Кого спавнити, вирішуємо до першого ворога: _track() одразу пише стан бою, і без
 	# цього решта точок вважала б себе вже вбитими.
-	var saved = Game.get_singleton().get_room_state(_room, STATE_KEY)
+	var saved = Game.get_singleton().get_room_state(_room, state_key)
 	var fight := {}
 	for spawn_point in spawn_points:
 		var spawn_now: bool = spawn_point.spawn_on_load if saved == null else saved.has(spawn_point.spawn_id)
@@ -105,7 +106,7 @@ func spawn_all_enemies() -> void:
 			fight[spawn_point.spawn_id] = -1 if saved == null else saved[spawn_point.spawn_id]
 	# Увесь бій — одразу в стан: інакше ворог із хвилі, що не встигла зʼявитись до виходу
 	# з кімнати, вважався б убитим.
-	Game.get_singleton().set_room_state(_room, STATE_KEY, fight)
+	Game.get_singleton().set_room_state(_room, state_key, fight)
 
 	if spawn_in_waves:
 		await _spawn_in_waves()
@@ -118,20 +119,27 @@ func spawn_all_enemies() -> void:
 	all_enemies_spawned.emit()
 	DebugLogger.info("RoomEnemySpawner: All enemies spawned (%d total)" % spawned_enemies.size(), "RoomEnemySpawner")
 
+## Герой зайшов у зону бою секції — бій один раз за завантаження кімнати; добитий бій (порожній стан) не повертається.
+func _on_trigger_body_entered(body: Node2D) -> void:
+	if not body.is_in_group(GameGroups.PLAYER):
+		return
+	trigger_area.body_entered.disconnect(_on_trigger_body_entered)
+	spawn_all_enemies()
+
 ## Бій уже йшов і гравець вийшов посеред нього — повертаємось без репліки (D152).
 func fight_in_progress() -> bool:
-	return Game.get_singleton().get_room_state(_room, STATE_KEY) != null
+	return Game.get_singleton().get_room_state(_room, state_key) != null
 
 func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
 	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає
 
 func _saved_enemies() -> Dictionary:
-	return Game.get_singleton().get_room_state(_room, STATE_KEY, {})
+	return Game.get_singleton().get_room_state(_room, state_key, {})
 
 func _save_hp(spawn_id: String, hp: int) -> void:
 	var saved := _saved_enemies()
 	saved[spawn_id] = hp
-	Game.get_singleton().set_room_state(_room, STATE_KEY, saved)
+	Game.get_singleton().set_room_state(_room, state_key, saved)
 
 func _spawn_immediately() -> void:
 	"""Спавнит всех врагов сразу"""
@@ -161,7 +169,7 @@ func _track(enemy: Node, spawn_id: String) -> void:
 		enemy.entity_died.connect(func() -> void:
 			var saved := _saved_enemies()
 			saved.erase(spawn_id)
-			Game.get_singleton().set_room_state(_room, STATE_KEY, saved)),
+			Game.get_singleton().set_room_state(_room, state_key, saved)),
 		CONNECT_ONE_SHOT)
 
 func _spawn_in_waves() -> void:

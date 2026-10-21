@@ -126,7 +126,7 @@ func _initialize() -> void:
 	game.set_quest_flag("lab_boss_fight_complete", false)
 	game.set_quest_flag("lab_after_boss_complete", false)
 	var spawner: Node = lab.get_node("EnemySpawner")
-	game.set_room_state(spawner._room, spawner.STATE_KEY, null)  # сейв до бою: убитих ще немає
+	game.set_room_state(spawner._room, spawner.state_key, null)  # сейв до бою: убитих ще немає
 	game.teleport_to_room(LAB, ^"SavePoint_PreBoss")
 	for i in 20: await physics_frame
 	await _drain(dm)

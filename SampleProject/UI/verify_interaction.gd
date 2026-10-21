@@ -138,9 +138,10 @@ func _initialize() -> void:
 	var ui = sl.get_ui_manager()
 	ck(not db.get_item("potion").is_empty(), "test item 'potion' is real ItemDatabase data")
 	var before: int = inv.get_item_count("potion")
-	var pickup: ItemPickup = load(PICKUP_SCENE).instantiate()
+	var pickup = load(PICKUP_SCENE).instantiate()  # без типу: ItemPickup тягне Game, а тест компілюється до автолоадів
 	pickup.item_id = "potion"
 	pickup.amount = 2
+	pickup.persistent = false  # поза кімнатою
 	root.add_child(pickup)
 	await process_frame
 	var picked := [""]
@@ -170,8 +171,9 @@ func _initialize() -> void:
 	ck(not is_instance_valid(pickup) or pickup.is_queued_for_deletion(), "picked item leaves the world")
 
 	print("[7] Unknown items are never invented")
-	var bogus: ItemPickup = load(PICKUP_SCENE).instantiate()
+	var bogus = load(PICKUP_SCENE).instantiate()
 	bogus.item_id = "does_not_exist"
+	bogus.persistent = false  # поза кімнатою
 	root.add_child(bogus)
 	await process_frame
 	var bcomp: InteractableComponent = bogus.get_node("Interactable")
