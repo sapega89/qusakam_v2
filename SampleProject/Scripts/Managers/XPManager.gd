@@ -87,3 +87,10 @@ func reset() -> void:
 	current_level = 1
 	xp_for_next_level = _calculate_xp_requirement(1)
 	DebugLogger.info("XPManager: Reset to level 1", "XPManager")
+
+## Рівень і досвід із сейва (B79) — без сигналу підвищення рівня; панелі XP оновлюються через xp_gained.
+func restore(level: int, xp: int) -> void:
+	current_level = level
+	current_xp = xp
+	xp_for_next_level = _calculate_xp_requirement(level)
+	xp_gained.emit(0, current_xp)

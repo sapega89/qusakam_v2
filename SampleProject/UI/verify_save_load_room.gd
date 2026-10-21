@@ -49,17 +49,25 @@ func _initialize() -> void:
 	save_system.save_game_settings()
 	ck(is_equal_approx(metsys.get_explored_ratio(), explored_more), "changing a setting mid-game keeps the explored map (%.3f)" % metsys.get_explored_ratio())
 	explored = explored_more
+	var xp = root.get_node("ServiceLocator").get_xp_manager()
+	xp.reset()
+	xp.add_xp(xp.xp_for_next_level + xp.xp_for_next_level / 2 + 30)  # B79: level 2 and 80 XP towards 3
+	var saved_level: int = xp.current_level
+	var saved_xp: int = xp.current_xp
 	ck(game.save_game(), "save_game() wrote slot %d" % TEST_SLOT)
 	var text := FileAccess.get_file_as_string(slot_path)
 	ck(text.contains("discovered_cells"), "slot file holds the MetSys map")
 	game.queue_free()
 	for i in 4: await process_frame
+	xp.reset()
 
 	print("[2] Load it back")
 	set_meta("save_file_path", slot_path)
 	game = await _boot()
 	ck(metsys.get_current_room_name() == road_room, "back on the Desert Road (%s, saved %s)" % [metsys.get_current_room_name(), road_room])
 	ck(is_equal_approx(metsys.get_explored_ratio(), explored), "explored map restored (%.3f vs %.3f)" % [metsys.get_explored_ratio(), explored])
+	ck(xp.current_level == saved_level and xp.current_xp == saved_xp and saved_level > 1,
+			"level and XP restored (level %d, %d XP; saved %d, %d) — B79" % [xp.current_level, xp.current_xp, saved_level, saved_xp])
 
 	for f in DirAccess.get_files_at(TEST_DIR):
 		DirAccess.remove_absolute(TEST_DIR + f)

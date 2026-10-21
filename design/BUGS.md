@@ -64,6 +64,15 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B79 — Level and XP were not saved: every loaded save was level 1 — ✅ fixed 2026-10-21
+- **Where:** `SampleProject/Scripts/Systems/Save/Modules/PlayerDataModule.gd` (save / load), `XPManager.gd`
+- **Expected:** loading a save brings back the hero's level and XP (the oath is level 5, D280; skill points and passives follow the level).
+- **Got:** `XPManager.current_level` / `current_xp` were written nowhere except the slot card's `level` (`Game.gd:308`); after a load the hero was level 1 with 0 XP.
+- **Evidence:** `grep xp Save/Modules` → 0 hits; found while tuning the XP curve (BACKLOG 23, [[world_expansion_plan]]).
+- **Severity:** blocker
+- **Found:** 2026-10-21, backlog item 23
+- **Fix:** `level` and `xp` in the player save data, `XPManager.restore()` on load; saves without them fail loudly (no-fallback rule — the two local dev saves got `level` from their slot card, backups `*.bak-before-B79`). Test: `verify_save_load_room` [2]. Still open: a New Game in the same session does not reset XP (`XPManager.reset()` has no caller outside tests; `PlayerStateManager.reset_player_state()` has none either).
+
 ### B77 — A skill cannot be learned with the mouse — ✅ fixed 2026-10-21
 - **Where:** `SampleProject/Scripts/Menus/Game/skills_component.gd` (Skills rows; learning goes through `try_unlock_selected()`)
 - **Expected:** a **double click** on a skill row learns it, like Enter/A on the selected row (Sapega 2026-10-20 «треба дабл клік мишкою»).
