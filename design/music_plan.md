@@ -5,6 +5,8 @@ status: done
 
 # Music — plan
 
+> **Q38 answered 2026-10-21: keep the current tracks for now.** Slice 2 (a per-room table) is not needed; the `Music` nodes in the rooms and `MainMenu.tscn` stay as built.
+
 **✅ Built 2026-10-14, differently from the slices below.** The maaacks
 `ProjectMusicController` autoload already plays any autoplay `AudioStreamPlayer` on the
 `Music` bus and blends between scenes — so each room and `MainMenu.tscn` got a `Music`

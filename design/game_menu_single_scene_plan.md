@@ -1,10 +1,12 @@
 ---
 type: plan
-status: in-progress
+status: done
 tags: [backlog, game-menu, refactor]
 ---
 
 # Game Menu — one scene, a script that only shows and hides
+
+> **Built; later Game Menu work → [[game_menu_batch_mapping]]** (BACKLOG 9–13, D286–D290). The single scene and the switch (slice 1, `verify_game_menu.gd`) exist; row templates per D117 were done screen by screen.
 
 Decided by Sapega 2026-10-12: **D116**, **D117** ([[figma_decision_register]] §9).
 Replaces the [[BACKLOG]] row "Connect `UIMenuShell` to the Game Menu".

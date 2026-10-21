@@ -1,8 +1,10 @@
 # Skills — discovery and plan
 
+> **Superseded by [[skill_trees_plan]].** Built: `SkillManager.gd`, `SkillDatabase` autoload, `Resources/Data/skills.json` (class, 3 oaths, 32 skills), Skills screen and casts ([[skills_combat_plan]], D271). Every **GAME DESIGN DECISION REQUIRED** below is closed by **D279–D285** (trunk + oath trees, one point per level, the oath at 5, respec, level cap 99). Kept as the original survey.
+
 > Trees, the class path, the oath and respec: [[skill_trees_plan]] (2026-10-21).
 
-**Nothing implemented.** This is a survey plus a proposal.
+~~**Nothing implemented.**~~ (outdated) This is a survey plus a proposal.
 No class definitions invented; no JP/SP invented.
 
 ## What actually exists today

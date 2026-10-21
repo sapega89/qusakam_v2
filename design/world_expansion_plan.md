@@ -6,6 +6,8 @@ tags: [world, map, xp, feedback]
 
 # World expansion — plan (BACKLOG 23)
 
+> **Ledge A's Potion is now an Iron Ingot** (potions removed in 4b, D261): `DesertRoad.tscn` `ItemPickup`s are `iron_ingot`, `herb`, `mana_crystal`. The Laboratory part moved to [[lab_story_plan]] (D303, queue 9.4–9.8).
+
 **Sapega 2026-10-20:** no new location names. City, CityGates, Village and Canyon stay as they are. Before the City
 only **DesertRoad** grows — longer, more MetSys cells, more fights, side ledges with pickups — and the XP curve is
 tuned so the hero reaches **level 5 at the City** (the oath, D280, is sworn there from level 5). The **Laboratory**

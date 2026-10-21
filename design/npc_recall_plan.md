@@ -1,12 +1,14 @@
 ---
 type: plan
-status: planned
+status: in-progress
 tags: [backlog, dialogue, journal]
 ---
 
 # NPC quests: recall, hints, side quests — plan
 
-**Nothing implemented.** 2026-10-14. Asked by Sapega: "ми маємо мати можливість перечитати те,
+> **Partly built (checked 2026-10-21).** Built: Quest at the old man (slice 2a, D169, `verify_npc_recall.gd`), speech bubbles (slice 3, D178/D263, `UI/Components/speech_bubble.gd`), Blacksmith tasks (D175, `quests.json`, `verify_tasks.gd`). **Not built:** objective hints (slice 1, D159 — no `hint` key in `story.json`), Remind at any NPC (slice 2, D158/D161 — no Remind entry in the NPC menu code), side quests in `story.json` (slice 4, D162).
+
+~~**Nothing implemented.**~~ 2026-10-14 (outdated, see the banner). Asked by Sapega: "ми маємо мати можливість перечитати те,
 що нам розповів NPC; якщо він дав квест — скорочений текст квесту".
 Decided: **D158** (re-read at the NPC itself), **D159** (objective keeps its short title, gains a
 hint sentence from the NPC; Sapega writes the texts). **D161**: the entry is Figma's `Quest`, a list when an NPC has several — main first with a gold

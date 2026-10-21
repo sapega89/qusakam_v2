@@ -1,5 +1,7 @@
 # UI Implementation Plan — Figma → Godot
 
+> **Superseded by [[runtime_ui_completion_plan]]** for what was built; this note keeps the original Figma → Godot mapping and the token import table (§1).
+
 **Figma file:** `zZet0eKcVhXSwQUNZsrOlO` ("Untitled")
 **Branch:** `feature/figma-ui-pipeline`
 **Status:** Phase 1–3 complete (audit + mapping). No Godot scenes modified.

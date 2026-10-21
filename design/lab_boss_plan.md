@@ -1,9 +1,11 @@
 ---
 type: plan
-status: in-progress  # 2026-10-21, queue row 9; Q52 answered by agent call D301/D302 (Sapega to confirm)
+status: in-progress
 ---
 
 # Bosses — the Mayor Hall boss and the Laboratory boss — plan
+
+> **Merged into [[lab_story_plan]].** Both bosses are built (queue row 9.2, D316: `BossEnemy`, `BossLogic`, hazards, boss bar, `brass_collector.tscn`, `fire_djinn.tscn`, `verify_bosses.gd`); the Mayor Hall fight is live (D300). Left: the djinn's boss hall (queue row 9.7 — `LabBoss.gd` is still only in the stash `refs/wip/row9`).
 
 Was blocked on Q52 (who the Laboratory boss is). BACKLOG 16 + 17 answered most of it: the Laboratory boss is the
 **fire djinn** that bursts out of the prisoner (item 17), and item 16 adds a second boss in the Mayor Hall — "meant

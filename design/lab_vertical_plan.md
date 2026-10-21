@@ -1,9 +1,11 @@
 ---
 type: plan
-status: in-progress  # slices 1–2 built 2026-10-18 (D225)
+status: done
 ---
 
 # Vertical rooms — Laboratory first (Tails of Iron style) — plan
+
+> **Superseded by [[lab_story_plan]]** (D303): slices 1–2 built (D225, ladders, one-way platforms); the Laboratory's storeys and rooms are now planned there.
 
 Critics 2026-10-18: rooms are flat, one floor, no verticality. Sapega: «Кімнати пласкі… оце я б виправив,
 референс — Tails of Iron»; first room — **the Laboratory**; floors joined by **ladders + one-way platforms**;

@@ -1,6 +1,6 @@
 ---
 type: mapping
-status: in-progress
+status: done
 figma: "menu-inventory 46:193 · UI/Equipment Panel 258:5110 · UI/Party Status Panel 104:490 · menu-tutorial 130:1172 · tutorial-content 135:1260 · journal-main-story 192:1529 · journal-character-detail 192:1754"
 tags: [game-menu, feedback-queue]
 ---

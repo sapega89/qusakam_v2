@@ -1,11 +1,13 @@
 ---
 type: plan
-status: planned
+status: done
 ---
 
 # Cutscenes — plan
 
-**Nothing implemented.** Every "cutscene" today is a dialogue in the normal dialogue box while
+> **Built — see the *Built* sections below** (2026-10-13 … 2026-10-21): staged beats, Canyon descent, meditation, City Gates raid, and the shared helper `Scripts/Systems/Cutscenes/Cutscene.gd` with HUD hidden and hold Tab / pad Y to skip (D308, `verify_cutscene.gd`). The Laboratory beats are [[lab_story_plan]] (queue rows 9.5–9.8). The paragraph under the title is the 2026-10-13 starting point.
+
+~~**Nothing implemented.**~~ (2026-10-13) Every "cutscene" today is a dialogue in the normal dialogue box while
 the player stands frozen. `CutsceneStep.gd` is an unused stub. 2026-10-13.
 Figma: no design exists (story scenes `36:65` is a dialogue layout, D70/D112).
 

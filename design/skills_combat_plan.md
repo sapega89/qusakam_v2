@@ -1,5 +1,7 @@
 # Skills — combat vertical slice
 
+> **Built (Phase 5.5).** Skill trees, the class path and the oath are [[skill_trees_plan]] (D279–D285); casts and effects per skill D271.
+
 Phase 5.5. Proves the Skills Foundation can execute a real combat skill
 end-to-end. No UI, no production skill content, no JP rewards.
 

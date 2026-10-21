@@ -5,6 +5,8 @@ status: done
 
 # Companion assists — plan
 
+> **Art done:** Уризен, Астрит, Алісия and her cat generated in the hero's style (D243, D244, D245); scenes `Scenes/Characters/Companions/companion_{guard,alisia,astrit,urizen}.tscn`, `verify_companions.gd`. The "waits on Ludo" notes below are history.
+
 **All four slices built 2026-10-18 (D213)** — guard at City Gates, Алісия / Астрит / Уризен from the Laboratory, HUD readiness slot. D201, D209.
 Figma: no design exists (HUD readiness indicator has no frame — Sapega's call, D209).
 

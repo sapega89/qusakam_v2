@@ -1,6 +1,8 @@
 # Journal — backing-data audit
 
-**Audit only. Nothing implemented.**
+> **Superseded — the Journal is built.** `journal_component.gd` is 321 lines now (was a 15-line stub); sections Quests / Characters / Bestiary per [[journal_codex_plan]] (D290); tests `verify_journal.gd`, `verify_journal_sections.gd`, `verify_story_journal.gd`. Kept as the 2026-09 audit; the portrait art gap it names is still open ([[game_menu_batch_mapping]] §13).
+
+**Audit only.** ~~Nothing implemented.~~ (2026-09, outdated)
 
 **Figma:** `journal-main-story` `192:1529`, `journal-side-stories` `192:1636`,
 `journal-character-detail` `192:1754`

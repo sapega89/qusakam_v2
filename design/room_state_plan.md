@@ -1,6 +1,6 @@
 ---
 type: plan
-status: planned
+status: done
 ---
 
 # Room state — plan

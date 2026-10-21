@@ -6,6 +6,8 @@ tags: [combat, feedback]
 
 # Souls-lite combat — plan (BACKLOG 4 + 15)
 
+> **Numbers changed by 4b (D264, Sapega 2026-10-21):** heavy hit **×1.5** (`PlayerCombat.heavy_damage`, `PlayerCombat.gd:43`), a front hit on a held **block costs 0 HP** unless it breaks the guard (`Player.gd:420-423`), **parry window 0.25 s** (`PlayerCombat.PARRY_WINDOW`, `PlayerCombat.gd:51`). **Walking in towns is revoked** (D266 revoked → the hero runs everywhere; no `metadata/town` left in any scene). The ×2.2 / ×0.3 / 0.18 s and the town-walk slice below are the first build.
+
 **Built 2026-10-20** (slices 1–6, D264–D270). Before this pass: one-swing attack, roll, enemy wind-ups only. Figma: no design exists (combat is not a UI screen).
 Decisions it builds: D250 (two-handed, dual-wield), D251 (no running in towns), D253 (souls-lite), D259
 (interrupts). The calls this pass makes are **D264–D270** (agent calls, Sapega to confirm). The skill execution

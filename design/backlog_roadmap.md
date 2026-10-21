@@ -1,9 +1,11 @@
 ---
 type: plan
-status: planned
+status: done
 ---
 
 # Backlog roadmap — the order to work in
+
+> **Superseded by [[play_feedback_queue]]** (2026-10-20), which is the order work runs in now. Kept for the reasoning of 2026-10-14.
 
 Ordering of everything in [[BACKLOG]] and [[BUGS]], 2026-10-14. The items themselves stay
 where they are; this note only says **what comes first and why**.

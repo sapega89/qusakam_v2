@@ -1,12 +1,13 @@
 ---
 type: plan
-status: blocked
-blocked-by: [D138 frames]
+status: done
 ---
 
 # Character animations — plan
 
-**Placeholder only.** The player has frames for Walk and Run; every other state shows a single
+> **Q40 → D138, Q41 → D139 (answered 2026-10-13).** The hero's frames now exist in his own style — Idle, Walk, Run, Jump, Fall, Land, Roll, Climb, Meditate, Hurt, Heavy, Block, CastPalm / CastFire / CastStorm in `SampleProject/Sprites/Player/` (D262, D264, D271). Enemies and NPCs stay as they are by D139; NPC idle activities came later (D295). There is no hero **Death** frame folder. The *What exists today* table below is the 2026-10-13 starting point.
+
+~~**Placeholder only.**~~ (2026-10-13) The player has frames for Walk and Run; every other state shows a single
 borrowed frame. Enemies share one generic sheet, NPCs are static pictures. 2026-10-13.
 Figma: no design exists (Figma covers UI only).
 
