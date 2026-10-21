@@ -50,7 +50,7 @@ MetSys layer 2, cell 864×480 (`Resources/Settings.tres`). Each room is its own 
 | 4 | Teleport to the cells: Kusakam behind bars; the alchemist leads Алісия to the table and injects her; leads in a bandit-like prisoner; the prisoner shouts an **invented incantation** (Q64 default); a **fire djinn** bursts out of him and flies off through the ceiling; explosions, an earthquake; Kusakam passes out | LabCells | `lab_cells_cutscene_complete` | flag unset → the cutscene plays (the teleport is not a save) |
 | 5 | Wake: the bars are gone, every belonging in place, everyone still in their cell; `Lab_Cells_Awake` (cloud) | LabCells | — | `lab_cells_cutscene_complete` → AWAKE |
 | 6 | He steps out of his cell: acquaintance (`Lab_Acquaintance`), **Малік** offers gold at his "humble place" and asks to be led out — the quest cannot be refused (`Lab_Malik_Quest`, task `malik_escort` taken without a menu); all three assists unlocked at once (the three `lab_companion_0N_complete` flags), the companions run to Kusakam and vanish (D230), Малік slips off "in the shadows" (he is an NPC later, BACKLOG 17); the east door opens | LabCells | `lab_acquaintance_complete`, `lab_companion_01..03_complete`, `task_malik_escort_taken` | `lab_acquaintance_complete` → FREE (door open, nobody in the cells) |
-| 7 | Three mob fights on the three storeys (spawn on a trigger zone, remember their dead, D152) | Laboratory | room state per spawner | room state |
+| 7 | Three mob fights on the three storeys (spawn on a trigger zone, remember their dead, D152) | Laboratory | room state per spawner; all three won → `lab_corridors_complete` | room state |
 | 8 | The djinn waits; trigger → the cloak talk (`Lab_Boss_Talk`): who are you — I am ready to bargain — give me the cloak — it is my grandfather's; the hall seals (west barrier) | LabBoss | `lab_boss_talk_complete` | talk done → the fight starts at once on re-entry (no talk replay) |
 | 9 | The fight (D302). **Djinn wins** → `Lab_Boss_TakesCloak` (it takes the cloak), game over (Game Over screen → last save). **Djinn loses** → `Laboratory_AfterBoss`: «Не знаю, чи віддали б ви плащ, а я — ні.»; the gates open | LabBoss | `lab_boss_fight_complete`, `lab_after_boss_complete` | `lab_boss_fight_complete` → OPEN (gates up) |
 | 10 | Walk out → `LaboratoryOutside` (as built: `Laboratory_Outside`, `Demo_End`, the demo end screen) | LaboratoryOutside | `lab_outside_complete`, `demo_end_complete` | as built (B66) |
@@ -90,7 +90,8 @@ in [[play_feedback_queue]].
    `verify_lab_rooms.gd` walks every door). The two new rooms have no script yet; the corridors keep the old story until 5–7.
 5. ~~**Cells cutscene** — injection, prisoner, djinn, explosions, faint; `verify_lab_cells.gd`.~~ — done (D304, queue row 9.5, see *Built — slices 5–6*).
 6. ~~**Wake + acquaintance + Малік + assists**; `verify_lab_cells.gd` [wake …].~~ — done (D305, queue row 9.5).
-7. **Mob corridors** — three fights; `verify_laboratory.gd` rewritten.
+7. ~~**Mob corridors** — three fights; `verify_laboratory.gd` rewritten.~~ — built on `cloud/lab-9-6` (queue row 9.6,
+   D306, see *Built — slice 7*; report `cloud_reports/lab-9-6.md`).
 8. ~~**Boss hall** — lock, cloak talk, fight, game over / win line, gates; `verify_lab_boss.gd`.~~ — built on `cloud/lab-9-7`
    (queue row 9.7, D307 below; report `cloud_reports/lab-9-7.md`). `LabBoss.gd` WAIT → TALK → FIGHT → CLOAK | OPEN;
    B83 fixed for the hall (bridges one row lower, 96 px). Left: `story.json` zone for `LabBoss` (title falls back to
@@ -153,6 +154,27 @@ none → CUTSCENE, `lab_cells_cutscene_complete` → AWAKE (hero put in his cell
   triggers and NPCs; `Laboratory.gd` is EXPLORE → (trigger `StateChangeTrigger_Fight`) BOSS_FIGHT → AFTER_BOSS until
   row 9.6 rewrites it.
 - Test: `SampleProject/UI/verify_lab_cells.gd`.
+
+## Built — slice 7 (queue row 9.6, D306; agent calls, Sapega to confirm)
+
+- **`Laboratory.gd`** is a plain room: no states, no lines. Three `RoomEnemySpawner`s like DesertRoad's sections
+  (D296): `Fight_Upper` (top storey, zone x 1000 on the way east to the first ladder; melee, fast, melee),
+  `Fight_Middle` (middle storey, zone x 1250 on the way west to the second ladder; melee, fast, tank, fast),
+  `Fight_Lower` (bottom storey, zone x 700 past `SavePoint_PreBoss`, before the exit to `LabBoss`; tank, melee, fast,
+  tank — the old corridor fight). Waves of 2, 1.5 s apart; zones 64 × 352 px (the whole storey height). Keys
+  `enemies_upper` / `_middle` / `_lower` in `Game.room_state` — a won fight stays won after leaving and after a load.
+  Existing enemies with their D264/D265 stats; no arena lock (the hero may run past — the fight follows him).
+- **Objective:** "Fight through the laboratory" until all three are won → flag **`lab_corridors_complete`** (new) and
+  "Go deeper into the laboratory"; after `lab_after_boss_complete` → "Leave the laboratory". `story.json` zone
+  `laboratory`: "Fight through the laboratory" (`lab_corridors_complete`) → "Defeat the fire djinn"
+  (`lab_boss_fight_complete`) → "Leave the laboratory"; a chronicle line for the corridors.
+- Retired: `EnemySpawner`, `StateChangeTrigger_Fight`, the `Laboratory_BossFight` / `Laboratory_AfterBoss` handling in
+  the corridors (the djinn and the after-boss line live in `LabBoss`, D307).
+- **B83 in the corridors:** floor-B bridge row 22 → 24, floor-C bridges row 38 → 39 — all 96 px above the floor (one
+  jump ~103 px), same fix as the boss hall; floor A's bridge stays (128 px above the floor, 64 px above the block it is
+  jumped to from). Art: the builder redraws the bridge decks from the layout (`build_laboratory.gd`, no new art).
+- `RoomEnemySpawner.fight_cleared()` — new helper (started and nobody left).
+- Test: `verify_laboratory.gd` rewritten (real-input route LabCells → corridors → LabBoss, save/load, real jumps).
 
 ## Out of scope for this pass
 
