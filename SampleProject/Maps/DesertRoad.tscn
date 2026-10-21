@@ -15,6 +15,11 @@
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/DesertRoad_Terrain.png" id="terrain_terrain"]
 
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shop.png" id="shop_art"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
+size = Vector2(600, 200)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
 
@@ -60,6 +65,16 @@ tile_set = ExtResource("2_xkx37")
 position = Vector2(0, 2)
 tile_map_data = PackedByteArray("AAAAAAkAAQAKAAcAAAAAAAoAAQAKAAcAAAAAAAsAAQAKAAgAAAAAAAYAAQAKAAYAAAAAAAcAAQAKAAcAAAAAAAgAAQAKAAcAAAA=")
 tile_set = ExtResource("2_xkx37")
+
+[node name="Shop" type="Sprite2D" parent="." unique_id=1402914111]
+texture_filter = 1
+position = Vector2(1087, 147)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("shop_art")
+centered = false
+
+[node name="ShopDoor" type="Marker2D" parent="." unique_id=1402914112]
+position = Vector2(1227, 396)
 
 [node name="Terrain" type="Sprite2D" parent="."]
 texture_filter = 1
@@ -138,7 +153,21 @@ enemy_type = "fast"
 script = ExtResource("9_gate")
 
 [node name="Merchant" parent="." unique_id=890430184 instance=ExtResource("10_merchant")]
-position = Vector2(1350, 396)
+position = Vector2(1120, 396)
+task_giver = "merchant"
+
+[node name="MerchantArrival" type="Area2D" parent="." unique_id=1402914113]
+position = Vector2(1200, 300)
+script = ExtResource("npc_arrival")
+npc_path = NodePath("../Merchant")
+door_path = NodePath("../ShopDoor")
+dialogue = "res://dialogue_quest/Merchant_Arrival.dqd"
+task_id = "merchant_caravan"
+done_flag = "desert_road_merchant_met"
+require_flag = "desert_road_fight_complete"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MerchantArrival" unique_id=1402914114]
+shape = SubResource("RectangleShape2D_arrival")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=603862840]
 process_mode = 3

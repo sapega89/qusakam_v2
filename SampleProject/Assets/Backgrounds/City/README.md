@@ -11,3 +11,4 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 
 Behind them: `desert_backdrop_open.tscn` — the pack's sky, the Canyon's generated clouds and mesas (D235),
 the pack's ground strip.
+| `gen_forge.png` | City: the Blacksmith's forge behind his station, door at x 1230 (BACKLOG 14, D292) |

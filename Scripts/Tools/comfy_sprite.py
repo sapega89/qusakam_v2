@@ -106,6 +106,18 @@ BASE_CAT = (
     "its eye and nose on the right side of its face, looking ahead to the right. Keep the plain flat magenta background."
 )
 # rows — рядки листа: (анімація, підказки кадрів); None — сам перший кадр (base).
+# Хода дорослого NPC у профіль праворуч (BACKLOG 14): чотири кадри, четвертий — той самий кадр, що другий.
+WALK = [
+    "walking to the right in strict side view, his whole body in profile facing right, his left leg stepping forward "
+    "and his right leg back, arms swinging",
+    "walking to the right in strict side view, his whole body in profile facing right, mid-stride with both legs "
+    "passing together under his body",
+    "walking to the right in strict side view, his whole body in profile facing right, his right leg stepping forward "
+    "and his left leg back, arms swinging",
+    "walking to the right in strict side view, his whole body in profile facing right, mid-stride with both legs "
+    "passing together under his body",
+]
+
 CHARACTERS = {
     "bandit": dict(
         out="SampleProject/Assets/Characters/Enemies/bandit/sheet.png",
@@ -173,7 +185,17 @@ CHARACTERS = {
                     None,
                     "breathing, chest and shoulders slightly lower, the hammer resting at his side",
                 ],
-            )
+            ),
+            # BACKLOG 14 (D292): виходить із кузні — профіль у ході; на місці стоїть фасом (D243)
+            ("walk", WALK),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, both eyes visible, the full dark beard, "
+                    "the leather apron over the dark shirt, rolled-up sleeves, the smithing hammer hanging in his right hand",
+                    "BOB:56:front:0",
+                ],
+            ),
         ],
     ),
     "merchant": dict(
@@ -191,7 +213,16 @@ CHARACTERS = {
             (
                 "idle",
                 [None, "breathing, chest and shoulders slightly lower, the same smile"],
-            )
+            ),
+            ("walk", WALK),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, both eyes visible, the red turban, "
+                    "the long yellow robe, the big leather satchel on his hip, the small scroll in his hand",
+                    "BOB:56:front:0",
+                ],
+            ),
         ],
     ),
     # Хранителі клятв у місті (BACKLOG 22, D281): профіль — коли герой говорить із ними, фас — коли стоять (D243).

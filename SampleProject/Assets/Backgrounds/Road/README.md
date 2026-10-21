@@ -7,6 +7,7 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 | File | Use |
 |---|---|
 | `gen_mid.png` | DesertRoad: Parallax2D ×0.6 — dunes, a rock arch, half-buried ancient pillars; near blur |
+| `gen_shop.png` | DesertRoad: the Merchant's roadside shop behind his station, door at x 1227 (BACKLOG 14, D292) |
 
 Behind them: `desert_backdrop_open.tscn` — the pack's sky, the Canyon's generated clouds and mesas (D235),
 the pack's ground strip.

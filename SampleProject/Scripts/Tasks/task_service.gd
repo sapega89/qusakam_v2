@@ -54,6 +54,8 @@ static func take(task: Dictionary) -> void:
 
 
 static func can_turn_in(task: Dictionary) -> bool:
+	if task.has("needs_flag") and not Game.get_singleton().get_quest_flag(task.needs_flag):
+		return false
 	for item_id in task.needs:
 		if _inventory().get_item_count(item_id) < int(task.needs[item_id]):
 			return false

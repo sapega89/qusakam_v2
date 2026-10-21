@@ -1,6 +1,18 @@
 {
-	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають.",
+	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають; needs_flag — прапорець, без якого не здати (D293).",
 	"tasks": [
+		{
+			"id": "merchant_caravan",
+			"giver": "merchant",
+			"title": "The Stolen Caravan",
+			"objective": "Drive the bandits from the City Gates, then come back to the Merchant on the Desert Road",
+			"give_dialogue": "Merchant_Caravan_Give",
+			"done_dialogue": "Merchant_Caravan_Done",
+			"gives": {},
+			"needs": {},
+			"needs_flag": "city_gates_fight_complete",
+			"reward": {"potion": 2, "coin": 30}
+		},
 		{
 			"id": "smith_helmet",
 			"giver": "blacksmith",

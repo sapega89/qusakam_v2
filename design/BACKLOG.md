@@ -112,9 +112,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Was: each hint opens the tutorial window (nothing is missed), and the topic lands in
     the Tutorial list; a Settings option turns these windows off.
 13. ~~**Journal sections**~~ — **done 2026-10-21 (D290, [[journal_codex_plan]]):** Quests · Characters · Bestiary tabs; people recorded when they speak, enemies when they appear and die. Was: choose between Quests and Characters (people we have met); plus a Bestiary.
-14. **Blacksmith and merchant come out to meet you** (Sapega 2026-10-20): bug — the blacksmith is drawn in front of
-    the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they walk out of it and a
-    cutscene plays (gameplay paused): they talk to Kusakam and give a task (quests via the story-and-dialogue skill).
+14. ~~**Blacksmith and merchant come out to meet you**~~ — **done 2026-10-21 (D291–D294):** NPCs no longer draw over the
+    hero (the NPC scenes carried z 10 + 10; now 0, checked for every NPC in every map); a generated shop on the Desert Road
+    (the Merchant moves to x 1120) and a forge in the City; on arrival each walks out of the door (new walk and front
+    frames), control taken, a draft talk, and a task — "The Stolen Caravan" (Merchant) and the existing "The Helmet"
+    (Blacksmith); NPC tasks are listed in the Journal. `verify_npc_arrival.gd`. Was (Sapega 2026-10-20): bug — the blacksmith
+    is drawn in front of the hero (z-order). Each gets a building (generated art) on the road; when the hero arrives they
+    walk out of it and a cutscene plays (gameplay paused): they talk to Kusakam and give a task.
 15. ~~**Weapons sheathed out of combat; an attack animation per weapon**~~ — **done 2026-10-20** (D268): the weapon
     is out of sight out of combat (2026-10-21 fix, Sapega: not on the back) and is drawn when a fight starts or on a swing; sword/axe arcs, mace overhead smash,
     dagger stabs, halberd thrusts, dual-wield alternating hands, heavy overhead; new hero frames Hurt, Heavy ×2, Block
@@ -153,7 +157,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Resources/Data/skills.json) gets a hero pose/cast animation and its effect, not just a number change.
     A cast can be **interrupted** (a hit during the wind-up staggers the hero): the skill's effect does not happen, but
     its cooldown starts anyway and the SP is spent (D259). Goes with the stagger system of item 4.
-22. ~~**Three skill trees: Light, Dark, Neutral**~~ — **done 2026-10-21 (D279–D285, [[skill_trees_plan]]):** Holy Warrior trunk + Paladin / Dark Knight / Warden of Balance trees (8 skills each to level 20, later tiers outlined), one point per level, level cap 99, the oath sworn in the City before Sister Ilvane (priest), Morrow (witch) or Kesh (sand dervish) — permanent; respec at any of them for 10 coins × level; Skills screen tabs, double click learns (B77). Left: subclass (40) and prestige (70), own cast art for the new actives, the NPCs drawn over the hero (as item 14's blacksmith). Was (Sapega 2026-10-20 «у кусакама має бути три гілки навичок — темні,
+22. ~~**Three skill trees: Light, Dark, Neutral**~~ — **done 2026-10-21 (D279–D285, [[skill_trees_plan]]):** Holy Warrior trunk + Paladin / Dark Knight / Warden of Balance trees (8 skills each to level 20, later tiers outlined), one point per level, level cap 99, the oath sworn in the City before Sister Ilvane (priest), Morrow (witch) or Kesh (sand dervish) — permanent; respec at any of them for 10 coins × level; Skills screen tabs, double click learns (B77). Left: subclass (40) and prestige (70), own cast art for the new actives. (The NPCs drawn over the hero — fixed with item 14, D291.) Was (Sapega 2026-10-20 «у кусакама має бути три гілки навичок — темні,
     світлі і нейтральні; все це можна взяти з навичок чемпіона або паладина з D&D і з Pathfinder, тільки переробити під
     нашу гру, як це роблять в інших іграх»). Today: 5 skills in Resources/Data/skills.json, no branches
     ([[skills_system_plan]], [[skills_combat_plan]], [[skills_ui_mapping]]). Source material: PF2e Champion (ORC
@@ -240,7 +244,7 @@ near/foreground plane; add one to Canyon, DesertRoad, CityGates, City, Laborator
 - **Resume:** slice 1 of [[gamepad_plan]] — the input map.
 
 ### ✅ Merchant & Blacksmith placed — 2026-10-14
-- D154. `Merchant` in `Maps/DesertRoad.tscn` (x 1350, after the fight, before `SavePoint_BeforeCity`);
+- D154. `Merchant` in `Maps/DesertRoad.tscn` (x 1350, moved to 1120 in front of his shop by D292; after the fight, before `SavePoint_BeforeCity`);
   `Blacksmith` in `Maps/City.tscn` (x 1100). (Canyon test copies and `TestGold` from D165 removed 2026-10-15.)
 - **Left as is (Sapega, 2026-10-15):** `Maps/City.tscn` `StateChangeTrigger_Merchant` still auto-plays the
   `[PLACEHOLDER]` `City_Merchant.dqd` greeting though no Merchant stands in the City. Not to be removed

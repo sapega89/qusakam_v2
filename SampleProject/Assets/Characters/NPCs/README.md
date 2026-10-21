@@ -8,8 +8,8 @@ to disclose AI-generated content. Replaces the Figma NPC art of D107 and the old
 
 | Folder | Used by | Frames |
 |---|---|---|
-| `blacksmith/sheet.png` | `Scenes/Gameplay/Objects/NPCs/blacksmith.tscn` | idle 0–1, feet row 91 |
-| `merchant/sheet.png` | `Scenes/Gameplay/Objects/NPCs/merchant.tscn` | idle 0–1, feet row 89 |
+| `blacksmith/sheet.png` | `Scenes/Gameplay/Objects/NPCs/blacksmith.tscn` | row 0 three-quarter `talk` 0–1, row 1 profile `walk` 4–7, row 2 front `idle` 8–9 (D292); feet row 91 |
+| `merchant/sheet.png` | `Scenes/Gameplay/Objects/NPCs/merchant.tscn` | row 0 three-quarter `talk` 0–1, row 1 profile `walk` 4–7, row 2 front `idle` 8–9 (D292); feet row 89 |
 | `old_man/sheet.png` | `Maps/Village.tscn` → OldMan (flipped, faces left) | idle 0–1, feet row 89 |
 | `gate_guard/sheet.png` | `Scenes/Gameplay/Objects/NPCs/gate_guard.tscn` → CityGates GuardLeft/GuardRight (flipped, face the road; D258) | idle 0–1, feet row 91 |
 | `priest/sheet.png` | `Scenes/Gameplay/Objects/NPCs/oath_priest.tscn` → City OathPriest (D281) | row 0 profile (faces **left**), row 1 front; feet row 90 |

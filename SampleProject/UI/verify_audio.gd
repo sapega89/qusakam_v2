@@ -78,6 +78,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	game.set_quest_flag("desert_road_monologue_complete", true)
+	game.set_quest_flag("desert_road_merchant_met", true)  # BACKLOG 14: the merchant already came out of his shop (verify_npc_arrival covers the meeting)
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())

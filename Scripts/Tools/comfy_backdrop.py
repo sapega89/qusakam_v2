@@ -371,6 +371,48 @@ LAYERS = {
         "width from the left edge to the right edge: a deck of weathered brown wooden planks side by side, a thick rope "
         f"handrail running straight above the deck, a short thick wooden post at each end, {CHROMA}",
     ),
+    # BACKLOG 14 (D292): будинки коваля й торговця — окремі предмети на дорозі, з дверей виходить NPC.
+    "City/gen_forge": dict(
+        seed=142,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        holes=True,  # темний дверний отвір, з якого виходить коваль
+        cut=(122, 576),  # ліворуч — довга тінь, яку модель кидає на тло
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="one single small desert blacksmith forge house: a squat one-storey sandstone workshop with a flat roof, "
+        "a short square brick chimney, a tall wide open arched doorway in its middle showing a dark interior with a faint "
+        "orange glow of the furnace, an iron anvil and a wooden barrel beside the door, a crossed hammer and tongs emblem "
+        "carved into the plain wall above the door, standing alone in the middle of the frame and filling half of its width, with empty space "
+        f"on both sides, its base resting on the bottom edge, warm light on the top, cool violet shadows in the recesses, {CHROMA}",
+    ),
+    "Road/gen_shop": dict(
+        seed=144,
+        rows=220,
+        top=0,
+        seam="none",
+        trim=True,
+        holes=True,  # темний вхід, з якого виходить торговець
+        cut=(158, 412),  # лише будинок із крамом: дюни обабіч модель домальовує
+        keep=198,  # нижче — пісок, який модель стелить під будинком
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="one single small roadside desert merchant shop: a one-storey sandstone and clay house with a flat roof, "
+        "a red and yellow striped cloth awning over a tall wide open doorway in its middle showing a dark interior, clay "
+        "pots, rolled carpets and wooden crates stacked beside the door, a hanging brass lantern, standing alone in the "
+        "middle of the frame and filling half of its width, with empty space on both sides, its base resting on the "
+        f"bottom edge, the house stands directly on bare sand, warm light on the top, cool violet shadows in the recesses, {CHROMA}",
+    ),
     # Задній ряд дахів села (критик: у проміжках між будинками сяяли скелі — «просвічується»); пальми тут.
     "Village/gen_back": dict(
         seed=25,

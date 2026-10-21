@@ -48,7 +48,6 @@ _data = {
 size = Vector2(64, 64)
 
 [node name="OathWitch" type="Area2D"]
-z_index = 10
 script = ExtResource("1_keeper")
 oath_id = "dark_knight"
 sworn_dialogue = "res://dialogue_quest/City_Oath_Witch_Sworn.dqd"
@@ -57,7 +56,6 @@ talk_dialogue = "res://dialogue_quest/City_Oath_Witch_Talk.dqd"
 character_id = "OATH_WITCH"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-z_index = 10
 texture_filter = 1
 offset = Vector2(0, -43)
 scale = Vector2(1.5, 1.5)

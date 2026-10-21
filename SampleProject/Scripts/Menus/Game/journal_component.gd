@@ -16,6 +16,8 @@ extends BaseMenuComponent
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const EMPTY_TEXT := "No journal entries yet."
+## load(), не preload: сервіс тягне Game (як у NpcBase).
+const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 
 ## Розділи журналу (BACKLOG 13, D290): вкладки над списком, ті самі колонки «список + текст».
 ## [id, заголовок сторінки, підпис списку, порожній стан]
@@ -138,6 +140,13 @@ func _load_story() -> void:
 					"state": objectives[i].state, "group": stage.title, "parent": zone.id})
 			if zone.state == "current":
 				current_id = zone.id
+	# Завдання NPC (quests.json, D293): кожне взяте — пункт із ціллю; здане — з позначкою.
+	var TASKS: GDScript = load(TASKS_PATH)
+	for task: Dictionary in TASKS.tasks():
+		var status: String = TASKS.status(task)
+		if status != "":
+			items.append({"id": "task/" + task.id, "title": tr(task.title), "group": "Tasks",
+				"state": "done" if status == TASKS.DONE else "current", "description": tr(task.objective)})
 	# Обраний пункт лишається, поки він доступний; інакше — поточний підетап.
 	var keep := false
 	for item in items:
