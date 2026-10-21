@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Лабораторія на кімнати (D303, черга 9.4): герой сам іде (справжнє натискання «праворуч») LabCells → коридори
-## (Laboratory, верхній поверх) → назад і знову → з нижнього поверху в LabBoss → LaboratoryOutside. На кожному переході:
+## (Laboratory, верхній поверх) → назад і знову → з нижнього поверху в LabBoss (джин уже переможений) → LaboratoryOutside. На кожному переході:
 ## нова кімната, герой на її підлозі біля краю, на тій самій висоті, що й перед дверима.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_rooms.gd
 
@@ -82,7 +82,10 @@ func _initialize() -> void:
 	await _walk_into(&"move_right", "Laboratory", "cells → corridors again")
 	await _drain(dm)
 
-	print("[3] From the corridors' bottom storey east into the boss hall")
+	print("[3] From the corridors' bottom storey east into the boss hall (the djinn already beaten — the gates are up)")
+	# Бій і замкнена зала — verify_lab_boss.gd (9.7); тут лише двері.
+	for flag in ["lab_boss_talk_complete", "lab_boss_fight_complete", "lab_after_boss_complete"]:
+		game.set_quest_flag(flag, true)
 	game.player.global_position = BOTTOM_EXIT
 	for i in 30: await physics_frame
 	await _drain(dm)
