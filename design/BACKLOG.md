@@ -207,6 +207,12 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Kokoro-82M Apache 2.0 for English barks, Piper voices per-voice licence for Ukrainian; never XTTS-v2 / F5-TTS
     non-commercial weights; check Stable Audio Open's licence before using it), buses and mixing, the event→sound map,
     Steam AI-content disclosure. Gamepad rumble on hits goes with item 24.
+27. **The oath, more interesting** (Sapega 2026-10-21, after D281 «все працює, треба буде подумати, як зробити цікавіше»):
+    today the oath is a menu choice at one of three NPCs. Needs a design pass with Sapega before building — candidate
+    ideas, none decided: a short trial per keeper before the oath (a fight, a choice, a sacrifice that fits Light/Dark/
+    Neutral); an oath ceremony cutscene with a visual change on Kusakam (aura, cloak trim, eye glow); the keepers react
+    to each other and to the hero's deeds (dialogue that changes with kills, mercy, quests); a first oath skill granted
+    at the ceremony; companions comment on the choice. Not queued — waits for Sapega's ideas.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
 ### Foreground parallax in every outdoor room
