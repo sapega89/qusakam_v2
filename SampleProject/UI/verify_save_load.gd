@@ -308,7 +308,6 @@ func _initialize() -> void:
 	layer._close_with_result("cancel")
 	await process_frame
 
-	ss.set_save_dir(ss.SAVE_DIR)
 	_wipe_dir_only()
 	_done()
 

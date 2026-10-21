@@ -145,7 +145,6 @@ func _initialize() -> void:
 		var cards: Array = scene._cards
 		ck(cards[1].is_selectable() and not cards[0].is_selectable(), "only the saved slot is selectable")
 
-	ss.set_save_dir(ss.SAVE_DIR)
 	_wipe()
 	DirAccess.remove_absolute(TEST_DIR)
 	_done()

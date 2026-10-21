@@ -131,7 +131,6 @@ func _initialize() -> void:
 	root.add_child(orphan)
 	ck(not GameOverScreen.present(orphan), "no current scene → falls back (old behaviour)")
 
-	ss.set_save_dir(ss.SAVE_DIR)
 	_wipe()
 	DirAccess.remove_absolute(TEST_DIR)
 	_done()

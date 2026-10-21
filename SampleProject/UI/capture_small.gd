@@ -57,7 +57,6 @@ func _initialize() -> void:
 	for file in DirAccess.get_files_at(DIR):
 		DirAccess.remove_absolute(DIR + file)
 	DirAccess.remove_absolute(DIR)
-	ss.set_save_dir(ss.SAVE_DIR)
 	DisplayServer.window_set_size(previous_size)
 	await process_frame
 	quit(0)

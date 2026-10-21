@@ -33,10 +33,17 @@ var _session_base_playtime_sec: float = 0.0
 
 # Включено ли автосохранение при переходе между сценами
 
-## Тека слотів. Змінюється лише тестами через set_save_dir(), щоб не чіпати справжні сейви.
+## Запуск з --script (verify_*, capture_*, playthrough) — не гра: він не читає й не пише справжні
+## сейви та налаштування гравця, а працює у власній теці, яку кожен такий запуск починає порожньою.
+## Раніше тести, що міняли налаштування, переписували slot_01.sav гравця (save_game_settings()).
+const SCRIPT_RUN_SAVE_DIR = "user://script_run_saves/"
+
+## Тека слотів. Тест може взяти ще окрему через set_save_dir().
 var save_dir: String = SAVE_DIR
 
 func _ready():
+	if get_tree().get_script() != null:
+		_start_script_run_dir()
 	# Создаем папку для сохранений если её нет
 	_create_save_directories()
 	_load_profile()
@@ -124,9 +131,21 @@ func get_player_data_path(slot_index: int) -> String:
 	var index = clamp(slot_index, 1, SLOT_COUNT)
 	return save_dir + (PLAYER_SLOT_TEMPLATE % index)
 
+func _start_script_run_dir() -> void:
+	save_dir = SCRIPT_RUN_SAVE_DIR
+	DirAccess.make_dir_recursive_absolute(save_dir)
+	for file in DirAccess.get_files_at(save_dir):
+		if DirAccess.remove_absolute(save_dir + file) != OK:
+			push_error("SaveSystem: cannot clear %s%s left by the previous script run" % [save_dir, file])
+	print("💾 SaveSystem: script run — saves and settings in %s, not %s" % [save_dir, SAVE_DIR])
+
 ## Лише для тестів: перенаправляє слоти в окрему теку і перечитує профіль.
 func set_save_dir(dir: String) -> void:
-	save_dir = dir if dir.ends_with("/") else dir + "/"
+	dir = dir if dir.ends_with("/") else dir + "/"
+	if dir == SAVE_DIR and get_tree().get_script() != null:
+		push_error("SaveSystem: a script run may not point at the player's saves %s" % SAVE_DIR)
+		return
+	save_dir = dir
 	if not DirAccess.dir_exists_absolute(save_dir):
 		DirAccess.make_dir_recursive_absolute(save_dir)
 	_load_profile()

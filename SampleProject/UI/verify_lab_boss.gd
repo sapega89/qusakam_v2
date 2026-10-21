@@ -336,7 +336,6 @@ func _initialize() -> void:
 	for f in DirAccess.get_files_at(TEST_DIR):
 		DirAccess.remove_absolute(TEST_DIR + f)
 	DirAccess.remove_absolute(TEST_DIR)
-	save_system.set_save_dir(save_system.SAVE_DIR)
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

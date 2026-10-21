@@ -43,7 +43,6 @@ func _initialize() -> void:
 	menu._on_slot_activated(1)
 	await _save("res://design/shots/save_load_overwrite_1920.png")
 
-	ss.set_save_dir(ss.SAVE_DIR)
 	for f in DirAccess.get_files_at(DIR):
 		DirAccess.remove_absolute(DIR + f)
 	DirAccess.remove_absolute(DIR)
