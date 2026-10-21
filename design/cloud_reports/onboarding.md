@@ -85,8 +85,6 @@ run. Plan and decisions: [[onboarding_plan]]. Godot 4.6.2 headless ran here; no 
   fixed here (a mode change is a repo-wide tooling call); fix: `git update-index --chmod=+x` on both, or call
   `bash Scripts/Tools/godot_locked.sh` from `run_verify.sh`. This run used a scratch copy calling it through `bash`
   with a 400 s per-test timeout.
-- **Note (not a bug of this branch):** `verify_onboarding` takes ~3–4 min headless (two full lesson runs) — longer
-  than `run_verify.sh`'s 180 s timeout per test. See the suite result below.
 
 ## Verify runs
 
@@ -99,8 +97,12 @@ run. Plan and decisions: [[onboarding_plan]]. Godot 4.6.2 headless ran here; no 
 | verify_souls_combat | RESULT: ALL PASS |
 | verify_misc_modal | RESULT: ALL PASS |
 | verify_game_menu | RESULT: ALL PASS (after the 9-panel count fix) |
+| verify_story_journal | RESULT: ALL PASS (after accepting `set_objective("…", &"id")` in its source check) |
 
-Full suite: SUITE_PLACEHOLDER
+Full suite (`run_verify.sh` logic, scratch copy calling `godot_locked.sh` through `bash`): first run
+**69 PASS, 1 FAIL — `verify_story_journal`** (8 FAIL: its static check looked for `set_objective("<text>")` and the
+early objectives now pass a marker id). Fixed in `verify_story_journal.gd:48`; re-run: `RESULT: ALL PASS`. So the
+suite is 70/70 on the final head. `verify_onboarding` takes ~60 s headless.
 
 ## What is left
 
