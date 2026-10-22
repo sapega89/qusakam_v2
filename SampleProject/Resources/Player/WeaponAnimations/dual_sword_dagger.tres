@@ -1,0 +1,446 @@
+[gd_resource type="AnimationLibrary" format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/CombatIdle/1.png" id="t_dual_combatidle_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/CombatIdle/2.png" id="t_dual_combatidle_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/CombatIdle/3.png" id="t_dual_combatidle_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/CombatIdle/4.png" id="t_dual_combatidle_4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/1.png" id="t_dual_run_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/2.png" id="t_dual_run_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/3.png" id="t_dual_run_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/4.png" id="t_dual_run_4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/5.png" id="t_dual_run_5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/6.png" id="t_dual_run_6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Run/7.png" id="t_dual_run_7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Air/1.png" id="t_dual_air_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Air/2.png" id="t_dual_air_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Air/3.png" id="t_dual_air_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack1/1.png" id="t_dual_attack1_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack1/2.png" id="t_dual_attack1_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack1/3.png" id="t_dual_attack1_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack2/1.png" id="t_dual_attack2_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack2/2.png" id="t_dual_attack2_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack2/3.png" id="t_dual_attack2_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack3/1.png" id="t_dual_attack3_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack3/2.png" id="t_dual_attack3_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack3/3.png" id="t_dual_attack3_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack4/1.png" id="t_dual_attack4_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack4/2.png" id="t_dual_attack4_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Attack4/3.png" id="t_dual_attack4_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Heavy/1.png" id="t_dual_heavy_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Heavy/2.png" id="t_dual_heavy_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Heavy/3.png" id="t_dual_heavy_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Block/1.png" id="t_dual_block_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/Hurt/1.png" id="t_sword_hurt_1"]
+
+[sub_resource type="Animation" id="Animation_Idle"]
+resource_name = "Idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_combatidle_1"), ExtResource("t_dual_combatidle_2"), ExtResource("t_dual_combatidle_3"), ExtResource("t_dual_combatidle_4")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Run"]
+resource_name = "Run"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.114, 0.229, 0.343, 0.457, 0.571, 0.686),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_run_1"), ExtResource("t_dual_run_2"), ExtResource("t_dual_run_3"), ExtResource("t_dual_run_4"), ExtResource("t_dual_run_5"), ExtResource("t_dual_run_6"), ExtResource("t_dual_run_7")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Jump"]
+resource_name = "Jump"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_air_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Apex"]
+resource_name = "Apex"
+length = 0.18
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_air_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Fall"]
+resource_name = "Fall"
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_air_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Land"]
+resource_name = "Land"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_combatidle_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Attack1"]
+resource_name = "Attack1"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_attack1_1"), ExtResource("t_dual_attack1_2"), ExtResource("t_dual_attack1_3"), ExtResource("t_dual_combatidle_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Attack2"]
+resource_name = "Attack2"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_attack2_1"), ExtResource("t_dual_attack2_2"), ExtResource("t_dual_attack2_3"), ExtResource("t_dual_combatidle_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Attack3"]
+resource_name = "Attack3"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_attack3_1"), ExtResource("t_dual_attack3_2"), ExtResource("t_dual_attack3_3"), ExtResource("t_dual_combatidle_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Attack4"]
+resource_name = "Attack4"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_attack4_1"), ExtResource("t_dual_attack4_2"), ExtResource("t_dual_attack4_3"), ExtResource("t_dual_combatidle_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_HeavyWindup"]
+resource_name = "HeavyWindup"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_heavy_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_HeavyStrike"]
+resource_name = "HeavyStrike"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("t_dual_heavy_2"), ExtResource("t_dual_heavy_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Block"]
+resource_name = "Block"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_dual_block_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_Hurt"]
+resource_name = "Hurt"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_sword_hurt_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[resource]
+_data = {
+&"Idle": SubResource("Animation_Idle"),
+&"Run": SubResource("Animation_Run"),
+&"Jump": SubResource("Animation_Jump"),
+&"Apex": SubResource("Animation_Apex"),
+&"Fall": SubResource("Animation_Fall"),
+&"Land": SubResource("Animation_Land"),
+&"Attack1": SubResource("Animation_Attack1"),
+&"Attack2": SubResource("Animation_Attack2"),
+&"Attack3": SubResource("Animation_Attack3"),
+&"Attack4": SubResource("Animation_Attack4"),
+&"HeavyWindup": SubResource("Animation_HeavyWindup"),
+&"HeavyStrike": SubResource("Animation_HeavyStrike"),
+&"Block": SubResource("Animation_Block"),
+&"Hurt": SubResource("Animation_Hurt")
+}

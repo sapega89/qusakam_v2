@@ -12,10 +12,16 @@ extends Node2D
 ##   важкий удар — зброя над головою на замаху, удар згори донизу; голі руки — кулак з «вибухом».
 ## Пози тіла без удару (блок, збій, замах важкого) ставить _process за станом бою.
 ## Розмітка — Player.tscn → WeaponMount (Pivot / OffPivot).
-## Тип зброї зі своїми кадрами героя (BACKLOG 42, бібліотека анімацій Player.tscn з іменем категорії, зараз — sword):
-## зброя намальована в кадрі, цей спрайт схований, поки грає анімація з тієї бібліотеки.
+## Тип зброї зі своїми кадрами героя (BACKLOG 42, бібліотека анімацій Player.tscn з іменем категорії: sword, dagger,
+## mace, polearm; дві зброї — dual_<у руці>_<друга>, зараз dual_sword_dagger): зброя намальована в кадрі, цей спрайт
+## схований, поки грає анімація з тієї бібліотеки. Метал у тих кадрах — ключ палітри: шейдер спрайта героя
+## (Shaders/weapon_palette.gdshader) фарбує його в палітру предмета (items.json → palette, weapon_palettes.json).
 
 const TEXTURE := "res://SampleProject/Assets/Weapons/%s.png"
+const PALETTES := "res://SampleProject/Resources/Data/weapon_palettes.json"
+## Параметри шейдера: ключ кадрів і кольори палітри (світлий, середній, темний).
+const KEY_PARAMS: Array[StringName] = [&"key_light", &"key_mid", &"key_dark"]
+const PALETTE_PARAMS: Array[StringName] = [&"to_light", &"to_mid", &"to_dark"]
 const SLASH_TRAIL_SCENE := preload("res://SampleProject/Scenes/FX/SlashTrail.tscn")
 ## Точка хвату — стільки пікселів текстури від низу (як GRIP у draw_weapons.py).
 const GRIP := 3
@@ -75,7 +81,13 @@ const SMEAR_SCALE := 1.3
 @onready var sprite: Sprite2D = $Pivot/Weapon
 @onready var off_pivot: Node2D = $OffPivot
 @onready var off_sprite: Sprite2D = $OffPivot/OffWeapon
+## Матеріал спрайта героя (Player.tscn → Sprite2D, weapon_palette.gdshader).
+@onready var _body_material: ShaderMaterial = player.get_node(^"Sprite2D").material
 var _category: String = ""
+var _off_category: String = ""
+## Палітра металу предмета в руці (weapon_palettes.json → palettes) і ключ кадрів.
+var palette: String = ""
+var _palettes: Dictionary = {}
 var _grip: StringName = &"bare"
 var _dual: bool = false
 var _tween: Tween
@@ -84,6 +96,10 @@ var sheathed: bool = true
 
 
 func _ready() -> void:
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(PALETTES))
+	_palettes = data.palettes
+	for i in 3:
+		_body_material.set_shader_parameter(KEY_PARAMS[i], Color(data.key[i]))
 	EventBus.weapon_in_hand_changed.connect(func(_slot: String) -> void: _refresh())
 	EventBus.equipment_equipped.connect(func(_c: String, _s: String, _i: String) -> void: _refresh())
 	EventBus.equipment_unequipped.connect(func(_c: String, _s: String) -> void: _refresh())
@@ -100,7 +116,10 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
 	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
-	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not _drawn_in_frame()
+	var in_frame: bool = _drawn_in_frame()
+	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not in_frame
+	if _body_material.get_shader_parameter(&"active") != in_frame:
+		_body_material.set_shader_parameter(&"active", in_frame)
 	off_pivot.visible = _dual and pivot.visible
 	if _tween and _tween.is_running():
 		return
@@ -112,12 +131,12 @@ func _open_palm() -> bool:
 	return String(player.animation).begins_with("Cast") and not CAST_POSES.has(player.animation)
 
 
-## Бібліотека кадрів героя для зброї в руці (BACKLOG 42): ім'я категорії, коли зброя дістана (бій або удар),
-## хват одноручний і в AnimationPlayer героя є така бібліотека; інакше &"" — базові кадри й цей спрайт.
+## Бібліотека кадрів героя для зброї в руці (BACKLOG 42): ім'я категорії (дві зброї — dual_<у руці>_<друга>), коли
+## зброя дістана (бій або удар) і в AnimationPlayer героя є така бібліотека; інакше &"" — базові кадри й цей спрайт.
 func body_library() -> StringName:
-	if not visible or _grip != &"one_handed" or (sheathed and not player.combat.is_attacking):
+	if not visible or (sheathed and not player.combat.is_attacking):
 		return &""
-	var library := StringName(_category)
+	var library := StringName("dual_%s_%s" % [_category, _off_category] if _dual else _category)
 	return library if player.get_node(^"AnimationPlayer").has_animation_library(library) else &""
 
 
@@ -136,12 +155,26 @@ func _refresh() -> void:
 		return
 	_category = item.category
 	_set_texture(sprite, item.id)
+	_set_palette(item.palette)
 	var off: Dictionary = equipment.get_off_hand_item()
 	_dual = not off.is_empty()
 	off_pivot.visible = _dual
+	_off_category = String(off.category) if _dual else ""
 	if _dual:
 		_set_texture(off_sprite, off.id)
 	_hold_pose()
+
+
+## Метал у кадрах зброї — у кольори палітри предмета (у двох зброй — палітра тієї, що в руці).
+func _set_palette(id: String) -> void:
+	palette = id
+	var entry: Dictionary = _palettes[id]
+	for i in 3:
+		_body_material.set_shader_parameter(PALETTE_PARAMS[i], Color(entry.colors[i]))
+	_body_material.set_shader_parameter(&"shimmer", entry.shimmer)
+	_body_material.set_shader_parameter(&"glow", entry.glow)
+	if entry.has("glow_color"):
+		_body_material.set_shader_parameter(&"glow_color", Color(entry.glow_color))
 
 
 func _set_texture(target: Sprite2D, id: String) -> void:

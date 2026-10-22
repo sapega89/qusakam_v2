@@ -231,14 +231,15 @@ func _unhandled_input(ev: InputEvent) -> void:
 			combat.heavy_attack(last_direction)
 
 ## Анімація тіла [param base] з кадрів зброї в руці (BACKLOG 42, design/hero_weapon_animation_plan.md):
-## `<бібліотека>/<base>`, удар серії — `<бібліотека>/Attack<крок+1>`; базова, якщо бібліотека її не має
+## `<бібліотека>/<base>`, удар серії (Attack, а для булави й алебарди AttackSmash / AttackThrust,
+## PlayerCombat.SWING_ANIMATIONS) — `<бібліотека>/Attack<крок+1>`; базова, якщо бібліотека її не має
 ## (Roll, Climb, Cast*) або зброя схована.
 func body_animation(base: StringName) -> StringName:
 	var library: StringName = weapon_view.body_library()
 	if library == &"":
 		return base
 	var name := StringName("%s/%s" % [library, base])
-	if base == &"Attack":
+	if String(base).begins_with("Attack"):
 		name = StringName("%s/Attack%d" % [library, combat.combo_step + 1])
 	return name if $AnimationPlayer.has_animation(name) else base
 
