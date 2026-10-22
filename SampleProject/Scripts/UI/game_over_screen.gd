@@ -52,6 +52,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	add_to_group(&"game_over_screen")
 	_build_vignette()
+	# Спільний скрим (UITokens.OVERLAY, як Blocker модалок і DimOverlay меню): без нього червоний заголовок
+	# і сірий підпис губилися на контрастному камені й ґратах дверей (B14).
+	%Scrim.color = UITokens.OVERLAY
 	for frame: Control in [%Inset, %Corners]:
 		frame.offset_left = UITokens.GAME_OVER_INSET
 		frame.offset_top = UITokens.GAME_OVER_INSET

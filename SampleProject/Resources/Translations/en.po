@@ -954,6 +954,12 @@ msgstr "Exit to Main Menu"
 msgid "Actions & Inputs"
 msgstr "Actions & Inputs"
 
+msgid "Keyboard & Mouse"
+msgstr "Keyboard & Mouse"
+
+msgid "Gamepad"
+msgstr "Gamepad"
+
 msgid "Primary"
 msgstr "Primary"
 
@@ -991,8 +997,8 @@ msgstr "Move Left"
 msgid "Move Right"
 msgstr "Move Right"
 
-msgid "Dq Accept"
-msgstr "Dq Accept"
+msgid "Next Dialogue Line"
+msgstr "Next Dialogue Line"
 
 msgid "Game Menu"
 msgstr "Game Menu"
@@ -1009,23 +1015,20 @@ msgstr "Dodge"
 msgid "Block"
 msgstr "Block"
 
-msgid "Weapon Next"
-msgstr "Weapon Next"
+msgid "Next Weapon"
+msgstr "Next Weapon"
 
-msgid "Weapon Prev"
-msgstr "Weapon Prev"
+msgid "Previous Weapon"
+msgstr "Previous Weapon"
 
-msgid "Assist"
-msgstr "Assist"
+msgid "Call Companion"
+msgstr "Call Companion"
 
-msgid "Save Delete"
-msgstr "Save Delete"
+msgid "Previous Menu Tab"
+msgstr "Previous Menu Tab"
 
-msgid "Menu Prev Tab"
-msgstr "Menu Prev Tab"
-
-msgid "Menu Next Tab"
-msgstr "Menu Next Tab"
+msgid "Next Menu Tab"
+msgstr "Next Menu Tab"
 
 msgid "Skill Slot 1"
 msgstr "Skill Slot 1"
@@ -1039,14 +1042,14 @@ msgstr "Skill Slot 3"
 msgid "Skill Slot 4"
 msgstr "Skill Slot 4"
 
-msgid "Cutscene Skip"
-msgstr "Cutscene Skip"
+msgid "Skip Cutscene"
+msgstr "Skip Cutscene"
 
-msgid "Skills Accept"
-msgstr "Skills Accept"
+msgid "Skills: Accept Picks"
+msgstr "Skills: Accept Picks"
 
-msgid "Skills Unpick"
-msgstr "Skills Unpick"
+msgid "Skills: Undo Pick"
+msgstr "Skills: Undo Pick"
 
 msgid "Left Stick Up"
 msgstr "Left Stick Up"

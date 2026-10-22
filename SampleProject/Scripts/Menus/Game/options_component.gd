@@ -244,12 +244,7 @@ func _add_segment_row(label_text: String, options: Array, selected: int,
 	var row := _make_row(label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
 	var frame := PanelContainer.new()
 	frame.name = "Segments"
-	var box := StyleBoxFlat.new()
-	box.bg_color = UITokens.SURFACE
-	box.set_border_width_all(UITokens.BORDER_WIDTH)
-	box.border_color = UITokens.TEXT_PRIMARY
-	box.set_corner_radius_all(UITokens.RADIUS)
-	frame.add_theme_stylebox_override("panel", box)
+	frame.theme_type_variation = &"SettingsSegmentFrame"
 	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var cells := HBoxContainer.new()
 	cells.name = "Cells"
@@ -299,6 +294,7 @@ func _add_stepper_row(label_text: String, options: Array[String], selected: int,
 		button.name = spec[0]
 		button.text = spec[1]
 		button.theme_type_variation = &"SettingsStepper"
+		button.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
 		button.disabled = not enabled
 		button.pressed.connect(step.bind(spec[2]))
 		group.add_child(button)
@@ -333,6 +329,7 @@ func _add_slider_row(label_text: String, key: String) -> void:
 	minus.name = "Minus"
 	minus.text = "−"
 	minus.theme_type_variation = &"SettingsStepper"
+	minus.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
 	group.add_child(minus)
 
 	var slider := HSlider.new()
@@ -349,6 +346,7 @@ func _add_slider_row(label_text: String, key: String) -> void:
 	plus.name = "Plus"
 	plus.text = "+"
 	plus.theme_type_variation = &"SettingsStepper"
+	plus.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
 	group.add_child(plus)
 
 	var readout := Label.new()

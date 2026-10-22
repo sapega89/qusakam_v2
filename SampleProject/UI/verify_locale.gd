@@ -575,12 +575,13 @@ func _language_switch(loc: Node) -> void:
 	ck(_cell(cells[0]) == "Англійська" and _cell(cells[1]) == "Українська",
 			"in Ukrainian the cells read Англійська | Українська (%s | %s)" % [_cell(cells[0]), _cell(cells[1])])
 
-	# Клавіатура як у гравця: → / Enter з вкладок переводить FocusRouter у вміст, далі фокус на клітинці.
-	menu.focus_router.focus_content()
+	# Мишка, потім клавіатура (B95): після кліку роутер лишається в "Tabs" (D348), фокус на клітинці вмісту —
+	# Enter має натиснути саме її, а не перекинути фокус на перший контрол.
 	cells[0].grab_focus()
 	await Kit.frames(self, 2)
+	ck(menu.focus_router.focus_mode == "Tabs", "after the click the router stays in Tabs (%s)" % menu.focus_router.focus_mode)
 	await Kit.key(self, KEY_ENTER)
-	ck(loc.get_language() == "en", "keyboard Enter on English → en")
+	ck(loc.get_language() == "en", "keyboard Enter on English after a mouse click → en (B95)")
 	ck(_shown(inventory_tab, inventory_tab.text) == "Inventory", "tab back to Inventory")
 
 	cells = _language_cells(opts)

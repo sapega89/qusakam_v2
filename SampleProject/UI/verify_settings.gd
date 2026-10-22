@@ -183,6 +183,11 @@ func _initialize() -> void:
 
 	print("[5] volume changes apply immediately and persist")
 	var master_row: Node = _row(opts, "Master Volume")
+	# B22: −/+ — квадратні кнопки з рамкою (SettingsStepper), а не голі гліфи.
+	for part in [^"Slider/Minus", ^"Slider/Plus"]:
+		var stepper: Button = master_row.get_node(part)
+		ck(stepper.theme_type_variation == &"SettingsStepper" and stepper.size.x >= UITokens.SETTINGS_STEPPER_BOX
+				and stepper.size.y >= UITokens.SETTINGS_STEPPER_BOX, "B22: %s is a %dpx framed box (%s)" % [part, UITokens.SETTINGS_STEPPER_BOX, stepper.size])
 	var master: HSlider = master_row.get_node(^"Slider/Value")
 	master.value = 40.0
 	for i in 4: await process_frame
@@ -265,6 +270,26 @@ func _initialize() -> void:
 		"res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_actions_list.gd",
 		FileAccess.READ).get_as_text()
 	ck(addon_src.find("action_add_event") != -1, "addon still owns rebinding behaviour")
+	# B96: кожна дія з біндингом має свою читабельну назву (ключ перекладу), а не capitalize() свого id.
+	var list: Node = input_menu.get_node(^"%InputActionsList")
+	var uk_po: Translation = load("res://SampleProject/Resources/Translations/uk.po")
+	var unnamed: Array = []
+	var untranslated: Array = []
+	for action: StringName in list._get_all_action_names(false):
+		if InputMap.action_get_events(action).is_empty():
+			continue
+		if not action in list.input_action_names:
+			unnamed.append(action)
+			continue
+		if uk_po.get_message(list.action_name_map[action]) == "":
+			untranslated.append(list.action_name_map[action])
+	ck(unnamed.is_empty(), "B96: every bound action has a readable name in input_options_menu.tscn %s" % str(unnamed))
+	ck(untranslated.is_empty(), "B96: every readable action name is in uk.po %s" % str(untranslated))
+	var shown: Array = []
+	for row in _action_rows(list).slice(1):
+		shown.append(row.get_child(0).text)
+	ck(shown.has("Next Dialogue Line") and not shown.has("Dq Accept") and not shown.has("Save Delete"),
+			"B96: rows read Next Dialogue Line, not Dq Accept / Save Delete %s" % str(shown))
 
 	print("[17] B20: the active tab's pointer does not move its button (#81)")
 	for tab in ids:
@@ -413,6 +438,7 @@ func _initialize() -> void:
 			"focused last row is drawn whole")
 	ck(_half_cut_row(actions) == "", "no half-cut row after keyboard scrolling")
 	vbar.value = 0.0
+	await _device_tabs(input_menu)
 
 	print("[9] persistence round trip")
 	opts.switch_to_tab("audio")
@@ -511,6 +537,105 @@ func _initialize() -> void:
 	var grabber: StyleBoxFlat = list_bar.get_theme_stylebox("grabber")
 	ck(grabber.bg_color == UITokens.ACCENT, "scrollbar grabber is color/accent (Figma 222:4768, #79)")
 	_done()
+
+
+## Комірки рядка дії на Controls: тексти кнопок прив'язок (без назви дії).
+func _binding_cells(list: Node, title: String) -> Array:
+	for row in list.get_node(^"%ParentBoxContainer").get_children():
+		if row.visible and not row.is_queued_for_deletion() and row.get_child(0).text == title:
+			return row.get_children().slice(1).map(func(b: Button) -> String: return b.text.strip_edges())
+	return []
+
+
+## D193, B19: дві вкладки пристроїв; призначення й Reset — лише свого пристрою. player_config.cfg гравця
+## тест переписує під час переназначення — зберігаємо його байти й повертаємо наприкінці.
+func _device_tabs(input_menu: Node) -> void:
+	print("[21] B19 / D193: Controls has Keyboard & Mouse and Gamepad tabs, each with its own device only")
+	const CONFIG := "user://player_config.cfg"
+	var saved_config: PackedByteArray = FileAccess.get_file_as_bytes(CONFIG) if FileAccess.file_exists(CONFIG) else PackedByteArray()
+	var saved_map: Dictionary = {}
+	for action: StringName in InputMap.get_actions():
+		saved_map[action] = InputMap.action_get_events(action)
+	var list: Node = input_menu.get_node(^"%InputActionsList")
+	var window: Node = input_menu.get_node(^"KeyAssignmentWindow")
+	# Назви кнопок миші перекладає рушій (у uk «ЛКМ») — порівнюємо з тим, що дає InputEventHelper.
+	var lmb_event := InputEventMouseButton.new()
+	lmb_event.button_index = MOUSE_BUTTON_LEFT
+	var lmb: String = InputEventHelper.get_text(lmb_event)
+	ck(input_menu.get_node(^"%KeyboardTab").is_visible_in_tree() and input_menu.get_node(^"%GamepadTab").is_visible_in_tree(),
+			"Keyboard & Mouse and Gamepad tabs are shown")
+	ck(not input_menu.is_pad() and input_menu.get_node(^"%KeyboardTab").theme_type_variation == &"SettingsSegmentOn",
+			"Keyboard & Mouse is the open tab")
+	var pad_shown: Array = []
+	for action: StringName in list.input_action_names:
+		for event in list.device_events(action):
+			if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+				pad_shown.append(action)
+	ck(pad_shown.is_empty(), "the keyboard tab lists no pad binding %s" % str(pad_shown))
+	ck(_binding_cells(list, "Attack") == [lmb, "", ""],
+			"B19: Attack on the keyboard tab = the left mouse button only %s" % str(_binding_cells(list, "Attack")))
+	var key_r := InputEventKey.new()
+	key_r.physical_keycode = KEY_K
+	key_r.pressed = true
+	var pad_touch := InputEventJoypadButton.new()
+	pad_touch.button_index = JOY_BUTTON_TOUCHPAD
+	pad_touch.pressed = true
+	var mouse_x := InputEventMouseButton.new()
+	mouse_x.button_index = MOUSE_BUTTON_XBUTTON1
+	mouse_x.pressed = true
+	ck(window._is_recordable_input(key_r) and window._is_recordable_input(mouse_x) and not window._is_recordable_input(pad_touch),
+			"the keyboard tab's Assign window takes keys and mouse buttons, not the pad")
+	# Клавіатура: друга комірка Attack ← K; геймпад Attack не чіпається.
+	# Як після кліку на комірку (_on_button_pressed), але без вікна Assign: подію даємо самі.
+	list.editing_action_name = "attack"
+	list.editing_action_group = 1
+	list.add_action_event("K", key_r)
+	for i in 2: await process_frame
+	ck(_binding_cells(list, "Attack") == [lmb, "K", ""], "a keyboard rebind fills the keyboard slot %s" % str(_binding_cells(list, "Attack")))
+
+	input_menu.get_node(^"%GamepadTab").pressed.emit()
+	for i in 3: await process_frame
+	ck(input_menu.is_pad() and window.pad, "Gamepad tab opens; the Assign window listens to the pad")
+	ck(_binding_cells(list, "Attack") == ["Button X", "", ""],
+			"B19: Attack on the gamepad tab = Button X only %s" % str(_binding_cells(list, "Attack")))
+	ck(_binding_cells(list, "Move Up") == ["Left Stick Up", "Dpad Up", ""], "Move Up on the gamepad tab %s" % str(_binding_cells(list, "Move Up")))
+	var xs: Dictionary = {}
+	for row in list.get_node(^"%ParentBoxContainer").get_children():
+		if row.visible and not row.is_queued_for_deletion():
+			xs[roundi(row.get_child(1).global_position.x)] = true
+	ck(xs.size() == 1, "every row's first cell starts at one x, long names included %s" % str(xs.keys()))
+	ck(window._is_recordable_input(pad_touch) and not window._is_recordable_input(key_r) and not window._is_recordable_input(mouse_x),
+			"the gamepad tab's Assign window takes the pad only")
+	list.editing_action_name = "attack"
+	list.editing_action_group = 0
+	list.add_action_event("Touchpad", pad_touch)
+	for i in 2: await process_frame
+	var attack: Array = InputMap.action_get_events(&"attack").map(func(e: InputEvent) -> String: return e.as_text())
+	ck(attack.size() == 3 and attack[2] == pad_touch.as_text() and not attack.has(saved_map[&"attack"][1].as_text()),
+			"a pad rebind replaces the pad button, the keyboard and mouse stay first %s" % str(attack))
+	list.reset()
+	for i in 2: await process_frame
+	ck(_binding_cells(list, "Attack") == ["Button X", "", ""], "gamepad Reset restores Button X")
+	ck(InputMap.action_get_events(&"attack").any(func(e: InputEvent) -> bool: return e is InputEventKey and e.physical_keycode == KEY_K),
+			"gamepad Reset leaves the keyboard rebind")
+	input_menu.get_node(^"%KeyboardTab").pressed.emit()
+	for i in 3: await process_frame
+	list.reset()
+	for i in 2: await process_frame
+	ck(_binding_cells(list, "Attack") == [lmb, "", ""], "keyboard Reset restores the keyboard tab")
+	# Повертаємо все, як було до тесту: InputMap і player_config.cfg гравця.
+	for action: StringName in saved_map:
+		InputMap.action_erase_events(action)
+		for event: InputEvent in saved_map[action]:
+			InputMap.action_add_event(action, event)
+	if saved_config.is_empty():
+		DirAccess.remove_absolute(CONFIG)
+	else:
+		FileAccess.open(CONFIG, FileAccess.WRITE).store_buffer(saved_config)
+	PlayerConfig.config_file = null
+	list._build_assigned_input_events()
+	list.set_pad(false)
+	for i in 3: await process_frame
 
 
 func _done() -> void:

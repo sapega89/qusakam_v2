@@ -186,6 +186,8 @@ func _initialize() -> void:
 	var first: Button = journal._entry_list.get_child(0)
 	ck(first.text == "Test Entry Alpha", "row title from data (%s)" % first.text)
 	ck(first.theme_type_variation == &"ListRow", "rows use the shared ListRow variation")
+	# B90: рядки малюють біле кільце фокуса, коли вибрані (list_row.gd).
+	ck(first.get_script() == preload("res://SampleProject/UI/Components/list_row.gd"), "B90: rows run list_row.gd")
 	ck(journal._detail_title.text == "Test Entry Alpha", "detail shows the selected entry")
 	ck(journal._detail_state.text == "ACTIVE", "state rendered (%s)" % journal._detail_state.text)
 	ck(_visible(journal._objective_list) == 2,

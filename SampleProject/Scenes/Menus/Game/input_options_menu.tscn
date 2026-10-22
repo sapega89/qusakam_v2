@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://input_options_menu_custom"]
+[gd_scene load_steps=10 format=3 uid="uid://input_options_menu_custom"]
 
-[ext_resource type="Script" path="res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_options_menu.gd" id="1"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/device_input_options_menu.gd" id="1"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/device_actions_list.gd" id="9_device_list"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/device_key_assignment_window.gd" id="10_device_window"]
 [ext_resource type="Script" path="res://addons/maaacks_menus_template/base/nodes/utilities/capture_focus.gd" id="2_wft4x"]
 [ext_resource type="PackedScene" uid="uid://bxp45814v6ydv" path="res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_actions_list.tscn" id="4_lf2nw"]
 [ext_resource type="PackedScene" uid="uid://ci6wgl2ngd35n" path="res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_actions_tree.tscn" id="5_b2whh"]
@@ -37,11 +39,38 @@ layout_mode = 2
 text = "Actions & Inputs"
 horizontal_alignment = 1
 
+[node name="DeviceRow" type="HBoxContainer" parent="VBoxContainer/InputMappingContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="DeviceTabs" type="PanelContainer" parent="VBoxContainer/InputMappingContainer/DeviceRow"]
+layout_mode = 2
+theme_type_variation = &"SettingsSegmentFrame"
+
+[node name="Cells" type="HBoxContainer" parent="VBoxContainer/InputMappingContainer/DeviceRow/DeviceTabs"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="KeyboardTab" type="Button" parent="VBoxContainer/InputMappingContainer/DeviceRow/DeviceTabs/Cells"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SettingsSegmentOn"
+text = "Keyboard & Mouse"
+
+[node name="GamepadTab" type="Button" parent="VBoxContainer/InputMappingContainer/DeviceRow/DeviceTabs/Cells"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SettingsSegment"
+text = "Gamepad"
+
 [node name="InputActionsList" parent="VBoxContainer/InputMappingContainer" instance=ExtResource("4_lf2nw")]
 unique_name_in_owner = true
+script = ExtResource("9_device_list")
 layout_mode = 2
 show_all_actions = true
 capitalize_action_names = true
+input_action_names = Array[StringName]([&"move_up", &"move_down", &"move_left", &"move_right", &"interact", &"dq_accept", &"game_menu", &"jump", &"attack", &"dodge", &"weapon_next", &"weapon_prev", &"assist", &"save_delete", &"menu_prev_tab", &"menu_next_tab", &"skill_slot_1", &"skill_slot_2", &"skill_slot_3", &"skill_slot_4", &"heavy_attack", &"block", &"cutscene_skip", &"skills_accept", &"skills_unpick"])
+readable_action_names = Array[String](["Move Up", "Move Down", "Move Left", "Move Right", "Interact", "Next Dialogue Line", "Game Menu", "Jump", "Attack", "Dodge", "Next Weapon", "Previous Weapon", "Call Companion", "Delete Save", "Previous Menu Tab", "Next Menu Tab", "Skill Slot 1", "Skill Slot 2", "Skill Slot 3", "Skill Slot 4", "Heavy Attack", "Block", "Skip Cutscene", "Skills: Accept Picks", "Skills: Undo Pick"])
 
 [node name="InputActionsTree" parent="VBoxContainer/InputMappingContainer" instance=ExtResource("5_b2whh")]
 unique_name_in_owner = true
@@ -90,6 +119,7 @@ update_content = true
 title = "Already Assigned"
 
 [node name="KeyAssignmentWindow" parent="." instance=ExtResource("7_r3r3g")]
+script = ExtResource("10_device_window")
 visible = false
 layout_mode = 2
 
