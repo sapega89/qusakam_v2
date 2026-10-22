@@ -128,6 +128,7 @@ func _setup_label_variations(theme: Theme) -> void:
 		"SmallLabel": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
 		"ValueLabel": [_font_semibold, UITokens.SIZE_VALUE, UITokens.TEXT_PRIMARY],
 		"CaptionLabel": [_font_bold, UITokens.SIZE_CAPTION, UITokens.TEXT_SECONDARY],
+		"ActionBadgeLabel": [_font_bold, UITokens.SIZE_CAPTION, UITokens.ON_ACCENT],  # літера на значку дії
 		"AccentLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.ACCENT],
 		"MutedLabel": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_MUTED],
 		# Виміряні з кадру menu-inventory (46:193) — поза задекларованою шкалою.
@@ -660,6 +661,27 @@ func _setup_panels(theme: Theme) -> void:
 	var dot := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)
 	dot.set_corner_radius_all(3)
 	theme.set_stylebox("panel", "AccentDot", dot)
+	# Іконка рядка предмета (UIItemRow): у звичайного — 1px рамка, у виділеного рамки немає (IconSlot).
+	theme.set_type_variation("IconSlotFramed", "Panel")
+	theme.set_stylebox("panel", "IconSlotFramed", _box(UITokens.ICON_SLOT_BG, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, 0, 0))
+
+	# Нижня панель підказок (Figma UI/Bottom Bar 121:1073): фон шелу, лише верхня лінія.
+	theme.set_type_variation("BottomBar", "PanelContainer")
+	var bar := StyleBoxFlat.new()
+	bar.bg_color = UITokens.BOTTOM_BAR_BG
+	bar.border_width_top = UITokens.BORDER_WIDTH
+	bar.border_color = UITokens.BORDER
+	theme.set_stylebox("panel", "BottomBar", bar)
+	# Підказка дії: значок + назва. Значки круглі — єдиний свідомий виняток із shape/radius-sm = 0,
+	# бо Figma UI/Action Button (276:467) малює їх колами.
+	theme.set_type_variation("ActionHint", "HBoxContainer")
+	theme.set_constant("separation", "ActionHint", UITokens.ICON_TEXT_GAP)
+	theme.set_type_variation("ActionBadge", "PanelContainer")
+	var badge := _box(UITokens.ACCENT, UITokens.ACCENT, 0, UITokens.SPACE_XS, 0)
+	badge.set_corner_radius_all(UITokens.ACTION_BADGE_SIZE / 2)
+	theme.set_stylebox("panel", "ActionBadge", badge)
+
 	# Риска між підписом і назвою в картці дії.
 	theme.set_type_variation("AccentTick", "Panel")
 	var tick := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)

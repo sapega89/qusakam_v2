@@ -12,46 +12,32 @@ signal row_selected(index: int)
 ## Подвійний клік або Enter — активувати (вдягнути / використати).
 signal row_activated(index: int)
 
-@onready var _icon: TextureRect = %Icon
-@onready var _icon_bg: Panel = %IconBg
-@onready var _name_label: Label = %NameLabel
-@onready var _sub_label: Label = %SubLabel
-@onready var _count_label: Label = %CountLabel
+## Шляхи, а не %-імена: рядок — шаблон у сцені списку, і його копії (RowFill, D117) не несуть
+## власника вкладеної сцени, тож %-імена в них не знаходяться.
+@onready var _icon: TextureRect = $Row/IconBg/Icon
+@onready var _icon_bg: Panel = $Row/IconBg
+@onready var _name_label: Label = $Row/Text/NameLabel
+@onready var _sub_label: Label = $Row/Text/SubLabel
+@onready var _count_label: Label = $Row/CountLabel
 
 var index: int = -1
 
-## Рамка іконки зникає, коли рядок виділений (Figma: у виділеного рядка
-## в іконки немає border).
-var _icon_box_normal: StyleBoxFlat
-var _icon_box_selected: StyleBoxFlat
 
 
 func _ready() -> void:
 	toggle_mode = true
 	focus_mode = Control.FOCUS_ALL
-	_build_icon_styles()
 	_apply_icon_style()
 	pressed.connect(_on_pressed)
 	focus_entered.connect(_on_focus_entered)
 	toggled.connect(func(_on: bool) -> void: _apply_icon_style())
 
 
-func _build_icon_styles() -> void:
-	_icon_box_normal = StyleBoxFlat.new()
-	_icon_box_normal.bg_color = UITokens.ICON_SLOT_BG
-	_icon_box_normal.set_corner_radius_all(UITokens.RADIUS)
-	_icon_box_normal.set_border_width_all(UITokens.BORDER_WIDTH)
-	_icon_box_normal.border_color = UITokens.BORDER
-
-	_icon_box_selected = StyleBoxFlat.new()
-	_icon_box_selected.bg_color = UITokens.ICON_SLOT_BG
-	_icon_box_selected.set_corner_radius_all(UITokens.RADIUS)
-
-
+## Рамка іконки зникає, коли рядок виділений (Figma: у виділеного рядка
+## в іконки немає border). Обидва стилі — з теми: IconSlotFramed / IconSlot.
 func _apply_icon_style() -> void:
 	if _icon_bg:
-		_icon_bg.add_theme_stylebox_override("panel",
-				_icon_box_selected if button_pressed else _icon_box_normal)
+		_icon_bg.theme_type_variation = &"IconSlot" if button_pressed else &"IconSlotFramed"
 
 
 ## [code]item[/code] — словник із _load_inventory_items(): id, name, desc, icon, count.

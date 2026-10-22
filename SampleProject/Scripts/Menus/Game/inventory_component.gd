@@ -6,8 +6,9 @@ extends BaseMenuComponent
 ## Дані: InventoryManager (що є в сумці) + ItemDatabase (описи, іконки, індекси).
 ## Фільтрація спирається на готовий індекс ItemDatabase.items_by_type —
 ## власного індексу компонент не будує.
+## Вкладки й рядки — копії шаблонів %Tab і %ItemRow зі сцени через RowFill (D117), стилі — з теми.
 
-const ITEM_ROW_SCENE := preload("res://SampleProject/UI/Components/item_row.tscn")
+const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const MODAL_TEMPLATES = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 
 ## Категорії з Figma. `types` порожній ⇒ показуємо все.
@@ -24,6 +25,8 @@ const CATEGORIES: Array[Dictionary] = [
 @onready var _filter_button: Button = %FilterButton
 @onready var _list_scroll: ScrollContainer = %ListScroll
 @onready var _item_list: VBoxContainer = %ItemList
+@onready var _item_row: UIItemRow = %ItemRow
+@onready var _tab: Button = %Tab
 @onready var _empty_label: Label = %EmptyLabel
 
 var items: Array = []       # відфільтровані, у порядку показу
@@ -34,6 +37,8 @@ var _tab_buttons: Dictionary = {}       # StringName -> Button
 var _tab_group := ButtonGroup.new()
 var _row_group := ButtonGroup.new()
 var _selected_index: int = -1
+## Рядки, вже під'єднані (duplicate() копіює meta, тож не за meta-прапорцем).
+var _wired: Dictionary = {}
 
 
 func _initialize_component() -> void:
@@ -55,21 +60,15 @@ func _get_inventory_manager() -> Node:
 # ── Вкладки ─────────────────────────────────────────────────────────────────
 
 func _build_tabs() -> void:
-	for child in _tabs.get_children():
-		child.queue_free()
 	_tab_buttons.clear()
-
-	for category in CATEGORIES:
-		var id: StringName = category["id"]
-		var button := Button.new()
+	var buttons := RowFill.fill(_tabs, _tab, CATEGORIES.size())
+	for i in buttons.size():
+		var id: StringName = CATEGORIES[i]["id"]
+		var button: Button = buttons[i]
 		button.name = String(id)
-		button.text = String(category["label"])
-		button.theme_type_variation = &"TabButton"
-		button.toggle_mode = true
+		button.text = String(CATEGORIES[i]["label"])
 		button.button_group = _tab_group
-		button.focus_mode = Control.FOCUS_ALL
 		button.pressed.connect(_select_category.bind(id))
-		_tabs.add_child(button)
 		_tab_buttons[id] = button
 
 
@@ -164,11 +163,8 @@ func _apply_filter() -> void:
 # ── Відображення ────────────────────────────────────────────────────────────
 
 func _refresh_display() -> void:
-	# queue_free() звільняє вузол лише в кінці кадру, тому спершу від'єднуємо —
-	# інакше get_child(0) нижче віддав би старий рядок.
-	for child in _item_list.get_children():
-		_item_list.remove_child(child)
-		child.queue_free()
+	# RowFill від'єднує зайві рядки одразу (не лише queue_free) — get_child(i) віддає живий рядок.
+	var rows := RowFill.fill(_item_list, _item_row, items.size())
 	_selected_index = -1
 
 	var has_items := not items.is_empty()
@@ -181,23 +177,24 @@ func _refresh_display() -> void:
 			_clear_description()
 		return
 
-	for i in items.size():
-		var row: UIItemRow = ITEM_ROW_SCENE.instantiate()
-		_item_list.add_child(row)
+	for i in rows.size():
+		var row: UIItemRow = rows[i]
 		row.button_group = _row_group
 		row.set_item(items[i], i)
 		row.tooltip_text = _tooltip_for(items[i])
-		row.row_selected.connect(_on_row_selected)
-		row.row_activated.connect(_on_row_activated)
+		if not _wired.has(row):
+			_wired[row] = true
+			row.row_selected.connect(_on_row_selected)
+			row.row_activated.connect(_on_row_activated)
 
 	# Перший рядок виділений за замовчуванням, як у Figma.
 	_select_row(0)
 
 
 func _select_row(index: int) -> void:
-	_selected_index = clampi(index, 0, _item_list.get_child_count() - 1)
+	_selected_index = clampi(index, 0, items.size() - 1)
 	# set_pressed_no_signal повз ButtonGroup — інші рядки знімаємо самі.
-	for i in _item_list.get_child_count():
+	for i in items.size():
 		(_item_list.get_child(i) as UIItemRow).set_pressed_no_signal(i == _selected_index)
 	_publish_description(_selected_index)
 
@@ -337,7 +334,7 @@ func _equip(item: Dictionary) -> void:
 
 func _focus_selected_row() -> void:
 	var index := maxi(_selected_index, 0)
-	if index < _item_list.get_child_count():
+	if index < items.size():
 		(_item_list.get_child(index) as Control).grab_focus.call_deferred()
 
 
