@@ -53,8 +53,7 @@ Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); 
 
 ## Sapega
 
-1. **Regenerate the theme** after his local `GameUITheme.tres` edits are settled
-   (`godot --headless --path . --script res://SampleProject/UI/build_game_ui_theme.gd`) — `verify_game_ui_theme` waits on it.
+1. ~~**Regenerate the theme**~~ — done 2026-10-22 (`36e94d7c`).
 2. **Delete line 141 of `SampleProject/UI/playthrough.gd`** (`set_save_dir(save_system.SAVE_DIR)`) — script runs now
    refuse it so tests never touch real saves.
 3. **BACKLOG 27** — ideas to make the oath more interesting.

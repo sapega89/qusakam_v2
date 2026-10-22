@@ -232,7 +232,7 @@ stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
 
-[node name="OptionsPanel" type="PanelContainer" parent="."]
+[node name="OptionsPanel" type="PanelContainer" parent="." unique_id=1151048282]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1

@@ -45,6 +45,8 @@ tree mid-attack, and no test failed (`verify_combat_flow` [4] now covers it).
 
 ## Results
 
+**Latest full run: 2026-10-22 — `SUITE: ALL PASS`, 92 of 92** (`Scripts/Tools/run_verify.sh` on `c4533f60`).
+
 | Script | Result | Notes |
 |---|---|---|
 | verify_combat_hud | ALL PASS | starting_map error (issue 3) |
