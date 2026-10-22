@@ -108,7 +108,7 @@ My own commits:
   - **B110**: the bow vanishes outside its frames (bow).
   - **B111**: enemy attack tempo ignores `EnemyStats.attack_cooldown` (bow). It keeps its own number, which is free in
     the register.
-- **B109** is unused.
+  - **B109**: `verify_weapon_animations` strike-frame check is flaky under suite load (found by this run).
 
 **Questions:** **Q68**, «бандит» or «розбійник». Until it is answered, data and speakers say «розбійник» and the part-1
 objectives keep «бандит». It is not blocking.
@@ -131,7 +131,7 @@ Merge-level verifies (RESULT lines):
 All of them gave `RESULT: ALL PASS`.
 
 Full suite `Scripts/Tools/run_verify.sh` after weapons-all (`07e6b85e`): **`SUITE: 1 FAIL`**, 84 of 85 PASS.
-After bow (`5c41f705`): SUITE_AFTER_BOW.
+After bow (`5c41f705`): **`SUITE: 2 FAIL`**, 83 of 85 PASS. The baseline below, plus `verify_weapon_animations` (mace: the first strike frame was sampled without the hitbox). Re-run alone twice, it gave `RESULT: ALL PASS` both times, so it is a timing flake, filed as **B109**.
 
 The one expected failure is `verify_game_ui_theme`, which prints no RESULT line. It is the known D329 baseline:
 `GameUITheme.tres` has to be regenerated on Sapega's machine, and integrators may not commit it.

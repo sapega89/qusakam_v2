@@ -155,6 +155,14 @@ the history, this note keeps only what is open.
 - **Severity:** visual (data)
 - **Found:** 2026-10-22, `cloud/localization-2`
 
+### B109 — `verify_weapon_animations` strike-frame check is flaky under suite load
+- **Where:** `SampleProject/UI/verify_weapon_animations.gd` — "each strike frame shows with the hitbox on and no overlay".
+- **Expected:** `[true, true, true]` every run.
+- **Got:** `[false, true, true]` for the mace once in the full suite after the `cloud/bow` merge (`e4dc0e2c`); ALL PASS twice in a row run alone. The first swing's strike frame (0.05 s) is sampled by frame timing, like B94 / combat_flow [0].
+- **Evidence:** `logs/verify_weapon_animations.log` (local) — integration-4 suite
+- **Severity:** cosmetic (test) — sample the strike by the animation position, not by wall-clock frames
+- **Found:** 2026-10-22, integration-4
+
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
 - **Expected:** the hero holds the bow in every pose (D385).
@@ -198,7 +206,7 @@ the history, this note keeps only what is open.
 > **B103** SCRIPT ERROR in the top HUD on every scene change from the game (`combat_hud_top.gd` connects `process_frame`
 > only in the tree; `cloud/lab-9-8`); **B104** holding block with a weapon that has frames brought the overlay weapon back
 > after the 0.1 s pose (`WeaponView._drawn_in_frame` reads `assigned_animation`, `verify_weapon_animations`;
-> `cloud/weapons-all`, its B110). B105–B108 and `cloud/bow`'s B110, B111 added — see [[cloud_reports/integration-4]].
+> `cloud/weapons-all`, its B110). B105–B109 and `cloud/bow`'s B110, B111 added — see [[cloud_reports/integration-4]].
 
 
 ## Playtest intake — 2026-09-29 (Sapega)
