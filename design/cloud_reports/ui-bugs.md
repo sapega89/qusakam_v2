@@ -223,4 +223,24 @@ checks. With a locally regenerated theme, `verify_game_ui_theme` is **ALL CHECKS
 
 ## Results
 
-_Full suite still running when this draft was pushed; results follow in the next commit._
+Per-area runs (Linux, Godot 4.6.2, after the last change):
+
+| Script | RESULT |
+|---|---|
+| verify_locale | ALL PASS (fails with the B95 fix reverted: 3 FAIL) |
+| verify_settings | ALL PASS (B22, B96, [21] B19/D193) |
+| verify_npc_recall | ALL PASS (fails with the B10 fix reverted: 1 FAIL) |
+| verify_game_over | ALL PASS |
+| verify_journal | ALL PASS |
+| verify_game_ui_theme | ALL CHECKS PASSED, **with a locally regenerated `GameUITheme.tres`**. Fails on the committed one until the owner regenerates it |
+| verify_combat_hud | ALL PASS after `797a2412` (its HUD check read `SidePanel`, which is now an opaque menu surface; it now reads the HUD's own `QuestPanel`) |
+| verify_game_menu, verify_gamepad_parity, verify_pause, verify_inventory, verify_save_load, verify_shop, verify_status, verify_equipment, verify_party_panel, verify_skills_ui, verify_tutorial_hints, verify_misc_destinations, verify_settings_graphics, verify_main_menu, verify_scripts_compile, verify_gamepad, verify_responsive | ALL PASS |
+
+**Full suite** (`Scripts/Tools/run_verify.sh`, 88 scripts, local theme regenerated): **86 PASS, 2 FAIL**:
+- `verify_combat_hud`: fixed afterwards in `797a2412`, re-run ALL PASS.
+- `verify_combat_flow` ("two hits in one frame on the player count once", "after the invulnerability window the player
+  is hit again"): **a pre-existing flake, not this branch's.** It passed 2/2 re-runs on `cloud/ui-bugs` and failed 1/2
+  on an untouched `origin/feature/backlog` worktree with the same two checks. It looks like a frame-timing race in the
+  test. Worth a B row for whoever owns combat.
+
+So the suite stands at 87/88, with the one failure reproducing on the base.
