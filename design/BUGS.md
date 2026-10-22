@@ -72,15 +72,6 @@ the history, this note keeps only what is open.
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
 
-### B112 — The speaker's name is drawn over the first line of the dialogue text
-- **Where:** `SampleProject/Scenes/UI/dialogue_box.tscn` (`NameMargin` overlay on the `DialogueBox` root).
-- **Evidence:** `design/shots/ui_bugs_dialogue_before.png` / `_after.png`: "Grandfather" sits across "…took our relic. It's the key…".
-- **Expected:** the name centred above the text (D321).
-- **Got:** D321 placed the name as an overlay over the Auto/Skip row; D319 then hid both buttons, `RowTop` collapsed to 0 px and the text moved up under the name.
-- **Fix:** move `NameMargin` into `Margin/Rows` as the first row (hidden when the name is empty, so narration has no blank line); update `verify_dialogue_speaker` [4] (`box/NameMargin`).
-- **Severity:** visual (every named dialogue line)
-- **Found:** 2026-10-22, `cloud/ui-bugs`
-
 ### B116 — After the Mayor Hall boss the hero stays "in combat" through the cutscene
 - **Where:** `PlayerCombat._track_combat` (`Scripts/Player/Components/PlayerCombat.gd:260`), `MayorHall.gd` win / loss cutscenes.
 - **Expected:** the fight ends with the collector's death or the hero's defeat — weapon sheathed, the battle track off (D414).
@@ -105,6 +96,8 @@ the history, this note keeps only what is open.
 - **Severity:** functional (every Settings row on a fresh install)
 - **Found:** 2026-10-22, `cloud/settings-1`
 
+> **Round 7 (2026-10-22):** **B112** fixed by `cloud/ui-fixes` — the speaker's name is the first row of `Margin/Rows`, hidden on narration (`verify_dialogue_speaker`); row removed.
+>
 > **2026-10-22, the next session:** **B113** fixed — row removed. Every failure had the same signature: the hero was still
 > invulnerable at the test's double hit, after a hitstop in [2b] showed an enemy hit landing past the fixed 1 s wait
 > (10 local runs, 5 under full CPU load, all green — the source was not caught). [2b] now takes the enemies out of the

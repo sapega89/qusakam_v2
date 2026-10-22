@@ -109,8 +109,8 @@ always exists, so the template is also the first real row). More rows =
 | Order | Screen | Code-built today |
 |---|---|---|
 | 2 | `party_status_panel` ✅ done 2026-10-12 (D127) — `%Card` template, theme `PortraitFrame` / `LevelBadge` / `HpBar` / `SpBar` / `CardSelect` | 0 nodes, 0 styleboxes |
-| 3 | `stats_component` | 13 nodes, 4 styleboxes |
-| 4 | `equipment_component` | 12 nodes, 4 styleboxes |
+| 3 | `stats_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
+| 4 | `equipment_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
 | 5 | `skills_component` | 13 nodes, 1 stylebox |
 | 6 | `options_component` | 15 nodes, 1 stylebox |
 | 7 | `journal_component` ✅ done 2026-10-12 ([[prologue_journal_plan]]) · `inventory_component`, `bottom_bar` | 0 / 1 / 4 nodes |
