@@ -605,7 +605,8 @@ func _weapons(sl: Node) -> void:
 	var played: Array = []
 	var log_anim := func(name: StringName) -> void: played.append(name)
 	anim.animation_started.connect(log_anim)
-	for case in [["sword", "iron_sword", &"sword/Attack1"], ["mace", "iron_mace", &"AttackSmash"], ["polearm", "iron_halberd", &"AttackThrust"]]:
+	# BACKLOG 42: у кожного з цих типів свої кадри — удар із їхньої бібліотеки (булава й алебарда — не AttackSmash / AttackThrust)
+	for case in [["sword", "iron_sword", &"sword/Attack1"], ["mace", "iron_mace", &"mace/Attack1"], ["polearm", "iron_halberd", &"polearm/Attack1"]]:
 		em.unequip_item(who, "sword")
 		equip.call(case[0], case[1])
 		while gm.player_state.weapon_in_hand != case[0]:

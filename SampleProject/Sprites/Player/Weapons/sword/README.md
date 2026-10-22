@@ -5,7 +5,11 @@ with the local ComfyUI, model **Qwen-Image-Edit-2511** (unsloth GGUF Q5_K_M, lic
 Lightning 4-step LoRA, from the artist's own frames in `SampleProject/Sprites/Player` (`Walk/1.png`; the run and
 jump frames from `Run/N`, `Jump/2–3`, `Fall/2`, with only the sword added). The artist's 28 colours.
 
-Not wired into `Player.tscn` yet.
+Wired: `Player.tscn` → `AnimationPlayer` library `sword` (in the scene).
+
+Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
+armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`
+recolours only the weapon metal.
 
 - Cell **96×96** (the sword reaches past 64×64). The artist's 64×64 frame sits in it at offset **(16, 32)**, so
   the hero's body is in the same place as in the 64×64 frames: feet on row **88** (= row 56 + 32). Faces right;

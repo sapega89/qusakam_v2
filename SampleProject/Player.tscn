@@ -73,6 +73,16 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/Heavy/3.png" id="sw_heavy3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/Block/1.png" id="sw_block1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/Hurt/1.png" id="sw_hurt1"]
+[ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/dagger.tres" id="lib_dagger"]
+[ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/mace.tres" id="lib_mace"]
+[ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/polearm.tres" id="lib_polearm"]
+[ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/dual_sword_dagger.tres" id="lib_dual_sword_dagger"]
+[ext_resource type="Shader" path="res://SampleProject/Shaders/weapon_palette.gdshader" id="weapon_palette"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_weapon_palette"]
+resource_local_to_scene = true
+shader = ExtResource("weapon_palette")
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yj7bn"]
 size = Vector2(24, 40)
 
@@ -1204,6 +1214,7 @@ shape = SubResource("RectangleShape2D_yj7bn")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1346982558]
 texture_filter = 1
+material = SubResource("ShaderMaterial_weapon_palette")
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w1")
 
@@ -1230,6 +1241,10 @@ centered = false
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=305643042]
 libraries/ = SubResource("AnimationLibrary_player")
 libraries/sword = SubResource("AnimationLibrary_sword")
+libraries/dagger = ExtResource("lib_dagger")
+libraries/mace = ExtResource("lib_mace")
+libraries/polearm = ExtResource("lib_polearm")
+libraries/dual_sword_dagger = ExtResource("lib_dual_sword_dagger")
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=1913987461]
 monitoring = false
