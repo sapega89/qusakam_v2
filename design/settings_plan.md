@@ -55,7 +55,7 @@ the scrollbar is too faint to see (#79).
 ## Decisions required
 
 1. ~~Q55~~ → **D194:** Language switches UI + Journal now (EN/UK), `.dqd` dialogue stays Ukrainian for now.
-2. Resolution list and Frame Rate Limit list — **GAME DESIGN DECISION REQUIRED** (values).
+2. ~~Resolution list and Frame Rate Limit list — **GAME DESIGN DECISION REQUIRED** (values).~~ → **D418** (2026-10-22).
 3. Screen Shake, Damage Numbers, Brightness, Ambient need their systems first; each gets its own plan.
 
 ## Slices

@@ -81,14 +81,11 @@ the history, this note keeps only what is open.
 - **Severity:** visual (every named dialogue line)
 - **Found:** 2026-10-22, `cloud/ui-bugs`
 
-### B113 — `verify_combat_flow` hit-timing checks are flaky
-- **Where:** `SampleProject/UI/verify_combat_flow.gd` — "two hits in one frame on the player count once", "after the invulnerability window the player is hit again".
-- **Expected:** green on every run.
-- **Got:** both fail now and then, on an untouched `feature/backlog` too (`cloud/skill-fx`: 1 of 2 base runs; `cloud/misc-bugs`: once while the suite waited on the lock). The i-frame checks race the frame.
-- **Fix:** count hits by game time or signals instead of sampling one frame.
-- **Severity:** tests only (flaky)
-- **Found:** 2026-10-22, `cloud/skill-fx`, `cloud/misc-bugs`
-
+> **2026-10-22, the next session:** **B113** fixed — row removed. Every failure had the same signature: the hero was still
+> invulnerable at the test's double hit, after a hitstop in [2b] showed an enemy hit landing past the fixed 1 s wait
+> (10 local runs, 5 under full CPU load, all green — the source was not caught). [2b] now takes the enemies out of the
+> physics world (`PROCESS_MODE_DISABLED`) and waits until the i-frames really end (a check of its own), then restores them.
+>
 > **Round 6, combat-stats (2026-10-22):** **B84** (D393) and **B111** (D394) fixed by `cloud/combat-stats` — rows removed.
 > Found and fixed by the orchestrator at merge: **B115** a tutorial hint already on screen stayed in the old language after
 > a language switch (`TutorialHintDisplay` set its text once; now re-resolves on `NOTIFICATION_TRANSLATION_CHANGED`;

@@ -205,7 +205,15 @@ func _initialize() -> void:
 	# Замах, що вже йде, б'є до кінця (див. [1]); швидкий ворог з темпом 1.0 с (D394) частіше ловиться посеред серії
 	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking):
 		await physics_frame
-	await create_timer(1.0).timeout
+	# B113: фіксована 1 с часом не покривала удар, що зачепив героя вже після серії, — вороги виходять із фізичного
+	# світу (їхні хітбокси нікого не торкнуться), а невразливість від їхнього удару чекаємо до справжнього кінця.
+	for e in enemies:
+		e.process_mode = Node.PROCESS_MODE_DISABLED
+	for i in 300:
+		if not game.player.is_invulnerable:
+			break
+		await process_frame
+	ck(not game.player.is_invulnerable, "the invulnerability from the enemies' last hit ends on its own")
 	game.player.current_health = game.player.Max_Health
 	var player_hits: Array = []
 	game.player.damage_token.connect(func(d: int) -> void: player_hits.append(d))
@@ -219,6 +227,8 @@ func _initialize() -> void:
 	enemies[2].take_damage(1)
 	enemies[2].take_damage(1)
 	ck(enemies[2].current_health == enemy_hp - 2, "an enemy (no invulnerability) takes both hits (%d → %d)" % [enemy_hp, enemies[2].current_health])
+	for e in enemies:
+		e.process_mode = Node.PROCESS_MODE_INHERIT  # назад у світ; фізика лишається вимкненою, як далі чекає [2c]
 
 	print("[2c] Enemy attack: wind-up, then the hitbox in front (B59, D198)")
 	var attacker = enemies[1]

@@ -71,7 +71,7 @@ Today: `attack` is **left mouse button** (`project.godot`), 6 UI scripts focus o
 - Commit: "Gamepad: the hero moves, jumps and attacks; menus confirm and go back".
 
 ### Slice 1b — mouse off (D157)
-- Cursor hidden by default; a `toggle_mouse` action on Ctrl flips it (D157). Opening the Game
+- Cursor hidden by default; a `toggle_mouse` action on **Alt** flips it (D157 → D417: Ctrl is block since D270). Opening the Game
   Menu shows the cursor regardless; closing it restores the Ctrl state. With the mouse off,
   GUI ignores mouse events (hover focus in the 6 UI scripts included) while LMB still attacks.
 - `verify_gamepad.gd`: Ctrl toggles; with the mouse off a click does not press a Button.
