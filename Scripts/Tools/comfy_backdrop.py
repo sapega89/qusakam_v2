@@ -66,6 +66,52 @@ LAYERS = {
         prompt="three big soft fluffy cumulus clouds in pale pink and lavender with violet shadows, floating "
         f"in the middle with empty space around them, {CHROMA}",
     ),
+    # Окремі хмари для дрейфу (BACKLOG 19, A5b): по одній на кадр, drop + trim — спрайт хмари, не екран.
+    "Clouds/gen_cloud_1": dict(
+        seed=81,
+        rows=H,
+        top=0,
+        seam="drop",
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=6,
+        small=2,
+        trim=True,
+        prompt="one single big soft fluffy cumulus cloud with a rounded billowing top and a flat base in pale pink and lavender with violet shadows, floating in the middle with empty space around "
+        f"it, {CHROMA}",
+    ),
+    "Clouds/gen_cloud_2": dict(
+        seed=83,
+        rows=H,
+        top=0,
+        seam="drop",
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=6,
+        small=2,
+        trim=True,
+        prompt="one single long thin flat stratus cloud streak, wide and low, with soft wispy ends in pale pink and lavender with violet shadows, floating in the middle with empty space around "
+        f"it, {CHROMA}",
+    ),
+    "Clouds/gen_cloud_3": dict(
+        seed=85,
+        rows=H,
+        top=0,
+        seam="drop",
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=6,
+        small=2,
+        trim=True,
+        prompt="one single small round soft puffy cloud in pale pink and lavender with violet shadows, floating in the middle with empty space around "
+        f"it, {CHROMA}",
+    ),
     "Canyon/gen_far": dict(
         seed=11,
         rows=200,
@@ -1163,6 +1209,12 @@ if __name__ == "__main__":
         ):  # латка: стовпці sx.. на місце dx.. (по колу — шар безшовний)
             out[y0:y1, (dx + np.arange(w)) % W] = out[y0:y1, (sx + np.arange(w)) % W]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
+            if layer["seam"] == "drop":  # окрема хмара: крихти довкола (шум ключа) розтягли б рамку — лише найбільша пляма
+                from scipy import ndimage
+
+                labels, n = ndimage.label(out[..., 3] > 0)
+                sizes = ndimage.sum(np.ones(labels.shape), labels, range(1, n + 1))
+                out[labels != 1 + int(np.argmax(sizes)), 3] = 0
             ys, xs = np.nonzero(out[..., 3])
             out = out[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
         if layer.get(
