@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from comfy_backdrop import API, run, upload  # noqa: E402
 
 CACHE = os.path.join(tempfile.gettempdir(), "comfy_sprite")
+MAGENTA_CUT_MIN = -1  # персонаж може підняти (magenta_cut_min): див. shrink()
 UP, CELL = 16, 64
 MAGENTA = (255, 0, 255)
 KEEP = (
@@ -472,6 +473,7 @@ CHARACTERS = {
         ],
     ),
     # Хранителі клятв у місті (BACKLOG 22, D281): профіль — коли герой говорить із ними, фас — коли стоять (D243).
+    # після цього запуску — comfy_art_fixes.py priest_work (виправлені кадри, remaining_work Art 4)
     "priest": dict(
         out="SampleProject/Assets/Characters/NPCs/priest/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
@@ -615,6 +617,7 @@ CHARACTERS = {
             ),
         ],
     ),
+    # після цього запуску — comfy_art_fixes.py old_man_idle (виправлені кадри, remaining_work Art 4)
     "old_man": dict(
         out="SampleProject/Assets/Characters/NPCs/old_man/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
@@ -1752,6 +1755,7 @@ CHARACTERS = {
             ),
         ],
     ),
+    # після цього запуску — comfy_art_fixes.py djinn_death0 (виправлені кадри, remaining_work Art 4)
     "fire_djinn": dict(
         out="SampleProject/Assets/Characters/Bosses/fire_djinn/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
@@ -1804,6 +1808,7 @@ CHARACTERS = {
     ),
     "malik": dict(
         out="SampleProject/Assets/Characters/NPCs/malik/sheet.png",
+        magenta_cut_min=170,  # фіолетова мантія: без порогу виріз тіні пробивав у ній дірки
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(64, 96),
         seed=35,
@@ -1869,6 +1874,7 @@ CHARACTERS = {
             ),
         ],
     ),
+    # після цього запуску — comfy_art_fixes.py alchemist (виправлені кадри, remaining_work Art 4)
     "alchemist": dict(
         out="SampleProject/Assets/Characters/NPCs/alchemist/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
@@ -2067,7 +2073,13 @@ def shrink(img, cell, k=32):
     )
     a = np.linalg.norm(f - np.median(border, axis=0), axis=2) > 75
     # тінь, яку модель кладе під ступні на пурпурі, — теж геть: пурпурових кольорів на персонажах немає
-    a &= ~((f[..., 0] > f[..., 1] + 60) & (f[..., 2] > f[..., 1] + 60))
+    # пурпурова мантія Маліка теж «пурпурова» — у неї цей виріз пробивав дірки (білі плями крізь мантію в грі):
+    # magenta_cut_min — ріже лише яскравий пурпур (min(R, B) вище за поріг), темна тканина лишається
+    a &= ~(
+        (f[..., 0] > f[..., 1] + 60)
+        & (f[..., 2] > f[..., 1] + 60)
+        & (np.minimum(f[..., 0], f[..., 2]) > MAGENTA_CUT_MIN)
+    )
     pim = Image.fromarray(rgb[a][None].astype(np.uint8)).quantize(
         k, Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
     )
@@ -2179,6 +2191,7 @@ def hero_palette():
 if __name__ == "__main__":
     char = CHARACTERS[sys.argv[1]]
     only = sys.argv[2:]
+    MAGENTA_CUT_MIN = char.get("magenta_cut_min", -1)
     seed = char["seed"]
     cell = char.get("cell", (CELL, CELL))
     UP = char.get(

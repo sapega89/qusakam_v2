@@ -10,6 +10,10 @@
 `assets/Complete_UI_Essential_Pack_Free/` (`License.txt`, copied here as `CRUSENHO_LICENSE.txt`).
 Changes: frames mirrored to face right and laid into the game's sheet grid. Credit them in the game's credits.
 
+Stagger poses (remaining_work Art 4): `jackal/stagger.png` (generated from the jackal's idle frame, see
+`jackal/README.md`) and `scorpion/stagger.png` (its own death frames 1–2, see `scorpion/README.md`); the bandit's in
+`bandit/stagger.png`.
+
 Sheets are built by `Scripts/Tools/build_desert_enemy_sheets.py`: rows idle / walk / attack / death, 96×72 cells,
 feet on the bottom row, facing right; frames unscaled (48×48), the scenes scale them ×1.5 like the hero.
 Attack frames: scorpion 1 = tail raised (wind-up), 2 = sting (lands at 0.7 s with the tank's wind-up);

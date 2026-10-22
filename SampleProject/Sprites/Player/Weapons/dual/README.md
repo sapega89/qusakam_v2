@@ -10,7 +10,7 @@ of this set (`FROM:`). The artist's colours only.
 
 Wired: `Player.tscn` → `AnimationPlayer` library `dual_sword_dagger` (sword in hand + dagger in the off hand;
 `Resources/Player/WeaponAnimations/dual_sword_dagger.tres`, written by `Scripts/Tools/weapon_libraries.py`); its `Hurt` is
-`sword/Hurt/1`.
+`sword/Hurt/1` (the own `Hurt/1` below is not wired yet).
 
 Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
 armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`
@@ -34,9 +34,12 @@ recolours only the weapon metal.
 | `Attack4/1–3` | 3 | dagger finisher: the `Attack2/1` coil, a long fencing lunge (back leg stretched, sword trailing low behind), the coil again |
 | `Heavy/1–3` | 3 | the sword set's overhead wind-up (`sword/Heavy/1`) + dagger low at the belly, swung forward, a low forward sweep with the sword (dagger hidden; made `ON:` frame 2, same maroon cape) |
 | `Block/1` | 1 | sword up-forward and dagger up-back crossed in a small X just above the fists, in front of the chest |
+| `Hurt/1` | 1 | recoil from a hit to the chest, head thrown back, staggering back on one foot; the sword low pointing down and back, the dagger in a reverse grip in the far fist (added later, see below) |
 
-**Missing: `Hurt`.** Three attempts (dagger flung back, reverse grip, knife pressed to the chest) all drew a
-sword-length second blade — use `sword/Hurt/1` (the dagger hand is hidden behind his body).
+**`Hurt/1` added later (remaining_work Art 3)** by `Scripts/Tools/comfy_art_fixes.py dual_hurt` (same model, seed 52)
+from this set's `CombatIdle/1` — both blades already the right size there — then `weapon_key_fixups.py`. Feet on
+row 88. The earlier three attempts (from other frames: dagger flung back, reverse grip, knife pressed to the chest)
+all drew a sword-length second blade.
 
 Fixups: `python Scripts/Tools/dual_fixups.py` before `comfy_sprite.py hero_weapon_dual` (builds `CombatIdle/1`), and
 `python Scripts/Tools/dual_fixups.py --after` after it — `Attack4/2`'s dagger came out sword-length in all three

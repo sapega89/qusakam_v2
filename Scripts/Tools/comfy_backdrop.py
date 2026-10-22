@@ -547,8 +547,10 @@ LAYERS = {
         quant="octree",
         prompt="the far back wall of a huge underground furnace hall seen straight on: a giant cracked stone furnace "
         "with a glowing orange mouth in the middle, huge shattered glass vats broken open from inside, scorched black "
-        "stone walls with soot, thick iron chains hanging from the dark vault, a ring of carved runes on the wall glowing "
-        "faint orange, lit only by firelight and embers, dark vaulted ceiling at the top, stone floor along the bottom",
+        "stone walls with soot, thick iron chains hanging from the dark vault, a ring of small carved cuneiform wedge "
+        "marks on the wall glowing faint orange, clusters of tiny triangular wedges, no letters, "
+        "lit only by firelight and embers, dark vaulted ceiling at the top, stone floor along the bottom",
+        # руни читались латиницею (DPOB) — клинопис перемальовано по схваленій картинці (comfy_art_fixes.py boss_runes)
     ),
     # Спуск із каньйону (D256): камінь переднього плану, за який злазить Кусакам, і місток над ущелиною —
     # окремі предмети, не екрани: seam none (без шва), trim — картинка обрізається до самого предмета.

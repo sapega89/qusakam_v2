@@ -16,5 +16,10 @@ Laboratory rooms (queue row 9.4, D303) — same model and licence, placed by `bu
 - `gen_cell.png` — a prison cell niche (LabCells `Cells`, five of them).
 - `gen_bars.png` — iron bars sized to the niche's opening (LabCells `Bars`, drawn over the hero).
 - `gen_table.png` — the operating table (LabCells `Table`).
-- `gen_boss_far.png` — the fire djinn's hall: furnaces, broken vats, a ring of runes (LabBoss far plane ×0.4).
+- `gen_boss_far.png` — the fire djinn's hall: furnaces, broken vats, rings of glyphs (LabBoss far plane ×0.4). Its runes
+  read as Latin letters (DPOB over the furnace); `Scripts/Tools/comfy_art_fixes.py boss_runes` repainted only their
+  rectangles of the approved image (same model, denoise 0.65; the side rings with the image rolled by half so the
+  horizontal seam stays intact): rings of triangular wedge glyphs, and glowing studs on the band over the furnace
+  (tries with «abstract glyphs» and with the layer prompt drew zigzags, «M●C●M» and Chinese-like signs). Then
+  `comfy_backdrop.py Lab/gen_boss_far` as usual (its prompt now names the glyphs). Same size, 576×324.
 - `gen_gates.png` — the portcullis before LabBoss's east exit (LabBoss `Gates`).

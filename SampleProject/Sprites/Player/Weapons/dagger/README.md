@@ -27,16 +27,27 @@ recolours only the weapon metal.
 | `Run/1–7` | 7 | the artist's run (no `Run/2`, as for the sword); feet follow his bounce (rows 88–90, same as the sword) |
 | `Air/1–3` | 3 | jump rise, apex, fall (from `Jump/2`, `Jump/3`, `Fall/2`) |
 | `Attack1/1–3` | 3 | dagger drawn back at the hip, quick straight stab, pull back |
-| `Attack2/1` | 1 | crouch (the upward stab and the raised dagger are missing, see below) |
+| `Attack2/1–3` | 3 | crouch; rising upward slash, the dagger forward and up at shoulder height; standing tall, the dagger raised before the face, blade up (2–3 added later, see below) |
 | `Attack3/1–3` | 3 | coiled, deep lunging stab, recovery with the dagger at the hip (finisher) |
 | `Block/1` | 1 | dagger crosswise before the face |
 | `Hurt/1` | 1 | recoil, head thrown back |
+| `Heavy/1–3` | 3 | wind-up: the dagger drawn back behind his head, the other hand open forward; heavy downward stab, blade down-forward at knee height; recovery, crouched, dagger before the chest (added later, see below) |
 
-**Missing: `Heavy`.** Three attempts (from the first frame, from `Attack1/1`, from `Attack2/3`) all drew a second
-dagger or a sword-length blade.
+**Added later (remaining_work Art 3): `Heavy/1–3` and `Attack2/2–3`** — `Scripts/Tools/comfy_art_fixes.py
+dagger_heavy dagger_attack2` (same model), each made from `Attack1/2` — the stab whose dagger is already short (the
+old attempts from the first frame drew a sword) — then `weapon_key_fixups.py` as above. Feet on row 88, 96×96, the
+artist's colours. **Not wired yet**: the `dagger` library still plays `Attack3` for the heavy and `Attack1/2–3` for
+`Attack2`.
+- Rejected: `Heavy/1` with the dagger raised over the head (seeds 52, 53 — a sword-length blade, a second knife in the
+  front hand), a "coiled behind the hip" wind-up (identical to the stab) and an ice-pick grip (a spike grew on the
+  head). The kept wind-up (seed 54) had a stub of the stab's blade left in the front hand; a second pass from that
+  frame (seed 53) removed it (seed 52 grew a white patch on the head instead).
+- `Attack2/3`: a grey squiggle the model drew beside the fist is erased (fixed rectangles in the tool); the eye glint
+  there, `Heavy/2`'s eye glint and `Heavy/3`'s belt pixels that share the blade key colours are moved to the body
+  twin (`twin=` in the tool), so the palette swap recolours only the blade.
+- The blade is 16–20 px here, the same as `CombatIdle` / `Block`.
 
-**Missing: `Attack2/2–3`.** The art director rejected them (the dagger grew into a ~20 px sword with a wide guard,
-the head tipped snout-up). Three more attempts each from `Attack2/1` (straight grip above the head, reverse grip,
-fist in front of the face) drew the same sword, so the frames were removed rather than kept off-style.
+Earlier history: three attempts at `Heavy` (from the first frame, from `Attack1/1`, from `Attack2/3`) and six at
+`Attack2/2–3` (from `Attack2/1`) all drew a second dagger or a sword-length blade.
 
 Isolated single pixels (no 8-neighbour, keying dirt) are dropped from every frame by the tool (`Hurt/1` had four).
