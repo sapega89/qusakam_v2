@@ -188,6 +188,43 @@ MACE_KEEP = (
     "; the same small mace as in the picture, exactly the same size and colours, a short handle and a small round "
     "steel head, only one mace, no blade, facing right"
 )
+# BACKLOG 42, A3: алебарда (D267: дворучна — уколи й низький мах, обидві руки на древку); з кадру меча, як булава
+HALBERD = (
+    "a two-handed steel halberd: a long thin straight brown wooden pole as long as he is tall, at its top end a "
+    "single small steel axe blade on one side only, a small steel spike on the other side and a short pointed steel "
+    "spear tip at the very end of the pole, not a double axe, the blade and tip the same light grey and white steel as "
+    "the sword in the picture"
+)
+HALBERD_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, cape, size and position as in the "
+    "picture, only now carrying "
+    + HALBERD
+    + " in his near hand, the pole slanted with the axe blade and spear point %s; one long polearm, not a sword"
+    + SWORD_COLOURS
+)
+# стрибок: «вперед і вгору» алебарда лягала головою назад, через плече — сторони названо
+HALBERD_AIR = (
+    HALBERD_ON
+    % ("%s", "up on the right in front of his face, the bottom end of the pole down on the left behind his feet")
+    + "; the steel head small, his bare round lizard head exactly as in the picture, no helmet, the same cape as in "
+    "the picture"
+)
+# FROM: з кадру, де алебарда вже вдала, — тримає її довжину й кольори
+HALBERD_KEEP = (
+    "; the same halberd as in the picture, exactly the same size and colours, a long brown wooden pole with the steel "
+    "axe blade and spear point at its top end, only one halberd, no sword, facing right"
+)
+# голова алебарди «вперед» виходила позаду голови героя або подвійною сокирою — сторони названо
+HALBERD_LEVEL = (
+    "; the same halberd as in the picture, exactly the same size and colours, its single axe blade, spike and spear "
+    "tip at the front end on the right, the hero does not grow, only one halberd, no arrow, no double axe, facing right"
+)
+# низько тримана алебарда: лезо звисає під древком, шип угору — не дволезова сокира
+HALBERD_LOW = (
+    "; the same small halberd head as in the picture, not bigger: one single axe blade hanging down under the pole, "
+    "a small spike pointing up and the spear tip at the front end, not a double axe, only one halberd, the hero the "
+    "same size, facing right"
+)
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
     "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
@@ -1256,6 +1293,128 @@ CHARACTERS = {
                     "in the same side view facing right: recoiling from a hard hit to the chest, his body bent "
                     "backwards, head thrown back, eyes squeezed shut, his mace arm flung back behind him still "
                     "holding the mace, staggering back on one foot" + MACE_KEEP,
+                ],
+            ),
+        ],
+    ),
+    # Алебарда (BACKLOG 42, A3, D267): дворучна — уколи вперед і низький мах, обидві руки на древку; клітинка й
+    # лінія ніг як у меча (96x96, ступні на рядку 88); біг і стрибок — з кадрів художника (несе в одній руці)
+    "hero_weapon_halberd": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/halberd",
+        ref="SampleProject/Sprites/Player/Weapons/sword/CombatIdle/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
+        + HALBERD
+        + ", exactly as small as in the picture",
+        base="Keep this exact character — the same small lizard knight with the steel armour, dark red cape and tail, "
+        "the same pixel art style, thick dark outline, flat shading, colours, size, pose and position. Change only "
+        "the weapon: the sword in his hand replaced by "
+        + HALBERD
+        + ", held with both hands on the pole at waist height like a pike, the pole pointing forward and a little up, "
+        "the axe blade and spear point far in front of him, the bottom end of the pole behind his hip; no sword. "
+        "Keep the plain flat magenta background.",
+        rows=[
+            ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
+            # Run/2 художника пропущено, як у меча (7 кадрів)
+            # Run/5 з першої спроби — друга зброя (спис) у задній руці; названо «одна алебарда»
+            (
+                "Run",
+                [
+                    HALBERD_ON % ("Run/%d" % n, "forward and up")
+                    + ("; exactly one halberd held in one hand, no spear, his other hand empty" if n == 5 else "")
+                    for n in (1, 3, 4, 5, 6, 7, 8)
+                ],
+            ),
+            # Air/1-2: алебарда лягає через плече головою назад (у стилі); з HALBERD_AIR модель двічі надягала шолом
+            ("Air", [HALBERD_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")] + [HALBERD_AIR % "Fall/2"]),
+            (
+                "Attack1",
+                [
+                    "FROM:CombatIdle:0:in the same side view facing right: drawing back for a thrust, leaning back "
+                    "with his weight on the back leg, knees bent, both hands pulled back to his hip holding the "
+                    "halberd pointing forward and a little up, its steel head on the right in front of his face, the "
+                    "bottom end of the pole on the left behind his back, the cape hanging behind him" + HALBERD_LEVEL,
+                    "FROM:CombatIdle:0:in the same side view facing right, the same size: a straight thrust, leaning forward, "
+                    "both arms pushed forward holding the halberd pointing forward and a little up, its steel head far "
+                    "out on the right in front of him, the bottom end of the pole at his hip, stepping forward on his "
+                    "front leg, the cape flying behind him" + HALBERD_LEVEL,
+                    "FROM:CombatIdle:0:in the same side view facing right: pulling back after the thrust, the halberd "
+                    "held in both hands in front of his chest pointing forward and a little up, its steel head on the "
+                    "right in front of him, the bottom end of the pole on the left behind him, standing on bent knees, "
+                    "the cape hanging behind him" + HALBERD_LEVEL,
+                ],
+            ),
+            (
+                "Attack2",
+                [
+                    # з першого кадру низька алебарда ставала великою подвійною сокирою — з Attack1/3 (та сама голова)
+                    "FROM:Attack1:2:winding up a low sweep, crouched on bent knees, both hands on the pole at his hip, "
+                    "the halberd lowered to point forward and down, its steel head on the right low in front of his "
+                    "feet" + HALBERD_LOW,
+                    "FROM:Attack2:0:a low sweep, crouched low and stepping forward, both hands on the pole at his hip, "
+                    "the halberd lowered to point straight forward just above the ground, its steel head far out on "
+                    "the right, the cape flying behind him" + HALBERD_LOW,
+                    "FROM:Attack2:0:the end of a low sweep, leaning forward on his bent front leg, both hands on the "
+                    "pole, the halberd pointing forward and down, its steel head on the right just above the ground "
+                    "in front of his front foot, the cape flying behind him" + HALBERD_LOW,
+                ],
+            ),
+            (
+                "Attack3",
+                [
+                    # з першого кадру голова виходила більшою подвійною сокирою — з кадрів, де вона вже вдала
+                    "FROM:Attack1:0:coiled for a big lunging thrust, crouched lower on bent knees, leaning further "
+                    "back, both hands pulled back to his hip, the halberd pointing forward and up, the cape hanging "
+                    "behind him" + HALBERD_LEVEL + "; the same small halberd head as in the picture, not bigger",
+                    "FROM:Attack2:0:a deep lunging thrust, lunging far on his bent front leg, the back leg straight, "
+                    "both arms stretched forward on the pole, the halberd raised to point straight forward at chest "
+                    "height, its steel head far out on the right, the cape flying behind him" + HALBERD_LOW,
+                    "FROM:Attack2:0:recovering after the lunge, standing up on bent knees, both hands on the pole at "
+                    "his waist, the halberd pointing forward and a little down, its steel head on the right at the "
+                    "height of his knees, the cape hanging behind him" + HALBERD_LOW,
+                ],
+            ),
+            (
+                "Heavy",
+                [
+                    # з першого кадру — друга голова героя під лезом; з Attack1/1 (нахил назад, та сама алебарда)
+                    "FROM:Attack1:0:his face and snout still pointing right, only one head: a two-handed overhead "
+                    "wind-up, leaning further back, both hands raised up beside his head gripping the pole, the "
+                    "halberd tilted back over his shoulder, its steel head high above and behind the back of his "
+                    "head, knees bent, the cape hanging behind him" + HALBERD_KEEP,
+                    "FROM:CombatIdle:0:in the same side view facing right: chopping a heavy blow down, both hands "
+                    "gripping the pole in front of his face, the halberd pointing forward and up, its steel head on "
+                    "the right high in front of him, stepping forward, the cape flying behind him" + HALBERD_LEVEL,
+                    "FROM:CombatIdle:0:in the same side view facing right: the end of a heavy downward chop, crouched "
+                    "low and leaning forward, both hands on the pole, the halberd pointing forward and down, its steel "
+                    "head on the right resting on the ground far in front of his front foot, the cape flying up "
+                    "behind him" + HALBERD_LEVEL,
+                ],
+            ),
+            (
+                "Block",
+                [
+                    # «тримає древко вертикально» малювало дві алебарди — та сама поза, лише нижче й ближче
+                    "FROM:CombatIdle:0:in the same side view facing right: the same pose, now guarding: crouched "
+                    "lower and braced on bent knees, the same single halberd pulled close so its pole stands almost "
+                    "upright right in front of his chest, both hands on it, its steel head above his head, his face "
+                    "in profile with the same big round eye, the cape hanging behind him; exactly one halberd and "
+                    "nothing else in his hands" + HALBERD_KEEP,
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    # перша спроба — дві алебарди й обличчя анфас
+                    "FROM:CombatIdle:0:in the same side view facing right: recoiling from a hard hit to the chest, "
+                    "his body leaning backwards, his head tipped back with the eye squeezed shut, his face still in "
+                    "profile pointing right, the same single halberd still in both hands tilted back over his "
+                    "shoulder, staggering back on one foot, the cape hanging behind him; exactly one halberd"
+                    + HALBERD_KEEP,
                 ],
             ),
         ],
