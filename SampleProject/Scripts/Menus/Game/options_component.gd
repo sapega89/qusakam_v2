@@ -214,13 +214,14 @@ func _build_rows() -> void:
 			_add_segment_row("Text Speed", ["Default", "Quick"],
 					SettingsModule.TEXT_SPEEDS.keys().find(String(_cfg_get("text_speed"))), _on_text_speed_changed)
 			_add_separator()
-			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
-			_add_segment_row("Tutorial Windows", ["On", "Off"],
-					0 if _cfg_get("tutorial_windows") else 1, _on_tutorial_windows_changed)
-			_add_separator()
+			# Figma 17:632: Screen Shake одразу за Text Speed.
 			# D426: Off — камера не смикається від ударів і вибухів; вібрація геймпада лишається.
 			_add_segment_row("Screen Shake", ["On", "Off"],
 					0 if _cfg_get("screen_shake") else 1, _on_screen_shake_changed)
+			_add_separator()
+			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
+			_add_segment_row("Tutorial Windows", ["On", "Off"],
+					0 if _cfg_get("tutorial_windows") else 1, _on_tutorial_windows_changed)
 			_add_separator()
 			# D66: цифри урону над героєм і ворогами (DamageNumbers)
 			_add_segment_row("Damage Numbers", ["On", "Off"],

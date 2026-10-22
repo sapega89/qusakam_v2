@@ -585,9 +585,12 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	ck(module.settings["brightness"] == 80 and display.brightness == 80 and overlay.visible
 			and absf(gamma - pow(2.0, 0.6)) < 0.001, "Brightness 80 stored and applied (gamma %.3f)" % gamma)
 	var preview: Node = opts._list.find_child("BrightnessPreview", true, false)
-	ck(preview != null and preview.get_child_count() == 2
-			and preview.get_node(^"Dark/Caption").text == "DARK" and preview.get_node(^"Bright/Caption").text == "BRIGHT"
-			and preview.get_node(^"Dark/Swatch/Compass").texture != null, "DARK / BRIGHT preview swatches with the compass")
+	var captions: Array = []
+	for column in ["Dark", "Bright"]:
+		var caption: Label = preview.get_node_or_null(NodePath(column + "/Caption")) if preview else null
+		var compass: TextureRect = preview.get_node_or_null(NodePath(column + "/Swatch/Compass")) if preview else null
+		captions.append("%s:%s" % [caption.text if caption else "-", compass != null and compass.texture != null])
+	ck(captions == ["DARK:true", "BRIGHT:true"], "DARK / BRIGHT preview swatches with the compass (%s)" % str(captions))
 
 	opts.switch_to_tab("audio")
 	for i in 3: await process_frame
@@ -696,7 +699,7 @@ func _typed_in_one_second() -> int:
 	box.settings.letters_per_second = 24.0  # як у dialogue_box_settings.tres (аддон міг лишити тег [speed])
 	box.text = "x".repeat(200)
 	box.start_progressing(0)
-	box._process(1.0)
+	box._process(1.01)  # трохи понад 1 с: сума кроків 1/48 с з плаваючою комою недобирає останню літеру
 	var typed: int = box._text.visible_characters
 	box.free()
 	return typed
