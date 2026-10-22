@@ -50,8 +50,10 @@ var last_chase_time: float = 0.0
 # Бойові параметри
 var base_damage: float = 10.0
 var damage: float = 10.0
-var last_attack_time: float = 0.0
 var attack_cooldown: float = 1.5
+## Скільки ще секунд ігрового часу до наступного удару (0 — можна бити). Рахується з delta фізики, а не з
+## годинника: стоп-кадр, сповільнення й пауза відсувають і наступний удар.
+var attack_ready_in: float = 0.0
 ## Іде замах або удар (D198): ворог стоїть, рішень не приймає.
 var is_attacking: bool = false
 ## Іде саме замах (ще не удар): ворог розвертається за героєм, тож від удару не втекти, просто ступивши за спину.
@@ -135,6 +137,7 @@ func process_physics(delta: float) -> Vector2:
 	lost_player_timer += delta
 	chase_cooldown_timer += delta
 	retreat_timer += delta
+	attack_ready_in = maxf(attack_ready_in - delta, 0.0)
 
 	# Обробляємо AI
 	process_ai(delta)
@@ -315,9 +318,8 @@ func handle_attack_state(_delta: float):
 			last_direction = dir
 
 	# Атакуємо
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - last_attack_time >= attack_cooldown:
-		last_attack_time = current_time
+	if attack_ready_in <= 0.0:
+		attack_ready_in = attack_cooldown
 		perform_attack()
 
 ## Після удару: нападати далі чи відступати на основі HP. Викликається, коли удар закінчився (D198),

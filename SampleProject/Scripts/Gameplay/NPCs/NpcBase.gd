@@ -98,9 +98,20 @@ func menu_entries() -> Array:
 	var entries: Array = []
 	if talk_dialogue != "":
 		entries.append({"id": &"talk", "label": "Talk"})
-	if task_giver != "" and not load(TASKS_PATH).open_tasks(task_giver).is_empty():
+	if not quest_rows().is_empty():
 		entries.append({"id": &"task", "label": "Quest"})
 	return entries
+
+
+## Рядки списку Quest (D161): {id, label, main}. База — відкриті завдання NPC (D175), id «task:<id>», підпис —
+## назва завдання; StoryNpc ставить перед ними основний квест (main — золотий ромбик).
+func quest_rows() -> Array:
+	var rows: Array = []
+	if task_giver == "":
+		return rows
+	for task: Dictionary in load(TASKS_PATH).open_tasks(task_giver):
+		rows.append({"id": StringName("task:" + task.id), "label": task.title, "main": false})
+	return rows
 
 
 ## Вимикає підказку, якщо NPC нічого не може запропонувати.
@@ -159,17 +170,35 @@ func _on_menu_chosen(id: StringName) -> void:
 		ServiceLocatorHelper.get_service_locator().get_dialogue_manager().start_dialogue(talk_dialogue)
 		return
 	if id == &"task":
-		_on_task_chosen()
+		_on_quest_chosen()
 		return
-	_on_npc_choice(id)
+	_run_quest_row(id)
 
 
-## Quest: видати завдання → нагадати його з ціллю → здати, коли умову виконано.
-## ponytail: завдання NPC іде по одному (after) — список із ромбиком (D161) тоді, коли їх стане кілька.
-func _on_task_chosen() -> void:
+## Quest (D161): один рядок — одразу його розмова; кілька — список у тому самому меню, основний квест першим.
+func _on_quest_chosen() -> void:
+	var rows := quest_rows()
+	if rows.size() == 1:
+		_run_quest_row(rows[0].id)
+		return
+	interactable.enabled = false
+	npc_menu.setup(rows)
+	npc_menu.open()
+
+
+## Рядок «task:<id>» — завдання NPC; будь-який інший id — дія нащадка (основний квест StoryNpc, Craft, Buy…).
+func _run_quest_row(id: StringName) -> void:
+	if String(id).begins_with("task:"):
+		_on_task_chosen(String(id).trim_prefix("task:"))
+	else:
+		_on_npc_choice(id)
+
+
+## Завдання [param task_id]: видати → нагадати його з ціллю → здати, коли умову виконано.
+func _on_task_chosen(task_id: String) -> void:
 	var dm: Node = ServiceLocatorHelper.get_service_locator().get_dialogue_manager()
 	var TASKS: GDScript = load(TASKS_PATH)
-	var task: Dictionary = TASKS.open_tasks(task_giver)[0]
+	var task: Dictionary = TASKS.open_tasks(task_giver).filter(func(t: Dictionary) -> bool: return t.id == task_id)[0]
 	if TASKS.status(task) != TASKS.ACTIVE:
 		TASKS.take(task)
 		dm.start_dialogue(_dqd(task.give_dialogue))

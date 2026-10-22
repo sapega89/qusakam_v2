@@ -109,7 +109,7 @@ func _run_move(boss: Node, kind: String, dx: float, on_start: Callable = Callabl
 	boss.moves = all.filter(func(m: Dictionary) -> bool: return m.kind == kind)
 	await _place(boss, dx)
 	boss.enemy_logic.last_move = {}
-	boss.enemy_logic.last_attack_time = 0.0
+	boss.enemy_logic.attack_ready_in = 0.0
 	var hp0: int = hero.current_health
 	boss.set_physics_process(true)
 	var started := false
@@ -129,6 +129,53 @@ func _run_move(boss: Node, kind: String, dx: float, on_start: Callable = Callabl
 	ck(started, "%s: the boss ran %s" % [boss.name, kind])
 	await create_timer(0.9).timeout  # хвилі й стовпи догоряють
 	return hp0 - hero.current_health
+
+## Підказки боса (4b): кожен EnemyTell, що з'явився на босі, — [анімація, відблиск, довжина лінії, напрямок].
+func _watch_tells(boss: Node, into: Array) -> Callable:
+	var cb := func(n: Node) -> void:
+		if n.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd"):
+			into.append([boss.anim_player.assigned_animation, n.glint_at, n.line_length, n.direction, boss.sprite.offset])
+	boss.child_entered_tree.connect(cb)
+	return cb
+
+## Відблиск ходу стоїть на зброї пози [param pose] самого боса (meta tell_at[_<pose>]), а не там, де він у бандита.
+func _check_tell(boss: Node, tells: Array, kind: String, pose: String, line: float) -> void:
+	var sprite: Sprite2D = boss.sprite
+	var key := "tell_at_" + pose
+	var at: Vector2 = sprite.get_meta(key) if sprite.has_meta(key) else sprite.get_meta(&"tell_at")
+	var ok := not tells.is_empty()
+	for t: Array in tells:
+		var want: Vector2 = sprite.position + (t[4] + Vector2(at.x * t[3], at.y)) * sprite.scale  # t[4] — зсув нахилу замаху
+		ok = ok and t[0] == pose and t[1].is_equal_approx(want) and is_equal_approx(t[2], line)
+	ck(ok and at != Vector2(3, -26), "%s %s: glint on its own %s point %s (not the bandit's), ground line %.0f px (%s)" % [boss.name, kind, pose, at, line, tells])
+
+## Перерва між ходами — ігровий час (4b): під стоп-кадром (time_scale 0) і на паузі вона стоїть, потім минає.
+func _game_time_cooldown(boss: Node) -> void:
+	var all: Array[Dictionary] = boss.moves
+	boss.moves = all.filter(func(m: Dictionary) -> bool: return m.kind == "combo")
+	await _place(boss, -70)
+	Engine.time_scale = 0.0  # стоп-кадр, як TimeManager.hitstop
+	boss.enemy_logic.attack_ready_in = 0.3
+	boss.set_physics_process(true)
+	await create_timer(0.6, true, false, true).timeout
+	var r1: float = boss.enemy_logic.attack_ready_in
+	var frozen: bool = not boss.enemy_logic.is_attacking and r1 > 0.25
+	Engine.time_scale = 1.0
+	paused = true
+	await create_timer(0.6, true, false, true).timeout
+	var held: bool = not boss.enemy_logic.is_attacking and is_equal_approx(boss.enemy_logic.attack_ready_in, r1)
+	paused = false
+	var waited := 0
+	while not boss.enemy_logic.is_attacking and waited < 120:
+		await physics_frame
+		waited += 1
+	ck(frozen and held and boss.enemy_logic.is_attacking,
+			"%s: the cooldown waits out hitstop and pause on game time, then the next move comes (hitstop %s, pause %s, then %d frames)" % [boss.name, frozen, held, waited])
+	while boss.enemy_logic.is_attacking:
+		await physics_frame
+	boss.set_physics_process(false)
+	boss.moves = all
+	await create_timer(0.9).timeout
 
 func _check_vanished(boss: Node, kind: String) -> void:
 	await create_timer(0.6).timeout
@@ -213,8 +260,12 @@ func _brass() -> void:
 	boss.set_physics_process(false)
 	await _common_start(boss, "The Brass Collector", 400)
 
+	var tells: Array = []
+	var tell_cb := _watch_tells(boss, tells)
 	var lost := await _run_move(boss, "combo", -70)
 	ck(lost > 0, "Sweep hits a hero in reach (-%d HP)" % lost)
+	_check_tell(boss, tells, "combo", "attack", 0.0)
+	await _game_time_cooldown(boss)
 	ck(boss.get_meta(&"voiced_swings", 0) > 0, "D278 voice hook counted its swings (roar on the first)")
 	var poses: Array = []
 	var on_anim := func(a: StringName) -> void: poses.append(a)
@@ -225,7 +276,9 @@ func _brass() -> void:
 			pose_at_wave.append([boss.anim_player.current_animation, boss.sprite.frame])
 			await physics_frame
 	game.map.child_entered_tree.connect(on_child)
+	tells.clear()
 	lost = await _run_move(boss, "slam", -180)
+	_check_tell(boss, tells, "slam", "slam", 0.0)
 	boss.anim_player.animation_started.disconnect(on_anim)
 	game.map.child_entered_tree.disconnect(on_child)
 	ck(poses.find(&"slam_strike") == poses.find(&"slam") + 1 and pose_at_wave.has([&"slam_strike", 17]),
@@ -242,7 +295,10 @@ func _brass() -> void:
 		_press(&"move_left", false))
 	ck(lost == 0 and absf(hero.global_position.x - boss.global_position.x) > 240.0, "Slam: a hero who walks out of its radius is missed (-%d HP, %.0f px)" % [lost, absf(hero.global_position.x - boss.global_position.x)])
 	var x0: float = boss.global_position.x
+	tells.clear()
 	lost = await _run_move(boss, "charge", -360)
+	_check_tell(boss, tells, "charge", "charge", float(boss.moves.filter(func(m: Dictionary) -> bool: return m.kind == "charge")[0].distance) + boss.melee_reach)
+	boss.child_entered_tree.disconnect(tell_cb)
 	ck(lost > 0 and absf(boss.global_position.x - x0) > 200.0, "Charge: dashes %.0f px and hits (-%d HP)" % [absf(boss.global_position.x - x0), lost])
 	await _parry(boss, 0.7)
 	await _poise(boss)
@@ -255,10 +311,15 @@ func _djinn() -> void:
 	boss.set_physics_process(false)
 	await _common_start(boss, "The Fire Djinn", 500)
 
+	var tells: Array = []
+	var tell_cb := _watch_tells(boss, tells)
 	var lost := await _run_move(boss, "combo", -60)
 	ck(lost > 0, "Claws hit a hero in reach (-%d HP)" % lost)
+	_check_tell(boss, tells, "combo", "attack", 0.0)
+	tells.clear()
 	lost = await _run_move(boss, "fireball", -300)
 	ck(lost > 0, "Fireball hits a hero standing in its path (-%d HP)" % lost)
+	_check_tell(boss, tells, "fireball", "fireball", 0.0)
 	await _check_vanished(boss, "fireball")
 	lost = await _run_move(boss, "fireball", -300, func() -> void:
 		for i in 200:
@@ -269,8 +330,11 @@ func _djinn() -> void:
 		hero.mover.roll_ready_in = 0.0
 		await _tap(&"dodge"))
 	ck(lost == 0, "Fireball: a dodge through it takes no damage (i-frames, -%d HP)" % lost)
+	tells.clear()
 	lost = await _run_move(boss, "pillar", -250)
 	ck(lost > 0, "Pillar hits a hero standing on the mark (-%d HP)" % lost)
+	_check_tell(boss, tells, "pillar", "pillar", 0.0)
+	boss.child_entered_tree.disconnect(tell_cb)
 	await _check_vanished(boss, "pillar")
 	lost = await _run_move(boss, "pillar", -250, func() -> void:
 		for i in 200:

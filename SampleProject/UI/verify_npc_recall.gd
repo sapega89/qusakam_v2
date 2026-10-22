@@ -76,7 +76,7 @@ func _initialize() -> void:
 	var flags_before: Dictionary = game.quest_flags.duplicate() if "quest_flags" in game else {}
 	npc.interactable.interacted.emit()
 	await process_frame
-	npc.npc_menu.chosen.emit(&"quest")
+	npc.npc_menu.chosen.emit(&"task")  # Quest з одним рядком (лише основний квест) — одразу його розмова (D161)
 	await process_frame
 	var box: Node = dm.current_dialogue_box
 	ck(dm.is_replaying() and dm.is_dialogue_active() and box.visible, "replay shows the dialogue box")

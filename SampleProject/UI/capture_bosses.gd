@@ -46,6 +46,9 @@ func _initialize() -> void:
 	await _move(brass, "combo", -110, "brass_sweep", func() -> void: await _anim(brass, &"attack", 0.68))
 	await _move(brass, "charge", -360, "brass_charge", func() -> void: await _anim(brass, &"charge_strike", 0.2))
 	await _move(brass, "slam", -200, "brass_slam", func() -> void: await _hazard(0.12))
+	await _move(brass, "combo", -110, "brass_tell_sweep", func() -> void: await _tell(brass))
+	await _move(brass, "charge", -360, "brass_tell_charge", func() -> void: await _tell(brass))
+	await _move(brass, "slam", -200, "brass_tell_slam", func() -> void: await _tell(brass))
 	brass.queue_free()
 	hero.global_position = Vector2(arena_x, floor_y)
 	await create_timer(0.5).timeout
@@ -55,6 +58,9 @@ func _initialize() -> void:
 	await _move(djinn, "fireball", -320, "djinn_fireball", func() -> void: await _hazard(0.3))
 	await _move(djinn, "pillar", -220, "djinn_pillar_mark", func() -> void: await _hazard(0.25))
 	await _move(djinn, "pillar", -220, "djinn_pillar_fire", func() -> void: await _hazard(0.72))
+	await _move(djinn, "combo", -100, "djinn_tell_claws", func() -> void: await _tell(djinn))
+	await _move(djinn, "fireball", -320, "djinn_tell_fireball", func() -> void: await _tell(djinn))
+	await _move(djinn, "pillar", -220, "djinn_tell_pillar", func() -> void: await _tell(djinn))
 	djinn.take_damage(djinn.current_health - djinn.Max_Health / 2 + 1)
 	await _move(djinn, "pillar", -220, "djinn_phase2_pillars", func() -> void: await _hazard(0.72))
 	quit()
@@ -98,6 +104,17 @@ func _anim(boss: Node, anim: StringName, after: float) -> void:
 		await physics_frame
 	await create_timer(after).timeout
 
+## Підказка ходу (4b): відблиск на зброї (і лінія ривка) — кадр, коли він розгорнувся. Підказка живе 0.25 с,
+## а повільний кадр без GPU проскакує її цілком — тож час сповільнюємо й зупиняємо до знімка (_move вертає 1).
+func _tell(boss: Node) -> void:
+	Engine.time_scale = 0.1
+	for i in 3000:
+		if boss.get_children().any(func(n: Node) -> bool: return n.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd")):
+			break
+		await process_frame
+	await create_timer(0.8, true, false, true).timeout
+	Engine.time_scale = 0.0
+
 func _hazard(after: float) -> void:
 	for i in 300:
 		if game.map.get_children().any(func(n: Node) -> bool: return n.scene_file_path.contains("/FX/Bosses/")):
@@ -113,11 +130,12 @@ func _move(boss: Node, kind: String, dx: float, name: String, moment: Callable) 
 	hero.current_health = hero.Max_Health
 	hero.global_position = Vector2(boss.global_position.x + dx, floor_y)
 	hero.velocity = Vector2.ZERO
-	boss.enemy_logic.last_attack_time = 0.0
+	boss.enemy_logic.attack_ready_in = 0.0
 	hero.set_physics_process(false)  # удар не відкидає героя з дальності ходу, поки знімаємо
 	boss.set_physics_process(true)
 	await moment.call()
 	await _shot(name)
+	Engine.time_scale = 1.0
 	for i in 400:
 		if not boss.enemy_logic.is_attacking:
 			break

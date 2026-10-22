@@ -181,7 +181,7 @@ func _arrow_within(arrow: Node, gap: float) -> bool:
 ## Кожна перевірка — про одну стрілу: лучник не стріляє (темп «ще не минув»), доки немає жодної стріли в польоті
 ## й жодного натягу; герой на 300 px — і лучник стріляє одразу.
 func _ready_to_shoot() -> void:
-	archer.enemy_logic.last_attack_time = 1.0e9
+	archer.enemy_logic.attack_ready_in = 1.0e9
 	# Параметр без типу: у списку є й звільнені стріли, а типізований параметр на них обриває any()
 	while archer.enemy_logic.is_attacking or enemy_arrows.any(func(a) -> bool:
 			return is_instance_valid(a) and not a.hero_side and not a._stuck):
@@ -192,7 +192,7 @@ func _ready_to_shoot() -> void:
 	hero.current_health = hero.Max_Health
 	hero.is_invulnerable = false
 	hero.invulnerability_timer = 0.0
-	archer.enemy_logic.last_attack_time = 0.0
+	archer.enemy_logic.attack_ready_in = 0.0
 	await physics_frame
 
 func _tell_then_shot() -> void:

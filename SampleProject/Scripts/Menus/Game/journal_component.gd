@@ -45,6 +45,9 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _entry_list: VBoxContainer = %EntryList
 @onready var _detail: VBoxContainer = %Detail
 @onready var _detail_title: Label = %DetailTitle
+## Портрет зустрінутої людини (D321 — ті самі портрети, що у вікні діалогу); у кого портрета нема — без рамки.
+@onready var _portrait_frame: PanelContainer = %PortraitBackground
+@onready var _portrait: TextureRect = %Portrait
 @onready var _detail_state: Label = %DetailState
 @onready var _detail_description: Label = %DetailDescription
 @onready var _objectives_caption: Label = %ObjectivesCaption
@@ -88,7 +91,7 @@ func _load() -> void:
 			_load_story()
 		"characters":
 			set_entries(JournalRecords.people().map(func(p: Dictionary) -> Dictionary:
-				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text}))
+				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text, "portrait": p.portrait}))
 		"bestiary":
 			set_entries(JournalRecords.enemies().map(func(e: Dictionary) -> Dictionary:
 				return {"id": e.kind, "title": e.name, "description": e.text,
@@ -201,6 +204,7 @@ func _normalize(raw: Dictionary) -> Dictionary:
 		"description": tr(String(raw.get("description", ""))),
 		"group": tr(String(raw.get("group", ""))),
 		"parent": String(raw.get("parent", "")),
+		"portrait": raw.get("portrait") as Texture2D,
 	}
 
 
@@ -299,6 +303,8 @@ func _show_detail(id: String) -> void:
 		_detail.visible = false
 		return
 	_detail.visible = true
+	_portrait.texture = entry.portrait
+	_portrait_frame.visible = entry.portrait != null
 	_detail_title.text = entry.title
 	# Над назвою пункту — етап («PROLOGUE»); у записів без етапу — їхній стан.
 	_detail_state.text = (entry.group if entry.group != "" else entry.state).to_upper()

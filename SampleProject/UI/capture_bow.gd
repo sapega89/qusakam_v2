@@ -138,13 +138,13 @@ func _stand(x: float) -> void:
 
 ## Один постріл на кадр: лучник не стріляє, доки в повітрі є стріла чи йде натяг; герой за 300 px — і постріл.
 func _archer_ready() -> void:
-	archer.enemy_logic.last_attack_time = 1.0e9
+	archer.enemy_logic.attack_ready_in = 1.0e9
 	while archer.enemy_logic.is_attacking or game.map.get_children().any(func(n: Node) -> bool:
 			return n.get_script() == arrow_script and not n._stuck):
 		await physics_frame
 	await _stand(archer.global_position.x - 300.0)
 	hero.current_health = hero.Max_Health
-	archer.enemy_logic.last_attack_time = 0.0
+	archer.enemy_logic.attack_ready_in = 0.0
 
 
 func _next_enemy_arrow() -> Node:

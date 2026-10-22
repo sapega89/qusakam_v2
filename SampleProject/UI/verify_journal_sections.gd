@@ -9,6 +9,7 @@ extends SceneTree
 ##   5. The records are saved with the player; every DialogueQuest character is in the codex or not_listed.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
+const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
@@ -64,6 +65,9 @@ func _initialize() -> void:
 	ck(_rows(journal) == ["Grandfather"], "Characters: the grandfather (%s)" % [_rows(journal)])
 	ck(journal._detail_state.text == "KUSAKAM'S GRANDFATHER" and journal._detail_description.text.contains("lizardfolk"), "his role and text (%s)" % journal._detail_state.text)
 	ck(journal._list_header.text == "PEOPLE MET", "list caption (%s)" % journal._list_header.text)
+	var portrait: Texture2D = root.get_node("DialogueQuest").CharacterDB.get_character_from_id("GRANDFATHER").portrait
+	ck(journal._portrait_frame.is_visible_in_tree() and journal._portrait.texture == portrait and portrait != null,
+			"his portrait, the same as in the dialogue box (D321)")
 	await Kit.key(self, KEY_ESCAPE)
 	await Kit.frames(self, 6)
 
@@ -112,6 +116,18 @@ func _initialize() -> void:
 	var missing: Array = root.get_node("DialogueQuest").CharacterDB.get_character_registry().keys().filter(func(id: String) -> bool: return not id in listed)
 	ck(missing.is_empty(), "every DialogueQuest character has a codex entry or is not_listed (missing %s)" % [missing])
 
+	sl.get_ui_manager().close_game_menu()
+	await Kit.frames(self, 4)
+
+	print("[6] Someone without a portrait: no empty frame (D321)")
+	JournalRecords.meet_person("VILLAGER_1")
+	journal = await _open_journal(sl)
+	await Kit.mouse(self, journal.get_node("%CharactersTab"))
+	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_VILLAGER_1"))
+	ck(journal.selected_id == "VILLAGER_1" and not journal._portrait_frame.visible and journal._portrait.texture == null,
+			"the villager: name and text, no portrait frame (selected %s)" % journal.selected_id)
+	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_GRANDFATHER"))
+	ck(journal._portrait_frame.visible and journal._portrait.texture == portrait, "back to the grandfather: his portrait again")
 	sl.get_ui_manager().close_game_menu()
 	await Kit.frames(self, 4)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

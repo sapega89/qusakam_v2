@@ -17,11 +17,14 @@ func _ready() -> void:
 	Game.get_singleton().quest_flag_changed.connect(func(_id: String, _value: Variant): refresh_availability())
 
 
-func menu_entries() -> Array:
-	var entries := super.menu_entries()
+## Основний квест — перший рядок списку Quest, із золотим ромбиком (D161); підпис — назва поточної зони
+## зі story.json (D188). Завдання цього NPC (task_giver), якщо є, — після нього.
+func quest_rows() -> Array:
+	var rows := super.quest_rows()
 	if Game.get_singleton().get_quest_flag(quest_flag):
-		entries.append({"id": &"quest", "label": "Quest"})
-	return entries
+		var zone: String = ServiceLocatorHelper.get_service_locator().get_game_flow().current_zone_title()
+		rows.push_front({"id": &"quest", "label": zone, "main": true})
+	return rows
 
 
 func _on_npc_choice(id: StringName) -> void:

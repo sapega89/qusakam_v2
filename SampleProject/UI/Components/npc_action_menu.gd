@@ -12,6 +12,8 @@ signal cancelled
 
 const THEME_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
 const POINTER := preload("res://SampleProject/Assets/UI/Icons/chevron.svg")
+## Основний квест у списку Quest (D161): золотий ромбик праворуч у рядку.
+const DIAMOND := preload("res://SampleProject/Assets/UI/Icons/diamond_sm.svg")
 const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
 
@@ -23,7 +25,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-## [param entries] — масив {id, label}. Показуються лише передані пункти.
+## [param entries] — масив {id, label, main?}. Показуються лише передані пункти; main — рядок із ромбиком.
 func setup(entries: Array) -> void:
 	for child in get_children():
 		# remove_child одразу: інакше open() віддасть фокус старій кнопці, що ось-ось зникне.
@@ -42,6 +44,15 @@ func setup(entries: Array) -> void:
 		b.focus_exited.connect(func(): b.theme_type_variation = &"NpcMenuItem")
 		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		b.pressed.connect(func(): chosen.emit(entry.id))
+		if entry.get("main", false):
+			var diamond := TextureRect.new()
+			diamond.name = "Diamond"
+			diamond.texture = DIAMOND
+			diamond.modulate = UITokens.ACCENT
+			diamond.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+			diamond.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			b.add_child(diamond)
+			diamond.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT, Control.PRESET_MODE_MINSIZE, UITokens.SPACE_SM)
 		add_child(b)
 
 
