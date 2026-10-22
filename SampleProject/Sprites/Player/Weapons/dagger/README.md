@@ -6,7 +6,13 @@ Lightning 4-step LoRA. The first frame is the sword set's `sword/CombatIdle/1.pn
 dagger; the attacks, block and hurt are made from that frame; run and air from the artist's own frames
 (`Run/N`, `Jump/2–3`, `Fall/2`) with only the dagger added. The artist's colours only (24 of his 28).
 
-Not wired into `Player.tscn` yet.
+Wired: `Player.tscn` → `AnimationPlayer` library `dagger` (`Resources/Player/WeaponAnimations/dagger.tres`, written by
+`Scripts/Tools/weapon_libraries.py`). No `Heavy`: the heavy plays `Attack3` (wind-up `Attack3/1`, strike `Attack3/2–3`);
+`Attack2` is `Attack2/1` + `Attack1/2–3`.
+
+Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
+armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`
+recolours only the weapon metal.
 
 - Cell **96×96**, the same as the sword set: the hero's body sits where it does in the sword frames, feet on row
   **88** (= row 56 of the 64×64 frames + 32). Faces right; flip for the left.

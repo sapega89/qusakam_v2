@@ -21,8 +21,10 @@ hurt, grips D267, sheathing D268). Figma: none (the hero is not a UI screen). Ar
 | Grip | `EquipmentManager.get_grip()` → bare / one_handed / two_handed / dual (D267) | ✅ |
 | Per-type body swing | `PlayerCombat.SWING_ANIMATIONS` (mace → `AttackSmash`, polearm → `AttackThrust`) | ✅ |
 | Hitbox | on for the whole `swing_time` (0.3 s) from the press; heavy: 0.4 s wind-up, 0.25 s strike | ✅ |
-| Sword full-body frames, 96×96 | `Sprites/Player/Weapons/sword/{CombatIdle,Run,Air,Attack1-3,Heavy,Block,Hurt}` (25 frames) | ✅ art, wired by this pass |
-| Frames for dagger, mace, halberd, dual-wield, bare-hands combat | — | ❌ (laptop art) |
+| Sword full-body frames, 96×96 | `Sprites/Player/Weapons/sword/{CombatIdle,Run,Air,Attack1-3,Heavy,Block,Hurt}` (25 frames) | ✅ wired (`cloud/weapon-gamepad`) |
+| Dagger, mace, halberd, sword + dagger frames | `Sprites/Player/Weapons/{dagger,mace,halberd,dual}` → `Resources/Player/WeaponAnimations/{dagger,mace,polearm,dual_sword_dagger}.tres` (`Scripts/Tools/weapon_libraries.py`) | ✅ wired (`cloud/weapons-all`) |
+| Palette swap per item | `Shaders/weapon_palette.gdshader` on the hero `Sprite2D`, `Resources/Data/weapon_palettes.json`, items.json `palette` | ✅ (`cloud/weapons-all`) |
+| Bare-hands combat stance frames | — | ❌ (optional, laptop art) |
 
 ## Decision: baked full-body frames per weapon TYPE, overlay kept as the fallback-free second path (D370)
 
@@ -53,8 +55,24 @@ the weapon's version when it exists:
 | `Hurt` | `Hurt/1` | |
 | `Roll`, `Climb`, `Cast*`, `Meditate`, `Walk` | — | base frames; weapon hidden in a roll, overlay in casts (D271) |
 
-Dual-wield gets its own library (`dual_<type>`) later — the frames draw both blades; until then dual-wield keeps
-the overlay for both hands. Bare hands keep the base frames (fists are drawn already).
+Dual-wield has its own library per pair, `dual_<in hand>_<off hand>`; the frames draw both blades and the combo is
+`Attack1–4` (D267: odd swings by the off hand). Only `dual_sword_dagger` exists (the owner's dual art, sword in the
+front hand); any other pair keeps the overlay for both hands. Bare hands keep the base frames (fists are drawn already).
+
+Missing frame kinds take the closest animation of the same set (`weapon_libraries.py`): dagger `Heavy` = its `Attack3`
+(coiled → lunge), dagger `Attack2` = `Attack2/1` + `Attack1/2–3`; dual `Hurt` = `sword/Hurt/1` (dual README).
+
+## Palette swap (slice 2, built)
+
+- Key: the sword set's blade metal `#F8F8E4` / `#C2C2C2` / `#87878C` (light, mid, dark). Every weapon set draws its
+  metal in it. The hero's armour and eye used the same colours, so `Scripts/Tools/weapon_key_fixups.py` moves those
+  pixels 2 RGB steps off the key (invisible); run it after `comfy_sprite.py` and the `*_fixups.py`.
+- `Shaders/weapon_palette.gdshader` on `Player.tscn → Sprite2D` maps the key to the item's palette; `WeaponView`
+  sets the palette on equip and turns the shader on only while a weapon-library frame is on screen (the base frames
+  keep the key in the armour).
+- `Resources/Data/weapon_palettes.json`: iron (= the key), copper, silver, crystal (shimmer band + pulsing glow and a
+  1 px halo). items.json names it per weapon (`"palette"`). Dual-wield uses the palette of the weapon in hand.
+- `verify_weapon_animations.gd`, `capture_weapon_palettes.gd` → `design/shots/weapon_palettes.png`.
 
 ## How the switch works (built for the sword)
 
@@ -73,12 +91,11 @@ the overlay for both hands. Bare hands keep the base frames (fists are drawn alr
 
 1. **Sword (one-handed sword)** — ✅ wired this pass (`cloud/weapon-gamepad`),
    `verify_souls_combat.gd` [12c].
-2. **Palette swap for variants** — shader on the hero `Sprite2D` while a weapon library plays; items.json
-   `palette` per item; crystal glow. Needs the key colours of the A3 blade measured.
-3. **Dagger** (A-batch on the laptop): same table, quick stabs for `Attack1–3`.
-4. **Mace**: overhead smash `Attack1–3`; `SWING_ANIMATIONS` mace → `AttackSmash` then resolves inside the library.
-5. **Halberd (two-handed)**: both hands on the shaft; thrusts, low sweep, long lunge.
-6. **Dual-wield** (`dual_sword`): four-swing combo frames (`Attack1–4`), both blades drawn.
+2. **Palette swap for variants** — ✅ `cloud/weapons-all` (above).
+3. **Dagger** — ✅ `cloud/weapons-all`.
+4. **Mace** — ✅ `cloud/weapons-all`; `AttackSmash` resolves to `mace/Attack<step>`.
+5. **Halberd (two-handed)** — ✅ `cloud/weapons-all`, library `polearm`; `AttackThrust` resolves inside it.
+6. **Dual-wield** — ✅ `cloud/weapons-all`, `dual_sword_dagger` (`Attack1–4`).
 7. **Bare-hands combat stance** (optional): `CombatIdle` with fists up.
 
 Each art slice: comfy-sprite from the artist frames (D239), 96×96, same offset, then add the library to
