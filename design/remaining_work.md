@@ -26,7 +26,8 @@ Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); 
 1. ~~**A5 — foreground parallax and a living world**~~ — **wired 2026-10-22** (D392, `cloud/living-world`; open:
    a grass idle sheet). Was (BACKLOG 7 + 19): a near plane for Canyon, DesertRoad, CityGates,
    City, LaboratoryOutside; decor idle frames (banners, palms, lamps, crystals); drifting clouds. Then a cloud task wires it.
-2. **A6 — own effects for the 18 new skills** (D279 leftover: they reuse recoloured Fire/Electric/Healing effects —
+2. ~~**A6 — own effects for the 18 new skills**~~ — **drawn 2026-10-22** (`e86bef3c`): the 9 oath actives × charge +
+   release = the 18 effects (the other 15 oath skills are passives, no cast); wiring: `cloud/skill-fx`. Was (D279 leftover: they reuse recoloured Fire/Electric/Healing effects —
    Searing Hex reads dark red, Balanced Strike looks like Fire Strike). Then wiring.
 3. **Missing weapon frames:** dagger Heavy and two Attack2 frames (kept turning into a sword), dual-wield Hurt.
 4. **Small art fixes noted by agents:** Malik's walk shows white patches through the robe; the alchemist's mask reads

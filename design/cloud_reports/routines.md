@@ -42,6 +42,7 @@ the journal lore/flags (34); Sapega's own texts (hints D159, lore, oath ideas 27
 |---|---|---|---|
 | 07:xx | code-fixes (`trig_01AKEmtZhgFsxCs72ueui65A`) | cloud/code-fixes | boss telegraph, game-time enemy cooldowns, souls_combat flake, B42, B4, #29, Journal portraits |
 | 08:09 | living-world (`trig_01MyFTRZ4Rone1Aiik6fc6ze`) | cloud/living-world | BACKLOG 7 + 19: foreground planes, decor idle loops, drifting clouds |
+| 10:02 | skill-fx (`trig_015CZMZqVbfC796bgZx9nmni`) | cloud/skill-fx | own charge + release effect for the 9 oath actives (A6 is all 9: the "18" was 9 skills × charge + release); the first short prompt on [[ROUTINE_RULES]] |
 
 ## Round 6 (2026-10-22): bugs and damage numbers
 
