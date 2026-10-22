@@ -32,7 +32,7 @@ func _wipe_test_dir() -> void:
 ## посилається на autoload MetSys, недоступний під час компіляції --script.
 func _make_slot(slot: int, room: String, meta: Dictionary) -> void:
 	var f := FileAccess.open(ss.get_slot_path(slot), FileAccess.WRITE)
-	f.store_string(var_to_str({"current_room": room, "game_settings": ss.settings_module.default_settings.duplicate()}))
+	f.store_string(var_to_str({"current_room": room}))
 	f.close()
 	ss.set_slot_metadata(slot, meta)
 

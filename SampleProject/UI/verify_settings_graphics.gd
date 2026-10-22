@@ -30,12 +30,9 @@ func _initialize() -> void:
 	await process_frame
 	var save_system: Node = root.get_node("SaveSystem")
 	var display: Node = root.get_node("DisplayManager")
-	# Тест не чіпає справжні сейви гравця; слот потрібен — без нього налаштування не пишуться.
+	# Тест не чіпає справжні налаштування гравця (B118: один файл на інсталяцію, у теці сейвів).
 	save_system.set_save_dir(TEST_DIR)
-	var slot_path: String = save_system.get_slot_path(save_system.current_slot)
-	var slot_file := FileAccess.open(slot_path, FileAccess.WRITE)
-	slot_file.store_string(var_to_str({"game_settings": {}}))
-	slot_file.close()
+	var settings_path: String = save_system.get_settings_path()
 	var module: Node = save_system.settings_module
 	module.settings = module.default_settings.duplicate()
 	module.apply_settings()
@@ -116,9 +113,9 @@ func _initialize() -> void:
 	ck(display.resolution == Vector2i(1600, 900), "Windowed reapplies 1600x900")
 
 	print("[6] both survive a restart of the settings module")
-	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))["game_settings"]
-	ck(on_disk.get("resolution") == "1600x900", "slot file holds 1600x900")
-	ck(on_disk.get("fps_limit") == 144, "slot file holds 144")
+	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(settings_path))
+	ck(on_disk["resolution"] == "1600x900", "settings file holds 1600x900")
+	ck(on_disk["fps_limit"] == 144, "settings file holds 144")
 	opts.queue_free()
 	await process_frame
 	# Скидаємо живий стан, щоб відновлення було видно саме з файла.
@@ -143,7 +140,7 @@ func _initialize() -> void:
 	ck(display.RESOLUTIONS == ["1280x720", "1600x900", "1920x1080", "2560x1440"], "resolution list")
 	ck(display.FPS_LIMITS == [30, 60, 120, 144, 0], "FPS list")
 
-	DirAccess.remove_absolute(slot_path)
+	DirAccess.remove_absolute(settings_path)
 	_done()
 
 

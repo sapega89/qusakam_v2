@@ -291,9 +291,6 @@ func save_game() -> bool:
 	var room_name: String = MetSys.get_current_room_name()
 	save_manager.set_value("current_room", room_name)
 	save_manager.set_value("abilities", player.abilities)
-	# Налаштування живуть у файлі слота поруч із грою; без цього кожен сейв гри
-	# перезаписував файл без них, і наступне завантаження скидало налаштування.
-	save_manager.set_value("game_settings", SaveSystem.settings_module.save())
 	
 	save_manager.store_game(self)
 	# Відкриті клітинки карти, маркери тощо. SaveManager.save_as_text() додає їх

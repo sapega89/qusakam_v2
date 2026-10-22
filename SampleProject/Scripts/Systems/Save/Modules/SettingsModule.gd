@@ -41,8 +41,7 @@ func save() -> Dictionary:
 
 ## Загружает настройки игры
 func load_data(data: Dictionary) -> void:
-	# Новий ключ налаштувань, якого ще немає у файлі, бере значення за замовчуванням.
-	settings = default_settings.merged(data, true)
+	read(data)
 	apply_settings()
 
 	log_info("Settings loaded: master=%.1f, music=%.1f, display_mode=%s" % [
@@ -50,6 +49,11 @@ func load_data(data: Dictionary) -> void:
 		settings["music_volume"],
 		settings["display_mode"]
 	])
+
+## Лише значення, без застосування: під час старту менеджери, що їх застосовують, ще не готові.
+func read(data: Dictionary) -> void:
+	# Новий ключ налаштувань, якого ще немає у файлі, бере значення за замовчуванням.
+	settings = default_settings.merged(data, true)
 
 ## Применяет настройки к игре
 func apply_settings() -> void:
