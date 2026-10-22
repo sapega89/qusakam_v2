@@ -315,7 +315,9 @@ func _settings_segment(theme: Theme) -> void:
 		theme.set_stylebox("disabled", t, _box(bg, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 
 
-## Figma settings-* стрілки степера (17:546 / 17:549) — 16px, без фону.
+## Figma settings-* стрілки степера (17:546 / 17:549) — 16px гліф. У Figma без фону; у грі — рамка 1px, як у
+## сегментів, Reset і кнопок футера, інакше голий «−» / «+» не читається як кнопка (B22, агентське рішення).
+## Квадрат SETTINGS_STEPPER_BOX ставить options_component.gd (тема не задає мінімальний розмір кнопки).
 func _settings_stepper(theme: Theme) -> void:
 	var t := "SettingsStepper"
 	theme.set_type_variation(t, "Button")
@@ -325,9 +327,12 @@ func _settings_stepper(theme: Theme) -> void:
 	theme.set_color("font_hover_color", t, UITokens.ACCENT)
 	theme.set_color("font_pressed_color", t, UITokens.ACCENT)
 	theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
-	for state in ["normal", "hover", "pressed", "disabled"]:
-		theme.set_stylebox(state, t, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 4, 2))
-	theme.set_stylebox("focus", t, _focus_ring(4, 2))
+	var pad := UITokens.SPACE_XS
+	theme.set_stylebox("normal", t, _box(Color(0, 0, 0, 0), UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("pressed", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), UITokens.TEXT_DISABLED, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("focus", t, _focus_ring(pad, pad))
 
 
 ## Figma UI/Settings Tab (117:835) — 36×36, активний має акцентну рамку,
@@ -403,6 +408,8 @@ func _list_row(theme: Theme) -> void:
 	theme.set_stylebox("pressed", t, _box(UITokens.ACCENT, UITokens.BORDER_STRONG,
 			UITokens.BORDER_WIDTH_SELECTED, pad_h, pad_v))
 	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v))
+	# Фокус на вибраному (акцентному) рядку — біле кільце (D329); малює list_row.gd, бо "focus" не знає pressed (B90).
+	theme.set_stylebox("focus_selected", t, _focus_ring(pad_h, pad_v, true))
 	theme.set_stylebox("disabled", t, _box(Color(UITokens.BACKGROUND, 0.5),
 			Color(0, 0, 0, 0), 0, pad_h, pad_v))
 
@@ -576,17 +583,17 @@ func _setup_panels(theme: Theme) -> void:
 
 	# Figma UI/Inventory Center Panel (355:6423) — акцентна рамка, padding 48.
 	theme.set_type_variation("CenterPanel", "PanelContainer")
-	theme.set_stylebox("panel", "CenterPanel", _box(UITokens.SURFACE, UITokens.ACCENT,
+	theme.set_stylebox("panel", "CenterPanel", _box(UITokens.MENU_SURFACE, UITokens.ACCENT,
 			UITokens.BORDER_WIDTH, UITokens.CENTER_PANEL_PADDING, UITokens.CENTER_PANEL_PADDING))
 
 	# Figma UI/Party Status Panel (104:490) — звичайна рамка, padding 24.
 	theme.set_type_variation("SidePanel", "PanelContainer")
-	theme.set_stylebox("panel", "SidePanel", _box(UITokens.SURFACE, UITokens.BORDER,
+	theme.set_stylebox("panel", "SidePanel", _box(UITokens.MENU_SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_XL, UITokens.SPACE_XL))
 
 	# Картка персонажа (Figma UI/Party Character Card 324:6127).
 	theme.set_type_variation("CardPanel", "PanelContainer")
-	theme.set_stylebox("panel", "CardPanel", _box(UITokens.SURFACE, UITokens.ACCENT,
+	theme.set_stylebox("panel", "CardPanel", _box(UITokens.MENU_SURFACE, UITokens.ACCENT,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_MD, UITokens.SPACE_MD))
 	# Частини картки — тепер шаблон у сцені (D117), а не StyleBoxFlat.new() у коді.
 	theme.set_type_variation("PortraitFrame", "PanelContainer")
@@ -616,16 +623,16 @@ func _setup_panels(theme: Theme) -> void:
 
 	# Figma menu-status: job-box / weapon-box / action-card — surface + 1px рамка.
 	theme.set_type_variation("BoxPanel", "PanelContainer")
-	theme.set_stylebox("panel", "BoxPanel", _box(UITokens.SURFACE, UITokens.BORDER,
+	theme.set_stylebox("panel", "BoxPanel", _box(UITokens.MENU_SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_MD, UITokens.SPACE_MD))
 
 	theme.set_type_variation("ActionCard", "PanelContainer")
-	theme.set_stylebox("panel", "ActionCard", _box(UITokens.SURFACE, UITokens.BORDER,
+	theme.set_stylebox("panel", "ActionCard", _box(UITokens.MENU_SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, 18, 18))
 
 	# Figma menu-skills: колонка класового дерева — surface + 1px рамка, padding 32.
 	theme.set_type_variation("TreePanel", "PanelContainer")
-	theme.set_stylebox("panel", "TreePanel", _box(UITokens.SURFACE, UITokens.BORDER,
+	theme.set_stylebox("panel", "TreePanel", _box(UITokens.MENU_SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, UITokens.SPACE_2XL, UITokens.SPACE_2XL))
 
 	# Figma UI/Interaction/Prompt (461:6479): State=Default / Focused / Disabled.
@@ -894,12 +901,13 @@ func _save_slots(theme: Theme) -> void:
 	# Figma: "Save Data Management" — Regular 11, letter-spacing 3.
 	theme.set_font("font", "SaveSystemLabel", _spaced(_font_regular, 3))
 
-	# Картка слота: без заливки, рамка 1px — біла; у вибраного (фокус) — accent 2px (B32).
+	# Картка слота: рамка 1px — біла; у вибраного (фокус) — accent 2px (B32). Заливка — MENU_SURFACE:
+	# у Figma картка без заливки, але тоді мапа-фон іде крізь текст слота (B8).
 	var t := "SaveSlotCard"
 	theme.set_type_variation(t, "Button")
-	var normal := _box(Color(0, 0, 0, 0), UITokens.SAVE_CARD_BORDER, UITokens.BORDER_WIDTH,
+	var normal := _box(UITokens.MENU_SURFACE, UITokens.SAVE_CARD_BORDER, UITokens.BORDER_WIDTH,
 			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
-	var selected := _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED,
+	var selected := _box(UITokens.MENU_SURFACE, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED,
 			UITokens.SAVE_CARD_PAD_H, UITokens.SAVE_CARD_PAD_V)
 	for state in ["normal", "pressed", "disabled"]:
 		theme.set_stylebox(state, t, normal)

@@ -15,6 +15,10 @@ class_name UITokens
 const BACKGROUND := Color("111118")
 # Figma: color/surface (#111118 @ 56%)
 const SURFACE := Color("111118", 0.56)
+# Поверхня панелей меню, на яких лежить текст (центральна панель, бічні колонки, картки, дерево навичок,
+# слоти збереження). Непрозора, як ModalPanel (D195) і ScreenPanel: крізь 56% SURFACE проступала
+# мапа-пергамент і її написи лягали під текст (B8). Мапа лишається видимою в проміжках між панелями.
+const MENU_SURFACE := BACKGROUND
 # Figma: Surface Hover (#111118 @ 30%)
 const SURFACE_HOVER := Color("111118", 0.30)
 # Figma: color/accent
@@ -156,6 +160,7 @@ const SETTINGS_SLIDER_ROW_HEIGHT := 50
 const SETTINGS_CHOICE_ROW_HEIGHT := 68
 const SETTINGS_ROW_GAP := 2   # лінія між рядками (крок 52 / 70)
 const SETTINGS_STEPPER_WIDTH := 280
+const SETTINGS_STEPPER_BOX := 32  # квадратна рамка кнопок −/+ і ‹/› (B22)
 const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320
 const SETTINGS_HEADER_ICON := 64
@@ -231,7 +236,7 @@ const COPYRIGHT_SPACING := 1       # Regular 12
 const SCREEN_PAD_BOTTOM := 64
 
 # ── Магазин (Figma: shop-buy 153:1289, shop-sell 153:1523, shop-buy-confirm 153:1760) ─
-const SHOP_PANEL_BG := Color("161310", 0.90)
+const SHOP_PANEL_BG := Color("161310")  # непрозора: крізь 0.90 проступала мапа-фон (B8)
 const SHOP_ROW_BG := Color("000000", 0.56)
 const SHOP_ICON_TINT := Color("bfb8a6", 0.70)
 const SHOP_CATEGORY_COLUMN := 64

@@ -60,6 +60,27 @@ func _initialize() -> void:
 				"SaveSlotCard/%s border == BORDER_WIDTH_SELECTED" % state)
 	var unsel: StyleBoxFlat = theme.get_stylebox("normal", "SaveSlotCard")
 	_check(unsel.border_width_left == UITokens.BORDER_WIDTH, "SaveSlotCard/normal border == BORDER_WIDTH")
+	# B8: панелі меню з текстом і слоти збереження непрозорі — мапа-фон не йде крізь текст.
+	for variation in ["CenterPanel", "SidePanel", "CardPanel", "BoxPanel", "ActionCard", "TreePanel"]:
+		var box: StyleBoxFlat = theme.get_stylebox("panel", variation)
+		_check(box.bg_color == UITokens.MENU_SURFACE and box.bg_color.a == 1.0, "B8: %s bg == MENU_SURFACE, opaque" % variation)
+	for state in ["normal", "hover", "focus"]:
+		var card: StyleBoxFlat = theme.get_stylebox(state, "SaveSlotCard")
+		_check(state == "focus" or card.bg_color == UITokens.MENU_SURFACE, "B8: SaveSlotCard/%s bg == MENU_SURFACE" % state)
+	_check((theme.get_stylebox("panel", "ShopPanel") as StyleBoxFlat).bg_color.a == 1.0, "B8: ShopPanel opaque")
+	# B22: кнопки −/+ і ‹/› у Settings мають рамку 1px, як решта контролів екрана.
+	var step: StyleBoxFlat = theme.get_stylebox("normal", "SettingsStepper")
+	_check(step.border_width_left == UITokens.BORDER_WIDTH and step.border_color == UITokens.BORDER,
+			"B22: SettingsStepper/normal has a 1px BORDER frame")
+	# B90: на вибраному (акцентному) рядку фокус — біле кільце (D329), його малює list_row.gd.
+	var ring: StyleBoxFlat = theme.get_stylebox("focus_selected", "ListRow")
+	_check(ring.border_color == UITokens.FOCUS_RING_ON_ACCENT and ring.border_width_left == UITokens.FOCUS_RING_WIDTH
+			and ring.bg_color.a == 0.0, "B90: ListRow/focus_selected is the on-accent ring")
+	var sub_row := Button.new()
+	sub_row.theme = theme
+	sub_row.theme_type_variation = &"ListSubRow"
+	_check(sub_row.get_theme_stylebox(&"focus_selected") == ring, "B90: ListSubRow inherits focus_selected")
+	sub_row.free()
 
 	print("\n[3] Inheritance under StateRoot")
 	var ui_root: Node = (load(UI_ROOT) as PackedScene).instantiate()

@@ -183,6 +183,11 @@ func _initialize() -> void:
 
 	print("[5] volume changes apply immediately and persist")
 	var master_row: Node = _row(opts, "Master Volume")
+	# B22: −/+ — квадратні кнопки з рамкою (SettingsStepper), а не голі гліфи.
+	for part in [^"Slider/Minus", ^"Slider/Plus"]:
+		var stepper: Button = master_row.get_node(part)
+		ck(stepper.theme_type_variation == &"SettingsStepper" and stepper.size.x >= UITokens.SETTINGS_STEPPER_BOX
+				and stepper.size.y >= UITokens.SETTINGS_STEPPER_BOX, "B22: %s is a %dpx framed box (%s)" % [part, UITokens.SETTINGS_STEPPER_BOX, stepper.size])
 	var master: HSlider = master_row.get_node(^"Slider/Value")
 	master.value = 40.0
 	for i in 4: await process_frame

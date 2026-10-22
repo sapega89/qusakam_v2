@@ -1,4 +1,4 @@
-extends Button
+extends "res://SampleProject/UI/Components/list_row.gd"
 class_name UIItemRow
 
 ## Рядок списку предметів.
