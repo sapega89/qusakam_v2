@@ -134,13 +134,6 @@ the history, this note keeps only what is open.
 - **Severity:** cosmetic — repaint those pixels on the laptop (key on the weapon, off-key on the body), or per-frame masks
 - **Found:** 2026-10-22, `cloud/weapons-all` (its B111)
 
-### B106 — Weapon frames draw a shorter weapon than the hitbox reaches
-- **Where:** weapon libraries (`Resources/Player/WeaponAnimations/*.tres`) vs items.json `reach`.
-- **Expected:** the drawn weapon reaches about as far as the hitbox (D364 keeps the hitbox = items.json `reach` = the SlashTrail arc).
-- **Got:** halberd 72 px (the pole hits the 96 px cell edge) vs 134; sword 62 vs 78; dagger 58 vs 77; mace 64 vs 66 (max x of the attack frames ×1.5).
-- **Severity:** visual — Sapega: a wider cell for the halberd, or a shorter reach
-- **Found:** 2026-10-22, `cloud/weapons-all` (its B112)
-
 ### B107 — Ether says "Restores 30 MP."
 - **Where:** `SampleProject/Resources/Data/items.json` → Ether `description`.
 - **Expected:** SP — the game's resource (the Ukrainian text already says SP).
@@ -170,6 +163,8 @@ the history, this note keeps only what is open.
 - **Severity:** visual (balance) — fixing it re-tunes every fight (4b). **Decided:** Sapega 2026-10-22, tempo from the stats (D394)
 - **Found:** 2026-10-22, `cloud/bow`
 
+> **2026-10-22:** **B106** closed as designed by D395 (the slash arc shows the reach) — row removed.
+>
 > **Fixed log (2026-10-22, `cloud/code-fixes`):** B42 (Game.tscn's dangling ObjectiveHUD; `verify_scripts_compile`
 > now fails on any unused ext_resource) and B4 (the `or true` check in `verify_misc_modal`) — rows removed,
 > `git log --grep B42` / `--grep B4`.

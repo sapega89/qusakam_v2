@@ -14,9 +14,12 @@ Written for Sapega («запиши, що треба зробити, в бекл�
 
 | Branch | What | Status |
 |---|---|---|
-| `cloud/bow` | BACKLOG 40 — the bow like Skul, arrows, the bandit archer enemy | working in the cloud |
-| `cloud/weapons-all` | BACKLOG 42 — dagger, mace, halberd, dual-wield in combat + the weapon palette swap (copper, silver, crystal) | working in the cloud |
-| integrator 2 (re-armed) / integrator 3 FINAL 09:30 | register 9.8 + localization-2 (already merged locally), then bow + weapons-all; `FINAL.md` | scheduled |
+| `cloud/combat-stats` | B84 (D393), B111 (D394), damage numbers + the Settings row (D66) | working in the cloud (round 6) |
+| `cloud/ui-bugs` | B8, B10, B14, B19, B22, B90, B95, B96 | working in the cloud (round 6) |
+| `cloud/misc-bugs` | B91, B92, B93, B94, B107, B108 | working in the cloud (round 6) |
+| `cloud/skill-fx`, `cloud/art-fixes-wire` | wiring of Art 2 and Art 3–4 (+ B105) | start when that art is on `feature/backlog` |
+
+Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); `cloud/code-fixes`, `cloud/living-world` (round 5).
 
 ## Art (needs ComfyUI on the laptop)
 
@@ -31,6 +34,9 @@ Written for Sapega («запиши, що треба зробити, в бекл�
    death frame reads close to idle; the priestess has a stray stick in the prayer frames; the grandfather's staff
    swaps hands between idle and pipe; the pillar floor mark and slam dust are faint.
 5. **BACKLOG 30 — effects polish** after Sapega's notes.
+6. **Bow frames for the other poses** (B110): Air 1–3, Block, Hurt, Roll in the bow grip; then a cloud task adds them to
+   `AnimationLibrary_bow`.
+7. **A grass idle sheet** (BACKLOG 19 leftover) for `Scenes/Backgrounds/Decor/`.
 
 ## Code (cloud or laptop)
 

@@ -42,3 +42,15 @@ the journal lore/flags (34); Sapega's own texts (hints D159, lore, oath ideas 27
 |---|---|---|---|
 | 07:xx | code-fixes (`trig_01AKEmtZhgFsxCs72ueui65A`) | cloud/code-fixes | boss telegraph, game-time enemy cooldowns, souls_combat flake, B42, B4, #29, Journal portraits |
 | 08:09 | living-world (`trig_01MyFTRZ4Rone1Aiik6fc6ze`) | cloud/living-world | BACKLOG 7 + 19: foreground planes, decor idle loops, drifting clouds |
+
+## Round 6 (2026-10-22): bugs and damage numbers
+
+Sapega «оце вже можна в хмарі запустити» (the open bugs) and «треба додати цифри урону по мені і ворогу». The three run side by side, so none edits the registers: each report carries its D-ID text and the B rows it fixed, and the orchestrator applies them at merge.
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 09:41 | combat-stats (`trig_012dFzq1nzQq3U3rPMcWC6qM`) | cloud/combat-stats | B84 (D393), B111 (D394), damage numbers on the hero and enemies + the Settings row (D66) |
+| 09:41 | ui-bugs (`trig_01NdCwKPSAEPpPjMiwKExM6v`) | cloud/ui-bugs | B8, B10, B14, B19, B22, B90, B95, B96 |
+| 09:41 | misc-bugs (`trig_016RhosmxiaoTrWqcMrsQGpi`) | cloud/misc-bugs | B91, B92, B93, B94, B107, B108 |
+
+Not in this round: B105 (weapon palette pixels) goes with `cloud/art-fixes-wire`; B110 needs bow frames from the art lane first (Air 1–3, Block, Hurt, Roll); B106 closed by D395.
