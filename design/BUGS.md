@@ -97,6 +97,14 @@ the history, this note keeps only what is open.
 - **Severity:** tests only (flaky)
 - **Found:** 2026-10-22, `cloud/fight-music`
 
+### B118 — Settings are lost on restart when the last-used slot has no save
+- **Where:** `SaveSystem.save_game_settings()` (`Scripts/Systems/SaveSystem.gd`: `if not FileAccess.file_exists(slot_path): return true`) — settings live inside the slot file.
+- **Expected:** every Settings row survives a restart ([[settings_plan]] rule), on a fresh install too.
+- **Got:** a fresh install that changes the language or volume from the Main Menu and quits loses the change.
+- **Fix (recommended by `cloud/settings-1`):** one global settings file (e.g. `user://saves/settings.json`); slot files stop carrying `game_settings`. Touches `Game.save_game`, `SaveSystem` and about 6 tests.
+- **Severity:** functional (every Settings row on a fresh install)
+- **Found:** 2026-10-22, `cloud/settings-1`
+
 > **2026-10-22, the next session:** **B113** fixed — row removed. Every failure had the same signature: the hero was still
 > invulnerable at the test's double hit, after a hitstop in [2b] showed an enemy hit landing past the fixed 1 s wait
 > (10 local runs, 5 under full CPU load, all green — the source was not caught). [2b] now takes the enemies out of the
