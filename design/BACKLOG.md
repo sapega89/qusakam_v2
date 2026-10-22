@@ -265,7 +265,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 38. ~~**Village centre**~~ (Q59) — **done 2026-10-22** (D342, `cloud/buildings`, integration-3). *Left: elder art (two views) + his lines, then swap `village_elder.tscn`'s sheet; Q58's one-cell Village reshape is not done.*: a separate house at the end of the Village — an interior room like the Mayor Hall (the
     village elder's house). The Village stays one cell high (Q58).
 39. ~~**Cleanup**~~ — **done 2026-10-21** (D337, `cloud/settings-cleanup`; the orphan world-object scenes stay as a parts bin): delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
-40. **Ranged weapons** (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
+40. ~~**Ranged weapons**~~ — **done 2026-10-22** (D380–D387, `cloud/bow`, integration-4, [[ranged_plan]]; left: bow frames for air / block / hurt B110, enemy tempo B111, aim up/down) (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
     the hero's bow plays like Skul: The Hero Slayer (confirmed by Sapega; fast aimed shots on the attack button, arrows fly straight, charge
     for a stronger shot — confirm details with Sapega when planned). Plan first.
 41. ~~**Graphics settings**~~ — **done 2026-10-21** (D327–D329, `cloud/settings-cleanup`; `GameUITheme.tres` must be regenerated locally): resolution and FPS-limit options in Settings (settings_plan.md:58 values — pick common ones:

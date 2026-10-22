@@ -155,6 +155,21 @@ the history, this note keeps only what is open.
 - **Severity:** visual (data)
 - **Found:** 2026-10-22, `cloud/localization-2`
 
+### B110 — The bow vanishes outside its frames
+- **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
+- **Expected:** the hero holds the bow in every pose (D385).
+- **Got:** A4 has bow frames only for stance, run, shots, draw and charge; in jump / apex / fall / land, block, hurt and roll the base frames play and the hero holds no bow.
+- **Evidence:** `design/shots/hero_blocks_arrow.png`
+- **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
+- **Found:** 2026-10-22, `cloud/bow`
+
+### B111 — Enemy attack tempo ignores `EnemyStats.attack_cooldown`
+- **Where:** `SampleProject/Scripts/Gameplay/…/EnemyLogic.gd` `handle_attack_state` (its own `attack_cooldown` 1.5 s; `initialize()` never copies the stats value).
+- **Expected:** each enemy swings at its stats' tempo (the fast 1.0 s…).
+- **Got:** every melee enemy swings every 1.5 s; only the archer reads `enemy.attack_cooldown` (2.2 s).
+- **Severity:** visual (balance) — fixing it re-tunes every fight (4b); needs Sapega's call on whether the stats' tempos are wanted
+- **Found:** 2026-10-22, `cloud/bow`
+
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
 > rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21
@@ -183,7 +198,7 @@ the history, this note keeps only what is open.
 > **B103** SCRIPT ERROR in the top HUD on every scene change from the game (`combat_hud_top.gd` connects `process_frame`
 > only in the tree; `cloud/lab-9-8`); **B104** holding block with a weapon that has frames brought the overlay weapon back
 > after the 0.1 s pose (`WeaponView._drawn_in_frame` reads `assigned_animation`, `verify_weapon_animations`;
-> `cloud/weapons-all`, its B110). B105–B108 added — see [[cloud_reports/integration-4]].
+> `cloud/weapons-all`, its B110). B105–B108 and `cloud/bow`'s B110, B111 added — see [[cloud_reports/integration-4]].
 
 
 ## Playtest intake — 2026-09-29 (Sapega)
