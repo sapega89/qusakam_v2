@@ -51,6 +51,8 @@ func _init() -> void:
 	_prompt = SKIP_PROMPT.instantiate()
 	_prompt.skip_requested.connect(_skip)
 	_tree.root.add_child(_prompt)
+	# Гра пішла — підказка з нею. Звільнена раніше (end(), вихід із програми) — і підписка зникла сама (B92).
+	player.tree_exiting.connect(_prompt.queue_free)
 	hold()
 
 
@@ -157,10 +159,9 @@ func end() -> void:
 
 ## Герой іде з дерева разом із грою, а end() так і не настав: сцена відпускає все, що тримає поза грою —
 ## підписку на автозавантаження DialogueManager (наступна гра інакше кликала б hold() на звільненому герої),
-## підказку в root, швидкість пропуску (B92).
+## швидкість пропуску; підказку в root звільняє її власна підписка на tree_exiting (B92).
 func _abandon() -> void:
 	_abandoned = true
-	_prompt.queue_free()  # root саме знімає гру — free() тут не можна
 	_release()
 
 
