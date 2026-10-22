@@ -8,7 +8,7 @@ class_name PlayerCombat
 
 const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
 
-enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE }
+enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED }
 
 # External references
 @export var sprite: Sprite2D
@@ -51,6 +51,27 @@ const POISE_HEAVY := 3
 const PARRY_WINDOW := 0.25
 ## Удар, що збив би героя на стільки секунд і довше (tank, фінішер серії), пробиває блок.
 const GUARD_BREAK := 0.6
+## Лук (D380–D382, design/ranged_plan.md), як у Skul: швидкий постріл — одразу на натискання удару, стріла вилітає
+## через QUICK_RELEASE с (кадр Shoot/1 у bow/Attack1), поза — SHOT_TIME с; кнопку тримають далі — натяг DRAW_TIME с
+## (рух стоїть, перекат зриває), потім заряджено; відпустили заряджений — заряджений постріл (поза Release).
+## Відпустили раніше — лук опускається без стріли. Важкий удар з луком — одразу натяг.
+const ARROW_SCENE := preload("res://SampleProject/Scenes/Combat/arrow.tscn")
+const CHARGED_ARROW_SCENE := preload("res://SampleProject/Scenes/Combat/arrow_charged.tscn")
+## Наконечник накладеної стріли в кадрах лука, px світу від центру героя обличчям праворуч
+## (Weapons/bow/README.md: (76, 61) у клітинці 96×96, зсув (0, −16), ×1.5).
+const ARROW_FROM := Vector2(42, -5)
+const QUICK_SHOT_DAMAGE := 0.7
+const CHARGED_SHOT_DAMAGE := 1.8
+const CHARGED_KNOCKBACK := 60.0
+const QUICK_RELEASE := 0.05
+const SHOT_TIME := 0.22
+const DRAW_TIME := 0.6
+const RELEASE_TIME := 0.3
+## Кнопку удару чи важкого тримають (Player._unhandled_input) — після пострілу лук натягується.
+var shot_held: bool = false
+## Швидкий постріл іде, а стріла ще не вилетіла.
+var _arrow_due: bool = false
+
 ## Збій героя (D264): на скільки px його відносить від того, хто вдарив, і за який час.
 @export var stagger_push: float = 50.0
 @export var stagger_push_time: float = 0.15
@@ -89,7 +110,7 @@ var _cast_fx: SkillCastFX
 
 var is_attacking: bool:
 	get:
-		return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE]
+		return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.SHOOT, State.DRAW, State.CHARGED]
 
 # Parent reference (for getting direction and signals)
 @onready var player = get_parent()
@@ -115,6 +136,11 @@ func apply_weapon_profile() -> void:
 		_hitbox_shape().size = _bare_size
 		attack_cooldown_time = _bare_cooldown
 		_weapon_knockback = 0.0
+	elif grip == &"bow":
+		# Лук б'є стрілами, хітбокс удару не потрібен (D383): з профілю — темп пострілів і відкидання.
+		var bow: Dictionary = item.weapon_profile
+		attack_cooldown_time = bow.cooldown
+		_weapon_knockback = bow.knockback
 	else:
 		var profile: Dictionary = item.weapon_profile
 		_hitbox_shape().size = Vector2(profile.reach, profile.height)
@@ -126,16 +152,25 @@ func _hitbox_shape() -> RectangleShape2D:
 	return hitbox.get_node(^"CollisionShape2D").shape
 
 ## Влучання: відкидання і стійкість ворога (D265).
-## Стійкість — першою: її збій штовхає ворога на 30 px, а відкидання удару (булава, фінішер, важкий) — далі й перекриває.
 func _on_damage_applied(target: Node, damage: int) -> void:
+	_hit_effects(target, damage, _poise, knockback, player.global_position.x)
+
+## Влучання стріли героя (D381): та сама стійкість, пасивки й відкидання, що й від удару, — від точки, звідки летіла
+## стріла ([param from_x]); підстрелений ворог повертається до героя, навіть якщо ще його не бачив.
+func on_arrow_hit(target: Node, damage: int, poise: int, push: float, from_x: float) -> void:
+	_hit_effects(target, damage, poise, push, from_x)
+	target.enemy_logic.on_player_detected(player)
+
+## Стійкість — першою: її збій штовхає ворога на 30 px, а відкидання удару (булава, фінішер, важкий) — далі й перекриває.
+func _hit_effects(target: Node, damage: int, poise: int, push: float, from_x: float) -> void:
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	target.take_poise(roundi(_poise * (1.0 + skills.passive_value("poise"))), player.global_position.x)  # D284
+	target.take_poise(roundi(poise * (1.0 + skills.passive_value("poise"))), from_x)  # D284
 	var drained := roundi(damage * skills.passive_value("lifesteal"))  # D284: Blood Pact
 	if drained > 0:
 		player.heal_damage(drained)
-	var away: float = signf(target.global_position.x - player.global_position.x)
-	if knockback > 0.0:
-		target.knockback(away * knockback)
+	var away: float = signf(target.global_position.x - from_x)
+	if push > 0.0:
+		target.knockback(away * push)
 	else:
 		# Легкий удар теж штовхає (4b «мало відчуття удару»), але замаху не зриває — це робить стійкість (D265)
 		target.nudge(away * HIT_PUSH)
@@ -170,13 +205,16 @@ func _physics_process(delta: float) -> void:
 	if state == State.READY:
 		if block_held:
 			_start_block()
-		elif _queued:
+		elif _queued and attack_cooldown <= 0.0:
 			# Наступний удар серії — кадром пізніше: хітбокс мусить хоч кадр побути вимкненим,
 			# інакше ворог, що стоїть у ньому, не «увійде» вдруге й не отримає удару.
+			# Постріл, натиснутий під час попереднього, чекає кінця темпу лука (attack_cooldown).
 			_queued = false
 			perform_attack(_direction)
 		return
 	_state_left -= delta
+	if _arrow_due and SHOT_TIME - _state_left >= QUICK_RELEASE:
+		_loose(false)
 	if _state_left > 0.0:
 		return
 	match state:
@@ -197,6 +235,14 @@ func _physics_process(delta: float) -> void:
 			_release_cast()
 		State.CAST_RELEASE:
 			state = State.READY
+		State.SHOOT:
+			state = State.READY
+			if shot_held:
+				_start_draw()
+		State.DRAW:
+			state = State.CHARGED
+			_state_left = INF  # тримає, доки кнопку не відпустять
+			_play(&"Charged")
 
 func in_combat() -> bool:
 	return _in_combat
@@ -222,16 +268,19 @@ func _exit_tree() -> void:
 	damage_applier.disable_damage()
 	state = State.READY
 	_queued = false
+	_arrow_due = false
 	block_held = false
+	shot_held = false
 	casting_skill = ""  # каст не зірвано ударом — нічого не списано
 
 ## Анімацію героя зараз веде бій, а не рух (Player._physics_process її не перемикає).
 func owns_animation() -> bool:
 	return state != State.READY
 
-## Рух вимкнено: збій, важкий удар, блок, каст навички (герой стоїть). Легкі удари рух не гальмують (D223).
+## Рух вимкнено: збій, важкий удар, блок, каст навички, натяг лука (герой стоїть). Легкі удари й швидкі постріли
+## рух не гальмують (D223, D382).
 func locks_movement() -> bool:
-	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE]
+	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE, State.DRAW, State.CHARGED]
 
 func is_staggered() -> bool:
 	return state == State.STAGGER
@@ -240,7 +289,11 @@ func is_blocking() -> bool:
 	return state == State.BLOCK
 
 ## Легкий удар (D264): перший серії або наступний, якщо попередній щойно скінчився; натиснутий посеред удару — у черзі.
+## З луком — швидкий постріл (D380).
 func perform_attack(last_direction: int) -> void:
+	if grip == &"bow":
+		_quick_shot(last_direction)
+		return
 	if state == State.SWING:
 		_queued = combo_step < combo_length() - 1
 		return
@@ -268,7 +321,13 @@ func perform_attack(last_direction: int) -> void:
 	_set_hitbox_active(true, last_direction)
 
 ## Важкий удар (D264): замах heavy_windup (удар по героєві його зриває), потім удар ×heavy_damage з відкиданням.
+## З луком — одразу натяг на заряджений постріл (D384).
 func heavy_attack(last_direction: int) -> void:
+	if grip == &"bow":
+		if state == State.READY:
+			_direction = last_direction
+			_start_draw()
+		return
 	if state != State.READY or attack_cooldown > 0:
 		return
 	state = State.HEAVY_WINDUP
@@ -288,6 +347,58 @@ func _strike_heavy() -> void:
 	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
+
+## Швидкий постріл (D380): натиснутий посеред пострілу — один у черзі, натяг і заряджений лук — без змін.
+func _quick_shot(last_direction: int) -> void:
+	if state == State.SHOOT:
+		_queued = true
+		return
+	if state != State.READY or attack_cooldown > 0:
+		return
+	state = State.SHOOT
+	_state_left = SHOT_TIME
+	_direction = last_direction
+	_arrow_due = true
+	combo_step = 0
+	attack_cooldown = attack_cooldown_time
+	_play(&"Attack")
+
+## Кнопку удару чи важкого відпустили: заряджений лук стріляє, недотягнутий — опускається.
+func release_shot() -> void:
+	shot_held = false
+	if state == State.CHARGED:
+		_loose(true)
+		state = State.SHOOT
+		_state_left = RELEASE_TIME
+		_play(&"Release")
+	elif state == State.DRAW:
+		state = State.READY
+
+## Натяг (D380): рух стоїть DRAW_TIME с, далі лук заряджений.
+func _start_draw() -> void:
+	state = State.DRAW
+	_state_left = DRAW_TIME
+	_queued = false
+	_play(&"Draw")
+	EventBus.player_bow_drawn.emit(player)
+
+## Перекат зриває натяг (D382) — без стріли.
+func cancel_draw() -> void:
+	if state in [State.DRAW, State.CHARGED]:
+		state = State.READY
+
+## Стріла з наконечника в кадрі туди, куди дивився герой на початку пострілу (D381). Летить у кімнаті, не в героєві.
+func _loose(charged: bool) -> void:
+	_arrow_due = false
+	var arrow: Arrow = (CHARGED_ARROW_SCENE if charged else ARROW_SCENE).instantiate()
+	arrow.direction = _direction
+	arrow.shooter = player
+	arrow.damage = roundi(hit_damage() * (CHARGED_SHOT_DAMAGE if charged else QUICK_SHOT_DAMAGE))
+	arrow.poise = POISE_HEAVY if charged else POISE_LIGHT
+	arrow.knockback = maxf(_weapon_knockback, CHARGED_KNOCKBACK) if charged else _weapon_knockback
+	Game.get_singleton().map.add_child(arrow)
+	arrow.global_position = player.global_position + Vector2(ARROW_FROM.x * _direction, ARROW_FROM.y)
+	EventBus.player_shot.emit(player, charged)
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
 ## вивільнення: SkillManager.use_skill застосовує ефект. false — герой зайнятий.
@@ -330,9 +441,9 @@ func _start_block() -> void:
 	_play(&"Block")
 
 ## Удар по героєві в блоці (D264): &"parry" — у перші PARRY_WINDOW с, &"block" — спереду, &"" — не захищено
-## (не в блоці, удар ззаду, не ворог).
+## (не в блоці, удар ззаду, не ворог і не стріла лучника — D384).
 func guard_against(source: Node) -> StringName:
-	if state != State.BLOCK or not source is DefaultEnemy:
+	if state != State.BLOCK or not (source is DefaultEnemy or source is Arrow):
 		return &""
 	var side: float = signf(source.global_position.x - player.global_position.x)
 	if side != 0.0 and side != player.last_direction:
@@ -353,6 +464,7 @@ func stagger(duration: float, from_x: float) -> void:
 	state = State.STAGGER
 	_state_left = duration
 	_queued = false
+	_arrow_due = false
 	_chain_left = 0.0
 	_play(&"Hurt")
 	var away: float = signf(player.global_position.x - from_x)

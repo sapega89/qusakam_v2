@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/ArcherEnemy.gd" id="2_archer"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit_archer/sheet.png" id="3_sheet"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 0.9
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.45),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "walk"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [4, 5, 6, 7]
+}
+
+[sub_resource type="Animation" id="Animation_attack"]
+resource_name = "attack"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "death"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [16, 17, 18, 19]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_archer"]
+_data = {
+&"attack": SubResource("Animation_attack"),
+&"death": SubResource("Animation_death"),
+&"idle": SubResource("Animation_idle"),
+&"walk": SubResource("Animation_walk")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 420.0
+
+[node name="EnemyArcher" instance=ExtResource("1_base")]
+script = ExtResource("2_archer")
+
+[node name="Sprite2D" parent="." index="2"]
+metadata/tell_at = Vector2(24, -2)
+texture = ExtResource("3_sheet")
+hframes = 4
+vframes = 5
+
+[node name="AnimationPlayer" parent="." index="3"]
+libraries/ = SubResource("AnimationLibrary_archer")
+metadata/attack_strike_time = 0.8
+
+[node name="CollisionShape2D" parent="dettection" index="0"]
+shape = SubResource("CircleShape2D_detection")

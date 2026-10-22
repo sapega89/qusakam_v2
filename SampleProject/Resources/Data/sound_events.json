@@ -13,6 +13,10 @@
 		"block": {"bus": "SFX", "files": ["SFX/impactMetal_light_000.ogg", "SFX/impactMetal_light_001.ogg", "SFX/impactMetal_light_002.ogg"]},
 		"parry": {"bus": "SFX", "files": ["SFX/impactBell_heavy_000.ogg", "SFX/impactBell_heavy_001.ogg"], "volume_db": -2.0},
 		"stagger": {"bus": "SFX", "files": ["SFX/impactPlate_heavy_000.ogg", "SFX/impactPlate_heavy_001.ogg"], "volume_db": -4.0},
+		"bow_draw": {"bus": "SFX", "files": ["SFX/drawKnife1.ogg", "SFX/drawKnife2.ogg", "SFX/drawKnife3.ogg"], "pitch": 0.6, "volume_db": -6.0},
+		"bow_shot": {"bus": "SFX", "files": ["SFX/knifeSlice.ogg", "SFX/knifeSlice2.ogg"], "pitch": 1.35, "volume_db": -3.0},
+		"bow_shot_charged": {"bus": "SFX", "files": ["SFX/knifeSlice.ogg", "SFX/knifeSlice2.ogg"], "pitch": 0.9, "volume_db": 1.0},
+		"arrow_wall": {"bus": "SFX", "files": ["SFX/impactWood_light_000.ogg", "SFX/impactWood_light_001.ogg", "SFX/impactWood_light_002.ogg"], "volume_db": -6.0},
 		"draw": {"bus": "SFX", "files": ["SFX/drawKnife1.ogg", "SFX/drawKnife2.ogg", "SFX/drawKnife3.ogg"], "volume_db": -4.0},
 		"sheathe": {"bus": "SFX", "files": ["SFX/beltHandle1.ogg", "SFX/beltHandle2.ogg"], "volume_db": -4.0},
 		"dash": {"bus": "SFX", "files": ["SFX/cloth1.ogg", "SFX/cloth2.ogg", "SFX/cloth3.ogg", "SFX/cloth4.ogg"], "pitch": 1.2},
@@ -103,5 +107,5 @@
 		"Три темніх жреца": "dark_priests",
 		"BRASS_COLLECTOR": "brass_collector", "FIRE_DJINN": "fire_djinn", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
 	},
-	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75}
+	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05}
 }

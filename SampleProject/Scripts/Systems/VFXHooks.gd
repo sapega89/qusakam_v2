@@ -39,6 +39,8 @@ const HURT_FEEL: Array[Dictionary] = [
 	{hitstop = 0.14, kick = 7.0, cut = 1.6, vignette = 1.0, fade = 0.6, rumble = Vector3(1.0, 1.0, 0.35)},
 ]
 const PARRY_HITSTOP := 0.07
+## Група стріл героя (Arrow.HERO_ARROWS): ім'я тут, а не клас — цей скрипт вантажиться раніше за class_name-класи.
+const HERO_ARROWS := &"hero_arrows"
 const PARRY_KICK := 5.0
 const KICK_TIME := 0.16
 
@@ -135,12 +137,15 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	ServiceLocator.get_time_manager().hitstop(feel.hitstop)
 	_kick_camera(Vector2(-side, 0.0), feel.kick)
 	target.enemy_view.flinch(side, feel.flinch)
-	if source.is_in_group(GameGroups.PLAYER):
+	if source.is_in_group(GameGroups.PLAYER) or source.is_in_group(HERO_ARROWS):
 		rumble(feel.rumble)
 
 
 ## Сила удару: 2 — важкий удар героя, 1 — удар із відкиданням (фінішер серії, булава D203, компаньйон D209), 0 — легкий.
+## Стріла героя (D381) несе свою: швидка 0, заряджена 2.
 static func hit_strength(source: Node) -> int:
+	if source.is_in_group(HERO_ARROWS):
+		return source.strength
 	if source.is_in_group(GameGroups.PLAYER) and source.combat.state == source.combat.State.HEAVY_STRIKE:
 		return 2
 	return 1 if is_heavy_hit(source) else 0
@@ -152,9 +157,9 @@ static func rumble(v: Vector3) -> void:
 		Input.start_joy_vibration(InputGlyphs.pad_device, v.x, v.y, v.z)
 
 
-## Герой чи компаньйон влучив у ворога (ефект і звук влучання — SoundHooks теж питає тут).
+## Герой, його стріла (D381) чи компаньйон влучив у ворога (ефект і звук влучання — SoundHooks теж питає тут).
 static func is_hero_side_hit(source: Node, target: Node) -> bool:
-	return (source.is_in_group(GameGroups.PLAYER) or source.is_in_group(&"companions")) and target.is_in_group(GameGroups.ENEMIES)
+	return (source.is_in_group(GameGroups.PLAYER) or source.is_in_group(HERO_ARROWS) or source.is_in_group(&"companions")) and target.is_in_group(GameGroups.ENEMIES)
 
 
 ## Важкий — удар із відкиданням: зброя героя (D203) чи компаньйон (D209).

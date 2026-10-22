@@ -34,6 +34,7 @@ func get_weapon_item_in_hand() -> Dictionary:
 	return ItemDatabase.get_item(_state().equipment[slot].id)
 
 ## Хват (D250, D267): &"bare" — голі руки; &"two_handed" — зброя з "grip": "two_handed" (алебарда);
+## &"bow" — лук ("grip": "bow", D383): обидві руки на луку, стріли замість удару хітбоксом;
 ## &"dual" — одноручна в руці, ще одна одноручна вдягнена і щита немає (друга — у другій руці); інакше &"one_handed".
 const ONE_HANDED_SLOTS: Array[String] = ["sword", "dagger", "axe", "mace"]
 
@@ -43,6 +44,8 @@ func get_grip() -> StringName:
 		return &"bare"
 	if item.get("grip", "") == "two_handed":
 		return &"two_handed"
+	if item.get("grip", "") == "bow":
+		return &"bow"
 	return &"dual" if not get_off_hand_item().is_empty() else &"one_handed"
 
 ## Зброя в другій руці (дві зброї, D250) або {}: перша за WEAPON_SLOTS одноручна, крім тієї, що в руці.

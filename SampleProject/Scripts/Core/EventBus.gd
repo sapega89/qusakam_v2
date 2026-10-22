@@ -174,6 +174,11 @@ signal combat_state_changed(in_combat: bool)
 ## Замах важкого удару героя (D264) — WeaponView піднімає зброю.
 @warning_ignore("unused_signal")
 signal player_heavy_windup(player: Node, direction: int)
+## Лук героя (D380): почався натяг; стріла вилетіла (charged — заряджений постріл). Звуки — SoundHooks.
+@warning_ignore("unused_signal")
+signal player_bow_drawn(player: Node)
+@warning_ignore("unused_signal")
+signal player_shot(player: Node, charged: bool)
 @warning_ignore("unused_signal")
 signal skill_interrupted(skill_id: String)
 ## Почався замах касту навички (D271) — звук замаху (D276).

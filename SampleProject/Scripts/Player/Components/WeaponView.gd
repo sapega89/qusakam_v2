@@ -21,6 +21,10 @@ const SLASH_TRAIL_SCENE := preload("res://SampleProject/Scenes/FX/SlashTrail.tsc
 const GRIP := 3
 ## Колючу зброю виносять уперед, решту — замахом (категорії items.json).
 const THRUST := ["polearm", "dagger"]
+## Зброя без накладного спрайта: її малюють лише кадри героя (лук, D385) — поза ними (стрибок, перекат) її не видно.
+const DRAWN_ONLY := ["bow"]
+## Хвати, для яких є бібліотеки кадрів героя (BACKLOG 42; лук — D385).
+const FRAME_GRIPS: Array[StringName] = [&"one_handed", &"bow"]
 ## Де кулак героя в кадрах (px світу від центру героя, обличчям праворуч), виміряно по кулаку:
 ## хода 1 — стійка, біг 4 — замах, біг 2 — удар; Heavy/1 — кулаки над головою, Heavy/2 — внизу перед собою,
 ## Block/1 — перед обличчям, Hurt/1 — рука відкинута.
@@ -100,7 +104,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
 	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
-	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not _drawn_in_frame()
+	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not _drawn_in_frame() and _category not in DRAWN_ONLY
 	off_pivot.visible = _dual and pivot.visible
 	if _tween and _tween.is_running():
 		return
@@ -113,9 +117,9 @@ func _open_palm() -> bool:
 
 
 ## Бібліотека кадрів героя для зброї в руці (BACKLOG 42): ім'я категорії, коли зброя дістана (бій або удар),
-## хват одноручний і в AnimationPlayer героя є така бібліотека; інакше &"" — базові кадри й цей спрайт.
+## хват одноручний чи лук і в AnimationPlayer героя є така бібліотека; інакше &"" — базові кадри й цей спрайт.
 func body_library() -> StringName:
-	if not visible or _grip != &"one_handed" or (sheathed and not player.combat.is_attacking):
+	if not visible or _grip not in FRAME_GRIPS or (sheathed and not player.combat.is_attacking):
 		return &""
 	var library := StringName(_category)
 	return library if player.get_node(^"AnimationPlayer").has_animation_library(library) else &""
@@ -135,6 +139,9 @@ func _refresh() -> void:
 	if not visible:
 		return
 	_category = item.category
+	if _category in DRAWN_ONLY:
+		_dual = false
+		return
 	_set_texture(sprite, item.id)
 	var off: Dictionary = equipment.get_off_hand_item()
 	_dual = not off.is_empty()
