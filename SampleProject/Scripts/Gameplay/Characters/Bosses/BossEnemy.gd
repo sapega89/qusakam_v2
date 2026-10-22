@@ -68,6 +68,17 @@ func telegraph(move: Dictionary) -> void:
 	_pose(move.kind)
 
 
+## Підказка ходу (4b): відблиск на зброї тієї пози, що зараз на екрані (EnemyView.weapon_point бере meta
+## «tell_at_<kind>» Sprite2D боса), а ривок (charge) ще й креслить червону лінію по землі на всю небезпечну
+## смугу — distance ривка плюс melee_reach хітбокса попереду, як лінія ривка fast.
+func _on_logic_attack_telegraphed() -> void:
+	var move: Dictionary = enemy_logic.last_move
+	if move.get("kind", "") == "charge":
+		enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, float(move.distance), melee_reach)
+	else:
+		enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, 0.0, 0.0)
+
+
 func strike(move: Dictionary) -> void:
 	_pose(move.kind + "_strike")
 

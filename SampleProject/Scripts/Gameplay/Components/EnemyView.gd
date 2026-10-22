@@ -82,9 +82,11 @@ func show_tell(life: float, lunge: float, reach: float) -> void:
 
 ## Де на кадрі замаху зброя (лезо, зуби, жало, наконечник стріли — звідси й летить стріла лучника, D386), px від
 ## центру ворога для погляду [param direction]: meta «tell_at» Sprite2D у сцені ворога — px текстури від центру кадру
-## для погляду праворуч.
+## для погляду праворуч. Ворог із кількома позами замаху (бос: charge, slam, fireball, pillar) дає на кожну свою
+## meta «tell_at_<анімація>» — береться та, що грає зараз.
 func weapon_point(direction: int) -> Vector2:
-	var at: Vector2 = sprite2d.get_meta(&"tell_at")
+	var pose_key := StringName("tell_at_" + anim_player.assigned_animation)
+	var at: Vector2 = sprite2d.get_meta(pose_key) if sprite2d.has_meta(pose_key) else sprite2d.get_meta(&"tell_at")
 	return sprite2d.position + (sprite2d.offset + Vector2(at.x * direction, at.y)) * _base_scale
 
 ## Удар героя влучив: тіло стискається, відхиляється від удару на [param push] px і вертається.

@@ -113,7 +113,7 @@ func _move(boss: Node, kind: String, dx: float, name: String, moment: Callable) 
 	hero.current_health = hero.Max_Health
 	hero.global_position = Vector2(boss.global_position.x + dx, floor_y)
 	hero.velocity = Vector2.ZERO
-	boss.enemy_logic.last_attack_time = 0.0
+	boss.enemy_logic.attack_ready_in = 0.0
 	hero.set_physics_process(false)  # удар не відкидає героя з дальності ходу, поки знімаємо
 	boss.set_physics_process(true)
 	await moment.call()

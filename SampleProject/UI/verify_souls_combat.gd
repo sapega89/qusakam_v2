@@ -169,6 +169,12 @@ func _hit_feel() -> void:
 	await create_timer(1.5).timeout
 
 ## [0] «Вороги інколи заморожують героя» (D264): довгий бій ніколи не лишає героя без керування.
+## Збій від удару (0.25 с, фінішер і tank 0.6 с) — задуманий, тож рух міряємо лише в кадрах, коли герой керований:
+## секунда «застрягла», якщо герой був вільний хоч FREE_MIN с, а йшов повільніше за STUCK_SPEED. Раніше міряли всю
+## секунду (< 100 px) — фінішер у вікні з'їдав 0.6 с, і тест падав ~1 раз на 10 без жодного застрягання.
+const FREE_MIN := 0.25
+const STUCK_SPEED := 150.0
+
 func _freeze_check() -> void:
 	print("[0] A long melee never leaves the hero stuck (D264)")
 	for e in enemies:
@@ -178,19 +184,33 @@ func _freeze_check() -> void:
 	hero.current_health = hero.Max_Health
 	hero.global_position = enemies[0].global_position + Vector2(-80, 0)
 	var stuck_seconds := 0
+	var staggered := 0.0
 	var dir := 1
+	var tick := 1.0 / Engine.physics_ticks_per_second
 	for sec in 12:
-		var x0: float = hero.global_position.x
+		var free_time := 0.0
+		var free_dx := 0.0
 		var act: StringName = &"move_right" if dir > 0 else &"move_left"
 		Input.action_press(act)
 		for f in 5:
 			await _tap(&"attack")
-			await create_timer(0.18).timeout
+			var timer := create_timer(0.18)
+			while timer.time_left > 0.0:
+				var x: float = hero.global_position.x
+				var was_free: bool = not hero.combat.is_staggered()
+				await physics_frame
+				if was_free and not hero.combat.is_staggered():
+					free_time += tick * Engine.time_scale
+					free_dx += (hero.global_position.x - x) * dir
+				else:
+					staggered += tick * Engine.time_scale
 		Input.action_release(act)
-		if absf(hero.global_position.x - x0) < 100.0:
+		if free_time >= FREE_MIN and free_dx < STUCK_SPEED * free_time:
 			stuck_seconds += 1
+			print("    stuck: free %.2f s, moved %.0f px" % [free_time, free_dx])
 		dir = -dir  # туди-сюди — не виходить з кімнати
-	ck(stuck_seconds <= 2, "the hero moved in at least 10 of 12 seconds of fighting (%d stuck)" % stuck_seconds)
+	print("    staggered %.1f s of 12 (by design, D264)" % staggered)
+	ck(stuck_seconds == 0, "whenever the hero is not staggered he moves at least %.0f px/s (%d stuck seconds of 12)" % [STUCK_SPEED, stuck_seconds])
 	# Бій скінчився: вороги стоять, а замах, що вже йшов, б'є до кінця (корутина на таймерах) — чекаємо його
 	_freeze_all()
 	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking):

@@ -169,7 +169,7 @@ func _initialize_components():
 	enemy_logic.direction_changed.connect(_on_logic_direction_changed)
 	enemy_logic.attack_started.connect(_on_logic_attack_started)
 	enemy_logic.attack_ended.connect(_on_logic_attack_ended)
-	enemy_logic.attack_telegraphed.connect(func() -> void: enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, lunge, attack_range))
+	enemy_logic.attack_telegraphed.connect(_on_logic_attack_telegraphed)
 
 	enemy_view = EnemyView.new()
 	enemy_view.name = "EnemyView"
@@ -239,6 +239,10 @@ func _on_logic_direction_changed(direction: int):
 func _on_logic_attack_started():
 	"""Обробляє початок атаки з EnemyLogic"""
 	enemy_view.on_attack_started(enemy_logic.swing_windup)
+
+## Підказка удару (4b): відблиск на зброї, а для ривка (fast) — червона лінія на lunge + attack_range.
+func _on_logic_attack_telegraphed() -> void:
+	enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, lunge, attack_range)
 
 func _on_logic_attack_ended():
 	"""Обробляє завершення атаки з EnemyLogic"""

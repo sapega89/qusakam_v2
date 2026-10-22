@@ -167,6 +167,9 @@ shape = SubResource("Shape_body")
 
 [node name="Sprite2D" parent="."]
 offset = Vector2(0, -40)
+metadata/tell_at = Vector2(0, -46)
+metadata/tell_at_charge = Vector2(24, 3)
+metadata/tell_at_slam = Vector2(20, -40)
 texture = ExtResource("4_sheet")
 hframes = 4
 vframes = 6
