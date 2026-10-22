@@ -123,24 +123,12 @@ func _initialize() -> void:
 	ck(menu.current_tab_name == "Misc", "menu switched to the Misc tab (%s)" % menu.current_tab_name)
 	var settings: Node = get_first_node_in_group("settings_screen")
 	ck(settings != null and settings.is_visible_in_tree(), "Settings screen visible, not behind a modal")
-	ck(current_scene == null or true, "no scene change")
+	ck(current_scene == boot_game and is_instance_valid(boot_game) and boot_game.is_inside_tree(),
+			"no scene change: the running Game is still the current scene (B4: was `or true`)")
 	ck(paused, "still paused")
 
-	print("[6] Tutorial destination still resolves")
-	var tutorial_path := "res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn"
-	var menu_src: String = FileAccess.open(
-		"res://SampleProject/Scripts/Menus/Game/game_menu.gd", FileAccess.READ).get_as_text()
-	ck(menu_src.find("TutorialComponent") != -1, "tutorial route still wired")
-	ck(ResourceLoader.exists(tutorial_path), "tutorial scene exists on disk")
-
-	print("[7] Exit to Main Menu resolves to the real scene")
-	ck(ResourceLoader.exists("res://SampleProject/MainMenu.tscn"), "MainMenu.tscn exists")
-	var opts_src: String = FileAccess.open(
-		"res://SampleProject/Scripts/Menus/Game/options_component.gd", FileAccess.READ).get_as_text()
-	ck(opts_src.find("res://SampleProject/MainMenu.tscn") != -1,
-			"exit path points at MainMenu.tscn")
-	ck(opts_src.find("Scenes/Menus/Main/main_menu.tscn") == -1, "dead path gone")
-	ck(menu_src.find("_show_exit_confirm") != -1, "exit still goes through confirmation")
+	# [6] Tutorial і [7] Exit тут колись «перевірялись» пошуком рядка у вихідному коді (B4) — тепер їх натискає
+	# verify_misc_destinations.gd ([5] Exit, підтверджений, — живе головне меню; [6] Tutorial — вікно, не зміна сцени).
 
 	print("[8] no second modal system")
 	var modal_src: String = FileAccess.open(

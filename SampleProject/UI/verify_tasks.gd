@@ -94,5 +94,53 @@ func _initialize() -> void:
 	ck(inv.get_item_count("iron_sword+1") == 1, "the +1 sword stays with the player")
 	ck(not _labels(smith).has("Quest"), "no tasks left → no Quest")
 
+	print("[4] Two open tasks → a list; the chosen row runs, not the first (D161, GitHub #29)")
+	var TASKS: GDScript = load("res://SampleProject/Scripts/Tasks/task_service.gd")
+	for id in ["fx_a", "fx_b"]:
+		TASKS.tasks().append({"id": id, "giver": "blacksmith", "title": "The Helmet" if id == "fx_a" else "The Enchantment",
+				"objective": "Buy 2 Iron Ingots and 1 Leather", "give_dialogue": "Smith_Helmet_Give", "done_dialogue": "Smith_Helmet_Done",
+				"gives": {}, "needs": {}, "reward": {}})
+	smith.refresh_availability()
+	ck(_labels(smith).count("Quest") == 1, "one Quest entry for two tasks (%s)" % str(_labels(smith)))
+	smith.interactable.interacted.emit()
+	await process_frame
+	smith.npc_menu.chosen.emit(&"task")
+	await process_frame
+	var rows: Array = smith.npc_menu.get_children().filter(func(c: Node) -> bool: return not c.is_queued_for_deletion())
+	ck(smith.npc_menu.visible and rows.map(func(b: Node) -> String: return b.name) == ["task_fx_a", "task_fx_b"],
+			"the list opens with both tasks (%s)" % [rows.map(func(b: Node) -> String: return b.name)])
+	ck(rows.map(func(b: Node) -> String: return b.text) == ["The Helmet", "The Enchantment"], "rows carry the task titles")
+	ck(rows.all(func(b: Node) -> bool: return b.get_node_or_null("Diamond") == null), "side tasks: no diamond")
+	smith.npc_menu.chosen.emit(&"task:fx_b")
+	await _drain(dm)
+	ck(game.get_quest_flag("task_fx_b_taken") and not game.get_quest_flag("task_fx_a_taken"),
+			"choosing the second row takes the second task, not open_tasks[0]")
+
+	print("[5] The old man's main quest meets a task: main first with the gold diamond (D161, D188)")
+	var old_man: Node = load("res://SampleProject/Scenes/Gameplay/Objects/NPCs/grandfather.tscn").instantiate()
+	old_man.quest_flag = "verify_tasks_main"
+	old_man.quest_dialogue = "OldMan_Decision"
+	old_man.task_giver = "blacksmith"
+	game.add_child(old_man)
+	game.set_quest_flag("verify_tasks_main", true)
+	await process_frame
+	ck(_labels(old_man) == ["Quest"], "one Quest entry (%s)" % str(_labels(old_man)))
+	old_man.interactable.interacted.emit()
+	await process_frame
+	old_man.npc_menu.chosen.emit(&"task")
+	await process_frame
+	rows = old_man.npc_menu.get_children().filter(func(c: Node) -> bool: return not c.is_queued_for_deletion())
+	var zone: String = sl.get_game_flow().current_zone_title()
+	ck(rows.map(func(b: Node) -> String: return b.name) == ["quest", "task_fx_a", "task_fx_b"] and rows[0].text == zone and zone != "",
+			"main quest first, labelled with the zone «%s», tasks after (%s)" % [zone, rows.map(func(b: Node) -> String: return b.name)])
+	var diamond: TextureRect = rows[0].get_node_or_null("Diamond")
+	ck(diamond != null and diamond.modulate == UITokens.ACCENT and rows.slice(1).all(func(b: Node) -> bool: return b.get_node_or_null("Diamond") == null),
+			"the gold diamond on the main row only")
+	old_man.npc_menu.chosen.emit(&"quest")
+	await process_frame
+	ck(dm.is_replaying(), "the main row replays the giving talk read-only")
+	await _drain(dm)
+	old_man.queue_free()
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

@@ -13,7 +13,6 @@
 [ext_resource type="PackedScene" uid="uid://c01nc0unt3r01" path="res://SampleProject/Scenes/UI/coin_counter.tscn" id="7_coin_counter"]
 [ext_resource type="PackedScene" uid="uid://c0mb4tc0nt3xt" path="res://SampleProject/Scenes/UI/CombatContextDisplay.tscn" id="8_combat_context"]
 [ext_resource type="PackedScene" uid="uid://tut0r14lh1nt" path="res://SampleProject/Scenes/UI/TutorialHintDisplay.tscn" id="9_tutorial_hint"]
-[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/skill_hotbar.tscn" id="12_hotbar"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/player_vitals_panel.tscn" id="13_vitals"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/combat_hud_top.tscn" id="14_hudtop"]

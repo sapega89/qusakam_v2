@@ -111,6 +111,15 @@ func _chronicle(zone: Dictionary, flags: Dictionary) -> Array:
 	return lines
 
 
+## Назва поточної зони журналу (перша непройдена) — підпис рядка основного квесту в списку Quest (D188).
+func current_zone_title() -> String:
+	for stage in _load_stages():
+		for zone in _zone_states(stage):
+			if zone.state == "current":
+				return zone.title
+	return ""
+
+
 ## Назва локації для картки сейва (D133): титул зони журналу, чия "scene" — ця кімната.
 ## Кімната двох зон (Canyon I / II) — пізніша з уже відкритих; кімната поза журналом
 ## (City, MayorHall) — імʼя сцени словами ("Mayor Hall").

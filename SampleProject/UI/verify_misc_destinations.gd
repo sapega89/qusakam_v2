@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Куди НАСПРАВДІ ведуть 4 пункти Misc. Доповнює verify_misc_modal.gd, який
-## перевіряє Tutorial і Exit пошуком рядка у вихідному коді (B4), а не натисканням.
+## Куди НАСПРАВДІ ведуть 4 пункти Misc. Доповнює verify_misc_modal.gd, який колись
+## перевіряв Tutorial і Exit пошуком рядка у вихідному коді (B4), а не натисканням; тепер — лише тут.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_misc_destinations.gd
 
 var fails: Array[String] = []
