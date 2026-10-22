@@ -112,7 +112,7 @@ always exists, so the template is also the first real row). More rows =
 | 3 | `stats_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
 | 4 | `equipment_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
 | 5 | `skills_component` ✅ done 2026-10-22 (D426, `cloud/rows-2`) | 0 nodes |
-| 6 | `options_component` ✅ done 2026-10-22 (`cloud/rows-3`, D-ID in the rows-3 report) — `%Tab`, `%SegmentRow`, `%StepperRow`, `%SliderRow`, `%Separator`, `%BrightnessPreview`; theme `SettingsRow` / `SettingsSeparator` / `SettingsControlGroup` / `SettingsSegmentCells` / `SettingsPreviewColumn` / `SettingsPreviewDark` / `SettingsPreviewBright` / `SettingsValueDisabled` | 0 nodes, 0 styleboxes |
+| 6 | `options_component` ✅ done 2026-10-22 (`cloud/rows-3`, D432) — `%Tab`, `%SegmentRow`, `%StepperRow`, `%SliderRow`, `%Separator`, `%BrightnessPreview`; theme `SettingsRow` / `SettingsSeparator` / `SettingsControlGroup` / `SettingsSegmentCells` / `SettingsPreviewColumn` / `SettingsPreviewDark` / `SettingsPreviewBright` / `SettingsValueDisabled` | 0 nodes, 0 styleboxes |
 | 7 | `journal_component` ✅ done 2026-10-12 ([[prologue_journal_plan]]) · `inventory_component`, `bottom_bar` ✅ done 2026-10-22 (D426) | 0 / 0 / 0 nodes |
 
 Out of this plan: `skill_hotbar` and `player_vitals_panel` (Combat HUD, not the

@@ -88,3 +88,5 @@ Round 8 merged 2026-10-22: settings-store (D424, B118), combat-fixes (D425, B116
 | UTC | Routine | Branch | Task |
 |---|---|---|---|
 | 16:05 | rows-3 (`trig_01XySQVTHZfMXq8iURt7AdkY`) | cloud/rows-3 | #50 order 6: options_component as templates (the last screen) |
+
+rows-3 merged 2026-10-22: D432 (#50 order 6, the last screen of D117 "Slices 2+"). Cloud suite: 92 PASS + the known `verify_audio` flake.
