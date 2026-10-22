@@ -48,6 +48,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[world_expansion_plan]] — BACKLOG 23: DesertRoad 2 → 6 cells, three more fights, ledges with pickups; XP curve in data, level 5 at the City (D296–D299); Laboratory split outlined
 - [[journal_codex_plan]] — BACKLOG 13: Journal sections Quests / Characters / Bestiary (D290)
 - [[souls_combat_plan]] — BACKLOG 4 + 15: combos, heavy, staggers both ways, block/parry, double dash, grips, sheathing (D264–D270); town walking revoked (D266) — the hero runs everywhere
+- [[ranged_plan]] — BACKLOG 40: the hero's bow like Skul (quick shot on the press, hold to charge, arrows fly straight) and the desert archer (keeps distance, red glint, arrows you block / parry / roll), D380–D387
 - [[inventory_diff_plan]] — inventory delta
 - [[backlog_roadmap]] — superseded by [[play_feedback_queue]] (the order work runs in now)
 - [[room_state_plan]] — ✅ built; D152: rooms remember enemies and their HP when the player leaves
