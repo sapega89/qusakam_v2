@@ -13,7 +13,7 @@ base skills keep their scenes. **Not done:** particle accents (base effects have
 **D-ID text (amends D279):** «Oath actives have their own art: `OathSkill.tscn` plays `Assets/FX/Skills/<id>/charge_1–4`
 (1–2, then 3–4 looping) during the wind-up and `release_1–3` at the release, anchored per README; the tinted copies are gone.»
 **B row fixed (new, found here):** casting any oath active asserted in `SoundHooks` (`unknown sound event 'cast_<id>_windup'`)
-— no sound events existed; each now reuses the base cast sounds of its pose. **Full suite:** see the last line below.
+— no sound events existed; each now reuses the base cast sounds of its pose. **Full suite:** `SUITE: 2 FAIL` — `verify_game_ui_theme` (expected) and `verify_combat_flow` (flaky, same 2 checks fail on base).
 
 ## Changes
 - `SampleProject/Scripts/FX/SkillCastFX.gd` — `var skill: SkillDefinition` (set by `PlayerCombat.begin_cast` before
@@ -39,6 +39,10 @@ base skills keep their scenes. **Not done:** particle accents (base effects have
 - `verify_skill_fx` (new): `RESULT: ALL PASS` — every active has its own frames (none shared), README frame counts,
   each of the 9 cast both facings: charge (1–2 then 3–4) → release → gone, mirrored.
 - `verify_skill_casts`: `RESULT: ALL PASS`.
+- Full suite `Scripts/Tools/run_verify.sh`: `SUITE: 2 FAIL` — `verify_game_ui_theme` (no RESULT line, expected until the
+  theme is regenerated) and `verify_combat_flow` `2 FAIL: two hits in one frame on the player count once (got [])…`.
+  The latter is timing-flaky and not this branch's: alone on this branch 2× ALL PASS; on `origin/feature/backlog`
+  1× ALL PASS, 1× the same 2 FAIL. Worth its own B row (i-frame test races the frame).
 
 ## Shot
 `design/shots/skill_fx_all.png` — the 9 releases in the order radiant_smite, skyfall_blessing, judgement_of_the_sky,
