@@ -348,12 +348,13 @@ func _strike_heavy() -> void:
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
 
-## Швидкий постріл (D380): натиснутий посеред пострілу — один у черзі, натяг і заряджений лук — без змін.
+## Швидкий постріл (D380): натиснутий посеред пострілу чи до кінця темпу лука — один у черзі; натяг і заряджений
+## лук — без змін.
 func _quick_shot(last_direction: int) -> void:
-	if state == State.SHOOT:
+	if state == State.SHOOT or (state == State.READY and attack_cooldown > 0):
 		_queued = true
 		return
-	if state != State.READY or attack_cooldown > 0:
+	if state != State.READY:
 		return
 	state = State.SHOOT
 	_state_left = SHOT_TIME
