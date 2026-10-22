@@ -137,7 +137,9 @@ func apply_weapon_profile() -> void:
 		attack_cooldown_time = _bare_cooldown
 		_weapon_knockback = 0.0
 	elif grip == &"bow":
-		# Лук б'є стрілами, хітбокс удару не потрібен (D383): з профілю — темп пострілів і відкидання.
+		# Лук б'є стрілами (D383): хітбокс — як у голих рук (його зону б'ють навички, D142); з профілю — темп
+		# пострілів і відкидання.
+		_hitbox_shape().size = _bare_size
 		var bow: Dictionary = item.weapon_profile
 		attack_cooldown_time = bow.cooldown
 		_weapon_knockback = bow.knockback
@@ -208,9 +210,10 @@ func _physics_process(delta: float) -> void:
 		elif _queued and attack_cooldown <= 0.0:
 			# Наступний удар серії — кадром пізніше: хітбокс мусить хоч кадр побути вимкненим,
 			# інакше ворог, що стоїть у ньому, не «увійде» вдруге й не отримає удару.
-			# Постріл, натиснутий під час попереднього, чекає кінця темпу лука (attack_cooldown).
+			# Постріл, натиснутий під час попереднього, чекає кінця темпу лука (attack_cooldown) і летить туди,
+			# куди герой дивиться тепер.
 			_queued = false
-			perform_attack(_direction)
+			perform_attack(player.last_direction if grip == &"bow" else _direction)
 		return
 	_state_left -= delta
 	if _arrow_due and SHOT_TIME - _state_left >= QUICK_RELEASE:
