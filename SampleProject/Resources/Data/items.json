@@ -206,9 +206,7 @@
 		{
 			"id": "crystal_sword",
 			"name": "Crystal Sword",
-			"name_ru": "Кристаллический меч",
 			"description": "A sword of living crystal that glimmers in the dark. Attack: +32",
-			"description_ru": "Меч из живого кристалла, мерцающий в темноте. Атака: +32",
 			"type": "weapon",
 			"category": "sword",
 			"palette": "crystal",

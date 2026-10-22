@@ -1731,6 +1731,9 @@ msgstr "Мідний меч"
 msgid "Silver Sword"
 msgstr "Срібний меч"
 
+msgid "Crystal Sword"
+msgstr "Кришталевий меч"
+
 msgid "Iron Halberd"
 msgstr "Залізна алебарда"
 
@@ -1820,6 +1823,9 @@ msgstr "Нехитрий мідний меч. Атака: +10"
 
 msgid "A fine silver sword. Attack: +25"
 msgstr "Добротний срібний меч. Атака: +25"
+
+msgid "A sword of living crystal that glimmers in the dark. Attack: +32"
+msgstr "Меч із живого кришталю, що мерехтить у темряві. Атака: +32"
 
 msgid "A long iron halberd. Attack: +18"
 msgstr "Довга залізна алебарда. Атака: +18"
