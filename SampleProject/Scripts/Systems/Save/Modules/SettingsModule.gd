@@ -9,7 +9,8 @@ var default_settings = {
 	"master_volume": 1.0,
 	"music_volume": 0.8,
 	"sfx_volume": 0.9,
-	"fullscreen": false,
+	# Settings plan slice 1: режим вікна — одне з DisplayManager.DISPLAY_MODES (Windowed / Fullscreen / Borderless).
+	"display_mode": "windowed",
 	"vsync": true,
 	# BACKLOG 41: розмір вікна (DisplayManager.RESOLUTIONS) і ліміт кадрів (DisplayManager.FPS_LIMITS, 0 = без ліміту).
 	# Значення за замовчуванням = project.godot: вʼюпорт 1920×1080, run/max_fps=60.
@@ -17,7 +18,8 @@ var default_settings = {
 	"fps_limit": 60,
 	"language": "en",  # BACKLOG 31: англійська — основна мова (D121); українська — у Settings → Game → Language
 	"tutorial_windows": true,  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
-	"damage_numbers": true  # D66: цифри урону над героєм і ворогами (DamageNumbers)
+	"damage_numbers": true,  # D66: цифри урону над героєм і ворогами (DamageNumbers)
+	"auto_save": false  # D413: автосейв при переході між кімнатами (SaveSystem._on_room_entered); вимкнено — лише SavePoint
 }
 
 # Текущие настройки
@@ -30,10 +32,10 @@ func _ready():
 
 ## Сохраняет настройки игры
 func save() -> Dictionary:
-	log_info("Settings saved: master=%.1f, music=%.1f, fullscreen=%s" % [
+	log_info("Settings saved: master=%.1f, music=%.1f, display_mode=%s" % [
 		settings["master_volume"],
 		settings["music_volume"],
-		settings["fullscreen"]
+		settings["display_mode"]
 	])
 	return settings.duplicate()
 
@@ -41,12 +43,13 @@ func save() -> Dictionary:
 func load_data(data: Dictionary) -> void:
 	# Новий ключ налаштувань, якого ще немає у файлі, бере значення за замовчуванням.
 	settings = default_settings.merged(data, true)
+	settings.erase("fullscreen")  # старий bool-ключ до "display_mode" (settings plan slice 1)
 	apply_settings()
 
-	log_info("Settings loaded: master=%.1f, music=%.1f, fullscreen=%s" % [
+	log_info("Settings loaded: master=%.1f, music=%.1f, display_mode=%s" % [
 		settings["master_volume"],
 		settings["music_volume"],
-		settings["fullscreen"]
+		settings["display_mode"]
 	])
 
 ## Применяет настройки к игре
@@ -79,10 +82,6 @@ func update_sfx_volume(volume: float) -> void:
 	_apply_audio_settings()
 
 ## Обновляет настройки дисплея
-func toggle_fullscreen() -> void:
-	settings["fullscreen"] = not settings["fullscreen"]
-	_apply_display_settings()
-
 func toggle_vsync() -> void:
 	settings["vsync"] = not settings["vsync"]
 	_apply_display_settings()

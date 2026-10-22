@@ -29,7 +29,7 @@ const TABS := [
 const TAB_HINTS := {
 	"display": "Set the display mode, window size and frame rate limit.",
 	"audio": "Adjust volume levels.",
-	"game": "Choose the interface language, whether hints open tutorial windows and whether damage numbers show.",
+	"game": "Choose the interface language, whether hints open tutorial windows, whether damage numbers show and whether the game saves on every room change.",
 	"controls": "Select an action to rebind it.",
 }
 
@@ -181,13 +181,13 @@ func _build_rows() -> void:
 
 	match current_tab:
 		"display":
-			_add_segment_row("Display Mode", ["Windowed", "Fullscreen"],
-					1 if _cfg_get("fullscreen") else 0, _on_display_mode_changed)
+			_add_segment_row("Display Mode", ["Windowed", "Fullscreen", "Borderless"],
+					DisplayManager.DISPLAY_MODES.find(String(_cfg_get("display_mode"))), _on_display_mode_changed)
 			_add_separator()
-			# BACKLOG 41: Fullscreen завжди в рідній роздільності екрана — розмір вікна лише для Windowed.
+			# BACKLOG 41: Fullscreen і Borderless завжди в рідній роздільності екрана — розмір вікна лише для Windowed.
 			_add_stepper_row("Resolution", _resolution_names(),
 					DisplayManager.RESOLUTIONS.find(String(_cfg_get("resolution"))),
-					_on_resolution_changed, not bool(_cfg_get("fullscreen")))
+					_on_resolution_changed, _cfg_get("display_mode") == "windowed")
 			_add_separator()
 			_add_segment_row("VSync", ["Enable", "Disable"],
 					0 if _cfg_get("vsync") else 1, _on_vsync_changed)
@@ -210,6 +210,10 @@ func _build_rows() -> void:
 			# D66: цифри урону над героєм і ворогами (DamageNumbers)
 			_add_segment_row("Damage Numbers", ["On", "Off"],
 					0 if _cfg_get("damage_numbers") else 1, _on_damage_numbers_changed)
+			_add_separator()
+			# D413: єдиний шлях автосейву — перехід між кімнатами (SaveSystem._on_room_entered).
+			_add_segment_row("Auto-Save", ["On", "Off"],
+					0 if _cfg_get("auto_save") else 1, _on_auto_save_changed)
 
 
 func _add_separator() -> void:
@@ -389,7 +393,7 @@ func _language_name(code: String) -> String:
 # ── Handlers ────────────────────────────────────────────────────────────────
 
 func _on_display_mode_changed(index: int) -> void:
-	_cfg_set("fullscreen", index == 1)
+	_cfg_set("display_mode", DisplayManager.DISPLAY_MODES[index])
 	_apply_and_save()
 	_rebuild_list()
 
@@ -412,6 +416,12 @@ func _on_tutorial_windows_changed(index: int) -> void:
 
 func _on_damage_numbers_changed(index: int) -> void:
 	_cfg_set("damage_numbers", index == 0)
+	_apply_and_save()
+	_rebuild_list()
+
+
+func _on_auto_save_changed(index: int) -> void:
+	_cfg_set("auto_save", index == 0)
 	_apply_and_save()
 	_rebuild_list()
 

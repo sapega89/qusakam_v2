@@ -4,10 +4,20 @@ extends Node
 ## Отвечает за fullscreen, vsync и другие настройки дисплея
 ## Используется SaveSystem и BaseOptionsComponent
 
-signal fullscreen_changed(enabled: bool)
+signal display_mode_changed(mode: String)
 signal vsync_changed(enabled: bool)
 signal resolution_changed(size: Vector2i)
 signal fps_limit_changed(fps: int)
+
+## Settings plan slice 1 (D66): Windowed / Fullscreen / Borderless — значення ключа "display_mode".
+## Fullscreen — ексклюзивний повноекранний режим; Borderless — вікно без рамки на весь екран
+## (у Godot це WINDOW_MODE_FULLSCREEN). Обидва йдуть у рідній роздільності екрана.
+const DISPLAY_MODES: Array[String] = ["windowed", "fullscreen", "borderless"]
+const _WINDOW_MODES: Dictionary = {
+	"windowed": DisplayServer.WINDOW_MODE_WINDOWED,
+	"fullscreen": DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN,
+	"borderless": DisplayServer.WINDOW_MODE_FULLSCREEN,
+}
 
 ## BACKLOG 41 (settings_plan.md "Resolution / Frame Rate Limit", Sapega: дати ці налаштування).
 ## Ключ налаштування — рядок "ШxВ": словник налаштувань пишеться в JSON слота, Vector2i там не живе.
@@ -15,23 +25,23 @@ const RESOLUTIONS: Array[String] = ["1280x720", "1600x900", "1920x1080", "2560x1
 ## 0 = без обмеження (Engine.max_fps = 0).
 const FPS_LIMITS: Array[int] = [30, 60, 120, 144, 0]
 
-## Останнє застосоване значення. Headless-драйвер ігнорує розмір вікна — тест читає це поле.
+## Останні застосовані значення. Headless-драйвер ігнорує режим і розмір вікна — тест читає ці поля.
+var display_mode: String = "windowed"
 var resolution: Vector2i = Vector2i.ZERO
 
-## Установить полноэкранный режим
-func set_fullscreen(enabled: bool):
-	"""Устанавливает полноэкранный режим"""
-	if enabled:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-	else:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	fullscreen_changed.emit(enabled)
-	print("🖥️ DisplayManager: Fullscreen ", "enabled" if enabled else "disabled")
+## Режим вікна зі списку DISPLAY_MODES.
+func set_display_mode(mode: String) -> void:
+	if not DISPLAY_MODES.has(mode):
+		push_error("DisplayManager: unknown display mode '%s'" % mode)
+		return
+	display_mode = mode
+	DisplayServer.window_set_mode(_WINDOW_MODES[mode])
+	display_mode_changed.emit(mode)
+	print("🖥️ DisplayManager: display mode ", mode)
 
-## Получить текущий режим полноэкранного окна
-func is_fullscreen() -> bool:
-	"""Возвращает true, если включен полноэкранный режим"""
-	return DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+## Windowed — єдиний режим, де діє Resolution.
+func is_windowed() -> bool:
+	return display_mode == "windowed"
 
 ## Установить VSync
 func set_vsync(enabled: bool):
@@ -66,7 +76,7 @@ func set_resolution(value: String) -> void:
 	if size == Vector2i.ZERO:
 		return
 	resolution = size
-	if not is_fullscreen():
+	if is_windowed():
 		DisplayServer.window_set_size(resolution)
 		var screen: int = DisplayServer.window_get_current_screen()
 		var usable: Rect2i = DisplayServer.screen_get_usable_rect(screen)
@@ -87,7 +97,7 @@ func set_fps_limit(fps: int) -> void:
 ## Усі ключі є в SettingsModule.default_settings (load_data зливає їх з файлом) — без запасних значень.
 ## Порядок важливий: спершу режим вікна, потім його розмір.
 func apply_display_settings(settings: Dictionary) -> void:
-	set_fullscreen(bool(settings["fullscreen"]))
+	set_display_mode(String(settings["display_mode"]))
 	set_vsync(bool(settings["vsync"]))
 	set_resolution(String(settings["resolution"]))
 	set_fps_limit(int(settings["fps_limit"]))

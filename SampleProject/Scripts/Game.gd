@@ -3,6 +3,7 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysGame.gd"
 class_name Game
 
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
+const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
 
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
 @export var starting_map: String = "Canyon.tscn"
@@ -85,6 +86,9 @@ func _ready() -> void:
 	print("✅ [Game] _ready() викликано вперше, ініціалізуємо гру")
 	print("🆔 [Game] Екземпляр Game з ID: %s" % game_instance_id)
 	DebugLogger.info("Game: ✅ _ready() викликано вперше, ініціалізуємо гру", "Game")
+
+	# D417: курсор схований у грі, Alt показує його; меню й модалки — завжди з курсором.
+	add_child(MouseCursorScene.instantiate())
 
 	# Make sure MetSys is in initial state (ТОЛЬКО НА НОВЫЙ ЗАПУСК ИЗ МЕНЮ)
 	print("🔄 [Game] Скидаємо стан MetSys...")

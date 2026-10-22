@@ -882,8 +882,8 @@ msgstr "Set the display mode, window size and frame rate limit."
 msgid "Adjust volume levels."
 msgstr "Adjust volume levels."
 
-msgid "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
-msgstr "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
+msgid "Choose the interface language, whether hints open tutorial windows, whether damage numbers show and whether the game saves on every room change."
+msgstr "Choose the interface language, whether hints open tutorial windows, whether damage numbers show and whether the game saves on every room change."
 
 msgid "Select an action to rebind it."
 msgstr "Select an action to rebind it."
@@ -896,6 +896,9 @@ msgstr "Windowed"
 
 msgid "Fullscreen"
 msgstr "Fullscreen"
+
+msgid "Borderless"
+msgstr "Borderless"
 
 msgid "Resolution"
 msgstr "Resolution"
@@ -947,6 +950,9 @@ msgstr "Off"
 
 msgid "Damage Numbers"
 msgstr "Damage Numbers"
+
+msgid "Auto-Save"
+msgstr "Auto-Save"
 
 msgid "Evade"
 msgstr "Evade"
@@ -1050,6 +1056,9 @@ msgstr "Skill Slot 4"
 
 msgid "Skip Cutscene"
 msgstr "Skip Cutscene"
+
+msgid "Show / Hide Cursor"
+msgstr "Show / Hide Cursor"
 
 msgid "Skills: Accept Picks"
 msgstr "Skills: Accept Picks"

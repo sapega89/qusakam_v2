@@ -31,7 +31,9 @@ var _session_slot_index: int = 1
 var _session_start_msec: int = 0
 var _session_base_playtime_sec: float = 0.0
 
-# Включено ли автосохранение при переходе между сценами
+## D413: Settings → Game → Auto-Save — єдиний шлях автосейву. Game, чию першу кімнату вже бачили:
+## перша кімната після старту чи завантаження — не перехід і не зберігається.
+var _auto_save_game_id: int = 0
 
 ## Запуск з --script (verify_*, capture_*, playthrough) — не гра: він не читає й не пише справжні
 ## сейви та налаштування гравця, а працює у власній теці, яку кожен такий запуск починає порожньою.
@@ -78,7 +80,18 @@ func _initialize_modules():
 
 func _connect_scene_events():
 	"""Подписывается на события переходов сцен для автосохранения"""
-	print("💾 SaveSystem: Connected to scene and dialogue events")
+	EventBus.room_entered.connect(_on_room_entered)
+
+
+## Перехід у сусідню кімнату зберігає гру тим самим Game.save_game(), що й SavePoint (D413).
+## room_entered емітує лише Game.init_room(), тож Game тут завжди є.
+func _on_room_entered(_room_name: String) -> void:
+	var game: Game = Game.get_singleton()
+	if game.get_instance_id() != _auto_save_game_id:
+		_auto_save_game_id = game.get_instance_id()
+		return
+	if settings_module.settings["auto_save"]:
+		game.save_game()
 
 func _create_save_directories():
 	"""Создает папку для сохранений если её не существует"""
