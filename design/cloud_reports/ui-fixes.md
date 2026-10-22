@@ -8,7 +8,7 @@ tags: [cloud, ui, dialogue, game-menu, d117]
 
 **Summary.** **B112 fixed** (row to remove): the speaker's name is now the first row of the dialogue box, and the row is hidden on narration. **GitHub #50, order 3 (Status) and order 4 (Equipment) done.** Their rows are scene templates (D117), styled by the theme, and both captures match the before shots. The only difference is the playtime clock. Not done: order 5 `skills_component`, order 6 `options_component` (left alone on purpose, `cloud/settings-1` is editing Settings), and `inventory_component` / `bottom_bar`. See §3.
 D-ID text (proposed, number to be assigned): **"Status and Equipment rows are scene templates (D117, #50 slices 3–4).** `%WeaponBox`, `%PointAttr`, `%AttrRow`, `%ActionCard` (Status) and `%SlotRow`, `%AttrRow` (Equipment) live in the `.tscn`. Further rows come from `RowFill.fill()` (`ui_rows.gd`), and one `%AttrRow` template fills both attribute columns. The styles come from the theme types `AvatarFrame`, `AvatarChip`, `AttrRow`, `IconSlot`, `AccentTick` and `AccentDot`. The avatar colour is set on a copy of the theme stylebox, because it is per-character data."
-Full suite: running (line added when it finishes).
+Full suite: `Scripts/Tools/run_verify.sh` → `SUITE: ALL PASS` (92 PASS).
 
 Branch `cloud/ui-fixes` from `origin/feature/backlog` @ `64ffcefc`. Commits: `42d1002b` (B112), `962720cd` (slice 3),
 `66e322fb` (slice 4).
