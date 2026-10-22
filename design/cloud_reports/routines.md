@@ -56,3 +56,14 @@ Sapega «оце вже можна в хмарі запустити» (the open b
 | 09:41 | misc-bugs (`trig_016RhosmxiaoTrWqcMrsQGpi`) | cloud/misc-bugs | B91, B92, B93, B94, B107, B108 |
 
 Not in this round: B105 (weapon palette pixels) goes with `cloud/art-fixes-wire`; B110 needs bow frames from the art lane first (Air 1–3, Block, Hurt, Roll); B106 closed by D395.
+
+## Round 7 (2026-10-22): Settings, fight music, UI fixes
+
+Sapega chose all four after the green suite (92/92). `cloud/settings-2` (#52, D418) waits until `cloud/settings-1` is
+merged: both edit the Settings screen.
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 12:40 | settings-1 (`trig_01RjsrWpydjYsaMR2JRsmqew`) | cloud/settings-1 | #100 settings_plan slice 1 (Borderless, Auto-Save row default Off, every row honest), #36 mouse off on Alt (D417) |
+| 12:41 | fight-music (`trig_01GZ9nXe5t5hDTJSakSA6YP2`) | cloud/fight-music | music_plan slice 3a (D414): battle / boss / room switching, placeholder tracks until Sapega's pick |
+| 12:41 | ui-fixes (`trig_01XDvEM6aPyHQF3maHM9cvRP`) | cloud/ui-fixes | B112 speaker name row; #50 row templates for stats_component and equipment_component |
