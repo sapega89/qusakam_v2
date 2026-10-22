@@ -2,7 +2,7 @@
 
 Light (Paladin) tree active. **AI-generated** with **Qwen-Image** (`qwen_image_fp8_e4m3fn` + `Qwen-Image-Lightning-4steps`
 LoRA, **Apache 2.0**) by `Scripts/Tools/comfy_fx.py` (`judgement_of_the_sky_charge`, `judgement_of_the_sky_release`), anime style of D273.
-Steam needs the AI-content disclosure. Not wired into a scene yet.
+Steam needs the AI-content disclosure. Wired: `Scenes/FX/Skills/OathSkill.tscn` (`OathSkillFX.gd`, D279).
 
 - `charge_1–4.png` (32×32) — golden halo with rays, gathered in the hand during the cast pose: grows from the centre (1–2) →
   full (3) → thinner pulse (4); loop 3–4 while charging. Anchor: canvas centre on the casting hand.

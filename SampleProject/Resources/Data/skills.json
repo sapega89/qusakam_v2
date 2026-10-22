@@ -240,7 +240,7 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/RadiantSmite.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "mending_hands",
@@ -309,7 +309,7 @@
         "release": 0.35,
         "pose": "CastPalm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "aura_of_valour",
@@ -352,7 +352,7 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/RadiantSmite.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "unbroken_vow",
@@ -394,7 +394,7 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/SearingHex.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "blood_pact",
@@ -466,7 +466,7 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/SearingHex.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "hoarded_ward",
@@ -512,7 +512,7 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/SearingHex.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "crimson_thirst",
@@ -551,7 +551,7 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/BalancedStrike.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "bulwark",
@@ -627,7 +627,7 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/BalancedStrike.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "unshakable",
@@ -663,7 +663,7 @@
         "release": 0.35,
         "pose": "CastPalm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
     },
     {
       "id": "perfect_balance",
