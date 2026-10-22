@@ -125,7 +125,10 @@ func _initialize() -> void:
 	var sl: Node = root.get_node_or_null("ServiceLocator")
 	var ui: Node = sl.get_ui_manager()
 	var save_system: Node = sl.get_save_system()
-	# Налаштування пишуться у файл слота — тест не має права чіпати справжні сейви гравця.
+	# Файл налаштувань лежить у теці сейвів — тест не має права чіпати справжні.
+	# Тека, що лишилась від обірваного прогону, має сейви — [9] перевіряє інсталяцію без жодного.
+	for f in DirAccess.get_files_at(TEST_DIR):
+		DirAccess.remove_absolute(TEST_DIR + f)
 	save_system.set_save_dir(TEST_DIR)
 	var loc: Node = root.get_node_or_null("LocalizationManager")
 	var tokens = load("res://SampleProject/UI/Tokens/UITokens.gd")
@@ -439,14 +442,16 @@ func _initialize() -> void:
 	vbar.value = 0.0
 	await _device_tabs(input_menu)
 
-	print("[9] persistence round trip")
+	print("[9] B118: a change with no slot save at all survives a restart")
+	for slot in range(1, save_system.get_slot_count() + 1):
+		ck(not save_system.slot_has_save(slot), "slot %d has no save" % slot)
 	opts.switch_to_tab("audio")
 	for i in 4: await process_frame
 	_row(opts, "Music").get_node(^"Slider/Value").value = 25.0
 	for i in 4: await process_frame
-	# Налаштування живуть у слоті з сейвом гри — слот без сейву не створюється.
-	FileAccess.open(save_system.get_slot_path(save_system.current_slot), FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
-	save_system.save_game_settings()
+	# Зміна сама записала файл налаштувань — без save_game_settings() з тесту.
+	ck(FileAccess.file_exists(save_system.get_settings_path()), "the change wrote %s" % save_system.get_settings_path())
+	ck(not save_system.slot_has_save(save_system.current_slot), "no slot file was created")
 	module.settings["music_volume"] = 0.99
 	save_system.load_game_settings()
 	await process_frame
@@ -612,24 +617,25 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	for i in 3: await process_frame
 	ck(module.settings["tutorial_windows"] == true and module.settings["damage_numbers"] == false
 			and module.settings["auto_save"] == true, "Tutorial Windows on, Damage Numbers off, Auto-Save on stored")
-	# Auto-Save діє одразу: наступний перехід між кімнатами пише сейв (слот містить заглушку з [9]).
-	var stub: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))
-	stub["current_room"] = ":test"
-	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str(stub))
+	# Auto-Save діє одразу: наступний перехід між кімнатами пише сейв поверх заглушки.
+	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
 	save_system._on_room_entered("probe")
 	var saved: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))
 	ck(saved["current_room"] != ":test", "Auto-Save On: a room change saved the game (%s)" % saved["current_room"])
+	ck(not saved.has("game_settings"), "B118: the slot file carries no settings")
 
 	print("[22b] restart round trip")
 	var changed: Dictionary = module.settings.duplicate()
-	save_system.save_game_settings()
-	# «Перезапуск»: модуль і живий стан — знову типові, далі SaveSystem читає слот, як під час старту.
+	# Кожна зміна вже записала файл налаштувань; save_game_settings() тест не кличе.
+	ck(str_to_var(FileAccess.get_file_as_string(save_system.get_settings_path())) == changed,
+			"the settings file holds every change")
+	# «Перезапуск»: модуль і живий стан — знову типові, далі SaveSystem читає файл налаштувань, як під час старту.
 	module.settings = module.default_settings.duplicate()
 	module.apply_settings()
 	ck(display.display_mode == "windowed" and Engine.max_fps == 60, "live state reset before the reload")
 	save_system.load_game_settings()
 	await process_frame
-	ck(module.settings == changed, "every key comes back from the slot")
+	ck(module.settings == changed, "every key comes back from the settings file")
 	ck(display.display_mode == "fullscreen" and display.resolution == Vector2i(2560, 1440) and Engine.max_fps == 120
 			and vsync_seen.back() == false, "display rows re-applied after the reload")
 	ck(absf(audio.get_music_volume() - 0.2) < 0.02, "volumes re-applied after the reload")
@@ -648,11 +654,9 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 			and absf(audio.get_music_volume() - float(module.default_settings["music_volume"])) < 0.02
 			and absf(audio.get_sfx_volume() - float(module.default_settings["sfx_volume"])) < 0.02, "volume defaults applied")
 	ck(TranslationServer.get_locale().begins_with(String(module.default_settings["language"])), "default language applied")
-	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))["game_settings"]
-	ck(on_disk == module.default_settings, "defaults written to the slot")
-	stub = str_to_var(FileAccess.get_file_as_string(slot_path))
-	stub["current_room"] = ":test"
-	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str(stub))
+	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(save_system.get_settings_path()))
+	ck(on_disk == module.default_settings, "defaults written to the settings file")
+	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
 	save_system._on_room_entered("probe")
 	ck(str_to_var(FileAccess.get_file_as_string(slot_path))["current_room"] == ":test", "Auto-Save Off: a room change saves nothing")
 	module.settings["tutorial_windows"] = false  # D289: решта тесту — без вікон туторіалу

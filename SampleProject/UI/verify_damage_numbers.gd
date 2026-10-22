@@ -187,7 +187,6 @@ func _initialize() -> void:
 	cells[1].pressed.emit()
 	for i in 4: await process_frame
 	ck(module.settings.damage_numbers == false and _active(opts, "Damage Numbers").ends_with("Off"), "Off pressed: setting off, Off lit")
-	FileAccess.open(save_system.get_slot_path(save_system.current_slot), FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
 	save_system.save_game_settings()
 	module.settings.damage_numbers = true
 	save_system.load_game_settings()

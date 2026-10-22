@@ -14,6 +14,9 @@ const SLOT_FILE_TEMPLATE = "slot_%02d.sav"
 const SLOT_COUNT = 4
 ## Дані гравця (інвентар, прапорці) — окремий файл на кожен слот (Q4).
 const PLAYER_SLOT_TEMPLATE = "player_%02d.json"
+## B118: налаштування — один файл на інсталяцію, не на слот: зміна з Main Menu без жодного сейву
+## теж переживає перезапуск. var_to_str, як і файли слотів, — типи (int fps_limit) не губляться.
+const SETTINGS_FILE = "settings.sav"
 
 
 # Модули сохранения
@@ -26,7 +29,6 @@ var settings_module: SettingsModule
 # Profile data for save slots
 var profile: Dictionary = {}
 var current_slot: int = 1
-var game_settings: Dictionary = {}
 var _session_slot_index: int = 1
 var _session_start_msec: int = 0
 var _session_base_playtime_sec: float = 0.0
@@ -53,8 +55,10 @@ func _ready():
 	# Инициализируем модули
 	_initialize_modules()
 
-	# Загружаем настройки при запуске (через call_deferred для доступа к менеджерам)
-	call_deferred("load_game_settings")
+	# Налаштування читаються один раз, ще до Main Menu; застосовуються відкладено —
+	# AudioManager, DisplayManager і LocalizationManager — автозавантаження після SaveSystem.
+	settings_module.read(_read_settings_file())
+	settings_module.apply_settings.call_deferred()
 
 	# Подключаем обработку выхода из игры
 	get_tree().root.close_requested.connect(_on_window_close_requested)
@@ -139,6 +143,9 @@ func get_slot_path(slot_index: int) -> String:
 	var index = clamp(slot_index, 1, SLOT_COUNT)
 	return save_dir + (SLOT_FILE_TEMPLATE % index)
 
+func get_settings_path() -> String:
+	return save_dir + SETTINGS_FILE
+
 func get_player_data_path(slot_index: int) -> String:
 	"""Інвентар / прапорці / стан гравця для конкретного слота."""
 	var index = clamp(slot_index, 1, SLOT_COUNT)
@@ -205,7 +212,6 @@ func set_current_slot(slot_index: int) -> void:
 	profile["last_slot"] = current_slot
 	_save_profile()
 	_start_play_session(current_slot)
-	load_game_settings()
 
 func get_slot_metadata(slot_index: int) -> Dictionary:
 	var slots = profile.get("slots", {})
@@ -319,47 +325,21 @@ func load_player_data():
 # СОХРАНЕНИЕ НАСТРОЕК
 # ============================================================================
 
-func save_game_settings():
-	"""Saves game settings into the current slot."""
-	var data = settings_module.save()
-	game_settings = data.duplicate()
-
-	var slot_path = get_slot_path(current_slot)
-	if not FileAccess.file_exists(slot_path):
-		# Слот без сейву гри не створюємо: Game.gd вважав би його сейвом без кімнати.
-		# Налаштування потраплять у слот з першим збереженням гри (Game.gd → "game_settings").
-		return true
-	var slot_data := _read_slot(slot_path)
-	slot_data["game_settings"] = data
-	var file := FileAccess.open(slot_path, FileAccess.WRITE)
-	file.store_string(var_to_str(slot_data))
+## Пишеться на кожну зміну рядка Settings і на Restore (options_component._apply_and_save()).
+func save_game_settings() -> void:
+	var file := FileAccess.open(get_settings_path(), FileAccess.WRITE)
+	file.store_string(var_to_str(settings_module.save()))
 	file.close()
-	print("SaveSystem: Settings saved to slot %d" % current_slot)
-	return true
 
-
-## Вміст файла слота як є — БЕЗ SaveManager.load_from_text(): той заодно підміняє поточний стан
-## MetSys (MetSys.set_save_data) даними з файла. Через це кожна зміна налаштувань посеред гри
-## відкочувала відкриту карту до стану з диска, і наступний сейв записував уже порожню карту.
-func _read_slot(slot_path: String) -> Dictionary:
-	if not FileAccess.file_exists(slot_path):
+## Немає файла — інсталяція ще нічого не змінювала: значення за замовчуванням.
+func _read_settings_file() -> Dictionary:
+	if not FileAccess.file_exists(get_settings_path()):
 		return {}
-	return str_to_var(FileAccess.get_file_as_string(slot_path))
+	return str_to_var(FileAccess.get_file_as_string(get_settings_path()))
 
-func load_game_settings():
-	"""Loads game settings from the current slot."""
-	var slot_path = get_slot_path(current_slot)
-	if not FileAccess.file_exists(slot_path):
-		print("SaveSystem: No slot settings found, using defaults")
-		settings_module.apply_settings()
-		game_settings = settings_module.save()
-		return false
-
-	var data: Dictionary = _read_slot(slot_path)["game_settings"]
-	settings_module.load_data(data)
-	game_settings = data.duplicate()
-	print("SaveSystem: Settings loaded from slot %d" % current_slot)
-	return true
+## Перечитує файл налаштувань і застосовує його — як під час старту гри.
+func load_game_settings() -> void:
+	settings_module.load_data(_read_settings_file())
 
 # ============================================================================
 # НАСТРОЙКИ (делегируем в SettingsModule)

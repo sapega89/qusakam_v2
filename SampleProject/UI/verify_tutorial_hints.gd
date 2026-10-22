@@ -133,7 +133,7 @@ func _initialize() -> void:
 	var saved: Dictionary = root.get_node("SaveSystem").player_data_module.save()
 	ck(saved.seen_tutorials == seen, "seen topics are saved with the player")
 	settings.tutorial_windows = true
-	root.get_node("SaveSystem").save_game_settings()  # клік Off записав налаштування в слот гравця — повертаємо
+	root.get_node("SaveSystem").save_game_settings()  # клік Off записав файл налаштувань — повертаємо
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

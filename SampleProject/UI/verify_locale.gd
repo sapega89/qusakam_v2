@@ -57,7 +57,7 @@ func _initialize() -> void:
 	await process_frame
 	var settings: Dictionary = root.get_node("SaveSystem").settings_module.settings
 	settings.tutorial_windows = false  # D289: підказки — плашки, гра не стає на паузу під вікном
-	root.get_node("SaveSystem").set_save_dir(TEST_DIR)  # мова пишеться у файл слота — не в справжні сейви
+	root.get_node("SaveSystem").set_save_dir(TEST_DIR)  # мова пишеться у файл налаштувань — не в справжній
 	var loc: Node = root.get_node("LocalizationManager")
 	var saved_language: String = loc.get_language()
 	_build_allow()
