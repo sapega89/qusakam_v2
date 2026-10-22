@@ -69,6 +69,10 @@ func _initialize() -> void:
 		return
 	ck(paused, "game paused behind it")
 	ck(s.get_node("%TitleLabel").text == "Game Over", "title copy")
+	# B14: спільний скрим (OVERLAY) між фоном-каменем і текстом.
+	var scrim: ColorRect = s.get_node("%Scrim")
+	ck(scrim.color == UITokens.OVERLAY and scrim.get_index() > s.get_node("%Vignette").get_index()
+			and scrim.get_index() < s.get_node(^"Center").get_index(), "B14: OVERLAY scrim sits between the art and the text")
 	ck(s.get_node("%ResumeButton").text == "Resume from last save point"
 			and s.get_node("%TitleButton").text == "Return to title", "option copy from Figma")
 	var opts: Array = s.get_node("%ResumeButton").get_parent().get_children().map(func(n: Node) -> String: return n.name)
