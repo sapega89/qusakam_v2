@@ -50,12 +50,31 @@ def cell(sheet, col, row, w, h):
 JOBS = {}
 
 
-def job(name, src, out, pose, who, seed, size, up=16, palette=None, bob=None, src_wt=False, erase=(), twin=()):
+def job(
+    name,
+    src,
+    out,
+    pose,
+    who,
+    seed,
+    size,
+    up=16,
+    palette=None,
+    bob=None,
+    src_wt=False,
+    erase=(),
+    twin=(),
+    scale=1.0,
+    post=None,
+):
     """src_wt — джерело з робочого дерева (кадр, щойно зроблений попереднім завданням); erase — прямокутники
     (x0, y0, x1, y1) готового кадру, що стають прозорими (ручне прибирання сміття моделі); twin — прямокутники, де
     ключові кольори металу зброї — тіло (відблиск ока, пояс): зсув на BODY_TWIN, як у weapon_key_fixups.py, якого
-    евристика тут не взяла."""
+    евристика тут не взяла; scale — картинка моделі зменшується перед зведенням до клітинки (модель малює звіра
+    більшим за референс, а «exactly as small» не допомагає); post(frame) -> frame — остання правка готового кадру."""
     JOBS[name] = dict(
+        scale=scale,
+        post=post,
         src=src,
         out=out,
         pose=pose,
@@ -92,11 +111,15 @@ for n, pose in enumerate(
         (HERO + "dagger/Heavy/%d.png" % n, None),
         pose + TINY,
         DAGGER_WHO,
-        {1: 54, 2: 53, 3: 52}[n],  # спроба 1 (зерно 52): Heavy/1 — лезо з меч і другий ніж, Heavy/2 — лезо з меч
+        {1: 54, 2: 53, 3: 52}[
+            n
+        ],  # спроба 1 (зерно 52): Heavy/1 — лезо з меч і другий ніж, Heavy/2 — лезо з меч
         (96, 96),
         12,
         "hero",
-        twin={2: ((57, 49, 58, 51),), 3: ((45, 71, 52, 73),)}.get(n, ()),  # відблиск ока; пояс
+        twin={2: ((57, 49, 58, 51),), 3: ((45, 71, 52, 73),)}.get(
+            n, ()
+        ),  # відблиск ока; пояс
     )
 for n, pose in (
     (
@@ -122,7 +145,9 @@ for n, pose in (
         12,
         "hero",
         # Attack2/3: сіра закарлючка праворуч від кулака («іскра» моделі, пришита до силуету) — геть
-        erase=((66, 44, 96, 60), (62, 50, 67, 51), (61, 51, 67, 53), (60, 53, 63, 54)) if n == 3 else (),
+        erase=((66, 44, 96, 60), (62, 50, 67, 51), (61, 51, 67, 53), (60, 53, 63, 54))
+        if n == 3
+        else (),
         twin=((47, 39, 49, 41),) if n == 3 else (),  # відблиск ока
     )
 # Heavy/1 (зерно 54): кинджал за головою вдався, але в передній руці лишився обрубок леза з кадру уколу — прибрано
@@ -141,7 +166,32 @@ job(
     src_wt=True,
 )
 
+
 # --- дворучний бій: Hurt з CombatIdle (гра досі брала sword/Hurt) ---
+def dagger_trim(frame):
+    """dual Hurt/1: кинджал у дальньому кулаку модель видовжила до меча (лезо по діагоналі вгору-вправо, 19 px —
+    арт-директор: «два мечі навхрест»). Як dual_fixups.py --after для Attack4/2: вістря моделі (обведене V) зсунуто
+    на 7 px по діагоналі до гарди, решта леза — геть; лишається ~9 px леза, як у CombatIdle/1. Смуга леза — x+y
+    116-121, гарда — x-y 8-9, лезо від x-y 10 до вістря на 39. Плаский торець моделі (контур на рядку 47, під ним
+    3 px металу) звужено до вістря: 2 px світлого металу під контуром, рядок 46 — 2 px контуру (арт-директор: «a 2-px
+    outlined point»); довжина та сама."""
+    y, x = np.mgrid[: frame.shape[0], : frame.shape[1]]
+    tip = (abs(x + y - 118.5) <= 4) & (x - y >= 18)
+    frame[tip] = np.roll(frame, (7, -7), (0, 1))[tip]  # (x, y) <- (x + 7, y - 7)
+    edge, light, dark = frame[47, 69].copy(), frame[48, 69].copy(), frame[49, 70].copy()
+    assert [tuple(c) for c in (edge, light, dark)] == [
+        (0x26, 0x18, 0x25, 255),
+        (0xF8, 0xF8, 0xE4, 255),
+        (0x87, 0x87, 0x8C, 255),
+    ], (
+        "dual Hurt/1: the dagger tip is not where it was trimmed to — the model frame changed"
+    )
+    frame[46, 70:72] = edge
+    frame[47, 70:72] = light
+    frame[48, 71] = dark
+    return frame
+
+
 job(
     "dual_hurt",
     (HERO + "dual/CombatIdle/1.png", None),
@@ -156,6 +206,7 @@ job(
     (96, 96),
     12,
     "hero",
+    post=dagger_trim,
 )
 
 # --- алхімік: довга чорна маска читалась як борода. Спроба 1 (коротка чорна маска до підборіддя) усе ще читалась
@@ -215,8 +266,16 @@ job(
 # мантії — стовпець 24 (не зачеплено), поділ — від рядка 80 (не зачеплено); кадри дихання (BOB:56) ті самі внизу
 PRI = NPC + "priest/sheet.png"
 for col in range(4):
-    job("priest_work%d" % col, cell(PRI, col, 2, 64, 96), cell(PRI, col, 2, 64, 96), None, None, 0, (64, 96),
-        erase=((0, 58, 24, 80),))
+    job(
+        "priest_work%d" % col,
+        cell(PRI, col, 2, 64, 96),
+        cell(PRI, col, 2, 64, 96),
+        None,
+        None,
+        0,
+        (64, 96),
+        erase=((0, 58, 24, 80),),
+    )
 
 # --- дід: у idle посох у ближній руці, у кадрах люльки — у дальній; idle перемальовано з кадру люльки ---
 OLD = NPC + "old_man/sheet.png"
@@ -255,6 +314,20 @@ job(
     33,
     (96, 112),
 )
+# смерть 1 (клітинка 13) лишалась старою (руки навхрест, яскраве волосся, роги вгору): після нового кадру 0 джин ніби
+# оговтувався перед розпадом — перемальовано з нового кадру 0 (робоче дерево), щоб 12 -> 13 було одне падіння
+job(
+    "djinn_death1",
+    cell(DJ, 0, 4, 96, 112),
+    cell(DJ, 1, 4, 96, 112),
+    DJINN_LEGS
+    + "dying in the same thrown-back pose as in the picture, his head flung back, his arms sagging and falling, "
+    "his body cracking apart into dark smoke and embers, his flame hair guttering out",
+    C["fire_djinn"]["who"],
+    33,
+    (96, 112),
+    src_wt=True,
+)
 
 # --- стагер (по два кадри, новий лист stagger.png поруч із sheet.png, та сама клітинка й лінія ніг) ---
 STAG = [
@@ -269,7 +342,9 @@ for who_key, sheet, w, h, src_box, seed, up in (
 ):
     for k, pose in enumerate(STAG):
         if who_key == "bandit":
-            if k == 1:  # спроба 1 («hunched forward … knees buckling») — той самий idle: поза сильніша
+            if (
+                k == 1
+            ):  # спроба 1 («hunched forward … knees buckling») — той самий idle: поза сильніша
                 pose = (
                     "dazed after a heavy blow: doubled over, bent forward at the waist, his head hanging down low, "
                     "his free hand clutching his stomach, the scimitar pointing down with its tip on the ground"
@@ -284,11 +359,19 @@ for who_key, sheet, w, h, src_box, seed, up in (
             pose = DJINN_LEGS + pose.replace(
                 "stumbling back on one foot", "his smoke tail swaying back"
             )
-            if k == 0:  # спроба 1 (руки врозтіч, голова назад) — двійник нового кадру смерті 0: інший силует
+            if (
+                k == 0
+            ):  # спроба 1 (руки врозтіч, голова назад) — двійник нового кадру смерті 0: інший силует
                 pose = DJINN_LEGS + (
                     "reeling from a heavy blow: his body twisted away to the left, one forearm raised in front of "
                     "his face as if shielding it, the other arm held low and bent, his head turned down and away, "
                     "his flame hair blown back"
+                )
+            else:  # спроба 1 (поза STAG) дивилась ліворуч, а руки, складені внизу, читались як підняте коліно
+                pose = DJINN_LEGS + (
+                    "facing right exactly like the picture, his face on the right side of his head, his flame hair "
+                    "blown back to the left: dazed after a heavy blow, hunched forward with his head bowed down, both "
+                    "arms hanging limp and straight down in front of his belly, his open hands dangling"
                 )
         else:
             pose = "in the same side view facing right: " + pose.replace(
@@ -304,38 +387,101 @@ for who_key, sheet, w, h, src_box, seed, up in (
             seed,
             (w, h),
             up,
+            # джин: обидва кадри моделі дивились ліворуч (лист — праворуч); кадр 0 дзеркально — кулька хвоста на тих
+            # самих x 37-58, рядок 108
+            post=(lambda f: f[:, ::-1].copy())
+            if (who_key, k) == ("fire_djinn", 0)
+            else None,
         )
-# шакал — кадр Crusenho (48x48 у клітинці 96x72), опис словами
-for who_key, who, poses in (
-    (
-        "jackal",
-        "the same small spotted brown hyena-like jackal with the dark muzzle and dark legs",
-        [
-            # спроба 1 («knocked back on its hind legs … head jerked up and back») — стає дибки й дивиться ліворуч
-            "in the same side view facing right: staggered by a heavy blow, pushed back onto its haunches, its "
-            "hindquarters low, its front legs stiff and braced forward, its head jerked up but still facing right, "
-            "its snout pointing up to the right",
-            "in the same side view facing right: dazed, its head hanging low to the ground, its legs splayed and "
-            "wobbling, its tail tucked down",
-        ],
-    ),
-):
-    sheet = ENEMY + who_key + "/sheet.png"
-    for k, pose in enumerate(poses):
-        job(
-            "stagger_%s%d" % (who_key, k),
-            cell(sheet, 0, 0, 96, 72),
-            (ENEMY + who_key + "/stagger.png", (k * 96, 0, 96, 72)),
-            pose + ", the same tiny size, the same pixel art style",
-            who,
-            41,
-            (96, 72),
-        )
+# латунний збирач, стагер 0: спроба 1 (зерно 31, поза STAG) — поза кадрів ходьби 4 і 6 (крок, голова попереду стегон,
+# руки махають), ще й тонший за них: бос ніби ступає до героя. Спроба 2 (зерно 32, «… its front toe lifted, its feet
+# close together …») — відкинувся назад, але передню ногу закинув високо, як у копняку, а клітку на спині модель
+# намалювала драбинкою дрібніше за блок 16 px — після зведення вона розсипалась на сірий шум
+job(
+    "stagger_brass_collector0",
+    cell(BOSS + "brass_collector/sheet.png", 0, 0, 96, 112),
+    (BOSS + "brass_collector/stagger.png", (0, 0, 96, 112)),
+    "in the same side view facing right: knocked backwards off balance by a heavy blow, rocking back on its heels, "
+    "its upper body tilted back about 20 degrees, its head thrown back, both long arms flung forward and up for "
+    "balance, both feet on the ground close together under its hips, only the toes of its front foot lifted, not "
+    "walking, not a stride; the same bulky body as in the picture, the shoulders as wide, the same barred iron cage "
+    "on its back fully visible with the same thick dark bars, the same gritty speckled brass",
+    C["brass_collector"]["who"],
+    35,
+    (96, 112),
+)
+# шакал — кадри Crusenho (48x48 у клітинці 96x72), опис словами. Модель малює його більшим за лист (спроба 2 —
+# 707 пікселів проти 521 в idle, ноги 13 px проти 8-9; «exactly as small» не зменшувало): scale зводить до розміру
+# листа (bbox до 36x29, ~520-580 пікселів)
+JK = ENEMY + "jackal/sheet.png"
+JK_WHO = "the same small spotted brown hyena-like jackal with the dark muzzle, the dark legs and the short dark tail"
+# спроба 1 («knocked back on its hind legs … head jerked up and back») — став дибки й дивився ліворуч; спроба 2
+# («pushed back onto its haunches … front legs stiff and braced forward») — задні ноги прямі, вищий і довгоногий,
+# довгий пухнастий хвіст до землі (в обох кадрах); спроба 3 («sitting back on its haunches … the same short dark
+# stubby tail») — сів, як пес, голова задрана (33 px заввишки й при 0.8), хвіст кільцем по землі; кадр 1 — хвіст
+# стирчить назад, як у бігу
+# спроба 4 («knocked back onto its haunches … head jerked up and back with the snout pointing up … mouth open in a
+# yelp») — знову сів і задер голову, як виє (41 px заввишки). Спроба 5 — два кандидати з idle, обидва «on all four»:
+# зерно 42 («flinching back … still standing on all four legs … its snout raised a little») — стоїть і дивиться вгору,
+# як виє, ноги світлі; узято зерно 43 — скавчить, передні ноги впираються назад, ноги темні, як у листі. Сісти на
+# задні з такою самою висотою модель не змогла жодного разу
+
+
+def jackal_tail_stub(frame):
+    """Кадр 0 (зерно 43, scale 0.83): хвіст моделі — 11 px по діагоналі до землі (рядки 59-69), у листі — короткий
+    темний обрубок (~6 px). Кінець хвоста (рядки 65-69 лівіше задньої ноги, x < 35) — геть, на рядку 64 — темний
+    кінчик між контурами, на 65 — 2 px контуру; лишається ~7 px, як у idle."""
+    out, tip = frame[64, 30].copy(), frame[65, 30].copy()
+    assert [tuple(c[:3]) for c in (out, tip, frame[68, 27])] == [
+        (0x25, 0x13, 0x1A),
+        (0x3D, 0x25, 0x3B),
+        (0x25, 0x13, 0x1A),
+    ], "jackal stagger 0: the long tail is not where it was — the model frame changed"
+    frame[65:70, :35] = 0
+    frame[64, 31:33] = tip
+    frame[65, 31:33] = out
+    return frame
+
+
+job(
+    "stagger_jackal0",
+    cell(JK, 0, 0, 96, 72),
+    (ENEMY + "jackal/stagger.png", (0, 0, 96, 72)),
+    "in the same side view facing right: recoiling from a heavy blow, crouching back on bent hind legs with all "
+    "four paws on the ground, its rump low, its front legs stiff and leaning back, its head tossed up with its mouth "
+    "open in a yelp, the same short dark tail hanging down as in the picture, no taller than in the picture, the "
+    "same tiny size, the same pixel art style",
+    JK_WHO,
+    43,
+    (96, 72),
+    scale=0.83,  # 36x29, 503 пікселі (idle 35x28, 521), плече ~20 px; 0.84 — вже 30 px заввишки
+    post=jackal_tail_stub,  # 33x29, 486 пікселів
+)
+# кадр 1 — з кадру смерті 20 (голова вже трохи нижче, хвіст звисає, як в idle), а не з idle
+job(
+    "stagger_jackal1",
+    cell(JK, 2, 3, 96, 72),
+    (ENEMY + "jackal/stagger.png", (96, 0, 96, 72)),
+    "in the same side view facing right: dazed after a heavy blow, its head hanging low to the ground, its legs "
+    "splayed and wobbling, the same body length and the same short dark tail hanging down as in the picture, the "
+    "same tiny size, the same pixel art style",
+    JK_WHO,
+    41,
+    (96, 72),
+    scale=0.9,  # 530 пікселів, ноги 8-9 px, тулуб завдовжки з idle (38x20: голова звисає наперед)
+)
 # скорпіон: дві спроби моделі (зерна 41, 42) — поза моделлю пака: друга клешня кільцем, око на клешні, видовжене
 # тіло. Стагер — його ж кадри смерті 1-2 (хвіст осідає; Crusenho, CC BY 4.0), лише скопійовані в stagger.png
 for k in range(2):
-    job("stagger_scorpion%d" % k, cell(ENEMY + "scorpion/sheet.png", 1 + k, 3, 96, 72),
-        (ENEMY + "scorpion/stagger.png", (k * 96, 0, 96, 72)), None, None, 0, (96, 72))
+    job(
+        "stagger_scorpion%d" % k,
+        cell(ENEMY + "scorpion/sheet.png", 1 + k, 3, 96, 72),
+        (ENEMY + "scorpion/stagger.png", (k * 96, 0, 96, 72)),
+        None,
+        None,
+        0,
+        (96, 72),
+    )
 
 
 # --- зала боса: руни на стіні читались латиницею (DPOB над піччю, кільця обабіч) — перемальовано лише їхні
@@ -373,23 +519,43 @@ def boss_runes():
     img = np.concatenate([img, np.repeat(img[-1:], height - len(img), axis=0)])
     text = f"{layer['prompt']}, {cb.STYLE}"
     # кільця гліфів біля обох країв: зсув на пів ширини зводить їх в один прямокутник і не чіпає шов шару
-    rings = os.path.join(cb.CACHE, "runes_rings_%s.png" % hashlib.sha1((text + "|0.65|4").encode()).hexdigest()[:12])
-    if os.path.exists(rings):  # проміжна картинка: смугу над піччю пробували кілька разів
+    rings = os.path.join(
+        cb.CACHE,
+        "runes_rings_%s.png"
+        % hashlib.sha1((text + "|0.65|4").encode()).hexdigest()[:12],
+    )
+    if os.path.exists(
+        rings
+    ):  # проміжна картинка: смугу над піччю пробували кілька разів
         img = np.asarray(Image.open(rings).convert("RGB"), np.float32)
     else:
         img = np.roll(img, cb.GW // 2, axis=1)
-        img = box_repaint(img, (190 * S, 56 * S, 408 * S, 248 * S), text, layer["seed"] + 4, height, 0.65)
+        img = box_repaint(
+            img,
+            (190 * S, 56 * S, 408 * S, 248 * S),
+            text,
+            layer["seed"] + 4,
+            height,
+            0.65,
+        )
         img = np.roll(img, -(cb.GW // 2), axis=1)
         Image.fromarray(img.astype(np.uint8)).save(rings)
     # смуга над піччю: з підказкою шару (зерно +5) — знаки, схожі на китайські ієрогліфи; «трикутники» з denoise 0.65
     # (зерно +6) — смуга зникла, три великі трикутники й обрізаний на краю прямокутника; 0.55 тримає смугу
     band = (
         "the same stone band over the furnace, carved with a row of six small glowing orange triangle glyphs and "
-        "dots, the same triangular glyphs as the ring on the wall, no letters, no characters, " + cb.STYLE
+        "dots, the same triangular glyphs as the ring on the wall, no letters, no characters, "
+        + cb.STYLE
     )
-    img = box_repaint(img, (230 * S, 62 * S, 348 * S, 104 * S), band, layer["seed"] + 7, height, 0.55)
+    img = box_repaint(
+        img, (230 * S, 62 * S, 348 * S, 104 * S), band, layer["seed"] + 7, height, 0.55
+    )
     Image.fromarray(img[:rows].astype(np.uint8)).save(cb.cache_path(layer))
-    print("done boss_runes ->", cb.cache_path(layer), "(run comfy_backdrop.py Lab/gen_boss_far)")
+    print(
+        "done boss_runes ->",
+        cb.cache_path(layer),
+        "(run comfy_backdrop.py Lab/gen_boss_far)",
+    )
 
 
 def git_png(path):
@@ -427,7 +593,12 @@ def drop_specks(op, least):
             part.append((cy, cx))
             for ny in (cy - 1, cy, cy + 1):
                 for nx in (cx - 1, cx, cx + 1):
-                    if 0 <= ny < op.shape[0] and 0 <= nx < op.shape[1] and op[ny, nx] and not seen[ny, nx]:
+                    if (
+                        0 <= ny < op.shape[0]
+                        and 0 <= nx < op.shape[1]
+                        and op[ny, nx]
+                        and not seen[ny, nx]
+                    ):
                         seen[ny, nx] = True
                         stack.append((ny, nx))
         if len(part) < least:
@@ -447,12 +618,32 @@ def run_job(name):
     elif j["pose"] is None:  # без моделі — кадр із SRC_REV, лише erase
         frame = np.asarray(crop(git_png(j["src"][0]), j["src"][1])).copy()
     else:
-        src = crop(Image.open(j["src"][0]).convert("RGBA") if j["src_wt"] else git_png(j["src"][0]), j["src"][1])
+        src = crop(
+            Image.open(j["src"][0]).convert("RGBA")
+            if j["src_wt"]
+            else git_png(j["src"][0]),
+            j["src"][1],
+        )
         cs.UP = j["up"]
         canvas = Image.new("RGBA", (w, h), cs.MAGENTA + (255,))
         canvas.alpha_composite(src, ((w - src.width) // 2, h - src.height))
         ref = np.asarray(canvas.resize((w * cs.UP, h * cs.UP), Image.NEAREST))
         raw = cs.edit(ref, KEEP.format(who=j["who"], pose=j["pose"]), j["seed"])
+        if (
+            j["scale"] != 1
+        ):  # низ і середина картинки на місці, поля — колір рамки (shrink його вирізає)
+            im = Image.fromarray(raw)
+            small = im.resize(
+                (round(im.width * j["scale"]), round(im.height * j["scale"])),
+                Image.NEAREST,
+            )
+            im = Image.new(
+                im.mode,
+                im.size,
+                tuple(int(v) for v in np.median(raw[:12].reshape(-1, raw.shape[2]), 0)),
+            )
+            im.paste(small, ((im.width - small.width) // 2, im.height - small.height))
+            raw = np.asarray(im)
         rgb, op = cs.shrink(raw, (w, h))
         pal = palette(j)
         rgb = pal[
@@ -474,6 +665,8 @@ def run_job(name):
         for key in ((0xF8, 0xF8, 0xE4), (0xC2, 0xC2, 0xC2), (0x87, 0x87, 0x8C)):
             hit = (part[..., :3] == key).all(-1) & (part[..., 3] > 0)
             part[hit, :3] = np.array(key) - 2
+    if j["post"]:
+        frame = j["post"](frame)
     path, box = j["out"]
     if box is None:
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -500,7 +693,9 @@ if __name__ == "__main__":
             n
             for a in sys.argv[1:]
             for n in JOBS
-            if n == a or n.startswith(a + "_") or (a.endswith("*") and n.startswith(a[:-1]))
+            if n == a
+            or n.startswith(a + "_")
+            or (a.endswith("*") and n.startswith(a[:-1]))
         )
     )
     try:
