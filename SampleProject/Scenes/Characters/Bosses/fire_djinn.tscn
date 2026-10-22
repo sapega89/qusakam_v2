@@ -176,6 +176,7 @@ vframes = 5
 
 [node name="AnimationPlayer" parent="."]
 libraries/ = SubResource("Lib")
+metadata/attack_strike_time = 0.3
 
 [node name="CollisionShape2D" parent="hitbox"]
 position = Vector2(0, -20)
