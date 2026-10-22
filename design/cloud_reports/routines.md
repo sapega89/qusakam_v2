@@ -67,3 +67,17 @@ merged: both edit the Settings screen.
 | 12:40 | settings-1 (`trig_01RjsrWpydjYsaMR2JRsmqew`) | cloud/settings-1 | #100 settings_plan slice 1 (Borderless, Auto-Save row default Off, every row honest), #36 mouse off on Alt (D417) |
 | 12:41 | fight-music (`trig_01GZ9nXe5t5hDTJSakSA6YP2`) | cloud/fight-music | music_plan slice 3a (D414): battle / boss / room switching, placeholder tracks until Sapega's pick |
 | 12:41 | ui-fixes (`trig_01XDvEM6aPyHQF3maHM9cvRP`) | cloud/ui-fixes | B112 speaker name row; #50 row templates for stats_component and equipment_component |
+
+Round 7 merged 2026-10-22: fight-music (D419), settings-1 (D420–D422), ui-fixes (D423, B112); B116, B118 filed, B117 fixed
+by the orchestrator. Local suite after the merge: 92 PASS + `verify_lab_boss` (B117), green after its fix.
+
+## Round 8 (2026-10-22): settings storage, row templates, combat fixes
+
+Sapega chose all four. `cloud/settings-2` (#52, D418) starts after `cloud/settings-store` is merged: both edit
+`SettingsModule.gd` and `verify_settings.gd`.
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 14:04 | settings-store (`trig_013NrFUvbHqQC8rmFA1Yvbxq`) | cloud/settings-store | B118: one global settings file, slots stop carrying settings |
+| 14:04 | rows-2 (`trig_014wctbx36UJsgUBWYAZPjTk`) | cloud/rows-2 | #50: skills_component, inventory_component, bottom_bar as templates (D423 way) |
+| 14:04 | combat-fixes (`trig_01ME2nviFHh4JuK3PQTdzGSM`) | cloud/combat-fixes | B116 (in combat through the boss cutscene); CombatInput / SkillScreenInput into project.godot |
