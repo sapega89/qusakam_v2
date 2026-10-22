@@ -36,7 +36,7 @@ recolours only the weapon metal.
 **Added later (remaining_work Art 3): `Heavy/1–3` and `Attack2/2–3`** — `Scripts/Tools/comfy_art_fixes.py
 dagger_heavy dagger_attack2` (same model), each made from `Attack1/2` — the stab whose dagger is already short (the
 old attempts from the first frame drew a sword) — then `weapon_key_fixups.py` as above. Feet on row 88, 96×96, the
-artist's colours. **Not wired yet**: the `dagger` library still plays `Attack3` for the heavy and `Attack1/2–3` for
+artist's colours. Wired (`cloud/art-fixes-wire`): the `dagger` library plays them as `HeavyWindup`/`HeavyStrike` and
 `Attack2`.
 - Rejected: `Heavy/1` with the dagger raised over the head (seeds 52, 53 — a sword-length blade, a second knife in the
   front hand), a "coiled behind the hip" wind-up (identical to the stab) and an ice-pick grip (a spike grew on the

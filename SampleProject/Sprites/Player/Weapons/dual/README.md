@@ -10,7 +10,7 @@ of this set (`FROM:`). The artist's colours only.
 
 Wired: `Player.tscn` → `AnimationPlayer` library `dual_sword_dagger` (sword in hand + dagger in the off hand;
 `Resources/Player/WeaponAnimations/dual_sword_dagger.tres`, written by `Scripts/Tools/weapon_libraries.py`); its `Hurt` is
-`sword/Hurt/1` (the own `Hurt/1` below is not wired yet).
+its own `Hurt/1` below (`cloud/art-fixes-wire`).
 
 Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
 armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`

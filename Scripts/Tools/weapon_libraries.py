@@ -6,9 +6,8 @@
 `Sprite2D:offset` (0, −16) під клітинку 96×96. Ім'я бібліотеки — `category` з items.json (алебарда — `polearm`),
 дві зброї — `dual_<у руці>_<друга>`.
 
-Кадрів, яких немає в наборі (README набору), бере найближчу наявну анімацію (записано в design/cloud_reports/
-weapons-all.md): кинджал — Heavy з фінішера Attack3, Attack2 — присід Attack2/1 + укол Attack1/2–3; dual — Hurt
-з `sword/Hurt/1` (README dual: рука з кинджалом схована за тілом).
+Кадрів, яких немає в наборі (README набору), бере найближчу наявну анімацію через `overrides`. Кинджал (Heavy,
+Attack2/2–3) і dual (Hurt) їх більше не потребують — кадри додано в fe96e88a (remaining_work Art 3).
     python Scripts/Tools/weapon_libraries.py
 """
 
@@ -104,18 +103,8 @@ def write(name, anims):
 
 
 if __name__ == "__main__":
-    write(
-        "dagger",
-        library(
-            "dagger",
-            3,
-            {
-                "Attack2": ["dagger/Attack2/1", "dagger/Attack1/2", "dagger/Attack1/3"],
-                "Heavy": frames("dagger", "Attack3"),
-            },
-        ),
-    )
+    write("dagger", library("dagger", 3, {}))
     write("mace", library("mace", 3, {}))
     write("polearm", library("halberd", 3, {}))
-    write("dual_sword_dagger", library("dual", 4, {"Hurt": ["sword/Hurt/1"]}))
+    write("dual_sword_dagger", library("dual", 4, {}))
     print("written", OUT)
