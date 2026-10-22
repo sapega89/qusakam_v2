@@ -11,7 +11,7 @@ New D-IDs: **D425** (Text Speed), **D426** (Screen Shake), **D427** (Ambient), *
 B rows fixed: none (no B row was open for these rows).
 The **Ukrainian strings are drafts for Sapega**: Швидкість тексту / Звичайна / Швидка / Тряска екрана / Звуки довкілля / Яскравість екрана / ТЕМНО / СВІТЛО, plus the two longer hints.
 The compass icon on the preview swatches is drawn by Claude (`settings_compass.svg`); Figma was not reachable.
-Full suite: SUITE_LINE
+Full suite: 91 PASS, 2 FAIL (`verify_audio` cast_interrupt, `verify_weapon_animations` strike frame), and both are `RESULT: ALL PASS` when re-run alone. They look like timing flakes under suite load and are not in the code this branch touches.
 
 ## D-ID text (for `figma_decision_register.md`)
 
@@ -44,3 +44,11 @@ Full suite: SUITE_LINE
 ## Shots
 
 `design/shots/settings2_display.png`, `settings2_audio.png`, `settings2_game.png`, `settings2_controls.png` (xvfb 1920×1080; Resolution shows 1920 × 1080 and the list there has 3 sizes). Not compared against Figma because Figma was not reachable from the cloud. The preview swatch size (208×96) and the compass are my own choices, to be checked against `brightness-preview-container` in 17:280.
+
+## Full suite
+
+`Scripts/Tools/run_verify.sh`: `SUITE: 2 FAIL` (91 PASS).
+- `verify_audio`: `FAIL a cast interrupted by a hit → cast_interrupt on SFX ([])`. Alone: `RESULT: ALL PASS`.
+- `verify_weapon_animations`: `FAIL each strike frame shows with the hitbox on and no overlay ([true, false, true])`. Alone: `RESULT: ALL PASS`. This is the frame-timing area BUGS.md:138 describes.
+
+Neither test touches the settings keys, the camera kick or the dialogue speed. This branch's defaults (Text Speed ×1, Shake On, Ambient 1.0, Brightness 50) leave runtime behaviour as it was.
