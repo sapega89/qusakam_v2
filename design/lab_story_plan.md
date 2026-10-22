@@ -114,7 +114,7 @@ in [[play_feedback_queue]].
    - Flags: `lab_boss_talk_complete`, `lab_boss_fight_complete`, `lab_after_boss_complete` — the last is the 9.8 hook
      (the way east is open).
    - B83 (hall only): the dodge bridges moved from row 8 to row 9 — 96 px above the floor, a held jump peaks ~107 px.
-9. **Demo end** — the walk out, `verify_demo_end` updated; full route `verify_lab_route.gd` (Mayor Hall → demo end, both
+9. **Demo end** (built, see below) — the walk out, `verify_demo_end` updated; full route `verify_lab_route.gd` (Mayor Hall → demo end, both
    Mayor outcomes, the cloak game over, save/reload mid-Lab — B53).
 10. **Art and voices** — comfy-sprite (Brass Collector, fire djinn, Малік, prisoner, alchemist), comfy-backdrop (cells,
     boss hall), generated effects (D273 practice), Kokoro lines (D278 hook).
@@ -175,6 +175,28 @@ none → CUTSCENE, `lab_cells_cutscene_complete` → AWAKE (hero put in his cell
   jumped to from). Art: the builder redraws the bridge decks from the layout (`build_laboratory.gd`, no new art).
 - `RoomEnemySpawner.fight_cleared()` — new helper (started and nobody left).
 - Test: `verify_laboratory.gd` rewritten (real-input route LabCells → corridors → LabBoss, save/load, real jumps).
+
+## Built — slices 9–10 (queue row 9.8, D310; agent calls, Sapega to confirm)
+
+- **Demo end:** no code change. `LaboratoryOutside.gd` is one-shot per flag — `Laboratory_Outside` and `Demo_End` play
+  once (`lab_outside_complete`, `demo_end_complete`), every later entry goes straight to the one demo end screen (the B66
+  fix holds). It does not read `lab_after_boss_complete`: the only way in is through the raised gates.
+- **`verify_lab_route.gd`** — the whole route with real input, keyboard and gamepad mixed: Mayor Hall win and lose (from
+  the same door save) → the same cells beat; cells skip (pad Y), save → load awake, no replay; acquaintance (stick, pad
+  A); corridors with a pad save at `SavePoint_PreBoss` and a load that keeps the won fights; the djinn talk (pad Y),
+  losing → the cloak → Game Over → pad A Resume → the last save (before the hall: the talk plays again); the talk (Tab),
+  the win, the gates, `LaboratoryOutside`, one demo end screen; back in and out again → the screen again, no talk; pad A
+  Return → main menu.
+- **Voices (D310):** Kokoro-82M via `make_voices.py <names>`: `Boss/brass_collector_roar_0..2` (am_onyx ×0.62, ring +
+  comb, played with the CC0 `roar_0..2`), `Boss/fire_djinn_roar_0..2`, `Boss/fire_djinn_laugh_0..1` (am_fenrir),
+  `Lab/prisoner_incantation_0` (am_adam, the Q64 words). `sound_events.json → boss_voices` maps each boss's enemy_type to
+  roar / shout / death (the djinn's "shout" is the laugh). Scene voices through `Cutscene.voice` (silent under a skip):
+  the collector climbs out (MayorHall), the prisoner's shout and the djinn rising (LabCells), the djinn taking the cloak
+  (LabBoss).
+- **Gamepad pass:** every Lab prompt — the skip prompt names Y on a pad, the save point badge, dialogue (A), the save
+  screen (A), Game Over (A), the demo end (A). Found and fixed: a world prompt made after a room change showed the
+  keyboard badge to a pad player; the top HUD threw a SCRIPT ERROR on every scene change (Resume, Return to menu).
+- Left: captures `fb17_*` + sheet (needs a display), the exe rebuild, BACKLOG 6/16/17/23 marked done (register edits).
 
 ## Out of scope for this pass
 
