@@ -821,6 +821,12 @@ msgid "Skills screen: undo a pick"
 msgstr "Skills screen: undo a pick"
 
 # ── Input glyphs (InputGlyphs)
+msgid "Arrows"
+msgstr "Arrows"
+
+msgid "D-pad"
+msgstr "D-pad"
+
 msgid "D-pad up"
 msgstr "D-pad up"
 

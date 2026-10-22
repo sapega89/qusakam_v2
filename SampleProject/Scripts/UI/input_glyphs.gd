@@ -62,9 +62,10 @@ static func badge(action: Variant) -> String:
 	if action is Array:
 		return "/".join(action.map(func(a: StringName) -> String: return badge(a)))
 	if action == &"navigate":
-		return "LS" if using_gamepad else "Arrows"
+		return "LS" if using_gamepad else TranslationServer.translate("Arrows")
 	var name: String = _names(action)[0]
-	return "D-pad" if name.begins_with("D-pad") else name  # бейдж малий: напрям хрестовини — у підказці
+	# бейдж малий: напрям хрестовини — у підказці; «Arrows» / «D-pad» — назви, не написи на кнопках, тож перекладаються
+	return TranslationServer.translate("D-pad") if name.begins_with("D-pad") else name
 
 
 static func _names(action: StringName) -> Array[String]:

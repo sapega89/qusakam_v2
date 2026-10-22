@@ -821,6 +821,12 @@ msgid "Skills screen: undo a pick"
 msgstr "Екран навичок: скасувати вибір"
 
 # ── Input glyphs (InputGlyphs)
+msgid "Arrows"
+msgstr "Стрілки"
+
+msgid "D-pad"
+msgstr "Хрестовина"
+
 msgid "D-pad up"
 msgstr "хрестовина вгору"
 
