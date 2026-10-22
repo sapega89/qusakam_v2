@@ -54,7 +54,8 @@ func _on_player_attacked(player: Node, _direction: int) -> void:
 
 
 ## Замах ворога чути: половина підказки «зараз ударить» (D215).
-## Голос: бос реве на першому замаху й кричить на кожному другому (D278), решта ворогів гарчить на кожному третьому.
+## Голос: бос реве на першому замаху й кричить на кожному другому (D278) — свої звуки в кожного боса (boss_voices,
+## D310: джин на другому замаху сміється), решта ворогів гарчить на кожному третьому.
 func _on_attack_started(attacker: Node, _target: Node) -> void:
 	if not attacker.is_in_group(GameGroups.ENEMIES):
 		return
@@ -63,15 +64,19 @@ func _on_attack_started(attacker: Node, _target: Node) -> void:
 	attacker.set_meta(&"voiced_swings", swings + 1)
 	if _is_boss(attacker):
 		if swings == 0:
-			AudioManager.play(&"boss_roar")
+			AudioManager.play(_boss_voice(attacker, "roar"))
 		elif swings % 2 == 0:
-			AudioManager.play(&"boss_shout")
+			AudioManager.play(_boss_voice(attacker, "shout"))
 	elif swings % 3 == 2:
 		AudioManager.play(&"enemy_grunt", _enemy_pitch(attacker))
 
 
 func _is_boss(enemy: Node) -> bool:
 	return enemy.is_in_group(GameGroups.BOSS) or enemy.is_in_group(GameGroups.MINIBOSS)
+
+
+func _boss_voice(boss: Node, kind: String) -> StringName:
+	return AudioManager.boss_voice(boss.enemy_stats.enemy_type, kind)
 
 
 func _enemy_pitch(enemy: Node) -> float:
@@ -89,7 +94,7 @@ func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
 	elif target.is_in_group(GameGroups.ENEMIES):
 		if _is_boss(target):
 			if not alive:
-				AudioManager.play(&"boss_death")
+				AudioManager.play(_boss_voice(target, "death"))
 		else:
 			AudioManager.play(&"enemy_grunt" if alive else &"enemy_death", _enemy_pitch(target))
 

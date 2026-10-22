@@ -78,9 +78,17 @@
 		"hero_death": {"bus": "Voice", "files": ["Voice/Hero/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0},
 		"enemy_grunt": {"bus": "Voice", "files": ["Voice/Enemy/grunt_0.ogg", "Voice/Enemy/grunt_1.ogg", "Voice/Enemy/grunt_2.ogg", "Voice/Enemy/grunt_3.ogg", "Voice/Enemy/grunt_4.ogg", "Voice/Enemy/grunt_5.ogg"], "volume_db": -6.0, "jitter": 0.06},
 		"enemy_death": {"bus": "Voice", "files": ["Voice/Enemy/death_0.ogg", "Voice/Enemy/death_1.ogg", "Voice/Enemy/death_2.ogg"], "volume_db": -3.0, "jitter": 0.04},
-		"boss_roar": {"bus": "Voice", "files": ["Voice/Boss/roar_0.ogg", "Voice/Boss/roar_1.ogg", "Voice/Boss/roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
+		"brass_collector_roar": {"bus": "Voice", "files": ["Voice/Boss/brass_collector_roar_0.ogg", "Voice/Boss/brass_collector_roar_1.ogg", "Voice/Boss/brass_collector_roar_2.ogg", "Voice/Boss/roar_0.ogg", "Voice/Boss/roar_1.ogg", "Voice/Boss/roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
+		"fire_djinn_roar": {"bus": "Voice", "files": ["Voice/Boss/fire_djinn_roar_0.ogg", "Voice/Boss/fire_djinn_roar_1.ogg", "Voice/Boss/fire_djinn_roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
+		"fire_djinn_laugh": {"bus": "Voice", "files": ["Voice/Boss/fire_djinn_laugh_0.ogg", "Voice/Boss/fire_djinn_laugh_1.ogg"], "volume_db": 0.0, "jitter": 0.0},
+		"prisoner_incantation": {"bus": "Voice", "files": ["Voice/Lab/prisoner_incantation_0.ogg"], "volume_db": 0.0, "jitter": 0.0},
 		"boss_shout": {"bus": "Voice", "files": ["Voice/Boss/shout_0.ogg", "Voice/Boss/shout_1.ogg", "Voice/Boss/shout_2.ogg"], "volume_db": 0.0, "jitter": 0.0},
 		"boss_death": {"bus": "Voice", "files": ["Voice/Boss/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0}
+	},
+	"boss_voices": {
+		"_comment": "D278, D310: enemy_type of a boss → its voice events. roar: the first swing; shout: every second swing after it; death: the killing blow.",
+		"brass_collector": {"roar": "brass_collector_roar", "shout": "boss_shout", "death": "boss_death"},
+		"fire_djinn": {"roar": "fire_djinn_roar", "shout": "fire_djinn_laugh", "death": "boss_death"}
 	},
 	"rooms": {
 		"Canyon": {"ambience": "amb_canyon_echo", "surface": "sand", "interior": false},

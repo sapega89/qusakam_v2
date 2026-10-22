@@ -76,7 +76,8 @@ Feedback rules: [[play_feedback_queue]]. Builds on [[souls_combat_plan]] (D264�
 | Enemy wind-up | `attack_started` | `enemy_windup` (+ 35 % `enemy_<type>_attack` grunt) | SFX / Voice | drawKnife; grunts (OGA thebardofblasphemy) |
 | Enemy hurt / death | `damage_received` (enemy) | `enemy_<type>_hurt`, `enemy_<type>_death` | Voice | grunts segments; tank pitched ×0.75, fast ×1.15 |
 | Enemy staggered (poise break) | `enemy_staggered` | `stagger` | SFX | impactPlate heavy (Impact) |
-| Boss sees hero / attacks / dies | `player_detected`, `attack_started`, death | `boss_roar`, `boss_shout`, `boss_death` | Voice | monster_roar (OGA trazzz123), roar_01–03 (OGA rubberduck), Kokoro shouts pitched down |
+| Boss attacks / dies (per boss, `boss_voices` in `sound_events.json`, D310) | `attack_started` (1st swing roar, every 2nd after it shout), death | Brass Collector `brass_collector_roar` / `boss_shout` / `boss_death`; fire djinn `fire_djinn_roar` / `fire_djinn_laugh` / `boss_death` | Voice | Kokoro roars (golem: ring-mod) + monster_roar (OGA trazzz123) layered with roar_01–03 (OGA rubberduck), Kokoro laugh and shouts pitched down |
+| Cutscene voices (`Cutscene.voice`, silent under a skip, D310) | Mayor Hall: the collector climbs out; LabCells: the prisoner's shout, the djinn rises; LabBoss: the djinn takes the cloak | `brass_collector_roar`, `prisoner_incantation`, `fire_djinn_laugh` | Voice | Kokoro (Q64 invented words) |
 | Dash | `PlayerMover.start_roll` | `dash` | SFX | cloth (RPG Audio) |
 | Draw / sheathe (D268) | `combat_state_changed` | `draw`, `sheathe` | SFX | drawKnife; beltHandle (RPG Audio) |
 | Skill wind-up / release / interrupt (D271) | new `skill_cast_started`, `skill_used`, `skill_interrupted` | `cast_<skill>_windup`, `cast_<skill>_release`, `cast_interrupt` | SFX | forceField, thrusterFire, laserSmall/Large, explosionCrunch (Sci-Fi); glitch (Interface) |
@@ -143,7 +144,7 @@ Audio cannot be captured as an image. Play the exe (or the montage `fb26_montage
 
 ## Out of scope for this pass
 
-- Boss cutscene lines — no boss exists until items 16/17 (D278 gives the hook).
+- ~~Boss cutscene lines~~ — done in queue row 9.8 (D310): roars, the djinn's laugh, the prisoner's incantation.
 - Gamepad rumble on hits — item 24.
 - Positional (2D) sound, music ducking under voice — ponytail, add when a room grows past the camera.
 - A separate Voice / Ambience slider — needs a Figma row and Sapega's word (D274).
