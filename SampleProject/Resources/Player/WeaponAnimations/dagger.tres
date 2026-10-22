@@ -18,9 +18,14 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack1/2.png" id="t_dagger_attack1_2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack1/3.png" id="t_dagger_attack1_3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack2/1.png" id="t_dagger_attack2_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack2/2.png" id="t_dagger_attack2_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack2/3.png" id="t_dagger_attack2_3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack3/1.png" id="t_dagger_attack3_1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack3/2.png" id="t_dagger_attack3_2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Attack3/3.png" id="t_dagger_attack3_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Heavy/1.png" id="t_dagger_heavy_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Heavy/2.png" id="t_dagger_heavy_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Heavy/3.png" id="t_dagger_heavy_3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Block/1.png" id="t_dagger_block_1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dagger/Hurt/1.png" id="t_dagger_hurt_1"]
 
@@ -236,7 +241,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [ExtResource("t_dagger_attack2_1"), ExtResource("t_dagger_attack1_2"), ExtResource("t_dagger_attack1_3"), ExtResource("t_dagger_combatidle_1")]
+"values": [ExtResource("t_dagger_attack2_1"), ExtResource("t_dagger_attack2_2"), ExtResource("t_dagger_attack2_3"), ExtResource("t_dagger_combatidle_1")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -292,7 +297,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("t_dagger_attack3_1")]
+"values": [ExtResource("t_dagger_heavy_1")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -320,7 +325,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [ExtResource("t_dagger_attack3_2"), ExtResource("t_dagger_attack3_3")]
+"values": [ExtResource("t_dagger_heavy_2"), ExtResource("t_dagger_heavy_3")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false

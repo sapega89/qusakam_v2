@@ -12,8 +12,9 @@
   довга (від 12 px) може заходити в тулуб;
 - тонка довга пляма (від 7 px, не товща за 2.5 px у середньому) — лезо, де б вона не була;
 - решта — тіло.
-Залишки, які евристика не бере (дрібні шипи кінця древка алебарди під тулубом, кинджал dual, притиснутий до грудей
-у Heavy/1 і Run/7), лишаються в ключі тіла — описано в design/cloud_reports/weapons-all.md.
+Залишки, які евристика не бере (B105: шип кінця древка алебарди під тулубом, кинджал dual, притиснутий до грудей,
+клинки dual/Air/3, намальовані не ключовими кольорами, наплічник у sword/Attack3/2), правлять ручні прямокутники
+`MANUAL` після евристики (design/cloud_reports/art-fixes-wire.md).
 
 Запускати з кореня проєкту після `comfy_sprite.py hero_weapon_<тип>` і ручних правок (`*_fixups.py`) — інструмент
 перезаписує кадри; повторний запуск нічого не змінює.
@@ -105,18 +106,47 @@ def is_weapon(px, size, blob, box):
     return (body <= other and sized and placed) or thin
 
 
+WEAPON = {v: k for k, v in BODY_TWIN.items()}
+# B105: кадр → [(прямокутник x0, y0, x1, y1 включно, заміна кольорів)]. WEAPON повертає двійника тіла в ключ (зброя),
+# BODY_TWIN зсуває ключ у двійника (тіло); інші пари — не ключові кольори клинка, які шейдер пропускав.
+OFF_KEY_BLADE = {(0xFC, 0xF3, 0xD5): KEY[0], (0xC0, 0xC0, 0xC0): KEY[1]}
+MANUAL = {
+    "halberd/Air/1": [((60, 79, 61, 80), WEAPON)],
+    "halberd/Block/1": [((56, 84, 58, 86), WEAPON)],
+    "halberd/CombatIdle/1": [((40, 84, 42, 87), WEAPON)],
+    "halberd/CombatIdle/2": [((40, 84, 42, 87), WEAPON)],
+    "halberd/CombatIdle/3": [((40, 84, 42, 87), WEAPON)],
+    "halberd/CombatIdle/4": [((40, 84, 42, 87), WEAPON)],
+    "dual/Heavy/1": [((49, 71, 68, 72), WEAPON)],
+    "dual/Run/7": [((50, 77, 68, 84), WEAPON)],
+    "dual/Air/3": [
+        ((64, 40, 79, 64), WEAPON | OFF_KEY_BLADE | {(0xF4, 0xCE, 0x8A): KEY[2]}),
+        ((43, 73, 60, 81), OFF_KEY_BLADE),
+    ],
+    "sword/Attack3/2": [((41, 59, 48, 62), BODY_TWIN)],
+}
+
+
 def fix(path):
     im = Image.open(path).convert("RGBA")
     px = im.load()
+    before = im.copy().load()
     box = torso(px, im.size)
-    moved = 0
     for blob in blobs(px, im.size, set(KEY), N8):
         if is_weapon(px, im.size, blob, box):
             continue
         for p in blob:
             c = px[p]
             px[p] = BODY_TWIN[c[:3]] + (c[3],)
-            moved += 1
+    frame = os.path.relpath(path, ROOT)[:-4].replace(os.sep, "/")
+    for (x0, y0, x1, y1), swap in MANUAL.get(frame, []):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                c = px[x, y]
+                if c[3] and c[:3] in swap:
+                    px[x, y] = swap[c[:3]] + (c[3],)
+    w, h = im.size
+    moved = sum(1 for y in range(h) for x in range(w) if px[x, y] != before[x, y])
     if moved:
         im.save(path)
     return moved
@@ -125,4 +155,4 @@ def fix(path):
 if __name__ == "__main__":
     for kind in SETS:
         total = sum(fix(p) for p in sorted(glob.glob(os.path.join(ROOT, kind, "*", "*.png"))))
-        print(kind, "body pixels moved off the key:", total)
+        print(kind, "pixels changed:", total)

@@ -8,4 +8,4 @@ Made by `Scripts/Tools/comfy_sprite.py brass_collector` from the hero's `Sprites
 - `stagger.png` — **new (remaining_work Art 4)**, 192×112: two 96×112 cells made by
   `Scripts/Tools/comfy_art_fixes.py stagger_brass_collector` (seed 31) from idle 0, colours from `sheet.png`.
   0 = knocked off balance, leaning far back, arms thrown forward (wide: x 6–89 of the cell; the cage mostly behind
-  it); 1 = dazed, hunched forward, head down, arms hanging. Feet on row 107. Not wired yet.
+  it); 1 = dazed, hunched forward, head down, arms hanging. Feet on row 107. Wired: animation `stagger` of the scene, played for the whole stagger (D264, `EnemyView.play_stagger`).

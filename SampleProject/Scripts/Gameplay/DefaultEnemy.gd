@@ -275,6 +275,8 @@ func _physics_process(delta: float) -> void:
 		_poise_reset_left -= delta
 		if _poise_reset_left <= 0.0:
 			poise = poise_max
+	if enemy_view.staggered and enemy_logic.stun_left <= 0.0:
+		enemy_view.end_stagger()
 	sprite.modulate = STUN_TINT if enemy_logic.stun_left > 0.0 else (BURN_TINT if burn_left > 0.0 else Color.WHITE)
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); тут лише X-рух.
@@ -461,7 +463,9 @@ func die():
 	# НЕ змінюємо стан на IDLE, щоб не запускати анімацію idle
 	# change_state(AIState.IDLE)
 
-	# Зупиняємо всі анімації перед програванням смерті
+	# Зупиняємо всі анімації перед програванням смерті; помер у збої — спершу sheet назад (кадри смерті там)
+	if enemy_view.staggered:
+		enemy_view.end_stagger()
 	anim_player.stop()
 	# Мертвий одразу перестає бути тілом: не блокує героя й не бʼє (F8)
 	_set_collisions_disabled(true)
@@ -611,6 +615,8 @@ func take_poise(amount: int, from_x: float) -> void:
 ## Збій (D264): удар не відбудеться, ворог стоїть і відлітає трохи від героя. Броня tank тут не рятує.
 func stagger(duration: float, from_x: float) -> void:
 	enemy_logic.stagger(duration)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
 	enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
 	EventBus.enemy_staggered.emit(self, duration)
 

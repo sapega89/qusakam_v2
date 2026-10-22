@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bwi4k0bdicpqv" path="res://SampleProject/Scripts/Combat/Components/DamageApplier.gd" id="2_damage_applier"]
 [ext_resource type="Script" uid="uid://d0j3khf1a852u" path="res://SampleProject/Scripts/Combat/Components/HealthComponent.gd" id="3_health_component"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png" id="5_enemy_sprite"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit/stagger.png" id="stagger_sheet"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_collision"]
 size = Vector2(32, 32)
@@ -70,12 +71,66 @@ tracks/0/keys = {
 "update": 1,
 "values": [4, 5, 6, 7]
 }
+
+[sub_resource type="Animation" id="Animation_stagger"]
+resource_name = "stagger"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("stagger_sheet")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [2]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:vframes")
+tracks/2/interp = 0
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:frame")
+tracks/3/interp = 0
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_enemy"]
 _data = {
 &"attack": SubResource("Animation_attack"),
 &"death": SubResource("Animation_death"),
 &"idle": SubResource("Animation_idle"),
-&"walk": SubResource("Animation_walk")
+&"walk": SubResource("Animation_walk"),
+&"stagger": SubResource("Animation_stagger")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hitbox"]

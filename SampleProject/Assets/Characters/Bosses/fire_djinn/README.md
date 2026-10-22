@@ -12,6 +12,6 @@ Cells 96×112, lowest pixel (the flame tail) on row 108, facing right.
 - `stagger.png` — **new**, 192×112: two 96×112 cells, `comfy_art_fixes.py stagger_fire_djinn` (seed 33, from idle 0),
   colours from `sheet.png`. 0 = reeling, twisted away with a forearm raised before his face; 1 = dazed, hunched
   forward, head down, arms folded low. Tail on row 108 like every frame. A first frame 0 (arms flung wide) was a twin
-  of the new death 0 and was redrawn. Not wired yet.
+  of the new death 0 and was redrawn. Wired: animation `stagger` of the scene, played for the whole stagger (D264, `EnemyView.play_stagger`).
 
 Rerunning `comfy_sprite.py fire_djinn` would bring the old death 0 back — run `comfy_art_fixes.py djinn_death0` after it.

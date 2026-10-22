@@ -6,6 +6,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_weapon_animations.gd
 
 const KEY := ["#F8F8E4", "#C2C2C2", "#87878C"]
+const WEAPON_FRAMES := "res://SampleProject/Sprites/Player/Weapons/"
 
 var fails: Array[String] = []
 
@@ -84,6 +85,7 @@ func _initialize() -> void:
 			"the hero sprite carries the weapon palette shader")
 
 	_frames_carry_the_key()
+	_own_frames()
 	for case in [
 		["sword", ["sword"], ["iron_sword"], 3],
 		["dagger", ["dagger"], ["iron_dagger"], 3],
@@ -118,6 +120,22 @@ func _frames_carry_the_key() -> void:
 			if not found:
 				missing.append(name)
 		ck(missing.is_empty(), "%s: key metal in every animation (missing: %s)" % [library, missing])
+
+## Кадри fe96e88a (remaining_work Art 3) стоять у своїх анімаціях, а не позичені з інших (Attack3, Attack1, sword/Hurt).
+func _own_frames() -> void:
+	print("[0b] dagger Heavy/Attack2 and dual Hurt play their own frames")
+	for case in [
+		[&"dagger", &"HeavyWindup", ["dagger/Heavy/1"]],
+		[&"dagger", &"HeavyStrike", ["dagger/Heavy/2", "dagger/Heavy/3"]],
+		[&"dagger", &"Attack2", ["dagger/Attack2/1", "dagger/Attack2/2", "dagger/Attack2/3", "dagger/CombatIdle/1"]],
+		[&"dual_sword_dagger", &"Hurt", ["dual/Hurt/1"]],
+	]:
+		var a: Animation = anim.get_animation_library(case[0]).get_animation(case[1])
+		var got: Array[String] = []
+		for k in a.track_get_key_count(0):
+			var texture: Texture2D = a.track_get_key_value(0, k)
+			got.append(texture.resource_path.trim_prefix(WEAPON_FRAMES).trim_suffix(".png"))
+		ck(got == Array(case[2], TYPE_STRING, "", null), "%s/%s frames %s" % [case[0], case[1], got])
 
 func _has_key(image: Image, key: Dictionary) -> bool:
 	for y in image.get_height():

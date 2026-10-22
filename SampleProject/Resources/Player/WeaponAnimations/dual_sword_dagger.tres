@@ -30,7 +30,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Heavy/2.png" id="t_dual_heavy_2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Heavy/3.png" id="t_dual_heavy_3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Block/1.png" id="t_dual_block_1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/Hurt/1.png" id="t_sword_hurt_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/dual/Hurt/1.png" id="t_dual_hurt_1"]
 
 [sub_resource type="Animation" id="Animation_Idle"]
 resource_name = "Idle"
@@ -412,7 +412,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("t_sword_hurt_1")]
+"values": [ExtResource("t_dual_hurt_1")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false

@@ -9,4 +9,4 @@ cells made by `Scripts/Tools/comfy_art_fixes.py stagger_jackal` with the local C
 frame 0 — a derivative of CC BY art, so the Crusenho credit applies to it too. Colours from `sheet.png`, feet on
 row 71, facing right. 0 = pushed back onto its haunches, front legs braced, head jerked up; 1 = dazed, head hanging
 low. Both have 20–35 % more pixels than idle (the model draws it a little larger; seed 43 with «exactly as small»
-was no smaller). A first frame 0 reared up on its hind legs looking left and was redrawn. Not wired yet.
+was no smaller). A first frame 0 reared up on its hind legs looking left and was redrawn. Wired: animation `stagger` of the scene, played for the whole stagger (D264, `EnemyView.play_stagger`).
