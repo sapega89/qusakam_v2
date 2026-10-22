@@ -139,12 +139,13 @@ signal damage_dealt(source: Node, target: Node, amount: int)
 ##     target (Node): Ціль ушкоджень (той, хто отримав ушкодження)
 ##     source (Node): Джерело ушкоджень (той, хто наніс ушкодження)
 ##     amount (int): Кількість ушкоджень
+##     critical (bool): Крит героя (D393) — цифра урону більша (DamageNumbers)
 ##
 ## Приклади:
 ##     EventBus.damage_received.connect(_on_damage_received)
-##     EventBus.damage_received.emit(player, enemy, 25)
+##     EventBus.damage_received.emit(player, enemy, 25, false)
 @warning_ignore("unused_signal")
-signal damage_received(target: Node, source: Node, amount: int)
+signal damage_received(target: Node, source: Node, amount: int, critical: bool)
 
 ## Емітується при початку атаки.
 ##
@@ -168,6 +169,9 @@ signal player_staggered(duration: float)
 signal player_parried(attacker: Node)
 @warning_ignore("unused_signal")
 signal player_blocked(attacker: Node)
+## Герой ухилився від удару (D393, Player.mitigated_damage): шкоди немає — слово над ним (DamageNumbers).
+@warning_ignore("unused_signal")
+signal player_evaded(attacker: Node)
 ## Почався / скінчився бій героя (D268): зброя з-за спини в руку й назад.
 @warning_ignore("unused_signal")
 signal combat_state_changed(in_combat: bool)

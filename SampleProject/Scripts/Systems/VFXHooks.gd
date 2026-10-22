@@ -92,7 +92,7 @@ func _on_player_landed(fall_height: float) -> void:
 ## Удар по героєві (4b): розтин з боку удару (D268) — більший, завмирання довше, ніж від його власних ударів,
 ## поштовх камери від ворога, червоні краї екрана, сильна вібрація. Важкий удар (is_big_hurt) — ще сильніше.
 ## Поза Hurt і відкидання — PlayerCombat.stagger (D264); рядок HP трясеться сам (player_vitals_panel).
-func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
+func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bool) -> void:
 	if not target.is_in_group(GameGroups.PLAYER):
 		return
 	# Без джерела (пастка, падіння) — розтин по центру тіла

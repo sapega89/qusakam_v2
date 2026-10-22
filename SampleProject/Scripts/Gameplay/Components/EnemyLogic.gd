@@ -50,8 +50,8 @@ var last_chase_time: float = 0.0
 # Бойові параметри
 var base_damage: float = 10.0
 var damage: float = 10.0
-var attack_cooldown: float = 1.5
-## Скільки ще секунд ігрового часу до наступного удару (0 — можна бити). Рахується з delta фізики, а не з
+## Скільки ще секунд ігрового часу до наступного удару (0 — можна бити). Темп — EnemyStats.attack_cooldown
+## ворога (D394: швидкий 1.0 с, звичайний 1.5, танк 2.0). Рахується з delta фізики, а не з
 ## годинника: стоп-кадр, сповільнення й пауза відсувають і наступний удар.
 var attack_ready_in: float = 0.0
 ## Іде замах або удар (D198): ворог стоїть, рішень не приймає.
@@ -319,7 +319,7 @@ func handle_attack_state(_delta: float):
 
 	# Атакуємо
 	if attack_ready_in <= 0.0:
-		attack_ready_in = attack_cooldown
+		attack_ready_in = enemy.attack_cooldown
 		perform_attack()
 
 ## Після удару: нападати далі чи відступати на основі HP. Викликається, коли удар закінчився (D198),

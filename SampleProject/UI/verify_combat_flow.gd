@@ -36,6 +36,9 @@ func _finish_dialogue(dm: Node) -> void:
 			return
 
 func _initialize() -> void:
+	# D393: кидки крита й ухилення з CALM_SEED — жоден не спрацює, бій точний
+	var rolls: GDScript = load("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+	rolls.calm()
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -397,5 +400,6 @@ func _initialize() -> void:
 	ck(not combat.is_attacking, "attack ended off-tree, no get_tree() on null")
 	game.add_child(player)
 
+	ck(rolls.rolls <= rolls.CALM_ROLLS, "the fight stayed inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

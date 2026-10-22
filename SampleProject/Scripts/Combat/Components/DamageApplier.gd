@@ -19,6 +19,9 @@ class_name DamageApplier
 ## Поточні ушкодження (з урахуванням бонусів)
 var current_damage: int = 10
 
+## Удар — крит (D393; ставить PlayerCombat), ціль показує більшу цифру.
+var critical: bool = false
+
 ## Чи активний компонент (для контролю через анімації)
 var is_active: bool = false
 
@@ -93,10 +96,10 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	
 	if health_component:
 		# Застосовуємо ушкодження через HealthComponent
-		health_component.apply_damage(current_damage, owner_body)
+		health_component.apply_damage(current_damage, owner_body, critical)
 	elif IDamageable.is_implemented_by(body):
 		# Гравець — CombatBody2D без HealthComponent: шкода напряму.
-		IDamageable.safe_take_damage(body, current_damage, owner_body)
+		IDamageable.safe_take_damage(body, current_damage, owner_body, critical)
 	else:
 		# Тіло без здоровʼя (стіна, тригер) — не ціль.
 		return

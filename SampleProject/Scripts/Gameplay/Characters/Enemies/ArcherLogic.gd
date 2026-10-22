@@ -25,7 +25,7 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	if absf(player.global_position.y - enemy.global_position.y) > enemy.same_height:
 		return
-	# Темп — EnemyStats.attack_cooldown (2.2 с): базова логіка тримає свій attack_cooldown (1.5) і статів не читає
+	# Темп — EnemyStats.attack_cooldown (2.2 с), як у всіх ворогів (D394)
 	if attack_ready_in <= 0.0:
 		attack_ready_in = enemy.attack_cooldown
 		perform_attack()

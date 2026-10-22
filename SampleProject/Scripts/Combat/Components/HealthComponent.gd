@@ -9,7 +9,7 @@ class_name HealthComponent
 
 ## Застосовує ушкодження до власника
 ## Викликається з DamageApplier
-func apply_damage(damage: int, source: Node = null) -> void:
+func apply_damage(damage: int, source: Node = null, critical: bool = false) -> void:
 	if not owner_body:
 		push_error("HealthComponent: owner_body is null")
 		return
@@ -18,7 +18,7 @@ func apply_damage(damage: int, source: Node = null) -> void:
 		return
 	
 	# owner_body — CombatBody2D, тобто IDamageable.
-	IDamageable.safe_take_damage(owner_body, damage, source)
+	IDamageable.safe_take_damage(owner_body, damage, source, critical)
 
 ## Отримує поточне здоров'я
 func get_current_health() -> int:

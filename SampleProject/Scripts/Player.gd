@@ -11,6 +11,7 @@ var animation: String
 const ROLL_ALPHA := 0.55
 ## D284: пасивки навичок знімають щонайбільше 75 % удару (окремо щит і загальне зниження).
 const MAX_SKILL_REDUCTION := 0.75
+const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
@@ -446,7 +447,8 @@ func refresh_max_health() -> void:
 ## Блок спереду (4b) шкоди не завдає й не збиває; удар, що збив би на GUARD_BREAK і довше (tank, фінішер серії),
 ## пробиває блок — повна шкода і збій. Парирування в перші PARRY_WINDOW с блоку — без шкоди, збиває самого ворога;
 ## парирована стріла лучника летить назад (Arrow.parried, D384).
-func take_damage(damage: int, source: Node = null) -> void:
+## Ухилення (D393): mitigated_damage дав 0 — удару немає зовсім (ні невразливості, ні збою), лише слово над героєм.
+func take_damage(damage: int, source: Node = null, critical: bool = false) -> void:
 	if is_invulnerable or is_dead:
 		return
 	var guard := combat.guard_against(source)
@@ -458,15 +460,22 @@ func take_damage(damage: int, source: Node = null) -> void:
 		EventBus.player_blocked.emit(source)
 		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
 			return
+	var dealt := mitigated_damage(damage)
+	if dealt == 0:
+		EventBus.player_evaded.emit(source)
+		return
 	var before := current_health
-	super.take_damage(mitigated_damage(damage), source)
+	super.take_damage(dealt, source, critical)
 	if current_health >= before or is_dead or not (source is DefaultEnemy or source is Arrow):
 		return
 	combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
 
+## Ухилення (D393) — кидок з шансом GameManager.calculate_dodge_chance: 0, удар не влучив.
 func mitigated_damage(damage: int) -> int:
 	var gm := ServiceLocator.get_game_manager()
+	if CombatRolls.roll(gm.calculate_dodge_chance()):
+		return 0
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
 	# Щит працює, лише якщо руки вільні від дворучної зброї (D267) і лука (D383)
