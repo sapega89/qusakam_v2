@@ -1,0 +1,4 @@
+// [DRAFT] D175 — the player shows the +1 sword
+say|BLACKSMITH|Feel it singing in your hand? Keep it.
+say|BLACKSMITH|And I don't take an enchanting fee from an apprentice — here.
+exit|

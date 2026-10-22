@@ -1,0 +1,6 @@
+// [DRAFT] D140 — eclipse; edit freely (Sapega)
+say|VILLAGER_1|Bandits! They're attacking the village!
+say|BANDIT_LEADER|Grab everyone who can walk. Leave the rest.
+say|VILLAGER_1|No! Let me go! Help!
+say||The screams die down. Smoke rises over the village.
+exit|

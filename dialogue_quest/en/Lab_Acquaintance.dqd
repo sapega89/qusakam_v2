@@ -1,0 +1,8 @@
+// [DRAFT] D305 — the prisoners meet as soon as Kusakam leaves his cage (BACKLOG 17).
+say|ASTRIT|Alive, lizard? I thought you'd sleep right through the end of the world.
+say|KUSAKAM|You... from the mayor's line.
+say|URIZEN|Urizen, priest of the God of Contracts. And this is Astrit — don't stand between her and a door.
+say|ASTRIT|Astrit. My shield remembers everyone who ever put me behind bars.
+say|ALISIA|Alisia. And this is my cat. Whatever they injected me with burns from the inside... but I'm still standing.
+say|KUSAKAM|Kusakam. I'm looking for my family's relic — and the ones who stole it.
+exit|

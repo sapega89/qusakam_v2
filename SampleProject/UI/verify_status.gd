@@ -50,10 +50,10 @@ func _initialize() -> void:
 	var ch = gm.get_active_character()
 	# B55: нова гра грає за Кусакама (player_3), не за Астрита.
 	ck(sl.get_character_manager().get_active_character_id() == "player_3", "new game's active character is player_3 (%s)" % sl.get_character_manager().get_active_character_id())
-	ck(String(ch.name) == "Кусакам" and ch.class_id == "wizard", "active character is Kusakam, wizard (%s, %s)" % [ch.name, ch.class_id])
+	ck(String(ch.name) == "Kusakam" and ch.class_id == "wizard", "active character is Kusakam, wizard (%s, %s)" % [ch.name, ch.class_id])
 	ck(gm.player_state.character_id == "player_3" and gm.player_state.class_id == "wizard", "player_state follows Kusakam (%s, %s)" % [gm.player_state.character_id, gm.player_state.class_id])
 	var first_card: Control = get_first_node_in_group("ui_party_panel")._cards.get_child(0)
-	ck(first_card.get_meta(&"character_id") == "player_3" and first_card.get_node(^"Row/Info/Head/Name").text == "Кусакам",
+	ck(first_card.get_meta(&"character_id") == "player_3" and first_card.get_node(^"Row/Info/Head/Name").text == "Kusakam",
 			"first party card is Kusakam (%s)" % first_card.get_node(^"Row/Info/Head/Name").text)
 	ck(st._name_label.text == String(ch.name), "name from CharacterManager (%s)" % st._name_label.text)
 	ck(st._level_label.text == "Lv.%d" % sl.get_xp_manager().get_level(), "level from XPManager (%s)" % st._level_label.text)

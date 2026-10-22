@@ -157,8 +157,14 @@ func letter(character_id: String, letter_typed: String) -> void:
 
 
 ## Привітання NPC, коли герой сам заговорив до нього (NpcBase). Катсцени першої зустрічі запускають кімнати, не NpcBase.
+## Мовою гри (BACKLOG 31): англійські — Kokoro (D277), українські — greet_<голос>_uk (Piper, make_voices_uk.py).
 func greet(character_id: String) -> void:
-	AudioManager.play(StringName("greet_" + _voice(character_id)))
+	AudioManager.play(greet_event(character_id))
+
+
+func greet_event(character_id: String) -> StringName:
+	var event := "greet_" + _voice(character_id)
+	return StringName(event + "_uk" if TranslationServer.get_locale() == "uk" else event)
 
 
 ## Мовець вікна діалогу за ім'ям, яке показує вікно (DialogueQuest не каже id мовця).

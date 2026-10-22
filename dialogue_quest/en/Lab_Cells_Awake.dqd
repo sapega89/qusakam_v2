@@ -1,0 +1,4 @@
+// [DRAFT] D305 — Kusakam wakes up: the cages are open, his things are in place (thought bubble over the hero).
+say|KUSAKAM|The bars are open... How long was I out?
+say|KUSAKAM|My things — here, all of them. Nobody even touched them.
+exit|

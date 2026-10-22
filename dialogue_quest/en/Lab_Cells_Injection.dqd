@@ -1,0 +1,7 @@
+// [DRAFT] D304 — Alisia is led to the operating table and injected.
+say|SCIENTIST|Huntress. Out. Slowly.
+say|ALISIA|Don't touch me! Let go!
+say|SCIENTIST|One drop — and you'll be more useful than you ever were.
+say|ALISIA|A-a-agh!..
+say|SCIENTIST|Take her back. Bring the next one.
+exit|

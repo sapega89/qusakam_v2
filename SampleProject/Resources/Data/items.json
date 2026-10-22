@@ -3,9 +3,7 @@
 		{
 			"id": "iron_ore",
 			"name": "Iron Ore",
-			"name_ru": "Железная руда",
 			"description": "Raw iron ore that can be smelted into iron ingots.",
-			"description_ru": "Сырая железная руда, которую можно переплавить в железные слитки.",
 			"type": "material",
 			"category": "ore",
 			"rarity": "common",
@@ -18,9 +16,7 @@
 		{
 			"id": "iron_ingot",
 			"name": "Iron Ingot",
-			"name_ru": "Железный слиток",
 			"description": "Refined iron metal, ready for crafting.",
-			"description_ru": "Очищенное железо, готовое для крафта.",
 			"type": "material",
 			"category": "metal",
 			"rarity": "common",
@@ -33,9 +29,7 @@
 		{
 			"id": "copper_ore",
 			"name": "Copper Ore",
-			"name_ru": "Медная руда",
 			"description": "Raw copper ore found in mines.",
-			"description_ru": "Сырая медная руда, найденная в шахтах.",
 			"type": "material",
 			"category": "ore",
 			"rarity": "common",
@@ -48,9 +42,7 @@
 		{
 			"id": "copper_ingot",
 			"name": "Copper Ingot",
-			"name_ru": "Медный слиток",
 			"description": "Refined copper metal.",
-			"description_ru": "Очищенная медь.",
 			"type": "material",
 			"category": "metal",
 			"rarity": "common",
@@ -63,9 +55,7 @@
 		{
 			"id": "silver_ore",
 			"name": "Silver Ore",
-			"name_ru": "Серебряная руда",
 			"description": "Rare silver ore with a beautiful shine.",
-			"description_ru": "Редкая серебряная руда с красивым блеском.",
 			"type": "material",
 			"category": "ore",
 			"rarity": "uncommon",
@@ -78,9 +68,7 @@
 		{
 			"id": "silver_ingot",
 			"name": "Silver Ingot",
-			"name_ru": "Серебряный слиток",
 			"description": "Refined silver, valuable and beautiful.",
-			"description_ru": "Очищенное серебро, ценное и красивое.",
 			"type": "material",
 			"category": "metal",
 			"rarity": "uncommon",
@@ -93,9 +81,7 @@
 		{
 			"id": "gold_ore",
 			"name": "Gold Ore",
-			"name_ru": "Золотая руда",
 			"description": "Precious gold ore, highly sought after.",
-			"description_ru": "Драгоценная золотая руда, очень востребованная.",
 			"type": "material",
 			"category": "ore",
 			"rarity": "rare",
@@ -108,9 +94,7 @@
 		{
 			"id": "gold_ingot",
 			"name": "Gold Ingot",
-			"name_ru": "Золотой слиток",
 			"description": "Pure gold, the most valuable metal.",
-			"description_ru": "Чистое золото, самый ценный металл.",
 			"type": "material",
 			"category": "metal",
 			"rarity": "rare",
@@ -123,9 +107,7 @@
 		{
 			"id": "wood_log",
 			"name": "Wood Log",
-			"name_ru": "Деревянное бревно",
 			"description": "A log of wood from a tree.",
-			"description_ru": "Бревно из дерева.",
 			"type": "material",
 			"category": "wood",
 			"rarity": "common",
@@ -138,9 +120,7 @@
 		{
 			"id": "wood_plank",
 			"name": "Wood Plank",
-			"name_ru": "Деревянная доска",
 			"description": "Processed wooden plank, ready for crafting.",
-			"description_ru": "Обработанная деревянная доска, готовая для крафта.",
 			"type": "material",
 			"category": "wood",
 			"rarity": "common",
@@ -153,9 +133,7 @@
 		{
 			"id": "stone",
 			"name": "Stone",
-			"name_ru": "Камень",
 			"description": "A common stone found everywhere.",
-			"description_ru": "Обычный камень, встречается везде.",
 			"type": "material",
 			"category": "stone",
 			"rarity": "common",
@@ -168,9 +146,7 @@
 		{
 			"id": "iron_sword",
 			"name": "Iron Sword",
-			"name_ru": "Железный меч",
 			"description": "A basic iron sword. Attack: +15",
-			"description_ru": "Базовый железный меч. Атака: +15",
 			"type": "weapon",
 			"category": "sword",
 			"rarity": "common",
@@ -189,9 +165,7 @@
 		{
 			"id": "copper_sword",
 			"name": "Copper Sword",
-			"name_ru": "Медный меч",
 			"description": "A simple copper sword. Attack: +10",
-			"description_ru": "Простой медный меч. Атака: +10",
 			"type": "weapon",
 			"category": "sword",
 			"rarity": "common",
@@ -210,9 +184,7 @@
 		{
 			"id": "silver_sword",
 			"name": "Silver Sword",
-			"name_ru": "Серебряный меч",
 			"description": "A fine silver sword. Attack: +25",
-			"description_ru": "Отличный серебряный меч. Атака: +25",
 			"type": "weapon",
 			"category": "sword",
 			"rarity": "uncommon",
@@ -286,9 +258,7 @@
 		{
 			"id": "iron_armor",
 			"name": "Iron Armor",
-			"name_ru": "Железная броня",
 			"description": "Heavy iron armor. Defense: +20",
-			"description_ru": "Тяжелая железная броня. Защита: +20",
 			"type": "armor",
 			"category": "armor",
 			"rarity": "common",
@@ -306,9 +276,7 @@
 		{
 			"id": "potion",
 			"name": "Potion",
-			"name_ru": "Зелье",
 			"description": "Restores 50 HP.",
-			"description_ru": "Восстанавливает 50 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "common",
@@ -325,9 +293,7 @@
 		{
 			"id": "hi_potion",
 			"name": "Hi-Potion",
-			"name_ru": "Большое зелье",
 			"description": "Restores 200 HP.",
-			"description_ru": "Восстанавливает 200 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "uncommon",
@@ -344,9 +310,7 @@
 		{
 			"id": "potion_lesser",
 			"name": "Lesser Potion",
-			"name_ru": "Меньшее зелье",
 			"description": "Restores 75 HP.",
-			"description_ru": "Восстанавливает 75 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "common",
@@ -363,9 +327,7 @@
 		{
 			"id": "potion_medium",
 			"name": "Medium Potion",
-			"name_ru": "Среднее зелье",
 			"description": "Restores 125 HP.",
-			"description_ru": "Восстанавливает 125 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "uncommon",
@@ -382,9 +344,7 @@
 		{
 			"id": "ether",
 			"name": "Ether",
-			"name_ru": "Эфир",
 			"description": "Restores 30 MP.",
-			"description_ru": "Восстанавливает 30 MP.",
 			"type": "consumable",
 			"category": "mana",
 			"rarity": "common",
@@ -401,9 +361,7 @@
 		{
 			"id": "herb",
 			"name": "Herb",
-			"name_ru": "Трава",
 			"description": "A medicinal herb used in potion making.",
-			"description_ru": "Лекарственная трава, используемая для изготовления зелий.",
 			"type": "material",
 			"category": "plant",
 			"rarity": "common",
@@ -416,9 +374,7 @@
 		{
 			"id": "mana_crystal",
 			"name": "Mana Crystal",
-			"name_ru": "Кристалл маны",
 			"description": "A crystal containing magical energy.",
-			"description_ru": "Кристалл, содержащий магическую энергию.",
 			"type": "material",
 			"category": "crystal",
 			"rarity": "uncommon",
@@ -431,9 +387,7 @@
 		{
 			"id": "leather",
 			"name": "Leather",
-			"name_ru": "Кожа",
 			"description": "Treated animal hide used for crafting.",
-			"description_ru": "Обработанная шкура животного, используемая для крафта.",
 			"type": "material",
 			"category": "hide",
 			"rarity": "common",
@@ -446,9 +400,7 @@
 		{
 			"id": "leather_armor",
 			"name": "Leather Armor",
-			"name_ru": "Кожаная броня",
 			"description": "Light leather armor. Defense: +10",
-			"description_ru": "Легкая кожаная броня. Защита: +10",
 			"type": "armor",
 			"category": "armor",
 			"rarity": "common",
@@ -466,9 +418,7 @@
 		{
 			"id": "iron_helmet",
 			"name": "Iron Helmet",
-			"name_ru": "Железный шлем",
 			"description": "Protective iron helmet. Defense: +8",
-			"description_ru": "Защитный железный шлем. Защита: +8",
 			"type": "armor",
 			"category": "helmet",
 			"rarity": "common",
@@ -486,9 +436,7 @@
 		{
 			"id": "iron_shield",
 			"name": "Iron Shield",
-			"name_ru": "Железный щит",
 			"description": "Sturdy iron shield. Defense: +12",
-			"description_ru": "Прочный железный щит. Защита: +12",
 			"type": "armor",
 			"category": "shield",
 			"rarity": "common",
@@ -506,9 +454,7 @@
 		{
 			"id": "coin",
 			"name": "Coin",
-			"name_ru": "Монета",
 			"description": "A gold coin",
-			"description_ru": "Золотая монета",
 			"type": "currency",
 			"category": "currency",
 			"stackable": true,

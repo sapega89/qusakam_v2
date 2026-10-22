@@ -17,7 +17,8 @@ const UNLOCK_FLAGS := {
 }
 ## Скільки компаньйонів ходить з героєм (лор: тест межі в лабораторії, D220).
 const PARTY_SIZE := 3
-const NAMES := {"alisia": "Алісия", "astrit": "Астрит", "urizen": "Уризен"}
+## Ключі перекладу (uk.po): Label перекладає сам, складені рядки — через tr().
+const NAMES := {"alisia": "Alisia", "astrit": "Astrit", "urizen": "Urizen"}
 const PORTRAIT_PATH := "res://SampleProject/Assets/Characters/Companions/%s/portrait.tres"
 const SCENES := {
 	"guard": preload("res://SampleProject/Scenes/Characters/Companions/companion_guard.tscn"),

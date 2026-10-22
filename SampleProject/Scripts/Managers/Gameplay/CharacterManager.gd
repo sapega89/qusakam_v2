@@ -65,7 +65,7 @@ func _get_default_character_data() -> Dictionary:
 	"""Возвращает дефолтные данные персонажей (БЕЗ level/experience)"""
 	return {
 		"player_1": {
-			"name": "Астрит",
+			"name": "Astrit",
 			"class_id": "champion",
 			"subclass_id": "paladin",
 			"avatar_color": Color(0.2, 0.6, 0.9, 1.0),
@@ -75,7 +75,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_2": {
-			"name": "Уризен",
+			"name": "Urizen",
 			"class_id": "fighter",
 			"subclass_id": "guardian",
 			"avatar_color": Color(0.9, 0.3, 0.3, 1.0),
@@ -85,7 +85,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_3": {
-			"name": "Кусакам",
+			"name": "Kusakam",
 			"class_id": "wizard",
 			"subclass_id": "evoker",
 			"avatar_color": Color(0.6, 0.3, 0.9, 1.0),
@@ -95,7 +95,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_4": {
-			"name": "Три темніх жреца",
+			"name": "Three dark priests",
 			"class_id": "wizard",
 			"subclass_id": "necromancer",
 			"avatar_color": Color(0.1, 0.1, 0.1, 1.0),
@@ -105,7 +105,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_5": {
-			"name": "Гном механник",
+			"name": "Gnome mechanic",
 			"class_id": "rogue",
 			"subclass_id": "thief",
 			"avatar_color": Color(0.8, 0.6, 0.4, 1.0),
@@ -115,7 +115,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_6": {
-			"name": "Алісия",
+			"name": "Alisia",
 			"class_id": "druid",
 			"subclass_id": "protector",
 			"avatar_color": Color(0.3, 0.8, 0.3, 1.0),
@@ -125,7 +125,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_7": {
-			"name": "Суан",
+			"name": "Suan",
 			"class_id": "ranger",
 			"subclass_id": "hunter",
 			"avatar_color": Color(0.9, 0.7, 0.2, 1.0),
@@ -135,7 +135,7 @@ func _get_default_character_data() -> Dictionary:
 			"constitution": 10
 		},
 		"player_8": {
-			"name": "Торговец",
+			"name": "Merchant",
 			"class_id": "rogue",
 			"subclass_id": "scoundrel",
 			"avatar_color": Color(0.5, 0.5, 0.8, 1.0),

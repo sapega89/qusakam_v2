@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Дві мови скрізь (BACKLOG 31, design/localization_plan.md, частина 1 — інтерфейс).
+## Дві мови скрізь (BACKLOG 31, design/localization_plan.md: частина 1 — інтерфейс, частина 2 — дані й діалоги).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_locale.gd
 ##
 ## Для кожної мови обходить усі тексти, які бачить гравець, і падає:
@@ -14,26 +14,21 @@ extends SceneTree
 ##   [3] обхід екранів у кожній мові: головне меню, Load, HUD, усі вкладки ігрового меню, Misc, усі вкладки Settings,
 ##       Tutorial (список і вікно теми), Controls, підтвердження виходу, усі модалки ModalTemplates, екран збереження,
 ##       магазин, крафт (усі станції), меню NPC і зачарування в коваля, Game Over, кінець демо
-##
-## ЧАСТИНА 2 (дані й діалоги) ЩЕ НЕ ЗРОБЛЕНА: тексти з Resources/Data/*.json і dialogue_quest/*.dqd вирізаються з
-## перевіреного рядка (DATA_DEFERRED) і лише рахуються. Частина 2 видаляє цей виняток — тоді verify ловить і їх.
+##   [4] кожен текст даних (Resources/Data/*.json, поля з Translations/data_fields.json) у кожній мові
+##   [5] діалоги: кожен dialogue_quest/<id>.dqd має англійського близнюка en/<id>.dqd з тими самими рядками й мовцями;
+##       кожна репліка кожного файлу проходить через справжнє вікно діалогу (текст + ім'я мовця) у кожній мові
+##   [6] привітання NPC мовою гри: англійські Kokoro (D277), українські Piper (greet_<голос>_uk)
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const TEST_DIR := "user://verify_locale/"
 const DATA_DIR := "res://SampleProject/Resources/Data/"
 const DIALOGUE_DIR := "res://dialogue_quest/"
 const PO_DIR := "res://SampleProject/Resources/Translations/"
-## Частина 2 вимикає: тоді тексти даних і діалогів перевіряються як усі інші.
-const DATA_DEFERRED := true
+## Які поля яких файлів даних бачить гравець — той самий список читає Scripts/Tools/po_data_keys.py.
+const DATA_FIELDS := "res://SampleProject/Resources/Translations/data_fields.json"
 ## Де шукати сцени з текстом для [1].
 const SCENE_DIRS := ["res://SampleProject/Scenes/", "res://SampleProject/UI/", "res://SampleProject/Maps/"]
 const SCENE_FILES := ["res://SampleProject/MainMenu.tscn", "res://SampleProject/Game.tscn"]
-## Заглушки в сценах, які скрипт завжди перезаписує даними (ім'я супутника, репліка) — частина 2 (дані й діалоги).
-const RUNTIME_FILLED := {
-	"res://SampleProject/Scenes/UI/dialogue_box.tscn": ["DialogueText", "Name"],
-	"res://SampleProject/Scenes/UI/companion_joined_notification.tscn": ["NameLabel"],
-}
-
 ## Латинські слова, дозволені в українській версії: назви кнопок геймпада й клавіш, HP/SP/XP.
 ## Назви клавіш клавіатури, на які щось призначено, додаються з InputMap (OS.get_keycode_string). Регістр не важить
 ## (ENTER, SPACE на кнопках).
@@ -43,14 +38,12 @@ const ALLOW_UK := ["HP", "SP", "XP", "Tab", "Esc", "A", "B", "X", "Y", "LB", "RB
 
 var fails: Array[String] = []
 var _allow: Dictionary = {}
-var _data: Array[String] = []
 var _cyrillic := RegEx.create_from_string("[\\x{0400}-\\x{04FF}]")
 var _latin_word := RegEx.create_from_string("[A-Za-z]+")
 ## Мова поточного обходу і знахідки: "текст" → де.
 var _locale := ""
 var _problems: Dictionary = {}
 var _checked := 0
-var _deferred := 0
 ## Екрани обходу, яких не знайшли або на яких не було тексту — обхід мусить їх бачити.
 var _missing: Array[String] = []
 
@@ -68,8 +61,6 @@ func _initialize() -> void:
 	var loc: Node = root.get_node("LocalizationManager")
 	var saved_language: String = loc.get_language()
 	_build_allow()
-	if DATA_DEFERRED:
-		_collect_data_strings()
 
 	print("[0] translations are registered from code, en.po and uk.po carry the same keys")
 	ck(TranslationServer.get_loaded_locales().has("en") and TranslationServer.get_loaded_locales().has("uk"),
@@ -118,8 +109,25 @@ func _initialize() -> void:
 		_report("[3] screens")
 		ck(_missing.is_empty(), "[3] %s: every walked screen was found and shows text (missing: %s)" % [lang, str(_missing)])
 
+	print("[4] every data text (items, recipes, skills, quests, journal, bestiary, tutorials, merchants…) in each language")
+	for lang in ["en", "uk"]:
+		loc.set_language(lang)
+		_begin(lang)
+		_check_data()
+		_report("[4] data")
+
+	print("[5] dialogue: an English twin for every file, every line through the dialogue window in each language")
+	_check_twins()
+	for lang in ["en", "uk"]:
+		loc.set_language(lang)
+		_begin(lang)
+		await _walk_dialogues()
+		_report("[5] dialogue lines")
+
+	print("[6] NPC greetings in the game language")
+	_check_greetings(loc)
+
 	loc.set_language(saved_language)
-	print("data and dialogue strings left for part 2 (deferred, not checked): %d occurrences" % _deferred)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
 
@@ -137,46 +145,6 @@ func _build_allow() -> void:
 					_allow[m.get_string().to_lower()] = true
 
 
-## Рядки даних і діалогів (частина 2): усі рядкові значення JSON і репліки .dqd, шматками між {дія}.
-func _collect_data_strings() -> void:
-	var found: Dictionary = {}
-	for file in DirAccess.get_files_at(DATA_DIR):
-		if file.ends_with(".json"):
-			_json_strings(JSON.parse_string(FileAccess.get_file_as_string(DATA_DIR + file)), found)
-	for dir in DirAccess.get_directories_at(DATA_DIR):
-		for file in DirAccess.get_files_at(DATA_DIR + dir):
-			if file.ends_with(".json"):
-				_json_strings(JSON.parse_string(FileAccess.get_file_as_string(DATA_DIR + dir + "/" + file)), found)
-	for file in DirAccess.get_files_at(DIALOGUE_DIR):
-		if file.ends_with(".dqd"):
-			for line in FileAccess.get_file_as_string(DIALOGUE_DIR + file).split("\n"):
-				for part in line.split("|"):
-					_add_fragments(part.strip_edges(), found)
-	_data.assign(found.keys())
-	_data.sort_custom(func(a: String, b: String) -> bool: return a.length() > b.length())
-
-
-func _json_strings(value: Variant, found: Dictionary) -> void:
-	if value is Dictionary:
-		for key in value:
-			_json_strings(value[key], found)
-	elif value is Array:
-		for item in value:
-			_json_strings(item, found)
-	elif value is String:
-		_add_fragments(value, found)
-
-
-func _add_fragments(text: String, found: Dictionary) -> void:
-	if text.begins_with("res://") or text.length() < 2:
-		return
-	var plain := RegEx.create_from_string("\\{[^}]*\\}|\\[[^\\]]*\\]").sub(text, "\n", true)
-	for part in plain.split("\n"):
-		var piece := part.strip_edges()
-		if piece.length() >= 2 and (_latin_word.search(piece) or _cyrillic.search(piece)):
-			found[piece] = true
-
-
 func _begin(lang: String) -> void:
 	_locale = lang
 	_problems = {}
@@ -189,17 +157,6 @@ func _check(text: String, where: String) -> void:
 	_checked += 1
 	if _ok(text):
 		return
-	if DATA_DEFERRED:
-		var rest := text
-		for piece in _data:
-			var at := rest.findn(piece)
-			while at >= 0:
-				rest = rest.substr(0, at) + " " + rest.substr(at + piece.length())
-				at = rest.findn(piece)
-		if rest != text:
-			_deferred += 1
-		if _ok(rest):
-			return
 	if not _problems.has(text):
 		_problems[text] = where
 
@@ -233,7 +190,7 @@ func _check_po_files() -> void:
 			% [uk_keys.size(), str(only_en.slice(0, 5)), str(only_uk.slice(0, 5))])
 	_begin("uk")
 	# {дія} — назва кнопки, яку підставляє InputGlyphs; KEY / ACTION — підстановки аддона maaacks у його рядку.
-	var placeholders := RegEx.create_from_string("\\{[a-z_]+\\}|\\bKEY\\b|\\bACTION\\b")
+	var placeholders := RegEx.create_from_string("\\{[a-z_0-9]+\\}|\\bKEY\\b|\\bACTION\\b")
 	for key in uk_keys:
 		var value := String(uk.get_message(key))
 		if value.is_empty():
@@ -288,9 +245,6 @@ func _scan_packed(path: String) -> void:
 		if node.auto_translate_mode == Node.AUTO_TRANSLATE_MODE_DISABLED:
 			continue
 		if node.owner != null and node.owner.scene_file_path.begins_with("res://addons/"):
-			continue
-		var source_scene: String = node.owner.scene_file_path if node.owner != null else scene.scene_file_path
-		if node != scene and RUNTIME_FILLED.get(source_scene, []).has(String(node.name)):
 			continue
 		var script: Script = node.get_script()
 		var own: Array = script.get_script_property_list().map(func(p: Dictionary) -> String: return p.name) if script else []
@@ -454,9 +408,9 @@ func _walk(game: Node) -> void:
 
 func _walk_templates() -> void:
 	var t: GDScript = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
-	var item := "Iron Sword"  # назва з даних — частина 2
+	var item := TranslationServer.translate("Iron Sword")  # викликачі дають назву з ItemDatabase.get_item_name — уже перекладену
 	var datas: Array[Dictionary] = [t.confirm_exit(), t.unsaved_changes(), t.reset_settings(), t.delete_save(),
-		t.overwrite_save(), t.buy_confirm(item, 2, "₹ 120"), t.craft_confirm(item, PackedStringArray(["Iron Ingot x3"]), "₹ 10"),
+		t.overwrite_save(), t.buy_confirm(item, 2, "₹ 120"), t.craft_confirm(item, PackedStringArray([TranslationServer.translate("Iron Ingot") + " x3"]), "₹ 10"),
 		t.cannot_craft("Not enough materials."), t.enchant_confirm(item, item + " +1", "₹ 10"),
 		t.cannot_enchant("Not enough coins."), t.game_saved(), t.save_failed(), t.item_pickup(item, 2),
 		t.cannot_use(item), t.confirm_exit_to_main_menu(), t.confirm_exit_game_unsaved()]
@@ -644,3 +598,128 @@ func _language_switch(loc: Node) -> void:
 	module.load_data(module.save().merged({"language": "en"}, true))
 	_ui().close_game_menu()
 	await Kit.frames(self, 8)
+
+
+# ── [4] дані ─────────────────────────────────────────────────────────────────
+
+## Кожне поле з data_fields.json (шлях: "a.b" — ключ, "x[]" — кожен елемент масиву x, "*" — кожне значення словника)
+## так, як його покаже Label: англійською — ключ як є, українською — переклад з uk.po.
+func _check_data() -> void:
+	var placeholders := RegEx.create_from_string("\\{[a-z_0-9]+\\}")
+	var cache: Dictionary = {}
+	for row: Dictionary in JSON.parse_string(FileAccess.get_file_as_string(DATA_FIELDS)).fields:
+		if not cache.has(row.file):
+			cache[row.file] = JSON.parse_string(FileAccess.get_file_as_string(DATA_DIR + row.file))
+		for text: String in _field_values(cache[row.file], String(row.path).split(".")):
+			var shown := TranslationServer.translate(text)
+			var where := "%s %s" % [row.file, row.path]
+			if _locale == "uk" and shown == text:
+				_problems[text] = where + ": no uk.po entry"
+			else:
+				_check(placeholders.sub(shown, "", true), where)
+
+
+func _field_values(value: Variant, path: PackedStringArray) -> Array[String]:
+	var out: Array[String] = []
+	if path.is_empty():
+		if value is String and not String(value).strip_edges().is_empty():
+			out.append(value)
+		return out
+	var head := path[0]
+	var rest := path.slice(1)
+	if head == "*":
+		for item: Variant in (value.values() if value is Dictionary else []):
+			out.append_array(_field_values(item, rest))
+	elif head.ends_with("[]"):
+		var list: Variant = value.get(head.trim_suffix("[]"), []) if value is Dictionary else []
+		for item: Variant in (list if list is Array else []):
+			out.append_array(_field_values(item, rest))
+	elif value is Dictionary and value.has(head):
+		out.append_array(_field_values(value[head], rest))
+	return out
+
+
+# ── [5] діалоги ──────────────────────────────────────────────────────────────
+
+func _dialogue_files() -> Array[String]:
+	var out: Array[String] = []
+	for file in DirAccess.get_files_at(DIALOGUE_DIR):
+		if file.ends_with(".dqd"):
+			out.append(DIALOGUE_DIR + file)
+	return out
+
+
+## Рядок .dqd без тексту репліки: "say|МОВЕЦЬ", "exit", "//", "" — у близнюка ті самі, у тому ж порядку.
+func _shape(path: String) -> Array[String]:
+	var out: Array[String] = []
+	for raw in FileAccess.get_file_as_string(path).split("\n"):
+		var parts := raw.split("|")
+		var kind := parts[0].strip_edges()
+		out.append("say|" + parts[1].strip_edges() if kind == "say" and parts.size() >= 3 else
+				"//" if kind.begins_with("//") else kind)
+	return out
+
+
+func _check_twins() -> void:
+	var files := _dialogue_files()
+	var twins: Array = Array(DirAccess.get_files_at(DIALOGUE_DIR + DialoguePaths.EN_DIR)).filter(
+			func(f: String) -> bool: return f.ends_with(".dqd"))
+	var wrong: Array[String] = []
+	for path in files:
+		var twin := DialoguePaths.ROOT + DialoguePaths.EN_DIR + path.get_file()
+		if not FileAccess.file_exists(twin) or _shape(twin) != _shape(path):
+			wrong.append(path.get_file())
+	ck(wrong.is_empty() and twins.size() == files.size(),
+			"%d dialogues, each with an English twin of the same lines and speakers (%d twins; wrong: %s)" % [files.size(), twins.size(), str(wrong)])
+	var registry: Dictionary = root.get_node("DialogueQuest").CharacterDB.get_character_registry()
+	var speakers: Dictionary = {}
+	for path in files:
+		for line: Dictionary in DqdReader.lines(path):
+			speakers[line.speaker] = true
+	speakers.erase("")
+	var unknown: Array = speakers.keys().filter(func(id: String) -> bool: return not registry.has(id))
+	ck(unknown.is_empty(), "every speaker is a DialogueQuest character id (%d; unknown %s)" % [speakers.size(), str(unknown)])
+	var cyrillic_ids: Array = registry.keys().filter(func(id: String) -> bool: return _cyrillic.search(id) != null)
+	ck(cyrillic_ids.is_empty(), "character ids are ASCII ids, names come through uk.po (%s)" % [str(cyrillic_ids)])
+
+
+## Кожна репліка кожного файлу — через справжнє вікно (DialogueManager.replay: те саме вікно, ім'я мовця, текст).
+func _walk_dialogues() -> void:
+	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
+	for path in _dialogue_files():
+		var count: int = DqdReader.lines(path).size()
+		dm.replay(path)
+		var box: Control = dm.current_dialogue_box
+		for i in count:
+			await Kit.frames(self, 2)
+			var where := "%s:%d" % [path.get_file(), i + 1]
+			var name_label: Label = box.get("_name")
+			if name_label.is_visible_in_tree() and not name_label.text.is_empty():
+				_check(_shown(name_label, name_label.text), where + " speaker")
+			_check((box.get("_text") as RichTextLabel).get_parsed_text(), where)
+			box.finish()  # домалювати репліку
+			box.accept()  # далі
+		await Kit.frames(self, 2)
+		if dm.is_replaying():
+			ck(false, "%s %s: every line shown, the window closed" % [_locale, path.get_file()])
+
+
+# ── [6] привітання ───────────────────────────────────────────────────────────
+
+func _check_greetings(loc: Node) -> void:
+	var audio: Node = root.get_node("AudioManager")
+	var greets: Array = audio.events.keys().filter(func(e: String) -> bool:
+		return e.begins_with("greet_") and not e.ends_with("_uk"))
+	var no_twin: Array = greets.filter(func(e: String) -> bool: return not audio.events.has(e + "_uk"))
+	ck(not greets.is_empty() and no_twin.is_empty(), "every greeting has a Ukrainian twin (%d; missing %s)" % [greets.size(), str(no_twin)])
+	var uk_files: Array = []
+	for e: String in greets:
+		uk_files.append_array(audio.events.get(e + "_uk", {}).get("files", []))
+	ck(not uk_files.is_empty() and uk_files.all(func(f: String) -> bool: return String(f).contains("Greetings/uk/") and ResourceLoader.exists("res://SampleProject/Assets/Audio/" + f)),
+			"the Ukrainian greetings are their own files in Voice/Greetings/uk (%d)" % uk_files.size())
+	loc.set_language("en")
+	var en_event: StringName = audio.hooks.greet_event("BLACKSMITH")
+	loc.set_language("uk")
+	var uk_event: StringName = audio.hooks.greet_event("BLACKSMITH")
+	ck(en_event == &"greet_blacksmith" and uk_event == &"greet_blacksmith_uk", "the blacksmith greets by locale (en %s, uk %s)" % [en_event, uk_event])
+

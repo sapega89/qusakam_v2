@@ -108,8 +108,11 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	current_dialogue_box.set_name_text("")
 	current_dialogue_box.set_portrait_image(null)
 	current_dialogue_box.visible = true
-	# dialogue_started шле _on_dialogue_quest_started (колбек DialogueQuest).
-	current_dialogue_player.play(timeline_name)
+	# dialogue_started шле _on_dialogue_quest_started (колбек DialogueQuest). Файл — мовою гри, а id розмови
+	# лишається українським шляхом, який чекають слухачі dialogue_finished (DialoguePaths, BACKLOG 31).
+	var sections: Array[DQDqdParser.DqdSection] = DQDqdParser.parse_from_file(DialoguePaths.localized(timeline_name))
+	assert(not sections.is_empty(), "DialogueManager: %s has no lines" % timeline_name)
+	current_dialogue_player.play_sections(sections, timeline_name)
 	return true
 
 func _on_dialogue_quest_started(dialogue_id: String):
@@ -259,7 +262,7 @@ func _end_replay() -> void:
 
 const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")
 ## Мовець-гравець. Два id — дубль одного персонажа, який має злити D114.
-const PLAYER_SPEAKERS: Array[String] = ["KUSAKAM", "Кусакам"]
+const PLAYER_SPEAKERS: Array[String] = ["KUSAKAM"]
 
 var _bubble_playing := false
 ## Множник часу реплік. Гра — 1.0; verify_*.gd ставлять 0, щоб не чекати секунди на кожну.

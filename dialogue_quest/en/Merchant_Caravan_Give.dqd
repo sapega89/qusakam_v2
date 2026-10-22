@@ -1,0 +1,4 @@
+// [DRAFT] D293, D311 (queue 8b) — the merchant's quest "The Stolen Caravan"
+say|MERCHANT|Those same bandits looted my caravan and drove it off to the city gate.
+say|MERCHANT|Chase them away from the gate. I'll follow my goods — look for me in the city.
+exit|

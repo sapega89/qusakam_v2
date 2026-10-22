@@ -132,7 +132,8 @@ func _load_story() -> void:
 	var current_id := ""
 	for stage in stages:
 		for zone in stage.zones:
-			var description := "\n\n".join(zone.get("chronicle", []))
+			# Абзаци склеюються — кожен перекладаємо до склеювання (ключ — абзац, BACKLOG 31).
+			var description := "\n\n".join(zone.get("chronicle", []).map(func(c: String) -> String: return tr(c)))
 			items.append({"id": zone.id, "title": zone.title, "state": zone.state,
 				"group": stage.title, "description": description})
 			# Цілі — підпункти під своїм підетапом; справа показують текст підетапу (D125).
@@ -189,14 +190,16 @@ func clear_entries() -> void:
 	set_entries([])
 
 
+## Назви, групи й описи — ключі з даних (англійською): перекладаємо тут, бо список склеює їх зі значками
+## й переводить у верхній регістр (BACKLOG 31). Уже перекладений чи складений текст tr() не змінює.
 func _normalize(raw: Dictionary) -> Dictionary:
 	return {
 		"id": String(raw.get("id", "")),
-		"title": String(raw.get("title", PLACEHOLDER)),
+		"title": tr(String(raw.get("title", PLACEHOLDER))),
 		"state": String(raw.get("state", "")),
 		"objectives": Array(raw.get("objectives", [])),
-		"description": String(raw.get("description", "")),
-		"group": String(raw.get("group", "")),
+		"description": tr(String(raw.get("description", ""))),
+		"group": tr(String(raw.get("group", ""))),
 		"parent": String(raw.get("parent", "")),
 	}
 

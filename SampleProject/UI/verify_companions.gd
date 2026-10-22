@@ -153,7 +153,7 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	var cards: Array = get_first_node_in_group("game_menu").find_child("CompanionCards", true, false).get_children().filter(func(c: Control) -> bool: return c.visible)
 	var labels: Array = cards.map(func(c: Control) -> String: return "%s %s" % [c.get_node(^"Row/Info/Name").text, c.get_node(^"Row/Info/Order").text])
-	ck(labels == ["Алісия IN PARTY · 3", "Астрит IN PARTY · 1", "Уризен IN PARTY · 2"], "Status shows each with its place in the queue (%s)" % [labels])
+	ck(labels == ["Alisia IN PARTY · 3", "Astrit IN PARTY · 1", "Urizen IN PARTY · 2"], "Status shows each with its place in the queue (%s)" % [labels])
 	cards[0].get_node(^"Select").pressed.emit()
 	await process_frame
 	ck(cards[0].get_node(^"Row/Info/Order").text == "IN CAMP" and not cm.is_in_party("alisia"), "pressing her card sends her to camp")

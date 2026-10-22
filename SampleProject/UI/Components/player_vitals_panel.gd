@@ -155,6 +155,12 @@ func _make_row(id: String, fill: Color, muted: bool) -> Control:
 	return row
 
 
+## Ім'я й рівень складені з tr() (верхній регістр, «LV.%d») — при зміні мови перемальовуємо (BACKLOG 31).
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		refresh()
+
+
 func refresh() -> void:
 	if not is_node_ready():
 		return
@@ -163,7 +169,7 @@ func refresh() -> void:
 		return
 	var gm = sl.get_game_manager()
 	var character = gm.get_active_character() if gm else null
-	_name_label.text = String(character.name).to_upper() if character else "—"
+	_name_label.text = tr(String(character.name)).to_upper() if character else "—"
 
 	if _xp_manager == null:
 		_xp_manager = sl.get_xp_manager()

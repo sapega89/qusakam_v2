@@ -80,7 +80,7 @@ func _initialize() -> void:
 	await process_frame
 	var box: Node = dm.current_dialogue_box
 	ck(dm.is_replaying() and dm.is_dialogue_active() and box.visible, "replay shows the dialogue box")
-	ck(box.name_text == "Дед", "speaker name from the DialogueQuest characters (%s)" % box.name_text)
+	ck(box.name_text == "Grandfather", "speaker name from the DialogueQuest characters (%s)" % box.name_text)
 	var shown: Array[String] = []
 	var typing_holds := true
 	for i in 40:
@@ -124,7 +124,7 @@ func _initialize() -> void:
 	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
 	for i in 5: await process_frame
 	var name_label: Label = box.get_node(^"%Name")
-	ck(name_label.is_visible_in_tree() and name_label.text == "Дед", "the box names the grandfather ('%s')" % name_label.text)
+	ck(name_label.is_visible_in_tree() and name_label.text == "Grandfather", "the box names the grandfather ('%s')" % name_label.text)
 	ck(box.get_node(^"%PortraitBackground").visible, "the grandfather's portrait frame is shown")
 	# B10: у вікні немає кнопок Auto/Skip — репліку гортає лише «далі» (D254, Figma npc-dialog-simple 36:6).
 	for b in [^"%AutoButton", ^"%SkipButton"]:

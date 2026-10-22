@@ -1,0 +1,5 @@
+// [DRAFT] D281 — the witch Morrow: oath of Darkness, Dark Knight (BACKLOG 22)
+say|OATH_WITCH|Looking for power, little lizard? Darkness gives it fast — and takes its price.
+say|OATH_WITCH|Swear to the Eclipse and you will become a Dark Knight: your blade will drink your enemies' blood and heal you.
+say|OATH_WITCH|An oath is never taken back. Come when you reach the fifth level.
+exit|

@@ -1,0 +1,4 @@
+// [DRAFT] D175 — the blacksmith gives the "Enchantment" quest
+say|BLACKSMITH|Now for the real lesson. Here's two iron swords.
+say|BLACKSMITH|Enchant them into one — you'll get a +1 sword. Bring it to show me.
+exit|

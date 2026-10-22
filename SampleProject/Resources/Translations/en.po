@@ -1619,3 +1619,876 @@ msgstr "Tutorial windows can be turned off in Settings → Game."
 
 msgid "Unknown Item"
 msgstr "Unknown Item"
+
+msgid "Coin × 7"
+msgstr "Coin × 7"
+
+# ── Character names (dialogue speakers, party)
+msgid "Bandit"
+msgstr "Bandit"
+
+msgid "Bandit leader"
+msgstr "Bandit leader"
+
+msgid "Blacksmith"
+msgstr "Blacksmith"
+
+msgid "Brass Collector"
+msgstr "Brass Collector"
+
+msgid "Fire djinn"
+msgstr "Fire djinn"
+
+msgid "Kesh"
+msgstr "Kesh"
+
+msgid "Sister Ilvane"
+msgstr "Sister Ilvane"
+
+msgid "Morrow"
+msgstr "Morrow"
+
+msgid "Priest"
+msgstr "Priest"
+
+msgid "Prisoner"
+msgstr "Prisoner"
+
+msgid "Alchemist"
+msgstr "Alchemist"
+
+msgid "Villager"
+msgstr "Villager"
+
+msgid "Alisia"
+msgstr "Alisia"
+
+msgid "Astrit"
+msgstr "Astrit"
+
+msgid "Enemy"
+msgstr "Enemy"
+
+msgid "Gnome mechanic"
+msgstr "Gnome mechanic"
+
+msgid "Suan"
+msgstr "Suan"
+
+msgid "Merchant"
+msgstr "Merchant"
+
+msgid "Three dark priests"
+msgstr "Three dark priests"
+
+msgid "Urizen"
+msgstr "Urizen"
+
+msgid "Astrit joined the party"
+msgstr "Astrit joined the party"
+
+# ── Data: items.json
+msgid "Iron Ore"
+msgstr "Iron Ore"
+
+msgid "Iron Ingot"
+msgstr "Iron Ingot"
+
+msgid "Copper Ore"
+msgstr "Copper Ore"
+
+msgid "Copper Ingot"
+msgstr "Copper Ingot"
+
+msgid "Silver Ore"
+msgstr "Silver Ore"
+
+msgid "Silver Ingot"
+msgstr "Silver Ingot"
+
+msgid "Gold Ore"
+msgstr "Gold Ore"
+
+msgid "Gold Ingot"
+msgstr "Gold Ingot"
+
+msgid "Wood Log"
+msgstr "Wood Log"
+
+msgid "Wood Plank"
+msgstr "Wood Plank"
+
+msgid "Stone"
+msgstr "Stone"
+
+msgid "Iron Sword"
+msgstr "Iron Sword"
+
+msgid "Copper Sword"
+msgstr "Copper Sword"
+
+msgid "Silver Sword"
+msgstr "Silver Sword"
+
+msgid "Iron Halberd"
+msgstr "Iron Halberd"
+
+msgid "Iron Mace"
+msgstr "Iron Mace"
+
+msgid "Iron Dagger"
+msgstr "Iron Dagger"
+
+msgid "Iron Armor"
+msgstr "Iron Armor"
+
+msgid "Potion"
+msgstr "Potion"
+
+msgid "Hi-Potion"
+msgstr "Hi-Potion"
+
+msgid "Lesser Potion"
+msgstr "Lesser Potion"
+
+msgid "Medium Potion"
+msgstr "Medium Potion"
+
+msgid "Ether"
+msgstr "Ether"
+
+msgid "Herb"
+msgstr "Herb"
+
+msgid "Mana Crystal"
+msgstr "Mana Crystal"
+
+msgid "Leather"
+msgstr "Leather"
+
+msgid "Leather Armor"
+msgstr "Leather Armor"
+
+msgid "Iron Helmet"
+msgstr "Iron Helmet"
+
+msgid "Iron Shield"
+msgstr "Iron Shield"
+
+msgid "Coin"
+msgstr "Coin"
+
+msgid "Raw iron ore that can be smelted into iron ingots."
+msgstr "Raw iron ore that can be smelted into iron ingots."
+
+msgid "Refined iron metal, ready for crafting."
+msgstr "Refined iron metal, ready for crafting."
+
+msgid "Raw copper ore found in mines."
+msgstr "Raw copper ore found in mines."
+
+msgid "Refined copper metal."
+msgstr "Refined copper metal."
+
+msgid "Rare silver ore with a beautiful shine."
+msgstr "Rare silver ore with a beautiful shine."
+
+msgid "Refined silver, valuable and beautiful."
+msgstr "Refined silver, valuable and beautiful."
+
+msgid "Precious gold ore, highly sought after."
+msgstr "Precious gold ore, highly sought after."
+
+msgid "Pure gold, the most valuable metal."
+msgstr "Pure gold, the most valuable metal."
+
+msgid "A log of wood from a tree."
+msgstr "A log of wood from a tree."
+
+msgid "Processed wooden plank, ready for crafting."
+msgstr "Processed wooden plank, ready for crafting."
+
+msgid "A common stone found everywhere."
+msgstr "A common stone found everywhere."
+
+msgid "A basic iron sword. Attack: +15"
+msgstr "A basic iron sword. Attack: +15"
+
+msgid "A simple copper sword. Attack: +10"
+msgstr "A simple copper sword. Attack: +10"
+
+msgid "A fine silver sword. Attack: +25"
+msgstr "A fine silver sword. Attack: +25"
+
+msgid "A long iron halberd. Attack: +18"
+msgstr "A long iron halberd. Attack: +18"
+
+msgid "A heavy iron mace. Attack: +17"
+msgstr "A heavy iron mace. Attack: +17"
+
+msgid "A light iron dagger. Attack: +10"
+msgstr "A light iron dagger. Attack: +10"
+
+msgid "Heavy iron armor. Defense: +20"
+msgstr "Heavy iron armor. Defense: +20"
+
+msgid "Restores 50 HP."
+msgstr "Restores 50 HP."
+
+msgid "Restores 200 HP."
+msgstr "Restores 200 HP."
+
+msgid "Restores 75 HP."
+msgstr "Restores 75 HP."
+
+msgid "Restores 125 HP."
+msgstr "Restores 125 HP."
+
+msgid "Restores 30 MP."
+msgstr "Restores 30 MP."
+
+msgid "A medicinal herb used in potion making."
+msgstr "A medicinal herb used in potion making."
+
+msgid "A crystal containing magical energy."
+msgstr "A crystal containing magical energy."
+
+msgid "Treated animal hide used for crafting."
+msgstr "Treated animal hide used for crafting."
+
+msgid "Light leather armor. Defense: +10"
+msgstr "Light leather armor. Defense: +10"
+
+msgid "Protective iron helmet. Defense: +8"
+msgstr "Protective iron helmet. Defense: +8"
+
+msgid "Sturdy iron shield. Defense: +12"
+msgstr "Sturdy iron shield. Defense: +12"
+
+msgid "A gold coin"
+msgstr "A gold coin"
+
+# ── Data: skills.json
+msgid "Holy Warrior"
+msgstr "Holy Warrior"
+
+msgid "Paladin"
+msgstr "Paladin"
+
+msgid "Dark Knight"
+msgstr "Dark Knight"
+
+msgid "Warden of Balance"
+msgstr "Warden of Balance"
+
+msgid "Light"
+msgstr "Light"
+
+msgid "Dark"
+msgstr "Dark"
+
+msgid "Neutral"
+msgstr "Neutral"
+
+msgid "Healing Palm"
+msgstr "Healing Palm"
+
+msgid "Fire Strike"
+msgstr "Fire Strike"
+
+msgid "Electric Strike"
+msgstr "Electric Strike"
+
+msgid "Toughness"
+msgstr "Toughness"
+
+msgid "Shield Block"
+msgstr "Shield Block"
+
+msgid "Devotion"
+msgstr "Devotion"
+
+msgid "Weapon Training"
+msgstr "Weapon Training"
+
+msgid "Fortitude"
+msgstr "Fortitude"
+
+msgid "Radiant Smite"
+msgstr "Radiant Smite"
+
+msgid "Mending Hands"
+msgstr "Mending Hands"
+
+msgid "Aura of Resolve"
+msgstr "Aura of Resolve"
+
+msgid "Sky's Grace"
+msgstr "Sky's Grace"
+
+msgid "Skyfall Blessing"
+msgstr "Skyfall Blessing"
+
+msgid "Aura of Valour"
+msgstr "Aura of Valour"
+
+msgid "Judgement of the Sky"
+msgstr "Judgement of the Sky"
+
+msgid "Unbroken Vow"
+msgstr "Unbroken Vow"
+
+msgid "Searing Hex"
+msgstr "Searing Hex"
+
+msgid "Blood Pact"
+msgstr "Blood Pact"
+
+msgid "Dread Aura"
+msgstr "Dread Aura"
+
+msgid "Relentless"
+msgstr "Relentless"
+
+msgid "Withering Grasp"
+msgstr "Withering Grasp"
+
+msgid "Hoarded Ward"
+msgstr "Hoarded Ward"
+
+msgid "Eclipse Cleave"
+msgstr "Eclipse Cleave"
+
+msgid "Crimson Thirst"
+msgstr "Crimson Thirst"
+
+msgid "Balanced Strike"
+msgstr "Balanced Strike"
+
+msgid "Bulwark"
+msgstr "Bulwark"
+
+msgid "Sand Stance"
+msgstr "Sand Stance"
+
+msgid "Iron Body"
+msgstr "Iron Body"
+
+msgid "Dervish Whirl"
+msgstr "Dervish Whirl"
+
+msgid "Unshakable"
+msgstr "Unshakable"
+
+msgid "Second Wind"
+msgstr "Second Wind"
+
+msgid "Perfect Balance"
+msgstr "Perfect Balance"
+
+msgid "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
+msgstr "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
+
+msgid "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
+msgstr "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
+
+msgid "A crackling strike at everything in front of you; jumps to one more enemy nearby and stuns the first. Needs a halberd or a mace in hand."
+msgstr "A crackling strike at everything in front of you; jumps to one more enemy nearby and stuns the first. Needs a halberd or a mace in hand."
+
+msgid "+10 Max HP."
+msgstr "+10 Max HP."
+
+msgid "Take 20% less damage while a shield is equipped."
+msgstr "Take 20% less damage while a shield is equipped."
+
+msgid "+5 max SP."
+msgstr "+5 max SP."
+
+msgid "+3 attack."
+msgstr "+3 attack."
+
+msgid "Take 5% less damage."
+msgstr "Take 5% less damage."
+
+msgid "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
+msgstr "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
+
+msgid "Your healing restores 25% more."
+msgstr "Your healing restores 25% more."
+
+msgid "Take 8% less damage."
+msgstr "Take 8% less damage."
+
+msgid "Regain 0.5 more SP each second."
+msgstr "Regain 0.5 more SP each second."
+
+msgid "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
+msgstr "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
+
+msgid "+25 Max HP."
+msgstr "+25 Max HP."
+
+msgid "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+msgstr "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+
+msgid "Take a further 8% less damage."
+msgstr "Take a further 8% less damage."
+
+msgid "A cursed strike at everything in front of you; sets them burning with dark fire."
+msgstr "A cursed strike at everything in front of you; sets them burning with dark fire."
+
+msgid "Your weapon hits heal you for 10% of the damage dealt."
+msgstr "Your weapon hits heal you for 10% of the damage dealt."
+
+msgid "+4 attack."
+msgstr "+4 attack."
+
+msgid "Your hits break an enemy's stance 25% faster."
+msgstr "Your hits break an enemy's stance 25% faster."
+
+msgid "A withering blow at everything in front of you; the dark fire burns on."
+msgstr "A withering blow at everything in front of you; the dark fire burns on."
+
+msgid "A cleave of dark fire at everything in front of you; leaps to one more enemy and sets them burning."
+msgstr "A cleave of dark fire at everything in front of you; leaps to one more enemy and sets them burning."
+
+msgid "Your weapon hits heal you for a further 10% of the damage dealt."
+msgstr "Your weapon hits heal you for a further 10% of the damage dealt."
+
+msgid "A measured strike at everything in front of you; stuns the first enemy."
+msgstr "A measured strike at everything in front of you; stuns the first enemy."
+
+msgid "Take a further 10% less damage while a shield is equipped."
+msgstr "Take a further 10% less damage while a shield is equipped."
+
+msgid "Your hits break an enemy's stance 30% faster."
+msgstr "Your hits break an enemy's stance 30% faster."
+
+msgid "+20 Max HP."
+msgstr "+20 Max HP."
+
+msgid "Spin through everything in front of you; the whirl catches one more enemy nearby."
+msgstr "Spin through everything in front of you; the whirl catches one more enemy nearby."
+
+msgid "Take 10% less damage."
+msgstr "Take 10% less damage."
+
+msgid "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
+msgstr "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
+
+msgid "+8 attack."
+msgstr "+8 attack."
+
+# ── Data: attributes.json
+msgid "Strength"
+msgstr "Strength"
+
+msgid "Agility"
+msgstr "Agility"
+
+msgid "Vitality"
+msgstr "Vitality"
+
+msgid "Wisdom"
+msgstr "Wisdom"
+
+msgid "Physical damage of every weapon hit."
+msgstr "Physical damage of every weapon hit."
+
+msgid "Critical hits, evasion and speed."
+msgstr "Critical hits, evasion and speed."
+
+msgid "Maximum HP."
+msgstr "Maximum HP."
+
+msgid "Maximum SP, skill power and SP regeneration."
+msgstr "Maximum SP, skill power and SP regeneration."
+
+# ── Data: quests.json
+msgid "The Stolen Caravan"
+msgstr "The Stolen Caravan"
+
+msgid "The Helmet"
+msgstr "The Helmet"
+
+msgid "The Enchantment"
+msgstr "The Enchantment"
+
+msgid "The Humble Place"
+msgstr "The Humble Place"
+
+msgid "The bandits Kusakam is chasing robbed a merchant's caravan on the Desert Road and drove it to the City Gates. The merchant follows his goods to the City."
+msgstr "The bandits Kusakam is chasing robbed a merchant's caravan on the Desert Road and drove it to the City Gates. The merchant follows his goods to the City."
+
+msgid "The City's blacksmith saw what the bandits' maces left of the gate guards. He will not sell Kusakam a helmet: one you forged yourself sits better than one you bought. His word holds like a contract before the god of deals: show him the finished helmet and he pays back every coin it cost."
+msgstr "The City's blacksmith saw what the bandits' maces left of the gate guards. He will not sell Kusakam a helmet: one you forged yourself sits better than one you bought. His word holds like a contract before the god of deals: show him the finished helmet and he pays back every coin it cost."
+
+msgid "The Blacksmith hands Kusakam two Iron Swords to learn enchanting on."
+msgstr "The Blacksmith hands Kusakam two Iron Swords to learn enchanting on."
+
+msgid "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow."
+msgstr "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow."
+
+msgid "Drive the bandits from the City Gates, then find the Merchant in the City, just past the gates"
+msgstr "Drive the bandits from the City Gates, then find the Merchant in the City, just past the gates"
+
+msgid "Buy 2 Iron Ingots and 1 Leather from the Merchant past the City gates, forge an Iron Helmet at the Blacksmith's anvil (12 coins), then show it to the Blacksmith"
+msgstr "Buy 2 Iron Ingots and 1 Leather from the Merchant past the City gates, forge an Iron Helmet at the Blacksmith's anvil (12 coins), then show it to the Blacksmith"
+
+msgid "Enchant the two Iron Swords into an Iron Sword +1 and show it to the Blacksmith"
+msgstr "Enchant the two Iron Swords into an Iron Sword +1 and show it to the Blacksmith"
+
+msgid "Lead Malik out of the Laboratory"
+msgstr "Lead Malik out of the Laboratory"
+
+# ── Data: story.json
+msgid "Prologue"
+msgstr "Prologue"
+
+msgid "Canyon I"
+msgstr "Canyon I"
+
+msgid "Village"
+msgstr "Village"
+
+msgid "Canyon II"
+msgstr "Canyon II"
+
+msgid "Desert Road"
+msgstr "Desert Road"
+
+msgid "City Gates"
+msgstr "City Gates"
+
+msgid "Laboratory — Cells"
+msgstr "Laboratory — Cells"
+
+msgid "Laboratory"
+msgstr "Laboratory"
+
+msgid "Laboratory — Outside"
+msgstr "Laboratory — Outside"
+
+msgid "Kusakam grumbled about the old man and wondered why the spirits would not make him a shaman yet."
+msgstr "Kusakam grumbled about the old man and wondered why the spirits would not make him a shaman yet."
+
+msgid "He wandered the silent canyon, looking for answers in a dead wind."
+msgstr "He wandered the silent canyon, looking for answers in a dead wind."
+
+msgid "From the ridge he saw villagers being led away — and something deep inside told him to run to the village."
+msgstr "From the ridge he saw villagers being led away — and something deep inside told him to run to the village."
+
+msgid "Bandits had raided the village and were taking everyone away."
+msgstr "Bandits had raided the village and were taking everyone away."
+
+msgid "A bandit stopped him in the middle of the village."
+msgstr "A bandit stopped him in the middle of the village."
+
+msgid "Kusakam beat the bandit and went looking for the old man."
+msgstr "Kusakam beat the bandit and went looking for the old man."
+
+msgid "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+msgstr "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+
+msgid "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
+msgstr "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
+
+msgid "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."
+msgstr "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."
+
+msgid "Armoured and ready, Kusakam began the climb down into the desert."
+msgstr "Armoured and ready, Kusakam began the climb down into the desert."
+
+msgid "The desert road stretched ahead toward the city."
+msgstr "The desert road stretched ahead toward the city."
+
+msgid "Enemies blocked the road. Kusakam fought his way through."
+msgstr "Enemies blocked the road. Kusakam fought his way through."
+
+msgid "He reached the great city gates and found the way barred."
+msgstr "He reached the great city gates and found the way barred."
+
+msgid "Bandits attacked the gates; he fought them off beside the guards."
+msgstr "Bandits attacked the gates; he fought them off beside the guards."
+
+msgid "Through the gates at last, they set out to find the laboratory."
+msgstr "Through the gates at last, they set out to find the laboratory."
+
+msgid "He came to in a laboratory cell and watched a fire djinn tear its way out of a prisoner and burst through the ceiling."
+msgstr "He came to in a laboratory cell and watched a fire djinn tear its way out of a prisoner and burst through the ceiling."
+
+msgid "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
+msgstr "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
+
+msgid "He fought his way down through three storeys of the laboratory's guards."
+msgstr "He fought his way down through three storeys of the laboratory's guards."
+
+msgid "The master of the laboratory declared it the end of his road."
+msgstr "The master of the laboratory declared it the end of his road."
+
+msgid "Kusakam defeated the boss, and the way out lay open."
+msgstr "Kusakam defeated the boss, and the way out lay open."
+
+msgid "They stepped out of the laboratory into the open air. It was a hard journey — but they made it."
+msgstr "They stepped out of the laboratory into the open air. It was a hard journey — but they made it."
+
+# ── Data: journal_people.json
+msgid "Kusakam's grandfather"
+msgstr "Kusakam's grandfather"
+
+msgid "City Gates guard"
+msgstr "City Gates guard"
+
+msgid "Priest of the Sky — oath of the Paladin"
+msgstr "Priest of the Sky — oath of the Paladin"
+
+msgid "Witch — oath of the Dark Knight"
+msgstr "Witch — oath of the Dark Knight"
+
+msgid "Sand dervish — oath of the Warden of Balance"
+msgstr "Sand dervish — oath of the Warden of Balance"
+
+msgid "Hunter"
+msgstr "Hunter"
+
+msgid "Warrior-thaumaturge"
+msgstr "Warrior-thaumaturge"
+
+msgid "Cleric of the god of contracts"
+msgstr "Cleric of the god of contracts"
+
+msgid "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out."
+msgstr "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out."
+
+msgid "A nameless prisoner held in the Laboratory."
+msgstr "A nameless prisoner held in the Laboratory."
+
+msgid "An alchemist who works in the Laboratory."
+msgstr "An alchemist who works in the Laboratory."
+
+msgid "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
+msgstr "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
+
+msgid "One of the people of the Village."
+msgstr "One of the people of the Village."
+
+msgid "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
+msgstr "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
+
+msgid "Forges and improves weapons and armour."
+msgstr "Forges and improves weapons and armour."
+
+msgid "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
+msgstr "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
+
+msgid "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+msgstr "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+
+msgid "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+msgstr "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+
+msgid "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+msgstr "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+
+msgid "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
+msgstr "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
+
+msgid "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire."
+msgstr "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire."
+
+msgid "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign."
+msgstr "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign."
+
+# ── Data: bestiary.json
+msgid "Desert Bandit"
+msgstr "Desert Bandit"
+
+msgid "Jackal"
+msgstr "Jackal"
+
+msgid "Giant Scorpion"
+msgstr "Giant Scorpion"
+
+msgid "The Brass Collector"
+msgstr "The Brass Collector"
+
+msgid "The Fire Djinn"
+msgstr "The Fire Djinn"
+
+msgid "Raiders of the desert roads who prey on villages and travellers. A bandit raises his blade before he strikes — step back or roll behind him while it is up, then punish."
+msgstr "Raiders of the desert roads who prey on villages and travellers. A bandit raises his blade before he strikes — step back or roll behind him while it is up, then punish."
+
+msgid "A lean desert hunter that circles and lunges with a quick bite. Its wind-up is short, so watch for the crouch and dash out of the lunge."
+msgstr "A lean desert hunter that circles and lunges with a quick bite. Its wind-up is short, so watch for the crouch and dash out of the lunge."
+
+msgid "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
+msgstr "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
+
+msgid "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
+msgstr "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
+
+msgid "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."
+msgstr "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."
+
+# ── Data: tutorial.json
+msgid "Basic Controls"
+msgstr "Basic Controls"
+
+msgid "The Map"
+msgstr "The Map"
+
+msgid "Saving Your Progress"
+msgstr "Saving Your Progress"
+
+msgid "The Journal"
+msgstr "The Journal"
+
+msgid "Moving and Jumping"
+msgstr "Moving and Jumping"
+
+msgid "Training 1/6 — Attack"
+msgstr "Training 1/6 — Attack"
+
+msgid "Training 2/6 — Combo"
+msgstr "Training 2/6 — Combo"
+
+msgid "Training 3/6 — Dodge"
+msgstr "Training 3/6 — Dodge"
+
+msgid "Training 4/6 — Block"
+msgstr "Training 4/6 — Block"
+
+msgid "Training 5/6 — Parry"
+msgstr "Training 5/6 — Parry"
+
+msgid "Training 6/6 — Heavy Attack"
+msgstr "Training 6/6 — Heavy Attack"
+
+msgid "Attacking"
+msgstr "Attacking"
+
+msgid "Block and Parry"
+msgstr "Block and Parry"
+
+msgid "Experience and Coins"
+msgstr "Experience and Coins"
+
+msgid "Levelling Up"
+msgstr "Levelling Up"
+
+msgid "Equipping Gear"
+msgstr "Equipping Gear"
+
+msgid "Calling an Ally"
+msgstr "Calling an Ally"
+
+msgid "Companions"
+msgstr "Companions"
+
+msgid "Move with {move} and jump with {jump}. Press {attack} to attack. When a prompt appears over a person or an object, press {interact} to talk, open or pick it up."
+msgstr "Move with {move} and jump with {jump}. Press {attack} to attack. When a prompt appears over a person or an object, press {interact} to talk, open or pick it up."
+
+msgid "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, {move} moves the view and you stand still."
+msgstr "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, {move} moves the view and you stand still."
+
+msgid "Look for save points along the way. Step up to one and choose a save slot — there are four. To pick up where you left off, choose Continue on the title screen."
+msgstr "Look for save points along the way. Step up to one and choose a save slot — there are four. To pick up where you left off, choose Continue on the title screen."
+
+msgid "The Journal in the game menu follows the story. Quests lists each part of the Prologue with its objectives; Characters keeps the people you have met; the Bestiary records the enemies you have met and killed."
+msgstr "The Journal in the game menu follows the story. Quests lists each part of the Prologue with its objectives; Characters keeps the people you have met; the Bestiary records the enemies you have met and killed."
+
+msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
+msgstr "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
+
+msgid "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
+msgstr "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
+
+msgid "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
+msgstr "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
+
+msgid "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
+msgstr "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
+
+msgid "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
+msgstr "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
+
+msgid "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
+msgstr "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
+
+msgid "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
+msgstr "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
+
+msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
+msgstr "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
+
+msgid "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
+msgstr "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
+
+msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
+msgstr "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
+
+msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
+msgstr "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
+
+msgid "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
+msgstr "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
+
+msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
+msgstr "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
+
+msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
+msgstr "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
+
+msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
+msgstr "Companions fight at your side — press {assist} to call one. Call the guard now!"
+
+msgid "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
+msgstr "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
+
+msgid "Button to open the game menu."
+msgstr "Button to open the game menu."
+
+msgid "Button to open or close the full map."
+msgstr "Button to open or close the full map."
+
+msgid "Button at a save point to save your game."
+msgstr "Button at a save point to save your game."
+
+msgid "Button to open the game menu, then choose Journal."
+msgstr "Button to open the game menu, then choose Journal."
+
+msgid "Button to jump."
+msgstr "Button to jump."
+
+msgid "Button for a light attack."
+msgstr "Button for a light attack."
+
+msgid "Press it three times quickly."
+msgstr "Press it three times quickly."
+
+msgid "Button to dash; twice in a row for a double dash."
+msgstr "Button to dash; twice in a row for a double dash."
+
+msgid "Hold it to block."
+msgstr "Hold it to block."
+
+msgid "Tap it on the red glint to parry."
+msgstr "Tap it on the red glint to parry."
+
+msgid "Button for a heavy attack."
+msgstr "Button for a heavy attack."
+
+msgid "Hold to block; press it when an enemy's weapon glints to parry."
+msgstr "Hold to block; press it when an enemy's weapon glints to parry."
+
+msgid "Button to open the game menu, then choose Skills."
+msgstr "Button to open the game menu, then choose Skills."
+
+msgid "Button for the first skill slot."
+msgstr "Button for the first skill slot."
+
+msgid "Button to switch weapons."
+msgstr "Button to switch weapons."
+
+msgid "Button to call the next ready companion."
+msgstr "Button to call the next ready companion."

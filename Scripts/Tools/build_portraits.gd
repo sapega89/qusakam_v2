@@ -17,10 +17,10 @@ const ALPHA := 0.5
 ## [тека, файл кадру, клітинка (x, y, w, h), сторона квадрата, персонажі з цим портретом, зсув униз (px, необов'язково —
 ## дервіш у високій шапці: перший рядок — її верх, а не голова)].
 const SOURCES := [
-	[HERO_DIR, "Idle/2.png", Rect2i(0, 0, 64, 64), 32, ["KUSAKAM", "Кусакам"]],
+	[HERO_DIR, "Idle/2.png", Rect2i(0, 0, 64, 64), 32, ["KUSAKAM"]],
 	[NPCS % "old_man", "sheet.png", Rect2i(0, 0, 64, 96), 32, ["GRANDFATHER"]],
 	[NPCS % "blacksmith", "sheet.png", Rect2i(0, 192, 64, 96), 32, ["BLACKSMITH"]],
-	[NPCS % "merchant", "sheet.png", Rect2i(0, 192, 64, 96), 32, ["Торговец"]],
+	[NPCS % "merchant", "sheet.png", Rect2i(0, 192, 64, 96), 32, ["MERCHANT"]],
 	[NPCS % "gate_guard", "sheet.png", Rect2i(0, 0, 64, 96), 32, ["GATE_GUARD"]],
 	[NPCS % "priest", "sheet.png", Rect2i(0, 96, 64, 96), 32, ["OATH_PRIEST"]],
 	[NPCS % "witch", "sheet.png", Rect2i(0, 96, 64, 96), 32, ["OATH_WITCH"]],
@@ -32,7 +32,7 @@ const SOURCES := [
 	[BOSSES % "fire_djinn", "sheet.png", Rect2i(0, 0, 96, 112), 48, ["FIRE_DJINN"]],
 ]
 ## Персонаж → тека компаньйона з готовим portrait.tres.
-const COMPANIONS := {"Астрит": "astrit", "Алісия": "alisia", "Уризен": "urizen"}
+const COMPANIONS := {"ASTRIT": "astrit", "ALISIA": "alisia", "URIZEN": "urizen"}
 
 
 func _initialize() -> void:

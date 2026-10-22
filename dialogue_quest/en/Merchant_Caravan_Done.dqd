@@ -1,0 +1,4 @@
+// [DRAFT] D293, D311 (queue 8b) — the merchant thanks you, now in the city: the gate is free, the caravan made it
+say|MERCHANT|The gate is free, and my wagons are in the city. Without you I'd never have seen them again.
+say|MERCHANT|Here — potions for the road and a few coins. A merchant never forgets a debt.
+exit|
