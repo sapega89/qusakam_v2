@@ -60,7 +60,7 @@ func _initialize() -> void:
 		sm.clear_cooldowns()
 		sm.restore_sp(999)
 		hero.current_health = hero.Max_Health - 70
-		hero.global_position = target.global_position + Vector2(-70, -4)
+		hero.global_position = target.global_position + Vector2(-40, -4)
 		hero.velocity = Vector2.ZERO
 		hero.mover.last_direction = 1
 		for f in 12: await physics_frame
