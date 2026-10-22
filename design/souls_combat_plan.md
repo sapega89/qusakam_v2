@@ -74,16 +74,15 @@ path stays in [[skills_combat_plan]]; per-skill animations are BACKLOG 21; frame
    overhead smash, dagger quick stabs, polearm thrusts, heavy = overhead wind-up for all.
 7. **Interrupts (D269):** a hit during the heavy wind-up staggers and cancels it; `SkillManager.interrupt_cast`
    spends the SP and starts the cooldown without the effect; skill wind-ups themselves come with BACKLOG 21.
-8. **Input (D270):** `heavy_attack` = right mouse / R / pad B, `block` = Left Ctrl / middle mouse / pad LB; registered
-   at boot from code (`Scripts/Core/CombatInput.gd`), because `project.godot` carries Sapega's local edits; move them
-   into `project.godot` when that file is committed. Double dash reuses `dodge`; draw/sheathe is automatic.
+8. **Input (D270):** `heavy_attack` = right mouse / R / pad B, `block` = Left Ctrl / middle mouse / pad LB; in
+   `project.godot` → `[input]` (moved there from the deleted `Scripts/Core/CombatInput.gd`, `cloud/combat-fixes`). Double dash reuses `dodge`; draw/sheathe is automatic.
 
 ## Slices
 
 ### Slice 1 — staggers both ways, enemy combos, the freeze check — ✅ built
 - `PlayerCombat.gd` (state machine on timers, `stagger`), `Player.gd` (stagger on a wounding enemy hit),
   `PlayerMover.gd` (`push`, `locked`), `EnemyLogic.gd` (combo loop, `stagger`), `DefaultEnemy.gd` (poise),
-  `EnemyStats.gd` + `enemy_stats_*.tres`, `Core/CombatInput.gd` (D270), EventBus `enemy_staggered`,
+  `EnemyStats.gd` + `enemy_stats_*.tres`, `project.godot` input actions (D270), EventBus `enemy_staggered`,
   `player_staggered`, `player_parried`, `skill_interrupted`; `Player.tscn` → `Hurt` (placeholder frame until slice 5).
 - `verify_souls_combat.gd` [0]–[3].
 ### Slice 2 — light combo, heavy attack, block, parry, interrupts (D259) — ✅ built

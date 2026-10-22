@@ -20,7 +20,7 @@ layout follows the existing screens, [[skills_ui_mapping]] and [[skill_trees_pla
 | Row state | `skills_component.gd` `_apply_row_state` | a lock icon on every not-learned row, even a learnable one; prereq-locked rows read `???` |
 | Details | `_publish_details` → bottom bar hint, one line | no panel; no cooldown, no effect values |
 | Learn rules | `SkillManager.gd` `can_unlock` (`:288`), `unlock_skill`, `can_upgrade` / `upgrade_skill` (D150) | rules live here — the UI must not copy them |
-| Hotbar | `SkillManager.equip_skill(skill_id, slot)`, 4 slots; actions `skill_slot_1..4` (keys 1–4, pad RT/R3/L3/Back via `CombatInput.gd`) | a learned active goes to the first free slot (D261); no way to choose the slot from a menu |
+| Hotbar | `SkillManager.equip_skill(skill_id, slot)`, 4 slots; actions `skill_slot_1..4` (keys 1–4, pad RT/R3/L3/Back, all in `project.godot`) | a learned active goes to the first free slot (D261); no way to choose the slot from a menu |
 | Attributes | `player_state.strength/intelligence/dexterity/constitution` (10 each) mirrored from `CharacterAttributes` by `CharacterManager._sync_*` (overwritten on every equip) | **fixed** — nothing raises them; `StatCalculator`: constitution → Max HP (+5), strength → Phys. Atk. (+2), dexterity → speed / evasion / accuracy / crit, intelligence → Elem. Atk. |
 | Crit / evasion / speed in combat | `StatCalculator.calculate_critical_chance` etc. | **shown in Status / Equipment only — combat never reads them** |
 | Save | `PlayerDataModule.gd` | saves the four base attributes, JP, skills, ranks, oath |
