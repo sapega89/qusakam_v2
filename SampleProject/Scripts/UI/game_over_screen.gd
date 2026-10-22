@@ -9,6 +9,7 @@ class_name GameOverScreen
 ##   Load Game                    → наявне меню Load (D92; кнопки немає у Figma).
 ##   Return to title              → титульний екран, як "Return to Title" у меню Misc.
 
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const SCENE_PATH := "res://SampleProject/Scenes/UI/game_over_screen.tscn"
 const GAME_SCENE := "res://SampleProject/Game.tscn"
 const MAIN_MENU := "res://SampleProject/MainMenu.tscn"
@@ -73,6 +74,13 @@ func _ready() -> void:
 	_load.pressed.connect(load_game)
 	_title.pressed.connect(return_to_title)
 	_resume.grab_focus.call_deferred()
+	_show_accept_key()
+	get_node(^"/root/EventBus").input_device_changed.connect(_show_accept_key.unbind(1))  # не ідентифікатор: verify_game_over компілює скрипт до autoload
+
+
+## Клавіша підтвердження в підвалі — за пристроєм (BACKLOG 24): ENTER з клавіатури, A з геймпада.
+func _show_accept_key() -> void:
+	%Footer.get_node(^"Keycap/KeyLabel").text = InputGlyphs.badge(&"ui_accept").to_upper()
 
 
 ## Figma: радіальний градієнт поверх фото підземелля.

@@ -4,7 +4,8 @@ extends RefCounted
 ## за останнім пристроєм вводу. Беруться з InputMap, тож переназначена клавіша теж правильна.
 ##   const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 ##   InputGlyphs.resolve("Press {jump} to jump")  →  "Press Space / W to jump" або "Press A to jump"
-## Хто бачить ввід, повідомляє: InputGlyphs.note_event(event) (підказка в грі, вікно туторіалу, InteractionPrompt).
+## Хто бачить ввід, повідомляє: InputGlyphs.note_event(event) — увесь ввід бачить InputDeviceWatcher (GameManager);
+## зміну пристрою чути як EventBus.input_device_changed (бейджі нижньої панелі, хотбар, підказки меню).
 
 const PAD_BUTTONS := {
 	JOY_BUTTON_A: "A", JOY_BUTTON_B: "B", JOY_BUTTON_X: "X", JOY_BUTTON_Y: "Y",
@@ -42,12 +43,28 @@ static func note_event(event: InputEvent) -> bool:
 		pad_device = event.device
 	var changed := pad != using_gamepad
 	using_gamepad = pad
+	if changed:
+		# Не ідентифікатор EventBus: скрипт вантажать і тести, що компілюються раніше за autoload.
+		var bus: Node = (Engine.get_main_loop() as SceneTree).root.get_node_or_null(^"EventBus")
+		if bus:
+			bus.input_device_changed.emit(pad)
 	return changed
 
 
 ## Кнопка дії на поточному пристрої: "Space / W", "Left click", "A", "Left stick".
 static func label(action: StringName) -> String:
 	return " / ".join(_names(action).slice(0, 2))
+
+
+## Коротка назва для круглого бейджа (нижня панель, хотбар): перша кнопка дії на поточному пристрої.
+## [param action] — дія InputMap, масив дій («Q/E», «LB/RB») або &"navigate" — навігація фокусом.
+static func badge(action: Variant) -> String:
+	if action is Array:
+		return "/".join(action.map(func(a: StringName) -> String: return badge(a)))
+	if action == &"navigate":
+		return "LS" if using_gamepad else "Arrows"
+	var name: String = _names(action)[0]
+	return "D-pad" if name.begins_with("D-pad") else name  # бейдж малий: напрям хрестовини — у підказці
 
 
 static func _names(action: StringName) -> Array[String]:

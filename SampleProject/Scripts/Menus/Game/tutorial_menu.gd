@@ -37,7 +37,7 @@ var _frame_left := 0.0
 func _ready() -> void:
 	topics = TutorialTopics.available()
 	_bottom_bar.set_default_hint("Use the arrow keys or the left stick to choose a topic.")
-	_bottom_bar.set_actions([{"key": "LS", "label": "Select"}, {"key": "B", "label": "Close"}])
+	_bottom_bar.set_actions([{"action": &"navigate", "label": "Select"}, {"action": &"ui_cancel", "label": "Close"}])
 	show_topic(0)
 	grab_focus.call_deferred()
 

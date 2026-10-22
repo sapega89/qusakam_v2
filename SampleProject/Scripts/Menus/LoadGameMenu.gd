@@ -70,10 +70,10 @@ func _apply_mode() -> void:
 	_bottom_bar.set_default_hint(tr("Select a slot to save your game.") if saving
 			else tr("Select a slot to load your game."))
 	_bottom_bar.set_actions([
-		{"key": "LS", "label": tr("Select")},
-		{"key": "A", "label": tr("Confirm")},
-		{"key": "Y", "label": tr("Delete")},
-		{"key": "B", "label": tr("Return")},
+		{"action": &"navigate", "label": tr("Select")},
+		{"action": &"ui_accept", "label": tr("Confirm")},
+		{"action": &"save_delete", "label": tr("Delete")},
+		{"action": &"ui_cancel", "label": tr("Return")},
 	])
 
 

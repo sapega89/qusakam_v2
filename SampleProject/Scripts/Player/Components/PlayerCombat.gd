@@ -260,8 +260,8 @@ func perform_attack(last_direction: int) -> void:
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	var body: StringName = SWING_ANIMATIONS.get(_category, &"Attack")
-	animation_player.play(body, -1, swing_time / _state_left)  # дві зброї — швидше
 	player.animation = body
+	player.play_body(body, swing_time / _state_left)  # дві зброї — швидше
 
 	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
 	EventBus.player_attacked.emit(player, last_direction)
@@ -276,8 +276,7 @@ func heavy_attack(last_direction: int) -> void:
 	_direction = last_direction
 	_chain_left = 0.0
 	combo_step = 0
-	animation_player.play(&"HeavyWindup")
-	player.animation = &"HeavyWindup"
+	_play(&"HeavyWindup")
 	EventBus.player_heavy_windup.emit(player, last_direction)
 
 func _strike_heavy() -> void:
@@ -286,8 +285,7 @@ func _strike_heavy() -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = _poise_of(POISE_HEAVY)
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
-	animation_player.play(&"HeavyStrike")
-	player.animation = &"HeavyStrike"
+	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
 
@@ -320,16 +318,16 @@ func _release_cast() -> void:
 	_cast_fx = null
 	ServiceLocator.get_skill_manager().use_skill(skill_id, null, player)
 
+## Анімація тіла — з кадрів зброї в руці, якщо вони є (Player.play_body, BACKLOG 42).
 func _play(animation: StringName) -> void:
-	animation_player.play(animation)
 	player.animation = animation
+	player.play_body(animation)
 
 func _start_block() -> void:
 	state = State.BLOCK
 	_block_time = 0.0
 	_chain_left = 0.0
-	animation_player.play(&"Block")
-	player.animation = &"Block"
+	_play(&"Block")
 
 ## Удар по героєві в блоці (D264): &"parry" — у перші PARRY_WINDOW с, &"block" — спереду, &"" — не захищено
 ## (не в блоці, удар ззаду, не ворог).
@@ -356,8 +354,7 @@ func stagger(duration: float, from_x: float) -> void:
 	_state_left = duration
 	_queued = false
 	_chain_left = 0.0
-	animation_player.play(&"Hurt")
-	player.animation = &"Hurt"
+	_play(&"Hurt")
 	var away: float = signf(player.global_position.x - from_x)
 	player.mover.push(away * stagger_push, stagger_push_time)
 	EventBus.player_staggered.emit(duration)

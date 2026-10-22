@@ -109,7 +109,8 @@ func _input(event: InputEvent) -> void:
 		return
 	# Лише коли на екрані саме меню: Options — дитина MainMenu, і _input тут іде раніше за
 	# їхній ui_cancel, тож Esc у налаштуваннях закривав гру замість налаштувань (Sapega, 2026-10-16).
-	if menu.visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	# ui_cancel — Esc і геймпад B (BACKLOG 24).
+	if menu.visible and event.is_action_pressed(&"ui_cancel"):
 		if _exit_modal_open():
 			return  # Esc у відкритому вікні — це його Cancel
 		get_viewport().set_input_as_handled()
@@ -201,6 +202,7 @@ func show_options_menu() -> void:
 
 	# Теперь настраиваем режим (после инициализации @onready переменных)
 	options_component._setup_mode()
+	options_component.focus_current_tab()  # геймпад / клавіатура: фокус одразу в налаштуваннях (BACKLOG 24)
 
 	# Анимация появления — вся панель разом із рамкою
 	%OptionsPanel.modulate.a = 0.0

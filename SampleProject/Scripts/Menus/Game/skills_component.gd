@@ -99,9 +99,16 @@ func _connect_live_sources() -> void:
 		[EventBus.skills_reset, _on_skills_reset],
 		[EventBus.attributes_changed, _refresh],
 		[EventBus.equipped_skills_changed, _on_loadout_changed],
+		[EventBus.input_device_changed, _on_input_device_changed],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
+
+
+## Пристрій змінився — підказка внизу називає кнопки нового (BACKLOG 24).
+func _on_input_device_changed(_pad: bool) -> void:
+	if is_visible_in_tree() and _selected_id != "":
+		_publish_details(_selected_id)
 
 
 func _on_points_changed(_current: int, _previous: int) -> void:

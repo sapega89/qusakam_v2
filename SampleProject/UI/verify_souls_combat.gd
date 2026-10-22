@@ -573,15 +573,18 @@ func _weapons(sl: Node) -> void:
 	ck(not hero.combat.in_combat() and wv.sheathed and not wv.pivot.visible and not wv.off_pivot.visible, "no fight: the sword is out of sight (Sapega 2026-10-21)")
 	enemies[0].enemy_logic.current_state = 1  # CHASE
 	await create_timer(0.4).timeout
-	ck(not wv.sheathed and wv.pivot.visible and wv.pivot.position.distance_to(wv.HAND_REST) < 1.0, "a fight starts: drawn into the hand (%s)" % wv.pivot.position)
+	# BACKLOG 42: у меча свої кадри — меч намальований у кадрі тіла, окремий спрайт схований
+	ck(not wv.sheathed and String(anim.current_animation).begins_with("sword/") and not wv.pivot.visible,
+			"a fight starts: the sword is drawn in Kusakam's own frames (%s, overlay %s)" % [anim.current_animation, wv.pivot.visible])
 	enemies[0].enemy_logic.current_state = 0
 	await create_timer(hero.combat.COMBAT_LINGER + 0.4).timeout
 	await process_frame
-	ck(wv.sheathed and not wv.pivot.visible, "the fight is over: the sword vanishes")
+	ck(wv.sheathed and not wv.pivot.visible and not String(anim.current_animation).begins_with("sword/"),
+			"the fight is over: the sword vanishes, base frames (%s)" % anim.current_animation)
 	await _tap(&"attack")
 	await physics_frame
 	await process_frame
-	ck(not wv.sheathed and wv.pivot.visible, "a swing draws it at once")
+	ck(not wv.sheathed and anim.current_animation == &"sword/Attack1", "a swing draws it at once (%s)" % anim.current_animation)
 	await create_timer(0.8).timeout
 
 	print("[12a] The hitbox reaches as far as the swing is drawn (D268, Sapega 2026-10-21)")
@@ -602,7 +605,7 @@ func _weapons(sl: Node) -> void:
 	var played: Array = []
 	var log_anim := func(name: StringName) -> void: played.append(name)
 	anim.animation_started.connect(log_anim)
-	for case in [["sword", "iron_sword", &"Attack"], ["mace", "iron_mace", &"AttackSmash"], ["polearm", "iron_halberd", &"AttackThrust"]]:
+	for case in [["sword", "iron_sword", &"sword/Attack1"], ["mace", "iron_mace", &"AttackSmash"], ["polearm", "iron_halberd", &"AttackThrust"]]:
 		em.unequip_item(who, "sword")
 		equip.call(case[0], case[1])
 		while gm.player_state.weapon_in_hand != case[0]:
@@ -626,3 +629,49 @@ func _weapons(sl: Node) -> void:
 	_press(&"block", false)
 	anim.animation_started.disconnect(log_anim)
 	await create_timer(0.5).timeout
+
+	print("[12c] BACKLOG 42: one-handed sword in combat — Kusakam's sword frames, the hitbox still matches the swings")
+	equip.call("sword", "iron_sword")
+	while gm.player_state.weapon_in_hand != "sword":
+		em.cycle_weapon(1)
+	enemies[0].enemy_logic.current_state = 1  # CHASE — бій
+	await create_timer(0.4).timeout
+	ck(anim.current_animation == &"sword/Idle" and not wv.pivot.visible and hero.get_node("Sprite2D").offset == Vector2(0, -16),
+			"combat idle: sword frames, overlay hidden, 96×96 cell offset (%s, %s)" % [anim.current_animation, hero.get_node("Sprite2D").offset])
+	var base_attack: Animation = anim.get_animation(&"Attack")
+	var hitbox: Area2D = hero.get_node("Hitbox")
+	for step in 3:
+		var swing: Animation = anim.get_animation(StringName("sword/Attack%d" % (step + 1)))
+		var strike_at: float = swing.track_get_key_time(0, 1)
+		ck(is_equal_approx(swing.length, base_attack.length) and is_equal_approx(swing.length, hero.combat.swing_time)
+				and is_equal_approx(strike_at, base_attack.track_get_key_time(0, 1)),
+				"Attack%d: %.2f s like the base swing, strike frame at %.2f s" % [step + 1, swing.length, strike_at])
+	played.clear()
+	anim.animation_started.connect(log_anim)
+	var live: Array = []
+	for i in 3:
+		await _tap(&"attack")
+		await create_timer(0.06).timeout  # кадр удару (0.05 с) — хітбокс увімкнений
+		live.append(hitbox.monitoring and not wv.pivot.visible)
+		await create_timer(0.22).timeout
+	anim.animation_started.disconnect(log_anim)
+	ck(played.has(&"sword/Attack1") and played.has(&"sword/Attack2") and played.has(&"sword/Attack3"), "the combo plays Attack1–3 (%s)" % [played])
+	ck(live == [true, true, true], "each strike frame shows with the hitbox on and no overlay (%s)" % [live])
+	await create_timer(1.0).timeout
+	ck(not hitbox.monitoring, "the hitbox is off after the combo")
+	played.clear()
+	anim.animation_started.connect(log_anim)
+	await _tap(&"heavy_attack")
+	await create_timer(0.6).timeout
+	_press(&"block")
+	await create_timer(1.3).timeout
+	_press(&"block", false)
+	anim.animation_started.disconnect(log_anim)
+	ck(played.has(&"sword/HeavyWindup") and played.has(&"sword/HeavyStrike") and is_equal_approx(anim.get_animation(&"sword/HeavyWindup").length, hero.combat.heavy_windup),
+			"heavy from the sword frames, wind-up as long as the rooted wind-up (%s)" % [played])
+	enemies[0].enemy_logic.current_state = 0
+	await create_timer(hero.combat.COMBAT_LINGER + 0.4).timeout
+	ck(not String(anim.current_animation).begins_with("sword/") and hero.get_node("Sprite2D").offset == Vector2.ZERO and not wv.pivot.visible,
+			"out of combat: base frames, offset back, the sword hidden (%s)" % anim.current_animation)
+	em.cycle_weapon(1)
+	await create_timer(0.3).timeout

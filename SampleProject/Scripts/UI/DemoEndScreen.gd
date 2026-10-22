@@ -27,8 +27,10 @@ func _ready() -> void:
 	# Блокуємо ввід гравця
 	_set_player_input_enabled(false)
 
-	# Показуємо екран з анімацією
+	# Показуємо екран з анімацією; фокус на кнопку — геймпад A / Enter (BACKLOG 24)
 	visible = true
+	if return_button:
+		return_button.grab_focus.call_deferred()
 	modulate.a = 0.0
 
 	# Анімація появи
