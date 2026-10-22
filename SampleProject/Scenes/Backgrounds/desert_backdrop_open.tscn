@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DesertOasis/bg4/plan5.png" id="plan5"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_far.tres" id="blur_far"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_mid.tres" id="blur_mid"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/drifting_clouds.tscn" id="drifting_clouds"]
 
 [node name="DesertBackdrop" type="Node2D"]
 z_index = -10
@@ -23,6 +24,7 @@ centered = false
 
 [node name="Plan4" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.1, 1)
+autoscroll = Vector2(-3, 0)
 repeat_size = Vector2(864, 0)
 repeat_times = 3
 
@@ -32,6 +34,8 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("plan4")
 centered = false
+
+[node name="DriftingClouds" parent="." instance=ExtResource("drifting_clouds")]
 
 [node name="Plan3" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.3, 1)

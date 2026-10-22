@@ -22,6 +22,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_chapel.png" id="chapel_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_front.png" id="front_tex"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(140, 200)
 
@@ -59,6 +61,12 @@ position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("city_near")
 centered = false
+
+[node name="Front" parent="." instance=ExtResource("front_plane")]
+
+[node name="Sprite" parent="Front" index="0"]
+position = Vector2(0, 40)
+texture = ExtResource("front_tex")
 
 [node name="TileMap" type="Node2D" parent="." unique_id=913459423]
 position = Vector2(0, -160)

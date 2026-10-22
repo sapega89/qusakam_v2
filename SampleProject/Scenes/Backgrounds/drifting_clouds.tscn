@@ -1,0 +1,53 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Clouds/gen_cloud_1.png" id="cloud_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Clouds/gen_cloud_2.png" id="cloud_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Clouds/gen_cloud_3.png" id="cloud_3"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_far.tres" id="blur_far"]
+
+[node name="DriftingClouds" type="Node2D"]
+
+[node name="Cloud1" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 1)
+repeat_size = Vector2(1728, 0)
+autoscroll = Vector2(-6, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Cloud1"]
+modulate = Color(1, 1, 1, 0.92)
+material = ExtResource("blur_far")
+texture_filter = 1
+position = Vector2(260, 34)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("cloud_1")
+centered = false
+
+[node name="Cloud2" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.12, 1)
+repeat_size = Vector2(1728, 0)
+autoscroll = Vector2(-9, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Cloud2"]
+modulate = Color(1, 1, 1, 0.85)
+material = ExtResource("blur_far")
+texture_filter = 1
+position = Vector2(1060, 10)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("cloud_2")
+centered = false
+
+[node name="Cloud3" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.2, 1)
+repeat_size = Vector2(1728, 0)
+autoscroll = Vector2(-4, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Cloud3"]
+modulate = Color(1, 1, 1, 0.9)
+material = ExtResource("blur_far")
+texture_filter = 1
+position = Vector2(700, 96)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("cloud_3")
+centered = false

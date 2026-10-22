@@ -12,6 +12,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_gates.png" id="11_hi60u"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/LabBoss.gd" id="12_labboss"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn" id="13_djinn"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
 
 [sub_resource type="RectangleShape2D" id="Shape_gates"]
 size = Vector2(32, 320)
@@ -106,6 +108,21 @@ texture = ExtResource("2_g67wm")
 centered = false
 region_enabled = true
 region_rect = Rect2(789.3333, 0, 128, 21.333334)
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Crystal1" parent="Decor" instance=ExtResource("decor_crystal")]
+position = Vector2(150, 384)
+
+[node name="Lamp1" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(1650, 384)
+frame = 1
+speed_scale = 0.9
+
+[node name="Crystal2" parent="Decor" instance=ExtResource("decor_crystal")]
+position = Vector2(860, 384)
+frame = 2
+speed_scale = 1.15
 
 [node name="RoomInstance" parent="." unique_id=1949025773 instance=ExtResource("2_room")]
 
