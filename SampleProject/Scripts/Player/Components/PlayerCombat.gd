@@ -258,8 +258,11 @@ func _physics_process(delta: float) -> void:
 func in_combat() -> bool:
 	return _in_combat
 
+## Кат-сцена, розмова, скриня (герой у event) чи поразка — не бій: він кінчається одразу, без COMBAT_LINGER (B116).
 func _track_combat(delta: float) -> void:
-	if state not in [State.READY, State.BLOCK] or _enemy_engaged():
+	if player.event or player.is_dead:
+		_combat_left = 0.0
+	elif state not in [State.READY, State.BLOCK] or _enemy_engaged():
 		_combat_left = COMBAT_LINGER
 	else:
 		_combat_left -= delta
