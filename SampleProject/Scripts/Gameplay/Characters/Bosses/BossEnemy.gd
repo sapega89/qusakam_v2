@@ -41,13 +41,13 @@ func _ready() -> void:
 ## Удари грають свої пози (telegraph, strike, combo); поза удару тримається, доки бос відновлюється (move.recovery).
 func _on_logic_state_changed(new_state: EnemyLogic.AIState) -> void:
 	super._on_logic_state_changed(new_state)
-	if new_state == EnemyLogic.AIState.ATTACK:
+	if new_state == EnemyLogic.AIState.ATTACK and not enemy_view.staggered:
 		anim_player.play(&"idle")
 
 
 func _on_logic_attack_ended() -> void:
 	super._on_logic_attack_ended()
-	if not is_dead and enemy_logic.current_state == EnemyLogic.AIState.ATTACK:
+	if not is_dead and not enemy_view.staggered and enemy_logic.current_state == EnemyLogic.AIState.ATTACK:
 		anim_player.play(&"idle")
 
 

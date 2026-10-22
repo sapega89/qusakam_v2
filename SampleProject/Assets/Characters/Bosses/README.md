@@ -12,5 +12,5 @@ palette per boss, the lowest pixel on row 107/108, facing right. A Steam release
 | `fire_djinn/sheet.png` (3 columns) | idle 0–1 · attack (claws) 3–5 · cast 6–7 · fly 9 · death 12–13 | the Laboratory boss: a fire djinn on a smoke-and-flame tail (D302) |
 
 Wired into `Scenes/Characters/Bosses/brass_collector.tscn` and `fire_djinn.tscn` (queue row 9.2, D316). `fire_djinn` death 12
-was redrawn (it read like idle) and both bosses got a 2-frame `stagger.png` (remaining_work Art 4, not wired yet) —
+was redrawn (it read like idle) and both bosses got a 2-frame `stagger.png` (remaining_work Art 4, played as the `stagger` animation) —
 see `brass_collector/README.md`, `fire_djinn/README.md`.

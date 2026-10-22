@@ -12,6 +12,9 @@ const EnemyTell := preload("res://SampleProject/Scripts/FX/EnemyTell.gd")
 const WINDUP_LEAN := 4.0
 ## Здригання від удару героя (4b «мало відчуття удару»): тіло стискається й відхиляється, за FLINCH_TIME вертається.
 const FLINCH_TIME := 0.16
+## Поза збою (D264, remaining_work Art 4): анімація «stagger» сцени ворога ставить Sprite2D свій stagger.png (дві
+## клітинки того ж розміру й якоря, що й sheet) і грає на весь збій; після нього вертається sheet ворога.
+const STAGGER := &"stagger"
 
 var enemy: CharacterBody2D = null
 var sprite2d: Sprite2D = null
@@ -21,6 +24,11 @@ var anim_player: AnimationPlayer = null
 var current_animation: String = "idle"
 var facing_direction: int = 1  # -1 left, 1 right
 var _base_scale := Vector2.ONE
+## Грає поза збою — інші анімації її не перебивають, доки DefaultEnemy не закінчить збій (end_stagger).
+var staggered := false
+var _sheet: Texture2D
+var _hframes := 1
+var _vframes := 1
 
 const STATE_ANIMATIONS := {
 	EnemyLogic.AIState.IDLE: "idle",
@@ -35,6 +43,9 @@ func initialize(enemy_node: CharacterBody2D) -> void:
 	sprite2d = enemy.get_node(^"Sprite2D")
 	anim_player = enemy.get_node(^"AnimationPlayer")
 	_base_scale = sprite2d.scale
+	_sheet = sprite2d.texture
+	_hframes = sprite2d.hframes
+	_vframes = sprite2d.vframes
 
 func update_state(new_state: EnemyLogic.AIState) -> void:
 	"""Оновлює анімацію на основі стану"""
@@ -42,6 +53,8 @@ func update_state(new_state: EnemyLogic.AIState) -> void:
 	if animation_name == current_animation:
 		return
 	current_animation = animation_name
+	if staggered:
+		return  # зіграє після збою
 	anim_player.play(animation_name)
 
 func update_direction(direction: int) -> void:
@@ -100,11 +113,34 @@ func flinch(from_side: float, push: float) -> void:
 	_lean.tween_property(sprite2d, ^"offset:x", 0.0, FLINCH_TIME)
 
 func on_attack_ended() -> void:
-	anim_player.speed_scale = 1.0
 	_offset_to(0.0, 0.06)
+	if staggered:
+		return  # серію зірвав збій — поза збою грає далі
+	anim_player.speed_scale = 1.0
 	# Повертаємося до анімації поточного стану
 	if current_animation != "attack":
 		anim_player.play(current_animation)
+
+## Чи є в ворога поза збою (кадри є не в усіх: лучник — ні, тоді лишається тінь STUN_TINT).
+func has_stagger_pose() -> bool:
+	return anim_player.has_animation(STAGGER)
+
+## Збій на [param duration] с: 2 кадри stagger.png розтягнуті на весь збій (кадр 1 «приголомшений» — з 30 %).
+func play_stagger(duration: float) -> void:
+	staggered = true
+	anim_player.speed_scale = anim_player.get_animation(STAGGER).length / duration
+	anim_player.play(STAGGER)
+	anim_player.seek(0.0, true)
+
+## Збій скінчився (або ворог помер): sheet назад, анімація стану (між ударами серії — idle).
+func end_stagger() -> void:
+	staggered = false
+	sprite2d.texture = _sheet
+	sprite2d.hframes = _hframes
+	sprite2d.vframes = _vframes
+	anim_player.speed_scale = 1.0
+	anim_player.play(&"idle" if current_animation == "attack" else StringName(current_animation))
+	anim_player.advance(0.0)
 
 func get_facing_direction() -> int:
 	return facing_direction

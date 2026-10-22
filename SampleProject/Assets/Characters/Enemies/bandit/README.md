@@ -12,5 +12,5 @@ for all frames, feet on row 56. A Steam release has to disclose AI-generated con
 `stagger.png` — **new (remaining_work Art 4)**, 128×64: two 64×64 cells made by `Scripts/Tools/comfy_art_fixes.py
 stagger_bandit` (same model, seed 2) from idle 0, colours from `sheet.png`, feet on row 56. 0 = knocked back, head
 jerked back, the scimitar arm flung up, stumbling on one foot; 1 = doubled over, head down, free hand on the stomach,
-scimitar tip on the ground. (A first frame 1, «hunched, knees buckling», came out as idle and was redrawn.) Not
-wired yet.
+scimitar tip on the ground. (A first frame 1, «hunched, knees buckling», came out as idle and was redrawn.) Wired: animation `stagger` of
+`default_enemy.tscn`, played for the whole stagger (D264, `EnemyView.play_stagger`).
