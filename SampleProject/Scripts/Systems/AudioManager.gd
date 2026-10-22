@@ -24,6 +24,8 @@ var rooms: Dictionary = {}
 var voices: Dictionary = {}
 ## Тип ворога → висота його голосу (tank нижчий, fast вищий).
 var enemy_voice_pitch: Dictionary = {}
+## Тип боса → {roar, shout, death}: події його голосу (D278, D310).
+var boss_voices: Dictionary = {}
 ## Події гри → звуки; сюди ж кличуть діалоги (бурмотіння) і NPC (привітання).
 @onready var hooks: Node = $SoundHooks
 ## Подія → Array[AudioStream], завантажені при старті: відсутній файл — помилка одразу, а не тиша в грі.
@@ -41,6 +43,7 @@ func _ready() -> void:
 	rooms = data.rooms
 	voices = data.voices
 	enemy_voice_pitch = data.enemy_voice_pitch
+	boss_voices = data.boss_voices
 	for event: String in events:
 		var list: Array[AudioStream] = []
 		for file: String in events[event].files:
@@ -87,6 +90,12 @@ func has_event(event: StringName) -> bool:
 
 
 ## Звук кімнати [param room_name] ({ambience, surface, interior}); кімнати без запису в таблиці — помилка.
+## Подія голосу боса [param kind] (roar, shout, death) за його enemy_type.
+func boss_voice(enemy_type: String, kind: String) -> StringName:
+	assert(boss_voices.has(enemy_type), "AudioManager: boss %s has no entry in sound_events.json → boss_voices" % enemy_type)
+	return StringName(boss_voices[enemy_type][kind])
+
+
 func room(room_name: String) -> Dictionary:
 	assert(rooms.has(room_name), "AudioManager: room %s has no entry in sound_events.json → rooms" % room_name)
 	return rooms[room_name]

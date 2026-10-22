@@ -124,6 +124,7 @@ func _on_hero_defeated() -> void:
 	cs.set_pose(&"Hurt")
 	var side := signf(djinn.global_position.x - player.global_position.x)
 	djinn.enemy_view.update_direction(-int(side) if side != 0.0 else -1)
+	cs.voice(&"fire_djinn_laugh")
 	await cs.move(djinn, Vector2(player.global_position.x + side * TAKE_CLOAK_GAP, djinn.global_position.y), TAKE_CLOAK_TIME)
 	await cs.say("Lab_Boss_TakesCloak")
 	cs.end()

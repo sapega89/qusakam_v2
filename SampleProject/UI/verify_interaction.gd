@@ -8,6 +8,7 @@ extends SceneTree
 
 const PROMPT_SCENE := "res://SampleProject/UI/Components/interaction_prompt.tscn"
 const PICKUP_SCENE := "res://SampleProject/Objects/ItemPickup.tscn"
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const MERCHANT_SCENE := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn"
 
 var fails: Array[String] = []
@@ -76,14 +77,21 @@ func _initialize() -> void:
 	var joy := InputEventJoypadButton.new()
 	joy.button_index = JOY_BUTTON_A
 	joy.pressed = true
-	prompt._input(joy)
+	InputGlyphs.note_event(joy)  # так кожен ввід бачить InputDeviceWatcher
 	ck(prompt.get_node("%Badge").texture == InteractionPrompt.BADGE_GAMEPAD, "gamepad input → Y badge (D156)")
 	var key := InputEventKey.new()
 	key.physical_keycode = KEY_W
 	key.pressed = true
-	prompt._input(key)
+	InputGlyphs.note_event(key)
 	ck(prompt.get_node("%Badge").texture == InteractionPrompt.BADGE_KEYBOARD, "keyboard input → E badge")
 	prompt.queue_free()
+	# Підказка, створена вже після переходу на геймпад (нова кімната), одразу показує Y — без нового вводу.
+	InputGlyphs.note_event(joy)
+	var later: InteractionPrompt = load(PROMPT_SCENE).instantiate()
+	root.add_child(later)
+	ck(later.get_node("%Badge").texture == InteractionPrompt.BADGE_GAMEPAD and later.is_using_gamepad(), "a prompt made after the switch shows Y at once")
+	later.queue_free()
+	InputGlyphs.note_event(key)
 
 	print("[4] `interact` input action (no hard-coded keys)")
 	ck(InputMap.has_action(&"interact"), "interact action exists")

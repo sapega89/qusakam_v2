@@ -28,13 +28,22 @@ func _ready() -> void:
 	add_to_group(&"combat_hud_top")
 	_menu_button.pressed.connect(_on_menu_pressed)
 	_was_paused = get_tree().paused
-	get_tree().process_frame.connect(_on_frame)
 	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 
 	if not EventBus.coins_changed.is_connected(_on_coins_changed):
 		EventBus.coins_changed.connect(_on_coins_changed)
 	_connect_objective.call_deferred()
 	_refresh_currency()
+
+
+## Кадр дерева — лише поки HUD у дереві: при зміні сцени (Resume з Game Over, вихід у меню) вузол уже вийнято,
+## а process_frame ще приходив — get_tree() == null, SCRIPT ERROR.
+func _enter_tree() -> void:
+	get_tree().process_frame.connect(_on_frame)
+
+
+func _exit_tree() -> void:
+	get_tree().process_frame.disconnect(_on_frame)
 
 
 ## Той самий сигнал, що слухав ObjectiveHUD.
