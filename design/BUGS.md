@@ -170,6 +170,10 @@ the history, this note keeps only what is open.
 - **Severity:** visual (balance) — fixing it re-tunes every fight (4b); needs Sapega's call on whether the stats' tempos are wanted
 - **Found:** 2026-10-22, `cloud/bow`
 
+> **Fixed log (2026-10-22, `cloud/code-fixes`):** B42 (Game.tscn's dangling ObjectiveHUD; `verify_scripts_compile`
+> now fails on any unused ext_resource) and B4 (the `or true` check in `verify_misc_modal`) — rows removed,
+> `git log --grep B42` / `--grep B4`.
+>
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
 > rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21
@@ -222,23 +226,6 @@ built*, not here.
 | P5 | No merchant and no blacksmith; should be placeholder cubes somewhere on the desert | ✅ **not a bug — known unbuilt work.** Both scenes exist and are tested but are placed **only in `Maps/City.tscn`**. This is **D81** in [[BACKLOG]] → "Merchant / Blacksmith on production maps". Desert placement was never done. |
 
 ---
-
-### B42 — `ObjectiveHUD.tscn` is loaded by `Game.tscn` and never added to the tree
-- **Seen again 2026-10-21** (`cloud/dialogue-ui`): the ext_resource `10_objective` is still in `Game.tscn`; `combat_hud_top` replaced it. Delete the line.
-- **Where:** `SampleProject/Game.tscn:15` —
-  `[ext_resource type="PackedScene" uid="uid://objectivehud001" path="res://SampleProject/Scenes/UI/ObjectiveHUD.tscn" id="10_objective"]`
-- **Screen:** [[figma_coverage]] §F — ObjectiveHUD is superseded by Quest Info Panel
-  `434:6580`, already implemented as `UI/Components/combat_hud_top.tscn`.
-- **Expected:** every declared `ext_resource` is used by a node in the same scene.
-- **Got:** `grep -c 'ExtResource("10_objective")' SampleProject/Game.tscn` = **0**.
-  The scene is parsed and loaded on every `Game.tscn` load and never instantiated.
-- **Evidence:** swept all 121 `.tscn` for this pattern; `10_objective` is the only
-  dangling `PackedScene` `ext_resource` in the project. It is also why a plain
-  path-grep reports `ObjectiveHUD.tscn` as used when it is not.
-- **Severity:** cosmetic — wasted load, no visible effect. Delete the line, and the
-  scene with it unless Q34's answer keeps it.
-- **Found:** 2026-09-29, scene inventory audit
-
 
 ### B19 — "Attack" row puts gamepad bindings in the keyboard columns, with two naming schemes
 - **Where:** Settings → Controls, Attack row (y≈598).
@@ -322,30 +309,6 @@ built*, not here.
   B7 needs. One migration closes both.
 - **Severity:** visual
 - **Found:** 2026-09-29, **reproduced visually.**
-
-### B4 — `verify_misc_modal.gd` asserts navigation by grepping source; one check cannot fail
-- **Where:** `SampleProject/UI/verify_misc_modal.gd:104, 111–120`
-- **Expected:** a test named "Tutorial destination still resolves" presses the
-  button and asserts where the player ends up.
-- **Got:** three of the four Misc destinations are never pressed.
-  - `:111–114` opens `game_menu.gd` with `FileAccess` and asserts
-    `menu_src.find("TutorialMenuScene") != -1` — a **string search of the source
-    file** — plus `ResourceLoader.exists(tutorial_path)`, a file-on-disk check.
-  - `:118` Exit asserts `ResourceLoader.exists("res://SampleProject/MainMenu.tscn")`.
-  - `:104` `ck(current_scene == null or true, "no scene change")` — `X or true`
-    is **always true**. The assertion is incapable of failing.
-- **Consequence:** [[BUGS]] **B2** (Tutorial unloads the game into a dead-end
-  stub) sits directly under a check called "tutorial route still wired" that
-  passes because the *string* is present. The suite cannot catch it, and never
-  could. Only `[5] Settings destination` actually drives the UI.
-- **Evidence:** run 2026-09-29, `RESULT: ALL PASS` (40 checks) on
-  `Godot_v4.6.2-stable_win64_console.exe`. Passing is the problem.
-- **Severity:** blocker — a green suite is the reason these shipped.
-- **Found:** 2026-09-29, **confirmed by running the script.**
-- **Note:** the test otherwise drives the real path (`ServiceLocator` →
-  `UIManager.open_game_menu()` → real modal layer), so its Settings result is
-  trustworthy. Fixing this means pressing the remaining three buttons and
-  asserting the destination, not adding more file-existence checks.
 
 ---
 

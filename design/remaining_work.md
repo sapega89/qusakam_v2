@@ -36,12 +36,12 @@ Written for Sapega («запиши, що треба зробити, в бекл�
 1. **Ukrainian voices are thin** — Piper "lada" x-low (16 kHz, one female voice pitched down for men). A better
    licence-clean Ukrainian voice (e.g. `uk_UA-ukrainian_tts-medium`, three speakers) lives on huggingface.co, which the
    cloud could not reach — check its model card licence from the laptop and regenerate (`Scripts/Tools/audio/make_voices_uk.py`).
-2. **Boss charge telegraph** — the bosses' glint sits on the bandit's weapon position; charges have no ground line (4b leftover).
-3. **Enemy attack cooldowns use the wall clock** (`EnemyLogic`/`BossLogic` `Time.get_ticks_msec`), so hitstop/slow-mo do
-   not delay the next attack (4b leftover).
-4. **verify_souls_combat [0]** fails about 1 run in 10 (3 stuck seconds vs a limit of 2) — tune or fix.
+2. ~~**Boss charge telegraph** — the bosses' glint sits on the bandit's weapon position; charges have no ground line (4b leftover).~~ — done 2026-10-22, D388 (`cloud/code-fixes`).
+3. ~~**Enemy attack cooldowns use the wall clock** (`EnemyLogic`/`BossLogic` `Time.get_ticks_msec`), so hitstop/slow-mo do
+   not delay the next attack (4b leftover).~~ — done 2026-10-22, D388.
+4. ~~**verify_souls_combat [0]** fails about 1 run in 10 (3 stuck seconds vs a limit of 2) — tune or fix.~~ — done 2026-10-22, D389 (a designed finisher stagger, not a lock; [0] now measures control).
 5. **Subclass at level 40 and prestige at 70** (D260) — only outlined in [[skill_trees_plan]].
-6. **Journal Characters page portraits; tutorial topic screenshots** (Game Menu batch leftovers).
+6. ~~**Journal Characters page portraits**~~ (done 2026-10-22, D391); **tutorial topic screenshots** (Game Menu batch leftovers).
 
 ## Sapega
 
