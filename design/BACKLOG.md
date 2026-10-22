@@ -103,7 +103,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
    all seven NPCs in the maps (Blacksmith, Merchant, Grandfather, three oath keepers, two gate guards) loop a generated
    activity with random rests and turn to the hero in their talk pose while talking; `verify_npc_activity.gd`.
 6. ~~**Boss**~~ — **done 2026-10-22** (D307, D310, queue row 9.8, `cloud/lab-9-8`, integration-4): both Laboratory bosses built, with their own voices. Generate the Laboratory boss ([[lab_boss_plan]]) → [[lab_story_plan]].
-7. **Foreground parallax** — below.
+7. ~~**Foreground parallax**~~ — **done 2026-10-22** (D392, `cloud/living-world`): one shared `foreground_plane.tscn`
+   in Village, Canyon, DesertRoad, CityGates, City and LaboratoryOutside.
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
    Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
    left, then the raid over black and the ridge lines; flags as before. [[cutscene_plan]] → "Built". ~~Open: no skip, HUD stays.~~ Done (D308).
@@ -154,7 +155,8 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     is the desert, the sky must be overhead (collision change: the ceiling band goes); add gate art — beautiful city
     gates with guards (generated); a cutscene when Kusakam approaches: bandits attack the gates (then the existing guard
     assist fight, D209).
-19. **A living world** (Sapega 2026-10-20): idle animations on decor (banners and cloth sway, grass and palm fronds
+19. **A living world** — **built 2026-10-22** (D392, `cloud/living-world`) except grass sway: there is no grass idle
+    sheet yet (an art item). Was (Sapega 2026-10-20): idle animations on decor (banners and cloth sway, grass and palm fronds
     move, lamps and crystals flicker, dust drifts…) and clouds that drift on their own and with parallax as the hero
     moves (Canyon HighClouds/gen_clouds and the other rooms' sky planes).
 20. ~~**Smoother hero animations; lighter jump dust**~~ — **done 2026-10-20 (D262):** Idle breathes over 4 keys, a jump plays Jump → Apex → Fall → Land, landing dust is 6 small wisps for 0.3 s. Was (Sapega 2026-10-20): the hero's animations must be smoother —
@@ -309,11 +311,6 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     what each point gives: Strength → physical damage, Agility → crit/dodge/attack speed, HP → max HP, Wisdom → SP, skill
     power, SP regen), respec together with skills (D282). Plan with item 43: `design/skill_screen_rework_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
-
-### Foreground parallax in every outdoor room
-Sapega 2026-10-20: «ще в план треба додати паралакс попереду». Only Village (`gen_front`) and Laboratory have a
-near/foreground plane; add one to Canyon, DesertRoad, CityGates, City, LaboratoryOutside — generated with
-`comfy_backdrop.py` (Village/gen_front is the model), depth blur, sparse so gameplay reads. After the terrain.
 
 ### Room story flow — one base class — [[code_review_2026-10-19]] §3.1
 - **Exists:** six copies of the same state flow (`_execute_step`, `_play_dialogue`, `advance_state`, `_complete_quest_for_dialogue`) in Canyon, Village, Laboratory, CityGates, DesertRoad, LaboratoryOutside; the "already done → advance" rule only as a comment (B66 came from a missed copy).

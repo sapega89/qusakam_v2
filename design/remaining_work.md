@@ -20,7 +20,8 @@ Written for Sapega («запиши, що треба зробити, в бекл�
 
 ## Art (needs ComfyUI on the laptop)
 
-1. **A5 — foreground parallax and a living world** (BACKLOG 7 + 19): a near plane for Canyon, DesertRoad, CityGates,
+1. ~~**A5 — foreground parallax and a living world**~~ — **wired 2026-10-22** (D392, `cloud/living-world`; open:
+   a grass idle sheet). Was (BACKLOG 7 + 19): a near plane for Canyon, DesertRoad, CityGates,
    City, LaboratoryOutside; decor idle frames (banners, palms, lamps, crystals); drifting clouds. Then a cloud task wires it.
 2. **A6 — own effects for the 18 new skills** (D279 leftover: they reuse recoloured Fire/Electric/Healing effects —
    Searing Hex reads dark red, Balanced Strike looks like Fire Strike). Then wiring.
