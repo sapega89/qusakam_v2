@@ -7,10 +7,9 @@ signal closed
 ## Екран налаштувань. Figma: settings-display 17:280, settings-audio 17:409,
 ## settings-gameplay 17:632, settings-controls 17:756.
 ##
-## Показуємо ТІЛЬКИ те, що має реальну підсистему. Рядки Figma без бекенду
-## (Screen Brightness, Ambient, Text Speed, Screen Shake) свідомо
-## відкладені — див. design/settings_mapping.md, D43–D48. Фейкових контролів тут немає.
-## Resolution і Frame Rate Limit — BACKLOG 41 (DisplayManager.RESOLUTIONS / FPS_LIMITS).
+## Показуємо ТІЛЬКИ те, що має реальну підсистему — фейкових контролів тут немає (design/settings_plan.md).
+## Resolution і Frame Rate Limit — BACKLOG 41 / D418 (DisplayManager.RESOLUTIONS / FPS_LIMITS); Screen Brightness —
+## D428, Ambient — D427, Text Speed — D425, Screen Shake — D426.
 ##
 ## Персистенс — існуючий: SaveSystem.settings_module + save_game_settings().
 ## Другої системи налаштувань не заводимо.
@@ -27,9 +26,9 @@ const TABS := [
 
 ## Підказка нижньої панелі для кожної вкладки — лише про реальні дії.
 const TAB_HINTS := {
-	"display": "Set the display mode, window size and frame rate limit.",
+	"display": "Set the display mode, window size, frame rate limit and screen brightness.",
 	"audio": "Adjust volume levels.",
-	"game": "Choose the interface language, whether hints open tutorial windows, whether damage numbers show and whether the game saves on every room change.",
+	"game": "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change.",
 	"controls": "Select an action to rebind it.",
 }
 
@@ -184,9 +183,10 @@ func _build_rows() -> void:
 			_add_segment_row("Display Mode", ["Windowed", "Fullscreen", "Borderless"],
 					DisplayManager.DISPLAY_MODES.find(String(_cfg_get("display_mode"))), _on_display_mode_changed)
 			_add_separator()
-			# BACKLOG 41: Fullscreen і Borderless завжди в рідній роздільності екрана — розмір вікна лише для Windowed.
+			# D418 / D420: Fullscreen і Borderless завжди в рідній роздільності екрана — розмір вікна лише для Windowed;
+			# у списку лише те, що вміщується в монітор (D429).
 			_add_stepper_row("Resolution", _resolution_names(),
-					DisplayManager.RESOLUTIONS.find(String(_cfg_get("resolution"))),
+					DisplayManager.available_resolutions().find(DisplayManager.fitted_resolution(String(_cfg_get("resolution")))),
 					_on_resolution_changed, _cfg_get("display_mode") == "windowed")
 			_add_separator()
 			_add_segment_row("VSync", ["Enable", "Disable"],
@@ -194,14 +194,30 @@ func _build_rows() -> void:
 			_add_separator()
 			_add_stepper_row("Frame Rate Limit", _fps_limit_names(),
 					DisplayManager.FPS_LIMITS.find(int(_cfg_get("fps_limit"))), _on_fps_limit_changed)
+			_add_separator()
+			# D428: гамма поверх світу й UI (DisplayManager); зразки DARK / BRIGHT — під рядком.
+			_add_slider_row("Screen Brightness", int(_cfg_get("brightness")), _on_brightness_changed,
+					UITokens.SETTINGS_CHOICE_ROW_HEIGHT)  # висота рядків вкладки Display
+			_add_brightness_preview()
 		"audio":
-			_add_slider_row("Master Volume", "master_volume")
+			_add_volume_row("Master Volume", "master_volume")
 			_add_separator()
-			_add_slider_row("Music", "music_volume")
+			_add_volume_row("Music", "music_volume")
 			_add_separator()
-			_add_slider_row("Sound Effects", "sfx_volume")
+			_add_volume_row("Sound Effects", "sfx_volume")
+			_add_separator()
+			_add_volume_row("Ambient", "ambient_volume")  # D427: шина Ambience
 		"game":
 			_add_language_row()
+			_add_separator()
+			# D425: Quick — текст діалогу й облачка вдвічі швидше.
+			_add_segment_row("Text Speed", ["Default", "Quick"],
+					SettingsModule.TEXT_SPEEDS.keys().find(String(_cfg_get("text_speed"))), _on_text_speed_changed)
+			_add_separator()
+			# Figma 17:632: Screen Shake одразу за Text Speed.
+			# D426: Off — камера не смикається від ударів і вибухів; вібрація геймпада лишається.
+			_add_segment_row("Screen Shake", ["On", "Off"],
+					0 if _cfg_get("screen_shake") else 1, _on_screen_shake_changed)
 			_add_separator()
 			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
 			_add_segment_row("Tutorial Windows", ["On", "Off"],
@@ -313,7 +329,7 @@ func _add_stepper_row(label_text: String, options: Array[String], selected: int,
 
 func _resolution_names() -> Array[String]:
 	var names: Array[String] = []
-	for value in DisplayManager.RESOLUTIONS:
+	for value in DisplayManager.available_resolutions():
 		names.append(value.replace("x", " × "))
 	return names
 
@@ -325,9 +341,15 @@ func _fps_limit_names() -> Array[String]:
 	return names
 
 
-## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100.
-func _add_slider_row(label_text: String, key: String) -> void:
-	var row := _make_row(label_text, UITokens.SETTINGS_SLIDER_ROW_HEIGHT)
+## Гучність шини: у налаштуваннях 0.0–1.0, на екрані 0–100.
+func _add_volume_row(label_text: String, key: String) -> void:
+	_add_slider_row(label_text, roundi(float(_cfg_get(key)) * 100.0), _on_volume_changed.bind(key))
+
+
+## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100. [param on_change] отримує ціле 0–100.
+func _add_slider_row(label_text: String, value: int, on_change: Callable,
+		height: int = UITokens.SETTINGS_SLIDER_ROW_HEIGHT) -> void:
+	var row := _make_row(label_text, height)
 	var group := HBoxContainer.new()
 	group.name = "Slider"
 	group.add_theme_constant_override("separation", UITokens.SPACE_LG)
@@ -347,7 +369,7 @@ func _add_slider_row(label_text: String, key: String) -> void:
 	slider.max_value = 100.0
 	slider.step = 1.0
 	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	slider.value = roundf(float(_cfg_get(key)) * 100.0)
+	slider.value = value
 	group.add_child(slider)
 
 	var plus := Button.new()
@@ -367,8 +389,55 @@ func _add_slider_row(label_text: String, key: String) -> void:
 
 	minus.pressed.connect(func() -> void: slider.value -= 5.0)
 	plus.pressed.connect(func() -> void: slider.value += 5.0)
-	slider.value_changed.connect(_on_volume_changed.bind(key, readout))
+	slider.value_changed.connect(func(v: float) -> void:
+		readout.text = str(int(v))
+		on_change.call(int(v)))
 	row.add_child(group)
+
+
+## D428: зразки під Screen Brightness — компас на чорному (DARK) і на білому (BRIGHT). Вони під тим самим
+## шаром яскравості, що й уся гра, тож показують її наживо: добра яскравість — видно обидва компаси.
+func _add_brightness_preview() -> void:
+	# Не MarginContainer: це не рядок налаштування (тести рядків рахують саме MarginContainer).
+	var swatches := HBoxContainer.new()
+	swatches.name = "BrightnessPreview"
+	swatches.alignment = BoxContainer.ALIGNMENT_END
+	swatches.add_theme_constant_override("separation", UITokens.SPACE_LG)
+	for spec in [["Dark", "DARK", UITokens.SETTINGS_PREVIEW_DARK_BG, UITokens.SETTINGS_PREVIEW_DARK_MARK],
+			["Bright", "BRIGHT", UITokens.SETTINGS_PREVIEW_BRIGHT_BG, UITokens.SETTINGS_PREVIEW_BRIGHT_MARK]]:
+		var column := VBoxContainer.new()
+		column.name = spec[0]
+		column.add_theme_constant_override("separation", UITokens.SPACE_XS)
+		var swatch := PanelContainer.new()
+		swatch.name = "Swatch"
+		swatch.custom_minimum_size = UITokens.SETTINGS_PREVIEW_SIZE
+		var fill := StyleBoxFlat.new()
+		fill.bg_color = spec[2]
+		fill.border_color = UITokens.BORDER
+		fill.set_border_width_all(UITokens.BORDER_WIDTH)
+		swatch.add_theme_stylebox_override("panel", fill)
+		var compass := TextureRect.new()
+		compass.name = "Compass"
+		compass.texture = _icon("compass")
+		compass.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_PREVIEW_ICON
+		compass.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		compass.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		compass.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		compass.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		compass.modulate = spec[3]
+		swatch.add_child(compass)
+		column.add_child(swatch)
+		var caption := Label.new()
+		caption.name = "Caption"
+		caption.text = spec[1]
+		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		caption.theme_type_variation = &"SettingsEyebrow"
+		column.add_child(caption)
+		swatches.add_child(column)
+	var pad := Control.new()  # правий відступ рядків, як у _make_row
+	pad.custom_minimum_size.x = UITokens.SETTINGS_ROW_PAD_H - UITokens.SPACE_LG
+	swatches.add_child(pad)
+	_list.add_child(swatches)
 
 
 ## Мови беремо з LocalizationManager — жодних вигаданих локалей.
@@ -399,13 +468,30 @@ func _on_display_mode_changed(index: int) -> void:
 
 
 func _on_resolution_changed(index: int) -> void:
-	_cfg_set("resolution", DisplayManager.RESOLUTIONS[index])
+	_cfg_set("resolution", DisplayManager.available_resolutions()[index])
 	_apply_and_save()
 
 
 func _on_fps_limit_changed(index: int) -> void:
 	_cfg_set("fps_limit", DisplayManager.FPS_LIMITS[index])
 	_apply_and_save()
+
+
+func _on_brightness_changed(value: int) -> void:
+	_cfg_set("brightness", value)
+	_apply_and_save()
+
+
+func _on_text_speed_changed(index: int) -> void:
+	_cfg_set("text_speed", SettingsModule.TEXT_SPEEDS.keys()[index])
+	_apply_and_save()
+	_rebuild_list()
+
+
+func _on_screen_shake_changed(index: int) -> void:
+	_cfg_set("screen_shake", index == 0)
+	_apply_and_save()
+	_rebuild_list()
 
 
 func _on_tutorial_windows_changed(index: int) -> void:
@@ -432,8 +518,7 @@ func _on_vsync_changed(index: int) -> void:
 	_rebuild_list()
 
 
-func _on_volume_changed(value: float, key: String, readout: Label) -> void:
-	readout.text = str(int(value))
+func _on_volume_changed(value: int, key: String) -> void:
 	if _suppress_write:
 		return
 	_cfg_set(key, clampf(value / 100.0, 0.0, 1.0))

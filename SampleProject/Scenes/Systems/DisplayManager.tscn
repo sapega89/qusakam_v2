@@ -1,7 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://display_manager_tscn"]
+[gd_scene load_steps=4 format=3 uid="uid://display_manager_tscn"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Systems/DisplayManager.gd" id="1_display_manager"]
+[ext_resource type="Shader" path="res://SampleProject/Shaders/brightness.gdshader" id="2_brightness"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_brightness"]
+shader = ExtResource("2_brightness")
+shader_parameter/gamma = 1.0
 
 [node name="DisplayManager" type="Node"]
 script = ExtResource("1_display_manager")
 
+[node name="BrightnessLayer" type="CanvasLayer" parent="."]
+layer = 127
+
+[node name="Brightness" type="ColorRect" parent="BrightnessLayer"]
+unique_name_in_owner = true
+visible = false
+material = SubResource("ShaderMaterial_brightness")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

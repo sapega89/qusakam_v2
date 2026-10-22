@@ -3,25 +3,18 @@ extends SceneTree
 ## Самоперевірка екрана Settings (Phase 5.13).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_settings.gd
 ##
-## Показуємо лише підтримувані налаштування; відкладені рядки Figma
-## (Screen Brightness, Ambient, Text Speed, Screen Shake) не мають бути
-## на екрані взагалі; Damage Numbers (D66) — verify_damage_numbers.gd. Resolution / Frame Rate Limit (BACKLOG 41) — verify_settings_graphics.gd.
+## Показуємо лише підтримувані налаштування; кожен рядок Figma тепер має свою систему (settings-2:
+## Screen Brightness D428, Ambient D427, Text Speed D425, Screen Shake D426 — [3], [22]);
+## Damage Numbers (D66) — verify_damage_numbers.gd. Resolution / Frame Rate Limit (BACKLOG 41) — verify_settings_graphics.gd.
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
 	if not ok: fails.append(label)
 
-const DEFERRED := ["Brightness", "Ambient",
-	"Text Speed", "Screen Shake"]
-
-
-func _labels(node: Node, out: Array) -> Array:
-	if node is Label:
-		out.append((node as Label).text)
-	for child in node.get_children():
-		_labels(child, out)
-	return out
+## Колись відкладені рядки Figma (settings_mapping.md) — тепер на своїх вкладках.
+const ONCE_DEFERRED := {"Screen Brightness": "display", "Ambient": "audio",
+	"Text Speed": "game", "Screen Shake": "game"}
 
 
 func _row(opts: Node, title: String) -> Node:
@@ -155,19 +148,11 @@ func _initialize() -> void:
 	for t in opts.TABS: ids.append(t.id)
 	ck(ids == ["display", "audio", "game", "controls"], "four tabs: %s" % str(ids))
 
-	print("[3] deferred Figma rows are absent everywhere")
-	var seen: Array = []
-	for tab in ids:
-		opts.switch_to_tab(tab)
+	print("[3] the once-deferred Figma rows are on their tabs (settings-2)")
+	for title in ONCE_DEFERRED:
+		opts.switch_to_tab(ONCE_DEFERRED[title])
 		for i in 3: await process_frame
-		_labels(opts, seen)
-	var leaked: Array = []
-	for term in DEFERRED:
-		for text in seen:
-			if String(text).findn(term) >= 0:
-				leaked.append(term)
-				break
-	ck(leaked.is_empty(), "no deferred rows rendered (leaked: %s)" % str(leaked))
+		ck(_row(opts, title) != null, "%s row on the %s tab" % [title, ONCE_DEFERRED[title]])
 
 	print("[4] audio rows bind to the real settings module")
 	opts.switch_to_tab("audio")
@@ -590,15 +575,34 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	_row(opts, "Frame Rate Limit").get_node(^"Stepper/Next").pressed.emit()
 	await process_frame
 	ck(module.settings["fps_limit"] == 120 and Engine.max_fps == 120, "Frame Rate Limit 120 applied (%d)" % Engine.max_fps)
+	# D428: одна гамма поверх світу й UI — шар DisplayManager, не сцена.
+	var overlay: ColorRect = display.get_node(^"%Brightness")
+	ck(not overlay.visible, "Brightness 50: no overlay drawn")
+	ck((overlay.get_parent() as CanvasLayer).layer > 100, "brightness layer above HUD, menus and transitions")
+	_row(opts, "Screen Brightness").get_node(^"Slider/Value").value = 80.0
+	await process_frame
+	var gamma: float = (overlay.material as ShaderMaterial).get_shader_parameter(&"gamma")
+	ck(module.settings["brightness"] == 80 and display.brightness == 80 and overlay.visible
+			and absf(gamma - pow(2.0, 0.6)) < 0.001, "Brightness 80 stored and applied (gamma %.3f)" % gamma)
+	var preview: Node = opts._list.find_child("BrightnessPreview", true, false)
+	var captions: Array = []
+	for column in ["Dark", "Bright"]:
+		var caption: Label = preview.get_node_or_null(NodePath(column + "/Caption")) if preview else null
+		var compass: TextureRect = preview.get_node_or_null(NodePath(column + "/Swatch/Compass")) if preview else null
+		captions.append("%s:%s" % [caption.text if caption else "-", compass != null and compass.texture != null])
+	ck(captions == ["DARK:true", "BRIGHT:true"], "DARK / BRIGHT preview swatches with the compass (%s)" % str(captions))
 
 	opts.switch_to_tab("audio")
 	for i in 3: await process_frame
-	var volumes := {"Master Volume": 30.0, "Music": 20.0, "Sound Effects": 10.0}
+	var volumes := {"Master Volume": 30.0, "Music": 20.0, "Sound Effects": 10.0, "Ambient": 40.0}
 	for title in volumes:
 		_row(opts, title).get_node(^"Slider/Value").value = volumes[title]
 	for i in 3: await process_frame
 	ck(absf(audio.get_master_volume() - 0.3) < 0.02 and absf(audio.get_music_volume() - 0.2) < 0.02
 			and absf(audio.get_sfx_volume() - 0.1) < 0.02, "three volumes applied to their buses")
+	var ambience: int = AudioServer.get_bus_index(&"Ambience")
+	ck(absf(audio.get_ambient_volume() - 0.4) < 0.02 and absf(float(module.settings["ambient_volume"]) - 0.4) < 0.01
+			and AudioServer.get_bus_volume_db(ambience) < -6.0 - 7.0, "Ambient 40 on the Ambience bus, under its −6 dB mix (D427)")
 
 	opts.switch_to_tab("game")
 	for i in 3: await process_frame
@@ -611,6 +615,20 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	for i in 3: await process_frame
 	_press_at(opts, "Damage Numbers", 1)
 	for i in 3: await process_frame
+	ck(module.settings["text_speed"] == "default" and module.settings["screen_shake"] == true,
+			"Text Speed Default and Screen Shake On by default")
+	var box_rate: Array[int] = [_typed_in_one_second()]
+	_press_at(opts, "Text Speed", 1)
+	for i in 3: await process_frame
+	box_rate.append(_typed_in_one_second())
+	ck(module.settings["text_speed"] == "quick" and box_rate == [24, 48],
+			"Text Speed Quick: the dialogue box types 48 letters/s, not 24 (%s)" % str(box_rate))
+	ck(is_equal_approx(SPEECH_BUBBLE.seconds_for("x".repeat(40)) / module.text_speed_factor(), 2.0),
+			"Text Speed Quick: a 40-letter cloud line holds 2 s, not 4 s (D178 / D425)")
+	ck(await _camera_kicks(), "Screen Shake On: a hit kicks the camera")
+	_press_at(opts, "Screen Shake", 1)
+	for i in 3: await process_frame
+	ck(module.settings["screen_shake"] == false and not await _camera_kicks(), "Screen Shake Off: no camera kick (D426)")
 	ck(_row(opts, "Auto-Save") != null, "Auto-Save row present (D413)")
 	ck(module.settings["auto_save"] == false, "Auto-Save is Off by default")
 	_press_at(opts, "Auto-Save", 0)
@@ -638,7 +656,10 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	ck(module.settings == changed, "every key comes back from the settings file")
 	ck(display.display_mode == "fullscreen" and display.resolution == Vector2i(2560, 1440) and Engine.max_fps == 120
 			and vsync_seen.back() == false, "display rows re-applied after the reload")
-	ck(absf(audio.get_music_volume() - 0.2) < 0.02, "volumes re-applied after the reload")
+	ck(absf(audio.get_music_volume() - 0.2) < 0.02 and absf(audio.get_ambient_volume() - 0.4) < 0.02,
+			"volumes re-applied after the reload")
+	ck(display.brightness == 80 and display.get_node(^"%Brightness").visible, "brightness re-applied after the reload")
+	ck(_typed_in_one_second() == 48 and not await _camera_kicks(), "Text Speed Quick and Screen Shake Off act after the reload")
 	ck(TranslationServer.get_locale().begins_with(lang), "language re-applied after the reload")
 	opts.switch_to_tab("game")
 	for i in 3: await process_frame
@@ -654,12 +675,51 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 			and absf(audio.get_music_volume() - float(module.default_settings["music_volume"])) < 0.02
 			and absf(audio.get_sfx_volume() - float(module.default_settings["sfx_volume"])) < 0.02, "volume defaults applied")
 	ck(TranslationServer.get_locale().begins_with(String(module.default_settings["language"])), "default language applied")
+	ck(absf(audio.get_ambient_volume() - 1.0) < 0.01 and display.brightness == 50
+			and not display.get_node(^"%Brightness").visible, "Ambient 100 and Brightness 50 restored")
+	ck(_typed_in_one_second() == 24 and await _camera_kicks(), "Text Speed Default and Screen Shake On restored")
 	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(save_system.get_settings_path()))
 	ck(on_disk == module.default_settings, "defaults written to the settings file")
 	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
 	save_system._on_room_entered("probe")
 	ck(str_to_var(FileAccess.get_file_as_string(slot_path))["current_room"] == ":test", "Auto-Save Off: a room change saves nothing")
 	module.settings["tutorial_windows"] = false  # D289: решта тесту — без вікон туторіалу
+
+
+const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")
+## load(), не preload: GameDialogueBox.gd читає автолоад SaveSystem, а скрипт тесту компілюється ще до автолоадів.
+const DIALOGUE_BOX := "res://SampleProject/Scenes/UI/dialogue_box.tscn"
+
+
+## Скільки літер вікно діалогу гри набирає за 1 с (D254 / D425) — окремий екземпляр, годинник крутить тест.
+func _typed_in_one_second() -> int:
+	var box: Node = (load(DIALOGUE_BOX) as PackedScene).instantiate()
+	root.add_child(box)
+	box.set_process(false)
+	box.settings.letters_per_second = 24.0  # як у dialogue_box_settings.tres (аддон міг лишити тег [speed])
+	box.text = "x".repeat(200)
+	box.start_progressing(0)
+	box._process(1.01)  # трохи понад 1 с: сума кроків 1/48 с з плаваючою комою недобирає останню літеру
+	var typed: int = box._text.visible_characters
+	box.free()
+	return typed
+
+
+## D426: чи зсуває VFXHooks._kick_camera камеру гри (кік триває KICK_TIME).
+func _camera_kicks() -> bool:
+	var camera: Camera2D = root.get_viewport().get_camera_2d()
+	var pause_mode: Node.ProcessMode = camera.process_mode
+	camera.process_mode = Node.PROCESS_MODE_ALWAYS  # меню паузи відкрите — твін камери інакше стоїть
+	camera.offset = Vector2.ZERO
+	root.get_node("GameManager/VFXHooks")._kick_camera(Vector2.RIGHT, 8.0)
+	var moved := false
+	for i in 4:
+		await process_frame
+		moved = moved or camera.offset != Vector2.ZERO
+	for i in 20: await process_frame  # кік догасає (KICK_TIME)
+	camera.process_mode = pause_mode
+	camera.offset = Vector2.ZERO
+	return moved
 
 
 func _binding_cells(list: Node, title: String) -> Array:

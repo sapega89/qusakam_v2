@@ -134,8 +134,10 @@ func attach_camera() -> void:
 	camera.reset_smoothing()
 
 
-## Трусить камеру [param seconds] с з силою [param strength] px (вибух, землетрус).
+## Трусить камеру [param seconds] с з силою [param strength] px (вибух, землетрус). Screen Shake Off — ні (D426).
 func shake(strength: float, seconds: float) -> void:
+	if not SaveSystem.settings_module.screen_shake_enabled():
+		return
 	if _shake and _shake.is_valid():
 		_shake.kill()
 	_shake = _tree.create_tween()

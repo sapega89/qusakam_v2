@@ -12,6 +12,12 @@ extends DQDialogueBox
 ## мовця — праворуч; портрети — у персонажах dialogue_quest/characters (Scripts/Tools/build_portraits.gd).
 
 
+## D425: Settings → Text Speed. Аддон набирає літери за settings.letters_per_second (24, D254; теги [speed] у .dqd
+## теж міняють саме його) — Quick лише пришвидшує годинник набору, тож і теги [speed] лишаються пропорційними.
+func _process(delta: float) -> void:
+	super._process(delta * SaveSystem.settings_module.text_speed_factor())
+
+
 func accept() -> void:
 	if not is_finished():
 		return

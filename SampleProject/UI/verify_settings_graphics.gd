@@ -55,7 +55,7 @@ func _initialize() -> void:
 	for margin in opts._list.get_children():
 		if margin is MarginContainer:
 			order.append(String(margin.get_child(0).name))
-	ck(order == ["Display Mode", "Resolution", "VSync", "Frame Rate Limit"], "rows: %s" % str(order))
+	ck(order == ["Display Mode", "Resolution", "VSync", "Frame Rate Limit", "Screen Brightness"], "rows: %s" % str(order))
 	var res_value: Label = _stepper(opts, "Resolution", "Value")
 	var fps_value: Label = _stepper(opts, "Frame Rate Limit", "Value")
 	ck(res_value != null and res_value.text == "1920 × 1080", "Resolution shows 1920 × 1080")
@@ -139,6 +139,15 @@ func _initialize() -> void:
 	print("[7] option lists are the BACKLOG 41 values")
 	ck(display.RESOLUTIONS == ["1280x720", "1600x900", "1920x1080", "2560x1440"], "resolution list")
 	ck(display.FPS_LIMITS == [30, 60, 120, 144, 0], "FPS list")
+
+	print("[8] D418 / D429: the list is cut to what the monitor fits")
+	ck(display.resolutions_for_screen(Vector2i(2560, 1440)) == display.RESOLUTIONS, "2560×1440 monitor: all four")
+	ck(display.resolutions_for_screen(Vector2i(1920, 1080)) == ["1280x720", "1600x900", "1920x1080"],
+			"1920×1080 monitor: no 2560×1440")
+	ck(display.resolutions_for_screen(Vector2i(1366, 768)) == ["1280x720"], "1366×768 monitor: 1280×720 only")
+	ck(display.resolutions_for_screen(Vector2i(1024, 768)) == ["1280x720"], "a monitor under 720p still gets the smallest")
+	ck(display.available_resolutions() == (display.RESOLUTIONS if DisplayServer.get_name() == "headless"
+			else display.resolutions_for_screen(DisplayServer.screen_get_size())), "the row lists this screen's sizes")
 
 	DirAccess.remove_absolute(settings_path)
 	_done()
