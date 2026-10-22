@@ -12,6 +12,8 @@ extends Node2D
 ##   важкий удар — зброя над головою на замаху, удар згори донизу; голі руки — кулак з «вибухом».
 ## Пози тіла без удару (блок, збій, замах важкого) ставить _process за станом бою.
 ## Розмітка — Player.tscn → WeaponMount (Pivot / OffPivot).
+## Тип зброї зі своїми кадрами героя (BACKLOG 42, бібліотека анімацій Player.tscn з іменем категорії, зараз — sword):
+## зброя намальована в кадрі, цей спрайт схований, поки грає анімація з тієї бібліотеки.
 
 const TEXTURE := "res://SampleProject/Assets/Weapons/%s.png"
 const SLASH_TRAIL_SCENE := preload("res://SampleProject/Scenes/FX/SlashTrail.tscn")
@@ -74,6 +76,7 @@ const SMEAR_SCALE := 1.3
 @onready var off_pivot: Node2D = $OffPivot
 @onready var off_sprite: Sprite2D = $OffPivot/OffWeapon
 var _category: String = ""
+var _grip: StringName = &"bare"
 var _dual: bool = false
 var _tween: Tween
 ## Зброю сховано — не видно (поза боєм, D268).
@@ -97,7 +100,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
 	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
-	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm()
+	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not _drawn_in_frame()
 	off_pivot.visible = _dual and pivot.visible
 	if _tween and _tween.is_running():
 		return
@@ -109,9 +112,25 @@ func _open_palm() -> bool:
 	return String(player.animation).begins_with("Cast") and not CAST_POSES.has(player.animation)
 
 
+## Бібліотека кадрів героя для зброї в руці (BACKLOG 42): ім'я категорії, коли зброя дістана (бій або удар),
+## хват одноручний і в AnimationPlayer героя є така бібліотека; інакше &"" — базові кадри й цей спрайт.
+func body_library() -> StringName:
+	if not visible or _grip != &"one_handed" or (sheathed and not player.combat.is_attacking):
+		return &""
+	var library := StringName(_category)
+	return library if player.get_node(^"AnimationPlayer").has_animation_library(library) else &""
+
+
+## Зараз грає анімація з кадрів зброї — зброя вже намальована в кадрі.
+func _drawn_in_frame() -> bool:
+	var library: StringName = body_library()
+	return library != &"" and String(player.get_node(^"AnimationPlayer").current_animation).begins_with(String(library) + "/")
+
+
 func _refresh() -> void:
 	var equipment := ServiceLocator.get_equipment_manager()
 	var item: Dictionary = equipment.get_weapon_item_in_hand()
+	_grip = equipment.get_grip()
 	visible = not item.is_empty()
 	if not visible:
 		return

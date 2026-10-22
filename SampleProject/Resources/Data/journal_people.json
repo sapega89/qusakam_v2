@@ -72,17 +72,20 @@
 		{
 			"id": "Алісия",
 			"title": "Hunter",
-			"text": "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
+			"text": "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue.",
+			"lore": "design/lore.md#Алісія"
 		},
 		{
 			"id": "Астрит",
 			"title": "Warrior-thaumaturge",
-			"text": "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire."
+			"text": "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire.",
+			"lore": "design/lore.md#Астрит"
 		},
 		{
 			"id": "Уризен",
 			"title": "Cleric of the god of contracts",
-			"text": "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign."
+			"text": "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign.",
+			"lore": "design/lore.md#Уризен"
 		}
 	]
 }

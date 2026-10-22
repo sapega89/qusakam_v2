@@ -84,9 +84,9 @@ func _setup_bottom_bar() -> void:
 	var bar = base_menu.get_node("BottomBar")
 	bar.set_default_hint(tr("Select an item."))
 	bar.set_actions([
-		{"key": "L/R", "label": tr("Switch Category")},
-		{"key": "A", "label": tr("Confirm")},
-		{"key": "B", "label": tr("Back")},
+		{"action": [&"menu_prev_tab", &"menu_next_tab"], "label": tr("Switch Category")},
+		{"action": &"ui_accept", "label": tr("Confirm")},
+		{"action": &"ui_cancel", "label": tr("Back")},
 	])
 
 

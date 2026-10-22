@@ -134,7 +134,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
-17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — *cells cutscene, wake, acquaintance, Малік and the assists done 2026-10-21 (D304, D305, queue row 9.5); boss hall done (D307); the corridors (9.6) and voices / demo end (9.8) are left* — replaces the current three-storey companion talks:
+17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — *cells cutscene, wake, acquaintance, Малік and the assists done 2026-10-21 (D304, D305, queue row 9.5); boss hall done (D307); the mob corridors done 2026-10-22 (D306, queue row 9.6, integration-3); voices / demo end (9.8) are left* — replaces the current three-storey companion talks:
     - Kusakam and his future team are on **one floor**: a room with an operating table and cells; everyone is behind bars.
     - Cutscene: Алісия is led to the operating table and injected; then an unknown prisoner who looks like a bandit is
       led in — he shouts and an evil boss bursts out of him, **a fire djinn**, and flees; explosions, an earthquake,
@@ -190,7 +190,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     generated watchtower / wagon / shrine; XP curve (`xp_curve.json`) and rewards (`EnemyStats.xp_reward`) in data —
     level 2 on the road, 5 on the last City Gates kill (`verify_xp_curve`, `verify_road_sections`); level and XP now
     survive a save (B79). **Laboratory part — open**, with items 16 + 17 (queue row 9; outline in the plan).
-24. **Every action works on a gamepad** (Sapega 2026-10-20 «кожна дія дублюється на джойстику — це важливо, будуть
+24. ~~**Every action works on a gamepad**~~ — **done 2026-10-22** (D346–D348, B97–B101, `cloud/weapon-gamepad`, integration-3; `verify_gamepad_parity`). *Left: `interaction_prompt.gd` keeps fixed E/Y textures (remaps not shown), the prologue "Press any key", the inventory tooltip wording, no LB/RB between top-level Game Menu tabs.* (Sapega 2026-10-20 «кожна дія дублюється на джойстику — це важливо, будуть
     тестувати на джойстику»): every keyboard/mouse action — movement, combat, skills, calling companions (F), menus and
     every Game Menu screen, dialogue, tutorial windows, the Skills learn (B77), inventory actions, map — has a gamepad
     binding in the InputMap and is reachable with focus navigation only. Hints name the gamepad button when a pad is in
@@ -228,13 +228,13 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     (D289 windows); clear on-screen goals (where to go next), readable enemy tells (4b), the hotbar/skills explained when
     they unlock, a Controls page in the menu. Plan first (what a new player sees in the first 10 minutes, step by step);
     then a playtest checklist for Sapega's coworkers. High priority — right after 4b and 8d.
-29. **Buildings for every trade NPC** (Sapega 2026-10-21, after D292 «будівлі тепер треба і для наших NPC професій»): the
+29. ~~**Buildings for every trade NPC**~~ — **done 2026-10-22** (D341, `cloud/buildings`, integration-3). (Sapega 2026-10-21, after D292 «будівлі тепер треба і для наших NPC професій»): the
     oath keepers get theirs in the City — a small sky chapel (priest), a witch's hut with herbs (witch), a dervish tent
     (dervish) — generated like the shop and the forge (D292); others that work somewhere (the grandfather's house in the
     Village) too. Each NPC works at/in front of its building (D295).
 30. **Effects polish** (Sapega 2026-10-21 on D273 «вже краще, але є над чим працювати»): a later pass over the generated
     swing, hit and skill effects — collect Sapega's notes first.
-31. **Every text in two languages: English and Ukrainian** (Sapega 2026-10-21 «всі тексти мають мати дві мови і перевірити,
+31. **Every text in two languages: English and Ukrainian** — *part 1 (every UI string, the Language switch, `verify_locale`) done 2026-10-22 (D349–D352, `cloud/localization-1`, integration-3); left: part 2 data JSON + character names + English `.dqd` twins (D353, [[localization_plan]] §4), part 3 voices* (Sapega 2026-10-21 «всі тексти мають мати дві мови і перевірити,
     що на англійській версії немає кирилиці, щоб не було помилок, і так само на українській не повинно бути англійських
     текстів — окрім кнопок; назви вкладок теж мають бути перекладені»). Today: `SampleProject/Resources/Translations/en.po`,
     `uk.po` exist (partial), a few scripts call `tr()`, `.dqd` dialogue is Ukrainian, UI/data text mostly English. Needed:
@@ -254,7 +254,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     pose, generated from his artist frames), then the obtained-item modal. Also: **a modal when someone gives you items**
     (the grandfather's gift, quest rewards — today only pickups show it) and **show what you picked up from a mob** (a
     small loot feed / toast on the HUD).
-34. **Companion lore stubs** (Q51): Астрит, Алісія, Уризен each get a separate description in `lore.md` (stubs marked
+34. **Companion lore stubs** (Q51) — *stubs done 2026-10-22 (D343, `cloud/buildings`, integration-3); left: the Journal UI pages for character lore from Figma*: Астрит, Алісія, Уризен each get a separate description in `lore.md` (stubs marked
     [ЗАГЛУШКА]) — Sapega takes them to the characters' creators. Figma has the Journal UI for character lore and city
     flags — build those pages from Figma (ui-screen-pipeline) on top of D290.
 35. ~~**NPC chatter in speech clouds**~~ — **route built 2026-10-21** (D338, `cloud/settings-cleanup`); no lines yet (Q67). (Q48): ambient NPC lines use the D263 cloud, not the box.
@@ -262,7 +262,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     player knows who she is; name colours don't matter.
 37. ~~**Objective plaque**~~ — **done 2026-10-21** (D322, `cloud/dialogue-ui`). (Q39): the 'Return to the village'-style objective also in the Journal list; the HUD plaque fades
     out after a few seconds and shows again after leaving a menu.
-38. **Village centre** (Q59): a separate house at the end of the Village — an interior room like the Mayor Hall (the
+38. ~~**Village centre**~~ (Q59) — **done 2026-10-22** (D342, `cloud/buildings`, integration-3). *Left: elder art (two views) + his lines, then swap `village_elder.tscn`'s sheet; Q58's one-cell Village reshape is not done.*: a separate house at the end of the Village — an interior room like the Mayor Hall (the
     village elder's house). The Village stays one cell high (Q58).
 39. ~~**Cleanup**~~ — **done 2026-10-21** (D337, `cloud/settings-cleanup`; the orphan world-object scenes stay as a parts bin): delete `Maps/Legacy` (18 maps, Q34) and the ranged stubs (`EnemyRanged.gd`, `player_projectile.tscn`).
 40. **Ranged weapons** (Q35, Sapega «стрільба з лука має бути як в грі Skul»): bows for the hero and ranged enemies;
@@ -273,7 +273,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** — ✅ recorded as
     **D317**, B rows deleted 2026-10-21. **One selection look in every menu** (Q33 ✅): the focused/selected row styled the same everywhere
     (theme tokens, ui-theme-tokens skill).
-42. **Kusakam animated holding each weapon** (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
+42. **Kusakam animated holding each weapon** — *sword frames wired 2026-10-22 (D344, D345, `cloud/weapon-gamepad`, integration-3, [[hero_weapon_animation_plan]]); left: dagger / mace / halberd libraries (art landed on `feature/backlog`), palette swap, dual-wield, bare hands* (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
     анімацію, як він тримає меч, і анімацію, як він тримає інші типи зброї»). Today the weapon is a separate sprite
     (`WeaponView`, D268) pinned to measured hand points on the artist frames, hidden out of combat. Needed: full-body hero
     frames per weapon grip — sword/axe one-handed, dagger, mace, halberd two-handed, dual-wield, bare hands — for combat

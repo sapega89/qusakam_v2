@@ -1,13 +1,14 @@
-# Ukrainian translations
-# Copyright (C) 2024
+# Kusakam — Ukrainian (BACKLOG 31, design/localization_plan.md).
+# Key (msgid) = the English text the scene or code shows (D121); Label/Button translate their text on their own.
+# Every msgid must also be in en.po: after editing run  python3 Scripts/Tools/po_sync.py
 msgid ""
 msgstr ""
-"Project-Id-Version: Demo\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-# UI Elements
+# ── Existing (2024 stub)
 msgid "Fire"
 msgstr "Вогонь"
 
@@ -20,18 +21,8 @@ msgstr "Щит"
 msgid "Utility"
 msgstr "Утиліта"
 
-# Character names
 msgid "Kusakam"
 msgstr "Кусакам"
-
-msgid "Astrid"
-msgstr "Астрит"
-
-msgid "Alicia"
-msgstr "Алисія"
-
-msgid "Urizan"
-msgstr "Уризен"
 
 msgid "Malik"
 msgstr "Малик"
@@ -42,7 +33,6 @@ msgstr "Охоронець"
 msgid "Grandfather"
 msgstr "Дідусь"
 
-# Common phrases
 msgid "Continue"
 msgstr "Продовжити"
 
@@ -52,3 +42,1580 @@ msgstr "Пропустити"
 msgid "Close"
 msgstr "Закрити"
 
+# ── Title screen, Load / Save
+msgid "Khalahas"
+msgstr "Халахас"
+
+msgid "KHALAHAS"
+msgstr "ХАЛАХАС"
+
+msgid "Heroes"
+msgstr "Герої"
+
+msgid "Khalahas Heroes"
+msgstr "Герої Халахасу"
+
+msgid "Press Any Button"
+msgstr "Натисніть будь-яку кнопку"
+
+msgid "New Game"
+msgstr "Нова гра"
+
+msgid "Settings"
+msgstr "Налаштування"
+
+msgid "Quit Game"
+msgstr "Вийти з гри"
+
+msgid "© 2024-2026 Khalahas Studio. All Rights Reserved."
+msgstr "© 2024-2026 Студія «Халахас». Усі права захищено."
+
+msgid "WAY OF\nQUSAKAM"
+msgstr "ШЛЯХ\nКУСАКАМА"
+
+msgid "Save Data Management"
+msgstr "Керування збереженнями"
+
+msgid "Load Game"
+msgstr "Завантажити гру"
+
+msgid "Save Game"
+msgstr "Зберегти гру"
+
+msgid "Select a slot to save your game."
+msgstr "Оберіть комірку, щоб зберегти гру."
+
+msgid "Select a slot to load your game."
+msgstr "Оберіть комірку, щоб завантажити гру."
+
+msgid "Empty Slot"
+msgstr "Порожня комірка"
+
+msgid "No save data available"
+msgstr "Немає збережених даних"
+
+msgid "Lv. %d"
+msgstr "Рів. %d"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Delete"
+msgstr "Видалити"
+
+# ── Bottom bar, common buttons
+msgid "Select"
+msgstr "Вибрати"
+
+msgid "Confirm"
+msgstr "Підтвердити"
+
+msgid "Return"
+msgstr "Назад"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Accept"
+msgstr "Прийняти"
+
+msgid "OK"
+msgstr "Гаразд"
+
+msgid "Yes"
+msgstr "Так"
+
+msgid "No"
+msgstr "Ні"
+
+msgid "Exit"
+msgstr "Вийти"
+
+msgid "Reset"
+msgstr "Скинути"
+
+msgid "Select a category."
+msgstr "Оберіть категорію."
+
+msgid "Title"
+msgstr "Заголовок"
+
+msgid "Description"
+msgstr "Опис"
+
+msgid "Confirmation"
+msgstr "Підтвердження"
+
+msgid "Are you sure?"
+msgstr "Ви впевнені?"
+
+msgid "Item"
+msgstr "Предмет"
+
+msgid "Interact"
+msgstr "Взаємодіяти"
+
+msgid "Talk"
+msgstr "Говорити"
+
+msgid "Quest"
+msgstr "Завдання"
+
+msgid "Shop"
+msgstr "Крамниця"
+
+msgid "Open"
+msgstr "Відкрити"
+
+msgid "Pick up"
+msgstr "Підняти"
+
+msgid "Examine"
+msgstr "Оглянути"
+
+msgid "Buy"
+msgstr "Купити"
+
+msgid "Sell"
+msgstr "Продати"
+
+msgid "Craft"
+msgstr "Кувати"
+
+msgid "Enchant"
+msgstr "Зачарувати"
+
+msgid "MENU"
+msgstr "МЕНЮ"
+
+msgid "Current task: %s"
+msgstr "Поточне завдання: %s"
+
+msgid "Current objective: %s"
+msgstr "Поточна мета: %s"
+
+# ── Game menu tabs
+msgid "Inventory"
+msgstr "Інвентар"
+
+msgid "Equipment"
+msgstr "Спорядження"
+
+msgid "World Map"
+msgstr "Мапа світу"
+
+msgid "Misc"
+msgstr "Інше"
+
+msgid "Journal"
+msgstr "Журнал"
+
+msgid "Skills"
+msgstr "Навички"
+
+msgid "Status"
+msgstr "Стан"
+
+# ── Inventory
+msgid "FILTER"
+msgstr "ФІЛЬТР"
+
+msgid "ITEM NAME"
+msgstr "НАЗВА ПРЕДМЕТА"
+
+msgid "ON HAND"
+msgstr "Є В НАЯВНОСТІ"
+
+msgid "No items in this category."
+msgstr "У цій категорії немає предметів."
+
+msgid "ALL"
+msgstr "УСЕ"
+
+msgid "CONSUMABLES"
+msgstr "ВИТРАТНЕ"
+
+msgid "MATERIALS"
+msgstr "МАТЕРІАЛИ"
+
+msgid "EQUIPMENT"
+msgstr "СПОРЯДЖЕННЯ"
+
+msgid "KEY ITEMS"
+msgstr "КЛЮЧОВІ ПРЕДМЕТИ"
+
+msgid "Double-click or Enter to use"
+msgstr "Подвійний клік або Enter — використати"
+
+msgid "Double-click or Enter to equip (%s)"
+msgstr "Подвійний клік або Enter — спорядити (%s)"
+
+msgid "Cannot be used"
+msgstr "Не можна використати"
+
+msgid "%s's SP is already full."
+msgstr "У %s SP уже повні."
+
+msgid "%s is already at full health."
+msgstr "У %s уже повне здоровʼя."
+
+msgid "%s equipped — %s."
+msgstr "%s споряджено — %s."
+
+msgid "Accessory"
+msgstr "Прикраса"
+
+# ── Equipment
+msgid "CURRENT CHARACTER"
+msgstr "ПОТОЧНИЙ ПЕРСОНАЖ"
+
+msgid "Category"
+msgstr "Категорія"
+
+msgid "Manage Hero Loadout"
+msgstr "Спорядження героя"
+
+msgid "OPTIMIZE"
+msgstr "ОПТИМІЗУВАТИ"
+
+msgid "✕  UNEQUIP ALL"
+msgstr "✕  ЗНЯТИ ВСЕ"
+
+msgid "Attributes"
+msgstr "Атрибути"
+
+msgid "(empty)"
+msgstr "(порожньо)"
+
+msgid "SWORDS"
+msgstr "МЕЧІ"
+
+msgid "POLEARMS"
+msgstr "ДРЕВКОВА ЗБРОЯ"
+
+msgid "DAGGERS"
+msgstr "КИНДЖАЛИ"
+
+msgid "AXES"
+msgstr "СОКИРИ"
+
+msgid "MACES"
+msgstr "БУЛАВИ"
+
+msgid "BOWS"
+msgstr "ЛУКИ"
+
+msgid "STAVES"
+msgstr "ПАЛИЦІ"
+
+msgid "SHIELDS"
+msgstr "ЩИТИ"
+
+msgid "HEAD"
+msgstr "ГОЛОВА"
+
+msgid "BODY"
+msgstr "ТІЛО"
+
+msgid "ACCESSORIES"
+msgstr "ПРИКРАСИ"
+
+msgid "Max. HP"
+msgstr "Макс. HP"
+
+msgid "Max. SP"
+msgstr "Макс. SP"
+
+msgid "Phys. Atk."
+msgstr "Фіз. атака"
+
+msgid "Phys. Def."
+msgstr "Фіз. захист"
+
+msgid "Accuracy"
+msgstr "Влучність"
+
+msgid "Critical"
+msgstr "Критичний удар"
+
+msgid "Elem. Atk."
+msgstr "Стих. атака"
+
+msgid "Elem. Def."
+msgstr "Стих. захист"
+
+msgid "Speed"
+msgstr "Швидкість"
+
+msgid "Evasion"
+msgstr "Ухилення"
+
+msgid "Equipped"
+msgstr "Споряджено"
+
+msgid "%s — empty. Press {ui_accept} to choose an item."
+msgstr "%s — порожньо. Натисніть {ui_accept}, щоб вибрати предмет."
+
+msgid "Swords"
+msgstr "Мечі"
+
+msgid "Choose an item for this slot"
+msgstr "Оберіть предмет для цього місця"
+
+msgid "Nothing in your bag fits this slot."
+msgstr "У сумці немає нічого для цього місця."
+
+msgid "Unequip"
+msgstr "Зняти"
+
+# ── World map
+msgid "The Desert Kingdoms"
+msgstr "Пустельні королівства"
+
+msgid "EXPLORED"
+msgstr "ДОСЛІДЖЕНО"
+
+msgid "Arrow keys — pan the map."
+msgstr "Стрілки — рухати мапу."
+
+# ── Journal
+msgid "JOURNAL"
+msgstr "ЖУРНАЛ"
+
+msgid "QUESTS"
+msgstr "ЗАВДАННЯ"
+
+msgid "CHARACTERS"
+msgstr "ПЕРСОНАЖІ"
+
+msgid "BESTIARY"
+msgstr "БЕСТІАРІЙ"
+
+msgid "CURRENT OBJECTIVE"
+msgstr "ПОТОЧНА МЕТА"
+
+msgid "OBJECTIVES"
+msgstr "ЦІЛІ"
+
+msgid "No journal entries yet."
+msgstr "У журналі ще немає записів."
+
+msgid "Quests"
+msgstr "Завдання"
+
+msgid "Characters"
+msgstr "Персонажі"
+
+msgid "Bestiary"
+msgstr "Бестіарій"
+
+msgid "PEOPLE MET"
+msgstr "ЗУСТРІНУТІ ЛЮДИ"
+
+msgid "You have not met anyone yet."
+msgstr "Ви ще ні з ким не зустрілися."
+
+msgid "ENEMIES MET"
+msgstr "ЗУСТРІНУТІ ВОРОГИ"
+
+msgid "No enemies met yet."
+msgstr "Ви ще не зустріли ворогів."
+
+msgid "Defeated: %d"
+msgstr "Переможено: %d"
+
+msgid "Not yet defeated"
+msgstr "Ще не переможено"
+
+msgid "Tasks"
+msgstr "Доручення"
+
+msgid "Goal: %s"
+msgstr "Мета: %s"
+
+msgid "PROLOGUE"
+msgstr "ПРОЛОГ"
+
+# ── Skills
+msgid "JP OBTAINED"
+msgstr "ОТРИМАНО ОН"
+
+msgid "0 JP"
+msgstr "0 ОН"
+
+msgid "%d JP"
+msgstr "%d ОН"
+
+msgid "Primary Class Tree"
+msgstr "Дерево основного класу"
+
+msgid "Pick"
+msgstr "Вибрати"
+
+msgid "Undo"
+msgstr "Скасувати"
+
+msgid "PUT ON THE HOTBAR"
+msgstr "НА ПАНЕЛЬ ШВИДКОГО ДОСТУПУ"
+
+msgid "POINTS"
+msgstr "ОЧКИ"
+
+msgid "Nothing picked"
+msgstr "Нічого не вибрано"
+
+msgid "No skills available yet."
+msgstr "Навичок поки немає."
+
+msgid "+%d atk"
+msgstr "+%d атаки"
+
+msgid "+%d HP"
+msgstr "+%d HP"
+
+msgid "+%d SP"
+msgstr "+%d SP"
+
+msgid "+%s%% crit"
+msgstr "+%s%% крит."
+
+msgid "+%s%% evade"
+msgstr "+%s%% ухилення"
+
+msgid "+%s%% speed"
+msgstr "+%s%% швидкості"
+
+msgid "+%s%% power"
+msgstr "+%s%% сили"
+
+msgid "+%s SP/s"
+msgstr "+%s SP/с"
+
+msgid "Lv %d"
+msgstr "Рів. %d"
+
+msgid "Lv.%d"
+msgstr "Рів. %d"
+
+msgid "LV.%d"
+msgstr "РІВ. %d"
+
+msgid "Lv.1"
+msgstr "Рів. 1"
+
+msgid "LV.1"
+msgstr "РІВ. 1"
+
+msgid "%s · Swear an oath in the City (level %d)"
+msgstr "%s · Складіть присягу в Місті (рівень %d)"
+
+msgid "Your oath"
+msgstr "Ваша присяга"
+
+msgid "Sworn to another oath"
+msgstr "Складено іншу присягу"
+
+msgid "R%d +%d"
+msgstr "Р%d +%d"
+
+msgid "R%d"
+msgstr "Р%d"
+
+msgid "Picked"
+msgstr "Вибрано"
+
+msgid "Picked +%d"
+msgstr "Вибрано +%d"
+
+msgid "Oath"
+msgstr "Присяга"
+
+msgid "Other oath"
+msgstr "Інша присяга"
+
+msgid "Locked"
+msgstr "Закрито"
+
+msgid "Free"
+msgstr "Безплатно"
+
+msgid "%s skill · %s"
+msgstr "%s навичка · %s"
+
+msgid "Active"
+msgstr "Активна"
+
+msgid "Passive"
+msgstr "Пасивна"
+
+msgid "Cost"
+msgstr "Ціна"
+
+msgid "Level"
+msgstr "Рівень"
+
+msgid "%d SP"
+msgstr "%d SP"
+
+msgid "Cooldown"
+msgstr "Перезарядка"
+
+msgid "%s s"
+msgstr "%s с"
+
+msgid "Rank"
+msgstr "Ранг"
+
+msgid "Requires"
+msgstr "Потрібно"
+
+msgid "Weapon"
+msgstr "Зброя"
+
+msgid "Effect"
+msgstr "Ефект"
+
+msgid "%d dmg"
+msgstr "%d шкоди"
+
+msgid "heal %d"
+msgstr "лікує %d"
+
+msgid "burn %d/s"
+msgstr "горіння %d/с"
+
+msgid "chain ×%s"
+msgstr "ланцюг ×%s"
+
+msgid "stun %s s"
+msgstr "оглушення %s с"
+
+msgid "+%d max HP"
+msgstr "+%d до макс. HP"
+
+msgid "+%d max SP"
+msgstr "+%d до макс. SP"
+
+msgid "+%d attack"
+msgstr "+%d до атаки"
+
+msgid "−%s%% damage with a shield"
+msgstr "−%s%% шкоди зі щитом"
+
+msgid "−%s%% damage taken"
+msgstr "−%s%% отриманої шкоди"
+
+msgid "heals +%s%%"
+msgstr "лікування +%s%%"
+
+msgid "hits heal %s%%"
+msgstr "удари лікують на %s%%"
+
+msgid "+%s%% poise damage"
+msgstr "+%s%% шкоди стійкості"
+
+msgid "Learned, rank %d/%d"
+msgstr "Вивчено, ранг %d/%d"
+
+msgid " → %d after Accept"
+msgstr " → %d після «Прийняти»"
+
+msgid "%s. Pick to rank up (+10%%, %d JP)."
+msgstr "%s. Виберіть, щоб підвищити ранг (+10%%, %d ОН)."
+
+msgid "%s. Max rank."
+msgstr "%s. Найвищий ранг."
+
+msgid "%s. Not enough JP to rank up."
+msgstr "%s. Замало ОН, щоб підвищити ранг."
+
+msgid "Picked: Accept to learn it."
+msgstr "Вибрано: «Прийняти», щоб вивчити."
+
+msgid "Picked: Accept to learn it at rank %d."
+msgstr "Вибрано: «Прийняти», щоб вивчити на ранзі %d."
+
+msgid "Can learn now: Pick, then Accept."
+msgstr "Можна вивчити: «Вибрати», потім «Прийняти»."
+
+msgid "Not enough JP (%d needed)."
+msgstr "Замало ОН (потрібно %d)."
+
+msgid "Level too low: needs level %d."
+msgstr "Замалий рівень: потрібен рівень %d."
+
+msgid "Needs %s first."
+msgstr "Спершу потрібно: %s."
+
+msgid "Swear an oath in the City (level %d)."
+msgstr "Складіть присягу в Місті (рівень %d)."
+
+msgid "Sworn to another oath."
+msgstr "Складено іншу присягу."
+
+msgid "empty"
+msgstr "порожньо"
+
+msgid "attribute points: %d"
+msgstr "очок атрибутів: %d"
+
+msgid "To spend: "
+msgstr "Витратити: "
+
+msgid "{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+msgstr "{ui_accept} вибрати · {skills_unpick} скасувати вибір · {skills_accept} прийняти · {ui_cancel} назад"
+
+msgid "%ds"
+msgstr "%d с"
+
+# ── Status
+msgid "To Next Level:"
+msgstr "До наступного рівня:"
+
+msgid "JP Obtained:"
+msgstr "Отримано ОН:"
+
+msgid "Attribute Points:"
+msgstr "Очки атрибутів:"
+
+msgid "PRIMARY JOB"
+msgstr "ОСНОВНИЙ ФАХ"
+
+msgid "SECONDARY JOB"
+msgstr "ДРУГИЙ ФАХ"
+
+msgid "WEAPON TYPES"
+msgstr "ВИДИ ЗБРОЇ"
+
+msgid "Unique Actions & Talents"
+msgstr "Особливі дії й таланти"
+
+msgid "PATH ACTION"
+msgstr "ДІЯ ШЛЯХУ"
+
+msgid "TALENT"
+msgstr "ТАЛАНТ"
+
+msgid "%d EXP"
+msgstr "%d XP"
+
+msgid "IN PARTY · %d"
+msgstr "У ЗАГОНІ · %d"
+
+msgid "IN CAMP"
+msgstr "У ТАБОРІ"
+
+# ── Misc, Tutorial, Controls
+msgid "Tutorial"
+msgstr "Навчання"
+
+msgid "Topic"
+msgstr "Тема"
+
+msgid "Return to Title"
+msgstr "На титульний екран"
+
+msgid "Quit the Game"
+msgstr "Вийти з гри"
+
+msgid "Controls"
+msgstr "Керування"
+
+msgid "←  Settings"
+msgstr "←  Налаштування"
+
+msgid "Press the"
+msgstr "Натисніть"
+
+msgid "Select a tutorial topic."
+msgstr "Оберіть тему навчання."
+
+msgid "Use the arrow keys or the left stick to choose a topic."
+msgstr "Обирайте тему стрілками або лівим стіком."
+
+msgid "Every action — rebind in Settings → Controls"
+msgstr "Усі дії — перепризначення в Налаштування → Керування"
+
+msgid "ACTION"
+msgstr "ДІЯ"
+
+msgid "KEYBOARD / MOUSE"
+msgstr "КЛАВІАТУРА / МИША"
+
+msgid "GAMEPAD"
+msgstr "ГЕЙМПАД"
+
+msgid "Every action with its keyboard and gamepad button."
+msgstr "Усі дії з клавішами клавіатури й кнопками геймпада."
+
+msgid "Move left"
+msgstr "Рух ліворуч"
+
+msgid "Move right"
+msgstr "Рух праворуч"
+
+msgid "Jump"
+msgstr "Стрибок"
+
+msgid "Dash (twice: double dash, also in the air)"
+msgstr "Ривок (двічі — подвійний ривок, також у повітрі)"
+
+msgid "Climb up"
+msgstr "Лізти вгору"
+
+msgid "Climb down / drop through a ledge"
+msgstr "Лізти вниз / зістрибнути крізь уступ"
+
+msgid "Attack (press again for a combo)"
+msgstr "Атака (ще раз — комбо)"
+
+msgid "Heavy attack"
+msgstr "Важка атака"
+
+msgid "Block (hold) / parry (tap on the red glint)"
+msgstr "Блок (тримати) / парирування (натиснути на червоному відблиску)"
+
+msgid "Interact, talk, pick up"
+msgstr "Взаємодіяти, говорити, підняти"
+
+msgid "Next line of dialogue"
+msgstr "Наступна репліка"
+
+msgid "Skip a cutscene (hold)"
+msgstr "Пропустити катсцену (тримати)"
+
+msgid "Skill slot 1"
+msgstr "Слот навички 1"
+
+msgid "Skill slot 2"
+msgstr "Слот навички 2"
+
+msgid "Skill slot 3"
+msgstr "Слот навички 3"
+
+msgid "Skill slot 4"
+msgstr "Слот навички 4"
+
+msgid "Call a companion"
+msgstr "Покликати супутника"
+
+msgid "Next weapon"
+msgstr "Наступна зброя"
+
+msgid "Previous weapon"
+msgstr "Попередня зброя"
+
+msgid "Game menu"
+msgstr "Ігрове меню"
+
+msgid "Previous / next menu tab"
+msgstr "Попередня / наступна вкладка меню"
+
+msgid "Skills screen: accept the picks"
+msgstr "Екран навичок: прийняти вибір"
+
+msgid "Skills screen: undo a pick"
+msgstr "Екран навичок: скасувати вибір"
+
+# ── Input glyphs (InputGlyphs)
+msgid "Arrows"
+msgstr "Стрілки"
+
+msgid "D-pad"
+msgstr "Хрестовина"
+
+msgid "D-pad up"
+msgstr "хрестовина вгору"
+
+msgid "D-pad down"
+msgstr "хрестовина вниз"
+
+msgid "D-pad left"
+msgstr "хрестовина ліворуч"
+
+msgid "D-pad right"
+msgstr "хрестовина праворуч"
+
+msgid "Left stick"
+msgstr "лівий стік"
+
+msgid "Right stick"
+msgstr "правий стік"
+
+msgid "Left Mouse"
+msgstr "ЛКМ"
+
+msgid "Right Mouse"
+msgstr "ПКМ"
+
+msgid "Middle Mouse"
+msgstr "СКМ"
+
+# ── Settings
+msgid "GRAPHICS OPTIONS"
+msgstr "ПАРАМЕТРИ ГРАФІКИ"
+
+msgid "Display Settings"
+msgstr "Налаштування екрана"
+
+msgid "SOUND OPTIONS"
+msgstr "ПАРАМЕТРИ ЗВУКУ"
+
+msgid "Audio Settings"
+msgstr "Налаштування звуку"
+
+msgid "GAME OPTIONS"
+msgstr "ПАРАМЕТРИ ГРИ"
+
+msgid "Game Settings"
+msgstr "Налаштування гри"
+
+msgid "INPUT OPTIONS"
+msgstr "ПАРАМЕТРИ КЕРУВАННЯ"
+
+msgid "Set the display mode, window size and frame rate limit."
+msgstr "Режим екрана, розмір вікна й обмеження частоти кадрів."
+
+msgid "Adjust volume levels."
+msgstr "Налаштуйте гучність."
+
+msgid "Choose the interface language and whether hints open tutorial windows."
+msgstr "Мова інтерфейсу і чи відкривають підказки вікна навчання."
+
+msgid "Select an action to rebind it."
+msgstr "Оберіть дію, щоб перепризначити її."
+
+msgid "Display Mode"
+msgstr "Режим екрана"
+
+msgid "Windowed"
+msgstr "У вікні"
+
+msgid "Fullscreen"
+msgstr "На весь екран"
+
+msgid "Resolution"
+msgstr "Роздільність"
+
+msgid "VSync"
+msgstr "Верт. синхронізація"
+
+msgid "Enable"
+msgstr "Увімкнути"
+
+msgid "Disable"
+msgstr "Вимкнути"
+
+msgid "Frame Rate Limit"
+msgstr "Обмеження кадрів"
+
+msgid "Unlimited"
+msgstr "Без обмежень"
+
+msgid "%d FPS"
+msgstr "%d кадр/с"
+
+msgid "Master Volume"
+msgstr "Загальна гучність"
+
+msgid "Music"
+msgstr "Музика"
+
+msgid "Sound Effects"
+msgstr "Звукові ефекти"
+
+msgid "Language"
+msgstr "Мова"
+
+msgid "English"
+msgstr "Англійська"
+
+msgid "Ukrainian"
+msgstr "Українська"
+
+msgid "Tutorial Windows"
+msgstr "Вікна навчання"
+
+msgid "On"
+msgstr "Увімк."
+
+msgid "Off"
+msgstr "Вимк."
+
+msgid "Restore Default Settings"
+msgstr "Відновити типові налаштування"
+
+msgid "Exit to Main Menu"
+msgstr "Вийти в головне меню"
+
+msgid "Actions & Inputs"
+msgstr "Дії й кнопки"
+
+msgid "Primary"
+msgstr "Основна"
+
+msgid "Secondary"
+msgstr "Друга"
+
+msgid "Tertiary"
+msgstr "Третя"
+
+msgid "Are you sure you want to remove KEY from ACTION?"
+msgstr "Прибрати KEY з дії ACTION?"
+
+msgid "Are you sure you want to reset controls back to the defaults?"
+msgstr "Скинути керування до типового?"
+
+msgid "Set Input"
+msgstr "Призначити кнопку"
+
+msgid "None"
+msgstr "Немає"
+
+msgid "Focus here to assign inputs."
+msgstr "Натисніть тут, щоб призначити кнопку."
+
+# ── Settings → Controls (maaacks rebinding list: action names, input names)
+msgid "Move Up"
+msgstr "Рух угору"
+
+msgid "Move Down"
+msgstr "Рух униз"
+
+msgid "Move Left"
+msgstr "Рух ліворуч"
+
+msgid "Move Right"
+msgstr "Рух праворуч"
+
+msgid "Dq Accept"
+msgstr "Діалог: далі"
+
+msgid "Game Menu"
+msgstr "Ігрове меню"
+
+msgid "Attack"
+msgstr "Атака"
+
+msgid "Heavy Attack"
+msgstr "Важка атака"
+
+msgid "Dodge"
+msgstr "Ривок"
+
+msgid "Block"
+msgstr "Блок"
+
+msgid "Weapon Next"
+msgstr "Наступна зброя"
+
+msgid "Weapon Prev"
+msgstr "Попередня зброя"
+
+msgid "Assist"
+msgstr "Допомога супутника"
+
+msgid "Save Delete"
+msgstr "Видалити збереження"
+
+msgid "Menu Prev Tab"
+msgstr "Попередня вкладка меню"
+
+msgid "Menu Next Tab"
+msgstr "Наступна вкладка меню"
+
+msgid "Skill Slot 1"
+msgstr "Слот навички 1"
+
+msgid "Skill Slot 2"
+msgstr "Слот навички 2"
+
+msgid "Skill Slot 3"
+msgstr "Слот навички 3"
+
+msgid "Skill Slot 4"
+msgstr "Слот навички 4"
+
+msgid "Cutscene Skip"
+msgstr "Пропуск катсцени"
+
+msgid "Skills Accept"
+msgstr "Навички: прийняти"
+
+msgid "Skills Unpick"
+msgstr "Навички: скасувати вибір"
+
+msgid "Left Stick Up"
+msgstr "Лівий стік угору"
+
+msgid "Left Stick Down"
+msgstr "Лівий стік униз"
+
+msgid "Left Stick Left"
+msgstr "Лівий стік ліворуч"
+
+msgid "Left Stick Right"
+msgstr "Лівий стік праворуч"
+
+msgid "Right Stick Up"
+msgstr "Правий стік угору"
+
+msgid "Right Stick Down"
+msgstr "Правий стік униз"
+
+msgid "Right Stick Left"
+msgstr "Правий стік ліворуч"
+
+msgid "Right Stick Right"
+msgstr "Правий стік праворуч"
+
+msgid "Button A"
+msgstr "Кнопка A"
+
+msgid "Button B"
+msgstr "Кнопка B"
+
+msgid "Button X"
+msgstr "Кнопка X"
+
+msgid "Button Y"
+msgstr "Кнопка Y"
+
+msgid "Button Start"
+msgstr "Кнопка Start"
+
+msgid "Button Back"
+msgstr "Кнопка Back"
+
+msgid "Button Guide"
+msgstr "Кнопка Guide"
+
+msgid "Left Shoulder"
+msgstr "LB"
+
+msgid "Right Shoulder"
+msgstr "RB"
+
+msgid "Left Trigger"
+msgstr "LT"
+
+msgid "Right Trigger"
+msgstr "RT"
+
+msgid "Left Stick"
+msgstr "L3"
+
+msgid "Right Stick"
+msgstr "R3"
+
+msgid "Dpad Up"
+msgstr "Хрестовина вгору"
+
+msgid "Dpad Down"
+msgstr "Хрестовина вниз"
+
+msgid "Dpad Left"
+msgstr "Хрестовина ліворуч"
+
+msgid "Dpad Right"
+msgstr "Хрестовина праворуч"
+
+msgid "Left Mouse Button"
+msgstr "ЛКМ"
+
+msgid "Right Mouse Button"
+msgstr "ПКМ"
+
+msgid "Middle Mouse Button"
+msgstr "СКМ"
+
+# ── Modals (ModalTemplates)
+msgid "Exit Game?"
+msgstr "Вийти з гри?"
+
+msgid "Any unsaved progress will be lost."
+msgstr "Незбережений поступ буде втрачено."
+
+msgid "Unsaved Changes"
+msgstr "Незбережені зміни"
+
+msgid "You have unsaved changes. Continue?"
+msgstr "Є незбережені зміни. Продовжити?"
+
+msgid "Reset Settings"
+msgstr "Скинути налаштування"
+
+msgid "Reset all settings to defaults?"
+msgstr "Скинути всі налаштування до типових?"
+
+msgid "Delete Save"
+msgstr "Видалити збереження"
+
+msgid "This will permanently delete the save slot."
+msgstr "Комірку збереження буде видалено назавжди."
+
+msgid "Overwrite Save?"
+msgstr "Перезаписати збереження?"
+
+msgid "This will replace the existing save data."
+msgstr "Наявне збереження буде замінено."
+
+msgid "Buy %s?"
+msgstr "Купити: %s?"
+
+msgid "Quantity: ◀ %d ▶  •  Total Cost: %s"
+msgstr "Кількість: ◀ %d ▶  •  Усього: %s"
+
+msgid "Craft %s?"
+msgstr "Викувати: %s?"
+
+msgid "Cannot Craft"
+msgstr "Не вдається викувати"
+
+msgid "Enchant %s?"
+msgstr "Зачарувати: %s?"
+
+msgid "Cannot Enchant"
+msgstr "Не вдається зачарувати"
+
+msgid "Game Saved"
+msgstr "Гру збережено"
+
+msgid "Your progress has been saved successfully."
+msgstr "Поступ успішно збережено."
+
+msgid "Save Failed"
+msgstr "Не вдалося зберегти"
+
+msgid "Your progress could not be saved. Please try again."
+msgstr "Не вдалося зберегти поступ. Спробуйте ще раз."
+
+msgid "You obtained:"
+msgstr "Ви отримали:"
+
+msgid "Cannot Use"
+msgstr "Не можна використати"
+
+msgid "%s cannot be used."
+msgstr "%s не можна використати."
+
+msgid "Exit to Main Menu?"
+msgstr "Вийти в головне меню?"
+
+msgid "Unsaved progress will be lost."
+msgstr "Незбережений поступ буде втрачено."
+
+# ── Shop
+msgid "SHOP"
+msgstr "КРАМНИЦЯ"
+
+msgid "All Wares"
+msgstr "Усі товари"
+
+msgid "All Possessions"
+msgstr "Усе ваше майно"
+
+msgid "Weapons"
+msgstr "Зброя"
+
+msgid "Shields"
+msgstr "Щити"
+
+msgid "Armor"
+msgstr "Обладунки"
+
+msgid "Accessories"
+msgstr "Прикраси"
+
+msgid "Items"
+msgstr "Речі"
+
+msgid "Item Name"
+msgstr "Назва предмета"
+
+msgid "Selling Price"
+msgstr "Ціна продажу"
+
+msgid "Buying Price"
+msgstr "Ціна викупу"
+
+msgid "Nothing here."
+msgstr "Тут порожньо."
+
+msgid "Select an item."
+msgstr "Оберіть предмет."
+
+msgid "Switch Category"
+msgstr "Змінити категорію"
+
+msgid "No wares in this category."
+msgstr "У цій категорії немає товарів."
+
+msgid "You have nothing to sell here."
+msgstr "Вам тут нічого продати."
+
+# ── Crafting, enchanting
+msgid "CRAFT"
+msgstr "КУВАННЯ"
+
+msgid "Available Recipes"
+msgstr "Доступні рецепти"
+
+msgid "Item Name & Materials"
+msgstr "Предмет і матеріали"
+
+msgid "On Hand"
+msgstr "Є"
+
+msgid "Crafting Cost"
+msgstr "Ціна роботи"
+
+msgid "No recipes here."
+msgstr "Тут немає рецептів."
+
+msgid "PLAYTIME"
+msgstr "ЧАС ГРИ"
+
+msgid "GOLD"
+msgstr "ЗОЛОТО"
+
+msgid "MP:"
+msgstr "МП:"
+
+msgid "LVL:"
+msgstr "РІВ:"
+
+msgid "description"
+msgstr "опис"
+
+msgid "Furnace"
+msgstr "Піч"
+
+msgid "Workbench"
+msgstr "Верстат"
+
+msgid "Anvil"
+msgstr "Ковадло"
+
+msgid "Alchemy"
+msgstr "Алхімія"
+
+msgid "Select a recipe."
+msgstr "Оберіть рецепт."
+
+msgid "Switch Station"
+msgstr "Змінити місце"
+
+msgid "Requires: %s"
+msgstr "Потрібно: %s"
+
+msgid "Not enough materials."
+msgstr "Замало матеріалів."
+
+msgid "You are missing: %s"
+msgstr "Бракує: %s"
+
+msgid "Not enough gold."
+msgstr "Замало золота."
+
+msgid "You need %s."
+msgstr "Потрібно %s."
+
+msgid "%s Recipe"
+msgstr "Рецепт: %s"
+
+msgid "Recipe"
+msgstr "Рецепт"
+
+msgid "Required Materials"
+msgstr "Потрібні матеріали"
+
+msgid "Expected Result Stats"
+msgstr "Що вийде"
+
+msgid "ENCHANT"
+msgstr "ЗАЧАРУВАННЯ"
+
+msgid "Enchantable Items"
+msgstr "Предмети для зачарування"
+
+msgid "Item & Result"
+msgstr "Предмет і результат"
+
+msgid "Enchant Cost"
+msgstr "Ціна зачарування"
+
+msgid "Nothing to enchant. Bring a weapon or armour."
+msgstr "Нічого зачаровувати. Принесіть зброю або обладунок."
+
+msgid "Two identical items make one a level higher."
+msgstr "Два однакові предмети дають один на рівень вищий."
+
+msgid "Phys. Atk"
+msgstr "Фіз. атака"
+
+msgid "Phys. Def"
+msgstr "Фіз. захист"
+
+msgid "Magic"
+msgstr "Магія"
+
+msgid "Restores HP"
+msgstr "Відновлює HP"
+
+msgid "Not enough coins."
+msgstr "Замало монет."
+
+# ── Oath keepers
+msgid "Come back at level %d"
+msgstr "Поверніться на рівні %d"
+
+msgid "I swear: %s (permanent)"
+msgstr "Присягаю: %s (назавжди)"
+
+msgid "Not yet"
+msgstr "Ще ні"
+
+msgid "Not enough coins (%d needed)"
+msgstr "Замало монет (потрібно %d)"
+
+msgid "Forget every skill and attribute point for %d coins"
+msgstr "Забути всі навички й очки атрибутів за %d монет"
+
+msgid "Swear the oath"
+msgstr "Скласти присягу"
+
+msgid "Unlearn skills and attributes (%d coins)"
+msgstr "Розучити навички й атрибути (%d монет)"
+
+# ── HUD, notifications
+msgid "Unarmed"
+msgstr "Без зброї"
+
+msgid "Level %d"
+msgstr "Рівень %d"
+
+msgid "Level 1"
+msgstr "Рівень 1"
+
+msgid "Level 2"
+msgstr "Рівень 2"
+
+msgid "%d / %d XP"
+msgstr "%d / %d XP"
+
+msgid "LEVEL UP!"
+msgstr "НОВИЙ РІВЕНЬ!"
+
+msgid "HP +%d, Damage +%d"
+msgstr "HP +%d, шкода +%d"
+
+msgid "HP +20, Damage +5"
+msgstr "HP +20, шкода +5"
+
+msgid "NEW COMPANION"
+msgstr "НОВИЙ СУПУТНИК"
+
+msgid "%s joined the party"
+msgstr "%s приєднується до загону"
+
+msgid "Active Quest"
+msgstr "Поточне завдання"
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid "Objective Text"
+msgstr "Текст мети"
+
+msgid "Boss"
+msgstr "Бос"
+
+msgid "Hold Tab to skip"
+msgstr "Тримайте Tab, щоб пропустити"
+
+msgid "Hold %s to skip"
+msgstr "Тримайте %s, щоб пропустити"
+
+msgid "Skipping…"
+msgstr "Пропускаємо…"
+
+msgid "Combat context message goes here..."
+msgstr "Тут буде повідомлення про бій..."
+
+msgid "Tutorial hint goes here..."
+msgstr "Тут буде підказка..."
+
+msgid "Combat Zone"
+msgstr "Зона бою"
+
+msgid "Press D to toggle delta vector"
+msgstr "Натисніть D, щоб показати вектор руху"
+
+msgid "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
+msgstr "Скверна шириться цими залами. Здолайте осквернених, щоб послабити її."
+
+msgid "A powerful guardian blocks your path. Steel yourself for battle."
+msgstr "Шлях заступає могутній вартовий. Готуйтеся до бою."
+
+msgid "Multiple foes ahead. Your skills will be tested."
+msgstr "Попереду багато ворогів. Ваші вміння буде випробувано."
+
+msgid "The source of corruption lies beyond. This is your final trial."
+msgstr "Джерело скверни — далі. Це ваше останнє випробування."
+
+msgid "Ancient treasures are protected by dark forces. Fight to claim your reward."
+msgstr "Давні скарби стережуть темні сили. Бийтеся за нагороду."
+
+msgid "Dark creatures lurk in every shadow. Stay vigilant."
+msgstr "У кожній тіні чатують темні істоти. Будьте пильні."
+
+# ── Game Over, demo end, prologue, leftovers
+msgid "Game Over"
+msgstr "Кінець гри"
+
+msgid "Resume from last save point"
+msgstr "Продовжити з останнього збереження"
+
+msgid "Return to title"
+msgstr "На титульний екран"
+
+msgid "ENTER"
+msgstr "ENTER"
+
+msgid "Select Option"
+msgstr "Оберіть дію"
+
+msgid "Thank you for playing!"
+msgstr "Дякуємо за гру!"
+
+msgid "You have finished the demo.\n\nWe hope you enjoyed it!"
+msgstr "Ви завершили демо-версію гри.\n\nСподіваємося, вам сподобалося!"
+
+msgid "Return to Main Menu"
+msgstr "Повернутися до головного меню"
+
+msgid "The Dark Realm"
+msgstr "Темне царство"
+
+msgid "Story text goes here..."
+msgstr "Тут буде текст історії..."
+
+msgid "Press any key to continue..."
+msgstr "Натисніть будь-яку клавішу, щоб продовжити..."
+
+msgid "VICTORY!"
+msgstr "ПЕРЕМОГА!"
+
+msgid "Congratulations! You completed the game!"
+msgstr "Вітаємо! Ви пройшли гру!"
+
+msgid "Press SPACE to play again\nPress ESC for main menu"
+msgstr "Натисніть SPACE, щоб грати знову\nНатисніть ESC — головне меню"
+
+# ── Objectives (zone scripts, D121 placeholders)
+msgid "Explore the Canyon"
+msgstr "Дослідіть Каньйон"
+
+msgid "Pursue the kidnappers"
+msgstr "Наздоженіть викрадачів"
+
+msgid "Find a way forward"
+msgstr "Знайдіть шлях уперед"
+
+msgid "Return to the village"
+msgstr "Поверніться до села"
+
+msgid "Head to the village"
+msgstr "Ідіть до села"
+
+msgid "Descend to the road"
+msgstr "Спустіться до дороги"
+
+msgid "Approach the city gates"
+msgstr "Підійдіть до міської брами"
+
+msgid "Enter the city"
+msgstr "Увійдіть до міста"
+
+msgid "Defeat the bandits"
+msgstr "Здолайте бандитів"
+
+msgid "Find the laboratory"
+msgstr "Знайдіть лабораторію"
+
+msgid "Continue on to the city"
+msgstr "Ідіть далі до міста"
+
+msgid "Reach the city gates"
+msgstr "Дійдіть до міської брами"
+
+msgid "Defeat the enemies on the road"
+msgstr "Здолайте ворогів на дорозі"
+
+msgid "Defeat the fire djinn"
+msgstr "Здолайте вогняного джина"
+
+msgid "Leave the laboratory"
+msgstr "Вийдіть із лабораторії"
+
+msgid "Fight through the laboratory"
+msgstr "Пробийтеся крізь лабораторію"
+
+msgid "Step out of the cell"
+msgstr "Вийдіть із клітки"
+
+msgid "Find out where you are"
+msgstr "Зʼясуйте, де ви"
+
+msgid "Finish the demo"
+msgstr "Завершіть демо"
+
+msgid "Speak with the mayor"
+msgstr "Поговоріть із мером"
+
+msgid "Survive the Brass Collector"
+msgstr "Виживіть у бою з Мідним Збирачем"
+
+msgid "Reach the village center"
+msgstr "Дійдіть до центру села"
+
+msgid "Check on the house"
+msgstr "Перевірте дім"
+
+msgid "Talk to the old man"
+msgstr "Поговоріть зі старим"
+
+msgid "Make a decision"
+msgstr "Ухваліть рішення"
+
+msgid "Leave the village"
+msgstr "Покиньте село"
+
+msgid "Learn to fight: follow the lesson"
+msgstr "Навчіться битися: виконуйте урок"
+
+msgid "Defeat the bandit in the street"
+msgstr "Здолайте бандита на вулиці"
+
+# ── Journal, tutorial hints (more)
+msgid "Journal entries appear here as you progress."
+msgstr "Записи журналу зʼявляються, коли ви просуваєтеся історією."
+
+msgid "Select an entry to read it."
+msgstr "Оберіть запис, щоб прочитати його."
+
+msgid "Path Action"
+msgstr "Дія шляху"
+
+msgid "Talent"
+msgstr "Талант"
+
+msgid "Tutorial windows can be turned off in Settings → Game."
+msgstr "Вікна навчання можна вимкнути в Налаштування → Гра."
+
+msgid "Unknown Item"
+msgstr "Невідомий предмет"

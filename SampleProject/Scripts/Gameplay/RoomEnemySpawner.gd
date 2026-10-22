@@ -130,6 +130,10 @@ func _on_trigger_body_entered(body: Node2D) -> void:
 func fight_in_progress() -> bool:
 	return Game.get_singleton().get_room_state(_room, state_key) != null
 
+## Бій добито: його починали, і живих у ньому не лишилось (D296, D306).
+func fight_cleared() -> bool:
+	return fight_in_progress() and _saved_enemies().is_empty()
+
 func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
 	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає
 

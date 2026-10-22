@@ -33,8 +33,8 @@ func show_notification(level: int) -> void:
 		return
 
 	# Update labels
-	level_label.text = "Level %d" % level
-	stats_label.text = "HP +%d, Damage +%d" % [
+	level_label.text = tr("Level %d") % level
+	stats_label.text = tr("HP +%d, Damage +%d") % [
 		xp_manager.stat_bonuses["hp_per_level"],
 		xp_manager.stat_bonuses["damage_per_level"]
 	]

@@ -424,6 +424,10 @@ signal inventory_updated()
 @warning_ignore("unused_signal")
 signal player_respawned()
 
+## Останній пристрій вводу змінився (InputGlyphs.note_event): підказки й бейджі перемальовують назви кнопок (BACKLOG 24).
+@warning_ignore("unused_signal")
+signal input_device_changed(using_gamepad: bool)
+
 # ============================================
 # UTILITY METHODS
 # ============================================

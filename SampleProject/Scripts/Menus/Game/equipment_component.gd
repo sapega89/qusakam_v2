@@ -56,6 +56,10 @@ const ATTR_ROWS: Array[Array] = [
 var _slot_rows: Dictionary = {}  # slot_id -> Button
 
 
+## Слот під фокусом — для підказки після зміни пристрою.
+var _focused_slot: String = ""
+
+
 func _initialize_component() -> void:
 	_optimize_button.pressed.connect(_on_optimize_pressed)
 	_unequip_button.pressed.connect(_on_unequip_all_pressed)
@@ -70,6 +74,15 @@ func _connect_live_sources() -> void:
 		EventBus.equipment_equipped.connect(_on_equipment_event)
 	if not EventBus.equipment_unequipped.is_connected(_on_equipment_unequipped):
 		EventBus.equipment_unequipped.connect(_on_equipment_unequipped)
+	if not EventBus.input_device_changed.is_connected(_on_input_device_changed):
+		EventBus.input_device_changed.connect(_on_input_device_changed)
+
+
+## Пристрій змінився — підказка слота під фокусом називає кнопку нового (BACKLOG 24).
+func _on_input_device_changed(_pad: bool) -> void:
+	var focused := get_viewport().gui_get_focus_owner()
+	if is_visible_in_tree() and _focused_slot != "" and focused and is_ancestor_of(focused):
+		_on_slot_focused(_focused_slot)
 
 
 func _on_equipment_event(_character_id: String, _slot_id: String, _item_id: String) -> void:
@@ -191,10 +204,11 @@ func _fitting_items(slot_id: String) -> Array:
 
 ## Підказка в нижній панелі — щоб опис працював і з клавіатури.
 func _on_slot_focused(slot_id: String) -> void:
+	_focused_slot = slot_id
 	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
 	var item := _equipped(slot_id)
 	if item.is_empty():
-		bar.set_context_hint(InputGlyphs.resolve("%s — empty. Press {ui_accept} to choose an item." % _slot_caption(slot_id)))
+		bar.set_context_hint(InputGlyphs.resolve(tr("%s — empty. Press {ui_accept} to choose an item.") % _slot_caption(slot_id)))
 	else:
 		bar.set_context_hint("%s — %s" % [_slot_caption(slot_id), String(item.get("name", ""))])
 

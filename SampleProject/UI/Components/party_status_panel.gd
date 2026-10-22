@@ -91,7 +91,7 @@ func _refresh_cards() -> void:
 func _fill_card(card: Control, id: String, display_name: String, art: Texture2D, color: Color, level: int, is_hero: bool) -> void:
 	card.set_meta(&"character_id", id)
 	card.get_node(^"Row/Info/Head/Name").text = display_name
-	card.get_node(^"Row/Info/Head/LevelBadge/Level").text = "Lv.%d" % level
+	card.get_node(^"Row/Info/Head/LevelBadge/Level").text = tr("Lv.%d") % level
 	card.get_node(^"Row/PortraitFrame/Portrait").color = color
 	var art_rect: TextureRect = card.get_node(^"Row/PortraitFrame/Art")
 	art_rect.texture = art

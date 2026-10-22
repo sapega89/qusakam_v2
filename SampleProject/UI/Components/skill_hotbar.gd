@@ -9,6 +9,7 @@ class_name UISkillHotbar
 ## доступності. Вона показує стан із SkillManager і просить його застосувати
 ## навичку. Другого таймера перезарядки в HUD немає — час береться з менеджера.
 
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const SLOT_SIZE := 48
 const ICON_SIZE := 28
 ## Портрет компаньйона — верх першого кадру його забігу (AtlasTexture поруч зі спрайтами).
@@ -38,6 +39,7 @@ func _connect_live_sources() -> void:
 		[EventBus.sp_changed, _on_sp_changed],
 		[EventBus.skill_used, _on_skill_used],
 		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
+		[EventBus.input_device_changed, _on_input_device_changed],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -119,7 +121,7 @@ func _build_slots() -> void:
 		badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		var badge_label := Label.new()
 		badge_label.name = "Key"
-		badge_label.text = str(i + 1)
+		badge_label.text = _key_for(StringName("skill_slot_%d" % (i + 1)))
 		badge_label.theme_type_variation = &"BindBadge"
 		badge.add_child(badge_label)
 		bind.add_child(badge)
@@ -155,6 +157,7 @@ func _build_weapon_bind() -> void:
 	var key := Label.new()
 	key.name = "Key"
 	key.theme_type_variation = &"BindBadge"
+	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key.text = _key_for(&"weapon_next")
 	badge.add_child(key)
 	bind.add_child(badge)
@@ -194,6 +197,7 @@ func _build_assist_bind() -> void:
 	var key := Label.new()
 	key.name = "Key"
 	key.theme_type_variation = &"BindBadge"
+	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key.text = _key_for(&"assist")
 	badge.add_child(key)
 	bind.add_child(badge)
@@ -213,7 +217,7 @@ func _update_assist() -> void:
 	var slot: Panel = bind.get_node(^"Slot")
 	var overlay: Label = slot.get_node(^"Cooldown")
 	var ready := ready_id != ""
-	overlay.text = "%ds" % ceili(cm.get_remaining_cooldown(id))
+	overlay.text = tr("%ds") % ceili(cm.get_remaining_cooldown(id))
 	# Портрет і стилі — лише коли змінився хто / готовність, не щокадру.
 	var shown := "%s:%s" % [id, ready]
 	if shown == _assist_shown:
@@ -227,18 +231,23 @@ func _update_assist() -> void:
 	badge.get_node(^"Key").add_theme_color_override("font_color", UITokens.ON_ACCENT if ready else UITokens.TEXT_PRIMARY)
 
 
-## Перша клавіша дії з InputMap — бейдж показує справжнє призначення, а не вписане.
+## Кнопка дії з InputMap на пристрої, яким грали останнім (BACKLOG 24) — бейдж показує справжнє призначення.
 func _key_for(action: StringName) -> String:
-	for ev in InputMap.action_get_events(action):
-		if ev is InputEventKey:
-			return ev.as_text_physical_keycode()
-	return ""
+	return InputGlyphs.badge(action)
+
+
+## Пристрій змінився — бейджі слотів, зброї й асисту називають його кнопки.
+func _on_input_device_changed(_pad: bool) -> void:
+	for i in _slots.size():
+		_slots[i].get_node(^"Badge/Key").text = _key_for(StringName("skill_slot_%d" % (i + 1)))
+	_slots_row.get_node(^"WeaponBind/Badge/Key").text = _key_for(&"weapon_next")
+	_slots_row.get_node(^"AssistBind/Badge/Key").text = _key_for(&"assist")
 
 
 func refresh() -> void:
 	var item: Dictionary = ServiceLocator.get_equipment_manager().get_weapon_item_in_hand()
 	var weapon_label: Label = _slots_row.get_node(^"WeaponBind/Slot/WeaponName")
-	weapon_label.text = item.name if not item.is_empty() else "Unarmed"
+	weapon_label.text = item.name if not item.is_empty() else tr("Unarmed")
 	weapon_label.add_theme_color_override("font_color", UITokens.TEXT_PRIMARY if not item.is_empty() else UITokens.TEXT_SECONDARY)
 	for i in _slots.size():
 		_update_slot(i)
@@ -267,7 +276,7 @@ func _update_slot(index: int) -> void:
 	# Перезарядка: залишок бере менеджер, HUD власного таймера не має.
 	if on_cooldown:
 		overlay.visible = true
-		overlay.text = "%ds" % ceili(_skill_manager.get_remaining_cooldown(skill_id))
+		overlay.text = tr("%ds") % ceili(_skill_manager.get_remaining_cooldown(skill_id))
 		overlay.add_theme_stylebox_override("normal", _overlay_box())
 	else:
 		overlay.visible = false

@@ -1,13 +1,14 @@
-# English translations
-# Copyright (C) 2024
+# Kusakam — English (BACKLOG 31, design/localization_plan.md).
+# Key (msgid) = the English text the scene or code shows (D121); Label/Button translate their text on their own.
+# en.po carries the same keys, each value = its key (English is the key) — Scripts/Tools/po_sync.py keeps it in step.
 msgid ""
 msgstr ""
-"Project-Id-Version: Demo\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-# UI Elements
+# ── Existing (2024 stub)
 msgid "Fire"
 msgstr "Fire"
 
@@ -20,18 +21,8 @@ msgstr "Shield"
 msgid "Utility"
 msgstr "Utility"
 
-# Character names
 msgid "Kusakam"
 msgstr "Kusakam"
-
-msgid "Astrid"
-msgstr "Astrid"
-
-msgid "Alicia"
-msgstr "Alicia"
-
-msgid "Urizan"
-msgstr "Urizan"
 
 msgid "Malik"
 msgstr "Malik"
@@ -42,7 +33,6 @@ msgstr "Guard"
 msgid "Grandfather"
 msgstr "Grandfather"
 
-# Common phrases
 msgid "Continue"
 msgstr "Continue"
 
@@ -52,3 +42,1580 @@ msgstr "Skip"
 msgid "Close"
 msgstr "Close"
 
+# ── Title screen, Load / Save
+msgid "Khalahas"
+msgstr "Khalahas"
+
+msgid "KHALAHAS"
+msgstr "KHALAHAS"
+
+msgid "Heroes"
+msgstr "Heroes"
+
+msgid "Khalahas Heroes"
+msgstr "Khalahas Heroes"
+
+msgid "Press Any Button"
+msgstr "Press Any Button"
+
+msgid "New Game"
+msgstr "New Game"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Quit Game"
+msgstr "Quit Game"
+
+msgid "© 2024-2026 Khalahas Studio. All Rights Reserved."
+msgstr "© 2024-2026 Khalahas Studio. All Rights Reserved."
+
+msgid "WAY OF\nQUSAKAM"
+msgstr "WAY OF\nQUSAKAM"
+
+msgid "Save Data Management"
+msgstr "Save Data Management"
+
+msgid "Load Game"
+msgstr "Load Game"
+
+msgid "Save Game"
+msgstr "Save Game"
+
+msgid "Select a slot to save your game."
+msgstr "Select a slot to save your game."
+
+msgid "Select a slot to load your game."
+msgstr "Select a slot to load your game."
+
+msgid "Empty Slot"
+msgstr "Empty Slot"
+
+msgid "No save data available"
+msgstr "No save data available"
+
+msgid "Lv. %d"
+msgstr "Lv. %d"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Delete"
+msgstr "Delete"
+
+# ── Bottom bar, common buttons
+msgid "Select"
+msgstr "Select"
+
+msgid "Confirm"
+msgstr "Confirm"
+
+msgid "Return"
+msgstr "Return"
+
+msgid "Back"
+msgstr "Back"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Accept"
+msgstr "Accept"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Yes"
+msgstr "Yes"
+
+msgid "No"
+msgstr "No"
+
+msgid "Exit"
+msgstr "Exit"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "Select a category."
+msgstr "Select a category."
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Confirmation"
+msgstr "Confirmation"
+
+msgid "Are you sure?"
+msgstr "Are you sure?"
+
+msgid "Item"
+msgstr "Item"
+
+msgid "Interact"
+msgstr "Interact"
+
+msgid "Talk"
+msgstr "Talk"
+
+msgid "Quest"
+msgstr "Quest"
+
+msgid "Shop"
+msgstr "Shop"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Pick up"
+msgstr "Pick up"
+
+msgid "Examine"
+msgstr "Examine"
+
+msgid "Buy"
+msgstr "Buy"
+
+msgid "Sell"
+msgstr "Sell"
+
+msgid "Craft"
+msgstr "Craft"
+
+msgid "Enchant"
+msgstr "Enchant"
+
+msgid "MENU"
+msgstr "MENU"
+
+msgid "Current task: %s"
+msgstr "Current task: %s"
+
+msgid "Current objective: %s"
+msgstr "Current objective: %s"
+
+# ── Game menu tabs
+msgid "Inventory"
+msgstr "Inventory"
+
+msgid "Equipment"
+msgstr "Equipment"
+
+msgid "World Map"
+msgstr "World Map"
+
+msgid "Misc"
+msgstr "Misc"
+
+msgid "Journal"
+msgstr "Journal"
+
+msgid "Skills"
+msgstr "Skills"
+
+msgid "Status"
+msgstr "Status"
+
+# ── Inventory
+msgid "FILTER"
+msgstr "FILTER"
+
+msgid "ITEM NAME"
+msgstr "ITEM NAME"
+
+msgid "ON HAND"
+msgstr "ON HAND"
+
+msgid "No items in this category."
+msgstr "No items in this category."
+
+msgid "ALL"
+msgstr "ALL"
+
+msgid "CONSUMABLES"
+msgstr "CONSUMABLES"
+
+msgid "MATERIALS"
+msgstr "MATERIALS"
+
+msgid "EQUIPMENT"
+msgstr "EQUIPMENT"
+
+msgid "KEY ITEMS"
+msgstr "KEY ITEMS"
+
+msgid "Double-click or Enter to use"
+msgstr "Double-click or Enter to use"
+
+msgid "Double-click or Enter to equip (%s)"
+msgstr "Double-click or Enter to equip (%s)"
+
+msgid "Cannot be used"
+msgstr "Cannot be used"
+
+msgid "%s's SP is already full."
+msgstr "%s's SP is already full."
+
+msgid "%s is already at full health."
+msgstr "%s is already at full health."
+
+msgid "%s equipped — %s."
+msgstr "%s equipped — %s."
+
+msgid "Accessory"
+msgstr "Accessory"
+
+# ── Equipment
+msgid "CURRENT CHARACTER"
+msgstr "CURRENT CHARACTER"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Manage Hero Loadout"
+msgstr "Manage Hero Loadout"
+
+msgid "OPTIMIZE"
+msgstr "OPTIMIZE"
+
+msgid "✕  UNEQUIP ALL"
+msgstr "✕  UNEQUIP ALL"
+
+msgid "Attributes"
+msgstr "Attributes"
+
+msgid "(empty)"
+msgstr "(empty)"
+
+msgid "SWORDS"
+msgstr "SWORDS"
+
+msgid "POLEARMS"
+msgstr "POLEARMS"
+
+msgid "DAGGERS"
+msgstr "DAGGERS"
+
+msgid "AXES"
+msgstr "AXES"
+
+msgid "MACES"
+msgstr "MACES"
+
+msgid "BOWS"
+msgstr "BOWS"
+
+msgid "STAVES"
+msgstr "STAVES"
+
+msgid "SHIELDS"
+msgstr "SHIELDS"
+
+msgid "HEAD"
+msgstr "HEAD"
+
+msgid "BODY"
+msgstr "BODY"
+
+msgid "ACCESSORIES"
+msgstr "ACCESSORIES"
+
+msgid "Max. HP"
+msgstr "Max. HP"
+
+msgid "Max. SP"
+msgstr "Max. SP"
+
+msgid "Phys. Atk."
+msgstr "Phys. Atk."
+
+msgid "Phys. Def."
+msgstr "Phys. Def."
+
+msgid "Accuracy"
+msgstr "Accuracy"
+
+msgid "Critical"
+msgstr "Critical"
+
+msgid "Elem. Atk."
+msgstr "Elem. Atk."
+
+msgid "Elem. Def."
+msgstr "Elem. Def."
+
+msgid "Speed"
+msgstr "Speed"
+
+msgid "Evasion"
+msgstr "Evasion"
+
+msgid "Equipped"
+msgstr "Equipped"
+
+msgid "%s — empty. Press {ui_accept} to choose an item."
+msgstr "%s — empty. Press {ui_accept} to choose an item."
+
+msgid "Swords"
+msgstr "Swords"
+
+msgid "Choose an item for this slot"
+msgstr "Choose an item for this slot"
+
+msgid "Nothing in your bag fits this slot."
+msgstr "Nothing in your bag fits this slot."
+
+msgid "Unequip"
+msgstr "Unequip"
+
+# ── World map
+msgid "The Desert Kingdoms"
+msgstr "The Desert Kingdoms"
+
+msgid "EXPLORED"
+msgstr "EXPLORED"
+
+msgid "Arrow keys — pan the map."
+msgstr "Arrow keys — pan the map."
+
+# ── Journal
+msgid "JOURNAL"
+msgstr "JOURNAL"
+
+msgid "QUESTS"
+msgstr "QUESTS"
+
+msgid "CHARACTERS"
+msgstr "CHARACTERS"
+
+msgid "BESTIARY"
+msgstr "BESTIARY"
+
+msgid "CURRENT OBJECTIVE"
+msgstr "CURRENT OBJECTIVE"
+
+msgid "OBJECTIVES"
+msgstr "OBJECTIVES"
+
+msgid "No journal entries yet."
+msgstr "No journal entries yet."
+
+msgid "Quests"
+msgstr "Quests"
+
+msgid "Characters"
+msgstr "Characters"
+
+msgid "Bestiary"
+msgstr "Bestiary"
+
+msgid "PEOPLE MET"
+msgstr "PEOPLE MET"
+
+msgid "You have not met anyone yet."
+msgstr "You have not met anyone yet."
+
+msgid "ENEMIES MET"
+msgstr "ENEMIES MET"
+
+msgid "No enemies met yet."
+msgstr "No enemies met yet."
+
+msgid "Defeated: %d"
+msgstr "Defeated: %d"
+
+msgid "Not yet defeated"
+msgstr "Not yet defeated"
+
+msgid "Tasks"
+msgstr "Tasks"
+
+msgid "Goal: %s"
+msgstr "Goal: %s"
+
+msgid "PROLOGUE"
+msgstr "PROLOGUE"
+
+# ── Skills
+msgid "JP OBTAINED"
+msgstr "JP OBTAINED"
+
+msgid "0 JP"
+msgstr "0 JP"
+
+msgid "%d JP"
+msgstr "%d JP"
+
+msgid "Primary Class Tree"
+msgstr "Primary Class Tree"
+
+msgid "Pick"
+msgstr "Pick"
+
+msgid "Undo"
+msgstr "Undo"
+
+msgid "PUT ON THE HOTBAR"
+msgstr "PUT ON THE HOTBAR"
+
+msgid "POINTS"
+msgstr "POINTS"
+
+msgid "Nothing picked"
+msgstr "Nothing picked"
+
+msgid "No skills available yet."
+msgstr "No skills available yet."
+
+msgid "+%d atk"
+msgstr "+%d atk"
+
+msgid "+%d HP"
+msgstr "+%d HP"
+
+msgid "+%d SP"
+msgstr "+%d SP"
+
+msgid "+%s%% crit"
+msgstr "+%s%% crit"
+
+msgid "+%s%% evade"
+msgstr "+%s%% evade"
+
+msgid "+%s%% speed"
+msgstr "+%s%% speed"
+
+msgid "+%s%% power"
+msgstr "+%s%% power"
+
+msgid "+%s SP/s"
+msgstr "+%s SP/s"
+
+msgid "Lv %d"
+msgstr "Lv %d"
+
+msgid "Lv.%d"
+msgstr "Lv.%d"
+
+msgid "LV.%d"
+msgstr "LV.%d"
+
+msgid "Lv.1"
+msgstr "Lv.1"
+
+msgid "LV.1"
+msgstr "LV.1"
+
+msgid "%s · Swear an oath in the City (level %d)"
+msgstr "%s · Swear an oath in the City (level %d)"
+
+msgid "Your oath"
+msgstr "Your oath"
+
+msgid "Sworn to another oath"
+msgstr "Sworn to another oath"
+
+msgid "R%d +%d"
+msgstr "R%d +%d"
+
+msgid "R%d"
+msgstr "R%d"
+
+msgid "Picked"
+msgstr "Picked"
+
+msgid "Picked +%d"
+msgstr "Picked +%d"
+
+msgid "Oath"
+msgstr "Oath"
+
+msgid "Other oath"
+msgstr "Other oath"
+
+msgid "Locked"
+msgstr "Locked"
+
+msgid "Free"
+msgstr "Free"
+
+msgid "%s skill · %s"
+msgstr "%s skill · %s"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Passive"
+msgstr "Passive"
+
+msgid "Cost"
+msgstr "Cost"
+
+msgid "Level"
+msgstr "Level"
+
+msgid "%d SP"
+msgstr "%d SP"
+
+msgid "Cooldown"
+msgstr "Cooldown"
+
+msgid "%s s"
+msgstr "%s s"
+
+msgid "Rank"
+msgstr "Rank"
+
+msgid "Requires"
+msgstr "Requires"
+
+msgid "Weapon"
+msgstr "Weapon"
+
+msgid "Effect"
+msgstr "Effect"
+
+msgid "%d dmg"
+msgstr "%d dmg"
+
+msgid "heal %d"
+msgstr "heal %d"
+
+msgid "burn %d/s"
+msgstr "burn %d/s"
+
+msgid "chain ×%s"
+msgstr "chain ×%s"
+
+msgid "stun %s s"
+msgstr "stun %s s"
+
+msgid "+%d max HP"
+msgstr "+%d max HP"
+
+msgid "+%d max SP"
+msgstr "+%d max SP"
+
+msgid "+%d attack"
+msgstr "+%d attack"
+
+msgid "−%s%% damage with a shield"
+msgstr "−%s%% damage with a shield"
+
+msgid "−%s%% damage taken"
+msgstr "−%s%% damage taken"
+
+msgid "heals +%s%%"
+msgstr "heals +%s%%"
+
+msgid "hits heal %s%%"
+msgstr "hits heal %s%%"
+
+msgid "+%s%% poise damage"
+msgstr "+%s%% poise damage"
+
+msgid "Learned, rank %d/%d"
+msgstr "Learned, rank %d/%d"
+
+msgid " → %d after Accept"
+msgstr " → %d after Accept"
+
+msgid "%s. Pick to rank up (+10%%, %d JP)."
+msgstr "%s. Pick to rank up (+10%%, %d JP)."
+
+msgid "%s. Max rank."
+msgstr "%s. Max rank."
+
+msgid "%s. Not enough JP to rank up."
+msgstr "%s. Not enough JP to rank up."
+
+msgid "Picked: Accept to learn it."
+msgstr "Picked: Accept to learn it."
+
+msgid "Picked: Accept to learn it at rank %d."
+msgstr "Picked: Accept to learn it at rank %d."
+
+msgid "Can learn now: Pick, then Accept."
+msgstr "Can learn now: Pick, then Accept."
+
+msgid "Not enough JP (%d needed)."
+msgstr "Not enough JP (%d needed)."
+
+msgid "Level too low: needs level %d."
+msgstr "Level too low: needs level %d."
+
+msgid "Needs %s first."
+msgstr "Needs %s first."
+
+msgid "Swear an oath in the City (level %d)."
+msgstr "Swear an oath in the City (level %d)."
+
+msgid "Sworn to another oath."
+msgstr "Sworn to another oath."
+
+msgid "empty"
+msgstr "empty"
+
+msgid "attribute points: %d"
+msgstr "attribute points: %d"
+
+msgid "To spend: "
+msgstr "To spend: "
+
+msgid "{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+msgstr "{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+
+msgid "%ds"
+msgstr "%ds"
+
+# ── Status
+msgid "To Next Level:"
+msgstr "To Next Level:"
+
+msgid "JP Obtained:"
+msgstr "JP Obtained:"
+
+msgid "Attribute Points:"
+msgstr "Attribute Points:"
+
+msgid "PRIMARY JOB"
+msgstr "PRIMARY JOB"
+
+msgid "SECONDARY JOB"
+msgstr "SECONDARY JOB"
+
+msgid "WEAPON TYPES"
+msgstr "WEAPON TYPES"
+
+msgid "Unique Actions & Talents"
+msgstr "Unique Actions & Talents"
+
+msgid "PATH ACTION"
+msgstr "PATH ACTION"
+
+msgid "TALENT"
+msgstr "TALENT"
+
+msgid "%d EXP"
+msgstr "%d EXP"
+
+msgid "IN PARTY · %d"
+msgstr "IN PARTY · %d"
+
+msgid "IN CAMP"
+msgstr "IN CAMP"
+
+# ── Misc, Tutorial, Controls
+msgid "Tutorial"
+msgstr "Tutorial"
+
+msgid "Topic"
+msgstr "Topic"
+
+msgid "Return to Title"
+msgstr "Return to Title"
+
+msgid "Quit the Game"
+msgstr "Quit the Game"
+
+msgid "Controls"
+msgstr "Controls"
+
+msgid "←  Settings"
+msgstr "←  Settings"
+
+msgid "Press the"
+msgstr "Press the"
+
+msgid "Select a tutorial topic."
+msgstr "Select a tutorial topic."
+
+msgid "Use the arrow keys or the left stick to choose a topic."
+msgstr "Use the arrow keys or the left stick to choose a topic."
+
+msgid "Every action — rebind in Settings → Controls"
+msgstr "Every action — rebind in Settings → Controls"
+
+msgid "ACTION"
+msgstr "ACTION"
+
+msgid "KEYBOARD / MOUSE"
+msgstr "KEYBOARD / MOUSE"
+
+msgid "GAMEPAD"
+msgstr "GAMEPAD"
+
+msgid "Every action with its keyboard and gamepad button."
+msgstr "Every action with its keyboard and gamepad button."
+
+msgid "Move left"
+msgstr "Move left"
+
+msgid "Move right"
+msgstr "Move right"
+
+msgid "Jump"
+msgstr "Jump"
+
+msgid "Dash (twice: double dash, also in the air)"
+msgstr "Dash (twice: double dash, also in the air)"
+
+msgid "Climb up"
+msgstr "Climb up"
+
+msgid "Climb down / drop through a ledge"
+msgstr "Climb down / drop through a ledge"
+
+msgid "Attack (press again for a combo)"
+msgstr "Attack (press again for a combo)"
+
+msgid "Heavy attack"
+msgstr "Heavy attack"
+
+msgid "Block (hold) / parry (tap on the red glint)"
+msgstr "Block (hold) / parry (tap on the red glint)"
+
+msgid "Interact, talk, pick up"
+msgstr "Interact, talk, pick up"
+
+msgid "Next line of dialogue"
+msgstr "Next line of dialogue"
+
+msgid "Skip a cutscene (hold)"
+msgstr "Skip a cutscene (hold)"
+
+msgid "Skill slot 1"
+msgstr "Skill slot 1"
+
+msgid "Skill slot 2"
+msgstr "Skill slot 2"
+
+msgid "Skill slot 3"
+msgstr "Skill slot 3"
+
+msgid "Skill slot 4"
+msgstr "Skill slot 4"
+
+msgid "Call a companion"
+msgstr "Call a companion"
+
+msgid "Next weapon"
+msgstr "Next weapon"
+
+msgid "Previous weapon"
+msgstr "Previous weapon"
+
+msgid "Game menu"
+msgstr "Game menu"
+
+msgid "Previous / next menu tab"
+msgstr "Previous / next menu tab"
+
+msgid "Skills screen: accept the picks"
+msgstr "Skills screen: accept the picks"
+
+msgid "Skills screen: undo a pick"
+msgstr "Skills screen: undo a pick"
+
+# ── Input glyphs (InputGlyphs)
+msgid "Arrows"
+msgstr "Arrows"
+
+msgid "D-pad"
+msgstr "D-pad"
+
+msgid "D-pad up"
+msgstr "D-pad up"
+
+msgid "D-pad down"
+msgstr "D-pad down"
+
+msgid "D-pad left"
+msgstr "D-pad left"
+
+msgid "D-pad right"
+msgstr "D-pad right"
+
+msgid "Left stick"
+msgstr "Left stick"
+
+msgid "Right stick"
+msgstr "Right stick"
+
+msgid "Left Mouse"
+msgstr "Left Mouse"
+
+msgid "Right Mouse"
+msgstr "Right Mouse"
+
+msgid "Middle Mouse"
+msgstr "Middle Mouse"
+
+# ── Settings
+msgid "GRAPHICS OPTIONS"
+msgstr "GRAPHICS OPTIONS"
+
+msgid "Display Settings"
+msgstr "Display Settings"
+
+msgid "SOUND OPTIONS"
+msgstr "SOUND OPTIONS"
+
+msgid "Audio Settings"
+msgstr "Audio Settings"
+
+msgid "GAME OPTIONS"
+msgstr "GAME OPTIONS"
+
+msgid "Game Settings"
+msgstr "Game Settings"
+
+msgid "INPUT OPTIONS"
+msgstr "INPUT OPTIONS"
+
+msgid "Set the display mode, window size and frame rate limit."
+msgstr "Set the display mode, window size and frame rate limit."
+
+msgid "Adjust volume levels."
+msgstr "Adjust volume levels."
+
+msgid "Choose the interface language and whether hints open tutorial windows."
+msgstr "Choose the interface language and whether hints open tutorial windows."
+
+msgid "Select an action to rebind it."
+msgstr "Select an action to rebind it."
+
+msgid "Display Mode"
+msgstr "Display Mode"
+
+msgid "Windowed"
+msgstr "Windowed"
+
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+msgid "Resolution"
+msgstr "Resolution"
+
+msgid "VSync"
+msgstr "VSync"
+
+msgid "Enable"
+msgstr "Enable"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "Frame Rate Limit"
+msgstr "Frame Rate Limit"
+
+msgid "Unlimited"
+msgstr "Unlimited"
+
+msgid "%d FPS"
+msgstr "%d FPS"
+
+msgid "Master Volume"
+msgstr "Master Volume"
+
+msgid "Music"
+msgstr "Music"
+
+msgid "Sound Effects"
+msgstr "Sound Effects"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "English"
+msgstr "English"
+
+msgid "Ukrainian"
+msgstr "Ukrainian"
+
+msgid "Tutorial Windows"
+msgstr "Tutorial Windows"
+
+msgid "On"
+msgstr "On"
+
+msgid "Off"
+msgstr "Off"
+
+msgid "Restore Default Settings"
+msgstr "Restore Default Settings"
+
+msgid "Exit to Main Menu"
+msgstr "Exit to Main Menu"
+
+msgid "Actions & Inputs"
+msgstr "Actions & Inputs"
+
+msgid "Primary"
+msgstr "Primary"
+
+msgid "Secondary"
+msgstr "Secondary"
+
+msgid "Tertiary"
+msgstr "Tertiary"
+
+msgid "Are you sure you want to remove KEY from ACTION?"
+msgstr "Are you sure you want to remove KEY from ACTION?"
+
+msgid "Are you sure you want to reset controls back to the defaults?"
+msgstr "Are you sure you want to reset controls back to the defaults?"
+
+msgid "Set Input"
+msgstr "Set Input"
+
+msgid "None"
+msgstr "None"
+
+msgid "Focus here to assign inputs."
+msgstr "Focus here to assign inputs."
+
+# ── Settings → Controls (maaacks rebinding list: action names, input names)
+msgid "Move Up"
+msgstr "Move Up"
+
+msgid "Move Down"
+msgstr "Move Down"
+
+msgid "Move Left"
+msgstr "Move Left"
+
+msgid "Move Right"
+msgstr "Move Right"
+
+msgid "Dq Accept"
+msgstr "Dq Accept"
+
+msgid "Game Menu"
+msgstr "Game Menu"
+
+msgid "Attack"
+msgstr "Attack"
+
+msgid "Heavy Attack"
+msgstr "Heavy Attack"
+
+msgid "Dodge"
+msgstr "Dodge"
+
+msgid "Block"
+msgstr "Block"
+
+msgid "Weapon Next"
+msgstr "Weapon Next"
+
+msgid "Weapon Prev"
+msgstr "Weapon Prev"
+
+msgid "Assist"
+msgstr "Assist"
+
+msgid "Save Delete"
+msgstr "Save Delete"
+
+msgid "Menu Prev Tab"
+msgstr "Menu Prev Tab"
+
+msgid "Menu Next Tab"
+msgstr "Menu Next Tab"
+
+msgid "Skill Slot 1"
+msgstr "Skill Slot 1"
+
+msgid "Skill Slot 2"
+msgstr "Skill Slot 2"
+
+msgid "Skill Slot 3"
+msgstr "Skill Slot 3"
+
+msgid "Skill Slot 4"
+msgstr "Skill Slot 4"
+
+msgid "Cutscene Skip"
+msgstr "Cutscene Skip"
+
+msgid "Skills Accept"
+msgstr "Skills Accept"
+
+msgid "Skills Unpick"
+msgstr "Skills Unpick"
+
+msgid "Left Stick Up"
+msgstr "Left Stick Up"
+
+msgid "Left Stick Down"
+msgstr "Left Stick Down"
+
+msgid "Left Stick Left"
+msgstr "Left Stick Left"
+
+msgid "Left Stick Right"
+msgstr "Left Stick Right"
+
+msgid "Right Stick Up"
+msgstr "Right Stick Up"
+
+msgid "Right Stick Down"
+msgstr "Right Stick Down"
+
+msgid "Right Stick Left"
+msgstr "Right Stick Left"
+
+msgid "Right Stick Right"
+msgstr "Right Stick Right"
+
+msgid "Button A"
+msgstr "Button A"
+
+msgid "Button B"
+msgstr "Button B"
+
+msgid "Button X"
+msgstr "Button X"
+
+msgid "Button Y"
+msgstr "Button Y"
+
+msgid "Button Start"
+msgstr "Button Start"
+
+msgid "Button Back"
+msgstr "Button Back"
+
+msgid "Button Guide"
+msgstr "Button Guide"
+
+msgid "Left Shoulder"
+msgstr "Left Shoulder"
+
+msgid "Right Shoulder"
+msgstr "Right Shoulder"
+
+msgid "Left Trigger"
+msgstr "Left Trigger"
+
+msgid "Right Trigger"
+msgstr "Right Trigger"
+
+msgid "Left Stick"
+msgstr "Left Stick"
+
+msgid "Right Stick"
+msgstr "Right Stick"
+
+msgid "Dpad Up"
+msgstr "Dpad Up"
+
+msgid "Dpad Down"
+msgstr "Dpad Down"
+
+msgid "Dpad Left"
+msgstr "Dpad Left"
+
+msgid "Dpad Right"
+msgstr "Dpad Right"
+
+msgid "Left Mouse Button"
+msgstr "Left Mouse Button"
+
+msgid "Right Mouse Button"
+msgstr "Right Mouse Button"
+
+msgid "Middle Mouse Button"
+msgstr "Middle Mouse Button"
+
+# ── Modals (ModalTemplates)
+msgid "Exit Game?"
+msgstr "Exit Game?"
+
+msgid "Any unsaved progress will be lost."
+msgstr "Any unsaved progress will be lost."
+
+msgid "Unsaved Changes"
+msgstr "Unsaved Changes"
+
+msgid "You have unsaved changes. Continue?"
+msgstr "You have unsaved changes. Continue?"
+
+msgid "Reset Settings"
+msgstr "Reset Settings"
+
+msgid "Reset all settings to defaults?"
+msgstr "Reset all settings to defaults?"
+
+msgid "Delete Save"
+msgstr "Delete Save"
+
+msgid "This will permanently delete the save slot."
+msgstr "This will permanently delete the save slot."
+
+msgid "Overwrite Save?"
+msgstr "Overwrite Save?"
+
+msgid "This will replace the existing save data."
+msgstr "This will replace the existing save data."
+
+msgid "Buy %s?"
+msgstr "Buy %s?"
+
+msgid "Quantity: ◀ %d ▶  •  Total Cost: %s"
+msgstr "Quantity: ◀ %d ▶  •  Total Cost: %s"
+
+msgid "Craft %s?"
+msgstr "Craft %s?"
+
+msgid "Cannot Craft"
+msgstr "Cannot Craft"
+
+msgid "Enchant %s?"
+msgstr "Enchant %s?"
+
+msgid "Cannot Enchant"
+msgstr "Cannot Enchant"
+
+msgid "Game Saved"
+msgstr "Game Saved"
+
+msgid "Your progress has been saved successfully."
+msgstr "Your progress has been saved successfully."
+
+msgid "Save Failed"
+msgstr "Save Failed"
+
+msgid "Your progress could not be saved. Please try again."
+msgstr "Your progress could not be saved. Please try again."
+
+msgid "You obtained:"
+msgstr "You obtained:"
+
+msgid "Cannot Use"
+msgstr "Cannot Use"
+
+msgid "%s cannot be used."
+msgstr "%s cannot be used."
+
+msgid "Exit to Main Menu?"
+msgstr "Exit to Main Menu?"
+
+msgid "Unsaved progress will be lost."
+msgstr "Unsaved progress will be lost."
+
+# ── Shop
+msgid "SHOP"
+msgstr "SHOP"
+
+msgid "All Wares"
+msgstr "All Wares"
+
+msgid "All Possessions"
+msgstr "All Possessions"
+
+msgid "Weapons"
+msgstr "Weapons"
+
+msgid "Shields"
+msgstr "Shields"
+
+msgid "Armor"
+msgstr "Armor"
+
+msgid "Accessories"
+msgstr "Accessories"
+
+msgid "Items"
+msgstr "Items"
+
+msgid "Item Name"
+msgstr "Item Name"
+
+msgid "Selling Price"
+msgstr "Selling Price"
+
+msgid "Buying Price"
+msgstr "Buying Price"
+
+msgid "Nothing here."
+msgstr "Nothing here."
+
+msgid "Select an item."
+msgstr "Select an item."
+
+msgid "Switch Category"
+msgstr "Switch Category"
+
+msgid "No wares in this category."
+msgstr "No wares in this category."
+
+msgid "You have nothing to sell here."
+msgstr "You have nothing to sell here."
+
+# ── Crafting, enchanting
+msgid "CRAFT"
+msgstr "CRAFT"
+
+msgid "Available Recipes"
+msgstr "Available Recipes"
+
+msgid "Item Name & Materials"
+msgstr "Item Name & Materials"
+
+msgid "On Hand"
+msgstr "On Hand"
+
+msgid "Crafting Cost"
+msgstr "Crafting Cost"
+
+msgid "No recipes here."
+msgstr "No recipes here."
+
+msgid "PLAYTIME"
+msgstr "PLAYTIME"
+
+msgid "GOLD"
+msgstr "GOLD"
+
+msgid "MP:"
+msgstr "MP:"
+
+msgid "LVL:"
+msgstr "LVL:"
+
+msgid "description"
+msgstr "description"
+
+msgid "Furnace"
+msgstr "Furnace"
+
+msgid "Workbench"
+msgstr "Workbench"
+
+msgid "Anvil"
+msgstr "Anvil"
+
+msgid "Alchemy"
+msgstr "Alchemy"
+
+msgid "Select a recipe."
+msgstr "Select a recipe."
+
+msgid "Switch Station"
+msgstr "Switch Station"
+
+msgid "Requires: %s"
+msgstr "Requires: %s"
+
+msgid "Not enough materials."
+msgstr "Not enough materials."
+
+msgid "You are missing: %s"
+msgstr "You are missing: %s"
+
+msgid "Not enough gold."
+msgstr "Not enough gold."
+
+msgid "You need %s."
+msgstr "You need %s."
+
+msgid "%s Recipe"
+msgstr "%s Recipe"
+
+msgid "Recipe"
+msgstr "Recipe"
+
+msgid "Required Materials"
+msgstr "Required Materials"
+
+msgid "Expected Result Stats"
+msgstr "Expected Result Stats"
+
+msgid "ENCHANT"
+msgstr "ENCHANT"
+
+msgid "Enchantable Items"
+msgstr "Enchantable Items"
+
+msgid "Item & Result"
+msgstr "Item & Result"
+
+msgid "Enchant Cost"
+msgstr "Enchant Cost"
+
+msgid "Nothing to enchant. Bring a weapon or armour."
+msgstr "Nothing to enchant. Bring a weapon or armour."
+
+msgid "Two identical items make one a level higher."
+msgstr "Two identical items make one a level higher."
+
+msgid "Phys. Atk"
+msgstr "Phys. Atk"
+
+msgid "Phys. Def"
+msgstr "Phys. Def"
+
+msgid "Magic"
+msgstr "Magic"
+
+msgid "Restores HP"
+msgstr "Restores HP"
+
+msgid "Not enough coins."
+msgstr "Not enough coins."
+
+# ── Oath keepers
+msgid "Come back at level %d"
+msgstr "Come back at level %d"
+
+msgid "I swear: %s (permanent)"
+msgstr "I swear: %s (permanent)"
+
+msgid "Not yet"
+msgstr "Not yet"
+
+msgid "Not enough coins (%d needed)"
+msgstr "Not enough coins (%d needed)"
+
+msgid "Forget every skill and attribute point for %d coins"
+msgstr "Forget every skill and attribute point for %d coins"
+
+msgid "Swear the oath"
+msgstr "Swear the oath"
+
+msgid "Unlearn skills and attributes (%d coins)"
+msgstr "Unlearn skills and attributes (%d coins)"
+
+# ── HUD, notifications
+msgid "Unarmed"
+msgstr "Unarmed"
+
+msgid "Level %d"
+msgstr "Level %d"
+
+msgid "Level 1"
+msgstr "Level 1"
+
+msgid "Level 2"
+msgstr "Level 2"
+
+msgid "%d / %d XP"
+msgstr "%d / %d XP"
+
+msgid "LEVEL UP!"
+msgstr "LEVEL UP!"
+
+msgid "HP +%d, Damage +%d"
+msgstr "HP +%d, Damage +%d"
+
+msgid "HP +20, Damage +5"
+msgstr "HP +20, Damage +5"
+
+msgid "NEW COMPANION"
+msgstr "NEW COMPANION"
+
+msgid "%s joined the party"
+msgstr "%s joined the party"
+
+msgid "Active Quest"
+msgstr "Active Quest"
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "Objective Text"
+msgstr "Objective Text"
+
+msgid "Boss"
+msgstr "Boss"
+
+msgid "Hold Tab to skip"
+msgstr "Hold Tab to skip"
+
+msgid "Hold %s to skip"
+msgstr "Hold %s to skip"
+
+msgid "Skipping…"
+msgstr "Skipping…"
+
+msgid "Combat context message goes here..."
+msgstr "Combat context message goes here..."
+
+msgid "Tutorial hint goes here..."
+msgstr "Tutorial hint goes here..."
+
+msgid "Combat Zone"
+msgstr "Combat Zone"
+
+msgid "Press D to toggle delta vector"
+msgstr "Press D to toggle delta vector"
+
+msgid "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
+msgstr "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
+
+msgid "A powerful guardian blocks your path. Steel yourself for battle."
+msgstr "A powerful guardian blocks your path. Steel yourself for battle."
+
+msgid "Multiple foes ahead. Your skills will be tested."
+msgstr "Multiple foes ahead. Your skills will be tested."
+
+msgid "The source of corruption lies beyond. This is your final trial."
+msgstr "The source of corruption lies beyond. This is your final trial."
+
+msgid "Ancient treasures are protected by dark forces. Fight to claim your reward."
+msgstr "Ancient treasures are protected by dark forces. Fight to claim your reward."
+
+msgid "Dark creatures lurk in every shadow. Stay vigilant."
+msgstr "Dark creatures lurk in every shadow. Stay vigilant."
+
+# ── Game Over, demo end, prologue, leftovers
+msgid "Game Over"
+msgstr "Game Over"
+
+msgid "Resume from last save point"
+msgstr "Resume from last save point"
+
+msgid "Return to title"
+msgstr "Return to title"
+
+msgid "ENTER"
+msgstr "ENTER"
+
+msgid "Select Option"
+msgstr "Select Option"
+
+msgid "Thank you for playing!"
+msgstr "Thank you for playing!"
+
+msgid "You have finished the demo.\n\nWe hope you enjoyed it!"
+msgstr "You have finished the demo.\n\nWe hope you enjoyed it!"
+
+msgid "Return to Main Menu"
+msgstr "Return to Main Menu"
+
+msgid "The Dark Realm"
+msgstr "The Dark Realm"
+
+msgid "Story text goes here..."
+msgstr "Story text goes here..."
+
+msgid "Press any key to continue..."
+msgstr "Press any key to continue..."
+
+msgid "VICTORY!"
+msgstr "VICTORY!"
+
+msgid "Congratulations! You completed the game!"
+msgstr "Congratulations! You completed the game!"
+
+msgid "Press SPACE to play again\nPress ESC for main menu"
+msgstr "Press SPACE to play again\nPress ESC for main menu"
+
+# ── Objectives (zone scripts, D121 placeholders)
+msgid "Explore the Canyon"
+msgstr "Explore the Canyon"
+
+msgid "Pursue the kidnappers"
+msgstr "Pursue the kidnappers"
+
+msgid "Find a way forward"
+msgstr "Find a way forward"
+
+msgid "Return to the village"
+msgstr "Return to the village"
+
+msgid "Head to the village"
+msgstr "Head to the village"
+
+msgid "Descend to the road"
+msgstr "Descend to the road"
+
+msgid "Approach the city gates"
+msgstr "Approach the city gates"
+
+msgid "Enter the city"
+msgstr "Enter the city"
+
+msgid "Defeat the bandits"
+msgstr "Defeat the bandits"
+
+msgid "Find the laboratory"
+msgstr "Find the laboratory"
+
+msgid "Continue on to the city"
+msgstr "Continue on to the city"
+
+msgid "Reach the city gates"
+msgstr "Reach the city gates"
+
+msgid "Defeat the enemies on the road"
+msgstr "Defeat the enemies on the road"
+
+msgid "Defeat the fire djinn"
+msgstr "Defeat the fire djinn"
+
+msgid "Leave the laboratory"
+msgstr "Leave the laboratory"
+
+msgid "Fight through the laboratory"
+msgstr "Fight through the laboratory"
+
+msgid "Step out of the cell"
+msgstr "Step out of the cell"
+
+msgid "Find out where you are"
+msgstr "Find out where you are"
+
+msgid "Finish the demo"
+msgstr "Finish the demo"
+
+msgid "Speak with the mayor"
+msgstr "Speak with the mayor"
+
+msgid "Survive the Brass Collector"
+msgstr "Survive the Brass Collector"
+
+msgid "Reach the village center"
+msgstr "Reach the village center"
+
+msgid "Check on the house"
+msgstr "Check on the house"
+
+msgid "Talk to the old man"
+msgstr "Talk to the old man"
+
+msgid "Make a decision"
+msgstr "Make a decision"
+
+msgid "Leave the village"
+msgstr "Leave the village"
+
+msgid "Learn to fight: follow the lesson"
+msgstr "Learn to fight: follow the lesson"
+
+msgid "Defeat the bandit in the street"
+msgstr "Defeat the bandit in the street"
+
+# ── Journal, tutorial hints (more)
+msgid "Journal entries appear here as you progress."
+msgstr "Journal entries appear here as you progress."
+
+msgid "Select an entry to read it."
+msgstr "Select an entry to read it."
+
+msgid "Path Action"
+msgstr "Path Action"
+
+msgid "Talent"
+msgstr "Talent"
+
+msgid "Tutorial windows can be turned off in Settings → Game."
+msgstr "Tutorial windows can be turned off in Settings → Game."
+
+msgid "Unknown Item"
+msgstr "Unknown Item"

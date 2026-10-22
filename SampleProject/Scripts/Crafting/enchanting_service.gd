@@ -67,7 +67,7 @@ func row(item_id: String) -> Dictionary:
 		"name": db.get_item_name(item_id),
 		"result_name": db.get_item_name(made),
 		"detail": "%s ×%d → %s  (%s %d → %d)" % [db.get_item_name(item_id), ITEMS_PER_ENCHANT,
-				db.get_item_name(made), STAT_LABELS[stat], int(db.get_item(item_id).stats[stat]),
+				db.get_item_name(made), tr(STAT_LABELS[stat]), int(db.get_item(item_id).stats[stat]),
 				int(db.get_item(made).stats[stat])],
 		"description": db.get_item_description(db.base_id(item_id)),
 		"icon": db.get_item_icon(item_id),

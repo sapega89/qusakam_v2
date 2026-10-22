@@ -87,7 +87,10 @@ func _initialize() -> void:
 	var ev := InputEventAction.new()
 	ev.action = &"ui_right"
 	ev.pressed = true
-	map._input(ev)
+	# BACKLOG 24: карта панорамується, лише коли фокус на ній (_gui_input) — D-pad на вкладках ходить вкладками
+	ck(map.focus_mode == Control.FOCUS_ALL, "the map takes focus (D-pad right / A from its tab)")
+	map.grab_focus()
+	map._gui_input(ev)
 	await process_frame
 	ck(map.offset == before + Vector2i.RIGHT, "map pans on ui_right (%s -> %s)" % [str(before), str(map.offset)])
 

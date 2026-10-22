@@ -92,7 +92,7 @@ func _load() -> void:
 		"bestiary":
 			set_entries(JournalRecords.enemies().map(func(e: Dictionary) -> Dictionary:
 				return {"id": e.kind, "title": e.name, "description": e.text,
-					"group": "Defeated: %d" % e.kills if e.kills > 0 else "Not yet defeated"}))
+					"group": tr("Defeated: %d") % e.kills if e.kills > 0 else tr("Not yet defeated")}))
 
 
 func _unhandled_input(event: InputEvent) -> void:

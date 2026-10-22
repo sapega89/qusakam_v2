@@ -127,6 +127,11 @@ func switch_to_tab(tab_id: String) -> void:
 	_set_hint(TAB_HINTS.get(tab_id, ""))
 
 
+## Фокус на вкладку бічної панелі, що зараз відкрита (головне меню відкриває налаштування без миші, BACKLOG 24).
+func focus_current_tab() -> void:
+	_tab_buttons[current_tab].button.grab_focus()
+
+
 func _set_hint(text: String) -> void:
 	var bar: Node = get_tree().get_first_node_in_group(&"ui_bottom_bar") if get_tree() else null
 	# Нижня панель спільна: прихована вкладка не має права її перезаписувати.
@@ -137,6 +142,31 @@ func _set_hint(text: String) -> void:
 # ── Rows ────────────────────────────────────────────────────────────────────
 
 func _rebuild_list() -> void:
+	# Рядок перебудовується з-під фокуса (Display Mode, VSync, Language…) — фокус повертається на ту саму
+	# комірку нового рядка, інакше геймпад лишався без фокуса (BACKLOG 24). Шлях — за іменами рядків.
+	var focused: Control = get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+	var refocus := NodePath(_list.get_path_to(focused)) if focused and _list.is_ancestor_of(focused) else NodePath()
+	_build_rows()
+	_link_sidebar_to_list()
+	if not refocus.is_empty():
+		var again: Control = _list.get_node_or_null(refocus)
+		if again:
+			again.grab_focus()
+
+
+## Вправо з вкладки — перший рядок списку, а не найближча за геометрією кнопка Restore внизу (BACKLOG 24).
+func _link_sidebar_to_list() -> void:
+	var first: Control = null
+	for control in _list.find_children("*", "Control", true, false):
+		if control.focus_mode == Control.FOCUS_ALL and not control is ScrollBar:
+			first = control
+			break
+	for id in _tab_buttons:
+		var button: Button = _tab_buttons[id].button
+		button.focus_neighbor_right = button.get_path_to(first) if first else NodePath()
+
+
+func _build_rows() -> void:
 	for child in _list.get_children():
 		_list.remove_child(child)
 		child.queue_free()
@@ -191,6 +221,7 @@ func _add_separator() -> void:
 ## Figma 17:325 — px16, назва ліворуч, контрол праворуч; висота рядка з Figma, вміст по центру (B21).
 func _make_row(label_text: String, height: int) -> HBoxContainer:
 	var margin := MarginContainer.new()
+	margin.name = "%sRow" % label_text  # стабільний шлях для повернення фокуса (_rebuild_list)
 	margin.custom_minimum_size.y = height
 	margin.add_theme_constant_override("margin_left", UITokens.SETTINGS_ROW_PAD_H)
 	margin.add_theme_constant_override("margin_right", UITokens.SETTINGS_ROW_PAD_H)
@@ -221,13 +252,14 @@ func _add_segment_row(label_text: String, options: Array, selected: int,
 	frame.add_theme_stylebox_override("panel", box)
 	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var cells := HBoxContainer.new()
+	cells.name = "Cells"
 	cells.add_theme_constant_override("separation", 0)
 	frame.add_child(cells)
 	for i in options.size():
 		var active: bool = i == selected
 		var cell := Button.new()
 		cell.name = "Cell%d" % i
-		cell.text = ("✓ " if active else "") + String(options[i])
+		cell.text = ("✓ " if active else "") + tr(String(options[i]))
 		cell.custom_minimum_size = Vector2(UITokens.SETTINGS_SEGMENT_MIN_WIDTH, 0)
 		cell.theme_type_variation = &"SettingsSegmentOn" if active else &"SettingsSegment"
 		cell.pressed.connect(on_change.bind(i))
@@ -285,7 +317,7 @@ func _resolution_names() -> Array[String]:
 func _fps_limit_names() -> Array[String]:
 	var names: Array[String] = []
 	for fps in DisplayManager.FPS_LIMITS:
-		names.append("Unlimited" if fps == 0 else "%d FPS" % fps)
+		names.append(tr("Unlimited") if fps == 0 else tr("%d FPS") % fps)
 	return names
 
 

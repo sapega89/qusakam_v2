@@ -167,7 +167,7 @@ func refresh() -> void:
 
 	if _xp_manager == null:
 		_xp_manager = sl.get_xp_manager()
-	_level_label.text = "LV.%d" % (_xp_manager.get_level() if _xp_manager else 1)
+	_level_label.text = tr("LV.%d") % (_xp_manager.get_level() if _xp_manager else 1)
 	_style_level_badge()
 
 	var player: Node = _ensure_player()

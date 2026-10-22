@@ -41,10 +41,10 @@ func _update_display() -> void:
 	progress_bar.value = xp_percentage * 100.0
 
 	# Update XP label (shows current/required XP)
-	xp_label.text = "%d / %d XP" % [xp_manager.current_xp, xp_manager.xp_for_next_level]
+	xp_label.text = tr("%d / %d XP") % [xp_manager.current_xp, xp_manager.xp_for_next_level]
 
 	# Update level label
-	level_label.text = "Level %d" % xp_manager.current_level
+	level_label.text = tr("Level %d") % xp_manager.current_level
 
 func _on_xp_gained(amount: int, _new_total: int) -> void:
 	"""Called when player gains XP"""

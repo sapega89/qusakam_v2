@@ -53,6 +53,59 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **Kusakam's cloak was his grandfather's** — he will not give it up, not even to a boss (Sapega, 2026-10-20).
 - The **City Gates guard** — the first assist, a tutorial (D209).
 
+## Companion stubs [ЗАГЛУШКА] (BACKLOG 34, Q51)
+
+**[ЗАГЛУШКА]** — one description per companion for Sapega to take to each character's creator. Built only from what the
+repo already says (the Characters section above, D209, D243–D245, D255, D300, `journal_people.json` and the dialogue
+lines in `dialogue_quest/`, most of which are `[ЧЕРНЕТКА]` drafts). Nothing here is new lore; every gap is left as a
+question for the creator. The Journal entries (`SampleProject/Resources/Data/journal_people.json`, field `lore`)
+point here.
+
+### Астрит
+
+**[ЗАГЛУШКА]**
+- **Who:** a woman, a **barbarian warrior-thaumaturge**, **dragonborn** — so she carries **fire symbols** (Sapega,
+  2026-10-18/19). Journal title: *Warrior-thaumaturge*.
+- **Look (D244):** fiery red hair in a high ponytail with a red bow, amber eyes, dark plate armour with red flame
+  emblems, a huge round spiked shield with a flame emblem, a spell book with a flame on its cover held in a burning
+  hand; no horns or scales.
+- **How she fights (D209):** her assist pounces on the enemy and hits hard with the spiked shield.
+- **In the story so far:** waits in the Mayor Hall queue with Уризен and Алісія (D255, D300) and says she has stood
+  there longest; flees when the wall bursts; wakes in the Laboratory cells as a prisoner — «Мій щит пам'ятає кожного,
+  хто садив мене за ґрати» (`Lab_Acquaintance.dqd`, draft); a Laboratory companion (D209).
+- **For the creator:** where she comes from, why she came to the mayor, what the dragon blood means for her, her
+  book (what it holds), her age and voice.
+
+### Алісія
+
+**[ЗАГЛУШКА]** (the dialogue and code spell her **Алісия**)
+- **Who:** a **hunter with a cat** — a white tiger cub (Sapega, 2026-10-18/19). Journal title: *Hunter*.
+- **Look (D245):** a silver-haired huntress, high ponytail, brown leather armour with gold trim, fur collar, dark
+  cape, longbow, **one green and one blue eye**. The cat: a white tiger cub with brown stripes, blue eyes and glowing
+  cyan spiral markings.
+- **How she fights (D209):** her assist — a bow shot that sends the cat on the nearest enemy; the cat runs and
+  swipes (the exact strike was a proposal).
+- **In the story so far:** in the Mayor Hall queue, the one who tells Астрит not to scare the newcomer and Kusakam to
+  stand behind her («Кішка не кусається... майже», draft); flees at the wall burst; in the Laboratory she is the one
+  on the operating table (D304 reserved, `Lab_Cells_Injection.dqd`) and says what they injected «пече зсередини»
+  (`Lab_Acquaintance.dqd`, draft); a Laboratory companion (D209).
+- **For the creator:** her name's spelling (Алісія / Алісия), where she hunts and why, how she found the cat, what
+  the injection did to her, her age and voice.
+
+### Уризен
+
+**[ЗАГЛУШКА]**
+- **Who:** a **cleric**, a **priest of the god of contracts**; the coin is that god's sign (Sapega, 2026-10-18/19).
+  Journal title: *Cleric of the god of contracts*.
+- **Look (D243):** a chubby bald human with a sly smile and a forehead tattoo, an iron circlet, a golden coin
+  amulet, a brown robe over a dark tunic.
+- **How he fights (D209):** a smite in the shape of a coin striking the enemy.
+- **In the story so far:** in the Mayor Hall queue since dawn («Договір є договір — чекай своєї черги», draft);
+  in the Laboratory introduces himself and Астрит (`Lab_Acquaintance.dqd`) and seals Малік's bargain — «Договір
+  укладено. Бог Договорів чув» (`Lab_Malik_Quest.dqd`, draft); a Laboratory companion (D209).
+- **For the creator:** the god of contracts — name, temple, what a broken contract costs; why Уризен wants the
+  mayor; whether his smile means he can be trusted; his age and voice.
+
 ## What follows for the game (consequences, not new facts)
 
 - **Visual pass:** one even light from a bright, empty sky — no sun disc, no directional sunlight, no

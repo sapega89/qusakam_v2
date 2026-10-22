@@ -16,6 +16,8 @@ class_name UIBottomBar
 const _BADGE_SIZE := 24
 
 
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
+
 ## Стандартна підказка з кадрів ігрового меню у Figma.
 const DEFAULT_HINT := "Select a category."
 
@@ -23,6 +25,8 @@ var _default_hint: String = DEFAULT_HINT
 ## Поточний текст підказки. Зберігається окремо від мітки: компоненти меню пишуть у панель
 ## під час власного _ready(), коли @onready-мітка цієї панелі ще не готова.
 var _hint: String = ""
+## Останні set_actions — щоб перемалювати бейджі, коли змінився пристрій вводу.
+var _action_list: Array = []
 
 
 func _enter_tree() -> void:
@@ -36,12 +40,17 @@ func _ready() -> void:
 	if _hint.is_empty():
 		_hint = _hint_label.text if not _hint_label.text.is_empty() else DEFAULT_HINT
 	_apply_hint()
-	if _actions.get_child_count() == 0:
+	if _action_list.is_empty():
 		set_actions([
-			{"key": "LB", "label": "Select"},
-			{"key": "A", "label": "Confirm"},
-			{"key": "B", "label": "Return"},
+			{"action": &"navigate", "label": "Select"},
+			{"action": &"ui_accept", "label": "Confirm"},
+			{"action": &"ui_cancel", "label": "Return"},
 		])
+	EventBus.input_device_changed.connect(_on_input_device_changed)
+
+
+func _on_input_device_changed(_pad: bool) -> void:
+	set_actions(_action_list)
 
 
 ## Ліва контекстна підказка.
@@ -68,13 +77,16 @@ func _apply_hint() -> void:
 		_hint_label.text = _hint
 
 
-## Праві підказки дій. [code]actions[/code] — масив {key, label}.
+## Праві підказки дій. [code]actions[/code] — масив {action, label}: action — дія InputMap, масив дій
+## (бейдж «Q/E» / «LB/RB») або &"navigate"; бейдж називає кнопку пристрою, яким грали останнім (BACKLOG 24).
 func set_actions(actions: Array) -> void:
+	_action_list = actions
 	for child in _actions.get_children():
+		_actions.remove_child(child)
 		child.queue_free()
 	for action in actions:
 		_actions.add_child(_make_action(
-			String(action.get("key", "")),
+			InputGlyphs.badge(action.action),
 			String(action.get("label", ""))
 		))
 
@@ -96,6 +108,7 @@ func _make_action(key: String, label_text: String) -> Control:
 
 	var key_label := Label.new()
 	key_label.text = key
+	key_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key_label.theme_type_variation = &"CaptionLabel"
 	key_label.add_theme_color_override("font_color", UITokens.ON_ACCENT)
 	key_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -54,8 +54,8 @@ static func overwrite_save() -> Dictionary:
 ## Figma shop-buy-confirm 153:1760: "Buy Circlet?" / "Quantity: 4  •  Total Cost: ₹ 4,200".
 static func buy_confirm(item_name: String, quantity: int, total: String) -> Dictionary:
 	return {
-		"title": "Buy %s?" % item_name,
-		"description": "Quantity: ◀ %d ▶  •  Total Cost: %s" % [quantity, total],
+		"title": TranslationServer.translate("Buy %s?") % item_name,
+		"description": TranslationServer.translate("Quantity: ◀ %d ▶  •  Total Cost: %s") % [quantity, total],
 		"buttons": [
 			{"id": "confirm", "text": "Yes", "is_default": true},
 			{"id": "cancel", "text": "No", "is_cancel": true}
@@ -67,7 +67,7 @@ static func craft_confirm(item_name: String, materials: PackedStringArray, cost:
 	var parts := materials.duplicate()
 	parts.append(cost)
 	return {
-		"title": "Craft %s?" % item_name,
+		"title": TranslationServer.translate("Craft %s?") % item_name,
 		"description": "  •  ".join(parts),
 		"buttons": [
 			{"id": "confirm", "text": "Yes", "is_default": true},
@@ -82,7 +82,7 @@ static func cannot_craft(reason: String) -> Dictionary:
 ## Зачарування (D94, D163) — та сама родина, що й крафт; Figma enchant-list не звірено (MCP).
 static func enchant_confirm(item_name: String, result_name: String, cost: String) -> Dictionary:
 	return {
-		"title": "Enchant %s?" % item_name,
+		"title": TranslationServer.translate("Enchant %s?") % item_name,
 		"description": "%s ×2 → %s  •  %s" % [item_name, result_name, cost],
 		"buttons": [
 			{"id": "confirm", "text": "Yes", "is_default": true},
@@ -122,7 +122,7 @@ static func misc_popup(title: String, description: String, ok_text: String = "OK
 
 ## D286: інгредієнт, ключовий предмет — у інвентарі їх не використати. Та сама родина, що й Cannot Craft.
 static func cannot_use(item_name: String) -> Dictionary:
-	return misc_popup("Cannot Use", "%s cannot be used." % item_name)
+	return misc_popup(TranslationServer.translate("Cannot Use"), TranslationServer.translate("%s cannot be used.") % item_name)
 
 
 static func confirm_exit_to_main_menu() -> Dictionary:
