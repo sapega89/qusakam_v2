@@ -13,24 +13,32 @@ extends BaseMenuComponent
 ## показу Status панель партії ховається (див. _set_party_panel_visible).
 
 const PLACEHOLDER := "—"
-## Картки компаньйонів — шаблон %CompanionCard зі сцени (D117).
+## Рядки й картки — шаблони зі сцени (D117): %WeaponBox, %PointAttr, %AttrRow (обидві колонки), %ActionCard,
+## %CompanionCard. Стилі — з теми (AvatarFrame, AttrRow, IconSlot, AccentTick, BoxPanel, ActionCard).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
 @onready var _avatar: Panel = %Avatar
+## Стиль AvatarFrame з теми — заливка підміняється кольором персонажа в копії.
+@onready var _avatar_box: StyleBoxFlat = _avatar.get_theme_stylebox(&"panel").duplicate()
 @onready var _name_label: Label = %NameLabel
 @onready var _level_label: Label = %LevelLabel
 @onready var _next_level_value: Label = %NextLevelValue
 @onready var _jp_value: Label = %JPValue
 @onready var _attr_points_value: Label = %AttrPointsValue
 @onready var _point_attrs: HBoxContainer = %PointAttrs
+@onready var _point_attr: HBoxContainer = %PointAttr
 @onready var _primary_job: Label = %PrimaryJobName
 @onready var _secondary_job: Label = %SecondaryJobName
 @onready var _weapon_slots: HBoxContainer = %WeaponSlots
+@onready var _weapon_box: PanelContainer = %WeaponBox
 @onready var _hp_meter: Control = %HPMeter
 @onready var _sp_meter: Control = %SPMeter
 @onready var _left_attrs: VBoxContainer = %LeftAttrs
 @onready var _right_attrs: VBoxContainer = %RightAttrs
+## Один шаблон на обидві колонки: права заповнюється його копіями.
+@onready var _attr_row: PanelContainer = %AttrRow
 @onready var _actions_row: HBoxContainer = %ActionsRow
+@onready var _action_card: PanelContainer = %ActionCard
 @onready var _companions: VBoxContainer = %CompanionsSection
 @onready var _companion_cards: HBoxContainer = %CompanionCards
 @onready var _companion_card: PanelContainer = %CompanionCard
@@ -107,12 +115,8 @@ func _update_header() -> void:
 	var character = game_manager.get_active_character()
 	_name_label.text = String(character.name) if character else PLACEHOLDER
 
-	var avatar_box := StyleBoxFlat.new()
-	avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
-	avatar_box.set_corner_radius_all(UITokens.RADIUS)
-	avatar_box.set_border_width_all(UITokens.BORDER_WIDTH_SELECTED)
-	avatar_box.border_color = UITokens.BORDER
-	_avatar.add_theme_stylebox_override("panel", avatar_box)
+	_avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
+	_avatar.add_theme_stylebox_override(&"panel", _avatar_box)
 
 	var service_locator: Node = ServiceLocatorHelper.get_service_locator()
 	var xp_manager: XPManager = service_locator.get_xp_manager() if service_locator else null
@@ -154,33 +158,17 @@ func _or_placeholder(value: String) -> String:
 
 
 func _update_weapon_slots(character) -> void:
-	for child in _weapon_slots.get_children():
-		_weapon_slots.remove_child(child)
-		child.queue_free()
-
 	var equipped: Dictionary = character.equipment if character else {}
-	var shown := 0
+	var names: Array[String] = []
 	for slot_id in ["sword", "polearm", "dagger", "axe", "mace", "bow", "staff"]:
 		var item = equipped.get(slot_id)
-		if item == null:
-			continue
-		_weapon_slots.add_child(_make_weapon_box(ServiceLocator.get_item_database().get_item_name(String(item.id))))
-		shown += 1
-	if shown == 0:
-		_weapon_slots.add_child(_make_weapon_box(""))
-
-
-func _make_weapon_box(item_name: String) -> Control:
-	var box := PanelContainer.new()
-	box.theme_type_variation = &"BoxPanel"
-	box.custom_minimum_size = Vector2(40, 40)
-	var label := Label.new()
-	label.theme_type_variation = &"SectionCaption"
-	label.text = item_name.substr(0, 1).to_upper() if item_name != "" else PLACEHOLDER
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	box.add_child(label)
-	return box
+		if item != null:
+			names.append(ServiceLocator.get_item_database().get_item_name(String(item.id)))
+	# Без зброї — одна порожня клітинка з прочерком.
+	var boxes := RowFill.fill(_weapon_slots, _weapon_box, maxi(names.size(), 1))
+	for i in boxes.size():
+		var item_name: String = names[i] if i < names.size() else ""
+		boxes[i].get_node(^"Letter").text = item_name.substr(0, 1).to_upper() if item_name != "" else PLACEHOLDER
 
 
 # ── Атрибути ────────────────────────────────────────────────────────────────
@@ -196,72 +184,24 @@ func _update_attributes() -> void:
 
 ## Вкладені очки атрибутів (D335) — назва й число, з даних attributes.json; що вони дають, уже в рядках нижче.
 func _fill_point_attrs() -> void:
-	for child in _point_attrs.get_children():
-		_point_attrs.remove_child(child)
-		child.queue_free()
 	var attributes: AttributeManager = ServiceLocator.get_attribute_manager()
-	for attribute_id in attributes.attribute_ids():
-		var pair := HBoxContainer.new()
-		pair.name = attribute_id
-		pair.add_theme_constant_override("separation", UITokens.SPACE_SM)
-		var caption := Label.new()
-		caption.text = String(attributes.get_definition(attribute_id).name)
-		caption.theme_type_variation = &"AttrLabel"
-		pair.add_child(caption)
-		var value := Label.new()
-		value.name = "Value"
-		value.text = str(attributes.get_points(attribute_id))
-		value.theme_type_variation = &"AttrValue"
-		pair.add_child(value)
-		_point_attrs.add_child(pair)
+	var ids := attributes.attribute_ids()
+	var pairs := RowFill.fill(_point_attrs, _point_attr, ids.size())
+	for i in pairs.size():
+		var attribute_id: String = ids[i]
+		pairs[i].name = attribute_id
+		pairs[i].get_node(^"Caption").text = String(attributes.get_definition(attribute_id).name)
+		pairs[i].get_node(^"Value").text = str(attributes.get_points(attribute_id))
 
 
 func _fill_rows(container: VBoxContainer, rows: Array[Array]) -> void:
-	for child in container.get_children():
-		container.remove_child(child)
-		child.queue_free()
-	for row in rows:
-		var method := String(row[1])
-		var value := float(game_manager.call(method))
-		if bool(row[2]):
+	var lines := RowFill.fill(container, _attr_row, rows.size())
+	for i in lines.size():
+		var value := float(game_manager.call(String(rows[i][1])))
+		if bool(rows[i][2]):
 			value *= 100.0
-		container.add_child(_make_attr_row(String(row[0]), roundi(value)))
-
-
-func _make_attr_row(label_text: String, value: int) -> Control:
-	var row := PanelContainer.new()
-	var line := StyleBoxFlat.new()
-	line.bg_color = Color(0, 0, 0, 0)
-	line.border_width_bottom = UITokens.BORDER_WIDTH
-	line.border_color = UITokens.BORDER
-	line.content_margin_top = UITokens.SPACE_SM
-	line.content_margin_bottom = UITokens.SPACE_SM
-	row.add_theme_stylebox_override("panel", line)
-
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 10)
-	row.add_child(hbox)
-
-	var icon := Panel.new()
-	icon.custom_minimum_size = Vector2(UITokens.ATTR_ICON, UITokens.ATTR_ICON)
-	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var icon_box := StyleBoxFlat.new()
-	icon_box.bg_color = UITokens.ICON_SLOT_BG
-	icon_box.set_corner_radius_all(UITokens.RADIUS)
-	icon.add_theme_stylebox_override("panel", icon_box)
-	hbox.add_child(icon)
-
-	var name_label := Label.new()
-	name_label.text = label_text
-	name_label.theme_type_variation = &"AttrLabel"
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(name_label)
-
-	var value_label := Label.new()
-	value_label.text = str(value)
-	value_label.theme_type_variation = &"AttrValue"
-	hbox.add_child(value_label)
-	return row
+		lines[i].get_node(^"Row/Name").text = String(rows[i][0])
+		lines[i].get_node(^"Row/Value").text = str(roundi(value))
 
 
 ## current < 0 ⇒ даних немає: "—" і порожня смуга.
@@ -307,45 +247,10 @@ func _current_hp() -> int:
 ## Системи Path Action / Talent у проєкті немає. Лишаємо структуру з Figma,
 ## але без вигаданого контенту.
 func _update_actions() -> void:
-	for child in _actions_row.get_children():
-		_actions_row.remove_child(child)
-		child.queue_free()
-	_actions_row.add_child(_make_action_card("Path Action"))
-	_actions_row.add_child(_make_action_card("Talent"))
-
-
-func _make_action_card(caption: String) -> Control:
-	var card := PanelContainer.new()
-	card.theme_type_variation = &"ActionCard"
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", UITokens.SPACE_SM)
-	card.add_child(col)
-
-	var head := HBoxContainer.new()
-	head.add_theme_constant_override("separation", UITokens.SPACE_SM)
-
-	var caption_label := Label.new()
-	caption_label.text = caption.to_upper()
-	caption_label.theme_type_variation = &"CardCaption"
-	head.add_child(caption_label)
-
-	var divider := Panel.new()
-	divider.custom_minimum_size = Vector2(1, 12)
-	divider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var divider_box := StyleBoxFlat.new()
-	divider_box.bg_color = UITokens.ACCENT
-	divider.add_theme_stylebox_override("panel", divider_box)
-	head.add_child(divider)
-
-	var title_label := Label.new()
-	title_label.text = PLACEHOLDER
-	title_label.theme_type_variation = &"CardTitle"
-	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	head.add_child(title_label)
-	col.add_child(head)
-	return card
+	var captions: Array[String] = ["Path Action", "Talent"]
+	var cards := RowFill.fill(_actions_row, _action_card, captions.size())
+	for i in cards.size():
+		cards[i].get_node(^"Col/Head/Caption").text = captions[i].to_upper()
 
 
 # ── Компаньйони (D220) ──────────────────────────────────────────────────────

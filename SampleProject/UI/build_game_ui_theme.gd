@@ -634,6 +634,34 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_stylebox("panel", "ActionCard", _box(UITokens.MENU_SURFACE, UITokens.BORDER,
 			UITokens.BORDER_WIDTH, 18, 18))
 
+	# Рядки Status / Equipment — шаблони в stats_component.tscn / equipment_component.tscn (D117), стилі лише тут.
+	# Аватар: колір заливки — avatar_color персонажа (копія цього стилю в stats_component.gd).
+	theme.set_type_variation("AvatarFrame", "Panel")
+	theme.set_stylebox("panel", "AvatarFrame", _box(UITokens.ICON_SLOT_BG, UITokens.BORDER,
+			UITokens.BORDER_WIDTH_SELECTED, 0, 0))
+	# Аватар на Equipment — менший, з тонкою рамкою.
+	theme.set_type_variation("AvatarChip", "Panel")
+	theme.set_stylebox("panel", "AvatarChip", _box(UITokens.ICON_SLOT_BG, UITokens.BORDER,
+			UITokens.BORDER_WIDTH, 0, 0))
+	# Рядок атрибута (Status і Equipment): лише нижня лінія.
+	theme.set_type_variation("AttrRow", "PanelContainer")
+	var attr_line := _box(Color(0, 0, 0, 0), UITokens.BORDER, 0, 0, UITokens.SPACE_SM)
+	attr_line.set_corner_radius_all(0)
+	attr_line.border_width_bottom = UITokens.BORDER_WIDTH
+	theme.set_stylebox("panel", "AttrRow", attr_line)
+	theme.set_type_variation("IconSlot", "Panel")
+	theme.set_stylebox("panel", "IconSlot", _box(UITokens.ICON_SLOT_BG, UITokens.ICON_SLOT_BG, 0, 0, 0))
+	# Крапка «вдягнено» в рядку слота Equipment (6 px, радіус — половина).
+	theme.set_type_variation("AccentDot", "Panel")
+	var dot := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)
+	dot.set_corner_radius_all(3)
+	theme.set_stylebox("panel", "AccentDot", dot)
+	# Риска між підписом і назвою в картці дії.
+	theme.set_type_variation("AccentTick", "Panel")
+	var tick := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)
+	tick.set_corner_radius_all(0)
+	theme.set_stylebox("panel", "AccentTick", tick)
+
 	# Figma menu-skills: колонка класового дерева — surface + 1px рамка, padding 32.
 	theme.set_type_variation("TreePanel", "PanelContainer")
 	theme.set_stylebox("panel", "TreePanel", _box(UITokens.MENU_SURFACE, UITokens.BORDER,

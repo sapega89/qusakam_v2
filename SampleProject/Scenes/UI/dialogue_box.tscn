@@ -32,6 +32,17 @@ theme_override_constants/margin_bottom = 10
 [node name="Rows" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
 
+[node name="NameMargin" type="MarginContainer" parent="Margin/Rows"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="Margin/Rows/NameMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
 [node name="RowTop" type="HBoxContainer" parent="Margin/Rows"]
 layout_mode = 2
 
@@ -83,16 +94,3 @@ custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
-
-[node name="NameMargin" type="MarginContainer" parent="."]
-layout_mode = 2
-size_flags_vertical = 0
-mouse_filter = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 10
-
-[node name="Name" type="Label" parent="NameMargin"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1

@@ -56,6 +56,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"AvatarChip"
 
 [node name="CharName" type="Label" parent="Columns/EquipmentPanel/Body/Header/CharBlock/NameRow"]
 unique_name_in_owner = true
@@ -94,6 +95,50 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
+
+[node name="SlotRow" type="Button" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 63)
+layout_mode = 2
+theme_type_variation = &"ListRow"
+
+[node name="Row" type="HBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_right = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"IconSlot"
+
+[node name="Caption" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"SlotCaption"
+vertical_alignment = 1
+
+[node name="ItemName" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SlotItemName"
+vertical_alignment = 1
+
+[node name="Dot" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+custom_minimum_size = Vector2(6, 6)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"AccentDot"
 
 [node name="BottomRule" type="HSeparator" parent="Columns/EquipmentPanel/Body"]
 layout_mode = 2
@@ -147,6 +192,29 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
+
+[node name="AttrRow" type="PanelContainer" parent="Columns/AttributesPanel/Body/AttrColumns/LeftAttrs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AttrRow"
+
+[node name="Row" type="HBoxContainer" parent="Columns/AttributesPanel/Body/AttrColumns/LeftAttrs/AttrRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Name" type="Label" parent="Columns/AttributesPanel/Body/AttrColumns/LeftAttrs/AttrRow/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"MetaLabel"
+
+[node name="Value" type="Label" parent="Columns/AttributesPanel/Body/AttrColumns/LeftAttrs/AttrRow/Row"]
+layout_mode = 2
+theme_type_variation = &"AttrValue"
+
+[node name="Delta" type="Label" parent="Columns/AttributesPanel/Body/AttrColumns/LeftAttrs/AttrRow/Row"]
+visible = false
+layout_mode = 2
+theme_type_variation = &"StatDelta"
 
 [node name="RightAttrs" type="VBoxContainer" parent="Columns/AttributesPanel/Body/AttrColumns"]
 unique_name_in_owner = true
