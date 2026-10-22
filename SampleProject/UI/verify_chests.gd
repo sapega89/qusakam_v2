@@ -13,6 +13,8 @@ extends SceneTree
 
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
 const CHEST_SCENE := "res://SampleProject/Objects/Chest.tscn"
+## Остання поза HERO_POSE — руки над головою (B91).
+const RAISED := preload("res://SampleProject/Sprites/Player/Raise/3.png")
 const TEST_DIR := "user://verify_chests/"
 const TEST_SLOT := 1
 ## On top of the caravan rock (tiles x 4096–4192, top y 256); the hero's origin is 24 px above his feet.
@@ -107,7 +109,8 @@ func _open(game: Node, chest: Node, press: InputEvent) -> Array:
 		if found.visible:
 			icon_ok = found.texture != null and found.global_position.y < player.global_position.y - 40.0 \
 					and absf(found.global_position.x - player.global_position.x) < 1.0
-			pose_ok = anim.current_animation == chest.HERO_POSE
+			# Raise не циклічна: остання поза тримається, тож питаємо assigned_animation, а не current_animation.
+			pose_ok = anim.assigned_animation == chest.HERO_POSE and player.get_node("Sprite2D").texture == RAISED
 			held = player.event
 		if layer.active_modal:
 			break
@@ -159,7 +162,7 @@ func _initialize() -> void:
 	var before: int = inventory.get_item_count("mana_crystal")
 	var r: Array = await _open(game, chest, key)
 	ck(r[0].has(&"opening") and chest.get_node("Sprite").animation == &"open", "the lid opens: %s → open" % [r[0].keys()])
-	ck(r[1], "the hero holds the %s pose while the item is up" % chest.HERO_POSE)
+	ck(r[1], "the hero holds the %s pose (Raise/3, arms overhead) while the item is up" % chest.HERO_POSE)
 	ck(r[2], "the Mana Crystal icon shows above his head")
 	ck(r[3], "he cannot move during the raise")
 	ck(inventory.get_item_count("mana_crystal") == before + 2, "Mana Crystal × 2 in the bag (%d → %d)" % [before, inventory.get_item_count("mana_crystal")])

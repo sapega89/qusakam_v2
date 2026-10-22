@@ -37,6 +37,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Hurt/1.png" id="hurt1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/1.png" id="heavy1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/2.png" id="heavy2"]
+[ext_resource type="Texture2D" uid="uid://s7wjy8oog06u" path="res://SampleProject/Sprites/Player/Raise/1.png" id="raise1"]
+[ext_resource type="Texture2D" uid="uid://bjrq235igxpty" path="res://SampleProject/Sprites/Player/Raise/3.png" id="raise3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Block/1.png" id="block1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastPalm/1.png" id="cast_palm1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastPalm/2.png" id="cast_palm2"]
@@ -538,6 +540,34 @@ tracks/1/keys = {
 "values": [Vector2(0, 0)]
 }
 
+
+[sub_resource type="Animation" id="Animation_raise"]
+resource_name = "Raise"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("raise1"), ExtResource("raise3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_block"]
 resource_name = "Block"
@@ -1387,6 +1417,7 @@ _data = {
 &"Jump": SubResource("Animation_jump"),
 &"Land": SubResource("Animation_land"),
 &"Meditate": SubResource("Animation_meditate"),
+&"Raise": SubResource("Animation_raise"),
 &"RESET": SubResource("Animation_reset"),
 &"Roll": SubResource("Animation_roll"),
 &"Run": SubResource("Animation_run"),
