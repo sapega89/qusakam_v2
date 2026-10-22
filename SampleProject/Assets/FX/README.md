@@ -19,6 +19,7 @@ the animation frames are cut from that one picture (appear → full → thinning
 | `Bosses/shockwave.png` | the Brass Collector's slam shockwave, `boss_shockwave.tscn` (D301) | `boss_shockwave` |
 | `Bosses/explosion.png`, `wall_burst.png`, `sleep_gas.png`, `wall_hole.png` | story effects for the Mayor Hall / cells (queue rows 9.3, 9.5), not wired yet | same names |
 | `Projectiles/arrow.png`, `arrow_charged.png` | the hero's bow arrow and charged arrow (BACKLOG 40), not wired yet, see `Projectiles/README.md` | `arrow`, `arrow_charged` |
+| `Skills/<skill_id>/charge_1–4.png`, `release_1–3.png` | own charge + release effects of the 9 oath-tree actives (A6), not wired yet, see each folder's README | `<skill_id>_charge`, `<skill_id>_release` |
 
 Replaced 2026-10-21 (Sapega: hack'n'slash, anime, generated): the drawn smears of `draw_hero_attack.py` and the
 round hit spark `HitSpark/` (unknown licence).

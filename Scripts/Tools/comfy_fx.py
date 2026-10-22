@@ -37,7 +37,12 @@ FX = {
         colors=6,
         kind="arc",
         canvas=(72, 72),
-        box=(4, 4, 68, 68),  # правий край = центр + SMEAR_RADIUS; хвости півмісяця тягнуться назад
+        box=(
+            4,
+            4,
+            68,
+            68,
+        ),  # правий край = центр + SMEAR_RADIUS; хвости півмісяця тягнуться назад
         frames=["Smear/arc_1", "Smear/arc_2", "Smear/arc_3"],
         prompt="a single sharp sword slash crescent, a thin curved arc bulging to the right like the right half of a "
         "thin ring, thick in the middle and tapering to needle points at the top and the bottom, bright white core "
@@ -141,7 +146,8 @@ FX = {
         box=(0, 0, 48, 104),
         frames=["Bosses/pillar"],
         prompt="a single tall vertical column of roaring fire rising straight up from the ground, straight sides, "
-        "white hot yellow core, orange flames, red tongues at the edges, flat bottom, front view, " + GREEN,
+        "white hot yellow core, orange flames, red tongues at the edges, flat bottom, front view, "
+        + GREEN,
     ),
     "boss_mark": dict(
         seed=23,
@@ -165,7 +171,8 @@ FX = {
         box=(0, 0, 56, 28),
         frames=["Bosses/shockwave"],
         prompt="a single ground shockwave of sandy dust and small rock chunks rolling to the right, a low curling "
-        "wave of beige dust, tallest at its right front edge, flat bottom, side view, " + MAGENTA,
+        "wave of beige dust, tallest at its right front edge, flat bottom, side view, "
+        + MAGENTA,
     ),
     "explosion": dict(
         seed=25,
@@ -234,6 +241,166 @@ FX = {
     ),
     # arrow_charged — Scripts/Tools/bow_fixups.py (лимонне сяйво на весь спрайт і відірваний слід — арт-директор)
 }
+
+# Власні ефекти дев'яти активних навичок клятв (A6, D279): заряд у руці (charge) + удар (release), кадри — у
+# Skills/<id>/. Світло — золото/біле сяйво, Темрява — фіолет/багрянець, Рівновага — пісок/вітер. Без спалахів
+# на весь екран і круглих вибухів. Фіолет на пурпуровому ключі губиться — темні ефекти лише на зеленому.
+# (id, seed, ключ, заряд, удар: (вид, розмір генерації, полотно, підказка))
+CHARGE = (32, 32)
+SKILL_FX = [
+    (
+        "radiant_smite",
+        41,
+        "green",
+        "a small cluster of golden light gathering into a bright white four-pointed star glint with short sharp gold "
+        "rays, a few tiny gold sparkles, centered",
+        (
+            "arc",
+            (1024, 1024),
+            (56, 72),
+            "a single radiant holy sword slash crescent of golden light, a thick curved arc bulging to the right like the "
+            "right half of a ring, bright white core, warm gold edge with small sharp gold rays along the outer edge, "
+            "tapering points at the top and the bottom, centered",
+        ),
+    ),
+    (
+        "skyfall_blessing",
+        42,
+        "green",
+        "a single small glowing feather made of golden light, a white hot core along its quill, short sharp gold "
+        "rays around it, centered",
+        (
+            "down",
+            (512, 1024),
+            (40, 104),
+            "a single tall vertical beam of golden holy light, a long straight ray of light, white hot core, soft "
+            "warm gold glow edges, tapering to thin points at the top and the bottom, floating, small four-pointed "
+            "golden sparkles along it, front view",
+        ),
+    ),
+    (
+        "judgement_of_the_sky",
+        43,
+        "green",
+        "a small golden halo ring with sharp white light runes and short gold rays pointing outward, centered",
+        (
+            "down",
+            (512, 1024),
+            (28, 96),
+            "a single long thin vertical lance made of pure white and golden light pointing straight down, a sharp "
+            "glowing tip at the bottom, a straight glowing shaft fading into a thin gold light trail toward the top, "
+            "no handle, no crossguard, front view",
+        ),
+    ),
+    (
+        "searing_hex",
+        44,
+        "green",
+        "a small violet hex sigil, a ring of crimson runes around a dark violet core with crimson flames licking "
+        "off it, centered",
+        (
+            "thrust",
+            (1024, 512),
+            (72, 24),
+            "a single horizontal streak of cursed dark violet fire flying to the right, widest at its right end with a "
+            "blunt flaming crimson tip, a hot magenta-white core, fading to a thin violet line toward the left",
+        ),
+    ),
+    (
+        "withering_grasp",
+        45,
+        "green",
+        "a small knot of curling dark violet shadow tendrils with crimson glowing tips, centered",
+        (
+            "right",
+            (1024, 512),
+            (64, 40),
+            "a single spectral clawed hand made of dark violet shadow reaching to the right, long sharp crimson glowing "
+            "claws spread open at the right end, a wispy smoky violet arm trailing back to the left edge, side view",
+        ),
+    ),
+    (
+        "eclipse_cleave",
+        46,
+        "green",
+        "a small black crescent moon with a bright crimson rim and a thin violet glow, centered",
+        (
+            "arc",
+            (1024, 1024),
+            (64, 80),
+            "a single thin sharp eclipse slash crescent, a thin curved arc bulging to the right like the right half of "
+            "a thin ring, a bright crimson cutting edge with a deep violet shadow trail along its inner side, thick in "
+            "the middle and tapering to needle points at the top and the bottom, centered",
+        ),
+    ),
+    (
+        "balanced_strike",
+        47,
+        "magenta",
+        "a small swirling spiral of golden sand grains and pale wind streaks, centered",
+        (
+            "thrust",
+            (1024, 512),
+            (72, 24),
+            "a single horizontal gust of sand and wind flying to the right, a sharp beige wind streak widest at its "
+            "right end with a blunt tip, curling pale wind lines and sand grains along it, fading to a thin line toward "
+            "the left",
+        ),
+    ),
+    (
+        "dervish_whirl",
+        48,
+        "magenta",
+        "a small tight vortex of beige sand and pale wind lines spinning, centered",
+        (
+            "right",
+            (1024, 512),
+            (96, 48),
+            "a single wide flat horizontal whirlwind ring of beige sand and pale wind streaks spinning around an empty "
+            "center, a wide thin oval band seen from the side, curling wind lines, sand grains, side view",
+        ),
+    ),
+    (
+        "second_wind",
+        49,
+        "magenta",
+        "a small spiral of pale wind lines with sand grains and two small green leaves, centered",
+        (
+            "up",
+            (512, 1024),
+            (48, 80),
+            "a single thick upward gust of pale cream wind, two broad curling wind ribbons rising and twisting "
+            "around each other into a tall flame-like swirl, tapering to a point at the top, golden sand grains and "
+            "two small green leaves carried along, no ground, centered, front view",
+        ),
+    ),
+]
+for _id, _seed, _key, _charge, (_kind, _size, _canvas, _release) in SKILL_FX:
+    _bg = GREEN if _key == "green" else MAGENTA
+    FX[_id + "_charge"] = dict(
+        seed=_seed,
+        size=(1024, 1024),
+        key=_key,
+        colors=8,
+        kind="charge",
+        canvas=CHARGE,
+        box=(1, 1, CHARGE[0] - 1, CHARGE[1] - 1),
+        frames=[f"Skills/{_id}/charge_{i}" for i in range(1, 5)],
+        prompt=f"{_charge}, {_bg}",
+    )
+    FX[_id + "_release"] = dict(
+        seed=_seed + 100,
+        size=_size,
+        key=_key,
+        colors=8,
+        kind=_kind,
+        canvas=_canvas,
+        box=(0, 0) + _canvas,
+        frames=[f"Skills/{_id}/release_{i}" for i in range(1, 5)],
+        prompt=f"{_release}, {_bg}",
+    )
+# Спис «Суду неба» модель малювала вістрям угору — перевертаємо, щоб падав вістрям униз.
+FX["judgement_of_the_sky_release"]["flip"] = True
 
 
 def generate(name, fx):
@@ -323,6 +490,20 @@ def erode(m, n):
     return m
 
 
+def grow(q, k):
+    """Той самий спрайт, зменшений у k разів (найближчий сусід) по центру полотна."""
+    h, w = q.shape[:2]
+    small = np.asarray(
+        Image.fromarray(q).resize(
+            (max(1, round(w * k)), max(1, round(h * k))), Image.NEAREST
+        )
+    )
+    out = np.zeros_like(q)
+    y, x = (h - small.shape[0]) // 2, (w - small.shape[1]) // 2
+    out[y : y + small.shape[0], x : x + small.shape[1]] = small
+    return out
+
+
 def frames(kind, opaque):
     """Кадри з однієї картинки: поява (частина, що вже промайнула) → повний → тоншає."""
     h, w = opaque.shape
@@ -342,6 +523,10 @@ def frames(kind, opaque):
             erode(opaque, 1),
             erode(opaque, 2),
         ]
+    # down — згори вниз, up — знизу вгору, right — зліва направо: поява → повний → тоншає
+    head = {"down": yy < h * 0.45, "up": yy > h * 0.55, "right": xx < w * 0.5}.get(kind)
+    if head is not None:
+        return [opaque & head, opaque, erode(opaque, 1)]
     return [opaque]
 
 
@@ -352,15 +537,39 @@ if __name__ == "__main__":
         img = generate(name, FX[fx["src"]]) if "src" in fx else generate(name, fx)
         a = key(img, fx["key"])
         if "rotate" in fx:  # проти годинникової, полотно розширюється
-            img = np.asarray(Image.fromarray(img.astype(np.uint8)).rotate(fx["rotate"], expand=True, fillcolor=(0, 255, 0)), np.float32)
-            a = np.asarray(Image.fromarray((a * 255).astype(np.uint8)).rotate(fx["rotate"], expand=True), np.float32) / 255
+            img = np.asarray(
+                Image.fromarray(img.astype(np.uint8)).rotate(
+                    fx["rotate"], expand=True, fillcolor=(0, 255, 0)
+                ),
+                np.float32,
+            )
+            a = (
+                np.asarray(
+                    Image.fromarray((a * 255).astype(np.uint8)).rotate(
+                        fx["rotate"], expand=True
+                    ),
+                    np.float32,
+                )
+                / 255
+            )
+        if fx.get("flip"):  # модель малює вістря вгору — перевернути
+            img, a = img[::-1].copy(), a[::-1].copy()
         if fx.get("main", True):
             a = main_shape(a)
         canvas, opaque = fit(img, a, fx)
         q = cb.quantize(canvas, opaque, fx["colors"], "octree")
-        for path, mask in zip(fx["frames"], frames(fx["kind"], opaque)):
-            out = q.copy()
-            out[..., 3] = mask.astype(np.uint8) * 255
+        if (
+            fx["kind"] == "charge"
+        ):  # заряд росте з центру → повний → пульс тонше (кадри 3–4 — петля утримання)
+            pulse = q.copy()
+            pulse[..., 3] *= erode(opaque, 1)
+            outs = [grow(q, 0.45), grow(q, 0.75), q, pulse]
+        else:
+            outs = []
+            for mask in frames(fx["kind"], opaque):
+                outs.append(q.copy())
+                outs[-1][..., 3] = mask.astype(np.uint8) * 255
+        for path, out in zip(fx["frames"], outs):
             os.makedirs(os.path.dirname(OUT + path), exist_ok=True)
             Image.fromarray(out).save(OUT + path + ".png")
             print("wrote", OUT + path + ".png")
