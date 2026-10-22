@@ -1,6 +1,6 @@
 extends RefCounted
 
-## Назви кнопок для підказок (BACKLOG 12 + 24, D289): клавіатура / миша або геймпад —
+## Назви кнопок для підказок (BACKLOG 12 + 24, D289; переклад назв миші, стіків і хрестовини — BACKLOG 31): клавіатура / миша або геймпад —
 ## за останнім пристроєм вводу. Беруться з InputMap, тож переназначена клавіша теж правильна.
 ##   const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 ##   InputGlyphs.resolve("Press {jump} to jump")  →  "Press Space / W to jump" або "Press A to jump"
@@ -86,7 +86,7 @@ static func names_for(action: StringName, pad: bool) -> Array[String]:
 
 ## Підставляє {дія} у тексті; {move} — рух уліво-вправо однією назвою.
 static func resolve(text: String) -> String:
-	var out := text.replace("{move}", "Left stick" if using_gamepad else "%s / %s" % [_names(&"move_left")[0], _names(&"move_right")[0]])
+	var out := text.replace("{move}", TranslationServer.translate("Left stick") if using_gamepad else "%s / %s" % [_names(&"move_left")[0], _names(&"move_right")[0]])
 	var at := out.find("{")
 	while at >= 0:
 		var end := out.find("}", at)
@@ -99,13 +99,20 @@ static func resolve(text: String) -> String:
 static func _event_name(event: InputEvent, pad: bool) -> String:
 	if pad:
 		if event is InputEventJoypadButton:
-			return PAD_BUTTONS.get(event.button_index, "")
+			if not PAD_BUTTONS.has(event.button_index):
+				return ""
+			# Назви кнопок (A, LB, Start, Back…) не перекладаються (Sapega 2026-10-21); хрестовина — так.
+			var button: String = PAD_BUTTONS[event.button_index]
+			return TranslationServer.translate(button) if button.begins_with("D-pad") else button
 		if event is InputEventJoypadMotion:
-			return PAD_AXES.get(event.axis, "")
+			if not PAD_AXES.has(event.axis):
+				return ""
+			var axis: String = PAD_AXES[event.axis]
+			return TranslationServer.translate(axis) if axis.ends_with("stick") else axis
 		return ""
 	if event is InputEventKey:
 		var code: Key = event.keycode if event.keycode != KEY_NONE else event.physical_keycode
 		return OS.get_keycode_string(code)
 	if event is InputEventMouseButton:
-		return MOUSE_BUTTONS.get(event.button_index, "")
+		return TranslationServer.translate(MOUSE_BUTTONS[event.button_index]) if MOUSE_BUTTONS.has(event.button_index) else ""
 	return ""

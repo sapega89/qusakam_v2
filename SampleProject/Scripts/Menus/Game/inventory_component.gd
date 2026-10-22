@@ -216,7 +216,7 @@ func _use_hint(item: Dictionary) -> String:
 		return "Double-click or Enter to use"
 	var slot_id := _get_slot_for_item(item)
 	if slot_id != "":
-		return "Double-click or Enter to equip (%s)" % _get_slot_display_name(slot_id)
+		return tr("Double-click or Enter to equip (%s)") % _get_slot_display_name(slot_id)
 	return "Cannot be used"
 
 
@@ -305,7 +305,7 @@ func _drink(item: Dictionary) -> void:
 	if _effect(item).type == "mana":
 		var sm: SkillManager = ServiceLocator.get_skill_manager()
 		if sm.get_current_sp() >= sm.get_max_sp():
-			_set_bar_hint("%s's SP is already full." % hero_name)
+			_set_bar_hint(tr("%s's SP is already full.") % hero_name)
 			return
 		sm.restore_sp(value)
 		now = sm.get_current_sp()
@@ -313,7 +313,7 @@ func _drink(item: Dictionary) -> void:
 	else:
 		var player: Node = game_manager.get_current_player()
 		if player.get_current_health() >= player.get_max_health():
-			_set_bar_hint("%s is already at full health." % hero_name)
+			_set_bar_hint(tr("%s is already at full health.") % hero_name)
 			return
 		player.heal_damage(value)
 		now = player.get_current_health()
@@ -332,7 +332,7 @@ func _equip(item: Dictionary) -> void:
 			String(item.get("id", "")), item.get("item_data", {}))
 	emit_item_equipped(String(item.get("id", "")), slot_id)
 	_focus_selected_row()
-	_set_bar_hint.call_deferred("%s equipped — %s." % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
+	_set_bar_hint.call_deferred(tr("%s equipped — %s.") % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 
 
 func _focus_selected_row() -> void:

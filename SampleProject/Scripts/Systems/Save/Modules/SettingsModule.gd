@@ -15,7 +15,7 @@ var default_settings = {
 	# Значення за замовчуванням = project.godot: вʼюпорт 1920×1080, run/max_fps=60.
 	"resolution": "1920x1080",
 	"fps_limit": 60,
-	"language": "uk",
+	"language": "en",  # BACKLOG 31: англійська — основна мова (D121); українська — у Settings → Game → Language
 	"tutorial_windows": true  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
 }
 
@@ -52,6 +52,7 @@ func load_data(data: Dictionary) -> void:
 func apply_settings() -> void:
 	_apply_audio_settings()
 	_apply_display_settings()
+	LocalizationManager.apply_language(settings["language"])
 
 ## Применяет настройки звука
 func _apply_audio_settings() -> void:

@@ -57,7 +57,7 @@ func setup(slot_summary: Dictionary, selectable: bool) -> void:
 		var has_level := slot_summary.has("level")
 		var has_name := slot_summary.has("character_name")
 		_level.visible = has_level
-		_level.text = "Lv. %d" % int(slot_summary.get("level", 0))
+		_level.text = tr("Lv. %d") % int(slot_summary.get("level", 0))
 		_name.visible = has_name
 		_name.text = str(slot_summary.get("character_name", ""))
 		_character.visible = has_level or has_name

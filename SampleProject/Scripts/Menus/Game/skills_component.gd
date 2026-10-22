@@ -173,14 +173,14 @@ func _gives_text(gives: Dictionary) -> String:
 	for stat: String in gives:
 		var value: float = gives[stat]
 		match stat:
-			"attack": parts.append("+%d atk" % roundi(value))
-			"max_health": parts.append("+%d HP" % roundi(value))
-			"max_sp": parts.append("+%d SP" % roundi(value))
-			"crit_chance": parts.append("+%s%% crit" % _percent(value))
-			"dodge_chance": parts.append("+%s%% evade" % _percent(value))
-			"attack_speed": parts.append("+%s%% speed" % _percent(value))
-			"skill_power": parts.append("+%s%% power" % _percent(value))
-			"sp_regen": parts.append("+%s SP/s" % String.num(value, 2))
+			"attack": parts.append(tr("+%d atk") % roundi(value))
+			"max_health": parts.append(tr("+%d HP") % roundi(value))
+			"max_sp": parts.append(tr("+%d SP") % roundi(value))
+			"crit_chance": parts.append(tr("+%s%% crit") % _percent(value))
+			"dodge_chance": parts.append(tr("+%s%% evade") % _percent(value))
+			"attack_speed": parts.append(tr("+%s%% speed") % _percent(value))
+			"skill_power": parts.append(tr("+%s%% power") % _percent(value))
+			"sp_regen": parts.append(tr("+%s SP/s") % String.num(value, 2))
 			_: assert(false, "SkillsComponent: no text for attribute stat %s" % stat)
 	return " · ".join(parts)
 
@@ -255,7 +255,7 @@ func _refresh_header() -> void:
 
 	_char_class.text = _skill_manager.class_title()  # D280: Holy Warrior → назва клятви
 	# Скільки лишиться після позначеного (D330); без позначок — просто очки героя.
-	_jp_value.text = "%d JP" % plan.jp_left()
+	_jp_value.text = tr("%d JP") % plan.jp_left()
 
 
 func _trunk() -> Array:
@@ -306,7 +306,7 @@ func _make_tier(level: int, trunk_skills: Array, oath_skills: Array) -> Control:
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_theme_constant_override("separation", UITokens.SPACE_LG)
 	var caption := Label.new()
-	caption.text = "Lv %d" % level
+	caption.text = tr("Lv %d") % level
 	caption.theme_type_variation = &"MicroLabel"
 	caption.custom_minimum_size.x = 56  # = TierSpacer у шапці
 	caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -353,8 +353,8 @@ func _tree_status_text() -> String:
 	var oath: Dictionary = _skill_database.get_oath(_shown_oath)
 	var sworn: String = _skill_manager.get_oath()
 	if sworn.is_empty():
-		return "%s · Swear an oath in the City (level %d)" % [String(oath.tree), int(oath.level)]
-	return "%s · %s" % [String(oath.tree), "Your oath" if sworn == _shown_oath else "Sworn to another oath"]
+		return tr("%s · Swear an oath in the City (level %d)") % [String(oath.tree), int(oath.level)]
+	return "%s · %s" % [String(oath.tree), tr("Your oath") if sworn == _shown_oath else tr("Sworn to another oath")]
 
 
 # ── Стани вузлів (D332) ─────────────────────────────────────────────────────
@@ -373,26 +373,26 @@ func _node_note(definition: SkillDefinition) -> String:
 	match node_state(definition.id):
 		NodeState.LEARNED:
 			var rank := _skill_manager.get_rank(definition.id)
-			return "R%d +%d" % [rank, picks] if picks > 0 else "R%d" % rank
+			return tr("R%d +%d") % [rank, picks] if picks > 0 else tr("R%d") % rank
 		NodeState.PICKED:
-			return "Picked" if picks == 1 else "Picked +%d" % (picks - 1)
+			return tr("Picked") if picks == 1 else tr("Picked +%d") % (picks - 1)
 		NodeState.CAN_LEARN:
 			return _cost_text(definition.jp_cost)
 	match plan.can_pick(definition.id):
 		SkillManager.Result.LEVEL_TOO_LOW:
-			return "Lv %d" % definition.required_level
+			return tr("Lv %d") % definition.required_level
 		SkillManager.Result.NO_OATH:
-			return "Oath"
+			return tr("Oath")
 		SkillManager.Result.OTHER_OATH:
-			return "Other oath"
+			return tr("Other oath")
 		SkillManager.Result.NOT_ENOUGH_JP:
 			return _cost_text(definition.jp_cost)
 		_:
-			return "Locked"
+			return tr("Locked")
 
 
 func _cost_text(jp: int) -> String:
-	return "Free" if jp == 0 else "%d JP" % jp
+	return tr("Free") if jp == 0 else tr("%d JP") % jp
 
 
 func _refresh_rows() -> void:
@@ -466,23 +466,23 @@ func _refresh_detail() -> void:
 
 	_detail_name.text = definition.name if not definition.name.is_empty() else definition.id
 	var tree: String = _skill_database.class_name_trunk if definition.oath == "" else String(_skill_database.get_oath(definition.oath).name)
-	_detail_kind.text = "%s skill · %s" % ["Active" if definition.is_active() else "Passive", tree]
+	_detail_kind.text = tr("%s skill · %s") % [tr("Active") if definition.is_active() else tr("Passive"), tree]
 	_detail_description.text = definition.description
-	_add_fact("Cost", _cost_text(definition.jp_cost))
-	_add_fact("Level", "Lv %d" % definition.required_level)
+	_add_fact(tr("Cost"), _cost_text(definition.jp_cost))
+	_add_fact(tr("Level"), tr("Lv %d") % definition.required_level)
 	if definition.is_active():
-		_add_fact("SP", "%d SP" % definition.sp_cost if definition.sp_cost > 0 else PLACEHOLDER)
-		_add_fact("Cooldown", "%s s" % String.num(definition.cooldown, 1) if definition.cooldown > 0.0 else PLACEHOLDER)
+		_add_fact("SP", tr("%d SP") % definition.sp_cost if definition.sp_cost > 0 else PLACEHOLDER)
+		_add_fact(tr("Cooldown"), tr("%s s") % String.num(definition.cooldown, 1) if definition.cooldown > 0.0 else PLACEHOLDER)
 	var rank := _skill_manager.get_rank(definition.id)
 	if rank > 0:
-		_add_fact("Rank", "%d / %d" % [rank, SkillManager.MAX_RANK])
+		_add_fact(tr("Rank"), "%d / %d" % [rank, SkillManager.MAX_RANK])
 	if not definition.prerequisites.is_empty():
-		_add_fact("Requires", ", ".join(definition.prerequisites.map(func(id): return String(_skill_database.get_skill(id).name))))
+		_add_fact(tr("Requires"), ", ".join(definition.prerequisites.map(func(id): return String(_skill_database.get_skill(id).name))))
 	if not definition.required_weapons.is_empty():
-		_add_fact("Weapon", ", ".join(definition.required_weapons))
+		_add_fact(tr("Weapon"), ", ".join(definition.required_weapons))
 	var effect := _effect_text(definition)
 	if not effect.is_empty():
-		_add_fact("Effect", effect)
+		_add_fact(tr("Effect"), effect)
 	_detail_state.text = _reason_text(definition.id)
 	_refresh_hotbar(definition)
 
@@ -503,27 +503,27 @@ func _effect_text(definition: SkillDefinition) -> String:
 	var learned := _skill_manager.is_unlocked(definition.id)
 	var parts: Array[String] = []
 	if definition.damage > 0:
-		parts.append("%d dmg" % (_skill_manager.scaled(definition.id, definition.damage) if learned else definition.damage))
+		parts.append(tr("%d dmg") % (_skill_manager.scaled(definition.id, definition.damage) if learned else definition.damage))
 	if definition.heal > 0:
-		parts.append("heal %d" % (_skill_manager.scaled(definition.id, definition.heal) if learned else definition.heal))
+		parts.append(tr("heal %d") % (_skill_manager.scaled(definition.id, definition.heal) if learned else definition.heal))
 	if definition.burn_dps > 0:
-		parts.append("burn %d/s" % definition.burn_dps)
+		parts.append(tr("burn %d/s") % definition.burn_dps)
 	if definition.chain_radius > 0.0:
-		parts.append("chain ×%s" % String.num(definition.chain_ratio, 1))
+		parts.append(tr("chain ×%s") % String.num(definition.chain_ratio, 1))
 	if definition.stun > 0.0:
-		parts.append("stun %s s" % String.num(definition.stun, 1))
+		parts.append(tr("stun %s s") % String.num(definition.stun, 1))
 	if not definition.is_active() and not definition.passive_stat.is_empty():
 		var value := definition.passive_value * (1.0 + SkillManager.RANK_BONUS * maxi(0, _skill_manager.get_rank(definition.id) - 1))
 		match definition.passive_stat:
-			"max_health": parts.append("+%d max HP" % roundi(value))
-			"max_sp": parts.append("+%d max SP" % roundi(value))
-			"attack": parts.append("+%d attack" % roundi(value))
-			"shield_block": parts.append("−%s%% damage with a shield" % _percent(value))
-			"damage_reduction": parts.append("−%s%% damage taken" % _percent(value))
-			"heal_power": parts.append("heals +%s%%" % _percent(value))
-			"sp_regen": parts.append("+%s SP/s" % String.num(value, 2))
-			"lifesteal": parts.append("hits heal %s%%" % _percent(value))
-			"poise": parts.append("+%s%% poise damage" % _percent(value))
+			"max_health": parts.append(tr("+%d max HP") % roundi(value))
+			"max_sp": parts.append(tr("+%d max SP") % roundi(value))
+			"attack": parts.append(tr("+%d attack") % roundi(value))
+			"shield_block": parts.append(tr("−%s%% damage with a shield") % _percent(value))
+			"damage_reduction": parts.append(tr("−%s%% damage taken") % _percent(value))
+			"heal_power": parts.append(tr("heals +%s%%") % _percent(value))
+			"sp_regen": parts.append(tr("+%s SP/s") % String.num(value, 2))
+			"lifesteal": parts.append(tr("hits heal %s%%") % _percent(value))
+			"poise": parts.append(tr("+%s%% poise damage") % _percent(value))
 			_: assert(false, "SkillsComponent: no text for passive stat %s" % definition.passive_stat)
 	return ", ".join(parts)
 
@@ -535,32 +535,32 @@ func _reason_text(skill_id: String) -> String:
 	var verdict := plan.can_pick(skill_id)
 	if _skill_manager.is_unlocked(skill_id):
 		var rank := _skill_manager.get_rank(skill_id)
-		var head := "Learned, rank %d/%d" % [rank, SkillManager.MAX_RANK]
+		var head := tr("Learned, rank %d/%d") % [rank, SkillManager.MAX_RANK]
 		if picks > 0:
-			head += " → %d after Accept" % (rank + picks)
+			head += tr(" → %d after Accept") % (rank + picks)
 		match verdict:
 			SkillManager.Result.OK:
-				return "%s. Pick to rank up (+10%%, %d JP)." % [head, SkillManager.UPGRADE_COST]
+				return tr("%s. Pick to rank up (+10%%, %d JP).") % [head, SkillManager.UPGRADE_COST]
 			SkillManager.Result.MAX_RANK:
-				return "%s. Max rank." % head
+				return tr("%s. Max rank.") % head
 			_:
-				return "%s. Not enough JP to rank up." % head
+				return tr("%s. Not enough JP to rank up.") % head
 	if picks > 0:
-		return "Picked: Accept to learn it." if picks == 1 else "Picked: Accept to learn it at rank %d." % picks
+		return tr("Picked: Accept to learn it.") if picks == 1 else tr("Picked: Accept to learn it at rank %d.") % picks
 	match verdict:
 		SkillManager.Result.OK:
-			return "Can learn now: Pick, then Accept."
+			return tr("Can learn now: Pick, then Accept.")
 		SkillManager.Result.NOT_ENOUGH_JP:
-			return "Not enough JP (%d needed)." % definition.jp_cost
+			return tr("Not enough JP (%d needed).") % definition.jp_cost
 		SkillManager.Result.LEVEL_TOO_LOW:
-			return "Level too low: needs level %d." % definition.required_level
+			return tr("Level too low: needs level %d.") % definition.required_level
 		SkillManager.Result.MISSING_PREREQUISITE:
 			var missing: Array = definition.prerequisites.filter(func(id): return not id in plan.planned_unlocked())
-			return "Needs %s first." % ", ".join(missing.map(func(id): return String(_skill_database.get_skill(id).name)))
+			return tr("Needs %s first.") % ", ".join(missing.map(func(id): return String(_skill_database.get_skill(id).name)))
 		SkillManager.Result.NO_OATH:
-			return "Swear an oath in the City (level %d)." % int(_skill_database.get_oath(definition.oath).level)
+			return tr("Swear an oath in the City (level %d).") % int(_skill_database.get_oath(definition.oath).level)
 		SkillManager.Result.OTHER_OATH:
-			return "Sworn to another oath."
+			return tr("Sworn to another oath.")
 		_:
 			return ""
 
@@ -570,7 +570,7 @@ func _refresh_hotbar(definition: SkillDefinition) -> void:
 	_hotbar_box.visible = definition.is_active() and _skill_manager.is_unlocked(definition.id)
 	for slot in _slot_buttons.size():
 		var held := _skill_manager.get_equipped_skill(slot)
-		var held_name := String(_skill_database.get_skill(held).name) if held != "" else "empty"
+		var held_name := String(_skill_database.get_skill(held).name) if held != "" else tr("empty")
 		_slot_buttons[slot].text = "%d · %s" % [slot + 1, held_name]
 		_slot_buttons[slot].set_pressed_no_signal(held == definition.id)
 
@@ -592,15 +592,15 @@ func _refresh_action_bar() -> void:
 	_cancel_button.disabled = plan.is_empty()
 	_accept_button.disabled = plan.is_empty()
 	if plan.is_empty():
-		_pending_label.text = "Nothing picked"
+		_pending_label.text = tr("Nothing picked")
 		return
 	var parts: Array[String] = []
 	if plan.has_skill_picks():
-		parts.append("%d JP" % plan.jp_cost())
+		parts.append(tr("%d JP") % plan.jp_cost())
 	var attribute_points := _attributes.get_unspent() - plan.attribute_points_left()
 	if attribute_points > 0:
-		parts.append("%d attribute pt%s" % [attribute_points, "" if attribute_points == 1 else "s"])
-	_pending_label.text = "To spend: " + ", ".join(parts)
+		parts.append(tr("attribute points: %d") % attribute_points)
+	_pending_label.text = tr("To spend: ") + ", ".join(parts)
 
 
 # ── Вибір, позначки, Accept ─────────────────────────────────────────────────
@@ -719,15 +719,15 @@ func _publish_details(skill_id: String) -> void:
 func _describe(definition: SkillDefinition) -> String:
 	var parts: Array[String] = []
 	parts.append(definition.name if not definition.name.is_empty() else definition.id)
-	parts.append("Active" if definition.is_active() else "Passive")
+	parts.append(tr("Active") if definition.is_active() else tr("Passive"))
 	if definition.jp_cost > 0:
-		parts.append("%d JP" % definition.jp_cost)
+		parts.append(tr("%d JP") % definition.jp_cost)
 	if definition.sp_cost > 0:
-		parts.append("%d SP" % definition.sp_cost)
+		parts.append(tr("%d SP") % definition.sp_cost)
 	if definition.required_level > 1:
-		parts.append("Lv.%d" % definition.required_level)
+		parts.append(tr("Lv.%d") % definition.required_level)
 	parts.append(_reason_text(definition.id))
-	parts.append(InputGlyphs.resolve("{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"))
+	parts.append(InputGlyphs.resolve(tr("{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel")))
 	return "  ·  ".join(parts)
 
 

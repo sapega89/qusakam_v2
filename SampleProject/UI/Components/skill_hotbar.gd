@@ -157,6 +157,7 @@ func _build_weapon_bind() -> void:
 	var key := Label.new()
 	key.name = "Key"
 	key.theme_type_variation = &"BindBadge"
+	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key.text = _key_for(&"weapon_next")
 	badge.add_child(key)
 	bind.add_child(badge)
@@ -196,6 +197,7 @@ func _build_assist_bind() -> void:
 	var key := Label.new()
 	key.name = "Key"
 	key.theme_type_variation = &"BindBadge"
+	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
 	key.text = _key_for(&"assist")
 	badge.add_child(key)
 	bind.add_child(badge)
@@ -215,7 +217,7 @@ func _update_assist() -> void:
 	var slot: Panel = bind.get_node(^"Slot")
 	var overlay: Label = slot.get_node(^"Cooldown")
 	var ready := ready_id != ""
-	overlay.text = "%ds" % ceili(cm.get_remaining_cooldown(id))
+	overlay.text = tr("%ds") % ceili(cm.get_remaining_cooldown(id))
 	# Портрет і стилі — лише коли змінився хто / готовність, не щокадру.
 	var shown := "%s:%s" % [id, ready]
 	if shown == _assist_shown:
@@ -245,7 +247,7 @@ func _on_input_device_changed(_pad: bool) -> void:
 func refresh() -> void:
 	var item: Dictionary = ServiceLocator.get_equipment_manager().get_weapon_item_in_hand()
 	var weapon_label: Label = _slots_row.get_node(^"WeaponBind/Slot/WeaponName")
-	weapon_label.text = item.name if not item.is_empty() else "Unarmed"
+	weapon_label.text = item.name if not item.is_empty() else tr("Unarmed")
 	weapon_label.add_theme_color_override("font_color", UITokens.TEXT_PRIMARY if not item.is_empty() else UITokens.TEXT_SECONDARY)
 	for i in _slots.size():
 		_update_slot(i)
@@ -274,7 +276,7 @@ func _update_slot(index: int) -> void:
 	# Перезарядка: залишок бере менеджер, HUD власного таймера не має.
 	if on_cooldown:
 		overlay.visible = true
-		overlay.text = "%ds" % ceili(_skill_manager.get_remaining_cooldown(skill_id))
+		overlay.text = tr("%ds") % ceili(_skill_manager.get_remaining_cooldown(skill_id))
 		overlay.add_theme_stylebox_override("normal", _overlay_box())
 	else:
 		overlay.visible = false

@@ -259,7 +259,7 @@ func _add_segment_row(label_text: String, options: Array, selected: int,
 		var active: bool = i == selected
 		var cell := Button.new()
 		cell.name = "Cell%d" % i
-		cell.text = ("✓ " if active else "") + String(options[i])
+		cell.text = ("✓ " if active else "") + tr(String(options[i]))
 		cell.custom_minimum_size = Vector2(UITokens.SETTINGS_SEGMENT_MIN_WIDTH, 0)
 		cell.theme_type_variation = &"SettingsSegmentOn" if active else &"SettingsSegment"
 		cell.pressed.connect(on_change.bind(i))
@@ -317,7 +317,7 @@ func _resolution_names() -> Array[String]:
 func _fps_limit_names() -> Array[String]:
 	var names: Array[String] = []
 	for fps in DisplayManager.FPS_LIMITS:
-		names.append("Unlimited" if fps == 0 else "%d FPS" % fps)
+		names.append(tr("Unlimited") if fps == 0 else tr("%d FPS") % fps)
 	return names
 
 

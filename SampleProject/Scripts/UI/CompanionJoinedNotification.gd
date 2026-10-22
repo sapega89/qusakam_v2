@@ -6,6 +6,8 @@ extends Control
 const SHOW_TIME := 2.5
 
 @onready var _name: Label = %NameLabel
+## Хто приєднався — щоб перекласти напис, якщо мову змінили, поки він видно (BACKLOG 31).
+var _companion_id := ""
 ## Попереднє сповіщення ще гасне — його анімацію зупиняємо, інакше вона сховає нове.
 var _tween: Tween
 
@@ -15,8 +17,14 @@ func _ready() -> void:
 	EventBus.companion_joined.connect(_on_companion_joined)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _companion_id != "":
+		_name.text = tr("%s joined the party") % CompanionManager.NAMES[_companion_id]
+
+
 func _on_companion_joined(companion_id: String) -> void:
-	_name.text = "%s joined the party" % CompanionManager.NAMES[companion_id]
+	_companion_id = companion_id
+	_name.text = tr("%s joined the party") % CompanionManager.NAMES[companion_id]
 	visible = true
 	modulate.a = 0.0
 	if _tween:
