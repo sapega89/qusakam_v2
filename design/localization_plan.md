@@ -12,7 +12,8 @@ Language row: [[settings_plan]] (D194). Sapega 2026-10-21: «всі тексти
 назви вкладок теж мають бути перекладені»; «HP, SP, XP так і залиш».
 
 **Part 1 (UI) is built** on `cloud/localization-1` — report: `design/cloud_reports/localization-1.md`.
-Part 2 (data + dialogue) and part 3 (voices) are open, see [[#Slices]].
+**Part 2 (data + dialogue) and part 3 (greetings) are built** on `cloud/localization-2` — report:
+`design/cloud_reports/localization-2.md`. See [[#Slices]].
 
 ## 1. Rules
 
@@ -92,7 +93,11 @@ dialogue ids, save keys, `sound_events.json`.
   `verify_dialogue_speaker`, `verify_companions`) change with it.
 - **Dialogue (`.dqd`) — per-locale files** (agent call, D-text 5 in the report): the Ukrainian files stay
   where they are (`dialogue_quest/<id>.dqd` — Sapega writes in Ukrainian); the English twin is
-  `dialogue_quest/en/<id>.dqd` with the same structure. One resolver picks the file by locale — today
+  `dialogue_quest/en/<id>.dqd` with the same structure. **Built differently (part 2):** the scenes keep the
+  Ukrainian path (it is the dialogue id `dialogue_finished` listeners compare); `DialoguePaths.localized()`
+  swaps in the twin only where the file is read (`DialogueManager.start_dialogue`, `DqdReader.lines`).
+  **When Sapega edits a Ukrainian `.dqd`, the English twin must get the same line** — `verify_locale` [5]
+  fails on a different line count or speaker. Originally planned: one resolver picks the file by locale — today
   12 places in 11 files build `"res://dialogue_quest/%s.dqd"` (`StateChangeTrigger.gd:202`, `RelicArmor.gd:38`,
   `LaboratoryOutside.gd:83`, `DesertRoad.gd:108`, `Village.gd:224`, `CityGates.gd:132`, `Canyon.gd:461,472`,
   `Laboratory.gd:114`, `StoryNpc.gd:31`, `NpcBase.gd:185`, `Cutscene.gd:65`) — replace them with one
@@ -109,8 +114,8 @@ dialogue ids, save keys, `sound_events.json`.
 | # | Slice | State |
 |---|---|---|
 | 1 | Runtime registration, the Language row works (mouse / keyboard / pad), every UI / menu / HUD / modal / tab string, `verify_locale` | ✅ built 2026-10-21 (`cloud/localization-1`) |
-| 2a | Data JSON → `uk.po` (items, recipes, skills, attributes, quests, story, journal people, bestiary, tutorials, merchants) + composers through `tr()` | open |
-| 2b | Character names → ids + English keys; speaker ids in `.dqd` | open |
-| 2c | English `.dqd` twins + `DialoguePaths` resolver + twin verify | open — English text needs writing (Sapega's lines, keep his voice) |
-| 2d | `DATA_DEFERRED := false`, dialogue walk in `verify_locale` | open |
-| 3 | Greeting by locale: Kokoro EN (D277), Piper UK voice with a release-clean licence (model card; never non-commercial weights) | open |
+| 2a | Data JSON → `uk.po` (every shown field — `Translations/data_fields.json`) + composers through `tr()` | ✅ 2026-10-22 (`cloud/localization-2`); recipe / merchant names are not shown anywhere, so not translated |
+| 2b | Character names → ids + English keys; speaker ids in `.dqd` | ✅ 2026-10-22 — names are `character_name` English keys in the `.tres` (not `journal_people` titles) |
+| 2c | English `.dqd` twins + `DialoguePaths` resolver + twin verify | ✅ 2026-10-22 — agent translation, Sapega to review; resolver works at read time (`DialoguePaths.localized`), not in the 12 path builders |
+| 2d | `DATA_DEFERRED` / `RUNTIME_FILLED` removed, data check [4] + dialogue walk [5] in `verify_locale` | ✅ 2026-10-22 |
+| 3 | Greeting by locale: Kokoro EN (D277), Piper UK voice "lada" (model card: Apache 2.0) | ✅ 2026-10-22 — one female x-low voice for all six; better voices are on huggingface.co (unreachable from the cloud box) |

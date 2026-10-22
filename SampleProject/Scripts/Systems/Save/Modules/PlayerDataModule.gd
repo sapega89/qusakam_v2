@@ -1,6 +1,9 @@
 extends SaveModule
 class_name PlayerDataModule
 
+## Старі id мовців DialogueQuest → нові (BACKLOG 31: id стали ASCII, імена — ключі перекладу).
+const RENAMED_SPEAKERS := {"Торговец": "MERCHANT", "Алісия": "ALISIA", "Астрит": "ASTRIT", "Уризен": "URIZEN"}
+
 ## 🎮 PlayerDataModule - Сохранение данных игрока
 ## Управляет: позиция, здоровье, характеристики, навыки, экипировка
 
@@ -164,6 +167,8 @@ func load_data(data: Dictionary) -> void:
 	player_state.companion_party = data.companion_party.duplicate()  # D220
 	player_state.seen_tutorials = data.seen_tutorials.duplicate()  # D289
 	player_state.journal = data.journal.duplicate(true)  # D290
+	# Сейви до BACKLOG 31 пишуть кириличні id мовців — переписуємо на нові (DialogueQuest їх уже не знає).
+	player_state.journal.people = player_state.journal.people.map(func(id: String) -> String: return RENAMED_SPEAKERS.get(id, id))
 
 	# Загружаем экипировку
 	if "equipment" in data:
