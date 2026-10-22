@@ -328,9 +328,10 @@ SKILL_FX = [
             "arc",
             (1024, 1024),
             (64, 80),
-            "a single thin sharp eclipse slash crescent, a thin curved arc bulging to the right like the right half of "
-            "a thin ring, a bright crimson cutting edge with a deep violet shadow trail along its inner side, thick in "
-            "the middle and tapering to needle points at the top and the bottom, centered",
+            "a single dark crimson sword slash crescent, a thick curved arc bulging to the right like the right half of "
+            "a ring, its body very dark violet black, a bright crimson flaming outer edge shaded from deep red to "
+            "bright crimson with a thin pale pink highlight line, small violet sparks and ragged pixels trailing off "
+            "its inner edge, a thin dark slate outline, tapering points at the top and the bottom, centered",
         ),
     ),
     (
@@ -401,6 +402,12 @@ for _id, _seed, _key, _charge, (_kind, _size, _canvas, _release) in SKILL_FX:
     )
 # Спис «Суду неба» модель малювала вістрям угору — перевертаємо, щоб падав вістрям униз.
 FX["judgement_of_the_sky_release"]["flip"] = True
+# Півмісяць «Затемнення» на 8 кольорах ставав двома пласкими смугами (арт-директор) — 10, як fire_arc.
+FX["eclipse_cleave_release"]["colors"] = 10
+# Контур 1 px кольором контуру заряду (charge_3), щоб заряд і удар читались однією навичкою; box на 1 px менший
+# під контур, зовнішній край контуру — на правому краю полотна.
+FX["eclipse_cleave_release"]["outline"] = (118, 154, 166)
+FX["eclipse_cleave_release"]["box"] = (1, 1, 63, 79)
 
 
 def generate(name, fx):
@@ -569,6 +576,9 @@ if __name__ == "__main__":
             for mask in frames(fx["kind"], opaque):
                 outs.append(q.copy())
                 outs[-1][..., 3] = mask.astype(np.uint8) * 255
+                if "outline" in fx:
+                    ring = ndimage.binary_dilation(mask) & ~mask
+                    outs[-1][ring] = fx["outline"] + (255,)
         for path, out in zip(fx["frames"], outs):
             os.makedirs(os.path.dirname(OUT + path), exist_ok=True)
             Image.fromarray(out).save(OUT + path + ".png")
