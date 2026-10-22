@@ -35,3 +35,10 @@ Routines: https://claude.ai/code/routines
 Not in the cloud (needs the laptop): art batches A4 (bow, archers), A5 (foreground parallax, living world),
 A6 (effects polish), the other weapon types for 42; the bow (40) and 7 + 19 wiring after that art; Figma pages for
 the journal lore/flags (34); Sapega's own texts (hints D159, lore, oath ideas 27, effect notes 30).
+
+## Round 5 (2026-10-22)
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 07:xx | code-fixes (`trig_01AKEmtZhgFsxCs72ueui65A`) | cloud/code-fixes | boss telegraph, game-time enemy cooldowns, souls_combat flake, B42, B4, #29, Journal portraits |
+| 08:09 | living-world (`trig_01MyFTRZ4Rone1Aiik6fc6ze`) | cloud/living-world | BACKLOG 7 + 19: foreground planes, decor idle loops, drifting clouds |
