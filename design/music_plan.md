@@ -77,7 +77,7 @@ What exists: the maaacks controller blends to any stream — `ProjectMusicContro
 fight state is `EventBus.combat_state_changed(in_combat)` (`PlayerCombat.gd:260-269`, 3 s linger `COMBAT_LINGER`);
 the boss fights start in `LabBoss._fight()` (`Scripts/Gameplay/Scenes/LabBoss.gd:100`) and `MayorHall._fight()` (`MayorHall.gd:99`), end on
 the boss's death (`_on_djinn_died`, `_on_collector_died`) or the hero's defeat (`defeat_handler`). Missing: nothing switches music inside a room (`grep play_stream SampleProject` → 0).
-- **3a — mechanism.** `SoundHooks` (already listens to `combat_state_changed`, `SoundHooks.gd:22`): fight on → the
+- **3a — mechanism.** ✅ **Built 2026-10-22 (D419, `cloud/fight-music`)**; placeholders until 3b; open: B116. Was: `SoundHooks` (already listens to `combat_state_changed`, `SoundHooks.gd:22`): fight on → the
   battle stream; fight off → back to the room's `Music` node stream. A boss fight → the boss stream until the boss
   dies or the hero is defeated (one signal from the boss rooms, or `BossEnemy` engage/death — pick the one both bosses
   already share). Tracks: two paths in `Resources/Data/sound_events.json` → `music` (`fight`, `boss`); a missing file is

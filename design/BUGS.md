@@ -81,6 +81,22 @@ the history, this note keeps only what is open.
 - **Severity:** visual (every named dialogue line)
 - **Found:** 2026-10-22, `cloud/ui-bugs`
 
+### B116 — After the Mayor Hall boss the hero stays "in combat" through the cutscene
+- **Where:** `PlayerCombat._track_combat` (`Scripts/Player/Components/PlayerCombat.gd:260`), `MayorHall.gd` win / loss cutscenes.
+- **Expected:** the fight ends with the collector's death or the hero's defeat — weapon sheathed, the battle track off (D414).
+- **Got:** the cutscene holds the hero in `Hurt`, so `COMBAT_LINGER` never runs out: the weapon stays drawn and the battle track plays until the transport to the Laboratory.
+- **Fix:** a cutscene (or a state that is not READY / BLOCK and not a swing) must not count as fighting; `verify_mayor_hall` then expects the room track after the boss.
+- **Severity:** audio + visual (one cutscene)
+- **Found:** 2026-10-22, `cloud/fight-music`
+
+### B117 — `verify_lab_boss` "claws, fireball and pillar all come" is flaky
+- **Where:** `SampleProject/UI/verify_lab_boss.gd` — waits 40 s for the djinn to use all three moves.
+- **Expected:** green on every run.
+- **Got:** the move pick is random; once no fireball came in 40 s (`cloud/fight-music` suite; green on the run before and on a re-run).
+- **Fix:** seed the boss's move pick in the test (like `CombatRolls.calm()`, D412) or assert each move from a forced pick.
+- **Severity:** tests only (flaky)
+- **Found:** 2026-10-22, `cloud/fight-music`
+
 > **2026-10-22, the next session:** **B113** fixed — row removed. Every failure had the same signature: the hero was still
 > invulnerable at the test's double hit, after a hitstop in [2b] showed an enemy hit landing past the fixed 1 s wait
 > (10 local runs, 5 under full CPU load, all green — the source was not caught). [2b] now takes the enemies out of the
