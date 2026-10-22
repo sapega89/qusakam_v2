@@ -270,10 +270,11 @@ func _world() -> void:
 	button.text = "probe"
 	game.add_child(button)
 	await process_frame
-	button.grab_focus()
-	await process_frame
 	var focus_player: AudioStreamPlayer = ui.get_node(^"ButtonFocusedAudioStreamPlayer")
-	ck(focus_player.playing and focus_player.bus == &"SFX", "focusing a button (pad navigation) ticks on SFX")
+	focus_player.stop()
+	# play() іде синхронно з focus_entered; кадр потому короткий тік уже міг відіграти (B94) — дивимось одразу.
+	button.grab_focus()
+	ck(button.has_focus() and focus_player.playing and focus_player.bus == &"SFX", "focusing a button (pad navigation) ticks on SFX")
 	button.queue_free()
 
 
