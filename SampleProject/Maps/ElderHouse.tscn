@@ -1,0 +1,53 @@
+[gd_scene format=4 uid="uid://dj0cdy8vnn08q"]
+
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="1_tileset"]
+[ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/ElderHouse/gen_wall.png" id="3_wall"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="4_door"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/village_elder.tscn" id="5_elder"]
+[ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
+
+[node name="ElderHouse" type="Node2D"]
+
+[node name="Wall" type="Sprite2D" parent="."]
+z_index = -10
+texture_filter = 1
+position = Vector2(0, -64)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_wall")
+centered = false
+
+[node name="TileMap" type="Node2D" parent="."]
+
+[node name="Foreground" type="TileMapLayer" parent="TileMap"]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAAwAAQAIAAYAAAAAAA0AAQAIAAcAAAAAAA4AAQAIAAcAAAABAAwAAQAIAAYAAAABAA0AAQAIAAcAAAABAA4AAQAIAAcAAAACAAwAAQAIAAYAAAACAA0AAQAIAAcAAAACAA4AAQAIAAcAAAADAAwAAQAIAAYAAAADAA0AAQAIAAcAAAADAA4AAQAIAAcAAAAEAAwAAQAIAAYAAAAEAA0AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAAwAAQAIAAYAAAAFAA0AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAAwAAQAIAAYAAAAGAA0AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAAwAAQAIAAYAAAAHAA0AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAAwAAQAIAAYAAAAIAA0AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAAwAAQAIAAYAAAAJAA0AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAAwAAQAIAAYAAAAKAA0AAQAIAAcAAAAKAA4AAQAIAAcAAAALAAwAAQAIAAYAAAALAA0AAQAIAAcAAAALAA4AAQAIAAcAAAAMAAwAAQAIAAYAAAAMAA0AAQAIAAcAAAAMAA4AAQAIAAcAAAANAAwAAQAIAAYAAAANAA0AAQAIAAcAAAANAA4AAQAIAAcAAAAOAAwAAQAIAAYAAAAOAA0AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAAwAAQAIAAYAAAAPAA0AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAAwAAQAIAAYAAAAQAA0AAQAIAAcAAAAQAA4AAQAIAAcAAAARAAwAAQAIAAYAAAARAA0AAQAIAAcAAAARAA4AAQAIAAcAAAASAAwAAQAIAAYAAAASAA0AAQAIAAcAAAASAA4AAQAIAAcAAAATAAwAAQAIAAYAAAATAA0AAQAIAAcAAAATAA4AAQAIAAcAAAAUAAwAAQAIAAYAAAAUAA0AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAAwAAQAIAAYAAAAVAA0AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAAwAAQAIAAYAAAAWAA0AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAAwAAQAIAAYAAAAXAA0AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAAwAAQAIAAYAAAAYAA0AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAAwAAQAIAAYAAAAZAA0AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAAwAAQAIAAYAAAAaAA0AAQAIAAcAAAAaAA4AAQAIAAcAAAA=")
+tile_set = ExtResource("1_tileset")
+
+[node name="Walls" type="TileMapLayer" parent="TileMap"]
+visible = false
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAAAAAQAIAAcAAAAAAAEAAQAIAAcAAAAAAAIAAQAIAAcAAAAAAAMAAQAIAAcAAAAAAAQAAQAIAAcAAAAAAAUAAQAIAAcAAAAAAAYAAQAIAAcAAAAAAAcAAQAIAAcAAAAAAAgAAQAIAAcAAAAAAAkAAQAIAAcAAAAAAAoAAQAIAAcAAAAAAAsAAQAIAAcAAAAaAAAAAQAIAAcAAAAaAAEAAQAIAAcAAAAaAAIAAQAIAAcAAAAaAAMAAQAIAAcAAAAaAAQAAQAIAAcAAAAaAAUAAQAIAAcAAAAaAAYAAQAIAAcAAAAaAAcAAQAIAAcAAAAaAAgAAQAIAAcAAAAaAAkAAQAIAAcAAAAaAAoAAQAIAAcAAAAaAAsAAQAIAAcAAAA=")
+tile_set = ExtResource("1_tileset")
+
+[node name="RoomInstance" parent="." instance=ExtResource("2_room")]
+
+[node name="Arrival" type="Marker2D" parent="."]
+position = Vector2(96, 344)
+
+[node name="ExitDoor" parent="." instance=ExtResource("4_door")]
+position = Vector2(96, 344)
+target_room = "res://SampleProject/Maps/Village.tscn"
+arrival = NodePath("ElderDoor")
+
+[node name="Interactable" parent="ExitDoor" index="1"]
+action_text = "Leave"
+
+[node name="VillageElder" parent="." instance=ExtResource("5_elder")]
+position = Vector2(560, 384)
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("music_track")
+autoplay = true
+bus = &"Music"
