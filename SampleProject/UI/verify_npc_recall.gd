@@ -129,6 +129,10 @@ func _initialize() -> void:
 	# B10: у вікні немає кнопок Auto/Skip — репліку гортає лише «далі» (D254, Figma npc-dialog-simple 36:6).
 	for b in [^"%AutoButton", ^"%SkipButton"]:
 		ck(not box.get_node(b).is_visible_in_tree(), "no %s in the dialogue box — B10" % String(b).trim_prefix("%"))
+	# B10: помаранчевий «!» — маркер аддона «текст набрано» (quest_marker.png); у Figma його немає.
+	box.finish()
+	for i in 5: await process_frame
+	ck(not box.get_node(^"%BobbingMarker").icon_visible, "no orange '!' marker after the line is typed out — B10")
 	await _drain(dm)
 	_done()
 
