@@ -295,6 +295,10 @@ func _gradient_box(colors: Array) -> StyleBoxTexture:
 ## Figma settings-* сегментований перемикач (17:350).
 ## Вибраний сегмент — акцентна заливка з темним текстом; контейнер малює рамку.
 func _settings_segment(theme: Theme) -> void:
+	# Figma 17:350 — спільна рамка комірок (рядки Settings, вкладки пристроїв на Controls).
+	theme.set_type_variation("SettingsSegmentFrame", "PanelContainer")
+	theme.set_stylebox("panel", "SettingsSegmentFrame", _box(UITokens.SURFACE, UITokens.TEXT_PRIMARY,
+			UITokens.BORDER_WIDTH, 0, 0))
 	var pad_h := UITokens.SPACE_3XL
 	var pad_v := UITokens.SPACE_SM
 	for t in ["SettingsSegment", "SettingsSegmentOn"]:

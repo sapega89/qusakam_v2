@@ -954,6 +954,12 @@ msgstr "Exit to Main Menu"
 msgid "Actions & Inputs"
 msgstr "Actions & Inputs"
 
+msgid "Keyboard & Mouse"
+msgstr "Keyboard & Mouse"
+
+msgid "Gamepad"
+msgstr "Gamepad"
+
 msgid "Primary"
 msgstr "Primary"
 

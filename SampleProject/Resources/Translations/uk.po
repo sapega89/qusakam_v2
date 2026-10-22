@@ -954,6 +954,12 @@ msgstr "Вийти в головне меню"
 msgid "Actions & Inputs"
 msgstr "Дії й кнопки"
 
+msgid "Keyboard & Mouse"
+msgstr "Клавіатура й миша"
+
+msgid "Gamepad"
+msgstr "Геймпад"
+
 msgid "Primary"
 msgstr "Основна"
 
