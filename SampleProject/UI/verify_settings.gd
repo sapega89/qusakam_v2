@@ -265,6 +265,26 @@ func _initialize() -> void:
 		"res://addons/maaacks_menus_template/base/nodes/menus/options_menu/input/input_actions_list.gd",
 		FileAccess.READ).get_as_text()
 	ck(addon_src.find("action_add_event") != -1, "addon still owns rebinding behaviour")
+	# B96: кожна дія з біндингом має свою читабельну назву (ключ перекладу), а не capitalize() свого id.
+	var list: Node = input_menu.get_node(^"%InputActionsList")
+	var uk_po: Translation = load("res://SampleProject/Resources/Translations/uk.po")
+	var unnamed: Array = []
+	var untranslated: Array = []
+	for action: StringName in list._get_all_action_names(false):
+		if InputMap.action_get_events(action).is_empty():
+			continue
+		if not action in list.input_action_names:
+			unnamed.append(action)
+			continue
+		if uk_po.get_message(list.action_name_map[action]) == "":
+			untranslated.append(list.action_name_map[action])
+	ck(unnamed.is_empty(), "B96: every bound action has a readable name in input_options_menu.tscn %s" % str(unnamed))
+	ck(untranslated.is_empty(), "B96: every readable action name is in uk.po %s" % str(untranslated))
+	var shown: Array = []
+	for row in _action_rows(list).slice(1):
+		shown.append(row.get_child(0).text)
+	ck(shown.has("Next Dialogue Line") and not shown.has("Dq Accept") and not shown.has("Save Delete"),
+			"B96: rows read Next Dialogue Line, not Dq Accept / Save Delete %s" % str(shown))
 
 	print("[17] B20: the active tab's pointer does not move its button (#81)")
 	for tab in ids:

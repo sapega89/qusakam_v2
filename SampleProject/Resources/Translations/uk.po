@@ -991,7 +991,7 @@ msgstr "Рух ліворуч"
 msgid "Move Right"
 msgstr "Рух праворуч"
 
-msgid "Dq Accept"
+msgid "Next Dialogue Line"
 msgstr "Діалог: далі"
 
 msgid "Game Menu"
@@ -1009,22 +1009,19 @@ msgstr "Ривок"
 msgid "Block"
 msgstr "Блок"
 
-msgid "Weapon Next"
+msgid "Next Weapon"
 msgstr "Наступна зброя"
 
-msgid "Weapon Prev"
+msgid "Previous Weapon"
 msgstr "Попередня зброя"
 
-msgid "Assist"
-msgstr "Допомога супутника"
+msgid "Call Companion"
+msgstr "Покликати супутника"
 
-msgid "Save Delete"
-msgstr "Видалити збереження"
-
-msgid "Menu Prev Tab"
+msgid "Previous Menu Tab"
 msgstr "Попередня вкладка меню"
 
-msgid "Menu Next Tab"
+msgid "Next Menu Tab"
 msgstr "Наступна вкладка меню"
 
 msgid "Skill Slot 1"
@@ -1039,14 +1036,14 @@ msgstr "Слот навички 3"
 msgid "Skill Slot 4"
 msgstr "Слот навички 4"
 
-msgid "Cutscene Skip"
-msgstr "Пропуск катсцени"
+msgid "Skip Cutscene"
+msgstr "Пропустити катсцену"
 
-msgid "Skills Accept"
-msgstr "Навички: прийняти"
+msgid "Skills: Accept Picks"
+msgstr "Навички: прийняти вибір"
 
-msgid "Skills Unpick"
-msgstr "Навички: скасувати вибір"
+msgid "Skills: Undo Pick"
+msgstr "Навички: зняти позначку"
 
 msgid "Left Stick Up"
 msgstr "Лівий стік угору"
