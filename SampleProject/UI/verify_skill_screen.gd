@@ -111,8 +111,12 @@ func _initialize() -> void:
 	ck(side.get_combined_minimum_size().y <= side.size.y + 1, "the detail / attributes column fits (%d of %d)" % [side.get_combined_minimum_size().y, side.size.y])
 	var tiers: Array = ui._tiers.get_children().map(func(t): return String(t.name))
 	ck(tiers == ["Tier1", "Tier2", "Tier3", "Tier4", "Tier5", "Tier6", "Tier8", "Tier10", "Tier12", "Tier15", "Tier18", "Tier20"], "12 level tiers, trunk + Paladin (%s)" % [tiers])
-	ck(ui._rows["radiant_smite"].get_parent().get_parent().name == "Tier5" and ui._rows["fortitude"].get_parent().get_parent().name == "Tier12", "each skill sits in its level's tier")
+	ck(ui._rows["radiant_smite"].get_parent().get_parent().get_parent().name == "Tier5" and ui._rows["fortitude"].get_parent().get_parent().get_parent().name == "Tier12", "each skill sits in its level's tier")
 	ck(ui._tree_tabs.get_parent().name == "OathHeader", "the oath tabs share the oath header, not their own row")
+	# D117: рядки — копії шаблонів зі сцени, стилі з теми; лише аватар несе копію AvatarChip з кольором героя.
+	var styled: Array = ui.find_children("*", "Control", true, false).filter(
+			func(c: Control) -> bool: return c.has_theme_stylebox_override(&"panel") or c.has_theme_color_override(&"font_color"))
+	ck(styled == [ui._avatar], "rows carry no stylebox / colour overrides, only the avatar's colour (D117): %s" % [styled.map(func(c): return String(c.name))])
 	ck(ui._links.links.size() == 3, "3 links in the Paladin view (Radiant Smite → Skyfall → Judgement, Resolve → Vow): %d" % ui._links.links.size())
 	for id in ui._rows:
 		var r: Rect2 = ui._rows[id].get_global_rect()

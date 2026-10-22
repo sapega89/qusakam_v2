@@ -125,6 +125,9 @@ const SIDEBAR_WIDTH := 320
 const TOP_BAR_HEIGHT := 50
 const BOTTOM_BAR_HEIGHT := 64
 const BOTTOM_BAR_PADDING := 60
+const BOTTOM_BAR_BG := Color("111118", 0.85)  # Figma UI/Bottom Bar (121:1073): фон шелу на 85 %
+## Значок дії в нижній панелі (Figma UI/Action Button 276:467) — коло 24 px.
+const ACTION_BADGE_SIZE := 24
 const SIDEBAR_ITEM_HEIGHT := 45
 
 # ── Розміри інвентарю (Figma: UI/Inventory Center Panel 355:6423) ───────────

@@ -97,6 +97,13 @@ func _initialize() -> void:
 		r1.emit_signal("row_selected", r1.index)
 		await process_frame
 		ck(inv._selected_index == r1.index, "row selection updates index")
+	# D117: вкладки, рядки й підказки нижньої панелі — копії шаблонів зі сцени, стилі з теми.
+	var menu_bar: Node = gm.find_children("*", "UIBottomBar", true, false).filter(func(b: Node) -> bool: return b.is_visible_in_tree())[0]
+	var chrome: Array = tabs.get_children() + list.get_children() + menu_bar.get_node(^"%Actions").get_children() + [menu_bar]
+	ck(chrome.all(func(c: Control) -> bool: return c.theme_type_variation != &"" and not c.has_theme_stylebox_override(&"panel")),
+		"tabs, item rows and bottom-bar hints are template copies styled by the theme (D117)")
+	ck(list.get_children().all(func(r: Node) -> bool: return r.get_node(^"Row/IconBg").theme_type_variation in [&"IconSlot", &"IconSlotFramed"]),
+		"the item icon frame comes from the theme (IconSlot / IconSlotFramed)")
 
 	print("[8] save/load")
 	var before: Dictionary = inv_mgr.save_to_dict()

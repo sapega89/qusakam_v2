@@ -52,11 +52,11 @@ func _pad(button: JoyButton) -> void:
 func _focus() -> Control:
 	return root.gui_get_focus_owner()
 
-## Вузли смуги клятви: клітинка — третя дитина ряду рівня (підпис, стовбур, клятва).
+## Вузли смуги клятви: смуга (Nodes + Pad) — третя дитина ряду рівня (підпис, стовбур, клятва).
 func _secondary_ids(ui: Node) -> Array:
 	var out: Array = []
 	for id in ui._rows:
-		var cell: Node = ui._rows[id].get_parent()
+		var cell: Node = ui._rows[id].get_parent().get_parent()
 		if cell.get_index() == 2:
 			out.append(id)
 	return out
