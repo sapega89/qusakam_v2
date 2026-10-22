@@ -84,7 +84,22 @@ that the shader compiles and recolours only the metal. Bow code was not touched 
 
 ## Verifies
 
-Full suite still running at this commit; results follow in the next commit.
+- `verify_weapon_animations` (new): RESULT: ALL PASS — [0] key metal in every animation of the five libraries; per
+  type (sword, dagger, mace, polearm, sword + dagger): out of combat no frames / palette off; combat idle from the
+  type's frames, overlay hidden, 96×96 offset, palette on; run; the 3- (dual 4-) swing combo with the hitbox on and no
+  overlay at each strike frame, each swing 0.30 s with the strike at 0.05 s like the base swing; heavy wind-up + strike;
+  block (overlay still hidden after the 0.1 s pose, B110); base frames back after the fight; [palette] iron = key,
+  four swords four palettes, crystal shimmers and glows, copper in a fight = same sword frames recoloured.
+- `verify_souls_combat`: RESULT: ALL PASS ([12] now expects `mace/Attack1` and `polearm/Attack1`; [12a] reach and
+  [12c] sword unchanged).
+- `verify_scripts_compile`: RESULT: ALL PASS.
+
+**Full suite (`Scripts/Tools/run_verify.sh`): 84 scripts, 82 PASS, 2 FAIL — no regressions.**
+- `verify_game_ui_theme`: "every button focus is the shared ring (off: FilterButton, MainMenuItem(On), MiscRow(On),
+  NpcMenuItem(On), ShopRow(On))" — the expected D329 failure (waits on Sapega regenerating `GameUITheme.tres`), the same
+  as integration-1/2/3.
+- `verify_audio`: "focusing a button (pad navigation) ticks on SFX" — the known flaky B94; re-run alone:
+  RESULT: ALL PASS.
 
 ## Left
 
