@@ -45,7 +45,7 @@ tree mid-attack, and no test failed (`verify_combat_flow` [4] now covers it).
 
 ## Results
 
-**Latest full run: 2026-10-22 — `SUITE: ALL PASS`, 92 of 92** (`Scripts/Tools/run_verify.sh` on `c4533f60`).
+**Latest full run: 2026-10-22, after round 7 — 92 PASS, 1 FAIL** (`verify_lab_boss`, B117 — fixed right after, 3/3 green); the run before, on `c4533f60`, was 92/92.
 
 | Script | Result | Notes |
 |---|---|---|

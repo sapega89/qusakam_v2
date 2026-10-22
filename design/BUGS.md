@@ -80,14 +80,6 @@ the history, this note keeps only what is open.
 - **Severity:** audio + visual (one cutscene)
 - **Found:** 2026-10-22, `cloud/fight-music`
 
-### B117 — `verify_lab_boss` "claws, fireball and pillar all come" is flaky
-- **Where:** `SampleProject/UI/verify_lab_boss.gd` — waits 40 s for the djinn to use all three moves.
-- **Expected:** green on every run.
-- **Got:** the move pick is random; once no fireball came in 40 s (`cloud/fight-music` suite; green on the run before and on a re-run).
-- **Fix:** seed the boss's move pick in the test (like `CombatRolls.calm()`, D412) or assert each move from a forced pick.
-- **Severity:** tests only (flaky)
-- **Found:** 2026-10-22, `cloud/fight-music`
-
 ### B118 — Settings are lost on restart when the last-used slot has no save
 - **Where:** `SaveSystem.save_game_settings()` (`Scripts/Systems/SaveSystem.gd`: `if not FileAccess.file_exists(slot_path): return true`) — settings live inside the slot file.
 - **Expected:** every Settings row survives a restart ([[settings_plan]] rule), on a fresh install too.
@@ -96,6 +88,8 @@ the history, this note keeps only what is open.
 - **Severity:** functional (every Settings row on a fresh install)
 - **Found:** 2026-10-22, `cloud/settings-1`
 
+> **2026-10-22, after round 7:** **B117** fixed — not chance: the test flipped the hero near/far every 0.5 s, and with the djinn's 1.0 s rest (D411) the flip always landed on the same side at the pick (26 moves, no fireball). [5] now places the hero for the move still missing (400 px → fireball, 60 → claws, 135 → only the pillar fits); row removed.
+>
 > **Round 7 (2026-10-22):** **B112** fixed by `cloud/ui-fixes` — the speaker's name is the first row of `Margin/Rows`, hidden on narration (`verify_dialogue_speaker`); row removed.
 >
 > **2026-10-22, the next session:** **B113** fixed — row removed. Every failure had the same signature: the hero was still

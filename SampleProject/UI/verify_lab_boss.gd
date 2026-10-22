@@ -240,14 +240,14 @@ func _initialize() -> void:
 	var kinds: Array[String] = []
 	djinn.enemy_logic.attack_started.connect(func() -> void: kinds.append(String(djinn.enemy_logic.last_move.kind)))
 	var deadline := Time.get_ticks_msec() + 40000
-	var near := true
 	while Time.get_ticks_msec() < deadline and not (kinds.has("combo") and kinds.has("fireball") and kinds.has("pillar")):
-		# Близько — пазурі, далеко — вогняні кулі й стовпи (D302)
+		# Хід — за відстанню (fire_djinn.tscn: пазурі до 120 px, кулі 150–700, стовп усюди; D302). B117: перемикання
+		# близько/далеко кожні 0.5 с з перервою джина 1.0 с (D411) щоразу потрапляло в те саме — тепер відстань під хід,
+		# якого ще не було; на 135 px підходить лише стовп.
 		if not djinn.enemy_logic.is_attacking:
-			var gap := 60.0 if near else 400.0
+			var gap := 400.0 if not kinds.has("fireball") else (60.0 if not kinds.has("combo") else 135.0)
 			var x := clampf(djinn.global_position.x + (-gap if djinn.global_position.x > 700.0 else gap), 80.0, 1480.0)
 			game.player.global_position = Vector2(x, 380)
-			near = not near
 		game.player.current_health = 99999
 		await create_timer(0.5).timeout
 	ck(kinds.has("combo") and kinds.has("fireball") and kinds.has("pillar"), "claws, fireball and pillar all come (%s)" % [kinds])
