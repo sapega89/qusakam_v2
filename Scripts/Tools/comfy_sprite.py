@@ -236,6 +236,44 @@ HALBERD_LOW = (
     "a small spike pointing up and the spear tip at the front end, not a double axe, only one halberd, the hero the "
     "same size, facing right"
 )
+# BACKLOG 40, A4: лук, як у Skul — лук у дальній руці перед ним, ближня натягує тятиву; біг — ON: з кадрів художника
+BOW = (
+    "a short curved wooden recurve bow, brown wood with a thin light string, as tall as his body from knee to head"
+)
+BOW_WHO = (
+    "the same small lizard knight with the steel armour, dark red cape and tail, with " + BOW + ", exactly as small as "
+    "in the picture, the top of his head below the middle of the picture"
+)
+BOW_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
+    "the picture, only now holding "
+    + BOW
+    + " in his far hand, low at his side, the bow upright, no arrow"
+    + SWORD_COLOURS
+)
+BOW_DRAW = (
+    "in the same side view facing right, the same size: standing sideways with his feet apart, his far arm stretched "
+    "straight forward at shoulder height holding the bow upright in front of him, an arrow nocked on the string, "
+)
+BOW_GLOW = (
+    ", the arrowhead and the arrow shaft glowing with a bright pale yellow light, a small yellow glow around the "
+    "arrowhead only, the bow and the hero unchanged"
+)
+# Лучник-бандит (BACKLOG 40, A4): кадри бандита, ятаган замінено луком
+BANDIT = "SampleProject/Assets/Characters/Enemies/bandit/sheet.png#%d,%d,64,64"
+ARCHER_WHO = (
+    "the same chibi desert bandit with the red face scarf and the ragged sand-coloured cloak, now an archer with a "
+    "brown quiver of arrows on his back and a short curved wooden bow"
+)
+ARCHER_SWAP = (
+    "the curved scimitar replaced by a short curved brown wooden bow with a thin light string, held upright in his "
+    "front hand, and a small brown leather quiver with three arrows on his back; no scimitar, no sword"
+)
+ARCHER_SCARF = ", the red scarf still covering his nose and mouth"
+ARCHER_ON = (
+    "ON:" + BANDIT + ":keeping exactly the same pose, legs, cloak, size and position as in the picture, only "
+    + ARCHER_SWAP + ARCHER_SCARF
+)
 # BACKLOG 42, A3 (D267): парна зброя — меч у ближній руці, кинджал у дальній; кадри меча (ON:/FROM:), кинджал додано
 DUAL_DAGGER = (
     "a short steel dagger with a small steel cross-guard and a brown grip, its blade only as long as his forearm, "
@@ -1551,6 +1589,90 @@ CHARACTERS = {
             # завдовжки з меч — гра бере sword/Hurt (README)
         ],
     ),
+    # Лук (BACKLOG 40, A4): клітинка й лінія ніг — як у меча (96x96, ступні на рядку 88); Draw/Shoot/Charged — з
+    # першого кадру (лук у руці, стріла на тятиві), біг — ON: з кадрів художника (модель лише додає лук)
+    "hero_weapon_bow": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/bow",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who=BOW_WHO,
+        base=KEEP.format(
+            who="the same small lizard knight with the steel armour, dark red cape and tail",
+            pose=BOW_DRAW + "his near hand holding the arrow at the string in front of his chest, the string not yet "
+            "pulled, the cape hanging behind him. " + SWORD_SIZE,
+        ),
+        rows=[
+            (
+                "Draw",
+                [
+                    None,
+                    "FROM:Draw:0:" + BOW_DRAW + "his near hand pulling the string halfway back to his chest, the "
+                    "bow bending, the cape hanging behind him. " + SWORD_SIZE,
+                    "FROM:Draw:0:" + BOW_DRAW + "his near hand pulling the string fully back to his cheek, the bow "
+                    "bent deeply, his elbow raised behind his head, the cape hanging behind him. " + SWORD_SIZE,
+                ],
+            ),
+            (
+                "Shoot",
+                [
+                    "FROM:Draw:2:" + "in the same side view facing right, the same size: the moment after loosing "
+                    "the arrow, the arrow gone from the bow, his far arm still stretched forward holding the bow "
+                    "upright, his near hand flung open back behind his ear, the string straight, the cape flying "
+                    "behind him. " + SWORD_SIZE,
+                    "FROM:Draw:0:" + "in the same side view facing right, the same size: lowering the bow after the "
+                    "shot, the bow held forward and down at waist height in his far hand, no arrow, his near hand "
+                    "relaxed at his chest, the cape hanging behind him. " + SWORD_SIZE,
+                ],
+            ),
+            (
+                "Charged",
+                [
+                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn" + BOW_GLOW + ". " + SWORD_SIZE,
+                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn" + BOW_GLOW
+                    + ", the glow larger and brighter, a few small yellow sparks next to the arrowhead. " + SWORD_SIZE,
+                ],
+            ),
+            ("Run", [BOW_ON % ("Run/%d" % n) for n in (1, 3, 4, 5, 7, 8)]),
+        ],
+    ),
+    # Лучник-бандит (BACKLOG 40, A4): з кадрів бандита (bandit/sheet.png#...) — той самий бандит, ятаган замінено луком
+    # (спроба 1 — з кадру героя, як бандит: плащ без ніг, лук поперек живота); сітка 64x64 по 4 в ряду, як у бандита;
+    # ряди idle / walk / attack (натяг + постріл) / hurt / death; хода, удар і смерть — ON: з кадрів бандита
+    "bandit_archer": dict(
+        out="SampleProject/Assets/Characters/Enemies/bandit_archer/sheet.png",
+        ref=BANDIT % (0, 0),
+        seed=2,
+        colors=16,
+        who=ARCHER_WHO,
+        base=KEEP.format(who=ARCHER_WHO.replace(" and a short curved wooden bow", ""), pose="the same idle stance "
+            "facing right, " + ARCHER_SWAP),
+        rows=[
+            ("idle", [None, "BOB:44"]),
+            ("walk", [ARCHER_ON % (x, 64) for x in (0, 64, 128, 192)]),
+            (
+                "attack",
+                [
+                    "FROM:idle:0:raising the bow upright in front of him with his front arm stretched forward at "
+                    "shoulder height, his back hand reaching over his shoulder to the quiver" + ARCHER_SCARF,
+                    "FROM:idle:0:standing sideways with his front arm stretched forward at shoulder height holding the "
+                    "bow upright in front of him, an arrow nocked, his back hand pulling the string fully back to his "
+                    "cheek, the bow bent, aiming to the right" + ARCHER_SCARF,
+                    "FROM:attack:1:keeping exactly the same pose, the string drawn fully back, the bow bent, "
+                    "the arrow nocked and aimed to the right, holding still" + ARCHER_SCARF,
+                    # спроба 1 (FROM:attack:1, «the arrow gone») лишала стрілу на тятиві — з кадру підйому лука
+                    "FROM:attack:0:the moment right after the shot: his front arm stretched straight forward at "
+                    "shoulder height holding the empty bow upright, no arrow anywhere on the bow, the string straight "
+                    "and vertical, his back hand open and empty, flung up and back behind his head" + ARCHER_SCARF,
+                ],
+            ),
+            ("hurt", [ARCHER_ON % (0, 192)]),
+            ("death", [ARCHER_ON % (x, 192) for x in (0, 64, 128, 192)]),
+        ],
+    ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
     "brass_collector": dict(
@@ -1849,10 +1971,20 @@ def edit_graph(text, seed, ref_name, megapixels, design_name=None):
     return g
 
 
+def load(path):
+    """<png> або <png>#x,y,w,h — клітинка листа (лучник: кадри бандита з його sheet.png)."""
+    path, _, box = path.partition("#")
+    im = Image.open(path).convert("RGBA")
+    if box:
+        x, y, w, h = map(int, box.split(","))
+        im = im.crop((x, y, x + w, y + h))
+    return im
+
+
 def enlarge(path, cell):
     """Кадр героя знизу посередині клітинки cell на пурпурі, ×16 найближчим сусідом — для моделі. Вища клітинка —
     для дорослих NPC (D172: на 1,5 вищі за героя) при тому ж пікселі."""
-    ref = Image.open(path).convert("RGBA")
+    ref = load(path)
     canvas = Image.new("RGBA", cell, MAGENTA + (255,))
     canvas.alpha_composite(ref, ((cell[0] - ref.width) // 2, cell[1] - ref.height))
     return np.asarray(canvas.resize((cell[0] * UP, cell[1] * UP), Image.NEAREST))
@@ -1967,7 +2099,7 @@ def rotate(small, deg):
 
 
 def from_file(path):
-    im = np.asarray(Image.open(path).convert("RGBA"), dtype=np.float32)
+    im = np.asarray(load(path), dtype=np.float32)
     return im[..., :3], im[..., 3] > 128
 
 
