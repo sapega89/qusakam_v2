@@ -44,6 +44,27 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 4
 
+[node name="Tab" type="HBoxContainer" parent="Layout/Sidebar" unique_id=467144958]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 40)
+layout_mode = 2
+alignment = 1
+
+[node name="Pointer" type="TextureRect" parent="Layout/Sidebar/Tab" unique_id=425886779]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_pointer")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Button" type="Button" parent="Layout/Sidebar/Tab" unique_id=860110333]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_type_variation = &"SettingsSidebarTab"
+toggle_mode = true
+expand_icon = true
+
 [node name="ContentWrapper" type="VBoxContainer" parent="Layout" unique_id=1320806140]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -124,10 +145,6 @@ text = "Back"
 
 [node name="TabIcons" type="Node" parent="." unique_id=1530965508]
 
-[node name="Pointer" type="TextureRect" parent="TabIcons" unique_id=1219197876]
-visible = false
-texture = ExtResource("2_pointer")
-
 [node name="display" type="TextureRect" parent="TabIcons" unique_id=526807474]
 visible = false
 texture = ExtResource("3_display")
@@ -144,6 +161,179 @@ texture = ExtResource("6_game")
 visible = false
 texture = ExtResource("7_controls")
 
-[node name="compass" type="TextureRect" parent="TabIcons" unique_id=1483983527]
+[node name="RowTemplates" type="VBoxContainer" parent="." unique_id=1651680148]
 visible = false
+layout_mode = 0
+
+[node name="Separator" type="HSeparator" parent="RowTemplates" unique_id=512595711]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SettingsSeparator"
+
+[node name="SegmentRow" type="MarginContainer" parent="RowTemplates" unique_id=910669677]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+theme_type_variation = &"SettingsRow"
+
+[node name="Row" type="HBoxContainer" parent="RowTemplates/SegmentRow" unique_id=767723752]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RowTemplates/SegmentRow/Row" unique_id=394939180]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"SettingsRowLabel"
+
+[node name="Segments" type="PanelContainer" parent="RowTemplates/SegmentRow/Row" unique_id=1489771419]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SettingsSegmentFrame"
+
+[node name="Cells" type="HBoxContainer" parent="RowTemplates/SegmentRow/Row/Segments" unique_id=140432856]
+layout_mode = 2
+theme_type_variation = &"SettingsSegmentCells"
+
+[node name="Cell0" type="Button" parent="RowTemplates/SegmentRow/Row/Segments/Cells" unique_id=188250190]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+theme_type_variation = &"SettingsSegment"
+
+[node name="StepperRow" type="MarginContainer" parent="RowTemplates" unique_id=1792427854]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 68)
+layout_mode = 2
+theme_type_variation = &"SettingsRow"
+
+[node name="Row" type="HBoxContainer" parent="RowTemplates/StepperRow" unique_id=1006078231]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RowTemplates/StepperRow/Row" unique_id=1602576896]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"SettingsRowLabel"
+
+[node name="Stepper" type="HBoxContainer" parent="RowTemplates/StepperRow/Row" unique_id=365697484]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SettingsControlGroup"
+
+[node name="Prev" type="Button" parent="RowTemplates/StepperRow/Row/Stepper" unique_id=162249241]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_type_variation = &"SettingsStepper"
+text = "‹"
+
+[node name="Value" type="Label" parent="RowTemplates/StepperRow/Row/Stepper" unique_id=1911850174]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_type_variation = &"SettingsValue"
+horizontal_alignment = 1
+
+[node name="Next" type="Button" parent="RowTemplates/StepperRow/Row/Stepper" unique_id=173975672]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_type_variation = &"SettingsStepper"
+text = "›"
+
+[node name="SliderRow" type="MarginContainer" parent="RowTemplates" unique_id=1699866577]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_type_variation = &"SettingsRow"
+
+[node name="Row" type="HBoxContainer" parent="RowTemplates/SliderRow" unique_id=1296844482]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RowTemplates/SliderRow/Row" unique_id=1693772587]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"SettingsRowLabel"
+
+[node name="Slider" type="HBoxContainer" parent="RowTemplates/SliderRow/Row" unique_id=1094497063]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SettingsControlGroup"
+
+[node name="Minus" type="Button" parent="RowTemplates/SliderRow/Row/Slider" unique_id=1002303466]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_type_variation = &"SettingsStepper"
+text = "−"
+
+[node name="Value" type="HSlider" parent="RowTemplates/SliderRow/Row/Slider" unique_id=1663384501]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_vertical = 4
+step = 1.0
+
+[node name="Plus" type="Button" parent="RowTemplates/SliderRow/Row/Slider" unique_id=183637731]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme_type_variation = &"SettingsStepper"
+text = "+"
+
+[node name="Readout" type="Label" parent="RowTemplates/SliderRow/Row/Slider" unique_id=1888068605]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+theme_type_variation = &"SettingsValue"
+horizontal_alignment = 2
+
+[node name="BrightnessPreview" type="HBoxContainer" parent="RowTemplates" unique_id=288437215]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SettingsControlGroup"
+alignment = 2
+
+[node name="Dark" type="VBoxContainer" parent="RowTemplates/BrightnessPreview" unique_id=1727969824]
+layout_mode = 2
+theme_type_variation = &"SettingsPreviewColumn"
+
+[node name="Swatch" type="PanelContainer" parent="RowTemplates/BrightnessPreview/Dark" unique_id=1480519711]
+custom_minimum_size = Vector2(208, 96)
+layout_mode = 2
+theme_type_variation = &"SettingsPreviewDark"
+
+[node name="Compass" type="TextureRect" parent="RowTemplates/BrightnessPreview/Dark/Swatch" unique_id=1218165935]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 texture = ExtResource("8_compass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="RowTemplates/BrightnessPreview/Dark" unique_id=901455355]
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "DARK"
+horizontal_alignment = 1
+
+[node name="Bright" type="VBoxContainer" parent="RowTemplates/BrightnessPreview" unique_id=1854975904]
+layout_mode = 2
+theme_type_variation = &"SettingsPreviewColumn"
+
+[node name="Swatch" type="PanelContainer" parent="RowTemplates/BrightnessPreview/Bright" unique_id=1716679692]
+custom_minimum_size = Vector2(208, 96)
+layout_mode = 2
+theme_type_variation = &"SettingsPreviewBright"
+
+[node name="Compass" type="TextureRect" parent="RowTemplates/BrightnessPreview/Bright/Swatch" unique_id=1104416614]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("8_compass")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Caption" type="Label" parent="RowTemplates/BrightnessPreview/Bright" unique_id=1382091778]
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "BRIGHT"
+horizontal_alignment = 1
+
+[node name="Pad" type="Control" parent="RowTemplates/BrightnessPreview" unique_id=1002127518]
+layout_mode = 2

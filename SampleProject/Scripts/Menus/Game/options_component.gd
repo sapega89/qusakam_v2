@@ -13,6 +13,12 @@ signal closed
 ##
 ## Персистенс — існуючий: SaveSystem.settings_module + save_game_settings().
 ## Другої системи налаштувань не заводимо.
+##
+## D117: рядки — шаблони в .tscn (%Tab у бічній панелі; %SegmentRow, %StepperRow, %SliderRow, %Separator,
+## %BrightnessPreview у прихованому RowTemplates). Рядок списку — копія шаблону, комірки й вкладки — RowFill;
+## стилі — з теми.
+
+const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
 # Mode: "main_menu" or "game_menu"
 var mode: String = "game_menu"
@@ -41,6 +47,12 @@ const TAB_HINTS := {
 @onready var _list: VBoxContainer = %SettingsList
 @onready var _input_menu: Control = %InputOptionsMenu
 @onready var _restore_button: Button = %RestoreButton
+@onready var _tab: HBoxContainer = %Tab
+@onready var _segment_row: MarginContainer = %SegmentRow
+@onready var _stepper_row: MarginContainer = %StepperRow
+@onready var _slider_row: MarginContainer = %SliderRow
+@onready var _separator: HSeparator = %Separator
+@onready var _brightness_preview: HBoxContainer = %BrightnessPreview
 
 var current_tab: String = "display"
 var _tab_buttons: Dictionary = {}
@@ -61,44 +73,21 @@ func _initialize_component() -> void:
 	switch_to_tab(current_tab)
 
 
+## Figma UI/Settings Tab 117:835 — 16px вказівник + 36×36 кнопка з іконкою (шаблон %Tab).
 func _build_sidebar() -> void:
-	for child in _sidebar.get_children():
-		_sidebar.remove_child(child)
-		child.queue_free()
 	_tab_buttons.clear()
-	for tab in TABS:
-		_sidebar.add_child(_make_tab(tab))
-
-
-## Figma UI/Settings Tab 117:835 — 16px вказівник + 36×36 кнопка з іконкою.
-func _make_tab(tab: Dictionary) -> Control:
-	var row := HBoxContainer.new()
-	row.custom_minimum_size = Vector2(UITokens.SETTINGS_SIDEBAR_WIDTH, UITokens.SETTINGS_TAB_HEIGHT)
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-
-	var pointer := TextureRect.new()
-	pointer.name = "Pointer"
-	pointer.custom_minimum_size = Vector2(UITokens.SETTINGS_POINTER, UITokens.SETTINGS_POINTER)
-	pointer.texture = _icon("Pointer")
-	pointer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	pointer.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	pointer.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	pointer.modulate = UITokens.ACCENT
-	row.add_child(pointer)
-
-	var button := Button.new()
-	button.name = "Tab_%s" % tab.id
-	button.custom_minimum_size = Vector2(UITokens.SETTINGS_TAB_BOX, UITokens.SETTINGS_TAB_BOX)
-	button.theme_type_variation = &"SettingsSidebarTab"
-	button.toggle_mode = true
-	button.icon = _icon(tab.id)
-	button.expand_icon = true
-	button.tooltip_text = tab.heading
-	button.pressed.connect(switch_to_tab.bind(tab.id))
-	row.add_child(button)
-
-	_tab_buttons[tab.id] = {"row": row, "pointer": pointer, "button": button}
-	return row
+	var rows := RowFill.fill(_sidebar, _tab, TABS.size())
+	for i in TABS.size():
+		var tab: Dictionary = TABS[i]
+		var row: HBoxContainer = rows[i]
+		var pointer: TextureRect = row.get_node(^"Pointer")
+		pointer.modulate = UITokens.ACCENT
+		var button: Button = row.get_node(^"Button")
+		button.name = "Tab_%s" % tab.id
+		button.icon = _icon(tab.id)
+		button.tooltip_text = tab.heading
+		button.pressed.connect(switch_to_tab.bind(tab.id))
+		_tab_buttons[tab.id] = {"row": row, "pointer": pointer, "button": button}
 
 
 func _icon(icon_name: String) -> Texture2D:
@@ -233,31 +222,24 @@ func _build_rows() -> void:
 
 
 func _add_separator() -> void:
-	var line := HSeparator.new()
-	var box := StyleBoxLine.new()
-	box.color = UITokens.BORDER
-	box.thickness = UITokens.SETTINGS_ROW_GAP
-	line.add_theme_stylebox_override("separator", box)
-	line.add_theme_constant_override("separation", UITokens.SETTINGS_ROW_GAP)
-	_list.add_child(line)
+	_list.add_child(_copy(_separator))
+
+
+## Копія шаблону рядка; зв'язки сигналів не копіюються — їх ставить той, хто будує рядок.
+func _copy(template: Control) -> Control:
+	var copy: Control = template.duplicate(Node.DUPLICATE_GROUPS | Node.DUPLICATE_SCRIPTS)
+	copy.visible = true
+	return copy
 
 
 ## Figma 17:325 — px16, назва ліворуч, контрол праворуч; висота рядка з Figma, вміст по центру (B21).
-func _make_row(label_text: String, height: int) -> HBoxContainer:
-	var margin := MarginContainer.new()
+func _make_row(template: MarginContainer, label_text: String, height: int) -> HBoxContainer:
+	var margin: MarginContainer = _copy(template)
 	margin.name = "%sRow" % label_text  # стабільний шлях для повернення фокуса (_rebuild_list)
 	margin.custom_minimum_size.y = height
-	margin.add_theme_constant_override("margin_left", UITokens.SETTINGS_ROW_PAD_H)
-	margin.add_theme_constant_override("margin_right", UITokens.SETTINGS_ROW_PAD_H)
-	var row := HBoxContainer.new()
+	var row: HBoxContainer = margin.get_node(^"Row")
 	row.name = label_text
-	margin.add_child(row)
-	var label := Label.new()
-	label.text = label_text
-	label.theme_type_variation = &"SettingsRowLabel"
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	row.add_child(label)
+	(row.get_node(^"Label") as Label).text = label_text
 	_list.add_child(margin)
 	return row
 
@@ -265,25 +247,16 @@ func _make_row(label_text: String, height: int) -> HBoxContainer:
 ## Figma 17:350 — дві комірки в спільній рамці, вибрана має акцентну заливку.
 func _add_segment_row(label_text: String, options: Array, selected: int,
 		on_change: Callable) -> void:
-	var row := _make_row(label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
-	var frame := PanelContainer.new()
-	frame.name = "Segments"
-	frame.theme_type_variation = &"SettingsSegmentFrame"
-	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var cells := HBoxContainer.new()
-	cells.name = "Cells"
-	cells.add_theme_constant_override("separation", 0)
-	frame.add_child(cells)
+	var row := _make_row(_segment_row, label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
+	var cells: HBoxContainer = row.get_node(^"Segments/Cells")
+	var buttons := RowFill.fill(cells, cells.get_child(0), options.size())
 	for i in options.size():
 		var active: bool = i == selected
-		var cell := Button.new()
+		var cell: Button = buttons[i]
 		cell.name = "Cell%d" % i
 		cell.text = ("✓ " if active else "") + tr(String(options[i]))
-		cell.custom_minimum_size = Vector2(UITokens.SETTINGS_SEGMENT_MIN_WIDTH, 0)
 		cell.theme_type_variation = &"SettingsSegmentOn" if active else &"SettingsSegment"
 		cell.pressed.connect(on_change.bind(i))
-		cells.add_child(cell)
-	row.add_child(frame)
 
 
 ## Figma 17:280 Stepper — шеврон ліворуч · 280px значення · шеврон праворуч (Resolution, Frame Rate Limit).
@@ -293,38 +266,21 @@ func _add_stepper_row(label_text: String, options: Array[String], selected: int,
 	if selected < 0:
 		push_error("OptionsComponent: '%s' holds a value outside its option list" % label_text)
 		return
-	var row := _make_row(label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
-	var group := HBoxContainer.new()
-	group.name = "Stepper"
-	group.add_theme_constant_override("separation", UITokens.SPACE_LG)
-	group.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-
-	var value := Label.new()
-	value.name = "Value"
-	value.custom_minimum_size = Vector2(UITokens.SETTINGS_STEPPER_WIDTH, 0)
-	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	value.theme_type_variation = &"SettingsValue"
+	var row := _make_row(_stepper_row, label_text, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)
+	var value: Label = row.get_node(^"Stepper/Value")
 	value.text = options[selected]
 	if not enabled:
-		value.add_theme_color_override("font_color", UITokens.TEXT_DISABLED)
+		value.theme_type_variation = &"SettingsValueDisabled"
 
 	var index: Array[int] = [selected]  # лямбда змінює значення через масив
 	var step := func(delta: int) -> void:
 		index[0] = wrapi(index[0] + delta, 0, options.size())
 		value.text = options[index[0]]
 		on_change.call(index[0])
-	for spec in [["Prev", "‹", -1], ["Next", "›", 1]]:
-		var button := Button.new()
-		button.name = spec[0]
-		button.text = spec[1]
-		button.theme_type_variation = &"SettingsStepper"
-		button.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
+	for spec in [[^"Stepper/Prev", -1], [^"Stepper/Next", 1]]:
+		var button: Button = row.get_node(spec[0])
 		button.disabled = not enabled
-		button.pressed.connect(step.bind(spec[2]))
-		group.add_child(button)
-	group.add_child(value)
-	group.move_child(value, 1)
-	row.add_child(group)
+		button.pressed.connect(step.bind(spec[1]))
 
 
 func _resolution_names() -> Array[String]:
@@ -349,94 +305,27 @@ func _add_volume_row(label_text: String, key: String) -> void:
 ## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100. [param on_change] отримує ціле 0–100.
 func _add_slider_row(label_text: String, value: int, on_change: Callable,
 		height: int = UITokens.SETTINGS_SLIDER_ROW_HEIGHT) -> void:
-	var row := _make_row(label_text, height)
-	var group := HBoxContainer.new()
-	group.name = "Slider"
-	group.add_theme_constant_override("separation", UITokens.SPACE_LG)
-	group.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-
-	var minus := Button.new()
-	minus.name = "Minus"
-	minus.text = "−"
-	minus.theme_type_variation = &"SettingsStepper"
-	minus.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
-	group.add_child(minus)
-
-	var slider := HSlider.new()
-	slider.name = "Value"
-	slider.custom_minimum_size = Vector2(UITokens.SETTINGS_SLIDER_WIDTH, 0)
-	slider.min_value = 0.0
-	slider.max_value = 100.0
-	slider.step = 1.0
-	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var row := _make_row(_slider_row, label_text, height)
+	var slider: HSlider = row.get_node(^"Slider/Value")
+	var readout: Label = row.get_node(^"Slider/Readout")
 	slider.value = value
-	group.add_child(slider)
-
-	var plus := Button.new()
-	plus.name = "Plus"
-	plus.text = "+"
-	plus.theme_type_variation = &"SettingsStepper"
-	plus.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX
-	group.add_child(plus)
-
-	var readout := Label.new()
-	readout.name = "Readout"
-	readout.custom_minimum_size = Vector2(36, 0)
-	readout.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	readout.theme_type_variation = &"SettingsValue"
 	readout.text = str(int(slider.value))
-	group.add_child(readout)
-
-	minus.pressed.connect(func() -> void: slider.value -= 5.0)
-	plus.pressed.connect(func() -> void: slider.value += 5.0)
+	(row.get_node(^"Slider/Minus") as Button).pressed.connect(func() -> void: slider.value -= 5.0)
+	(row.get_node(^"Slider/Plus") as Button).pressed.connect(func() -> void: slider.value += 5.0)
 	slider.value_changed.connect(func(v: float) -> void:
 		readout.text = str(int(v))
 		on_change.call(int(v)))
-	row.add_child(group)
 
 
 ## D428: зразки під Screen Brightness — компас на чорному (DARK) і на білому (BRIGHT). Вони під тим самим
 ## шаром яскравості, що й уся гра, тож показують її наживо: добра яскравість — видно обидва компаси.
+## Не MarginContainer: це не рядок налаштування (тести рядків рахують саме MarginContainer). Останній дочірній
+## вузол Pad дає ще один проміжок SPACE_LG справа — правий відступ рядків (SETTINGS_ROW_PAD_H).
 func _add_brightness_preview() -> void:
-	# Не MarginContainer: це не рядок налаштування (тести рядків рахують саме MarginContainer).
-	var swatches := HBoxContainer.new()
+	var swatches: HBoxContainer = _copy(_brightness_preview)
 	swatches.name = "BrightnessPreview"
-	swatches.alignment = BoxContainer.ALIGNMENT_END
-	swatches.add_theme_constant_override("separation", UITokens.SPACE_LG)
-	for spec in [["Dark", "DARK", UITokens.SETTINGS_PREVIEW_DARK_BG, UITokens.SETTINGS_PREVIEW_DARK_MARK],
-			["Bright", "BRIGHT", UITokens.SETTINGS_PREVIEW_BRIGHT_BG, UITokens.SETTINGS_PREVIEW_BRIGHT_MARK]]:
-		var column := VBoxContainer.new()
-		column.name = spec[0]
-		column.add_theme_constant_override("separation", UITokens.SPACE_XS)
-		var swatch := PanelContainer.new()
-		swatch.name = "Swatch"
-		swatch.custom_minimum_size = UITokens.SETTINGS_PREVIEW_SIZE
-		var fill := StyleBoxFlat.new()
-		fill.bg_color = spec[2]
-		fill.border_color = UITokens.BORDER
-		fill.set_border_width_all(UITokens.BORDER_WIDTH)
-		swatch.add_theme_stylebox_override("panel", fill)
-		var compass := TextureRect.new()
-		compass.name = "Compass"
-		compass.texture = _icon("compass")
-		compass.custom_minimum_size = Vector2.ONE * UITokens.SETTINGS_PREVIEW_ICON
-		compass.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		compass.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		compass.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		compass.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		compass.modulate = spec[3]
-		swatch.add_child(compass)
-		column.add_child(swatch)
-		var caption := Label.new()
-		caption.name = "Caption"
-		caption.text = spec[1]
-		caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		caption.theme_type_variation = &"SettingsEyebrow"
-		column.add_child(caption)
-		swatches.add_child(column)
-	var pad := Control.new()  # правий відступ рядків, як у _make_row
-	pad.custom_minimum_size.x = UITokens.SETTINGS_ROW_PAD_H - UITokens.SPACE_LG
-	swatches.add_child(pad)
+	(swatches.get_node(^"Dark/Swatch/Compass") as TextureRect).modulate = UITokens.SETTINGS_PREVIEW_DARK_MARK
+	(swatches.get_node(^"Bright/Swatch/Compass") as TextureRect).modulate = UITokens.SETTINGS_PREVIEW_BRIGHT_MARK
 	_list.add_child(swatches)
 
 
