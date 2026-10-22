@@ -1619,3 +1619,16 @@ msgstr "Tutorial windows can be turned off in Settings → Game."
 
 msgid "Unknown Item"
 msgstr "Unknown Item"
+
+# ── Bow and the desert archer (BACKLOG 40, D380–D387): items.json, bestiary.json
+msgid "Short Bow"
+msgstr "Short Bow"
+
+msgid "A desert short bow. Tap attack to loose an arrow, hold it to draw a charged shot that pierces. Attack: +12"
+msgstr "A desert short bow. Tap attack to loose an arrow, hold it to draw a charged shot that pierces. Attack: +12"
+
+msgid "Desert Archer"
+msgstr "Desert Archer"
+
+msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."

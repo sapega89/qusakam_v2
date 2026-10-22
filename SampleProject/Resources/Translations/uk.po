@@ -1619,3 +1619,16 @@ msgstr "Вікна навчання можна вимкнути в Налашт�
 
 msgid "Unknown Item"
 msgstr "Невідомий предмет"
+
+# ── Bow and the desert archer (BACKLOG 40, D380–D387): items.json, bestiary.json
+msgid "Short Bow"
+msgstr "Короткий лук"
+
+msgid "A desert short bow. Tap attack to loose an arrow, hold it to draw a charged shot that pierces. Attack: +12"
+msgstr "Пустельний короткий лук. Натисніть удар — випустити стрілу, утримуйте — натягнути заряджений постріл, що прошиває. Атака: +12"
+
+msgid "Desert Archer"
+msgstr "Пустельний лучник"
+
+msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+msgstr "Бандит із коротким луком: тримається на відстані й відступає, коли ви підходите. Червоний відблиск на наконечнику — стріла летить саме зараз: заблокуйте її, відбийте парируванням назад у нього, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
