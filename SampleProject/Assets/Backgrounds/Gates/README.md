@@ -12,3 +12,4 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 
 Behind them: `desert_backdrop_open.tscn` — the pack's sky, the Canyon's generated clouds and mesas (D235),
 the pack's ground strip.
+| `gen_front.png` | CityGates: foreground plane (BACKLOG 7, A5a; not wired yet) — a cart with a red cloth, crates, sacks, barrels, sandstone blocks; 576×324, transparent above row ~238, a dark ground strip from row 311 to the bottom; made like `Village/gen_front`: Parallax2D ×1.25, z 20, darkened (shade 0.6), `depth_blur_front` |

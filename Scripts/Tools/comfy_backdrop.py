@@ -124,6 +124,75 @@ LAYERS = {
         "plants, a few rocks, big clay jars and a broken wooden fence, with wide gaps between the groups, "
         f"{MAGENTA}",
     ),
+    # Передні плани решти кімнат (BACKLOG 7, A5a): як у села — смуга внизу, рідкі групи з широкими проміжками.
+    "Canyon/gen_front": dict(
+        seed=131,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground objects along the bottom edge: jagged red sandstone boulders, dry yellow grass tufts, thorny "
+        f"dead bushes and a fallen weathered log, with wide gaps between the groups, {MAGENTA}",
+    ),
+    "Road/gen_front": dict(
+        seed=133,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground objects along the bottom edge: half-buried sandstone rocks, dry grass tufts, a broken "
+        "wooden cart wheel, a small stack of wooden crates and a leaning wooden road post, with wide gaps between the "
+        f"groups, {MAGENTA}",
+    ),
+    "Gates/gen_front": dict(
+        seed=135,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground objects along the bottom edge: stacked wooden crates, grain sacks, wooden barrels, a "
+        "red cloth draped over a cart, a few sandstone blocks and dry grass tufts, with wide gaps between the groups, "
+        f"{MAGENTA}",
+    ),
+    "City/gen_front": dict(
+        seed=137,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground objects along the bottom edge: market crates of fruit, woven baskets, big clay jars, a "
+        "rolled carpet, a low wooden stall with striped red and blue cloth hanging from it, with wide gaps between the "
+        f"groups, {MAGENTA}",
+    ),
+    "LabOut/gen_front": dict(
+        seed=139,
+        rows=110,
+        top=H - 110,
+        seam="model",
+        key="magenta",
+        shade=0.6,
+        fill=False,
+        haze=0,
+        colors=6,
+        prompt="foreground plants and objects along the bottom edge: tall reeds, low palm fronds, leafy desert shrubs, "
+        f"mossy rocks and a broken stone column piece, with wide gaps between the groups, {MAGENTA}",
+    ),
     # Решта кімнат (D237): спільні з каньйоном небо, хмари й мези; свій середній план. Переднього плану в кімнатах
     # заввишки в одну клітинку немає: камера показує рівно до низу бруківки, нижче місця нема.
     "Road/gen_mid": dict(

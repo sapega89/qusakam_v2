@@ -21,3 +21,4 @@ z 20) — and `gen_bridge.png` — the rope bridge, cut into slices by `build_ca
 D257 (meditation on the summit): `gen_shrine.png` — the meditation stone with a cairn and a glowing rune on top of
 the Pride Rock (`Meditation/Shrine`) — **AI-generated** the same way (`comfy_backdrop.py`, Qwen-Image, Apache 2.0;
 `small=2`: game pixels from 6×6 blocks, the model painted the stone too big).
+| `gen_front.png` | Canyon: foreground plane (BACKLOG 7, A5a; not wired yet) — red sandstone boulders, dry grass tufts, thorny dead bushes, a fallen log; 576×324, transparent above row ~225, a dark ground strip from row 300 to the bottom; made like `Village/gen_front`: Parallax2D ×1.25, z 20, darkened (shade 0.6), `depth_blur_front` |
