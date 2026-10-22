@@ -166,7 +166,8 @@ func _initialize() -> void:
 		ck(hotbar.get_theme_color("font_color", "CooldownLabel") == tokens.ACCENT,
 				"cooldown colour from tokens")
 	var top: Node = game.get_node_or_null(^"UICanvas/CombatHUD/CombatHudTop")
-	var hud_box: StyleBox = top.get_theme_stylebox("panel", "SidePanel") if top else null
+	# HUD-панелі (QuestPanel, CurrencyDisplay) — звичайний PanelContainer; SidePanel — поверхня меню (MENU_SURFACE, B8).
+	var hud_box: StyleBox = top.get_node(^"QuestPanel").get_theme_stylebox("panel") if top else null
 	ck(hud_box is StyleBoxFlat and (hud_box as StyleBoxFlat).bg_color == UITokens.SURFACE,
 			"stylebox resolves to the token surface for HUD chrome")
 
