@@ -3,8 +3,10 @@
 **AI-generated** by `Scripts/Tools/comfy_sprite.py bandit_archer`: the local ComfyUI with **Qwen-Image-Edit-2511**
 (Alibaba Qwen, Apache 2.0; GGUF Q5_K_M by unsloth) and its Lightning LoRA (lightx2v, Apache 2.0). Made from the
 melee bandit's own frames (`../bandit/sheet.png`): the scimitar replaced by a short wooden bow and a quiver added;
-the walk, hurt and death are the bandit's frames with only the weapon changed (`ON:`), the attack is made from the
-first frame. 16-colour palette, feet on row 56 like the bandit. A Steam release has to disclose AI-generated content.
+the walk and hurt are the bandit's frames with only the weapon changed (`ON:`), the attack and the death fall are made
+from the first / hurt frame (`FROM:`). The death row was regenerated after art review (the bandit-based one left a
+standing corpse) and spliced into this sheet in its existing 16 colours, so a full rerun of the tool re-quantises
+the other rows slightly. 16-colour palette, feet on row 56 like the bandit. A Steam release has to disclose AI-generated content.
 
 Not wired into a scene yet.
 
@@ -18,6 +20,6 @@ same cell, scale and feet line as `bandit/sheet.png`, so `default_enemy.tscn`'s 
 | walk | 4–7 | the bandit's walk |
 | attack | 8–11 | raise the bow (8), full draw (9), hold the draw (10), release — empty bow, hand flung back (11). Fire the arrow on frame 11; nocked arrowhead tip at about (56, 30) in the cell on 9–10 |
 | hurt | 12 | recoil (the same picture as death 16) |
-| death | 16–19 | recoil, standing slump, collapse, lying on his back |
+| death | 16–19 | recoil (= hurt), staggering back with the bow hanging, sitting collapsed with the bow on the ground, lying flat on his back (bbox top row 20); hold 19 |
 
 Unused cells: 2–3, 13–15.

@@ -244,13 +244,6 @@ BOW_WHO = (
     "the same small lizard knight with the steel armour, dark red cape and tail, with " + BOW + ", exactly as small as "
     "in the picture, the top of his head below the middle of the picture"
 )
-BOW_ON = (
-    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
-    "the picture, only now holding "
-    + BOW
-    + " in his far hand, low at his side, the bow upright, no arrow"
-    + SWORD_COLOURS
-)
 BOW_DRAW = (
     "in the same side view facing right, the same size: standing sideways with his feet apart, his far arm stretched "
     "straight forward at shoulder height holding the bow upright in front of him, an arrow nocked on the string, "
@@ -1636,7 +1629,7 @@ CHARACTERS = {
                     + ", the glow larger and brighter, a few small yellow sparks next to the arrowhead. " + SWORD_SIZE,
                 ],
             ),
-            ("Run", [BOW_ON % ("Run/%d" % n) for n in (1, 3, 4, 5, 7, 8)]),
+            # Run — не тут: ON: перемальовував тіла й лук стрибав довжиною (арт-директор); Scripts/Tools/bow_fixups.py
         ],
     ),
     # Лучник-бандит (BACKLOG 40, A4): з кадрів бандита (bandit/sheet.png#...) — той самий бандит, ятаган замінено луком
@@ -1670,7 +1663,25 @@ CHARACTERS = {
                 ],
             ),
             ("hurt", [ARCHER_ON % (0, 192)]),
-            ("death", [ARCHER_ON % (x, 192) for x in (0, 64, 128, 192)]),
+            # смерть: ON: з кадрів смерті бандита давав стоячий «труп» з піднятим луком (арт-директор) — падіння
+            # з кадру удару: відкинутий удар → падає навзнак → сидить → лежить на спині
+            (
+                "death",
+                [
+                    ARCHER_ON % (0, 192),
+                    # спроба 1 («falling over backwards») — сальто головою вправо, не в бік, куди він лягає
+                    "FROM:hurt:0:staggering backwards to the left, still upright on bent buckling knees, his upper "
+                    "body leaning far back to the left, his head thrown back to the left, his face still looking "
+                    "right, the bow hanging low from his limp hand" + ARCHER_SCARF,
+                    "FROM:hurt:0:collapsed on the ground, sitting with his legs stretched out in front of him to the "
+                    "right, leaning far back on one elbow, his head low, the bow lying on the ground beside him"
+                    + ARCHER_SCARF,
+                    "FROM:hurt:0:dead, lying flat on his back on the ground, his whole body stretched out "
+                    "horizontally from left to right, his head on the left and his feet on the right, low against the "
+                    "bottom of the picture, his eyes closed, the bow lying flat on the ground beside him"
+                    + ARCHER_SCARF,
+                ],
+            ),
         ],
     ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль

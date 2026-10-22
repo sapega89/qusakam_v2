@@ -232,23 +232,7 @@ FX = {
         "arrowhead at the right end, as tall as a third of the arrow's length, two big white feather fletchings at the "
         "left end, filling the whole width of the picture, " + MAGENTA,
     ),
-    "arrow_charged": dict(
-        seed=32,
-        size=(1024, 384),
-        key="magenta",
-        colors=7,
-        kind="sprite",
-        main=False,
-        canvas=(36, 13),
-        box=(0, 0, 36, 13),
-        frames=["Projectiles/arrow_charged"],
-        # перша спроба: сяйво тонке й бліде — велике жовте сяйво навколо наконечника
-        prompt="a single short thick chunky arrow flying to the right, perfectly horizontal, side view, 16-bit pixel "
-        "art with a thick dark outline, a thick brown wooden shaft, a very large wide triangular arrowhead glowing "
-        "bright yellow, surrounded by a big solid round bright yellow and white glow around the arrowhead and a thick "
-        "glowing yellow trail along the shaft, white feather fletchings, filling the whole width of the picture, "
-        + MAGENTA,
-    ),
+    # arrow_charged — Scripts/Tools/bow_fixups.py (лимонне сяйво на весь спрайт і відірваний слід — арт-директор)
 }
 
 

@@ -3,8 +3,10 @@
 **AI-generated** (a Steam release has to disclose it). Made by `Scripts/Tools/comfy_sprite.py hero_weapon_bow` with
 the local ComfyUI, model **Qwen-Image-Edit-2511** (unsloth GGUF Q5_K_M, licence **Apache 2.0**) + the Lightning 4-step
 LoRA (Apache 2.0). Reference: the artist's frame `SampleProject/Sprites/Player/Walk/1.png`; the first frame (bow up,
-arrow nocked) is made from it, the other draw / shoot / charged frames from that first frame (`FROM:`), the run is the
-artist's `Run/1,3,4,5,7,8` with only the bow added (`ON:`). The artist's 28 colours only.
+arrow nocked) is made from it, the other draw / shoot / charged frames from that first frame (`FROM:`). The run is
+`Scripts/Tools/bow_fixups.py`: the artist's `Run/1,3,4,5,7,8` pixel for pixel, with one and the same bow (cut out of a
+Qwen-Image-Edit frame) behind the body in the far hand, following the fist — the first, fully generated run redrew
+the bodies and the bow changed length every frame (art review). The artist's 28 colours only.
 
 Not wired into `Player.tscn` yet.
 
@@ -19,4 +21,4 @@ Not wired into `Player.tscn` yet.
 | `Draw/1–3` | 3 | bow raised, arrow nocked, string slack → half drawn → fully drawn (the change is mostly the string and the hand) |
 | `Shoot/1–2` | 2 | the release (string straight, drawing hand flung back) → the bow lowered to the hip |
 | `Charged/1–2` | 2 | full draw held, the arrowhead glowing cream-yellow → a bigger glow with sparks; loop the two |
-| `Run/1–6` | 6 | the artist's run with the bow upright in the far hand |
+| `Run/1–6` | 6 | the artist's run frames untouched, the same bow upright behind him in the far hand |
