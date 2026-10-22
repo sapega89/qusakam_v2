@@ -101,8 +101,8 @@ func _initialize() -> void:
 	ck(ui._columns.visible, "columns shown when skills exist")
 	ck(not ui._empty_label.visible, "empty state hidden")
 	ck(ui._rows.size() == 8, "8 rows generated from data (%d)" % ui._rows.size())
-	ck(ui._rows["ta_learned"].get_parent().get_parent().get_child(1) == ui._rows["ta_learned"].get_parent(), "the trunk lane holds the class skills")
-	ck(ui._rows["tg_sub"].get_parent().get_parent().get_child(2) == ui._rows["tg_sub"].get_parent(), "the oath lane holds the Paladin skills")
+	ck(ui._rows["ta_learned"].get_parent().get_parent().get_parent().get_child(1) == ui._rows["ta_learned"].get_parent().get_parent(), "the trunk lane holds the class skills")
+	ck(ui._rows["tg_sub"].get_parent().get_parent().get_parent().get_child(2) == ui._rows["tg_sub"].get_parent().get_parent(), "the oath lane holds the Paladin skills")
 
 	print("[3] data-driven, not hardcoded")
 	var scene_text: String = FileAccess.open(

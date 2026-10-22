@@ -176,6 +176,10 @@ func _setup_label_variations(theme: Theme) -> void:
 		"SkillNameLocked": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_SECONDARY],
 		"SkillNameSelected": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
 		"SkillCost": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
+		# Підпис стану вузла (D332): вивчено / заблоковано / на вибраному (акцентна заливка, D26).
+		"SkillCostLearned": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
+		"SkillCostLocked": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_MUTED],
+		"SkillCostSelected": [_font_regular, UITokens.SIZE_LABEL, UITokens.ON_ACCENT],
 		"SectionLabel": [_font_regular, UITokens.SIZE_LABEL, UITokens.TEXT_SECONDARY],
 		"TreeTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.ACCENT],
 		"TooltipTitle": [_font_medium, UITokens.SIZE_LABEL, UITokens.ACCENT],
