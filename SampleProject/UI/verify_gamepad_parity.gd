@@ -15,6 +15,8 @@ const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const TEST_DIR := "user://verify_gamepad_parity_saves/"
 ## ui_*, які гра бере (решта вбудованих ui_* — текстові поля, графи, діалоги файлів — у грі не вживаються).
 const UI_ACTIONS: Array[StringName] = [&"ui_accept", &"ui_cancel", &"ui_up", &"ui_down", &"ui_left", &"ui_right"]
+## Дії лише для клавіатури й миші: курсор геймпад не рухає, показувати його з пада нема чого (D417).
+const MOUSE_ONLY: Array[StringName] = [&"toggle_mouse"]
 const CODE_DIRS := ["res://SampleProject/Scripts", "res://SampleProject/UI/Components", "res://addons/dialogue_quest/scripts"]
 
 var fails: Array[String] = []
@@ -68,7 +70,7 @@ func _actions() -> void:
 	for action in InputMap.get_actions():
 		if String(action).begins_with("ui_") and action not in UI_ACTIONS:
 			continue
-		if not _has_pad(action):
+		if not _has_pad(action) and action not in MOUSE_ONLY:
 			missing.append(action)
 	ck(missing.is_empty(), "every InputMap action the game owns has a pad event (missing: %s)" % [missing])
 	var used := {}
@@ -79,7 +81,7 @@ func _actions() -> void:
 				used[m.get_string(1)] = path
 	var no_pad: Array = []
 	for action in used:
-		if InputMap.has_action(action) and not _has_pad(action):
+		if InputMap.has_action(action) and not _has_pad(action) and StringName(action) not in MOUSE_ONLY:
 			no_pad.append("%s (%s)" % [action, used[action].get_file()])
 	ck(used.size() > 20, "actions named in code scanned (%d)" % used.size())
 	ck(no_pad.is_empty(), "every action the code reacts to has a pad event (missing: %s)" % [no_pad])

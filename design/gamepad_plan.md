@@ -70,11 +70,16 @@ Today: `attack` is **left mouse button** (`project.godot`), 6 UI scripts focus o
   one modal.
 - Commit: "Gamepad: the hero moves, jumps and attacks; menus confirm and go back".
 
-### Slice 1b — mouse off (D157)
+### Slice 1b — mouse off (D157, D417) — ✅ built 2026-10-22 (`cloud/settings-1`, `verify_mouse_cursor.gd`)
 - Cursor hidden by default; a `toggle_mouse` action on **Alt** flips it (D157 → D417: Ctrl is block since D270). Opening the Game
   Menu shows the cursor regardless; closing it restores the Ctrl state. With the mouse off,
   GUI ignores mouse events (hover focus in the 6 UI scripts included) while LMB still attacks.
 - `verify_gamepad.gd`: Ctrl toggles; with the mouse off a click does not press a Button.
+- As built: `Scenes/UI/mouse_cursor.tscn` (child of Game). Forced visible while the tree is paused, a UIManager
+  state is open or a modal is up; Alt is ignored then. While hidden a full-screen `MOUSE_FILTER_PASS` shield on
+  canvas layer 128 takes hover and clicks, so nothing under it is pressed or focused, and the click stays unhandled
+  for `Player._unhandled_input`. Filtering in `_input` alone is not enough: Godot computes hover from the stored
+  mouse position before `_input` runs. Test: `verify_mouse_cursor.gd` (not `verify_gamepad.gd`).
 
 ### Slice 2 — one device source
 - Move `_using_gamepad` out of `interaction_prompt.gd` into a small autoload-free static

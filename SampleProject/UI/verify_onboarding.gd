@@ -27,6 +27,7 @@ const PAD := {"attack": [&"pad", JOY_BUTTON_X], "heavy_attack": [&"pad", JOY_BUT
 const NOT_GAMEPLAY := {
 	&"save_delete": "Load Game menu only (delete a save)",
 	&"menu_next_tab": "shares the Previous / next menu tab row with menu_prev_tab",
+	&"toggle_mouse": "keyboard & mouse only (D417): a pad never moves the cursor; rebindable in Settings → Controls",
 }
 
 ## Ранні кроки сюжету (D-28h): кімната → її скрипт. Кожна ціль там або веде на мітку ObjectiveTargets/<id> цієї

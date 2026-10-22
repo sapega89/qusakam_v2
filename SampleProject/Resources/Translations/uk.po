@@ -882,8 +882,8 @@ msgstr "Режим екрана, розмір вікна й обмеження �
 msgid "Adjust volume levels."
 msgstr "Налаштуйте гучність."
 
-msgid "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
-msgstr "Мова інтерфейсу, чи відкривають підказки вікна навчання і чи видно цифри урону."
+msgid "Choose the interface language, whether hints open tutorial windows, whether damage numbers show and whether the game saves on every room change."
+msgstr "Мова інтерфейсу, чи відкривають підказки вікна навчання, чи видно цифри урону і чи зберігається гра при кожному переході між кімнатами."
 
 msgid "Select an action to rebind it."
 msgstr "Оберіть дію, щоб перепризначити її."
@@ -896,6 +896,9 @@ msgstr "У вікні"
 
 msgid "Fullscreen"
 msgstr "На весь екран"
+
+msgid "Borderless"
+msgstr "Без рамки"
 
 msgid "Resolution"
 msgstr "Роздільність"
@@ -947,6 +950,9 @@ msgstr "Вимк."
 
 msgid "Damage Numbers"
 msgstr "Цифри урону"
+
+msgid "Auto-Save"
+msgstr "Автозбереження"
 
 msgid "Evade"
 msgstr "Ухил"
@@ -1050,6 +1056,9 @@ msgstr "Слот навички 4"
 
 msgid "Skip Cutscene"
 msgstr "Пропустити катсцену"
+
+msgid "Show / Hide Cursor"
+msgstr "Показати / сховати курсор"
 
 msgid "Skills: Accept Picks"
 msgstr "Навички: прийняти вибір"

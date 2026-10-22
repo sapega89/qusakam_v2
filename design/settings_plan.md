@@ -20,7 +20,7 @@ except keybinds (maaacks `app_settings.gd`).
 
 | Row | Must do | Today |
 |---|---|---|
-| Display Mode | Windowed / Fullscreen / Borderless (D66). Window switches at once. | ⚠️ Windowed ↔ Fullscreen works in a standalone window (probe 2026-10-16: mode 0 → 3 → 0). **Does nothing when the game runs embedded in the editor's Game tab** — Godot ignores window-mode requests there. Borderless missing. |
+| Display Mode | Windowed / Fullscreen / Borderless (D66). Window switches at once. | ✅ 2026-10-22 (`cloud/settings-1`): key `display_mode` = windowed / fullscreen (exclusive) / borderless (Godot `WINDOW_MODE_FULLSCREEN`). Still does nothing when embedded in the editor's Game tab — Godot ignores window-mode requests there. |
 | Resolution | Window size from a list; disabled in Fullscreen. | ❌ no key, no list. Values undefined → Q. |
 | VSync | On/Off → `DisplayServer.window_set_vsync_mode`. | ✅ works; has no visible effect except tearing/FPS. |
 | Frame Rate Limit | `Engine.max_fps` from a list. | ❌ values undefined → Q. |
@@ -40,7 +40,7 @@ except keybinds (maaacks `app_settings.gd`).
 | Language | Switches UI and Journal text at once (D194); dialogue stays Ukrainian for now. | ❌ **switches nothing.** `TranslationServer.set_locale()` runs (`LocalizationManager.gd:60`), but `project.godot:167` registers only the maaacks en/fr translations; `Resources/Translations/uk.po` is not registered and holds 14 strings; UI is English literals (D121), `.dqd` dialogue is Ukrainian only. |
 | Text Speed | Default / Quick: dialogue box typing speed and bubble line time (D178, D192). | ❌ |
 | Screen Shake | On/Off; off = no camera shake. | ❌ no shake system exists — the row has nothing to switch. |
-| Auto-Save | On/Off → `SaveSystem.enable_auto_save_on_scene_transition`, persisted. | ⚠️ target exists, no key, no row. |
+| Auto-Save | On/Off, default Off (D413): a room change saves the game with `Game.save_game()`. | ✅ 2026-10-22 (`cloud/settings-1`): key `auto_save`, `SaveSystem._on_room_entered`; the first room after a start or load is not a transition. |
 | Damage Numbers | On/Off. | ✅ built 2026-10-22 (D408, `cloud/combat-stats`), default On. |
 
 ## Controls — `17:756`
@@ -60,13 +60,15 @@ the scrollbar is too faint to see (#79).
 
 ## Slices
 
-### Slice 1 — honest Display and Game rows
+### Slice 1 — honest Display and Game rows — ✅ built 2026-10-22 (`cloud/settings-1`, report [[settings-1]])
 - `DisplayManager` + `SettingsModule`: Borderless as a third Display Mode value.
 - Auto-Save row + `auto_save` key.
 - Language (D194): wrap every UI literal in `tr()`, extract to `Resources/Translations/{en,uk}.po`, journal texts from
   `story.json` too; register both in `project.godot` `locale/translations`. Who writes the Ukrainian UI strings is
   Sapega's call — draft them marked for review.
-- `verify_settings.gd`: every row → change → value applied → restart round trip → Restore.
+- `verify_settings.gd`: every row → change → value applied → restart round trip → Restore. ✅ `[22]`.
+- Open: settings live in the slot file, so with no save in the last-used slot a change made from the Main Menu
+  does not survive a restart (see the report).
 
 ### Slice 2 — Controls split (D193, #98) — ✅ built 2026-10-22 (D397, `cloud/ui-bugs`)
 - Keyboard & Mouse / Gamepad tabs over the maaacks list; device filter on rebinding; mouse buttons accepted.
