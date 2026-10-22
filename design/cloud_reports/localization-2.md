@@ -132,7 +132,11 @@ the Ukrainian source directly for its «Длань» check.
 | `verify_locale` | `RESULT: ALL PASS` — [0] 818 keys, [1] 428 scene texts per locale, [3] 1664 (en) / 1672 (uk) live texts, [4] 298 data texts per locale, [5] 59 twins, 322 window texts (182 lines + speaker names) per locale, [6] 6 greetings, 12 Ukrainian files |
 | `po_sync.py` / `po_data_keys.py` | `en.po: 818 keys` / `data strings: 292, missing in uk.po: 0` |
 
-Full suite: running — result added when it finishes.
+Full suite (`Scripts/Tools/run_verify.sh`, 83 verifies): **`SUITE: 1 FAIL`** — 82 PASS. The one failure is
+`verify_game_ui_theme` (no RESULT line) — the same baseline failure as integration-3 (the D329 theme check), nothing
+in this branch touches the theme. Every verify of a touched area passed, among them locale, dialogue_speaker,
+npc_recall, npc_chatter, tasks, journal_sections, companions, party_panel, status, canyon_exit, village_fight,
+audio, shop, crafting, enchanting, skills_ui, save_load, tutorial_hints, scripts_compile.
 
 ## 4. Left
 
