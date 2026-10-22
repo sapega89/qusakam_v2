@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png" id="21_clouds"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_shrine.png" id="22_shrine"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="music_track"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_front.png" id="front_tex"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
 
 [sub_resource type="Gradient" id="Gradient_sky"]
 colors = PackedColorArray(0.31, 0.53, 0.86, 1, 0.769, 0.859, 0.906, 1)
@@ -70,6 +73,7 @@ centered = false
 [node name="HighClouds" type="Parallax2D" parent="." unique_id=713266127]
 z_index = -10
 scroll_scale = Vector2(0.1, 1)
+autoscroll = Vector2(-3, 0)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -99,6 +103,12 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("4_jxins")
 centered = false
 
+[node name="Front" parent="." instance=ExtResource("front_plane")]
+
+[node name="Sprite" parent="Front" index="0"]
+position = Vector2(0, 160)
+texture = ExtResource("front_tex")
+
 [node name="TileMap" type="Node2D" parent="." unique_id=1262723541]
 
 [node name="Foreground" type="TileMapLayer" parent="TileMap" unique_id=1335832231]
@@ -126,6 +136,26 @@ tile_set = ExtResource("2_ctv3h")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PrideRock" unique_id=72532851]
 polygon = PackedVector2Array(1000, 400, 1000, 300, 1196, 300, 1204, 262, 1140, 254, 1080, 244, 1072, 228, 1080, 216, 1250, 214, 1420, 216, 1600, 216, 1606, 272, 1760, 272, 1766, 328, 1920, 328, 1928, 384, 1928, 400)
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Dust1" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(520, 330)
+
+[node name="Dust2" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(1300, 334)
+frame = 3
+speed_scale = 0.8
+
+[node name="Dust3" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(1900, 326)
+frame = 1
+speed_scale = 1.2
+
+[node name="Dust4" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(2350, 336)
+frame = 4
+speed_scale = 0.9
 
 [node name="Terrain" type="Sprite2D" parent="." unique_id=328152295]
 texture_filter = 1

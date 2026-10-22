@@ -27,6 +27,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/cat/run.png" id="28_ysodw"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/urizen/idle.png" id="29_88lt1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/urizen/enter.png" id="30_qp2sy"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lock"]
 size = Vector2(16, 192)
@@ -601,6 +603,21 @@ texture = ExtResource("2_ky4e7")
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 1152, 64)
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Lamp1" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(300, 384)
+
+[node name="Crystal1" parent="Decor" instance=ExtResource("decor_crystal")]
+position = Vector2(1200, 384)
+frame = 1
+speed_scale = 0.9
+
+[node name="Lamp2" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(1650, 384)
+frame = 2
+speed_scale = 1.15
 
 [node name="RoomInstance" type="Node2D" parent="." unique_id=973866632 instance=ExtResource("2_room")]
 script = ExtResource("4_6q00t")

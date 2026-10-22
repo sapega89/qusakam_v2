@@ -22,6 +22,10 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="item_pickup"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="chest"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_front.png" id="front_tex"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
 size = Vector2(600, 200)
 
@@ -53,6 +57,12 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("road_mid")
 centered = false
+
+[node name="Front" parent="." instance=ExtResource("front_plane")]
+
+[node name="Sprite" parent="Front" index="0"]
+position = Vector2(0, 52)
+texture = ExtResource("front_tex")
 
 [node name="TileMap" type="Node2D" parent="." unique_id=857881542]
 
@@ -104,6 +114,39 @@ centered = false
 
 [node name="ShopDoor" type="Marker2D" parent="." unique_id=1402914112]
 position = Vector2(1227, 396)
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Palm1" parent="Decor" instance=ExtResource("decor_palm")]
+position = Vector2(1030, 386)
+
+[node name="Palm2" parent="Decor" instance=ExtResource("decor_palm")]
+position = Vector2(1520, 386)
+frame = 2
+speed_scale = 0.85
+
+[node name="Palm3" parent="Decor" instance=ExtResource("decor_palm")]
+position = Vector2(4540, 386)
+frame = 1
+speed_scale = 1.1
+
+[node name="Dust1" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(700, 336)
+
+[node name="Dust2" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(2000, 304)
+frame = 2
+speed_scale = 0.8
+
+[node name="Dust3" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(3300, 336)
+frame = 4
+speed_scale = 1.2
+
+[node name="Dust4" parent="Decor" instance=ExtResource("decor_dust")]
+position = Vector2(4300, 304)
+frame = 1
+speed_scale = 0.9
 
 [node name="Terrain" type="Sprite2D" parent="."]
 texture_filter = 1

@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="gate_guard"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png" id="bandit_sheet"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit_archer/sheet.png" id="archer_sheet"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_front.png" id="front_tex"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -129,6 +131,12 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("gates_mid")
 centered = false
+
+[node name="Front" parent="." instance=ExtResource("front_plane")]
+
+[node name="Sprite" parent="Front" index="0"]
+position = Vector2(0, 32)
+texture = ExtResource("front_tex")
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1306653119]
 

@@ -18,6 +18,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_front.png" id="17_mdnv7"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_mid2.png" id="18_u1hjy"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -273,6 +275,29 @@ texture = ExtResource("3_qid1n")
 centered = false
 region_enabled = true
 region_rect = Rect2(917.3333, 0, 106.666664, 21.333334)
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Lamp1" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(200, 384)
+
+[node name="Lamp2" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(560, 320)
+frame = 1
+speed_scale = 0.8
+
+[node name="Crystal1" parent="Decor" instance=ExtResource("decor_crystal")]
+position = Vector2(660, 320)
+
+[node name="Crystal2" parent="Decor" instance=ExtResource("decor_crystal")]
+position = Vector2(1100, 384)
+frame = 2
+speed_scale = 0.85
+
+[node name="Lamp3" parent="Decor" instance=ExtResource("decor_lamp")]
+position = Vector2(1400, 384)
+frame = 2
+speed_scale = 1.2
 
 [node name="RoomInstance" parent="." unique_id=891762722 instance=ExtResource("3_t6xmk")]
 
