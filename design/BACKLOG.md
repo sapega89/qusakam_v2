@@ -498,7 +498,7 @@ Each needs a Figma frame **and** a plan. Raise with Sapega before assuming a des
 
 Every row: changes at once, survives a restart, Restore puts it back. Found 2026-10-16: **Language
 switches nothing** (no translations registered; D194: translate UI + Journal); **Display Mode** works only in a standalone
-window, not embedded in the editor; Controls mixes keyboard and pad (D193, #98); scrollbar too faint (#79).
+window, not embedded in the editor; scrollbar too faint (#79).
 **Resume:** slice 1 of [[settings_plan]].
 
 ### Settings rows with no backing system — [[settings_mapping]]

@@ -72,82 +72,6 @@ the history, this note keeps only what is open.
 - **Severity:** blocker for Agility being worth a point
 - **Found:** 2026-10-21, `cloud/skills-screen`
 
-### B90 — A pressed (selected) `ListRow` shows no focus ring
-- **Where:** `SampleProject/UI/build_game_ui_theme.gd` `ListRow` focus (D329).
-- **Expected:** the cursor is visible on the selected row too.
-- **Got:** the accent ring sits on the accent fill; the `focus` stylebox cannot know the pressed state. Matters where a selected row and the cursor differ (inventory / journal lists).
-- **Severity:** cosmetic
-- **Found:** 2026-10-21, `cloud/settings-cleanup`
-
-### B91 — The hero shows `Idle`, not the raise-the-item pose, while a chest opens
-- **Where:** `SampleProject/Scripts/Gameplay/Chest.gd:17` (`HERO_POSE`), `Player.tscn` (no `Raise` animation).
-- **Expected:** Kusakam raises the found item overhead (BACKLOG 33, art A1 `Sprites/Player/Raise/1–3.png`).
-- **Got:** the held pose is `Idle` (D339). The Raise frames have now landed on `feature/backlog` (`b56cbe6a`) but are not wired.
-- **Fix:** add an animation `Raise` (Raise/1–3) to the player's `AnimatedSprite2D` frames and set `Chest.HERO_POSE := &"Raise"`; `verify_chests` follows the constant.
-- **Severity:** visual
-- **Found:** 2026-10-21, `cloud/chests`
-
-### B92 — A `Cutscene` that never reaches `end()` outlives its game
-- **Where:** `SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd` `_init` (connects `_hold_later` to `DialogueManager.dialogue_started`, hides `Game/UI` + `Game/UICanvas`), `Cutscene.gd:54` `hold()`.
-- **Expected:** quitting to the main menu or loading a save mid-cutscene leaves nothing behind (D308).
-- **Got:** the autoload connection survives; the next game's first dialogue calls `hold()` on the freed hero → **segfault**. A second cutscene in the same game sees the HUD already hidden and never shows it again.
-- **Fix:** the cutscene ends itself on `player.tree_exiting` (disconnect, `Engine.time_scale = 1`, restore the HUD).
-- **Severity:** blocker (crash, edge path)
-- **Found:** 2026-10-21, `cloud/lab-9-5`
-
-### B93 — `Game.gd` fails to compile when a `--script` verify names a class that references `Game`
-- **Where:** `SampleProject/Scripts/Game.gd:390` `teleport_to_room()` — `var old_room_instance := MetSys.get_current_room_instance()`.
-- **Expected:** a verify can name any `class_name` (e.g. `RoomDoor`) and compile.
-- **Got:** when `Game.gd` is compiled before the autoloads exist, the type cannot be inferred: Parse Error, "Failed to compile depended scripts", the test crashes. `verify_village_house` works around it by typing the doors as `Area2D`.
-- **Fix:** an explicit type (`var old_room_instance: Node = …`).
-- **Severity:** tests only
-- **Found:** 2026-10-21, `cloud/buildings`
-
-### B94 — `verify_audio` "focusing a button (pad navigation) ticks on SFX" is flaky
-- **Where:** `SampleProject/UI/verify_audio.gd:276`.
-- **Expected:** the check passes whenever the focus tick plays.
-- **Got:** fails about one run in three on Linux 4.6.2, on an untouched `feature/backlog` too: it samples `ButtonFocusedAudioStreamPlayer.playing` one `process_frame` after `grab_focus()`; the player is not always playing yet (or already done) on that frame.
-- **Fix:** wait until `playing` with a short deadline, or count the `play()` calls.
-- **Severity:** tests only (flaky)
-- **Found:** 2026-10-21, `cloud/buildings` (also seen by `cloud/localization-1`)
-
-### B95 — Keyboard Enter after a mouse click in the Game Menu does not press the focused button
-- **Where:** `SampleProject/Scripts/UI/focus_router.gd` `_unhandled_input` (Game Menu).
-- **Expected:** Enter presses the button the mouse click focused (e.g. the Settings → Language cell).
-- **Got:** a click focuses a content button but the router stays in `"Tabs"` mode (D348 keeps that on purpose so Esc after a click closes the menu); the Enter press reaches the router → `focus_content()` moves focus to the first content control and the release lands nowhere. Pad A is not affected. `verify_locale` [2] steps around it (`focus_router.focus_content()` first).
-- **Fix:** in `"Tabs"` mode, let `ui_accept` through when the focus owner is already inside the content.
-- **Severity:** minor (mixed mouse + keyboard)
-- **Found:** 2026-10-22, `cloud/localization-1`
-
-### B96 — Settings → Controls lists action ids as names
-- **Where:** maaacks input list (Settings → Controls), `String.capitalize()` of the action id.
-- **Expected:** readable action names (`readable_action_names`).
-- **Got:** `Dq Accept`, `Save Delete`, `Menu Prev Tab`, `Skills Unpick`… Ukrainian translations exist now (`uk.po`); the English stays clumsy.
-- **Severity:** cosmetic
-- **Found:** 2026-10-22, `cloud/localization-1`
-
-### B105 — Weapon palette swap misses a few pixels
-- **Where:** `SampleProject/Sprites/Player/Weapons/{halberd,dual,sword}/…` frames; `Scripts/Tools/weapon_key_fixups.py`; `Shaders/weapon_palette.gdshader`.
-- **Expected:** the whole weapon recolours and the body never does (D361).
-- **Got:** the halberd's butt spike stays iron in `Air/1`, `Block/1`, `CombatIdle` (below the torso box); the dual dagger stays iron in `Heavy/1` and `Run/7` (pressed to the chest) and is drawn in `#FCF3D5` (not a key colour) in `Air/3`, `Run/2`, `Run/4`, so it stays pale in every palette; a few arm pixels in `sword/Attack2/2` and `Attack3/2` tint with the palette.
-- **Evidence:** `design/shots/weapon_palettes.png`
-- **Severity:** cosmetic — repaint those pixels on the laptop (key on the weapon, off-key on the body), or per-frame masks
-- **Found:** 2026-10-22, `cloud/weapons-all` (its B111)
-
-### B107 — Ether says "Restores 30 MP."
-- **Where:** `SampleProject/Resources/Data/items.json` → Ether `description`.
-- **Expected:** SP — the game's resource (the Ukrainian text already says SP).
-- **Got:** "Restores 30 MP."
-- **Severity:** cosmetic (content)
-- **Found:** 2026-10-22, `cloud/localization-2`
-
-### B108 — "Lesser Potion" heals more than "Potion"
-- **Where:** `SampleProject/Resources/Data/items.json` → `potion` (heal 50), "Lesser Potion" (heal 75).
-- **Expected:** a lesser potion heals less than the plain one (D357: Мале / Середнє / Велике зілля).
-- **Got:** Lesser 75 > plain 50.
-- **Severity:** visual (data)
-- **Found:** 2026-10-22, `cloud/localization-2`
-
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
 - **Expected:** the hero holds the bow in every pose (D385).
@@ -163,6 +87,29 @@ the history, this note keeps only what is open.
 - **Severity:** visual (balance) — fixing it re-tunes every fight (4b). **Decided:** Sapega 2026-10-22, tempo from the stats (D394)
 - **Found:** 2026-10-22, `cloud/bow`
 
+### B112 — The speaker's name is drawn over the first line of the dialogue text
+- **Where:** `SampleProject/Scenes/UI/dialogue_box.tscn` (`NameMargin` overlay on the `DialogueBox` root).
+- **Evidence:** `design/shots/ui_bugs_dialogue_before.png` / `_after.png`: "Grandfather" sits across "…took our relic. It's the key…".
+- **Expected:** the name centred above the text (D321).
+- **Got:** D321 placed the name as an overlay over the Auto/Skip row; D319 then hid both buttons, `RowTop` collapsed to 0 px and the text moved up under the name.
+- **Fix:** move `NameMargin` into `Margin/Rows` as the first row (hidden when the name is empty, so narration has no blank line); update `verify_dialogue_speaker` [4] (`box/NameMargin`).
+- **Severity:** visual (every named dialogue line)
+- **Found:** 2026-10-22, `cloud/ui-bugs`
+
+### B113 — `verify_combat_flow` hit-timing checks are flaky
+- **Where:** `SampleProject/UI/verify_combat_flow.gd` — "two hits in one frame on the player count once", "after the invulnerability window the player is hit again".
+- **Expected:** green on every run.
+- **Got:** both fail now and then, on an untouched `feature/backlog` too (`cloud/skill-fx`: 1 of 2 base runs; `cloud/misc-bugs`: once while the suite waited on the lock). The i-frame checks race the frame.
+- **Fix:** count hits by game time or signals instead of sampling one frame.
+- **Severity:** tests only (flaky)
+- **Found:** 2026-10-22, `cloud/skill-fx`, `cloud/misc-bugs`
+
+> **Round 6 (2026-10-22):** fixed, rows removed — **B95, B96, B19, B22, B90, B14, B10, B8** (`cloud/ui-bugs`, D396–D402),
+> **B91, B92, B93, B94, B107, B108** (`cloud/misc-bugs`, D403–D405), **B105** (`cloud/art-fixes-wire`). Found and fixed on
+> `cloud/skill-fx`: **B114** casting any oath active asserted in `SoundHooks` (no `cast_<id>_*` events; each now reuses
+> its pose's base cast sounds). B112, B113 added — see [[cloud_reports/ui-bugs]], [[cloud_reports/misc-bugs]],
+> [[cloud_reports/skill-fx]], [[cloud_reports/art-fixes-wire]].
+>
 > **2026-10-22:** **B106** closed as designed by D395 (the slash arc shows the reach) — row removed.
 >
 > **Fixed log (2026-10-22, `cloud/code-fixes`):** B42 (Game.tscn's dangling ObjectiveHUD; `verify_scripts_compile`
@@ -221,89 +168,6 @@ built*, not here.
 | P5 | No merchant and no blacksmith; should be placeholder cubes somewhere on the desert | ✅ **not a bug — known unbuilt work.** Both scenes exist and are tested but are placed **only in `Maps/City.tscn`**. This is **D81** in [[BACKLOG]] → "Merchant / Blacksmith on production maps". Desert placement was never done. |
 
 ---
-
-### B19 — "Attack" row puts gamepad bindings in the keyboard columns, with two naming schemes
-- **Where:** Settings → Controls, Attack row (y≈598).
-- **Evidence:** `settings_controls_1920.png` — Primary = `Button #0`,
-  Secondary = `Button A`, Tertiary = empty.
-- **Expected:** the pattern every other row follows — keyboard in Primary/Secondary,
-  gamepad in Tertiary (`W`/`Up`/`Dpad Up`, `Space`/`W`/`Left Stick Up`) — and one
-  naming scheme for gamepad buttons.
-- **Got:** gamepad in both keyboard columns, empty gamepad column, and the same
-  input class named two different ways in a single row.
-- **Note:** this is binding data and labels, not maaacks widget styling, so **D48
-  does not cover it**.
-- **Severity:** visual
-
-### B22 — Volume steppers have no control chrome
-- **Where:** Settings → Audio, the `-` / `+` beside each slider (x≈1076, x≈1444).
-- **Evidence:** `settings_audio_1920.png` — bare glyphs directly on the background.
-- **Expected:** a 1px bordered box, matching every other interactive control on
-  these screens (segmented control, Reset, both footer buttons).
-- **Got:** unframed characters with no visible hit target.
-- **Severity:** cosmetic
-
-### B14 — Game Over text is unreadable against the stone-wall art
-- **Where:** `Scenes/UI/game_over_screen.tscn`.
-- **Evidence:** `design/shots/game_over_1920.png`.
-- **"Khalahas Heroes"** (`:117`) — small dark-red type on the dark wall, effectively
-  invisible at 1920×1080. *(The name itself is correct — `MainMenu.tscn:77` and the
-  `TitleKhalahas` / `SIZE_TITLE_KHALAHAS` tokens confirm it is the game's title.)*
-- **"Game Over"** — dark red over a high-contrast stone-and-iron-door photo; the
-  letterforms collide with the door bars and lose their edges.
-- **Expected:** a scrim or a darker backdrop behind the type, as every other
-  screen uses (`DimOverlay`), so text reads at a glance.
-- **Related:** this is the same missing-scrim family as **B8** — the background
-  art is intended, the darkening under the text is not there.
-- **Not filed:** the missing third button (Load Game) — that is **D92**, decided
-  2026-09-29, after this screenshot.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review.
-
-### B10 — A stray orange `!` glyph inside the dialogue box
-- **Where:** `Scenes/UI/dialogue_box.tscn` (`DQDialogueBox`), in gameplay.
-- **Evidence:** `design/shots/combat_hud_1920.png` (2026-09-29).
-- **Fixed parts:** the empty portrait frame (2026-10-20; now real portraits, D321) and the Auto/Skip buttons (D319,
-  `cloud/b82-b10`, `verify_npc_recall` [5]).
-- **Still open:** an orange `!` floats inside the box next to the portrait frame, matching nothing in the design. Not
-  re-checked since 2026-09-29 (no window in the cloud runs) — capture the box and close the row if it is gone.
-- **Severity:** visual
-- **Found:** 2026-09-29, screenshot review.
-
-### B8 — Menu surfaces are transparent; the parchment map bleeds through (systemic)
-- **Where:** not one screen. Confirmed on three so far:
-  - **Skills tab** — no surface at all, "No skills available yet." sits on the map.
-  - **Shop** — parchment visible through the top of the wares panel and the
-    whole left sidebar (`design/shots/shop_buy_1920.png`).
-  - **Save / Load** — all four slot cards are see-through, the map runs straight
-    through the slot text (`design/shots/save_load_save_mode_1920.png`).
-  - **The overwrite confirmation modal** — worst instance found. Panel interior
-    measures `(12,11,15)`→`(15,14,18)` and the map's "Shifting Sands" label crosses
-    it at y≈522, **directly behind the body text**. Verified arithmetically:
-    `0.56×(17,17,24) + 0.44×(12,10,10)` = `(14.8,13.9,17.8)` = the measured value,
-    i.e. `SURFACE` `#111118` @56% is doing exactly what it says. A destructive
-    confirmation is the worst surface in the app to be see-through.
-  - **Inventory empty state** — "No items in this category." sits dead centre over
-    the darkest part of the bleed-through in dim grey; the least legible text found
-    in any shot.
-- **Originally filed as:** `SkillsPanel` in the Game Menu.
-- **Expected:** the menu's opaque surface (`UITokens.SURFACE`, `#111118` @56%
-  over the backdrop) behind the panel content.
-- **Got:** on the Skills tab only `CentralPanel`, `PanelManager` and
-  `SkillsPanel` are visible — no surface panel, no `RightPanel`/`PartyStatusPanel`.
-  The illustrated parchment world map fills the whole content area and the
-  "No skills available yet." text sits directly on it, barely legible.
-- **Evidence:** `design/shots/flow/05_tab_skills.png`; panel-visibility dump in
-  the same run.
-- **Note:** the parchment backdrop is **intended** — `menu_shell.gd:63` documents
-  it as *"у Figma — ілюстрована мапа під затемненням"*. What is missing is the
-  darkening: `menu_shell.tscn` has a `DimOverlay`, and the legacy
-  `vertical_menu.tscn` the Game Menu actually uses has **none** (`grep` → 0).
-- **Root cause, shared with B7:** the Game Menu never migrated to `UIMenuShell`.
-  The shell carries both the `DimOverlay` this tab lacks and the `ButtonGroup`
-  B7 needs. One migration closes both.
-- **Severity:** visual
-- **Found:** 2026-09-29, **reproduced visually.**
 
 ---
 

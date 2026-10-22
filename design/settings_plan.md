@@ -68,7 +68,7 @@ the scrollbar is too faint to see (#79).
   Sapega's call — draft them marked for review.
 - `verify_settings.gd`: every row → change → value applied → restart round trip → Restore.
 
-### Slice 2 — Controls split (D193, #98)
+### Slice 2 — Controls split (D193, #98) — ✅ built 2026-10-22 (D397, `cloud/ui-bugs`)
 - Keyboard & Mouse / Gamepad tabs over the maaacks list; device filter on rebinding; mouse buttons accepted.
 - `verify_settings.gd` [controls]: a pad slot ignores keys and mouse, a keyboard slot accepts a mouse button.
 
