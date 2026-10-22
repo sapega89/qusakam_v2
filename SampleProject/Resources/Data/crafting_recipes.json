@@ -320,14 +320,14 @@
 		},
 		{
 			"id": "craft_potion_lesser_chain",
-			"name": "Craft Lesser Potion",
+			"name": "Craft Potion",
 			"result": {
-				"item_id": "potion_lesser",
+				"item_id": "potion",
 				"quantity": 1
 			},
 			"ingredients": [
 				{
-					"item_id": "potion",
+					"item_id": "potion_lesser",
 					"quantity": 2
 				}
 			],
@@ -345,7 +345,7 @@
 			},
 			"ingredients": [
 				{
-					"item_id": "potion_lesser",
+					"item_id": "potion",
 					"quantity": 4
 				}
 			],

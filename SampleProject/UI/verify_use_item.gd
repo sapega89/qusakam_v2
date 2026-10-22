@@ -8,6 +8,7 @@ extends SceneTree
 ##   4. A material opens the "Cannot Use" modal; pad B closes it, focus back on the row, nothing spent.
 ##   5. A weapon, armour and a helmet equip into their slots from the inventory.
 ##   6. An empty potion stack leaves the list.
+##   7. The potion line ascends Lesser < Potion < Medium < Large in heal, price and description (B108, D357).
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
@@ -40,7 +41,7 @@ func _initialize() -> void:
 	var sm: Node = sl.get_skill_manager()
 	for id in ["potion", "ether", "herb", "iron_sword", "iron_armor", "iron_helmet"]:
 		inventory.add_item(id, 3 if id == "potion" else 1)
-	player.current_health = 30
+	player.current_health = 20
 	var potions: int = inventory.get_item_count("potion")
 
 	game.set_quest_flag("village_oldman_gift", true)  # Inventory відкрита сюжетом (D151)
@@ -56,22 +57,22 @@ func _initialize() -> void:
 	await _focus_row(inv, "potion")
 	await Kit.key(self, KEY_ENTER)
 	ck(ui.get_modal_layer().active_modal == null, "no confirmation modal")
-	ck(player.current_health == 80, "HP 30 → 80 (%d)" % player.current_health)
+	ck(player.current_health == 95, "HP 20 → 95 (%d)" % player.current_health)
 	ck(inventory.get_item_count("potion") == potions - 1, "one potion spent")
 	var card_hp: String = get_first_node_in_group("ui_party_panel")._cards.get_child(0).get_node("Row/Info/Bars/Hp/Head/Value").text
-	ck(card_hp == "80/100", "party card follows (%s)" % card_hp)
+	ck(card_hp == "95/100", "party card follows (%s)" % card_hp)
 	var focus: Control = root.gui_get_focus_owner()
 	ck(focus == _row(inv, "potion"), "focus stays on the potion row (%s)" % (focus.get_path() if focus else "none"))
 	ck(inv._item_list.get_children().filter(func(r: Button) -> bool: return r.button_pressed).size() == 1, "one row selected")
-	ck(bar._hint_label.text == "Potion — HP 80 / 100.", "bottom bar shows the result (%s)" % bar._hint_label.text)
+	ck(bar._hint_label.text == "Potion — HP 95 / 100.", "bottom bar shows the result (%s)" % bar._hint_label.text)
 
 	print("[2] Double click and pad A; full HP keeps the potion")
 	player.current_health = 10
 	await Kit.mouse(self, _row(inv, "potion"), true)
-	ck(player.current_health == 60, "double click: HP 10 → 60 (%d)" % player.current_health)
+	ck(player.current_health == 85, "double click: HP 10 → 85 (%d)" % player.current_health)
 	await _focus_row(inv, "potion")
 	await Kit.pad(self, JOY_BUTTON_A)
-	ck(player.current_health == 100, "pad A: HP 60 → 100 (%d)" % player.current_health)
+	ck(player.current_health == 100, "pad A: HP 85 → 100 (%d)" % player.current_health)
 	ck(_row(inv, "potion") == null, "last potion left the list")
 	inventory.add_item("potion", 1)
 	await Kit.frames(self, 4)
@@ -123,6 +124,19 @@ func _initialize() -> void:
 	inventory.remove_item("potion", inventory.get_item_count("potion"))
 	await process_frame
 	ck(_row(inv, "potion") == null, "no potion row at zero")
+
+	print("[7] The potion line ascends (B108, D357)")
+	var db: Node = sl.get_item_database()
+	var line: Array = ["potion_lesser", "potion", "potion_medium", "hi_potion"].map(func(id: String) -> Dictionary: return db.get_item(id))
+	for i in range(1, line.size()):
+		var lo: Dictionary = line[i - 1]
+		var hi: Dictionary = line[i]
+		ck(lo.effect.value < hi.effect.value and lo.buy_price < hi.buy_price and lo.sell_price < hi.sell_price,
+				"%s < %s: heal %d < %d, buy %d < %d, sell %d < %d" % [lo.id, hi.id, lo.effect.value, hi.effect.value,
+				lo.buy_price, hi.buy_price, lo.sell_price, hi.sell_price])
+	for item: Dictionary in line:
+		ck(item.description == "Restores %d HP." % item.effect.value, "%s says what it heals (%s)" % [item.id, item.description])
+	ck(db.get_item("ether").description == "Restores %d SP." % db.get_item("ether").effect.value, "Ether names SP (B107)")
 
 	ui.close_game_menu()
 	await Kit.frames(self, 4)
