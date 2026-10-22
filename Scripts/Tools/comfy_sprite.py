@@ -236,6 +236,34 @@ HALBERD_LOW = (
     "a small spike pointing up and the spear tip at the front end, not a double axe, only one halberd, the hero the "
     "same size, facing right"
 )
+# BACKLOG 42, A3 (D267): парна зброя — меч у ближній руці, кинджал у дальній; кадри меча (ON:/FROM:), кинджал додано
+DUAL_DAGGER = (
+    "a short steel dagger with a small steel cross-guard and a brown grip, its blade only as long as his forearm, "
+    "the same light grey and white steel as the sword"
+)
+DUAL_ON = (
+    "ON:SampleProject/Sprites/Player/Weapons/sword/%s.png:keeping exactly the same pose, legs, cape, size, position "
+    "and the same sword in his near hand as in the picture, only now his other hand, the far one, also holds "
+    + DUAL_DAGGER
+    + ", %s; exactly one sword and one dagger; the dagger tiny, its blade only as long as his hand, half the "
+    "length of the sword blade, a small knife, not a second sword"
+    + SWORD_COLOURS
+)
+# спроба 1 (Air) малювала кинджал завдовжки з меч — довжину названо рукою
+# низько тримана рука малювала кинджал завдовжки з меч і після «half the length» (Air, спроби 1–2) — зворотний хват
+DUAL_REVERSE = "in a reverse grip, the tiny blade pointing down along the outside of his forearm, the brown grip in his fist"
+# FROM: з кадру, де обидва клинки вже вдалі, — тримає їхні розміри й кольори
+DUAL_KEEP = (
+    "; the same sword and the same short dagger as in the picture, exactly the same sizes and colours, the dagger "
+    "blade shorter than his forearm, exactly one sword and one dagger, the hero the same size, facing right"
+)
+# модель додавала третій клинок або губила кинджал — обидва названо
+DUAL_TWO = DUAL_KEEP + ", both weapons visible, exactly two blades in total and no third blade"
+DUAL_PULL = (
+    "FROM:Attack2:1:pulling back after the stab, the dagger arm bent with the dagger in front of his chest, the short "
+    "dagger blade pointing forward, the sword still held low in front of his hip, both weapons visible, standing on "
+    "bent knees, the cape settling behind him, plain armour" + DUAL_KEEP
+)
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
     "in the same side view facing right, standing at a small dark iron anvil on the ground right in front of him, a "
@@ -1439,6 +1467,89 @@ CHARACTERS = {
             ),
         ],
     ),
+    # Парна зброя (BACKLOG 42, A3, D267): меч у ближній руці, кинджал у дальній; комбо з 4 ударів почергово —
+    # Attack1/3 меч (кадри меча Attack1/Attack2 + кинджал), Attack2/4 кинджал (з уколу Attack2/2, FROM:)
+    "hero_weapon_dual": dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/dual",
+        ref="SampleProject/Sprites/Player/Weapons/sword/CombatIdle/1.png",
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        palette="hero",
+        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
+        + SWORD
+        + " in his near hand and "
+        + DUAL_DAGGER
+        + " in his far hand, exactly as small as in the picture",
+        base="Keep this exact character — the same small lizard knight with the steel armour, dark red cape and tail, "
+        "the same pixel art style, thick dark outline, flat shading, colours, size, pose and position, the same sword "
+        "in his near hand. Change only his other hand: the raised fist near his chest now holds "
+        + DUAL_DAGGER
+        + ", the short blade pointing forward and up beside the sword, the dagger blade only half as long as the "
+        "sword blade; exactly one sword and one dagger. "
+        "Keep the plain flat magenta background.",
+        rows=[
+            ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
+            ("Run", [DUAL_ON % ("Run/%d" % n, DUAL_REVERSE) for n in range(1, 8)]),
+            ("Air", [DUAL_ON % ("Air/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
+            ("Attack1", [DUAL_ON % ("Attack1/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
+            (
+                "Attack2",
+                [
+                    # замах і відхід — один кадр (кинджал біля плеча, меч низько): з першого кадру кинджал зникав,
+                    # «відтягнутий назад» малював третій клинок за головою
+                    DUAL_PULL,
+                    "FROM:CombatIdle:0:in the same side view facing right: a quick straight stab with the dagger, his "
+                    "far arm with the dagger thrust straight forward at chest height, the short blade pointing straight "
+                    "ahead, the sword lowered behind him in his near hand, stepping forward on his front leg, the cape "
+                    "flying behind him" + DUAL_KEEP,
+                    DUAL_PULL,
+                ],
+            ),
+            ("Attack3", [DUAL_ON % ("Attack2/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
+            (
+                "Attack4",
+                [
+                    # з першого кадру замах ставав уколом; «відтягнутий кинджал» — третій клинок за головою; з
+                    # кадру випаду лишався один клинок — спроба 3: замах Attack2, присів нижче
+                    "FROM:Attack2:0:the same pose with both weapons exactly where they are, only crouching lower on "
+                    "deeply bent knees and leaning back a little, coiled for a lunge" + DUAL_TWO,
+                    "FROM:Attack2:1:the same stab but a much deeper lunge, his front leg bent far forward, the back leg "
+                    "straight behind him, his body low and leaning forward, the dagger arm fully extended straight "
+                    "ahead at chest height, the sword still held low behind, both weapons visible, the cape flying "
+                    "behind him" + DUAL_KEEP,
+                    # відхід — кадр замаху Attack2 (дві спроби: загубив кинджал, герой більшав на ~15 %)
+                    DUAL_PULL,
+                ],
+            ),
+            (
+                "Heavy",
+                [
+                    "FROM:CombatIdle:0:in the same side view facing right: winding up a heavy double blow, both arms "
+                    "raised above his head, the sword in his near hand and the dagger in his far hand both held high "
+                    "above and behind his head, the blades pointing back, leaning back, knees bent, the cape hanging "
+                    "behind him" + DUAL_KEEP,
+                    "FROM:CombatIdle:0:in the same side view facing right: swinging a heavy double blow down, both "
+                    "arms swung forward at shoulder height, the sword and the dagger both pointing forward in front of "
+                    "him, stepping forward, the cape flying behind him" + DUAL_KEEP,
+                    "FROM:CombatIdle:0:in the same side view facing right: finishing a heavy double blow, crouched low "
+                    "and leaning forward, the sword and the dagger both swung down low in front of him, the sword tip "
+                    "near the ground, the cape flying up behind him" + DUAL_KEEP,
+                ],
+            ),
+            (
+                "Block",
+                [
+                    "FROM:CombatIdle:0:in the same side view facing right: guarding, crouched and braced on bent knees, "
+                    "the sword and the dagger crossed in an X in front of his face, the cape hanging behind him"
+                    + DUAL_KEEP,
+                ],
+            ),
+            # Hurt пропущено: за три спроби («відкинута назад», зворотний хват, ніж біля грудей) кинджал виходив
+            # завдовжки з меч — гра бере sword/Hurt (README)
+        ],
+    ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
     "brass_collector": dict(
@@ -1940,38 +2051,42 @@ if __name__ == "__main__":
     base_ref[..., 3] = 255
     frames = {}
     floors = {}  # ON: — ступні на рядку кадру-джерела (біг художника підскакує на 1–2 px)
-    for anim, poses in char["rows"]:
-        for i, pose in enumerate(poses):
-            text = KEEP.format(who=char["who"], pose=pose) if pose else None
-            if pose is None:
-                frames[(anim, i)] = base
-            elif pose.startswith("FROM:"):
-                # FROM:<анімація>:<кадр>:<поза> — з іншого згенерованого кадру (цикл дії тримає реквізит і позу)
-                _, src_anim, src_i, rest = pose.split(":", 3)
-                src = frames.get((src_anim, int(src_i)))
-                if src is not None:
-                    src_ref = regrid(src, cell)
+    total = sum(len(p) for _, p in char["rows"])
+    # FROM: на пізніший кадр (замах з кадру удару) — другий прохід бере кадри, готові після першого
+    for _ in range(2):
+        for anim, poses in char["rows"]:
+            for i, pose in enumerate(poses):
+                if (anim, i) in frames:
+                    continue
+                text = KEEP.format(who=char["who"], pose=pose) if pose else None
+                if pose is None:
+                    frames[(anim, i)] = base
+                elif pose.startswith("FROM:"):
+                    # FROM:<анімація>:<кадр>:<поза> — з іншого згенерованого кадру (цикл дії тримає реквізит і позу)
+                    _, src_anim, src_i, rest = pose.split(":", 3)
+                    src = frames.get((src_anim, int(src_i)))
+                    if src is not None:
+                        src_ref = regrid(src, cell)
+                        text = KEEP.format(who=char["who"], pose=rest)
+                        if not only or anim in only or cached(src_ref, text, seed):
+                            frames[(anim, i)] = edit(src_ref, text, seed)
+                elif pose.startswith("ON:"):
+                    # ON:<png>:<поза> — з кадру-файлу (кадр художника): модель лише додає зброю, рух лишається його
+                    _, path, rest = pose.split(":", 2)
+                    src_ref = enlarge(path, cell)
                     text = KEEP.format(who=char["who"], pose=rest)
+                    src_op = from_file(path)[1]
+                    floors[(anim, i)] = cell[1] - len(src_op) + feet_row(src_op)
                     if not only or anim in only or cached(src_ref, text, seed):
                         frames[(anim, i)] = edit(src_ref, text, seed)
-            elif pose.startswith("ON:"):
-                # ON:<png>:<поза> — з кадру-файлу (кадр художника): модель лише додає зброю, рух лишається його
-                _, path, rest = pose.split(":", 2)
-                src_ref = enlarge(path, cell)
-                text = KEEP.format(who=char["who"], pose=rest)
-                src_op = from_file(path)[1]
-                floors[(anim, i)] = cell[1] - len(src_op) + feet_row(src_op)
-                if not only or anim in only or cached(src_ref, text, seed):
-                    frames[(anim, i)] = edit(src_ref, text, seed)
-            elif pose.split(":")[0] in SPECIAL:
-                frames[(anim, i)] = (
-                    pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
-                )
-            elif not only or anim in only:
-                frames[(anim, i)] = edit(base_ref, text, seed)
-            elif cached(base_ref, text, seed):
-                frames[(anim, i)] = edit(base_ref, text, seed)
-    total = sum(len(p) for _, p in char["rows"])
+                elif pose.split(":")[0] in SPECIAL:
+                    frames[(anim, i)] = (
+                        pose  # BOB:<рядок пояса> | ROT:<анімація>:<кадр>:<градуси> | FILE:<png>
+                    )
+                elif not only or anim in only:
+                    frames[(anim, i)] = edit(base_ref, text, seed)
+                elif cached(base_ref, text, seed):
+                    frames[(anim, i)] = edit(base_ref, text, seed)
     free()
     if len(frames) < total:
         sys.exit(
