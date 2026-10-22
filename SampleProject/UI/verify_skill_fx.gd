@@ -159,7 +159,9 @@ func _cast(id: String, facing: int) -> void:
 			seen.append(sprite.frame)
 		await process_frame
 	var looped := seen.slice(0, 4) == [0, 1, 2, 3] and seen.slice(4).all(func(f: int) -> bool: return f >= 2)
-	ck(looped and seen.size() > 4, "%s: charge 1–2 then 3–4 looping through the %.2f s wind-up %s" % [id, definition.cast_windup, seen])
+	# 3–4 по колу видно, лише якщо замах довший за 5 кадрів charge (0.35 с — це рівно 1–4)
+	var loop_visible: bool = definition.cast_windup > 5.0 / OathSkillFX.CHARGE_FPS
+	ck(looped and (seen.size() > 4 or not loop_visible), "%s: charge 1–2 then 3–4 looping through the %.2f s wind-up %s" % [id, definition.cast_windup, seen])
 	ck(is_instance_valid(fx) and fx.phase() == &"release" and sprite.frame == 0, "%s: release plays at the release" % id)
 	await create_timer(definition.cast_release + 0.6).timeout
 	ck(not is_instance_valid(fx), "%s: the effect is gone after the release" % id)
