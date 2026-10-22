@@ -9,7 +9,7 @@ tags: [cloud, routines, ui]
 Not done: nothing from the task. The Controls tab is the Maaacks addon widget, which was left as it is (it was never our rows).
 **D-ID text (next free number, D432 at the time of writing; orchestrator applies):** | D4xx | TECH | **Settings rows are scene templates** (D117, #50 order 6; agent call, Sapega to confirm; `cloud/rows-3`). Sidebar: `%Tab` (Pointer + Button) in `Sidebar`, filled by `RowFill.fill()`. The list mixes row kinds in a fixed order, so its templates sit in a hidden `RowTemplates` holder: `%SegmentRow` (cells are filled from `Cell0` by `RowFill`), `%StepperRow`, `%SliderRow`, `%Separator` and `%BrightnessPreview` (DARK / BRIGHT swatches). Each list row is a copy of its template and is rebuilt as before, so focus is restored by path. New theme types: `SettingsRow`, `SettingsSeparator`, `SettingsControlGroup`, `SettingsSegmentCells`, `SettingsPreviewColumn`, `SettingsPreviewDark` / `SettingsPreviewBright`, `SettingsValueDisabled` (Resolution outside Windowed). New token: `SETTINGS_READOUT_WIDTH`. `options_component.gd` has no `.new()`. |
 **B rows fixed:** none (this is #50 / D117 work, no B-ID).
-**Full suite:** see the end of this report.
+**Full suite:** `Scripts/Tools/run_verify.sh` → `SUITE: 1 FAIL` (92 PASS + `verify_audio`). The one failure is the known flake from `test_baseline.md` (it fails under suite load). `verify_audio` does not touch Settings, and it passed 2 of 2 re-runs on its own on this branch.
 
 ## What changed (`82c0ec09`)
 - `SampleProject/Scenes/Menus/Game/options_component.tscn`
