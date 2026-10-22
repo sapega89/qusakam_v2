@@ -140,10 +140,11 @@ func body_library() -> StringName:
 	return library if player.get_node(^"AnimationPlayer").has_animation_library(library) else &""
 
 
-## Зараз грає анімація з кадрів зброї — зброя вже намальована в кадрі.
+## На екрані кадр з анімації зброї — зброя вже намальована в кадрі. assigned_animation, а не current_animation:
+## коротка поза без циклу (Block 0.1 с, Hurt) скінчилась, але її кадр лишається, доки не почнеться наступна.
 func _drawn_in_frame() -> bool:
 	var library: StringName = body_library()
-	return library != &"" and String(player.get_node(^"AnimationPlayer").current_animation).begins_with(String(library) + "/")
+	return library != &"" and String(player.get_node(^"AnimationPlayer").assigned_animation).begins_with(String(library) + "/")
 
 
 func _refresh() -> void:
