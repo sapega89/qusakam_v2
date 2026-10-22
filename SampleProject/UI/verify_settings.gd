@@ -203,15 +203,14 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	ck(_row(opts, "Display Mode") != null, "Display Mode row present")
 	ck(_row(opts, "VSync") != null, "VSync row present")
-	ck(_segments(opts, "Display Mode").size() == 2, "two display modes only (no borderless)")
-	var was_fs: bool = module.settings.get("fullscreen", false)
+	ck(_segments(opts, "Display Mode").size() == 3, "three display modes: Windowed / Fullscreen / Borderless")
 	ck(_press(opts, "Display Mode", "Fullscreen"), "Fullscreen cell pressed")
 	for i in 4: await process_frame
-	ck(module.settings["fullscreen"] == true, "fullscreen stored")
+	ck(module.settings["display_mode"] == "fullscreen", "fullscreen stored")
 	ck(_active_segment(opts, "Display Mode").ends_with("Fullscreen"), "segment shows the new state")
 	ck(_press(opts, "Display Mode", "Windowed"), "Windowed cell pressed")
 	for i in 4: await process_frame
-	ck(module.settings["fullscreen"] == false, "windowed stored")
+	ck(module.settings["display_mode"] == "windowed", "windowed stored")
 	ck(_press(opts, "VSync", "Disable"), "VSync Disable pressed")
 	for i in 4: await process_frame
 	ck(module.settings["vsync"] == false, "vsync stored")
@@ -457,6 +456,8 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	ck(_row(opts, "Music").get_node(^"Slider/Value").value == 25.0, "UI reflects the reloaded value")
 
+	await _every_row(opts, module, save_system, loc)
+
 	# [10] «порожній / неповний payload → значення за замовчуванням» прибрано разом із цим
 	# запасним шляхом (D131): відсутній ключ у налаштуваннях — помилка.
 
@@ -540,6 +541,123 @@ func _initialize() -> void:
 
 
 ## Комірки рядка дії на Controls: тексти кнопок прив'язок (без назви дії).
+## Settings plan slice 1 (GitHub #100): кожен рядок — зміна видна одразу, переживає перезапуск,
+## Restore Default Settings повертає типове значення. Controls мають власний Reset (D397) — [21].
+## Клітинка за номером — підписи залежать від мови інтерфейсу.
+func _press_at(opts: Node, title: String, index: int) -> bool:
+	var cells: Array = _segments(opts, title)
+	if index < 0 or index >= cells.size():
+		return false
+	cells[index].pressed.emit()
+	return true
+
+
+func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
+	print("[22] every row: change → applied → restart round trip → Restore (settings plan slice 1)")
+	var display: Node = root.get_node("DisplayManager")
+	var audio: Node = root.get_node("AudioManager")
+	var vsync_seen: Array[bool] = []
+	display.vsync_changed.connect(func(on: bool) -> void: vsync_seen.append(on))
+	var slot_path: String = save_system.get_slot_path(save_system.current_slot)
+
+	opts.switch_to_tab("display")
+	for i in 3: await process_frame
+	ck(_press_at(opts, "Display Mode", 2), "Borderless cell pressed")
+	for i in 3: await process_frame
+	ck(module.settings["display_mode"] == "borderless" and display.display_mode == "borderless",
+			"Borderless stored and applied (%s)" % display.display_mode)
+	ck(_segments(opts, "Display Mode")[2].theme_type_variation == &"SettingsSegmentOn", "segment shows Borderless")
+	ck((_row(opts, "Resolution").get_node(^"Stepper/Next") as Button).disabled, "Resolution locked in Borderless")
+	if DisplayServer.get_name() != "headless":
+		ck(DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN, "window is borderless fullscreen")
+	_press_at(opts, "Display Mode", 0)
+	for i in 3: await process_frame
+	_row(opts, "Resolution").get_node(^"Stepper/Next").pressed.emit()
+	await process_frame
+	ck(module.settings["resolution"] == "2560x1440" and display.resolution == Vector2i(2560, 1440),
+			"Resolution 2560x1440 stored and applied (%s)" % display.resolution)
+	_press_at(opts, "Display Mode", 1)
+	for i in 3: await process_frame
+	ck(display.display_mode == "fullscreen", "Fullscreen applied")
+	_press_at(opts, "VSync", 1)
+	for i in 3: await process_frame
+	ck(module.settings["vsync"] == false and vsync_seen.back() == false, "VSync off stored and applied")
+	_row(opts, "Frame Rate Limit").get_node(^"Stepper/Next").pressed.emit()
+	await process_frame
+	ck(module.settings["fps_limit"] == 120 and Engine.max_fps == 120, "Frame Rate Limit 120 applied (%d)" % Engine.max_fps)
+
+	opts.switch_to_tab("audio")
+	for i in 3: await process_frame
+	var volumes := {"Master Volume": 30.0, "Music": 20.0, "Sound Effects": 10.0}
+	for title in volumes:
+		_row(opts, title).get_node(^"Slider/Value").value = volumes[title]
+	for i in 3: await process_frame
+	ck(absf(audio.get_master_volume() - 0.3) < 0.02 and absf(audio.get_music_volume() - 0.2) < 0.02
+			and absf(audio.get_sfx_volume() - 0.1) < 0.02, "three volumes applied to their buses")
+
+	opts.switch_to_tab("game")
+	for i in 3: await process_frame
+	var lang: String = "uk" if loc.get_language() != "uk" else "en"
+	ck(_press_at(opts, "Language", Array(loc.get_available_languages()).find(lang)), "Language cell pressed")
+	for i in 3: await process_frame
+	ck(TranslationServer.get_locale().begins_with(lang), "locale %s applied" % TranslationServer.get_locale())
+	# Підписи клітинок перекладені — натискаємо за індексом (0 — On, 1 — Off).
+	_press_at(opts, "Tutorial Windows", 0)
+	for i in 3: await process_frame
+	_press_at(opts, "Damage Numbers", 1)
+	for i in 3: await process_frame
+	ck(_row(opts, "Auto-Save") != null, "Auto-Save row present (D413)")
+	ck(module.settings["auto_save"] == false, "Auto-Save is Off by default")
+	_press_at(opts, "Auto-Save", 0)
+	for i in 3: await process_frame
+	ck(module.settings["tutorial_windows"] == true and module.settings["damage_numbers"] == false
+			and module.settings["auto_save"] == true, "Tutorial Windows on, Damage Numbers off, Auto-Save on stored")
+	# Auto-Save діє одразу: наступний перехід між кімнатами пише сейв (слот містить заглушку з [9]).
+	var stub: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))
+	stub["current_room"] = ":test"
+	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str(stub))
+	save_system._on_room_entered("probe")
+	var saved: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))
+	ck(saved["current_room"] != ":test", "Auto-Save On: a room change saved the game (%s)" % saved["current_room"])
+
+	print("[22b] restart round trip")
+	var changed: Dictionary = module.settings.duplicate()
+	save_system.save_game_settings()
+	# «Перезапуск»: модуль і живий стан — знову типові, далі SaveSystem читає слот, як під час старту.
+	module.settings = module.default_settings.duplicate()
+	module.apply_settings()
+	ck(display.display_mode == "windowed" and Engine.max_fps == 60, "live state reset before the reload")
+	save_system.load_game_settings()
+	await process_frame
+	ck(module.settings == changed, "every key comes back from the slot")
+	ck(display.display_mode == "fullscreen" and display.resolution == Vector2i(2560, 1440) and Engine.max_fps == 120
+			and vsync_seen.back() == false, "display rows re-applied after the reload")
+	ck(absf(audio.get_music_volume() - 0.2) < 0.02, "volumes re-applied after the reload")
+	ck(TranslationServer.get_locale().begins_with(lang), "language re-applied after the reload")
+	opts.switch_to_tab("game")
+	for i in 3: await process_frame
+	ck(_segments(opts, "Auto-Save")[0].theme_type_variation == &"SettingsSegmentOn", "Auto-Save row shows On after the reload")
+
+	print("[22c] Restore Default Settings puts every row back")
+	opts._on_restore_pressed()
+	for i in 3: await process_frame
+	ck(module.settings == module.default_settings, "every key back to default")
+	ck(display.display_mode == "windowed" and display.resolution == Vector2i(1920, 1080) and Engine.max_fps == 60
+			and vsync_seen.back() == true, "display defaults applied")
+	ck(absf(audio.get_master_volume() - float(module.default_settings["master_volume"])) < 0.02
+			and absf(audio.get_music_volume() - float(module.default_settings["music_volume"])) < 0.02
+			and absf(audio.get_sfx_volume() - float(module.default_settings["sfx_volume"])) < 0.02, "volume defaults applied")
+	ck(TranslationServer.get_locale().begins_with(String(module.default_settings["language"])), "default language applied")
+	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(slot_path))["game_settings"]
+	ck(on_disk == module.default_settings, "defaults written to the slot")
+	stub = str_to_var(FileAccess.get_file_as_string(slot_path))
+	stub["current_room"] = ":test"
+	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str(stub))
+	save_system._on_room_entered("probe")
+	ck(str_to_var(FileAccess.get_file_as_string(slot_path))["current_room"] == ":test", "Auto-Save Off: a room change saves nothing")
+	module.settings["tutorial_windows"] = false  # D289: решта тесту — без вікон туторіалу
+
+
 func _binding_cells(list: Node, title: String) -> Array:
 	for row in list.get_node(^"%ParentBoxContainer").get_children():
 		if row.visible and not row.is_queued_for_deletion() and row.get_child(0).text == title:
