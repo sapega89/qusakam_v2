@@ -59,9 +59,13 @@ func _check_line(box: Control, speaker: String, with_portrait: bool) -> void:
 	var portrait: TextureRect = box.get_node("%Portrait")
 	if speaker == "":
 		ck(name_label.text == "", "narration: no name (%s)" % name_label.text)
+		ck(not box.get_node("%NameMargin").visible, "narration: the name row is hidden, no blank line above the text")
 		ck(not frame.visible, "narration: no portrait frame")
 		return
 	ck(name_label.text == speaker, "%s: the name is shown (%s)" % [speaker, name_label.text])
+	var text_top: float = box.get_node("%DialogueText").get_global_rect().position.y
+	ck(name_label.is_visible_in_tree() and name_label.get_global_rect().end.y <= text_top,
+		"%s: the name sits above the text, not over it (B112: %.0f ≤ %.0f)" % [speaker, name_label.get_global_rect().end.y, text_top])
 	ck(name_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "%s: the name is centred" % speaker)
 	var centre: float = name_label.get_global_rect().get_center().x
 	ck(absf(centre - box.get_global_rect().get_center().x) < 2.0, "%s: the name's row is centred on the box (%.0f vs %.0f)" % [speaker, centre, box.get_global_rect().get_center().x])
@@ -115,8 +119,10 @@ func _initialize() -> void:
 	box.set_portrait_image(null)
 	ck(not box.get_node("%PortraitBackground").visible, "no texture → no frame")
 
-	print("[4] The name overlay does not block the box's buttons (mouse passes through)")
-	ck(box.get_node("NameMargin").mouse_filter == Control.MOUSE_FILTER_IGNORE and box.get_node("%Name").mouse_filter == Control.MOUSE_FILTER_IGNORE, "NameMargin and Name ignore the mouse")
+	print("[4] The name is the first row of the box, not an overlay (B112); the mouse passes through it")
+	var name_row: Control = box.get_node("%NameMargin")
+	ck(name_row.get_parent() == box.get_node("Margin/Rows") and name_row.get_index() == 0, "NameMargin is the first child of Margin/Rows")
+	ck(name_row.mouse_filter == Control.MOUSE_FILTER_IGNORE and box.get_node("%Name").mouse_filter == Control.MOUSE_FILTER_IGNORE, "NameMargin and Name ignore the mouse")
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
