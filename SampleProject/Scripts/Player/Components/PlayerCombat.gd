@@ -7,6 +7,7 @@ class_name PlayerCombat
 ## Таймери — у _physics_process, а не await анімації.
 
 const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
+const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 
 enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED }
 
@@ -20,8 +21,12 @@ enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WIND
 # перезаписує обидва своїм weapon_profile з items.json (D203).
 ## Відновлення після фінішера серії (у зброї — weapon_profile.cooldown, D203).
 @export var attack_cooldown_time: float = 0.5
-## Тривалість одного удару — довжина анімації Attack у Player.tscn.
+## Тривалість одного удару — довжина анімації Attack у Player.tscn; швидкість атаки (D393) її скорочує.
 @export var swing_time: float = 0.3
+## Крит (D393): удар, що випав з шансом GameManager.calculate_critical_chance, б'є в CRIT_DAMAGE раз сильніше.
+const CRIT_DAMAGE := 1.5
+## Останній hit_damage() був критом — його несе удар (DamageApplier.critical) чи стріла (Arrow.critical).
+var critical: bool = false
 ## Серія (D264): множники ушкодження ударів; наступний удар — якщо натиснуто під час удару або за chain_window після.
 const COMBO_DAMAGE: Array[float] = [1.0, 1.0, 1.4]
 ## Дві зброї (D267): серія з чотирьох ударів, що чергують руки, кожен швидший у DUAL_SWING_SPEED раз.
@@ -178,9 +183,12 @@ func _hit_effects(target: Node, damage: int, poise: int, push: float, from_x: fl
 		target.nudge(away * HIT_PUSH)
 
 ## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
-## тож зміна спорядження чи рівня діє одразу, без підписок.
+## тож зміна спорядження чи рівня діє одразу, без підписок. Крит (D393) — кидок на кожен удар, ×CRIT_DAMAGE.
 func hit_damage() -> int:
-	return ServiceLocator.get_game_manager().calculate_physical_damage()
+	var gm := ServiceLocator.get_game_manager()
+	critical = CombatRolls.roll(gm.calculate_critical_chance())
+	var damage: int = gm.calculate_physical_damage()
+	return roundi(damage * CRIT_DAMAGE) if critical else damage
 
 func _combo_damage() -> Array[float]:
 	return DUAL_COMBO_DAMAGE if grip == &"dual" else COMBO_DAMAGE
@@ -306,18 +314,20 @@ func perform_attack(last_direction: int) -> void:
 	_chain_left = 0.0
 	var finisher := combo_step == combo_length() - 1
 	state = State.SWING
-	_state_left = swing_time * (DUAL_SWING_SPEED if grip == &"dual" else 1.0)
+	# Швидкість атаки (D393): множник 1.0–2.0 зі спритності й Agility скорочує замах
+	_state_left = swing_time * (DUAL_SWING_SPEED if grip == &"dual" else 1.0) / ServiceLocator.get_game_manager().calculate_attack_speed()
 	_direction = last_direction
 	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
 	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
 	damage_applier.current_damage = roundi(hit_damage() * _combo_damage()[combo_step])
+	damage_applier.critical = critical
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	var body: StringName = SWING_ANIMATIONS.get(_category, &"Attack")
 	player.animation = body
-	player.play_body(body, swing_time / _state_left)  # дві зброї — швидше
+	player.play_body(body, swing_time / _state_left)  # дві зброї, швидкість атаки — швидше
 
 	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
 	EventBus.player_attacked.emit(player, last_direction)
@@ -347,6 +357,7 @@ func _strike_heavy() -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = _poise_of(POISE_HEAVY)
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
+	damage_applier.critical = critical
 	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
@@ -398,6 +409,7 @@ func _loose(charged: bool) -> void:
 	arrow.direction = _direction
 	arrow.shooter = player
 	arrow.damage = roundi(hit_damage() * (CHARGED_SHOT_DAMAGE if charged else QUICK_SHOT_DAMAGE))
+	arrow.critical = critical
 	arrow.poise = POISE_HEAVY if charged else POISE_LIGHT
 	arrow.knockback = maxf(_weapon_knockback, CHARGED_KNOCKBACK) if charged else _weapon_knockback
 	Game.get_singleton().map.add_child(arrow)

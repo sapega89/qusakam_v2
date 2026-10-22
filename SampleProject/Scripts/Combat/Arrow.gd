@@ -26,6 +26,8 @@ var direction: int = 1
 ## true — стріла героя (б'є ворогів), false — лучника (б'є героя).
 var hero_side: bool = true
 var damage: int = 0
+## Постріл героя був критом (D393) — цифра над ворогом більша (DamageNumbers).
+var critical: bool = false
 var poise: int = 1
 var knockback: float = 0.0
 ## Скільки збиває героя влучання стріли лучника (його EnemyStats.stagger_time), с.
@@ -89,7 +91,7 @@ func _on_body_entered(body: Node2D) -> void:
 func _strike(body: Node2D) -> void:
 	if hero_side:
 		_hit.append(body)
-		body.take_damage(damage, self)
+		body.take_damage(damage, self, critical)
 		shooter.combat.on_arrow_hit(body, damage, poise, knockback, global_position.x - direction)
 		if not pierce:
 			queue_free()

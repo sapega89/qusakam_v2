@@ -45,7 +45,7 @@ var speed = 70
 var base_damage = 10.0
 var damage = 10.0
 var last_attack_time = 0.0
-var attack_cooldown = 1.5
+var attack_cooldown: float = 1.5
 ## D198: замах і тривалість удару (EnemyStats перезаписує).
 var attack_windup := 0.4
 var attack_active_time := 0.2
@@ -566,11 +566,11 @@ func weapon():
 ## Удар (D198): хітбокс перед ворогом у бік [param direction] (±1) живий, доки не end_attack().
 ## Ушкодження — через DamageApplier хітбокса, як у гравця.
 ## Удар спереду по панцирю (tank) — front_damage від шкоди. Без джерела (підпал) — повна.
-func take_damage(amount: int, source: Node = null) -> void:
+func take_damage(amount: int, source: Node = null, critical: bool = false) -> void:
 	var facing := enemy_logic.last_direction
 	if source is Node2D and front_damage < 1.0 and facing != 0 and signf(source.global_position.x - global_position.x) == facing:
 		amount = maxi(1, roundi(amount * front_damage))
-	super.take_damage(amount, source)
+	super.take_damage(amount, source, critical)
 
 func start_attack(direction: int) -> void:
 	hitbox.position.x = direction * attack_range / 2.0

@@ -8,7 +8,7 @@ signal closed
 ## settings-gameplay 17:632, settings-controls 17:756.
 ##
 ## Показуємо ТІЛЬКИ те, що має реальну підсистему. Рядки Figma без бекенду
-## (Screen Brightness, Ambient, Text Speed, Screen Shake, Damage Numbers) свідомо
+## (Screen Brightness, Ambient, Text Speed, Screen Shake) свідомо
 ## відкладені — див. design/settings_mapping.md, D43–D48. Фейкових контролів тут немає.
 ## Resolution і Frame Rate Limit — BACKLOG 41 (DisplayManager.RESOLUTIONS / FPS_LIMITS).
 ##
@@ -29,7 +29,7 @@ const TABS := [
 const TAB_HINTS := {
 	"display": "Set the display mode, window size and frame rate limit.",
 	"audio": "Adjust volume levels.",
-	"game": "Choose the interface language and whether hints open tutorial windows.",
+	"game": "Choose the interface language, whether hints open tutorial windows and whether damage numbers show.",
 	"controls": "Select an action to rebind it.",
 }
 
@@ -206,6 +206,10 @@ func _build_rows() -> void:
 			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
 			_add_segment_row("Tutorial Windows", ["On", "Off"],
 					0 if _cfg_get("tutorial_windows") else 1, _on_tutorial_windows_changed)
+			_add_separator()
+			# D66: цифри урону над героєм і ворогами (DamageNumbers)
+			_add_segment_row("Damage Numbers", ["On", "Off"],
+					0 if _cfg_get("damage_numbers") else 1, _on_damage_numbers_changed)
 
 
 func _add_separator() -> void:
@@ -402,6 +406,12 @@ func _on_fps_limit_changed(index: int) -> void:
 
 func _on_tutorial_windows_changed(index: int) -> void:
 	_cfg_set("tutorial_windows", index == 0)
+	_apply_and_save()
+	_rebuild_list()
+
+
+func _on_damage_numbers_changed(index: int) -> void:
+	_cfg_set("damage_numbers", index == 0)
 	_apply_and_save()
 	_rebuild_list()
 

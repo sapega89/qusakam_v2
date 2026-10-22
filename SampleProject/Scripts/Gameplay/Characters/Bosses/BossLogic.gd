@@ -54,10 +54,10 @@ func perform_attack() -> void:
 	_decide_after_attack()
 
 
-## Перерва attack_cooldown рахується від кінця ходу, а не від замаху: довгий замах боса інакше з'їдав би
+## Перерва EnemyStats.attack_cooldown боса (D394) рахується від кінця ходу, а не від замаху: довгий замах боса інакше з'їдав би
 ## всю перерву, і новий хід починався б одразу після удару — героєві ніколи бити у відповідь.
 func _rest() -> void:
-	attack_ready_in = attack_cooldown
+	attack_ready_in = enemy.attack_cooldown
 
 
 ## Хід для поточної відстані до героя й фази боса, випадково за вагою.

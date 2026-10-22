@@ -63,7 +63,7 @@ func _on_player_health_changed(_hp: int, _max_hp: int, _animate: bool) -> void:
 
 
 ## Героя вдарили (4b): рядок HP трясеться й на мить червоніє — лише цей елемент, не екран. Важкий удар — сильніше.
-func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
+func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bool) -> void:
 	if not target.is_in_group(GameGroups.PLAYER):
 		return
 	var row: Control = _rows_by_id["HP"]

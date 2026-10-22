@@ -882,8 +882,8 @@ msgstr "Режим екрана, розмір вікна й обмеження �
 msgid "Adjust volume levels."
 msgstr "Налаштуйте гучність."
 
-msgid "Choose the interface language and whether hints open tutorial windows."
-msgstr "Мова інтерфейсу і чи відкривають підказки вікна навчання."
+msgid "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
+msgstr "Мова інтерфейсу, чи відкривають підказки вікна навчання і чи видно цифри урону."
 
 msgid "Select an action to rebind it."
 msgstr "Оберіть дію, щоб перепризначити її."
@@ -944,6 +944,12 @@ msgstr "Увімк."
 
 msgid "Off"
 msgstr "Вимк."
+
+msgid "Damage Numbers"
+msgstr "Цифри урону"
+
+msgid "Evade"
+msgstr "Ухил"
 
 msgid "Restore Default Settings"
 msgstr "Відновити типові налаштування"

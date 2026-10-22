@@ -45,6 +45,9 @@ func _freeze_all() -> void:
 		e.set_physics_process(false)
 
 func _initialize() -> void:
+	# D393: кидки крита й ухилення з CALM_SEED — жоден не спрацює, бій точний
+	var rolls: GDScript = load("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+	rolls.calm()
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
 	await process_frame
@@ -81,6 +84,7 @@ func _initialize() -> void:
 	await _hit_feel()
 	await _freeze_check()
 
+	ck(rolls.rolls <= rolls.CALM_ROLLS, "the fight stayed inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
 

@@ -11,9 +11,9 @@ static func is_implemented_by(node: Node) -> bool:
 		   node.has_method("get_max_health")
 
 ## Безпечно викликає take_damage на об'єкті
-static func safe_take_damage(node: Node, damage: int, source: Node = null) -> void:
+static func safe_take_damage(node: Node, damage: int, source: Node = null, critical: bool = false) -> void:
 	if is_implemented_by(node):
-		node.take_damage(damage, source)
+		node.take_damage(damage, source, critical)
 	else:
 		push_error("Node " + str(node) + " does not implement IDamageable")
 

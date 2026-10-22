@@ -882,8 +882,8 @@ msgstr "Set the display mode, window size and frame rate limit."
 msgid "Adjust volume levels."
 msgstr "Adjust volume levels."
 
-msgid "Choose the interface language and whether hints open tutorial windows."
-msgstr "Choose the interface language and whether hints open tutorial windows."
+msgid "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
+msgstr "Choose the interface language, whether hints open tutorial windows and whether damage numbers show."
 
 msgid "Select an action to rebind it."
 msgstr "Select an action to rebind it."
@@ -944,6 +944,12 @@ msgstr "On"
 
 msgid "Off"
 msgstr "Off"
+
+msgid "Damage Numbers"
+msgstr "Damage Numbers"
+
+msgid "Evade"
+msgstr "Evade"
 
 msgid "Restore Default Settings"
 msgstr "Restore Default Settings"

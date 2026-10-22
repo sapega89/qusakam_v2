@@ -36,6 +36,9 @@ func _finish_dialogue(dm: Node) -> void:
 			return
 
 func _initialize() -> void:
+	# D393: кидки крита й ухилення з CALM_SEED — жоден не спрацює, бій точний
+	var rolls: GDScript = load("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+	rolls.calm()
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -199,6 +202,9 @@ func _initialize() -> void:
 	print("[2b] Invulnerability frames (B60)")
 	for e in enemies:
 		e.set_physics_process(false)  # вороги не бʼють, поки міряємо
+	# Замах, що вже йде, б'є до кінця (див. [1]); швидкий ворог з темпом 1.0 с (D394) частіше ловиться посеред серії
+	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking):
+		await physics_frame
 	await create_timer(1.0).timeout
 	game.player.current_health = game.player.Max_Health
 	var player_hits: Array = []
@@ -397,5 +403,6 @@ func _initialize() -> void:
 	ck(not combat.is_attacking, "attack ended off-tree, no get_tree() on null")
 	game.add_child(player)
 
+	ck(rolls.rolls <= rolls.CALM_ROLLS, "the fight stayed inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

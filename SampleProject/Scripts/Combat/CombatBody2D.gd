@@ -32,7 +32,8 @@ func _process(delta: float) -> void:
 			is_invulnerable = false
 
 ## Обробляє отримання ушкоджень, використовуйте take_damage() замість цього
-func register_damage(damage: int, ignore_overide: bool = false) -> void:
+## [param critical] — крит героя (D393): лише для цифри урону (DamageNumbers через EventBus.damage_received).
+func register_damage(damage: int, ignore_overide: bool = false, critical: bool = false) -> void:
 	# Перевірка невразливості
 	if is_invulnerable and not ignore_overide:
 		return
@@ -49,7 +50,7 @@ func register_damage(damage: int, ignore_overide: bool = false) -> void:
 
 		# Емітуємо подію через EventBus
 		var source = get_meta("last_damage_source", null) if has_meta("last_damage_source") else null
-		EventBus.damage_received.emit(self, source, damage)
+		EventBus.damage_received.emit(self, source, damage, critical)
 		# Также эмитим damage_dealt когда источник наносит урон цели
 		if source:
 			EventBus.damage_dealt.emit(source, self, damage)
@@ -68,12 +69,12 @@ func register_damage(damage: int, ignore_overide: bool = false) -> void:
 			die()
 
 ## Реалізація IDamageable.take_damage()
-func take_damage(damage: int, source: Node = null) -> void:
+func take_damage(damage: int, source: Node = null, critical: bool = false) -> void:
 	# Зберігаємо джерело ушкоджень для EventBus. Без джерела (пастка, падіння) — скидаємо: інакше лишався
 	# попередній кривдник, часто вже звільнений, і слухачі damage_received падали на ньому (звук, розтин).
 	set_meta("last_damage_source", source)
 	# B60: раніше тут було register_damage(damage, true) — обхід невразливості й перевірки смерті на кожному шляху ушкодження.
-	register_damage(damage)
+	register_damage(damage, false, critical)
 
 func heal_damage(amount: int) -> void:
 	if is_dead:

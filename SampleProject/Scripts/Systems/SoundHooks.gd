@@ -88,7 +88,7 @@ func _enemy_pitch(enemy: Node) -> float:
 
 
 ## Удар і голос: біль, а останній удар — смерть (damage_received приходить, коли HP вже 0, перед die()).
-func _on_damage_received(target: Node, source: Node, _amount: int) -> void:
+func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bool) -> void:
 	var alive: bool = target.current_health > 0
 	if target.is_in_group(GameGroups.PLAYER):
 		AudioManager.play(&"hero_hurt")

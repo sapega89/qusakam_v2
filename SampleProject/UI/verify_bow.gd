@@ -56,6 +56,7 @@ var sl: Node
 var enemies: Array = []
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	arrow_script = load("res://SampleProject/Scripts/Combat/Arrow.gd")
 	impact_script = load("res://SampleProject/Scripts/FX/HitImpact.gd")
