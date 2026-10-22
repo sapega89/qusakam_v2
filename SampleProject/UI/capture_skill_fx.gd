@@ -8,8 +8,8 @@ extends SceneTree
 const OATH_ACTIVES := ["radiant_smite", "skyfall_blessing", "judgement_of_the_sky", "searing_hex", "withering_grasp",
 		"eclipse_cleave", "balanced_strike", "dervish_whirl", "second_wind"]
 ## Вирізка навколо героя: ліворуч, вгору, розмір (екранні px).
-const CROP_FROM := Vector2i(-120, -230)
-const CROP_SIZE := Vector2i(320, 300)
+const CROP_FROM := Vector2i(-130, -300)
+const CROP_SIZE := Vector2i(320, 370)
 
 var game: Node
 var hero: Node
