@@ -9,7 +9,7 @@ tags: [cloud, routines, ui]
 Not done: order 6 `options_component` (left alone on purpose, Settings is being changed on another branch), plus the leftovers listed below.
 **D-ID text (next free number; orchestrator applies):** | D4xx | TECH | **Skills, Inventory and bottom-bar rows are scene templates** (D117, #50 slices 5 and 7; agent call; `cloud/rows-2`). Skills: `%Tier` (caption + `TrunkLane` / `OathLane`, each with a `SkillNode` in `Nodes` and a `Pad` sized to the free places of `NODES_PER_LANE`), `%TreeTab`, `%Slot1`, `%Fact` (one label template, even = `StatLabel`, odd = `StatValue`), `%AttributeRow`. Inventory: `%Tab`, `%ItemRow` (an `item_row.tscn` instance). Bottom bar: `%ActionHint`. Rows come from `RowFill.fill()` and are reused between rebuilds (wired once, the skill id lives in meta). New theme types: `SkillCostLearned` / `SkillCostLocked` / `SkillCostSelected`, `IconSlotFramed`, `BottomBar`, `ActionHint`, `ActionBadge`, `ActionBadgeLabel`; new tokens `BOTTOM_BAR_BG`, `ACTION_BADGE_SIZE`. The Skills avatar is a copy of `AvatarChip`. `item_row.gd` reads its children by path, because RowFill copies of a scene instance lose the `%`-name owner. Left: `options_component`, see the rows-2 report. |
 **B rows fixed:** none (this is #50 / D117 work, no B-ID).
-**Full suite:** see the end of this report.
+**Full suite:** `Scripts/Tools/run_verify.sh` → `SUITE: ALL PASS` (no FAIL lines), after both slices.
 
 ## What changed
 
