@@ -267,7 +267,7 @@ enemy_type = "melee"
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
 position = Vector2(3070, 304)
 script = ExtResource("8_spawn_point")
-enemy_type = "fast"
+enemy_type = "archer"
 
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
