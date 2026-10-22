@@ -64,27 +64,12 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B84 — Crit, evasion and attack speed do nothing in a fight
-- **Where:** `GameManager.calculate_critical_chance` / `calculate_dodge_chance` / `calculate_attack_speed`; `PlayerCombat.hit_damage()`, `Player.mitigated_damage()`, swing times.
-- **Expected:** Agility points (D335) and base dexterity change crit, evasion and attack speed in combat.
-- **Got:** only the Status and Equipment screens read them; no crit roll, no evasion roll, speed ignored (D336).
-- **Fix:** crit roll in `hit_damage` (×1.5) and evasion in `mitigated_damage` behind a seedable RNG so `verify_combat_flow` / `verify_souls_combat` stay exact; speed into `swing_time`. **Decided:** Sapega 2026-10-22, all three (D393).
-- **Severity:** blocker for Agility being worth a point
-- **Found:** 2026-10-21, `cloud/skills-screen`
-
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
 - **Expected:** the hero holds the bow in every pose (D385).
 - **Got:** A4 has bow frames only for stance, run, shots, draw and charge; in jump / apex / fall / land, block, hurt and roll the base frames play and the hero holds no bow.
 - **Evidence:** `design/shots/hero_blocks_arrow.png`
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
-- **Found:** 2026-10-22, `cloud/bow`
-
-### B111 — Enemy attack tempo ignores `EnemyStats.attack_cooldown`
-- **Where:** `SampleProject/Scripts/Gameplay/…/EnemyLogic.gd` `handle_attack_state` (its own `attack_cooldown` 1.5 s; `initialize()` never copies the stats value).
-- **Expected:** each enemy swings at its stats' tempo (the fast 1.0 s…).
-- **Got:** every melee enemy swings every 1.5 s; only the archer reads `enemy.attack_cooldown` (2.2 s).
-- **Severity:** visual (balance) — fixing it re-tunes every fight (4b). **Decided:** Sapega 2026-10-22, tempo from the stats (D394)
 - **Found:** 2026-10-22, `cloud/bow`
 
 ### B112 — The speaker's name is drawn over the first line of the dialogue text
@@ -104,6 +89,11 @@ the history, this note keeps only what is open.
 - **Severity:** tests only (flaky)
 - **Found:** 2026-10-22, `cloud/skill-fx`, `cloud/misc-bugs`
 
+> **Round 6, combat-stats (2026-10-22):** **B84** (D393) and **B111** (D394) fixed by `cloud/combat-stats` — rows removed.
+> Found and fixed by the orchestrator at merge: **B115** a tutorial hint already on screen stayed in the old language after
+> a language switch (`TutorialHintDisplay` set its text once; now re-resolves on `NOTIFICATION_TRANSLATION_CHANGED`;
+> `verify_locale` [3]).
+>
 > **Round 6 (2026-10-22):** fixed, rows removed — **B95, B96, B19, B22, B90, B14, B10, B8** (`cloud/ui-bugs`, D396–D402),
 > **B91, B92, B93, B94, B107, B108** (`cloud/misc-bugs`, D403–D405), **B105** (`cloud/art-fixes-wire`). Found and fixed on
 > `cloud/skill-fx`: **B114** casting any oath active asserted in `SoundHooks` (no `cast_<id>_*` events; each now reuses

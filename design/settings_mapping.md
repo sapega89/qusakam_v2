@@ -70,7 +70,7 @@ linear, converted with `linear_to_db()` on apply. That is a presentation change
 | Text Speed (Default / Quick) | no text-speed setting in DialogueQuest integration or project code | **NEEDS DESIGN DECISION** |
 | Screen Shake | no camera-shake system exists | **NEEDS DESIGN DECISION** |
 | Auto-Save | `SaveSystem.enable_auto_save_on_scene_transition: bool` is real, but **not persisted** — no `SettingsModule` key | **Partial.** Toggle has a live target; persisting it means adding one key to the existing module (not a second system). |
-| Damage Numbers | no damage-number system | **NEEDS DESIGN DECISION** |
+| Damage Numbers | ✅ D408 (`cloud/combat-stats`) | built 2026-10-22 |
 
 ### Controls `17:756`
 

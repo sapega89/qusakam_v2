@@ -41,7 +41,7 @@ except keybinds (maaacks `app_settings.gd`).
 | Text Speed | Default / Quick: dialogue box typing speed and bubble line time (D178, D192). | ❌ |
 | Screen Shake | On/Off; off = no camera shake. | ❌ no shake system exists — the row has nothing to switch. |
 | Auto-Save | On/Off → `SaveSystem.enable_auto_save_on_scene_transition`, persisted. | ⚠️ target exists, no key, no row. |
-| Damage Numbers | On/Off. | ❌ no damage-number system exists. |
+| Damage Numbers | On/Off. | ✅ built 2026-10-22 (D408, `cloud/combat-stats`), default On. |
 
 ## Controls — `17:756`
 

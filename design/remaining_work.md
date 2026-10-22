@@ -14,10 +14,9 @@ Written for Sapega («запиши, що треба зробити, в бекл�
 
 | Branch | What | Status |
 |---|---|---|
-| `cloud/combat-stats` | B84 (D393), B111 (D394), damage numbers + the Settings row (D66) | working in the cloud (round 6) |
 
 Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); `cloud/code-fixes`, `cloud/living-world`,
-`cloud/skill-fx`, `cloud/art-fixes-wire` (round 5); `cloud/ui-bugs`, `cloud/misc-bugs` (round 6).
+`cloud/skill-fx`, `cloud/art-fixes-wire` (round 5); `cloud/ui-bugs`, `cloud/misc-bugs`, `cloud/combat-stats` (round 6).
 
 ## Art (needs ComfyUI on the laptop)
 
