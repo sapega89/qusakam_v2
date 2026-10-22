@@ -180,9 +180,41 @@ func _initialize() -> void:
 		Input.action_press(&"move_left")
 		await _until(func() -> bool: return game.player.event, 5.0)
 		Input.action_release(&"move_left")
+	var before_descent := _snap([])
 	await _play_and_skip("descent", descent_start,
 			func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn") and not game.player.event,
 			[], _key(true), _key(false), "Tab")
+
+	print("[4] Quit to the main menu mid-cutscene, then a new game (B92)")
+	_restore(before_descent)
+	await descent_start.call()
+	await _until(func() -> bool: return _prompt() != null, 8.0)
+	ck(_prompt() != null and not _hud_visible(), "descent is playing")
+	root.get_node("ServiceLocator").get_ui_manager().close_state()
+	set_meta("show_title_screen", true)
+	change_scene_to_file("res://SampleProject/MainMenu.tscn")
+	for i in 30: await process_frame
+	ck(_prompt() == null, "the skip prompt left with its game")
+	ck(is_equal_approx(Engine.time_scale, 1.0), "normal speed in the main menu (%.1f)" % Engine.time_scale)
+	var started: Array[String] = []
+	var count_started := func(id: String) -> void: started.append(id)
+	dm.dialogue_started.connect(count_started)  # саме dialogue_started кликав hold() на звільненому герої
+	set_meta("start_new_game", true)
+	change_scene_to_file("res://SampleProject/Game.tscn")
+	await _until(func() -> bool: return current_scene != null and current_scene.scene_file_path.ends_with("Game.tscn") \
+			and current_scene.player != null, 10.0)
+	game = current_scene
+	await _until(func() -> bool: return not started.is_empty(), 10.0)
+	dm.dialogue_started.disconnect(count_started)
+	ck(not started.is_empty(), "the new game's first dialogue runs (%s)" % [started])
+	await _drain()
+	for i in 30: await process_frame
+	ck(_hud_visible() and _prompt() == null, "the new game's intro ends with the HUD back")
+	ck(not game.player.event, "the new game's intro gives control back")
+
+	print("[5] The next cutscene in the new game hides and shows the HUD again (B92)")
+	await _play_and_skip("raid after a new game", raid_start,
+			func() -> bool: return game.map.get_current_state_name() == "FIGHT_LOOP", bandits, _key(true), _key(false), "Tab")
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
