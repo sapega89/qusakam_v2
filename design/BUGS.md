@@ -80,14 +80,8 @@ the history, this note keeps only what is open.
 - **Severity:** audio + visual (one cutscene)
 - **Found:** 2026-10-22, `cloud/fight-music`
 
-### B118 — Settings are lost on restart when the last-used slot has no save
-- **Where:** `SaveSystem.save_game_settings()` (`Scripts/Systems/SaveSystem.gd`: `if not FileAccess.file_exists(slot_path): return true`) — settings live inside the slot file.
-- **Expected:** every Settings row survives a restart ([[settings_plan]] rule), on a fresh install too.
-- **Got:** a fresh install that changes the language or volume from the Main Menu and quits loses the change.
-- **Fix (recommended by `cloud/settings-1`):** one global settings file (e.g. `user://saves/settings.json`); slot files stop carrying `game_settings`. Touches `Game.save_game`, `SaveSystem` and about 6 tests.
-- **Severity:** functional (every Settings row on a fresh install)
-- **Found:** 2026-10-22, `cloud/settings-1`
-
+> **Round 8 (2026-10-22):** **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
+>
 > **2026-10-22, after round 7:** **B117** fixed — not chance: the test flipped the hero near/far every 0.5 s, and with the djinn's 1.0 s rest (D411) the flip always landed on the same side at the pick (26 moves, no fireball). [5] now places the hero for the move still missing (400 px → fireball, 60 → claws, 135 → only the pillar fits); row removed.
 >
 > **Round 7 (2026-10-22):** **B112** fixed by `cloud/ui-fixes` — the speaker's name is the first row of `Margin/Rows`, hidden on narration (`verify_dialogue_speaker`); row removed.
