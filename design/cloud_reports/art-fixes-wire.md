@@ -15,7 +15,8 @@ the rest — with the blue stun tint on top, then its normal animation; killed w
 death frames. The archer has no stagger art and keeps the tint alone.»
 **B rows fixed:** B105 (halberd butt spike, dual dagger in `Heavy/1` and `Run/7`, off-key blades in dual `Air/3`,
 shoulder in `sword/Attack3/2`); its `Run/2`, `Run/4` and `sword/Attack2/2` parts do not reproduce (below).
-**Full suite:** SUITE_LINE
+**Full suite:** `SUITE: 2 FAIL` — `verify_game_ui_theme` (expected) and `verify_combat_flow` (two player-hit checks under
+full-suite load; alone on the same tree `RESULT: ALL PASS` — it tests the hero being hit, which this branch does not touch).
 
 ## 1. Weapon frames
 
