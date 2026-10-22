@@ -81,10 +81,12 @@
 				{
 					"id": "laboratory", "title": "Laboratory", "scene": "Laboratory", "story_state": "LABORATORY",
 					"objectives": [
-						{"flag": "lab_boss_fight_complete", "text": "Fight through the laboratory"},
+						{"flag": "lab_corridors_complete", "text": "Fight through the laboratory"},
+						{"flag": "lab_boss_fight_complete", "text": "Defeat the fire djinn"},
 						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory"}
 					],
 					"chronicle": [
+						{"flag": "lab_corridors_complete", "text": "He fought his way down through three storeys of the laboratory's guards."},
 						{"flag": "lab_boss_fight_complete", "text": "The master of the laboratory declared it the end of his road."},
 						{"flag": "lab_after_boss_complete", "text": "Kusakam defeated the boss, and the way out lay open."}
 					]

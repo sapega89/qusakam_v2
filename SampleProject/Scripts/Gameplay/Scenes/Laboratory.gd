@@ -1,164 +1,37 @@
 extends Node2D
 
-## 🧪 Laboratory Scene — коридори (D303). States: Explore, BossFight (бій із мобами), AfterBoss.
-## Знайомство з компаньйонами й асисти — у LabCells (D305); тест межі прибрано (row 9.5). Три бої по поверхах — row 9.6.
+## 🧪 Коридори лабораторії (D303, D306, [[lab_story_plan]] зріз 7): звичайна кімната з ціллю, без сюжетних реплік.
+## Три бої — по одному на поверх (Fight_Upper / Fight_Middle / Fight_Lower, RoomEnemySpawner з trigger_area, як
+## секції DesertRoad, D296): вороги зʼявляються, коли герой заходить у зону бою; кожен бій памʼятає своїх убитих
+## у Game.room_state під своїм ключем (D152), тож добитий бій не повертається ні після виходу, ні після завантаження.
+## Усі три добиті → прапорець lab_corridors_complete (журнал) і ціль далі — у залу джина (LabBoss, D307).
 
-enum State {
-	EXPLORE,
-	BOSS_FIGHT,
-	AFTER_BOSS
-}
+const FIGHTS: Array[NodePath] = [^"Fight_Upper", ^"Fight_Middle", ^"Fight_Lower"]
+const CLEARED_FLAG := "lab_corridors_complete"
 
-enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
-
-@export var current_state: State = State.EXPLORE:
-	set(val):
-		current_state = val
-		_on_state_changed(val)
-
-var state_run_id: int = 0
-signal state_complete(state: State)
-
-# Enemy spawner reference
-var enemy_spawner: RoomEnemySpawner = null
 
 func _ready() -> void:
-	var loc = ServiceLocator
-	if not loc.is_node_ready():
-		await loc.ready
+	for path in FIGHTS:
+		# Відкладено: спавнер викидає сигнал раніше, ніж стирає вбитого зі стану кімнати.
+		(get_node(path) as RoomEnemySpawner).all_enemies_defeated.connect(_update, CONNECT_DEFERRED)
+	_update()
 
-	# Находим EnemySpawner
-	enemy_spawner = $EnemySpawner
-	enemy_spawner.all_enemies_defeated.connect(_on_all_enemies_defeated)
-	DebugLogger.info("🧪 Laboratory: EnemySpawner found and connected", "Scene")
 
-	current_state = _initial_state()
+func is_fight_cleared(path: NodePath) -> bool:
+	return (get_node(path) as RoomEnemySpawner).fight_cleared()
 
-## Стан при вході — за прапорцями (B53), як CityGates._initial_state(). Сюди потрапляють лише
-## завантаженням сейва: дороги назад у лабораторію немає.
-func _initial_state() -> State:
+
+func cleared_count() -> int:
+	return FIGHTS.filter(is_fight_cleared).size()
+
+
+func _update() -> void:
 	var game := Game.get_singleton()
-	if game.get_quest_flag("lab_boss_fight_complete"):
-		return State.AFTER_BOSS
-	return State.EXPLORE
-
-## Для StateChangeTrigger: бій запускає тригер на нижньому поверсі (D174).
-func get_current_state_name() -> String:
-	return State.keys()[current_state]
-
-func change_state_by_name(state_name: String) -> void:
-	current_state = State[state_name]
-
-func _on_state_changed(new_state: State) -> void:
-	state_run_id += 1
-	var run_id = state_run_id
-	DebugLogger.info("🧪 Laboratory: Entering state %s (RunID: %d)" % [State.keys()[new_state], run_id], "Scene")
-
-	_apply_state_logic(new_state, run_id)
-
-func _apply_state_logic(state: State, run_id: int) -> void:
-	var game = Game.get_singleton()
-	match state:
-		State.EXPLORE:
-			_set_objective("Fight through the laboratory")
-			# EXPLORE не має автоматичного переходу - чекає на тригер
-			DebugLogger.info("🧪 Laboratory: Стейт EXPLORE - очікування тригера", "Scene")
-		State.BOSS_FIGHT:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_boss_fight_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Laboratory_BossFight вже був прочитаний, пропускаємо", "Scene")
-				return
-			_set_objective("Fight through the laboratory")
-			_start_fight("Laboratory_BossFight", run_id)
-		State.AFTER_BOSS:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if game.get_quest_flag("lab_after_boss_complete", false):
-				DebugLogger.info("🧪 Laboratory: ⏭️ Діалог Laboratory_AfterBoss вже був прочитаний, пропускаємо", "Scene")
-				_set_objective("Leave the laboratory")
-				return
-			_set_objective("Leave the laboratory")
-			_execute_step(StepType.DIALOGUE, "Laboratory_AfterBoss", run_id)
-
-## Репліка йде ПЕРЕД боєм: поки вона висить, гравець заблокований (DialogueManager), і ворог,
-## що вже зʼявився, бив би його, а гравець не міг би поворухнутись — виглядало як зависання.
-## Бій закінчується лише смертю ворогів (_on_all_enemies_defeated), а не кінцем репліки.
-## Гравець вийшов посеред бою — повертаємо тих самих ворогів без репліки (D152).
-func _start_fight(dialogue_id: String, run_id: int) -> void:
-	if not enemy_spawner.fight_in_progress():
-		await _play_dialogue(dialogue_id, run_id)
-		if run_id != state_run_id:
-			return
-	_spawn_enemies_for_fight()
-
-func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
-	match type:
-		StepType.DIALOGUE:
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.COMBAT:
-			# Fast Path: Імітуємо бій діалогом
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.LOOP:
-			# Fast Path: Чекаємо 1 сек
-			await get_tree().create_timer(1.0).timeout
-		StepType.TRANSITION:
-			pass
-
-	if run_id != state_run_id: return
-
-func _play_dialogue(dialogue_id: String, run_id: int) -> void:
-	var dm = _get_dialogue_manager()
-	if not dm: 
-		await get_tree().create_timer(0.5).timeout
-		return
-
-	var path = "res://dialogue_quest/" + dialogue_id + ".dqd"
-	dm.start_dialogue(path)
-
-	while true:
-		var finished_id = await EventBus.dialogue_finished
-		# Адресна перевірка: чекаємо саме наш діалог (або шлях до нього)
-		if finished_id == path or finished_id == dialogue_id:
-			# Завершуємо квест після діалогу
-			_complete_quest_for_dialogue(dialogue_id)
-			break
-		# Якщо стейт змінився поки ми чекали - виходимо
-		if run_id != state_run_id: return
-
-func _complete_quest_for_dialogue(dialogue_id: String) -> void:
-	"""Встановлює квестові флаги для діалогів"""
-	var game = Game.get_singleton()
-	if not game: return
-
-	match dialogue_id:
-		"Laboratory_AfterBoss":
-			game.set_quest_flag("lab_after_boss_complete", true)
-
-func advance_state() -> void:
-	state_complete.emit(current_state)
-	if current_state < State.AFTER_BOSS:
-		current_state = (current_state + 1) as State
+	if cleared_count() == FIGHTS.size() and not game.get_quest_flag(CLEARED_FLAG):
+		game.set_quest_flag(CLEARED_FLAG, true)
+	if game.get_quest_flag("lab_after_boss_complete"):
+		game.set_objective("Leave the laboratory")
+	elif game.get_quest_flag(CLEARED_FLAG):
+		game.set_objective("Go deeper into the laboratory")
 	else:
-		# Перехід до LaboratoryOutside обробляється автоматично через MetSys room connections
-		DebugLogger.info("🧪 Laboratory: Стейт AFTER_BOSS досягнуто - перехід обробляється через MetSys", "Scene")
-
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
-	var game = Game.get_singleton()
-	game.set_objective(text)
-
-func _get_dialogue_manager() -> Node:
-	return ServiceLocator.get_dialogue_manager()
-	return null
-
-func _spawn_enemies_for_fight() -> void:
-	"""Спавнить врагов для боя"""
-	enemy_spawner.spawn_all_enemies()
-	DebugLogger.info("🧪 Laboratory: Enemies spawning for boss fight", "Scene")
-
-func _on_all_enemies_defeated() -> void:
-	"""Обработчик когда все враги убиты"""
-	DebugLogger.info("🧪 Laboratory: All enemies defeated, advancing state", "Scene")
-	# Переходим к следующему state после победы
-	if current_state == State.BOSS_FIGHT:
-		Game.get_singleton().set_quest_flag("lab_boss_fight_complete", true)
-		advance_state()
+		game.set_objective("Fight through the laboratory")
