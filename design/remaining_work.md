@@ -29,8 +29,9 @@ Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); 
 2. ~~**A6 — own effects for the 18 new skills**~~ — **drawn 2026-10-22** (`e86bef3c`): the 9 oath actives × charge +
    release = the 18 effects (the other 15 oath skills are passives, no cast); wiring: `cloud/skill-fx`. Was (D279 leftover: they reuse recoloured Fire/Electric/Healing effects —
    Searing Hex reads dark red, Balanced Strike looks like Fire Strike). Then wiring.
-3. **Missing weapon frames:** dagger Heavy and two Attack2 frames (kept turning into a sword), dual-wield Hurt.
-4. **Small art fixes noted by agents:** Malik's walk shows white patches through the robe; the alchemist's mask reads
+3. ~~**Missing weapon frames:**~~ — **drawn 2026-10-22** (`fe96e88a`); wiring: `cloud/art-fixes-wire`. Was: dagger Heavy and two Attack2 frames (kept turning into a sword), dual-wield Hurt.
+4. **Small art fixes noted by agents** — **drawn 2026-10-22** (`fe96e88a`) except the faint pillar floor mark and
+   slam dust; wiring and the stagger animation: `cloud/art-fixes-wire`. Was: Malik's walk shows white patches through the robe; the alchemist's mask reads
    as a beard; the boss-hall runes look like Latin letters; enemies have no stagger frames (only a tint); the djinn's
    death frame reads close to idle; the priestess has a stray stick in the prayer frames; the grandfather's staff
    swaps hands between idle and pipe; the pillar floor mark and slam dust are faint.
