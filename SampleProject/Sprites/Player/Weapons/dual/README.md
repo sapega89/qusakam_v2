@@ -8,7 +8,13 @@ sword too); run, air and the sword swings (`Attack1`, `Attack3`) are the sword s
 dagger added (`ON:`); the dagger stabs, heavy and block are made from the first frame or from already good frames
 of this set (`FROM:`). The artist's colours only.
 
-Not wired into `Player.tscn` yet.
+Wired: `Player.tscn` → `AnimationPlayer` library `dual_sword_dagger` (sword in hand + dagger in the off hand;
+`Resources/Player/WeaponAnimations/dual_sword_dagger.tres`, written by `Scripts/Tools/weapon_libraries.py`); its `Hurt` is
+`sword/Hurt/1`.
+
+Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
+armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`
+recolours only the weapon metal.
 
 - Cell **96×96**, the same as the sword set: the hero's body sits where it does in the sword frames, feet on row
   **88** (= row 56 of the 64×64 frames + 32). Faces right; flip for the left.

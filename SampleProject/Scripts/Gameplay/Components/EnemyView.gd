@@ -73,15 +73,19 @@ func _offset_to(px: float, time: float) -> void:
 func show_tell(life: float, lunge: float, reach: float) -> void:
 	var tell := EnemyTell.new()
 	tell.setup(life)
-	# Де на кадрі замаху зброя (лезо, зуби, жало): meta «tell_at» Sprite2D у сцені ворога, px текстури від центру кадру,
-	# для погляду праворуч.
-	var at: Vector2 = sprite2d.get_meta(&"tell_at")
-	tell.glint_at = sprite2d.position + (sprite2d.offset + Vector2(at.x * facing_direction, at.y)) * _base_scale
+	tell.glint_at = weapon_point(facing_direction)
 	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
 	tell.feet = body.position + Vector2(0, body.shape.get_rect().end.y)
 	tell.direction = facing_direction
 	tell.line_length = lunge + reach if lunge > 0.0 else 0.0
 	enemy.add_child(tell)
+
+## Де на кадрі замаху зброя (лезо, зуби, жало, наконечник стріли — звідси й летить стріла лучника, D386), px від
+## центру ворога для погляду [param direction]: meta «tell_at» Sprite2D у сцені ворога — px текстури від центру кадру
+## для погляду праворуч.
+func weapon_point(direction: int) -> Vector2:
+	var at: Vector2 = sprite2d.get_meta(&"tell_at")
+	return sprite2d.position + (sprite2d.offset + Vector2(at.x * direction, at.y)) * _base_scale
 
 ## Удар героя влучив: тіло стискається, відхиляється від удару на [param push] px і вертається.
 func flinch(from_side: float, push: float) -> void:

@@ -7,7 +7,12 @@ halberd; the attacks, block and hurt are made from that frame or from already go
 run and air from the artist's own frames (`Run/N`, `Jump/2–3`, `Fall/2`) with only the halberd added. The artist's
 colours only.
 
-Not wired into `Player.tscn` yet.
+Wired: `Player.tscn` → `AnimationPlayer` library `polearm` (the items.json category; `Resources/Player/WeaponAnimations/
+polearm.tres`, written by `Scripts/Tools/weapon_libraries.py`).
+
+Palette swap (BACKLOG 42): after the tool and the fixups run `python Scripts/Tools/weapon_key_fixups.py` — it moves the
+armour and eye pixels that share the blade key colours 2 RGB steps off the key, so `Shaders/weapon_palette.gdshader`
+recolours only the weapon metal.
 
 - Cell **96×96**, the same as the sword set: the hero's body sits where it does in the sword frames, feet on row
   **88** (= row 56 of the 64×64 frames + 32). Faces right; flip for the left.

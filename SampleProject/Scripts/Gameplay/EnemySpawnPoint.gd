@@ -6,7 +6,7 @@ class_name EnemySpawnPoint
 ## Используется RoomEnemySpawner для автоматического создания врагов
 
 ## Тип врага для спавна
-@export_enum("melee", "tank", "fast") var enemy_type: String = "melee"  # ranged не збудовано (Q35)
+@export_enum("melee", "tank", "fast", "archer") var enemy_type: String = "melee"  # archer — лучник (D386)
 
 ## Спавнить при загрузке комнаты (если false, нужно вызвать spawn() вручную)
 @export var spawn_on_load: bool = true
@@ -22,6 +22,7 @@ const ENEMY_SCENES := {
 	"melee": "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn",
 	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
 	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
+	"archer": "res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn",
 }
 
 ## Спавнить только один раз (если true, после смерти врага больше не спавнится)
@@ -63,7 +64,7 @@ func _draw() -> void:
 			"melee": color = Color.RED
 			"tank": color = Color.BLUE
 			"fast": color = Color.GREEN
-			"ranged": color = Color.YELLOW
+			"archer": color = Color.YELLOW
 
 		# Крест
 		draw_line(Vector2(-10, 0), Vector2(10, 0), color, 2.0)

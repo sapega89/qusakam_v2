@@ -208,7 +208,10 @@ func _unhandled_input(ev: InputEvent) -> void:
 		if not event and not combat.is_attacking:
 			ServiceLocator.get_equipment_manager().cycle_weapon(1 if ev.is_action_pressed(&"weapon_next") else -1)
 		return
-	if ev.is_action_pressed(&"dodge") and not event and not combat.owns_animation():
+	if ev.is_action_pressed(&"dodge") and not event:
+		combat.cancel_draw()  # перекат зриває натяг лука (D382)
+		if combat.owns_animation():
+			return
 		if mover.start_roll():
 			animation = &"Roll"
 			play_body(&"Roll")
@@ -218,12 +221,17 @@ func _unhandled_input(ev: InputEvent) -> void:
 	if ev.is_action(&"block"):
 		combat.block_held = ev.is_pressed() and not event
 		return
+	# Лук (D380): кнопку удару чи важкого відпустили — заряджений постріл або лук опускається.
+	if ev.is_action_released(&"attack") or ev.is_action_released(&"heavy_attack"):
+		combat.release_shot()
+		return
 	var light := ev.is_action_pressed(&"attack")
 	if (light or ev.is_action_pressed(&"heavy_attack")) and not mover.is_rolling() and not mover.is_climbing():
 		if event:
 			return  # під час катсцени не б'ємо
 		if ev is InputEventMouseButton and get_tree().paused:
 			return
+		combat.shot_held = true
 		# Посеред удару натискання лягає в чергу серії — тож тут не перевіряємо, чи бій вільний.
 		if light:
 			combat.perform_attack(last_direction)
@@ -231,14 +239,15 @@ func _unhandled_input(ev: InputEvent) -> void:
 			combat.heavy_attack(last_direction)
 
 ## Анімація тіла [param base] з кадрів зброї в руці (BACKLOG 42, design/hero_weapon_animation_plan.md):
-## `<бібліотека>/<base>`, удар серії — `<бібліотека>/Attack<крок+1>`; базова, якщо бібліотека її не має
+## `<бібліотека>/<base>`, удар серії (Attack, а для булави й алебарди AttackSmash / AttackThrust,
+## PlayerCombat.SWING_ANIMATIONS) — `<бібліотека>/Attack<крок+1>`; базова, якщо бібліотека її не має
 ## (Roll, Climb, Cast*) або зброя схована.
 func body_animation(base: StringName) -> StringName:
 	var library: StringName = weapon_view.body_library()
 	if library == &"":
 		return base
 	var name := StringName("%s/%s" % [library, base])
-	if base == &"Attack":
+	if String(base).begins_with("Attack"):
 		name = StringName("%s/Attack%d" % [library, combat.combo_step + 1])
 	return name if $AnimationPlayer.has_animation(name) else base
 
@@ -435,7 +444,8 @@ func refresh_max_health() -> void:
 ## Ушкодження героєві: спершу захист у відсотках (D206), далі Shield Block зі щитом (D207). Щонайменше 1.
 ## Souls-lite (D264): удар ворога, що справді поранив, збиває героя — на stagger_time ворога, фінішер серії довше.
 ## Блок спереду (4b) шкоди не завдає й не збиває; удар, що збив би на GUARD_BREAK і довше (tank, фінішер серії),
-## пробиває блок — повна шкода і збій. Парирування в перші PARRY_WINDOW с блоку — без шкоди, збиває самого ворога.
+## пробиває блок — повна шкода і збій. Парирування в перші PARRY_WINDOW с блоку — без шкоди, збиває самого ворога;
+## парирована стріла лучника летить назад (Arrow.parried, D384).
 func take_damage(damage: int, source: Node = null) -> void:
 	if is_invulnerable or is_dead:
 		return
@@ -450,7 +460,7 @@ func take_damage(damage: int, source: Node = null) -> void:
 			return
 	var before := current_health
 	super.take_damage(mitigated_damage(damage), source)
-	if current_health >= before or is_dead or not source is DefaultEnemy:
+	if current_health >= before or is_dead or not (source is DefaultEnemy or source is Arrow):
 		return
 	combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
@@ -459,8 +469,8 @@ func mitigated_damage(damage: int) -> int:
 	var gm := ServiceLocator.get_game_manager()
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	# Щит працює, лише якщо в руках не дворучна зброя (D267)
-	if gm.player_state.equipment.get("shield") != null and combat.grip != &"two_handed":
+	# Щит працює, лише якщо руки вільні від дворучної зброї (D267) і лука (D383)
+	if gm.player_state.equipment.get("shield") != null and combat.grip not in [&"two_handed", &"bow"]:
 		result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("shield_block"))
 	result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("damage_reduction"))  # D284
 	return maxi(1, roundi(result))

@@ -1,0 +1,10 @@
+{
+	"_comment": "BACKLOG 42: weapon metal per item. 'key' = the three metal colours (light, mid, dark) every weapon frame in Sprites/Player/Weapons is drawn in; each palette maps them to its own (items.json -> palette). Tones match Scripts/Tools/draw_weapons.py METAL. shimmer / glow: 0..1 (weapon_palette.gdshader).",
+	"key": ["#F8F8E4", "#C2C2C2", "#87878C"],
+	"palettes": {
+		"iron": {"colors": ["#F8F8E4", "#C2C2C2", "#87878C"], "shimmer": 0.0, "glow": 0.0},
+		"copper": {"colors": ["#FABE82", "#D6844E", "#A05836"], "shimmer": 0.0, "glow": 0.0},
+		"silver": {"colors": ["#FFFFFF", "#D6E2F0", "#9EB0C8"], "shimmer": 0.0, "glow": 0.0},
+		"crystal": {"colors": ["#E8FCFF", "#96E2F0", "#5496D2"], "shimmer": 1.0, "glow": 0.6, "glow_color": "#9AF2FF"}
+	}
+}
