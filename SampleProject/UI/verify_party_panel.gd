@@ -37,7 +37,7 @@ func _initialize() -> void:
 	ck(menu != null, "pad Start opens the Game Menu")
 	menu.switch_to_tab("Inventory")
 	await Kit.frames(self, 4)
-	ck(_names() == ["Кусакам"], "only Kusakam (%s)" % [_names()])
+	ck(_names() == ["Kusakam"], "only Kusakam (%s)" % [_names()])
 	var hp: String = _cards()[0].get_node(^"Row/Info/Bars/Hp/Head/Value").text
 	ck(hp == "100/100", "his real HP (%s)" % hp)
 
@@ -50,7 +50,7 @@ func _initialize() -> void:
 	ck(cm.get_party() == ["alisia"], "Status click put her in the party (%s)" % [cm.get_party()])
 	menu.switch_to_tab("Inventory")
 	await Kit.frames(self, 6)
-	ck(_names() == ["Кусакам", "Алісия"], "Kusakam and Alisia (%s)" % [_names()])
+	ck(_names() == ["Kusakam", "Alisia"], "Kusakam and Alisia (%s)" % [_names()])
 	var art: TextureRect = _cards()[1].get_node(^"Row/PortraitFrame/Art")
 	ck(art.visible and art.texture != null, "her portrait")
 	ck(_cards()[1].get_node(^"Row/Info/Bars/Hp/Head/Value").text == "—/—", "no invented HP for an assist")
@@ -65,7 +65,7 @@ func _initialize() -> void:
 	ck(cm.get_party().is_empty(), "Enter sent her to camp")
 	menu.switch_to_tab("Inventory")
 	await Kit.frames(self, 6)
-	ck(_names() == ["Кусакам"], "one card again (%s)" % [_names()])
+	ck(_names() == ["Kusakam"], "one card again (%s)" % [_names()])
 
 	sl.get_ui_manager().close_game_menu()
 	await Kit.frames(self, 4)

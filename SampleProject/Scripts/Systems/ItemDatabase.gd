@@ -151,9 +151,7 @@ func _enchanted_item(item_id: String) -> Dictionary:
 		return {}
 	var item: Dictionary = items[base_id(item_id)].duplicate(true)
 	item.id = item_id
-	for key in ["name", "name_ru"]:
-		if item.has(key):
-			item[key] = "%s +%d" % [item[key], level]
+	item.name = "%s +%d" % [item.name, level]
 	var stat: String = ENCHANT_STAT[item.type]
 	item.stats[stat] = int(item.stats.get(stat, 0)) + level
 	return item
@@ -166,25 +164,23 @@ func get_item_data(item_id: String):
 		return items_data[item_id]
 	return null
 
-func get_item_name(item_id: String, language: String = "en") -> String:
-	"""Gets item name in specified language"""
+## Назва предмета мовою гри (BACKLOG 31): ключ — англійська назва з items.json, переклад — uk.po.
+## Перекладає тут, а не кожен викликач: назви склеюються в рядки («%s × %d», рецепти, зачарування).
+func get_item_name(item_id: String) -> String:
 	var item = get_item(item_id)
 	if item.is_empty():
-		return "Unknown Item"
-	
-	if language == "ru" and item.has("name_ru"):
-		return item.name_ru
-	return item.get("name", "Unknown Item")
+		return tr("Unknown Item")
+	var level := enchant_level(item_id)
+	if level > 0:
+		return "%s +%d" % [tr(items[base_id(item_id)].name), level]
+	return tr(item.name)
 
-func get_item_description(item_id: String, language: String = "en") -> String:
-	"""Gets item description in specified language"""
+## Опис предмета мовою гри (BACKLOG 31), як get_item_name().
+func get_item_description(item_id: String) -> String:
 	var item = get_item(item_id)
 	if item.is_empty():
 		return ""
-	
-	if language == "ru" and item.has("description_ru"):
-		return item.description_ru
-	return item.get("description", "")
+	return tr(item.description)
 
 func get_items_by_category(category: String) -> Array:
 	"""Gets list of item IDs by category"""

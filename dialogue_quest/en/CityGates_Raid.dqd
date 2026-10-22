@@ -1,0 +1,3 @@
+// [DRAFT] Bandit raid on the gate (BACKLOG feedback 18): the line is waiting on Sapega.
+say|GATE_GUARD|Bandits! Hold the gates!
+exit|

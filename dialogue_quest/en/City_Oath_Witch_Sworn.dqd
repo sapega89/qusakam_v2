@@ -1,0 +1,4 @@
+// [DRAFT] D281 — Morrow after the Dark Knight's oath (BACKLOG 22)
+say|OATH_WITCH|The Eclipse has heard you, Dark Knight.
+say|OATH_WITCH|Should you wish to forget what you learned — pay in coin, and you start anew.
+exit|

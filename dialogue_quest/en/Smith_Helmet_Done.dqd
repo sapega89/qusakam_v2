@@ -1,0 +1,4 @@
+// [DRAFT] D175, D311 (queue 8b) — Kusakam shows the helmet, the blacksmith pays as promised
+say|BLACKSMITH|Let's see... Rivets are crooked, but it holds. It'll take a hit — good enough for a first go.
+say|BLACKSMITH|The helmet's yours. And here's eighty-eight coins — every last one, like we agreed. A smith doesn't break his word.
+exit|

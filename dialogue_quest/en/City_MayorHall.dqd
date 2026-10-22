@@ -1,0 +1,8 @@
+// [DRAFT] D300 — the queue to see the mayor (BACKLOG 16, D255): Astrit, Urizen and Alisia are waiting, Kusakam takes the back of the line.
+say|KUSAKAM|Is this the line for the mayor?
+say|URIZEN|Since dawn itself, friend. The mayor sees one at a time — and he's in no hurry, it seems.
+say|ASTRIT|I've stood here longer than anyone. Whoever cuts ahead will regret it.
+say|ALISIA|Don't scare the new one. Get in line behind me, lizard. The cat doesn't bite... mostly.
+say|KUSAKAM|I just need to find out about the laboratory.
+say|URIZEN|Everyone here wants something from the mayor. A deal is a deal — wait your turn.
+exit|

@@ -1,0 +1,5 @@
+// [DRAFT] D304 — an unknown prisoner who looks like a bandit shouts an incantation in an invented language (Q64: not a real phrase).
+say|PRISONER|Hands off, butcher! You think it's you holding me? It's HIM who's held me all this time!
+say|SCIENTIST|Get him on the table.
+say|PRISONER|Varra-khess um-tal! Shakraz-iduun! Takhmi-rakh ash-zarra!
+exit|

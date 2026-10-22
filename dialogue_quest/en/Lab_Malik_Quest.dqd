@@ -1,0 +1,7 @@
+// [DRAFT] D305 — Malik asks to be led out of the laboratory; refusing is not possible.
+say|MALIK|Friends! My brave, my dear friends! Allow me to introduce myself: Malik, a humble merchant.
+say|MALIK|Get me out of here — and at my humble place every one of you gets gold. Lots of gold.
+say|KUSAKAM|We can barely stand ourselves. I can't promise anything...
+say|MALIK|Can't promise — then don't! Just go on ahead, and I'll follow, quiet as a shadow. Deal? Deal!
+say|URIZEN|The contract is sealed. The God of Contracts has heard.
+exit|

@@ -126,7 +126,7 @@ func _initialize() -> void:
 	ck(dm.is_dialogue_active() and player0.event, "the talk counts as a dialogue and holds the input")
 	await _until(func() -> bool: return cloud.visible, 2.0)
 	var cloud_label: Label = cloud.get_child(0).get_child(0)
-	ck(cloud_label.text.begins_with("Вдалині видно село"), "the stage tag is not spoken in the cloud ('%s')" % cloud_label.text.left(30))
+	ck(cloud_label.text.begins_with("A village in the distance"), "the stage tag is not spoken in the cloud ('%s')" % cloud_label.text.left(30))
 	# Набір — як у вікні (24 літери/с) і не пропускається: Enter посеред набору нічого не робить.
 	var first_line := cloud_label.text
 	await _press_accept_key()

@@ -1,0 +1,6 @@
+// [DRAFT] D140 — talk with the first bandit before the fight
+say|KUSAKAM|Where is everyone? What have you done to the village?
+say|BANDIT_1|None of your business. The boss said nobody gets out.
+say|KUSAKAM|Then I'll have to go through you.
+say|BANDIT_1|You can't beat me!
+exit|

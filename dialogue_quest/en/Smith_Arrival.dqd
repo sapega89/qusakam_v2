@@ -1,0 +1,5 @@
+// [DRAFT] D293 — the blacksmith comes out of the forge to meet Kusakam (BACKLOG 14)
+say|BLACKSMITH|You the one who ran off the bandits at the gate? Heard about it, heard — you hear everything in a forge.
+say|KUSAKAM|They took the relic. I have to get it back.
+say|BLACKSMITH|You won't get far in armor like that. Come here, I'll teach you the trade.
+exit|

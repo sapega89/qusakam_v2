@@ -90,9 +90,9 @@ func _initialize() -> void:
 	ck(box.visible, "the dialogue box is open")
 	_check_line(box, "", false)
 	await _advance(dm, 0)
-	_check_line(box, "Кусакам", true)
+	_check_line(box, "Kusakam", true)
 	await _advance(dm, 1)
-	_check_line(box, "Дед", true)
+	_check_line(box, "Grandfather", true)
 	var portrait: TextureRect = box.get_node("%Portrait")
 	ck(portrait.texture.resource_path.ends_with("old_man/portrait.tres"), "the grandfather's own face (%s)" % portrait.texture.resource_path)
 	await _advance(dm, 2)
@@ -102,8 +102,8 @@ func _initialize() -> void:
 	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245)")
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 6: await process_frame
-	_check_line(box, "Кусакам", true)
-	for who: Array in [["Уризен", "urizen"], ["Астрит", "astrit"], ["Алісия", "alisia"]]:
+	_check_line(box, "Kusakam", true)
+	for who: Array in [["Urizen", "urizen"], ["Astrit", "astrit"], ["Alisia", "alisia"]]:
 		await _advance(dm, 0)
 		_check_line(box, who[0], true)
 		ck(portrait.texture.resource_path.ends_with("%s/portrait.tres" % who[1]), "%s: the companion portrait (%s)" % [who[0], portrait.texture.resource_path])

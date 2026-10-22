@@ -125,9 +125,10 @@ func _initialize() -> void:
 	game.player.velocity = Vector2.ZERO
 	for i in 30: await process_frame
 	ck(village.get_current_state_name() == "OLD_MAN_HEALING", "the tree trigger starts the old man's scene")
-	var healing_lines: Array = DqdReader.lines("res://dialogue_quest/OldMan_Healing.dqd").map(func(l): return l.text)
-	ck(not healing_lines.any(func(t: String) -> bool: return t.contains("Длань") or t.contains("твоя черга")),
-			"OldMan_Healing no longer asks Kusakam to heal him (%s)" % [healing_lines])
+	# Українське джерело (DqdReader читає файл мовою гри — тут англійську).
+	var healing_source := FileAccess.get_file_as_string("res://dialogue_quest/OldMan_Healing.dqd")
+	ck(not healing_source.contains("Длань") and not healing_source.contains("твоя черга"),
+			"OldMan_Healing no longer asks Kusakam to heal him (%s)" % [healing_source])
 	await _drain(dm)
 	for i in 10: await process_frame
 	ck(started.has("OldMan_Outside") and started.has("OldMan_Healing"), "meeting and healing lines (%s)" % [started])

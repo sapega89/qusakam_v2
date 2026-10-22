@@ -37,8 +37,10 @@ static func available() -> Array:
 ## Тема з підставленими назвами кнопок для поточного пристрою.
 static func resolved(topic: Dictionary) -> Dictionary:
 	var out := topic.duplicate()
-	for field in ["text", "key", "hint"]:
-		out[field] = InputGlyphs.resolve(String(topic.get(field, "")))
+	# Текст і підпис — мовою гри (ключ — англійський текст з tutorial.json, BACKLOG 31); key — назва кнопки.
+	for field in ["text", "hint"]:
+		out[field] = InputGlyphs.resolve(TranslationServer.translate(String(topic.get(field, ""))))
+	out.key = InputGlyphs.resolve(String(topic.get("key", "")))
 	return out
 
 

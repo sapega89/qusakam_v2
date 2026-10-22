@@ -353,8 +353,8 @@ func _tree_status_text() -> String:
 	var oath: Dictionary = _skill_database.get_oath(_shown_oath)
 	var sworn: String = _skill_manager.get_oath()
 	if sworn.is_empty():
-		return tr("%s · Swear an oath in the City (level %d)") % [String(oath.tree), int(oath.level)]
-	return "%s · %s" % [String(oath.tree), tr("Your oath") if sworn == _shown_oath else tr("Sworn to another oath")]
+		return tr("%s · Swear an oath in the City (level %d)") % [tr(String(oath.tree)), int(oath.level)]
+	return "%s · %s" % [tr(String(oath.tree)), tr("Your oath") if sworn == _shown_oath else tr("Sworn to another oath")]
 
 
 # ── Стани вузлів (D332) ─────────────────────────────────────────────────────
@@ -465,7 +465,7 @@ func _refresh_detail() -> void:
 		return
 
 	_detail_name.text = definition.name if not definition.name.is_empty() else definition.id
-	var tree: String = _skill_database.class_name_trunk if definition.oath == "" else String(_skill_database.get_oath(definition.oath).name)
+	var tree: String = tr(_skill_database.class_name_trunk if definition.oath == "" else String(_skill_database.get_oath(definition.oath).name))
 	_detail_kind.text = tr("%s skill · %s") % [tr("Active") if definition.is_active() else tr("Passive"), tree]
 	_detail_description.text = definition.description
 	_add_fact(tr("Cost"), _cost_text(definition.jp_cost))
@@ -477,7 +477,7 @@ func _refresh_detail() -> void:
 	if rank > 0:
 		_add_fact(tr("Rank"), "%d / %d" % [rank, SkillManager.MAX_RANK])
 	if not definition.prerequisites.is_empty():
-		_add_fact(tr("Requires"), ", ".join(definition.prerequisites.map(func(id): return String(_skill_database.get_skill(id).name))))
+		_add_fact(tr("Requires"), ", ".join(definition.prerequisites.map(func(id): return tr(String(_skill_database.get_skill(id).name)))))
 	if not definition.required_weapons.is_empty():
 		_add_fact(tr("Weapon"), ", ".join(definition.required_weapons))
 	var effect := _effect_text(definition)
@@ -556,7 +556,7 @@ func _reason_text(skill_id: String) -> String:
 			return tr("Level too low: needs level %d.") % definition.required_level
 		SkillManager.Result.MISSING_PREREQUISITE:
 			var missing: Array = definition.prerequisites.filter(func(id): return not id in plan.planned_unlocked())
-			return tr("Needs %s first.") % ", ".join(missing.map(func(id): return String(_skill_database.get_skill(id).name)))
+			return tr("Needs %s first.") % ", ".join(missing.map(func(id): return tr(String(_skill_database.get_skill(id).name))))
 		SkillManager.Result.NO_OATH:
 			return tr("Swear an oath in the City (level %d).") % int(_skill_database.get_oath(definition.oath).level)
 		SkillManager.Result.OTHER_OATH:
@@ -570,7 +570,7 @@ func _refresh_hotbar(definition: SkillDefinition) -> void:
 	_hotbar_box.visible = definition.is_active() and _skill_manager.is_unlocked(definition.id)
 	for slot in _slot_buttons.size():
 		var held := _skill_manager.get_equipped_skill(slot)
-		var held_name := String(_skill_database.get_skill(held).name) if held != "" else tr("empty")
+		var held_name := tr(String(_skill_database.get_skill(held).name)) if held != "" else tr("empty")
 		_slot_buttons[slot].text = "%d · %s" % [slot + 1, held_name]
 		_slot_buttons[slot].set_pressed_no_signal(held == definition.id)
 
@@ -718,7 +718,7 @@ func _publish_details(skill_id: String) -> void:
 ## Один рядок для нижньої панелі: назва, головні числа, вердикт, кнопки.
 func _describe(definition: SkillDefinition) -> String:
 	var parts: Array[String] = []
-	parts.append(definition.name if not definition.name.is_empty() else definition.id)
+	parts.append(tr(definition.name) if not definition.name.is_empty() else definition.id)
 	parts.append(tr("Active") if definition.is_active() else tr("Passive"))
 	if definition.jp_cost > 0:
 		parts.append(tr("%d JP") % definition.jp_cost)

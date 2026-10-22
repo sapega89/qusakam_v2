@@ -3,7 +3,7 @@ extends SceneTree
 ## Journal sections — Quests, Characters, Bestiary (BACKLOG 13, D290), real input:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_journal_sections.gd
 ##   1. The Journal opens on Quests (tab pressed, current objective shown); Characters is empty at the start.
-##   2. A talk with the grandfather → Characters lists "Дед" with his role (mouse click on the tab).
+##   2. A talk with the grandfather → Characters lists "Grandfather" with his role (mouse click on the tab).
 ##   3. A bandit killed and a jackal seen → Bestiary (pad RB / key E) shows both, kills counted.
 ##   4. Q / LB go back; Enter on a tab selects it; D-pad up from the first row reaches the tabs.
 ##   5. The records are saved with the player; every DialogueQuest character is in the codex or not_listed.
@@ -61,7 +61,7 @@ func _initialize() -> void:
 	await Kit.drain(self)
 	journal = await _open_journal(sl)
 	await Kit.mouse(self, journal.get_node("%CharactersTab"))
-	ck(_rows(journal) == ["Дед"], "Characters: the grandfather (%s)" % [_rows(journal)])
+	ck(_rows(journal) == ["Grandfather"], "Characters: the grandfather (%s)" % [_rows(journal)])
 	ck(journal._detail_state.text == "KUSAKAM'S GRANDFATHER" and journal._detail_description.text.contains("lizardfolk"), "his role and text (%s)" % journal._detail_state.text)
 	ck(journal._list_header.text == "PEOPLE MET", "list caption (%s)" % journal._list_header.text)
 	await Kit.key(self, KEY_ESCAPE)

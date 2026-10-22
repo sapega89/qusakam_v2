@@ -196,7 +196,7 @@ func _fitting_items(slot_id: String) -> Array:
 		var data: Dictionary = item_database.get_item(item_id)
 		if int(bag[item_id]) <= 0 or not InventorySlotRules.fits(data, slot_id):
 			continue
-		out.append({"id": item_id, "name": item_database.get_item_name(item_id, "en"),
+		out.append({"id": item_id, "name": item_database.get_item_name(item_id),
 			"icon": item_database.get_item_icon(item_id), "count": bag[item_id],
 			"subtitle": "Equipped" if item_id == worn else ""})
 	return out
@@ -210,7 +210,7 @@ func _on_slot_focused(slot_id: String) -> void:
 	if item.is_empty():
 		bar.set_context_hint(InputGlyphs.resolve(tr("%s — empty. Press {ui_accept} to choose an item.") % _slot_caption(slot_id)))
 	else:
-		bar.set_context_hint("%s — %s" % [_slot_caption(slot_id), String(item.get("name", ""))])
+		bar.set_context_hint("%s — %s" % [_slot_caption(slot_id), item_database.get_item_name(String(item.id))])
 
 
 func _slot_caption(slot_id: String) -> String:
@@ -264,7 +264,7 @@ func _update_slots() -> void:
 			item_label.theme_type_variation = &"SlotItemEmpty"
 			dot.visible = false
 		else:
-			item_label.text = String(item.get("name", ""))
+			item_label.text = item_database.get_item_name(String(item.id))
 			item_label.theme_type_variation = &"SlotItemName"
 			dot.visible = true
 

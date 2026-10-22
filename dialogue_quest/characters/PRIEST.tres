@@ -6,4 +6,4 @@
 script = ExtResource("1_character")
 color = Color(0.9, 0.7, 0.2, 1)
 character_id = "PRIEST"
-character_name = "Жрец"
+character_name = "Priest"

@@ -133,8 +133,8 @@ func _load_inventory_items() -> void:
 func _make_entry(item_id: String, count: int, item_data: Dictionary) -> Dictionary:
 	return {
 		"id": item_id,
-		"name": item_database.get_item_name(item_id, "en"),
-		"desc": item_database.get_item_description(item_id, "en"),
+		"name": item_database.get_item_name(item_id),
+		"desc": item_database.get_item_description(item_id),
 		"icon": item_database.get_item_icon(item_id),
 		"count": count,
 		"item_data": item_data,

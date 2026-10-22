@@ -164,7 +164,7 @@ func _update_weapon_slots(character) -> void:
 		var item = equipped.get(slot_id)
 		if item == null:
 			continue
-		_weapon_slots.add_child(_make_weapon_box(String(item.get("name", ""))))
+		_weapon_slots.add_child(_make_weapon_box(ServiceLocator.get_item_database().get_item_name(String(item.id))))
 		shown += 1
 	if shown == 0:
 		_weapon_slots.add_child(_make_weapon_box(""))
