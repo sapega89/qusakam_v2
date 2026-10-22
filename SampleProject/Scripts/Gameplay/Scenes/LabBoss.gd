@@ -110,6 +110,7 @@ func _fight() -> void:
 	djinn.enemy_logic.leash_range = room_width
 	_set_djinn_awake(true)
 	djinn.enemy_logic.on_player_detected(game.player)  # смужка боса — одразу (BossEnemy)
+	EventBus.boss_fight_changed.emit(self, true)
 
 
 ## Джин переміг: підлітає до героя, забирає плащ (BACKLOG 17) — і звичайний Game Over.
@@ -118,6 +119,7 @@ func _on_hero_defeated() -> void:
 	state_run_id += 1
 	var player: Node2D = Game.get_singleton().player
 	player.defeat_handler = Callable()
+	EventBus.boss_fight_changed.emit(self, false)
 	djinn.set_deferred(&"process_mode", Node.PROCESS_MODE_DISABLED)
 	djinn.bar.hide()
 	var cs := Cutscene.new()
@@ -133,6 +135,7 @@ func _on_hero_defeated() -> void:
 
 func _on_djinn_died() -> void:
 	Game.get_singleton().player.defeat_handler = Callable()
+	EventBus.boss_fight_changed.emit(self, false)
 	Game.get_singleton().set_quest_flag("lab_boss_fight_complete", true)
 	_enter(State.OPEN)
 

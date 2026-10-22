@@ -26,6 +26,8 @@ var voices: Dictionary = {}
 var enemy_voice_pitch: Dictionary = {}
 ## Тип боса → {roar, shout, death}: події його голосу (D278, D310).
 var boss_voices: Dictionary = {}
+## Музика бою (D414): "fight" — бій героя, "boss" — бій з босом; AudioStream, завантажені при старті.
+var music: Dictionary = {}
 ## Події гри → звуки; сюди ж кличуть діалоги (бурмотіння) і NPC (привітання).
 @onready var hooks: Node = $SoundHooks
 ## Подія → Array[AudioStream], завантажені при старті: відсутній файл — помилка одразу, а не тиша в грі.
@@ -44,6 +46,12 @@ func _ready() -> void:
 	voices = data.voices
 	enemy_voice_pitch = data.enemy_voice_pitch
 	boss_voices = data.boss_voices
+	for use: String in data.music:
+		if use == "_comment":
+			continue
+		var track: AudioStream = load(data.music[use])
+		assert(track != null, "AudioManager: music %s → %s not found" % [use, data.music[use]])
+		music[use] = track
 	for event: String in events:
 		var list: Array[AudioStream] = []
 		for file: String in events[event].files:

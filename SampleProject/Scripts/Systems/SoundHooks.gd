@@ -20,6 +20,7 @@ func _ready() -> void:
 	EventBus.player_parried.connect(_on_parried)
 	EventBus.enemy_staggered.connect(func(_enemy: Node, _duration: float) -> void: AudioManager.play(&"stagger"))
 	EventBus.combat_state_changed.connect(_on_combat_state_changed)
+	EventBus.boss_fight_changed.connect(_on_boss_fight_changed)
 	EventBus.skill_cast_started.connect(_on_cast_started)
 	EventBus.skill_used.connect(_on_skill_used)
 	EventBus.skill_interrupted.connect(func(_id: String) -> void:
@@ -118,9 +119,61 @@ func _on_parried(_attacker: Node) -> void:
 
 ## Зброя з'являється в руці на початку бою і зникає після (D268); голі руки — без звуку.
 func _on_combat_state_changed(in_combat: bool) -> void:
+	_in_fight = in_combat
+	_update_music()
 	if GameGroups.get_player().combat.grip == &"bare":
 		return
 	AudioManager.play(&"draw" if in_combat else &"sheathe")
+
+
+# ── Музика бою (D414, music_plan slice 3) ─────────────────────────────────────
+
+## Герой у бою (combat_state_changed) і зала боса, де йде бій (boss_fight_changed); бос перекриває бій.
+var _in_fight: bool = false
+var _boss_arena: Node = null
+## Програвач, який дав ProjectMusicController.play_stream для бою; поки грає він — кімнатна музика відкладена.
+var _music_override: AudioStreamPlayer = null
+## Трек кімнати, до якого музика вертається після бою.
+var _room_music: AudioStream = null
+
+
+func _on_boss_fight_changed(arena: Node, active: bool) -> void:
+	if active:
+		_boss_arena = arena
+		if not arena.tree_exiting.is_connected(_on_boss_arena_left.bind(arena)):
+			arena.tree_exiting.connect(_on_boss_arena_left.bind(arena))
+	elif arena == _boss_arena:
+		_boss_arena = null
+	_update_music()
+
+
+## Зала зникла посеред бою (телепорт, вихід у меню, завантаження) — бою з босом більше немає.
+## Музику вже перемикає вузол Music наступної сцени.
+func _on_boss_arena_left(arena: Node) -> void:
+	if arena == _boss_arena:
+		_boss_arena = null
+
+
+## Одна музика через maaacks ProjectMusicController: бос → його трек, бій → бойовий, інакше — трек кімнати.
+## Вузол Music нової сцени контролер підхоплює сам; тоді його трек і є кімнатним.
+func _update_music() -> void:
+	var current: AudioStreamPlayer = ProjectMusicController.music_stream_player
+	if current != _music_override:
+		_music_override = null
+		_room_music = current.stream if is_instance_valid(current) else null
+	var track: AudioStream = null
+	if _boss_arena != null:
+		track = AudioManager.music["boss"]
+	elif _in_fight:
+		track = AudioManager.music["fight"]
+	if track == null:
+		if _music_override != null:
+			assert(_room_music != null, "SoundHooks: fight music ended with no room Music to return to")
+			_music_override = null
+			ProjectMusicController.play_stream(_room_music)
+		return
+	if _music_override == null or _music_override.stream != track:
+		_music_override = ProjectMusicController.play_stream(track)
 
 
 # ── Кімната: петля атмосфери й двері (D276) ────────────────────────────────────
@@ -137,6 +190,7 @@ func _on_room_entered(room_name: String) -> void:
 	var entry: Dictionary = AudioManager.room(room_name)
 	if not is_instance_valid(ambience):
 		_room = ""  # гра почалась заново (петля пішла разом зі старою Game)
+		_in_fight = false  # бій старого героя пішов разом із ним
 	elif AudioManager.room(_room).interior != entry.interior:
 		AudioManager.play(&"door")
 	_room = room_name

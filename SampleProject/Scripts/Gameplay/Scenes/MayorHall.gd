@@ -103,6 +103,7 @@ func _fight() -> void:
 	game.player.defeat_handler = _on_hero_defeated
 	collector.anim_player.process_mode = Node.PROCESS_MODE_INHERIT
 	collector.process_mode = Node.PROCESS_MODE_INHERIT
+	EventBus.boss_fight_changed.emit(self, true)
 
 
 ## Програш (D300): Game Over немає — Збирач несе Кусакама в лабораторію.
@@ -138,6 +139,7 @@ func _on_collector_died() -> void:
 func _end_fight() -> void:
 	current_state = State.TRANSPORT
 	Game.get_singleton().player.defeat_handler = Callable()
+	EventBus.boss_fight_changed.emit(self, false)
 
 
 ## Темрява вже настала: герой на ногах, у лабораторії. Після телепорту зали немає — жодного await.
