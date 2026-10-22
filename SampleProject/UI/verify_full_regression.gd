@@ -138,10 +138,10 @@ func _initialize() -> void:
 	# "Path Action" / "Talent" НЕ в списку: на екрані Status це схвалені порожні
 	# картки-структура з Figma без вигаданого вмісту (рішення фази Status).
 	# Заборонені тут — відхилені імена кодексу і відкладені рядки Settings.
-	# Frame Rate Limit і Resolution — уже не відкладені (BACKLOG 41, verify_settings_graphics.gd); Borderless — settings plan slice 1.
+	# Frame Rate Limit і Resolution — уже не відкладені (BACKLOG 41, verify_settings_graphics.gd); Borderless — settings plan slice 1;
+	# Screen Brightness, Ambient, Text Speed, Screen Shake — settings-2 (D425–D428, verify_settings [3], [22]).
 	var forbidden := ["Lyra", "Ashveil", "Valen", "Selene",
-		"All Chapters", "Screen Brightness",
-		"Ambient", "Damage Numbers", "Screen Shake", "Text Speed"]
+		"All Chapters", "Damage Numbers"]
 	var leaked: Array = []
 	for term in forbidden:
 		for text in texts:

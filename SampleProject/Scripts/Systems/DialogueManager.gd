@@ -320,6 +320,7 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 	bubble.tree_exiting.connect(_on_bubble_gone.bind(bubble))
 	Game.get_singleton().player.add_child(bubble)
 	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
+	# D425: Text Speed — і набір, і час репліки (читається щоразу: зміна в меню паузи діє з наступної репліки).
 	var letters_per_second: float = current_dialogue_box.settings.letters_per_second
 	var speaker := [""]  # мовець поточної репліки для бурмотіння (лямбда бачить масив, не локальну змінну)
 	bubble.typed.connect(func(typed_text: String, count: int) -> void:
@@ -331,7 +332,7 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 		if talk:
 			# Облачко висить над героєм — у такій розмові говорить лише він (або ремарка того, що він бачить).
 			assert(line.speaker == "" or line.speaker in PLAYER_SPEAKERS, "DialogueManager: cloud talk %s has speaker %s" % [path, line.speaker])
-			await bubble.type_out(text.length() / letters_per_second * bubble_time_scale)
+			await bubble.type_out(text.length() / (letters_per_second * SaveSystem.settings_module.text_speed_factor()) * bubble_time_scale)
 			_bubble_skip = false
 			while not _bubble_skip and _bubble == bubble:
 				await get_tree().process_frame
@@ -339,7 +340,8 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 				return
 			continue
 		# process_always = false: відкрите меню (пауза) тримає репліку.
-		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false)
+		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) / SaveSystem.settings_module.text_speed_factor()
+				* bubble_time_scale, false)
 		_bubble_skip = false
 		while timer.time_left > 0.0 and not _bubble_skip and _bubble == bubble:
 			await get_tree().process_frame
@@ -389,7 +391,8 @@ func _run_chatter(id: int, bubble: Node2D, lines: Array[Dictionary]) -> void:
 			return  # мовець пішов зі сценою або розмова закрила облачко
 		await bubble.show_line(_stage_tag.sub(line.text, ""))
 		# process_always = false: відкрите меню (пауза) тримає репліку.
-		await get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) * bubble_time_scale, false).timeout
+		await get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) / SaveSystem.settings_module.text_speed_factor()
+				* bubble_time_scale, false).timeout
 	if _chatter.get(id) == bubble:
 		_drop_chatter(id)
 

@@ -165,6 +165,13 @@ const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320
 const SETTINGS_HEADER_ICON := 64
 const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
+# D428: зразки під Screen Brightness — компас ледь видно на чорному і на білому; правильна яскравість — видно обидва.
+const SETTINGS_PREVIEW_SIZE := Vector2(208, 96)
+const SETTINGS_PREVIEW_ICON := 40
+const SETTINGS_PREVIEW_DARK_BG := Color("050508")
+const SETTINGS_PREVIEW_DARK_MARK := Color("1a1a20")
+const SETTINGS_PREVIEW_BRIGHT_BG := Color("f5f5f5")
+const SETTINGS_PREVIEW_BRIGHT_MARK := Color("dedede")
 # Figma: UI/Scrollbar 222:4768 — 10px, без заокруглень
 const SCROLLBAR_WIDTH := 10
 

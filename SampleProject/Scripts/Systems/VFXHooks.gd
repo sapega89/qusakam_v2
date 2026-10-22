@@ -183,8 +183,11 @@ func _on_guard(attacker: Node2D, parry: bool) -> void:
 
 
 ## Поштовх камери в бік [param dir] на [param strength] px і згасання туди-сюди за KICK_TIME (реальних с — грає й
-## під час завмирання, тож удар читається одразу).
+## під час завмирання, тож удар читається одразу). Settings → Screen Shake Off — поштовху немає (D426); вібрація
+## геймпада — не тряска екрана, вона лишається.
 func _kick_camera(dir: Vector2, strength: float) -> void:
+	if not SaveSystem.settings_module.screen_shake_enabled():
+		return
 	var camera := get_viewport().get_camera_2d()
 	if dir == Vector2.ZERO:
 		dir = Vector2.DOWN

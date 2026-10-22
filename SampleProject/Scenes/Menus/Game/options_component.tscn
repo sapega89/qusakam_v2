@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/input_options_menu.tscn" id="5_input_menu"]
 [ext_resource type="Texture2D" uid="uid://cuqbkdkbb8jh1" path="res://SampleProject/Assets/UI/Icons/settings_game.svg" id="6_game"]
 [ext_resource type="Texture2D" uid="uid://d08616hgr86bu" path="res://SampleProject/Assets/UI/Icons/settings_controls.svg" id="7_controls"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/settings_compass.svg" id="8_compass"]
 
 [node name="OptionsComponent" type="Control" unique_id=159623540]
 layout_mode = 3
@@ -142,3 +143,7 @@ texture = ExtResource("6_game")
 [node name="controls" type="TextureRect" parent="TabIcons" unique_id=1483983526]
 visible = false
 texture = ExtResource("7_controls")
+
+[node name="compass" type="TextureRect" parent="TabIcons" unique_id=1483983527]
+visible = false
+texture = ExtResource("8_compass")

@@ -4,6 +4,7 @@ extends Node
 ## Звук — це подія з Resources/Data/sound_events.json: шина, файли (грає випадковий), гучність, висота.
 ## Події гри на звуки перекладає SoundHooks (дочірній вузол), рух героя — PlayerMover.
 ## Шини: Master → Music, SFX; Ambience і Voice ідуть у SFX — повзунок «Sound Effects» керує й ними (D274).
+## Ambience має ще й власний повзунок «Ambient» (D427): поверх мікшу шини з default_bus_layout.tres (−6 dB).
 
 signal volume_changed(bus_name: String, volume: float)
 ## Кожен програний звук — для verify_audio.gd і налагодження.
@@ -16,6 +17,9 @@ const AUDIO_ROOT := "res://SampleProject/Assets/Audio/"
 var _master_bus_index: int = -1
 var _music_bus_index: int = -1
 var _sfx_bus_index: int = -1
+var _ambience_bus_index: int = -1
+## Гучність Ambience з default_bus_layout.tres — це «100» повзунка Ambient (D427), мікс не змінюється.
+var _ambience_base_db: float = 0.0
 
 ## Подія → {bus, files, volume_db, pitch, jitter}; кімната → {ambience, surface, interior}.
 var events: Dictionary = {}
@@ -38,6 +42,8 @@ func _ready() -> void:
 	_master_bus_index = AudioServer.get_bus_index("Master")
 	_music_bus_index = AudioServer.get_bus_index("Music")
 	_sfx_bus_index = AudioServer.get_bus_index("SFX")
+	_ambience_bus_index = AudioServer.get_bus_index("Ambience")
+	_ambience_base_db = AudioServer.get_bus_volume_db(_ambience_bus_index)
 	for bus in ["Music", "SFX", "Ambience", "Voice"]:
 		assert(AudioServer.get_bus_index(bus) >= 0, "AudioManager: bus %s missing from default_bus_layout.tres" % bus)
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(EVENTS_PATH))
@@ -124,6 +130,11 @@ func set_sfx_volume(volume: float) -> void:
 	AudioServer.set_bus_volume_db(_sfx_bus_index, linear_to_db(volume))
 	volume_changed.emit("SFX", volume)
 
+## Установить громкость Ambience (0.0 - 1.0) поверх мікшу шини (D427).
+func set_ambient_volume(volume: float) -> void:
+	AudioServer.set_bus_volume_db(_ambience_bus_index, _ambience_base_db + linear_to_db(volume))
+	volume_changed.emit("Ambience", volume)
+
 func get_master_volume() -> float:
 	return db_to_linear(AudioServer.get_bus_volume_db(_master_bus_index))
 
@@ -133,6 +144,9 @@ func get_music_volume() -> float:
 func get_sfx_volume() -> float:
 	return db_to_linear(AudioServer.get_bus_volume_db(_sfx_bus_index))
 
+func get_ambient_volume() -> float:
+	return db_to_linear(AudioServer.get_bus_volume_db(_ambience_bus_index) - _ambience_base_db)
+
 ## Применить настройки громкости из словаря
 func apply_volume_settings(settings: Dictionary) -> void:
 	if settings.has("master_volume"):
@@ -141,3 +155,5 @@ func apply_volume_settings(settings: Dictionary) -> void:
 		set_music_volume(settings.music_volume)
 	if settings.has("sfx_volume"):
 		set_sfx_volume(settings.sfx_volume)
+	if settings.has("ambient_volume"):
+		set_ambient_volume(settings.ambient_volume)
