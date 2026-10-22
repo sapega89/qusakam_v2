@@ -89,6 +89,11 @@ func _show_banner(hint_key: String, force: bool, sticky: bool) -> void:
 	if is_showing and current_hint == hint_key:
 		_animate_out()
 
+## Текст підказки складається один раз у _show_banner; при зміні мови показану підказку перекладаємо заново.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_showing:
+		hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(current_hint)).text
+
 func _animate_in() -> void:
 	"""Animates hint sliding in from bottom"""
 	visible = true
