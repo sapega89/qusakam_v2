@@ -134,6 +134,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	# A / Enter на іншій вкладці — її кнопка натиснеться на відпусканні й перемкне вкладку; у вміст — лише з активної.
 	var owner: Control = get_viewport().gui_get_focus_owner()
 	var other_tab: bool = owner is Button and owner.get_parent() == _menu_node(tabs_container_path) and not owner.button_pressed
+	# Фокус уже у вмісті після кліку миші (D348 лишає роутер у "Tabs") — Enter тисне саму цю кнопку,
+	# а не перекидає фокус на перший контрол, куди потім падало відпускання (B95).
+	var in_content: bool = owner != null and _menu_node(panels_container_path).is_ancestor_of(owner)
+	if event.is_action_pressed("ui_accept") and in_content:
+		return
 	if event.is_action_pressed("ui_right") or (event.is_action_pressed("ui_accept") and not other_tab):
 		focus_content()
 		get_viewport().set_input_as_handled()
