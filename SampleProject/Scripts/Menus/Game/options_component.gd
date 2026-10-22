@@ -196,7 +196,8 @@ func _build_rows() -> void:
 					DisplayManager.FPS_LIMITS.find(int(_cfg_get("fps_limit"))), _on_fps_limit_changed)
 			_add_separator()
 			# D428: гамма поверх світу й UI (DisplayManager); зразки DARK / BRIGHT — під рядком.
-			_add_slider_row("Screen Brightness", int(_cfg_get("brightness")), _on_brightness_changed)
+			_add_slider_row("Screen Brightness", int(_cfg_get("brightness")), _on_brightness_changed,
+					UITokens.SETTINGS_CHOICE_ROW_HEIGHT)  # висота рядків вкладки Display
 			_add_brightness_preview()
 		"audio":
 			_add_volume_row("Master Volume", "master_volume")
@@ -345,8 +346,9 @@ func _add_volume_row(label_text: String, key: String) -> void:
 
 
 ## Figma 17:457 — мінус · 320px доріжка · плюс · значення 0–100. [param on_change] отримує ціле 0–100.
-func _add_slider_row(label_text: String, value: int, on_change: Callable) -> void:
-	var row := _make_row(label_text, UITokens.SETTINGS_SLIDER_ROW_HEIGHT)
+func _add_slider_row(label_text: String, value: int, on_change: Callable,
+		height: int = UITokens.SETTINGS_SLIDER_ROW_HEIGHT) -> void:
+	var row := _make_row(label_text, height)
 	var group := HBoxContainer.new()
 	group.name = "Slider"
 	group.add_theme_constant_override("separation", UITokens.SPACE_LG)
@@ -395,16 +397,11 @@ func _add_slider_row(label_text: String, value: int, on_change: Callable) -> voi
 ## D428: зразки під Screen Brightness — компас на чорному (DARK) і на білому (BRIGHT). Вони під тим самим
 ## шаром яскравості, що й уся гра, тож показують її наживо: добра яскравість — видно обидва компаси.
 func _add_brightness_preview() -> void:
-	var margin := MarginContainer.new()
-	margin.name = "BrightnessPreviewRow"
-	margin.add_theme_constant_override("margin_left", UITokens.SETTINGS_ROW_PAD_H)
-	margin.add_theme_constant_override("margin_right", UITokens.SETTINGS_ROW_PAD_H)
-	margin.add_theme_constant_override("margin_bottom", UITokens.SPACE_LG)
+	# Не MarginContainer: це не рядок налаштування (тести рядків рахують саме MarginContainer).
 	var swatches := HBoxContainer.new()
 	swatches.name = "BrightnessPreview"
 	swatches.alignment = BoxContainer.ALIGNMENT_END
 	swatches.add_theme_constant_override("separation", UITokens.SPACE_LG)
-	margin.add_child(swatches)
 	for spec in [["Dark", "DARK", UITokens.SETTINGS_PREVIEW_DARK_BG, UITokens.SETTINGS_PREVIEW_DARK_MARK],
 			["Bright", "BRIGHT", UITokens.SETTINGS_PREVIEW_BRIGHT_BG, UITokens.SETTINGS_PREVIEW_BRIGHT_MARK]]:
 		var column := VBoxContainer.new()
@@ -436,7 +433,10 @@ func _add_brightness_preview() -> void:
 		caption.theme_type_variation = &"SettingsEyebrow"
 		column.add_child(caption)
 		swatches.add_child(column)
-	_list.add_child(margin)
+	var pad := Control.new()  # правий відступ рядків, як у _make_row
+	pad.custom_minimum_size.x = UITokens.SETTINGS_ROW_PAD_H - UITokens.SPACE_LG
+	swatches.add_child(pad)
+	_list.add_child(swatches)
 
 
 ## Мови беремо з LocalizationManager — жодних вигаданих локалей.

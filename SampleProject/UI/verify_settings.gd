@@ -684,12 +684,13 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 
 
 const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")
-const DIALOGUE_BOX := preload("res://SampleProject/Scenes/UI/dialogue_box.tscn")
+## load(), не preload: GameDialogueBox.gd читає автолоад SaveSystem, а скрипт тесту компілюється ще до автолоадів.
+const DIALOGUE_BOX := "res://SampleProject/Scenes/UI/dialogue_box.tscn"
 
 
 ## Скільки літер вікно діалогу гри набирає за 1 с (D254 / D425) — окремий екземпляр, годинник крутить тест.
 func _typed_in_one_second() -> int:
-	var box: Node = DIALOGUE_BOX.instantiate()
+	var box: Node = (load(DIALOGUE_BOX) as PackedScene).instantiate()
 	root.add_child(box)
 	box.set_process(false)
 	box.settings.letters_per_second = 24.0  # як у dialogue_box_settings.tres (аддон міг лишити тег [speed])
