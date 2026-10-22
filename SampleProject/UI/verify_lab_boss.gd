@@ -130,8 +130,9 @@ func _hall_track() -> AudioStream:
 	return null
 
 func _room_music_back(label: String) -> void:
-	await _until(func() -> bool: return _music() == _hall_track(), 8.0)
+	await _until(func() -> bool: return _music() == _hall_track(), 1.0)
 	ck(_music() == _hall_track(), "%s: the hall's own Music is back (%s)" % [label, _music().resource_path if _music() else "none"])
+	ck(not game.player.combat.in_combat() and game.player.weapon_view.sheathed, "%s: the fight is over in the cutscene, the weapon sheathed (B116)" % label)
 
 func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.state == "FIGHT", "%s: fight state (%s)" % [label, s.state])
