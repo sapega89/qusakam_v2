@@ -29,6 +29,8 @@ var _hold_later: Callable
 var _shake: Tween
 ## Утримали пропуск: сцена домотується, голоси (voice) вже не звучать.
 var skipping := false
+## Гра пішла посеред сцени (вихід у меню, завантаження): сцена скінчилася разом із героєм (B92).
+var _abandoned := false
 
 
 func _init() -> void:
@@ -40,6 +42,7 @@ func _init() -> void:
 	_dm = ServiceLocator.get_dialogue_manager()
 	_hold_later = func(_id: String) -> void: hold.call_deferred()
 	_dm.dialogue_started.connect(_hold_later)
+	player.tree_exiting.connect(_abandon)
 	for layer_name in [^"UI", ^"UICanvas"]:
 		var layer: CanvasLayer = game.get_node(layer_name)
 		if layer.visible:
@@ -48,6 +51,8 @@ func _init() -> void:
 	_prompt = SKIP_PROMPT.instantiate()
 	_prompt.skip_requested.connect(_skip)
 	_tree.root.add_child(_prompt)
+	# Гра пішла — підказка з нею. Звільнена раніше (end(), вихід із програми) — і підписка зникла сама (B92).
+	player.tree_exiting.connect(_prompt.queue_free)
 	hold()
 
 
@@ -68,6 +73,8 @@ func say(dialogue_id: String, in_cloud: bool = false) -> void:
 	_dm.start_dialogue(path, in_cloud)
 	while true:
 		var finished: String = await _dm.dialogue_finished
+		if _abandoned:
+			return  # та сама розмова в наступній грі — героя цієї сцени вже немає
 		if finished == path or finished == dialogue_id:
 			break
 	hold()
@@ -141,17 +148,31 @@ func shake(strength: float, seconds: float) -> void:
 
 ## Кінець сцени: камера за героєм, HUD і керування назад, звичайна швидкість.
 func end() -> void:
-	if _shake and _shake.is_valid():
-		_shake.kill()
+	player.tree_exiting.disconnect(_abandon)
 	camera.offset = Vector2.ZERO
 	if camera.top_level:
 		attach_camera()
+	_prompt.free()  # не queue_free: до кінця кадру підказка гортала б уже наступну розмову (CityGates_Fight)
+	_release()
+	player.set_movement_enabled(true)
+
+
+## Герой іде з дерева разом із грою, а end() так і не настав: сцена відпускає все, що тримає поза грою —
+## підписку на автозавантаження DialogueManager (наступна гра інакше кликала б hold() на звільненому герої),
+## швидкість пропуску; підказку в root звільняє її власна підписка на tree_exiting (B92).
+func _abandon() -> void:
+	_abandoned = true
+	_release()
+
+
+func _release() -> void:
+	if _shake and _shake.is_valid():
+		_shake.kill()
 	_dm.dialogue_started.disconnect(_hold_later)
 	for layer in _hud:
 		layer.visible = true
-	_prompt.free()  # не queue_free: до кінця кадру підказка гортала б уже наступну розмову (CityGates_Fight)
+	_hud.clear()
 	Engine.time_scale = 1.0
-	player.set_movement_enabled(true)
 
 
 func _skip() -> void:

@@ -1853,8 +1853,8 @@ msgstr "Restores 75 HP."
 msgid "Restores 125 HP."
 msgstr "Restores 125 HP."
 
-msgid "Restores 30 MP."
-msgstr "Restores 30 MP."
+msgid "Restores 30 SP."
+msgstr "Restores 30 SP."
 
 msgid "A medicinal herb used in potion making."
 msgstr "A medicinal herb used in potion making."

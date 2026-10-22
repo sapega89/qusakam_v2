@@ -321,17 +321,17 @@
 		{
 			"id": "potion",
 			"name": "Potion",
-			"description": "Restores 50 HP.",
+			"description": "Restores 75 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "common",
 			"stackable": true,
 			"max_stack": 99,
-			"sell_price": 10,
-			"buy_price": 20,
+			"sell_price": 20,
+			"buy_price": 40,
 			"effect": {
 				"type": "heal",
-				"value": 50
+				"value": 75
 			},
 			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
@@ -355,17 +355,17 @@
 		{
 			"id": "potion_lesser",
 			"name": "Lesser Potion",
-			"description": "Restores 75 HP.",
+			"description": "Restores 50 HP.",
 			"type": "consumable",
 			"category": "healing",
 			"rarity": "common",
 			"stackable": true,
 			"max_stack": 99,
-			"sell_price": 20,
-			"buy_price": 40,
+			"sell_price": 10,
+			"buy_price": 20,
 			"effect": {
 				"type": "heal",
-				"value": 75
+				"value": 50
 			},
 			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/potion.png"
 		},
@@ -389,7 +389,7 @@
 		{
 			"id": "ether",
 			"name": "Ether",
-			"description": "Restores 30 MP.",
+			"description": "Restores 30 SP.",
 			"type": "consumable",
 			"category": "mana",
 			"rarity": "common",

@@ -12,9 +12,9 @@ class_name Chest
 
 signal opened(contents: Dictionary)
 
-## Поза героя, поки предмет над головою. Кадрів Raise (SampleProject/Sprites/Player/Raise/, арт A1 «hero_raise»)
-## ще нема в репо — коли ляжуть: анімація "Raise" у Player.tscn і тут &"Raise". Більше нічого міняти не треба.
-const HERO_POSE := &"Idle"
+## Поза героя, поки предмет над головою: анімація "Raise" у Player.tscn (арт A1 «hero_raise»: Raise/1 нахил,
+## Raise/3 руки над головою — тримається до кінця; Raise/2 у репо немає, B91).
+const HERO_POSE := &"Raise"
 ## Скільки предмет висить над героєм, перш ніж відкриється модалка.
 const RAISE_SECONDS := 1.2
 

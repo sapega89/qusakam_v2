@@ -6,7 +6,8 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_village_house.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
-## Двері — Area2D, а не RoomDoor: class_name тягне Game.gd, а той не компілюється до автозавантажень (тести --script).
+## Двері — Area2D, а не RoomDoor: class_name тягне Game.gd, а той звертається до автозавантаження-сцени MetSys,
+## якої ще немає, коли компілюється --script: "Identifier not found: MetSys" (B93).
 const VILLAGE := "res://SampleProject/Maps/Village.tscn"
 
 var fails: Array[String] = []

@@ -1854,7 +1854,7 @@ msgstr "Відновлює 75 HP."
 msgid "Restores 125 HP."
 msgstr "Відновлює 125 HP."
 
-msgid "Restores 30 MP."
+msgid "Restores 30 SP."
 msgstr "Відновлює 30 SP."
 
 msgid "A medicinal herb used in potion making."
