@@ -55,9 +55,12 @@ Branch `cloud/living-world` (from `origin/feature/backlog`). Godot 4.6.2 on Linu
   - each decor scene loops several frames and changes frame by itself in the tree;
   - every cloud layer in both backdrops and `HighClouds` has autoscroll + repeat + parallax < 1, and on screen it moved
     4–14 px in 1.5 s with no input.
-- Full suite `Scripts/Tools/run_verify.sh`: see below.
 
-SUITE_RESULT
+Full suite (`Scripts/Tools/run_verify.sh`): **86 PASS, 2 FAIL**.
+- `verify_game_ui_theme`: no RESULT line. This failure was expected (the task brief says so).
+- `verify_audio`: `RESULT: 1 FAIL` inside the suite run, but **ALL PASS** when it runs alone right after. It touches no
+  scene from this branch (no backdrop, map or decor). It reads as timing-dependent under the suite and is not caused by
+  this change. If it repeats, it's a new B-ID for the register owner.
 
 ## D-ID text for the register (another branch edits the register)
 - **D-new (living world, BACKLOG 7 + 19):** Each outdoor room has one shared foreground plane
