@@ -166,6 +166,7 @@ const SETTINGS_STEPPER_WIDTH := 280
 const SETTINGS_STEPPER_BOX := 32  # квадратна рамка кнопок −/+ і ‹/› (B22)
 const SETTINGS_SEGMENT_MIN_WIDTH := 120
 const SETTINGS_SLIDER_WIDTH := 320
+const SETTINGS_READOUT_WIDTH := 36  # 0–100 праворуч від повзунка
 const SETTINGS_HEADER_ICON := 64
 const SETTINGS_ON_ACCENT := Color("050508")  # текст на акцентному сегменті
 # D428: зразки під Screen Brightness — компас ледь видно на чорному і на білому; правильна яскравість — видно обидва.

@@ -466,6 +466,27 @@ func _initialize() -> void:
 		"res://SampleProject/Scenes/Menus/Game/options_component.tscn", FileAccess.READ).get_as_text()
 	ck(scene_text.find("theme_override_colors") == -1, "no one-off colour overrides in the scene")
 	ck(scene_text.find("FontFile") == -1, "no embedded one-off fonts")
+	# D117 (#50 order 6): рядки — копії шаблонів зі сцени, розміри шаблонів — з токенів.
+	ck(src.find(".new()") == -1, "D117: no row node or stylebox is built in options_component.gd")
+	for spec in [[^"%Tab", Vector2(UITokens.SETTINGS_SIDEBAR_WIDTH, UITokens.SETTINGS_TAB_HEIGHT)],
+			[^"%Tab/Pointer", Vector2.ONE * UITokens.SETTINGS_POINTER],
+			[^"%SegmentRow", Vector2(0, UITokens.SETTINGS_CHOICE_ROW_HEIGHT)],
+			[^"%SegmentRow/Row/Segments/Cells/Cell0", Vector2(UITokens.SETTINGS_SEGMENT_MIN_WIDTH, 0)],
+			[^"%StepperRow/Row/Stepper/Prev", Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX],
+			[^"%StepperRow/Row/Stepper/Value", Vector2(UITokens.SETTINGS_STEPPER_WIDTH, 0)],
+			[^"%StepperRow/Row/Stepper/Next", Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX],
+			[^"%SliderRow", Vector2(0, UITokens.SETTINGS_SLIDER_ROW_HEIGHT)],
+			[^"%SliderRow/Row/Slider/Minus", Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX],
+			[^"%SliderRow/Row/Slider/Value", Vector2(UITokens.SETTINGS_SLIDER_WIDTH, 0)],
+			[^"%SliderRow/Row/Slider/Plus", Vector2.ONE * UITokens.SETTINGS_STEPPER_BOX],
+			[^"%SliderRow/Row/Slider/Readout", Vector2(UITokens.SETTINGS_READOUT_WIDTH, 0)],
+			[^"%BrightnessPreview/Dark/Swatch", UITokens.SETTINGS_PREVIEW_SIZE],
+			[^"%BrightnessPreview/Bright/Swatch", UITokens.SETTINGS_PREVIEW_SIZE],
+			[^"%BrightnessPreview/Dark/Swatch/Compass", Vector2.ONE * UITokens.SETTINGS_PREVIEW_ICON]]:
+		var size: Vector2 = (opts.get_node(spec[0]) as Control).custom_minimum_size
+		ck(size == spec[1], "D117: template %s is %s, tokens say %s" % [spec[0], size, spec[1]])
+	var tab_box: Vector2 = (opts._tab_buttons["display"].button as Button).custom_minimum_size  # %Tab/Button, перейменована
+	ck(tab_box == Vector2.ONE * UITokens.SETTINGS_TAB_BOX, "D117: tab button is %s, tokens say %d" % [tab_box, UITokens.SETTINGS_TAB_BOX])
 
 	print("[13] bottom bar hints are truthful")
 	var bar: Node = get_first_node_in_group("ui_bottom_bar")

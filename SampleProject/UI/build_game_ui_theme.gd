@@ -205,6 +205,7 @@ func _setup_label_variations(theme: Theme) -> void:
 		"SettingsHeading": [_font_bold, UITokens.SIZE_DISPLAY, UITokens.TEXT_PRIMARY],
 		"SettingsRowLabel": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
 		"SettingsValue": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SettingsValueDisabled": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_DISABLED],  # Resolution не у Windowed
 		"SettingsHint": [_font_regular, UITokens.SIZE_BODY_SM, UITokens.TEXT_SECONDARY],
 		# Figma UI/Modal/Confirm (258:5332) — заголовок над описом (B34)
 		"ModalTitle": [_font_regular, UITokens.SIZE_MODAL_TITLE, UITokens.TEXT_PRIMARY],
@@ -254,6 +255,7 @@ func _setup_button_variations(theme: Theme) -> void:
 	_settings_segment(theme)
 	_settings_stepper(theme)
 	_settings_sidebar_tab(theme)
+	_settings_rows(theme)
 	_misc_row(theme)
 
 
@@ -342,6 +344,29 @@ func _settings_stepper(theme: Theme) -> void:
 	theme.set_stylebox("pressed", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
 	theme.set_stylebox("disabled", t, _box(Color(0, 0, 0, 0), UITokens.TEXT_DISABLED, UITokens.BORDER_WIDTH, pad, pad))
 	theme.set_stylebox("focus", t, _focus_ring(pad, pad))
+
+
+## D117: шаблони рядків Settings (options_component.tscn) — відступи, лінія між рядками, зразки яскравості.
+func _settings_rows(theme: Theme) -> void:
+	theme.set_type_variation("SettingsRow", "MarginContainer")
+	theme.set_constant("margin_left", "SettingsRow", UITokens.SETTINGS_ROW_PAD_H)
+	theme.set_constant("margin_right", "SettingsRow", UITokens.SETTINGS_ROW_PAD_H)
+	theme.set_type_variation("SettingsSeparator", "HSeparator")
+	var line := StyleBoxLine.new()
+	line.color = UITokens.BORDER
+	line.thickness = UITokens.SETTINGS_ROW_GAP
+	theme.set_stylebox("separator", "SettingsSeparator", line)
+	theme.set_constant("separation", "SettingsSeparator", UITokens.SETTINGS_ROW_GAP)
+	for spec in [["SettingsControlGroup", "HBoxContainer", UITokens.SPACE_LG],
+			["SettingsSegmentCells", "HBoxContainer", 0],
+			["SettingsPreviewColumn", "VBoxContainer", UITokens.SPACE_XS]]:
+		theme.set_type_variation(spec[0], spec[1])
+		theme.set_constant("separation", spec[0], spec[2])
+	# D428: зразок DARK / BRIGHT — заливка й 1px рамка.
+	for spec in [["SettingsPreviewDark", UITokens.SETTINGS_PREVIEW_DARK_BG],
+			["SettingsPreviewBright", UITokens.SETTINGS_PREVIEW_BRIGHT_BG]]:
+		theme.set_type_variation(spec[0], "PanelContainer")
+		theme.set_stylebox("panel", spec[0], _box(spec[1], UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0))
 
 
 ## Figma UI/Settings Tab (117:835) — 36×36, активний має акцентну рамку,
