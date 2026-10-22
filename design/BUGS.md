@@ -72,13 +72,6 @@ the history, this note keeps only what is open.
 - **Severity:** blocker for Agility being worth a point
 - **Found:** 2026-10-21, `cloud/skills-screen`
 
-### B86 — English UI shows Cyrillic speaker names in the dialogue box
-- **Where:** `dialogue_quest/characters/*.tres` (`Дед`, `Торговец`, `Разбойник`, …).
-- **Expected:** English names in the English locale (BACKLOG 31).
-- **Got:** Russian / Ukrainian names, now centred and prominent (D321).
-- **Severity:** visual (content) — goes with BACKLOG 31
-- **Found:** 2026-10-21, `cloud/dialogue-ui`
-
 ### B90 — A pressed (selected) `ListRow` shows no focus ring
 - **Where:** `SampleProject/UI/build_game_ui_theme.gd` `ListRow` focus (D329).
 - **Expected:** the cursor is visible on the selected row too.
@@ -133,6 +126,35 @@ the history, this note keeps only what is open.
 - **Severity:** cosmetic
 - **Found:** 2026-10-22, `cloud/localization-1`
 
+### B105 — Weapon palette swap misses a few pixels
+- **Where:** `SampleProject/Sprites/Player/Weapons/{halberd,dual,sword}/…` frames; `Scripts/Tools/weapon_key_fixups.py`; `Shaders/weapon_palette.gdshader`.
+- **Expected:** the whole weapon recolours and the body never does (D361).
+- **Got:** the halberd's butt spike stays iron in `Air/1`, `Block/1`, `CombatIdle` (below the torso box); the dual dagger stays iron in `Heavy/1` and `Run/7` (pressed to the chest) and is drawn in `#FCF3D5` (not a key colour) in `Air/3`, `Run/2`, `Run/4`, so it stays pale in every palette; a few arm pixels in `sword/Attack2/2` and `Attack3/2` tint with the palette.
+- **Evidence:** `design/shots/weapon_palettes.png`
+- **Severity:** cosmetic — repaint those pixels on the laptop (key on the weapon, off-key on the body), or per-frame masks
+- **Found:** 2026-10-22, `cloud/weapons-all` (its B111)
+
+### B106 — Weapon frames draw a shorter weapon than the hitbox reaches
+- **Where:** weapon libraries (`Resources/Player/WeaponAnimations/*.tres`) vs items.json `reach`.
+- **Expected:** the drawn weapon reaches about as far as the hitbox (D364 keeps the hitbox = items.json `reach` = the SlashTrail arc).
+- **Got:** halberd 72 px (the pole hits the 96 px cell edge) vs 134; sword 62 vs 78; dagger 58 vs 77; mace 64 vs 66 (max x of the attack frames ×1.5).
+- **Severity:** visual — Sapega: a wider cell for the halberd, or a shorter reach
+- **Found:** 2026-10-22, `cloud/weapons-all` (its B112)
+
+### B107 — Ether says "Restores 30 MP."
+- **Where:** `SampleProject/Resources/Data/items.json` → Ether `description`.
+- **Expected:** SP — the game's resource (the Ukrainian text already says SP).
+- **Got:** "Restores 30 MP."
+- **Severity:** cosmetic (content)
+- **Found:** 2026-10-22, `cloud/localization-2`
+
+### B108 — "Lesser Potion" heals more than "Potion"
+- **Where:** `SampleProject/Resources/Data/items.json` → `potion` (heal 50), "Lesser Potion" (heal 75).
+- **Expected:** a lesser potion heals less than the plain one (D357: Мале / Середнє / Велике зілля).
+- **Got:** Lesser 75 > plain 50.
+- **Severity:** visual (data)
+- **Found:** 2026-10-22, `cloud/localization-2`
+
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
 > rest). The Figma deviations **B1, B27, B28, B30, B35, B37, B39, B56** were **accepted as built** by Sapega on 2026-10-21
@@ -153,6 +175,15 @@ the history, this note keeps only what is open.
 > from a sidebar tab went to Restore, segment rows dropped focus (`MainMenu.gd`, `options_component.gd`); **B100** Forge
 > categories unreachable without a mouse, dialogue choices and the Demo end without focus; **B101** bottom-bar / hotbar
 > badges fixed to one device. B93–B96 added — see [[cloud_reports/integration-3]].
+>
+> **integration-4, 2026-10-22:** **B86** fixed by `cloud/localization-2` (D356: ASCII speaker ids, English names, Ukrainian
+> in `uk.po`; `verify_locale` [5] walks every line through the dialogue window in both languages) — row removed.
+> Found and fixed on their branches: **B102** world interaction prompts showed the keyboard badge to a pad player after a
+> room change (`interaction_prompt.gd` reads `InputGlyphs.using_gamepad`, `verify_interaction` [3]; `cloud/lab-9-8`);
+> **B103** SCRIPT ERROR in the top HUD on every scene change from the game (`combat_hud_top.gd` connects `process_frame`
+> only in the tree; `cloud/lab-9-8`); **B104** holding block with a weapon that has frames brought the overlay weapon back
+> after the 0.1 s pose (`WeaponView._drawn_in_frame` reads `assigned_animation`, `verify_weapon_animations`;
+> `cloud/weapons-all`, its B110). B105–B108 added — see [[cloud_reports/integration-4]].
 
 
 ## Playtest intake — 2026-09-29 (Sapega)

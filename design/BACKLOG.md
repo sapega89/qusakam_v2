@@ -102,7 +102,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 5. ~~**NPCs do something** — idle activities (blacksmith hammers, merchant counts coins, elder…), generated frames.~~ — **done 2026-10-21** (D295):
    all seven NPCs in the maps (Blacksmith, Merchant, Grandfather, three oath keepers, two gate guards) loop a generated
    activity with random rests and turn to the hero in their talk pose while talking; `verify_npc_activity.gd`.
-6. **Boss** — generate the Laboratory boss ([[lab_boss_plan]]). In progress with 16 + 17 → [[lab_story_plan]].
+6. ~~**Boss**~~ — **done 2026-10-22** (D307, D310, queue row 9.8, `cloud/lab-9-8`, integration-4): both Laboratory bosses built, with their own voices. Generate the Laboratory boss ([[lab_boss_plan]]) → [[lab_story_plan]].
 7. **Foreground parallax** — below.
 8. ~~**A reason to climb the Canyon mountain**~~ — **done 2026-10-20** (D257): the abduction waits for the summit of the
    Pride Rock — a generated meditation stone (`gen_shrine`), Kusakam sits (generated `Meditate` frames), the camera drifts
@@ -134,7 +134,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Уризен and Алісия stand in a queue and Kusakam joins it (Q65 answered: Алісия too); a wall
     bursts and a boss climbs out. The boss is meant to be unbeatable, but can be beaten: either way Kusakam ends up
     transported to the Laboratory — a win only gives more XP and items from the boss. This is the boss of item 6.
-17. **The Laboratory story, rewritten** — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — *cells cutscene, wake, acquaintance, Малік and the assists done 2026-10-21 (D304, D305, queue row 9.5); boss hall done (D307); the mob corridors done 2026-10-22 (D306, queue row 9.6, integration-3); voices / demo end (9.8) are left* — replaces the current three-storey companion talks:
+17. ~~**The Laboratory story, rewritten**~~ — **done 2026-10-22** (D310, queue row 9.8, `cloud/lab-9-8`, integration-4; `verify_lab_route`) — plan [[lab_story_plan]] (D302–D307) (Sapega 2026-10-20) — *cells cutscene, wake, acquaintance, Малік and the assists done 2026-10-21 (D304, D305, queue row 9.5); boss hall done (D307); the mob corridors done 2026-10-22 (D306, queue row 9.6, integration-3); voices / demo end done 2026-10-22 (D310, queue row 9.8)* — replaces the current three-storey companion talks:
     - Kusakam and his future team are on **one floor**: a room with an operating table and cells; everyone is behind bars.
     - Cutscene: Алісия is led to the operating table and injected; then an unknown prisoner who looks like a bandit is
       led in — he shouts and an evil boss bursts out of him, **a fire djinn**, and flees; explosions, an earthquake,
@@ -178,7 +178,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     **Dark Knight** (dark) / **Warden of Balance** (neutral) → subclass at 40 → prestige at 70 (names in D260). The oath
     is sworn **in the City** before a thematic NPC: a **priest** (Paladin), a **witch** (Dark Knight), a **sand
     dervish** (Warden) — new NPCs, generated art.
-23. **DesertRoad grows; the Laboratory grows and splits into screens** (Sapega 2026-10-20 «збільшити локації» → «не
+23. ~~**DesertRoad grows; the Laboratory grows and splits into screens**~~ — **done 2026-10-22** (D303, D310; queue rows 9.4–9.8, integration-4) (Sapega 2026-10-20 «збільшити локації» → «не
     треба додавати нові назви, дорога має стати більшою» → «місто, брама і село залишаються, каньйон теж, а ось
     лабораторію треба буде збільшити і розбити на екрани»): City, CityGates, Village and Canyon stay as they are. Before
     the City only **DesertRoad** grows (longer, more MetSys cells, more fights, side ledges with pickups) and the XP curve
@@ -234,7 +234,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     Village) too. Each NPC works at/in front of its building (D295).
 30. **Effects polish** (Sapega 2026-10-21 on D273 «вже краще, але є над чим працювати»): a later pass over the generated
     swing, hit and skill effects — collect Sapega's notes first.
-31. **Every text in two languages: English and Ukrainian** — *part 1 (every UI string, the Language switch, `verify_locale`) done 2026-10-22 (D349–D352, `cloud/localization-1`, integration-3); left: part 2 data JSON + character names + English `.dqd` twins (D353, [[localization_plan]] §4), part 3 voices* (Sapega 2026-10-21 «всі тексти мають мати дві мови і перевірити,
+31. ~~**Every text in two languages: English and Ukrainian**~~ — **done 2026-10-22**: *part 1 (every UI string, the Language switch, `verify_locale`) (D349–D352, `cloud/localization-1`, integration-3); part 2 data JSON + character names + English `.dqd` twins and part 3 Ukrainian greetings (D353–D358, `cloud/localization-2`, integration-4). Left for Sapega: read the English twins (D354), Q68* (Sapega 2026-10-21 «всі тексти мають мати дві мови і перевірити,
     що на англійській версії немає кирилиці, щоб не було помилок, і так само на українській не повинно бути англійських
     текстів — окрім кнопок; назви вкладок теж мають бути перекладені»). Today: `SampleProject/Resources/Translations/en.po`,
     `uk.po` exist (partial), a few scripts call `tr()`, `.dqd` dialogue is Ukrainian, UI/data text mostly English. Needed:
@@ -273,7 +273,7 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     The eight small Figma deviations B1, B27, B28, B30, B35, B37, B39, B56 are **accepted as built** — ✅ recorded as
     **D317**, B rows deleted 2026-10-21. **One selection look in every menu** (Q33 ✅): the focused/selected row styled the same everywhere
     (theme tokens, ui-theme-tokens skill).
-42. **Kusakam animated holding each weapon** — *sword frames wired 2026-10-22 (D344, D345, `cloud/weapon-gamepad`, integration-3, [[hero_weapon_animation_plan]]); left: dagger / mace / halberd libraries (art landed on `feature/backlog`), palette swap, dual-wield, bare hands* (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
+42. **Kusakam animated holding each weapon** — *sword frames wired 2026-10-22 (D344, D345, `cloud/weapon-gamepad`, integration-3, [[hero_weapon_animation_plan]]); ~~dagger / mace / halberd libraries, palette swap, dual-wield~~ done 2026-10-22 (D359–D364, `cloud/weapons-all`, integration-4; art fixes B105, B106); left: bare hands (optional slice 7), other dual pairs* (Sapega 2026-10-21 «анімація Кусакама має бути більш красивою: він має мати
     анімацію, як він тримає меч, і анімацію, як він тримає інші типи зброї»). Today the weapon is a separate sprite
     (`WeaponView`, D268) pinned to measured hand points on the artist frames, hidden out of combat. Needed: full-body hero
     frames per weapon grip — sword/axe one-handed, dagger, mace, halberd two-handed, dual-wield, bare hands — for combat
