@@ -72,15 +72,8 @@ the history, this note keeps only what is open.
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
 
-### B116 — After the Mayor Hall boss the hero stays "in combat" through the cutscene
-- **Where:** `PlayerCombat._track_combat` (`Scripts/Player/Components/PlayerCombat.gd:260`), `MayorHall.gd` win / loss cutscenes.
-- **Expected:** the fight ends with the collector's death or the hero's defeat — weapon sheathed, the battle track off (D414).
-- **Got:** the cutscene holds the hero in `Hurt`, so `COMBAT_LINGER` never runs out: the weapon stays drawn and the battle track plays until the transport to the Laboratory.
-- **Fix:** a cutscene (or a state that is not READY / BLOCK and not a swing) must not count as fighting; `verify_mayor_hall` then expects the room track after the boss.
-- **Severity:** audio + visual (one cutscene)
-- **Found:** 2026-10-22, `cloud/fight-music`
-
-> **Round 8 (2026-10-22):** **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
+> **Round 8 (2026-10-22):** **B116** fixed by `cloud/combat-fixes` — a held or dead hero leaves combat at once (D425); row removed.
+> **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
 >
 > **2026-10-22, after round 7:** **B117** fixed — not chance: the test flipped the hero near/far every 0.5 s, and with the djinn's 1.0 s rest (D411) the flip always landed on the same side at the pick (26 moves, no fireball). [5] now places the hero for the move still missing (400 px → fireball, 60 → claws, 135 → only the pillar fits); row removed.
 >
