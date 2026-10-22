@@ -241,6 +241,10 @@ DUAL_DAGGER = (
     "a short steel dagger with a small steel cross-guard and a brown grip, its blade only as long as his forearm, "
     "the same light grey and white steel as the sword"
 )
+DUAL_WHO = (
+    "the same small lizard knight with the steel armour, dark red cape and tail, holding " + SWORD + " in his near hand "
+    "and " + DUAL_DAGGER + " in his far hand, exactly as small as in the picture"
+)
 DUAL_ON = (
     "ON:SampleProject/Sprites/Player/Weapons/sword/%s.png:keeping exactly the same pose, legs, cape, size, position "
     "and the same sword in his near hand as in the picture, only now his other hand, the far one, also holds "
@@ -259,10 +263,19 @@ DUAL_KEEP = (
 )
 # модель додавала третій клинок або губила кинджал — обидва названо
 DUAL_TWO = DUAL_KEEP + ", both weapons visible, exactly two blades in total and no third blade"
-DUAL_PULL = (
-    "FROM:Attack2:1:pulling back after the stab, the dagger arm bent with the dagger in front of his chest, the short "
-    "dagger blade pointing forward, the sword still held low in front of his hip, both weapons visible, standing on "
-    "bent knees, the cape settling behind him, plain armour" + DUAL_KEEP
+DUAL_COIL = (
+    "FROM:CombatIdle:0:in the same side view facing right: chambering a dagger stab, the full-length sword lowered in "
+    "his near hand and held low at his hip pointing forward and down, its brown grip and cross-guard visible in his "
+    "near fist, his far hand pulled back beside his shoulder holding the short dagger, the tiny dagger blade pointing "
+    "forward, knees bent" + DUAL_TWO
+)
+DUAL_STAB = (
+    # спроба 1: у кулаці два короткі леза рогаткою (третій клинок) — одне лезо, горизонтально
+    "FROM:Attack2:0:in the same side view facing right: a quick straight stab, his far arm thrust straight forward "
+    "past his chest at chest height, his far fist gripping one short dagger whose single small blade points straight "
+    "ahead horizontally, only one blade in that fist, the "
+    "full-length sword still held low at his hip in his near fist exactly as long as before, stepping forward on his "
+    "front leg, the cape flying behind him" + DUAL_TWO
 )
 # BACKLOG 5 (D295): перші кадри дій NPC — з першого кадру персонажа (профіль), решта циклу — FROM: з цього кадру
 SMITH_RAISE = (
@@ -1477,73 +1490,61 @@ CHARACTERS = {
         seed=52,
         floor=88,
         palette="hero",
-        who="the same small lizard knight with the steel armour, dark red cape and tail, holding "
-        + SWORD
-        + " in his near hand and "
-        + DUAL_DAGGER
-        + " in his far hand, exactly as small as in the picture",
-        base="Keep this exact character — the same small lizard knight with the steel armour, dark red cape and tail, "
-        "the same pixel art style, thick dark outline, flat shading, colours, size, pose and position, the same sword "
-        "in his near hand. Change only his other hand: the raised fist near his chest now holds "
-        + DUAL_DAGGER
-        + ", the short blade pointing forward and up beside the sword, the dagger blade only half as long as the "
-        "sword blade; exactly one sword and one dagger. "
-        "Keep the plain flat magenta background.",
+        who=DUAL_WHO,
+        # арт-директор: другий клинок виходив завдовжки з меч (два мечі); дві спроби моделі вкорочували й меч —
+        # перший кадр складає Scripts/Tools/dual_fixups.py (запускати перед цим записом)
+        base="FILE:SampleProject/Sprites/Player/Weapons/dual/CombatIdle/1.png",
         rows=[
             ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
             ("Run", [DUAL_ON % ("Run/%d" % n, DUAL_REVERSE) for n in range(1, 8)]),
             ("Air", [DUAL_ON % ("Air/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
             ("Attack1", [DUAL_ON % ("Attack1/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
-            (
-                "Attack2",
-                [
-                    # замах і відхід — один кадр (кинджал біля плеча, меч низько): з першого кадру кинджал зникав,
-                    # «відтягнутий назад» малював третій клинок за головою
-                    DUAL_PULL,
-                    "FROM:CombatIdle:0:in the same side view facing right: a quick straight stab with the dagger, his "
-                    "far arm with the dagger thrust straight forward at chest height, the short blade pointing straight "
-                    "ahead, the sword lowered behind him in his near hand, stepping forward on his front leg, the cape "
-                    "flying behind him" + DUAL_KEEP,
-                    DUAL_PULL,
-                ],
-            ),
+            # арт-директор (друга хвиля): у стусах меч усихав до довжини кинджала, колола ближня (мечова) рука, а
+            # нижній клинок висів без руків'я — тепер меч повний біля стегна з видимим кулаком, колє дальня рука
+            ("Attack2", [DUAL_COIL, DUAL_STAB, DUAL_COIL]),
             ("Attack3", [DUAL_ON % ("Attack2/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
             (
                 "Attack4",
                 [
-                    # з першого кадру замах ставав уколом; «відтягнутий кинджал» — третій клинок за головою; з
-                    # кадру випаду лишався один клинок — спроба 3: замах Attack2, присів нижче
-                    "FROM:Attack2:0:the same pose with both weapons exactly where they are, only crouching lower on "
-                    "deeply bent knees and leaning back a little, coiled for a lunge" + DUAL_TWO,
-                    "FROM:Attack2:1:the same stab but a much deeper lunge, his front leg bent far forward, the back leg "
-                    "straight behind him, his body low and leaning forward, the dagger arm fully extended straight "
-                    "ahead at chest height, the sword still held low behind, both weapons visible, the cape flying "
-                    "behind him" + DUAL_KEEP,
-                    # відхід — кадр замаху Attack2 (дві спроби: загубив кинджал, герой більшав на ~15 %)
-                    DUAL_PULL,
+                    DUAL_COIL,  # той самий замах, що й Attack2/1 (арт-директор)
+                    # спроба 1 (FROM:Attack2:1) повторювала силует стусу; спроба 2 (з першого кадру) — кинджал
+                    # довший за меч — довжину кинджала названо рукою, як у DUAL_ON
+                    "FROM:CombatIdle:0:in the same side view facing right: a long fencing lunge, his front knee bent far "
+                    "forward over the front foot, the back leg stretched out straight and long far behind him, his body "
+                    "low and leaning far forward, his head lower than standing, the far arm fully extended forward at "
+                    "full reach thrusting the short dagger straight ahead, the dagger tiny, its blade only as long as "
+                    "his hand, a small knife half the length of the sword, not a second sword, the full-length sword "
+                    "trailing low behind his back leg in his near hand, the cape flying behind him" + DUAL_TWO,
+                    # спроба 1 (відхід із випаду) — каша в ногах і поясі — відхід = той самий замах
+                    DUAL_COIL,
                 ],
             ),
             (
                 "Heavy",
                 [
-                    "FROM:CombatIdle:0:in the same side view facing right: winding up a heavy double blow, both arms "
-                    "raised above his head, the sword in his near hand and the dagger in his far hand both held high "
-                    "above and behind his head, the blades pointing back, leaning back, knees bent, the cape hanging "
-                    "behind him" + DUAL_KEEP,
-                    "FROM:CombatIdle:0:in the same side view facing right: swinging a heavy double blow down, both "
-                    "arms swung forward at shoulder height, the sword and the dagger both pointing forward in front of "
-                    "him, stepping forward, the cape flying behind him" + DUAL_KEEP,
-                    "FROM:CombatIdle:0:in the same side view facing right: finishing a heavy double blow, crouched low "
-                    "and leaning forward, the sword and the dagger both swung down low in front of him, the sword tip "
-                    "near the ground, the cape flying up behind him" + DUAL_KEEP,
+                    # перша хвиля зливала клинки в одну палицю, тіло витягнуте; FROM:CombatIdle — меч задовгий і
+                    # кинджал завдовжки пів меча — замах меча (sword/Heavy/1) + кинджал низько, під іншим кутом
+                    DUAL_ON % ("Heavy/1", "held low in front of his belly, the tiny blade pointing forward"),
+                    # удар — кадр першої хвилі (арт-директор його прийняв)
+                    "FILE:SampleProject/Sprites/Player/Weapons/dual/Heavy/2.png",
+                    # з Heavy/2: темно-бордовий плащ замість яскраво-червоного; кинджал за тілом, не два паралельні
+                    "ON:SampleProject/Sprites/Player/Weapons/dual/Heavy/2.png:keeping exactly the same character, "
+                    "armour and the same dark maroon cape colours as in the picture, now finishing the heavy blow with "
+                    "a low forward sweep: crouched low and leaning forward, the full-length sword in his near hand "
+                    "swept down low in front of him, the sword tip near the ground, the dagger hidden behind his body, "
+                    "only the sword visible, the cape flying behind him" + SWORD_COLOURS,
                 ],
             ),
             (
                 "Block",
                 [
-                    "FROM:CombatIdle:0:in the same side view facing right: guarding, crouched and braced on bent knees, "
-                    "the sword and the dagger crossed in an X in front of his face, the cape hanging behind him"
-                    + DUAL_KEEP,
+                    # перша хвиля: два мечі навхрест через око; спроба 1 з CombatIdle — кинджал уздовж плеча, один
+                    # кулак; спроба 2 з sword/Block/1 — три клинки через обличчя
+                    "FROM:CombatIdle:0:in the same side view facing right: guarding, braced on bent knees, both fists "
+                    "held together low in front of his chest, well below his chin, the full-length sword in his near "
+                    "fist pointing up and forward at 45 degrees, the short dagger in his far fist pointing up and back, "
+                    "the two blades crossing just above the fists in a small X, both fists clearly visible, his eye and "
+                    "face uncovered, the cape hanging behind him" + DUAL_TWO,
                 ],
             ),
             # Hurt пропущено: за три спроби («відкинута назад», зворотний хват, ніж біля грудей) кинджал виходив
@@ -2042,9 +2043,12 @@ if __name__ == "__main__":
     )  # менший блок для більшої клітинки: картинка моделі лишається ~1 Мп (меч, 96x96)
     ref = enlarge(char["ref"], cell)
     # base=None — перший кадр сам кадр художника (новий кадр героя, D239), інакше модель робить його з референсу
+    # base="FILE:<png>" — готовий перший кадр (dual: кадр меча художника + кинджал, Scripts/Tools/dual_fixups.py)
     base = (
         ref
         if char["base"] is None
+        else enlarge(char["base"][5:], cell)
+        if char["base"].startswith("FILE:")
         else edit(ref, char["base"], seed, char.get("design"))
     )
     base_ref = base.copy()
