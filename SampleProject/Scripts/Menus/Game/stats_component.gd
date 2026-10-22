@@ -14,7 +14,7 @@ extends BaseMenuComponent
 
 const PLACEHOLDER := "—"
 ## Рядки й картки — шаблони зі сцени (D117): %WeaponBox, %PointAttr, %AttrRow (обидві колонки), %ActionCard,
-## %CompanionCard. Стилі — з теми (AvatarFrame, AttrRow, AttrIcon, AccentTick, BoxPanel, ActionCard).
+## %CompanionCard. Стилі — з теми (AvatarFrame, AttrRow, IconSlot, AccentTick, BoxPanel, ActionCard).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
 @onready var _avatar: Panel = %Avatar

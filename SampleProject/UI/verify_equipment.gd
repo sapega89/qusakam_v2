@@ -89,7 +89,12 @@ func _initialize() -> void:
 	var sp_line: Node = eq._right_attrs.get_child(0).get_child(0)
 	ck(sp_line.get_child(0).text == "Max. SP", "first right row is Max. SP")
 	ck(sp_line.get_child(1).text == str(sl.get_skill_manager().get_max_sp()), "Max. SP shows the SP pool (%s)" % sp_line.get_child(1).text)
-	ck(sp_line.get_child_count() == 2, "Max. SP has no delta")
+	ck(not sp_line.get_node(^"Delta").visible, "Max. SP has no delta")
+	# D117: рядки — копії шаблонів %SlotRow / %AttrRow зі сцени, стиль з теми, а не StyleBoxFlat у коді.
+	var rows: Array = eq._slot_rows.values() + eq._left_attrs.get_children() + eq._right_attrs.get_children()
+	ck(rows.size() == eq.SLOTS.size() + eq.ATTR_ROWS.size(), "%d slot rows + %d attribute rows" % [eq.SLOTS.size(), eq.ATTR_ROWS.size()])
+	ck(rows.all(func(r: Control) -> bool: return r.theme_type_variation != &"" and not r.has_theme_stylebox_override(&"panel")),
+		"slot and attribute rows are template copies styled by the theme (D117)")
 
 	print("[7] incompatible items rejected")
 	eq._equip("head", "iron_sword", db.get_item("iron_sword"))

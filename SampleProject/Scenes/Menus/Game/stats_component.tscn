@@ -301,7 +301,7 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"AttrIcon"
+theme_type_variation = &"IconSlot"
 
 [node name="Name" type="Label" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
 layout_mode = 2

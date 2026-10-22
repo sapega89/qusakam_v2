@@ -12,6 +12,9 @@ extends BaseMenuComponent
 const PLACEHOLDER := "(empty)"
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const EQUIP_PICKER := preload("res://SampleProject/UI/Components/equip_picker.tscn")
+## Рядки — шаблони зі сцени (D117): %SlotRow, %AttrRow (обидві колонки). Стилі — з теми
+## (AvatarChip, ListRow, IconSlot, AccentDot, AttrRow).
+const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
 ## 12 слотів із player_state.equipment (mace — D147) — це і є реальна модель.
 ## Figma показує 8 (без polearm/axe/staff); вигадувати слоти не можна,
@@ -47,11 +50,16 @@ const ATTR_ROWS: Array[Array] = [
 
 @onready var _char_name: Label = %CharName
 @onready var _avatar: Panel = %Avatar
+## Стиль AvatarChip з теми — заливка підміняється кольором персонажа в копії.
+@onready var _avatar_box: StyleBoxFlat = _avatar.get_theme_stylebox(&"panel").duplicate()
 @onready var _slot_list: VBoxContainer = %SlotList
+@onready var _slot_row: Button = %SlotRow
 @onready var _optimize_button: Button = %OptimizeButton
 @onready var _unequip_button: Button = %UnequipAllButton
 @onready var _left_attrs: VBoxContainer = %LeftAttrs
 @onready var _right_attrs: VBoxContainer = %RightAttrs
+## Один шаблон на обидві колонки: права заповнюється його копіями.
+@onready var _attr_row: PanelContainer = %AttrRow
 
 var _slot_rows: Dictionary = {}  # slot_id -> Button
 
@@ -96,76 +104,15 @@ func _on_equipment_unequipped(_character_id: String, _slot_id: String) -> void:
 # ── Рядки слотів ────────────────────────────────────────────────────────────
 
 func _build_slot_rows() -> void:
-	for child in _slot_list.get_children():
-		_slot_list.remove_child(child)
-		child.queue_free()
-	_slot_rows.clear()
-
-	for entry in SLOTS:
-		var slot_id := String(entry[0])
-		var row := _make_slot_row(slot_id, String(entry[1]))
-		_slot_list.add_child(row)
+	var rows := RowFill.fill(_slot_list, _slot_row, SLOTS.size())
+	for i in rows.size():
+		var slot_id := String(SLOTS[i][0])
+		var row: Button = rows[i]
+		row.name = slot_id
+		row.get_node(^"Row/Caption").text = String(SLOTS[i][1])
+		row.pressed.connect(_on_slot_pressed.bind(slot_id))
+		row.focus_entered.connect(_on_slot_focused.bind(slot_id))
 		_slot_rows[slot_id] = row
-
-
-func _make_slot_row(slot_id: String, caption: String) -> Button:
-	var row := Button.new()
-	row.name = slot_id
-	row.theme_type_variation = &"ListRow"
-	row.focus_mode = Control.FOCUS_ALL
-	row.custom_minimum_size = Vector2(0, 63)
-	row.pressed.connect(_on_slot_pressed.bind(slot_id))
-	row.focus_entered.connect(_on_slot_focused.bind(slot_id))
-
-	var hbox := HBoxContainer.new()
-	hbox.name = "Row"
-	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	hbox.offset_left = UITokens.PANEL_PADDING
-	hbox.offset_right = -UITokens.PANEL_PADDING
-	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_theme_constant_override("separation", UITokens.SPACE_LG)
-	row.add_child(hbox)
-
-	var icon := Panel.new()
-	icon.name = "Icon"
-	icon.custom_minimum_size = Vector2(40, 40)
-	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var icon_box := StyleBoxFlat.new()
-	icon_box.bg_color = UITokens.ICON_SLOT_BG
-	icon_box.set_corner_radius_all(UITokens.RADIUS)
-	icon.add_theme_stylebox_override("panel", icon_box)
-	hbox.add_child(icon)
-
-	var caption_label := Label.new()
-	caption_label.name = "Caption"
-	caption_label.text = caption
-	caption_label.theme_type_variation = &"SlotCaption"
-	caption_label.custom_minimum_size = Vector2(150, 0)
-	caption_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	caption_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(caption_label)
-
-	var item_label := Label.new()
-	item_label.name = "ItemName"
-	item_label.theme_type_variation = &"SlotItemName"
-	item_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	item_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	item_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(item_label)
-
-	var dot := Panel.new()
-	dot.name = "Dot"
-	dot.custom_minimum_size = Vector2(6, 6)
-	dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var dot_box := StyleBoxFlat.new()
-	dot_box.bg_color = UITokens.ACCENT
-	dot_box.set_corner_radius_all(3)
-	dot.add_theme_stylebox_override("panel", dot_box)
-	hbox.add_child(dot)
-
-	return row
 
 
 ## Клік / Enter / A по слоту — вікно з предметами із сумки, що влазять у цей слот (D288).
@@ -242,12 +189,8 @@ func _update_header() -> void:
 	var character = game_manager.get_active_character()
 	_char_name.text = String(character.name) if character else "—"
 
-	var box := StyleBoxFlat.new()
-	box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
-	box.set_corner_radius_all(UITokens.RADIUS)
-	box.set_border_width_all(UITokens.BORDER_WIDTH)
-	box.border_color = UITokens.BORDER
-	_avatar.add_theme_stylebox_override("panel", box)
+	_avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
+	_avatar.add_theme_stylebox_override(&"panel", _avatar_box)
 
 
 func _update_slots() -> void:
@@ -272,66 +215,35 @@ func _update_slots() -> void:
 ## Значення беремо з GameManager (делегати до StatCalculator), а дельту — як
 ## різницю "зі спорядженням" мінус "без спорядження". Нічого не дублюємо.
 func _update_attributes() -> void:
-	for container in [_left_attrs, _right_attrs]:
-		for child in container.get_children():
-			container.remove_child(child)
-			child.queue_free()
-
 	var character = game_manager.get_active_character()
 	var attributes: CharacterAttributes = character.attributes if character else null
 	var equipment_stats: Dictionary = character.get_equipment_stats() if character else {}
 
+	var left := RowFill.fill(_left_attrs, _attr_row, 5)
+	var right := RowFill.fill(_right_attrs, _attr_row, ATTR_ROWS.size() - 5)
+	var rows: Array = left + right
 	for i in ATTR_ROWS.size():
-		var row: Array = ATTR_ROWS[i]
-		var container: VBoxContainer = _left_attrs if i < 5 else _right_attrs
-		container.add_child(_make_attr_row(row, attributes, equipment_stats))
+		_fill_attr_row(rows[i], ATTR_ROWS[i], attributes, equipment_stats)
 
 
-func _make_attr_row(spec: Array, attributes: CharacterAttributes, equipment_stats: Dictionary) -> Control:
-	var label_text := String(spec[0])
+func _fill_attr_row(row: Control, spec: Array, attributes: CharacterAttributes, equipment_stats: Dictionary) -> void:
 	var method := String(spec[1])
 	var is_ratio := bool(spec[2])
-
-	var row := PanelContainer.new()
-	var line := StyleBoxFlat.new()
-	line.bg_color = Color(0, 0, 0, 0)
-	line.border_width_bottom = UITokens.BORDER_WIDTH
-	line.border_color = UITokens.BORDER
-	line.content_margin_top = UITokens.SPACE_SM
-	line.content_margin_bottom = UITokens.SPACE_SM
-	row.add_theme_stylebox_override("panel", line)
-
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", UITokens.SPACE_SM)
-	row.add_child(hbox)
-
-	var name_label := Label.new()
-	name_label.text = label_text
-	name_label.theme_type_variation = &"MetaLabel"
-	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.add_child(name_label)
+	var value_label: Label = row.get_node(^"Row/Value")
+	var delta_label: Label = row.get_node(^"Row/Delta")
+	row.get_node(^"Row/Name").text = String(spec[0])
 
 	# Max. SP — пул SkillManager (D146); жодна екіпіровка SP не змінює, тож без дельти.
 	if method == "":
-		var sp_label := Label.new()
-		sp_label.text = str(ServiceLocator.get_skill_manager().get_max_sp())
-		sp_label.theme_type_variation = &"AttrValue"
-		hbox.add_child(sp_label)
-		return row
+		value_label.text = str(ServiceLocator.get_skill_manager().get_max_sp())
+		delta_label.visible = false
+		return
 
 	var current := _stat_value(method, is_ratio)
-	var value_label := Label.new()
 	value_label.text = str(current)
-	value_label.theme_type_variation = &"AttrValue"
-	hbox.add_child(value_label)
-
 	var delta := current - _stat_without_equipment(method, is_ratio, attributes)
-	if delta != 0 and not equipment_stats.is_empty():
-		var delta_label := Label.new()
-		delta_label.text = "(%s%d)" % ["+" if delta > 0 else "", delta]
-		delta_label.theme_type_variation = &"StatDelta"
-		hbox.add_child(delta_label)
-	return row
+	delta_label.visible = delta != 0 and not equipment_stats.is_empty()
+	delta_label.text = "(%s%d)" % ["+" if delta > 0 else "", delta]
 
 
 func _stat_value(method: String, is_ratio: bool) -> int:
