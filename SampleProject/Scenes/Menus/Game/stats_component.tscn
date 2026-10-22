@@ -48,6 +48,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 size_flags_vertical = 4
+theme_type_variation = &"AvatarFrame"
 
 [node name="NameLevelBox" type="VBoxContainer" parent="Columns/Center/Body/CharHeader"]
 layout_mode = 2
@@ -202,6 +203,19 @@ custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="WeaponBox" type="PanelContainer" parent="Columns/Center/Body/JobsWeapons/WeaponTypes/WeaponSlots"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+theme_type_variation = &"BoxPanel"
+
+[node name="Letter" type="Label" parent="Columns/Center/Body/JobsWeapons/WeaponTypes/WeaponSlots/WeaponBox"]
+layout_mode = 2
+theme_type_variation = &"SectionCaption"
+text = "—"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="AttributesSection" type="VBoxContainer" parent="Columns/Center/Body"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -215,6 +229,19 @@ text = "Attributes"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 32
+
+[node name="PointAttr" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection/PointAttrs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Caption" type="Label" parent="Columns/Center/Body/AttributesSection/PointAttrs/PointAttr"]
+layout_mode = 2
+theme_type_variation = &"AttrLabel"
+
+[node name="Value" type="Label" parent="Columns/Center/Body/AttributesSection/PointAttrs/PointAttr"]
+layout_mode = 2
+theme_type_variation = &"AttrValue"
 
 [node name="AttrColumns" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection"]
 layout_mode = 2
@@ -260,6 +287,30 @@ show_percentage = false
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 0
+
+[node name="AttrRow" type="PanelContainer" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"AttrRow"
+
+[node name="Row" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Panel" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"AttrIcon"
+
+[node name="Name" type="Label" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"AttrLabel"
+
+[node name="Value" type="Label" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
+layout_mode = 2
+theme_type_variation = &"AttrValue"
 
 [node name="Right" type="VBoxContainer" parent="Columns/Center/Body/AttributesSection/AttrColumns"]
 layout_mode = 2
@@ -315,6 +366,36 @@ text = "Unique Actions & Talents"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 24
+
+[node name="ActionCard" type="PanelContainer" parent="Columns/Center/Body/ActionsSection/ActionsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ActionCard"
+
+[node name="Col" type="VBoxContainer" parent="Columns/Center/Body/ActionsSection/ActionsRow/ActionCard"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Head" type="HBoxContainer" parent="Columns/Center/Body/ActionsSection/ActionsRow/ActionCard/Col"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Caption" type="Label" parent="Columns/Center/Body/ActionsSection/ActionsRow/ActionCard/Col/Head"]
+layout_mode = 2
+theme_type_variation = &"CardCaption"
+
+[node name="Divider" type="Panel" parent="Columns/Center/Body/ActionsSection/ActionsRow/ActionCard/Col/Head"]
+custom_minimum_size = Vector2(1, 12)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"AccentTick"
+
+[node name="Title" type="Label" parent="Columns/Center/Body/ActionsSection/ActionsRow/ActionCard/Col/Head"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"CardTitle"
+text = "—"
 
 [node name="CompanionsSection" type="VBoxContainer" parent="Columns/Center/Body"]
 unique_name_in_owner = true

@@ -68,6 +68,10 @@ func _initialize() -> void:
 	print("[3] attributes come from StatCalculator")
 	ck(st._left_attrs.get_child_count() == 4, "4 left attribute rows")
 	ck(st._right_attrs.get_child_count() == 4, "4 right attribute rows")
+	# D117: рядки — копії шаблону %AttrRow зі сцени, стиль з теми, а не StyleBoxFlat у коді.
+	var rows: Array = st._left_attrs.get_children() + st._right_attrs.get_children() + st._actions_row.get_children() + st._weapon_slots.get_children()
+	ck(rows.all(func(r: Control) -> bool: return r.theme_type_variation != &"" and not r.has_theme_stylebox_override(&"panel")),
+		"attribute rows, action cards and weapon boxes are template copies styled by the theme (D117)")
 	var hp_txt: String = st._hp_meter.get_node("Head/Value").text
 	ck(hp_txt != st.PLACEHOLDER, "Max HP has a real value (%s)" % hp_txt)
 	# D199: Phys. Atk. — сила й спорядження плюс бонус рівня, те саме число, що й удар гравця.
