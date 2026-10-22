@@ -79,14 +79,6 @@ the history, this note keeps only what is open.
 - **Severity:** visual (content) — goes with BACKLOG 31
 - **Found:** 2026-10-21, `cloud/dialogue-ui`
 
-### B89 — Settings segment rows lose keyboard / gamepad focus after every toggle
-- **Where:** `Scripts/Menus/Game/options_component.gd` `_on_*_changed` → `_rebuild_list()` (Display Mode, VSync, Language, Tutorial Windows).
-- **Expected:** focus stays on the toggled cell (the new stepper rows, D327/D328, update in place).
-- **Got:** the whole list is rebuilt, the focused cell is freed, focus is lost.
-- **Fix:** update the cells in place or re-grab focus on the same row after the rebuild.
-- **Severity:** blocker for pad play of Settings
-- **Found:** 2026-10-21, `cloud/settings-cleanup`
-
 ### B90 — A pressed (selected) `ListRow` shows no focus ring
 - **Where:** `SampleProject/UI/build_game_ui_theme.gd` `ListRow` focus (D329).
 - **Expected:** the cursor is visible on the selected row too.
@@ -110,14 +102,36 @@ the history, this note keeps only what is open.
 - **Severity:** blocker (crash, edge path)
 - **Found:** 2026-10-21, `cloud/lab-9-5`
 
-### B83 — One-way bridges in the Laboratory corridors are out of jump reach
-- **Where:** `Maps/Laboratory.tscn` floor-B bridge (row 22, 160 px above the floor), floor-C bridges (row 38, 128 px).
-  **The boss hall part is fixed** (`cloud/lab-9-7`, D307: `LabBoss.tscn` dodge bridges row 8 → 9, 96 px, `verify_lab_boss` [9]);
-  the corridors are queue row 9.6.
-- **Expected:** a bridge meant to be used is reachable with one jump (≈103 px; no double jump) — the LabBoss dodge bridges are part of the djinn fight (D302).
-- **Got:** 128–160 px above anything near them; unreachable.
-- **Severity:** visual (corridors; the boss-hall blocker is fixed)
-- **Found:** 2026-10-21, BACKLOG 32 sweep
+### B93 — `Game.gd` fails to compile when a `--script` verify names a class that references `Game`
+- **Where:** `SampleProject/Scripts/Game.gd:390` `teleport_to_room()` — `var old_room_instance := MetSys.get_current_room_instance()`.
+- **Expected:** a verify can name any `class_name` (e.g. `RoomDoor`) and compile.
+- **Got:** when `Game.gd` is compiled before the autoloads exist, the type cannot be inferred: Parse Error, "Failed to compile depended scripts", the test crashes. `verify_village_house` works around it by typing the doors as `Area2D`.
+- **Fix:** an explicit type (`var old_room_instance: Node = …`).
+- **Severity:** tests only
+- **Found:** 2026-10-21, `cloud/buildings`
+
+### B94 — `verify_audio` "focusing a button (pad navigation) ticks on SFX" is flaky
+- **Where:** `SampleProject/UI/verify_audio.gd:276`.
+- **Expected:** the check passes whenever the focus tick plays.
+- **Got:** fails about one run in three on Linux 4.6.2, on an untouched `feature/backlog` too: it samples `ButtonFocusedAudioStreamPlayer.playing` one `process_frame` after `grab_focus()`; the player is not always playing yet (or already done) on that frame.
+- **Fix:** wait until `playing` with a short deadline, or count the `play()` calls.
+- **Severity:** tests only (flaky)
+- **Found:** 2026-10-21, `cloud/buildings` (also seen by `cloud/localization-1`)
+
+### B95 — Keyboard Enter after a mouse click in the Game Menu does not press the focused button
+- **Where:** `SampleProject/Scripts/UI/focus_router.gd` `_unhandled_input` (Game Menu).
+- **Expected:** Enter presses the button the mouse click focused (e.g. the Settings → Language cell).
+- **Got:** a click focuses a content button but the router stays in `"Tabs"` mode (D348 keeps that on purpose so Esc after a click closes the menu); the Enter press reaches the router → `focus_content()` moves focus to the first content control and the release lands nowhere. Pad A is not affected. `verify_locale` [2] steps around it (`focus_router.focus_content()` first).
+- **Fix:** in `"Tabs"` mode, let `ui_accept` through when the focus owner is already inside the content.
+- **Severity:** minor (mixed mouse + keyboard)
+- **Found:** 2026-10-22, `cloud/localization-1`
+
+### B96 — Settings → Controls lists action ids as names
+- **Where:** maaacks input list (Settings → Controls), `String.capitalize()` of the action id.
+- **Expected:** readable action names (`readable_action_names`).
+- **Got:** `Dq Accept`, `Save Delete`, `Menu Prev Tab`, `Skills Unpick`… Ukrainian translations exist now (`uk.po`); the English stays clumsy.
+- **Severity:** cosmetic
+- **Found:** 2026-10-22, `cloud/localization-1`
 
 > **Fixed log (2026-10-21 cleanup):** B16, B38, B53, B54, B55, B74–B80 were fixed and their rows removed — find each
 > with `git log --grep "B<n>"` (B38 checked on `design/shots/flow/04_tab_status.png`: the lit tab spans x 0–295 like the
@@ -129,6 +143,16 @@ the history, this note keeps only what is open.
 > (`weapon_prev` had no key) were found and fixed on their branches — see [[cloud_reports/integration-1]].
 >
 > **integration-2, 2026-10-21:** no B-rows fixed; B91 (`cloud/chests`) and B92 (`cloud/lab-9-5`) added — see [[cloud_reports/integration-2]].
+>
+> **integration-3, 2026-10-22:** **B83** fixed for the corridors by `cloud/lab-9-6` (D306, `verify_laboratory` [5]; the
+> boss hall half was D307) — row removed. **B89** fixed by `cloud/weapon-gamepad` (`options_component._rebuild_list`
+> re-grabs the same row, `verify_gamepad_parity` [1]) — row removed. Found and fixed on `cloud/weapon-gamepad` (its
+> B100–B104, renumbered): **B97** Game Menu, pad: B in content closed the menu, A on another tab did not switch
+> (`focus_router.gd`); **B98** the World Map's `_input` ate every arrow / D-pad press, a typed-array error on focus
+> (`metsys_map_component`, `game_menu.gd`); **B99** main menu: pad B did nothing, Settings opened without focus, D-pad →
+> from a sidebar tab went to Restore, segment rows dropped focus (`MainMenu.gd`, `options_component.gd`); **B100** Forge
+> categories unreachable without a mouse, dialogue choices and the Demo end without focus; **B101** bottom-bar / hotbar
+> badges fixed to one device. B93–B96 added — see [[cloud_reports/integration-3]].
 
 
 ## Playtest intake — 2026-09-29 (Sapega)
