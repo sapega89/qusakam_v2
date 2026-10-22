@@ -219,6 +219,17 @@ HALBERD_LEVEL = (
     "; the same halberd as in the picture, exactly the same size and colours, its single axe blade, spike and spear "
     "tip at the front end on the right, the hero does not grow, only one halberd, no arrow, no double axe, facing right"
 )
+# укол: модель піднімала древко до кута стійки — горизонталь названо, голова та сама мала
+HALBERD_THRUST = (
+    "; the same small halberd head as in the picture, not bigger: a single axe blade, a small spike and the spear tip "
+    "at the front end on the right, not a double axe, the pole level, not pointing at the sky, only one halberd, the "
+    "hero the same size, facing right"
+)
+# одна мала голова з одним лезом у кожному кадрі (арт-директор: у замаху ставала дволезовою сокирою)
+HALBERD_ONE = (
+    "; the same small single-blade halberd head as in the picture, not a double axe, not bigger, only one halberd, "
+    "no sword, the hero the same size, facing right"
+)
 # низько тримана алебарда: лезо звисає під древком, шип угору — не дволезова сокира
 HALBERD_LOW = (
     "; the same small halberd head as in the picture, not bigger: one single axe blade hanging down under the pole, "
@@ -1334,65 +1345,74 @@ CHARACTERS = {
             (
                 "Attack1",
                 [
+                    # арт-директор: древко лишалось під 60° як у стійці — тепер майже горизонтально, вістря на ворога
                     "FROM:CombatIdle:0:in the same side view facing right: drawing back for a thrust, leaning back "
-                    "with his weight on the back leg, knees bent, both hands pulled back to his hip holding the "
-                    "halberd pointing forward and a little up, its steel head on the right in front of his face, the "
-                    "bottom end of the pole on the left behind his back, the cape hanging behind him" + HALBERD_LEVEL,
-                    "FROM:CombatIdle:0:in the same side view facing right, the same size: a straight thrust, leaning forward, "
-                    "both arms pushed forward holding the halberd pointing forward and a little up, its steel head far "
-                    "out on the right in front of him, the bottom end of the pole at his hip, stepping forward on his "
-                    "front leg, the cape flying behind him" + HALBERD_LEVEL,
-                    "FROM:CombatIdle:0:in the same side view facing right: pulling back after the thrust, the halberd "
-                    "held in both hands in front of his chest pointing forward and a little up, its steel head on the "
-                    "right in front of him, the bottom end of the pole on the left behind him, standing on bent knees, "
-                    "the cape hanging behind him" + HALBERD_LEVEL,
+                    "with his weight on the back leg, knees bent, both hands pulled back to his hip, the halberd "
+                    "lowered and held level, the pole almost horizontal at chest height, the spear tip pointing "
+                    "straight right at an enemy in front of him, the bottom end of the pole behind his back"
+                    + HALBERD_THRUST,
+                    "FROM:CombatIdle:0:in the same side view facing right: thrusting the halberd straight forward at "
+                    "chest height, the pole level and almost horizontal, both arms pushed forward, the rear hand at "
+                    "his hip and the front hand at his chest, the spear tip far out on the right near the edge of the "
+                    "picture, lunging forward on his front leg, the cape flying behind him" + HALBERD_THRUST,
+                    "FROM:CombatIdle:0:in the same side view facing right: pulling the halberd back after the thrust, "
+                    "standing on bent knees, both hands on the pole in front of his belly, the pole level and almost "
+                    "horizontal at chest height, the spear tip pointing right in front of him, the cape hanging behind "
+                    "him" + HALBERD_THRUST,
                 ],
             ),
             (
                 "Attack2",
                 [
-                    # з першого кадру низька алебарда ставала великою подвійною сокирою — з Attack1/3 (та сама голова)
-                    "FROM:Attack1:2:winding up a low sweep, crouched on bent knees, both hands on the pole at his hip, "
-                    "the halberd lowered to point forward and down, its steel head on the right low in front of his "
-                    "feet" + HALBERD_LOW,
-                    "FROM:Attack2:0:a low sweep, crouched low and stepping forward, both hands on the pole at his hip, "
-                    "the halberd lowered to point straight forward just above the ground, its steel head far out on "
-                    "the right, the cape flying behind him" + HALBERD_LOW,
-                    "FROM:Attack2:0:the end of a low sweep, leaning forward on his bent front leg, both hands on the "
-                    "pole, the halberd pointing forward and down, its steel head on the right just above the ground "
-                    "in front of his front foot, the cape flying behind him" + HALBERD_LOW,
+                    # арт-директор: три копії однієї пози — тепер дуга: позаду, біля передньої ступні, далі за нею
+                    "FROM:CombatIdle:0:in the same side view facing right: winding up a low sweep, crouched on bent knees, his "
+                    "body twisted back, both hands on the pole at his hip, the halberd swung low behind him, its steel "
+                    "head low on the left near the ground behind his back foot, his face still in profile pointing "
+                    "right" + HALBERD_LOW,
+                    "FROM:CombatIdle:0:in the same side view facing right: a low sweep, crouched low and stepping forward, both "
+                    "hands on the pole at his hip, the halberd swinging forward just above the ground, its steel head "
+                    "low on the right beside his front foot, the cape flying behind him" + HALBERD_LOW,
+                    "FROM:CombatIdle:0:in the same side view facing right: the follow-through of a low sweep, leaning forward on "
+                    "his bent front leg, both hands on the pole, the halberd swung past his front foot, its steel head "
+                    "on the right far in front of him at the height of his knees, the cape flying behind him"
+                    + HALBERD_LOW,
                 ],
             ),
             (
                 "Attack3",
                 [
-                    # з першого кадру голова виходила більшою подвійною сокирою — з кадрів, де вона вже вдала
-                    "FROM:Attack1:0:coiled for a big lunging thrust, crouched lower on bent knees, leaning further "
-                    "back, both hands pulled back to his hip, the halberd pointing forward and up, the cape hanging "
-                    "behind him" + HALBERD_LEVEL + "; the same small halberd head as in the picture, not bigger",
-                    "FROM:Attack2:0:a deep lunging thrust, lunging far on his bent front leg, the back leg straight, "
-                    "both arms stretched forward on the pole, the halberd raised to point straight forward at chest "
-                    "height, its steel head far out on the right, the cape flying behind him" + HALBERD_LOW,
-                    "FROM:Attack2:0:recovering after the lunge, standing up on bent knees, both hands on the pole at "
-                    "his waist, the halberd pointing forward and a little down, its steel head on the right at the "
-                    "height of his knees, the cape hanging behind him" + HALBERD_LOW,
+                    # арт-директор: голова мінялась на подвійну, древко проходило крізь щелепу — нижче підборіддя
+                    "FROM:CombatIdle:0:in the same side view facing right: coiled for a big lunging thrust, crouched low on "
+                    "bent knees, leaning back, both hands pulled back to his hip, the halberd held level at the height "
+                    "of his belly, the spear tip pointing right, the pole below his chin" + HALBERD_THRUST,
+                    # з першого кадру древко піднімалось до щелепи — з Attack3/1, де воно вже на висоті живота; «довгий крок» —
+                    # інакше випад виходив копією Attack3/1
+                    "FROM:Attack3:0:a deep lunging thrust: his whole body moved far forward to the right in a long "
+                    "low stride, the front foot far forward, the back leg stretched straight behind him, both arms "
+                    "fully stretched out forward, the halberd pushed far forward, still level at the height of his "
+                    "belly as in the picture, its spear tip at the right edge of the picture, the pole below his "
+                    "chin, the cape flying behind him" + HALBERD_THRUST,
+                    "FROM:Attack3:0:recovering after the lunge, standing up on bent knees, both hands on the pole at "
+                    "his waist, the halberd tilted forward and down, its steel head low on the right just above the "
+                    "ground in front of his front foot, the cape hanging behind him" + HALBERD_LOW,
                 ],
             ),
             (
                 "Heavy",
                 [
-                    # з першого кадру — друга голова героя під лезом; з Attack1/1 (нахил назад, та сама алебарда)
-                    "FROM:Attack1:0:his face and snout still pointing right, only one head: a two-handed overhead "
-                    "wind-up, leaning further back, both hands raised up beside his head gripping the pole, the "
-                    "halberd tilted back over his shoulder, its steel head high above and behind the back of his "
-                    "head, knees bent, the cape hanging behind him" + HALBERD_KEEP,
-                    "FROM:CombatIdle:0:in the same side view facing right: chopping a heavy blow down, both hands "
-                    "gripping the pole in front of his face, the halberd pointing forward and up, its steel head on "
-                    "the right high in front of him, stepping forward, the cape flying behind him" + HALBERD_LEVEL,
-                    "FROM:CombatIdle:0:in the same side view facing right: the end of a heavy downward chop, crouched "
-                    "low and leaning forward, both hands on the pole, the halberd pointing forward and down, its steel "
-                    "head on the right resting on the ground far in front of his front foot, the cape flying up "
-                    "behind him" + HALBERD_LEVEL,
+                    # арт-директор: голова мінялась на подвійну сокиру, удар ішов угору — одна дуга згори вниз
+                    "FROM:CombatIdle:0:his face and snout still pointing right, only one head: a two-handed overhead "
+                    "wind-up, leaning back, both hands raised up beside his head gripping the pole, the halberd tilted "
+                    "back over his shoulder, its steel head high above and behind the back of his head, knees bent, "
+                    "the cape hanging behind him" + HALBERD_ONE,
+                    # «рубає вниз» модель ставила древко сторч — тут голова попереду на висоті його голови, древко майже лежить
+                    "FROM:CombatIdle:0:in the same side view facing right: chopping a heavy blow down, leaning forward and "
+                    "stepping forward, both hands gripping the pole in front of his chest, the halberd held out in "
+                    "front of him nearly horizontal, sloping a little down at the front, its steel head far out on the "
+                    "right at the height of his head, the cape flying behind him" + HALBERD_ONE,
+                    "FROM:CombatIdle:0:in the same side view facing right: the end of a heavy downward chop, crouched low and "
+                    "leaning forward, both hands on the pole, the halberd pointing forward and down, its steel head "
+                    "resting on the ground in front of his front foot, the cape flying up behind him" + HALBERD_LOW,
                 ],
             ),
             (

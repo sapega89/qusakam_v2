@@ -13,20 +13,26 @@ Not wired into `Player.tscn` yet.
   **88** (= row 56 of the 64×64 frames + 32). Faces right; flip for the left.
 - The halberd head (axe blade, back spike, spear tip) is drawn in the sword's metal key colours on a brown wooden
   pole — the colours a palette-swap shader recolours per item (BACKLOG 42). The pole is about the hero's height.
-- Two-handed in the combat poses (D267: thrusts and a low sweep). Run and air carry it in one hand, slanted back
-  over the shoulder with the head behind the hero (the model kept a helmet on him when asked for the head forward).
-- Where the halberd is level or low the model draws the head as a symmetric double blade; upright it is a single
-  blade with a spike. Same colours either way.
-- The pole reaches the cell edges in the low poses (`Attack2`, `Attack3/2–3`, `Heavy/3`: x 4–91).
+- Two-handed in the combat poses (D267: thrusts and a low sweep). Air carries it in one hand, slanted back over the
+  shoulder with the head behind the hero (the model kept a helmet on him when asked for the head forward).
+- **One halberd head in every attack frame.** Level or low, the model drew a big symmetric double axe, so
+  `Scripts/Tools/halberd_fixups.py` (run it after every `comfy_sprite.py hero_weapon_halberd`, which overwrites the
+  frames) replaces the model's head in `Attack1–3` and `Heavy` with the small single-blade head of `CombatIdle/1`,
+  turned to each frame's pole angle with RotSprite (Scale2x ×8, nearest rotation, centre sampling). Facing forward
+  the blade hangs below the pole.
+- **Run** is built by the same script, not by the model (the model changed the head size and the slant every frame):
+  the artist's run frames with one fixed halberd behind his back — the same head, the pole 29° off vertical, head up
+  and behind; it moves only with his bounce.
+- The pole reaches the cell edges in the low poses (`Attack1`, `Attack2`, `Attack3`, `Heavy/3`: x 0–92).
 
 | Folder | Frames | Pose |
 |---|---|---|
 | `CombatIdle/1–4` | 4 | stance, both hands on the pole, head up and forward; 2–3 = breathing (`BOB:76`) |
-| `Run/1–7` | 7 | the artist's run (no `Run/2`, as for the sword); feet follow his bounce (rows 88–90) |
+| `Run/1–7` | 7 | the artist's run (no `Run/2`, as for the sword) + the fixed halberd behind him; feet follow his bounce (rows 88–90) |
 | `Air/1–3` | 3 | jump rise, apex, fall (from `Jump/2`, `Jump/3`, `Fall/2`) |
-| `Attack1/1–3` | 3 | thrust: lean back, step-in thrust (head forward and up), recover |
-| `Attack2/1–3` | 3 | low sweep: head low before the feet, pole level just above the ground, end |
-| `Attack3/1–3` | 3 | finisher: coiled lean-back, deep lunge with the pole level at chest height, recover low |
-| `Heavy/1–3` | 3 | two-handed overhead wind-up (head behind his head), chop, head on the ground in front |
+| `Attack1/1–3` | 3 | thrust with the pole level at chest height: pull back, lunging thrust (tip at x 89), recover |
+| `Attack2/1–3` | 3 | low sweep arc: head low behind his back foot, head sweeping past the front foot, follow-through at knee height |
+| `Attack3/1–3` | 3 | finisher: coiled with the pole at the belly, long low lunge (pole below the chin), recover with the head low |
+| `Heavy/1–3` | 3 | overhead arc: wind-up (head high behind his head), chop (head in front at head height), head on the ground in front |
 | `Block/1` | 1 | pole upright before the chest, head above his head |
 | `Hurt/1` | 1 | recoil, head tipped back, halberd tilted over the shoulder |
