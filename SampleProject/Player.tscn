@@ -78,6 +78,19 @@
 [ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/polearm.tres" id="lib_polearm"]
 [ext_resource type="AnimationLibrary" path="res://SampleProject/Resources/Player/WeaponAnimations/dual_sword_dagger.tres" id="lib_dual_sword_dagger"]
 [ext_resource type="Shader" path="res://SampleProject/Shaders/weapon_palette.gdshader" id="weapon_palette"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Draw/1.png" id="bw_draw1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Draw/2.png" id="bw_draw2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Draw/3.png" id="bw_draw3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Shoot/1.png" id="bw_shoot1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Shoot/2.png" id="bw_shoot2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Charged/1.png" id="bw_charged1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Charged/2.png" id="bw_charged2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/1.png" id="bw_run1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/2.png" id="bw_run2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/3.png" id="bw_run3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/4.png" id="bw_run4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/5.png" id="bw_run5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/bow/Run/6.png" id="bw_run6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_weapon_palette"]
 resource_local_to_scene = true
@@ -1154,6 +1167,187 @@ tracks/1/keys = {
 "values": [Vector2(0, -16)]
 }
 
+[sub_resource type="Animation" id="Animation_bow_idle"]
+resource_name = "Idle"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("bw_shoot2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_bow_run"]
+resource_name = "Run"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.133, 0.267, 0.4, 0.533, 0.667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("bw_run1"), ExtResource("bw_run2"), ExtResource("bw_run3"), ExtResource("bw_run4"), ExtResource("bw_run5"), ExtResource("bw_run6")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_bow_attack_1"]
+resource_name = "Attack1"
+length = 0.22
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.13),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("bw_draw3"), ExtResource("bw_shoot1"), ExtResource("bw_shoot2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_bow_draw"]
+resource_name = "Draw"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [ExtResource("bw_draw1"), ExtResource("bw_draw2"), ExtResource("bw_draw3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_bow_charged"]
+resource_name = "Charged"
+length = 0.24
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("bw_charged1"), ExtResource("bw_charged2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="Animation" id="Animation_bow_release"]
+resource_name = "Release"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.12),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("bw_shoot1"), ExtResource("bw_shoot2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bow"]
+_data = {
+&"Idle": SubResource("Animation_bow_idle"),
+&"Run": SubResource("Animation_bow_run"),
+&"Attack1": SubResource("Animation_bow_attack_1"),
+&"Draw": SubResource("Animation_bow_draw"),
+&"Charged": SubResource("Animation_bow_charged"),
+&"Release": SubResource("Animation_bow_release")
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sword"]
 _data = {
 &"Idle": SubResource("Animation_sword_idle"),
@@ -1245,6 +1439,7 @@ libraries/dagger = ExtResource("lib_dagger")
 libraries/mace = ExtResource("lib_mace")
 libraries/polearm = ExtResource("lib_polearm")
 libraries/dual_sword_dagger = ExtResource("lib_dual_sword_dagger")
+libraries/bow = SubResource("AnimationLibrary_bow")
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=1913987461]
 monitoring = false

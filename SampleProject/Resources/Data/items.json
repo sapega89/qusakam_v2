@@ -282,6 +282,25 @@
 			"weapon_profile": {"reach": 77, "cooldown": 0.3, "height": 32, "knockback": 0}
 		},
 		{
+			"id": "short_bow",
+			"name": "Short Bow",
+			"description": "A desert short bow. Tap attack to loose an arrow, hold it to draw a charged shot that pierces. Attack: +12",
+			"type": "weapon",
+			"category": "bow",
+			"rarity": "common",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 110,
+			"buy_price": 220,
+			"stats": {
+				"attack": 12,
+				"defense": 0,
+				"magic": 0
+			},
+			"grip": "bow",
+			"weapon_profile": {"cooldown": 0.3, "knockback": 0}
+		},
+		{
 			"id": "iron_armor",
 			"name": "Iron Armor",
 			"description": "Heavy iron armor. Defense: +20",

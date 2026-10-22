@@ -9,6 +9,10 @@ func _ready() -> void:
 	EventBus.player_heavy_windup.connect(func(_player: Node, _direction: int) -> void:
 		AudioManager.play(&"heavy_windup")
 		AudioManager.play(&"hero_effort"))
+	# Лук (D380): натяг тихо скрипить, постріл свистить; заряджений — нижче й гучніше
+	EventBus.player_bow_drawn.connect(func(_player: Node) -> void: AudioManager.play(&"bow_draw"))
+	EventBus.player_shot.connect(func(_player: Node, charged: bool) -> void:
+		AudioManager.play(&"bow_shot_charged" if charged else &"bow_shot"))
 	EventBus.attack_started.connect(_on_attack_started)
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)

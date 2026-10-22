@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Combat/arrow.tscn" id="1_arrow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Projectiles/arrow_charged.png" id="2_tex"]
+
+[sub_resource type="RectangleShape2D" id="Shape_tip"]
+size = Vector2(20, 12)
+
+[node name="ArrowCharged" instance=ExtResource("1_arrow")]
+speed = 1200.0
+pierce = true
+strength = 2
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(14, 0)
+shape = SubResource("Shape_tip")
+
+[node name="Sprite2D" parent="." index="1"]
+offset = Vector2(0, 2.5)
+texture = ExtResource("2_tex")

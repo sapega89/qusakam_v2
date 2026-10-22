@@ -420,6 +420,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(4, 6)  # 4-6 coins (harder, more reward)
 		"fast":
 			return randi_range(1, 3)  # 1-3 coins
+		"archer":
+			return randi_range(1, 3)  # D386: як fast
 	push_error("DefaultEnemy: unknown enemy_type '%s'" % enemy_stats.enemy_type)
 	return 0
 

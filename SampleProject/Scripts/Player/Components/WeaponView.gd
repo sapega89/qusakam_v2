@@ -27,6 +27,8 @@ const SLASH_TRAIL_SCENE := preload("res://SampleProject/Scenes/FX/SlashTrail.tsc
 const GRIP := 3
 ## Колючу зброю виносять уперед, решту — замахом (категорії items.json).
 const THRUST := ["polearm", "dagger"]
+## Зброя без накладного спрайта: її малюють лише кадри героя (лук, D385) — поза ними (стрибок, перекат) її не видно.
+const DRAWN_ONLY := ["bow"]
 ## Де кулак героя в кадрах (px світу від центру героя, обличчям праворуч), виміряно по кулаку:
 ## хода 1 — стійка, біг 4 — замах, біг 2 — удар; Heavy/1 — кулаки над головою, Heavy/2 — внизу перед собою,
 ## Block/1 — перед обличчям, Hurt/1 — рука відкинута.
@@ -117,7 +119,7 @@ func _process(_delta: float) -> void:
 	scale.x = player.last_direction
 	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
 	var in_frame: bool = _drawn_in_frame()
-	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not in_frame
+	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not in_frame and _category not in DRAWN_ONLY
 	if _body_material.get_shader_parameter(&"active") != in_frame:
 		_body_material.set_shader_parameter(&"active", in_frame)
 	off_pivot.visible = _dual and pivot.visible
@@ -155,8 +157,13 @@ func _refresh() -> void:
 	if not visible:
 		return
 	_category = item.category
+	# Лук (D385) без палітри: iron = ключ, кадри лука не перефарбовуються
+	_set_palette(item.get("palette", "iron"))
+	if _category in DRAWN_ONLY:
+		_dual = false
+		_off_category = ""
+		return
 	_set_texture(sprite, item.id)
-	_set_palette(item.palette)
 	var off: Dictionary = equipment.get_off_hand_item()
 	_dual = not off.is_empty()
 	off_pivot.visible = _dual
