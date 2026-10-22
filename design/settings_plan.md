@@ -67,8 +67,8 @@ the scrollbar is too faint to see (#79).
   `story.json` too; register both in `project.godot` `locale/translations`. Who writes the Ukrainian UI strings is
   Sapega's call — draft them marked for review.
 - `verify_settings.gd`: every row → change → value applied → restart round trip → Restore. ✅ `[22]`.
-- Open: settings live in the slot file, so with no save in the last-used slot a change made from the Main Menu
-  does not survive a restart (see the report).
+- ✅ B118 (`cloud/settings-store`): settings are one file per install, `<save_dir>/settings.sav`, written on every
+  change and on Restore, read once at boot; slot files carry no settings. `[9]` covers a change with no slot save.
 
 ### Slice 2 — Controls split (D193, #98) — ✅ built 2026-10-22 (D397, `cloud/ui-bugs`)
 - Keyboard & Mouse / Gamepad tabs over the maaacks list; device filter on rebinding; mouse buttons accepted.
