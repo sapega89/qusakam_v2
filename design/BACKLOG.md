@@ -357,6 +357,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
   `ProjectMusicController`; six loops in `Resources/Audio/Music/`. Tracks are provisional (Q38).
   Test: `verify_music.gd`.
 
+### Fight music — [[music_plan]] slice 3 (D414, #34)
+- A battle track for any fight, a boss track for the two bosses; room tracks stay. Exists: `ProjectMusicController.play_stream`,
+  `EventBus.combat_state_changed`, the boss-room fight hooks. Waits on: Sapega's pick of the CC0 tracks (3b only).
+- **Resume:** slice 3a — switch in `SoundHooks._on_combat_state_changed`, test streams, extend `verify_music.gd`.
+
 ### ✅ Room state — built 2026-10-14
 - [[room_state_plan]]. `Game.room_state` (saved by `FlagsModule`); `RoomEnemySpawner` remembers
   each fight's dead and the HP of the living (D152); the fight line is not replayed. Test:

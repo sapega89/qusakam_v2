@@ -36,6 +36,8 @@ Merged already: `cloud/bow`, `cloud/weapons-all` and the integrators (round 4); 
 6. **Bow frames for the other poses** (B110): Air 1–3, Block, Hurt, Roll in the bow grip; then a cloud task adds them to
    `AnimationLibrary_bow`.
 7. **A grass idle sheet** (BACKLOG 19 leftover) for `Scenes/Backgrounds/Decor/`.
+8. **UI art pass** — UI art is hand-made, never generated (D239). Waiting for it: the speech-bubble body and tail
+   (#26; Claude's temporary PNGs since D178 — Sapega 2026-10-22: keep them until this pass).
 
 ## Code (cloud or laptop)
 

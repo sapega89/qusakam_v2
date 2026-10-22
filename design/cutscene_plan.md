@@ -49,7 +49,7 @@ marked `[ЧЕРНЕТКА]` for Sapega to edit.
 
 D176 (2026-10-15): Canyon abduction, Canyon descent and Mayor's Hall → Laboratory get **fully
 staged** cutscenes. Screenplay with shot lists and draft lines: [[cutscene_script]]. Scene 3 waits on
-Q51 (its story). Lab boss intro: not chosen.
+Q51 (its story). Lab boss intro: not chosen then; built since as a camera pan + the cloak talk (D307) — Sapega closed #22 on that, 2026-10-22.
 
 ## Built (2026-10-13)
 
