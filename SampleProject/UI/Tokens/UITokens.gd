@@ -289,6 +289,26 @@ const SIDEBAR_TAB_HEIGHT := 45
 const HURT_RED := Color("e0281e")
 const HURT_VIGNETTE := [[Color("e0281e", 0.0), 0.72], [Color("e0281e", 0.55), 1.0]]
 
+# ── Цифри урону (D66; Sapega 2026-10-22 «цифри урону по мені і ворогу»): над тілом, піднімаються й гаснуть.
+# Figma кадру не має — агентське рішення, див. design/cloud_reports/combat-stats.md.
+const DAMAGE_NUMBER_ENEMY := TEXT_PRIMARY     # удар героя по ворогу
+const DAMAGE_NUMBER_HERO := HURT_RED          # удар по героєві — інший колір, ніж по ворогу
+const DAMAGE_NUMBER_CRIT := ACCENT            # крит героя (D393) — золото, більший
+const DAMAGE_NUMBER_EVADED := TEXT_SECONDARY  # слово «Evade» над героєм замість 0
+const DAMAGE_NUMBER_OUTLINE := BACKGROUND
+# Растр шрифту; сцена DamageNumber зменшує вузол ×0.4, камера гри ×2.25 — на екрані ≈ 0.9 цього розміру
+# (цифри Cormorant старого стилю, низькі — тому розмір більший за текст HUD).
+const DAMAGE_NUMBER_SIZE := 52
+const DAMAGE_NUMBER_CRIT_SIZE := 72
+const DAMAGE_NUMBER_WORD_SIZE := 40
+const DAMAGE_NUMBER_OUTLINE_SIZE := 16
+const DAMAGE_NUMBER_RISE := 28.0              # світові px угору за час життя
+const DAMAGE_NUMBER_TIME := 0.8               # с; друга половина — згасання
+const DAMAGE_NUMBER_CRIT_POP := 1.4           # крит з'являється більшим і за DAMAGE_NUMBER_POP_TIME стискається
+const DAMAGE_NUMBER_POP_TIME := 0.15
+const DAMAGE_NUMBER_GAP := 18.0               # світові px над верхом тіла: над смужкою HP ворога
+const DAMAGE_NUMBER_SPREAD: Array[float] = [0.0, -10.0, 10.0]  # цифри поспіль не лягають одна на одну
+
 # ── Game Over (Figma: game-over-screen 41:83) ─────────────────────────────────
 const GAME_OVER_RED := Color("9e1b1b")
 const GAME_OVER_FRAME := Color("5c5655")

@@ -16,7 +16,8 @@ var default_settings = {
 	"resolution": "1920x1080",
 	"fps_limit": 60,
 	"language": "en",  # BACKLOG 31: англійська — основна мова (D121); українська — у Settings → Game → Language
-	"tutorial_windows": true  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
+	"tutorial_windows": true,  # D289: підказка відкриває вікно туторіалу; вимкнено — лише плашка
+	"damage_numbers": true  # D66: цифри урону над героєм і ворогами (DamageNumbers)
 }
 
 # Текущие настройки

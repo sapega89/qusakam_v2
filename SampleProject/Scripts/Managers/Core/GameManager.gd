@@ -18,6 +18,7 @@ const LootSystemScript = preload("res://SampleProject/Scripts/Systems/LootSystem
 const DialogueManagerScript = preload("res://SampleProject/Scripts/Systems/DialogueManager.gd")
 const InventoryManagerScript = preload("res://SampleProject/Scripts/Systems/InventoryManager.gd")
 const VFXHooksScript = preload("res://SampleProject/Scripts/Systems/VFXHooks.gd")
+const DamageNumbersScript = preload("res://SampleProject/Scripts/FX/DamageNumbers.gd")
 const XPManagerScript = preload("res://SampleProject/Scripts/Managers/XPManager.gd")
 const TutorialManagerScript = preload("res://SampleProject/Scripts/Managers/TutorialManager.gd")
 const GameFlowScript = preload("res://SampleProject/Scripts/Managers/Story/GameFlow.gd")
@@ -154,6 +155,11 @@ func _create_managers() -> void:
 	add_child(vfx_hooks)
 	print("✨ GameManager: VFXHooks created and added as child")
 	print("🔧 GameManager: VFXHooks enabled = ", vfx_hooks.enabled)
+
+	# Цифри урону над героєм і ворогами (D66)
+	var damage_numbers: Node = DamageNumbersScript.new()
+	damage_numbers.name = "DamageNumbers"
+	add_child(damage_numbers)
 
 	# Регистрируем менеджеры в ServiceLocator сразу после создания
 	# ServiceLocator - это autoload экземпляр, используем call_deferred для безопасности
