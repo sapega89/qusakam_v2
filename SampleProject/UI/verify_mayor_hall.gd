@@ -95,12 +95,31 @@ func _snap() -> Dictionary:
 			"hud": _hud_visible(), "control": not game.player.event, "speed": Engine.time_scale,
 			"handler": game.player.defeat_handler.is_valid()}
 
+## Музика бою (D414): що зараз грає ProjectMusicController і трек вузла Music самої зали.
+func _music() -> AudioStream:
+	var player: AudioStreamPlayer = root.get_node("ProjectMusicController").music_stream_player
+	return player.stream if is_instance_valid(player) else null
+
+func _hall_track() -> AudioStream:
+	var state := (load(HALL) as PackedScene).get_state()
+	for n in state.get_node_count():
+		if state.get_node_name(n) == &"Music":
+			for i in state.get_node_property_count(n):
+				if state.get_node_property_name(n, i) == &"stream":
+					return state.get_node_property_value(n, i)
+	return null
+
+func _room_music_back(label: String) -> void:
+	await _until(func() -> bool: return _music() == _hall_track(), 8.0)
+	ck(_music() == _hall_track(), "%s: the hall's own Music is back (%s)" % [label, _music().resource_path if _music() else "none"])
+
 func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.state == "FIGHT", "%s: fight state (%s)" % [label, s.state])
 	ck(s.boss_visible and s.hole and s.barrier and not s.queue, "%s: boss out, hole shown, west barred, queue gone (%s)" % [label, s])
 	ck(s.hud and s.control and is_equal_approx(s.speed, 1.0), "%s: HUD and control back, normal speed" % label)
 	ck(s.handler, "%s: the hall owns the hero's defeat (no Game Over)" % label)
 	ck(s.objective == "Survive the Brass Collector", "%s: objective (%s)" % [label, s.objective])
+	ck(_music() == root.get_node("AudioManager").music["boss"], "%s: the boss track plays (D414)" % label)
 
 func _in_lab(label: String) -> void:
 	await _until(func() -> bool: return game.map != null and game.map.scene_file_path.ends_with("LabCells.tscn"), 10.0)
@@ -239,6 +258,7 @@ func _initialize() -> void:
 	ck(boss.is_dead, "the Brass Collector falls to a real attack")
 	await _until(func() -> bool: return started.has("MayorHall_Victory"), 6.0)
 	ck(started.has("MayorHall_Victory"), "the victory talk (%s)" % [started])
+	await _room_music_back("win")
 	ck(gained.has(400), "+400 XP from the boss (%s)" % [gained])
 	for item: String in before:
 		var want: int = {"silver_ingot": 2, "silver_sword": 1}[item]
@@ -264,6 +284,7 @@ func _initialize() -> void:
 	game.player.global_position = Vector2(boss.global_position.x - 90.0, game.player.global_position.y)
 	await _until(func() -> bool: return started.has("MayorHall_Defeat"), 15.0)
 	ck(started.has("MayorHall_Defeat"), "the defeat talk (%s)" % [started])
+	await _room_music_back("lose")
 	ck(get_first_node_in_group(&"game_over_screen") == null, "no Game Over screen on defeat")
 	ck(not game.get_quest_flag("mayor_boss_defeated") and gained.is_empty() and inv.get_item_count("coin") == coins, "no win flag, XP or loot")
 	await _drain()

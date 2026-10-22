@@ -115,6 +115,24 @@ func _snap() -> Dictionary:
 			"hud": _hud_visible(), "control": not game.player.event, "speed": Engine.time_scale,
 			"handler": game.player.defeat_handler.is_valid()}
 
+## Музика бою (D414): що зараз грає ProjectMusicController і трек вузла Music самої зали.
+func _music() -> AudioStream:
+	var player: AudioStreamPlayer = root.get_node("ProjectMusicController").music_stream_player
+	return player.stream if is_instance_valid(player) else null
+
+func _hall_track() -> AudioStream:
+	var state := (load(HALL) as PackedScene).get_state()
+	for n in state.get_node_count():
+		if state.get_node_name(n) == &"Music":
+			for i in state.get_node_property_count(n):
+				if state.get_node_property_name(n, i) == &"stream":
+					return state.get_node_property_value(n, i)
+	return null
+
+func _room_music_back(label: String) -> void:
+	await _until(func() -> bool: return _music() == _hall_track(), 8.0)
+	ck(_music() == _hall_track(), "%s: the hall's own Music is back (%s)" % [label, _music().resource_path if _music() else "none"])
+
 func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.state == "FIGHT", "%s: fight state (%s)" % [label, s.state])
 	ck(s.locked and not s.gates_open, "%s: the arena is locked, the gates down (%s)" % [label, s])
@@ -123,6 +141,7 @@ func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.handler, "%s: the hall owns the hero's defeat (the cloak)" % label)
 	ck(s.objective == "Defeat the fire djinn", "%s: objective (%s)" % [label, s.objective])
 	ck(s.flags.get("lab_boss_talk_complete", false) and not s.flags.get("lab_boss_fight_complete", false), "%s: talk flag set, fight not won" % label)
+	ck(_music() == root.get_node("AudioManager").music["boss"], "%s: the boss track plays (D414)" % label)
 
 ## Справжній стрибок з підлоги під містком: герой стає на нього (односторонній — знизу проходить наскрізь).
 ## Ступні — низ колізії героя; на підлозі (y 384) вони на feet px нижче за його позицію.
@@ -279,6 +298,7 @@ func _initialize() -> void:
 	await _until(func() -> bool: return get_first_node_in_group(&"game_over_screen") != null, 5.0)
 	ck(get_first_node_in_group(&"game_over_screen") != null and paused, "the Game Over screen, game paused")
 	ck(not game.player.defeat_handler.is_valid() and not game.get_quest_flag("lab_boss_fight_complete"), "handler cleared, no win flag")
+	await _room_music_back("lose")
 	paused = false
 	for layer in game.find_children("GameOverLayer", "CanvasLayer", false, false):
 		layer.free()
@@ -310,6 +330,7 @@ func _initialize() -> void:
 	await _until(func() -> bool: return started.has("Laboratory_AfterBoss"), 6.0)
 	ck(started.has("Laboratory_AfterBoss"), "Kusakam's cloak line (%s)" % [started])
 	ck(_state() == "OPEN" and not _hall().is_arena_locked(), "OPEN, the arena unlocked")
+	await _room_music_back("win")
 	await _drain()
 	await _until(func() -> bool: return game.get_quest_flag("lab_after_boss_complete") and root.get_node_or_null(^"CutsceneSkipPrompt") == null, 10.0)
 	ck(game.get_quest_flag("lab_boss_fight_complete") and game.get_quest_flag("lab_after_boss_complete"), "fight and after-boss flags")

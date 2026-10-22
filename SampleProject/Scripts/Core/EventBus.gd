@@ -175,6 +175,10 @@ signal player_evaded(attacker: Node)
 ## Почався / скінчився бій героя (D268): зброя з-за спини в руку й назад.
 @warning_ignore("unused_signal")
 signal combat_state_changed(in_combat: bool)
+## Бій з босом у його залі почався / скінчився (D414): LabBoss і MayorHall; [param arena] — сама зала.
+## Кінець — смерть боса або поразка героя; зала, що зникла посеред бою, теж його кінчає (SoundHooks).
+@warning_ignore("unused_signal")
+signal boss_fight_changed(arena: Node, active: bool)
 ## Замах важкого удару героя (D264) — WeaponView піднімає зброю.
 @warning_ignore("unused_signal")
 signal player_heavy_windup(player: Node, direction: int)

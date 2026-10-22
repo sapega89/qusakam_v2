@@ -18,4 +18,16 @@ between scenes. To change a room's track, change that node's `stream` in the edi
 | City Gates | sunblade_horizon.ogg |
 | Village | ash_and_oasis.ogg |
 
+## Fight music (D414, music_plan slice 3)
+
+While the hero fights (`EventBus.combat_state_changed`) `SoundHooks` asks `ProjectMusicController.play_stream` for
+the battle track; during the two boss fights (`EventBus.boss_fight_changed` from `LabBoss` / `MayorHall`) the boss
+track wins over it; when both end, the room's own `Music` stream comes back. Paths: `Resources/Data/sound_events.json`
+→ `music`.
+
+| Use | Track | Status |
+|---|---|---|
+| fight | time_for_adventure.mp3 (the menu's track) | **placeholder** — the CC0 pick is slice 3b (Sapega) |
+| boss | sunblade_horizon.ogg (City Gates' track) | **placeholder** — the CC0 pick is slice 3b (Sapega) |
+
 Provisional (Q38 — Sapega: "connect it somehow for now"). Checked by `verify_music.gd`.
