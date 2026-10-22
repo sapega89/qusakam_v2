@@ -19,8 +19,7 @@ const _VARIATIONS := {
 	State.DISABLED: &"InteractionPromptDisabled",
 }
 
-## Останній пристрій вводу — спільний для всіх підказок.
-static var _using_gamepad := false
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 @export var action_text: String = "Interact":
 	set(value):
@@ -48,22 +47,13 @@ func _ready() -> void:
 	_label.text = action_text
 	_apply_state()
 	_apply_badge()
+	get_node(^"/root/EventBus").input_device_changed.connect(_apply_badge.unbind(1))
 
 
-func _input(event: InputEvent) -> void:
-	var gamepad := _using_gamepad
-	if event is InputEventJoypadButton:
-		gamepad = true
-	elif event is InputEventJoypadMotion and absf(event.axis_value) > 0.5:
-		gamepad = true
-	elif event is InputEventKey or event is InputEventMouseButton:
-		gamepad = false
-	_using_gamepad = gamepad
-	_apply_badge()
-
-
+## Пристрій — спільний InputGlyphs (увесь ввід бачить InputDeviceWatcher). Власний прапорець підказки оновлювався
+## лише поки якась підказка була в дереві: у новій кімнаті вона показувала E, хоч гравець тримав стік.
 func is_using_gamepad() -> bool:
-	return _using_gamepad
+	return InputGlyphs.using_gamepad
 
 
 func _apply_state() -> void:
@@ -74,6 +64,6 @@ func _apply_state() -> void:
 
 
 func _apply_badge() -> void:
-	var tex: Texture2D = BADGE_GAMEPAD if _using_gamepad else BADGE_KEYBOARD
+	var tex: Texture2D = BADGE_GAMEPAD if InputGlyphs.using_gamepad else BADGE_KEYBOARD
 	if _badge.texture != tex:
 		_badge.texture = tex
