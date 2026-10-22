@@ -111,9 +111,9 @@ always exists, so the template is also the first real row). More rows =
 | 2 | `party_status_panel` ✅ done 2026-10-12 (D127) — `%Card` template, theme `PortraitFrame` / `LevelBadge` / `HpBar` / `SpBar` / `CardSelect` | 0 nodes, 0 styleboxes |
 | 3 | `stats_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
 | 4 | `equipment_component` ✅ done 2026-10-22 (D423, `cloud/ui-fixes`) | 0 nodes, 0 styleboxes |
-| 5 | `skills_component` | 13 nodes, 1 stylebox |
+| 5 | `skills_component` ✅ done 2026-10-22 (D426, `cloud/rows-2`) | 0 nodes |
 | 6 | `options_component` | 15 nodes, 1 stylebox |
-| 7 | `journal_component` ✅ done 2026-10-12 ([[prologue_journal_plan]]) · `inventory_component`, `bottom_bar` | 0 / 1 / 4 nodes |
+| 7 | `journal_component` ✅ done 2026-10-12 ([[prologue_journal_plan]]) · `inventory_component`, `bottom_bar` ✅ done 2026-10-22 (D426) | 0 / 0 / 0 nodes |
 
 Out of this plan: `skill_hotbar` and `player_vitals_panel` (Combat HUD, not the
 Game Menu) — same rule would apply, separate decision.
