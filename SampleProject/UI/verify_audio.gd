@@ -400,25 +400,40 @@ func _voices() -> void:
 	_heard(&"enemy_death", &"Voice", "an enemy killed")
 	_not_heard(&"enemy_grunt", "the killing blow")
 
-	# Bosses (D278): no boss stands in a room yet — an enemy in the boss group roars, shouts, dies with a roar.
-	var boss: Node = null
-	for node in game.map.find_children("*", "CharacterBody2D", true, false):
-		if node.is_in_group(&"enemies") and node.is_alive():
-			boss = node
-			break
-	boss.add_to_group(&"boss")
-	boss.Max_Health = 9999
-	boss.current_health = 9999
+	# Bosses (D278, D310): each real boss has its own voice — the Brass Collector roars, the djinn roars and laughs.
+	for scene: String in ["brass_collector", "fire_djinn"]:
+		var boss: Node = load("res://SampleProject/Scenes/Characters/Bosses/%s.tscn" % scene).instantiate()
+		boss.process_mode = Node.PROCESS_MODE_DISABLED  # лише голос: ШІ не потрібне
+		game.map.add_child(boss)
+		boss.global_position = hero.global_position + Vector2(400, 0)
+		var voice: Dictionary = am.boss_voices[boss.enemy_stats.enemy_type]
+		boss.Max_Health = 9999
+		boss.current_health = 9999
+		_mark()
+		for i in 3:
+			eb.attack_started.emit(boss, hero)
+		_heard(StringName(voice.roar), &"Voice", "%s's first swing" % scene)
+		_heard(StringName(voice.shout), &"Voice", "%s's later swing" % scene)
+		_not_heard(&"enemy_grunt", scene)
+		_mark()
+		boss.current_health = 3
+		boss.take_damage(5, hero)
+		_heard(StringName(voice.death), &"Voice", "%s killed" % scene)
+		boss.bar.queue_free()
+		boss.queue_free()
+	ck(am.boss_voices.brass_collector.roar == "brass_collector_roar" and am.boss_voices.fire_djinn.roar == "fire_djinn_roar"
+			and am.boss_voices.fire_djinn.shout == "fire_djinn_laugh", "the bosses' own roars, the djinn laughs (%s)" % [am.boss_voices])
+	# Голос сцени (Cutscene.voice): звучить, а під пропуском — ні.
+	var cs = load("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd").new()
 	_mark()
-	for i in 3:
-		eb.attack_started.emit(boss, hero)
-	_heard(&"boss_roar", &"Voice", "a boss's first swing")
-	_heard(&"boss_shout", &"Voice", "a boss's later swing")
-	_not_heard(&"enemy_grunt", "a boss")
+	cs.voice(&"prisoner_incantation")
+	_heard(&"prisoner_incantation", &"Voice", "a cutscene voice")
+	cs._skip()
 	_mark()
-	boss.current_health = 3
-	boss.take_damage(5, hero)
-	_heard(&"boss_death", &"Voice", "a boss killed")
+	cs.voice(&"fire_djinn_laugh")
+	_not_heard(&"fire_djinn_laugh", "a cutscene voice under a skip")
+	cs.end()
+	await process_frame
 
 	# Hero: pain voice; heavy attack shout. Companion: the guard's call on assist.
 	await create_timer(1.2).timeout

@@ -107,6 +107,7 @@ func _cells_cutscene() -> void:
 	await _walk(prisoner, ($Marks/PrisonerTable as Node2D).global_position, PRISONER_WALK, cs)
 	await cs.say("Lab_Cells_Prisoner")
 	_play(prisoner, &"shout")
+	cs.voice(&"prisoner_incantation")  # закляття вголос (Q64, D310)
 	cs.shake(4.0, SHOUT_SHAKE)
 	await cs.wait(SHOUT_SHAKE)
 	_play(prisoner, &"collapse")
@@ -120,6 +121,7 @@ func _cells_cutscene() -> void:
 	djinn.anim_player.play(&"idle")
 	var rise := create_tween()
 	rise.tween_property(djinn, ^"modulate:a", 1.0, DJINN_RISE)
+	cs.voice(&"fire_djinn_laugh")
 	await cs.move(djinn, djinn.global_position + Vector2(0, -40), DJINN_RISE)
 	await cs.say("Lab_Cells_Djinn")
 

@@ -78,6 +78,7 @@ func _queue_and_burst() -> void:
 	create_tween().tween_property(collector, ^"modulate:a", 1.0, EMERGE_TIME * 0.4)
 	await cs.move(collector, ($Marks/CollectorStand as Node2D).global_position, EMERGE_TIME)
 	collector.anim_player.play(&"idle")
+	cs.voice(&"brass_collector_roar")
 	_set_barrier(true)
 	await cs.say("MayorHall_WallBurst")
 	# Троє тікають на захід, геть із зали

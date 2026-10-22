@@ -27,6 +27,8 @@ var _prompt: Node
 var _hud: Array[CanvasLayer] = []
 var _hold_later: Callable
 var _shake: Tween
+## Утримали пропуск: сцена домотується, голоси (voice) вже не звучать.
+var skipping := false
 
 
 func _init() -> void:
@@ -69,6 +71,12 @@ func say(dialogue_id: String, in_cloud: bool = false) -> void:
 		if finished == path or finished == dialogue_id:
 			break
 	hold()
+
+
+## Голос, що належить сцені (рев, сміх, закляття — D310); під пропуском — тиша, а не вісім голосів за секунду.
+func voice(event: StringName) -> void:
+	if not skipping:
+		AudioManager.play(event)
 
 
 func wait(seconds: float) -> void:
@@ -147,4 +155,5 @@ func end() -> void:
 
 
 func _skip() -> void:
+	skipping = true
 	Engine.time_scale = SKIP_SPEED

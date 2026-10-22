@@ -1,6 +1,7 @@
 """Spoken lines and vocal sounds (D275, D277, D278).
 
-    python -I make_voices.py <downloads_dir> <repo_dir> <kokoro.onnx> <voices.bin>
+    python -I make_voices.py <downloads_dir> <repo_dir> <kokoro.onnx> <voices.bin> [<name> ...]
+With names (keys of LINES, e.g. Boss/fire_djinn_laugh) only those lines are rebuilt and no recording is cut.
 needs a venv with kokoro-onnx (MIT) + its Kokoro-82M weights and voices (Apache 2.0), numpy, scipy, soundfile.
 Lines are English (D277). Grunts and roars are cut from CC0 OpenGameArt recordings (README in each folder).
 """
@@ -46,7 +47,32 @@ LINES = {
     "Calls/urizen": ("bm_lewis", 1.0, 1.0, 0.15, ["Be blessed!", "Light, guide us!"]),
     "Hero/effort": ("am_liam", 1.2, 1.0, 0.0, ["Hah!", "Hyah!", "Hup!"]),
     "Boss/shout": ("am_onyx", 0.9, 0.72, 0.35, ["Kneel!", "You will burn!", "Enough!"]),
+    # The Laboratory bosses and the prisoner (queue row 9.8, D310).
+    "Boss/brass_collector_roar": ("am_onyx", 0.8, 0.62, 0.3, ["Graaaagh!", "Hrrrraaah!", "Rrraaawgh!"]),
+    "Boss/fire_djinn_roar": ("am_fenrir", 0.85, 0.7, 0.45, ["Raaaaagh!", "Hhhaaaargh!", "Grrraaaah!"]),
+    "Boss/fire_djinn_laugh": ("am_fenrir", 0.9, 0.8, 0.45, ["Ha ha ha ha ha!", "Hahahaha... ha ha!"]),
+    "Lab/prisoner_incantation": (
+        "am_adam",
+        0.85,
+        0.9,
+        0.3,
+        ["Varra-khess um-tal! Shakraz-idoon! Tahmi-rakh ash-zarra!"],
+    ),
 }
+
+
+def clank(x: np.ndarray) -> np.ndarray:
+    """The Brass Collector is a golem: ring modulation at 70 Hz and a tight metal comb."""
+    t = np.arange(len(x)) / SR
+    ring = x * (0.55 + 0.45 * np.sin(2 * np.pi * 70 * t)).astype(np.float32)
+    d = int(0.004 * SR)
+    comb = ring.copy()
+    comb[d:] += 0.6 * ring[:-d]
+    return comb
+
+
+# name: an effect after pitch, before reverb
+POST = {"Boss/brass_collector_roar": clank}
 
 
 def tts(kokoro: Kokoro, voice: str, speed: float, text: str) -> np.ndarray:
@@ -78,17 +104,25 @@ def segments(
     return [(a, b) for a, b in out if (b - a) / SR > 0.12]
 
 
-def main(dl: Path, repo: Path, model: str, voices: str) -> None:
+def main(dl: Path, repo: Path, model: str, voices: str, only: list[str]) -> None:
     voice_dir = repo / "SampleProject/Assets/Audio/Voice"
     kokoro = Kokoro(model, voices)
+    assert all(name in LINES for name in only), only
     for name, (voice, speed, factor, room, lines) in LINES.items():
+        if only and name not in only:
+            continue
         for i, text in enumerate(lines):
             x = tts(kokoro, voice, speed, text)
             if factor != 1.0:
                 x = pitch(x, factor)
+            if name in POST:
+                x = POST[name](x)
             if room:
                 x = reverb(x, room, 1.4)
             save(x, voice_dir / f"{name}_{i}.ogg")
+    if only:
+        print("lines built")
+        return
 
     # Bandits (and every human enemy): pain grunts and death cries cut from one take.
     take = load(dl / "dl_oga_grunts/grunts.wav")
@@ -132,4 +166,4 @@ def main(dl: Path, repo: Path, model: str, voices: str) -> None:
 
 
 if __name__ == "__main__":
-    main(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], sys.argv[4])
+    main(Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], sys.argv[4], sys.argv[5:])
