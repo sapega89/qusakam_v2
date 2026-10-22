@@ -1,0 +1,7 @@
+// [DRAFT] D307 — the fire djinn waits at the end of the laboratory and demands the cloak (BACKLOG 17).
+say|FIRE_DJINN|Still alive? Who are you to stand in my way?
+say|KUSAKAM|We just want to get out. I'm ready to bargain.
+say|FIRE_DJINN|Bargain? Very well. Give me the cloak — and go.
+say|KUSAKAM|This cloak belonged to my grandfather. I won't give it up.
+say|FIRE_DJINN|Then I'll take it off your ashes!
+exit|

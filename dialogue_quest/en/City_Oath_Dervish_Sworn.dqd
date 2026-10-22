@@ -1,0 +1,4 @@
+// [DRAFT] D281 — Kesh after the oath of the Warden of Balance (BACKLOG 22)
+say|OATH_DERVISH|The sand has accepted your oath, Warden.
+say|OATH_DERVISH|If your path has gone crooked — for coin, I'll help you straighten it.
+exit|

@@ -1,0 +1,5 @@
+// [DRAFT] D311 (queue 8b) — the caravan merchant in the city: conversation (Talk). Was [PLACEHOLDER] (a trigger with no merchant).
+say|MERCHANT|Ah, my savior! The caravan made it to the city — not all of it, but it made it.
+say|MERCHANT|Now I trade here, by the gate. Potions, ingots, leather — whatever the bandits left me, I'll sell.
+say|MERCHANT|The blacksmith was just asking about iron. Tell him I've got some.
+exit|

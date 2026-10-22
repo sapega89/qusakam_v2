@@ -21,8 +21,6 @@ theme = ExtResource("1_j5uw8")
 theme_type_variation = &"ModalPanel"
 script = ExtResource("1_6hcde")
 settings = ExtResource("2_lis4o")
-text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Fringilla ut morbi tincidunt augue interdum. Sed viverra ipsum nunc aliquet bibendum enim facilisis.q"
-name_text = "This is a man with a very long name"
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -60,7 +58,6 @@ clip_contents = false
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
-text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Fringilla ut morbi tincidunt augue interdum. Sed viverra ipsum nunc aliquet bibendum enim facilisis.q"
 fit_content = true
 visible_characters_behavior = 1
 
@@ -98,5 +95,4 @@ theme_override_constants/margin_right = 10
 [node name="Name" type="Label" parent="NameMargin"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "This is a man with a very long name"
 horizontal_alignment = 1

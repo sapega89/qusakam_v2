@@ -19,12 +19,12 @@ func _ready() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _companion_id != "":
-		_name.text = tr("%s joined the party") % CompanionManager.NAMES[_companion_id]
+		_name.text = tr("%s joined the party") % tr(CompanionManager.NAMES[_companion_id])
 
 
 func _on_companion_joined(companion_id: String) -> void:
 	_companion_id = companion_id
-	_name.text = tr("%s joined the party") % CompanionManager.NAMES[companion_id]
+	_name.text = tr("%s joined the party") % tr(CompanionManager.NAMES[companion_id])
 	visible = true
 	modulate.a = 0.0
 	if _tween:

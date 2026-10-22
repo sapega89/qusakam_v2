@@ -1,0 +1,4 @@
+// [DRAFT] D304 — a fire djinn bursts out of the prisoner and flees.
+say|FIRE_DJINN|Freedom! A hundred years in this pitiful body!
+say|FIRE_DJINN|Burn, insects. Burn, all of you!
+exit|

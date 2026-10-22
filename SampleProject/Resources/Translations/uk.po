@@ -25,13 +25,13 @@ msgid "Kusakam"
 msgstr "Кусакам"
 
 msgid "Malik"
-msgstr "Малик"
+msgstr "Малік"
 
 msgid "Guard"
 msgstr "Охоронець"
 
 msgid "Grandfather"
-msgstr "Дідусь"
+msgstr "Дід"
 
 msgid "Continue"
 msgstr "Продовжити"
@@ -1619,3 +1619,877 @@ msgstr "Вікна навчання можна вимкнути в Налашт�
 
 msgid "Unknown Item"
 msgstr "Невідомий предмет"
+
+# loot_feed.tscn: the toast template's preview text (the feed writes "<item> × <n>" itself)
+msgid "Coin × 7"
+msgstr "Монета × 7"
+
+# ── Character names (dialogue speakers, party)
+msgid "Bandit"
+msgstr "Розбійник"
+
+msgid "Bandit leader"
+msgstr "Ватажок розбійників"
+
+msgid "Blacksmith"
+msgstr "Коваль"
+
+msgid "Brass Collector"
+msgstr "Мідний Збирач"
+
+msgid "Fire djinn"
+msgstr "Вогняний джин"
+
+msgid "Kesh"
+msgstr "Кеш"
+
+msgid "Sister Ilvane"
+msgstr "Сестра Ільване"
+
+msgid "Morrow"
+msgstr "Морроу"
+
+msgid "Priest"
+msgstr "Жрець"
+
+msgid "Prisoner"
+msgstr "Вʼязень"
+
+msgid "Alchemist"
+msgstr "Алхімік"
+
+msgid "Villager"
+msgstr "Житель"
+
+msgid "Alisia"
+msgstr "Алісія"
+
+msgid "Astrit"
+msgstr "Астрит"
+
+msgid "Enemy"
+msgstr "Ворог"
+
+msgid "Gnome mechanic"
+msgstr "Гном-механік"
+
+msgid "Suan"
+msgstr "Суан"
+
+msgid "Merchant"
+msgstr "Торговець"
+
+msgid "Three dark priests"
+msgstr "Три темні жерці"
+
+msgid "Urizen"
+msgstr "Уризен"
+
+msgid "Astrit joined the party"
+msgstr "Астрит приєднується до загону"
+
+# ── Data: items.json
+msgid "Iron Ore"
+msgstr "Залізна руда"
+
+msgid "Iron Ingot"
+msgstr "Залізний злиток"
+
+msgid "Copper Ore"
+msgstr "Мідна руда"
+
+msgid "Copper Ingot"
+msgstr "Мідний злиток"
+
+msgid "Silver Ore"
+msgstr "Срібна руда"
+
+msgid "Silver Ingot"
+msgstr "Срібний злиток"
+
+msgid "Gold Ore"
+msgstr "Золота руда"
+
+msgid "Gold Ingot"
+msgstr "Золотий злиток"
+
+msgid "Wood Log"
+msgstr "Колода"
+
+msgid "Wood Plank"
+msgstr "Дошка"
+
+msgid "Stone"
+msgstr "Камінь"
+
+msgid "Iron Sword"
+msgstr "Залізний меч"
+
+msgid "Copper Sword"
+msgstr "Мідний меч"
+
+msgid "Silver Sword"
+msgstr "Срібний меч"
+
+msgid "Iron Halberd"
+msgstr "Залізна алебарда"
+
+msgid "Iron Mace"
+msgstr "Залізна булава"
+
+msgid "Iron Dagger"
+msgstr "Залізний кинджал"
+
+msgid "Iron Armor"
+msgstr "Залізний обладунок"
+
+msgid "Potion"
+msgstr "Зілля"
+
+msgid "Hi-Potion"
+msgstr "Велике зілля"
+
+msgid "Lesser Potion"
+msgstr "Мале зілля"
+
+msgid "Medium Potion"
+msgstr "Середнє зілля"
+
+msgid "Ether"
+msgstr "Ефір"
+
+msgid "Herb"
+msgstr "Трава"
+
+msgid "Mana Crystal"
+msgstr "Кристал мани"
+
+msgid "Leather"
+msgstr "Шкіра"
+
+msgid "Leather Armor"
+msgstr "Шкіряний обладунок"
+
+msgid "Iron Helmet"
+msgstr "Залізний шолом"
+
+msgid "Iron Shield"
+msgstr "Залізний щит"
+
+msgid "Coin"
+msgstr "Монета"
+
+msgid "Raw iron ore that can be smelted into iron ingots."
+msgstr "Сира залізна руда, яку можна переплавити на залізні злитки."
+
+msgid "Refined iron metal, ready for crafting."
+msgstr "Очищене залізо, готове до роботи."
+
+msgid "Raw copper ore found in mines."
+msgstr "Сира мідна руда з копалень."
+
+msgid "Refined copper metal."
+msgstr "Очищена мідь."
+
+msgid "Rare silver ore with a beautiful shine."
+msgstr "Рідкісна срібна руда з гарним блиском."
+
+msgid "Refined silver, valuable and beautiful."
+msgstr "Очищене срібло, цінне й гарне."
+
+msgid "Precious gold ore, highly sought after."
+msgstr "Дорогоцінна золота руда, на яку завжди є попит."
+
+msgid "Pure gold, the most valuable metal."
+msgstr "Чисте золото, найцінніший метал."
+
+msgid "A log of wood from a tree."
+msgstr "Колода зі стовбура дерева."
+
+msgid "Processed wooden plank, ready for crafting."
+msgstr "Оброблена деревʼяна дошка, готова до роботи."
+
+msgid "A common stone found everywhere."
+msgstr "Звичайний камінь, що трапляється всюди."
+
+msgid "A basic iron sword. Attack: +15"
+msgstr "Простий залізний меч. Атака: +15"
+
+msgid "A simple copper sword. Attack: +10"
+msgstr "Нехитрий мідний меч. Атака: +10"
+
+msgid "A fine silver sword. Attack: +25"
+msgstr "Добротний срібний меч. Атака: +25"
+
+msgid "A long iron halberd. Attack: +18"
+msgstr "Довга залізна алебарда. Атака: +18"
+
+msgid "A heavy iron mace. Attack: +17"
+msgstr "Важка залізна булава. Атака: +17"
+
+msgid "A light iron dagger. Attack: +10"
+msgstr "Легкий залізний кинджал. Атака: +10"
+
+msgid "Heavy iron armor. Defense: +20"
+msgstr "Важкий залізний обладунок. Захист: +20"
+
+msgid "Restores 50 HP."
+msgstr "Відновлює 50 HP."
+
+msgid "Restores 200 HP."
+msgstr "Відновлює 200 HP."
+
+msgid "Restores 75 HP."
+msgstr "Відновлює 75 HP."
+
+msgid "Restores 125 HP."
+msgstr "Відновлює 125 HP."
+
+msgid "Restores 30 MP."
+msgstr "Відновлює 30 SP."
+
+msgid "A medicinal herb used in potion making."
+msgstr "Лікарська трава для приготування зілля."
+
+msgid "A crystal containing magical energy."
+msgstr "Кристал, що містить магічну енергію."
+
+msgid "Treated animal hide used for crafting."
+msgstr "Вичинена шкура тварини, з якої виготовляють речі."
+
+msgid "Light leather armor. Defense: +10"
+msgstr "Легкий шкіряний обладунок. Захист: +10"
+
+msgid "Protective iron helmet. Defense: +8"
+msgstr "Захисний залізний шолом. Захист: +8"
+
+msgid "Sturdy iron shield. Defense: +12"
+msgstr "Міцний залізний щит. Захист: +12"
+
+msgid "A gold coin"
+msgstr "Золота монета"
+
+# ── Data: skills.json
+msgid "Holy Warrior"
+msgstr "Святий воїн"
+
+msgid "Paladin"
+msgstr "Паладин"
+
+msgid "Dark Knight"
+msgstr "Темний лицар"
+
+msgid "Warden of Balance"
+msgstr "Вартовий рівноваги"
+
+msgid "Light"
+msgstr "Світло"
+
+msgid "Dark"
+msgstr "Темрява"
+
+msgid "Neutral"
+msgstr "Нейтральність"
+
+msgid "Healing Palm"
+msgstr "Цілюща долоня"
+
+msgid "Fire Strike"
+msgstr "Вогняний удар"
+
+msgid "Electric Strike"
+msgstr "Удар блискавки"
+
+msgid "Toughness"
+msgstr "Витривалість"
+
+msgid "Shield Block"
+msgstr "Блок щитом"
+
+msgid "Devotion"
+msgstr "Відданість"
+
+msgid "Weapon Training"
+msgstr "Володіння зброєю"
+
+msgid "Fortitude"
+msgstr "Сила духу"
+
+msgid "Radiant Smite"
+msgstr "Сяйна кара"
+
+msgid "Mending Hands"
+msgstr "Зцілювальні руки"
+
+msgid "Aura of Resolve"
+msgstr "Аура рішучості"
+
+msgid "Sky's Grace"
+msgstr "Благодать неба"
+
+msgid "Skyfall Blessing"
+msgstr "Благословення з небес"
+
+msgid "Aura of Valour"
+msgstr "Аура звитяги"
+
+msgid "Judgement of the Sky"
+msgstr "Суд неба"
+
+msgid "Unbroken Vow"
+msgstr "Непорушна обітниця"
+
+msgid "Searing Hex"
+msgstr "Пекуче прокляття"
+
+msgid "Blood Pact"
+msgstr "Кривава угода"
+
+msgid "Dread Aura"
+msgstr "Аура жаху"
+
+msgid "Relentless"
+msgstr "Невблаганність"
+
+msgid "Withering Grasp"
+msgstr "Хватка тліну"
+
+msgid "Hoarded Ward"
+msgstr "Накопичений оберіг"
+
+msgid "Eclipse Cleave"
+msgstr "Розруб затемнення"
+
+msgid "Crimson Thirst"
+msgstr "Багряна спрага"
+
+msgid "Balanced Strike"
+msgstr "Виважений удар"
+
+msgid "Bulwark"
+msgstr "Заслін"
+
+msgid "Sand Stance"
+msgstr "Піщана стійка"
+
+msgid "Iron Body"
+msgstr "Залізне тіло"
+
+msgid "Dervish Whirl"
+msgstr "Вихор дервіша"
+
+msgid "Unshakable"
+msgstr "Непохитність"
+
+msgid "Second Wind"
+msgstr "Друге дихання"
+
+msgid "Perfect Balance"
+msgstr "Досконала рівновага"
+
+msgid "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
+msgstr "Відновлює 40 HP союзникові поруч або вам. Вивчається з 2-го рівня."
+
+msgid "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
+msgstr "Палючий удар по всьому, що перед вами; підпалює цілі. Потрібен меч або кинджал у руці."
+
+msgid "A crackling strike at everything in front of you; jumps to one more enemy nearby and stuns the first. Needs a halberd or a mace in hand."
+msgstr "Тріскучий удар по всьому, що перед вами; перескакує ще на одного ворога поруч і оглушує першого. Потрібна алебарда або булава в руці."
+
+msgid "+10 Max HP."
+msgstr "+10 до макс. HP."
+
+msgid "Take 20% less damage while a shield is equipped."
+msgstr "На 20% менше шкоди, коли у вас щит."
+
+msgid "+5 max SP."
+msgstr "+5 до макс. SP."
+
+msgid "+3 attack."
+msgstr "+3 до атаки."
+
+msgid "Take 5% less damage."
+msgstr "На 5% менше отриманої шкоди."
+
+msgid "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
+msgstr "Удар, сповнений небесного світла, по всьому, що перед вами; приголомшує першого ворога."
+
+msgid "Your healing restores 25% more."
+msgstr "Ваше зцілення відновлює на 25% більше."
+
+msgid "Take 8% less damage."
+msgstr "На 8% менше отриманої шкоди."
+
+msgid "Regain 0.5 more SP each second."
+msgstr "Щосекунди відновлюєте на 0,5 SP більше."
+
+msgid "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
+msgstr "Удар по всьому, що перед вами, і 20 HP зцілення союзникові поруч або вам."
+
+msgid "+25 Max HP."
+msgstr "+25 до макс. HP."
+
+msgid "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+msgstr "Обрушує небо на все, що перед вами; вибух перескакує ще на одного ворога й приголомшує першого."
+
+msgid "Take a further 8% less damage."
+msgstr "Ще на 8% менше отриманої шкоди."
+
+msgid "A cursed strike at everything in front of you; sets them burning with dark fire."
+msgstr "Проклятий удар по всьому, що перед вами; підпалює цілі темним вогнем."
+
+msgid "Your weapon hits heal you for 10% of the damage dealt."
+msgstr "Удари зброєю зцілюють вас на 10% завданої шкоди."
+
+msgid "+4 attack."
+msgstr "+4 до атаки."
+
+msgid "Your hits break an enemy's stance 25% faster."
+msgstr "Ваші удари ламають стійкість ворога на 25% швидше."
+
+msgid "A withering blow at everything in front of you; the dark fire burns on."
+msgstr "Виснажливий удар по всьому, що перед вами; темний вогонь горить і далі."
+
+msgid "A cleave of dark fire at everything in front of you; leaps to one more enemy and sets them burning."
+msgstr "Розруб темним вогнем по всьому, що перед вами; перескакує ще на одного ворога й підпалює цілі."
+
+msgid "Your weapon hits heal you for a further 10% of the damage dealt."
+msgstr "Удари зброєю зцілюють вас ще на 10% завданої шкоди."
+
+msgid "A measured strike at everything in front of you; stuns the first enemy."
+msgstr "Виважений удар по всьому, що перед вами; оглушує першого ворога."
+
+msgid "Take a further 10% less damage while a shield is equipped."
+msgstr "Ще на 10% менше шкоди, коли у вас щит."
+
+msgid "Your hits break an enemy's stance 30% faster."
+msgstr "Ваші удари ламають стійкість ворога на 30% швидше."
+
+msgid "+20 Max HP."
+msgstr "+20 до макс. HP."
+
+msgid "Spin through everything in front of you; the whirl catches one more enemy nearby."
+msgstr "Вихором проноситеся крізь усе, що перед вами; вихор зачіпає ще одного ворога поруч."
+
+msgid "Take 10% less damage."
+msgstr "На 10% менше отриманої шкоди."
+
+msgid "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
+msgstr "Переведіть подих і відновіть 60 HP союзникові поруч або собі."
+
+msgid "+8 attack."
+msgstr "+8 до атаки."
+
+# ── Data: attributes.json
+msgid "Strength"
+msgstr "Сила"
+
+msgid "Agility"
+msgstr "Спритність"
+
+msgid "Vitality"
+msgstr "Живучість"
+
+msgid "Wisdom"
+msgstr "Мудрість"
+
+msgid "Physical damage of every weapon hit."
+msgstr "Фізична шкода кожного удару зброєю."
+
+msgid "Critical hits, evasion and speed."
+msgstr "Критичні удари, ухилення й швидкість."
+
+msgid "Maximum HP."
+msgstr "Максимум HP."
+
+msgid "Maximum SP, skill power and SP regeneration."
+msgstr "Максимум SP, сила навичок і відновлення SP."
+
+# ── Data: quests.json
+msgid "The Stolen Caravan"
+msgstr "Викрадений караван"
+
+msgid "The Helmet"
+msgstr "Шолом"
+
+msgid "The Enchantment"
+msgstr "Зачарування"
+
+msgid "The Humble Place"
+msgstr "Скромна місцина"
+
+msgid "The bandits Kusakam is chasing robbed a merchant's caravan on the Desert Road and drove it to the City Gates. The merchant follows his goods to the City."
+msgstr "Розбійники, яких переслідує Кусакам, пограбували караван торговця на Пустельній дорозі й погнали його до Міської брами. Торговець іде за своїм товаром до Міста."
+
+msgid "The City's blacksmith saw what the bandits' maces left of the gate guards. He will not sell Kusakam a helmet: one you forged yourself sits better than one you bought. His word holds like a contract before the god of deals: show him the finished helmet and he pays back every coin it cost."
+msgstr "Міський коваль бачив, що лишили булави розбійників від охоронців брами. Шолома Кусакамові він не продасть: власноруч викуваний сидить краще за куплений. Його слово міцне, як угода перед богом угод: покажіть йому готовий шолом — і він поверне кожну монету, яку той коштував."
+
+msgid "The Blacksmith hands Kusakam two Iron Swords to learn enchanting on."
+msgstr "Коваль дає Кусакамові два залізні мечі, щоб той навчився на них зачаровувати."
+
+msgid "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow."
+msgstr "Малік, балакучий торговець з останньої клітки, поклявся, що в його скромній місцині знайдеться золото для кожного, хто виведе його з Лабораторії. Згоди ніхто не питав: він просто йде слідом, тихий, як тінь."
+
+msgid "Drive the bandits from the City Gates, then find the Merchant in the City, just past the gates"
+msgstr "Проженіть розбійників від Міської брами, а тоді знайдіть Торговця в Місті, одразу за брамою"
+
+msgid "Buy 2 Iron Ingots and 1 Leather from the Merchant past the City gates, forge an Iron Helmet at the Blacksmith's anvil (12 coins), then show it to the Blacksmith"
+msgstr "Купіть у Торговця за міською брамою 2 залізні злитки й 1 шкіру, викуйте залізний шолом на ковадлі Коваля (12 монет), а тоді покажіть його Ковалеві"
+
+msgid "Enchant the two Iron Swords into an Iron Sword +1 and show it to the Blacksmith"
+msgstr "Зачаруйте два залізні мечі в залізний меч +1 і покажіть його Ковалеві"
+
+msgid "Lead Malik out of the Laboratory"
+msgstr "Виведіть Маліка з Лабораторії"
+
+# ── Data: story.json
+msgid "Prologue"
+msgstr "Пролог"
+
+msgid "Canyon I"
+msgstr "Каньйон І"
+
+msgid "Village"
+msgstr "Село"
+
+msgid "Canyon II"
+msgstr "Каньйон ІІ"
+
+msgid "Desert Road"
+msgstr "Пустельна дорога"
+
+msgid "City Gates"
+msgstr "Міська брама"
+
+msgid "Laboratory — Cells"
+msgstr "Лабораторія — клітки"
+
+msgid "Laboratory"
+msgstr "Лабораторія"
+
+msgid "Laboratory — Outside"
+msgstr "Лабораторія — зовні"
+
+msgid "Kusakam grumbled about the old man and wondered why the spirits would not make him a shaman yet."
+msgstr "Кусакам бурчав на старого й дивувався, чому духи досі не роблять його шаманом."
+
+msgid "He wandered the silent canyon, looking for answers in a dead wind."
+msgstr "Він блукав мовчазним каньйоном, шукаючи відповідей у мертвому вітрі."
+
+msgid "From the ridge he saw villagers being led away — and something deep inside told him to run to the village."
+msgstr "З гребеня він побачив, як селян кудись ведуть, — і щось глибоко всередині наказало йому бігти до села."
+
+msgid "Bandits had raided the village and were taking everyone away."
+msgstr "Розбійники напали на село й забирали всіх його мешканців."
+
+msgid "A bandit stopped him in the middle of the village."
+msgstr "Посеред села йому заступив дорогу розбійник."
+
+msgid "Kusakam beat the bandit and went looking for the old man."
+msgstr "Кусакам здолав розбійника й пішов шукати старого."
+
+msgid "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+msgstr "Він знайшов старого біля його зруйнованого дому. Старий зцілив його останніми силами, а тоді розповів, що розбійники викрали реліквію — ключ до всього."
+
+msgid "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
+msgstr "Кусакам покинув спорожніле село, поклявшись піти слідом за розбійниками. Та спершу його кликав назад каньйон."
+
+msgid "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."
+msgstr "На краю каньйону він медитував біля священного обладунку й відчув поруч духів пустелі. Обладунок він забрав із собою."
+
+msgid "Armoured and ready, Kusakam began the climb down into the desert."
+msgstr "В обладунку й готовий до всього, Кусакам почав спускатися в пустелю."
+
+msgid "The desert road stretched ahead toward the city."
+msgstr "Попереду до міста тяглася пустельна дорога."
+
+msgid "Enemies blocked the road. Kusakam fought his way through."
+msgstr "Вороги перепинили дорогу. Кусакам пробився крізь них."
+
+msgid "He reached the great city gates and found the way barred."
+msgstr "Він дійшов до великої міської брами, але шлях був зачинений."
+
+msgid "Bandits attacked the gates; he fought them off beside the guards."
+msgstr "Розбійники напали на браму; він відбив їх пліч-о-пліч з охоронцями."
+
+msgid "Through the gates at last, they set out to find the laboratory."
+msgstr "Нарешті минувши браму, вони вирушили шукати лабораторію."
+
+msgid "He came to in a laboratory cell and watched a fire djinn tear its way out of a prisoner and burst through the ceiling."
+msgstr "Він опритомнів у клітці лабораторії й побачив, як вогняний джин вирвався з тіла вʼязня та пробив стелю."
+
+msgid "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
+msgstr "Клітки стояли відчинені. Він познайомився з іншими з черги до мера — і з Маліком, який обіцяв золото кожному, хто його виведе."
+
+msgid "He fought his way down through three storeys of the laboratory's guards."
+msgstr "Він пробився вниз крізь три поверхи лабораторної варти."
+
+msgid "The master of the laboratory declared it the end of his road."
+msgstr "Господар лабораторії оголосив, що тут його дорога й скінчиться."
+
+msgid "Kusakam defeated the boss, and the way out lay open."
+msgstr "Кусакам переміг господаря лабораторії, і шлях назовні відкрився."
+
+msgid "They stepped out of the laboratory into the open air. It was a hard journey — but they made it."
+msgstr "Вони вийшли з лабораторії на свіже повітря. Шлях був важкий — та вони впоралися."
+
+# ── Data: journal_people.json
+msgid "Kusakam's grandfather"
+msgstr "Дід Кусакама"
+
+msgid "City Gates guard"
+msgstr "Охоронець Міської брами"
+
+msgid "Priest of the Sky — oath of the Paladin"
+msgstr "Жриця Неба — присяга Паладина"
+
+msgid "Witch — oath of the Dark Knight"
+msgstr "Відьма — присяга Темного лицаря"
+
+msgid "Sand dervish — oath of the Warden of Balance"
+msgstr "Піщаний дервіш — присяга Вартового рівноваги"
+
+msgid "Hunter"
+msgstr "Мисливиця"
+
+msgid "Warrior-thaumaturge"
+msgstr "Воїтелька-чудотворниця"
+
+msgid "Cleric of the god of contracts"
+msgstr "Клірик бога угод"
+
+msgid "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out."
+msgstr "Вʼязень Лабораторії. Обіцяє золото у своїй «скромній місцині» кожному, хто його виведе."
+
+msgid "A nameless prisoner held in the Laboratory."
+msgstr "Безіменний вʼязень Лабораторії."
+
+msgid "An alchemist who works in the Laboratory."
+msgstr "Алхімік, що працює в Лабораторії."
+
+msgid "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
+msgstr "Старійшина Села з народу ящерів, як і його онук. Плащ, який носить Кусакам, колись належав йому."
+
+msgid "One of the people of the Village."
+msgstr "Один із мешканців Села."
+
+msgid "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
+msgstr "Стереже браму Міста. Бився пліч-о-пліч із Кусакамом, коли розбійники напали на браму."
+
+msgid "Forges and improves weapons and armour."
+msgstr "Кує й поліпшує зброю та обладунки."
+
+msgid "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
+msgstr "Купець із Пустельної дороги, чий караван розбійники пригнали до Міської брами. Щойно браму звільнили, він рушив за своїм товаром до Міста й поставив там свій прилавок."
+
+msgid "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+msgstr "Хранителька присяги Паладина в Місті. Перед нею Святий воїн присягає світлу; за монети вона також допоможе розучити навички."
+
+msgid "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+msgstr "Хранителька присяги Темного лицаря в Місті. За монети вона також допоможе розучити навички."
+
+msgid "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+msgstr "Хранитель присяги Вартового рівноваги в Місті. За монети він також допоможе розучити навички."
+
+msgid "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
+msgstr "Мисливиця з білим тигреням поруч; одне її око зелене, друге — блакитне."
+
+msgid "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire."
+msgstr "Драконороджена варварка з величезним шипастим щитом і книгою; на ній знаки вогню."
+
+msgid "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign."
+msgstr "Жрець бога угод. Його кара падає у формі монети — знаку цього бога."
+
+# ── Data: bestiary.json
+msgid "Desert Bandit"
+msgstr "Пустельний розбійник"
+
+msgid "Jackal"
+msgstr "Шакал"
+
+msgid "Giant Scorpion"
+msgstr "Велетенський скорпіон"
+
+msgid "The Brass Collector"
+msgstr "Мідний Збирач"
+
+msgid "The Fire Djinn"
+msgstr "Вогняний джин"
+
+msgid "Raiders of the desert roads who prey on villages and travellers. A bandit raises his blade before he strikes — step back or roll behind him while it is up, then punish."
+msgstr "Грабіжники пустельних шляхів, що полюють на села й мандрівників. Перед ударом розбійник заносить клинок — поки той піднятий, відступіть або перекотіться йому за спину, а тоді покарайте."
+
+msgid "A lean desert hunter that circles and lunges with a quick bite. Its wind-up is short, so watch for the crouch and dash out of the lunge."
+msgstr "Худий пустельний мисливець: кружляє довкола й кидається зі швидким укусом. Замах у нього короткий, тож пильнуйте, коли він пригинається, і вискакуйте ривком з-під кидка."
+
+msgid "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
+msgstr "Спереду вкритий панцирем: удари по ньому майже не шкодять, а оглушення не зупинить жала. Замах у нього довгий — перекотіться йому за спину й бийте ззаду."
+
+msgid "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
+msgstr "Громіздкий голем із міді й пісковику з кліткою на спині — ловець людей Лабораторії. Його удари повільні й важкі: викочуйтеся з-під розмаху, перестрибуйте ударну хвилю, коли він гупає об землю, і не припиняйте атакувати — лише довга серія ламає його стійкість."
+
+msgid "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."
+msgstr "Палаючий дух на хвості з диму й полумʼя, народжений у клітках Лабораторії. Зблизька дере пазурами, здалеку жбурляє вогонь; сяйлива мітка на підлозі означає, що зараз здійметься вогняний стовп, — зійдіть із неї. Поранений, він бʼється швидше й кидає двічі."
+
+# ── Data: tutorial.json
+msgid "Basic Controls"
+msgstr "Основи керування"
+
+msgid "The Map"
+msgstr "Мапа"
+
+msgid "Saving Your Progress"
+msgstr "Збереження гри"
+
+msgid "The Journal"
+msgstr "Журнал"
+
+msgid "Moving and Jumping"
+msgstr "Рух і стрибки"
+
+msgid "Training 1/6 — Attack"
+msgstr "Тренування 1/6 — Атака"
+
+msgid "Training 2/6 — Combo"
+msgstr "Тренування 2/6 — Серія"
+
+msgid "Training 3/6 — Dodge"
+msgstr "Тренування 3/6 — Ривок"
+
+msgid "Training 4/6 — Block"
+msgstr "Тренування 4/6 — Блок"
+
+msgid "Training 5/6 — Parry"
+msgstr "Тренування 5/6 — Парирування"
+
+msgid "Training 6/6 — Heavy Attack"
+msgstr "Тренування 6/6 — Важка атака"
+
+msgid "Attacking"
+msgstr "Як атакувати"
+
+msgid "Block and Parry"
+msgstr "Блок і парирування"
+
+msgid "Experience and Coins"
+msgstr "Досвід і монети"
+
+msgid "Levelling Up"
+msgstr "Новий рівень"
+
+msgid "Equipping Gear"
+msgstr "Як спорядитися"
+
+msgid "Calling an Ally"
+msgstr "Виклик союзника"
+
+msgid "Companions"
+msgstr "Супутники"
+
+msgid "Move with {move} and jump with {jump}. Press {attack} to attack. When a prompt appears over a person or an object, press {interact} to talk, open or pick it up."
+msgstr "Рухайтеся — {move}, стрибайте — {jump}. Натисніть {attack}, щоб атакувати. Коли над людиною чи предметом зʼявляється підказка, натисніть {interact}, щоб поговорити, відчинити чи підібрати."
+
+msgid "The minimap in the top right shows the rooms around you. Open the full map to see everything you have explored so far; while it is open, {move} moves the view and you stand still."
+msgstr "Мінімапа вгорі праворуч показує кімнати довкола вас. Відкрийте повну мапу, щоб побачити все, що ви вже дослідили; поки вона відкрита, {move} зсуває огляд, а ви стоїте на місці."
+
+msgid "Look for save points along the way. Step up to one and choose a save slot — there are four. To pick up where you left off, choose Continue on the title screen."
+msgstr "Шукайте дорогою точки збереження. Підійдіть до такої й оберіть комірку збереження — їх чотири. Щоб продовжити з того місця, де зупинилися, оберіть «Продовжити» на титульному екрані."
+
+msgid "The Journal in the game menu follows the story. Quests lists each part of the Prologue with its objectives; Characters keeps the people you have met; the Bestiary records the enemies you have met and killed."
+msgstr "Журнал в ігровому меню стежить за історією. У «Завданнях» — кожна частина Прологу з її цілями; у «Персонажах» — люди, яких ви зустріли; «Бестіарій» записує ворогів, яких ви зустріли й перемогли."
+
+msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
+msgstr "Рухайтеся — {move}. Натисніть {jump}, щоб стрибнути. {dodge} — ривок, двічі поспіль, навіть у повітрі."
+
+msgid "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
+msgstr "Тренування 1 з 6. Натисніть {attack}, щоб ударити розбійника. Не хвилюйтеся: поки ви вчитеся, ніхто з вас не впаде."
+
+msgid "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
+msgstr "Тренування 2 з 6. Швидко натисніть {attack} тричі поспіль: третій замах — завершальний, він вибиває супротивника з рівноваги."
+
+msgid "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
+msgstr "Тренування 3 з 6. Коли зброя розбійника спалахує червоним, його удар уже близько: натисніть {dodge}, щоб ривком проскочити крізь нього неушкодженим."
+
+msgid "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
+msgstr "Тренування 4 з 6. Станьте обличчям до розбійника й утримуйте {block}: хай його удар прийде на ваш захист. Заблокований удар не завдає шкоди."
+
+msgid "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
+msgstr "Тренування 5 з 6. Коротко натисніть {block} саме тоді, коли його зброя спалахує червоним: це парирування. Жодної шкоди, а він хитається, відкритий для ваших ударів."
+
+msgid "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
+msgstr "Тренування 6 з 6. Натисніть {heavy_attack}: повільний замах, а тоді удар, що пробиває його захист. Бийте, коли він не замахується на вас."
+
+msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
+msgstr "Попереду вороги! Натисніть {attack}, щоб замахнутися зброєю. Натискайте далі, щоб скласти серію з трьох замахів — чотирьох, коли зброя в кожній руці. Останній замах серії вибиває ворога з рівноваги."
+
+msgid "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
+msgstr "Натисніть {heavy_attack} для важкої атаки: повільний замах, а тоді удар, що пробиває захист ворога й вибиває його з рівноваги. Удар по вас під час замаху перериває атаку, тож обирайте мить."
+
+msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
+msgstr "Утримуйте {block}, щоб блокувати: удар спереду не завдає шкоди (важкий удар чи останній удар серії пробиває захист). Коли зброя ворога спалахує червоним, натисніть {block} — це парирування: жодної шкоди, а нападник утрачає рівновагу й відкритий для контрудару."
+
+msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
+msgstr "Переможені вороги лишають XP і монети. Шкала XP заповнюється з кожною перемогою; коли вона повна, ви отримуєте новий рівень, а з ним HP, шкоду й очко навичок."
+
+msgid "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
+msgstr "Кожен рівень додає HP і шкоди та дає очко навичок. Витрачайте очки в ігровому меню, у розділі «Навички»."
+
+msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
+msgstr "Новий рівень! Можна вивчити «Цілющу долоню»: натисніть {game_menu}, відкрийте «Навички», виберіть її й підтвердьте. Вона потрапить на панель швидкого доступу; натисніть {skill_slot_1}, щоб зцілитися."
+
+msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
+msgstr "Дід дав вам меч і обладунок: натисніть {game_menu}, відкрийте «Інвентар» і скористайтеся ними, щоб спорядитися, або оберіть місце в «Спорядженні». {weapon_next} перемикає зброю."
+
+msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
+msgstr "Супутники бʼються пліч-о-пліч із вами — натисніть {assist}, щоб покликати одного. Покличте охоронця зараз!"
+
+msgid "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
+msgstr "Союзники, яких ви зустрінете, приєднаються до загону. {assist} кличе наступного готового супутника; кого брати з собою, оберіть у «Стані»."
+
+msgid "Button to open the game menu."
+msgstr "Кнопка, що відкриває ігрове меню."
+
+msgid "Button to open or close the full map."
+msgstr "Кнопка, що відкриває й закриває повну мапу."
+
+msgid "Button at a save point to save your game."
+msgstr "Кнопка біля точки збереження, щоб зберегти гру."
+
+msgid "Button to open the game menu, then choose Journal."
+msgstr "Кнопка, що відкриває ігрове меню; далі оберіть «Журнал»."
+
+msgid "Button to jump."
+msgstr "Кнопка стрибка."
+
+msgid "Button for a light attack."
+msgstr "Кнопка легкої атаки."
+
+msgid "Press it three times quickly."
+msgstr "Швидко натисніть її тричі."
+
+msgid "Button to dash; twice in a row for a double dash."
+msgstr "Кнопка ривка; двічі поспіль — подвійний ривок."
+
+msgid "Hold it to block."
+msgstr "Утримуйте її, щоб блокувати."
+
+msgid "Tap it on the red glint to parry."
+msgstr "Коротко натисніть її на червоний спалах, щоб парирувати."
+
+msgid "Button for a heavy attack."
+msgstr "Кнопка важкої атаки."
+
+msgid "Hold to block; press it when an enemy's weapon glints to parry."
+msgstr "Утримуйте, щоб блокувати; натисніть, коли зброя ворога спалахне, щоб парирувати."
+
+msgid "Button to open the game menu, then choose Skills."
+msgstr "Кнопка, що відкриває ігрове меню; далі оберіть «Навички»."
+
+msgid "Button for the first skill slot."
+msgstr "Кнопка першого слота навичок."
+
+msgid "Button to switch weapons."
+msgstr "Кнопка зміни зброї."
+
+msgid "Button to call the next ready companion."
+msgstr "Кнопка, що кличе наступного готового супутника."

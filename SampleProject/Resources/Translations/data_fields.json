@@ -1,0 +1,130 @@
+{
+	"_comment": "Which data fields the player sees (BACKLOG 31). Path: \"a.b\" dict key, \"x[]\" every element of array x, \"*\" every value of a dict. Read by Scripts/Tools/po_data_keys.py (missing uk.po keys) and SampleProject/UI/verify_locale.gd [4]. Left out on purpose (no code shows them): crafting_recipes name, merchants name, skills oaths keeper/subclasses/prestige, tutorial key, journal_people not_listed/lore.",
+	"fields": [
+		{
+			"file": "items.json",
+			"path": "items[].name",
+			"shown": "ItemDatabase.get_item_name → інвентар, спорядження, крамниця, крафт"
+		},
+		{
+			"file": "items.json",
+			"path": "items[].description",
+			"shown": "ItemDatabase.get_item_description → опис у інвентарі, крамниці, крафті"
+		},
+		{
+			"file": "skills.json",
+			"path": "class.name",
+			"shown": "skills_component._trunk_title, _detail_kind; SkillManager"
+		},
+		{
+			"file": "skills.json",
+			"path": "oaths.*.name",
+			"shown": "skills_component._detail_kind (дерево), OathKeeper._oath_name"
+		},
+		{
+			"file": "skills.json",
+			"path": "oaths.*.tree",
+			"shown": "skills_component:356-357 (Light / Dark / Neutral)"
+		},
+		{
+			"file": "skills.json",
+			"path": "skills[].name",
+			"shown": "SkillDefinition.name → вкладка Навички, панель швидкого доступу"
+		},
+		{
+			"file": "skills.json",
+			"path": "skills[].description",
+			"shown": "skills_component._detail_description, підказка вузла"
+		},
+		{
+			"file": "attributes.json",
+			"path": "attributes[].name",
+			"shown": "skills_component рядки атрибутів, stats_component"
+		},
+		{
+			"file": "attributes.json",
+			"path": "attributes[].description",
+			"shown": "skills_component підказка рядка атрибута"
+		},
+		{
+			"file": "quests.json",
+			"path": "tasks[].title",
+			"shown": "journal_component:151 (Завдання)"
+		},
+		{
+			"file": "quests.json",
+			"path": "tasks[].description",
+			"shown": "journal_component:153"
+		},
+		{
+			"file": "quests.json",
+			"path": "tasks[].objective",
+			"shown": "journal_component:153 (\"Goal: %s\")"
+		},
+		{
+			"file": "story.json",
+			"path": "stages[].title",
+			"shown": "journal_component групи (Пролог)"
+		},
+		{
+			"file": "story.json",
+			"path": "stages[].zones[].title",
+			"shown": "journal_component пункти журналу"
+		},
+		{
+			"file": "story.json",
+			"path": "stages[].zones[].objectives[].text",
+			"shown": "journal_component підпункти-цілі"
+		},
+		{
+			"file": "story.json",
+			"path": "stages[].zones[].chronicle[].text",
+			"shown": "journal_component опис підетапу (абзаци)"
+		},
+		{
+			"file": "journal_people.json",
+			"path": "people[].title",
+			"shown": "journal_component:91 (група / підпис людини)"
+		},
+		{
+			"file": "journal_people.json",
+			"path": "people[].text",
+			"shown": "journal_component:91 (опис)"
+		},
+		{
+			"file": "bestiary.json",
+			"path": "enemies[].name",
+			"shown": "journal_component:94 (Бестіарій)"
+		},
+		{
+			"file": "bestiary.json",
+			"path": "enemies[].text",
+			"shown": "journal_component:94"
+		},
+		{
+			"file": "tutorial.json",
+			"path": "topics[].title",
+			"shown": "tutorial_component, TutorialHintDisplay"
+		},
+		{
+			"file": "tutorial.json",
+			"path": "topics[].text",
+			"shown": "TutorialTopics.resolved → вікно туторіалу, підказка"
+		},
+		{
+			"file": "tutorial.json",
+			"path": "topics[].hint",
+			"shown": "TutorialTopics.resolved → підпис бейджа кнопки"
+		},
+		{
+			"file": "pathfinder_classes.json",
+			"path": "classes.*.name",
+			"shown": "stats_component._primary_job (поки порожні)"
+		},
+		{
+			"file": "pathfinder_classes.json",
+			"path": "classes.*.subclasses.*.name",
+			"shown": "stats_component._secondary_job (поки порожні)"
+		}
+	]
+}

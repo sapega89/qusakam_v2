@@ -1,0 +1,5 @@
+// [DRAFT] D281 — Sister Ilvane, priestess of the Sky: oath of Light, Paladin (BACKLOG 22)
+say|OATH_PRIEST|The Sky shines on all alike, child. No sun, no stars — only light.
+say|OATH_PRIEST|Whoever swears to the Sky becomes a Paladin: their strike carries light, their hands heal.
+say|OATH_PRIEST|The oath is given once and forever. When you are ready — from the fifth level — come and tell me.
+exit|

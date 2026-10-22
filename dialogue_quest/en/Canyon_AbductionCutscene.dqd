@@ -1,0 +1,10 @@
+say||[Cutscene] A village in the distance. Something is happening...
+say||[Cutscene] Figures moving. People? Are they being led somewhere?
+say||[Cutscene] Carts, screams... but the sounds don't reach this far.
+say|KUSAKAM|What is that? I don't understand what's going on down there...
+say|KUSAKAM|Who are those people? Why are they walking like that?
+say|KUSAKAM|But something tells me I have to go there.
+say|KUSAKAM|Something's wrong. I can feel it deep inside.
+say|KUSAKAM|I don't know why, but I have to run to the village!
+say|KUSAKAM|I have to run there right now!
+exit|

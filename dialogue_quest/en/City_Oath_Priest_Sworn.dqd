@@ -1,0 +1,4 @@
+// [DRAFT] D281 — Sister Ilvane after the Paladin's oath (BACKLOG 22)
+say|OATH_PRIEST|The Sky has accepted your oath, Paladin.
+say|OATH_PRIEST|Shine for the weak. And if you have lost your way in your learning — I will help you begin again, for an offering.
+exit|

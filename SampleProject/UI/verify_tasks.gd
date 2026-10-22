@@ -66,7 +66,7 @@ func _initialize() -> void:
 	await process_frame
 	smith.npc_menu.chosen.emit(&"task")
 	for i in 10: await process_frame
-	ck(dm.current_dialogue_box.name_text == "Коваль", "the Blacksmith speaks (%s)" % dm.current_dialogue_box.name_text)
+	ck(dm.current_dialogue_box.name_text == "Blacksmith", "the Blacksmith speaks (%s)" % dm.current_dialogue_box.name_text)
 	await _drain(dm)
 	ck(game.get_quest_flag("task_smith_helmet_taken") and not game.get_quest_flag("task_smith_helmet_done"), "task_smith_helmet active")
 	var shown := await _choose_quest(smith, dm)

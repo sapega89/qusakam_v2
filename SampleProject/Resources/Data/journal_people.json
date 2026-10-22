@@ -1,15 +1,14 @@
 {
 	"not_listed": [
 		"KUSAKAM",
-		"Кусакам",
 		"BANDIT_1",
 		"BANDIT_2",
 		"BANDIT_LEADER",
-		"Враг",
+		"ENEMY",
 		"PRIEST",
-		"Гном механник",
-		"Суан",
-		"Три темніх жреца",
+		"GNOME_MECHANIC",
+		"SUAN",
+		"DARK_PRIESTS",
 		"BRASS_COLLECTOR",
 		"FIRE_DJINN"
 	],
@@ -50,7 +49,7 @@
 			"text": "Forges and improves weapons and armour."
 		},
 		{
-			"id": "Торговец",
+			"id": "MERCHANT",
 			"title": "Merchant",
 			"text": "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
 		},
@@ -70,19 +69,19 @@
 			"text": "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
 		},
 		{
-			"id": "Алісия",
+			"id": "ALISIA",
 			"title": "Hunter",
 			"text": "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue.",
 			"lore": "design/lore.md#Алісія"
 		},
 		{
-			"id": "Астрит",
+			"id": "ASTRIT",
 			"title": "Warrior-thaumaturge",
 			"text": "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire.",
 			"lore": "design/lore.md#Астрит"
 		},
 		{
-			"id": "Уризен",
+			"id": "URIZEN",
 			"title": "Cleric of the god of contracts",
 			"text": "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign.",
 			"lore": "design/lore.md#Уризен"

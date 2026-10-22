@@ -8,4 +8,4 @@ script = ExtResource("1_character")
 portrait = ExtResource("portrait")
 color = Color(0.55, 0.75, 0.65, 1)
 character_id = "SCIENTIST"
-character_name = "Алхімік"
+character_name = "Alchemist"

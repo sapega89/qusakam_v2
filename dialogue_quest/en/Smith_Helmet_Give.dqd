@@ -1,0 +1,7 @@
+// [DRAFT] D175, D311 (queue 8b) — the blacksmith gives the "Helmet" quest: what to bring, where to get it, where to forge
+say|BLACKSMITH|Your head's hard, lizard. But a bandit's mace is harder — I saw what was left of the guards at the gate.
+say|BLACKSMITH|I won't sell you a helmet. A helmet you forged yourself sits on your head better than a bought one.
+say|BLACKSMITH|Two iron ingots and a piece of leather. Get them from the caravan merchant — he's set up right past the gate.
+say|BLACKSMITH|Then to my anvil. Twelve coins for coal and the bellows, the rest is your own hands.
+say|BLACKSMITH|Show me the finished helmet — I'll give back every coin you spent on it. My word's as solid as a contract before the god of deals.
+exit|

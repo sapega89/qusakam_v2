@@ -8,5 +8,5 @@
 script = ExtResource("1_character")
 color = Color(0.8, 0.2, 0.2, 1)
 character_id = "BANDIT_LEADER"
-character_name = "Предводитель разбойников"
+character_name = "Bandit leader"
 custom_theme_name = SubResource("Theme_mbrtg")

@@ -1,0 +1,4 @@
+// [DRAFT] D304 — Kusakam comes to in a laboratory cage (BACKLOG 17).
+say|KUSAKAM|Where am I?.. Bars... It's a cage.
+say|SCIENTIST|Awake, lizard? Don't rush. Your turn hasn't come yet.
+exit|
