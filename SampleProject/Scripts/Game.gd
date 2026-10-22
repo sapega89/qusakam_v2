@@ -387,7 +387,7 @@ func reset_map_starting_coords():
 ## не чекає її tree_exited і відпрацьовує синхронно — гравця ставимо одразу.
 func teleport_to_room(room_path: String, arrival: NodePath) -> void:
 	var old_map := map
-	var old_room_instance := MetSys.get_current_room_instance()
+	var old_room_instance: Node = MetSys.get_current_room_instance()
 	old_room_instance.get_parent().remove_child(old_room_instance)
 	old_room_instance.queue_free()
 	map = null
