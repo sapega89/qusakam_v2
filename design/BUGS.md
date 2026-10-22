@@ -68,7 +68,7 @@ the history, this note keeps only what is open.
 - **Where:** `GameManager.calculate_critical_chance` / `calculate_dodge_chance` / `calculate_attack_speed`; `PlayerCombat.hit_damage()`, `Player.mitigated_damage()`, swing times.
 - **Expected:** Agility points (D335) and base dexterity change crit, evasion and attack speed in combat.
 - **Got:** only the Status and Equipment screens read them; no crit roll, no evasion roll, speed ignored (D336).
-- **Fix:** crit roll in `hit_damage` (×1.5) and evasion in `mitigated_damage` behind a seedable RNG so `verify_combat_flow` / `verify_souls_combat` stay exact; speed into `swing_time`. Needs Sapega's call on the feel.
+- **Fix:** crit roll in `hit_damage` (×1.5) and evasion in `mitigated_damage` behind a seedable RNG so `verify_combat_flow` / `verify_souls_combat` stay exact; speed into `swing_time`. **Decided:** Sapega 2026-10-22, all three (D393).
 - **Severity:** blocker for Agility being worth a point
 - **Found:** 2026-10-21, `cloud/skills-screen`
 
@@ -167,7 +167,7 @@ the history, this note keeps only what is open.
 - **Where:** `SampleProject/Scripts/Gameplay/…/EnemyLogic.gd` `handle_attack_state` (its own `attack_cooldown` 1.5 s; `initialize()` never copies the stats value).
 - **Expected:** each enemy swings at its stats' tempo (the fast 1.0 s…).
 - **Got:** every melee enemy swings every 1.5 s; only the archer reads `enemy.attack_cooldown` (2.2 s).
-- **Severity:** visual (balance) — fixing it re-tunes every fight (4b); needs Sapega's call on whether the stats' tempos are wanted
+- **Severity:** visual (balance) — fixing it re-tunes every fight (4b). **Decided:** Sapega 2026-10-22, tempo from the stats (D394)
 - **Found:** 2026-10-22, `cloud/bow`
 
 > **Fixed log (2026-10-22, `cloud/code-fixes`):** B42 (Game.tscn's dangling ObjectiveHUD; `verify_scripts_compile`
