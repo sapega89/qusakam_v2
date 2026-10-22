@@ -32,18 +32,19 @@ LIGHT = "flat 2D game sprite, warm light on the top, cool violet shadows"
 # canvas — кадр (px гри), предмет вписується в box по центру. hot — гарячі пікселі: (канал, поріг яскравості).
 DECOR = {
     "banner": dict(
-        seed=71,
+        seed=103,
         size=(512, 1024),
         key="green",
         colors=10,
-        kind="sway",
-        anchor=(0.5, 0.0),
-        amp=2.0,
-        canvas=(24, 48),
-        box=(4, 0, 20, 48),
-        prompt="one single long narrow hanging cloth banner with vertical red and deep blue stripes and a scalloped "
-        "fringe at its bottom edge, hanging straight down from a short horizontal wooden rod with round knobs at both "
-        f"ends, the rod touches the top edge of the image, the cloth falls freely, {LIGHT}, {cb.CHROMA}",
+        kind="shift",  # кадри — цілі px-зсуви рядків ОДНОГО зменшеного кадру: смуги й кольори ті самі в усіх кадрах
+        amp=2,
+        canvas=(24, 32),
+        box=(2, 1, 22, 32),  # 1 px над жердиною — навершя не обрізаються
+        prompt="one single hanging cloth banner, the cloth has exactly three bold wide vertical stripes: brick red, "
+        "teal blue, brick red, the bottom hem is cut into a swallow-tail with two points, the cloth hangs straight down "
+        "from a horizontal wooden rod that is wider than the cloth, a round wooden knob at each end of the rod, the "
+        "whole rod with both knobs is visible near the top of the image, flat 2D game sprite, warm light on the top, "
+        f"{cb.CHROMA}",
     ),
     "palm": dict(
         seed=73,
@@ -181,6 +182,8 @@ def build(name, d):
         labels, n = ndimage.label(a > 0)
         a = (labels == 1 + int(np.argmax(ndimage.sum(np.ones_like(a), labels, range(1, n + 1))))).astype(np.float32)
     ys, xs = np.nonzero(a)
+    if d["kind"] == "shift":
+        return shift_sheet(img[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], a[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], d)
     img, a = (
         img[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1],
         a[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1],
@@ -221,6 +224,29 @@ def build(name, d):
     out = cb.quantize(sheet, opaque, d["colors"], "octree")
     rows = np.nonzero(opaque.any(axis=1))[0]  # порожні рядки геть: верхній рядок — підвіс, нижній — лінія ніг
     return out[rows.min() : rows.max() + 1]
+
+
+def shift_sheet(img, a, d):
+    """Один кадр зменшується й квантується РАЗ; кадри петлі — цілі px-зсуви його рядків: рядок y зсувається на
+    round(phase·amp·(y/h)^1.5) — жердина (верх) стоїть, кінчик ходить на ±amp. Кольори й смуги в кадрах однакові."""
+    r, g, b = img[..., 0], img[..., 1], img[..., 2]
+    a = a * ~((b > g + 15) & (b > r + 30) & (r > 35))  # синьо-фіолетова тінь на фоні (STYLE), не тканина: бірюза має r < 25
+    ys, xs = np.nonzero(a > 0)
+    img, a = img[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], a[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+    x0, y0, x1, y1 = d["box"]
+    k = min((x1 - x0) / a.shape[1], (y1 - y0) / a.shape[0])
+    w, h = max(1, round(a.shape[1] * k)), max(1, round(a.shape[0] * k))
+    rgb, op = down(img, a, k, (w, h))
+    base = cb.quantize(rgb, op, d["colors"], "octree")  # (h, w, 4)
+    cw, ch = d["canvas"]
+    ox = x0 + (x1 - x0 - w) // 2
+    sheet = np.zeros((ch, cw * FRAMES, 4), np.uint8)
+    for i in range(FRAMES):
+        phase = round(np.sin(2 * np.pi * i / FRAMES))
+        for y in range(h):
+            dx = round(phase * d["amp"] * (y / max(1, h - 1)) ** 1.5)
+            sheet[y0 + y, i * cw + ox + dx : i * cw + ox + dx + w] = base[y]
+    return sheet
 
 
 def dust(seed=3, n=14, size=(64, 64), frames=6):

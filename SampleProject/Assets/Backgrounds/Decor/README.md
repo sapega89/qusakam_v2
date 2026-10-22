@@ -2,7 +2,7 @@
 
 Made by `Scripts/Tools/comfy_decor.py`: one generation per prop in the backdrop style (`STYLE` of
 `comfy_backdrop.py`), the loop frames are derived from that single image by the script (sway = pixel shift growing
-from the anchor; flicker = brightness of the hot pixels), so the shape never drifts between frames. Each
+from the anchor — the banner shifts whole rows of one downscaled, quantised frame, so its stripes never change; flicker = brightness of the hot pixels), so the shape never drifts between frames. Each
 `<name>_sheet.png` is a horizontal strip of equal frames, one shared palette; empty rows are trimmed, so row 0 is
 the hanging line and the last row the foot line. Not wired into scenes yet.
 
@@ -10,7 +10,7 @@ AI-generated: drawn by the local ComfyUI with **Qwen-Image** (Alibaba Qwen, Apac
 
 | folder | frames | frame px | loop | anchor |
 |---|---|---|---|---|
-| `banner/` | 4 | 24×30 | sway 0,+,0,− | hangs from row 0 (rod, x 4–19) |
+| `banner/` | 4 | 24×32 | sway 0,+,0,− (whole-pixel row shifts of one frame) | row 0 empty, rod on row 1 (knobs x 2–21), tip ±2 px |
 | `palm/` | 4 | 56×70 | sway 0,+,0,− | trunk foot: last row, x 23–28 |
 | `lamp/` | 3 | 28×20 | flame flicker 1.0/0.72/1.18 | stands on the last row |
 | `crystal/` | 3 | 24×26 | glow flicker | stands on the last row |
