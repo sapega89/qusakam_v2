@@ -82,3 +82,5 @@ Sapega chose all four. `cloud/settings-2` (#52, D418) starts after `cloud/settin
 | 14:04 | rows-2 (`trig_014wctbx36UJsgUBWYAZPjTk`) | cloud/rows-2 | #50: skills_component, inventory_component, bottom_bar as templates (D423 way) |
 | 14:04 | combat-fixes (`trig_01ME2nviFHh4JuK3PQTdzGSM`) | cloud/combat-fixes | B116 (in combat through the boss cutscene); CombatInput / SkillScreenInput into project.godot |
 | 14:42 | settings-2 (`trig_01YQGg9VyujAfkkUo4fSEj3g`) | cloud/settings-2 | #52: D418 check, Text Speed, Screen Shake, Ambient, Brightness — started after settings-store merged (D424) |
+
+Round 8 merged 2026-10-22: settings-store (D424, B118), combat-fixes (D425, B116), rows-2 (D426), settings-2 (D427–D431, renumbered from the branch's D425–D429). Local suite after the merge: 93/93. Left of #50: `options_component` (order 6), now unblocked.
