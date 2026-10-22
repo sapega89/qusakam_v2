@@ -202,6 +202,9 @@ func _initialize() -> void:
 	print("[2b] Invulnerability frames (B60)")
 	for e in enemies:
 		e.set_physics_process(false)  # вороги не бʼють, поки міряємо
+	# Замах, що вже йде, б'є до кінця (див. [1]); швидкий ворог з темпом 1.0 с (D394) частіше ловиться посеред серії
+	while enemies.any(func(e: Node) -> bool: return e.enemy_logic.is_attacking):
+		await physics_frame
 	await create_timer(1.0).timeout
 	game.player.current_health = game.player.Max_Health
 	var player_hits: Array = []
