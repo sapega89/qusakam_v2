@@ -42,6 +42,7 @@ var em: Node
 var target: Node
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
 	await process_frame

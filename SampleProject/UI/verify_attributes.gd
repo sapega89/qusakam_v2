@@ -57,6 +57,7 @@ func _key(code: Key) -> void:
 		await process_frame
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	await process_frame
 	root.size = Vector2i(1920, 1080)  # headless скидає вікно до 64×64, а миша клікає в координатах 1920×1080

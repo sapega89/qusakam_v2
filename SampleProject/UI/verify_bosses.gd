@@ -43,6 +43,7 @@ var floor_y := 0.0
 var arena_x := 0.0
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
 	await process_frame

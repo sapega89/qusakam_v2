@@ -29,6 +29,7 @@ class Ally extends Node2D:
 		healed += amount
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)

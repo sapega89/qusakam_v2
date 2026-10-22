@@ -36,6 +36,7 @@ func _level_to(xp: Node, level: int) -> void:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)

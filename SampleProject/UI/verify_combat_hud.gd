@@ -25,6 +25,7 @@ func _row_bar(panel: Node, id: String) -> ProgressBar:
 
 
 func _initialize() -> void:
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	await process_frame
 	var sl: Node = root.get_node_or_null("ServiceLocator")
