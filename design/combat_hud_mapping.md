@@ -92,13 +92,13 @@ production skills, targeting system, controller bindings.
 
 ## HUD v2 hero panel (D453, D476, D485): measured spec, 2026-10-23
 
-**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 220 (the plate and, under it, the F and Q chips). In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. The stamina row was added on 2026-10-23 for D537, and the plate grew by 22 px. The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
+**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 198 (the plate and, under it, the F and Q chips). In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. There is no stamina row: stamina is out for now (D551). The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
 
 **Assets:** all in `SampleProject/Assets/UI/HUD/hero_panel/`.
 
 | File | Size | What it is |
 |---|---|---|
-| `plate.svg` | 470 × 144 | Dark gradient plate with a gold rim and an arrow tip on the right |
+| `plate.svg` | 470 × 122 | Dark gradient plate with a gold rim and an arrow tip on the right |
 | `portrait_ring.svg` | 104 × 92 | Gold hexagon ring around the portrait |
 | `level_diamond.svg` | 30 × 30 | Gold level badge |
 | `curl.svg` | 44 × 44 | D476 ornament. On the panel's right end it is mirrored: `flip_h`, which is Figma's rotate 180 + flip Y |
@@ -108,26 +108,25 @@ production skills, targeting system, controller bindings.
 
 | Element | Position, size | Look |
 |---|---|---|
-| Plate | (0, 14) 470 × 144 | `plate.svg` |
-| Portrait | (14, 40) 104 × 92 | The hero portrait (`CharacterManager.HERO_PORTRAIT`, D534), nearest-filtered, clipped to the hexagon `M26 2H78L102 46L78 90H26L2 46Z` over a `#15141C` fill. `portrait_ring.svg` sits on top |
-| Level badge | (51, 118) 30 × 30 | `level_diamond.svg`. The level number is centred: Cormorant Bold 15, `#0B0B10` |
+| Plate | (0, 14) 470 × 122 | `plate.svg` |
+| Portrait | (14, 29) 104 × 92 | The hero portrait (`CharacterManager.HERO_PORTRAIT`, D534), nearest-filtered, clipped to the hexagon `M26 2H78L102 46L78 90H26L2 46Z` over a `#15141C` fill. `portrait_ring.svg` sits on top |
+| Level badge | (51, 107) 30 × 30 | `level_diamond.svg`. The level number is centred: Cormorant Bold 15, `#0B0B10` |
 | Name | (134, 22) | "KUSAKAM": Cormorant Bold 26, `#F1D77A`, uppercase, letter spacing 3 |
 | Class | right edge at x 440, top 30 | Cormorant Regular 16, `#CFC8B0`. The sworn oath's name; "Holy Warrior" before the oath (as Status, D532) |
 | Rule | (134, 56) 300 × 1 | Accent `#D4AF37` at 60 % |
 | HP row | label y 62, bar y 66, h 14 | Fill `#2ECC71` |
 | SP row | label y 84, bar y 88, h 14 | Fill `#3498DB` |
-| ST row | label y 106, bar y 110, h 14 | Fill `UITokens.STAMINA_FILL` (`#E67E22`) |
-| XP row | label y 126, bar y 132, h 8 | Fill accent `#D4AF37` |
-| Curl | (462, 64) 44 × 44 | `curl.svg`, `flip_h` |
-| F chip, the assist | (134, 158) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 198) with "F" |
-| Q chip, potions | (200, 158) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 182) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 198) with "Q" |
+| XP row | label y 104, bar y 110, h 8 | Fill accent `#D4AF37` |
+| Curl | (462, 53) 44 × 44 | `curl.svg`, `flip_h` |
+| F chip, the assist | (134, 136) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 176) with "F" |
+| Q chip, potions | (200, 136) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 160) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 176) with "Q" |
 
 **Rows:**
 - Each label is at x 134: Cormorant Bold 16, `#CFC8B0`.
 - Each bar is at x 168, 200 wide.
 - Each value is right-aligned to x 442: Cormorant SemiBold 18, white. The XP value is 16, `#E8E2CC`.
 - The bar background is black at 60 % with a 1 px `#8A6F22` border. The fill is inset 1 px.
-- HP, SP and ST have a 3 px top highlight of white at 25 %. XP has no highlight.
+- HP and SP have a 3 px top highlight of white at 25 %. XP has no highlight.
 - Colours go through `UITokens`: reuse the existing tokens, and add one only where none exists.
 
 **The potion and the assist live here** (Sapega, 2026-10-23: «QF прибери з панелі», meaning out of the hotbar). The old "Q Potions ×N" text line (D538) becomes the Q chip, and the assist slot leaves the hotbar for the F chip.

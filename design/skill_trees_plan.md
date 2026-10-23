@@ -37,7 +37,7 @@ Each tab gets every role Dragon Nest gives a tab:
 - sustain;
 - (oaths only) the level-20 ultimate.
 
-No skill puts the hero behind an enemy (Sapega: «за спину ми нікому не зможемо забігти»).
+No skill puts the hero behind an enemy (Sapega: «за спину ми нікому не зможемо забігти»). No skill uses stamina: stamina is out for now (D551).
 
 ### Holy Warrior (base): 10 active, 9 passive
 
@@ -60,7 +60,7 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | 12 | Fortitude | passive | less damage | exists |
 | 12 | **Battle Cry** | active | +attack for a while; weak enemies close by flinch | new |
 | 14 | **Counter Stance** | active | a short stance: a blow taken in it is blocked and answered hard (not red unblockable attacks) | new |
-| 14 | **Steady Breath** | passive | stamina comes back faster (D537) | new |
+| 14 | **Keen Edge** | passive | critical hits come more often (D393) | new |
 | 16 | **Heavy Hand** | passive | the heavy attack deals more guard damage | new |
 
 ### Paladin: 10 active, 9 passive
@@ -84,7 +84,7 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | 15 | **Heaven's Anvil** | active | leap and slam, pillars of light on both sides | new |
 | 18 | Unbroken Vow | passive | less damage | exists |
 | 18 | **Radiant Flare** | active | a flash that dazes every enemy around and clears burning and curses from the hero | new |
-| 18 | **Shield of Faith** | passive | a shield block costs less stamina | new |
+| 18 | **Shield of Faith** | passive | a block with a shield heals a little | new |
 | 20 | Judgement of the Sky | ultimate | the oath's ultimate (D528) | exists |
 
 ### Dark Knight: 10 active, 9 passive
@@ -129,10 +129,10 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | 15 | Unshakable | passive | less damage | exists |
 | 15 | Rooted Resolve | passive | at low HP, faster guard break | exists (draft) |
 | 15 | **Mirror Stance** | active | a short stance that sends arrows and projectiles back | new |
-| 15 | **Centered Breath** | active | restores stamina fast and a little SP; a hit breaks it | new |
+| 15 | **Centered Breath** | active | a short meditation in battle: restores some HP and SP; a hit breaks it | new |
 | 18 | Perfect Balance | passive | +attack | exists |
 | 18 | **Dune Quake** | active | leap and slam; a sand wave both ways knocks enemies down | new |
-| 18 | **Light Feet** | passive | a roll costs less stamina | new |
+| 18 | **Light Feet** | passive | the roll goes further and stays invulnerable a little longer | new |
 | 20 | Second Wind | ultimate | the oath's ultimate (D528) | exists |
 
 ### What the new actives need that does not exist yet
