@@ -171,6 +171,8 @@ func load_data(data: Dictionary) -> void:
 	player_state.journal = data.journal.duplicate(true)  # D290
 	# Сейви до BACKLOG 31 пишуть кириличні id мовців — переписуємо на нові (DialogueQuest їх уже не знає).
 	player_state.journal.people = player_state.journal.people.map(func(id: String) -> String: return RENAMED_SPEAKERS.get(id, id))
+	# Сейви до D606 не мають знайдених шматків історії.
+	player_state.journal.get_or_add("stories", [])
 
 	# Загружаем экипировку
 	if "equipment" in data:

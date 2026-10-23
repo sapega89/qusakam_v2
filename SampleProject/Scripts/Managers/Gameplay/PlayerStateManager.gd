@@ -72,7 +72,7 @@ static func _initial_state() -> Dictionary:
 		"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
 		"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
 		"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial)
-		"journal": {"people": [], "enemies": {}},  # D290: зустрінуті люди і вороги (kind → вбито)
+		"journal": {"people": [], "enemies": {}, "stories": []},  # D290: люди, вороги (kind → вбито); D606: шматки історії
 		"job_points": 0,
 		"equipped_skills": ["", "", "", ""],
 		"skill_ranks": {},  # D150: skill_id → рівень 1..20 (немає запису = 1)

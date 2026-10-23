@@ -1,12 +1,14 @@
 extends RefCounted
 
 ## Що Кусакам зустрів (BACKLOG 13, D290, design/journal_codex_plan.md): люди, з якими говорив, і вороги —
-## бачені та скільки вбито. Живе в player_state.journal (у сейві): {"people": [id], "enemies": {kind: kills}}.
+## бачені та скільки вбито, і знайдені шматки історії (D583, D606). Живе в player_state.journal (у сейві):
+## {"people": [id], "enemies": {kind: kills}, "stories": [id]}.
 ## Тексти — Resources/Data/journal_people.json і bestiary.json. Записують тригери, не списки:
 ## DialogueManager (перша літера репліки — мовець), DefaultEnemy (з'явився / загинув).
 
 const PEOPLE_FILE := "res://SampleProject/Resources/Data/journal_people.json"
 const BESTIARY_FILE := "res://SampleProject/Resources/Data/bestiary.json"
+const STORIES_FILE := "res://SampleProject/Resources/Data/journal_stories.json"
 
 
 ## Автозавантаження — через дерево, а не за іменем: скрипт тягнуть class_name-класи (DefaultEnemy,
@@ -71,3 +73,29 @@ static func enemies() -> Array:
 			entry.kills = int(_state().enemies[e.kind])
 			out.append(entry)
 	return out
+
+
+static func _stories_data() -> Array:
+	return JSON.parse_string(FileAccess.get_file_as_string(STORIES_FILE)).stories
+
+
+## Прочитаний шматок історії [param story_id] (StoryNote); id без запису в journal_stories.json — помилка даних.
+static func find_story(story_id: String) -> void:
+	assert(_stories_data().any(func(s: Dictionary) -> bool: return s.id == story_id),
+			"JournalRecords: story %s is not in journal_stories.json" % story_id)
+	if not story_id in _state().stories:
+		_state().stories.append(story_id)
+
+
+## Запис шматка історії: {id, title, text, draft} (англійські ключі).
+static func story(story_id: String) -> Dictionary:
+	for entry: Dictionary in _stories_data():
+		if entry.id == story_id:
+			return entry
+	assert(false, "JournalRecords: story %s is not in journal_stories.json" % story_id)
+	return {}
+
+
+## Знайдені шматки історії в порядку знахідок.
+static func stories() -> Array:
+	return _state().stories.map(func(id: String) -> Dictionary: return story(id))

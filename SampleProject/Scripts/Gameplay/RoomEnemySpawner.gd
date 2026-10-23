@@ -33,6 +33,10 @@ const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 ## Боси й сюжетні бої (false) памʼятають своїх убитих назавжди (D152).
 @export var respawns: bool = false
 
+## D583: здобич бою — item_id → кількість, дається один раз, коли бій добито вперше (стан кімнати
+## <state_key>_reward, у сейві); повернення ворогів (D492) її не повторює. Порожньо — без здобичі.
+@export var reward: Dictionary[String, int] = {}
+
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
 
@@ -247,6 +251,21 @@ func _on_enemy_died(enemy: Node) -> void:
 	if get_alive_enemies_count() == 0:
 		all_enemies_defeated.emit()
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
+	if not reward.is_empty():
+		_grant_reward.call_deferred()  # після того, як _track() викреслив убитого зі стану бою
+
+const REWARD_SUFFIX := "_reward"
+
+## Бій добито вперше — здобич в інвентар і модалка «You obtained».
+func _grant_reward() -> void:
+	var game := Game.get_singleton()
+	if not fight_cleared() or game.get_room_state(_room, state_key + REWARD_SUFFIX, false):
+		return
+	game.set_room_state(_room, state_key + REWARD_SUFFIX, true)
+	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
+	for item_id: String in reward:
+		inventory.add_item(item_id, reward[item_id])
+	ServiceLocator.get_ui_manager().show_obtained(reward)
 
 func get_alive_enemies_count() -> int:
 	"""Возвращает количество живых врагов"""

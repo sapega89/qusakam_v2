@@ -1,0 +1,3 @@
+// [DRAFT] D562 — the hero tries the attic hatch before Grandfather lets him up (gates.json → elder_attic).
+say|KUSAKAM|The attic is Grandfather's. I'll ask him first.
+exit|

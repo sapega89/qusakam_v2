@@ -130,6 +130,16 @@
 			"file": "locations.json",
 			"path": "locations[].name",
 			"shown": "LocationDB.title → карта світу (world_structure_plan слайс 2)"
+		},
+		{
+			"file": "journal_stories.json",
+			"path": "stories[].title",
+			"shown": "StoryNote → модалка читання (D606)"
+		},
+		{
+			"file": "journal_stories.json",
+			"path": "stories[].text",
+			"shown": "StoryNote → модалка читання (D606)"
 		}
 	]
 }

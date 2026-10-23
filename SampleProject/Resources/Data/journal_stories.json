@@ -1,0 +1,11 @@
+{
+	"_comment": "D583, D606: pieces of story found in the world (a note, a mural, papers). A StoryNote (Objects/StoryNote.tscn, story_id = id here) shows the text when read and writes the id into player_state.journal.stories (JournalRecords.find_story). Texts are English keys, uk in uk.po. \"draft\": the text is a [ЧЕРНЕТКА] for Sapega. The Journal has no tab for them yet (design/journal_story_plan.md).",
+	"stories": [
+		{
+			"id": "grandfather_notes",
+			"title": "Grandfather's notes",
+			"text": "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay.",
+			"draft": true
+		}
+	]
+}

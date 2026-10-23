@@ -24,11 +24,27 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_front.png" id="front_tex"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/Ladder.tscn" id="ladder"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/BreakableWall.tscn" id="breakable_wall"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="locked_door"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="bars_art"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shop_roof"]
+size = Vector2(372, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tower_top"]
+size = Vector2(212, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stash_bars"]
+size = Vector2(168, 108)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stash_reach"]
+size = Vector2(232, 120)
 
 [node name="DesertRoad" type="Node2D" unique_id=1561391997]
 script = ExtResource("1_desert")
@@ -290,6 +306,9 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_CaravanTrigger")
 state_key = "enemies_caravan"
 respawns = true
+reward = Dictionary[String, int]({
+"bandit_key": 1
+})
 
 [node name="Fight_CaravanTrigger" type="Area2D" parent="Fight_Caravan" unique_id=1054714481]
 position = Vector2(3500, 240)
@@ -322,20 +341,62 @@ position = Vector2(3960, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 
-[node name="Pickup_DuneLedge" parent="." unique_id=284198446 instance=ExtResource("item_pickup")]
-position = Vector2(2048, 232)
+[node name="Ladder_Shop" parent="." instance=ExtResource("ladder")]
+position = Vector2(1464, 153)
+height = 231.0
+
+[node name="Ledge_ShopRoof" type="StaticBody2D" parent="."]
+position = Vector2(1284, 159)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ledge_ShopRoof"]
+shape = SubResource("RectangleShape2D_shop_roof")
+one_way_collision = true
+
+[node name="Pickup_ShopRoofRubble" parent="." instance=ExtResource("item_pickup")]
+position = Vector2(1222, 113)
 item_id = "iron_ingot"
 
-[node name="Pickup_MesaLedge" parent="." unique_id=1624730996 instance=ExtResource("item_pickup")]
-position = Vector2(3200, 232)
+[node name="Rubble_ShopRoof" parent="." instance=ExtResource("breakable_wall")]
+position = Vector2(1222, 153)
+
+[node name="Pickup_ShopRoof" parent="." instance=ExtResource("item_pickup")]
+position = Vector2(1392, 129)
 item_id = "herb"
 amount = 2
 
-[node name="Chest_CaravanLedge" parent="." unique_id=1169964136 instance=ExtResource("chest")]
-position = Vector2(4144, 256)
+[node name="Ladder_Tower" parent="." instance=ExtResource("ladder")]
+position = Vector2(2318, 158)
+height = 226.0
+
+[node name="Ledge_TowerTop" type="StaticBody2D" parent="."]
+position = Vector2(2406, 164)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ledge_TowerTop"]
+shape = SubResource("RectangleShape2D_tower_top")
+one_way_collision = true
+
+[node name="Chest_TowerStash" parent="." instance=ExtResource("chest")]
+position = Vector2(2434, 158)
 contents = Dictionary[String, int]({
 "mana_crystal": 2
 })
+
+[node name="Cage_TowerStash" parent="." instance=ExtResource("locked_door")]
+position = Vector2(2428, 158)
+gate_id = "tower_stash"
+
+[node name="Sprite" parent="Cage_TowerStash" index="0"]
+z_index = 1
+position = Vector2(0, -56)
+texture = ExtResource("bars_art")
+
+[node name="CollisionShape2D" parent="Cage_TowerStash/Body" index="0"]
+position = Vector2(0, -54)
+shape = SubResource("RectangleShape2D_stash_bars")
+
+[node name="CollisionShape2D" parent="Cage_TowerStash/Area" index="0"]
+position = Vector2(-24, -60)
+shape = SubResource("RectangleShape2D_stash_reach")
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=603862840]
 process_mode = 3
