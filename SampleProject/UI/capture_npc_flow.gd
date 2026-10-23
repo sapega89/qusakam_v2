@@ -41,7 +41,7 @@ func _initialize() -> void:
 	await _drain(dm)
 
 	# 1. Місто: синій «!» над ковалем, герб над жрицею.
-	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 60: await physics_frame
 	await _drain(dm)
 	var smith: NpcBase = game.map.get_node(^"Blacksmith")
@@ -59,7 +59,7 @@ func _initialize() -> void:
 	# 3. Село: жовтий «!» над дідом, поки сюжетне завдання не видано.
 	for flag in ["village_abduction_complete", "village_arrival_complete", "village_fight_complete", "village_afterfight_complete"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"ElderDoor")
+	await game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"ElderDoor")
 	for i in 60: await physics_frame
 	await _drain(dm)
 	var old_man: NpcBase = game.map.get_node(^"OldManQuest")
