@@ -1,8 +1,9 @@
 extends SceneTree
 
 ## Бос Зали мера — сокирник Скорпікори (D468, D557, D642, design/lab_boss_plan.md slice 3).
-##   [1] Числа D642 для героя очікуваного рівня (5: присяга, D297) із залізним мечем, без блоку й ухилень:
-##       бос падає приблизно від 40 легких ударів, а кожен його хід убиває героя за 3–4 удари.
+##   [1] Герой очікуваного рівня (5: присяга, D297). Числа D642 (бос падає приблизно від 40 ударів, убиває героя за 3–4)
+##       рахує verify_difficulty — для збірок SKILLS і STRENGTH із атрибутами, бронею й навичками (B144); тут — лише
+##       для звіту, скільки б це було в героя без жодних вкладень.
 ##   [2] Кожен хід на арені DesertRoad (справжній AI, набір з одного ходу): підказка свого кольору (D573/D574)
 ##       з відблиском на сокирі, і удар влучає.
 ##   [3] Зала: велетенський скорпіон — лише кат-сцена (D557): виходить із проламу, стає дибки, вертається в пролам;
@@ -17,9 +18,6 @@ const TEST_SLOT := 1
 ## XP до 5 рівня з xp_curve.json (100 + 150 + 200 + 250) — рівень героя в Залі мера (verify_xp_curve: 5 → 8 після боса).
 const XP_TO_LEVEL_5 := 700
 const EXPECTED_LEVEL := 5
-## D642: бос — «приблизно 40» ударів героя, герой — 3–4 удари боса.
-const BOSS_HITS := Vector2i(35, 45)
-const HERO_HITS := Vector2i(3, 4)
 ## Підказки ходів (D574): серія — жовта, потім червона; ривок і удар об землю — червоні.
 const TELLS := {"combo": [&"parry", &"dodge"], "slam": [&"dodge"], "charge": [&"dodge"]}
 
@@ -100,7 +98,7 @@ func _numbers() -> void:
 	var boss_hp: int = boss.enemy_stats.max_health
 	var hits := ceili(float(boss_hp) / hit)
 	ck(xp.current_level == EXPECTED_LEVEL, "the hero is at level %d (%d)" % [EXPECTED_LEVEL, xp.current_level])
-	ck(hits >= BOSS_HITS.x and hits <= BOSS_HITS.y, "the boss (%d HP) takes %d light hits of %d (D642: about 40)" % [boss_hp, hits, hit])
+	print("    info: the boss (%d HP) takes %d light hits of %d from a hero with nothing invested (D642 lives in verify_difficulty)" % [boss_hp, hits, hit])
 	# Лише сила: усі очки атрибутів рівнів 2–5 у Strength (attributes.json) — для звіту; спадну віддачу сили (D642)
 	# ставить cloud/difficulty, тут лише видно, скільки вона зараз дає.
 	var am: Node = sl.get_attribute_manager()
@@ -192,7 +190,7 @@ func _move(boss: Node, kind: String, dx: float) -> void:
 	ck(not drops.is_empty() and drops.size() <= TELLS[kind].size(), "%s: it lands on a hero in range (%s)" % [kind, drops])
 	for d: int in drops:
 		var to_kill := ceili(float(level5_hp) / d)
-		ck(to_kill >= HERO_HITS.x and to_kill <= HERO_HITS.y, "%s: a hit of %d kills the level-%d hero (%d HP) in %d (D642: 3–4)" % [kind, d, EXPECTED_LEVEL, level5_hp, to_kill])
+		print("    info: %s: a hit of %d kills the level-%d hero with nothing invested (%d HP) in %d" % [kind, d, EXPECTED_LEVEL, level5_hp, to_kill])
 	await create_timer(0.6).timeout
 
 ## Збій (поза stagger — перший кадр смерті з того ж аркуша): аркуш і кадри повертаються.

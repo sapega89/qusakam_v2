@@ -23,7 +23,6 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 ## Маршрут у порядку історії (verify_xp_curve: ROUTE + LAB_ROUTE).
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
-const BOSSES := {"MayorHall": "Brass Collector", "LabBoss": "Fire Djinn"}
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
@@ -169,7 +168,7 @@ func _meetings() -> Array[Dictionary]:
 							"name": "%s%s L%d" % ["elite " if elite else "", KIND_NAMES[node.enemy_type], enemy_level]})
 				xp.add_xp(node.enemy_stats().xp_reward)
 			elif node.get_script() == Boss:
-				out.append({"cls": "boss", "kind": "boss", "name": BOSSES[room_name], "level": xp.current_level, "city": city,
+				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city,
 						"scene": node.scene_file_path})
 				room_xp += node.enemy_stats.xp_reward
 		xp.add_xp(room_xp)
