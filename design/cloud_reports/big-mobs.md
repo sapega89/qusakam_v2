@@ -13,7 +13,8 @@ exists. Six planned big kinds plus the horror jackal are data slots with no art.
 is the one elite that is live today. The 12 D582 places that wanted an elite or a large enemy are now `BigSlot_<Kind>_n`
 points. Each spawns the ordinary kind until its big kind's art lands (list below). The cursed foam (D653) is a reusable
 VFX in the hit-VFX layer. **Not done:** big-kind art, scenes, stats and bestiary names (art batch). D-IDs: **D675–D677**
-(text below). B rows fixed: none. Full suite: SUITE_LINE
+(text below). B rows fixed: none. Full suite: 110 PASS, 3 FAIL (`verify_difficulty`, `verify_lab_boss`,
+`verify_mayor_boss`: all three fail the same way on `origin/feature/backlog`, the boss numbers of D671 vs the mayor-boss branch)
 
 ## D-ID text (for the register; the next free numbers after D674, bugfix-1 runs beside, renumber as needed)
 
@@ -69,7 +70,11 @@ Slot point names (node → kept `spawn_id`):
   stashed): `Brass Collector at level 5: 9 hits kill the hero ([3, 4]), 27 hits kill it ([34, 46])` and
   `Brass Collector at level 5, STRENGTH: wins`. The boss here has HP 2600 and damage 48, not D671's 3900 / 120, so the
   D671 boss numbers have not reached `feature/backlog` yet (mayor-boss vs difficulty merge). Not this task's.
-- Full suite: SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`): `SUITE: 3 FAIL`, 110 PASS. The three FAILs were re-run on
+  `origin/feature/backlog` with the same result, so they are **pre-existing**: `verify_difficulty` (2, above),
+  `verify_lab_boss` (2: «balanced build: he dies in 2.6 of the mercenary's blows (406 HP; mace 129, club 206)»,
+  «the mercenary takes 60 light hits (6800 HP, Phys. Atk. 100)»), `verify_mayor_boss` (1: «the boss (2600 HP) takes 50
+  light hits of 53 (D642: about 40)»). They are boss balance after D642/D671 and outside this task.
 - Shot: `design/shots/enemy_variety/shield_fight.png`. Panel 1 is small and medium bandit, jackal, and a jackal with
   `jackal_cursed` stats (elite numbers and the foam, on the ordinary jackal frames). Panel 2 zooms ×4 on its foam: glowing
   blue drops fall from the jaw. Panels 3–5 are the shield-bearer fight, unchanged.
