@@ -1,9 +1,10 @@
-"""Іконки вмінь (D550: «маленькі малюночки, але впізнавані»). Лист кандидатів: кілька вмінь × кілька стилів.
+"""Іконки вмінь (D550: «маленькі малюночки, але впізнавані»; сам ефект уміння, без зброї й без Кусакама).
 
     python -I -B Scripts/Tools/comfy_icons.py   → design/shots/candidates/skill_icons.png
 
-Картинка — темний квадрат кольору дерева (полотно); кадру героя немає (на іконці не має бути Кусакама). Стиль MapleStory
-зводиться до сітки 48×48 найчастішим кольором блоку й палітрою (comfy_sprite.shrink); мальовані — як є.
+Еталон стилю — іконка, яку обрав Sapega (Searing Hex у стилі Dragon Nest: золота рамка, глянець, світіння;
+design/shots/candidates/picks/icon_style_ref_hex.png). Кожна іконка — правка цієї картинки: рамка й манера лишаються,
+всередині — ефект уміння, колір світіння — свій. Образи — з D&D 5e SRD і Pathfinder 2e, звідки вміння (D285).
 """
 
 import os
@@ -14,109 +15,87 @@ from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, os.path.dirname(__file__))
 from comfy_backdrop import run, upload  # noqa: E402
-from comfy_sprite import edit_graph, free, own_palette, polish, shrink, to_palette  # noqa: E402
+from comfy_sprite import edit_graph, free  # noqa: E402
 
-GRID, UPX = 48, 16  # клітинка іконки й блок моделі
+REF = "design/shots/candidates/picks/icon_style_ref_hex.png"
 OUT = "design/shots/candidates/skill_icons.png"
-TREE_BG = {  # тло квадрата за деревом (D550)
-    "holy": (58, 44, 26),
-    "paladin": (24, 34, 66),
-    "dark": (52, 18, 40),
-    "warden": (18, 52, 52),
-}
-SKILLS = [  # Sapega 2026-10-23: «вміння має бути самодостатнім» — на іконці сам ефект, не зброя й не герой
-    ("Fire Strike", "holy", "a roaring burst of orange fire sweeping in a slash-shaped arc"),
-    ("Electric Strike", "holy", "a jagged bolt of blue-white lightning with crackling sparks"),
-    ("Healing Palm", "holy", "a gentle healing touch: an open palm with soft green-gold light flowing out of it"),
-    ("Radiant Smite", "paladin", "a burst of white-gold holy light striking down from above"),
-    ("Searing Hex", "dark", "a cursed rune burning with violet-black fire"),
-    ("Dervish Whirl", "warden", "a spinning whirlwind of sand and wind"),
+SIZE = 192  # показ на листі
+# (вміння, джерело D&D / Pathfinder, що всередині рамки, колір світіння); None — сам еталон без руки
+SKILLS = [
+    ("Searing Hex", "Touch of Corruption", None, None),
+    (
+        "Fire Strike",
+        "Searing Smite",
+        "a roaring burst of orange fire shaped like a slashing arc",
+        "warm orange",
+    ),
+    (
+        "Electric Strike",
+        "Thunderous Smite",
+        "a jagged bolt of blue-white lightning crackling with sparks",
+        "electric blue",
+    ),
+    (
+        "Healing Palm",
+        "Lay on Hands",
+        "a laying-on of hands: an open palm with soft golden light pouring out of it",
+        "soft golden green",
+    ),
+    (
+        "Radiant Smite",
+        "Divine Smite",
+        "a blinding white-gold radiant burst with a small holy sunburst sigil at its heart",
+        "white gold",
+    ),
+    (
+        "Dervish Whirl",
+        "Whirlwind",
+        "a spinning whirlwind of sand and wind",
+        "sand yellow and teal",
+    ),
 ]
-STYLES = [  # Sapega 2026-10-23: «за референси візьми Dragon Nest, MapleStory, Diablo»
-    (
-        "dragon_nest",
-        "in the style of Dragon Nest skill icons: a glossy hand-painted square icon, vivid saturated colours, a strong "
-        "inner glow and sharp highlights",
-    ),
-    (
-        "maplestory",
-        "in the style of MapleStory skill icons: a small cute pixel-art icon with clean dark outlines, bright cheerful "
-        "colours and simple shapes",
-    ),
-    (
-        "diablo2",
-        "in the style of Diablo II skill icons: a dark, gritty hand-painted square icon, muted earthy colours, worn and "
-        "moody",
-    ),
-    (
-        "diablo4",
-        "in the style of Diablo IV skill icons: a detailed painterly icon with dramatic lighting, mostly dark and "
-        "monochrome with one strong accent colour",
-    ),
-]
-PROMPT = (
-    "Paint a square game skill icon over this whole dark square, {style}: {subject}. One clear subject filling the "
-    "square, centred, readable at a glance; the dark square stays the background. Only the effect of the "
-    "skill itself: no weapons, no people, no characters, no lizard, no faces (a lone hand only where the skill is a "
-    "touch). No text, no letters, no border."
+KEEP_HEX = (
+    "Keep this icon exactly as it is: the gold rounded-square frame, the dark purple background, the glow, the dark rune "
+    "and the violet-black fire. Remove the clawed hand and its sleeve completely, so only the rune in its fire stays, "
+    "centred in the frame. No text."
+)
+RESTYLE = (
+    "Keep exactly this icon's frame and style: the same gold rounded-square frame, the dark background, the glossy "
+    "hand-painted look and the soft outer glow. Replace everything inside the frame with {subject}, and change the glow "
+    "and the main colour to {glow}. One clear subject, centred and readable at a glance. No weapons, no people, no faces "
+    "(a lone hand only where the skill is a touch), no rune, no text."
 )
 
 
-def canvas(color):
-    return np.asarray(Image.new("RGBA", (GRID * UPX, GRID * UPX), color + (255,)))
-
-
-def pixel_icon(img):
-    rgb, op = shrink(img, (GRID, GRID))
-    op[:] = True  # іконка — повний квадрат, тло не вирізаємо
-    pal = own_palette([(rgb, op)], 16)
-    q, _ = polish(to_palette(rgb, pal), op)
-    return Image.fromarray(q.astype(np.uint8)).resize(
-        (GRID * 4, GRID * 4), Image.NEAREST
-    )
-
-
 def main():
-    cells = {}
-    for si, (label, style) in enumerate(STYLES):
-        for ki, (name, tree, subject) in enumerate(SKILLS):
-            src = canvas(TREE_BG[tree])
-            ref = upload(src, "icon_canvas.png")
-            mp = src.shape[0] * src.shape[1] / 1048576
-            out = run(
-                edit_graph(
-                    PROMPT.format(style=style, subject=subject), 300 + ki, ref, mp
-                )
-            ).astype(np.uint8)
-            rgba = np.dstack([out, np.full(out.shape[:2], 255, np.uint8)])
-            cells[(si, ki)] = (
-                pixel_icon(rgba)
-                if label == "maplestory"
-                else Image.fromarray(out).resize((GRID * 4, GRID * 4), Image.LANCZOS)
-            )
-            print("generated", label, name, flush=True)
+    ref = np.asarray(Image.open(REF).convert("RGBA"))
+    name = upload(ref, "icon_style_ref.png")
+    mp = ref.shape[0] * ref.shape[1] / 1048576
+    cells = []
+    for ki, (skill, source, subject, glow) in enumerate(SKILLS):
+        text = (
+            KEEP_HEX if subject is None else RESTYLE.format(subject=subject, glow=glow)
+        )
+        out = run(edit_graph(text, 400 + ki, name, mp)).astype(np.uint8)
+        cells.append(
+            (skill, source, Image.fromarray(out).resize((SIZE, SIZE), Image.LANCZOS))
+        )
+        print("generated", skill, flush=True)
     free()
-    font = ImageFont.truetype("arial.ttf", 26)
-    cw, pad, top, left = GRID * 4, 24, 60, 150
+    font, small = (
+        ImageFont.truetype("arial.ttf", 22),
+        ImageFont.truetype("arial.ttf", 17),
+    )
+    pad, top = 24, 70
     sheet = Image.new(
-        "RGB",
-        (left + len(SKILLS) * (cw + pad), top + len(STYLES) * (cw + pad)),
-        (60, 60, 66),
+        "RGB", (pad + len(cells) * (SIZE + pad), top + SIZE + pad), (60, 60, 66)
     )
     d = ImageDraw.Draw(sheet)
-    for ki, (name, _, _) in enumerate(SKILLS):
-        d.text((left + ki * (cw + pad), 18), name, fill="white", font=font)
-    for si, (label, _) in enumerate(STYLES):
-        d.text(
-            (16, top + si * (cw + pad) + cw // 2 - 14),
-            f"{si + 1} {label}",
-            fill="white",
-            font=font,
-        )
-        for ki in range(len(SKILLS)):
-            sheet.paste(
-                cells[(si, ki)], (left + ki * (cw + pad), top + si * (cw + pad))
-            )
+    for i, (skill, source, im) in enumerate(cells):
+        x = pad + i * (SIZE + pad)
+        d.text((x, 14), skill, fill="white", font=font)
+        d.text((x, 42), source, fill=(200, 200, 210), font=small)
+        sheet.paste(im, (x, top))
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     sheet.save(OUT)
     print("sheet", OUT, sheet.size)
