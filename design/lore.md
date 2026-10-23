@@ -50,7 +50,10 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **The one who casts the curse is very powerful, and nobody will ever learn who it is** (Sapega, 2026-10-23: «той, хто накладає
   прокляття, дуже могутній, але ніхто ніколи не дізнається, хто це, але прокляття буде ставити палки в колеса»). The curse
   keeps **getting in the way**: it is an obstacle along the road, never a villain who is unmasked or fought.
-- Open (not said): does the barrier, or the Maiden, shield the village from the sky? Alisia has one blue eye (2026-10-19):
+- **The barrier, the Maiden's, shields her followers from the sky's curse** (Sapega, 2026-10-23: «так»). With the barrier
+  asleep and the statuette stolen, the villagers are open to the curse; a worthier place for the Maiden means a place where
+  her barrier can shield her followers again.
+- Open (not said): Alisia has one blue eye (2026-10-19):
   is that the curse beginning, or chance? Are the blue-eyed mindless an enemy kind?
 
 ## The story spine: the Maiden and the barrier (Sapega, 2026-10-23)
