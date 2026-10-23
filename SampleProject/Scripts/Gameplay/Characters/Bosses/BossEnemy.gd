@@ -24,11 +24,19 @@ signal phase_changed(phase: int)
 ## Друга фаза: множник замахів і швидкості.
 @export var phase2_windup := 0.75
 @export var phase2_speed := 1.3
+## Поза другого удару серії combo (D564: булава навідліг); у кого її немає — та сама attack.
+@export var finisher_animation: StringName = &"attack"
+## Кпини посеред бою (D466) — ключі .po, по одному на кожен ковток (хід drink), по колу; на початку другої фази —
+## phase2_taunt. Облачко — над головою, вістря хвоста в taunt_anchor.
+@export var taunts: PackedStringArray = []
+@export var phase2_taunt := ""
+@export var taunt_anchor := Vector2(0, -110)
 
 var phase := 1
 ## Множник замаху ходів (1 у першій фазі).
 var windup_scale := 1.0
 var bar: Control
+var _taunt_at := 0
 
 
 func _ready() -> void:
@@ -55,6 +63,11 @@ func _on_logic_attack_ended() -> void:
 	super._on_logic_attack_ended()
 	if not is_dead and not enemy_view.staggered and enemy_logic.current_state == EnemyLogic.AIState.ATTACK:
 		anim_player.play(&"idle")
+
+
+## Другий удар серії — своя поза (finisher_animation), перший — attack.
+func _on_logic_attack_started():
+	enemy_view.on_attack_started(enemy_logic.swing_windup, finisher_animation if enemy_logic.finisher else &"attack")
 
 
 func _make_logic() -> EnemyLogic:
@@ -84,6 +97,19 @@ func _on_logic_attack_telegraphed() -> void:
 	EventBus.enemy_tell_shown.emit(self, enemy_logic.tell_kind)
 
 
+## Ковток (BossLogic, D564): поза drink і кпин в облачку.
+func drink(move: Dictionary) -> void:
+	_pose(move.kind)
+	if not taunts.is_empty():
+		taunt(taunts[_taunt_at % taunts.size()])
+		_taunt_at += 1
+
+
+## Репліка [param key] (.po) в облачку над головою; посеред розмови мовчить (DialogueManager.say_line_in_passing).
+func taunt(key: String) -> void:
+	ServiceLocator.get_dialogue_manager().say_line_in_passing(self, tr(key), taunt_anchor)
+
+
 func strike(move: Dictionary) -> void:
 	_pose(move.kind + "_strike")
 
@@ -103,6 +129,8 @@ func _on_health_changed(health: int, max_health: int, _animate: bool) -> void:
 		attack_windup *= phase2_windup
 		speed *= phase2_speed
 		enemy_logic.speed = speed
+		if not phase2_taunt.is_empty():
+			taunt(phase2_taunt)
 		phase_changed.emit(phase)
 
 

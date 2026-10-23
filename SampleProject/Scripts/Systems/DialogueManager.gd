@@ -401,6 +401,17 @@ func say_in_passing(speaker: Node2D, path: String, anchor: Vector2) -> bool:
 	if lines.is_empty():
 		push_error("DialogueManager: chatter %s has no lines" % path)
 		return false
+	return _say_lines_in_passing(speaker, lines, anchor)
+
+
+## Одна вже перекладена репліка [param text] мимохідь — як say_in_passing (кпини боса посеред бою, D466).
+func say_line_in_passing(speaker: Node2D, text: String, anchor: Vector2) -> bool:
+	if is_dialogue_active() or _bubble_playing or _chatter.has(speaker.get_instance_id()):
+		return false
+	return _say_lines_in_passing(speaker, [{"speaker": "", "text": text}], anchor)
+
+
+func _say_lines_in_passing(speaker: Node2D, lines: Array[Dictionary], anchor: Vector2) -> bool:
 	var bubble: Node2D = SPEECH_BUBBLE.new()
 	_chatter[speaker.get_instance_id()] = bubble
 	speaker.add_child(bubble)

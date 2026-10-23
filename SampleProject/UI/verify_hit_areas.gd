@@ -18,6 +18,7 @@ const KINDS := {
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn": "archer",
 	"res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn": "",
+	"res://SampleProject/Scenes/Characters/Bosses/lab_boss.tscn": "",
 }
 
 var fails: Array[String] = []

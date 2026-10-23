@@ -391,16 +391,16 @@ func _initialize() -> void:
 	await _stick_until(1.0, func() -> bool: return _room() == BOSS, 15.0)
 	ck(_room() == BOSS, "stick east into the boss hall (%s)" % _room())
 
-	print("[4] The djinn: pad Y skips the talk; losing → the cloak → Game Over; pad A Resume → the last save")
+	print("[4] The mercenary: pad Y skips the talk; losing → the cloak → Game Over; pad A Resume → the last save")
 	started.clear()
 	await _stick_until(1.0, func() -> bool: return _state() != "WAIT", 8.0)
 	await _hold_skip(true, func() -> bool: return _state() == "FIGHT" and not game.player.event)
 	ck(_state() == "FIGHT" and started.has("Lab_Boss_Talk"), "the talk, then the fight (%s)" % [started])
-	var djinn: Node2D = game.map.get_node(^"FireDjinn")
+	var boss: Node2D = game.map.get_node(^"Mercenary")
 	game.player.current_health = 1
-	game.player.global_position = Vector2(djinn.global_position.x - 60.0, 380)
+	game.player.global_position = Vector2(boss.global_position.x - 50.0, 380)
 	await _until(func() -> bool: return started.has("Lab_Boss_TakesCloak"), 20.0)
-	ck(_state() == "CLOAK", "the djinn wins: CLOAK (%s)" % _state())
+	ck(_state() == "CLOAK", "the mercenary wins: CLOAK (%s)" % _state())
 	await _pad_talk()
 	await _until(func() -> bool: return get_first_node_in_group(&"game_over_screen") != null, 6.0)
 	var over: Control = get_first_node_in_group(&"game_over_screen")
@@ -415,7 +415,7 @@ func _initialize() -> void:
 	for i in 60: await physics_frame
 	ck(not paused and _room() == LAB, "pad A Resume → the last save, in the corridors (%s)" % _room())
 	ck(game.get_quest_flag("lab_corridors_complete") and not game.get_quest_flag("lab_boss_talk_complete") and not game.get_quest_flag("lab_boss_fight_complete"),
-			"the save is before the hall: corridors done, the djinn not met")
+			"the save is before the hall: corridors done, the mercenary not met")
 
 	print("[5] Again: the talk (Tab), the win, the gates, out to the demo end")
 	# D492: сейв на PreBoss — медитація, тож нижній бій повернувся; герой знову пробивається крізь нього.
@@ -426,9 +426,9 @@ func _initialize() -> void:
 	await _stick_until(1.0, func() -> bool: return _state() != "WAIT", 8.0)
 	ck(_state() == "TALK", "the talk again — it was not in the save (%s)" % _state())
 	await _hold_skip(false, func() -> bool: return _state() == "FIGHT" and not game.player.event)
-	djinn = game.map.get_node(^"FireDjinn")
-	await _strike_down(djinn)
-	ck(djinn.is_dead, "the djinn falls to a real attack")
+	boss = game.map.get_node(^"Mercenary")
+	await _strike_down(boss)
+	ck(boss.is_dead, "the mercenary falls to a real attack")
 	await _until(func() -> bool: return started.has("Laboratory_AfterBoss"), 6.0)
 	await _pad_talk()
 	await _until(func() -> bool: return game.get_quest_flag("lab_after_boss_complete") and _prompt() == null, 10.0)

@@ -116,6 +116,8 @@
 		"brass_collector_roar": {"bus": "Voice", "files": ["Voice/Boss/brass_collector_roar_0.ogg", "Voice/Boss/brass_collector_roar_1.ogg", "Voice/Boss/brass_collector_roar_2.ogg", "Voice/Boss/roar_0.ogg", "Voice/Boss/roar_1.ogg", "Voice/Boss/roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
 		"fire_djinn_roar": {"bus": "Voice", "files": ["Voice/Boss/fire_djinn_roar_0.ogg", "Voice/Boss/fire_djinn_roar_1.ogg", "Voice/Boss/fire_djinn_roar_2.ogg"], "volume_db": 0.0, "jitter": 0.03},
 		"fire_djinn_laugh": {"bus": "Voice", "files": ["Voice/Boss/fire_djinn_laugh_0.ogg", "Voice/Boss/fire_djinn_laugh_1.ogg"], "volume_db": 0.0, "jitter": 0.0},
+		"lab_boss_roar": {"bus": "Voice", "files": ["Voice/Boss/roar_0.ogg", "Voice/Boss/roar_1.ogg", "Voice/Boss/roar_2.ogg"], "volume_db": 0.0, "pitch": 0.9, "jitter": 0.03},
+		"lab_boss_laugh": {"bus": "Voice", "files": ["Voice/Boss/shout_0.ogg", "Voice/Boss/shout_1.ogg"], "volume_db": 0.0, "pitch": 0.85, "jitter": 0.0},
 		"prisoner_incantation": {"bus": "Voice", "files": ["Voice/Lab/prisoner_incantation_0.ogg"], "volume_db": 0.0, "jitter": 0.0},
 		"boss_shout": {"bus": "Voice", "files": ["Voice/Boss/shout_0.ogg", "Voice/Boss/shout_1.ogg", "Voice/Boss/shout_2.ogg"], "volume_db": 0.0, "jitter": 0.0},
 		"boss_death": {"bus": "Voice", "files": ["Voice/Boss/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0}
@@ -123,7 +125,8 @@
 	"boss_voices": {
 		"_comment": "D278, D310: enemy_type of a boss → its voice events. roar: the first swing; shout: every second swing after it; death: the killing blow.",
 		"brass_collector": {"roar": "brass_collector_roar", "shout": "boss_shout", "death": "boss_death"},
-		"fire_djinn": {"roar": "fire_djinn_roar", "shout": "fire_djinn_laugh", "death": "boss_death"}
+		"fire_djinn": {"roar": "fire_djinn_roar", "shout": "fire_djinn_laugh", "death": "boss_death"},
+		"lab_boss": {"roar": "lab_boss_roar", "shout": "lab_boss_laugh", "death": "boss_death"}
 	},
 	"rooms": {
 		"Canyon": {"ambience": "amb_canyon_echo", "surface": "sand", "interior": false},
@@ -144,7 +147,7 @@
 		"BANDIT_1": "bandit", "BANDIT_2": "bandit", "BANDIT_LEADER": "bandit_leader", "ENEMY": "enemy",
 		"ALISIA": "alisia", "ASTRIT": "astrit", "URIZEN": "urizen", "GNOME_MECHANIC": "gnome", "SUAN": "suan",
 		"DARK_PRIESTS": "dark_priests",
-		"BRASS_COLLECTOR": "brass_collector", "FIRE_DJINN": "fire_djinn", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
+		"BRASS_COLLECTOR": "brass_collector", "FIRE_DJINN": "fire_djinn", "LAB_BOSS": "bandit_leader", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
 	},
 	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05, "shield": 0.92, "vulture": 0.85, "bat": 1.6, "fly": 1.3},
 	"music": {

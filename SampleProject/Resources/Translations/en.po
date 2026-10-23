@@ -2996,3 +2996,24 @@ msgstr "Later"
 
 msgid "Coming later: this skill is not built yet."
 msgstr "Coming later: this skill is not built yet."
+
+msgid "The Mercenary [DRAFT]"
+msgstr "The Mercenary [DRAFT]"
+
+msgid "Defeat the mercenary"
+msgstr "Defeat the mercenary"
+
+msgid "Hic! Hold still, lizard. I get paid by the head. [DRAFT]"
+msgstr "Hic! Hold still, lizard. I get paid by the head. [DRAFT]"
+
+msgid "Ha! Look at him dance! [DRAFT]"
+msgstr "Ha! Look at him dance! [DRAFT]"
+
+msgid "One more swig, then I flatten you. [DRAFT]"
+msgstr "One more swig, then I flatten you. [DRAFT]"
+
+msgid "You made me spill it! Now you pay. [DRAFT]"
+msgstr "You made me spill it! Now you pay. [DRAFT]"
+
+msgid "A drunken manticore-man hired to guard the Laboratory. His small mace strikes quick and twice — block the first blow, parry the second. A red glint on his spiked club means a slam that shakes the floor: roll through it or jump the shockwave. Between attacks he swigs from his flask — that is your moment. [DRAFT]"
+msgstr "A drunken manticore-man hired to guard the Laboratory. His small mace strikes quick and twice — block the first blow, parry the second. A red glint on his spiked club means a slam that shakes the floor: roll through it or jump the shockwave. Between attacks he swigs from his flask — that is your moment. [DRAFT]"

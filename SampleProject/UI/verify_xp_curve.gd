@@ -15,10 +15,10 @@ extends SceneTree
 ## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates).
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates"]
 const OATH_LEVEL := 5
-## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → corridors → the djinn → outside.
+## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → corridors → the mercenary (D466) → outside.
 const LAB_ROUTE := ["City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
 const LAB_END_LEVELS := [16, 17]
-## "A little farming" (D492): rounds of the respawning Laboratory corridors after the djinn.
+## "A little farming" (D492): rounds of the respawning Laboratory corridors after the mercenary.
 const FARM_ROUNDS := 2
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 

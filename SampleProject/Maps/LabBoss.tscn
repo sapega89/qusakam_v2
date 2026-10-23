@@ -11,7 +11,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_front.png" id="10_i8lkq"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_gates.png" id="11_hi60u"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/LabBoss.gd" id="12_labboss"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn" id="13_djinn"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/lab_boss.tscn" id="13_boss"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
 
@@ -173,7 +173,7 @@ position = Vector2(720, 260)
 [node name="GatesLook" type="Marker2D" parent="Marks" unique_id=1892093049]
 position = Vector2(1300, 260)
 
-[node name="FireDjinn" parent="." unique_id=1892093050 instance=ExtResource("13_djinn")]
+[node name="Mercenary" parent="." unique_id=1892093050 instance=ExtResource("13_boss")]
 process_mode = 4
 position = Vector2(1060, 368)
 
