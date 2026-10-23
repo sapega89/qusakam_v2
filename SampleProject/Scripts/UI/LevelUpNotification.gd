@@ -1,73 +1,67 @@
 extends Control
 class_name LevelUpNotification
 
-## Level Up Notification UI
-## Displays when player levels up with stat increases
+## Сповіщення про рівень (D436, Figma UI/Notification/LevelUp 484:6490): угорі по центру, під панеллю квесту.
+## Рядки — те, що реально дає один рівень: Max HP і шкода (XPManager.stat_bonuses), очки атрибутів
+## (attributes.json → AttributeManager.points_per_level), очки навичок (SkillManager.JP_PER_LEVEL).
+## Гру не ставить на паузу; кілька рівнів поспіль ідуть у черзі. На кепі (D541) XPManager рівня не дає — сповіщення немає.
 
-@onready var panel: PanelContainer = $Panel
-@onready var title_label: Label = $Panel/VBoxContainer/TitleLabel
-@onready var level_label: Label = $Panel/VBoxContainer/LevelLabel
-@onready var stats_label: Label = $Panel/VBoxContainer/StatsLabel
+const FADE_IN := 0.3
+const HOLD := 3.0
+const FADE_OUT := 0.3
 
-var display_duration: float = 3.0
+@onready var _level: Label = %LevelLabel
+@onready var _max_hp: Label = $Panel/Column/Rows/MaxHp/Value
+@onready var _damage: Label = $Panel/Column/Rows/Damage/Value
+@onready var _attribute_points: Label = $Panel/Column/Rows/AttributePoints/Value
+@onready var _job_points: Label = $Panel/Column/Rows/JobPoints/Value
+
+## Рівні, що ще чекають показу (перший — той, що на екрані).
+var _queue: Array[int] = []
+var _tween: Tween
+
 
 func _ready() -> void:
-	"""Initialize and connect to level up events"""
 	visible = false
-	modulate = Color(1, 1, 1, 0)  # Start transparent
-
-	# Connect to EventBus
+	modulate.a = 0.0
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 
-	DebugLogger.info("LevelUpNotification: Initialized", "UI")
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and not _queue.is_empty():
+		_level.text = tr("Level %d") % _queue[0]
+
 
 func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
-	"""Called when player levels up"""
-	show_notification(new_level)
+	_queue.append(new_level)
+	if _queue.size() == 1:
+		_show_next()
 
-func show_notification(level: int) -> void:
-	"""Shows the level up notification with animation"""
-	var xp_manager = ServiceLocator.get_xp_manager()
-	if not xp_manager:
-		DebugLogger.warning("LevelUpNotification: XPManager not found", "UI")
-		return
 
-	# Update labels
-	level_label.text = tr("Level %d") % level
-	stats_label.text = tr("HP +%d, Damage +%d") % [
-		xp_manager.stat_bonuses["hp_per_level"],
-		xp_manager.stat_bonuses["damage_per_level"]
-	]
+## Скільки рівнів ще в черзі разом із показаним — для тестів.
+func pending() -> int:
+	return _queue.size()
 
-	# Show and animate
+
+func _show_next() -> void:
+	var xp: XPManager = ServiceLocator.get_xp_manager()
+	_level.text = tr("Level %d") % _queue[0]
+	_max_hp.text = "+%d" % int(xp.stat_bonuses["hp_per_level"])
+	_damage.text = "+%d" % int(xp.stat_bonuses["damage_per_level"])
+	_attribute_points.text = "+%d" % ServiceLocator.get_attribute_manager().points_per_level
+	_job_points.text = "+%d" % SkillManager.JP_PER_LEVEL
 	visible = true
-	_animate_in()
+	modulate.a = 0.0
+	_tween = create_tween()
+	_tween.tween_property(self, ^"modulate:a", 1.0, FADE_IN)
+	_tween.tween_interval(HOLD)
+	_tween.tween_property(self, ^"modulate:a", 0.0, FADE_OUT)
+	_tween.tween_callback(_on_shown)
 
-	# Auto-hide after duration
-	await get_tree().create_timer(display_duration).timeout
-	_animate_out()
 
-func _animate_in() -> void:
-	"""Animates the notification appearing"""
-	modulate = Color(1, 1, 1, 0)
-	scale = Vector2(0.5, 0.5)
-
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.set_trans(Tween.TRANS_BACK)
-
-	tween.tween_property(self, "modulate", Color.WHITE, 0.4)
-	tween.tween_property(self, "scale", Vector2.ONE, 0.4)
-
-func _animate_out() -> void:
-	"""Animates the notification disappearing"""
-	var tween = create_tween()
-	tween.set_ease(Tween.EASE_IN)
-	tween.set_trans(Tween.TRANS_QUAD)
-
-	tween.tween_property(self, "modulate", Color(1, 1, 1, 0), 0.3)
-	tween.tween_property(self, "scale", Vector2(0.8, 0.8), 0.3)
-
-	await tween.finished
-	visible = false
+func _on_shown() -> void:
+	_queue.pop_front()
+	if _queue.is_empty():
+		visible = false
+	else:
+		_show_next()

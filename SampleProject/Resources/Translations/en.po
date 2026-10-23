@@ -2644,8 +2644,6 @@ msgstr "%s. This tree's JP cap is reached."
 msgid "Needs %d more JP spent in the %s tree."
 msgstr "Needs %d more JP spent in the %s tree."
 
-msgid "This tree's JP cap is reached (%d JP)."
-msgstr "This tree's JP cap is reached (%d JP)."
 msgid "Dash through the blow, or hold block."
 msgstr "Dash through the blow, or hold block."
 
@@ -2663,8 +2661,25 @@ msgstr "Drink it in play with the quick slot (%s)"
 
 msgid "ST"
 msgstr "ST"
+
 msgid "MAX"
 msgstr "MAX"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Swear an oath with the oath keepers"
+
+# ── Сповіщення про рівень (D436)
+msgid "LEVEL UP"
+msgstr "LEVEL UP"
+
+msgid "Max HP"
+msgstr "Max HP"
+
+msgid "Damage"
+msgstr "Damage"
+
+msgid "Attribute Points"
+msgstr "Attribute Points"
+
+msgid "Job Points"
+msgstr "Job Points"

@@ -441,3 +441,14 @@ const MODAL_BUTTON_SPACING := 2    # tracking 2 px
 const MODAL_BUTTON_TEXTURE := "res://SampleProject/Assets/UI/Icons/hex_button.svg"
 const MODAL_BUTTON_SELECTED_TEXTURE := "res://SampleProject/Assets/UI/Icons/hex_button_selected.svg"
 const MODAL_POINTER_TEXTURE := "res://SampleProject/Assets/UI/Icons/chevron.svg"
+
+
+# ── Сповіщення про рівень (Figma UI/Notification/LevelUp 484:6490, D436) ─
+const LEVEL_UP_WIDTH := 320
+const LEVEL_UP_TOP := 120          # від верху екрана, під панеллю активного квесту
+const LEVEL_UP_PAD_H := SPACE_2XL
+const LEVEL_UP_PAD_V := SPACE_XL
+const LEVEL_UP_GAP := SPACE_MD     # заголовок → лінія → «Level N» → рядки
+const LEVEL_UP_ROW_GAP := SPACE_SM
+const LEVEL_UP_RULE_WIDTH := 240   # 1 px акцентна лінія під «LEVEL UP»
+const LEVEL_UP_TITLE_SPACING := 3  # tracking заголовка

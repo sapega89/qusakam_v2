@@ -1,63 +1,125 @@
-[gd_scene load_steps=4 format=3 uid="uid://iohtoyiye7q4"]
+[gd_scene load_steps=3 format=3 uid="uid://iohtoyiye7q4"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/LevelUpNotification.gd" id="1_level_up"]
-[ext_resource type="StyleBox" path="res://SampleProject/Resources/UI/notification_panel.tres" id="2_panel"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_text_bg"]
-bg_color = Color(0, 0, 0, 0)
+[ext_resource type="Theme" uid="uid://bfe1cbr8www03" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
 
 [node name="LevelUpNotification" type="Control"]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -80.0
-offset_right = 150.0
-offset_bottom = 80.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_level_up")
-
-[node name="Panel" type="PanelContainer" parent="."]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = ExtResource("2_panel")
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_level_up")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -160.0
+offset_top = 120.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"LevelUpPanel"
 
-[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="Column" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_text_bg")
-text = "LEVEL UP!"
+mouse_filter = 2
+theme_type_variation = &"LevelUpColumn"
+
+[node name="Title" type="Label" parent="Panel/Column"]
+layout_mode = 2
+theme_type_variation = &"LevelUpTitle"
+text = "LEVEL UP"
 horizontal_alignment = 1
-vertical_alignment = 1
+uppercase = true
 
-[node name="LevelLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="Rule" type="HSeparator" parent="Panel/Column"]
+custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-theme_override_styles/normal = SubResource("StyleBoxFlat_text_bg")
+size_flags_horizontal = 4
+mouse_filter = 2
+theme_type_variation = &"LevelUpRule"
+
+[node name="LevelLabel" type="Label" parent="Panel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LevelUpLevel"
 text = "Level 2"
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="Panel/VBoxContainer"]
+[node name="Rows" type="VBoxContainer" parent="Panel/Column"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 1, 0.7, 1)
-theme_override_font_sizes/font_size = 18
-theme_override_styles/normal = SubResource("StyleBoxFlat_text_bg")
-text = "HP +20, Damage +5"
-horizontal_alignment = 1
-vertical_alignment = 1
+mouse_filter = 2
+theme_type_variation = &"LevelUpRows"
+
+[node name="MaxHp" type="HBoxContainer" parent="Panel/Column/Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Panel/Column/Rows/MaxHp"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LevelUpRowLabel"
+text = "Max HP"
+
+[node name="Value" type="Label" parent="Panel/Column/Rows/MaxHp"]
+layout_mode = 2
+theme_type_variation = &"LevelUpRowValue"
+text = "+20"
+horizontal_alignment = 2
+
+[node name="Damage" type="HBoxContainer" parent="Panel/Column/Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Panel/Column/Rows/Damage"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LevelUpRowLabel"
+text = "Damage"
+
+[node name="Value" type="Label" parent="Panel/Column/Rows/Damage"]
+layout_mode = 2
+theme_type_variation = &"LevelUpRowValue"
+text = "+5"
+horizontal_alignment = 2
+
+[node name="AttributePoints" type="HBoxContainer" parent="Panel/Column/Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Panel/Column/Rows/AttributePoints"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LevelUpRowLabel"
+text = "Attribute Points"
+
+[node name="Value" type="Label" parent="Panel/Column/Rows/AttributePoints"]
+layout_mode = 2
+theme_type_variation = &"LevelUpRowValue"
+text = "+5"
+horizontal_alignment = 2
+
+[node name="JobPoints" type="HBoxContainer" parent="Panel/Column/Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Panel/Column/Rows/JobPoints"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LevelUpRowLabel"
+text = "Job Points"
+
+[node name="Value" type="Label" parent="Panel/Column/Rows/JobPoints"]
+layout_mode = 2
+theme_type_variation = &"LevelUpRowValue"
+text = "+1"
+horizontal_alignment = 2
