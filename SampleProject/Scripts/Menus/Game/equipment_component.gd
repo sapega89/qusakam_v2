@@ -147,7 +147,7 @@ func _on_charm_pressed(slot: int) -> void:
 			"subtitle": tr("Equipped") if charm_id in Charms.equipped() else Charms.charm_description(charm_id)})
 	var layer: ModalLayer = ServiceLocator.get_ui_manager().get_modal_layer()
 	layer.show_custom_modal(EQUIP_PICKER)
-	layer.active_modal.show_slot(tr(CHARM_CAPTIONS[slot]).capitalize(), items, worn != "")
+	layer.active_modal.show_slot(tr(CHARM_CAPTIONS[slot]), items, worn != "")
 	layer.modal_closed.connect(_on_charm_picked.bind(slot), CONNECT_ONE_SHOT)
 
 
@@ -165,7 +165,7 @@ func _on_charm_picked(result: String, slot: int) -> void:
 func _on_charm_focused(slot: int) -> void:
 	_focused_slot = ""
 	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
-	var caption := tr(CHARM_CAPTIONS[slot]).capitalize()
+	var caption := tr(CHARM_CAPTIONS[slot])
 	var worn := String(Charms.equipped()[slot])
 	if slot >= Charms.open_slots():
 		bar.set_context_hint(tr("%s — locked. A third charm slot opens later in the journey.") % caption)

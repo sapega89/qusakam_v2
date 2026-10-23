@@ -106,6 +106,7 @@ theme_override_styles/separator = SubResource("StyleBoxLine_rule")
 [node name="SlotScroll" type="ScrollContainer" parent="Columns/EquipmentPanel/Body"]
 layout_mode = 2
 size_flags_vertical = 3
+follow_focus = true
 horizontal_scroll_mode = 0
 
 [node name="Stack" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll"]
