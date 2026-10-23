@@ -57,7 +57,10 @@ an open question below, never filled in. Used by skills, enemies, companions and
   вкрали це, і заодно тупих селян — в рабство»). They saw the villagers guarding something, stole it, and took the villagers
   as **slaves** too.
 - **The relic is a statuette, and the Maiden lives in it** (Sapega, 2026-10-23: «реліквія — це статуетка, в ній живе діва»).
-  Are Kusakam's paladin powers tied to her?
+- **Kusakam's paladin powers awaken through the Maiden** (Sapega, 2026-10-23: «так, це її вплив; їй байдуже буде, який шлях
+  вибере він, їй головне, щоби він знайшов більш достойне місце для неї і її послідовників»). It is her influence. She does not care
+  which oath he swears; what she wants is a **worthier place for herself and her followers**. That is the long road.
+
 
 ## Characters (Sapega, 2026-10-18)
 
