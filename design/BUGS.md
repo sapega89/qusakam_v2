@@ -64,6 +64,12 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B141 — In Laboratory Outside the hero stands on air, 56 units above the painted grass
+- **Where:** `SampleProject/Maps/LaboratoryOutside.tscn`: something invisible has collision at about y 304, while the grass line is painted near y 360.
+- **Got:** the hero stands at y 304 in both the before and the after captures of `cloud/world-fixes`. **Expected:** his feet are on the painted grass.
+- **Evidence:** `design/shots/world_fixes/LaboratoryOutside.png`.
+- **Severity:** visual. **Found:** 2026-10-23, `cloud/world-fixes` (seen, not in its scope).
+
 ### B133 — Parrying a boss hazard staggers the boss from any distance
 - **Where:** `BossFireball.gd:30`, `BossPillar.gd:26`, `BossLogic.gd:103` → `PlayerCombat.gd:465-471`, `DefaultEnemy.gd:624-625`. The hazard names the boss as the damage source.
 - **Got:** a parried fireball staggered the djinn 450 px away (0.93 s left, 0 damage). A floor pillar can be blocked just by facing the boss. **Expected:** hazards cannot be parried or blocked; only melee strikes and arrows can.
