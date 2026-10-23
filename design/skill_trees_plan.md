@@ -81,9 +81,9 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | 15 | Aura of Valour | passive | +max HP | exists |
 | 15 | Consecrated Ground | passive | after a skill, less damage | exists (draft) |
 | 15 | **Rally** | active | the next companion assist hits harder and stays longer (still one at a time, D515) | new |
-| 15 | **Hammer of Dawn** | active | leap and slam, pillars of light on both sides | new |
+| 15 | **Heaven's Anvil** | active | leap and slam, pillars of light on both sides | new |
 | 18 | Unbroken Vow | passive | less damage | exists |
-| 18 | **Beacon** | active | a flash that dazes every enemy around and clears burning and curses from the hero | new |
+| 18 | **Radiant Flare** | active | a flash that dazes every enemy around and clears burning and curses from the hero | new |
 | 18 | **Shield of Faith** | passive | a shield block costs less stamina | new |
 | 20 | Judgement of the Sky | ultimate | the oath's ultimate (D528) | exists |
 
@@ -163,10 +163,10 @@ Around the skills themselves the work also needs:
    - Re-tune the JP caps (D530) so a full tab cannot be maxed.
    - Test: `verify_skill_rules`.
 2. **Skills screen at 19 a tab.** Claude redraws Figma `485:6490`, then the screen is built (with D489 and D490).
-3. **Movement skills:** Dash Strike, Shield Charge, Blood Rush, Wind Step, Hammer of Dawn, Dune Quake.
+3. **Movement skills:** Dash Strike, Shield Charge, Blood Rush, Wind Step, Heaven's Anvil, Dune Quake.
 4. **Ranged and zones:** Holy Javelin, Lightspear, Hallowed Circle, Hellfire Stomp.
 5. **Stances and buffs:** Counter Stance, Mirror Stance, Centered Breath, Battle Cry, Aegis, Blood Price, Rally.
-6. **Control and finishers:** Rising Slash, Ground Slam, Sweeping Arc, Shield Bash, Stone Palm, Chain of Night, Sand Veil, Dread Howl, Beacon, Night Reaper, Soul Harvest. Soul Harvest goes in after `cloud/combat-enemies`.
+6. **Control and finishers:** Rising Slash, Ground Slam, Sweeping Arc, Shield Bash, Stone Palm, Chain of Night, Sand Veil, Dread Howl, Radiant Flare, Night Reaper, Soul Harvest. Soul Harvest goes in after `cloud/combat-enemies`.
 7. **Art batch (ComfyUI lane):** hero poses for the new actives, icons, effects.
 
 **Order:**
