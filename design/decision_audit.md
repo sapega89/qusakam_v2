@@ -18,6 +18,40 @@ A grep of source or `ck(x or true, …)` does not count as a test ([[BUGS]] B4).
 
 ---
 
+## Cleanup list from Runs 2–5 (2026-10-23): stale notes to fix
+
+These are the out-of-date lines the auditors found along the way. None of them is a game defect.
+
+- [ ] **Wrong D-IDs in settings code:** 37 comment and check-label lines in 14 files cite the branch numbers D425–D429. The register numbers are Text Speed D427, Screen Shake D428, Ambient D429, Brightness D430 and the resolution list D431. The register's own D425 (combat) and D426 (row templates) are unrelated, so fix only the settings lines (`grep -rn "D42[5-9]" SampleProject`). One example is `verify_settings` "(D178 / D425)" for Text Speed.
+- [ ] **Register:**
+  - Strike through D81 and D99.
+  - D107 says the Figma art is the in-game art, which stopped being true with D239.
+  - The §8 "Seven of these reverse shipped code" table: D89–D91 are cancelled (D413), and D104, D105 and D108 are built.
+  - D79's consequence column says "nothing implemented", but the save-failure modal is built (`LoadGameMenu.gd:165`, `verify_save_load`).
+  - D178 names `Кусакам` as a speaker ID; only `KUSAKAM` exists.
+- [ ] **[[questions_for_sapega]]:**
+  - The header still says "Seven answers reverse shipped code …".
+  - Q28 says the speaker-ID merge is untouched, but it is done.
+- [ ] **[[BACKLOG]]:**
+  - The "⚠️ Rework" table: D89–D91 are cancelled; D99 is overridden by D184 / D240; D104, D105 and D108 are built.
+  - "Settings rows with no backing system": only Special Ability is left (Q70).
+  - "Dialogue — project-owned presentation layer": the box exists (D110); what is left is D111, D112 and the Figma restyle.
+  - `:418`: the quest list with the gold diamond is built (D390).
+  - `:424`: D174 is superseded by D303 / D305 / D306.
+  - Gamepad `:342`, `:345`: pad events exist since D211; the mouse toggle is Alt since D417.
+- [ ] **[[npc_recall_plan]]:** slice 4 is superseded by D175's `quests.json`; slice 2 hangs on Q71.
+- [ ] **[[cutscene_script]]:** scenes 1 and 3 describe the staging from before D191 / D300.
+- [ ] **[[scene_inventory]] `:262`:** it says the dialogue box is the addon prefab.
+- [ ] **[[no_fallbacks_pass]]:** it says to resume with EnemyStateManager and DebugManager, which are deleted.
+- [ ] **[[character_animation_plan]]:** it is `status: done`, but the hero Death animation (D138) is missing.
+- [ ] **Code comments only:**
+  - `Scripts/Menus/LoadGameMenu.gd:5` names a `load_game_state` that does not exist.
+  - `UI/Components/npc_action_menu.gd:82` says `ui_accept` has no pad button; it is A since D211.
+- [ ] **Dead code (D131):** `Scripts/Core/GameSettings.gd:118-151` `get_default_inventory_items()` has no callers.
+- [ ] **Test labels:** `verify_equipment` "11 slot rows" actually compares 12.
+
+---
+
 ## Run 5 — 2026-10-23 — D147–D178
 
 Source text for D147–D178 is the register's §9 rows (`figma_decision_register.md:318-349`); none of them
