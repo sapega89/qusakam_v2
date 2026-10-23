@@ -158,6 +158,7 @@ mode = 1
 strike_frame = 5
 damage = 40
 knockback = 60.0
+stun = 1.5
 reach = 320.0
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]

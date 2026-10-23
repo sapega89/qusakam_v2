@@ -1462,8 +1462,8 @@ msgstr "HP +20, шкода +5"
 msgid "NEW COMPANION"
 msgstr "НОВИЙ СУПУТНИК"
 
-msgid "%s joined the party"
-msgstr "%s приєднується до загону"
+msgid "%s can join your party"
+msgstr "%s може приєднатися до загону"
 
 msgid "Active Quest"
 msgstr "Поточне завдання"
@@ -1725,8 +1725,8 @@ msgstr "Три темні жерці"
 msgid "Urizen"
 msgstr "Уризен"
 
-msgid "Astrit joined the party"
-msgstr "Астрит приєднується до загону"
+msgid "Astrit can join your party"
+msgstr "Астрит може приєднатися до загону"
 
 # ── Data: items.json
 msgid "Iron Ore"
@@ -2423,6 +2423,15 @@ msgstr "Новий рівень"
 msgid "Equipping Gear"
 msgstr "Як спорядитися"
 
+msgid "Choosing Companions"
+msgstr "Вибір супутників"
+
+msgid "New companions are ready to join you. Open {game_menu}, go to Status → Companions and press a card to take that companion along; the order you pick is the order {assist} calls them. Only the ones you pick come to help."
+msgstr "Нові супутники готові приєднатися до вас. Відкрийте {game_menu}, перейдіть у «Стан» → «Супутники» й натисніть картку, щоб узяти супутника з собою; у якому порядку ви їх оберете, в такому {assist} їх і кличе. На допомогу приходять лише обрані."
+
+msgid "Open Companions"
+msgstr "Відкрити супутників"
+
 msgid "Calling an Ally"
 msgstr "Виклик союзника"
 
@@ -2486,8 +2495,8 @@ msgstr "Дід дав вам меч і обладунок: натисніть {g
 msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
 msgstr "Супутники бʼються пліч-о-пліч із вами — натисніть {assist}, щоб покликати одного. Покличте охоронця зараз!"
 
-msgid "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
-msgstr "Союзники, яких ви зустрінете, приєднаються до загону. {assist} кличе наступного готового супутника; кого брати з собою, оберіть у «Стані»."
+msgid "Allies you meet can join your party: choose who goes with you in Status. {assist} calls the next ready companion."
+msgstr "Союзники, яких ви зустрінете, можуть приєднатися до загону: кого брати з собою, оберіть у «Стані». {assist} кличе наступного готового супутника."
 
 msgid "Button to open the game menu."
 msgstr "Кнопка, що відкриває ігрове меню."

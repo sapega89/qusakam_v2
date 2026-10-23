@@ -356,7 +356,9 @@ func _initialize() -> void:
 			await process_frame
 	for i in 30: await physics_frame
 	ck(_state() == "FREE" and started.has("Lab_Acquaintance") and started.has("Lab_Malik_Quest"), "pad A read the acquaintance and Malik → FREE (%s, %s)" % [_state(), started])
-	ck(sl.get_companion_manager().get_party().size() == 3 and game.get_quest_flag("task_malik_escort_taken"), "three assists in the party, Malik's task taken")
+	ck(sl.get_companion_manager().get_unlocked().size() == 3 and sl.get_companion_manager().get_party().is_empty() and game.get_quest_flag("task_malik_escort_taken"), "three assists available, none picked yet (D464), Malik's task taken")
+	for id in ["alisia", "astrit", "urizen"]:  # як гравець у Status
+		sl.get_companion_manager().toggle_party(id)
 	await _stick_until(1.0, func() -> bool: return _room() == LAB, 12.0)
 	ck(_room() == LAB, "stick east into the corridors (%s)" % _room())
 

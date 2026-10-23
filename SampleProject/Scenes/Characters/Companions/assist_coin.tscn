@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/coin.png" id="coin"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
 
 [sub_resource type="AtlasTexture" id="Atlas_1"]
 atlas = ExtResource("coin")
@@ -53,6 +55,10 @@ region = Rect2(176, 0, 16, 16)
 [sub_resource type="SpriteFrames" id="SpriteFrames_c"]
 animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_1")}, {"duration": 1.0, "texture": SubResource("Atlas_2")}, {"duration": 1.0, "texture": SubResource("Atlas_3")}, {"duration": 1.0, "texture": SubResource("Atlas_4")}, {"duration": 1.0, "texture": SubResource("Atlas_5")}, {"duration": 1.0, "texture": SubResource("Atlas_6")}, {"duration": 1.0, "texture": SubResource("Atlas_7")}, {"duration": 1.0, "texture": SubResource("Atlas_8")}, {"duration": 1.0, "texture": SubResource("Atlas_9")}, {"duration": 1.0, "texture": SubResource("Atlas_10")}, {"duration": 1.0, "texture": SubResource("Atlas_11")}, {"duration": 1.0, "texture": SubResource("Atlas_12")}], "loop": true, "name": &"spin", "speed": 24}]
 
+[sub_resource type="Gradient" id="G_glint"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 0.9, 1, 1, 0.85, 0.35, 0.9, 0.95, 0.65, 0.2, 0)
+
 [node name="AssistCoin" type="Node2D"]
 z_index = 5
 scale = Vector2(3, 3)
@@ -63,3 +69,26 @@ sprite_frames = SubResource("SpriteFrames_c")
 animation = &"spin"
 centered = false
 offset = Vector2(-8, -16)
+
+[node name="Glint" type="CPUParticles2D" parent="."]
+material = ExtResource("add")
+position = Vector2(0, -8)
+amount = 26
+lifetime = 0.35
+local_coords = false
+emission_shape = 1
+emission_sphere_radius = 4.0
+spread = 180.0
+gravity = Vector2(0, 40)
+initial_velocity_min = 5.0
+initial_velocity_max = 20.0
+scale_amount_min = 0.7
+scale_amount_max = 1.1
+color_ramp = SubResource("G_glint")
+
+[node name="Glow" type="Sprite2D" parent="."]
+modulate = Color(1, 0.85, 0.35, 0.75)
+material = ExtResource("add")
+position = Vector2(0, -8)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("glow")

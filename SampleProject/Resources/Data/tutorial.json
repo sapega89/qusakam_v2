@@ -168,10 +168,21 @@
 			"id": "companions",
 			"hint_topic": true,
 			"title": "Companions",
-			"text": "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status.",
+			"text": "Allies you meet can join your party: choose who goes with you in Status. {assist} calls the next ready companion.",
 			"key": "{assist}",
 			"hint": "Button to call the next ready companion.",
 			"frames": "assist"
+		},
+		{
+			"id": "choose_companions",
+			"hint_topic": true,
+			"title": "Choosing Companions",
+			"text": "New companions are ready to join you. Open {game_menu}, go to Status → Companions and press a card to take that companion along; the order you pick is the order {assist} calls them. Only the ones you pick come to help.",
+			"key": "{assist}",
+			"hint": "Button to call the next ready companion.",
+			"frames": "companion_picker",
+			"open": "companions",
+			"open_label": "Open Companions"
 		}
 	]
 }

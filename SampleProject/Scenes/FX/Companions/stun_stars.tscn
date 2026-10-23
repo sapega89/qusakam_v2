@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/StunStars.gd" id="stars"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Companions/star.png" id="star"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[node name="StunStars" type="Node2D"]
+z_index = 210
+script = ExtResource("stars")
+metadata/_doc = "Stun stars over a stunned enemy's head (D465)"
+
+[node name="Star1" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.35, 1)
+texture_filter = 1
+material = ExtResource("add")
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("star")
+
+[node name="Star2" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.35, 1)
+texture_filter = 1
+material = ExtResource("add")
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("star")
+
+[node name="Star3" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.35, 1)
+texture_filter = 1
+material = ExtResource("add")
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("star")

@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Projectiles/arrow.png" id="arrow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[sub_resource type="Gradient" id="G_streak"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.92, 1, 0.9, 0.9, 0.55, 0.95, 0.7, 0)
+
+[node name="ArrowStreak" type="Node2D"]
+z_index = 200
+metadata/_doc = "Alisia's arrow with its streak (D464, D465); CompanionAssist flies it, tip at the origin"
+
+[node name="Streak" type="CPUParticles2D" parent="."]
+material = ExtResource("add")
+amount = 40
+lifetime = 0.2
+local_coords = false
+emission_shape = 3
+emission_rect_extents = Vector2(4, 1)
+direction = Vector2(-1, 0)
+spread = 3.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 30.0
+scale_amount_min = 2.0
+scale_amount_max = 3.0
+color_ramp = SubResource("G_streak")
+position = Vector2(-30, 0)
+
+[node name="Glow" type="Sprite2D" parent="."]
+modulate = Color(0.7, 1, 0.75, 0.7)
+material = ExtResource("add")
+position = Vector2(-8, 0)
+scale = Vector2(0.9, 0.35)
+texture = ExtResource("glow")
+
+[node name="Arrow" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("arrow")
+centered = false
+offset = Vector2(-27, -4.5)

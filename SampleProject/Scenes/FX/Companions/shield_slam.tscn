@@ -1,0 +1,88 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/ring.tres" id="ring"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[sub_resource type="Gradient" id="G_dust"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.86, 0.74, 0.56, 0.95, 0.72, 0.6, 0.45, 0)
+
+[sub_resource type="Gradient" id="G_rock"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.45, 0.33, 0.24, 1, 0.38, 0.28, 0.2, 0)
+
+[node name="ShieldSlam" type="Node2D"]
+z_index = 200
+script = ExtResource("fx")
+life = 0.7
+flash_grow = 2.4
+flash_time = 0.22
+metadata/_doc = "Astrit's spiked-shield slam (D464, D465): impact flash, dust ring, debris"
+
+[node name="FlashGlow" type="Sprite2D" parent="."]
+modulate = Color(1, 0.86, 0.55, 0.9)
+material = ExtResource("add")
+position = Vector2(0, -34)
+scale = Vector2(1.1, 1.1)
+texture = ExtResource("glow")
+
+[node name="FlashRing" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.75, 0.8)
+material = ExtResource("add")
+scale = Vector2(0.8, 0.22)
+texture = ExtResource("ring")
+
+[node name="DustRight" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 12
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(6, 2)
+direction = Vector2(1, -0.12)
+spread = 14.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 120.0
+initial_velocity_max = 230.0
+damping_min = 260.0
+damping_max = 360.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color_ramp = SubResource("G_dust")
+
+[node name="DustLeft" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 12
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(6, 2)
+direction = Vector2(-1, -0.12)
+spread = 14.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 120.0
+initial_velocity_max = 230.0
+damping_min = 260.0
+damping_max = 360.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color_ramp = SubResource("G_dust")
+
+[node name="Debris" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 8
+lifetime = 0.6
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+spread = 50.0
+gravity = Vector2(0, 700)
+initial_velocity_min = 140.0
+initial_velocity_max = 240.0
+scale_amount_min = 2.0
+scale_amount_max = 3.0
+color_ramp = SubResource("G_rock")

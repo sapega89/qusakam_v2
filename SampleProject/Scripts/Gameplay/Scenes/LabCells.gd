@@ -41,6 +41,8 @@ const BLACK_HOLD := 1.2
 const STEP_TIME := 0.6
 const MALIK_WALK := 2.2
 const JOIN_HOLD := 0.9
+## Тема туторіалу про вибір компаньйонів (D463, tutorial.json).
+const CHOOSE_COMPANIONS_TOPIC := "choose_companions"
 const MALIK_FADE := 1.2
 const DOOR_RISE := 0.8
 
@@ -172,14 +174,14 @@ func _acquaintance() -> void:
 	await _walk(malik, ($Marks/MalikMeet as Node2D).global_position, MALIK_WALK, cs)
 	await cs.say("Lab_Malik_Quest")
 
-	# Відмовитися не можна: завдання взято без меню; асисти — всі три разом
+	# Відмовитися не можна: завдання взято без меню; асисти — всі три разом доступні, у загін їх бере гравець (D464)
 	var TASKS: GDScript = load(TASKS_PATH)
 	TASKS.take(TASKS.tasks().filter(func(t: Dictionary) -> bool: return t.id == MALIK_TASK)[0])
 	var companions := ServiceLocator.get_companion_manager()
 	for id in COMPANIONS:
 		var flag: String = CompanionManager.UNLOCK_FLAGS[id]
 		game.set_quest_flag(flag, true)
-		companions.join_on_unlock(flag)  # D220: у загін, якщо є місце
+		companions.announce_unlock(flag)
 		(get_node("CompanionNPC_%s" % id) as Node2D).call(&"join", cs.player)
 	game.set_quest_flag("lab_acquaintance_complete", true)
 	await cs.wait(JOIN_HOLD)
@@ -195,6 +197,9 @@ func _acquaintance() -> void:
 	await cs.camera_back(PAN_TIME)
 	cs.end()
 	game.set_objective("Fight through the laboratory")
+	# D463: уперше є з кого вибирати — вікно туторіалу про вибір у Status (або плашка, якщо вікна вимкнено)
+	if companions.get_unlocked().size() > 1:
+		(get_tree().get_first_node_in_group(&"tutorial_hint_display") as TutorialHintDisplay).show_hint(CHOOSE_COMPANIONS_TOPIC)
 
 
 ## Після кат-сцени: ґрати зникли, камера героя відчинена, алхімік утік, в'язень лежить біля столу.

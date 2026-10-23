@@ -1461,8 +1461,8 @@ msgstr "HP +20, Damage +5"
 msgid "NEW COMPANION"
 msgstr "NEW COMPANION"
 
-msgid "%s joined the party"
-msgstr "%s joined the party"
+msgid "%s can join your party"
+msgstr "%s can join your party"
 
 msgid "Active Quest"
 msgstr "Active Quest"
@@ -1723,8 +1723,8 @@ msgstr "Three dark priests"
 msgid "Urizen"
 msgstr "Urizen"
 
-msgid "Astrit joined the party"
-msgstr "Astrit joined the party"
+msgid "Astrit can join your party"
+msgstr "Astrit can join your party"
 
 # ── Data: items.json
 msgid "Iron Ore"
@@ -2421,6 +2421,15 @@ msgstr "Levelling Up"
 msgid "Equipping Gear"
 msgstr "Equipping Gear"
 
+msgid "Choosing Companions"
+msgstr "Choosing Companions"
+
+msgid "New companions are ready to join you. Open {game_menu}, go to Status → Companions and press a card to take that companion along; the order you pick is the order {assist} calls them. Only the ones you pick come to help."
+msgstr "New companions are ready to join you. Open {game_menu}, go to Status → Companions and press a card to take that companion along; the order you pick is the order {assist} calls them. Only the ones you pick come to help."
+
+msgid "Open Companions"
+msgstr "Open Companions"
+
 msgid "Calling an Ally"
 msgstr "Calling an Ally"
 
@@ -2484,8 +2493,8 @@ msgstr "Grandfather gave you a sword and armour — press {game_menu}, open Inve
 msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
 msgstr "Companions fight at your side — press {assist} to call one. Call the guard now!"
 
-msgid "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
-msgstr "Allies you meet will join your party. {assist} calls the next ready companion; choose who goes with you in Status."
+msgid "Allies you meet can join your party: choose who goes with you in Status. {assist} calls the next ready companion."
+msgstr "Allies you meet can join your party: choose who goes with you in Status. {assist} calls the next ready companion."
 
 msgid "Button to open the game menu."
 msgstr "Button to open the game menu."

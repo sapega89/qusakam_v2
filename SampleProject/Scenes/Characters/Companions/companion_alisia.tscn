@@ -100,8 +100,8 @@ animations = [{"frames": [{"duration": 1.0, "texture": SubResource("Atlas_1")}, 
 script = ExtResource("script")
 mode = 3
 strike_frame = 4
-damage = 8
-reach = 320.0
+damage = 24
+reach = 640.0
 pet_scene = ExtResource("cat")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]

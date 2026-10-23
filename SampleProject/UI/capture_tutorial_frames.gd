@@ -99,7 +99,7 @@ func _initialize() -> void:
 	# Виклик компаньйона (D209)
 	var cm: Node = sl.get_companion_manager()
 	game.set_quest_flag("lab_companion_01_complete", true)
-	cm.join_on_unlock("lab_companion_01_complete")
+	cm.toggle_party("alisia")  # D464: вибрано в Status
 	await _place(-160)
 	_with_enemy = true
 	_record("assist", 12, 0.1)

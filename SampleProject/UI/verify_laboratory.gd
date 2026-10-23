@@ -196,8 +196,8 @@ func _initialize() -> void:
 	# Камери пройдено (D304/D305, verify_lab_cells.gd): двері відчинено, три асисти в загоні.
 	for f in ["lab_cells_cutscene_complete", "lab_acquaintance_complete"] + UNLOCKS:
 		game.set_quest_flag(f, true)
-	for f in UNLOCKS:
-		sl.get_companion_manager().join_on_unlock(f)
+	for id in ["alisia", "astrit", "urizen"]:  # D464: у загін їх бере гравець у Status
+		sl.get_companion_manager().toggle_party(id)
 	ck(sl.get_companion_manager().get_party().size() == 3, "three companions in the party (%s)" % [sl.get_companion_manager().get_party()])
 
 	print("[1] The room: three storey fights, nothing of the old story")
