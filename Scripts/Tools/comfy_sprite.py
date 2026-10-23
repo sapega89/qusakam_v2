@@ -2094,11 +2094,11 @@ CHARACTERS = {
                 "club",
                 [
                     "in the same side view facing right: the big spiked wooden club lifted high above his head in both "
-                    "hands, leaning back, about to smash the ground, the small mace tucked in his belt",
+                    "hands, leaning back, about to smash the ground, no small mace anywhere in the picture, only the big club in both hands",
                     "in the same side view facing right: crouching low, the big spiked wooden club smashed down onto the "
-                    "ground in front of him in both hands",
+                    "ground in front of him in both hands, no small mace anywhere in the picture",
                     "in the same side view facing right: straightening up, swinging the big spiked wooden club back up "
-                    "onto his shoulder",
+                    "onto his shoulder with both hands, no small mace anywhere in the picture",
                 ],
             ),
             (
@@ -2718,7 +2718,7 @@ CHARACTERS = {
     ),
     # D589: проклятий шакал — з кадру шакала (Crusenho, CC BY): модель лише додає сині очі й піну; спершу проба
     # D589 + D649: проклятий шакал — не гієна з кадрів Crusenho (Sapega: «це гієни, а мають бути вовки-шакали з хорору»),
-    # а новий звір: худий вовк-шакал, синє світіння прокляття (D587); 2×2 зерно × вид
+    # а новий звір: худий вовк-шакал, синє світіння прокляття (D587); піна — ефект у грі, не в арті (D653); 2×2 зерно × вид
     "jackal_cursed": dict(
         candidates=(
             "design/shots/candidates/jackal_cursed.png",
@@ -2729,11 +2729,11 @@ CHARACTERS = {
         seed=118,
         colors=16,
         who="the same cursed horror jackal-wolf with the mangy dark grey fur, the jutting ribs, the long snout full of "
-        "fangs, the glowing blue eyes and the blue foam dripping from its jaws",
+        "fangs, the glowing blue eyes",
         base="Replace the character in picture 1 with a cursed horror jackal-wolf from a dark fairy tale: a gaunt, "
         "starved wolf-like jackal on four long thin legs, mangy patchy dark grey fur, ribs and spine jutting through "
         "the skin, a long narrow snout with bared crooked fangs, tall pointed ears, cold glowing bright blue eyes, "
-        "glowing blue foam dripping from its jaws, a ragged thin tail, standing low and menacing, ready to pounce — "
+        "its jaws dry and closed-lipped over the fangs, no foam, no drool, a ragged thin tail, standing low and menacing, ready to pounce — "
         + PIXEL_STYLE
         + ", a wolf-sized beast as long as the picture is wide, not a hyena: no spots, no mane, no sloping back. §."
         + MAGENTA_BG,
