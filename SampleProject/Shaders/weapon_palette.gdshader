@@ -18,6 +18,8 @@ uniform float shimmer : hint_range(0.0, 1.0) = 0.0;
 // Сяйво: метал пульсує, а прозорі пікселі поруч із ним — ореол кольору glow_color (0 — немає).
 uniform float glow : hint_range(0.0, 1.0) = 0.0;
 uniform vec3 glow_color = vec3(0.6, 0.95, 1.0);
+// Білий спалах героя від удару по ньому (D581, VFXHooks.flash_hero): 0 — немає, 1 — кадр білий.
+uniform float flash : hint_range(0.0, 1.0) = 0.0;
 
 // Один крок 8-бітного каналу: тіло зсунуте з ключа на 2 кроки.
 const float TOLERANCE = 1.0 / 255.0;
@@ -60,4 +62,5 @@ void fragment() {
 			}
 		}
 	}
+	COLOR.rgb = mix(COLOR.rgb, vec3(1.0), flash * step(0.001, c.a));
 }
