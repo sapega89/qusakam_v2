@@ -6,7 +6,7 @@ const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/Sa
 const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
 const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreloader.gd")
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
-const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
+const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 ## D492: у room_state кімнати — {ключ бою: регіон} її звичайних боїв, тих, що повертаються.
 const ORDINARY_FIGHTS_KEY := "ordinary_fights"
 
@@ -373,9 +373,9 @@ func load_room(room_ref: String) -> void:
 	await room_preloader.wait(path)
 
 	room_swapping.emit()
-	# D492: герой повертається в регіон, з якого пішов, — його звичайні вороги знову на місцях.
-	var region: String = Regions.of_scene(path)
-	if region != Regions.of_scene(map.scene_file_path):
+	# D492, D565: герой повертається в локацію, з якої пішов, — її звичайні вороги знову на місцях.
+	var region: String = LocationDB.of_scene(path)
+	if region != LocationDB.of_scene(map.scene_file_path):
 		reset_ordinary_fights(region)
 	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
 	# синхронно, а MetSys.current_room одразу стає новою.

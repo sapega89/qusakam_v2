@@ -2648,6 +2648,7 @@ msgstr "Потрібно вкласти ще %d ОН у дерево «%s»."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "Ліміт ОН цього дерева вичерпано (%d ОН)."
+
 msgid "Dash through the blow, or hold block."
 msgstr "Проскочіть крізь удар ривком або утримуйте блок."
 
@@ -2671,3 +2672,13 @@ msgstr "МАКС"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Складіть присягу перед хранителями присяг"
+
+# ── Locations (D565, Resources/Data/locations.json)
+msgid "Canyon of Whispers"
+msgstr "Каньйон Шепотів"
+
+msgid "The City"
+msgstr "Місто"
+
+msgid "The Laboratory"
+msgstr "Лабораторія"

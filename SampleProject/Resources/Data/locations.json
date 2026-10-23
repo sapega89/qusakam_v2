@@ -1,0 +1,23 @@
+{
+	"_comment": "D565, D458: the demo's three locations, each a set of MetSys rooms (scene names in SampleProject/Maps). entries — rooms the hero first comes into the location by. D492's respawn rule works per location: coming back into a location the hero has left brings its ordinary enemies back. Read by Scripts/Systems/LocationDB.gd; checked by verify_locations.gd. The world-map position is slice 2's (world_structure_plan), not set here.",
+	"locations": [
+		{
+			"id": "canyon_of_whispers",
+			"name": "Canyon of Whispers",
+			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad"],
+			"entries": ["Canyon"]
+		},
+		{
+			"id": "city",
+			"name": "The City",
+			"rooms": ["CityGates", "City", "MayorHall"],
+			"entries": ["CityGates"]
+		},
+		{
+			"id": "laboratory",
+			"name": "The Laboratory",
+			"rooms": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss"],
+			"entries": ["LabCells"]
+		}
+	]
+}

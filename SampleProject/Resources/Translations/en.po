@@ -2646,6 +2646,7 @@ msgstr "Needs %d more JP spent in the %s tree."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "This tree's JP cap is reached (%d JP)."
+
 msgid "Dash through the blow, or hold block."
 msgstr "Dash through the blow, or hold block."
 
@@ -2663,8 +2664,19 @@ msgstr "Drink it in play with the quick slot (%s)"
 
 msgid "ST"
 msgstr "ST"
+
 msgid "MAX"
 msgstr "MAX"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Swear an oath with the oath keepers"
+
+# ── Locations (D565, Resources/Data/locations.json)
+msgid "Canyon of Whispers"
+msgstr "Canyon of Whispers"
+
+msgid "The City"
+msgstr "The City"
+
+msgid "The Laboratory"
+msgstr "The Laboratory"

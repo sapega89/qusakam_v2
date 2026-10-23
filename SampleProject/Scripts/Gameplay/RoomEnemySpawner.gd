@@ -1,7 +1,7 @@
 extends Node2D
 class_name RoomEnemySpawner
 
-const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
+const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 
 ## 🏠 RoomEnemySpawner - Управляет спавном врагов в комнате
 ## Автоматически находит все EnemySpawnPoint в комнате и спавнит врагов
@@ -70,7 +70,7 @@ func _ready() -> void:
 	if trigger_area:
 		trigger_area.body_entered.connect(_on_trigger_body_entered)
 	if respawns:
-		_region = Regions.of_scene(get_parent().scene_file_path)
+		_region = LocationDB.of_scene(get_parent().scene_file_path)
 		Game.get_singleton().ordinary_fights_reset.connect(_on_ordinary_fights_reset)
 
 	# Ждём следующий кадр чтобы комната полностью загрузилась
