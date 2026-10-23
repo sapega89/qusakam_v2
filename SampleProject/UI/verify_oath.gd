@@ -118,8 +118,9 @@ func _initialize() -> void:
 	ck(priest.talk_dialogue.ends_with("City_Oath_Priest_Sworn.dqd"), "the priest's Talk now speaks of the sworn oath")
 
 	print("[4] The oath is permanent; respec for coins at another keeper (D282)")
-	sm.add_job_points(3)
-	sm.unlock_skill("toughness")
+	sm.add_job_points(5)
+	for id in ["toughness", "shield_block", "devotion"]:  # D497: навичка клятви — від 3 JP у стовбурі
+		sm.unlock_skill(id)
 	sm.unlock_skill("radiant_smite")
 	var attrs: Node = sl.get_attribute_manager()  # D335: скидання повертає й очки атрибутів
 	var unspent: int = attrs.get_unspent()
@@ -137,7 +138,7 @@ func _initialize() -> void:
 	await _choose(witch, 1)
 	ck(_labels(witch) == ["Forget every skill and attribute point for %d coins" % price, "Not yet"], "the confirm: %s" % [_labels(witch)])
 	await _choose(witch, 0)
-	ck(sm.get_unlocked_skills().is_empty() and sm.get_job_points() == jp + 2 and inv.get_coins() == 0, "skills forgotten, 2 points back, coins paid")
+	ck(sm.get_unlocked_skills().is_empty() and sm.get_job_points() == jp + 4 and inv.get_coins() == 0, "skills forgotten, 4 points back, coins paid")
 	ck(sm.get_oath() == "paladin", "the oath stays")
 	ck(attrs.spent_total() == 0 and attrs.get_unspent() == unspent, "attribute points back too (%d unspent)" % attrs.get_unspent())
 

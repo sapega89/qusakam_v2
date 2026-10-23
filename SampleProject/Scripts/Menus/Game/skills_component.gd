@@ -21,6 +21,7 @@ const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
 const ICON_PICKED := preload("res://SampleProject/Assets/UI/Icons/diamond_sm.svg")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
+const SkillTooltip = preload("res://SampleProject/Scripts/Systems/SkillTooltip.gd")
 ## Скільки місць у ряду одного дерева (D333): у даних 1–2 навички на рівень; більше — вузли вужчають, а не ламають вікно.
 const NODES_PER_LANE := 2
 
@@ -189,7 +190,7 @@ func _gives_text(gives: Dictionary) -> String:
 			"dodge_chance": parts.append(tr("+%s%% evade") % _percent(value))
 			"attack_speed": parts.append(tr("+%s%% speed") % _percent(value))
 			"skill_power": parts.append(tr("+%s%% power") % _percent(value))
-			"sp_regen": parts.append(tr("+%s SP/s") % String.num(value, 2))
+			"sp_per_hit": parts.append(tr("+%s SP per hit") % String.num(value, 2))
 			_: assert(false, "SkillsComponent: no text for attribute stat %s" % stat)
 	return " · ".join(parts)
 
@@ -380,6 +381,10 @@ func _node_note(definition: SkillDefinition) -> String:
 			return tr("Other oath")
 		SkillManager.Result.NOT_ENOUGH_JP:
 			return _cost_text(definition.jp_cost)
+		SkillManager.Result.BASE_TREE_GATE:
+			return tr("%d JP") % _skill_manager.base_jp_missing(definition.id, plan.planned_unlocked(), plan.planned_ranks())
+		SkillManager.Result.TREE_CAP:
+			return tr("Cap")
 		_:
 			return tr("Locked")
 
@@ -493,34 +498,10 @@ func _show_facts(facts: Array[String]) -> void:
 		labels[i].theme_type_variation = &"StatValue" if i % 2 == 1 else &"StatLabel"
 
 
-## Що робить навичка — з полів визначення, на поточному ранзі (D150) і з Wisdom (D335), якщо вивчена.
+## Що робить навичка — з полів визначення, на поточному ранзі (D150), з атакою героя (B137), Wisdom (D335) і синергіями (D496);
+## не вивчена — як на першому ранзі. Текст спільний з підказкою (SkillTooltip).
 func _effect_text(definition: SkillDefinition) -> String:
-	var learned := _skill_manager.is_unlocked(definition.id)
-	var parts: Array[String] = []
-	if definition.damage > 0:
-		parts.append(tr("%d dmg") % (_skill_manager.scaled(definition.id, definition.damage) if learned else definition.damage))
-	if definition.heal > 0:
-		parts.append(tr("heal %d") % (_skill_manager.scaled(definition.id, definition.heal) if learned else definition.heal))
-	if definition.burn_dps > 0:
-		parts.append(tr("burn %d/s") % definition.burn_dps)
-	if definition.chain_radius > 0.0:
-		parts.append(tr("chain ×%s") % String.num(definition.chain_ratio, 1))
-	if definition.stun > 0.0:
-		parts.append(tr("stun %s s") % String.num(definition.stun, 1))
-	if not definition.is_active() and not definition.passive_stat.is_empty():
-		var value := definition.passive_value * (1.0 + SkillManager.RANK_BONUS * maxi(0, _skill_manager.get_rank(definition.id) - 1))
-		match definition.passive_stat:
-			"max_health": parts.append(tr("+%d max HP") % roundi(value))
-			"max_sp": parts.append(tr("+%d max SP") % roundi(value))
-			"attack": parts.append(tr("+%d attack") % roundi(value))
-			"shield_block": parts.append(tr("−%s%% damage with a shield") % _percent(value))
-			"damage_reduction": parts.append(tr("−%s%% damage taken") % _percent(value))
-			"heal_power": parts.append(tr("heals +%s%%") % _percent(value))
-			"sp_regen": parts.append(tr("+%s SP/s") % String.num(value, 2))
-			"lifesteal": parts.append(tr("hits heal %s%%") % _percent(value))
-			"poise": parts.append(tr("+%s%% poise damage") % _percent(value))
-			_: assert(false, "SkillsComponent: no text for passive stat %s" % definition.passive_stat)
-	return ", ".join(parts)
+	return SkillTooltip.effect_text(_skill_manager, definition, _skill_manager.get_rank(definition.id))
 
 
 ## Пояснення бере вердикт SkillManager (через план) — правила тут не дублюються.
@@ -538,6 +519,8 @@ func _reason_text(skill_id: String) -> String:
 				return tr("%s. Pick to rank up (+10%%, %d JP).") % [head, SkillManager.UPGRADE_COST]
 			SkillManager.Result.MAX_RANK:
 				return tr("%s. Max rank.") % head
+			SkillManager.Result.TREE_CAP:
+				return tr("%s. This tree's JP cap is reached.") % head
 			_:
 				return tr("%s. Not enough JP to rank up.") % head
 	if picks > 0:
@@ -556,6 +539,11 @@ func _reason_text(skill_id: String) -> String:
 			return tr("Swear an oath in the City (level %d).") % int(_skill_database.get_oath(definition.oath).level)
 		SkillManager.Result.OTHER_OATH:
 			return tr("Sworn to another oath.")
+		SkillManager.Result.BASE_TREE_GATE:
+			return tr("Needs %d more JP spent in the %s tree.") % [_skill_manager.base_jp_missing(skill_id, plan.planned_unlocked(),
+					plan.planned_ranks()), tr(_skill_database.class_name_trunk)]
+		SkillManager.Result.TREE_CAP:
+			return tr("This tree's JP cap is reached (%d JP).") % _skill_database.tree_cap(definition.oath)
 		_:
 			return ""
 

@@ -42,6 +42,7 @@ func _initialize() -> void:
 	print("[2] database loads and rejects safely")
 	db.load_from_array(FIXTURES)
 	sm.skill_database = db
+	db.class_jp_cap = 1000  # D497: фікстури коштують по 25–100 JP — ліміт дерева тут ні до чого
 	ck(db.has_skill("test_strike"), "valid definition loaded")
 	ck(db.skills.size() == 4, "4 valid of 6 entries (%d)" % db.skills.size())
 	ck(db.rejected.size() == 2, "2 rejected: missing id + duplicate")

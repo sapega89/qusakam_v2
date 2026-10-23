@@ -50,6 +50,24 @@ var stun: float = 0.0
 ## Пасивка (D207): який показник підсилює ("max_health", "shield_block") і на скільки на 1-му рангу.
 var passive_stat: String = ""
 var passive_value: float = 0.0
+## D496: умова пасивки (D207-хук passive_value): "" — завжди; "below_hp" — HP героя нижче частки [member passive_condition_value];
+## "after_parry" / "after_skill" — [member passive_condition_value] с після парирування / застосованої навички.
+var passive_condition: String = ""
+var passive_condition_value: float = 0.0
+
+## B137: частки Phys. Atk. і Elem. Atk. героя, що додаються до damage / heal.
+var damage_phys: float = 0.0
+var damage_elem: float = 0.0
+var heal_phys: float = 0.0
+var heal_elem: float = 0.0
+## D491: ультимативна навичка професії — довга перезарядка, тряска камери, подвійне кільце на хотбарі (D453).
+var ultimate: bool = false
+## D504: фляга — заряди замість SP і перезарядки, поповнюються при збереженні. 0 — навичка не фляга.
+var charges: int = 0
+## D496: синергії — [{skill, per_rank}]: кожен ранг пасивки свого дерева додає per_rank до сили навички.
+var synergies: Array[Dictionary] = []
+## D497: скільки JP треба вкласти в дерево базового класу, щоб вивчити цю навичку професії. 0 — без вимоги.
+var base_jp: int = 0
 
 ## Посилання на ресурси. Не завантажуються тут — це робота UI/VFX-шарів.
 var icon: String = ""
@@ -99,6 +117,20 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	var passive: Dictionary = data.get("passive", {})
 	definition.passive_stat = String(passive.get("stat", ""))
 	definition.passive_value = float(passive.get("value", 0.0))
+	var condition: Dictionary = passive.get("condition", {})
+	definition.passive_condition = String(condition.get("type", ""))
+	definition.passive_condition_value = float(condition.get("value", 0.0))
+	var damage_scaling: Dictionary = data.get("damage_scaling", {})
+	definition.damage_phys = maxf(0.0, float(damage_scaling.get("phys", 0.0)))
+	definition.damage_elem = maxf(0.0, float(damage_scaling.get("elem", 0.0)))
+	var heal_scaling: Dictionary = data.get("heal_scaling", {})
+	definition.heal_phys = maxf(0.0, float(heal_scaling.get("phys", 0.0)))
+	definition.heal_elem = maxf(0.0, float(heal_scaling.get("elem", 0.0)))
+	definition.ultimate = bool(data.get("ultimate", false))
+	definition.charges = maxi(0, int(data.get("charges", 0)))
+	for synergy: Dictionary in data.get("synergies", []):
+		definition.synergies.append({"skill": String(synergy.skill), "per_rank": float(synergy.per_rank)})
+	definition.base_jp = maxi(0, int(data.get("base_jp", 0)))
 
 	for entry in data.get("prerequisites", []):
 		var prerequisite := String(entry).strip_edges()
@@ -121,6 +153,13 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 		definition.burn_dps = 0
 		definition.chain_radius = 0.0
 		definition.stun = 0.0
+		definition.damage_phys = 0.0
+		definition.damage_elem = 0.0
+		definition.heal_phys = 0.0
+		definition.heal_elem = 0.0
+		definition.ultimate = false
+		definition.charges = 0
+		definition.synergies.clear()
 
 	return definition
 
@@ -149,7 +188,14 @@ func to_dict() -> Dictionary:
 		"burn": {"dps": burn_dps, "duration": burn_duration},
 		"chain": {"radius": chain_radius, "ratio": chain_ratio},
 		"stun": stun,
-		"passive": {"stat": passive_stat, "value": passive_value},
+		"passive": {"stat": passive_stat, "value": passive_value,
+				"condition": {"type": passive_condition, "value": passive_condition_value}},
+		"damage_scaling": {"phys": damage_phys, "elem": damage_elem},
+		"heal_scaling": {"phys": heal_phys, "elem": heal_elem},
+		"ultimate": ultimate,
+		"charges": charges,
+		"synergies": synergies.duplicate(true),
+		"base_jp": base_jp,
 		"icon": icon,
 		"vfx": vfx,
 	}

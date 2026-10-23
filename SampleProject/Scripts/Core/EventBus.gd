@@ -234,7 +234,7 @@ signal skill_unlocked(skill_id: String)
 signal skill_upgraded(skill_id: String, rank: int)
 ## Герой присягнув клятві (D280): "paladin" / "dark_knight" / "warden". Назавжди.
 signal oath_sworn(oath_id: String)
-## Навички скинуто за монети (D282): усе забуто, refunded очок повернуто, клятва лишилась.
+## Навички скинуто за монети (D282) чи безкоштовно (D490): усе забуто, refunded очок повернуто, клятва лишилась.
 signal skills_reset(refunded: int)
 ## Невкладених очок атрибутів стало current (D335): рівень, вкладення, скидання.
 signal attribute_points_changed(current: int, previous: int)
@@ -274,6 +274,14 @@ signal job_points_changed(current: int, previous: int)
 ## Пример:
 ##     EventBus.sp_changed.emit(80, 120)
 signal sp_changed(current_sp: int, max_sp: int)
+
+## Заряди фляги змінились (D504, Healing Palm): ковток, зірваний каст, поповнення при збереженні.
+signal skill_charges_changed(skill_id: String, charges: int, max_charges: int)
+
+## Гравець зберігає гру на екрані збереження (точка збереження / медитація, D447): фляга поповнюється (D504)
+## до запису, тож сейв уже з повною флягою. Автозбереження при переході кімнатою (D413) цього не емітує.
+@warning_ignore("unused_signal")
+signal game_saving(slot: int)
 
 signal equipment_equip_requested(character_id: String, slot_id: String, item_id: String, item_data: Dictionary)
 

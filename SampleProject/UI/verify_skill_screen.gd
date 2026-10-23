@@ -134,7 +134,7 @@ func _initialize() -> void:
 	await _mouse(ui._rows["fire_strike"])
 	var facts := _facts(ui)
 	ck(ui._selected_id == "fire_strike" and ui._detail_name.text == "Fire Strike", "a click selects Fire Strike and shows it")
-	ck(facts.get("Cost") == "1 JP" and facts.get("Level") == "Lv 6" and facts.get("SP", "").ends_with("SP") and facts.get("Cooldown", "").ends_with(" s"), "cost, level, SP, cooldown: %s" % [facts])
+	ck(facts.get("Cost") == "1 JP" and facts.get("Level") == "Lv 6" and facts.get("SP", "").ends_with("SP") and facts.get("Cooldown") == ui.PLACEHOLDER, "cost, level, SP, no cooldown (D504): %s" % [facts])
 	ck(String(facts.get("Effect", "")).find("dmg") >= 0 and String(facts.get("Weapon", "")) != "", "effect and weapon shown")
 	ck(ui._detail_state.text.begins_with("Level too low: needs level 6"), "the full reason: %s" % ui._detail_state.text)
 	ck(not ui._hotbar_box.visible and ui._pick_button.disabled, "not learned: no hotbar row, Pick disabled")
@@ -183,6 +183,8 @@ func _initialize() -> void:
 	ck(ui._shown_oath == "warden" and ui._rows.has("bulwark") and not ui._rows.has("radiant_smite"), "A on the Warden tab shows its tree")
 
 	print("[6] A picked prerequisite opens its skill; undoing it drops the skill (cascade)")
+	# D497: навичка клятви 5-го рівня — від 3 JP у стовбурі; два вже вкладено, третє дасть позначений Shield Block.
+	ck(sm.unlock_skill("devotion") == R.OK and sm.unlock_skill("weapon_training") == R.OK, "2 JP already in the base tree")
 	ck(sm.swear_oath("warden") == R.OK, "swore the Warden oath")
 	for i in 2: await process_frame
 	ck(ui.node_state("bulwark") == S.LOCKED and _note(ui, "bulwark") == "Locked", "Bulwark needs Shield Block: locked")

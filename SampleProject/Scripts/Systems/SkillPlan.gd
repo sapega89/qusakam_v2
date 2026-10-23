@@ -75,8 +75,16 @@ func _cost_of(picks: Array[String]) -> int:
 func can_pick(skill_id: String) -> SkillManager.Result:
 	var rank := planned_rank(skill_id)
 	if rank == 0:
-		return _skills.check_unlock(skill_id, planned_unlocked(), jp_left())
-	return _skills.check_upgrade(skill_id, rank, jp_left())
+		return _skills.check_unlock(skill_id, planned_unlocked(), jp_left(), planned_ranks())
+	return _skills.check_upgrade(skill_id, rank, jp_left(), planned_unlocked(), planned_ranks())
+
+
+## Ранги після Accept для позначених навичок — для лімітів дерев і порогів (D497).
+func planned_ranks() -> Dictionary:
+	var ranks := {}
+	for skill_id in _picks:
+		ranks[skill_id] = planned_rank(skill_id)
+	return ranks
 
 
 func pick(skill_id: String) -> SkillManager.Result:

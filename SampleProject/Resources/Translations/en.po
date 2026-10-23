@@ -491,8 +491,8 @@ msgstr "+%s%% speed"
 msgid "+%s%% power"
 msgstr "+%s%% power"
 
-msgid "+%s SP/s"
-msgstr "+%s SP/s"
+msgid "+%s SP per hit"
+msgstr "+%s SP per hit"
 
 msgid "Lv %d"
 msgstr "Lv %d"
@@ -2022,8 +2022,8 @@ msgstr "Second Wind"
 msgid "Perfect Balance"
 msgstr "Perfect Balance"
 
-msgid "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
-msgstr "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
+msgid "A flask of three sips: each restores HP to an ally next to you, or to yourself. Refilled when you save the game. Learned from level 2."
+msgstr "A flask of three sips: each restores HP to an ally next to you, or to yourself. Refilled when you save the game. Learned from level 2."
 
 msgid "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
 msgstr "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
@@ -2055,11 +2055,11 @@ msgstr "Your healing restores 25% more."
 msgid "Take 8% less damage."
 msgstr "Take 8% less damage."
 
-msgid "Regain 0.5 more SP each second."
-msgstr "Regain 0.5 more SP each second."
+msgid "Gain 0.5 more SP from every hit and parry."
+msgstr "Gain 0.5 more SP from every hit and parry."
 
-msgid "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
-msgstr "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
+msgid "Strike everything in front of you and heal an ally next to you, or yourself."
+msgstr "Strike everything in front of you and heal an ally next to you, or yourself."
 
 msgid "+25 Max HP."
 msgstr "+25 Max HP."
@@ -2109,8 +2109,8 @@ msgstr "Spin through everything in front of you; the whirl catches one more enem
 msgid "Take 10% less damage."
 msgstr "Take 10% less damage."
 
-msgid "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
-msgstr "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
+msgid "The Warden's ultimate: catch your breath and restore a great deal of HP to an ally next to you, or to yourself."
+msgstr "The Warden's ultimate: catch your breath and restore a great deal of HP to an ally next to you, or to yourself."
 
 msgid "+8 attack."
 msgstr "+8 attack."
@@ -2137,8 +2137,8 @@ msgstr "Critical hits, evasion and speed."
 msgid "Maximum HP."
 msgstr "Maximum HP."
 
-msgid "Maximum SP, skill power and SP regeneration."
-msgstr "Maximum SP, skill power and SP regeneration."
+msgid "Maximum SP, skill power and SP from every hit."
+msgstr "Maximum SP, skill power and SP from every hit."
 
 # ── Data: quests.json
 msgid "The Stolen Caravan"
@@ -2544,3 +2544,114 @@ msgstr "Desert Archer"
 
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
 msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+
+msgid "Riposte Instinct [DRAFT]"
+msgstr "Riposte Instinct [DRAFT]"
+
+msgid "For 3 s after a parry, your skills deal 25% more damage. [DRAFT]"
+msgstr "For 3 s after a parry, your skills deal 25% more damage. [DRAFT]"
+
+msgid "Last Stand [DRAFT]"
+msgstr "Last Stand [DRAFT]"
+
+msgid "Below 30% HP, take 15% less damage. [DRAFT]"
+msgstr "Below 30% HP, take 15% less damage. [DRAFT]"
+
+msgid "Merciful Light [DRAFT]"
+msgstr "Merciful Light [DRAFT]"
+
+msgid "Below 30% HP, your healing restores 40% more. [DRAFT]"
+msgstr "Below 30% HP, your healing restores 40% more. [DRAFT]"
+
+msgid "Zealous Answer [DRAFT]"
+msgstr "Zealous Answer [DRAFT]"
+
+msgid "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]"
+msgstr "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]"
+
+msgid "Consecrated Ground [DRAFT]"
+msgstr "Consecrated Ground [DRAFT]"
+
+msgid "For 3 s after using a skill, take 10% less damage. [DRAFT]"
+msgstr "For 3 s after using a skill, take 10% less damage. [DRAFT]"
+
+msgid "Desperate Hunger [DRAFT]"
+msgstr "Desperate Hunger [DRAFT]"
+
+msgid "Below 35% HP, your weapon hits heal you for a further 15% of the damage dealt. [DRAFT]"
+msgstr "Below 35% HP, your weapon hits heal you for a further 15% of the damage dealt. [DRAFT]"
+
+msgid "Cruel Momentum [DRAFT]"
+msgstr "Cruel Momentum [DRAFT]"
+
+msgid "For 3 s after using a skill, +6 attack. [DRAFT]"
+msgstr "For 3 s after using a skill, +6 attack. [DRAFT]"
+
+msgid "Dark Riposte [DRAFT]"
+msgstr "Dark Riposte [DRAFT]"
+
+msgid "Still Water [DRAFT]"
+msgstr "Still Water [DRAFT]"
+
+msgid "For 3 s after a parry, take 15% less damage. [DRAFT]"
+msgstr "For 3 s after a parry, take 15% less damage. [DRAFT]"
+
+msgid "Dervish Rhythm [DRAFT]"
+msgstr "Dervish Rhythm [DRAFT]"
+
+msgid "For 3 s after using a skill, your hits break an enemy's stance 30% faster. [DRAFT]"
+msgstr "For 3 s after using a skill, your hits break an enemy's stance 30% faster. [DRAFT]"
+
+msgid "Rooted Resolve [DRAFT]"
+msgstr "Rooted Resolve [DRAFT]"
+
+msgid "Below 30% HP, your hits break an enemy's stance 50% faster. [DRAFT]"
+msgstr "Below 30% HP, your hits break an enemy's stance 50% faster. [DRAFT]"
+
+msgid "Ultimate · cooldown %d s"
+msgstr "Ultimate · cooldown %d s"
+
+msgid "Flask: %d / %d sips, refilled when you save"
+msgstr "Flask: %d / %d sips, refilled when you save"
+
+msgid "Rank %d: %s"
+msgstr "Rank %d: %s"
+
+msgid "Next rank: %s"
+msgstr "Next rank: %s"
+
+msgid "Receives bonuses from:"
+msgstr "Receives bonuses from:"
+
+msgid "%s: +%s%% per rank (now +%s%%)"
+msgstr "%s: +%s%% per rank (now +%s%%)"
+
+msgid "%d sips"
+msgstr "%d sips"
+
+msgid "skills +%s%%"
+msgstr "skills +%s%%"
+
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+msgid "below %s%% HP"
+msgstr "below %s%% HP"
+
+msgid "%s s after a parry"
+msgstr "%s s after a parry"
+
+msgid "%s s after a skill"
+msgstr "%s s after a skill"
+
+msgid "Cap"
+msgstr "Cap"
+
+msgid "%s. This tree's JP cap is reached."
+msgstr "%s. This tree's JP cap is reached."
+
+msgid "Needs %d more JP spent in the %s tree."
+msgstr "Needs %d more JP spent in the %s tree."
+
+msgid "This tree's JP cap is reached (%d JP)."
+msgstr "This tree's JP cap is reached (%d JP)."

@@ -108,7 +108,7 @@ func _initialize() -> void:
 	ck(sm.get_max_sp() == max_sp + 10, "Wisdom: +2 Max SP per point (%d → %d)" % [max_sp, sm.get_max_sp()])
 	sm.unlock_skill("healing_palm")  # ранг 1 — інакше scaled рахує ранг 0
 	ck(sm.scaled("healing_palm", 40) == 42, "Wisdom: +1 %% skill power per point (heal 40 → %d)" % sm.scaled("healing_palm", 40))
-	ck(is_equal_approx(attrs.bonus("sp_regen"), 0.25), "Wisdom: +0.05 SP/s per point")
+	ck(is_equal_approx(attrs.bonus("sp_per_hit"), 0.25), "Wisdom: +0.05 SP per hit per point (D504)")
 	ck(attrs.get_unspent() == 0, "all 15 spent")
 	ck(attrs.spend({"strength": 1}) == AR.NOT_ENOUGH_POINTS, "no more points: refused")
 	ck(attrs.spend({"luck": 1}) == AR.UNKNOWN_ATTRIBUTE, "an unknown attribute: refused")

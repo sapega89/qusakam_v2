@@ -136,6 +136,8 @@ func _initialize() -> void:
 	ck(sm.is_unlocked("devotion") and sm.get_job_points() == jp - 1, "Pick, then Accept learn it (JP %d → %d)" % [jp, sm.get_job_points()])
 
 	print("[5] After the oath")
+	# D497: навичка клятви 5-го рівня — від 3 JP у стовбурі (Devotion уже є).
+	ck(sm.unlock_skill("toughness") == 0 and sm.unlock_skill("shield_block") == 0, "3 JP in the base tree")
 	ck(sm.swear_oath("paladin") == 0, "swore the Paladin oath")
 	for i in 2: await process_frame
 	ck(ui._char_class.text == "Paladin", "header class: Paladin")

@@ -137,6 +137,7 @@ func _fx() -> Node:
 func _reset(hurt: bool) -> void:
 	await create_timer(1.2).timeout  # i-frames і збій попереднього кроку минули
 	sm.clear_cooldowns()
+	sm.refill_charges()  # D504: фляга Healing Palm
 	sm.restore_sp(999)
 	target.current_health = 9999
 	hero.current_health = hero.Max_Health - (50 if hurt else 0)
@@ -163,7 +164,10 @@ func _cast(id: String, weapon: String, pose: String) -> void:
 	await create_timer(definition.cast_windup).timeout
 	ck(hero.combat.state == hero.combat.State.CAST_RELEASE and hero.animation == pose + "Release", "%s: release pose %s" % [id, hero.animation])
 	ck(is_instance_valid(fx) and fx.get_node("AnimationPlayer").current_animation == "release", "%s: the release effect plays" % id)
-	ck(sm.get_current_sp() == sp0 - definition.sp_cost and sm.is_skill_on_cooldown(id), "%s: SP %d → %d, cooldown running" % [id, sp0, sm.get_current_sp()])
+	# D504: перезарядка — лише в ультимативних; фляга віддає ковток.
+	ck(sm.get_current_sp() == sp0 - definition.sp_cost and sm.is_skill_on_cooldown(id) == definition.ultimate
+			and (definition.charges == 0 or sm.get_charges(id) == definition.charges - 1),
+			"%s: SP %d → %d, cooldown only on an ultimate, a sip from a flask" % [id, sp0, sm.get_current_sp()])
 	if definition.damage > 0:
 		ck(target.current_health < 9999, "%s: the enemy in front is hit (%d)" % [id, 9999 - target.current_health])
 	if definition.heal > 0:
@@ -171,7 +175,7 @@ func _cast(id: String, weapon: String, pose: String) -> void:
 	await create_timer(definition.cast_release + 0.9).timeout
 	ck(hero.combat.state == hero.combat.State.READY and not is_instance_valid(fx), "%s: back to ready, the effect is gone" % id)
 
-## Удар під час замаху (D259): збій, ефекту немає, SP витрачено, кулдаун іде.
+## Удар під час замаху (D259): збій, ефекту немає, SP (і ковток фляги, D504) витрачено.
 func _interrupt(id: String, weapon: String) -> void:
 	var definition: Object = sm.skill_database.get_skill(id)
 	print("[4] %s interrupted by a hit during the wind-up (D259)" % id)
@@ -190,7 +194,10 @@ func _interrupt(id: String, weapon: String) -> void:
 	var hp_after_hit: int = hero.current_health
 	await physics_frame
 	ck(hero.combat.is_staggered() and hero.combat.casting_skill == "" and interrupted == [id], "%s: staggered, cast interrupted" % id)
-	ck(sm.get_current_sp() == sp0 - definition.sp_cost and sm.is_skill_on_cooldown(id), "%s: SP %d → %d, cooldown running" % [id, sp0, sm.get_current_sp()])
+	# D504: перезарядка — лише в ультимативних; фляга віддає ковток.
+	ck(sm.get_current_sp() == sp0 - definition.sp_cost and sm.is_skill_on_cooldown(id) == definition.ultimate
+			and (definition.charges == 0 or sm.get_charges(id) == definition.charges - 1),
+			"%s: SP %d → %d, cooldown only on an ultimate, a sip from a flask" % [id, sp0, sm.get_current_sp()])
 	ck(not is_instance_valid(fx), "%s: the effect is gone" % id)
 	await create_timer(definition.cast_windup + definition.cast_release).timeout
 	ck(target.current_health == 9999 and hero.current_health == hp_after_hit, "%s: no damage and no heal" % id)

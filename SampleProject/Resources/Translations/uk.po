@@ -491,8 +491,8 @@ msgstr "+%s%% швидкості"
 msgid "+%s%% power"
 msgstr "+%s%% сили"
 
-msgid "+%s SP/s"
-msgstr "+%s SP/с"
+msgid "+%s SP per hit"
+msgstr "+%s SP за удар"
 
 msgid "Lv %d"
 msgstr "Рів. %d"
@@ -2024,8 +2024,8 @@ msgstr "Друге дихання"
 msgid "Perfect Balance"
 msgstr "Досконала рівновага"
 
-msgid "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2."
-msgstr "Відновлює 40 HP союзникові поруч або вам. Вивчається з 2-го рівня."
+msgid "A flask of three sips: each restores HP to an ally next to you, or to yourself. Refilled when you save the game. Learned from level 2."
+msgstr "Фляга на три ковтки: кожен відновлює HP союзникові поруч або вам. Поповнюється, коли ви зберігаєте гру. Вивчається з 2-го рівня."
 
 msgid "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand."
 msgstr "Палючий удар по всьому, що перед вами; підпалює цілі. Потрібен меч або кинджал у руці."
@@ -2057,11 +2057,11 @@ msgstr "Ваше зцілення відновлює на 25% більше."
 msgid "Take 8% less damage."
 msgstr "На 8% менше отриманої шкоди."
 
-msgid "Regain 0.5 more SP each second."
-msgstr "Щосекунди відновлюєте на 0,5 SP більше."
+msgid "Gain 0.5 more SP from every hit and parry."
+msgstr "Кожен удар і парирування дають на 0,5 SP більше."
 
-msgid "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself."
-msgstr "Удар по всьому, що перед вами, і 20 HP зцілення союзникові поруч або вам."
+msgid "Strike everything in front of you and heal an ally next to you, or yourself."
+msgstr "Удар по всьому, що перед вами, і зцілення союзникові поруч або вам."
 
 msgid "+25 Max HP."
 msgstr "+25 до макс. HP."
@@ -2111,8 +2111,8 @@ msgstr "Вихором проноситеся крізь усе, що перед
 msgid "Take 10% less damage."
 msgstr "На 10% менше отриманої шкоди."
 
-msgid "Catch your breath and restore 60 HP to an ally next to you, or to yourself."
-msgstr "Переведіть подих і відновіть 60 HP союзникові поруч або собі."
+msgid "The Warden's ultimate: catch your breath and restore a great deal of HP to an ally next to you, or to yourself."
+msgstr "Ультимативна навичка Вартового: переведіть подих і відновіть багато HP союзникові поруч або собі."
 
 msgid "+8 attack."
 msgstr "+8 до атаки."
@@ -2139,8 +2139,8 @@ msgstr "Критичні удари, ухилення й швидкість."
 msgid "Maximum HP."
 msgstr "Максимум HP."
 
-msgid "Maximum SP, skill power and SP regeneration."
-msgstr "Максимум SP, сила навичок і відновлення SP."
+msgid "Maximum SP, skill power and SP from every hit."
+msgstr "Максимум SP, сила навичок і SP за кожен удар."
 
 # ── Data: quests.json
 msgid "The Stolen Caravan"
@@ -2547,3 +2547,113 @@ msgstr "Пустельний лучник"
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
 msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Червоний відблиск на наконечнику — стріла летить саме зараз: заблокуйте її, відбийте парируванням назад у нього, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 
+msgid "Riposte Instinct [DRAFT]"
+msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"
+
+msgid "For 3 s after a parry, your skills deal 25% more damage. [DRAFT]"
+msgstr "Протягом 3 с після парирування ваші навички завдають на 25% більше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Last Stand [DRAFT]"
+msgstr "Останній рубіж [ЧЕРНЕТКА]"
+
+msgid "Below 30% HP, take 15% less damage. [DRAFT]"
+msgstr "Коли HP нижче 30%, отримуєте на 15% менше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Merciful Light [DRAFT]"
+msgstr "Милосердне світло [ЧЕРНЕТКА]"
+
+msgid "Below 30% HP, your healing restores 40% more. [DRAFT]"
+msgstr "Коли HP нижче 30%, ваше зцілення відновлює на 40% більше. [ЧЕРНЕТКА]"
+
+msgid "Zealous Answer [DRAFT]"
+msgstr "Ревна відповідь [ЧЕРНЕТКА]"
+
+msgid "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]"
+msgstr "Протягом 4 с після парирування ваші навички завдають на 30% більше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Consecrated Ground [DRAFT]"
+msgstr "Освячена земля [ЧЕРНЕТКА]"
+
+msgid "For 3 s after using a skill, take 10% less damage. [DRAFT]"
+msgstr "Протягом 3 с після навички отримуєте на 10% менше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Desperate Hunger [DRAFT]"
+msgstr "Відчайдушний голод [ЧЕРНЕТКА]"
+
+msgid "Below 35% HP, your weapon hits heal you for a further 15% of the damage dealt. [DRAFT]"
+msgstr "Коли HP нижче 35%, удари зброєю зцілюють вас ще на 15% завданої шкоди. [ЧЕРНЕТКА]"
+
+msgid "Cruel Momentum [DRAFT]"
+msgstr "Жорстокий розгін [ЧЕРНЕТКА]"
+
+msgid "For 3 s after using a skill, +6 attack. [DRAFT]"
+msgstr "Протягом 3 с після навички +6 до атаки. [ЧЕРНЕТКА]"
+
+msgid "Dark Riposte [DRAFT]"
+msgstr "Темний рипост [ЧЕРНЕТКА]"
+
+msgid "Still Water [DRAFT]"
+msgstr "Тиха вода [ЧЕРНЕТКА]"
+
+msgid "For 3 s after a parry, take 15% less damage. [DRAFT]"
+msgstr "Протягом 3 с після парирування отримуєте на 15% менше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Dervish Rhythm [DRAFT]"
+msgstr "Ритм дервіша [ЧЕРНЕТКА]"
+
+msgid "For 3 s after using a skill, your hits break an enemy's stance 30% faster. [DRAFT]"
+msgstr "Протягом 3 с після навички ваші удари збивають стійкість ворога на 30% швидше. [ЧЕРНЕТКА]"
+
+msgid "Rooted Resolve [DRAFT]"
+msgstr "Вкорінена воля [ЧЕРНЕТКА]"
+
+msgid "Below 30% HP, your hits break an enemy's stance 50% faster. [DRAFT]"
+msgstr "Коли HP нижче 30%, ваші удари збивають стійкість ворога на 50% швидше. [ЧЕРНЕТКА]"
+
+msgid "Ultimate · cooldown %d s"
+msgstr "Ультимативна · перезарядка %d с"
+
+msgid "Flask: %d / %d sips, refilled when you save"
+msgstr "Фляга: %d / %d ковтків, поповнюється при збереженні"
+
+msgid "Rank %d: %s"
+msgstr "Ранг %d: %s"
+
+msgid "Next rank: %s"
+msgstr "Наступний ранг: %s"
+
+msgid "Receives bonuses from:"
+msgstr "Отримує бонуси від:"
+
+msgid "%s: +%s%% per rank (now +%s%%)"
+msgstr "%s: +%s%% за ранг (зараз +%s%%)"
+
+msgid "%d sips"
+msgstr "ковтків: %d"
+
+msgid "skills +%s%%"
+msgstr "навички +%s%%"
+
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+msgid "below %s%% HP"
+msgstr "HP нижче %s%%"
+
+msgid "%s s after a parry"
+msgstr "%s с після парирування"
+
+msgid "%s s after a skill"
+msgstr "%s с після навички"
+
+msgid "Cap"
+msgstr "Ліміт"
+
+msgid "%s. This tree's JP cap is reached."
+msgstr "%s. Ліміт ОН цього дерева вичерпано."
+
+msgid "Needs %d more JP spent in the %s tree."
+msgstr "Потрібно вкласти ще %d ОН у дерево «%s»."
+
+msgid "This tree's JP cap is reached (%d JP)."
+msgstr "Ліміт ОН цього дерева вичерпано (%d ОН)."

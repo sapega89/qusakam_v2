@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), upgrade to rank 20 (D150). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock.",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), upgrade to rank 20 (D150). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497).",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -11,8 +11,8 @@
       "jp_cost": "int >= 0 - Job Points spent to unlock",
       "required_level": "int >= 1 - XPManager level gate",
       "prerequisites": "[skill_id] - must be unlocked first",
-      "sp_cost": "int >= 0 - active only, forced to 0 for passive",
-      "cooldown": "float >= 0 seconds - active only, forced to 0 for passive",
+      "sp_cost": "int >= 0 - active only, forced to 0 for passive; SP comes from landed hits and parries (D504)",
+      "cooldown": "float >= 0 seconds - active only, forced to 0 for passive; only ultimates have one (D504)",
       "icon": "res:// path",
       "vfx": "res:// .tscn of the cast effect (SkillCastFX: 'charge' during the wind-up, 'release' on completion) - active only (D271)",
       "heal": "int >= 0 - HP restored on the target (D142: an ally next to the hero, else the hero)",
@@ -21,21 +21,29 @@
       "burn": "{dps: int, duration: float} - sets the target burning (D207); a new burn refreshes",
       "chain": "{radius: px, ratio: 0..1} - also hits the nearest other enemy within radius of the first target (D207)",
       "stun": "float seconds - stuns the first target; cancels a wind-up in progress (D207)",
-      "passive": "{stat: max_health | shield_block | max_sp | attack | damage_reduction | heal_power | sp_regen | lifesteal | poise, value} - passive only (D207, D284)",
+      "passive": "{stat: max_health | shield_block | max_sp | attack | damage_reduction | heal_power | sp_per_hit | lifesteal | poise | skill_damage, value, condition?: {type: below_hp (value = HP fraction) | after_parry | after_skill (value = seconds)}} - passive only (D207, D284, D496); a conditional passive counts only while its condition holds",
       "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release)} - active only, required; a stagger during the wind-up interrupts (D259, D271)",
-      "oath": "String - the tree: \"\" = Holy Warrior trunk (everyone), else an id in oaths; such a skill needs that oath sworn (D280)"
+      "oath": "String - the tree: \"\" = Holy Warrior trunk (everyone), else an id in oaths; such a skill needs that oath sworn (D280)",
+      "damage_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to damage (B137)",
+      "heal_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to heal (B137)",
+      "ultimate": "bool - the oath's level-20 active ultimate: long cooldown, screen shake, double gold ring on the hotbar (D491, D453)",
+      "charges": "int >= 0 - a flask: uses charges instead of SP, refilled when the game is saved at a save point (D504); 0 = not a flask",
+      "synergies": "[{skill: passive id of the same tree, per_rank: fraction}] - each rank of that passive adds per_rank to this skill's damage and heal (D496)",
+      "base_jp": "int >= 0 - JP that must be spent in the base class tree before this profession skill can be learned (D497)"
     },
-    "class": "{name} - the trunk's class title before an oath (D260)",
-    "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); subclasses (level 40) and prestige (level 70) are names only, not built"
+    "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
+    "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
   },
   "class": {
-    "name": "Holy Warrior"
+    "name": "Holy Warrior",
+    "jp_cap": 12
   },
   "oaths": {
     "paladin": {
       "name": "Paladin",
       "tree": "Light",
       "level": 5,
+      "jp_cap": 10,
       "keeper": "Sister Ilvane, priest of the Sky",
       "subclasses": [
         "Sky Warden",
@@ -47,6 +55,7 @@
       "name": "Dark Knight",
       "tree": "Dark",
       "level": 5,
+      "jp_cap": 10,
       "keeper": "Morrow the witch",
       "subclasses": [
         "Lord of Ash",
@@ -58,6 +67,7 @@
       "name": "Warden of Balance",
       "tree": "Neutral",
       "level": 5,
+      "jp_cap": 10,
       "keeper": "Kesh the sand dervish",
       "subclasses": [
         "Sand Warden",
@@ -70,15 +80,15 @@
     {
       "id": "healing_palm",
       "name": "Healing Palm",
-      "description": "Restores 40 HP to an ally next to you, or to yourself. Learned from level 2.",
+      "description": "A flask of three sips: each restores HP to an ally next to you, or to yourself. Refilled when you save the game. Learned from level 2.",
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 0,
       "required_level": 2,
       "prerequisites": [],
-      "sp_cost": 5,
-      "cooldown": 4.0,
-      "heal": 40,
+      "sp_cost": 0,
+      "cooldown": 0.0,
+      "heal": 25,
       "required_weapons": [],
       "cast": {
         "windup": 0.6,
@@ -86,7 +96,18 @@
         "pose": "CastPalm"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn",
-      "oath": ""
+      "oath": "",
+      "heal_scaling": {
+        "phys": 0.0,
+        "elem": 1.0
+      },
+      "charges": 3,
+      "synergies": [
+        {
+          "skill": "devotion",
+          "per_rank": 0.06
+        }
+      ]
     },
     {
       "id": "fire_strike",
@@ -98,7 +119,7 @@
       "required_level": 6,
       "prerequisites": [],
       "sp_cost": 6,
-      "cooldown": 2.0,
+      "cooldown": 0.0,
       "damage": 20,
       "required_weapons": [
         "sword",
@@ -114,7 +135,21 @@
         "pose": "CastFire"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/FireStrike.tscn",
-      "oath": ""
+      "oath": "",
+      "damage_scaling": {
+        "phys": 1.3,
+        "elem": 0.3
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "riposte_instinct",
+          "per_rank": 0.04
+        }
+      ]
     },
     {
       "id": "electric_strike",
@@ -126,7 +161,7 @@
       "required_level": 6,
       "prerequisites": [],
       "sp_cost": 8,
-      "cooldown": 3.0,
+      "cooldown": 0.0,
       "damage": 25,
       "required_weapons": [
         "polearm",
@@ -143,7 +178,21 @@
         "pose": "CastStorm"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/ElectricStrike.tscn",
-      "oath": ""
+      "oath": "",
+      "damage_scaling": {
+        "phys": 1.2,
+        "elem": 0.5
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "devotion",
+          "per_rank": 0.04
+        }
+      ]
     },
     {
       "id": "toughness",
@@ -221,6 +270,44 @@
       }
     },
     {
+      "id": "riposte_instinct",
+      "name": "Riposte Instinct [DRAFT]",
+      "description": "For 3 s after a parry, your skills deal 25% more damage. [DRAFT]",
+      "class_id": "",
+      "oath": "",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 8,
+      "prerequisites": [],
+      "passive": {
+        "stat": "skill_damage",
+        "value": 0.25,
+        "condition": {
+          "type": "after_parry",
+          "value": 3.0
+        }
+      }
+    },
+    {
+      "id": "last_stand",
+      "name": "Last Stand [DRAFT]",
+      "description": "Below 30% HP, take 15% less damage. [DRAFT]",
+      "class_id": "",
+      "oath": "",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 10,
+      "prerequisites": [],
+      "passive": {
+        "stat": "damage_reduction",
+        "value": 0.15,
+        "condition": {
+          "type": "below_hp",
+          "value": 0.3
+        }
+      }
+    },
+    {
       "id": "radiant_smite",
       "name": "Radiant Smite",
       "description": "A strike charged with the light of the sky at everything in front of you; dazes the first enemy.",
@@ -231,7 +318,7 @@
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 6,
-      "cooldown": 3.0,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 24,
       "stun": 0.3,
@@ -240,7 +327,22 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.4,
+        "elem": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "zealous_answer",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 3
     },
     {
       "id": "mending_hands",
@@ -255,7 +357,8 @@
       "passive": {
         "stat": "heal_power",
         "value": 0.25
-      }
+      },
+      "base_jp": 3
     },
     {
       "id": "aura_of_resolve",
@@ -270,12 +373,13 @@
       "passive": {
         "stat": "damage_reduction",
         "value": 0.08
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "skys_grace",
       "name": "Sky's Grace",
-      "description": "Regain 0.5 more SP each second.",
+      "description": "Gain 0.5 more SP from every hit and parry.",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "passive",
@@ -283,14 +387,15 @@
       "required_level": 10,
       "prerequisites": [],
       "passive": {
-        "stat": "sp_regen",
+        "stat": "sp_per_hit",
         "value": 0.5
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "skyfall_blessing",
       "name": "Skyfall Blessing",
-      "description": "Strike everything in front of you and heal 20 HP to an ally next to you, or to yourself.",
+      "description": "Strike everything in front of you and heal an ally next to you, or yourself.",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",
@@ -300,7 +405,7 @@
         "radiant_smite"
       ],
       "sp_cost": 12,
-      "cooldown": 8.0,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 28,
       "heal": 20,
@@ -309,7 +414,26 @@
         "release": 0.35,
         "pose": "CastPalm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.6,
+        "elem": 0.4
+      },
+      "heal_scaling": {
+        "phys": 0.0,
+        "elem": 0.6
+      },
+      "synergies": [
+        {
+          "skill": "mending_hands",
+          "per_rank": 0.08
+        },
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.05
+        }
+      ],
+      "base_jp": 6
     },
     {
       "id": "aura_of_valour",
@@ -324,7 +448,8 @@
       "passive": {
         "stat": "max_health",
         "value": 25
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "judgement_of_the_sky",
@@ -334,14 +459,14 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
-      "required_level": 18,
+      "required_level": 20,
       "prerequisites": [
         "skyfall_blessing"
       ],
       "sp_cost": 16,
-      "cooldown": 10.0,
+      "cooldown": 60.0,
       "required_weapons": [],
-      "damage": 45,
+      "damage": 80,
       "chain": {
         "radius": 160,
         "ratio": 0.6
@@ -352,7 +477,23 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 4.0,
+        "elem": 1.0
+      },
+      "ultimate": true,
+      "synergies": [
+        {
+          "skill": "aura_of_resolve",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "unbroken_vow",
+          "per_rank": 0.06
+        }
+      ],
+      "base_jp": 10
     },
     {
       "id": "unbroken_vow",
@@ -362,14 +503,75 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 2,
-      "required_level": 20,
+      "required_level": 18,
       "prerequisites": [
         "aura_of_resolve"
       ],
       "passive": {
         "stat": "damage_reduction",
         "value": 0.08
-      }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "merciful_light",
+      "name": "Merciful Light [DRAFT]",
+      "description": "Below 30% HP, your healing restores 40% more. [DRAFT]",
+      "class_id": "",
+      "oath": "paladin",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 8,
+      "prerequisites": [],
+      "passive": {
+        "stat": "heal_power",
+        "value": 0.4,
+        "condition": {
+          "type": "below_hp",
+          "value": 0.3
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "zealous_answer",
+      "name": "Zealous Answer [DRAFT]",
+      "description": "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]",
+      "class_id": "",
+      "oath": "paladin",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 10,
+      "prerequisites": [],
+      "passive": {
+        "stat": "skill_damage",
+        "value": 0.3,
+        "condition": {
+          "type": "after_parry",
+          "value": 4.0
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "consecrated_ground",
+      "name": "Consecrated Ground [DRAFT]",
+      "description": "For 3 s after using a skill, take 10% less damage. [DRAFT]",
+      "class_id": "",
+      "oath": "paladin",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 15,
+      "prerequisites": [],
+      "passive": {
+        "stat": "damage_reduction",
+        "value": 0.1,
+        "condition": {
+          "type": "after_skill",
+          "value": 3.0
+        }
+      },
+      "base_jp": 6
     },
     {
       "id": "searing_hex",
@@ -382,7 +584,7 @@
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 6,
-      "cooldown": 3.0,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 18,
       "burn": {
@@ -394,7 +596,22 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.3,
+        "elem": 0.5
+      },
+      "synergies": [
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dark_riposte",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 3
     },
     {
       "id": "blood_pact",
@@ -409,7 +626,8 @@
       "passive": {
         "stat": "lifesteal",
         "value": 0.1
-      }
+      },
+      "base_jp": 3
     },
     {
       "id": "dread_aura",
@@ -424,7 +642,8 @@
       "passive": {
         "stat": "attack",
         "value": 4
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "relentless",
@@ -439,7 +658,8 @@
       "passive": {
         "stat": "poise",
         "value": 0.25
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "withering_grasp",
@@ -454,7 +674,7 @@
         "searing_hex"
       ],
       "sp_cost": 12,
-      "cooldown": 7.0,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 34,
       "burn": {
@@ -466,7 +686,22 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "blood_pact",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "relentless",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 6
     },
     {
       "id": "hoarded_ward",
@@ -481,7 +716,8 @@
       "passive": {
         "stat": "damage_reduction",
         "value": 0.08
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "eclipse_cleave",
@@ -491,14 +727,14 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
-      "required_level": 18,
+      "required_level": 20,
       "prerequisites": [
         "withering_grasp"
       ],
       "sp_cost": 18,
-      "cooldown": 10.0,
+      "cooldown": 60.0,
       "required_weapons": [],
-      "damage": 50,
+      "damage": 90,
       "chain": {
         "radius": 160,
         "ratio": 0.5
@@ -512,7 +748,23 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 4.5,
+        "elem": 0.8
+      },
+      "ultimate": true,
+      "synergies": [
+        {
+          "skill": "crimson_thirst",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.06
+        }
+      ],
+      "base_jp": 10
     },
     {
       "id": "crimson_thirst",
@@ -522,14 +774,75 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 2,
-      "required_level": 20,
+      "required_level": 18,
       "prerequisites": [
         "blood_pact"
       ],
       "passive": {
         "stat": "lifesteal",
         "value": 0.1
-      }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "desperate_hunger",
+      "name": "Desperate Hunger [DRAFT]",
+      "description": "Below 35% HP, your weapon hits heal you for a further 15% of the damage dealt. [DRAFT]",
+      "class_id": "",
+      "oath": "dark_knight",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 8,
+      "prerequisites": [],
+      "passive": {
+        "stat": "lifesteal",
+        "value": 0.15,
+        "condition": {
+          "type": "below_hp",
+          "value": 0.35
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "cruel_momentum",
+      "name": "Cruel Momentum [DRAFT]",
+      "description": "For 3 s after using a skill, +6 attack. [DRAFT]",
+      "class_id": "",
+      "oath": "dark_knight",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 10,
+      "prerequisites": [],
+      "passive": {
+        "stat": "attack",
+        "value": 6,
+        "condition": {
+          "type": "after_skill",
+          "value": 3.0
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "dark_riposte",
+      "name": "Dark Riposte [DRAFT]",
+      "description": "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]",
+      "class_id": "",
+      "oath": "dark_knight",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 15,
+      "prerequisites": [],
+      "passive": {
+        "stat": "skill_damage",
+        "value": 0.3,
+        "condition": {
+          "type": "after_parry",
+          "value": 4.0
+        }
+      },
+      "base_jp": 6
     },
     {
       "id": "balanced_strike",
@@ -542,7 +855,7 @@
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 5,
-      "cooldown": 2.5,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 26,
       "stun": 0.5,
@@ -551,7 +864,22 @@
         "release": 0.3,
         "pose": "CastFire"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.4,
+        "elem": 0.0
+      },
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "still_water",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 3
     },
     {
       "id": "bulwark",
@@ -568,7 +896,8 @@
       "passive": {
         "stat": "shield_block",
         "value": 0.1
-      }
+      },
+      "base_jp": 3
     },
     {
       "id": "sand_stance",
@@ -583,7 +912,8 @@
       "passive": {
         "stat": "poise",
         "value": 0.3
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "iron_body",
@@ -600,7 +930,8 @@
       "passive": {
         "stat": "max_health",
         "value": 20
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "dervish_whirl",
@@ -615,7 +946,7 @@
         "balanced_strike"
       ],
       "sp_cost": 10,
-      "cooldown": 6.0,
+      "cooldown": 0.0,
       "required_weapons": [],
       "damage": 30,
       "chain": {
@@ -627,7 +958,22 @@
         "release": 0.3,
         "pose": "CastStorm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.0
+      },
+      "synergies": [
+        {
+          "skill": "dervish_rhythm",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "unshakable",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 6
     },
     {
       "id": "unshakable",
@@ -642,28 +988,47 @@
       "passive": {
         "stat": "damage_reduction",
         "value": 0.1
-      }
+      },
+      "base_jp": 6
     },
     {
       "id": "second_wind",
       "name": "Second Wind",
-      "description": "Catch your breath and restore 60 HP to an ally next to you, or to yourself.",
+      "description": "The Warden's ultimate: catch your breath and restore a great deal of HP to an ally next to you, or to yourself.",
       "class_id": "",
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
-      "required_level": 18,
-      "prerequisites": [],
+      "required_level": 20,
+      "prerequisites": [
+        "dervish_whirl"
+      ],
       "sp_cost": 14,
-      "cooldown": 20.0,
+      "cooldown": 60.0,
       "required_weapons": [],
-      "heal": 60,
+      "heal": 120,
       "cast": {
         "windup": 0.6,
         "release": 0.35,
         "pose": "CastPalm"
       },
-      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn"
+      "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+      "heal_scaling": {
+        "phys": 1.0,
+        "elem": 2.0
+      },
+      "ultimate": true,
+      "synergies": [
+        {
+          "skill": "iron_body",
+          "per_rank": 0.08
+        },
+        {
+          "skill": "rooted_resolve",
+          "per_rank": 0.04
+        }
+      ],
+      "base_jp": 10
     },
     {
       "id": "perfect_balance",
@@ -673,14 +1038,75 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 2,
-      "required_level": 20,
+      "required_level": 18,
       "prerequisites": [
         "dervish_whirl"
       ],
       "passive": {
         "stat": "attack",
         "value": 8
-      }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "still_water",
+      "name": "Still Water [DRAFT]",
+      "description": "For 3 s after a parry, take 15% less damage. [DRAFT]",
+      "class_id": "",
+      "oath": "warden",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 8,
+      "prerequisites": [],
+      "passive": {
+        "stat": "damage_reduction",
+        "value": 0.15,
+        "condition": {
+          "type": "after_parry",
+          "value": 3.0
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "dervish_rhythm",
+      "name": "Dervish Rhythm [DRAFT]",
+      "description": "For 3 s after using a skill, your hits break an enemy's stance 30% faster. [DRAFT]",
+      "class_id": "",
+      "oath": "warden",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 10,
+      "prerequisites": [],
+      "passive": {
+        "stat": "poise",
+        "value": 0.3,
+        "condition": {
+          "type": "after_skill",
+          "value": 3.0
+        }
+      },
+      "base_jp": 6
+    },
+    {
+      "id": "rooted_resolve",
+      "name": "Rooted Resolve [DRAFT]",
+      "description": "Below 30% HP, your hits break an enemy's stance 50% faster. [DRAFT]",
+      "class_id": "",
+      "oath": "warden",
+      "skill_type": "passive",
+      "jp_cost": 1,
+      "required_level": 15,
+      "prerequisites": [],
+      "passive": {
+        "stat": "poise",
+        "value": 0.5,
+        "condition": {
+          "type": "below_hp",
+          "value": 0.3
+        }
+      },
+      "base_jp": 6
     }
   ]
 }

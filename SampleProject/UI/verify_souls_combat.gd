@@ -476,7 +476,7 @@ func _hero_moves(sl: Node) -> void:
 	_press(&"block", false)
 	await create_timer(1.0).timeout
 
-	print("[7] D259: a hit during a skill cast spends the SP and starts the cooldown, no effect")
+	print("[7] D259: a hit during a skill cast spends the SP, no effect")
 	var sm: Node = sl.get_skill_manager()
 	sm.clear_cooldowns()
 	sm.restore_sp(999)
@@ -485,8 +485,9 @@ func _hero_moves(sl: Node) -> void:
 	eb.skill_interrupted.connect(func(id: String) -> void: interrupted.append(id))
 	ck(hero.combat.begin_cast(sm.skill_database.get_skill("fire_strike")), "a cast starts")
 	hero.take_damage(5, target)
-	ck(interrupted == ["fire_strike"] and sm.get_current_sp() == sp0 - 6 and sm.is_skill_on_cooldown("fire_strike"),
-			"interrupted: SP %d → %d, cooldown %s" % [sp0, sm.get_current_sp(), sm.is_skill_on_cooldown("fire_strike")])
+	# D504: перезарядка лишилась тільки в ультимативних — у Fire Strike її немає.
+	ck(interrupted == ["fire_strike"] and sm.get_current_sp() == sp0 - 6 and not sm.is_skill_on_cooldown("fire_strike"),
+			"interrupted: SP %d → %d, no cooldown (D504)" % [sp0, sm.get_current_sp()])
 	ck(hero.combat.casting_skill == "", "the cast is over")
 	await create_timer(1.0).timeout
 
