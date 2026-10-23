@@ -90,3 +90,20 @@ Round 8 merged 2026-10-22: settings-store (D424, B118), combat-fixes (D425, B116
 | 16:05 | rows-3 (`trig_01XySQVTHZfMXq8iURt7AdkY`) | cloud/rows-3 | #50 order 6: options_component as templates (the last screen) |
 
 rows-3 merged 2026-10-22: D432 (#50 order 6, the last screen of D117 "Slices 2+"). Cloud suite: 92 PASS + the known `verify_audio` flake. Local suite after the merge: 93/93.
+
+## Round 9 (2026-10-23): Sapega's playtest
+
+Sapega played the demo and reported as he went. Each item is a B-ID or D-ID in the registers. playtest-1 and ui-kit
+merged (D477–D482 renumbered from the branches' D443–D446, B119 / B122 / B123 fixed). The local suite runs after the
+merge.
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 01:28 | playtest-1 (`trig_016Dw9H1DX9R8UrqhGzDYg1M`) | cloud/playtest-1 | B122, B123, D437, D439 — merged |
+| 01:28 | ui-kit (`trig_0133mr7NRgLcPALNDCBRMbhc`) | cloud/ui-kit | B119, D433 — merged |
+| 02:13 | perf-1 (`trig_01QdvohWAPwpHQ3sFeRkiiq2`) | cloud/perf-1 | performance_plan slices 1–3 and 6, D434 fade |
+| 02:20 | combat-feel (`trig_01SsSus3e2Lb7hNha4Cxym7h`) | cloud/combat-feel | B128, D443, D456, B125, D444 |
+| 02:20 | npc-flow (`trig_01N1yoFKhEuXs3wq5dFKoVNa`) | cloud/npc-flow | D442, D452, D454 |
+| 02:20 | story-text (`trig_015CA5q64kigmy5dtqzfhvi3`) | cloud/story-text | D437 rest, D457, D462, B126, D460 |
+| 02:20 | ui-text (`trig_014xkVFFPggLwdiAWnEHFBGr`) | cloud/ui-text | D474, D475 |
+| 02:20 | companions (`trig_017aeA6bXGhs2gsGoj12FFaB`) | cloud/companions | D463, D464, D465 |
