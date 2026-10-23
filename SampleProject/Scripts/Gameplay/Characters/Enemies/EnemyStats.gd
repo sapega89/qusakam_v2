@@ -28,6 +28,14 @@ class_name EnemyStats
 ## Комбо (D265): найбільше ударів у серії й шанс кожного наступного.
 @export var combo_hits: int = 1
 @export var combo_chance: float = 0.5
+## Підказка удару (D504): block — білий (блокувати), parry — жовтий (парирувати), dodge — червоний (лише ухилитись).
+## tell — звичайний удар, finisher_tell — останній удар серії.
+@export_enum("block", "parry", "dodge") var tell: String = "parry"
+@export_enum("block", "parry", "dodge") var finisher_tell: String = "dodge"
+## Поза відновлення після серії, с (D504: вікно для відповіді героя).
+@export var recovery: float = 0.5
+## На скільки px ворог відходить після серії (D504, critique §B); 0 — лишається на місці (tank).
+@export var back_off: float = 0.0
 
 @export_group("Detection")
 @export var detection_range: float = 300.0

@@ -60,6 +60,13 @@ var poise := 3
 var stagger_time := 0.25
 var combo_hits := 1
 var combo_chance := 0.5
+## D504: підказка звичайного удару й фінішера серії (EnemyLogic.TELL_*), поза відновлення після серії (с) і відхід після
+## неї (px). Бос не відкидається зовсім (B134).
+var tell: StringName = EnemyLogic.TELL_PARRY
+var finisher_tell: StringName = EnemyLogic.TELL_DODGE
+var recovery := 0.5
+var back_off := 0.0
+var knockback_immune := false
 ## Стійкість повертається повністю, якщо стільки секунд ворога ніхто не бив.
 const POISE_RESET_TIME := 2.0
 ## Збій від вичерпаної стійкості й від парирування героя, с; відкидання при збої, px.
@@ -149,6 +156,10 @@ func _apply_stats(stats: EnemyStats) -> void:
 	stagger_time = stats.stagger_time
 	combo_hits = stats.combo_hits
 	combo_chance = stats.combo_chance
+	tell = StringName(stats.tell)
+	finisher_tell = StringName(stats.finisher_tell)
+	recovery = stats.recovery
+	back_off = stats.back_off
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range
@@ -175,6 +186,7 @@ func _initialize_components():
 	enemy_logic.attack_started.connect(_on_logic_attack_started)
 	enemy_logic.attack_ended.connect(_on_logic_attack_ended)
 	enemy_logic.attack_telegraphed.connect(_on_logic_attack_telegraphed)
+	enemy_logic.recovery_started.connect(func(_time: float) -> void: enemy_view.hold_recovery())
 
 	enemy_view = EnemyView.new()
 	enemy_view.name = "EnemyView"
@@ -259,9 +271,16 @@ func _on_logic_attack_started():
 	"""Обробляє початок атаки з EnemyLogic"""
 	enemy_view.on_attack_started(enemy_logic.swing_windup)
 
-## Підказка удару (4b): відблиск на зброї; поза замаху — анімація attack. Лінії ривка в шакала немає (D444).
+## Підказка удару (D504): відблиск кольору tell_kind на зброї й свій звук (SoundHooks); поза замаху — анімація attack.
+## Лінії ривка в шакала немає (D444).
 func _on_logic_attack_telegraphed() -> void:
-	enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, 0.0, 0.0)
+	enemy_view.show_tell(enemy_logic.tell_time, 0.0, 0.0, enemy_logic.tell_kind)
+	EventBus.enemy_tell_shown.emit(self, enemy_logic.tell_kind)
+
+## Підказка удару, що зараз летить у героя (PlayerCombat.guard_against): білий — блок, жовтий — парирування,
+## червоний — ні те, ні те.
+func incoming_tell() -> StringName:
+	return enemy_logic.tell_kind
 
 func _on_logic_attack_ended():
 	"""Обробляє завершення атаки з EnemyLogic"""
@@ -384,6 +403,9 @@ func _on_dettection_body_entered(body):
 	if body.is_in_group(GameGroups.PLAYER):
 		player_in_area = true
 		player = body
+		# На іншому поверсі за стіною героя не видно (B139): помітить пізніше, коли той вийде на його поверх чи на вид
+		if not enemy_logic.can_notice(body):
+			return
 		DebugLogger.verbose("Enemy detected player!", "Enemy")
 
 		enemy_logic.on_player_detected(body)
@@ -632,12 +654,13 @@ func take_poise(amount: int, from_x: float) -> void:
 		poise = poise_max
 		stagger(POISE_BREAK_STAGGER, from_x)
 
-## Збій (D264): удар не відбудеться, ворог стоїть і відлітає трохи від героя. Броня tank тут не рятує.
+## Збій (D264): удар не відбудеться, ворог стоїть і відлітає трохи від героя (бос — ні). Броня tank тут не рятує.
 func stagger(duration: float, from_x: float) -> void:
 	enemy_logic.stagger(duration)
 	if enemy_view.has_stagger_pose():
 		enemy_view.play_stagger(enemy_logic.stun_left)
-	enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
+	if not knockback_immune:
+		enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
 	EventBus.enemy_staggered.emit(self, duration)
 
 ## Герой парирував цей удар (D264).
@@ -650,11 +673,14 @@ func hit_stagger_time() -> float:
 
 ## Поштовх легкого удару (4b): [param push] px, замах не зриває.
 func nudge(push: float) -> void:
-	enemy_logic.start_knockback(push, false)
+	if not knockback_immune:
+		enemy_logic.start_knockback(push, false)
 
-## Відкидання від удару (булава, D203): [param push] px, знак — напрямок.
+## Відкидання від удару (булава, D203): [param push] px, знак — напрямок. Бос не відкидається (B134); замах після
+## підказки відкидання не зриває (EnemyLogic.start_knockback).
 func knockback(push: float) -> void:
-	enemy_logic.start_knockback(push)
+	if not knockback_immune:
+		enemy_logic.start_knockback(push)
 
 ## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона-ціль, зона виявлення.
 func _set_collisions_disabled(disabled: bool) -> void:

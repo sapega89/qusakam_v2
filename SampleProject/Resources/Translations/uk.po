@@ -775,8 +775,8 @@ msgstr "Атака (ще раз — комбо)"
 msgid "Heavy attack"
 msgstr "Важка атака"
 
-msgid "Block (hold) / parry (tap on the red glint)"
-msgstr "Блок (тримати) / парирування (натиснути на червоному відблиску)"
+msgid "Block (hold) / parry (tap as a yellow-glint blow lands)"
+msgstr "Блок (тримати) / парирування (натиснути, коли падає удар із жовтим відблиском)"
 
 msgid "Interact, talk, pick up"
 msgstr "Взаємодіяти, говорити, підняти"
@@ -2450,14 +2450,14 @@ msgstr "Тренування 1 з 6. Натисніть {attack}, щоб уда�
 msgid "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
 msgstr "Тренування 2 з 6. Швидко натисніть {attack} тричі поспіль: третій замах — завершальний, він вибиває супротивника з рівноваги."
 
-msgid "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
-msgstr "Тренування 3 з 6. Коли зброя розбійника спалахує червоним, його удар уже близько: натисніть {dodge}, щоб ривком проскочити крізь нього неушкодженим."
+msgid "Training 3 of 6. A red glint means a blow you cannot block: press {dodge} as it falls to dash through it untouched."
+msgstr "Тренування 3 з 6. Червоний відблиск — удар, який не заблокувати: натисніть {dodge}, коли він падає, щоб ривком проскочити крізь нього неушкодженим."
 
 msgid "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
 msgstr "Тренування 4 з 6. Станьте обличчям до розбійника й утримуйте {block}: хай його удар прийде на ваш захист. Заблокований удар не завдає шкоди."
 
-msgid "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
-msgstr "Тренування 5 з 6. Коротко натисніть {block} саме тоді, коли його зброя спалахує червоним: це парирування. Жодної шкоди, а він хитається, відкритий для ваших ударів."
+msgid "Training 5 of 6. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
+msgstr "Тренування 5 з 6. Жовтий відблиск — удар, який можна парирувати: коротко натисніть {block} саме тоді, коли він падає. Жодної шкоди, він хитається, а ваш наступний удар — важкий рипост."
 
 msgid "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
 msgstr "Тренування 6 з 6. Натисніть {heavy_attack}: повільний замах, а тоді удар, що пробиває його захист. Бийте, коли він не замахується на вас."
@@ -2516,8 +2516,8 @@ msgstr "Кнопка ривка; двічі поспіль — подвійни�
 msgid "Hold it to block."
 msgstr "Утримуйте її, щоб блокувати."
 
-msgid "Tap it on the red glint to parry."
-msgstr "Коротко натисніть її на червоний спалах, щоб парирувати."
+msgid "Tap it as the yellow-glint blow lands to parry."
+msgstr "Коротко натисніть її, коли падає удар із жовтим відблиском, щоб парирувати."
 
 msgid "Button for a heavy attack."
 msgstr "Кнопка важкої атаки."
@@ -2544,6 +2544,6 @@ msgstr "Пустельний короткий лук. Натисніть уда�
 msgid "Desert Archer"
 msgstr "Пустельний лучник"
 
-msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
-msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Червоний відблиск на наконечнику — стріла летить саме зараз: заблокуйте її, відбийте парируванням назад у нього, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
+msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
+msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Жовтий відблиск на наконечнику — стріла ось-ось полетить: заблокуйте її, відбийте парируванням назад у нього, коли вона долітає, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 

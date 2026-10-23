@@ -152,7 +152,10 @@ func _initialize() -> void:
 		tempos[e.enemy_stats.enemy_type] = logic.attack_ready_in
 		ck(is_equal_approx(logic.attack_ready_in, e.enemy_stats.attack_cooldown),
 				"%s (%s) waits its stats' %.2f s (%.2f)" % [e.name, e.enemy_stats.enemy_type, e.enemy_stats.attack_cooldown, logic.attack_ready_in])
-	ck(tempos.has("fast") and is_equal_approx(tempos.fast, 1.0), "the fast enemy swings every 1.0 s (%s)" % [tempos])
+		# D504: замахуються разом не більше двох (жетон) — наступний ворог чекав би, доки цей не скінчить
+		while logic.is_attacking:
+			await physics_frame
+	ck(tempos.has("fast") and is_equal_approx(tempos.fast, 1.5), "the fast enemy swings every 1.5 s (D494: 1.0 × 1.5) (%s)" % [tempos])
 
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

@@ -197,8 +197,10 @@ func _combo() -> void:
 	await create_timer(0.4).timeout
 
 
+## D504: підказка — за TELL_LEAD до удару; ривок — коли удар падає (хітбокс живий посеред ривка).
 func _dodge_on_glint() -> void:
 	await _bandit_signal(&"attack_telegraphed")
+	await create_timer(bandit.enemy_logic.TELL_LEAD - 0.12).timeout
 	await _tap("dodge")
 	await create_timer(0.4).timeout
 
@@ -221,8 +223,13 @@ func _hold_block() -> void:
 	_hold("block", false)
 
 
+## D504: блок — в останні PARRY_WINDOW с перед ударом, тобто трохи після підказки; удар — жовтий (не фінішер).
 func _parry_on_glint() -> void:
 	await _bandit_signal(&"attack_telegraphed")
+	if bandit.enemy_logic.tell_kind != &"parry":
+		await create_timer(0.6).timeout
+		return
+	await create_timer(bandit.enemy_logic.TELL_LEAD - hero.combat.PARRY_WINDOW + 0.08).timeout
 	_hold("block", true)
 	await create_timer(0.3).timeout
 	_hold("block", false)

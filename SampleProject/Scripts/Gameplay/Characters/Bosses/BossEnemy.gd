@@ -11,8 +11,13 @@ signal phase_changed(phase: int)
 
 ## Назва на смужці боса (англійською, як решта інтерфейсу, D121).
 @export var display_name := ""
-## Ходи: [{kind, min_range, max_range, windup, damage, weight, phase, …}] — див. BossLogic.
+## Ходи: [{kind, min_range, max_range, windup, damage, recovery, tell / tells, phase, …}] — див. BossLogic.
 @export var moves: Array[Dictionary] = []
+## Візерунок ходів (D504): черга kind, яку BossLogic.pick_move проходить по колу; у другій фазі — pattern_phase2.
+@export var pattern: PackedStringArray = []
+@export var pattern_phase2: PackedStringArray = []
+## Між ходами бос тримається на цій відстані від героя, px (D504: не стоїть на місці).
+@export var preferred_range := 150.0
 ## Докуди сягає хітбокс (combo, charge) — передній край його форми в сцені (B128, verify_hit_areas), px.
 ## attack_range боса — дальність найдальшого ходу.
 @export var melee_reach := 130.0
@@ -29,6 +34,7 @@ var bar: Control
 func _ready() -> void:
 	add_to_group(GameGroups.BOSS)  # до super._ready(): там вирішується, чи потрібна смужка над головою
 	super._ready()
+	knockback_immune = true  # B134: удари героя боса не відкидають і замаху не зривають — лише збій
 	health_changed.connect(_on_health_changed)
 	bar = BOSS_BAR.instantiate()
 	get_tree().current_scene.get_node(^"UICanvas").add_child(bar)
@@ -68,15 +74,14 @@ func telegraph(move: Dictionary) -> void:
 	_pose(move.kind)
 
 
-## Підказка ходу (4b): відблиск на зброї тієї пози, що зараз на екрані (EnemyView.weapon_point бере meta
-## «tell_at_<kind>» Sprite2D боса), а ривок (charge) ще й креслить червону лінію по землі на всю небезпечну
-## смугу — distance ривка плюс melee_reach хітбокса попереду, як лінія ривка fast.
+## Підказка ходу (4b, D504): відблиск кольору підказки на зброї тієї пози, що зараз на екрані (EnemyView.weapon_point
+## бере meta «tell_at_<kind>» Sprite2D боса), зі звуком; ривок (charge) ще й креслить червону лінію по землі на всю
+## небезпечну смугу — distance ривка плюс melee_reach хітбокса попереду (D522).
 func _on_logic_attack_telegraphed() -> void:
 	var move: Dictionary = enemy_logic.last_move
-	if move.get("kind", "") == "charge":
-		enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, float(move.distance), melee_reach)
-	else:
-		enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, 0.0, 0.0)
+	var line := float(move.distance) if move.kind == "charge" else 0.0
+	enemy_view.show_tell(enemy_logic.tell_time, line, melee_reach if line > 0.0 else 0.0, enemy_logic.tell_kind)
+	EventBus.enemy_tell_shown.emit(self, enemy_logic.tell_kind)
 
 
 func strike(move: Dictionary) -> void:

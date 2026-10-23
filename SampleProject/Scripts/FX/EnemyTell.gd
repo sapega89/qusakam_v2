@@ -1,11 +1,11 @@
 extends Node2D
 
-## Підказка удару ворога (4b): червоно-білий відблиск на зброї, що спалахує рівно тоді, коли блок стане
-## парируванням (за PlayerCombat.PARRY_WINDOW до удару), і для ривка — червона лінія по землі на всю
+## Підказка удару ворога (4b, D504): відблиск на зброї за EnemyLogic.TELL_LEAD до удару, кольором — що робити:
+## білий — блокувати, жовтий — парирувати, червоний — лише ухилитись; для ривка — червона лінія по землі на всю
 ## його довжину. Без спалахів екрана (D268): лише сам відблиск і лінія. Ставить EnemyView.show_tell.
 
-const GLINT_OUTER := Color(1.0, 0.18, 0.12)
-const GLINT_CORE := Color(1.0, 0.95, 0.85)
+const GLINT_OUTER := {&"block": Color(0.92, 0.95, 1.0), &"parry": Color(1.0, 0.8, 0.12), &"dodge": Color(1.0, 0.18, 0.12)}
+const GLINT_CORE := Color(1.0, 0.98, 0.92)
 const LINE_COLOR := Color(1.0, 0.15, 0.1, 0.7)
 ## Довжина променя відблиску (px), товщина лінії ривка, крок її шевронів.
 const GLINT_RAY := 11.0
@@ -17,12 +17,15 @@ var glint_at := Vector2.ZERO
 var feet := Vector2.ZERO
 var line_length := 0.0
 var direction := 1
+## Колір підказки (EnemyLogic.TELL_*).
+var kind: StringName = &"parry"
 var _t := 0.0
-var _life := 0.25
+var _life := 0.45
 
 
-func setup(life: float) -> void:
+func setup(life: float, tell_kind: StringName) -> void:
 	_life = life
+	kind = tell_kind
 	z_index = 50
 
 
@@ -38,7 +41,7 @@ func _draw() -> void:
 	var k := _t / _life
 	# Відблиск: швидко розгортається, тримається, а наприкінці стискається в точку — удар
 	var grow := minf(1.0, k * 4.0) * (1.0 - maxf(0.0, k - 0.8) * 5.0)
-	_star(glint_at, GLINT_RAY * grow, GLINT_OUTER)
+	_star(glint_at, GLINT_RAY * grow, GLINT_OUTER[kind])
 	_star(glint_at, GLINT_RAY * 0.5 * grow, GLINT_CORE)
 	if line_length > 0.0:
 		var end := feet + Vector2(direction * line_length * minf(1.0, k * 3.0), 0)

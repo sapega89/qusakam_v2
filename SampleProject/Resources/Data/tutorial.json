@@ -63,7 +63,7 @@
 			"id": "lesson_dodge",
 			"hint_topic": true,
 			"title": "Training 3/6 — Dodge",
-			"text": "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched.",
+			"text": "Training 3 of 6. A red glint means a blow you cannot block: press {dodge} as it falls to dash through it untouched.",
 			"key": "{dodge}",
 			"hint": "Button to dash; twice in a row for a double dash.",
 			"frames": "dodge"
@@ -81,9 +81,9 @@
 			"id": "lesson_parry",
 			"hint_topic": true,
 			"title": "Training 5/6 — Parry",
-			"text": "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows.",
+			"text": "Training 5 of 6. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte.",
 			"key": "{block}",
-			"hint": "Tap it on the red glint to parry.",
+			"hint": "Tap it as the yellow-glint blow lands to parry.",
 			"frames": "parry"
 		},
 		{
