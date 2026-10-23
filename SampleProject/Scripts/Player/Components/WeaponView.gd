@@ -112,7 +112,9 @@ func _ready() -> void:
 			sheathed = false  # замах важкого теж дістає зброю
 			if _tween:
 				_tween.kill())
-	_refresh()
+	# Після героя: його PlayerCombat (поза в _hold_pose) готовий лише в його _ready — інакше зброя в руці
+	# зі сейву (завантаження) падала на player.combat == null.
+	player.ready.connect(_refresh, CONNECT_ONE_SHOT)
 
 
 func _process(_delta: float) -> void:
@@ -185,8 +187,9 @@ func _set_palette(id: String) -> void:
 		_body_material.set_shader_parameter(&"glow_color", Color(entry.glow_color))
 
 
+## Спрайт — від базового предмета: у зачарованого («iron_sword+1», D94) свого файла немає (B142).
 func _set_texture(target: Sprite2D, id: String) -> void:
-	target.texture = load(TEXTURE % id)
+	target.texture = load(TEXTURE % ItemDatabase.base_id(id))
 	target.offset = Vector2(-target.texture.get_width() / 2.0, -target.texture.get_height() + GRIP)
 
 
@@ -354,7 +357,7 @@ func drawn_swing_rect(item: Dictionary) -> Rect2:
 	var size := 1.0
 	var length := 0.0
 	if not item.is_empty():
-		length = load(TEXTURE % item.id).get_height() * sprite.scale.y
+		length = load(TEXTURE % ItemDatabase.base_id(item.id)).get_height() * sprite.scale.y
 		kind = &"thrust" if String(item.category) in THRUST else &"arc"
 		if kind == &"thrust":
 			size = (length + thrust_reach) / SMEAR_LENGTH  # як _stab без фінішера
