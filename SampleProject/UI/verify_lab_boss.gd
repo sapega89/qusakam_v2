@@ -285,10 +285,11 @@ func _numbers() -> void:
 			hero.mitigated_damage(roundi(stats.base_damage * club_mult))]
 	var per_hit := (series[0] + series[1] + series[2]) / 3.0
 	var to_die := float(hero.Max_Health) / per_hit
-	ck(to_die >= 3.0 and to_die <= 4.0, "balanced build: he dies in %.1f of the mercenary's blows (%d HP; mace %d, club %d)" % [to_die, hero.Max_Health, series[0], series[2]])
+	# D676: Sapega прийняв 2,6 удару й 60 ударів для боса лабораторії («так, це норм»)
+	ck(to_die >= 2.5 and to_die <= 4.0, "balanced build: he dies in %.1f of the mercenary's blows (%d HP; mace %d, club %d)" % [to_die, hero.Max_Health, series[0], series[2]])
 	var swing: float = gm.calculate_physical_damage() * 3.4 / 3.0
 	var to_kill: float = stats.max_health / swing
-	ck(to_kill >= 35.0 and to_kill <= 45.0, "balanced build: the mercenary takes %.0f light hits (%d HP, Phys. Atk. %d)" % [to_kill, stats.max_health, gm.calculate_physical_damage()])
+	ck(to_kill >= 35.0 and to_kill <= 65.0, "balanced build: the mercenary takes %.0f light hits (%d HP, Phys. Atk. %d)" % [to_kill, stats.max_health, gm.calculate_physical_damage()])
 	attrs.reset()
 	for i in 5: await process_frame
 	attrs.spend({"strength": attrs.get_unspent()})
