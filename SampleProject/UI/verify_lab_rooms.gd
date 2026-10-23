@@ -86,7 +86,7 @@ func _initialize() -> void:
 	await _walk_into(&"move_right", "Laboratory", "cells → corridors again")
 	await _drain(dm)
 
-	print("[3] From the corridors' bottom storey east into the boss hall (the djinn already beaten — the gates are up)")
+	print("[3] From the corridors' bottom storey east into the boss hall (the mercenary already beaten — the gates are up)")
 	# Бій і замкнена зала — verify_lab_boss.gd (9.7); тут лише двері.
 	for flag in ["lab_boss_talk_complete", "lab_boss_fight_complete", "lab_after_boss_complete"]:
 		game.set_quest_flag(flag, true)

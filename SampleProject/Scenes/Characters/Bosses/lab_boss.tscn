@@ -152,11 +152,11 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(60, 110)
+size = Vector2(67.5, 139.5)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(64, 104)
+size = Vector2(135, 160.5)
 
 [sub_resource type="AnimationLibrary" id="Lib"]
 _data = {
@@ -175,11 +175,11 @@ _data = {
 script = ExtResource("2_boss")
 enemy_stats = SubResource("Stats")
 display_name = "The Mercenary [DRAFT]"
-moves = Array[Dictionary]([{"kind": "combo", "max_range": 66.0, "min_range": 0.0, "recovery": 0.6, "tells": ["block", "parry"], "tells_phase2": ["parry", "parry"]}, {"damage": 1.6, "kind": "slam", "max_range": 200.0, "min_range": 0.0, "radius": 200.0, "recovery": 1.0, "tell": "dodge", "windup": 1.1}, {"kind": "drink", "max_range": 200.0, "min_range": 0.0, "time": 1.4}])
+moves = Array[Dictionary]([{"kind": "combo", "max_range": 72.0, "min_range": 0.0, "recovery": 0.6, "tells": ["block", "parry"], "tells_phase2": ["parry", "parry"]}, {"damage": 1.6, "kind": "slam", "max_range": 200.0, "min_range": 0.0, "radius": 200.0, "recovery": 1.0, "tell": "dodge", "windup": 1.1}, {"kind": "drink", "max_range": 200.0, "min_range": 0.0, "time": 1.4}])
 pattern = PackedStringArray("combo", "slam", "drink", "combo", "slam", "combo", "drink")
 pattern_phase2 = PackedStringArray("combo", "slam", "combo", "slam", "drink")
 preferred_range = 60.0
-melee_reach = 60.0
+melee_reach = 67.5
 phase2_windup = 0.8
 phase2_speed = 1.25
 finisher_animation = &"attack_finisher"
@@ -208,9 +208,9 @@ position = Vector2(0, -20)
 shape = SubResource("Shape_detection")
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(30, -50)
+position = Vector2(33.75, -48.75)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(0, -38)
+position = Vector2(1.5, -59.25)
 shape = SubResource("Shape_hurt")

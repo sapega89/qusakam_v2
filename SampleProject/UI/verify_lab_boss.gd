@@ -382,7 +382,7 @@ func _initialize() -> void:
 	var deadline := Time.get_ticks_msec() + 40000
 	while Time.get_ticks_msec() < deadline and not (kinds.has("combo") and kinds.has("slam") and kinds.has("drink")):
 		# B117: не перемикання близько/далеко навмання, а відстань під хід, якого ще не було (lab_boss.tscn: булава
-		# до 66 px, палиця й ковток до 200 px): 40 px — булава, 150 px — лише палиця й ковток, за візерунком.
+		# до 72 px, палиця й ковток до 200 px): 40 px — булава, 150 px — лише палиця й ковток, за візерунком.
 		if not boss.enemy_logic.is_attacking:
 			var gap := 40.0 if not kinds.has("combo") else 150.0
 			var x := clampf(boss.global_position.x + (-gap if boss.global_position.x > 700.0 else gap), 80.0, 1480.0)

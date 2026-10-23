@@ -1,12 +1,13 @@
 extends SceneTree
 
 ## Кадри босів (queue row 9.2): кожен бос у спокої, кожен хід з його небезпекою, смужка боса. Потрібне вікно:
-##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_bosses.gd -- <out_dir>
-## Файли: <out_dir>/fb9_2_<boss>_<shot>.png
+##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_bosses.gd -- <out_dir> [boss…]
+## Без імен — усі боси (brass, djinn, lab). Файли: <out_dir>/fb9_2_<boss>_<shot>.png
 
 const BOSSES := {
 	"brass": "res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn",
 	"djinn": "res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn",
+	"lab": "res://SampleProject/Scenes/Characters/Bosses/lab_boss.tscn",
 }
 
 var game: Node
@@ -14,9 +15,11 @@ var hero: Node
 var out_dir := ""
 var floor_y := 0.0
 var arena_x := 0.0
+var only: PackedStringArray = []
 
 func _initialize() -> void:
 	out_dir = OS.get_cmdline_user_args()[0]
+	only = OS.get_cmdline_user_args().slice(1)
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
 	await process_frame
@@ -41,6 +44,15 @@ func _initialize() -> void:
 	floor_y = hero.global_position.y
 	arena_x = hero.global_position.x
 
+	if only.is_empty() or only.has("brass"):
+		await _brass()
+	if only.is_empty() or only.has("djinn"):
+		await _djinn()
+	if only.is_empty() or only.has("lab"):
+		await _lab()
+	quit()
+
+func _brass() -> void:
 	var brass: Node = await _spawn("brass")
 	await _move(brass, "combo", -110, "brass_sweep", func() -> void: await _anim(brass, &"attack", 0.68))
 	await _move(brass, "charge", -360, "brass_charge", func() -> void: await _anim(brass, &"charge_strike", 0.2))
@@ -52,6 +64,7 @@ func _initialize() -> void:
 	hero.global_position = Vector2(arena_x, floor_y)
 	await create_timer(0.5).timeout
 
+func _djinn() -> void:
 	var djinn: Node = await _spawn("djinn")
 	await _move(djinn, "combo", -100, "djinn_claws", func() -> void: await _anim(djinn, &"attack", 0.48))
 	await _move(djinn, "fireball", -320, "djinn_fireball", func() -> void: await _hazard(0.3))
@@ -62,7 +75,21 @@ func _initialize() -> void:
 	await _move(djinn, "pillar", -220, "djinn_tell_pillar", func() -> void: await _tell(djinn))
 	djinn.take_damage(djinn.current_health - djinn.Max_Health / 2 + 1)
 	await _move(djinn, "pillar", -220, "djinn_phase2_pillars", func() -> void: await _hazard(0.72))
-	quit()
+	djinn.queue_free()
+	hero.global_position = Vector2(arena_x, floor_y)
+	await create_timer(0.5).timeout
+
+## Найманець (D466, D564): булава (дві ланки), палиця з хвилею, ковток; підказки ходів.
+func _lab() -> void:
+	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 1.0  # кпин при ковтку видно на кадрі
+	var lab: Node = await _spawn("lab")
+	await _move(lab, "combo", -50, "lab_mace", func() -> void: await _anim(lab, &"attack", 0.4))
+	await _move(lab, "slam", -150, "lab_club_raise", func() -> void: await _anim(lab, &"slam", 0.5))
+	await _move(lab, "slam", -150, "lab_club_slam", func() -> void: await _hazard(0.12))
+	await _move(lab, "drink", -120, "lab_drink", func() -> void: await _anim(lab, &"drink", 0.5))
+	await _move(lab, "combo", -50, "lab_tell_mace", func() -> void: await _tell(lab))
+	await _move(lab, "slam", -150, "lab_tell_club", func() -> void: await _tell(lab))
+	lab.queue_free()
 
 func _finish_dialogue(dm: Node) -> void:
 	for i in 400:

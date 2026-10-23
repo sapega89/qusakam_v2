@@ -381,8 +381,8 @@ func _voices() -> void:
 	_heard(&"enemy_death", &"Voice", "an enemy killed")
 	_not_heard(&"enemy_grunt", "the killing blow")
 
-	# Bosses (D278, D310): each real boss has its own voice — the Brass Collector roars, the djinn roars and laughs.
-	for scene: String in ["brass_collector", "fire_djinn"]:
+	# Bosses (D278, D310): each real boss has its own voice — the Brass Collector roars, the djinn roars and laughs, the mercenary (D466) roars and guffaws.
+	for scene: String in ["brass_collector", "fire_djinn", "lab_boss"]:
 		var boss: Node = load("res://SampleProject/Scenes/Characters/Bosses/%s.tscn" % scene).instantiate()
 		boss.process_mode = Node.PROCESS_MODE_DISABLED  # лише голос: ШІ не потрібне
 		game.map.add_child(boss)
