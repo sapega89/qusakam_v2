@@ -64,6 +64,22 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B126 — In the Laboratory cells cutscene the cat walks out with Alisia
+- **Where:** the `LabCells` cutscene (D304; `verify_lab_cells.gd`), cell 3, where Alisia and the white cat creatures sit.
+- **Expected:** only Alisia is led out of cell 3 to the table and back. The cat stays in the cell.
+- **Got:** the cat came out together with Alisia. Most likely it is a child of her node, or it shares the node the cutscene moves.
+- **Evidence:** Sapega's screenshot (the chat, 2026-10-23).
+- **Severity:** visual / story.
+- **Found:** 2026-10-23, Sapega's playtest.
+
+### B127 — Nobody is laid on the operating table
+- **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
+- **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
+- **Got:** she only walks up to the table; nobody is ever on it (Sapega: «на стіл ніхто нікого не поклав»).
+- **Needs art:** Alisia lying on her back (a frame or two, plus getting up). It goes in the ComfyUI art batch (comfy-sprite, from her existing sheet). Then the cutscene places her on the table top.
+- **Severity:** story.
+- **Found:** 2026-10-23, Sapega's playtest.
+
 ### B125 — The boss ends up hanging above Kusakam
 - **Where:** the Mayor Hall boss (the brass golem with the cage, `bestiary.json`), `Scripts/Gameplay/Characters/Bosses/BossLogic.gd` and the boss body; player / enemy collision (D197, now D443).
 - **Expected:** the boss stays on the floor and never stands or hangs on the hero. Whoever lands on the other slides off (D443).
