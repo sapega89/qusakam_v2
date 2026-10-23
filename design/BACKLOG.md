@@ -516,6 +516,9 @@ Slices 1b, 2 and 8 built the previous defaults and pass their tests. A green
 
 ## 🔍 Needs a plan
 
+### Future (not the demo): playable heroes and co-op — [[playable_heroes_plan]] (D498)
+- **Resume:** only after Sapega says the Kusakam game is where he wants it; slice 1 is the hero choice at New Game.
+
 No plan note exists for any of these. Write one before writing code.
 
 ### Deferred by an approved decision — [[figma_decision_register]]
