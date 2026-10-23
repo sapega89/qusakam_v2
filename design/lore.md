@@ -60,7 +60,8 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **Alisia's blue eye is chance, and that is why she was injected** (Sapega, 2026-10-23: «це збіг, через це її і вкололи: той
   алхімік ставить досліди, шукає ліки від прокляття»). The **alchemist** of the Laboratory runs experiments looking for **a
   cure for the sky's curse**. He took Alisia's blue eye for the curse's start.
-- Open (not said): are the blue-eyed mindless an enemy kind?
+- **After the demo, not before** (Sapega, 2026-10-23: «це все потім, спочатку демо»): blue-eyed mindless enemies, places where
+  one must not look up (caves, roofs, awnings), NPCs whose eyes are turning blue.
 
 ## The story spine: the Maiden and the barrier (Sapega, 2026-10-23)
 
