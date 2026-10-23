@@ -307,6 +307,8 @@ func _initialize() -> void:
 	shop.refresh()  # у грі золото під час магазину міняє лише купівля, а за нею refresh()
 	await process_frame
 	var poor: ShopRow = shop.get_rows()[0]
+	poor.release_focus()  # refresh() фокусує перший рядок; спершу — невибраний вигляд
+	await process_frame
 	ck(not poor.affordable and poor._name.theme_type_variation == &"ShopRowDisabled", "row greyed")
 	# D433: ціна сіра так само, як назва, — саме через неї рядок недоступний.
 	var price_c: Color = poor._price.get_theme_color("font_color")
