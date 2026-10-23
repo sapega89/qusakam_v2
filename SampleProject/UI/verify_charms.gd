@@ -24,6 +24,16 @@ func ck(ok: bool, label: String) -> void:
 	if not ok: fails.append(label)
 
 
+## Підказки навчання (модалки) ставлять гру на паузу й забирають ввід — закриваємо їх.
+func _clear_modals(sl: Node) -> void:
+	var layer: Node = sl.get_ui_manager().get_modal_layer()
+	for i in 20:
+		if layer.active_modal == null:
+			return
+		layer._close_with_result("confirm", layer.active_modal)
+		for f in 4: await process_frame
+
+
 ## Справжня подія дії block — Player._unhandled_input ставить combat.block_held.
 func _block(pressed: bool) -> void:
 	var ev := InputEventAction.new()
@@ -56,6 +66,8 @@ func _initialize() -> void:
 	var player: Node = gm.get_current_player()
 	var bus: Node = root.get_node("EventBus")
 	var sdb: Node = root.get_node("SkillDatabase")
+
+	await _clear_modals(sl)
 
 	print("[1] data")
 	ck(Charms.all_ids().size() == 6, "6 charms in charms.json (%d)" % Charms.all_ids().size())
@@ -101,6 +113,7 @@ func _initialize() -> void:
 	Charms.unequip(0)
 	player.current_health = player.Max_Health
 
+	await _clear_modals(sl)
 	print("[3b] Sand Runner's Ring: no block, a longer roll")
 	var combat = player.combat
 	var roll_before: float = player.mover.roll_factor()
@@ -202,6 +215,7 @@ func _initialize() -> void:
 	game.add_child(chest)
 	await process_frame
 	ck(chest.get_node("Interactable").enabled, "a charm-only chest is open to interact")
+	await _clear_modals(sl)
 	chest._on_interacted()
 	ck("grandfathers_ring" in Charms.owned(), "opening it grants the charm")
 	for i in 120: await process_frame
