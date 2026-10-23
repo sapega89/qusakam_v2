@@ -172,7 +172,7 @@ theme_type_variation = &"GameOverOptions"
 [node name="ResumeButton" type="Button" parent="Center/Column/Options"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"NpcMenuItem"
+theme_type_variation = &"GameOverItem"
 text = "Resume from last save point"
 icon = ExtResource("6_chevron")
 alignment = 0
@@ -180,7 +180,7 @@ alignment = 0
 [node name="LoadButton" type="Button" parent="Center/Column/Options"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"NpcMenuItem"
+theme_type_variation = &"GameOverItem"
 text = "Load Game"
 icon = ExtResource("6_chevron")
 alignment = 0
@@ -188,7 +188,7 @@ alignment = 0
 [node name="TitleButton" type="Button" parent="Center/Column/Options"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"NpcMenuItem"
+theme_type_variation = &"GameOverItem"
 text = "Return to title"
 icon = ExtResource("6_chevron")
 alignment = 0

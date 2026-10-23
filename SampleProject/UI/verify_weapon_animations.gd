@@ -149,8 +149,7 @@ func _equip(slots: Array, ids: Array) -> void:
 		em.unequip_item(who, slot)
 	for i in slots.size():
 		em.equip_item(who, slots[i], ids[i], items.get_item(ids[i]))
-	while gm.player_state.weapon_in_hand != slots[0]:
-		em.cycle_weapon(1)
+	em.equip_item(who, slots[0], ids[0], items.get_item(ids[0]))  # перша — в руці (D475: в руці остання вдягнена)
 	await process_frame
 
 func _fight(on: bool) -> void:

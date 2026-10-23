@@ -802,12 +802,6 @@ msgstr "Skill slot 4"
 msgid "Call a companion"
 msgstr "Call a companion"
 
-msgid "Next weapon"
-msgstr "Next weapon"
-
-msgid "Previous weapon"
-msgstr "Previous weapon"
-
 msgid "Game menu"
 msgstr "Game menu"
 
@@ -1434,9 +1428,6 @@ msgid "Unlearn skills and attributes (%d coins)"
 msgstr "Unlearn skills and attributes (%d coins)"
 
 # ── HUD, notifications
-msgid "Unarmed"
-msgstr "Unarmed"
-
 msgid "Level %d"
 msgstr "Level %d"
 
@@ -2478,8 +2469,8 @@ msgstr "Each level raises your HP and damage and gives a skill point. Spend poin
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 
-msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
-msgstr "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
+msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
+msgstr "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
 
 msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
 msgstr "Companions fight at your side — press {assist} to call one. Call the guard now!"
@@ -2528,9 +2519,6 @@ msgstr "Button to open the game menu, then choose Skills."
 
 msgid "Button for the first skill slot."
 msgstr "Button for the first skill slot."
-
-msgid "Button to switch weapons."
-msgstr "Button to switch weapons."
 
 msgid "Button to call the next ready companion."
 msgstr "Button to call the next ready companion."

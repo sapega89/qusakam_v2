@@ -193,6 +193,11 @@ func _setup_label_variations(theme: Theme) -> void:
 		"VitalsValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
 		"QuestCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
 		"QuestTitle": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		# Ті самі ролі в панелі квесту HUD (D474: ігрова поверхня); QuestCaption — ще й у Journal, QuestTitle — у боса.
+		"HudQuestCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"HudQuestTitle": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		# Вікно діалогу (D134): ім'я мовця й текст репліки — як базовий Label, але ігрова поверхня (D474).
+		"DialogueName": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 		"CurrencyGlyph": [_font_regular, UITokens.SIZE_LABEL, UITokens.ACCENT],
 		"CurrencyValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.ACCENT],
 		# Figma menu-world-map (94:609)
@@ -241,6 +246,13 @@ func _setup_button(theme: Theme) -> void:
 	# B27 (#75): DialogueQuest Auto/Skip ставлять цю варіацію; без власних значень вона = базова Button.
 	# Окремий стан "увімкнено" відкладено до D110 (#24).
 	theme.set_type_variation("ButtonActivated", "Button")
+	# Відповіді в ChoiceMenu діалогу (D474): базова Button з більшим текстом.
+	theme.set_type_variation("DialogueChoice", "Button")
+	theme.set_font_size("font_size", "DialogueChoice", UITokens.SIZE_LABEL)
+	# Текст репліки (RichTextLabel) у вікні діалогу (D474).
+	theme.set_type_variation("DialogueText", "RichTextLabel")
+	for size_name in ["normal_font_size", "bold_font_size", "italics_font_size", "bold_italics_font_size", "mono_font_size"]:
+		theme.set_font_size(size_name, "DialogueText", UITokens.SIZE_BODY)
 
 
 func _setup_button_variations(theme: Theme) -> void:
@@ -488,6 +500,9 @@ func _tutorial(theme: Theme) -> void:
 		"TutorialBody": [_font_regular, UITokens.SIZE_TUTORIAL_BODY, UITokens.TEXT_PRIMARY],
 		"TutorialHint": [_font_regular, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
 		"KeyBadgeLabel": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		# Вікно туторіалу й плашка підказки — ігрові поверхні (D474); KeyBadgeLabel лишається в Controls.
+		"TutorialKeyLabel": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		"TutorialBanner": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 	}
 	for name in labels:
 		theme.set_type_variation(name, "Label")
@@ -1033,8 +1048,11 @@ func _shop(theme: Theme) -> void:
 	var npc_box := _box(UITokens.BACKGROUND, UITokens.BORDER, UITokens.BORDER_WIDTH,
 			UITokens.MENU_ITEM_PAD_H, UITokens.MENU_ITEM_PAD_V)
 	var dim := Color(UITokens.TEXT_PRIMARY, UITokens.MENU_INACTIVE_ALPHA)
+	# Game Over — той самий рядок під власними іменами: NPC-меню — ігрова поверхня з більшим текстом (D474).
 	for spec in [["NpcMenuItem", _font_regular, dim, Color(0, 0, 0, 0)],
-			["NpcMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
+			["NpcMenuItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY],
+			["GameOverItem", _font_regular, dim, Color(0, 0, 0, 0)],
+			["GameOverItemOn", _font_semibold, UITokens.TEXT_PRIMARY, UITokens.TEXT_PRIMARY]]:
 		var n: String = spec[0]
 		theme.set_type_variation(n, "Button")
 		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
@@ -1173,8 +1191,10 @@ func _setup_tooltip(theme: Theme) -> void:
 
 
 ## D166: один прохід по всіх розмірах шрифтів теми — жоден тип не пропущено, хоч би як його задали вище.
+## Типи ігрових поверхонь (UITokens.INGAME_FONT_TYPES) — ×1.5 з порогами (D474).
 func _scale_fonts(theme: Theme) -> void:
 	theme.default_font_size = UITokens.font_px(theme.default_font_size)
 	for type_name in theme.get_font_size_type_list():
+		var in_game := type_name in UITokens.INGAME_FONT_TYPES
 		for size_name in theme.get_font_size_list(type_name):
-			theme.set_font_size(size_name, type_name, UITokens.font_px(theme.get_font_size(size_name, type_name)))
+			theme.set_font_size(size_name, type_name, UITokens.font_px(theme.get_font_size(size_name, type_name), in_game))

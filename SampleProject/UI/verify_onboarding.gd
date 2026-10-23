@@ -363,8 +363,7 @@ func _check_controls(sl: Node) -> void:
 		if not String(action).begins_with("ui_") and not action in NOT_GAMEPLAY and not action in listed:
 			unlisted.append(action)
 	ck(unlisted.is_empty(), "every gameplay action in the InputMap is listed (missing %s)" % [unlisted])
-	var weapon_prev: Array[String] = page.row_texts(listed.find(&"weapon_prev"))
-	ck(weapon_prev[1] == "Z" and weapon_prev[2] == "D-pad left", "previous weapon: Z / D-pad left (D-28i) (%s)" % [weapon_prev])
+	ck(not &"weapon_next" in listed and not &"weapon_prev" in listed, "D475: no weapon-switch rows")
 	var block_row: Array[String] = page.row_texts(8)
 	ck(block_row[1].contains("Ctrl") and block_row[2] == "LB", "block: Ctrl / LB (%s)" % [block_row])
 	ck(root.gui_get_focus_owner() == page.get_node(^"%ActionList").get_child(0), "focus on the first row (pad / arrows scroll)")

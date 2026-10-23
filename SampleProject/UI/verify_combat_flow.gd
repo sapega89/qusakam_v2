@@ -147,7 +147,7 @@ func _initialize() -> void:
 	sl.get_equipment_manager().unequip_item(hero, "sword")
 	await process_frame
 
-	print("[1d] Weapon in hand: reach, switch key, knockback, bare hands (D202, D203)")
+	print("[1d] Weapon in hand: reach, equip draws, knockback, bare hands (D202, D203, D475)")
 	var em: Node = sl.get_equipment_manager()
 	var items: Node = sl.get_item_database()
 	em.equip_item(hero, "polearm", "iron_halberd", items.get_item("iron_halberd"))
@@ -167,13 +167,11 @@ func _initialize() -> void:
 	await create_timer(0.5).timeout
 	ck(hits.size() == 1, "the halberd reaches an enemy 70 px away (events %s)" % [hits])
 	target.set_physics_process(true)
-	em.equip_item(hero, "mace", "iron_mace", items.get_item("iron_mace"))
-	var next_ev := InputEventAction.new()
-	next_ev.action = &"weapon_next"
-	next_ev.pressed = true
 	await create_timer(0.9).timeout  # кулдаун алебарди
-	game.player._unhandled_input(next_ev)
-	ck(gm.player_state.weapon_in_hand == "mace", "the switch key takes the mace (%s)" % gm.player_state.weapon_in_hand)
+	em.equip_item(hero, "mace", "iron_mace", items.get_item("iron_mace"))
+	await process_frame
+	ck(gm.player_state.weapon_in_hand == "mace", "equipping the mace draws it (D475) (%s)" % gm.player_state.weapon_in_hand)
+	ck(not InputMap.has_action(&"weapon_next") and not InputMap.has_action(&"weapon_prev"), "D475: no weapon-switch action")
 	game.player.global_position = target.global_position + Vector2(-26, 0)
 	await create_timer(0.1).timeout
 	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає

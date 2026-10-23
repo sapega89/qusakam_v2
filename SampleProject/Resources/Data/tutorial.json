@@ -151,9 +151,9 @@
 			"id": "oldman_gift",
 			"hint_topic": true,
 			"title": "Equipping Gear",
-			"text": "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons.",
-			"key": "{weapon_next}",
-			"hint": "Button to switch weapons."
+			"text": "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment.",
+			"key": "{game_menu}",
+			"hint": "Button to open the game menu."
 		},
 		{
 			"id": "call_guard",

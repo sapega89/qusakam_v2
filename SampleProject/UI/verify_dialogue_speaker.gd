@@ -4,6 +4,8 @@ extends SceneTree
 ## оповідача (без мовця) немає зовсім (D437). Репліки гортаються справжнім вводом: Enter, пад A, ЛКМ.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_dialogue_speaker.gd
 
+const TextFit = preload("res://SampleProject/UI/text_fit.gd")
+
 var fails: Array[String] = []
 
 func ck(ok: bool, label: String) -> void:
@@ -69,6 +71,12 @@ func _check_line(box: Control, speaker: String, with_portrait: bool) -> void:
 	if with_portrait:
 		ck(box.get_global_rect().encloses(frame.get_global_rect()),
 			"%s: the box holds the portrait (B122: box %s, portrait %s)" % [speaker, box.get_global_rect(), frame.get_global_rect()])
+	# D474: текст у грі ×1.5 (тіло ≥ 24 px), вікно росте під нього — нічого не обрізано.
+	var text_px: int = box.get_node("%DialogueText").get_theme_font_size(&"normal_font_size")
+	ck(text_px >= UITokens.INGAME_BODY_MIN and name_label.get_theme_font_size(&"font_size") >= UITokens.INGAME_BODY_MIN,
+			"%s: D474 dialogue text %d px, name %d px" % [speaker, text_px, name_label.get_theme_font_size(&"font_size")])
+	var clip: String = TextFit.clipped(box)
+	ck(clip == "", "%s: D474 nothing clipped in the box (%s)" % [speaker, clip])
 
 
 func _initialize() -> void:

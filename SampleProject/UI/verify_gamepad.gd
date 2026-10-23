@@ -72,7 +72,7 @@ func _initialize() -> void:
 	ck(_pad_buttons(&"game_menu") == [JOY_BUTTON_START], "Start opens the Game Menu")
 	ck(JOY_BUTTON_START not in _pad_buttons(&"ui_cancel") and JOY_BUTTON_B not in _pad_buttons(&"game_menu"), "B is not the menu button")
 	ck(JOY_BUTTON_A in _pad_buttons(&"dq_accept"), "A turns dialogue lines (dq_accept) — without it a pad player is stuck in every dialogue")
-	for action in [&"dodge", &"weapon_next", &"weapon_prev", &"assist"]:
+	for action in [&"dodge", &"assist"]:  # D475: перемикання зброї немає, D-pad ←→ вільні
 		ck(not _pad_buttons(action).is_empty() or _has_axis(action, JOY_AXIS_TRIGGER_LEFT, 1), "%s has a pad input" % action)
 
 	print("[2] Real pad events drive the hero")

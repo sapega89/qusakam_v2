@@ -25,7 +25,7 @@ func _ready() -> void:
 	_panel.add_theme_stylebox_override(&"panel", box)
 	# Світ не під GameUITheme (він лише на UI-шарах), тож шрифт і колір — прямо з токенів.
 	_label.add_theme_font_override(&"font", load(UITokens.FONT_PATH))
-	_label.add_theme_font_size_override(&"font_size", UITokens.font_px(UITokens.SIZE_BODY))
+	_label.add_theme_font_size_override(&"font_size", UITokens.font_px(UITokens.SIZE_BODY, true))  # D474: ігровий текст ×1.5
 	_label.add_theme_color_override(&"font_color", UITokens.BUBBLE_INK)
 	# Набір (type_out) лише ховає літери вже розкладеного тексту — облачко не росте посеред репліки.
 	_label.visible_characters_behavior = TextServer.VC_CHARS_AFTER_SHAPING

@@ -89,9 +89,28 @@ const FONT_SCALE := 1.25
 const FONT_SCALE_MAX := 28
 
 
-## Розмір, який реально потрапляє в тему, для Figma-розміру.
-static func font_px(figma_size: int) -> int:
-	return figma_size if figma_size > FONT_SCALE_MAX else roundi(figma_size * FONT_SCALE)
+# D474 (Sapega, 2026-10-23): на чотирьох ігрових поверхнях — вікно діалогу й облачка, меню дій NPC,
+# панелі HUD (герой, хотбар, квест) і підказка та вікно туторіалу — текст ×1.5, а не ×1.25.
+# Пороги при 1080p: тіло ≥ 24 px, підписи й клавіші ≥ 20 px. Заголовки (> FONT_SCALE_MAX) — як були.
+const INGAME_FONT_SCALE := 1.5
+const INGAME_BODY_MIN := 24
+const INGAME_LABEL_MIN := 20
+## Типи теми цих поверхонь; build_game_ui_theme.gd масштабує їх через font_px(…, true).
+const INGAME_FONT_TYPES: Array[StringName] = [
+	&"DialogueName", &"DialogueText", &"DialogueChoice",
+	&"NpcMenuItem", &"NpcMenuItemOn",
+	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel", &"HudQuestCaption", &"HudQuestTitle",
+	&"TutorialBody", &"TutorialHint", &"TutorialKeyLabel", &"TutorialBanner",
+]
+
+
+## Розмір, який реально потрапляє в тему, для Figma-розміру; [param in_game] — ігрові поверхні (D474).
+static func font_px(figma_size: int, in_game: bool = false) -> int:
+	if figma_size > FONT_SCALE_MAX:
+		return figma_size
+	if in_game:
+		return maxi(roundi(figma_size * INGAME_FONT_SCALE), INGAME_LABEL_MIN)
+	return roundi(figma_size * FONT_SCALE)
 
 
 # Figma type scale: 12 · 14 · 16 · 20 · 24 · 36

@@ -552,24 +552,19 @@ func _weapons(sl: Node) -> void:
 	sl.get_skill_manager().unlock_skill("shield_block")
 	await process_frame
 	var with_shield: int = hero.mitigated_damage(100)
-	em.cycle_weapon(1)  # щось одноручне? немає — лишається алебарда
-	ck(hero.mitigated_damage(100) == with_shield, "same weapon, same mitigation")
 	em.unequip_item(who, "polearm")
 	equip.call("sword", "iron_sword")
 	await process_frame
 	ck(hero.combat.grip == &"one_handed", "sword + shield is one-handed (%s)" % hero.combat.grip)
 	var one_handed_mitigation: int = hero.mitigated_damage(100)
-	equip.call("polearm", "iron_halberd")
-	while gm.player_state.weapon_in_hand != "polearm":
-		em.cycle_weapon(1)
+	equip.call("polearm", "iron_halberd")  # вдягнена зброя — в руці (D475)
 	await process_frame
 	ck(hero.mitigated_damage(100) > one_handed_mitigation or sl.get_skill_manager().passive_value("shield_block") == 0.0,
 			"no Shield Block with a two-handed weapon (%d vs %d)" % [hero.mitigated_damage(100), one_handed_mitigation])
 	em.unequip_item(who, "shield")
 	em.unequip_item(who, "polearm")
 	equip.call("dagger", "iron_dagger")
-	while gm.player_state.weapon_in_hand != "sword":
-		em.cycle_weapon(1)
+	equip.call("sword", "iron_sword")  # меч знову в руці, кинджал — у другій (D475: зброю міняє лише екіпірування)
 	await process_frame
 	ck(hero.combat.grip == &"dual" and em.get_off_hand_item().id == "iron_dagger" and wv.off_pivot.visible,
 			"sword in hand + dagger = dual-wield, the dagger shown in the off hand (%s)" % hero.combat.grip)
@@ -614,8 +609,6 @@ func _weapons(sl: Node) -> void:
 	var box: RectangleShape2D = hero.get_node("Hitbox/CollisionShape2D").shape
 	for case in [["sword", "iron_sword"], ["mace", "iron_mace"], ["polearm", "iron_halberd"], ["dagger", "iron_dagger"]]:
 		equip.call(case[0], case[1])
-		while gm.player_state.weapon_in_hand != case[0]:
-			em.cycle_weapon(1)
 		await process_frame
 		ck(absf(box.size.x - wv.drawn_reach()) <= 2.0, "%s: hitbox %.0f px, drawn %.0f px" % [case[1], box.size.x, wv.drawn_reach()])
 	em.unequip_item(who, "dagger")
@@ -632,8 +625,6 @@ func _weapons(sl: Node) -> void:
 	for case in [["sword", "iron_sword", &"sword/Attack1"], ["mace", "iron_mace", &"mace/Attack1"], ["polearm", "iron_halberd", &"polearm/Attack1"]]:
 		em.unequip_item(who, "sword")
 		equip.call(case[0], case[1])
-		while gm.player_state.weapon_in_hand != case[0]:
-			em.cycle_weapon(1)
 		await create_timer(1.2).timeout
 		played.clear()
 		await _tap(&"attack")
@@ -656,8 +647,6 @@ func _weapons(sl: Node) -> void:
 
 	print("[12c] BACKLOG 42: one-handed sword in combat — Kusakam's sword frames, the hitbox still matches the swings")
 	equip.call("sword", "iron_sword")
-	while gm.player_state.weapon_in_hand != "sword":
-		em.cycle_weapon(1)
 	enemies[0].enemy_logic.current_state = 1  # CHASE — бій
 	await create_timer(0.4).timeout
 	ck(anim.current_animation == &"sword/Idle" and not wv.pivot.visible and hero.get_node("Sprite2D").offset == Vector2(0, -16),
@@ -697,5 +686,3 @@ func _weapons(sl: Node) -> void:
 	await create_timer(hero.combat.COMBAT_LINGER + 0.4).timeout
 	ck(not String(anim.current_animation).begins_with("sword/") and hero.get_node("Sprite2D").offset == Vector2.ZERO and not wv.pivot.visible,
 			"out of combat: base frames, offset back, the sword hidden (%s)" % anim.current_animation)
-	em.cycle_weapon(1)
-	await create_timer(0.3).timeout

@@ -5,6 +5,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_npc_recall.gd
 
 const STORY_NPC := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/grandfather.tscn"
+const TextFit = preload("res://SampleProject/UI/text_fit.gd")
 
 var fails: Array[String] = []
 
@@ -75,7 +76,12 @@ func _initialize() -> void:
 	dm.dialogue_finished.connect(func(_id): finished[0] += 1)
 	var flags_before: Dictionary = game.quest_flags.duplicate() if "quest_flags" in game else {}
 	npc.interactable.interacted.emit()
-	await process_frame
+	for i in 3: await process_frame
+	# D474: пункти меню NPC ×1.5 (≥ 24 px), меню росте під них.
+	var item: Button = npc.npc_menu.get_child(0)
+	ck(item.get_theme_font_size(&"font_size") >= UITokens.INGAME_BODY_MIN, "D474: NPC menu item %d px" % item.get_theme_font_size(&"font_size"))
+	var clip: String = TextFit.clipped(npc.npc_menu)
+	ck(clip == "", "D474: nothing clipped in the NPC menu (%s)" % clip)
 	npc.npc_menu.chosen.emit(&"task")  # Quest з одним рядком (лише основний квест) — одразу його розмова (D161)
 	await process_frame
 	var box: Node = dm.current_dialogue_box

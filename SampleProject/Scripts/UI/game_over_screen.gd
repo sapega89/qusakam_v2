@@ -70,8 +70,8 @@ func _ready() -> void:
 	footer.offset_bottom = -UITokens.GAME_OVER_FOOTER_BOTTOM
 	for b in [_resume, _load, _title]:
 		b.custom_minimum_size.x = UITokens.MENU_ITEM_WIDTH
-		b.focus_entered.connect(func(): b.theme_type_variation = &"NpcMenuItemOn")
-		b.focus_exited.connect(func(): b.theme_type_variation = &"NpcMenuItem")
+		b.focus_entered.connect(func(): b.theme_type_variation = &"GameOverItemOn")
+		b.focus_exited.connect(func(): b.theme_type_variation = &"GameOverItem")
 		b.mouse_entered.connect(b.grab_focus)
 	_resume.pressed.connect(resume)
 	_load.pressed.connect(load_game)
