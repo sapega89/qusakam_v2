@@ -149,9 +149,7 @@ DAGGER_ON = (
     + SWORD_COLOURS
 )
 # кинджал у високих позах модель видовжувала до меча — довжину названо
-DAGGER_SHORT = (
-    "; the dagger exactly as small as in the picture, its blade shorter than his forearm, a short knife, not a sword"
-)
+DAGGER_SHORT = "; the dagger exactly as small as in the picture, its blade shorter than his forearm, a short knife, not a sword"
 # FROM: з кадру, де кинджал уже короткий, — інакше в нових позах він росте до меча
 DAGGER_KEEP = (
     "; the same short dagger as in the picture, exactly the same size and colours, its blade shorter than his "
@@ -207,7 +205,10 @@ HALBERD_ON = (
 # стрибок: «вперед і вгору» алебарда лягала головою назад, через плече — сторони названо
 HALBERD_AIR = (
     HALBERD_ON
-    % ("%s", "up on the right in front of his face, the bottom end of the pole down on the left behind his feet")
+    % (
+        "%s",
+        "up on the right in front of his face, the bottom end of the pole down on the left behind his feet",
+    )
     + "; the steel head small, his bare round lizard head exactly as in the picture, no helmet, the same cape as in "
     "the picture"
 )
@@ -239,11 +240,11 @@ HALBERD_LOW = (
     "same size, facing right"
 )
 # BACKLOG 40, A4: лук, як у Skul — лук у дальній руці перед ним, ближня натягує тятиву; біг — ON: з кадрів художника
-BOW = (
-    "a short curved wooden recurve bow, brown wood with a thin light string, as tall as his body from knee to head"
-)
+BOW = "a short curved wooden recurve bow, brown wood with a thin light string, as tall as his body from knee to head"
 BOW_WHO = (
-    "the same small lizard knight with the steel armour, dark red cape and tail, with " + BOW + ", exactly as small as "
+    "the same small lizard knight with the steel armour, dark red cape and tail, with "
+    + BOW
+    + ", exactly as small as "
     "in the picture, the top of his head below the middle of the picture"
 )
 BOW_DRAW = (
@@ -266,8 +267,11 @@ ARCHER_SWAP = (
 )
 ARCHER_SCARF = ", the red scarf still covering his nose and mouth"
 ARCHER_ON = (
-    "ON:" + BANDIT + ":keeping exactly the same pose, legs, cloak, size and position as in the picture, only "
-    + ARCHER_SWAP + ARCHER_SCARF
+    "ON:"
+    + BANDIT
+    + ":keeping exactly the same pose, legs, cloak, size and position as in the picture, only "
+    + ARCHER_SWAP
+    + ARCHER_SCARF
 )
 # BACKLOG 42, A3 (D267): парна зброя — меч у ближній руці, кинджал у дальній; кадри меча (ON:/FROM:), кинджал додано
 DUAL_DAGGER = (
@@ -275,7 +279,9 @@ DUAL_DAGGER = (
     "the same light grey and white steel as the sword"
 )
 DUAL_WHO = (
-    "the same small lizard knight with the steel armour, dark red cape and tail, holding " + SWORD + " in his near hand "
+    "the same small lizard knight with the steel armour, dark red cape and tail, holding "
+    + SWORD
+    + " in his near hand "
     "and " + DUAL_DAGGER + " in his far hand, exactly as small as in the picture"
 )
 DUAL_ON = (
@@ -283,8 +289,7 @@ DUAL_ON = (
     "and the same sword in his near hand as in the picture, only now his other hand, the far one, also holds "
     + DUAL_DAGGER
     + ", %s; exactly one sword and one dagger; the dagger tiny, its blade only as long as his hand, half the "
-    "length of the sword blade, a small knife, not a second sword"
-    + SWORD_COLOURS
+    "length of the sword blade, a small knife, not a second sword" + SWORD_COLOURS
 )
 # спроба 1 (Air) малювала кинджал завдовжки з меч — довжину названо рукою
 # низько тримана рука малювала кинджал завдовжки з меч і після «half the length» (Air, спроби 1–2) — зворотний хват
@@ -295,7 +300,9 @@ DUAL_KEEP = (
     "blade shorter than his forearm, exactly one sword and one dagger, the hero the same size, facing right"
 )
 # модель додавала третій клинок або губила кинджал — обидва названо
-DUAL_TWO = DUAL_KEEP + ", both weapons visible, exactly two blades in total and no third blade"
+DUAL_TWO = (
+    DUAL_KEEP + ", both weapons visible, exactly two blades in total and no third blade"
+)
 DUAL_COIL = (
     "FROM:CombatIdle:0:in the same side view facing right: chambering a dagger stab, the full-length sword lowered in "
     "his near hand and held low at his hip pointing forward and down, its brown grip and cross-guard visible in his "
@@ -352,6 +359,21 @@ SIDE_VIEW = (
     "ahead to the right, not at the viewer"
 )
 MAGENTA_BG = " Keep the plain flat magenta background."
+
+# Напрями кандидатів «спробуй ще» (Sapega 2026-10-23): рядок замінює «§» у base
+WIRY = 'a lanky wiry build with long thin arms and legs, hunched forward; '
+STOCKY = 'a short stocky build with broad shoulders and a round belly; '
+CRIMSON = 'a long deep crimson velvet robe richly embroidered with gold over black clothes, a gold-embroidered sash, '
+BLACK = 'a long black velvet robe richly embroidered with gold over a dark green silk shirt, a gold-embroidered sash, '
+BIGHEAD = ' with the same chibi proportions as the reference character: a huge round head as big as his head, about half of the whole height, on a short round body with short legs'
+TALLER = ', a little taller than the reference character, with a big round head and a round belly'
+CHIBI = 'with the same chibi proportions as the reference character: a big round head about half of her whole height, big eyes, a short small body with short legs; '
+SLIM = 'slightly taller than the reference character, with a big head and a slim body; '
+BOW_BACK = 'a big red ribbon bow tied at the base of her ponytail, '
+BOW_TOP = 'a big red ribbon bow on top of her head, '
+BOW_SMALL = 'a small red ribbon bow at the base of her ponytail, '
+RIBBON = 'a red ribbon wound round her ponytail with its long ends trailing behind, '
+
 
 CHARACTERS = {
     "bandit": dict(
@@ -1226,12 +1248,21 @@ CHARACTERS = {
         rows=[
             ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
             # Run/2 художника пропущено, як у меча (7 кадрів)
-            ("Run", [DAGGER_ON % ("Run/%d" % n, "forward and up") for n in (1, 3, 4, 5, 6, 7, 8)]),
+            (
+                "Run",
+                [
+                    DAGGER_ON % ("Run/%d" % n, "forward and up")
+                    for n in (1, 3, 4, 5, 6, 7, 8)
+                ],
+            ),
             (
                 "Air",
                 [DAGGER_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")]
                 # Fall/2 «вперед і вгору» — кривий клинок і зім'ятий плащ
-                + [DAGGER_ON % ("Fall/2", "straight forward, a straight blade") + ", his head in profile facing right"],
+                + [
+                    DAGGER_ON % ("Fall/2", "straight forward, a straight blade")
+                    + ", his head in profile facing right"
+                ],
             ),
             (
                 "Attack1",
@@ -1260,16 +1291,14 @@ CHARACTERS = {
                 [
                     "FROM:Attack1:0:coiled for a lunging stab, leaning back with his weight on the bent back leg, the "
                     "dagger pulled further back behind his hip, the blade pointing forward, his other hand stretched "
-                    "forward, the cape hanging behind him"
-                    + DAGGER_KEEP,
+                    "forward, the cape hanging behind him" + DAGGER_KEEP,
                     "in the same side view facing right: a deep lunging stab, lunging far on his bent front leg, the "
                     "back leg straight, his dagger arm fully extended straight forward at chest height, the short blade "
                     "pointing straight ahead, the cape flying behind him",
                     "FROM:Attack3:1:recovering after the lunge, knees bent, the same short dagger pulled back close "
                     "in front of his hip, the short blade pointing forward and a little down, its tip at the height of "
                     "his knees, far above his feet, the blade the same length as in the picture, the cape flying "
-                    "behind him"
-                    + DAGGER_KEEP,
+                    "behind him" + DAGGER_KEEP,
                 ],
             ),
             # Heavy пропущено: за три спроби (з першого кадру, FROM:Attack1:0, FROM:Attack2:2) модель малювала
@@ -1279,8 +1308,7 @@ CHARACTERS = {
                 [
                     "in the same side view facing right: guarding, crouched and braced on bent knees, the dagger held "
                     "crosswise in front of his face, the short blade pointing forward and up, his other forearm raised "
-                    "beside it, the cape hanging behind him"
-                    + DAGGER_SHORT,
+                    "beside it, the cape hanging behind him" + DAGGER_SHORT,
                 ],
             ),
             (
@@ -1288,8 +1316,7 @@ CHARACTERS = {
                 [
                     "in the same side view facing right: recoiling from a hard hit to the chest, his body bent "
                     "backwards, head thrown back, eyes squeezed shut, his dagger arm flung back behind him still "
-                    "holding the dagger, staggering back on one foot"
-                    + DAGGER_SHORT,
+                    "holding the dagger, staggering back on one foot" + DAGGER_SHORT,
                 ],
             ),
         ],
@@ -1315,9 +1342,19 @@ CHARACTERS = {
         rows=[
             ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
             # Run/2 художника пропущено, як у меча (7 кадрів)
-            ("Run", [MACE_ON % ("Run/%d" % n, "forward and up") for n in (1, 3, 4, 5, 6, 7, 8)]),
+            (
+                "Run",
+                [
+                    MACE_ON % ("Run/%d" % n, "forward and up")
+                    for n in (1, 3, 4, 5, 6, 7, 8)
+                ],
+            ),
             # Air/2 і Air/3 — гладка куля й плащ художника (арт-директор: Air/2 мав червону пляму замість плаща)
-            ("Air", [MACE_ON % ("Jump/2", "forward and up")] + [MACE_BALL_ON % (f, "forward and up") for f in ("Jump/3", "Fall/2")]),
+            (
+                "Air",
+                [MACE_ON % ("Jump/2", "forward and up")]
+                + [MACE_BALL_ON % (f, "forward and up") for f in ("Jump/3", "Fall/2")],
+            ),
             (
                 "Attack1",
                 [
@@ -1341,7 +1378,8 @@ CHARACTERS = {
                     "drawn back low behind his hip, the round head pointing back and down, the cape hanging behind "
                     "him" + MACE_KEEP,
                     "in the same side view facing right: a rising swing, stepping forward, the mace swung forward and "
-                    "up at chest height, the round head forward and up, the cape flying behind him" + MACE_KEEP,
+                    "up at chest height, the round head forward and up, the cape flying behind him"
+                    + MACE_KEEP,
                     "in the same side view facing right: the end of a rising swing, standing tall, his mace arm "
                     "stretched high above his head, the round head pointing straight up, the cape flying behind him"
                     + MACE_KEEP,
@@ -1369,7 +1407,8 @@ CHARACTERS = {
                     "FROM:Attack1:0:the same side view facing right, his face and snout still pointing right: a "
                     "two-handed overhead wind-up, leaning back, both hands gripping the mace handle above and behind "
                     "his head, both elbows raised high, the round head hanging far behind his back, the steel armour "
-                    "plates on his chest drawn as in the picture, knees bent, the cape hanging behind him" + MACE_KEEP,
+                    "plates on his chest drawn as in the picture, knees bent, the cape hanging behind him"
+                    + MACE_KEEP,
                     "in the same side view facing right: swinging a heavy blow down, both hands gripping the mace "
                     "handle in front of his face, the round head forward and up, stepping forward, the cape flying "
                     "behind him" + MACE_KEEP,
@@ -1427,12 +1466,20 @@ CHARACTERS = {
                 "Run",
                 [
                     HALBERD_ON % ("Run/%d" % n, "forward and up")
-                    + ("; exactly one halberd held in one hand, no spear, his other hand empty" if n == 5 else "")
+                    + (
+                        "; exactly one halberd held in one hand, no spear, his other hand empty"
+                        if n == 5
+                        else ""
+                    )
                     for n in (1, 3, 4, 5, 6, 7, 8)
                 ],
             ),
             # Air/1-2: алебарда лягає через плече головою назад (у стилі); з HALBERD_AIR модель двічі надягала шолом
-            ("Air", [HALBERD_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")] + [HALBERD_AIR % "Fall/2"]),
+            (
+                "Air",
+                [HALBERD_ON % (f, "forward and up") for f in ("Jump/2", "Jump/3")]
+                + [HALBERD_AIR % "Fall/2"],
+            ),
             (
                 "Attack1",
                 [
@@ -1445,7 +1492,8 @@ CHARACTERS = {
                     "FROM:CombatIdle:0:in the same side view facing right: thrusting the halberd straight forward at "
                     "chest height, the pole level and almost horizontal, both arms pushed forward, the rear hand at "
                     "his hip and the front hand at his chest, the spear tip far out on the right near the edge of the "
-                    "picture, lunging forward on his front leg, the cape flying behind him" + HALBERD_THRUST,
+                    "picture, lunging forward on his front leg, the cape flying behind him"
+                    + HALBERD_THRUST,
                     "FROM:CombatIdle:0:in the same side view facing right: pulling the halberd back after the thrust, "
                     "standing on bent knees, both hands on the pole in front of his belly, the pole level and almost "
                     "horizontal at chest height, the spear tip pointing right in front of him, the cape hanging behind "
@@ -1462,7 +1510,8 @@ CHARACTERS = {
                     "right" + HALBERD_LOW,
                     "FROM:CombatIdle:0:in the same side view facing right: a low sweep, crouched low and stepping forward, both "
                     "hands on the pole at his hip, the halberd swinging forward just above the ground, its steel head "
-                    "low on the right beside his front foot, the cape flying behind him" + HALBERD_LOW,
+                    "low on the right beside his front foot, the cape flying behind him"
+                    + HALBERD_LOW,
                     "FROM:CombatIdle:0:in the same side view facing right: the follow-through of a low sweep, leaning forward on "
                     "his bent front leg, both hands on the pole, the halberd swung past his front foot, its steel head "
                     "on the right far in front of him at the height of his knees, the cape flying behind him"
@@ -1475,7 +1524,8 @@ CHARACTERS = {
                     # арт-директор: голова мінялась на подвійну, древко проходило крізь щелепу — нижче підборіддя
                     "FROM:CombatIdle:0:in the same side view facing right: coiled for a big lunging thrust, crouched low on "
                     "bent knees, leaning back, both hands pulled back to his hip, the halberd held level at the height "
-                    "of his belly, the spear tip pointing right, the pole below his chin" + HALBERD_THRUST,
+                    "of his belly, the spear tip pointing right, the pole below his chin"
+                    + HALBERD_THRUST,
                     # з першого кадру древко піднімалось до щелепи — з Attack3/1, де воно вже на висоті живота; «довгий крок» —
                     # інакше випад виходив копією Attack3/1
                     "FROM:Attack3:0:a deep lunging thrust: his whole body moved far forward to the right in a long "
@@ -1485,7 +1535,8 @@ CHARACTERS = {
                     "chin, the cape flying behind him" + HALBERD_THRUST,
                     "FROM:Attack3:0:recovering after the lunge, standing up on bent knees, both hands on the pole at "
                     "his waist, the halberd tilted forward and down, its steel head low on the right just above the "
-                    "ground in front of his front foot, the cape hanging behind him" + HALBERD_LOW,
+                    "ground in front of his front foot, the cape hanging behind him"
+                    + HALBERD_LOW,
                 ],
             ),
             (
@@ -1500,10 +1551,12 @@ CHARACTERS = {
                     "FROM:CombatIdle:0:in the same side view facing right: chopping a heavy blow down, leaning forward and "
                     "stepping forward, both hands gripping the pole in front of his chest, the halberd held out in "
                     "front of him nearly horizontal, sloping a little down at the front, its steel head far out on the "
-                    "right at the height of his head, the cape flying behind him" + HALBERD_ONE,
+                    "right at the height of his head, the cape flying behind him"
+                    + HALBERD_ONE,
                     "FROM:CombatIdle:0:in the same side view facing right: the end of a heavy downward chop, crouched low and "
                     "leaning forward, both hands on the pole, the halberd pointing forward and down, its steel head "
-                    "resting on the ground in front of his front foot, the cape flying up behind him" + HALBERD_LOW,
+                    "resting on the ground in front of his front foot, the cape flying up behind him"
+                    + HALBERD_LOW,
                 ],
             ),
             (
@@ -1548,11 +1601,17 @@ CHARACTERS = {
             ("CombatIdle", [None, "BOB:76", "BOB:76", None]),
             ("Run", [DUAL_ON % ("Run/%d" % n, DUAL_REVERSE) for n in range(1, 8)]),
             ("Air", [DUAL_ON % ("Air/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
-            ("Attack1", [DUAL_ON % ("Attack1/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
+            (
+                "Attack1",
+                [DUAL_ON % ("Attack1/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)],
+            ),
             # арт-директор (друга хвиля): у стусах меч усихав до довжини кинджала, колола ближня (мечова) рука, а
             # нижній клинок висів без руків'я — тепер меч повний біля стегна з видимим кулаком, колє дальня рука
             ("Attack2", [DUAL_COIL, DUAL_STAB, DUAL_COIL]),
-            ("Attack3", [DUAL_ON % ("Attack2/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)]),
+            (
+                "Attack3",
+                [DUAL_ON % ("Attack2/%d" % n, DUAL_REVERSE) for n in (1, 2, 3)],
+            ),
             (
                 "Attack4",
                 [
@@ -1564,7 +1623,8 @@ CHARACTERS = {
                     "low and leaning far forward, his head lower than standing, the far arm fully extended forward at "
                     "full reach thrusting the short dagger straight ahead, the dagger tiny, its blade only as long as "
                     "his hand, a small knife half the length of the sword, not a second sword, the full-length sword "
-                    "trailing low behind his back leg in his near hand, the cape flying behind him" + DUAL_TWO,
+                    "trailing low behind his back leg in his near hand, the cape flying behind him"
+                    + DUAL_TWO,
                     # спроба 1 (відхід із випаду) — каша в ногах і поясі — відхід = той самий замах
                     DUAL_COIL,
                 ],
@@ -1574,7 +1634,11 @@ CHARACTERS = {
                 [
                     # перша хвиля зливала клинки в одну палицю, тіло витягнуте; FROM:CombatIdle — меч задовгий і
                     # кинджал завдовжки пів меча — замах меча (sword/Heavy/1) + кинджал низько, під іншим кутом
-                    DUAL_ON % ("Heavy/1", "held low in front of his belly, the tiny blade pointing forward"),
+                    DUAL_ON
+                    % (
+                        "Heavy/1",
+                        "held low in front of his belly, the tiny blade pointing forward",
+                    ),
                     # удар — кадр першої хвилі (арт-директор його прийняв)
                     "FILE:SampleProject/Sprites/Player/Weapons/dual/Heavy/2.png",
                     # з Heavy/2: темно-бордовий плащ замість яскраво-червоного; кинджал за тілом, не два паралельні
@@ -1582,7 +1646,8 @@ CHARACTERS = {
                     "armour and the same dark maroon cape colours as in the picture, now finishing the heavy blow with "
                     "a low forward sweep: crouched low and leaning forward, the full-length sword in his near hand "
                     "swept down low in front of him, the sword tip near the ground, the dagger hidden behind his body, "
-                    "only the sword visible, the cape flying behind him" + SWORD_COLOURS,
+                    "only the sword visible, the cape flying behind him"
+                    + SWORD_COLOURS,
                 ],
             ),
             (
@@ -1614,7 +1679,8 @@ CHARACTERS = {
         who=BOW_WHO,
         base=KEEP.format(
             who="the same small lizard knight with the steel armour, dark red cape and tail",
-            pose=BOW_DRAW + "his near hand holding the arrow at the string in front of his chest, the string not yet "
+            pose=BOW_DRAW
+            + "his near hand holding the arrow at the string in front of his chest, the string not yet "
             "pulled, the cape hanging behind him. " + SWORD_SIZE,
         ),
         rows=[
@@ -1622,20 +1688,27 @@ CHARACTERS = {
                 "Draw",
                 [
                     None,
-                    "FROM:Draw:0:" + BOW_DRAW + "his near hand pulling the string halfway back to his chest, the "
+                    "FROM:Draw:0:"
+                    + BOW_DRAW
+                    + "his near hand pulling the string halfway back to his chest, the "
                     "bow bending, the cape hanging behind him. " + SWORD_SIZE,
-                    "FROM:Draw:0:" + BOW_DRAW + "his near hand pulling the string fully back to his cheek, the bow "
-                    "bent deeply, his elbow raised behind his head, the cape hanging behind him. " + SWORD_SIZE,
+                    "FROM:Draw:0:"
+                    + BOW_DRAW
+                    + "his near hand pulling the string fully back to his cheek, the bow "
+                    "bent deeply, his elbow raised behind his head, the cape hanging behind him. "
+                    + SWORD_SIZE,
                 ],
             ),
             (
                 "Shoot",
                 [
-                    "FROM:Draw:2:" + "in the same side view facing right, the same size: the moment after loosing "
+                    "FROM:Draw:2:"
+                    + "in the same side view facing right, the same size: the moment after loosing "
                     "the arrow, the arrow gone from the bow, his far arm still stretched forward holding the bow "
                     "upright, his near hand flung open back behind his ear, the string straight, the cape flying "
                     "behind him. " + SWORD_SIZE,
-                    "FROM:Draw:0:" + "in the same side view facing right, the same size: lowering the bow after the "
+                    "FROM:Draw:0:"
+                    + "in the same side view facing right, the same size: lowering the bow after the "
                     "shot, the bow held forward and down at waist height in his far hand, no arrow, his near hand "
                     "relaxed at his chest, the cape hanging behind him. " + SWORD_SIZE,
                 ],
@@ -1643,9 +1716,14 @@ CHARACTERS = {
             (
                 "Charged",
                 [
-                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn" + BOW_GLOW + ". " + SWORD_SIZE,
-                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn" + BOW_GLOW
-                    + ", the glow larger and brighter, a few small yellow sparks next to the arrowhead. " + SWORD_SIZE,
+                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn"
+                    + BOW_GLOW
+                    + ". "
+                    + SWORD_SIZE,
+                    "FROM:Draw:2:keeping exactly the same pose, the string fully drawn"
+                    + BOW_GLOW
+                    + ", the glow larger and brighter, a few small yellow sparks next to the arrowhead. "
+                    + SWORD_SIZE,
                 ],
             ),
             # Run — не тут: ON: перемальовував тіла й лук стрибав довжиною (арт-директор); Scripts/Tools/bow_fixups.py
@@ -1660,8 +1738,10 @@ CHARACTERS = {
         seed=2,
         colors=16,
         who=ARCHER_WHO,
-        base=KEEP.format(who=ARCHER_WHO.replace(" and a short curved wooden bow", ""), pose="the same idle stance "
-            "facing right, " + ARCHER_SWAP),
+        base=KEEP.format(
+            who=ARCHER_WHO.replace(" and a short curved wooden bow", ""),
+            pose="the same idle stance facing right, " + ARCHER_SWAP,
+        ),
         rows=[
             ("idle", [None, "BOB:44"]),
             ("walk", [ARCHER_ON % (x, 64) for x in (0, 64, 128, 192)]),
@@ -1669,16 +1749,19 @@ CHARACTERS = {
                 "attack",
                 [
                     "FROM:idle:0:raising the bow upright in front of him with his front arm stretched forward at "
-                    "shoulder height, his back hand reaching over his shoulder to the quiver" + ARCHER_SCARF,
+                    "shoulder height, his back hand reaching over his shoulder to the quiver"
+                    + ARCHER_SCARF,
                     "FROM:idle:0:standing sideways with his front arm stretched forward at shoulder height holding the "
                     "bow upright in front of him, an arrow nocked, his back hand pulling the string fully back to his "
                     "cheek, the bow bent, aiming to the right" + ARCHER_SCARF,
                     "FROM:attack:1:keeping exactly the same pose, the string drawn fully back, the bow bent, "
-                    "the arrow nocked and aimed to the right, holding still" + ARCHER_SCARF,
+                    "the arrow nocked and aimed to the right, holding still"
+                    + ARCHER_SCARF,
                     # спроба 1 (FROM:attack:1, «the arrow gone») лишала стрілу на тятиві — з кадру підйому лука
                     "FROM:attack:0:the moment right after the shot: his front arm stretched straight forward at "
                     "shoulder height holding the empty bow upright, no arrow anywhere on the bow, the string straight "
-                    "and vertical, his back hand open and empty, flung up and back behind his head" + ARCHER_SCARF,
+                    "and vertical, his back hand open and empty, flung up and back behind his head"
+                    + ARCHER_SCARF,
                 ],
             ),
             ("hurt", [ARCHER_ON % (0, 192)]),
@@ -1932,33 +2015,40 @@ CHARACTERS = {
     # D466 + D467: бос Лабораторії — людина-мантикора (НЕ ящур: Sapega «це не ящур»), Скорпікора. З референсом
     # (він у пів-оберта ліворуч) обидва кандидати дивились ліворуч — напрям названо в частині {…}
     "lab_boss_brute": dict(
-        candidates=("design/shots/candidates/lab_boss.png", [(71, True), (72, True), (101, False), (72, False)]),  # 3: зерно 71 дало зелену морду ящура
+        # Sapega 2026-10-23 «перегенерувати»: перші чотири вийшли вовком-громилою; тепер котяча морда з рефу, 2×2 статура
+        candidates=(
+            "design/shots/candidates/lab_boss.png",
+            [(103, True, WIRY, "wiry"), (103, False, WIRY, "wiry"), (104, True, STOCKY, "stocky"), (104, False, STOCKY, "stocky")],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/lab_boss.webp",
         cell=(96, 112),
-        seed=71,
+        seed=103,
         colors=16,
-        who="the same hulking black-spined manticore-man with the glowing green eyes, the long ringed ears, the toothy "
-        "grin, the green tunic with the red scorpion emblem, the brown belts, the curled spiny scorpion tail, the spiked "
-        "wooden club and the steel mace",
+        who="the same spiky black manticore-man thug with the flat cat-like face, the ear-to-ear toothy grin, the glowing "
+        "green eyes, the long pierced bat-like ears, the green tunic with the bone necklaces, the brown sash and belts, the "
+        "baggy green trousers with the black swirl emblems, the spiny scorpion tail, the spiked wooden club and the steel mace",
         base="Replace the character in picture 1 with {the creature from picture 2, but turned to face the right side of "
-        "the picture: his muzzle pointing right, his tail curling behind him on the left; }a hulking manticore-man "
-        "brute — a "
-        "manticore-man, not a lizard, not a reptile and not a kobold: a broad feline beast face with a short flat nose, a "
-        "wide nasty grin full of small sharp teeth, glowing green eyes, long pointed ears pierced with small gold rings, "
-        "his whole body covered in shaggy black hide bristling with sharp black spines, no scales; a ragged dark green "
-        "tunic with a red scorpion emblem on the chest, brown leather belts and pouches round his waist, baggy dark green "
-        "trousers, clawed feet, a long spiny black tail curled up behind him like a scorpion's tail with a stinger at its "
-        "tip, a big spiked wooden club resting on his right shoulder and a steel mace hanging in his left hand — "
+        "the picture: his face pointing right, his tail curling behind him on the left; }a manticore-man thug — not a "
+        "lizard, not a wolf, not a dog and not a rat: a broad flat cat-like face with a very short snout, a wide mouth "
+        "split from ear to ear in a nasty grin full of small sharp teeth, glowing green eyes, big long pointed bat-like "
+        "ears with pink insides pierced with small gold rings, a wild spiky black mane; his body covered in shaggy black "
+        "hide bristling with short black spines; §a dark green short-sleeved tunic with bone necklaces, a brown sash and "
+        "leather belts with pouches round his waist, baggy dark green trousers with round black swirl emblems, clawed "
+        "black feet, a long spiny black tail curled up behind him like a scorpion's tail with a stinger at its tip, a big "
+        "spiked wooden club resting on his right shoulder and a steel mace in his left hand — "
         + PIXEL_STYLE
-        + ", much taller and bulkier than the reference character, filling the whole height of the picture. "
+        + ", taller than the reference character, filling the whole height of the picture. "
         + SIDE_VIEW % {"p": "his"}
-        + ". He stands in a cocky swaggering pose, chest puffed out, with a smug drunken grin."
+        + ". He swaggers in a cocky drunken slouch, knees bent, chest out, a smug sneer on his face."
         + MAGENTA_BG,
     ),
     # D468: той, хто напав на Майор Хол, — лисий воїн Скорпікори з сокирою; його гігантський скорпіон — окремо
     "mayor_hall_boss": dict(
-        candidates=("design/shots/candidates/mayor_hall_boss.png", [(73, True), (74, True), (73, False), (74, False)]),
+        candidates=(
+            "design/shots/candidates/mayor_hall_boss.png",
+            [(73, True), (74, True), (73, False), (74, False)],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/mayor_hall_boss.webp",
         cell=(96, 112),
@@ -1979,11 +2069,14 @@ CHARACTERS = {
     ),
     # «facing right» без названих сторін — усі чотири кандидати дивились ліворуч (клешні зліва)
     "giant_scorpion": dict(
-        candidates=("design/shots/candidates/giant_scorpion.png", [(75, True), (76, True), (75, False), (76, False)]),
+        candidates=(
+            "design/shots/candidates/giant_scorpion.png",
+            [(75, True), (76, True), (75, False), (76, False)],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/mayor_hall_boss.webp",
         cell=(128, 80),
-        seed=75,
+        seed=76,
         colors=16,
         who="the same giant armoured scorpion with the glossy black plates with dark red edges, the huge pincers, the "
         "spiky dark red legs and the curled tail with the big stinger",
@@ -1996,45 +2089,51 @@ CHARACTERS = {
         "and its raised tail reaches near the top edge. Strict side view, facing right: its head and its two huge "
         "pincers at the right end of its body, reaching forward to the right edge of the picture; its tail starts at the "
         "left end of its body and curls up over its back, the stinger pointing forward to the right; its legs on the "
-        "ground."
-        + MAGENTA_BG,
+        "ground." + MAGENTA_BG,
     ),
     # D467: алхімік (SCIENTIST, той, хто робить уколи) — з референсу Sapega; шприц лишається для кадрів inject.
     # Фільтри маски — світлі: чорні на чорній масці зникали в блоці 16 px
     "alchemist_v2": dict(
-        candidates=("design/shots/candidates/alchemist.png", [(77, True), (78, True), (77, False), (78, False)]),
+        # Sapega 2026-10-23 «перегенерувати більш багатим»: багатий одяг, 2×2 колір мантії × референс
+        candidates=(
+            "design/shots/candidates/alchemist.png",
+            [(77, True, CRIMSON, "crimson"), (77, False, CRIMSON, "crimson"), (78, True, BLACK, "black"), (78, False, BLACK, "black")],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/alchemist.webp",
         cell=(64, 96),
         seed=77,
         colors=16,
-        who="the same thin alchemist with the long green hair, the red eyes, the black two-filter gas mask, the grey "
-        "scarf, the long dark robe, the wrapped forearms, the red scorpion emblem and the glass syringe",
-        base="Replace the character in picture 1 with {the man from picture 2, }a thin laboratory alchemist of the "
-        "Scorpicore clan: long messy green hair falling past his shoulders, red eyes, a black gas mask over his mouth "
-        "and nose with two big round light grey metal filters, a grey scarf wound around his neck, a long dark brown robe over black clothes "
-        "with a dark sash, bandage-wrapped forearms, a red scorpion emblem on the chest of his black shirt, a glass "
-        "syringe with green liquid in his right hand — "
+        who="the same thin rich alchemist with the long green hair, the red eyes, the black two-filter gas mask, the grey "
+        "silk scarf, the long gold-embroidered velvet robe, the gold rings, the heavy gold chain with the red scorpion "
+        "pendant and the glass syringe",
+        base="Replace the character in picture 1 with {the man from picture 2, }a thin, wealthy laboratory alchemist of "
+        "the Scorpicore clan, dressed richly: long messy green hair falling past his shoulders, red eyes, a black gas mask "
+        "over his mouth and nose with two big round light grey metal filters, a grey silk scarf wound around his neck, "
+        "§gold rings on his fingers, a heavy gold chain with a red scorpion pendant on his chest, polished black boots with "
+        "gold buckles, a glass syringe with green liquid in his right hand — "
         + PIXEL_STYLE
-        + ", a tall thin adult man filling the whole height of the picture, seen whole from his head down to his dark "
-        "boots. "  # референс Sapega обрізаний по стегна — кандидати з ним були без ніг
+        + ", a tall thin adult man filling the whole height of the picture, seen whole from his head down to his boots. "
         + SIDE_VIEW % {"p": "his"}
         + ". Standing idle."
         + MAGENTA_BG,
     ),
-    # D469: Малік з піксельного спрайта Sapega, без змії
+    # D469: Малік з піксельного спрайта Sapega, без змії; Sapega 2026-10-23 — без бороди
     "malik_v2": dict(
-        candidates=("design/shots/candidates/malik.png", [(79, True), (102, True), (79, False), (80, False)]),  # 2: зерно 80 дивилось ліворуч
+        candidates=(
+            "design/shots/candidates/malik.png",
+            [(79, True), (102, True), (79, False), (80, False)],
+        ),  # 2: зерно 80 дивилось ліворуч
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/malik_pixel.webp",
         cell=(64, 96),
         seed=79,
         colors=16,
-        who="the same man in the white turban with the red jewel, the short dark beard, the green scarf, the white robe "
+        who="the same man in the white turban with the red jewel, the clean-shaven face, the green scarf, the white robe "
         "with orange trim, the green cape with gold shoulder pieces, the belt with the green gem and the leather bag with "
         "the clock",
         base="Replace the character in picture 1 with {the man from picture 2, }a desert man: a white turban with a small "
-        "red jewel at the front and a cloth tail hanging behind, a short dark beard, green eyes, a green scarf round his "
+        "red jewel at the front and a cloth tail hanging behind, a clean-shaven face with no beard and no moustache, green eyes, a green scarf round his "
         "neck, a long white robe with orange trim, a long dark green cape with gold shoulder pieces, a brown belt with a "
         "green gem, a gold pendant on his chest, a leather shoulder bag with a small round clock on its flap, brown "
         "boots; no snake, no animal on his shoulders — "
@@ -2046,16 +2145,20 @@ CHARACTERS = {
     ),
     # D470: Уризен з піксельної версії Sapega; клітинка компаньйона 64×64, як зараз
     "urizen_v2": dict(
-        candidates=("design/shots/candidates/urizen.png", [(81, True), (82, True), (81, False), (82, False)]),
+        # Sapega 2026-10-23 «спробуй ще»: напрям — пропорції (чібі як герой / трохи вищий), × референс
+        candidates=(
+            "design/shots/candidates/urizen.png",
+            [(105, True, BIGHEAD, "big head"), (105, False, BIGHEAD, "big head"), (106, True, TALLER, "taller"), (106, False, TALLER, "taller")],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/urizen_pixel.webp",
-        seed=81,
+        seed=105,
         colors=16,
-        who="the same stocky bald priest with the small dark tattoo marks on his head, the sly half-smile, the brown "
+        who="the same chubby bald priest with the small dark tattoo marks on his head, the smug half-smile, the brown "
         "hooded robe over the dark grey tunic and the belt with the iron buckle",
-        base="Replace the character in picture 1 with {the man from picture 2, }a stocky chubby bald human priest: a "
-        "round face, small dark tattoo marks on the top of his bald head, a sly half-smile, a long brown hooded robe open "
-        "over a dark grey wrapped tunic, a brown belt with an iron buckle, brown shoes — "
+        base="Replace the character in picture 1 with {the man from picture 2, }a chubby bald human priest§: a big round "
+        "face with a sly smug half-smile and narrowed eyes, small dark tattoo marks on the top of his bald head, a long "
+        "brown hooded robe open over a dark grey wrapped tunic, a brown belt with an iron buckle, brown shoes — "
         + CHIBI_STYLE
         + ". "
         + SIDE_VIEW % {"p": "his"}
@@ -2064,18 +2167,22 @@ CHARACTERS = {
     ),
     # D471: Алісія в пікселі героя (64×64); різні очі (зелене й синє) видно лише у фас — кандидат = профіль + фас
     "alisia_v2": dict(
-        candidates=("design/shots/candidates/alisia.png", [(83, True), (84, True), (83, False), (84, False)]),
+        # Sapega 2026-10-23 «спробуй ще»: напрям — пропорції (чібі як герой / струнка), × референс
+        candidates=(
+            "design/shots/candidates/alisia.png",
+            [(107, True, CHIBI, "chibi"), (107, False, CHIBI, "chibi"), (108, True, SLIM, "slim"), (108, False, SLIM, "slim")],
+        ),
         candidate_poses=[ALISIA_FRONT],
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/alisia_v2.webp",
-        seed=83,
+        seed=107,
         colors=24,  # 16 губили синє око (рідкісний колір)
         who="the same silver-haired huntress with the high ponytail, one green eye and one blue eye, the dark leather "
         "and bronze armour, the fur collar, the tattered short cape and the wooden longbow",
-        base="Replace the character in picture 1 with {the girl from picture 2, }a cheerful young huntress: long "
-        "silver-grey hair in a high ponytail, heterochromia — one bright green eye and one bright blue eye, a soft smile, "
-        "dark brown leather armour with bronze plates and a fur collar, a tattered short dark brown cape and a wooden "
-        "longbow in her hand — "
+        base="Replace the character in picture 1 with {the girl from picture 2, }a cheerful young huntress §long "
+        "silver-grey hair in a high ponytail, heterochromia — one bright green eye and one bright blue eye, rosy cheeks "
+        "and a soft smile, dark brown leather armour with bronze plates and a fur collar, a tattered short dark brown cape "
+        "and a wooden longbow in her hand — "
         + CHIBI_STYLE
         + ". "
         + SIDE_VIEW % {"p": "her"}
@@ -2084,15 +2191,19 @@ CHARACTERS = {
     ),
     # D472 + Q82 (Sapega 2026-10-23): з референсу Sapega, але зі щитом із шипами, без цепа
     "astrit_v2": dict(
-        candidates=("design/shots/candidates/astrit.png", [(85, True), (86, True), (85, False), (86, False)]),
+        # D472 + Q82: щит із шипами, без цепа. Sapega 2026-10-23: перший референс (85 ref) + червоний бант — 2×2 банта
+        candidates=(
+            "design/shots/candidates/astrit.png",
+            [(85, True, BOW_BACK, "bow back"), (85, True, BOW_TOP, "bow top"), (85, True, BOW_SMALL, "small bow"), (85, True, RIBBON, "ribbon")],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/astrit_v2.png",
         seed=85,
         colors=16,
-        who="the same fierce red-haired barbarian woman with the high ponytail, the scowl, the dark steel plate armour "
-        "with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
+        who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
+        "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
         base="Replace the character in picture 1 with {the girl from picture 2, }a fierce barbarian woman: long fiery red "
-        "hair in a high ponytail, brown eyes, a fierce scowl, dark steel plate armour with bronze trim and big pauldrons, "
+        "hair in a high ponytail, §brown eyes, a fierce scowl, dark steel plate armour with bronze trim and big pauldrons, "
         "a short red plaid skirt, a red cape, brown boots, and a big round dark steel shield with bronze spikes around "
         "its rim and a small red flame emblem in its middle, held in front of her; no flail, no chain, no fireball — "
         + CHIBI_STYLE
@@ -2103,7 +2214,10 @@ CHARACTERS = {
     ),
     # D449: гвард-компаньйон — той самий, що варта біля воріт: перший кадр з кадру gate_guard, лише поза бійця
     "companion_guard": dict(
-        candidates=("design/shots/candidates/companion_guard.png", [(87, False), (88, False), (89, False), (90, False)]),
+        candidates=(
+            "design/shots/candidates/companion_guard.png",
+            [(87, False), (88, False), (89, False), (90, False)],
+        ),
         ref="SampleProject/Assets/Characters/NPCs/gate_guard/sheet.png#0,0,64,96",
         cell=(64, 96),
         seed=87,
@@ -2116,14 +2230,16 @@ CHARACTERS = {
         "trousers, the curved sword at his belt and the long spear — the same pixel art style, thick dark outline, flat "
         "shading, colours, size and position. Change only the pose: standing ready to fight in the same side view "
         "facing right, feet apart and knees slightly bent, the long spear held level in both hands at waist height, its "
-        "steel point forward to the right."
-        + MAGENTA_BG,
+        "steel point forward to the right." + MAGENTA_BG,
     ),
     # D445: літаючі вороги — гриф (надворі) і кажан (у лабораторії), профіль праворуч
     "enemy_vulture": dict(
-        candidates=("design/shots/candidates/vulture.png", [(91, False), (92, False), (93, False), (94, False)]),
+        candidates=(
+            "design/shots/candidates/vulture.png",
+            [(91, False), (92, False), (93, False), (94, False)],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=91,
+        seed=92,
         colors=16,
         who="the same desert vulture with the dark brown and black feathers, the bare pinkish-red head and neck, the "
         "pale neck ruff and the hooked beak",
@@ -2139,9 +2255,12 @@ CHARACTERS = {
     # «small», «a third of the width» — кажан завбільшки з грифа (крила на всю клітинку); розмір — відносно
     # голови героя на картинці 1, як кошеня — відносно його пояса
     "enemy_bat": dict(
-        candidates=("design/shots/candidates/bat.png", [(95, False), (96, False), (97, False), (98, False)]),
+        candidates=(
+            "design/shots/candidates/bat.png",
+            [(95, False), (96, False), (97, False), (98, False)],
+        ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=95,
+        seed=97,
         colors=16,
         who="the same small cave bat with the dark brown-grey fur, the big pointed ears, the tiny red eyes, the white "
         "fangs and the leathery dark grey wings",
@@ -2276,7 +2395,9 @@ def edit(ref_rgba, text, seed, design=None):
     path = os.path.join(CACHE, key + ".png")
     if not os.path.exists(path):
         global GENERATED
-        if GENERATED >= MAX_NEW:  # COMFY_MAX=4: не більше 4 картинок за запуск (ОЗП), решта — наступним запуском
+        if (
+            GENERATED >= MAX_NEW
+        ):  # COMFY_MAX=4: не більше 4 картинок за запуск (ОЗП), решта — наступним запуском
             free()
             sys.exit(f"{MAX_NEW} new images generated — run again for the rest")
         GENERATED += 1
@@ -2445,11 +2566,15 @@ def own_palette(smalls, colors):
     pim = Image.fromarray(every.astype(np.uint8)[None]).quantize(
         colors, Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
     )
-    return clamp_chroma(np.array(pim.getpalette()[: 3 * colors], dtype=np.float32).reshape(-1, 3))
+    return clamp_chroma(
+        np.array(pim.getpalette()[: 3 * colors], dtype=np.float32).reshape(-1, 3)
+    )
 
 
 def to_palette(rgb, pal):
-    return pal[np.linalg.norm(rgb[:, :, None, :] - pal[None, None], axis=3).argmin(axis=2)]
+    return pal[
+        np.linalg.norm(rgb[:, :, None, :] - pal[None, None], axis=3).argmin(axis=2)
+    ]
 
 
 GREY = (110, 110, 120, 255)  # нейтральне тло листів кандидатів
@@ -2462,13 +2587,22 @@ def candidates(char, cell):
     out, variants = char["candidates"]
     ref = enlarge(char["ref"], cell)
     groups = []
-    for seed, use_design in variants:
+    for seed, use_design, *direction in variants:
+        # (зерно, з design?, напрям, підпис) — напрям замінює «§» у base: 2×2 напрямів, а не зерен (Sapega «спробуй ще»)
         design = char["design"] if use_design else None
-        base = edit(ref, with_design(char["base"], design), seed, design)
+        base = edit(
+            ref,
+            with_design(
+                char["base"].replace("§", direction[0] if direction else ""), design
+            ),
+            seed,
+            design,
+        )
         base_ref = base.copy()
         base_ref[..., 3] = 255
         imgs = [base] + [
-            edit(base_ref, KEEP.format(who=char["who"], pose=p), seed) for p in char.get("candidate_poses", [])
+            edit(base_ref, KEEP.format(who=char["who"], pose=p), seed)
+            for p in char.get("candidate_poses", [])
         ]
         small = [shrink(i, cell) for i in imgs]
         pal = own_palette(small, char["colors"])
@@ -2479,7 +2613,10 @@ def candidates(char, cell):
         groups.append(group)
     free()
     tiles = [[np.asarray(load("SampleProject/Sprites/Player/Walk/1.png"))]] + groups
-    labels = ["hero"] + [f"{i + 1} {'ref' if d else 'text'}" for i, (_, d) in enumerate(variants)]
+    labels = ["hero"] + [
+        f"{i + 1} {'ref' if v[1] else 'text'}" + (f" {v[3]}" if len(v) > 3 else "")
+        for i, v in enumerate(variants)
+    ]
     k, pad, top = 4, 32, 72
     w = sum(sum(f.shape[1] for f in g) * k + pad for g in tiles) + pad
     h = max(f.shape[0] for g in tiles for f in g) * k + top + pad
@@ -2489,7 +2626,9 @@ def candidates(char, cell):
     for group, label in zip(tiles, labels):
         draw.text((x, 12), label, fill="white", font=font)
         for f in group:
-            im = Image.fromarray(f).resize((f.shape[1] * k, f.shape[0] * k), Image.NEAREST)
+            im = Image.fromarray(f).resize(
+                (f.shape[1] * k, f.shape[0] * k), Image.NEAREST
+            )
             sheet.alpha_composite(im, (x, h - pad - im.height))
             x += im.width
         x += pad
@@ -2501,12 +2640,21 @@ def candidates(char, cell):
 def overview(out="design/shots/candidates/_all.png", max_w=2600):
     """Усі листи кандидатів однією картинкою: кожен ×½ найближчим (×4 → ×2, піксель лишається чітким), з підписом."""
     names = [c["candidates"][0] for c in CHARACTERS.values() if "candidates" in c]
-    ims = [(os.path.basename(n)[:-4], Image.open(n).convert("RGBA")) for n in names if os.path.exists(n)]
-    ims = [(n, im.resize((im.width // 2, im.height // 2), Image.NEAREST)) for n, im in ims]
+    ims = [
+        (os.path.basename(n)[:-4], Image.open(n).convert("RGBA"))
+        for n in names
+        if os.path.exists(n)
+    ]
+    ims = [
+        (n, im.resize((im.width // 2, im.height // 2), Image.NEAREST)) for n, im in ims
+    ]
     font, pad, label = ImageFont.truetype("arial.ttf", 40), 24, 52
     rows = [[]]
     for item in ims:
-        if rows[-1] and sum(im.width + pad for _, im in rows[-1]) + item[1].width > max_w:
+        if (
+            rows[-1]
+            and sum(im.width + pad for _, im in rows[-1]) + item[1].width > max_w
+        ):
             rows.append([])
         rows[-1].append(item)
     w = max(sum(im.width + pad for _, im in r) for r in rows) + pad
@@ -2545,7 +2693,12 @@ if __name__ == "__main__":
         if char["base"] is None
         else enlarge(char["base"][5:], cell)
         if char["base"].startswith("FILE:")
-        else edit(ref, with_design(char["base"], char.get("design")), seed, char.get("design"))
+        else edit(
+            ref,
+            with_design(char["base"].replace("§", char.get("direction", "")), char.get("design")),
+            seed,
+            char.get("design"),
+        )
     )
     base_ref = base.copy()
     base_ref[..., 3] = 255
@@ -2636,7 +2789,9 @@ if __name__ == "__main__":
                 p = np.pad(op, 1)
                 op = op & (
                     sum(
-                        p[1 + dy : 1 + dy + op.shape[0], 1 + dx : 1 + dx + op.shape[1]].astype(int)
+                        p[
+                            1 + dy : 1 + dy + op.shape[0], 1 + dx : 1 + dx + op.shape[1]
+                        ].astype(int)
                         for dy in (-1, 0, 1)
                         for dx in (-1, 0, 1)
                         if dy or dx
