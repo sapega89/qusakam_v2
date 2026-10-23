@@ -2207,7 +2207,8 @@ CHARACTERS = {
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/astrit_v2.png",
-        seed=85,
+        seed=85,  # D595: обрано 2 (ref, бант зверху) — «ідеальний»
+        direction=BOW_TOP,
         colors=16,
         who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
         "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
