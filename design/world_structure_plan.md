@@ -74,7 +74,11 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 - Keys and levers get their own small system: a `Lever` / `LockedDoor` scene and a key item.
 - `verify_desert_road_layout.gd` walks the graph.
 
-### Slices 5–8 — The other four locations, one per slice, in story order.
+### Slice 5 — The Desert Road as a region (D487: «так само треба переробити дорогу»)
+- Same treatment as slice 4. The road becomes connected stretches: the main road, a dune side path, a mesa climb, a ruin with a
+  chest and a secret, and a shortcut back. Vultures overhead (D445) and a meditation spot (D447).
+
+### Slices 6–8 — The other three locations, one per slice, in story order.
 
 ## Order and dependencies
 `1 → 2 → 3`, while 4 can start after 1. `4 → 5…8`. The fade and background loading (D434, [[performance_plan]]) should
