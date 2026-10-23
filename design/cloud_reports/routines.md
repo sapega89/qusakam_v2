@@ -136,3 +136,10 @@ fixed (`362a0178`).
 | 10:52 | ui-moments (`trig_017dMJtshPnHtL6ghLk6VCgX`) | cloud/ui-moments | D436 level-up, D486 journal card, D473 finale (quiet, D587) |
 | 10:52 | perf-gfx (`trig_01GC4dKDbSKmTuoYtKyoTCzZ`) | cloud/perf-gfx | performance slices 4, 5, 7: High/Low for the HD 3000 (D553, D554) |
 | 10:52 | text-1 (`trig_01FTn4tGdUakz5ok2iGPN5gf`) | cloud/text-1 | D566 «бандит», D571 NPC chatter drafts |
+
+Round 11 merged 2026-10-23: text-1 (D606–D607), perf-gfx (D608–D611), combat-polish (D612–D613), enemy-variety
+(D614–D617), world-1 (D618–D622), ui-moments (D623–D625), skills-v2 (D626–D629), hud-v2 (D630–D634); every branch's
+D603+ renumbered (D603–D605 were taken locally by the skill icons). No B rows fixed. Q87 (journal notes tab) and Q88
+(HUD v2 text size) filed, both non-blocking. Conflicts: the stamina removal against world-1, skills-v2 and hud-v2
+(the «ST» string, the weak block, the vitals rows: HP and SP only, XP is its own bar), `Regions` → `LocationDB`, and
+the skill icons moved onto hud-v2's hex slots (`hotbar_slot.tscn` → `Icon/Art`). The 33 draft skills got icons (D635).
