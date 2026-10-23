@@ -11,7 +11,7 @@ tags: [cloud, routines, ui, game-menu]
 - **D-IDs for the register:** D523–D526 (below).
 - **B rows fixed:** B129, B130, B131, B132.
 - **Theme:** `GameUITheme.tres` regenerated; `verify_game_ui_theme` prints **ALL CHECKS PASSED**.
-- **Full suite:** SUITE_LINE
+- **Full suite:** one run, 98 tests, `SUITE: ALL PASS`.
 
 ## D-ID text (for `figma_decision_register.md`)
 
