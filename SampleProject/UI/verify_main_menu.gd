@@ -163,7 +163,7 @@ func _initialize() -> void:
 	var t1 := Time.get_ticks_msec()
 	while not (current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn") \
 			and Time.get_ticks_msec() - t1 < 10000:
-		ck_black_while_loading(start)
+		ck_black_while_loading(is_instance_valid(start))
 		await process_frame
 	ck(current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn", "Game becomes current_scene")
 	ck(seen_light_while_loading == false, "the screen stays black between the menu and the room")
@@ -184,8 +184,8 @@ func _initialize() -> void:
 var seen_light_while_loading := false
 
 ## Між згасанням меню і появою кімнати екран лишається чорним (D434: жодного кадру меню чи порожньої гри).
-func ck_black_while_loading(menu_node: Node) -> void:
-	if not is_instance_valid(menu_node) and not ScreenFade.is_black(root):
+func ck_black_while_loading(menu_alive: bool) -> void:
+	if not menu_alive and not ScreenFade.is_black(root):
 		seen_light_while_loading = true
 
 
