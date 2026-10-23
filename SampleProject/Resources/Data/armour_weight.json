@@ -1,6 +1,6 @@
 {
-	"description": "Armour weight (D592, D551: no stamina, so weight trades roll for defence), read by Scripts/Systems/ArmourWeight.gd. The worn body armour's items.json \"weight\" sets the class; no body armour is light. roll_length = share added to the roll's length; defense = flat Phys. Def. added to the equipment stats. Numbers are provisional (design/charms_plan.md), checked against verify_difficulty (D642).",
-	"unarmoured": "light",
+	"description": "Armour weight (D592, D551: no stamina, so weight trades roll for defence), read by Scripts/Systems/ArmourWeight.gd. The worn body armour's items.json \"weight\" sets the class; no body armour is medium (the plain roll). roll_length = share added to the roll's length; defense = flat Phys. Def. added to the equipment stats. Numbers are provisional (design/charms_plan.md), checked against verify_difficulty (D642).",
+	"unarmoured": "medium",
 	"classes": {
 		"light": {"roll_length": 0.15, "defense": 0},
 		"medium": {"roll_length": 0.0, "defense": 0},

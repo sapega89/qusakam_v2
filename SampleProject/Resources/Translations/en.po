@@ -3066,17 +3066,17 @@ msgstr "Jackal Tooth Amulet [DRAFT]"
 msgid "Each kill restores 4 SP. [DRAFT]"
 msgstr "Each kill restores 4 SP. [DRAFT]"
 
-msgid "CHARMS"
-msgstr "CHARMS"
+msgid "Charms"
+msgstr "Charms"
 
-msgid "CHARM I"
-msgstr "CHARM I"
+msgid "CHARM 1"
+msgstr "CHARM 1"
 
-msgid "CHARM II"
-msgstr "CHARM II"
+msgid "CHARM 2"
+msgstr "CHARM 2"
 
-msgid "CHARM III"
-msgstr "CHARM III"
+msgid "CHARM 3"
+msgstr "CHARM 3"
 
 msgid "(locked)"
 msgstr "(locked)"

@@ -18,8 +18,9 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
 const ArmourWeight = preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
 
-## Обереги (D592): рядки з того самого шаблону %SlotRow. Кадру Figma немає — вигляд як у слотів спорядження.
-const CHARM_CAPTIONS: Array[String] = ["CHARM I", "CHARM II", "CHARM III"]
+## Обереги (D592): рядки з того самого шаблону %SlotRow у бічній панелі під атрибутами (у списку слотів вони
+## вилазили за екран). Кадру Figma немає — вигляд як у слотів спорядження.
+const CHARM_CAPTIONS: Array[String] = ["CHARM 1", "CHARM 2", "CHARM 3"]
 const LOCKED := "(locked)"
 ## Вага обладунку (D592) — дописується до назви в рядку BODY.
 const WEIGHT_NAMES := {"light": "Light armour", "medium": "Medium armour", "heavy": "Heavy armour"}

@@ -2,6 +2,7 @@ extends RefCounted
 
 ## Вага броні (D592; без витривалості — D551): легка — довший перекат, важка — більше захисту й коротший перекат.
 ## Клас задає вдягнений обладунок (слот body, items.json "weight"); без обладунку — armour_weight.json "unarmoured".
+## Без автозавантажень: скрипт тягне GameCharacter, а його компілюють і тести до появи автозавантажень.
 ##   const ArmourWeight = preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
 
 const DATA_PATH := "res://SampleProject/Resources/Data/armour_weight.json"
@@ -24,15 +25,9 @@ static func row(weight_class: String) -> Dictionary:
 	return data().classes[weight_class]
 
 
-## Клас ваги героя — за вдягненим обладунком.
-static func worn_class() -> String:
-	var body = ServiceLocator.get_game_manager().player_state.equipment.get("body")
-	return class_of({} if body == null else ServiceLocator.get_item_database().get_item(String(body.id)))
-
-
-## Частка, на яку перекат довший (мінус — коротший).
-static func roll_length() -> float:
-	return float(row(worn_class()).roll_length)
+## Частка, на яку перекат довший (мінус — коротший) з обладунком [param item] ({} — без нього).
+static func roll_length_of(item: Dictionary) -> float:
+	return float(row(class_of(item)).roll_length)
 
 
 ## Захист, що додає клас ваги обладунку [param item] (GameCharacter.get_equipment_stats).

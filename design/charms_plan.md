@@ -65,13 +65,13 @@ A chest gets `charm = "<id>"` (`Chest.gd`); the modal names the charm.
 
 ### Armour weight (`armour_weight.json`)
 
-Body armour carries `"weight"` in `items.json`; the worn body armour sets the hero's class (none worn = light).
+Body armour carries `"weight"` in `items.json`; the worn body armour sets the hero's class (none worn = medium, the plain roll).
 Helmets and shields carry no weight.
 
 | Class | Roll | Defence | Items |
 |---|---|---|---|
-| light | +15 % | +0 | `leather_armor`, no body armour |
-| medium | 0 | +0 | none yet (the class exists for later armour) |
+| light | +15 % | +0 | `leather_armor` |
+| medium | 0 | +0 | no body armour (the plain roll) |
 | heavy | −15 % | +2 (and +4 max HP: 2 HP per defence) | `iron_armor` |
 
 Heavy's +2 is added in `GameCharacter.get_equipment_stats`, so Phys. Def., `mitigated_damage` and `verify_difficulty`

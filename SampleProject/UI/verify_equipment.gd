@@ -149,17 +149,18 @@ func _initialize() -> void:
 	var passive: float = sl.get_skill_manager().passive_value("roll_length")
 	eq._on_unequip_all_pressed()
 	for i in 4: await process_frame
-	ck(ArmourWeight.worn_class() == "light", "no body armour is light (%s)" % ArmourWeight.worn_class())
+	ck(ArmourWeight.class_of(mover.worn_armour()) == "medium", "no body armour is medium: the plain roll (×%.2f)" % mover.roll_factor())
+	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive), "unarmoured: roll unchanged")
 	var bare_def: int = gm.calculate_physical_defense()
 	eq._equip("body", "leather_armor", db.get_item("leather_armor"))
 	for i in 4: await process_frame
-	ck(ArmourWeight.worn_class() == "light", "leather armour is light")
+	ck(ArmourWeight.class_of(mover.worn_armour()) == "light", "leather armour is light")
 	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive + 0.15), "light: roll ×%.2f (+15%%)" % mover.roll_factor())
 	ck(gm.calculate_physical_defense() == bare_def + 10, "light: defence is the item's +10 only (%d)" % gm.calculate_physical_defense())
 	ck(eq._slot_rows["body"].get_node("Row/ItemName").text.find("Light armour") >= 0, "BODY row names the weight (%s)" % eq._slot_rows["body"].get_node("Row/ItemName").text)
 	eq._equip("body", "iron_armor", db.get_item("iron_armor"))
 	for i in 4: await process_frame
-	ck(ArmourWeight.worn_class() == "heavy", "iron armour is heavy")
+	ck(ArmourWeight.class_of(mover.worn_armour()) == "heavy", "iron armour is heavy")
 	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive - 0.15), "heavy: roll ×%.2f (−15%%)" % mover.roll_factor())
 	ck(gm.calculate_physical_defense() == bare_def + 20 + 2, "heavy: defence +20 item +2 weight (%d)" % gm.calculate_physical_defense())
 	ck(eq._slot_rows["body"].get_node("Row/ItemName").text.find("Heavy armour") >= 0, "BODY row says heavy")

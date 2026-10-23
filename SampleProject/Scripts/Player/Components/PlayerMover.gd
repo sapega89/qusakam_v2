@@ -136,7 +136,13 @@ func start_roll() -> bool:
 ## оберіг Sand Runner's Ring і вага обладунку (D592).
 func roll_factor() -> float:
 	return 1.0 + ServiceLocator.get_skill_manager().passive_value("roll_length") + Charms.effect(&"roll_length") \
-		+ ArmourWeight.roll_length()
+		+ ArmourWeight.roll_length_of(worn_armour())
+
+
+## Вдягнений обладунок (запис ItemDatabase) або {} — без нього (вага, D592).
+static func worn_armour() -> Dictionary:
+	var body = ServiceLocator.get_game_manager().player_state.equipment.get("body")
+	return {} if body == null else ServiceLocator.get_item_database().get_item(String(body.id))
 
 
 ## D443: ворог зупиняє героя, а перекат проходить крізь нього. Виняток тіл на весь ривок; знімається, щойно герой

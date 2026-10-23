@@ -3070,17 +3070,17 @@ msgstr "Амулет із зуба шакала [ЧЕРНЕТКА]"
 msgid "Each kill restores 4 SP. [DRAFT]"
 msgstr "Кожне вбивство повертає 4 SP. [ЧЕРНЕТКА]"
 
-msgid "CHARMS"
-msgstr "ОБЕРЕГИ"
+msgid "Charms"
+msgstr "Обереги"
 
-msgid "CHARM I"
-msgstr "ОБЕРІГ I"
+msgid "CHARM 1"
+msgstr "ОБЕРІГ 1"
 
-msgid "CHARM II"
-msgstr "ОБЕРІГ II"
+msgid "CHARM 2"
+msgstr "ОБЕРІГ 2"
 
-msgid "CHARM III"
-msgstr "ОБЕРІГ III"
+msgid "CHARM 3"
+msgstr "ОБЕРІГ 3"
 
 msgid "(locked)"
 msgstr "(закрито)"
