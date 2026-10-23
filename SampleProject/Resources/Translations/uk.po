@@ -1660,10 +1660,10 @@ msgstr "Монета × 7"
 
 # ── Character names (dialogue speakers, party)
 msgid "Bandit"
-msgstr "Розбійник"
+msgstr "Бандит"
 
 msgid "Bandit leader"
-msgstr "Ватажок розбійників"
+msgstr "Ватажок бандитів"
 
 msgid "Blacksmith"
 msgstr "Коваль"
@@ -1694,6 +1694,9 @@ msgstr "Алхімік"
 
 msgid "Villager"
 msgstr "Житель"
+
+msgid "Market trader"
+msgstr "Крамар"
 
 msgid "Alisia"
 msgstr "Алісія"
@@ -2159,10 +2162,10 @@ msgid "The Humble Place"
 msgstr "Скромна місцина"
 
 msgid "The bandits Kusakam is chasing robbed a merchant's caravan on the Desert Road and drove it to the City Gates. The merchant follows his goods to the City."
-msgstr "Розбійники, яких переслідує Кусакам, пограбували караван торговця на Пустельній дорозі й погнали його до Міської брами. Торговець іде за своїм товаром до Міста."
+msgstr "Бандити, яких переслідує Кусакам, пограбували караван торговця на Пустельній дорозі й погнали його до Міської брами. Торговець іде за своїм товаром до Міста."
 
 msgid "The City's blacksmith saw what the bandits' maces left of the gate guards. He will not sell Kusakam a helmet: one you forged yourself sits better than one you bought. His word holds like a contract before the god of deals: show him the finished helmet and he pays back every coin it cost."
-msgstr "Міський коваль бачив, що лишили булави розбійників від охоронців брами. Шолома Кусакамові він не продасть: власноруч викуваний сидить краще за куплений. Його слово міцне, як угода перед богом угод: покажіть йому готовий шолом — і він поверне кожну монету, яку той коштував."
+msgstr "Міський коваль бачив, що лишили булави бандитів від охоронців брами. Шолома Кусакамові він не продасть: власноруч викуваний сидить краще за куплений. Його слово міцне, як угода перед богом угод: покажіть йому готовий шолом — і він поверне кожну монету, яку той коштував."
 
 msgid "The Blacksmith hands Kusakam two Iron Swords to learn enchanting on."
 msgstr "Коваль дає Кусакамові два залізні мечі, щоб той навчився на них зачаровувати."
@@ -2171,7 +2174,7 @@ msgid "Malik, a talkative merchant from the last cell, swore that his humble pla
 msgstr "Малік, балакучий торговець з останньої клітки, поклявся, що в його скромній місцині знайдеться золото для кожного, хто виведе його з Лабораторії. Згоди ніхто не питав: він просто йде слідом, тихий, як тінь."
 
 msgid "Drive the bandits from the City Gates, then find the Merchant in the City, just past the gates"
-msgstr "Проженіть розбійників від Міської брами, а тоді знайдіть Торговця в Місті, одразу за брамою"
+msgstr "Проженіть бандитів від Міської брами, а тоді знайдіть Торговця в Місті, одразу за брамою"
 
 msgid "Buy 2 Iron Ingots and 1 Leather from the Merchant past the City gates, forge an Iron Helmet at the Blacksmith's anvil (12 coins), then show it to the Blacksmith"
 msgstr "Купіть у Торговця за міською брамою 2 залізні злитки й 1 шкіру, викуйте залізний шолом на ковадлі Коваля (12 монет), а тоді покажіть його Ковалеві"
@@ -2220,19 +2223,19 @@ msgid "From the ridge he saw villagers being led away — and something deep ins
 msgstr "З гребеня він побачив, як селян кудись ведуть, — і щось глибоко всередині наказало йому бігти до села."
 
 msgid "Bandits had raided the village and were taking everyone away."
-msgstr "Розбійники напали на село й забирали всіх його мешканців."
+msgstr "Бандити напали на село й забирали всіх його мешканців."
 
 msgid "A bandit stopped him in the middle of the village."
-msgstr "Посеред села йому заступив дорогу розбійник."
+msgstr "Посеред села йому заступив дорогу бандит."
 
 msgid "Kusakam beat the bandit and went looking for the old man."
-msgstr "Кусакам здолав розбійника й пішов шукати старого."
+msgstr "Кусакам здолав бандита й пішов шукати старого."
 
 msgid "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
-msgstr "Він знайшов старого біля його зруйнованого дому. Старий зцілив його останніми силами, а тоді розповів, що розбійники викрали реліквію — ключ до всього."
+msgstr "Він знайшов старого біля його зруйнованого дому. Старий зцілив його останніми силами, а тоді розповів, що бандити викрали реліквію — ключ до всього."
 
 msgid "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
-msgstr "Кусакам покинув спорожніле село, поклявшись піти слідом за розбійниками. Та спершу його кликав назад каньйон."
+msgstr "Кусакам покинув спорожніле село, поклявшись піти слідом за бандитами. Та спершу його кликав назад каньйон."
 
 msgid "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."
 msgstr "На краю каньйону він медитував біля священного обладунку й відчув поруч духів пустелі. Обладунок він забрав із собою."
@@ -2247,7 +2250,7 @@ msgid "He reached the great city gates and found the way barred."
 msgstr "Він дійшов до великої міської брами, але шлях був зачинений."
 
 msgid "Bandits attacked the gates; he fought them off beside the guards."
-msgstr "Розбійники напали на браму; він відбив їх пліч-о-пліч з охоронцями."
+msgstr "Бандити напали на браму; він відбив їх пліч-о-пліч з охоронцями."
 
 msgid "Through the gates at last, they set out to find the laboratory."
 msgstr "Нарешті минувши браму, вони вирушили шукати лабораторію."
@@ -2311,13 +2314,13 @@ msgid "One of the people of the Village."
 msgstr "Один із мешканців Села."
 
 msgid "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
-msgstr "Стереже браму Міста. Бився пліч-о-пліч із Кусакамом, коли розбійники напали на браму."
+msgstr "Стереже браму Міста. Бився пліч-о-пліч із Кусакамом, коли бандити напали на браму."
 
 msgid "Forges and improves weapons and armour."
 msgstr "Кує й поліпшує зброю та обладунки."
 
 msgid "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
-msgstr "Купець із Пустельної дороги, чий караван розбійники пригнали до Міської брами. Щойно браму звільнили, він рушив за своїм товаром до Міста й поставив там свій прилавок."
+msgstr "Купець із Пустельної дороги, чий караван бандити пригнали до Міської брами. Щойно браму звільнили, він рушив за своїм товаром до Міста й поставив там свій прилавок."
 
 msgid "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
 msgstr "Хранителька присяги Паладина в Місті. Перед нею Святий воїн присягає світлу; за монети вона також допоможе розучити навички."
@@ -2339,7 +2342,7 @@ msgstr "Жрець бога угод. Його кара падає у формі
 
 # ── Data: bestiary.json
 msgid "Desert Bandit"
-msgstr "Пустельний розбійник"
+msgstr "Пустельний бандит"
 
 msgid "Jackal"
 msgstr "Шакал"
@@ -2354,7 +2357,7 @@ msgid "The Fire Djinn"
 msgstr "Вогняний джин"
 
 msgid "Raiders of the desert roads who prey on villages and travellers. A bandit raises his blade before he strikes — step back or roll behind him while it is up, then punish."
-msgstr "Грабіжники пустельних шляхів, що полюють на села й мандрівників. Перед ударом розбійник заносить клинок — поки той піднятий, відступіть або перекотіться йому за спину, а тоді покарайте."
+msgstr "Грабіжники пустельних шляхів, що полюють на села й мандрівників. Перед ударом бандит заносить клинок — поки той піднятий, відступіть або перекотіться йому за спину, а тоді покарайте."
 
 msgid "A lean desert hunter that circles and lunges with a quick bite. Its wind-up is short, so watch for the crouch and dash out of the lunge."
 msgstr "Худий пустельний мисливець: кружляє довкола й кидається зі швидким укусом. Замах у нього короткий, тож пильнуйте, коли він пригинається, і вискакуйте ривком з-під кидка."
@@ -2536,7 +2539,7 @@ msgid "Desert Archer"
 msgstr "Пустельний лучник"
 
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
-msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Жовтий відблиск на наконечнику — стріла ось-ось полетить: заблокуйте її, відбийте парируванням назад у нього, коли вона долітає, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
+msgstr "Бандит із коротким луком: тримається на відстані й відступає, коли ви підходите. Жовтий відблиск на наконечнику — стріла ось-ось полетить: заблокуйте її, відбийте парируванням назад у нього, коли вона долітає, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"

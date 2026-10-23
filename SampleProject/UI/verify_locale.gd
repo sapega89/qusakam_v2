@@ -18,6 +18,7 @@ extends SceneTree
 ##   [5] діалоги: кожен dialogue_quest/<id>.dqd має англійського близнюка en/<id>.dqd з тими самими рядками й мовцями;
 ##       кожна репліка кожного файлу проходить через справжнє вікно діалогу (текст + ім'я мовця) у кожній мові
 ##   [6] привітання NPC мовою гри: англійські Kokoro (D277), українські Piper (greet_<голос>_uk)
+##   [7] D566: червонохустки — «бандит» скрізь в українських текстах (uk.po, .dqd), жодного «розбійника»
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const TEST_DIR := "user://verify_locale/"
@@ -126,6 +127,9 @@ func _initialize() -> void:
 
 	print("[6] NPC greetings in the game language")
 	_check_greetings(loc)
+
+	print("[7] «бандит», never «розбійник», in the Ukrainian texts (D566)")
+	_check_bandit_word()
 
 	loc.set_language(saved_language)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -703,6 +707,23 @@ func _walk_dialogues() -> void:
 		await Kit.frames(self, 2)
 		if dm.is_replaying():
 			ck(false, "%s %s: every line shown, the window closed" % [_locale, path.get_file()])
+
+
+# ── [7] «бандит» (D566) ──────────────────────────────────────────────────────
+
+func _check_bandit_word() -> void:
+	var old_word := RegEx.create_from_string("(?i)розбійн")
+	var files: Array[String] = _dialogue_files()
+	files.append(PO_DIR + "uk.po")
+	var hits: Array[String] = []
+	for path in files:
+		if old_word.search(FileAccess.get_file_as_string(path)) != null:
+			hits.append(path.get_file())
+	ck(hits.is_empty(), "no «розбійник» in uk.po or any Ukrainian dialogue (%d files; found in %s)" % [files.size(), str(hits)])
+	var uk: Translation = load(PO_DIR + "uk.po")
+	ck(uk.get_message("Bandit") == "Бандит" and uk.get_message("Desert Bandit") == "Пустельний бандит"
+			and uk.get_message("Bandit leader") == "Ватажок бандитів",
+			"the enemy names read «Бандит», «Пустельний бандит», «Ватажок бандитів»")
 
 
 # ── [6] привітання ───────────────────────────────────────────────────────────

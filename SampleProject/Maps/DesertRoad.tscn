@@ -208,6 +208,7 @@ script = ExtResource("9_gate")
 position = Vector2(1120, 396)
 task_giver = "merchant"
 gone_with_flag = "city_gates_fight_complete"
+chatter_dialogue = "res://dialogue_quest/DesertRoad_Merchant_Chatter.dqd"
 
 [node name="Fight_Dunes" type="Node2D" parent="." unique_id=1773711575 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
