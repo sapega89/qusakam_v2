@@ -114,9 +114,8 @@ production skills, targeting system, controller bindings.
 | Name | (134, 22) | "KUSAKAM": Cormorant Bold 26, `#F1D77A`, uppercase, letter spacing 3 |
 | Class | right edge at x 440, top 30 | Cormorant Regular 16, `#CFC8B0`. The sworn oath's name; "Holy Warrior" before the oath (as Status, D532) |
 | Rule | (134, 56) 300 × 1 | Accent `#D4AF37` at 60 % |
-| HP row | label y 62, bar y 66, h 14 | Fill `#2ECC71` |
-| SP row | label y 84, bar y 88, h 14 | Fill `#3498DB` |
-| XP row | label y 104, bar y 110, h 8 | Fill accent `#D4AF37` |
+| HP row | label y 68, bar y 72, value y 66, h 14 | Fill `#2ECC71` |
+| SP row | label y 92, bar y 96, value y 90, h 14 | Fill `#3498DB` |
 | Curl | (462, 53) 44 × 44 | `curl.svg`, `flip_h` |
 | F chip, the assist | (134, 136) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 176) with "F" |
 | Q chip, potions | (200, 136) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 160) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 176) with "Q" |
@@ -124,9 +123,9 @@ production skills, targeting system, controller bindings.
 **Rows:**
 - Each label is at x 134: Cormorant Bold 16, `#CFC8B0`.
 - Each bar is at x 168, 200 wide.
-- Each value is right-aligned to x 442: Cormorant SemiBold 18, white. The XP value is 16, `#E8E2CC`.
+- Each value is right-aligned to x 442: Cormorant SemiBold 18, white.
 - The bar background is black at 60 % with a 1 px `#8A6F22` border. The fill is inset 1 px.
-- HP and SP have a 3 px top highlight of white at 25 %. XP has no highlight.
+- HP and SP have a 3 px top highlight of white at 25 %. XP is not in this panel: it is the full-width bar below (D552).
 - Colours go through `UITokens`: reuse the existing tokens, and add one only where none exists.
 
 **The potion and the assist live here** (Sapega, 2026-10-23: «QF прибери з панелі», meaning out of the hotbar). The old "Q Potions ×N" text line (D538) becomes the Q chip, and the assist slot leaves the hotbar for the F chip.
@@ -177,3 +176,19 @@ The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mir
 **Behaviour:** everything `skill_hotbar.gd` does today stays. `SkillManager.SLOT_COUNT` goes from 4 to 8.
 
 **Not here:** the potion (Q) and the assist (F). They are chips under the hero panel.
+
+## HUD v2 XP bar (D552): spec, 2026-10-23
+
+**Figma:** component `UI/HUD/XP Bar` `515:6662`, 1920 × 10. Its in-game placement is in `hud-combat` `492:6543`, along the bottom edge of the screen. Shot of the whole HUD: `design/shots/figma_hud_v2_context.png`.
+
+**Look:**
+- The bar runs the full width of the screen at the very bottom, 10 px tall at 1080p.
+- Background: black at 60 %, with a 1 px top rim in `#8A6F22`.
+- Fill: accent gold `#D4AF37`, the share of XP towards the next level, with a 2 px white highlight at 25 % along its top.
+- **No label and no numbers** (Sapega: «без підпису, що це XP, всі і так знають»). At the level cap (D541) it stays full.
+- It is drawn by the engine, with no texture: a `ProgressBar` with theme styleboxes and `UITokens` colours.
+
+**HUD placement at 1080p:**
+- Hero panel at (24, 24), top left.
+- Hotbar centred: x 570, y 942, so 4 px above the XP bar.
+- XP bar at y 1070.
