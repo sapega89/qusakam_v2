@@ -2,12 +2,14 @@ extends Node2D
 
 ## Камери лабораторії (BACKLOG 17, D303–D305, design/lab_story_plan.md, біти 4–6).
 ##   CUTSCENE — одна кат-сцена (D308, пропуск — до пробудження): Кусакам у клітці; алхімік веде Алісию до
-##              операційного столу й колє її; заводять в'язня, схожого на бандита; він вигукує закляття вигаданою
-##              мовою (Q64) — з нього виривається вогняний джин і тікає крізь стелю; вибухи, землетрус,
-##              Кусакам непритомніє. Темрява — і він прокидається: ґрати зникли, речі на місці, всі в своїх клітках.
+##              операційного столу й колє її (кішка лишається в камері, B126); заводять в'язня, схожого на бандита;
+##              він вигукує закляття вигаданою мовою (Q64) — з нього виривається вогняний джин і тікає крізь стелю;
+##              вибухи, землетрус, Кусакам непритомніє. Алхімік і в'язні в камерах реагують (Cutscene.react, D460):
+##              «!» на крик, крапля поту на джина, біль від вибуху поруч. Темрява — і він прокидається: ґрати зникли,
+##              речі на місці, всі в своїх клітках.
 ##   AWAKE    — чекає, доки герой вийде з камери (StepOutTrigger).
-##   ACQUAINTANCE — друга кат-сцена: знайомство, Малік просить вивести його (завдання malik_escort, відмовитися
-##              не можна), усі три асисти відкриті разом (D209, D230: біжать до героя й зникають), Малік зникає в тінях,
+##   ACQUAINTANCE — друга кат-сцена (D462): Малік підходить першим і питає, хто вони; кожен називає себе (D461),
+##              тоді Малік — себе й кличе за собою (завдання malik_escort, відмовитися не можна), усі три асисти відкриті разом (D209, D230: біжать до героя й зникають), Малік зникає в тінях,
 ##              двері на схід відчиняються.
 ##   FREE     — двері відчинені, камери порожні; шлях — на схід, у коридори.
 ## Стан при вході — за прапорцями (B53): сюди потрапляють телепортом із зали мера або завантаженням.
@@ -24,6 +26,8 @@ enum State { CUTSCENE, AWAKE, ACQUAINTANCE, FREE }
 const MALIK_TASK := "malik_escort"
 ## Супутники в камерах, зліва направо (порядок реплік знайомства — у Lab_Acquaintance).
 const COMPANIONS: Array[String] = ["astrit", "alisia", "urizen"]
+## Хто з камер реагує на кат-сцену (D460), окрім алхіміка: супутники й Малік.
+const CAGED: Array[NodePath] = [^"CompanionNPC_astrit", ^"CompanionNPC_alisia", ^"CompanionNPC_urizen", ^"Malik"]
 const BLASTS: Array[NodePath] = [^"Marks/Blast1", ^"Marks/Blast2", ^"Marks/Blast3", ^"Marks/Blast4"]
 
 ## Ступні боса — над підлогою (як BrassCollector у MayorHall).
@@ -88,18 +92,20 @@ func _cells_cutscene() -> void:
 	cs.player.get_node(^"Sprite2D").flip_h = false
 	await cs.say("Lab_Cells_Arrival")
 
-	# Алісию виводять із камери до столу й колють
+	# Алісию виводять із камери до столу й колють; кішка лишається в камері (B126) — іде лише її спрайт
 	await cs.pan_to(($Marks/Look as Node2D).global_position, PAN_TIME)
 	var alisia: Node2D = $CompanionNPC_alisia
-	var cell_x := alisia.global_position.x
+	var alisia_body: AnimatedSprite2D = $CompanionNPC_alisia/Sprite
+	var cell_x := alisia_body.global_position.x
 	$Bars/Bars3.hide()
 	_walk(scientist, ($Marks/ScientistTable as Node2D).global_position, LEAD_TIME, cs)
-	await _run(alisia, Vector2(($Marks/Table as Node2D).global_position.x, alisia.global_position.y), LEAD_TIME, cs)
+	await _run(alisia_body, Vector2(($Marks/Table as Node2D).global_position.x, alisia_body.global_position.y), LEAD_TIME, cs)
 	_play(scientist, &"inject")
+	await cs.react(alisia, &"pain")  # здригається від уколу (D460)
 	await cs.wait(INJECT_HOLD)
 	_play(scientist, &"idle")
 	await cs.say("Lab_Cells_Injection")
-	await _run(alisia, Vector2(cell_x, alisia.global_position.y), LEAD_TIME, cs)
+	await _run(alisia_body, Vector2(cell_x, alisia_body.global_position.y), LEAD_TIME, cs)
 	$Bars/Bars3.show()
 
 	# В'язня заводять зі сходу; закляття (Q64) — і з нього виривається джин
@@ -108,6 +114,7 @@ func _cells_cutscene() -> void:
 	await cs.say("Lab_Cells_Prisoner")
 	_play(prisoner, &"shout")
 	cs.voice(&"prisoner_incantation")  # закляття вголос (Q64, D310)
+	_react_all(cs, &"surprise")  # крик — усі здригаються (D460)
 	cs.shake(4.0, SHOUT_SHAKE)
 	await cs.wait(SHOUT_SHAKE)
 	_play(prisoner, &"collapse")
@@ -122,6 +129,7 @@ func _cells_cutscene() -> void:
 	var rise := create_tween()
 	rise.tween_property(djinn, ^"modulate:a", 1.0, DJINN_RISE)
 	cs.voice(&"fire_djinn_laugh")
+	_react_all(cs, &"fear")  # джин — страх (D460)
 	await cs.move(djinn, djinn.global_position + Vector2(0, -40), DJINN_RISE)
 	await cs.say("Lab_Cells_Djinn")
 
@@ -133,6 +141,7 @@ func _cells_cutscene() -> void:
 		var blast: Node2D = EXPLOSION.instantiate()
 		add_child(blast)
 		blast.global_position = (get_node(mark) as Node2D).global_position
+		cs.react(_nearest(blast.global_position), &"pain")  # вибух поруч — боляче (D460)
 		cs.shake(8.0, BLAST_GAP * 2.0)
 		await cs.wait(BLAST_GAP)
 	cs.shake(12.0, QUAKE_TIME)
@@ -168,9 +177,9 @@ func _acquaintance() -> void:
 	await cs.walk_hero(Vector2(($Marks/Meet as Node2D).global_position.x, cs.player.global_position.y), STEP_TIME)
 	cs.player.get_node(^"Sprite2D").flip_h = false  # до решти в'язнів
 	await cs.pan_to(($Marks/MeetLook as Node2D).global_position, PAN_TIME)
-	await cs.say("Lab_Acquaintance")
+	# D462: Малік підходить першим і питає, хто вони; знайомство і його «ідіть зі мною» — одна розмова
 	await _walk(malik, ($Marks/MalikMeet as Node2D).global_position, MALIK_WALK, cs)
-	await cs.say("Lab_Malik_Quest")
+	await cs.say("Lab_Acquaintance")
 
 	# Відмовитися не можна: завдання взято без меню; асисти — всі три разом
 	var TASKS: GDScript = load(TASKS_PATH)
@@ -234,16 +243,31 @@ func _walk(actor: Node2D, to: Vector2, seconds: float, cs: Cutscene) -> void:
 	_play(actor, &"idle")
 
 
-## Компаньйон-NPC (CompanionNPC) біжить (run) до [param to] і стає в idle (фас — без дзеркала).
-func _run(npc: Node2D, to: Vector2, seconds: float, cs: Cutscene) -> void:
-	var sprites := npc.find_children("*", "AnimatedSprite2D", false)
-	for sprite: AnimatedSprite2D in sprites:
-		sprite.flip_h = to.x < npc.global_position.x
-		sprite.play(&"run")
-	await cs.move(npc, to, seconds)
-	for sprite: AnimatedSprite2D in sprites:
-		sprite.flip_h = false
-		sprite.play(&"idle")
+## Спрайт компаньйона-NPC (CompanionNPC/Sprite) біжить (run) до [param to] і стає в idle (фас — без дзеркала).
+## Сам вузол лишається в камері — з ним і кішка Алісії (B126).
+func _run(sprite: AnimatedSprite2D, to: Vector2, seconds: float, cs: Cutscene) -> void:
+	sprite.flip_h = to.x < sprite.global_position.x
+	sprite.play(&"run")
+	await cs.move(sprite, to, seconds)
+	sprite.flip_h = false
+	sprite.play(&"idle")
+
+
+## Алхімік і всі в камерах реагують разом (D460).
+func _react_all(cs: Cutscene, kind: StringName) -> void:
+	cs.react(scientist, kind)
+	for path in CAGED:
+		cs.react(get_node(path), kind)
+
+
+## Хто з алхіміка й камер найближчий до [param point] (вибух).
+func _nearest(point: Vector2) -> Node2D:
+	var actors: Array[Node2D] = [scientist]
+	for path in CAGED:
+		actors.append(get_node(path))
+	actors.sort_custom(func(a: Node2D, b: Node2D) -> bool:
+		return a.global_position.distance_to(point) < b.global_position.distance_to(point))
+	return actors[0]
 
 
 func _play(actor: Node2D, animation: StringName) -> void:

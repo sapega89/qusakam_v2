@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/Emote.gd" id="1_emote"]
+
+[node name="Emote" type="Sprite2D"]
+z_index = 50
+texture_filter = 1
+script = ExtResource("1_emote")

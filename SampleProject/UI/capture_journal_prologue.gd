@@ -19,7 +19,7 @@ func _initialize() -> void:
 	var flags := {}
 	for flag in ["canyon_intro_complete", "canyon_exploration_complete", "canyon_abduction_complete",
 			"village_abduction_complete", "village_arrival_complete", "village_fight_complete",
-			"village_oldman_met", "village_oldman_healed", "village_oldman_complete", "village_left_complete", "canyon_relic_meditation_complete"]:
+			"village_oldman_met", "village_oldman_healed", "village_oldman_complete", "village_left_complete"]:
 		flags[flag] = true
 	game.set_quest_flags(flags)
 	game.set_objective("Descend to the road")

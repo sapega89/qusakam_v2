@@ -15,6 +15,17 @@ extends RefCounted
 
 const SKIP_PROMPT := preload("res://SampleProject/Scenes/UI/cutscene_skip_prompt.tscn")
 const SKIP_SPEED := 8.0
+const EMOTE := preload("res://SampleProject/Scenes/FX/Emote.tscn")
+## react(): усі види, які розуміє; у pain значка немає — лише тіло (D460).
+const REACT_KINDS: Array[StringName] = [&"surprise", &"confusion", &"silence", &"fear", &"pain"]
+## Подив — підскок назад і на місце: висота, відступ (px), час.
+const REACT_HOP_HEIGHT := 10.0
+const REACT_HOP_BACK := 8.0
+const REACT_HOP_TIME := 0.3
+## Біль — відсахується назад і на місце, тремтить, червоніє й відходить: відступ, тремтіння (px), час.
+const REACT_RECOIL := 10.0
+const REACT_TREMBLE := 2.0
+const REACT_PAIN_TIME := 0.3
 
 var player: Node2D
 var camera: Camera2D
@@ -146,6 +157,82 @@ func move(node: Node2D, to: Vector2, seconds: float, trans: Tween.TransitionType
 	var tween := _tree.create_tween()
 	tween.tween_property(node, ^"global_position", to, seconds).set_trans(trans).set_ease(Tween.EASE_IN_OUT)
 	await tween.finished
+
+
+## Реакція актора сцени (D460): над головою — значок (surprise «!», confusion «?», silence «…», fear — крапля поту);
+## surprise ще й підскакує назад, pain (без значка) відсахується, червоніє, як ворог від удару, і тремтить.
+## Рухається лише тіло — перший спрайт актора (Sprite2D / AnimatedSprite2D), а не вузол: твін ходи (move) на вузлі
+## не збивається, а кішка Алісії, другий спрайт, сидить собі (B126). Нова реакція перебиває попередню того ж актора
+## (і її значок).
+## Повертається, коли тіло стало на місце.
+func react(actor: Node2D, kind: StringName) -> void:
+	assert(kind in REACT_KINDS, "Cutscene.react: unknown kind %s" % kind)
+	var body := _body(actor)
+	if actor.has_meta(&"react_tween"):
+		(actor.get_meta(&"react_tween") as Tween).kill()
+		body.position = actor.get_meta(&"react_base")
+		body.modulate = Color.WHITE
+	var base := body.position
+	if kind != &"pain":
+		for old in actor.get_children():
+			if old.scene_file_path == EMOTE.resource_path:
+				old.queue_free()  # новий значок замість того, що ще висить
+		var emote: Node2D = EMOTE.instantiate()
+		actor.add_child(emote)
+		emote.position = Vector2(base.x, _head_top(body) - UITokens.EMOTE_GAP)
+		emote.call(&"pop", kind)
+	if kind != &"surprise" and kind != &"pain":
+		return
+	var back := 1.0 if _faces_left(body) else -1.0
+	var step: Callable
+	var seconds := REACT_HOP_TIME
+	if kind == &"surprise":
+		step = func(t: float) -> void:
+			body.position = base + Vector2(back * REACT_HOP_BACK * sin(PI * t), -REACT_HOP_HEIGHT * sin(PI * t))
+	else:
+		seconds = REACT_PAIN_TIME
+		step = func(t: float) -> void:
+			var tremble := Vector2(randf_range(-1, 1), randf_range(-1, 1)) * REACT_TREMBLE * (1.0 - t)
+			body.position = base + Vector2(back * REACT_RECOIL * sin(PI * t), 0) + tremble
+			body.modulate = UITokens.REACT_PAIN_FLASH.lerp(Color.WHITE, t)
+	var tween := _tree.create_tween()
+	tween.tween_method(step, 0.0, 1.0, seconds)
+	tween.tween_callback(func() -> void:
+		body.position = base
+		body.modulate = Color.WHITE
+		actor.remove_meta(&"react_tween")
+		actor.remove_meta(&"react_base"))
+	actor.set_meta(&"react_tween", tween)
+	actor.set_meta(&"react_base", base)
+	await tween.finished
+
+
+## Тіло актора — його перший спрайт.
+func _body(actor: Node2D) -> Node2D:
+	for child in actor.get_children():
+		if child is Sprite2D or child is AnimatedSprite2D:
+			return child
+	assert(false, "Cutscene.react: %s has no sprite" % actor.name)
+	return null
+
+
+## Маківка тіла в координатах актора: перший непрозорий рядок поточного кадру (кадри мають порожнє місце над головою).
+func _head_top(body: Node2D) -> float:
+	if body is Sprite2D:
+		var sprite := body as Sprite2D
+		var rect := sprite.get_rect()
+		var cell := Rect2i(Vector2i(sprite.frame_coords) * Vector2i(rect.size), Vector2i(rect.size))
+		var used := sprite.texture.get_image().get_region(cell).get_used_rect()
+		return sprite.position.y + (rect.position.y + used.position.y) * sprite.scale.y
+	var animated := body as AnimatedSprite2D
+	var frame := animated.sprite_frames.get_frame_texture(animated.animation, animated.frame)
+	var image := frame.get_image()
+	var top := animated.offset.y - (image.get_height() / 2.0 if animated.centered else 0.0)
+	return animated.position.y + (top + image.get_used_rect().position.y) * animated.scale.y
+
+
+func _faces_left(body: Node2D) -> bool:
+	return (body as Sprite2D).flip_h if body is Sprite2D else (body as AnimatedSprite2D).flip_h
 
 
 ## Камера більше не йде за героєм: лишається там, де зараз центр екрана.

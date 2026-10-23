@@ -1,8 +1,8 @@
-say | | [Hero] This armor... It looks ancient.
-say | | [Hero] There are symbols on it that I don't understand.
-say | | [Hero] It stands here, at the edge of the canyon, before the exit
-say | | [Hero] But something tells me it's important.
-say | | [Hero] Maybe it belonged to my ancestors?
-say | | [Hero] Time to take it. It has to be with me.
-say | | [Hero] Time to set out.
+say|KUSAKAM|This armor... It looks ancient.
+say|KUSAKAM|There are symbols on it that I don't understand.
+say|KUSAKAM|It stands here, at the edge of the canyon, before the exit.
+say|KUSAKAM|But something tells me it's important.
+say|KUSAKAM|Maybe it belonged to my ancestors?
+say|KUSAKAM|Time to take it. It has to be with me.
+say|KUSAKAM|Time to set out.
 exit|

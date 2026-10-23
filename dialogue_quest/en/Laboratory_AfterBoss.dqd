@@ -1,4 +1,3 @@
 // [DRAFT] D307 — the djinn is defeated; Kusakam's line is Sapega's words (BACKLOG 17); the gates open.
 say|KUSAKAM|I don't know if you'd have given up the cloak, but I wouldn't.
-say| |[The laboratory gates grind open.]
 exit|

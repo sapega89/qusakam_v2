@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Хто говорить (BACKLOG 36, Q31): ім'я мовця по центру вікна діалогу і його портрет праворуч; у репліки
-## оповідача (без мовця) — ні імені, ні рамки портрета. Репліки гортаються справжнім вводом: Enter, пад A, ЛКМ.
+## Хто говорить (BACKLOG 36, Q31): ім'я мовця по центру вікна діалогу і його портрет праворуч; реплік
+## оповідача (без мовця) немає зовсім (D437). Репліки гортаються справжнім вводом: Enter, пад A, ЛКМ.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_dialogue_speaker.gd
 
 var fails: Array[String] = []
@@ -57,11 +57,6 @@ func _check_line(box: Control, speaker: String, with_portrait: bool) -> void:
 	var name_label: Label = box.get_node("%Name")
 	var frame: Control = box.get_node("%PortraitBackground")
 	var portrait: TextureRect = box.get_node("%Portrait")
-	if speaker == "":
-		ck(name_label.text == "", "narration: no name (%s)" % name_label.text)
-		ck(not box.get_node("%NameMargin").visible, "narration: the name row is hidden, no blank line above the text")
-		ck(not frame.visible, "narration: no portrait frame")
-		return
 	ck(name_label.text == speaker, "%s: the name is shown (%s)" % [speaker, name_label.text])
 	var text_top: float = box.get_node("%DialogueText").get_global_rect().position.y
 	ck(name_label.is_visible_in_tree() and name_label.get_global_rect().end.y <= text_top,
@@ -104,11 +99,19 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	ck(not dm.is_dialogue_active(), "the talk ends on a mouse click")
 
-	print("[1b] A line with no speaker (Laboratory_Outside): no name row, no portrait frame")
-	dm.start_dialogue("res://dialogue_quest/Laboratory_Outside.dqd")
-	for i in 6: await process_frame
-	_check_line(box, "", false)
-	await _drain(dm)
+	print("[1b] D437: no line without a speaker in any dialogue, uk or en (the box never narrates)")
+	var narration: Array[String] = []
+	for dir: String in ["res://dialogue_quest/", "res://dialogue_quest/en/"]:
+		for file: String in DirAccess.get_files_at(dir):
+			if not file.ends_with(".dqd"):
+				continue
+			var n := 0
+			for raw: String in FileAccess.get_file_as_string(dir + file).split("\n"):
+				n += 1
+				var parts := raw.split("|")
+				if parts.size() >= 3 and parts[0].strip_edges() == "say" and parts[1].strip_edges().is_empty():
+					narration.append("%s%s:%d" % [dir.trim_prefix("res://dialogue_quest/"), file, n])
+	ck(narration.is_empty(), "every say line has a speaker (%s)" % [narration])
 
 	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245); a second start_dialogue after one has ended still grows the box (B122)")
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")

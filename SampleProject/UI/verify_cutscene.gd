@@ -150,7 +150,7 @@ func _initialize() -> void:
 	dm.dialogue_started.connect(at_line)
 	var cs: RefCounted = load("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd").new()  # не preload: скрипт кличе автозавантаження
 	ck(cs.landing, "the cutscene lets him land first")
-	dm.start_dialogue("res://dialogue_quest/CityGates.dqd")  # як Canyon_ExitCutscene: розмова не через cs.say
+	dm.start_dialogue("res://dialogue_quest/CityGates_Raid.dqd")  # як Canyon_ExitCutscene: розмова не через cs.say
 	ck(not dm.is_dialogue_active(), "the line waits while he falls")
 	await _until(func() -> bool: return not on_floor_at_line.is_empty(), 4.0)
 	dm.dialogue_started.disconnect(at_line)

@@ -355,7 +355,7 @@ func _initialize() -> void:
 		else:
 			await process_frame
 	for i in 30: await physics_frame
-	ck(_state() == "FREE" and started.has("Lab_Acquaintance") and started.has("Lab_Malik_Quest"), "pad A read the acquaintance and Malik → FREE (%s, %s)" % [_state(), started])
+	ck(_state() == "FREE" and started.has("Lab_Acquaintance") and not started.has("Lab_Malik_Quest"), "pad A read the one acquaintance talk with Malik (D462) → FREE (%s, %s)" % [_state(), started])
 	ck(sl.get_companion_manager().get_party().size() == 3 and game.get_quest_flag("task_malik_escort_taken"), "three assists in the party, Malik's task taken")
 	await _stick_until(1.0, func() -> bool: return _room() == LAB, 12.0)
 	ck(_room() == LAB, "stick east into the corridors (%s)" % _room())
@@ -435,7 +435,7 @@ func _initialize() -> void:
 	await _pad_talk()
 	await _until(func() -> bool: return not _end_screens().is_empty(), 6.0)
 	for i in 30: await process_frame
-	ck(started == ["Laboratory_Outside", "Demo_End"], "the two closing talks, once each (%s)" % [started])
+	ck(started == ["Demo_End"], "the closing talk once, no narrator line before it (D437) (%s)" % [started])
 	ck(game.get_quest_flag("lab_outside_complete") and game.get_quest_flag("demo_end_complete"), "lab_outside_complete, demo_end_complete")
 	ck(_end_screens().size() == 1, "one demo end screen (%d)" % _end_screens().size())
 	var screen: Control = _end_screens()[0]

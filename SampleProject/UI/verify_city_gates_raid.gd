@@ -113,14 +113,11 @@ func _initialize() -> void:
 	ck(player.event, "movement taken")
 	ck(camera.top_level, "camera detached from the hero")
 	await _until(func() -> bool: return dm.is_dialogue_active(), 4.0)
-	ck(started == ["CityGates"], "CityGates first (%s)" % [started])
+
+	print("[4] The guard shouts (no narrator line before it, D437), then the bandits run at the gate and stop on the fight's spawn points")
+	ck(started == ["CityGates_Raid"], "CityGates_Raid first (%s)" % [started])
 	var look: Node2D = room.get_node(^"Raid/Look")
 	ck(camera.global_position.distance_to(look.global_position) < 2.0, "camera at the gate (%s)" % camera.global_position)
-	await _drain_one(dm, started)
-
-	print("[4] The guard shouts, then the bandits run at the gate and stop on the fight's spawn points")
-	await _until(func() -> bool: return dm.is_dialogue_active(), 4.0)
-	ck(started == ["CityGates", "CityGates_Raid"], "then CityGates_Raid (%s)" % [started])
 	await _drain_one(dm, started)
 	var bandits: Array[Node] = room.get_node(^"Raid/Bandits").get_children()
 	var start_x: float = (bandits[0] as Node2D).global_position.x
@@ -140,7 +137,7 @@ func _initialize() -> void:
 	ck(not camera.top_level, "camera follows the hero again")
 	ck(game.get_quest_flag("city_gates_intro_complete"), "city_gates_intro_complete set")
 	await _until(func() -> bool: return dm.is_dialogue_active(), 4.0)
-	ck(started == ["CityGates", "CityGates_Raid", "CityGates_Fight"], "then CityGates_Fight (%s)" % [started])
+	ck(started == ["CityGates_Raid", "CityGates_Fight"], "then CityGates_Fight (%s)" % [started])
 	await _drain(dm)
 	await _until(func() -> bool: return _enemies(room).size() == 3, 4.0)
 	var enemies: Array = _enemies(room)
@@ -158,7 +155,7 @@ func _initialize() -> void:
 	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 60: await physics_frame
 	ck(game.map.get_current_state_name() == "FIGHT_LOOP", "back in FIGHT_LOOP (%s)" % game.map.get_current_state_name())
-	ck(not started.has("CityGates") and not started.has("CityGates_Raid"), "no raid lines (%s)" % [started])
+	ck(not started.has("CityGates_Raid"), "no raid lines (%s)" % [started])
 	ck(not game.map.get_node(^"Raid").visible, "no cutscene bandits")
 
 	print("[7] B80: a teleport from where the new room has a trigger moves the body at once; the trigger stays quiet")
