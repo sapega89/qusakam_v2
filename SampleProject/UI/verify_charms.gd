@@ -24,6 +24,14 @@ func ck(ok: bool, label: String) -> void:
 	if not ok: fails.append(label)
 
 
+## Справжня подія дії block — Player._unhandled_input ставить combat.block_held.
+func _block(pressed: bool) -> void:
+	var ev := InputEventAction.new()
+	ev.action = &"block"
+	ev.pressed = pressed
+	Input.parse_input_event(ev)
+
+
 func _initialize() -> void:
 	await process_frame; await process_frame
 	Charms = load("res://SampleProject/Scripts/Systems/Charms.gd")
@@ -96,16 +104,18 @@ func _initialize() -> void:
 	print("[3b] Sand Runner's Ring: no block, a longer roll")
 	var combat = player.combat
 	var roll_before: float = player.mover.roll_factor()
-	combat.block_held = true
-	for i in 3: await physics_frame
-	ck(combat.is_blocking(), "no charm: holding block blocks")
-	combat.block_held = false
-	for i in 3: await physics_frame
+	_block(true)
+	for i in 30:
+		if combat.is_blocking(): break
+		await physics_frame
+	ck(combat.is_blocking(), "no charm: holding block blocks (state %s)" % combat.state)
+	_block(false)
+	for i in 5: await physics_frame
 	Charms.equip(0, "sand_runner_ring")
-	combat.block_held = true
-	for i in 3: await physics_frame
-	ck(not combat.is_blocking(), "worn: holding block does nothing")
-	combat.block_held = false
+	_block(true)
+	for i in 30: await physics_frame
+	ck(not combat.is_blocking(), "worn: holding block does nothing (state %s)" % combat.state)
+	_block(false)
 	ck(is_equal_approx(player.mover.roll_factor(), roll_before + 0.3), "worn: roll ×%.2f (was ×%.2f)" % [player.mover.roll_factor(), roll_before])
 	Charms.unequip(0)
 
@@ -125,6 +135,7 @@ func _initialize() -> void:
 
 	print("[3d] Breaker's Ring: more damage to a staggered enemy")
 	var enemy: Node = load(ENEMY_SCENE).instantiate()
+	enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
 	enemy.position = player.global_position + Vector2(4000, -2000)
 	root.add_child(enemy)
 	enemy.process_mode = Node.PROCESS_MODE_DISABLED
