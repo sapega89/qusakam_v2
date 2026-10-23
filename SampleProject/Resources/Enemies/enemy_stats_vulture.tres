@@ -6,7 +6,7 @@
 script = ExtResource("1_vulture")
 enemy_type = "vulture"
 speed = 120.0
-base_damage = 24.0
+base_damage = 23.0
 attack_windup = 0.6
 attack_active_time = 0.6
 attack_cooldown = 1.0
@@ -22,5 +22,5 @@ dive_speed = 450.0
 detection_range = 350.0
 attack_range = 160.0
 chase_range = 450.0
-max_health = 140
+max_health = 165
 xp_reward = 7

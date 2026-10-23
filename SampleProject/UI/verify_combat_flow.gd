@@ -194,6 +194,8 @@ func _initialize() -> void:
 	ck(gm.player_state.weapon_in_hand == "" and is_equal_approx(game.player.combat.attack_cooldown_time, 0.5),
 			"nothing equipped → bare hands (%s, %.1f s)" % [gm.player_state.weapon_in_hand, game.player.combat.attack_cooldown_time])
 
+	game.player.Max_Health = 9999  # D642: вороги б'ють сильніше й частіше — герой рівня 1 загинув би, і пауза Game Over спинила б решту перевірок
+	game.player.current_health = game.player.Max_Health
 	print("[2] Enemies chase and hit the player")
 	game.player.current_health = game.player.Max_Health
 	var player_hp: int = game.player.current_health
