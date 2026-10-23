@@ -10,8 +10,8 @@
 script = ExtResource("3_stats")
 enemy_type = "fire_djinn"
 speed = 80.0
-base_damage = 30.0
-attack_cooldown = 1.5
+base_damage = 185.0
+attack_cooldown = 1.1
 attack_windup = 0.5
 attack_active_time = 0.2
 super_armor = true
@@ -22,7 +22,7 @@ combo_chance = 0.5
 detection_range = 600.0
 attack_range = 500.0
 chase_range = 900.0
-max_health = 1100
+max_health = 6000
 xp_reward = 500
 
 [sub_resource type="RectangleShape2D" id="Shape_body"]

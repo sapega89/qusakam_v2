@@ -29,6 +29,8 @@ var _burn_tick := 0.0
 ## Різновид (D560): розмір (EnemyVariety.SIZES) і еліта — ставить RoomEnemySpawner до _ready(); множники з enemy_variety.json.
 var size_kind := "medium"
 var elite := false
+## Рівень бою (D642): рівень, на якому герой його зустрічає; HP і шкода ростуть за enemy_variety.json "levels".
+var level := 1
 ## Досвід за вбивство: EnemyStats.xp_reward × розмір × еліта.
 var xp_reward := 0
 
@@ -203,7 +205,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 	DebugLogger.info("DefaultEnemy: Applied stats from EnemyStats resource (type: %s)" % stats.enemy_type, "Enemy")
 
-## Розмір і еліта (D560): HP, шкода, швидкість і досвід множаться; спрайт і форми (B128: що видно, те й б'є) ростуть
+## Розмір, еліта (D560) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт і форми (B128: що видно, те й б'є) ростуть
 ## від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом із хітбоксом.
 func _apply_variety() -> void:
 	var mult: Dictionary = EnemyVariety.size(size_kind)
@@ -211,6 +213,9 @@ func _apply_variety() -> void:
 	var health: float = mult.health
 	var hit: float = mult.damage
 	var xp: float = mult.xp
+	var grown: Dictionary = EnemyVariety.level(level)
+	health *= grown.health
+	hit *= grown.damage
 	if elite:
 		var marks: Dictionary = EnemyVariety.elite()
 		grow *= marks.scale

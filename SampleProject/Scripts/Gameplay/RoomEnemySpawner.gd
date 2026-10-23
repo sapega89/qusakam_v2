@@ -37,6 +37,9 @@ const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 ## D560, D582: точки з elite = auto кидають еліту (1 з 8). Вмикається лише там, де героя вже навчено еліті сам-на-сам.
 @export var elite_rolls: bool = false
 
+## D642: рівень ворогів бою — рівень, на якому герой сюди доходить (verify_difficulty бере його з XP-кривої).
+@export var enemy_level: int = 1
+
 ## D583: здобич бою — item_id → кількість, дається один раз, коли бій добито вперше (стан кімнати
 ## <state_key>_reward, у сейві); повернення ворогів (D492) її не повторює. Порожньо — без здобичі.
 @export var reward: Dictionary[String, int] = {}
@@ -190,6 +193,7 @@ func _spawn(spawn_point: EnemySpawnPoint) -> void:
 		# Ворог додається відкладено (EnemySpawnPoint.spawn_enemy) — різновид встигає до його _ready()
 		enemy.size_kind = variant_size(spawn_point)
 		enemy.elite = variant_elite(spawn_point)
+		enemy.level = enemy_level
 		spawned_enemies.append(enemy)
 		_connect_enemy_signals(enemy)
 		_track(enemy, spawn_point.spawn_id)

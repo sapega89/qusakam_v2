@@ -1,9 +1,9 @@
 {
-	"_comment": "D335 (BACKLOG 44): attribute points the hero gets on each level-up and what one point gives. Stats: attack (Phys. Atk.), max_health, crit_chance / dodge_chance / attack_speed (fractions, 0.004 = 0.4 %), max_sp, skill_power (skill damage and heals x(1 + v)), sp_per_hit (extra SP per landed hit and parry, D504). caps = the same ceilings StatCalculator puts on the base values. Read by AttributeManager.bonus(stat). Plan: design/skill_screen_rework_plan.md",
+	"_comment": "D335 (BACKLOG 44): attribute points the hero gets on each level-up and what one point gives. Stats: attack (Phys. Atk.), max_health, crit_chance / dodge_chance / attack_speed (fractions, 0.004 = 0.4 %), max_sp, skill_power (skill damage and heals x(1 + v)), sp_per_hit (extra SP per landed hit and parry, D504). caps = the same ceilings StatCalculator puts on the base values. diminishing (D642): every step points give factor times less than the step before (AttributeManager.effective_points). Read by AttributeManager.bonus(stat). Plan: design/skill_screen_rework_plan.md",
 	"points_per_level": 5,
 	"caps": {"crit_chance": 0.5, "dodge_chance": 0.5, "attack_speed": 2.0},
 	"attributes": [
-		{"id": "strength", "name": "Strength", "description": "Physical damage of every weapon hit.", "per_point": {"attack": 1}},
+		{"id": "strength", "name": "Strength", "description": "Physical damage of every weapon hit.", "per_point": {"attack": 1}, "diminishing": {"step": 10, "factor": 0.5}},
 		{"id": "agility", "name": "Agility", "description": "Critical hits, evasion and speed.", "per_point": {"crit_chance": 0.004, "dodge_chance": 0.003, "attack_speed": 0.005}},
 		{"id": "vitality", "name": "Vitality", "description": "Maximum HP.", "per_point": {"max_health": 4}},
 		{"id": "wisdom", "name": "Wisdom", "description": "Maximum SP, skill power and SP from every hit.", "per_point": {"max_sp": 2, "skill_power": 0.01, "sp_per_hit": 0.05}}

@@ -9,7 +9,7 @@ class_name EnemyLogic
 ## Бій (D504, design/combat_critique_2026-10-23.md §B): кожен удар має підказку свого кольору (tell_kind) за TELL_LEAD с
 ## до удару; показана підказка — удар відбудеться, зірвати його може лише збій (вичерпана стійкість, парирування).
 ## Після серії — поза відновлення (вікно для відповіді героя), потім ворог відходить (back_off). Між ударами він
-## тримається трохи поза досяжністю й переступає, а заходить бити, лише коли ударів одночасно менше за MAX_ATTACKERS.
+## тримається трохи поза досяжністю й переступає, а заходить бити, лише коли ударів одночасно менше за max_attackers().
 
 # Посилання на ворога
 var enemy: CharacterBody2D = null
@@ -87,9 +87,9 @@ var finisher: bool = false
 ## Замах удару, що зараз іде (EnemyView тягне позу замаху саме на нього).
 var swing_windup: float = 0.0
 
-## Жетон удару (D504, critique §B «group rules»): замахуються одночасно не більше MAX_ATTACKERS ворогів, решта чекає
+## Жетон удару (D504, critique §B «group rules»): замахуються одночасно не більше max_attackers() ворогів, решта чекає
 ## поза досяжністю. Бос жетона не бере й не займає.
-const MAX_ATTACKERS := 2
+const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 static var _attackers: Array[EnemyLogic] = []
 
 ## Між ударами (D504): тримається на attack_range + WAIT_GAP від героя й переступає на ±SHUFFLE px.
@@ -439,10 +439,14 @@ func wind_up(windup: float) -> void:
 	attack_telegraphed.emit()
 	await get_tree().create_timer(tell_time, false).timeout
 
-## Жетон вільний: замахуються менше за MAX_ATTACKERS інших ворогів (або цей уже має жетон).
+## Скільки ворогів замахуються одночасно (D642: тиск групи) — enemy_variety.json "pressure".
+static func max_attackers() -> int:
+	return int(EnemyVariety.data().pressure.max_attackers)
+
+## Жетон вільний: замахуються менше за max_attackers() інших ворогів (або цей уже має жетон).
 func token_free() -> bool:
 	_attackers = _attackers.filter(func(l: EnemyLogic) -> bool: return is_instance_valid(l) and l.is_attacking)
-	return self in _attackers or _attackers.size() < MAX_ATTACKERS
+	return self in _attackers or _attackers.size() < max_attackers()
 
 ## Скільки ворогів зараз тримає жетон удару (для тестів).
 static func attackers() -> int:

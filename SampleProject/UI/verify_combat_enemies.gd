@@ -137,13 +137,13 @@ func _done(enemy: Node) -> void:
 	await create_timer(0.3).timeout
 
 
-## [1] D494: темп ×1.5, удар сильніший, замах не коротший за підказку.
+## [1] D494 → D642: темп знову колишній (D494 сповільнив його в ×1.5), удар сильніший, замах не коротший за підказку.
 func _numbers() -> void:
-	print("[1] D494: cooldowns x1.5, harder hits, readable wind-ups")
+	print("[1] D642: cooldowns back to the pre-D494 tempo, harder hits, readable wind-ups")
 	var lead := 0.45
 	for kind: String in OLD_COOLDOWN:
 		var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
-		ck(is_equal_approx(stats.attack_cooldown, OLD_COOLDOWN[kind] * 1.5) and stats.base_damage > OLD_DAMAGE[kind] and stats.attack_windup >= lead,
+		ck(is_equal_approx(stats.attack_cooldown, OLD_COOLDOWN[kind]) and stats.base_damage > OLD_DAMAGE[kind] and stats.attack_windup >= lead,
 				"%s: cooldown %.2f s (was %.2f), damage %.0f (was %.0f), wind-up %.2f s" % [kind, stats.attack_cooldown, OLD_COOLDOWN[kind], stats.base_damage, OLD_DAMAGE[kind], stats.attack_windup])
 		ck(stats.tell in KINDS and stats.finisher_tell in KINDS and stats.recovery > 0.0, "%s: tell %s, finisher %s, recovery %.2f s" % [kind, stats.tell, stats.finisher_tell, stats.recovery])
 	for path in [BRASS, DJINN]:
@@ -533,25 +533,31 @@ func _static_box(center: Vector2, size: Vector2) -> StaticBody2D:
 
 ## [8] Жетон: замахуються одночасно не більше двох; третій чекає й переступає.
 func _token() -> void:
-	print("[8] At most two enemies wind up at once (attack token)")
-	var a: Node = await _spawn(BANDIT, 170.0)
-	var b: Node = await _spawn(BANDIT, 230.0)
-	var c: Node = await _spawn(BANDIT, 290.0)
-	await _place(b, -30)
-	for e: Node in [a, b, c]:
+	var most: int = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd").max_attackers()
+	print("[8] At most %d enemies wind up at once (attack token, D642)" % most)
+	var crowd: Array[Node] = []
+	for i in most + 1:
+		crowd.append(await _spawn(BANDIT, 170.0 + 60.0 * i))
+	var a: Node = crowd[0]
+	var last: Node = crowd[-1]
+	await _place(crowd[1], -30)
+	for e: Node in crowd:
 		e.global_position.x = hero.global_position.x + (30.0 if e != a else -30.0)
 		e.enemy_logic.player = hero
 		e.enemy_logic.change_state(e.enemy_logic.AIState.ATTACK)
 		e.enemy_logic.attack_ready_in = 0.0
-	for e: Node in [a, b, c]:
+	for e: Node in crowd:
 		e.enemy_logic.handle_attack_state(0.016)
-	var states := [a, b, c].map(func(e: Node) -> bool: return e.enemy_logic.is_attacking)
-	ck(states == [true, true, false] and a.enemy_logic.attackers() == 2, "two swing, the third waits (%s, tokens %d)" % [states, a.enemy_logic.attackers()])
+	var states := crowd.map(func(e: Node) -> bool: return e.enemy_logic.is_attacking)
+	var expected := []
+	for i in most + 1:
+		expected.append(i < most)
+	ck(states == expected and a.enemy_logic.attackers() == most, "%d swing, the last waits (%s, tokens %d)" % [most, states, a.enemy_logic.attackers()])
 	while a.enemy_logic.is_attacking and not a.enemy_logic.recovering:
 		await physics_frame
-	c.enemy_logic.handle_attack_state(0.016)
-	ck(c.enemy_logic.is_attacking, "once one recovers, its token passes to the third")
-	for e: Node in [a, b, c]:
+	last.enemy_logic.handle_attack_state(0.016)
+	ck(last.enemy_logic.is_attacking, "once one recovers, its token passes to the last")
+	for e: Node in crowd:
 		await _done(e)
 
 

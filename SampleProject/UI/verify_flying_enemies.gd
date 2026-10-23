@@ -133,7 +133,7 @@ func _scenes() -> void:
 			"vulture: the jackal's HP %d, damage %d, speed %d, a 0.6 s wind-up, a red tell" % [vs.max_health, vs.base_damage, vs.speed])
 	# XP — менше за шакала: два грифи на дорозі не мають зсунути рівень 5 з останнього вбивства біля воріт (D280, verify_xp_curve)
 	ck(vs.xp_reward * 2 < 15, "vulture XP %d: the oath level still lands on the last City Gates kill" % vs.xp_reward)
-	ck(bs.max_health * 2 == jackal.max_health and bs.base_damage * 2 == jackal.base_damage and bs.tell == "block",
+	ck(bs.max_health == roundi(jackal.max_health / 2.0) and is_equal_approx(bs.base_damage, roundf(jackal.base_damage / 2.0)) and bs.tell == "block",
 			"bat: half the jackal's HP (%d) and damage (%d), a white tell" % [bs.max_health, bs.base_damage])
 	var fs: Resource = load(STATS % "fly")
 	ck(fs.flying and fs.flight_attack == "bite" and fs.max_health == bs.max_health and fs.base_damage == bs.base_damage and fs.tell == "block",

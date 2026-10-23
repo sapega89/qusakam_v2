@@ -22,6 +22,12 @@ static func size(kind: String) -> Dictionary:
 	return data().sizes[kind]
 
 
+## Множники рівня бою [param fight_level] (D642): levels.health / levels.damage, по числу на рівень 1 … 20.
+static func level(fight_level: int) -> Dictionary:
+	var table: Dictionary = data().levels
+	return {"health": float(table.health[fight_level - 1]), "damage": float(table.damage[fight_level - 1])}
+
+
 static func elite() -> Dictionary:
 	return data().elite
 

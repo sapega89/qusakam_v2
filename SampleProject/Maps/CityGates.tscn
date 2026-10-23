@@ -236,6 +236,7 @@ libraries = {
 
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=1351945035]
 script = ExtResource("7_spawner")
+enemy_level = 4
 auto_spawn_on_ready = false
 spawn_in_waves = true
 

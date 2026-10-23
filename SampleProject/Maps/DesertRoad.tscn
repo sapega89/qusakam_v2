@@ -234,6 +234,7 @@ chatter_dialogue = "res://dialogue_quest/DesertRoad_Merchant_Chatter.dqd"
 
 [node name="Fight_LoneShield" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 2
 auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_LoneShieldTrigger")
 state_key = "enemies_loneshield"
@@ -254,6 +255,7 @@ elite = "never"
 
 [node name="Fight_LoneVulture" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 2
 auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_LoneVultureTrigger")
 state_key = "enemies_lonevulture"
@@ -274,6 +276,7 @@ elite = "never"
 
 [node name="Fight_LoneElite" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 2
 auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_LoneEliteTrigger")
 state_key = "enemies_loneelite"
@@ -294,6 +297,7 @@ elite = "always"
 
 [node name="Fight_Dunes" type="Node2D" parent="." unique_id=1773711575 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 2
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
@@ -325,6 +329,7 @@ enemy_type = "fast"
 
 [node name="Fight_Mesa" type="Node2D" parent="." unique_id=1009990628 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 3
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
@@ -361,6 +366,7 @@ enemy_type = "archer"
 
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 3
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
