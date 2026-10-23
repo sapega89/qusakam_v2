@@ -14,6 +14,8 @@ func _ready() -> void:
 	EventBus.player_shot.connect(func(_player: Node, charged: bool) -> void:
 		AudioManager.play(&"bow_shot_charged" if charged else &"bow_shot"))
 	EventBus.attack_started.connect(_on_attack_started)
+	# Підказка удару (D504): білий, жовтий і червоний — кожен свій звук
+	EventBus.enemy_tell_shown.connect(func(_enemy: Node, kind: StringName) -> void: AudioManager.play(StringName("tell_" + kind)))
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_blocked.connect(func(_attacker: Node) -> void: AudioManager.play(&"block"))

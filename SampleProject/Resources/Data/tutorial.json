@@ -54,7 +54,7 @@
 			"id": "lesson_defend",
 			"hint_topic": true,
 			"title": "Training 2/4 — Dodge or Block",
-			"text": "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard.",
+			"text": "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it.",
 			"key": "{dodge}",
 			"hint": "Dash through the blow, or hold block.",
 			"frames": "dodge"
@@ -63,9 +63,9 @@
 			"id": "lesson_parry",
 			"hint_topic": true,
 			"title": "Training 3/4 — Parry",
-			"text": "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows.",
+			"text": "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte.",
 			"key": "{block}",
-			"hint": "Tap it on the red glint to parry.",
+			"hint": "Tap it as the yellow-glint blow lands to parry.",
 			"frames": "parry"
 		},
 		{

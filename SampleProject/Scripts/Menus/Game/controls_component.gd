@@ -17,7 +17,7 @@ const ACTIONS := [
 	["Climb down / drop through a ledge", &"move_down"],
 	["Attack (press again for a combo)", &"attack"],
 	["Heavy attack", &"heavy_attack"],
-	["Block (hold) / parry (tap on the red glint)", &"block"],
+	["Block (hold) / parry (tap as a yellow-glint blow lands)", &"block"],
 	["Drink a potion (quick slot)", &"quick_potion"],
 	["Interact, talk, pick up", &"interact"],
 	["Next line of dialogue", &"dq_accept"],

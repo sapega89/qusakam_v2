@@ -18,7 +18,7 @@
 		{
 			"kind": "archer",
 			"name": "Desert Archer",
-			"text": "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+			"text": "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 		},
 		{
 			"kind": "brass_collector",

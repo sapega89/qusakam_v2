@@ -32,6 +32,8 @@ var poise: int = 1
 var knockback: float = 0.0
 ## Скільки збиває героя влучання стріли лучника (його EnemyStats.stagger_time), с.
 var stagger_time: float = 0.0
+## Підказка пострілу лучника (D504, EnemyLogic.TELL_*): стрілу можна парирувати, якщо вона жовта (PlayerCombat.guard_against).
+var tell: StringName = &"parry"
 ## Хто стріляв: герой (його PlayerCombat рахує стійкість і пасивки) або лучник.
 var shooter: Node2D
 var _flown: float = 0.0

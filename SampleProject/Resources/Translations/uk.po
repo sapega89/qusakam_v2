@@ -778,8 +778,8 @@ msgstr "Атака (ще раз — комбо)"
 msgid "Heavy attack"
 msgstr "Важка атака"
 
-msgid "Block (hold) / parry (tap on the red glint)"
-msgstr "Блок (тримати) / парирування (натиснути на червоному відблиску)"
+msgid "Block (hold) / parry (tap as a yellow-glint blow lands)"
+msgstr "Блок (тримати) / парирування (натиснути, коли падає удар із жовтим відблиском)"
 
 msgid "Interact, talk, pick up"
 msgstr "Взаємодіяти, говорити, підняти"
@@ -2444,11 +2444,11 @@ msgstr "Рухайтеся — {move}. Натисніть {jump}, щоб стр�
 msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
 msgstr "Тренування 1 з 4. Швидко натисніть {attack} тричі: третій замах вибиває з рівноваги. Поки ви вчитеся, ніхто з вас не впаде. {cutscene_skip} — пропустити тренування."
 
-msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
-msgstr "Тренування 2 з 4. Коли його зброя спалахує, проскочіть крізь удар ривком {dodge} або утримуйте {block}, щоб прийняти удар на захист."
+msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
+msgstr "Тренування 2 з 4. Коли його зброя спалахує, проскочіть крізь удар ривком {dodge} або утримуйте {block}, щоб прийняти удар на захист. Червоний відблиск не заблокувати: ухиляйтеся."
 
-msgid "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
-msgstr "Тренування 3 з 4. Коротко натисніть {block} саме на червоний спалах: це парирування. Він хитається, відкритий для ваших ударів."
+msgid "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
+msgstr "Тренування 3 з 4. Жовтий відблиск — удар, який можна парирувати: коротко натисніть {block} саме тоді, коли він падає. Жодної шкоди, він хитається, а ваш наступний удар — важкий рипост."
 
 msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
 msgstr "Тренування 4 з 4. Натисніть {heavy_attack}, коли він не замахується: повільний замах, а тоді удар, що пробиває його захист."
@@ -2507,8 +2507,8 @@ msgstr "Кнопка ривка; двічі поспіль — подвійни�
 msgid "Hold it to block."
 msgstr "Утримуйте її, щоб блокувати."
 
-msgid "Tap it on the red glint to parry."
-msgstr "Коротко натисніть її на червоний спалах, щоб парирувати."
+msgid "Tap it as the yellow-glint blow lands to parry."
+msgstr "Коротко натисніть її, коли падає удар із жовтим відблиском, щоб парирувати."
 
 msgid "Button for a heavy attack."
 msgstr "Кнопка важкої атаки."
@@ -2535,8 +2535,8 @@ msgstr "Пустельний короткий лук. Натисніть уда�
 msgid "Desert Archer"
 msgstr "Пустельний лучник"
 
-msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
-msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Червоний відблиск на наконечнику — стріла летить саме зараз: заблокуйте її, відбийте парируванням назад у нього, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
+msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
+msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Жовтий відблиск на наконечнику — стріла ось-ось полетить: заблокуйте її, відбийте парируванням назад у нього, коли вона долітає, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"

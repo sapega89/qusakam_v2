@@ -82,10 +82,11 @@ func _offset_to(px: float, time: float) -> void:
 	_lean = create_tween()
 	_lean.tween_property(sprite2d, ^"offset:x", px / _base_scale.x, time).set_ease(Tween.EASE_OUT)
 
-## Відблиск на зброї й лінія ривка (EnemyLogic.attack_telegraphed) — на [param life] с, до самого удару.
-func show_tell(life: float, lunge: float, reach: float) -> void:
+## Відблиск кольору [param kind] (EnemyLogic.TELL_*) на зброї й лінія ривка (EnemyLogic.attack_telegraphed) — на
+## [param life] с, до самого удару.
+func show_tell(life: float, lunge: float, reach: float, kind: StringName) -> void:
 	var tell := EnemyTell.new()
-	tell.setup(life)
+	tell.setup(life, kind)
 	tell.glint_at = weapon_point(facing_direction)
 	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
 	tell.feet = body.position + Vector2(0, body.shape.get_rect().end.y)
@@ -111,6 +112,11 @@ func flinch(from_side: float, push: float) -> void:
 	_lean = create_tween().set_parallel()
 	_lean.tween_property(sprite2d, ^"scale", _base_scale, FLINCH_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_lean.tween_property(sprite2d, ^"offset:x", 0.0, FLINCH_TIME)
+
+## Поза відновлення (D504): кадр удару застигає, доки серія не скінчиться (on_attack_ended) — героєві видно вікно.
+func hold_recovery() -> void:
+	if not staggered:
+		anim_player.speed_scale = 0.0
 
 func on_attack_ended() -> void:
 	_offset_to(0.0, 0.06)

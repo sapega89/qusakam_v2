@@ -778,8 +778,8 @@ msgstr "Attack (press again for a combo)"
 msgid "Heavy attack"
 msgstr "Heavy attack"
 
-msgid "Block (hold) / parry (tap on the red glint)"
-msgstr "Block (hold) / parry (tap on the red glint)"
+msgid "Block (hold) / parry (tap as a yellow-glint blow lands)"
+msgstr "Block (hold) / parry (tap as a yellow-glint blow lands)"
 
 msgid "Interact, talk, pick up"
 msgstr "Interact, talk, pick up"
@@ -2442,11 +2442,11 @@ msgstr "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a ro
 msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
 msgstr "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
 
-msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
-msgstr "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
+msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
+msgstr "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
 
-msgid "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
-msgstr "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
+msgid "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
+msgstr "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
 
 msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
 msgstr "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
@@ -2505,8 +2505,8 @@ msgstr "Button to dash; twice in a row for a double dash."
 msgid "Hold it to block."
 msgstr "Hold it to block."
 
-msgid "Tap it on the red glint to parry."
-msgstr "Tap it on the red glint to parry."
+msgid "Tap it as the yellow-glint blow lands to parry."
+msgstr "Tap it as the yellow-glint blow lands to parry."
 
 msgid "Button for a heavy attack."
 msgstr "Button for a heavy attack."
@@ -2533,8 +2533,8 @@ msgstr "A desert short bow. Tap attack to loose an arrow, hold it to draw a char
 msgid "Desert Archer"
 msgstr "Desert Archer"
 
-msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
-msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
+msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Riposte Instinct [DRAFT]"

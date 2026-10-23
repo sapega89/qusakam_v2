@@ -114,6 +114,11 @@ func _initialize() -> void:
 		var alive: Array = _alive(spawner)
 		ck(alive.size() == FIGHTS[fight], "%s: %d enemies after the hero walked in (%d)" % [fight, FIGHTS[fight], alive.size()])
 		for enemy in alive:
+			# D504: вороги вже б'ються — ходять, задкують, відскакують від тіл (D443); на підлозі — хоч в один із кадрів
+			for i in 20:
+				if enemy.is_on_floor():
+					break
+				await physics_frame
 			ck(enemy.is_on_floor(), "%s: %s stands on the floor (y %.0f)" % [fight, enemy.name, enemy.global_position.y])
 		for enemy in alive:
 			enemy.die()

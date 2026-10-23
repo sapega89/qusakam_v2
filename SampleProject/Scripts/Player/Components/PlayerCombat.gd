@@ -69,8 +69,18 @@ const POISE_LIGHT := 1
 const POISE_FINISHER := 2
 const POISE_HEAVY := 3
 ## Блок (D264, 4b): удар спереду шкоди не завдає; парирування — удар у перші PARRY_WINDOW с блоку.
-## Ворог показує відблиск рівно за PARRY_WINDOW до удару (EnemyLogic.wind_up): блок на відблиск — парирування.
+## Ворог показує підказку за EnemyLogic.TELL_LEAD (0.45 с) до удару (D504): блок у останні PARRY_WINDOW с — парирування.
+## Колір підказки вирішує (guard_against): білий удар лише блокують, жовтий ще й парирують, червоний — ні те, ні те.
 const PARRY_WINDOW := 0.25
+## Рипост (D504): вдале парирування удару ворога зблизька відкриває RIPOSTE_WINDOW с — наступний удар (легкий чи
+## важкий) стає важким рипостом: одразу, без замаху й відновлення серії, ×RIPOSTE_DAMAGE, і стійкість ворога ламає
+## одразу, хоч яка вона (RIPOSTE_POISE). Стріла, відбита парируванням, — сама собі нагорода, рипосту не відкриває.
+const RIPOSTE_WINDOW := 1.0
+const RIPOSTE_DAMAGE := 3.0
+const RIPOSTE_POISE := 999
+## Скільки ще відкрите вікно рипосту, с; удар, що зараз іде, — рипост.
+var riposte_left: float = 0.0
+var riposting: bool = false
 ## Удар, що збив би героя на стільки секунд і довше (tank, фінішер серії), пробиває блок.
 const GUARD_BREAK := 0.6
 ## Лук (D380–D382, design/ranged_plan.md), як у Skul: швидкий постріл — одразу на натискання удару, стріла вилітає
@@ -155,7 +165,13 @@ func _ready() -> void:
 	EventBus.equipment_equipped.connect(func(_c: String, _s: String, _i: String) -> void: apply_weapon_profile())
 	EventBus.equipment_unequipped.connect(func(_c: String, _s: String) -> void: apply_weapon_profile())
 	damage_applier.damage_applied.connect(_on_damage_applied)
+	EventBus.player_parried.connect(_on_parried)
 	apply_weapon_profile()
+
+## Парирування удару ворога зблизька (не стріли) відкриває рипост; з луком рипосту немає — лук б'є стрілами.
+func _on_parried(attacker: Node) -> void:
+	if attacker is DefaultEnemy and grip != &"bow":
+		riposte_left = RIPOSTE_WINDOW
 
 ## Профіль удару зброї в руці (D202/D203): кулдаун і відкидання — з items.json; хітбокс — з намальованого шлейфа
 ## удару (B128, WeaponView.drawn_swing_rect): та частина шлейфа, що перед героєм, на його висоту.
@@ -229,6 +245,7 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	_track_combat(delta)
+	riposte_left = maxf(riposte_left - delta, 0.0)
 	if _chain_left > 0.0:
 		_chain_left -= delta
 	if _buffer_left > 0.0:
@@ -279,6 +296,7 @@ func _physics_process(delta: float) -> void:
 			_strike_heavy()
 		State.HEAVY_STRIKE:
 			_set_hitbox_active(false, _direction)
+			riposting = false
 			state = State.HEAVY_RECOVERY
 			_state_left = heavy_recovery
 		State.HEAVY_RECOVERY, State.DRINK:
@@ -344,6 +362,8 @@ func _exit_tree() -> void:
 	_drink_heal = 0
 	block_held = false
 	shot_held = false
+	riposte_left = 0.0
+	riposting = false
 	casting_skill = ""  # каст не зірвано ударом — нічого не списано
 
 ## Анімацію героя зараз веде бій, а не рух (Player._physics_process її не перемикає).
@@ -372,6 +392,9 @@ func is_blocking() -> bool:
 func perform_attack(last_direction: int) -> void:
 	if grip == &"bow":
 		_quick_shot(last_direction)
+		return
+	if riposte_left > 0.0 and state == State.READY:
+		_riposte(last_direction)
 		return
 	if state == State.SWING and combo_step < combo_length() - 1:
 		_queued = true
@@ -416,6 +439,9 @@ func heavy_attack(last_direction: int) -> void:
 			_direction = last_direction
 			_start_draw()
 		return
+	if riposte_left > 0.0 and state == State.READY:
+		_riposte(last_direction)
+		return
 	if state != State.READY or attack_cooldown > 0:
 		_buffer(&"heavy")
 		return
@@ -445,6 +471,24 @@ func _strike_heavy() -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = _poise_of(POISE_HEAVY)
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
+	damage_applier.critical = critical
+	_step(HEAVY_STEP)
+	_play(&"HeavyStrike")
+	EventBus.player_attacked.emit(player, _direction)
+	_set_hitbox_active(true, _direction)
+
+## Рипост (D504): удар важкого кадру одразу, без замаху; відновлення — як після важкого (heavy_recovery).
+func _riposte(last_direction: int) -> void:
+	riposte_left = 0.0
+	riposting = true
+	_direction = player.mover.face_input(last_direction)
+	_chain_left = 0.0
+	combo_step = 0
+	state = State.HEAVY_STRIKE
+	_state_left = heavy_strike_time
+	knockback = maxf(_weapon_knockback, heavy_knockback)
+	_poise = RIPOSTE_POISE
+	damage_applier.current_damage = roundi(hit_damage() * RIPOSTE_DAMAGE)
 	damage_applier.critical = critical
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
@@ -563,6 +607,7 @@ func cancel_attack() -> void:
 		attack_cooldown = maxf(attack_cooldown, _state_left)
 	_set_hitbox_active(false, _direction)
 	_hit_on = false
+	riposting = false
 	state = State.READY
 	_state_left = 0.0
 	_queued = false
@@ -591,15 +636,19 @@ func _start_block() -> void:
 	_chain_left = 0.0
 	_play(&"Block")
 
-## Удар по героєві в блоці (D264): &"parry" — у перші PARRY_WINDOW с, &"block" — спереду, &"" — не захищено
-## (не в блоці, удар ззаду, не ворог і не стріла лучника — D384).
+## Удар по героєві в блоці (D264, D504): &"parry" — жовтий удар у перші PARRY_WINDOW с блоку, &"block" — спереду,
+## &"" — не захищено: не в блоці, удар ззаду, червона підказка, або не удар ворога й не стріла лучника (D384) — хвилю,
+## кулю й стовп боса (їх джерело — сам снаряд, B133) не блокують і не парирують.
 func guard_against(source: Node) -> StringName:
 	if state != State.BLOCK or not (source is DefaultEnemy or source is Arrow):
+		return &""
+	var tell: StringName = source.tell if source is Arrow else source.incoming_tell()
+	if tell == EnemyLogic.TELL_DODGE:
 		return &""
 	var side: float = signf(source.global_position.x - player.global_position.x)
 	if side != 0.0 and side != player.last_direction:
 		return &""
-	return &"parry" if _block_time <= PARRY_WINDOW else &"block"
+	return &"parry" if tell == EnemyLogic.TELL_PARRY and _block_time <= PARRY_WINDOW else &"block"
 
 ## Удар ворога збив героя (D264): дія, що йшла, зірвана, герой відлітає від [param from_x] і [param duration] с
 ## не керується. «Вороги інколи заморожують героя» (D253) — довгий збій від tank і фінішера серії.
@@ -609,6 +658,8 @@ func stagger(duration: float, from_x: float) -> void:
 		_set_hitbox_active(false, _direction)
 	_hit_on = false
 	_drink_heal = 0  # зілля, яке не встигло подіяти, пропало
+	riposting = false
+	riposte_left = 0.0
 	if casting_skill != "":
 		ServiceLocator.get_skill_manager().interrupt_cast(casting_skill)
 		casting_skill = ""

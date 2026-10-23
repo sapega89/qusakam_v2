@@ -196,7 +196,7 @@ func _ready_to_shoot() -> void:
 	await physics_frame
 
 func _tell_then_shot() -> void:
-	print("[2] Every shot: the draw frames and a red glint on the arrowhead, then the arrow 0.25 s later (4b)")
+	print("[2] Every shot: the draw frames and a yellow (parry) glint on the arrowhead, then the arrow 0.45 s later (4b, D504)")
 	await _ready_to_shoot()
 	var tells: Array[int] = []
 	var glint_red := [false]
@@ -205,7 +205,7 @@ func _tell_then_shot() -> void:
 		await process_frame
 		for c in archer.get_children():
 			if c.get_script() == tell_script:
-				glint_red[0] = c.GLINT_OUTER.r > 0.9 and c.GLINT_OUTER.g < 0.3
+				glint_red[0] = c.kind == &"parry" and c.GLINT_OUTER[c.kind].r > 0.9 and c.GLINT_OUTER[c.kind].g > 0.6 and c.GLINT_OUTER[c.kind].b < 0.3
 	archer.enemy_logic.attack_telegraphed.connect(on_tell)
 	var drew := false
 	var shot: Array = []
@@ -219,12 +219,12 @@ func _tell_then_shot() -> void:
 			shot = [enemy_arrows[seen], arrow_times[seen]]
 	archer.enemy_logic.attack_telegraphed.disconnect(on_tell)
 	ck(drew, "the draw frames (8-10) during the wind-up")
-	ck(tells.size() >= 1 and glint_red[0], "a red glint before the shot (%d tells)" % tells.size())
+	ck(tells.size() >= 1 and glint_red[0], "a yellow glint before the shot: arrows can be parried (%d tells)" % tells.size())
 	ck(not shot.is_empty(), "then an arrow")
 	if tells.is_empty() or shot.is_empty():
 		return
 	var lead: int = shot[1] - tells[0]
-	ck(lead >= 180 and lead <= 360, "the arrow flies %d ms after the glint (parry window 250 ms)" % lead)
+	ck(lead >= 380 and lead <= 560, "the arrow flies %d ms after the glint (TELL_LEAD 450 ms)" % lead)
 	var arrow: Node = shot[0]
 	var y0: float = arrow.global_position.y
 	ck(arrow.direction == -1 and absf(arrow.global_position.x - archer.global_position.x) < 50.0, "from the arrowhead, towards the hero")

@@ -282,7 +282,7 @@ func _staggers() -> void:
 	target.combo_chance = 1.0
 	var stagger_times: Array = []
 	target.enemy_logic.attack_started.connect(func() -> void: stagger_times.append(target.hit_stagger_time()))
-	# 4b: перед кожним ударом — відблиск (EnemyTell на ворогові) рівно за PARRY_WINDOW до удару
+	# 4b, D504: перед кожним ударом — відблиск (EnemyTell на ворогові) за EnemyLogic.TELL_LEAD до удару
 	var tells: Array = []
 	var tell_nodes: Array = []
 	var on_tell := func() -> void:
@@ -303,8 +303,9 @@ func _staggers() -> void:
 	var leads: Array = []
 	for i in mini(tells.size(), strikes.size()):
 		leads.append(strikes[i] - tells[i])
-	ck(tells.size() == 3 and strikes.size() == 3 and leads.all(func(ms: int) -> bool: return absi(ms - 250) <= 50),
-			"a tell before each of the three swings, %d ms before the strike (tells %d, strikes %d, leads %s)" % [roundi(hero.combat.PARRY_WINDOW * 1000), tells.size(), strikes.size(), leads])
+	var lead_ms := roundi(target.enemy_logic.TELL_LEAD * 1000)
+	ck(tells.size() == 3 and strikes.size() == 3 and leads.all(func(ms: int) -> bool: return absi(ms - lead_ms) <= 50),
+			"a tell before each of the three swings, %d ms before the strike (tells %d, strikes %d, leads %s)" % [lead_ms, tells.size(), strikes.size(), leads])
 	ck(tell_nodes.size() == 3 and tell_nodes.all(func(n: int) -> bool: return n >= 1), "the glint is drawn on the enemy at each tell (%s)" % [tell_nodes])
 	ck(target.attack_windup > hero.combat.PARRY_WINDOW and target.enemy_logic.COMBO_WINDUP > hero.combat.PARRY_WINDOW,
 			"wind-ups longer than the parry window: first %.2f s, combo %.2f s" % [target.attack_windup, target.enemy_logic.COMBO_WINDUP])

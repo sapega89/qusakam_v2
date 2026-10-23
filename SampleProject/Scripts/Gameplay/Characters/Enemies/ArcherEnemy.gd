@@ -41,6 +41,7 @@ func start_attack(direction: int) -> void:
 	arrow.speed = arrow_speed
 	arrow.damage = int(damage)
 	arrow.stagger_time = stagger_time
+	arrow.tell = enemy_logic.tell_kind
 	arrow.shooter = self
 	get_parent().add_child(arrow)
 	arrow.global_position = global_position + enemy_view.weapon_point(direction)

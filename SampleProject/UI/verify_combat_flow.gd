@@ -198,9 +198,23 @@ func _initialize() -> void:
 	game.player.current_health = game.player.Max_Health
 	var player_hp: int = game.player.current_health
 	game.player.global_position = enemies[1].global_position + Vector2(-60, 0)
-	await create_timer(4.0).timeout
+	# Б'ється той, біля кого герой; решта, застиглі з [1], — подалі: їхні тіла (D443) стали б на шляху його ривку (D504)
+	var others: Array = enemies.filter(func(e: Node) -> bool: return e != enemies[1])
+	var others_at: Array = others.map(func(e: Node) -> Vector2: return e.global_position)
+	for e in others:
+		e.global_position.x = game.player.global_position.x - 600
+	enemies[1].set_physics_process(true)
+	for i in 40:  # до 8 с: серія випадкова (D265), а між ударами ворог задкує й чекає (D504)
+		await create_timer(0.2).timeout
+		if game.player.current_health < player_hp:
+			break
 	ck(game.player.current_health < player_hp, "player lost HP (%d → %d)" % [player_hp, game.player.current_health])
 	ck(enemies[1].enemy_logic.current_state != 0 or enemies[2].enemy_logic.current_state != 0, "enemies left IDLE")
+	enemies[1].set_physics_process(false)
+	while enemies[1].enemy_logic.is_attacking:
+		await physics_frame
+	for i in others.size():
+		others[i].global_position = others_at[i]
 
 	print("[2b] Invulnerability frames (B60)")
 	for e in enemies:
@@ -354,7 +368,7 @@ func _initialize() -> void:
 	ck(type_hits.is_empty(), "the tank is still winding up at 0.5 s")
 	tank.stun(0.5)
 	ck(tank.enemy_logic.stun_left <= 0.0, "armour: a stun does not cancel the tank's swing")
-	await create_timer(0.5).timeout
+	await create_timer(tank.attack_windup - 0.5 + 0.15).timeout
 	ck(type_hits.size() == 1, "the tank's swing lands after its %.1f s wind-up (%s)" % [tank.attack_windup, type_hits])
 	await create_timer(1.0).timeout
 	type_hits.clear()
