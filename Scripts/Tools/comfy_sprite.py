@@ -2160,7 +2160,8 @@ CHARACTERS = {
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/urizen_pixel.webp",
-        seed=105,
+        seed=106,  # D596: обрано 3 (ref, трохи вищий, трьох-чвертний поворот)
+        direction=TALLER,
         colors=16,
         who="the same chubby bald priest with the small dark tattoo marks on his head, the smug half-smile, the brown "
         "hooded robe over the dark grey tunic and the belt with the iron buckle",
