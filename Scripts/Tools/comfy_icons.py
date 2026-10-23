@@ -2,8 +2,8 @@
 
     python -I -B Scripts/Tools/comfy_icons.py   → design/shots/candidates/skill_icons.png
 
-Картинка 1 — темний квадрат кольору дерева (полотно), картинка 2 — кадр героя (стиль). Піксельний стиль зводиться
-до сітки 48×48 найчастішим кольором блоку й палітрою, як спрайти (comfy_sprite.shrink); мальований і гравюра — як є.
+Картинка — темний квадрат кольору дерева (полотно); кадру героя немає (на іконці не має бути Кусакама). Стиль MapleStory
+зводиться до сітки 48×48 найчастішим кольором блоку й палітрою (comfy_sprite.shrink); мальовані — як є.
 """
 
 import os
@@ -17,7 +17,6 @@ from comfy_backdrop import run, upload  # noqa: E402
 from comfy_sprite import edit_graph, free, own_palette, polish, shrink, to_palette  # noqa: E402
 
 GRID, UPX = 48, 16  # клітинка іконки й блок моделі
-HERO = "SampleProject/Sprites/Player/Walk/1.png"
 OUT = "design/shots/candidates/skill_icons.png"
 TREE_BG = {  # тло квадрата за деревом (D550)
     "holy": (58, 44, 26),
@@ -25,53 +24,41 @@ TREE_BG = {  # тло квадрата за деревом (D550)
     "dark": (52, 18, 40),
     "warden": (18, 52, 52),
 }
-SKILLS = [
-    (
-        "Fire Strike",
-        "holy",
-        "a sword blade wreathed in orange fire, slashing diagonally",
-    ),
-    (
-        "Electric Strike",
-        "holy",
-        "a sword blade crackling with bright blue lightning arcs",
-    ),
-    (
-        "Healing Palm",
-        "holy",
-        "an open hand cradling a small glowing healing flask with a soft green-gold light",
-    ),
-    (
-        "Radiant Smite",
-        "paladin",
-        "a war hammer striking down in a burst of white-gold holy light",
-    ),
-    (
-        "Searing Hex",
-        "dark",
-        "a clawed hand casting a violet-black flame shaped like a cursed rune",
-    ),
-    ("Dervish Whirl", "warden", "two curved scimitars spinning in a whirl of sand"),
+SKILLS = [  # Sapega 2026-10-23: «вміння має бути самодостатнім» — на іконці сам ефект, не зброя й не герой
+    ("Fire Strike", "holy", "a roaring burst of orange fire sweeping in a slash-shaped arc"),
+    ("Electric Strike", "holy", "a jagged bolt of blue-white lightning with crackling sparks"),
+    ("Healing Palm", "holy", "a gentle healing touch: an open palm with soft green-gold light flowing out of it"),
+    ("Radiant Smite", "paladin", "a burst of white-gold holy light striking down from above"),
+    ("Searing Hex", "dark", "a cursed rune burning with violet-black fire"),
+    ("Dervish Whirl", "warden", "a spinning whirlwind of sand and wind"),
 ]
-STYLES = [
+STYLES = [  # Sapega 2026-10-23: «за референси візьми Dragon Nest, MapleStory, Diablo»
     (
-        "pixel",
-        "in exactly the pixel art style of the character in picture 2: big square pixels, a thick dark outline, flat "
-        "shading and a small palette",
+        "dragon_nest",
+        "in the style of Dragon Nest skill icons: a glossy hand-painted square icon, vivid saturated colours, a strong "
+        "inner glow and sharp highlights",
     ),
     (
-        "painted",
-        "as a small hand-painted fantasy RPG skill icon like the ones in Diablo II or Dragon Nest: rich painted shading "
-        "and glow, yet simple and readable at a small size",
+        "maplestory",
+        "in the style of MapleStory skill icons: a small cute pixel-art icon with clean dark outlines, bright cheerful "
+        "colours and simple shapes",
     ),
     (
-        "ink",
-        "as a bold inked woodcut emblem on old parchment, thick dark lines and a single accent colour",
+        "diablo2",
+        "in the style of Diablo II skill icons: a dark, gritty hand-painted square icon, muted earthy colours, worn and "
+        "moody",
+    ),
+    (
+        "diablo4",
+        "in the style of Diablo IV skill icons: a detailed painterly icon with dramatic lighting, mostly dark and "
+        "monochrome with one strong accent colour",
     ),
 ]
 PROMPT = (
     "Paint a square game skill icon over this whole dark square, {style}: {subject}. One clear subject filling the "
-    "square, centred, readable at a glance; the dark square stays the background. No text, no letters, no border."
+    "square, centred, readable at a glance; the dark square stays the background. Only the effect of the "
+    "skill itself: no weapons, no people, no characters, no lizard, no faces (a lone hand only where the skill is a "
+    "touch). No text, no letters, no border."
 )
 
 
@@ -90,14 +77,6 @@ def pixel_icon(img):
 
 
 def main():
-    hero = upload(
-        np.asarray(
-            Image.open(HERO)
-            .convert("RGBA")
-            .resize((64 * UPX // 4, 64 * UPX // 4), Image.NEAREST)
-        ),
-        "icon_style.png",
-    )
     cells = {}
     for si, (label, style) in enumerate(STYLES):
         for ki, (name, tree, subject) in enumerate(SKILLS):
@@ -106,13 +85,13 @@ def main():
             mp = src.shape[0] * src.shape[1] / 1048576
             out = run(
                 edit_graph(
-                    PROMPT.format(style=style, subject=subject), 300 + ki, ref, mp, hero
+                    PROMPT.format(style=style, subject=subject), 300 + ki, ref, mp
                 )
             ).astype(np.uint8)
             rgba = np.dstack([out, np.full(out.shape[:2], 255, np.uint8)])
             cells[(si, ki)] = (
                 pixel_icon(rgba)
-                if label == "pixel"
+                if label == "maplestory"
                 else Image.fromarray(out).resize((GRID * 4, GRID * 4), Image.LANCZOS)
             )
             print("generated", label, name, flush=True)
