@@ -69,15 +69,17 @@ SKILLS = [
         "sand-yellow",
     ),
 ]
-TO_MAGENTA = (
-    "Keep the pale violet rune and its dark fire exactly as they are, the same size and place. Replace the whole stone "
+TO_GREEN = (
+    "Keep the pale violet rune and its dark fire as they are, but put the rune exactly in the centre of the square with "
+    "the dark fire burning evenly around it (the rune carries the meaning: a curse). Replace the whole stone "
     "square behind them with a plain flat bright green background (#00FF00) right to the edges: no stone, no texture, no "
     "border, no shadow. No text."
 )
 RESTYLE = (
     "Keep exactly this icon's painting style: matte, muted and desaturated, soft shading, no shine and no glow, on the "
     "same plain flat bright green background right to the edges. Replace the rune and its fire with {subject}, in a pale "
-    "{tint} tint, the same size and in the same place. One clear subject, readable at a glance. No weapon as the "
+    "{tint} tint. The element that carries the meaning sits exactly in the centre of the square, anything else around it. "
+    "One clear subject, readable at a glance. No weapon as the "
     "subject; if a figure helps, a small faceless generic silhouette, never a lizard; no rune, no text, no border."
 )
 
@@ -93,10 +95,47 @@ def key_green(rgb):
     return np.dstack([out.clip(0, 255), alpha * 255]).astype(np.uint8)
 
 
+def centre(rgba, fill=0.8):
+    """Видима частина (альфа) — рівно по центру квадрата й займає fill його сторони (Sapega: «центрувати не забувай»)."""
+    im = Image.fromarray(rgba)
+    box = im.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox()
+    im = im.crop(box)
+    side = round(max(im.width, im.height) / fill)
+    sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    sq.alpha_composite(im, ((side - im.width) // 2, (side - im.height) // 2))
+    return sq
+
+
+def sheet_from(raw):
+    """Лист: кожна іконка — по центру, на тлі слота й на відтінку дерева; прозорі PNG — у ICONS_OUT."""
+    os.makedirs(ICONS_OUT, exist_ok=True)
+    font, small = ImageFont.truetype("arial.ttf", 22), ImageFont.truetype("arial.ttf", 17)
+    pad, top = 24, 70
+    sheet = Image.new("RGB", (pad + len(SKILLS) * (SIZE + pad), top + 2 * (SIZE + pad)), (60, 60, 66))
+    d = ImageDraw.Draw(sheet)
+    for i, ((skill, tree, source, _, _), img) in enumerate(zip(SKILLS, raw)):
+        icon = centre(key_green(img)).resize((SIZE, SIZE), Image.LANCZOS)
+        icon.save(os.path.join(ICONS_OUT, skill.lower().replace(" ", "_") + ".png"))
+        x = pad + i * (SIZE + pad)
+        d.text((x, 14), skill, fill="white", font=font)
+        d.text((x, 42), source, fill=(200, 200, 210), font=small)
+        for row, bg in enumerate((SLOT, TINT[tree])):
+            tile = Image.new("RGBA", (SIZE, SIZE), bg + (255,))
+            tile.alpha_composite(icon)
+            sheet.paste(tile.convert("RGB"), (x, top + row * (SIZE + pad)))
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    sheet.save(OUT)
+    print("sheet", OUT, sheet.size)
+
+
+def raw_path(skill):
+    return os.path.join(ICONS_OUT, "raw", skill.lower().replace(" ", "_") + ".png")
+
+
 def main():
     base = np.asarray(Image.open(BASE).convert("RGBA"))
     mp = base.shape[0] * base.shape[1] / 1048576
-    hexm = run(edit_graph(TO_MAGENTA, 500, upload(base, "icon_base.png"), mp)).astype(
+    hexm = run(edit_graph(TO_GREEN, 500, upload(base, "icon_base.png"), mp)).astype(
         np.uint8
     )
     hex_name = upload(
@@ -115,30 +154,14 @@ def main():
         )
         print("generated", SKILLS[ki][0], flush=True)
     free()
-    os.makedirs(ICONS_OUT, exist_ok=True)
-    font, small = (
-        ImageFont.truetype("arial.ttf", 22),
-        ImageFont.truetype("arial.ttf", 17),
-    )
-    pad, top = 24, 70
-    sheet = Image.new(
-        "RGB", (pad + len(SKILLS) * (SIZE + pad), top + 2 * (SIZE + pad)), (60, 60, 66)
-    )
-    d = ImageDraw.Draw(sheet)
-    for i, ((skill, tree, source, _, _), img) in enumerate(zip(SKILLS, raw)):
-        icon = Image.fromarray(key_green(img)).resize((SIZE, SIZE), Image.LANCZOS)
-        icon.save(os.path.join(ICONS_OUT, skill.lower().replace(" ", "_") + ".png"))
-        x = pad + i * (SIZE + pad)
-        d.text((x, 14), skill, fill="white", font=font)
-        d.text((x, 42), source, fill=(200, 200, 210), font=small)
-        for row, bg in enumerate((SLOT, TINT[tree])):
-            tile = Image.new("RGBA", (SIZE, SIZE), bg + (255,))
-            tile.alpha_composite(icon)
-            sheet.paste(tile.convert("RGB"), (x, top + row * (SIZE + pad)))
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    sheet.save(OUT)
-    print("sheet", OUT, sheet.size)
+    os.makedirs(os.path.join(ICONS_OUT, "raw"), exist_ok=True)
+    for (skill, *_), img in zip(SKILLS, raw):
+        Image.fromarray(img).save(raw_path(skill))
+    sheet_from(raw)
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ["--sheet"]:  # лише лист із збережених сирих кадрів, без моделі
+        sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
+    else:
+        main()
