@@ -71,8 +71,7 @@ func _casts(em: Node, who: String, items: Node) -> void:
 
 	for cast in [["healing_palm", "sword", "palm"], ["fire_strike", "sword", "fire"], ["electric_strike", "mace", "storm"]]:
 		var definition: Object = sm.skill_database.get_skill(cast[0])
-		while em.get_weapon_in_hand() != cast[1]:
-			await _press(&"weapon_next")
+		_draw(em, who, items, cast[1])
 		sm.clear_cooldowns()
 		sm.restore_sp(999)
 		hero.current_health = hero.Max_Health - 50
@@ -84,8 +83,7 @@ func _casts(em: Node, who: String, items: Node) -> void:
 		await _shot("fb21_%s_release" % cast[2])
 		await create_timer(1.5).timeout
 
-	while em.get_weapon_in_hand() != "sword":
-		await _press(&"weapon_next")
+	_draw(em, who, items, "sword")
 	sm.clear_cooldowns()
 	sm.restore_sp(999)
 	await _place(-50)
@@ -165,3 +163,9 @@ func _shot(name: String) -> void:
 	var rect := Rect2i(Vector2i(at) - Vector2i(200, 200), Vector2i(480, 320)).intersection(Rect2i(Vector2i.ZERO, img.get_size()))
 	img.get_region(rect).save_png(out_dir.path_join(name + ".png"))
 	print("shot ", name, " ", rect)
+
+
+## Зброю в руку дає лише екіпірування (D475): вдягаємо вже вдягнений предмет слота ще раз.
+func _draw(em: Node, who: String, items: Node, slot: String) -> void:
+	var id: String = root.get_node("ServiceLocator").get_game_manager().player_state.equipment[slot].id
+	em.equip_item(who, slot, id, items.get_item(id))

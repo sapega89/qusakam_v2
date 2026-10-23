@@ -13,13 +13,14 @@ const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const TopicWindow = preload("res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn")
 
 @onready var hint_label: Label = $Panel/MarginContainer/HintLabel
-@onready var panel: Panel = $Panel
+@onready var panel: PanelContainer = $Panel
 
 var current_hint: String = ""
 var is_showing: bool = false
 var display_duration: float = 4.0
 ## Місце плашки зі сцени (над панеллю навичок); анімація зсуває від нього, а не від нуля — інакше плашка лягала на панель.
-var _panel_y: float
+## Зсуваємо весь вузол, не плашку: плашка росте вгору під текст (D474), і її власна позиція міняється з висотою.
+var _rest_y: float
 ## Теми, що чекають на вільну гру, щоб відкрити вікно: [id, sticky].
 var _pending: Array = []
 ## Вікно відкрили ми — ми ж і знімаємо паузу.
@@ -28,7 +29,7 @@ var _window_open := false
 func _ready() -> void:
 	visible = false
 	is_showing = false
-	_panel_y = panel.position.y
+	_rest_y = position.y
 	# Перша тема гри — рух, за дві секунди після входу (вікно дочекається кінця вступного діалогу).
 	await get_tree().create_timer(2.0).timeout
 	show_hint("movement")
@@ -98,19 +99,19 @@ func _animate_in() -> void:
 	"""Animates hint sliding in from bottom"""
 	visible = true
 	panel.modulate.a = 0.0
-	panel.position.y = _panel_y + 50
+	position.y = _rest_y + 50
 
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 1.0, 0.3)
-	tween.tween_property(panel, "position:y", _panel_y, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "position:y", _rest_y, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _animate_out() -> void:
 	"""Animates hint sliding out"""
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
-	tween.tween_property(panel, "position:y", _panel_y + 50, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "position:y", _rest_y + 50, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 
 	await tween.finished
 	visible = false

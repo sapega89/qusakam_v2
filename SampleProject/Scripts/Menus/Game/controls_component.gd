@@ -26,8 +26,6 @@ const ACTIONS := [
 	["Skill slot 3", &"skill_slot_3"],
 	["Skill slot 4", &"skill_slot_4"],
 	["Call a companion", &"assist"],
-	["Next weapon", &"weapon_next"],
-	["Previous weapon", &"weapon_prev"],
 	["Game menu", &"game_menu"],
 	["Previous / next menu tab", &"menu_prev_tab"],
 	["Skills screen: accept the picks", &"skills_accept"],

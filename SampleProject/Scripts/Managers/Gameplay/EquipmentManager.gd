@@ -6,7 +6,7 @@ class_name EquipmentManager
 ## статистику спорядження рахує GameCharacter.get_equipment_stats().
 
 ## Слоти зброї (D147). З вдягнених у них одна — в руці: нею бʼє гравець (D203) і за нею
-## перевіряються Fire / Electric Strike (D141).
+## перевіряються Fire / Electric Strike (D141). Перемикання кнопкою немає (D475): в руці — остання вдягнена.
 const WEAPON_SLOTS: Array[String] = ["sword", "polearm", "dagger", "axe", "mace", "bow", "staff"]
 
 func _initialize():
@@ -63,24 +63,13 @@ func get_off_hand_item() -> Dictionary:
 				return item
 	return {}
 
-## Наступна (step = 1) чи попередня (-1) вдягнена зброя. Без вдягненої зброї — голі руки.
-func cycle_weapon(step: int) -> void:
-	var equipped := _equipped_weapons()
-	if equipped.is_empty():
-		_set_in_hand("")
-		return
-	var index := equipped.find(get_weapon_in_hand())
-	if index == -1:
-		_set_in_hand(equipped[0])
-		return
-	_set_in_hand(equipped[posmod(index + step, equipped.size())])
-
 func _equipped_weapons() -> Array[String]:
 	var equipment: Dictionary = _state().equipment
 	return WEAPON_SLOTS.filter(func(slot: String) -> bool: return equipment.get(slot) != null)
 
+## Зброю міняє лише екіпірування (D475): вдягнена зброя одразу в руці.
 func _on_equipped(_character_id: String, slot_id: String, _item_id: String) -> void:
-	if slot_id in WEAPON_SLOTS and get_weapon_in_hand().is_empty():
+	if slot_id in WEAPON_SLOTS:
 		_set_in_hand(slot_id)
 
 func _on_unequipped(_character_id: String, slot_id: String) -> void:

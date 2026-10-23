@@ -204,11 +204,6 @@ func _unhandled_input(ev: InputEvent) -> void:
 			ServiceLocator.get_companion_manager().call_next()
 		_assist_down = down
 		return
-	# D202: перемкнути зброю в руці (не посеред удару)
-	if ev.is_action_pressed(&"weapon_next") or ev.is_action_pressed(&"weapon_prev"):
-		if not event and not combat.is_attacking:
-			ServiceLocator.get_equipment_manager().cycle_weapon(1 if ev.is_action_pressed(&"weapon_next") else -1)
-		return
 	if ev.is_action_pressed(&"dodge") and not event:
 		combat.cancel_draw()  # перекат зриває натяг лука (D382)
 		if combat.owns_animation():

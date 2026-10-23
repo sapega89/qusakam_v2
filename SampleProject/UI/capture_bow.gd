@@ -44,9 +44,7 @@ func _initialize() -> void:
 	var who: String = sl.get_game_manager().get_active_character().character_id
 	var em: Node = sl.get_equipment_manager()
 	var items: Node = sl.get_item_database()
-	em.equip_item(who, "bow", "short_bow", items.get_item("short_bow"))
-	while sl.get_game_manager().player_state.weapon_in_hand != "bow":
-		em.cycle_weapon(1)
+	em.equip_item(who, "bow", "short_bow", items.get_item("short_bow"))  # вдягнений — в руці (D475)
 
 	# Лук: стійка, швидкий постріл, натяг, заряджено, заряджений постріл
 	await _stand(hero.global_position.x)

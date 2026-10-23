@@ -79,7 +79,7 @@ func _initialize() -> void:
 	ck(opts == ["ResumeButton", "LoadButton", "TitleButton"] and s.get_node("%LoadButton").text == "Load Game",
 			"third option Load Game between Resume and Return (D92)")
 	ck(s.get_viewport().gui_get_focus_owner() == s.get_node("%ResumeButton"), "Resume focused")
-	ck(s.get_node("%ResumeButton").theme_type_variation == &"NpcMenuItemOn", "focused option uses the active UI/Menu Item style")
+	ck(s.get_node("%ResumeButton").theme_type_variation == &"GameOverItemOn", "focused option uses the active UI/Menu Item style")
 	ck((s.get_node("%Vignette") as TextureRect).texture is GradientTexture2D, "radial vignette built from tokens")
 	GameOverScreen.present(player)
 	await process_frame

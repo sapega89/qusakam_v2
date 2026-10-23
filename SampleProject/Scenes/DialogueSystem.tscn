@@ -20,3 +20,4 @@ theme = ExtResource("5_game_ui_theme")
 
 [node name="ChoiceMenu" parent="." instance=ExtResource("3_choice_menu")]
 theme = ExtResource("5_game_ui_theme")
+button_type_variation = &"DialogueChoice"

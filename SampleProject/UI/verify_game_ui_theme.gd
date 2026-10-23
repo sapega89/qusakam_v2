@@ -49,6 +49,21 @@ func _initialize() -> void:
 	_check(theme.get_color("font_color", "TabButton") == UITokens.TEXT_SECONDARY, "TabButton font_color == TEXT_SECONDARY")
 	_check(theme.get_font_size("font_size", "SmallLabel") == 18 and theme.get_font_size("font_size", "TitleLabel") == 30, "D166: 14 → 18, 24 → 30")
 	_check(theme.get_font_size("font_size", "TitleLabel") == UITokens.font_px(UITokens.SIZE_TITLE), "TitleLabel size == font_px(SIZE_TITLE) (D166)")
+	# D474: чотири ігрові поверхні — ×1.5, тіло ≥ 24, підписи й клавіші ≥ 20; меню гри лишається ×1.25.
+	for t in UITokens.INGAME_FONT_TYPES:
+		for size_name in theme.get_font_size_list(t):
+			var px := theme.get_font_size(size_name, t)
+			_check(px >= UITokens.INGAME_LABEL_MIN, "D474: %s/%s = %d ≥ %d" % [t, size_name, px, UITokens.INGAME_LABEL_MIN])
+	for t in ["DialogueText", "NpcMenuItem", "HudQuestTitle", "TutorialBody", "TutorialBanner"]:
+		for size_name in theme.get_font_size_list(t):
+			_check(theme.get_font_size(size_name, t) >= UITokens.INGAME_BODY_MIN, "D474: body %s/%s ≥ %d" % [t, size_name, UITokens.INGAME_BODY_MIN])
+	_check(theme.get_font_size("font_size", "QuestTitle") == UITokens.font_px(UITokens.SIZE_BODY)
+			and theme.get_font_size("font_size", "HudQuestTitle") == UITokens.font_px(UITokens.SIZE_BODY, true) and UITokens.font_px(UITokens.SIZE_BODY, true) == 24,
+			"D474: QuestTitle (boss bar) ×1.25 = 20, HudQuestTitle ×1.5 = 24")
+	_check(theme.get_font_size("font_size", "KeyBadgeLabel") == UITokens.font_px(UITokens.SIZE_SMALL)
+			and theme.get_font_size("font_size", "GameOverItem") == UITokens.font_px(UITokens.SIZE_LABEL),
+			"D474: Controls key badge and Game Over items stay ×1.25")
+	_check(theme.get_font_size("font_size", "StatusName") == UITokens.SIZE_NAME, "D474: titles keep their size (StatusName 48)")
 	var panel := theme.get_stylebox("panel", "PanelContainer") as StyleBoxFlat
 	_check(panel != null and panel.bg_color == UITokens.SURFACE, "PanelContainer bg == SURFACE")
 	_check(panel != null and panel.corner_radius_top_left == UITokens.RADIUS, "PanelContainer radius == 0")

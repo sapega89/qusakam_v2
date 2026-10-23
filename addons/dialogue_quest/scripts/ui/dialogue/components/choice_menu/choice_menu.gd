@@ -4,6 +4,8 @@ class_name DQChoiceMenu
 signal choice_made(choice: String)
 
 var choices: PackedStringArray = [] : set = set_choices, get = get_choices
+## Kusakam, D474: варіація теми для кнопок відповідей (DialogueSystem.tscn ставить DialogueChoice).
+@export var button_type_variation: StringName = &""
 
 @onready
 var _buttons_container: Container = %ButtonsContainer
@@ -25,6 +27,7 @@ func set_choices(value: PackedStringArray) -> void:
 		var btn = Button.new()
 		btn.name = c
 		btn.text = c
+		btn.theme_type_variation = button_type_variation
 		btn.pressed.connect(_emit_choice_made.bind(c))
 		_buttons_container.add_child(btn)
 	_focus_first.call_deferred()

@@ -135,11 +135,7 @@ func _place(dx: float) -> void:
 func _combat() -> void:
 	print("[2] Combat: every swing, hit, guard, stagger, draw/sheathe and cast (D276)")
 	var who: String = sl.get_game_manager().get_active_character().character_id
-	em.equip_item(who, "sword", "iron_sword", sl.get_item_database().get_item("iron_sword"))
-	for i in 4:
-		if em.get_weapon_in_hand() == "sword":
-			break
-		await _tap(&"weapon_next")
+	em.equip_item(who, "sword", "iron_sword", sl.get_item_database().get_item("iron_sword"))  # вдягнений — в руці (D475)
 	await create_timer(3.5).timeout  # бій від екіпірування минув
 
 	await _place(600)

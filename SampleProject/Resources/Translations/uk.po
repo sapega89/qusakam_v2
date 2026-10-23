@@ -802,12 +802,6 @@ msgstr "Слот навички 4"
 msgid "Call a companion"
 msgstr "Покликати супутника"
 
-msgid "Next weapon"
-msgstr "Наступна зброя"
-
-msgid "Previous weapon"
-msgstr "Попередня зброя"
-
 msgid "Game menu"
 msgstr "Ігрове меню"
 
@@ -1435,9 +1429,6 @@ msgid "Unlearn skills and attributes (%d coins)"
 msgstr "Розучити навички й атрибути (%d монет)"
 
 # ── HUD, notifications
-msgid "Unarmed"
-msgstr "Без зброї"
-
 msgid "Level %d"
 msgstr "Рівень %d"
 
@@ -2480,8 +2471,8 @@ msgstr "Кожен рівень додає HP і шкоди та дає очко
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Новий рівень! Можна вивчити «Цілющу долоню»: натисніть {game_menu}, відкрийте «Навички», виберіть її й підтвердьте. Вона потрапить на панель швидкого доступу; натисніть {skill_slot_1}, щоб зцілитися."
 
-msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment. {weapon_next} switches weapons."
-msgstr "Дід дав вам меч і обладунок: натисніть {game_menu}, відкрийте «Інвентар» і скористайтеся ними, щоб спорядитися, або оберіть місце в «Спорядженні». {weapon_next} перемикає зброю."
+msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
+msgstr "Дід дав вам меч і обладунок: натисніть {game_menu}, відкрийте «Інвентар» і скористайтеся ними, щоб спорядитися, або оберіть місце в «Спорядженні»."
 
 msgid "Companions fight at your side — press {assist} to call one. Call the guard now!"
 msgstr "Супутники бʼються пліч-о-пліч із вами — натисніть {assist}, щоб покликати одного. Покличте охоронця зараз!"
@@ -2530,9 +2521,6 @@ msgstr "Кнопка, що відкриває ігрове меню; далі о
 
 msgid "Button for the first skill slot."
 msgstr "Кнопка першого слота навичок."
-
-msgid "Button to switch weapons."
-msgstr "Кнопка зміни зброї."
 
 msgid "Button to call the next ready companion."
 msgstr "Кнопка, що кличе наступного готового супутника."

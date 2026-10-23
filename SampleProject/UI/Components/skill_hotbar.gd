@@ -1,7 +1,7 @@
 extends PanelContainer
 class_name UISkillHotbar
 
-## Бойова панель навичок.
+## Бойова панель навичок: лише навички 1–4 і асист; слота зброї немає (D475).
 ## Figma: Game Scene / Combat HUD → Skill Hotbar (434:6628).
 ## Виміри й стани: design/combat_hud_mapping.md
 ##
@@ -79,7 +79,6 @@ func _build_slots() -> void:
 		_slots_row.remove_child(child)
 		child.queue_free()
 	_slots.clear()
-	_build_weapon_bind()
 
 	var count: int = _skill_manager.SLOT_COUNT if _skill_manager else 4
 	for i in count:
@@ -129,39 +128,6 @@ func _build_slots() -> void:
 		_slots_row.add_child(bind)
 		_slots.append(bind)
 	_build_assist_bind()
-
-
-## Зброя в руці (D202) — ліворуч від навичок: назва й клавіша перемикання з InputMap.
-## Іконок зброї ще немає (D128), тож показуємо назву.
-func _build_weapon_bind() -> void:
-	var bind := VBoxContainer.new()
-	bind.name = "WeaponBind"
-	bind.add_theme_constant_override("separation", UITokens.SPACE_XS)
-	var slot := PanelContainer.new()
-	slot.name = "Slot"
-	slot.custom_minimum_size = Vector2(0, SLOT_SIZE)
-	var box := _slot_box(false)
-	box.content_margin_left = UITokens.SPACE_SM
-	box.content_margin_right = UITokens.SPACE_SM
-	slot.add_theme_stylebox_override("panel", box)
-	var name_label := Label.new()
-	name_label.name = "WeaponName"
-	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	slot.add_child(name_label)
-	bind.add_child(slot)
-	var badge := PanelContainer.new()
-	badge.name = "Badge"
-	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	badge.add_theme_stylebox_override("panel", _badge_box(false))
-	var key := Label.new()
-	key.name = "Key"
-	key.theme_type_variation = &"BindBadge"
-	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
-	key.text = _key_for(&"weapon_next")
-	badge.add_child(key)
-	bind.add_child(badge)
-	_slots_row.add_child(bind)
 
 
 ## Асист компаньйона (D209) — праворуч від навичок: портрет того, хто вийде на кнопку асисту;
@@ -236,19 +202,14 @@ func _key_for(action: StringName) -> String:
 	return InputGlyphs.badge(action)
 
 
-## Пристрій змінився — бейджі слотів, зброї й асисту називають його кнопки.
+## Пристрій змінився — бейджі слотів і асисту називають його кнопки.
 func _on_input_device_changed(_pad: bool) -> void:
 	for i in _slots.size():
 		_slots[i].get_node(^"Badge/Key").text = _key_for(StringName("skill_slot_%d" % (i + 1)))
-	_slots_row.get_node(^"WeaponBind/Badge/Key").text = _key_for(&"weapon_next")
 	_slots_row.get_node(^"AssistBind/Badge/Key").text = _key_for(&"assist")
 
 
 func refresh() -> void:
-	var item: Dictionary = ServiceLocator.get_equipment_manager().get_weapon_item_in_hand()
-	var weapon_label: Label = _slots_row.get_node(^"WeaponBind/Slot/WeaponName")
-	weapon_label.text = item.name if not item.is_empty() else tr("Unarmed")
-	weapon_label.add_theme_color_override("font_color", UITokens.TEXT_PRIMARY if not item.is_empty() else UITokens.TEXT_SECONDARY)
 	for i in _slots.size():
 		_update_slot(i)
 

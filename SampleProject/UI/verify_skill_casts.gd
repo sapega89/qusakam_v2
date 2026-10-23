@@ -111,11 +111,14 @@ func _initialize() -> void:
 func _slot_action(id: String) -> StringName:
 	return StringName("skill_slot_%d" % (sm.get_slot_of_skill(id) + 1))
 
+## Зброю в руку дає лише екіпірування (D475): вдягаємо вже вдягнений предмет слота ще раз.
 func _hold_weapon(slot: String) -> void:
-	for i in 4:
-		if em.get_weapon_in_hand() == slot or slot == "":
-			return
-		await _tap(&"weapon_next")
+	if slot == "":
+		return
+	var sl: Node = root.get_node("ServiceLocator")
+	var id: String = sl.get_game_manager().player_state.equipment[slot].id
+	em.equip_item(sl.get_game_manager().get_active_character().character_id, slot, id, sl.get_item_database().get_item(id))
+	await process_frame
 	ck(em.get_weapon_in_hand() == slot, "%s in hand" % slot)
 
 func _place(dx: float) -> void:

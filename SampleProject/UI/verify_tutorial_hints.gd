@@ -11,6 +11,7 @@ extends SceneTree
 ##      banner, no window, and still lands in the list. Seen topics are saved with the player.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
+const TextFit = preload("res://SampleProject/UI/text_fit.gd")
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
@@ -59,6 +60,13 @@ func _initialize() -> void:
 	ck(_title() == "Moving and Jumping", "window on the movement topic (%s)" % _title())
 	ck(paused, "the game is paused under it")
 	ck(_body().contains("A / D") and _body().contains("Space"), "keyboard names (%s)" % _body())
+	# D474: вікно туторіалу ×1.5 (тіло ≥ 24, клавіша ≥ 20), уміщається в екран — нічого не обрізано.
+	var win: Control = _window()
+	ck(win.get_node("%Body").get_theme_font_size(&"font_size") >= UITokens.INGAME_BODY_MIN
+			and win.get_node("%Key").get_theme_font_size(&"font_size") >= UITokens.INGAME_LABEL_MIN,
+			"D474: window body %d px, key %d px" % [win.get_node("%Body").get_theme_font_size(&"font_size"), win.get_node("%Key").get_theme_font_size(&"font_size")])
+	var win_clip: String = TextFit.clipped(win)
+	ck(win_clip == "", "D474: nothing clipped in the tutorial window (%s)" % win_clip)
 
 	print("[2] Pad B closes; the next hint names pad buttons")
 	await Kit.pad(self, JOY_BUTTON_B)
@@ -128,6 +136,11 @@ func _initialize() -> void:
 	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
 	ck(_window() == null, "no window with the setting off")
 	ck(hint.is_showing and hint.hint_label.text != "", "a banner instead (%s: %s)" % [hint.current_hint, hint.hint_label.text])
+	await Kit.frames(self, 3)
+	# D474: плашка ×1.5 (≥ 24 px) росте вгору під текст — нічого не обрізано.
+	ck(hint.hint_label.get_theme_font_size(&"font_size") >= UITokens.INGAME_BODY_MIN, "D474: banner text %d px" % hint.hint_label.get_theme_font_size(&"font_size"))
+	var banner_clip: String = TextFit.clipped(hint.panel)
+	ck(banner_clip == "", "D474: nothing clipped in the banner (%s)" % banner_clip)
 	var seen: Array = sl.get_game_manager().player_state.seen_tutorials
 	ck("heavy_attack" in seen and "first_kill" in seen, "both still land in the list (%s)" % [seen])
 	var saved: Dictionary = root.get_node("SaveSystem").player_data_module.save()
