@@ -78,8 +78,12 @@ static func enemies() -> Array:
 	return out
 
 
+## Файл текстів; тести підміняють його фікстурою в user:// (кілька шматків — перевірити порядок знахідок).
+static var stories_file: String = STORIES_FILE
+
+
 static func _stories_data() -> Array:
-	return JSON.parse_string(FileAccess.get_file_as_string(STORIES_FILE)).stories
+	return JSON.parse_string(FileAccess.get_file_as_string(stories_file)).stories
 
 
 ## Прочитаний шматок історії [param story_id] (StoryNote); id без запису в journal_stories.json — помилка даних.

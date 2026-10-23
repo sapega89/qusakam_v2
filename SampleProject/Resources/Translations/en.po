@@ -427,6 +427,18 @@ msgstr "ENEMIES MET"
 msgid "No enemies met yet."
 msgstr "No enemies met yet."
 
+msgid "NOTES"
+msgstr "NOTES"
+
+msgid "Notes"
+msgstr "Notes"
+
+msgid "NOTES FOUND"
+msgstr "NOTES FOUND"
+
+msgid "No notes found yet."
+msgstr "No notes found yet."
+
 msgid "Defeated: %d"
 msgstr "Defeated: %d"
 

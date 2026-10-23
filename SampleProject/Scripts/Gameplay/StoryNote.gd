@@ -3,7 +3,7 @@ extends Area2D
 ## Шматок історії у світі (D583, D621): записка, папери, малюнок на стіні — у світі блиск, як предмет (D446).
 ## Поруч — "Read"; interact показує текст (модалка misc_popup) і пише знахідку в журнал
 ## (JournalRecords.find_story → player_state.journal.stories, у сейві).
-## Текст — Resources/Data/journal_stories.json за [member story_id]. Читати можна знову.
+## Текст — Resources/Data/journal_stories.json за [member story_id]. Читати можна знову; у журналі — вкладка Notes (Q87).
 
 signal read(story_id: String)
 

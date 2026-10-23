@@ -427,6 +427,18 @@ msgstr "ЗУСТРІНУТІ ВОРОГИ"
 msgid "No enemies met yet."
 msgstr "Ви ще не зустріли ворогів."
 
+msgid "NOTES"
+msgstr "ЗАПИСИ"
+
+msgid "Notes"
+msgstr "Записи"
+
+msgid "NOTES FOUND"
+msgstr "ЗНАЙДЕНІ ЗАПИСИ"
+
+msgid "No notes found yet."
+msgstr "Ви ще не знайшли записів."
+
 msgid "Defeated: %d"
 msgstr "Переможено: %d"
 

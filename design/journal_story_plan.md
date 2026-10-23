@@ -1,14 +1,15 @@
 ---
 type: plan
-status: planned
-blocked-by: [Q87]
+status: built
 figma: "journal-main-story 192:1529 · journal-character-detail 192:1754 (no frame for story pieces)"
 tags: [journal, story, secrets]
 ---
 
 # Journal: found story pieces (plan)
 
-**Half built.** D583 says every "what's there?" may end in a **piece of story** (a note, a mural, the grandfather's or
+**Built** (`cloud/journal-notes`, Q87 default): the fourth tab NOTES lists the found pieces in the order found, the full text on the right; `verify_journal_notes.gd`, shots `design/shots/journal_notes_{empty,en,uk}.png`. No Figma frame yet (step 1 below is still open).
+
+**Was half built.** D583 says every "what's there?" may end in a **piece of story** (a note, a mural, the grandfather's or
 the alchemist's papers), and [[world_structure_plan]] says every story piece goes into the Journal. `cloud/world-1`
 (D622) built the **data and the record**, not the Journal view:
 
@@ -17,7 +18,7 @@ the alchemist's papers), and [[world_structure_plan]] says every story piece goe
 | Story texts | `Resources/Data/journal_stories.json` (`id`, `title`, `text`, `draft`), English keys, uk in `uk.po` | ✅ one: `grandfather_notes` `[ЧЕРНЕТКА]` |
 | A thing to read in the world | `Objects/StoryNote.tscn` + `Scripts/Gameplay/StoryNote.gd`: a sparkle (D446), "Read", the text in the `misc_popup` modal | ✅ the grandfather's attic (D621) |
 | The record | `JournalRecords.find_story / story / stories`, `player_state.journal.stories` (in the save) | ✅ `verify_branches` [4]–[5] |
-| **A Journal page that lists them** | `journal_component.gd` has three tabs: QUESTS · CHARACTERS · BESTIARY (D290) | ❌ no tab, no Figma frame |
+| **A Journal page that lists them** | `journal_component.gd`: QUESTS · CHARACTERS · BESTIARY · **NOTES** | ✅ tab (Q87 default); ❌ no Figma frame |
 
 ## Decision required (Q87)
 Where do found pieces show in the Journal? Default: a fourth tab **NOTES** (uk «ЗАПИСИ») after BESTIARY, built
