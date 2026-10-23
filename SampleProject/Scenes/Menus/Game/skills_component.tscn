@@ -1,11 +1,10 @@
 [gd_scene load_steps=3 format=3 uid="uid://c8k2skillsuicmp"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/portrait.tres" id="hero_portrait"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/skills_component.gd" id="1_skills"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/skill_tree_links.gd" id="2_links"]
 
 [node name="SkillsComponent" type="Control"]
-layout_mode = 3
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -13,157 +12,100 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_skills")
 
-[node name="Center" type="MarginContainer" parent="."]
+[node name="Window" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -64.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 32
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 32
+theme_type_variation = &"SkillWindow"
 
-[node name="Body" type="VBoxContainer" parent="Center"]
+[node name="Center" type="MarginContainer" parent="Window"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
 
-[node name="ProfileHeader" type="HBoxContainer" parent="Center/Body"]
+[node name="Body" type="VBoxContainer" parent="Window/Center"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
-[node name="Avatar" type="Panel" parent="Center/Body/ProfileHeader"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+[node name="TopBar" type="HBoxContainer" parent="Window/Center/Body"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Window/Center/Body/TopBar"]
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"AvatarChip"
+theme_type_variation = &"SkillWindowTitle"
+text = "Skills"
+uppercase = true
 
-[node name="Art" type="TextureRect" parent="Center/Body/ProfileHeader/Avatar"]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 2.0
-offset_top = 2.0
-offset_right = -2.0
-offset_bottom = -2.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("hero_portrait")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="NameBlock" type="VBoxContainer" parent="Center/Body/ProfileHeader"]
+[node name="TreeTabs" type="HBoxContainer" parent="Window/Center/Body/TopBar"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_constants/separation = 2
+theme_override_constants/separation = 16
+alignment = 1
 
-[node name="CharName" type="Label" parent="Center/Body/ProfileHeader/NameBlock"]
+[node name="TreeTab" type="Button" parent="Window/Center/Body/TopBar/TreeTabs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillTreeTab"
+toggle_mode = true
+text = "Holy Warrior"
+clip_text = true
+
+[node name="HeroLine" type="Label" parent="Window/Center/Body/TopBar"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TopBarTitle"
+size_flags_vertical = 4
+theme_type_variation = &"SkillHero"
 text = "—"
 
-[node name="CharClass" type="Label" parent="Center/Body/ProfileHeader/NameBlock"]
-unique_name_in_owner = true
+[node name="TopRule" type="HSeparator" parent="Window/Center/Body"]
 layout_mode = 2
-theme_type_variation = &"SmallLabel"
-text = "—"
+theme_type_variation = &"SkillBarRule"
 
-[node name="Meta" type="VBoxContainer" parent="Center/Body/ProfileHeader"]
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-theme_override_constants/separation = 2
-
-[node name="JPCaption" type="Label" parent="Center/Body/ProfileHeader/Meta"]
-layout_mode = 2
-size_flags_horizontal = 8
-theme_type_variation = &"MicroLabel"
-text = "JP OBTAINED"
-
-[node name="JPValue" type="Label" parent="Center/Body/ProfileHeader/Meta"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 8
-theme_type_variation = &"BigValueAccent"
-text = "0 JP"
-
-[node name="Columns" type="HBoxContainer" parent="Center/Body"]
+[node name="Columns" type="HBoxContainer" parent="Window/Center/Body"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 32
+theme_override_constants/separation = 16
 
-[node name="TreePanel" type="PanelContainer" parent="Center/Body/Columns"]
+[node name="LeftPanel" type="PanelContainer" parent="Window/Center/Body/Columns"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TreePanel"
 
-[node name="TreeBox" type="VBoxContainer" parent="Center/Body/Columns/TreePanel"]
+[node name="Tree" type="VBoxContainer" parent="Window/Center/Body/Columns/LeftPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
-[node name="LaneHeader" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox"]
+[node name="Heading" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_type_variation = &"SkillTreeHeading"
+text = "Holy Warrior"
+horizontal_alignment = 1
+uppercase = true
 
-[node name="TierSpacer" type="Control" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader"]
-custom_minimum_size = Vector2(56, 0)
+[node name="Status" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree"]
 layout_mode = 2
+theme_type_variation = &"SkillTreeStatus"
+horizontal_alignment = 1
+autowrap_mode = 3
 
-[node name="TrunkHeader" type="VBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="TrunkTitle" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader/TrunkHeader"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"TreeTitle"
-text = "—"
-
-[node name="TrunkSubtitle" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader/TrunkHeader"]
-layout_mode = 2
-theme_type_variation = &"SmallLabel"
-text = "Primary Class Tree"
-
-[node name="OathHeader" type="VBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 2
-
-[node name="TreeTabs" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader/OathHeader"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="TreeTab" type="Button" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader/OathHeader/TreeTabs"]
-unique_name_in_owner = true
-layout_mode = 2
-focus_mode = 2
-theme_type_variation = &"TabButton"
-toggle_mode = true
-
-[node name="TreeStatus" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/LaneHeader/OathHeader"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"MutedLabel"
-text = "—"
-
-[node name="TreeStage" type="Control" parent="Center/Body/Columns/TreePanel/TreeBox"]
-unique_name_in_owner = true
+[node name="Stage" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Links" type="Control" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage"]
-unique_name_in_owner = true
+[node name="Links" type="Control" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -173,246 +115,251 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_links")
 
-[node name="Tiers" type="VBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage"]
-unique_name_in_owner = true
+[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 16.0
 grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 4
-
-[node name="Tier" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 16
-
-[node name="Caption" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier"]
-custom_minimum_size = Vector2(56, 0)
-layout_mode = 2
-theme_type_variation = &"MicroLabel"
-vertical_alignment = 1
-
-[node name="TrunkLane" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Nodes" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="SkillNode" type="Button" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes"]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-theme_type_variation = &"SkillRow"
-toggle_mode = true
-
-[node name="Row" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes/SkillNode"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_right = -12.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Art" type="TextureRect" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes/SkillNode/Row"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture_filter = 4
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Marker" type="TextureRect" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes/SkillNode/Row"]
-custom_minimum_size = Vector2(14, 14)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SkillName" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes/SkillNode/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-clip_text = true
-text_overrun_behavior = 3
-
-[node name="State" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane/Nodes/SkillNode/Row"]
-layout_mode = 2
-mouse_filter = 2
-theme_type_variation = &"SkillCost"
-
-[node name="Pad" type="Control" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/TrunkLane"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="OathLane" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Nodes" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="SkillNode" type="Button" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 2
-theme_type_variation = &"SkillRow"
-toggle_mode = true
-
-[node name="Row" type="HBoxContainer" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes/SkillNode"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 12.0
-offset_right = -12.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Art" type="TextureRect" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes/SkillNode/Row"]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture_filter = 4
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Marker" type="TextureRect" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes/SkillNode/Row"]
-custom_minimum_size = Vector2(14, 14)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SkillName" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes/SkillNode/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-clip_text = true
-text_overrun_behavior = 3
-
-[node name="State" type="Label" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane/Nodes/SkillNode/Row"]
-layout_mode = 2
-mouse_filter = 2
-theme_type_variation = &"SkillCost"
-
-[node name="Pad" type="Control" parent="Center/Body/Columns/TreePanel/TreeBox/TreeStage/Tiers/Tier/OathLane"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="SidePanel" type="VBoxContainer" parent="Center/Body/Columns"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="DetailPanel" type="PanelContainer" parent="Center/Body/Columns/SidePanel"]
-custom_minimum_size = Vector2(420, 0)
-layout_mode = 2
-size_flags_vertical = 3
-theme_type_variation = &"TreePanel"
-
-[node name="DetailBox" type="VBoxContainer" parent="Center/Body/Columns/SidePanel/DetailPanel"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="DetailName" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"TreeTitle"
-text = "—"
-
-[node name="DetailKind" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"SmallLabel"
-
-[node name="DetailDescription" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 0)
-layout_mode = 2
-theme_type_variation = &"TooltipBody"
-autowrap_mode = 3
-
-[node name="DetailGrid" type="GridContainer" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 4
+theme_override_constants/h_separation = 52
+theme_override_constants/v_separation = 24
 columns = 4
 
-[node name="Fact" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/DetailGrid"]
+[node name="Cell" type="VBoxContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"StatLabel"
-
-[node name="DetailState" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 0)
-layout_mode = 2
-theme_type_variation = &"AccentLabel"
-autowrap_mode = 3
-
-[node name="PickRow" type="HBoxContainer" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="PickButton" type="Button" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/PickRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Pick"
-
-[node name="UndoButton" type="Button" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/PickRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Undo"
-
-[node name="HotbarBox" type="VBoxContainer" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox"]
-unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="HotbarCaption" type="Label" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/HotbarBox"]
+[node name="Slot" type="Button" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-theme_type_variation = &"MicroLabel"
-text = "PUT ON THE HOTBAR"
+focus_mode = 2
+theme_type_variation = &"SkillSlot"
+toggle_mode = true
 
-[node name="HotbarSlots" type="GridContainer" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/HotbarBox"]
+[node name="Art" type="TextureRect" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LevelBadge" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+layout_mode = 1
+offset_left = -4.0
+offset_top = -9.0
+mouse_filter = 2
+theme_type_variation = &"SkillLevelBadge"
+
+[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot/LevelBadge"]
+layout_mode = 2
+theme_type_variation = &"SkillLevelBadgeLabel"
+text = "Lv 1"
+
+[node name="Plus" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -10.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 10.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"SkillPlusBadge"
+
+[node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot/Plus"]
+layout_mode = 2
+theme_type_variation = &"SkillPlusLabel"
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Rank" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell"]
+layout_mode = 2
+theme_type_variation = &"SkillRank"
+text = "0 / 5"
+horizontal_alignment = 1
+
+[node name="RightPanel" type="PanelContainer" parent="Window/Center/Body/Columns"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"TreePanel"
+
+[node name="Tree" type="VBoxContainer" parent="Window/Center/Body/Columns/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Heading" type="Label" parent="Window/Center/Body/Columns/RightPanel/Tree"]
+layout_mode = 2
+theme_type_variation = &"SkillTreeHeading"
+text = "Holy Warrior"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Status" type="Label" parent="Window/Center/Body/Columns/RightPanel/Tree"]
+layout_mode = 2
+theme_type_variation = &"SkillTreeStatus"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Stage" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Links" type="Control" parent="Window/Center/Body/Columns/RightPanel/Tree/Stage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_links")
+
+[node name="Grid" type="GridContainer" parent="Window/Center/Body/Columns/RightPanel/Tree/Stage"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 16.0
+grow_horizontal = 2
+theme_override_constants/h_separation = 52
+theme_override_constants/v_separation = 24
+columns = 4
+
+[node name="SidePanel" type="PanelContainer" parent="Window/Center/Body/Columns"]
+layout_mode = 2
+custom_minimum_size = Vector2(436, 0)
+theme_type_variation = &"TreePanel"
+
+[node name="Detail" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="IconFrame" type="Panel" parent="Window/Center/Body/Columns/SidePanel/Detail/Header"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+theme_type_variation = &"SkillDetailIcon"
+
+[node name="DetailIcon" type="TextureRect" parent="Window/Center/Body/Columns/SidePanel/Detail/Header/IconFrame"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameBox" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="DetailName" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/Header/NameBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillDetailName"
+text = "—"
+autowrap_mode = 3
+
+[node name="DetailKind" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/Header/NameBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillDetailKind"
+autowrap_mode = 3
+
+[node name="Rule" type="HSeparator" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+layout_mode = 2
+theme_type_variation = &"SkillDetailRule"
+
+[node name="DetailDescription" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillDetailBody"
+autowrap_mode = 3
+
+[node name="DetailGrid" type="GridContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="Fact" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/DetailGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SkillFactLabel"
+
+[node name="NextCaption" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillNextCaption"
+text = "Next rank"
+uppercase = true
+
+[node name="NextText" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillDetailBody"
+autowrap_mode = 3
+
+[node name="DetailState" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"SkillVerdict"
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HotbarBox" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HotbarCaption" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox"]
+layout_mode = 2
+theme_type_variation = &"SkillNextCaption"
+text = "Put on the hotbar"
+uppercase = true
+
+[node name="HotbarSlots" type="GridContainer" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="Slot1" type="Button" parent="Center/Body/Columns/SidePanel/DetailPanel/DetailBox/HotbarBox/HotbarSlots"]
+[node name="Slot1" type="Button" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox/HotbarSlots"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -420,97 +367,165 @@ focus_mode = 2
 toggle_mode = true
 clip_text = true
 
-[node name="AttributesPanel" type="PanelContainer" parent="Center/Body/Columns/SidePanel"]
+[node name="ButtonRow" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
 layout_mode = 2
-theme_type_variation = &"TreePanel"
+theme_override_constants/separation = 24
 
-[node name="AttrBox" type="VBoxContainer" parent="Center/Body/Columns/SidePanel/AttributesPanel"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="AttrHeader" type="HBoxContainer" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="AttrTitle" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrHeader"]
+[node name="LearnButton" type="Button" parent="Window/Center/Body/Columns/SidePanel/Detail/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_type_variation = &"SectionLabel"
+focus_mode = 2
+theme_type_variation = &"SkillLearnButton"
+text = "Learn +1"
+
+[node name="ResetButton" type="Button" parent="Window/Center/Body/Columns/SidePanel/Detail/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+theme_type_variation = &"SkillResetButton"
+text = "Reset"
+
+[node name="AttrPanel" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AttrHeader" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AttrTitle" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SkillDetailName"
 text = "Attributes"
 
-[node name="AttrPointsCaption" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrHeader"]
+[node name="AttrPointsCaption" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"MicroLabel"
-text = "POINTS"
+theme_type_variation = &"SkillBottomCaption"
+text = "Points"
+uppercase = true
 
-[node name="AttrPointsValue" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrHeader"]
+[node name="AttrPointsValue" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"MetaValue"
+size_flags_vertical = 4
+theme_type_variation = &"SkillPointsValue"
 text = "0"
 
-[node name="AttrRows" type="VBoxContainer" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox"]
-unique_name_in_owner = true
+[node name="AttrRule" type="HSeparator" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_type_variation = &"SkillDetailRule"
 
-[node name="AttributeRow" type="HBoxContainer" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows"]
+[node name="AttrRows" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Name" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows/AttributeRow"]
+[node name="AttributeRow" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Name" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"AttrLabel"
 
-[node name="Gives" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows/AttributeRow"]
+[node name="Gives" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"MutedLabel"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Value" type="Label" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows/AttributeRow"]
+[node name="Value" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
 custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
 theme_type_variation = &"AttrValue"
 horizontal_alignment = 2
 
-[node name="Minus" type="Button" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows/AttributeRow"]
+[node name="Minus" type="Button" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
 custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 text = "−"
 
-[node name="Plus" type="Button" parent="Center/Body/Columns/SidePanel/AttributesPanel/AttrBox/AttrRows/AttributeRow"]
+[node name="Plus" type="Button" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
 custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 text = "+"
 
-[node name="ActionBar" type="HBoxContainer" parent="Center/Body/Columns/SidePanel"]
+[node name="BottomRule" type="HSeparator" parent="Window/Center/Body"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_type_variation = &"SkillBarRule"
 
-[node name="PendingLabel" type="Label" parent="Center/Body/Columns/SidePanel/ActionBar"]
+[node name="BottomBar" type="HBoxContainer" parent="Window/Center/Body"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PointsCaption" type="Label" parent="Window/Center/Body/BottomBar"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SkillBottomCaption"
+text = "Skill points"
+uppercase = true
+
+[node name="JPValue" type="Label" parent="Window/Center/Body/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SkillPointsValue"
+text = "0"
+
+[node name="Budgets" type="Label" parent="Window/Center/Body/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_type_variation = &"SmallLabel"
-text = "Nothing picked"
+size_flags_vertical = 4
+theme_type_variation = &"SkillBudgets"
 
-[node name="CancelButton" type="Button" parent="Center/Body/Columns/SidePanel/ActionBar"]
+[node name="PendingLabel" type="Label" parent="Window/Center/Body/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"SkillVerdict"
+
+[node name="CancelButton" type="Button" parent="Window/Center/Body/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillResetButton"
 text = "Cancel"
 
-[node name="AcceptButton" type="Button" parent="Center/Body/Columns/SidePanel/ActionBar"]
+[node name="AcceptButton" type="Button" parent="Window/Center/Body/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
+focus_mode = 2
+theme_type_variation = &"SkillLearnButton"
 text = "Accept"
 
-[node name="EmptyLabel" type="Label" parent="Center/Body"]
+[node name="AttributesButton" type="Button" parent="Window/Center/Body/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillTextButton"
+toggle_mode = true
+text = "Attributes"
+
+[node name="ResetAllButton" type="Button" parent="Window/Center/Body/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillTextButton"
+text = "Reset all"
+
+[node name="EmptyLabel" type="Label" parent="Window/Center/Body"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

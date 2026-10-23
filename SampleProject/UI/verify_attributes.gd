@@ -145,6 +145,8 @@ func _screen(sl: Node, gm: Node, sm: Node, attrs: Node) -> void:
 	menu.switch_to_tab("Skills")
 	for i in 8: await process_frame
 	var ui: Node = menu.find_child("SkillsComponent", true, false)
+	await _mouse(ui._attributes_button)  # D674: атрибути — за кнопкою Attributes унизу вікна навичок
+	ck(ui._attr_panel.visible, "the Attributes button opens the attribute rows")
 	var rows: Dictionary = ui._attribute_rows
 	ck(rows.keys() == attrs.attribute_ids(), "four attribute rows from data")
 	ck(ui._attr_points_value.text == "15", "15 points to spend shown (%s)" % ui._attr_points_value.text)

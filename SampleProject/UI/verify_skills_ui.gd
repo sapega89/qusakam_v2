@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Самоперевірка екрана Skills (Phase 5.6).
+## Самоперевірка екрана Skills (Phase 5.6; вікно Dragon Nest — D674).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skills_ui.gd
 ##
 ## ⚠️ ФІКСТУРИ ТІЛЬКИ ДЛЯ ТЕСТІВ/QA. Вводяться через SkillDatabase.load_from_array()
@@ -15,22 +15,22 @@ func ck(ok: bool, label: String) -> void:
 ## prerequisite-locked / level-locked / active+SP / passive / cooldown.
 const FIXTURES := [
 	{"id": "ta_learned", "name": "Test Skill A", "description": "Already learned.",
-	 "class_id": "champion", "skill_type": "active", "jp_cost": 10, "sp_cost": 4, "cooldown": 1.5},
+	 "class_id": "champion", "skill_type": "active", "jp_cost": 10, "sp_cost": 4, "cooldown": 1.5, "slot": [0, 0]},
 	{"id": "tb_afford", "name": "Test Skill B", "description": "Affordable now.",
-	 "class_id": "champion", "skill_type": "active", "jp_cost": 30, "sp_cost": 6},
+	 "class_id": "champion", "skill_type": "active", "jp_cost": 30, "sp_cost": 6, "slot": [1, 0]},
 	{"id": "tc_expensive", "name": "Test Skill C", "description": "Too expensive.",
-	 "class_id": "champion", "skill_type": "active", "jp_cost": 9000, "sp_cost": 8},
+	 "class_id": "champion", "skill_type": "active", "jp_cost": 9000, "sp_cost": 8, "slot": [2, 0]},
 	{"id": "td_prereq", "name": "Test Skill D", "description": "Needs C first.",
 	 "class_id": "champion", "skill_type": "active", "jp_cost": 20,
-	 "prerequisites": ["tc_expensive"]},
+	 "prerequisites": ["tc_expensive"], "slot": [2, 1]},
 	{"id": "te_level", "name": "Test Skill E", "description": "High level gate.",
-	 "class_id": "champion", "skill_type": "passive", "jp_cost": 5, "required_level": 99},
+	 "class_id": "champion", "skill_type": "passive", "jp_cost": 5, "required_level": 99, "slot": [3, 0]},
 	{"id": "tf_passive", "name": "Test Skill F", "description": "Passive support.",
-	 "class_id": "champion", "skill_type": "passive", "jp_cost": 15},
+	 "class_id": "champion", "skill_type": "passive", "jp_cost": 15, "slot": [0, 1]},
 	{"id": "tg_sub", "name": "Test Skill G", "description": "Secondary tree.",
-	 "oath": "paladin", "skill_type": "active", "jp_cost": 25, "sp_cost": 3},
+	 "oath": "paladin", "skill_type": "active", "jp_cost": 25, "sp_cost": 3, "slot": [0, 0]},
 	{"id": "th_sub_passive", "name": "Test Skill H", "description": "Secondary passive.",
-	 "oath": "paladin", "skill_type": "passive", "jp_cost": 12},
+	 "oath": "paladin", "skill_type": "passive", "jp_cost": 12, "slot": [1, 0]},
 ]
 
 ## Фікстури записані під champion; праве дерево — клятва paladin (D283, перша вкладка); екран показує лише клас активного персонажа,
@@ -86,7 +86,7 @@ func _initialize() -> void:
 	# Загальні навички Кусакама (без класу) показуються — порожнього стану вже немає.
 	ck(not ui._empty_label.visible, "no empty state: Kusakam's skills are listed")
 	ck(ui._columns.visible, "columns shown")
-	ck(ui._jp_value.text.ends_with("JP"), "real JP still displayed (%s)" % ui._jp_value.text)
+	ck(ui._jp_value.text == str(sm.get_job_points()), "real JP still displayed (%s)" % ui._jp_value.text)
 
 	print("[2] populated (test fixtures)")
 	var fixtures: Array = _for_active_class(FIXTURES, gm.get_active_character())
@@ -101,9 +101,10 @@ func _initialize() -> void:
 	for i in 3: await process_frame
 	ck(ui._columns.visible, "columns shown when skills exist")
 	ck(not ui._empty_label.visible, "empty state hidden")
-	ck(ui._rows.size() == 8, "8 rows generated from data (%d)" % ui._rows.size())
-	ck(ui._rows["ta_learned"].get_parent().get_parent().get_parent().get_child(1) == ui._rows["ta_learned"].get_parent().get_parent(), "the trunk lane holds the class skills")
-	ck(ui._rows["tg_sub"].get_parent().get_parent().get_parent().get_child(2) == ui._rows["tg_sub"].get_parent().get_parent(), "the oath lane holds the Paladin skills")
+	ck(ui._rows.size() == 8, "8 cells filled from data (%d)" % ui._rows.size())
+	ck(ui._rows["ta_learned"].get_parent().get_parent() == ui._grid(ui._left_panel), "the left panel holds the class skills")
+	ck(ui._rows["tg_sub"].get_parent().get_parent() == ui._grid(ui._right_panel), "the right panel holds the Paladin skills")
+	ck(ui._rows["td_prereq"].get_parent().get_index() == ui._rows["tc_expensive"].get_parent().get_index() + 4, "a skill sits by its slot: Test Skill D right under C")
 
 	print("[3] data-driven, not hardcoded")
 	var scene_text: String = FileAccess.open(
@@ -115,7 +116,7 @@ func _initialize() -> void:
 	ck(not leaked, "no fixture names hardcoded in the .tscn")
 	var extended: Array = fixtures.duplicate()
 	extended.append({"id": "tz_new", "name": "Test Skill Z",
-		"class_id": gm.get_active_character().class_id, "skill_type": "active", "jp_cost": 1})
+		"class_id": gm.get_active_character().class_id, "skill_type": "active", "jp_cost": 1, "slot": [1, 1]})
 	db.load_from_array(extended)
 	ui.update_display()
 	for i in 2: await process_frame
@@ -132,9 +133,9 @@ func _initialize() -> void:
 	ck(sm.can_unlock("te_level") == R.LEVEL_TOO_LOW, "level gate reported")
 	# D332: назва видна завжди (раніше «???»), стан — заблоковано, причина — у панелі деталей.
 	var locked_row: Button = ui._rows["td_prereq"]
-	ck(locked_row.get_node("Row/SkillName").text == "Test Skill D" and ui.node_state("td_prereq") == ui.NodeState.LOCKED, "prereq-locked node shows its name, locked")
+	ck(locked_row.tooltip_text.begins_with("Test Skill D") and ui.node_state("td_prereq") == ui.NodeState.LOCKED, "prereq-locked cell names it, locked")
 	var learned_row: Button = ui._rows["ta_learned"]
-	ck(learned_row.get_node("Row/SkillName").text == "Test Skill A", "learned row shows its name")
+	ck(learned_row.tooltip_text.begins_with("Test Skill A") and ui.rank_text("ta_learned") == "1 / 5", "learned cell names it, rank 1 / 5")
 
 	print("[5] selection + details (keyboard parity)")
 	var bar: Node = get_first_node_in_group("ui_bottom_bar")
@@ -160,7 +161,7 @@ func _initialize() -> void:
 	for i in 3: await process_frame
 	ck(sm.is_unlocked("tb_afford"), "skill recorded as unlocked")
 	ck(sm.get_job_points() == jp_before - 30, "exact JP deducted (%d)" % sm.get_job_points())
-	ck(ui._jp_value.text == "%d JP" % sm.get_job_points(), "JP display refreshed immediately")
+	ck(ui._jp_value.text == str(sm.get_job_points()), "JP display refreshed immediately")
 	# D150: A на вивченій навичці — покращення (+1 рівень за 1 очко), а не повторне вивчення.
 	ck(ui.pick_selected() == R.OK, "a learned skill can be picked for a rank")
 	ui.accept_plan()
@@ -176,7 +177,7 @@ func _initialize() -> void:
 	print("[8] live event refresh")
 	sm.add_job_points(500)
 	await process_frame
-	ck(ui._jp_value.text == "%d JP" % sm.get_job_points(), "job_points_changed refreshes JP")
+	ck(ui._jp_value.text == str(sm.get_job_points()), "job_points_changed refreshes JP")
 	# D27: SP свідомо прибрано з екрана прогресії — показ належить бойовому HUD.
 	var ui_src: String = FileAccess.open(
 		"res://SampleProject/Scripts/Menus/Game/skills_component.gd", FileAccess.READ).get_as_text()

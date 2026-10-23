@@ -125,6 +125,18 @@ static func cannot_use(item_name: String) -> Dictionary:
 	return misc_popup(TranslationServer.translate("Cannot Use"), TranslationServer.translate("%s cannot be used.") % item_name)
 
 
+## D628/D674: Reset all на екрані навичок — платне скидання на місці медитації.
+static func confirm_respec(price: int) -> Dictionary:
+	return {
+		"title": TranslationServer.translate("Reset all?"),
+		"description": TranslationServer.translate("Forget every skill and attribute point for %d coins") % price,
+		"buttons": [
+			{"id": "confirm", "text": TranslationServer.translate("Reset all"), "is_default": true},
+			{"id": "cancel", "text": "Cancel", "is_cancel": true}
+		]
+	}
+
+
 static func confirm_exit_to_main_menu() -> Dictionary:
 	return {
 		"title": "Exit to Main Menu?",

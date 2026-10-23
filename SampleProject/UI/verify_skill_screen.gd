@@ -1,8 +1,9 @@
 extends SceneTree
 
-## Екран Skills після переробки (BACKLOG 43, D330–D334) справжнім вводом: миша, клавіші, InputEventJoypadButton.
-## Вміщається без прокрутки, дерево рівнів із лініями, стани вузлів, панель деталей, позначки й Accept,
-## каскад зняття передумови, Esc скидає позначене, слот хотбара з цього екрана.
+## Вікно навичок Dragon Nest (D674; до того BACKLOG 43, D330–D334) справжнім вводом: миша, клавіші, InputEventJoypadButton.
+## Вміщається без прокрутки, клітинки за slot з лініями, розміри з UITokens, стани клітинок (бейдж рівня, ранг, «+»),
+## панель деталей (ранг і ефект зараз → далі), Learn +1 / Reset і Accept, каскад зняття передумови, Esc скидає позначене,
+## ранги до найвищого, слот хотбара, атрибути, Reset all лише на місці медитації.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skill_screen.gd
 
 var fails: Array[String] = []
@@ -61,15 +62,18 @@ func _key(code: Key) -> void:
 func _focus() -> Control:
 	return root.gui_get_focus_owner()
 
-func _note(ui: Node, id: String) -> String:
-	return ui._rows[id].get_node(^"Row/State").text
+func _rank(ui: Node, id: String) -> Label:
+	return ui._rows[id].get_parent().get_node(^"Rank")
 
-func _marker(ui: Node, id: String) -> Texture2D:
-	return ui._rows[id].get_node(^"Row/Marker").texture
+func _badge(ui: Node, id: String) -> Label:
+	return ui._rows[id].get_node(^"LevelBadge/Label")
+
+func _plus(ui: Node, id: String) -> bool:
+	return ui._rows[id].get_node(^"Plus").visible
 
 func _facts(ui: Node) -> Dictionary:
 	var out := {}
-	var cells: Array = ui._detail_grid.get_children().filter(func(c): return not c.is_queued_for_deletion())
+	var cells: Array = ui._detail_grid.get_children().filter(func(c): return not c.is_queued_for_deletion() and c.visible)
 	for i in range(0, cells.size() - 1, 2):
 		out[cells[i].text] = cells[i + 1].text
 	return out
@@ -102,83 +106,105 @@ func _initialize() -> void:
 	var ui: Node = menu.find_child("SkillsComponent", true, false)
 	var S = ui.NodeState
 
-	print("[1] Fits without scrolling; a tree by level tiers; tabs in the oath header")
+	print("[1] Fits without scrolling; cells by slot; sizes from UITokens")
 	ck(ui.find_children("*", "ScrollContainer", true, false).is_empty(), "no ScrollContainer on the screen")
-	var body: Control = ui.get_node(^"Center/Body")
-	ck(body.get_combined_minimum_size().y <= ui.size.y - 64, "the screen's content fits its height (%d of %d)" % [body.get_combined_minimum_size().y, ui.size.y - 64])
-	ck(ui._tiers.get_combined_minimum_size().y <= ui._tree_stage.size.y, "the tree fits its panel (%d of %d)" % [ui._tiers.get_combined_minimum_size().y, ui._tree_stage.size.y])
-	var side: Control = ui.get_node(^"Center/Body/Columns/SidePanel")
-	ck(side.get_combined_minimum_size().y <= side.size.y + 1, "the detail / attributes column fits (%d of %d)" % [side.get_combined_minimum_size().y, side.size.y])
-	var tiers: Array = ui._tiers.get_children().map(func(t): return String(t.name))
-	ck(tiers == ["Tier1", "Tier2", "Tier3", "Tier4", "Tier5", "Tier6", "Tier8", "Tier10", "Tier12", "Tier14", "Tier15", "Tier16", "Tier18", "Tier20"],
-			"14 level tiers with v2's levels 14 and 16 (D535), trunk + Paladin (%s)" % [tiers])
-	ck(ui._rows["radiant_smite"].get_parent().get_parent().get_parent().name == "Tier5" and ui._rows["fortitude"].get_parent().get_parent().get_parent().name == "Tier12", "each skill sits in its level's tier")
-	ck(ui._tree_tabs.get_parent().name == "OathHeader", "the oath tabs share the oath header, not their own row")
-	# D117: рядки — копії шаблонів зі сцени, стилі з теми; аватар — портрет героя (B129), без власного стилю.
+	var window: Control = ui.get_node(^"Window")
+	ck(window.get_combined_minimum_size().y <= window.size.y, "the window's content fits its height (%d of %d)" % [window.get_combined_minimum_size().y, window.size.y])
+	ck(window.offset_bottom == -UITokens.BOTTOM_BAR_HEIGHT, "the window ends above the hint bar (%d)" % window.offset_bottom)
+	for panel: Control in [ui._left_panel, ui._right_panel]:
+		var stage: Control = panel.get_node(^"Tree/Stage")
+		var grid: GridContainer = ui._grid(panel)
+		ck(grid.get_combined_minimum_size().y + grid.offset_top <= stage.size.y, "%s: the grid fits (%d of %d)" % [panel.name, grid.get_combined_minimum_size().y, stage.size.y])
+		ck(grid.columns == UITokens.SKILL_GRID_COLUMNS and grid.get_theme_constant(&"h_separation") == UITokens.SKILL_GRID_GAP_H
+				and grid.get_theme_constant(&"v_separation") == UITokens.SKILL_GRID_GAP_V, "%s: columns and gaps from UITokens" % panel.name)
+		ck(grid.get_child_count() == UITokens.SKILL_GRID_COLUMNS * UITokens.SKILL_GRID_ROWS, "%s: a 4 × 5 grid" % panel.name)
+	ck(ui._cell.custom_minimum_size.x == UITokens.SKILL_SLOT_SIZE and ui._cell.get_node(^"Slot").custom_minimum_size == Vector2(UITokens.SKILL_SLOT_SIZE, UITokens.SKILL_SLOT_SIZE),
+			"the cell is SKILL_SLOT_SIZE")
+	ck(ui.get_node(^"Window/Center/Body/Columns/SidePanel").custom_minimum_size.x == UITokens.SKILL_DETAIL_WIDTH
+			and ui._tree_tab.custom_minimum_size.x == UITokens.SKILL_TAB_WIDTH, "detail width and tab width from UITokens")
+	var misplaced: Array = ui._rows.keys().filter(func(id: String) -> bool:
+			var d: SkillDefinition = ui._skill_database.get_skill(id)
+			return ui._rows[id].get_parent().get_index() != d.slot.y * UITokens.SKILL_GRID_COLUMNS + d.slot.x)
+	ck(misplaced.is_empty(), "every skill sits in its slot's cell %s" % [misplaced])
+	var keen: Rect2 = ui._rows["keen_edge"].get_global_rect()
+	var training: Rect2 = ui._rows["weapon_training"].get_global_rect()
+	ck(is_equal_approx(keen.position.x, training.position.x) and keen.position.y > training.end.y, "Keen Edge right under Weapon Training")
 	var styled: Array = ui.find_children("*", "Control", true, false).filter(
 			func(c: Control) -> bool: return c.has_theme_stylebox_override(&"panel") or c.has_theme_color_override(&"font_color"))
-	ck(styled.is_empty(), "rows and the avatar carry no stylebox / colour overrides (D117, B129): %s" % [styled.map(func(c): return String(c.name))])
-	ck(ui._links.links.size() == 11, "11 links in the Paladin view (3 of v1, 4 new in the trunk, 4 new in Paladin, D535): %d" % ui._links.links.size())
-	for id in ui._rows:
-		var r: Rect2 = ui._rows[id].get_global_rect()
-		if not ui._tree_stage.get_global_rect().grow(1).encloses(r):
-			ck(false, "%s inside the tree panel" % id)
+	ck(styled.is_empty(), "cells and panels carry no stylebox / colour overrides (D117): %s" % [styled.map(func(c): return String(c.name))])
+	var links: Array = ui._links(ui._left_panel).links + ui._links(ui._right_panel).links
+	ck(links.size() == 11, "11 lines in the Paladin view (4 in the trunk, 7 in Paladin): %d" % links.size())
+	ck(links.all(func(l: Array) -> bool: return not bool(l[2])), "nothing learned: every line is grey")
 
-	print("[2] States: learned / can learn now / locked with the reason (D332)")
-	ck(ui.node_state("toughness") == S.CAN_LEARN and _marker(ui, "toughness") == null and _note(ui, "toughness") == "1 JP", "Toughness: can learn now, no lock, cost 1 JP")
-	ck(ui.node_state("healing_palm") == S.CAN_LEARN and _note(ui, "healing_palm") == "Free", "Healing Palm: free")
-	ck(ui.node_state("fortitude") == S.LOCKED and _marker(ui, "fortitude") == ui.ICON_LOCK and _note(ui, "fortitude") == "Lv 12", "Fortitude: locked, lock icon, Lv 12")
-	ck(ui.node_state("radiant_smite") == S.LOCKED and _note(ui, "radiant_smite") == "Oath", "Radiant Smite before the oath: locked, Oath")
-	ck(ui.node_state("skyfall_blessing") == S.LOCKED and _note(ui, "skyfall_blessing") == "Oath", "Skyfall Blessing before the oath: Oath")
-	ck(ui.node_state("dash_strike") == S.LOCKED and _marker(ui, "dash_strike") == ui.ICON_LOCK and _note(ui, "dash_strike") == "Later"
-			and ui._reason_text("dash_strike") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): locked, Later, coming later")
+	print("[2] Cell states: icon, level badge, rank, + (D674, D332)")
+	ck(ui.node_state("toughness") == S.CAN_LEARN and _rank(ui, "toughness").text == "0 / 3" and _badge(ui, "toughness").text == "Lv 1"
+			and _badge(ui, "toughness").theme_type_variation == &"SkillLevelBadgeLabel", "Toughness: can learn, 0 / 3, badge Lv 1")
+	ck(ui._rows["toughness"].get_node(^"Art").modulate.a == 1.0 and not _plus(ui, "toughness"), "a learnable skill: full icon, no + yet")
+	ck(_rank(ui, "fire_strike").text == "0 / 5", "an active ranks to 5")
+	ck(ui.node_state("fortitude") == S.LOCKED and _badge(ui, "fortitude").text == "Lv 12" and _badge(ui, "fortitude").theme_type_variation == &"SkillLevelBadgeLow",
+			"Fortitude: locked, red Lv 12 (hero is level 5)")
+	ck(is_equal_approx(ui._rows["fortitude"].get_node(^"Art").modulate.a, UITokens.SKILL_LOCKED_ICON_ALPHA), "a locked icon is dimmed (D605)")
+	ck(ui._rows["toughness"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_PASSIVE and ui._rows["fire_strike"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_ACTIVE,
+			"icon tints by kind (D605)")
+	ck(ui.node_state("radiant_smite") == S.LOCKED and _badge(ui, "radiant_smite").theme_type_variation == &"SkillLevelBadgeLabel", "Radiant Smite before the oath: locked, Lv 5 not red")
+	ck(ui.node_state("dash_strike") == S.LOCKED and ui._reason_text("dash_strike") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): coming later")
 
-	print("[3] Detail panel: what it does and costs (D334)")
+	print("[3] Detail panel: rank, effect now → next, costs (D334, D674)")
 	await _mouse(ui._rows["fire_strike"])
 	var facts := _facts(ui)
-	ck(ui._selected_id == "fire_strike" and ui._detail_name.text == "Fire Strike", "a click selects Fire Strike and shows it")
-	ck(facts.get("Cost") == "1 JP" and facts.get("Level") == "Lv 6" and facts.get("SP", "").ends_with("SP") and facts.get("Cooldown") == ui.PLACEHOLDER, "cost, level, SP, no cooldown (D504): %s" % [facts])
-	ck(String(facts.get("Effect", "")).find("dmg") >= 0 and String(facts.get("Weapon", "")) != "", "effect and weapon shown")
+	ck(ui._selected_id == "fire_strike" and ui._detail_name.text == "Fire Strike" and ui._detail_kind.text == "Active · Holy Warrior · Rank 0 / 5", "a click selects Fire Strike: %s" % ui._detail_kind.text)
+	ck(String(facts.get("Damage", "")).begins_with("—  →  ") and facts.get("SP cost") == "6" and facts.get("Cooldown") == ui.PLACEHOLDER
+			and facts.get("Required level") == "6" and facts.get("Rank cost") == "1 JP" and facts.has("Weapon") and facts.has("Burn per second"), "facts: %s" % [facts])
 	ck(ui._detail_state.text.begins_with("Level too low: needs level 6"), "the full reason: %s" % ui._detail_state.text)
-	ck(not ui._hotbar_box.visible and ui._pick_button.disabled, "not learned: no hotbar row, Pick disabled")
+	ck(not ui._hotbar_box.visible and ui._learn_button.disabled and ui._reset_button.disabled, "not learned: no hotbar row, Learn +1 and Reset disabled")
+	ck(ui._detail_icon.texture != null and ui._detail_icon.self_modulate == UITokens.SKILL_ICON_ACTIVE, "the big icon")
 	await _mouse(ui._rows["toughness"])
-	ck(_facts(ui).get("Effect") == "+10 max HP" and ui._detail_state.text.begins_with("Can learn now"), "a passive's effect: %s" % _facts(ui).get("Effect"))
+	ck(_facts(ui).get("Effect") == "—  →  +10 max HP" and ui._next_text.text == "+10 max HP" and not ui._learn_button.disabled, "a passive's effect: %s" % _facts(ui).get("Effect"))
 
-	print("[4] Mouse: a click only selects; Pick / Undo / right click are pending")
+	print("[4] Mouse: a click only selects; Learn +1 / Reset / right click are pending (D330)")
 	var jp: int = sm.get_job_points()
 	await _mouse(ui._rows["toughness"], MOUSE_BUTTON_LEFT, true)
-	ck(not sm.is_unlocked("toughness") and ui.plan.is_empty(), "a double click no longer learns (B77 / D283 replaced)")
-	await _mouse(ui._pick_button)
-	ck(ui.node_state("toughness") == S.PICKED and not sm.is_unlocked("toughness") and sm.get_job_points() == jp, "Pick marks it, nothing spent")
-	ck(ui._jp_value.text == "%d JP" % (jp - 1) and _note(ui, "toughness") == "Picked" and _marker(ui, "toughness") == ui.ICON_PICKED, "the header shows what is left (%s)" % ui._jp_value.text)
-	ck(ui._pending_label.text == "To spend: 1 JP" and not ui._accept_button.disabled, "the action bar: %s" % ui._pending_label.text)
-	await _mouse(ui._undo_button)
-	ck(ui.plan.is_empty() and ui.node_state("toughness") == S.CAN_LEARN, "Undo takes it back")
-	await _mouse(ui._pick_button)
+	ck(not sm.is_unlocked("toughness") and ui.plan.is_empty(), "a double click does not learn")
+	await _mouse(ui._learn_button)
+	ck(ui.node_state("toughness") == S.PICKED and not sm.is_unlocked("toughness") and sm.get_job_points() == jp, "Learn +1 marks it, nothing spent")
+	ck(ui._jp_value.text == str(jp - 1) and _rank(ui, "toughness").text == "1 / 3" and _rank(ui, "toughness").theme_type_variation == &"SkillRankPlanned",
+			"skill points left and the planned rank in gold (%s, %s)" % [ui._jp_value.text, _rank(ui, "toughness").text])
+	ck(ui._rows["toughness"].theme_type_variation == &"SkillSlotLearned" and not ui._rows["toughness"].get_node(^"LevelBadge").visible and _plus(ui, "toughness"),
+			"a picked cell: gold frame, no level badge, + for the next rank")
+	ck(ui._pending_label.text == "To spend: 1 JP" and ui._accept_button.visible and ui._cancel_button.visible, "the bottom bar: %s" % ui._pending_label.text)
+	await _mouse(ui._learn_button)
+	ck(ui.plan.skill_picks("toughness") == 2 and _rank(ui, "toughness").text == "2 / 3", "Learn +1 again: rank 2 planned")
+	await _mouse(ui._reset_button)
+	ck(ui.plan.is_empty() and ui.node_state("toughness") == S.CAN_LEARN and not ui._accept_button.visible, "Reset takes back all of its picks")
+	await _mouse(ui._learn_button)
 	await _mouse(ui._rows["toughness"], MOUSE_BUTTON_RIGHT)
-	ck(ui.plan.is_empty(), "a right click takes it back too")
+	ck(ui.plan.is_empty(), "a right click takes one back")
 
-	print("[5] Keyboard and gamepad on the nodes")
+	print("[5] Keyboard and gamepad on the cells")
 	ui._rows["devotion"].grab_focus()
 	await process_frame
 	ck(ui._selected_id == "devotion", "focus selects")
 	await _key(KEY_ENTER)
-	ck(ui.plan.skill_picks("devotion") == 1, "Enter picks")
+	ck(ui.plan.skill_picks("devotion") == 1, "Enter: Learn +1")
 	await _key(KEY_BACKSPACE)
 	ck(ui.plan.skill_picks("devotion") == 0, "Backspace takes it back")
 	await _pad(JOY_BUTTON_A)
-	ck(ui.plan.skill_picks("devotion") == 1, "pad A picks")
+	ck(ui.plan.skill_picks("devotion") == 1, "pad A: Learn +1")
 	await _pad(JOY_BUTTON_X)
 	ck(ui.plan.is_empty(), "pad X takes it back")
 	await _pad(JOY_BUTTON_DPAD_RIGHT)
-	ck(_focus() != null and ui._rows.values().has(_focus()), "D-pad moves between nodes (%s)" % (_focus().name if _focus() else "none"))
-	for i in 14:
+	ck(_focus() == ui._rows["shield_bash"], "D-pad right: the next cell of the row (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	await _pad(JOY_BUTTON_DPAD_RIGHT)
+	ck(_focus() == ui._rows["shield_of_faith"], "and on into the oath tree (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	await _pad(JOY_BUTTON_DPAD_DOWN)
+	ck(_focus() == ui._rows["aura_of_resolve"], "D-pad down: the cell below (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	for i in 8:
 		if _focus() in ui._tree_tabs.get_children():
 			break
 		await _pad(JOY_BUTTON_DPAD_UP)
-	ck(_focus() in ui._tree_tabs.get_children(), "D-pad up reaches the oath tabs (%s)" % (_focus().name if _focus() else "none"))
-	for i in 3:
-		if _focus() == ui._tree_tabs.get_child(2):
+	ck(_focus() in ui._tree_tabs.get_children(), "D-pad up reaches the tabs (%s)" % (_focus().name if _focus() else "none"))
+	for i in 4:
+		if _focus() == ui._tree_tabs.get_child(3):
 			break
 		await _pad(JOY_BUTTON_DPAD_RIGHT)
 	await _pad(JOY_BUTTON_A)
@@ -190,61 +216,68 @@ func _initialize() -> void:
 	ck(sm.unlock_skill("devotion") == R.OK and sm.unlock_skill("weapon_training") == R.OK, "2 JP already in the base tree")
 	ck(sm.swear_oath("warden") == R.OK, "swore the Warden oath")
 	for i in 2: await process_frame
-	ck(ui.node_state("bulwark") == S.LOCKED and _note(ui, "bulwark") == "Locked", "Bulwark needs Shield Block: locked")
+	var trained: Array = ui._links(ui._left_panel).links.filter(func(l): return l[0] == ui._rows["weapon_training"])
+	ck(trained.size() == 2 and trained.all(func(l): return bool(l[2])), "learned Weapon Training: its two lines are gold")
+	ck(ui.node_state("bulwark") == S.LOCKED and ui._reason_text("bulwark") == "Needs Shield Block first.", "Bulwark needs Shield Block (in the other panel)")
 	await _mouse(ui._rows["shield_block"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	ck(ui.node_state("bulwark") == S.CAN_LEARN, "Shield Block picked → Bulwark can be picked")
-	var link: Array = ui._links.links.filter(func(l): return l[1] == ui._rows["bulwark"])[0]
-	ck(link[0] == ui._rows["shield_block"] and bool(link[2]), "the Shield Block → Bulwark line lights up")
 	await _mouse(ui._rows["bulwark"])
 	await _key(KEY_ENTER)
 	ck(ui.plan.skill_picks("bulwark") == 1 and ui.plan.jp_cost() == 2, "Bulwark picked (2 JP pending)")
+	ck(ui._budgets.text == "Holy Warrior 3 / 14  ·  Warden of Balance 1 / 12", "budgets with the plan: %s" % ui._budgets.text)
 	await _mouse(ui._rows["shield_block"], MOUSE_BUTTON_RIGHT)
 	ck(ui.plan.is_empty(), "undoing Shield Block drops Bulwark too")
 
-	print("[7] Esc / B drop the picks and keep the screen; Accept spends")
+	print("[7] Esc / B drop the picks and keep the screen; Accept spends; ranks stop at the top")
 	await _mouse(ui._rows["toughness"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _key(KEY_ESCAPE)
 	for i in 2: await process_frame
 	ck(ui.plan.is_empty() and get_first_node_in_group("game_menu") != null and ui.is_visible_in_tree(), "Esc drops the picks, the menu stays")
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _pad(JOY_BUTTON_B)
 	for i in 2: await process_frame
 	ck(ui.plan.is_empty() and get_first_node_in_group("game_menu") != null, "pad B the same")
 	jp = sm.get_job_points()
-	await _mouse(ui._pick_button)  # Toughness
+	await _mouse(ui._learn_button)  # Toughness
 	await _mouse(ui._rows["shield_block"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _mouse(ui._rows["bulwark"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _mouse(ui._cancel_button)
 	ck(ui.plan.is_empty() and not sm.is_unlocked("toughness"), "the Cancel button drops them")
 	await _mouse(ui._rows["toughness"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _mouse(ui._rows["shield_block"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _mouse(ui._rows["bulwark"])
 	await _pad(JOY_BUTTON_A)
 	await _pad(JOY_BUTTON_Y)
 	for i in 2: await process_frame
 	ck(sm.is_unlocked("toughness") and sm.is_unlocked("shield_block") and sm.is_unlocked("bulwark"), "pad Y accepts all three")
-	ck(sm.get_job_points() == jp - 3 and ui.plan.is_empty() and ui._jp_value.text == "%d JP" % sm.get_job_points(), "3 JP spent once (%d → %d)" % [jp, sm.get_job_points()])
-	ck(ui.node_state("bulwark") == S.LEARNED and _note(ui, "bulwark") == "R1" and _marker(ui, "bulwark") == ui.ICON_CHECK, "learned: check icon and rank")
+	ck(sm.get_job_points() == jp - 3 and ui.plan.is_empty() and ui._jp_value.text == str(sm.get_job_points()), "3 JP spent once (%d → %d)" % [jp, sm.get_job_points()])
+	ck(ui.node_state("bulwark") == S.LEARNED and _rank(ui, "bulwark").text == "1 / 3" and ui._rows["bulwark"].theme_type_variation == &"SkillSlotLearned"
+			and _plus(ui, "bulwark"), "learned: gold frame, 1 / 3, + for the next rank")
 	await _key(KEY_ENTER)  # фокус на Bulwark: ранг
-	ck(ui.plan.skill_picks("bulwark") == 1 and _note(ui, "bulwark") == "R1 +1", "Enter on a learned skill picks a rank (R1 +1)")
+	ck(ui.plan.skill_picks("bulwark") == 1 and _rank(ui, "bulwark").text == "2 / 3", "Enter on a learned skill picks a rank (2 / 3)")
 	await _mouse(ui._accept_button)
 	for i in 2: await process_frame
 	ck(sm.get_rank("bulwark") == 2, "the Accept button ranks it up")
 	await _mouse(ui._rows["toughness"])
-	await _mouse(ui._pick_button)
+	var now_hp: String = _facts(ui).get("Effect", "")
+	ck(now_hp == "+10 max HP  →  +13 max HP", "a passive's effect now → next: %s" % now_hp)
+	await _mouse(ui._learn_button)
+	await _mouse(ui._learn_button)
+	ck(ui.plan.skill_picks("toughness") == 2 and ui._learn_button.disabled and ui._reason_text("toughness") == "Rank 3 after Accept.", "a passive stops at rank 3")
 	await _key(KEY_F)
 	for i in 2: await process_frame
-	ck(sm.get_rank("toughness") == 2, "key F accepts")
+	ck(sm.get_rank("toughness") == 3 and not _plus(ui, "toughness") and ui._reason_text("toughness") == "Max rank." and not ui._next_caption.visible,
+			"key F accepts; at 3 / 3: no +, Max rank, no next rank")
 
 	print("[8] Put a learned active skill on the hotbar from this screen (D331)")
 	await _mouse(ui._rows["healing_palm"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._learn_button)
 	await _mouse(ui._accept_button)
 	for i in 2: await process_frame
 	ck(sm.is_unlocked("healing_palm") and ui._hotbar_box.visible, "learned active: the hotbar row shows")
@@ -265,13 +298,28 @@ func _initialize() -> void:
 	await _key(KEY_3)
 	ck(sm.get_equipped_skill(2) != "toughness", "the hotbar key does nothing for a passive")
 
-	print("[9] Leaving with picks spends nothing")
+	print("[9] Attributes behind the Attributes button; Reset all only at a meditation spot (D335, D628, D629)")
+	var attrs: Node = sl.get_attribute_manager()
+	ck(ui._attributes_button.text == "Attributes %d" % attrs.get_unspent() and not ui._attr_panel.visible, "the button names the unspent points")
+	await _mouse(ui._attributes_button)
+	ck(ui._attr_panel.visible and not ui._detail.visible, "it swaps the detail panel for the attributes")
+	var strength: int = attrs.get_points("strength")
+	await _mouse(ui._attribute_rows["strength"].get_node(^"Plus"))
+	ck(ui._attribute_rows["strength"].get_node(^"Value").text == "%d +1" % strength and ui._accept_button.visible, "+ marks a point")
+	await _mouse(ui._accept_button)
+	ck(attrs.get_points("strength") == strength + 1, "Accept spends it")
+	await _mouse(ui._attributes_button)
+	ck(ui._detail.visible and not ui._attr_panel.visible, "pressed again: back to the skill")
+	ck(sm.can_respec() == R.NOT_MEDITATING and ui._reset_all_button.disabled and ui._reset_all_button.tooltip_text == "Reset at a meditation spot",
+			"Reset all is closed away from a meditation spot")
+
+	print("[10] Leaving with picks spends nothing")
 	jp = sm.get_job_points()
-	await _mouse(ui._rows["toughness"])
-	await _mouse(ui._pick_button)
+	await _mouse(ui._rows["bulwark"])
+	await _mouse(ui._learn_button)
 	menu.switch_to_tab("Inventory")
 	for i in 4: await process_frame
-	ck(ui.plan.is_empty() and sm.get_job_points() == jp and sm.get_rank("toughness") == 2, "another tab drops the picks")
+	ck(ui.plan.is_empty() and sm.get_job_points() == jp and sm.get_rank("bulwark") == 2, "another tab drops the picks")
 	sl.get_ui_manager().close_game_menu()
 	for i in 6: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

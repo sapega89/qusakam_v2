@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Екран Skills з деревами (D283, D333) справжнім вводом: вкладки клятв мишею і геймпадом, фокус з вузлів на вкладки,
-## вивчення — позначка + Accept (D330, замість подвійного кліку B77), стан дерева до і після клятви, назва класу в шапці.
+## Вікно навичок Dragon Nest (D674) справжнім вводом: вкладки чотирьох дерев мишею і геймпадом, дві панелі (базове дерево
+## і клятва), фокус з клітинок на вкладки, вивчення — Learn +1 + Accept (D330), стан до і після клятви.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skill_trees_ui.gd
 
 var fails: Array[String] = []
@@ -52,14 +52,9 @@ func _pad(button: JoyButton) -> void:
 func _focus() -> Control:
 	return root.gui_get_focus_owner()
 
-## Вузли смуги клятви: смуга (Nodes + Pad) — третя дитина ряду рівня (підпис, стовбур, клятва).
+## Навички правої панелі (дерево клятви).
 func _secondary_ids(ui: Node) -> Array:
-	var out: Array = []
-	for id in ui._rows:
-		var cell: Node = ui._rows[id].get_parent().get_parent()
-		if cell.get_index() == 2:
-			out.append(id)
-	return out
+	return ui._rows.keys().filter(func(id: String) -> bool: return ui._rows[id].get_parent().get_parent() == ui._grid(ui._right_panel))
 
 func _initialize() -> void:
 	await process_frame
@@ -86,76 +81,73 @@ func _initialize() -> void:
 	for i in 8: await process_frame
 	var ui: Node = menu.find_child("SkillsComponent", true, false)
 
-	print("[1] Two columns: trunk and an oath tree under three tabs")
+	print("[1] Four tabs; the base tree left, an oath tree right")
 	var tabs: Array = ui._tree_tabs.get_children()
-	ck(tabs.map(func(t): return t.text) == ["Paladin", "Dark Knight", "Warden of Balance"], "three oath tabs %s" % [tabs.map(func(t): return t.text)])
-	ck(ui._char_class.text == "Holy Warrior", "header class: Holy Warrior (%s)" % ui._char_class.text)
+	ck(tabs.map(func(t): return t.text) == ["Holy Warrior", "Paladin", "Dark Knight", "Warden of Balance"], "four tree tabs %s" % [tabs.map(func(t): return t.text)])
+	ck(ui._hero_line.text.begins_with("Lv 5 · "), "the hero line: %s" % ui._hero_line.text)
 	ck(ui._rows.has("healing_palm") and ui._rows.has("devotion") and not ui._rows.has("searing_hex"), "trunk left, Paladin tree right by default")
-	ck(tabs[0].button_pressed and _secondary_ids(ui).has("radiant_smite"), "Paladin tab pressed, its tree shown")
-	var status: Label = ui._tree_status
-	ck(status.text.find("Swear an oath in the City") >= 0, "before the oath the tree says where to swear (%s)" % status.text)
+	ck(tabs[0].button_pressed and tabs[1].button_pressed and not tabs[2].button_pressed, "Holy Warrior and Paladin tabs pressed")
+	ck(_secondary_ids(ui).has("radiant_smite"), "the Paladin tree is in the right panel")
+	var status: Label = ui._right_panel.get_node(^"Tree/Status")
+	ck(status.visible and status.text.find("Swear an oath in the City") >= 0, "before the oath the tree says where to swear (%s)" % status.text)
+	ck(ui._right_panel.get_node(^"Tree/Heading").text == "Paladin · Light", "right heading: %s" % ui._right_panel.get_node(^"Tree/Heading").text)
 
-	print("[2] Mouse: a click on a tab switches the tree")
-	await _mouse(tabs[2])
+	print("[2] Mouse: a click on an oath tab switches the right tree")
+	await _mouse(tabs[3])
 	for i in 2: await process_frame
 	ck(ui._shown_oath == "warden" and _secondary_ids(ui).has("balanced_strike") and not _secondary_ids(ui).has("radiant_smite"), "Warden tab shows the Warden tree")
+	ck(_focus() == ui._rows["bulwark"], "and focuses its first cell (%s)" % (_focus().name if _focus() else "none"))
 
-	print("[3] Gamepad: from a trunk node into the oath tree, up to the tabs, switch with A")
-	ui._rows["weapon_training"].grab_focus()  # Lv 4 стовбура; праворуч нижче — Lv 5 клятви
+	print("[3] Gamepad: from a trunk cell into the oath tree, up to the tabs, switch with A")
+	ui._rows["healing_palm"].grab_focus()  # правий стовпець базового дерева; праворуч — дерево клятви
 	await process_frame
-	for i in 3:
-		if _focus() != null and _secondary_ids(ui).has(String(_focus().name)):
-			break
-		await _pad(JOY_BUTTON_DPAD_DOWN if i == 0 else JOY_BUTTON_DPAD_RIGHT)
-	ck(_focus() != null and _secondary_ids(ui).has(String(_focus().name)), "the D-pad reaches the oath tree (%s)" % (_focus().name if _focus() else "none"))
-	for i in 12:
+	await _pad(JOY_BUTTON_DPAD_RIGHT)
+	ck(_focus() != null and _secondary_ids(ui).has(String(_focus().get_parent().name)), "D-pad right crosses into the oath tree (%s)" % (_focus().get_parent().name if _focus() else "none"))
+	for i in 8:
 		if _focus() in tabs:
 			break
 		await _pad(JOY_BUTTON_DPAD_UP)
 	ck(_focus() in tabs, "D-pad up reaches the tabs (%s)" % (_focus().name if _focus() else "none"))
-	for i in 3:
-		if _focus() == tabs[1]:
+	for i in 4:
+		if _focus() == tabs[2]:
 			break
-		await _pad(JOY_BUTTON_DPAD_RIGHT if _focus() == tabs[0] else JOY_BUTTON_DPAD_LEFT)
-	ck(_focus() == tabs[1], "the D-pad walks the tabs (%s)" % (_focus().name if _focus() else "none"))
+		await _pad(JOY_BUTTON_DPAD_RIGHT if tabs.find(_focus()) < 2 else JOY_BUTTON_DPAD_LEFT)
+	ck(_focus() == tabs[2], "the D-pad walks the tabs (%s)" % (_focus().name if _focus() else "none"))
 	await _pad(JOY_BUTTON_A)
 	for i in 2: await process_frame
 	ck(ui._shown_oath == "dark_knight" and _secondary_ids(ui).has("searing_hex"), "A on the Dark Knight tab shows its tree")
 	ui._on_row_selected("searing_hex")
 	ck(get_first_node_in_group("ui_bottom_bar")._hint_label.text.find("Swear an oath in the City") >= 0, "an oath skill before the oath explains why")
+	await _mouse(tabs[0])
+	ck(_focus() == ui._rows["toughness"], "the Holy Warrior tab focuses the base tree (%s)" % (_focus().get_parent().name if _focus() else "none"))
 
-	print("[4] Mouse: a click selects, Pick + Accept learn (D330 replaces the B77 double click)")
+	print("[4] Mouse: a click selects, Learn +1 + Accept learn (D330)")
 	var jp: int = sm.get_job_points()
 	await _mouse(ui._rows["devotion"])
 	ck(not sm.is_unlocked("devotion") and ui._selected_id == "devotion", "a single click only selects")
 	await _mouse(ui._rows["devotion"], true)
-	ck(not sm.is_unlocked("devotion"), "a double click does not learn any more")
-	await _mouse(ui._pick_button)
+	ck(not sm.is_unlocked("devotion"), "a double click does not learn")
+	await _mouse(ui._learn_button)
 	await _mouse(ui._accept_button)
 	for i in 2: await process_frame
-	ck(sm.is_unlocked("devotion") and sm.get_job_points() == jp - 1, "Pick, then Accept learn it (JP %d → %d)" % [jp, sm.get_job_points()])
+	ck(sm.is_unlocked("devotion") and sm.get_job_points() == jp - 1, "Learn +1, then Accept learn it (JP %d → %d)" % [jp, sm.get_job_points()])
 
 	print("[5] After the oath")
 	# D497: навичка клятви 5-го рівня — від 3 JP у стовбурі (Devotion уже є).
 	ck(sm.unlock_skill("toughness") == 0 and sm.unlock_skill("shield_block") == 0, "3 JP in the base tree")
 	ck(sm.swear_oath("paladin") == 0, "swore the Paladin oath")
 	for i in 2: await process_frame
-	ck(ui._char_class.text == "Paladin", "header class: Paladin")
-	ck(ui._shown_oath == "paladin" and tabs[0].button_pressed, "the sworn tree is shown")
-	ck(status.text.ends_with("Your oath"), "status: Your oath (%s)" % status.text)
-	await _mouse(tabs[1])
-	for i in 2: await process_frame
-	ck(status.text.ends_with("Sworn to another oath"), "another tree: Sworn to another oath (%s)" % status.text)
-	await _mouse(tabs[0])
-	for i in 2: await process_frame
+	ck(ui._shown_oath == "paladin" and tabs[1].button_pressed and not status.visible, "the sworn tree is shown, no oath hint")
+	ck(tabs[2].disabled and tabs[3].disabled and not tabs[0].disabled and not tabs[1].disabled, "other oaths' tabs are closed (D489)")
+	ck(ui._budgets.text == "Holy Warrior 3 / 14  ·  Paladin 0 / 12", "budgets at the bottom: %s" % ui._budgets.text)
 	ui._rows["radiant_smite"].grab_focus()
 	await process_frame
 	await _pad(JOY_BUTTON_A)
-	ck(not sm.is_unlocked("radiant_smite") and ui.plan.skill_picks("radiant_smite") == 1, "A on an oath node picks it")
+	ck(not sm.is_unlocked("radiant_smite") and ui.plan.skill_picks("radiant_smite") == 1, "A on an oath cell picks it")
 	await _pad(JOY_BUTTON_Y)
 	for i in 2: await process_frame
 	ck(sm.is_unlocked("radiant_smite"), "Y accepts: learned")
-	ck(_focus() == ui._rows.get("radiant_smite"), "focus stays on the row after learning (%s)" % (_focus().name if _focus() else "none"))
+	ck(_focus() == ui._rows.get("radiant_smite"), "focus stays on the cell after learning (%s)" % (_focus().get_parent().name if _focus() else "none"))
 
 	sl.get_ui_manager().close_game_menu()
 	for i in 6: await process_frame

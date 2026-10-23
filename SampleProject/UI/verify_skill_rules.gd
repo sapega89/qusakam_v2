@@ -199,9 +199,11 @@ func _initialize() -> void:
 	sm.upgrade_skill("fire_strike")
 	sm.upgrade_skill("fire_strike")
 	ck(sm.tree_spent("") == 10 and sm.can_unlock("judgement_of_the_sky") == R.OK, "10 base JP open the ultimate")
-	for i in 4:
+	for i in 2:
 		sm.upgrade_skill("fire_strike")
-	ck(sm.tree_spent("") == 14 and sm.can_upgrade("fire_strike") == R.TREE_CAP, "the base tree stops at 14 JP")
+	ck(sm.can_upgrade("fire_strike") == R.MAX_RANK, "an active stops at rank 5 (D674)")
+	ck(sm.upgrade_skill("fortitude") == R.OK, "Fortitude rank 2 costs its 2 JP (D674)")
+	ck(sm.tree_spent("") == 14 and sm.can_upgrade("fortitude") == R.TREE_CAP, "the base tree stops at 14 JP")
 	ck(sm.unlock_skill("riposte_instinct") == R.TREE_CAP, "a new skill past the cap → TREE_CAP")
 	ck(sm.unlock_skill("judgement_of_the_sky") == R.OK, "Judgement of the Sky learned")
 	ck(sm.tree_spent("paladin") == 6, "paladin tree: 6 JP spent (%d)" % sm.tree_spent("paladin"))
@@ -242,9 +244,9 @@ func _initialize() -> void:
 	ck(sm.skill_damage("skyfall_blessing") == roundi(base_power * (1.0 + sm.synergy_bonus("skyfall_blessing"))), "the synergy multiplies the damage (%d)" % sm.skill_damage("skyfall_blessing"))
 
 	print("[8] Conditional passives (D496, D207 hook passive_value)")
-	ck(is_equal_approx(sm.passive_value("heal_power"), 0.25 * 1.2), "Merciful Light is off at full HP (only Mending Hands, rank 3)")
+	ck(is_equal_approx(sm.passive_value("heal_power"), 0.25 * 1.5), "Merciful Light is off at full HP (only Mending Hands, rank 3: +25 %% a rank, D674)")
 	player.current_health = roundi(player.Max_Health * 0.2)
-	ck(is_equal_approx(sm.passive_value("heal_power"), 0.25 * 1.2 + 0.4), "below 30 %% HP it adds +40 %% healing (%.2f)" % sm.passive_value("heal_power"))
+	ck(is_equal_approx(sm.passive_value("heal_power"), 0.25 * 1.5 + 0.4), "below 30 %% HP it adds +40 %% healing (%.2f)" % sm.passive_value("heal_power"))
 	player.current_health = player.Max_Health
 	sm._process(10.0)  # парирування з [3] давно минуло
 	ck(is_equal_approx(sm.passive_value("skill_damage"), 0.0), "Zealous Answer is off before a parry")
