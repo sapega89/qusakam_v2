@@ -30,6 +30,7 @@ const SOURCES := [
 	[NPCS % "alchemist", "sheet.png", Rect2i(0, 288, 64, 96), 32, ["SCIENTIST"]],
 	[BOSSES % "brass_collector", "sheet.png", Rect2i(0, 0, 96, 112), 48, ["BRASS_COLLECTOR"]],
 	[BOSSES % "fire_djinn", "sheet.png", Rect2i(0, 0, 96, 112), 48, ["FIRE_DJINN"]],
+	[BOSSES % "mayor_hall_boss", "sheet.png", Rect2i(0, 0, 96, 112), 48, ["SCORPICORE_WARRIOR"]],
 ]
 ## Персонаж → тека компаньйона з готовим portrait.tres.
 const COMPANIONS := {"ASTRIT": "astrit", "ALISIA": "alisia", "URIZEN": "urizen"}

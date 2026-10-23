@@ -1,4 +1,4 @@
-// [DRAFT] D300 — Kusakam beat the Collector, but sleeping smoke pours out of its cage.
+// [DRAFT] D300, D556 — Kusakam beat the axe-warrior; the scorpion hauls him off, and the clan's men come through the breach.
 say|KUSAKAM|It's down... I did it.
-say|KUSAKAM|What is this smoke... my head... spinning...
+say|KUSAKAM|The scorpion took him... and more of them are coming through the breach.
 exit|

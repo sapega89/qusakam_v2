@@ -1646,6 +1646,9 @@ msgstr "Speak with the mayor"
 msgid "Survive the Brass Collector"
 msgstr "Survive the Brass Collector"
 
+msgid "Survive the Scorpicore Axe-Warrior"
+msgstr "Survive the Scorpicore Axe-Warrior"
+
 msgid "Reach the village center"
 msgstr "Reach the village center"
 
@@ -1701,6 +1704,9 @@ msgstr "Blacksmith"
 
 msgid "Brass Collector"
 msgstr "Brass Collector"
+
+msgid "Scorpicore Axe-Warrior"
+msgstr "Scorpicore Axe-Warrior"
 
 msgid "Fire djinn"
 msgstr "Fire djinn"
@@ -2384,6 +2390,9 @@ msgstr "Giant Scorpion"
 msgid "The Brass Collector"
 msgstr "The Brass Collector"
 
+msgid "The Scorpicore Axe-Warrior"
+msgstr "The Scorpicore Axe-Warrior"
+
 msgid "The Fire Djinn"
 msgstr "The Fire Djinn"
 
@@ -2398,6 +2407,9 @@ msgstr "Armoured from the front: blows to its shell do little, and a stun will n
 
 msgid "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
 msgstr "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
+
+msgid "A bald Scorpicore warrior with a huge axe, his face wrapped in a green scarf; he broke into the Mayor Hall on a giant scorpion. Every blow of the axe is heavy: a yellow glint means parry the swing, red means roll — out of the charge, over the slam. Only a long chain of blows breaks his stance."
+msgstr "A bald Scorpicore warrior with a huge axe, his face wrapped in a green scarf; he broke into the Mayor Hall on a giant scorpion. Every blow of the axe is heavy: a yellow glint means parry the swing, red means roll — out of the charge, over the slam. Only a long chain of blows breaks his stance."
 
 msgid "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."
 msgstr "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."

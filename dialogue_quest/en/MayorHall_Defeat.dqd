@@ -1,4 +1,4 @@
-// [DRAFT] D300 — Kusakam lost to the Collector: darkness, and he is carried off to the laboratory.
+// [DRAFT] D300, D556 — Kusakam lost to the axe-warrior: darkness, and the clan's men drag him off to the laboratory.
 say|KUSAKAM|Too... strong...
-say|BRASS_COLLECTOR|One more. To the cage.
+say|SCORPICORE_WARRIOR|Bind the lizard. He goes with the others.
 exit|

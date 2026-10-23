@@ -123,6 +123,7 @@
 	"boss_voices": {
 		"_comment": "D278, D310: enemy_type of a boss → its voice events. roar: the first swing; shout: every second swing after it; death: the killing blow.",
 		"brass_collector": {"roar": "brass_collector_roar", "shout": "boss_shout", "death": "boss_death"},
+		"scorpicore_warrior": {"roar": "boss_shout", "shout": "boss_shout", "death": "boss_death"},
 		"fire_djinn": {"roar": "fire_djinn_roar", "shout": "fire_djinn_laugh", "death": "boss_death"}
 	},
 	"rooms": {
@@ -144,7 +145,7 @@
 		"BANDIT_1": "bandit", "BANDIT_2": "bandit", "BANDIT_LEADER": "bandit_leader", "ENEMY": "enemy",
 		"ALISIA": "alisia", "ASTRIT": "astrit", "URIZEN": "urizen", "GNOME_MECHANIC": "gnome", "SUAN": "suan",
 		"DARK_PRIESTS": "dark_priests",
-		"BRASS_COLLECTOR": "brass_collector", "FIRE_DJINN": "fire_djinn", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
+		"BRASS_COLLECTOR": "brass_collector", "SCORPICORE_WARRIOR": "bandit_leader", "FIRE_DJINN": "fire_djinn", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
 	},
 	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05, "shield": 0.92, "vulture": 0.85, "bat": 1.6},
 	"music": {

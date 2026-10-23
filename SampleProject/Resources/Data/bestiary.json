@@ -41,6 +41,11 @@
 			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
 		},
 		{
+			"kind": "scorpicore_warrior",
+			"name": "The Scorpicore Axe-Warrior",
+			"text": "A bald Scorpicore warrior with a huge axe, his face wrapped in a green scarf; he broke into the Mayor Hall on a giant scorpion. Every blow of the axe is heavy: a yellow glint means parry the swing, red means roll — out of the charge, over the slam. Only a long chain of blows breaks his stance."
+		},
+		{
 			"kind": "fire_djinn",
 			"name": "The Fire Djinn",
 			"text": "A burning spirit on a tail of smoke and flame, born in the Laboratory's cells. It claws up close and hurls fire from afar; a glowing mark on the floor means a pillar of fire is coming — step off it. Wounded, it fights faster and throws twice."

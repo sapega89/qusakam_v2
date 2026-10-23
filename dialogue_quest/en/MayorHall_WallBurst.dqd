@@ -1,6 +1,6 @@
-// [DRAFT] D300 — the wall explodes, the Brass Collector climbs out of the breach (BACKLOG 16).
+// [DRAFT] D300, D468 — the wall explodes: a giant scorpion, then the Scorpicore axe-warrior climbs out of the breach (BACKLOG 16).
 say|URIZEN|The wall! What the...
-say|BRASS_COLLECTOR|Collect. Everyone. To the cage.
+say|SCORPICORE_WARRIOR|By the clan's sting. All of you — with us.
 say|ALISIA|Run!
 say|KUSAKAM|Go! I'll hold him off.
 exit|
