@@ -22,8 +22,9 @@ tags: [enemies, combat, art]
 ## Missing entirely
 - size variants: the scale, the matching hitboxes and hurtboxes (B128), and stats that scale with size;
 - an elite layer: a rarity roll at spawn, a visual marker, a stat multiplier, one signature move and a better drop;
-- a shield-bearer kind: it blocks hits from the front, a heavy attack breaks the block, a hit from behind gets through,
-  and it has a shield-bash attack;
+- a shared **guard bar** (shield or armour) that absorbs every hit until it is broken (D495 follow-up). It is used by the
+  shield-bearer and by the scorpion (tank), whose bulk moves from HP into armour;
+- a shield-bearer kind with a shield-bash attack;
 - art: a shield-bearer sheet, plus elite marks (UI art or a palette swap).
 
 ## Decisions required
@@ -32,11 +33,12 @@ tags: [enemies, combat, art]
    - **elites:** 1 in 8 spawns outside story fights; HP ×2.5, damage ×1.5, a gold name plate with an epithet and a
      faint aura; one signature move per kind; double XP and a guaranteed drop.
    GAME DESIGN DECISION — defaults stand until Sapega answers.
-2. **The shield-bearer (GAME DESIGN).** Default: a guard that raises a tower shield.
-   - Front hits are blocked, with sparks and no damage, while the shield meter drains.
-   - A heavy attack or a drained meter breaks the guard: he staggers for 1.2 s.
-   - Hits from behind always land, and the roll (D200) gets the hero behind him.
-   - His shield bash has a clear wind-up.
+2. **The guard bar (Sapega's follow-up, 2026-10-23).** There is no backstab, since bodies block (D443).
+   - The shield-bearer's shield and the scorpion's armour plates absorb all damage until the guard bar is gone; heavy
+     attacks drain it ×2.
+   - On a break, pieces fly off, the enemy staggers for 1.2 s and then takes normal damage.
+   - The shield-bearer's bash has a clear wind-up.
+   - The scorpion trades about half of its HP for armour.
 
 ## Slices
 ### Slice 1 — size variants
@@ -55,7 +57,8 @@ tags: [enemies, combat, art]
 - Art (comfy-sprite, in the hero's style): idle, walk, block, bash, staggered, hurt, death.
 - `enemy_stats_shield.tres`, `enemy_shield.tscn`, and the block logic in `EnemyLogic`.
 - The bestiary entry.
-- `verify_enemy_variety.gd`: front blocked, back lands, heavy breaks.
+- `verify_enemy_variety.gd` checks three things: no HP damage while the guard holds, a heavy attack drains it faster, and after the break normal hits land.
+- The scorpion gets the same guard bar (armour) in this slice.
 - Its own commit.
 
 ## Order and dependencies
