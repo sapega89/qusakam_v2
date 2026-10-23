@@ -312,6 +312,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     power, SP regen), respec together with skills (D282). Plan with item 43: `design/skill_screen_rework_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
+### Flying enemies — [[flying_enemies_plan]] (D445)
+- **Exists:** four ground enemy kinds (melee, fast, tank, archer); `DefaultEnemy` always applies gravity.
+- **Waits on:** Q74 (where they live, how they fight, numbers — defaults in the plan) and the ComfyUI art batch.
+- **Resume:** slice 0 — add `enemy_vulture` / `enemy_bat` to `Scripts/Tools/comfy_sprite.py` and render a ×4 candidate sheet for Sapega.
+
 ### Room story flow — one base class — [[code_review_2026-10-19]] §3.1
 - **Exists:** six copies of the same state flow (`_execute_step`, `_play_dialogue`, `advance_state`, `_complete_quest_for_dialogue`) in Canyon, Village, Laboratory, CityGates, DesertRoad, LaboratoryOutside; the "already done → advance" rule only as a comment (B66 came from a missed copy).
 - **Missing:** a `RoomStoryFlow` base with steps as data and the skip rule in one place.
