@@ -1,7 +1,8 @@
 extends SceneTree
 
-## BACKLOG 14 (D291–D294): NPC під героєм у кожній мапі; торговець і коваль виходять зі своїх будинків назустріч
-## Кусакаму — кат-сцена один раз, керування забрано, голосового привітання немає, завдання в журналі, NPC на місці.
+## BACKLOG 14 (D291, D293), D442, D452, D454: NPC під героєм у кожній мапі; катсцен першої зустрічі немає — торговець
+## і коваль стоять на місці з синім «!», гукають героя, меню відкривається саме, Quest видає завдання, знак зникає;
+## завдання в журналі; караванник переходить у місто (D311).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_npc_arrival.gd
 
 const NPC_DIR := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/"
@@ -58,14 +59,16 @@ func _tap(action: StringName) -> void:
 		Input.parse_input_event(ev)
 		await physics_frame
 
-## Герой підходить до NPC і тисне interact; у меню — справжні ui_down × n і ui_accept.
+## Меню NPC відкрите саме (D454) — або, якщо гравець його закрив, E відкриває знову; у меню — справжні
+## ui_down × n і interact (D454: вибирає interact).
 func _choose(npc: NpcBase, label: String) -> void:
-	await _tap(&"interact")
-	for i in 4: await process_frame
+	if not npc.npc_menu.visible:
+		await _tap(&"interact")
+		for i in 4: await process_frame
 	var labels: Array = npc.npc_menu.get_children().map(func(b: Button) -> String: return b.text)
 	for i in labels.find(label):
 		await _tap(&"ui_down")
-	await _tap(&"ui_accept")
+	await _tap(&"interact")
 	for i in 4: await process_frame
 
 func _drain(dm: Node) -> void:
@@ -80,60 +83,49 @@ func _drain(dm: Node) -> void:
 		if not dm.is_dialogue_active():
 			return
 
-## Герой іде праворуч справжнім move_right, поки не почнеться зустріч (керування забрано).
-func _walk_in(player: CharacterBody2D) -> void:
-	Input.action_press(&"move_right")
-	await _until(func() -> bool: return player.event, 8.0)
-	Input.action_release(&"move_right")
-
-func _arrival(game: Node, sl: Node, room: String, start: NodePath, npc_name: String, door_name: String, task: String,
-		flag: String, first_line: String, start_x: float = 0.0) -> void:
+## D442: NPC стоїть на місці від початку, над головою синій «!»; герой підбігає справжнім move_right — жодної
+## катсцени: меню відкривається саме (D454), NPC гукає (D452); Quest видає завдання, і знак зникає.
+func _meet(game: Node, sl: Node, room: String, start: NodePath, npc_name: String, task: String, give: String,
+		bark: String, start_x: float) -> void:
 	var dm: Node = sl.get_dialogue_manager()
 	game.teleport_to_room(room, start)
 	for i in 30: await physics_frame
-	if start_x > 0.0:  # past the room's own dialogue triggers (Road monologue; City_Merchant zone before D311)
-		game.player.global_position = Vector2(start_x, 360)
-		for i in 20: await physics_frame
+	game.player.global_position = Vector2(start_x, 360)  # past the room's own dialogue triggers (Road monologue)
+	for i in 20: await physics_frame
 	var npc: NpcBase = game.map.get_node(npc_name)
-	var station: float = npc.global_position.x
-	var door: float = (game.map.get_node(door_name) as Node2D).global_position.x
-	ck(not npc.visible and npc.process_mode == Node.PROCESS_MODE_DISABLED, "%s hidden before the meeting" % npc_name)
+	var station: float = (load(room) as PackedScene).instantiate().get_node(npc_name).position.x
+	ck(npc.visible and npc.process_mode != Node.PROCESS_MODE_DISABLED and absf(npc.global_position.x - station) < 1.0,
+			"%s stands at his station from the start (D442)" % npc_name)
+	ck(npc.marker.visible and npc.marker.kind == &"side", "a blue \"!\" over his head: a side quest to give (%s)" % npc.marker.kind)
 	var started: Array[String] = []
 	var on_start := func(id: String) -> void: started.append(id.get_file().get_basename())
 	dm.dialogue_started.connect(on_start)
 	played.clear()
+	dm.bubble_time_scale = 1.0  # облачко мимохідь живе seconds_for() — тест має його побачити
 	var player: CharacterBody2D = game.player
-	await _walk_in(player)
-	ck(player.event and not dm.is_dialogue_active(), "walking in starts the meeting: control taken by the cutscene, not a dialogue")
+	Input.action_press(&"move_right")
+	await _until(func() -> bool: return npc.npc_menu.visible or player.event, 8.0)
+	var x0: float = player.global_position.x
 	for i in 6: await physics_frame
-	var anim: AnimationPlayer = npc.get_node(^"AnimationPlayer")
-	ck(npc.visible and anim.current_animation == "walk", "%s walks (%s)" % [npc_name, anim.current_animation])
-	ck(absf(npc.global_position.x - door) < absf(station - door), "%s comes out of the door (x %.0f, door %.0f)" % [npc_name, npc.global_position.x, door])
-	ck(not npc.interactable.enabled, "no talk prompt during the cutscene")
-	await _until(func() -> bool: return dm.is_dialogue_active(), 8.0)
-	ck(absf(npc.global_position.x - station) < 1.0, "%s at the station when the talk starts" % npc_name)
-	ck(started == [first_line], "first-meeting talk %s (%s)" % [first_line, started])
+	var still_running: bool = player.global_position.x > x0
+	Input.action_release(&"move_right")
+	ck(not player.event and not dm.is_dialogue_active(), "walking up starts no cutscene and no dialogue")
+	ck(npc.npc_menu.visible, "his menu opens by itself (D454)")
+	ck(still_running, "the menu is not modal: the hero keeps running")
+	var bubble: Node2D = dm.chatter_bubble(npc)
+	ck(bubble != null and npc.quest_bark_dialogue.ends_with(bark + ".dqd"), "he calls out in a cloud (D452: %s)" % bark)
+	var greet: StringName = root.get_node("AudioManager").hooks.greet_event(npc.character_id)
+	ck(played.has(greet), "a voiced greeting as the menu opens (%s in %s)" % [greet, played])
+	dm.bubble_time_scale = 0.0
+	player.global_position.x = npc.global_position.x - 30.0
+	for i in 10: await physics_frame
+	await _choose(npc, "Quest")
+	ck(started == [give], "Quest: the give talk %s (%s)" % [give, started])
 	await _drain(dm)
 	for i in 10: await process_frame
-	ck(not played.any(func(e: StringName) -> bool: return String(e).begins_with("greet_")), "no voiced greeting in the cutscene (%s)" % [played])
-	ck(game.get_quest_flag("task_%s_taken" % task), "task %s started" % task)
-	ck(game.get_quest_flag(flag), "%s set" % flag)
-	ck(not player.event, "control back")
-	ck(anim.current_animation == "work" and npc.interactable.enabled, "%s goes to work at the station, with a prompt (D295)" % npc_name)
+	ck(game.get_quest_flag("task_%s_taken" % task), "task %s taken" % task)
+	ck(not npc.marker.visible and npc.marker.kind == &"", "the \"!\" is gone once the quest is taken")
 	dm.dialogue_started.disconnect(on_start)
-
-	# Повернувшись у кімнату — NPC уже стоїть, сцена не повторюється.
-	game.teleport_to_room(room, start)
-	for i in 30: await physics_frame
-	if start_x > 0.0:
-		game.player.global_position = Vector2(start_x, 360)
-	npc = game.map.get_node(npc_name)
-	ck(npc.visible and absf(npc.global_position.x - station) < 1.0, "%s stays at the station on return" % npc_name)
-	player = game.player
-	Input.action_press(&"move_right")
-	for i in 90: await physics_frame
-	Input.action_release(&"move_right")
-	ck(not player.event and not dm.is_dialogue_active(), "the meeting plays once")
 
 func _initialize() -> void:
 	await process_frame
@@ -150,15 +142,21 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
 
-	print("[2] Desert Road: after the fight the merchant comes out of his shop")
+	print("[2] No first-meeting cutscenes (D442): no NpcArrival anywhere")
+	ck(not FileAccess.file_exists("res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd"), "NpcArrival.gd is gone")
+	for map: String in ["DesertRoad", "City"]:
+		var text := FileAccess.get_file_as_string("res://SampleProject/Maps/%s.tscn" % map)
+		ck(text.find("NpcArrival") == -1 and text.find("_Arrival.dqd") == -1, "%s has no arrival zone or arrival talk" % map)
+
+	print("[3] Desert Road: after the fight the merchant stands at his shop with a blue \"!\"")
 	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(f, true)
-	await _arrival(game, sl, "res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start", "Merchant", "ShopDoor",
-			"merchant_caravan", "desert_road_merchant_met", "Merchant_Arrival", 700.0)
+	await _meet(game, sl, "res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start", "Merchant", "merchant_caravan",
+			"Merchant_Caravan_Give", "Merchant_Bark", 700.0)
 
-	print("[3] City: the blacksmith comes out of his forge")
-	await _arrival(game, sl, "res://SampleProject/Maps/City.tscn", ^"SavePoint", "Blacksmith", "ForgeDoor",
-			"smith_helmet", "city_blacksmith_met", "Smith_Arrival", 840.0)
+	print("[3b] City: the blacksmith stands at his forge with a blue \"!\"")
+	await _meet(game, sl, "res://SampleProject/Maps/City.tscn", ^"SavePoint", "Blacksmith", "smith_helmet",
+			"Smith_Helmet_Give", "Smith_Bark", 840.0)
 
 	print("[4] Both tasks show in the Journal")
 	sl.get_ui_manager().open_game_menu()
@@ -193,20 +191,20 @@ func _initialize() -> void:
 	ck(_z(merchant.get_node(^"Sprite2D")) < _z(hero.get_node(^"Sprite2D")), "behind the hero (D291)")
 	await _until(func() -> bool: return merchant.get_node(^"AnimationPlayer").current_animation == "work", 8.0)
 	ck(merchant.get_node(^"AnimationPlayer").current_animation == "work", "he counts coins (D295)")
-	hero.global_position = merchant.global_position + Vector2(-40, -10)
-	hero.velocity = Vector2.ZERO
-	for i in 20: await physics_frame
 	var dm: Node = sl.get_dialogue_manager()
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 	played.clear()
-	await _tap(&"interact")
-	for i in 4: await process_frame
+	hero.global_position = merchant.global_position + Vector2(-40, -10)
+	hero.velocity = Vector2.ZERO
+	for i in 20: await physics_frame
 	var labels: Array = merchant.npc_menu.get_children().map(func(b: Button) -> String: return b.text)
-	ck(labels == ["Talk", "Quest", "Buy"], "his menu: Talk / Quest / Buy (%s)" % [labels])
-	ck(played.has(&"greet_merchant"), "a voiced greeting when the hero starts the talk (D277) (%s)" % [played])
+	ck(merchant.npc_menu.visible and labels == ["Talk", "Quest", "Buy"], "his menu opens by itself: Talk / Quest / Buy (%s)" % [labels])
+	ck(played.has(&"greet_merchant"), "a voiced greeting as the menu opens (D277, D454) (%s)" % [played])
+	ck(not merchant.marker.visible, "no \"!\": the caravan task is already taken")
 	merchant.npc_menu.cancelled.emit()
-	for i in 4: await process_frame
+	for i in 10: await process_frame
+	ck(not merchant.npc_menu.visible, "ui_cancel closes it, and it stays closed while the hero stands there")
 	await _choose(merchant, "Quest")
 	ck(started.has("Merchant_Caravan_Done"), "Quest hands in the caravan in the City (%s)" % [started])
 	await _drain(dm)
@@ -215,9 +213,11 @@ func _initialize() -> void:
 	for i in 6: await process_frame
 	var layer: Node = sl.get_ui_manager().get_modal_layer()
 	ck(layer.active_modal != null and layer.active_modal.description_label.text == "Coin × 60", "the reward popup: Coin × 60")
+	ck(not merchant.npc_menu.visible, "the menu waits while the popup is open")
 	await _tap(&"ui_accept")
 	for i in 4: await process_frame
 	ck(layer.active_modal == null, "ui_accept closes the reward popup")
+	ck(merchant.npc_menu.visible, "then the menu comes back by itself")
 	await _choose(merchant, "Buy")
 	ck(merchant.is_shop_open, "Buy opens his shop")
 	var stock: Array = merchant.shop_menu_instance.shop_items

@@ -114,18 +114,15 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	ck(dm.chatter_bubble(other) != null, "second NPC chatters as the hero comes")
-	root.push_input(_press(InteractableComponent.ACTION))
-	await process_frame
-	await process_frame
-	ck(other.npc_menu.visible, "E opens the NPC menu")
-	ck(dm.chatter_bubble(other) == null, "opening the menu ends the chatter")
+	ck(other.npc_menu.visible, "the menu opens by itself alongside the cloud, no E (D454)")
+	ck(dm.chatter_bubble(other) != null, "the open menu does not end the chatter (D454)")
 	other.npc_menu.chosen.emit(&"talk")
 	await process_frame
 	await process_frame
 	ck(dm.is_dialogue_active(), "Talk starts a dialogue")
 	ck(dm.current_dialogue_box.visible, "Talk is shown in the dialogue box")
 	await process_frame
-	ck(_clouds(other) == 0, "no cloud over the NPC during the talk")
+	ck(_clouds(other) == 0, "no cloud over the NPC during the talk: picking an entry ends the chatter")
 
 	print("[4] No chatter while a dialogue runs; it comes on the next approach")
 	var third := _spawn(world, far + Vector2(2200, 0))

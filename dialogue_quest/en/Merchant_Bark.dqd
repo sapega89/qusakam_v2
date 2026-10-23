@@ -1,0 +1,3 @@
+// [DRAFT] D452 — the merchant calls out while "The Stolen Caravan" is not taken (Q67)
+say|MERCHANT|Hey, traveler! A moment — I have business with you!
+exit|

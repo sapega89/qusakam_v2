@@ -136,7 +136,7 @@ func _initialize() -> void:
 
 	set_meta("start_new_game", true)
 	var game: Node = await _boot()
-	for flag in ["desert_road_fight_complete", "desert_road_merchant_met"]:
+	for flag in ["desert_road_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame

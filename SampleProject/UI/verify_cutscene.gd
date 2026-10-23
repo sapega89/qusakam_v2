@@ -179,22 +179,7 @@ func _initialize() -> void:
 	await _play_and_skip("raid", raid_start,
 			func() -> bool: return game.map.get_current_state_name() == "FIGHT_LOOP", bandits, _key(true), _key(false), "Tab")
 
-	print("[2] Merchant arrival on the Desert Road (NpcArrival): hold pad Y")
-	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
-		game.set_quest_flag(f, true)
-	var merchant_start := func() -> void:
-		game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
-		for i in 30: await physics_frame
-		game.player.global_position = Vector2(700, 360)
-		for i in 20: await physics_frame
-		Input.action_press(&"move_right")
-		await _until(func() -> bool: return game.player.event, 8.0)
-		Input.action_release(&"move_right")
-	await _play_and_skip("merchant", merchant_start,
-			func() -> bool: return game.get_quest_flag("desert_road_merchant_met") and not game.player.event,
-			[^"Merchant"], _pad_y(true), _pad_y(false), "Y")
-
-	print("[3] Canyon descent (ends after a teleport): hold Tab")
+	print("[2] Canyon descent (ends after a teleport): hold pad Y")
 	var all: Dictionary = game.get_quest_flags().duplicate()
 	all.merge({"canyon_abduction_complete": true, "village_abduction_complete": true, "village_arrival_complete": true,
 			"village_fight_complete": true, "village_left_complete": true}, true)
@@ -210,9 +195,9 @@ func _initialize() -> void:
 	var before_descent := _snap([])
 	await _play_and_skip("descent", descent_start,
 			func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn") and not game.player.event,
-			[], _key(true), _key(false), "Tab")
+			[], _pad_y(true), _pad_y(false), "Y")
 
-	print("[4] Quit to the main menu mid-cutscene, then a new game (B92)")
+	print("[3] Quit to the main menu mid-cutscene, then a new game (B92)")
 	_restore(before_descent)
 	await descent_start.call()
 	await _until(func() -> bool: return _prompt() != null, 8.0)
@@ -239,7 +224,7 @@ func _initialize() -> void:
 	ck(_hud_visible() and _prompt() == null, "the new game's intro ends with the HUD back")
 	ck(not game.player.event, "the new game's intro gives control back")
 
-	print("[5] The next cutscene in the new game hides and shows the HUD again (B92)")
+	print("[4] The next cutscene in the new game hides and shows the HUD again (B92)")
 	await _play_and_skip("raid after a new game", raid_start,
 			func() -> bool: return game.map.get_current_state_name() == "FIGHT_LOOP", bandits, _key(true), _key(false), "Tab")
 

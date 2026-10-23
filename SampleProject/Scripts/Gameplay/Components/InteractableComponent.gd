@@ -31,6 +31,12 @@ const ACTION := &"interact"
 
 @export var prompt_offset: Vector2 = Vector2(0, UITokens.PROMPT_OFFSET_Y)
 
+## false — підказки немає зовсім: NPC відкриває своє меню сам, щойно герой поруч (D454).
+@export var show_prompt: bool = true:
+	set(value):
+		show_prompt = value
+		_refresh_visibility()
+
 var player_nearby := false
 var _prompt: InteractionPrompt = null
 var _area: Area2D = null
@@ -92,7 +98,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _refresh_visibility() -> void:
 	if _prompt:
-		_prompt.visible = enabled and player_nearby
+		_prompt.visible = show_prompt and enabled and player_nearby
 		if _prompt.visible:
 			_place_prompt()
 

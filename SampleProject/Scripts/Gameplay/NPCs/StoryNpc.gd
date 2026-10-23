@@ -27,6 +27,13 @@ func quest_rows() -> Array:
 	return rows
 
 
+## Сюжетний квест ще не видано — жовтий «!» (D442); видано — як у бази.
+func quest_marker() -> StringName:
+	if not Game.get_singleton().get_quest_flag(quest_flag):
+		return &"story"
+	return super.quest_marker()
+
+
 func _on_npc_choice(id: StringName) -> void:
 	if id == &"quest":
 		var tail: Array[Dictionary] = [{"speaker": "", "text": tr("Current objective: %s") % Game.get_singleton().current_objective}]

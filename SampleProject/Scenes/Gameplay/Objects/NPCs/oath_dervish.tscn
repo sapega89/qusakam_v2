@@ -73,6 +73,7 @@ oath_id = "warden"
 sworn_dialogue = "res://dialogue_quest/City_Oath_Dervish_Sworn.dqd"
 profile_faces_left = false
 talk_dialogue = "res://dialogue_quest/City_Oath_Dervish_Talk.dqd"
+quest_bark_dialogue = "res://dialogue_quest/City_Oath_Dervish_Bark.dqd"
 character_id = "OATH_DERVISH"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

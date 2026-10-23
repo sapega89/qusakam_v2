@@ -4,7 +4,7 @@ class_name NpcActionMenu
 ## Меню дій NPC. Figma: npc-interaction-menu у npc-menu-merchant 164:1302 /
 ## npc-menu-blacksmith 176:1357; рядки — UI/Menu Item 248:62 (активний: SemiBold + шеврон).
 ## Працює й під паузою; ui_cancel закриває. Лише клавіатура/геймпад (D155): вгору/вниз — пункти,
-## interact (E / геймпад A) — вибір; WASD, стіки та вліво/вправо — рух гравця, фокус лишається в меню;
+## interact (E / геймпад Y) — вибір; WASD, стіки та вліво/вправо — рух гравця, фокус лишається в меню;
 ## миша ігнорується.
 
 signal chosen(id: StringName)
@@ -66,9 +66,13 @@ func open() -> void:
 
 
 ## Стік у Godot теж веде ui_up/ui_down; тут він лише для руху героя (D155).
+## Пробіл і геймпад A — і ui_accept, і стрибок: меню відкрите саме, поки герой біжить повз (D454),
+## тож вони стрибають, а не вибирають; вибір — interact (Enter лишається).
 ## Input-опитування (PlayerMover) бачить подію й після set_input_as_handled.
 func _input(event: InputEvent) -> void:
-	if visible and event is InputEventJoypadMotion:
+	if not visible:
+		return
+	if event is InputEventJoypadMotion or (event.is_action(&"ui_accept") and event.is_action(&"jump")):
 		get_viewport().set_input_as_handled()
 
 

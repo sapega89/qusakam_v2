@@ -18,16 +18,12 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_tower.png" id="tower_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_wreck.png" id="wreck_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shrine.png" id="shrine_art"]
-[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcArrival.gd" id="npc_arrival"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="item_pickup"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="chest"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_front.png" id="front_tex"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_arrival"]
-size = Vector2(600, 200)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
@@ -211,19 +207,6 @@ script = ExtResource("9_gate")
 position = Vector2(1120, 396)
 task_giver = "merchant"
 gone_with_flag = "city_gates_fight_complete"
-
-[node name="MerchantArrival" type="Area2D" parent="." unique_id=1402914113]
-position = Vector2(1200, 300)
-script = ExtResource("npc_arrival")
-npc_path = NodePath("../Merchant")
-door_path = NodePath("../ShopDoor")
-dialogue = "res://dialogue_quest/Merchant_Arrival.dqd"
-task_id = "merchant_caravan"
-done_flag = "desert_road_merchant_met"
-require_flag = "desert_road_fight_complete"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MerchantArrival" unique_id=1402914114]
-shape = SubResource("RectangleShape2D_arrival")
 
 [node name="Fight_Dunes" type="Node2D" parent="." unique_id=1773711575 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")

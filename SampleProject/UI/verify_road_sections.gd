@@ -94,7 +94,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 60: await physics_frame
 	# The story beats of the road are done — only the sections are under test.
-	for flag in ["desert_road_fight_complete", "desert_road_merchant_met"]:
+	for flag in ["desert_road_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame

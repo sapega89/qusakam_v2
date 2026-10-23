@@ -16,8 +16,6 @@ extends Node
 ## Поки true — поза розмови; ставить NpcBase.
 var talking: bool = false:
 	set = set_talking
-## Катсцена (NpcArrival) веде анімацію сама — розклад стоїть.
-var held: bool = false
 
 var _working: bool = false
 var _left: float = 0.0
@@ -29,7 +27,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if talking or held:
+	if talking:
 		return
 	_left -= delta
 	if _left > 0.0:
@@ -41,27 +39,18 @@ func _process(delta: float) -> void:
 
 
 func is_working() -> bool:
-	return _working and not talking and not held
+	return _working and not talking
 
 
 func set_talking(value: bool) -> void:
 	if value == talking:
 		return
 	talking = value
-	if held:
-		return
 	if talking:
 		_working = false
 		_anim.play(&"talk")
 	else:
 		_work()
-
-
-## Катсцена скінчилась — знову до дії.
-func resume() -> void:
-	held = false
-	talking = false
-	_work()
 
 
 func _work() -> void:

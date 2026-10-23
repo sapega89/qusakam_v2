@@ -102,10 +102,9 @@ func _initialize() -> void:
 	b.refresh_availability()
 	ck(_labels(b) == ["Craft"], "Craft appears once a crafting screen exists")
 	b.interactable._on_body_entered(player)
-	ck(b.interactable.get_prompt().visible and b.interactable.get_prompt().action_text == "Craft", "prompt \"Craft\"")
-	b.interactable.interacted.emit()
 	await process_frame
-	ck(b.npc_menu.visible and not paused, "NPC menu opens without pausing (D155)")
+	ck(not b.interactable.get_prompt().visible, "no [E] prompt (D454)")
+	ck(b.npc_menu.visible and not paused, "NPC menu opens by itself, without pausing (D155, D454)")
 	b.npc_menu.chosen.emit(&"craft")
 	await process_frame
 	ck(b.is_screen_open and b.screen_instance != null and paused, "Craft opens the crafting screen")
@@ -116,7 +115,8 @@ func _initialize() -> void:
 	b.screen_instance.closed.emit()
 	await process_frame
 	ck(not b.is_screen_open and not paused, "closing crafting resumes the game")
-	ck(b.interactable.get_prompt().visible, "prompt returns")
+	await process_frame
+	ck(b.npc_menu.visible and not b.interactable.get_prompt().visible, "the menu comes back by itself, still no prompt")
 
 	DirAccess.remove_absolute(STUB_PATH)
 	_done()

@@ -1,0 +1,3 @@
+// [DRAFT] D452 — the Sky priestess calls the hero while he has no oath (Q67)
+say|OATH_PRIEST|The Sky sees you, child. Stop for a moment.
+exit|

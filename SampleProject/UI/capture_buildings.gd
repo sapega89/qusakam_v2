@@ -20,7 +20,7 @@ func _initialize() -> void:
 	game = await Kit.boot(self)
 	for flag in ["village_abduction_complete", "village_arrival_complete", "village_fight_complete",
 			"village_afterfight_complete", "village_oldman_met", "village_oldman_healed",
-			"village_oldman_complete", "village_left_complete", "city_gates_fight_complete", "city_blacksmith_met"]:
+			"village_oldman_complete", "village_left_complete", "city_gates_fight_complete"]:
 		game.set_quest_flag(flag, true)
 
 	await _visit(CITY, ^"SavePoint")

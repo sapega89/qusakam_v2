@@ -87,6 +87,7 @@ size = Vector2(64, 64)
 
 [node name="Merchant" type="Area2D"]
 script = ExtResource("1_merchant")
+quest_bark_dialogue = "res://dialogue_quest/Merchant_Bark.dqd"
 character_id = "MERCHANT"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

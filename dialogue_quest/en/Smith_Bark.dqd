@@ -1,0 +1,3 @@
+// [DRAFT] D452 — the blacksmith calls out while he has a task not taken (Q67)
+say|BLACKSMITH|Hey, lizard! Come here — I have work for those hands of yours.
+exit|
