@@ -312,6 +312,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     power, SP regen), respec together with skills (D282). Plan with item 43: `design/skill_screen_rework_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
+### World structure: big locations, metroidvania inside — [[world_structure_plan]] (D458)
+- **Exists:** 11 rooms in five linear locations, and a MetSys grid map over the parchment.
+- **Waits on:** Q75–Q78 (the defaults are in the plan); the fade and background loading ([[performance_plan]]) before the pilot location.
+- **Resume:** slice 1 — write `Resources/Data/locations.json` grouping the 11 rooms into the five locations, plus `verify_locations.gd`.
+
 ### Flying enemies — [[flying_enemies_plan]] (D445)
 - **Exists:** four ground enemy kinds (melee, fast, tank, archer); `DefaultEnemy` always applies gravity.
 - **Waits on:** Q74 (where they live, how they fight, numbers — defaults in the plan) and the ComfyUI art batch.
