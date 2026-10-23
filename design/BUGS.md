@@ -108,14 +108,6 @@ the history, this note keeps only what is open.
 - **Severity:** gameplay (combat feel).
 - **Found:** 2026-10-23, Sapega's playtest.
 
-### B126 — In the Laboratory cells cutscene the cat walks out with Alisia
-- **Where:** the `LabCells` cutscene (D304; `verify_lab_cells.gd`), cell 3, where Alisia and the white cat creatures sit.
-- **Expected:** only Alisia is led out of cell 3 to the table and back. The cat stays in the cell.
-- **Got:** the cat came out together with Alisia. Most likely it is a child of her node, or it shares the node the cutscene moves.
-- **Evidence:** Sapega's screenshot (the chat, 2026-10-23).
-- **Severity:** visual / story.
-- **Found:** 2026-10-23, Sapega's playtest.
-
 ### B127 — Nobody is laid on the operating table
 - **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
 - **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
@@ -231,6 +223,8 @@ the history, this note keeps only what is open.
 > - **B119** (`cloud/ui-kit`, D477): confirm modals follow `UI/Modal/Confirm`.
 > - **B122** (`cloud/playtest-1` `c6c71df0`): the box was hidden and then cleared, so Godot kept a stale minimum size. `GameDialogueBox` now refits its `offset_top` on every content or visibility change. `verify_dialogue_speaker`.
 > - **B123** (`374daa57`): `Cutscene` lands an airborne hero first and holds the lines until he lands. `verify_cutscene` [0].
+
+> **Fixed 2026-10-23:** B126 (`cloud/story-text`, D499): in the LabCells cutscene only Alisia's body moves; the cat stays in cell 3.
 
 ## Playtest intake — 2026-09-29 (Sapega)
 
