@@ -160,3 +160,5 @@ None blocks work. Each default holds until Sapega answers.
 | Q77 | World structure | The map: two levels (world + location) or one map with all rooms? | Two levels. |
 | Q78 | World structure | Which location is rebuilt first? | The Desert Road. |
 | Q79 | Laboratory boss (D466) | Who is the manticore-man brute: his name, and why he is in the Laboratory (the alchemist's guard, a captive turned beast, a mercenary)? | Name `[ЧЕРНЕТКА]`; he is the alchemist's guard. |
+| Q80 | Mayor Hall boss (D468) | How are Kusakam and the others captured now, without the golem's cage and its sleeping smoke: the scorpion's sting puts them to sleep, the warrior throws a sleeping-smoke flask from his bag, or the clan's men drag them off after the fight? | The giant scorpion's sting puts them to sleep, and the dialogue lines stay close to the old ones. |
+| Q81 | Mayor Hall boss (D468) | Does the giant scorpion fight too (a duo: the warrior plus the scorpion lunging and stinging), or does it only appear in the cutscene? | It fights as a second, slower attacker with a telegraphed sting, and it retreats when the warrior falls. |

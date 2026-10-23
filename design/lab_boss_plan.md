@@ -78,3 +78,12 @@ stays a story beat: it escapes in the cells cutscene (D304 / D459). Slices:
    `fire_djinn.tscn`. `verify_lab_boss.gd` checks each move's tell and hit and the defeat flow (B117's deterministic placement
    stays).
 4. **Story text.** The lines around the fight (`[ЧЕРНЕТКА]`, name per Q79).
+
+## Mayor Hall boss replaced (D468, 2026-10-23)
+
+The Brass Collector golem gives way to the **Scorpicore axe-warrior and his giant scorpion**
+(`design/refs/mayor_hall_boss_reference.webp`). Same order as D466:
+1. Candidates from the reference: a ×4 sheet each for the warrior and the scorpion.
+2. Frames for both.
+3. Fight: the duo per Q81, on `BossEnemy` / `BossLogic`. `MayorHall` spawns it, the D300 beats stay, and the capture follows Q80.
+4. Text: the victory lines (D457 already cut the cage line), drafts marked [ЧЕРНЕТКА].
