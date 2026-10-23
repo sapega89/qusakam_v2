@@ -12,7 +12,7 @@ each oath's level-18 active and level-20 passive swapped, the level-20 skill is 
 shake, `ultimate` flag) (D491); synergies, 11 new conditional passives (drafts) and tooltip data (D496); JP caps per tree
 and base-tree gates for profession skills, a free respec API (D497, D490). Not done: the HUD's double gold ring and the
 Reset button (later branches, D453 / D489); the oath keepers' paid respec is left as is (see Open points).
-D-ID text: **D523–D527** below. B rows fixed: **B137**. Full suite: RESULT_LINE_PLACEHOLDER
+D-ID text: **D523–D527** below. B rows fixed: **B137**. Full suite: `SUITE: ALL PASS` (99 verify scripts).
 
 Branch `cloud/skills-data` from `origin/feature/backlog` 80dc164. Godot 4.6.2 headless; no captures (no screen changed
 its layout).
@@ -37,4 +37,20 @@ its layout).
   (en.po values are their English keys), so en carries `[DRAFT]` and uk `[ЧЕРНЕТКА]`, as `cloud/npc-flow` did (D517).
 
 ## Details
-DETAILS_PLACEHOLDER
+- Data: `SampleProject/Resources/Data/skills.json` (schema documents every new key), `attributes.json` (`sp_per_hit`).
+- `SkillDefinition.gd`: `damage_phys/elem`, `heal_phys/elem`, `ultimate`, `charges`, `synergies`, `base_jp`,
+  `passive_condition(_value)`. `SkillDatabase.gd:103` `tree_cap`.
+- `SkillManager.gd`: `SP_PER_HIT` / `SP_PER_PARRY` `:58`; `check_upgrade` `:118` (cap); `skill_damage` `:157`,
+  `skill_heal` `:166`, `synergy_bonus` `:184`; `passive_value` `:201` + `condition_met` `:211`; `_on_damage_dealt` `:280`,
+  `_on_player_parried` `:287`, `gain_sp` `:298`; flask `get_charges` `:311`, `refill_charges` `:324`, `_on_game_saving` `:330`;
+  `check_unlock` `:440` (gate, cap), `tree_spent` `:467`, `base_jp_missing` `:478`; `reset_free` `:581`, `tree_budgets` `:590`;
+  `_pay` `:824` (SP, sip, cooldown; also used by `interrupt_cast`).
+- `SkillTooltip.gd` (new, preloaded); `skills_component.gd` uses its `effect_text` and shows the new verdicts (text only).
+- `EventBus.gd:279` `skill_charges_changed`, `:284` `game_saving`; `LoadGameMenu.gd:162` emits it before a save-screen save.
+- `PlayerDataModule.gd` / `PlayerStateManager.gd`: `skill_charges` saved / defaulted. `VFXHooks.gd:190` ultimate shake.
+- `SkillPlan.gd`: passes planned ranks so the screen's plan obeys caps and gates.
+- Tests: new `verify_skill_rules.gd` `RESULT: ALL PASS` ([1] data, [2] scaling, [3] SP from hits, [4] flask, [5] caps
+  and gates, [6] ultimate and shake, [7] synergies, [8] conditional passives, [9] tooltip, [10] free respec). Updated for
+  the new rules (numbers, cooldowns, gates): `verify_skill_trees`, `verify_skill_trees_ui`, `verify_skill_screen`,
+  `verify_skills`, `verify_skills_ui`, `verify_kusakam_skills`, `verify_skill_casts`, `verify_oath`,
+  `verify_souls_combat`, `verify_attributes`. No test was skipped or disabled.
