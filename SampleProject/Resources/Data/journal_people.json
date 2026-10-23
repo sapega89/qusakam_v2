@@ -17,70 +17,121 @@
 		{
 			"id": "MALIK",
 			"title": "Malik",
-			"text": "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out."
+			"text": "A prisoner of the Laboratory. He promises gold at his \"humble place\" to anyone who leads him out.",
+			"met_in": "lab_cells"
 		},
 		{
 			"id": "PRISONER",
 			"title": "Prisoner",
-			"text": "A nameless prisoner held in the Laboratory."
+			"text": "A nameless prisoner held in the Laboratory.",
+			"met_in": "lab_cells"
 		},
 		{
 			"id": "SCIENTIST",
 			"title": "Alchemist",
-			"text": "An alchemist who works in the Laboratory."
+			"text": "An alchemist who works in the Laboratory.",
+			"met_in": "lab_cells"
 		},
 		{
 			"id": "GRANDFATHER",
 			"title": "Kusakam's grandfather",
-			"text": "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
+			"text": "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his.",
+			"met_in": "village"
 		},
 		{
 			"id": "GATE_GUARD",
 			"title": "City Gates guard",
-			"text": "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates."
+			"text": "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates.",
+			"met_in": "city_gates"
 		},
 		{
 			"id": "BLACKSMITH",
 			"title": "Blacksmith",
-			"text": "Forges and improves weapons and armour."
+			"text": "Forges and improves weapons and armour.",
+			"met_in": "city"
 		},
 		{
 			"id": "MERCHANT",
 			"title": "Merchant",
-			"text": "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
+			"text": "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there.",
+			"met_in": "desert_road"
 		},
 		{
 			"id": "OATH_PRIEST",
 			"title": "Priest of the Sky — oath of the Paladin",
-			"text": "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+			"text": "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins.",
+			"met_in": "city"
 		},
 		{
 			"id": "OATH_WITCH",
 			"title": "Witch — oath of the Dark Knight",
-			"text": "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+			"text": "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins.",
+			"met_in": "city"
 		},
 		{
 			"id": "OATH_DERVISH",
 			"title": "Sand dervish — oath of the Warden of Balance",
-			"text": "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+			"text": "Keeper of the Warden's oath in the City. He can also unlearn skills for coins.",
+			"met_in": "city"
 		},
 		{
 			"id": "ALISIA",
 			"title": "Hunter",
 			"text": "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue.",
-			"lore": "design/lore.md#Алісія"
+			"lore": "design/lore.md#Алісія",
+			"met_in": "lab_cells"
 		},
 		{
 			"id": "ASTRIT",
 			"title": "Warrior-thaumaturge",
 			"text": "A dragonborn barbarian with a huge spiked shield and a book; she carries the signs of fire.",
-			"lore": "design/lore.md#Астрит"
+			"lore": "design/lore.md#Астрит",
+			"met_in": "lab_cells"
 		},
 		{
 			"id": "URIZEN",
 			"title": "Cleric of the god of contracts",
 			"text": "A priest of the god of contracts. His smite strikes in the shape of a coin, that god's sign.",
-			"lore": "design/lore.md#Уризен"
+			"lore": "design/lore.md#Уризен",
+			"met_in": "lab_cells"
 		}
-	]
+	],
+	"_places_comment": "D486: where each person is first met; map is the point on the parchment (menu_map_background.jpg) as a 0..1 fraction of its width and height, lit on the journal character card.",
+	"places": {
+		"village": {
+			"title": "Village",
+			"map": [
+				0.69,
+				0.47
+			]
+		},
+		"desert_road": {
+			"title": "Desert Road",
+			"map": [
+				0.63,
+				0.4
+			]
+		},
+		"city_gates": {
+			"title": "City Gates",
+			"map": [
+				0.6,
+				0.56
+			]
+		},
+		"city": {
+			"title": "City",
+			"map": [
+				0.56,
+				0.52
+			]
+		},
+		"lab_cells": {
+			"title": "Laboratory — Cells",
+			"map": [
+				0.74,
+				0.63
+			]
+		}
+	}
 }

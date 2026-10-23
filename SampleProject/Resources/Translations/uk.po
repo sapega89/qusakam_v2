@@ -2691,3 +2691,10 @@ msgstr "Очки навичок"
 # ── Фінал демо (D473)
 msgid "Thank you for playing — you have finished the demo"
 msgstr "Дякуємо за гру — ви пройшли демо"
+
+# ── Журнал → картка персонажа (D486)
+msgid "City"
+msgstr "Місто"
+
+msgid "Left / Right: another person. Confirm: read about them."
+msgstr "Вліво / вправо — інша людина. Підтвердити — прочитати про неї."

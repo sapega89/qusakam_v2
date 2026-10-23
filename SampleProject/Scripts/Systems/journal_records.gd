@@ -43,7 +43,8 @@ static func kill_enemy(kind: String) -> void:
 	_state().enemies[kind] += 1
 
 
-## Зустрінуті люди в порядку зустрічі: {id, name і portrait (як у вікні діалогу, D321; без портрета — null), title, text}.
+## Зустрінуті люди в порядку зустрічі: {id, name і portrait (як у вікні діалогу, D321; без портрета — null), title, text,
+## place — де вперше зустріли (D486): {title, map — точка на пергаменті, частки 0..1}}.
 static func people() -> Array:
 	var data := _people_data()
 	var by_id := {}
@@ -57,6 +58,8 @@ static func people() -> Array:
 		var character: Resource = _root().get_node("DialogueQuest").CharacterDB.get_character_from_id(id)
 		entry.name = character.character_name
 		entry.portrait = character.portrait
+		var place: Dictionary = data.places[entry.met_in]
+		entry.place = {"title": place.title, "map": Vector2(place.map[0], place.map[1])}
 		out.append(entry)
 	return out
 

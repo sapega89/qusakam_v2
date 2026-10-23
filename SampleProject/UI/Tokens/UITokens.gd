@@ -452,3 +452,16 @@ const LEVEL_UP_GAP := SPACE_MD     # заголовок → лінія → «Lev
 const LEVEL_UP_ROW_GAP := SPACE_SM
 const LEVEL_UP_RULE_WIDTH := 240   # 1 px акцентна лінія під «LEVEL UP»
 const LEVEL_UP_TITLE_SPACING := 3  # tracking заголовка
+
+
+# ── Журнал → картка персонажа (Figma journal-character-detail 192:1754, D486) ─
+const CARD_GAP := SPACE_XL
+const CARD_MAP_ZOOM := 1.6             # пергамент більший за свою половину — точка зустрічі в центрі світла
+const CARD_LIGHT_RADIUS := 0.16        # світле коло, частка висоти мапи
+const CARD_LIGHT_SOFTNESS := 0.20      # м'який край світла
+const CARD_SHADE := Color("111118", 0.94)  # пергамент поза світлом
+const CARD_EPITHET_SPACING := 6        # tracking епітета
+const SIZE_CARD_EPITHET := 16          # SemiBold, UPPER, accent
+const SIZE_CARD_PLACE := 14            # SemiBold, UPPER, accent — назва місця
+const CARD_PLACE_SPACING := 2
+const CARD_DESCRIPTION_WIDTH := 560

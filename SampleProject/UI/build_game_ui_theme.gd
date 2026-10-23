@@ -635,6 +635,7 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_stylebox("panel", "ModalPanel", modal)
 	_modal_kit(theme)
 	_level_up_kit(theme)
+	_person_card_kit(theme)
 
 	# Figma UI/Window — модалки, вікна. Непрозорий фон + тінь замість Panel Glow.
 	theme.set_type_variation("WindowPanel", "PanelContainer")
@@ -844,6 +845,23 @@ func _level_up_kit(theme: Theme) -> void:
 		theme.set_font("font", spec[0], spec[1])
 		theme.set_font_size("font_size", spec[0], spec[2])
 		theme.set_color("font_color", spec[0], spec[3])
+
+
+## Figma journal-character-detail 192:1754 (D486): епітет — золоті розріджені великі літери, ім'я — великий serif,
+## назва місця на пергаменті — малі золоті великі літери.
+func _person_card_kit(theme: Theme) -> void:
+	for spec in [["CardEpithet", _spaced(_font_semibold, UITokens.CARD_EPITHET_SPACING), UITokens.SIZE_CARD_EPITHET, UITokens.ACCENT],
+			["CardName", _font_bold, UITokens.SIZE_NAME, UITokens.TEXT_PRIMARY],
+			["CardPlace", _spaced(_font_semibold, UITokens.CARD_PLACE_SPACING), UITokens.SIZE_CARD_PLACE, UITokens.ACCENT]]:
+		theme.set_type_variation(spec[0], "Label")
+		theme.set_font("font", spec[0], spec[1])
+		theme.set_font_size("font_size", spec[0], spec[2])
+		theme.set_color("font_color", spec[0], spec[3])
+	theme.set_type_variation("CardMargin", "MarginContainer")
+	for side in ["left", "top", "right", "bottom"]:
+		theme.set_constant("margin_" + side, "CardMargin", UITokens.SPACE_XL)
+	theme.set_type_variation("CardColumns", "HBoxContainer")
+	theme.set_constant("separation", "CardColumns", UITokens.CARD_GAP)
 
 
 ## Шестикутна кнопка з SVG: кінці (MODAL_BUTTON_POINT) не розтягуються, середина — так.

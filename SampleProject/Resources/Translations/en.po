@@ -2687,3 +2687,10 @@ msgstr "Job Points"
 # ── Фінал демо (D473)
 msgid "Thank you for playing — you have finished the demo"
 msgstr "Thank you for playing — you have finished the demo"
+
+# ── Журнал → картка персонажа (D486)
+msgid "City"
+msgstr "City"
+
+msgid "Left / Right: another person. Confirm: read about them."
+msgstr "Left / Right: another person. Confirm: read about them."

@@ -57,6 +57,19 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _objective_line: Label = %ObjectiveLine
 @onready var _empty_state: Label = %EmptyState
 @onready var _tabs: Dictionary = {"quests": %QuestsTab, "characters": %CharactersTab, "bestiary": %BestiaryTab}
+## Characters — картка персонажа (D486, Figma 192:1754): зліва пергамент зі світлом над місцем зустрічі,
+## справа ілюстрація (поки — портрет D321, nearest), під нею епітет та ім'я. ←/→ — інша людина, A / Enter — опис.
+@onready var _card: HBoxContainer = %PersonCard
+@onready var _map_view: Control = %MapView
+@onready var _parchment: TextureRect = %Parchment
+@onready var _light: ColorRect = %Light
+@onready var _place: Label = %PlaceLabel
+@onready var _pager: Label = %Pager
+@onready var _about_panel: PanelContainer = %AboutPanel
+@onready var _about_text: Label = %AboutText
+@onready var _illustration: TextureRect = %Illustration
+@onready var _epithet: Label = %Epithet
+@onready var _card_name: Label = %CardName
 
 var entries: Array = []
 var selected_id: String = ""
@@ -71,6 +84,16 @@ func _initialize_component() -> void:
 	for id: String in _tabs:
 		(_tabs[id] as Button).pressed.connect(select_section.bind(id))
 	_connect_objective()
+	(_tabs["characters"] as Button).focus_neighbor_bottom = _card.get_path()
+	_about_panel.custom_minimum_size.x = UITokens.CARD_DESCRIPTION_WIDTH
+	var light := _light.material as ShaderMaterial
+	light.set_shader_parameter(&"shade_color", UITokens.CARD_SHADE)
+	light.set_shader_parameter(&"radius", UITokens.CARD_LIGHT_RADIUS)
+	light.set_shader_parameter(&"softness", UITokens.CARD_LIGHT_SOFTNESS)
+	%PrevButton.pressed.connect(show_next_person.bind(-1))
+	%NextButton.pressed.connect(show_next_person.bind(1))
+	_card.gui_input.connect(_on_card_input)
+	_map_view.resized.connect(_place_parchment)
 	select_section("quests")
 
 
@@ -91,7 +114,8 @@ func _load() -> void:
 			_load_story()
 		"characters":
 			set_entries(JournalRecords.people().map(func(p: Dictionary) -> Dictionary:
-				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text, "portrait": p.portrait}))
+				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text, "portrait": p.portrait,
+					"place": p.place}))
 		"bestiary":
 			set_entries(JournalRecords.enemies().map(func(e: Dictionary) -> Dictionary:
 				return {"id": e.kind, "title": e.name, "description": e.text,
@@ -205,6 +229,7 @@ func _normalize(raw: Dictionary) -> Dictionary:
 		"group": tr(String(raw.get("group", ""))),
 		"parent": String(raw.get("parent", "")),
 		"portrait": raw.get("portrait") as Texture2D,
+		"place": Dictionary(raw.get("place", {})),
 	}
 
 
@@ -230,12 +255,17 @@ func update_display() -> void:
 	_refresh_objective()
 	_rebuild_rows()
 	var has_entries: bool = not entries.is_empty()
-	_columns.visible = has_entries
+	var as_card := section == "characters"
+	_columns.visible = has_entries and not as_card
+	_card.visible = has_entries and as_card
 	_empty_state.visible = not has_entries
-	if has_entries:
-		_show_detail(selected_id)
-	else:
+	if not has_entries:
 		_detail.visible = false
+	elif as_card:
+		_about_panel.visible = false
+		_show_person(selected_id)
+	else:
+		_show_detail(selected_id)
 	_set_hint()
 
 
@@ -319,6 +349,65 @@ func _show_detail(id: String) -> void:
 		lines[i].text = "◇  %s" % String(objectives[i])
 
 
+# ── Characters: картка персонажа (D486) ───────────────────────────────────────
+
+func _show_person(id: String) -> void:
+	var entry: Dictionary = _entry(id)
+	_pager.text = "%d / %d" % [entries.find(entry) + 1, entries.size()]
+	_illustration.texture = entry.portrait
+	_epithet.text = entry.group
+	_card_name.text = entry.title
+	_about_text.text = entry.description
+	_place.text = tr(String(entry.place.title))
+	_place_parchment()
+
+
+## Пергамент більший за свою половину (CARD_MAP_ZOOM): точка зустрічі якомога ближче до центру, краї не видно;
+## світло — коло навколо неї.
+func _place_parchment() -> void:
+	var entry: Dictionary = _entry(selected_id)
+	if entry.is_empty() or section != "characters":
+		return
+	var view := _map_view.size
+	var tex := _parchment.texture.get_size()
+	var map_size := tex * maxf(view.x / tex.x, view.y / tex.y) * UITokens.CARD_MAP_ZOOM
+	var point: Vector2 = entry.place.map * map_size
+	var pos := (view / 2.0 - point).clamp(view - map_size, Vector2.ZERO)
+	_parchment.position = pos
+	_parchment.size = map_size
+	var light := _light.material as ShaderMaterial
+	light.set_shader_parameter(&"center", (pos + point) / view)
+	light.set_shader_parameter(&"aspect", view.x / view.y)
+
+
+## ←/→ — попередня / наступна людина (по колу); кнопки ‹ › — те саме мишею.
+func show_next_person(step: int) -> void:
+	if entries.is_empty():
+		return
+	selected_id = entries[posmod(entries.find(_entry(selected_id)) + step, entries.size())].id
+	_about_panel.visible = false
+	_show_person(selected_id)
+	_set_hint()
+
+
+## A / Enter або клік — опис людини поверх пергаменту й назад.
+func toggle_description() -> void:
+	_about_panel.visible = not _about_panel.visible
+
+
+func _on_card_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_left"):
+		show_next_person(-1)
+	elif event.is_action_pressed(&"ui_right"):
+		show_next_person(1)
+	elif event.is_action_pressed(&"ui_accept") \
+			or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		toggle_description()
+	else:
+		return
+	_card.accept_event()
+
+
 ## Меню ставить свою типову підказку вже після перемикання вкладки,
 ## тож нашу виставляємо відкладено, інакше її перетирають.
 func _set_hint() -> void:
@@ -333,6 +422,8 @@ func _apply_hint() -> void:
 	# Підказка описує лише те, що екран реально вміє.
 	if entries.is_empty():
 		bar.set_context_hint("Journal entries appear here as you progress.")
+	elif section == "characters":
+		bar.set_context_hint("Left / Right: another person. Confirm: read about them.")
 	else:
 		var entry: Dictionary = _entry(selected_id)
 		bar.set_context_hint(String(entry.get("title", "Select an entry to read it.")))
