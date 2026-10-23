@@ -53,6 +53,7 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **The barrier, the Maiden's, shields her followers from the sky's curse** (Sapega, 2026-10-23: «так»). With the barrier
   asleep and the statuette stolen, the villagers are open to the curse; a worthier place for the Maiden means a place where
   her barrier can shield her followers again.
+- **The Maiden is an assist too — later, not in the demo** (Sapega, 2026-10-23: «діва це теж асист, але то потім, не в демо»).
 - Open (not said): Alisia has one blue eye (2026-10-19):
   is that the curse beginning, or chance? Are the blue-eyed mindless an enemy kind?
 
