@@ -13,7 +13,7 @@ branch: cloud/skills-dn
 - **Not done:** the daze growing per rank (the frame's "0.3 s → 0.4 s"): stun does not scale with rank. The heading epithet ("Oath of the Sky") has no data.
 - D-ID text: D675, D676 below. No B rows fixed.
 - verify_difficulty: the same 2 FAIL as on `feature/backlog` before this branch (Brass Collector, B144). The ranks did not change any number in it.
-- **Full suite:** SUITE_LINE
+- **Full suite:** `SUITE: 3 FAIL`, 111 PASS. The 3 are verify_difficulty (2, B144), verify_lab_boss (2) and verify_mayor_boss (1). Each fails identically on `origin/feature/backlog` without this branch, so none is caused here.
 
 ## D-ID text (next free numbers; the orchestrator renumbers)
 
@@ -35,6 +35,13 @@ branch: cloud/skills-dn
 - `verify_skill_trees_ui`, `verify_skills_ui`, `verify_attributes`, `verify_kusakam_skills`, `verify_skill_rules` (updated for ranks / layout): ALL PASS.
 - `verify_locale`, `verify_responsive`, `verify_game_ui_theme`, `verify_skill_trees`, `verify_skill_icons`: ALL PASS.
 - `verify_difficulty`: RESULT: 2 FAIL. These are the same two as before the branch: "Brass Collector at level 5: 9 hits kill the hero ([3, 4]), 27 hits kill it ([34, 46])" and "Brass Collector at level 5, STRENGTH: wins". Both are B144, not this branch.
+
+## Full suite
+
+`Scripts/Tools/run_verify.sh`: 111 PASS, 3 FAIL. All 3 reproduce on a clean `origin/feature/backlog` worktree with the same lines:
+- `verify_difficulty`: 2 FAIL, Brass Collector (B144).
+- `verify_lab_boss`: "balanced build: he dies in 2.6 of the mercenary's blows (406 HP; mace 129, club 206)" and "the mercenary takes 60 light hits (6800 HP, Phys. Atk. 100)".
+- `verify_mayor_boss`: "the boss (2600 HP) takes 50 light hits of 53 (D642: about 40)".
 
 ## Shots
 
