@@ -2703,7 +2703,9 @@ CHARACTERS = {
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(64, 96),
-        seed=120,
+        # Sapega обрав кандидат 2 — зерно 121, профіль (D654)
+        direction=SIDE_VIEW % {"p": "its"},
+        seed=121,
         colors=16,
         who="the same humanoid fly-creature with the glossy green-black chitin body, the huge glowing blue compound "
         "eyes, the writhing tentacles in place of a mouth, the thin clawed arms and the buzzing translucent wings",
