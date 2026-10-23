@@ -56,7 +56,7 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **Nobody sent the bandits** (Sapega, 2026-10-23: «ніхто не слав бандитів, вони просто побачили, що селяни щось охороняють, і
   вкрали це, і заодно тупих селян — в рабство»). They saw the villagers guarding something, stole it, and took the villagers
   as **slaves** too.
-- Open (not said): is the relic a statue, an object or the Maiden herself?
+- **The relic is a statuette, and the Maiden lives in it** (Sapega, 2026-10-23: «реліквія — це статуетка, в ній живе діва»).
   Are Kusakam's paladin powers tied to her?
 
 ## Characters (Sapega, 2026-10-18)
