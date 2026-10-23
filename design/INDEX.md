@@ -56,6 +56,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[audio_plan]] — BACKLOG 26: buses, event→sound map, world sound, babble, greetings, boss voices (D274–D278)
 - [[performance_plan]] — measured 2026-10-23: room-change freezes (script compiling plus a synchronous load), New Game with no loading screen, GPU post-processing and overdraw; slices 1–6 ready, 7 waits on Q83 / Q84
 - [[world_structure_plan]] — D458: Tails of Iron-style locations, world map + location map, Desert Road pilot (Q75–Q78)
+- [[enemy_variety_plan]] — D495: size variants, elites, shield-bearers (Q85)
 - [[flying_enemies_plan]] — D445: vultures outdoors, bats indoors; art → movement and attack → placement (Q74)
 - [[music_plan]] — ✅ music plays: a `Music` node in every room and the Main Menu; Q38 answered 2026-10-21 (keep the tracks)
 

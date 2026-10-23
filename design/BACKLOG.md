@@ -333,6 +333,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** Q75–Q78 (the defaults are in the plan); the fade and background loading ([[performance_plan]]) before the pilot location.
 - **Resume:** slice 1 — write `Resources/Data/locations.json` grouping the 11 rooms into the five locations, plus `verify_locations.gd`.
 
+### Enemy variety — [[enemy_variety_plan]] (D495)
+- **Exists:** four kinds, one size each; enemies never block.
+- **Waits on:** Q85 (defaults are in the plan); after `cloud/combat-feel` and D494.
+- **Resume:** slice 1 — add a `scale` field to the enemy stats and honour it in the sprite, the shapes and the stats; add `verify_enemy_variety.gd`.
+
 ### Flying enemies — [[flying_enemies_plan]] (D445)
 - **Exists:** four ground enemy kinds (melee, fast, tank, archer); `DefaultEnemy` always applies gravity.
 - **Waits on:** Q74 (where they live, how they fight, numbers — defaults in the plan) and the ComfyUI art batch.
