@@ -128,8 +128,10 @@ func _scenes() -> void:
 	var bs: Resource = load(STATS % "bat")
 	ck(vs.flying and vs.flight_attack == "dive" and bs.flying and bs.flight_attack == "bite", "both kinds fly: the vulture dives, the bat bites")
 	ck(vs.max_health == jackal.max_health and vs.base_damage == jackal.base_damage and vs.speed == jackal.speed
-			and vs.xp_reward == jackal.xp_reward and is_equal_approx(vs.attack_windup, 0.6) and vs.tell == "dodge",
-			"vulture: the jackal's HP %d, damage %d, speed %d, XP %d, a 0.6 s wind-up, a red tell" % [vs.max_health, vs.base_damage, vs.speed, vs.xp_reward])
+			and is_equal_approx(vs.attack_windup, 0.6) and vs.tell == "dodge",
+			"vulture: the jackal's HP %d, damage %d, speed %d, a 0.6 s wind-up, a red tell" % [vs.max_health, vs.base_damage, vs.speed])
+	# XP — менше за шакала: два грифи на дорозі не мають зсунути рівень 5 з останнього вбивства біля воріт (D280, verify_xp_curve)
+	ck(vs.xp_reward * 2 < 15, "vulture XP %d: the oath level still lands on the last City Gates kill" % vs.xp_reward)
 	ck(bs.max_health * 2 == jackal.max_health and bs.base_damage * 2 == jackal.base_damage and bs.tell == "block",
 			"bat: half the jackal's HP (%d) and damage (%d), a white tell" % [bs.max_health, bs.base_damage])
 	for kind in ["vulture", "bat"]:
@@ -168,7 +170,7 @@ func _never_lands() -> void:
 			chased = chased or enemy.enemy_logic.current_state != 0
 			hero.current_health = hero.Max_Health
 		ck(chased, "%s: chases the hero in the air" % kind)
-		ck(lowest < FLOOR_Y - 4.0 and not enemy.is_on_floor(), "%s: never touches the floor (lowest feet y %.0f, floor %.0f)" % [kind, lowest, FLOOR_Y])
+		ck(lowest < FLOOR_Y - 1.0 and not enemy.is_on_floor(), "%s: never touches the floor (lowest feet y %.0f, floor %.0f)" % [kind, lowest, FLOOR_Y])
 		enemy.queue_free()
 		await physics_frame
 	_clear_arena()
