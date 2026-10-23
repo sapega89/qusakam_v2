@@ -159,6 +159,7 @@ func _save_to_slot(slot: int) -> void:
 	var save_system = _save_system()
 	if save_system:
 		save_system.set_current_slot(slot)
+	EventBus.game_saving.emit(slot)  # D504: фляга поповнюється перед записом
 	var ok: bool = save_handler.call() if save_handler.is_valid() else false
 	if ok:
 		refresh()

@@ -22,7 +22,7 @@ enum Result {
 
 const DATA_PATH := "res://SampleProject/Resources/Data/attributes.json"
 ## Показники, які хтось справді читає (bonus); інший ключ у даних — помилка даних, не тихий нуль.
-const KNOWN_STATS: Array[String] = ["attack", "max_health", "crit_chance", "dodge_chance", "attack_speed", "max_sp", "skill_power", "sp_regen"]
+const KNOWN_STATS: Array[String] = ["attack", "max_health", "crit_chance", "dodge_chance", "attack_speed", "max_sp", "skill_power", "sp_per_hit"]
 
 var points_per_level: int = 0
 ## Визначення в порядку файлу: {id, name, description, per_point}.

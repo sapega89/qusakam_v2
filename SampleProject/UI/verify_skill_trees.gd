@@ -80,7 +80,8 @@ func _initialize() -> void:
 			elif not load(d.vfx).instantiate() is Node2D:
 				data_ok = false
 	ck(data_ok, "every skill: known tree, level gate ≥ oath level, prerequisites exist, actives have a cast and an effect")
-	ck(per_tree[""] == 8 and per_tree.paladin == 8 and per_tree.dark_knight == 8 and per_tree.warden == 8, "8 skills per tree %s" % per_tree)
+	# D496: по 2–3 умовні пасивки на дерево — 10 у стовбурі, по 11 у клятвах.
+	ck(per_tree[""] == 10 and per_tree.paladin == 11 and per_tree.dark_knight == 11 and per_tree.warden == 11, "10 / 11 skills per tree %s" % per_tree)
 	ck(db.get_skill("healing_palm").oath == "" and db.get_skill("fire_strike").oath == "", "existing skills stay in the trunk")
 
 	print("[2] One point per level (D260)")
@@ -101,7 +102,8 @@ func _initialize() -> void:
 	ck(sm.get_oath() == "paladin" and sm.class_title() == "Paladin", "oath kept, title Paladin")
 	ck(sm.swear_oath("warden") == R.OATH_SWORN, "the oath is permanent")
 	ck(sm.can_unlock("searing_hex") == R.OTHER_OATH, "another oath's skill → OTHER_OATH")
-	ck(sm.can_unlock("radiant_smite") == R.OK, "own oath's level-5 skill can be learned")
+	ck(sm.can_unlock("radiant_smite") == R.BASE_TREE_GATE and sm.base_jp_missing("radiant_smite") == 3,
+			"own oath's level-5 skill waits for 3 JP in the base tree (D497)")
 	ck(sm.can_unlock("aura_of_resolve") == R.LEVEL_TOO_LOW, "a level-8 skill waits for level 8")
 
 	print("[4] New passive stats (D284)")
@@ -115,11 +117,17 @@ func _initialize() -> void:
 	ck(sm.unlock_skill("toughness") == R.OK and player.Max_Health == hp_max + 10, "Toughness: +10 max HP on the hero")
 	var hurt: int = player.mitigated_damage(100)
 	_level_to(xp, 8)
+	ck(sm.can_unlock("radiant_smite") == R.OK, "3 base JP open own oath's level-5 skill (D497)")
+	for id in ["shield_block", "fire_strike", "electric_strike"]:  # D497: середні ряди клятви — від 6 JP у стовбурі
+		sm.unlock_skill(id)
 	ck(sm.unlock_skill("aura_of_resolve") == R.OK and player.mitigated_damage(100) < hurt, "Aura of Resolve: less damage taken (%d → %d)" % [hurt, player.mitigated_damage(100)])
 	ck(sm.unlock_skill("mending_hands") == R.OK and sm.unlock_skill("healing_palm") == R.OK, "Mending Hands + Healing Palm learned")
 	player.take_damage(90)
 	var hp: int = player.current_health
-	ck(sm.use_skill("healing_palm", player) == R.OK and player.current_health - hp == 50, "Healing Palm heals 40 × 1.25 = 50 (%d)" % (player.current_health - hp))
+	# B137 / D496: (25 + Elem. Atk.) × синергія Devotion 1.06 × Mending Hands 1.25.
+	var palm_heal := roundi((25 + gm.calculate_magic_damage()) * 1.06 * 1.25)
+	ck(sm.use_skill("healing_palm", player) == R.OK and player.current_health - hp == palm_heal,
+			"Healing Palm heals (25 + Elem. Atk.) × 1.06 × 1.25 = %d (%d)" % [palm_heal, player.current_health - hp])
 	# Blood Pact — чужа клятва; стат перевіряємо прямо через стан (дерево тут ні до чого).
 	gm.player_state.unlocked_skills.append("blood_pact")
 	player.take_damage(40)
@@ -148,7 +156,7 @@ func _initialize() -> void:
 	var hp_before: int = player.Max_Health
 	var reset_seen := [-1]
 	root.get_node("EventBus").skills_reset.connect(func(n: int) -> void: reset_seen[0] = n)
-	ck(spent == 1 + 1 + 1 + 1 + 1 + 0 + 1, "points spent counted with ranks (%d)" % spent)
+	ck(spent == 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 0 + 1, "points spent counted with ranks (%d)" % spent)
 	ck(sm.respec() == R.OK, "respec done")
 	ck(sm.get_unlocked_skills().is_empty() and sm.get_equipped_skills() == ["", "", "", ""], "every skill forgotten, hotbar empty")
 	ck(sm.get_job_points() == jp_before + spent and reset_seen[0] == spent, "all points back (%d)" % sm.get_job_points())

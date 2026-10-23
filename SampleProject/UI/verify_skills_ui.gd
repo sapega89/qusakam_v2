@@ -92,6 +92,7 @@ func _initialize() -> void:
 	var fixtures: Array = _for_active_class(FIXTURES, gm.get_active_character())
 	db.load_from_array(fixtures)
 	sm.skill_database = db
+	db.class_jp_cap = 1000000  # D497: фікстури коштують десятки й тисячі JP — ліміт дерева тут ні до чого
 	gm.player_state["unlocked_skills"] = ["ta_learned"]
 	gm.player_state["job_points"] = 50
 	sm.set_max_sp(40)

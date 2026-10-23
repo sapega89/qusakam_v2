@@ -56,6 +56,7 @@ func save() -> Dictionary:
 	data["job_points"] = player_state.get("job_points", 0)
 	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
 	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
+	data["skill_charges"] = player_state.get("skill_charges", {}).duplicate()  # D504: заряди фляги
 	data["oath"] = player_state.oath  # D280
 	data["attribute_points"] = player_state.attribute_points  # D335
 	data["attributes"] = player_state.attributes.duplicate()
@@ -137,6 +138,7 @@ func load_data(data: Dictionary) -> void:
 			loadout.append(String(entry))
 		player_state.equipped_skills = loadout
 	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
+	player_state.skill_charges = data.get("skill_charges", {}).duplicate()  # D504: сейв без зарядів — фляга повна
 	player_state.oath = String(data.get("oath", ""))  # D280: сейв без клятви — клятви немає
 	ServiceLocator.get_xp_manager().restore(int(data.level), int(data.xp))  # B79
 	# D335: сейв до очок атрибутів — нічого не вкладено, а невкладених стільки, скільки дали б рівні.

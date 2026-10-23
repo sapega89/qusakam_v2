@@ -43,6 +43,9 @@ const PARRY_HITSTOP := 0.07
 const HERO_ARROWS := &"hero_arrows"
 const PARRY_KICK := 5.0
 const KICK_TIME := 0.16
+## D491: ультимативна навичка трясе камеру на ULTIMATE_SHAKE px протягом ULTIMATE_SHAKE_TIME с.
+const ULTIMATE_SHAKE := 9.0
+const ULTIMATE_SHAKE_TIME := 0.5
 
 var hurt_vignette: CanvasLayer
 
@@ -69,6 +72,7 @@ func _connect_to_event_bus() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_parried.connect(_on_guard.bind(true))
 	EventBus.player_blocked.connect(_on_guard.bind(false))
+	EventBus.skill_used.connect(_on_skill_used)
 	hurt_vignette = HURT_VIGNETTE_SCENE.instantiate()
 	add_child(hurt_vignette)
 
@@ -180,6 +184,27 @@ func _on_guard(attacker: Node2D, parry: bool) -> void:
 		ServiceLocator.get_time_manager().hitstop(PARRY_HITSTOP)
 		_kick_camera(Vector2(signf(attacker.global_position.x - hero.global_position.x), 0.0), PARRY_KICK)
 		rumble(HIT_FEEL[2].rumble)
+
+
+## D491: ультимативна навичка — тряска камери й сильна вібрація.
+func _on_skill_used(skill_id: String) -> void:
+	if not SkillDatabase.get_skill(skill_id).ultimate:
+		return
+	shake_camera(ULTIMATE_SHAKE, ULTIMATE_SHAKE_TIME)
+	rumble(HIT_FEEL[2].rumble)
+
+
+## Тряска камери на [param strength] px, що згасає за [param seconds] (реальних с). Screen Shake Off — немає (D426).
+func shake_camera(strength: float, seconds: float) -> void:
+	if not SaveSystem.settings_module.screen_shake_enabled():
+		return
+	var camera := get_viewport().get_camera_2d()
+	var tween := camera.create_tween().set_ignore_time_scale()
+	var steps := roundi(seconds / 0.05)
+	for i in steps:
+		var fade := 1.0 - float(i) / steps
+		tween.tween_property(camera, ^"offset", Vector2(randf_range(-1, 1), randf_range(-1, 1)) * strength * fade, 0.05)
+	tween.tween_property(camera, ^"offset", Vector2.ZERO, 0.05)
 
 
 ## Поштовх камери в бік [param dir] на [param strength] px і згасання туди-сюди за KICK_TIME (реальних с — грає й

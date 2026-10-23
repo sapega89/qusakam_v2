@@ -19,6 +19,8 @@ var skills_by_type: Dictionary = {}
 ## Шлях класу (D260, D279): назва стовбура і клятви — oath_id -> {name, tree, level, keeper, subclasses, prestige}.
 var class_name_trunk: String = ""
 var oaths: Dictionary = {}
+## D497: скільки JP можна вкласти в дерево базового класу (у кожній клятві — її "jp_cap").
+var class_jp_cap: int = 0
 
 ## Записи, які не пройшли валідацію (для діагностики й тестів).
 var rejected: Array[String] = []
@@ -49,6 +51,7 @@ func load_skills() -> void:
 
 	var data = json.data
 	class_name_trunk = String(data.get("class", {}).get("name", ""))
+	class_jp_cap = int(data.get("class", {}).get("jp_cap", 0))
 	oaths = data.get("oaths", {})
 	var entries = data.get("skills", []) if data is Dictionary else []
 	load_from_array(entries)
@@ -94,6 +97,11 @@ func has_oath(oath_id: String) -> bool:
 
 func get_oath(oath_id: String) -> Dictionary:
 	return oaths.get(oath_id, {})
+
+
+## D497: ліміт JP дерева: "" — базовий клас, інакше id клятви.
+func tree_cap(tree: String) -> int:
+	return class_jp_cap if tree == "" else int(oaths[tree].jp_cap)
 
 
 func has_skill(skill_id: String) -> bool:

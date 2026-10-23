@@ -40,6 +40,9 @@ enum Result {
 	OATH_SWORN,  # D280: клятва вже дана — назавжди
 	NOT_ENOUGH_COINS,  # D282: скидання коштує монет
 	NOTHING_TO_RESET,
+	NO_CHARGES,  # D504: фляга порожня, поповнюється при збереженні
+	TREE_CAP,  # D497: у дереві вже вкладено його ліміт JP
+	BASE_TREE_GATE,  # D497: у дерево базового класу вкладено замало JP для навички професії
 }
 
 ## D260/D279: одне очко навичок (JP) за кожен рівень персонажа (було 2, D149).
@@ -51,8 +54,11 @@ const MAX_RANK := 20
 const RANK_BONUS := 0.10
 const UPGRADE_COST := 1
 
-## D146: тимчасове відновлення SP за секунду.
-const SP_REGEN_PER_SECOND := 1.0
+## D504: SP не відновлюється з часом — його дають влучання героя (удар, стріла) і парирування.
+const SP_PER_HIT := 2.0
+const SP_PER_PARRY := 6.0
+## D496: умови пасивок, що рахують секунди від події (passive.condition.type).
+const TIMED_CONDITIONS: Array[String] = ["after_parry", "after_skill"]
 
 var game_manager: Node = null
 var skill_database: Node = null
@@ -65,7 +71,12 @@ var combat_executor: SkillCombatExecutor = SkillCombatExecutor.new()
 ## Навмисно НЕ зберігається: SkillDefinition.cooldown — це конфігурація,
 ## а миттєвий стан не входить у збережений контракт player_state.
 var _cooldowns: Dictionary = {}
-var _sp_regen_debt := 0.0
+## Дробові SP за влучання (пасивки й Wisdom дають частки), доки не набереться ціле очко.
+var _sp_debt := 0.0
+## Секунд від події умовної пасивки (D496): "after_parry" / "after_skill" → с. Подій не було — INF.
+var _since: Dictionary = {"after_parry": INF, "after_skill": INF}
+## Поки навичка б'є (use_skill), її влучання не дають SP (D504: SP — за удари й парирування).
+var _skill_effect_running := false
 
 
 func _initialize() -> void:
@@ -73,6 +84,9 @@ func _initialize() -> void:
 	skill_database = SkillDatabase
 	EventBus.player_leveled_up.connect(_on_player_leveled_up)
 	EventBus.attributes_changed.connect(_on_attributes_changed)
+	EventBus.damage_dealt.connect(_on_damage_dealt)
+	EventBus.player_parried.connect(_on_player_parried)
+	EventBus.game_saving.connect(_on_game_saving)
 
 
 ## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
@@ -100,13 +114,18 @@ func can_upgrade(skill_id: String) -> Result:
 
 ## Ті самі правила для уявного стану (SkillPlan, D330): навичка на рівні [param rank] (0 — не вивчена),
 ## [param jp] очок лишилось після запланованого.
-func check_upgrade(skill_id: String, rank: int, jp: int) -> Result:
+## [param unlocked] і [param ranks] — уявне вивчене й уявні ранги для ліміту дерева (D497); порожні — справжні.
+func check_upgrade(skill_id: String, rank: int, jp: int, unlocked: Array = [], ranks: Dictionary = {}) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
 	if rank <= 0:
 		return Result.NOT_UNLOCKED
 	if rank >= MAX_RANK:
 		return Result.MAX_RANK
+	var tree: String = skill_database.get_skill(skill_id).oath
+	var learned: Array = get_unlocked_skills() if unlocked.is_empty() else unlocked
+	if tree_spent(tree, learned, ranks) + UPGRADE_COST > skill_database.tree_cap(tree):
+		return Result.TREE_CAP
 	if jp < UPGRADE_COST:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
@@ -127,9 +146,46 @@ func upgrade_skill(skill_id: String) -> Result:
 	return Result.OK
 
 
-## Ушкодження чи лікування з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший) × сила навичок (Wisdom, D335).
+## Значення з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший) × сила навичок (Wisdom, D335).
+## Підпал (burn_dps); ушкодження й лікування — skill_damage / skill_heal.
 func scaled(skill_id: String, base: int) -> int:
 	return roundi(base * _rank_factor(skill_id) * (1.0 + _attributes().bonus("skill_power")))
+
+
+## B137: ушкодження навички = (damage + частка Phys. Atk. + частка Elem. Atk.) × ранг × Wisdom × синергії (D496)
+## × пасивки skill_damage. [param rank] — для підказки наступного рангу; -1 — поточний.
+func skill_damage(skill_id: String, rank: int = -1) -> int:
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if definition.damage <= 0:
+		return 0
+	var power := _scaled_power(definition.damage, definition.damage_phys, definition.damage_elem)
+	return roundi(power * _skill_factor(skill_id, rank) * (1.0 + passive_value("skill_damage")))
+
+
+## B137: лікування навички = (heal + частки Phys. / Elem. Atk.) × ранг × Wisdom × синергії × пасивки heal_power.
+func skill_heal(skill_id: String, rank: int = -1) -> int:
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if definition.heal <= 0:
+		return 0
+	var power := _scaled_power(definition.heal, definition.heal_phys, definition.heal_elem)
+	return roundi(power * _skill_factor(skill_id, rank) * (1.0 + passive_value("heal_power")))
+
+
+func _scaled_power(base: int, phys: float, elem: float) -> float:
+	return base + phys * game_manager.calculate_physical_damage() + elem * game_manager.calculate_magic_damage()
+
+
+func _skill_factor(skill_id: String, rank: int) -> float:
+	var at_rank := get_rank(skill_id) if rank < 0 else rank
+	return (1.0 + RANK_BONUS * (maxi(1, at_rank) - 1)) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
+
+
+## D496: синергії — сума per_rank × ранг кожної пасивки-джерела (не вивчена — 0).
+func synergy_bonus(skill_id: String) -> float:
+	var total := 0.0
+	for synergy: Dictionary in skill_database.get_skill(skill_id).synergies:
+		total += float(synergy.per_rank) * get_rank(String(synergy.skill))
+	return total
 
 
 func _attributes() -> AttributeManager:
@@ -141,18 +197,33 @@ func _rank_factor(skill_id: String) -> float:
 
 
 ## Сума вивчених пасивок на показник [param stat] з урахуванням рангу (D207): Toughness → "max_health",
-## Shield Block → "shield_block". Нічого не вивчено — 0.
+## Shield Block → "shield_block". Умовна пасивка (D496) рахується, лише поки її умова виконана. Нічого не вивчено — 0.
 func passive_value(stat: String) -> float:
 	var total := 0.0
 	for skill_id in get_unlocked_skills():
 		var definition: SkillDefinition = skill_database.get_skill(skill_id)
-		if not definition.is_active() and definition.passive_stat == stat:
+		if not definition.is_active() and definition.passive_stat == stat and condition_met(definition):
 			total += definition.passive_value * _rank_factor(skill_id)
 	return total
 
 
+## D496: умова пасивки зараз виконана? Без умови — завжди.
+func condition_met(definition: SkillDefinition) -> bool:
+	match definition.passive_condition:
+		"":
+			return true
+		"below_hp":
+			var hero: Node = _default_source()
+			return hero.current_health < hero.Max_Health * definition.passive_condition_value
+		"after_parry", "after_skill":
+			return _since[definition.passive_condition] <= definition.passive_condition_value
+	assert(false, "SkillManager: unknown passive condition %s on %s" % [definition.passive_condition, definition.id])
+	return false
+
+
 func _process(delta: float) -> void:
-	_regen_sp(delta)
+	for condition in TIMED_CONDITIONS:
+		_since[condition] += delta
 	for skill_id in _cooldowns.keys():
 		var remaining: float = _cooldowns[skill_id] - delta
 		if remaining <= 0.0:
@@ -189,6 +260,8 @@ func can_use_skill(skill_id: String) -> Result:
 		return Result.ON_COOLDOWN
 	if definition.sp_cost > 0 and get_current_sp() < definition.sp_cost:
 		return Result.NOT_ENOUGH_SP
+	if definition.charges > 0 and get_charges(skill_id) <= 0:
+		return Result.NO_CHARGES
 	if not _has_required_weapon(definition):
 		return Result.WRONG_WEAPON
 	return Result.OK
@@ -201,15 +274,61 @@ func _has_required_weapon(definition: SkillDefinition) -> bool:
 	return String(_state().get("weapon_in_hand", "")) in definition.required_weapons
 
 
-## SP відновлюється щосекунди (D146), без дробових списань.
-func _regen_sp(delta: float) -> void:
-	if get_current_sp() >= get_max_sp():
-		_sp_regen_debt = 0.0
+# ── SP за влучання і парирування (D504) ────────────────────────────────────
+
+## Влучання героя чи його стріли у ворога; удари навичок і компаньйонів SP не дають.
+func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
+	if _skill_effect_running:
 		return
-	_sp_regen_debt += delta * (SP_REGEN_PER_SECOND + passive_value("sp_regen") + _attributes().bonus("sp_regen"))
-	if _sp_regen_debt >= 1.0:
-		restore_sp(int(_sp_regen_debt))
-		_sp_regen_debt -= floorf(_sp_regen_debt)
+	if (source.is_in_group(GameGroups.PLAYER) or source.is_in_group(VFXHooks.HERO_ARROWS)) and target.is_in_group(GameGroups.ENEMIES):
+		gain_sp(SP_PER_HIT + sp_per_hit_bonus())
+
+
+func _on_player_parried(_attacker: Node) -> void:
+	_since["after_parry"] = 0.0
+	gain_sp(SP_PER_PARRY + sp_per_hit_bonus())
+
+
+## Пасивки (Sky's Grace) і Wisdom (D335): +SP до кожного влучання й парирування.
+func sp_per_hit_bonus() -> float:
+	return passive_value("sp_per_hit") + _attributes().bonus("sp_per_hit")
+
+
+## Дробові SP копляться, ціле очко додається одразу. На повному SP залишок пропадає.
+func gain_sp(amount: float) -> void:
+	if get_current_sp() >= get_max_sp():
+		_sp_debt = 0.0
+		return
+	_sp_debt += amount
+	if _sp_debt >= 1.0:
+		restore_sp(int(_sp_debt))
+		_sp_debt -= floorf(_sp_debt)
+
+
+# ── Фляга (D504) ────────────────────────────────────────────────────────────
+
+## Зарядів лишилось; запису немає — фляга повна.
+func get_charges(skill_id: String) -> int:
+	return int(_state().get("skill_charges", {}).get(skill_id, skill_database.get_skill(skill_id).charges))
+
+
+func _set_charges(skill_id: String, charges: int) -> void:
+	var state := _state()
+	var all: Dictionary = state.get("skill_charges", {})
+	all[skill_id] = charges
+	state["skill_charges"] = all
+	EventBus.skill_charges_changed.emit(skill_id, charges, skill_database.get_skill(skill_id).charges)
+
+
+## Кожна фляга знову повна. Кличе збереження на екрані збереження (EventBus.game_saving).
+func refill_charges() -> void:
+	for definition: SkillDefinition in skill_database.get_all_skills():
+		if definition.charges > 0:
+			_set_charges(definition.id, definition.charges)
+
+
+func _on_game_saving(_slot: int) -> void:
+	refill_charges()
 
 
 func _state() -> Dictionary:
@@ -317,8 +436,8 @@ func can_unlock(skill_id: String) -> Result:
 
 
 ## Ті самі правила для уявного стану (SkillPlan, D330): [param unlocked] — вивчене разом із запланованим,
-## [param jp] — очок лишилось після запланованого. Не змінює стан.
-func check_unlock(skill_id: String, unlocked: Array, jp: int) -> Result:
+## [param jp] — очок лишилось після запланованого, [param ranks] — заплановані ранги (для ліміту дерева). Не змінює стан.
+func check_unlock(skill_id: String, unlocked: Array, jp: int, ranks: Dictionary = {}) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
 	if skill_id in unlocked:
@@ -332,9 +451,32 @@ func check_unlock(skill_id: String, unlocked: Array, jp: int) -> Result:
 	for prerequisite in definition.prerequisites:
 		if not prerequisite in unlocked:
 			return Result.MISSING_PREREQUISITE
+	if base_jp_missing(skill_id, unlocked, ranks) > 0:
+		return Result.BASE_TREE_GATE
+	if tree_spent(definition.oath, unlocked, ranks) + definition.jp_cost > skill_database.tree_cap(definition.oath):
+		return Result.TREE_CAP
 	if jp < definition.jp_cost:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
+
+
+# ── Ліміти дерев і пороги професій (D497) ──────────────────────────────────
+
+## JP, вкладені в дерево [param tree] ("" — базовий клас, інакше id клятви): вартості вивчених + ранги понад перший.
+## [param unlocked] / [param ranks] — уявний стан плану; ранг не з [param ranks] — справжній (заплановане вивчення — 1).
+func tree_spent(tree: String, unlocked: Array = get_unlocked_skills(), ranks: Dictionary = {}) -> int:
+	var total := 0
+	for skill_id in unlocked:
+		var definition: SkillDefinition = skill_database.get_skill(skill_id)
+		if definition.oath == tree:
+			var rank: int = ranks.get(skill_id, maxi(1, get_rank(skill_id)))
+			total += definition.jp_cost + (rank - 1) * UPGRADE_COST
+	return total
+
+
+## Скільки JP ще бракує в дереві базового класу, щоб відкрити навичку професії (0 — досить або порогу немає).
+func base_jp_missing(skill_id: String, unlocked: Array = get_unlocked_skills(), ranks: Dictionary = {}) -> int:
+	return maxi(0, skill_database.get_skill(skill_id).base_jp - tree_spent("", unlocked, ranks))
 
 
 ## Вивчає навичку: перевірка → списання JP → запис у player_state → сигнал.
@@ -423,6 +565,36 @@ func respec() -> Result:
 	if verdict != Result.OK:
 		return verdict
 	ServiceLocator.get_inventory_manager().spend_coins(respec_price())
+	_forget_all()
+	return Result.OK
+
+
+## D490: скидання безкоштовне (кнопка «Скинути» — з новим екраном навичок, D489).
+func can_reset_free() -> Result:
+	if get_unlocked_skills().is_empty() and _attributes().spent_total() == 0:
+		return Result.NOTHING_TO_RESET
+	return Result.OK
+
+
+## D490: те саме, що respec(), без монет. Кожне дерево повертає вкладені в нього JP — у межах свого ліміту (D497),
+## бо більше за ліміт туди не вкласти; очки атрибутів теж повертаються, клятва лишається.
+func reset_free() -> Result:
+	var verdict := can_reset_free()
+	if verdict != Result.OK:
+		return verdict
+	_forget_all()
+	return Result.OK
+
+
+## D497: «вкладено / ліміт» кожного дерева — базового класу ("") і клятви героя, якщо вона є.
+func tree_budgets() -> Dictionary:
+	var budgets := {"": {"spent": tree_spent(""), "cap": skill_database.tree_cap("")}}
+	if get_oath() != "":
+		budgets[get_oath()] = {"spent": tree_spent(get_oath()), "cap": skill_database.tree_cap(get_oath())}
+	return budgets
+
+
+func _forget_all() -> void:
 	var refund := spent_points()
 	var state := _state()
 	state["unlocked_skills"] = []
@@ -434,7 +606,6 @@ func respec() -> Result:
 	_set_current_sp(get_current_sp())
 	EventBus.skills_reset.emit(refund)
 	_announce_max_sp()
-	return Result.OK
 
 
 ## Пасивка max_sp змінює межу — HUD дізнається через той самий sp_changed.
@@ -614,29 +785,28 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		if targets.is_empty():
 			return _fail(skill_id, Result.NO_TARGET)
 		var hit := false
-		var amount := scaled(skill_id, definition.damage)
+		var amount := skill_damage(skill_id)
+		_skill_effect_running = true
 		for each in targets:
 			if combat_executor.execute(definition, effect_source, each, amount):
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
 		if not hit:
+			_skill_effect_running = false
 			return _fail(skill_id, Result.EFFECT_FAILED)
 		# D207: ланцюг — ще й найближчий інший ворог біля першої цілі, частиною ушкодження
 		if definition.chain_radius > 0.0:
 			var next := SkillTargeting.chain_target(targets[0], targets, definition.chain_radius)
 			if next != null:
 				combat_executor.execute(definition, effect_source, next, roundi(amount * definition.chain_ratio))
+		_skill_effect_running = false
 	if definition.heal > 0:
 		var patient: Node = target if target != null else SkillTargeting.heal_target(effect_source)
-		var heal_amount := roundi(scaled(skill_id, definition.heal) * (1.0 + passive_value("heal_power")))
-		if not combat_executor.heal(definition, patient, heal_amount):
+		if not combat_executor.heal(definition, patient, skill_heal(skill_id)):
 			return _fail(skill_id, Result.EFFECT_FAILED)
 
-	if definition.sp_cost > 0:
-		spend_sp(definition.sp_cost)
-	if definition.cooldown > 0.0:
-		_cooldowns[skill_id] = definition.cooldown
-
+	_pay(definition)
+	_since["after_skill"] = 0.0
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK
 
@@ -646,11 +816,18 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 func interrupt_cast(skill_id: String) -> void:
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	assert(definition != null, "SkillManager.interrupt_cast: unknown skill %s" % skill_id)
+	_pay(definition)
+	EventBus.skill_interrupted.emit(skill_id)
+
+
+## Ціна застосування: SP, ковток фляги (D504), перезарядка (лише в ультимативних, D504).
+func _pay(definition: SkillDefinition) -> void:
 	if definition.sp_cost > 0:
 		spend_sp(mini(definition.sp_cost, get_current_sp()))
+	if definition.charges > 0:
+		_set_charges(definition.id, get_charges(definition.id) - 1)
 	if definition.cooldown > 0.0:
-		_cooldowns[skill_id] = definition.cooldown
-	EventBus.skill_interrupted.emit(skill_id)
+		_cooldowns[definition.id] = definition.cooldown
 
 func _fail(skill_id: String, reason: Result) -> Result:
 	EventBus.skill_failed.emit(skill_id, int(reason))

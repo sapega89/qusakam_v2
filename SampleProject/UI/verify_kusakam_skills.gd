@@ -55,11 +55,11 @@ func _initialize() -> void:
 	ck(rules.default_slot(db.get_item("iron_dagger")) == "dagger", "dagger → dagger")
 	ck(equipment.has("mace"), "player_state.equipment has a mace slot")
 
-	print("[2] SP pool 30, +1 per second (D146)")
+	print("[2] SP pool 30; it does not refill over time, hits and parries give it (D146, D504)")
 	ck(sm.get_max_sp() == 30 and sm.get_current_sp() == 30, "starts with 30 / 30")
 	sm.spend_sp(10)
 	await create_timer(2.2).timeout
-	ck(sm.get_current_sp() == 22, "regains 1 SP per second (%d)" % sm.get_current_sp())
+	ck(sm.get_current_sp() == 20, "no SP over time (%d)" % sm.get_current_sp())
 	sm.restore_sp(30)
 
 	print("[2b] Healing Palm is learned at the first level-up (D252, D261); strikes at level 6 for skill points (D149)")
@@ -130,10 +130,11 @@ func _initialize() -> void:
 	ck(sm.get_job_points() - jp_before == gained - 2, "1 point each")
 
 	print("[3] Healing Palm: an ally next to you, else yourself (D142)")
-	player.take_damage(40)
+	player.take_damage(90)
 	var hp: int = player.current_health
+	var palm_heal: int = sm.skill_heal("healing_palm")  # B137: 25 + Elem. Atk.
 	ck(sm.use_skill("healing_palm") == R.OK, "usable with no ally around")
-	ck(player.current_health == hp + 40, "healed yourself by 40 — a Potion minus 10 (%d → %d)" % [hp, player.current_health])
+	ck(player.current_health == hp + palm_heal, "healed yourself by %d (%d → %d)" % [palm_heal, hp, player.current_health])
 	sm.clear_cooldowns()
 	var ally := Ally.new()
 	ally.add_to_group(&"allies")
@@ -141,7 +142,7 @@ func _initialize() -> void:
 	ally.global_position = player.global_position + Vector2(30, 0)
 	hp = player.current_health
 	ck(sm.use_skill("healing_palm") == R.OK, "usable next to an ally")
-	ck(ally.healed == 40 and player.current_health == hp, "the ally is healed, not you")
+	ck(ally.healed == palm_heal and player.current_health == hp, "the ally is healed, not you")
 	ally.queue_free()
 	sm.clear_cooldowns()
 
@@ -182,11 +183,16 @@ func _initialize() -> void:
 	player.global_position = Vector2(1000, 344)
 	front.global_position = player.global_position + Vector2(30, 0)
 	behind.global_position = player.global_position + Vector2(-40, 0)
+	for e in enemies:  # B137: навички б'ють від атаки героя — щоб ніхто не загинув за тест
+		e.Max_Health = 10000
+		e.current_health = 10000
 	for i in 3: await physics_frame
 	var hp_front: int = front.current_health
 	var hp_behind: int = behind.current_health
 	ck(sm.use_skill("fire_strike") == R.OK, "Fire Strike lands")
-	ck(front.current_health == hp_front - 20, "front enemy -20 (%d → %d)" % [hp_front, front.current_health])
+	var fire_damage: int = sm.skill_damage("fire_strike")
+	ck(fire_damage > sl.get_game_manager().calculate_physical_damage(), "B137: Fire Strike hits harder than a light swing (%d)" % fire_damage)
+	ck(front.current_health == hp_front - fire_damage, "front enemy -%d (%d → %d)" % [fire_damage, hp_front, front.current_health])
 	ck(behind.current_health == hp_behind, "enemy behind untouched")
 	sm.clear_cooldowns()
 	# Усіх ворогів — геть: тіла проходять крізь гравця (D197), і ворог зі спавну на x 1000 лишився б попереду.
@@ -204,7 +210,8 @@ func _initialize() -> void:
 	front.global_position = player.global_position + Vector2(30, 0)
 	hp_front = front.current_health
 	sm.use_skill("fire_strike")
-	ck(front.current_health == hp_front - 22, "the upgraded strike lands for 22")
+	ck(front.current_health == hp_front - sm.skill_damage("fire_strike") and sm.skill_damage("fire_strike") > fire_damage,
+			"the upgraded strike lands harder (%d → %d)" % [fire_damage, hp_front - front.current_health])
 	sl.get_game_manager().player_state.skill_ranks["fire_strike"] = 20
 	ck(sm.can_upgrade("fire_strike") == R.MAX_RANK, "rank 20 is the cap")
 	ck(sm.scaled("fire_strike", 20) == 58, "rank 20 = ×2.9")
@@ -221,7 +228,7 @@ func _initialize() -> void:
 	var hp_burn: int = front.current_health
 	ck(sm.use_skill("fire_strike") == R.OK, "Fire Strike lands again")
 	await create_timer(3.4).timeout
-	ck(front.current_health == hp_burn - 20 - 12, "20 from the strike + 3 burn ticks of 4 (%d → %d)" % [hp_burn, front.current_health])
+	ck(front.current_health == hp_burn - fire_damage - 12, "%d from the strike + 3 burn ticks of 4 (%d → %d)" % [fire_damage, hp_burn, front.current_health])
 	ck(front.burn_left <= 0.0, "the burn is over after 3 s")
 
 	print("[8] Electric Strike jumps to a neighbour and stuns, cancelling a wind-up (D207)")
@@ -244,8 +251,9 @@ func _initialize() -> void:
 	var hp_s: int = second.current_health
 	var hp_far: int = far.current_health
 	ck(sm.use_skill("electric_strike") == R.OK, "Electric Strike lands")
-	ck(front.current_health == hp_f - 25, "first target -25 (%d → %d)" % [hp_f, front.current_health])
-	ck(second.current_health == hp_s - 13, "the neighbour takes 50 %% = 13 (%d → %d)" % [hp_s, second.current_health])
+	var shock: int = sm.skill_damage("electric_strike")
+	ck(front.current_health == hp_f - shock, "first target -%d (%d → %d)" % [shock, hp_f, front.current_health])
+	ck(second.current_health == hp_s - roundi(shock * 0.5), "the neighbour takes 50 %% = %d (%d → %d)" % [roundi(shock * 0.5), hp_s, second.current_health])
 	ck(far.current_health == hp_far, "an enemy 300 px away is untouched")
 	ck(front.enemy_logic.stun_left > 0.0 and second.enemy_logic.stun_left <= 0.0, "the struck enemy is stunned, the chained one is not")
 	await create_timer(0.7).timeout
