@@ -159,4 +159,4 @@ None blocks work. Each default holds until Sapega answers.
 | Q76 | World structure | What opens new paths inside a location: keys / levers / shortcuts, new hero abilities, or both? | Keys, levers and shortcuts; no ability gates for now. |
 | Q77 | World structure | The map: two levels (world + location) or one map with all rooms? | Two levels. |
 | Q78 | World structure | Which location is rebuilt first? | The Desert Road. |
-| Q79 | Laboratory boss (D466) | Who is the black lizardfolk brute: his name, and why he is in the Laboratory (kin of Kusakam's people, the alchemist's guard, a captive turned beast)? | Name `[ЧЕРНЕТКА]`; he is the alchemist's guard. |
+| Q79 | Laboratory boss (D466) | Who is the manticore-man brute: his name, and why he is in the Laboratory (the alchemist's guard, a captive turned beast, a mercenary)? | Name `[ЧЕРНЕТКА]`; he is the alchemist's guard. |

@@ -68,7 +68,7 @@ A Figma boss bar; boss music of its own (rooms keep their tracks, [[music_plan]]
 
 ## Boss replaced (D466, 2026-10-23)
 
-Sapega: the Laboratory boss is the **black lizardfolk brute** from `design/refs/lab_boss_reference.webp`, not the djinn. The djinn
+Sapega: the Laboratory boss is the **manticore-man brute** (not a lizardfolk) from `design/refs/lab_boss_reference.webp`, not the djinn. The djinn
 stays a story beat: it escapes in the cells cutscene (D304 / D459). Slices:
 1. **Art candidates.** Add `comfy_sprite.py` entry `lab_boss_brute`: `design` = `assets/references/bosses/lab_boss.webp`, the
    hero palette, an adult-sized cell (D172 ×1.5 or a boss size like `brass_collector`). Render a ×4 candidate sheet; Sapega picks one.
