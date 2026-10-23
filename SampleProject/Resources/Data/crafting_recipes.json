@@ -177,7 +177,7 @@
 					"quantity": 1
 				}
 			],
-			"gold_cost": 4,
+			"gold_cost": 8,
 			"crafting_time": 5,
 			"required_station": "alchemy_table",
 			"category": "alchemy"

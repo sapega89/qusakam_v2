@@ -65,6 +65,9 @@ func _initialize() -> void:
 	xp.add_xp(xp.xp_for_next_level + xp.xp_for_next_level / 2 + 30)  # B79: level 2 and 80 XP towards 3
 	var saved_level: int = xp.current_level
 	var saved_xp: int = xp.current_xp
+	for i in 4: await process_frame
+	game.player.current_health = 37  # B138: поранений герой
+	var saved_max: int = game.player.Max_Health
 	ck(game.save_game(), "save_game() wrote slot %d" % TEST_SLOT)
 	var text := FileAccess.get_file_as_string(slot_path)
 	ck(text.contains("discovered_cells"), "slot file holds the MetSys map")
@@ -88,6 +91,8 @@ func _initialize() -> void:
 			"not at the room's arrival marker — B82")
 	ck(xp.current_level == saved_level and xp.current_xp == saved_xp and saved_level > 1,
 			"level and XP restored (level %d, %d XP; saved %d, %d) — B79" % [xp.current_level, xp.current_xp, saved_level, saved_xp])
+	ck(game.player.current_health == 37 and game.player.Max_Health == saved_max,
+			"the saved HP is back, not full (%d/%d, saved 37/%d) — B138" % [game.player.current_health, game.player.Max_Health, saved_max])
 
 	for f in DirAccess.get_files_at(TEST_DIR):
 		DirAccess.remove_absolute(TEST_DIR + f)

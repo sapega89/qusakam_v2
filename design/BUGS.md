@@ -64,15 +64,6 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B141 — In Laboratory Outside the hero stands on air, 56 units above the painted grass
-- **Where:** `SampleProject/Maps/LaboratoryOutside.tscn`: something invisible has collision at about y 304, while the grass line is painted near y 360.
-- **Got:** the hero stands at y 304 in both the before and the after captures of `cloud/world-fixes`. **Expected:** his feet are on the painted grass.
-- **Evidence:** `design/shots/world_fixes/LaboratoryOutside.png`.
-- **Severity:** visual. **Found:** 2026-10-23, `cloud/world-fixes` (seen, not in its scope).
-
-### B138 — The saved hero HP is ignored: every load gives full HP
-- **Where:** `PlayerDataModule.gd:31`; `PlayerStateManager.gd:33` (no callers); `Player.gd:70-71`. **Severity:** gameplay / save. **Found:** 2026-10-23, combat critique.
-
 ### B127 — Nobody is laid on the operating table
 - **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
 - **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
@@ -89,22 +80,6 @@ the history, this note keeps only what is open.
 - **Evidence:** Sapega's two screenshots (the chat, 2026-10-23).
 - **Severity:** visual (art).
 - **Found:** 2026-10-23, Sapega's playtest.
-
-### B120 — `craft_potion` still charges the price from before D403
-- **Where:** `SampleProject/Resources/Data/crafting_recipes.json:164-180` (`craft_potion`: Herb ×2 + Stone ×1 → Potion ×2, `gold_cost` 4).
-- **Expected:** the gold cost is 10 % of the result's buy price (D97's placeholder rule, kept by D179 / D416; the formula is in [[crafting_mapping]] "Data"). Potion ×2 at buy 40 gives **8**.
-- **Got:** 4, which was right for the old Potion at buy 20. D403 swapped Potion and Lesser Potion but did not update this recipe, so 2 Potions now cost 4 gold. That is cheaper than the chain step (2 Lesser → 1 Potion), which also costs 4.
-- **Evidence:** of the 18 recipes compared with the `items.json` buy prices, 17 follow the rule and only `craft_potion` does not. `verify_crafting` only checks `gold_cost > 0`.
-- **Severity:** data. The fix is `gold_cost` 8, applying the D416 formula. Pointing the recipe at `potion_lesser` instead would change the recipe, which D403 did not ask for.
-- **Found:** 2026-10-23, [[decision_audit]] Run 3 (D97).
-
-### B121 — `verify_misc_modal` still has an `or true` check after B4 was closed
-- **Where:** `SampleProject/UI/verify_misc_modal.gd:102`: `ck(row.focus_neighbor_bottom != NodePath() or true, "%s in the focus chain" % row.name)`.
-- **Expected:** every `ck()` can fail (B4's rule; the fixed log says B4 removed the `or true` check in `verify_misc_modal`).
-- **Got:** the B4 fix (`dc9a6e32`) replaced only the "no scene change" check. The "in the focus chain" check still always passes.
-- **Evidence:** `grep -n "or true" SampleProject/UI/verify_*.gd` finds only this line.
-- **Severity:** cosmetic, test only.
-- **Found:** 2026-10-23, [[decision_audit]] Run 2.
 
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
@@ -185,30 +160,6 @@ the history, this note keeps only what is open.
 > **Fixed 2026-10-23:** B126 (`cloud/story-text`, D499): in the LabCells cutscene only Alisia's body moves; the cat stays in cell 3.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
-
-### B142 — the game crashes when an enchanted weapon is equipped
-- **Where:** equipping from the inventory / equipment screen; not yet reproduced or traced
-- **Expected:** an enchanted weapon equips like any other (D-IDs of the enchant system)
-- **Got:** the game closes (crash) at the moment of equipping
-- **Evidence:** Sapega's playtest report, 2026-10-23 («гра вилітає при одяганні зачарованої зброї»); again on the round 12 build with an **enchanted Iron Sword +1** («зачарований +1 айрон сворд теж вибиває гру»)
-- **Severity:** blocker
-- **Found:** 2026-10-23, playtest of the round 11 build
-
-### B143 — the block lesson still teaches «red glint = parry»
-- **Where:** `SampleProject/Resources/Data/tutorial.json:102`, `en.po:2496` (and the uk line)
-- **Expected:** D573 / D574: red = dodge, yellow = parry as the blow lands
-- **Got:** "When an enemy's weapon glints red, press {block} — that is a parry"
-- **Evidence:** `cloud/fliers` report, seen when a vulture's hit triggered the lesson
-- **Severity:** visual
-- **Found:** 2026-10-23, cloud/fliers
-
-### B144 — the Mayor Hall boss is too easy for D642 since the Scorpicore replaced the Brass Collector
-- **Where:** the Mayor Hall boss (`cloud/mayor-boss`, merged in `9f69524e` after `cloud/difficulty`); `SampleProject/UI/verify_difficulty.gd` still names it "Brass Collector" (`BOSSES`)
-- **Expected:** D642: at the expected level a boss kills the hero in 3–4 hits and falls to about 40; a strength-only hero loses
-- **Got:** at level 5 it takes 9 hits to kill the hero and dies to 27; the STRENGTH hero wins (34 hits needed, survives 9)
-- **Evidence:** `verify_difficulty` — `RESULT: 2 FAIL` (both on this boss), 2026-10-23
-- **Severity:** blocker
-- **Found:** 2026-10-23, while wiring the Cthulhu fly (D655)
 
 ### B145 — the game crashes going down from the Canyon
 - **Where:** `Maps/Canyon.tscn`, the way down; round 12 build (difficulty, lab-boss, mayor-boss, fliers merged)

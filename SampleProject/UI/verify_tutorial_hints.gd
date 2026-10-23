@@ -89,6 +89,9 @@ func _initialize() -> void:
 	root.get_node("EventBus").player_staggered.emit(0.3)
 	await _wait_window()
 	ck(_title() == "Block and Parry" and _body().contains("Hold LB"), "block topic names LB (%s)" % _body())
+	# B143, D573/D574: жовтий відблиск — парирування, червоний — ухилитися
+	ck(_body().contains("glints yellow") and _body().contains("A red glint cannot be blocked or parried") and not _body().contains("glints red"),
+			"block topic: yellow = parry, red = roll (B143)")
 	await Kit.key(self, KEY_ESCAPE)
 	ck(_window() == null and not paused, "Esc closed it")
 	ck(get_first_node_in_group("game_menu") == null, "Esc did not open the Game Menu")

@@ -2505,8 +2505,8 @@ msgstr "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to cha
 msgid "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
 msgstr "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
 
-msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
-msgstr "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
+msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
+msgstr "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
 
 msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
 msgstr "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
@@ -2559,8 +2559,8 @@ msgstr "Tap it as the yellow-glint blow lands to parry."
 msgid "Button for a heavy attack."
 msgstr "Button for a heavy attack."
 
-msgid "Hold to block; press it when an enemy's weapon glints to parry."
-msgstr "Hold to block; press it when an enemy's weapon glints to parry."
+msgid "Hold to block; tap it as a yellow-glint blow lands to parry. Roll from a red glint."
+msgstr "Hold to block; tap it as a yellow-glint blow lands to parry. Roll from a red glint."
 
 msgid "Button to open the game menu, then choose Skills."
 msgstr "Button to open the game menu, then choose Skills."

@@ -45,8 +45,10 @@ func _initialize() -> void:
 		for i in 30: await physics_frame
 		await _drain()
 		for screen in root.find_children("*", "Control", true, false):
-			if screen is DemoEndScreen:
+			# Без типу DemoEndScreen: скрипт знімка компілюється до autoload, клас тягне за собою Game.gd і MetSys
+			if screen.get_script() != null and screen.get_script().resource_path.ends_with("DemoEndScreen.gd"):
 				screen.get_parent().queue_free()  # LaboratoryOutside одразу показує кінець демо — кадр про кімнату
+				game.player.set_movement_enabled(true)  # B141: екран тримав героя — без цього він висів, де його поставили
 		var mark: Node2D = game.map.get_node(spot[1])
 		var size: Vector2 = game.map.get_node(^"RoomInstance").get_size()
 		var columns := roundi(size.x / cell.x)

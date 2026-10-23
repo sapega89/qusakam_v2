@@ -9,8 +9,8 @@
 script = ExtResource("3_stats")
 enemy_type = "scorpicore_warrior"
 speed = 55.0
-base_damage = 48.0
-attack_cooldown = 1.8
+base_damage = 120.0
+attack_cooldown = 1.3
 attack_windup = 0.7
 attack_active_time = 0.25
 super_armor = true
@@ -21,7 +21,7 @@ combo_chance = 1.0
 detection_range = 600.0
 attack_range = 460.0
 chase_range = 900.0
-max_health = 2600
+max_health = 3900
 xp_reward = 400
 
 [sub_resource type="RectangleShape2D" id="Shape_body"]
