@@ -1244,6 +1244,8 @@ func _setup_tooltip(theme: Theme) -> void:
 func _scale_fonts(theme: Theme) -> void:
 	theme.default_font_size = UITokens.font_px(theme.default_font_size)
 	for type_name in theme.get_font_size_type_list():
+		if type_name in UITokens.FIGMA_FONT_TYPES:
+			continue  # HUD v2: Figma-розмір як є (UITokens.FIGMA_FONT_TYPES)
 		var in_game := type_name in UITokens.INGAME_FONT_TYPES
 		for size_name in theme.get_font_size_list(type_name):
 			theme.set_font_size(size_name, type_name, UITokens.font_px(theme.get_font_size(size_name, type_name), in_game))

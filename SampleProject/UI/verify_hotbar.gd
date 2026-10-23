@@ -194,7 +194,8 @@ func _initialize() -> void:
 	await process_frame
 	ck(badge.visible, "cooldown overlay appears from manager state")
 	var seconds: Label = badge.get_node(^"Seconds")
-	ck(seconds.text.ends_with("s"), "overlay shows remaining seconds (%s)" % seconds.text)
+	ck(seconds.text == ("%.1f" % sm.get_remaining_cooldown(sm.get_equipped_skill(0))) or seconds.text.is_valid_int(),
+			"overlay shows the seconds left, Figma style (%s)" % seconds.text)
 	ck(not bind0.get_node(^"Ready").visible, "no ready ring while cooling down")
 	print("[11b] the gamepad: LT shifts the four slot buttons to slots 5–8 (D549)")
 	var SkillSlotInput: GDScript = load("res://SampleProject/Scripts/UI/skill_slot_input.gd")

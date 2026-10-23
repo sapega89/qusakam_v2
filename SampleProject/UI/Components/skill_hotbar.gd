@@ -103,11 +103,16 @@ func _update_slot(index: int) -> void:
 	var overlay: Control = bind.get_node(^"Cooldown")
 	overlay.visible = on_cooldown
 	if on_cooldown:
-		overlay.get_node(^"Seconds").text = tr("%ds") % ceili(_skill_manager.get_remaining_cooldown(skill_id))
+		overlay.get_node(^"Seconds").text = _seconds(_skill_manager.get_remaining_cooldown(skill_id))
 
 	bind.get_node(^"Ready").visible = usable
 	bind.get_node(^"Glow").visible = usable
 	bind.modulate.a = 1.0 if (empty or usable or on_cooldown) else UNAVAILABLE_ALPHA
+
+
+## Залишок як у Figma 497:6587: «2.1» — десяті до 10 с, далі цілі.
+func _seconds(left: float) -> String:
+	return "%.1f" % left if left < 10.0 else str(ceili(left))
 
 
 func _icon_box() -> StyleBoxFlat:

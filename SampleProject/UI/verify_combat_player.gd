@@ -300,13 +300,9 @@ func _stamina() -> void:
 	ck(stamina.current > after_roll, "it regenerates once he stops (%.0f → %.0f)" % [after_roll, stamina.current])
 	await create_timer(1.0).timeout
 	ck(is_equal_approx(stamina.current, full), "and fills up (%.0f)" % stamina.current)
-	var bar: ProgressBar = get_first_node_in_group(&"player_vitals_panel")._rows_by_id["ST"].get_node(^"Bar")
+	# D551: витривалості на панелі героя більше немає (HUD v2 — лише HP і SP).
 	var rows: Array = get_first_node_in_group(&"player_vitals_panel")._rows.get_children().map(func(r: Node) -> String: return r.name)
-	ck(rows.find("ST") == rows.find("SP") + 1, "the hero panel shows ST right under SP (%s)" % [rows])
-	ck(is_equal_approx(bar.value, full), "the ST bar follows (%.0f)" % bar.value)
-	stamina.spend(stamina.COST_LIGHT)
-	await physics_frame
-	ck(is_equal_approx(bar.value, full - stamina.COST_LIGHT), "the ST bar drops with a spend (%.0f)" % bar.value)
+	ck(rows == ["HP", "SP"], "the hero panel shows no ST row (D551: %s)" % [rows])
 	await _until_ready()
 	# Порожня — без перекату
 	stamina.spend(full)
@@ -346,8 +342,8 @@ func _potion(sl: Node) -> void:
 	ck(combat.is_drinking() and combat.locks_movement(), "one button: he drinks, planted")
 	ck(inventory.get_item_count("potion") == 0 and inventory.get_item_count("potion_lesser") == 1,
 			"60 HP missing: the slot takes the Potion (75), the smallest that covers it")
-	var label: Label = get_first_node_in_group(&"player_vitals_panel")._potion_label
-	ck(label.text.ends_with("×2"), "the hero panel counts the potions left (%s)" % label.text)
+	var label: Label = get_first_node_in_group(&"player_vitals_panel").get_node(^"%PotionChip/Pill/Count")
+	ck(label.text == "×2", "the Q chip counts the potions left (%s)" % label.text)
 	ck(hero.current_health == 440, "no heal before the sip")
 	await create_timer(combat.DRINK_HEAL_AT + 0.05).timeout
 	ck(hero.current_health == 500, "healed in real time (%d)" % hero.current_health)

@@ -65,6 +65,12 @@ func _initialize() -> void:
 			and theme.get_font_size("font_size", "GameOverItem") == UITokens.font_px(UITokens.SIZE_LABEL),
 			"D474: Controls key badge and Game Over items stay ×1.25")
 	_check(theme.get_font_size("font_size", "StatusName") == UITokens.SIZE_NAME, "D474: titles keep their size (StatusName 48)")
+	# HUD v2: плитки намальовані під Figma-розміри при 1080p — ні ×1.5, ні ×1.25.
+	var figma := {"VitalsName": UITokens.SIZE_HUD_NAME, "VitalsLabel": UITokens.SIZE_HUD_ROW_LABEL, "VitalsValue": UITokens.SIZE_HUD_ROW_VALUE,
+			"BindBadge": UITokens.SIZE_HUD_KEY, "CooldownLabel": UITokens.SIZE_HUD_COOLDOWN, "HudClass": UITokens.SIZE_HUD_CLASS,
+			"HudLevel": UITokens.SIZE_HUD_LEVEL, "HudSpCost": UITokens.SIZE_HUD_SP_COST, "HudCount": UITokens.SIZE_HUD_COUNT}
+	_check(figma.keys().all(func(t: String) -> bool: return theme.get_font_size("font_size", t) == figma[t])
+			and figma.size() == UITokens.FIGMA_FONT_TYPES.size(), "HUD v2 text at its Figma size (26 / 16 / 18 / 14 / 22 …)")
 	var panel := theme.get_stylebox("panel", "PanelContainer") as StyleBoxFlat
 	_check(panel != null and panel.bg_color == UITokens.SURFACE, "PanelContainer bg == SURFACE")
 	_check(panel != null and panel.corner_radius_top_left == UITokens.RADIUS, "PanelContainer radius == 0")

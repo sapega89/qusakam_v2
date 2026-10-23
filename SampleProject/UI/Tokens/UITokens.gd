@@ -99,8 +99,7 @@ const INGAME_LABEL_MIN := 20
 const INGAME_FONT_TYPES: Array[StringName] = [
 	&"DialogueName", &"DialogueText", &"DialogueChoice",
 	&"NpcMenuItem", &"NpcMenuItemOn",
-	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel", &"HudQuestCaption", &"HudQuestTitle",
-	&"HudClass", &"HudLevel", &"HudSpCost", &"HudCount",
+	&"HudQuestCaption", &"HudQuestTitle",
 	&"TutorialBody", &"TutorialHint", &"TutorialKeyLabel", &"TutorialBanner",
 ]
 
@@ -461,12 +460,18 @@ const HUD_XP_HEIGHT := 10                   # смуга XP на всю шири
 ## Світіння готового слота й пульс асисту — малює рушій (design/shots/figma_hotbar_slot_ready_2x.png):
 ## обвід шестикутника кількома шарами, від широкого прозорого до вузького. Ширина в px, непрозорість шару.
 const HUD_GLOW_COLOR := Color("f1d77a")
-const HUD_GLOW_WIDTH := 14.0
+const HUD_GLOW_WIDTH := 10.0
 const HUD_GLOW_LAYERS := 6
 const HUD_GLOW_ALPHA := 0.16
 ## Асист на полі — шеврон «нейтральний»: бейдж клавіші тьмяніє до цієї яскравості (D525).
 const HUD_BADGE_NEUTRAL := 0.45
-## Figma-розміри тексту HUD v2; у тему йдуть через font_px(…, true) (D474).
+## Figma-розміри тексту HUD v2 — у тему йдуть як є, без ×1.5 D474 і без ×1.25 D166: плитки й бейджі намальовані
+## під ці розміри при 1080p, і більший текст наїжджає на смуги й сусідів (ім'я на клас, число на смугу).
+## Більший текст — лише всією панеллю разом (питання до Sapega в звіті cloud/hud-v2).
+const FIGMA_FONT_TYPES: Array[StringName] = [
+	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel",
+	&"HudClass", &"HudLevel", &"HudSpCost", &"HudCount",
+]
 const SIZE_HUD_NAME := 26        # Bold, UPPER, tracking 3
 const HUD_NAME_SPACING := 3
 const SIZE_HUD_CLASS := 16       # Regular

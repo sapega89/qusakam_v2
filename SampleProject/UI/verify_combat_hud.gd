@@ -190,13 +190,13 @@ func _initialize() -> void:
 	# has_theme_*() марне як проба: дефолтна тема відповідає true на будь-який тип.
 	# Єдиний чесний доказ — збіг РЕЗОЛЬВНУТОГО значення з токеном.
 	var name_label: Label = vitals._name_label
-	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.font_px(tokens.SIZE_HUD_NAME, true),  # D474: HUD ×1.5
+	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.SIZE_HUD_NAME,  # HUD v2: Figma-розмір як є
 			"font size from tokens (%d)" % name_label.get_theme_font_size("font_size", "VitalsName"))
 	ck(name_label.get_theme_color("font_color", "VitalsName") == tokens.HUD_GOLD_LIGHT, "colour from tokens")
 	ck(name_label.get_theme_font("font", "VitalsName") != null, "font resource resolves")
 	var hotbar: Node = get_first_node_in_group("skill_hotbar")
 	if hotbar:
-		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.font_px(tokens.SIZE_HUD_KEY, true),  # D474
+		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.SIZE_HUD_KEY,  # HUD v2
 				"bind badge size from tokens")
 		ck(hotbar.get_theme_color("font_color", "CooldownLabel") == tokens.TEXT_PRIMARY,
 				"cooldown colour from tokens")
@@ -210,7 +210,7 @@ func _initialize() -> void:
 	var minimap: Node = game.find_child("Minimap", true, false)
 	ck(minimap != null, "third-party MetSys Minimap present for comparison")
 	if minimap:
-		ck(minimap.get_theme_font_size("font_size", "VitalsName") != tokens.font_px(tokens.SIZE_HUD_NAME, true),
+		ck(minimap.get_theme_font_size("font_size", "VitalsName") != tokens.SIZE_HUD_NAME,
 				"addon UI does NOT resolve GameUITheme sizes (%d)"
 				% minimap.get_theme_font_size("font_size", "VitalsName"))
 		ck(minimap.get_theme_color("font_color", "VitalsName") != tokens.ACCENT,
@@ -218,7 +218,7 @@ func _initialize() -> void:
 	var legacy: Node = game.get_node_or_null(^"UICanvas/CoinCounter")
 	ck(legacy != null, "legacy CoinCounter still under UICanvas, outside the wrapper")
 	if legacy:
-		ck(legacy.get_theme_font_size("font_size", "VitalsName") != tokens.font_px(tokens.SIZE_HUD_NAME, true),
+		ck(legacy.get_theme_font_size("font_size", "VitalsName") != tokens.SIZE_HUD_NAME,
 				"legacy UICanvas widgets keep their own look")
 	var proj_theme: String = str(ProjectSettings.get_setting("gui/theme/custom", ""))
 	ck(proj_theme == "", "theme is still not project-global")
