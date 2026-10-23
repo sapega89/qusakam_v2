@@ -27,6 +27,8 @@ const REPOSITION_SPEED := 0.6
 
 ## Останній обраний хід — для тестів і журналу.
 var last_move: Dictionary = {}
+## Хід combo, що зараз іде (його серія й відновлення), — не last_move: той можуть перезаписати посеред серії.
+var _combo: Dictionary = {}
 ## Місце в черзі візерунка й фаза, для якої вона йде.
 var pattern_at := 0
 var _pattern_phase := 1
@@ -70,6 +72,7 @@ func perform_attack() -> void:
 		return
 	last_move = move
 	if move.kind == "combo":
+		_combo = move
 		await super.perform_attack()
 		_rest()
 		return
@@ -103,9 +106,9 @@ func perform_attack() -> void:
 
 ## Серія ходу combo — фіксована (D504): по удару на кожну підказку tells (у другій фазі tells_phase2, якщо є).
 func _swing_tells() -> Array[StringName]:
-	var names: Array = last_move.tells
+	var names: Array = _combo.tells
 	if enemy.phase >= 2:
-		names = last_move.get("tells_phase2", names)
+		names = _combo.get("tells_phase2", names)
 	var tells: Array[StringName] = []
 	for kind: String in names:
 		tells.append(StringName(kind))
@@ -113,7 +116,7 @@ func _swing_tells() -> Array[StringName]:
 
 
 func _recovery_time() -> float:
-	return float(last_move.recovery)
+	return float(_combo.recovery)
 
 
 ## Перерва EnemyStats.attack_cooldown боса (D394) рахується від кінця ходу, а не від замаху: довгий замах боса інакше з'їдав би
