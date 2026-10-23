@@ -48,6 +48,15 @@ BAT_LEVEL = (
     "its body"
 )
 BAT_DOWN = "in the same side view facing right, just as small as before: flying, its leathery wings swept down below its body"
+# D654: махи крил мухи Ктулху — тіло й руки на місці, рухаються лише крила
+FLY_UP = (
+    "in the same side view facing right, just as big as before: hovering, its translucent wings raised high above its "
+    "back, its legs dangling"
+)
+FLY_DOWN = (
+    "in the same side view facing right, just as big as before: hovering, its translucent wings swept down behind its "
+    "back, its legs dangling"
+)
 # D595: Астрит v2 — бант зверху, щит із шипами, без книги
 ASTRIT2_FRONT = (
     "turned to face the viewer: a front view of her standing idle, both brown eyes visible, the fierce scowl, the red "
@@ -2707,6 +2716,39 @@ CHARACTERS = {
         direction=SIDE_VIEW % {"p": "its"},
         seed=121,
         colors=16,
+        out="SampleProject/Assets/Characters/Enemies/cthulhu_fly/sheet.png",
+        # як у кажана (D640, укус): політ (4), удар кігтями (2), удар по ній (1), смерть (3)
+        rows=[
+            ("fly", [None, FLY_UP, FLY_DOWN, FLY_UP]),
+            (
+                "bite",
+                [
+                    "in the same side view facing right, just as big as before: lunging forward through the air, both "
+                    "clawed arms drawn back, its tentacles spread wide",
+                    "in the same side view facing right, just as big as before: slashing forward with both long clawed "
+                    "arms stretched out to the right, its tentacles reaching forward",
+                ],
+            ),
+            (
+                "hurt",
+                [
+                    "in the same side view facing right, just as big as before: recoiling in mid-air from a hit, its "
+                    "head thrown back, its arms flung up, its wings crumpled"
+                ],
+            ),
+            (
+                "death",
+                [
+                    # з кадру удару: інакше модель лишає позу польоту; «head first» малює її згори
+                    "FROM:hurt:0:in the same side view facing right, just as big as before: keeling over backwards in "
+                    "mid-air, its body tilted far back, its wings limp and drooping, its arms hanging loose",
+                    "in the same side view facing right, not seen from above, just as big as before: dropping to the "
+                    "ground, its body lying tilted sideways in the air, its wings limp and folded, its eyes dimmed",
+                    "just as big as before: lying on its back on the ground, its wings spread limp on the ground, its "
+                    "eyes dark",
+                ],
+            ),
+        ],
         who="the same humanoid fly-creature with the glossy green-black chitin body, the huge glowing blue compound "
         "eyes, the writhing tentacles in place of a mouth, the thin clawed arms and the buzzing translucent wings",
         base="Replace the character in picture 1 with a cursed humanoid fly-creature from a horror tale: a thin, "
