@@ -358,6 +358,12 @@ SIDE_VIEW = (
     "Strict side view: %(p)s head and body in profile facing right, %(p)s eye on the right side of %(p)s face, looking "
     "ahead to the right, not at the viewer"
 )
+# D591: персонажі стоять у легкому трьох-чвертному повороті, як герой (Sapega: «він трошки повернутий до нас»), а не в профіль
+THREE_QUARTER = (
+    "Three-quarter side view, exactly like the character in picture 1: %(p)s body turned a little toward the viewer so that "
+    "%(p)s chest and both shoulders show, %(p)s face turned to the right with the near eye clearly visible, looking ahead "
+    "to the right"
+)
 MAGENTA_BG = " Keep the plain flat magenta background."
 
 # Напрями кандидатів «спробуй ще» (Sapega 2026-10-23): рядок замінює «§» у base
@@ -2128,9 +2134,8 @@ CHARACTERS = {
             [(79, True), (102, True), (79, False), (80, False)],
         ),  # 2: зерно 80 дивилось ліворуч
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        design="assets/references/npcs/malik_pixel.webp",
         cell=(64, 96),
-        seed=79,
+        seed=80,  # D590: обрано 4 (text, без референсу)
         colors=16,
         who="the same man in the white turban with the red jewel, the clean-shaven face, the green scarf, the white robe "
         "with orange trim, the green cape with gold shoulder pieces, the belt with the green gem and the leather bag with "
@@ -2148,7 +2153,7 @@ CHARACTERS = {
     ),
     # D470: Уризен з піксельної версії Sapega; клітинка компаньйона 64×64, як зараз
     "urizen_v2": dict(
-        # Sapega 2026-10-23 «спробуй ще»: напрям — пропорції (чібі як герой / трохи вищий), × референс
+        # Sapega 2026-10-23 «спробуй ще», потім «вони всі прям в профіль» (D591): пропорції × референс, трьох-чвертний поворот
         candidates=(
             "design/shots/candidates/urizen.png",
             [(105, True, BIGHEAD, "big head"), (105, False, BIGHEAD, "big head"), (106, True, TALLER, "taller"), (106, False, TALLER, "taller")],
@@ -2164,7 +2169,7 @@ CHARACTERS = {
         "brown hooded robe open over a dark grey wrapped tunic, a brown belt with an iron buckle, brown shoes — "
         + CHIBI_STYLE
         + ". "
-        + SIDE_VIEW % {"p": "his"}
+        + THREE_QUARTER % {"p": "his"}
         + ". Standing idle."
         + MAGENTA_BG,
     ),
