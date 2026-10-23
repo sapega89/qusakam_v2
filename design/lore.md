@@ -53,7 +53,10 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **A dragon is equal to a god — perhaps stronger; nobody has checked** (Sapega, 2026-10-23: «дракон прирівнюється до бога,
   може навіть сильніше за нього, ніхто не перевіряв»). This sharpens the 2026-10-18 line «like deities, but not deities».
   The Maiden is one of these, not an angel.
-- Open (not said): is the relic a statue, an object or the Maiden herself? Who sent the bandits for it?
+- **Nobody sent the bandits** (Sapega, 2026-10-23: «ніхто не слав бандитів, вони просто побачили, що селяни щось охороняють, і
+  вкрали це, і заодно тупих селян — в рабство»). They saw the villagers guarding something, stole it, and took the villagers
+  as **slaves** too.
+- Open (not said): is the relic a statue, an object or the Maiden herself?
   Are Kusakam's paladin powers tied to her?
 
 ## Characters (Sapega, 2026-10-18)
