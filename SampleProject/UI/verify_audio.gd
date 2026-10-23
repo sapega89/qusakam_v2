@@ -321,21 +321,14 @@ func _voices() -> void:
 	for voice: String in am.voices.values():
 		ck(am.has_event(StringName("babble_" + voice)), "babble_%s exists" % voice)
 
-	# The box: a line types for 0.8 s → the speaker's babble on Voice; narration stays silent.
+	# The box: a line types for 0.8 s → the speaker's babble on Voice.
 	var box: Node = null
 	var replay_done := [false]
 	var run := func() -> void:
-		await dm.replay("res://dialogue_quest/Laboratory_Outside.dqd")  # репліка без мовця (OldMan_Outside її більше не має, D437)
 		await dm.replay("res://dialogue_quest/OldMan_Outside.dqd")
 		replay_done[0] = true
 	run.call()
 	box = dm.current_dialogue_box
-	_mark()
-	await create_timer(0.8).timeout
-	ck(played.filter(func(p: Array) -> bool: return String(p[0]).begins_with("babble_")).is_empty(), "narration (no speaker) does not babble")
-	box.finish()
-	box.accept()
-	await process_frame
 	_mark()
 	await create_timer(0.8).timeout
 	_heard(&"babble_kusakam", &"Voice", "Kusakam's line typing")

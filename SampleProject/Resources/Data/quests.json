@@ -45,7 +45,7 @@
 			"title": "The Humble Place",
 			"description": "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow.",
 			"objective": "Lead Malik out of the Laboratory",
-			"give_dialogue": "Lab_Malik_Quest",
+			"give_dialogue": "Lab_Acquaintance",
 			"done_dialogue": "",
 			"gives": {},
 			"needs": {},

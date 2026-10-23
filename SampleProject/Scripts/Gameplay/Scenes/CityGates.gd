@@ -151,7 +151,7 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 		"CityGates_AfterFight":
 			game.set_quest_flag("city_gates_after_fight_complete", true)
 
-## Напад бандитів (BACKLOG feedback 18): RaidTrigger забирає керування, камера пливе до брами, CityGates,
+## Напад бандитів (BACKLOG feedback 18): RaidTrigger забирає керування, камера пливе до брами (D437: без слів автора),
 ## CityGates_Raid (варта кличе до зброї), бандити (Raid/Bandits) біжать дорогою до варти й стають на точки спавну
 ## бою, камера
 ## повертається до героя, керування — назад; далі FIGHT_LOOP (CityGates_Fight, бій, асист охоронця D209).
@@ -164,10 +164,8 @@ const RAID_RETURN_TIME := 1.0
 func _raid_cutscene(run_id: int) -> void:
 	var cs := Cutscene.new()
 	await cs.pan_to($Raid/Look.global_position, RAID_PAN_TIME)
-	await _play_dialogue("CityGates", run_id)
 	if run_id != state_run_id:
 		return
-	cs.hold()
 
 	# Варта бачить бандитів першою; репліка — до їхнього бігу, щоб вікно діалогу не закрило їх.
 	await _play_dialogue("CityGates_Raid", run_id)

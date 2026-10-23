@@ -309,6 +309,20 @@ const SIDEBAR_TAB_HEIGHT := 45
 const HURT_RED := Color("e0281e")
 const HURT_VIGNETTE := [[Color("e0281e", 0.0), 0.72], [Color("e0281e", 0.55), 1.0]]
 
+# ── Реакції NPC у кат-сценах (D460, Cutscene.react): піксельний значок над головою і червоний спалах болю.
+# Figma кадру не має — агентське рішення, див. design/cloud_reports/story-text.md. Значки — Assets/UI/Icons/emote_*.svg
+# (білий гліф, фарбується цими кольорами; контур — BUBBLE_INK).
+const EMOTE_SURPRISE := ACCENT          # «!»
+const EMOTE_CONFUSION := TEXT_PRIMARY   # «?»
+const EMOTE_SILENCE := TEXT_SECONDARY   # «…»
+const EMOTE_FEAR := SP_FILL             # крапля поту
+const EMOTE_SCALE := 3.0                # значок 10–12 px × 3: читається поруч зі спрайтами акторів (×1.5 від 64 px)
+const EMOTE_GAP := 4.0                  # світові px між маківкою і низом значка
+const EMOTE_POP := 0.12                 # значок вискакує, секунд
+const EMOTE_HOLD := 0.9                 # тримається
+const EMOTE_FADE := 0.25                # гасне
+const REACT_PAIN_FLASH := HURT_RED      # біль — актор червоніє, як від удару
+
 # ── Цифри урону (D66; Sapega 2026-10-22 «цифри урону по мені і ворогу»): над тілом, піднімаються й гаснуть.
 # Figma кадру не має — агентське рішення, див. design/cloud_reports/combat-stats.md.
 const DAMAGE_NUMBER_ENEMY := TEXT_PRIMARY     # удар героя по ворогу

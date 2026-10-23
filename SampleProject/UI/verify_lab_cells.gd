@@ -1,8 +1,10 @@
 extends SceneTree
 
-## Камери лабораторії (queue row 9.5, D304, D305): справжній ввід.
-## Телепорт із зали мера → кат-сцена камер грає раз; пропуск (утримання Tab) закінчується в тому самому стані, що й
-## повний перегляд. Герой виходить із камери (move_right) → знайомство, Малік, завдання malik_escort, три асисти разом;
+## Камери лабораторії (queue row 9.5, D304, D305, D462): справжній ввід.
+## Телепорт із зали мера → кат-сцена камер грає раз: Алісию ведуть до столу без кішки (B126), алхімік і камери
+## реагують на крик, джина й вибухи (D460); пропуск (утримання Tab) закінчується в тому самому стані, що й
+## повний перегляд. Герой виходить із камери (move_right) → Малік підходить першим, одна розмова знайомства (D462),
+## завдання malik_escort, три асисти разом;
 ## пропуск (утримання геймпада Y) — той самий стан. Асист кличе справжня клавіша F. Завантаження сейва лише з прапорцями
 ## (B53) починає з потрібного біту. Двері на схід ведуть у коридори (move_right).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_cells.gd
@@ -13,7 +15,9 @@ const TEST_DIR := "user://verify_lab_cells/"
 const TEST_SLOT := 1
 const CELLS_TALKS: Array[String] = ["Lab_Cells_Arrival", "Lab_Cells_Injection", "Lab_Cells_Prisoner",
 		"Lab_Cells_Djinn", "Lab_Cells_Faint", "Lab_Cells_Awake"]
-const MEET_TALKS: Array[String] = ["Lab_Acquaintance", "Lab_Malik_Quest"]
+const MEET_TALKS: Array[String] = ["Lab_Acquaintance"]
+## Хто реагує в кат-сцені камер (D460).
+const REACTORS: Array[String] = ["Scientist", "CompanionNPC_astrit", "CompanionNPC_alisia", "CompanionNPC_urizen", "Malik"]
 const UNLOCKS: Array[String] = ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete"]
 
 var fails: Array[String] = []
@@ -192,25 +196,53 @@ func _initialize() -> void:
 	ck(absf(game.player.global_position.x - (cells.get_node(^"Arrival") as Node2D).global_position.x) < 2.0, "the hero is in his cell (x %.0f)" % game.player.global_position.x)
 	ck(started == ["Lab_Cells_Arrival"], "first the arrival talk (%s)" % [started])
 	var alisia: Node2D = cells.get_node(^"CompanionNPC_alisia")
-	var alisia_cell: float = alisia.global_position.x
+	var alisia_body: Node2D = alisia.get_node(^"Sprite")
+	var cat: Node2D = alisia.get_node(^"Cat")
+	var alisia_cell: float = alisia_body.global_position.x
+	var alisia_node_x: float = alisia.global_position.x
+	var cat_x: float = cat.global_position.x
 	var alisia_max := alisia_cell
+	var cat_moved := 0.0
 	var djinn_seen := false
 	var blasts := 0
+	var emotes := {}  # "Актор:вид" → true
+	var hurt := {}    # актор, чиє тіло почервоніло (pain)
+	var bases := {}
+	for actor in REACTORS:
+		var body: Node2D = cells.get_node(actor).get_child(0) if actor != "CompanionNPC_alisia" else alisia_body
+		bases[actor] = body.position
 	var deadline := Time.get_ticks_msec() + 60000
 	while not _settled("AWAKE") and Time.get_ticks_msec() < deadline:
 		if dm.is_dialogue_active() and not dm.is_bubble_playing():  # облачко гортається саме (bubble_time_scale 0)
 			dm.current_dialogue_box.finish()
 			dm.current_dialogue_player.accept()
-		if is_instance_valid(alisia):
-			alisia_max = maxf(alisia_max, alisia.global_position.x)
+		alisia_max = maxf(alisia_max, alisia_body.global_position.x)
+		cat_moved = maxf(cat_moved, absf(cat.global_position.x - cat_x))
 		djinn_seen = djinn_seen or cells.find_children("*", "CharacterBody2D", false, false).any(
 				func(n: Node) -> bool: return n.is_in_group(&"enemies") and (n as Node2D).visible)
 		blasts = maxi(blasts, cells.find_children("Explosion*", "Node2D", false, false).size())
+		for actor in REACTORS:
+			for child in cells.get_node(actor).get_children():
+				if child.scene_file_path.ends_with("Emote.tscn"):
+					emotes["%s:%s" % [actor, child.get(&"kind")]] = true
+				elif child is CanvasItem and (child as CanvasItem).modulate.g < 0.6:
+					hurt[actor] = true
 		await process_frame
 	for i in 30: await physics_frame
 	ck(started == CELLS_TALKS, "the beats in order (%s)" % [started])
-	ck(alisia_max > alisia_cell + 200.0 and absf(alisia.global_position.x - alisia_cell) < 1.0, "Alisia led to the table (x %.0f) and back to her cell" % alisia_max)
+	ck(alisia_max > alisia_cell + 200.0 and absf(alisia_body.global_position.x - alisia_cell) < 1.0, "Alisia led to the table (x %.0f) and back to her cell" % alisia_max)
+	ck(cat_moved < 1.0 and absf(alisia.global_position.x - alisia_node_x) < 1.0, "B126: the cat stays in cell 3 (moved %.0f px)" % cat_moved)
 	ck(djinn_seen and blasts > 0, "the djinn bursts out, explosions (%d at once)" % blasts)
+	for actor in REACTORS:
+		ck(emotes.has(actor + ":surprise") and emotes.has(actor + ":fear"), "D460: %s reacts — «!» at the cry, a sweat drop at the djinn (%s)" % [actor,
+				emotes.keys().filter(func(k: String) -> bool: return k.begins_with(actor + ":"))])
+	ck(hurt.has("CompanionNPC_alisia"), "D460: Alisia flinches red at the injection (%s)" % [hurt.keys()])
+	ck(hurt.size() >= 3, "D460: the blasts hurt those next to them (%s)" % [hurt.keys()])
+	var settled := REACTORS.all(func(actor: String) -> bool:
+		var body: CanvasItem = cells.get_node(actor).get_child(0) if actor != "CompanionNPC_alisia" else alisia_body
+		var still := cells.get_node(actor).get_children().all(func(c: Node) -> bool: return not c.scene_file_path.ends_with("Emote.tscn"))
+		return still and body.modulate == Color.WHITE and (body as Node2D).position.distance_to(bases[actor]) < 0.5)
+	ck(settled, "after the reactions every body is back in place, untinted, no icon left")
 	var played := _snap()
 	_awake_ok(played, "played")
 	ck(played.hud and played.control and is_equal_approx(played.speed, 1.0), "played: HUD, control and normal speed back")
@@ -234,8 +266,12 @@ func _initialize() -> void:
 	var before_meet: Dictionary = game.get_quest_flags().duplicate(true)
 	await _step_out()
 	ck(game.player.event, "the acquaintance takes the input")
+	await _until(func() -> bool: return dm.is_dialogue_active(), 10.0)
+	var malik_x: float = (_cells().get_node(^"Malik") as Node2D).global_position.x
+	var meet_x: float = (_cells().get_node(^"Marks/MalikMeet") as Node2D).global_position.x
+	ck(absf(malik_x - meet_x) < 2.0, "D462: Malik walks over before the first line (x %.0f, meet %.0f)" % [malik_x, meet_x])
 	await _play_to("FREE")
-	ck(started == MEET_TALKS, "the acquaintance, then Malik (%s)" % [started])
+	ck(started == MEET_TALKS, "one talk: Malik asks, each names themselves, Malik leads on (%s)" % [started])
 	var met := _snap()
 	_free_ok(met, "played")
 	ck(met.party.size() == 3, "all three in the party (%s)" % [met.party])
@@ -255,7 +291,7 @@ func _initialize() -> void:
 	await _step_out()
 	await _skip_to("FREE", _pad_y(true), _pad_y(false))
 	_same(met, _snap(), "acquaintance")
-	ck(started == MEET_TALKS, "skipped: both talks paged through (%s)" % [started])
+	ck(started == MEET_TALKS, "skipped: the talk paged through (%s)" % [started])
 
 	print("[6] A flags-only load resumes at the right beat (B53)")
 	await _load_with({}, slot_path)

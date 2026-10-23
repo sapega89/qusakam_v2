@@ -776,8 +776,6 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 			quest_id = "canyon_exploration_complete"
 		"Canyon_AbductionCutscene":
 			quest_id = "canyon_abduction_complete"
-		"Canyon_MeditationAtRelic":
-			quest_id = "canyon_relic_meditation_complete"
 		"Canyon_ExitCutscene":
 			quest_id = "canyon_exit_complete"
 		_:
