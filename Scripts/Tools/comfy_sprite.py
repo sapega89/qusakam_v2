@@ -2183,7 +2183,8 @@ CHARACTERS = {
         candidate_poses=[ALISIA_FRONT],
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/alisia_v2.webp",
-        seed=107,
+        seed=107,  # D594: обрано 1 (ref, чібі) — «ідеальна»
+        direction=CHIBI,
         colors=24,  # 16 губили синє око (рідкісний колір)
         who="the same silver-haired huntress with the high ponytail, one green eye and one blue eye, the dark leather "
         "and bronze armour, the fur collar, the tattered short cape and the wooden longbow",
