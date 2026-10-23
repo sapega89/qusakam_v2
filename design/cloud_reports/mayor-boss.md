@@ -10,7 +10,7 @@ tags: [cloud, routines, bosses, mayor-hall]
 - **Not done:** an attribute-only hero is not stopped yet. A strength-only build needs 31 hits instead of 40, because strength's diminishing returns and the build simulation of D642 belong to `cloud/difficulty`. That branch had no boss formula on `feature/backlog` when this ran, so the numbers are this branch's own (D646). `brass_collector.tscn` stays only as a test fixture (six verify scripts and `capture_bosses.gd` use it). No room spawns it now.
 - **D-IDs for the register:** D645–D647 (orchestrator renumbers; lab-boss runs beside this). Text below.
 - **B rows fixed:** none.
-- **Full suite:** running (this line is updated when it finishes).
+- **Full suite:** 112 tests, all pass. The first run stopped at its 30-min limit after 83 tests: 82 passed, and `verify_lab_route` failed because it still looked up the old `BrassCollector` node. After the fix it passes, and the other 29 tests were run on their own, all passing.
 
 ## D-ID text (for `figma_decision_register.md`)
 
@@ -48,5 +48,6 @@ Suggested Q (non-blocking, not filed): **what is the axe-warrior called?** Defau
   - `verify_mayor_boss.gd` (new) → `RESULT: ALL PASS`. [1] D642 numbers at level 5. [2] Each move gets its tell colour from `EventBus.enemy_tell_shown`, the glint sits on the axe of its pose, the move lands, and each hit kills the level-5 hero in 3–4. Only the first sweep swing lands, because the hero's hit stagger carries him out of the second. [2] also checks stagger frame 20. [3] The scorpion comes out, rears and goes back; it has no collision object, no `damage_token` reaches the hero, and the axe-warrior is the only boss. [4] On a win the scorpion returns, the body is taken, the scorpion leaves before `MayorHall_Victory`, and the hero lands in LabCells with `mayor_boss_defeated`.
   - `verify_mayor_hall.gd` (updated node name and objective; it keeps the defeat flow: a real hit → no Game Over → LabCells) → `RESULT: ALL PASS`.
   - `verify_hit_areas.gd` (new scene added) → `RESULT: ALL PASS`.
+  - `verify_lab_route.gd` and `capture_mayor_hall.gd` now use the `ScorpicoreWarrior` node; the capture names its shots `warrior_out` and `win_scorpion`.
 - Capture: `SampleProject/UI/capture_mayor_boss.gd` → `design/shots/mayor_boss.png`. Top left: the slam's red glint on the
   raised axe. Top right: the axe lands (−62). Bottom: the scorpion rears out of the breach beside the queue.
