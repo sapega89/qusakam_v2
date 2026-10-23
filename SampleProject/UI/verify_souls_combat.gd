@@ -70,6 +70,11 @@ func _initialize() -> void:
 		if node.is_in_group(&"enemies"):
 			enemies.append(node)
 	ck(enemies.size() >= 2, "enemies on DesertRoad (%d)" % enemies.size())
+	# Арена тесту — вороги сюжетного бою; бої секцій (D296, самотній щитоносець D617) не вмикаються
+	var spawner_script: Script = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
+	for node in game.map.get_children():
+		if node.get_script() == spawner_script and node.trigger_area:
+			node.trigger_area.monitoring = false
 	ck(InputMap.has_action(&"heavy_attack") and InputMap.has_action(&"block"), "heavy_attack and block are registered (D270)")
 	for action in [&"heavy_attack", &"block"]:
 		var kinds: Array = InputMap.action_get_events(action).map(func(e: InputEvent) -> String: return e.get_class())

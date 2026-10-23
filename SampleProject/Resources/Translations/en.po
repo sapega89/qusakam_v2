@@ -2548,6 +2548,12 @@ msgstr "Desert Archer"
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 
+msgid "Shield Bandit"
+msgstr "Shield Bandit"
+
+msgid "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
+msgstr "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Riposte Instinct [DRAFT]"
 

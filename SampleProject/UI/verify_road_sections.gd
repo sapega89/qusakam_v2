@@ -13,7 +13,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_road_sections.gd
 
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
-const FIGHTS := {"Fight_Dunes": 4, "Fight_Mesa": 4, "Fight_Caravan": 5}
+const FIGHTS := {"Fight_Dunes": 3, "Fight_Mesa": 4, "Fight_Caravan": 4}  # D617: a bandit from each went to the lone fights
 
 ## A jump lifts the hero ~103 px (PlayerMover.jump_velocity, default gravity); a rise is climbable up to 3 tiles.
 const JUMP_RISE := 96

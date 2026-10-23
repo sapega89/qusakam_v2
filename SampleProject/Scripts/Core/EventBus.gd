@@ -161,6 +161,12 @@ signal attack_started(attacker: Node, target: Node)
 ## Ворог показав підказку удару (D504): [param kind] — EnemyLogic.TELL_BLOCK / TELL_PARRY / TELL_DODGE (свій звук у SoundHooks).
 signal enemy_tell_shown(enemy: Node, kind: StringName)
 
+## Щитоносець (D560): щит прийняв удар спереду / важкий удар розбив щит; [param at] — де щит, світові px (іскри, звук).
+@warning_ignore("unused_signal")
+signal enemy_shield_blocked(enemy: Node2D, at: Vector2)
+@warning_ignore("unused_signal")
+signal enemy_shield_broken(enemy: Node2D, at: Vector2)
+
 ## Souls-lite (D264): ворога збито (стійкість вичерпано або парировано), героя збито ударом,
 ## герой парирував удар, каст навички зірвано ударом (D259 — SP і кулдаун усе одно списано).
 @warning_ignore("unused_signal")

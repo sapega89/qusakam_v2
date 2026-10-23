@@ -358,6 +358,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Trigger")
 state_key = "enemies_upper"
 respawns = true
+elite_rolls = true
 
 [node name="Trigger" type="Area2D" parent="Fight_Upper" unique_id=1640100101]
 position = Vector2(1000, 208)
@@ -387,6 +388,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Trigger")
 state_key = "enemies_middle"
 respawns = true
+elite_rolls = true
 
 [node name="Trigger" type="Area2D" parent="Fight_Middle" unique_id=1640100201]
 position = Vector2(1250, 688)
@@ -422,6 +424,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Trigger")
 state_key = "enemies_lower"
 respawns = true
+elite_rolls = true
 
 [node name="Trigger" type="Area2D" parent="Fight_Lower" unique_id=1640100301]
 position = Vector2(700, 1168)
@@ -437,6 +440,7 @@ enemy_type = "tank"
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Lower" unique_id=1640100304]
 position = Vector2(1350, 1328)
 script = ExtResource("8_spawn_point")
+enemy_type = "shield"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Lower" unique_id=1640100305]
 position = Vector2(1450, 1328)

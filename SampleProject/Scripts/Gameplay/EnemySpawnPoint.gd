@@ -6,7 +6,14 @@ class_name EnemySpawnPoint
 ## Используется RoomEnemySpawner для автоматического создания врагов
 
 ## Тип врага для спавна
-@export_enum("melee", "tank", "fast", "archer") var enemy_type: String = "melee"  # archer — лучник (D386)
+@export_enum("melee", "tank", "fast", "archer", "shield") var enemy_type: String = "melee"  # archer — лучник (D386), shield — щитоносець (D560)
+
+## Розмір (D560): auto — кидок у звичайному бою (RoomEnemySpawner.respawns), medium у сюжетному; або заданий.
+@export_enum("auto", "small", "medium", "large") var size: String = "auto"
+
+## Еліта (D560): auto — кидок 1 з 8, де спавнер дозволяє (RoomEnemySpawner.elite_rolls); never / always — задано
+## (перша зустріч з елітою — сам-на-сам, D582).
+@export_enum("auto", "never", "always") var elite: String = "auto"
 
 ## Спавнить при загрузке комнаты (если false, нужно вызвать spawn() вручную)
 @export var spawn_on_load: bool = true
@@ -23,6 +30,7 @@ const ENEMY_SCENES := {
 	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
 	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
 	"archer": "res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn",
+	"shield": "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn",
 }
 ## Стандартні стати за типом ворога.
 const STATS_PATH := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
@@ -67,6 +75,7 @@ func _draw() -> void:
 			"tank": color = Color.BLUE
 			"fast": color = Color.GREEN
 			"archer": color = Color.YELLOW
+			"shield": color = Color.ORANGE
 
 		# Крест
 		draw_line(Vector2(-10, 0), Vector2(10, 0), color, 2.0)

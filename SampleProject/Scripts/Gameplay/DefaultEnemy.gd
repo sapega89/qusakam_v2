@@ -1,6 +1,8 @@
 extends CombatBody2D
 class_name DefaultEnemy
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
+const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
+const ELITE_OUTLINE = preload("res://SampleProject/Shaders/elite_outline.gdshader")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -22,6 +24,12 @@ var _burn_tick := 0.0
 ## EnemyStats resource для конфігурації ворога
 ## Якщо встановлено, параметри з resource перезапишуть дефолтні значення
 @export var enemy_stats: EnemyStats
+
+## Різновид (D560): розмір (EnemyVariety.SIZES) і еліта — ставить RoomEnemySpawner до _ready(); множники з enemy_variety.json.
+var size_kind := "medium"
+var elite := false
+## Досвід за вбивство: EnemyStats.xp_reward × розмір × еліта.
+var xp_reward := 0
 
 # === КОМПОНЕНТИ ===
 var enemy_logic: EnemyLogic = null
@@ -105,6 +113,7 @@ func _ready():
 	# НОВОЕ: Применяем статистику из EnemyStats resource, если он установлен
 	if enemy_stats:
 		_apply_stats(enemy_stats)
+	_apply_variety()
 
 	# Додаємо до групи ворогів
 	add_to_group(GameGroups.ENEMIES)
@@ -168,8 +177,55 @@ func _apply_stats(stats: EnemyStats) -> void:
 	# Здоровье
 	Max_Health = stats.max_health
 	current_health = Max_Health
+	xp_reward = stats.xp_reward
 
 	DebugLogger.info("DefaultEnemy: Applied stats from EnemyStats resource (type: %s)" % stats.enemy_type, "Enemy")
+
+## Розмір і еліта (D560): HP, шкода, швидкість і досвід множаться; спрайт і форми (B128: що видно, те й б'є) ростуть
+## від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом із хітбоксом.
+func _apply_variety() -> void:
+	var mult: Dictionary = EnemyVariety.size(size_kind)
+	var grow: float = mult.scale
+	var health: float = mult.health
+	var hit: float = mult.damage
+	var xp: float = mult.xp
+	if elite:
+		var marks: Dictionary = EnemyVariety.elite()
+		grow *= marks.scale
+		health *= marks.health
+		hit *= marks.damage
+		xp *= marks.xp
+		_mark_elite(marks)
+	Max_Health = roundi(Max_Health * health)
+	current_health = Max_Health
+	base_damage *= hit
+	damage = base_damage
+	speed *= mult.speed
+	xp_reward = roundi(xp_reward * xp)
+	if grow != 1.0:
+		_grow(grow)
+
+## Масштаб [param factor] від лінії ніг: спрайт, тіло, хітбокс, зона-ціль. Тіло — спільний ресурс сцени, тож копія.
+func _grow(factor: float) -> void:
+	var feet: float = body_collision.position.y + body_collision.shape.get_rect().end.y
+	body_collision.shape = body_collision.shape.duplicate()
+	for shape: CollisionShape2D in [body_collision, hitbox_collision, hurt_collision]:
+		(shape.shape as RectangleShape2D).size *= factor
+		shape.position = Vector2(shape.position.x * factor, feet + (shape.position.y - feet) * factor)
+	sprite.scale *= factor
+	sprite.position = Vector2(sprite.position.x * factor, feet + (sprite.position.y - feet) * factor)
+	attack_range *= factor
+	lunge *= factor
+
+## Знак еліти (D560): тонкий золотий контур, що дихає (Shaders/elite_outline.gdshader). Арт проклятих лабораторних
+## (D589) згодом замінить його для своїх видів.
+func _mark_elite(marks: Dictionary) -> void:
+	var glow := ShaderMaterial.new()
+	glow.shader = ELITE_OUTLINE
+	glow.set_shader_parameter(&"outline_color", Color(marks.outline_color))
+	glow.set_shader_parameter(&"alpha_min", marks.outline_alpha_min)
+	glow.set_shader_parameter(&"alpha_max", marks.outline_alpha_max)
+	sprite.material = glow
 
 func _initialize_components():
 	"""Ініціалізує EnemyLogic та EnemyView"""
@@ -392,8 +448,8 @@ func _check_existing_player_in_detection_area():
 
 func _award_xp_to_player() -> void:
 	"""Awards XP to player — the reward is data (EnemyStats.xp_reward, D297)"""
-	ServiceLocator.get_xp_manager().add_xp(enemy_stats.xp_reward)
-	DebugLogger.info("Enemy died, awarded %d XP to player" % enemy_stats.xp_reward, "Enemy")
+	ServiceLocator.get_xp_manager().add_xp(xp_reward)
+	DebugLogger.info("Enemy died, awarded %d XP to player" % xp_reward, "Enemy")
 
 func _spawn_coin_drops() -> void:
 	"""Spawns coins on enemy death"""
@@ -429,6 +485,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(1, 3)  # 1-3 coins
 		"archer":
 			return randi_range(1, 3)  # D386: як fast
+		"shield":
+			return randi_range(3, 5)  # D560: між бандитом і скорпіоном
 	push_error("DefaultEnemy: unknown enemy_type '%s'" % enemy_stats.enemy_type)
 	return 0
 
