@@ -23,10 +23,19 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_front.png" id="front_tex"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/City.gd" id="city_script"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="gate_guard"]
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate"]
+size = Vector2(32, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate_talk"]
+size = Vector2(164, 120)
+
 [node name="City" type="Node2D" unique_id=1536537228]
+script = ExtResource("city_script")
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 
@@ -164,6 +173,35 @@ position = Vector2(1915, 396)
 
 [node name="OathDervish" parent="." instance=ExtResource("9_oath_dervish")]
 position = Vector2(2330, 396)
+
+[node name="GuardLeft" parent="." instance=ExtResource("gate_guard")]
+position = Vector2(2440, 396)
+
+[node name="Sprite2D" parent="GuardLeft" index="0"]
+flip_h = true
+
+[node name="GuardRight" parent="." instance=ExtResource("gate_guard")]
+position = Vector2(2520, 396)
+
+[node name="Sprite2D" parent="GuardRight" index="0"]
+flip_h = true
+
+[node name="MayorHallGate" type="StaticBody2D" parent="."]
+position = Vector2(2560, 240)
+
+[node name="Collision" type="CollisionShape2D" parent="MayorHallGate"]
+shape = SubResource("RectangleShape2D_gate")
+
+[node name="GateTalk" type="Area2D" parent="."]
+position = Vector2(2462, 340)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GateTalk"]
+shape = SubResource("RectangleShape2D_gate_talk")
+
+[node name="ObjectiveTargets" type="Node2D" parent="."]
+
+[node name="oath_keepers" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(1610, 344)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

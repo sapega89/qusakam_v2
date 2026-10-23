@@ -1,6 +1,8 @@
 extends Node2D
 class_name RoomEnemySpawner
 
+const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
+
 ## 🏠 RoomEnemySpawner - Управляет спавном врагов в комнате
 ## Автоматически находит все EnemySpawnPoint в комнате и спавнит врагов
 ## Добавьте этот скрипт как дочерний узел комнаты
@@ -27,6 +29,10 @@ class_name RoomEnemySpawner
 ## Ключ бою в Game.room_state (D152): у кімнаті з кількома боями — свій у кожного спавнера.
 @export var state_key: String = "enemies"
 
+## D492: звичайний бій — вороги повертаються, коли герой медитує (D447) або повертається в регіон, з якого пішов.
+## Боси й сюжетні бої (false) памʼятають своїх убитих назавжди (D152).
+@export var respawns: bool = false
+
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
 
@@ -37,6 +43,10 @@ var spawned_enemies: Array[Node] = []
 ## невідоме (ворог не встиг зʼявитись). Немає ключа — бій не починали. Вбитих у словнику немає.
 ## Імʼя кімнати MetSys — запамʼятовуємо одразу: під час вивантаження MetSys уже в іншій.
 var _room: String
+## D492: регіон кімнати (лише для respawns) і чи цей бій ще пишеться в стан: після медитації посеред кімнати
+## живі вороги й решта хвиль старого бою більше не пишуть HP і смерть — наступний вхід почне бій спочатку.
+var _region: String
+var _recording := true
 
 ## Сигнал: все враги заспавнены
 signal all_enemies_spawned()
@@ -59,6 +69,9 @@ func _ready() -> void:
 			push_error("RoomEnemySpawner: %s and %s share state_key '%s' in %s" % [name, other.name, state_key, _room])
 	if trigger_area:
 		trigger_area.body_entered.connect(_on_trigger_body_entered)
+	if respawns:
+		_region = Regions.of_scene(get_parent().scene_file_path)
+		Game.get_singleton().ordinary_fights_reset.connect(_on_ordinary_fights_reset)
 
 	# Ждём следующий кадр чтобы комната полностью загрузилась
 	await get_tree().process_frame
@@ -97,6 +110,7 @@ func spawn_all_enemies() -> void:
 
 	# Кого спавнити, вирішуємо до першого ворога: _track() одразу пише стан бою, і без
 	# цього решта точок вважала б себе вже вбитими.
+	_recording = true
 	var saved = Game.get_singleton().get_room_state(_room, state_key)
 	var fight := {}
 	for spawn_point in spawn_points:
@@ -107,6 +121,8 @@ func spawn_all_enemies() -> void:
 	# Увесь бій — одразу в стан: інакше ворог із хвилі, що не встигла зʼявитись до виходу
 	# з кімнати, вважався б убитим.
 	Game.get_singleton().set_room_state(_room, state_key, fight)
+	if respawns:
+		Game.get_singleton().register_ordinary_fight(_room, state_key, _region)
 
 	if spawn_in_waves:
 		await _spawn_in_waves()
@@ -134,6 +150,13 @@ func fight_in_progress() -> bool:
 func fight_cleared() -> bool:
 	return fight_in_progress() and _saved_enemies().is_empty()
 
+## D492: у room_state — «цей звичайний бій уже колись добито» (Game.reset_ordinary_fights ставить, коли бій повертається).
+const WON_SUFFIX := "_won"
+
+## Бій добито зараз або колись до повернення ворогів (D492) — для сюжету, що чекає перемоги.
+func fight_won() -> bool:
+	return fight_cleared() or Game.get_singleton().get_room_state(_room, state_key + WON_SUFFIX, false)
+
 func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
 	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає
 
@@ -141,6 +164,8 @@ func _saved_enemies() -> Dictionary:
 	return Game.get_singleton().get_room_state(_room, state_key, {})
 
 func _save_hp(spawn_id: String, hp: int) -> void:
+	if not _recording:
+		return
 	var saved := _saved_enemies()
 	saved[spawn_id] = hp
 	Game.get_singleton().set_room_state(_room, state_key, saved)
@@ -171,10 +196,17 @@ func _track(enemy: Node, spawn_id: String) -> void:
 			if new_health > 0:
 				_save_hp(spawn_id, new_health))
 		enemy.entity_died.connect(func() -> void:
+			if not _recording:
+				return
 			var saved := _saved_enemies()
 			saved.erase(spawn_id)
 			Game.get_singleton().set_room_state(_room, state_key, saved)),
 		CONNECT_ONE_SHOT)
+
+## D492: бій цього спавнера повернувся — далі він живе лише до виходу з кімнати.
+func _on_ordinary_fights_reset(region: String) -> void:
+	if region == "" or region == _region:
+		_recording = false
 
 func _spawn_in_waves() -> void:
 	"""Спавнит врагов волнами"""

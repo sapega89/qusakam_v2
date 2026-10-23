@@ -1,5 +1,4 @@
 {
-	"_comment": "D297: XP to reach the next level = first_level + step * (level - 1) -> 100, 150, 200, 250 ...; level 5 at 700 total, on the City Gates raid (design/world_expansion_plan.md).",
-	"first_level": 100,
-	"step": 50
+	"_comment": "D297, D492: to_next[level - 1] = XP from that level to the next, levels 1..19 (cap 20, D488). Levels 1-4 stay D297's 100, 150, 200, 250 (level 5 at 700, on the City Gates raid). Straight through the Laboratory (2040 XP) ends at level 16; two more rounds of the Laboratory corridors (430 each) reach 20. verify_xp_curve.gd replays it.",
+	"to_next": [100, 150, 200, 250, 105, 110, 110, 115, 115, 120, 120, 125, 125, 130, 130, 190, 210, 230, 250]
 }

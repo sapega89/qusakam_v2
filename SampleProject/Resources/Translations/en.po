@@ -2663,3 +2663,8 @@ msgstr "Drink it in play with the quick slot (%s)"
 
 msgid "ST"
 msgstr "ST"
+msgid "MAX"
+msgstr "MAX"
+
+msgid "Swear an oath with the oath keepers"
+msgstr "Swear an oath with the oath keepers"

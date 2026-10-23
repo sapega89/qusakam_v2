@@ -295,7 +295,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(DirAccess.get_files_at(TEST_DIR).size() == files_before, "walking onto the save point writes nothing")
 	sp.interactable.interacted.emit()
-	for i in 6: await process_frame
+	await create_timer(sp.MEDITATE_SIT_TIME + 0.3).timeout  # D447: спершу герой сідає медитувати
 	ck(ui.current_state_name == "SaveGameState", "interact opens Save Slot Selection (%s)" % ui.current_state_name)
 	var save_menu := get_first_node_in_group(&"save_slot_menu")
 	ck(save_menu != null and save_menu.mode == "save", "opened in SAVE mode")

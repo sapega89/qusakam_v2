@@ -1,6 +1,8 @@
 # Точка збереження. Поруч — підказка "[A] Save" (UI/Interaction/Prompt, D74);
-# interact відкриває Save Slot Selection у режимі SAVE (D75).
+# interact садить героя медитувати (D447, кадри Meditate, як у каньйоні) і тоді відкриває Save Slot Selection
+# у режимі SAVE (D75); вихід з екрана його підводить. Медитація повертає звичайних ворогів (D492, Game.meditate()).
 # Автозбереження при дотику прибрано (Q5): зберігаємо лише свідомо через підказку.
+# Арт місця медитації (килимок, камінне коло, D447) ще не зроблений — поки що старе синє коло з «S».
 extends Area2D
 
 const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
@@ -11,7 +13,16 @@ const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 ## Позиционировать игрока при сохранении (true = игрок встанет на SavePoint)
 @export var position_player_on_touch: bool = true
 
+## D447: скільки герой сидить, перш ніж відкриється екран збереження (с).
+const MEDITATE_SIT_TIME := 0.8
+
 var interactable: InteractableComponent = null
+## Герой уже сидить тут — повторне натискання нічого не робить.
+var meditating := false
+
+## Герой сів медитувати / підвівся (екран збереження закрито).
+signal meditation_started
+signal meditation_finished
 
 func _ready() -> void:
 	# Добавляем в группу для поиска SavePoint'ов при загрузке комнаты
@@ -28,11 +39,14 @@ func _ready() -> void:
 	label.scale = WORLD_UI.screen_scale(self)
 
 func _on_interacted() -> void:
+	if meditating:
+		return
 	var player := GameGroups.get_first_node_in_group(GameGroups.PLAYER) as Node2D
 
 	# Позиционируем игрока на SavePoint перед сохранением — сейв відновить саме цю точку.
 	if position_player_on_touch and player:
-		var spawn_pos = global_position + spawn_offset
+		# D447: лише по горизонталі — герой сідає на підлозі, де стоїть, а не зависає на висоті кола.
+		var spawn_pos := Vector2(global_position.x + spawn_offset.x, player.global_position.y)
 		player.global_position = spawn_pos
 		DebugLogger.info("SavePoint: Positioned player at %s" % spawn_pos, "SavePoint")
 		MetSys.set_player_position(player.global_position)
@@ -41,7 +55,24 @@ func _on_interacted() -> void:
 	# Starting coords for the delta vector feature.
 	game.reset_map_starting_coords()
 
-	ServiceLocator.get_ui_manager().open_save_game()
+	await _meditate(player, game)
+
+
+## D447: герой сідає й медитує, тоді — екран збереження; закрили екран — він встає й знову ходить.
+func _meditate(player: Node2D, game: Game) -> void:
+	meditating = true
+	player.set_movement_enabled(false)
+	player.play_body(&"Meditate")
+	game.meditate()
+	meditation_started.emit()
+	await get_tree().create_timer(MEDITATE_SIT_TIME).timeout
+	var ui_manager: Node = ServiceLocator.get_ui_manager()
+	ui_manager.open_save_game()
+	await (ui_manager.current_state as Node).tree_exiting
+	player.play_body(&"Idle")
+	player.set_movement_enabled(true)
+	meditating = false
+	meditation_finished.emit()
 
 func _draw() -> void:
 	# Draws the circle.

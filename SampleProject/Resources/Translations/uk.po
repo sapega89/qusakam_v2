@@ -2665,3 +2665,9 @@ msgstr "Випийте його в грі зі швидкого слота (%s)"
 
 msgid "ST"
 msgstr "ВТ"
+
+msgid "MAX"
+msgstr "МАКС"
+
+msgid "Swear an oath with the oath keepers"
+msgstr "Складіть присягу перед хранителями присяг"

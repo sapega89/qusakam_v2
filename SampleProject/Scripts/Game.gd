@@ -6,6 +6,9 @@ const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/Sa
 const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
 const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreloader.gd")
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
+const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
+## D492: у room_state кімнати — {ключ бою: регіон} її звичайних боїв, тих, що повертаються.
+const ORDINARY_FIGHTS_KEY := "ordinary_fights"
 
 ## Екран чорний, кімната завантажена — стара зараз зміниться на нову (D434).
 signal room_swapping
@@ -42,6 +45,9 @@ var location_flags: Dictionary = {}
 ## Що сталося в кімнатах: {імʼя кімнати MetSys: {ключ: значення}} (room_state_plan, D152).
 ## Кімнату передають явно: стан пишуть і під час вивантаження, коли MetSys уже в новій.
 var room_state: Dictionary = {}
+## D492: звичайні бої щойно повернулись (медитація або повернення в регіон) — спавнери в кімнаті, що зараз
+## відкрита, перестають писати свій старий бій: наступний вхід почне його спочатку. [param region] "" — усі регіони.
+signal ordinary_fights_reset(region: String)
 var _bootstrapped: = false
 var game_instance_id: String = ""  # Унікальний ID екземпляру Game
 static var _last_game_id: int = 0  # Статичний лічильник для генерації унікальних ID
@@ -367,6 +373,10 @@ func load_room(room_ref: String) -> void:
 	await room_preloader.wait(path)
 
 	room_swapping.emit()
+	# D492: герой повертається в регіон, з якого пішов, — його звичайні вороги знову на місцях.
+	var region: String = Regions.of_scene(path)
+	if region != Regions.of_scene(map.scene_file_path):
+		reset_ordinary_fights(region)
 	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
 	# синхронно, а MetSys.current_room одразу стає новою.
 	var old_map := map
@@ -536,6 +546,29 @@ func get_room_state(room: String, key: String, default: Variant = null) -> Varia
 
 func set_room_state(room: String, key: String, value: Variant) -> void:
 	room_state.get_or_add(room, {})[key] = value
+
+## D492: звичайний бій кімнати — повертається після медитації чи повернення в його регіон (RoomEnemySpawner.respawns).
+func register_ordinary_fight(room: String, key: String, region: String) -> void:
+	room_state.get_or_add(room, {}).get_or_add(ORDINARY_FIGHTS_KEY, {})[key] = region
+
+## D492: звичайні бої [param region] (порожній — усі) забувають убитих і живих: вороги повертаються повними.
+## Боси й сюжетні бої сюди не потрапляють — вони не зареєстровані як звичайні.
+func reset_ordinary_fights(region: String = "") -> void:
+	for room: String in room_state:
+		var fights: Dictionary = room_state[room].get(ORDINARY_FIGHTS_KEY, {})
+		for key: String in fights.keys():
+			if region == "" or fights[key] == region:
+				# Добитий бій лишає слід (RoomEnemySpawner.fight_won): сюжет, що чекає перемог (lab_corridors_complete),
+				# не відкочується, коли вороги повертаються.
+				if (room_state[room].get(key) as Dictionary).is_empty():
+					room_state[room][key + RoomEnemySpawner.WON_SUFFIX] = true
+				room_state[room].erase(key)
+				fights.erase(key)
+	ordinary_fights_reset.emit(region)
+
+## D447, D492: герой медитує на точці збереження — звичайні вороги всього світу повертаються.
+func meditate() -> void:
+	reset_ordinary_fights()
 
 func get_room_states() -> Dictionary:
 	return room_state.duplicate(true)

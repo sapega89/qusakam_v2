@@ -216,6 +216,7 @@ wave_size = 2
 wave_delay = 1.5
 trigger_area = NodePath("Fight_DunesTrigger")
 state_key = "enemies_dunes"
+respawns = true
 
 [node name="Fight_DunesTrigger" type="Area2D" parent="Fight_Dunes" unique_id=722591254]
 position = Vector2(2170, 240)
@@ -251,6 +252,7 @@ wave_size = 2
 wave_delay = 1.5
 trigger_area = NodePath("Fight_MesaTrigger")
 state_key = "enemies_mesa"
+respawns = true
 
 [node name="Fight_MesaTrigger" type="Area2D" parent="Fight_Mesa" unique_id=914293600]
 position = Vector2(2700, 240)
@@ -286,6 +288,7 @@ wave_size = 2
 wave_delay = 1.5
 trigger_area = NodePath("Fight_CaravanTrigger")
 state_key = "enemies_caravan"
+respawns = true
 
 [node name="Fight_CaravanTrigger" type="Area2D" parent="Fight_Caravan" unique_id=1054714481]
 position = Vector2(3500, 240)

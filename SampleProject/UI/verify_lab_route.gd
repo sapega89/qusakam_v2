@@ -262,7 +262,7 @@ func _save_at(point: String) -> void:
 	var ui: Node = sl.get_ui_manager()
 	DirAccess.remove_absolute(slot_path)
 	await _pad_tap(JOY_BUTTON_Y)
-	for i in 20: await process_frame
+	await _until(func() -> bool: return ui.current_state_name == "SaveGameState", 3.0)  # D447: спершу медитація
 	ck(ui.current_state_name == "SaveGameState", "%s: pad Y opens the save screen (%s)" % [point, ui.current_state_name])
 	for i in 6:
 		if FileAccess.file_exists(slot_path) and (ui.modal_layer == null or ui.modal_layer.active_modal == null):
@@ -380,7 +380,9 @@ func _initialize() -> void:
 	await _load(slot_path)
 	ck(_room() == LAB and game.player.global_position.distance_to(saved_at) < 16.0, "the load resumes at PreBoss (%s, %s)" % [_room(), game.player.global_position])
 	ck(game.map.is_fight_cleared(^"Fight_Upper") and game.map.is_fight_cleared(^"Fight_Middle") and not game.map.is_fight_cleared(^"Fight_Lower"),
-			"the two won fights stay won, the lower one waits")
+			"the two won fights count as won, the lower one waits")
+	ck(not game.map.get_node(^"Fight_Upper").fight_in_progress() and not game.map.get_node(^"Fight_Middle").fight_in_progress(),
+			"the meditation at PreBoss brought their enemies back (D492)")
 	_tough()
 	ck(await _go(1600.0), "bottom storey east through the last fight (%s)" % game.player.global_position)
 	ck(game.get_quest_flag("lab_corridors_complete"), "lab_corridors_complete")
@@ -416,6 +418,10 @@ func _initialize() -> void:
 			"the save is before the hall: corridors done, the djinn not met")
 
 	print("[5] Again: the talk (Tab), the win, the gates, out to the demo end")
+	# D492: сейв на PreBoss — медитація, тож нижній бій повернувся; герой знову пробивається крізь нього.
+	ck(not game.map.get_node(^"Fight_Lower").fight_in_progress(), "the lower fight is back after the meditation (D492)")
+	_tough()
+	ck(await _go(1600.0), "through the lower fight again (%s)" % game.player.global_position)
 	await _stick_until(1.0, func() -> bool: return _room() == BOSS, 15.0)
 	await _stick_until(1.0, func() -> bool: return _state() != "WAIT", 8.0)
 	ck(_state() == "TALK", "the talk again — it was not in the save (%s)" % _state())

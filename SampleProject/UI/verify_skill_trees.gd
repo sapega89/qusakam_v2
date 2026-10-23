@@ -165,14 +165,14 @@ func _initialize() -> void:
 	ck(player.Max_Health == hp_before - 10, "Toughness gone from max HP")
 	ck(sm.respec() == R.NOTHING_TO_RESET, "nothing learned → nothing to reset")
 
-	print("[7] Level cap 99 (D285)")
+	print("[7] Level cap %d (D285, D488)" % xp.MAX_LEVEL)
 	var jp_cap: int = sm.get_job_points()
 	var from_level: int = xp.get_level()
 	xp.add_xp(100000000)
-	ck(xp.get_level() == 99, "a flood of XP stops at level 99 (%d)" % xp.get_level())
-	ck(sm.get_job_points() - jp_cap == 99 - from_level, "one point per level up to 99 (%d)" % (sm.get_job_points() - jp_cap))
+	ck(xp.get_level() == xp.MAX_LEVEL, "a flood of XP stops at level %d (%d)" % [xp.MAX_LEVEL, xp.get_level()])
+	ck(sm.get_job_points() - jp_cap == xp.MAX_LEVEL - from_level, "one point per level up to %d (%d)" % [xp.MAX_LEVEL, sm.get_job_points() - jp_cap])
 	xp.add_xp(5000)
-	ck(xp.get_level() == 99 and xp.current_xp == 0, "XP no longer counts at 99")
+	ck(xp.get_level() == xp.MAX_LEVEL and xp.current_xp == 0, "XP no longer counts at %d" % xp.MAX_LEVEL)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

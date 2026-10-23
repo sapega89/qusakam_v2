@@ -140,7 +140,9 @@ func _update_header() -> void:
 	var xp_manager: XPManager = service_locator.get_xp_manager() if service_locator else null
 	if xp_manager:
 		_level_label.text = tr("Lv.%d") % xp_manager.get_level()
-		_next_level_value.text = tr("%d EXP") % maxi(0, xp_manager.xp_for_next_level - xp_manager.current_xp)
+		# D488: на найвищому рівні — MAX замість досвіду до наступного.
+		_next_level_value.text = tr("MAX") if xp_manager.is_max_level() \
+				else tr("%d EXP") % maxi(0, xp_manager.xp_for_next_level - xp_manager.current_xp)
 	else:
 		_level_label.text = PLACEHOLDER
 		_next_level_value.text = PLACEHOLDER
