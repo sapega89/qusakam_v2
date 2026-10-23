@@ -678,6 +678,8 @@ func _on_exit_cutscene_state(run_id: int) -> void:
 	game.set_objective("Descend to the road")
 
 	await cs.walk_hero($Descent/Edge.global_position, DESCENT_WALK_TIME)
+	# Спуск іде нижче підлоги: камера знову бачить усю нижню клітинку (D483 підняв її межу до підлоги)
+	cs.camera.limit_bottom = int($RoomInstance.get_size().y)
 	cs.set_pose(&"Climb")
 	await cs.move(cs.player, $Descent/Below.global_position, DESCENT_CLIMB_TIME, Tween.TRANS_SINE)
 	cs.set_pose(&"Idle")

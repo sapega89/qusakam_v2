@@ -442,6 +442,7 @@ func init_room():
 	var room_instance = MetSys.get_current_room_instance()
 	if is_instance_valid(room_instance):
 		room_instance.adjust_camera_limits($Player/Camera2D)
+		_raise_camera_bottom($Player/Camera2D)
 		DebugLogger.info("Game: RoomInstance знайдено: %s" % room_instance.name, "Game")
 	else:
 		push_warning("Game: No RoomInstance found in current room!")
@@ -472,6 +473,18 @@ func init_room():
 	# ВАЖЛИВО: НЕ позиціонуємо камеру вручну — вона є дочірнім вузлом гравця
 	# і слідкує за ним автоматично.
 	EventBus.room_entered.emit(map.scene_file_path.get_file().get_basename())
+
+## D483: надворі підлога стоїть на ~85 % висоти кадру — нижня межа камери піднімається до підлоги + 15 % кадру,
+## верх кадру тоді виходить за верхній край кімнати, де його закривають шари задника. Підлогу кімнати задає
+## metadata/camera_floor_y у її .tscn; кімнати без неї (усередині) тримають межі клітинок MetSys.
+const CAMERA_GROUND_SHARE := 0.15
+
+func _raise_camera_bottom(camera: Camera2D) -> void:
+	if not map.has_meta(&"camera_floor_y"):
+		return
+	var view_height: float = get_viewport().get_visible_rect().size.y / camera.zoom.y
+	camera.limit_bottom = roundi(float(map.get_meta(&"camera_floor_y")) + view_height * CAMERA_GROUND_SHARE)
+	camera.limit_top = mini(camera.limit_top, camera.limit_bottom - ceili(view_height))
 
 # ============================================================================
 # Флаги квестов, диалогов, катсцен, боссов и локаций

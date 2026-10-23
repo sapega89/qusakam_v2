@@ -16,7 +16,6 @@
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_forge.png" id="forge_art"]
 [ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/gate_passage.tscn" id="gate_passage"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png" id="anvil"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_chapel.png" id="chapel_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
@@ -27,6 +26,7 @@
 radius = 32.0
 
 [node name="City" type="Node2D" unique_id=1536537228]
+metadata/camera_floor_y = 384
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
 
@@ -111,9 +111,6 @@ texture = ExtResource("terrain_terrain")
 centered = false
 
 [node name="RoomInstance" parent="." unique_id=1633453511 instance=ExtResource("2_room")]
-
-[node name="GatePassage" parent="." unique_id=1633453600 instance=ExtResource("gate_passage")]
-position = Vector2(-407, 127)
 
 [node name="SavePoint" type="Area2D" parent="." unique_id=1461170938]
 position = Vector2(600, 280)

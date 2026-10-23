@@ -7,7 +7,7 @@ class_name ItemPickup
 ##   3. модалка підтвердження UI/Modal/ItemPickup ("You obtained: …").
 ##
 ## Дані предмета — лише з ItemDatabase. Невідомий item_id вимикає підбір,
-## нічого не вигадуючи.
+## нічого не вигадуючи. У світі предмет — блиск (D446), що саме лежить, видно лише в модалці підбору.
 
 signal picked_up(item_id: String, amount: int)
 
@@ -18,7 +18,6 @@ signal picked_up(item_id: String, amount: int)
 @export var persistent: bool = true
 
 @onready var _interactable: InteractableComponent = $Interactable
-@onready var _sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
@@ -30,8 +29,6 @@ func _ready() -> void:
 	if db == null or db.get_item(item_id).is_empty():
 		push_error("ItemPickup: unknown item_id '%s' at %s" % [item_id, get_path()])
 		_interactable.enabled = false
-		return
-	_sprite.texture = db.get_item_icon(item_id)
 
 
 func _on_interacted() -> void:

@@ -178,7 +178,7 @@ func _initialize() -> void:
 	ck(started.is_empty() and not player.event, "no raid lines, control kept (%s)" % [started])
 	ck(player.global_position.y > y0, "the hero falls after the teleport (y %.1f -> %.1f)" % [y0, player.global_position.y])
 
-	print("[8] 8c/8d: the gatehouse is a passage the hero walks through, every gate layer behind him (D314); walking east loads the City inside it")
+	print("[8] 8c/8d: the gatehouse is a passage the hero walks through, every gate layer behind him (D314), the road over its feet (D451); walking east loads the City")
 	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
@@ -190,6 +190,8 @@ func _initialize() -> void:
 	for layer: CanvasItem in room.get_node(^"GatePassage").get_children():
 		ck(_z(layer) < hero_z, "gate layer %s z %d below the hero %d (8d: the gate never covers him)" % [layer.name, _z(layer), hero_z])
 	ck(_z(room.get_node(^"GatePassage/Back")) < _z(front), "the dark wall stays behind the towers")
+	ck(room.get_node(^"GatePassage").get_index() < room.get_node(^"Terrain").get_index(),
+			"the road is drawn over the gate's feet (D451)")
 	player.global_position = Vector2(1100, 360)
 	for i in 30: await physics_frame
 	var past_tower := false
@@ -209,10 +211,7 @@ func _initialize() -> void:
 	ck(past_tower, "the hero walks past the tower, drawn in front of it")
 	ck(under_bridge, "deeper in, the hero stands inside the arch, under the bridge")
 	ck(game.map.scene_file_path.ends_with("/City.tscn"), "real move_right east loads the City (%s)" % game.map.scene_file_path)
-	var city_front: Sprite2D = game.map.get_node(^"GatePassage/Front")
-	ck(not _covers(city_front, player, true) and _covers(city_front, player, false),
-			"the City side: the hero arrives inside the same passage (x %.0f)" % player.global_position.x)
-	ck(_z(city_front) < _z(game.player.get_node(^"Sprite2D")), "the City side: the towers are behind the hero too")
+	ck(not game.map.has_node(^"GatePassage"), "the City side draws no second gate (D451)")
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
