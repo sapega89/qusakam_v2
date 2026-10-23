@@ -93,34 +93,6 @@ the history, this note keeps only what is open.
 ### B140 — Dead code: `VFXHooks.play_boss_attack_effect` and its helpers, and `EnemyLogic`'s HP-based retreat
 - **Where:** `VFXHooks.gd:202-303`; `EnemyLogic.gd:459-525` (the retreat can only run at 1 HP or less). It is removed per D131. **Severity:** code. **Found:** 2026-10-23, combat critique.
 
-### B129 — The hero's portrait is a purple square in the Game Menu
-- **Where:** Status header, Equipment "Current character", and the party card in the right column (Inventory, Equipment, Misc, Map).
-- **Expected:** Kusakam's portrait, the one the dialogue box uses (`Sprites/Player/portrait.tres`), framed as in Figma `58:719`.
-- **Got:** a flat purple square. **Evidence:** `design/shots/menu_qa/cmp_status.png`, `game_equipment.png`.
-- **Severity:** visual. **Found:** 2026-10-23, menu QA.
-
-### B130 — Status shows "—" for the primary job, weapon types and stat icons
-- **Where:** Status (`58:719`).
-- **Expected:**
-  - Primary Job shows the hero's class, Holy Warrior.
-  - Secondary Job shows the oath once one is sworn.
-  - Weapon Types shows the icons of the usable weapons.
-  - Each stat row has its icon (Figma's crossed-swords glyph).
-- **Got:** "—" in the job and weapon boxes, and empty squares instead of the stat icons. Path Action and Talent are "—" too: hide them while the hero has none.
-- **Severity:** visual / data. **Found:** 2026-10-23, menu QA.
-
-### B131 — Equipment shows an empty frame above Attributes
-- **Where:** Equipment, the middle column.
-- **Expected:** that frame shows the hero (his sprite in the current gear) or it is not there.
-- **Got:** a large empty bordered box. **Evidence:** `design/shots/menu_qa/game_equipment.png`.
-- **Severity:** visual. **Found:** 2026-10-23, menu QA.
-
-### B132 — The World Map is covered by a dense cell grid
-- **Where:** Game Menu → World Map (`metsys_map_component`).
-- **Expected:** the parchment map reads clearly (Figma `94:609`). D487 replaces it with per-region maps later.
-- **Got:** unexplored MetSys cells are drawn as a fine square pattern over the whole parchment, so the map is hard to read and the two explored cells are tiny. **Evidence:** `design/shots/menu_qa/cmp_map.png`.
-- **Severity:** visual. **Found:** 2026-10-23, menu QA.
-
 ### B127 — Nobody is laid on the operating table
 - **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
 - **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
@@ -162,7 +134,7 @@ the history, this note keeps only what is open.
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
 
-> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed.
+> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed. **B129, B130, B131, B132** fixed by `cloud/menu-qa` — one hero portrait in the Game Menu (D534), jobs and weapon icons on Status (D532), Equipment's empty frame removed (D531), unexplored map cells not drawn; rows removed.
 
 > **Round 8 (2026-10-22):** **B116** fixed by `cloud/combat-fixes` — a held or dead hero leaves combat at once (D425); row removed.
 > **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
