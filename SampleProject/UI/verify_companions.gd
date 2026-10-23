@@ -212,14 +212,18 @@ func _initialize() -> void:
 	ck(focus != null and focus.name == "Select" and menu.find_child("CompanionCards", true, false).is_ancestor_of(focus), "focus is on a companion card (%s)" % [focus])
 	ui.close_game_menu()
 	for i in 10: await process_frame
+	# Інші підказки (перше вбивство охоронцем) могли стати в чергу, поки вікна були ввімкнені — дивимось лише на свою тему.
 	hint.show_hint("choose_companions")
-	for i in 6: await process_frame
-	ck(layer.active_modal == null and not paused, "it fires once: a second time opens nothing (%s, paused %s, menu %s)" % [layer.active_modal, paused, ui.current_state_name])
+	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.current_hint != "choose_companions",
+			"it fires once: a second time queues no window and shows no banner")
+	if layer.active_modal != null:
+		layer.active_modal.cancelled.emit()
+	hint.force_hide()
 	seen.erase("choose_companions")
 	settings.tutorial_windows = false
 	hint.show_hint("choose_companions")
-	for i in 3: await process_frame
-	ck(layer.active_modal == null and hint.is_showing and hint.current_hint == "choose_companions", "Tutorial windows Off → the plain hint banner instead (%s, %s, %s)" % [layer.active_modal, hint.is_showing, hint.current_hint])
+	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.is_showing and hint.current_hint == "choose_companions",
+			"Tutorial windows Off → the plain hint banner instead (%s)" % hint.current_hint)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
