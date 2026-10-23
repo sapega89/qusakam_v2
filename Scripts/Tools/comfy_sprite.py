@@ -2694,28 +2694,26 @@ CHARACTERS = {
         + MAGENTA_BG,
     ),
     # D589: муха Ктулху — проклята лабораторією (D587): синє світіння прокляття, як у шакалів; профіль × три чверті
+    # D589 + D651: муха Ктулху — гуманоїдна (Sapega: «муха має бути гуманоїдна»): людиноподібне тіло, голова мухи,
+    # щупальця замість рота, крила; висить у повітрі. Синє світіння прокляття (D587). 2×2 зерно × вид
     "enemy_fly": dict(
         candidates=(
             "design/shots/candidates/cthulhu_fly.png",
-            [
-                (112, False, SIDE_VIEW % {"p": "its"}, "side"),
-                (113, False, SIDE_VIEW % {"p": "its"}, "side"),
-                (112, False, THREE_QUARTER % {"p": "its"}, "3/4"),
-                (113, False, THREE_QUARTER % {"p": "its"}, "3/4"),
-            ],
+            [(120, False, SIDE_VIEW % {"p": "its"}, "side"), (121, False, SIDE_VIEW % {"p": "its"}, "side"), (120, False, THREE_QUARTER % {"p": "its"}, "3/4"), (121, False, THREE_QUARTER % {"p": "its"}, "3/4")],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=112,
+        cell=(64, 96),
+        seed=120,
         colors=16,
-        who="the same cursed fly with the glossy dark green-black body, the glowing blue eyes, the buzzing wings and the "
-        "short writhing tentacles under its head",
-        base="Replace the character in picture 1 with a cursed giant fly: a bloated glossy dark green-black body, big "
-        "glowing blue compound eyes, two translucent wings raised above its back mid-buzz, thin bristly legs tucked "
-        "under it, and a cluster of short writhing dark tentacles hanging under its head in place of a mouth, faint "
-        "glowing blue spots on its back — "
+        who="the same humanoid fly-creature with the glossy green-black chitin body, the huge glowing blue compound "
+        "eyes, the writhing tentacles in place of a mouth, the thin clawed arms and the buzzing translucent wings",
+        base="Replace the character in picture 1 with a cursed humanoid fly-creature from a horror tale: a thin, "
+        "hunched human-like body of glossy green-black chitin, two long thin arms ending in hooked claws, a fly's head "
+        "with two huge glowing blue compound eyes, a cluster of short writhing dark tentacles hanging where the mouth "
+        "should be, two big translucent veined wings buzzing on its back, its spindly legs dangling as it hovers in the "
+        "air above the ground, faint glowing blue spots on its chest — "
         + PIXEL_STYLE
-        + ". It is small, no bigger than the head of the character in picture 1: the whole fly fits inside a small "
-        "square in the middle of the picture, a large empty magenta space all around it. §."
+        + ", as tall as a grown man, filling most of the height of the picture. §."
         + MAGENTA_BG,
     ),
     # D589: проклятий шакал — з кадру шакала (Crusenho, CC BY): модель лише додає сині очі й піну; спершу проба
