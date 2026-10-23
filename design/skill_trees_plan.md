@@ -174,7 +174,7 @@ Around the skills themselves the work also needs:
 - Slices 3–6 in any order. In slice 6, Soul Harvest waits for the guard bar.
 - Slice 7 runs alongside the rest.
 
-**Open:** Q86 (hotbar slots).
+**Open:** Q86 (hotbar slots, answered: D549). Icons for every skill: [[skill_icons_brief]].
 
 ## What exists today
 
