@@ -148,6 +148,7 @@ size = Vector2(40, 32)
 radius = 300.0
 
 [node name="DefaultEnemy" type="CharacterBody2D" unique_id=579402896]
+platform_floor_layers = 0
 script = ExtResource("1_enemy_script")
 
 [node name="HealthComponent" type="Node" parent="." unique_id=1376665906]

@@ -1430,6 +1430,7 @@ size = Vector2(40, 32)
 
 [node name="Player" type="CharacterBody2D" unique_id=227232328]
 z_index = 1
+platform_floor_layers = 0
 script = ExtResource("1_ecbsx")
 metadata/player = true
 

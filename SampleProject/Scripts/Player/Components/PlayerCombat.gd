@@ -84,8 +84,8 @@ var _arrow_due: bool = false
 ## Відкидання ворога поточним ударом, px (булава D203, фінішер, важкий). VFXHooks: > 0 — важке влучання.
 var knockback: float = 0.0
 var _weapon_knockback: float = 0.0
-## Висота центру хітбокса від центру героя, px (центр намальованого шлейфа).
-var _hitbox_y: float = 0.0
+## Центр хітбокса від центру героя обличчям праворуч, px: частина намальованого шлейфа перед героєм (B128).
+var hitbox_center: Vector2 = Vector2.ZERO
 ## Хват і тип зброї в руці (EquipmentManager.get_grip(), items.json category).
 var grip: StringName = &"bare"
 var _category: String = ""
@@ -132,7 +132,7 @@ func _ready() -> void:
 	apply_weapon_profile()
 
 ## Профіль удару зброї в руці (D202/D203): кулдаун і відкидання — з items.json; хітбокс — з намальованого шлейфа
-## удару (B128, WeaponView.drawn_swing_rect): від центру героя до краю шлейфа, на його висоту.
+## удару (B128, WeaponView.drawn_swing_rect): та частина шлейфа, що перед героєм, на його висоту.
 func apply_weapon_profile() -> void:
 	var equipment := ServiceLocator.get_equipment_manager()
 	var item: Dictionary = equipment.get_weapon_item_in_hand()
@@ -141,8 +141,9 @@ func apply_weapon_profile() -> void:
 	# Лук б'є стрілами (D383): хітбокс — як у голих рук (його зону б'ють навички, D142)
 	# WeaponMount — сусідній вузол: у _ready() героя @onready-поля Player ще не готові
 	var drawn: Rect2 = player.get_node(^"WeaponMount").drawn_swing_rect({} if grip == &"bow" else item)
-	_hitbox_shape().size = Vector2(drawn.end.x, drawn.size.y)
-	_hitbox_y = drawn.get_center().y
+	var from := maxf(drawn.position.x, 0.0)  # дуга, що заходить за спину, назад не б'є
+	_hitbox_shape().size = Vector2(drawn.end.x - from, drawn.size.y)
+	hitbox_center = Vector2((from + drawn.end.x) / 2.0, drawn.get_center().y)
 	if item.is_empty():
 		attack_cooldown_time = _bare_cooldown
 		_weapon_knockback = 0.0
@@ -506,8 +507,8 @@ func stagger(duration: float, from_x: float) -> void:
 
 func _set_hitbox_active(active: bool, last_direction: int) -> void:
 	if active:
-		# Хітбокс починається біля героя й тягнеться на довжину зброї вперед. Ту саму зону бʼють навички (D142).
-		hitbox.position = Vector2(_hitbox_shape().size.x / 2.0 * signi(last_direction), _hitbox_y)
+		# Хітбокс — намальований удар перед героєм (B128), за поглядом. Ту саму зону бʼють навички (D142).
+		hitbox.position = Vector2(hitbox_center.x * signi(last_direction), hitbox_center.y)
 	# Відкладено: збій героя приходить із body_entered хітбокса ворога, посеред фізичного запиту.
 	hitbox.set_deferred(&"monitoring", active)
 	hitbox.set_deferred(&"monitorable", active)

@@ -144,8 +144,10 @@ func set_invulnerable(active: bool, duration: float = 0.0) -> void:
 
 ## D443: тіла героя й ворогів зупиняють одне одного (крізь ворога — лише перекат, PlayerMover), але ніхто не стоїть
 ## на чужій голові: тіло, що лежить на іншому бійцеві, зісковзує вбік від його центру зі SLIDE_OFF_SPEED, доки не впаде.
-## Притиснуте до стіни — зсуває того, хто внизу. Кличуть після move_and_slide() герой (PlayerMover) і кожен ворог
+## Шлях убік закритий (стіна, герой поруч) — зсуває того, хто внизу, в інший бік. Кличуть після move_and_slide() герой (PlayerMover) і кожен ворог
 ## (DefaultEnemy, отже й боси) — одне правило для всіх (B125).
+## Бійці — не платформи (platform_floor_layers = 0 у Player.tscn і default_enemy.tscn): хто стоїть на іншому, не їде
+## з ним і не отримує його швидкість, коли той зникає з-під ніг. Рухомих платформ у грі немає.
 const SLIDE_OFF_SPEED := 240.0
 ## Наскільки нижче ніг шукати тіло під собою, px.
 const STANDING_PROBE := 2.0
@@ -159,8 +161,7 @@ func slide_off_bodies(delta: float) -> void:
 	var other: CombatBody2D = under.get_collider()
 	var away := 1.0 if global_position.x >= other.global_position.x else -1.0
 	var step := Vector2(away * SLIDE_OFF_SPEED * delta, 0)
-	var wall := move_and_collide(step)
-	if wall != null and not wall.get_collider() is CombatBody2D:
+	if move_and_collide(step) != null:
 		other.move_and_collide(-step)
 
 

@@ -162,7 +162,7 @@ func _put_hurt_edge(enemy: Node, x: float) -> void:
 	await physics_frame
 
 
-## [2] Удар героя кожною зброєю: хітбокс = намальований шлейф; ворог на краю шлейфа отримує удар, трохи далі — ні.
+## [2] Удар героя кожною зброєю: хітбокс = намальований шлейф перед героєм; ворог на краю шлейфа отримує удар, трохи далі — ні.
 func _hero_swings(sl: Node) -> void:
 	print("[2] The hero's swing hits what its slash trail covers (B128)")
 	var em: Node = sl.get_equipment_manager()
@@ -185,7 +185,7 @@ func _hero_swings(sl: Node) -> void:
 		await create_timer(1.2).timeout  # серія скінчилась, кулдаун минув — наступний удар перший
 		hero.mover.last_direction = 1
 		hero.velocity = Vector2.ZERO
-		var reach: float = hero.global_position.x + hero.get_node("Hitbox/CollisionShape2D").shape.size.x
+		var reach: float = hero.global_position.x + hero.combat.hitbox_center.x + hero.get_node("Hitbox/CollisionShape2D").shape.size.x / 2.0
 		for inside in [true, false]:
 			await _put_hurt_edge(target, reach - 3.0 if inside else reach + 6.0)
 			hits.clear()
@@ -198,8 +198,10 @@ func _hero_swings(sl: Node) -> void:
 					break
 			if inside:
 				var box := _hitbox_rect()
-				ck(trail.size != Vector2.ZERO and absf(box.end.x - trail.end.x) <= TOL and absf(box.position.y - trail.position.y) <= TOL and absf(box.end.y - trail.end.y) <= TOL,
-						"%s: hitbox %s = drawn trail %s" % [label, box, trail])
+				var near := maxf(trail.position.x, hero.global_position.x)  # частина шлейфа за спиною героя не б'є
+				ck(trail.size != Vector2.ZERO and absf(box.position.x - near) <= TOL and absf(box.end.x - trail.end.x) <= TOL
+						and absf(box.position.y - trail.position.y) <= TOL and absf(box.end.y - trail.end.y) <= TOL,
+						"%s: hitbox %s = drawn trail %s in front of the hero" % [label, box, trail])
 			await create_timer(0.5).timeout
 			ck(hits.size() == (1 if inside else 0), "%s: an enemy whose drawn body is %s the trail's edge is %s (%s)" % [label, "3 px inside" if inside else "6 px past", "hit" if inside else "not hit", hits])
 			await create_timer(0.8).timeout
