@@ -38,6 +38,8 @@ var fails: Array[String] = []
 var game: Node
 var sl: Node
 var assists: Array[String] = []
+## D515: натискання, поки компаньйон на полі чи йде спільний кулдаун, — відмова, не асист.
+var denied: Array[String] = []
 ## Бій → x героя, коли зʼявився перший ворог; бій → вороги, що стали на підлогу свого поверху.
 var started_at := {}
 var landed := {}
@@ -190,6 +192,7 @@ func _initialize() -> void:
 	sl = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	root.get_node("EventBus").assist_called.connect(func(id: String) -> void: assists.append(id))
+	root.get_node("EventBus").assist_denied.connect(func(id: String) -> void: denied.append(id))
 	set_meta("start_new_game", true)
 	await _boot()
 	var dm: Node = sl.get_dialogue_manager()
@@ -254,6 +257,7 @@ func _initialize() -> void:
 	for fight: String in FIGHTS:
 		ck(_alive(game.map.get_node(fight)).is_empty(), "%s: no enemy before the hero comes" % fight)
 	assists.clear()
+	denied.clear()
 	ck(await _go(1504.0), "top storey east to the ladder (%s)" % game.player.global_position)
 	await _fought("Fight_Upper")
 	await _climb_down("top → middle")
@@ -267,7 +271,9 @@ func _initialize() -> void:
 	ck(await _go(1600.0, 1200), "bottom storey east (%s)" % game.player.global_position)
 	await _fought("Fight_Lower")
 	for i in 5: await physics_frame
-	ck(assists.size() == 3, "a real F press in each fight sent an assist (%s)" % [assists])
+	# Бої йдуть один за одним швидше за спільний кулдаун (D515): частину натискань відмовлено — це правило, не збій.
+	ck(assists.size() >= 1 and assists.size() + denied.size() == 3,
+			"a real F press in each fight sent an assist or was refused under the shared cooldown (%s / denied %s)" % [assists, denied])
 	ck(game.get_quest_flag("lab_corridors_complete"), "all three fights won → lab_corridors_complete")
 	ck(game.get_objective() == "Go deeper into the laboratory", "objective (%s)" % game.get_objective())
 	ck(game.player.is_alive(), "the hero lived through the corridors")
