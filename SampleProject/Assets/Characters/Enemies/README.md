@@ -5,6 +5,8 @@
 | tank | `scorpion/sheet.png` | Crusenho desert enemies, `3 Scorpio` (idle, walk, attack, death) |
 | fast | `jackal/sheet.png` | Crusenho desert enemies, `2 Hyena` — the jackal (idle, walk, attack, death) |
 | melee | `Scripts/Systems/character-spritesheet (4).png` (unchanged, `default_enemy.tscn`) | — |
+| flying, outdoors | `vulture/sheet.png` | AI-generated (D445, D637), see `vulture/README.md` |
+| flying, caves | `bat/sheet.png` | AI-generated (D445, D637), see `bat/README.md` |
 
 **Licence: CC BY 4.0** — art by **Crusenho Agus Hennihuno** (https://crusenho.itch.io), from the pack found in
 `assets/Complete_UI_Essential_Pack_Free/` (`License.txt`, copied here as `CRUSENHO_LICENSE.txt`).
