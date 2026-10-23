@@ -2181,9 +2181,7 @@ CHARACTERS = {
             (
                 "attack",
                 [
-                    "in the same side view facing right: winding up, gripping the huge axe in both hands and lifting it up over "
-                    "his right shoulder, the same axe as in the picture: the same long straight handle, the same single "
-                    "broad steel blade with the black scorpion sign, the same size and shape, not bent, leaning back",  # D648: замах перекрутив сокиру
+                    "ROT:attack:3:0",  # D667: модель двічі перекрутила сокиру в замаху — копія піднятої сокири з кінця ряду
                     "in the same side view facing right: the huge axe swung forward and down in both hands, its blade in "
                     "front of his chest; no motion trail, no swoosh line",
                     "in the same side view facing right: follow-through, the axe blade low in front of him near the "
