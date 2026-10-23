@@ -15,6 +15,7 @@
 
 [node name="LaboratoryOutside" type="Node2D" unique_id=1870208361]
 script = ExtResource("1_lab_out")
+metadata/camera_floor_y = 384
 
 [node name="Backdrop" type="Node2D" parent="." unique_id=2038923679 instance=ExtResource("backdrop")]
 z_index = -10

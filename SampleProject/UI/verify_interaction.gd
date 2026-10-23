@@ -156,7 +156,9 @@ func _initialize() -> void:
 	pickup.picked_up.connect(func(id, _n): picked[0] = id)
 	var pcomp: InteractableComponent = pickup.get_node("Interactable")
 	ck(pcomp.action_text == "Pick up", "prompt reads \"Pick up\"")
-	ck(pickup.get_node("Sprite2D").texture != null, "sprite uses the ItemDatabase icon")
+	ck(pickup.get_node("Sprite2D").texture.resource_path == "res://SampleProject/Assets/World/pickup_sparkle.svg"
+			and pickup.get_node("Sprite2D").texture != db.get_item_icon("potion"), "on the ground it is a sparkle, not the item icon (D446)")
+	ck(pickup.get_node("AnimationPlayer").current_animation == "glint", "the sparkle glints (D446)")
 	pcomp._on_body_entered(player)
 	pcomp._unhandled_input(_press(&"interact"))
 	await process_frame

@@ -23,6 +23,15 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("plan5")
 centered = false
 
+[node name="SkyTop" type="Sprite2D" parent="Plan5"]
+texture_filter = 1
+position = Vector2(0, -96)
+scale = Vector2(1.5, 24)
+texture = ExtResource("plan5")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 4)
+
 [node name="Plan4" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.1, 1)
 autoscroll = Vector2(-3, 0)
