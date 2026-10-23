@@ -45,11 +45,14 @@ static func kill_enemy(kind: String) -> void:
 
 ## Зустрінуті люди в порядку зустрічі: {id, name і portrait (як у вікні діалогу, D321; без портрета — null), title, text}.
 static func people() -> Array:
+	var data := _people_data()
 	var by_id := {}
-	for p: Dictionary in _people_data().people:
+	for p: Dictionary in data.people:
 		by_id[p.id] = p
 	var out: Array = []
 	for id: String in _state().people:
+		if id in data.not_listed:  # D440: кодекс не веде перехожих, навіть якщо їх уже записали раніше
+			continue
 		var entry: Dictionary = by_id[id].duplicate()
 		var character: Resource = _root().get_node("DialogueQuest").CharacterDB.get_character_from_id(id)
 		entry.name = character.character_name

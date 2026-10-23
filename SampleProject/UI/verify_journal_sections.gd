@@ -119,13 +119,21 @@ func _initialize() -> void:
 	sl.get_ui_manager().close_game_menu()
 	await Kit.frames(self, 4)
 
-	print("[6] Someone without a portrait: no empty frame (D321)")
+	print("[6] A passer-by is not in the journal (D440); someone without a portrait: no empty frame (D321)")
 	JournalRecords.meet_person("VILLAGER_1")
+	ck(not JournalRecords.people().any(func(p: Dictionary) -> bool: return p.id == "VILLAGER_1"),
+			"the villager spoke, but the journal does not list him (D440)")
+	# Портрет є в кожного, кого веде кодекс, тож людину без портрета робимо лише в пам'яті — файл не змінюється.
+	var malik: Resource = load("res://dialogue_quest/characters/MALIK.tres")
+	var malik_portrait: Texture2D = malik.get(&"portrait")
+	malik.set(&"portrait", null)
+	JournalRecords.meet_person("MALIK")
 	journal = await _open_journal(sl)
 	await Kit.mouse(self, journal.get_node("%CharactersTab"))
-	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_VILLAGER_1"))
-	ck(journal.selected_id == "VILLAGER_1" and not journal._portrait_frame.visible and journal._portrait.texture == null,
-			"the villager: name and text, no portrait frame (selected %s)" % journal.selected_id)
+	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_MALIK"))
+	ck(journal.selected_id == "MALIK" and not journal._portrait_frame.visible and journal._portrait.texture == null,
+			"a person without a portrait: name and text, no portrait frame (selected %s)" % journal.selected_id)
+	malik.set(&"portrait", malik_portrait)
 	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_GRANDFATHER"))
 	ck(journal._portrait_frame.visible and journal._portrait.texture == portrait, "back to the grandfather: his portrait again")
 	sl.get_ui_manager().close_game_menu()

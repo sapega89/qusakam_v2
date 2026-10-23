@@ -10,7 +10,8 @@
 		"SUAN",
 		"DARK_PRIESTS",
 		"BRASS_COLLECTOR",
-		"FIRE_DJINN"
+		"FIRE_DJINN",
+		"VILLAGER_1"
 	],
 	"people": [
 		{
@@ -32,11 +33,6 @@
 			"id": "GRANDFATHER",
 			"title": "Kusakam's grandfather",
 			"text": "A lizardfolk elder of the Village, like his grandson. The cloak Kusakam wears was his."
-		},
-		{
-			"id": "VILLAGER_1",
-			"title": "Villager",
-			"text": "One of the people of the Village."
 		},
 		{
 			"id": "GATE_GUARD",
