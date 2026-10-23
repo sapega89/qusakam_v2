@@ -1,14 +1,14 @@
-<svg width="832" height="96" viewBox="0 0 832 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="700" height="96" viewBox="0 0 700 96" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="plate">
-<path id="Vector" d="M26 8H806L828 48L806 88H26L4 48L26 8Z" fill="url(#paint0_linear_0_77)" fill-opacity="0.94" stroke-width="2" stroke="#D4AF37"/>
-<path id="Vector_2" d="M32 14H800L818 48L800 82H32L14 48L32 14Z" stroke="#4A4552"/>
+<path id="Vector" d="M26 8H674L696 48L674 88H26L4 48L26 8Z" fill="url(#paint0_linear_0_4)" fill-opacity="0.94" stroke="#D4AF37" stroke-width="2"/>
+<path id="Vector_2" d="M32 14H668L686 48L668 82H32L14 48L32 14Z" stroke="#4A4552"/>
 <g id="Vector_3">
-<path d="M60 88H772Z" fill="black"/>
-<path d="M60 88H772" stroke="#D4AF37" stroke-opacity="0.35"/>
+<path d="M60 88H640Z" fill="black"/>
+<path d="M60 88H640" stroke="#D4AF37" stroke-opacity="0.35"/>
 </g>
 </g>
 <defs>
-<linearGradient id="paint0_linear_0_77" x1="4" y1="8" x2="4" y2="88" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint0_linear_0_4" x1="4" y1="8" x2="4" y2="88" gradientUnits="userSpaceOnUse">
 <stop stop-color="#1D1D27"/>
 <stop offset="1" stop-color="#0B0B10"/>
 </linearGradient>

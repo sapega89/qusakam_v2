@@ -92,7 +92,7 @@ production skills, targeting system, controller bindings.
 
 ## HUD v2 hero panel (D453, D476, D485): measured spec, 2026-10-23
 
-**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 162. In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. The stamina row was added on 2026-10-23 for D537, and the plate grew by 22 px. The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
+**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 220 (the plate and, under it, the F and Q chips). In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. The stamina row was added on 2026-10-23 for D537, and the plate grew by 22 px. The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
 
 **Assets:** all in `SampleProject/Assets/UI/HUD/hero_panel/`.
 
@@ -102,6 +102,7 @@ production skills, targeting system, controller bindings.
 | `portrait_ring.svg` | 104 × 92 | Gold hexagon ring around the portrait |
 | `level_diamond.svg` | 30 × 30 | Gold level badge |
 | `curl.svg` | 44 × 44 | D476 ornament. On the panel's right end it is mirrored: `flip_h`, which is Figma's rotate 180 + flip Y |
+| `chip.svg` | 52 × 46 | Small hexagon for the F and Q chips |
 
 **Layout:** positions are in Figma px from the component's top left. Scale them the way the current vitals panel is scaled (see *Player Vitals Panel*). Fonts follow the in-game font rule (`UITokens.font_px(…, true)`).
 
@@ -118,6 +119,8 @@ production skills, targeting system, controller bindings.
 | ST row | label y 106, bar y 110, h 14 | Fill `UITokens.STAMINA_FILL` (`#E67E22`) |
 | XP row | label y 126, bar y 132, h 8 | Fill accent `#D4AF37` |
 | Curl | (462, 64) 44 × 44 | `curl.svg`, `flip_h` |
+| F chip, the assist | (134, 158) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 198) with "F" |
+| Q chip, potions | (200, 158) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 182) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 198) with "Q" |
 
 **Rows:**
 - Each label is at x 134: Cormorant Bold 16, `#CFC8B0`.
@@ -127,11 +130,11 @@ production skills, targeting system, controller bindings.
 - HP, SP and ST have a 3 px top highlight of white at 25 %. XP has no highlight.
 - Colours go through `UITokens`: reuse the existing tokens, and add one only where none exists.
 
-**Not in this panel:** the potion line ("Q Potions ×N", D538). It moves to the Q slot of the hotbar v2 below.
+**The potion and the assist live here** (Sapega, 2026-10-23: «QF прибери з панелі», meaning out of the hotbar). The old "Q Potions ×N" text line (D538) becomes the Q chip, and the assist slot leaves the hotbar for the F chip.
 
 ## HUD v2 hotbar, 8 slots (D453, D476, D549): measured spec, 2026-10-23
 
-**Figma:** component `UI/HUD/Hotbar v2` `497:6587`, 912 × 124, at the bottom centre. It was redrawn from 4 slots to 8 on 2026-10-23.
+**Figma:** component `UI/HUD/Hotbar v2` `497:6587`, 780 × 124, at the bottom centre. It was redrawn from 4 slots to 8 on 2026-10-23 and holds only the 8 skills; the Q and F chips are on the hero panel.
 - Shot: `design/shots/figma_hotbar_v2_8.png`.
 - The glow of a ready slot: `design/shots/figma_hotbar_slot_ready_2x.png`.
 
@@ -139,14 +142,13 @@ production skills, targeting system, controller bindings.
 
 | File | Size | What it is |
 |---|---|---|
-| `plate.svg` | 832 × 96 | The plate |
+| `plate.svg` | 700 × 96 | The plate |
 | `slot.svg` | 64 × 56 | Skill slot hexagon |
 | `slot_ready.svg` | 83 × 75 | Gold ring of a ready slot, including the glow margin. The SVG filter is stripped (Godot drops it), so the soft gold glow is made in the engine, matching the reference shot |
 | `cooldown.svg` | 64 × 56 | Dark overlay |
 | `sp_gem.svg` | 18 × 18 | Badge for the SP cost |
 | `key_badge.svg` | 22 × 22 | Gold diamond under each slot |
 | `centre_diamond.svg` | 16 × 16 | Divider between the two groups |
-| `slot_small.svg` | 52 × 46 | The Q and F slots |
 
 The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mirrored.
 
@@ -154,13 +156,11 @@ The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mir
 
 | Element | Position, size |
 |---|---|
-| Plate | (40, 22) 832 × 96 |
-| Q, potion slot | (70, 43) 52 × 46. A 30 × 30 icon, centred. The count "×N" sits at the bottom right: Cormorant Bold 13, white. Key badge at (85, 93) with "Q" |
-| Skill slots 1–4 | x 144, 220, 296, 372; y 38; 64 × 56 each |
-| Centre diamond | (448, 62) 16 × 16 |
-| Skill slots 5–8 | x 476, 552, 628, 704; y 38 |
-| F, assist slot | (790, 43) 52 × 46. It shows the companion's portrait and the three D525 states: ready, active with the pulse, cooldown |
-| Curls | Left at (2, 48), 44 × 44. Right mirrored, with its right edge at x 910 |
+| Plate | (40, 22) 700 × 96 |
+| Skill slots 1–4 | x 78, 154, 230, 306; y 38; 64 × 56 each |
+| Centre diamond | (382, 62) 16 × 16 |
+| Skill slots 5–8 | x 410, 486, 562, 638; y 38 |
+| Curls | Left at (2, 48), 44 × 44. Right mirrored, with its right edge at x 778 |
 
 **Inside each skill slot:**
 - **Icon:** 28 × 28 at (+18, +14). The D550 painted icon once it exists; until then, today's icon.
@@ -177,4 +177,4 @@ The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mir
 
 **Behaviour:** everything `skill_hotbar.gd` does today stays. `SkillManager.SLOT_COUNT` goes from 4 to 8.
 
-**Potion:** the D538 quick slot moves here, out of the hero panel.
+**Not here:** the potion (Q) and the assist (F). They are chips under the hero panel.
