@@ -12,7 +12,7 @@ and name. ←/→ and ‹ › move between people, and Confirm or a click shows 
 pans the camera 4 s up into a new deep-blue sky over LaboratoryOutside under a low swell, then shows the main menu's title,
 the thanks and a HexButton. **Not done:** the painted illustrations (D486; the portrait stands in, layout unchanged).
 **D-IDs:** D603, D604, D605 (text below). **B rows fixed:** none.
-**Full suite:** FULL_SUITE_LINE
+**Full suite:** `SUITE: 2 FAIL` on the first run: `verify_locale` (mine, now fixed and `ALL PASS`) and `verify_onboarding` ("keyboard: a light hit does not pass Heavy", which fails the same on `origin/feature/backlog`, so it is not this branch). With the fix that leaves 1 FAIL, already present on the base.
 
 ## D-ID text (for the register; next free numbers after D602)
 
@@ -51,6 +51,12 @@ the thanks and a HexButton. **Not done:** the painted illustrations (D486; the p
   lower, title + farewell shown, main-menu title size, focus on the HexButton); `verify_lab_route.gd` — `ALL PASS`
   (waits for the finale, then pad A → main menu).
 - Shots: `design/shots/ui_moments_finale_pan.png` (mid-pan), `ui_moments_finale_end.png` (title over the cursed sky).
+
+### Suite fixes along the way
+- `verify_locale` failed 4 checks after the first run. (a) `uk.po` had no blank line after "This tree's JP cap is reached (%d JP).", so
+  `po_sync.py` swallowed the key and dropped it from `en.po`. The separator is restored and the key is back in both files.
+  (b) The card's placeholder texts ("CITY GATES", "THE COMPANION", "Name") are removed from the scene, since the script fills them.
+  (c) The locale walk calls `show_notification(level)`, which is kept as the public entry point (it queues).
 
 ### Other
 - `SampleProject/UI/capture_ui_moments.gd -- journal|level_up|finale` makes all the shots.
