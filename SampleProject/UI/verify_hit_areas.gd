@@ -17,6 +17,7 @@ const KINDS := {
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn": "tank",
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn": "archer",
 	"res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn": "",
+	"res://SampleProject/Scenes/Characters/Bosses/scorpicore_warrior.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn": "",
 }
 

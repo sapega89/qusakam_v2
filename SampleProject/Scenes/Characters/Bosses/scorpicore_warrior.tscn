@@ -151,11 +151,11 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(63, 150)
+size = Vector2(67.5, 160.5)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(120, 153)
+size = Vector2(127.5, 160.5)
 
 [sub_resource type="AnimationLibrary" id="Lib"]
 _data = {
@@ -178,7 +178,7 @@ moves = Array[Dictionary]([{"kind": "combo", "max_range": 69.0, "min_range": 0.0
 pattern = PackedStringArray("combo", "slam", "combo", "charge")
 pattern_phase2 = PackedStringArray("combo", "charge", "slam", "combo", "slam")
 preferred_range = 60.0
-melee_reach = 63.0
+melee_reach = 67.5
 phase2_windup = 0.75
 phase2_speed = 1.3
 
@@ -203,9 +203,9 @@ position = Vector2(0, -20)
 shape = SubResource("Shape_detection")
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(31.5, -57)
+position = Vector2(33.75, -59.25)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(1.5, -58.5)
+position = Vector2(5.25, -59.25)
 shape = SubResource("Shape_hurt")

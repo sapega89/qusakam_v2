@@ -644,14 +644,14 @@ position = Vector2(680, 368)
 position = Vector2(8, 384)
 
 [node name="ScorpionStand" type="Marker2D" parent="Marks" unique_id=1174096695]
-position = Vector2(600, 368)
+position = Vector2(740, 384)
 
 [node name="ScorpionOut" type="Marker2D" parent="Marks" unique_id=1174096696]
-position = Vector2(760, 368)
+position = Vector2(840, 384)
 
 [node name="GiantScorpion" parent="." unique_id=1174096697 instance=ExtResource("16_scorpion")]
 visible = false
-position = Vector2(760, 368)
+position = Vector2(840, 384)
 
 [node name="ScorpicoreWarrior" parent="." unique_id=1635224286 instance=ExtResource("15_wdyt7")]
 process_mode = 4
