@@ -1,9 +1,9 @@
 {
-	"_note": "Enemy variety (D495, D560): sizes, elites, the shield-bearer. Read by Scripts/Gameplay/EnemyVariety.gd.",
+	"_note": "Enemy variety (D495, D560): sizes, elites, the shield-bearer. Read by Scripts/Gameplay/EnemyVariety.gd. XP stays 1.0: the D297 curve puts level 5 on the last City Gates kill with 15 XP to spare.",
 	"sizes": {
-		"small": {"scale": 0.8, "health": 0.7, "damage": 0.8, "speed": 1.15, "xp": 0.7},
+		"small": {"scale": 0.8, "health": 0.7, "damage": 0.8, "speed": 1.15, "xp": 1.0},
 		"medium": {"scale": 1.0, "health": 1.0, "damage": 1.0, "speed": 1.0, "xp": 1.0},
-		"large": {"scale": 1.3, "health": 1.8, "damage": 1.3, "speed": 0.85, "xp": 1.5}
+		"large": {"scale": 1.3, "health": 1.8, "damage": 1.3, "speed": 0.85, "xp": 1.0}
 	},
 	"size_weights": {"small": 1, "medium": 2, "large": 1},
 	"elite": {
@@ -11,7 +11,7 @@
 		"health": 2.5,
 		"damage": 1.5,
 		"scale": 1.1,
-		"xp": 2.0,
+		"xp": 1.0,
 		"outline_color": "ffcf5a",
 		"outline_alpha_min": 0.45,
 		"outline_alpha_max": 0.85

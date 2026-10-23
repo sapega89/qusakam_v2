@@ -201,11 +201,11 @@ func _placements() -> void:
 	var mesa: Array = map.get_node(^"Fight_Mesa").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
 	ck(mesa.slice(2) == ["shield", "archer"], "Mesa: the second wave is a shield-bearer in front and an archer behind (%s)" % [mesa])
 	var caravan: Array = map.get_node(^"Fight_Caravan").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
-	ck(caravan.has("shield") and caravan.size() == 5, "Caravan (guards the chest): a big group with a shield-bearer (%s)" % [caravan])
-	var no_rolls := true
-	for spawner in map.find_children("*", "RoomEnemySpawner", true, false):
-		no_rolls = no_rolls and not spawner.elite_rolls
-	ck(no_rolls, "DesertRoad: no random elites before the lone one has taught them")
+	ck(caravan.has("shield") and caravan.size() == 4, "Caravan (guards the chest): a big group with a shield-bearer (%s)" % [caravan])
+	var spawner_script: Script = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
+	var spawners := map.get_children().filter(func(n: Node) -> bool: return n.get_script() == spawner_script)
+	ck(spawners.size() == 6 and spawners.all(func(n: Node) -> bool: return not n.elite_rolls),
+			"DesertRoad: no random elites before the lone one has taught them (%d fights)" % spawners.size())
 	var story: Node = map.get_node(^"EnemySpawner")
 	var story_sizes: Array = story.spawn_points.map(func(p: Node) -> String: return story.variant_size(p))
 	ck(story_sizes.all(func(s: String) -> bool: return s == "medium"), "the story fight keeps medium sizes (%s)" % [story_sizes])

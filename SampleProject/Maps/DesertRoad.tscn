@@ -217,13 +217,13 @@ state_key = "enemies_loneshield"
 respawns = true
 
 [node name="Fight_LoneShieldTrigger" type="Area2D" parent="Fight_LoneShield"]
-position = Vector2(1450, 240)
+position = Vector2(1650, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneShield/Fight_LoneShieldTrigger"]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneShield"]
-position = Vector2(1650, 368)
+position = Vector2(1760, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 size = "medium"
@@ -274,11 +274,6 @@ enemy_type = "melee"
 position = Vector2(2330, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
-
-[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Dunes" unique_id=1371368787]
-position = Vector2(2410, 368)
-script = ExtResource("8_spawn_point")
-enemy_type = "melee"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Dunes" unique_id=758727549]
 position = Vector2(2490, 368)
@@ -341,11 +336,6 @@ shape = SubResource("RectangleShape2D_fight")
 position = Vector2(3640, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
-
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Caravan" unique_id=1431784635]
-position = Vector2(3720, 368)
-script = ExtResource("8_spawn_point")
-enemy_type = "melee"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Caravan" unique_id=1077175829]
 position = Vector2(3800, 368)
