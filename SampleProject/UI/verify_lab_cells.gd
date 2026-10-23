@@ -252,6 +252,7 @@ func _initialize() -> void:
 	Input.parse_input_event(_key(KEY_F, false))
 	for i in 10: await physics_frame
 	ck(assists.size() == 1 and assists[0] in ["alisia", "astrit", "urizen"], "a real F press calls a companion's assist (%s)" % [assists])
+	cm.toggle_party("astrit")  # назад у табір: пропуск знайомства порівнює загін з цим проходом
 
 	print("[5] The acquaintance skipped with a real pad Y hold, from the same start")
 	for f: String in game.get_quest_flags().keys():
