@@ -31,41 +31,46 @@ TINT = {
     "warden": (18, 52, 52),
 }
 # (вміння, дерево, джерело D&D / Pathfinder, що намалювати, відтінок); None — еталонна руна
-SKILLS = [
+SKILLS = [  # Sapega 2026-10-23: «для кожної іконки треба особистий промт» — склад і що в центрі, окремо для кожної
     ("Searing Hex", "dark", "Touch of Corruption", None, None),
     (
         "Fire Strike",
         "holy",
         "Searing Smite",
-        "a roaring burst of fire shaped like a slashing arc",
+        "a crescent-shaped burst of fire sweeping from the upper right to the lower left like the trail of a blow, bright "
+        "at its leading edge, darker ember tips, painted volume; the crescent fills the square and nothing else is there",
         "orange",
     ),
     (
         "Electric Strike",
         "holy",
         "Thunderous Smite",
-        "a jagged bolt of lightning crackling with sparks",
+        "a single jagged lightning bolt striking down diagonally through the centre, branching into thin crackling arcs, "
+        "a blue-white core with a pale blue halo",
         "blue-white",
     ),
     (
         "Healing Palm",
         "holy",
         "Lay on Hands",
-        "a laying-on of hands: an open palm with soft light pouring out of it",
+        "an open palm facing the viewer in the centre, fingers slightly spread, soft golden light pooling in the palm and "
+        "rising from it as small motes; the hand is the only figure",
         "golden",
     ),
     (
         "Radiant Smite",
         "paladin",
         "Divine Smite",
-        "a radiant burst of holy light with a small sunburst sigil at its heart",
+        "a sunburst of white-gold light bursting down from the top centre, a small eight-pointed holy sigil at its heart, "
+        "rays fanning out to the edges",
         "white-gold",
     ),
     (
         "Dervish Whirl",
         "warden",
         "Whirlwind",
-        "a spinning whirlwind of sand and wind",
+        "a spinning funnel of sand and wind in the centre, circling streaks of sand and small flying grit, a darker eye at "
+        "its core",
         "sand-yellow",
     ),
 ]
@@ -75,23 +80,34 @@ TO_GREEN = (
     "square behind them with a plain flat bright green background (#00FF00) right to the edges: no stone, no texture, no "
     "border, no shadow. No text."
 )
-RESTYLE = (
-    "Keep exactly this icon's painting style: matte, muted and desaturated, soft shading, no shine and no glow, on the "
-    "same plain flat bright green background right to the edges. Replace the rune and its fire with {subject}, in a pale "
-    "{tint} tint. The element that carries the meaning sits exactly in the centre of the square, anything else around it. "
-    "One clear subject, readable at a glance. No weapon as the "
-    "subject; if a figure helps, a small faceless generic silhouette, never a lizard; no rune, no text, no border."
+# Sapega 2026-10-23: «вогонь якийсь плоский, на попередньому арті краще було… і людина тут ні до чого» — кожну іконку
+# спершу малюємо на камені (об'єм, світлотінь), потім окремою правкою знімаємо камінь; жодних фігурок на ефектах
+STONE_RESTYLE = (
+    "Keep exactly this icon's style: the Diablo II look, the dark weathered stone square filling the whole icon, the "
+    "gritty texture, the soft vignette, muted desaturated colours, painted volume and soft shading, matte with no shine "
+    "and no glow, no frame. Replace the rune and its fire with {subject}, in a pale {tint} tint. The element that carries "
+    "the meaning sits exactly in the centre, anything else around it. One clear subject, readable at a glance. No weapon "
+    "as the subject, no people, no figures, no faces (a lone hand only where the skill is a touch), no rune, no text."
 )
+CLEAR_BG = (
+    "Keep the painted subject exactly as it is: the same shapes, painted volume, shading and colours, centred in the "
+    "square. Replace the whole stone square behind it with a plain flat bright green background (#00FF00) right to the "
+    "edges: no stone, no texture, no border, no shadow. Remove any people or figures. No text."
+)
+STONE = {"Fire Strike": "design/shots/candidates/picks/icon_fire_stone.png"}  # кам'яні кадри, які схвалив Sapega
 
 
 def key_green(rgb):
-    """Зелене тло → прозоре; м'який край без зеленого ореолу (домішку зеленого прибираємо)."""
+    """Тло → прозоре. Колір тла міряємо з рамки кадру (модель малює «#00FF00» неточно, приглушено), альфа — за
+    відстанню до нього з м'яким краєм; із краю прибираємо зелену домішку."""
     f = rgb.astype(np.float32)
-    r, g, b = f[..., 0], f[..., 1], f[..., 2]
-    m = g - np.maximum(r, b)
-    alpha = np.clip(1.0 - (np.clip(m / 255.0, 0, 1) - 0.25) / 0.4, 0, 1)
+    border = np.concatenate([f[:8].reshape(-1, 3), f[-8:].reshape(-1, 3), f[:, :8].reshape(-1, 3), f[:, -8:].reshape(-1, 3)])
+    bg = np.median(border, axis=0)
+    dist = np.linalg.norm(f - bg, axis=2)
+    alpha = np.clip((dist - 45.0) / 70.0, 0, 1)
     out = f.copy()
-    out[..., 1] = g - np.clip(m, 0, None)  # зелений не більший за червоний чи синій
+    g_over = out[..., 1] - np.maximum(out[..., 0], out[..., 2])
+    out[..., 1] -= np.clip(g_over, 0, None)  # зелений не більший за червоний чи синій: тло пофарбувало краї
     return np.dstack([out.clip(0, 255), alpha * 255]).astype(np.uint8)
 
 
@@ -133,31 +149,29 @@ def raw_path(skill):
 
 
 def main():
+    """Що вже є — не перемальовуємо: сирий зелений кадр (raw) лишається; кам'яний кадр — лише знімаємо камінь;
+    решта — камінь, потім зняти камінь. Аргументи — назви вмінь (за замовчуванням ті, яких ще немає)."""
     base = np.asarray(Image.open(BASE).convert("RGBA"))
     mp = base.shape[0] * base.shape[1] / 1048576
-    hexm = run(edit_graph(TO_GREEN, 500, upload(base, "icon_base.png"), mp)).astype(
-        np.uint8
-    )
-    hex_name = upload(
-        np.dstack([hexm, np.full(hexm.shape[:2], 255, np.uint8)]),
-        "icon_base_green.png",
-    )
-    raw = [hexm]
-    print("generated", SKILLS[0][0], flush=True)
-    for ki, (_, _, _, subject, tint) in enumerate(SKILLS[1:], start=1):
-        raw.append(
-            run(
-                edit_graph(
-                    RESTYLE.format(subject=subject, tint=tint), 500 + ki, hex_name, mp
-                )
-            ).astype(np.uint8)
-        )
-        print("generated", SKILLS[ki][0], flush=True)
-    free()
+    base_name = upload(base, "icon_base.png")
+    want = [s for s in SKILLS if s[0] in sys.argv[1:]] or [s for s in SKILLS if not os.path.exists(raw_path(s[0]))]
     os.makedirs(os.path.join(ICONS_OUT, "raw"), exist_ok=True)
-    for (skill, *_), img in zip(SKILLS, raw):
-        Image.fromarray(img).save(raw_path(skill))
-    sheet_from(raw)
+    for ki, (skill, _, _, subject, tint) in enumerate(SKILLS):
+        if (skill, _, _, subject, tint) not in want:
+            continue
+        if skill in STONE:
+            stone = np.asarray(Image.open(STONE[skill]).convert("RGB"))
+        elif subject is None:
+            stone = base[..., :3]
+        else:
+            stone = run(edit_graph(STONE_RESTYLE.format(subject=subject, tint=tint), 600 + ki, base_name, mp)).astype(np.uint8)
+            Image.fromarray(stone).save(raw_path(skill).replace(".png", "_stone.png"))
+        stone_name = upload(np.dstack([stone, np.full(stone.shape[:2], 255, np.uint8)]), "icon_stone.png")
+        green = run(edit_graph(CLEAR_BG, 700 + ki, stone_name, mp)).astype(np.uint8)
+        Image.fromarray(green).save(raw_path(skill))
+        print("generated", skill, flush=True)
+    free()
+    sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
 
 
 if __name__ == "__main__":
