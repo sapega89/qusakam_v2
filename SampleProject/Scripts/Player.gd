@@ -38,6 +38,9 @@ var defeat_handler: Callable
 @onready var weapon_view: Node2D = $WeaponMount
 ## Бібліотека кадрів зброї, з якої зараз грають анімації тіла (&"" — базові кадри), BACKLOG 42.
 var _body_library: StringName = &""
+## Буфер перекату (D456): натиснутий завчасно чекає стільки секунд (6 кадрів фізики).
+const ROLL_BUFFER := 0.1
+var _roll_buffer: float = 0.0
 
 # Рух винесено в PlayerMover (speed_min/max, jump_velocity, gravity тощо).
 # last_direction лишаємо тут як forwarding-властивість, бо на нього посилаються
@@ -112,6 +115,9 @@ func _physics_process(delta: float) -> void:
 	# Гравітація, стрибок, горизонтальний рух, move_and_slide() та детекція
 	# приземлення тепер живуть у PlayerMover (SRP: Player.gd відповідає лише
 	# за стан здоров'я/анімацію/атаку, PlayerMover — за фізику руху).
+	if _roll_buffer > 0.0:
+		_roll_buffer -= delta
+		_try_roll()
 	mover.locked = combat.locks_movement()
 	mover.physics_move(delta)
 
@@ -183,6 +189,20 @@ func _physics_process(delta: float) -> void:
 
 	_update_facing()
 
+## Перекат (D200); посеред удару — зриває його (D456). Натиснутий завчасно (збій, каст, ривки ще не повернулись,
+## другий ривок ще рано) — чекає ROLL_BUFFER с у _physics_process і починається, щойно можна.
+func _try_roll() -> void:
+	if not mover.can_roll() or (combat.owns_animation() and not combat.can_cancel_attack()):
+		return
+	_roll_buffer = 0.0
+	if combat.can_cancel_attack():
+		combat.cancel_attack()
+	mover.start_roll()
+	animation = &"Roll"
+	play_body(&"Roll")
+	$Sprite2D.modulate.a = ROLL_ALPHA
+
+
 ## Кнопка асисту зараз натиснута (для фронту натискання тригера).
 var _assist_down := false
 
@@ -206,16 +226,15 @@ func _unhandled_input(ev: InputEvent) -> void:
 		return
 	if ev.is_action_pressed(&"dodge") and not event:
 		combat.cancel_draw()  # перекат зриває натяг лука (D382)
-		if combat.owns_animation():
-			return
-		if mover.start_roll():
-			animation = &"Roll"
-			play_body(&"Roll")
-			$Sprite2D.modulate.a = ROLL_ALPHA
+		_roll_buffer = ROLL_BUFFER
+		_try_roll()
 		return
 	# Блок / парирування (D264): поки кнопку тримають; починається, щойно герой вільний (PlayerCombat).
+	# Посеред удару блок зриває його (D456); натиснутий завчасно — тримають, тож починається, щойно можна.
 	if ev.is_action(&"block"):
 		combat.block_held = ev.is_pressed() and not event
+		if combat.block_held and combat.can_cancel_attack():
+			combat.cancel_attack()
 		return
 	# Лук (D380): кнопку удару чи важкого відпустили — заряджений постріл або лук опускається.
 	if ev.is_action_released(&"attack") or ev.is_action_released(&"heavy_attack"):

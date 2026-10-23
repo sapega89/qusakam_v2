@@ -72,7 +72,7 @@ func _initialize() -> void:
 	ck(is_equal_approx(enemies[0].global_position.x, x_before + 100.0), "an enemy moves with its room (%.1f → %.1f)" % [x_before, enemies[0].global_position.x])
 	road.position.x -= 100.0
 
-	print("[0b] An enemy dropped onto the player falls through to the floor (B58, D197)")
+	print("[0b] An enemy dropped onto the player slides off to the floor (B58, D443)")
 	var dropped = enemies[3]
 	dropped.set_physics_process(true)
 	game.player.global_position = Vector2(dropped.global_position.x, game.player.global_position.y)
@@ -80,7 +80,7 @@ func _initialize() -> void:
 	await create_timer(0.3).timeout
 	dropped.global_position = game.player.global_position + Vector2(0, -60)
 	dropped.velocity = Vector2.ZERO
-	await create_timer(1.0).timeout
+	await create_timer(2.0).timeout  # D443: зісковзує з героя, а з ворогів поруч — теж
 	ck(dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0,
 			"the enemy stands on the floor, not on the player (enemy y %.1f, floor-level %.1f, player y %.1f)"
 			% [dropped.global_position.y, points[3].global_position.y, game.player.global_position.y])
@@ -95,11 +95,16 @@ func _initialize() -> void:
 		await physics_frame
 	await create_timer(0.6).timeout  # невразливість після останнього удару минула
 	var target = enemies[0]
+	# Сусіди — подалі: зона-ціль = намальоване тіло (B128), і удар по цілі зачепив би й того, хто стоїть поруч
+	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
+	var parked_at: Array = parked.map(func(e: Node) -> Vector2: return e.global_position)
+	for e in parked:  # і не під довгою алебардою (134 px, D268), і не впирають відкинутого ворога булавою
+		e.global_position.x = target.global_position.x - 600
 	var hits: Array = []
 	target.damage_token.connect(func(d: int) -> void: hits.append(d))
 	var hp_before: int = target.current_health
 	var dmg: int = game.player.combat.hit_damage()
-	game.player.global_position = target.global_position + Vector2(-26, 0)
+	game.player.global_position = target.global_position + Vector2(-30, 0)
 	game.player.velocity = Vector2.ZERO
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(1)
@@ -111,7 +116,7 @@ func _initialize() -> void:
 	print("[1b] An attack facing away misses")
 	hits.clear()
 	hp_before = target.current_health
-	game.player.global_position = target.global_position + Vector2(-26, 0)
+	game.player.global_position = target.global_position + Vector2(-30, 0)
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(-1)
 	await create_timer(0.6).timeout
@@ -120,7 +125,7 @@ func _initialize() -> void:
 	print("[1e] An attack in the air lands (it used to be cancelled by Jump / Fall)")
 	await create_timer(0.3).timeout
 	hits.clear()
-	game.player.global_position = target.global_position + Vector2(-26, -6)
+	game.player.global_position = target.global_position + Vector2(-30, -6)
 	game.player.velocity = Vector2(0, -150)
 	await physics_frame
 	game.player.combat.perform_attack(1)
@@ -139,7 +144,7 @@ func _initialize() -> void:
 	ck(armed == dmg + int(sword.stats.attack), "iron_sword adds its attack %d (%d → %d)" % [int(sword.stats.attack), dmg, armed])
 	hits.clear()
 	hp_before = target.current_health
-	game.player.global_position = target.global_position + Vector2(-26, 0)
+	game.player.global_position = target.global_position + Vector2(-30, 0)
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(1)
 	await create_timer(0.6).timeout
@@ -156,10 +161,6 @@ func _initialize() -> void:
 			"the halberd is drawn: cooldown %.1f" % game.player.combat.attack_cooldown_time)
 	target.current_health = target.Max_Health  # після [1]–[1c] у цілі 25 HP — алебарда (48) її б добила
 	target.set_physics_process(false)  # стоїть на місці, поки міряємо дальність
-	var parked: Array = enemies.filter(func(e: Node) -> bool: return e != target)
-	var parked_at: Array = parked.map(func(e: Node) -> Vector2: return e.global_position)
-	for e in parked:  # сусіди не під довгою алебардою (134 px, D268) і не впирають відкинутого ворога булавою
-		e.global_position.x = target.global_position.x - 600
 	hits.clear()
 	game.player.global_position = target.global_position + Vector2(-70, 0)
 	await create_timer(0.1).timeout
@@ -172,7 +173,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(gm.player_state.weapon_in_hand == "mace", "equipping the mace draws it (D475) (%s)" % gm.player_state.weapon_in_hand)
 	ck(not InputMap.has_action(&"weapon_next") and not InputMap.has_action(&"weapon_prev"), "D475: no weapon-switch action")
-	game.player.global_position = target.global_position + Vector2(-26, 0)
+	game.player.global_position = target.global_position + Vector2(-30, 0)
 	await create_timer(0.1).timeout
 	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає
 	var x_before_hit: float = target.global_position.x
@@ -230,6 +231,9 @@ func _initialize() -> void:
 	print("[2c] Enemy attack: wind-up, then the hitbox in front (B59, D198)")
 	var attacker = enemies[1]
 	var buddy = enemies[2]
+	for e in enemies:  # D443: тіла тверді — герой, поставлений у сусіда, розштовхувався б із ним
+		if e != attacker:
+			e.global_position.x = attacker.global_position.x + 600
 	attacker.combo_hits = 1  # тут — один удар D198; серії (D265) — verify_souls_combat
 	var hits_p: Array = []
 	game.player.damage_token.connect(func(d: int) -> void: hits_p.append(d))
@@ -337,7 +341,7 @@ func _initialize() -> void:
 	var tank = enemies[0]
 	tank._apply_stats(load("res://SampleProject/Resources/Enemies/enemy_stats_tank.tres"))
 	tank.current_health = tank.Max_Health
-	tank.global_position = Vector2(pl.global_position.x + 50, tank.global_position.y)
+	tank.global_position = Vector2(pl.global_position.x + 40, tank.global_position.y)  # B128: удар бандита-сцени сягає 34.5 px
 	await create_timer(0.6).timeout
 	tank.enemy_logic.last_direction = -1
 	tank.enemy_logic.perform_attack()
@@ -364,16 +368,17 @@ func _initialize() -> void:
 	ck(tank.current_health == tank_hp - 20, "from behind, full damage (%d → %d)" % [tank_hp, tank.current_health])
 	tank.global_position.x = pl.global_position.x - 400
 	var fast = enemies.filter(func(e: Node) -> bool: return e.enemy_stats.enemy_type == "fast")[0]
-	fast.global_position = Vector2(pl.global_position.x + 110, fast.global_position.y)
 	fast.set_physics_process(true)  # ривок рухає тіло
 	await create_timer(0.6).timeout
+	# Ставимо вже після очікування: живий AI за 0.6 с відходить (B128: укус 34.5 + ривок 60 + пів героя 12 > 100)
+	fast.global_position = Vector2(pl.global_position.x + 100, fast.global_position.y)
 	type_hits.clear()
 	var fast_x0: float = fast.global_position.x
 	fast.enemy_logic.last_direction = -1
 	fast.enemy_logic.perform_attack()
 	await create_timer(fast.attack_windup + fast.attack_active_time + 0.1).timeout
 	ck(fast_x0 - fast.global_position.x >= 40.0, "the fast enemy lunges forward (%.0f px)" % (fast_x0 - fast.global_position.x))
-	ck(type_hits.size() == 1, "the lunge reaches a hero 110 px away (%s)" % [type_hits])
+	ck(type_hits.size() == 1, "the lunge reaches a hero 100 px away (%s)" % [type_hits])
 	fast.set_physics_process(false)
 	for e in enemies:
 		e.set_physics_process(true)

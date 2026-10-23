@@ -56,7 +56,7 @@ const HOOK_LIFT := 12.0
 const SMEAR_RADIUS := 32.0
 const SMEAR_LENGTH := 72.0
 ## Дуга й «вибух» кулака — на стільки більші за довжину зброї (Sapega 2026-10-21: «аури удару досить маленькі»).
-## Хітбокс зброї (items.json reach) = drawn_reach(), перевіряє verify_souls_combat [12].
+## Хітбокс удару = drawn_swing_rect() (B128), перевіряє verify_hit_areas.
 const SMEAR_SCALE := 1.3
 
 ## Кути, градуси: 0 — вістрям угору, більше — вперед за поглядом.
@@ -320,29 +320,67 @@ func _recover(target: Node2D) -> void:
 func _spawn_smear(kind: StringName, upward: bool, size: float) -> void:
 	var trail: Node2D = SLASH_TRAIL_SCENE.instantiate()
 	player.add_child(trail)
-	var at: Vector2
-	var scale_by: float
-	match kind:
-		&"arc":
-			at = SMEAR_CENTER
-			scale_by = _reach() / SMEAR_RADIUS * size * SMEAR_SCALE
-		&"thrust":
-			at = HAND_STRIKE
-			scale_by = size
-		_:
-			at = PUNCH_AT - Vector2(0, HOOK_LIFT if upward else 0.0)
-			scale_by = 1.5 * size * SMEAR_SCALE  # піксель героя
+	var at := _smear_at(kind, upward)
+	var scale_by := _smear_scale(kind, size, 0.0 if kind == &"punch" else _reach())  # голі руки — спрайта зброї немає
 	trail.position = Vector2(at.x * scale.x, at.y)
 	trail.scale = Vector2(scale_by * scale.x, scale_by)
 	trail.play(kind, upward and kind == &"arc")
 
 
-## Докуди від центру героя сягає намальований звичайний удар зброї в руці, px: дуга — від плеча на SMEAR_SCALE
-## довжини зброї, укол — кулак на ударі + зброя + випад. Хітбокс (items.json reach) мусить бути таким самим (D268).
-func drawn_reach() -> float:
-	if _thrust():
-		return HAND_STRIKE.x + _reach() + thrust_reach
-	return SMEAR_CENTER.x + _reach() * SMEAR_SCALE
+## Точка шлейфа [param kind] від центру героя, обличчям праворуч.
+func _smear_at(kind: StringName, upward: bool) -> Vector2:
+	match kind:
+		&"arc":
+			return SMEAR_CENTER
+		&"thrust":
+			return HAND_STRIKE
+	return PUNCH_AT - Vector2(0, HOOK_LIFT if upward else 0.0)
+
+
+## Масштаб шлейфа [param kind] (див. _spawn_smear); [param length] — довжина зброї, px світу.
+func _smear_scale(kind: StringName, size: float, length: float) -> float:
+	match kind:
+		&"arc":
+			return length / SMEAR_RADIUS * size * SMEAR_SCALE
+		&"thrust":
+			return size
+	return 1.5 * size * SMEAR_SCALE  # піксель героя
+
+
+## Що намальовано звичайним ударом зброї [param item] ({} — голі руки): непрозорі межі шлейфа, px від центру героя
+## обличчям праворуч (B128). Хітбокс удару (PlayerCombat) — від центру героя до краю цього шлейфа, на його висоту.
+func drawn_swing_rect(item: Dictionary) -> Rect2:
+	var kind := &"punch"
+	var size := 1.0
+	var length := 0.0
+	if not item.is_empty():
+		length = load(TEXTURE % item.id).get_height() * sprite.scale.y
+		kind = &"thrust" if String(item.category) in THRUST else &"arc"
+		if kind == &"thrust":
+			size = (length + thrust_reach) / SMEAR_LENGTH  # як _stab без фінішера
+	var scale_by := _smear_scale(kind, size, length)
+	var frames := _trail_rect(kind)
+	return Rect2(_smear_at(kind, false) + frames.position * scale_by, frames.size * scale_by)
+
+
+## Непрозорі межі кадрів шлейфа [param kind] у px SlashTrail (до масштабу), як їх ставить SlashTrail.play.
+static func _trail_rect(kind: StringName) -> Rect2:
+	if _trail_rects.has(kind):
+		return _trail_rects[kind]
+	var trail: Node2D = SLASH_TRAIL_SCENE.instantiate()
+	var frames: SpriteFrames = trail.get_node(^"Sprite").sprite_frames
+	trail.free()
+	var out := Rect2()
+	for i in frames.get_frame_count(kind):
+		var image: Image = frames.get_frame_texture(kind, i).get_image()
+		var used := Rect2(image.get_used_rect())
+		used.position += Vector2(0, -image.get_height() / 2.0) if kind == &"thrust" else -Vector2(image.get_size()) / 2.0
+		out = used if i == 0 else out.merge(used)
+	_trail_rects[kind] = out
+	return out
+
+
+static var _trail_rects: Dictionary = {}
 
 
 ## Довжина зброї в руці, px світу (спрайт ×1.5 — як герой).

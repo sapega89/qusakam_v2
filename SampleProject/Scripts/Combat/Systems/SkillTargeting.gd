@@ -12,16 +12,17 @@ const ALLIES_GROUP := &"allies"
 ## Прямокутник хітбокса атаки в світових координатах, у бік [param direction] (±1).
 static func attack_area(player: Node2D, direction: int) -> Rect2:
 	var shape: RectangleShape2D = player.get_node(^"Hitbox/CollisionShape2D").shape
-	var offset := Vector2(shape.size.x / 2.0 * direction, 0)  # як PlayerCombat._set_hitbox_active (D203)
+	var center: Vector2 = player.combat.hitbox_center
+	var offset := Vector2(center.x * direction, center.y)  # як PlayerCombat._set_hitbox_active (D203, B128)
 	return Rect2(player.global_position + offset - shape.size / 2.0, shape.size)
 
 
-## Живі вороги, чия колізія перетинає зону удару перед героєм.
+## Живі вороги, чия зона-ціль (Hurtbox, B128 — намальоване тіло) перетинає зону удару перед героєм.
 static func enemies_in_front(player: Node2D) -> Array[Node]:
 	var area := attack_area(player, player.last_direction)
 	var out: Array[Node] = []
 	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
-		if enemy.is_alive() and area.intersects(_body_rect(enemy)):
+		if enemy.is_alive() and area.intersects(enemy.hurt_rect()):
 			out.append(enemy)
 	return out
 

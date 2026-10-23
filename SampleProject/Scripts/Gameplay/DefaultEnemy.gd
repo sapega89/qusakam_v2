@@ -37,6 +37,7 @@ var health_bar: HealthBar = null  # Unified HealthBar (ЭТАП 2.2 ✅)
 @onready var body_collision: CollisionShape2D = $CollisionShape2D
 @onready var hitbox_collision: CollisionShape2D = $hitbox/CollisionShape2D
 @onready var hitbox_damage: DamageApplier = $hitbox/DamageApplier
+@onready var hurt_collision: CollisionShape2D = $Hurtbox/CollisionShape2D
 @onready var detection_area: Area2D = $dettection
 @onready var detection_collision: CollisionShape2D = $dettection/CollisionShape2D
 
@@ -87,6 +88,10 @@ var max_lost_time = 3.0
 var player_in_area
 var player
 
+## Зсув форм удару й тіла-цілі зі сцени (обличчям праворуч), px.
+var _strike_x := 0.0
+var _hurt_x := 0.0
+
 func _ready():
 	# Викликаємо батьківський _ready() для ініціалізації CombatBody2D
 	super._ready()
@@ -101,17 +106,17 @@ func _ready():
 	JournalRecords.meet_enemy(enemy_stats.enemy_type)
 	entity_died.connect(func() -> void: JournalRecords.kill_enemy(enemy_stats.enemy_type))
 
-	# D197: тіла гравця й ворога проходять одне крізь одне — ворог не стає гравцеві на голову (B58).
-	# Виняток на пару тіл: зони, хітбокси й геометрія світу працюють як раніше.
-	add_collision_exception_with(GameGroups.get_player())
+	# D443: тіло ворога зупиняє героя (крізь нього — лише перекат, PlayerMover); хто впав на іншого — зісковзує
+	# (CombatBody2D.slide_off_bodies).
 
 	# Налаштовуємо невразливість для ворога (відключаємо)
 	is_invulnerable = false
 	invulnerability_duration = 0.0
 
-	# Хітбокс удару (B59/D198): смуга довжиною attack_range перед ворогом, висота — зі сцени.
-	# Форма local_to_scene: у кожного ворога своя довжина.
-	hitbox_collision.shape.size.x = attack_range
+	# Хітбокс удару й зона, куди б'ють (B128): форми зі сцени ворога — з його кадрів (HitAreas, verify_hit_areas),
+	# обличчям праворуч; за поглядом дзеркалить _face_shapes. attack_range — лише дальність, з якої ворог починає удар.
+	_strike_x = hitbox_collision.position.x
+	_hurt_x = hurt_collision.position.x
 	hitbox.monitoring = false
 	hitbox.monitorable = false
 
@@ -235,14 +240,28 @@ func _on_logic_state_changed(new_state: EnemyLogic.AIState):
 func _on_logic_direction_changed(direction: int):
 	"""Обробляє зміну напрямку з EnemyLogic"""
 	enemy_view.update_direction(direction)
+	_face_shapes(direction)
+
+
+## Зона-ціль (Hurtbox: намальоване тіло, B128) у світових координатах.
+func hurt_rect() -> Rect2:
+	var size: Vector2 = hurt_collision.shape.get_rect().size * global_scale
+	return Rect2(hurt_collision.global_position - size / 2.0, size)
+
+
+## Форми удару й тіла-цілі — за поглядом, як і кадри (спрайт дзеркалиться навколо центру ворога).
+func _face_shapes(direction: int) -> void:
+	if direction != 0:
+		hitbox_collision.position.x = _strike_x * direction
+		hurt_collision.position.x = _hurt_x * direction
 
 func _on_logic_attack_started():
 	"""Обробляє початок атаки з EnemyLogic"""
 	enemy_view.on_attack_started(enemy_logic.swing_windup)
 
-## Підказка удару (4b): відблиск на зброї, а для ривка (fast) — червона лінія на lunge + attack_range.
+## Підказка удару (4b): відблиск на зброї; поза замаху — анімація attack. Лінії ривка в шакала немає (D444).
 func _on_logic_attack_telegraphed() -> void:
-	enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, lunge, attack_range)
+	enemy_view.show_tell(PlayerCombat.PARRY_WINDOW, 0.0, 0.0)
 
 func _on_logic_attack_ended():
 	"""Обробляє завершення атаки з EnemyLogic"""
@@ -294,6 +313,7 @@ func _physics_process(delta: float) -> void:
 
 	# Применяем движение с физикой
 	move_and_slide()
+	slide_off_bodies(delta)
 
 func change_state(new_state: AIState):
 	# Не змінюємо стан під час паузи або якщо ворог мертвий
@@ -573,7 +593,7 @@ func take_damage(amount: int, source: Node = null, critical: bool = false) -> vo
 	super.take_damage(amount, source, critical)
 
 func start_attack(direction: int) -> void:
-	hitbox.position.x = direction * attack_range / 2.0
+	_face_shapes(direction)
 	hitbox_damage.update_damage()
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true
@@ -636,9 +656,9 @@ func nudge(push: float) -> void:
 func knockback(push: float) -> void:
 	enemy_logic.start_knockback(push)
 
-## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона виявлення.
+## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона-ціль, зона виявлення.
 func _set_collisions_disabled(disabled: bool) -> void:
-	for shape in [body_collision, hitbox_collision, detection_collision]:
+	for shape in [body_collision, hitbox_collision, hurt_collision, detection_collision]:
 		shape.set_deferred(&"disabled", disabled)
 
 func set_dead_state(dead: bool):

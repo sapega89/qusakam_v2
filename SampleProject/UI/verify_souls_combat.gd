@@ -110,7 +110,7 @@ func _hit_feel() -> void:
 	var target := _dummy()
 	var sprite: Sprite2D = target.get_node("Sprite2D")
 	var base_scale: Vector2 = sprite.scale
-	await _place_hero(target, -26)
+	await _place_hero(target, -30)
 	Input.stop_joy_vibration(0)
 	hero.combat.perform_attack(1)
 	await physics_frame
@@ -126,9 +126,9 @@ func _hit_feel() -> void:
 	ck(flinched, "the enemy flinches on a light hit (scale %s → %s)" % [base_scale, sprite.scale])
 	ck(light_rumble.x > 0.0, "a connecting hit rumbles the pad (%s)" % light_rumble)
 	await create_timer(0.8).timeout
-	# Промах: спиною до ворога
+	# Промах: спиною до ворога, чиє намальоване тіло (зона-ціль, B128) не заходить за героя
 	Input.stop_joy_vibration(0)
-	await _place_hero(target, -26)
+	await _place_hero(target, -40)
 	hero.combat.perform_attack(-1)
 	var miss_ms: int = await _hitstop_ms(400)
 	ck(miss_ms == 0 and Input.get_joy_vibration_strength(0) == Vector2.ZERO, "a miss: no hitstop, no rumble (%d ms)" % miss_ms)
@@ -178,6 +178,12 @@ func _hit_feel() -> void:
 const FREE_MIN := 0.25
 const STUCK_SPEED := 150.0
 
+## Тіло ворога впритул попереду героя (D443: крізь ворога — лише перекат).
+func _blocked_by_enemy(dir: int) -> bool:
+	var hit := KinematicCollision2D.new()
+	return hero.test_move(hero.global_transform, Vector2(dir * 2.0, 0), hit) and hit.get_collider() in enemies
+
+
 func _freeze_check() -> void:
 	print("[0] A long melee never leaves the hero stuck (D264)")
 	for e in enemies:
@@ -200,7 +206,8 @@ func _freeze_check() -> void:
 			var timer := create_timer(0.18)
 			while timer.time_left > 0.0:
 				var x: float = hero.global_position.x
-				var was_free: bool = not hero.combat.is_staggered()
+				# D443: впертися в тіло ворога — не «застряг», а так задумано; рахуємо лише вільний шлях
+				var was_free: bool = not hero.combat.is_staggered() and not _blocked_by_enemy(dir)
 				await physics_frame
 				if was_free and not hero.combat.is_staggered():
 					free_time += tick * Engine.time_scale
@@ -325,6 +332,7 @@ func _staggers() -> void:
 	ck(hero.global_position.x < x_before - 20.0, "pushed away from the enemy, not walking into it (%.0f px)" % (hero.global_position.x - x_before))
 	await _tap(&"attack")
 	ck(not hero.combat.is_attacking, "no attack while staggered")
+	target.global_position.x += 300  # D443: герой іде праворуч — ворог не має стати на шляху
 	await create_timer(0.3).timeout
 	var x_free: float = hero.global_position.x
 	await create_timer(0.2).timeout
@@ -349,6 +357,10 @@ func _staggers() -> void:
 func _dummy() -> Node:
 	_freeze_all()
 	var target: Node = enemies[0]
+	# Решта — подалі (D443, B128): тверді тіла й намальовані зони-цілі сусідів інакше заважали б і ловили удари
+	for e in enemies:
+		if e != target:
+			e.global_position.x = target.global_position.x + 600
 	target.poise_max = 99
 	target.poise = 99
 	target.current_health = target.Max_Health
@@ -370,7 +382,7 @@ func _hero_moves(sl: Node) -> void:
 	var d: int = hero.combat.hit_damage()
 
 	print("[4] Light combo: three presses, three hits, the finisher 1.4x, then a recovery")
-	await _place_hero(target, -26)
+	await _place_hero(target, -30)
 	await _tap(&"attack")
 	await create_timer(0.1).timeout
 	await _tap(&"attack")  # посеред удару — у черзі
@@ -495,7 +507,7 @@ func _movement() -> void:
 	var mover: Node = hero.mover
 	await create_timer(1.0).timeout
 	print("[8] Double dash: two in a row, a third waits; the second works in the air")
-	await _place_hero(enemies[1], 0)
+	await _place_hero(enemies[1], -200)
 	mover.dash_charges = mover.dash_charges_max
 	mover.roll_ready_in = 0.0
 	await _tap(&"dodge")
@@ -520,7 +532,7 @@ func _movement() -> void:
 	print("[9] Run everywhere, towns too (D266 revoked, Sapega 2026-10-21)")
 	for room in ["Village", "City", "CityGates", "MayorHall", "Canyon", "DesertRoad", "Laboratory"]:
 		ck(_root_meta("res://SampleProject/Maps/%s.tscn" % room, "town") == null, "%s has no town walk" % room)
-	await _place_hero(enemies[1], 0)
+	await _place_hero(enemies[1], -200)
 	await create_timer(hero.combat.COMBAT_LINGER + 0.2).timeout
 	ck(not hero.combat.in_combat(), "no fight on")
 	Input.action_press(&"move_left")
@@ -575,7 +587,7 @@ func _weapons(sl: Node) -> void:
 	var hits: Array = []
 	target.damage_token.connect(func(dd: int) -> void: hits.append(dd))
 	var d: int = hero.combat.hit_damage()
-	await _place_hero(target, -26)
+	await _place_hero(target, -30)
 	for i in 4:  # одне натискання на удар — черга тримає одне
 		await _tap(&"attack")
 		await create_timer(0.2).timeout
@@ -610,7 +622,8 @@ func _weapons(sl: Node) -> void:
 	for case in [["sword", "iron_sword"], ["mace", "iron_mace"], ["polearm", "iron_halberd"], ["dagger", "iron_dagger"]]:
 		equip.call(case[0], case[1])
 		await process_frame
-		ck(absf(box.size.x - wv.drawn_reach()) <= 2.0, "%s: hitbox %.0f px, drawn %.0f px" % [case[1], box.size.x, wv.drawn_reach()])
+		var drawn: Rect2 = wv.drawn_swing_rect(sl.get_item_database().get_item(case[1]))
+		ck(absf(hero.combat.hitbox_center.x + box.size.x / 2.0 - drawn.end.x) <= 2.0, "%s: hitbox to %.0f px, drawn to %.0f px (B128)" % [case[1], hero.combat.hitbox_center.x + box.size.x / 2.0, drawn.end.x])
 	em.unequip_item(who, "dagger")
 	em.unequip_item(who, "mace")
 	em.unequip_item(who, "polearm")

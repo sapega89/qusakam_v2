@@ -26,6 +26,8 @@ const PLAYER = "player"
 const ENEMIES = "enemies"
 const BOSS = "boss"
 const MINIBOSS = "miniboss"
+## Зона-ціль ворога (Area2D «Hurtbox» у default_enemy.tscn, B128): удари героя й його стріли влучають у неї.
+const HURTBOX = "hurtbox"
 
 # UI groups
 const UI_CANVAS = "ui_canvas"

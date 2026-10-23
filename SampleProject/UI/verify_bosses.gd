@@ -153,7 +153,7 @@ func _check_tell(boss: Node, tells: Array, kind: String, pose: String, line: flo
 func _game_time_cooldown(boss: Node) -> void:
 	var all: Array[Dictionary] = boss.moves
 	boss.moves = all.filter(func(m: Dictionary) -> bool: return m.kind == "combo")
-	await _place(boss, -70)
+	await _place(boss, -55)
 	Engine.time_scale = 0.0  # стоп-кадр, як TimeManager.hitstop
 	boss.enemy_logic.attack_ready_in = 0.3
 	boss.set_physics_process(true)
@@ -219,7 +219,7 @@ func _parry(boss: Node, windup: float) -> void:
 	var cb := func(a: Node) -> void: parried.append(a)
 	eb.player_parried.connect(cb)
 	var hp0: int = hero.current_health
-	await _run_move(boss, "combo", -70, func() -> void:
+	await _run_move(boss, "combo", -55, func() -> void:
 		await create_timer(windup - 0.1).timeout
 		_press(&"block"))
 	_press(&"block", false)
@@ -262,7 +262,7 @@ func _brass() -> void:
 
 	var tells: Array = []
 	var tell_cb := _watch_tells(boss, tells)
-	var lost := await _run_move(boss, "combo", -70)
+	var lost := await _run_move(boss, "combo", -55)
 	ck(lost > 0, "Sweep hits a hero in reach (-%d HP)" % lost)
 	_check_tell(boss, tells, "combo", "attack", 0.0)
 	await _game_time_cooldown(boss)

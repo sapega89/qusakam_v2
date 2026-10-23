@@ -28,10 +28,6 @@ xp_reward = 500
 [sub_resource type="RectangleShape2D" id="Shape_body"]
 size = Vector2(40, 100)
 
-[sub_resource type="RectangleShape2D" id="Shape_hitbox"]
-resource_local_to_scene = true
-size = Vector2(130, 80)
-
 [sub_resource type="CircleShape2D" id="Shape_detection"]
 radius = 600.0
 
@@ -193,6 +189,14 @@ tracks/3/keys = {
 "values": [0, 1]
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(60, 160.5)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(51, 163.5)
+
 [sub_resource type="AnimationLibrary" id="Lib"]
 _data = {
 &"attack": SubResource("Anim_attack"),
@@ -210,8 +214,8 @@ _data = {
 script = ExtResource("2_boss")
 enemy_stats = SubResource("Stats")
 display_name = "The Fire Djinn"
-moves = Array[Dictionary]([{"kind": "combo", "max_range": 120.0, "min_range": 0.0, "weight": 2.0}, {"count_phase2": 2, "damage": 1.0, "kind": "fireball", "recovery": 0.45, "max_range": 700.0, "min_range": 150.0, "weight": 2.0, "windup": 0.6}, {"damage": 1.6, "kind": "pillar", "recovery": 0.45, "max_range": 700.0, "min_range": 0.0, "side": 140.0, "weight": 1.0, "width": 72.0, "windup": 0.9}])
-melee_reach = 120.0
+moves = Array[Dictionary]([{"kind": "combo", "max_range": 66.0, "min_range": 0.0, "weight": 2.0}, {"count_phase2": 2, "damage": 1.0, "kind": "fireball", "recovery": 0.45, "max_range": 700.0, "min_range": 150.0, "weight": 2.0, "windup": 0.6}, {"damage": 1.6, "kind": "pillar", "recovery": 0.45, "max_range": 700.0, "min_range": 0.0, "side": 140.0, "weight": 1.0, "width": 72.0, "windup": 0.9}])
+melee_reach = 60.0
 phase2_windup = 0.8
 phase2_speed = 1.0
 
@@ -232,10 +236,14 @@ vframes = 5
 libraries/ = SubResource("Lib")
 metadata/attack_strike_time = 0.3
 
-[node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(0, -20)
-shape = SubResource("Shape_hitbox")
-
 [node name="CollisionShape2D" parent="dettection"]
 position = Vector2(0, -20)
 shape = SubResource("Shape_detection")
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(30, -60.75)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(3, -62.25)
+shape = SubResource("Shape_hurt")

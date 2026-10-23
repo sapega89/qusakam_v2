@@ -122,6 +122,14 @@ tracks/3/keys = {
 "values": [0, 1]
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(34.5, 43.5)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(67.5, 42)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jackal"]
 _data = {
 &"attack": SubResource("Animation_attack"),
@@ -145,3 +153,11 @@ region_enabled = false
 [node name="AnimationPlayer" parent="." index="3"]
 libraries/ = SubResource("AnimationLibrary_jackal")
 metadata/attack_strike_time = 0.225
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(17.25, 6.75)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(6.75, 7.5)
+shape = SubResource("Shape_hurt")
