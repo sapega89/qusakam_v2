@@ -275,7 +275,7 @@ func _refresh() -> void:
 
 func _refresh_header() -> void:
 	var character = game_manager.get_active_character() if game_manager else null
-	var hero := String(character.name) if character else PLACEHOLDER
+	var hero := tr(String(character.name)) if character else PLACEHOLDER
 	_hero_line.text = tr("Lv %d · %s") % [_hero_level(), hero]
 
 
@@ -349,6 +349,9 @@ func _fill_panel(panel: PanelContainer, tree_id: String, definitions: Array) -> 
 		slot.mouse_filter = Control.MOUSE_FILTER_STOP if definition else Control.MOUSE_FILTER_IGNORE
 		if definition:
 			_set_cell(slot, definition)
+		else:
+			slot.get_node(^"LevelBadge/Label").text = ""
+			cell.get_node(^"Rank").text = ""
 
 
 func _set_cell(slot: Button, definition: SkillDefinition) -> void:

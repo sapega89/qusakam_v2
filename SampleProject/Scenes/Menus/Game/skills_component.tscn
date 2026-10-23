@@ -164,7 +164,6 @@ theme_type_variation = &"SkillLevelBadge"
 [node name="Label" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot/LevelBadge"]
 layout_mode = 2
 theme_type_variation = &"SkillLevelBadgeLabel"
-text = "Lv 1"
 
 [node name="Plus" type="PanelContainer" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell/Slot"]
 custom_minimum_size = Vector2(18, 18)
@@ -190,7 +189,6 @@ vertical_alignment = 1
 [node name="Rank" type="Label" parent="Window/Center/Body/Columns/LeftPanel/Tree/Stage/Grid/Cell"]
 layout_mode = 2
 theme_type_variation = &"SkillRank"
-text = "0 / 5"
 horizontal_alignment = 1
 
 [node name="RightPanel" type="PanelContainer" parent="Window/Center/Body/Columns"]
@@ -465,52 +463,52 @@ text = "+"
 layout_mode = 2
 theme_type_variation = &"SkillBarRule"
 
-[node name="BottomBar" type="HBoxContainer" parent="Window/Center/Body"]
+[node name="PointsBar" type="HBoxContainer" parent="Window/Center/Body"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="PointsCaption" type="Label" parent="Window/Center/Body/BottomBar"]
+[node name="PointsCaption" type="Label" parent="Window/Center/Body/PointsBar"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SkillBottomCaption"
 text = "Skill points"
 uppercase = true
 
-[node name="JPValue" type="Label" parent="Window/Center/Body/BottomBar"]
+[node name="JPValue" type="Label" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SkillPointsValue"
 text = "0"
 
-[node name="Budgets" type="Label" parent="Window/Center/Body/BottomBar"]
+[node name="Budgets" type="Label" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 theme_type_variation = &"SkillBudgets"
 
-[node name="PendingLabel" type="Label" parent="Window/Center/Body/BottomBar"]
+[node name="PendingLabel" type="Label" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"SkillVerdict"
 
-[node name="CancelButton" type="Button" parent="Window/Center/Body/BottomBar"]
+[node name="CancelButton" type="Button" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 2
 theme_type_variation = &"SkillResetButton"
 text = "Cancel"
 
-[node name="AcceptButton" type="Button" parent="Window/Center/Body/BottomBar"]
+[node name="AcceptButton" type="Button" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 2
 theme_type_variation = &"SkillLearnButton"
 text = "Accept"
 
-[node name="AttributesButton" type="Button" parent="Window/Center/Body/BottomBar"]
+[node name="AttributesButton" type="Button" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 2
@@ -518,7 +516,7 @@ theme_type_variation = &"SkillTextButton"
 toggle_mode = true
 text = "Attributes"
 
-[node name="ResetAllButton" type="Button" parent="Window/Center/Body/BottomBar"]
+[node name="ResetAllButton" type="Button" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 2
