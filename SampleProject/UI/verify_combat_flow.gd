@@ -80,7 +80,12 @@ func _initialize() -> void:
 	await create_timer(0.3).timeout
 	dropped.global_position = game.player.global_position + Vector2(0, -60)
 	dropped.velocity = Vector2.ZERO
-	await create_timer(2.0).timeout  # D443: зісковзує з героя, а з ворогів поруч — теж
+	# D443: зісковзує з героя, а з ворогів поруч — теж. Чекаємо кроки фізики, а не секунди: під навантаженням набору
+	# за 2 с реального часу фізика встигала менше кроків, і ворог ще не доїжджав до підлоги.
+	for i in 240:
+		await physics_frame
+		if dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0:
+			break
 	ck(dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0,
 			"the enemy stands on the floor, not on the player (enemy y %.1f, floor-level %.1f, player y %.1f)"
 			% [dropped.global_position.y, points[3].global_position.y, game.player.global_position.y])
