@@ -1,13 +1,16 @@
 extends SceneTree
 
-## Асисти компаньйонів (D464, D465) у справжньому вікні DesertRoad: кожен асист окремо, два кадри — мить першого
-## влучання (+0,08 с) і пізніше (+0,4 с), коли видно ланцюг, зірки й пил. Тег — після «--» (before / after):
+## Асисти компаньйонів (D464, D465, D515) у справжньому вікні DesertRoad: кожен асист окремо, чотири кадри — вихід
+## (+0,3 с від виклику), мить першого влучання (+0,08 с), пізніше (+0,4 с), коли видно ланцюг, зірки й пил, і відхід
+## (+1,6 с від влучання). Тег — після «--» (before / after):
 ## design/shots/companions/<тег>_<id>_<n>.png. Склеює before / after в одну картинку Scripts/Tools/companion_shots.py.
 ##   godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_companion_assists.gd -- after
 
 const OUT := "res://design/shots/companions"
 const ORDER := ["astrit", "alisia", "urizen", "guard"]
-const SHOT_DELAYS := [0.08, 0.4]
+## Кадр 0 — від виклику, решта — від першого влучання, с.
+const ENTRANCE_DELAY := 0.3
+const SHOT_DELAYS := [0.08, 0.4, 1.6]
 ## Вирізка навколо середини між героєм і рядом ворогів (екранні px).
 const CROP_SIZE := Vector2i(1100, 460)
 
@@ -56,13 +59,18 @@ func _initialize() -> void:
 			cm.offer_guard(true)
 		_hit_at = -1
 		cm.call_next()
+		var called_at := Time.get_ticks_msec()
+		while Time.get_ticks_msec() - called_at < ENTRANCE_DELAY * 1000.0:
+			await process_frame
+		await RenderingServer.frame_post_draw
+		_snap("%s/%s_%s_0.png" % [OUT, tag, id])
 		while _hit_at < 0:
 			await process_frame
 		for n in SHOT_DELAYS.size():
 			while Time.get_ticks_msec() - _hit_at < SHOT_DELAYS[n] * 1000.0:
 				await process_frame
 			await RenderingServer.frame_post_draw
-			_snap("%s/%s_%s_%d.png" % [OUT, tag, id, n])
+			_snap("%s/%s_%s_%d.png" % [OUT, tag, id, n + 1])
 		while not get_nodes_in_group(&"companions").is_empty():
 			await process_frame
 	print("companion shots done: ", tag)

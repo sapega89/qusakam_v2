@@ -314,11 +314,16 @@ signal equipment_unequip_requested(character_id: String, slot_id: String)
 @warning_ignore("unused_signal")
 signal equipment_unequipped(character_id: String, slot_id: String)
 
-## Асист компаньйона (D209): викликано / знову готовий.
+## Асист компаньйона (D209, D515): викликано / пішов з поля (стартував спільний кулдаун) / знову готовий /
+## кнопку натиснуто, поки хтось на полі чи йде кулдаун (id того, хто на полі, або наступного в черзі).
 @warning_ignore("unused_signal")
 signal assist_called(companion_id: String)
 @warning_ignore("unused_signal")
+signal assist_left()
+@warning_ignore("unused_signal")
 signal assist_ready(companion_id: String)
+@warning_ignore("unused_signal")
+signal assist_denied(companion_id: String)
 
 ## Склад або порядок загону змінився (Status, лабораторія — D220).
 @warning_ignore("unused_signal")

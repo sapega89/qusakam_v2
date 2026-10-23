@@ -160,6 +160,12 @@ damage = 40
 knockback = 60.0
 stun = 1.5
 reach = 320.0
+entrance = 1
+entrance_time = 0.6
+windup_time = 0.35
+hold_time = 0.5
+exit_time = 0.6
+tint = Color(1, 0.72, 0.4, 1)
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

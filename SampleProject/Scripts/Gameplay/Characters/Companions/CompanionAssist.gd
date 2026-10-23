@@ -1,6 +1,8 @@
 extends Node2D
 
-## Асист компаньйона (D201, D209): забігає з краю кадру за героєм, робить фірмовий удар, тікає.
+## Асист компаньйона (D201, D209, D515): повний виступ — вихід (забіг з краю кадру або стрибок згори), замах зі
+## світінням, фірмова дія з ефектами, пауза-поза й відхід; разом ~2,5–3,5 с. Поки він на полі, іншого не покличеш
+## (CompanionManager стежить за tree_exiting).
 ## Ушкодження — через HealthComponent ворога, як у навичок (той самий шлях, що й DamageApplier).
 ## Кожен закриває свою потребу (D464), числа — умовні, до плейтесту; ефекти — D465 (Scenes/FX/Companions).
 ## Сцени: Scenes/Characters/Companions/companion_<id>.tscn; викликає CompanionManager.call_next().
@@ -12,8 +14,19 @@ enum Mode {
 	RANGED,  ## Алісия: постріл здалеку в найдальшого ворога попереду; кішка поруч — для краси
 }
 
-const ENTER_TIME := 0.35
-const LEAVE_TIME := 0.4
+## Вихід (D515): забігає з-за краю кадру або падає згори просто на своє місце.
+enum Entrance { RUN, DROP }
+## Відхід: тікає, згасаючи, або злітає вгору й тане (Уризен).
+enum Exit { RUN, RISE }
+
+## Звідки падає компаньйон, що стрибає згори, і як високо злітає той, хто відходить угору, px.
+const DROP_HEIGHT := 260.0
+const RISE_HEIGHT := 200.0
+## Скільки пробігає той, хто тікає, поки згасає, px (не до краю кадру: на такій швидкості це був би ривок).
+const EXIT_RUN := 320.0
+## Присідання при приземленні: масштаб і час повернення.
+const LAND_SQUASH := Vector2(1.18, 0.82)
+const LAND_SQUASH_TIME := 0.14
 ## Рядок ступнів героя нижче його центру: Sprite2D по центру, ×1,5, ступні на рядку 56 кадру 64 px — (56 − 32) × 1,5;
 ## зсув (-32, -58) компаньйонів ставить їхній рядок ступнів (58) так само на початок вузла. Не низ колізії (24):
 ## спрайти героя й ворогів малюють ступні на ~13 px нижче за неї, і компаньйони висіли над дорогою.
@@ -26,13 +39,13 @@ const STAND_FRONT := 30.0
 const PET_SPAWN_BEHIND := 20.0
 const PET_STAND_FRONT := 26.0
 const COIN_DROP := 140.0
-const COIN_FALL_TIME := 0.25
+const COIN_FALL_TIME := 0.3
 ## Монета перескакує дугою: час стрибка й висота дуги.
-const COIN_HOP_TIME := 0.22
+const COIN_HOP_TIME := 0.3
 const COIN_HOP_HEIGHT := 46.0
 ## Стріла Алісиї: звідки вилітає (від ступнів, у бік удару) і швидкість, px/с.
 const ARROW_FROM := Vector2(24.0, -44.0)
-const ARROW_SPEED := 1400.0
+const ARROW_SPEED := 1100.0
 ## Зірки оглушення — над верхом колізії ворога.
 const STARS_ABOVE := 10.0
 
@@ -43,8 +56,12 @@ const HIT_SPARK := preload("res://SampleProject/Scenes/FX/Companions/hit_spark.t
 const GOLD_BURST := preload("res://SampleProject/Scenes/FX/Companions/gold_burst.tscn")
 const WIND_ARC := preload("res://SampleProject/Scenes/FX/Companions/wind_arc.tscn")
 const KNOCKBACK_PUFF := preload("res://SampleProject/Scenes/FX/Companions/knockback_puff.tscn")
+const LANDING_DUST := preload("res://SampleProject/Scenes/FX/Companions/landing_dust.tscn")
+const CHARGE_GLOW := preload("res://SampleProject/Scenes/FX/Companions/charge_glow.tscn")
 
 signal _landed
+## Фаза виступу змінилась (для тестів і знімків): &"enter", &"windup", &"strike", &"hold", &"exit".
+signal phase_changed(phase: StringName)
 
 @export var mode: Mode = Mode.FRONT
 ## Кадр анімації strike, на якому удар влучає.
@@ -59,6 +76,19 @@ signal _landed
 ## Уризен: скільки ворогів зачіпає монета і як далеко вона перескакує від попереднього, px.
 @export var chain_count := 3
 @export var chain_radius := 200.0
+@export_group("Sequence (D515)")
+@export var entrance: Entrance = Entrance.RUN
+@export var entrance_time := 0.7
+## Замах перед дією: перший кадр strike стоїть, компаньйон світиться своїм кольором.
+@export var windup_time := 0.35
+## Швидкість анімації strike (< 1 — повільніший, вагоміший удар).
+@export var strike_speed := 0.8
+## Поза після дії, перш ніж піти.
+@export var hold_time := 0.45
+@export var exit: Exit = Exit.RUN
+@export var exit_time := 0.6
+## Колір світіння замаху (charge_glow).
+@export var tint := Color(1, 1, 1)
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 var _dir := 1
@@ -66,13 +96,15 @@ var _dir := 1
 var _in_flight := 0
 ## Кішка Алісиї, що стоїть поруч (тікає разом з нею).
 var _pet: Node2D
+## Поточна фаза виступу (phase_changed).
+var phase: StringName = &""
 
 
 func _ready() -> void:
 	add_to_group(&"companions")
 
 
-## Увесь виступ: забіг → удар → відхід. [param hero] — гравець.
+## Увесь виступ (D515): вихід → замах → дія → поза → відхід. [param hero] — гравець.
 func start(hero: Node2D) -> void:
 	var target := _nearest_enemy(hero)
 	# Б'є в бік ворога, а не туди, куди дивиться герой: інакше ворог за спиною — удар у порожнечу.
@@ -81,36 +113,93 @@ func start(hero: Node2D) -> void:
 		target = _farthest_in_front(hero)
 	elif mode == Mode.CHAIN:
 		target = _nearest_in_front(hero)
-	var camera := get_viewport().get_camera_2d()
-	var half_view: float = get_viewport_rect().size.x / camera.zoom.x / 2.0
-	global_position = Vector2(camera.get_screen_center_position().x - _dir * (half_view + 40.0), hero.global_position.y + HERO_FEET)
+	var feet_y: float = hero.global_position.y + HERO_FEET
 	var stand_x: float = hero.global_position.x + _dir * STAND_FRONT
 	if mode == Mode.POUNCE and target != null:
 		stand_x = target.global_position.x - _dir * STAND_BEFORE_TARGET
 	elif mode == Mode.CHAIN or mode == Mode.RANGED:
 		stand_x = hero.global_position.x - _dir * STAND_BEHIND
 	_face(_dir)
-	sprite.play(&"enter")
-	var run_in := create_tween()
-	run_in.tween_property(self, ^"global_position:x", stand_x, ENTER_TIME)
-	await run_in.finished
+	await _enter(Vector2(stand_x, feet_y))
+	_set_phase(&"windup")
 	sprite.play(&"strike")
+	sprite.pause()
+	var glow: Node2D = CHARGE_GLOW.instantiate()
+	glow.modulate = tint
+	add_child(glow)
+	var flare := create_tween()
+	var bright := tint.lightened(0.5) * 1.4
+	bright.a = 1.0
+	flare.tween_property(sprite, ^"modulate", bright, windup_time * 0.7).set_ease(Tween.EASE_OUT)
+	flare.tween_property(sprite, ^"modulate", Color.WHITE, windup_time * 0.3)
+	await get_tree().create_timer(windup_time, false).timeout
+	_set_phase(&"strike")
+	sprite.speed_scale = strike_speed
+	sprite.play()
 	while sprite.frame < strike_frame and sprite.is_playing():
 		await sprite.frame_changed
 	_strike(hero, target)
 	await sprite.animation_finished
 	while _in_flight > 0:
 		await _landed
-	_face(-_dir)
-	if _pet != null:
-		var pet_sprite: AnimatedSprite2D = _pet.get_node(^"Sprite")
-		pet_sprite.flip_h = _dir > 0
-		pet_sprite.play(&"run")
-	sprite.play(&"leave" if sprite.sprite_frames.has_animation(&"leave") else &"enter")
-	var run_out := create_tween()
-	run_out.tween_property(self, ^"global_position:x", global_position.x - _dir * (half_view * 2.0 + 80.0), LEAVE_TIME)
-	await run_out.finished
+	_set_phase(&"hold")
+	await get_tree().create_timer(hold_time, false).timeout
+	_set_phase(&"exit")
+	sprite.speed_scale = 1.0
+	await _leave()
 	queue_free()
+
+
+func _set_phase(next: StringName) -> void:
+	phase = next
+	phase_changed.emit(next)
+
+
+## Вихід: забіг з-за краю кадру, що гальмує біля місця (пил з-під ніг), або падіння згори з присіданням і пилом.
+func _enter(stand: Vector2) -> void:
+	_set_phase(&"enter")
+	sprite.play(&"enter")
+	var move := create_tween()
+	if entrance == Entrance.RUN:
+		var camera := get_viewport().get_camera_2d()
+		var half_view: float = get_viewport_rect().size.x / camera.zoom.x / 2.0
+		global_position = Vector2(camera.get_screen_center_position().x - _dir * (half_view + 40.0), stand.y)
+		move.tween_property(self, ^"global_position:x", stand.x, entrance_time).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	else:
+		global_position = stand - Vector2(0.0, DROP_HEIGHT)
+		sprite.pause()
+		modulate.a = 0.0
+		move.set_parallel()
+		move.tween_property(self, ^"global_position:y", stand.y, entrance_time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+		move.tween_property(self, ^"modulate:a", 1.0, entrance_time * 0.3)
+	await move.finished
+	_spawn_fx(LANDING_DUST, global_position, _dir)
+	if entrance == Entrance.DROP:
+		var rest := sprite.scale
+		sprite.scale = rest * LAND_SQUASH
+		var squash := create_tween()
+		squash.tween_property(sprite, ^"scale", rest, LAND_SQUASH_TIME).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		await squash.finished
+
+
+## Відхід: тікає назад, згасаючи (кішка Алісиї — з нею), або злітає вгору й тане.
+func _leave() -> void:
+	var move := create_tween().set_parallel()
+	if exit == Exit.RUN:
+		_face(-_dir)
+		if _pet != null:
+			var pet_sprite: AnimatedSprite2D = _pet.get_node(^"Sprite")
+			pet_sprite.flip_h = _dir > 0
+			pet_sprite.play(&"run")
+		sprite.play(&"leave" if sprite.sprite_frames.has_animation(&"leave") else &"enter")
+		move.tween_property(self, ^"global_position:x", -_dir * EXIT_RUN, exit_time).as_relative().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	else:
+		var glow: Node2D = CHARGE_GLOW.instantiate()
+		glow.modulate = tint
+		add_child(glow)
+		move.tween_property(self, ^"global_position:y", -RISE_HEIGHT, exit_time).as_relative().set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	move.tween_property(self, ^"modulate:a", 0.0, exit_time * 0.6).set_delay(exit_time * 0.4)
+	await move.finished
 
 
 func _strike(hero: Node2D, target: Node2D) -> void:

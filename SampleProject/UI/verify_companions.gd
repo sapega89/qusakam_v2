@@ -3,7 +3,9 @@ extends SceneTree
 ## Асисти компаньйонів ([[companion_assist_plan]], D209, D464) у справжній грі на DesertRoad: хто відкритий —
 ## з прапорців лабораторії, у загін — лише вибрані гравцем; одна кнопка кличе наступного готового з вибраних;
 ## кожен робить своє (стріла Алісії в найдальшого, оглушення щитом Астрит, ланцюг монети Уризена на 3,
-## відкидання охоронця) з ефектами D465 і прибирає себе; кулдаун у кожного свій. Туторіал вибору — D463.
+## відкидання охоронця) з ефектами D465 і прибирає себе. D515: кожен — повний виступ (вихід, замах, дія, поза, відхід,
+## ~2,5–3,5 с), на полі лише один (кнопка відмовляє зі звуком і трусом слота), спільний кулдаун — після відходу;
+## слот на хотбарі: готовий / на полі / кулдаун. Туторіал вибору — D463.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_companions.gd
 
 var fails: Array[String] = []
@@ -31,6 +33,56 @@ func _hud() -> Array:
 	var overlay: Label = bind.get_node(^"Slot/Cooldown")
 	var who := "" if portrait == null else portrait.resource_path.get_base_dir().get_file()
 	return [bind.is_visible_in_tree(), who, overlay.text if overlay.visible else ""]
+
+## Стан слота (D515): "ready" — бейдж золотий; "active" — рамка пульсує; "cooldown" — портрет тьмяний, секунди.
+func _hud_state() -> String:
+	var hotbar: Node = get_first_node_in_group(&"skill_hotbar")
+	var slot: Panel = hotbar.get_node(^"%SlotsRow/AssistBind/Slot")
+	var badge: StyleBoxFlat = hotbar.get_node(^"%SlotsRow/AssistBind/Badge").get_theme_stylebox("panel")
+	if hotbar._assist_pulse != null and hotbar._assist_pulse.is_running():
+		return "active"
+	if slot.get_node(^"Cooldown").visible and slot.get_node(^"Portrait").modulate.r < 1.0:
+		return "cooldown"
+	return "ready" if badge.bg_color == UITokens.ACCENT else "?"
+
+## Виступ компаньйона (D515): фази з мітками часу від виклику, мс, і коли він зник.
+var _phases: Array = []
+var _called_ms := 0
+var _left_ms := 0
+
+func _call(cm: Node, id: String) -> Node2D:
+	_phases.clear()
+	_called_ms = Time.get_ticks_msec()
+	_left_ms = 0
+	var got: String = cm.call_next()
+	ck(got == id and _actors().size() == 1, "%s answers the button (%s)" % [id, got])
+	var actor: Node2D = _actors()[0]
+	_phases.append([actor.phase, 0])
+	actor.phase_changed.connect(func(p: StringName) -> void: _phases.append([p, Time.get_ticks_msec() - _called_ms]))
+	actor.tree_exiting.connect(func() -> void: _left_ms = Time.get_ticks_msec() - _called_ms)
+	return actor
+
+func _until_phase(actor: Node2D, phase: StringName) -> void:
+	for i in 600:
+		if not is_instance_valid(actor) or actor.phase == phase:
+			return
+		await process_frame
+
+func _gone(actor: Node2D) -> void:
+	for i in 900:
+		if not is_instance_valid(actor):
+			return
+		await process_frame
+
+## Після відходу: фази по черзі, вихід 0,5–0,8 с, увесь виступ 2,5–3,5 с (+0,1 на hitstop і кадри).
+func _check_sequence(id: String) -> void:
+	var names: Array = _phases.map(func(e: Array) -> StringName: return e[0])
+	ck(names == [&"enter", &"windup", &"strike", &"hold", &"exit"], "%s: enter → windup → strike → hold → exit (%s)" % [id, names])
+	var enter_s: float = _phases[1][1] / 1000.0
+	var total_s: float = _left_ms / 1000.0
+	ck(enter_s >= 0.5 and enter_s <= 0.85, "%s: the entrance takes %.2f s (0.5–0.8)" % [id, enter_s])
+	ck(total_s >= 2.5 and total_s <= 3.6, "%s: the whole assist takes %.2f s (2.5–3.5)" % [id, total_s])
+	print("    timing %s: %s, gone at %d ms" % [id, _phases, _left_ms])
 
 func _actors() -> Array:
 	return get_nodes_in_group(&"companions")
@@ -70,10 +122,18 @@ func _initialize() -> void:
 		enemies[i].global_position = Vector2(hero.global_position.x + 60 + i * 50, enemies[i].global_position.y)
 	var near = enemies[0]
 	var far = enemies[-1]
-	game.map.child_entered_tree.connect(func(n: Node) -> void: _fx.append(n.scene_file_path.get_file().get_basename()))
+	node_added.connect(func(n: Node) -> void:  # charge_glow — дитина компаньйона, не кімнати
+		if n.scene_file_path != "": _fx.append(n.scene_file_path.get_file().get_basename()))
 	var cm: Node = sl.get_companion_manager()
 	var called: Array = []
-	root.get_node("EventBus").assist_called.connect(func(id: String) -> void: called.append(id))
+	var denied: Array = []
+	var readied: Array = []
+	var bus: Node = root.get_node("EventBus")
+	bus.assist_called.connect(func(id: String) -> void: called.append(id))
+	bus.assist_denied.connect(func(id: String) -> void: denied.append(id))
+	bus.assist_ready.connect(func(id: String) -> void: readied.append(id))
+	var sounds: Array = []
+	root.get_node("AudioManager").sound_played.connect(func(e: StringName, _s: AudioStream, _b: StringName, _p: float) -> void: sounds.append(e))
 
 	print("[1] Nobody unlocked → the button does nothing")
 	ck(cm.get_unlocked().is_empty() and cm.call_next() == "" and _actors().is_empty(), "no companions, no assist")
@@ -93,71 +153,108 @@ func _initialize() -> void:
 	print("[3] Picking: only the picked companion is called")
 	ck(cm.toggle_party("alisia") and cm.get_party() == ["alisia"], "Алісия picked (%s)" % [cm.get_party()])
 	for i in 2: await process_frame
-	ck(_hud() == [true, "alisia", ""], "the hotbar shows Алісия ready (%s)" % [_hud()])
+	ck(_hud() == [true, "alisia", ""] and _hud_state() == "ready", "the hotbar shows Алісия ready (%s, %s)" % [_hud(), _hud_state()])
 
-	print("[4] Алісия (D464): a ranged shot at the farthest enemy in front, an arrow streak and a hit spark")
+	print("[4] Алісия (D464, D515): runs in, draws with a green glow, shoots the farthest enemy in front, holds, runs off")
 	var before: Array = enemies.map(func(e: Node) -> int: return e.current_health)
 	_fx.clear()
-	ck(cm.call_next() == "alisia" and _actors().size() == 1, "Алісия runs in")
+	var actor: Node2D = await _call(cm, "alisia")
 	await process_frame
 	# Ступні — як намальовано: низ непрозорих пікселів поточного кадру героя й компаньйона на екрані.
 	var hs: Sprite2D = hero.get_node(^"Sprite2D")
 	var himg: Image = hs.texture.get_image()
 	var hero_feet: float = hs.to_global(hs.offset + Vector2(0, himg.get_used_rect().end.y - himg.get_height() / 2.0)).y
-	var cs: AnimatedSprite2D = _actors()[0].get_node(^"Sprite")
+	var cs: AnimatedSprite2D = actor.get_node(^"Sprite")
 	var cimg: Image = cs.sprite_frames.get_frame_texture(cs.animation, cs.frame).get_image()
 	var comp_feet: float = cs.to_global(cs.offset + Vector2(0, cimg.get_used_rect().end.y)).y
 	ck(absf(hero_feet - comp_feet) <= 1.5, "Алісия's feet on the hero's foot line (%.1f vs %.1f)" % [comp_feet, hero_feet])
-	await create_timer(2.5).timeout
+	ck(absf(actor.global_position.x - hero.global_position.x) > 200.0, "she runs in from the edge of the view (%.0f px off)" % absf(actor.global_position.x - hero.global_position.x))
+	for i in 2: await process_frame
+	ck(cm.get_state() == cm.State.ACTIVE and _hud()[1] == "alisia" and _hud_state() == "active",
+			"the hotbar shows her on the field, the frame pulsing (%s, %s)" % [_hud(), _hud_state()])
+	print("[4b] D515: only one on the field — while she is out the button calls nobody, with a denied sound and a shake")
+	ck(cm.toggle_party("astrit") and cm.get_party() == ["alisia", "astrit"], "Астрит picked second (%s)" % [cm.get_party()])
+	sounds.clear()
+	ck(cm.call_next() == "" and _actors().size() == 1, "a second press calls nobody while Алісия is out")
+	ck(denied == ["alisia"] and sounds.has(&"assist_denied"), "assist_denied with a sound (%s, %s)" % [denied, sounds])
+	var portrait_node: Control = get_first_node_in_group(&"skill_hotbar").get_node(^"%SlotsRow/AssistBind/Slot/Portrait")
+	for i in 3: await process_frame
+	ck(absf(portrait_node.position.x) > 0.5, "the slot's portrait shakes (%.1f px)" % portrait_node.position.x)
+	ck(is_equal_approx(cm.get_remaining_cooldown(), 0.0), "no cooldown runs while she is on the field")
+	await _until_phase(actor, &"windup")
+	ck(_fx_count("landing_dust") == 1 and _fx_count("charge_glow") == 1, "dust where she stops, a charge glow as she draws (%s)" % [_fx])
+	await _gone(actor)
+	_check_sequence("Алісия")
 	ck(far.current_health == before[-1] - 24, "the arrow hit the farthest enemy for 24 (%d → %d)" % [before[-1], far.current_health])
 	ck(range(enemies.size() - 1).all(func(i: int) -> bool: return enemies[i].current_health == before[i]), "nobody nearer was touched")
 	ck(_fx_count("arrow_streak") == 1 and _fx_count("hit_spark") == 1, "an arrow streak flew and a hit spark burst (%s)" % [_fx])
-	ck(_actors().is_empty(), "Алісия left and freed herself")
-	ck(cm.call_next() == "", "Астрит is available but not picked → nobody while Алісия cools down")
+	ck(absf(portrait_node.position.x) < 0.01, "the shake settled")
 
-	print("[5] Астрит (D464): pounces on the nearest, the spiked shield stuns; a dust ring and stun stars")
-	ck(cm.toggle_party("astrit") and cm.get_party() == ["alisia", "astrit"], "Астрит picked second (%s)" % [cm.get_party()])
+	print("[4c] D515: the shared cooldown starts when she leaves; the slot shows the next in the queue, dim, with seconds")
+	ck(cm.get_state() == cm.State.COOLDOWN and cm.get_remaining_cooldown() > cm.COOLDOWN - 0.2, "cooldown %.1f of %.0f s" % [cm.get_remaining_cooldown(), cm.COOLDOWN])
+	for i in 2: await process_frame
+	var hud: Array = _hud()
+	ck(hud[0] and hud[1] == "astrit" and hud[2].ends_with("s") and _hud_state() == "cooldown", "the hotbar: Астрит next, dim, seconds left (%s, %s)" % [hud, _hud_state()])
+	denied.clear()
+	ck(cm.call_next() == "" and denied == ["astrit"], "the button is refused during the cooldown too (%s)" % [denied])
+	cm._process(cm.COOLDOWN)
+	ck(cm.get_state() == cm.State.READY and readied == ["astrit"], "after %.0f s: ready, Астрит next (%s)" % [cm.COOLDOWN, readied])
+
+	print("[5] Астрит (D464, D515): drops in before the nearest, an orange glow, the spiked shield stuns; dust ring and stars")
 	var hp: int = near.current_health
 	_fx.clear()
-	ck(cm.call_next() == "astrit", "Астрит is next in the queue")
-	await create_timer(2.0).timeout
+	actor = await _call(cm, "astrit")
+	await process_frame
+	ck(actor.global_position.y < hero.global_position.y + actor.HERO_FEET - 100.0, "she drops in from above (%.0f above the feet)" % (hero.global_position.y + actor.HERO_FEET - actor.global_position.y))
+	await _until_phase(actor, &"hold")
 	ck(near.current_health == hp - 40, "Астрит hit for 40 (%d → %d)" % [hp, near.current_health])
 	ck(near.enemy_logic.stun_left > 0.0 and _stars(near), "and stunned it, with stars over its head (%.2f s)" % near.enemy_logic.stun_left)
-	ck(_fx_count("shield_slam") == 1, "a shield slam: flash and dust ring (%s)" % [_fx])
-	ck(cm.call_next() == "", "both on cooldown → nobody")
-	for i in 2: await process_frame
-	var hud := _hud()
-	ck(hud[0] and hud[1] == "alisia" and hud[2].ends_with("s"), "the hotbar shows Алісия, soonest back, with seconds left (%s)" % [hud])
+	ck(_fx_count("shield_slam") == 1 and _fx_count("landing_dust") == 1 and _fx_count("charge_glow") == 1, "landing dust, charge glow, a shield slam (%s)" % [_fx])
+	await _gone(actor)
+	_check_sequence("Астрит")
 
-	print("[6] Уризен (D464): the coin smite chains to up to 3 enemies, a golden burst on each")
+	print("[6] Уризен (D464, D515): drops in, a gold glow, the coin chains to up to 3 enemies, rises away")
 	game.set_quest_flag("lab_companion_03_complete", true)
 	cm.announce_unlock("lab_companion_03_complete")
 	cm.toggle_party("urizen")
+	cm._process(cm.COOLDOWN)
 	near.enemy_logic.stun_left = 0.0  # Астрит оглушила першого — рахуємо лише оглушення монетою
 	before = enemies.map(func(e: Node) -> int: return e.current_health)
 	_fx.clear()
-	ck(cm.call_next() == "urizen", "Уризен answers")
-	await create_timer(2.6).timeout
+	actor = await _call(cm, "urizen")
+	await _until_phase(actor, &"hold")
 	var hurt: Array = range(enemies.size()).filter(func(i: int) -> bool: return enemies[i].current_health == before[i] - 30)
 	ck(hurt == [0, 1, 2], "the coin struck the three nearest for 30 each, the fourth is spared (%s of %d)" % [hurt, enemies.size()])
 	ck(hurt.all(func(i: int) -> bool: return enemies[i].enemy_logic.stun_left > 0.0), "each struck enemy is stunned")
 	ck(_fx_count("gold_burst") == 3, "a golden burst on each hit (%d)" % _fx_count("gold_burst"))
+	await _until_phase(actor, &"exit")
+	var exit_y: float = actor.global_position.y
+	for i in 10: await process_frame
+	ck(is_instance_valid(actor) and actor.global_position.y < exit_y - 1.0, "he rises away instead of running")
+	await _gone(actor)
+	_check_sequence("Уризен")
 
-	print("[7] Cooldowns: 15 s each, then the queue goes on")
-	cm._process(cm.COOLDOWN + 0.1)
+	print("[7] The queue goes on after the shared cooldown")
+	cm._process(cm.COOLDOWN)
 	ck(cm.is_ready("alisia") and cm.is_ready("astrit") and cm.is_ready("urizen"), "all ready after %.0f s" % cm.COOLDOWN)
-	ck(cm.call_next() == "alisia", "the queue goes on after the last called (Уризен): Алісия")
-	await create_timer(2.5).timeout
+	actor = await _call(cm, "alisia")
+	await _gone(actor)
+	cm._process(cm.COOLDOWN)
 
-	print("[8] The City Gates guard: offered for the fight, his thrust ends it with a wind arc")
+	print("[8] The City Gates guard: offered for the fight, runs in, his thrust ends it with a wind arc")
 	cm.offer_guard(true)
 	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
 	ck(_hud()[1] == "guard", "the hotbar shows the guard while he is offered (%s)" % [_hud()])
 	_fx.clear()
-	ck(cm.call_next() == "guard" and not cm.is_guard_offered(), "the button calls the guard once")
-	await create_timer(2.0).timeout
+	actor = await _call(cm, "guard")
+	ck(not cm.is_guard_offered(), "the button calls the guard once")
+	denied.clear()
+	ck(cm.call_next() == "" and denied == ["guard"], "nobody else while the guard is out (%s)" % [denied])
+	await _until_phase(actor, &"hold")
 	ck(enemies.all(func(e: Node) -> bool: return not e.is_alive()), "every enemy in front is down")
 	ck(_fx_count("wind_arc") == 1 and _fx_count("knockback_puff") == enemies.size(), "a wind arc and a puff per enemy (%s)" % [_fx])
+	await _gone(actor)
+	_check_sequence("guard")
 	ck(called == ["alisia", "astrit", "urizen", "alisia", "guard"], "assist_called for each (%s)" % [called])
 	await create_timer(1.0).timeout
 	ck(_actors().is_empty(), "no companion left behind")

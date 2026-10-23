@@ -32,6 +32,7 @@ func _ready() -> void:
 	EventBus.room_entered.connect(_on_room_entered)
 	EventBus.player_died.connect(func() -> void: AudioManager.play(&"hero_death"))
 	EventBus.assist_called.connect(func(id: String) -> void: AudioManager.play(StringName("call_" + id)))
+	EventBus.assist_denied.connect(func(_id: String) -> void: AudioManager.play(&"assist_denied"))
 
 
 ## Навичка, чий замах звучить: її вивільнення — свій звук (пасивні й навички без касту — без звуку).

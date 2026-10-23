@@ -283,6 +283,13 @@ const SHOP_ROW_PAD_H := 12
 const SHOP_ROW_PAD_V := 10
 ## Figma menu-skills 58:453: рядок навички — py 10 + Medium 18 (skills_ui_mapping); Button без тексту сам такої висоти не має.
 const SKILL_ROW_HEIGHT := 44
+## D515: слот асисту на хотбарі — компаньйон на полі (рамка ACCENT пульсує: період і сила світіння),
+## відмова кнопки (портрет тремтить: розмах і час), кулдаун (портрет тьмяніє до цієї яскравості).
+const ASSIST_PULSE_TIME := 0.8
+const ASSIST_PULSE_SHADOW := 6
+const ASSIST_SHAKE_PX := 4.0
+const ASSIST_SHAKE_TIME := 0.24
+const ASSIST_COOLDOWN_DIM := 0.55
 const SHOP_ROW_ICON := 22
 const SHOP_COL_COUNT := 120
 const SHOP_COL_PRICE := 150
