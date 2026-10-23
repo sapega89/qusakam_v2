@@ -6,6 +6,7 @@ extends SceneTree
 ## Figma: main-menu 9:26, UI/Splash Screen 258:5140, UI/Menu Item 248:62.
 ## Рішення: D72 (лише Continue), D75/D77 (Continue → Save Slot Selection, LOAD).
 
+const Kit := preload("res://SampleProject/UI/input_kit.gd")
 const MENU_SCENE := "res://SampleProject/MainMenu.tscn"
 const TEST_DIR := "user://verify_mainmenu_saves/"
 
@@ -147,28 +148,18 @@ func _initialize() -> void:
 
 	print("[6] New Game: a real click fades to black, the game loads in the background, light again in the room (D434)")
 	current_scene.queue_free()
+	menu.queue_free()  # меню з [1]–[4] лежить поверх і забирало б клік
+	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64: кнопка поза ним не ловить мишу
 	var start := _open(false)
 	current_scene = start
-	for i in 10: await process_frame
+	for i in 40: await process_frame  # меню проявляється
 	var entered: Array = [false]
 	root.get_node("EventBus").room_entered.connect(func(_r: String) -> void: entered[0] = true, CONNECT_ONE_SHOT)
 	var t0 := Time.get_ticks_usec()
-	var new_game: Button = start.menu.get_node("new_game")
-	var vp := new_game.get_viewport()
-	var pos := new_game.get_global_rect().get_center()
-	var motion := InputEventMouseMotion.new()
-	motion.position = pos
-	vp.push_input(motion)
-	await process_frame
-	for pressed in [true, false]:
-		var click := InputEventMouseButton.new()
-		click.button_index = MOUSE_BUTTON_LEFT
-		click.pressed = pressed
-		click.position = pos
-		vp.push_input(click)
+	await Kit.mouse(self, start.menu.get_node("new_game"))  # справжній клік: рух, натиск, відпуск
 	var click_ms := (Time.get_ticks_usec() - t0) / 1000.0
 	await process_frame
-	ck(root.has_node(^"ScreenFade") and current_scene == start, "the click starts a fade on the menu (%.0f ms)" % click_ms)
+	ck(root.has_node(^"ScreenFade") and current_scene == start, "the click starts a fade on the menu (click + 6 frames: %.0f ms)" % click_ms)
 	var t1 := Time.get_ticks_msec()
 	while not (current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn") \
 			and Time.get_ticks_msec() - t1 < 10000:

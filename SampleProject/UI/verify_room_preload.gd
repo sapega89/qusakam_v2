@@ -95,7 +95,8 @@ func _walk_east() -> Dictionary:
 	while not done[0] and Time.get_ticks_msec() - t0 < 6000:
 		await process_frame
 		var now: int = Time.get_ticks_usec()
-		result["longest_ms"] = maxf(result["longest_ms"], (now - last) / 1000.0)
+		if changed[0] > 0:  # лише кадри самої зміни кімнати: від клітинки сусіда до кінця появи
+			result["longest_ms"] = maxf(result["longest_ms"], (now - last) / 1000.0)
 		last = now
 		if changed[0] == 0 and Time.get_ticks_msec() - t0 > 2500 and result["how"] == "walked":
 			result["how"] = "nudged across the edge"

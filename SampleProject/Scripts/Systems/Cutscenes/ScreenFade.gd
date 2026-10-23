@@ -16,7 +16,10 @@ static func to_black(host: Node, time: float = UITokens.FADE_TIME) -> void:
 
 static func from_black(host: Node, time: float = UITokens.FADE_TIME) -> void:
 	await _fade(host, 0.0, time)
-	_overlay(host).get_parent().queue_free()
+	# Одразу з дерева: шар, що лише чекає queue_free, наступне затемнення (зміна кімнати слідом) взяло б за живий.
+	var layer := _overlay(host).get_parent()
+	layer.get_parent().remove_child(layer)
+	layer.queue_free()
 
 
 ## Чорний шар є (екран темний або темніє чи світлішає).
