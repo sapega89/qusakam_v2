@@ -107,3 +107,19 @@ merge.
 | 02:20 | story-text (`trig_015CA5q64kigmy5dtqzfhvi3`) | cloud/story-text | D437 rest, D457, D462, B126, D460 |
 | 02:20 | ui-text (`trig_014xkVFFPggLwdiAWnEHFBGr`) | cloud/ui-text | D474, D475 |
 | 02:20 | companions (`trig_017aeA6bXGhs2gsGoj12FFaB`) | cloud/companions | D463, D464, D465 |
+
+Round 9 merged 2026-10-23: perf-1 (D505–D508), ui-text (D509–D511), companions (D512–D514), npc-flow (D516–D518),
+combat-feel (D519–D522), story-text (D499–D501). Local suite: 97/98, and the one flake (`verify_combat_flow` [0b]) was
+fixed (`362a0178`).
+
+## Round 10 (2026-10-23): souls-like combat, skills, menu QA, progression, assists, world
+
+| UTC | Routine | Branch | Task |
+|---|---|---|---|
+| 06:20 | combat-player (`trig_01Mc6YD9yJTo1X3RDpZuPPma`) | cloud/combat-player | D504 hero side: commitment, stamina, potion slot; B136; D502; D503 |
+| 06:20 | combat-enemies (`trig_019GiYqT9bFVXXBz2pXcNbha`) | cloud/combat-enemies | D504 enemy side: colour tells, parry/riposte, B133–B135, B139, B140, D494 |
+| 06:20 | skills-data (`trig_017U1vDMnuv2xPJaffHnJABQ`) | cloud/skills-data | B137, the flask, D491, D496, D497, D490 API |
+| 06:20 | menu-qa (`trig_01D3omsQbPTaGHoqdjADdEPy`) | cloud/menu-qa | B129–B132, D493 |
+| 06:20 | progression (`trig_01SviDye8epyKH2yPHA1ZZDu`) | cloud/progression | D488, D447 behaviour, D492 |
+| 06:20 | assists-2 (`trig_01DR6RMPV4decwg8ChB9TDci`) | cloud/assists-2 | D515 |
+| 06:20 | world-fixes (`trig_01SneiTQdYeENaYg2Jgb1PoQ`) | cloud/world-fixes | D446, D448, D451, D483 |

@@ -45,7 +45,7 @@ tree mid-attack, and no test failed (`verify_combat_flow` [4] now covers it).
 
 ## Results
 
-**Latest full run: 2026-10-23, after playtest-1 + ui-kit — `SUITE: ALL PASS`, 93 of 93** (`Scripts/Tools/run_verify.sh` on `7c130aa5`). Watch: in the cloud, under suite load, `verify_audio` (three times, different checks) and `verify_weapon_animations` failed once each and passed alone; never seen locally.
+**Latest full run: 2026-10-23, after round 9 (perf-1, ui-text, companions, npc-flow, combat-feel, story-text) — 97 of 98 PASS; the one FAIL, `verify_combat_flow` [0b], timed by seconds and was flaky under load. It now waits physics frames and passes (`362a0178`)** (`Scripts/Tools/run_verify.sh` on `4be13ef5`). Watch: in the cloud, under suite load, `verify_audio` (three times, different checks) and `verify_weapon_animations` failed once each and passed alone; never seen locally.
 
 | Script | Result | Notes |
 |---|---|---|
