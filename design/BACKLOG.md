@@ -312,6 +312,22 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
     power, SP regen), respec together with skills (D282). Plan with item 43: `design/skill_screen_rework_plan.md`.
     **Plan: [[audio_plan]]** (D274–D278), built; the listening checklist for Sapega is in the plan.
 
+### Performance — weak-PC lag and room-change freezes — [[performance_plan]]
+- **Measured 2026-10-23** (`SampleProject/UI/measure_performance.gd`, dev PC Ryzen 5 5600 / RTX 3060):
+  - a first visit to a room freezes one frame for 39–172 ms, and 46–89 % of that is GDScript compiling;
+  - going back to a room, or walking on, blocks 13–51 ms;
+  - New Game freezes for 517 ms over two frames, with no loading screen;
+  - per frame the GPU dominates: the WorldEnvironment glow and colour curves (D233) take 19–33 %, the parallax layers up to 36 % and the lab lights up to 36 %, with 8.5–9.6× overdraw outdoors;
+  - textures and `assets/` are not a cost.
+- **Exists:**
+  - a synchronous `load()` in `MetSysGame.load_room()` (`MetSysGame.gd:89`);
+  - `RoomInstance.get_neighbor_rooms()`, which nothing calls;
+  - Maaack's `SceneLoader` with threaded loading, which nothing uses.
+- **Waits on:**
+  - slices 1–6 wait on nothing (D434 answers how the load looks);
+  - slice 7 waits on Q83, then Q84.
+- **Resume:** slice 1 — delete the temporary `DebugLogger.current_level = INFO` (`Game.gd:51`) and the room-change `print()`s.
+
 ### World structure: big locations, metroidvania inside — [[world_structure_plan]] (D458)
 - **Exists:** 11 rooms in five linear locations, and a MetSys grid map over the parchment.
 - **Waits on:** Q75–Q78 (the defaults are in the plan); the fade and background loading ([[performance_plan]]) before the pilot location.
