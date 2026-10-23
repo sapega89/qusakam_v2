@@ -156,13 +156,13 @@ func _initialize() -> void:
 	# has_theme_*() марне як проба: дефолтна тема відповідає true на будь-який тип.
 	# Єдиний чесний доказ — збіг РЕЗОЛЬВНУТОГО значення з токеном.
 	var name_label: Label = vitals._name_label
-	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.font_px(tokens.SIZE_ROW_TITLE),
+	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.font_px(tokens.SIZE_ROW_TITLE, true),  # D474: HUD ×1.5
 			"font size from tokens (%d)" % name_label.get_theme_font_size("font_size", "VitalsName"))
 	ck(name_label.get_theme_color("font_color", "VitalsName") == tokens.ACCENT, "colour from tokens")
 	ck(name_label.get_theme_font("font", "VitalsName") != null, "font resource resolves")
 	var hotbar: Node = get_first_node_in_group("skill_hotbar")
 	if hotbar:
-		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.font_px(tokens.SIZE_MICRO),
+		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.font_px(tokens.SIZE_MICRO, true),  # D474
 				"bind badge size from tokens")
 		ck(hotbar.get_theme_color("font_color", "CooldownLabel") == tokens.ACCENT,
 				"cooldown colour from tokens")

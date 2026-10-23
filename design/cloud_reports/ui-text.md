@@ -11,7 +11,7 @@ tags: [cloud, routines, ui, theme]
 - **Not done:** the D453 v2 hotbar (hex slots, SP gem). This branch only removes the weapon slot from the current hotbar. The `ui-theme-tokens` skill named in the prompt does not exist in the repo; the theme was edited following CLAUDE.md.
 - **D-IDs for the register:** D484, D486, D487 (below). D485 already exists on feature/backlog, so it is skipped.
 - **B rows fixed:** none.
-- **Full suite:** SUITE_LINE
+- **Full suite:** one run of 93 tests: 91 PASS, 2 FAIL. The two failures, `verify_combat_hud` and `verify_full_regression`, still expected the ×1.25 HUD sizes (VitalsName 23, BindBadge 14). Both were updated to `font_px(…, true)` and now print ALL PASS on their own re-run.
 
 ## D-ID text (for `figma_decision_register.md`)
 
@@ -37,7 +37,7 @@ tags: [cloud, routines, ui, theme]
 - New `SampleProject/UI/text_fit.gd`: no visible text is below its minimum size or outside its box.
 - `verify_game_ui_theme`: 32 D474 checks (floors, body ≥ 24, ×1.25 kept on Controls, Game Over and the boss bar, titles unchanged). Result: `=== ALL CHECKS PASSED ===`.
 - `verify_dialogue_speaker` (24 px plus fit for every speaker), `verify_tutorial_hints` (window body, key and fit; banner 24 px and fit), `verify_npc_recall` (item 24 px and fit): ALL PASS.
-- Tests that used the switch now equip instead: `verify_combat_flow` (also checks that `weapon_next` and `weapon_prev` are gone), `verify_kusakam_skills`, `verify_skill_casts`, `verify_souls_combat`, `verify_weapon_animations`, `verify_audio`, `verify_gamepad`, `verify_onboarding` (no weapon rows), `verify_game_over` (GameOverItemOn). Captures `capture_skill_casts` and `capture_bow` are updated the same way.
+- Tests that used the switch now equip instead: `verify_combat_flow` (also checks that `weapon_next` and `weapon_prev` are gone), `verify_kusakam_skills`, `verify_skill_casts`, `verify_souls_combat`, `verify_weapon_animations`, `verify_audio`, `verify_gamepad`, `verify_onboarding` (no weapon rows), `verify_game_over` (GameOverItemOn). Captures `capture_skill_casts` and `capture_bow` are updated the same way. `verify_combat_hud` and `verify_full_regression` now expect the HUD's ×1.5 sizes.
 
 **Captures** (`SampleProject/UI/capture_ui_text.gd -- before|after`, 1920×1080)
 - `design/shots/ui_text/ui_text_before_after.png`: rows are the dialogue box, NPC menu, HUD, tutorial window and tutorial banner; before on the left, after on the right. Per-surface files are `design/shots/ui_text/<surface>_{before,after}.png`.
