@@ -1,6 +1,6 @@
 ---
 type: plan
-status: done
+status: planned
 tags: [skills, class-path, feedback]
 figma: "menu-skills 58:453"
 ---
@@ -14,6 +14,167 @@ plan makes is an **agent call, Sapega to confirm**: D279–D285.
 Figma: `menu-skills 58:453` — two flat columns (Primary / Secondary Class Tree), Job Skills / Support Skills sections,
 no graph ([[skills_ui_mapping]]). Feedback rules: [[play_feedback_queue]]. Builds on [[skills_system_plan]] (the model),
 [[skills_combat_plan]] (execution), D150 ranks, D207 effects, D259/D269 interrupts, D271 casts.
+
+## v2: 19 skills per tab (D535), draft for Sapega, 2026-10-23
+
+**Status: planned. The list is waiting for Sapega to read it.** He counted Dragon Nest's Gladiator: 19 skills in the Warrior tab and 19 in the Gladiator tab, with **10 active and 9 passive** in each, and not all of them can be learned. After `cloud/skills-data` our base tree has 10 skills (3 active) and each oath has 11 (3 active).
+
+The draft adds **33 new skills**:
+- the base tree gets 7 actives and 2 passives;
+- each of the three oaths gets 7 actives and 1 passive.
+
+Names and effects are drafts (`[DRAFT]` / `[ЧЕРНЕТКА]` once they are in data). Numbers come with each build slice.
+
+Each tab gets every role Dragon Nest gives a tab:
+- a gap closer;
+- a launch or knock-down;
+- an area hit;
+- a ranged hit;
+- a stance;
+- a buff;
+- a control;
+- a finisher;
+- sustain;
+- (oaths only) the level-20 ultimate.
+
+No skill puts the hero behind an enemy (Sapega: «за спину ми нікому не зможемо забігти»).
+
+### Holy Warrior (base): 10 active, 9 passive
+
+| Lv | Skill | Kind | Does | |
+|---|---|---|---|---|
+| 1 | Toughness | passive | +max HP | exists |
+| 1 | Shield Block | passive | less damage with a shield | exists |
+| 1 | **Dash Strike** | active | dashes forward and cuts the first enemy, stops at it (bodies block, D443) | new |
+| 2 | Healing Palm | active | the 3-sip flask (D527) | exists |
+| 3 | Devotion | passive | +max SP | exists |
+| 3 | **Rising Slash** | active | an upward cut that throws light enemies into the air | new |
+| 4 | Weapon Training | passive | +attack | exists |
+| 4 | **Shield Bash** | active | breaks a wind-up and deals heavy guard damage (D495); uses the pommel when there is no shield | new |
+| 6 | Fire Strike | active | burns | exists |
+| 6 | Electric Strike | active | stuns, chains to one more enemy | exists |
+| 8 | Riposte Instinct | passive | after a parry, skills hit harder | exists (draft) |
+| 8 | **Ground Slam** | active | knocks down everyone close, on both sides | new |
+| 10 | Last Stand | passive | below 30 % HP, less damage | exists (draft) |
+| 10 | **Holy Javelin** | active | throws a spear of light; the base tree's ranged hit | new |
+| 12 | Fortitude | passive | less damage | exists |
+| 12 | **Battle Cry** | active | +attack for a while; weak enemies close by flinch | new |
+| 14 | **Counter Stance** | active | a short stance: a blow taken in it is blocked and answered hard (not red unblockable attacks) | new |
+| 14 | **Steady Breath** | passive | stamina comes back faster (D537) | new |
+| 16 | **Heavy Hand** | passive | the heavy attack deals more guard damage | new |
+
+### Paladin: 10 active, 9 passive
+
+| Lv | Skill | Kind | Does | |
+|---|---|---|---|---|
+| 5 | Radiant Smite | active | light strike, dazes | exists |
+| 5 | Mending Hands | passive | stronger healing | exists |
+| 5 | **Shield Charge** | active | runs forward behind the shield, knocks enemies back | new |
+| 8 | Aura of Resolve | passive | less damage | exists |
+| 8 | Merciful Light | passive | at low HP, stronger healing | exists (draft) |
+| 8 | **Lightspear** | active | a spear of light that pierces every enemy in a line | new |
+| 10 | Sky's Grace | passive | more SP from hits and parries | exists |
+| 10 | Zealous Answer | passive | after a parry, skills hit harder | exists (draft) |
+| 10 | **Aegis** | active | a barrier of light that soaks damage for a few seconds | new |
+| 10 | **Hallowed Circle** | active | holy ground: enemies in it burn with light, and the hero and the companion heal slowly | new |
+| 12 | Skyfall Blessing | active | strike and heal | exists |
+| 15 | Aura of Valour | passive | +max HP | exists |
+| 15 | Consecrated Ground | passive | after a skill, less damage | exists (draft) |
+| 15 | **Rally** | active | the next companion assist hits harder and stays longer (still one at a time, D515) | new |
+| 15 | **Hammer of Dawn** | active | leap and slam, pillars of light on both sides | new |
+| 18 | Unbroken Vow | passive | less damage | exists |
+| 18 | **Beacon** | active | a flash that dazes every enemy around and clears burning and curses from the hero | new |
+| 18 | **Shield of Faith** | passive | a shield block costs less stamina | new |
+| 20 | Judgement of the Sky | ultimate | the oath's ultimate (D528) | exists |
+
+### Dark Knight: 10 active, 9 passive
+
+| Lv | Skill | Kind | Does | |
+|---|---|---|---|---|
+| 5 | Searing Hex | active | dark fire strike | exists |
+| 5 | Blood Pact | passive | weapon hits heal | exists |
+| 5 | **Blood Rush** | active | a dash to the enemy; the hit drinks HP | new |
+| 8 | Dread Aura | passive | +attack | exists |
+| 8 | Desperate Hunger | passive | at low HP, more lifesteal | exists (draft) |
+| 8 | **Chain of Night** | active | a dark chain pulls one enemy to the hero | new |
+| 10 | Relentless | passive | faster guard break | exists |
+| 10 | Cruel Momentum | passive | after a skill, +attack | exists (draft) |
+| 10 | **Blood Price** | active | pay some HP: the next three hits deal much more | new |
+| 10 | **Night Reaper** | active | a wide, long crescent of dark fire | new |
+| 12 | Withering Grasp | active | lingering dark fire | exists |
+| 15 | Hoarded Ward | passive | less damage | exists |
+| 15 | Dark Riposte | passive | after a parry, skills hit harder | exists (draft) |
+| 15 | **Dread Howl** | active | weak enemies flee for a moment, strong ones flinch | new |
+| 15 | **Hellfire Stomp** | active | leaves a pool of dark fire on the ground | new |
+| 18 | Crimson Thirst | passive | more lifesteal | exists |
+| 18 | **Soul Harvest** | active | executes an enemy with a broken guard or under 20 % HP, gives SP back | new |
+| 18 | **Embers Within** | passive | burning enemies take more damage from the hero | new |
+| 20 | Eclipse Cleave | ultimate | the oath's ultimate (D528) | exists |
+
+### Warden of Balance: 10 active, 9 passive
+
+| Lv | Skill | Kind | Does | |
+|---|---|---|---|---|
+| 5 | Balanced Strike | active | measured strike, stuns | exists |
+| 5 | Bulwark | passive | less damage with a shield | exists |
+| 5 | **Wind Step** | active | a quick step forward with a cut and a moment of invulnerability | new |
+| 8 | Sand Stance | passive | faster guard break | exists |
+| 8 | Still Water | passive | after a parry, less damage | exists (draft) |
+| 8 | **Sand Veil** | active | sand in the eyes: enemies in front miss for a few seconds | new |
+| 10 | Iron Body | passive | +max HP | exists |
+| 10 | Dervish Rhythm | passive | after a skill, faster guard break | exists (draft) |
+| 10 | **Stone Palm** | active | an open palm: huge guard damage, little HP damage | new |
+| 10 | **Sweeping Arc** | active | a low sweep that knocks down everyone in front | new |
+| 12 | Dervish Whirl | active | spinning strike | exists |
+| 15 | Unshakable | passive | less damage | exists |
+| 15 | Rooted Resolve | passive | at low HP, faster guard break | exists (draft) |
+| 15 | **Mirror Stance** | active | a short stance that sends arrows and projectiles back | new |
+| 15 | **Centered Breath** | active | restores stamina fast and a little SP; a hit breaks it | new |
+| 18 | Perfect Balance | passive | +attack | exists |
+| 18 | **Dune Quake** | active | leap and slam; a sand wave both ways knocks enemies down | new |
+| 18 | **Light Feet** | passive | a roll costs less stamina | new |
+| 20 | Second Wind | ultimate | the oath's ultimate (D528) | exists |
+
+### What the new actives need that does not exist yet
+
+Today `SkillCombatExecutor` has one shape: a hit in front, with burn, stun, daze, chain or heal riders. It has three poses: `CastFire`, `CastStorm` and `CastPalm`.
+
+The new actives need:
+- a **dash** and a **leap-slam**, where the hero moves during the skill;
+- a **projectile** (the bow's arrow is the model);
+- **stances** for counter and reflect (the parry window is the model);
+- timed **buffs** (the D529 "for N s after…" passives are the model);
+- **ground zones**;
+- new enemy states: **launched**, **knocked down**, **blinded** and **feared**;
+- a **pull**;
+- an **execute** on a broken guard (D495, `cloud/combat-enemies`).
+
+Around the skills themselves the work also needs:
+- hero poses for the new actives;
+- 33 icons (with D455);
+- the skills screen at 19 nodes a tab, with `485:6490` redrawn first.
+
+### v2 slices (each its own branch and test)
+
+1. **Data and passives.**
+   - Add the 33 rows to `skills.json` as drafts.
+   - Make the 5 new passives work.
+   - The new actives exist in data but cannot be learned until their slice lands.
+   - Re-tune the JP caps (D530) so a full tab cannot be maxed.
+   - Test: `verify_skill_rules`.
+2. **Skills screen at 19 a tab.** Claude redraws Figma `485:6490`, then the screen is built (with D489 and D490).
+3. **Movement skills:** Dash Strike, Shield Charge, Blood Rush, Wind Step, Hammer of Dawn, Dune Quake.
+4. **Ranged and zones:** Holy Javelin, Lightspear, Hallowed Circle, Hellfire Stomp.
+5. **Stances and buffs:** Counter Stance, Mirror Stance, Centered Breath, Battle Cry, Aegis, Blood Price, Rally.
+6. **Control and finishers:** Rising Slash, Ground Slam, Sweeping Arc, Shield Bash, Stone Palm, Chain of Night, Sand Veil, Dread Howl, Beacon, Night Reaper, Soul Harvest. Soul Harvest goes in after `cloud/combat-enemies`.
+7. **Art batch (ComfyUI lane):** hero poses for the new actives, icons, effects.
+
+**Order:**
+- Slice 1, then slice 2.
+- Slices 3–6 in any order. In slice 6, Soul Harvest waits for the guard bar.
+- Slice 7 runs alongside the rest.
+
+**Open:** Q86 (hotbar slots).
 
 ## What exists today
 

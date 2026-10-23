@@ -343,6 +343,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** Q74 (where they live, how they fight, numbers — defaults in the plan) and the ComfyUI art batch.
 - **Resume:** slice 0 — add `enemy_vulture` / `enemy_bat` to `Scripts/Tools/comfy_sprite.py` and render a ×4 candidate sheet for Sapega.
 
+### Skill trees v2: 19 skills a tab — [[skill_trees_plan]] → *v2* (D535)
+- **Exists:** the base tree has 10 skills (3 active) and each oath has 11 (3 active); `SkillCombatExecutor` has one hit shape and three poses.
+- **Waits on:** Sapega reading the draft list of 33 new skills (28 active, 5 passive); Q86 (hotbar slots) for the HUD only.
+- **Resume:** slice 1 — add the 33 draft rows to `skills.json`, make the 5 new passives work, keep the new actives unlearnable, and re-tune the JP caps (D530).
+
 ### Room story flow — one base class — [[code_review_2026-10-19]] §3.1
 - **Exists:** six copies of the same state flow (`_execute_step`, `_play_dialogue`, `advance_state`, `_complete_quest_for_dialogue`) in Canyon, Village, Laboratory, CityGates, DesertRoad, LaboratoryOutside; the "already done → advance" rule only as a comment (B66 came from a missed copy).
 - **Missing:** a `RoomStoryFlow` base with steps as data and the skip rule in one place.
