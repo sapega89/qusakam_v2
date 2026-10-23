@@ -353,6 +353,10 @@ signal companion_joined(companion_id: String)
 @warning_ignore("unused_signal")
 signal weapon_in_hand_changed(slot_id: String)
 
+## Обереги змінились (D592): знайдено, вдягнено, знято, відкрито слот (Systems/Charms.gd).
+@warning_ignore("unused_signal")
+signal charms_changed()
+
 # ============================================
 # SCENE EVENTS
 # ============================================

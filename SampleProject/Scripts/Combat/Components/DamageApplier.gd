@@ -21,6 +21,8 @@ var current_damage: int = 10
 
 ## Удар — крит (D393; ставить PlayerCombat), ціль показує більшу цифру.
 var critical: bool = false
+## Частка, на яку удар сильніший по збитому ворогу (D592, Breaker's Ring); ставить PlayerCombat на кожен удар.
+var staggered_bonus: float = 0.0
 
 ## Чи активний компонент (для контролю через анімації)
 var is_active: bool = false
@@ -95,12 +97,16 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	# Шукаємо HealthComponent у цілі
 	var health_component = _find_health_component(body)
 	
+	# D592: по збитому ворогу удар сильніший на staggered_bonus (оберіг Breaker's Ring)
+	var amount := current_damage
+	if staggered_bonus > 0.0 and body is DefaultEnemy and body.is_staggered():
+		amount = roundi(amount * (1.0 + staggered_bonus))
 	if health_component:
 		# Застосовуємо ушкодження через HealthComponent
-		health_component.apply_damage(current_damage, owner_body, critical)
+		health_component.apply_damage(amount, owner_body, critical)
 	elif IDamageable.is_implemented_by(body):
 		# Гравець — CombatBody2D без HealthComponent: шкода напряму.
-		IDamageable.safe_take_damage(body, current_damage, owner_body, critical)
+		IDamageable.safe_take_damage(body, amount, owner_body, critical)
 	else:
 		# Тіло без здоровʼя (стіна, тригер) — не ціль.
 		return
@@ -109,7 +115,7 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	hit_targets.append(body)
 	
 	# Емітуємо сигнал
-	damage_applied.emit(body, current_damage)
+	damage_applied.emit(body, amount)
 
 ## Зона-ціль ворога (B128): удар по ній — удар по самому ворогу (hit_targets не дасть влучити двічі).
 func _on_hitbox_area_entered(area: Area2D) -> void:

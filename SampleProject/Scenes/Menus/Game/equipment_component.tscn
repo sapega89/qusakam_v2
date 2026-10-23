@@ -106,6 +106,7 @@ theme_override_styles/separator = SubResource("StyleBoxLine_rule")
 [node name="SlotScroll" type="ScrollContainer" parent="Columns/EquipmentPanel/Body"]
 layout_mode = 2
 size_flags_vertical = 3
+follow_focus = true
 horizontal_scroll_mode = 0
 
 [node name="SlotList" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll"]
@@ -150,6 +151,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SlotItemName"
 vertical_alignment = 1
+text_overrun_behavior = 3
 
 [node name="Dot" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
 custom_minimum_size = Vector2(6, 6)
@@ -230,6 +232,18 @@ layout_mode = 2
 theme_type_variation = &"StatDelta"
 
 [node name="RightAttrs" type="VBoxContainer" parent="Columns/AttributesPanel/Body/AttrColumns"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="CharmsHeading" type="Label" parent="Columns/AttributesPanel/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelHeading"
+text = "Charms"
+
+[node name="CharmList" type="VBoxContainer" parent="Columns/AttributesPanel/Body"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

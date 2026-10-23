@@ -1,6 +1,8 @@
 extends ManagerBase
 class_name PlayerStateManager
 
+const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
+
 ## 👤 PlayerStateManager - Управління станом гравця
 ## Винесено з GameManager для розділення відповідальностей
 ## Дотримується принципу Single Responsibility
@@ -91,6 +93,7 @@ static func _initial_state() -> Dictionary:
 		"subclass_id": "paladin",
 		"character_id": GameSettings.DEFAULT_CHARACTER_ID,
 		"weapon_in_hand": "",  # D202: слот зброї в руці, "" — голі руки
+		"charms": Charms.initial_state(),  # D592: знайдені, вдягнені обереги й відкриті слоти
 		"equipment": {
 			"sword": null,
 			"polearm": null,

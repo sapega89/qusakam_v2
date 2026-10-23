@@ -1,6 +1,9 @@
 extends Node
 class_name PlayerMover
 
+const Charms := preload("res://SampleProject/Scripts/Systems/Charms.gd")
+const ArmourWeight := preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
+
 ## Component handling player movement physics, extracted from Player.gd.
 ## Following SRP: this class only cares about gravity, jumping, horizontal
 ## movement and landing detection. Animation state is decided by Player.gd,
@@ -119,8 +122,7 @@ func start_roll() -> bool:
 	var held := Input.get_axis(&"move_left", &"move_right")
 	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
 	last_direction = roll_direction
-	# D535: Light Feet — ривок триває довше з тією ж швидкістю: далі й довше невразливий
-	roll_length = roll_duration * (1.0 + ServiceLocator.get_skill_manager().passive_value("roll_length"))
+	roll_length = roll_duration * roll_factor()
 	roll_time_left = roll_length
 	dash_charges -= 1
 	roll_ready_in = roll_length + roll_cooldown
@@ -128,6 +130,19 @@ func start_roll() -> bool:
 	_pass_through_enemies()
 	AudioManager.play(&"dash")
 	return true
+
+
+## Ривок триває довше чи коротше з тією ж швидкістю, тож і далі, і довше невразливий: Light Feet (D535),
+## оберіг Sand Runner's Ring і вага обладунку (D592).
+func roll_factor() -> float:
+	return 1.0 + ServiceLocator.get_skill_manager().passive_value("roll_length") + Charms.effect(&"roll_length") \
+		+ ArmourWeight.roll_length_of(worn_armour())
+
+
+## Вдягнений обладунок (запис ItemDatabase) або {} — без нього (вага, D592).
+static func worn_armour() -> Dictionary:
+	var body = ServiceLocator.get_game_manager().player_state.equipment.get("body")
+	return {} if body == null else ServiceLocator.get_item_database().get_item(String(body.id))
 
 
 ## D443: ворог зупиняє героя, а перекат проходить крізь нього. Виняток тіл на весь ривок; знімається, щойно герой

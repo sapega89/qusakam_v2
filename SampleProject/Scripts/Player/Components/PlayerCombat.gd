@@ -8,6 +8,7 @@ class_name PlayerCombat
 
 const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+const Charms := preload("res://SampleProject/Scripts/Systems/Charms.gd")
 
 enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, HEAVY_RECOVERY, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED, DRINK }
 
@@ -169,9 +170,13 @@ func _ready() -> void:
 	apply_weapon_profile()
 
 ## Парирування удару ворога зблизька (не стріли) відкриває рипост; з луком рипосту немає — лук б'є стрілами.
+## D592: Grandfather's Ring — парирування лікує частку макс. HP.
 func _on_parried(attacker: Node) -> void:
 	if attacker is DefaultEnemy and grip != &"bow":
 		riposte_left = RIPOSTE_WINDOW
+	var healed := roundi(player.Max_Health * Charms.effect(&"parry_heal"))
+	if healed > 0:
+		player.heal_damage(healed)
 
 ## Профіль удару зброї в руці (D202/D203): кулдаун і відкидання — з items.json; хітбокс — з намальованого шлейфа
 ## удару (B128, WeaponView.drawn_swing_rect): та частина шлейфа, що перед героєм, на його висоту.
@@ -230,6 +235,12 @@ func hit_damage() -> int:
 	var damage: int = gm.calculate_physical_damage()
 	return roundi(damage * CRIT_DAMAGE) if critical else damage
 
+## Удар, що зараз вийде: сила, крит і бонус по збитому ворогу (D592, Breaker's Ring).
+func _load_hit(amount: int) -> void:
+	damage_applier.current_damage = amount
+	damage_applier.critical = critical
+	damage_applier.staggered_bonus = Charms.effect(&"staggered_damage")
+
 func _combo_damage() -> Array[float]:
 	return DUAL_COMBO_DAMAGE if grip == &"dual" else COMBO_DAMAGE
 
@@ -250,8 +261,10 @@ func _physics_process(delta: float) -> void:
 		_chain_left -= delta
 	if _buffer_left > 0.0:
 		_buffer_left -= delta
+	# D592: з Sand Runner's Ring блоку немає — утримана кнопка нічого не робить
+	var guarding := block_held and not Charms.has_effect(&"no_block")
 	# Блок, натиснутий посеред удару, тримають — він зриває удар, щойно настало відновлення (D504)
-	if block_held and can_cancel_attack():
+	if guarding and can_cancel_attack():
 		cancel_attack()
 	if state == State.BLOCK:
 		_block_time += delta
@@ -259,7 +272,7 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 		return
 	if state == State.READY:
-		if block_held:
+		if guarding:
 			_start_block()
 		elif _queued and attack_cooldown <= 0.0:
 			# Наступний удар серії — кадром пізніше: хітбокс мусить хоч кадр побути вимкненим,
@@ -418,8 +431,7 @@ func perform_attack(last_direction: int) -> void:
 	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
-	damage_applier.current_damage = roundi(hit_damage() * _combo_damage()[combo_step])
-	damage_applier.critical = critical
+	_load_hit(roundi(hit_damage() * _combo_damage()[combo_step]))
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	var body: StringName = SWING_ANIMATIONS.get(_category, &"Attack")
@@ -469,8 +481,7 @@ func _strike_heavy() -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	# D535: Heavy Hand — важкий удар б'є по стійкості сильніше
 	_poise = roundi(_poise_of(POISE_HEAVY) * (1.0 + ServiceLocator.get_skill_manager().passive_value("heavy_poise")))
-	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
-	damage_applier.critical = critical
+	_load_hit(roundi(hit_damage() * heavy_damage))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)
@@ -487,8 +498,7 @@ func _riposte(last_direction: int) -> void:
 	_state_left = heavy_strike_time
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = RIPOSTE_POISE
-	damage_applier.current_damage = roundi(hit_damage() * RIPOSTE_DAMAGE)
-	damage_applier.critical = critical
+	_load_hit(roundi(hit_damage() * RIPOSTE_DAMAGE))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)

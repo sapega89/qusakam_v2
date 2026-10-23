@@ -12,6 +12,8 @@ class_name Chest
 
 signal opened(contents: Dictionary)
 
+const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
+
 ## Поза героя, поки предмет над головою: анімація "Raise" у Player.tscn (арт A1 «hero_raise»: Raise/1 нахил,
 ## Raise/3 руки над головою — тримається до кінця; Raise/2 у репо немає, B91).
 const HERO_POSE := &"Raise"
@@ -20,6 +22,8 @@ const RAISE_SECONDS := 1.2
 
 ## item_id → кількість. Лише предмети з ItemDatabase; невідомий id вимикає скриню, нічого не вигадуючи.
 @export var contents: Dictionary[String, int] = {}
+## Оберіг у скрині (D592, charms.json) або "" — без оберега. Скриня може тримати лише його.
+@export var charm: String = ""
 ## Скриня, поставлена в кімнату, відкривається один раз. false — поза кімнатою (тести).
 @export var persistent: bool = true
 
@@ -40,8 +44,12 @@ func _ready() -> void:
 		return
 	_sprite.play(&"closed")
 	var db := _item_database()
-	if contents.is_empty():
+	if contents.is_empty() and charm == "":
 		push_error("Chest: no contents at %s" % get_path())
+		_interactable.enabled = false
+		return
+	if charm != "" and Charms.get_charm(charm).is_empty():
+		push_error("Chest: unknown charm '%s' at %s" % [charm, get_path()])
 		_interactable.enabled = false
 		return
 	for item_id: String in contents:
@@ -60,6 +68,8 @@ func _on_interacted() -> void:
 		if inventory == null or not inventory.add_item(item_id, contents[item_id]):
 			DebugLogger.warning("Chest: could not add '%s' to the inventory" % item_id, "Chest")
 			return
+	if charm != "":
+		Charms.grant(charm)
 	is_open = true
 	_interactable.enabled = false
 	if persistent:
@@ -75,7 +85,7 @@ func _play_opening() -> void:
 	var player := Game.get_singleton().player
 	player.set_movement_enabled(false)
 	player.get_node(^"AnimationPlayer").play(HERO_POSE)
-	_found.texture = _item_database().get_item_icon(contents.keys()[0])
+	_found.texture = Charms.icon(charm) if charm != "" else _item_database().get_item_icon(contents.keys()[0])
 	_found.global_position = player.global_position + _found_offset
 	_found.visible = true
 	await get_tree().create_timer(RAISE_SECONDS).timeout
@@ -85,6 +95,8 @@ func _play_opening() -> void:
 	if ui:
 		var db := _item_database()
 		var lines: Array[String] = []
+		if charm != "":
+			lines.append(Charms.charm_name(charm))
 		for item_id: String in contents:
 			lines.append("%s × %d" % [db.get_item_name(item_id), contents[item_id]])
 		ui.show_modal(ModalTemplates.items_obtained(lines))
