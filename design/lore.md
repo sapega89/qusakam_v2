@@ -50,6 +50,8 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **The barrier fell asleep because nobody prayed to the relic.** With no prayers the Maiden, a punishing
   angel-like being, had **no strength**, so the barrier slept and the bandits found the village.
 - **No angels and no demons** in this world: only **spirits, gods and demigods** — **followers of the divine path**.
+- **A dragon is equal to a god — perhaps stronger; nobody has checked** (Sapega, 2026-10-23: «дракон прирівнюється до бога,
+  може навіть сильніше за нього, ніхто не перевіряв»). This sharpens the 2026-10-18 line «like deities, but not deities».
   The Maiden is one of these, not an angel.
 - Open (not said): is the relic a statue, an object or the Maiden herself? Who sent the bandits for it?
   Are Kusakam's paladin powers tied to her?
