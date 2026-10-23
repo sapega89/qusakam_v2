@@ -69,7 +69,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)
-	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 20: await physics_frame
 	await _drain(dm)
 	var sm: Node = sl.get_skill_manager()

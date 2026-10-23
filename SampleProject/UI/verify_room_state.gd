@@ -57,11 +57,11 @@ func _initialize() -> void:
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var game: Node = await _boot()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 10: await physics_frame
 	var road: String = metsys.get_current_room_name()
 	game.set_room_state(road, "test_key", 42)
-	game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
 	for i in 10: await physics_frame
 	ck(metsys.get_current_room_name() != road, "left the road (%s)" % metsys.get_current_room_name())
 	ck(game.get_room_state(road, "test_key") == 42, "the road's state is still there")
@@ -87,7 +87,7 @@ func _initialize() -> void:
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 	await _drain(dm)
 	game.set_quest_flag("desert_road_monologue_complete", true)
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
 	for k in 3:
 		await create_timer(1.0).timeout
 		await _drain(dm)
@@ -100,10 +100,10 @@ func _initialize() -> void:
 	for i in 10: await physics_frame
 	var hurt_hp: int = hurt.current_health
 	ck(hurt_hp < hurt.Max_Health, "one enemy hurt (%d / %d)" % [hurt_hp, hurt.Max_Health])
-	game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
 	for i in 20: await physics_frame
 	started.clear()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
 	await create_timer(WAVES_TIME).timeout  # DesertRoad спавнить хвилями: 2 + 2 через 1.5 с
 	ck(not started.has("DesertRoad_Fight"), "the fight line is not played again (%s)" % [started])
 	enemies = _enemies(game)
@@ -131,7 +131,7 @@ func _initialize() -> void:
 
 	print("[6] City Gates: the guards are still there after leaving and coming back")
 	game.set_quest_flag("city_gates_intro_complete", true)
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for k in 3:
 		await create_timer(1.0).timeout
 		await _drain(dm)
@@ -140,10 +140,10 @@ func _initialize() -> void:
 	ck(guards.size() == 3, "3 guards at the gates (%d)" % guards.size())
 	guards[0].take_damage(30)
 	for i in 10: await physics_frame
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_BeforeCity")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_BeforeCity")
 	for i in 20: await physics_frame
 	started.clear()
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	await create_timer(WAVES_TIME).timeout
 	ck(not started.has("CityGates_Fight"), "no fight line on return (%s)" % [started])
 	ck(_enemies(game).size() == 3, "all 3 guards back (%d)" % _enemies(game).size())

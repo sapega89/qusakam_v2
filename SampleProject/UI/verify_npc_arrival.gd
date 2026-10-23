@@ -89,7 +89,7 @@ func _walk_in(player: CharacterBody2D) -> void:
 func _arrival(game: Node, sl: Node, room: String, start: NodePath, npc_name: String, door_name: String, task: String,
 		flag: String, first_line: String, start_x: float = 0.0) -> void:
 	var dm: Node = sl.get_dialogue_manager()
-	game.teleport_to_room(room, start)
+	await game.teleport_to_room(room, start)
 	for i in 30: await physics_frame
 	if start_x > 0.0:  # past the room's own dialogue triggers (Road monologue; City_Merchant zone before D311)
 		game.player.global_position = Vector2(start_x, 360)
@@ -123,7 +123,7 @@ func _arrival(game: Node, sl: Node, room: String, start: NodePath, npc_name: Str
 	dm.dialogue_started.disconnect(on_start)
 
 	# Повернувшись у кімнату — NPC уже стоїть, сцена не повторюється.
-	game.teleport_to_room(room, start)
+	await game.teleport_to_room(room, start)
 	for i in 30: await physics_frame
 	if start_x > 0.0:
 		game.player.global_position = Vector2(start_x, 360)
@@ -182,10 +182,10 @@ func _initialize() -> void:
 	ck(TASKS.can_turn_in(caravan), "after the gates fight")
 
 	print("[6] The caravan merchant has moved on to the City (D311): gone from the road, at work past the City gates")
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 30: await physics_frame
 	ck(game.map.get_node_or_null(^"Merchant") == null, "no merchant on the Desert Road after the gates fight")
-	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 30: await physics_frame
 	var merchant: NpcBase = game.map.get_node(^"Merchant")
 	var hero: CharacterBody2D = game.player

@@ -163,7 +163,7 @@ func _initialize() -> void:
 
 	print("[1] Arriving: the queue waits, nothing plays")
 	var loads_before: int = game._load_room_call_count
-	game.teleport_to_room(HALL, ^"Arrival")
+	await game.teleport_to_room(HALL, ^"Arrival")
 	for i in 30: await physics_frame
 	ck(game._load_room_call_count - loads_before == 1, "one teleport loads the room once (B51, %d)" % (game._load_room_call_count - loads_before))
 	ck(_hall() != null, "in the Mayor Hall")
@@ -207,7 +207,7 @@ func _initialize() -> void:
 	ck(started.count("City_MayorHall") == 1, "the queue played once (%s)" % [started])
 
 	print("[4] Same beat, skipped with a real Tab hold, from the same start")
-	game.teleport_to_room(HALL, ^"Arrival")
+	await game.teleport_to_room(HALL, ^"Arrival")
 	for i in 30: await physics_frame
 	started.clear()
 	ck(_state() == "QUEUE", "a fresh hall starts at the queue (%s)" % _state())

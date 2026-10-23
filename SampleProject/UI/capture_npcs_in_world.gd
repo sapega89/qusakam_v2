@@ -20,7 +20,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
 	for spot in SPOTS:
-		game.teleport_to_room(spot[0], spot[1])
+		await game.teleport_to_room(spot[0], spot[1])
 		for i in 90: await physics_frame
 		for i in 300:
 			if not dm.is_dialogue_active(): break
@@ -35,7 +35,7 @@ func _initialize() -> void:
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png(ProjectSettings.globalize_path("res://design/shots/%s.png" % spot[2]))
 	# Ворог зі смужкою HP (D170: смужка над головою під збільшеною камерою).
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Merchant")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Merchant")
 	for i in 60: await physics_frame
 	game.map.get_node("EnemySpawner").spawn_all_enemies()
 	for i in 30: await physics_frame

@@ -49,7 +49,7 @@ func _initialize() -> void:
 	var sheet := Image.create(CROP.x * (MOMENTS + 1), CROP.y * SPOTS.size(), false, Image.FORMAT_RGBA8)
 	for row in SPOTS.size():
 		var spot: Array = SPOTS[row]
-		game.teleport_to_room(spot[0], spot[1])
+		await game.teleport_to_room(spot[0], spot[1])
 		for i in 90: await physics_frame
 		for i in 300:
 			if not dm.is_dialogue_active(): break

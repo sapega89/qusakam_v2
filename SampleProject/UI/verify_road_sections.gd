@@ -96,7 +96,7 @@ func _initialize() -> void:
 	# The story beats of the road are done — only the sections are under test.
 	for flag in ["desert_road_monologue_complete", "desert_road_fight_complete", "desert_road_merchant_met"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room(ROAD, ^"Arrival_Start")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
 	var road: Node = game.map
 	var player: CharacterBody2D = game.player
@@ -121,7 +121,7 @@ func _initialize() -> void:
 		ck(_alive(spawner).is_empty(), "%s: won" % fight)
 
 	print("[2] A won section stays won")
-	game.teleport_to_room(ROAD, ^"Arrival_Start")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
 	road = game.map
 	for fight: String in FIGHTS:
@@ -166,7 +166,7 @@ func _initialize() -> void:
 	if layer.active_modal:
 		layer.active_modal.get_viewport().gui_get_focus_owner().pressed.emit()
 		for i in 4: await process_frame
-	game.teleport_to_room(ROAD, ^"Arrival_Start")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
 	ck(game.map.get_node_or_null("Pickup_DuneLedge") == null, "the picked ingot does not come back")
 	ck(game.map.get_node_or_null("Pickup_MesaLedge") != null, "the other ledges keep theirs")

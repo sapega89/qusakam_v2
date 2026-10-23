@@ -44,7 +44,7 @@ func _initialize() -> void:
 		game.set_quest_flag(flag, true)
 
 	# 1. Торговець за роботою біля брами, герой ліворуч.
-	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 60: await physics_frame
 	await _drain(dm)
 	var merchant: NpcBase = game.map.get_node(^"Merchant")

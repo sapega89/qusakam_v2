@@ -44,7 +44,7 @@ func _enter_canyon(game: Node, flags: Dictionary) -> void:
 	var all: Dictionary = game.get_quest_flags().duplicate()
 	all.merge(flags, true)
 	game.set_quest_flags(all)
-	game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
 	for i in 20: await process_frame
 
 func _initialize() -> void:

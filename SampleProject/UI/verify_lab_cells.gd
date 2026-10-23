@@ -182,7 +182,7 @@ func _initialize() -> void:
 
 	print("[1] Arriving from the Mayor Hall: the cells cutscene plays through")
 	game.set_quest_flag("city_mayor_hall_complete", true)
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	started.clear()
 	await _until(func() -> bool: return dm.is_dialogue_active(), 6.0)
 	var cells := _cells()
@@ -217,14 +217,14 @@ func _initialize() -> void:
 
 	print("[2] The same beat skipped with a real Tab hold, from the same start")
 	game.set_quest_flag("lab_cells_cutscene_complete", false)
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	started.clear()
 	await _skip_to("AWAKE", _key(KEY_TAB, true), _key(KEY_TAB, false))
 	_same(played, _snap(), "cells")
 	ck(started == CELLS_TALKS, "skipped: every talk paged through (%s)" % [started])
 
 	print("[3] The cutscene plays once: back in the room, nothing replays")
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	started.clear()
 	for i in 60: await physics_frame
 	ck(_state() == "AWAKE" and started.is_empty() and not game.player.event, "AWAKE, no talk, control free (%s, %s)" % [_state(), started])
@@ -248,7 +248,7 @@ func _initialize() -> void:
 	print("[5] The acquaintance skipped with a real pad Y hold, from the same start")
 	for f: String in game.get_quest_flags().keys():
 		game.set_quest_flag(f, before_meet.get(f, false))
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	for i in 60: await physics_frame
 	ck(_state() == "AWAKE", "back at the wake (%s)" % _state())
 	started.clear()

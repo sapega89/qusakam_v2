@@ -181,7 +181,7 @@ func _initialize() -> void:
 		sl.get_companion_manager().join_on_unlock(flag)  # як у 9.5: відкритий — у загін
 
 	print("[1] Arriving: the djinn waits asleep, the gates are down, nothing plays")
-	game.teleport_to_room(HALL, ^"Arrival")
+	await game.teleport_to_room(HALL, ^"Arrival")
 	for i in 30: await physics_frame
 	started.clear()
 	for i in 30: await physics_frame
@@ -220,7 +220,7 @@ func _initialize() -> void:
 
 	print("[4] Same beat, skipped with a real Tab hold, from the same start")
 	game.set_quest_flag("lab_boss_talk_complete", false)
-	game.teleport_to_room(HALL, ^"Arrival")
+	await game.teleport_to_room(HALL, ^"Arrival")
 	for i in 30: await physics_frame
 	started.clear()
 	ck(_state() == "WAIT", "a fresh hall waits (%s)" % _state())

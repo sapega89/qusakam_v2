@@ -4,24 +4,35 @@ class_name ScreenFade
 ## Затемнення екрана для кат-сцен (design/cutscene_plan.md). Один чорний шар у корені дерева,
 ## нижче за діалог (шар 100), тож репліки читаються поверх чорного.
 ##   await ScreenFade.to_black(self)   …   await ScreenFade.from_black(self)
+## Зміна кімнати й старт гри з меню (D434) гасять і запалюють той самий шар, коротше — UITokens.ROOM_FADE_TIME.
 
 const LAYER := 90
 const NODE_NAME := &"ScreenFade"
 
 
-static func to_black(host: Node) -> void:
-	await _fade(host, 1.0)
+static func to_black(host: Node, time: float = UITokens.FADE_TIME) -> void:
+	await _fade(host, 1.0, time)
 
 
-static func from_black(host: Node) -> void:
-	await _fade(host, 0.0)
+static func from_black(host: Node, time: float = UITokens.FADE_TIME) -> void:
+	await _fade(host, 0.0, time)
 	_overlay(host).get_parent().queue_free()
 
 
-static func _fade(host: Node, alpha: float) -> void:
+## Чорний шар є (екран темний або темніє чи світлішає).
+static func is_on(host: Node) -> bool:
+	return host.get_tree().root.has_node(NodePath(NODE_NAME))
+
+
+## Екран уже повністю чорний — гасити нема чого.
+static func is_black(host: Node) -> bool:
+	return is_on(host) and is_equal_approx(_overlay(host).color.a, 1.0)
+
+
+static func _fade(host: Node, alpha: float, time: float) -> void:
 	var rect := _overlay(host)
 	var tween := rect.create_tween()
-	tween.tween_property(rect, "color:a", alpha, UITokens.FADE_TIME)
+	tween.tween_property(rect, "color:a", alpha, time)
 	await tween.finished
 
 

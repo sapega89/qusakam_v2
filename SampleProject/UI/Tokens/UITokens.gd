@@ -274,6 +274,7 @@ const SIZE_SHOP_TITLE := 22        # "All Wares" — SemiBold, accent
 const CRAFT_ROW_HEIGHT := 60
 const CRAFT_ROW_NAME_GAP := 2
 const FADE_TIME := 0.6  # затемнення кат-сцени (ScreenFade), секунд
+const ROOM_FADE_TIME := 0.25  # зміна кімнати й старт гри з меню: згасання і поява, секунд (D434)
 # Облачко над головою (D178). Арт тимчасовий: Assets/UI/Dialogue/bubble_*.png (D160).
 const BUBBLE_MARGIN := 24          # поле 9-slice у bubble_body.png
 const BUBBLE_PADDING := 14         # від контуру до тексту

@@ -136,7 +136,7 @@ func _initialize() -> void:
 	ck(g_anim.current_animation == "work", "grandfather: back to his pipe after the dialogue (%s)" % g_anim.current_animation)
 
 	print("[5] B81: the anvil stands at the forge the whole time, the smith walks out to it without carrying it")
-	world.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await world.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 30: await physics_frame
 	var city: Node = world.map
 	var smith: NpcBase = city.get_node(^"Blacksmith")

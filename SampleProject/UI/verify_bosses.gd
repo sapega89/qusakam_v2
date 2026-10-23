@@ -57,7 +57,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	game.set_quest_flag("desert_road_monologue_complete", true)
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	await create_timer(1.5).timeout

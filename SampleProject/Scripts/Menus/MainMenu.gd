@@ -6,6 +6,7 @@ extends Control
 ## Continue відкриває Save Slot Selection у режимі LOAD).
 
 const LOAD_MENU_PATH := "res://SampleProject/Scenes/Menus/LoadGameMenu.tscn"
+const GAME_PATH := "res://SampleProject/Game.tscn"
 const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 
 @onready var menu: VBoxContainer = $Center/Menu
@@ -116,11 +117,16 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		_confirm_exit()
 
+## D434: меню гасне в чорне, гра вантажиться у фоні (SceneLoader), і вже вона світлішає, коли кімната готова.
+## Клік — звичайний кадр меню, а не пів секунди завмирання (performance_plan, slice 6).
 func new_game_button_up() -> void:
+	if ScreenFade.is_on(self):
+		return  # гра вже стартує: другий клік під час згасання
 	# Set flag to indicate this is a new game (don't load save)
 	# Save file will remain but won't be loaded until explicitly loaded
 	get_tree().set_meta("start_new_game", true)
-	get_tree().change_scene_to_file("res://SampleProject/Game.tscn")
+	await ScreenFade.to_black(self, UITokens.ROOM_FADE_TIME)
+	SceneLoader.load_scene(GAME_PATH)
 
 ## Continue → Save Slot Selection у режимі LOAD (D72, D75). Вибір слота — там.
 func continue_pressed() -> void:

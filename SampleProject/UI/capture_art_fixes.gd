@@ -126,7 +126,7 @@ func _until(ok: Callable) -> void:
 
 func _room(room: String, mark: NodePath) -> void:
 	if not game.map.scene_file_path.ends_with(room + ".tscn"):
-		game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % room, mark)
+		await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % room, mark)
 		for i in 30: await physics_frame
 		await _drain()
 

@@ -81,7 +81,7 @@ func _initialize() -> void:
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
 	print("[1] Arriving: nothing plays until the road reaches the trigger")
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 30: await physics_frame
 	var room: Node = game.map
 	ck(room.get_current_state_name() == "APPROACH", "waits in APPROACH (%s)" % room.get_current_state_name())
@@ -153,9 +153,9 @@ func _initialize() -> void:
 
 	print("[6] Coming back mid-fight does not replay the raid")
 	started.clear()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_BeforeCity")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"SavePoint_BeforeCity")
 	for i in 20: await physics_frame
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 60: await physics_frame
 	ck(game.map.get_current_state_name() == "FIGHT_LOOP", "back in FIGHT_LOOP (%s)" % game.map.get_current_state_name())
 	ck(not started.has("CityGates") and not started.has("CityGates_Raid"), "no raid lines (%s)" % [started])
@@ -168,7 +168,7 @@ func _initialize() -> void:
 	flags.erase("city_gates_intro_complete")  # знову APPROACH — RaidTrigger чатує
 	game.set_quest_flags(flags)
 	started.clear()
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	var body: Transform2D = PhysicsServer2D.body_get_state(player.get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM)
 	ck(body.origin.is_equal_approx(player.global_position), "physics body at the arrival right away (%s vs %s)" % [body.origin, player.global_position])
 	var y0: float = player.global_position.y
@@ -180,7 +180,7 @@ func _initialize() -> void:
 	print("[8] 8c/8d: the gatehouse is a passage the hero walks through, every gate layer behind him (D314); walking east loads the City inside it")
 	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 30: await physics_frame
 	room = game.map
 	ck(room.get_current_state_name() == "TO_CITY", "TO_CITY (%s)" % room.get_current_state_name())

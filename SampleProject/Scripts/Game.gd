@@ -4,6 +4,18 @@ class_name Game
 
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
 const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
+const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreloader.gd")
+const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
+
+## Екран чорний, кімната завантажена — стара зараз зміниться на нову (D434).
+signal room_swapping
+## Зміна кімнати закінчилась: екран знову світлий (D434). Гравця вже поставлено.
+signal room_change_finished
+
+## Фонове завантаження кімнат (RoomPreloader.gd).
+var room_preloader: RoomPreloader
+## Від початку затемнення до кінця появи (D434). Нова зміна кімнати чекає, поки скінчиться ця.
+var room_changing: bool = false
 
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
 @export var starting_map: String = "Canyon.tscn"
@@ -43,19 +55,7 @@ func _ready() -> void:
 	if game_instance_id.is_empty():
 		_last_game_id += 1
 		game_instance_id = "Game_%d_%d" % [Time.get_ticks_msec(), _last_game_id]
-		print("🆔 [Game] Створено новий екземпляр з ID: %s" % game_instance_id)
-	else:
-		print("🆔 [Game] Використовується існуючий екземпляр з ID: %s" % game_instance_id)
-	
-	# ТИМЧАСОВО: діагностика квестових прапорців. Прибрати після розбору.
-	DebugLogger.current_level = DebugLogger.LogLevel.INFO
 
-	print("=")
-	print("🎮 [Game] ========== _ready() ВИКЛИКАНО (виклик #%d) ==========" % _ready_call_count)
-	print("🆔 [Game] ID екземпляру: %s" % game_instance_id)
-	print("🎮 [Game] Поточна сцена: %s" % (get_tree().current_scene.scene_file_path if get_tree().current_scene else "null"))
-	print("🎮 [Game] Поточний час: %s" % Time.get_datetime_string_from_system())
-	
 	# ВАЖЛИВО: Встановлюємо мета-значення singleton ПЕРЕД викликом get_singleton()
 	# Це потрібно для того, щоб get_singleton() міг знайти екземпляр
 	get_script().set_meta(&"singleton", self)
@@ -63,53 +63,34 @@ func _ready() -> void:
 	# Перевірка, чи це той самий екземпляр
 	var singleton = Game.get_singleton()
 	if singleton and singleton != self:
-		print("⚠️ [Game] УВАГА: Знайдено ІНШИЙ екземпляр Game!")
-		print("⚠️ [Game] Поточний ID: %s" % game_instance_id)
-		print("⚠️ [Game] Singleton ID: %s" % (singleton.game_instance_id if singleton.has("game_instance_id") else "N/A"))
-		print("⚠️ [Game] ЦЕ МОЖЕ БУТИ ПРИЧИНОЮ ПОДВІЙНОЇ ТЕЛЕПОРТАЦІЇ - створено новий екземпляр!")
-	
+		push_warning("Game: another Game instance is the singleton (%s, this one %s)" % [singleton.game_instance_id, game_instance_id])
+
 	# singleton meta можно оставить, но это тоже выполнится много раз — ок
 	get_script().set_meta(&"singleton", self)
 
 	# ВАЖНО: bootstrap только один раз
 	if _bootstrapped:
-		print("⚠️ [Game] _ready() вже викликано (_bootstrapped=true), пропускаємо ініціалізацію")
-		print("⚠️ [Game] ID екземпляру: %s" % game_instance_id)
-		print("⚠️ [Game] ЦЕ МОЖЕ БУТИ ПРИЧИНОЮ ПОДВІЙНОЇ ТЕЛЕПОРТАЦІЇ - гра перестворюється!")
-		print("⚠️ [Game] Stack trace:")
-		print_stack()
 		DebugLogger.warning("Game: ⚠️ _ready() вже викликано (_bootstrapped=true), пропускаємо ініціалізацію", "Game")
 		DebugLogger.warning("Game: ⚠️ ЦЕ МОЖЕ БУТИ ПРИЧИНОЮ ПОДВІЙНОЇ ТЕЛЕПОРТАЦІЇ - гра перестворюється!", "Game")
-		print("=")
 		return
 	_bootstrapped = true
-	print("✅ [Game] _ready() викликано вперше, ініціалізуємо гру")
-	print("🆔 [Game] Екземпляр Game з ID: %s" % game_instance_id)
 	DebugLogger.info("Game: ✅ _ready() викликано вперше, ініціалізуємо гру", "Game")
 
 	# D417: курсор схований у грі, Alt показує його; меню й модалки — завжди з курсором.
 	add_child(MouseCursorScene.instantiate())
 
 	# Make sure MetSys is in initial state (ТОЛЬКО НА НОВЫЙ ЗАПУСК ИЗ МЕНЮ)
-	print("🔄 [Game] Скидаємо стан MetSys...")
 	MetSys.reset_state()
-	print("✅ [Game] MetSys стан скинуто")
 
 	var player_node = $Player
 	if player_node:
-		print("✅ [Game] Player node знайдено: %s" % player_node.name)
 		set_player(player_node)
 		player_node.process_mode = Node.PROCESS_MODE_INHERIT
 		player_node.visible = true
-		print("✅ [Game] Player налаштовано: process_mode=%d, visible=%s" % [player_node.process_mode, player_node.visible])
 	else:
 		push_error("🎮 Game: Player node NOT FOUND!")
-		print("❌ [Game] Player node НЕ ЗНАЙДЕНО!")
 
-	print("📞 [Game] Викликаємо _initialize_save_and_room() через call_deferred...")
 	call_deferred("_initialize_save_and_room")
-	print("✅ [Game] _ready() завершено, _initialize_save_and_room() заплановано")
-	print("=")
 
 
 ## Game Menu відкривається дією game_menu — Esc або Start (D156). Не ui_cancel: на ньому кнопка B,
@@ -164,11 +145,9 @@ func _get_current_save_path() -> String:
 
 func _initialize_save_and_room() -> void:
 	if _save_room_initialized:
-		print("⚠️ [Game] _initialize_save_and_room() вже викликано, пропускаємо")
 		DebugLogger.warning("Game: ⚠️ _initialize_save_and_room() вже викликано, пропускаємо", "Game")
 		return
 	_save_room_initialized = true
-	print("✅ [Game] _initialize_save_and_room() викликано вперше")
 	DebugLogger.info("Game: ✅ _initialize_save_and_room() викликано вперше", "Game")
 	# Check if this is a new game (don't load save) or loading from save
 	var start_new_game = get_tree().get_meta("start_new_game", false)
@@ -234,9 +213,11 @@ func _initialize_save_and_room() -> void:
 		push_error("Cannot resolve starting_map to scene ref: %s" % starting_map)
 		return
 
-	print("🚪 [Game] Викликаємо load_room() для: %s" % scene_path)
-	load_room(scene_path)  # навмисно без await: нижче є своє очікування кадру
-	print("🚪 [Game] load_room() викликано для: %s" % scene_path)
+	# Сусідів і цілі дверей вантажить у фоні з першої ж кімнати (performance_plan, slice 2–3).
+	room_preloader = RoomPreloader.new(self)
+	modules.append(room_preloader)
+	# Без старої мапи load_room() синхронний (перша кімната; з меню — під чорним екраном, D434).
+	load_room(scene_path)
 
 
 	# Нова гра — гравець на мітці Arrival стартової кімнати. Завантаження — там, де він зберігся (B82):
@@ -249,15 +230,8 @@ func _initialize_save_and_room() -> void:
 		await get_tree().process_frame  # Ждём загрузки комнаты
 		_position_player_at_start()
 
-	# Add module for room transitions.
-	# УВАГА: тільки ScrollingRoomTransitions. Він обнуляє game.map перед
-	# завантаженням, через що базовий load_room() не чекає map.tree_exited і
-	# відпрацьовує синхронно. RoomTransitions так не робить і вимагає await у
-	# нашому override — а це ламає переходи (див. коментар у load_room()).
-	var transitions := add_module("ScrollingRoomTransitions.gd")
-	transitions.SCROLL_TIME = 0.4      # тривалість доїзду камери, с
-	transitions.SCROLL_DISTANCE = 0.5  # дистанція в частках екрана (1.0 = повний екран)
-	print("📦 [Game] Модуль ScrollingRoomTransitions.gd додано")
+	# Перехід пішки крізь край кімнати — через затемнення (D434), як двері й телепорти: усі йдуть через load_room().
+	add_module(FADE_ROOM_TRANSITIONS)
 
 	# Reset position tracking (feature specific to this project).
 	await get_tree().physics_frame
@@ -347,55 +321,88 @@ func _sync_player_state_to_save_system():
 var _load_room_call_count: int = 0
 var _last_load_room_path: String = ""
 
+## Єдиний шлях зміни кімнати: прохід крізь край (FadeRoomTransitions), двері й телепорти (teleport_to_room).
+## D434: екран гасне, кімната довантажується (зазвичай уже готова у фоні, RoomPreloader), стара міняється на нову
+## під чорним, і екран світлішає. Гра на цей час на паузі, але кадри йдуть — нічого не зависає.
+## Повертається одразу після заміни, коли екран ще чорний: викликач ставить гравця, і лише тоді його видно.
+## Кінець появи — сигнал room_change_finished.
 func load_room(room_ref: String) -> void:
-	"""Перевизначений load_room() з логуванням для діагностики"""
 	_load_room_call_count += 1
 	var normalized_path = _normalize_room_ref_to_scene_ref(room_ref)
-	
-	print("🚪 [Game] load_room() викликано #%d: room_ref='%s', path='%s'" % [_load_room_call_count, room_ref, normalized_path])
-	print("🆔 [Game] ID екземпляру: %s" % game_instance_id)
-	
+
 	# Перевірка на повторний виклик для тієї ж кімнати
 	# Перевіряємо як по шляху, так і по поточній кімнаті MetSys
 	var current_room_name = MetSys.get_current_room_name()
 	var current_room_path = MetSys.get_full_room_path(current_room_name) if current_room_name != "" else ""
-	
+
 	# ВАЖЛИВО: Блокуємо тільки якщо намагаємося завантажити ТУ Ж кімнату, в якій вже знаходимося
 	# Але дозволяємо перехід до НОВОЇ кімнати (наприклад, Canyon → DesertRoad)
 	if current_room_path == normalized_path:
-		# Намагаємося завантажити кімнату, в якій вже знаходимося
-		print("⚠️ [Game] load_room() викликано для вже завантаженої кімнати (поточна кімната MetSys): %s" % current_room_name)
-		print("🆔 [Game] ID екземпляру: %s" % game_instance_id)
-		print("⚠️ [Game] БЛОКУЄМО ПОДВІЙНИЙ ВИКЛИК, щоб запобігти подвійній телепортації!")
 		DebugLogger.warning("Game: load_room() викликано для вже завантаженої кімнати: %s" % normalized_path, "Game")
 		return  # Блокуємо подвійний виклик
-	
+
 	# Якщо це перехід до НОВОЇ кімнати, оновлюємо _last_load_room_path
 	_last_load_room_path = normalized_path
-	
-	# Викликаємо базовий метод.
-	# УВАГА: свідомо БЕЗ await — перевірено, що з ним переходи зациклюються
-	# (Canyon <-> Village сотнями разів). Зі ScrollingRoomTransitions await і не
-	# потрібен: модуль обнуляє game.map, тому базовий load_room() не доходить до
-	# `await map.tree_exited` і відпрацьовує синхронно в одному кадрі.
-	super.load_room(room_ref)
+
+	var path: String = RoomPreloader.scene_path(normalized_path)
+	if map == null:
+		# Перша кімната гри. Без старої мапи базовий load_room() синхронний.
+		super.load_room(path)
+		if ScreenFade.is_on(self):
+			room_changing = true
+			_lift_fade()
+		return
+
+	while room_changing:
+		await room_change_finished
+	room_changing = true
+	var tree := get_tree()
+	var was_paused := tree.paused
+	tree.paused = true
+	room_preloader.request(path)
+	# Кат-сцена могла вже затемнити екран сама (Canyon, MayorHall) — тоді гасити нічого.
+	if not ScreenFade.is_black(self):
+		await ScreenFade.to_black(self, UITokens.ROOM_FADE_TIME)
+	# Чорне тримається лише доки кімната ще вантажиться.
+	await room_preloader.wait(path)
+
+	room_swapping.emit()
+	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
+	# синхронно, а MetSys.current_room одразу стає новою.
+	var old_map := map
+	var old_room: Node = MetSys.get_current_room_instance()
+	old_room.get_parent().remove_child(old_room)
+	old_room.queue_free()
+	map = null
+	super.load_room(path)
+	old_map.queue_free()
+	tree.paused = was_paused
+	_lift_fade()
+
+
+## Поява після заміни кімнати. Без await у load_room(): викликач ставить гравця в тому ж кадрі, до першого світлого.
+func _lift_fade() -> void:
+	await ScreenFade.from_black(self, UITokens.ROOM_FADE_TIME)
+	room_changing = false
+	room_change_finished.emit()
+
+
+## Кат-сцена, що закінчиться телепортом, просить цільову кімнату заздалегідь (performance_plan, slice 3).
+func preload_room(room_path: String) -> void:
+	room_preloader.request(RoomPreloader.scene_path(room_path))
 
 func reset_map_starting_coords():
 	$UI/MapWindow.reset_starting_coords()
 
-## Телепорт у кімнату, не повʼязану з поточною (кат-сцена, а не прохід по мапі).
-## Як ScrollingRoomTransitions: стару кімнату відʼєднуємо до load_room(), тоді він
-## не чекає її tree_exited і відпрацьовує синхронно — гравця ставимо одразу.
+## Телепорт у кімнату, не повʼязану з поточною (двері, кат-сцена, а не прохід по мапі): затемнення, заміна кімнати,
+## герой на вузлі [param arrival], поява (D434). Повертається, коли екран знову світлий.
+## Кат-сцена, що сама затемнила екран, не чекає: її кімнату звільняє цей самий виклик, а світло повертає load_room().
 func teleport_to_room(room_path: String, arrival: NodePath) -> void:
-	var old_map := map
-	var old_room_instance: Node = MetSys.get_current_room_instance()
-	old_room_instance.get_parent().remove_child(old_room_instance)
-	old_room_instance.queue_free()
-	map = null
-	load_room(room_path)
-	old_map.queue_free()
+	await load_room(room_path)
 	var target: Node2D = map.get_node(arrival)
 	place_player(target.global_position)
+	if room_changing:
+		await room_change_finished
 
 ## Нова гра: гравець на мітці Arrival стартової кімнати. Точки збереження бувають
 ## не в кожній кімнаті (до DesertRoad їх немає), тож старт від них не залежить.
@@ -411,8 +418,6 @@ func init_room():
 	_init_room_call_count += 1
 	var current_room = MetSys.get_current_room_name()
 
-	print("🆔 [Game] init_room() викликано для екземпляру з ID: %s" % game_instance_id)
-	_dump_quest_flags("init_room -> %s" % current_room)
 	
 	# Захист від повторного виклику для тієї ж кімнати
 	# MetSys може емітувати room_loaded кілька разів для тієї ж кімнати - це нормальна поведінка
@@ -429,12 +434,7 @@ func init_room():
 	if current_room_path != "" and _last_load_room_path == current_room_path:
 		# Кімната успішно завантажена, скидаємо захист для майбутніх переходів
 		_last_load_room_path = ""
-		print("🔄 [Game] Скинуто _last_load_room_path після успішного завантаження кімнати: %s" % current_room)
 	
-	print("✅ [Game] init_room() викликано для кімнати %s (виклик #%d)" % [current_room, _init_room_call_count])
-	print("🆔 [Game] ID екземпляру: %s" % game_instance_id)
-	print("📍 [Game] Поточна позиція гравця ДО init_room: %s" % player.global_position)
-	print("📍 [Game] MetSys.last_player_position: %s" % MetSys.last_player_position)
 	DebugLogger.info("Game: ✅ init_room() викликано для кімнати %s (виклик #%d)" % [current_room, _init_room_call_count], "Game")
 	DebugLogger.info("Game: Поточна позиція гравця ДО init_room: %s" % player.global_position, "Game")
 	DebugLogger.info("Game: MetSys.last_player_position: %s" % MetSys.last_player_position, "Game")
@@ -442,7 +442,6 @@ func init_room():
 	var room_instance = MetSys.get_current_room_instance()
 	if is_instance_valid(room_instance):
 		room_instance.adjust_camera_limits($Player/Camera2D)
-		print("✅ [Game] RoomInstance знайдено: %s" % room_instance.name)
 		DebugLogger.info("Game: RoomInstance знайдено: %s" % room_instance.name, "Game")
 	else:
 		push_warning("Game: No RoomInstance found in current room!")
@@ -452,7 +451,6 @@ func init_room():
 	await get_tree().process_frame
 	await get_tree().process_frame
 	
-	print("📍 [Game] Позиція гравця ПІСЛЯ очікування MetSys: %s" % player.global_position)
 	DebugLogger.info("Game: Позиція гравця ПІСЛЯ очікування MetSys: %s" % player.global_position, "Game")
 	
 	# ВАЖЛИВО: НЕ позиціонуємо камеру вручну.
@@ -467,10 +465,8 @@ func init_room():
 	# Initializes MetSys.get_current_coords(), so you can use it from the beginning.
 	if MetSys.last_player_position.x == Vector2i.MAX.x:
 		MetSys.set_player_position(player.position)
-		print("📍 [Game] Встановлено MetSys.last_player_position: %s" % player.position)
 		DebugLogger.info("Game: Встановлено MetSys.last_player_position: %s" % player.position, "Game")
 	
-	print("📍 [Game] Позиція гравця ПІСЛЯ init_room: %s" % player.global_position)
 	DebugLogger.info("Game: Позиція гравця ПІСЛЯ init_room: %s" % player.global_position, "Game")
 	
 	# ВАЖЛИВО: НЕ позиціонуємо камеру вручну — вона є дочірнім вузлом гравця
@@ -525,7 +521,7 @@ func set_quest_flags(flags: Dictionary) -> void:
 func set_quest_flag(quest_id: String, value: Variant) -> void:
 	var old_value = quest_flags.get(quest_id, false)
 	quest_flags[quest_id] = value
-	print("🚩 [FLAGS] SET %s = %s | Game=%s | всього=%d" % [quest_id, value, game_instance_id, quest_flags.size()])
+	DebugLogger.verbose("Game: quest flag %s = %s" % [quest_id, value], "Game")
 	quest_flag_changed.emit(quest_id, value)
 	# Если квест завершен (value == true), эмитим событие завершения
 	if value == true and old_value != true:
@@ -546,19 +542,6 @@ func get_room_states() -> Dictionary:
 
 func set_room_states(states: Dictionary) -> void:
 	room_state = states.duplicate(true)
-
-## ТИМЧАСОВО: діагностика. Друкує всі виставлені квестові прапорці.
-## Разом з game_instance_id видно, чи не читає сцена інший екземпляр Game.
-func _dump_quest_flags(where: String) -> void:
-	var active: Array[String] = []
-	for k in quest_flags:
-		if quest_flags[k] == true:
-			active.append(String(k))
-	active.sort()
-	print("🚩 [FLAGS] %s | Game=%s | всього=%d | виставлено: %s" % [
-		where, game_instance_id, quest_flags.size(),
-		", ".join(active) if active.size() > 0 else "(жодного)"
-	])
 
 ## Получает флаги катсцен
 func get_cutscene_flags() -> Dictionary:
