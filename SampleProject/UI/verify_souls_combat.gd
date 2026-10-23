@@ -207,9 +207,10 @@ func _freeze_check() -> void:
 			while timer.time_left > 0.0:
 				var x: float = hero.global_position.x
 				# D443: впертися в тіло ворога — не «застряг», а так задумано; рахуємо лише вільний шлях
-				var was_free: bool = not hero.combat.is_staggered() and not _blocked_by_enemy(dir)
+				# D504: удар з землі саджає героя — теж так задумано, не «застряг»
+				var was_free: bool = not hero.combat.locks_movement() and not _blocked_by_enemy(dir)
 				await physics_frame
-				if was_free and not hero.combat.is_staggered():
+				if was_free and not hero.combat.locks_movement():
 					free_time += tick * Engine.time_scale
 					free_dx += (hero.global_position.x - x) * dir
 				else:

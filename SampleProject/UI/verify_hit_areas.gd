@@ -184,8 +184,9 @@ func _hero_swings(sl: Node) -> void:
 		await create_timer(1.2).timeout  # серія скінчилась, кулдаун минув — наступний удар перший
 		hero.mover.last_direction = 1
 		hero.velocity = Vector2.ZERO
-		var reach: float = hero.global_position.x + hero.combat.hitbox_center.x + hero.get_node("Hitbox/CollisionShape2D").shape.size.x / 2.0
 		for inside in [true, false]:
+			# Удар з землі крокує вперед на SWING_STEP px (D504) — край шлейфа там, куди герой ступить
+			var reach: float = hero.global_position.x + hero.combat.SWING_STEP + hero.combat.hitbox_center.x + hero.get_node("Hitbox/CollisionShape2D").shape.size.x / 2.0
 			await _put_hurt_edge(target, reach - 3.0 if inside else reach + 6.0)
 			hits.clear()
 			hero.combat.perform_attack(1)

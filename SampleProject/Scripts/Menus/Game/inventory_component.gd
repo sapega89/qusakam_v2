@@ -10,6 +10,7 @@ extends BaseMenuComponent
 
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const MODAL_TEMPLATES = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
+const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 ## Категорії з Figma. `types` порожній ⇒ показуємо все.
 ## Порожня категорія (напр. KEY ITEMS) лишається доступною й показує порожній стан (D9).
@@ -207,8 +208,10 @@ func _tooltip_for(item: Dictionary) -> String:
 " + _use_hint(item)
 
 
-## Що зробить подвійний клік / Enter на предметі (D286).
+## Що зробить подвійний клік / Enter на предметі (D286). Зілля HP п'ють лише в грі, зі швидкого слота (D504).
 func _use_hint(item: Dictionary) -> String:
+	if _is_potion(item):
+		return tr("Drink it in play with the quick slot (%s)") % InputGlyphs.label(&"quick_potion")
 	if _heal_amount(item) > 0:
 		return "Double-click or Enter to use"
 	var slot_id := _get_slot_for_item(item)
@@ -275,7 +278,9 @@ func _on_row_activated(index: int) -> void:
 	if index < 0 or index >= items.size():
 		return
 	var item: Dictionary = items[index]
-	if _heal_amount(item) > 0:
+	if _is_potion(item):
+		_set_bar_hint(_use_hint(item))
+	elif _heal_amount(item) > 0:
 		_drink(item)
 	elif _get_slot_for_item(item) != "":
 		_equip(item)
@@ -289,36 +294,27 @@ func _effect(item: Dictionary) -> Dictionary:
 	return item.get("item_data", {}).get("effect", {})
 
 
+## Зілля HP (effect heal) — не в меню на паузі, а в реальному часі (D504, Player.drink_potion).
+func _is_potion(item: Dictionary) -> bool:
+	return _effect(item).get("type", "") == "heal"
+
+
 func _heal_amount(item: Dictionary) -> int:
 	return int(_effect(item).get("value", 0)) if _effect(item).get("type", "") in ["heal", "mana"] else 0
 
 
-## Зілля (HP) чи ефір (SP) діє на героя одразу — без вибору, кому, і без підтвердження (D286).
+## Ефір (SP) діє на героя одразу — без вибору, кому, і без підтвердження (D286); зілля HP сюди не доходить (D504).
 func _drink(item: Dictionary) -> void:
 	var hero_name := String(game_manager.get_active_character().name)
-	var value := _heal_amount(item)
-	var now: int
-	var top: int
-	if _effect(item).type == "mana":
-		var sm: SkillManager = ServiceLocator.get_skill_manager()
-		if sm.get_current_sp() >= sm.get_max_sp():
-			_set_bar_hint(tr("%s's SP is already full.") % hero_name)
-			return
-		sm.restore_sp(value)
-		now = sm.get_current_sp()
-		top = sm.get_max_sp()
-	else:
-		var player: Node = game_manager.get_current_player()
-		if player.get_current_health() >= player.get_max_health():
-			_set_bar_hint(tr("%s is already at full health.") % hero_name)
-			return
-		player.heal_damage(value)
-		now = player.get_current_health()
-		top = player.get_max_health()
+	var sm: SkillManager = ServiceLocator.get_skill_manager()
+	if sm.get_current_sp() >= sm.get_max_sp():
+		_set_bar_hint(tr("%s's SP is already full.") % hero_name)
+		return
+	sm.restore_sp(_heal_amount(item))
 	_get_inventory_manager().remove_item(String(item.get("id", "")), 1)
 	_focus_selected_row()
 	# Після фокуса: рядок у фокусі публікує свій опис, підсумок має лягти поверх.
-	_set_bar_hint.call_deferred("%s — %s %d / %d." % [String(item.get("name", "")), "SP" if _effect(item).type == "mana" else "HP", now, top])
+	_set_bar_hint.call_deferred("%s — %s %d / %d." % [String(item.get("name", "")), "SP", sm.get_current_sp(), sm.get_max_sp()])
 
 
 ## Зброя, броня, прикраса — у свій слот через штатний API (EquipmentManager → EventBus → CharacterManager).

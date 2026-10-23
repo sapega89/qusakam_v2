@@ -85,6 +85,7 @@ func _initialize() -> void:
 
 	_frames_carry_the_key()
 	_own_frames()
+	var start_x: float = hero.global_position.x
 	for case in [
 		["sword", ["sword"], ["iron_sword"], 3],
 		["dagger", ["dagger"], ["iron_dagger"], 3],
@@ -92,6 +93,7 @@ func _initialize() -> void:
 		["polearm", ["polearm"], ["iron_halberd"], 3],
 		["dual_sword_dagger", ["sword", "dagger"], ["iron_sword", "iron_dagger"], 4],
 	]:
+		hero.global_position.x = start_x  # удари крокують уперед (D504) — інакше герой доходить до ворога й не біжить
 		await _weapon_type(case[0], case[1], case[2], case[3])
 	await _palettes()
 
