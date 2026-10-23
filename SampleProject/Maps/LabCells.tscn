@@ -815,6 +815,9 @@ material = ExtResource("9_g4pi5")
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("10_c67qq")
 centered = false
+offset = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 116)
 
 [node name="Cells" type="Node2D" parent="." unique_id=1111227837]
 z_index = -3

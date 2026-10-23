@@ -60,6 +60,9 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("back")
 centered = false
+offset = Vector2(0, 80)
+region_enabled = true
+region_rect = Rect2(0, 80, 576, 244)
 
 [node name="Houses" type="Parallax2D" parent="."]
 z_index = -9
@@ -74,6 +77,9 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("houses")
 centered = false
+offset = Vector2(0, 112)
+region_enabled = true
+region_rect = Rect2(0, 112, 576, 164)
 
 [node name="Front" parent="." instance=ExtResource("front_plane")]
 

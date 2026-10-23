@@ -30,6 +30,11 @@ const FPS_LIMITS: Array[int] = [30, 60, 120, 144, 0]
 const BRIGHTNESS_DEFAULT := 50
 const BRIGHTNESS_MAX := 100
 
+const GraphicsQuality := preload("res://SampleProject/Scripts/Systems/GraphicsQuality.gd")
+
+## D554: High / Low — вузол GraphicsQuality цієї сцени.
+@onready var graphics_quality: GraphicsQuality = $GraphicsQuality
+
 ## Шар BrightnessLayer (127) — над HUD, меню, модалками й переходами (≤ 100), під курсором миші (128).
 @onready var _brightness: ColorRect = %Brightness
 
@@ -146,4 +151,5 @@ func apply_display_settings(settings: Dictionary) -> void:
 	set_resolution(String(settings["resolution"]))
 	set_fps_limit(int(settings["fps_limit"]))
 	set_brightness(int(settings["brightness"]))
+	graphics_quality.apply(String(settings["graphics_quality"]))
 

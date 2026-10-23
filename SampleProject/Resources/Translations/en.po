@@ -873,8 +873,8 @@ msgstr "Game Settings"
 msgid "INPUT OPTIONS"
 msgstr "INPUT OPTIONS"
 
-msgid "Set the display mode, window size, frame rate limit and screen brightness."
-msgstr "Set the display mode, window size, frame rate limit and screen brightness."
+msgid "Set the display mode, window size, frame rate limit, screen brightness and graphics quality."
+msgstr "Set the display mode, window size, frame rate limit, screen brightness and graphics quality."
 
 msgid "Adjust volume levels."
 msgstr "Adjust volume levels."
@@ -911,6 +911,15 @@ msgstr "Disable"
 
 msgid "Frame Rate Limit"
 msgstr "Frame Rate Limit"
+
+msgid "Quality"
+msgstr "Quality"
+
+msgid "High"
+msgstr "High"
+
+msgid "Low"
+msgstr "Low"
 
 msgid "Unlimited"
 msgstr "Unlimited"

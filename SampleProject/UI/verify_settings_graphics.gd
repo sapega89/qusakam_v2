@@ -55,7 +55,7 @@ func _initialize() -> void:
 	for margin in opts._list.get_children():
 		if margin is MarginContainer:
 			order.append(String(margin.get_child(0).name))
-	ck(order == ["Display Mode", "Resolution", "VSync", "Frame Rate Limit", "Screen Brightness"], "rows: %s" % str(order))
+	ck(order == ["Display Mode", "Resolution", "VSync", "Frame Rate Limit", "Quality", "Screen Brightness"], "rows: %s" % str(order))  # Quality — D554
 	var res_value: Label = _stepper(opts, "Resolution", "Value")
 	var fps_value: Label = _stepper(opts, "Frame Rate Limit", "Value")
 	ck(res_value != null and res_value.text == "1920 × 1080", "Resolution shows 1920 × 1080")

@@ -44,6 +44,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("plan4")
 centered = false
+offset = Vector2(16, 0)
+region_enabled = true
+region_rect = Rect2(16, 0, 528, 196)
 
 [node name="DriftingClouds" parent="." instance=ExtResource("drifting_clouds")]
 
@@ -58,6 +61,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("plan3")
 centered = false
+offset = Vector2(0, 112)
+region_enabled = true
+region_rect = Rect2(0, 112, 576, 212)
 
 [node name="Walls" type="Parallax2D" parent="."]
 modulate = Color(1.04, 1.02, 1.12, 1)
@@ -72,6 +78,9 @@ position = Vector2(0, 48)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("walls")
 centered = false
+offset = Vector2(0, 144)
+region_enabled = true
+region_rect = Rect2(0, 144, 576, 180)
 
 [node name="Plan1" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.75, 1)
@@ -83,6 +92,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("plan1")
 centered = false
+offset = Vector2(0, 272)
+region_enabled = true
+region_rect = Rect2(0, 272, 576, 52)
 
 [node name="Ground" type="Sprite2D" parent="Plan1"]
 texture_filter = 1

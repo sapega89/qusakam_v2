@@ -24,6 +24,8 @@ const ENEMY_SCENES := {
 	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
 	"archer": "res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn",
 }
+## Стандартні стати за типом ворога.
+const STATS_PATH := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 
 ## Спавнить только один раз (если true, после смерти врага больше не спавнится)
 @export var spawn_once: bool = true
@@ -144,4 +146,4 @@ func is_enemy_alive() -> bool:
 func enemy_stats() -> EnemyStats:
 	if custom_enemy_stats:
 		return custom_enemy_stats as EnemyStats
-	return load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % enemy_type) as EnemyStats
+	return load(STATS_PATH % enemy_type) as EnemyStats

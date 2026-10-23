@@ -9,6 +9,12 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysModule.gd"
 var held: Dictionary = {}
 ## Шляхи, чиє фонове завантаження ще йде.
 var _pending: Dictionary = {}
+## Шляхи, які тримаються до кінця гри, а не до зміни кімнати (SceneWarmer.gd, slice 5).
+var pinned: Dictionary = {}
+## Закріплені шляхи, що ще чекають своєї черги. Вони йдуть по одному й лише коли кімнати не вантажаться:
+## два потоки, що разом компілюють ті самі скрипти (DefaultEnemy.gd у ворогах і кімнатах, HealingPalm.tscn у
+## Village.gd), давали «Could not resolve class» і «Could not preload».
+var _pin_queue: Array[String] = []
 
 
 func _initialize() -> void:
@@ -47,6 +53,19 @@ func wait(path: String) -> PackedScene:
 	return held[path]
 
 
+## Завантажити у фоні й тримати до кінця гри — не лише кімнату, будь-який ресурс (slice 5). Без поспіху: у черзі.
+func pin(path: String) -> void:
+	if pinned.has(path):
+		return
+	pinned[path] = true
+	_pin_queue.append(path)
+
+
+## Чи йде ще якесь фонове завантаження (тести чекають, поки стихне, перш ніж вийти).
+func busy() -> bool:
+	return not _pending.is_empty() or not _pin_queue.is_empty()
+
+
 func is_held(path: String) -> bool:
 	return held.has(path)
 
@@ -60,6 +79,8 @@ func _collect() -> void:
 		_pending.erase(path)
 		assert(status == ResourceLoader.THREAD_LOAD_LOADED, "RoomPreloader: failed to load %s (%d)" % [path, status])
 		held[path] = ResourceLoader.load_threaded_get(path)
+	if _pending.is_empty() and not _pin_queue.is_empty():
+		request(_pin_queue.pop_front())
 
 
 func _on_room_loaded() -> void:
@@ -71,7 +92,7 @@ func _on_room_loaded() -> void:
 		if node is RoomDoor:
 			wanted.append(scene_path((node as RoomDoor).target_room))
 	for path: String in held.keys():
-		if not path in wanted:
+		if not path in wanted and not pinned.has(path):
 			held.erase(path)
 	for path: String in wanted:
 		request(path)

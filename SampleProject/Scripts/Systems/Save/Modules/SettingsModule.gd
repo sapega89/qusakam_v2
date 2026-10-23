@@ -4,6 +4,8 @@ class_name SettingsModule
 ## ⚙️ SettingsModule - Сохранение настроек игры
 ## Управляет: громкость, экран, язык, VSync
 
+const GraphicsQuality := preload("res://SampleProject/Scripts/Systems/GraphicsQuality.gd")
+
 # Настройки игры по умолчанию
 var default_settings = {
 	"master_volume": 1.0,
@@ -23,7 +25,10 @@ var default_settings = {
 	"damage_numbers": true,  # D66: цифри урону над героєм і ворогами (DamageNumbers)
 	"auto_save": false,  # D413: автосейв при переході між кімнатами (SaveSystem._on_room_entered); вимкнено — лише SavePoint
 	"text_speed": "default",  # D425: одне з TEXT_SPEEDS — набір у вікні діалогу й час репліки в облачку
-	"screen_shake": true  # D426: вимкнено — камера не смикається (VFXHooks._kick_camera, Cutscene.shake)
+	"screen_shake": true,  # D426: вимкнено — камера не смикається (VFXHooks._kick_camera, Cutscene.shake)
+	# D554: одне з GraphicsQuality.QUALITIES. Значення за замовчуванням ставить _ready() за назвою відеокарти:
+	# слабка вбудована (D553) — "low". Файл налаштувань без цього ключа (перший запуск) бере те саме.
+	"graphics_quality": "high",
 }
 
 ## D425: Text Speed → у скільки разів швидше за D254 / D178 (Default — 24 літери/с і 2 с + 0.05 с/літеру, до 6 с).
@@ -34,6 +39,7 @@ var settings: Dictionary = {}
 
 func _ready():
 	module_name = "SettingsModule"
+	default_settings["graphics_quality"] = GraphicsQuality.default_for_adapter(RenderingServer.get_video_adapter_name())
 	# Инициализируем настройками по умолчанию
 	settings = default_settings.duplicate()
 

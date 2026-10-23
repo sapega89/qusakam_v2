@@ -598,6 +598,12 @@ func _room(room: String, tp: Dictionary) -> void:
 	if not s_all.light_nodes.is_empty():
 		var nolights: Acc = await _without(s_all.light_nodes, false)
 		print("PERF frame | %-17s | -lights   | %s" % [room, nolights.line()])
+	# D554: увесь пресет Low (GraphicsQuality) разом; потім назад High.
+	var quality: Node = root.get_node("DisplayManager").graphics_quality
+	quality.apply("low")
+	var low: Acc = await _window(secs)
+	quality.apply("high")
+	print("PERF frame | %-17s | low       | %s" % [room, low.line()])
 
 
 func _tags() -> void:

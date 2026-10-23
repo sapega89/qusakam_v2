@@ -53,6 +53,9 @@ position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("city_far")
 centered = false
+offset = Vector2(0, 48)
+region_enabled = true
+region_rect = Rect2(0, 48, 576, 276)
 
 [node name="CityNear" type="Parallax2D" parent="."]
 z_index = -9
@@ -67,6 +70,9 @@ position = Vector2(0, 0)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("city_near")
 centered = false
+offset = Vector2(0, 64)
+region_enabled = true
+region_rect = Rect2(0, 64, 576, 212)
 
 [node name="Front" parent="." instance=ExtResource("front_plane")]
 
@@ -129,6 +135,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("terrain_terrain")
 centered = false
+offset = Vector2(0, 240)
+region_enabled = true
+region_rect = Rect2(0, 240, 1728, 59)
 
 [node name="RoomInstance" parent="." unique_id=1633453511 instance=ExtResource("2_room")]
 

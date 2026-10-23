@@ -50,6 +50,9 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("road_mid")
 centered = false
+offset = Vector2(0, 80)
+region_enabled = true
+region_rect = Rect2(0, 80, 576, 244)
 
 [node name="Front" parent="." instance=ExtResource("front_plane")]
 
@@ -146,6 +149,9 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("terrain_terrain")
 centered = false
+offset = Vector2(0, 160)
+region_enabled = true
+region_rect = Rect2(0, 160, 3606, 160)
 
 [node name="RoomInstance" parent="." unique_id=2047758505 instance=ExtResource("3_0gx3l")]
 
