@@ -171,6 +171,8 @@ func _run_lessons(device: String, wrong_moves: bool = true) -> void:
 	var done: Array[String] = []
 	training.lesson_done.connect(func(id: String) -> void: done.append(id))
 	await _wait_lesson("lesson_attack")
+	if device == "pad":
+		await _tap("block")  # плашка бере назви кнопок з останнього пристрою — спершу кнопка геймпада
 	var hint: Node = get_first_node_in_group("tutorial_hint_display")
 	var glyph: String = "X" if device == "pad" else "Left Mouse"
 	ck(hint.current_hint == "lesson_attack" and hint.hint_label.text.contains("Press %s three times" % glyph),
@@ -335,7 +337,7 @@ func _check_frames() -> void:
 		if not topic.frames in sets:
 			sets.append(topic.frames)
 	ck(sets.size() >= 8, "eight frame sets: move, combo, dodge, block, parry, heavy, heal, assist (%s)" % [sets])
-	for id in ["movement", "lesson_attack", "lesson_combo", "lesson_dodge", "lesson_block", "lesson_parry",
+	for id in ["movement", "lesson_attack", "lesson_defend", "lesson_parry",
 			"lesson_heavy", "healing_palm", "call_guard"]:
 		ck(with_frames.any(func(t: Dictionary) -> bool: return t.id == id), "%s has a picture" % id)
 	for topic in with_frames:
