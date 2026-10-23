@@ -214,12 +214,12 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	hint.show_hint("choose_companions")
 	for i in 6: await process_frame
-	ck(layer.active_modal == null and not paused, "it fires once: a second time opens nothing")
+	ck(layer.active_modal == null and not paused, "it fires once: a second time opens nothing (%s, paused %s, menu %s)" % [layer.active_modal, paused, ui.current_state_name])
 	seen.erase("choose_companions")
 	settings.tutorial_windows = false
 	hint.show_hint("choose_companions")
 	for i in 3: await process_frame
-	ck(layer.active_modal == null and hint.is_showing and hint.current_hint == "choose_companions", "Tutorial windows Off → the plain hint banner instead")
+	ck(layer.active_modal == null and hint.is_showing and hint.current_hint == "choose_companions", "Tutorial windows Off → the plain hint banner instead (%s, %s, %s)" % [layer.active_modal, hint.is_showing, hint.current_hint])
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
