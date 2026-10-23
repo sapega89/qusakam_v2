@@ -1,6 +1,7 @@
 extends SceneTree
 
-## Клятва в місті (BACKLOG 22, D280–D282): три хранителі стоять у City, меню справжнім вводом (геймпад і клавіша E),
+## Клятва в місті (BACKLOG 22, D280–D282): три хранителі стоять у City, меню відкривається саме (D454), вибір справжнім
+## вводом (геймпад і клавіша E),
 ## рівень 5, підтвердження «I swear… / Not yet», клятва назавжди, скидання навичок за монети.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_oath.gd
 
@@ -49,7 +50,7 @@ func _approach(player: Node2D, keeper: Node2D) -> void:
 	player.global_position = keeper.global_position + Vector2(-24, -10)
 	for i in 10: await physics_frame
 
-## Y — відкрити / вибрати, D-pad вниз — наступний пункт.
+## Меню відкрите саме (D454); Y — вибрати, D-pad вниз — наступний пункт.
 func _choose(keeper: Node, index: int) -> void:
 	for i in index:
 		await _pad(JOY_BUTTON_DPAD_DOWN)
@@ -91,26 +92,26 @@ func _initialize() -> void:
 	print("[2] Below level 5 the oath waits (pad)")
 	ck(xp.get_level() < 5, "hero below level 5 (%d)" % xp.get_level())
 	await _approach(player, priest)
-	await _pad(JOY_BUTTON_Y)
-	ck(priest.npc_menu.visible and _labels(priest) == ["Talk", "Swear the oath"], "menu: %s" % [_labels(priest)])
+	ck(priest.npc_menu.visible and _labels(priest) == ["Talk", "Swear the oath"], "walking up opens her menu (D454): %s" % [_labels(priest)])
 	ck(priest.get_node("AnimationPlayer").current_animation == "talk" and priest.get_node("Sprite2D").frame < 2, "turns to profile while the menu is open")
 	await _choose(priest, 1)
 	ck(priest.npc_menu.visible and _labels(priest) == ["Come back at level 5"], "the oath asks for level 5: %s" % [_labels(priest)])
 	await _pad(JOY_BUTTON_Y)
-	ck(not priest.npc_menu.visible and sm.get_oath() == "", "closed, no oath")
-	ck(priest.get_node("AnimationPlayer").current_animation == "work", "back to her prayer (D295)")
+	ck(_labels(priest) == ["Talk", "Swear the oath"] and sm.get_oath() == "", "back to her menu, no oath")
+	player.global_position = priest.global_position + Vector2(-400, -10)
+	for i in 10: await physics_frame
+	ck(not priest.npc_menu.visible and priest.get_node("AnimationPlayer").current_animation == "work", "the hero walks off: menu closed, back to her prayer (D295)")
 
 	print("[3] At level 5: the choice, Not yet, then the oath (key E + pad)")
 	while xp.get_level() < 5:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
-	await _key_e()
+	await _approach(player, priest)
 	await _choose(priest, 1)
 	ck(_labels(priest) == ["I swear: Paladin (permanent)", "Not yet"], "the confirm: %s" % [_labels(priest)])
 	await _choose(priest, 1)
-	ck(not priest.npc_menu.visible and sm.get_oath() == "", "Not yet changes nothing")
-	await _pad(JOY_BUTTON_Y)
+	ck(_labels(priest) == ["Talk", "Swear the oath"] and sm.get_oath() == "", "Not yet changes nothing: back to her menu")
 	await _choose(priest, 1)
-	await _choose(priest, 0)
+	await _key_e()  # E вибирає той самий перший пункт, що й Y
 	ck(sm.get_oath() == "paladin" and sm.class_title() == "Paladin", "sworn: Paladin")
 	ck(dm.is_dialogue_active(), "the priest answers the oath")
 	await _drain(dm)
@@ -124,7 +125,6 @@ func _initialize() -> void:
 	var unspent: int = attrs.get_unspent()
 	ck(attrs.spend({"strength": 2, "wisdom": 1}) == 0, "3 attribute points spent before the respec")
 	await _approach(player, witch)
-	await _pad(JOY_BUTTON_Y)
 	var price: int = sm.respec_price()
 	ck(_labels(witch) == ["Talk", "Unlearn skills and attributes (%d coins)" % price], "no oath entry after an oath, respec offered: %s" % [_labels(witch)])
 	var inv: Node = sl.get_inventory_manager()
@@ -134,7 +134,6 @@ func _initialize() -> void:
 	await _pad(JOY_BUTTON_Y)
 	inv.add_coins(price)
 	var jp: int = sm.get_job_points()
-	await _pad(JOY_BUTTON_Y)
 	await _choose(witch, 1)
 	ck(_labels(witch) == ["Forget every skill and attribute point for %d coins" % price, "Not yet"], "the confirm: %s" % [_labels(witch)])
 	await _choose(witch, 0)
