@@ -9,7 +9,7 @@ tags: [cloud, text, world, loose-ends]
 - **Not done:** the City market folk (no City NPC fits; waiting for art). The HUD shows no location name: it has no such element and HUD v2's Figma has none (Q below). Everything else left in round 11 needs art or a decision (table in §3).
 - **D-ID text:** **D675** (gate guard chatter), **D676** (save card location from LocationDB). Proposed **Q89** (HUD location name) and **Q90** (the priest's sky line vs D587). Next free numbers at the time of writing; the orchestrator renumbers.
 - **B rows fixed:** none.
-- **Full suite (one run):** SUITE_LINE
+- **Full suite (one run):** `SUITE: 4 FAIL`, 109 PASS. All 4 fail the same way on `origin/feature/backlog` without this branch, so none are from it: `verify_audio`, `verify_difficulty`, `verify_lab_boss`, `verify_mayor_boss`.
 
 ## D-ID text (orchestrator to apply)
 
@@ -59,4 +59,11 @@ tags: [cloud, text, world, loose-ends]
 
 ## Full suite
 
-SUITE_DETAIL
+`Scripts/Tools/run_verify.sh`: **SUITE: 4 FAIL**, 109 PASS. Each of the 4 was re-run on a clean `origin/feature/backlog` worktree and gave the same RESULT, so they come from the base (the difficulty and boss rebalance of round 12) and not from this branch:
+
+- `verify_audio`: 1 FAIL, «a cast interrupted by a hit → cast_interrupt on SFX ([])».
+- `verify_difficulty`: 2 FAIL. At level 5 the Brass Collector kills the hero in 3–4 hits (the test wants 9), and the hero needs 34–46 hits to kill it (the test wants 27). The STRENGTH build does not win.
+- `verify_lab_boss`: 2 FAIL. With the balanced build the hero dies in 2.6 of the mercenary's blows, and the mercenary takes 60 light hits.
+- `verify_mayor_boss`: 1 FAIL. The boss (2600 HP) takes 50 light hits, against about 40 in D642.
+
+The tests this branch touches are green: `verify_npc_chatter`, `verify_progression`, `verify_locations` and `verify_save_load`.
