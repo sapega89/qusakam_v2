@@ -21,6 +21,8 @@ report and its task. This note is the shared part, so the prompts stay short. Ro
 ## Rules
 - The owner (Sapega) is not reachable: never ask, make the call and write it down.
 - Read the root `CLAUDE.md` and `docs/CLAUDE.md` first.
+- Before any game-design call (a number, a behaviour, a look), read `design/pillars.md`: hard readable combat,
+  locations with secrets, a build through profession and skills, companions. Free gifts on the road are out (D583).
 - Never commit `SampleProject/UI/playthrough.gd`: the laptop holds uncommitted work in it.
 - Do not edit `design/BUGS.md`, `design/figma_decision_register.md`, `design/remaining_work.md`, `design/BACKLOG.md`:
   routines run side by side. The report carries the D-ID text and the B rows fixed; the orchestrator applies them.
