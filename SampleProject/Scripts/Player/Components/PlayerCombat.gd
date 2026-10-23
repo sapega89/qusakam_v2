@@ -414,7 +414,6 @@ func perform_attack(last_direction: int) -> void:
 	# Між ударами серії можна розвернутись (D504): удар іде туди, куди тиснуть
 	_direction = player.mover.face_input(last_direction)
 	_step(FINISHER_STEP if finisher else SWING_STEP)
-	player.stamina.spend(player.stamina.COST_LIGHT)
 	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
 	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
@@ -450,7 +449,6 @@ func heavy_attack(last_direction: int) -> void:
 	_direction = player.mover.face_input(last_direction)
 	_chain_left = 0.0
 	combo_step = 0
-	player.stamina.spend(player.stamina.COST_HEAVY)
 	_play(&"HeavyWindup")
 	EventBus.player_heavy_windup.emit(player, _direction)
 
@@ -508,7 +506,6 @@ func _quick_shot(last_direction: int) -> void:
 	_direction = last_direction
 	_arrow_due = true
 	combo_step = 0
-	player.stamina.spend(player.stamina.COST_SHOT)
 	attack_cooldown = attack_cooldown_time
 	_play(&"Attack")
 
@@ -516,7 +513,6 @@ func _quick_shot(last_direction: int) -> void:
 func release_shot() -> void:
 	shot_held = false
 	if state == State.CHARGED:
-		player.stamina.spend(player.stamina.COST_HEAVY)
 		_loose(true)
 		state = State.SHOOT
 		_state_left = RELEASE_TIME

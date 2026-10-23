@@ -2661,8 +2661,6 @@ msgstr "Potions ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Drink it in play with the quick slot (%s)"
 
-msgid "ST"
-msgstr "ST"
 msgid "MAX"
 msgstr "MAX"
 

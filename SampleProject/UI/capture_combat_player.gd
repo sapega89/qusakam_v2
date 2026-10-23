@@ -42,7 +42,6 @@ func _initialize() -> void:
 	sl.get_inventory_manager().add_item("potion", 3)
 	await create_timer(0.8).timeout
 	hero.current_health = hero.Max_Health - 40
-	hero.stamina.spend(45.0)
 	hero.drink_potion()
 	await create_timer(0.3).timeout
 	var img: Image = root.get_texture().get_image()

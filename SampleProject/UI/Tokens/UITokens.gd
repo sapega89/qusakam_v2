@@ -169,7 +169,6 @@ const BAR_HEIGHT := 6
 const BAR_WIDTH := 180
 const HP_FILL := Color("2ecc71")
 const SP_FILL := Color("3498db")
-const STAMINA_FILL := Color("e67e22")  # витривалість (D504), панель героя в HUD
 
 # ── Розміри екрана Settings (Figma: settings-* 17:280 / 17:409 / 17:632) ────
 const SIZE_OPTIONS_TITLE := 38  # Bold — "OPTIONS" у верхній секції

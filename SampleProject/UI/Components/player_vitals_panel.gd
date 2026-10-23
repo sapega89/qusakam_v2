@@ -6,7 +6,7 @@ class_name UIPlayerVitalsPanel
 ##
 ## Три рядки з кадру: HP, SP, XP. Значення беруться з наявних власників —
 ## вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
-## D504: під SP — витривалість (ST, PlayerStamina героя), під рядками — швидкий слот зілля (кнопка і скільки зілля).
+## D504: під рядками — швидкий слот зілля (кнопка і скільки зілля). Рядка ST немає: витривалість прибрано (D551).
 
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const QuickPotion = preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
@@ -42,7 +42,6 @@ func _ready() -> void:
 		EventBus.player_respawned.connect(_on_player_respawned)
 	if not EventBus.damage_received.is_connected(_on_damage_received):
 		EventBus.damage_received.connect(_on_damage_received)
-	EventBus.player_stamina_changed.connect(_on_stamina_changed)
 	EventBus.inventory_updated.connect(_refresh_potion)
 	EventBus.input_device_changed.connect(func(_pad: bool) -> void: _refresh_potion())
 	if _xp_manager:
@@ -55,10 +54,6 @@ func _ready() -> void:
 
 func _on_sp_changed(_current: int, _max: int) -> void:
 	refresh()
-
-
-func _on_stamina_changed(current: int, maximum: int) -> void:
-	_set_row("ST", current, maximum)
 
 
 ## Швидкий слот (D504): «Q  Potions ×3» — кнопка за пристроєм і все зілля в сумці.
@@ -127,7 +122,6 @@ func _build_rows() -> void:
 	_rows_by_id.clear()
 	_rows.add_child(_make_row("HP", UITokens.HP_FILL, false))
 	_rows.add_child(_make_row("SP", UITokens.SP_FILL, false))
-	_rows.add_child(_make_row("ST", UITokens.STAMINA_FILL, false))
 	_rows.add_child(_make_row("XP", UITokens.ACCENT, true))
 
 
@@ -197,11 +191,9 @@ func refresh() -> void:
 	var player: Node = _ensure_player()
 	if player:
 		_set_row("HP", int(player.current_health), int(player.Max_Health))
-		_set_row("ST", roundi(player.stamina.current), roundi(player.stamina.MAX))
 	else:
 		# Джерело не резолвиться — показуємо це чесно, а не повний бар.
 		_set_row_unknown("HP")
-		_set_row_unknown("ST")
 	_refresh_potion()
 	if _skill_manager:
 		_set_row("SP", _skill_manager.get_current_sp(), _skill_manager.get_max_sp())
