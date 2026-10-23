@@ -143,3 +143,12 @@ D603+ renumbered (D603–D605 were taken locally by the skill icons). No B rows 
 (HUD v2 text size) filed, both non-blocking. Conflicts: the stamina removal against world-1, skills-v2 and hud-v2
 (the «ST» string, the weak block, the vitals rows: HP and SP only, XP is its own bar), `Regions` → `LocationDB`, and
 the skill icons moved onto hud-v2's hex slots (`hotbar_slot.tscn` → `Icon/Art`). The 33 draft skills got icons (D635).
+
+## Round 12 — 2026-10-23: fights for the new art (Sapega: «запускай»)
+
+| Fires (UTC) | Routine | Branch | Task |
+|---|---|---|---|
+| 14:02 | fliers (`trig_01PKeaBgmgw6ubZgoNBVLeFy`) | cloud/fliers | flying enemies slices 1–2: vulture dive outdoors, bat built but not placed (no caves), D637 art |
+
+Next, once their frames are pushed: lab-boss (D564 moveset on the D466 fight) and mayor-boss (D468, the scorpion only in
+the cutscene, D557); after Sapega's picks: the Laboratory curse (D589: Cthulhu flies, cursed jackals).
