@@ -136,7 +136,7 @@ func _initialize() -> void:
 	ck(InputMap.has_action(&"cutscene_skip"), "cutscene_skip action registered (Tab / pad Y)")
 
 	print("[0] A cutscene that starts mid-air lands the hero before its first line (B123)")
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 30: await physics_frame
 	game.player.global_position = Vector2(560, 360)
 	for i in 30: await physics_frame

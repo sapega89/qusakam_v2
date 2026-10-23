@@ -25,7 +25,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _drain()
 	game.set_quest_flag("lab_cells_cutscene_complete", true)  # AWAKE: усі в камерах, кат-сцена не грає
-	game.teleport_to_room("res://SampleProject/Maps/LabCells.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/LabCells.tscn", ^"Arrival")
 	for i in 60: await physics_frame
 	await _drain()
 	var cells: Node = game.map
