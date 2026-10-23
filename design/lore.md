@@ -47,6 +47,9 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **The blue sky is a curse** cast by an **unknown power**. It is the main plot.
 - **Whoever looks at it gets blue eyes**, then **loses their mind** and becomes **like a zombie**.
 - Read with the world section above: the bright, sunless sky. The curse is that sky.
+- **The one who casts the curse is very powerful, and nobody will ever learn who it is** (Sapega, 2026-10-23: «той, хто накладає
+  прокляття, дуже могутній, але ніхто ніколи не дізнається, хто це, але прокляття буде ставити палки в колеса»). The curse
+  keeps **getting in the way**: it is an obstacle along the road, never a villain who is unmasked or fought.
 - Open (not said): does the barrier, or the Maiden, shield the village from the sky? Alisia has one blue eye (2026-10-19):
   is that the curse beginning, or chance? Are the blue-eyed mindless an enemy kind?
 
