@@ -65,3 +65,16 @@ in a row, a pillar under the hero and one each side 140 px away.
 ## Out of scope
 
 A Figma boss bar; boss music of its own (rooms keep their tracks, [[music_plan]]).
+
+## Boss replaced (D466, 2026-10-23)
+
+Sapega: the Laboratory boss is the **black lizardfolk brute** from `design/refs/lab_boss_reference.webp`, not the djinn. The djinn
+stays a story beat: it escapes in the cells cutscene (D304 / D459). Slices:
+1. **Art candidates.** Add `comfy_sprite.py` entry `lab_boss_brute`: `design` = `assets/references/bosses/lab_boss.webp`, the
+   hero palette, an adult-sized cell (D172 ×1.5 or a boss size like `brass_collector`). Render a ×4 candidate sheet; Sapega picks one.
+2. **Frames.** Idle, walk, club smash (wind-up, slam, recover), mace combo ×2, tail sweep, charge, hurt and death, each in the
+   picked look.
+3. **Fight.** A new boss scene on `BossEnemy` / `BossLogic` (D316) with the D466 moveset. `LabBoss` spawns it in place of
+   `fire_djinn.tscn`. `verify_lab_boss.gd` checks each move's tell and hit and the defeat flow (B117's deterministic placement
+   stays).
+4. **Story text.** The lines around the fight (`[ЧЕРНЕТКА]`, name per Q79).
