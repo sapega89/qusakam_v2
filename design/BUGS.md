@@ -202,6 +202,14 @@ the history, this note keeps only what is open.
 - **Severity:** visual
 - **Found:** 2026-10-23, cloud/fliers
 
+### B144 — the Mayor Hall boss is too easy for D642 since the Scorpicore replaced the Brass Collector
+- **Where:** the Mayor Hall boss (`cloud/mayor-boss`, merged in `9f69524e` after `cloud/difficulty`); `SampleProject/UI/verify_difficulty.gd` still names it "Brass Collector" (`BOSSES`)
+- **Expected:** D642: at the expected level a boss kills the hero in 3–4 hits and falls to about 40; a strength-only hero loses
+- **Got:** at level 5 it takes 9 hits to kill the hero and dies to 27; the STRENGTH hero wins (34 hits needed, survives 9)
+- **Evidence:** `verify_difficulty` — `RESULT: 2 FAIL` (both on this boss), 2026-10-23
+- **Severity:** blocker
+- **Found:** 2026-10-23, while wiring the Cthulhu fly (D655)
+
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**

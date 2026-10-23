@@ -6,7 +6,7 @@
 script = ExtResource("1_fly")
 enemy_type = "fly"
 speed = 120.0
-base_damage = 7.0
+base_damage = 23.0
 attack_windup = 0.55
 attack_active_time = 0.2
 lunge = 40.0
@@ -23,5 +23,5 @@ hover_height = 40.0
 detection_range = 300.0
 attack_range = 50.0
 chase_range = 400.0
-max_health = 30
+max_health = 165
 xp_reward = 12

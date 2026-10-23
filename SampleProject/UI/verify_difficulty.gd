@@ -25,7 +25,7 @@ const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHa
 const CITY := "City"
 const BOSSES := {"MayorHall": "Brass Collector", "LabBoss": "Fire Djinn"}
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
-		"vulture": "vulture", "bat": "bat"}
+		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.

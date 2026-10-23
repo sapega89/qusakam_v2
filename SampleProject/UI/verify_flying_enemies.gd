@@ -136,8 +136,8 @@ func _scenes() -> void:
 	ck(bs.max_health == roundi(jackal.max_health / 2.0) and is_equal_approx(bs.base_damage, roundf(jackal.base_damage / 2.0)) and bs.tell == "block",
 			"bat: half the jackal's HP (%d) and damage (%d), a white tell" % [bs.max_health, bs.base_damage])
 	var fs: Resource = load(STATS % "fly")
-	ck(fs.flying and fs.flight_attack == "bite" and fs.max_health == bs.max_health and fs.base_damage == bs.base_damage and fs.tell == "block",
-			"Cthulhu fly: the bat's numbers (D589: it takes the bats' place), elite on top")
+	ck(fs.flying and fs.flight_attack == "bite" and fs.max_health == jackal.max_health and fs.base_damage == jackal.base_damage and fs.tell == "block",
+			"Cthulhu fly: the bat's bite, the jackal's HP and damage (D642: an ordinary enemy's numbers), elite on top")
 	for kind in ["vulture", "bat", "fly"]:
 		var enemy: Node = load({"vulture": VULTURE, "bat": BAT, "fly": FLY}[kind]).instantiate()
 		var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
