@@ -66,7 +66,7 @@ RESTYLE = (
     "Keep exactly this icon's style: the Diablo II look, the dark weathered stone square filling the whole icon, the "
     "gritty texture, the soft vignette, muted desaturated colours, matte with no shine and no glow, no frame. Replace the "
     "rune and its fire with {subject}, in a pale {glow} tint. One clear subject, centred and readable at a glance. No "
-    "weapons, no people, no faces (a lone hand only where the skill is a touch), no rune, no text."
+    "weapon as the subject; if a figure helps, a small faceless generic silhouette, never a lizard; no rune, no text."
 )
 
 
