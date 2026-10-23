@@ -174,8 +174,86 @@ def main():
     sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
 
 
+# Піксельні іконки (Sapega 2026-10-23: «мені подобався стиль в пікселі, просто Кусакам тут зайвий»): еталон — палаючий
+# меч з першого листа (design/shots/candidates/picks/icon_pixel_fire_ref.png) без героя; решта — правки цього кадру;
+# потім сітка 48×48 найчастішим кольором блоку (як спрайти), 16 кольорів, тло — прозоре.
+PIXEL_REF = "design/shots/candidates/picks/icon_pixel_fire_ref.png"
+PIXEL_OUT = "design/shots/candidates/skill_icons_pixel.png"
+PIX_GRID = 48
+PIX_BASE = (
+    "Remove the lizard character completely. Keep only the flaming sword with its fire, in exactly the same pixel art "
+    "style: big square pixels, a thick dark outline, flat shading. The fire engulfs the blade as it strikes; the sword "
+    "lies diagonally across the centre of the square. Plain flat bright green background (#00FF00) right to the edges. "
+    "No character, no text, no border."
+)
+PIX_RESTYLE = (
+    "Keep exactly this icon's pixel art style: big square pixels, a thick dark outline, flat shading, bright clean "
+    "colours, and the plain flat bright green background right to the edges. Replace the flaming sword with {subject}. "
+    "The element that carries the meaning sits exactly in the centre of the square. No character, no lizard, no people, "
+    "no text, no border."
+)
+PIX_SUBJECT = {"Searing Hex": "a pale violet curse rune in the centre with dark violet-black fire burning evenly around it"}
+
+
+def pixel_icon(img):
+    """Кадр моделі на зеленому → іконка 48×48 у пікселях: блоки, палітра, прозоре тло, по центру з полем."""
+    import comfy_sprite
+
+    comfy_sprite.MAGENTA_CUT_MIN = 999  # тло зелене: пурпуровий виріз шрифту спрайтів тут зайвий (фіолетова руна)
+    rgb, op = comfy_sprite.shrink(np.dstack([img, np.full(img.shape[:2], 255, np.uint8)]), (PIX_GRID, PIX_GRID))
+    pal = comfy_sprite.own_palette([(rgb, op)], 16)
+    q, op = comfy_sprite.polish(comfy_sprite.to_palette(rgb, pal), op)
+    rgba = np.dstack([q, op * 255]).astype(np.uint8)
+    ys, xs = np.nonzero(op)
+    crop = rgba[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+    side = PIX_GRID
+    out = np.zeros((side, side, 4), np.uint8)
+    h, w = crop.shape[:2]
+    out[(side - h) // 2 : (side - h) // 2 + h, (side - w) // 2 : (side - w) // 2 + w] = crop[:side, :side]
+    return Image.fromarray(out)
+
+
+def pixel_main():
+    ref = np.asarray(Image.open(PIXEL_REF).convert("RGBA"))
+    mp = ref.shape[0] * ref.shape[1] / 1048576
+    base = run(edit_graph(PIX_BASE, 800, upload(ref, "icon_pixel_ref.png"), mp)).astype(np.uint8)
+    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_pixel_base.png")
+    raw = {"Fire Strike": base}
+    print("generated Fire Strike", flush=True)
+    for ki, (skill, _, _, subject, _) in enumerate(SKILLS):
+        if skill == "Fire Strike":
+            continue
+        text = PIX_RESTYLE.format(subject=PIX_SUBJECT.get(skill, subject))
+        raw[skill] = run(edit_graph(text, 801 + ki, base_name, mp)).astype(np.uint8)
+        print("generated", skill, flush=True)
+    free()
+    folder = os.path.join(ICONS_OUT, "pixel")
+    os.makedirs(os.path.join(folder, "raw"), exist_ok=True)
+    font, small = ImageFont.truetype("arial.ttf", 22), ImageFont.truetype("arial.ttf", 17)
+    pad, top = 24, 70
+    sheet = Image.new("RGB", (pad + len(SKILLS) * (SIZE + pad), top + 2 * (SIZE + pad)), (60, 60, 66))
+    d = ImageDraw.Draw(sheet)
+    for i, (skill, tree, source, _, _) in enumerate(SKILLS):
+        name = skill.lower().replace(" ", "_")
+        Image.fromarray(raw[skill]).save(os.path.join(folder, "raw", name + ".png"))
+        icon = pixel_icon(raw[skill])
+        icon.save(os.path.join(folder, name + ".png"))
+        big = icon.resize((SIZE, SIZE), Image.NEAREST)
+        x = pad + i * (SIZE + pad)
+        d.text((x, 14), skill, fill="white", font=font)
+        d.text((x, 42), source, fill=(200, 200, 210), font=small)
+        for row, bg in enumerate((SLOT, TINT[tree])):
+            tile = Image.new("RGBA", (SIZE, SIZE), bg + (255,))
+            tile.alpha_composite(big)
+            sheet.paste(tile.convert("RGB"), (x, top + row * (SIZE + pad)))
+    sheet.save(PIXEL_OUT)
+    print("sheet", PIXEL_OUT, sheet.size)
+
+
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--sheet"]:  # лише лист із збережених сирих кадрів, без моделі
+    if sys.argv[1:] == ["--pixel"]:
+        pixel_main()
+    elif sys.argv[1:] == ["--sheet"]:  # лише лист із збережених сирих кадрів, без моделі
         sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
     else:
         main()
