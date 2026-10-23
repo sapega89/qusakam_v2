@@ -11,7 +11,7 @@ build **segfaults** on that null texture (reproduced: exit 139). B144, B138, B14
 check that fails before the fix and passes after. **B145 is not reproduced:** the Canyon descent ran without a crash in the
 debug build, the Linux release build headless, and the release build under OpenGL, with and without tutorial windows. Its
 most likely cause is B142 (see §2). **B rows fixed:** B142, B144, B138, B141, B143, B120, B121. B145 stays open.
-**D-ID:** D674 (below). **Full suite:** FULL_SUITE_LINE
+**D-ID:** D674 (below). **Full suite:** `SUITE: 2 FAIL`, 112 PASS. `verify_lab_boss` fails the same way on `feature/backlog` (new B row proposed below). `verify_audio` failed only inside the suite run and passes alone.
 
 > **D674** | ROUTINE CALL | **The Mayor Hall boss carries the D642 boss numbers** (B144; `cloud/bugfix-1`). The Scorpicore
 > axe-warrior takes the numbers `cloud/difficulty` gave the Brass Collector: `base_damage` 120, `attack_cooldown` 1.3 s,
@@ -108,4 +108,16 @@ hero outside is on the floor, below the Arrival mark: `ALL PASS`. Shot:
 
 ## Full suite
 
-FULL_SUITE_DETAIL
+`Scripts/Tools/run_verify.sh`: 112 PASS, `SUITE: 2 FAIL`.
+
+- `verify_audio`: `RESULT: 1 FAIL` inside the suite run. Run alone right after: `RESULT: ALL PASS`. Timing under load; no
+  audio file was touched.
+- `verify_lab_boss`: `RESULT: 2 FAIL: balanced build: he dies in 2.6 of the mercenary's blows (406 HP; mace 129, club
+  206), balanced build: the mercenary takes 60 light hits (6800 HP, Phys. Atk. 100)`. The **same 2 FAIL on
+  `origin/feature/backlog` @ `1a1fd911`**, checked in a clean worktree, so this branch did not cause it.
+
+**Proposed new B row (for the orchestrator):** *B146 — `verify_lab_boss` still checks the Mercenary against its pre-D642
+"balanced build"*. Since `cloud/difficulty`, the Mercenary has 6800 HP and hits for 180, with a ×1.6 slam. `verify_difficulty`
+passes it for the SKILLS build at level 12 (4 hits kill the hero, 45 to kill it), while `verify_lab_boss` still expects its own
+balanced-build numbers. This is the same conflict as B144: one of the two tests has to give way, and D674's call (D642
+lives in `verify_difficulty`) would settle it the same way. Severity: test. Not fixed here: it is outside this task's list.
