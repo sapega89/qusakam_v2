@@ -179,8 +179,7 @@ func _hero_swings(sl: Node) -> void:
 	for case in [["", ""], ["sword", "iron_sword"], ["mace", "iron_mace"], ["polearm", "iron_halberd"], ["dagger", "iron_dagger"]]:
 		if case[0] != "":
 			em.equip_item(who, case[0], case[1], items.get_item(case[1]))
-			while gm.player_state.weapon_in_hand != case[0]:
-				em.cycle_weapon(1)
+			await process_frame  # D475 / D510: екіпірування одразу бере зброю в руку, перемикання немає
 		var label: String = "bare hands" if case[0] == "" else case[1]
 		await create_timer(1.2).timeout  # серія скінчилась, кулдаун минув — наступний удар перший
 		hero.mover.last_direction = 1
