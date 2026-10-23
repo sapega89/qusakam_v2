@@ -2648,6 +2648,7 @@ msgstr "Потрібно вкласти ще %d ОН у дерево «%s»."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "Ліміт ОН цього дерева вичерпано (%d ОН)."
+
 msgid "Dash through the blow, or hold block."
 msgstr "Проскочіть крізь удар ривком або утримуйте блок."
 

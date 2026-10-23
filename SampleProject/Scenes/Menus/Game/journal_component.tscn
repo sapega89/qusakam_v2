@@ -277,7 +277,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"CardPlace"
-text = "CITY GATES"
 uppercase = true
 
 [node name="PrevButton" type="Button" parent="Margin/Page/PersonCard/MapView/PlaceMargin/TopRow"]
@@ -346,7 +345,6 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardEpithet"
-text = "THE COMPANION"
 horizontal_alignment = 2
 uppercase = true
 
@@ -354,7 +352,6 @@ uppercase = true
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"CardName"
-text = "Name"
 horizontal_alignment = 2
 
 [node name="EmptyState" type="Label" parent="Margin/Page"]

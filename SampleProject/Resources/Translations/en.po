@@ -2644,6 +2644,9 @@ msgstr "%s. This tree's JP cap is reached."
 msgid "Needs %d more JP spent in the %s tree."
 msgstr "Needs %d more JP spent in the %s tree."
 
+msgid "This tree's JP cap is reached (%d JP)."
+msgstr "This tree's JP cap is reached (%d JP)."
+
 msgid "Dash through the blow, or hold block."
 msgstr "Dash through the blow, or hold block."
 

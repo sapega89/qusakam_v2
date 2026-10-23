@@ -33,7 +33,12 @@ func _notification(what: int) -> void:
 
 
 func _on_player_leveled_up(new_level: int, _old_level: int) -> void:
-	_queue.append(new_level)
+	show_notification(new_level)
+
+
+## Рівень [param level] — у чергу; показується, щойно згасне попередній.
+func show_notification(level: int) -> void:
+	_queue.append(level)
 	if _queue.size() == 1:
 		_show_next()
 
