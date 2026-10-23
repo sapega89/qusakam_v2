@@ -51,6 +51,10 @@ ProjectMusicController="*res://addons/maaacks_menus_template/base/nodes/autoload
 ProjectUISoundController="*res://addons/maaacks_menus_template/base/nodes/autoloads/ui_sound_controller/project_ui_sound_controller.tscn"
 DialogueQuest="*uid://dt3pmybyly12b"
 
+[debug]
+
+file_logging/max_log_files=50
+
 [dialogue_quest]
 
 data_directory=&"res://dialogue_quest/"
@@ -286,7 +290,3 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 2d/snap/snap_2d_transforms_to_pixel=true
 2d/snap/snap_2d_vertices_to_pixel=true
-
-[debug]
-
-file_logging/max_log_files=50
