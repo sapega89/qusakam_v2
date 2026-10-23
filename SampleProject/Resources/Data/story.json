@@ -79,7 +79,7 @@
 					"id": "laboratory", "title": "Laboratory", "scene": "Laboratory", "story_state": "LABORATORY",
 					"objectives": [
 						{"flag": "lab_corridors_complete", "text": "Fight through the laboratory"},
-						{"flag": "lab_boss_fight_complete", "text": "Defeat the fire djinn"},
+						{"flag": "lab_boss_fight_complete", "text": "Defeat the mercenary"},
 						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory"}
 					],
 					"chronicle": [
