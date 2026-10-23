@@ -664,6 +664,9 @@ position = Vector2(0, -62)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("15_uy8wm")
 centered = false
+offset = Vector2(0, 128)
+region_enabled = true
+region_rect = Rect2(0, 128, 576, 196)
 
 [node name="Front1" type="Parallax2D" parent="Atmosphere" unique_id=1707135308]
 modulate = Color(0.86, 0.8, 1, 0.94)
@@ -678,6 +681,9 @@ material = ExtResource("13_3ybgt")
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("17_mdnv7")
 centered = false
+offset = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 116)
 
 [node name="Far2" type="Parallax2D" parent="Atmosphere" unique_id=465986462]
 modulate = Color(0.6, 0.58, 0.72, 1)
@@ -708,6 +714,9 @@ position = Vector2(288, 418)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("18_u1hjy")
 centered = false
+offset = Vector2(0, 112)
+region_enabled = true
+region_rect = Rect2(0, 112, 576, 212)
 
 [node name="Front2" type="Parallax2D" parent="Atmosphere" unique_id=1290164991]
 modulate = Color(0.86, 0.8, 1, 0.94)
@@ -723,6 +732,9 @@ position = Vector2(288, 480)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("17_mdnv7")
 centered = false
+offset = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 116)
 
 [node name="Far3" type="Parallax2D" parent="Atmosphere" unique_id=131506068]
 modulate = Color(0.6, 0.58, 0.72, 1)
@@ -753,6 +765,9 @@ position = Vector2(576, 898)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("15_uy8wm")
 centered = false
+offset = Vector2(0, 128)
+region_enabled = true
+region_rect = Rect2(0, 128, 576, 196)
 
 [node name="Front3" type="Parallax2D" parent="Atmosphere" unique_id=1996512781]
 modulate = Color(0.86, 0.8, 1, 0.94)
@@ -768,6 +783,9 @@ position = Vector2(576, 960)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("17_mdnv7")
 centered = false
+offset = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 116)
 
 [node name="Ladder1" type="Node2D" parent="." unique_id=2108615034 instance=ExtResource("10_fg77m")]
 z_index = -1
