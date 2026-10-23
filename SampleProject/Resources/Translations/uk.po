@@ -2671,3 +2671,219 @@ msgstr "МАКС"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Складіть присягу перед хранителями присяг"
+
+msgid "Dash Strike [DRAFT]"
+msgstr "Ривок-удар [ЧЕРНЕТКА]"
+
+msgid "Dash forward and cut the first enemy in your way; you stop at it. [DRAFT]"
+msgstr "Ривок уперед і удар по першому ворогу на шляху; ви зупиняєтеся біля нього. [ЧЕРНЕТКА]"
+
+msgid "Rising Slash [DRAFT]"
+msgstr "Висхідний удар [ЧЕРНЕТКА]"
+
+msgid "An upward cut that throws light enemies into the air. [DRAFT]"
+msgstr "Удар знизу вгору, що підкидає легких ворогів у повітря. [ЧЕРНЕТКА]"
+
+msgid "Shield Bash [DRAFT]"
+msgstr "Удар щитом [ЧЕРНЕТКА]"
+
+msgid "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
+msgstr "Зриває замах ворога й сильно б'є по його стійкості; без щита — удар руків'ям. [ЧЕРНЕТКА]"
+
+msgid "Ground Slam [DRAFT]"
+msgstr "Удар об землю [ЧЕРНЕТКА]"
+
+msgid "Knocks down every enemy close to you, on both sides. [DRAFT]"
+msgstr "Збиває з ніг усіх ворогів поруч, з обох боків. [ЧЕРНЕТКА]"
+
+msgid "Holy Javelin [DRAFT]"
+msgstr "Святий спис [ЧЕРНЕТКА]"
+
+msgid "Throw a spear of light at the enemy ahead. [DRAFT]"
+msgstr "Кидає спис світла у ворога попереду. [ЧЕРНЕТКА]"
+
+msgid "Battle Cry [DRAFT]"
+msgstr "Бойовий клич [ЧЕРНЕТКА]"
+
+msgid "Raise your attack for a while; weak enemies close by flinch. [DRAFT]"
+msgstr "На якийсь час підвищує атаку; слабкі вороги поруч здригаються. [ЧЕРНЕТКА]"
+
+msgid "Counter Stance [DRAFT]"
+msgstr "Стійка відповіді [ЧЕРНЕТКА]"
+
+msgid "A short stance: a blow taken in it is blocked and answered hard. Red unblockable attacks still hit. [DRAFT]"
+msgstr "Коротка стійка: удар у ній блокується, і ви сильно відповідаєте. Червоні неблоковані атаки все одно влучають. [ЧЕРНЕТКА]"
+
+msgid "Keen Edge [DRAFT]"
+msgstr "Гостре лезо [ЧЕРНЕТКА]"
+
+msgid "+5% critical hit chance. [DRAFT]"
+msgstr "+5% шансу критичного удару. [ЧЕРНЕТКА]"
+
+msgid "Heavy Hand [DRAFT]"
+msgstr "Важка рука [ЧЕРНЕТКА]"
+
+msgid "Your heavy attack breaks an enemy's guard 30% faster. [DRAFT]"
+msgstr "Ваша важка атака ламає стійкість ворога на 30% швидше. [ЧЕРНЕТКА]"
+
+msgid "Shield Charge [DRAFT]"
+msgstr "Натиск щитом [ЧЕРНЕТКА]"
+
+msgid "Run forward behind your shield and knock enemies back. [DRAFT]"
+msgstr "Біжите вперед за щитом і відкидаєте ворогів. [ЧЕРНЕТКА]"
+
+msgid "Lightspear [DRAFT]"
+msgstr "Спис світла [ЧЕРНЕТКА]"
+
+msgid "A spear of light that pierces every enemy in a line. [DRAFT]"
+msgstr "Спис світла, що пронизує всіх ворогів на одній лінії. [ЧЕРНЕТКА]"
+
+msgid "Aegis [DRAFT]"
+msgstr "Егіда [ЧЕРНЕТКА]"
+
+msgid "A barrier of light soaks up damage for a few seconds. [DRAFT]"
+msgstr "Бар'єр світла поглинає шкоду кілька секунд. [ЧЕРНЕТКА]"
+
+msgid "Hallowed Circle [DRAFT]"
+msgstr "Освячене коло [ЧЕРНЕТКА]"
+
+msgid "Holy ground: enemies in it burn with light, and you and your companion slowly heal. [DRAFT]"
+msgstr "Свята земля: вороги на ній горять світлом, а ви й ваш супутник повільно зцілюєтеся. [ЧЕРНЕТКА]"
+
+msgid "Rally [DRAFT]"
+msgstr "Згуртування [ЧЕРНЕТКА]"
+
+msgid "Your companion's next assist hits harder and lasts longer. [DRAFT]"
+msgstr "Наступна допомога супутника б'є сильніше й триває довше. [ЧЕРНЕТКА]"
+
+msgid "Heaven's Anvil [DRAFT]"
+msgstr "Небесне ковадло [ЧЕРНЕТКА]"
+
+msgid "Leap and slam down; pillars of light rise on both sides. [DRAFT]"
+msgstr "Стрибок і удар об землю; з обох боків здіймаються стовпи світла. [ЧЕРНЕТКА]"
+
+msgid "Radiant Flare [DRAFT]"
+msgstr "Сяйний спалах [ЧЕРНЕТКА]"
+
+msgid "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
+msgstr "Спалах, що приголомшує всіх ворогів навколо й знімає з вас підпал і прокляття. [ЧЕРНЕТКА]"
+
+msgid "Shield of Faith [DRAFT]"
+msgstr "Щит віри [ЧЕРНЕТКА]"
+
+msgid "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
+msgstr "Блок щитом зцілює вас на 25% заблокованої шкоди. [ЧЕРНЕТКА]"
+
+msgid "Blood Rush [DRAFT]"
+msgstr "Кривавий ривок [ЧЕРНЕТКА]"
+
+msgid "Dash to the enemy; the hit drinks HP. [DRAFT]"
+msgstr "Ривок до ворога; удар п'є його HP. [ЧЕРНЕТКА]"
+
+msgid "Chain of Night [DRAFT]"
+msgstr "Ланцюг ночі [ЧЕРНЕТКА]"
+
+msgid "A dark chain pulls one enemy to you. [DRAFT]"
+msgstr "Темний ланцюг притягує до вас одного ворога. [ЧЕРНЕТКА]"
+
+msgid "Blood Price [DRAFT]"
+msgstr "Ціна крові [ЧЕРНЕТКА]"
+
+msgid "Pay some HP: your next three hits deal much more damage. [DRAFT]"
+msgstr "Заплатіть частиною HP: три наступні удари завдають значно більше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Night Reaper [DRAFT]"
+msgstr "Жнець ночі [ЧЕРНЕТКА]"
+
+msgid "A wide, long crescent of dark fire. [DRAFT]"
+msgstr "Широкий і довгий півмісяць темного вогню. [ЧЕРНЕТКА]"
+
+msgid "Dread Howl [DRAFT]"
+msgstr "Жахливе виття [ЧЕРНЕТКА]"
+
+msgid "Weak enemies flee for a moment; strong ones flinch. [DRAFT]"
+msgstr "Слабкі вороги на мить тікають, сильні здригаються. [ЧЕРНЕТКА]"
+
+msgid "Hellfire Stomp [DRAFT]"
+msgstr "Пекельний тупіт [ЧЕРНЕТКА]"
+
+msgid "Leaves a pool of dark fire on the ground. [DRAFT]"
+msgstr "Залишає на землі калюжу темного вогню. [ЧЕРНЕТКА]"
+
+msgid "Soul Harvest [DRAFT]"
+msgstr "Жнива душ [ЧЕРНЕТКА]"
+
+msgid "Executes an enemy with a broken guard or below 20% HP and gives SP back. [DRAFT]"
+msgstr "Добиває ворога зі зламаною стійкістю або з HP нижче 20% і повертає SP. [ЧЕРНЕТКА]"
+
+msgid "Embers Within [DRAFT]"
+msgstr "Жар усередині [ЧЕРНЕТКА]"
+
+msgid "Burning enemies take 20% more damage from you. [DRAFT]"
+msgstr "Палаючі вороги отримують від вас на 20% більше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Wind Step [DRAFT]"
+msgstr "Крок вітру [ЧЕРНЕТКА]"
+
+msgid "A quick step forward with a cut and a moment of invulnerability. [DRAFT]"
+msgstr "Швидкий крок уперед з ударом і миттю невразливості. [ЧЕРНЕТКА]"
+
+msgid "Sand Veil [DRAFT]"
+msgstr "Піщана завіса [ЧЕРНЕТКА]"
+
+msgid "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
+msgstr "Пісок в очі: вороги перед вами кілька секунд промахуються. [ЧЕРНЕТКА]"
+
+msgid "Stone Palm [DRAFT]"
+msgstr "Кам'яна долоня [ЧЕРНЕТКА]"
+
+msgid "An open palm: huge guard damage, little HP damage. [DRAFT]"
+msgstr "Відкрита долоня: величезна шкода стійкості, мало шкоди HP. [ЧЕРНЕТКА]"
+
+msgid "Sweeping Arc [DRAFT]"
+msgstr "Низька дуга [ЧЕРНЕТКА]"
+
+msgid "A low sweep that knocks down everyone in front of you. [DRAFT]"
+msgstr "Низький мах, що збиває з ніг усіх перед вами. [ЧЕРНЕТКА]"
+
+msgid "Mirror Stance [DRAFT]"
+msgstr "Дзеркальна стійка [ЧЕРНЕТКА]"
+
+msgid "A short stance that sends arrows and projectiles back. [DRAFT]"
+msgstr "Коротка стійка, що відбиває стріли й снаряди назад. [ЧЕРНЕТКА]"
+
+msgid "Centered Breath [DRAFT]"
+msgstr "Зосереджений подих [ЧЕРНЕТКА]"
+
+msgid "A short meditation in battle restores some HP and SP; a hit breaks it. [DRAFT]"
+msgstr "Коротка медитація в бою відновлює трохи HP і SP; удар її перериває. [ЧЕРНЕТКА]"
+
+msgid "Dune Quake [DRAFT]"
+msgstr "Трус дюн [ЧЕРНЕТКА]"
+
+msgid "Leap and slam down; a sand wave knocks enemies down both ways. [DRAFT]"
+msgstr "Стрибок і удар об землю; піщана хвиля збиває ворогів з ніг в обидва боки. [ЧЕРНЕТКА]"
+
+msgid "Light Feet [DRAFT]"
+msgstr "Легкі ноги [ЧЕРНЕТКА]"
+
+msgid "Your roll goes 20% further and keeps you invulnerable 20% longer. [DRAFT]"
+msgstr "Ваш перекат на 20% довший, і невразливість триває на 20% довше. [ЧЕРНЕТКА]"
+
+msgid "heavy attack +%s%% poise damage"
+msgstr "важка атака +%s%% шкоди стійкості"
+
+msgid "a shield block heals %s%%"
+msgstr "блок щитом лікує %s%%"
+
+msgid "+%s%% damage to burning enemies"
+msgstr "+%s%% шкоди палаючим ворогам"
+
+msgid "roll +%s%%"
+msgstr "перекат +%s%%"
+
+msgid "Later"
+msgstr "Згодом"
+
+msgid "Coming later: this skill is not built yet."
+msgstr "Буде згодом: цю навичку ще не зроблено."

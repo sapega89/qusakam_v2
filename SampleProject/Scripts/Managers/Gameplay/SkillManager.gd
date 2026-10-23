@@ -43,12 +43,16 @@ enum Result {
 	NO_CHARGES,  # D504: фляга порожня, поповнюється при збереженні
 	TREE_CAP,  # D497: у дереві вже вкладено його ліміт JP
 	BASE_TREE_GATE,  # D497: у дерево базового класу вкладено замало JP для навички професії
+	PLANNED,  # D535: навичка v2 є в даних, але ще не збудована — ні вивчити, ні застосувати
+	NOT_MEDITATING,  # D592: скидання — лише на місці медитації (D447)
 }
 
 ## D260/D279: одне очко навичок (JP) за кожен рівень персонажа (було 2, D149).
 const JP_PER_LEVEL := 1
-## D282: скидання навичок коштує стільки монет за кожен рівень героя.
-const RESPEC_COINS_PER_LEVEL := 10
+## D592: скидання коштує стільки монет за кожне вкладене JP (вартості + ранги), але не менше RESPEC_MIN_COINS.
+## Числа тимчасові (звіт cloud/skills-v2).
+const RESPEC_COINS_PER_JP := 10
+const RESPEC_MIN_COINS := 10
 ## D150: рівні навички 1..20, кожен понад перший — +10 % ефекту; покращення коштує 1 очко.
 const MAX_RANK := 20
 const RANK_BONUS := 0.10
@@ -122,6 +126,8 @@ func check_upgrade(skill_id: String, rank: int, jp: int, unlocked: Array = [], r
 		return Result.NOT_UNLOCKED
 	if rank >= MAX_RANK:
 		return Result.MAX_RANK
+	if skill_database.get_skill(skill_id).planned:
+		return Result.PLANNED
 	var tree: String = skill_database.get_skill(skill_id).oath
 	var learned: Array = get_unlocked_skills() if unlocked.is_empty() else unlocked
 	if tree_spent(tree, learned, ranks) + UPGRADE_COST > skill_database.tree_cap(tree):
@@ -251,9 +257,11 @@ func clear_cooldowns() -> void:
 func can_use_skill(skill_id: String) -> Result:
 	if not skill_database.has_skill(skill_id):
 		return Result.UNKNOWN_SKILL
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if definition.planned:
+		return Result.PLANNED
 	if not is_unlocked(skill_id):
 		return Result.NOT_UNLOCKED
-	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	if not definition.is_active():
 		return Result.NOT_ACTIVE
 	if is_skill_on_cooldown(skill_id):
@@ -444,6 +452,8 @@ func check_unlock(skill_id: String, unlocked: Array, jp: int, ranks: Dictionary 
 		return Result.ALREADY_UNLOCKED
 
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if definition.planned:
+		return Result.PLANNED
 	if definition.oath != "" and definition.oath != get_oath():
 		return Result.NO_OATH if get_oath() == "" else Result.OTHER_OATH
 	if _player_level() < definition.required_level:
@@ -537,7 +547,7 @@ func class_title() -> String:
 	return String(skill_database.get_oath(get_oath()).name)
 
 
-# ── Скидання навичок (D282) ─────────────────────────────────────────────────
+# ── Скидання навичок (D282, D592) ─────────────────────────────────────────────────
 
 ## Скільки очок вкладено: вартості вивчених навичок + покращення понад перший рівень.
 func spent_points() -> int:
@@ -547,19 +557,23 @@ func spent_points() -> int:
 	return total
 
 
+## D592: ціна росте з вкладеними JP; лише атрибути — RESPEC_MIN_COINS.
 func respec_price() -> int:
-	return RESPEC_COINS_PER_LEVEL * _player_level()
+	return maxi(RESPEC_MIN_COINS, RESPEC_COINS_PER_JP * spent_points())
 
 
 func can_respec() -> Result:
 	if get_unlocked_skills().is_empty() and _attributes().spent_total() == 0:
 		return Result.NOTHING_TO_RESET
+	if not is_meditating():
+		return Result.NOT_MEDITATING
 	if ServiceLocator.get_inventory_manager().get_coins() < respec_price():
 		return Result.NOT_ENOUGH_COINS
 	return Result.OK
 
 
-## Забуває все, повертає всі очки навичок і атрибутів (D335), спорожнює хотбар; клятва лишається.
+## D592: забуває все, повертає всі очки навичок (кожне дерево — у межах свого ліміту, D497) і атрибутів (D335),
+## спорожнює хотбар; коштує монет і робиться лише на місці медитації (D447). Клятва лишається (D570).
 func respec() -> Result:
 	var verdict := can_respec()
 	if verdict != Result.OK:
@@ -569,21 +583,9 @@ func respec() -> Result:
 	return Result.OK
 
 
-## D490: скидання безкоштовне (кнопка «Скинути» — з новим екраном навичок, D489).
-func can_reset_free() -> Result:
-	if get_unlocked_skills().is_empty() and _attributes().spent_total() == 0:
-		return Result.NOTHING_TO_RESET
-	return Result.OK
-
-
-## D490: те саме, що respec(), без монет. Кожне дерево повертає вкладені в нього JP — у межах свого ліміту (D497),
-## бо більше за ліміт туди не вкласти; очки атрибутів теж повертаються, клятва лишається.
-func reset_free() -> Result:
-	var verdict := can_reset_free()
-	if verdict != Result.OK:
-		return verdict
-	_forget_all()
-	return Result.OK
+## D447: герой зараз сидить на місці медитації (SavePoint.meditating).
+func is_meditating() -> bool:
+	return get_tree().get_nodes_in_group(&"save_points").any(func(point: Node) -> bool: return point.meditating)
 
 
 ## D497: «вкладено / ліміт» кожного дерева — базового класу ("") і клятви героя, якщо вона є.

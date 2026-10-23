@@ -68,6 +68,9 @@ var charges: int = 0
 var synergies: Array[Dictionary] = []
 ## D497: скільки JP треба вкласти в дерево базового класу, щоб вивчити цю навичку професії. 0 — без вимоги.
 var base_jp: int = 0
+## D535 (v2, зріз 1): навичка вже в даних, але ще не збудована — її не можна вивчити чи застосувати,
+## екран навичок показує її замкненою («Coming later»).
+var planned: bool = false
 
 ## Посилання на ресурси. Не завантажуються тут — це робота UI/VFX-шарів.
 var icon: String = ""
@@ -131,6 +134,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	for synergy: Dictionary in data.get("synergies", []):
 		definition.synergies.append({"skill": String(synergy.skill), "per_rank": float(synergy.per_rank)})
 	definition.base_jp = maxi(0, int(data.get("base_jp", 0)))
+	definition.planned = bool(data.get("planned", false))
 
 	for entry in data.get("prerequisites", []):
 		var prerequisite := String(entry).strip_edges()
@@ -196,6 +200,7 @@ func to_dict() -> Dictionary:
 		"charges": charges,
 		"synergies": synergies.duplicate(true),
 		"base_jp": base_jp,
+		"planned": planned,
 		"icon": icon,
 		"vfx": vfx,
 	}

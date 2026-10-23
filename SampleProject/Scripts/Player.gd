@@ -500,6 +500,7 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 		stamina.spend(stamina.COST_BLOCK)
 		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
 			if not weak:
+				_heal_on_block(damage)
 				return
 			damage = roundi(damage * WEAK_BLOCK_DAMAGE)
 	var dealt := mitigated_damage(damage)
@@ -513,6 +514,20 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 	combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
 
+## D535: Shield of Faith — утриманий блок щитом лікує частку заблокованої шкоди.
+func _heal_on_block(blocked: int) -> void:
+	if not _shield_in_hand():
+		return
+	var healed := roundi(blocked * ServiceLocator.get_skill_manager().passive_value("block_heal"))
+	if healed > 0:
+		heal_damage(healed)
+
+
+## Щит працює, лише якщо руки вільні від дворучної зброї (D267) і лука (D383).
+func _shield_in_hand() -> bool:
+	return ServiceLocator.get_game_manager().player_state.equipment.get("shield") != null and combat.grip not in [&"two_handed", &"bow"]
+
+
 ## Ухилення (D393) — кидок з шансом GameManager.calculate_dodge_chance: 0, удар не влучив.
 func mitigated_damage(damage: int) -> int:
 	var gm := ServiceLocator.get_game_manager()
@@ -520,8 +535,7 @@ func mitigated_damage(damage: int) -> int:
 		return 0
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	# Щит працює, лише якщо руки вільні від дворучної зброї (D267) і лука (D383)
-	if gm.player_state.equipment.get("shield") != null and combat.grip not in [&"two_handed", &"bow"]:
+	if _shield_in_hand():
 		result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("shield_block"))
 	result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("damage_reduction"))  # D284
 	return maxi(1, roundi(result))

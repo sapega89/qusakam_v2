@@ -268,7 +268,13 @@ func calculate_accuracy() -> float:
 
 func calculate_critical_chance() -> float:
 	var attributes := _active_attributes()
-	return with_attribute_ratio("crit_chance", StatCalculator.calculate_critical_chance(attributes)) if attributes else 0.0
+	return crit_chance_from(attributes) if attributes else 0.0
+
+
+## Шанс криту з атрибутів [param attributes], бонусів атрибутів і пасивки Keen Edge (D535) — під спільною межею (D393).
+func crit_chance_from(attributes) -> float:
+	return with_attribute_ratio("crit_chance", StatCalculator.calculate_critical_chance(attributes)
+			+ ServiceLocator.get_skill_manager().passive_value("crit_chance"))
 
 
 # ── Прочие тонкие делегаты для UI ──────────────────────────────────────────

@@ -23,6 +23,11 @@ func _drain(dm: Node) -> void:
 			return
 
 ## Ціль для удару героя: стійкість і відкидання без ворога.
+## Місце медитації (D447) для скидання (D592): SkillManager питає лише групу save_points і поле meditating.
+class MeditationSpot extends Node:
+	var meditating := false
+
+
 class Dummy extends Node2D:
 	func take_poise(_amount: int, _from_x: float) -> void:
 		pass
@@ -59,6 +64,7 @@ func _initialize() -> void:
 	ck(db.class_name_trunk == "Holy Warrior", "trunk class is Holy Warrior")
 	ck(db.oaths.keys() == ["paladin", "dark_knight", "warden"], "three oaths: %s" % [db.oaths.keys()])
 	var per_tree := {"": 0, "paladin": 0, "dark_knight": 0, "warden": 0}
+	var actives := {"": 0, "paladin": 0, "dark_knight": 0, "warden": 0}
 	var data_ok := true
 	for d in db.get_all_skills():
 		if not per_tree.has(d.oath):
@@ -66,6 +72,8 @@ func _initialize() -> void:
 			print("    unknown oath on ", d.id)
 			continue
 		per_tree[d.oath] += 1
+		if d.is_active():
+			actives[d.oath] += 1
 		if d.oath != "" and d.required_level < int(db.get_oath(d.oath).level):
 			data_ok = false
 			print("    oath skill below the oath level: ", d.id)
@@ -73,15 +81,19 @@ func _initialize() -> void:
 			if not db.has_skill(pre):
 				data_ok = false
 				print("    missing prerequisite ", pre, " of ", d.id)
-		if d.is_active():
+		if d.planned and (not d.is_active() or not d.name.ends_with("[DRAFT]")):
+			data_ok = false
+			print("    planned is only for the v2 draft actives (D535): ", d.id)
+		elif d.is_active() and not d.planned:
 			if d.cast_pose == "" or not ResourceLoader.exists(d.vfx):
 				data_ok = false
 				print("    active without a cast or effect: ", d.id)
 			elif not load(d.vfx).instantiate() is Node2D:
 				data_ok = false
-	ck(data_ok, "every skill: known tree, level gate ≥ oath level, prerequisites exist, actives have a cast and an effect")
-	# D496: по 2–3 умовні пасивки на дерево — 10 у стовбурі, по 11 у клятвах.
-	ck(per_tree[""] == 10 and per_tree.paladin == 11 and per_tree.dark_knight == 11 and per_tree.warden == 11, "10 / 11 skills per tree %s" % per_tree)
+	ck(data_ok, "every skill: known tree, level gate ≥ oath level, prerequisites exist, built actives have a cast and an effect")
+	# D535: 19 навичок у кожній вкладці — 10 активних і 9 пасивних, як у гладіатора Dragon Nest.
+	ck(per_tree.values().all(func(n: int) -> bool: return n == 19) and actives.values().all(func(n: int) -> bool: return n == 10),
+			"19 skills per tree, 10 of them active (D535): %s, actives %s" % [per_tree, actives])
 	ck(db.get_skill("healing_palm").oath == "" and db.get_skill("fire_strike").oath == "", "existing skills stay in the trunk")
 
 	print("[2] One point per level (D260)")
@@ -145,12 +157,19 @@ func _initialize() -> void:
 	pdm.load_data(snap)
 	ck(sm.get_oath() == "paladin", "oath survives save/load")
 
-	print("[6] Respec for coins (D282)")
-	ck(sm.respec_price() == 10 * xp.get_level(), "price 10 coins × level (%d)" % sm.respec_price())
-	inv.spend_coins(inv.get_coins())
-	ck(sm.respec() == R.NOT_ENOUGH_COINS, "no coins → refused")
-	inv.add_coins(sm.respec_price() + 7)
+	print("[6] Respec for coins, at a meditation spot (D592)")
 	sm.upgrade_skill("devotion")
+	ck(sm.respec_price() == 10 * sm.spent_points(), "price 10 coins × spent JP (%d for %d JP)" % [sm.respec_price(), sm.spent_points()])
+	inv.add_coins(sm.respec_price() + 7)
+	ck(sm.respec() == R.NOT_MEDITATING and sm.is_unlocked("devotion"), "away from a meditation spot → refused, nothing forgotten")
+	var spot := MeditationSpot.new()
+	spot.add_to_group(&"save_points")
+	game.add_child(spot)
+	ck(sm.respec() == R.NOT_MEDITATING, "next to a meditation spot but not sitting → refused")
+	spot.meditating = true
+	inv.spend_coins(inv.get_coins())
+	ck(sm.respec() == R.NOT_ENOUGH_COINS, "meditating with no coins → refused")
+	inv.add_coins(sm.respec_price() + 7)
 	var spent: int = sm.spent_points()
 	var jp_before: int = sm.get_job_points()
 	var hp_before: int = player.Max_Health
@@ -164,6 +183,13 @@ func _initialize() -> void:
 	ck(sm.get_oath() == "paladin", "the oath stays")
 	ck(player.Max_Health == hp_before - 10, "Toughness gone from max HP")
 	ck(sm.respec() == R.NOTHING_TO_RESET, "nothing learned → nothing to reset")
+	var attributes: Node = sl.get_attribute_manager()
+	var first: String = attributes.attribute_ids()[0]
+	inv.add_coins(sm.RESPEC_MIN_COINS)
+	ck(attributes.spend({first: 1}) == 0, "one attribute point spent (%d unspent before)" % (attributes.get_unspent() + attributes.spent_total()))
+	ck(sm.respec_price() == sm.RESPEC_MIN_COINS and sm.can_respec() == R.OK, "only attribute points spent → the floor price (%d)" % sm.respec_price())
+	attributes.reset()
+	spot.queue_free()
 
 	print("[7] Level cap %d (D285, D488)" % xp.MAX_LEVEL)
 	var jp_cap: int = sm.get_job_points()

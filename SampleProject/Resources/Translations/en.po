@@ -2644,8 +2644,6 @@ msgstr "%s. This tree's JP cap is reached."
 msgid "Needs %d more JP spent in the %s tree."
 msgstr "Needs %d more JP spent in the %s tree."
 
-msgid "This tree's JP cap is reached (%d JP)."
-msgstr "This tree's JP cap is reached (%d JP)."
 msgid "Dash through the blow, or hold block."
 msgstr "Dash through the blow, or hold block."
 
@@ -2663,8 +2661,225 @@ msgstr "Drink it in play with the quick slot (%s)"
 
 msgid "ST"
 msgstr "ST"
+
 msgid "MAX"
 msgstr "MAX"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Swear an oath with the oath keepers"
+
+msgid "Dash Strike [DRAFT]"
+msgstr "Dash Strike [DRAFT]"
+
+msgid "Dash forward and cut the first enemy in your way; you stop at it. [DRAFT]"
+msgstr "Dash forward and cut the first enemy in your way; you stop at it. [DRAFT]"
+
+msgid "Rising Slash [DRAFT]"
+msgstr "Rising Slash [DRAFT]"
+
+msgid "An upward cut that throws light enemies into the air. [DRAFT]"
+msgstr "An upward cut that throws light enemies into the air. [DRAFT]"
+
+msgid "Shield Bash [DRAFT]"
+msgstr "Shield Bash [DRAFT]"
+
+msgid "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
+msgstr "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
+
+msgid "Ground Slam [DRAFT]"
+msgstr "Ground Slam [DRAFT]"
+
+msgid "Knocks down every enemy close to you, on both sides. [DRAFT]"
+msgstr "Knocks down every enemy close to you, on both sides. [DRAFT]"
+
+msgid "Holy Javelin [DRAFT]"
+msgstr "Holy Javelin [DRAFT]"
+
+msgid "Throw a spear of light at the enemy ahead. [DRAFT]"
+msgstr "Throw a spear of light at the enemy ahead. [DRAFT]"
+
+msgid "Battle Cry [DRAFT]"
+msgstr "Battle Cry [DRAFT]"
+
+msgid "Raise your attack for a while; weak enemies close by flinch. [DRAFT]"
+msgstr "Raise your attack for a while; weak enemies close by flinch. [DRAFT]"
+
+msgid "Counter Stance [DRAFT]"
+msgstr "Counter Stance [DRAFT]"
+
+msgid "A short stance: a blow taken in it is blocked and answered hard. Red unblockable attacks still hit. [DRAFT]"
+msgstr "A short stance: a blow taken in it is blocked and answered hard. Red unblockable attacks still hit. [DRAFT]"
+
+msgid "Keen Edge [DRAFT]"
+msgstr "Keen Edge [DRAFT]"
+
+msgid "+5% critical hit chance. [DRAFT]"
+msgstr "+5% critical hit chance. [DRAFT]"
+
+msgid "Heavy Hand [DRAFT]"
+msgstr "Heavy Hand [DRAFT]"
+
+msgid "Your heavy attack breaks an enemy's guard 30% faster. [DRAFT]"
+msgstr "Your heavy attack breaks an enemy's guard 30% faster. [DRAFT]"
+
+msgid "Shield Charge [DRAFT]"
+msgstr "Shield Charge [DRAFT]"
+
+msgid "Run forward behind your shield and knock enemies back. [DRAFT]"
+msgstr "Run forward behind your shield and knock enemies back. [DRAFT]"
+
+msgid "Lightspear [DRAFT]"
+msgstr "Lightspear [DRAFT]"
+
+msgid "A spear of light that pierces every enemy in a line. [DRAFT]"
+msgstr "A spear of light that pierces every enemy in a line. [DRAFT]"
+
+msgid "Aegis [DRAFT]"
+msgstr "Aegis [DRAFT]"
+
+msgid "A barrier of light soaks up damage for a few seconds. [DRAFT]"
+msgstr "A barrier of light soaks up damage for a few seconds. [DRAFT]"
+
+msgid "Hallowed Circle [DRAFT]"
+msgstr "Hallowed Circle [DRAFT]"
+
+msgid "Holy ground: enemies in it burn with light, and you and your companion slowly heal. [DRAFT]"
+msgstr "Holy ground: enemies in it burn with light, and you and your companion slowly heal. [DRAFT]"
+
+msgid "Rally [DRAFT]"
+msgstr "Rally [DRAFT]"
+
+msgid "Your companion's next assist hits harder and lasts longer. [DRAFT]"
+msgstr "Your companion's next assist hits harder and lasts longer. [DRAFT]"
+
+msgid "Heaven's Anvil [DRAFT]"
+msgstr "Heaven's Anvil [DRAFT]"
+
+msgid "Leap and slam down; pillars of light rise on both sides. [DRAFT]"
+msgstr "Leap and slam down; pillars of light rise on both sides. [DRAFT]"
+
+msgid "Radiant Flare [DRAFT]"
+msgstr "Radiant Flare [DRAFT]"
+
+msgid "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
+msgstr "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
+
+msgid "Shield of Faith [DRAFT]"
+msgstr "Shield of Faith [DRAFT]"
+
+msgid "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
+msgstr "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
+
+msgid "Blood Rush [DRAFT]"
+msgstr "Blood Rush [DRAFT]"
+
+msgid "Dash to the enemy; the hit drinks HP. [DRAFT]"
+msgstr "Dash to the enemy; the hit drinks HP. [DRAFT]"
+
+msgid "Chain of Night [DRAFT]"
+msgstr "Chain of Night [DRAFT]"
+
+msgid "A dark chain pulls one enemy to you. [DRAFT]"
+msgstr "A dark chain pulls one enemy to you. [DRAFT]"
+
+msgid "Blood Price [DRAFT]"
+msgstr "Blood Price [DRAFT]"
+
+msgid "Pay some HP: your next three hits deal much more damage. [DRAFT]"
+msgstr "Pay some HP: your next three hits deal much more damage. [DRAFT]"
+
+msgid "Night Reaper [DRAFT]"
+msgstr "Night Reaper [DRAFT]"
+
+msgid "A wide, long crescent of dark fire. [DRAFT]"
+msgstr "A wide, long crescent of dark fire. [DRAFT]"
+
+msgid "Dread Howl [DRAFT]"
+msgstr "Dread Howl [DRAFT]"
+
+msgid "Weak enemies flee for a moment; strong ones flinch. [DRAFT]"
+msgstr "Weak enemies flee for a moment; strong ones flinch. [DRAFT]"
+
+msgid "Hellfire Stomp [DRAFT]"
+msgstr "Hellfire Stomp [DRAFT]"
+
+msgid "Leaves a pool of dark fire on the ground. [DRAFT]"
+msgstr "Leaves a pool of dark fire on the ground. [DRAFT]"
+
+msgid "Soul Harvest [DRAFT]"
+msgstr "Soul Harvest [DRAFT]"
+
+msgid "Executes an enemy with a broken guard or below 20% HP and gives SP back. [DRAFT]"
+msgstr "Executes an enemy with a broken guard or below 20% HP and gives SP back. [DRAFT]"
+
+msgid "Embers Within [DRAFT]"
+msgstr "Embers Within [DRAFT]"
+
+msgid "Burning enemies take 20% more damage from you. [DRAFT]"
+msgstr "Burning enemies take 20% more damage from you. [DRAFT]"
+
+msgid "Wind Step [DRAFT]"
+msgstr "Wind Step [DRAFT]"
+
+msgid "A quick step forward with a cut and a moment of invulnerability. [DRAFT]"
+msgstr "A quick step forward with a cut and a moment of invulnerability. [DRAFT]"
+
+msgid "Sand Veil [DRAFT]"
+msgstr "Sand Veil [DRAFT]"
+
+msgid "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
+msgstr "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
+
+msgid "Stone Palm [DRAFT]"
+msgstr "Stone Palm [DRAFT]"
+
+msgid "An open palm: huge guard damage, little HP damage. [DRAFT]"
+msgstr "An open palm: huge guard damage, little HP damage. [DRAFT]"
+
+msgid "Sweeping Arc [DRAFT]"
+msgstr "Sweeping Arc [DRAFT]"
+
+msgid "A low sweep that knocks down everyone in front of you. [DRAFT]"
+msgstr "A low sweep that knocks down everyone in front of you. [DRAFT]"
+
+msgid "Mirror Stance [DRAFT]"
+msgstr "Mirror Stance [DRAFT]"
+
+msgid "A short stance that sends arrows and projectiles back. [DRAFT]"
+msgstr "A short stance that sends arrows and projectiles back. [DRAFT]"
+
+msgid "Centered Breath [DRAFT]"
+msgstr "Centered Breath [DRAFT]"
+
+msgid "A short meditation in battle restores some HP and SP; a hit breaks it. [DRAFT]"
+msgstr "A short meditation in battle restores some HP and SP; a hit breaks it. [DRAFT]"
+
+msgid "Dune Quake [DRAFT]"
+msgstr "Dune Quake [DRAFT]"
+
+msgid "Leap and slam down; a sand wave knocks enemies down both ways. [DRAFT]"
+msgstr "Leap and slam down; a sand wave knocks enemies down both ways. [DRAFT]"
+
+msgid "Light Feet [DRAFT]"
+msgstr "Light Feet [DRAFT]"
+
+msgid "Your roll goes 20% further and keeps you invulnerable 20% longer. [DRAFT]"
+msgstr "Your roll goes 20% further and keeps you invulnerable 20% longer. [DRAFT]"
+
+msgid "heavy attack +%s%% poise damage"
+msgstr "heavy attack +%s%% poise damage"
+
+msgid "a shield block heals %s%%"
+msgstr "a shield block heals %s%%"
+
+msgid "+%s%% damage to burning enemies"
+msgstr "+%s%% damage to burning enemies"
+
+msgid "roll +%s%%"
+msgstr "roll +%s%%"
+
+msgid "Later"
+msgstr "Later"
+
+msgid "Coming later: this skill is not built yet."
+msgstr "Coming later: this skill is not built yet."

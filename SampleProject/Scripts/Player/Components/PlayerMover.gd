@@ -48,6 +48,8 @@ var airtime: float = 0.0
 var prev_on_floor: bool = false
 var fall_start_height: float = 0.0
 var roll_time_left: float = 0.0
+## Тривалість поточного ривку: roll_duration, з Light Feet (D535) довша.
+var roll_length: float = 0.0
 var roll_ready_in: float = 0.0  # до повернення ривків: останній ривок + roll_cooldown
 var dash_charges: int = 2
 var roll_direction: int = 1
@@ -93,7 +95,7 @@ func is_climbing() -> bool:
 
 ## Ривок можна почати зараз: не на драбині, є заряд, а посеред ривка — уже минуло dash_chain_after.
 func can_roll() -> bool:
-	return not is_climbing() and dash_charges > 0 and not (is_rolling() and roll_time_left > roll_duration - dash_chain_after)
+	return not is_climbing() and dash_charges > 0 and not (is_rolling() and roll_time_left > roll_length - dash_chain_after)
 
 
 ## Удар повертає героя туди, куди тиснуть (D504: між ударами серії можна розвернутись); нічого не тиснуть —
@@ -117,10 +119,12 @@ func start_roll() -> bool:
 	var held := Input.get_axis(&"move_left", &"move_right")
 	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
 	last_direction = roll_direction
-	roll_time_left = roll_duration
+	# D535: Light Feet — ривок триває довше з тією ж швидкістю: далі й довше невразливий
+	roll_length = roll_duration * (1.0 + ServiceLocator.get_skill_manager().passive_value("roll_length"))
+	roll_time_left = roll_length
 	dash_charges -= 1
-	roll_ready_in = roll_duration + roll_cooldown
-	player.set_invulnerable(true, roll_duration)
+	roll_ready_in = roll_length + roll_cooldown
+	player.set_invulnerable(true, roll_length)
 	_pass_through_enemies()
 	AudioManager.play(&"dash")
 	return true
