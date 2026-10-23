@@ -42,6 +42,9 @@ func _ready():
 
 	@warning_ignore("integer_division")
 	map_view = MetSys.make_map_view(self, -SIZE / 2, SIZE, 0)
+	# B132: не досліджені клітинки не малюємо — empty_space_texture теми клав густу сітку на пергамент.
+	map_view.skip_empty = true
+	map_view.update_all()
 	player_location = MetSys.add_player_location(self)
 
 	# Подключаем сигнал обновления карты

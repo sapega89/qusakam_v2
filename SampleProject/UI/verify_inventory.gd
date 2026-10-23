@@ -53,7 +53,7 @@ func _initialize() -> void:
 	ck(tabs != null and tabs.get_child_count() == 5, "5 category tabs")
 	var names: Array = []
 	for b in tabs.get_children(): names.append(b.text)
-	ck(names == ["ALL","CONSUMABLES","MATERIALS","EQUIPMENT","KEY ITEMS"], "tab labels match Figma: %s" % str(names))
+	ck(names == ["ALL","CONSUMABLES","MATERIALS","WEAPONS","KEY ITEMS"], "tab labels match Figma: %s" % str(names))
 	var key_tab: Button = tabs.get_node_or_null("key_items")
 	ck(key_tab != null and not key_tab.disabled, "KEY ITEMS selectable even when empty (D9, replaces #4a)")
 	ck(key_tab != null and key_tab.visible, "KEY ITEMS still visible")
@@ -76,7 +76,7 @@ func _initialize() -> void:
 	for it in inv.items:
 		var t: String = String(it["item_data"].get("type",""))
 		if t != "weapon" and t != "armor": bad += 1
-	ck(bad == 0, "EQUIPMENT contains only weapon/armor")
+	ck(bad == 0, "WEAPONS contains only weapon/armor")
 
 	print("[5] empty category behaviour")
 	inv._select_category(&"key_items")
@@ -159,7 +159,7 @@ func _initialize() -> void:
 		await process_frame
 		seen.append(String(inv._current_category))
 	ck(seen == ["consumables", "materials", "equipment", "key_items", "all"],
-			"ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL: %s" % str(seen))
+			"ALL → CONSUMABLES → MATERIALS → WEAPONS → KEY ITEMS → ALL: %s" % str(seen))
 	inv._select_category(&"materials")
 	filter_btn.pressed.emit()
 	await process_frame

@@ -30,9 +30,6 @@ enum NodeState { LEARNED, PICKED, CAN_LEARN, LOCKED }
 
 @onready var _char_name: Label = %CharName
 @onready var _char_class: Label = %CharClass
-@onready var _avatar: Panel = %Avatar
-## Стиль AvatarChip з теми — заливка підміняється кольором персонажа в копії.
-@onready var _avatar_box: StyleBoxFlat = _avatar.get_theme_stylebox(&"panel").duplicate()
 @onready var _jp_value: Label = %JPValue
 @onready var _columns: HBoxContainer = %Columns
 @onready var _empty_label: Label = %EmptyLabel
@@ -261,8 +258,6 @@ func _refresh_header() -> void:
 	var character = game_manager.get_active_character() if game_manager else null
 	_char_name.text = String(character.name) if character else PLACEHOLDER
 
-	_avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
-	_avatar.add_theme_stylebox_override(&"panel", _avatar_box)
 
 	_char_class.text = _skill_manager.class_title()  # D280: Holy Warrior → назва клятви
 	# Скільки лишиться після позначеного (D330); без позначок — просто очки героя.

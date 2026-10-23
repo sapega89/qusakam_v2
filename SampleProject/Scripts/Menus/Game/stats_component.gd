@@ -4,8 +4,8 @@ extends BaseMenuComponent
 ## Figma: menu-status (58:719).
 ##
 ## Формул тут немає — усе рахують наявні власники:
-##   ім'я/клас       — CharacterManager (game_manager.get_active_character())
-##   дані класу      — game_manager.get_class_data() → CharacterManager → JSON
+##   ім'я            — CharacterManager (game_manager.get_active_character())
+##   клас і клятва   — SkillDatabase (skills.json → class, oaths) і SkillManager.get_oath() (B130)
 ##   похідні стати   — game_manager.calculate_*() → StatCalculator
 ##   рівень і досвід — XPManager
 ##
@@ -13,13 +13,10 @@ extends BaseMenuComponent
 ## показу Status панель партії ховається (див. _set_party_panel_visible).
 
 const PLACEHOLDER := "—"
-## Рядки й картки — шаблони зі сцени (D117): %WeaponBox, %PointAttr, %AttrRow (обидві колонки), %ActionCard,
-## %CompanionCard. Стилі — з теми (AvatarFrame, AttrRow, IconSlot, AccentTick, BoxPanel, ActionCard).
+## Рядки й картки — шаблони зі сцени (D117): %WeaponBox, %PointAttr, %AttrRow (обидві колонки), %CompanionCard.
+## Стилі — з теми (AvatarFrame, AttrRow, IconSlot, AccentTick, BoxPanel, ActionCard).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 
-@onready var _avatar: Panel = %Avatar
-## Стиль AvatarFrame з теми — заливка підміняється кольором персонажа в копії.
-@onready var _avatar_box: StyleBoxFlat = _avatar.get_theme_stylebox(&"panel").duplicate()
 @onready var _name_label: Label = %NameLabel
 @onready var _level_label: Label = %LevelLabel
 @onready var _next_level_value: Label = %NextLevelValue
@@ -29,6 +26,7 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 @onready var _point_attr: HBoxContainer = %PointAttr
 @onready var _primary_job: Label = %PrimaryJobName
 @onready var _secondary_job: Label = %SecondaryJobName
+@onready var _secondary_job_column: VBoxContainer = %SecondaryJob
 @onready var _weapon_slots: HBoxContainer = %WeaponSlots
 @onready var _weapon_box: PanelContainer = %WeaponBox
 @onready var _hp_meter: Control = %HPMeter
@@ -38,7 +36,6 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 ## Один шаблон на обидві колонки: права заповнюється його копіями.
 @onready var _attr_row: PanelContainer = %AttrRow
 @onready var _actions_row: HBoxContainer = %ActionsRow
-@onready var _action_card: PanelContainer = %ActionCard
 @onready var _companions: VBoxContainer = %CompanionsSection
 @onready var _companion_cards: HBoxContainer = %CompanionCards
 @onready var _companion_card: PanelContainer = %CompanionCard
@@ -52,6 +49,21 @@ const LEFT_ROWS: Array[Array] = [
 	["Accuracy", "calculate_accuracy", true],
 	["Critical", "calculate_critical_chance", true],
 ]
+## Іконки типів зброї (B130) — у порядку EquipmentManager.WEAPON_SLOTS.
+const WEAPON_ICONS: Dictionary[String, Texture2D] = {
+	"sword": preload("res://SampleProject/Assets/UI/Icons/weapon_sword.svg"),
+	"polearm": preload("res://SampleProject/Assets/UI/Icons/weapon_polearm.svg"),
+	"dagger": preload("res://SampleProject/Assets/UI/Icons/weapon_dagger.svg"),
+	"axe": preload("res://SampleProject/Assets/UI/Icons/weapon_axe.svg"),
+	"mace": preload("res://SampleProject/Assets/UI/Icons/weapon_mace.svg"),
+	"bow": preload("res://SampleProject/Assets/UI/Icons/weapon_bow.svg"),
+	"staff": preload("res://SampleProject/Assets/UI/Icons/weapon_staff.svg"),
+}
+## Підпис типу зброї для підказки — ті самі ключі, що й у рядках Equipment.
+const WEAPON_NAMES: Dictionary[String, String] = {
+	"sword": "SWORDS", "polearm": "POLEARMS", "dagger": "DAGGERS", "axe": "AXES",
+	"mace": "MACES", "bow": "BOWS", "staff": "STAVES",
+}
 const RIGHT_ROWS: Array[Array] = [
 	["Elem. Atk.", "calculate_magic_damage", false],
 	["Elem. Def.", "calculate_magic_defense", false],
@@ -61,6 +73,9 @@ const RIGHT_ROWS: Array[Array] = [
 
 
 func _initialize_component() -> void:
+	# Гліфи рядків і типів зброї — акцентом, як у Figma 58:719 (шаблони, тож копії успадкують).
+	(_attr_row.get_node(^"Row/Icon") as TextureRect).self_modulate = UITokens.ACCENT
+	(_weapon_box.get_node(^"Icon") as TextureRect).self_modulate = UITokens.ACCENT
 	_connect_live_sources()
 	update_display()
 
@@ -83,11 +98,17 @@ func _connect_live_sources() -> void:
 		EventBus.attribute_points_changed.connect(_on_job_points_changed)
 	if not EventBus.attributes_changed.is_connected(update_display):
 		EventBus.attributes_changed.connect(update_display)
+	if not EventBus.oath_sworn.is_connected(_on_oath_sworn):
+		EventBus.oath_sworn.connect(_on_oath_sworn)
 	if not EventBus.companion_party_changed.is_connected(_update_companions):
 		EventBus.companion_party_changed.connect(_update_companions)
 
 
 func _on_character_changed(_character_id: String) -> void:
+	update_display()
+
+
+func _on_oath_sworn(_oath_id: String) -> void:
 	update_display()
 
 
@@ -105,7 +126,6 @@ func update_display() -> void:
 	_update_header()
 	_update_jobs()
 	_update_attributes()
-	_update_actions()
 	_update_companions()
 
 
@@ -115,8 +135,6 @@ func _update_header() -> void:
 	var character = game_manager.get_active_character()
 	_name_label.text = String(character.name) if character else PLACEHOLDER
 
-	_avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
-	_avatar.add_theme_stylebox_override(&"panel", _avatar_box)
 
 	var service_locator: Node = ServiceLocatorHelper.get_service_locator()
 	var xp_manager: XPManager = service_locator.get_xp_manager() if service_locator else null
@@ -135,40 +153,26 @@ func _update_header() -> void:
 # ── Робота / зброя ──────────────────────────────────────────────────────────
 
 func _update_jobs() -> void:
-	var character = game_manager.get_active_character()
-	if character == null:
-		_primary_job.text = PLACEHOLDER
-		_secondary_job.text = PLACEHOLDER
-		return
-
-	var class_data: Dictionary = game_manager.get_class_data(
-			String(character.class_id), String(character.subclass_id))
-	# Файл класів існує як інфраструктура, але назви поки не заповнені —
-	# порожній рядок показуємо як прочерк, а не як порожнє місце.
-	_primary_job.text = _or_placeholder(String(class_data.get("name", "")))
-	var subclass: Dictionary = class_data.get("subclass", {})
-	_secondary_job.text = _or_placeholder(String(subclass.get("name", "")))
-
-	_update_weapon_slots(character)
+	# B130: основна робота — клас (Holy Warrior, D260), друга — складена клятва (D280); до клятви її немає.
+	var skill_manager: SkillManager = ServiceLocator.get_skill_manager()
+	_primary_job.text = tr(SkillDatabase.class_name_trunk)
+	var oath_id := skill_manager.get_oath()
+	# Колонка тримає своє місце (поле основної роботи не розтягується), порожня до клятви.
+	for child in _secondary_job_column.get_children():
+		child.visible = oath_id != ""
+	if oath_id != "":
+		_secondary_job.text = tr(String(SkillDatabase.get_oath(oath_id).name))
+	_update_weapon_slots()
 
 
-## Типи зброї беремо з реально екіпірованих слотів.
-func _or_placeholder(value: String) -> String:
-	return value if not value.strip_edges().is_empty() else PLACEHOLDER
-
-
-func _update_weapon_slots(character) -> void:
-	var equipped: Dictionary = character.equipment if character else {}
-	var names: Array[String] = []
-	for slot_id in ["sword", "polearm", "dagger", "axe", "mace", "bow", "staff"]:
-		var item = equipped.get(slot_id)
-		if item != null:
-			names.append(ServiceLocator.get_item_database().get_item_name(String(item.id)))
-	# Без зброї — одна порожня клітинка з прочерком.
-	var boxes := RowFill.fill(_weapon_slots, _weapon_box, maxi(names.size(), 1))
+## Типи зброї, якими володіє герой: усі слоти зброї Equipment (EquipmentManager.WEAPON_SLOTS).
+func _update_weapon_slots() -> void:
+	var boxes := RowFill.fill(_weapon_slots, _weapon_box, EquipmentManager.WEAPON_SLOTS.size())
 	for i in boxes.size():
-		var item_name: String = names[i] if i < names.size() else ""
-		boxes[i].get_node(^"Letter").text = item_name.substr(0, 1).to_upper() if item_name != "" else PLACEHOLDER
+		var slot_id: String = EquipmentManager.WEAPON_SLOTS[i]
+		boxes[i].name = slot_id
+		boxes[i].tooltip_text = tr(WEAPON_NAMES[slot_id])
+		(boxes[i].get_node(^"Icon") as TextureRect).texture = WEAPON_ICONS[slot_id]
 
 
 # ── Атрибути ────────────────────────────────────────────────────────────────
@@ -244,13 +248,8 @@ func _current_hp() -> int:
 
 # ── Унікальні дії та таланти ────────────────────────────────────────────────
 
-## Системи Path Action / Talent у проєкті немає. Лишаємо структуру з Figma,
-## але без вигаданого контенту.
-func _update_actions() -> void:
-	var captions: Array[String] = ["Path Action", "Talent"]
-	var cards := RowFill.fill(_actions_row, _action_card, captions.size())
-	for i in cards.size():
-		cards[i].get_node(^"Col/Head/Caption").text = captions[i].to_upper()
+## Системи Path Action / Talent у проєкті немає: секція ActionsSection прихована в сцені (B130),
+## доки герой не має жодної. Шаблон %ActionCard лишається в сцені для майбутньої системи.
 
 
 # ── Компаньйони (D220) ──────────────────────────────────────────────────────

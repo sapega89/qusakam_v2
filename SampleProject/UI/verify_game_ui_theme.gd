@@ -17,6 +17,7 @@ const DIALOGUE_SYSTEM := "res://SampleProject/Scenes/DialogueSystem.tscn"
 # Вікно аддона, яке гра справді показує (підтвердження Reset на Controls). Приклад pause_menu
 # тягнув AppConfig аддона, а той ми замінили своїм InputConfig.
 const ADDON_SCENE := "res://addons/maaacks_menus_template/base/nodes/windows/confirmation_overlaid_window.tscn"
+const ArrowPlateStyle = preload("res://SampleProject/UI/Components/arrow_plate_style.gd")
 
 var _failures: Array[String] = []
 
@@ -149,7 +150,14 @@ func _initialize() -> void:
 	for type in buttons:
 		if not theme.has_stylebox("focus", type):
 			continue
-		var focus := theme.get_stylebox("focus", type) as StyleBoxFlat
+		var focus_box := theme.get_stylebox("focus", type)
+		# D493: табличка-стрілка Game Menu — та сама рамка FOCUS_RING, лише за формою стрілки.
+		if focus_box.get_script() == ArrowPlateStyle:
+			if not (focus_box.border_color == UITokens.FOCUS_RING and focus_box.border_width == UITokens.FOCUS_RING_WIDTH
+					and focus_box.bg_color.a == 0.0):
+				off_ring.append(String(type))
+			continue
+		var focus := focus_box as StyleBoxFlat
 		var ok: bool = focus != null \
 				and (focus.border_color == UITokens.FOCUS_RING or focus.border_color == UITokens.FOCUS_RING_ON_ACCENT) \
 				and focus.border_width_left == UITokens.FOCUS_RING_WIDTH \

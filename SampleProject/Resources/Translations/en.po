@@ -210,6 +210,9 @@ msgstr "World Map"
 msgid "Misc"
 msgstr "Misc"
 
+msgid "Miscellaneous"
+msgstr "Miscellaneous"
+
 msgid "Journal"
 msgstr "Journal"
 
@@ -241,8 +244,8 @@ msgstr "CONSUMABLES"
 msgid "MATERIALS"
 msgstr "MATERIALS"
 
-msgid "EQUIPMENT"
-msgstr "EQUIPMENT"
+msgid "WEAPONS"
+msgstr "WEAPONS"
 
 msgid "KEY ITEMS"
 msgstr "KEY ITEMS"
