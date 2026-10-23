@@ -1,5 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://dves5wvm67pju"]
 
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/portrait.tres" id="hero_portrait"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/weapon_sword.svg" id="weapon_sword"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/stat_crossed_swords.svg" id="stat_glyph"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/stats_component.gd" id="1_stats"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
@@ -49,6 +52,23 @@ custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"AvatarFrame"
+
+[node name="Art" type="TextureRect" parent="Columns/Center/Body/CharHeader/Avatar"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("hero_portrait")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="NameLevelBox" type="VBoxContainer" parent="Columns/Center/Body/CharHeader"]
 layout_mode = 2
@@ -168,6 +188,7 @@ theme_type_variation = &"JobName"
 text = "—"
 
 [node name="SecondaryJob" type="VBoxContainer" parent="Columns/Center/Body/JobsWeapons/Jobs"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
@@ -209,12 +230,11 @@ custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 theme_type_variation = &"BoxPanel"
 
-[node name="Letter" type="Label" parent="Columns/Center/Body/JobsWeapons/WeaponTypes/WeaponSlots/WeaponBox"]
+[node name="Icon" type="TextureRect" parent="Columns/Center/Body/JobsWeapons/WeaponTypes/WeaponSlots/WeaponBox"]
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
-theme_type_variation = &"SectionCaption"
-text = "—"
-horizontal_alignment = 1
-vertical_alignment = 1
+texture = ExtResource("weapon_sword")
+stretch_mode = 5
 
 [node name="AttributesSection" type="VBoxContainer" parent="Columns/Center/Body"]
 layout_mode = 2
@@ -297,11 +317,13 @@ theme_type_variation = &"AttrRow"
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Icon" type="Panel" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
+[node name="Icon" type="TextureRect" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"IconSlot"
+texture = ExtResource("stat_glyph")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Name" type="Label" parent="Columns/Center/Body/AttributesSection/AttrColumns/Left/LeftAttrs/AttrRow/Row"]
 layout_mode = 2
@@ -354,6 +376,8 @@ layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="ActionsSection" type="VBoxContainer" parent="Columns/Center/Body"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
 

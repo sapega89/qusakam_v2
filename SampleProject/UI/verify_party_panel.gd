@@ -54,7 +54,7 @@ func _initialize() -> void:
 	var art: TextureRect = _cards()[1].get_node(^"Row/PortraitFrame/Art")
 	ck(art.visible and art.texture != null, "her portrait")
 	ck(_cards()[1].get_node(^"Row/Info/Bars/Hp/Head/Value").text == "—/—", "no invented HP for an assist")
-	ck(not _cards()[0].get_node(^"Row/PortraitFrame/Art").visible, "hero card keeps his colour")
+	ck(_cards()[0].get_node(^"Row/PortraitFrame/Art").texture == CharacterManager.HERO_PORTRAIT, "hero card shows Kusakam's dialogue portrait (B129)")
 
 	print("[3] Back to camp")
 	menu.switch_to_tab("Status")

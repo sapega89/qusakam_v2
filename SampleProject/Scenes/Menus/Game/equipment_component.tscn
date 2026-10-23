@@ -1,5 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dshid7dx84rt5"]
 
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/portrait.tres" id="hero_portrait"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/equipment_component.gd" id="1_equipment"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
@@ -57,6 +58,23 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"AvatarChip"
+
+[node name="Art" type="TextureRect" parent="Columns/EquipmentPanel/Body/Header/CharBlock/NameRow/Avatar"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("hero_portrait")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CharName" type="Label" parent="Columns/EquipmentPanel/Body/Header/CharBlock/NameRow"]
 unique_name_in_owner = true
@@ -172,11 +190,6 @@ theme_type_variation = &"SidePanel"
 [node name="Body" type="VBoxContainer" parent="Columns/AttributesPanel"]
 layout_mode = 2
 theme_override_constants/separation = 24
-
-[node name="ArtFrame" type="Panel" parent="Columns/AttributesPanel/Body"]
-custom_minimum_size = Vector2(0, 260)
-layout_mode = 2
-theme_type_variation = &"InsetPanel"
 
 [node name="Header" type="Label" parent="Columns/AttributesPanel/Body"]
 layout_mode = 2

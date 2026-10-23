@@ -210,6 +210,9 @@ msgstr "Мапа світу"
 msgid "Misc"
 msgstr "Інше"
 
+msgid "Miscellaneous"
+msgstr "Різне"
+
 msgid "Journal"
 msgstr "Журнал"
 
@@ -241,8 +244,8 @@ msgstr "ВИТРАТНЕ"
 msgid "MATERIALS"
 msgstr "МАТЕРІАЛИ"
 
-msgid "EQUIPMENT"
-msgstr "СПОРЯДЖЕННЯ"
+msgid "WEAPONS"
+msgstr "ЗБРОЯ"
 
 msgid "KEY ITEMS"
 msgstr "КЛЮЧОВІ ПРЕДМЕТИ"

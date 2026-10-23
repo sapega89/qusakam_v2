@@ -330,6 +330,9 @@ const QUEST_MARK_PIXEL := 3                # сторона «пікселя» �
 const QUEST_MARK_GAP := SPACE_XS           # від верху спрайта до низу знака, px
 const LG_TAB_GAP := 16            # UI/Sidebar Tab: gap 16 у category-list
 const SIDEBAR_TAB_HEIGHT := 45
+# D493: табличка-стрілка бічної панелі Game Menu (Figma UI/Sidebar Tab 386:6642) — непрозора, носик праворуч.
+const SIDEBAR_TAB_BG := BACKGROUND
+const SIDEBAR_TAB_TIP := 14       # довжина носика стрілки, px (виміряно з кадру 94:609)
 
 # ── Удар по героєві (4b, Sapega «відчуття, що тебе вдарили»): червона віньєтка лише по краях екрана
 # (центр прозорий — не повноекранний спалах) і короткий червоний спалах рядка HP. Колір@альфа → позиція від центру.

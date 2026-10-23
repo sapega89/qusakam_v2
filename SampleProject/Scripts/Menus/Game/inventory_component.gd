@@ -17,7 +17,7 @@ const CATEGORIES: Array[Dictionary] = [
 	{"id": &"all", "label": "ALL", "types": []},
 	{"id": &"consumables", "label": "CONSUMABLES", "types": ["consumable"]},
 	{"id": &"materials", "label": "MATERIALS", "types": ["material"]},
-	{"id": &"equipment", "label": "EQUIPMENT", "types": ["weapon", "armor"]},
+	{"id": &"equipment", "label": "WEAPONS", "types": ["weapon", "armor"]},  # D493: підпис з Figma
 	{"id": &"key_items", "label": "KEY ITEMS", "types": ["key_item"]},
 ]
 
@@ -237,7 +237,7 @@ func _on_inventory_changed() -> void:
 
 
 ## D9: кожне натискання FILTER перемикає на наступну категорію по колу:
-## ALL → CONSUMABLES → MATERIALS → EQUIPMENT → KEY ITEMS → ALL. Без меню й спливаючих списків.
+## ALL → CONSUMABLES → MATERIALS → WEAPONS → KEY ITEMS → ALL. Без меню й спливаючих списків.
 func _on_filter_pressed() -> void:
 	var index := 0
 	for i in CATEGORIES.size():

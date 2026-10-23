@@ -82,20 +82,17 @@ func _refresh_cards() -> void:
 	var party: Array = ServiceLocator.get_companion_manager().get_party()
 	var level: int = ServiceLocator.get_xp_manager().get_level()
 	var cards := RowFill.fill(_cards, _card, 1 + party.size())
-	_fill_card(cards[0], String(hero.character_id), String(hero.name), null, hero.avatar_color, level, true)
+	_fill_card(cards[0], String(hero.character_id), String(hero.name), CharacterManager.HERO_PORTRAIT, level, true)
 	for i in party.size():
 		var id: String = party[i]
-		_fill_card(cards[i + 1], id, CompanionManager.NAMES[id], load(CompanionManager.PORTRAIT_PATH % id), UITokens.ICON_SLOT_BG, level, false)
+		_fill_card(cards[i + 1], id, CompanionManager.NAMES[id], load(CompanionManager.PORTRAIT_PATH % id), level, false)
 
 
-func _fill_card(card: Control, id: String, display_name: String, art: Texture2D, color: Color, level: int, is_hero: bool) -> void:
+func _fill_card(card: Control, id: String, display_name: String, art: Texture2D, level: int, is_hero: bool) -> void:
 	card.set_meta(&"character_id", id)
 	card.get_node(^"Row/Info/Head/Name").text = display_name
 	card.get_node(^"Row/Info/Head/LevelBadge/Level").text = tr("Lv.%d") % level
-	card.get_node(^"Row/PortraitFrame/Portrait").color = color
-	var art_rect: TextureRect = card.get_node(^"Row/PortraitFrame/Art")
-	art_rect.texture = art
-	art_rect.visible = art != null
+	(card.get_node(^"Row/PortraitFrame/Art") as TextureRect).texture = art
 	# HP і SP (D146, один пул у player_state) — лише в героя; компаньйони — асисти без власних HP (D18, D209).
 	var hp := _active_hp() if is_hero else Vector2i(-1, -1)
 	_fill_stat(card.get_node(^"Row/Info/Bars/Hp"), hp.x, hp.y)

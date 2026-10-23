@@ -8,6 +8,8 @@ class_name CharacterManager
 
 # Preload GameCharacter script to ensure it's loaded (class_name should be available globally)
 const GameCharacterScript = preload("res://SampleProject/Scripts/Systems/Character.gd")
+## Портрет Кусакама — той самий, що в діалоговому вікні (dialogue_quest/characters/KUSAKAM.tres), B129.
+const HERO_PORTRAIT: Texture2D = preload("res://SampleProject/Sprites/Player/portrait.tres")
 
 # Character system - multiple characters support
 var characters: Dictionary[String, GameCharacter] = {}  # Dictionary of character_id -> GameCharacter (Resource)

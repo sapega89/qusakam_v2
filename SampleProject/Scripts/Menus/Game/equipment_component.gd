@@ -49,9 +49,6 @@ const ATTR_ROWS: Array[Array] = [
 ]
 
 @onready var _char_name: Label = %CharName
-@onready var _avatar: Panel = %Avatar
-## Стиль AvatarChip з теми — заливка підміняється кольором персонажа в копії.
-@onready var _avatar_box: StyleBoxFlat = _avatar.get_theme_stylebox(&"panel").duplicate()
 @onready var _slot_list: VBoxContainer = %SlotList
 @onready var _slot_row: Button = %SlotRow
 @onready var _optimize_button: Button = %OptimizeButton
@@ -189,8 +186,6 @@ func _update_header() -> void:
 	var character = game_manager.get_active_character()
 	_char_name.text = String(character.name) if character else "—"
 
-	_avatar_box.bg_color = character.avatar_color if character else UITokens.ICON_SLOT_BG
-	_avatar.add_theme_stylebox_override(&"panel", _avatar_box)
 
 
 func _update_slots() -> void:

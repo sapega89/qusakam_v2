@@ -9,6 +9,7 @@ extends SceneTree
 ## UITokens.gd і перезапусти цей скрипт, інакше правки загубляться.
 
 const OUT_PATH := "res://SampleProject/UI/Themes/GameUITheme.tres"
+const ArrowPlateStyle = preload("res://SampleProject/UI/Components/arrow_plate_style.gd")
 
 var _font_regular: FontVariation
 var _font_medium: FontVariation
@@ -577,17 +578,28 @@ func _sidebar_tab(theme: Theme) -> void:
 	theme.set_type_variation("SidebarTabOn", t)
 	for c in icon_states:
 		theme.set_color(c, "SidebarTabOn", UITokens.TEXT_PRIMARY)
-	var pad_h := UITokens.SPACE_LG
-	var pad_v := UITokens.SPACE_MD
-	theme.set_stylebox("normal", t, _box(UITokens.SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
-	theme.set_stylebox("hover", t, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad_h, pad_v))
-	theme.set_stylebox("focus", t, _focus_ring(pad_h, pad_v))
-	theme.set_stylebox("disabled", t, _box(Color(UITokens.SURFACE, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v))
-	# Активний пункт: акцентна ліва грань.
-	var act := _box(UITokens.SURFACE_HOVER, UITokens.BORDER, UITokens.BORDER_WIDTH, pad_h, pad_v)
-	act.border_width_left = UITokens.SPACE_XS
-	act.border_color = UITokens.ACCENT
-	theme.set_stylebox("pressed", t, act)
+	# D493: таблички-стрілки Figma (UI/Sidebar Tab 386:6642). Активну вкладку позначає лише вказівник ▶.
+	var plate := _arrow_plate(UITokens.SIDEBAR_TAB_BG, UITokens.BORDER, UITokens.BORDER_WIDTH)
+	theme.set_stylebox("normal", t, plate)
+	theme.set_stylebox("pressed", t, plate)
+	theme.set_stylebox("hover", t, _arrow_plate(UITokens.SIDEBAR_TAB_BG, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH))
+	theme.set_stylebox("hover_pressed", t, _arrow_plate(UITokens.SIDEBAR_TAB_BG, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH))
+	theme.set_stylebox("focus", t, _arrow_plate(Color(0, 0, 0, 0), UITokens.FOCUS_RING, UITokens.FOCUS_RING_WIDTH))
+	theme.set_stylebox("disabled", t, _arrow_plate(Color(UITokens.SIDEBAR_TAB_BG, 0.25), UITokens.BORDER, UITokens.BORDER_WIDTH))
+
+
+## Табличка-стрілка (arrow_plate_style.gd) з відступами вмісту вкладки.
+func _arrow_plate(bg: Color, border_color: Color, border_width: int) -> StyleBox:
+	var sb: StyleBox = ArrowPlateStyle.new()
+	sb.bg_color = bg
+	sb.border_color = border_color
+	sb.border_width = border_width
+	sb.tip_width = UITokens.SIDEBAR_TAB_TIP
+	sb.content_margin_left = UITokens.SPACE_LG
+	sb.content_margin_right = UITokens.SPACE_LG + UITokens.SIDEBAR_TAB_TIP
+	sb.content_margin_top = UITokens.SPACE_MD
+	sb.content_margin_bottom = UITokens.SPACE_MD
+	return sb
 
 
 ## Figma UI/IconButton — квадратна кнопка 36×36 з іконкою.
@@ -685,7 +697,7 @@ func _setup_panels(theme: Theme) -> void:
 			UITokens.BORDER_WIDTH, 18, 18))
 
 	# Рядки Status / Equipment — шаблони в stats_component.tscn / equipment_component.tscn (D117), стилі лише тут.
-	# Аватар: колір заливки — avatar_color персонажа (копія цього стилю в stats_component.gd).
+	# Аватар: рамка під портретом героя (B129, Sprites/Player/portrait.tres у дочірньому Art).
 	theme.set_type_variation("AvatarFrame", "Panel")
 	theme.set_stylebox("panel", "AvatarFrame", _box(UITokens.ICON_SLOT_BG, UITokens.BORDER,
 			UITokens.BORDER_WIDTH_SELECTED, 0, 0))

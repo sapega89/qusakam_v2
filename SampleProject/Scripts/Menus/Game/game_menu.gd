@@ -3,7 +3,8 @@ extends Control
 ## GameMenu — одна сцена (D116, design/game_menu_single_scene_plan.md).
 ## Усі вікна та їхній початковий стан задані в game_menu.tscn. Скрипт нічого
 ## не шукає й не ховає на старті — лише перемикає панель, коли натиснуто вкладку.
-## Кожна кнопка вкладки несе metadata/tab (ім'я) і metadata/panel (шлях до панелі).
+## Кожна кнопка вкладки несе metadata/tab (ім'я), metadata/label (ключ підпису, D493: "Misc" → "Miscellaneous")
+## і metadata/panel (шлях до панелі).
 
 const MiscMenuModalScene = preload("res://SampleProject/Scenes/Menus/Game/misc_menu_modal.tscn")
 const MODAL_TEMPLATES = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
@@ -112,7 +113,7 @@ func _connect_ui_refresh() -> void:
 
 func _apply_localized_labels() -> void:
 	for button in _tabs.get_buttons():
-		button.text = tr(button.get_meta("tab"))
+		button.text = tr(button.get_meta("label"))
 
 
 func _get_ui_manager() -> Node:
