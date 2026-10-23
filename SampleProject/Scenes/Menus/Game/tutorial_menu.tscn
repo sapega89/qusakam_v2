@@ -196,6 +196,19 @@ layout_mode = 2
 theme_type_variation = &"TutorialHint"
 text = "—"
 
+[node name="OpenRow" type="HBoxContainer" parent="Margin/Page"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="OpenButton" type="Button" parent="Margin/Page/OpenRow"]
+unique_name_in_owner = true
+auto_translate_mode = 2
+layout_mode = 2
+theme_type_variation = &"ModalButton"
+text = "OPEN COMPANIONS"
+
 [node name="BottomBar" parent="." instance=ExtResource("3_bottom_bar")]
 unique_name_in_owner = true
 layout_mode = 1

@@ -26,6 +26,8 @@ const FRAME_TIME := 0.1
 @onready var _key: Label = %Key
 @onready var _hint_text: Label = %HintText
 @onready var _bottom_bar: Node = %BottomBar
+@onready var _open_row: Control = %OpenRow
+@onready var _open_button: Button = %OpenButton
 
 var topics: Array = []
 var index := 0
@@ -37,7 +39,10 @@ var _frame_left := 0.0
 func _ready() -> void:
 	topics = TutorialTopics.available()
 	_bottom_bar.set_default_hint("Use the arrow keys or the left stick to choose a topic.")
-	_bottom_bar.set_actions([{"action": &"navigate", "label": "Select"}, {"action": &"ui_cancel", "label": "Close"}])
+	_open_button.custom_minimum_size = Vector2(UITokens.MODAL_BUTTON_WIDTH, UITokens.MODAL_BUTTON_HEIGHT)
+	_open_button.focus_entered.connect(func() -> void: _open_button.theme_type_variation = &"ModalButtonOn")
+	_open_button.focus_exited.connect(func() -> void: _open_button.theme_type_variation = &"ModalButton")
+	_open_button.pressed.connect(_open_section)
 	show_topic(0)
 	grab_focus.call_deferred()
 
@@ -58,6 +63,13 @@ func show_topic(i: int) -> void:
 	_key.text = topic.get("key", "")
 	_hint_text.text = topic.get("hint", "")
 	_hint_bar.visible = not _key.text.is_empty()
+	# Тема з "open" (D463) — кнопка, що веде просто до свого розділу меню.
+	_open_row.visible = topic.has("open")
+	_open_button.text = tr(topic.get("open_label", "")).to_upper()
+	var actions: Array = [{"action": &"navigate", "label": "Select"}, {"action": &"ui_cancel", "label": "Close"}]
+	if _open_row.visible:
+		actions.insert(1, {"action": &"ui_accept", "label": topic.open_label})
+	_bottom_bar.set_actions(actions)
 
 
 static func load_frames(set_name: String) -> Array[Texture2D]:
@@ -83,6 +95,12 @@ func open_id(id: String) -> void:
 	_bottom_bar.set_default_hint("Tutorial windows can be turned off in Settings → Game.")
 
 
+## Кнопка теми (D463): вікно закривається, Game Menu відкривається на розділі теми ("open": "companions").
+func _open_section() -> void:
+	cancelled.emit()
+	ServiceLocator.get_ui_manager().open_companion_picker()
+
+
 func _input(event: InputEvent) -> void:
 	if InputGlyphs.note_event(event):
 		show_topic(index)
@@ -100,6 +118,8 @@ func _handle(event: InputEvent) -> void:
 	var step := 0
 	if event.is_action_pressed(&"ui_cancel"):
 		cancelled.emit()
+	elif event.is_action_pressed(&"ui_accept") and _open_row.visible:
+		_open_section()
 	elif event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_left") \
 			or event.is_action_pressed(&"menu_prev_tab"):
 		step = -1

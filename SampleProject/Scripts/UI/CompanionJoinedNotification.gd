@@ -1,6 +1,7 @@
 extends Control
 
-## «X приєднався до загону» (D230): коли компаньйона відкрито в лабораторії (EventBus.companion_joined).
+## «X може приєднатися до загону» (D230, D464): компаньйона відкрито в лабораторії (EventBus.companion_joined);
+## у загін його бере гравець у Status.
 ## Вигляд — як сповіщення про рівень (спільна панель Resources/UI/notification_panel.tres).
 
 const SHOW_TIME := 2.5
@@ -19,12 +20,12 @@ func _ready() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready() and _companion_id != "":
-		_name.text = tr("%s joined the party") % tr(CompanionManager.NAMES[_companion_id])
+		_name.text = tr("%s can join your party") % tr(CompanionManager.NAMES[_companion_id])
 
 
 func _on_companion_joined(companion_id: String) -> void:
 	_companion_id = companion_id
-	_name.text = tr("%s joined the party") % tr(CompanionManager.NAMES[companion_id])
+	_name.text = tr("%s can join your party") % tr(CompanionManager.NAMES[companion_id])
 	visible = true
 	modulate.a = 0.0
 	if _tween:

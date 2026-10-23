@@ -324,7 +324,7 @@ signal assist_ready(companion_id: String)
 @warning_ignore("unused_signal")
 signal companion_party_changed()
 
-## Компаньйон щойно приєднався до загону (лабораторія, D230) — сповіщення на екрані.
+## Компаньйона щойно відкрито (лабораторія, D230): тепер його можна взяти в загін у Status (D464) — сповіщення на екрані.
 @warning_ignore("unused_signal")
 signal companion_joined(companion_id: String)
 

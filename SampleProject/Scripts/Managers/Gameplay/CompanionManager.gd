@@ -4,8 +4,9 @@ class_name CompanionManager
 ## 🤝 Асисти компаньйонів (D201, D209): одна кнопка викликає наступного готового, у кожного свій кулдаун.
 ## Хто відкритий — рахується з сюжетних прапорців лабораторії (вони й так у сейві), окремого списку немає.
 ## Охоронець біля воріт міста — разовий туторіал: CityGates пропонує його на час бою (offer_guard).
-## Загін (D220): до PARTY_SIZE відкритих, порядок = черга кнопки; гравець збирає його в Status,
-## новий компаньйон сам стає в загін, якщо є місце. Зберігається в player_state.companion_party.
+## Загін (D220): до PARTY_SIZE відкритих, порядок = черга кнопки; гравець збирає його в Status.
+## Відкритий компаньйон сам у загін не стає (D464): лише доступний, доки гравець не вибере його в Status;
+## кнопка кличе тільки вибраних. Зберігається в player_state.companion_party.
 
 ## Кулдаун кожного компаньйона після виклику, с (мок, D209).
 const COOLDOWN := 15.0
@@ -98,14 +99,10 @@ func toggle_party(companion_id: String) -> bool:
 	return companion_id in party
 
 
-## Лабораторія: щойно поставлено прапорець [param flag] — компаньйон, якого він відкриває, стає в загін, якщо є місце.
-func join_on_unlock(flag: String) -> void:
-	var companion_id: Variant = UNLOCK_FLAGS.find_key(flag)
-	if companion_id == null:
-		return
-	if not is_in_party(companion_id) and get_party().size() < PARTY_SIZE:
-		toggle_party(companion_id)
-	EventBus.companion_joined.emit(companion_id)  # D230: сповіщення, навіть якщо загін повний (тоді — у таборі)
+## Лабораторія: щойно поставлено прапорець [param flag] — компаньйон, якого він відкриває, тепер доступний (D464):
+## у загін його бере гравець у Status. Сповіщення на екрані (D230).
+func announce_unlock(flag: String) -> void:
+	EventBus.companion_joined.emit(UNLOCK_FLAGS.find_key(flag))
 
 
 ## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний у загоні за останнім викликаним, хто готовий.

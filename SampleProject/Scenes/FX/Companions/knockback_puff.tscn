@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
+
+[sub_resource type="Gradient" id="G_puff"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.96, 0.94, 0.9, 0.9, 0.85, 0.8, 0.72, 0)
+
+[node name="KnockbackPuff" type="Node2D"]
+z_index = 200
+script = ExtResource("fx")
+life = 0.45
+metadata/_doc = "Dust puff behind a knocked-back enemy (D465)"
+
+[node name="Puff" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 10
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(4, 2)
+direction = Vector2(1, -0.3)
+spread = 30.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 60.0
+initial_velocity_max = 150.0
+damping_min = 200.0
+damping_max = 280.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color_ramp = SubResource("G_puff")

@@ -178,7 +178,7 @@ func _initialize() -> void:
 	await _drain()  # вступ Canyon
 	for flag in ASSIST_FLAGS:
 		game.set_quest_flag(flag, true)
-		sl.get_companion_manager().join_on_unlock(flag)  # як у 9.5: відкритий — у загін
+		sl.get_companion_manager().toggle_party(sl.get_companion_manager().UNLOCK_FLAGS.find_key(flag))  # D464: вибрано в Status
 
 	print("[1] Arriving: the djinn waits asleep, the gates are down, nothing plays")
 	await game.teleport_to_room(HALL, ^"Arrival")

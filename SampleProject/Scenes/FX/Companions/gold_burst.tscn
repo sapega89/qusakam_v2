@@ -1,0 +1,48 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/ring.tres" id="ring"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[sub_resource type="Gradient" id="G_gold"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 0.85, 1, 1, 0.82, 0.3, 1, 0.95, 0.6, 0.15, 0)
+
+[node name="GoldBurst" type="Node2D"]
+z_index = 205
+script = ExtResource("fx")
+life = 0.55
+flash_grow = 2.2
+flash_time = 0.2
+metadata/_doc = "Urizen's coin hit: golden burst (D465)"
+
+[node name="FlashGlow" type="Sprite2D" parent="."]
+modulate = Color(1, 0.85, 0.35, 1)
+material = ExtResource("add")
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("glow")
+
+[node name="FlashRing" type="Sprite2D" parent="."]
+modulate = Color(1, 0.9, 0.45, 0.9)
+material = ExtResource("add")
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("ring")
+
+[node name="Sparks" type="CPUParticles2D" parent="."]
+material = ExtResource("add")
+emitting = false
+amount = 16
+lifetime = 0.45
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 300)
+initial_velocity_min = 90.0
+initial_velocity_max = 200.0
+damping_min = 120.0
+damping_max = 200.0
+scale_amount_min = 2.0
+scale_amount_max = 3.5
+color_ramp = SubResource("G_gold")

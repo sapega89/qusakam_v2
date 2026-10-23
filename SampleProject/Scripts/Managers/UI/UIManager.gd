@@ -152,6 +152,17 @@ func open_game_menu() -> void:
 		return
 	change_state("GameMenuState")
 
+## Кнопка вікна туторіалу (D463): Game Menu → Status → Companions, фокус на першій картці компаньйона.
+## Меню вже відкрите (вікно з Misc → Tutorial) — лише перемикає вкладку.
+func open_companion_picker() -> void:
+	if current_state_name != "GameMenuState":
+		open_game_menu()
+		await get_tree().process_frame
+	var menu: Node = get_tree().get_first_node_in_group(&"game_menu")
+	menu.switch_to_tab("Status")
+	await get_tree().process_frame
+	menu.find_child("StatsComponent", true, false).focus_companions()
+
 func close_game_menu() -> void:
 	if current_state_name == "GameMenuState":
 		close_state()

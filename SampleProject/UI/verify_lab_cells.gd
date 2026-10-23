@@ -277,12 +277,21 @@ func _initialize() -> void:
 	ck(started == MEET_TALKS, "one talk: Malik asks, each names themselves, Malik leads on (%s)" % [started])
 	var met := _snap()
 	_free_ok(met, "played")
-	ck(met.party.size() == 3, "all three in the party (%s)" % [met.party])
+	var cm: Node = sl.get_companion_manager()
+	ck(met.party.is_empty() and cm.get_unlocked().size() == 3, "all three available, none in the party until picked, D464 (%s)" % [met.party])
+	ck("choose_companions" in sl.get_game_manager().player_state.seen_tutorials, "the picker tutorial fired once more than one can be chosen (D463)")
+	Input.parse_input_event(_key(KEY_F, true))
+	await physics_frame
+	Input.parse_input_event(_key(KEY_F, false))
+	for i in 10: await physics_frame
+	ck(assists.is_empty(), "F calls nobody before a pick (%s)" % [assists])
+	cm.toggle_party("astrit")
 	Input.parse_input_event(_key(KEY_F, true))
 	await physics_frame
 	Input.parse_input_event(_key(KEY_F, false))
 	for i in 10: await physics_frame
 	ck(assists.size() == 1 and assists[0] in ["alisia", "astrit", "urizen"], "a real F press calls a companion's assist (%s)" % [assists])
+	cm.toggle_party("astrit")  # назад у табір: пропуск знайомства порівнює загін з цим проходом
 
 	print("[5] The acquaintance skipped with a real pad Y hold, from the same start")
 	for f: String in game.get_quest_flags().keys():

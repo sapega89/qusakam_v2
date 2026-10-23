@@ -278,6 +278,14 @@ func _update_companions() -> void:
 			select.pressed.connect(func() -> void: cm.toggle_party(card.get_meta(&"companion_id")))
 
 
+## Туторіал вибору компаньйонів (D463): фокус на першій картці, секція — у полі зору прокрутки Status.
+func focus_companions() -> void:
+	_update_companions()
+	var first: Control = _companion_cards.get_children().filter(func(c: Control) -> bool: return c.visible)[0]
+	(first.get_node(^"Select") as Button).grab_focus()
+	(get_parent() as ScrollContainer).ensure_control_visible(_companions)
+
+
 # ── Панель партії ───────────────────────────────────────────────────────────
 
 ## Figma menu-status має праву колонку-портрет 640 замість панелі партії.

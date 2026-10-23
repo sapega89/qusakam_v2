@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[sub_resource type="Gradient" id="G_spark"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.8, 1, 0.75, 1, 0.45, 0.95, 0.55, 0)
+
+[node name="HitSpark" type="Node2D"]
+z_index = 205
+script = ExtResource("fx")
+life = 0.4
+flash_grow = 1.8
+flash_time = 0.14
+metadata/_doc = "Alisia's arrow hit spark (D465)"
+
+[node name="FlashGlow" type="Sprite2D" parent="."]
+modulate = Color(0.85, 1, 0.85, 1)
+material = ExtResource("add")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("glow")
+
+[node name="Sparks" type="CPUParticles2D" parent="."]
+material = ExtResource("add")
+emitting = false
+amount = 14
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 250)
+initial_velocity_min = 120.0
+initial_velocity_max = 260.0
+damping_min = 280.0
+damping_max = 380.0
+scale_amount_min = 2.0
+scale_amount_max = 3.0
+color_ramp = SubResource("G_spark")
