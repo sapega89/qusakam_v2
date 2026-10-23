@@ -39,8 +39,8 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(dm)
-	for flag in ["desert_road_fight_complete", "desert_road_merchant_met", "task_merchant_caravan_taken",
-			"city_gates_fight_complete", "city_blacksmith_met", "task_smith_helmet_taken"]:
+	for flag in ["desert_road_fight_complete", "task_merchant_caravan_taken",
+			"city_gates_fight_complete", "task_smith_helmet_taken"]:
 		game.set_quest_flag(flag, true)
 
 	# 1. Торговець за роботою біля брами, герой ліворуч.

@@ -17,7 +17,9 @@ var _first_talk: String = ""
 func _ready() -> void:
 	_first_talk = talk_dialogue
 	super._ready()
-	EventBus.oath_sworn.connect(func(_id: String) -> void: _sync_talk())
+	EventBus.oath_sworn.connect(func(_id: String) -> void:
+		_sync_talk()
+		refresh_availability())
 	_sync_talk()
 
 
@@ -32,6 +34,13 @@ func _oath_name() -> String:
 ## Після клятви цьому хранителеві він говорить інше.
 func _sync_talk() -> void:
 	talk_dialogue = sworn_dialogue if _skills().get_oath() == oath_id else _first_talk
+
+
+## Клятви ще немає — герб (D452): її можна взяти в будь-якого з трьох хранителів, а можна й не брати.
+func quest_marker() -> StringName:
+	if _skills().get_oath() == "":
+		return &"oath"
+	return super.quest_marker()
 
 
 func menu_entries() -> Array:

@@ -77,7 +77,6 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
-	game.set_quest_flag("desert_road_merchant_met", true)  # BACKLOG 14: the merchant already came out of his shop (verify_npc_arrival covers the meeting)
 	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
@@ -360,15 +359,13 @@ func _voices() -> void:
 		await create_timer(0.3).timeout
 	ck(not dm.is_dialogue_active(), "the cloud talk ended")
 
-	# The hero walks up to the merchant on DesertRoad and presses interact: the merchant greets him.
+	# The hero walks up to the merchant on DesertRoad: his menu opens by itself (D454) and he greets him.
 	var merchant: Node2D = game.map.get_node(^"Merchant")
+	_mark()
 	hero.global_position = merchant.global_position + Vector2(-40, -10)
 	hero.velocity = Vector2.ZERO
 	for i in 20: await physics_frame
-	_mark()
-	await _tap(&"interact")
-	for i in 4: await process_frame
-	ck(merchant.npc_menu.visible, "interact opens the merchant's menu")
+	ck(merchant.npc_menu.visible, "walking up opens the merchant's menu")
 	_heard(&"greet_merchant", &"Voice", "talking to the merchant")
 	merchant.npc_menu.cancelled.emit()
 

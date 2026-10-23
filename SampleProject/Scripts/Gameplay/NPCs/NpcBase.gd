@@ -3,16 +3,19 @@ class_name NpcBase
 
 ## Спільна поведінка NPC з меню дій (Merchant, Blacksmith).
 ## Figma: npc-menu-merchant 164:1302, npc-menu-blacksmith 176:1357.
-##   поруч → UI/Interaction/Prompt → interact → NpcActionMenu → дія.
-## Меню без паузи: світ живе, гравець ходить; відійшов від NPC — меню закрилось (D155).
+##   поруч → NpcActionMenu відкривається саме, без підказки [E] (D454) → interact → дія.
+## Меню без паузи: світ живе, гравець біжить і стрибає; відійшов від NPC — меню закрилось (D155).
+## Є що дати — знак над головою (D442, D452) і репліка мимохідь, коли герой пробігає поруч.
 ##
-## Нащадки перевизначають menu_entries() і _on_npc_choice(). Показуються лише пункти
-## з реальним наповненням; якщо пунктів немає — немає й підказки.
+## Нащадки перевизначають menu_entries(), quest_marker() і _on_npc_choice(). Показуються лише пункти
+## з реальним наповненням; якщо пунктів немає — немає й меню.
 
 ## load(), не preload: сервіс тягне Game, а тест-скрипти компілюють NpcBase ще до автолоадів.
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 const GAME_PATH := "res://SampleProject/Scripts/Game.gd"
 const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd")
+const QuestMarker := preload("res://SampleProject/UI/Components/quest_marker.gd")
+const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
 ## DQD-діалог для пункту Talk. Порожньо — пункту Talk немає (без вигаданого вмісту).
 @export var talk_dialogue: String = ""
@@ -21,6 +24,8 @@ const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActiv
 ## BACKLOG 35 (Q48): .dqd з репліками, які NPC каже мимохідь, коли герой підходить, — облачко над ним,
 ## не вікно. Раз за появу NPC у кімнаті. Порожньо — NPC мовчить (реплік мимохідь ще ніхто не написав).
 @export var chatter_dialogue: String = ""
+## D452: .dqd, яким NPC гукає героя мимохідь, поки має що дати (є знак над головою); замість chatter_dialogue.
+@export var quest_bark_dialogue: String = ""
 ## Хто це в DialogueQuest (character_id) — його голос вітає героя, коли той сам заговорив (D277).
 @export var character_id: String = ""
 
@@ -41,8 +46,14 @@ const NpcActivity := preload("res://SampleProject/Scripts/Gameplay/NPCs/NpcActiv
 var _rest_flip: bool = false
 
 var npc_menu: NpcActionMenu = null
+## Знак над головою: що в NPC є взяти (D442, D452).
+var marker: QuestMarker = null
 ## Репліку мимохідь уже сказано в цій кімнаті.
 var _chatted: bool = false
+## Привітання голосом уже звучало в цій кімнаті (D277: раз, коли герой уперше підійшов до меню).
+var _greeted: bool = false
+## Гравець закрив меню (ui_cancel) — саме воно не відкривається, поки герой не відійде; E відкриває знову.
+var _dismissed: bool = false
 
 
 func _ready() -> void:
@@ -60,9 +71,18 @@ func _ready() -> void:
 	npc_menu.position = UITokens.NPC_MENU_OFFSET
 	add_child(npc_menu)
 	npc_menu.chosen.connect(_on_menu_chosen)
-	npc_menu.cancelled.connect(_close_npc_menu)
+	npc_menu.cancelled.connect(_dismiss_npc_menu)
 	interactable.player_exited.connect(_on_player_left)
 	interactable.player_entered.connect(_on_player_came)
+	interactable.show_prompt = false  # D454: меню відкривається саме — підказки [E] немає
+	marker = QuestMarker.new()
+	marker.name = "QuestMarker"
+	marker.z_index = 20
+	add_child(marker)
+	marker.position = chatter_anchor() - Vector2(0, UITokens.QUEST_MARK_GAP) * WORLD_UI.screen_scale(self)
+	if task_giver != "":
+		# Завдання взяли (прапорець task_<id>_taken) — знак зникає одразу.
+		load(GAME_PATH).get_singleton().quest_flag_changed.connect(func(_id: String, _value: Variant) -> void: refresh_availability())
 	refresh_availability()
 
 
@@ -75,6 +95,12 @@ func _here() -> bool:
 
 
 func _process(_delta: float) -> void:
+	if npc_menu.visible and not _menu_allowed():
+		_close_npc_menu()  # поверх стала розмова чи модалка — меню повернеться (і з фокусом), коли вони скінчаться
+	elif _wants_menu():
+		_open_menu()
+	# Облачко репліки мимохідь стоїть там само, де знак, — поки NPC говорить, знак чекає.
+	marker.visible = marker.kind != &"" and ServiceLocatorHelper.get_service_locator().get_dialogue_manager().chatter_bubble(self) == null
 	var now := is_talking()
 	if now == activity.talking:
 		return
@@ -84,6 +110,20 @@ func _process(_delta: float) -> void:
 		sprite.flip_h = (hero.global_position.x < global_position.x) != profile_faces_left
 	else:
 		sprite.flip_h = _rest_flip
+
+
+## D454: герой у зоні, меню закрите й не відкинуте, NPC є що запропонувати і ніщо інше не говорить —
+## меню відкривається саме: щойно підійшов, після розмови, після екрана магазину чи кузні.
+func _wants_menu() -> bool:
+	if not interactable.player_nearby or npc_menu.visible or _dismissed or not interactable.enabled:
+		return false
+	return _menu_allowed()
+
+
+func _menu_allowed() -> bool:
+	var sl: Node = ServiceLocatorHelper.get_service_locator()
+	return _can_open_menu() and not sl.get_dialogue_manager().is_dialogue_active() \
+			and sl.get_ui_manager().is_gameplay_input_allowed()
 
 
 ## Говорить: відкрите його меню чи екран (магазин, кузня) або йде розмова, а герой поруч.
@@ -114,25 +154,44 @@ func quest_rows() -> Array:
 	return rows
 
 
-## Вимикає підказку, якщо NPC нічого не може запропонувати.
+## Знак над головою (D442, D452): &"story" — жовтий «!», &"side" — синій «!», &"oath" — герб, &"" — нічого.
+## База: побічне завдання NPC (quests.json), якого ще не взяли. Нащадки додають сюжет і клятву.
+func quest_marker() -> StringName:
+	if task_giver == "":
+		return &""
+	var TASKS: GDScript = load(TASKS_PATH)
+	for task: Dictionary in TASKS.open_tasks(task_giver):
+		if TASKS.status(task) == "":
+			return &"side"
+	return &""
+
+
+## Вимикає меню, якщо NPC нічого не може запропонувати; оновлює знак над головою.
 func refresh_availability() -> void:
 	interactable.enabled = not menu_entries().is_empty()
+	marker.kind = quest_marker()
 
 
+## Interact (E) поруч із NPC, чиє меню закрите: відкриває його знову, навіть відкинуте ui_cancel.
 func _on_interacted() -> void:
-	# Під час розмови E не відкриває меню поверх неї.
-	var dialogue_running: bool = ServiceLocatorHelper.get_service_locator().get_dialogue_manager().is_dialogue_active()
-	if npc_menu.visible or not _can_open_menu() or dialogue_running:
+	_dismissed = false
+	_open_menu()
+
+
+func _open_menu() -> void:
+	# Під час розмови меню не відкривається поверх неї.
+	if npc_menu.visible or not _menu_allowed():
 		return
 	var entries := menu_entries()
 	if entries.is_empty():
 		return
 	interactable.enabled = false
-	ServiceLocatorHelper.get_service_locator().get_dialogue_manager().end_chatter(self)
 	npc_menu.setup(entries)
 	npc_menu.open()
-	# Герой сам підійшов і заговорив — привітання. Катсцену першої зустрічі запускає кімната, не цей шлях.
-	get_node(^"/root/AudioManager").hooks.greet(character_id)  # не ідентифікатор: тести компілюють NpcBase до автолоадів
+	# Герой підійшов — меню і є початок розмови (D454); привітання голосом раз за кімнату, не на кожен підхід.
+	if not _greeted:
+		_greeted = true
+		get_node(^"/root/AudioManager").hooks.greet(character_id)  # не ідентифікатор: тести компілюють NpcBase до автолоадів
 
 
 ## Нащадок може заборонити меню (напр. поки відкритий магазин).
@@ -145,12 +204,26 @@ func _close_npc_menu() -> void:
 	refresh_availability()
 
 
-## Герой підійшов — NPC каже своє мимохідь (якщо зараз ніхто не говорить; інакше спробує наступного разу).
+## ui_cancel: меню геть, доки герой не відійде (або не натисне E).
+func _dismiss_npc_menu() -> void:
+	_dismissed = true
+	_close_npc_menu()
+
+
+## Герой підійшов — NPC каже своє мимохідь (якщо зараз ніхто не говорить; інакше спробує наступного разу),
+## і поруч з облачком одразу відкривається меню (D454).
 func _on_player_came() -> void:
-	if chatter_dialogue == "" or _chatted or npc_menu.visible:
+	_say_in_passing()
+	_open_menu()
+
+
+## Має що дати — гукає героя (D452), інакше звичайна репліка мимохідь (D338). Раз за кімнату.
+func _say_in_passing() -> void:
+	var lines := quest_bark_dialogue if quest_bark_dialogue != "" and quest_marker() != &"" else chatter_dialogue
+	if lines == "" or _chatted:
 		return
 	_chatted = ServiceLocatorHelper.get_service_locator().get_dialogue_manager().say_in_passing(
-			self, chatter_dialogue, chatter_anchor())
+			self, lines, chatter_anchor())
 
 
 ## Вістря хвоста облачка — над верхнім краєм спрайта NPC, посередині.
@@ -160,12 +233,15 @@ func chatter_anchor() -> Vector2:
 
 
 func _on_player_left() -> void:
+	_dismissed = false
 	if npc_menu.visible:
 		_close_npc_menu()
 
 
 func _on_menu_chosen(id: StringName) -> void:
 	_close_npc_menu()
+	# Герой вибрав дію — заговорив по-справжньому: репліка мимохідь зникає.
+	ServiceLocatorHelper.get_service_locator().get_dialogue_manager().end_chatter(self)
 	if id == &"talk":
 		ServiceLocatorHelper.get_service_locator().get_dialogue_manager().start_dialogue(talk_dialogue)
 		return

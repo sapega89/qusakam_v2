@@ -1,5 +1,0 @@
-// [DRAFT] D293 — the merchant comes out of his shop to meet Kusakam (BACKLOG 14)
-say|MERCHANT|Hey, traveler! Not every day somebody comes down this road alive.
-say|KUSAKAM|Bandits took the people from my village. I'm going after them.
-say|MERCHANT|Then we're headed the same way. Drop in whenever you need potions or iron — the shop's open.
-exit|

@@ -43,7 +43,7 @@ func _initialize() -> void:
 	root.add_child(game)
 	current_scene = game
 	for i in 40: await process_frame
-	for flag in ["city_blacksmith_met", "desert_road_merchant_met", "desert_road_fight_complete"]:
+	for flag in ["desert_road_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
 	var sheet := Image.create(CROP.x * (MOMENTS + 1), CROP.y * SPOTS.size(), false, Image.FORMAT_RGBA8)
@@ -60,9 +60,8 @@ func _initialize() -> void:
 		var player: Node2D = game.player
 		player.global_position.x = npc.global_position.x - 220
 		for i in 30: await physics_frame
-		var activity: Node = npc.get_node(^"Activity")
 		var anim: AnimationPlayer = npc.get_node(^"AnimationPlayer")
-		activity.resume()
+		anim.play(&"work")
 		var step: float = anim.get_animation(&"work").length / MOMENTS
 		for m in MOMENTS:
 			anim.seek(step * m + 0.05, true)

@@ -101,6 +101,7 @@ size = Vector2(64, 64)
 [node name="Blacksmith" type="Area2D"]
 script = ExtResource("1_blacksmith")
 task_giver = "blacksmith"
+quest_bark_dialogue = "res://dialogue_quest/Smith_Bark.dqd"
 character_id = "BLACKSMITH"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

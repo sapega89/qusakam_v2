@@ -226,10 +226,11 @@ func _initialize() -> void:
 	zmerchant.interactable._on_body_entered(zp)
 	await process_frame
 	var zprompt: Control = zmerchant.interactable.get_prompt()
-	ck(zprompt.visible and zprompt.scale.is_equal_approx(Vector2.ONE / 2.25), "prompt scaled back to screen size (%s)" % zprompt.scale)
-	zmerchant.npc_menu.setup([{"id": &"buy", "label": "Buy"}])
-	zmerchant.npc_menu.open()
+	ck(not zprompt.visible and zmerchant.npc_menu.visible, "an NPC shows no [E] prompt: his menu opens by itself (D454)")
 	ck(zmerchant.npc_menu.scale.is_equal_approx(Vector2.ONE / 2.25), "NPC menu scaled back to screen size")
+	zmerchant.npc_menu.cancelled.emit()
+	zmerchant.interactable.show_prompt = true  # той самий компонент з підказкою, як у скрині чи точки збереження
+	ck(zprompt.visible and zprompt.scale.is_equal_approx(Vector2.ONE / 2.25), "prompt scaled back to screen size (%s)" % zprompt.scale)
 	ck(load("res://SampleProject/Game.tscn").instantiate().get_node("Player/Camera2D").zoom == Vector2(2.25, 2.25),
 			"the game camera is zoomed ×2.25 — one cell fills the screen height (D170)")
 	zoom_world.queue_free()

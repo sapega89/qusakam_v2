@@ -321,6 +321,13 @@ const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)
 const NPC_MENU_OFFSET := Vector2(40, -140)  # праворуч над NPC, як у 164:1302
+# Знак над NPC, у якого є що взяти (D442, D452): піксельний «!» чи герб, розмір екранний (world_ui.gd).
+const QUEST_MARK_STORY := ACCENT           # сюжетний квест — жовтий «!»
+const QUEST_MARK_SIDE := Color("4a9cff")   # побічний — синій «!»
+const QUEST_MARK_OATH := Color("c9cdd8")   # клятва (професія) — срібний герб
+const QUEST_MARK_OUTLINE := BACKGROUND
+const QUEST_MARK_PIXEL := 3                # сторона «пікселя» знака, px
+const QUEST_MARK_GAP := SPACE_XS           # від верху спрайта до низу знака, px
 const LG_TAB_GAP := 16            # UI/Sidebar Tab: gap 16 у category-list
 const SIDEBAR_TAB_HEIGHT := 45
 

@@ -51,6 +51,7 @@ size = Vector2(64, 64)
 
 [node name="Grandfather" type="Area2D"]
 script = ExtResource("1_story")
+quest_bark_dialogue = "res://dialogue_quest/OldMan_Bark.dqd"
 character_id = "GRANDFATHER"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
