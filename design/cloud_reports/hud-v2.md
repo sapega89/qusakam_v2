@@ -12,7 +12,7 @@ chip (potions). The 8-slot hotbar is at the bottom centre, and the full-width XP
 assist is an LT tap. The ready glow is drawn by the engine. Old 4-slot saves are padded to 8 with no special path.
 **Not done:** painted skill icons (D550, the slots keep today's placeholder square); the Skills screen's "Put on the
 hotbar" grid now has 8 buttons in 2 columns (4 rows), and it has no Figma frame. D-ID text: D603–D607 below, plus one
-Q-ID. No B rows fixed. **Full suite:** SUITE_LINE
+Q-ID. No B rows fixed. **Full suite:** 101 PASS / 1 FAIL. The one failure is `verify_onboarding` "keyboard: a light hit does not pass Heavy", which fails the same way on `origin/feature/backlog`.
 
 Branch `cloud/hud-v2` from `origin/feature/backlog` @ `62dd198f`. Spec: [[combat_hud_mapping]] → *HUD v2 hero panel*,
 *HUD v2 hotbar, 8 slots*, *HUD v2 XP bar*.
@@ -72,7 +72,13 @@ placement (the hotbar would no longer fit 4 px above the XP bar)."
   the F chip reads `LT`. `verify_combat_player`: no ST row; the Q chip counts the potions. `verify_full_regression`:
   the name size token.
 
-Full suite: SUITE_DETAIL
+Full suite (`run_verify.sh`, once at the end): 99 PASS / 3 FAIL on the first run.
+- `verify_progression` read the old HUD XP row. It now checks that the new XP bar is full at the cap.
+- `verify_skill_trees` compared the loadout with four empties. It now checks that every slot is empty.
+- Both pass on a re-run, so the suite stands at **101 PASS / 1 FAIL**.
+- The one failure is `verify_onboarding` [lesson_heavy] "keyboard: a light hit does not pass Heavy". It fails identically
+  on a clean `origin/feature/backlog` worktree, so it is pre-existing and not caused by this branch.
+- Also touched for the v2 HUD: `verify_progression` [1] and `verify_skill_trees` (respec).
 
 ## Shots
 

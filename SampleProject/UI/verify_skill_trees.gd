@@ -158,7 +158,7 @@ func _initialize() -> void:
 	root.get_node("EventBus").skills_reset.connect(func(n: int) -> void: reset_seen[0] = n)
 	ck(spent == 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 0 + 1, "points spent counted with ranks (%d)" % spent)
 	ck(sm.respec() == R.OK, "respec done")
-	ck(sm.get_unlocked_skills().is_empty() and sm.get_equipped_skills() == ["", "", "", ""], "every skill forgotten, hotbar empty")
+	ck(sm.get_unlocked_skills().is_empty() and sm.get_equipped_skills().all(func(id: String) -> bool: return id == ""), "every skill forgotten, hotbar empty")
 	ck(sm.get_job_points() == jp_before + spent and reset_seen[0] == spent, "all points back (%d)" % sm.get_job_points())
 	ck(inv.get_coins() == 7, "the price was taken (%d left)" % inv.get_coins())
 	ck(sm.get_oath() == "paladin", "the oath stays")
