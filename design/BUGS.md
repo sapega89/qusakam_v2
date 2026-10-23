@@ -64,6 +64,20 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B119 — Confirm modals do not match the kit's UI/Modal/Confirm
+- **Where:** `SampleProject/Scenes/UI/modal_dialog.tscn` (`Panel/VBox/Buttons` is an `HBoxContainer`), `SampleProject/Scripts/UI/modal_templates.gd`, theme types `ModalPanel` / `ModalTitle`.
+- **Expected:** Figma `UI/Modal/Confirm` `258:5332` (also `shop-buy-confirm` `153:1760`):
+  - padding 40 × 28, gap 16;
+  - title in Cormorant Garamond Regular 22, then a **1 px accent rule 300 px wide**, then the body in Regular 14;
+  - **buttons stacked vertically** (gap 12, a 300-px column), each a `UI/HexButton` 260 × 36 with pointed ends;
+  - selected button: accent fill (`SampleProject/Assets/UI/Icons/hex_button_selected.svg`) with the `›` pointer 16 px at x 49 (the glyph is `Assets/UI/Icons/chevron.svg`); other button: a 2-px `#3A3A42` outline (`hex_button.svg`);
+  - labels in Cormorant Garamond SemiBold 18, **uppercase**, tracking 2 px;
+  - the panel stays opaque (D195), and the D329 ring is drawn over the selected look (white on accent).
+- **Got:** no rule under the title; small rectangular Yes / No buttons side by side, in mixed case.
+- **Evidence:** `design/shots/shop_buy_confirm_qty3_1920.png` against `258:5332`.
+- **Severity:** visual. Every confirm modal shares the scene: buy, craft, enchant, overwrite save, delete slot, quit, item pickup.
+- **Found:** 2026-10-23, #43 check. Sapega chose the kit for all modals.
+
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
 - **Expected:** the hero holds the bow in every pose (D385).

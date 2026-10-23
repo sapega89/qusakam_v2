@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="260" height="36" viewBox="0 0 260 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="hex-yes">
+<path d="M0 18L16.2 0H243.8L260 18L243.8 36H16.2L0 18Z" fill="#D4AF37"/>
+<mask id="stroke0_0_16" fill="white">
+<path d="M0 18L16.2 0H243.8L260 18L243.8 36H16.2L0 18Z"/>
+</mask>
+<path d="M0 18L16.2 0H243.8L260 18L243.8 36H16.2L0 18Z" stroke-width="2" stroke="#D4AF37" mask="url(#stroke0_0_16)"/>
+</g>
+</svg>
