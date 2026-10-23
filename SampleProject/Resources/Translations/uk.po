@@ -873,8 +873,8 @@ msgstr "Налаштування гри"
 msgid "INPUT OPTIONS"
 msgstr "ПАРАМЕТРИ КЕРУВАННЯ"
 
-msgid "Set the display mode, window size, frame rate limit and screen brightness."
-msgstr "Режим екрана, розмір вікна, обмеження частоти кадрів і яскравість екрана."
+msgid "Set the display mode, window size, frame rate limit, screen brightness and graphics quality."
+msgstr "Режим екрана, розмір вікна, обмеження частоти кадрів, яскравість екрана і якість графіки."
 
 msgid "Adjust volume levels."
 msgstr "Налаштуйте гучність."
@@ -911,6 +911,15 @@ msgstr "Вимкнути"
 
 msgid "Frame Rate Limit"
 msgstr "Обмеження кадрів"
+
+msgid "Quality"
+msgstr "Якість"
+
+msgid "High"
+msgstr "Висока"
+
+msgid "Low"
+msgstr "Низька"
 
 msgid "Unlimited"
 msgstr "Без обмежень"

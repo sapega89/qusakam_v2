@@ -19,6 +19,7 @@ signal closed
 ## стилі — з теми.
 
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
+const GraphicsQuality := preload("res://SampleProject/Scripts/Systems/GraphicsQuality.gd")
 
 # Mode: "main_menu" or "game_menu"
 var mode: String = "game_menu"
@@ -32,7 +33,7 @@ const TABS := [
 
 ## Підказка нижньої панелі для кожної вкладки — лише про реальні дії.
 const TAB_HINTS := {
-	"display": "Set the display mode, window size, frame rate limit and screen brightness.",
+	"display": "Set the display mode, window size, frame rate limit, screen brightness and graphics quality.",
 	"audio": "Adjust volume levels.",
 	"game": "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change.",
 	"controls": "Select an action to rebind it.",
@@ -183,6 +184,10 @@ func _build_rows() -> void:
 			_add_separator()
 			_add_stepper_row("Frame Rate Limit", _fps_limit_names(),
 					DisplayManager.FPS_LIMITS.find(int(_cfg_get("fps_limit"))), _on_fps_limit_changed)
+			_add_separator()
+			# D554: Low знімає світіння, колірні криві, розмиття глибини, тіні й частину частинок (GraphicsQuality).
+			_add_segment_row("Quality", ["High", "Low"],
+					GraphicsQuality.QUALITIES.find(String(_cfg_get("graphics_quality"))), _on_quality_changed)
 			_add_separator()
 			# D428: гамма поверх світу й UI (DisplayManager); зразки DARK / BRIGHT — під рядком.
 			_add_slider_row("Screen Brightness", int(_cfg_get("brightness")), _on_brightness_changed,
@@ -369,6 +374,12 @@ func _on_fps_limit_changed(index: int) -> void:
 func _on_brightness_changed(value: int) -> void:
 	_cfg_set("brightness", value)
 	_apply_and_save()
+
+
+func _on_quality_changed(index: int) -> void:
+	_cfg_set("graphics_quality", GraphicsQuality.QUALITIES[index])
+	_apply_and_save()
+	_rebuild_list()
 
 
 func _on_text_speed_changed(index: int) -> void:
