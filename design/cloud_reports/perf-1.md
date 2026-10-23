@@ -8,7 +8,7 @@ tags: [cloud, performance, loading, D434]
 
 **Done:** [[performance_plan]] slices 1, 2, 3 and 6, plus D434. A room change now fades to black (0.25 s), the room swaps under black and the screen fades back in (0.25 s). Walking across an edge, doors, story teleports, New Game and Load Game all use this fade. On the main thread a swap now costs 0.4–2.3 ms for load+instantiate (before: 4–260 ms), and every room change prints 0–4 log lines (before: 19–95). **Not done:** slices 4, 5 and 7 (not requested; 7 is still blocked on Q83/Q84). The first room after New Game/Load Game still loads on the main thread, under a black screen (see §5).
 **D-IDs for the register (agent calls, for Sapega to confirm):** D477–D480 (text in §6). **B rows fixed:** none.
-**Full suite:** see §7.
+**Full suite:** `Scripts/Tools/run_verify.sh` → **SUITE: ALL PASS** (95 scripts, 0 SCRIPT ERROR).
 
 Branch `cloud/perf-1` from `origin/feature/backlog` @ `4c7903b8`.
 
@@ -107,4 +107,4 @@ The "first visit" teleports come straight from the script, so they are the un-pr
 ## 8. Tests
 - New: `verify_quiet_transitions` ALL PASS, `verify_room_preload` ALL PASS. Extended: `verify_main_menu` [6] ALL PASS.
 - Re-run after the fixes: `verify_lab_cells`, `verify_lab_boss`, `verify_city_gates_raid`, `verify_canyon_exit`, `verify_mayor_hall`, `verify_scripts_compile` all PASS.
-- Full suite: filled in below.
+- Full suite at the end: `SUITE: ALL PASS`, 95 scripts. The first full run found 3 to fix: `verify_city_gates_raid`, `verify_lab_boss` (the `ScreenFade` SCRIPT ERROR) and `verify_lab_cells`. All are covered in §4.
