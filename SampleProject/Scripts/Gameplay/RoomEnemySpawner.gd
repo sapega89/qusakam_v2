@@ -34,9 +34,6 @@ const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 ## Боси й сюжетні бої (false) памʼятають своїх убитих назавжди (D152).
 @export var respawns: bool = false
 
-## D560, D582: точки з elite = auto кидають еліту (1 з 8). Вмикається лише там, де героя вже навчено еліті сам-на-сам.
-@export var elite_rolls: bool = false
-
 ## D642: рівень ворогів бою — рівень, на якому герой сюди доходить (verify_difficulty бере його з XP-кривої).
 @export var enemy_level: int = 1
 
@@ -190,28 +187,19 @@ func _spawn_immediately() -> void:
 func _spawn(spawn_point: EnemySpawnPoint) -> void:
 	var enemy = spawn_point.spawn_enemy()
 	if enemy:
-		# Ворог додається відкладено (EnemySpawnPoint.spawn_enemy) — різновид встигає до його _ready()
+		# Ворог додається відкладено (EnemySpawnPoint.spawn_enemy) — розмір і рівень встигають до його _ready();
+		# еліта — властивість виду (D652), ворог бере її сам.
 		enemy.size_kind = variant_size(spawn_point)
-		enemy.elite = variant_elite(spawn_point)
 		enemy.level = enemy_level
 		spawned_enemies.append(enemy)
 		_connect_enemy_signals(enemy)
 		_track(enemy, spawn_point.spawn_id)
 
-## Розмір ворога точки (D560): заданий — як є; auto — кидок у звичайному бою, medium у сюжетному.
+## Розмір ворога точки (D560): заданий — як є; auto — кидок за вагами виду у звичайному бою, medium у сюжетному.
 func variant_size(spawn_point: EnemySpawnPoint) -> String:
 	if spawn_point.size != "auto":
 		return spawn_point.size
-	return EnemyVariety.roll_size(_variant_key(spawn_point)) if respawns else "medium"
-
-## Чи ворог точки — еліта (D560, D582).
-func variant_elite(spawn_point: EnemySpawnPoint) -> bool:
-	match spawn_point.elite:
-		"always":
-			return true
-		"never":
-			return false
-	return elite_rolls and EnemyVariety.roll_elite(_variant_key(spawn_point))
+	return EnemyVariety.roll_size(spawn_point.kind(), _variant_key(spawn_point)) if respawns else "medium"
 
 ## Ключ кидків: кімната й точка — кімната щоразу та сама (D560).
 func _variant_key(spawn_point: EnemySpawnPoint) -> String:

@@ -9,7 +9,7 @@ extends SceneTree
 ## 1 Wisdom за рівень, JP на активні й пасивні навички дерева (Paladin після клятви).
 ##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів і валить ворога за 4–6 своїх;
 ##   [2] бос: валить героя за 3–4 удари, падає приблизно за 40 (34–46) ударів SKILLS-героя;
-##   [3] еліта (Лабораторія) і бос: SKILLS-герой перемагає, STRENGTH — ні; Strength дає спадну віддачу;
+##   [3] еліта (вид-еліта й заплановані великі види в точках BigSlot_*, D652) і бос: SKILLS-герой перемагає, STRENGTH — ні;
 ##   [4] найважчий хід боса не вбиває героя з повним HP одним ударом; [5] Strength дає спадну віддачу.
 ## Уроки навчання (D-28c) лишаються прохідними — це перевіряє verify_onboarding.
 ## Удар героя — легка серія (COMBO_DAMAGE) без криту, зі спини (панцир tank, щит shield-bearer); удар ворога —
@@ -53,6 +53,7 @@ var hero: Node
 var Rolls: Script
 var SpawnPoint: Script
 var Spawner: Script
+var Variety: Script
 var Boss: Script
 
 func ck(ok: bool, label: String) -> void:
@@ -65,6 +66,7 @@ func _initialize() -> void:
 	Rolls = load("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 	SpawnPoint = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 	Spawner = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
+	Variety = load("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 	Boss = load("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd")
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
 	game = await Kit.boot(self)
@@ -133,8 +135,9 @@ func _in(value: int, window: Array) -> bool:
 
 
 ## Де герой стрічає ворогів: кожен бій (RoomEnemySpawner) на маршруті — рівень героя на його початку (XP — з EnemyStats
-## точок, як verify_xp_curve) і enemy_level бою; рід, еліта (elite = always, або auto там, де elite_rolls) і рівні —
-## одна зустріч. Боси — їхні кімнати. Точка поза спавнером — бій рівня 1.
+## точок, як verify_xp_curve) і enemy_level бою; вид точки, його еліта (D652: властивість виду) і рівні — одна зустріч.
+## Точка BigSlot_* (великий вид без арту) дає ще й «заплановану» зустріч: звичайний вид з множниками еліти — так
+## видно, чи бій витримає великий вид, коли той зʼявиться. Боси — їхні кімнати. Точка поза спавнером — бій рівня 1.
 func _meetings() -> Array[Dictionary]:
 	var xp: Node = sl.get_xp_manager()
 	xp.reset()
@@ -154,19 +157,21 @@ func _meetings() -> Array[Dictionary]:
 					starts[fight] = xp.current_level
 					fights.append({"fight": fight, "hero": xp.current_level, "enemy": spawner.enemy_level if spawner else 1})
 				var enemy_level: int = spawner.enemy_level if spawner else 1
-				var kinds: Array[bool] = []
-				if node.elite != "always":
-					kinds.append(false)
-				if node.elite == "always" or (spawner and spawner.elite_rolls and node.elite == "auto"):
-					kinds.append(true)
+				var kind: String = node.kind()
+				var kinds: Array[bool] = [Variety.is_elite(kind)]
+				if node.big_kind != "none" and kind != node.big_kind:
+					kinds.append(true)  # заплановано: великий вид на місці звичайного
 				for elite: bool in kinds:
-					var key := "%s|%s|%d|%d" % [node.enemy_type, elite, starts[fight], enemy_level]
+					var planned: bool = elite and not Variety.is_elite(kind)
+					var key := "%s|%s|%d|%d" % [node.big_kind if planned else kind, elite, starts[fight], enemy_level]
 					if seen.has(key):
 						continue
 					seen[key] = true
-					out.append({"cls": "elite" if elite else "ordinary", "kind": node.enemy_type, "level": starts[fight],
-							"enemy_level": enemy_level, "city": city, "stats": node.enemy_stats(), "elite": elite,
-							"name": "%s%s L%d" % ["elite " if elite else "", KIND_NAMES[node.enemy_type], enemy_level]})
+					var label: String = ("planned %s as %s" % [node.big_kind, KIND_NAMES[kind]]) if planned \
+							else "%s%s" % ["elite " if elite else "", KIND_NAMES[kind]]
+					out.append({"cls": "elite" if elite else "ordinary", "kind": kind, "level": starts[fight],
+							"enemy_level": enemy_level, "city": city, "stats": node.enemy_stats(), "planned": planned,
+							"name": "%s L%d" % [label, enemy_level]})
 				xp.add_xp(node.enemy_stats().xp_reward)
 			elif node.get_script() == Boss:
 				out.append({"cls": "boss", "kind": "boss", "name": BOSSES[room_name], "level": xp.current_level, "city": city,
@@ -216,12 +221,22 @@ func add_child_enemy(enemy: Node) -> void:
 func _enemy(meeting: Dictionary) -> Node:
 	if meeting.cls == "boss":
 		return (load(meeting.scene) as PackedScene).instantiate()
-	var enemy: Node = (load(SpawnPoint.get_script_constant_map().ENEMY_SCENES[meeting.kind]) as PackedScene).instantiate()
+	var enemy: Node = (load(SpawnPoint.scene_path(meeting.kind)) as PackedScene).instantiate()
 	enemy.enemy_stats = meeting.stats
 	enemy.size_kind = "medium"
-	enemy.elite = meeting.elite
 	enemy.level = meeting.enemy_level
+	if meeting.planned:
+		enemy.ready.connect(_as_elite.bind(enemy))
 	return enemy
+
+
+## Заплановний великий вид (D652) поки що — звичайний з множниками еліти D560 (його статів ще немає).
+func _as_elite(enemy: Node) -> void:
+	var marks: Dictionary = Variety.elite()
+	enemy.Max_Health = roundi(enemy.Max_Health * marks.health)
+	enemy.current_health = enemy.Max_Health
+	enemy.base_damage *= marks.damage
+	enemy.damage = enemy.base_damage
 
 
 ## Герой рівня [param level]: усе забуто, очки рівня видано наново й розкладено за збіркою (NONE — не вкладено нічого).
