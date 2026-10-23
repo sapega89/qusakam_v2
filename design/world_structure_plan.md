@@ -55,6 +55,26 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 
 Every story piece goes into the Journal. Rewards are tuned so that the main path alone stays winnable, while explorers get the edge.
 
+## Branch batch 1 (D643, Sapega «так», 2026-10-23)
+
+Five new side rooms from the curiosity map, each a real MetSys room off the main road (not a roof). Art first (the
+ComfyUI lane: one backdrop each, comfy-backdrop skill, in the style of the room it branches from), then one cloud
+routine builds the rooms, doors, keys and contents with room-content. MetSys cell 864×480.
+
+| # | Room (scene) | Location | Branches off | Size | How you get in | What it holds |
+|---|---|---|---|---|---|---|
+| 1 | **Lizard Cave** (`LizardCave`) | Canyon of Whispers | the Canyon, under the bridge | 2 cells wide | open; its side tunnel to the shrine is a `LockedDoor` (the grandfather's old key, given after the talk in his house) | the family shrine: **story** (a mural of the shaman family and the barrier) + **chest** (the first charm, D592, or a Healing Palm upgrade). A few small enemies in the open part |
+| 2 | **Bandit Camp** (`BanditCamp`) | Canyon of Whispers | a dune side path off the Desert Road | 2 cells wide | open, but a hard group fight (D582) with an elite bandit holding a key | **chest** of goods stolen from the village; a gate opened from inside = **shortcut** back to Zahra's Rest |
+| 3 | **Mesa Climb** (`MesaClimb`) | Canyon of Whispers | the Desert Road, the mesa | 1 cell wide, 2 tall | a jump route up the mesa (no new ability) | **chest:** a weapon with a trade-off. Vultures circle it (D558) |
+| 4 | **Dragon Mural** (`DragonMural`) | Canyon of Whispers | the Canyon, a cracked wall | 1 cell | a heavy attack breaks the wall (`BreakableWall`) | **story:** an old dragon mural (the dragons nobody has seen for ages) |
+| 5 | **Gatehouse Cellar** (`GatehouseCellar`) | The City | City Gates, the gatehouse | 1–2 cells | the guard lets you down (talk) | a **bat** fight (D558: bats live here, so the bat finally has a home) and a **chest** |
+
+Backdrops to draw (one each, plus a far parallax plane where the room is outdoors): a sandstone cave with a carved
+lizard-shaman shrine; a bandit camp of ragged tents and stolen crates on a dune; the mesa's terraced cliff; a small
+cave chamber whose wall is a faded dragon mural; a stone gatehouse cellar with barrels and arches.
+
+Out of this batch: the City rooftops, the tavern attic, the Mayor Hall archive, the Laboratory branches (batch 2).
+
 ## What exists today
 | Thing | Where | State |
 |---|---|---|
