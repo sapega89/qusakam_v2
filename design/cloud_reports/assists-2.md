@@ -10,7 +10,7 @@ tags: [cloud, companions, assists, vfx, hud, d515]
 - Only one companion can be on the field. While one is out, or during the shared cooldown, the button calls nobody: it plays a short denied sound and the HUD slot shakes. The shared **8 s** cooldown starts when the companion leaves.
 - The HUD assist slot has three states: **ready**, **active** (pulsing gold frame) and **cooldown** (dimmed, seconds left).
 - The D-ID text is **D523–D525** (§5). No B rows were fixed. All timings are provisional (§2).
-- Full suite: SUITE_LINE
+- Full suite: `SUITE: ALL PASS` (98 verify scripts), one run at the end.
 
 Branch `cloud/assists-2` from `origin/feature/backlog` @ `80dc1640`. Before/after shot: `design/shots/companions_seqbefore_seqafter.png`.
 
@@ -71,8 +71,10 @@ Shared cooldown: **8 s** after the companion leaves. The old cooldown was 15 s p
   - [5]: Astrit drops from above (more than 100 px over the feet), with the hit, stun and stars at the hold.
   - [6]: Urizen's chain hits three enemies and he rises on exit.
   - [8]: the guard also blocks a second call.
-- Related tests run alone: RELATED_LINES
-- Full suite, once at the end: SUITE_DETAIL
+- Related tests run alone: `verify_scripts_compile`, `verify_hotbar`, `verify_lab_cells`, `verify_lab_boss`, `verify_lab_route`, `verify_city_gates_raid`, `verify_gamepad_parity`, `verify_gamepad`, `verify_onboarding`, `verify_party_panel`: all **ALL PASS**.
+  - `verify_laboratory` failed once, as expected: the three corridor fights come faster than the shared cooldown, so the third F press is refused (`["alisia", "astrit"]`). Its check now counts every press as either sent or refused (`assists + denied == 3`, at least one sent) and passes (`["alisia", "astrit"] / denied ["astrit"]`).
+  - `verify_audio` failed under load once (`hero_hurt`, the known flake in `test_baseline.md`) and passed alone.
+- Full suite, once at the end: `Scripts/Tools/run_verify.sh` → **SUITE: ALL PASS** (98 of 98).
 
 ## 5. D-ID text (proposed; the register ends at D522)
 
