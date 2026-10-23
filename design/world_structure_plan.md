@@ -20,6 +20,41 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 > 
 > Paths open with keys and NPC talks, and side branches (a little cave, an attic, a cellar) hold secrets (D562). The genre is Tails of Iron's (D563). Slice 1's `locations.json` uses these three. Slice 4 stays the Laboratory; slice 5 becomes the Canyon of Whispers location (the road joins it), and slices 6–8 shrink to the City.
 
+## Curiosity map (D583, D562, D565), draft for Sapega, 2026-10-23
+
+**Rule:** nothing lies free on the main road. Every branch ends in a **chest**, a **piece of story** or a **shortcut** back to a meditation spot. Paths open with **keys** or **NPC talks**, never with new abilities. Optional fights guard the best chests (D582: crowds are hard).
+
+### 1. Canyon of Whispers (the canyon, the village, the road, Zahra's Rest)
+
+| Where | How you get in | What it holds |
+|---|---|---|
+| **The family shrine in Lizard Cave**, a side tunnel of the cave under the bridge | the grandfather's old key: he gives it after the talk in his house | **story:** a mural of the shaman family and the barrier. **Chest:** a shaman amulet (the first charm, or a Healing Palm upgrade) |
+| **The grandfather's attic** (ElderHouse) | a ladder behind the curtain, once he lets you up (talk) | **story:** his notes on the barrier that fell asleep. A small potion |
+| **A breakable wall in the canyon** | a heavy attack on a cracked wall | **story:** an old dragon mural (the dragons nobody has seen for ages) |
+| **The bandit camp** on a dune side path off the road | open, but it is a hard group fight (D582) | **chest:** goods stolen from the village (they robbed his people). An elite bandit with a key |
+| **Mesa climb** (today's `Pickup_MesaLedge` moves here) | a jump route up the mesa | **chest:** a weapon with a trade-off |
+| **Shortcut** from the bandit camp back to Zahra's Rest | a gate opened from the far side | a shortcut to the meditation spot |
+
+### 2. The City (the Gates and the City)
+
+| Where | How you get in | What it holds |
+|---|---|---|
+| **The gatehouse cellar** | the guard lets you down if you clear the bats (talk) | a fight with bats (D558), then a **chest** |
+| **The tavern attic** | a ladder behind the market stall | **the merchant's lost ledger** returned to him: a discount or an item (NPC quest) |
+| **The Mayor Hall archive** behind a bookshelf | a key from the mayor's desk | **story:** the empire and the barriers. **Chest** |
+| **Rooftops** | a climb from the market | a **shortcut** back to the Gates' meditation spot |
+
+### 3. The Laboratory
+
+| Where | How you get in | What it holds |
+|---|---|---|
+| **The collapsed drain** under Laboratory Outside | a crawl through a pipe | a second way into the cells, plus a **chest** |
+| **The alchemist's storeroom** | the key from his desk in the corridor | **story:** his journal (the experiments, the djinn). Potion ingredients |
+| **Malik's stash** | Malik's talk: "under the loose stone in my cell" | gold and his gift (his "humble place" promise) |
+| **A lever** by the boss door | pull it from the far side | a **shortcut** back to the entrance meditation spot |
+
+Every story piece goes into the Journal. Rewards are tuned so that the main path alone stays winnable, while explorers get the edge.
+
 ## What exists today
 | Thing | Where | State |
 |---|---|---|
