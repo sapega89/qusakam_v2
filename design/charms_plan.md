@@ -78,8 +78,9 @@ Heavy's +2 is added in `GameCharacter.get_equipment_stats`, so Phys. Def., `miti
 see it. Checked against D642: +5 pushed jackal L9/L10 to 7 hits and the Fire Djinn to 5; +3 put the Fire Djinn at 5 (defence also adds 2 HP each, and Last Stand); +2 keeps every row where it was (report).
 
 ### UI
-A **CHARMS** block under the slot list in the Equipment screen: the same `SlotRow` template (`ListRow`, `IconSlot`,
-`SlotCaption`, `SlotItemName`, `AccentDot`), captions `CHARM I–III`, the closed slot reads "(locked)". A row opens the
+A **Charms** block under Attributes in the Equipment side panel (under the slot list it ran off the screen): the same
+`SlotRow` template (`ListRow`, `IconSlot`, `SlotCaption`, `SlotItemName`, `AccentDot`), captions `CHARM 1–3`, the
+closed slot reads "(locked)". A row opens the
 existing `equip_picker` with the owned charms. The body slot row shows the weight. No new colours or sizes.
 
 ## Decisions required
