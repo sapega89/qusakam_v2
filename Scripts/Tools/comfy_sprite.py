@@ -3208,6 +3208,71 @@ def overview(out="design/shots/candidates/_all.png", max_w=2600):
     print("overview", out, sheet.size, [n for n, _ in ims])
 
 
+# D645, D647, D650: повні кадри чібі (64×64, три чверті) — та сама сітка рядків, що в старих NPC і компаньйонів;
+# окремі файли (*_chibi), сцени перемикає код-раунд
+_TQ_WALK = [
+    p.replace("in strict side view, his whole body in profile facing right", "in the same three-quarter view facing right")
+    for p in WALK
+]
+_STEP_TQ = "walking quickly to the right in the same three-quarter view facing right, %s leg stepping forward, %s leg back"
+CHARACTERS["malik_chibi"].update(
+    out="SampleProject/Assets/Characters/NPCs/malik/sheet_chibi.png",
+    rows=[
+        ("idle", [None, "BOB:44"]),
+        ("walk", _TQ_WALK),
+        (
+            "front",
+            [
+                "turned to face the viewer: a front view of him standing, both green eyes visible, a wide sly smile, "
+                "the white turban with the red jewel, the green scarf, the green cape over the white robe",
+                "BOB:44:front:0",
+            ],
+        ),
+    ],
+)
+CHARACTERS["alchemist_chibi"].update(
+    out="SampleProject/Assets/Characters/NPCs/alchemist/sheet_chibi.png",
+    rows=[
+        ("idle", [None, "BOB:44"]),
+        ("walk", _TQ_WALK),
+        (
+            "inject",
+            [
+                "in the same three-quarter view facing right: thrusting the glass syringe with green liquid forward and "
+                "down in front of him with his hand"
+            ],
+        ),
+        (
+            "front",
+            [
+                "turned to face the viewer: a front view of him standing idle, both red eyes visible above the black gas "
+                "mask with the two light grey filters, the long green hair, the crimson gold-embroidered robe",
+                "BOB:44:front:0",
+            ],
+        ),
+    ],
+)
+CHARACTERS["guard_chibi"].update(
+    rows_out="SampleProject/Assets/Characters/Companions/guard/chibi",
+    floor=58,
+    rows=[
+        ("idle", [None] * 3 + ["BOB:44"] * 3),
+        ("enter", ([_STEP_TQ % ("left", "right")] * 2 + [None] + [_STEP_TQ % ("right", "left")] * 2 + [None]) * 2),
+        (
+            "strike",
+            [None]
+            + ["in the same three-quarter view facing right: drawing the long spear back at waist height in both hands, "
+               "ready to thrust"] * 2
+            + ["in the same three-quarter view facing right: thrusting the long spear straight forward in both hands, "
+               "lunging on his front leg, the steel point far ahead"] * 6
+            + ["in the same three-quarter view facing right: drawing the long spear back at waist height in both hands, "
+               "ready to thrust"] * 2
+            + [None],
+        ),
+    ],
+)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())
