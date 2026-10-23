@@ -3273,6 +3273,81 @@ CHARACTERS["guard_chibi"].update(
 )
 
 
+# D652: великі моби — окремі вороги зі своїм артом (еліта); кандидати 2 зерна × вид
+CHARACTERS["big_bandit_brute"] = dict(
+    candidates=("design/shots/candidates/big_bandit_brute.png", [(130, False, SIDE_VIEW % {"p": "his"}, "side"), (131, False, SIDE_VIEW % {"p": "his"}, "side"), (130, False, THREE_QUARTER % {"p": "his"}, "3/4"), (131, False, THREE_QUARTER % {"p": "his"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 96),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=130,
+    colors=16,
+    who="the same a hulking desert bandit brute",
+    base="Replace the character in picture 1 with a hulking desert bandit brute: a huge broad-shouldered man, a red face scarf over his nose and mouth, a ragged sand-coloured cloak over bare scarred arms, leather bracers, a heavy two-handed spiked club resting on his shoulder — " + PIXEL_STYLE + ", much bigger and heavier than an ordinary bandit, filling most of the height of the picture. §." + MAGENTA_BG,
+)
+CHARACTERS["big_jackal_leader"] = dict(
+    candidates=("design/shots/candidates/big_jackal_leader.png", [(132, False, SIDE_VIEW % {"p": "its"}, "side"), (133, False, SIDE_VIEW % {"p": "its"}, "side"), (132, False, THREE_QUARTER % {"p": "its"}, "3/4"), (133, False, THREE_QUARTER % {"p": "its"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 72),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=132,
+    colors=16,
+    who="the same a desert jackal pack leader",
+    base="Replace the character in picture 1 with a desert jackal pack leader: a big lean scarred jackal with a torn ear, dark brown fur with a lighter mane of bristling fur along its neck and back, bared fangs, amber eyes, standing low and menacing — " + PIXEL_STYLE + ", bigger than an ordinary jackal, as long as the picture is wide. §." + MAGENTA_BG,
+)
+CHARACTERS["big_armoured_scorpion"] = dict(
+    candidates=("design/shots/candidates/big_armoured_scorpion.png", [(134, False, SIDE_VIEW % {"p": "its"}, "side"), (135, False, SIDE_VIEW % {"p": "its"}, "side"), (134, False, THREE_QUARTER % {"p": "its"}, "3/4"), (135, False, THREE_QUARTER % {"p": "its"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(128, 80),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=134,
+    colors=16,
+    who="the same an armoured desert scorpion",
+    base="Replace the character in picture 1 with an armoured desert scorpion: thick overlapping sand-yellow armour plates with dark brown edges, two big heavy pincers held forward, eight spiky legs, a segmented tail curled over its back with a big stinger — " + PIXEL_STYLE + ", much bigger than an ordinary scorpion, stretching across most of the picture. §." + MAGENTA_BG,
+)
+CHARACTERS["big_crossbowman"] = dict(
+    candidates=("design/shots/candidates/big_crossbowman.png", [(136, False, SIDE_VIEW % {"p": "his"}, "side"), (137, False, SIDE_VIEW % {"p": "his"}, "side"), (136, False, THREE_QUARTER % {"p": "his"}, "3/4"), (137, False, THREE_QUARTER % {"p": "his"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 96),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=136,
+    colors=16,
+    who="the same a heavy bandit crossbowman",
+    base="Replace the character in picture 1 with a heavy bandit crossbowman: a stocky man in a dented steel cuirass over a sand-coloured tunic, a red face scarf, a round iron helmet, a big heavy crossbow held in both hands, a bolt quiver at his hip — " + PIXEL_STYLE + ", bigger and heavier than an ordinary bandit archer, filling most of the height of the picture. §." + MAGENTA_BG,
+)
+CHARACTERS["big_tower_guard"] = dict(
+    candidates=("design/shots/candidates/big_tower_guard.png", [(138, False, SIDE_VIEW % {"p": "his"}, "side"), (139, False, SIDE_VIEW % {"p": "his"}, "side"), (138, False, THREE_QUARTER % {"p": "his"}, "3/4"), (139, False, THREE_QUARTER % {"p": "his"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 96),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=138,
+    colors=16,
+    who="the same a bandit tower-shield guard",
+    base="Replace the character in picture 1 with a bandit tower-shield guard: a big armoured man behind a tall rectangular wooden tower shield bound with iron, a short curved sword in his other hand, a red face scarf, a spiked steel helmet — " + PIXEL_STYLE + ", bigger and heavier than an ordinary shield-bearer, filling most of the height of the picture. §." + MAGENTA_BG,
+)
+CHARACTERS["big_old_vulture"] = dict(
+    candidates=("design/shots/candidates/big_old_vulture.png", [(140, False, SIDE_VIEW % {"p": "its"}, "side"), (141, False, SIDE_VIEW % {"p": "its"}, "side"), (140, False, THREE_QUARTER % {"p": "its"}, "3/4"), (141, False, THREE_QUARTER % {"p": "its"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 96),
+    up=12,  # менший блок: ~1,3 Мп замість 2,4 — інакше ОЗП не вистачає
+    seed=140,
+    colors=16,
+    who="the same an old giant desert vulture",
+    base="Replace the character in picture 1 with an old giant desert vulture: ragged dark grey and black feathers, a bald wrinkled grey-pink head with a scarred beak, a ruff of dirty white feathers, huge broad wings raised mid-flap, heavy talons — " + PIXEL_STYLE + ", much bigger than an ordinary vulture, its spread wings filling the picture. §." + MAGENTA_BG,
+)
+
+
+# B127: Алісія на операційному столі — лягає на спину й підводиться (кат-сцена лабораторії)
+CHARACTERS["alisia_v2"]["rows"].append(
+    (
+        "lie",
+        [
+            "lying flat on her back on a low stone table, eyes closed, arms at her sides, her longbow gone, seen from the side",
+            "sitting up on the edge of the low stone table, legs hanging down, one hand on her head, dazed, her longbow gone",
+        ],
+    )
+)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())
