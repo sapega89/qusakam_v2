@@ -15,6 +15,14 @@ const EQUIP_PICKER := preload("res://SampleProject/UI/Components/equip_picker.ts
 ## Рядки — шаблони зі сцени (D117): %SlotRow, %AttrRow (обидві колонки). Стилі — з теми
 ## (AvatarChip, ListRow, IconSlot, AccentDot, AttrRow).
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
+const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
+const ArmourWeight = preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
+
+## Обереги (D592): рядки з того самого шаблону %SlotRow. Кадру Figma немає — вигляд як у слотів спорядження.
+const CHARM_CAPTIONS: Array[String] = ["CHARM I", "CHARM II", "CHARM III"]
+const LOCKED := "(locked)"
+## Вага обладунку (D592) — дописується до назви в рядку BODY.
+const WEIGHT_NAMES := {"light": "Light armour", "medium": "Medium armour", "heavy": "Heavy armour"}
 
 ## 12 слотів із player_state.equipment (mace — D147) — це і є реальна модель.
 ## Figma показує 8 (без polearm/axe/staff); вигадувати слоти не можна,
@@ -51,6 +59,7 @@ const ATTR_ROWS: Array[Array] = [
 @onready var _char_name: Label = %CharName
 @onready var _slot_list: VBoxContainer = %SlotList
 @onready var _slot_row: Button = %SlotRow
+@onready var _charm_list: VBoxContainer = %CharmList
 @onready var _optimize_button: Button = %OptimizeButton
 @onready var _unequip_button: Button = %UnequipAllButton
 @onready var _left_attrs: VBoxContainer = %LeftAttrs
@@ -59,6 +68,7 @@ const ATTR_ROWS: Array[Array] = [
 @onready var _attr_row: PanelContainer = %AttrRow
 
 var _slot_rows: Dictionary = {}  # slot_id -> Button
+var _charm_rows: Array[Button] = []
 
 
 ## Слот під фокусом — для підказки після зміни пристрою.
@@ -70,6 +80,7 @@ func _initialize_component() -> void:
 	_unequip_button.pressed.connect(_on_unequip_all_pressed)
 	_connect_live_sources()
 	_build_slot_rows()
+	_build_charm_rows()
 	update_display()
 
 
@@ -79,6 +90,8 @@ func _connect_live_sources() -> void:
 		EventBus.equipment_equipped.connect(_on_equipment_event)
 	if not EventBus.equipment_unequipped.is_connected(_on_equipment_unequipped):
 		EventBus.equipment_unequipped.connect(_on_equipment_unequipped)
+	if not EventBus.charms_changed.is_connected(update_display):
+		EventBus.charms_changed.connect(update_display)
 	if not EventBus.input_device_changed.is_connected(_on_input_device_changed):
 		EventBus.input_device_changed.connect(_on_input_device_changed)
 
@@ -110,6 +123,56 @@ func _build_slot_rows() -> void:
 		row.pressed.connect(_on_slot_pressed.bind(slot_id))
 		row.focus_entered.connect(_on_slot_focused.bind(slot_id))
 		_slot_rows[slot_id] = row
+
+
+func _build_charm_rows() -> void:
+	var rows := RowFill.fill(_charm_list, _slot_row, Charms.total_slots())
+	for i in rows.size():
+		var row: Button = rows[i]
+		row.name = "charm_%d" % i
+		row.get_node(^"Row/Caption").text = CHARM_CAPTIONS[i]
+		row.pressed.connect(_on_charm_pressed.bind(i))
+		row.focus_entered.connect(_on_charm_focused.bind(i))
+		_charm_rows.append(row)
+
+
+## Відкритий слот оберега — те саме вікно вибору (D288) зі знайденими оберегами.
+func _on_charm_pressed(slot: int) -> void:
+	if slot >= Charms.open_slots():
+		return
+	var worn := String(Charms.equipped()[slot])
+	var items: Array = []
+	for charm_id: String in Charms.owned():
+		items.append({"id": charm_id, "name": Charms.charm_name(charm_id), "icon": Charms.icon(charm_id), "count": 1,
+			"subtitle": tr("Equipped") if charm_id in Charms.equipped() else Charms.charm_description(charm_id)})
+	var layer: ModalLayer = ServiceLocator.get_ui_manager().get_modal_layer()
+	layer.show_custom_modal(EQUIP_PICKER)
+	layer.active_modal.show_slot(tr(CHARM_CAPTIONS[slot]).capitalize(), items, worn != "")
+	layer.modal_closed.connect(_on_charm_picked.bind(slot), CONNECT_ONE_SHOT)
+
+
+func _on_charm_picked(result: String, slot: int) -> void:
+	match result:
+		"cancel":
+			pass
+		"unequip":
+			Charms.unequip(slot)
+		_:
+			Charms.equip(slot, result)
+	_charm_rows[slot].grab_focus.call_deferred()
+
+
+func _on_charm_focused(slot: int) -> void:
+	_focused_slot = ""
+	var bar := get_tree().get_first_node_in_group(&"ui_bottom_bar")
+	var caption := tr(CHARM_CAPTIONS[slot]).capitalize()
+	var worn := String(Charms.equipped()[slot])
+	if slot >= Charms.open_slots():
+		bar.set_context_hint(tr("%s — locked. A third charm slot opens later in the journey.") % caption)
+	elif worn == "":
+		bar.set_context_hint(InputGlyphs.resolve(tr("%s — empty. Press {ui_accept} to choose an item.") % caption))
+	else:
+		bar.set_context_hint("%s — %s" % [Charms.charm_name(worn), Charms.charm_description(worn)])
 
 
 ## Клік / Enter / A по слоту — вікно з предметами із сумки, що влазять у цей слот (D288).
@@ -179,6 +242,7 @@ func update_display() -> void:
 		return
 	_update_header()
 	_update_slots()
+	_update_charms()
 	_update_attributes()
 
 
@@ -203,8 +267,23 @@ func _update_slots() -> void:
 			dot.visible = false
 		else:
 			item_label.text = item_database.get_item_name(String(item.id))
+			if slot_id == "body":
+				item_label.text += "  ·  " + tr(WEIGHT_NAMES[ArmourWeight.class_of(item_database.get_item(String(item.id)))])
 			item_label.theme_type_variation = &"SlotItemName"
 			dot.visible = true
+
+
+func _update_charms() -> void:
+	for i in _charm_rows.size():
+		var item_label: Label = _charm_rows[i].get_node(^"Row/ItemName")
+		var worn := String(Charms.equipped()[i])
+		var shown := worn != "" and i < Charms.open_slots()
+		if i >= Charms.open_slots():
+			item_label.text = LOCKED
+		else:
+			item_label.text = Charms.charm_name(worn) if worn != "" else PLACEHOLDER
+		item_label.theme_type_variation = &"SlotItemName" if shown else &"SlotItemEmpty"
+		(_charm_rows[i].get_node(^"Row/Dot") as Panel).visible = shown
 
 
 ## Значення беремо з GameManager (делегати до StatCalculator), а дельту — як

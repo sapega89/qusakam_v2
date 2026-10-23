@@ -762,6 +762,10 @@ func stagger(duration: float, from_x: float) -> void:
 		enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
 	EventBus.enemy_staggered.emit(self, duration)
 
+## Ворог збитий чи оглушений (стагер, парирування, стійкість, оглушення навички) — для Breaker's Ring (D592).
+func is_staggered() -> bool:
+	return enemy_logic.stun_left > 0.0
+
 ## Герой парирував цей удар (D264).
 func parried(by: Node2D) -> void:
 	stagger(PARRY_STAGGER, by.global_position.x)

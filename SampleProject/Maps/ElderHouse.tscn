@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="7_locked"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/StoryNote.tscn" id="8_note"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="9_pickup"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="10_chest"]
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
@@ -134,6 +135,10 @@ shape = SubResource("RectangleShape2D_notes_reach")
 [node name="Pickup_AtticPotion" parent="Attic" instance=ExtResource("9_pickup")]
 position = Vector2(248, 424)
 item_id = "potion_lesser"
+
+[node name="Chest_Attic" parent="Attic" instance=ExtResource("10_chest")]
+position = Vector2(520, 448)
+charm = "grandfathers_ring"
 
 [node name="RoomInstance" parent="." instance=ExtResource("2_room")]
 

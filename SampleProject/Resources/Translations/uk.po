@@ -3033,3 +3033,66 @@ msgstr "Через тебе я розлив! Тепер заплатиш. [ЧЕ�
 
 msgid "A drunken manticore-man hired to guard the Laboratory. His small mace strikes quick and twice — block the first blow, parry the second. A red glint on his spiked club means a slam that shakes the floor: roll through it or jump the shockwave. Between attacks he swigs from his flask — that is your moment. [DRAFT]"
 msgstr "П'яний чоловік-мантикора, найнятий стерегти Лабораторію. Маленька булава б'є швидко й двічі — перший удар заблокуйте, другий парируйте. Червоний відблиск на шипастій палиці — удар об підлогу: перекотіться крізь нього чи перестрибніть хвилю. Між атаками він прикладається до фляги — це ваша мить. [ЧЕРНЕТКА]"
+
+msgid "Grandfather's Ring [DRAFT]"
+msgstr "Перстень діда [ЧЕРНЕТКА]"
+
+msgid "A parry heals 5% of your max HP. [DRAFT]"
+msgstr "Парирування лікує 5% вашого макс. HP. [ЧЕРНЕТКА]"
+
+msgid "Sand Runner's Ring [DRAFT]"
+msgstr "Перстень піщаного бігуна [ЧЕРНЕТКА]"
+
+msgid "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
+msgstr "Ви не можете блокувати чи парирувати, зате перекат триває на 30% довше. [ЧЕРНЕТКА]"
+
+msgid "Hermit's Amulet [DRAFT]"
+msgstr "Амулет відлюдника [ЧЕРНЕТКА]"
+
+msgid "Skills cost 30% less SP, but every skill heals 30% less. [DRAFT]"
+msgstr "Навички коштують на 30% менше SP, але кожна навичка лікує на 30% слабше. [ЧЕРНЕТКА]"
+
+msgid "Breaker's Ring [DRAFT]"
+msgstr "Перстень руйнівника [ЧЕРНЕТКА]"
+
+msgid "Your blows deal 35% more damage to a staggered enemy. [DRAFT]"
+msgstr "Ваші удари завдають збитому з ніг ворогу на 35% більше шкоди. [ЧЕРНЕТКА]"
+
+msgid "Deep Gourd Amulet [DRAFT]"
+msgstr "Амулет глибокого гарбуза [ЧЕРНЕТКА]"
+
+msgid "The flask holds one more sip, but each sip heals 30% less. [DRAFT]"
+msgstr "У флязі на один ковток більше, але кожен ковток лікує на 30% слабше. [ЧЕРНЕТКА]"
+
+msgid "Jackal Tooth Amulet [DRAFT]"
+msgstr "Амулет із зуба шакала [ЧЕРНЕТКА]"
+
+msgid "Each kill restores 4 SP. [DRAFT]"
+msgstr "Кожне вбивство повертає 4 SP. [ЧЕРНЕТКА]"
+
+msgid "CHARMS"
+msgstr "ОБЕРЕГИ"
+
+msgid "CHARM I"
+msgstr "ОБЕРІГ I"
+
+msgid "CHARM II"
+msgstr "ОБЕРІГ II"
+
+msgid "CHARM III"
+msgstr "ОБЕРІГ III"
+
+msgid "(locked)"
+msgstr "(закрито)"
+
+msgid "%s — locked. A third charm slot opens later in the journey."
+msgstr "%s — закрито. Третій слот оберега відкриється пізніше в мандрах."
+
+msgid "Light armour"
+msgstr "Легкий обладунок"
+
+msgid "Medium armour"
+msgstr "Середній обладунок"
+
+msgid "Heavy armour"
+msgstr "Важкий обладунок"

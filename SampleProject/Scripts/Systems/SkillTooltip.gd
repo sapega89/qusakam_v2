@@ -35,9 +35,9 @@ static func values(skills: SkillManager, definition: SkillDefinition, rank: int)
 		"heal": skills.skill_heal(definition.id, rank),
 		"burn_dps": definition.burn_dps,
 		"passive": definition.passive_value * (1.0 + SkillManager.RANK_BONUS * (rank - 1)),
-		"sp_cost": definition.sp_cost,
+		"sp_cost": skills.sp_cost(definition),
 		"cooldown": definition.cooldown,
-		"charges": definition.charges,
+		"charges": skills.max_charges(definition),
 	}
 
 
@@ -48,7 +48,7 @@ static func _lines(skills: SkillManager, definition: SkillDefinition, tooltip: D
 		lines.append(TranslationServer.translate("Ultimate · cooldown %d s") % roundi(definition.cooldown))
 	if definition.charges > 0:
 		lines.append(TranslationServer.translate("Flask: %d / %d sips, refilled when you save")
-				% [skills.get_charges(definition.id), definition.charges])
+				% [skills.get_charges(definition.id), skills.max_charges(definition)])
 	if rank > 0:
 		lines.append(TranslationServer.translate("Rank %d: %s") % [rank, effect_text(skills, definition, rank)])
 	if not tooltip.next.is_empty():
@@ -70,7 +70,7 @@ static func effect_text(skills: SkillManager, definition: SkillDefinition, rank:
 	if definition.heal > 0:
 		parts.append(TranslationServer.translate("heal %d") % skills.skill_heal(definition.id, at_rank))
 	if definition.charges > 0:
-		parts.append(TranslationServer.translate("%d sips") % definition.charges)
+		parts.append(TranslationServer.translate("%d sips") % skills.max_charges(definition))
 	if definition.burn_dps > 0:
 		parts.append(TranslationServer.translate("burn %d/s") % definition.burn_dps)
 	if definition.chain_radius > 0.0:

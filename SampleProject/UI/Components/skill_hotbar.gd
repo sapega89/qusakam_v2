@@ -41,6 +41,7 @@ func _connect_live_sources() -> void:
 		[EventBus.skill_used, _on_skill_used],
 		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
 		[EventBus.input_device_changed, _on_input_device_changed],
+		[EventBus.charms_changed, refresh],  # D592: ціна в SP з оберегом
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -100,7 +101,7 @@ func _update_slot(index: int) -> void:
 		var art: TextureRect = bind.get_node(^"Icon/Art")
 		art.texture = load(definition.icon)  # D605: білий силует, тон за видом (D602)
 		art.self_modulate = definition.icon_tint()
-	var cost: int = 0 if empty else SkillDatabase.get_skill(skill_id).sp_cost
+	var cost: int = 0 if empty else _skill_manager.sp_cost(SkillDatabase.get_skill(skill_id))  # D592: з оберегом дешевше
 	bind.get_node(^"Gem").visible = cost > 0
 	bind.get_node(^"Gem/Cost").text = str(cost)
 

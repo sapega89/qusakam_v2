@@ -108,19 +108,24 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SlotList" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll"]
+[node name="Stack" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="SlotList" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
-[node name="SlotRow" type="Button" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList"]
+[node name="SlotRow" type="Button" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 63)
 layout_mode = 2
 theme_type_variation = &"ListRow"
 
-[node name="Row" type="HBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow"]
+[node name="Row" type="HBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList/SlotRow"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -132,31 +137,43 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 16
 
-[node name="Icon" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+[node name="Icon" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList/SlotRow/Row"]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"IconSlot"
 
-[node name="Caption" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+[node name="Caption" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList/SlotRow/Row"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_type_variation = &"SlotCaption"
 vertical_alignment = 1
 
-[node name="ItemName" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+[node name="ItemName" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList/SlotRow/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"SlotItemName"
 vertical_alignment = 1
 
-[node name="Dot" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/SlotList/SlotRow/Row"]
+[node name="Dot" type="Panel" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack/SlotList/SlotRow/Row"]
 custom_minimum_size = Vector2(6, 6)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 theme_type_variation = &"AccentDot"
+
+[node name="CharmsHeading" type="Label" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PanelEyebrow"
+text = "CHARMS"
+
+[node name="CharmList" type="VBoxContainer" parent="Columns/EquipmentPanel/Body/SlotScroll/Stack"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
 
 [node name="BottomRule" type="HSeparator" parent="Columns/EquipmentPanel/Body"]
 layout_mode = 2

@@ -470,7 +470,7 @@ func _refresh_detail() -> void:
 	_add_fact(facts, tr("Cost"), _cost_text(definition.jp_cost))
 	_add_fact(facts, tr("Level"), tr("Lv %d") % definition.required_level)
 	if definition.is_active():
-		_add_fact(facts, "SP", tr("%d SP") % definition.sp_cost if definition.sp_cost > 0 else PLACEHOLDER)
+		_add_fact(facts, "SP", tr("%d SP") % _skill_manager.sp_cost(definition) if definition.sp_cost > 0 else PLACEHOLDER)
 		_add_fact(facts, tr("Cooldown"), tr("%s s") % String.num(definition.cooldown, 1) if definition.cooldown > 0.0 else PLACEHOLDER)
 	var rank := _skill_manager.get_rank(definition.id)
 	if rank > 0:
@@ -711,7 +711,7 @@ func _describe(definition: SkillDefinition) -> String:
 	if definition.jp_cost > 0:
 		parts.append(tr("%d JP") % definition.jp_cost)
 	if definition.sp_cost > 0:
-		parts.append(tr("%d SP") % definition.sp_cost)
+		parts.append(tr("%d SP") % _skill_manager.sp_cost(definition))
 	if definition.required_level > 1:
 		parts.append(tr("Lv.%d") % definition.required_level)
 	parts.append(_reason_text(definition.id))

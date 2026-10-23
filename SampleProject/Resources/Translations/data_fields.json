@@ -2,6 +2,16 @@
 	"_comment": "Which data fields the player sees (BACKLOG 31). Path: \"a.b\" dict key, \"x[]\" every element of array x, \"*\" every value of a dict. Read by Scripts/Tools/po_data_keys.py (missing uk.po keys) and SampleProject/UI/verify_locale.gd [4]. Left out on purpose (no code shows them): crafting_recipes name, merchants name, skills oaths keeper/subclasses/prestige, tutorial key, journal_people not_listed/lore.",
 	"fields": [
 		{
+			"file": "charms.json",
+			"path": "charms[].name",
+			"shown": "Charms.charm_name → Equipment (CHARMS), вікно вибору, скриня (D592)"
+		},
+		{
+			"file": "charms.json",
+			"path": "charms[].description",
+			"shown": "Charms.charm_description → вікно вибору й підказка слота в Equipment (D592)"
+		},
+		{
 			"file": "items.json",
 			"path": "items[].name",
 			"shown": "ItemDatabase.get_item_name → інвентар, спорядження, крамниця, крафт"

@@ -3,6 +3,8 @@ extends SceneTree
 ## Самоперевірка екрана Equipment (Phase 5.3).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_equipment.gd
 
+var ArmourWeight: GDScript
+
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -32,7 +34,7 @@ func _initialize() -> void:
 	var im: Node = sl.get_inventory_manager()
 	var db: Node = sl.get_item_database()
 	var cm: Node = sl.get_character_manager()
-	for id in ["iron_sword", "copper_sword", "iron_armor", "iron_helmet", "iron_shield"]:
+	for id in ["iron_sword", "copper_sword", "iron_armor", "iron_helmet", "iron_shield", "leather_armor"]:
 		im.add_item(id, 1)
 	await process_frame
 
@@ -140,6 +142,30 @@ func _initialize() -> void:
 	for i in 3: await process_frame
 	ck(gm.player_state.equipment.get("sword") != null, "equipment survives a state round-trip")
 	ck(cm.get_active_character().equipment.get("sword") != null, "character rehydrated from player_state")
+
+	ArmourWeight = load("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
+	print("[12b] armour weight (D592): light — longer roll, heavy — more defence and a shorter roll")
+	var mover: Node = gm.get_current_player().mover
+	var passive: float = sl.get_skill_manager().passive_value("roll_length")
+	eq._on_unequip_all_pressed()
+	for i in 4: await process_frame
+	ck(ArmourWeight.worn_class() == "light", "no body armour is light (%s)" % ArmourWeight.worn_class())
+	var bare_def: int = gm.calculate_physical_defense()
+	eq._equip("body", "leather_armor", db.get_item("leather_armor"))
+	for i in 4: await process_frame
+	ck(ArmourWeight.worn_class() == "light", "leather armour is light")
+	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive + 0.15), "light: roll ×%.2f (+15%%)" % mover.roll_factor())
+	ck(gm.calculate_physical_defense() == bare_def + 10, "light: defence is the item's +10 only (%d)" % gm.calculate_physical_defense())
+	ck(eq._slot_rows["body"].get_node("Row/ItemName").text.find("Light armour") >= 0, "BODY row names the weight (%s)" % eq._slot_rows["body"].get_node("Row/ItemName").text)
+	eq._equip("body", "iron_armor", db.get_item("iron_armor"))
+	for i in 4: await process_frame
+	ck(ArmourWeight.worn_class() == "heavy", "iron armour is heavy")
+	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive - 0.15), "heavy: roll ×%.2f (−15%%)" % mover.roll_factor())
+	ck(gm.calculate_physical_defense() == bare_def + 20 + 5, "heavy: defence +20 item +5 weight (%d)" % gm.calculate_physical_defense())
+	ck(eq._slot_rows["body"].get_node("Row/ItemName").text.find("Heavy armour") >= 0, "BODY row says heavy")
+	mover.start_roll()
+	ck(is_equal_approx(mover.roll_length, mover.roll_duration * mover.roll_factor()), "a real roll uses the weight (%.3f s)" % mover.roll_length)
+	for i in 30: await physics_frame
 
 	print("[13] back / close")
 	sl.get_ui_manager().close_game_menu()

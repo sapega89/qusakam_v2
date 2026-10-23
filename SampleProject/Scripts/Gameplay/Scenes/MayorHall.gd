@@ -13,6 +13,7 @@ extends Node2D
 ## підлогу від кінця черги до східної стіни: герой або вже в ньому, або дійде до нього, ідучи вглиб зали.
 
 const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
+const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
 const BossEnemy = preload("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd")
 const WALL_BURST := preload("res://SampleProject/Scenes/FX/Bosses/wall_burst.tscn")
 
@@ -143,6 +144,7 @@ func _on_warrior_died() -> void:
 		inventory.add_item(item_id, VICTORY_LOOT[item_id])
 	ServiceLocator.get_ui_manager().show_obtained(VICTORY_LOOT)  # BACKLOG 33: покажеться в лабораторії, коли кат-сцена відпустить
 	Game.get_singleton().set_quest_flag("mayor_boss_defeated", true)
+	Charms.unlock_slot()  # D592: третій слот оберегів — після першого боса
 	var cs := Cutscene.new()
 	await cs.wait(KNOCKOUT_HOLD)
 	var over_body := Vector2(warrior.global_position.x + SCORPION_OVER_BODY, ($Marks/ScorpionStand as Node2D).global_position.y)

@@ -1,6 +1,8 @@
 extends Resource
 class_name GameCharacter
 
+const ArmourWeight = preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
+
 ## Идентификатор персонажа
 @export var character_id: String = ""
 
@@ -59,6 +61,8 @@ func get_equipment_stats() -> Dictionary:
 						# Прямые бонусы статов
 						total_stats["attack"] += stats.get("attack", 0)
 						total_stats["defense"] += stats.get("defense", 0)
+						if slot_id == "body":
+							total_stats["defense"] += ArmourWeight.defense_of(item_data)  # D592: важкий обладунок
 						total_stats["magic"] += stats.get("magic", 0)
 						
 						# Бонусы к базовым атрибутам

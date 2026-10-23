@@ -1,6 +1,8 @@
 extends ManagerBase
 class_name SkillManager
 
+const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
+
 ## 🎓 SkillManager — бойові/класові навички, Job Points і SP.
 ##
 ## Стан не дублюється: єдине джерело — player_state (PlayerStateManager),
@@ -91,6 +93,8 @@ func _initialize() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_parried.connect(_on_player_parried)
 	EventBus.game_saving.connect(_on_game_saving)
+	EventBus.enemy_died.connect(_on_enemy_died)
+	EventBus.charms_changed.connect(_on_charms_changed)
 
 
 ## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
@@ -174,7 +178,20 @@ func skill_heal(skill_id: String, rank: int = -1) -> int:
 	if definition.heal <= 0:
 		return 0
 	var power := _scaled_power(definition.heal, definition.heal_phys, definition.heal_elem)
-	return roundi(power * _skill_factor(skill_id, rank) * (1.0 + passive_value("heal_power")))
+	return roundi(power * _skill_factor(skill_id, rank) * (1.0 + passive_value("heal_power")) * _charm_heal_factor(definition))
+
+
+## D592: Hermit's Amulet — кожне лікування навичок слабше; Deep Gourd Amulet — кожен ковток фляги слабший.
+func _charm_heal_factor(definition: SkillDefinition) -> float:
+	var flask := Charms.effect(&"flask_heal") if definition.charges > 0 else 0.0
+	return maxf(0.0, (1.0 + Charms.effect(&"skill_heal")) * (1.0 + flask))
+
+
+## Ціна навички в SP: sp_cost, з Hermit's Amulet дешевша (D592), але не менше 1.
+func sp_cost(definition: SkillDefinition) -> int:
+	if definition.sp_cost <= 0:
+		return 0
+	return maxi(1, roundi(definition.sp_cost * (1.0 + Charms.effect(&"skill_sp_cost"))))
 
 
 func _scaled_power(base: int, phys: float, elem: float) -> float:
@@ -266,7 +283,7 @@ func can_use_skill(skill_id: String) -> Result:
 		return Result.NOT_ACTIVE
 	if is_skill_on_cooldown(skill_id):
 		return Result.ON_COOLDOWN
-	if definition.sp_cost > 0 and get_current_sp() < definition.sp_cost:
+	if sp_cost(definition) > get_current_sp():
 		return Result.NOT_ENOUGH_SP
 	if definition.charges > 0 and get_charges(skill_id) <= 0:
 		return Result.NO_CHARGES
@@ -290,6 +307,12 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 		return
 	if (source.is_in_group(GameGroups.PLAYER) or source.is_in_group(VFXHooks.HERO_ARROWS)) and target.is_in_group(GameGroups.ENEMIES):
 		gain_sp(SP_PER_HIT + sp_per_hit_bonus())
+
+
+## D592: Jackal Tooth Amulet — убивство повертає SP.
+func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
+	if Charms.has_effect(&"sp_on_kill"):
+		gain_sp(Charms.effect(&"sp_on_kill"))
 
 
 func _on_player_parried(_attacker: Node) -> void:
@@ -317,7 +340,14 @@ func gain_sp(amount: float) -> void:
 
 ## Зарядів лишилось; запису немає — фляга повна.
 func get_charges(skill_id: String) -> int:
-	return int(_state().get("skill_charges", {}).get(skill_id, skill_database.get_skill(skill_id).charges))
+	return int(_state().get("skill_charges", {}).get(skill_id, max_charges(skill_database.get_skill(skill_id))))
+
+
+## Ковтків у повній флязі: charges, з Deep Gourd Amulet на один більше (D592); 0 — не фляга.
+func max_charges(definition: SkillDefinition) -> int:
+	if definition.charges <= 0:
+		return 0
+	return definition.charges + roundi(Charms.effect(&"flask_charges"))
 
 
 func _set_charges(skill_id: String, charges: int) -> void:
@@ -325,14 +355,21 @@ func _set_charges(skill_id: String, charges: int) -> void:
 	var all: Dictionary = state.get("skill_charges", {})
 	all[skill_id] = charges
 	state["skill_charges"] = all
-	EventBus.skill_charges_changed.emit(skill_id, charges, skill_database.get_skill(skill_id).charges)
+	EventBus.skill_charges_changed.emit(skill_id, charges, max_charges(skill_database.get_skill(skill_id)))
 
 
 ## Кожна фляга знову повна. Кличе збереження на екрані збереження (EventBus.game_saving).
 func refill_charges() -> void:
 	for definition: SkillDefinition in skill_database.get_all_skills():
 		if definition.charges > 0:
-			_set_charges(definition.id, definition.charges)
+			_set_charges(definition.id, max_charges(definition))
+
+
+## Оберіг змінив розмір фляги (D592): зайвий ковток зникає, HUD бачить нову межу. Новий ковток наллє збереження.
+func _on_charms_changed() -> void:
+	for definition: SkillDefinition in skill_database.get_all_skills():
+		if definition.charges > 0:
+			_set_charges(definition.id, mini(get_charges(definition.id), max_charges(definition)))
 
 
 func _on_game_saving(_slot: int) -> void:
@@ -824,8 +861,8 @@ func interrupt_cast(skill_id: String) -> void:
 
 ## Ціна застосування: SP, ковток фляги (D504), перезарядка (лише в ультимативних, D504).
 func _pay(definition: SkillDefinition) -> void:
-	if definition.sp_cost > 0:
-		spend_sp(mini(definition.sp_cost, get_current_sp()))
+	if sp_cost(definition) > 0:
+		spend_sp(mini(sp_cost(definition), get_current_sp()))
 	if definition.charges > 0:
 		_set_charges(definition.id, get_charges(definition.id) - 1)
 	if definition.cooldown > 0.0:
