@@ -2,14 +2,14 @@ extends NpcBase
 
 ## Хранитель клятви в місті (BACKLOG 22, D281): жриця Неба — Paladin, відьма — Dark Knight, дервіш — Warden.
 ## Меню: Talk → Swear the oath → друге меню «I swear… (permanent)» / «Not yet» — єдиний вибір у грі, зроблений
-## тим самим меню дій NPC, а не вікном вибору діалогу (D113). Unlearn skills — скидання навичок за монети (D282).
+## тим самим меню дій NPC, а не вікном вибору діалогу (D113). Скидання навичок тут більше немає: воно на місці медитації (D592).
 ## Фас — коли стоїть, молитва / читання / кружляння — коли сам (D295); профіль до героя — поки говорить (NpcBase).
 
 ## Клятва цього хранителя (skills.json → oaths).
 @export var oath_id: String = ""
 ## Розмова після клятви саме йому (замість talk_dialogue).
 @export var sworn_dialogue: String = ""
-## Яке підменю підтвердження відкрите: &"oath", &"respec" або &"" — звичайне меню.
+## Яке підменю підтвердження відкрите: &"oath" або &"" — звичайне меню.
 var _confirming: StringName = &""
 var _first_talk: String = ""
 
@@ -53,19 +53,9 @@ func menu_entries() -> Array:
 				{"id": &"swear", "label": tr("I swear: %s (permanent)") % _oath_name()},
 				{"id": &"not_yet", "label": tr("Not yet")},
 			]
-		&"respec":
-			if skills.can_respec() == SkillManager.Result.NOT_ENOUGH_COINS:
-				return [{"id": &"not_yet", "label": tr("Not enough coins (%d needed)") % skills.respec_price()}]
-			return [
-				{"id": &"unlearn", "label": tr("Forget every skill and attribute point for %d coins") % skills.respec_price()},
-				{"id": &"not_yet", "label": tr("Not yet")},
-			]
 	var entries := super.menu_entries()
 	if skills.get_oath() == "":
 		entries.append({"id": &"oath", "label": tr("Swear the oath")})
-	# D282 + D335: скидання і навичок, і очок атрибутів — пропонується, коли вкладено хоч щось.
-	if skills.can_respec() != SkillManager.Result.NOTHING_TO_RESET:
-		entries.append({"id": &"respec", "label": tr("Unlearn skills and attributes (%d coins)") % skills.respec_price()})
 	return entries
 
 
@@ -76,13 +66,11 @@ func _close_npc_menu() -> void:
 
 func _on_npc_choice(id: StringName) -> void:
 	match id:
-		&"oath", &"respec":
+		&"oath":
 			_open_confirm(id)
 		&"swear":
 			_skills().swear_oath(oath_id)
 			ServiceLocatorHelper.get_service_locator().get_dialogue_manager().start_dialogue(sworn_dialogue)
-		&"unlearn":
-			_skills().respec()
 
 
 func _open_confirm(kind: StringName) -> void:

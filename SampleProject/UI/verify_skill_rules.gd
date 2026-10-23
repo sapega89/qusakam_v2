@@ -28,6 +28,11 @@ func _level_to(xp: Node, level: int) -> void:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
 
 ## Справжній ворог (default_enemy), далеко від героя й без фізики — сам не б'є; HP вистачить на весь тест.
+## Місце медитації (D447) для скидання (D592): SkillManager питає лише групу save_points і поле meditating.
+class MeditationSpot extends Node:
+	var meditating := false
+
+
 func _make_enemy(game: Node, hp: int) -> Node:
 	var enemy: Node2D = load("res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn").instantiate()
 	enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
@@ -61,7 +66,7 @@ func _initialize() -> void:
 	var player: Node2D = game.player
 	var enemy: Node = _make_enemy(game, 100000)
 
-	print("[1] Tree data: more passives than actives, cooldowns only on ultimates, caps and gates (D491, D496, D497, D504)")
+	print("[1] Tree data: 10 actives and 9 passives a tab, cooldowns only on ultimates, caps and gates (D491, D496, D497, D504, D535)")
 	var counts := {}
 	var data_ok := true
 	for d in db.get_all_skills():
@@ -80,7 +85,7 @@ func _initialize() -> void:
 		if d.oath != "" and not d.ultimate and d.base_jp != (3 if d.required_level <= 5 else 6):
 			data_ok = false
 			print("    profession gate is not 3 / 6: ", d.id, " ", d.base_jp)
-		if d.is_active() and not d.synergies.size() in [1, 2]:
+		if d.is_active() and not d.planned and not d.synergies.size() in [1, 2]:
 			data_ok = false
 			print("    active without 1–2 synergies: ", d.id)
 		for synergy: Dictionary in d.synergies:
@@ -92,17 +97,25 @@ func _initialize() -> void:
 	var trees_ok := true
 	for tree in counts:
 		var c: Dictionary = counts[tree]
-		if c.passive <= c.active or c.conditional < 2 or c.conditional > 3:
+		if c.active != 10 or c.passive != 9 or c.conditional < 2 or c.conditional > 3:
 			trees_ok = false
-		if tree != "" and (c.ultimate != 1 or c.active != 3):
+		if c.ultimate != (0 if tree == "" else 1):
 			trees_ok = false
-	ck(trees_ok and counts.size() == 4, "every tree: more passives than actives, 2–3 conditional passives, one ultimate per oath %s" % counts)
+	ck(trees_ok and counts.size() == 4, "every tree: 10 actives, 9 passives (D535), 2–3 conditional passives, one ultimate per oath %s" % counts)
 	for oath in ["paladin", "dark_knight", "warden"]:
-		var level_18: Array = db.get_all_skills().filter(func(d) -> bool: return d.oath == oath and d.required_level == 18)
-		ck(not level_18.is_empty() and level_18.all(func(d) -> bool: return not d.is_active()), "%s: the level-18 skill is now the passive (D491)" % oath)
+		var level_20: Array = db.get_all_skills().filter(func(d) -> bool: return d.oath == oath and d.required_level == 20)
+		ck(level_20.size() == 1 and level_20[0].ultimate, "%s: level 20 holds only the ultimate (D491)" % oath)
 	ck(db.get_skill("judgement_of_the_sky").ultimate and db.get_skill("eclipse_cleave").ultimate and db.get_skill("second_wind").ultimate,
 			"ultimates: Judgement of the Sky, Eclipse Cleave, Second Wind")
-	ck(db.tree_cap("") == 12 and db.tree_cap("paladin") == 10 and db.tree_cap("warden") == 10, "caps: base 12 JP, profession 10 JP")
+	ck(db.tree_cap("") == 14 and db.tree_cap("paladin") == 12 and db.tree_cap("dark_knight") == 12 and db.tree_cap("warden") == 12,
+			"caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP")
+	for tree in ["", "paladin", "dark_knight", "warden"]:
+		var full := 0
+		for d in db.get_all_skills():
+			if d.oath == tree:
+				full += d.jp_cost
+		ck(db.tree_cap(tree) < full and full > xp.MAX_LEVEL - 1, "tab '%s': learning all 19 costs %d JP, over its cap %d and over the %d JP of level %d"
+				% [tree, full, db.tree_cap(tree), xp.MAX_LEVEL - 1, xp.MAX_LEVEL])
 
 	print("[2] Skill power scales with Phys. Atk. and Elem. Atk. (B137)")
 	_level_to(xp, 20)
@@ -186,17 +199,17 @@ func _initialize() -> void:
 	sm.upgrade_skill("fire_strike")
 	sm.upgrade_skill("fire_strike")
 	ck(sm.tree_spent("") == 10 and sm.can_unlock("judgement_of_the_sky") == R.OK, "10 base JP open the ultimate")
-	sm.upgrade_skill("fire_strike")
-	sm.upgrade_skill("fire_strike")
-	ck(sm.tree_spent("") == 12 and sm.can_upgrade("fire_strike") == R.TREE_CAP, "the base tree stops at 12 JP")
+	for i in 4:
+		sm.upgrade_skill("fire_strike")
+	ck(sm.tree_spent("") == 14 and sm.can_upgrade("fire_strike") == R.TREE_CAP, "the base tree stops at 14 JP")
 	ck(sm.unlock_skill("riposte_instinct") == R.TREE_CAP, "a new skill past the cap → TREE_CAP")
 	ck(sm.unlock_skill("judgement_of_the_sky") == R.OK, "Judgement of the Sky learned")
 	ck(sm.tree_spent("paladin") == 6, "paladin tree: 6 JP spent (%d)" % sm.tree_spent("paladin"))
-	for id in ["skys_grace", "mending_hands", "merciful_light", "zealous_answer"]:
+	for id in ["skys_grace", "mending_hands", "merciful_light", "zealous_answer", "consecrated_ground", "aura_of_valour"]:
 		sm.unlock_skill(id)
-	ck(sm.tree_spent("paladin") == 10 and sm.can_unlock("consecrated_ground") == R.TREE_CAP, "the profession tree stops at 10 JP")
+	ck(sm.tree_spent("paladin") == 12 and sm.can_unlock("unbroken_vow") == R.TREE_CAP, "the profession tree stops at 12 JP")
 	var budgets: Dictionary = sm.tree_budgets()
-	ck(budgets[""].spent == 12 and budgets[""].cap == 12 and budgets.paladin.spent == 10 and budgets.paladin.cap == 10, "spent / cap per tree for the screen %s" % budgets)
+	ck(budgets[""].spent == 14 and budgets[""].cap == 14 and budgets.paladin.spent == 12 and budgets.paladin.cap == 12, "spent / cap per tree for the screen %s" % budgets)
 	var plan = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
 	ck(plan.can_pick("mending_hands") == R.TREE_CAP, "the skill screen's plan obeys the cap")
 
@@ -253,15 +266,83 @@ func _initialize() -> void:
 	ck("\n".join(Tooltip.data(sm, "judgement_of_the_sky").lines).contains("Ultimate · cooldown 60 s"), "the ultimate's tooltip says so")
 	ck(Tooltip.effect_text(sm, db.get_skill("merciful_light"), 1) == "heals +40% (below 30% HP)", "a conditional passive names its condition (%s)" % Tooltip.effect_text(sm, db.get_skill("merciful_light"), 1))
 
-	print("[10] Free respec (D490)")
-	var coins: int = inv.get_coins()
+	print("[10] Respec costs coins and needs a meditation spot (D592, D447); the oath stays (D570)")
 	var spent: int = sm.spent_points()
 	var jp_before: int = sm.get_job_points()
-	ck(spent == 22 + 2, "points spent: 12 base + 10 paladin + 2 extra Mending Hands ranks (%d)" % spent)
-	ck(sm.reset_free() == R.OK, "reset done")
-	ck(sm.get_job_points() == jp_before + spent and inv.get_coins() == coins, "every JP back, no coins taken (%d JP, %d coins)" % [sm.get_job_points(), inv.get_coins()])
+	ck(spent == 26 + 2, "points spent: 14 base + 12 paladin + 2 extra Mending Hands ranks (%d)" % spent)
+	ck(sm.respec_price() == 10 * spent, "the price scales with spent JP: 10 × %d = %d coins" % [spent, sm.respec_price()])
+	inv.add_coins(sm.respec_price())
+	var coins: int = inv.get_coins()
+	ck(sm.respec() == R.NOT_MEDITATING and sm.spent_points() == spent, "not at a meditation spot → refused")
+	var spot := MeditationSpot.new()
+	spot.add_to_group(&"save_points")
+	game.add_child(spot)
+	spot.meditating = true
+	var price: int = sm.respec_price()
+	ck(sm.respec() == R.OK, "meditating: respec done")
+	ck(sm.get_job_points() == jp_before + spent and inv.get_coins() == coins - price, "every JP back, %d coins taken (%d JP, %d coins)" % [price, sm.get_job_points(), inv.get_coins()])
 	ck(sm.get_unlocked_skills().is_empty() and sm.get_oath() == "paladin" and sl.get_attribute_manager().spent_total() == 0, "skills and attributes forgotten, the oath stays")
-	ck(sm.reset_free() == R.NOTHING_TO_RESET, "nothing left to reset")
+	ck(sm.respec() == R.NOTHING_TO_RESET, "nothing left to reset")
+	ck(not sm.has_method("reset_free"), "the free reset is gone (D592 reverses D490's free respec)")
+	spot.queue_free()
+
+	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
+	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
+	ck(planned.size() == 28 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "28 planned actives, all [DRAFT] (%d)" % planned.size())
+	var refused := true
+	for d in planned:
+		if sm.can_unlock(d.id) != R.PLANNED or sm.unlock_skill(d.id) != R.PLANNED:
+			refused = false
+			print("    learnable: ", d.id)
+	ck(refused and sm.get_unlocked_skills().is_empty(), "level 20, %d JP, sworn: every planned skill → PLANNED, nothing learned" % sm.get_job_points())
+	gm.player_state.unlocked_skills.append("dash_strike")  # навіть якщо потрапила в стан (старий сейв) — не б'є
+	sm.restore_sp(100)
+	ck(sm.can_use_skill("dash_strike") == R.PLANNED and sm.cast_skill("dash_strike") == R.PLANNED and sm.use_skill("dash_strike", enemy) == R.PLANNED,
+			"a planned skill in the state still cannot be cast or used")
+	ck(sm.can_upgrade("dash_strike") == R.PLANNED, "nor ranked up")
+	gm.player_state.unlocked_skills.erase("dash_strike")
+	var plan_v2 = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
+	ck(plan_v2.can_pick("lightspear") == R.PLANNED, "the skill screen's plan refuses it too")
+
+	print("[12] The 5 new v2 passives work (D535)")
+	ck(sm.unlock_skill("weapon_training") == R.OK, "Weapon Training learned (Keen Edge and Heavy Hand need it)")
+	var crit: float = gm.calculate_critical_chance()
+	ck(sm.unlock_skill("keen_edge") == R.OK and is_equal_approx(gm.calculate_critical_chance() - crit, 0.05),
+			"Keen Edge: +5 %% crit (%.3f → %.3f)" % [crit, gm.calculate_critical_chance()])
+	var combat = player.combat
+	combat._strike_heavy()
+	var heavy_poise: int = combat._poise
+	ck(sm.unlock_skill("heavy_hand") == R.OK, "Heavy Hand learned")
+	combat._strike_heavy()
+	ck(combat._poise == roundi(heavy_poise * 1.3), "Heavy Hand: the heavy attack's poise ×1.3 (%d → %d)" % [heavy_poise, combat._poise])
+	combat._set_hitbox_active(false, 1)
+	for id in ["healing_palm", "fire_strike", "electric_strike", "toughness", "shield_block", "mending_hands"]:
+		sm.unlock_skill(id)
+	ck(sm.unlock_skill("shield_of_faith") == R.OK, "Shield of Faith learned (6 base JP, Mending Hands)")
+	sl.get_equipment_manager().equip_item(gm.get_active_character().character_id, "shield", "iron_shield", items.get_item("iron_shield"))
+	player.current_health = player.Max_Health - 50
+	player._heal_on_block(40)
+	ck(player.current_health == player.Max_Health - 40, "a blocked 40 hit with a shield heals 10 (25 %%): %d" % (player.Max_Health - player.current_health))
+	gm.player_state.unlocked_skills.append("embers_within")  # клятва Dark Knight — стат перевіряємо прямо через стан
+	enemy.burn_left = 0.0  # Fire Strike і ультимативна з попередніх розділів могли підпалити
+	enemy.current_health = enemy.Max_Health
+	enemy.take_damage(100, player)
+	var cold: int = enemy.Max_Health - enemy.current_health
+	enemy.apply_burn(1, 5.0)
+	enemy.current_health = enemy.Max_Health
+	enemy.take_damage(100, player)
+	ck(enemy.Max_Health - enemy.current_health == roundi(cold * 1.2), "Embers Within: a burning enemy takes +20 %% from the hero (%d → %d)" % [cold, enemy.Max_Health - enemy.current_health])
+	enemy.current_health = enemy.Max_Health
+	enemy.take_damage(10)
+	ck(enemy.Max_Health - enemy.current_health == 10, "the burn's own tick is not boosted")
+	enemy.burn_left = 0.0
+	gm.player_state.unlocked_skills.erase("embers_within")
+	gm.player_state.unlocked_skills.append("light_feet")  # клятва Warden
+	ck(player.mover.start_roll() and is_equal_approx(player.mover.roll_length, player.mover.roll_duration * 1.2) and player.is_invulnerable,
+			"Light Feet: the roll lasts 20 %% longer at the same speed (%.2f s), invulnerable" % player.mover.roll_length)
+	gm.player_state.unlocked_skills.erase("light_feet")
+	ck(Tooltip.effect_text(sm, db.get_skill("light_feet"), 1) == "roll +20%" and Tooltip.effect_text(sm, db.get_skill("embers_within"), 1) == "+20% damage to burning enemies",
+			"the tooltip names the new stats")
 
 	enemy.queue_free()
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

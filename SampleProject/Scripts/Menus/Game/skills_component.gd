@@ -380,6 +380,8 @@ func _node_note(definition: SkillDefinition) -> String:
 			return tr("%d JP") % _skill_manager.base_jp_missing(definition.id, plan.planned_unlocked(), plan.planned_ranks())
 		SkillManager.Result.TREE_CAP:
 			return tr("Cap")
+		SkillManager.Result.PLANNED:
+			return tr("Later")
 		_:
 			return tr("Locked")
 
@@ -543,6 +545,8 @@ func _reason_text(skill_id: String) -> String:
 					plan.planned_ranks()), tr(_skill_database.class_name_trunk)]
 		SkillManager.Result.TREE_CAP:
 			return tr("This tree's JP cap is reached (%d JP).") % _skill_database.tree_cap(definition.oath)
+		SkillManager.Result.PLANNED:
+			return tr("Coming later: this skill is not built yet.")
 		_:
 			return ""
 

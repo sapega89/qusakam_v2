@@ -272,7 +272,7 @@ func _stat_without_equipment(method: String, is_ratio: bool, attributes: Charact
 		"calculate_accuracy":
 			value = StatCalculator.calculate_accuracy(attributes)
 		"calculate_critical_chance":
-			value = game_manager.with_attribute_ratio("crit_chance", StatCalculator.calculate_critical_chance(attributes))
+			value = game_manager.crit_chance_from(attributes)
 	return roundi(value * 100.0 if is_ratio else value)
 
 

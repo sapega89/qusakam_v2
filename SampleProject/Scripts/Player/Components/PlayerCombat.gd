@@ -467,7 +467,8 @@ func _strike_heavy() -> void:
 	state = State.HEAVY_STRIKE
 	_state_left = heavy_strike_time
 	knockback = maxf(_weapon_knockback, heavy_knockback)
-	_poise = _poise_of(POISE_HEAVY)
+	# D535: Heavy Hand — важкий удар б'є по стійкості сильніше
+	_poise = roundi(_poise_of(POISE_HEAVY) * (1.0 + ServiceLocator.get_skill_manager().passive_value("heavy_poise")))
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
 	damage_applier.critical = critical
 	_step(HEAVY_STEP)

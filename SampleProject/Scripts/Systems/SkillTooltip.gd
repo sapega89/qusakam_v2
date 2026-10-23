@@ -96,6 +96,11 @@ static func _passive_text(stat: String, value: float) -> String:
 		"lifesteal": return TranslationServer.translate("hits heal %s%%") % _percent(value)
 		"poise": return TranslationServer.translate("+%s%% poise damage") % _percent(value)
 		"skill_damage": return TranslationServer.translate("skills +%s%%") % _percent(value)
+		"crit_chance": return TranslationServer.translate("+%s%% crit") % _percent(value)
+		"heavy_poise": return TranslationServer.translate("heavy attack +%s%% poise damage") % _percent(value)
+		"block_heal": return TranslationServer.translate("a shield block heals %s%%") % _percent(value)
+		"burning_damage": return TranslationServer.translate("+%s%% damage to burning enemies") % _percent(value)
+		"roll_length": return TranslationServer.translate("roll +%s%%") % _percent(value)
 	assert(false, "SkillTooltip: no text for passive stat %s" % stat)
 	return ""
 

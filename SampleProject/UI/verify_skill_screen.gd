@@ -110,14 +110,15 @@ func _initialize() -> void:
 	var side: Control = ui.get_node(^"Center/Body/Columns/SidePanel")
 	ck(side.get_combined_minimum_size().y <= side.size.y + 1, "the detail / attributes column fits (%d of %d)" % [side.get_combined_minimum_size().y, side.size.y])
 	var tiers: Array = ui._tiers.get_children().map(func(t): return String(t.name))
-	ck(tiers == ["Tier1", "Tier2", "Tier3", "Tier4", "Tier5", "Tier6", "Tier8", "Tier10", "Tier12", "Tier15", "Tier18", "Tier20"], "12 level tiers, trunk + Paladin (%s)" % [tiers])
+	ck(tiers == ["Tier1", "Tier2", "Tier3", "Tier4", "Tier5", "Tier6", "Tier8", "Tier10", "Tier12", "Tier14", "Tier15", "Tier16", "Tier18", "Tier20"],
+			"14 level tiers with v2's levels 14 and 16 (D535), trunk + Paladin (%s)" % [tiers])
 	ck(ui._rows["radiant_smite"].get_parent().get_parent().get_parent().name == "Tier5" and ui._rows["fortitude"].get_parent().get_parent().get_parent().name == "Tier12", "each skill sits in its level's tier")
 	ck(ui._tree_tabs.get_parent().name == "OathHeader", "the oath tabs share the oath header, not their own row")
 	# D117: рядки — копії шаблонів зі сцени, стилі з теми; аватар — портрет героя (B129), без власного стилю.
 	var styled: Array = ui.find_children("*", "Control", true, false).filter(
 			func(c: Control) -> bool: return c.has_theme_stylebox_override(&"panel") or c.has_theme_color_override(&"font_color"))
 	ck(styled.is_empty(), "rows and the avatar carry no stylebox / colour overrides (D117, B129): %s" % [styled.map(func(c): return String(c.name))])
-	ck(ui._links.links.size() == 3, "3 links in the Paladin view (Radiant Smite → Skyfall → Judgement, Resolve → Vow): %d" % ui._links.links.size())
+	ck(ui._links.links.size() == 11, "11 links in the Paladin view (3 of v1, 4 new in the trunk, 4 new in Paladin, D535): %d" % ui._links.links.size())
 	for id in ui._rows:
 		var r: Rect2 = ui._rows[id].get_global_rect()
 		if not ui._tree_stage.get_global_rect().grow(1).encloses(r):
@@ -129,6 +130,8 @@ func _initialize() -> void:
 	ck(ui.node_state("fortitude") == S.LOCKED and _marker(ui, "fortitude") == ui.ICON_LOCK and _note(ui, "fortitude") == "Lv 12", "Fortitude: locked, lock icon, Lv 12")
 	ck(ui.node_state("radiant_smite") == S.LOCKED and _note(ui, "radiant_smite") == "Oath", "Radiant Smite before the oath: locked, Oath")
 	ck(ui.node_state("skyfall_blessing") == S.LOCKED and _note(ui, "skyfall_blessing") == "Oath", "Skyfall Blessing before the oath: Oath")
+	ck(ui.node_state("dash_strike") == S.LOCKED and _marker(ui, "dash_strike") == ui.ICON_LOCK and _note(ui, "dash_strike") == "Later"
+			and ui._reason_text("dash_strike") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): locked, Later, coming later")
 
 	print("[3] Detail panel: what it does and costs (D334)")
 	await _mouse(ui._rows["fire_strike"])
