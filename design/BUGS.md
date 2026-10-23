@@ -64,6 +64,22 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B128 — Hit areas do not match what is drawn: enemies hit from too far, the hero cannot reach them
+- **Where:** `Scripts/Gameplay/DefaultEnemy.gd:114`: `hitbox_collision.shape.size.x = attack_range`, so the enemy's damage area is as wide as its whole attack range (melee and tank 100 px, fast 80 px plus a 60-px lunge; `Resources/Enemies/enemy_stats_*.tres`). The scene's own `hitbox` shape is 28 × 28. The shape is a shared sub-resource, so writing to it may resize every enemy's. The enemy's body / hurt area (`default_enemy.tscn` `CollisionShape2D`) and the hero's swing area (`PlayerCombat` / `WeaponView`) are not matched to their sprites either.
+- **Expected:** what you see is what hits.
+  - An enemy's attack reaches only as far as its visible strike: the claw, blade or lunge.
+  - The hero's swing hits anything the drawn slash (`SlashTrail`) overlaps.
+  - An enemy can be hit wherever its sprite is opaque at body height.
+  - `attack_range` stays the distance at which an enemy *starts* its attack, not the size of the damage area.
+- **Got:** Sapega, playtest 2026-10-23: «я стою далеко від мобів, але вони мене дістають — не очевидно» and «так само я не можу до них дотягнутись, хоча здається, що мав би».
+- **Fix:**
+  - Per kind, size the attack hitbox from the strike frames, the hurtbox from the body's opaque bounds, and the hero's hitbox from the slash trail.
+  - Make each shape local to its scene, so nothing is shared.
+  - Add a debug draw toggle for tuning.
+  - Add `verify_hit_areas.gd`: per enemy kind and per hero weapon, the shapes stay within a few px of the sprites' opaque bounds, and the hero at the drawn reach does hit.
+- **Severity:** gameplay (combat feel).
+- **Found:** 2026-10-23, Sapega's playtest.
+
 ### B126 — In the Laboratory cells cutscene the cat walks out with Alisia
 - **Where:** the `LabCells` cutscene (D304; `verify_lab_cells.gd`), cell 3, where Alisia and the white cat creatures sit.
 - **Expected:** only Alisia is led out of cell 3 to the table and back. The cat stays in the cell.
