@@ -39,7 +39,6 @@
 						{"flag": "canyon_exit_complete", "text": "Descend to the road"}
 					],
 					"chronicle": [
-						{"flag": "canyon_relic_meditation_complete", "text": "At the canyon's edge he meditated beside the sacred armour and felt the desert spirits close. He took the armour with him."},
 						{"flag": "canyon_exit_complete", "text": "Armoured and ready, Kusakam began the climb down into the desert."}
 					]
 				},
