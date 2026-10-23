@@ -39,6 +39,21 @@ an open question below, never filled in. Used by skills, enemies, companions and
   an open question.
 - **Very cowardly, but brave**: he is scared and goes anyway.
 
+## The story spine: the Maiden and the barrier (Sapega, 2026-10-23)
+
+> діва кари небесної — це і є те, що вкрали бандити, але це не кінець історії, а лише початок великого шляху.
+> Бар'єр заснув, бо не молились реліквії, і як наслідок не було сил у діви, ангела-карателя. Ангелів і демонів
+> в цьому світі немає: це все духи, або боги, напівбоги, послідовники божественного шляху.
+
+- **The Maiden of Heavenly Punishment** («діва кари небесної») is what the **bandits stole**. Her English name is `[DRAFT]`.
+  The theft is **the beginning** of a long road, not its end.
+- **The barrier fell asleep because nobody prayed to the relic.** With no prayers the Maiden, a punishing
+  angel-like being, had **no strength**, so the barrier slept and the bandits found the village.
+- **No angels and no demons** in this world: only **spirits, gods and demigods** — **followers of the divine path**.
+  The Maiden is one of these, not an angel.
+- Open (not said): is the relic a statue, an object or the Maiden herself? Who sent the bandits for it?
+  Are Kusakam's paladin powers tied to her?
+
 ## Characters (Sapega, 2026-10-18)
 
 > астріт це воїн талматург з щитом та книгою
