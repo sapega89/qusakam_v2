@@ -2590,6 +2590,12 @@ msgstr "Cave Bat"
 msgid "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
 msgstr "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
 
+msgid "Cthulhu Fly"
+msgstr "Cthulhu Fly"
+
+msgid "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
+msgstr "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Riposte Instinct [DRAFT]"
 

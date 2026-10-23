@@ -379,6 +379,26 @@ enemy_type = "fast"
 position = Vector2(1600, 368)
 script = ExtResource("8_spawn_point")
 
+[node name="Fight_Fly" type="Node2D" parent="." unique_id=1640100400 node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+trigger_area = NodePath("Trigger")
+state_key = "enemies_fly"
+respawns = true
+
+[node name="Trigger" type="Area2D" parent="Fight_Fly" unique_id=1640100401]
+position = Vector2(600, 208)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Fly/Trigger" unique_id=1640100402]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Fly" unique_id=1640100403]
+position = Vector2(820, 300)
+script = ExtResource("8_spawn_point")
+enemy_type = "fly"
+size = "medium"
+elite = "always"
+
 [node name="Fight_Middle" type="Node2D" parent="." unique_id=1640100200 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false

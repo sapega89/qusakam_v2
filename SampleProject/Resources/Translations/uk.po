@@ -2592,6 +2592,12 @@ msgstr "Печерний кажан"
 msgid "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
 msgstr "Маленький кажан, що полює зграями в темряві. Летить до вас хвилею, кусає й відскакує. Білий спалах — блокуйте укус; одного-двох ударів йому досить."
 
+msgid "Cthulhu Fly"
+msgstr "Муха Ктулху"
+
+msgid "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
+msgstr "Муха завбільшки з людину, із синіми очима, що світяться, і щупальцями замість рота — один із дослідів алхіміка над прокляттям неба. Висить над землею, підлітає й б'є кігтями, а потім відлітає. Білий спалах — блокуйте кігті; вона міцніша, ніж здається."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"
 

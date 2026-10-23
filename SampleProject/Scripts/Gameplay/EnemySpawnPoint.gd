@@ -6,8 +6,8 @@ class_name EnemySpawnPoint
 ## Используется RoomEnemySpawner для автоматического создания врагов
 
 ## Тип врага для спавна
-## archer — лучник (D386), shield — щитоносець (D560), vulture і bat — летючі (D445): точку ставлять у повітрі.
-@export_enum("melee", "tank", "fast", "archer", "shield", "vulture", "bat") var enemy_type: String = "melee"
+## archer — лучник (D386), shield — щитоносець (D560), vulture, bat і fly (муха Ктулху, D589) — летючі (D445): точку ставлять у повітрі.
+@export_enum("melee", "tank", "fast", "archer", "shield", "vulture", "bat", "fly") var enemy_type: String = "melee"
 
 ## Розмір (D560): auto — кидок у звичайному бою (RoomEnemySpawner.respawns), medium у сюжетному; або заданий.
 @export_enum("auto", "small", "medium", "large") var size: String = "auto"
@@ -34,6 +34,7 @@ const ENEMY_SCENES := {
 	"shield": "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn",
 	"vulture": "res://SampleProject/Scenes/Characters/Enemies/enemy_vulture.tscn",
 	"bat": "res://SampleProject/Scenes/Characters/Enemies/enemy_bat.tscn",
+	"fly": "res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn",
 }
 ## Стандартні стати за типом ворога.
 const STATS_PATH := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
@@ -81,6 +82,7 @@ func _draw() -> void:
 			"shield": color = Color.ORANGE
 			"vulture": color = Color.PURPLE
 			"bat": color = Color.MAGENTA
+			"fly": color = Color.CYAN
 
 		# Крест
 		draw_line(Vector2(-10, 0), Vector2(10, 0), color, 2.0)

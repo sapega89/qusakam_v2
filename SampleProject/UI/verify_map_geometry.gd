@@ -139,7 +139,7 @@ func _check_room(path: String, room_cells: Array, edges: Dictionary) -> void:
 		if n.get_script() == spawn_point_script:
 			var floor_y = _floor_below(fg, tile, p)
 			var feet := p.y + enemy_half_height
-			if n.enemy_type in ["vulture", "bat"]:  # D445: летючий з'являється в повітрі — над підлогою, не на ній
+			if n.enemy_type in ["vulture", "bat", "fly"]:  # D445: летючий з'являється в повітрі — над підлогою, не на ній
 				ck(floor_y != null and feet < floor_y, "%s: %s (flier) spawns in the air over the floor (feet y %.0f, floor %s)" % [name, n.name, feet, floor_y])
 				continue
 			ck(floor_y != null and feet <= floor_y and feet >= floor_y - SPAWN_TOLERANCE,

@@ -36,6 +36,11 @@
 			"text": "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
 		},
 		{
+			"kind": "fly",
+			"name": "Cthulhu Fly",
+			"text": "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
+		},
+		{
 			"kind": "brass_collector",
 			"name": "The Brass Collector",
 			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."

@@ -9,11 +9,12 @@ extends SceneTree
 ##   [5] перекат під піке — промах;
 ##   [6] кажан кусає (біла підказка) й відлітає назад;
 ##   [7] поведінку вибирають стати, а не сцена; смерть — падає на землю й рахується в бестіарії;
-##   [8] розстановка: гриф лише надворі, перший — сам, далі долучається до бою; кажанів у демо немає.
+##   [8] розстановка: гриф лише надворі, перший — сам, далі долучається до бою; кажанів у демо немає; муха Ктулху — одна, сама й еліта в Лабораторії (D589, D582).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_flying_enemies.gd
 
 const VULTURE := "res://SampleProject/Scenes/Characters/Enemies/enemy_vulture.tscn"
 const BAT := "res://SampleProject/Scenes/Characters/Enemies/enemy_bat.tscn"
+const FLY := "res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn"
 const STATS := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
 const ARENA := Vector2(560, 368)
@@ -134,15 +135,18 @@ func _scenes() -> void:
 	ck(vs.xp_reward * 2 < 15, "vulture XP %d: the oath level still lands on the last City Gates kill" % vs.xp_reward)
 	ck(bs.max_health * 2 == jackal.max_health and bs.base_damage * 2 == jackal.base_damage and bs.tell == "block",
 			"bat: half the jackal's HP (%d) and damage (%d), a white tell" % [bs.max_health, bs.base_damage])
-	for kind in ["vulture", "bat"]:
-		var enemy: Node = load(VULTURE if kind == "vulture" else BAT).instantiate()
+	var fs: Resource = load(STATS % "fly")
+	ck(fs.flying and fs.flight_attack == "bite" and fs.max_health == bs.max_health and fs.base_damage == bs.base_damage and fs.tell == "block",
+			"Cthulhu fly: the bat's numbers (D589: it takes the bats' place), elite on top")
+	for kind in ["vulture", "bat", "fly"]:
+		var enemy: Node = load({"vulture": VULTURE, "bat": BAT, "fly": FLY}[kind]).instantiate()
 		var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
 		var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
 		var stats: Resource = load(STATS % kind)
 		var body: Rect2 = hit_areas.body_rect(sprite, anim)
 		ck(_shape_rect(enemy, ^"Hurtbox/CollisionShape2D").is_equal_approx(body), "%s: hurtbox = the fly frames %s" % [kind, body])
 		var strike: Rect2 = hit_areas.strike_rect(sprite, anim, stats.attack_active_time)
-		if kind == "bat":  # укус — зубами, від центру вперед (як у D519)
+		if kind != "vulture":  # укус — зубами, від центру вперед (як у D519)
 			strike = Rect2(Vector2(0, strike.position.y), Vector2(strike.end.x, strike.size.y))
 		ck(_shape_rect(enemy, ^"hitbox/CollisionShape2D").is_equal_approx(strike), "%s: hitbox = the %s frames %s" % [kind, "dive" if kind == "vulture" else "bite", strike])
 		enemy.free()
@@ -360,6 +364,7 @@ func _placements() -> void:
 	print("[8] Placements")
 	var spawn_script: Script = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 	var vultures: Array = []
+	var flies: Array = []
 	for file in DirAccess.get_files_at("res://SampleProject/Maps"):
 		if not file.ends_with(".tscn"):
 			continue
@@ -369,10 +374,15 @@ func _placements() -> void:
 				continue
 			if p.enemy_type == "bat":
 				ck(false, "%s: no bats in the demo (no cave room; the Laboratory gets the Cthulhu flies, D589)" % file)
+			if p.enemy_type == "fly":
+				var spawner: Node = p.get_parent()
+				flies.append([file.get_basename(), spawner.get_child_count() - 1, p.elite, p.size])
 			if p.enemy_type == "vulture":
 				vultures.append([file.get_basename(), String(p.get_parent().name), p.position])
 		room.free()
 	print("  info vultures: %s" % [vultures])
+	# Trigger — теж дитина спавнера, тому точок = дітей − 1
+	ck(flies == [["Laboratory", 1, "always", "medium"]], "one Cthulhu fly, in the Laboratory, alone, always elite, medium (%s)" % [flies])
 	ck(vultures.size() >= 2 and vultures.all(func(v: Array) -> bool: return v[0] in OUTDOORS), "vultures only outdoors (%d)" % vultures.size())
 	var map: Node = game.map
 	var lone: Node = map.get_node(^"Fight_LoneVulture")
