@@ -13,7 +13,7 @@ Branch `cloud/playtest-1`, from `feature/backlog` @ `6182a265`. Rules: [[ROUTINE
 - **Not done:** D438 (art), as instructed. There are 32 more speaker-less lines in the `say | |` spelling that D437 did not list (Q74 below).
 - **D-ID text:** D443–D446 below.
 - **B rows fixed:** B122, B123. Move both to Fixed with the commits below.
-- **Full suite:** FULL_SUITE_LINE
+- **Full suite:** `SUITE: ALL PASS` (93 verify scripts, `Scripts/Tools/run_verify.sh`).
 
 ## B122: the portrait sticks out below the dialogue box (`c6c71df0`)
 - **Repro, through the real path:** `verify_dialogue_speaker` [1] then [2], two `start_dialogue` calls in a row (OldMan_Outside, then City_MayorHall). The first talk grows the box to 245 px. In the second, every line with a speaker and a portrait stayed at 178 px, with the portrait at y 835–995 under a box ending at 954. That is 4 FAIL with the new check and the old code.
