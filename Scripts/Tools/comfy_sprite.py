@@ -2083,11 +2083,11 @@ CHARACTERS = {
                     "in the same side view facing right: winding up, the small round steel mace raised behind his head, "
                     "no club anywhere: the big spiked club is gone from his shoulder and his back, only the small mace",
                     "in the same side view facing right: striking forward, the small round steel mace swung down in front "
-                    "of him at chest height, no club anywhere, only the small mace, leaning forward; no motion trail, no swoosh line",
+                    "of him at chest height, his shoulders and back empty, no wooden club anywhere in the picture, only the small mace, leaning forward; no motion trail, no swoosh line",
                     "in the same side view facing right: swinging back up, the small round steel mace raised high in "
                     "front of him, no club anywhere: the big spiked club is gone from his shoulder and his back, only the small mace",
                     "in the same side view facing right: a second strike, the small round steel mace swung down low in "
-                    "front of him at knee height, no club anywhere, only the small mace, leaning far forward; no motion trail, no swoosh line",
+                    "front of him at knee height, his shoulders and back empty, no wooden club anywhere in the picture, only the small mace, leaning far forward; no motion trail, no swoosh line",
                 ],
             ),
             (
@@ -2172,8 +2172,9 @@ CHARACTERS = {
             (
                 "attack",
                 [
-                    "in the same side view facing right: winding up, the huge axe raised high behind his shoulder in both "
-                    "hands, leaning back",
+                    "in the same side view facing right: winding up, gripping the huge axe in both hands and lifting it up over "
+                    "his right shoulder, the same axe as in the picture: the same long straight handle, the same single "
+                    "broad steel blade with the black scorpion sign, the same size and shape, not bent, leaning back",  # D648: замах перекрутив сокиру
                     "in the same side view facing right: the huge axe swung forward and down in both hands, its blade in "
                     "front of his chest; no motion trail, no swoosh line",
                     "in the same side view facing right: follow-through, the axe blade low in front of him near the "
@@ -2717,19 +2718,26 @@ CHARACTERS = {
         + MAGENTA_BG,
     ),
     # D589: проклятий шакал — з кадру шакала (Crusenho, CC BY): модель лише додає сині очі й піну; спершу проба
+    # D589 + D649: проклятий шакал — не гієна з кадрів Crusenho (Sapega: «це гієни, а мають бути вовки-шакали з хорору»),
+    # а новий звір: худий вовк-шакал, синє світіння прокляття (D587); 2×2 зерно × вид
     "jackal_cursed": dict(
         candidates=(
             "design/shots/candidates/jackal_cursed.png",
-            [(114, False), (115, False), (116, False), (117, False)],
+            [(118, False, SIDE_VIEW % {"p": "its"}, "side"), (119, False, SIDE_VIEW % {"p": "its"}, "side"), (118, False, THREE_QUARTER % {"p": "its"}, "3/4"), (119, False, THREE_QUARTER % {"p": "its"}, "3/4")],
         ),
-        ref="SampleProject/Assets/Characters/Enemies/jackal/sheet.png#0,0,96,72",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(96, 72),
-        seed=114,
-        colors=24,
-        who="the same jackal with the glowing blue eyes and the blue foam at its mouth",
-        base="Keep this exact animal — the same pixel art jackal, the same pose, size, position, colours, fur, "
-        "outline and flat shading. Change only two things: its eyes now glow bright blue, and bright blue foam drips "
-        "from its mouth. Nothing else changes." + MAGENTA_BG,
+        seed=118,
+        colors=16,
+        who="the same cursed horror jackal-wolf with the mangy dark grey fur, the jutting ribs, the long snout full of "
+        "fangs, the glowing blue eyes and the blue foam dripping from its jaws",
+        base="Replace the character in picture 1 with a cursed horror jackal-wolf from a dark fairy tale: a gaunt, "
+        "starved wolf-like jackal on four long thin legs, mangy patchy dark grey fur, ribs and spine jutting through "
+        "the skin, a long narrow snout with bared crooked fangs, tall pointed ears, cold glowing bright blue eyes, "
+        "glowing blue foam dripping from its jaws, a ragged thin tail, standing low and menacing, ready to pounce — "
+        + PIXEL_STYLE
+        + ", a wolf-sized beast as long as the picture is wide, not a hyena: no spots, no mane, no sloping back. §."
+        + MAGENTA_BG,
     ),
 }
 
