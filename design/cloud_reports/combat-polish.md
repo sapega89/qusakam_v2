@@ -11,7 +11,7 @@ tags: [cloud, combat, hit-feel, stamina]
 - **Hit feel (D581).** Hitstop now rises from light to heavy to riposte to a boss's blow. The screen shakes on the heavy, the riposte and every hit the hero takes, scaled to the blow and off when Screen Shake is off. The hero flashes white for 0.12 s, and the heavy and the riposte each have their own hit sound.
 - **Proof:** `design/shots/combat_polish_fight.png`, the training bandit in the Village street: light, heavy, parry and a hit taken, each before and at the hit.
 - Not done: no knockback scaling (out of scope), and no death-screen "killed by" line (D581 idea, left open).
-- D-ID text for D603–D604 is below. No B rows fixed. Full suite: see the last section.
+- D-ID text for D603–D604 is below. No B rows fixed. Full suite: 101 PASS, 2 FAIL. Both were fixed and re-run as ALL PASS: `verify_audio` now expects the heavy's new sound, and `verify_onboarding` was already red on `feature/backlog`.
 
 ## D-ID text (the orchestrator applies it to the register)
 
@@ -96,4 +96,6 @@ Under xvfb the game draws at about 6 fps, which is slower than the 0.12 s flash.
 
 ## Full suite
 
-(filled in below)
+`Scripts/Tools/run_verify.sh`: **101 PASS, 2 FAIL** (`SUITE: 2 FAIL`). After the fixes below, both give `RESULT: ALL PASS`.
+- `verify_audio`: "heavy hit lands → hit_heavy on SFX ([])". The heavy strike now plays its own `hit_strike` (D604), so the check expects `hit_strike`.
+- `verify_onboarding`: "keyboard: a light hit does not pass Heavy". This was **already red on `origin/feature/backlog`**, checked in a separate worktree. Right after the Parry lesson, the riposte window (D575, 1.0 s) is still open. The test's "wrong" light tap therefore became a riposte, which uses the heavy strike and so passes the Heavy lesson. The test now waits `RIPOSTE_WINDOW` before that tap. The game is unchanged. A riposte straight after the Parry lesson still counts as the Heavy lesson. That reads as fine, but Sapega may want it otherwise.

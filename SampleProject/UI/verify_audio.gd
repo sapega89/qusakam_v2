@@ -159,7 +159,7 @@ func _combat() -> void:
 	_heard(&"heavy_windup", &"SFX", "heavy wind-up")
 	await create_timer(0.8).timeout
 	_heard(&"swing_heavy", &"SFX", "heavy strike")
-	_heard(&"hit_heavy", &"SFX", "heavy hit lands")
+	_heard(&"hit_strike", &"SFX", "heavy hit lands (its own sound, D581)")
 
 	await create_timer(1.5).timeout
 	_mark()
