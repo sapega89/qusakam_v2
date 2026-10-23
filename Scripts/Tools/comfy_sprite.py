@@ -2081,13 +2081,13 @@ CHARACTERS = {
                 "mace",
                 [
                     "in the same side view facing right: winding up, the small round steel mace raised behind his head, "
-                    "the club still resting on his shoulder",
+                    "no club anywhere: the big spiked club is gone from his shoulder and his back, only the small mace",
                     "in the same side view facing right: striking forward, the small round steel mace swung down in front "
-                    "of him at chest height, leaning forward; no motion trail, no swoosh line",
+                    "of him at chest height, no club anywhere, only the small mace, leaning forward; no motion trail, no swoosh line",
                     "in the same side view facing right: swinging back up, the small round steel mace raised high in "
-                    "front of him, the club still resting on his shoulder",
+                    "front of him, no club anywhere: the big spiked club is gone from his shoulder and his back, only the small mace",
                     "in the same side view facing right: a second strike, the small round steel mace swung down low in "
-                    "front of him at knee height, leaning far forward; no motion trail, no swoosh line",
+                    "front of him at knee height, no club anywhere, only the small mace, leaning far forward; no motion trail, no swoosh line",
                 ],
             ),
             (
@@ -2615,7 +2615,8 @@ CHARACTERS = {
             [(80, False), (79, False), (80, True), (79, True)],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        design="assets/references/npcs/malik.webp",
+        # design не беремо: Sapega обрав 1 — без референсу (D645)
+        
         seed=80,
         colors=16,
         who="the same man in the white turban with the red jewel, the clean-shaven face, the green scarf, the white robe "
