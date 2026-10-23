@@ -133,3 +133,6 @@ fixed (`362a0178`).
 | 10:49 | world-1 (`trig_01J2f6CV6DXH1um3rZkJgkZs`) | cloud/world-1 | D565 locations data, D562 gates, D583 pickups into branches, the attic |
 | 10:49 | skills-v2 (`trig_011hxei4kv9MxLHDkazQUTGp`) | cloud/skills-v2 | D535 33 draft skills, JP caps, D592 paid respec |
 | 10:49 | hud-v2 (`trig_01TGsbpruzDTVYxLzPMvAWVX`) | cloud/hud-v2 | D453/D549/D552 hero panel, 8-slot hotbar, XP bar |
+| 10:52 | ui-moments (`trig_017dMJtshPnHtL6ghLk6VCgX`) | cloud/ui-moments | D436 level-up, D486 journal card, D473 finale (quiet, D587) |
+| 10:52 | perf-gfx (`trig_01GC4dKDbSKmTuoYtKyoTCzZ`) | cloud/perf-gfx | performance slices 4, 5, 7: High/Low for the HD 3000 (D553, D554) |
+| 10:52 | text-1 (`trig_01FTn4tGdUakz5ok2iGPN5gf`) | cloud/text-1 | D566 «бандит», D571 NPC chatter drafts |
