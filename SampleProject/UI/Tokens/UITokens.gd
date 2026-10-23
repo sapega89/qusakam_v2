@@ -270,6 +270,10 @@ const SHOP_COL_PRICE := 150
 const SHOP_DESC_PAD := 16
 const SHOP_DESC_GAP := 8
 const SIZE_SHOP_TITLE := 22        # "All Wares" — SemiBold, accent
+## D433: рядок, на який не вистачає золота, — сірі і назва, і ціна. На вибраному рядку (заливка ACCENT)
+## TEXT_MUTED (2.7:1) не читається; Figma Disabled дає ≈ 4.9:1 до ACCENT і тьмяніший за ON_ACCENT (8.9:1).
+const SHOP_TEXT_DISABLED_ON_ACCENT := TEXT_DISABLED
+const MIN_TEXT_CONTRAST := 4.5
 # Крафт (Figma crafting-list 160:1291): рядок у два рядки — назва + "Requires: …" (13 Regular).
 const CRAFT_ROW_HEIGHT := 60
 const CRAFT_ROW_NAME_GAP := 2
@@ -364,3 +368,24 @@ const MISC_ROW_OFF := [
 	Color(0.1490, 0.1490, 0.1686, 0.0),
 ]
 const MISC_ROW_STOPS := [0.0, 0.5, 0.75, 1.0]
+
+
+# ── Модалка підтвердження (Figma UI/Modal/Confirm 258:5332, shop-buy-confirm 153:1760; B119) ─
+const MODAL_PAD_H := 40
+const MODAL_PAD_V := 28
+const MODAL_GAP := 16              # заголовок → лінія → опис → кнопки
+const MODAL_RULE_WIDTH := 300      # 1 px акцентна лінія під заголовком
+const MODAL_RULE := 1
+const MODAL_BUTTON_COLUMN := 300   # колонка кнопок
+const MODAL_BUTTON_GAP := 12
+const MODAL_BUTTON_WIDTH := 260    # UI/HexButton
+const MODAL_BUTTON_HEIGHT := 36
+const MODAL_BUTTON_POINT := 17     # ширина загостреного кінця (Figma 16.2): margin текстури, кінці не тягнуться
+const MODAL_POINTER_X := 49        # шеврон «›» вибраної кнопки
+const MODAL_POINTER := 16
+const SIZE_MODAL_BODY := 14        # Regular
+const SIZE_MODAL_BUTTON := 18      # SemiBold, UPPER
+const MODAL_BUTTON_SPACING := 2    # tracking 2 px
+const MODAL_BUTTON_TEXTURE := "res://SampleProject/Assets/UI/Icons/hex_button.svg"
+const MODAL_BUTTON_SELECTED_TEXTURE := "res://SampleProject/Assets/UI/Icons/hex_button_selected.svg"
+const MODAL_POINTER_TEXTURE := "res://SampleProject/Assets/UI/Icons/chevron.svg"

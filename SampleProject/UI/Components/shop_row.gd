@@ -66,12 +66,12 @@ func _on_focus(focused: bool) -> void:
 
 
 func _apply_style(on: bool) -> void:
-	if not sellable or not affordable:
-		_name.theme_type_variation = &"ShopRowDisabled"
-		_count.theme_type_variation = &"ShopRowCount"
-		_price.theme_type_variation = &"ShopRowCount"
-		return
-	_name.theme_type_variation = &"ShopRowNameOn" if on else &"ShopRowName"
 	_detail.theme_type_variation = &"ShopRowDetailOn" if on else &"ShopRowDetail"
 	_count.theme_type_variation = &"ShopRowCountOn" if on else &"ShopRowCount"
+	if not sellable or not affordable:
+		# D433: сіра й ціна — саме через неї рядок недоступний; на заливці accent — свій сірий.
+		_name.theme_type_variation = &"ShopRowDisabledOn" if on else &"ShopRowDisabled"
+		_price.theme_type_variation = &"ShopRowPriceDisabledOn" if on else &"ShopRowPriceDisabled"
+		return
+	_name.theme_type_variation = &"ShopRowNameOn" if on else &"ShopRowName"
 	_price.theme_type_variation = &"ShopRowPriceOn" if on else &"ShopRowPrice"

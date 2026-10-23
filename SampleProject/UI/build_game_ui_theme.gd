@@ -601,7 +601,12 @@ func _setup_panels(theme: Theme) -> void:
 	theme.set_type_variation("ModalPanel", "PanelContainer")
 	var modal: StyleBoxFlat = surface.duplicate()
 	modal.bg_color = UITokens.BACKGROUND
+	modal.content_margin_left = UITokens.MODAL_PAD_H
+	modal.content_margin_right = UITokens.MODAL_PAD_H
+	modal.content_margin_top = UITokens.MODAL_PAD_V
+	modal.content_margin_bottom = UITokens.MODAL_PAD_V
 	theme.set_stylebox("panel", "ModalPanel", modal)
+	_modal_kit(theme)
 
 	# Figma UI/Window — модалки, вікна. Непрозорий фон + тінь замість Panel Glow.
 	theme.set_type_variation("WindowPanel", "PanelContainer")
@@ -735,6 +740,69 @@ func _setup_panels(theme: Theme) -> void:
 
 
 ## Шрифт із міжлітерним інтервалом (Figma letterSpacing у px).
+## Figma UI/Modal/Confirm 258:5332 (B119): заголовок · 1 px акцентна лінія · опис · кнопки стовпчиком.
+## Кнопка — UI/HexButton 260×36 із загостреними кінцями: звичайна — контур hex_button.svg, вибрана
+## (фокус) — заливка hex_button_selected.svg і шеврон. modal_dialog.gd перемикає ModalButton/ModalButtonOn.
+func _modal_kit(theme: Theme) -> void:
+	theme.set_type_variation("ModalColumn", "VBoxContainer")
+	theme.set_constant("separation", "ModalColumn", UITokens.MODAL_GAP)
+	theme.set_type_variation("ModalButtons", "VBoxContainer")
+	theme.set_constant("separation", "ModalButtons", UITokens.MODAL_BUTTON_GAP)
+
+	theme.set_type_variation("ModalRule", "HSeparator")
+	var line := StyleBoxLine.new()
+	line.color = UITokens.ACCENT
+	line.thickness = UITokens.MODAL_RULE
+	theme.set_stylebox("separator", "ModalRule", line)
+	theme.set_constant("separation", "ModalRule", UITokens.MODAL_RULE)
+
+	theme.set_type_variation("ModalBody", "Label")
+	theme.set_font("font", "ModalBody", _font_regular)
+	theme.set_font_size("font_size", "ModalBody", UITokens.SIZE_MODAL_BODY)
+	theme.set_color("font_color", "ModalBody", UITokens.TEXT_PRIMARY)
+
+	var font := _spaced(_font_semibold, UITokens.MODAL_BUTTON_SPACING)
+	# Текст по центру кнопки: праве поле = ліве + місце шеврона.
+	var pad_l := UITokens.MODAL_POINTER_X
+	var pad_r := UITokens.MODAL_POINTER_X + UITokens.MODAL_POINTER + UITokens.ICON_TEXT_GAP
+	# D329: та сама 2 px рамка фокусу, біла (вибрана кнопка — на акценті), повторює загострені кінці.
+	var ring := _focus_ring(pad_l, 0, true)
+	ring.set_corner_radius_all(UITokens.MODAL_BUTTON_HEIGHT / 2)
+	ring.corner_detail = 1
+	ring.draw_center = false
+	for spec in [["ModalButton", UITokens.MODAL_BUTTON_TEXTURE, UITokens.TEXT_PRIMARY, Color(0, 0, 0, 0)],
+			["ModalButtonOn", UITokens.MODAL_BUTTON_SELECTED_TEXTURE, UITokens.ON_ACCENT, UITokens.ON_ACCENT]]:
+		var t: String = spec[0]
+		theme.set_type_variation(t, "Button")
+		var hex := _hex_box(spec[1], pad_l, pad_r)
+		for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+			theme.set_stylebox(state, t, hex)
+		theme.set_stylebox("focus", t, ring)
+		theme.set_font("font", t, font)
+		theme.set_font_size("font_size", t, UITokens.SIZE_MODAL_BUTTON)
+		for c in ["font_color", "font_hover_color", "font_focus_color", "font_pressed_color", "font_hover_pressed_color"]:
+			theme.set_color(c, t, spec[2])
+		theme.set_color("font_disabled_color", t, UITokens.TEXT_DISABLED)
+		for c in ["icon_normal_color", "icon_hover_color", "icon_focus_color", "icon_pressed_color", "icon_hover_pressed_color"]:
+			theme.set_color(c, t, spec[3])
+		theme.set_color("icon_disabled_color", t, Color(0, 0, 0, 0))
+		theme.set_constant("h_separation", t, UITokens.ICON_TEXT_GAP)
+		theme.set_constant("icon_max_width", t, UITokens.MODAL_POINTER)
+
+
+## Шестикутна кнопка з SVG: кінці (MODAL_BUTTON_POINT) не розтягуються, середина — так.
+func _hex_box(path: String, pad_l: int, pad_r: int) -> StyleBoxTexture:
+	var box := StyleBoxTexture.new()
+	box.texture = load(path)
+	box.texture_margin_left = UITokens.MODAL_BUTTON_POINT
+	box.texture_margin_right = UITokens.MODAL_BUTTON_POINT
+	box.content_margin_left = pad_l
+	box.content_margin_right = pad_r
+	box.content_margin_top = 0
+	box.content_margin_bottom = 0
+	return box
+
+
 func _spaced(base: Font, spacing: int) -> FontVariation:
 	var fv := FontVariation.new()
 	fv.base_font = base
@@ -879,7 +947,11 @@ func _shop(theme: Theme) -> void:
 		"ShopRowCountOn": [_font_regular, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
 		"ShopRowPrice": [_font_semibold, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 		"ShopRowPriceOn": [_font_semibold, UITokens.SIZE_BODY, UITokens.ON_ACCENT],
+		# D433: не вистачає золота — сірі назва й ціна; на вибраному рядку (accent) — темніший сірий.
 		"ShopRowDisabled": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_MUTED],
+		"ShopRowDisabledOn": [_font_medium, UITokens.SIZE_ROW_TITLE, UITokens.SHOP_TEXT_DISABLED_ON_ACCENT],
+		"ShopRowPriceDisabled": [_font_semibold, UITokens.SIZE_BODY, UITokens.TEXT_MUTED],
+		"ShopRowPriceDisabledOn": [_font_semibold, UITokens.SIZE_BODY, UITokens.SHOP_TEXT_DISABLED_ON_ACCENT],
 		# Другий рядок рецепта крафту ("Requires: …").
 		"ShopRowDetail": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
 		"ShopRowDetailOn": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.ON_ACCENT],
