@@ -1,0 +1,15 @@
+<svg width="52" height="46" viewBox="0 0 52 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="potion-slot" clip-path="url(#clip0_0_32)">
+<path id="Vector" d="M13 1.64286H39L50.375 23L39 44.3571H13L1.625 23L13 1.64286Z" fill="url(#paint0_linear_0_32)" stroke-width="2" stroke="#D4AF37"/>
+<path id="Vector_2" d="M15.4375 5.75H36.5625L45.5 23L36.5625 40.25H15.4375L6.5 23L15.4375 5.75Z" stroke="#4A4552"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_32" x1="1.625" y1="1.64286" x2="1.625" y2="44.3571" gradientUnits="userSpaceOnUse">
+<stop stop-color="#262532"/>
+<stop offset="1" stop-color="#0E0E14"/>
+</linearGradient>
+<clipPath id="clip0_0_32">
+<rect width="52" height="46" fill="white"/>
+</clipPath>
+</defs>
+</svg>

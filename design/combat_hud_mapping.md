@@ -92,7 +92,7 @@ production skills, targeting system, controller bindings.
 
 ## HUD v2 hero panel (D453, D476, D485): measured spec, 2026-10-23
 
-**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 162. In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. The stamina row was added on 2026-10-23 for D537, and the plate grew by 22 px. The hotbar v2 (`497:6587`) is built separately, after Q86.
+**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 162. In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. The stamina row was added on 2026-10-23 for D537, and the plate grew by 22 px. The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
 
 **Assets:** all in `SampleProject/Assets/UI/HUD/hero_panel/`.
 
@@ -127,4 +127,54 @@ production skills, targeting system, controller bindings.
 - HP, SP and ST have a 3 px top highlight of white at 25 %. XP has no highlight.
 - Colours go through `UITokens`: reuse the existing tokens, and add one only where none exists.
 
-**Not in this panel:** the potion line ("Q Potions ×N", D538). It moves to the hotbar v2 (Q86). Until then it stays where `cloud/combat-player` put it.
+**Not in this panel:** the potion line ("Q Potions ×N", D538). It moves to the Q slot of the hotbar v2 below.
+
+## HUD v2 hotbar, 8 slots (D453, D476, D549): measured spec, 2026-10-23
+
+**Figma:** component `UI/HUD/Hotbar v2` `497:6587`, 912 × 124, at the bottom centre. It was redrawn from 4 slots to 8 on 2026-10-23.
+- Shot: `design/shots/figma_hotbar_v2_8.png`.
+- The glow of a ready slot: `design/shots/figma_hotbar_slot_ready_2x.png`.
+
+**Assets:** in `SampleProject/Assets/UI/HUD/hotbar/`.
+
+| File | Size | What it is |
+|---|---|---|
+| `plate.svg` | 832 × 96 | The plate |
+| `slot.svg` | 64 × 56 | Skill slot hexagon |
+| `slot_ready.svg` | 83 × 75 | Gold ring of a ready slot, including the glow margin. The SVG filter is stripped (Godot drops it), so the soft gold glow is made in the engine, matching the reference shot |
+| `cooldown.svg` | 64 × 56 | Dark overlay |
+| `sp_gem.svg` | 18 × 18 | Badge for the SP cost |
+| `key_badge.svg` | 22 × 22 | Gold diamond under each slot |
+| `centre_diamond.svg` | 16 × 16 | Divider between the two groups |
+| `slot_small.svg` | 52 × 46 | The Q and F slots |
+
+The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mirrored.
+
+**Layout:** positions are in Figma px from the component's top left.
+
+| Element | Position, size |
+|---|---|
+| Plate | (40, 22) 832 × 96 |
+| Q, potion slot | (70, 43) 52 × 46. A 30 × 30 icon, centred. The count "×N" sits at the bottom right: Cormorant Bold 13, white. Key badge at (85, 93) with "Q" |
+| Skill slots 1–4 | x 144, 220, 296, 372; y 38; 64 × 56 each |
+| Centre diamond | (448, 62) 16 × 16 |
+| Skill slots 5–8 | x 476, 552, 628, 704; y 38 |
+| F, assist slot | (790, 43) 52 × 46. It shows the companion's portrait and the three D525 states: ready, active with the pulse, cooldown |
+| Curls | Left at (2, 48), 44 × 44. Right mirrored, with its right edge at x 910 |
+
+**Inside each skill slot:**
+- **Icon:** 28 × 28 at (+18, +14). The D550 painted icon once it exists; until then, today's icon.
+- **SP cost gem:** at (+50, −6), with the cost: Cormorant Bold 13, white.
+- **Key badge:** at (+21, +55), with the key: Cormorant Bold 14, `#0B0B10`.
+- **Cooldown:** `cooldown.svg` over the slot, with the seconds centred: Cormorant Bold 22, white.
+- **Ready:** `slot_ready.svg` plus the gold glow.
+- **Empty slot:** the hexagon with nothing in it.
+
+**Keys:**
+- Keyboard: 1–8.
+- Gamepad: extend today's pad scheme to 8. D549 suggests two sets of four, behind LT and RT.
+- The badges show the pad glyphs while a pad is in use, as the current hotbar does.
+
+**Behaviour:** everything `skill_hotbar.gd` does today stays. `SkillManager.SLOT_COUNT` goes from 4 to 8.
+
+**Potion:** the D538 quick slot moves here, out of the hero panel.
