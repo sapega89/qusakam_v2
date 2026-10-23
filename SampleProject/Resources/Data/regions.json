@@ -1,0 +1,7 @@
+{
+	"_comment": "D492: which region each room belongs to (D487 maps are per region). Coming back into a region the hero has left brings its ordinary enemies back.",
+	"prologue": ["Canyon", "Village", "ElderHouse"],
+	"desert_road": ["DesertRoad"],
+	"city": ["CityGates", "City", "MayorHall"],
+	"laboratory": ["LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
+}

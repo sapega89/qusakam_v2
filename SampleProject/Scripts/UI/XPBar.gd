@@ -41,7 +41,8 @@ func _update_display() -> void:
 	progress_bar.value = xp_percentage * 100.0
 
 	# Update XP label (shows current/required XP)
-	xp_label.text = tr("%d / %d XP") % [xp_manager.current_xp, xp_manager.xp_for_next_level]
+	# D488: на найвищому рівні — MAX замість чисел.
+	xp_label.text = tr("MAX") if xp_manager.is_max_level() else tr("%d / %d XP") % [xp_manager.current_xp, xp_manager.xp_for_next_level]
 
 	# Update level label
 	level_label.text = tr("Level %d") % xp_manager.current_level

@@ -186,7 +186,9 @@ func refresh() -> void:
 		_set_row("SP", _skill_manager.get_current_sp(), _skill_manager.get_max_sp())
 	else:
 		_set_row_unknown("SP")
-	if _xp_manager:
+	if _xp_manager and _xp_manager.is_max_level():
+		_set_row_max("XP")
+	elif _xp_manager:
 		_set_row("XP", _xp_manager.current_xp, _xp_manager.xp_for_next_level)
 	else:
 		_set_row_unknown("XP")
@@ -217,6 +219,18 @@ func _set_row(id: String, current: int, maximum: int) -> void:
 	bar.max_value = maxf(1.0, float(maximum))
 	bar.value = float(clampi(current, 0, maxi(maximum, 0)))
 	value.text = "%s / %s" % [_thousands(current), _thousands(maximum)]
+
+
+## D488: найвищий рівень — смуга повна, замість чисел MAX.
+func _set_row_max(id: String) -> void:
+	var row: Control = _rows_by_id.get(id)
+	if row == null:
+		return
+	var bar: ProgressBar = row.get_node(^"Bar")
+	var value: Label = row.get_node(^"Value")
+	bar.max_value = 1.0
+	bar.value = 1.0
+	value.text = tr("MAX")
 
 
 func _set_row_unknown(id: String) -> void:
