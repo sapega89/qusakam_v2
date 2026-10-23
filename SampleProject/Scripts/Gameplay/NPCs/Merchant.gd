@@ -3,6 +3,9 @@ extends NpcBase
 # 🛒 Merchant — NPC-торговець. Figma npc-menu-merchant 164:1302: Talk / Quest / Buy.
 # Quest приховано — квестовий рушій неактивний (D56). Спільна логіка меню — NpcBase.
 
+## Сцена магазину; SceneWarmer.gd вантажить її у фоні після старту гри (performance_plan, slice 5).
+const SHOP_SCENE := "res://SampleProject/Scenes/Shop/shop_menu.tscn"
+
 var is_shop_open = false
 var shop_menu_instance: Control = null
 var shop_canvas_layer: CanvasLayer = null
@@ -42,7 +45,7 @@ func open_shop():
 		close_shop()
 		return
 
-	var shop_ui_scene = load("res://SampleProject/Scenes/Shop/shop_menu.tscn")
+	var shop_ui_scene = load(SHOP_SCENE)
 	if not shop_ui_scene:
 		push_error("❌ Merchant: ShopMenu scene not found!")
 		return

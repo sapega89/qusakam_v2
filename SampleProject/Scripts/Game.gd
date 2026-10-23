@@ -5,6 +5,7 @@ class_name Game
 const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/SaveManager.gd")
 const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
 const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreloader.gd")
+const SceneWarmer := preload("res://SampleProject/Scripts/Gameplay/SceneWarmer.gd")
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
 const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
 ## D492: у room_state кімнати — {ключ бою: регіон} її звичайних боїв, тих, що повертаються.
@@ -17,6 +18,8 @@ signal room_change_finished
 
 ## Фонове завантаження кімнат (RoomPreloader.gd).
 var room_preloader: RoomPreloader
+## Сцени першого вжитку, що гріються у фоні після старту (SceneWarmer.gd, slice 5).
+var scene_warmer: SceneWarmer
 ## Від початку затемнення до кінця появи (D434). Нова зміна кімнати чекає, поки скінчиться ця.
 var room_changing: bool = false
 
@@ -222,6 +225,8 @@ func _initialize_save_and_room() -> void:
 	# Сусідів і цілі дверей вантажить у фоні з першої ж кімнати (performance_plan, slice 2–3).
 	room_preloader = RoomPreloader.new(self)
 	modules.append(room_preloader)
+	scene_warmer = SceneWarmer.new(self, room_preloader)
+	modules.append(scene_warmer)
 	# Без старої мапи load_room() синхронний (перша кімната; з меню — під чорним екраном, D434).
 	load_room(scene_path)
 

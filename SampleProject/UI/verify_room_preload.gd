@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Самоперевірка performance_plan, slice 2–3 і D434: сусідні кімнати й цілі дверей вантажаться у фоні, а зміна кімнати
+## Самоперевірка performance_plan, slice 2–3, 5 і D434: сусідні кімнати й цілі дверей вантажаться у фоні, а зміна кімнати
 ## гасить екран, міняє кімнату під чорним і світлішає — без жодного завислого кадру.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_room_preload.gd
 
@@ -26,6 +26,16 @@ func _initialize() -> void:
 	ck(game.room_preloader.is_held(MAPS % "Canyon"), "the current room (Canyon) is held")
 	ck(not ResourceLoader.has_cached(MAPS % "LabBoss"), "a non-neighbour (LabBoss) is not loaded")
 
+	print("[1b] Slice 5: first-use scenes warm in the background after the start and stay held")
+	var warm: Array[String] = game.scene_warmer.paths()
+	ck(warm.has("res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn") and warm.has("res://SampleProject/Scenes/Shop/shop_menu.tscn"),
+			"the list has the enemy scenes and the shop (%d paths)" % warm.size())
+	ck(await _all_held_within(warm, 5.0), "all %d are held and cached within 5 s of the start" % warm.size())
+	root.get_node("EventBus").skill_unlocked.emit("radiant_smite")
+	var skill_paths: Array[String] = ["res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
+			"res://SampleProject/Assets/FX/Skills/radiant_smite/release_3.png"]
+	ck(await _all_held_within(skill_paths, 5.0), "a skill learned in play warms its cast effect and frames")
+
 	print("[2] Walking east with a real D hold: fade to black, swap under black, light again (D434)")
 	var walk: Dictionary = await _walk_east()
 	ck(_in("Village"), "the room is Village (%s, %s)" % [game.map.scene_file_path.get_file(), walk["how"]])
@@ -35,6 +45,7 @@ func _initialize() -> void:
 	ck(not root.has_node(^"ScreenFade") and not paused, "light again and the game runs")
 	ck(game.room_preloader.is_held(MAPS % "Canyon"), "Canyon is still held (neighbour of Village)")
 	ck(not ResourceLoader.has_cached(MAPS % "LabBoss"), "LabBoss is still not loaded")
+	ck(game.room_preloader.is_held("res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn"), "a room change keeps the warmed scenes held")
 
 	print("[3] Slice 3: a door's target is held; the door fades like a walk")
 	ck(await _held_within(MAPS % "ElderHouse", 3.0), "ElderHouse (the Village door's target) is held")
@@ -65,6 +76,15 @@ func _held_within(path: String, secs: float) -> bool:
 	var t0: int = Time.get_ticks_msec()
 	while Time.get_ticks_msec() - t0 < secs * 1000.0:
 		if game.room_preloader.is_held(path):
+			return true
+		await process_frame
+	return false
+
+
+func _all_held_within(paths: Array[String], secs: float) -> bool:
+	var t0: int = Time.get_ticks_msec()
+	while Time.get_ticks_msec() - t0 < secs * 1000.0:
+		if paths.all(func(p: String) -> bool: return game.room_preloader.is_held(p) and ResourceLoader.has_cached(p)):
 			return true
 		await process_frame
 	return false

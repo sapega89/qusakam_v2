@@ -9,6 +9,8 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysModule.gd"
 var held: Dictionary = {}
 ## Шляхи, чиє фонове завантаження ще йде.
 var _pending: Dictionary = {}
+## Шляхи, які тримаються до кінця гри, а не до зміни кімнати (SceneWarmer.gd, slice 5).
+var pinned: Dictionary = {}
 
 
 func _initialize() -> void:
@@ -47,6 +49,17 @@ func wait(path: String) -> PackedScene:
 	return held[path]
 
 
+## Завантажити у фоні й тримати до кінця гри — не лише кімнату, будь-який ресурс (slice 5).
+func pin(path: String) -> void:
+	pinned[path] = true
+	request(path)
+
+
+## Чи йде ще якесь фонове завантаження (тести чекають, поки стихне, перш ніж вийти).
+func busy() -> bool:
+	return not _pending.is_empty()
+
+
 func is_held(path: String) -> bool:
 	return held.has(path)
 
@@ -71,7 +84,7 @@ func _on_room_loaded() -> void:
 		if node is RoomDoor:
 			wanted.append(scene_path((node as RoomDoor).target_room))
 	for path: String in held.keys():
-		if not path in wanted:
+		if not path in wanted and not pinned.has(path):
 			held.erase(path)
 	for path: String in wanted:
 		request(path)
