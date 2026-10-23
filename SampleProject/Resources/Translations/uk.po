@@ -2675,9 +2675,6 @@ msgstr "Зілля ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Випийте його в грі зі швидкого слота (%s)"
 
-msgid "ST"
-msgstr "ВТ"
-
 msgid "MAX"
 msgstr "МАКС"
 

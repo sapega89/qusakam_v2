@@ -107,10 +107,15 @@ func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bo
 			AudioManager.play(&"enemy_grunt" if alive else &"enemy_death", _enemy_pitch(target))
 
 
+## Звук влучання за силою удару (VFXHooks.hit_strength, D581): легкий, фінішер / відкидання, важкий, рипост.
+## Блок і парирування мають свої (block, parry) — _ready, _on_parried.
+const HIT_SOUNDS: Array[StringName] = [&"hit", &"hit_heavy", &"hit_strike", &"hit_riposte"]
+
+
 ## damage_dealt приходить лише з реального ушкодження (B60) — промах звуку влучання не дає (свист замаху — так).
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	if VFXHooks.is_hero_side_hit(source, target):
-		AudioManager.play(&"hit_heavy" if VFXHooks.hit_strength(source) > 0 else &"hit")
+		AudioManager.play(HIT_SOUNDS[VFXHooks.hit_strength(source)])
 		# 4b: шар матеріалу під ударом — панцир (tank, front_damage < 1) дзвенить, решта — плоть
 		AudioManager.play(&"hit_armour" if target.front_damage < 1.0 else &"hit_flesh")
 

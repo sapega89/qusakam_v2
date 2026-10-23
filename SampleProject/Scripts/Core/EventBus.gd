@@ -189,9 +189,6 @@ signal player_heavy_windup(player: Node, direction: int)
 signal player_bow_drawn(player: Node)
 @warning_ignore("unused_signal")
 signal player_shot(player: Node, charged: bool)
-## Витривалість героя змінилась (D504, PlayerStamina): панель героя в HUD.
-@warning_ignore("unused_signal")
-signal player_stamina_changed(current: int, maximum: int)
 @warning_ignore("unused_signal")
 signal skill_interrupted(skill_id: String)
 ## Почався замах касту навички (D271) — звук замаху (D276).

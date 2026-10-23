@@ -201,6 +201,8 @@ func _run_lessons(device: String, wrong_moves: bool = true) -> void:
 
 	await _wait_lesson("lesson_heavy")
 	if wrong_moves:
+		# Після парирування відкрите вікно рипосту (D575): легкий удар у ньому — рипост важким кадром, тож чекаємо
+		await create_timer(hero.combat.RIPOSTE_WINDOW).timeout
 		await _face()
 		await _tap("attack")
 		await create_timer(0.8).timeout

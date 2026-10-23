@@ -4,8 +4,7 @@ extends SceneTree
 ##   [1] удар саджає героя з кроком уперед; погляд не змінюється, доки удар не вийшов (B136);
 ##   [2] перекат і блок зривають удар лише на відновленні, замах важкого — ніколи; недобуте відновлення важкого
 ##       лишається кулдауном (B-9); буфер натискань 0.2 с крізь збій, буфер стрибка, стрибок зриває відновлення;
-##   [3] витривалість: витрата на удари, перекат, блок; відновлення після паузи; порожня — без перекату, слабкий блок;
-##       рядок ST у панелі героя під SP;
+##   [3] витривалості немає (D551): ні вузла, ні рядка ST; перекати й блок не вичерпуються;
 ##   [4] зілля зі швидкого слота: одна кнопка, у реальному часі, герой стоїть; удар до ковтка — зілля пропало;
 ##   [5] над звичайним ворогом смужки HP немає (D502).
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
@@ -18,7 +17,6 @@ var fails: Array[String] = []
 var game: Node
 var hero: Node
 var combat: Node
-var stamina: Node
 var bandit: Node
 var hits: Array = []
 var floor_y: float
@@ -71,7 +69,6 @@ func _initialize() -> void:
 	await create_timer(1.5).timeout
 	hero = game.player
 	combat = hero.combat
-	stamina = hero.stamina
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group(&"enemies"):
 			node.queue_free()
@@ -93,7 +90,7 @@ func _initialize() -> void:
 
 	await _commitment()
 	await _cancel_rules()
-	await _stamina()
+	await _no_stamina()
 	await _potion(sl)
 	await _no_enemy_bar()
 
@@ -105,7 +102,6 @@ func _hero_at(x: float, y: float = floor_y) -> void:
 	hero.global_position = Vector2(x, y)
 	hero.velocity = Vector2.ZERO
 	hero.mover.last_direction = 1
-	stamina.refill()
 	await physics_frame
 
 
@@ -274,59 +270,37 @@ func _cancel_rules() -> void:
 	await _until_ready()
 
 
-## [3] Витривалість (D504, Salt and Sanctuary).
-func _stamina() -> void:
-	print("[3] Stamina: spent by attacks, rolls and blocked hits; regenerates after a pause (D504)")
-	await _hero_at(arena_x)
-	var full: float = stamina.MAX
-	combat.perform_attack(1)
-	await physics_frame
-	ck(is_equal_approx(stamina.current, full - stamina.COST_LIGHT), "a light swing costs %d (%.0f)" % [stamina.COST_LIGHT, stamina.current])
-	await _until_ready()
-	stamina.refill()
-	combat.heavy_attack(1)
-	await physics_frame
-	ck(is_equal_approx(stamina.current, full - stamina.COST_HEAVY), "a heavy costs %d (%.0f)" % [stamina.COST_HEAVY, stamina.current])
-	await _until_ready()
-	stamina.refill()
-	await _tap(&"dodge")
-	ck(is_equal_approx(stamina.current, full - stamina.COST_ROLL), "a roll costs %d (%.0f)" % [stamina.COST_ROLL, stamina.current])
-	while hero.mover.is_rolling():
-		await physics_frame
-	var after_roll: float = stamina.current
-	await create_timer(stamina.REGEN_DELAY * 0.6).timeout
-	ck(is_equal_approx(stamina.current, after_roll), "no regen right after acting (%.0f)" % stamina.current)
-	await create_timer(stamina.REGEN_DELAY * 0.4 + 0.25).timeout
-	ck(stamina.current > after_roll, "it regenerates once he stops (%.0f → %.0f)" % [after_roll, stamina.current])
-	await create_timer(1.0).timeout
-	ck(is_equal_approx(stamina.current, full), "and fills up (%.0f)" % stamina.current)
-	var bar: ProgressBar = get_first_node_in_group(&"player_vitals_panel")._rows_by_id["ST"].get_node(^"Bar")
+## [3] Витривалості немає (D551; скасовує D537).
+func _no_stamina() -> void:
+	print("[3] No stamina: no node, no HUD row; rolls and blocks never run dry (D551)")
+	ck(not hero.has_node(^"PlayerStamina") and not ("stamina" in hero), "the hero has no PlayerStamina node or field")
+	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Player/Components/PlayerStamina.gd"), "PlayerStamina.gd is gone")
+	ck(not root.get_node("EventBus").has_signal(&"player_stamina_changed"), "EventBus has no player_stamina_changed")
 	var rows: Array = get_first_node_in_group(&"player_vitals_panel")._rows.get_children().map(func(r: Node) -> String: return r.name)
-	ck(rows.find("ST") == rows.find("SP") + 1, "the hero panel shows ST right under SP (%s)" % [rows])
-	ck(is_equal_approx(bar.value, full), "the ST bar follows (%.0f)" % bar.value)
-	stamina.spend(stamina.COST_LIGHT)
-	await physics_frame
-	ck(is_equal_approx(bar.value, full - stamina.COST_LIGHT), "the ST bar drops with a spend (%.0f)" % bar.value)
-	await _until_ready()
-	# Порожня — без перекату
-	stamina.spend(full)
-	await _tap(&"dodge")
-	for i in 4: await physics_frame
-	ck(not hero.mover.is_rolling(), "an empty bar: no roll")
-	await _until_ready()
-	# Блок: повний — без шкоди, порожній — слабкий
+	ck(rows == ["HP", "SP", "XP"], "the hero panel shows HP, SP, XP and no ST (%s)" % [rows])
+	# Десять перекатів поспіль — кожен починається (раніше п'ятий уже не мав витривалості)
+	await _hero_at(arena_x)
+	var rolls := 0
+	for i in 10:
+		await _tap(&"dodge")
+		for f in 3: await physics_frame
+		if hero.mover.is_rolling():
+			rolls += 1
+		while hero.mover.is_rolling():
+			await physics_frame
+		await _until_ready()
+		for f in 30: await physics_frame
+	ck(rolls == 10, "ten rolls in a row all start (%d)" % rolls)
+	# Блок тримає будь-скільки звичайних ударів: без шкоди й без збою
 	await _hero_at_bandit()
 	_press(&"block")
 	await create_timer(0.4).timeout  # мимо вікна парирування
 	var hp: int = hero.current_health
-	hero.take_damage(20, bandit)
-	ck(hero.current_health == hp and is_equal_approx(stamina.current, full - stamina.COST_BLOCK),
-			"a blocked hit costs %d stamina and no HP (HP %d, ST %.0f)" % [stamina.COST_BLOCK, hp - hero.current_health, stamina.current])
-	stamina.spend(full)
-	hero.take_damage(20, bandit)
-	ck(hero.current_health < hp and combat.is_staggered(), "with an empty bar the block is weak: damage gets through and he staggers (−%d)" % (hp - hero.current_health))
+	for i in 8:
+		hero.take_damage(20, bandit)
+	ck(hero.current_health == hp and not combat.is_staggered(), "eight blocked hits in a row: no HP lost, no stagger (−%d)" % (hp - hero.current_health))
 	_press(&"block", false)
-	await create_timer(0.6).timeout
+	await create_timer(0.3).timeout
 	hero.current_health = hero.Max_Health
 	await _until_ready()
 

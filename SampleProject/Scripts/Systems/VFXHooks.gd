@@ -25,19 +25,26 @@ const HERO_CUT_TINT := Color(1.0, 0.45, 0.4)
 ## Відчуття удару (4b; Sapega «мало відчуття удару», «і відчуття, що тебе вдарили»). Лише справжнє влучання —
 ## промах нічого не дає. Без спалахів екрана й круглих вибухів (D268).
 ## hitstop — завмирання, с; kick — поштовх камери в бік удару, px; cut — розмір розтину (D273); flinch — на скільки
-## px здригається тіло ворога; rumble — вібрація геймпада (слабкий мотор, сильний, с).
-## Удар героя: 0 легкий, 1 фінішер серії / зброя з відкиданням, 2 важкий.
+## px здригається тіло ворога; rumble — вібрація геймпада (слабкий мотор, сильний, с); shake — тряска камери (px, с;
+## 0 — немає, D581: лише важкий удар і рипост героя та кожен удар по ньому).
+## Удар героя (hit_strength): 0 легкий, 1 фінішер серії / зброя з відкиданням, 2 важкий, 3 рипост (D575).
+## Завмирання росте з силою удару: легкий < важкий < рипост < удар боса по героєві (D581; числа попередні).
 const HIT_FEEL: Array[Dictionary] = [
-	{hitstop = 0.055, kick = 1.5, cut = 1.0, flinch = 3.0, rumble = Vector3(0.3, 0.0, 0.08)},
-	{hitstop = 0.08, kick = 3.0, cut = 1.25, flinch = 5.0, rumble = Vector3(0.45, 0.3, 0.12)},
-	{hitstop = 0.11, kick = 5.0, cut = 1.5, flinch = 7.0, rumble = Vector3(0.6, 0.7, 0.18)},
+	{hitstop = 0.055, kick = 1.5, cut = 1.0, flinch = 3.0, rumble = Vector3(0.3, 0.0, 0.08), shake = Vector2.ZERO},
+	{hitstop = 0.08, kick = 3.0, cut = 1.25, flinch = 5.0, rumble = Vector3(0.45, 0.3, 0.12), shake = Vector2.ZERO},
+	{hitstop = 0.11, kick = 5.0, cut = 1.5, flinch = 7.0, rumble = Vector3(0.6, 0.7, 0.18), shake = Vector2(3.0, 0.15)},
+	{hitstop = 0.15, kick = 6.0, cut = 1.7, flinch = 9.0, rumble = Vector3(0.8, 0.9, 0.24), shake = Vector2(5.0, 0.2)},
 ]
-## Удар по героєві: 0 звичайний, 1 важкий (tank, фінішер серії, бос — is_big_hurt). vignette — сила червоних країв,
-## fade — за скільки вони гаснуть.
+## Удар по героєві (hurt_tier): 0 звичайний, 1 важкий (tank, фінішер серії, мінібос — пробив би блок), 2 удар боса.
+## vignette — сила червоних країв, fade — за скільки вони гаснуть.
 const HURT_FEEL: Array[Dictionary] = [
-	{hitstop = 0.09, kick = 4.0, cut = 1.3, vignette = 0.6, fade = 0.4, rumble = Vector3(0.6, 0.8, 0.22)},
-	{hitstop = 0.14, kick = 7.0, cut = 1.6, vignette = 1.0, fade = 0.6, rumble = Vector3(1.0, 1.0, 0.35)},
+	{hitstop = 0.09, kick = 4.0, cut = 1.3, vignette = 0.6, fade = 0.4, rumble = Vector3(0.6, 0.8, 0.22), shake = Vector2(3.0, 0.15)},
+	{hitstop = 0.14, kick = 7.0, cut = 1.6, vignette = 1.0, fade = 0.6, rumble = Vector3(1.0, 1.0, 0.35), shake = Vector2(5.0, 0.25)},
+	{hitstop = 0.18, kick = 8.0, cut = 1.8, vignette = 1.0, fade = 0.7, rumble = Vector3(1.0, 1.0, 0.4), shake = Vector2(7.0, 0.3)},
 ]
+## Білий спалах героя від удару по ньому (D581): параметр flash шейдера кадрів героя (weapon_palette) з 1 до 0
+## за HURT_FLASH_TIME реальних с — грає й під час завмирання.
+const HURT_FLASH_TIME := 0.12
 const PARRY_HITSTOP := 0.07
 ## Група стріл героя (Arrow.HERO_ARROWS): ім'я тут, а не клас — цей скрипт вантажиться раніше за class_name-класи.
 const HERO_ARROWS := &"hero_arrows"
@@ -48,6 +55,9 @@ const ULTIMATE_SHAKE := 9.0
 const ULTIMATE_SHAKE_TIME := 0.5
 
 var hurt_vignette: CanvasLayer
+
+## Тряска камери почалась (strength px, seconds с); emitted навіть за Screen Shake Off — тоді камера стоїть.
+signal shake_started(strength: float, seconds: float)
 
 
 func _init() -> void:
@@ -101,14 +111,31 @@ func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bo
 		return
 	# Без джерела (пастка, падіння) — розтин по центру тіла
 	var side: float = 0.0 if source == null else signf(source.global_position.x - target.global_position.x)
-	var feel: Dictionary = HURT_FEEL[1 if is_big_hurt(source) else 0]
+	var feel: Dictionary = HURT_FEEL[hurt_tier(source)]
 	var impact := _spawn_impact(target, side)
 	impact.modulate = HERO_CUT_TINT
 	impact.scale = Vector2.ONE * feel.cut
 	ServiceLocator.get_time_manager().hitstop(feel.hitstop)
 	_kick_camera(Vector2(-side, 0.0), feel.kick)
+	shake_camera(feel.shake.x, feel.shake.y)
 	hurt_vignette.pulse(feel.vignette, feel.fade)
 	rumble(feel.rumble)
+	flash_hero(target)
+
+
+## Білий спалах героя (D581): кадри героя на мить стають білими й гаснуть за HURT_FLASH_TIME.
+func flash_hero(hero: Node) -> void:
+	var material: ShaderMaterial = hero.get_node(^"Sprite2D").material
+	material.set_shader_parameter(&"flash", 1.0)
+	hero.create_tween().set_ignore_time_scale().tween_method(
+			func(v: float) -> void: material.set_shader_parameter(&"flash", v), 1.0, 0.0, HURT_FLASH_TIME)
+
+
+## Сила удару по героєві: 2 — бос, 1 — важкий (is_big_hurt), 0 — звичайний.
+static func hurt_tier(source: Node) -> int:
+	if source != null and source.is_in_group(GameGroups.BOSS):
+		return 2
+	return 1 if is_big_hurt(source) else 0
 
 
 ## Важкий удар по героєві: той, що пробив би блок (tank, фінішер серії, D264), або удар боса.
@@ -141,17 +168,19 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	ServiceLocator.get_time_manager().hitstop(feel.hitstop)
 	_kick_camera(Vector2(-side, 0.0), feel.kick)
 	target.enemy_view.flinch(side, feel.flinch)
+	if source.is_in_group(GameGroups.PLAYER):
+		shake_camera(feel.shake.x, feel.shake.y)  # стріла — без тряски: це не удар героя (D581)
 	if source.is_in_group(GameGroups.PLAYER) or source.is_in_group(HERO_ARROWS):
 		rumble(feel.rumble)
 
 
-## Сила удару: 2 — важкий удар героя, 1 — удар із відкиданням (фінішер серії, булава D203, компаньйон D209), 0 — легкий.
-## Стріла героя (D381) несе свою: швидка 0, заряджена 2.
+## Сила удару: 3 — рипост (D575), 2 — важкий удар героя, 1 — удар із відкиданням (фінішер серії, булава D203,
+## компаньйон D209), 0 — легкий. Стріла героя (D381) несе свою: швидка 0, заряджена 2.
 static func hit_strength(source: Node) -> int:
 	if source.is_in_group(HERO_ARROWS):
 		return source.strength
 	if source.is_in_group(GameGroups.PLAYER) and source.combat.state == source.combat.State.HEAVY_STRIKE:
-		return 2
+		return 3 if source.combat.riposting else 2
 	return 1 if is_heavy_hit(source) else 0
 
 
@@ -195,7 +224,11 @@ func _on_skill_used(skill_id: String) -> void:
 
 
 ## Тряска камери на [param strength] px, що згасає за [param seconds] (реальних с). Screen Shake Off — немає (D426).
+## Кожна тряска — сигнал shake_started (перевірка verify_hit_feel), навіть коли її вимкнено.
 func shake_camera(strength: float, seconds: float) -> void:
+	if strength <= 0.0:
+		return
+	shake_started.emit(strength, seconds)
 	if not SaveSystem.settings_module.screen_shake_enabled():
 		return
 	var camera := get_viewport().get_camera_2d()
