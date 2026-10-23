@@ -141,3 +141,40 @@ The rules come from D550, D599, D601 and D602:
 | Cursed | The small curse rune |
 | Bleeding | Two drops of blood |
 | Riposte window | A crossed blade with a gold spark |
+
+## The asset kit and the order of work
+
+Sapega on 2026-10-23: «і таких у нас 4 класи; всі треба генерувати в одному стилі; винеси схожі іконки, намалюй для них спільний елемент, затверди його як асет і так далі».
+
+### Bases
+
+| Asset | Used in |
+|---|---|
+| gloved hand: open palm, fist, praying, grasping, raised | Healing Palm, Mending Hands, Devotion, Blood Pact, Withering Grasp, Unbroken Vow, Balanced Strike, Ground Slam, Stone Palm, Mirror Stance |
+| shield, plus a cracked shield | Shield Block, Last Stand, Bulwark, Relentless, Shield Bash, Shield Charge, Shield of Faith, Soul Harvest, Stone Palm |
+| sword | Weapon Training, Fire Strike, Riposte Instinct, Dark Riposte, Dread Aura, Keen Edge, Blood Price, Counter Stance |
+| hammer / mace | Electric Strike, Heavy Hand, Heaven's Anvil |
+| heart, plus a cracked heart | Toughness, Merciful Light, Aura of Valour, Desperate Hunger, Iron Body |
+| breastplate | Fortitude, Hoarded Ward, Iron Body |
+| faceless figure: stand, dash, leap with a knee, spin, shout, guard, sit | Aura of Resolve, Consecrated Ground, Dervish Whirl, Dash Strike, Battle Cry, Counter Stance, Aegis, Rally, Wind Step, Centered Breath, Second Wind |
+
+### Effects
+
+| Asset | Used in |
+|---|---|
+| holy light: beam, sunburst, spear | Radiant Smite, Skyfall Blessing, Judgement of the Sky, Lightspear, Holy Javelin, Radiant Flare, Hallowed Circle |
+| fire, dark fire | Fire Strike, Searing Hex, Withering Grasp, Eclipse Cleave, Night Reaper, Hellfire Stomp, Cruel Momentum, Embers Within, burning |
+| lightning | Electric Strike |
+| blood drop | Blood Pact, Desperate Hunger, Crimson Thirst, Blood Rush, Blood Price, bleeding |
+| sand / wind whirl | Dervish Whirl, Sand Stance, Dervish Rhythm, Unshakable, Dune Quake, Sand Veil, Light Feet, Second Wind |
+| impact flash with stars | Balanced Strike, Shield Bash, Radiant Flare, stunned |
+| parry spark | Riposte Instinct, Zealous Answer, Dark Riposte, riposte window |
+| aura ring | Aura of Resolve, Aura of Valour, Dread Aura, Embers Within |
+| curse rune | Searing Hex, Hoarded Ward, cursed |
+
+### Order
+
+1. Each asset gets 3 candidates in the approved pixel style. Each is drawn **once**, in ivory with gold, on transparent, 48×48 (`comfy_icons.py --assets`).
+2. Sapega picks one per asset. The pick is copied to `SampleProject/Assets/UI/Icons/kit/<asset>.png`, and from then on it is an asset.
+3. Colours are swapped in code, not redrawn. The gold in the three-colour palette maps to steel-blue for passives and to crimson for ultimates (D602).
+4. Each skill has a recipe in `Resources/Data/skill_icons.json`: the base, the effect, their offsets and scales. A composer builds every icon and colour variant from the kit, so the same shield is the same everywhere.
