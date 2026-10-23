@@ -210,6 +210,14 @@ the history, this note keeps only what is open.
 - **Severity:** blocker
 - **Found:** 2026-10-23, while wiring the Cthulhu fly (D655)
 
+### B144 — the game crashes going down from the Canyon
+- **Where:** `Maps/Canyon.tscn`, the way down; round 12 build (difficulty, lab-boss, mayor-boss, fliers merged)
+- **Expected:** the hero walks down out of the Canyon
+- **Got:** the exported Windows build closes (crash); the log was rotated away (5 files kept, now 50)
+- **Evidence:** Sapega's playtest, 2026-10-23 («гра вилетіла… я спускався з каньйону»)
+- **Severity:** blocker
+- **Found:** 2026-10-23, playtest of the round 12 build
+
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**
