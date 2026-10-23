@@ -10,7 +10,7 @@ tags: [cloud, routines, progression, xp, save, enemies]
 - **D447 behaviour done:** using a save point, the hero sits in the `Meditate` pose, and the save screen opens 0.8 s later. Closing the screen stands him up. **Not done:** the meditation-spot art. The blue "S" circle stays until the art arrives.
 - **D492 done, except the new spawn groups:** ordinary fights (the 3 Desert Road sections and the 3 Laboratory corridors, `RoomEnemySpawner.respawns`) come back on meditation or when the hero re-enters their region. Story fights and bosses never come back. The XP curve is now a per-level table: straight through the Laboratory ends at **level 16**, and two more rounds of the corridors reach **20**. The "standing group in every room" part of D492 is **not built**, because it was not in this task.
 - **D-IDs for the register:** D523–D526 (below). **B rows fixed:** none.
-- **Full suite:** _see the last section_.
+- **Full suite:** SUITE: ALL PASS (99/99, second run after fixing the 3 failures this branch caused in the first run).
 
 ## D-ID text (for `figma_decision_register.md`)
 
@@ -42,4 +42,4 @@ tags: [cloud, routines, progression, xp, save, enemies]
 `design/shots/progression_sheet.png` (from `capture_progression.gd`): left, the hero at the shut door, the right guard's bubble, and the oath-keepers objective; right, the hero meditating at the City save point (old circle art).
 
 ## Full suite
-_pending_
+Run 1: 96 PASS, 3 FAIL (verify_lab_route, verify_save_load, verify_save_load_room), all caused by this branch and fixed (see Tests). Run 2: `SUITE: ALL PASS`, 99 tests.
