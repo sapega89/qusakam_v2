@@ -55,16 +55,18 @@ SKILLS = [
     ),
 ]
 # Sapega 2026-10-23: «глянець і рамку прибери, вони зайві» — рамку дає слот панелі; спершу еталон без рамки, з нього решта
+# Sapega 2026-10-23: «немає ніяких глянців, стиль панелі — камінь, і все» (дерево вмінь Diablo II) — матово, приглушено
 KEEP_HEX = (
-    "Repaint this icon without its gold frame and without the glossy shine: keep only the dark rune and its violet-black "
-    "fire, centred, on a plain dark purple background that fills the whole square. Remove the clawed hand and its sleeve "
-    "completely. A matte hand-painted look with soft shading. No frame, no border, no text."
+    "Repaint this icon in the style of Diablo II skill icons: no gold frame, no shine, no glow. A pale, desaturated "
+    "violet rune with dim dark fire around it, painted on a dark weathered stone square that fills the whole icon, with "
+    "gritty texture and a soft dark vignette. Remove the clawed hand and its sleeve completely. Muted colours, matte, "
+    "simple and readable. No frame, no border, no text."
 )
 RESTYLE = (
-    "Keep exactly this icon's painting style: the matte hand-painted look, the soft shading, the plain dark background "
-    "that fills the whole square, no frame and no border. Replace the rune and its fire with {subject}, and change the "
-    "background tint and the main colour to {glow}. One clear subject, centred and readable at a glance. No weapons, no "
-    "people, no faces (a lone hand only where the skill is a touch), no rune, no text."
+    "Keep exactly this icon's style: the Diablo II look, the dark weathered stone square filling the whole icon, the "
+    "gritty texture, the soft vignette, muted desaturated colours, matte with no shine and no glow, no frame. Replace the "
+    "rune and its fire with {subject}, in a pale {glow} tint. One clear subject, centred and readable at a glance. No "
+    "weapons, no people, no faces (a lone hand only where the skill is a touch), no rune, no text."
 )
 
 
