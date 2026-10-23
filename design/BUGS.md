@@ -64,6 +64,15 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B124 — The sword changes hands between running and attacking
+- **Where:** `SampleProject/Sprites/Player/Weapons/sword/` (`Run/1–7` against `Attack1–3`, `Heavy`, and the other folders); `Player.tscn` → library `sword`.
+- **Expected:** the same hand in every sword frame. The sword README says "held in the near hand"; keep that, unless the majority of frames is the other way.
+- **Got:** in Sapega's playtest the attack frames hold the sword in one hand ("in the right hand") and the run frames in the other ("in the left"). Qwen-Image-Edit did not keep the hand from frame to frame.
+- **Fix:** check every sword folder (`CombatIdle`, `Run`, `Air`, `Attack1–3`, `Heavy`, `Block`, `Hurt`) and regenerate the frames on the wrong hand with `comfy_sprite.py hero_weapon_sword` (name the hand in the prompt), then run `weapon_key_fixups.py`. This goes in the ComfyUI art batch with B110. Check the other weapons' frames for the same drift.
+- **Evidence:** Sapega's two screenshots (the chat, 2026-10-23).
+- **Severity:** visual (art).
+- **Found:** 2026-10-23, Sapega's playtest.
+
 ### B122 — The speaker's portrait sticks out below the dialogue box
 - **Where:** `SampleProject/Scenes/UI/dialogue_box.tscn` (`DialogueBox` 938 × 178 from its offsets; `Margin/Rows`: `NameMargin` row (B112), then `RowMiddle` with the 160-px `PortraitBackground`); `Scripts/UI/GameDialogueBox.gd` (`set_name_text` / `set_portrait_image` toggle the rows).
 - **Expected:** the box always holds the name row, the text and the portrait (it grows upward, `grow_vertical` = begin).
