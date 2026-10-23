@@ -1,0 +1,216 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://ckkogqiocc0pv" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd" id="2_boss"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="3_stats"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Bosses/lab_boss/sheet.png" id="4_sheet"]
+
+[sub_resource type="Resource" id="Stats"]
+script = ExtResource("3_stats")
+enemy_type = "lab_boss"
+speed = 70.0
+base_damage = 180.0
+attack_cooldown = 1.0
+attack_windup = 0.55
+attack_active_time = 0.2
+super_armor = true
+poise = 16
+stagger_time = 0.6
+combo_hits = 2
+combo_chance = 1.0
+detection_range = 600.0
+attack_range = 200.0
+chase_range = 900.0
+max_health = 6800
+xp_reward = 500
+
+[sub_resource type="RectangleShape2D" id="Shape_body"]
+size = Vector2(56, 100)
+
+[sub_resource type="CircleShape2D" id="Shape_detection"]
+radius = 600.0
+
+[sub_resource type="Animation" id="Anim_idle"]
+resource_name = "idle"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="Animation" id="Anim_walk"]
+resource_name = "walk"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Anim_attack"]
+resource_name = "attack"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [12, 13]
+}
+
+[sub_resource type="Animation" id="Anim_attack_finisher"]
+resource_name = "attack_finisher"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [14, 15]
+}
+
+[sub_resource type="Animation" id="Anim_slam"]
+resource_name = "slam"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [16]
+}
+
+[sub_resource type="Animation" id="Anim_slam_strike"]
+resource_name = "slam_strike"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [17, 18]
+}
+
+[sub_resource type="Animation" id="Anim_drink"]
+resource_name = "drink"
+length = 0.9
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [4, 5]
+}
+
+[sub_resource type="Animation" id="Anim_stagger"]
+resource_name = "stagger"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [20]
+}
+
+[sub_resource type="Animation" id="Anim_death"]
+resource_name = "death"
+length = 0.9
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 0
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [24, 25, 26]
+}
+
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(60, 110)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(64, 104)
+
+[sub_resource type="AnimationLibrary" id="Lib"]
+_data = {
+&"idle": SubResource("Anim_idle"),
+&"walk": SubResource("Anim_walk"),
+&"attack": SubResource("Anim_attack"),
+&"attack_finisher": SubResource("Anim_attack_finisher"),
+&"slam": SubResource("Anim_slam"),
+&"slam_strike": SubResource("Anim_slam_strike"),
+&"drink": SubResource("Anim_drink"),
+&"stagger": SubResource("Anim_stagger"),
+&"death": SubResource("Anim_death")
+}
+
+[node name="Mercenary" instance=ExtResource("1_base")]
+script = ExtResource("2_boss")
+enemy_stats = SubResource("Stats")
+display_name = "The Mercenary [DRAFT]"
+moves = Array[Dictionary]([{"kind": "combo", "max_range": 66.0, "min_range": 0.0, "recovery": 0.6, "tells": ["block", "parry"], "tells_phase2": ["parry", "parry"]}, {"damage": 1.6, "kind": "slam", "max_range": 200.0, "min_range": 0.0, "radius": 200.0, "recovery": 1.0, "tell": "dodge", "windup": 1.1}, {"kind": "drink", "max_range": 200.0, "min_range": 0.0, "time": 1.4}])
+pattern = PackedStringArray("combo", "slam", "drink", "combo", "slam", "combo", "drink")
+pattern_phase2 = PackedStringArray("combo", "slam", "combo", "slam", "drink")
+preferred_range = 60.0
+melee_reach = 60.0
+phase2_windup = 0.8
+phase2_speed = 1.25
+finisher_animation = &"attack_finisher"
+taunts = PackedStringArray("Hic! Hold still, lizard. I get paid by the head. [DRAFT]", "Ha! Look at him dance! [DRAFT]", "One more swig, then I flatten you. [DRAFT]")
+phase2_taunt = "You made me spill it! Now you pay. [DRAFT]"
+
+[node name="CollisionShape2D" parent="."]
+position = Vector2(0, -34)
+shape = SubResource("Shape_body")
+
+[node name="Sprite2D" parent="."]
+offset = Vector2(0, -40)
+metadata/tell_at = Vector2(-26, -44)
+metadata/tell_at_attack_finisher = Vector2(26, -46)
+metadata/tell_at_slam = Vector2(-8, -50)
+texture = ExtResource("4_sheet")
+hframes = 4
+vframes = 7
+
+[node name="AnimationPlayer" parent="."]
+libraries/ = SubResource("Lib")
+metadata/attack_strike_time = 0.35
+
+[node name="CollisionShape2D" parent="dettection"]
+position = Vector2(0, -20)
+shape = SubResource("Shape_detection")
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(30, -50)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -38)
+shape = SubResource("Shape_hurt")

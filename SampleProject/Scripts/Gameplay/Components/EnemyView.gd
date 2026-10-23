@@ -63,8 +63,9 @@ func update_direction(direction: int) -> void:
 	if direction != 0:
 		sprite2d.flip_h = (direction < 0)
 
-func on_attack_started(windup: float) -> void:
-	anim_player.play("attack")
+## [param anim] — поза замаху (бос: друга ланка серії має свою, BossEnemy.finisher_animation).
+func on_attack_started(windup: float, anim: StringName = &"attack") -> void:
+	anim_player.play(anim)
 	anim_player.seek(0.0, true)  # наступний удар серії — поза замаху знову з початку
 	anim_player.speed_scale = anim_player.get_meta(&"attack_strike_time") / windup
 	_offset_to(-facing_direction * WINDUP_LEAN, windup)

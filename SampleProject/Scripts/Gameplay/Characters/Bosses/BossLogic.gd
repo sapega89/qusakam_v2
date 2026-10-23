@@ -8,7 +8,8 @@ extends EnemyLogic
 ##   charge   — ривок на distance px з живим хітбоксом;
 ##   slam     — ударна хвиля по підлозі на radius px в обидва боки, героя в повітрі не зачіпає;
 ##   fireball — вогняна куля на висоті героя (у другій фазі — count_phase2 штук поспіль);
-##   pillar   — мітка на підлозі під героєм, потім стовп вогню width px (у другій фазі — ще по одному обабіч, side px).
+##   pillar   — мітка на підлозі під героєм, потім стовп вогню width px (у другій фазі — ще по одному обабіч, side px);
+##   drink    — не удар: бос п'є з фляги time с (D564), без підказки й шкоди — вікно для героя.
 ## Після кожного ходу бос recovery с стоїть у позі удару — вікно для відповіді героя. Підказка ходу — його tell
 ## (EnemyLogic.TELL_*): хвиля, куля й стовп — червоні, їх не блокують і не парирують (B133); шкоду від них несе сам
 ## снаряд, а не бос. Бос не відкидається (B134) і жетона удару не бере. Усі таймери стоять на паузі (B135).
@@ -71,6 +72,9 @@ func perform_attack() -> void:
 	if move.is_empty():
 		return
 	last_move = move
+	if move.kind == "drink":
+		await _drink(move)
+		return
 	if move.kind == "combo":
 		_combo = move
 		await super.perform_attack()
@@ -98,6 +102,20 @@ func perform_attack() -> void:
 		await get_tree().create_timer(float(move.recovery), false).timeout
 		recovering = false
 	committed = false
+	is_attacking = false
+	_rest()
+	attack_ended.emit()
+	_decide_after_attack()
+
+
+## Ковток (D564): бос стоїть у позі ковтка time с, як у відновленні (recovering), — героєві бити у відповідь.
+func _drink(move: Dictionary) -> void:
+	is_attacking = true
+	attack_broken = false
+	enemy.drink(move)
+	recovering = true
+	await get_tree().create_timer(float(move.time), false).timeout
+	recovering = false
 	is_attacking = false
 	_rest()
 	attack_ended.emit()
