@@ -99,9 +99,9 @@
 			"id": "block",
 			"hint_topic": true,
 			"title": "Block and Parry",
-			"text": "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter.",
+			"text": "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way.",
 			"key": "{block}",
-			"hint": "Hold to block; press it when an enemy's weapon glints to parry.",
+			"hint": "Hold to block; tap it as a yellow-glint blow lands to parry. Roll from a red glint.",
 			"frames": "parry"
 		},
 		{

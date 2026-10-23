@@ -2507,8 +2507,8 @@ msgstr "Попереду вороги! Натисніть {attack}, щоб за�
 msgid "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow that breaks an enemy's guard and staggers it. A hit during the wind-up interrupts it, so pick your moment."
 msgstr "Натисніть {heavy_attack} для важкої атаки: повільний замах, а тоді удар, що пробиває захист ворога й вибиває його з рівноваги. Удар по вас під час замаху перериває атаку, тож обирайте мить."
 
-msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints red, press {block} — that is a parry: no damage, and the attacker is staggered and open to a counter."
-msgstr "Утримуйте {block}, щоб блокувати: удар спереду не завдає шкоди (важкий удар чи останній удар серії пробиває захист). Коли зброя ворога спалахує червоним, натисніть {block} — це парирування: жодної шкоди, а нападник утрачає рівновагу й відкритий для контрудару."
+msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
+msgstr "Утримуйте {block}, щоб блокувати: удар спереду не завдає шкоди (важкий удар чи останній удар серії пробиває захист). Коли зброя ворога спалахує жовтим, коротко натисніть {block}, щойно падає удар, — це парирування: жодної шкоди, а нападник утрачає рівновагу й відкритий для контрудару. Червоний відблиск не заблокувати й не парирувати: перекотіться геть."
 
 msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
 msgstr "Переможені вороги лишають XP і монети. Шкала XP заповнюється з кожною перемогою; коли вона повна, ви отримуєте новий рівень, а з ним HP, шкоду й очко навичок."
@@ -2561,8 +2561,8 @@ msgstr "Коротко натисніть її, коли падає удар і�
 msgid "Button for a heavy attack."
 msgstr "Кнопка важкої атаки."
 
-msgid "Hold to block; press it when an enemy's weapon glints to parry."
-msgstr "Утримуйте, щоб блокувати; натисніть, коли зброя ворога спалахне, щоб парирувати."
+msgid "Hold to block; tap it as a yellow-glint blow lands to parry. Roll from a red glint."
+msgstr "Утримуйте, щоб блокувати; коротко натисніть, коли падає удар із жовтим відблиском, щоб парирувати. Від червоного — перекочуйтеся."
 
 msgid "Button to open the game menu, then choose Skills."
 msgstr "Кнопка, що відкриває ігрове меню; далі оберіть «Навички»."

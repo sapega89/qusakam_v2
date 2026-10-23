@@ -465,6 +465,14 @@ func _spawn_level_up_vfx() -> void:
 	DebugLogger.verbose("Player: Spawned level up VFX", "Player")
 
 ## Max HP за формулою меню (D205). Підвищення лікує на різницю, зниження лише обрізає поточне HP.
+## HP зі сейву (B138): завантаження дає збережене здоровʼя, а не повне. Max HP — уже з завантаженого стану
+## (рівень, спорядження, навички); друге refresh_max_health() лише показує нове HP на смузі.
+func restore_health(saved: int) -> void:
+	refresh_max_health()
+	current_health = clampi(saved, 1, Max_Health)
+	refresh_max_health()
+
+
 func refresh_max_health() -> void:
 	var old_max := Max_Health
 	Max_Health = ServiceLocator.get_game_manager().calculate_max_health()

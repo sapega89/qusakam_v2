@@ -237,6 +237,7 @@ func _initialize_save_and_room() -> void:
 	# тригери кімнати бачать гравця на збереженому місці, а не в дефолтній точці Game.tscn (B80).
 	if loaded_from_save:
 		place_player(ServiceLocator.get_player_state_manager().get_player_position())
+		player.restore_health(ServiceLocator.get_player_state_manager().get_player_health().current)
 	elif start_new_game:
 		await get_tree().process_frame  # Ждём загрузки комнаты
 		_position_player_at_start()
@@ -642,9 +643,10 @@ func set_location_flag(location_id: String, value: Variant) -> void:
 func get_location_flag(location_id: String, default: Variant = false) -> Variant:
 	return location_flags.get(location_id, default)
 
-## Інвентар, прапорці й позиція гравця — у файл поточного слота (SaveSystem).
+## Інвентар, прапорці, позиція й HP гравця — у файл поточного слота (SaveSystem).
 func _save_full_game_data_to_save_system() -> bool:
 	ServiceLocator.get_player_state_manager().set_player_position(player.global_position)
+	ServiceLocator.get_player_state_manager().update_player_health(player.current_health, player.Max_Health)  # B138
 	return bool(SaveSystem.save_player_data())
 
 

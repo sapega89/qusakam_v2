@@ -67,6 +67,14 @@ func _initialize() -> void:
 	for recipe_id in sl.get_item_database().get_all_recipes():
 		costs_ok = costs_ok and int(sl.get_item_database().get_recipe(recipe_id).get("gold_cost", 0)) > 0
 	ck(costs_ok, "all 18 recipes carry gold_cost > 0")
+	# B120, D416: ціна — 10 % ціни купівлі результату (× кількість)
+	var off_rule: Array[String] = []
+	for recipe_id in sl.get_item_database().get_all_recipes():
+		var recipe: Dictionary = sl.get_item_database().get_recipe(recipe_id)
+		var buy: int = int(sl.get_item_database().get_item(recipe.result.item_id).buy_price) * int(recipe.result.quantity)
+		if int(recipe.gold_cost) != roundi(buy / 10.0):
+			off_rule.append("%s %d≠%d" % [recipe_id, int(recipe.gold_cost), roundi(buy / 10.0)])
+	ck(off_rule.is_empty(), "every gold_cost is 10 %% of the result's buy price (D416) %s" % [off_rule])
 	ck(service.row("craft_iron_sword").detail == "Requires: 3 Iron Ingot, 1 Wood Plank", "materials line (%s)" % service.row("craft_iron_sword").detail)
 
 	print("[2] Missing materials: refused, nothing taken")

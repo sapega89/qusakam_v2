@@ -97,10 +97,13 @@ func _initialize() -> void:
 	ck(modal.tutorial_button.theme_type_variation == &"MiscRowOn", "highlight follows focus")
 	ck(modal.settings_button.theme_type_variation == &"MiscRow", "previous row reverts")
 	ck(not modal.settings_button.text.begins_with(modal.SELECTED_PREFIX), "arrow moves too")
-	for row in rows:
+	for i in rows.size():
+		var row: Control = rows[i]
 		ck(row.focus_mode == Control.FOCUS_ALL, "%s is focusable" % row.name)
-		ck(row.focus_neighbor_bottom != NodePath() or true, "%s in the focus chain" % row.name)
-		break
+		# B121: ↓ з рядка веде на наступний (останній — нікуди далі в колонці)
+		if i + 1 < rows.size():
+			var below: Control = row.find_valid_focus_neighbor(SIDE_BOTTOM)
+			ck(below == rows[i + 1], "%s in the focus chain: down goes to %s (%s)" % [row.name, rows[i + 1].name, below.name if below else "nothing"])
 
 	print("[4] ui_cancel closes and restores focus")
 	var ev := InputEventAction.new()
