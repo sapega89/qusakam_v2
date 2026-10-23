@@ -123,3 +123,13 @@ fixed (`362a0178`).
 | 06:20 | progression (`trig_01SviDye8epyKH2yPHA1ZZDu`) | cloud/progression | D488, D447 behaviour, D492 |
 | 06:20 | assists-2 (`trig_01DR6RMPV4decwg8ChB9TDci`) | cloud/assists-2 | D515 |
 | 06:20 | world-fixes (`trig_01SneiTQdYeENaYg2Jgb1PoQ`) | cloud/world-fixes | D446, D448, D451, D483 |
+
+## Round 11 — 2026-10-23, launched 10:49 UTC (the four pillars, D585)
+
+| Time (UTC) | Routine | Branch | Task |
+|---|---|---|---|
+| 10:49 | combat-polish (`trig_01WY4yVPjQGHs4BZCEtxYhC7`) | cloud/combat-polish | D551 stamina out, D581 hit feel |
+| 10:49 | enemy-variety (`trig_01GdxdDbm3CpEih96hMJ77rA`) | cloud/enemy-variety | D495/D560 sizes, elites, shield-bearer; D582 pacing |
+| 10:49 | world-1 (`trig_01J2f6CV6DXH1um3rZkJgkZs`) | cloud/world-1 | D565 locations data, D562 gates, D583 pickups into branches, the attic |
+| 10:49 | skills-v2 (`trig_011hxei4kv9MxLHDkazQUTGp`) | cloud/skills-v2 | D535 33 draft skills, JP caps, D592 paid respec |
+| 10:49 | hud-v2 (`trig_01TGsbpruzDTVYxLzPMvAWVX`) | cloud/hud-v2 | D453/D549/D552 hero panel, 8-slot hotbar, XP bar |
