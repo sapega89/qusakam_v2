@@ -80,7 +80,7 @@ func _initialize() -> void:
 	await _drain()
 
 	# 4 — торговець виходить, геймпад Y: підказка називає Y.
-	for flag in ["canyon_exit_complete", "desert_road_monologue_complete", "desert_road_fight_complete"]:
+	for flag in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(flag, true)
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 30: await physics_frame

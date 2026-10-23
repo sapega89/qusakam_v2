@@ -1,7 +1,5 @@
 say|KUSAKAM|So this is the edge of the canyon.
 say|KUSAKAM|Ahead of me - the desert. The road I have to walk.
 say|KUSAKAM|The armor is with me. Now I'm ready.
-say||Kusakam starts climbing down from the canyon...
 say|KUSAKAM|Step by step, I walk into the unknown.
-say|KUSAKAM|But I know - this is my path.
 exit|

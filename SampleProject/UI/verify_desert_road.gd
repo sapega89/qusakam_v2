@@ -1,8 +1,7 @@
 extends SceneTree
 
-## Desert Road (Sapega, 2026-10-12): Canyon II закривається при спуску на дорогу,
-## монолог чекає на тригер, вороги справді зʼявляються, а бій зараховується
-## лише коли всі вороги мертві.
+## Desert Road (Sapega, 2026-10-12; D439): Canyon II закривається при спуску на дорогу, розмови перед боєм
+## немає — вороги вже стоять на дорозі, а бій зараховується лише коли всі вороги мертві.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_desert_road.gd
 
 var fails: Array[String] = []
@@ -30,7 +29,7 @@ func _enemies(road: Node) -> Array[Node]:
 
 func _reset_flags(game: Node, extra: Dictionary) -> void:
 	var flags: Dictionary = game.get_quest_flags().duplicate()
-	for f in ["canyon_exit_complete", "desert_road_monologue_complete", "desert_road_fight_complete"]:
+	for f in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		flags.erase(f)
 	flags.merge(extra, true)
 	game.set_quest_flags(flags)
@@ -55,7 +54,6 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	var sl: Node = root.get_node("ServiceLocator")
-	var bus: Node = root.get_node("EventBus")
 	# Як кнопка New Game: без цього Game.tscn вантажить справжній сейв гравця.
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
@@ -67,28 +65,24 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	sl.get_dialogue_manager().dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
-	print("[1] Landing on the road closes Canyon II and waits for the trigger")
+	print("[1] Landing on the road closes Canyon II; no talk, the enemies already stand on the road (D439)")
 	_reset_flags(game, {})
 	var road: Node = _load_road()
 	for i in 6: await process_frame
 	ck(game.get_quest_flag("canyon_exit_complete"), "canyon_exit_complete set on arrival")
-	ck(road.current_state == road.State.TRAVELING, "state TRAVELING")
-	ck(not started.has("DesertRoad_Monologue"), "monologue not started by arrival (%s)" % [started])
-
-	print("[2] Monologue → taunt first, enemies appear only after it")
-	var dm: Node = sl.get_dialogue_manager()
-	bus.dialogue_finished.emit("DesertRoad_Monologue")
-	for i in 6: await process_frame
-	ck(road.current_state == road.State.FIGHT_ENCOUNTER, "state FIGHT_ENCOUNTER")
-	ck(started.has("DesertRoad_Fight"), "the taunt is playing (%s)" % [started])
-	ck(_enemies(road).size() == 0, "no enemy yet while the player is locked in the dialogue (%d)" % _enemies(road).size())
-	await _finish_dialogue(dm)
-	await create_timer(2.5).timeout  # дві хвилі з паузою 1.5 с
-	ck(_enemies(road).size() == 4, "4 enemies on the road after the taunt (%d)" % _enemies(road).size())
-	ck(road.current_state == road.State.FIGHT_ENCOUNTER, "the taunt alone does not end the fight")
+	ck(road.current_state == road.State.FIGHT_ENCOUNTER, "state FIGHT_ENCOUNTER from the start")
+	ck(started.is_empty(), "no monologue, no 'Enemies on the road!' (%s)" % [started])
+	ck(not FileAccess.file_exists("res://dialogue_quest/DesertRoad_Monologue.dqd") and not FileAccess.file_exists("res://dialogue_quest/en/DesertRoad_Fight.dqd"),
+			"the road's talks are cut (en and uk)")
+	ck(road.get_node_or_null("StateChangeTrigger_DesertMonologue") == null, "no monologue trigger on the road")
+	ck(_enemies(road).size() == 4, "all 4 enemies stand on the road at once (%d)" % _enemies(road).size())
+	var hero_x: float = road.get_node("ArrivalFromCanyon").global_position.x
+	for enemy in _enemies(road):
+		ck(enemy.global_position.x - hero_x > enemy.detection_range,
+				"%s waits out of reach of the arriving hero (%.0f px > %.0f)" % [enemy.name, enemy.global_position.x - hero_x, enemy.detection_range])
 	ck(not game.get_quest_flag("desert_road_fight_complete"), "fight not counted yet")
 
-	print("[3] Killing every enemy ends the fight")
+	print("[2] Killing every enemy ends the fight")
 	for enemy in _enemies(road):
 		enemy.die()
 	for i in 4: await process_frame
@@ -97,15 +91,12 @@ func _initialize() -> void:
 	road.queue_free()
 	for i in 4: await process_frame
 
-	print("[4] Re-entering after the monologue: taunt, then enemies")
-	_reset_flags(game, {"desert_road_monologue_complete": true})
+	print("[3] Re-entering after the fight: no enemies, on to the city")
 	road = _load_road()
 	for i in 6: await process_frame
-	ck(road.current_state == road.State.FIGHT_ENCOUNTER, "state FIGHT_ENCOUNTER")
-	ck(_enemies(road).size() == 0, "no enemy before the taunt ends")
-	await _finish_dialogue(dm)
-	await create_timer(2.5).timeout
-	ck(_enemies(road).size() == 4, "4 enemies on the road (%d)" % _enemies(road).size())
+	ck(road.current_state == road.State.TRANSITION_TO_CITY, "state TRANSITION_TO_CITY")
+	ck(_enemies(road).size() == 0, "the road stays clear (%d)" % _enemies(road).size())
+	ck(started.is_empty(), "still no talk (%s)" % [started])
 	road.queue_free()
 
 	for i in 4: await process_frame

@@ -31,6 +31,9 @@ var _shake: Tween
 var skipping := false
 ## Гра пішла посеред сцени (вихід у меню, завантаження): сцена скінчилася разом із героєм (B92).
 var _abandoned := false
+## B123: сцена почалась, коли герой був у повітрі — спершу він падає на землю (гравітація є, вводу немає).
+var landing := false
+signal landed
 
 
 func _init() -> void:
@@ -53,7 +56,45 @@ func _init() -> void:
 	_tree.root.add_child(_prompt)
 	# Гра пішла — підказка з нею. Звільнена раніше (end(), вихід із програми) — і підписка зникла сама (B92).
 	player.tree_exiting.connect(_prompt.queue_free)
+	var fall_speed: float = player.velocity.y  # hold() зупиняє героя — швидкість стрибка/падіння беремо до того
 	hold()
+	if not player.is_on_floor():
+		_start_landing(fall_speed)
+
+
+## B123: кат-сцена, що почалась у стрибку чи падінні (край каньйону), не вішає героя в повітрі: він долітає до
+## землі за власною гравітацією, ввід вимкнений, і лише тоді сцена тримає його. Розмови тим часом чекають
+## (DialogueManager.hold_lines) — перша репліка показується, коли він уже стоїть; walk_hero теж чекає.
+func _start_landing(fall_speed: float) -> void:
+	landing = true
+	_dm.hold_lines()
+	player.velocity = Vector2(0.0, fall_speed)
+	player.play_body(&"Fall")
+	_tree.physics_frame.connect(_fall_step)
+
+
+func _fall_step() -> void:
+	var mover: PlayerMover = player.mover
+	player.velocity.x = 0.0
+	player.velocity.y = minf(player.velocity.y + mover.gravity * player.get_physics_process_delta_time(), mover.max_fall_speed)
+	player.move_and_slide()
+	if player.is_on_floor():
+		_stop_landing(true)
+		hold()
+		landed.emit()
+
+
+func _stop_landing(play_lines: bool) -> void:
+	if not landing:
+		return
+	landing = false
+	_tree.physics_frame.disconnect(_fall_step)
+	_dm.release_lines(play_lines)
+
+
+func _until_landed() -> void:
+	if landing:
+		await landed
 
 
 ## Героя тримає сцена: стоїть у своїй позі, ввід не діє. Кінець кожного діалогу повертає керування — тому знову.
@@ -92,6 +133,7 @@ func wait(seconds: float) -> void:
 
 ## Герой іде (Walk) до [param to] за [param seconds] і стає в Idle; дивиться туди, куди йде.
 func walk_hero(to: Vector2, seconds: float) -> void:
+	await _until_landed()
 	player.get_node(^"Sprite2D").flip_h = to.x < player.global_position.x
 	pose = &"Walk"
 	anim.play(pose)
@@ -151,6 +193,7 @@ func shake(strength: float, seconds: float) -> void:
 ## Кінець сцени: камера за героєм, HUD і керування назад, звичайна швидкість.
 func end() -> void:
 	player.tree_exiting.disconnect(_abandon)
+	_stop_landing(true)
 	camera.offset = Vector2.ZERO
 	if camera.top_level:
 		attach_camera()
@@ -164,6 +207,7 @@ func end() -> void:
 ## швидкість пропуску; підказку в root звільняє її власна підписка на tree_exiting (B92).
 func _abandon() -> void:
 	_abandoned = true
+	_stop_landing(false)
 	_release()
 
 

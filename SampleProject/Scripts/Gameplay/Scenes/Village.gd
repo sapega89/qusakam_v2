@@ -19,6 +19,8 @@ enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 const OLDMAN_GIFT := "oldman_gift"
 const CombatTraining = preload("res://SampleProject/Scripts/Gameplay/CombatTraining.gd")
+## D437: дідове лікування видно, а не розказано — те саме світло, що й у Healing Palm (D271).
+const HEALING_LIGHT := preload("res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn")
 
 @export var current_state: State = State.ABDUCTION_CUTSCENE:
 	set(val):
@@ -169,7 +171,15 @@ func _talk_to_old_man(run_id: int) -> void:
 	if run_id != state_run_id: return
 	var player: CombatBody2D = Game.get_singleton().player
 	player.heal_damage(player.Max_Health)
+	_show_healing_light(player)
 	advance_state()
+
+## Репліку «Тепле світло огортає Кусакама» прибрано (D437): світло огортає героя на екрані й гасне саме.
+func _show_healing_light(player: Node2D) -> void:
+	var light: Node2D = HEALING_LIGHT.instantiate()
+	player.add_child(light)
+	(light.get_node(^"AnimationPlayer") as AnimationPlayer).animation_finished.connect(
+			func(_charge: StringName) -> void: light.release(), CONNECT_ONE_SHOT)
 
 ## Спершу зʼявляється бандит, потім репліки (Sapega, 2026-10-15). Поки діалог тримає гравця
 ## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як

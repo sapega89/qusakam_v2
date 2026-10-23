@@ -39,7 +39,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)
-	for f in ["desert_road_monologue_complete", "canyon_abduction_complete"]:
+	for f in ["canyon_abduction_complete"]:
 		game.set_quest_flag(f, true)
 	var warm_static := 0.0
 	var warm_orphans := 0

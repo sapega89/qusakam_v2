@@ -135,6 +135,33 @@ func _initialize() -> void:
 	await _drain()  # вступ Canyon
 	ck(InputMap.has_action(&"cutscene_skip"), "cutscene_skip action registered (Tab / pad Y)")
 
+	print("[0] A cutscene that starts mid-air lands the hero before its first line (B123)")
+	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	for i in 30: await physics_frame
+	game.player.global_position = Vector2(560, 360)
+	for i in 30: await physics_frame
+	ck(game.player.is_on_floor(), "the hero stands at the gates before the jump")
+	var ground_y: float = game.player.global_position.y
+	game.player.global_position.y -= 160.0
+	for i in 3: await physics_frame
+	ck(not game.player.is_on_floor(), "the hero is in the air when the cutscene starts")
+	var on_floor_at_line: Array[bool] = []
+	var at_line := func(_id: String) -> void: on_floor_at_line.append(game.player.is_on_floor())
+	dm.dialogue_started.connect(at_line)
+	var cs: RefCounted = load("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd").new()  # не preload: скрипт кличе автозавантаження
+	ck(cs.landing, "the cutscene lets him land first")
+	dm.start_dialogue("res://dialogue_quest/CityGates.dqd")  # як Canyon_ExitCutscene: розмова не через cs.say
+	ck(not dm.is_dialogue_active(), "the line waits while he falls")
+	await _until(func() -> bool: return not on_floor_at_line.is_empty(), 4.0)
+	dm.dialogue_started.disconnect(at_line)
+	ck(on_floor_at_line == [true], "he is on the floor when the first line shows (%s)" % [on_floor_at_line])
+	ck(absf(game.player.global_position.y - ground_y) < 2.0, "he landed on the ground, not hanging (%.0f vs %.0f)" % [game.player.global_position.y, ground_y])
+	ck(game.player.event, "input stays off: the cutscene holds him")
+	await _drain()
+	cs.end()
+	for i in 10: await physics_frame
+	ck(not game.player.event and _prompt() == null, "the cutscene ends and control comes back")
+
 	print("[1] City Gates raid: hold Tab")
 	var raid_start := func() -> void:
 		game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
@@ -153,7 +180,7 @@ func _initialize() -> void:
 			func() -> bool: return game.map.get_current_state_name() == "FIGHT_LOOP", bandits, _key(true), _key(false), "Tab")
 
 	print("[2] Merchant arrival on the Desert Road (NpcArrival): hold pad Y")
-	for f: String in ["canyon_exit_complete", "desert_road_monologue_complete", "desert_road_fight_complete"]:
+	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(f, true)
 	var merchant_start := func() -> void:
 		game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")

@@ -1590,9 +1590,6 @@ msgstr "Здолайте бандитів"
 msgid "Find the laboratory"
 msgstr "Знайдіть лабораторію"
 
-msgid "Continue on to the city"
-msgstr "Ідіть далі до міста"
-
 msgid "Reach the city gates"
 msgstr "Дійдіть до міської брами"
 
@@ -2248,9 +2245,6 @@ msgstr "На краю каньйону він медитував біля свя
 
 msgid "Armoured and ready, Kusakam began the climb down into the desert."
 msgstr "В обладунку й готовий до всього, Кусакам почав спускатися в пустелю."
-
-msgid "The desert road stretched ahead toward the city."
-msgstr "Попереду до міста тяглася пустельна дорога."
 
 msgid "Enemies blocked the road. Kusakam fought his way through."
 msgstr "Вороги перепинили дорогу. Кусакам пробився крізь них."

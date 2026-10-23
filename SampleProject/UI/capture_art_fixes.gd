@@ -28,7 +28,6 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain()
-	game.set_quest_flag("desert_road_monologue_complete", true)  # як verify_*: пролог не тримає героя (event)
 
 	# [кімната, мітка входу, вузол NPC, кадр, поза з правкою або "" — та, що грає]
 	for spot: Array in [

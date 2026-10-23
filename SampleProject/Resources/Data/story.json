@@ -46,11 +46,9 @@
 				{
 					"id": "desert_road", "title": "Desert Road", "scene": "DesertRoad", "story_state": "DESERT_ROAD",
 					"objectives": [
-						{"flag": "desert_road_monologue_complete", "text": "Continue on to the city"},
 						{"flag": "desert_road_fight_complete", "text": "Defeat the enemies on the road"}
 					],
 					"chronicle": [
-						{"flag": "desert_road_monologue_complete", "text": "The desert road stretched ahead toward the city."},
 						{"flag": "desert_road_fight_complete", "text": "Enemies blocked the road. Kusakam fought his way through."}
 					]
 				},

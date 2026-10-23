@@ -19,6 +19,11 @@ var dialogue_player_instance: Node = null
 # Діалоги, запрошені, поки йшов інший: грають по черзі (див. start_dialogue).
 var _queue: Array[String] = []
 
+# B123: кат-сцена ще садить героя на землю — розмови, запрошені тим часом, чекають тут [timeline, in_cloud]
+# і починаються, коли він стане (Cutscene.gd → hold_lines / release_lines).
+var _lines_held := false
+var _held_lines: Array[Array] = []
+
 # Сигналы
 signal dialogue_started(timeline_name: String)
 signal dialogue_finished(timeline_name: String)
@@ -90,6 +95,9 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	заблокованим, а діалог висів. Активний діалог не перебиваємо й не «відновлюємо» силоміць (D131).
 	[param in_cloud] — розмова кат-сцени в облачку над героєм замість вікна (D263): набирається, як у вікні,
 	«далі» — dq_accept, герой стоїть і не рухається до кінця."""
+	if _lines_held:
+		_held_lines.append([timeline_name, in_cloud])
+		return true
 	if is_dialogue_active() or _bubble_playing:
 		assert(not in_cloud, "DialogueManager: a cloud talk cannot be queued (%s)" % timeline_name)
 		if not _queue.has(timeline_name):
@@ -114,6 +122,22 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	assert(not sections.is_empty(), "DialogueManager: %s has no lines" % timeline_name)
 	current_dialogue_player.play_sections(sections, timeline_name)
 	return true
+
+## B123: поки кат-сцена садить героя на землю, жодна розмова не починається (перша репліка — вже на підлозі).
+func hold_lines() -> void:
+	_lines_held = true
+
+
+## Герой стоїть — відкладені розмови починаються по черзі. [param play] = false: сцена пішла разом із грою,
+## розмови йдуть з нею.
+func release_lines(play: bool = true) -> void:
+	_lines_held = false
+	var held: Array[Array] = _held_lines.duplicate()
+	_held_lines.clear()
+	if play:
+		for line: Array in held:
+			start_dialogue(line[0], line[1])
+
 
 func _on_dialogue_quest_started(dialogue_id: String):
 	"""Обработчик начала диалога из DialogueQuest"""

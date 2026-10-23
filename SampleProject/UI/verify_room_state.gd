@@ -86,7 +86,6 @@ func _initialize() -> void:
 	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 	await _drain(dm)
-	game.set_quest_flag("desert_road_monologue_complete", true)
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
 	for k in 3:
 		await create_timer(1.0).timeout

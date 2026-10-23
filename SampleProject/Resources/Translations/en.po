@@ -1589,9 +1589,6 @@ msgstr "Defeat the bandits"
 msgid "Find the laboratory"
 msgstr "Find the laboratory"
 
-msgid "Continue on to the city"
-msgstr "Continue on to the city"
-
 msgid "Reach the city gates"
 msgstr "Reach the city gates"
 
@@ -2246,9 +2243,6 @@ msgstr "At the canyon's edge he meditated beside the sacred armour and felt the 
 
 msgid "Armoured and ready, Kusakam began the climb down into the desert."
 msgstr "Armoured and ready, Kusakam began the climb down into the desert."
-
-msgid "The desert road stretched ahead toward the city."
-msgstr "The desert road stretched ahead toward the city."
 
 msgid "Enemies blocked the road. Kusakam fought his way through."
 msgstr "Enemies blocked the road. Kusakam fought his way through."

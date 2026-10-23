@@ -4,7 +4,6 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="2_xkx37"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="3_0gx3l"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="5_save"]
-[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="6_trigger"]
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="Script" uid="uid://bj4inntnujsms" path="res://SampleProject/Scripts/Gameplay/GateController.gd" id="9_gate"]
@@ -34,9 +33,6 @@ size = Vector2(64, 480)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_trigger"]
-size = Vector2(100, 386)
 
 [node name="DesertRoad" type="Node2D" unique_id=1561391997]
 script = ExtResource("1_desert")
@@ -186,22 +182,9 @@ text = "S"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StateChangeTrigger_DesertMonologue" type="Area2D" parent="." unique_id=1961165259]
-position = Vector2(400, 400)
-script = ExtResource("6_trigger")
-dialogue_id = "DesertRoad_Monologue"
-action_mode = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_DesertMonologue" unique_id=79235657]
-position = Vector2(0, -143)
-shape = SubResource("RectangleShape2D_trigger")
-
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=1070670507]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
-spawn_in_waves = true
-wave_size = 2
-wave_delay = 1.5
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=796924420]
 position = Vector2(800, 368)
