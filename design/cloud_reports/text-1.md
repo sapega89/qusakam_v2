@@ -11,7 +11,7 @@ tags: [cloud, text, localization, dialogue]
   - **D603** | GAP | **«Бандит» applied** (`cloud/text-1`, applies D566). Every «розбійник» form in `uk.po` (speaker names, objectives, journal, story, bestiary) now reads бандит / бандита / бандити / бандитів / бандитами. The `.dqd` files, `dialogue_quest/characters` and the JSON data had none, because the data are English with `uk.po` keys. `verify_locale` [7] keeps it that way. Sapega's own quote in [[lore]] stays as said.
   - **D604** | GAP | **NPC chatter drafts** (`cloud/text-1`, applies D571 through D338). The `*_Chatter.dqd` files carry 2–3 lines each, marked `[ЧЕРНЕТКА]`/`[DRAFT]`. Wired: `Smith_Chatter`, `City_Oath_{Priest,Witch,Dervish}_Chatter` (on the NPC scenes) and `DesertRoad_Merchant_Chatter` (on the DesertRoad map instance only, so the City merchant stays quiet). Written but not wired: `CityGates_Guard_Chatter` (the guard is not an NpcBase) and `City_Market_Chatter`, with a new speaker `MARKET_TRADER` «Крамар» (not in the journal). The quest bark (D452) still wins while an NPC has a marker. Tested by `verify_npc_chatter` [8].
 - **B rows fixed:** none.
-- **Full suite:** see the end of this report.
+- **Full suite (one run):** `SUITE: 3 FAIL`, 99 PASS. Two of the fails were mine and are fixed, each re-run green: `verify_npc_flow` (the smith now says his plain chatter when he has nothing to give) and `verify_audio` (`MARKET_TRADER` needed a babble voice). The third, `verify_onboarding` («keyboard: a light hit does not pass Heavy»), fails the same way on `origin/feature/backlog` without these changes, so it is not this branch's.
 
 ## 1. «Бандит» (D566)
 
@@ -66,8 +66,13 @@ The chatter route plays a file's lines one after another in the cloud, so each s
 - `SampleProject/Scenes/Gameplay/Objects/NPCs/{blacksmith,oath_priest,oath_witch,oath_dervish}.tscn`: `chatter_dialogue`.
 - `SampleProject/Maps/DesertRoad.tscn`: `chatter_dialogue` on the Merchant instance.
 - `SampleProject/UI/verify_locale.gd`: new [7], «бандит» only (no «розбійн» in `uk.po` or any uk `.dqd`; the enemy names).
+- `SampleProject/Resources/Data/sound_events.json`: `MARKET_TRADER` → the `villager` babble voice.
+- `SampleProject/UI/verify_npc_flow.gd`: the smith with nothing to give no longer stays silent. He says his first `Smith_Chatter` line, not the D452 bark.
 - `SampleProject/UI/verify_npc_chatter.gd`: uses `Smith_Chatter`; new [8] checks the wiring, 2–3 lines by one speaker, at most 90 characters, and the draft marks in both twins.
 
 ## Tests
 - `verify_npc_chatter`: `RESULT: ALL PASS`
 - `verify_locale`: `RESULT: ALL PASS` (60 dialogues with twins, 21 speakers, [7] OK)
+- `verify_npc_flow`: `RESULT: ALL PASS` (after the fix)
+- `verify_audio`: `RESULT: ALL PASS` (after the fix)
+- `verify_onboarding`: `RESULT: 1 FAIL: keyboard: a light hit does not pass Heavy`, the same on `origin/feature/backlog`
