@@ -6,6 +6,7 @@ extends SceneTree
 ##   2. Кожна локація має вхід, і вхід — її власна кімната.
 ##   3. Три локації демо D565 з їхніми кімнатами; назви перекладено (uk.po).
 ##   4. LocationDB: кімната → локація; Village і DesertRoad — одна локація (дорога стала частиною Canyon of Whispers).
+##   5. GameFlow.location_title (картка сейва) — назва локації кімнати, ключ; картка показує її мовою гри.
 
 const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const MAPS_DIR := "res://SampleProject/Maps"
@@ -78,6 +79,24 @@ func _initialize() -> void:
 	ck(LocationDB.of_scene("res://SampleProject/Maps/LabBoss.tscn") == "laboratory", "LabBoss → laboratory")
 	ck(LocationDB.of_room("Village") == LocationDB.of_room("DesertRoad"), "Village and DesertRoad are one location")
 	ck(LocationDB.of_room("DesertRoad") != LocationDB.of_room("CityGates"), "DesertRoad → CityGates crosses into the City")
+
+	# 5. Картка сейва: локація, не зона журналу (D618 замість D133).
+	var flow: Node = load("res://SampleProject/Scripts/Managers/Story/GameFlow.gd").new()
+	for room in scenes:
+		var title: String = flow.location_title("%s/%s.tscn" % [MAPS_DIR, room])
+		ck(title == LocationDB.location(LocationDB.of_room(room)).name, "save card: %s → %s" % [room, title])
+	ck(flow.location_title(MAPS_DIR + "/MayorHall.tscn") == "The City", "MayorHall reads The City, not \"Mayor Hall\"")
+	ck(flow.location_title(MAPS_DIR + "/DesertRoad.tscn") == "Canyon of Whispers", "DesertRoad reads Canyon of Whispers")
+	flow.free()
+	var card: Node = load("res://SampleProject/UI/Components/save_slot_card.tscn").instantiate()
+	root.add_child(card)
+	card.setup({"exists": true, "slot": 1, "location": "The City", "timestamp": "2026-10-23T12:00:00"}, true)
+	TranslationServer.set_locale("uk")
+	ck(card._location.atr(card._location.text) == LocationDB.title("city") and LocationDB.title("city") != "The City",
+			"the card shows the location in Ukrainian (%s)" % card._location.atr(card._location.text))
+	TranslationServer.set_locale("en")
+	ck(card._location.atr(card._location.text) == "The City", "and in English")
+	card.free()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

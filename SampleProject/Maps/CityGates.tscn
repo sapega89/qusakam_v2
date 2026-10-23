@@ -178,11 +178,17 @@ shape = SubResource("WorldBoundary_sky")
 
 [node name="GuardLeft" parent="." unique_id=1846200204 instance=ExtResource("gate_guard")]
 position = Vector2(1200, 384)
-scale = Vector2(-1, 1)
+chatter_dialogue = "res://dialogue_quest/CityGates_Guard_Chatter.dqd"
+chatter_with_flag = "city_gates_after_fight_complete"
+
+[node name="Sprite2D" parent="GuardLeft" index="0"]
+flip_h = true
 
 [node name="GuardRight" parent="." unique_id=1846200205 instance=ExtResource("gate_guard")]
 position = Vector2(1270, 384)
-scale = Vector2(-1, 1)
+
+[node name="Sprite2D" parent="GuardRight" index="0"]
+flip_h = true
 
 [node name="RaidTrigger" type="Area2D" parent="." unique_id=806456742]
 position = Vector2(700, 192)
