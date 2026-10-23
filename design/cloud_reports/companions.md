@@ -16,7 +16,7 @@ tags: [cloud, companions, assists, vfx, tutorial, d463, d464, d465]
 
 D-ID text: **D491–D493** (§5). The register on `feature/backlog` already runs to D490, so I did not use D484. No B rows were fixed.
 
-Full suite: see §6.
+Full suite: `SUITE: 2 FAIL` (91 of 93 PASS). Both are explained in §6: `verify_scripts_compile` failed on my FX scenes, is fixed and passes alone; `verify_audio` is the known flake.
 
 Branch `cloud/companions` from `origin/feature/backlog` @ `ca8c2d1b`. Shots: `design/shots/companions_before_after.png`.
 
@@ -89,4 +89,4 @@ New scenes are in `SampleProject/Scenes/FX/Companions/`. They share `glow.tres` 
 - Related tests:
   - `verify_lab_cells`: ALL PASS. It needed one fix: the F-press check now sends Astrit back to camp, so the skipped-acquaintance comparison is unaffected.
   - `verify_laboratory`, `verify_lab_boss`, `verify_lab_route`, `verify_party_panel`, `verify_tutorial_hints`, `verify_locale`: ALL PASS.
-- Full suite: SUITE_LINE
+- Full suite (one run, at the end): `Scripts/Tools/run_verify.sh` → `SUITE: 2 FAIL` (91 of 93 PASS). (1) `verify_scripts_compile` caught unused ext_resources in three of the new FX scenes; fixed in the last commit, and it passes alone. (2) `verify_audio` is the known flake in `test_baseline.md`: its failing check moves each run (suite: hero_hurt_voice; alone: 1 PASS, then 1 FAIL on cast_interrupt). It does not touch companions. `verify_companions` passes again after the fix.
