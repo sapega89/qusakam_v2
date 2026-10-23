@@ -2674,7 +2674,8 @@ CHARACTERS = {
             ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        design="assets/references/npcs/alchemist.webp",
+        # design не беремо: Sapega обрав 3 — малинова мантія без референсу (D650)
+        direction=CRIMSON,
         seed=77,
         colors=16,
         who="the same thin rich alchemist with the long green hair, the red eyes, the black two-filter gas mask, the grey "
