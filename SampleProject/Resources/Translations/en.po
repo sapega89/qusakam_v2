@@ -2683,3 +2683,7 @@ msgstr "Attribute Points"
 
 msgid "Job Points"
 msgstr "Job Points"
+
+# ── Фінал демо (D473)
+msgid "Thank you for playing — you have finished the demo"
+msgstr "Thank you for playing — you have finished the demo"

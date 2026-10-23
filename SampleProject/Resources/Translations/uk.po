@@ -2687,3 +2687,7 @@ msgstr "Очки атрибутів"
 
 msgid "Job Points"
 msgstr "Очки навичок"
+
+# ── Фінал демо (D473)
+msgid "Thank you for playing — you have finished the demo"
+msgstr "Дякуємо за гру — ви пройшли демо"

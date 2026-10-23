@@ -447,7 +447,8 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("lab_outside_complete") and game.get_quest_flag("demo_end_complete"), "lab_outside_complete, demo_end_complete")
 	ck(_end_screens().size() == 1, "one demo end screen (%d)" % _end_screens().size())
 	var screen: Control = _end_screens()[0]
-	ck(screen.get_viewport().gui_get_focus_owner() == screen.get_node(^"VBoxContainer/ReturnButton"), "Return has the focus")
+	await _finale(screen)
+	ck(screen.get_viewport().gui_get_focus_owner() == screen.return_button, "Return has the focus")
 
 	print("[6] B66: back into the hall and out again — the screen again, the talks not again")
 	screen.queue_free()
@@ -463,8 +464,8 @@ func _initialize() -> void:
 	ck(_end_screens().size() == 1, "the demo end screen again, one (%d)" % _end_screens().size())
 	ck(started.is_empty(), "the closing talks do not replay (%s)" % [started])
 	screen = _end_screens()[0]
-	for i in 10: await process_frame
-	ck(screen.get_viewport().gui_get_focus_owner() == screen.get_node(^"VBoxContainer/ReturnButton"), "Return has the focus again")
+	await _finale(screen)
+	ck(screen.get_viewport().gui_get_focus_owner() == screen.return_button, "Return has the focus again")
 	await _pad_tap(JOY_BUTTON_A)
 	await _until(func() -> bool: return current_scene != null and current_scene.scene_file_path.ends_with("MainMenu.tscn"), 5.0)
 	ck(current_scene != null and current_scene.scene_file_path.ends_with("MainMenu.tscn"), "pad A Return → the main menu (%s)" % (current_scene.scene_file_path if current_scene else "null"))
@@ -475,3 +476,16 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
+
+
+## D473: кнопка з'являється, коли фінал дограв (HUD гасне, камера в небо, титул); вікно туторіалу ставить гру на паузу — закриваємо.
+func _finale(screen: Control) -> void:
+	var shown := [false]
+	screen.finale_shown.connect(func() -> void: shown[0] = true)
+	var modals: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer()
+	var deadline := Time.get_ticks_msec() + 15000
+	while not shown[0] and Time.get_ticks_msec() < deadline:
+		if modals.active_modal != null:
+			modals._close_with_result("", modals.active_modal)
+		await process_frame
+	ck(shown[0], "the finale played to the end (D473)")

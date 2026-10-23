@@ -153,6 +153,7 @@ func _show_demo_end_screen() -> void:
 
 	# Підключаємо сигнал повернення до меню
 	demo_end.return_to_menu.connect(_on_return_to_menu)
+	demo_end.play_finale($Music, $HighSky.global_position.y)  # D473: HUD гасне, камера в небо, титул
 
 	DebugLogger.info("🌳 LabOutside: Екран завершення показано", "Scene")
 

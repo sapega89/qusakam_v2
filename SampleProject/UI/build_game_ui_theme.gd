@@ -873,6 +873,8 @@ func _main_menu(theme: Theme) -> void:
 		"TitleHeroes": [_spaced(_font_bold, UITokens.TITLE_SPACING_HEROES), UITokens.SIZE_TITLE_HEROES],
 		"SplashPrompt": [_spaced(_font_semibold, UITokens.SPLASH_PROMPT_SPACING), UITokens.SIZE_SPLASH_PROMPT],
 		"CopyrightLabel": [_spaced(_font_regular, UITokens.COPYRIGHT_SPACING), UITokens.SIZE_CAPTION],
+		# Фінал демо (D473): подяка під титулом, як у головному меню.
+		"FinaleMessage": [_font_regular, UITokens.SIZE_HEADING],
 	}
 	for name in labels:
 		theme.set_type_variation(name, "Label")
