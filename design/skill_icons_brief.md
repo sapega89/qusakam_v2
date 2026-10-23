@@ -184,3 +184,4 @@ Sapega on 2026-10-23: «і таких у нас 4 класи; всі треба 
 | Asset | Pick | File | Note |
 |---|---|---|---|
 | hand_palm | candidate 3 | `SampleProject/Assets/UI/Icons/kit/hand_palm.png` | Sapega 2026-10-23: «окей, давай поки таку іконку залишимо». A gold glove with ivory fingers. It has five fingers, not the three-fingered lizard hand of D601; Sapega took it as it is for now |
+| shield | candidate 3 | `SampleProject/Assets/UI/Icons/kit/shield.png` | Sapega 2026-10-23: «окей». A heater shield, ivory with a gold rim and a gold boss |
