@@ -1,6 +1,8 @@
 extends Node2D
 class_name EnemySpawnPoint
 
+const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
+
 ## 🎯 EnemySpawnPoint - Маркер для спавна врагов
 ## Размещается в комнате и указывает где и какой тип врага должен появиться
 ## Используется RoomEnemySpawner для автоматического создания врагов
@@ -9,12 +11,14 @@ class_name EnemySpawnPoint
 ## archer — лучник (D386), shield — щитоносець (D560), vulture, bat і fly (муха Ктулху, D589) — летючі (D445): точку ставлять у повітрі.
 @export_enum("melee", "tank", "fast", "archer", "shield", "vulture", "bat", "fly") var enemy_type: String = "melee"
 
-## Розмір (D560): auto — кидок у звичайному бою (RoomEnemySpawner.respawns), medium у сюжетному; або заданий.
-@export_enum("auto", "small", "medium", "large") var size: String = "auto"
+## Розмір (D560, D652): auto — кидок за вагами виду у звичайному бою (RoomEnemySpawner.respawns), medium у сюжетному;
+## або заданий. Великого розміру немає: більший ворог — свій вид (big_kind).
+@export_enum("auto", "small", "medium") var size: String = "auto"
 
-## Еліта (D560): auto — кидок 1 з 8, де спавнер дозволяє (RoomEnemySpawner.elite_rolls); never / always — задано
-## (перша зустріч з елітою — сам-на-сам, D582).
-@export_enum("auto", "never", "always") var elite: String = "auto"
+## Великий вид (D652), що стане тут, коли буде його арт (enemy_variety.json kinds.<id>.sheet); до того точка спавнить
+## звичайний enemy_type. Такі точки звуться BigSlot_* — це місця, де розстановка D582 хотіла еліту чи великого ворога.
+@export_enum("none", "bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_crossbowman", "tower_shield_guard",
+		"old_vulture", "jackal_cursed") var big_kind: String = "none"
 
 ## Спавнить при загрузке комнаты (если false, нужно вызвать spawn() вручную)
 @export var spawn_on_load: bool = true
@@ -26,6 +30,7 @@ class_name EnemySpawnPoint
 @export var custom_enemy_stats: Resource = null
 
 ## Шляхи, а не preload: інакше кожен скрипт, що згадує EnemySpawnPoint, компілює сцени ворогів (і їхні автолоади).
+## Великі види (big_kind) мають свою сцену в enemy_variety.json (kinds.<id>.scene).
 const ENEMY_SCENES := {
 	"melee": "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn",
 	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
@@ -97,7 +102,7 @@ func spawn_enemy() -> Node:
 		return null
 
 	# Арт за типом (D208): tank — черепаха, fast — багатоніжка; melee — базова сцена.
-	var enemy_scene: PackedScene = load(ENEMY_SCENES[enemy_type])
+	var enemy_scene: PackedScene = load(scene_path(kind()))
 
 	# Создаём экземпляр
 	var enemy = enemy_scene.instantiate()
@@ -133,7 +138,7 @@ func spawn_enemy() -> Node:
 	spawned_enemy = enemy
 	has_spawned = true
 
-	DebugLogger.info("EnemySpawnPoint: Spawned %s enemy at %s (spawn_id: %s)" % [enemy_type, global_position, spawn_id], "EnemySpawnPoint")
+	DebugLogger.info("EnemySpawnPoint: Spawned %s enemy at %s (spawn_id: %s)" % [kind(), global_position, spawn_id], "EnemySpawnPoint")
 
 	return enemy
 
@@ -162,4 +167,18 @@ func is_enemy_alive() -> bool:
 func enemy_stats() -> EnemyStats:
 	if custom_enemy_stats:
 		return custom_enemy_stats as EnemyStats
-	return load(STATS_PATH % enemy_type) as EnemyStats
+	return load(STATS_PATH % kind()) as EnemyStats
+
+
+## Вид, що тут зʼявляється (D652): big_kind, коли його арт уже є, інакше звичайний enemy_type.
+func kind() -> String:
+	if big_kind != "none" and EnemyVariety.available(big_kind):
+		return big_kind
+	return enemy_type
+
+
+## Сцена виду [param id]: звичайні — ENEMY_SCENES, великі — kinds.<id>.scene.
+static func scene_path(id: String) -> String:
+	if ENEMY_SCENES.has(id):
+		return ENEMY_SCENES[id]
+	return EnemyVariety.kind(id).scene

@@ -1,12 +1,14 @@
 extends SceneTree
 
-## Знімок D560: ряд розмірів (малий, середній, великий бандит і еліта) і бій зі щитоносцем — удар спереду в щит
+## Знімок D560, D652, D653: ряд розмірів (малий і середній бандит, шакал і шакал з проклятою піною — стати виду
+## jackal_cursed на кадрах звичайного шакала, поки його аркуша немає) і бій зі щитоносцем — удар спереду в щит
 ## (іскри), важкий удар розбиває щит (щит відлітає, поза збою), удар без щита. Усе в одному design/shots/enemy_variety/
 ## shield_fight.png. Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_enemy_variety.gd
 
 const BANDIT := "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"
 const SHIELD := "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn"
+const JACKAL := "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn"
 const PANEL := Vector2i(1100, 270)
 
 var game: Node
@@ -45,11 +47,11 @@ func _initialize() -> void:
 	await create_timer(0.6).timeout
 	var floor_y: float = hero.global_position.y
 
-	# Ряд розмірів: малий, середній, великий, еліта
+	# Ряд розмірів: малий і середній бандит, шакал, проклятий шакал з піною (D653)
 	var lineup: Array = []
-	var variants := [["small", false], ["medium", false], ["large", false], ["medium", true]]
+	var variants := [[BANDIT, "melee", "small"], [BANDIT, "melee", "medium"], [JACKAL, "fast", "medium"], [JACKAL, "jackal_cursed", "medium"]]
 	for i in variants.size():
-		lineup.append(_spawn(BANDIT, "melee", variants[i][0], variants[i][1], Vector2(hero.global_position.x + 120.0 + i * 85.0, floor_y)))
+		lineup.append(_spawn(variants[i][0], variants[i][1], variants[i][2], Vector2(hero.global_position.x + 120.0 + i * 95.0, floor_y)))
 	for i in 40: await physics_frame
 	for e: Node in lineup:
 		e.set_physics_process(false)
@@ -59,11 +61,13 @@ func _initialize() -> void:
 	hero.global_position.x = lineup[0].global_position.x - 120.0
 	await create_timer(0.4).timeout
 	await _grab((lineup[0].global_position + lineup[3].global_position) / 2.0 + Vector2(-30, 0))
+	await create_timer(0.5).timeout
+	await _grab(lineup[3].global_position + Vector2(-25, 20), 4.0)
 	for e: Node in lineup:
 		e.queue_free()
 
 	# Бій зі щитоносцем
-	var bearer: Node = _spawn(SHIELD, "shield", "medium", false, Vector2(hero.global_position.x + 220.0, floor_y))
+	var bearer: Node = _spawn(SHIELD, "shield", "medium", Vector2(hero.global_position.x + 220.0, floor_y))
 	for i in 40: await physics_frame
 	bearer.set_physics_process(false)
 	bearer.poise_max = 99
@@ -110,11 +114,15 @@ func _initialize() -> void:
 	quit()
 
 
-func _spawn(scene: String, kind: String, size_kind: String, elite: bool, at: Vector2) -> Node:
+## [param kind] — вид з enemy_variety.json; jackal_cursed без власних статів бере шакалові з його enemy_type.
+func _spawn(scene: String, kind: String, size_kind: String, at: Vector2) -> Node:
 	var e: Node = load(scene).instantiate()
-	e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
+	if kind == "jackal_cursed":
+		e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").duplicate()
+		e.enemy_stats.enemy_type = kind
+	else:
+		e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
 	e.size_kind = size_kind
-	e.elite = elite
 	e.position = game.map.to_local(at - Vector2(0, 40))
 	game.map.add_child(e)
 	return e
@@ -139,8 +147,8 @@ func _tap(action: StringName) -> void:
 	Input.parse_input_event(up)
 
 
-## Кадр навколо [param world] (світові px), PANEL завбільшки, у panels.
-func _grab(world: Vector2) -> void:
+## Кадр навколо [param world] (світові px), PANEL завбільшки, у panels; [param zoom] — збільшений центр кадру.
+func _grab(world: Vector2, zoom: float = 1.0) -> void:
 	Engine.time_scale = 0.0
 	await RenderingServer.frame_post_draw
 	var mid: Vector2 = root.get_viewport().get_canvas_transform() * world
@@ -149,5 +157,9 @@ func _grab(world: Vector2) -> void:
 	img.convert(Image.FORMAT_RGBA8)
 	var panel := Image.create(PANEL.x, PANEL.y, false, Image.FORMAT_RGBA8)
 	panel.blit_rect(img, rect, Vector2i.ZERO)
+	if zoom != 1.0:
+		var crop := Vector2i(Vector2(PANEL) / zoom)
+		panel = panel.get_region(Rect2i(PANEL / 2 - crop / 2, crop))
+		panel.resize(PANEL.x, PANEL.y, Image.INTERPOLATE_NEAREST)
 	panels.append(panel)
 	Engine.time_scale = 1.0

@@ -376,19 +376,20 @@ func _placements() -> void:
 				ck(false, "%s: no bats in the demo (no cave room; the Laboratory gets the Cthulhu flies, D589)" % file)
 			if p.enemy_type == "fly":
 				var spawner: Node = p.get_parent()
-				flies.append([file.get_basename(), spawner.get_child_count() - 1, p.elite, p.size])
+				flies.append([file.get_basename(), spawner.get_child_count() - 1, p.kind(), p.size])
 			if p.enemy_type == "vulture":
 				vultures.append([file.get_basename(), String(p.get_parent().name), p.position])
 		room.free()
 	print("  info vultures: %s" % [vultures])
 	# Trigger — теж дитина спавнера, тому точок = дітей − 1
-	ck(flies == [["Laboratory", 1, "always", "medium"]], "one Cthulhu fly, in the Laboratory, alone, always elite, medium (%s)" % [flies])
+	ck(flies == [["Laboratory", 1, "fly", "medium"]] and load("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd").is_elite("fly"),
+			"one Cthulhu fly, in the Laboratory, alone, medium; an elite by kind (D652) (%s)" % [flies])
 	ck(vultures.size() >= 2 and vultures.all(func(v: Array) -> bool: return v[0] in OUTDOORS), "vultures only outdoors (%d)" % vultures.size())
 	var map: Node = game.map
 	var lone: Node = map.get_node(^"Fight_LoneVulture")
 	var first: Node = lone.spawn_points[0]
-	ck(lone.spawn_points.size() == 1 and first.enemy_type == "vulture" and lone.variant_size(first) == "medium" and not lone.variant_elite(first),
-			"DesertRoad: the first vulture comes alone, medium, never elite")
+	ck(lone.spawn_points.size() == 1 and first.enemy_type == "vulture" and lone.variant_size(first) == "medium" and first.kind() == "vulture",
+			"DesertRoad: the first vulture comes alone, medium, an ordinary vulture")
 	var road: Array = vultures.filter(func(v: Array) -> bool: return v[0] == "DesertRoad")
 	ck(road.all(func(v: Array) -> bool: return v[2].x >= first.position.x or v[1] == "Fight_LoneVulture"), "no vulture on the road before the lone one")
 	var caravan: Array = map.get_node(^"Fight_Caravan").spawn_points.map(func(p: Node) -> String: return p.enemy_type)

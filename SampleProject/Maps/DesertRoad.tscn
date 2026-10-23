@@ -251,7 +251,6 @@ position = Vector2(1760, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 size = "medium"
-elite = "never"
 
 [node name="Fight_LoneVulture" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -272,7 +271,6 @@ position = Vector2(1900, 210)
 script = ExtResource("8_spawn_point")
 enemy_type = "vulture"
 size = "medium"
-elite = "never"
 
 [node name="Fight_LoneElite" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -288,12 +286,13 @@ position = Vector2(4300, 240)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneElite/Fight_LoneEliteTrigger"]
 shape = SubResource("RectangleShape2D_fight")
 
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneElite"]
+[node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_LoneElite"]
 position = Vector2(4480, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 size = "medium"
-elite = "always"
+big_kind = "bandit_brute"
+spawn_id = "Fight_LoneElite_EnemySpawnPoint1"
 
 [node name="Fight_Dunes" type="Node2D" parent="." unique_id=1773711575 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -312,20 +311,24 @@ position = Vector2(2170, 240)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Dunes/Fight_DunesTrigger" unique_id=1881644014]
 shape = SubResource("RectangleShape2D_fight")
 
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Dunes" unique_id=279423724]
+[node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_Dunes" unique_id=279423724]
 position = Vector2(2250, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
+big_kind = "bandit_brute"
+spawn_id = "Fight_Dunes_EnemySpawnPoint1"
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Dunes" unique_id=136671725]
 position = Vector2(2330, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 
-[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Dunes" unique_id=758727549]
+[node name="BigSlot_JackalPackLeader_4" type="Node2D" parent="Fight_Dunes" unique_id=758727549]
 position = Vector2(2490, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
+big_kind = "jackal_pack_leader"
+spawn_id = "Fight_Dunes_EnemySpawnPoint4"
 
 [node name="Fight_Mesa" type="Node2D" parent="." unique_id=1009990628 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -359,10 +362,12 @@ position = Vector2(2990, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 
-[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
+[node name="BigSlot_HeavyCrossbowman_4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
 position = Vector2(3070, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "archer"
+big_kind = "heavy_crossbowman"
+spawn_id = "Fight_Mesa_EnemySpawnPoint4"
 
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -384,10 +389,12 @@ position = Vector2(3500, 240)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Caravan/Fight_CaravanTrigger" unique_id=130227908]
 shape = SubResource("RectangleShape2D_fight")
 
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Caravan" unique_id=574678015]
+[node name="BigSlot_ArmouredScorpion_1" type="Node2D" parent="Fight_Caravan" unique_id=574678015]
 position = Vector2(3640, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
+big_kind = "armoured_scorpion"
+spawn_id = "Fight_Caravan_EnemySpawnPoint1"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Caravan" unique_id=1077175829]
 position = Vector2(3800, 368)

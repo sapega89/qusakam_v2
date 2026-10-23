@@ -51,6 +51,11 @@ func _ready() -> void:
 	enemy_logic.player_detected.connect(bar.show)
 
 
+## Бос — не вид з enemy_variety.json (D652): без розміру, еліти й рівня бою, його числа — свої (D671).
+func _apply_variety() -> void:
+	pass
+
+
 ## Стан ATTACK у боса — це очікування між ходами, а не удар: замість анімації attack (фальшивий замах) — спокій.
 ## Удари грають свої пози (telegraph, strike, combo); поза удару тримається, доки бос відновлюється (move.recovery).
 func _on_logic_state_changed(new_state: EnemyLogic.AIState) -> void:

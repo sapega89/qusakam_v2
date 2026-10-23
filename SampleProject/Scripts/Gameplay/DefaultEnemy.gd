@@ -2,7 +2,7 @@ extends CombatBody2D
 class_name DefaultEnemy
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
-const ELITE_OUTLINE = preload("res://SampleProject/Shaders/elite_outline.gdshader")
+const CURSED_FOAM = preload("res://SampleProject/Scenes/FX/CursedFoam.tscn")
 const FLYING_LOGIC = preload("res://SampleProject/Scripts/Gameplay/Components/FlyingLogic.gd")
 # signal hp_changed вже визначений в CombatBody2D
 
@@ -26,8 +26,9 @@ var _burn_tick := 0.0
 ## Якщо встановлено, параметри з resource перезапишуть дефолтні значення
 @export var enemy_stats: EnemyStats
 
-## Різновид (D560): розмір (EnemyVariety.SIZES) і еліта — ставить RoomEnemySpawner до _ready(); множники з enemy_variety.json.
+## Різновид (D560): розмір (EnemyVariety.SIZES) ставить RoomEnemySpawner до _ready(); множники з enemy_variety.json.
 var size_kind := "medium"
+## Еліта — властивість виду (D652: enemy_variety.json kinds.<enemy_type>.elite), ставить _apply_variety.
 var elite := false
 ## Рівень бою (D642): рівень, на якому герой його зустрічає; HP і шкода ростуть за enemy_variety.json "levels".
 var level := 1
@@ -205,9 +206,12 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 	DebugLogger.info("DefaultEnemy: Applied stats from EnemyStats resource (type: %s)" % stats.enemy_type, "Enemy")
 
-## Розмір, еліта (D560) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт і форми (B128: що видно, те й б'є) ростуть
-## від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом із хітбоксом.
+## Розмір, еліта (D560, D652) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
+## і форми (B128: що видно, те й б'є) ростуть від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом
+## із хітбоксом. Еліта — це вид зі своїм артом (D652): вона не росте й не має контуру, лише множники.
 func _apply_variety() -> void:
+	var kind: Dictionary = EnemyVariety.kind(enemy_stats.enemy_type)
+	elite = kind.elite
 	var mult: Dictionary = EnemyVariety.size(size_kind)
 	var grow: float = mult.scale
 	var health: float = mult.health
@@ -218,11 +222,11 @@ func _apply_variety() -> void:
 	hit *= grown.damage
 	if elite:
 		var marks: Dictionary = EnemyVariety.elite()
-		grow *= marks.scale
 		health *= marks.health
 		hit *= marks.damage
 		xp *= marks.xp
-		_mark_elite(marks)
+	if kind.has("foam"):
+		_add_foam(Vector2(kind.foam[0], kind.foam[1]))
 	Max_Health = roundi(Max_Health * health)
 	current_health = Max_Health
 	base_damage *= hit
@@ -244,15 +248,12 @@ func _grow(factor: float) -> void:
 	attack_range *= factor
 	lunge *= factor
 
-## Знак еліти (D560): тонкий золотий контур, що дихає (Shaders/elite_outline.gdshader). Арт проклятих лабораторних
-## (D589) згодом замінить його для своїх видів.
-func _mark_elite(marks: Dictionary) -> void:
-	var glow := ShaderMaterial.new()
-	glow.shader = ELITE_OUTLINE
-	glow.set_shader_parameter(&"outline_color", Color(marks.outline_color))
-	glow.set_shader_parameter(&"alpha_min", marks.outline_alpha_min)
-	glow.set_shader_parameter(&"alpha_max", marks.outline_alpha_max)
-	sprite.material = glow
+## Проклята піна (D653): сяйні сині краплі з пащі [param mouth] (пікселі спрайта від центру кадру, погляд праворуч) —
+## ефект, а не арт, тож його може мати будь-який проклятий вид (kinds.<id>.foam).
+func _add_foam(mouth: Vector2) -> void:
+	var foam: Node2D = CURSED_FOAM.instantiate()
+	foam.mouth = mouth
+	sprite.add_child(foam)
 
 func _initialize_components():
 	"""Ініціалізує EnemyLogic та EnemyView"""
