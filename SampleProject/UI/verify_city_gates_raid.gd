@@ -168,7 +168,11 @@ func _initialize() -> void:
 	flags.erase("city_gates_intro_complete")  # знову APPROACH — RaidTrigger чатує
 	game.set_quest_flags(flags)
 	started.clear()
-	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	# Перевіряємо одразу після заміни кімнати, ще під чорним (D434): після появи герой уже встиг би впасти.
+	var old_map: Node = game.map
+	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	while game.map == old_map or game.map == null:
+		await process_frame
 	var body: Transform2D = PhysicsServer2D.body_get_state(player.get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM)
 	ck(body.origin.is_equal_approx(player.global_position), "physics body at the arrival right away (%s vs %s)" % [body.origin, player.global_position])
 	var y0: float = player.global_position.y
