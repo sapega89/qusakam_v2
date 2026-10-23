@@ -70,31 +70,8 @@ the history, this note keeps only what is open.
 - **Evidence:** `design/shots/world_fixes/LaboratoryOutside.png`.
 - **Severity:** visual. **Found:** 2026-10-23, `cloud/world-fixes` (seen, not in its scope).
 
-### B133 — Parrying a boss hazard staggers the boss from any distance
-- **Where:** `BossFireball.gd:30`, `BossPillar.gd:26`, `BossLogic.gd:103` → `PlayerCombat.gd:465-471`, `DefaultEnemy.gd:624-625`. The hazard names the boss as the damage source.
-- **Got:** a parried fireball staggered the djinn 450 px away (0.93 s left, 0 damage). A floor pillar can be blocked just by facing the boss. **Expected:** hazards cannot be parried or blocked; only melee strikes and arrows can.
-- **Severity:** gameplay. **Found:** 2026-10-23, [[combat_critique_2026-10-23]] (confirmed by probe).
-
-### B134 — Knockback cancels any wind-up, even an armoured or boss swing
-- **Where:** `EnemyLogic.gd:370-374` (no armour or boss check). A combo's last swing (40 px), every mace hit (60 px), and Astrit's and the guard's assists all do it.
-- **Got:** a level-1 bare-hand combo cancelled the Brass slam wind-up at 0.65 s, with no shockwave, while the boss's poise was not broken. **Expected:** once a tell is shown, the swing completes unless poise breaks; bosses ignore knockback.
-- **Severity:** gameplay. **Found:** 2026-10-23, combat critique (probe).
-
-### B135 — Boss timers keep running while the game is paused
-- **Where:** `BossLogic.gd:50`, `:90`, `:118`; `BossPillar.gd:21`, `:27`. `create_timer` is called without stopping on pause.
-- **Got:** the hero lost 38 HP during 1.2 s of pause. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (probe).
-
 ### B138 — The saved hero HP is ignored: every load gives full HP
 - **Where:** `PlayerDataModule.gd:31`; `PlayerStateManager.gd:33` (no callers); `Player.gd:70-71`. **Severity:** gameplay / save. **Found:** 2026-10-23, combat critique.
-
-### B139 — Enemies notice the hero through floors and walls
-- **Where:** `default_enemy.tscn` (a 300-px circle); `EnemyLogic.gd:222-227` (distance checked along X only); `PlayerCombat.gd:274-278`.
-- **Got:** an enemy on another floor chases, swings at the ceiling and keeps the hero "in combat", so the fight music plays.
-- **Expected:** an enemy notices the hero only on its own floor or in line of sight.
-- **Severity:** gameplay. **Found:** 2026-10-23, combat critique.
-
-### B140 — Dead code: `VFXHooks.play_boss_attack_effect` and its helpers, and `EnemyLogic`'s HP-based retreat
-- **Where:** `VFXHooks.gd:202-303`; `EnemyLogic.gd:459-525` (the retreat can only run at 1 HP or less). It is removed per D131. **Severity:** code. **Found:** 2026-10-23, combat critique.
 
 ### B127 — Nobody is laid on the operating table
 - **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
@@ -137,7 +114,7 @@ the history, this note keeps only what is open.
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
 
-> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed. **B129, B130, B131, B132** fixed by `cloud/menu-qa` — one hero portrait in the Game Menu (D534), jobs and weapon icons on Status (D532), Equipment's empty frame removed (D531), unexplored map cells not drawn; rows removed. **B136** fixed by `cloud/combat-player` — facing stays locked until the hit is out (D536, `verify_combat_player`); row removed.
+> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed. **B129, B130, B131, B132** fixed by `cloud/menu-qa` — one hero portrait in the Game Menu (D534), jobs and weapon icons on Status (D532), Equipment's empty frame removed (D531), unexplored map cells not drawn; rows removed. **B136** fixed by `cloud/combat-player` — facing stays locked until the hit is out (D536, `verify_combat_player`); row removed. **B133, B134, B135, B139, B140** fixed by `cloud/combat-enemies` — hazards cannot be parried (D575), committed enemy swings ignore knockback (D576), boss timers pause (D577), noticing needs sight (D578), the dead boss-effect code is gone; rows removed.
 
 > **Round 8 (2026-10-22):** **B116** fixed by `cloud/combat-fixes` — a held or dead hero leaves combat at once (D425); row removed.
 > **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.

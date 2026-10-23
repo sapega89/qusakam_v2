@@ -25,6 +25,20 @@ an open question below, never filled in. Used by skills, enemies, companions and
 - **There is no day and no night.**
 - **The sky is bright: light comes from the sky itself, with no sun.** (Read with the line above as: a bright, empty sky — no sun, no stars, no heavenly bodies. If "немає небес" meant something else, correct this line.)
 
+## Kusakam — the player fantasy (Sapega, 2026-10-23)
+
+> Маленький ящур, якого дід заставляв вчитись на шамана, бо вся його сім'я була шаманами, поступово відкриває в собі
+> сили паладина. Він слабкий наївний селянин, який жив на откосі світів. Там ніколи не було ні торговців, ні кого,
+> тільки жителі пустелі, яких захищав бар'єр; але бар'єр спав, і їх знайшли розбійники. Ящур дуже трусливий, але відважний.
+
+- **A small lizardfolk from a family of shamans.** His grandfather made him study to be a shaman; instead, little by little,
+  he finds a **paladin's** powers in himself.
+- **A weak, naive villager** from the **edge of the worlds** («на откосі світів»): no traders and no strangers ever came, only
+  desert folk.
+- **A barrier** protected them. **The barrier fell asleep**, and the **bandits** found them. Why it slept is not said; that is
+  an open question.
+- **Very cowardly, but brave**: he is scared and goes anyway.
+
 ## Characters (Sapega, 2026-10-18)
 
 > астріт це воїн талматург з щитом та книгою
