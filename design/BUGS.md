@@ -81,10 +81,6 @@ the history, this note keeps only what is open.
 ### B136 — Turning mid-swing turns the body and weapon, but not the hitbox
 - **Where:** `PlayerCombat.gd:494-497`, `:296-297`; `WeaponView.gd:119`. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (by reading).
 
-### B137 — Skills ignore Phys. Atk., so a level-20 ultimate hits for less than a light swing
-- **Where:** `SkillManager.gd:131-132`, `SkillCombatExecutor.gd:17-34`. Flat 20–50 against a light hit of 45–150; this contradicts D491.
-- **Expected:** skill damage scales with the hero's attack. **Severity:** gameplay. **Found:** 2026-10-23, combat critique.
-
 ### B138 — The saved hero HP is ignored: every load gives full HP
 - **Where:** `PlayerDataModule.gd:31`; `PlayerStateManager.gd:33` (no callers); `Player.gd:70-71`. **Severity:** gameplay / save. **Found:** 2026-10-23, combat critique.
 
@@ -165,6 +161,8 @@ the history, this note keeps only what is open.
 - **Evidence:** `design/shots/hero_blocks_arrow.png`
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
+
+> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed.
 
 > **Round 8 (2026-10-22):** **B116** fixed by `cloud/combat-fixes` — a held or dead hero leaves combat at once (D425); row removed.
 > **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
