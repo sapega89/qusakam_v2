@@ -92,6 +92,14 @@ toggle_mode = true
 button_group = SubResource("ButtonGroup_sections")
 text = "BESTIARY"
 
+[node name="NotesTab" type="Button" parent="Margin/Page/SectionTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_sections")
+text = "NOTES"
+
 [node name="Rule" type="HSeparator" parent="Margin/Page"]
 layout_mode = 2
 

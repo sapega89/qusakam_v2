@@ -19,12 +19,13 @@ const EMPTY_TEXT := "No journal entries yet."
 ## load(), не preload: сервіс тягне Game (як у NpcBase).
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 
-## Розділи журналу (BACKLOG 13, D290): вкладки над списком, ті самі колонки «список + текст».
+## Розділи журналу (BACKLOG 13, D290; Notes — Q87): вкладки над списком, ті самі колонки «список + текст».
 ## [id, заголовок сторінки, підпис списку, порожній стан]
 const SECTIONS := {
 	"quests": ["Quests", "", "No journal entries yet."],
 	"characters": ["Characters", "PEOPLE MET", "You have not met anyone yet."],
 	"bestiary": ["Bestiary", "ENEMIES MET", "No enemies met yet."],
+	"notes": ["Notes", "NOTES FOUND", "No notes found yet."],
 }
 const PLACEHOLDER := "—"
 ## Ідентифікатор підпункту поточної цілі з HUD під поточним підетапом (BACKLOG 37).
@@ -56,7 +57,8 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _list_header: Label = %ListHeader
 @onready var _objective_line: Label = %ObjectiveLine
 @onready var _empty_state: Label = %EmptyState
-@onready var _tabs: Dictionary = {"quests": %QuestsTab, "characters": %CharactersTab, "bestiary": %BestiaryTab}
+@onready var _tabs: Dictionary = {"quests": %QuestsTab, "characters": %CharactersTab, "bestiary": %BestiaryTab,
+	"notes": %NotesTab}
 ## Characters — картка персонажа (D486, Figma 192:1754): зліва пергамент зі світлом над місцем зустрічі,
 ## справа ілюстрація (поки — портрет D321, nearest), під нею епітет та ім'я. ←/→ — інша людина, A / Enter — опис.
 @onready var _card: HBoxContainer = %PersonCard
@@ -120,6 +122,9 @@ func _load() -> void:
 			set_entries(JournalRecords.enemies().map(func(e: Dictionary) -> Dictionary:
 				return {"id": e.kind, "title": e.name, "description": e.text,
 					"group": tr("Defeated: %d") % e.kills if e.kills > 0 else tr("Not yet defeated")}))
+		"notes":  # знайдені шматки історії (D622, Q87): назви в порядку знахідок, справа — повний текст
+			set_entries(JournalRecords.stories().map(func(s: Dictionary) -> Dictionary:
+				return {"id": s.id, "title": s.title, "description": s.text}))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -303,6 +308,26 @@ func _rebuild_rows() -> void:
 			row.pressed.connect(_on_row_pressed.bind(row))
 			# Стрілки ↑/↓ по списку одразу показують текст пункту справа.
 			row.focus_entered.connect(_on_row_focused.bind(row))
+	_link_tab_and_list(rows)
+
+
+## ↑ з першого рядка — на вкладку цього розділу, ↓ з неї — на перший рядок (а не на найближчу кнопку за геометрією).
+## Characters веде вниз на картку (D486).
+func _link_tab_and_list(rows: Array) -> void:
+	var focusable: Array = rows.filter(func(r: Button) -> bool: return r.focus_mode == Control.FOCUS_ALL)
+	for row: Button in rows:
+		row.focus_neighbor_top = NodePath()
+	for id: String in _tabs:
+		if id != "characters":
+			(_tabs[id] as Button).focus_neighbor_bottom = NodePath()
+	if section == "characters":
+		return
+	var tab: Button = _tabs[section]
+	if focusable.is_empty():
+		return
+	var first: Button = focusable[0]
+	first.focus_neighbor_top = first.get_path_to(tab)
+	tab.focus_neighbor_bottom = tab.get_path_to(first)
 
 
 func _on_row_pressed(row: Button) -> void:
