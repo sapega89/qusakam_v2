@@ -101,6 +101,7 @@
 		"call_alisia": {"bus": "Voice", "files": ["Voice/Calls/alisia_0.ogg", "Voice/Calls/alisia_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
 		"call_astrit": {"bus": "Voice", "files": ["Voice/Calls/astrit_0.ogg", "Voice/Calls/astrit_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
 		"call_urizen": {"bus": "Voice", "files": ["Voice/Calls/urizen_0.ogg", "Voice/Calls/urizen_1.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"assist_denied": {"bus": "SFX", "files": ["SFX/cast_interrupt.ogg"], "volume_db": -9.0, "pitch": 1.5, "jitter": 0.0},
 		"hero_effort": {"bus": "Voice", "files": ["Voice/Hero/effort_0.ogg", "Voice/Hero/effort_1.ogg", "Voice/Hero/effort_2.ogg"], "volume_db": -4.0, "jitter": 0.03},
 		"hero_hurt_voice": {"bus": "Voice", "files": ["Voice/Hero/hurt_0.ogg", "Voice/Hero/hurt_1.ogg", "Voice/Hero/hurt_2.ogg", "Voice/Hero/hurt_3.ogg", "Voice/Hero/hurt_4.ogg"], "volume_db": -4.0, "jitter": 0.03},
 		"hero_death": {"bus": "Voice", "files": ["Voice/Hero/death_0.ogg"], "volume_db": 0.0, "jitter": 0.0},

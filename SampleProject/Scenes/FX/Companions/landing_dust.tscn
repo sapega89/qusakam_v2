@@ -1,0 +1,61 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/ring.tres" id="ring"]
+[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
+
+[sub_resource type="Gradient" id="G_dust"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.9, 0.82, 0.66, 0.9, 0.76, 0.66, 0.5, 0)
+
+[node name="LandingDust" type="Node2D"]
+z_index = 199
+script = ExtResource("fx")
+life = 0.5
+flash_grow = 1.8
+flash_time = 0.2
+metadata/_doc = "Dust when a companion lands or skids to a stop at the start of an assist (D515)"
+
+[node name="FlashRing" type="Sprite2D" parent="."]
+modulate = Color(1, 0.94, 0.82, 0.55)
+material = ExtResource("add")
+scale = Vector2(0.55, 0.16)
+texture = ExtResource("ring")
+
+[node name="DustRight" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 8
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(4, 2)
+direction = Vector2(1, -0.25)
+spread = 18.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 70.0
+initial_velocity_max = 150.0
+damping_min = 220.0
+damping_max = 300.0
+scale_amount_min = 2.5
+scale_amount_max = 4.5
+color_ramp = SubResource("G_dust")
+
+[node name="DustLeft" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 8
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(4, 2)
+direction = Vector2(-1, -0.25)
+spread = 18.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 70.0
+initial_velocity_max = 150.0
+damping_min = 220.0
+damping_max = 300.0
+scale_amount_min = 2.5
+scale_amount_max = 4.5
+color_ramp = SubResource("G_dust")

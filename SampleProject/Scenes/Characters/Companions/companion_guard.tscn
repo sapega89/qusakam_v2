@@ -110,6 +110,12 @@ strike_frame = 6
 damage = 999
 knockback = 80.0
 reach = 900.0
+entrance_time = 0.6
+windup_time = 0.35
+strike_speed = 0.85
+hold_time = 0.4
+exit_time = 0.6
+tint = Color(0.8, 0.9, 1, 1)
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1

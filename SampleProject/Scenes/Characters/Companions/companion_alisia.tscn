@@ -102,6 +102,11 @@ mode = 3
 strike_frame = 4
 damage = 24
 reach = 640.0
+entrance_time = 0.7
+windup_time = 0.45
+hold_time = 0.5
+exit_time = 0.65
+tint = Color(0.7, 1, 0.7, 1)
 pet_scene = ExtResource("cat")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]

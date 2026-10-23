@@ -1,15 +1,16 @@
 extends ManagerBase
 class_name CompanionManager
 
-## 🤝 Асисти компаньйонів (D201, D209): одна кнопка викликає наступного готового, у кожного свій кулдаун.
+## 🤝 Асисти компаньйонів (D201, D209, D515): одна кнопка викликає наступного з загону. На полі — лише один:
+## поки він виступає, кнопка нікого не кличе (assist_denied — звук і трус слота), а коли піде — стартує спільний кулдаун.
 ## Хто відкритий — рахується з сюжетних прапорців лабораторії (вони й так у сейві), окремого списку немає.
 ## Охоронець біля воріт міста — разовий туторіал: CityGates пропонує його на час бою (offer_guard).
 ## Загін (D220): до PARTY_SIZE відкритих, порядок = черга кнопки; гравець збирає його в Status.
 ## Відкритий компаньйон сам у загін не стає (D464): лише доступний, доки гравець не вибере його в Status;
 ## кнопка кличе тільки вибраних. Зберігається в player_state.companion_party.
 
-## Кулдаун кожного компаньйона після виклику, с (мок, D209).
-const COOLDOWN := 15.0
+## Спільний кулдаун після того, як компаньйон пішов з поля, с (умовно, D515; раніше — 15 с у кожного, D209).
+const COOLDOWN := 8.0
 ## Компаньйони лабораторії в порядку черги і прапорець, що їх відкриває (D209).
 const UNLOCK_FLAGS := {
 	"alisia": "lab_companion_01_complete",
@@ -28,8 +29,14 @@ const SCENES := {
 	"urizen": preload("res://SampleProject/Scenes/Characters/Companions/companion_urizen.tscn"),
 }
 
-## companion_id -> секунд до готовності. Миттєвий стан, не зберігається (як перезарядки навичок).
-var _cooldowns: Dictionary = {}
+## Стан слота асисту (HUD, D515).
+enum State { NONE, READY, ACTIVE, COOLDOWN }
+
+## Секунд до готовності спільного кулдауну. Миттєвий стан, не зберігається (як перезарядки навичок).
+var _cooldown := 0.0
+## Хто зараз на полі (id), або "" — нікого, і його вузол.
+var _active := ""
+var _active_actor: Node2D
 ## Хто був викликаний останнім — черга йде далі від нього.
 var _last_called := ""
 ## Охоронець біля воріт зараз доступний (CityGates, на час бою).
@@ -42,11 +49,12 @@ func _initialize() -> void:
 
 
 func _process(delta: float) -> void:
-	for id in _cooldowns.keys():
-		_cooldowns[id] -= delta
-		if _cooldowns[id] <= 0.0:
-			_cooldowns.erase(id)
-			EventBus.assist_ready.emit(id)
+	if _cooldown <= 0.0:
+		return
+	_cooldown -= delta
+	if _cooldown <= 0.0:
+		_cooldown = 0.0
+		EventBus.assist_ready.emit(peek_next())
 
 
 func is_unlocked(companion_id: String) -> bool:
@@ -62,12 +70,31 @@ func get_unlocked() -> Array[String]:
 	return out
 
 
+## Кнопку можна натиснути: ніхто не на полі й спільний кулдаун минув.
+func is_free() -> bool:
+	return _active == "" and _cooldown <= 0.0
+
+
 func is_ready(companion_id: String) -> bool:
-	return is_unlocked(companion_id) and not _cooldowns.has(companion_id)
+	return is_unlocked(companion_id) and is_free()
 
 
-func get_remaining_cooldown(companion_id: String) -> float:
-	return float(_cooldowns.get(companion_id, 0.0))
+func get_remaining_cooldown() -> float:
+	return _cooldown
+
+
+## Хто зараз на полі, або "".
+func get_active() -> String:
+	return _active
+
+
+## Стан слота асисту для HUD: нікого в черзі / готовий / на полі / кулдаун.
+func get_state() -> State:
+	if _active != "":
+		return State.ACTIVE
+	if get_next_in_queue() == "":
+		return State.NONE
+	return State.COOLDOWN if _cooldown > 0.0 else State.READY
 
 
 ## CityGates: на час бою біля воріт кнопка асисту кличе охоронця (туторіал, D209).
@@ -105,45 +132,46 @@ func announce_unlock(flag: String) -> void:
 	EventBus.companion_joined.emit(UNLOCK_FLAGS.find_key(flag))
 
 
-## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний у загоні за останнім викликаним, хто готовий.
-## Повертає id того, хто вийшов, або "" — нікого.
+## Кнопка асисту: охоронець, якщо його пропонують; інакше наступний у загоні за останнім викликаним.
+## Повертає id того, хто вийшов, або "" — нікого. Поки хтось на полі чи йде кулдаун — відмова (assist_denied).
 func call_next() -> String:
-	var id := peek_next()
+	var id := get_next_in_queue()
+	if id == "":
+		return ""
+	if not is_free():
+		EventBus.assist_denied.emit(_active if _active != "" else id)
+		return ""
 	if id == "guard":
 		_guard_offered = false
-	elif id != "":
-		_cooldowns[id] = COOLDOWN
+	else:
 		_last_called = id
-	if id != "":
-		_send(id)
+	_send(id)
 	return id
 
 
-## Хто вийде на наступне натискання (для HUD), або "" — нікого готового.
+## Хто вийде на наступне натискання, або "" — нікого готового.
 func peek_next() -> String:
+	return get_next_in_queue() if is_free() else ""
+
+
+## Хто наступний у черзі, незалежно від кулдауну (HUD показує його й під кулдауном), або "" — черга порожня.
+func get_next_in_queue() -> String:
 	if _guard_offered:
 		return "guard"
 	var party := get_party()
 	var start := party.find(_last_called) + 1
 	for i in party.size():
 		var id: String = party[(start + i) % party.size()]
-		if is_ready(id):
+		if is_unlocked(id):
 			return id
 	return ""
 
 
-## Хто з тих, що на кулдауні, звільниться першим (для HUD), або "".
-func get_soonest_on_cooldown() -> String:
-	var best := ""
-	for id in _cooldowns:
-		if best == "" or _cooldowns[id] < _cooldowns[best]:
-			best = id
-	return best
-
-
-## Нова сесія гри (Game): кулдауни, черга й пропозиція охоронця не переходять з минулої.
+## Нова сесія гри (Game): кулдаун, черга, хто на полі й пропозиція охоронця не переходять з минулої.
 func reset() -> void:
-	_cooldowns.clear()
+	_cooldown = 0.0
+	_active = ""
+	_active_actor = null
 	_last_called = ""
 	_guard_offered = false
 
@@ -154,5 +182,19 @@ func _send(companion_id: String) -> void:
 	var actor: Node2D = SCENES[companion_id].instantiate()
 	# У кімнату, а не до героя (він дитина Game): при переході актор, монети й кішка зникають разом із кімнатою.
 	Game.get_singleton().map.add_child(actor)
+	_active = companion_id
+	_active_actor = actor
+	# Пішов сам або зник разом з кімнатою — поле вільне, стартує спільний кулдаун (D515).
+	actor.tree_exiting.connect(_on_actor_left.bind(actor))
 	actor.start(hero)
 	EventBus.assist_called.emit(companion_id)
+
+
+## Актор минулої сесії, що зникає з її кімнатою вже після reset(), кулдаун нової не запускає.
+func _on_actor_left(actor: Node2D) -> void:
+	if actor != _active_actor:
+		return
+	_active = ""
+	_active_actor = null
+	_cooldown = COOLDOWN
+	EventBus.assist_left.emit()

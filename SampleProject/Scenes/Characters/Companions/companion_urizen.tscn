@@ -111,6 +111,13 @@ strike_frame = 3
 damage = 30
 stun = 1.0
 reach = 260.0
+entrance = 1
+entrance_time = 0.6
+windup_time = 0.35
+hold_time = 0.35
+exit = 1
+exit_time = 0.6
+tint = Color(1, 0.85, 0.35, 1)
 coin_scene = ExtResource("coin")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]

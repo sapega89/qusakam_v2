@@ -19,8 +19,11 @@ const ICON_SIZE := 28
 var _skill_manager: Node = null
 var _skill_database: Node = null
 var _slots: Array[Control] = []
-## Що зараз намальовано в слоті асисту ("id:готовий").
+## Що зараз намальовано в слоті асисту ("id:стан").
 var _assist_shown := ""
+## Пульс рамки, поки компаньйон на полі (D515), і трус портрета на відмову.
+var _assist_pulse: Tween
+var _assist_shake: Tween
 
 
 func _ready() -> void:
@@ -40,6 +43,7 @@ func _connect_live_sources() -> void:
 		[EventBus.skill_used, _on_skill_used],
 		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
 		[EventBus.input_device_changed, _on_input_device_changed],
+		[EventBus.assist_denied, _on_assist_denied],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -130,8 +134,9 @@ func _build_slots() -> void:
 	_build_assist_bind()
 
 
-## Асист компаньйона (D209) — праворуч від навичок: портрет того, хто вийде на кнопку асисту;
-## коли всі на кулдауні — того, хто звільниться першим, із залишком. Нікого не відкрито — слота немає.
+## Асист компаньйона (D209, D515) — праворуч від навичок, три стани: готовий (портрет того, хто вийде, золота рамка
+## й бейдж), на полі (портрет того, хто виступає, рамка пульсує, бейдж згаслий), кулдаун (наступний у черзі тьмяно,
+## із залишком секунд). Нікого в загоні — слота немає.
 func _build_assist_bind() -> void:
 	var bind := VBoxContainer.new()
 	bind.name = "AssistBind"
@@ -175,26 +180,51 @@ func _build_assist_bind() -> void:
 func _update_assist() -> void:
 	var cm := ServiceLocator.get_companion_manager()
 	var bind: Control = _slots_row.get_node(^"AssistBind")
-	var ready_id: String = cm.peek_next()
-	var id: String = ready_id if ready_id != "" else cm.get_soonest_on_cooldown()
-	bind.visible = id != ""
-	if id == "":
+	var state: CompanionManager.State = cm.get_state()
+	bind.visible = state != CompanionManager.State.NONE
+	if state == CompanionManager.State.NONE:
 		return
+	var id: String = cm.get_active() if state == CompanionManager.State.ACTIVE else cm.get_next_in_queue()
 	var slot: Panel = bind.get_node(^"Slot")
 	var overlay: Label = slot.get_node(^"Cooldown")
-	var ready := ready_id != ""
-	overlay.text = tr("%ds") % ceili(cm.get_remaining_cooldown(id))
-	# Портрет і стилі — лише коли змінився хто / готовність, не щокадру.
-	var shown := "%s:%s" % [id, ready]
+	overlay.text = tr("%ds") % ceili(cm.get_remaining_cooldown())
+	# Портрет і стилі — лише коли змінився хто / стан, не щокадру.
+	var shown := "%s:%d" % [id, state]
 	if shown == _assist_shown:
 		return
 	_assist_shown = shown
+	var ready := state == CompanionManager.State.READY
+	var active := state == CompanionManager.State.ACTIVE
 	var badge: PanelContainer = bind.get_node(^"Badge")
-	slot.get_node(^"Portrait").texture = load(CompanionManager.PORTRAIT_PATH % id)
-	overlay.visible = not ready
-	slot.add_theme_stylebox_override("panel", _slot_box(ready))
+	var portrait: TextureRect = slot.get_node(^"Portrait")
+	portrait.texture = load(CompanionManager.PORTRAIT_PATH % id)
+	var dim := UITokens.ASSIST_COOLDOWN_DIM
+	portrait.modulate = Color(dim, dim, dim) if state == CompanionManager.State.COOLDOWN else Color.WHITE
+	overlay.visible = state == CompanionManager.State.COOLDOWN
+	var box := _slot_box(ready or active)
+	slot.add_theme_stylebox_override("panel", box)
 	badge.add_theme_stylebox_override("panel", _badge_box(ready))
 	badge.get_node(^"Key").add_theme_color_override("font_color", UITokens.ON_ACCENT if ready else UITokens.TEXT_PRIMARY)
+	if _assist_pulse != null:
+		_assist_pulse.kill()
+		_assist_pulse = null
+	if active:
+		_assist_pulse = create_tween().set_loops()
+		_assist_pulse.tween_property(box, ^"shadow_size", UITokens.ASSIST_PULSE_SHADOW, UITokens.ASSIST_PULSE_TIME / 2.0).set_trans(Tween.TRANS_SINE)
+		_assist_pulse.tween_property(box, ^"shadow_size", 0, UITokens.ASSIST_PULSE_TIME / 2.0).set_trans(Tween.TRANS_SINE)
+
+
+## Кнопку натиснули, поки компаньйон на полі чи йде кулдаун (D515): портрет і залишок тремтять (звук — SoundHooks).
+func _on_assist_denied(_id: String) -> void:
+	var slot: Panel = _slots_row.get_node(^"AssistBind/Slot")
+	if _assist_shake != null:
+		_assist_shake.kill()
+	var shake_px := UITokens.ASSIST_SHAKE_PX
+	var step := UITokens.ASSIST_SHAKE_TIME / 4.0
+	_assist_shake = create_tween()
+	for x: float in [shake_px, -shake_px, shake_px / 2.0, 0.0]:
+		_assist_shake.tween_property(slot.get_node(^"Portrait"), ^"position:x", x, step)
+		_assist_shake.parallel().tween_property(slot.get_node(^"Cooldown"), ^"position:x", x, step)
 
 
 ## Кнопка дії з InputMap на пристрої, яким грали останнім (BACKLOG 24) — бейдж показує справжнє призначення.
