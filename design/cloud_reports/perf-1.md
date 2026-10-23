@@ -7,7 +7,7 @@ tags: [cloud, performance, loading, D434]
 # Cloud report — `cloud/perf-1` (2026-10-23)
 
 **Done:** [[performance_plan]] slices 1, 2, 3 and 6, plus D434. A room change now fades to black (0.25 s), the room swaps under black and the screen fades back in (0.25 s). Walking across an edge, doors, story teleports, New Game and Load Game all use this fade. On the main thread a swap now costs 0.4–2.3 ms for load+instantiate (before: 4–260 ms), and every room change prints 0–4 log lines (before: 19–95). **Not done:** slices 4, 5 and 7 (not requested; 7 is still blocked on Q83/Q84). The first room after New Game/Load Game still loads on the main thread, under a black screen (see §5).
-**D-IDs for the register (agent calls, for Sapega to confirm):** D477–D480 (text in §6). **B rows fixed:** none.
+**D-IDs for the register (agent calls, for Sapega to confirm):** D477–D508 (text in §6). **B rows fixed:** none.
 **Full suite:** `Scripts/Tools/run_verify.sh` → **SUITE: ALL PASS** (95 scripts, 0 SCRIPT ERROR).
 
 Branch `cloud/perf-1` from `origin/feature/backlog` @ `4c7903b8`.
@@ -42,7 +42,7 @@ Branch `cloud/perf-1` from `origin/feature/backlog` @ `4c7903b8`.
   A change that starts during another one waits for `room_change_finished`.
 - **`teleport_to_room()`** is now a coroutine: it awaits `load_room()`, places the hero, and awaits the fade-in. `RoomDoor` still calls it deferred.
 - **Walking across an edge**: the new `Scripts/Gameplay/FadeRoomTransitions.gd` replaces `ScrollingRoomTransitions`, whose camera pan would happen under black and so would never be seen. The new module keeps the room-offset shift, the 16 px edge nudge and the camera smoothing reset. It keeps the tree paused until the fade-in ends, as the scroll did, so the hero cannot cross back. The addon file is untouched.
-- **Cutscenes that teleport** (Canyon → DesertRoad, MayorHall → LabCells) still fade out themselves (0.6 s) and call `teleport_to_room()` without `await`, because their room is freed. They no longer call `from_black`: the room change lifts their black (D478). `verify_canyon_exit` and `verify_mayor_hall` pass.
+- **Cutscenes that teleport** (Canyon → DesertRoad, MayorHall → LabCells) still fade out themselves (0.6 s) and call `teleport_to_room()` without `await`, because their room is freed. They no longer call `from_black`: the room change lifts their black (D506). `verify_canyon_exit` and `verify_mayor_hall` pass.
 - **`ScreenFade`** (`Scripts/Systems/Cutscenes/ScreenFade.gd`):
   - it takes a `time` and gains `is_on()`/`is_black()`;
   - `from_black()` keeps the overlay itself rather than its host, which a teleport may have freed (this caused a SCRIPT ERROR in `verify_lab_boss`);
@@ -61,10 +61,10 @@ Branch `cloud/perf-1` from `origin/feature/backlog` @ `4c7903b8`.
 ## 6. D-ID text (next free numbers after D476)
 | D-ID | Kind | Decision |
 |---|---|---|
-| D477 | AGENT CALL | **Walking across a room edge fades like every other room change (D434).** The camera scroll (`ScrollingRoomTransitions`, 0.4 s) is replaced by `FadeRoomTransitions`: 0.25 s out, swap, 0.25 s in. The tree is paused from the cell change until the fade-in ends. A pan under a black screen cannot be seen. |
-| D478 | AGENT CALL | **A cutscene that ends in a teleport lifts its black through the room change, in 0.25 s instead of 0.6 s.** Canyon's descent and the Mayor Hall transport still fade out themselves in 0.6 s, then `Game.load_room()` lifts the black. |
-| D479 | AGENT CALL | **New Game and Load Game: the menu fades to black in 0.25 s, `SceneLoader` loads `Game.tscn` in the background behind a plain black screen (`Scenes/UI/loading_black.tscn`, which replaces Maaack's example loading screen), and the game fades in once the first room is ready.** The first room itself still loads on the main thread under black. |
-| D480 | AGENT CALL | **RoomPreloader holds the current room, its MetSys neighbours, its door targets and any room a cutscene asks for with `Game.preload_room()`.** Everything else is released on each room change. This is the "direct neighbours and door targets" recommendation in the plan's Decisions §4, plus the current room, so walking back is free. |
+| D505 | AGENT CALL | **Walking across a room edge fades like every other room change (D434).** The camera scroll (`ScrollingRoomTransitions`, 0.4 s) is replaced by `FadeRoomTransitions`: 0.25 s out, swap, 0.25 s in. The tree is paused from the cell change until the fade-in ends. A pan under a black screen cannot be seen. |
+| D506 | AGENT CALL | **A cutscene that ends in a teleport lifts its black through the room change, in 0.25 s instead of 0.6 s.** Canyon's descent and the Mayor Hall transport still fade out themselves in 0.6 s, then `Game.load_room()` lifts the black. |
+| D507 | AGENT CALL | **New Game and Load Game: the menu fades to black in 0.25 s, `SceneLoader` loads `Game.tscn` in the background behind a plain black screen (`Scenes/UI/loading_black.tscn`, which replaces Maaack's example loading screen), and the game fades in once the first room is ready.** The first room itself still loads on the main thread under black. |
+| D508 | AGENT CALL | **RoomPreloader holds the current room, its MetSys neighbours, its door targets and any room a cutscene asks for with `Game.preload_room()`.** Everything else is released on each room change. This is the "direct neighbours and door targets" recommendation in the plan's Decisions §4, plus the current room, so walking back is free. |
 
 ## 7. Measurements: `measure_performance.gd`, before vs after
 Run in this container under xvfb: `llvmpipe` software GL on a 4-core Xeon at 2.10 GHz. Every frame costs 110–200 ms just to draw, so the "longest frames" columns are set by the renderer, not by the load, and are not comparable with the plan's RTX 3060 numbers. The CPU columns (load, instantiate, `_ready`, log lines) are valid.

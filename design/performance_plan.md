@@ -1,6 +1,6 @@
 ---
 type: plan
-status: planned
+status: in-progress
 blocked-by: [Q83, Q84]
 tags: [performance, loading, rendering]
 ---
