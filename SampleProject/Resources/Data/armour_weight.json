@@ -4,6 +4,6 @@
 	"classes": {
 		"light": {"roll_length": 0.15, "defense": 0},
 		"medium": {"roll_length": 0.0, "defense": 0},
-		"heavy": {"roll_length": -0.15, "defense": 5}
+		"heavy": {"roll_length": -0.15, "defense": 3}
 	}
 }

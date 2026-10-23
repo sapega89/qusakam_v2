@@ -72,10 +72,10 @@ Helmets and shields carry no weight.
 |---|---|---|---|
 | light | +15 % | +0 | `leather_armor`, no body armour |
 | medium | 0 | +0 | none yet (the class exists for later armour) |
-| heavy | −15 % | +5 | `iron_armor` |
+| heavy | −15 % | +3 | `iron_armor` |
 
-Heavy's +5 is added in `GameCharacter.get_equipment_stats`, so Phys. Def., `mitigated_damage` and `verify_difficulty`
-see it. Checked against D642: `verify_difficulty` keeps its ordinary rows in range (report).
+Heavy's +3 is added in `GameCharacter.get_equipment_stats`, so Phys. Def., `mitigated_damage` and `verify_difficulty`
+see it. Checked against D642: +5 pushed jackal L9/L10 to 7 hits and the Fire Djinn to 5; +3 is the most that keeps every row in range (report).
 
 ### UI
 A **CHARMS** block under the slot list in the Equipment screen: the same `SlotRow` template (`ListRow`, `IconSlot`,

@@ -161,7 +161,7 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	ck(ArmourWeight.worn_class() == "heavy", "iron armour is heavy")
 	ck(is_equal_approx(mover.roll_factor(), 1.0 + passive - 0.15), "heavy: roll ×%.2f (−15%%)" % mover.roll_factor())
-	ck(gm.calculate_physical_defense() == bare_def + 20 + 5, "heavy: defence +20 item +5 weight (%d)" % gm.calculate_physical_defense())
+	ck(gm.calculate_physical_defense() == bare_def + 20 + 3, "heavy: defence +20 item +3 weight (%d)" % gm.calculate_physical_defense())
 	ck(eq._slot_rows["body"].get_node("Row/ItemName").text.find("Heavy armour") >= 0, "BODY row says heavy")
 	mover.start_roll()
 	ck(is_equal_approx(mover.roll_length, mover.roll_duration * mover.roll_factor()), "a real roll uses the weight (%.3f s)" % mover.roll_length)
