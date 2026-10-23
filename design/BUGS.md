@@ -186,6 +186,22 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
+### B142 — the game crashes when an enchanted weapon is equipped
+- **Where:** equipping from the inventory / equipment screen; not yet reproduced or traced
+- **Expected:** an enchanted weapon equips like any other (D-IDs of the enchant system)
+- **Got:** the game closes (crash) at the moment of equipping
+- **Evidence:** Sapega's playtest report, 2026-10-23 («гра вилітає при одяганні зачарованої зброї»)
+- **Severity:** blocker
+- **Found:** 2026-10-23, playtest of the round 11 build
+
+### B143 — the block lesson still teaches «red glint = parry»
+- **Where:** `SampleProject/Resources/Data/tutorial.json:102`, `en.po:2496` (and the uk line)
+- **Expected:** D573 / D574: red = dodge, yellow = parry as the blow lands
+- **Got:** "When an enemy's weapon glints red, press {block} — that is a parry"
+- **Evidence:** `cloud/fliers` report, seen when a vulture's hit triggered the lesson
+- **Severity:** visual
+- **Found:** 2026-10-23, cloud/fliers
+
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**
