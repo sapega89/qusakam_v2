@@ -252,6 +252,26 @@ enemy_type = "shield"
 size = "medium"
 elite = "never"
 
+[node name="Fight_LoneVulture" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_LoneVultureTrigger")
+state_key = "enemies_lonevulture"
+respawns = true
+
+[node name="Fight_LoneVultureTrigger" type="Area2D" parent="Fight_LoneVulture"]
+position = Vector2(1810, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneVulture/Fight_LoneVultureTrigger"]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneVulture"]
+position = Vector2(1900, 210)
+script = ExtResource("8_spawn_point")
+enemy_type = "vulture"
+size = "medium"
+elite = "never"
+
 [node name="Fight_LoneElite" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
@@ -377,6 +397,11 @@ enemy_type = "shield"
 position = Vector2(3960, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
+
+[node name="EnemySpawnPoint6" type="Node2D" parent="Fight_Caravan"]
+position = Vector2(3760, 220)
+script = ExtResource("8_spawn_point")
+enemy_type = "vulture"
 
 [node name="Ladder_Shop" parent="." instance=ExtResource("ladder")]
 position = Vector2(1464, 153)

@@ -3,6 +3,7 @@ class_name DefaultEnemy
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 const ELITE_OUTLINE = preload("res://SampleProject/Shaders/elite_outline.gdshader")
+const FLYING_LOGIC = preload("res://SampleProject/Scripts/Gameplay/Components/FlyingLogic.gd")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -45,6 +46,7 @@ var enemy_view: EnemyView = null
 @onready var hitbox_collision: CollisionShape2D = $hitbox/CollisionShape2D
 @onready var hitbox_damage: DamageApplier = $hitbox/DamageApplier
 @onready var hurt_collision: CollisionShape2D = $Hurtbox/CollisionShape2D
+@onready var hurt_area: Area2D = $Hurtbox
 @onready var detection_area: Area2D = $dettection
 @onready var detection_collision: CollisionShape2D = $dettection/CollisionShape2D
 
@@ -74,6 +76,16 @@ var finisher_tell: StringName = EnemyLogic.TELL_DODGE
 var recovery := 0.5
 var back_off := 0.0
 var knockback_immune := false
+## Летючий ворог (D445): EnemyStats.flying — без гравітації, логіка FlyingLogic; спосіб удару, висота над героєм,
+## швидкість піке.
+var flying := false
+var flight_attack := "dive"
+var hover_height := 0.0
+var dive_speed := 0.0
+## Скільки тіл (вороги й герой) летючий уже не помічає (_ignore_bodies).
+var _ignored_count := -1
+## Падіння мертвого летючого на землю, с.
+const FALL_TIME := 0.45
 ## Стійкість повертається повністю, якщо стільки секунд ворога ніхто не бив.
 const POISE_RESET_TIME := 2.0
 ## Збій від вичерпаної стійкості й від парирування героя, с; відкидання при збої, px.
@@ -135,6 +147,12 @@ func _ready():
 	hitbox.monitoring = false
 	hitbox.monitorable = false
 
+	# D445: летючий у повітрі — герой і вороги проходять під ним (тіло не в шарі), сам він спиняється лише об стіни
+	# (_ignore_bodies); «приземлитись» йому нема на що (floating).
+	if flying:
+		collision_layer = 0
+		motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+
 	# Ініціалізуємо компоненти
 	_initialize_components()
 
@@ -168,6 +186,10 @@ func _apply_stats(stats: EnemyStats) -> void:
 	finisher_tell = StringName(stats.finisher_tell)
 	recovery = stats.recovery
 	back_off = stats.back_off
+	flying = stats.flying
+	flight_attack = stats.flight_attack
+	hover_height = stats.hover_height
+	dive_speed = stats.dive_speed
 
 	# Дальность обнаружения и атаки
 	detection_range = stats.detection_range
@@ -256,7 +278,7 @@ func _initialize_components():
 
 ## Логіка ворога; бос підставляє свою (BossLogic, D301/D302).
 func _make_logic() -> EnemyLogic:
-	return EnemyLogic.new()
+	return FLYING_LOGIC.new() if flying else EnemyLogic.new()
 
 func _on_logic_state_changed(new_state: EnemyLogic.AIState):
 	"""Обробляє зміну стану з EnemyLogic"""
@@ -270,8 +292,10 @@ func _on_logic_direction_changed(direction: int):
 	_face_shapes(direction)
 
 
-## Зона-ціль (Hurtbox: намальоване тіло, B128) у світових координатах.
+## Зона-ціль (Hurtbox: намальоване тіло, B128) у світових координатах. Гриф угорі недосяжний (D445) — порожня.
 func hurt_rect() -> Rect2:
+	if not reachable():
+		return Rect2()
 	var size: Vector2 = hurt_collision.shape.get_rect().size * global_scale
 	return Rect2(hurt_collision.global_position - size / 2.0, size)
 
@@ -332,11 +356,15 @@ func _physics_process(delta: float) -> void:
 		enemy_view.end_stagger()
 	sprite.modulate = STUN_TINT if enemy_logic.stun_left > 0.0 else (BURN_TINT if burn_left > 0.0 else Color.WHITE)
 
-	# AI — EnemyLogic (створюється в _initialize_components() завжди); тут лише X-рух.
-	velocity.x = enemy_logic.process_physics(delta).x
+	# AI — EnemyLogic (створюється в _initialize_components() завжди); наземному — лише X-рух, летючому — увесь.
+	var move: Vector2 = enemy_logic.process_physics(delta)
 	current_state = enemy_logic.current_state
 	state_timer = enemy_logic.state_timer
 	lost_player_timer = enemy_logic.lost_player_timer
+	if flying:
+		_fly(move)
+		return
+	velocity.x = move.x
 
 	# Применяем гравитацию из project settings
 	if not is_on_floor():
@@ -348,6 +376,37 @@ func _physics_process(delta: float) -> void:
 	# Применяем движение с физикой
 	move_and_slide()
 	slide_off_bodies(delta)
+
+## Летючий (D445): рух у повітрі без гравітації; удар героя дістає його лише низько (reachable).
+func _fly(move: Vector2) -> void:
+	_ignore_bodies()
+	var low := reachable()
+	if hurt_area.monitorable != low:
+		hurt_area.set_deferred(&"monitorable", low)
+	velocity = move
+	move_and_slide()
+
+## Летючий не зупиняється об героя й ворогів — лише об стіни й підлогу (усі тіла в шарі 1). Новий ворог у кімнаті
+## (хвиля бою) — список оновлюється.
+func _ignore_bodies() -> void:
+	var bodies := _other_bodies()
+	if bodies.size() == _ignored_count:
+		return
+	_ignored_count = bodies.size()
+	for body: PhysicsBody2D in bodies:
+		add_collision_exception_with(body)
+
+## Інші тіла-персонажі кімнати: вороги й герой.
+func _other_bodies() -> Array[PhysicsBody2D]:
+	var bodies: Array[PhysicsBody2D] = []
+	for body: Node in GameGroups.get_nodes_in_group(GameGroups.ENEMIES) + [GameGroups.get_player()]:
+		if body != self and body is PhysicsBody2D:
+			bodies.append(body)
+	return bodies
+
+## Чи дістане ворога удар героя: наземного — завжди, летючого — як скаже FlyingLogic (гриф — лише низько).
+func reachable() -> bool:
+	return not flying or enemy_logic.reachable()
 
 func change_state(new_state: AIState):
 	# Не змінюємо стан під час паузи або якщо ворог мертвий
@@ -487,6 +546,10 @@ func _calculate_coin_drop() -> int:
 			return randi_range(1, 3)  # D386: як fast
 		"shield":
 			return randi_range(3, 5)  # D560: між бандитом і скорпіоном
+		"vulture":
+			return randi_range(1, 3)  # D445: як fast
+		"bat":
+			return randi_range(0, 1)  # D445: слабкий, ходить зграйкою
 	push_error("DefaultEnemy: unknown enemy_type '%s'" % enemy_stats.enemy_type)
 	return 0
 
@@ -528,6 +591,8 @@ func die():
 	anim_player.stop()
 	# Мертвий одразу перестає бути тілом: не блокує героя й не бʼє (F8)
 	_set_collisions_disabled(true)
+	if flying:
+		_fall_dead()
 
 	# === ENHANCED DEATH SEQUENCE ===
 	# Red flash effect (3 times). Раніше шукався AnimatedSprite2D, якого в сцені нема, — спалаху не було.
@@ -573,6 +638,19 @@ func die():
 	anim_player.stop()
 	_set_collisions_disabled(true)
 
+## Мертвий летючий падає на землю під собою (D445), а не висить у повітрі.
+func _fall_dead() -> void:
+	var ray := PhysicsRayQueryParameters2D.create(global_position, global_position + Vector2(0, 2000))
+	var exclude: Array[RID] = [get_rid()]
+	for body: PhysicsBody2D in _other_bodies():
+		exclude.append(body.get_rid())
+	ray.exclude = exclude
+	var hit := get_world_2d().direct_space_state.intersect_ray(ray)
+	if hit.is_empty():
+		return  # під ним прірва — падати нікуди
+	var feet: float = body_collision.position.y + body_collision.shape.get_rect().end.y
+	create_tween().tween_property(self, ^"global_position:y", hit.position.y - feet, FALL_TIME).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+
 func revive(health_amount: int = -1):
 	# Перевіряємо, чи ворог вже живий
 	if not is_dead:
@@ -617,6 +695,9 @@ func weapon():
 ## Ушкодження — через DamageApplier хітбокса, як у гравця.
 ## Удар спереду по панцирю (tank) — front_damage від шкоди. Без джерела (підпал) — повна.
 func take_damage(amount: int, source: Node = null, critical: bool = false) -> void:
+	# D445: гриф угорі недосяжний — ні удар, ні стріла, ні навичка (підпал, без джерела, горить і там)
+	if source != null and not reachable():
+		return
 	var facing := enemy_logic.last_direction
 	if source is Node2D and front_damage < 1.0 and facing != 0 and signf(source.global_position.x - global_position.x) == facing:
 		amount = maxi(1, roundi(amount * front_damage))
