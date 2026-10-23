@@ -190,7 +190,7 @@ the history, this note keeps only what is open.
 - **Where:** equipping from the inventory / equipment screen; not yet reproduced or traced
 - **Expected:** an enchanted weapon equips like any other (D-IDs of the enchant system)
 - **Got:** the game closes (crash) at the moment of equipping
-- **Evidence:** Sapega's playtest report, 2026-10-23 («гра вилітає при одяганні зачарованої зброї»)
+- **Evidence:** Sapega's playtest report, 2026-10-23 («гра вилітає при одяганні зачарованої зброї»); again on the round 12 build with an **enchanted Iron Sword +1** («зачарований +1 айрон сворд теж вибиває гру»)
 - **Severity:** blocker
 - **Found:** 2026-10-23, playtest of the round 11 build
 
