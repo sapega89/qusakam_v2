@@ -287,8 +287,86 @@ def pixel_sheet(variant, raw):
     print("sheet", out, sheet.size)
 
 
+# Набір елементів (Sapega 2026-10-23: «винеси схожі іконки, намалюй для них спільний елемент, затверди його як асет»):
+# кожен елемент — окремо, 3 кандидати, у затвердженому піксельному стилі (база — палаючий меч без героя), слонова кістка
+# з золотом; кольори пасивок і ультимейтів міняє код (D602). Див. design/skill_icons_brief.md → «The asset kit».
+ASSETS_DIR = "design/shots/candidates/icon_assets"
+ASSETS = {
+    "hand_palm": "a three-fingered lizard hand in a priest's leather glove, open palm facing the viewer, fingers slightly spread",
+    "shield": "a heater shield seen from the front, plain, with a simple round boss in its middle",
+    "sword": "a straight longsword lying diagonally from the lower left to the upper right, point up",
+    "hammer": "a war hammer with a heavy square head, lying diagonally, head up",
+    "heart": "a simple stylised heart",
+    "breastplate": "a steel breastplate seen from the front",
+    "figure": "a small faceless generic figure standing in a heroic stance, a simple silhouette, not a lizard",
+    "holy_beam": "a beam of holy light falling straight down from the top edge",
+    "sunburst": "a sunburst: a small round core with straight rays all around",
+    "fire": "a single tall flame",
+    "dark_fire": "a single tall flame drawn mostly in the dark outline colour, with ivory and gold edges",
+    "lightning": "a single jagged lightning bolt",
+    "blood_drop": "a single drop of blood, drawn in deep crimson with an ivory highlight",
+    "whirl": "a whirl of sand and wind seen from the side, curling round",
+    "impact": "an impact flash: a spiky starburst with three small stars around it",
+    "parry_spark": "a bright small spark where two blades meet, an X-shaped flash",
+    "aura_ring": "a ring of light seen in slight perspective, an aura",
+    "rune": "a single pale curse rune, angular strokes",
+}
+PIX_ASSET = (
+    "Keep exactly this icon's pixel art style: big square pixels, a thick dark outline, flat shading, and the plain flat "
+    "bright green background right to the edges. Replace the flaming sword with {desc}, alone, centred, filling about "
+    "two thirds of the square. Use at most three colours: pale ivory, warm gold and the thick dark outline, unless the "
+    "description names another. Nothing else in the picture, no lizard unless named, no text, no border."
+)
+
+
+def assets_main(names):
+    """Кандидати елементів: names — які (порожньо — усі, яких ще немає). Сирі кадри кешуються; лист — усі наявні."""
+    os.makedirs(os.path.join(ASSETS_DIR, "raw"), exist_ok=True)
+    base_path = os.path.join(ICONS_OUT, "pixel", "raw", "_base.png")
+    base = np.asarray(Image.open(base_path).convert("RGB"))
+    mp = base.shape[0] * base.shape[1] / 1048576
+    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_pixel_base.png")
+    todo = names or [a for a in ASSETS if not os.path.exists(os.path.join(ASSETS_DIR, "raw", f"{a}_1.png"))]
+    for ai, asset in enumerate(ASSETS):
+        if asset not in todo:
+            continue
+        for n in (1, 2, 3):
+            path = os.path.join(ASSETS_DIR, "raw", f"{asset}_{n}.png")
+            if os.path.exists(path):
+                continue
+            out = run(edit_graph(PIX_ASSET.format(desc=ASSETS[asset]), 900 + ai * 10 + n, base_name, mp))
+            Image.fromarray(out.astype(np.uint8)).save(path)
+            print("generated", asset, n, flush=True)
+    free()
+    assets_sheet()
+
+
+def assets_sheet():
+    """Лист кандидатів: рядок на елемент, три кандидати на тлі слота; 48×48 PNG кожного — поруч із сирими."""
+    done = [a for a in ASSETS if all(os.path.exists(os.path.join(ASSETS_DIR, "raw", f"{a}_{n}.png")) for n in (1, 2, 3))]
+    font = ImageFont.truetype("arial.ttf", 22)
+    cell, pad, left = 144, 16, 170
+    sheet = Image.new("RGB", (left + 3 * (cell + pad) + pad, pad + len(done) * (cell + pad)), (60, 60, 66))
+    d = ImageDraw.Draw(sheet)
+    for r, asset in enumerate(done):
+        y = pad + r * (cell + pad)
+        d.text((12, y + cell // 2 - 12), asset, fill="white", font=font)
+        for n in (1, 2, 3):
+            icon = pixel_icon(np.asarray(Image.open(os.path.join(ASSETS_DIR, "raw", f"{asset}_{n}.png")).convert("RGB")))
+            icon.save(os.path.join(ASSETS_DIR, f"{asset}_{n}.png"))
+            tile = Image.new("RGBA", (cell, cell), SLOT + (255,))
+            tile.alpha_composite(icon.resize((cell, cell), Image.NEAREST))
+            x = left + (n - 1) * (cell + pad)
+            sheet.paste(tile.convert("RGB"), (x, y))
+            d.text((x + 6, y + 4), str(n), fill=(230, 230, 230), font=font)
+    sheet.save(ASSETS_DIR + ".png")
+    print("sheet", ASSETS_DIR + ".png", sheet.size, len(done), "assets")
+
+
 if __name__ == "__main__":
-    if sys.argv[1:2] == ["--pixel"]:
+    if sys.argv[1:2] == ["--assets"]:
+        assets_main(sys.argv[2:])
+    elif sys.argv[1:2] == ["--pixel"]:
         pixel_main(sys.argv[2] if len(sys.argv) > 2 else "E")
     elif sys.argv[1:] == ["--sheet"]:  # лише лист із збережених сирих кадрів, без моделі
         sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
