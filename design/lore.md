@@ -54,6 +54,9 @@ an open question below, never filled in. Used by skills, enemies, companions and
   asleep and the statuette stolen, the villagers are open to the curse; a worthier place for the Maiden means a place where
   her barrier can shield her followers again.
 - **The Maiden is an assist too — later, not in the demo** (Sapega, 2026-10-23: «діва це теж асист, але то потім, не в демо»).
+- **Idea, needs a script first:** when Kusakam sits down to meditate, the barrier bursts (Sapega, 2026-10-23: «ми можемо зробити
+  щось таке: коли Кусакам сідає медитувати, бар'єр лопається, але треба спочатку сценарій, перед тим як робити»). Nothing is
+  built until the script exists.
 - Open (not said): Alisia has one blue eye (2026-10-19):
   is that the curse beginning, or chance? Are the blue-eyed mindless an enemy kind?
 
