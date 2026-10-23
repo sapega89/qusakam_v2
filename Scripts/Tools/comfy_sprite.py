@@ -2646,7 +2646,8 @@ CHARACTERS = {
             ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=87,
+        seed=87,  # D647: Sapega обрав 1 — кремезний
+        direction=STOCKY_CHIBI,
         colors=16,
         who="the same desert city guard with the pointed steel helmet wrapped in a white cloth, the short dark beard, the "
         "red tabard with the golden disc over the chain shirt, the baggy sand-coloured trousers, the curved sword at his "
