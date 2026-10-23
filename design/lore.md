@@ -39,6 +39,17 @@ an open question below, never filled in. Used by skills, enemies, companions and
   an open question.
 - **Very cowardly, but brave**: he is scared and goes anyway.
 
+## The main plot: the blue sky (Sapega, 2026-10-23)
+
+> основний сюжет в тому, що синє небо — це прокляття невідомої сили: хто на нього подивиться, в того синіють очі, і потім
+> він втрачає розсудок і стає як зомбі.
+
+- **The blue sky is a curse** cast by an **unknown power**. It is the main plot.
+- **Whoever looks at it gets blue eyes**, then **loses their mind** and becomes **like a zombie**.
+- Read with the world section above: the bright, sunless sky. The curse is that sky.
+- Open (not said): does the barrier, or the Maiden, shield the village from the sky? Alisia has one blue eye (2026-10-19):
+  is that the curse beginning, or chance? Are the blue-eyed mindless an enemy kind?
+
 ## The story spine: the Maiden and the barrier (Sapega, 2026-10-23)
 
 > діва кари небесної — це і є те, що вкрали бандити, але це не кінець історії, а лише початок великого шляху.
