@@ -4,6 +4,7 @@ extends SceneTree
 ## кожного стовпця клітинок MetSys, кадр — увесь екран, зменшений удвічі. До/після складає
 ## Scripts/Tools/world_fixes_sheet.py. Потрібне вікно:
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_world_fixes.gd -- <out_dir>
+##   … -- <out_dir> [кімната ...]
 ## Файли: <out_dir>/<кімната>_<стовпець>.png, <out_dir>/sparkle_<кадр>.png (блиск предмета, D446, у повну величину)
 
 const ROOMS := [
@@ -33,20 +34,19 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain()
-	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
-	var pickup: Node2D = game.map.get_node(^"Pickup_DuneLedge")
-	game.place_player(pickup.global_position + Vector2(-120, 0))
-	for i in 45: await physics_frame
-	await _drain()
-	for f in 4:
-		pickup.get_node(^"AnimationPlayer").seek([0.0, 0.15, 0.3, 0.65][f], true)
-		await _crop(pickup, "sparkle_%d" % f)
-	game.set_quest_flag("demo_end_complete", true)  # інакше LaboratoryOutside показує екран кінця демо
+	var only := OS.get_cmdline_user_args().slice(1)  # після <out_dir> можна назвати кімнати (і sparkle) — тоді лише їх
+	if only.is_empty() or only.has("sparkle"):
+		await _sparkle()
 	var cell: Vector2 = root.get_node("MetSys").settings.in_game_cell_size
 	for spot: Array in ROOMS:
+		if not only.is_empty() and not only.has(spot[0]):
+			continue
 		await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % spot[0], spot[1])
 		for i in 30: await physics_frame
 		await _drain()
+		for screen in root.find_children("*", "Control", true, false):
+			if screen is DemoEndScreen:
+				screen.get_parent().queue_free()  # LaboratoryOutside одразу показує кінець демо — кадр про кімнату
 		var mark: Node2D = game.map.get_node(spot[1])
 		var size: Vector2 = game.map.get_node(^"RoomInstance").get_size()
 		var columns := roundi(size.x / cell.x)
@@ -56,6 +56,17 @@ func _initialize() -> void:
 			await _drain()
 			await _shot("%s_%d" % [spot[0], c])
 	quit()
+
+## Блиск предмета на землі (D446): кадри анімації у повну величину.
+func _sparkle() -> void:
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	var pickup: Node2D = game.map.get_node(^"Pickup_DuneLedge")
+	game.place_player(pickup.global_position + Vector2(-120, 0))
+	for i in 45: await physics_frame
+	await _drain()
+	for f in 4:
+		pickup.get_node(^"AnimationPlayer").seek([0.0, 0.15, 0.3, 0.65][f], true)
+		await _crop(pickup, "sparkle_%d" % f)
 
 ## Виріз 320×180 px екрана навколо [param node] у повну величину.
 func _crop(node: Node2D, name: String) -> void:
