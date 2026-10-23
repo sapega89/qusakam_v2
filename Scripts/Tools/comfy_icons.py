@@ -54,32 +54,31 @@ SKILLS = [
         "sand yellow and teal",
     ),
 ]
+# Sapega 2026-10-23: «глянець і рамку прибери, вони зайві» — рамку дає слот панелі; спершу еталон без рамки, з нього решта
 KEEP_HEX = (
-    "Keep this icon exactly as it is: the gold rounded-square frame, the dark purple background, the glow, the dark rune "
-    "and the violet-black fire. Remove the clawed hand and its sleeve completely, so only the rune in its fire stays, "
-    "centred in the frame. No text."
+    "Repaint this icon without its gold frame and without the glossy shine: keep only the dark rune and its violet-black "
+    "fire, centred, on a plain dark purple background that fills the whole square. Remove the clawed hand and its sleeve "
+    "completely. A matte hand-painted look with soft shading. No frame, no border, no text."
 )
 RESTYLE = (
-    "Keep exactly this icon's frame and style: the same gold rounded-square frame, the dark background, the glossy "
-    "hand-painted look and the soft outer glow. Replace everything inside the frame with {subject}, and change the glow "
-    "and the main colour to {glow}. One clear subject, centred and readable at a glance. No weapons, no people, no faces "
-    "(a lone hand only where the skill is a touch), no rune, no text."
+    "Keep exactly this icon's painting style: the matte hand-painted look, the soft shading, the plain dark background "
+    "that fills the whole square, no frame and no border. Replace the rune and its fire with {subject}, and change the "
+    "background tint and the main colour to {glow}. One clear subject, centred and readable at a glance. No weapons, no "
+    "people, no faces (a lone hand only where the skill is a touch), no rune, no text."
 )
 
 
 def main():
     ref = np.asarray(Image.open(REF).convert("RGBA"))
-    name = upload(ref, "icon_style_ref.png")
     mp = ref.shape[0] * ref.shape[1] / 1048576
-    cells = []
-    for ki, (skill, source, subject, glow) in enumerate(SKILLS):
-        text = (
-            KEEP_HEX if subject is None else RESTYLE.format(subject=subject, glow=glow)
-        )
-        out = run(edit_graph(text, 400 + ki, name, mp)).astype(np.uint8)
-        cells.append(
-            (skill, source, Image.fromarray(out).resize((SIZE, SIZE), Image.LANCZOS))
-        )
+    # 1) еталон без рамки й глянцю (Searing Hex), 2) з нього — решта, щоб манера була одна
+    base = run(edit_graph(KEEP_HEX, 400, upload(ref, "icon_style_ref.png"), mp)).astype(np.uint8)
+    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_style_base.png")
+    cells = [(SKILLS[0][0], SKILLS[0][1], Image.fromarray(base).resize((SIZE, SIZE), Image.LANCZOS))]
+    print("generated", SKILLS[0][0], flush=True)
+    for ki, (skill, source, subject, glow) in enumerate(SKILLS[1:], start=1):
+        out = run(edit_graph(RESTYLE.format(subject=subject, glow=glow), 400 + ki, base_name, mp)).astype(np.uint8)
+        cells.append((skill, source, Image.fromarray(out).resize((SIZE, SIZE), Image.LANCZOS)))
         print("generated", skill, flush=True)
     free()
     font, small = (
