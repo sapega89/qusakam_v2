@@ -12,7 +12,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_road_sections.gd
 
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
-const FIGHTS := {"Fight_Dunes": 3, "Fight_Mesa": 4, "Fight_Caravan": 4}  # D617: a bandit from each went to the lone fights
+const FIGHTS := {"Fight_Dunes": 3, "Fight_Mesa": 4, "Fight_Caravan": 5}  # D617: a bandit from each went to the lone fights; D445: a vulture joins the caravan
 
 ## A jump lifts the hero ~103 px (PlayerMover.jump_velocity, default gravity); a rise is climbable up to 3 tiles.
 const JUMP_RISE := 96
@@ -112,7 +112,7 @@ func _initialize() -> void:
 		await create_timer(3.5).timeout  # waves of 2, 1.5 s apart
 		var alive: Array = _alive(spawner)
 		ck(alive.size() == FIGHTS[fight], "%s: %d enemies after the hero walked in (%d)" % [fight, FIGHTS[fight], alive.size()])
-		for enemy in alive:
+		for enemy in alive.filter(func(e: Node) -> bool: return not e.flying):  # D445: гриф у повітрі (verify_flying_enemies)
 			# D504: вороги вже б'ються — ходять, задкують, відскакують від тіл (D443); на підлозі — хоч в один із кадрів
 			for i in 20:
 				if enemy.is_on_floor():

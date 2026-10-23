@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="1_bat"]
+
+[resource]
+script = ExtResource("1_bat")
+enemy_type = "bat"
+speed = 120.0
+base_damage = 7.0
+attack_windup = 0.55
+attack_active_time = 0.2
+lunge = 40.0
+attack_cooldown = 1.5
+poise = 1
+stagger_time = 0.2
+tell = "block"
+finisher_tell = "block"
+recovery = 0.3
+back_off = 90.0
+flying = true
+flight_attack = "bite"
+hover_height = 40.0
+detection_range = 300.0
+attack_range = 50.0
+chase_range = 400.0
+max_health = 30
+xp_reward = 12

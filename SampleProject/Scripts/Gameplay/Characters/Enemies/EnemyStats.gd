@@ -37,6 +37,16 @@ class_name EnemyStats
 ## На скільки px ворог відходить після серії (D504, critique §B); 0 — лишається на місці (tank).
 @export var back_off: float = 0.0
 
+@export_group("Flight")
+## Летючий ворог (D445, D558): без гравітації, тіло не зупиняє героя й інших ворогів (лише стіни), логіка —
+## FlyingLogic. flight_attack: dive — кружляє поза досяжністю й пікірує (гриф), bite — підлітає хвилею й кусає (кажан).
+@export var flying: bool = false
+@export_enum("dive", "bite") var flight_attack: String = "dive"
+## На скільки px над ногами героя тримається летючий ворог, коли переслідує.
+@export var hover_height: float = 0.0
+## Швидкість піке, px/с (dive).
+@export var dive_speed: float = 0.0
+
 @export_group("Detection")
 @export var detection_range: float = 300.0
 @export var attack_range: float = 100.0

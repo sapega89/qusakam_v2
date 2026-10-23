@@ -2580,6 +2580,18 @@ msgstr "Бандит зі щитом"
 msgid "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 msgstr "Бандит за круглим щитом. Удари спереду відскакують від щита — розбийте його важким ударом або перекотіться крізь нього й бийте в спину. Без щита це звичайний бандит."
 
+msgid "Vulture"
+msgstr "Гриф"
+
+msgid "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
+msgstr "Падальник, що кружляє високо над пустелею, куди не дістане жоден клинок. Коли він підіймається і його дзьоб спалахує червоним, він пікірує прямо туди, де ви стоїте, — перекотіться під ним і бийте, поки він летить низько й набирає висоту."
+
+msgid "Cave Bat"
+msgstr "Печерний кажан"
+
+msgid "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
+msgstr "Маленький кажан, що полює зграями в темряві. Летить до вас хвилею, кусає й відскакує. Білий спалах — блокуйте укус; одного-двох ударів йому досить."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"
 

@@ -26,6 +26,16 @@
 			"text": "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 		},
 		{
+			"kind": "vulture",
+			"name": "Vulture",
+			"text": "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
+		},
+		{
+			"kind": "bat",
+			"name": "Cave Bat",
+			"text": "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."
+		},
+		{
 			"kind": "brass_collector",
 			"name": "The Brass Collector",
 			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."
