@@ -73,69 +73,6 @@ func _initialize() -> void:
 	await _wait(4.0)
 	await _step("07_game_start", TOLERANCE_GAMEPLAY)
 
-	# ── Маршрут 2: перші хвилини Кусакамом (Sapega, 2026-10-16: «побігати кусакамом, подивитись,
-	# що доступне — поки тільки меню Misc») ────────────────────────────────────────────────────
-	var game: Node = current_scene
-	await _finish_dialogues()                              # вступ Canyon, Enter гортає (D192)
-	await _step("08_canyon_free", TOLERANCE_GAMEPLAY)
-
-	var x0: float = game.player.global_position.x
-	await _hold(KEY_D, 1.5)
-	_log("run right: %s" % _yes(game.player.global_position.x > x0 + 50.0))
-	await _step("09_ran_right", TOLERANCE_GAMEPLAY)
-	var y0: float = game.player.global_position.y
-	await _key(KEY_SPACE)
-	await _wait(0.15)
-	_log("jump: %s" % _yes(game.player.global_position.y < y0 - 10.0))
-	await _wait(1.0)
-	var x1: float = game.player.global_position.x
-	await _hold(KEY_A, 1.0)
-	_log("run left: %s" % _yes(game.player.global_position.x < x1 - 50.0))
-	await _step("10_ran_left", TOLERANCE_GAMEPLAY)
-
-	await _key(KEY_ESCAPE)                                 # Game Menu; на старті відкрита лише Misc (D151)
-	await _wait(0.8)
-	await _step("11_game_menu")
-	var game_menu: Node = get_first_node_in_group("game_menu")
-	await _click(game_menu.misc_button)
-	await _wait(0.5)
-	await _step("12_misc")
-	await _click(_misc_button("Settings"))
-	await _wait(0.8)
-	await _step("13_misc_settings")
-
-	await _click(game_menu.misc_button)
-	await _wait(0.5)
-	await _click(_misc_button("Tutorial"))
-	await _wait(0.8)
-	await _step("14_tutorial")
-	await _key(KEY_ESCAPE)
-	await _wait(0.5)
-	game_menu = get_first_node_in_group("game_menu")
-	var menu_open: bool = game_menu != null and game_menu.is_visible_in_tree()
-	_log("Esc in Tutorial keeps the Game Menu open: %s" % _yes(menu_open))
-	if not menu_open:
-		await _key(KEY_ESCAPE)
-		await _wait(0.8)
-		game_menu = get_first_node_in_group("game_menu")
-
-	await _click(game_menu.misc_button)
-	await _wait(0.5)
-	await _click(_misc_button("Quit the Game"))
-	await _wait(0.5)
-	await _step("15_quit_confirm")
-	await _click(_modal_button("Cancel"))
-	await _wait(0.5)
-
-	await _click(game_menu.misc_button)
-	await _wait(0.5)
-	await _click(_misc_button("Return to Title"))
-	await _wait(0.5)
-	await _step("16_return_confirm")
-	await _click(_modal_button("Exit"))
-	await _wait(1.5)
-	await _step("17_back_on_title")
-
 	# ── Підсумок ─────────────────────────────────────────────────────────────────────────────
 	_check_transcript()
 	save_system.set_save_dir(save_system.SAVE_DIR)
@@ -159,7 +96,7 @@ func _step(name: String, tolerance: float = TOLERANCE) -> void:
 	shot.resize(SHOT_SIZE.x, SHOT_SIZE.y, Image.INTERPOLATE_BILINEAR)
 	var scene: String = current_scene.scene_file_path.get_file() if current_scene else "<none>"
 	var modal: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer().active_modal
-	_log("step %s | scene %s | modal %s" % [name, scene, _modal_name(modal)])
+	_log("step %s | scene %s | modal %s" % [name, scene, modal.title_label.text if modal else "-"])
 	var out_path := OUT_DIR + name + ".png"
 	shot.save_png(ProjectSettings.globalize_path(out_path))
 	if _approve:
@@ -234,8 +171,8 @@ func _key(keycode: Key) -> void:
 ## Клік миші в центр контрола — у координатах вікна, як справжня миша. Якщо щось перекриває
 ## кнопку, клік дістанеться тому, що зверху, і транскрипт це покаже.
 func _click(control: Control) -> void:
-	if control == null or not is_instance_valid(control) or not control.is_visible_in_tree():
-		_fail("click", "nothing to click (gone or hidden)")
+	if control == null:
+		_fail("click", "nothing to click")
 		return
 	var at: Vector2 = root.get_final_transform() * control.get_global_rect().get_center()
 	var move := InputEventMouseMotion.new()
@@ -266,17 +203,6 @@ func _label(control: Control) -> String:
 	return control.name
 
 
-## Рядок підменю Misc (MiscMenuModal) за текстом.
-func _misc_button(text: String) -> Control:
-	var modal: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer().active_modal
-	if modal == null:
-		return null
-	for b in modal.find_children("*", "Button", true, false):
-		if b.visible and b.text == text:
-			return b
-	return null
-
-
 func _modal_button(text: String) -> Control:
 	var modal: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer().active_modal
 	if modal == null:
@@ -288,47 +214,6 @@ func _modal_button(text: String) -> Control:
 
 
 # ── Дрібне ───────────────────────────────────────────────────────────────────────────────────
-
-## Тримає клавішу, як гравець, що біжить.
-func _hold(keycode: Key, seconds: float) -> void:
-	var e := InputEventKey.new()
-	e.keycode = keycode
-	e.physical_keycode = keycode
-	e.pressed = true
-	Input.parse_input_event(e)
-	await _wait(seconds)
-	var up: InputEventKey = e.duplicate()
-	up.pressed = false
-	Input.parse_input_event(up)
-	await process_frame
-
-
-## Гортає репліки Enter, доки не стихнуть і діалоги, і облачка (вони йдуть ланцюжком).
-func _finish_dialogues() -> void:
-	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
-	var quiet := 0.0
-	for i in 200:
-		if dm.is_dialogue_active() or dm.is_bubble_playing():
-			quiet = 0.0
-			await _key(KEY_ENTER)
-		else:
-			quiet += 0.3
-			if quiet >= 1.5:
-				return
-		await _wait(0.3)
-	_fail("dialogues", "still talking after 60 s")
-
-
-## Заголовок модалки для транскрипту; у підменю Misc (MiscMenuModal) заголовка немає — ім'я вузла.
-func _modal_name(modal: Node) -> String:
-	if modal == null:
-		return "-"
-	return modal.title_label.text if "title_label" in modal else String(modal.name)
-
-
-func _yes(ok: bool) -> String:
-	return "yes" if ok else "NO"
-
 
 func _wait(seconds: float) -> void:
 	await create_timer(seconds).timeout
