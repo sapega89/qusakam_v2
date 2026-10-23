@@ -90,13 +90,11 @@ func _initialize() -> void:
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)  # вступ стартової кімнати
 
-	print("[1] The old man's talk: narration, then Kusakam, then the grandfather")
+	print("[1] The old man's talk: Kusakam, then the grandfather (D437: no narration line first)")
 	dm.start_dialogue("res://dialogue_quest/OldMan_Outside.dqd")
 	for i in 6: await process_frame
 	var box: Control = dm.current_dialogue_box
 	ck(box.visible, "the dialogue box is open")
-	_check_line(box, "", false)
-	await _advance(dm, 0)
 	_check_line(box, "Kusakam", true)
 	await _advance(dm, 1)
 	_check_line(box, "Grandfather", true)
@@ -105,6 +103,12 @@ func _initialize() -> void:
 	await _advance(dm, 2)
 	for i in 10: await process_frame
 	ck(not dm.is_dialogue_active(), "the talk ends on a mouse click")
+
+	print("[1b] A line with no speaker (Laboratory_Outside): no name row, no portrait frame")
+	dm.start_dialogue("res://dialogue_quest/Laboratory_Outside.dqd")
+	for i in 6: await process_frame
+	_check_line(box, "", false)
+	await _drain(dm)
 
 	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245); a second start_dialogue after one has ended still grows the box (B122)")
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")

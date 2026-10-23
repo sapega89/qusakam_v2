@@ -1,5 +1,3 @@
 // [DRAFT] D140/D252 — the grandfather gives his last strength healing Kusakam (the request to heal him was removed, D261)
 say|GRANDFATHER|Hold still. This power was in our family long before you.
-say||A warm light wraps around Kusakam. His wounds close.
-say||Grandfather staggers. The light in his palms fades.
 exit|

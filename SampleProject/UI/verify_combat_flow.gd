@@ -52,7 +52,6 @@ func _initialize() -> void:
 	await _finish_dialogue(sl.get_dialogue_manager())  # вступ Canyon
 	var inv: Node = sl.get_inventory_manager()
 
-	game.set_quest_flag("desert_road_monologue_complete", true)
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 10: await process_frame
 	var road: Node = game.map

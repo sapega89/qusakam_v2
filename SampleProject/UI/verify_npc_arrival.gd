@@ -151,7 +151,7 @@ func _initialize() -> void:
 	await _drain(sl.get_dialogue_manager())
 
 	print("[2] Desert Road: after the fight the merchant comes out of his shop")
-	for f: String in ["canyon_exit_complete", "desert_road_monologue_complete", "desert_road_fight_complete"]:
+	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(f, true)
 	await _arrival(game, sl, "res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start", "Merchant", "ShopDoor",
 			"merchant_caravan", "desert_road_merchant_met", "Merchant_Arrival", 700.0)

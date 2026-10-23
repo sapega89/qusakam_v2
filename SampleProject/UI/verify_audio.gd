@@ -77,7 +77,6 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
-	game.set_quest_flag("desert_road_monologue_complete", true)
 	game.set_quest_flag("desert_road_merchant_met", true)  # BACKLOG 14: the merchant already came out of his shop (verify_npc_arrival covers the meeting)
 	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
@@ -326,6 +325,7 @@ func _voices() -> void:
 	var box: Node = null
 	var replay_done := [false]
 	var run := func() -> void:
+		await dm.replay("res://dialogue_quest/Laboratory_Outside.dqd")  # репліка без мовця (OldMan_Outside її більше не має, D437)
 		await dm.replay("res://dialogue_quest/OldMan_Outside.dqd")
 		replay_done[0] = true
 	run.call()
@@ -355,16 +355,10 @@ func _voices() -> void:
 	ck(replay_done[0], "the replay ended")
 
 	# The cloud talk (D263) types at the box speed and babbles in Kusakam's voice.
-	# Three narration lines first (shown at once here), then Kusakam's line types at the box speed.
+	# The first line is Kusakam's (D437: no narration before it); it types at the box speed.
+	dm.bubble_time_scale = 1.0
+	_mark()
 	dm.start_dialogue("res://dialogue_quest/Canyon_AbductionCutscene.dqd", true)
-	for i in 3:
-		for f in 6: await process_frame
-		if i == 2:
-			dm.bubble_time_scale = 1.0
-			_mark()
-		_press(&"dq_accept")
-		await process_frame
-		_press(&"dq_accept", false)
 	await create_timer(1.0).timeout
 	_heard(&"babble_kusakam", &"Voice", "Kusakam's cloud talk typing")
 	dm.bubble_time_scale = 0.0

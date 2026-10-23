@@ -133,6 +133,8 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	ck(started.has("OldMan_Outside") and started.has("OldMan_Healing"), "meeting and healing lines (%s)" % [started])
 	ck(game.player.current_health == game.player.Max_Health, "the old man healed Kusakam to full")
+	ck(game.player.get_children().any(func(c: Node) -> bool: return c.scene_file_path.ends_with("HealingPalm.tscn")),
+			"the healing light wraps Kusakam on screen, no narration line (D437)")
 	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "the Village teaches no Healing Palm, slot 1 empty")
 	ck(hint.current_hint != "healing_palm", "no Healing Palm tutorial in the Village (%s)" % hint.current_hint)
 
