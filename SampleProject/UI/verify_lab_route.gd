@@ -446,6 +446,10 @@ func _initialize() -> void:
 	ck(started == ["Demo_End"], "the closing talk once, no narrator line before it (D437) (%s)" % [started])
 	ck(game.get_quest_flag("lab_outside_complete") and game.get_quest_flag("demo_end_complete"), "lab_outside_complete, demo_end_complete")
 	ck(_end_screens().size() == 1, "one demo end screen (%d)" % _end_screens().size())
+	# B141: герой стоїть на намальованій траві (підлога 384 — верх Terrain), а не висить у повітрі над міткою Arrival
+	var arrival_y: float = game.map.get_node(^"Arrival").global_position.y
+	ck(game.player.is_on_floor() and game.player.global_position.y > arrival_y + 8.0,
+			"the hero stands on the grass outside (y %.0f, below the Arrival mark %.0f, on floor %s) — B141" % [game.player.global_position.y, arrival_y, game.player.is_on_floor()])
 	var screen: Control = _end_screens()[0]
 	await _finale(screen)
 	ck(screen.get_viewport().gui_get_focus_owner() == screen.return_button, "Return has the focus")
