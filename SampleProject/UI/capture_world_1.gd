@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Гілки з секретами (D583, D604–D621) під камерою гри, кадр — увесь екран, зменшений удвічі. Потрібне вікно:
+## Гілки з секретами (D583, D619–D621) під камерою гри, кадр — увесь екран, зменшений удвічі. Потрібне вікно:
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_world_1.gd -- <out_dir>
 ## Файли в <out_dir>: road_shop_roof (дах крамниці: трави й брила), road_shop_roof_broken (брилу розбито),
 ## road_tower (ґрати схованки на вежі), road_tower_open (ґрати відімкнено ключем), elder_house (драбина за килимом,

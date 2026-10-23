@@ -11,7 +11,7 @@ tags: [cloud, combat, hit-feel, stamina]
 - **Hit feel (D581).** Hitstop now rises from light to heavy to riposte to a boss's blow. The screen shakes on the heavy, the riposte and every hit the hero takes, scaled to the blow and off when Screen Shake is off. The hero flashes white for 0.12 s, and the heavy and the riposte each have their own hit sound.
 - **Proof:** `design/shots/combat_polish_fight.png`, the training bandit in the Village street: light, heavy, parry and a hit taken, each before and at the hit.
 - Not done: no knockback scaling (out of scope), and no death-screen "killed by" line (D581 idea, left open).
-- D-ID text for D603–D613 is below. No B rows fixed. Full suite: 101 PASS, 2 FAIL. Both were fixed and re-run as ALL PASS: `verify_audio` now expects the heavy's new sound, and `verify_onboarding` was already red on `feature/backlog`.
+- D-ID text for D612–D613 is below. No B rows fixed. Full suite: 101 PASS, 2 FAIL. Both were fixed and re-run as ALL PASS: `verify_audio` now expects the heavy's new sound, and `verify_onboarding` was already red on `feature/backlog`.
 
 ## D-ID text (the orchestrator applies it to the register)
 

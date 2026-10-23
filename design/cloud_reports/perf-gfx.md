@@ -8,7 +8,7 @@ tags: [cloud, performance, graphics, D553, D554]
 
 **Done:** [[performance_plan]] slices 4, 5 and 7 (D554). Settings → Display has a **Quality** row (High / Low). Low turns off glow, colour curves, depth blur, light shadows and halves big particle counts. A first run on a weak Intel GPU or ANGLE 10_x picks Low. Low applies before the first room draws. On the software renderer, Low cuts the GPU frame by 58–82 % (Canyon 118 → 35 ms).
 **Not done as specified:** slice 4's **pixel diff is not 0**: 333 k px over 36 shots (0.4 %), mostly one-pixel texel-boundary ties (§1). Nothing was measured on the HD 3000 itself; numbers come from llvmpipe.
-**D-IDs for the register (agent calls, for Sapega to confirm):** D603–D611 (text in §5). **B rows fixed:** none.
+**D-IDs for the register (agent calls, for Sapega to confirm):** D608–D611 (text in §5). **B rows fixed:** none.
 **Full suite:** `SUITE: 3 FAIL` of 103: `verify_onboarding` fails identically on base `62dd198f`; `verify_combat_flow` passes alone on both; `verify_main_menu` had 5 SCRIPT ERRORs from slice 5. Those are fixed in `RoomPreloader` (§2, §6) and pass on reruns. The suite was not re-run after the fix.
 
 Branch `cloud/perf-gfx` from `origin/feature/backlog` @ `62dd198f`. Commits: slice 4 `eafc64e7`, slice 5 `a919bab7`, slice 7 `551b72d6`.

@@ -10,7 +10,7 @@ tags: [cloud, routines, world, locations, secrets, gates]
 - **Done, gates (D619):** `Objects/LockedDoor.tscn` + `gates.json`: a key gate (the watchtower stash; the **Bandit Key** drops once from `Fight_Caravan`'s first win) and a flag gate (the attic hatch; Grandfather's `OldMan_Decision` talk, flag `village_oldman_complete`). Both saved; `verify_gates` green.
 - **Done, no free gifts (D620):** the three road gifts left the road: herbs ×2 and the iron ingot to the **shop roof** (a ladder; the ingot inside a cracked boulder only a heavy blow breaks, `Objects/BreakableWall.tscn`), the chest (Mana Crystal ×2) to the **watchtower top** (a ladder; barred stash, bandit key). `verify_branches` green.
 - **Done, the attic (D621):** ElderHouse is now two MetSys cells (`[6,0,0]` added above the house); ladder behind the rug, a hatch, Grandfather's notes (`[ЧЕРНЕТКА]` uk + en), a Lesser Potion. **Not done:** a Journal tab for found story pieces (D622; recorded in the save, no view: [[journal_story_plan]], **Q87**).
-- **D-ID text:** D603–D622 below. **Q-ID:** Q87 (non-blocking, default given). **B rows fixed:** none.
+- **D-ID text:** D618–D622 below. **Q-ID:** Q87 (non-blocking, default given). **B rows fixed:** none.
 - **Full suite:** SUITE: 1 FAIL (104/105). The one failure, `verify_onboarding` "keyboard: a light hit does not pass Heavy", fails the same way on `origin/feature/backlog` (98b0cfe9), so it predates this branch.
 
 ## D-ID text (for `figma_decision_register.md`)

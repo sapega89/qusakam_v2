@@ -2698,7 +2698,7 @@ msgstr "Місто"
 msgid "The Laboratory"
 msgstr "Лабораторія"
 
-# ── Gates, branches and story pieces (D604–D622)
+# ── Gates, branches and story pieces (D619–D622)
 msgid "Bandit Key"
 msgstr "Ключ бандита"
 

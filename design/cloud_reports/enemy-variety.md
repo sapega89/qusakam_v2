@@ -14,7 +14,7 @@ heavy attack breaks the shield: it flies off, he staggers 1.2 s in the bandit's 
 shieldless. Placed per D582 (the full list is below). New `verify_enemy_variety` (ALL PASS) and the capture
 `design/shots/enemy_variety/shield_fight.png`. **Not built:** the plan's elite name plate, signature move and better
 drop; the shared guard bar and the scorpion's armour; real shield-bearer art (the shield is a placeholder).
-D-IDs: **D603–D617** (text below). B rows fixed: none. Full suite: 102 PASS, 1 FAIL (`verify_onboarding`, which fails on the base branch too)
+D-IDs: **D614–D617** (text below). B rows fixed: none. Full suite: 102 PASS, 1 FAIL (`verify_onboarding`, which fails on the base branch too)
 
 ## D-ID text (for the register; the next free numbers after D602)
 
