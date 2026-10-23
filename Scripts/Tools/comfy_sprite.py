@@ -2023,11 +2023,14 @@ CHARACTERS = {
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/lab_boss.webp",
         cell=(96, 112),
+        # Sapega 2026-10-23: «ось цей варіант… гарний» — ранковий кадр з рефом (кеш 2e41addf), а не нові кандидати
+        pick="design/shots/candidates/picks/lab_boss_pick.png",
         seed=103,
         colors=16,
-        who="the same spiky black manticore-man thug with the flat cat-like face, the ear-to-ear toothy grin, the glowing "
-        "green eyes, the long pierced bat-like ears, the green tunic with the bone necklaces, the brown sash and belts, the "
-        "baggy green trousers with the black swirl emblems, the spiny scorpion tail, the spiked wooden club and the steel mace",
+        who="the same spiky dark grey manticore-man with the glowing green eyes, the gold ring in his long pointed ear, the "
+        "toothy grin, the sleeveless green tunic with the red scorpion emblem, the brown belt with the leather pouch, the "
+        "baggy green trousers, the clawed feet, the curled spiny tail, the big spiked wooden club on his shoulder and the "
+        "small round steel mace in his other hand",
         base="Replace the character in picture 1 with {the creature from picture 2, but turned to face the right side of "
         "the picture: his face pointing right, his tail curling behind him on the left; }a manticore-man thug — not a "
         "lizard, not a wolf, not a dog and not a rat: a broad flat cat-like face with a very short snout, a wide mouth "
@@ -2691,6 +2694,9 @@ if __name__ == "__main__":
     base = (
         ref
         if char["base"] is None
+        # pick — вибраний Sapega кадр моделі (×16) як є: з нього решта кадрів (бос лабораторії, 2026-10-23)
+        else np.asarray(Image.open(char["pick"]).convert("RGBA"))
+        if "pick" in char
         else enlarge(char["base"][5:], cell)
         if char["base"].startswith("FILE:")
         else edit(

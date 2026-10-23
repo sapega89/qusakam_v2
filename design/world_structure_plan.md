@@ -13,6 +13,13 @@ tags: [world, map, metsys, rooms]
 between locations fade to black (D434). Figma has the parchment world map (`UI/World Map Base` `68:1900`) and its
 markers (`UI/Map/Marker` `222:4785`), but no location map.
 
+> **2026-10-23, D565 (Sapega):** the demo has **three locations** taken from his world map (`design/refs/world_map_figma.png`, Figma `94:609`):
+> 1. **Canyon of Whispers**: the canyon, the village, the desert road and Zahra's Rest. The canyon-exit cutscene becomes a walkable cave under the bridge that comes out on the road.
+> 2. **The City**: the Gates and the City.
+> 3. **The Laboratory**.
+> 
+> Paths open with keys and NPC talks, and side branches (a little cave, an attic, a cellar) hold secrets (D562). The genre is Tails of Iron's (D563). Slice 1's `locations.json` uses these three. Slice 4 stays the Laboratory; slice 5 becomes the Canyon of Whispers location (the road joins it), and slices 6–8 shrink to the City.
+
 ## What exists today
 | Thing | Where | State |
 |---|---|---|
