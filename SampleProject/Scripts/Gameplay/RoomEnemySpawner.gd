@@ -2,6 +2,7 @@ extends Node2D
 class_name RoomEnemySpawner
 
 const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
+const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 
 ## 🏠 RoomEnemySpawner - Управляет спавном врагов в комнате
 ## Автоматически находит все EnemySpawnPoint в комнате и спавнит врагов
@@ -32,6 +33,9 @@ const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
 ## D492: звичайний бій — вороги повертаються, коли герой медитує (D447) або повертається в регіон, з якого пішов.
 ## Боси й сюжетні бої (false) памʼятають своїх убитих назавжди (D152).
 @export var respawns: bool = false
+
+## D560, D582: точки з elite = auto кидають еліту (1 з 8). Вмикається лише там, де героя вже навчено еліті сам-на-сам.
+@export var elite_rolls: bool = false
 
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
@@ -174,11 +178,36 @@ func _spawn_immediately() -> void:
 	"""Спавнит всех врагов сразу"""
 	for spawn_point in spawn_points:
 		if _should_spawn(spawn_point):
-			var enemy = spawn_point.spawn_enemy()
-			if enemy:
-				spawned_enemies.append(enemy)
-				_connect_enemy_signals(enemy)
-				_track(enemy, spawn_point.spawn_id)
+			_spawn(spawn_point)
+
+func _spawn(spawn_point: EnemySpawnPoint) -> void:
+	var enemy = spawn_point.spawn_enemy()
+	if enemy:
+		# Ворог додається відкладено (EnemySpawnPoint.spawn_enemy) — різновид встигає до його _ready()
+		enemy.size_kind = variant_size(spawn_point)
+		enemy.elite = variant_elite(spawn_point)
+		spawned_enemies.append(enemy)
+		_connect_enemy_signals(enemy)
+		_track(enemy, spawn_point.spawn_id)
+
+## Розмір ворога точки (D560): заданий — як є; auto — кидок у звичайному бою, medium у сюжетному.
+func variant_size(spawn_point: EnemySpawnPoint) -> String:
+	if spawn_point.size != "auto":
+		return spawn_point.size
+	return EnemyVariety.roll_size(_variant_key(spawn_point)) if respawns else "medium"
+
+## Чи ворог точки — еліта (D560, D582).
+func variant_elite(spawn_point: EnemySpawnPoint) -> bool:
+	match spawn_point.elite:
+		"always":
+			return true
+		"never":
+			return false
+	return elite_rolls and EnemyVariety.roll_elite(_variant_key(spawn_point))
+
+## Ключ кидків: кімната й точка — кімната щоразу та сама (D560).
+func _variant_key(spawn_point: EnemySpawnPoint) -> String:
+	return "%s/%s" % [_room, spawn_point.spawn_id]
 
 ## HP ворога пишемо в стан кімнати при кожній зміні — тоді воно правильне і в сейві посеред
 ## бою, і після вивантаження кімнати. Збережене HP ставимо, коли ворог уже готовий
@@ -219,11 +248,7 @@ func _spawn_in_waves() -> void:
 		for j in range(i, wave_end):
 			var spawn_point = spawn_points[j]
 			if _should_spawn(spawn_point):
-				var enemy = spawn_point.spawn_enemy()
-				if enemy:
-					spawned_enemies.append(enemy)
-					_connect_enemy_signals(enemy)
-					_track(enemy, spawn_point.spawn_id)
+				_spawn(spawn_point)
 
 		wave_index += 1
 		wave_spawned.emit(wave_index, total_waves)

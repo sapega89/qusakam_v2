@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/ShieldBearer.gd" id="2_shield"]
+
+[node name="EnemyShield" instance=ExtResource("1_base")]
+script = ExtResource("2_shield")
+
+[node name="Shield" type="Node2D" parent="Sprite2D" index="0"]
+
+[node name="Rim" type="Polygon2D" parent="Sprite2D/Shield"]
+color = Color(0.72, 0.55, 0.26, 1)
+polygon = PackedVector2Array(20.50, 3.00, 19.56, 7.12, 16.92, 10.43, 13.11, 12.26, 8.89, 12.26, 5.08, 10.43, 2.44, 7.12, 1.50, 3.00, 2.44, -1.12, 5.08, -4.43, 8.89, -6.26, 13.11, -6.26, 16.92, -4.43, 19.56, -1.12)
+
+[node name="Face" type="Polygon2D" parent="Sprite2D/Shield"]
+color = Color(0.45, 0.29, 0.17, 1)
+polygon = PackedVector2Array(18.50, 3.00, 17.76, 6.25, 15.68, 8.86, 12.67, 10.31, 9.33, 10.31, 6.32, 8.86, 4.24, 6.25, 3.50, 3.00, 4.24, -0.25, 6.32, -2.86, 9.33, -4.31, 12.67, -4.31, 15.68, -2.86, 17.76, -0.25)
+
+[node name="Boss" type="Polygon2D" parent="Sprite2D/Shield"]
+color = Color(0.86, 0.72, 0.38, 1)
+polygon = PackedVector2Array(13.50, 3.00, 12.77, 4.77, 11.00, 5.50, 9.23, 4.77, 8.50, 3.00, 9.23, 1.23, 11.00, 0.50, 12.77, 1.23)

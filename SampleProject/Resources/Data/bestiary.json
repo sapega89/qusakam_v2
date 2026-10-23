@@ -21,6 +21,11 @@
 			"text": "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 		},
 		{
+			"kind": "shield",
+			"name": "Shield Bandit",
+			"text": "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
+		},
+		{
 			"kind": "brass_collector",
 			"name": "The Brass Collector",
 			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."

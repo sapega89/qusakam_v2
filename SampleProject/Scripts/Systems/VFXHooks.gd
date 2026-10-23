@@ -72,6 +72,8 @@ func _connect_to_event_bus() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_parried.connect(_on_guard.bind(true))
 	EventBus.player_blocked.connect(_on_guard.bind(false))
+	EventBus.enemy_shield_blocked.connect(_on_shield.bind(false))
+	EventBus.enemy_shield_broken.connect(_on_shield.bind(true))
 	EventBus.skill_used.connect(_on_skill_used)
 	hurt_vignette = HURT_VIGNETTE_SCENE.instantiate()
 	add_child(hurt_vignette)
@@ -169,6 +171,19 @@ static func is_hero_side_hit(source: Node, target: Node) -> bool:
 ## Важкий — удар із відкиданням: зброя героя (D203) чи компаньйон (D209).
 static func is_heavy_hit(source: Node) -> bool:
 	return (source.combat.knockback if source.is_in_group(GameGroups.PLAYER) else source.knockback) > 0.0
+
+
+## Щит щитоносця (D560): блок — дрібні іскри на щиті; розбитий щит — великі, завмирання й поштовх камери.
+func _on_shield(enemy: Node2D, at: Vector2, broken: bool) -> void:
+	var spark: CPUParticles2D = PARRY_SPARK_SCENE.instantiate()
+	spark.finished.connect(spark.queue_free)
+	enemy.get_parent().add_child(spark)
+	spark.global_position = at
+	spark.scale = Vector2.ONE * (1.0 if broken else BLOCK_SPARK_SCALE)
+	spark.emitting = true
+	if broken:
+		ServiceLocator.get_time_manager().hitstop(PARRY_HITSTOP)
+		_kick_camera(Vector2(signf(at.x - GameGroups.get_player().global_position.x), 0.0), PARRY_KICK)
 
 
 ## Парирування: великі іскри, завмирання й тремтіння; блок — дрібні іскри (дзвін — SoundHooks).

@@ -19,6 +19,10 @@ func _ready() -> void:
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_blocked.connect(func(_attacker: Node) -> void: AudioManager.play(&"block"))
+	EventBus.enemy_shield_blocked.connect(func(_enemy: Node2D, _at: Vector2) -> void: AudioManager.play(&"block"))
+	EventBus.enemy_shield_broken.connect(func(_enemy: Node2D, _at: Vector2) -> void:
+		AudioManager.play(&"hit_heavy")
+		AudioManager.play(&"hit_armour"))
 	EventBus.player_parried.connect(_on_parried)
 	EventBus.enemy_staggered.connect(func(_enemy: Node, _duration: float) -> void: AudioManager.play(&"stagger"))
 	EventBus.combat_state_changed.connect(_on_combat_state_changed)

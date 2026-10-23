@@ -209,6 +209,46 @@ position = Vector2(1120, 396)
 task_giver = "merchant"
 gone_with_flag = "city_gates_fight_complete"
 
+[node name="Fight_LoneShield" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_LoneShieldTrigger")
+state_key = "enemies_loneshield"
+respawns = true
+
+[node name="Fight_LoneShieldTrigger" type="Area2D" parent="Fight_LoneShield"]
+position = Vector2(1450, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneShield/Fight_LoneShieldTrigger"]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneShield"]
+position = Vector2(1650, 368)
+script = ExtResource("8_spawn_point")
+enemy_type = "shield"
+size = "medium"
+elite = "never"
+
+[node name="Fight_LoneElite" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_LoneEliteTrigger")
+state_key = "enemies_loneelite"
+respawns = true
+
+[node name="Fight_LoneEliteTrigger" type="Area2D" parent="Fight_LoneElite"]
+position = Vector2(4300, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneElite/Fight_LoneEliteTrigger"]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneElite"]
+position = Vector2(4480, 368)
+script = ExtResource("8_spawn_point")
+enemy_type = "melee"
+size = "medium"
+elite = "always"
+
 [node name="Fight_Dunes" type="Node2D" parent="." unique_id=1773711575 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
@@ -274,7 +314,7 @@ enemy_type = "fast"
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Mesa" unique_id=1658975055]
 position = Vector2(2990, 304)
 script = ExtResource("8_spawn_point")
-enemy_type = "melee"
+enemy_type = "shield"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
 position = Vector2(3070, 304)
@@ -315,7 +355,7 @@ enemy_type = "fast"
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Caravan" unique_id=153186663]
 position = Vector2(3880, 368)
 script = ExtResource("8_spawn_point")
-enemy_type = "melee"
+enemy_type = "shield"
 
 [node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Caravan" unique_id=327418003]
 position = Vector2(3960, 368)
