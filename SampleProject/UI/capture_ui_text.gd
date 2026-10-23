@@ -67,7 +67,7 @@ func _initialize() -> void:
 	var npc: Node2D = load(MERCHANT).instantiate()
 	npc.talk_dialogue = "res://dialogue_quest/OldMan_Decision.dqd"
 	game.add_child(npc)
-	npc.global_position = player.global_position + Vector2(60, 0)
+	npc.global_position = player.global_position + Vector2(-140, 0)
 	await process_frame
 	npc.interactable.interacted.emit()
 	await _shot("npc_menu")
