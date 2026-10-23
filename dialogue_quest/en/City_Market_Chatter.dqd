@@ -1,0 +1,5 @@
+// [DRAFT] D571 — the City market folk in passing (D338). Not wired yet: the market has no NPC
+say|MARKET_TRADER|Dates! Sweet as a dream without a sky!
+say|MARKET_TRADER|A lizard at the market? Keep your purse close to your tail.
+say|MARKET_TRADER|Same prices under the awning, and you keep your wits.
+exit|

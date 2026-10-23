@@ -1,0 +1,4 @@
+// [DRAFT] D571 — the witch Morrow, an oath keeper, in passing (D338)
+say|OATH_WITCH|Shh, little lizard. In the shade, at least, nobody is tempted to look up.
+say|OATH_WITCH|Fear is strength too. Do not throw it away before you learn to hold it.
+exit|

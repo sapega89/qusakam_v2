@@ -1,0 +1,5 @@
+// [DRAFT] D571 — the blacksmith in passing (D338)
+say|BLACKSMITH|Iron does not lie: it holds the blow, or it does not.
+say|BLACKSMITH|Keep away from the forge — sparks do not ask whose tail it is.
+say|BLACKSMITH|You are small for armour. Then again, every shield was once a lump of ore.
+exit|

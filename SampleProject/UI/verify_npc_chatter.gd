@@ -5,8 +5,20 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_npc_chatter.gd
 
 const NPC_SCENE := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn"
-## Реплік мимохідь у грі ще немає (BACKLOG 35: ніхто їх не написав) — тест бере наявну розмову NPC.
-const CHATTER := "res://dialogue_quest/City_Merchant.dqd"
+## Чернетки реплік мимохідь (D571) — тест бере ковалеві.
+const CHATTER := "res://dialogue_quest/Smith_Chatter.dqd"
+const NPC_DIR := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/"
+## D571: хто з NPC що каже мимохідь — сцена NPC (або екземпляр у мапі) → .dqd.
+const WIRED := {
+	"blacksmith.tscn": "Smith_Chatter.dqd",
+	"oath_priest.tscn": "City_Oath_Priest_Chatter.dqd",
+	"oath_witch.tscn": "City_Oath_Witch_Chatter.dqd",
+	"oath_dervish.tscn": "City_Oath_Dervish_Chatter.dqd",
+}
+const ROAD_MAP := "res://SampleProject/Maps/DesertRoad.tscn"
+const ROAD_CHATTER := "DesertRoad_Merchant_Chatter.dqd"
+## Написані, але ще не підключені: вартовий брами — не NpcBase, на базарі NPC немає (звіт cloud/text-1).
+const UNWIRED := ["CityGates_Guard_Chatter.dqd", "City_Market_Chatter.dqd"]
 const TALK := "res://dialogue_quest/OldMan_Decision.dqd"
 
 var fails: Array[String] = []
@@ -164,7 +176,45 @@ func _initialize() -> void:
 	for i in 10 * dm.DQD_READER.lines(CHATTER).size() + 10:
 		await process_frame
 	ck(dm.chatter_bubble(quick) == null and _clouds(quick) == 0, "cloud removed after the last line")
+
+	print("[8] D571: the draft lines are wired to their NPCs, 2-3 short lines each, marked as drafts")
+	for scene: String in WIRED:
+		var keeper: NpcBase = load(NPC_DIR + scene).instantiate()
+		ck(keeper.chatter_dialogue == DialoguePaths.ROOT + WIRED[scene], "%s chatters %s (%s)" % [scene, WIRED[scene], keeper.chatter_dialogue])
+		keeper.free()
+	ck(_map_chatter(ROAD_MAP, ^"Merchant") == DialoguePaths.ROOT + ROAD_CHATTER, "the caravan merchant on the Desert Road chatters " + ROAD_CHATTER)
+	var files: Array = WIRED.values() + [ROAD_CHATTER] + UNWIRED
+	for file: String in files:
+		_check_draft(file)
 	_done()
+
+
+## chatter_dialogue екземпляра [param node] у мапі [param map] (без запуску мапи).
+func _map_chatter(map: String, node: NodePath) -> String:
+	var state: SceneState = (load(map) as PackedScene).get_state()
+	for i in state.get_node_count():
+		if state.get_node_path(i) != NodePath("./" + String(node)):
+			continue
+		for p in state.get_node_property_count(i):
+			if state.get_node_property_name(i, p) == &"chatter_dialogue":
+				return state.get_node_property_value(i, p)
+	return ""
+
+
+## 2-3 репліки по одному мовцю, коротко (облачко, не вікно), обидві мови позначені чернеткою.
+func _check_draft(file: String) -> void:
+	var path := DialoguePaths.ROOT + file
+	var twin := DialoguePaths.ROOT + DialoguePaths.EN_DIR + file
+	var lines: Array[Dictionary] = DqdReader.lines(path)
+	var speakers: Dictionary = {}
+	var longest := 0
+	for line in lines:
+		speakers[line.speaker] = true
+		longest = maxi(longest, String(line.text).length())
+	ck(lines.size() >= 2 and lines.size() <= 3 and speakers.size() == 1 and longest <= 90,
+			"%s: %d lines by %s, longest %d chars" % [file, lines.size(), str(speakers.keys()), longest])
+	ck(FileAccess.get_file_as_string(path).begins_with("// [ЧЕРНЕТКА] D571")
+			and FileAccess.get_file_as_string(twin).begins_with("// [DRAFT] D571"), "%s is marked [ЧЕРНЕТКА] / [DRAFT]" % file)
 
 
 func _done() -> void:

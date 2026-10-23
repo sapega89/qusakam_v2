@@ -1693,6 +1693,9 @@ msgstr "Alchemist"
 msgid "Villager"
 msgstr "Villager"
 
+msgid "Market trader"
+msgstr "Market trader"
+
 msgid "Alisia"
 msgstr "Alisia"
 

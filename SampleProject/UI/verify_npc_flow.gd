@@ -190,7 +190,11 @@ func _initialize() -> void:
 	ck(helmet_done and not smith.marker.visible, "the blacksmith has nothing left to give")
 	await _go(smith)
 	await process_frame
-	ck(dm.chatter_bubble(smith) == null, "so he does not call out")
+	# Нічого дати — не гукає (D452), а каже своє звичайне мимохідь (D338, D571).
+	var passing: Node2D = dm.chatter_bubble(smith)
+	var plain: String = dm._stage_tag.sub(dm.DQD_READER.lines(smith.chatter_dialogue)[0].text, "")
+	ck(passing != null and passing._label.text == plain, "so he does not call out: his plain chatter instead (%s)"
+			% (passing._label.text if passing != null else "no cloud"))
 	await _leave()
 	dm.bubble_time_scale = 0.0
 

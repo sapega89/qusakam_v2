@@ -1,0 +1,5 @@
+// [DRAFT] D571 — the caravan merchant on the Desert Road in passing (D338)
+say|MERCHANT|My caravan… The bandits took even the ropes.
+say|MERCHANT|Twenty years on this road and I never once raised my eyes. That is why I am alive.
+say|MERCHANT|A lizard from the edge of the world? I thought there was nothing out there but sand.
+exit|
