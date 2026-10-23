@@ -35,6 +35,7 @@ func _quest_flags() -> Dictionary:
 ## Етап → підетапи (D120): дані в story.json, стан підетапу — зі збережених
 ## прапорців квестів (FlagsModule). Тож окремого стану сюжету в сейві не треба.
 const STORY_FILE := "res://SampleProject/Resources/Data/story.json"
+const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 var _stages: Array = []
 
 
@@ -120,17 +121,10 @@ func current_zone_title() -> String:
 	return ""
 
 
-## Назва локації для картки сейва (D133): титул зони журналу, чия "scene" — ця кімната.
-## Кімната двох зон (Canyon I / II) — пізніша з уже відкритих; кімната поза журналом
-## (City, MayorHall) — імʼя сцени словами ("Mayor Hall").
+## Назва локації для картки сейва (D618, замість зон журналу D133): локація кімнати з locations.json.
+## Повертає ключ (англійську назву, D121) — Label картки перекладає його мовою гри й після зміни мови.
 func location_title(room_scene_path: String) -> String:
-	var scene := room_scene_path.get_file().get_basename()
-	var title := ""
-	for stage in _load_stages():
-		for zone in _zone_states(stage):
-			if zone.scene == scene and (title == "" or zone.state != "locked"):
-				title = zone.title
-	return title if title != "" else scene.capitalize()
+	return LocationDB.location(LocationDB.of_scene(room_scene_path)).name
 
 
 ## StoryState виводиться з тих самих прапорців, а не штовхається зі сцени (B43).

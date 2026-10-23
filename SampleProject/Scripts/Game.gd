@@ -292,7 +292,7 @@ func save_game() -> bool:
 	save_file.store_string(var_to_str(save_manager.data))
 	save_file.close()
 
-	# Картка слота (Figma 150:1278): лише реальні дані (Q3); локація — зона журналу (D133).
+	# Картка слота (Figma 150:1278): лише реальні дані (Q3); локація — з locations.json (D618).
 	var meta := {
 		"timestamp": Time.get_datetime_string_from_system(),
 		"location": ServiceLocator.get_game_flow().location_title(map.scene_file_path),
