@@ -277,7 +277,7 @@ func _no_stamina() -> void:
 	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Player/Components/PlayerStamina.gd"), "PlayerStamina.gd is gone")
 	ck(not root.get_node("EventBus").has_signal(&"player_stamina_changed"), "EventBus has no player_stamina_changed")
 	var rows: Array = get_first_node_in_group(&"player_vitals_panel")._rows.get_children().map(func(r: Node) -> String: return r.name)
-	ck(rows == ["HP", "SP", "XP"], "the hero panel shows HP, SP, XP and no ST (%s)" % [rows])
+	ck(rows == ["HP", "SP"], "the hero panel shows HP and SP, no ST; XP is its own bar (D552: %s)" % [rows])
 	# Десять перекатів поспіль — кожен починається (раніше п'ятий уже не мав витривалості)
 	await _hero_at(arena_x)
 	var rolls := 0
@@ -320,8 +320,8 @@ func _potion(sl: Node) -> void:
 	ck(combat.is_drinking() and combat.locks_movement(), "one button: he drinks, planted")
 	ck(inventory.get_item_count("potion") == 0 and inventory.get_item_count("potion_lesser") == 1,
 			"60 HP missing: the slot takes the Potion (75), the smallest that covers it")
-	var label: Label = get_first_node_in_group(&"player_vitals_panel")._potion_label
-	ck(label.text.ends_with("×2"), "the hero panel counts the potions left (%s)" % label.text)
+	var label: Label = get_first_node_in_group(&"player_vitals_panel").get_node(^"%PotionChip/Pill/Count")
+	ck(label.text == "×2", "the Q chip counts the potions left (%s)" % label.text)
 	ck(hero.current_health == 440, "no heal before the sip")
 	await create_timer(combat.DRINK_HEAL_AT + 0.05).timeout
 	ck(hero.current_health == 500, "healed in real time (%d)" % hero.current_health)

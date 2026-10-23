@@ -20,6 +20,7 @@ const ICON_CHECK := preload("res://SampleProject/Assets/UI/Icons/check_circle.sv
 const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
 const ICON_PICKED := preload("res://SampleProject/Assets/UI/Icons/diamond_sm.svg")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
+const SkillSlotInput = preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const SkillTooltip = preload("res://SampleProject/Scripts/Systems/SkillTooltip.gd")
 ## Скільки місць у ряду одного дерева (D333): у даних 1–2 навички на рівень; більше — вузли вужчають, а не ламають вікно.
@@ -196,7 +197,7 @@ func _percent(fraction: float) -> String:
 	return String.num(fraction * 100.0, 1).trim_suffix(".0")
 
 
-## Чотири слоти хотбара (D331): кнопка ставить вибрану вивчену активну навичку в слот.
+## Слоти хотбара (D331, вісім — D549): кнопка ставить вибрану вивчену активну навичку в слот.
 func _build_slot_buttons() -> void:
 	var buttons := RowFill.fill(_hotbar_slots, _slot_template, SkillManager.SLOT_COUNT)
 	_rename(buttons, range(1, buttons.size() + 1).map(func(n: int) -> String: return "Slot%d" % n))
@@ -683,10 +684,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed(&"skills_unpick") and plan.skill_picks(_selected_id) > 0:
 		unpick_selected()
 	else:
-		for slot in SkillManager.SLOT_COUNT:
-			if event.is_action_pressed(StringName("skill_slot_%d" % (slot + 1))) and not _selected_id.is_empty():
-				assign_to_slot(slot)
-				get_viewport().set_input_as_handled()
+		# Слот за подією (D549): RT — слот 1, з затиснутим LT — слот 5.
+		var slot := SkillSlotInput.slot_for(event)
+		if slot >= 0 and not _selected_id.is_empty():
+			assign_to_slot(slot)
+			get_viewport().set_input_as_handled()
 		return
 	get_viewport().set_input_as_handled()
 

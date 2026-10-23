@@ -99,7 +99,7 @@ const INGAME_LABEL_MIN := 20
 const INGAME_FONT_TYPES: Array[StringName] = [
 	&"DialogueName", &"DialogueText", &"DialogueChoice",
 	&"NpcMenuItem", &"NpcMenuItemOn",
-	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel", &"HudQuestCaption", &"HudQuestTitle",
+	&"HudQuestCaption", &"HudQuestTitle",
 	&"TutorialBody", &"TutorialHint", &"TutorialKeyLabel", &"TutorialBanner",
 ]
 
@@ -468,3 +468,45 @@ const SIZE_CARD_EPITHET := 16          # SemiBold, UPPER, accent
 const SIZE_CARD_PLACE := 14            # SemiBold, UPPER, accent — назва місця
 const CARD_PLACE_SPACING := 2
 const CARD_DESCRIPTION_WIDTH := 560
+
+
+# ── HUD v2 (D453, D476, D485, D549, D552; Figma 501:6611 панель героя, 497:6587 хотбар, 515:6662 XP) ─
+# Виміри: design/combat_hud_mapping.md → HUD v2. Геометрія — у .tscn (Figma px при 1080p), кольори й шрифти — тут.
+const HUD_GOLD_LIGHT := Color("f1d77a")     # ім'я героя, кільце готового слота, число в пігулці зілля
+const HUD_TEXT_SOFT := Color("cfc8b0")      # клас, підписи рядків HP / SP
+const HUD_RIM := Color("8a6f22")            # рамка смуг, пігулки, верхній край смуги XP
+const HUD_INK := Color("0b0b10")            # число рівня, клавіша на бейджі, тло пігулки (×0.9)
+const HUD_PILL_ALPHA := 0.9
+const HUD_PILL_RADIUS := 10
+const HUD_PORTRAIT_BG := Color("15141c")    # під портретом у шестикутнику
+const HUD_RULE := Color("d4af37", 0.6)      # лінія під ім'ям
+const HUD_BAR_BG := Color(0, 0, 0, 0.6)     # тло смуг HP / SP / XP
+const HUD_BAR_HIGHLIGHT := 0.25             # біла смужка зверху заливки: частка білого
+const HUD_BAR_HIGHLIGHT_ROW := 3            # px, HP / SP
+const HUD_BAR_HIGHLIGHT_XP := 2             # px, XP
+const HUD_XP_HEIGHT := 10                   # смуга XP на всю ширину, при 1080p
+## Світіння готового слота й пульс асисту — малює рушій (design/shots/figma_hotbar_slot_ready_2x.png):
+## обвід шестикутника кількома шарами, від широкого прозорого до вузького. Ширина в px, непрозорість шару.
+const HUD_GLOW_COLOR := Color("f1d77a")
+const HUD_GLOW_WIDTH := 10.0
+const HUD_GLOW_LAYERS := 6
+const HUD_GLOW_ALPHA := 0.16
+## Асист на полі — шеврон «нейтральний»: бейдж клавіші тьмяніє до цієї яскравості (D525).
+const HUD_BADGE_NEUTRAL := 0.45
+## Figma-розміри тексту HUD v2 — у тему йдуть як є, без ×1.5 D474 і без ×1.25 D166: плитки й бейджі намальовані
+## під ці розміри при 1080p, і більший текст наїжджає на смуги й сусідів (ім'я на клас, число на смугу).
+## Більший текст — лише всією панеллю разом (питання до Sapega в звіті cloud/hud-v2).
+const FIGMA_FONT_TYPES: Array[StringName] = [
+	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel",
+	&"HudClass", &"HudLevel", &"HudSpCost", &"HudCount",
+]
+const SIZE_HUD_NAME := 26        # Bold, UPPER, tracking 3
+const HUD_NAME_SPACING := 3
+const SIZE_HUD_CLASS := 16       # Regular
+const SIZE_HUD_LEVEL := 15       # Bold
+const SIZE_HUD_ROW_LABEL := 16   # Bold
+const SIZE_HUD_ROW_VALUE := 18   # SemiBold
+const SIZE_HUD_SP_COST := 13     # Bold
+const SIZE_HUD_KEY := 14         # Bold
+const SIZE_HUD_COOLDOWN := 22    # Bold
+const SIZE_HUD_COUNT := 16       # Bold

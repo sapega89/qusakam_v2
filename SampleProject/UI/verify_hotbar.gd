@@ -53,10 +53,11 @@ func _initialize() -> void:
 	sm.clear_cooldowns()
 
 	print("[1] slot count comes from Figma, not invented")
-	ck(sm.SLOT_COUNT == 4, "4 active skill slots (Figma 434:6628)")
-	ck(sm.get_equipped_skills().size() == 4, "loadout normalised to 4 entries")
-	ck(sm.is_valid_slot(0) and sm.is_valid_slot(3), "slots 0..3 valid")
-	ck(not sm.is_valid_slot(-1) and not sm.is_valid_slot(4), "out-of-range slots invalid")
+	ck(sm.SLOT_COUNT == 8, "8 active skill slots (Hotbar v2 497:6587, D549)")
+	ck(InputMap.has_action("skill_slot_8") and not InputMap.has_action("skill_slot_9"), "one input action per slot")
+	ck(sm.get_equipped_skills().size() == 8, "loadout normalised to 8 entries")
+	ck(sm.is_valid_slot(0) and sm.is_valid_slot(7), "slots 0..7 valid")
+	ck(not sm.is_valid_slot(-1) and not sm.is_valid_slot(8), "out-of-range slots invalid")
 
 	print("[2] equip validation")
 	ck(sm.equip_skill("h_a", 0) == R.OK, "unlocked active skill equips")
@@ -85,7 +86,7 @@ func _initialize() -> void:
 	ck(sm.unequip_skill(2) == R.OK, "unequip succeeds")
 	ck(sm.get_equipped_skill(2) == "", "slot cleared")
 	ck(sm.unequip_skill(2) == R.SLOT_EMPTY, "unequipping an empty slot reports SLOT_EMPTY")
-	ck(sm.swap_equipped_skills(0, 7) == R.INVALID_SLOT, "swap validates slots")
+	ck(sm.swap_equipped_skills(0, 8) == R.INVALID_SLOT, "swap validates slots")
 
 	print("[5] loadout is separate from progression")
 	ck(gm.player_state.has("equipped_skills"), "equipped_skills exists in player_state")
@@ -148,32 +149,84 @@ func _initialize() -> void:
 	legacy.erase("equipped_skills")
 	pdm.load_data(legacy)
 	ck(gm.player_state.has("equipped_skills"), "old save loads without crashing")
-	ck(sm.get_equipped_skills().size() == 4, "loadout still normalised after legacy load")
+	ck(sm.get_equipped_skills().size() == 8, "loadout still normalised after legacy load")
+	print("[10b] a 4-slot save from before D549 loads into 8 slots, the first four kept")
+	var four: Dictionary = snap.duplicate(true)
+	four["equipped_skills"] = ["h_a", "", "", "h_b"]
+	pdm.load_data(four)
+	ck(sm.get_equipped_skills().size() == 8 and sm.get_equipped_skill(0) == "h_a" and sm.get_equipped_skill(3) == "h_b"
+			and sm.get_equipped_skill(7) == "", "old 4-slot loadout padded to 8 (%s)" % [sm.get_equipped_skills()])
+	ck(sm.equip_skill("h_a", 7) == R.OK and sm.get_equipped_skill(7) == "h_a", "slot 8 takes a skill")
+	ck(sm.equip_skill("h_a", 8) == R.INVALID_SLOT, "slot 9 does not exist")
+	sm.equip_skill("h_a", 0)
 
 	print("[11] hotbar UI reflects manager state")
-	var InputMapCheck := InputMap.has_action("skill_slot_1") and InputMap.has_action("skill_slot_4")
-	ck(InputMapCheck, "skill_slot_1..4 input actions registered")
+	var InputMapCheck := range(1, 9).all(func(n: int) -> bool: return InputMap.has_action("skill_slot_%d" % n))
+	ck(InputMapCheck, "skill_slot_1..8 input actions registered")
+	for n in range(1, 9):
+		var keys: Array = InputMap.action_get_events("skill_slot_%d" % n).filter(func(e: InputEvent) -> bool: return e is InputEventKey)
+		ck(keys.size() == 1 and keys[0].physical_keycode == KEY_0 + n, "slot %d on key %d" % [n, n])
 	var HotbarScene = load("res://SampleProject/UI/Components/skill_hotbar.tscn")
 	var hotbar: Control = HotbarScene.instantiate()
 	root.add_child(hotbar)
-	hotbar.set_process(false)  # слот асисту читає прапорці Game, а тут хотбар без гри
 	for i in 3: await process_frame
-	ck(hotbar._slots.size() == 4, "hotbar renders 4 slots")
+	ck(hotbar._slots.size() == 8, "hotbar renders 8 slots")
+	ck(hotbar.size == Vector2(780, 124), "hotbar is Figma 780 × 124 (%s)" % hotbar.size)
+	var xs: Array = hotbar._slots.map(func(b: Control) -> int: return int(b.position.x))
+	ck(xs == [78, 154, 230, 306, 410, 486, 562, 638], "two groups of four around the centre diamond (%s)" % [xs])
+	var diamond: Control = hotbar.get_node(^"CentreDiamond")
+	ck(diamond.position == Vector2(382, 62), "centre diamond at (382, 62)")
+	ck(hotbar.get_node(^"CurlRight").flip_h and not hotbar.get_node(^"CurlLeft").flip_h, "right curl mirrored")
+	ck(hotbar.get_node(^"Slots/Bind8/Badge/Key").text == "8", "slot 8 badge reads 8 on the keyboard")
+	ck(not hotbar.get_node(^"Slots/Bind8/Icon").visible and not hotbar.get_node(^"Slots/Bind8/Ready").visible,
+			"an empty slot is the bare hexagon")
 	hotbar.refresh()
 	await process_frame
-	var badge: Label = hotbar._slots[0].get_node("Slot/Cooldown")
+	var bind0: Control = hotbar._slots[0]
+	var badge: Control = bind0.get_node("Cooldown")
 	ck(not badge.visible, "no cooldown overlay when ready")
+	ck(bind0.get_node(^"Ready").visible and bind0.get_node(^"Glow").visible, "a ready slot shows the gold ring and the glow")
+	var cost: int = root.get_node(^"SkillDatabase").get_skill(sm.get_equipped_skill(0)).sp_cost
+	ck(bind0.get_node(^"Gem").visible == (cost > 0) and bind0.get_node(^"Gem/Cost").text == str(cost),
+			"the SP gem shows the skill's cost (%d)" % cost)
 	sm.use_slot(0, target)
 	hotbar.refresh()
 	await process_frame
 	ck(badge.visible, "cooldown overlay appears from manager state")
-	ck(badge.text.ends_with("s"), "overlay shows remaining seconds (%s)" % badge.text)
+	var seconds: Label = badge.get_node(^"Seconds")
+	ck(seconds.text == ("%.1f" % sm.get_remaining_cooldown(sm.get_equipped_skill(0))) or seconds.text.is_valid_int(),
+			"overlay shows the seconds left, Figma style (%s)" % seconds.text)
+	ck(not bind0.get_node(^"Ready").visible, "no ready ring while cooling down")
+	print("[11b] the gamepad: LT shifts the four slot buttons to slots 5–8 (D549)")
+	var SkillSlotInput: GDScript = load("res://SampleProject/Scripts/UI/skill_slot_input.gd")
+	var InputGlyphs: GDScript = load("res://SampleProject/Scripts/UI/input_glyphs.gd")
+	var rt := InputEventJoypadMotion.new()
+	rt.axis = JOY_AXIS_TRIGGER_RIGHT
+	rt.axis_value = 1.0
+	ck(SkillSlotInput.slot_for(rt) == 0, "RT alone is slot 1")
+	Input.action_press(&"assist")
+	SkillSlotInput.shift_used = false
+	ck(SkillSlotInput.slot_for(rt) == 4 and SkillSlotInput.shift_used, "LT + RT is slot 5, and the LT hold is used up")
+	var back := InputEventJoypadButton.new()
+	back.button_index = JOY_BUTTON_BACK
+	back.pressed = true
+	ck(SkillSlotInput.slot_for(back) == 7, "LT + Back is slot 8")
+	Input.action_release(&"assist")
+	ck(SkillSlotInput.slot_for(back) == 3, "Back alone is slot 4")
+	var key6 := InputEventKey.new()
+	key6.physical_keycode = KEY_6
+	key6.pressed = true
+	ck(SkillSlotInput.slot_for(key6) == 5, "key 6 is slot 6")
+	InputGlyphs.using_gamepad = true
+	ck(SkillSlotInput.badge(0) == "RT" and SkillSlotInput.badge(4) == "LT+RT" and SkillSlotInput.badge(7) == "LT+Back",
+			"pad badges: RT … LT+Back (%s, %s)" % [SkillSlotInput.badge(0), SkillSlotInput.badge(4)])
+	InputGlyphs.using_gamepad = false
 
 	print("[12] hotbar does no rules work")
 	var src: String = FileAccess.open(
 		"res://SampleProject/UI/Components/skill_hotbar.gd", FileAccess.READ).get_as_text()
 	ck(src.find("player_state") == -1, "hotbar never touches player_state")
-	ck(src.find("sp_cost") == -1, "hotbar does not read SP cost")
+	ck(src.count("sp_cost") == 1 and src.find("get_current_sp") == -1, "hotbar shows the SP cost on the gem, never compares SP")
 	ck(src.find("damage") == -1, "hotbar does not compute damage")
 	ck(src.find("Input.is_key_pressed") == -1, "no hardcoded key polling")
 

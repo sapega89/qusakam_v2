@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/player_vitals_panel.tscn" id="13_vitals"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/combat_hud_top.tscn" id="14_hudtop"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/loot_feed.tscn" id="16_lootfeed"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hud_xp_bar.tscn" id="17_hudxp"]
 [ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
@@ -355,19 +356,11 @@ grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("15_gameuitheme")
 
+[node name="XpBar" parent="UICanvas/CombatHUD" instance=ExtResource("17_hudxp")]
+layout_mode = 1
+
 [node name="SkillHotbar" parent="UICanvas/CombatHUD" instance=ExtResource("12_hotbar")]
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -124.0
-offset_top = -111.0
-offset_right = 124.0
-offset_bottom = -24.0
-grow_horizontal = 2
-grow_vertical = 0
 
 [node name="PlayerVitalsPanel" parent="UICanvas/CombatHUD" instance=ExtResource("13_vitals")]
 

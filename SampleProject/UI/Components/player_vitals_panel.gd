@@ -1,18 +1,16 @@
-extends PanelContainer
+extends Control
 class_name UIPlayerVitalsPanel
 
-## Панель життєвих показників гравця.
-## Figma: Game Scene / Combat HUD → Player Vitals Panel (434:6558).
+## Панель героя v2, вгорі ліворуч (D453, D476, D485). Figma: UI/HUD/HeroPanel v2 (501:6611).
+## Виміри: design/combat_hud_mapping.md → HUD v2 hero panel. Розкладка — у player_vitals_panel.tscn.
 ##
-## Три рядки з кадру: HP, SP, XP. Значення беруться з наявних власників —
-## вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
-## D504: під рядками — швидкий слот зілля (кнопка і скільки зілля). Рядка ST немає: витривалість прибрано (D551).
+## Портрет у шестикутнику, ромб рівня, ім'я й клас, рядки HP і SP. Витривалості немає (D551), XP — смуга на всю
+## ширину внизу (D552, hud_xp_bar). Під плиткою — чипи F (асист, hud_assist_chip.gd) і Q (зілля з лічильником, D538).
+## Значення беруться з наявних власників — вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const QuickPotion = preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
 
-const BAR_WIDTH := 200
-const BAR_HEIGHT := 8
 ## Тряска рядка HP від удару по героєві (4b): px і с.
 const HURT_SHAKE := 4.0
 const HURT_TIME := 0.3
@@ -20,8 +18,9 @@ var _hurt: Tween
 
 @onready var _name_label: Label = %VitalsName
 @onready var _level_label: Label = %LevelValue
-@onready var _rows: VBoxContainer = %VitalsBars
-@onready var _potion_label: Label = %QuickPotion
+@onready var _class_label: Label = %HeroClass
+@onready var _rows: Control = %VitalsBars
+@onready var _potion_chip: Control = %PotionChip
 
 var _skill_manager: Node = null
 var _xp_manager: Node = null
@@ -34,7 +33,12 @@ func _ready() -> void:
 	var sl: Node = ServiceLocatorHelper.get_service_locator()
 	_skill_manager = sl.get_skill_manager()
 	_xp_manager = sl.get_xp_manager()
-	_build_rows()
+	for row in _rows.get_children():
+		_rows_by_id[String(row.name)] = row
+	%Portrait.texture = CharacterManager.HERO_PORTRAIT
+	%PortraitMask.color = UITokens.HUD_PORTRAIT_BG
+	%Rule.color = UITokens.HUD_RULE
+	EventBus.oath_sworn.connect(func(_oath: String) -> void: refresh())
 	# Подієво, без опитування щокадру: кожне значення має власника з сигналом.
 	if not EventBus.sp_changed.is_connected(_on_sp_changed):
 		EventBus.sp_changed.connect(_on_sp_changed)
@@ -56,9 +60,10 @@ func _on_sp_changed(_current: int, _max: int) -> void:
 	refresh()
 
 
-## Швидкий слот (D504): «Q  Potions ×3» — кнопка за пристроєм і все зілля в сумці.
+## Чип Q (D538 → HUD v2): кнопка за пристроєм і все зілля лікування в сумці в пігулці «×3».
 func _refresh_potion() -> void:
-	_potion_label.text = "%s  %s" % [InputGlyphs.label(&"quick_potion"), tr("Potions ×%d") % QuickPotion.count()]
+	_potion_chip.get_node(^"Badge/Key").text = InputGlyphs.badge(&"quick_potion")
+	_potion_chip.get_node(^"Pill/Count").text = "×%d" % QuickPotion.count()
 
 
 func _on_xp_gained(_amount: int, _new_total: int) -> void:
@@ -115,59 +120,7 @@ func _ensure_player() -> Node:
 	return _player
 
 
-func _build_rows() -> void:
-	for child in _rows.get_children():
-		_rows.remove_child(child)
-		child.queue_free()
-	_rows_by_id.clear()
-	_rows.add_child(_make_row("HP", UITokens.HP_FILL, false))
-	_rows.add_child(_make_row("SP", UITokens.SP_FILL, false))
-	_rows.add_child(_make_row("XP", UITokens.ACCENT, true))
-
-
-func _make_row(id: String, fill: Color, muted: bool) -> Control:
-	var row := HBoxContainer.new()
-	row.name = id
-	row.add_theme_constant_override("separation", UITokens.SPACE_SM)
-
-	var label := Label.new()
-	label.text = id
-	label.custom_minimum_size = Vector2(30, 0)
-	label.theme_type_variation = &"VitalsLabel"
-	if muted:
-		label.add_theme_color_override("font_color", UITokens.TEXT_SECONDARY)
-	row.add_child(label)
-
-	var bar := ProgressBar.new()
-	bar.name = "Bar"
-	bar.custom_minimum_size = Vector2(BAR_WIDTH, BAR_HEIGHT)
-	bar.show_percentage = false
-	var track := StyleBoxFlat.new()
-	track.bg_color = UITokens.BACKGROUND
-	track.set_corner_radius_all(UITokens.RADIUS)
-	track.set_border_width_all(UITokens.BORDER_WIDTH)
-	track.border_color = UITokens.BORDER
-	bar.add_theme_stylebox_override("background", track)
-	var fill_box := StyleBoxFlat.new()
-	fill_box.bg_color = fill
-	fill_box.set_corner_radius_all(UITokens.RADIUS)
-	bar.add_theme_stylebox_override("fill", fill_box)
-	row.add_child(bar)
-
-	var value := Label.new()
-	value.name = "Value"
-	value.custom_minimum_size = Vector2(80, 0)
-	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	value.theme_type_variation = &"VitalsValue"
-	if muted:
-		value.add_theme_color_override("font_color", UITokens.TEXT_SECONDARY)
-	row.add_child(value)
-
-	_rows_by_id[id] = row
-	return row
-
-
-## Ім'я й рівень складені з tr() (верхній регістр, «LV.%d») — при зміні мови перемальовуємо (BACKLOG 31).
+## Ім'я й клас складені з tr() (ім'я — верхній регістр) — при зміні мови перемальовуємо (BACKLOG 31).
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		refresh()
@@ -185,8 +138,10 @@ func refresh() -> void:
 
 	if _xp_manager == null:
 		_xp_manager = sl.get_xp_manager()
-	_level_label.text = tr("LV.%d") % (_xp_manager.get_level() if _xp_manager else 1)
-	_style_level_badge()
+	_level_label.text = str(_xp_manager.get_level() if _xp_manager else 1)
+	# Клас (D532, як Status): складена клятва, до клятви — клас-стовбур (Holy Warrior).
+	var oath_id: String = _skill_manager.get_oath()
+	_class_label.text = tr(String(SkillDatabase.get_oath(oath_id).name)) if oath_id != "" else tr(SkillDatabase.class_name_trunk)
 
 	var player: Node = _ensure_player()
 	if player:
@@ -199,28 +154,6 @@ func refresh() -> void:
 		_set_row("SP", _skill_manager.get_current_sp(), _skill_manager.get_max_sp())
 	else:
 		_set_row_unknown("SP")
-	if _xp_manager and _xp_manager.is_max_level():
-		_set_row_max("XP")
-	elif _xp_manager:
-		_set_row("XP", _xp_manager.current_xp, _xp_manager.xp_for_next_level)
-	else:
-		_set_row_unknown("XP")
-
-
-## Figma 434:6561 — акцентна заливка, темний текст.
-func _style_level_badge() -> void:
-	_level_label.add_theme_color_override("font_color", UITokens.ON_ACCENT)
-	var badge := _level_label.get_parent() as PanelContainer
-	if badge == null:
-		return
-	var box := StyleBoxFlat.new()
-	box.bg_color = UITokens.ACCENT
-	box.set_corner_radius_all(UITokens.RADIUS)
-	box.content_margin_left = 6
-	box.content_margin_right = 6
-	box.content_margin_top = 2
-	box.content_margin_bottom = 2
-	badge.add_theme_stylebox_override("panel", box)
 
 
 func _set_row(id: String, current: int, maximum: int) -> void:
@@ -232,18 +165,6 @@ func _set_row(id: String, current: int, maximum: int) -> void:
 	bar.max_value = maxf(1.0, float(maximum))
 	bar.value = float(clampi(current, 0, maxi(maximum, 0)))
 	value.text = "%s / %s" % [_thousands(current), _thousands(maximum)]
-
-
-## D488: найвищий рівень — смуга повна, замість чисел MAX.
-func _set_row_max(id: String) -> void:
-	var row: Control = _rows_by_id.get(id)
-	if row == null:
-		return
-	var bar: ProgressBar = row.get_node(^"Bar")
-	var value: Label = row.get_node(^"Value")
-	bar.max_value = 1.0
-	bar.value = 1.0
-	value.text = tr("MAX")
 
 
 func _set_row_unknown(id: String) -> void:

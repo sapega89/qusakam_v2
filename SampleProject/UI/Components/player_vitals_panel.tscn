@@ -1,61 +1,363 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://SampleProject/UI/Components/player_vitals_panel.gd" id="1_vitals"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/plate.svg" id="2_plate"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/portrait_ring.svg" id="3_ring"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/level_diamond.svg" id="4_level"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/curl.svg" id="5_curl"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/chip.svg" id="6_chip"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hotbar/key_badge.svg" id="7_key"]
+[ext_resource type="Script" path="res://SampleProject/UI/Components/hud_hex_glow.gd" id="8_glow"]
+[ext_resource type="Script" path="res://SampleProject/UI/Components/hud_assist_chip.gd" id="9_assist"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/Items/potion.png" id="10_potion"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vitals"]
-content_margin_left = 16.0
-content_margin_top = 16.0
-content_margin_right = 16.0
-content_margin_bottom = 16.0
-bg_color = Color(0.06666667, 0.06666667, 0.09411765, 0.56)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.22745098, 0.22745098, 0.25882354, 1)
-
-[node name="PlayerVitalsPanel" type="PanelContainer"]
+[node name="PlayerVitalsPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 offset_left = 24.0
 offset_top = 24.0
-offset_right = 384.0
-offset_bottom = 186.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_vitals")
+offset_right = 544.0
+offset_bottom = 222.0
+mouse_filter = 2
 script = ExtResource("1_vitals")
 
-[node name="Body" type="VBoxContainer" parent="."]
-layout_mode = 2
-theme_override_constants/separation = 12
+[node name="Plate" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 0
+offset_top = 14
+offset_right = 470
+offset_bottom = 136
+mouse_filter = 2
+texture = ExtResource("2_plate")
 
-[node name="Header" type="HBoxContainer" parent="Body"]
-layout_mode = 2
-
-[node name="VitalsName" type="Label" parent="Body/Header"]
+[node name="PortraitMask" type="Polygon2D" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
+clip_children = 2
+position = Vector2(14, 29)
+polygon = PackedVector2Array(26, 2, 78, 2, 102, 46, 78, 90, 26, 90, 2, 46)
+
+[node name="Portrait" type="TextureRect" parent="PortraitMask"]
+layout_mode = 0
+offset_left = 0
+offset_top = 0
+offset_right = 104
+offset_bottom = 92
+mouse_filter = 2
+unique_name_in_owner = true
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Ring" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 14
+offset_top = 29
+offset_right = 118
+offset_bottom = 121
+mouse_filter = 2
+texture = ExtResource("3_ring")
+
+[node name="VitalsName" type="Label" parent="."]
+layout_mode = 0
+offset_left = 134
+offset_top = 14
+offset_right = 330
+offset_bottom = 62
+mouse_filter = 2
 theme_type_variation = &"VitalsName"
 text = "—"
-
-[node name="LevelBadge" type="PanelContainer" parent="Body/Header"]
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="LevelValue" type="Label" parent="Body/Header/LevelBadge"]
+horizontal_alignment = 0
+vertical_alignment = 1
 unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"BindBadge"
-text = "LV.1"
 
-[node name="Rule" type="HSeparator" parent="Body"]
-layout_mode = 2
-
-[node name="VitalsBars" type="VBoxContainer" parent="Body"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="QuickPotion" type="Label" parent="Body"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"VitalsValue"
+[node name="HeroClass" type="Label" parent="."]
+layout_mode = 0
+offset_left = 240
+offset_top = 26
+offset_right = 440
+offset_bottom = 54
+mouse_filter = 2
+theme_type_variation = &"HudClass"
 text = ""
+horizontal_alignment = 2
+vertical_alignment = 1
+unique_name_in_owner = true
+
+[node name="Rule" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 134
+offset_top = 56
+offset_right = 434
+offset_bottom = 57
+mouse_filter = 2
+unique_name_in_owner = true
+
+[node name="VitalsBars" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="HP" type="Control" parent="VitalsBars"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="VitalsBars/HP"]
+layout_mode = 0
+offset_left = 134
+offset_top = 62
+offset_right = 168
+offset_bottom = 96
+mouse_filter = 2
+theme_type_variation = &"VitalsLabel"
+text = "HP"
+horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="VitalsBars/HP"]
+layout_mode = 0
+offset_left = 168
+offset_top = 72
+offset_right = 368
+offset_bottom = 86
+mouse_filter = 2
+theme_type_variation = &"HudHpBar"
+show_percentage = false
+
+[node name="Value" type="Label" parent="VitalsBars/HP"]
+layout_mode = 0
+offset_left = 340
+offset_top = 60
+offset_right = 442
+offset_bottom = 98
+mouse_filter = 2
+theme_type_variation = &"VitalsValue"
+text = "— / —"
+horizontal_alignment = 2
+vertical_alignment = 1
+auto_translate_mode = 2
+
+[node name="SP" type="Control" parent="VitalsBars"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="VitalsBars/SP"]
+layout_mode = 0
+offset_left = 134
+offset_top = 86
+offset_right = 168
+offset_bottom = 120
+mouse_filter = 2
+theme_type_variation = &"VitalsLabel"
+text = "SP"
+horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="VitalsBars/SP"]
+layout_mode = 0
+offset_left = 168
+offset_top = 96
+offset_right = 368
+offset_bottom = 110
+mouse_filter = 2
+theme_type_variation = &"HudSpBar"
+show_percentage = false
+
+[node name="Value" type="Label" parent="VitalsBars/SP"]
+layout_mode = 0
+offset_left = 340
+offset_top = 84
+offset_right = 442
+offset_bottom = 122
+mouse_filter = 2
+theme_type_variation = &"VitalsValue"
+text = "— / —"
+horizontal_alignment = 2
+vertical_alignment = 1
+auto_translate_mode = 2
+
+[node name="LevelDiamond" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 51
+offset_top = 107
+offset_right = 81
+offset_bottom = 137
+mouse_filter = 2
+texture = ExtResource("4_level")
+
+[node name="LevelValue" type="Label" parent="LevelDiamond"]
+layout_mode = 0
+offset_left = -10
+offset_top = -10
+offset_right = 40
+offset_bottom = 40
+mouse_filter = 2
+theme_type_variation = &"HudLevel"
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+unique_name_in_owner = true
+auto_translate_mode = 2
+
+[node name="Curl" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 462
+offset_top = 53
+offset_right = 506
+offset_bottom = 97
+mouse_filter = 2
+texture = ExtResource("5_curl")
+flip_h = true
+
+[node name="AssistChip" type="Control" parent="."]
+layout_mode = 0
+offset_left = 134
+offset_top = 136
+offset_right = 186
+offset_bottom = 182
+mouse_filter = 2
+unique_name_in_owner = true
+script = ExtResource("9_assist")
+
+[node name="Glow" type="Control" parent="AssistChip"]
+layout_mode = 0
+offset_left = 0
+offset_top = 0
+offset_right = 52
+offset_bottom = 46
+mouse_filter = 2
+visible = false
+script = ExtResource("8_glow")
+outline = PackedVector2Array(13, 1.64, 39, 1.64, 50.375, 23, 39, 44.36, 13, 44.36, 1.625, 23)
+
+[node name="Chip" type="TextureRect" parent="AssistChip"]
+layout_mode = 0
+offset_left = 0
+offset_top = 0
+offset_right = 52
+offset_bottom = 46
+mouse_filter = 2
+texture = ExtResource("6_chip")
+
+[node name="Mask" type="Polygon2D" parent="AssistChip"]
+clip_children = 2
+polygon = PackedVector2Array(15.44, 5.75, 36.56, 5.75, 45.5, 23, 36.56, 40.25, 15.44, 40.25, 6.5, 23)
+
+[node name="Portrait" type="TextureRect" parent="AssistChip/Mask"]
+layout_mode = 0
+offset_left = 6
+offset_top = 5
+offset_right = 46
+offset_bottom = 41
+mouse_filter = 2
+texture_filter = 1
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Cooldown" type="Label" parent="AssistChip"]
+layout_mode = 0
+offset_left = -10
+offset_top = 0
+offset_right = 62
+offset_bottom = 46
+mouse_filter = 2
+theme_type_variation = &"CooldownLabel"
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+visible = false
+
+[node name="Badge" type="TextureRect" parent="AssistChip"]
+layout_mode = 0
+offset_left = 15
+offset_top = 40
+offset_right = 37
+offset_bottom = 62
+mouse_filter = 2
+texture = ExtResource("7_key")
+
+[node name="Key" type="Label" parent="AssistChip/Badge"]
+layout_mode = 0
+offset_left = -19
+offset_top = -5
+offset_right = 41
+offset_bottom = 27
+mouse_filter = 2
+theme_type_variation = &"BindBadge"
+text = "F"
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2
+
+[node name="PotionChip" type="Control" parent="."]
+layout_mode = 0
+offset_left = 200
+offset_top = 136
+offset_right = 252
+offset_bottom = 182
+mouse_filter = 2
+unique_name_in_owner = true
+
+[node name="Chip" type="TextureRect" parent="PotionChip"]
+layout_mode = 0
+offset_left = 0
+offset_top = 0
+offset_right = 52
+offset_bottom = 46
+mouse_filter = 2
+texture = ExtResource("6_chip")
+
+[node name="Icon" type="TextureRect" parent="PotionChip"]
+layout_mode = 0
+offset_left = 12
+offset_top = 9
+offset_right = 40
+offset_bottom = 37
+mouse_filter = 2
+texture_filter = 1
+texture = ExtResource("10_potion")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Pill" type="PanelContainer" parent="PotionChip"]
+layout_mode = 0
+offset_left = 38
+offset_top = 24
+offset_right = 61
+offset_bottom = 44
+mouse_filter = 2
+theme_type_variation = &"HudCountPill"
+
+[node name="Count" type="Label" parent="PotionChip/Pill"]
+offset_left = 0
+offset_top = 0
+offset_right = 23
+offset_bottom = 20
+mouse_filter = 2
+theme_type_variation = &"HudCount"
+text = "×0"
+horizontal_alignment = 1
+vertical_alignment = 1
+layout_mode = 2
+auto_translate_mode = 2
+
+[node name="Badge" type="TextureRect" parent="PotionChip"]
+layout_mode = 0
+offset_left = 15
+offset_top = 40
+offset_right = 37
+offset_bottom = 62
+mouse_filter = 2
+texture = ExtResource("7_key")
+
+[node name="Key" type="Label" parent="PotionChip/Badge"]
+layout_mode = 0
+offset_left = -19
+offset_top = -5
+offset_right = 41
+offset_bottom = 27
+mouse_filter = 2
+theme_type_variation = &"BindBadge"
+text = "Q"
+horizontal_alignment = 1
+vertical_alignment = 1
+auto_translate_mode = 2

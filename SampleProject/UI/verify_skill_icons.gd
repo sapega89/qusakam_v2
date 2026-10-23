@@ -39,13 +39,11 @@ func _initialize() -> void:
 	ck(sm.equip_skill("healing_palm", 0) == R.OK, "healing_palm equips into slot 1")
 	var hotbar: Control = load("res://SampleProject/UI/Components/skill_hotbar.tscn").instantiate()
 	root.add_child(hotbar)
-	hotbar.set_process(false)  # слот асисту читає прапорці Game, а тут хотбар без гри
 	hotbar.refresh()
-	var art: TextureRect = hotbar._slots[0].get_node("Slot/IconCenter/Icon/Art")
+	var art: TextureRect = hotbar._slots[0].get_node("Icon/Art")
 	ck(art.texture != null and art.texture.resource_path.ends_with("healing_palm.png"), "slot 1 shows healing_palm.png")
 	ck(art.self_modulate == UITokens.SKILL_ICON_ACTIVE, "slot 1 icon is tinted as an active")
-	var empty_art: TextureRect = hotbar._slots[1].get_node("Slot/IconCenter/Icon/Art")
-	ck(empty_art.texture == null, "an empty slot draws no icon")
+	ck(not hotbar._slots[1].get_node("Icon").visible, "an empty slot draws no icon")
 	hotbar.queue_free()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))

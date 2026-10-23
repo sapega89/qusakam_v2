@@ -6,6 +6,7 @@ extends Control
 
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
+const SkillSlotInput = preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
 
 ## [назва, дія] у порядку, в якому гра їх вчить.
 const ACTIONS := [
@@ -26,6 +27,10 @@ const ACTIONS := [
 	["Skill slot 2", &"skill_slot_2"],
 	["Skill slot 3", &"skill_slot_3"],
 	["Skill slot 4", &"skill_slot_4"],
+	["Skill slot 5", &"skill_slot_5"],
+	["Skill slot 6", &"skill_slot_6"],
+	["Skill slot 7", &"skill_slot_7"],
+	["Skill slot 8", &"skill_slot_8"],
 	["Call a companion", &"assist"],
 	["Game menu", &"game_menu"],
 	["Previous / next menu tab", &"menu_prev_tab"],
@@ -60,7 +65,13 @@ func _fill() -> void:
 
 static func _names(action: StringName, pad: bool) -> String:
 	var names := InputGlyphs.names_for(action, pad)
-	return " / ".join(names.slice(0, 2)) if not names.is_empty() else "—"
+	if names.is_empty():
+		return "—"
+	# Слоти 5–8 на геймпаді — ті самі кнопки, що 1–4, з затиснутим LT (D549).
+	var slot := String(action).trim_prefix("skill_slot_").to_int() - 1
+	if pad and String(action).begins_with("skill_slot_") and SkillSlotInput.is_shifted(slot):
+		return "%s + %s" % [InputGlyphs.names_for(SkillSlotInput.SHIFT_ACTION, true)[0], names[0]]
+	return " / ".join(names.slice(0, 2))
 
 
 func _notification(what: int) -> void:

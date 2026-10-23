@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Іконки вмінь на панелі (D604) у справжньому вікні: активне, ще одне активне, ультимейт, порожній слот.
+## Іконки вмінь на панелі (D604, D605) у справжньому вікні: активне, ще одне активне, ультимейт, порожні слоти.
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_skill_icons.gd
 ## Пише design/shots/skill_icons_hotbar.png.
 
@@ -24,11 +24,9 @@ func _initialize() -> void:
 	root.add_child(bg)
 	var hotbar: Control = load("res://SampleProject/UI/Components/skill_hotbar.tscn").instantiate()
 	root.add_child(hotbar)
-	hotbar.set_process(false)  # слот асисту читає прапорці Game, а тут хотбар без гри
-	hotbar.position = Vector2(760, 480)
 	hotbar.refresh()
 	for i in 10:
 		await process_frame
-	var rect := Rect2i(Vector2i(hotbar.position) - Vector2i(20, 20), Vector2i(hotbar.size) + Vector2i(40, 40))
+	var rect := Rect2i(hotbar.get_global_rect().grow(20))
 	root.get_texture().get_image().get_region(rect).save_png("res://design/shots/skill_icons_hotbar.png")
 	quit()

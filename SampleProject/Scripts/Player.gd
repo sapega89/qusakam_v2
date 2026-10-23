@@ -13,6 +13,7 @@ const ROLL_ALPHA := 0.55
 const MAX_SKILL_REDUCTION := 0.75
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 const QuickPotion := preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
+const SkillSlotInput := preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
 
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
@@ -222,10 +223,16 @@ func _unhandled_input(ev: InputEvent) -> void:
 	цього класу (ознака катсцени), а `input_event` — сигнал CollisionObject2D.
 	"""
 	# D209: асист компаньйона — наступний готовий
-	# Тригер LT — вісь: is_action_pressed true на кожен її рух, тож кличемо лише на переході «відпущено → натиснуто».
+	# Тригер LT — вісь: is_action_pressed true на кожен її рух, тож дивимось лише на переходи.
+	# D549: на геймпаді LT ще й зсуває хотбар на слоти 5–8, тож там асист — на відпусканні LT, якщо за це
+	# утримання не кинули слот (SkillSlotInput.shift_used). Клавіша F кличе одразу, на натисканні.
 	if ev.is_action(&"assist"):
 		var down := ev.is_action_pressed(&"assist")
-		if down and not _assist_down and not event and ServiceLocator.get_ui_manager().is_gameplay_input_allowed() and not ServiceLocator.get_dialogue_manager().is_dialogue_active():
+		var pad := ev is InputEventJoypadMotion or ev is InputEventJoypadButton
+		if down and not _assist_down:
+			SkillSlotInput.shift_used = false
+		var fire := (down and not _assist_down and not pad) or (not down and _assist_down and pad and not SkillSlotInput.shift_used)
+		if fire and not event and ServiceLocator.get_ui_manager().is_gameplay_input_allowed() and not ServiceLocator.get_dialogue_manager().is_dialogue_active():
 			ServiceLocator.get_companion_manager().call_next()
 		_assist_down = down
 		return

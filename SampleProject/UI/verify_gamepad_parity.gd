@@ -169,11 +169,13 @@ func _game_menu(game: Node) -> void:
 	print("[2] Game Menu tabs, content and back with the pad; bottom-bar and hotbar badges follow the device")
 	var hotbar: Node = get_first_node_in_group(&"skill_hotbar")
 	await Kit.key(self, KEY_SHIFT)
-	ck(not InputGlyphs.using_gamepad and hotbar.get_node("%SlotsRow/Bind1/Badge/Key").text == "1", "keyboard: hotbar slot 1 reads 1")
+	ck(not InputGlyphs.using_gamepad and hotbar.get_node("%Slots/Bind1/Badge/Key").text == "1", "keyboard: hotbar slot 1 reads 1")
 	await Kit.pad(self, JOY_BUTTON_X)
 	await create_timer(0.6).timeout
-	ck(InputGlyphs.using_gamepad and hotbar.get_node("%SlotsRow/Bind1/Badge/Key").text == "RT"
-			and hotbar.get_node("%SlotsRow/AssistBind/Badge/Key").text == "LT", "pad: hotbar slot 1 reads RT, assist LT")
+	ck(InputGlyphs.using_gamepad and hotbar.get_node("%Slots/Bind1/Badge/Key").text == "RT"
+			and hotbar.get_node("%Slots/Bind5/Badge/Key").text == "LT+RT"
+			and get_first_node_in_group(&"player_vitals_panel").get_node("%AssistChip/Badge/Key").text == "LT",
+			"pad: hotbar slot 1 reads RT, slot 5 LT+RT (D549), the F chip LT")
 
 	# Вкладки, які сюжет ще не відкрив, відкриваємо прапорцями до відкриття меню
 	var probe: Node = load("res://SampleProject/Scenes/Menus/Game/game_menu.tscn").instantiate()
@@ -233,7 +235,7 @@ func _game_menu(game: Node) -> void:
 
 	await Kit.key(self, KEY_DOWN)
 	ck(badges.call() == ["Arrows", "Enter", "Escape"], "keyboard: the same bar reads Arrows / Enter / Escape (%s)" % [badges.call()])
-	ck(hotbar.get_node("%SlotsRow/Bind1/Badge/Key").text == "1", "keyboard: hotbar back to 1")
+	ck(hotbar.get_node("%Slots/Bind1/Badge/Key").text == "1", "keyboard: hotbar back to 1")
 	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
 	ck(badges.call() == ["LS", "A", "B"], "pad again: LS / A / B")
 	await Kit.pad(self, JOY_BUTTON_START)

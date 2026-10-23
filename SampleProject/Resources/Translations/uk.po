@@ -802,6 +802,18 @@ msgstr "Слот навички 3"
 msgid "Skill slot 4"
 msgstr "Слот навички 4"
 
+msgid "Skill slot 5"
+msgstr "Слот навички 5"
+
+msgid "Skill slot 6"
+msgstr "Слот навички 6"
+
+msgid "Skill slot 7"
+msgstr "Слот навички 7"
+
+msgid "Skill slot 8"
+msgstr "Слот навички 8"
+
 msgid "Call a companion"
 msgstr "Покликати супутника"
 
@@ -1084,6 +1096,18 @@ msgstr "Слот навички 3"
 
 msgid "Skill Slot 4"
 msgstr "Слот навички 4"
+
+msgid "Skill Slot 5"
+msgstr "Слот навички 5"
+
+msgid "Skill Slot 6"
+msgstr "Слот навички 6"
+
+msgid "Skill Slot 7"
+msgstr "Слот навички 7"
+
+msgid "Skill Slot 8"
+msgstr "Слот навички 8"
 
 msgid "Skip Cutscene"
 msgstr "Пропустити катсцену"

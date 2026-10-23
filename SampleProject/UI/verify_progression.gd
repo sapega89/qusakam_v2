@@ -50,11 +50,10 @@ func _initialize() -> void:
 	xp.add_xp(100000000)
 	await Kit.frames(self, 6)
 	ck(xp.get_level() == 20 and xp.current_xp == 0 and xp.is_max_level(), "a flood of XP stops at 20 (level %d, %d XP)" % [xp.get_level(), xp.current_xp])
-	var vitals: Node = game.get_node("UICanvas/CombatHUD/PlayerVitalsPanel")
-	vitals.refresh()
-	var row: Control = vitals._rows_by_id["XP"]
-	ck(row.get_node(^"Value").text == tr("MAX") and (row.get_node(^"Bar") as ProgressBar).ratio == 1.0,
-			"HUD XP row: '%s', bar full" % row.get_node(^"Value").text)
+	# D552: XP на HUD — смуга на всю ширину без чисел; на капі повна.
+	var hud_xp: ProgressBar = game.get_node("UICanvas/CombatHUD/XpBar")
+	hud_xp.refresh()
+	ck(hud_xp.ratio == 1.0, "HUD XP bar full at the cap (%.2f)" % hud_xp.ratio)
 	var bar: Node = game.get_node("UICanvas/PlayerXPBar")
 	bar._update_display()
 	ck(bar.xp_label.text == tr("MAX") and bar.progress_bar.value == 100.0, "XP bar: '%s', %d%%" % [bar.xp_label.text, bar.progress_bar.value])

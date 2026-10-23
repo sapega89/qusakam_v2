@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/hud_xp_bar.gd" id="1_xp"]
+
+[node name="XpBar" type="ProgressBar"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"HudXpBar"
+max_value = 1.0
+step = 0.0
+show_percentage = false
+script = ExtResource("1_xp")
