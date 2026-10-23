@@ -41,7 +41,7 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 3. **Q77: the maps.** Default: two maps. The **world map** is the illustrated parchment with the locations drawn on it
    and "you are here". The **location map** shows the current location's rooms, hand-drawn, with meditation spots,
    merchants and exits.
-4. **Q78: the pilot location.** Default: the **Desert Road**. Its growth was already planned ([[world_expansion_plan]]),
+4. **Q78: the pilot location.** Default since D487: the **Laboratory**, which Sapega called short and without chests or secrets. Before that the default was the **Desert Road**. Its growth was already planned ([[world_expansion_plan]]),
    and it sits between the Village and the City. The Canyon would make the better first impression; the Laboratory
    already has floors.
 
@@ -66,7 +66,7 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 - Legend icons for meditation spot (D447), merchant, exit to the next location, and the "!" quest givers (D442).
 - Its own verify and capture.
 
-### Slice 4 — Pilot location: the Desert Road as a metroidvania
+### Slice 4 — Pilot region: the Laboratory as a metroidvania (D487; was the Desert Road)
 - First a room graph on paper, in this plan: the main road, 2 side paths, 1 secret, 1 shortcut opened from the far
   side, 1 locked door with its key.
 - Then the rooms, using the room-content and comfy-backdrop skills: the backdrops in the style Sapega likes; enemies,
