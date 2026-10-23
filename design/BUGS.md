@@ -114,22 +114,6 @@ the history, this note keeps only what is open.
 - **Severity:** visual (art).
 - **Found:** 2026-10-23, Sapega's playtest.
 
-### B122 — The speaker's portrait sticks out below the dialogue box
-- **Where:** `SampleProject/Scenes/UI/dialogue_box.tscn` (`DialogueBox` 938 × 178 from its offsets; `Margin/Rows`: `NameMargin` row (B112), then `RowMiddle` with the 160-px `PortraitBackground`); `Scripts/UI/GameDialogueBox.gd` (`set_name_text` / `set_portrait_image` toggle the rows).
-- **Expected:** the box always holds the name row, the text and the portrait (it grows upward, `grow_vertical` = begin).
-- **Got:** in Sapega's playtest (2026-10-23), during Grandfather's line "Hold still. This power was in our family long before you." (`OldMan_Healing.dqd`, Village, hotbar visible, not a cutscene), the box stayed 178 px tall and the portrait hung about 40 px below its bottom edge. In the Canyon exit cutscene the same box grew to 245 px correctly. An isolated repro (`logs/repro_dialogue_portrait.gd`, which sets name + portrait + text with the box shown or hidden) also grows correctly. So the cause is in the real flow: the order in which `DialogueManager` / `DQDialoguePlayer` show the box and set the name and portrait, or something that sets the box size or offsets. Reproduce it through the real Village old-man flow first.
-- **Evidence:** Sapega's screenshots (the chat, 2026-10-23): seen twice, both **outside cutscenes, through `DialogueManager.start_dialogue`** with the hotbar on screen (Grandfather in the Village; Kusakam's "Enemies on the road!" on the Desert Road, `DesertRoad.gd:_play_dialogue`). **Update:** it also happened in a cutscene: the LabCells cutscene, at the Fire djinn's line "Freedom! A hundred years in this pitiful body!" (Sapega's screenshot). So it is not tied to the start_dialogue path. The Canyon exit cutscene sized correctly, so look for what differs per line: speaker change, portrait size, first line after a narrator line. B112's name row (`42d1002b`) made the content taller than the 178-px offsets.
-- **Severity:** visual.
-- **Found:** 2026-10-23, Sapega's playtest.
-
-### B123 — A cutscene starts while Kusakam is still in the air
-- **Where:** the shared cutscene start (`Cutscene`, D308) and its triggers; seen at the Canyon exit (`Canyon_ExitCutscene`).
-- **Expected:** a cutscene starts only once the hero stands on the ground. If he is mid-jump or falling when the trigger fires, he lands first, with gravity still applied and input off, and then the cutscene begins.
-- **Got:** the cutscene froze him in mid-air above the ledge, and he stayed hanging there through "So this is the edge of the canyon".
-- **Fix where all callers route:** the shared cutscene start, not each trigger.
-- **Severity:** visual / feel.
-- **Found:** 2026-10-23, Sapega's playtest.
-
 ### B120 — `craft_potion` still charges the price from before D403
 - **Where:** `SampleProject/Resources/Data/crafting_recipes.json:164-180` (`craft_potion`: Herb ×2 + Stone ×1 → Potion ×2, `gold_cost` 4).
 - **Expected:** the gold cost is 10 % of the result's buy price (D97's placeholder rule, kept by D179 / D416; the formula is in [[crafting_mapping]] "Data"). Potion ×2 at buy 40 gives **8**.
@@ -145,20 +129,6 @@ the history, this note keeps only what is open.
 - **Evidence:** `grep -n "or true" SampleProject/UI/verify_*.gd` finds only this line.
 - **Severity:** cosmetic, test only.
 - **Found:** 2026-10-23, [[decision_audit]] Run 2.
-
-### B119 — Confirm modals do not match the kit's UI/Modal/Confirm
-- **Where:** `SampleProject/Scenes/UI/modal_dialog.tscn` (`Panel/VBox/Buttons` is an `HBoxContainer`), `SampleProject/Scripts/UI/modal_templates.gd`, theme types `ModalPanel` / `ModalTitle`.
-- **Expected:** Figma `UI/Modal/Confirm` `258:5332` (also `shop-buy-confirm` `153:1760`):
-  - padding 40 × 28, gap 16;
-  - title in Cormorant Garamond Regular 22, then a **1 px accent rule 300 px wide**, then the body in Regular 14;
-  - **buttons stacked vertically** (gap 12, a 300-px column), each a `UI/HexButton` 260 × 36 with pointed ends;
-  - selected button: accent fill (`SampleProject/Assets/UI/Icons/hex_button_selected.svg`) with the `›` pointer 16 px at x 49 (the glyph is `Assets/UI/Icons/chevron.svg`); other button: a 2-px `#3A3A42` outline (`hex_button.svg`);
-  - labels in Cormorant Garamond SemiBold 18, **uppercase**, tracking 2 px;
-  - the panel stays opaque (D195), and the D329 ring is drawn over the selected look (white on accent).
-- **Got:** no rule under the title; small rectangular Yes / No buttons side by side, in mixed case.
-- **Evidence:** `design/shots/shop_buy_confirm_qty3_1920.png` against `258:5332`.
-- **Severity:** visual. Every confirm modal shares the scene: buy, craft, enchant, overwrite save, delete slot, quit, item pickup.
-- **Found:** 2026-10-23, #43 check. Sapega chose the kit for all modals.
 
 ### B110 — The bow vanishes outside its frames
 - **Where:** `SampleProject/Player.tscn` → `AnimationLibrary_bow`; art `Sprites/Player/Weapons/bow/`.
@@ -227,6 +197,12 @@ the history, this note keeps only what is open.
 > after the 0.1 s pose (`WeaponView._drawn_in_frame` reads `assigned_animation`, `verify_weapon_animations`;
 > `cloud/weapons-all`, its B110). B105–B108 and `cloud/bow`'s B110, B111 added — see [[cloud_reports/integration-4]].
 
+
+
+> **Fixed 2026-10-23:**
+> - **B119** (`cloud/ui-kit`, D477): confirm modals follow `UI/Modal/Confirm`.
+> - **B122** (`cloud/playtest-1` `c6c71df0`): the box was hidden and then cleared, so Godot kept a stale minimum size. `GameDialogueBox` now refits its `offset_top` on every content or visibility change. `verify_dialogue_speaker`.
+> - **B123** (`374daa57`): `Cutscene` lands an airborne hero first and holds the lines until he lands. `verify_cutscene` [0].
 
 ## Playtest intake — 2026-09-29 (Sapega)
 

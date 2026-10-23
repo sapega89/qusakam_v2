@@ -8,12 +8,12 @@ tags: [cloud, ui, modal, shop, b119, d433]
 
 **Summary.** **B119 fixed (remove the row).** The shared modal scene now follows the kit's `UI/Modal/Confirm`: padding 40 × 28, gap 16, a 1 px accent rule 300 px wide under the title, body Regular 14, and buttons stacked in a 300 px column with a 12 px gap. Each button is a 260 × 36 `UI/HexButton` (`hex_button.svg` / `hex_button_selected.svg`) with an uppercase SemiBold 18 label at tracking 2. The selected button gets the accent fill, the `›` pointer at x 49 and the white D329 ring. Every confirm modal goes through this one scene.
 **D433 done.** An unaffordable row now greys its price as well as its name. On the selected (accent) row both use `TEXT_DISABLED`, which has 4.93:1 contrast against `ACCENT`.
-D-ID text (proposed): **D443**, **D444** (§3). `verify_game_ui_theme` prints `ALL CHECKS PASSED`.
+D-ID text (proposed): **D477**, **D478** (§3). `verify_game_ui_theme` prints `ALL CHECKS PASSED`.
 Full suite: `Scripts/Tools/run_verify.sh` → `SUITE: ALL PASS` (93 scripts).
 Not done: nothing from the task. Open item: the Figma MCP was not available in this run, so I compared against B119's listed values and the earlier shots, not a fresh frame.
 
 Branch `cloud/ui-kit` from `origin/feature/backlog` @ `6182a265`. Commits: `91961275` (B119 + D433), `f16db89d` (tests).
-Note: the prompt said the register ends at D439, but `feature/backlog` already has D440–D442, so the new numbers start at D443.
+Note: the prompt said the register ends at D439, but `feature/backlog` already has D440–D442, so the new numbers start at D477.
 
 ## 1. B119: confirm modals → UI/Modal/Confirm
 
@@ -40,13 +40,13 @@ Note: the prompt said the register ends at D439, but `feature/backlog` already h
 
 ## 3. D-ID text (proposed)
 
-- **D443 | OVERRIDE→KIT | Confirm modals are the kit's UI/Modal/Confirm (B119; Sapega, 2026-10-23).** Every modal from `modal_dialog.tscn` uses:
+- **D477 | OVERRIDE→KIT | Confirm modals are the kit's UI/Modal/Confirm (B119; Sapega, 2026-10-23).** Every modal from `modal_dialog.tscn` uses:
   - padding 40 × 28 and gap 16;
   - title Regular 22, then a 1 px accent rule 300 px wide, then body Regular 14;
   - buttons stacked in a 300 px column with a 12 px gap. Each is a 260 × 36 `UI/HexButton` (`hex_button.svg` outline / `hex_button_selected.svg` fill) with an uppercase SemiBold 18 label at tracking 2.
 
   The focused button is the selected one: accent fill, dark text and the `›` pointer at x 49. On top of it the D329 ring is drawn white and follows the pointed ends. The panel stays opaque (D195). Theme types: `ModalColumn`, `ModalRule`, `ModalBody`, `ModalButtons`, `ModalButton`/`On`. Verified by `verify_shop` [4a0] and `verify_save_load`.
-- **D444 | GAP | The disabled text colour on an accent fill is `TEXT_DISABLED` (completes D433).** An unaffordable shop row greys its name and its price: `TEXT_MUTED` on the dark row, and `TEXT_DISABLED` (#404040, 4.93:1, at least `MIN_TEXT_CONTRAST` 4.5) on the selected accent row. Count and detail follow the selected state. Verified by `verify_shop` [4b2].
+- **D478 | GAP | The disabled text colour on an accent fill is `TEXT_DISABLED` (completes D433).** An unaffordable shop row greys its name and its price: `TEXT_MUTED` on the dark row, and `TEXT_DISABLED` (#404040, 4.93:1, at least `MIN_TEXT_CONTRAST` 4.5) on the selected accent row. Count and detail follow the selected state. Verified by `verify_shop` [4b2].
 
 ## 4. B rows fixed
 
