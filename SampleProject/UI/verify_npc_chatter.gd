@@ -17,8 +17,13 @@ const WIRED := {
 }
 const ROAD_MAP := "res://SampleProject/Maps/DesertRoad.tscn"
 const ROAD_CHATTER := "DesertRoad_Merchant_Chatter.dqd"
-## Написані, але ще не підключені: вартовий брами — не NpcBase, на базарі NPC немає (звіт cloud/text-1).
-const UNWIRED := ["CityGates_Guard_Chatter.dqd", "City_Market_Chatter.dqd"]
+## Вартовий брами (не NpcBase, GateGuard.gd): лівий біля Міської брами, коли бій і розмова позаду (cloud/loose-ends).
+const GUARD_SCENE := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn"
+const GATES_MAP := "res://SampleProject/Maps/CityGates.tscn"
+const GUARD_CHATTER := "CityGates_Guard_Chatter.dqd"
+const GUARD_FLAG := "city_gates_after_fight_complete"
+## Написані, але ще не підключені: на базарі NPC немає, чекає на арт (звіти cloud/text-1, cloud/loose-ends).
+const UNWIRED := ["City_Market_Chatter.dqd"]
 const TALK := "res://dialogue_quest/OldMan_Decision.dqd"
 
 var fails: Array[String] = []
@@ -183,10 +188,63 @@ func _initialize() -> void:
 		ck(keeper.chatter_dialogue == DialoguePaths.ROOT + WIRED[scene], "%s chatters %s (%s)" % [scene, WIRED[scene], keeper.chatter_dialogue])
 		keeper.free()
 	ck(_map_chatter(ROAD_MAP, ^"Merchant") == DialoguePaths.ROOT + ROAD_CHATTER, "the caravan merchant on the Desert Road chatters " + ROAD_CHATTER)
-	var files: Array = WIRED.values() + [ROAD_CHATTER] + UNWIRED
+	var files: Array = WIRED.values() + [ROAD_CHATTER, GUARD_CHATTER] + UNWIRED
 	for file: String in files:
 		_check_draft(file)
+
+	print("[9] D571: the City Gates guard says his lines in passing once the gate fight is over")
+	ck(_map_chatter(GATES_MAP, ^"GuardLeft") == DialoguePaths.ROOT + GUARD_CHATTER, "the left gate guard chatters " + GUARD_CHATTER)
+	ck(_map_value(GATES_MAP, ^"GuardLeft", &"chatter_with_flag") == GUARD_FLAG, "only after " + GUARD_FLAG)
+	ck(_map_chatter(GATES_MAP, ^"GuardRight") == "", "the right guard stays quiet (one cloud, not the same lines twice)")
+	ck(_map_value(GATES_MAP, ^"GuardLeft", &"scale") == null and _map_value(GATES_MAP, ^"GuardRight", &"scale") == null,
+			"the guards face left through flip_h, not a mirrored root (the cloud's text is not mirrored)")
+	ck(_map_value(GATES_MAP, ^"GuardLeft/Sprite2D", &"flip_h") == true and _map_value(GATES_MAP, ^"GuardRight/Sprite2D", &"flip_h") == true,
+			"both still look left, as before")
+	dm.bubble_time_scale = 1.0
+	var game: Node = world
+	game.set_quest_flag(GUARD_FLAG, false)
+	var guard: Node2D = load(GUARD_SCENE).instantiate()
+	guard.chatter_dialogue = DialoguePaths.ROOT + GUARD_CHATTER
+	guard.chatter_with_flag = GUARD_FLAG
+	world.add_child(guard)
+	guard.global_position = far + Vector2(4400, 0)
+	await process_frame
+	player.global_position = guard.global_position + Vector2(-40, 0)
+	guard.chatter_zone.body_entered.emit(player)
+	await process_frame
+	ck(dm.chatter_bubble(guard) == null, "before the fight is over: no cloud")
+	game.set_quest_flag(GUARD_FLAG, true)
+	guard.chatter_zone.body_entered.emit(player)
+	await process_frame
+	var guard_bubble: Node2D = dm.chatter_bubble(guard)
+	ck(guard_bubble != null and guard_bubble.get_parent() == guard, "after it: a cloud over the guard")
+	ck(guard_bubble != null and guard_bubble.position == guard.chatter_anchor() and guard_bubble.position.y < 0.0, "the tail sits above his sprite")
+	ck(guard_bubble != null and guard_bubble._label.text == dm._stage_tag.sub(DqdReader.lines(DialoguePaths.ROOT + GUARD_CHATTER)[0].text, ""), "his first draft line")
+	ck(not dm.is_dialogue_active(), "chatter is not a dialogue")
+	dm.end_chatter(guard)
+	guard.chatter_zone.body_entered.emit(player)
+	await process_frame
+	ck(dm.chatter_bubble(guard) == null, "once per room: walking past again says nothing")
+	var mute: Node2D = load(GUARD_SCENE).instantiate()
+	world.add_child(mute)
+	mute.global_position = far + Vector2(4800, 0)
+	mute.chatter_zone.body_entered.emit(player)
+	await process_frame
+	ck(dm.chatter_bubble(mute) == null, "a guard without lines (the City's) stays quiet")
+	game.set_quest_flag(GUARD_FLAG, false)
 	_done()
+
+
+## Властивість [param prop] вузла [param node] у мапі [param map] (null — не задано в мапі).
+func _map_value(map: String, node: NodePath, prop: StringName) -> Variant:
+	var state: SceneState = (load(map) as PackedScene).get_state()
+	for i in state.get_node_count():
+		if state.get_node_path(i) != NodePath("./" + String(node)):
+			continue
+		for p in state.get_node_property_count(i):
+			if state.get_node_property_name(i, p) == prop:
+				return state.get_node_property_value(i, p)
+	return null
 
 
 ## chatter_dialogue екземпляра [param node] у мапі [param map] (без запуску мапи).

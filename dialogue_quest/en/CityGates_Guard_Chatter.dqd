@@ -1,4 +1,4 @@
-// [DRAFT] D571 — the City Gates guards in passing (D338). Not wired yet: the guard is not an NpcBase
+// [DRAFT] D571 — the City Gates guards in passing (D338). Said by the left CityGates guard after the fight (GateGuard.gd)
 say|GATE_GUARD|Keep your eyes down, little one. Nobody here looks at the sky.
 say|GATE_GUARD|Are you shaking, or is that just sand rustling on you?
 say|GATE_GUARD|We guard the gate. What hangs above it, nobody guards.

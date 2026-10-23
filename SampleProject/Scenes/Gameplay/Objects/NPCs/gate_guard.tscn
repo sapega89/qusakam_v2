@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/gate_guard/sheet.png" id="1_sheet"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd" id="act_script"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/GateGuard.gd" id="guard_script"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -38,6 +39,9 @@ tracks/0/keys = {
 }
 
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chatter"]
+size = Vector2(160, 120)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_idle"]
 _data = {
 &"work": SubResource("Animation_work"),
@@ -45,6 +49,7 @@ _data = {
 }
 
 [node name="GateGuard" type="Node2D" unique_id=1846200111]
+script = ExtResource("guard_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1846200112]
 texture_filter = 1
@@ -64,3 +69,10 @@ autoplay = "idle"
 script = ExtResource("act_script")
 work_loops_min = 1
 work_loops_max = 2
+
+[node name="ChatterZone" type="Area2D" parent="."]
+position = Vector2(0, -44)
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChatterZone"]
+shape = SubResource("RectangleShape2D_chatter")
