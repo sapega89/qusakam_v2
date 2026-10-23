@@ -35,9 +35,9 @@ func _initialize() -> void:
 	_shot("wall_burst")
 	await _until(func() -> bool: return dm.is_dialogue_active(), 6.0)
 	await _page(2)
-	_shot("collector_out")
+	_shot("warrior_out")
 	await _to_fight()
-	var boss: Node2D = game.map.get_node(^"BrassCollector")
+	var boss: Node2D = game.map.get_node(^"ScorpicoreWarrior")
 	game.player.Max_Health = 99999
 	game.player.current_health = 99999
 	game.player.global_position.x = boss.global_position.x - 200.0
@@ -52,7 +52,7 @@ func _initialize() -> void:
 	dm.bubble_time_scale = 1.0  # MayorHall_Victory — монолог героя в облачках (D178)
 	await _until(func() -> bool: return dm.is_bubble_playing(), 6.0)
 	await create_timer(1.0).timeout
-	_shot("win_gas")
+	_shot("win_scorpion")
 	await _until(func() -> bool: return game.map.scene_file_path.ends_with("LabCells.tscn"), 30.0)
 	dm.bubble_time_scale = 0.0
 	await _drain()
@@ -63,7 +63,7 @@ func _initialize() -> void:
 	game.set_quest_flag("mayor_boss_defeated", false)
 	await _enter()
 	await _to_fight()
-	boss = game.map.get_node(^"BrassCollector")
+	boss = game.map.get_node(^"ScorpicoreWarrior")
 	game.player.current_health = 1
 	game.player.global_position.x = boss.global_position.x - 90.0
 	await _until(func() -> bool: return dm.is_dialogue_active(), 15.0)
