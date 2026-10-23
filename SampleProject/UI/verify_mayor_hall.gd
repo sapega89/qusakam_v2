@@ -89,8 +89,8 @@ func _skip_to_fight() -> void:
 func _snap() -> Dictionary:
 	var hall := _hall()
 	return {"state": _state(), "flags": game.get_quest_flags().duplicate(true), "objective": game.get_objective(),
-			"hero": game.player.global_position, "boss": (hall.get_node(^"BrassCollector") as Node2D).global_position,
-			"boss_visible": hall.get_node(^"BrassCollector").visible, "hole": hall.get_node(^"WallHole").visible,
+			"hero": game.player.global_position, "boss": (hall.get_node(^"ScorpicoreWarrior") as Node2D).global_position,
+			"boss_visible": hall.get_node(^"ScorpicoreWarrior").visible, "hole": hall.get_node(^"WallHole").visible,
 			"barrier": not hall.get_node(^"BarrierWest/Collision").disabled, "queue": hall.get_node(^"Queue").visible,
 			"hud": _hud_visible(), "control": not game.player.event, "speed": Engine.time_scale,
 			"handler": game.player.defeat_handler.is_valid()}
@@ -120,7 +120,7 @@ func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.boss_visible and s.hole and s.barrier and not s.queue, "%s: boss out, hole shown, west barred, queue gone (%s)" % [label, s])
 	ck(s.hud and s.control and is_equal_approx(s.speed, 1.0), "%s: HUD and control back, normal speed" % label)
 	ck(s.handler, "%s: the hall owns the hero's defeat (no Game Over)" % label)
-	ck(s.objective == "Survive the Brass Collector", "%s: objective (%s)" % [label, s.objective])
+	ck(s.objective == "Survive the Scorpicore Axe-Warrior", "%s: objective (%s)" % [label, s.objective])
 	ck(_music() == root.get_node("AudioManager").music["boss"], "%s: the boss track plays (D414)" % label)
 
 func _in_lab(label: String) -> void:
@@ -171,7 +171,7 @@ func _initialize() -> void:
 	for i in 30: await physics_frame
 	var hall := _hall()
 	ck(_state() == "QUEUE" and started.is_empty(), "QUEUE, no dialogue (%s, %s)" % [_state(), started])
-	ck(not hall.get_node(^"BrassCollector").visible and hall.get_node(^"BrassCollector").process_mode == Node.PROCESS_MODE_DISABLED, "the boss is not there yet")
+	ck(not hall.get_node(^"ScorpicoreWarrior").visible and hall.get_node(^"ScorpicoreWarrior").process_mode == Node.PROCESS_MODE_DISABLED, "the boss is not there yet")
 	ck(not hall.get_node(^"WallHole").visible and hall.get_node(^"BarrierWest/Collision").disabled, "wall whole, way west open")
 	for id in ["astrit", "urizen", "alisia"]:
 		ck(hall.get_node("Queue/CompanionNPC_" + id).visible, "%s stands in the queue" % id)
@@ -243,7 +243,7 @@ func _initialize() -> void:
 	var coin_adds: Array = []
 	root.get_node("EventBus").item_added.connect(func(id: String, amount: int) -> void:
 		if id == "coin": coin_adds.append(amount))
-	var boss: Node2D = _hall().get_node(^"BrassCollector")
+	var boss: Node2D = _hall().get_node(^"ScorpicoreWarrior")
 	game.player.Max_Health = 99999
 	game.player.current_health = 99999
 	boss.current_health = 1
@@ -257,7 +257,7 @@ func _initialize() -> void:
 		await physics_frame
 		_press(&"attack", false)
 		await create_timer(0.3).timeout
-	ck(boss.is_dead, "the Brass Collector falls to a real attack")
+	ck(boss.is_dead, "the axe-warrior falls to a real attack")
 	await _until(func() -> bool: return started.has("MayorHall_Victory"), 6.0)
 	ck(started.has("MayorHall_Victory"), "the victory talk (%s)" % [started])
 	await _room_music_back("win")
@@ -281,7 +281,7 @@ func _initialize() -> void:
 	_fight_state_ok(_snap(), "lose run")
 	gained.clear()
 	var coins: int = inv.get_item_count("coin")
-	boss = _hall().get_node(^"BrassCollector")
+	boss = _hall().get_node(^"ScorpicoreWarrior")
 	game.player.current_health = 1
 	game.player.global_position = Vector2(boss.global_position.x - 90.0, game.player.global_position.y)
 	await _until(func() -> bool: return started.has("MayorHall_Defeat"), 15.0)

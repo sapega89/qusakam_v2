@@ -13,7 +13,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/cat/idle.png" id="12_qjh5u"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/cat/run.png" id="13_ldjqb"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Bosses/wall_hole.png" id="14_d8hbo"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn" id="15_wdyt7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/scorpicore_warrior.tscn" id="15_wdyt7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/giant_scorpion.tscn" id="16_scorpion"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="music_track"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Hall/gen_wall.png" id="wall"]
 
@@ -636,13 +637,23 @@ position = Vector2(520, 260)
 [node name="HoleMouth" type="Marker2D" parent="Marks" unique_id=1821203488]
 position = Vector2(720, 340)
 
-[node name="CollectorStand" type="Marker2D" parent="Marks" unique_id=1664511135]
+[node name="WarriorStand" type="Marker2D" parent="Marks" unique_id=1664511135]
 position = Vector2(680, 368)
 
 [node name="FleeTo" type="Marker2D" parent="Marks" unique_id=1174096694]
 position = Vector2(8, 384)
 
-[node name="BrassCollector" parent="." unique_id=1635224286 instance=ExtResource("15_wdyt7")]
+[node name="ScorpionStand" type="Marker2D" parent="Marks" unique_id=1174096695]
+position = Vector2(740, 384)
+
+[node name="ScorpionOut" type="Marker2D" parent="Marks" unique_id=1174096696]
+position = Vector2(840, 384)
+
+[node name="GiantScorpion" parent="." unique_id=1174096697 instance=ExtResource("16_scorpion")]
+visible = false
+position = Vector2(840, 384)
+
+[node name="ScorpicoreWarrior" parent="." unique_id=1635224286 instance=ExtResource("15_wdyt7")]
 process_mode = 4
 visible = false
 position = Vector2(720, 368)
