@@ -1,9 +1,6 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/FX/AssistFX.gd" id="fx"]
-[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/glow.tres" id="glow"]
-[ext_resource type="Texture2D" path="res://SampleProject/Scenes/FX/Companions/ring.tres" id="ring"]
-[ext_resource type="Material" path="res://SampleProject/Scenes/FX/Companions/additive.tres" id="add"]
 
 [sub_resource type="Gradient" id="G_puff"]
 offsets = PackedFloat32Array(0, 1)
