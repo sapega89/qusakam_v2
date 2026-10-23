@@ -1,37 +1,35 @@
-extends PanelContainer
+extends Control
 class_name UISkillHotbar
 
-## Бойова панель навичок: лише навички 1–4 і асист; слота зброї немає (D475).
-## Figma: Game Scene / Combat HUD → Skill Hotbar (434:6628).
-## Виміри й стани: design/combat_hud_mapping.md
+## Бойова панель навичок v2: вісім слотів, дві четвірки навколо ромба (D453, D476, D549).
+## Figma: UI/HUD/Hotbar v2 (497:6587). Виміри й стани: design/combat_hud_mapping.md → HUD v2 hotbar.
+## Розкладка — у skill_hotbar.tscn і hotbar_slot.tscn; тут лише стан слотів. Зілля (Q) і асист (F) — чипи під
+## панеллю героя (player_vitals_panel), не тут.
 ##
 ## Панель НІЧОГО не рахує: ні шкоду, ні вартість SP, ні перезарядку, ні правила
 ## доступності. Вона показує стан із SkillManager і просить його застосувати
 ## навичку. Другого таймера перезарядки в HUD немає — час береться з менеджера.
 
-const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
-const SLOT_SIZE := 48
-const ICON_SIZE := 28
-## Портрет компаньйона — верх першого кадру його забігу (AtlasTexture поруч зі спрайтами).
+const SkillSlotInput = preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
+## Недоступний слот (немає SP, не та зброя) — уся група слота тьмяніє (Figma 434:6628, Bind 4).
+const UNAVAILABLE_ALPHA := 0.4
 
-@onready var _slots_row: HBoxContainer = %SlotsRow
+@onready var _slots_root: Control = %Slots
 
 var _skill_manager: Node = null
-var _skill_database: Node = null
 var _slots: Array[Control] = []
-## Що зараз намальовано в слоті асисту ("id:стан").
-var _assist_shown := ""
-## Пульс рамки, поки компаньйон на полі (D515), і трус портрета на відмову.
-var _assist_pulse: Tween
-var _assist_shake: Tween
 
 
 func _ready() -> void:
 	add_to_group(&"skill_hotbar")
 	_skill_manager = ServiceLocator.get_skill_manager()
-	_skill_database = SkillDatabase
-
-	_build_slots()
+	for child in _slots_root.get_children():
+		_slots.append(child)
+	assert(_slots.size() == SkillManager.SLOT_COUNT, "skill_hotbar.tscn: %d slots, SkillManager has %d" % [_slots.size(), SkillManager.SLOT_COUNT])
+	for bind in _slots:
+		# Плейсхолдер іконки, доки немає мальованих (D28, D550) — той самий квадрат, що й раніше.
+		bind.get_node(^"Icon").add_theme_stylebox_override("panel", _icon_box())
+	_refresh_keys()
 	_connect_live_sources()
 	refresh()
 
@@ -43,7 +41,6 @@ func _connect_live_sources() -> void:
 		[EventBus.skill_used, _on_skill_used],
 		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
 		[EventBus.input_device_changed, _on_input_device_changed],
-		[EventBus.assist_denied, _on_assist_denied],
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])
@@ -67,176 +64,20 @@ func _on_weapon_changed(_slot: String) -> void:
 
 ## Перезарядка тікає в SkillManager; тут лише перемальовуємо залишок.
 func _process(_delta: float) -> void:
-	if _skill_manager == null:
-		return
 	for i in _slots.size():
 		var skill_id := String(_skill_manager.get_equipped_skill(i))
-		if skill_id.is_empty():
-			continue
-		if _skill_manager.is_skill_on_cooldown(skill_id):
+		if not skill_id.is_empty() and _skill_manager.is_skill_on_cooldown(skill_id):
 			_update_slot(i)
-	_update_assist()
 
 
-func _build_slots() -> void:
-	for child in _slots_row.get_children():
-		_slots_row.remove_child(child)
-		child.queue_free()
-	_slots.clear()
-
-	var count: int = _skill_manager.SLOT_COUNT if _skill_manager else 4
-	for i in count:
-		var bind := VBoxContainer.new()
-		bind.name = "Bind%d" % (i + 1)
-		bind.add_theme_constant_override("separation", UITokens.SPACE_XS)
-		bind.alignment = BoxContainer.ALIGNMENT_CENTER
-
-		var slot := Panel.new()
-		slot.name = "Slot"
-		slot.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
-
-		# CenterContainer тримає плейсхолдер іконки по центру слота надійніше,
-		# ніж ручні offset-и: слот може змінювати розмір разом із темою.
-		var icon_center := CenterContainer.new()
-		icon_center.name = "IconCenter"
-		icon_center.set_anchors_preset(Control.PRESET_FULL_RECT)
-		icon_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(icon_center)
-
-		var icon := Panel.new()
-		icon.name = "Icon"
-		icon.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		icon_center.add_child(icon)
-
-		var overlay := Label.new()
-		overlay.name = "Cooldown"
-		overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-		overlay.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		overlay.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		overlay.theme_type_variation = &"CooldownLabel"
-		overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(overlay)
-		bind.add_child(slot)
-
-		var badge := PanelContainer.new()
-		badge.name = "Badge"
-		badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		var badge_label := Label.new()
-		badge_label.name = "Key"
-		badge_label.text = _key_for(StringName("skill_slot_%d" % (i + 1)))
-		badge_label.theme_type_variation = &"BindBadge"
-		badge.add_child(badge_label)
-		bind.add_child(badge)
-
-		_slots_row.add_child(bind)
-		_slots.append(bind)
-	_build_assist_bind()
-
-
-## Асист компаньйона (D209, D515) — праворуч від навичок, три стани: готовий (портрет того, хто вийде, золота рамка
-## й бейдж), на полі (портрет того, хто виступає, рамка пульсує, бейдж згаслий), кулдаун (наступний у черзі тьмяно,
-## із залишком секунд). Нікого в загоні — слота немає.
-func _build_assist_bind() -> void:
-	var bind := VBoxContainer.new()
-	bind.name = "AssistBind"
-	bind.add_theme_constant_override("separation", UITokens.SPACE_XS)
-	var slot := Panel.new()
-	slot.name = "Slot"
-	slot.custom_minimum_size = Vector2(SLOT_SIZE, SLOT_SIZE)
-	var portrait := TextureRect.new()
-	portrait.name = "Portrait"
-	portrait.set_anchors_preset(Control.PRESET_FULL_RECT)
-	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	slot.add_child(portrait)
-	var overlay := Label.new()
-	overlay.name = "Cooldown"
-	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
-	overlay.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	overlay.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	overlay.theme_type_variation = &"CooldownLabel"
-	overlay.add_theme_stylebox_override("normal", _overlay_box())
-	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	slot.add_child(overlay)
-	bind.add_child(slot)
-	var badge := PanelContainer.new()
-	badge.name = "Badge"
-	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	var key := Label.new()
-	key.name = "Key"
-	key.theme_type_variation = &"BindBadge"
-	key.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED  # назва кнопки, не текст (BACKLOG 31)
-	key.text = _key_for(&"assist")
-	badge.add_child(key)
-	bind.add_child(badge)
-	_slots_row.add_child(bind)
-
-
-## Стан бере CompanionManager; панель лише показує. Лише з _process: хто відкритий — це прапорці
-## Game, а хотбар готовий раніше за Game (він його дитина).
-func _update_assist() -> void:
-	var cm := ServiceLocator.get_companion_manager()
-	var bind: Control = _slots_row.get_node(^"AssistBind")
-	var state: CompanionManager.State = cm.get_state()
-	bind.visible = state != CompanionManager.State.NONE
-	if state == CompanionManager.State.NONE:
-		return
-	var id: String = cm.get_active() if state == CompanionManager.State.ACTIVE else cm.get_next_in_queue()
-	var slot: Panel = bind.get_node(^"Slot")
-	var overlay: Label = slot.get_node(^"Cooldown")
-	overlay.text = tr("%ds") % ceili(cm.get_remaining_cooldown())
-	# Портрет і стилі — лише коли змінився хто / стан, не щокадру.
-	var shown := "%s:%d" % [id, state]
-	if shown == _assist_shown:
-		return
-	_assist_shown = shown
-	var ready := state == CompanionManager.State.READY
-	var active := state == CompanionManager.State.ACTIVE
-	var badge: PanelContainer = bind.get_node(^"Badge")
-	var portrait: TextureRect = slot.get_node(^"Portrait")
-	portrait.texture = load(CompanionManager.PORTRAIT_PATH % id)
-	var dim := UITokens.ASSIST_COOLDOWN_DIM
-	portrait.modulate = Color(dim, dim, dim) if state == CompanionManager.State.COOLDOWN else Color.WHITE
-	overlay.visible = state == CompanionManager.State.COOLDOWN
-	var box := _slot_box(ready or active)
-	slot.add_theme_stylebox_override("panel", box)
-	badge.add_theme_stylebox_override("panel", _badge_box(ready))
-	badge.get_node(^"Key").add_theme_color_override("font_color", UITokens.ON_ACCENT if ready else UITokens.TEXT_PRIMARY)
-	if _assist_pulse != null:
-		_assist_pulse.kill()
-		_assist_pulse = null
-	if active:
-		_assist_pulse = create_tween().set_loops()
-		_assist_pulse.tween_property(box, ^"shadow_size", UITokens.ASSIST_PULSE_SHADOW, UITokens.ASSIST_PULSE_TIME / 2.0).set_trans(Tween.TRANS_SINE)
-		_assist_pulse.tween_property(box, ^"shadow_size", 0, UITokens.ASSIST_PULSE_TIME / 2.0).set_trans(Tween.TRANS_SINE)
-
-
-## Кнопку натиснули, поки компаньйон на полі чи йде кулдаун (D515): портрет і залишок тремтять (звук — SoundHooks).
-func _on_assist_denied(_id: String) -> void:
-	var slot: Panel = _slots_row.get_node(^"AssistBind/Slot")
-	if _assist_shake != null:
-		_assist_shake.kill()
-	var shake_px := UITokens.ASSIST_SHAKE_PX
-	var step := UITokens.ASSIST_SHAKE_TIME / 4.0
-	_assist_shake = create_tween()
-	for x: float in [shake_px, -shake_px, shake_px / 2.0, 0.0]:
-		_assist_shake.tween_property(slot.get_node(^"Portrait"), ^"position:x", x, step)
-		_assist_shake.parallel().tween_property(slot.get_node(^"Cooldown"), ^"position:x", x, step)
-
-
-## Кнопка дії з InputMap на пристрої, яким грали останнім (BACKLOG 24) — бейдж показує справжнє призначення.
-func _key_for(action: StringName) -> String:
-	return InputGlyphs.badge(action)
-
-
-## Пристрій змінився — бейджі слотів і асисту називають його кнопки.
-func _on_input_device_changed(_pad: bool) -> void:
+## Бейдж — кнопка з InputMap на пристрої, яким грали останнім (BACKLOG 24); на геймпаді 5–8 — «LT+…» (D549).
+func _refresh_keys() -> void:
 	for i in _slots.size():
-		_slots[i].get_node(^"Badge/Key").text = _key_for(StringName("skill_slot_%d" % (i + 1)))
-	_slots_row.get_node(^"AssistBind/Badge/Key").text = _key_for(&"assist")
+		_slots[i].get_node(^"Badge/Key").text = SkillSlotInput.badge(i)
+
+
+func _on_input_device_changed(_pad: bool) -> void:
+	_refresh_keys()
 
 
 func refresh() -> void:
@@ -245,103 +86,42 @@ func refresh() -> void:
 
 
 ## Малює один слот за вердиктом SkillManager. Жодних власних правил.
+## Порожній — сам шестикутник; готовий — золоте кільце й світіння; перезарядка — темний шар і секунди.
 func _update_slot(index: int) -> void:
-	if _skill_manager == null or index >= _slots.size():
-		return
 	var bind: Control = _slots[index]
-	var slot: Panel = bind.get_node(^"Slot")
-	var icon: Panel = slot.get_node(^"IconCenter/Icon")
-	var overlay: Label = slot.get_node(^"Cooldown")
-	var badge: PanelContainer = bind.get_node(^"Badge")
-	var badge_label: Label = badge.get_node(^"Key")
-
 	var skill_id := String(_skill_manager.get_equipped_skill(index))
 	var empty := skill_id.is_empty()
-	var verdict: int = _skill_manager.can_use_skill(skill_id) if not empty else -1
 	var on_cooldown: bool = (not empty) and _skill_manager.is_skill_on_cooldown(skill_id)
-	var usable: bool = verdict == SkillManager.Result.OK
+	var usable: bool = (not empty) and _skill_manager.can_use_skill(skill_id) == SkillManager.Result.OK
 
-	# Іконки навичок ще не експортовані — показуємо плейсхолдер (D28).
-	icon.add_theme_stylebox_override("panel", _icon_box(empty))
+	bind.get_node(^"Icon").visible = not empty
+	var cost: int = 0 if empty else SkillDatabase.get_skill(skill_id).sp_cost
+	bind.get_node(^"Gem").visible = cost > 0
+	bind.get_node(^"Gem/Cost").text = str(cost)
 
 	# Перезарядка: залишок бере менеджер, HUD власного таймера не має.
+	var overlay: Control = bind.get_node(^"Cooldown")
+	overlay.visible = on_cooldown
 	if on_cooldown:
-		overlay.visible = true
-		overlay.text = tr("%ds") % ceili(_skill_manager.get_remaining_cooldown(skill_id))
-		overlay.add_theme_stylebox_override("normal", _overlay_box())
-	else:
-		overlay.visible = false
+		overlay.get_node(^"Seconds").text = tr("%ds") % ceili(_skill_manager.get_remaining_cooldown(skill_id))
 
-	slot.add_theme_stylebox_override("panel", _slot_box(usable and not empty))
-	badge.add_theme_stylebox_override("panel", _badge_box(usable and not empty))
-	badge_label.add_theme_color_override("font_color",
-			UITokens.ON_ACCENT if (usable and not empty) else UITokens.TEXT_PRIMARY)
-
-	# Недоступний слот (немає SP / не готовий) — 40% прозорості, як у Figma.
-	bind.modulate.a = 1.0 if (empty or usable or on_cooldown) else 0.4
+	bind.get_node(^"Ready").visible = usable
+	bind.get_node(^"Glow").visible = usable
+	bind.modulate.a = 1.0 if (empty or usable or on_cooldown) else UNAVAILABLE_ALPHA
 
 
-func _slot_box(highlighted: bool) -> StyleBoxFlat:
+func _icon_box() -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
-	box.bg_color = UITokens.BACKGROUND
+	box.bg_color = UITokens.ICON_SLOT_BG
 	box.set_corner_radius_all(UITokens.RADIUS)
-	if highlighted:
-		box.set_border_width_all(UITokens.BORDER_WIDTH_SELECTED)
-		box.border_color = UITokens.ACCENT
-		box.shadow_color = Color(UITokens.ACCENT, 0.3)
-		box.shadow_size = 3
-	else:
-		box.set_border_width_all(UITokens.BORDER_WIDTH)
-		box.border_color = UITokens.BORDER
-	return box
-
-
-func _icon_box(empty: bool) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = UITokens.ICON_SLOT_BG if not empty else Color(UITokens.ICON_SLOT_BG, 0.5)
-	box.set_corner_radius_all(UITokens.RADIUS)
-	return box
-
-
-func _overlay_box() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = Color(UITokens.BACKGROUND, 0.75)
-	box.set_corner_radius_all(UITokens.RADIUS)
-	return box
-
-
-func _badge_box(highlighted: bool) -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.set_corner_radius_all(UITokens.RADIUS)
-	box.content_margin_left = 6
-	box.content_margin_right = 6
-	box.content_margin_top = 1
-	box.content_margin_bottom = 1
-	if highlighted:
-		box.bg_color = UITokens.ACCENT
-	else:
-		box.bg_color = UITokens.ICON_SLOT_BG
-		box.set_border_width_all(UITokens.BORDER_WIDTH)
-		box.border_color = UITokens.BORDER
 	return box
 
 
 ## Вхід зі слота: розв'язати слот → попросити SkillManager про каст героя (замах, D271). Нічого не рахуємо.
+## Слот за подією — SkillSlotInput (клавіші 1–8; на геймпаді LT зсуває на 5–8, D549).
 func _unhandled_input(event: InputEvent) -> void:
-	if _skill_manager == null:
+	var slot := SkillSlotInput.slot_for(event)
+	if slot < 0:
 		return
-	for i in _slots.size():
-		if event.is_action_pressed("skill_slot_%d" % (i + 1)):
-			_skill_manager.cast_slot(i)
-			get_viewport().set_input_as_handled()
-			return
-
-
-## Явної цілі хотбар не дає: SkillManager сам бере ціль за D142
-## (удар — усе перед героєм, лікування — союзник поруч або сам герой).
-func _resolve_target() -> Node:
-	return null
-
-
-func _resolve_source() -> Node:
-	return ServiceLocator.get_game_manager().get_current_player()
+	_skill_manager.cast_slot(slot)
+	get_viewport().set_input_as_handled()

@@ -26,24 +26,20 @@ func _drain(dm: Node) -> void:
 		if not dm.is_dialogue_active():
 			return
 
-## Слот асисту на хотбарі (зріз 4): видно? чий портрет? залишок кулдауну?
-func _hud() -> Array:
-	var bind: Control = get_first_node_in_group(&"skill_hotbar").get_node(^"%SlotsRow/AssistBind")
-	var portrait: Texture2D = bind.get_node(^"Slot/Portrait").texture
-	var overlay: Label = bind.get_node(^"Slot/Cooldown")
-	var who := "" if portrait == null else portrait.resource_path.get_base_dir().get_file()
-	return [bind.is_visible_in_tree(), who, overlay.text if overlay.visible else ""]
+## Чип F під панеллю героя (HUD v2, D549; був слотом хотбара): видно? чий портрет? залишок кулдауну?
+func _chip() -> Control:
+	return get_first_node_in_group(&"player_vitals_panel").get_node(^"%AssistChip")
 
-## Стан слота (D515): "ready" — бейдж золотий; "active" — рамка пульсує; "cooldown" — портрет тьмяний, секунди.
+func _hud() -> Array:
+	var chip := _chip()
+	var portrait: Texture2D = chip.get_node(^"Mask/Portrait").texture
+	var overlay: Label = chip.get_node(^"Cooldown")
+	var who := "" if portrait == null else portrait.resource_path.get_base_dir().get_file()
+	return [chip.is_visible_in_tree(), who, overlay.text if overlay.visible else ""]
+
+## Стан чипа (D525): "ready" — бейдж золотий; "active" — світіння пульсує; "cooldown" — портрет тьмяний, секунди.
 func _hud_state() -> String:
-	var hotbar: Node = get_first_node_in_group(&"skill_hotbar")
-	var slot: Panel = hotbar.get_node(^"%SlotsRow/AssistBind/Slot")
-	var badge: StyleBoxFlat = hotbar.get_node(^"%SlotsRow/AssistBind/Badge").get_theme_stylebox("panel")
-	if hotbar._assist_pulse != null and hotbar._assist_pulse.is_running():
-		return "active"
-	if slot.get_node(^"Cooldown").visible and slot.get_node(^"Portrait").modulate.r < 1.0:
-		return "cooldown"
-	return "ready" if badge.bg_color == UITokens.ACCENT else "?"
+	return _chip().shown_state()
 
 ## Виступ компаньйона (D515): фази з мітками часу від виклику, мс, і коли він зник.
 var _phases: Array = []
@@ -138,7 +134,7 @@ func _initialize() -> void:
 	print("[1] Nobody unlocked → the button does nothing")
 	ck(cm.get_unlocked().is_empty() and cm.call_next() == "" and _actors().is_empty(), "no companions, no assist")
 	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
-	ck(not _hud()[0], "no assist slot on the hotbar")
+	ck(not _hud()[0], "no F chip under the hero panel")
 
 	print("[2] D464: the Laboratory flags make them available, but nobody joins until picked")
 	for f in ["lab_companion_01_complete", "lab_companion_02_complete"]:  # як LabCells._acquaintance
@@ -153,7 +149,7 @@ func _initialize() -> void:
 	print("[3] Picking: only the picked companion is called")
 	ck(cm.toggle_party("alisia") and cm.get_party() == ["alisia"], "Алісия picked (%s)" % [cm.get_party()])
 	for i in 2: await process_frame
-	ck(_hud() == [true, "alisia", ""] and _hud_state() == "ready", "the hotbar shows Алісия ready (%s, %s)" % [_hud(), _hud_state()])
+	ck(_hud() == [true, "alisia", ""] and _hud_state() == "ready", "the F chip shows Алісия ready (%s, %s)" % [_hud(), _hud_state()])
 
 	print("[4] Алісия (D464, D515): runs in, draws with a green glow, shoots the farthest enemy in front, holds, runs off")
 	var before: Array = enemies.map(func(e: Node) -> int: return e.current_health)
@@ -171,15 +167,15 @@ func _initialize() -> void:
 	ck(absf(actor.global_position.x - hero.global_position.x) > 200.0, "she runs in from the edge of the view (%.0f px off)" % absf(actor.global_position.x - hero.global_position.x))
 	for i in 2: await process_frame
 	ck(cm.get_state() == cm.State.ACTIVE and _hud()[1] == "alisia" and _hud_state() == "active",
-			"the hotbar shows her on the field, the frame pulsing (%s, %s)" % [_hud(), _hud_state()])
+			"the F chip shows her on the field, the frame pulsing (%s, %s)" % [_hud(), _hud_state()])
 	print("[4b] D515: only one on the field — while she is out the button calls nobody, with a denied sound and a shake")
 	ck(cm.toggle_party("astrit") and cm.get_party() == ["alisia", "astrit"], "Астрит picked second (%s)" % [cm.get_party()])
 	sounds.clear()
 	ck(cm.call_next() == "" and _actors().size() == 1, "a second press calls nobody while Алісия is out")
 	ck(denied == ["alisia"] and sounds.has(&"assist_denied"), "assist_denied with a sound (%s, %s)" % [denied, sounds])
-	var portrait_node: Control = get_first_node_in_group(&"skill_hotbar").get_node(^"%SlotsRow/AssistBind/Slot/Portrait")
+	var chip: Control = _chip()
 	for i in 3: await process_frame
-	ck(absf(portrait_node.position.x) > 0.5, "the slot's portrait shakes (%.1f px)" % portrait_node.position.x)
+	ck(absf(chip.shake_offset()) > 0.5, "the F chip's portrait shakes (%.1f px)" % chip.shake_offset())
 	ck(is_equal_approx(cm.get_remaining_cooldown(), 0.0), "no cooldown runs while she is on the field")
 	await _until_phase(actor, &"windup")
 	ck(_fx_count("landing_dust") == 1 and _fx_count("charge_glow") == 1, "dust where she stops, a charge glow as she draws (%s)" % [_fx])
@@ -188,13 +184,13 @@ func _initialize() -> void:
 	ck(far.current_health == before[-1] - 24, "the arrow hit the farthest enemy for 24 (%d → %d)" % [before[-1], far.current_health])
 	ck(range(enemies.size() - 1).all(func(i: int) -> bool: return enemies[i].current_health == before[i]), "nobody nearer was touched")
 	ck(_fx_count("arrow_streak") == 1 and _fx_count("hit_spark") == 1, "an arrow streak flew and a hit spark burst (%s)" % [_fx])
-	ck(absf(portrait_node.position.x) < 0.01, "the shake settled")
+	ck(absf(chip.shake_offset()) < 0.01, "the shake settled")
 
 	print("[4c] D515: the shared cooldown starts when she leaves; the slot shows the next in the queue, dim, with seconds")
 	ck(cm.get_state() == cm.State.COOLDOWN and cm.get_remaining_cooldown() > cm.COOLDOWN - 0.2, "cooldown %.1f of %.0f s" % [cm.get_remaining_cooldown(), cm.COOLDOWN])
 	for i in 2: await process_frame
 	var hud: Array = _hud()
-	ck(hud[0] and hud[1] == "astrit" and hud[2].ends_with("s") and _hud_state() == "cooldown", "the hotbar: Астрит next, dim, seconds left (%s, %s)" % [hud, _hud_state()])
+	ck(hud[0] and hud[1] == "astrit" and hud[2].ends_with("s") and _hud_state() == "cooldown", "the F chip: Астрит next, dim, seconds left (%s, %s)" % [hud, _hud_state()])
 	denied.clear()
 	ck(cm.call_next() == "" and denied == ["astrit"], "the button is refused during the cooldown too (%s)" % [denied])
 	cm._process(cm.COOLDOWN)
@@ -244,7 +240,7 @@ func _initialize() -> void:
 	print("[8] The City Gates guard: offered for the fight, runs in, his thrust ends it with a wind arc")
 	cm.offer_guard(true)
 	for i in 2: await process_frame  # хотбар оновлюється у своєму _process
-	ck(_hud()[1] == "guard", "the hotbar shows the guard while he is offered (%s)" % [_hud()])
+	ck(_hud()[1] == "guard", "the F chip shows the guard while he is offered (%s)" % [_hud()])
 	_fx.clear()
 	actor = await _call(cm, "guard")
 	ck(not cm.is_guard_offered(), "the button calls the guard once")

@@ -33,6 +33,7 @@ func _initialize() -> void:
 	_shop(theme)
 	_game_over(theme)
 	_setup_progress_bar(theme)
+	_hud_v2(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
 	_setup_slider(theme)
@@ -186,12 +187,16 @@ func _setup_label_variations(theme: Theme) -> void:
 		"TreeTitle": [_font_bold, UITokens.SIZE_TOPBAR, UITokens.ACCENT],
 		"TooltipTitle": [_font_medium, UITokens.SIZE_LABEL, UITokens.ACCENT],
 		"TooltipBody": [_font_regular, UITokens.SIZE_CAPTION_SM, UITokens.TEXT_PRIMARY],
-		# Figma Game Scene / Combat HUD (434:6556)
-		"BindBadge": [_font_bold, UITokens.SIZE_MICRO, UITokens.TEXT_PRIMARY],
-		"CooldownLabel": [_font_bold, UITokens.SIZE_LABEL, UITokens.ACCENT],
-		"VitalsName": [_font_bold, UITokens.SIZE_ROW_TITLE, UITokens.ACCENT],
-		"VitalsLabel": [_font_semibold, UITokens.SIZE_LABEL, UITokens.TEXT_PRIMARY],
-		"VitalsValue": [_font_semibold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
+		# HUD v2 (Figma 501:6611 панель героя, 497:6587 хотбар; combat_hud_mapping → HUD v2)
+		"BindBadge": [_font_bold, UITokens.SIZE_HUD_KEY, UITokens.HUD_INK],
+		"CooldownLabel": [_font_bold, UITokens.SIZE_HUD_COOLDOWN, UITokens.TEXT_PRIMARY],
+		"VitalsName": [_spaced(_font_bold, UITokens.HUD_NAME_SPACING), UITokens.SIZE_HUD_NAME, UITokens.HUD_GOLD_LIGHT],
+		"VitalsLabel": [_font_bold, UITokens.SIZE_HUD_ROW_LABEL, UITokens.HUD_TEXT_SOFT],
+		"VitalsValue": [_font_semibold, UITokens.SIZE_HUD_ROW_VALUE, UITokens.TEXT_PRIMARY],
+		"HudClass": [_font_regular, UITokens.SIZE_HUD_CLASS, UITokens.HUD_TEXT_SOFT],
+		"HudLevel": [_font_bold, UITokens.SIZE_HUD_LEVEL, UITokens.HUD_INK],
+		"HudSpCost": [_font_bold, UITokens.SIZE_HUD_SP_COST, UITokens.TEXT_PRIMARY],
+		"HudCount": [_font_bold, UITokens.SIZE_HUD_COUNT, UITokens.HUD_GOLD_LIGHT],
 		"QuestCaption": [_font_regular, UITokens.SIZE_SMALL, UITokens.ACCENT],
 		"QuestTitle": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 		# Ті самі ролі в панелі квесту HUD (D474: ігрова поверхня); QuestCaption — ще й у Journal, QuestTitle — у боса.
@@ -1141,6 +1146,38 @@ func _save_slots(theme: Theme) -> void:
 	theme.set_type_variation("InsetPanel", "PanelContainer")
 	theme.set_stylebox("panel", "InsetPanel", _box(Color(UITokens.BACKGROUND, 0.75),
 			UITokens.BORDER, UITokens.BORDER_WIDTH, UITokens.PANEL_PADDING, UITokens.PANEL_PADDING))
+
+
+# ── HUD v2: смуги HP / SP і XP на всю ширину, пігулка зілля (combat_hud_mapping → HUD v2) ──
+
+func _hud_v2(theme: Theme) -> void:
+	for spec in [["HudHpBar", UITokens.HP_FILL], ["HudSpBar", UITokens.SP_FILL]]:
+		theme.set_type_variation(spec[0], "ProgressBar")
+		var track := _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0)
+		theme.set_stylebox("background", spec[0], track)
+		theme.set_stylebox("fill", spec[0], _hud_fill(spec[1], UITokens.HUD_BAR_HIGHLIGHT_ROW, UITokens.BORDER_WIDTH))
+	# D552: тло з 1 px верхнім краєм, золота заливка під ним; ні підпису, ні чисел.
+	theme.set_type_variation("HudXpBar", "ProgressBar")
+	var xp_track := _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, 0, 0, 0)
+	xp_track.border_width_top = UITokens.BORDER_WIDTH
+	theme.set_stylebox("background", "HudXpBar", xp_track)
+	var xp_fill := _hud_fill(UITokens.ACCENT, UITokens.HUD_BAR_HIGHLIGHT_XP, 0)
+	xp_fill.expand_margin_top = -UITokens.BORDER_WIDTH
+	theme.set_stylebox("fill", "HudXpBar", xp_fill)
+	# Пігулка з кількістю зілля на чипі Q.
+	theme.set_type_variation("HudCountPill", "PanelContainer")
+	var pill := _box(Color(UITokens.HUD_INK, UITokens.HUD_PILL_ALPHA), UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0)
+	pill.set_corner_radius_all(UITokens.HUD_PILL_RADIUS)
+	theme.set_stylebox("panel", "HudCountPill", pill)
+
+
+## Заливка смуги: колір і світла смужка зверху (білий HUD_BAR_HIGHLIGHT поверх кольору), утоплена на [param inset] px.
+func _hud_fill(fill: Color, highlight: int, inset: int) -> StyleBoxFlat:
+	var box := _box(fill, fill.lerp(Color.WHITE, UITokens.HUD_BAR_HIGHLIGHT), 0, 0, 0)
+	box.border_width_top = highlight
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		box.set_expand_margin(side, -inset)
+	return box
 
 
 # ── ProgressBar (Figma UI/ProgressBar, UI/ResourceBar) ──────────────────────

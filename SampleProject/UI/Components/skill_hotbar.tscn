@@ -1,36 +1,119 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://SampleProject/UI/Components/skill_hotbar.gd" id="1_hotbar"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hotbar/plate.svg" id="2_plate"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hero_panel/curl.svg" id="3_curl"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/HUD/hotbar/centre_diamond.svg" id="4_diamond"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hotbar_slot.tscn" id="6_slot"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hotbar"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-bg_color = Color(0.06666667, 0.06666667, 0.09411765, 0.56)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.83137256, 0.6862745, 0.21568628, 1)
-
-[node name="SkillHotbar" type="PanelContainer"]
+[node name="SkillHotbar" type="Control"]
+custom_minimum_size = Vector2(780, 124)
 layout_mode = 3
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -124.0
-offset_top = -111.0
-offset_right = 124.0
-offset_bottom = -24.0
+offset_left = -390.0
+offset_top = -138.0
+offset_right = 390.0
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_hotbar")
+mouse_filter = 2
 script = ExtResource("1_hotbar")
 
-[node name="SlotsRow" type="HBoxContainer" parent="."]
+[node name="Plate" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 22.0
+offset_right = 740.0
+offset_bottom = 118.0
+mouse_filter = 2
+texture = ExtResource("2_plate")
+
+[node name="CurlLeft" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 48.0
+offset_right = 46.0
+offset_bottom = 92.0
+mouse_filter = 2
+texture = ExtResource("3_curl")
+
+[node name="CurlRight" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 734.0
+offset_top = 48.0
+offset_right = 778.0
+offset_bottom = 92.0
+mouse_filter = 2
+texture = ExtResource("3_curl")
+flip_h = true
+
+[node name="CentreDiamond" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 382.0
+offset_top = 62.0
+offset_right = 398.0
+offset_bottom = 78.0
+mouse_filter = 2
+texture = ExtResource("4_diamond")
+
+[node name="Slots" type="Control" parent="."]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 12
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bind1" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 78.0
+offset_top = 38.0
+offset_right = 142.0
+offset_bottom = 94.0
+
+[node name="Bind2" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 154.0
+offset_top = 38.0
+offset_right = 218.0
+offset_bottom = 94.0
+
+[node name="Bind3" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 230.0
+offset_top = 38.0
+offset_right = 294.0
+offset_bottom = 94.0
+
+[node name="Bind4" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 306.0
+offset_top = 38.0
+offset_right = 370.0
+offset_bottom = 94.0
+
+[node name="Bind5" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 410.0
+offset_top = 38.0
+offset_right = 474.0
+offset_bottom = 94.0
+
+[node name="Bind6" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 486.0
+offset_top = 38.0
+offset_right = 550.0
+offset_bottom = 94.0
+
+[node name="Bind7" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 562.0
+offset_top = 38.0
+offset_right = 626.0
+offset_bottom = 94.0
+
+[node name="Bind8" parent="Slots" instance=ExtResource("6_slot")]
+offset_left = 638.0
+offset_top = 38.0
+offset_right = 702.0
+offset_bottom = 94.0

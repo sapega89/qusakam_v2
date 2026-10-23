@@ -619,10 +619,10 @@ func _announce_max_sp() -> void:
 # unlocked_skills (що взагалі вивчено). Зберігається в player_state поруч,
 # тому окремої системи збереження не потрібно.
 #
-# Кількість слотів задана Figma (Game Scene / Combat HUD 434:6556 — чотири
-# Hotbar Bind), а не вигадана. Див. design/combat_hud_mapping.md
+# Кількість слотів задана Figma: вісім (Hotbar v2 497:6587, D549; було чотири, 434:6556).
+# Старе збереження з чотирма слотами _loadout() доповнює порожніми. Див. design/combat_hud_mapping.md
 
-const SLOT_COUNT := 4
+const SLOT_COUNT := 8
 
 
 func _loadout() -> Array:

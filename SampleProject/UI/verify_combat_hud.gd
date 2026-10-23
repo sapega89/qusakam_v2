@@ -132,23 +132,57 @@ func _initialize() -> void:
 		ck(_row_value(vitals, "SP") == "%d / %d" % [skills.get_current_sp(), skills.get_max_sp()],
 				"SP matches SkillManager")
 
-	print("[9] XP and level update live")
+	print("[9] XP and level: the full-width bar along the bottom and the level diamond (D552)")
 	var xp: Node = sl.get_xp_manager()
 	ck(xp != null, "xp manager present")
-	if xp:
-		var xp_before: String = _row_value(vitals, "XP")
+	ck(not vitals._rows_by_id.has("XP") and not vitals._rows_by_id.has("ST"), "the hero panel has only HP and SP (D551, D552)")
+	var xp_bar: ProgressBar = get_first_node_in_group("hud_xp_bar")
+	ck(xp_bar != null and xp_bar.get_parent() == hud_root, "the XP bar lives in the themed HUD")
+	if xp and xp_bar:
+		var view: Vector2 = hud_root.size
+		ck(xp_bar.size == Vector2(view.x, 10) and xp_bar.position == Vector2(0, view.y - 10),
+				"full width, 10 px, at the bottom edge (%s at %s, view %s)" % [xp_bar.size, xp_bar.position, view])
+		ck(not xp_bar.show_percentage and xp_bar.get_children().is_empty(), "no label and no numbers")
+		ck(xp_bar.theme_type_variation == &"HudXpBar", "drawn by the theme, no texture")
+		var fill: StyleBoxFlat = xp_bar.get_theme_stylebox("fill")
+		var track: StyleBoxFlat = xp_bar.get_theme_stylebox("background")
+		ck(fill.bg_color == tokens.ACCENT and fill.border_width_top == tokens.HUD_BAR_HIGHLIGHT_XP, "gold fill, 2 px highlight")
+		ck(track.bg_color == tokens.HUD_BAR_BG and track.border_width_top == 1 and track.border_color == tokens.HUD_RIM
+				and track.border_width_left == 0, "black 60 % track with a 1 px top rim")
+		var ratio_before: float = xp_bar.value
 		xp.add_xp(10)
 		for i in 4: await process_frame
-		ck(_row_value(vitals, "XP") != xp_before,
-				"XP row changed on xp_gained (%s -> %s)" % [xp_before, _row_value(vitals, "XP")])
-		ck(_row_value(vitals, "XP") == "%d / %d" % [xp.current_xp, xp.xp_for_next_level],
-				"XP matches XPManager")
+		ck(xp_bar.value != ratio_before, "XP bar moved on xp_gained (%.3f -> %.3f)" % [ratio_before, xp_bar.value])
+		ck(is_equal_approx(xp_bar.value, xp.get_xp_percentage()), "XP bar = XPManager share to the next level")
 		var lvl_before: String = vitals._level_label.text
 		xp.add_xp(100000)
 		for i in 6: await process_frame
 		ck(vitals._level_label.text != lvl_before,
-				"level badge followed the level-up (%s -> %s)" % [lvl_before, vitals._level_label.text])
-		ck(vitals._level_label.text == "LV.%d" % xp.get_level(), "level badge matches XPManager")
+				"level diamond followed the level-up (%s -> %s)" % [lvl_before, vitals._level_label.text])
+		ck(vitals._level_label.text == str(xp.get_level()), "level diamond matches XPManager")
+		if xp.is_max_level():
+			ck(xp_bar.value == xp_bar.max_value, "at the cap the XP bar stays full (D541)")
+	var hotbar_node: Control = get_first_node_in_group("skill_hotbar")
+	if hotbar_node and xp_bar:
+		var gap: float = xp_bar.global_position.y - (hotbar_node.global_position.y + hotbar_node.size.y)
+		ck(is_equal_approx(gap, 4.0) and is_equal_approx(hotbar_node.global_position.x + hotbar_node.size.x / 2.0, hud_root.size.x / 2.0),
+				"hotbar centred, 4 px above the XP bar (gap %.1f)" % gap)
+
+	print("[9b] the hero panel v2: layout, portrait, class, Q chip")
+	ck(vitals.position == Vector2(24, 24) and vitals.size == Vector2(520, 198), "panel at (24, 24), 520 × 198")
+	ck(vitals.get_node(^"%Portrait").texture == load("res://SampleProject/Sprites/Player/portrait.tres"), "hero portrait (D534)")
+	ck(vitals.get_node(^"%Portrait").texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "portrait nearest-filtered")
+	ck((vitals.get_node(^"%PortraitMask") as Polygon2D).clip_children == CanvasItem.CLIP_CHILDREN_AND_DRAW, "portrait clipped to the hexagon")
+	var oath: String = sl.get_skill_manager().get_oath()
+	ck(vitals._class_label.text == (tr(root.get_node(^"SkillDatabase").class_name_trunk) if oath == "" else tr(String(root.get_node(^"SkillDatabase").get_oath(oath).name))),
+			"class reads the oath or Holy Warrior (%s)" % vitals._class_label.text)
+	ck(vitals.get_node(^"Curl").flip_h, "curl mirrored on the right end")
+	var chip: Control = vitals.get_node(^"%PotionChip")
+	ck(chip.get_node(^"Pill/Count").text == "×%d" % load("res://SampleProject/Scripts/Combat/QuickPotion.gd").count(), "Q chip counts the potions")
+	ck(chip.get_node(^"Badge/Key").text == "Q", "Q chip badge names the key")
+	ck(vitals.get_node(^"%AssistChip").position == Vector2(134, 136) and chip.position == Vector2(200, 136), "F and Q chips under the plate")
+	var hp_fill: StyleBoxFlat = _row_bar(vitals, "HP").get_theme_stylebox("fill")
+	ck(hp_fill.bg_color == tokens.HP_FILL and hp_fill.border_width_top == tokens.HUD_BAR_HIGHLIGHT_ROW, "HP fill with a 3 px highlight")
 
 	print("[10] Combat HUD resolves GameUITheme at runtime")
 	ck(hud_root.theme != null, "wrapper carries a theme")
@@ -156,15 +190,15 @@ func _initialize() -> void:
 	# has_theme_*() марне як проба: дефолтна тема відповідає true на будь-який тип.
 	# Єдиний чесний доказ — збіг РЕЗОЛЬВНУТОГО значення з токеном.
 	var name_label: Label = vitals._name_label
-	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.font_px(tokens.SIZE_ROW_TITLE, true),  # D474: HUD ×1.5
+	ck(name_label.get_theme_font_size("font_size", "VitalsName") == tokens.font_px(tokens.SIZE_HUD_NAME, true),  # D474: HUD ×1.5
 			"font size from tokens (%d)" % name_label.get_theme_font_size("font_size", "VitalsName"))
-	ck(name_label.get_theme_color("font_color", "VitalsName") == tokens.ACCENT, "colour from tokens")
+	ck(name_label.get_theme_color("font_color", "VitalsName") == tokens.HUD_GOLD_LIGHT, "colour from tokens")
 	ck(name_label.get_theme_font("font", "VitalsName") != null, "font resource resolves")
 	var hotbar: Node = get_first_node_in_group("skill_hotbar")
 	if hotbar:
-		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.font_px(tokens.SIZE_MICRO, true),  # D474
+		ck(hotbar.get_theme_font_size("font_size", "BindBadge") == tokens.font_px(tokens.SIZE_HUD_KEY, true),  # D474
 				"bind badge size from tokens")
-		ck(hotbar.get_theme_color("font_color", "CooldownLabel") == tokens.ACCENT,
+		ck(hotbar.get_theme_color("font_color", "CooldownLabel") == tokens.TEXT_PRIMARY,
 				"cooldown colour from tokens")
 	var top: Node = game.get_node_or_null(^"UICanvas/CombatHUD/CombatHudTop")
 	# HUD-панелі (QuestPanel, CurrencyDisplay) — звичайний PanelContainer; SidePanel — поверхня меню (MENU_SURFACE, B8).
@@ -176,7 +210,7 @@ func _initialize() -> void:
 	var minimap: Node = game.find_child("Minimap", true, false)
 	ck(minimap != null, "third-party MetSys Minimap present for comparison")
 	if minimap:
-		ck(minimap.get_theme_font_size("font_size", "VitalsName") != tokens.SIZE_ROW_TITLE,
+		ck(minimap.get_theme_font_size("font_size", "VitalsName") != tokens.font_px(tokens.SIZE_HUD_NAME, true),
 				"addon UI does NOT resolve GameUITheme sizes (%d)"
 				% minimap.get_theme_font_size("font_size", "VitalsName"))
 		ck(minimap.get_theme_color("font_color", "VitalsName") != tokens.ACCENT,
@@ -184,7 +218,7 @@ func _initialize() -> void:
 	var legacy: Node = game.get_node_or_null(^"UICanvas/CoinCounter")
 	ck(legacy != null, "legacy CoinCounter still under UICanvas, outside the wrapper")
 	if legacy:
-		ck(legacy.get_theme_font_size("font_size", "VitalsName") != tokens.SIZE_ROW_TITLE,
+		ck(legacy.get_theme_font_size("font_size", "VitalsName") != tokens.font_px(tokens.SIZE_HUD_NAME, true),
 				"legacy UICanvas widgets keep their own look")
 	var proj_theme: String = str(ProjectSettings.get_setting("gui/theme/custom", ""))
 	ck(proj_theme == "", "theme is still not project-global")
