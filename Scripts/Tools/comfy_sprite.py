@@ -40,6 +40,19 @@ ASTRIT_FRONT = (
     "turned to face the viewer: a front view of her standing idle, both amber eyes visible, the red bow on her ponytail, "
     "the huge spiked shield with the flame emblem at her side, the burning spell book in her other hand"
 )
+# Літаючі вороги (D445): помах крил — три пози, «рівно» повторюється (той самий кадр з кешу)
+VULTURE_LEVEL = "in the same side view facing right: flying, its broad wings stretched out level with its body"
+VULTURE_DOWN = "in the same side view facing right: flying, its broad wings swept down below its body"
+BAT_LEVEL = (
+    "in the same side view facing right, just as small as before: flying, its leathery wings stretched out level with "
+    "its body"
+)
+BAT_DOWN = "in the same side view facing right, just as small as before: flying, its leathery wings swept down below its body"
+# D595: Астрит v2 — бант зверху, щит із шипами, без книги
+ASTRIT2_FRONT = (
+    "turned to face the viewer: a front view of her standing idle, both brown eyes visible, the fierce scowl, the red "
+    "ribbon bow on top of her head, the round spiked shield at her side"
+)
 ASTRIT_STEP = (
     "running to the right in the same side view facing right, %s leg stepping forward, %s leg back, the ponytail flying "
     "behind her, the shield held in front of her"
@@ -367,18 +380,19 @@ THREE_QUARTER = (
 MAGENTA_BG = " Keep the plain flat magenta background."
 
 # Напрями кандидатів «спробуй ще» (Sapega 2026-10-23): рядок замінює «§» у base
-WIRY = 'a lanky wiry build with long thin arms and legs, hunched forward; '
-STOCKY = 'a short stocky build with broad shoulders and a round belly; '
-CRIMSON = 'a long deep crimson velvet robe richly embroidered with gold over black clothes, a gold-embroidered sash, '
-BLACK = 'a long black velvet robe richly embroidered with gold over a dark green silk shirt, a gold-embroidered sash, '
-BIGHEAD = ' with the same chibi proportions as the reference character: a huge round head as big as his head, about half of the whole height, on a short round body with short legs'
-TALLER = ', a little taller than the reference character, with a big round head and a round belly'
-CHIBI = 'with the same chibi proportions as the reference character: a big round head about half of her whole height, big eyes, a short small body with short legs; '
-SLIM = 'slightly taller than the reference character, with a big head and a slim body; '
-BOW_BACK = 'a big red ribbon bow tied at the base of her ponytail, '
-BOW_TOP = 'a big red ribbon bow on top of her head, '
-BOW_SMALL = 'a small red ribbon bow at the base of her ponytail, '
-RIBBON = 'a red ribbon wound round her ponytail with its long ends trailing behind, '
+WIRY = "a lanky wiry build with long thin arms and legs, hunched forward; "
+STOCKY = "a short stocky build with broad shoulders and a round belly; "
+CRIMSON = "a long deep crimson velvet robe richly embroidered with gold over black clothes, a gold-embroidered sash, "
+BLACK = "a long black velvet robe richly embroidered with gold over a dark green silk shirt, a gold-embroidered sash, "
+BIGHEAD = " with the same chibi proportions as the reference character: a huge round head as big as his head, about half of the whole height, on a short round body with short legs"
+TALLER = ", a little taller than the reference character, with a big round head and a round belly"
+CHIBI = "with the same chibi proportions as the reference character: a big round head about half of her whole height, big eyes, a short small body with short legs; "
+SLIM = "slightly taller than the reference character, with a big head and a slim body; "
+STOCKY_CHIBI = "slightly taller than the reference character, with a big head and a stocky body; "
+BOW_BACK = "a big red ribbon bow tied at the base of her ponytail, "
+BOW_TOP = "a big red ribbon bow on top of her head, "
+BOW_SMALL = "a small red ribbon bow at the base of her ponytail, "
+RIBBON = "a red ribbon wound round her ponytail with its long ends trailing behind, "
 
 
 CHARACTERS = {
@@ -2024,13 +2038,88 @@ CHARACTERS = {
         # Sapega 2026-10-23 «перегенерувати»: перші чотири вийшли вовком-громилою; тепер котяча морда з рефу, 2×2 статура
         candidates=(
             "design/shots/candidates/lab_boss.png",
-            [(103, True, WIRY, "wiry"), (103, False, WIRY, "wiry"), (104, True, STOCKY, "stocky"), (104, False, STOCKY, "stocky")],
+            [
+                (103, True, WIRY, "wiry"),
+                (103, False, WIRY, "wiry"),
+                (104, True, STOCKY, "stocky"),
+                (104, False, STOCKY, "stocky"),
+            ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/lab_boss.webp",
         cell=(96, 112),
+        out="SampleProject/Assets/Characters/Bosses/lab_boss/sheet.png",
         # Sapega 2026-10-23: «ось цей варіант… гарний» — ранковий кадр з рефом (кеш 2e41addf), а не нові кандидати
         pick="design/shots/candidates/picks/lab_boss_pick.png",
+        # D564: легкий удар — швидкий удар маленькою булавою (серія з двох), важкий — гупання кийком з плеча;
+        # найманець пиячить на службі — ковток із фляги
+        rows=[
+            ("idle", [None, "BOB:62"]),
+            (
+                "drink",
+                [
+                    "in the same side view facing right: the small mace tucked in his belt, lifting a small leather "
+                    "flask to his mouth with that hand, the club still resting on his shoulder",
+                    "in the same side view facing right: the small mace tucked in his belt, his head thrown back, "
+                    "drinking from a small leather flask held up to his mouth, the club still resting on his shoulder",
+                ],
+            ),
+            (
+                "walk",
+                [
+                    "swaggering to the right in the same side view facing right, his left leg stepping forward and his "
+                    "right leg back, the club resting on his shoulder",
+                    "swaggering to the right in the same side view facing right, both legs together under his body, the "
+                    "club resting on his shoulder",
+                    "swaggering to the right in the same side view facing right, his right leg stepping forward and his "
+                    "left leg back, the club resting on his shoulder",
+                    "swaggering to the right in the same side view facing right, both legs together under his body, the "
+                    "club resting on his shoulder",
+                ],
+            ),
+            (
+                "mace",
+                [
+                    "in the same side view facing right: winding up, the small round steel mace raised behind his head, "
+                    "the club still resting on his shoulder",
+                    "in the same side view facing right: striking forward, the small round steel mace swung down in front "
+                    "of him at chest height, leaning forward; no motion trail, no swoosh line",
+                    "in the same side view facing right: swinging back up, the small round steel mace raised high in "
+                    "front of him, the club still resting on his shoulder",
+                    "in the same side view facing right: a second strike, the small round steel mace swung down low in "
+                    "front of him at knee height, leaning far forward; no motion trail, no swoosh line",
+                ],
+            ),
+            (
+                "club",
+                [
+                    "in the same side view facing right: the big spiked wooden club lifted high above his head in both "
+                    "hands, leaning back, about to smash the ground, the small mace tucked in his belt",
+                    "in the same side view facing right: crouching low, the big spiked wooden club smashed down onto the "
+                    "ground in front of him in both hands",
+                    "in the same side view facing right: straightening up, swinging the big spiked wooden club back up "
+                    "onto his shoulder",
+                ],
+            ),
+            (
+                "hurt",
+                [
+                    "in the same side view facing right: recoiling backwards from a heavy hit, his head thrown back, "
+                    "teeth clenched"
+                ],
+            ),
+            (
+                "death",
+                [
+                    "in the same side view facing right: staggering backwards, dropping the small mace, the club sliding "
+                    "off his shoulder",
+                    "in the same side view facing right: fallen to his knees, his arms hanging limp, the club on the "
+                    "ground beside him",
+                    "lying on his back on the ground, eyes closed, the spiked club and the small mace on the ground "
+                    "beside him",
+                ],
+            ),
+        ],
         seed=103,
         colors=16,
         who="the same spiky dark grey manticore-man with the glowing green eyes, the gold ring in his long pointed ear, the "
@@ -2061,8 +2150,65 @@ CHARACTERS = {
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/mayor_hall_boss.webp",
         cell=(96, 112),
-        seed=73,
+        seed=73,  # Sapega 2026-10-23: кандидат 1 (ref)
         colors=16,
+        out="SampleProject/Assets/Characters/Bosses/mayor_hall_boss/sheet.png",
+        # заміна Brass Collector (D468): та сама сітка рядків, що в brass_collector, — його ходи (замах, ривок, гупання)
+        rows=[
+            ("idle", [None, "BOB:62"]),
+            (
+                "walk",
+                [
+                    "stomping heavily to the right in the same side view facing right, his left leg stepping forward and "
+                    "his right leg back, the huge axe held in both hands across his body",
+                    "stomping heavily to the right in the same side view facing right, both legs together under his body, "
+                    "the huge axe held in both hands across his body",
+                    "stomping heavily to the right in the same side view facing right, his right leg stepping forward and "
+                    "his left leg back, the huge axe held in both hands across his body",
+                    "stomping heavily to the right in the same side view facing right, both legs together under his body, "
+                    "the huge axe held in both hands across his body",
+                ],
+            ),
+            (
+                "attack",
+                [
+                    "in the same side view facing right: winding up, the huge axe raised high behind his shoulder in both "
+                    "hands, leaning back",
+                    "in the same side view facing right: the huge axe swung forward and down in both hands, its blade in "
+                    "front of his chest; no motion trail, no swoosh line",
+                    "in the same side view facing right: follow-through, the axe blade low in front of him near the "
+                    "ground, leaning forward",
+                    "in the same side view facing right: straightening up again, lifting the huge axe back in front of him",
+                ],
+            ),
+            (
+                "charge",
+                [
+                    "in the same side view facing right: lowering his head and shoulders, leaning far forward, ready to "
+                    "charge, the huge axe held low behind him",
+                    "in the same side view facing right: charging forward at full speed, leaning forward shoulder first, "
+                    "the huge axe held low at his side, one leg stretched far behind",
+                ],
+            ),
+            (
+                "slam",
+                [
+                    "in the same side view facing right: the huge axe raised high above his head in both hands, about to "
+                    "smash the ground, both feet planted, nothing else on the ground",
+                    "in the same side view facing right: crouching low, the huge axe smashed blade first into the ground "
+                    "in front of him",
+                ],
+            ),
+            (
+                "death",
+                [
+                    "in the same side view facing right: staggering backwards, the huge axe slipping from his hands",
+                    "in the same side view facing right: fallen to his knees, his arms hanging limp, the huge axe on the "
+                    "ground in front of him",
+                    "lying on his back on the ground, eyes closed, the huge axe on the ground beside him",
+                ],
+            ),
+        ],
         who="the same bald muscular axe-warrior with the green face scarf, the ragged green tunic, the shoulder bag, the "
         "spiked bracers, the black knee guards and the huge scorpion-marked axe",
         base="Replace the character in picture 1 with {the bald warrior from picture 2, }a bald, heavily muscled "
@@ -2085,8 +2231,31 @@ CHARACTERS = {
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/bosses/mayor_hall_boss.webp",
         cell=(128, 80),
-        seed=76,
+        seed=76,  # Sapega 2026-10-23: кандидат 2 (ref)
         colors=16,
+        # D557: лише в кат-сцені, без бою — стоїть, біжить, жалить
+        out="SampleProject/Assets/Characters/Bosses/giant_scorpion/sheet.png",
+        rows=[
+            ("idle", [None, "BOB:52"]),
+            (
+                "walk",
+                [
+                    "scuttling to the right in the same side view facing right, the legs on its near side reaching "
+                    "forward, the huge pincers held forward, the tail curled high over its back",
+                    "scuttling to the right in the same side view facing right, the legs on its near side pushed back, "
+                    "the huge pincers held forward, the tail curled high over its back",
+                ],
+            ),
+            (
+                "sting",
+                [
+                    "in the same side view facing right: its tail drawn back high over its back, the stinger ready to "
+                    "strike, its huge pincers spread wide open",
+                    "in the same side view facing right: its tail lashed forward over its head, the stinger stabbing down "
+                    "in front of its pincers",
+                ],
+            ),
+        ],
         who="the same giant armoured scorpion with the glossy black plates with dark red edges, the huge pincers, the "
         "spiky dark red legs and the curled tail with the big stinger",
         base="Replace the character in picture 1 with {the giant scorpion lying on the floor in picture 2, }a giant "
@@ -2106,7 +2275,12 @@ CHARACTERS = {
         # Sapega 2026-10-23 «перегенерувати більш багатим»: багатий одяг, 2×2 колір мантії × референс
         candidates=(
             "design/shots/candidates/alchemist.png",
-            [(77, True, CRIMSON, "crimson"), (77, False, CRIMSON, "crimson"), (78, True, BLACK, "black"), (78, False, BLACK, "black")],
+            [
+                (77, True, CRIMSON, "crimson"),
+                (77, False, CRIMSON, "crimson"),
+                (78, True, BLACK, "black"),
+                (78, False, BLACK, "black"),
+            ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/alchemist.webp",
@@ -2156,12 +2330,46 @@ CHARACTERS = {
         # Sapega 2026-10-23 «спробуй ще», потім «вони всі прям в профіль» (D591): пропорції × референс, трьох-чвертний поворот
         candidates=(
             "design/shots/candidates/urizen.png",
-            [(105, True, BIGHEAD, "big head"), (105, False, BIGHEAD, "big head"), (106, True, TALLER, "taller"), (106, False, TALLER, "taller")],
+            [
+                (105, True, BIGHEAD, "big head"),
+                (105, False, BIGHEAD, "big head"),
+                (106, True, TALLER, "taller"),
+                (106, False, TALLER, "taller"),
+            ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/urizen_pixel.webp",
         seed=106,  # D596: обрано 3 (ref, трохи вищий, трьох-чвертний поворот)
         direction=TALLER,
+        rows_out="SampleProject/Assets/Characters/Companions/urizen",
+        floor=58,
+        # D591: стоїть у трьох-чвертному повороті, як герой (idle — сам перший кадр, він і портрет), ходить і бʼє в
+        # ньому ж; сітка старого Уризена (6 + 12 + 12) — сцени ріжуть листи як були
+        rows=[
+            ("idle", [None] * 3 + ["BOB:45"] * 3),
+            (
+                "enter",
+                (
+                    [
+                        URIZEN_STEP.replace("side view", "three-quarter view")
+                        % ("left", "right")
+                    ]
+                    * 2
+                    + [None]
+                    + [STEP_B.replace("side view", "three-quarter view")] * 2
+                    + [None]
+                )
+                * 2,
+            ),
+            (
+                "strike",
+                [None]
+                + [URIZEN_RAISE.replace("side view", "three-quarter view")] * 2
+                + [URIZEN_SMITE.replace("side view", "three-quarter view")] * 6
+                + [URIZEN_RAISE.replace("side view", "three-quarter view")] * 2
+                + [None],
+            ),
+        ],
         colors=16,
         who="the same chubby bald priest with the small dark tattoo marks on his head, the smug half-smile, the brown "
         "hooded robe over the dark grey tunic and the belt with the iron buckle",
@@ -2179,13 +2387,35 @@ CHARACTERS = {
         # Sapega 2026-10-23 «спробуй ще»: напрям — пропорції (чібі як герой / струнка), × референс
         candidates=(
             "design/shots/candidates/alisia.png",
-            [(107, True, CHIBI, "chibi"), (107, False, CHIBI, "chibi"), (108, True, SLIM, "slim"), (108, False, SLIM, "slim")],
+            [
+                (107, True, CHIBI, "chibi"),
+                (107, False, CHIBI, "chibi"),
+                (108, True, SLIM, "slim"),
+                (108, False, SLIM, "slim"),
+            ],
         ),
         candidate_poses=[ALISIA_FRONT],
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/alisia_v2.webp",
         seed=107,  # D594: обрано 1 (ref, чібі) — «ідеальна»
         direction=CHIBI,
+        rows_out="SampleProject/Assets/Characters/Companions/alisia",
+        floor=58,
+        # сітка старої Алісії (6 + 12 + 10): фас стоїть і дає портрет (різні очі видно лише у фас)
+        rows=[
+            ("idle", [ALISIA_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
+            (
+                "enter",
+                ([ALISIA_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
+                * 2,
+            ),
+            (
+                "strike",
+                [None, ALISIA_AIM, ALISIA_DRAW, ALISIA_DRAW]
+                + [ALISIA_RELEASE] * 3
+                + [ALISIA_AIM, None, None],
+            ),
+        ],
         colors=24,  # 16 губили синє око (рідкісний колір)
         who="the same silver-haired huntress with the high ponytail, one green eye and one blue eye, the dark leather "
         "and bronze armour, the fur collar, the tattered short cape and the wooden longbow",
@@ -2204,12 +2434,41 @@ CHARACTERS = {
         # D472 + Q82: щит із шипами, без цепа. Sapega 2026-10-23: перший референс (85 ref) + червоний бант — 2×2 банта
         candidates=(
             "design/shots/candidates/astrit.png",
-            [(85, True, BOW_BACK, "bow back"), (85, True, BOW_TOP, "bow top"), (85, True, BOW_SMALL, "small bow"), (85, True, RIBBON, "ribbon")],
+            [
+                (85, True, BOW_BACK, "bow back"),
+                (85, True, BOW_TOP, "bow top"),
+                (85, True, BOW_SMALL, "small bow"),
+                (85, True, RIBBON, "ribbon"),
+            ],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         design="assets/references/npcs/astrit_v2.png",
         seed=85,  # D595: обрано 2 (ref, бант зверху) — «ідеальний»
         direction=BOW_TOP,
+        rows_out="SampleProject/Assets/Characters/Companions/astrit",
+        floor=58,
+        # сітка старої Астрит (6 + 12 + 12 + 12): фас стоїть і дає портрет, наскок щитом влучає на кадрі 5
+        rows=[
+            ("idle", [ASTRIT2_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
+            (
+                "enter",
+                ([ASTRIT_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
+                * 2,
+            ),
+            (
+                "run",
+                ([ASTRIT_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
+                * 2,
+            ),
+            (
+                "strike",
+                [ASTRIT_CROUCH] * 2
+                + [ASTRIT_LEAP] * 3
+                + [ASTRIT_SLAM] * 3
+                + [ASTRIT_CROUCH] * 2
+                + [None] * 2,
+            ),
+        ],
         colors=16,
         who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
         "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
@@ -2250,8 +2509,40 @@ CHARACTERS = {
             [(91, False), (92, False), (93, False), (94, False)],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=92,
+        seed=92,  # Sapega 2026-10-23: кандидат 2
         colors=16,
+        out="SampleProject/Assets/Characters/Enemies/vulture/sheet.png",
+        # [[flying_enemies_plan]] зріз 0: політ (4), пікірування (3), удар по ньому (1), смерть (3)
+        rows=[
+            ("fly", [None, VULTURE_LEVEL, VULTURE_DOWN, VULTURE_LEVEL]),
+            (
+                "dive",
+                [
+                    "in the same side view facing right: diving steeply down to the right, its wings folded back tight "
+                    "against its body, its talons thrust forward",
+                    "in the same side view facing right: striking with its talons thrust forward and open, its wings "
+                    "half spread, its beak open",
+                    "in the same side view facing right: pulling up out of the dive, its broad wings spread wide and "
+                    "beating, climbing back up",
+                ],
+            ),
+            (
+                "hurt",
+                [
+                    "in the same side view facing right: recoiling in mid-air from a hit, its feathers ruffled, its wings "
+                    "flung up, its head thrown back"
+                ],
+            ),
+            (
+                "death",
+                [
+                    "in the same side view facing right: tumbling in the air, its wings limp and crumpled, its head "
+                    "hanging",
+                    "falling head first, its wings folded limp, a few loose feathers",
+                    "lying on its back on the ground, its wings spread limp on the ground, eyes closed",
+                ],
+            ),
+        ],
         who="the same desert vulture with the dark brown and black feathers, the bare pinkish-red head and neck, the "
         "pale neck ruff and the hooked beak",
         base="Replace the character in picture 1 with a desert vulture: dark brown and black feathers, a bare wrinkled "
@@ -2271,8 +2562,39 @@ CHARACTERS = {
             [(95, False), (96, False), (97, False), (98, False)],
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
-        seed=97,
+        seed=97,  # Sapega 2026-10-23: кандидат 3
         colors=16,
+        out="SampleProject/Assets/Characters/Enemies/bat/sheet.png",
+        # [[flying_enemies_plan]] зріз 0: політ (4), укус (2), удар по ньому (1), смерть (3); «just as small» — бо
+        # модель роздуває кажана до розміру грифа
+        rows=[
+            ("fly", [None, BAT_LEVEL, BAT_DOWN, BAT_LEVEL]),
+            (
+                "bite",
+                [
+                    "in the same side view facing right, just as small as before: swooping down forward, its wings swept "
+                    "back, its mouth open, the white fangs bared",
+                    "in the same side view facing right, just as small as before: biting forward, its mouth wide open, "
+                    "its wings spread wide",
+                ],
+            ),
+            (
+                "hurt",
+                [
+                    "in the same side view facing right, just as small as before: recoiling in mid-air from a hit, its "
+                    "wings flung up, its head thrown back"
+                ],
+            ),
+            (
+                "death",
+                [
+                    "in the same side view facing right, just as small as before: tumbling in the air, its wings "
+                    "crumpled",
+                    "just as small as before: falling head first, its wings folded limp",
+                    "just as small as before: lying on its back on the ground, its wings spread limp, eyes closed",
+                ],
+            ),
+        ],
         who="the same small cave bat with the dark brown-grey fur, the big pointed ears, the tiny red eyes, the white "
         "fangs and the leathery dark grey wings",
         base="Replace the character in picture 1 with a small cave bat: dark brown-grey fur, big pointed ears, tiny "
@@ -2284,6 +2606,128 @@ CHARACTERS = {
         + SIDE_VIEW % {"p": "its"}
         + "."
         + MAGENTA_BG,
+    ),
+    # D598: люди — чібі, як у MapleStory (~2,5 голови), трохи вищі за героя; D597: у трьох-чвертному повороті.
+    # Клітинка героя 64×64, як у компаньйонів. Малік — без референсу обрано (D590), тут і з ним, і без
+    "malik_chibi": dict(
+        candidates=(
+            "design/shots/candidates/malik_chibi.png",
+            [(80, False), (79, False), (80, True), (79, True)],
+        ),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/malik.webp",
+        seed=80,
+        colors=16,
+        who="the same man in the white turban with the red jewel, the clean-shaven face, the green scarf, the white robe "
+        "with orange trim, the green cape with gold shoulder pieces, the belt with the green gem and the leather bag with "
+        "the clock",
+        base="Replace the character in picture 1 with {the man from picture 2, }a desert man, slightly taller than the "
+        "reference character, with a big head and a slim body: a white turban with a small red jewel at the front and a "
+        "cloth tail hanging behind, a clean-shaven face with no beard and no moustache, green eyes, a green scarf round "
+        "his neck, a long white robe with orange trim, a long dark green cape with gold shoulder pieces, a brown belt "
+        "with a green gem, a gold pendant on his chest, a leather shoulder bag with a small round clock on its flap, "
+        "brown boots; no snake, no animal on his shoulders — "
+        + CHIBI_STYLE
+        + ". "
+        + THREE_QUARTER % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D449 + D598: вартовий-компаньйон у чібі — як варта біля воріт; 2×2 статура × зерно, без референсу
+    "guard_chibi": dict(
+        candidates=(
+            "design/shots/candidates/guard_chibi.png",
+            [
+                (87, False, STOCKY_CHIBI, "stocky"),
+                (88, False, STOCKY_CHIBI, "stocky"),
+                (87, False, SLIM, "slim"),
+                (88, False, SLIM, "slim"),
+            ],
+        ),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=87,
+        colors=16,
+        who="the same desert city guard with the pointed steel helmet wrapped in a white cloth, the short dark beard, the "
+        "red tabard with the golden disc over the chain shirt, the baggy sand-coloured trousers, the curved sword at his "
+        "belt and the long spear",
+        base="Replace the character in picture 1 with a desert city guard, §a pointed steel helmet wrapped in a white "
+        "cloth, a short dark beard, a red tabard with a golden disc over a chain shirt, baggy sand-coloured trousers, a "
+        "curved sword at his belt and a long spear held upright in his hand — "
+        + CHIBI_STYLE
+        + ". "
+        + THREE_QUARTER % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D467 + D598: багатий алхімік у чібі; мантія (D-«багатший») — 2×2 колір × референс, як у alchemist_v2
+    "alchemist_chibi": dict(
+        candidates=(
+            "design/shots/candidates/alchemist_chibi.png",
+            [
+                (77, True, CRIMSON, "crimson"),
+                (78, True, BLACK, "black"),
+                (77, False, CRIMSON, "crimson"),
+                (78, False, BLACK, "black"),
+            ],
+        ),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/alchemist.webp",
+        seed=77,
+        colors=16,
+        who="the same thin rich alchemist with the long green hair, the red eyes, the black two-filter gas mask, the grey "
+        "silk scarf, the long gold-embroidered velvet robe, the gold rings, the heavy gold chain with the red scorpion "
+        "pendant and the glass syringe",
+        base="Replace the character in picture 1 with {the man from picture 2, }a wealthy laboratory alchemist of the "
+        "Scorpicore clan, slightly taller than the reference character, with a big head and a slim body, dressed richly: "
+        "long messy green hair falling past his shoulders, red eyes, a black gas mask over his mouth and nose with two "
+        "big round light grey metal filters, a grey silk scarf wound around his neck, §gold rings on his fingers, a heavy "
+        "gold chain with a red scorpion pendant on his chest, polished black boots with gold buckles, a glass syringe "
+        "with green liquid in his hand — "
+        + CHIBI_STYLE
+        + ". "
+        + THREE_QUARTER % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D589: муха Ктулху — проклята лабораторією (D587): синє світіння прокляття, як у шакалів; профіль × три чверті
+    "enemy_fly": dict(
+        candidates=(
+            "design/shots/candidates/cthulhu_fly.png",
+            [
+                (112, False, SIDE_VIEW % {"p": "its"}, "side"),
+                (113, False, SIDE_VIEW % {"p": "its"}, "side"),
+                (112, False, THREE_QUARTER % {"p": "its"}, "3/4"),
+                (113, False, THREE_QUARTER % {"p": "its"}, "3/4"),
+            ],
+        ),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=112,
+        colors=16,
+        who="the same cursed fly with the glossy dark green-black body, the glowing blue eyes, the buzzing wings and the "
+        "short writhing tentacles under its head",
+        base="Replace the character in picture 1 with a cursed giant fly: a bloated glossy dark green-black body, big "
+        "glowing blue compound eyes, two translucent wings raised above its back mid-buzz, thin bristly legs tucked "
+        "under it, and a cluster of short writhing dark tentacles hanging under its head in place of a mouth, faint "
+        "glowing blue spots on its back — "
+        + PIXEL_STYLE
+        + ". It is small, no bigger than the head of the character in picture 1: the whole fly fits inside a small "
+        "square in the middle of the picture, a large empty magenta space all around it. §."
+        + MAGENTA_BG,
+    ),
+    # D589: проклятий шакал — з кадру шакала (Crusenho, CC BY): модель лише додає сині очі й піну; спершу проба
+    "jackal_cursed": dict(
+        candidates=(
+            "design/shots/candidates/jackal_cursed.png",
+            [(114, False), (115, False), (116, False), (117, False)],
+        ),
+        ref="SampleProject/Assets/Characters/Enemies/jackal/sheet.png#0,0,96,72",
+        cell=(96, 72),
+        seed=114,
+        colors=24,
+        who="the same jackal with the glowing blue eyes and the blue foam at its mouth",
+        base="Keep this exact animal — the same pixel art jackal, the same pose, size, position, colours, fur, "
+        "outline and flat shading. Change only two things: its eyes now glow bright blue, and bright blue foam drips "
+        "from its mouth. Nothing else changes." + MAGENTA_BG,
     ),
 }
 
@@ -2709,7 +3153,9 @@ if __name__ == "__main__":
         if char["base"].startswith("FILE:")
         else edit(
             ref,
-            with_design(char["base"].replace("§", char.get("direction", "")), char.get("design")),
+            with_design(
+                char["base"].replace("§", char.get("direction", "")), char.get("design")
+            ),
             seed,
             char.get("design"),
         )
