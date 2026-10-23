@@ -3104,3 +3104,72 @@ msgstr "Medium armour"
 
 msgid "Heavy armour"
 msgstr "Heavy armour"
+
+msgid "Lv %d · %s"
+msgstr "Lv %d · %s"
+
+msgid "Next rank"
+msgstr "Next rank"
+
+msgid "Put on the hotbar"
+msgstr "Put on the hotbar"
+
+msgid "Learn +1"
+msgstr "Learn +1"
+
+msgid "Points"
+msgstr "Points"
+
+msgid "Skill points"
+msgstr "Skill points"
+
+msgid "Reset all"
+msgstr "Reset all"
+
+msgid "Reset all?"
+msgstr "Reset all?"
+
+msgid "Rank %d / %d"
+msgstr "Rank %d / %d"
+
+msgid "Burn per second"
+msgstr "Burn per second"
+
+msgid "SP cost"
+msgstr "SP cost"
+
+msgid "Required level"
+msgstr "Required level"
+
+msgid "Rank cost"
+msgstr "Rank cost"
+
+msgid "+%d damage"
+msgstr "+%d damage"
+
+msgid "+%d healing"
+msgstr "+%d healing"
+
+msgid "+%d burn per second"
+msgstr "+%d burn per second"
+
+msgid "Rank %d after Accept."
+msgstr "Rank %d after Accept."
+
+msgid "Learn +1 marks it; Accept spends the JP."
+msgstr "Learn +1 marks it; Accept spends the JP."
+
+msgid "Max rank."
+msgstr "Max rank."
+
+msgid "Attributes %d"
+msgstr "Attributes %d"
+
+msgid "Reset at a meditation spot"
+msgstr "Reset at a meditation spot"
+
+msgid "{ui_accept} Learn +1 · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+msgstr "{ui_accept} Learn +1 · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+
+msgid "Swear an oath in the City (level %d)"
+msgstr "Swear an oath in the City (level %d)"

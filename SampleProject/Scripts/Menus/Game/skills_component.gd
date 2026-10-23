@@ -1,76 +1,76 @@
 extends BaseMenuComponent
 
-## 🎓 SkillsComponent — екран Skills (BACKLOG 43 + 44, design/skill_screen_rework_plan.md).
-## Figma: menu-skills (58:453) — свідомо відходить від двох пласких списків до дерева (D333, рішення Sapega).
+## 🎓 SkillsComponent — вікно навичок Dragon Nest (D674, Figma 533:6472, design/shots/figma_skills_dragon_nest.png).
 ##
-## Повністю data-driven: у сцені по одному шаблону кожного рядка (D117) — %Tier з вузлом навички в кожній
-## смузі, %TreeTab, %Slot1, %Fact, %AttributeRow; решту дають копії через RowFill (ui_rows.gd), стилі — з теми.
-## Ряди дерева — рівні, на яких є навички
-## (стовбур Holy Warrior ∪ показане дерево клятви), ліворуч стовбур, праворуч клятва, лінії від передумов (D333).
-## Праворуч — панель деталей (D334), атрибути (D335) і Cancel / Accept.
+## Зверху — вкладки чотирьох дерев; дві панелі дерев поруч: ліворуч базове (Holy Warrior), праворуч клятва героя,
+## а до клятви — та, чию вкладку вибрано (D280). Клітинки лежать за SkillDefinition.slot: навичка просто під своєю
+## передумовою, лінія золота, коли передумову вивчено або позначено. На клітинці — іконка (тон D605), ранг під нею,
+## бейдж рівня на невивченій (червоний, поки герой нижче), «+», коли можна взяти ще ранг.
+## Праворуч — деталі (D334): назва, вид, ранг зараз і далі, ефект зараз і на наступному ранзі, SP, перезарядка,
+## рівень, Learn +1 і Reset; або атрибути (D335) — кнопкою Attributes унизу. Унизу — очки навичок, бюджети дерев
+## (D497), Cancel / Accept плану і Reset all (платне скидання на місці медитації, D628/D629).
 ##
-## Нічого не витрачається одним натисканням (D330): вибір — у SkillPlan, витрачає лише Accept.
+## Нічого не витрачається одним натисканням (D330): Learn +1 позначає ранг у SkillPlan, витрачає лише Accept.
 ## UI НЕ редагує player_state і НЕ дублює правила: чому навичка недоступна — завжди вердикт SkillManager
-## (через SkillPlan.can_pick, який питає SkillManager з урахуванням позначеного).
+## (через SkillPlan.can_pick). Розкладка — у сцені (один шаблон клітинки %Cell, вкладки %TreeTab, факту %Fact,
+## слота %Slot1, атрибута %AttributeRow); копії дає RowFill (ui_rows.gd), стилі — тема (UITokens, D674).
 ##
 ## SP героя тут свідомо НЕ показується (рішення D27): це бойовий ресурс, його місце — бойовий HUD.
 
 const PLACEHOLDER := "—"
-const ICON_CHECK := preload("res://SampleProject/Assets/UI/Icons/check_circle.svg")
-const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
-const ICON_PICKED := preload("res://SampleProject/Assets/UI/Icons/diamond_sm.svg")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const SkillSlotInput = preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const SkillTooltip = preload("res://SampleProject/Scripts/Systems/SkillTooltip.gd")
-## Скільки місць у ряду одного дерева (D333): у даних 1–2 навички на рівень; більше — вузли вужчають, а не ламають вікно.
-const NODES_PER_LANE := 2
+const ModalTemplates = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 
-## Стан вузла (D332).
+## Стан клітинки (D332).
 enum NodeState { LEARNED, PICKED, CAN_LEARN, LOCKED }
 
-@onready var _char_name: Label = %CharName
-@onready var _char_class: Label = %CharClass
+@onready var _hero_line: Label = %HeroLine
 @onready var _jp_value: Label = %JPValue
+@onready var _budgets: Label = %Budgets
 @onready var _columns: HBoxContainer = %Columns
 @onready var _empty_label: Label = %EmptyLabel
 @onready var _tree_tabs: HBoxContainer = %TreeTabs
 @onready var _tree_tab: Button = %TreeTab
-@onready var _tree_status: Label = %TreeStatus
-@onready var _trunk_title: Label = %TrunkTitle
-@onready var _tree_stage: Control = %TreeStage
-@onready var _tiers: VBoxContainer = %Tiers
-@onready var _links: Control = %Links
-@onready var _tier: HBoxContainer = %Tier
+@onready var _left_panel: PanelContainer = %LeftPanel
+@onready var _right_panel: PanelContainer = %RightPanel
+@onready var _cell: VBoxContainer = %Cell
+@onready var _detail: VBoxContainer = %Detail
+@onready var _detail_icon: TextureRect = %DetailIcon
 @onready var _detail_name: Label = %DetailName
 @onready var _detail_kind: Label = %DetailKind
 @onready var _detail_description: Label = %DetailDescription
 @onready var _detail_grid: GridContainer = %DetailGrid
 @onready var _fact: Label = %Fact
+@onready var _next_caption: Label = %NextCaption
+@onready var _next_text: Label = %NextText
 @onready var _detail_state: Label = %DetailState
-@onready var _pick_button: Button = %PickButton
-@onready var _undo_button: Button = %UndoButton
+@onready var _learn_button: Button = %LearnButton
+@onready var _reset_button: Button = %ResetButton
 @onready var _hotbar_box: VBoxContainer = %HotbarBox
 @onready var _hotbar_slots: GridContainer = %HotbarSlots
 @onready var _slot_template: Button = %Slot1
+@onready var _attr_panel: VBoxContainer = %AttrPanel
 @onready var _attr_rows_box: VBoxContainer = %AttrRows
 @onready var _attr_row_template: HBoxContainer = %AttributeRow
 @onready var _attr_points_value: Label = %AttrPointsValue
 @onready var _pending_label: Label = %PendingLabel
 @onready var _cancel_button: Button = %CancelButton
 @onready var _accept_button: Button = %AcceptButton
+@onready var _attributes_button: Button = %AttributesButton
+@onready var _reset_all_button: Button = %ResetAllButton
 
-## Позначене, ще не прийняте (D330).
+## Що позначено, але ще не прийнято (D330).
 var plan: SkillPlan
 var _selected_id: String = ""
-var _row_group := ButtonGroup.new()
-var _rows: Dictionary = {}  # skill_id -> Button (вузол дерева)
-var _tab_group := ButtonGroup.new()
-## Яке дерево клятви показане праворуч (D283); "" — ще не вибрано: присягнуте або перше.
+var _slot_group := ButtonGroup.new()
+var _rows: Dictionary = {}  # skill_id -> Button (клітинка навички)
 var _shown_oath: String = ""
 var _attribute_rows: Dictionary = {}  # attribute_id -> HBoxContainer
 var _slot_buttons: Array[Button] = []
-## Вузли дерева, вже під'єднані (duplicate() копіює meta, тож не за meta-прапорцем); id — у meta skill_id.
+## Клітинки, яким уже під'єднано сигнали (RowFill перевикористовує їх між перебудовами).
 var _wired: Dictionary = {}
 
 var _skill_manager: SkillManager = null
@@ -89,11 +89,15 @@ func _initialize_component() -> void:
 	_build_tabs()
 	_build_attribute_rows()
 	_build_slot_buttons()
-	_pick_button.pressed.connect(pick_selected)
-	_undo_button.pressed.connect(unpick_selected)
+	_learn_button.pressed.connect(pick_selected)
+	_reset_button.pressed.connect(reset_selected)
 	_cancel_button.pressed.connect(cancel_plan)
 	_accept_button.pressed.connect(accept_plan)
-	_tiers.sort_children.connect(_links.queue_redraw)
+	_attributes_button.toggled.connect(_on_attributes_toggled)
+	_reset_all_button.pressed.connect(ask_reset_all)
+	for panel: PanelContainer in [_left_panel, _right_panel]:
+		var grid: GridContainer = _grid(panel)
+		grid.sort_children.connect(_links(panel).queue_redraw)
 	update_display()
 
 
@@ -125,7 +129,7 @@ func _on_points_changed(_current: int, _previous: int) -> void:
 
 
 func _on_skill_changed(_skill_id: String, _rank: int = 0) -> void:
-	update_display()
+	_refresh()
 
 
 func _on_oath_sworn(oath_id: String) -> void:
@@ -142,16 +146,15 @@ func _on_loadout_changed(_loadout: Array) -> void:
 	_refresh_detail()
 
 
-## Вкладки дерев клятв — з даних (skills.json → oaths), у порядку файлу; сидять у шапці дерева клятви (D333).
+## Вкладки — базове дерево і клятви з даних (skills.json → oaths), у порядку файлу (D674).
 func _build_tabs() -> void:
-	var oath_ids: Array = _skill_database.oaths.keys()
-	var tabs := RowFill.fill(_tree_tabs, _tree_tab, oath_ids.size())
-	_rename(tabs, oath_ids)
+	var tree_ids: Array = [""] + _skill_database.oaths.keys()
+	var tabs := RowFill.fill(_tree_tabs, _tree_tab, tree_ids.size())
+	_rename(tabs, tree_ids.map(func(id: String) -> String: return "Base" if id == "" else id))
 	for i in tabs.size():
 		var tab: Button = tabs[i]
-		tab.text = String(_skill_database.get_oath(oath_ids[i]).name)
-		tab.button_group = _tab_group
-		tab.pressed.connect(show_tree.bind(oath_ids[i]))
+		tab.text = _tree_name(tree_ids[i])
+		tab.pressed.connect(show_tree.bind(tree_ids[i]))
 
 
 ## Рядки атрибутів — з attributes.json (D335): назва, що дає очко, вкладено (+ позначено), − / +.
@@ -216,10 +219,19 @@ func _rename(rows: Array, names: Array) -> void:
 		rows[i].name = String(names[i])
 
 
-## Показати дерево клятви праворуч (вкладка: клавіатура, геймпад, миша).
-func show_tree(oath_id: String) -> void:
-	_shown_oath = oath_id
+## Вкладка (клавіатура, геймпад, миша): базове дерево — фокус у ліву панель; клятва — показати її праворуч
+## (після клятви інші клятви закриті, D489) і фокус туди.
+func show_tree(tree_id: String) -> void:
+	if tree_id != "":
+		_shown_oath = tree_id
 	update_display()
+	var cells := _cells_of(tree_id)
+	if not cells.is_empty() and is_visible_in_tree():
+		_rows[cells[0]].grab_focus()
+
+
+func _tree_name(tree_id: String) -> String:
+	return tr(_skill_database.class_name_trunk) if tree_id == "" else tr(String(_skill_database.get_oath(tree_id).name))
 
 
 # ── Побудова ────────────────────────────────────────────────────────────────
@@ -227,127 +239,157 @@ func show_tree(oath_id: String) -> void:
 func update_display() -> void:
 	if not is_node_ready() or _skill_manager == null:
 		return
-	if _shown_oath.is_empty():
-		_shown_oath = _skill_manager.get_oath() if _skill_manager.get_oath() != "" else String(_skill_database.oaths.keys()[0])
-	for tab in _tree_tabs.get_children():
-		tab.set_pressed_no_signal(tab.name == _shown_oath)
-	# Перебудова звільняє вузли — фокус клавіатури/геймпада повертаємо на вибраний вузол.
+	var sworn := _skill_manager.get_oath()
+	if sworn != "":
+		_shown_oath = sworn
+	elif _shown_oath.is_empty():
+		_shown_oath = String(_skill_database.oaths.keys()[0])
+	for tab: Button in _tree_tabs.get_children():
+		var tree_id := "" if tab.name == "Base" else String(tab.name)
+		tab.set_pressed_no_signal(tree_id == "" or tree_id == _shown_oath)
+		tab.disabled = sworn != "" and tree_id != "" and tree_id != sworn
+	# Перебудова звільняє клітинки — фокус клавіатури/геймпада повертаємо на вибрану.
 	var focused := get_viewport().gui_get_focus_owner()
 	var had_row_focus := focused != null and focused in _rows.values()
-	_rebuild_tree()
+	_rebuild_trees()
+	_link_focus()
 	if not _rows.has(_selected_id) and not _rows.is_empty():
-		_selected_id = _rows.keys()[0]
+		_selected_id = _cells_of("")[0] if not _cells_of("").is_empty() else _rows.keys()[0]
 	if had_row_focus and _rows.has(_selected_id):
 		_rows[_selected_id].grab_focus()
 	_refresh()
 
 
-## Усе, що залежить від плану й очок, без перебудови дерева.
+## Усе, що залежить від плану й очок, без перебудови дерев.
 func _refresh() -> void:
 	if not is_node_ready() or _skill_manager == null:
 		return
 	_refresh_header()
-	_refresh_rows()
+	_refresh_cells()
 	_refresh_links()
 	_refresh_detail()
 	_refresh_attributes()
-	_refresh_action_bar()
+	_refresh_bottom_bar()
 	_publish_details(_selected_id)
 
 
 func _refresh_header() -> void:
 	var character = game_manager.get_active_character() if game_manager else null
-	_char_name.text = String(character.name) if character else PLACEHOLDER
+	var hero := tr(String(character.name)) if character else PLACEHOLDER
+	_hero_line.text = tr("Lv %d · %s") % [_hero_level(), hero]
 
 
-	_char_class.text = _skill_manager.class_title()  # D280: Holy Warrior → назва клятви
-	# Скільки лишиться після позначеного (D330); без позначок — просто очки героя.
-	_jp_value.text = tr("%d JP") % plan.jp_left()
+func _hero_level() -> int:
+	return ServiceLocatorHelper.get_service_locator().get_xp_manager().get_level()
 
 
-func _trunk() -> Array:
+func _tree_skills(tree_id: String) -> Array:
 	var character = game_manager.get_active_character() if game_manager else null
 	var class_id := String(character.class_id) if character else ""
 	return _skill_database.get_all_skills().filter(
-			func(d): return d.oath == "" and (d.class_id == "" or d.class_id == class_id))
+			func(d: SkillDefinition) -> bool: return d.oath == tree_id and (d.class_id == "" or d.class_id == class_id))
 
 
-func _oath_tree() -> Array:
-	return _skill_database.get_all_skills().filter(func(d): return d.oath == _shown_oath)
+## Id навичок дерева в порядку клітинок (ряд за рядом) — для фокуса вкладки.
+func _cells_of(tree_id: String) -> Array:
+	var skills := _tree_skills(tree_id)
+	skills.sort_custom(func(a: SkillDefinition, b: SkillDefinition) -> bool:
+			return a.slot.y < b.slot.y or (a.slot.y == b.slot.y and a.slot.x < b.slot.x))
+	return skills.map(func(d: SkillDefinition) -> String: return d.id)
 
 
-func _rebuild_tree() -> void:
+func _grid(panel: PanelContainer) -> GridContainer:
+	return panel.get_node(^"Tree/Stage/Grid")
+
+
+func _links(panel: PanelContainer) -> Control:
+	return panel.get_node(^"Tree/Stage/Links")
+
+
+func _rebuild_trees() -> void:
 	_rows.clear()
-
-	var trunk := _trunk()
-	var tree := _oath_tree()
+	var trunk := _tree_skills("")
+	var oath := _tree_skills(_shown_oath)
 	# Чесний порожній стан: немає жодної навички для цього героя.
-	var has_any := not trunk.is_empty() or not tree.is_empty()
+	var has_any := not trunk.is_empty() or not oath.is_empty()
 	_columns.visible = has_any
 	_empty_label.visible = not has_any
 	if not has_any:
-		_empty_label.text = "No skills available yet."
 		return
-
-	_trunk_title.text = _skill_database.class_name_trunk if not String(_skill_database.class_name_trunk).is_empty() else PLACEHOLDER
-	_tree_status.text = _tree_status_text()
-
-	var levels: Array[int] = []
-	for definition in trunk + tree:
-		if not definition.required_level in levels:
-			levels.append(definition.required_level)
-	levels.sort()
-	var tiers := RowFill.fill(_tiers, _tier, levels.size())
-	_rename(tiers, levels.map(func(level: int) -> String: return "Tier%d" % level))
-	for i in tiers.size():
-		var level: int = levels[i]
-		var tier: HBoxContainer = tiers[i]
-		tier.get_node(^"Caption").text = tr("Lv %d") % level
-		_fill_lane(tier.get_node(^"TrunkLane"), trunk.filter(func(d): return d.required_level == level))
-		_fill_lane(tier.get_node(^"OathLane"), tree.filter(func(d): return d.required_level == level))
+	_fill_panel(_left_panel, "", trunk)
+	_fill_panel(_right_panel, _shown_oath, oath)
 
 
-## Смуга ряду: вузли (Nodes) і порожнє місце (Pad) на решту з NODES_PER_LANE місць —
-## воно тримає стовпці рівними, лінії йдуть прямо вниз.
-func _fill_lane(lane: HBoxContainer, definitions: Array) -> void:
-	var nodes_box: HBoxContainer = lane.get_node(^"Nodes")
-	var pad: Control = lane.get_node(^"Pad")
-	var count := definitions.size()
-	nodes_box.visible = count > 0
-	nodes_box.size_flags_stretch_ratio = maxf(count, 1)
-	pad.visible = count < NODES_PER_LANE
-	pad.size_flags_stretch_ratio = NODES_PER_LANE - count
-	var nodes := RowFill.fill(nodes_box, nodes_box.get_child(0), count)
-	_rename(nodes, definitions.map(func(d: SkillDefinition) -> String: return d.id))
-	for i in nodes.size():
-		_set_node(nodes[i], definitions[i])
+## Панель дерева: заголовок, стан клятви і сітка SKILL_GRID_COLUMNS × SKILL_GRID_ROWS з клітинок за slot.
+func _fill_panel(panel: PanelContainer, tree_id: String, definitions: Array) -> void:
+	var heading: Label = panel.get_node(^"Tree/Heading")
+	var status: Label = panel.get_node(^"Tree/Status")
+	if tree_id == "":
+		heading.text = _tree_name("")
+		status.text = ""
+	else:
+		heading.text = "%s · %s" % [_tree_name(tree_id), tr(String(_skill_database.get_oath(tree_id).tree))]
+		status.text = "" if _skill_manager.get_oath() == tree_id \
+				else tr("Swear an oath in the City (level %d)") % int(_skill_database.get_oath(tree_id).level)
+	status.visible = not status.text.is_empty()
+	var by_cell := {}
+	for definition: SkillDefinition in definitions:
+		var at := definition.slot.y * UITokens.SKILL_GRID_COLUMNS + definition.slot.x
+		assert(not by_cell.has(at), "SkillsComponent: two skills in one cell (%s)" % definition.id)
+		by_cell[at] = definition
+	var cells := RowFill.fill(_grid(panel), _cell, UITokens.SKILL_GRID_COLUMNS * UITokens.SKILL_GRID_ROWS)
+	_rename(cells, range(cells.size()).map(func(at: int) -> String: return by_cell[at].id if by_cell.has(at) else "Empty%d" % at))
+	for at in cells.size():
+		var cell: VBoxContainer = cells[at]
+		var definition: SkillDefinition = by_cell.get(at)
+		var slot: Button = cell.get_node(^"Slot")
+		# Порожнє місце тримає сітку: клітинка є, але її не видно і на неї не стати фокусом.
+		cell.modulate.a = 1.0 if definition else 0.0
+		slot.focus_mode = Control.FOCUS_ALL if definition else Control.FOCUS_NONE
+		slot.mouse_filter = Control.MOUSE_FILTER_STOP if definition else Control.MOUSE_FILTER_IGNORE
+		if definition:
+			_set_cell(slot, definition)
+		else:
+			slot.get_node(^"LevelBadge/Label").text = ""
+			cell.get_node(^"Rank").text = ""
 
 
-func _set_node(node: Button, definition: SkillDefinition) -> void:
-	node.set_meta(&"skill_id", definition.id)
-	node.button_group = _row_group
-	node.tooltip_text = definition.description
-	node.get_node(^"Row/SkillName").text = definition.name if not definition.name.is_empty() else definition.id
-	_rows[definition.id] = node
-	if _wired.has(node):
+func _set_cell(slot: Button, definition: SkillDefinition) -> void:
+	slot.set_meta(&"skill_id", definition.id)
+	slot.button_group = _slot_group
+	slot.tooltip_text = "%s\n%s" % [tr(definition.name), tr(definition.description)]
+	var art: TextureRect = slot.get_node(^"Art")
+	art.texture = load(definition.icon)  # D604: іконка-силует, тон за видом (D602, D605)
+	art.self_modulate = definition.icon_tint()
+	_rows[definition.id] = slot
+	if _wired.has(slot):
 		return
-	_wired[node] = true
-	node.pressed.connect(func() -> void: _on_row_selected(node.get_meta(&"skill_id")))
-	node.focus_entered.connect(func() -> void: _on_row_selected(node.get_meta(&"skill_id")))
-	# gui_input приходить раніше, ніж Button сам «з'їдає» ui_accept: Enter / A на вузлі — позначити (D331).
-	node.gui_input.connect(func(event: InputEvent) -> void: _on_row_input(event, node.get_meta(&"skill_id")))
+	_wired[slot] = true
+	slot.pressed.connect(func() -> void: _on_row_selected(slot.get_meta(&"skill_id")))
+	slot.focus_entered.connect(func() -> void: _on_row_selected(slot.get_meta(&"skill_id")))
+	# gui_input приходить раніше, ніж Button сам «з'їдає» ui_accept: Enter / A на клітинці — Learn +1 (D331).
+	slot.gui_input.connect(func(event: InputEvent) -> void: _on_row_input(event, slot.get_meta(&"skill_id")))
 
 
-## Стан правого дерева (D280): клятви ще немає / це клятва героя / чужа клятва.
-func _tree_status_text() -> String:
-	var oath: Dictionary = _skill_database.get_oath(_shown_oath)
-	var sworn: String = _skill_manager.get_oath()
-	if sworn.is_empty():
-		return tr("%s · Swear an oath in the City (level %d)") % [tr(String(oath.tree)), int(oath.level)]
-	return "%s · %s" % [tr(String(oath.tree)), tr("Your oath") if sworn == _shown_oath else tr("Sworn to another oath")]
+## Клавіатура / геймпад уздовж ряду (D674): ліворуч / праворуч — найближча навичка цього ряду, через порожні клітинки
+## і з панелі в панель (Godot сам інколи стрибає на вкладки). Вгору / вниз — пошук Godot: у сітці він точний.
+func _link_focus() -> void:
+	var rows := {}  # ряд → [[x у вікні, клітинка], ...]
+	for skill_id: String in _rows:
+		var slot: Button = _rows[skill_id]
+		var definition: SkillDefinition = _skill_database.get_skill(skill_id)
+		var right_panel := slot.get_parent().get_parent() == _grid(_right_panel)
+		var x := definition.slot.x + (UITokens.SKILL_GRID_COLUMNS if right_panel else 0)
+		rows.get_or_add(definition.slot.y, []).append([x, slot])
+	for row: Array in rows.values():
+		row.sort_custom(func(a: Array, b: Array) -> bool: return a[0] < b[0])
+		for i in row.size():
+			var slot: Button = row[i][1]
+			slot.focus_neighbor_left = slot.get_path_to(row[i - 1][1]) if i > 0 else NodePath()
+			slot.focus_neighbor_right = slot.get_path_to(row[i + 1][1]) if i < row.size() - 1 else NodePath()
 
 
-# ── Стани вузлів (D332) ─────────────────────────────────────────────────────
+# ── Стани клітинок (D332) ───────────────────────────────────────────────────
 
 func node_state(skill_id: String) -> NodeState:
 	if _skill_manager.is_unlocked(skill_id):
@@ -357,134 +399,128 @@ func node_state(skill_id: String) -> NodeState:
 	return NodeState.CAN_LEARN if plan.can_pick(skill_id) == SkillManager.Result.OK else NodeState.LOCKED
 
 
-## Короткий підпис праворуч на вузлі; повна причина — у панелі деталей.
-func _node_note(definition: SkillDefinition) -> String:
-	var picks := plan.skill_picks(definition.id)
-	match node_state(definition.id):
-		NodeState.LEARNED:
-			var rank := _skill_manager.get_rank(definition.id)
-			return tr("R%d +%d") % [rank, picks] if picks > 0 else tr("R%d") % rank
-		NodeState.PICKED:
-			return tr("Picked") if picks == 1 else tr("Picked +%d") % (picks - 1)
-		NodeState.CAN_LEARN:
-			return _cost_text(definition.jp_cost)
-	match plan.can_pick(definition.id):
-		SkillManager.Result.LEVEL_TOO_LOW:
-			return tr("Lv %d") % definition.required_level
-		SkillManager.Result.NO_OATH:
-			return tr("Oath")
-		SkillManager.Result.OTHER_OATH:
-			return tr("Other oath")
-		SkillManager.Result.NOT_ENOUGH_JP:
-			return _cost_text(definition.jp_cost)
-		SkillManager.Result.BASE_TREE_GATE:
-			return tr("%d JP") % _skill_manager.base_jp_missing(definition.id, plan.planned_unlocked(), plan.planned_ranks())
-		SkillManager.Result.TREE_CAP:
-			return tr("Cap")
-		SkillManager.Result.PLANNED:
-			return tr("Later")
-		_:
-			return tr("Locked")
+## «2 / 3» під клітинкою — ранг після Accept з найвищим рангом навички (D674).
+func rank_text(skill_id: String) -> String:
+	return "%d / %d" % [plan.planned_rank(skill_id), _skill_database.get_skill(skill_id).max_rank]
 
 
-func _cost_text(jp: int) -> String:
-	return tr("Free") if jp == 0 else tr("%d JP") % jp
+func _refresh_cells() -> void:
+	for skill_id: String in _rows:
+		_apply_cell_state(_skill_database.get_skill(skill_id), _rows[skill_id])
 
 
-func _refresh_rows() -> void:
-	for skill_id in _rows:
-		_apply_row_state(_skill_database.get_skill(skill_id), _rows[skill_id])
-
-
-## Стан вузла визначає SkillManager (через план) — UI лише малює його вердикт.
-func _apply_row_state(definition: SkillDefinition, node: Button) -> void:
+## Стан клітинки визначає SkillManager (через план) — UI лише малює його вердикт.
+func _apply_cell_state(definition: SkillDefinition, slot: Button) -> void:
 	var state := node_state(definition.id)
-	var selected := definition.id == _selected_id
-	var name_label: Label = node.get_node(^"Row/SkillName")
-	var note: Label = node.get_node(^"Row/State")
-	var marker: TextureRect = node.get_node(^"Row/Marker")
-	var art: TextureRect = node.get_node(^"Row/Art")
-	art.texture = load(definition.icon)  # D604: іконка-силует, тон за видом (D602), закрите — приглушене
-	art.self_modulate = definition.icon_tint()
-	art.modulate.a = 0.45 if state == NodeState.LOCKED else 1.0
-
-	if selected:
-		name_label.theme_type_variation = &"SkillNameSelected"
-	elif state == NodeState.LOCKED:
-		name_label.theme_type_variation = &"SkillNameLocked"
-	else:
-		name_label.theme_type_variation = &"SkillName"
-
-	note.text = _node_note(definition)
-	# Figma малює акцентний текст на акцентній заливці — нечитабельно; на вибраному — контрастний (D26).
-	var note_type := &"SkillCostLocked"
-	match state:
-		NodeState.LEARNED:
-			marker.texture = ICON_CHECK
-			marker.modulate = UITokens.ACCENT
-			note_type = &"SkillCostLearned"
-		NodeState.PICKED:
-			marker.texture = ICON_PICKED
-			marker.modulate = UITokens.ACCENT
-			note_type = &"SkillCost"
-		NodeState.CAN_LEARN:
-			marker.texture = null  # D332: на тому, що можна вчити, замка немає
-			note_type = &"SkillCost"
-		NodeState.LOCKED:
-			marker.texture = ICON_LOCK
-			marker.modulate = UITokens.TEXT_MUTED
-	note.theme_type_variation = &"SkillCostSelected" if selected else note_type
-	node.set_pressed_no_signal(selected)
+	var owned := state == NodeState.LEARNED or state == NodeState.PICKED
+	slot.theme_type_variation = &"SkillSlotLearned" if owned else &"SkillSlot"
+	slot.set_pressed_no_signal(definition.id == _selected_id)
+	var art: TextureRect = slot.get_node(^"Art")
+	art.modulate.a = UITokens.SKILL_LOCKED_ICON_ALPHA if state == NodeState.LOCKED else 1.0
+	var badge: PanelContainer = slot.get_node(^"LevelBadge")
+	badge.visible = not owned
+	var badge_label: Label = badge.get_node(^"Label")
+	badge_label.text = tr("Lv %d") % definition.required_level
+	badge_label.theme_type_variation = &"SkillLevelBadgeLow" if _hero_level() < definition.required_level \
+			else &"SkillLevelBadgeLabel"
+	# «+» — на вивченій (чи позначеній) навичці, що бере ще ранг (Figma); невивчену видно з яскравої іконки.
+	slot.get_node(^"Plus").visible = owned and plan.can_pick(definition.id) == SkillManager.Result.OK
+	var rank: Label = slot.get_parent().get_node(^"Rank")
+	rank.text = rank_text(definition.id)
+	rank.theme_type_variation = &"SkillRankPlanned" if plan.skill_picks(definition.id) > 0 else &"SkillRank"
 
 
 func _refresh_links() -> void:
 	var planned := plan.planned_unlocked()
-	var links: Array = []
-	for skill_id in _rows:
-		for prerequisite in _skill_database.get_skill(skill_id).prerequisites:
-			if _rows.has(prerequisite):
-				links.append([_rows[prerequisite], _rows[skill_id], prerequisite in planned])
-	_links.set_links(links)
+	for panel: PanelContainer in [_left_panel, _right_panel]:
+		var grid := _grid(panel)
+		var links: Array = []
+		for skill_id: String in _rows:
+			var slot: Button = _rows[skill_id]
+			if slot.get_parent().get_parent() != grid:
+				continue
+			for prerequisite: String in _skill_database.get_skill(skill_id).prerequisites:
+				# Передумова з іншого дерева (Bulwark ← Shield Block) — без лінії: вона в сусідній панелі.
+				if _rows.has(prerequisite) and _rows[prerequisite].get_parent().get_parent() == grid:
+					links.append([_rows[prerequisite], slot, prerequisite in planned])
+		_links(panel).set_links(links)
 
 
-# ── Панель деталей (D334) ───────────────────────────────────────────────────
+# ── Панель деталей (D334, D674) ─────────────────────────────────────────────
 
 func _refresh_detail() -> void:
 	var definition: SkillDefinition = _skill_database.get_skill(_selected_id) if _rows.has(_selected_id) else null
-	_pick_button.disabled = definition == null or plan.can_pick(definition.id) != SkillManager.Result.OK
-	_undo_button.disabled = definition == null or plan.skill_picks(definition.id) == 0
+	_learn_button.disabled = definition == null or plan.can_pick(definition.id) != SkillManager.Result.OK
+	_reset_button.disabled = definition == null or plan.skill_picks(definition.id) == 0
 	if definition == null:
+		_detail_icon.texture = null
 		_detail_name.text = PLACEHOLDER
 		_detail_kind.text = ""
 		_detail_description.text = ""
+		_next_text.text = ""
 		_detail_state.text = ""
 		_hotbar_box.visible = false
 		_show_facts([])
 		return
 
-	_detail_name.text = definition.name if not definition.name.is_empty() else definition.id
-	var tree: String = tr(_skill_database.class_name_trunk if definition.oath == "" else String(_skill_database.get_oath(definition.oath).name))
-	_detail_kind.text = tr("%s skill · %s") % [tr("Active") if definition.is_active() else tr("Passive"), tree]
-	_detail_description.text = definition.description
+	_detail_icon.texture = load(definition.icon)
+	_detail_icon.self_modulate = definition.icon_tint()
+	_detail_name.text = tr(definition.name) if not definition.name.is_empty() else definition.id
+	var kind := tr("Active") if definition.is_active() else tr("Passive")
+	var rank := plan.planned_rank(definition.id)
+	_detail_kind.text = "%s · %s · %s" % [kind, _tree_name(definition.oath), tr("Rank %d / %d") % [rank, definition.max_rank]]
+	_detail_description.text = tr(definition.description)
+
+	var now := SkillTooltip.values(_skill_manager, definition, rank) if rank > 0 else {}
+	var at_max := rank >= definition.max_rank
+	var next := SkillTooltip.values(_skill_manager, definition, rank + 1) if not at_max else {}
 	var facts: Array[String] = []
-	_add_fact(facts, tr("Cost"), _cost_text(definition.jp_cost))
-	_add_fact(facts, tr("Level"), tr("Lv %d") % definition.required_level)
+	for row: Array in [["damage", tr("Damage")], ["heal", tr("Heal")], ["burn_dps", tr("Burn per second")]]:
+		if int(SkillTooltip.values(_skill_manager, definition, 1)[row[0]]) > 0:
+			_add_fact(facts, row[1], _now_next(str(now.get(row[0], PLACEHOLDER)), str(next.get(row[0], ""))))
+	if not definition.is_active():
+		var effect_now := SkillTooltip.effect_text(_skill_manager, definition, rank) if rank > 0 else PLACEHOLDER
+		var effect_next := SkillTooltip.effect_text(_skill_manager, definition, rank + 1) if not at_max else ""
+		_add_fact(facts, tr("Effect"), _now_next(effect_now, effect_next))
 	if definition.is_active():
-		_add_fact(facts, "SP", tr("%d SP") % _skill_manager.sp_cost(definition) if definition.sp_cost > 0 else PLACEHOLDER)
+		_add_fact(facts, tr("SP cost"), str(_skill_manager.sp_cost(definition)) if definition.sp_cost > 0 else PLACEHOLDER)
 		_add_fact(facts, tr("Cooldown"), tr("%s s") % String.num(definition.cooldown, 1) if definition.cooldown > 0.0 else PLACEHOLDER)
-	var rank := _skill_manager.get_rank(definition.id)
-	if rank > 0:
-		_add_fact(facts, tr("Rank"), "%d / %d" % [rank, SkillManager.MAX_RANK])
-	if not definition.prerequisites.is_empty():
-		_add_fact(facts, tr("Requires"), ", ".join(definition.prerequisites.map(func(id): return tr(String(_skill_database.get_skill(id).name)))))
+	_add_fact(facts, tr("Required level"), str(definition.required_level))
+	_add_fact(facts, tr("Rank cost"), tr("%d JP") % (definition.jp_cost if rank == 0 else definition.rank_jp))
 	if not definition.required_weapons.is_empty():
 		_add_fact(facts, tr("Weapon"), ", ".join(definition.required_weapons))
-	var effect := _effect_text(definition)
-	if not effect.is_empty():
-		_add_fact(facts, tr("Effect"), effect)
 	_show_facts(facts)
+
+	_next_caption.visible = not at_max
+	_next_text.visible = not at_max
+	_next_text.text = _next_rank_text(definition, rank)
 	_detail_state.text = _reason_text(definition.id)
 	_refresh_hotbar(definition)
+
+
+## «104 → 126»; на найвищому ранзі — лише теперішнє.
+func _now_next(now: String, next: String) -> String:
+	return now if next.is_empty() else "%s  →  %s" % [now, next]
+
+
+## Що дасть наступний ранг одним рядком (Figma: «+22 damage, …»); невивчена — ефект першого рангу.
+func _next_rank_text(definition: SkillDefinition, rank: int) -> String:
+	if rank >= definition.max_rank:
+		return ""
+	if rank == 0:
+		return SkillTooltip.effect_text(_skill_manager, definition, 1)
+	var now := SkillTooltip.values(_skill_manager, definition, rank)
+	var next := SkillTooltip.values(_skill_manager, definition, rank + 1)
+	var parts: Array[String] = []
+	if int(next.damage) > int(now.damage):
+		parts.append(tr("+%d damage") % (int(next.damage) - int(now.damage)))
+	if int(next.heal) > int(now.heal):
+		parts.append(tr("+%d healing") % (int(next.heal) - int(now.heal)))
+	if int(next.burn_dps) > int(now.burn_dps):
+		parts.append(tr("+%d burn per second") % (int(next.burn_dps) - int(now.burn_dps)))
+	if not definition.is_active():
+		parts.append(SkillTooltip.effect_text(_skill_manager, definition, rank + 1))
+	return ", ".join(parts)
 
 
 func _add_fact(facts: Array[String], caption: String, value: String) -> void:
@@ -492,18 +528,14 @@ func _add_fact(facts: Array[String], caption: String, value: String) -> void:
 	facts.append(value)
 
 
-## Сітка фактів — пари «підпис, значення» з одного шаблону %Fact: парні — StatLabel, непарні — StatValue.
+## Сітка фактів — пари «підпис, значення» з одного шаблону %Fact: підпис ліворуч, значення праворуч.
 func _show_facts(facts: Array[String]) -> void:
 	var labels := RowFill.fill(_detail_grid, _fact, facts.size())
 	for i in labels.size():
-		labels[i].text = facts[i]
-		labels[i].theme_type_variation = &"StatValue" if i % 2 == 1 else &"StatLabel"
-
-
-## Що робить навичка — з полів визначення, на поточному ранзі (D150), з атакою героя (B137), Wisdom (D335) і синергіями (D496);
-## не вивчена — як на першому ранзі. Текст спільний з підказкою (SkillTooltip).
-func _effect_text(definition: SkillDefinition) -> String:
-	return SkillTooltip.effect_text(_skill_manager, definition, _skill_manager.get_rank(definition.id))
+		var label: Label = labels[i]
+		label.text = facts[i]
+		label.theme_type_variation = &"SkillFactValue" if i % 2 == 1 else &"SkillFactLabel"
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if i % 2 == 1 else HORIZONTAL_ALIGNMENT_LEFT
 
 
 ## Пояснення бере вердикт SkillManager (через план) — правила тут не дублюються.
@@ -511,32 +543,21 @@ func _reason_text(skill_id: String) -> String:
 	var definition: SkillDefinition = _skill_database.get_skill(skill_id)
 	var picks := plan.skill_picks(skill_id)
 	var verdict := plan.can_pick(skill_id)
-	if _skill_manager.is_unlocked(skill_id):
-		var rank := _skill_manager.get_rank(skill_id)
-		var head := tr("Learned, rank %d/%d") % [rank, SkillManager.MAX_RANK]
-		if picks > 0:
-			head += tr(" → %d after Accept") % (rank + picks)
-		match verdict:
-			SkillManager.Result.OK:
-				return tr("%s. Pick to rank up (+10%%, %d JP).") % [head, SkillManager.UPGRADE_COST]
-			SkillManager.Result.MAX_RANK:
-				return tr("%s. Max rank.") % head
-			SkillManager.Result.TREE_CAP:
-				return tr("%s. This tree's JP cap is reached.") % head
-			_:
-				return tr("%s. Not enough JP to rank up.") % head
 	if picks > 0:
-		return tr("Picked: Accept to learn it.") if picks == 1 else tr("Picked: Accept to learn it at rank %d.") % picks
+		return tr("Picked: Accept to learn it.") if not _skill_manager.is_unlocked(skill_id) and picks == 1 \
+				else tr("Rank %d after Accept.") % plan.planned_rank(skill_id)
 	match verdict:
 		SkillManager.Result.OK:
-			return tr("Can learn now: Pick, then Accept.")
+			return tr("Learn +1 marks it; Accept spends the JP.")
+		SkillManager.Result.MAX_RANK:
+			return tr("Max rank.")
 		SkillManager.Result.NOT_ENOUGH_JP:
-			return tr("Not enough JP (%d needed).") % definition.jp_cost
+			return tr("Not enough JP (%d needed).") % (definition.rank_jp if _skill_manager.is_unlocked(skill_id) else definition.jp_cost)
 		SkillManager.Result.LEVEL_TOO_LOW:
 			return tr("Level too low: needs level %d.") % definition.required_level
 		SkillManager.Result.MISSING_PREREQUISITE:
-			var missing: Array = definition.prerequisites.filter(func(id): return not id in plan.planned_unlocked())
-			return tr("Needs %s first.") % ", ".join(missing.map(func(id): return tr(String(_skill_database.get_skill(id).name))))
+			var missing: Array = definition.prerequisites.filter(func(id: String) -> bool: return not id in plan.planned_unlocked())
+			return tr("Needs %s first.") % ", ".join(missing.map(func(id: String) -> String: return tr(String(_skill_database.get_skill(id).name))))
 		SkillManager.Result.NO_OATH:
 			return tr("Swear an oath in the City (level %d).") % int(_skill_database.get_oath(definition.oath).level)
 		SkillManager.Result.OTHER_OATH:
@@ -562,11 +583,19 @@ func _refresh_hotbar(definition: SkillDefinition) -> void:
 		_slot_buttons[slot].set_pressed_no_signal(held == definition.id)
 
 
-# ── Атрибути і панель дій ───────────────────────────────────────────────────
+# ── Атрибути і нижня смуга ──────────────────────────────────────────────────
+
+## Кнопка Attributes перемикає праву панель між деталями навички й атрибутами (D335 лишається на цьому екрані).
+func _on_attributes_toggled(on: bool) -> void:
+	_attr_panel.visible = on
+	_detail.visible = not on
+
 
 func _refresh_attributes() -> void:
 	_attr_points_value.text = str(plan.attribute_points_left())
-	for attribute_id in _attribute_rows:
+	_attributes_button.text = tr("Attributes %d") % plan.attribute_points_left() if plan.attribute_points_left() > 0 \
+			else tr("Attributes")
+	for attribute_id: String in _attribute_rows:
 		var row: HBoxContainer = _attribute_rows[attribute_id]
 		var picked := plan.attribute_points(attribute_id)
 		var spent := _attributes.get_points(attribute_id)
@@ -575,19 +604,41 @@ func _refresh_attributes() -> void:
 		row.get_node(^"Plus").disabled = plan.attribute_points_left() <= 0
 
 
-func _refresh_action_bar() -> void:
-	_cancel_button.disabled = plan.is_empty()
-	_accept_button.disabled = plan.is_empty()
-	if plan.is_empty():
-		_pending_label.text = tr("Nothing picked")
-		return
+## Очки навичок після плану, бюджети дерев (D497: «Holy Warrior 9 / 14 · Paladin 12 / 12»), план, Reset all.
+func _refresh_bottom_bar() -> void:
+	_jp_value.text = str(plan.jp_left())
+	var unlocked := plan.planned_unlocked()
+	var ranks := plan.planned_ranks()
 	var parts: Array[String] = []
-	if plan.has_skill_picks():
-		parts.append(tr("%d JP") % plan.jp_cost())
-	var attribute_points := _attributes.get_unspent() - plan.attribute_points_left()
-	if attribute_points > 0:
-		parts.append(tr("attribute points: %d") % attribute_points)
-	_pending_label.text = tr("To spend: ") + ", ".join(parts)
+	for tree_id: String in [""] + ([_skill_manager.get_oath()] if _skill_manager.get_oath() != "" else []):
+		parts.append("%s %d / %d" % [_tree_name(tree_id), _skill_manager.tree_spent(tree_id, unlocked, ranks),
+				_skill_database.tree_cap(tree_id)])
+	_budgets.text = "  ·  ".join(parts)
+
+	_cancel_button.visible = not plan.is_empty()
+	_accept_button.visible = not plan.is_empty()
+	_pending_label.visible = not plan.is_empty()
+	if not plan.is_empty():
+		var pending: Array[String] = []
+		if plan.has_skill_picks():
+			pending.append(tr("%d JP") % plan.jp_cost())
+		var attribute_points := _attributes.get_unspent() - plan.attribute_points_left()
+		if attribute_points > 0:
+			pending.append(tr("attribute points: %d") % attribute_points)
+		_pending_label.text = tr("To spend: ") + ", ".join(pending)
+
+	# D629: Reset all — платне скидання (D628), лише на місці медитації.
+	var verdict := _skill_manager.can_respec()
+	_reset_all_button.disabled = verdict != SkillManager.Result.OK
+	match verdict:
+		SkillManager.Result.NOT_MEDITATING:
+			_reset_all_button.tooltip_text = tr("Reset at a meditation spot")
+		SkillManager.Result.NOT_ENOUGH_COINS:
+			_reset_all_button.tooltip_text = tr("Not enough coins (%d needed)") % _skill_manager.respec_price()
+		SkillManager.Result.NOTHING_TO_RESET:
+			_reset_all_button.tooltip_text = ""
+		_:
+			_reset_all_button.tooltip_text = tr("Forget every skill and attribute point for %d coins") % _skill_manager.respec_price()
 
 
 # ── Вибір, позначки, Accept ─────────────────────────────────────────────────
@@ -596,21 +647,27 @@ func _on_row_selected(skill_id: String) -> void:
 	if _selected_id == skill_id:
 		return
 	_selected_id = skill_id
-	_refresh_rows()
+	_refresh_cells()
 	_refresh_detail()
 	_publish_details(skill_id)
 
 
-## Позначити вибрану навичку (кнопка Pick, Enter / A на вузлі). Повертає вердикт SkillManager.
+## Learn +1 (кнопка, Enter / A на клітинці): позначити ще один ранг. Повертає вердикт SkillManager.
 func pick_selected() -> SkillManager.Result:
 	if _selected_id.is_empty():
 		return SkillManager.Result.UNKNOWN_SKILL
 	return plan.pick(_selected_id)
 
 
-## Зняти останню позначку вибраної навички (кнопка Undo, правий клік, X / Backspace).
+## Зняти останню позначку вибраної навички (правий клік, X / Backspace).
 func unpick_selected() -> bool:
 	return not _selected_id.is_empty() and plan.unpick(_selected_id)
+
+
+## Reset у деталях: зняти всі позначки вибраної навички (вивчене не чіпає — це Reset all, D628).
+func reset_selected() -> void:
+	while unpick_selected():
+		pass
 
 
 func _pick_attribute(attribute_id: String) -> void:
@@ -633,6 +690,20 @@ func cancel_plan() -> void:
 	plan.clear()
 
 
+## Reset all: питає підтвердження, бо скидання коштує монет (D628).
+func ask_reset_all() -> void:
+	if _skill_manager.can_respec() != SkillManager.Result.OK:
+		return
+	var ui_manager: Node = ServiceLocatorHelper.get_service_locator().get_ui_manager()
+	ui_manager.get_modal_layer().modal_closed.connect(_on_reset_all_closed, CONNECT_ONE_SHOT)
+	ui_manager.show_modal(ModalTemplates.confirm_respec(_skill_manager.respec_price()))
+
+
+func _on_reset_all_closed(result: String) -> void:
+	if result == "confirm":
+		_skill_manager.respec()
+
+
 ## Поставити вибрану вивчену активну навичку в слот хотбара (кнопка слота або клавіша / кнопка слота).
 func assign_to_slot(slot: int) -> SkillManager.Result:
 	var verdict: SkillManager.Result = _skill_manager.equip_skill(_selected_id, slot) if not _selected_id.is_empty() \
@@ -641,7 +712,7 @@ func assign_to_slot(slot: int) -> SkillManager.Result:
 	return verdict
 
 
-## Enter / геймпад A на вузлі — позначити; X / Backspace / правий клік — зняти позначку (D331).
+## Enter / геймпад A на клітинці — Learn +1; X / Backspace / правий клік — зняти позначку (D331).
 func _on_row_input(event: InputEvent, skill_id: String) -> void:
 	var mouse := event as InputEventMouseButton
 	if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_RIGHT:
@@ -703,19 +774,17 @@ func _publish_details(skill_id: String) -> void:
 	bar.set_context_hint(_describe(definition))
 
 
-## Один рядок для нижньої панелі: назва, головні числа, вердикт, кнопки.
+## Один рядок для нижньої панелі: назва, ранг, вердикт, кнопки.
 func _describe(definition: SkillDefinition) -> String:
 	var parts: Array[String] = []
 	parts.append(tr(definition.name) if not definition.name.is_empty() else definition.id)
-	parts.append(tr("Active") if definition.is_active() else tr("Passive"))
-	if definition.jp_cost > 0:
-		parts.append(tr("%d JP") % definition.jp_cost)
+	parts.append(rank_text(definition.id))
+	if plan.planned_rank(definition.id) < definition.max_rank:
+		parts.append(tr("%d JP") % (definition.rank_jp if plan.planned_rank(definition.id) > 0 else definition.jp_cost))
 	if definition.sp_cost > 0:
 		parts.append(tr("%d SP") % _skill_manager.sp_cost(definition))
-	if definition.required_level > 1:
-		parts.append(tr("Lv.%d") % definition.required_level)
 	parts.append(_reason_text(definition.id))
-	parts.append(InputGlyphs.resolve(tr("{ui_accept} Pick · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel")))
+	parts.append(InputGlyphs.resolve(tr("{ui_accept} Learn +1 · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel")))
 	return "  ·  ".join(parts)
 
 

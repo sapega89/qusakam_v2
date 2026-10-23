@@ -13,9 +13,9 @@ static func data(skills: SkillManager, skill_id: String) -> Dictionary:
 	var rank := skills.get_rank(skill_id)
 	var result := {
 		"rank": rank,
-		"max_rank": SkillManager.MAX_RANK,
+		"max_rank": definition.max_rank,
 		"current": values(skills, definition, rank) if rank > 0 else {},
-		"next": values(skills, definition, rank + 1) if rank < SkillManager.MAX_RANK else {},
+		"next": values(skills, definition, rank + 1) if rank < definition.max_rank else {},
 		"synergies": [],
 		"lines": [],
 	}
@@ -33,8 +33,8 @@ static func values(skills: SkillManager, definition: SkillDefinition, rank: int)
 	return {
 		"damage": skills.skill_damage(definition.id, rank),
 		"heal": skills.skill_heal(definition.id, rank),
-		"burn_dps": definition.burn_dps,
-		"passive": definition.passive_value * (1.0 + SkillManager.RANK_BONUS * (rank - 1)),
+		"burn_dps": roundi(definition.burn_dps * definition.rank_factor(rank)),
+		"passive": definition.passive_value * definition.rank_factor(rank),
 		"sp_cost": skills.sp_cost(definition),
 		"cooldown": definition.cooldown,
 		"charges": skills.max_charges(definition),
@@ -72,13 +72,13 @@ static func effect_text(skills: SkillManager, definition: SkillDefinition, rank:
 	if definition.charges > 0:
 		parts.append(TranslationServer.translate("%d sips") % skills.max_charges(definition))
 	if definition.burn_dps > 0:
-		parts.append(TranslationServer.translate("burn %d/s") % definition.burn_dps)
+		parts.append(TranslationServer.translate("burn %d/s") % roundi(definition.burn_dps * definition.rank_factor(at_rank)))
 	if definition.chain_radius > 0.0:
 		parts.append(TranslationServer.translate("chain ×%s") % String.num(definition.chain_ratio, 1))
 	if definition.stun > 0.0:
 		parts.append(TranslationServer.translate("stun %s s") % String.num(definition.stun, 1))
 	if not definition.is_active() and not definition.passive_stat.is_empty():
-		var passive := _passive_text(definition.passive_stat, definition.passive_value * (1.0 + SkillManager.RANK_BONUS * (at_rank - 1)))
+		var passive := _passive_text(definition.passive_stat, definition.passive_value * definition.rank_factor(at_rank))
 		var condition := _condition_text(definition)
 		parts.append(passive if condition.is_empty() else TranslationServer.translate("%s (%s)") % [passive, condition])
 	return ", ".join(parts)

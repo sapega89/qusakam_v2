@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), upgrade to rank 20 (D150). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned` (v2 slice 1). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned` (v2 slice 1). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -9,6 +9,7 @@
       "subclass_id": "String",
       "skill_type": "active | passive",
       "jp_cost": "int >= 0 - Job Points spent to unlock",
+      "rank": "{max: int, jp: int, bonus: float} - D674: highest rank (actives 5, passives 3), JP per rank above the first, and the share of the rank-1 effect each rank above the first adds (damage, heal, burn, passive value)",
       "required_level": "int >= 1 - XPManager level gate",
       "prerequisites": "[skill_id] - must be unlocked first",
       "sp_cost": "int >= 0 - active only, forced to 0 for passive; SP comes from landed hits and parries (D504)",
@@ -30,7 +31,8 @@
       "charges": "int >= 0 - a flask: uses charges instead of SP, refilled when the game is saved at a save point (D504); 0 = not a flask",
       "synergies": "[{skill: passive id of the same tree, per_rank: fraction}] - each rank of that passive adds per_rank to this skill's damage and heal (D496)",
       "base_jp": "int >= 0 - JP that must be spent in the base class tree before this profession skill can be learned (D497)",
-      "planned": "bool - in the data but not built yet: cannot be learned or cast, the skills screen shows it locked as 'Coming later' (D535, v2 slice 1)"
+      "planned": "bool - in the data but not built yet: cannot be learned or cast, the skills screen shows it locked as 'Coming later' (D535, v2 slice 1)",
+      "slot": "[column 0-3, row 0-4] - D674: the skill's cell in its tree panel; an in-tree prerequisite sits in the row right above"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -86,6 +88,11 @@
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 0,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 2,
       "prerequisites": [],
       "sp_cost": 0,
@@ -109,6 +116,10 @@
           "skill": "devotion",
           "per_rank": 0.06
         }
+      ],
+      "slot": [
+        3,
+        0
       ]
     },
     {
@@ -119,6 +130,11 @@
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 6,
       "prerequisites": [],
       "sp_cost": 6,
@@ -152,6 +168,10 @@
           "skill": "riposte_instinct",
           "per_rank": 0.04
         }
+      ],
+      "slot": [
+        0,
+        3
       ]
     },
     {
@@ -162,6 +182,11 @@
       "class_id": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 6,
       "prerequisites": [],
       "sp_cost": 8,
@@ -196,6 +221,10 @@
           "skill": "devotion",
           "per_rank": 0.04
         }
+      ],
+      "slot": [
+        1,
+        3
       ]
     },
     {
@@ -206,13 +235,22 @@
       "class_id": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 1,
       "prerequisites": [],
       "passive": {
         "stat": "max_health",
         "value": 10
       },
-      "oath": ""
+      "oath": "",
+      "slot": [
+        0,
+        0
+      ]
     },
     {
       "id": "shield_block",
@@ -222,13 +260,22 @@
       "class_id": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 1,
       "prerequisites": [],
       "passive": {
         "stat": "shield_block",
         "value": 0.2
       },
-      "oath": ""
+      "oath": "",
+      "slot": [
+        1,
+        0
+      ]
     },
     {
       "id": "devotion",
@@ -239,12 +286,21 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 3,
       "prerequisites": [],
       "passive": {
         "stat": "max_sp",
         "value": 5
-      }
+      },
+      "slot": [
+        2,
+        1
+      ]
     },
     {
       "id": "weapon_training",
@@ -255,12 +311,21 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 4,
       "prerequisites": [],
       "passive": {
         "stat": "attack",
         "value": 3
-      }
+      },
+      "slot": [
+        1,
+        1
+      ]
     },
     {
       "id": "fortitude",
@@ -271,12 +336,21 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 12,
       "prerequisites": [],
       "passive": {
         "stat": "damage_reduction",
         "value": 0.05
-      }
+      },
+      "slot": [
+        1,
+        4
+      ]
     },
     {
       "id": "riposte_instinct",
@@ -287,6 +361,11 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
@@ -296,7 +375,11 @@
           "type": "after_parry",
           "value": 3.0
         }
-      }
+      },
+      "slot": [
+        2,
+        3
+      ]
     },
     {
       "id": "last_stand",
@@ -307,6 +390,11 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
@@ -316,7 +404,11 @@
           "type": "below_hp",
           "value": 0.3
         }
-      }
+      },
+      "slot": [
+        3,
+        3
+      ]
     },
     {
       "id": "radiant_smite",
@@ -327,6 +419,11 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 6,
@@ -354,7 +451,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        1,
+        0
+      ]
     },
     {
       "id": "mending_hands",
@@ -365,13 +466,22 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 5,
       "prerequisites": [],
       "passive": {
         "stat": "heal_power",
         "value": 0.25
       },
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        0,
+        0
+      ]
     },
     {
       "id": "aura_of_resolve",
@@ -382,13 +492,22 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
         "stat": "damage_reduction",
         "value": 0.08
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        2
+      ]
     },
     {
       "id": "skys_grace",
@@ -399,13 +518,22 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
         "stat": "sp_per_hit",
         "value": 0.5
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        2
+      ]
     },
     {
       "id": "skyfall_blessing",
@@ -416,6 +544,11 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 12,
       "prerequisites": [
         "radiant_smite"
@@ -449,7 +582,11 @@
           "per_rank": 0.05
         }
       ],
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        1
+      ]
     },
     {
       "id": "aura_of_valour",
@@ -460,13 +597,22 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
         "stat": "max_health",
         "value": 25
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        4
+      ]
     },
     {
       "id": "judgement_of_the_sky",
@@ -477,6 +623,11 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 20,
       "prerequisites": [
         "skyfall_blessing"
@@ -511,7 +662,11 @@
           "per_rank": 0.06
         }
       ],
-      "base_jp": 10
+      "base_jp": 10,
+      "slot": [
+        2,
+        2
+      ]
     },
     {
       "id": "unbroken_vow",
@@ -522,6 +677,11 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [
         "aura_of_resolve"
@@ -530,7 +690,11 @@
         "stat": "damage_reduction",
         "value": 0.08
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        3
+      ]
     },
     {
       "id": "merciful_light",
@@ -541,6 +705,11 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
@@ -551,7 +720,11 @@
           "value": 0.3
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        0
+      ]
     },
     {
       "id": "zealous_answer",
@@ -562,6 +735,11 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
@@ -572,7 +750,11 @@
           "value": 4.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        3
+      ]
     },
     {
       "id": "consecrated_ground",
@@ -583,6 +765,11 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
@@ -593,7 +780,11 @@
           "value": 3.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        4
+      ]
     },
     {
       "id": "searing_hex",
@@ -604,6 +795,11 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 6,
@@ -634,7 +830,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        1,
+        0
+      ]
     },
     {
       "id": "blood_pact",
@@ -645,13 +845,22 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 5,
       "prerequisites": [],
       "passive": {
         "stat": "lifesteal",
         "value": 0.1
       },
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        2,
+        2
+      ]
     },
     {
       "id": "dread_aura",
@@ -662,13 +871,22 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
         "stat": "attack",
         "value": 4
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        0
+      ]
     },
     {
       "id": "relentless",
@@ -679,13 +897,22 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
         "stat": "poise",
         "value": 0.25
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        3
+      ]
     },
     {
       "id": "withering_grasp",
@@ -696,6 +923,11 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 12,
       "prerequisites": [
         "searing_hex"
@@ -728,7 +960,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        1
+      ]
     },
     {
       "id": "hoarded_ward",
@@ -739,13 +975,22 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
         "stat": "damage_reduction",
         "value": 0.08
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        4
+      ]
     },
     {
       "id": "eclipse_cleave",
@@ -756,6 +1001,11 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 20,
       "prerequisites": [
         "withering_grasp"
@@ -793,7 +1043,11 @@
           "per_rank": 0.06
         }
       ],
-      "base_jp": 10
+      "base_jp": 10,
+      "slot": [
+        1,
+        2
+      ]
     },
     {
       "id": "crimson_thirst",
@@ -804,6 +1058,11 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [
         "blood_pact"
@@ -812,7 +1071,11 @@
         "stat": "lifesteal",
         "value": 0.1
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        3
+      ]
     },
     {
       "id": "desperate_hunger",
@@ -823,6 +1086,11 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
@@ -833,7 +1101,11 @@
           "value": 0.35
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        0
+      ]
     },
     {
       "id": "cruel_momentum",
@@ -844,6 +1116,11 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
@@ -854,7 +1131,11 @@
           "value": 3.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        3
+      ]
     },
     {
       "id": "dark_riposte",
@@ -865,6 +1146,11 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
@@ -875,7 +1161,11 @@
           "value": 4.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        4
+      ]
     },
     {
       "id": "balanced_strike",
@@ -886,6 +1176,11 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "sp_cost": 5,
@@ -913,7 +1208,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        1,
+        0
+      ]
     },
     {
       "id": "bulwark",
@@ -924,6 +1223,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 5,
       "prerequisites": [
         "shield_block"
@@ -932,7 +1236,11 @@
         "stat": "shield_block",
         "value": 0.1
       },
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        0,
+        0
+      ]
     },
     {
       "id": "sand_stance",
@@ -943,13 +1251,22 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
         "stat": "poise",
         "value": 0.3
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        2
+      ]
     },
     {
       "id": "iron_body",
@@ -960,6 +1277,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [
         "toughness"
@@ -968,7 +1290,11 @@
         "stat": "max_health",
         "value": 20
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        3
+      ]
     },
     {
       "id": "dervish_whirl",
@@ -979,6 +1305,11 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 12,
       "prerequisites": [
         "balanced_strike"
@@ -1011,7 +1342,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        1
+      ]
     },
     {
       "id": "unshakable",
@@ -1022,13 +1357,22 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
         "stat": "damage_reduction",
         "value": 0.1
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        3
+      ]
     },
     {
       "id": "second_wind",
@@ -1039,6 +1383,11 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 20,
       "prerequisites": [
         "dervish_whirl"
@@ -1068,7 +1417,11 @@
           "per_rank": 0.04
         }
       ],
-      "base_jp": 10
+      "base_jp": 10,
+      "slot": [
+        2,
+        2
+      ]
     },
     {
       "id": "perfect_balance",
@@ -1079,6 +1432,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [
         "dervish_whirl"
@@ -1087,7 +1445,11 @@
         "stat": "attack",
         "value": 8
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        2
+      ]
     },
     {
       "id": "still_water",
@@ -1098,6 +1460,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 8,
       "prerequisites": [],
       "passive": {
@@ -1108,7 +1475,11 @@
           "value": 3.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        2
+      ]
     },
     {
       "id": "dervish_rhythm",
@@ -1119,6 +1490,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 10,
       "prerequisites": [],
       "passive": {
@@ -1129,7 +1505,11 @@
           "value": 3.0
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        3
+      ]
     },
     {
       "id": "rooted_resolve",
@@ -1140,6 +1520,11 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 1,
+      "rank": {
+        "max": 3,
+        "jp": 1,
+        "bonus": 0.25
+      },
       "required_level": 15,
       "prerequisites": [],
       "passive": {
@@ -1150,7 +1535,11 @@
           "value": 0.3
         }
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        4
+      ]
     },
     {
       "id": "dash_strike",
@@ -1161,9 +1550,18 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 1,
       "prerequisites": [],
-      "planned": true
+      "planned": true,
+      "slot": [
+        2,
+        0
+      ]
     },
     {
       "id": "rising_slash",
@@ -1174,9 +1572,18 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 3,
       "prerequisites": [],
-      "planned": true
+      "planned": true,
+      "slot": [
+        0,
+        1
+      ]
     },
     {
       "id": "shield_bash",
@@ -1187,9 +1594,18 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 4,
       "prerequisites": [],
-      "planned": true
+      "planned": true,
+      "slot": [
+        3,
+        1
+      ]
     },
     {
       "id": "ground_slam",
@@ -1200,11 +1616,20 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 8,
       "prerequisites": [
         "rising_slash"
       ],
-      "planned": true
+      "planned": true,
+      "slot": [
+        0,
+        2
+      ]
     },
     {
       "id": "holy_javelin",
@@ -1215,9 +1640,18 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true
+      "planned": true,
+      "slot": [
+        0,
+        4
+      ]
     },
     {
       "id": "battle_cry",
@@ -1228,9 +1662,18 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 12,
       "prerequisites": [],
-      "planned": true
+      "planned": true,
+      "slot": [
+        2,
+        4
+      ]
     },
     {
       "id": "counter_stance",
@@ -1241,11 +1684,20 @@
       "oath": "",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 14,
       "prerequisites": [
         "shield_bash"
       ],
-      "planned": true
+      "planned": true,
+      "slot": [
+        3,
+        2
+      ]
     },
     {
       "id": "keen_edge",
@@ -1256,6 +1708,11 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 14,
       "prerequisites": [
         "weapon_training"
@@ -1263,7 +1720,11 @@
       "passive": {
         "stat": "crit_chance",
         "value": 0.05
-      }
+      },
+      "slot": [
+        1,
+        2
+      ]
     },
     {
       "id": "heavy_hand",
@@ -1274,6 +1735,11 @@
       "oath": "",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 16,
       "prerequisites": [
         "weapon_training"
@@ -1281,7 +1747,11 @@
       "passive": {
         "stat": "heavy_poise",
         "value": 0.3
-      }
+      },
+      "slot": [
+        2,
+        2
+      ]
     },
     {
       "id": "shield_charge",
@@ -1292,10 +1762,19 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        3,
+        0
+      ]
     },
     {
       "id": "lightspear",
@@ -1306,12 +1785,21 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 8,
       "prerequisites": [
         "radiant_smite"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        1
+      ]
     },
     {
       "id": "aegis",
@@ -1322,10 +1810,19 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        3
+      ]
     },
     {
       "id": "hallowed_circle",
@@ -1336,10 +1833,19 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        3
+      ]
     },
     {
       "id": "rally",
@@ -1350,10 +1856,19 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        4
+      ]
     },
     {
       "id": "heavens_anvil",
@@ -1364,12 +1879,21 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [
         "shield_charge"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        1
+      ]
     },
     {
       "id": "radiant_flare",
@@ -1380,12 +1904,21 @@
       "oath": "paladin",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 18,
       "prerequisites": [
         "lightspear"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        2
+      ]
     },
     {
       "id": "shield_of_faith",
@@ -1396,6 +1929,11 @@
       "oath": "paladin",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [
         "mending_hands"
@@ -1404,7 +1942,11 @@
         "stat": "block_heal",
         "value": 0.25
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        1
+      ]
     },
     {
       "id": "blood_rush",
@@ -1415,10 +1957,19 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        3,
+        0
+      ]
     },
     {
       "id": "chain_of_night",
@@ -1429,10 +1980,19 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 8,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        2
+      ]
     },
     {
       "id": "blood_price",
@@ -1443,12 +2003,21 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [
         "blood_pact"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        3
+      ]
     },
     {
       "id": "night_reaper",
@@ -1459,12 +2028,21 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [
         "searing_hex"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        1
+      ]
     },
     {
       "id": "dread_howl",
@@ -1475,10 +2053,19 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        4
+      ]
     },
     {
       "id": "hellfire_stomp",
@@ -1489,12 +2076,21 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [
         "night_reaper"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        2
+      ]
     },
     {
       "id": "soul_harvest",
@@ -1505,12 +2101,21 @@
       "oath": "dark_knight",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 18,
       "prerequisites": [
         "blood_rush"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        1
+      ]
     },
     {
       "id": "embers_within",
@@ -1521,6 +2126,11 @@
       "oath": "dark_knight",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [
         "searing_hex"
@@ -1529,7 +2139,11 @@
         "stat": "burning_damage",
         "value": 0.2
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        1
+      ]
     },
     {
       "id": "wind_step",
@@ -1540,10 +2154,19 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 5,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 3
+      "base_jp": 3,
+      "slot": [
+        3,
+        0
+      ]
     },
     {
       "id": "sand_veil",
@@ -1554,10 +2177,19 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 8,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        0
+      ]
     },
     {
       "id": "stone_palm",
@@ -1568,12 +2200,21 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [
         "balanced_strike"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        0,
+        1
+      ]
     },
     {
       "id": "sweeping_arc",
@@ -1584,10 +2225,19 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 1,
+      "rank": {
+        "max": 5,
+        "jp": 1,
+        "bonus": 0.15
+      },
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        3
+      ]
     },
     {
       "id": "mirror_stance",
@@ -1598,12 +2248,21 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [
         "sand_veil"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        1
+      ]
     },
     {
       "id": "centered_breath",
@@ -1614,10 +2273,19 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        1,
+        4
+      ]
     },
     {
       "id": "dune_quake",
@@ -1628,12 +2296,21 @@
       "oath": "warden",
       "skill_type": "active",
       "jp_cost": 2,
+      "rank": {
+        "max": 5,
+        "jp": 2,
+        "bonus": 0.15
+      },
       "required_level": 18,
       "prerequisites": [
         "wind_step"
       ],
       "planned": true,
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        3,
+        1
+      ]
     },
     {
       "id": "light_feet",
@@ -1644,13 +2321,22 @@
       "oath": "warden",
       "skill_type": "passive",
       "jp_cost": 2,
+      "rank": {
+        "max": 3,
+        "jp": 2,
+        "bonus": 0.25
+      },
       "required_level": 18,
       "prerequisites": [],
       "passive": {
         "stat": "roll_length",
         "value": 0.2
       },
-      "base_jp": 6
+      "base_jp": 6,
+      "slot": [
+        2,
+        4
+      ]
     }
   ]
 }

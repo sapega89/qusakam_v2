@@ -66,7 +66,8 @@ func _cost_of(picks: Array[String]) -> int:
 	var seen: Array[String] = []
 	for skill_id in picks:
 		var learns := not _skills.is_unlocked(skill_id) and not skill_id in seen
-		total += _skills.skill_database.get_skill(skill_id).jp_cost if learns else SkillManager.UPGRADE_COST
+		var definition: SkillDefinition = _skills.skill_database.get_skill(skill_id)
+		total += definition.jp_cost if learns else definition.rank_jp
 		seen.append(skill_id)
 	return total
 

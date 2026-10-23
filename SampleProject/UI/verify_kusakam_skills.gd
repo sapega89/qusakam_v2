@@ -201,20 +201,20 @@ func _initialize() -> void:
 	front.global_position = player.global_position + Vector2(400, 0)
 	ck(sm.use_skill("fire_strike") == R.NO_TARGET, "nothing in front → NO_TARGET, no SP spent")
 
-	print("[6] Upgrades to rank 20, +10% each (D150)")
+	print("[6] Ranks up to 5 for an active, +15% each from the data (D674)")
 	sm.add_job_points(5)
 	ck(sm.upgrade_skill("fire_strike") == R.OK and sm.get_rank("fire_strike") == 2, "Fire Strike → rank 2")
-	ck(sm.scaled("fire_strike", 20) == 22, "rank 2 deals 22")
-	ck(sm.upgrade_skill("healing_palm") == R.OK and sm.scaled("healing_palm", 40) == 44, "Healing Palm upgrades too: 40 → 44")
+	ck(sm.scaled("fire_strike", 20) == 23, "rank 2 deals 23")
+	ck(sm.upgrade_skill("healing_palm") == R.OK and sm.scaled("healing_palm", 40) == 46, "Healing Palm upgrades too: 40 → 46")
 	sm.clear_cooldowns()
 	front.global_position = player.global_position + Vector2(30, 0)
 	hp_front = front.current_health
 	sm.use_skill("fire_strike")
 	ck(front.current_health == hp_front - sm.skill_damage("fire_strike") and sm.skill_damage("fire_strike") > fire_damage,
 			"the upgraded strike lands harder (%d → %d)" % [fire_damage, hp_front - front.current_health])
-	sl.get_game_manager().player_state.skill_ranks["fire_strike"] = 20
-	ck(sm.can_upgrade("fire_strike") == R.MAX_RANK, "rank 20 is the cap")
-	ck(sm.scaled("fire_strike", 20) == 58, "rank 20 = ×2.9")
+	sl.get_game_manager().player_state.skill_ranks["fire_strike"] = 5
+	ck(sm.can_upgrade("fire_strike") == R.MAX_RANK, "rank 5 is the cap")
+	ck(sm.scaled("fire_strike", 20) == 32, "rank 5 = ×1.6")
 
 	print("[7] Fire Strike sets the target burning: 4/s for 3 s (D207)")
 	state.skill_ranks.erase("fire_strike")

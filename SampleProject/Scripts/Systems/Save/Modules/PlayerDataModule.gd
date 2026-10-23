@@ -165,6 +165,7 @@ func load_data(data: Dictionary) -> void:
 		else:
 			player_state.unlocked_skills = []
 
+	ServiceLocator.get_skill_manager().fit_ranks()  # D674: сейв з рангами понад нові межі
 	# Межа SP — з пасивками й Wisdom (D284, D335), тож після навичок і атрибутів.
 	player_state.current_sp = clampi(int(data.get("current_sp", player_state.get("current_sp", 0))),
 			0, ServiceLocator.get_skill_manager().get_max_sp())

@@ -55,10 +55,7 @@ const JP_PER_LEVEL := 1
 ## Числа тимчасові (звіт cloud/skills-v2).
 const RESPEC_COINS_PER_JP := 10
 const RESPEC_MIN_COINS := 10
-## D150: рівні навички 1..20, кожен понад перший — +10 % ефекту; покращення коштує 1 очко.
-const MAX_RANK := 20
-const RANK_BONUS := 0.10
-const UPGRADE_COST := 1
+## D674: ранги — з даних кожної навички (SkillDefinition.max_rank / rank_jp / rank_bonus): активні до 5, пасивки до 3.
 
 ## D504: SP не відновлюється з часом — його дають влучання героя (удар, стріла) і парирування.
 const SP_PER_HIT := 2.0
@@ -116,6 +113,20 @@ func get_rank(skill_id: String) -> int:
 	return int(_state().get("skill_ranks", {}).get(skill_id, 1))
 
 
+## D674: сейв часів D150 (ранги до 20 по 1 JP) — ранг понад найвищий обрізається, а JP за зайві ранги повертаються
+## (по 1, як вони тоді коштували). Кличе PlayerDataModule після завантаження.
+func fit_ranks() -> void:
+	var ranks: Dictionary = _state().get("skill_ranks", {})
+	var refund := 0
+	for skill_id: String in ranks.keys():
+		var cap: int = skill_database.get_skill(skill_id).max_rank
+		if int(ranks[skill_id]) > cap:
+			refund += int(ranks[skill_id]) - cap
+			ranks[skill_id] = cap
+	if refund > 0:
+		add_job_points(refund)
+
+
 func can_upgrade(skill_id: String) -> Result:
 	return check_upgrade(skill_id, get_rank(skill_id), get_job_points())
 
@@ -128,15 +139,15 @@ func check_upgrade(skill_id: String, rank: int, jp: int, unlocked: Array = [], r
 		return Result.UNKNOWN_SKILL
 	if rank <= 0:
 		return Result.NOT_UNLOCKED
-	if rank >= MAX_RANK:
+	var definition: SkillDefinition = skill_database.get_skill(skill_id)
+	if rank >= definition.max_rank:
 		return Result.MAX_RANK
-	if skill_database.get_skill(skill_id).planned:
+	if definition.planned:
 		return Result.PLANNED
-	var tree: String = skill_database.get_skill(skill_id).oath
 	var learned: Array = get_unlocked_skills() if unlocked.is_empty() else unlocked
-	if tree_spent(tree, learned, ranks) + UPGRADE_COST > skill_database.tree_cap(tree):
+	if tree_spent(definition.oath, learned, ranks) + definition.rank_jp > skill_database.tree_cap(definition.oath):
 		return Result.TREE_CAP
-	if jp < UPGRADE_COST:
+	if jp < definition.rank_jp:
 		return Result.NOT_ENOUGH_JP
 	return Result.OK
 
@@ -145,7 +156,7 @@ func upgrade_skill(skill_id: String) -> Result:
 	var verdict := can_upgrade(skill_id)
 	if verdict != Result.OK:
 		return verdict
-	spend_job_points(UPGRADE_COST)
+	spend_job_points(skill_database.get_skill(skill_id).rank_jp)
 	var rank := get_rank(skill_id) + 1
 	var state := _state()
 	var ranks: Dictionary = state.get("skill_ranks", {})
@@ -156,7 +167,7 @@ func upgrade_skill(skill_id: String) -> Result:
 	return Result.OK
 
 
-## Значення з урахуванням рівня: база × (1 + 10 % за кожен рівень понад перший) × сила навичок (Wisdom, D335).
+## Значення з урахуванням рангу: база × (1 + rank_bonus за кожен ранг понад перший, D674) × сила навичок (Wisdom, D335).
 ## Підпал (burn_dps); ушкодження й лікування — skill_damage / skill_heal.
 func scaled(skill_id: String, base: int) -> int:
 	return roundi(base * _rank_factor(skill_id) * (1.0 + _attributes().bonus("skill_power")))
@@ -200,7 +211,7 @@ func _scaled_power(base: int, phys: float, elem: float) -> float:
 
 func _skill_factor(skill_id: String, rank: int) -> float:
 	var at_rank := get_rank(skill_id) if rank < 0 else rank
-	return (1.0 + RANK_BONUS * (maxi(1, at_rank) - 1)) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
+	return skill_database.get_skill(skill_id).rank_factor(at_rank) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
 
 
 ## D496: синергії — сума per_rank × ранг кожної пасивки-джерела (не вивчена — 0).
@@ -216,7 +227,7 @@ func _attributes() -> AttributeManager:
 
 
 func _rank_factor(skill_id: String) -> float:
-	return 1.0 + RANK_BONUS * (get_rank(skill_id) - 1)
+	return skill_database.get_skill(skill_id).rank_factor(get_rank(skill_id))
 
 
 ## Сума вивчених пасивок на показник [param stat] з урахуванням рангу (D207): Toughness → "max_health",
@@ -517,7 +528,7 @@ func tree_spent(tree: String, unlocked: Array = get_unlocked_skills(), ranks: Di
 		var definition: SkillDefinition = skill_database.get_skill(skill_id)
 		if definition.oath == tree:
 			var rank: int = ranks.get(skill_id, maxi(1, get_rank(skill_id)))
-			total += definition.jp_cost + (rank - 1) * UPGRADE_COST
+			total += definition.jp_cost + (rank - 1) * definition.rank_jp
 	return total
 
 
@@ -590,7 +601,8 @@ func class_title() -> String:
 func spent_points() -> int:
 	var total := 0
 	for skill_id in get_unlocked_skills():
-		total += skill_database.get_skill(skill_id).jp_cost + (get_rank(skill_id) - 1) * UPGRADE_COST
+		var definition: SkillDefinition = skill_database.get_skill(skill_id)
+		total += definition.jp_cost + (get_rank(skill_id) - 1) * definition.rank_jp
 	return total
 
 

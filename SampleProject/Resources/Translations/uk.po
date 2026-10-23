@@ -3108,3 +3108,72 @@ msgstr "Середній обладунок"
 
 msgid "Heavy armour"
 msgstr "Важкий обладунок"
+
+msgid "Lv %d · %s"
+msgstr "Рів. %d · %s"
+
+msgid "Next rank"
+msgstr "Наступний ранг"
+
+msgid "Put on the hotbar"
+msgstr "На панель швидкого доступу"
+
+msgid "Learn +1"
+msgstr "Вивчити +1"
+
+msgid "Points"
+msgstr "Очки"
+
+msgid "Skill points"
+msgstr "Очки навичок"
+
+msgid "Reset all"
+msgstr "Скинути все"
+
+msgid "Reset all?"
+msgstr "Скинути все?"
+
+msgid "Rank %d / %d"
+msgstr "Ранг %d / %d"
+
+msgid "Burn per second"
+msgstr "Підпал за секунду"
+
+msgid "SP cost"
+msgstr "Ціна SP"
+
+msgid "Required level"
+msgstr "Потрібний рівень"
+
+msgid "Rank cost"
+msgstr "Ціна рангу"
+
+msgid "+%d damage"
+msgstr "+%d ушкоджень"
+
+msgid "+%d healing"
+msgstr "+%d лікування"
+
+msgid "+%d burn per second"
+msgstr "+%d підпалу за секунду"
+
+msgid "Rank %d after Accept."
+msgstr "Ранг %d після «Прийняти»."
+
+msgid "Learn +1 marks it; Accept spends the JP."
+msgstr "«Вивчити +1» позначає, «Прийняти» витрачає ОН."
+
+msgid "Max rank."
+msgstr "Найвищий ранг."
+
+msgid "Attributes %d"
+msgstr "Атрибути %d"
+
+msgid "Reset at a meditation spot"
+msgstr "Скинути можна на місці медитації"
+
+msgid "{ui_accept} Learn +1 · {skills_unpick} Undo · {skills_accept} Accept · {ui_cancel} Cancel"
+msgstr "{ui_accept} Вивчити +1 · {skills_unpick} Відмінити · {skills_accept} Прийняти · {ui_cancel} Скасувати"
+
+msgid "Swear an oath in the City (level %d)"
+msgstr "Складіть присягу в Місті (рівень %d)"

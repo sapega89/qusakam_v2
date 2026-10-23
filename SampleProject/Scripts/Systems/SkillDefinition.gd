@@ -23,6 +23,15 @@ var skill_type: Type = Type.ACTIVE
 
 ## Вартість розблокування в Job Points.
 var jp_cost: int = 0
+## D674: ранги — найвищий (активні 5, пасивки 3), JP за кожен ранг понад перший і частка ефекту першого рангу,
+## яку додає кожен ранг понад перший (ушкодження, лікування, підпал, значення пасивки).
+const MAX_RANK_ACTIVE := 5
+const MAX_RANK_PASSIVE := 3
+var max_rank: int = MAX_RANK_ACTIVE
+var rank_jp: int = 1
+var rank_bonus: float = 0.15
+## D674: клітинка у вікні навичок — (стовпець, ряд) у панелі свого дерева.
+var slot: Vector2i = Vector2i.ZERO
 ## Мінімальний рівень персонажа.
 var required_level: int = 1
 ## Ідентифікатори навичок, які треба вивчити раніше.
@@ -135,6 +144,14 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 		definition.synergies.append({"skill": String(synergy.skill), "per_rank": float(synergy.per_rank)})
 	definition.base_jp = maxi(0, int(data.get("base_jp", 0)))
 	definition.planned = bool(data.get("planned", false))
+	# D674: у skills.json блок rank є в кожної навички (verify_skill_ranks); тестові записи без нього — ранги за видом.
+	var rank: Dictionary = data.get("rank", {})
+	var passive_kind := definition.skill_type == Type.PASSIVE
+	definition.max_rank = maxi(1, int(rank.get("max", MAX_RANK_PASSIVE if passive_kind else MAX_RANK_ACTIVE)))
+	definition.rank_jp = maxi(1, int(rank.get("jp", 1)))
+	definition.rank_bonus = maxf(0.0, float(rank.get("bonus", 0.25 if passive_kind else 0.15)))
+	var cell: Array = data.get("slot", [0, 0])
+	definition.slot = Vector2i(int(cell[0]), int(cell[1]))
 
 	for entry in data.get("prerequisites", []):
 		var prerequisite := String(entry).strip_edges()
@@ -168,6 +185,11 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	return definition
 
 
+## D674: множник ефекту на ранзі [param rank] (0 — як на першому): 1 + bonus за кожен ранг понад перший.
+func rank_factor(rank: int) -> float:
+	return 1.0 + rank_bonus * (maxi(1, rank) - 1)
+
+
 func is_active() -> bool:
 	return skill_type == Type.ACTIVE
 
@@ -189,6 +211,8 @@ func to_dict() -> Dictionary:
 		"oath": oath,
 		"skill_type": "active" if is_active() else "passive",
 		"jp_cost": jp_cost,
+		"rank": {"max": max_rank, "jp": rank_jp, "bonus": rank_bonus},
+		"slot": [slot.x, slot.y],
 		"required_level": required_level,
 		"prerequisites": prerequisites.duplicate(),
 		"sp_cost": sp_cost,

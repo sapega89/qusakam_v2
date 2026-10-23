@@ -34,6 +34,7 @@ func _initialize() -> void:
 	_game_over(theme)
 	_setup_progress_bar(theme)
 	_hud_v2(theme)
+	_skill_window(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
 	_setup_slider(theme)
@@ -887,6 +888,122 @@ func _spaced(base: Font, spacing: int) -> FontVariation:
 	fv.base_font = base
 	fv.spacing_glyph = spacing
 	return fv
+
+
+## D674: вікно навичок Dragon Nest (Figma 533:6472): вкладки дерев, клітинки навичок, бейджі, панель деталей, кнопки.
+func _skill_window(theme: Theme) -> void:
+	theme.set_type_variation("SkillWindow", "PanelContainer")
+	theme.set_stylebox("panel", "SkillWindow", _box(UITokens.MENU_SURFACE, UITokens.BORDER, UITokens.BORDER_WIDTH, 0, 0))
+
+	var heading := _spaced(_font_bold, UITokens.SKILL_HEADING_SPACING)
+	var caption := _spaced(_font_semibold, UITokens.SKILL_HEADING_SPACING)
+	var labels := {
+		"SkillWindowTitle": [heading, UITokens.SIZE_SKILL_WINDOW_TITLE, UITokens.ACCENT],
+		"SkillTreeHeading": [heading, UITokens.SIZE_HEADING, UITokens.ACCENT],
+		"SkillTreeStatus": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"SkillHero": [_font_regular, UITokens.SIZE_HEADING, UITokens.TEXT_PRIMARY],
+		"SkillRank": [_font_regular, UITokens.SIZE_SKILL_RANK, UITokens.TEXT_SECONDARY],
+		"SkillRankPlanned": [_font_bold, UITokens.SIZE_SKILL_RANK, UITokens.ACCENT],
+		"SkillLevelBadgeLabel": [_font_regular, UITokens.SIZE_MICRO, UITokens.TEXT_SECONDARY],
+		"SkillLevelBadgeLow": [_font_regular, UITokens.SIZE_MICRO, UITokens.SKILL_LEVEL_LOW],
+		"SkillPlusLabel": [_font_bold, UITokens.SIZE_CAPTION, UITokens.ON_ACCENT],
+		"SkillDetailName": [heading, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		"SkillDetailKind": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SkillDetailBody": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SkillFactLabel": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_SECONDARY],
+		"SkillFactValue": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+		"SkillNextCaption": [caption, UITokens.SIZE_SMALL, UITokens.ACCENT],
+		"SkillVerdict": [_font_regular, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"SkillBottomCaption": [caption, UITokens.SIZE_SMALL, UITokens.TEXT_SECONDARY],
+		"SkillPointsValue": [_font_bold, UITokens.SIZE_TITLE, UITokens.ACCENT],
+		"SkillBudgets": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
+	}
+	for type_name: String in labels:
+		var role: Array = labels[type_name]
+		theme.set_type_variation(type_name, "Label")
+		theme.set_font("font", type_name, role[0])
+		theme.set_font_size("font_size", type_name, role[1])
+		theme.set_color("font_color", type_name, role[2])
+
+	# Клітинка навички: невивчена — сіра рамка, вивчена (чи позначена) — золота; вибрана — золото зі сяйвом.
+	for type_name: String in ["SkillSlot", "SkillSlotLearned"]:
+		var learned := type_name == "SkillSlotLearned"
+		var edge: Color = UITokens.ACCENT if learned else UITokens.BORDER
+		var width: int = UITokens.BORDER_WIDTH_SELECTED if learned else UITokens.BORDER_WIDTH
+		theme.set_type_variation(type_name, "Button")
+		theme.set_stylebox("normal", type_name, _box(UITokens.SKILL_SLOT_BG, edge, width, 0, 0))
+		theme.set_stylebox("disabled", type_name, _box(UITokens.SKILL_SLOT_BG, edge, width, 0, 0))
+		theme.set_stylebox("hover", type_name, _box(UITokens.SKILL_SLOT_BG, UITokens.BORDER_STRONG, width, 0, 0))
+		var selected := _box(UITokens.SKILL_SLOT_BG, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED + 1, 0, 0)
+		selected.shadow_color = UITokens.SKILL_SLOT_GLOW
+		selected.shadow_size = UITokens.SKILL_SLOT_GLOW_SIZE
+		theme.set_stylebox("pressed", type_name, selected)
+		theme.set_stylebox("hover_pressed", type_name, selected)
+		theme.set_stylebox("focus", type_name, _focus_ring(0, 0))
+
+	theme.set_type_variation("SkillLevelBadge", "PanelContainer")
+	theme.set_stylebox("panel", "SkillLevelBadge", _box(UITokens.SKILL_SLOT_BG, UITokens.BORDER, UITokens.BORDER_WIDTH,
+			UITokens.SPACE_XS, 0))
+	theme.set_type_variation("SkillPlusBadge", "PanelContainer")
+	var plus := _box(UITokens.ACCENT, UITokens.ACCENT, 0, 0, 0)
+	plus.set_corner_radius_all(UITokens.SKILL_PLUS_SIZE / 2)
+	theme.set_stylebox("panel", "SkillPlusBadge", plus)
+	theme.set_type_variation("SkillDetailIcon", "Panel")
+	theme.set_stylebox("panel", "SkillDetailIcon", _box(UITokens.SKILL_SLOT_BG, UITokens.ACCENT, UITokens.BORDER_WIDTH_SELECTED, 0, 0))
+
+	theme.set_type_variation("SkillDetailRule", "HSeparator")
+	var rule := StyleBoxLine.new()
+	rule.color = UITokens.ACCENT
+	rule.thickness = UITokens.BORDER_WIDTH
+	theme.set_stylebox("separator", "SkillDetailRule", rule)
+	theme.set_type_variation("SkillBarRule", "HSeparator")
+	var bar_rule := StyleBoxLine.new()
+	bar_rule.color = UITokens.BORDER
+	bar_rule.thickness = UITokens.BORDER_WIDTH
+	theme.set_stylebox("separator", "SkillBarRule", bar_rule)
+
+	# Вкладка дерева: показане — темна заливка й золото; інше — контур; чужа клятва — приглушена.
+	var tab := "SkillTreeTab"
+	theme.set_type_variation(tab, "Button")
+	theme.set_font("font", tab, _spaced(_font_semibold, 1))
+	theme.set_font_size("font_size", tab, UITokens.SIZE_LABEL)
+	theme.set_color("font_color", tab, UITokens.TEXT_SECONDARY)
+	theme.set_color("font_hover_color", tab, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_pressed_color", tab, UITokens.ACCENT)
+	theme.set_color("font_hover_pressed_color", tab, UITokens.ACCENT)
+	theme.set_color("font_focus_color", tab, UITokens.TEXT_PRIMARY)
+	theme.set_color("font_disabled_color", tab, UITokens.TEXT_MUTED)
+	var pad := UITokens.SPACE_SM
+	theme.set_stylebox("normal", tab, _box(Color(0, 0, 0, 0), UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("disabled", tab, _box(Color(0, 0, 0, 0), UITokens.BORDER, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("hover", tab, _box(UITokens.SURFACE_HOVER, UITokens.BORDER_STRONG, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("pressed", tab, _box(UITokens.SKILL_TAB_BG_ON, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("hover_pressed", tab, _box(UITokens.SKILL_TAB_BG_ON, UITokens.ACCENT, UITokens.BORDER_WIDTH, pad, pad))
+	theme.set_stylebox("focus", tab, _focus_ring(pad, pad))
+
+	# Learn +1 — золотий контур на темно-золотій заливці; Reset — сірий контур; текстові кнопки нижньої смуги.
+	var buttons := {
+		"SkillLearnButton": [Color(UITokens.ACCENT, 0.12), UITokens.ACCENT, UITokens.ACCENT],
+		"SkillResetButton": [Color(0, 0, 0, 0), UITokens.BORDER, UITokens.TEXT_SECONDARY],
+		"SkillTextButton": [Color(0, 0, 0, 0), Color(0, 0, 0, 0), UITokens.TEXT_SECONDARY],
+	}
+	for type_name: String in buttons:
+		var look: Array = buttons[type_name]
+		var border_width := 0 if type_name == "SkillTextButton" else UITokens.BORDER_WIDTH_SELECTED
+		theme.set_type_variation(type_name, "Button")
+		theme.set_font("font", type_name, caption)
+		theme.set_font_size("font_size", type_name, UITokens.SIZE_LABEL)
+		theme.set_color("font_color", type_name, look[2])
+		theme.set_color("font_hover_color", type_name, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_pressed_color", type_name, UITokens.TEXT_PRIMARY)
+		theme.set_color("font_focus_color", type_name, look[2])
+		theme.set_color("font_disabled_color", type_name, UITokens.TEXT_DISABLED)
+		theme.set_stylebox("normal", type_name, _box(look[0], look[1], border_width, UITokens.SPACE_LG, UITokens.SPACE_SM))
+		theme.set_stylebox("hover", type_name, _box(UITokens.SURFACE_HOVER, look[1], border_width, UITokens.SPACE_LG, UITokens.SPACE_SM))
+		theme.set_stylebox("pressed", type_name, _box(look[0], look[1], border_width, UITokens.SPACE_LG, UITokens.SPACE_SM))
+		theme.set_stylebox("disabled", type_name, _box(Color(0, 0, 0, 0), UITokens.BORDER if border_width > 0 else Color(0, 0, 0, 0),
+				border_width, UITokens.SPACE_LG, UITokens.SPACE_SM))
+		theme.set_stylebox("focus", type_name, _focus_ring(UITokens.SPACE_LG, UITokens.SPACE_SM))
 
 
 ## Figma main-menu 9:26, UI/Splash Screen 258:5140, UI/Menu Item 248:62.
