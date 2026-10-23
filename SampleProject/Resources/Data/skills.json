@@ -123,7 +123,7 @@
       "prerequisites": [],
       "sp_cost": 6,
       "cooldown": 0.0,
-      "damage": 20,
+      "damage": 30,
       "required_weapons": [
         "sword",
         "dagger"
@@ -140,7 +140,7 @@
       "vfx": "res://SampleProject/Scenes/FX/Skills/FireStrike.tscn",
       "oath": "",
       "damage_scaling": {
-        "phys": 1.3,
+        "phys": 1.95,
         "elem": 0.3
       },
       "synergies": [
@@ -166,7 +166,7 @@
       "prerequisites": [],
       "sp_cost": 8,
       "cooldown": 0.0,
-      "damage": 25,
+      "damage": 38,
       "required_weapons": [
         "polearm",
         "mace"
@@ -184,7 +184,7 @@
       "vfx": "res://SampleProject/Scenes/FX/Skills/ElectricStrike.tscn",
       "oath": "",
       "damage_scaling": {
-        "phys": 1.2,
+        "phys": 1.8,
         "elem": 0.5
       },
       "synergies": [
@@ -332,7 +332,7 @@
       "sp_cost": 6,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 24,
+      "damage": 36,
       "stun": 0.3,
       "cast": {
         "windup": 0.5,
@@ -341,7 +341,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.4,
+        "phys": 2.1,
         "elem": 0.4
       },
       "synergies": [
@@ -423,7 +423,7 @@
       "sp_cost": 12,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 28,
+      "damage": 42,
       "heal": 20,
       "cast": {
         "windup": 0.6,
@@ -432,7 +432,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.6,
+        "phys": 2.4,
         "elem": 0.4
       },
       "heal_scaling": {
@@ -609,7 +609,7 @@
       "sp_cost": 6,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 18,
+      "damage": 27,
       "burn": {
         "dps": 5,
         "duration": 4.0
@@ -621,7 +621,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.3,
+        "phys": 1.95,
         "elem": 0.5
       },
       "synergies": [
@@ -703,7 +703,7 @@
       "sp_cost": 12,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 34,
+      "damage": 51,
       "burn": {
         "dps": 6,
         "duration": 3.0
@@ -715,7 +715,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.8,
+        "phys": 2.7,
         "elem": 0.4
       },
       "synergies": [
@@ -891,7 +891,7 @@
       "sp_cost": 5,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 26,
+      "damage": 39,
       "stun": 0.5,
       "cast": {
         "windup": 0.35,
@@ -900,7 +900,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.4,
+        "phys": 2.1,
         "elem": 0.0
       },
       "synergies": [
@@ -986,7 +986,7 @@
       "sp_cost": 10,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 30,
+      "damage": 45,
       "chain": {
         "radius": 140,
         "ratio": 0.6
@@ -998,7 +998,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.8,
+        "phys": 2.7,
         "elem": 0.0
       },
       "synergies": [

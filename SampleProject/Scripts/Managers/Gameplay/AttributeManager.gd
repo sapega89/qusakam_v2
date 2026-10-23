@@ -101,7 +101,24 @@ func bonus(stat: String) -> float:
 	assert(stat in KNOWN_STATS, "AttributeManager.bonus: unknown stat %s" % stat)
 	var total := 0.0
 	for definition in definitions:
-		total += get_points(String(definition.id)) * float(definition.per_point.get(stat, 0.0))
+		total += effective_points(definition, get_points(String(definition.id))) * float(definition.per_point.get(stat, 0.0))
+	return total
+
+
+## Спадна віддача (D642): з "diminishing" {step, factor} кожні step очок дають у factor разів менше за попередні
+## (Strength: 1–10 повністю, 11–20 наполовину, 21–30 на чверть…). Без "diminishing" — скільки вкладено, стільки й діє.
+func effective_points(definition: Dictionary, points: int) -> float:
+	if not definition.has("diminishing"):
+		return points
+	var step := int(definition.diminishing.step)
+	var factor := float(definition.diminishing.factor)
+	var total := 0.0
+	var weight := 1.0
+	var left := points
+	while left > 0:
+		total += mini(left, step) * weight
+		left -= step
+		weight *= factor
 	return total
 
 
@@ -110,12 +127,14 @@ func capped(stat: String, value: float) -> float:
 	return minf(value, float(_caps[stat])) if _caps.has(stat) else value
 
 
-## Що дадуть [param points] очок атрибута (для панелі деталей і плану).
+## Що дадуть [param points] очок атрибута понад уже вкладені (для панелі деталей і плану; зі спадною віддачею).
 func preview(attribute_id: String, points: int) -> Dictionary:
 	var out := {}
-	var per_point: Dictionary = get_definition(attribute_id).per_point
-	for stat: String in per_point:
-		out[stat] = float(per_point[stat]) * points
+	var definition := get_definition(attribute_id)
+	var now := get_points(attribute_id)
+	var gain := effective_points(definition, now + points) - effective_points(definition, now)
+	for stat: String in definition.per_point:
+		out[stat] = float(definition.per_point[stat]) * gain
 	return out
 
 

@@ -351,6 +351,7 @@ vertical_alignment = 1
 
 [node name="Fight_Upper" type="Node2D" parent="." unique_id=1640100100 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 8
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
@@ -381,6 +382,7 @@ script = ExtResource("8_spawn_point")
 
 [node name="Fight_Middle" type="Node2D" parent="." unique_id=1640100200 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 9
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
@@ -417,6 +419,7 @@ enemy_type = "fast"
 
 [node name="Fight_Lower" type="Node2D" parent="." unique_id=1640100300 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
+enemy_level = 10
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2

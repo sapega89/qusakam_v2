@@ -140,6 +140,8 @@ func _initialize() -> void:
 	print("[4] Enemy tempo from EnemyStats.attack_cooldown (B111, D394)")
 	ck(not "attack_cooldown" in enemies[0].enemy_logic, "EnemyLogic keeps no tempo of its own")
 	var tempos := {}
+	hero.Max_Health = 9999  # тут лише темп: чотири серії D642 інакше вбивають героя рівня 1, і пауза Game Over зупиняє бій
+	hero.current_health = hero.Max_Health
 	for e in enemies:
 		if not e.is_alive():
 			continue
@@ -155,7 +157,7 @@ func _initialize() -> void:
 		# D504: замахуються разом не більше двох (жетон) — наступний ворог чекав би, доки цей не скінчить
 		while logic.is_attacking:
 			await physics_frame
-	ck(tempos.has("fast") and is_equal_approx(tempos.fast, 1.5), "the fast enemy swings every 1.5 s (D494: 1.0 × 1.5) (%s)" % [tempos])
+	ck(tempos.has("fast") and is_equal_approx(tempos.fast, 1.0), "the fast enemy swings every 1.0 s (D642, was D494's 1.5) (%s)" % [tempos])
 
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

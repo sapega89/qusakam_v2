@@ -5,6 +5,12 @@
 		"medium": {"scale": 1.0, "health": 1.0, "damage": 1.0, "speed": 1.0, "xp": 1.0},
 		"large": {"scale": 1.3, "health": 1.8, "damage": 1.3, "speed": 0.85, "xp": 1.0}
 	},
+	"levels": {
+		"_note": "D642: a fight's enemy_level (RoomEnemySpawner) is the level the hero reaches it at; health[level - 1] and damage[level - 1] multiply the enemy's HP and damage. They follow the SKILLS hero of verify_difficulty: HP with his weapon hits and skills, damage with his HP and armour (the City gear lands at level 5). XP does not grow (D297).",
+		"health": [1.0, 1.1, 1.2, 1.35, 1.9, 2.1, 2.35, 2.6, 2.75, 2.9, 3.05, 3.2, 3.35, 3.5, 3.65, 3.8, 3.95, 4.1, 4.25, 4.4],
+		"damage": [1.0, 1.2, 1.4, 1.6, 2.2, 2.8, 3.4, 3.9, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6]
+	},
+	"pressure": {"_note": "D642: how many enemies may wind up at once (EnemyLogic attack token, D576 had 2).", "max_attackers": 3},
 	"size_weights": {"small": 1, "medium": 2, "large": 1},
 	"elite": {
 		"chance": 0.125,
