@@ -64,6 +64,34 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B129 — The hero's portrait is a purple square in the Game Menu
+- **Where:** Status header, Equipment "Current character", and the party card in the right column (Inventory, Equipment, Misc, Map).
+- **Expected:** Kusakam's portrait, the one the dialogue box uses (`Sprites/Player/portrait.tres`), framed as in Figma `58:719`.
+- **Got:** a flat purple square. **Evidence:** `design/shots/menu_qa/cmp_status.png`, `game_equipment.png`.
+- **Severity:** visual. **Found:** 2026-10-23, menu QA.
+
+### B130 — Status shows "—" for the primary job, weapon types and stat icons
+- **Where:** Status (`58:719`).
+- **Expected:**
+  - Primary Job shows the hero's class, Holy Warrior.
+  - Secondary Job shows the oath once one is sworn.
+  - Weapon Types shows the icons of the usable weapons.
+  - Each stat row has its icon (Figma's crossed-swords glyph).
+- **Got:** "—" in the job and weapon boxes, and empty squares instead of the stat icons. Path Action and Talent are "—" too: hide them while the hero has none.
+- **Severity:** visual / data. **Found:** 2026-10-23, menu QA.
+
+### B131 — Equipment shows an empty frame above Attributes
+- **Where:** Equipment, the middle column.
+- **Expected:** that frame shows the hero (his sprite in the current gear) or it is not there.
+- **Got:** a large empty bordered box. **Evidence:** `design/shots/menu_qa/game_equipment.png`.
+- **Severity:** visual. **Found:** 2026-10-23, menu QA.
+
+### B132 — The World Map is covered by a dense cell grid
+- **Where:** Game Menu → World Map (`metsys_map_component`).
+- **Expected:** the parchment map reads clearly (Figma `94:609`). D487 replaces it with per-region maps later.
+- **Got:** unexplored MetSys cells are drawn as a fine square pattern over the whole parchment, so the map is hard to read and the two explored cells are tiny. **Evidence:** `design/shots/menu_qa/cmp_map.png`.
+- **Severity:** visual. **Found:** 2026-10-23, menu QA.
+
 ### B128 — Hit areas do not match what is drawn: enemies hit from too far, the hero cannot reach them
 - **Where:** `Scripts/Gameplay/DefaultEnemy.gd:114`: `hitbox_collision.shape.size.x = attack_range`, so the enemy's damage area is as wide as its whole attack range (melee and tank 100 px, fast 80 px plus a 60-px lunge; `Resources/Enemies/enemy_stats_*.tres`). The scene's own `hitbox` shape is 28 × 28. The shape is a shared sub-resource, so writing to it may resize every enemy's. The enemy's body / hurt area (`default_enemy.tscn` `CollisionShape2D`) and the hero's swing area (`PlayerCombat` / `WeaponView`) are not matched to their sprites either.
 - **Expected:** what you see is what hits.
