@@ -186,13 +186,35 @@ PIX_BASE = (
     "lies diagonally across the centre of the square. Plain flat bright green background (#00FF00) right to the edges. "
     "No character, no text, no border."
 )
+# Sapega 2026-10-23 (мобільна гра як приклад): «скіл каже, що він робить… давай і так, і так спробуємо… один колір для
+# скілів, ультимейт — іншого». Знак — однокольоровий світлий (слот дає колір), два варіанти: лише ефект / фігурка в дії
 PIX_RESTYLE = (
-    "Keep exactly this icon's pixel art style: big square pixels, a thick dark outline, flat shading, bright clean "
-    "colours, and the plain flat bright green background right to the edges. Replace the flaming sword with {subject}. "
-    "The element that carries the meaning sits exactly in the centre of the square. No character, no lizard, no people, "
-    "no text, no border."
+    "Keep exactly this icon's pixel art style: big square pixels, a thick dark outline, flat shading, and the plain flat "
+    "bright green background right to the edges. Replace the flaming sword with {subject}. Use at most three colours: "
+    "{colour} and the thick dark outline, nothing else, no rainbow. The element that carries "
+    "the meaning sits exactly in the centre of the square. No lizard, no face details, no text, no border."
 )
-PIX_SUBJECT = {"Searing Hex": "a pale violet curse rune in the centre with dark violet-black fire burning evenly around it"}
+# Sapega: «можливо, в нас інші кольори; я не проти мати три кольори, але не різнокольорове» — кольори UI гри
+SKILL_COLOUR, ULT_COLOUR = "pale ivory with warm gold accents", "warm gold with deep crimson accents"
+EFFECT = {
+    "Fire Strike": "a crescent of fire like the trail of a blow",
+    "Electric Strike": "a jagged lightning bolt",
+    "Healing Palm": "an open palm with light rising from it",
+    "Radiant Smite": "a sunburst with a small holy sigil at its heart",
+    "Searing Hex": "a curse rune inside a ring of fire",
+    "Dervish Whirl": "a spinning whirlwind",
+}
+FIGURE = {  # маленька безлика фігурка робить дію (не ящур)
+    "Fire Strike": "a small faceless figure swinging a flaming sword in a wide slash",
+    "Electric Strike": "a small faceless figure striking down with a hammer as a lightning bolt hits it",
+    "Healing Palm": "a small faceless figure laying an open hand on a kneeling ally, light rising between them",
+    "Radiant Smite": "a small faceless figure raising a hammer as a beam of holy light strikes down",
+    "Searing Hex": "a small faceless figure casting a curse rune from an outstretched hand, fire around the rune",
+    "Dervish Whirl": "a small faceless figure spinning round with two curved blades inside a whirlwind",
+    "Wind Step": "a small faceless figure leaping forward with a flying knee strike, motion lines behind",
+    "Judgement of the Sky": "a small faceless figure raising a sword as a great pillar of light falls from the sky",
+}
+ULTIMATES = {"Judgement of the Sky"}
 
 
 def pixel_icon(img):
@@ -213,46 +235,61 @@ def pixel_icon(img):
     return Image.fromarray(out)
 
 
-def pixel_main():
-    ref = np.asarray(Image.open(PIXEL_REF).convert("RGBA"))
-    mp = ref.shape[0] * ref.shape[1] / 1048576
-    base = run(edit_graph(PIX_BASE, 800, upload(ref, "icon_pixel_ref.png"), mp)).astype(np.uint8)
-    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_pixel_base.png")
-    raw = {"Fire Strike": base}
-    print("generated Fire Strike", flush=True)
-    for ki, (skill, _, _, subject, _) in enumerate(SKILLS):
-        if skill == "Fire Strike":
-            continue
-        text = PIX_RESTYLE.format(subject=PIX_SUBJECT.get(skill, subject))
-        raw[skill] = run(edit_graph(text, 801 + ki, base_name, mp)).astype(np.uint8)
-        print("generated", skill, flush=True)
-    free()
+def pixel_main(variant):
+    """variant: "E" — лише ефект, "F" — фігурка в дії. База (палаючий меч без героя) — одна на обидва, кешується."""
     folder = os.path.join(ICONS_OUT, "pixel")
     os.makedirs(os.path.join(folder, "raw"), exist_ok=True)
-    font, small = ImageFont.truetype("arial.ttf", 22), ImageFont.truetype("arial.ttf", 17)
-    pad, top = 24, 70
-    sheet = Image.new("RGB", (pad + len(SKILLS) * (SIZE + pad), top + 2 * (SIZE + pad)), (60, 60, 66))
+    ref = np.asarray(Image.open(PIXEL_REF).convert("RGBA"))
+    mp = ref.shape[0] * ref.shape[1] / 1048576
+    base_path = os.path.join(folder, "raw", "_base.png")
+    if not os.path.exists(base_path):
+        Image.fromarray(run(edit_graph(PIX_BASE, 800, upload(ref, "icon_pixel_ref.png"), mp)).astype(np.uint8)).save(base_path)
+        print("generated base", flush=True)
+    base = np.asarray(Image.open(base_path).convert("RGB"))
+    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_pixel_base.png")
+    subjects = EFFECT if variant == "E" else FIGURE
+    raw = {}
+    for ki, (skill, subject) in enumerate(subjects.items()):
+        colour = ULT_COLOUR if skill in ULTIMATES else SKILL_COLOUR
+        path = os.path.join(folder, "raw", f"{variant}_{skill.lower().replace(' ', '_')}.png")
+        if not os.path.exists(path):
+            out = run(edit_graph(PIX_RESTYLE.format(subject=subject, colour=colour), 810 + ki, base_name, mp))
+            Image.fromarray(out.astype(np.uint8)).save(path)
+            print("generated", variant, skill, flush=True)
+        raw[skill] = np.asarray(Image.open(path).convert("RGB"))
+    free()
+    pixel_sheet(variant, raw)
+
+
+def pixel_sheet(variant, raw):
+    """Лист: кожен знак — у круглому слоті одного кольору (як у прикладі Sapega), ультимейт — у слоті іншого."""
+    folder = os.path.join(ICONS_OUT, "pixel")
+    font = ImageFont.truetype("arial.ttf", 20)
+    pad, top = 24, 50
+    sheet = Image.new("RGB", (pad + len(raw) * (SIZE + pad), top + SIZE + pad), (60, 60, 66))
     d = ImageDraw.Draw(sheet)
-    for i, (skill, tree, source, _, _) in enumerate(SKILLS):
-        name = skill.lower().replace(" ", "_")
-        Image.fromarray(raw[skill]).save(os.path.join(folder, "raw", name + ".png"))
-        icon = pixel_icon(raw[skill])
-        icon.save(os.path.join(folder, name + ".png"))
+    for i, (skill, img) in enumerate(raw.items()):
+        icon = pixel_icon(img)
+        icon.save(os.path.join(folder, f"{variant}_{skill.lower().replace(' ', '_')}.png"))
         big = icon.resize((SIZE, SIZE), Image.NEAREST)
         x = pad + i * (SIZE + pad)
         d.text((x, 14), skill, fill="white", font=font)
-        d.text((x, 42), source, fill=(200, 200, 210), font=small)
-        for row, bg in enumerate((SLOT, TINT[tree])):
-            tile = Image.new("RGBA", (SIZE, SIZE), bg + (255,))
-            tile.alpha_composite(big)
-            sheet.paste(tile.convert("RGB"), (x, top + row * (SIZE + pad)))
-    sheet.save(PIXEL_OUT)
-    print("sheet", PIXEL_OUT, sheet.size)
+        disc = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(disc)
+        fill = (58, 16, 32, 255) if skill in ULTIMATES else (29, 29, 39, 255)  # слот UI: #1D1D27; ультимейт — темно-багряний
+        dd.ellipse((4, 4, SIZE - 5, SIZE - 5), fill=fill, outline=(15, 15, 20, 255), width=4)
+        disc.alpha_composite(big)
+        tile = Image.new("RGBA", (SIZE, SIZE), (60, 60, 66, 255))
+        tile.alpha_composite(disc)
+        sheet.paste(tile.convert("RGB"), (x, top))
+    out = PIXEL_OUT.replace(".png", f"_{variant}.png")
+    sheet.save(out)
+    print("sheet", out, sheet.size)
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--pixel"]:
-        pixel_main()
+    if sys.argv[1:2] == ["--pixel"]:
+        pixel_main(sys.argv[2] if len(sys.argv) > 2 else "E")
     elif sys.argv[1:] == ["--sheet"]:  # лише лист із збережених сирих кадрів, без моделі
         sheet_from([np.asarray(Image.open(raw_path(s[0])).convert("RGB")) for s in SKILLS])
     else:
