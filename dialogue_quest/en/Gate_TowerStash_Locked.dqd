@@ -1,0 +1,3 @@
+// [DRAFT] D562 — the hero tries the barred stash on the watchtower without the key (gates.json → tower_stash).
+say|KUSAKAM|Locked. The bandits hide their caravan loot up here... and must carry the key on them.
+exit|

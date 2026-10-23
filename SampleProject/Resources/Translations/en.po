@@ -2664,6 +2664,7 @@ msgstr "Needs %d more JP spent in the %s tree."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "This tree's JP cap is reached (%d JP)."
+
 msgid "Dash through the blow, or hold block."
 msgstr "Dash through the blow, or hold block."
 
@@ -2684,3 +2685,29 @@ msgstr "MAX"
 
 msgid "Swear an oath with the oath keepers"
 msgstr "Swear an oath with the oath keepers"
+
+# ── Locations (D565, Resources/Data/locations.json)
+msgid "Canyon of Whispers"
+msgstr "Canyon of Whispers"
+
+msgid "The City"
+msgstr "The City"
+
+msgid "The Laboratory"
+msgstr "The Laboratory"
+
+# ── Gates, branches and story pieces (D604–D622)
+msgid "Bandit Key"
+msgstr "Bandit Key"
+
+msgid "A crude iron key from the belt of the bandit who led the caravan raid. It fits the barred stash on top of the old watchtower."
+msgstr "A crude iron key from the belt of the bandit who led the caravan raid. It fits the barred stash on top of the old watchtower."
+
+msgid "Read"
+msgstr "Read"
+
+msgid "Grandfather's notes"
+msgstr "Grandfather's notes"
+
+msgid "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay."
+msgstr "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay."

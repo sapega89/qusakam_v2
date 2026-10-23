@@ -4,8 +4,7 @@ extends SceneTree
 ##   1. Each section fight (dunes, mesa, caravan) waits for the hero: no enemy until he walks into its zone, then its
 ##      own enemies appear on the floor; the story fight at the start (EnemySpawner) is not touched.
 ##   2. A finished section fight stays finished when the hero comes back (its own room-state key, D152).
-##   3. A ledge pickup: the hero jumps from the step onto the ledge (real physics, real keys), presses interact,
-##      the item lands in the inventory, and after a reload of the room it is gone (D298).
+##   3. No gift lies on the road (D583): the pickups and the chest are up in branches (verify_road_secrets walks them).
 ##   4. The road ends at CityGates: walking off the east edge loads CityGates.
 ##   5. Every ledge can be climbed again with one jump at a time (BACKLOG 32, no double jump): no rise between
 ##      neighbouring tile columns is higher than a jump, and from the floor on both sides of each raised top the
@@ -135,46 +134,11 @@ func _initialize() -> void:
 		await create_timer(2.0).timeout
 		ck(_alive(spawner).is_empty(), "%s: nobody comes back" % fight)
 
-	print("[3] The dune ledge: jump up, pick up, gone after a reload")
-	var inventory: Node = sl.get_inventory_manager()
-	var before: int = inventory.get_item_count("iron_ingot")
-	# On the floor west of the step (tiles 58–61, top y 320), facing east.
-	player.global_position = Vector2(1800.0, 360.0)
-	player.velocity = Vector2.ZERO
-	await create_timer(0.5).timeout
-	Input.action_press(&"move_right")
-	await create_timer(0.15).timeout
-	await _hold(&"jump", 0.25)  # onto the step
-	await create_timer(0.45).timeout
-	await _hold(&"jump", 0.25)  # onto the rock (tiles 62–65, top y 256)
-	await create_timer(0.3).timeout
-	Input.action_release(&"move_right")
-	await create_timer(0.6).timeout
-	if player.global_position.x > 2060.0:  # overshot the pickup: a step back west
-		await _hold(&"move_left", 0.12)
-		await create_timer(0.3).timeout
-	ck(player.is_on_floor() and player.global_position.y < 260.0 and absf(player.global_position.x - 2048.0) < 30.0,
-			"the hero stands on the ledge (%.0f, %.0f)" % [player.global_position.x, player.global_position.y])
-	var pickup: Node = road.get_node("Pickup_DuneLedge")
-	ck(pickup.get_node("Interactable").enabled, "the pickup offers \"Pick up\"")
-	var press := InputEventAction.new()
-	press.action = &"interact"
-	press.pressed = true
-	Input.parse_input_event(press)
-	await process_frame
-	var release := InputEventAction.new()
-	release.action = &"interact"
-	Input.parse_input_event(release)
-	for i in 6: await process_frame
-	ck(inventory.get_item_count("iron_ingot") == before + 1, "an iron ingot in the bag (potions out, 4b) (%d → %d)" % [before, inventory.get_item_count("iron_ingot")])
-	var layer = sl.get_ui_manager().get_modal_layer()
-	if layer.active_modal:
-		layer.active_modal.get_viewport().gui_get_focus_owner().pressed.emit()
-		for i in 4: await process_frame
-	await game.teleport_to_room(ROAD, ^"Arrival_Start")
-	for i in 20: await physics_frame
-	ck(game.map.get_node_or_null("Pickup_DuneLedge") == null, "the picked ingot does not come back")
-	ck(game.map.get_node_or_null("Pickup_MesaLedge") != null, "the other ledges keep theirs")
+	print("[3] No gift lies on the road (D583): every pickup and chest is up in a branch")
+	var gifts := road.get_children().filter(func(n: Node) -> bool: return n.scene_file_path in ["res://SampleProject/Objects/ItemPickup.tscn", "res://SampleProject/Objects/Chest.tscn"])
+	ck(gifts.size() == 3, "three gifts on the road, all in branches (%d)" % gifts.size())
+	for gift: Node2D in gifts:
+		ck(gift.global_position.y < 200.0, "%s is above the road (y %.0f), not on it" % [gift.name, gift.global_position.y])
 
 	print("[5] Every ledge can be climbed back onto (BACKLOG 32)")
 	var fg: TileMapLayer = game.map.get_node("TileMap/Foreground")

@@ -506,6 +506,18 @@
 			"max_stack": 999,
 			"sell_price": 1,
 			"buy_price": 1
+		},
+		{
+			"id": "bandit_key",
+			"name": "Bandit Key",
+			"description": "A crude iron key from the belt of the bandit who led the caravan raid. It fits the barred stash on top of the old watchtower.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
 		}
 	]
 }

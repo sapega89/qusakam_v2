@@ -125,6 +125,21 @@
 			"file": "pathfinder_classes.json",
 			"path": "classes.*.subclasses.*.name",
 			"shown": "stats_component._secondary_job (поки порожні)"
+		},
+		{
+			"file": "locations.json",
+			"path": "locations[].name",
+			"shown": "LocationDB.title → карта світу (world_structure_plan слайс 2)"
+		},
+		{
+			"file": "journal_stories.json",
+			"path": "stories[].title",
+			"shown": "StoryNote → модалка читання (D621)"
+		},
+		{
+			"file": "journal_stories.json",
+			"path": "stories[].text",
+			"shown": "StoryNote → модалка читання (D621)"
 		}
 	]
 }

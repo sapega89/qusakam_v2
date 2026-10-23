@@ -102,7 +102,7 @@ func _initialize() -> void:
 	ck(_room() == "ElderHouse" and game.player.position.x > 0.0, "west wall holds (x %.0f)" % game.player.position.x)
 
 	print("[4] Back to the exit (real input), pad Y leaves")
-	game.player.global_position = Vector2(400.0, 344.0)
+	game.player.global_position = Vector2(400.0, exit.global_position.y)  # дім — нижня клітинка кімнати, над ним горище (D621)
 	for i in 20: await physics_frame
 	await _walk_to_door(&"move_left", exit)
 	ck(exit.get_node(^"Interactable").get_prompt().visible, "the Leave prompt shows at the exit")

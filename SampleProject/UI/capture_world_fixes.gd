@@ -60,7 +60,7 @@ func _initialize() -> void:
 ## Блиск предмета на землі (D446): кадри анімації у повну величину.
 func _sparkle() -> void:
 	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
-	var pickup: Node2D = game.map.get_node(^"Pickup_DuneLedge")
+	var pickup: Node2D = game.map.get_node(^"Pickup_ShopRoof")
 	game.place_player(pickup.global_position + Vector2(-120, 0))
 	for i in 45: await physics_frame
 	await _drain()

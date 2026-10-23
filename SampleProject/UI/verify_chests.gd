@@ -1,7 +1,8 @@
 extends SceneTree
 
 ## Chests (BACKLOG 33, D88 path 3, design/chests_plan.md) in the real game:
-##   1. The caravan ledge on DesertRoad holds a closed chest (not the old Mana Crystal pickup) with an "Open" prompt.
+##   1. The bandits' stash on the DesertRoad watchtower holds a closed chest (D583; its cage opened with the bandit
+##      key — verify_gates walks the key itself) with an "Open" prompt.
 ##   2. Open it with the keyboard (the E key event the interact action is bound to): the lid opens (Closed → Opening →
 ##      Open), the hero is held in Chest.HERO_POSE with the found item's icon above his head, the contents land in the
 ##      bag, then the "You obtained:" modal; a pad A closes it and the hero walks again.
@@ -17,8 +18,8 @@ const CHEST_SCENE := "res://SampleProject/Objects/Chest.tscn"
 const RAISED := preload("res://SampleProject/Sprites/Player/Raise/3.png")
 const TEST_DIR := "user://verify_chests/"
 const TEST_SLOT := 1
-## On top of the caravan rock (tiles x 4096–4192, top y 256); the hero's origin is 24 px above his feet.
-const LEDGE_SPOT := Vector2(4144.0, 232.0)
+## On top of the watchtower (Ledge_TowerTop, top y 158) beside the stash; the hero's origin is 24 px above his feet.
+const LEDGE_SPOT := Vector2(2420.0, 134.0)
 
 var fails: Array[String] = []
 var sl: Node
@@ -142,10 +143,13 @@ func _initialize() -> void:
 	for i in 20: await physics_frame
 	var player: CharacterBody2D = game.player
 
-	print("[1] The caravan ledge holds a closed chest")
-	var chest: Node = game.map.get_node_or_null("Chest_CaravanLedge")
-	ck(chest != null and chest.scene_file_path == CHEST_SCENE, "Chest_CaravanLedge is a Chest.tscn")
-	ck(game.map.get_node_or_null("Pickup_CaravanLedge") == null, "the old ledge pickup is gone")
+	print("[1] The watchtower stash holds a closed chest")
+	var chest: Node = game.map.get_node_or_null("Chest_TowerStash")
+	ck(chest != null and chest.scene_file_path == CHEST_SCENE, "Chest_TowerStash is a Chest.tscn")
+	ck(game.map.get_node_or_null("Chest_CaravanLedge") == null, "the old caravan-ledge chest is gone (D583)")
+	inventory.add_item("bandit_key", 1)
+	game.map.get_node("Cage_TowerStash/Area/Interactable").interacted.emit()  # ключ відмикає ґрати
+	await create_timer(0.5).timeout
 	if chest == null:
 		_finish()
 		return
@@ -182,7 +186,7 @@ func _initialize() -> void:
 	print("[3] A room reload keeps it open")
 	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
-	chest = game.map.get_node("Chest_CaravanLedge")
+	chest = game.map.get_node("Chest_TowerStash")
 	await _stand(player, LEDGE_SPOT)
 	ck(chest.is_open and chest.get_node("Sprite").animation == &"open", "the chest is open after the reload")
 	ck(not chest.get_node("Interactable").enabled and not chest.get_node("Interactable").get_prompt().visible, "no prompt")
@@ -199,7 +203,7 @@ func _initialize() -> void:
 	game = await _boot()
 	player = game.player
 	ck(game.map.scene_file_path == ROAD, "loaded on the Desert Road (%s)" % game.map.scene_file_path)
-	chest = game.map.get_node_or_null("Chest_CaravanLedge")
+	chest = game.map.get_node_or_null("Chest_TowerStash")
 	ck(chest != null and chest.is_open and chest.get_node("Sprite").animation == &"open", "the chest is open after the load")
 	ck(inventory.get_item_count("mana_crystal") == before + 2, "the crystals are still in the bag (%d)" % inventory.get_item_count("mana_crystal"))
 
@@ -209,7 +213,7 @@ func _initialize() -> void:
 	var two: Dictionary[String, int] = {"herb": 1, "mana_crystal": 1}
 	pad_chest.contents = two
 	game.map.add_child(pad_chest)
-	pad_chest.global_position = Vector2(LEDGE_SPOT.x, 256.0)
+	pad_chest.global_position = LEDGE_SPOT + Vector2(0.0, 24.0)  # на тому ж уступі, що й герой
 	await _stand(player, LEDGE_SPOT)
 	var herbs: int = inventory.get_item_count("herb")
 	r = await _open(game, pad_chest, pad)

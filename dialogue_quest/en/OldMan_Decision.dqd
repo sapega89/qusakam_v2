@@ -1,3 +1,5 @@
 say|GRANDFATHER|You need to catch up with the bandits. They took our relic. It's the key to everything.
 say|GRANDFATHER|Take my old copper sword and leather armor. I've no use for them anymore, but you'll need them.
+// [DRAFT] D621 — Grandfather lets Kusakam into the attic (his flag village_oldman_complete opens the hatch, gates.json → elder_attic), D583 / D562.
+say|GRANDFATHER|And one more thing... behind the rug in my house there's a ladder to the attic. My old notes are up there. You may go up now.
 exit|

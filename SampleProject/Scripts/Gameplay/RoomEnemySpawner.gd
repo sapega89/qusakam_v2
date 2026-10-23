@@ -1,8 +1,8 @@
 extends Node2D
 class_name RoomEnemySpawner
 
-const Regions := preload("res://SampleProject/Scripts/Systems/Regions.gd")
 const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
+const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 
 ## 🏠 RoomEnemySpawner - Управляет спавном врагов в комнате
 ## Автоматически находит все EnemySpawnPoint в комнате и спавнит врагов
@@ -36,6 +36,10 @@ const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety
 
 ## D560, D582: точки з elite = auto кидають еліту (1 з 8). Вмикається лише там, де героя вже навчено еліті сам-на-сам.
 @export var elite_rolls: bool = false
+
+## D583: здобич бою — item_id → кількість, дається один раз, коли бій добито вперше (стан кімнати
+## <state_key>_reward, у сейві); повернення ворогів (D492) її не повторює. Порожньо — без здобичі.
+@export var reward: Dictionary[String, int] = {}
 
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
@@ -74,7 +78,7 @@ func _ready() -> void:
 	if trigger_area:
 		trigger_area.body_entered.connect(_on_trigger_body_entered)
 	if respawns:
-		_region = Regions.of_scene(get_parent().scene_file_path)
+		_region = LocationDB.of_scene(get_parent().scene_file_path)
 		Game.get_singleton().ordinary_fights_reset.connect(_on_ordinary_fights_reset)
 
 	# Ждём следующий кадр чтобы комната полностью загрузилась
@@ -272,6 +276,21 @@ func _on_enemy_died(enemy: Node) -> void:
 	if get_alive_enemies_count() == 0:
 		all_enemies_defeated.emit()
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
+	if not reward.is_empty():
+		_grant_reward.call_deferred()  # після того, як _track() викреслив убитого зі стану бою
+
+const REWARD_SUFFIX := "_reward"
+
+## Бій добито вперше — здобич в інвентар і модалка «You obtained».
+func _grant_reward() -> void:
+	var game := Game.get_singleton()
+	if not fight_cleared() or game.get_room_state(_room, state_key + REWARD_SUFFIX, false):
+		return
+	game.set_room_state(_room, state_key + REWARD_SUFFIX, true)
+	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
+	for item_id: String in reward:
+		inventory.add_item(item_id, reward[item_id])
+	ServiceLocator.get_ui_manager().show_obtained(reward)
 
 func get_alive_enemies_count() -> int:
 	"""Возвращает количество живых врагов"""
