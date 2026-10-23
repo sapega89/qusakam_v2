@@ -150,3 +150,5 @@ New coverage: `verify_combat_flow` [0] spawn on the floor and moving with the ro
 passes through the player (D197), [1] one hit = one damage event, [1b] a miss, [1c] the hit equals
 Phys. Atk. and grows with the weapon (D199), [2b] invulnerability frames, [2c] enemy wind-up /
 facing / height / no friendly fire (D198); `verify_map_geometry` [5] every spawn point stands on a tile.
+
+> **2026-10-23, after round 10 (all seven branches merged):** full suite 101/102; the one FAIL was a real merge interaction, `verify_onboarding` "a light hit does not pass Heavy" — the riposte (D575) reuses HEAVY_STRIKE, so `CombatTraining` now ignores riposting strikes for the Heavy lesson (02dc075f); re-run ALL PASS. Windows build sent.
