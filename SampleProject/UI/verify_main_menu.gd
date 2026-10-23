@@ -129,7 +129,7 @@ func _initialize() -> void:
 		var panel_bg: Color = modal.get_node("Panel").get_theme_stylebox("panel").bg_color
 		ck(panel_bg.a == 1.0, "%s → the modal panel is opaque (D195, alpha %.2f)" % [way, panel_bg.a])
 		for b in modal.buttons_container.get_children():
-			if b is Button and b.text == "Cancel":
+			if b is Button and b.text == "CANCEL":  # B119: підписи модалки великими
 				b.pressed.emit()
 		for i in 6: await process_frame
 		ck(layer.active_modal == null and menu.menu.visible, "%s → Cancel keeps the game running" % way)

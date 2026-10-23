@@ -29,9 +29,71 @@ func _press_modal(text: String) -> void:
 	if m == null:
 		return
 	for b in m.buttons_container.get_children():
-		if b is Button and b.visible and b.text == text:
+		# B119: підписи кнопок модалки — великими літерами (Figma UI/Modal/Confirm).
+		if b is Button and b.visible and b.text == text.to_upper():
 			b.pressed.emit()
 			return
+
+
+## WCAG: відносна яскравість і контраст двох кольорів.
+func _luminance(c: Color) -> float:
+	var lin := func(v: float) -> float: return v / 12.92 if v <= 0.04045 else pow((v + 0.055) / 1.055, 2.4)
+	return 0.2126 * lin.call(c.r) + 0.7152 * lin.call(c.g) + 0.0722 * lin.call(c.b)
+
+
+func _contrast(a: Color, b: Color) -> float:
+	var la := _luminance(a)
+	var lb := _luminance(b)
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+
+
+## B119: модалка підтвердження — набір UI/Modal/Confirm (Figma 258:5332, shop-buy-confirm 153:1760).
+func _check_confirm_kit(m: Node, mb: Array) -> void:
+	print("[4a0] Confirm modal follows the kit's UI/Modal/Confirm (B119)")
+	var psb: StyleBoxFlat = m.get_node("Panel").get_theme_stylebox("panel")
+	ck(psb.content_margin_left == UITokens.MODAL_PAD_H and psb.content_margin_right == UITokens.MODAL_PAD_H
+			and psb.content_margin_top == UITokens.MODAL_PAD_V and psb.content_margin_bottom == UITokens.MODAL_PAD_V,
+			"panel padding 40 × 28")
+	ck(psb.bg_color.a == 1.0, "panel stays opaque (D195)")
+	ck(m.get_node("Panel/VBox").get_theme_constant("separation") == UITokens.MODAL_GAP, "column gap 16")
+	# Лінія під заголовком: 1 px accent, 300 px, одразу після заголовка.
+	var rule: HSeparator = m.rule
+	var line := rule.get_theme_stylebox("separator") as StyleBoxLine
+	ck(rule.visible and rule.get_index() == m.title_label.get_index() + 1, "a rule right under the title")
+	ck(line != null and line.color == UITokens.ACCENT and line.thickness == UITokens.MODAL_RULE
+			and rule.size.x == UITokens.MODAL_RULE_WIDTH, "the rule is 1 px accent, %d px wide" % int(rule.size.x))
+	ck(m.description_label.get_theme_font_size("font_size") == UITokens.font_px(UITokens.SIZE_MODAL_BODY), "body Regular 14")
+	# Кнопки — стовпчиком: одна над одною, ліві краї збігаються, проміжок 12.
+	ck(m.buttons_container is VBoxContainer and m.buttons_container.get_theme_constant("separation") == UITokens.MODAL_BUTTON_GAP
+			and m.buttons_container.size.x == UITokens.MODAL_BUTTON_COLUMN, "buttons in a 300-px vertical column, gap 12")
+	var a: Rect2 = mb[0].get_global_rect()
+	var b: Rect2 = mb[1].get_global_rect()
+	ck(is_equal_approx(a.position.x, b.position.x) and is_equal_approx(b.position.y - a.end.y, UITokens.MODAL_BUTTON_GAP),
+			"No sits under Yes (%s, %s)" % [a, b])
+	ck(a.size == Vector2(UITokens.MODAL_BUTTON_WIDTH, UITokens.MODAL_BUTTON_HEIGHT), "hex button 260 × 36 (%s)" % a.size)
+	ck(mb[0].text == "YES" and mb[1].text == "NO", "labels uppercase (%s / %s)" % [mb[0].text, mb[1].text])
+	var font: FontVariation = mb[0].get_theme_font("font")
+	ck(font.spacing_glyph == UITokens.MODAL_BUTTON_SPACING and mb[0].get_theme_font_size("font_size") == UITokens.font_px(UITokens.SIZE_MODAL_BUTTON),
+			"labels SemiBold 18, tracking 2")
+	# Вибрана — заливка hex_button_selected + шеврон; інша — контур hex_button; рамка D329 біла поверх.
+	mb[0].grab_focus()
+	await process_frame
+	var on: StyleBoxTexture = mb[0].get_theme_stylebox("normal")
+	var off: StyleBoxTexture = mb[1].get_theme_stylebox("normal")
+	ck(mb[0].theme_type_variation == &"ModalButtonOn" and on.texture.resource_path == UITokens.MODAL_BUTTON_SELECTED_TEXTURE,
+			"selected button: accent hex fill")
+	ck(mb[1].theme_type_variation == &"ModalButton" and off.texture.resource_path == UITokens.MODAL_BUTTON_TEXTURE,
+			"other button: hex outline")
+	ck(mb[0].icon != null and mb[0].get_theme_color("icon_focus_color").a > 0.0 and mb[1].get_theme_color("icon_normal_color").a == 0.0
+			and on.content_margin_left == UITokens.MODAL_POINTER_X, "the pointer only on the selected one, at x 49")
+	var ring := mb[0].get_theme_stylebox("focus") as StyleBoxFlat
+	ck(ring != null and ring.border_color == UITokens.FOCUS_RING_ON_ACCENT and ring.border_width_left == UITokens.FOCUS_RING_WIDTH,
+			"D329 ring over the selected look, white on accent")
+	mb[1].grab_focus()
+	await process_frame
+	ck(mb[1].theme_type_variation == &"ModalButtonOn" and mb[0].theme_type_variation == &"ModalButton", "selection follows focus")
+	mb[0].grab_focus()
+	await process_frame
 
 
 func _set_gold(value: int) -> void:
@@ -213,6 +275,7 @@ func _initialize() -> void:
 	ck(psb.border_width_left == UITokens.BORDER_WIDTH and psb.border_width_top == UITokens.BORDER_WIDTH
 			and psb.border_width_right == UITokens.BORDER_WIDTH and psb.border_width_bottom == UITokens.BORDER_WIDTH
 			and psb.border_color == UITokens.BORDER, "modal panel border is BORDER at BORDER_WIDTH")
+	await _check_confirm_kit(_modal(), mb)
 	_press_modal("No")
 	await process_frame
 	ck(inv.get_item_count(id) == before, "No cancels the purchase")
@@ -244,7 +307,24 @@ func _initialize() -> void:
 	shop.refresh()  # у грі золото під час магазину міняє лише купівля, а за нею refresh()
 	await process_frame
 	var poor: ShopRow = shop.get_rows()[0]
+	poor.release_focus()  # refresh() фокусує перший рядок; спершу — невибраний вигляд
+	await process_frame
 	ck(not poor.affordable and poor._name.theme_type_variation == &"ShopRowDisabled", "row greyed")
+	# D433: ціна сіра так само, як назва, — саме через неї рядок недоступний.
+	var price_c: Color = poor._price.get_theme_color("font_color")
+	ck(poor._price.theme_type_variation == &"ShopRowPriceDisabled" and price_c == UITokens.TEXT_MUTED
+			and price_c == poor._name.get_theme_color("font_color"), "the price greys too (D433, %s)" % price_c.to_html(false))
+	# D433: на вибраному рядку (заливка accent) сірий тексту читається — контраст ≥ 4.5:1.
+	poor.grab_focus()
+	await process_frame
+	var fill: Color = (poor.get_theme_stylebox("focus") as StyleBoxFlat).bg_color
+	var name_c: Color = poor._name.get_theme_color("font_color")
+	price_c = poor._price.get_theme_color("font_color")
+	ck(fill == UITokens.ACCENT and poor._name.theme_type_variation == &"ShopRowDisabledOn"
+			and poor._price.theme_type_variation == &"ShopRowPriceDisabledOn", "selected unaffordable row: accent fill, ...DisabledOn text")
+	ck(_contrast(name_c, fill) >= UITokens.MIN_TEXT_CONTRAST and _contrast(price_c, fill) >= UITokens.MIN_TEXT_CONTRAST,
+			"selected unaffordable row reads on the fill (name %.2f:1, price %.2f:1)" % [_contrast(name_c, fill), _contrast(price_c, fill)])
+	ck(name_c != poor._name.get_theme_color("font_color", &"ShopRowNameOn"), "…and still looks disabled (not the ON_ACCENT text)")
 	ck(poor.focus_mode != Control.FOCUS_NONE, "still focusable — its description stays readable")
 	poor.pressed.emit()
 	await process_frame

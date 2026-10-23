@@ -47,7 +47,8 @@ func _press_modal(text: String) -> void:
 	if modal == null:
 		return
 	for b in modal.buttons_container.get_children():
-		if b is Button and b.visible and b.text == text:
+		# B119: підписи кнопок модалки — великими літерами.
+		if b is Button and b.visible and b.text == text.to_upper():
 			b.pressed.emit()
 			return
 
@@ -204,7 +205,12 @@ func _initialize() -> void:
 	ck(m.title_label.theme_type_variation == &"ModalTitle" and t_px == UITokens.font_px(UITokens.SIZE_MODAL_TITLE)
 			and t_px > d_px, "modal title %d > description %d, from ModalTitle (B34)" % [t_px, d_px])
 	var cb: Button = m.buttons_container.get_child(0)
-	ck(cb.get_theme_font_size("font_size") == UITokens.font_px(UITokens.SIZE_LABEL), "modal buttons keep the Button size (B34)")
+	ck(cb.get_theme_font_size("font_size") == UITokens.font_px(UITokens.SIZE_MODAL_BUTTON), "modal buttons: the kit's SemiBold 18 (B34, B119)")
+	# B119: та сама модалка набору — лінія під заголовком і кнопки стовпчиком.
+	ck(m.rule.visible and m.rule.get_index() == m.title_label.get_index() + 1, "overwrite modal has the rule under the title (B119)")
+	var shown: Array = m.buttons_container.get_children().filter(func(b: Node) -> bool: return b is Button and b.visible)
+	ck(m.buttons_container is VBoxContainer and shown.map(func(b: Button) -> String: return b.text) == ["YES", "NO"],
+			"overwrite buttons stacked, uppercase (B119, %s)" % str(shown.map(func(b: Button) -> String: return b.text)))
 	# B36 (#71): панель за вмістом — не більше SPACE_3XL порожнечі з кожного боку, по центру екрана.
 	await process_frame
 	var panel: Control = m.get_node("Panel")

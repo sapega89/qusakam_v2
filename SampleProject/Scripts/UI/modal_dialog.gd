@@ -6,8 +6,9 @@ signal chosen(result: String)
 
 @onready var icon_rect: TextureRect = $Panel/VBox/Icon
 @onready var title_label: Label = $Panel/VBox/Title
+@onready var rule: HSeparator = $Panel/VBox/Rule
 @onready var description_label: Label = $Panel/VBox/Description
-@onready var buttons_container: HBoxContainer = $Panel/VBox/Buttons
+@onready var buttons_container: VBoxContainer = $Panel/VBox/Buttons
 @onready var confirm_button: Button = $Panel/VBox/Buttons/ConfirmButton
 @onready var cancel_button: Button = $Panel/VBox/Buttons/CancelButton
 
@@ -28,12 +29,17 @@ func setup(data: Dictionary) -> void:
 		_build_custom_buttons(buttons)
 		return
 	if confirm_button:
-		confirm_button.text = str(data.get("confirm_text", "OK"))
+		confirm_button.text = _label(str(data.get("confirm_text", "OK")))
 	if cancel_button:
-		cancel_button.text = str(data.get("cancel_text", "Cancel"))
+		cancel_button.text = _label(str(data.get("cancel_text", "Cancel")))
 		cancel_button.visible = bool(data.get("allow_cancel", true))
 
 func _ready() -> void:
+	# Figma UI/Modal/Confirm (B119): лінія 300 px під заголовком, кнопки — колонка 300 px.
+	rule.custom_minimum_size.x = UITokens.MODAL_RULE_WIDTH
+	buttons_container.custom_minimum_size.x = UITokens.MODAL_BUTTON_COLUMN
+	_style_button(confirm_button)
+	_style_button(cancel_button)
 	if confirm_button and not confirm_button.pressed.is_connected(_on_confirmed):
 		confirm_button.pressed.connect(_on_confirmed)
 	if cancel_button and not cancel_button.pressed.is_connected(_on_cancelled):
@@ -63,7 +69,10 @@ func _build_custom_buttons(buttons: Array) -> void:
 		var is_default = bool(entry.get("is_default", false))
 
 		var button = Button.new()
-		button.text = text
+		button.text = _label(text)
+		button.icon = confirm_button.icon
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		_style_button(button)
 		buttons_container.add_child(button)
 		button.pressed.connect(_on_button_pressed.bind(id, is_cancel))
 		_custom_buttons.append(button)
@@ -76,6 +85,20 @@ func _build_custom_buttons(buttons: Array) -> void:
 		confirm_button.visible = false
 	if cancel_button:
 		cancel_button.visible = false
+
+## UI/HexButton (B119): 260×36; вибрана (фокус, наведення) — ModalButtonOn: заливка, шеврон, темний текст.
+func _style_button(button: Button) -> void:
+	button.custom_minimum_size = Vector2(UITokens.MODAL_BUTTON_WIDTH, UITokens.MODAL_BUTTON_HEIGHT)
+	button.theme_type_variation = &"ModalButtonOn" if button.has_focus() else &"ModalButton"
+	button.focus_entered.connect(func() -> void: button.theme_type_variation = &"ModalButtonOn")
+	button.focus_exited.connect(func() -> void: button.theme_type_variation = &"ModalButton")
+	button.mouse_entered.connect(button.grab_focus)
+
+
+## Figma: підписи кнопок великими літерами. Перекладаємо тут, бо авто-переклад не знайде "YES".
+func _label(key: String) -> String:
+	return tr(key).to_upper()
+
 
 func _clear_custom_buttons() -> void:
 	if not buttons_container:
