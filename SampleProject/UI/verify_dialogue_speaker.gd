@@ -71,6 +71,9 @@ func _check_line(box: Control, speaker: String, with_portrait: bool) -> void:
 	ck(absf(centre - box.get_global_rect().get_center().x) < 2.0, "%s: the name's row is centred on the box (%.0f vs %.0f)" % [speaker, centre, box.get_global_rect().get_center().x])
 	ck(frame.visible == with_portrait and (portrait.texture != null) == with_portrait,
 			"%s: portrait %s" % [speaker, "shown" if with_portrait else "absent"])
+	if with_portrait:
+		ck(box.get_global_rect().encloses(frame.get_global_rect()),
+			"%s: the box holds the portrait (B122: box %s, portrait %s)" % [speaker, box.get_global_rect(), frame.get_global_rect()])
 
 
 func _initialize() -> void:
@@ -103,7 +106,7 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	ck(not dm.is_dialogue_active(), "the talk ends on a mouse click")
 
-	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245)")
+	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245); a second start_dialogue after one has ended still grows the box (B122)")
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 6: await process_frame
 	_check_line(box, "Kusakam", true)
