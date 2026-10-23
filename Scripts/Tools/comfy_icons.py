@@ -363,8 +363,59 @@ def assets_sheet():
     print("sheet", ASSETS_DIR + ".png", sheet.size, len(done), "assets")
 
 
+# Sapega 2026-10-23: «не вистачає анімешності корейського стилю» — проба: те саме, але як у MapleStory / Elsword
+ASSETS_K_DIR = "design/shots/candidates/icon_assets_k"
+# Sapega 2026-10-23: «однотонності: ти робиш якісь акценти, декілька кольорів, а я б хотів силуети… додай те, що це силуети»
+PIX_ASSET_K = (
+    "Keep this icon's pixel art basics: big square pixels and the plain flat bright green background right to the "
+    "edges. Replace the flaming sword with {desc}, drawn as a SILHOUETTE: one flat solid shape in a single pale ivory "
+    "colour, with only a few thin dark lines inside for the key details. No shading, no gradients, no gold, no other "
+    "colours. Give it the energy of Korean MMO skill icons like MapleStory and Elsword: a dynamic tilted angle, bold "
+    "readable shapes, and small sparkles or short motion lines as part of the same ivory silhouette. Centred, filling "
+    "about two thirds of the square. No lizard unless named, no text, no border."
+)
+
+
+def assets_k_main(names):
+    """Проба корейського стилю для кількох елементів (по 2 кандидати) і лист «звичайний | корейський»."""
+    os.makedirs(os.path.join(ASSETS_K_DIR, "raw"), exist_ok=True)
+    base = np.asarray(Image.open(os.path.join(ICONS_OUT, "pixel", "raw", "_base.png")).convert("RGB"))
+    mp = base.shape[0] * base.shape[1] / 1048576
+    base_name = upload(np.dstack([base, np.full(base.shape[:2], 255, np.uint8)]), "icon_pixel_base.png")
+    for ai, asset in enumerate(names):
+        for n in (1, 2):
+            path = os.path.join(ASSETS_K_DIR, "raw", f"{asset}_{n}.png")
+            if not os.path.exists(path):
+                out = run(edit_graph(PIX_ASSET_K.format(desc=ASSETS[asset]), 1100 + ai * 10 + n, base_name, mp))
+                Image.fromarray(out.astype(np.uint8)).save(path)
+                print("generated", asset, n, flush=True)
+    free()
+    font = ImageFont.truetype("arial.ttf", 22)
+    cell, pad, left = 144, 16, 170
+    cols = [("plain", ASSETS_DIR, 1), ("plain", ASSETS_DIR, 2), ("korean", ASSETS_K_DIR, 1), ("korean", ASSETS_K_DIR, 2)]
+    sheet = Image.new("RGB", (left + len(cols) * (cell + pad) + pad, 40 + pad + len(names) * (cell + pad)), (60, 60, 66))
+    d = ImageDraw.Draw(sheet)
+    for c, (label, _, n) in enumerate(cols):
+        d.text((left + c * (cell + pad), 10), f"{label} {n}", fill="white", font=font)
+    for r, asset in enumerate(names):
+        y = 40 + pad + r * (cell + pad)
+        d.text((12, y + cell // 2 - 12), asset, fill="white", font=font)
+        for c, (_, folder, n) in enumerate(cols):
+            path = os.path.join(folder, "raw", f"{asset}_{n}.png")
+            if not os.path.exists(path):
+                continue
+            icon = pixel_icon(np.asarray(Image.open(path).convert("RGB")))
+            tile = Image.new("RGBA", (cell, cell), SLOT + (255,))
+            tile.alpha_composite(icon.resize((cell, cell), Image.NEAREST))
+            sheet.paste(tile.convert("RGB"), (left + c * (cell + pad), y))
+    sheet.save(ASSETS_K_DIR + "_compare.png")
+    print("sheet", ASSETS_K_DIR + "_compare.png", sheet.size)
+
+
 if __name__ == "__main__":
-    if sys.argv[1:2] == ["--assets"]:
+    if sys.argv[1:2] == ["--assets-k"]:
+        assets_k_main(sys.argv[2:])
+    elif sys.argv[1:2] == ["--assets"]:
         assets_main(sys.argv[2:])
     elif sys.argv[1:2] == ["--pixel"]:
         pixel_main(sys.argv[2] if len(sys.argv) > 2 else "E")
