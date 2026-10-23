@@ -178,3 +178,9 @@ Sapega on 2026-10-23: «і таких у нас 4 класи; всі треба 
 2. Sapega picks one per asset. The pick is copied to `SampleProject/Assets/UI/Icons/kit/<asset>.png`, and from then on it is an asset.
 3. Colours are swapped in code, not redrawn. The gold in the three-colour palette maps to steel-blue for passives and to crimson for ultimates (D602).
 4. Each skill has a recipe in `Resources/Data/skill_icons.json`: the base, the effect, their offsets and scales. A composer builds every icon and colour variant from the kit, so the same shield is the same everywhere.
+
+### Approved assets
+
+| Asset | Pick | File | Note |
+|---|---|---|---|
+| hand_palm | candidate 3 | `SampleProject/Assets/UI/Icons/kit/hand_palm.png` | Sapega 2026-10-23: «окей, давай поки таку іконку залишимо». A gold glove with ivory fingers. It has five fingers, not the three-fingered lizard hand of D601; Sapega took it as it is for now |
