@@ -201,7 +201,7 @@ func _initialize() -> void:
 	ck(sl.get_companion_manager().get_party().size() == 3, "three companions in the party (%s)" % [sl.get_companion_manager().get_party()])
 
 	print("[1] The room: three storey fights, nothing of the old story")
-	game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
 	for i in 20: await physics_frame
 	var lab: Node = game.map
 	var keys := {}
@@ -239,7 +239,7 @@ func _initialize() -> void:
 				"%s: not started — nobody walked into it (the far-plane check stays west of every zone)" % fight)
 
 	print("[2] The route with real input: LabCells → three storeys → LabBoss")
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	for i in 30: await physics_frame
 	await _drain(dm)
 	ck(_room() == "LabCells", "start in the cells (%s)" % _room())
@@ -281,7 +281,7 @@ func _initialize() -> void:
 	for i in 20: await physics_frame
 
 	print("[3] Load the save made before the bottom fight: the two won fights stay won, the third waits")
-	game.teleport_to_room(LAB, ^"SavePoint_PreBoss")  # не в LabBoss: туди сейв веде вже після бою
+	await game.teleport_to_room(LAB, ^"SavePoint_PreBoss")  # не в LabBoss: туди сейв веде вже після бою
 	for i in 20: await physics_frame
 	await _load_slot(slot_path)
 	ck(_room() == "Laboratory" and game.player.global_position.distance_to(hero_at) < 8.0,

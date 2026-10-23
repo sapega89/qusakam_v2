@@ -45,7 +45,7 @@ func _initialize() -> void:
 	var warm_orphans := 0
 	for lap in LAPS:
 		for r in ROOMS:
-			game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % r[0], NodePath(r[1]))
+			await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % r[0], NodePath(r[1]))
 			for i in 12: await process_frame
 			await _drain(dm)
 		for i in 30: await process_frame

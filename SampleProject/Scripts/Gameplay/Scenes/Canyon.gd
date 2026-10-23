@@ -663,9 +663,11 @@ const DESCENT_CLIMB_TIME := 2.6
 const DESCENT_PAUSE := 0.5
 const DESCENT_PAN_TIME := 4.0
 const DESCENT_SKY_HOLD := 1.2
+const DESERT_ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
 
 func _on_exit_cutscene_state(run_id: int) -> void:
 	var game := Game.get_singleton()
+	game.preload_room(DESERT_ROAD)  # кат-сцена довга — дорога встигне завантажитись у фоні (performance_plan, slice 3)
 	var cs := Cutscene.new()
 	cs.detach_camera()
 	if not $Bridge.is_collapsed():
@@ -689,11 +691,10 @@ func _on_exit_cutscene_state(run_id: int) -> void:
 	await cs.wait(DESCENT_SKY_HOLD)
 	await ScreenFade.to_black(self)
 
-	# Межі камери виставить нова кімната. Після телепорту цієї кімнати вже немає:
-	# далі жодного await на ній — світло повертає ScreenFade від героя.
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"ArrivalFromCanyon")
+	# Межі камери виставить нова кімната. Після телепорту цієї кімнати вже немає: телепорт не чекаємо (жодного
+	# await на ній), світло після заміни кімнати повертає сам Game.load_room() (D434).
+	game.teleport_to_room(DESERT_ROAD, ^"ArrivalFromCanyon")
 	cs.end()
-	ScreenFade.from_black(cs.player)
 
 func _on_to_desert_road_state(run_id: int) -> void:
 	"""Обробка стейту TO_DESERT_ROAD - перехід до пустельної дороги"""

@@ -293,7 +293,7 @@ func _initialize() -> void:
 	await _pad_talk()  # вступ Canyon
 
 	print("[1] Mayor Hall, both outcomes lead to the Lab cells")
-	game.teleport_to_room(MAYOR, ^"Arrival")
+	await game.teleport_to_room(MAYOR, ^"Arrival")
 	for i in 30: await physics_frame
 	ck(game.save_game(), "saved at the hall door (test-only: the hall has no save point)")
 	DirAccess.copy_absolute(slot_path, TEST_DIR + "mayor.bak")

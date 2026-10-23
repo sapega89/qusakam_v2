@@ -41,7 +41,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
-	game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_Entrance")
+	await game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_Entrance")
 	for i in 20: await physics_frame
 	await _drain(sl.get_dialogue_manager())
 	var lab: Node = game.map

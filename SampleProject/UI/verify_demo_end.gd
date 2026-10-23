@@ -41,7 +41,7 @@ func _initialize() -> void:
 		game.set_quest_flag(f, true)
 
 	print("[1] First time out of the laboratory: the talks, then the demo end screen")
-	game.teleport_to_room("res://SampleProject/Maps/LaboratoryOutside.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/LaboratoryOutside.tscn", ^"Arrival")
 	for i in 20: await process_frame
 	await _drain(dm)
 	for i in 30: await process_frame
@@ -52,10 +52,10 @@ func _initialize() -> void:
 	await process_frame
 
 	print("[2] Back into the laboratory and out again: the demo still ends (B66)")
-	game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_PreBoss")
+	await game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_PreBoss")
 	for i in 20: await process_frame
 	await _drain(dm)
-	game.teleport_to_room("res://SampleProject/Maps/LaboratoryOutside.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/LaboratoryOutside.tscn", ^"Arrival")
 	for i in 30: await process_frame
 	await _drain(dm)
 	ck(_end_screens(game).size() == 1, "the demo end screen shows again (%d)" % _end_screens(game).size())

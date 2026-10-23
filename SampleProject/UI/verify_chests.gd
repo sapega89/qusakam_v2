@@ -138,7 +138,7 @@ func _initialize() -> void:
 	var game: Node = await _boot()
 	for flag in ["desert_road_fight_complete", "desert_road_merchant_met"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room(ROAD, ^"Arrival_Start")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
 	var player: CharacterBody2D = game.player
 
@@ -180,7 +180,7 @@ func _initialize() -> void:
 	ck(inventory.get_item_count("mana_crystal") == before + 2 and layer.active_modal == null, "a second press gives nothing")
 
 	print("[3] A room reload keeps it open")
-	game.teleport_to_room(ROAD, ^"Arrival_Start")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
 	chest = game.map.get_node("Chest_CaravanLedge")
 	await _stand(player, LEDGE_SPOT)

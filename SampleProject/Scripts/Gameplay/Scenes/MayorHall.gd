@@ -101,6 +101,7 @@ func _fight() -> void:
 	var game := Game.get_singleton()
 	game.set_objective("Survive the Brass Collector")
 	game.player.defeat_handler = _on_hero_defeated
+	game.preload_room(LAB_ROOM)  # бій закінчиться телепортом у лабораторію за будь-якого результату (performance_plan, slice 3)
 	collector.anim_player.process_mode = Node.PROCESS_MODE_INHERIT
 	collector.process_mode = Node.PROCESS_MODE_INHERIT
 	EventBus.boss_fight_changed.emit(self, true)
@@ -142,7 +143,8 @@ func _end_fight() -> void:
 	EventBus.boss_fight_changed.emit(self, false)
 
 
-## Темрява вже настала: герой на ногах, у лабораторії. Після телепорту зали немає — жодного await.
+## Темрява вже настала: герой на ногах, у лабораторії. Після телепорту зали немає — телепорт не чекаємо (жодного
+## await на ній); світло після заміни кімнати повертає сам Game.load_room() (D434).
 func _transport(cs: Cutscene) -> void:
 	var game := Game.get_singleton()
 	var player: CombatBody2D = game.player
@@ -150,7 +152,6 @@ func _transport(cs: Cutscene) -> void:
 	game.set_quest_flag("city_mayor_hall_complete", true)
 	game.teleport_to_room(LAB_ROOM, LAB_MARKER)
 	cs.end()
-	ScreenFade.from_black(player)
 
 
 func _set_barrier(on: bool) -> void:

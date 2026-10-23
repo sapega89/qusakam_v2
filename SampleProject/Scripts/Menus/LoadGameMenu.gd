@@ -140,6 +140,8 @@ func _on_slot_activated(slot: int) -> void:
 
 
 func _load_slot(slot: int) -> void:
+	if ScreenFade.is_on(self):
+		return  # гра вже вантажиться: другий вибір під час згасання
 	var save_system = _save_system()
 	if save_system:
 		save_system.set_current_slot(slot)
@@ -148,7 +150,9 @@ func _load_slot(slot: int) -> void:
 	DebugLogger.info("LoadGameMenu: loading slot %d" % slot, "SaveLoad")
 	menu_closed.emit("load")
 	if not load_target_scene.is_empty():
-		get_tree().change_scene_to_file(load_target_scene)
+		# D434: як New Game — гасне в чорне, гра вантажиться у фоні, світлішає вже в кімнаті сейва.
+		await ScreenFade.to_black(self, UITokens.ROOM_FADE_TIME)
+		SceneLoader.load_scene(load_target_scene)
 
 
 func _save_to_slot(slot: int) -> void:

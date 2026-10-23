@@ -38,7 +38,7 @@ func _initialize() -> void:
 	quit()
 
 func _visit(room: String, marker: NodePath) -> void:
-	game.teleport_to_room(room, marker)
+	await game.teleport_to_room(room, marker)
 	for i in 30: await physics_frame
 	await Kit.drain(self)
 

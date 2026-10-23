@@ -50,7 +50,7 @@ func _initialize() -> void:
 	# Бій біля брами вже позаду — TO_CITY, у Місті без зустрічей.
 	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 30: await physics_frame
 	game.player.global_position = Vector2(1000, 360)
 	for i in 60: await physics_frame

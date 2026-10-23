@@ -47,7 +47,7 @@ func _initialize() -> void:
 	await _drain()
 
 	# 1 — до сцени: HUD на місці.
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 30: await physics_frame
 	game.player.global_position = Vector2(560, 360)
 	for i in 60: await physics_frame
@@ -82,7 +82,7 @@ func _initialize() -> void:
 	# 4 — торговець виходить, геймпад Y: підказка називає Y.
 	for flag in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(flag, true)
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 30: await physics_frame
 	game.player.global_position = Vector2(700, 360)
 	for i in 30: await physics_frame

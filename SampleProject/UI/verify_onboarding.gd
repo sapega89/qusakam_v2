@@ -84,7 +84,7 @@ func _initialize() -> void:
 	game.set_quest_flags(flags)
 
 	print("[0] The street fight starts with the lessons (D-28a)")
-	game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"Arrival")
 	await create_timer(1.0).timeout
 	var village: Node = game.map
 	hero = game.player

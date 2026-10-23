@@ -34,7 +34,7 @@ func _initialize() -> void:
 	print("[1] Save on the Desert Road with part of the map explored")
 	set_meta("start_new_game", true)
 	var game: Node = await _boot()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 20: await physics_frame
 	var road_room: String = metsys.get_current_room_name()
 	var explored: float = metsys.get_explored_ratio()
@@ -68,7 +68,7 @@ func _initialize() -> void:
 	var text := FileAccess.get_file_as_string(slot_path)
 	ck(text.contains("discovered_cells"), "slot file holds the MetSys map")
 	# Після сейву йдемо геть — в іншу кімнату: завантаження має повернути на точку збереження.
-	game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
 	for i in 20: await physics_frame
 	ck(metsys.get_current_room_name() != road_room, "walked off to another room before loading (%s)" % metsys.get_current_room_name())
 	game.queue_free()

@@ -74,7 +74,7 @@ func _initialize() -> void:
 	for f in ["lab_cells_cutscene_complete", "lab_acquaintance_complete", "lab_companion_01_complete",
 			"lab_companion_02_complete", "lab_companion_03_complete"]:
 		game.set_quest_flag(f, true)
-	game.teleport_to_room(CELLS, ^"Arrival")
+	await game.teleport_to_room(CELLS, ^"Arrival")
 	for i in 30: await physics_frame
 	ck(_room() == "LabCells" and game.player.is_on_floor(), "in LabCells on the floor (%s, %s)" % [_room(), game.player.global_position])
 	for n in ["Cells", "Bars", "Table", "Malik", "Scientist", "Prisoner"]:

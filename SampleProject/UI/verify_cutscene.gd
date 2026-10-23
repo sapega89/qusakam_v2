@@ -164,7 +164,7 @@ func _initialize() -> void:
 
 	print("[1] City Gates raid: hold Tab")
 	var raid_start := func() -> void:
-		game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+		await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 		for i in 30: await physics_frame
 		game.player.global_position = Vector2(560, 360)
 		for i in 30: await physics_frame
@@ -172,7 +172,7 @@ func _initialize() -> void:
 		await _until(func() -> bool: return game.player.event, 4.0)
 		Input.action_release(&"move_right")
 	var bandits: Array[NodePath] = []
-	game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
+	await game.teleport_to_room("res://SampleProject/Maps/CityGates.tscn", ^"Arrival")
 	for i in 10: await physics_frame
 	for bandit in game.map.get_node(^"Raid/Bandits").get_children():
 		bandits.append(NodePath("Raid/Bandits/" + bandit.name))
@@ -183,7 +183,7 @@ func _initialize() -> void:
 	for f: String in ["canyon_exit_complete", "desert_road_fight_complete"]:
 		game.set_quest_flag(f, true)
 	var merchant_start := func() -> void:
-		game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+		await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 		for i in 30: await physics_frame
 		game.player.global_position = Vector2(700, 360)
 		for i in 20: await physics_frame
@@ -200,7 +200,7 @@ func _initialize() -> void:
 			"village_fight_complete": true, "village_left_complete": true}, true)
 	game.set_quest_flags(all)
 	var descent_start := func() -> void:
-		game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
+		await game.teleport_to_room("res://SampleProject/Maps/Canyon.tscn", ^"Arrival")
 		for i in 20: await process_frame
 		game.player.global_position = Vector2(1000, 370)
 		for i in 30: await process_frame

@@ -151,8 +151,9 @@ var t_game_ready: int = 0
 var t_child: int = 0
 var t_ready: int = 0
 var t_change: int = 0
-var t_load_start: int = 0    # початок load_room(): перед teleport_to_room(), відкладений room_changed або Game.ready
+var t_load_start: int = 0    # заміна кімнати: Game.room_swapping (екран уже чорний, D434) або Game.ready для першої
 var load_inst: int = 0       # від t_load_start до входу кімнати в дерево = load() + instantiate()
+var t_swap: int = 0          # Game.room_swapping: кінець згасання й фонового довантаження
 var ready_marks: Array = []   # [імʼя прямої дитини кімнати, мкс її ready]; [0] — останній вхід у дерево
 var textures: Dictionary = {}     # шлях → [ширина, висота, найменший масштаб на екрані, кімнати]
 var processing: Dictionary = {}   # скрипт → найбільше вузлів в одній кімнаті
@@ -186,9 +187,6 @@ func _initialize() -> void:
 	RenderingServer.frame_pre_draw.connect(_on_pre_draw)
 	RenderingServer.frame_post_draw.connect(_on_post_draw)
 	metsys.room_changed.connect(func(_room: String) -> void: t_change = _us())
-	# Відкладено й раніше за ScrollingRoomTransitions (той підключається, коли гра стартує): виклик стоїть у черзі
-	# перед його _on_room_changed → load_room(), тож це і є початок завантаження при переході пішки.
-	metsys.room_changed.connect(func(_room: String) -> void: t_load_start = _us(), CONNECT_DEFERRED)
 	_uncap()
 	var p0: int = _us()
 	for i: int in 200:
@@ -407,24 +405,40 @@ func _start() -> Dictionary:
 	await create_timer(1.0).timeout
 
 	root.child_entered_tree.connect(_on_root_child)
-	set_meta("start_new_game", true)
 	var a: Acc = _begin()
 	var s0: int = _us()
-	change_scene_to_file(GAME)
+	menu.new_game_button_up()  # як клік: згасання в чорне → SceneLoader (фоновий load Game.tscn) → кімната → поява (D434)
 	var s1: int = _us()
-	await bus.room_entered
-	var s2: int = _us()
+	var entered: Array = [0]
+	bus.room_entered.connect(func(_r: String) -> void: entered[0] = _us(), CONNECT_ONE_SHOT)
+	var worst_seen: float = 0.0   # найдовший кадр, коли на екрані щось видно
+	var worst_black: float = 0.0  # найдовший кадр під повністю чорним екраном
+	var last: int = _us()
+	while entered[0] == 0 or ScreenFade.is_on(root):
+		var black: bool = ScreenFade.is_black(root)
+		await process_frame
+		var now: int = _us()
+		if black:
+			worst_black = maxf(worst_black, (now - last) / 1000.0)
+		else:
+			worst_seen = maxf(worst_seen, (now - last) / 1000.0)
+		last = now
+	var s3: int = _us()
+	var s2: int = entered[0]
 	for i: int in 5:
 		await process_frame
 	_end(a)
 	game = current_scene
+	game.room_swapping.connect(func() -> void:
+		t_swap = _us()
+		t_load_start = t_swap)
 	var tp: Dictionary = {
 		"load_inst": load_inst, "add": t_ready - t_child, "total": s2 - s0,
 		"frames": a.worst(3), "lines": a.lines, "ready_top": _ready_top(),
 	}
-	print("PERF start | New Game → room_entered %s | click frame: Game.tscn load+instantiate %s | next frame: Game add_child+_ready %s, then _initialize_save_and_room + Canyon load+instantiate %s, add_child+_ready %s | longest frames %s | log lines %d" % [
-			_ms(s2 - s0), _ms(s1 - s0), _ms(t_game_ready - t_game_child), _ms(tp["load_inst"]),
-			_ms(tp["add"]), _frames(tp["frames"]), a.lines])
+	print("PERF start | New Game → room_entered %s, → light again %s | click frame %s | Game add_child+_ready %s, then _initialize_save_and_room + Canyon load+instantiate %s, add_child+_ready %s | longest frame on screen %.0f ms, under black %.0f ms | longest frames %s | log lines %d" % [
+			_ms(s2 - s0), _ms(s3 - s0), _ms(s1 - s0), _ms(t_game_ready - t_game_child), _ms(tp["load_inst"]),
+			_ms(tp["add"]), worst_seen, worst_black, _frames(tp["frames"]), a.lines])
 	var g0: int = _us()
 	var gps: PackedScene = load(GAME)  # залежності вже живі в грі: лише сама сцена
 	var g1: int = _us()
@@ -488,20 +502,21 @@ func _ready_top() -> String:
 
 # ── Кімнати ───────────────────────────────────────────────────────────────────────────────────────────────────────
 
-## Як у грі: Game.teleport_to_room() → load_room() → load() + instantiate() + add_child(); стара кімната ще жива.
+## Як у грі: Game.teleport_to_room() → load_room(): згасання, фонове довантаження під чорним, instantiate() + add_child(),
+## поява (D434). Кімната, якої RoomPreloader ще не тримає, — тут видно ціну її завантаження: "fade+black".
 func _teleport(room: String, marker: NodePath) -> Dictionary:
 	t_child = 0
 	t_ready = 0
 	var a: Acc = _begin()
 	var t0: int = _us()
-	t_load_start = t0
-	game.teleport_to_room(MAPS % room, marker)
+	t_swap = 0
+	await game.teleport_to_room(MAPS % room, marker)
 	var t1: int = _us()
 	for i: int in 3:
 		await process_frame
 	_end(a)
-	return {"load_inst": load_inst, "add": t_ready - t_child, "total": t1 - t0,
-			"after": t1 - t_ready, "frames": a.ft, "lines": a.lines, "ready_top": _ready_top(), "spikes": a.spikes}
+	return {"load_inst": load_inst, "add": t_ready - t_child, "total": t1 - t0, "fade_black": t_swap - t0,
+			"after": t1 - t_ready, "frames": a.worst(3), "lines": a.lines, "ready_top": _ready_top(), "spikes": a.spikes}
 
 
 func _frames(f: PackedFloat32Array) -> String:
@@ -512,8 +527,8 @@ func _frames(f: PackedFloat32Array) -> String:
 
 
 func _tp_line(tp: Dictionary) -> String:
-	return "load+instantiate %s | add_child+_ready %s (slowest: %s) | after ready %s | whole call %s | frames after %s | log lines %d%s" % [
-			_ms(tp["load_inst"]), _ms(tp["add"]), tp.get("ready_top", ""), _ms(tp.get("after", 0)), _ms(tp["total"]),
+	return "fade out+black %s | load+instantiate %s | add_child+_ready %s (slowest: %s) | after ready %s | whole call %s | longest frames %s | log lines %d%s" % [
+			_ms(tp.get("fade_black", 0)), _ms(tp["load_inst"]), _ms(tp["add"]), tp.get("ready_top", ""), _ms(tp.get("after", 0)), _ms(tp["total"]),
 			_frames(tp["frames"]), tp["lines"], "" if (tp.get("spikes", PackedStringArray()) as PackedStringArray).is_empty()
 			else " | spikes " + "; ".join(tp["spikes"] as PackedStringArray)]
 
@@ -732,7 +747,7 @@ func _parallax(n: Node) -> Parallax2D:
 	return null
 
 
-# ── Переходи пішки: герой біжить через східний край, далі MetSys → ScrollingRoomTransitions → load_room ─────────────
+# ── Переходи пішки: герой біжить через східний край, далі MetSys → FadeRoomTransitions → load_room ─────────────────
 
 func _walk(from: String, to: String, row: int) -> void:
 	if not _in(from):
@@ -756,6 +771,7 @@ func _walk(from: String, to: String, row: int) -> void:
 	for i: int in 20:
 		await physics_frame
 	t_change = 0
+	t_swap = 0
 	t_child = 0
 	t_ready = 0
 	_uncap()
@@ -772,7 +788,7 @@ func _walk(from: String, to: String, row: int) -> void:
 			await process_frame
 	_key(KEY_D, false)
 	var t1: int = _us()
-	while _us() - t1 < 1500000:  # 0,4 с прокрутки + init_room
+	while _us() - t1 < 1500000:  # 0,25 с згасання + 0,25 с появи (D434) + init_room
 		await process_frame
 	_end(a)
 	var slow: int = 0
@@ -780,8 +796,8 @@ func _walk(from: String, to: String, row: int) -> void:
 		if v > 33.0:
 			slow += 1
 	var now_in: String = game.map.scene_file_path.get_file().get_basename()
-	print("PERF walk  | %-17s → %-17s | %s | cell change → room ready %s | load+instantiate %s, add_child+_ready %s (slowest: %s) | longest frames %s, frames > 33 ms: %d | log lines %d%s%s" % [
-			from, to, how, _ms(t_ready - t_change) if t_change > 0 else "never", _ms(load_inst),
+	print("PERF walk  | %-17s → %-17s | %s | cell change → swap (fade out+black) %s, swap → room ready %s | load+instantiate %s, add_child+_ready %s (slowest: %s) | longest frames %s, frames > 33 ms: %d | log lines %d%s%s" % [
+			from, to, how, _ms(t_swap - t_change) if t_swap > 0 else "never", _ms(t_ready - t_swap) if t_swap > 0 else "never", _ms(load_inst),
 			_ms(t_ready - t_child), _ready_top(), _frames(a.worst(3)), slow, a.lines, "" if now_in == to else " | NOW IN %s" % now_in,
 			"" if a.spikes.is_empty() else " | spikes " + "; ".join(a.spikes)])
 	await _drain()

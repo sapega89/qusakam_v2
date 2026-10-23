@@ -34,7 +34,7 @@ func _initialize() -> void:
 	await _drain()
 	for shot: Array in SHOTS:
 		if not game.map.scene_file_path.ends_with(shot[0] + ".tscn"):
-			game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % shot[0], shot[1])
+			await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % shot[0], shot[1])
 			for i in 30: await physics_frame
 		game.player.global_position = Vector2(shot[2], 360.0)
 		for i in 60: await physics_frame

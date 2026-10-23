@@ -53,7 +53,7 @@ func _initialize() -> void:
 		game.set_quest_flag(flag, true)
 
 	print("[1] The village: the grandfather's and the elder's houses stand behind the hero")
-	game.teleport_to_room(VILLAGE, ^"Arrival")
+	await game.teleport_to_room(VILLAGE, ^"Arrival")
 	for i in 30: await physics_frame
 	await Kit.drain(self)
 	ck(_room() == "Village", "in the Village (%s)" % _room())

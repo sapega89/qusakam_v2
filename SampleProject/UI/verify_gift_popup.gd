@@ -70,7 +70,7 @@ func _initialize() -> void:
 	await _drain(dm, layer)  # вступ Canyon
 
 	print("[1] A mob killed by a real attack (pad X) adds a loot toast that stacks and fades")
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _drain(dm, layer)  # репліка перед боєм
 	await create_timer(2.5).timeout

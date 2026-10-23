@@ -167,7 +167,7 @@ func _initialize() -> void:
 	ck(state.weapon_in_hand == "dagger", "switching wraps around to the dagger")
 
 	print("[5] Strikes hit everything in front, nothing behind (D142)")
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _drain(dm)
 	await create_timer(2.5).timeout

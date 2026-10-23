@@ -28,7 +28,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _finish_dialogue()
-	game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _finish_dialogue()
 	await create_timer(2.5).timeout

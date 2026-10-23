@@ -76,7 +76,7 @@ func _initialize() -> void:
 	quit()
 
 func _enter() -> void:
-	game.teleport_to_room(HALL, ^"Arrival")
+	await game.teleport_to_room(HALL, ^"Arrival")
 	for i in 40: await physics_frame
 	_press(&"move_right")
 	await _until(func() -> bool: return game.map.get_current_state_name() != "QUEUE", 5.0)

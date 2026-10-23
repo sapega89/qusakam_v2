@@ -21,7 +21,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _finish_dialogue()
-	game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 30: await physics_frame
 	await _finish_dialogue()
 	var xp: Node = sl.get_xp_manager()

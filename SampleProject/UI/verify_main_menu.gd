@@ -6,6 +6,7 @@ extends SceneTree
 ## Figma: main-menu 9:26, UI/Splash Screen 258:5140, UI/Menu Item 248:62.
 ## Рішення: D72 (лише Continue), D75/D77 (Continue → Save Slot Selection, LOAD).
 
+const Kit := preload("res://SampleProject/UI/input_kit.gd")
 const MENU_SCENE := "res://SampleProject/MainMenu.tscn"
 const TEST_DIR := "user://verify_mainmenu_saves/"
 
@@ -145,9 +146,47 @@ func _initialize() -> void:
 		var cards: Array = scene._cards
 		ck(cards[1].is_selectable() and not cards[0].is_selectable(), "only the saved slot is selectable")
 
+	print("[6] New Game: a real click fades to black, the game loads in the background, light again in the room (D434)")
+	current_scene.queue_free()
+	menu.queue_free()  # меню з [1]–[4] лежить поверх і забирало б клік
+	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64: кнопка поза ним не ловить мишу
+	var start := _open(false)
+	current_scene = start
+	for i in 40: await process_frame  # меню проявляється
+	var entered: Array = [false]
+	root.get_node("EventBus").room_entered.connect(func(_r: String) -> void: entered[0] = true, CONNECT_ONE_SHOT)
+	var t0 := Time.get_ticks_usec()
+	await Kit.mouse(self, start.menu.get_node("new_game"))  # справжній клік: рух, натиск, відпуск
+	var click_ms := (Time.get_ticks_usec() - t0) / 1000.0
+	await process_frame
+	ck(root.has_node(^"ScreenFade") and current_scene == start, "the click starts a fade on the menu (click + 6 frames: %.0f ms)" % click_ms)
+	var t1 := Time.get_ticks_msec()
+	while not (current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn") \
+			and Time.get_ticks_msec() - t1 < 10000:
+		ck_black_while_loading(is_instance_valid(start))
+		await process_frame
+	ck(current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn", "Game becomes current_scene")
+	ck(seen_light_while_loading == false, "the screen stays black between the menu and the room")
+	while not entered[0] and Time.get_ticks_msec() - t1 < 10000:
+		await process_frame
+	ck(entered[0], "room_entered fires")
+	while root.has_node(^"ScreenFade") and Time.get_ticks_msec() - t1 < 10000:
+		await process_frame
+	ck(not root.has_node(^"ScreenFade"), "light again in the room (%d ms after the click)" % (Time.get_ticks_msec() - t1))
+	current_scene.queue_free()
+	for i in 3: await process_frame
+
 	_wipe()
 	DirAccess.remove_absolute(TEST_DIR)
 	_done()
+
+
+var seen_light_while_loading := false
+
+## Між згасанням меню і появою кімнати екран лишається чорним (D434: жодного кадру меню чи порожньої гри).
+func ck_black_while_loading(menu_alive: bool) -> void:
+	if not menu_alive and not ScreenFade.is_black(root):
+		seen_light_while_loading = true
 
 
 func _done() -> void:
