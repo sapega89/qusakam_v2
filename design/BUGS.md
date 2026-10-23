@@ -64,6 +64,22 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B120 — `craft_potion` still charges the price from before D403
+- **Where:** `SampleProject/Resources/Data/crafting_recipes.json:164-180` (`craft_potion`: Herb ×2 + Stone ×1 → Potion ×2, `gold_cost` 4).
+- **Expected:** the gold cost is 10 % of the result's buy price (D97's placeholder rule, kept by D179 / D416; the formula is in [[crafting_mapping]] "Data"). Potion ×2 at buy 40 gives **8**.
+- **Got:** 4, which was right for the old Potion at buy 20. D403 swapped Potion and Lesser Potion but did not update this recipe, so 2 Potions now cost 4 gold. That is cheaper than the chain step (2 Lesser → 1 Potion), which also costs 4.
+- **Evidence:** of the 18 recipes compared with the `items.json` buy prices, 17 follow the rule and only `craft_potion` does not. `verify_crafting` only checks `gold_cost > 0`.
+- **Severity:** data. The fix is `gold_cost` 8, applying the D416 formula. Pointing the recipe at `potion_lesser` instead would change the recipe, which D403 did not ask for.
+- **Found:** 2026-10-23, [[decision_audit]] Run 3 (D97).
+
+### B121 — `verify_misc_modal` still has an `or true` check after B4 was closed
+- **Where:** `SampleProject/UI/verify_misc_modal.gd:102`: `ck(row.focus_neighbor_bottom != NodePath() or true, "%s in the focus chain" % row.name)`.
+- **Expected:** every `ck()` can fail (B4's rule; the fixed log says B4 removed the `or true` check in `verify_misc_modal`).
+- **Got:** the B4 fix (`dc9a6e32`) replaced only the "no scene change" check. The "in the focus chain" check still always passes.
+- **Evidence:** `grep -n "or true" SampleProject/UI/verify_*.gd` finds only this line.
+- **Severity:** cosmetic, test only.
+- **Found:** 2026-10-23, [[decision_audit]] Run 2.
+
 ### B119 — Confirm modals do not match the kit's UI/Modal/Confirm
 - **Where:** `SampleProject/Scenes/UI/modal_dialog.tscn` (`Panel/VBox/Buttons` is an `HBoxContainer`), `SampleProject/Scripts/UI/modal_templates.gd`, theme types `ModalPanel` / `ModalTitle`.
 - **Expected:** Figma `UI/Modal/Confirm` `258:5332` (also `shop-buy-confirm` `153:1760`):

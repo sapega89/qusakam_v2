@@ -447,14 +447,18 @@ belongs under *Needs a plan*, and the decision still has to be made.
 | Companion system | **D201, D209** | ✅ **Built 2026-10-18 (D213)**, art D243–D245, scenes `Scenes/Characters/Companions/`, `verify_companions.gd`. Was: Decided 2026-10-18: guard at City Gates (tutorial assist), then Алісия / Астрит / Уризен from the Laboratory; one button, per-companion cooldown. Plan: [[companion_assist_plan]]. Manager is a 27-line stub; four unreferenced `Companion*.gd`; no scenes, no art. Built 2026-10-18 (D213): slices 1–4 (HUD slot right of the skills: portrait of who answers next, seconds left when all rest). **Resume:** lab dialogue lines from Sapega. |
 | `ItemPickup` placement | **Q2 / D88** | ✅ **Placed 2026-10-21 (D298):** `DesertRoad.tscn` has three `ItemPickup`s (`iron_ingot`, `herb`, `mana_crystal`) — the rest of this cell is the 2026-10-15 state. Was: built and tested; no production map grants an inventory item. Pickup paths decided in D88, nothing placed. **Wider than this row:** [[scene_inventory]] §4 proves **no** `Objects/*.tscn` is placed in any of the 8 live maps — they contain only `TileMap`, `RoomInstance` and inline `Area2D`s. Chests (D88) are a new scene too. |
 | Journal quests grouped by city (region bar of Figma `192:1636`) | **D181** | Not built: no region in `journal_component.gd` or `story.json` (grep `region` → 0). The city name is Q54 (default *Bab ar-Rimal*). |
-| Per-slot player data | **Q4**, then reversed by **D90** | Built in slice 1b, then deliberately reverted. Deferred, not forgotten. |
+| Per-slot player data | **Q4** | ✅ Saves are per slot (`SaveSystem.gd:279,294`). D90 (one shared file) was never built and is cancelled by D413 ([[decision_audit]] Run 3). |
 | Party card SP bar | **D3** ✅ | Built 2026-10-15 (#51): active card shows `SP cur/max` from `SkillManager` (D146); others `—/—` (D18). |
+| Special story dialogue presentation (Figma `36:65`); much of the prologue's story dialogue moves onto it | **D111** | Not built: there is no story layout in code, and every story beat and cutscene plays in the standard box. Found by [[decision_audit]] Run 3, 2026-10-23. |
+| Full-body character art in story scenes, not portraits | **D112** | Not built. It waits on D111, because there is no story scene to put the art in. Found by [[decision_audit]] Run 3. |
+| Hero Death animation | **D138** (amended by D196 → D239) | Not built: there is no `Sprites/Player/Death/` and no `Death` animation in `Player.tscn`. `Player.die()` (`Scripts/Player.gd:269-283`) goes straight to Game Over. Every other D138 state exists. It is in the ComfyUI art batch (D435). Found by [[decision_audit]] Run 4. |
+| Objective hints in the Journal: `story.json` objectives get an optional `hint` + `from`; the Journal shows the hint under its objective, attributed to the NPC who gave it, and the Quest replay ends on it | **D159** (and the hint half of **D161**) | Not built: `story.json` has no `hint` / `from` key, `journal_component.gd` has no hint line, and the replay ends only on "Current objective: …" (`StoryNpc.gd:32`). The texts are Sapega's and still owed (#27). The code can land first with empty hints, which show nothing. Plan: [[npc_recall_plan]] slice 1. Found by [[decision_audit]] Run 5. |
 | Status `JP Obtained` | **D11** ✅ | Built 2026-10-15 (#51): `"%d JP" % get_job_points()` (D149), live on `job_points_changed`. |
 | Status `Max. SP` meter | **D12** ✅ | Built 2026-10-15 (#51): meter reads `cur / max` from `SkillManager` (D146). |
 | Equipment `Max. SP` row | **D24** ✅ | Built 2026-10-15 (#51): row shows `get_max_sp()`, no delta. |
 
-**Worth an audit:** D41–D115 have never been checked against the code
-(D1–D40 done 2026-10-15 — [[decision_audit]]; resume at D41). A D-ID
+**Worth an audit:** D179–D432 have never been checked against the code
+(D1–D40 done 2026-10-15, D41–D178 on 2026-10-23 — [[decision_audit]]; resume at D179). A D-ID
 that asserts runtime behaviour with no implementation and no `verify_*` covering
 it is an entry for this list. Apart from the D3–D24 rows above, the ones above were
 found by Sapega playing, which is the expensive way to find them.
