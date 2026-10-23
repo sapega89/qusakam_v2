@@ -139,6 +139,7 @@ func _initialize() -> void:
 	upper = game.map.get_node("Fight_Upper")
 	ck(game.get_room_state(_room_of(LAB), "enemies_upper") == null and not upper.fight_in_progress(),
 			"back in the Laboratory region: Fight_Upper is forgotten and starts afresh")
+	ck(upper.fight_won(), "but it still counts as won (lab_corridors_complete does not wait for it again)")
 	upper.spawn_all_enemies()
 	await create_timer(4.0).timeout
 	ck(_alive(upper).size() == upper.spawn_points.size(), "all %d come back (%d)" % [upper.spawn_points.size(), _alive(upper).size()])

@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 func is_fight_cleared(path: NodePath) -> bool:
-	return (get_node(path) as RoomEnemySpawner).fight_cleared()
+	return (get_node(path) as RoomEnemySpawner).fight_won()  # D492: повернуті вороги не скасовують перемоги
 
 
 func cleared_count() -> int:

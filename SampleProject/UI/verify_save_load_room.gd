@@ -52,6 +52,7 @@ func _initialize() -> void:
 	# герой стає на землю, і екран зберігає через Game.save_game() (LoadGameMenu._save_via_game).
 	var save_point: Node2D = game.map.get_node(^"SavePoint_BeforeCity")
 	save_point.call(&"_on_interacted")
+	await create_timer(save_point.MEDITATE_SIT_TIME + 0.3).timeout  # D447: спершу герой сідає медитувати
 	var ui = root.get_node("ServiceLocator").get_ui_manager()
 	ck(ui.current_state_name == "SaveGameState", "the save point opens the save screen (%s)" % ui.current_state_name)
 	ui.close_state()

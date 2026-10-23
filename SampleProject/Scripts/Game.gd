@@ -558,6 +558,10 @@ func reset_ordinary_fights(region: String = "") -> void:
 		var fights: Dictionary = room_state[room].get(ORDINARY_FIGHTS_KEY, {})
 		for key: String in fights.keys():
 			if region == "" or fights[key] == region:
+				# Добитий бій лишає слід (RoomEnemySpawner.fight_won): сюжет, що чекає перемог (lab_corridors_complete),
+				# не відкочується, коли вороги повертаються.
+				if (room_state[room].get(key) as Dictionary).is_empty():
+					room_state[room][key + RoomEnemySpawner.WON_SUFFIX] = true
 				room_state[room].erase(key)
 				fights.erase(key)
 	ordinary_fights_reset.emit(region)

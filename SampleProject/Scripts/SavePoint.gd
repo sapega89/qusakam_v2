@@ -65,7 +65,7 @@ func _meditate(player: Node2D, game: Game) -> void:
 	player.play_body(&"Meditate")
 	game.meditate()
 	meditation_started.emit()
-	await get_tree().create_timer(MEDITATE_SIT_TIME, false).timeout
+	await get_tree().create_timer(MEDITATE_SIT_TIME).timeout
 	var ui_manager: Node = ServiceLocator.get_ui_manager()
 	ui_manager.open_save_game()
 	await (ui_manager.current_state as Node).tree_exiting

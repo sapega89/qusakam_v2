@@ -150,6 +150,13 @@ func fight_in_progress() -> bool:
 func fight_cleared() -> bool:
 	return fight_in_progress() and _saved_enemies().is_empty()
 
+## D492: у room_state — «цей звичайний бій уже колись добито» (Game.reset_ordinary_fights ставить, коли бій повертається).
+const WON_SUFFIX := "_won"
+
+## Бій добито зараз або колись до повернення ворогів (D492) — для сюжету, що чекає перемоги.
+func fight_won() -> bool:
+	return fight_cleared() or Game.get_singleton().get_room_state(_room, state_key + WON_SUFFIX, false)
+
 func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
 	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає
 
