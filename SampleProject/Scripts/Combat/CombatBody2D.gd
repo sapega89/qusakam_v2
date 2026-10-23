@@ -141,3 +141,31 @@ func set_invulnerable(active: bool, duration: float = 0.0) -> void:
 	elif not active:
 		invulnerability_timer = 0.0
 
+
+## D443: тіла героя й ворогів зупиняють одне одного (крізь ворога — лише перекат, PlayerMover), але ніхто не стоїть
+## на чужій голові: тіло, що лежить на іншому бійцеві, зісковзує вбік від його центру зі SLIDE_OFF_SPEED, доки не впаде.
+## Притиснуте до стіни — зсуває того, хто внизу. Кличуть після move_and_slide() герой (PlayerMover) і кожен ворог
+## (DefaultEnemy, отже й боси) — одне правило для всіх (B125).
+const SLIDE_OFF_SPEED := 240.0
+## Наскільки нижче ніг шукати тіло під собою, px.
+const STANDING_PROBE := 2.0
+
+func slide_off_bodies(delta: float) -> void:
+	var under := KinematicCollision2D.new()
+	if not test_move(global_transform, Vector2(0, STANDING_PROBE), under) or not under.get_collider() is CombatBody2D:
+		return
+	if under.get_normal().y > -0.5:
+		return  # торкається боком, а не стоїть зверху
+	var other: CombatBody2D = under.get_collider()
+	var away := 1.0 if global_position.x >= other.global_position.x else -1.0
+	var step := Vector2(away * SLIDE_OFF_SPEED * delta, 0)
+	var wall := move_and_collide(step)
+	if wall != null and not wall.get_collider() is CombatBody2D:
+		other.move_and_collide(-step)
+
+
+## Габарит тіла (CollisionShape2D, прямокутник) у світових координатах.
+func body_rect() -> Rect2:
+	var collision: CollisionShape2D = get_node(^"CollisionShape2D")
+	var size: Vector2 = collision.shape.get_rect().size * global_scale
+	return Rect2(collision.global_position - size / 2.0, size)

@@ -3,6 +3,7 @@
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="15_gameuitheme"]
 
 [ext_resource type="Script" uid="uid://btgvo27tngq4o" path="res://SampleProject/Scripts/Game.gd" id="1_xdpfu"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Combat/HitAreaDebug.gd" id="hit_area_debug"]
 [ext_resource type="PackedScene" uid="uid://xpbhai8nlgtx" path="res://SampleProject/Player.tscn" id="2_bam1a"]
 [ext_resource type="PackedScene" uid="uid://dch8dyylb7526" path="res://addons/MetroidvaniaSystem/Template/Nodes/Minimap.tscn" id="3_a3gfy"]
 [ext_resource type="Texture2D" uid="uid://wiq0mic5m6is" path="res://SampleProject/Sprites/Collectible.png" id="3_kng3d"]
@@ -205,6 +206,10 @@ scale_amount_min = 1.0
 scale_amount_max = 2.0
 color = Color(1, 0.92, 0.75, 0.55)
 color_ramp = SubResource("Gradient_dust")
+
+[node name="HitAreaDebug" type="Node2D" parent="."]
+z_index = 4000
+script = ExtResource("hit_area_debug")
 
 [node name="UI" type="CanvasLayer" parent="."]
 

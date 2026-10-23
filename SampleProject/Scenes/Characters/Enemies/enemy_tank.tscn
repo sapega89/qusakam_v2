@@ -122,6 +122,14 @@ tracks/3/keys = {
 "values": [0, 1]
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(40.5, 58.5)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(74.25, 51.75)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_scorpion"]
 _data = {
 &"attack": SubResource("Animation_attack"),
@@ -146,3 +154,11 @@ region_enabled = false
 [node name="AnimationPlayer" parent="." index="3"]
 libraries/ = SubResource("AnimationLibrary_scorpion")
 metadata/attack_strike_time = 0.7
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(20.25, -0.45)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(1.125, 2.925)
+shape = SubResource("Shape_hurt")

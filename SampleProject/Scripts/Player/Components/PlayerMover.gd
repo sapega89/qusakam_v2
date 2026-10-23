@@ -60,6 +60,8 @@ var _push_speed: float = 0.0
 var _push_left: float = 0.0
 ## Пройдено від останнього кроку, px.
 var _stride: float = 0.0
+## Вороги, крізь яких герой зараз проходить перекатом (D443).
+var _passing: Array[Node] = []
 
 # Parent reference: the CharacterBody2D that owns this component (the Player).
 @onready var player: CharacterBody2D = get_parent()
@@ -84,12 +86,15 @@ func is_climbing() -> bool:
 	return climbing != null
 
 
+## Ривок можна почати зараз: не на драбині, є заряд, а посеред ривка — уже минуло dash_chain_after.
+func can_roll() -> bool:
+	return not is_climbing() and dash_charges > 0 and not (is_rolling() and roll_time_left > roll_duration - dash_chain_after)
+
+
 ## Перекат-ривок (D200, D264): dash_charges_max підряд, з землі й у повітрі (у повітрі — рівно, без падіння).
 ## Невразливість — на весь ривок. Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи ривок почався.
 func start_roll() -> bool:
-	if is_climbing() or dash_charges <= 0:
-		return false
-	if is_rolling() and roll_time_left > roll_duration - dash_chain_after:
+	if not can_roll():
 		return false
 	var held := Input.get_axis(&"move_left", &"move_right")
 	roll_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else last_direction
@@ -98,8 +103,27 @@ func start_roll() -> bool:
 	dash_charges -= 1
 	roll_ready_in = roll_duration + roll_cooldown
 	player.set_invulnerable(true, roll_duration)
+	_pass_through_enemies()
 	AudioManager.play(&"dash")
 	return true
+
+
+## D443: ворог зупиняє героя, а перекат проходить крізь нього. Виняток тіл на весь ривок; знімається, щойно герой
+## уже не всередині ворога (_release_passed) — інакше фізика розштовхувала б їх і могла б поставити когось нагору.
+func _pass_through_enemies() -> void:
+	for enemy in player.get_tree().get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy not in _passing:
+			player.add_collision_exception_with(enemy)
+			_passing.append(enemy)
+
+
+func _release_passed() -> void:
+	for enemy in _passing.duplicate():
+		if not is_instance_valid(enemy):
+			_passing.erase(enemy)
+		elif not player.body_rect().intersects(enemy.body_rect()):
+			player.remove_collision_exception_with(enemy)
+			_passing.erase(enemy)
 
 
 ## Runs one physics step of movement: gravity, jump, horizontal movement,
@@ -135,6 +159,9 @@ func physics_move(delta: float) -> void:
 	prev_on_floor = player.is_on_floor()
 
 	player.move_and_slide()
+	if not is_rolling():
+		_release_passed()
+	player.slide_off_bodies(delta)
 
 	if OS.is_debug_build() and absf(player.velocity.x) > 10:
 		if player.is_on_wall() and absf(player.velocity.x) > 1:

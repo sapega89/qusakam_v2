@@ -13,7 +13,8 @@ signal phase_changed(phase: int)
 @export var display_name := ""
 ## Ходи: [{kind, min_range, max_range, windup, damage, weight, phase, …}] — див. BossLogic.
 @export var moves: Array[Dictionary] = []
-## Довжина удару хітбоксом (combo, charge), px. attack_range боса — дальність найдальшого ходу.
+## Докуди сягає хітбокс (combo, charge) — передній край його форми в сцені (B128, verify_hit_areas), px.
+## attack_range боса — дальність найдальшого ходу.
 @export var melee_reach := 130.0
 ## Друга фаза: множник замахів і швидкості.
 @export var phase2_windup := 0.75
@@ -28,7 +29,6 @@ var bar: Control
 func _ready() -> void:
 	add_to_group(GameGroups.BOSS)  # до super._ready(): там вирішується, чи потрібна смужка над головою
 	super._ready()
-	hitbox_collision.shape.size.x = melee_reach
 	health_changed.connect(_on_health_changed)
 	bar = BOSS_BAR.instantiate()
 	get_tree().current_scene.get_node(^"UICanvas").add_child(bar)
@@ -56,7 +56,7 @@ func _make_logic() -> EnemyLogic:
 
 
 func start_attack(direction: int) -> void:
-	hitbox.position.x = direction * melee_reach / 2.0
+	_face_shapes(direction)
 	hitbox_damage.update_damage()
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true

@@ -41,6 +41,7 @@ var _stuck: bool = false
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
+	area_entered.connect(_on_area_entered)
 	_face()
 	if hero_side:
 		add_to_group(HERO_ARROWS)
@@ -86,6 +87,12 @@ func _on_body_entered(body: Node2D) -> void:
 		_strike(body)
 	elif not body is CharacterBody2D:
 		_stick()  # стіна, підлога, скеля; герой, NPC і чужі вороги стрілу не зупиняють
+
+
+## Зона-ціль ворога (B128) — стріла влучає в намальоване тіло, а не лише в колізію.
+func _on_area_entered(area: Area2D) -> void:
+	if area.is_in_group(GameGroups.HURTBOX):
+		_on_body_entered(area.get_parent())
 
 
 func _strike(body: Node2D) -> void:

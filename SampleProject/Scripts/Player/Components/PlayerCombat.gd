@@ -17,8 +17,8 @@ enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WIND
 @export var hitbox: Area2D
 @export var damage_applier: DamageApplier
 
-# Combat parameters. Голі руки: кулдаун тут, хітбокс — Player.tscn (Hitbox 40×32); зброя в руці
-# перезаписує обидва своїм weapon_profile з items.json (D203).
+# Combat parameters. Голі руки: кулдаун тут; зброя в руці перезаписує його своїм weapon_profile з items.json (D203).
+# Хітбокс — з намальованого удару (B128, apply_weapon_profile).
 ## Відновлення після фінішера серії (у зброї — weapon_profile.cooldown, D203).
 @export var attack_cooldown_time: float = 0.5
 ## Тривалість одного удару — довжина анімації Attack у Player.tscn; швидкість атаки (D393) її скорочує.
@@ -84,7 +84,8 @@ var _arrow_due: bool = false
 ## Відкидання ворога поточним ударом, px (булава D203, фінішер, важкий). VFXHooks: > 0 — важке влучання.
 var knockback: float = 0.0
 var _weapon_knockback: float = 0.0
-var _bare_size: Vector2
+## Висота центру хітбокса від центру героя, px (центр намальованого шлейфа).
+var _hitbox_y: float = 0.0
 ## Хват і тип зброї в руці (EquipmentManager.get_grip(), items.json category).
 var grip: StringName = &"bare"
 var _category: String = ""
@@ -121,7 +122,6 @@ var is_attacking: bool:
 @onready var player = get_parent()
 
 func _ready() -> void:
-	_bare_size = _hitbox_shape().size
 	_bare_cooldown = attack_cooldown_time
 	_set_hitbox_active(false, 1) # Ensure hitbox is disabled on start
 	EventBus.weapon_in_hand_changed.connect(func(_slot: String) -> void: apply_weapon_profile())
@@ -131,26 +131,23 @@ func _ready() -> void:
 	damage_applier.damage_applied.connect(_on_damage_applied)
 	apply_weapon_profile()
 
-## Профіль удару зброї в руці (D202/D203): довжина й висота хітбокса, кулдаун, відкидання.
+## Профіль удару зброї в руці (D202/D203): кулдаун і відкидання — з items.json; хітбокс — з намальованого шлейфа
+## удару (B128, WeaponView.drawn_swing_rect): від центру героя до краю шлейфа, на його висоту.
 func apply_weapon_profile() -> void:
 	var equipment := ServiceLocator.get_equipment_manager()
 	var item: Dictionary = equipment.get_weapon_item_in_hand()
 	grip = equipment.get_grip()
 	_category = "" if item.is_empty() else String(item.category)
+	# Лук б'є стрілами (D383): хітбокс — як у голих рук (його зону б'ють навички, D142)
+	# WeaponMount — сусідній вузол: у _ready() героя @onready-поля Player ще не готові
+	var drawn: Rect2 = player.get_node(^"WeaponMount").drawn_swing_rect({} if grip == &"bow" else item)
+	_hitbox_shape().size = Vector2(drawn.end.x, drawn.size.y)
+	_hitbox_y = drawn.get_center().y
 	if item.is_empty():
-		_hitbox_shape().size = _bare_size
 		attack_cooldown_time = _bare_cooldown
 		_weapon_knockback = 0.0
-	elif grip == &"bow":
-		# Лук б'є стрілами (D383): хітбокс — як у голих рук (його зону б'ють навички, D142); з профілю — темп
-		# пострілів і відкидання.
-		_hitbox_shape().size = _bare_size
-		var bow: Dictionary = item.weapon_profile
-		attack_cooldown_time = bow.cooldown
-		_weapon_knockback = bow.knockback
 	else:
 		var profile: Dictionary = item.weapon_profile
-		_hitbox_shape().size = Vector2(profile.reach, profile.height)
 		attack_cooldown_time = profile.cooldown
 		_weapon_knockback = profile.knockback
 	knockback = _weapon_knockback
@@ -454,6 +451,22 @@ func _play(animation: StringName) -> void:
 	player.animation = animation
 	player.play_body(animation)
 
+## D456: удар зривають перекат і блок — легкий удар серії, важкий (замах і удар), постріл лука; замах навички — ні.
+func can_cancel_attack() -> bool:
+	return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.SHOOT]
+
+
+## Решта удару скасована одразу: хітбокс вимкнено (удар, що ще не влучив, уже не влучить), стріла не вилетить,
+## серія починається спочатку. Відновлення після фінішера (attack_cooldown) лишається.
+func cancel_attack() -> void:
+	_set_hitbox_active(false, _direction)
+	state = State.READY
+	_state_left = 0.0
+	_queued = false
+	_arrow_due = false
+	_chain_left = 0.0
+
+
 func _start_block() -> void:
 	state = State.BLOCK
 	_block_time = 0.0
@@ -494,7 +507,7 @@ func stagger(duration: float, from_x: float) -> void:
 func _set_hitbox_active(active: bool, last_direction: int) -> void:
 	if active:
 		# Хітбокс починається біля героя й тягнеться на довжину зброї вперед. Ту саму зону бʼють навички (D142).
-		hitbox.position = Vector2(_hitbox_shape().size.x / 2.0 * signi(last_direction), 0)
+		hitbox.position = Vector2(_hitbox_shape().size.x / 2.0 * signi(last_direction), _hitbox_y)
 	# Відкладено: збій героя приходить із body_entered хітбокса ворога, посеред фізичного запиту.
 	hitbox.set_deferred(&"monitoring", active)
 	hitbox.set_deferred(&"monitorable", active)

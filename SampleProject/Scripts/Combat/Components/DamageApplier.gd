@@ -53,6 +53,7 @@ func _ready() -> void:
 	if hitbox:
 		if not hitbox.body_entered.is_connected(_on_hitbox_body_entered):
 			hitbox.body_entered.connect(_on_hitbox_body_entered)
+			hitbox.area_entered.connect(_on_hitbox_area_entered)
 	
 	# Ініціалізуємо поточні ушкодження
 	current_damage = base_damage
@@ -109,6 +110,11 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	
 	# Емітуємо сигнал
 	damage_applied.emit(body, current_damage)
+
+## Зона-ціль ворога (B128): удар по ній — удар по самому ворогу (hit_targets не дасть влучити двічі).
+func _on_hitbox_area_entered(area: Area2D) -> void:
+	if area.is_in_group(GameGroups.HURTBOX):
+		_on_hitbox_body_entered(area.get_parent())
 
 ## Знаходить HealthComponent у цілі
 func _find_health_component(target: Node) -> HealthComponent:

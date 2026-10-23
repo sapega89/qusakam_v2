@@ -28,10 +28,6 @@ xp_reward = 400
 [sub_resource type="RectangleShape2D" id="Shape_body"]
 size = Vector2(56, 100)
 
-[sub_resource type="RectangleShape2D" id="Shape_hitbox"]
-resource_local_to_scene = true
-size = Vector2(130, 80)
-
 [sub_resource type="CircleShape2D" id="Shape_detection"]
 radius = 600.0
 
@@ -193,6 +189,14 @@ tracks/3/keys = {
 "values": [0, 1]
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(63, 150)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(120, 153)
+
 [sub_resource type="AnimationLibrary" id="Lib"]
 _data = {
 &"attack": SubResource("Anim_attack"),
@@ -210,8 +214,8 @@ _data = {
 script = ExtResource("2_boss")
 enemy_stats = SubResource("Stats")
 display_name = "The Brass Collector"
-moves = Array[Dictionary]([{"kind": "combo", "max_range": 130.0, "min_range": 0.0, "weight": 2.0}, {"damage": 1.5, "kind": "slam", "recovery": 0.6, "max_range": 240.0, "min_range": 0.0, "radius": 240.0, "weight": 1.0, "windup": 1.0}, {"damage": 1.3, "distance": 320.0, "kind": "charge", "recovery": 0.6, "max_range": 600.0, "min_range": 140.0, "weight": 1.0, "windup": 0.8}])
-melee_reach = 130.0
+moves = Array[Dictionary]([{"kind": "combo", "max_range": 69.0, "min_range": 0.0, "weight": 2.0}, {"damage": 1.5, "kind": "slam", "recovery": 0.6, "max_range": 240.0, "min_range": 0.0, "radius": 240.0, "weight": 1.0, "windup": 1.0}, {"damage": 1.3, "distance": 320.0, "kind": "charge", "recovery": 0.6, "max_range": 600.0, "min_range": 140.0, "weight": 1.0, "windup": 0.8}])
+melee_reach = 63.0
 phase2_windup = 0.75
 phase2_speed = 1.3
 
@@ -231,10 +235,14 @@ vframes = 6
 [node name="AnimationPlayer" parent="."]
 libraries/ = SubResource("Lib")
 
-[node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(0, -20)
-shape = SubResource("Shape_hitbox")
-
 [node name="CollisionShape2D" parent="dettection"]
 position = Vector2(0, -20)
 shape = SubResource("Shape_detection")
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(31.5, -57)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(1.5, -58.5)
+shape = SubResource("Shape_hurt")

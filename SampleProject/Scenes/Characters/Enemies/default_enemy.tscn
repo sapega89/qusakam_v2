@@ -135,7 +135,11 @@ _data = {
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hitbox"]
 resource_local_to_scene = true
-size = Vector2(28, 28)
+size = Vector2(34.5, 73.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_hurtbox"]
+resource_local_to_scene = true
+size = Vector2(70.5, 75)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy_attack"]
 size = Vector2(40, 32)
@@ -170,11 +174,19 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitbox" unique_id=731052803]
+position = Vector2(17.25, -8.25)
 shape = SubResource("RectangleShape2D_enemy_hitbox")
 
 [node name="DamageApplier" type="Node" parent="hitbox" unique_id=188663354]
 script = ExtResource("2_damage_applier")
 target_group = &"player"
+
+[node name="Hurtbox" type="Area2D" parent="." groups=["hurtbox"]]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0.75, -9)
+shape = SubResource("RectangleShape2D_enemy_hurtbox")
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1808953547]
 monitoring = false

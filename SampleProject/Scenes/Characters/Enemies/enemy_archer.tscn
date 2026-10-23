@@ -70,6 +70,14 @@ tracks/0/keys = {
 "values": [16, 17, 18, 19]
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(34.5, 73.5)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(66, 75)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_archer"]
 _data = {
 &"attack": SubResource("Animation_attack"),
@@ -96,3 +104,11 @@ metadata/attack_strike_time = 0.8
 
 [node name="CollisionShape2D" parent="dettection" index="0"]
 shape = SubResource("CircleShape2D_detection")
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(17.25, -8.25)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(-1.5, -9)
+shape = SubResource("Shape_hurt")
