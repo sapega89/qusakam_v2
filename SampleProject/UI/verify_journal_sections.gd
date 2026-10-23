@@ -7,6 +7,8 @@ extends SceneTree
 ##   3. A bandit killed and a jackal seen → Bestiary (pad RB / key E) shows both, kills counted.
 ##   4. Q / LB go back; Enter on a tab selects it; D-pad up from the first row reaches the tabs.
 ##   5. The records are saved with the player; every DialogueQuest character is in the codex or not_listed.
+##   7. Characters is a character card (D486): place on the lit parchment, portrait (nearest), epithet and name;
+##      ←/→ move between people, Enter shows the description, ↑ reaches the tabs.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
@@ -63,11 +65,13 @@ func _initialize() -> void:
 	journal = await _open_journal(sl)
 	await Kit.mouse(self, journal.get_node("%CharactersTab"))
 	ck(_rows(journal) == ["Grandfather"], "Characters: the grandfather (%s)" % [_rows(journal)])
-	ck(journal._detail_state.text == "KUSAKAM'S GRANDFATHER" and journal._detail_description.text.contains("lizardfolk"), "his role and text (%s)" % journal._detail_state.text)
-	ck(journal._list_header.text == "PEOPLE MET", "list caption (%s)" % journal._list_header.text)
+	ck(journal._card.is_visible_in_tree() and not journal._columns.visible, "the character card, not the list (D486)")
+	ck(journal._epithet.text == "Kusakam's grandfather" and journal._card_name.text == "Grandfather", "epithet and name (%s / %s)" % [journal._epithet.text, journal._card_name.text])
+	ck(journal._about_text.text.contains("lizardfolk") and not journal._about_panel.visible, "his text, behind Confirm")
 	var portrait: Texture2D = root.get_node("DialogueQuest").CharacterDB.get_character_from_id("GRANDFATHER").portrait
-	ck(journal._portrait_frame.is_visible_in_tree() and journal._portrait.texture == portrait and portrait != null,
-			"his portrait, the same as in the dialogue box (D321)")
+	ck(journal._illustration.texture == portrait and portrait != null and journal._illustration.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST,
+			"his portrait, the same as in the dialogue box (D321), nearest")
+	ck(journal._place.text == "Village", "met in the Village (%s)" % journal._place.text)
 	await Kit.key(self, KEY_ESCAPE)
 	await Kit.frames(self, 6)
 
@@ -130,12 +134,36 @@ func _initialize() -> void:
 	JournalRecords.meet_person("MALIK")
 	journal = await _open_journal(sl)
 	await Kit.mouse(self, journal.get_node("%CharactersTab"))
-	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_MALIK"))
-	ck(journal.selected_id == "MALIK" and not journal._portrait_frame.visible and journal._portrait.texture == null,
-			"a person without a portrait: name and text, no portrait frame (selected %s)" % journal.selected_id)
+	await Kit.mouse(self, journal.get_node("%NextButton"))
+	ck(journal.selected_id == "MALIK" and journal._illustration.texture == null and journal._card_name.text == "Malik",
+			"a person without a portrait: name, no picture (selected %s)" % journal.selected_id)
 	malik.set(&"portrait", malik_portrait)
-	await Kit.mouse(self, journal.get_node("%EntryList").get_node("Entry_GRANDFATHER"))
-	ck(journal._portrait_frame.visible and journal._portrait.texture == portrait, "back to the grandfather: his portrait again")
+	await Kit.mouse(self, journal.get_node("%PrevButton"))
+	ck(journal.selected_id == "GRANDFATHER" and journal._illustration.texture == portrait, "back to the grandfather (‹): his portrait again")
+
+	print("[7] The character card (D486): keys, place, light")
+	await Kit.mouse(self, journal.get_node("%PersonCard"))
+	ck(journal._about_panel.visible and root.gui_get_focus_owner() == journal._card, "a click on the card shows the description")
+	await Kit.key(self, KEY_RIGHT)
+	ck(journal.selected_id == "MALIK" and not journal._about_panel.visible, "→ the next person, description closed (%s)" % journal.selected_id)
+	ck(journal._place.text == "Laboratory — Cells" and journal._pager.text == "2 / 2", "Malik met in the cells, 2 / 2 (%s, %s)" % [journal._place.text, journal._pager.text])
+	var view: Vector2 = journal._map_view.size
+	var center: Vector2 = (journal._light.material as ShaderMaterial).get_shader_parameter(&"center")
+	var spot: Vector2 = journal._parchment.position + Vector2(0.74, 0.63) * journal._parchment.size
+	ck(center.distance_to(spot / view) < 0.001, "the light sits on the place on the parchment (%s)" % center)
+	ck(journal._parchment.position.x <= 0.0 and journal._parchment.position.y <= 0.0
+			and journal._parchment.position.x + journal._parchment.size.x >= view.x
+			and journal._parchment.position.y + journal._parchment.size.y >= view.y, "the parchment covers its half")
+	await Kit.key(self, KEY_ENTER)
+	ck(journal._about_panel.visible and journal._about_text.text.contains("prisoner"), "Enter: his description")
+	await Kit.key(self, KEY_ENTER)
+	ck(not journal._about_panel.visible, "Enter again: closed")
+	await Kit.key(self, KEY_LEFT)
+	ck(journal.selected_id == "GRANDFATHER", "← back")
+	await Kit.key(self, KEY_UP)
+	ck(root.gui_get_focus_owner() == journal.get_node("%CharactersTab"), "↑ reaches the tabs (%s)" % root.gui_get_focus_owner())
+	await Kit.key(self, KEY_DOWN)
+	ck(root.gui_get_focus_owner() == journal._card, "↓ back to the card (%s)" % root.gui_get_focus_owner())
 	sl.get_ui_manager().close_game_menu()
 	await Kit.frames(self, 4)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

@@ -634,6 +634,8 @@ func _setup_panels(theme: Theme) -> void:
 	modal.content_margin_bottom = UITokens.MODAL_PAD_V
 	theme.set_stylebox("panel", "ModalPanel", modal)
 	_modal_kit(theme)
+	_level_up_kit(theme)
+	_person_card_kit(theme)
 
 	# Figma UI/Window — модалки, вікна. Непрозорий фон + тінь замість Panel Glow.
 	theme.set_type_variation("WindowPanel", "PanelContainer")
@@ -817,6 +819,51 @@ func _modal_kit(theme: Theme) -> void:
 		theme.set_constant("icon_max_width", t, UITokens.MODAL_POINTER)
 
 
+## Figma UI/Notification/LevelUp 484:6490 (D436): панель kit 320 px · «LEVEL UP» (UI/Title, accent) ·
+## 1 px акцентна лінія · «Level N» (UI/Display) · рядки нагород (UI/Body text-secondary + UI/Label status/increase).
+func _level_up_kit(theme: Theme) -> void:
+	theme.set_type_variation("LevelUpPanel", "PanelContainer")
+	theme.set_stylebox("panel", "LevelUpPanel", _box(UITokens.BACKGROUND, UITokens.BORDER, UITokens.BORDER_WIDTH,
+			UITokens.LEVEL_UP_PAD_H, UITokens.LEVEL_UP_PAD_V))
+	theme.set_type_variation("LevelUpColumn", "VBoxContainer")
+	theme.set_constant("separation", "LevelUpColumn", UITokens.LEVEL_UP_GAP)
+	theme.set_type_variation("LevelUpRows", "VBoxContainer")
+	theme.set_constant("separation", "LevelUpRows", UITokens.LEVEL_UP_ROW_GAP)
+
+	theme.set_type_variation("LevelUpRule", "HSeparator")
+	var line := StyleBoxLine.new()
+	line.color = UITokens.ACCENT
+	line.thickness = UITokens.MODAL_RULE
+	theme.set_stylebox("separator", "LevelUpRule", line)
+	theme.set_constant("separation", "LevelUpRule", UITokens.MODAL_RULE)
+
+	for spec in [["LevelUpTitle", _spaced(_font_bold, UITokens.LEVEL_UP_TITLE_SPACING), UITokens.SIZE_TITLE, UITokens.ACCENT],
+			["LevelUpLevel", _font_bold, UITokens.SIZE_DISPLAY, UITokens.TEXT_PRIMARY],
+			["LevelUpRowLabel", _font_regular, UITokens.SIZE_BODY, UITokens.TEXT_SECONDARY],
+			["LevelUpRowValue", _font_semibold, UITokens.SIZE_LABEL, UITokens.STATUS_INCREASE]]:
+		theme.set_type_variation(spec[0], "Label")
+		theme.set_font("font", spec[0], spec[1])
+		theme.set_font_size("font_size", spec[0], spec[2])
+		theme.set_color("font_color", spec[0], spec[3])
+
+
+## Figma journal-character-detail 192:1754 (D486): епітет — золоті розріджені великі літери, ім'я — великий serif,
+## назва місця на пергаменті — малі золоті великі літери.
+func _person_card_kit(theme: Theme) -> void:
+	for spec in [["CardEpithet", _spaced(_font_semibold, UITokens.CARD_EPITHET_SPACING), UITokens.SIZE_CARD_EPITHET, UITokens.ACCENT],
+			["CardName", _font_bold, UITokens.SIZE_NAME, UITokens.TEXT_PRIMARY],
+			["CardPlace", _spaced(_font_semibold, UITokens.CARD_PLACE_SPACING), UITokens.SIZE_CARD_PLACE, UITokens.ACCENT]]:
+		theme.set_type_variation(spec[0], "Label")
+		theme.set_font("font", spec[0], spec[1])
+		theme.set_font_size("font_size", spec[0], spec[2])
+		theme.set_color("font_color", spec[0], spec[3])
+	theme.set_type_variation("CardMargin", "MarginContainer")
+	for side in ["left", "top", "right", "bottom"]:
+		theme.set_constant("margin_" + side, "CardMargin", UITokens.SPACE_XL)
+	theme.set_type_variation("CardColumns", "HBoxContainer")
+	theme.set_constant("separation", "CardColumns", UITokens.CARD_GAP)
+
+
 ## Шестикутна кнопка з SVG: кінці (MODAL_BUTTON_POINT) не розтягуються, середина — так.
 func _hex_box(path: String, pad_l: int, pad_r: int) -> StyleBoxTexture:
 	var box := StyleBoxTexture.new()
@@ -844,6 +891,8 @@ func _main_menu(theme: Theme) -> void:
 		"TitleHeroes": [_spaced(_font_bold, UITokens.TITLE_SPACING_HEROES), UITokens.SIZE_TITLE_HEROES],
 		"SplashPrompt": [_spaced(_font_semibold, UITokens.SPLASH_PROMPT_SPACING), UITokens.SIZE_SPLASH_PROMPT],
 		"CopyrightLabel": [_spaced(_font_regular, UITokens.COPYRIGHT_SPACING), UITokens.SIZE_CAPTION],
+		# Фінал демо (D473): подяка під титулом, як у головному меню.
+		"FinaleMessage": [_font_regular, UITokens.SIZE_HEADING],
 	}
 	for name in labels:
 		theme.set_type_variation(name, "Label")

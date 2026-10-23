@@ -2711,3 +2711,30 @@ msgstr "Grandfather's notes"
 
 msgid "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay."
 msgstr "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay."
+
+# ── Сповіщення про рівень (D436)
+msgid "LEVEL UP"
+msgstr "LEVEL UP"
+
+msgid "Max HP"
+msgstr "Max HP"
+
+msgid "Damage"
+msgstr "Damage"
+
+msgid "Attribute Points"
+msgstr "Attribute Points"
+
+msgid "Job Points"
+msgstr "Job Points"
+
+# ── Фінал демо (D473)
+msgid "Thank you for playing — you have finished the demo"
+msgstr "Thank you for playing — you have finished the demo"
+
+# ── Журнал → картка персонажа (D486)
+msgid "City"
+msgstr "City"
+
+msgid "Left / Right: another person. Confirm: read about them."
+msgstr "Left / Right: another person. Confirm: read about them."

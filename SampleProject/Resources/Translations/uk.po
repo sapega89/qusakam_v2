@@ -2715,3 +2715,30 @@ msgstr "Дідові записи"
 # [ЧЕРНЕТКА] D621
 msgid "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay."
 msgstr "Бар'єр тихшає. Колись він дзвенів над дюнами так, що чули навіть діти, а тепер мовчить. Статуетці вже ніхто не молиться, а молодші кажуть, що Діва давно заснула. Може, й правда: без молитов у неї немає сил, а без неї бар'єр не втримається. Малому б молитви вчити, а не за жуками ганятися. Якщо бар'єр засне зовсім, нас знайдуть. Хтось мусить молитися. Хтось мусить лишитися."
+
+# ── Сповіщення про рівень (D436)
+msgid "LEVEL UP"
+msgstr "НОВИЙ РІВЕНЬ"
+
+msgid "Max HP"
+msgstr "Макс. HP"
+
+msgid "Damage"
+msgstr "Шкода"
+
+msgid "Attribute Points"
+msgstr "Очки атрибутів"
+
+msgid "Job Points"
+msgstr "Очки навичок"
+
+# ── Фінал демо (D473)
+msgid "Thank you for playing — you have finished the demo"
+msgstr "Дякуємо за гру — ви пройшли демо"
+
+# ── Журнал → картка персонажа (D486)
+msgid "City"
+msgstr "Місто"
+
+msgid "Left / Right: another person. Confirm: read about them."
+msgstr "Вліво / вправо — інша людина. Підтвердити — прочитати про неї."
