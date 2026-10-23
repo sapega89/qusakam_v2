@@ -109,6 +109,16 @@ func _build_slots() -> void:
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		icon_center.add_child(icon)
 
+		# Іконка вміння (D604) — білий силует на тлі слота, тон за видом (D602)
+		var art := TextureRect.new()
+		art.name = "Art"
+		art.set_anchors_preset(Control.PRESET_FULL_RECT)
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		icon.add_child(art)
+
 		var overlay := Label.new()
 		overlay.name = "Cooldown"
 		overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -261,8 +271,14 @@ func _update_slot(index: int) -> void:
 	var on_cooldown: bool = (not empty) and _skill_manager.is_skill_on_cooldown(skill_id)
 	var usable: bool = verdict == SkillManager.Result.OK
 
-	# Іконки навичок ще не експортовані — показуємо плейсхолдер (D28).
 	icon.add_theme_stylebox_override("panel", _icon_box(empty))
+	var art: TextureRect = icon.get_node(^"Art")
+	if empty:
+		art.texture = null
+	else:
+		var definition: SkillDefinition = _skill_database.get_skill(skill_id)
+		art.texture = load(definition.icon)
+		art.self_modulate = definition.icon_tint()
 
 	# Перезарядка: залишок бере менеджер, HUD власного таймера не має.
 	if on_cooldown:

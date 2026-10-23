@@ -412,8 +412,100 @@ def assets_k_main(names):
     print("sheet", ASSETS_K_DIR + "_compare.png", sheet.size)
 
 
+# Sapega 2026-10-23: «знайди модель для створення іконок» — проба двох моделей тексту в картинку:
+# 1) SDXL base 1.0 + LoRA «Game icon» (Civitai 141066 v156373, OpenRAIL++-M, тригер «icon»);
+# 2) Qwen-Image + LoRA «Master Pixel Art» (уже стояла в ComfyUI) + Lightning 4 кроки.
+MODELS_DIR = "design/shots/candidates/icon_models"
+ICON_NEG = "text, letters, words, watermark, signature, frame, border, multiple objects, photo, blurry, broken fingers"
+
+
+def sdxl_icon_graph(desc, seed):
+    def n(c, **i):
+        return {"class_type": c, "inputs": i}
+
+    text = f"2d icon, {desc}, fantasy RPG game skill icon, bold simple shape, centered, plain flat green background, icon"
+    return {
+        "ckpt": n("CheckpointLoaderSimple", ckpt_name="sd_xl_base_1.0.safetensors"),
+        "lora": n("LoraLoader", model=["ckpt", 0], clip=["ckpt", 1], lora_name="game_icon_v1.0.safetensors",
+                  strength_model=0.9, strength_clip=0.9),
+        "pos": n("CLIPTextEncode", clip=["lora", 1], text=text),
+        "neg": n("CLIPTextEncode", clip=["lora", 1], text=ICON_NEG),
+        "latent": n("EmptyLatentImage", width=1024, height=1024, batch_size=1),
+        "sample": n("KSampler", model=["lora", 0], positive=["pos", 0], negative=["neg", 0], latent_image=["latent", 0],
+                    seed=seed, steps=30, cfg=6.5, sampler_name="euler_ancestral", scheduler="normal", denoise=1.0),
+        "decode": n("VAEDecode", samples=["sample", 0], vae=["ckpt", 2]),
+        "save": n("SaveImage", images=["decode", 0], filename_prefix="kusakam/icon_sdxl"),
+    }
+
+
+def qwen_pixel_graph(desc, seed):
+    def n(c, **i):
+        return {"class_type": c, "inputs": i}
+
+    text = (f"Pixel art game skill icon of {desc}: one bold readable subject, centred, thick dark outline, clean flat "
+            "colours, on a plain flat bright green background (#00FF00). No text, no frame.")
+    return {
+        "unet": n("UNETLoader", unet_name="qwen_image_fp8_e4m3fn.safetensors", weight_dtype="default"),
+        "clip": n("CLIPLoader", clip_name="qwen_2.5_vl_7b_fp8_scaled.safetensors", type="qwen_image", device="default"),
+        "vae": n("VAELoader", vae_name="qwen_image_vae.safetensors"),
+        "light": n("LoraLoaderModelOnly", model=["unet", 0], lora_name="Qwen-Image-Lightning-4steps-V1.0.safetensors",
+                   strength_model=1.0),
+        "pixel": n("LoraLoaderModelOnly", model=["light", 0], lora_name="Qwen-Image-2512-Master-Pixel-Art-LoRA.safetensors",
+                   strength_model=1.0),
+        "model": n("ModelSamplingAuraFlow", model=["pixel", 0], shift=3.1),
+        "pos": n("CLIPTextEncode", clip=["clip", 0], text=text),
+        "neg": n("CLIPTextEncode", clip=["clip", 0], text=""),
+        "latent": n("EmptySD3LatentImage", width=1024, height=1024, batch_size=1),
+        "sample": n("KSampler", model=["model", 0], positive=["pos", 0], negative=["neg", 0], latent_image=["latent", 0],
+                    seed=seed, steps=4, cfg=1.0, sampler_name="euler", scheduler="simple", denoise=1.0),
+        "decode": n("VAEDecode", samples=["sample", 0], vae=["vae", 0]),
+        "save": n("SaveImage", images=["decode", 0], filename_prefix="kusakam/icon_qpix"),
+    }
+
+
+def models_main(names):
+    """Лист «модель × елемент»: SDXL+Game icon і Qwen+Pixel Art, по 2 кандидати; сирі кадри й 48×48 поруч."""
+    os.makedirs(os.path.join(MODELS_DIR, "raw"), exist_ok=True)
+    rows = []
+    for mi, (model, build) in enumerate((("sdxl", sdxl_icon_graph), ("qpix", qwen_pixel_graph))):
+        for ai, asset in enumerate(names):
+            for c in (1, 2):
+                path = os.path.join(MODELS_DIR, "raw", f"{model}_{asset}_{c}.png")
+                if not os.path.exists(path):
+                    Image.fromarray(run(build(ASSETS[asset], 1300 + mi * 100 + ai * 10 + c)).astype(np.uint8)).save(path)
+                    print("generated", model, asset, c, flush=True)
+                rows.append((model, asset, c, path))
+        free()
+    font = ImageFont.truetype("arial.ttf", 20)
+    cell, pad = 192, 14
+    cols = len(names) * 2
+    sheet = Image.new("RGB", (170 + cols * (cell + pad), 2 * 2 * (cell + pad) + 40), (60, 60, 66))
+    d = ImageDraw.Draw(sheet)
+    for i, (model, asset, c, path) in enumerate(rows):
+        mi = 0 if model == "sdxl" else 1
+        col = (i % cols)
+        raw = Image.open(path).convert("RGB").resize((cell, cell), Image.LANCZOS)
+        px = pixel_icon(np.asarray(Image.open(path).convert("RGB")))
+        tile = Image.new("RGBA", (cell, cell), SLOT + (255,))
+        tile.alpha_composite(px.resize((cell, cell), Image.NEAREST))
+        x = 170 + col * (cell + pad)
+        y = 40 + mi * 2 * (cell + pad)
+        sheet.paste(raw, (x, y))
+        sheet.paste(tile.convert("RGB"), (x, y + cell + pad))
+        if mi == 0:
+            d.text((x, 10), f"{asset} {c}", fill="white", font=font)
+    d.text((10, 40 + cell // 2), "SDXL+Game icon", fill="white", font=font)
+    d.text((10, 40 + cell + pad + cell // 2), "  → 48 px", fill="white", font=font)
+    d.text((10, 40 + 2 * (cell + pad) + cell // 2), "Qwen+Pixel Art", fill="white", font=font)
+    d.text((10, 40 + 3 * (cell + pad) + cell // 2), "  → 48 px", fill="white", font=font)
+    sheet.save(MODELS_DIR + ".png")
+    print("sheet", MODELS_DIR + ".png", sheet.size)
+
+
 if __name__ == "__main__":
-    if sys.argv[1:2] == ["--assets-k"]:
+    if sys.argv[1:2] == ["--models"]:
+        models_main(sys.argv[2:] or ["hand_palm", "sword", "fire"])
+    elif sys.argv[1:2] == ["--assets-k"]:
         assets_k_main(sys.argv[2:])
     elif sys.argv[1:2] == ["--assets"]:
         assets_main(sys.argv[2:])

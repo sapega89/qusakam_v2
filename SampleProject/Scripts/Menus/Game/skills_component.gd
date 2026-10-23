@@ -400,6 +400,10 @@ func _apply_row_state(definition: SkillDefinition, node: Button) -> void:
 	var name_label: Label = node.get_node(^"Row/SkillName")
 	var note: Label = node.get_node(^"Row/State")
 	var marker: TextureRect = node.get_node(^"Row/Marker")
+	var art: TextureRect = node.get_node(^"Row/Art")
+	art.texture = load(definition.icon)  # D604: іконка-силует, тон за видом (D602), закрите — приглушене
+	art.self_modulate = definition.icon_tint()
+	art.modulate.a = 0.45 if state == NodeState.LOCKED else 1.0
 
 	if selected:
 		name_label.theme_type_variation = &"SkillNameSelected"

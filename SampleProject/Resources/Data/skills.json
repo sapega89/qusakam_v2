@@ -79,6 +79,7 @@
   "skills": [
     {
       "id": "healing_palm",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/healing_palm.png",
       "name": "Healing Palm",
       "description": "A flask of three sips: each restores HP to an ally next to you, or to yourself. Refilled when you save the game. Learned from level 2.",
       "class_id": "",
@@ -111,6 +112,7 @@
     },
     {
       "id": "fire_strike",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/fire_strike.png",
       "name": "Fire Strike",
       "description": "A burning strike at everything in front of you; sets them burning. Needs a sword or a dagger in hand.",
       "class_id": "",
@@ -153,6 +155,7 @@
     },
     {
       "id": "electric_strike",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/electric_strike.png",
       "name": "Electric Strike",
       "description": "A crackling strike at everything in front of you; jumps to one more enemy nearby and stuns the first. Needs a halberd or a mace in hand.",
       "class_id": "",
@@ -196,6 +199,7 @@
     },
     {
       "id": "toughness",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/toughness.png",
       "name": "Toughness",
       "description": "+10 Max HP.",
       "class_id": "",
@@ -211,6 +215,7 @@
     },
     {
       "id": "shield_block",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_block.png",
       "name": "Shield Block",
       "description": "Take 20% less damage while a shield is equipped.",
       "class_id": "",
@@ -226,6 +231,7 @@
     },
     {
       "id": "devotion",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/devotion.png",
       "name": "Devotion",
       "description": "+5 max SP.",
       "class_id": "",
@@ -241,6 +247,7 @@
     },
     {
       "id": "weapon_training",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/weapon_training.png",
       "name": "Weapon Training",
       "description": "+3 attack.",
       "class_id": "",
@@ -256,6 +263,7 @@
     },
     {
       "id": "fortitude",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/fortitude.png",
       "name": "Fortitude",
       "description": "Take 5% less damage.",
       "class_id": "",
@@ -271,6 +279,7 @@
     },
     {
       "id": "riposte_instinct",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/riposte_instinct.png",
       "name": "Riposte Instinct [DRAFT]",
       "description": "For 3 s after a parry, your skills deal 25% more damage. [DRAFT]",
       "class_id": "",
@@ -290,6 +299,7 @@
     },
     {
       "id": "last_stand",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/last_stand.png",
       "name": "Last Stand [DRAFT]",
       "description": "Below 30% HP, take 15% less damage. [DRAFT]",
       "class_id": "",
@@ -309,6 +319,7 @@
     },
     {
       "id": "radiant_smite",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/radiant_smite.png",
       "name": "Radiant Smite",
       "description": "A strike charged with the light of the sky at everything in front of you; dazes the first enemy.",
       "class_id": "",
@@ -346,6 +357,7 @@
     },
     {
       "id": "mending_hands",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/mending_hands.png",
       "name": "Mending Hands",
       "description": "Your healing restores 25% more.",
       "class_id": "",
@@ -362,6 +374,7 @@
     },
     {
       "id": "aura_of_resolve",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/aura_of_resolve.png",
       "name": "Aura of Resolve",
       "description": "Take 8% less damage.",
       "class_id": "",
@@ -378,6 +391,7 @@
     },
     {
       "id": "skys_grace",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/skys_grace.png",
       "name": "Sky's Grace",
       "description": "Gain 0.5 more SP from every hit and parry.",
       "class_id": "",
@@ -394,6 +408,7 @@
     },
     {
       "id": "skyfall_blessing",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/skyfall_blessing.png",
       "name": "Skyfall Blessing",
       "description": "Strike everything in front of you and heal an ally next to you, or yourself.",
       "class_id": "",
@@ -437,6 +452,7 @@
     },
     {
       "id": "aura_of_valour",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/aura_of_valour.png",
       "name": "Aura of Valour",
       "description": "+25 Max HP.",
       "class_id": "",
@@ -453,6 +469,7 @@
     },
     {
       "id": "judgement_of_the_sky",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/judgement_of_the_sky.png",
       "name": "Judgement of the Sky",
       "description": "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first.",
       "class_id": "",
@@ -497,6 +514,7 @@
     },
     {
       "id": "unbroken_vow",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/unbroken_vow.png",
       "name": "Unbroken Vow",
       "description": "Take a further 8% less damage.",
       "class_id": "",
@@ -515,6 +533,7 @@
     },
     {
       "id": "merciful_light",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/merciful_light.png",
       "name": "Merciful Light [DRAFT]",
       "description": "Below 30% HP, your healing restores 40% more. [DRAFT]",
       "class_id": "",
@@ -535,6 +554,7 @@
     },
     {
       "id": "zealous_answer",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/zealous_answer.png",
       "name": "Zealous Answer [DRAFT]",
       "description": "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]",
       "class_id": "",
@@ -555,6 +575,7 @@
     },
     {
       "id": "consecrated_ground",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/consecrated_ground.png",
       "name": "Consecrated Ground [DRAFT]",
       "description": "For 3 s after using a skill, take 10% less damage. [DRAFT]",
       "class_id": "",
@@ -575,6 +596,7 @@
     },
     {
       "id": "searing_hex",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/searing_hex.png",
       "name": "Searing Hex",
       "description": "A cursed strike at everything in front of you; sets them burning with dark fire.",
       "class_id": "",
@@ -615,6 +637,7 @@
     },
     {
       "id": "blood_pact",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/blood_pact.png",
       "name": "Blood Pact",
       "description": "Your weapon hits heal you for 10% of the damage dealt.",
       "class_id": "",
@@ -631,6 +654,7 @@
     },
     {
       "id": "dread_aura",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dread_aura.png",
       "name": "Dread Aura",
       "description": "+4 attack.",
       "class_id": "",
@@ -647,6 +671,7 @@
     },
     {
       "id": "relentless",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/relentless.png",
       "name": "Relentless",
       "description": "Your hits break an enemy's stance 25% faster.",
       "class_id": "",
@@ -663,6 +688,7 @@
     },
     {
       "id": "withering_grasp",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/withering_grasp.png",
       "name": "Withering Grasp",
       "description": "A withering blow at everything in front of you; the dark fire burns on.",
       "class_id": "",
@@ -705,6 +731,7 @@
     },
     {
       "id": "hoarded_ward",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/hoarded_ward.png",
       "name": "Hoarded Ward",
       "description": "Take 8% less damage.",
       "class_id": "",
@@ -721,6 +748,7 @@
     },
     {
       "id": "eclipse_cleave",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/eclipse_cleave.png",
       "name": "Eclipse Cleave",
       "description": "A cleave of dark fire at everything in front of you; leaps to one more enemy and sets them burning.",
       "class_id": "",
@@ -768,6 +796,7 @@
     },
     {
       "id": "crimson_thirst",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/crimson_thirst.png",
       "name": "Crimson Thirst",
       "description": "Your weapon hits heal you for a further 10% of the damage dealt.",
       "class_id": "",
@@ -786,6 +815,7 @@
     },
     {
       "id": "desperate_hunger",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/desperate_hunger.png",
       "name": "Desperate Hunger [DRAFT]",
       "description": "Below 35% HP, your weapon hits heal you for a further 15% of the damage dealt. [DRAFT]",
       "class_id": "",
@@ -806,6 +836,7 @@
     },
     {
       "id": "cruel_momentum",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/cruel_momentum.png",
       "name": "Cruel Momentum [DRAFT]",
       "description": "For 3 s after using a skill, +6 attack. [DRAFT]",
       "class_id": "",
@@ -826,6 +857,7 @@
     },
     {
       "id": "dark_riposte",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dark_riposte.png",
       "name": "Dark Riposte [DRAFT]",
       "description": "For 4 s after a parry, your skills deal 30% more damage. [DRAFT]",
       "class_id": "",
@@ -846,6 +878,7 @@
     },
     {
       "id": "balanced_strike",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/balanced_strike.png",
       "name": "Balanced Strike",
       "description": "A measured strike at everything in front of you; stuns the first enemy.",
       "class_id": "",
@@ -883,6 +916,7 @@
     },
     {
       "id": "bulwark",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/bulwark.png",
       "name": "Bulwark",
       "description": "Take a further 10% less damage while a shield is equipped.",
       "class_id": "",
@@ -901,6 +935,7 @@
     },
     {
       "id": "sand_stance",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/sand_stance.png",
       "name": "Sand Stance",
       "description": "Your hits break an enemy's stance 30% faster.",
       "class_id": "",
@@ -917,6 +952,7 @@
     },
     {
       "id": "iron_body",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/iron_body.png",
       "name": "Iron Body",
       "description": "+20 Max HP.",
       "class_id": "",
@@ -935,6 +971,7 @@
     },
     {
       "id": "dervish_whirl",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dervish_whirl.png",
       "name": "Dervish Whirl",
       "description": "Spin through everything in front of you; the whirl catches one more enemy nearby.",
       "class_id": "",
@@ -977,6 +1014,7 @@
     },
     {
       "id": "unshakable",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/unshakable.png",
       "name": "Unshakable",
       "description": "Take 10% less damage.",
       "class_id": "",
@@ -993,6 +1031,7 @@
     },
     {
       "id": "second_wind",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/second_wind.png",
       "name": "Second Wind",
       "description": "The Warden's ultimate: catch your breath and restore a great deal of HP to an ally next to you, or to yourself.",
       "class_id": "",
@@ -1032,6 +1071,7 @@
     },
     {
       "id": "perfect_balance",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/perfect_balance.png",
       "name": "Perfect Balance",
       "description": "+8 attack.",
       "class_id": "",
@@ -1050,6 +1090,7 @@
     },
     {
       "id": "still_water",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/still_water.png",
       "name": "Still Water [DRAFT]",
       "description": "For 3 s after a parry, take 15% less damage. [DRAFT]",
       "class_id": "",
@@ -1070,6 +1111,7 @@
     },
     {
       "id": "dervish_rhythm",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dervish_rhythm.png",
       "name": "Dervish Rhythm [DRAFT]",
       "description": "For 3 s after using a skill, your hits break an enemy's stance 30% faster. [DRAFT]",
       "class_id": "",
@@ -1090,6 +1132,7 @@
     },
     {
       "id": "rooted_resolve",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/rooted_resolve.png",
       "name": "Rooted Resolve [DRAFT]",
       "description": "Below 30% HP, your hits break an enemy's stance 50% faster. [DRAFT]",
       "class_id": "",

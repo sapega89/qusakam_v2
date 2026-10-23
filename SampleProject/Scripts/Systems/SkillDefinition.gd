@@ -168,6 +168,13 @@ func is_active() -> bool:
 	return skill_type == Type.ACTIVE
 
 
+## Тон іконки (D602): ультимейт — золото, пасивка — сталево-блакитний, решта активних — слонова кістка.
+func icon_tint() -> Color:
+	if ultimate:
+		return UITokens.SKILL_ICON_ULTIMATE
+	return UITokens.SKILL_ICON_ACTIVE if is_active() else UITokens.SKILL_ICON_PASSIVE
+
+
 func to_dict() -> Dictionary:
 	return {
 		"id": id,

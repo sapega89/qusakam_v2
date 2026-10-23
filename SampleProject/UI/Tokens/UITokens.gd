@@ -152,6 +152,10 @@ const SIDEBAR_ITEM_HEIGHT := 45
 # ── Розміри інвентарю (Figma: UI/Inventory Center Panel 355:6423) ───────────
 const ICON_SLOT := 36
 const ICON_SLOT_BG := Color("2a2a35")
+## Тон іконки вміння за видом (D602, D604): іконка — білий силует, колір дає гра.
+const SKILL_ICON_ACTIVE := Color("ede6d3")  # слонова кістка
+const SKILL_ICON_PASSIVE := Color("96b9d7")  # сталево-блакитний
+const SKILL_ICON_ULTIMATE := Color("ecc45c")  # золото
 const CENTER_PANEL_PADDING := 48
 
 # ── Розміри екрана Status (Figma: menu-status 58:719) ──────────────────────
