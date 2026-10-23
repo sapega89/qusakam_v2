@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 
 DIR = Path("design/shots/companions")
 ORDER = ["astrit", "alisia", "urizen", "guard"]
-SCALE = 0.5
+SCALE = 0.4
 GAP = 8
 
 tags = sys.argv[1:] or ["before", "after"]
