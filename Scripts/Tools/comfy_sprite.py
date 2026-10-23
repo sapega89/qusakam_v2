@@ -2770,7 +2770,37 @@ CHARACTERS = {
         ),
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(96, 72),
-        seed=118,
+        seed=118,  # D654: кадри з кандидата 1 (Sapega: «шакали вже готові, треба тільки запустити анімації»)
+        out="SampleProject/Assets/Characters/Enemies/jackal_cursed/sheet.png",
+        rows=[
+            ("idle", [None, "BOB:40"]),
+            (
+                "walk",
+                [
+                    "running fast to the right in the same view, its front legs stretched forward and its hind legs pushed back",
+                    "running fast to the right in the same view, all four legs gathered under its body",
+                    "running fast to the right in the same view, its front legs pushed back and its hind legs reaching forward",
+                    "running fast to the right in the same view, all four legs gathered under its body",
+                ],
+            ),
+            (
+                "attack",
+                [
+                    "crouching low on all four legs, head down, ready to leap forward, fangs bared",
+                    "leaping forward through the air to the right, jaws wide open, front claws stretched out",
+                    "biting down hard, landing on its front legs, head thrust forward, jaws snapping shut",
+                ],
+            ),
+            ("hurt", ["recoiling from a hit, head tossed up, body twisted, yelping"]),
+            (
+                "death",
+                [
+                    "staggering, its legs buckling, head hanging low",
+                    "collapsing onto its side",
+                    "lying dead on its side on the ground, legs limp, its blue eyes dim",
+                ],
+            ),
+        ],
         colors=16,
         who="the same cursed horror jackal-wolf with the mangy dark grey fur, the jutting ribs, the long snout full of "
         "fangs, the glowing blue eyes",
