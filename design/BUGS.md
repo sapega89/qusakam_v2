@@ -125,37 +125,12 @@ the history, this note keeps only what is open.
 - **Got:** unexplored MetSys cells are drawn as a fine square pattern over the whole parchment, so the map is hard to read and the two explored cells are tiny. **Evidence:** `design/shots/menu_qa/cmp_map.png`.
 - **Severity:** visual. **Found:** 2026-10-23, menu QA.
 
-### B128 — Hit areas do not match what is drawn: enemies hit from too far, the hero cannot reach them
-- **Where:** `Scripts/Gameplay/DefaultEnemy.gd:114`: `hitbox_collision.shape.size.x = attack_range`, so the enemy's damage area is as wide as its whole attack range (melee and tank 100 px, fast 80 px plus a 60-px lunge; `Resources/Enemies/enemy_stats_*.tres`). The scene's own `hitbox` shape is 28 × 28. The shape is a shared sub-resource, so writing to it may resize every enemy's. The enemy's body / hurt area (`default_enemy.tscn` `CollisionShape2D`) and the hero's swing area (`PlayerCombat` / `WeaponView`) are not matched to their sprites either.
-- **Expected:** what you see is what hits.
-  - An enemy's attack reaches only as far as its visible strike: the claw, blade or lunge.
-  - The hero's swing hits anything the drawn slash (`SlashTrail`) overlaps.
-  - An enemy can be hit wherever its sprite is opaque at body height.
-  - `attack_range` stays the distance at which an enemy *starts* its attack, not the size of the damage area.
-- **Got:** Sapega, playtest 2026-10-23: «я стою далеко від мобів, але вони мене дістають — не очевидно» and «так само я не можу до них дотягнутись, хоча здається, що мав би».
-- **Fix:**
-  - Per kind, size the attack hitbox from the strike frames, the hurtbox from the body's opaque bounds, and the hero's hitbox from the slash trail.
-  - Make each shape local to its scene, so nothing is shared.
-  - Add a debug draw toggle for tuning.
-  - Add `verify_hit_areas.gd`: per enemy kind and per hero weapon, the shapes stay within a few px of the sprites' opaque bounds, and the hero at the drawn reach does hit.
-- **Severity:** gameplay (combat feel).
-- **Found:** 2026-10-23, Sapega's playtest.
-
 ### B127 — Nobody is laid on the operating table
 - **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
 - **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
 - **Got:** she only walks up to the table; nobody is ever on it (Sapega: «на стіл ніхто нікого не поклав»).
 - **Needs art:** Alisia lying on her back (a frame or two, plus getting up). It goes in the ComfyUI art batch (comfy-sprite, from her existing sheet). Then the cutscene places her on the table top.
 - **Severity:** story.
-- **Found:** 2026-10-23, Sapega's playtest.
-
-### B125 — The boss ends up hanging above Kusakam
-- **Where:** the Mayor Hall boss (the brass golem with the cage, `bestiary.json`), `Scripts/Gameplay/Characters/Bosses/BossLogic.gd` and the boss body; player / enemy collision (D197, now D443).
-- **Expected:** the boss stays on the floor and never stands or hangs on the hero. Whoever lands on the other slides off (D443).
-- **Got:** in Sapega's playtest the boss hung above Kusakam.
-- **Fix where all callers route:** the shared body rule from D443, not a boss-only patch. Check it with the boss's jumps and lunges.
-- **Evidence:** Sapega's report (the chat, 2026-10-23).
-- **Severity:** gameplay.
 - **Found:** 2026-10-23, Sapega's playtest.
 
 ### B124 — The sword changes hands between running and attacking
@@ -258,6 +233,8 @@ the history, this note keeps only what is open.
 > - **B123** (`374daa57`): `Cutscene` lands an airborne hero first and holds the lines until he lands. `verify_cutscene` [0].
 
 > **Fixed 2026-10-23:** B126 (`cloud/story-text`, D499): in the LabCells cutscene only Alisia's body moves; the cat stays in cell 3.
+
+> **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
 ## Playtest intake — 2026-09-29 (Sapega)
 
