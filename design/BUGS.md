@@ -64,6 +64,39 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B133 — Parrying a boss hazard staggers the boss from any distance
+- **Where:** `BossFireball.gd:30`, `BossPillar.gd:26`, `BossLogic.gd:103` → `PlayerCombat.gd:465-471`, `DefaultEnemy.gd:624-625`. The hazard names the boss as the damage source.
+- **Got:** a parried fireball staggered the djinn 450 px away (0.93 s left, 0 damage). A floor pillar can be blocked just by facing the boss. **Expected:** hazards cannot be parried or blocked; only melee strikes and arrows can.
+- **Severity:** gameplay. **Found:** 2026-10-23, [[combat_critique_2026-10-23]] (confirmed by probe).
+
+### B134 — Knockback cancels any wind-up, even an armoured or boss swing
+- **Where:** `EnemyLogic.gd:370-374` (no armour or boss check). A combo's last swing (40 px), every mace hit (60 px), and Astrit's and the guard's assists all do it.
+- **Got:** a level-1 bare-hand combo cancelled the Brass slam wind-up at 0.65 s, with no shockwave, while the boss's poise was not broken. **Expected:** once a tell is shown, the swing completes unless poise breaks; bosses ignore knockback.
+- **Severity:** gameplay. **Found:** 2026-10-23, combat critique (probe).
+
+### B135 — Boss timers keep running while the game is paused
+- **Where:** `BossLogic.gd:50`, `:90`, `:118`; `BossPillar.gd:21`, `:27`. `create_timer` is called without stopping on pause.
+- **Got:** the hero lost 38 HP during 1.2 s of pause. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (probe).
+
+### B136 — Turning mid-swing turns the body and weapon, but not the hitbox
+- **Where:** `PlayerCombat.gd:494-497`, `:296-297`; `WeaponView.gd:119`. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (by reading).
+
+### B137 — Skills ignore Phys. Atk., so a level-20 ultimate hits for less than a light swing
+- **Where:** `SkillManager.gd:131-132`, `SkillCombatExecutor.gd:17-34`. Flat 20–50 against a light hit of 45–150; this contradicts D491.
+- **Expected:** skill damage scales with the hero's attack. **Severity:** gameplay. **Found:** 2026-10-23, combat critique.
+
+### B138 — The saved hero HP is ignored: every load gives full HP
+- **Where:** `PlayerDataModule.gd:31`; `PlayerStateManager.gd:33` (no callers); `Player.gd:70-71`. **Severity:** gameplay / save. **Found:** 2026-10-23, combat critique.
+
+### B139 — Enemies notice the hero through floors and walls
+- **Where:** `default_enemy.tscn` (a 300-px circle); `EnemyLogic.gd:222-227` (distance checked along X only); `PlayerCombat.gd:274-278`.
+- **Got:** an enemy on another floor chases, swings at the ceiling and keeps the hero "in combat", so the fight music plays.
+- **Expected:** an enemy notices the hero only on its own floor or in line of sight.
+- **Severity:** gameplay. **Found:** 2026-10-23, combat critique.
+
+### B140 — Dead code: `VFXHooks.play_boss_attack_effect` and its helpers, and `EnemyLogic`'s HP-based retreat
+- **Where:** `VFXHooks.gd:202-303`; `EnemyLogic.gd:459-525` (the retreat can only run at 1 HP or less). It is removed per D131. **Severity:** code. **Found:** 2026-10-23, combat critique.
+
 ### B129 — The hero's portrait is a purple square in the Game Menu
 - **Where:** Status header, Equipment "Current character", and the party card in the right column (Inventory, Equipment, Misc, Map).
 - **Expected:** Kusakam's portrait, the one the dialogue box uses (`Sprites/Player/portrait.tres`), framed as in Figma `58:719`.

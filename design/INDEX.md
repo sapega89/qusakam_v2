@@ -74,6 +74,7 @@ Read-only findings. No decisions made inside them.
 - [[journal_audit]] — D52–D57
 - [[ui_theme_scope_audit]] — **why `project.godot` sets no global theme.** Read before changing that
 - [[service_locator_audit]]
+- [[combat_critique_2026-10-23]] — the combat against a 2D souls-like bar: the top 10, the hero's action matrix, enemy movement, 10 bugs
 - [[decision_audit]] — did the D-IDs become code?
 - [[play_feedback_queue]] — Sapega's play feedback 2026-10-20: the order to run BACKLOG items 1–23, rules, what is open
 - [[code_review_2026-10-19]] — the whole game: the B73 room leak, plugins keep / own / remove, maintainability (Q61–Q63)
