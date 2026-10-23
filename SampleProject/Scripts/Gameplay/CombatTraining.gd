@@ -97,7 +97,8 @@ func _on_hit(target: Node, _damage: int) -> void:
 			if _combat.state == PlayerCombat.State.SWING and _combat.combo_step == _combat.combo_length() - 1:
 				_complete(0)
 		3:
-			if _combat.state == PlayerCombat.State.HEAVY_STRIKE:
+			# рипост після паррі (D575) теж іде станом HEAVY_STRIKE, але це не важкий удар уроку
+			if _combat.state == PlayerCombat.State.HEAVY_STRIKE and not _combat.riposting:
 				_complete(3)
 
 
