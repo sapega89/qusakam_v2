@@ -11,7 +11,7 @@ branch: cloud/difficulty
 - Changed: hero growth per level, Strength's diminishing returns, enemy level per fight, base stats, bosses, the 8 damaging non-ultimate actives (×1.5), faster enemy tempo and a 3-enemy attack token. All numbers are in data; the flask is unchanged.
 - Not done: no real-fight capture (D580), so this is numbers only, and Sapega should play it. The Laboratory boss is still the djinn (D564's manticore is not built).
 - D-IDs: D643–D648 below. B rows fixed: none.
-- Full suite: SUITE_LINE
+- Full suite: `SUITE: ALL PASS` (112 verify scripts, final run after all changes).
 
 ## D-ID text (for the orchestrator)
 
@@ -143,4 +143,7 @@ What the table shows:
 
 ## Tests
 
-TESTS
+- `verify_difficulty`: `RESULT: ALL PASS` (before the retune: `RESULT: 14 FAIL`).
+- Touched while working, all `RESULT: ALL PASS`: `verify_combat_enemies`, `verify_combat_stats`, `verify_combat_flow`, `verify_bosses`, `verify_archer`, `verify_flying_enemies`.
+- `verify_onboarding` passes, so the lessons stay winnable (D-28c: `min_health` keeps the hero alive).
+- Full suite, `Scripts/Tools/run_verify.sh`: `SUITE: ALL PASS` (112 PASS). The first full run had 3 FAIL (archer, combat_flow, flying_enemies), all fixed above.
