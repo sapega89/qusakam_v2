@@ -159,8 +159,7 @@ func _item_and_grip() -> void:
 	gm.player_state["unlocked_skills"] = unlocked
 	em.equip_item(who, "bow", "short_bow", bow)
 	await process_frame
-	while gm.player_state.weapon_in_hand != "bow":
-		em.cycle_weapon(1)
+	await process_frame  # D475 / D510: екіпірування одразу бере зброю в руку
 	await process_frame
 	ck(em.get_grip() == &"bow" and hero.combat.grip == &"bow", "the bow in hand → grip bow (%s)" % hero.combat.grip)
 	ck(em.get_off_hand_item().is_empty(), "no off-hand weapon with a bow")

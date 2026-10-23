@@ -78,8 +78,7 @@ func _initialize() -> void:
 	for slot in ["sword", "dagger", "mace", "polearm", "shield"]:
 		em.unequip_item(who, slot)
 	em.equip_item(who, "dagger", "iron_dagger", sl.get_item_database().get_item("iron_dagger"))
-	while sl.get_game_manager().player_state.weapon_in_hand != "dagger":
-		em.cycle_weapon(1)
+	await process_frame  # D475 / D510: екіпірування одразу бере зброю в руку
 	game.player.is_invulnerable = true  # замах бандита не перебиває важкий удар позою Hurt
 	var bandit: CharacterBody2D = load(BANDIT).instantiate()
 	bandit.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
