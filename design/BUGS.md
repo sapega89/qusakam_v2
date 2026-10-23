@@ -78,9 +78,6 @@ the history, this note keeps only what is open.
 - **Where:** `BossLogic.gd:50`, `:90`, `:118`; `BossPillar.gd:21`, `:27`. `create_timer` is called without stopping on pause.
 - **Got:** the hero lost 38 HP during 1.2 s of pause. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (probe).
 
-### B136 — Turning mid-swing turns the body and weapon, but not the hitbox
-- **Where:** `PlayerCombat.gd:494-497`, `:296-297`; `WeaponView.gd:119`. **Severity:** gameplay. **Found:** 2026-10-23, combat critique (by reading).
-
 ### B138 — The saved hero HP is ignored: every load gives full HP
 - **Where:** `PlayerDataModule.gd:31`; `PlayerStateManager.gd:33` (no callers); `Player.gd:70-71`. **Severity:** gameplay / save. **Found:** 2026-10-23, combat critique.
 
@@ -134,7 +131,7 @@ the history, this note keeps only what is open.
 - **Severity:** visual — an A-batch for the bow (Air 1–3, Block, Hurt, the sword set's list), then add them to the library
 - **Found:** 2026-10-22, `cloud/bow`
 
-> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed. **B129, B130, B131, B132** fixed by `cloud/menu-qa` — one hero portrait in the Game Menu (D534), jobs and weapon icons on Status (D532), Equipment's empty frame removed (D531), unexplored map cells not drawn; rows removed.
+> **Round 10 (2026-10-23):** **B137** fixed by `cloud/skills-data` — skills scale with Phys. Atk. / Elem. Atk. (D526, `verify_skill_rules` [2]); row removed. **B129, B130, B131, B132** fixed by `cloud/menu-qa` — one hero portrait in the Game Menu (D534), jobs and weapon icons on Status (D532), Equipment's empty frame removed (D531), unexplored map cells not drawn; rows removed. **B136** fixed by `cloud/combat-player` — facing stays locked until the hit is out (D536, `verify_combat_player`); row removed.
 
 > **Round 8 (2026-10-22):** **B116** fixed by `cloud/combat-fixes` — a held or dead hero leaves combat at once (D425); row removed.
 > **B118** fixed by `cloud/settings-store` — one settings file per install (D424); row removed.
