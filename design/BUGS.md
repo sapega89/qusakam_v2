@@ -64,6 +64,15 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
+### B125 — The boss ends up hanging above Kusakam
+- **Where:** the Mayor Hall boss (the brass golem with the cage, `bestiary.json`), `Scripts/Gameplay/Characters/Bosses/BossLogic.gd` and the boss body; player / enemy collision (D197, now D443).
+- **Expected:** the boss stays on the floor and never stands or hangs on the hero. Whoever lands on the other slides off (D443).
+- **Got:** in Sapega's playtest the boss hung above Kusakam.
+- **Fix where all callers route:** the shared body rule from D443, not a boss-only patch. Check it with the boss's jumps and lunges.
+- **Evidence:** Sapega's report (the chat, 2026-10-23).
+- **Severity:** gameplay.
+- **Found:** 2026-10-23, Sapega's playtest.
+
 ### B124 — The sword changes hands between running and attacking
 - **Where:** `SampleProject/Sprites/Player/Weapons/sword/` (`Run/1–7` against `Attack1–3`, `Heavy`, and the other folders); `Player.tscn` → library `sword`.
 - **Expected:** the same hand in every sword frame. The sword README says "held in the near hand"; keep that, unless the majority of frames is the other way.
