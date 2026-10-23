@@ -2551,4 +2551,4 @@ msgid "Drink it in play with the quick slot (%s)"
 msgstr "Випийте його в грі зі швидкого слота (%s)"
 
 msgid "ST"
-msgstr "ST"
+msgstr "ВТ"
