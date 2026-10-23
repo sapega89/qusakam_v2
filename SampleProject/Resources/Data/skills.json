@@ -1154,6 +1154,7 @@
     },
     {
       "id": "dash_strike",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dash_strike.png",
       "name": "Dash Strike [DRAFT]",
       "description": "Dash forward and cut the first enemy in your way; you stop at it. [DRAFT]",
       "class_id": "",
@@ -1166,6 +1167,7 @@
     },
     {
       "id": "rising_slash",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/rising_slash.png",
       "name": "Rising Slash [DRAFT]",
       "description": "An upward cut that throws light enemies into the air. [DRAFT]",
       "class_id": "",
@@ -1178,6 +1180,7 @@
     },
     {
       "id": "shield_bash",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_bash.png",
       "name": "Shield Bash [DRAFT]",
       "description": "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]",
       "class_id": "",
@@ -1190,6 +1193,7 @@
     },
     {
       "id": "ground_slam",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/ground_slam.png",
       "name": "Ground Slam [DRAFT]",
       "description": "Knocks down every enemy close to you, on both sides. [DRAFT]",
       "class_id": "",
@@ -1204,6 +1208,7 @@
     },
     {
       "id": "holy_javelin",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/holy_javelin.png",
       "name": "Holy Javelin [DRAFT]",
       "description": "Throw a spear of light at the enemy ahead. [DRAFT]",
       "class_id": "",
@@ -1216,6 +1221,7 @@
     },
     {
       "id": "battle_cry",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/battle_cry.png",
       "name": "Battle Cry [DRAFT]",
       "description": "Raise your attack for a while; weak enemies close by flinch. [DRAFT]",
       "class_id": "",
@@ -1228,6 +1234,7 @@
     },
     {
       "id": "counter_stance",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/counter_stance.png",
       "name": "Counter Stance [DRAFT]",
       "description": "A short stance: a blow taken in it is blocked and answered hard. Red unblockable attacks still hit. [DRAFT]",
       "class_id": "",
@@ -1242,6 +1249,7 @@
     },
     {
       "id": "keen_edge",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/keen_edge.png",
       "name": "Keen Edge [DRAFT]",
       "description": "+5% critical hit chance. [DRAFT]",
       "class_id": "",
@@ -1259,6 +1267,7 @@
     },
     {
       "id": "heavy_hand",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/heavy_hand.png",
       "name": "Heavy Hand [DRAFT]",
       "description": "Your heavy attack breaks an enemy's guard 30% faster. [DRAFT]",
       "class_id": "",
@@ -1276,6 +1285,7 @@
     },
     {
       "id": "shield_charge",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_charge.png",
       "name": "Shield Charge [DRAFT]",
       "description": "Run forward behind your shield and knock enemies back. [DRAFT]",
       "class_id": "",
@@ -1289,6 +1299,7 @@
     },
     {
       "id": "lightspear",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/lightspear.png",
       "name": "Lightspear [DRAFT]",
       "description": "A spear of light that pierces every enemy in a line. [DRAFT]",
       "class_id": "",
@@ -1304,6 +1315,7 @@
     },
     {
       "id": "aegis",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/aegis.png",
       "name": "Aegis [DRAFT]",
       "description": "A barrier of light soaks up damage for a few seconds. [DRAFT]",
       "class_id": "",
@@ -1317,6 +1329,7 @@
     },
     {
       "id": "hallowed_circle",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/hallowed_circle.png",
       "name": "Hallowed Circle [DRAFT]",
       "description": "Holy ground: enemies in it burn with light, and you and your companion slowly heal. [DRAFT]",
       "class_id": "",
@@ -1330,6 +1343,7 @@
     },
     {
       "id": "rally",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/rally.png",
       "name": "Rally [DRAFT]",
       "description": "Your companion's next assist hits harder and lasts longer. [DRAFT]",
       "class_id": "",
@@ -1343,6 +1357,7 @@
     },
     {
       "id": "heavens_anvil",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/heavens_anvil.png",
       "name": "Heaven's Anvil [DRAFT]",
       "description": "Leap and slam down; pillars of light rise on both sides. [DRAFT]",
       "class_id": "",
@@ -1358,6 +1373,7 @@
     },
     {
       "id": "radiant_flare",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/radiant_flare.png",
       "name": "Radiant Flare [DRAFT]",
       "description": "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]",
       "class_id": "",
@@ -1373,6 +1389,7 @@
     },
     {
       "id": "shield_of_faith",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_of_faith.png",
       "name": "Shield of Faith [DRAFT]",
       "description": "A block with a shield heals you for 25% of the blocked damage. [DRAFT]",
       "class_id": "",
@@ -1391,6 +1408,7 @@
     },
     {
       "id": "blood_rush",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/blood_rush.png",
       "name": "Blood Rush [DRAFT]",
       "description": "Dash to the enemy; the hit drinks HP. [DRAFT]",
       "class_id": "",
@@ -1404,6 +1422,7 @@
     },
     {
       "id": "chain_of_night",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/chain_of_night.png",
       "name": "Chain of Night [DRAFT]",
       "description": "A dark chain pulls one enemy to you. [DRAFT]",
       "class_id": "",
@@ -1417,6 +1436,7 @@
     },
     {
       "id": "blood_price",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/blood_price.png",
       "name": "Blood Price [DRAFT]",
       "description": "Pay some HP: your next three hits deal much more damage. [DRAFT]",
       "class_id": "",
@@ -1432,6 +1452,7 @@
     },
     {
       "id": "night_reaper",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/night_reaper.png",
       "name": "Night Reaper [DRAFT]",
       "description": "A wide, long crescent of dark fire. [DRAFT]",
       "class_id": "",
@@ -1447,6 +1468,7 @@
     },
     {
       "id": "dread_howl",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dread_howl.png",
       "name": "Dread Howl [DRAFT]",
       "description": "Weak enemies flee for a moment; strong ones flinch. [DRAFT]",
       "class_id": "",
@@ -1460,6 +1482,7 @@
     },
     {
       "id": "hellfire_stomp",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/hellfire_stomp.png",
       "name": "Hellfire Stomp [DRAFT]",
       "description": "Leaves a pool of dark fire on the ground. [DRAFT]",
       "class_id": "",
@@ -1475,6 +1498,7 @@
     },
     {
       "id": "soul_harvest",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/soul_harvest.png",
       "name": "Soul Harvest [DRAFT]",
       "description": "Executes an enemy with a broken guard or below 20% HP and gives SP back. [DRAFT]",
       "class_id": "",
@@ -1490,6 +1514,7 @@
     },
     {
       "id": "embers_within",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/embers_within.png",
       "name": "Embers Within [DRAFT]",
       "description": "Burning enemies take 20% more damage from you. [DRAFT]",
       "class_id": "",
@@ -1508,6 +1533,7 @@
     },
     {
       "id": "wind_step",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/wind_step.png",
       "name": "Wind Step [DRAFT]",
       "description": "A quick step forward with a cut and a moment of invulnerability. [DRAFT]",
       "class_id": "",
@@ -1521,6 +1547,7 @@
     },
     {
       "id": "sand_veil",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/sand_veil.png",
       "name": "Sand Veil [DRAFT]",
       "description": "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]",
       "class_id": "",
@@ -1534,6 +1561,7 @@
     },
     {
       "id": "stone_palm",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/stone_palm.png",
       "name": "Stone Palm [DRAFT]",
       "description": "An open palm: huge guard damage, little HP damage. [DRAFT]",
       "class_id": "",
@@ -1549,6 +1577,7 @@
     },
     {
       "id": "sweeping_arc",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/sweeping_arc.png",
       "name": "Sweeping Arc [DRAFT]",
       "description": "A low sweep that knocks down everyone in front of you. [DRAFT]",
       "class_id": "",
@@ -1562,6 +1591,7 @@
     },
     {
       "id": "mirror_stance",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/mirror_stance.png",
       "name": "Mirror Stance [DRAFT]",
       "description": "A short stance that sends arrows and projectiles back. [DRAFT]",
       "class_id": "",
@@ -1577,6 +1607,7 @@
     },
     {
       "id": "centered_breath",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/centered_breath.png",
       "name": "Centered Breath [DRAFT]",
       "description": "A short meditation in battle restores some HP and SP; a hit breaks it. [DRAFT]",
       "class_id": "",
@@ -1590,6 +1621,7 @@
     },
     {
       "id": "dune_quake",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/dune_quake.png",
       "name": "Dune Quake [DRAFT]",
       "description": "Leap and slam down; a sand wave knocks enemies down both ways. [DRAFT]",
       "class_id": "",
@@ -1605,6 +1637,7 @@
     },
     {
       "id": "light_feet",
+      "icon": "res://SampleProject/Assets/UI/Icons/skills/light_feet.png",
       "name": "Light Feet [DRAFT]",
       "description": "Your roll goes 20% further and keeps you invulnerable 20% longer. [DRAFT]",
       "class_id": "",

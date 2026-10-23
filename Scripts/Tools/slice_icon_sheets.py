@@ -6,6 +6,7 @@
 вміння через modulate, D602). Пише SampleProject/Assets/UI/Icons/skills/<id>.png і лист для перегляду.
 """
 
+import json
 import os
 
 import numpy as np
@@ -81,18 +82,62 @@ MANIFEST = {
         "state_cursed",
         "state_bleeding",
     ],
+    # 33 чернетки D535 (skills-v2); аркуш 15 — три останні й запасні варіанти трьох ризикових (D635)
+    10: [
+        "dash_strike",
+        "rising_slash",
+        "shield_bash",
+        "ground_slam",
+        "holy_javelin",
+        "battle_cry",
+    ],
+    11: [
+        "counter_stance",
+        "keen_edge",
+        "heavy_hand",
+        "shield_charge",
+        "lightspear",
+        "aegis",
+    ],
+    12: [
+        "hallowed_circle",
+        None,  # стяг із фігуркою — взято кулак зі стягом з аркуша 15
+        "heavens_anvil",
+        "radiant_flare",
+        "shield_of_faith",
+        "blood_rush",
+    ],
+    13: [
+        "chain_of_night",
+        "blood_price",
+        "night_reaper",
+        None,  # паща з кільцями — взято голову вовка з аркуша 15
+        "hellfire_stomp",
+        None,  # розбитий щит із душею — взято косу з аркуша 15
+    ],
+    14: [
+        "embers_within",
+        "wind_step",
+        "sand_veil",
+        "stone_palm",
+        "sweeping_arc",
+        "mirror_stance",
+    ],
+    15: [
+        "centered_breath",
+        "dune_quake",
+        "light_feet",
+        "rally",
+        "dread_howl",
+        "soul_harvest",
+    ],
 }
-ULTIMATES = {"judgement_of_the_sky", "eclipse_cleave", "second_wind"}
-ACTIVES = {
-    "fire_strike",
-    "electric_strike",
-    "healing_palm",
-    "radiant_smite",
-    "searing_hex",
-    "dervish_whirl",
-    "skyfall_blessing",
-    "withering_grasp",
-    "balanced_strike",
+# вид іконки для листа перегляду — з даних вмінь (skill_type, ultimate), а не зі списків
+SKILLS = {
+    s["id"]: s
+    for s in json.load(
+        open("SampleProject/Resources/Data/skills.json", encoding="utf-8")
+    )["skills"]
 }
 TINT = {
     "active": (237, 230, 211),
@@ -130,15 +175,12 @@ def cut(cell):
 
 
 def kind(skill):
-    return (
-        "state"
-        if skill.startswith("state_")
-        else "ultimate"
-        if skill in ULTIMATES
-        else "active"
-        if skill in ACTIVES
-        else "passive"
-    )
+    if skill.startswith("state_"):
+        return "state"
+    data = SKILLS[skill]
+    if data.get("ultimate"):
+        return "ultimate"
+    return "active" if data["skill_type"] == "active" else "passive"
 
 
 def main():

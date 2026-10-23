@@ -94,7 +94,7 @@ The rules come from D550, D599, D601 and D602:
 
 ---
 
-## The 33 drafts (D535): images for when they are built
+## The 33 drafts (D535): drawn on Figma sheets 10–15 (D635)
 
 | Skill | Tree | Source and its image | How to draw |
 |---|---|---|---|
@@ -111,7 +111,7 @@ The rules come from D550, D599, D601 and D602:
 | Lightspear | Paladin | D&D *Sunbeam* | A spear of light piercing through three points in a line |
 | Aegis | Paladin | D&D *Shield of Faith* / *Sanctuary* | A dome of light around a small figure |
 | Hallowed Circle | Paladin | D&D *Spirit Guardians* | A glowing circle on the ground with rays rising |
-| Rally | Paladin | *Rallying Cry* | A raised banner, a companion figure beside it |
+| Rally | Paladin | *Rallying Cry* | A raised gloved fist with a war banner rippling behind it (D635; the banner with a small figure read worse) |
 | Heaven's Anvil | Paladin | D&D *Destructive Wave* | A hammer falling from above, pillars of light on both sides |
 | Radiant Flare | Paladin | D&D *Daylight* / *Blinding Smite* | A bright flash with rays, small stars of the daze |
 | Shield of Faith | Paladin, passive | D&D *Shield of Faith* | A shield with a glowing healing cross |
@@ -119,9 +119,9 @@ The rules come from D550, D599, D601 and D602:
 | Chain of Night | Dark Knight | *Compelled Duel* / a pull | A dark chain with a hook pulling |
 | Blood Price | Dark Knight | Blood paid for power | A blood drop falling onto a blade that glows |
 | Night Reaper | Dark Knight | A reaping sweep | A wide crescent of dark fire |
-| Dread Howl | Dark Knight | D&D *Fear* | Rings of dread spreading from an open mouth-shape |
+| Dread Howl | Dark Knight | D&D *Fear* | A wolf-like head roaring, jagged waves of dread before its mouth (D635) |
 | Hellfire Stomp | Dark Knight | D&D *Hellish Rebuke* | A pool of dark fire on the ground |
-| Soul Harvest | Dark Knight | Execute | A broken shield and a pale wisp of soul rising |
+| Soul Harvest | Dark Knight | Execute | A scythe blade with a pale soul wisp curling off its edge (D635; the broken shield read as a block) |
 | Embers Within | Dark Knight, passive | Burning foes hurt more | A coal glowing inside a dark ring |
 | Wind Step | Warden | D&D monk *Step of the Wind* | **Sapega:** «стрибок з коліном» — a figure leaping with a flying knee, motion lines |
 | Sand Veil | Warden | D&D *Blindness* | A handful of sand thrown, a small closed eye |
