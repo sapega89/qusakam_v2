@@ -9,7 +9,7 @@ class_name PlayerCombat
 const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 
-enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED }
+enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, HEAVY_RECOVERY, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED, DRINK }
 
 # External references
 @export var sprite: Sprite2D
@@ -37,14 +37,31 @@ const TWO_HANDED_POISE := 1.5
 ## Тіло на ударі — своя анімація для типу зброї (D268), решта — Attack.
 const SWING_ANIMATIONS := {"mace": &"AttackSmash", "polearm": &"AttackThrust"}
 @export var chain_window: float = 0.35
+## Вага удару (D504, як у Tails of Iron): удар з землі саджає героя й робить крок уперед (px за STEP_TIME с).
+## Хітбокс — лише на кадрах удару, між SWING_HIT_FROM і SWING_HIT_TO частки замаху (намальований удар 0.05–0.13 с
+## з 0.3 с, D224; не коротше MIN_HIT_TIME); до кінця удару погляд не змінюється (B136), далі — відновлення.
+const SWING_STEP := 10.0
+const FINISHER_STEP := 24.0
+const HEAVY_STEP := 18.0
+const STEP_TIME := 0.08
+const SWING_HIT_FROM := 0.05 / 0.3
+const SWING_HIT_TO := 0.13 / 0.3
+const MIN_HIT_TIME := 0.05
+## Натиснуте завчасно (удар, важкий, перекат) чекає стільки секунд — і крізь збій, і крізь відновлення.
+const INPUT_BUFFER := 0.2
+## Зілля зі швидкого слота (D504): герой стоїть DRINK_TIME с, лікує на DRINK_HEAL_AT с; удар до того — зілля пропало.
+const DRINK_TIME := 0.8
+const DRINK_HEAL_AT := 0.5
 ## Легкий удар без відкидання зброї штовхає ворога на стільки px (4b).
 const HIT_PUSH := 8.0
 ## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
 @export var finisher_knockback: float = 40.0
 ## Важкий удар (D264): замах (його можна збити), удар, відновлення; множник, відкидання.
+## Відновлення (D504) — стан, герой стоїть; перекат чи блок зривають лише останні HEAVY_CANCEL_LAST с.
 @export var heavy_windup: float = 0.4
 @export var heavy_strike_time: float = 0.25
-@export var heavy_recovery: float = 1.0
+@export var heavy_recovery: float = 0.6
+const HEAVY_CANCEL_LAST := 0.3
 @export var heavy_damage: float = 1.5
 @export var heavy_knockback: float = 70.0
 ## Скільки стійкості ворога (D265) забирає удар.
@@ -99,6 +116,15 @@ var _direction: int = 1
 var combo_step: int = 0
 var _chain_left: float = 0.0
 var _queued: bool = false
+## Тривалість поточного удару серії; хітбокс увімкнено / удар уже вийшов (далі відновлення).
+var _swing_total: float = 0.0
+var _hit_on: bool = false
+var _hit_out: bool = false
+## Буфер (D504): &"light" / &"heavy", натиснутий, коли бій зайнятий, і скільки ще чекає.
+var _buffered: StringName = &""
+var _buffer_left: float = 0.0
+## Зілля, що п'ють: скільки HP воно дасть (0 — уже дало або зірване).
+var _drink_heal: int = 0
 var _poise: int = POISE_LIGHT
 ## Кнопку блоку тримають (Player._unhandled_input); блок починається, щойно герой вільний.
 var block_held: bool = false
@@ -116,7 +142,7 @@ var _cast_fx: SkillCastFX
 
 var is_attacking: bool:
 	get:
-		return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.SHOOT, State.DRAW, State.CHARGED]
+		return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.HEAVY_RECOVERY, State.SHOOT, State.DRAW, State.CHARGED]
 
 # Parent reference (for getting direction and signals)
 @onready var player = get_parent()
@@ -205,6 +231,11 @@ func _physics_process(delta: float) -> void:
 	_track_combat(delta)
 	if _chain_left > 0.0:
 		_chain_left -= delta
+	if _buffer_left > 0.0:
+		_buffer_left -= delta
+	# Блок, натиснутий посеред удару, тримають — він зриває удар, щойно настало відновлення (D504)
+	if block_held and can_cancel_attack():
+		cancel_attack()
 	if state == State.BLOCK:
 		_block_time += delta
 		if not block_held:
@@ -220,10 +251,22 @@ func _physics_process(delta: float) -> void:
 			# куди герой дивиться тепер.
 			_queued = false
 			perform_attack(player.last_direction if grip == &"bow" else _direction)
+		elif _buffer_left > 0.0 and attack_cooldown <= 0.0:
+			var action := _buffered
+			_buffer_left = 0.0
+			if action == &"heavy":
+				heavy_attack(player.last_direction)
+			else:
+				perform_attack(player.last_direction)
 		return
 	_state_left -= delta
 	if _arrow_due and SHOT_TIME - _state_left >= QUICK_RELEASE:
 		_loose(false)
+	if state == State.SWING:
+		_swing_phase()
+	if state == State.DRINK and _drink_heal > 0 and DRINK_TIME - _state_left >= DRINK_HEAL_AT:
+		player.heal_damage(_drink_heal)
+		_drink_heal = 0
 	if _state_left > 0.0:
 		return
 	match state:
@@ -236,7 +279,9 @@ func _physics_process(delta: float) -> void:
 			_strike_heavy()
 		State.HEAVY_STRIKE:
 			_set_hitbox_active(false, _direction)
-			attack_cooldown = heavy_recovery
+			state = State.HEAVY_RECOVERY
+			_state_left = heavy_recovery
+		State.HEAVY_RECOVERY, State.DRINK:
 			state = State.READY
 		State.STAGGER:
 			state = State.READY
@@ -253,6 +298,19 @@ func _physics_process(delta: float) -> void:
 			_state_left = INF  # тримає, доки кнопку не відпустять
 			_play(&"Charged")
 
+## Фази удару серії (D504): замах — хітбокс вимкнено; удар — увімкнено; відновлення — вимкнено, удар вийшов.
+func _swing_phase() -> void:
+	var elapsed := _swing_total - _state_left
+	var hit_from := _swing_total * SWING_HIT_FROM
+	var hit_to := maxf(_swing_total * SWING_HIT_TO, hit_from + MIN_HIT_TIME)
+	if not _hit_on and not _hit_out and elapsed >= hit_from:
+		_hit_on = true
+		_set_hitbox_active(true, _direction)
+	elif _hit_on and elapsed >= hit_to:
+		_hit_on = false
+		_hit_out = true
+		_set_hitbox_active(false, _direction)
+
 func in_combat() -> bool:
 	return _in_combat
 
@@ -260,7 +318,7 @@ func in_combat() -> bool:
 func _track_combat(delta: float) -> void:
 	if player.event or player.is_dead:
 		_combat_left = 0.0
-	elif state not in [State.READY, State.BLOCK] or _enemy_engaged():
+	elif state not in [State.READY, State.BLOCK, State.DRINK] or _enemy_engaged():
 		_combat_left = COMBAT_LINGER
 	else:
 		_combat_left -= delta
@@ -281,6 +339,9 @@ func _exit_tree() -> void:
 	state = State.READY
 	_queued = false
 	_arrow_due = false
+	_buffer_left = 0.0
+	_hit_on = false
+	_drink_heal = 0
 	block_held = false
 	shot_held = false
 	casting_skill = ""  # каст не зірвано ударом — нічого не списано
@@ -289,10 +350,16 @@ func _exit_tree() -> void:
 func owns_animation() -> bool:
 	return state != State.READY
 
-## Рух вимкнено: збій, важкий удар, блок, каст навички, натяг лука (герой стоїть). Легкі удари й швидкі постріли
-## рух не гальмують (D223, D382).
+## Рух вимкнено: збій, важкий удар з відновленням, блок, каст навички, натяг лука, зілля (герой стоїть). Удар серії
+## з землі теж саджає героя (D504, замість D223); у повітрі він летить далі. Швидкі постріли рух не гальмують (D382).
 func locks_movement() -> bool:
-	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE, State.DRAW, State.CHARGED]
+	if state == State.SWING:
+		return player.is_on_floor()
+	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.HEAVY_RECOVERY, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE, State.DRAW, State.CHARGED, State.DRINK]
+
+## Погляд не змінюється, доки удар не вийшов (D504, B136): замах і удар серії, весь важкий удар.
+func locks_facing() -> bool:
+	return (state == State.SWING and not _hit_out) or state in [State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.HEAVY_RECOVERY]
 
 func is_staggered() -> bool:
 	return state == State.STAGGER
@@ -306,10 +373,11 @@ func perform_attack(last_direction: int) -> void:
 	if grip == &"bow":
 		_quick_shot(last_direction)
 		return
-	if state == State.SWING:
-		_queued = combo_step < combo_length() - 1
+	if state == State.SWING and combo_step < combo_length() - 1:
+		_queued = true
 		return
 	if state != State.READY or attack_cooldown > 0:
+		_buffer(&"light")
 		return
 	combo_step = combo_step + 1 if _chain_left > 0.0 else 0
 	_chain_left = 0.0
@@ -317,7 +385,13 @@ func perform_attack(last_direction: int) -> void:
 	state = State.SWING
 	# Швидкість атаки (D393): множник 1.0–2.0 зі спритності й Agility скорочує замах
 	_state_left = swing_time * (DUAL_SWING_SPEED if grip == &"dual" else 1.0) / ServiceLocator.get_game_manager().calculate_attack_speed()
-	_direction = last_direction
+	_swing_total = _state_left
+	_hit_on = false
+	_hit_out = false
+	# Між ударами серії можна розвернутись (D504): удар іде туди, куди тиснуть
+	_direction = player.mover.face_input(last_direction)
+	_step(FINISHER_STEP if finisher else SWING_STEP)
+	player.stamina.spend(player.stamina.COST_LIGHT)
 	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
 	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
@@ -330,9 +404,9 @@ func perform_attack(last_direction: int) -> void:
 	player.animation = body
 	player.play_body(body, swing_time / _state_left)  # дві зброї, швидкість атаки — швидше
 
-	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу
-	EventBus.player_attacked.emit(player, last_direction)
-	_set_hitbox_active(true, last_direction)
+	# Signals — без цього VFXHooks._on_player_attacked() не спрацьовував жодного разу.
+	# Хітбокс вмикає _swing_phase на кадрах удару.
+	EventBus.player_attacked.emit(player, _direction)
 
 ## Важкий удар (D264): замах heavy_windup (удар по героєві його зриває), потім удар ×heavy_damage з відкиданням.
 ## З луком — одразу натяг на заряджений постріл (D384).
@@ -343,14 +417,27 @@ func heavy_attack(last_direction: int) -> void:
 			_start_draw()
 		return
 	if state != State.READY or attack_cooldown > 0:
+		_buffer(&"heavy")
 		return
 	state = State.HEAVY_WINDUP
 	_state_left = heavy_windup
-	_direction = last_direction
+	_direction = player.mover.face_input(last_direction)
 	_chain_left = 0.0
 	combo_step = 0
+	player.stamina.spend(player.stamina.COST_HEAVY)
 	_play(&"HeavyWindup")
-	EventBus.player_heavy_windup.emit(player, last_direction)
+	EventBus.player_heavy_windup.emit(player, _direction)
+
+## Натиснуте, коли бій зайнятий (удар, відновлення, збій), — спрацює, щойно герой вільний, якщо мине не більше
+## INPUT_BUFFER с (D504).
+func _buffer(action: StringName) -> void:
+	_buffered = action
+	_buffer_left = INPUT_BUFFER
+
+## Крок уперед на ударі (D504) — лише з землі.
+func _step(distance: float) -> void:
+	if player.is_on_floor():
+		player.mover.push(_direction * distance, STEP_TIME)
 
 func _strike_heavy() -> void:
 	state = State.HEAVY_STRIKE
@@ -359,6 +446,7 @@ func _strike_heavy() -> void:
 	_poise = _poise_of(POISE_HEAVY)
 	damage_applier.current_damage = roundi(hit_damage() * heavy_damage)
 	damage_applier.critical = critical
+	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
 	EventBus.player_attacked.emit(player, _direction)
 	_set_hitbox_active(true, _direction)
@@ -376,6 +464,7 @@ func _quick_shot(last_direction: int) -> void:
 	_direction = last_direction
 	_arrow_due = true
 	combo_step = 0
+	player.stamina.spend(player.stamina.COST_SHOT)
 	attack_cooldown = attack_cooldown_time
 	_play(&"Attack")
 
@@ -383,6 +472,7 @@ func _quick_shot(last_direction: int) -> void:
 func release_shot() -> void:
 	shot_held = false
 	if state == State.CHARGED:
+		player.stamina.spend(player.stamina.COST_HEAVY)
 		_loose(true)
 		state = State.SHOOT
 		_state_left = RELEASE_TIME
@@ -452,21 +542,48 @@ func _play(animation: StringName) -> void:
 	player.animation = animation
 	player.play_body(animation)
 
-## D456: удар зривають перекат і блок — легкий удар серії, важкий (замах і удар), постріл лука; замах навички — ні.
+## D456 у редакції D504: перекат і блок зривають удар лише на відновленні — удар серії після кадрів удару,
+## останні HEAVY_CANCEL_LAST с відновлення важкого, постріл лука, коли стріла вже вилетіла. Замах і удар важкого,
+## замах навички, зілля — ні.
 func can_cancel_attack() -> bool:
-	return state in [State.SWING, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.SHOOT]
+	match state:
+		State.SWING:
+			return _hit_out
+		State.HEAVY_RECOVERY:
+			return _state_left <= HEAVY_CANCEL_LAST
+		State.SHOOT:
+			return not _arrow_due
+	return false
 
 
-## Решта удару скасована одразу: хітбокс вимкнено (удар, що ще не влучив, уже не влучить), стріла не вилетить,
-## серія починається спочатку. Відновлення після фінішера (attack_cooldown) лишається.
+## Решту удару скасовано одразу, серія починається спочатку. Відновлення після фінішера (attack_cooldown) лишається,
+## а недобуте відновлення важкого переходить у attack_cooldown (B-9: перекат більше не скасовує його).
 func cancel_attack() -> void:
+	if state == State.HEAVY_RECOVERY:
+		attack_cooldown = maxf(attack_cooldown, _state_left)
 	_set_hitbox_active(false, _direction)
+	_hit_on = false
 	state = State.READY
 	_state_left = 0.0
 	_queued = false
 	_arrow_due = false
 	_chain_left = 0.0
 
+
+## Зілля зі швидкого слота (D504): лише вільний і на землі; лікує [param heal] на DRINK_HEAL_AT с. false — не можна.
+func drink(heal: int) -> bool:
+	if state != State.READY or not player.is_on_floor():
+		return false
+	state = State.DRINK
+	_state_left = DRINK_TIME
+	_drink_heal = heal
+	_chain_left = 0.0
+	combo_step = 0
+	_play(&"Raise")
+	return true
+
+func is_drinking() -> bool:
+	return state == State.DRINK
 
 func _start_block() -> void:
 	state = State.BLOCK
@@ -490,6 +607,8 @@ func guard_against(source: Node) -> StringName:
 func stagger(duration: float, from_x: float) -> void:
 	if state in [State.SWING, State.HEAVY_STRIKE]:
 		_set_hitbox_active(false, _direction)
+	_hit_on = false
+	_drink_heal = 0  # зілля, яке не встигло подіяти, пропало
 	if casting_skill != "":
 		ServiceLocator.get_skill_manager().interrupt_cast(casting_skill)
 		casting_skill = ""

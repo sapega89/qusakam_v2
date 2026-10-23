@@ -2379,23 +2379,17 @@ msgstr "The Journal"
 msgid "Moving and Jumping"
 msgstr "Moving and Jumping"
 
-msgid "Training 1/6 — Attack"
-msgstr "Training 1/6 — Attack"
+msgid "Training 1/4 — Attack"
+msgstr "Training 1/4 — Attack"
 
-msgid "Training 2/6 — Combo"
-msgstr "Training 2/6 — Combo"
+msgid "Training 2/4 — Dodge or Block"
+msgstr "Training 2/4 — Dodge or Block"
 
-msgid "Training 3/6 — Dodge"
-msgstr "Training 3/6 — Dodge"
+msgid "Training 3/4 — Parry"
+msgstr "Training 3/4 — Parry"
 
-msgid "Training 4/6 — Block"
-msgstr "Training 4/6 — Block"
-
-msgid "Training 5/6 — Parry"
-msgstr "Training 5/6 — Parry"
-
-msgid "Training 6/6 — Heavy Attack"
-msgstr "Training 6/6 — Heavy Attack"
+msgid "Training 4/4 — Heavy Attack"
+msgstr "Training 4/4 — Heavy Attack"
 
 msgid "Attacking"
 msgstr "Attacking"
@@ -2442,23 +2436,17 @@ msgstr "The Journal in the game menu follows the story. Quests lists each part o
 msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
 msgstr "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
 
-msgid "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
-msgstr "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
+msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
+msgstr "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
 
-msgid "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
-msgstr "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
+msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
+msgstr "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
 
-msgid "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
-msgstr "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
+msgid "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
+msgstr "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
 
-msgid "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
-msgstr "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
-
-msgid "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
-msgstr "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
-
-msgid "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
-msgstr "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
+msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
+msgstr "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
 
 msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
 msgstr "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
@@ -2544,3 +2532,21 @@ msgstr "Desert Archer"
 
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
 msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
+
+msgid "Dash through the blow, or hold block."
+msgstr "Dash through the blow, or hold block."
+
+msgid "Quick Potion"
+msgstr "Quick Potion"
+
+msgid "Drink a potion (quick slot)"
+msgstr "Drink a potion (quick slot)"
+
+msgid "Potions ×%d"
+msgstr "Potions ×%d"
+
+msgid "Drink it in play with the quick slot (%s)"
+msgstr "Drink it in play with the quick slot (%s)"
+
+msgid "ST"
+msgstr "ST"

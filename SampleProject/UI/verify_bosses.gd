@@ -190,7 +190,7 @@ func _kills(kind: String) -> int:
 
 func _common_start(boss: Node, title: String, xp_reward: int) -> void:
 	ck(boss.is_in_group(&"boss") and boss.enemy_logic.get_script().resource_path.ends_with("BossLogic.gd"), "%s: a boss with BossLogic" % title)
-	ck(boss.health_bar == null, "%s: no bar over its head" % title)
+	ck(not "health_bar" in boss, "%s: no bar over its head" % title)
 	ck(is_instance_valid(boss.bar) and boss.bar.get_parent() == game.get_node(^"UICanvas"), "%s: boss bar on UICanvas" % title)
 	ck(boss.bar.visible and boss.bar.get_node("%BossName").text == title, "%s: bar shown once it saw the hero, named (%s)" % [title, boss.bar.get_node("%BossName").text])
 	ck(boss.enemy_stats.xp_reward == xp_reward, "%s: XP reward %d" % [title, boss.enemy_stats.xp_reward])

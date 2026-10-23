@@ -1,8 +1,9 @@
 extends SceneTree
 
 ## Навчання бою й сторінка Controls (BACKLOG 28, design/onboarding_plan.md, D-28a…D-28f), справжнім вводом:
-## шість уроків у вуличному бою села — кожен чекає, доки рух зроблено, хибний рух його не зараховує;
-## усі шість проходять клавіатурою з мишею, а потім геймпадом. Вікна туторіалу крутять кадри з гри;
+## чотири уроки у вуличному бою села (D503) — кожен чекає одну вдалу дію, хибний рух його не зараховує;
+## усі чотири проходять клавіатурою з мишею, а потім геймпадом — без вікон на паузі, менш ніж за хвилину;
+## кнопка пропуску кат-сцени пропускає решту. Вікна туторіалу крутять кадри з гри;
 ## Misc → Controls відкривається кліками й називає кожну дію для обох пристроїв.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_onboarding.gd
 
@@ -19,9 +20,12 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Кнопки уроків: клавіатура / миша (D270, project.godot) і геймпад.
 const KEYBOARD := {"attack": [&"mouse", MOUSE_BUTTON_LEFT], "heavy_attack": [&"key", KEY_R],
-		"block": [&"key", KEY_CTRL], "dodge": [&"key", KEY_SHIFT]}
+		"block": [&"key", KEY_CTRL], "dodge": [&"key", KEY_SHIFT], "cutscene_skip": [&"key", KEY_TAB]}
 const PAD := {"attack": [&"pad", JOY_BUTTON_X], "heavy_attack": [&"pad", JOY_BUTTON_B],
-		"block": [&"pad", JOY_BUTTON_LEFT_SHOULDER], "dodge": [&"pad", JOY_BUTTON_RIGHT_SHOULDER]}
+		"block": [&"pad", JOY_BUTTON_LEFT_SHOULDER], "dodge": [&"pad", JOY_BUTTON_RIGHT_SHOULDER],
+		"cutscene_skip": [&"pad", JOY_BUTTON_Y]}
+## D503: увесь ланцюг уроків — менш ніж за хвилину для гравця, що робить кожен рух раз.
+const CHAIN_LIMIT_MS := 60000
 
 ## Дії InputMap, яких немає на сторінці Controls, і чому.
 const NOT_GAMEPLAY := {
@@ -110,14 +114,32 @@ func _initialize() -> void:
 	ck(game.current_objective == "Defeat the bandit in the street", "after the lessons: finish him (%s)" % game.current_objective)
 	ck(not hint.is_showing or not hint.current_hint.begins_with("lesson_"), "no lesson banner left")
 
-	print("[2] Gamepad: the same six lessons with pad buttons")
+	print("[2] Gamepad: the same four lessons with pad buttons, each move once, under a minute (D503)")
 	buttons = PAD
 	var pad_training: Node = CombatTraining.new()
 	village.add_child(pad_training)
 	training = pad_training
+	var started := Time.get_ticks_msec()
 	training.start(village.enemy_spawner.spawned_enemies)
 	for i in 4: await process_frame
-	await _run_lessons("pad")
+	ck(not paused and hint.is_showing and hint.current_hint == "lesson_attack", "a banner, no window pausing the game")
+	await _run_lessons("pad", false)
+	var took := Time.get_ticks_msec() - started
+	ck(took < CHAIN_LIMIT_MS, "the whole chain took %.1f s (< %d s)" % [took / 1000.0, CHAIN_LIMIT_MS / 1000])
+
+	print("[2b] The skip button skips the rest of the training (D503)")
+	var skip_training: Node = CombatTraining.new()
+	village.add_child(skip_training)
+	var skipped := [false]
+	skip_training.finished.connect(func() -> void: skipped[0] = true)
+	skip_training.start(village.enemy_spawner.spawned_enemies)
+	for i in 4: await process_frame
+	ck(skip_training.current_id() == "lesson_attack", "a fresh training is on lesson 1 (%s)" % skip_training.current_id())
+	await _tap("cutscene_skip")
+	for i in 4: await process_frame
+	ck(skipped[0] and skip_training.current_id() == "", "skipped: finished, no lesson left (%s)" % skip_training.current_id())
+	ck(not hint.is_showing or not hint.current_hint.begins_with("lesson_"), "no lesson banner left after the skip")
+	skip_training.queue_free()
 
 	print("[3] Nobody fell while learning (D-28c); after them the bandit can be killed")
 	ck(hero.is_alive() and _lowest_hero > 0, "the hero never dropped to 0 (lowest %d)" % _lowest_hero)
@@ -143,51 +165,46 @@ func _initialize() -> void:
 	quit(0)
 
 
-## Шість уроків по черзі: перед кожним — хибний рух, що урок не зараховує; потім правильний, доки не зараховано.
-func _run_lessons(device: String) -> void:
+## Чотири уроки по черзі (D503). [param wrong_moves]: перед кожним — хибний рух, що урок не зараховує; потім правильний,
+## доки не зараховано. Урок захисту клавіатурою проходить ривком, геймпадом — блоком.
+func _run_lessons(device: String, wrong_moves: bool = true) -> void:
 	var done: Array[String] = []
 	training.lesson_done.connect(func(id: String) -> void: done.append(id))
 	await _wait_lesson("lesson_attack")
-	await _until(_attack_once, "lesson_attack", device)
-
-	await _wait_lesson("lesson_combo")
 	var hint: Node = get_first_node_in_group("tutorial_hint_display")
 	var glyph: String = "X" if device == "pad" else "Left Mouse"
-	ck(hint.current_hint == "lesson_combo" and hint.hint_label.text.contains("Press %s three times" % glyph),
+	ck(hint.current_hint == "lesson_attack" and hint.hint_label.text.contains("Press %s three times" % glyph),
 			"%s: the banner names the %s button (%s)" % [device, device, hint.hint_label.text])
-	await _tap("heavy_attack")
-	await create_timer(1.6).timeout
-	ck(training.current_id() == "lesson_combo", "%s: a heavy hit does not pass Combo" % device)
-	await _until(_combo, "lesson_combo", device)
+	if wrong_moves:
+		await _face()
+		await _tap("heavy_attack")
+		await create_timer(1.6).timeout
+		ck(training.current_id() == "lesson_attack", "%s: a heavy hit does not pass Attack" % device)
+	await _until(_combo, "lesson_attack", device)
 
-	await _wait_lesson("lesson_dodge")
-	await _face()
-	await _tap("attack")
-	await create_timer(0.8).timeout
-	ck(training.current_id() == "lesson_dodge", "%s: attacking does not pass Dodge" % device)
-	await _until(_dodge_on_glint, "lesson_dodge", device)
-
-	await _wait_lesson("lesson_block")
-	await _until(_hold_block, "lesson_block", device)
+	await _wait_lesson("lesson_defend")
+	if wrong_moves:
+		await _face()
+		await _tap("attack")
+		await create_timer(0.8).timeout
+		ck(training.current_id() == "lesson_defend", "%s: attacking does not pass Dodge or Block" % device)
+	await _until(_hold_block if device == "pad" else _dodge_on_glint, "lesson_defend", device)
 
 	await _wait_lesson("lesson_parry")
-	await _face()
-	await _hold_block()  # тримати з початку замаху — це блок, не парирування
-	ck(training.current_id() == "lesson_parry", "%s: a held block does not pass Parry" % device)
+	if wrong_moves:
+		await _face()
+		await _hold_block()  # тримати з початку замаху — це блок, не парирування
+		ck(training.current_id() == "lesson_parry", "%s: a held block does not pass Parry" % device)
 	await _until(_parry_on_glint, "lesson_parry", device)
 
 	await _wait_lesson("lesson_heavy")
-	await _face()
-	await _tap("attack")
-	await create_timer(0.8).timeout
-	ck(training.current_id() == "lesson_heavy", "%s: a light hit does not pass Heavy" % device)
+	if wrong_moves:
+		await _face()
+		await _tap("attack")
+		await create_timer(0.8).timeout
+		ck(training.current_id() == "lesson_heavy", "%s: a light hit does not pass Heavy" % device)
 	await _until(_heavy, "lesson_heavy", device)
-	ck(done == CombatTraining.get_script_constant_map()["LESSONS"], "%s: all six in order (%s)" % [device, done])
-
-
-func _attack_once() -> void:
-	await _tap("attack")
-	await create_timer(0.3).timeout
+	ck(done == CombatTraining.get_script_constant_map()["LESSONS"], "%s: all four in order (%s)" % [device, done])
 
 
 func _combo() -> void:

@@ -55,6 +55,11 @@ var roll_direction: int = 1
 var climbing: Node2D = null
 ## Рух вимкнено боєм (збій, D264) — Player ставить щокадру з PlayerCombat.locks_movement().
 var locked: bool = false
+## Погляд не змінюється (D504, B136): удар ще не вийшов — Player ставить щокадру з PlayerCombat.locks_facing().
+var facing_locked: bool = false
+## Буфер стрибка (D504): натиснутий завчасно (в ударі, за мить до приземлення) чекає стільки секунд.
+const JUMP_BUFFER := 0.1
+var _jump_buffer: float = 0.0
 ## Поштовх від удару по герою (D264): швидкість і скільки ще триває.
 var _push_speed: float = 0.0
 var _push_left: float = 0.0
@@ -89,6 +94,19 @@ func is_climbing() -> bool:
 ## Ривок можна почати зараз: не на драбині, є заряд, а посеред ривка — уже минуло dash_chain_after.
 func can_roll() -> bool:
 	return not is_climbing() and dash_charges > 0 and not (is_rolling() and roll_time_left > roll_duration - dash_chain_after)
+
+
+## Удар повертає героя туди, куди тиснуть (D504: між ударами серії можна розвернутись); нічого не тиснуть —
+## [param fallback]. Повертає новий погляд.
+func face_input(fallback: int) -> int:
+	var held := Input.get_axis(&"move_left", &"move_right")
+	last_direction = (1 if held > 0.0 else -1) if absf(held) > 0.1 else fallback
+	return last_direction
+
+
+## Стрибок натиснуто щойно і він ще чекає (D504).
+func jump_buffered() -> bool:
+	return _jump_buffer > 0.0
 
 
 ## Перекат-ривок (D200, D264): dash_charges_max підряд, з землі й у повітрі (у повітрі — рівно, без падіння).
@@ -135,6 +153,7 @@ func physics_move(delta: float) -> void:
 			dash_charges = dash_charges_max
 	if not is_climbing():
 		_apply_gravity_and_track_fall(delta)
+	_jump_buffer = JUMP_BUFFER if Input.is_action_just_pressed(&"jump") else maxf(0.0, _jump_buffer - delta)
 
 	if _push_left > 0.0:
 		_push_left -= delta
@@ -229,6 +248,7 @@ func _climb() -> void:
 	player.velocity = Vector2(0.0, axis * climb_speed)
 	if Input.is_action_just_pressed(&"jump") and not Input.is_action_pressed(&"move_up"):
 		climbing = null
+		_jump_buffer = 0.0  # це вже стрибок — не ще один з буфера
 		player.velocity.y = jump_velocity * ladder_jump_factor
 		AudioManager.play(&"jump")
 	elif axis > 0.0 and player.is_on_floor() and player.global_position.y > climbing.global_position.y:
@@ -252,7 +272,8 @@ func _handle_jump() -> void:
 	var on_floor_ct: bool = player.is_on_floor() or airtime < coyote_time
 
 	# Jump with Space or W. Ігноруємо, якщо натиснуто Escape (щоб не стрибати при відкритті меню).
-	if Input.is_action_just_pressed("jump") and (on_floor_ct or double_jump) and not Input.is_key_pressed(KEY_ESCAPE):
+	if _jump_buffer > 0.0 and (on_floor_ct or double_jump) and not Input.is_key_pressed(KEY_ESCAPE):
+		_jump_buffer = 0.0
 		if not on_floor_ct:
 			double_jump = false
 
@@ -260,6 +281,9 @@ func _handle_jump() -> void:
 			player.position.y += 8
 		else:
 			player.velocity.y = jump_velocity
+			# Кнопку вже відпустили, поки стрибок чекав у буфері, — короткий стрибок
+			if not Input.is_action_pressed("jump"):
+				player.velocity.y -= jump_velocity * short_hop
 			AudioManager.play(&"jump")
 
 	if Input.is_action_just_released("jump"):
@@ -288,7 +312,7 @@ func _handle_horizontal_movement(delta: float) -> void:
 		player.velocity.x = move_toward(player.velocity.x, 0, speed_min)
 		speed = speed_min
 
-	if absf(player.velocity.x) > 1:
+	if absf(player.velocity.x) > 1 and not facing_locked:
 		last_direction = sign(player.velocity.x)
 
 

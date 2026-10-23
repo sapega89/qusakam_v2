@@ -12,6 +12,9 @@ const ROLL_ALPHA := 0.55
 ## D284: пасивки навичок знімають щонайбільше 75 % удару (окремо щит і загальне зниження).
 const MAX_SKILL_REDUCTION := 0.75
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+const QuickPotion := preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
+## Слабкий блок (D504): удар, прийнятий на блок з порожньою витривалістю, проходить з такою часткою шкоди і збиває.
+const WEAK_BLOCK_DAMAGE := 0.5
 
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
@@ -36,10 +39,11 @@ var defeat_handler: Callable
 @onready var combat: PlayerCombat = $PlayerCombat
 @onready var mover: PlayerMover = $PlayerMover
 @onready var weapon_view: Node2D = $WeaponMount
+## Витривалість (D504, PlayerStamina.gd).
+@onready var stamina: Node = $PlayerStamina
 ## Бібліотека кадрів зброї, з якої зараз грають анімації тіла (&"" — базові кадри), BACKLOG 42.
 var _body_library: StringName = &""
-## Буфер перекату (D456): натиснутий завчасно чекає стільки секунд (6 кадрів фізики).
-const ROLL_BUFFER := 0.1
+## Буфер перекату (D456, D504): натиснутий завчасно чекає PlayerCombat.INPUT_BUFFER с — і крізь збій.
 var _roll_buffer: float = 0.0
 
 # Рух винесено в PlayerMover (speed_min/max, jump_velocity, gravity тощо).
@@ -118,7 +122,11 @@ func _physics_process(delta: float) -> void:
 	if _roll_buffer > 0.0:
 		_roll_buffer -= delta
 		_try_roll()
+	# Стрибок зриває відновлення удару серії (D504), як і перекат
+	if mover.jump_buffered() and combat.state == PlayerCombat.State.SWING and combat.can_cancel_attack():
+		combat.cancel_attack()
 	mover.locked = combat.locks_movement()
+	mover.facing_locked = combat.locks_facing()
 	mover.physics_move(delta)
 
 	# Оновлюємо затримку для переключення анімацій
@@ -189,15 +197,17 @@ func _physics_process(delta: float) -> void:
 
 	_update_facing()
 
-## Перекат (D200); посеред удару — зриває його (D456). Натиснутий завчасно (збій, каст, ривки ще не повернулись,
-## другий ривок ще рано) — чекає ROLL_BUFFER с у _physics_process і починається, щойно можна.
+## Перекат (D200); на відновленні удару — зриває його (D456, D504). Натиснутий завчасно (удар, збій, каст, ривки ще
+## не повернулись, другий ривок ще рано) — чекає PlayerCombat.INPUT_BUFFER с у _physics_process і починається, щойно
+## можна. Порожня витривалість — перекату немає (D504).
 func _try_roll() -> void:
-	if not mover.can_roll() or (combat.owns_animation() and not combat.can_cancel_attack()):
+	if not mover.can_roll() or stamina.is_empty() or (combat.owns_animation() and not combat.can_cancel_attack()):
 		return
 	_roll_buffer = 0.0
 	if combat.can_cancel_attack():
 		combat.cancel_attack()
 	mover.start_roll()
+	stamina.spend(stamina.COST_ROLL)
 	animation = &"Roll"
 	play_body(&"Roll")
 	$Sprite2D.modulate.a = ROLL_ALPHA
@@ -226,15 +236,16 @@ func _unhandled_input(ev: InputEvent) -> void:
 		return
 	if ev.is_action_pressed(&"dodge") and not event:
 		combat.cancel_draw()  # перекат зриває натяг лука (D382)
-		_roll_buffer = ROLL_BUFFER
+		_roll_buffer = PlayerCombat.INPUT_BUFFER
 		_try_roll()
 		return
 	# Блок / парирування (D264): поки кнопку тримають; починається, щойно герой вільний (PlayerCombat).
-	# Посеред удару блок зриває його (D456); натиснутий завчасно — тримають, тож починається, щойно можна.
+	# На відновленні удару блок зриває його (D456, D504); натиснутий раніше — тримають, тож починається, щойно можна.
 	if ev.is_action(&"block"):
 		combat.block_held = ev.is_pressed() and not event
-		if combat.block_held and combat.can_cancel_attack():
-			combat.cancel_attack()
+		return
+	if ev.is_action_pressed(&"quick_potion") and not event:
+		drink_potion()
 		return
 	# Лук (D380): кнопку удару чи важкого відпустили — заряджений постріл або лук опускається.
 	if ev.is_action_released(&"attack") or ev.is_action_released(&"heavy_attack"):
@@ -252,6 +263,17 @@ func _unhandled_input(ev: InputEvent) -> void:
 			combat.perform_attack(last_direction)
 		else:
 			combat.heavy_attack(last_direction)
+
+## Швидкий слот зілля (D504): герой п'є в реальному часі, стоячи (PlayerCombat.drink). Повне HP, зілля немає,
+## герой зайнятий чи в повітрі — нічого. Зілля зникає з сумки одразу; удар до DRINK_HEAL_AT — воно пропало.
+func drink_potion() -> void:
+	if is_dead or current_health >= Max_Health:
+		return
+	var potion: Array = QuickPotion.pick(Max_Health - current_health)
+	if potion.is_empty() or not combat.drink(potion[1]):
+		return
+	ServiceLocator.get_inventory_manager().remove_item(potion[0], 1)
+	AudioManager.play(&"potion")
 
 ## Анімація тіла [param base] з кадрів зброї в руці (BACKLOG 42, design/hero_weapon_animation_plan.md):
 ## `<бібліотека>/<base>`, удар серії (Attack, а для булави й алебарди AttackSmash / AttackThrust,
@@ -320,6 +342,7 @@ func kill():
 	is_dead = false
 	is_dying = false
 	current_health = Max_Health
+	stamina.refill()
 	health_changed.emit(current_health, Max_Health, true)
 
 	# Викликаємо load_room тільки якщо це не призведе до циклу
@@ -472,8 +495,13 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 		return
 	if guard == &"block":
 		EventBus.player_blocked.emit(source)
+		# D504: блок коштує витривалості; з порожньою — слабкий: пів шкоди і збій
+		var weak: bool = stamina.is_empty()
+		stamina.spend(stamina.COST_BLOCK)
 		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
-			return
+			if not weak:
+				return
+			damage = roundi(damage * WEAK_BLOCK_DAMAGE)
 	var dealt := mitigated_damage(damage)
 	if dealt == 0:
 		EventBus.player_evaded.emit(source)

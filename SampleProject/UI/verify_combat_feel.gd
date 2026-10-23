@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Відчуття бою з плейтесту 2026-10-23 у справжній фізиці DesertRoad:
 ##   D443 — ворог зупиняє героя, крізь нього проходить лише перекат; хто впав на іншого — зісковзує (і бос, B125);
-##   D456 — удар зривається перекатом чи блоком, перекат починається за 2 кадри фізики, ранній — у буфері;
+##   (D456 — зрив удару перекатом чи блоком — у редакції D504 перевіряє verify_combat_player);
 ##   D444 — у шакала перед ривком лише відблиск, без червоної лінії.
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_combat_feel.gd
@@ -71,7 +71,6 @@ func _initialize() -> void:
 	await _bodies_block()
 	await _slide_off()
 	await _boss()
-	await _cancel()
 	await _jackal_tell()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
@@ -201,95 +200,6 @@ func _boss() -> void:
 func _boss_logic_has_no_jump() -> bool:
 	var source: String = load("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossLogic.gd").source_code
 	return not source.contains("jump")
-
-
-## [4] D456: удар зриває перекат (за 2 кадри фізики) і блок; зірваний удар не б'є; ранній перекат — у буфері.
-func _cancel() -> void:
-	print("[4] An attack is cut short by a roll or a block (D456)")
-	var bandit: Node = await _spawn(BANDIT, 300.0)
-	bandit.Max_Health = 99999
-	bandit.current_health = bandit.Max_Health
-	var hits: Array = []
-	bandit.damage_token.connect(func(d: int) -> void: hits.append(d))
-	await _hero_at(arena_x)
-	var combat: Node = hero.combat
-	# Перекат посеред удару
-	combat.perform_attack(1)
-	await physics_frame
-	ck(combat.state == combat.State.SWING, "the swing is on")
-	_press(&"dodge")
-	var frames := 0
-	while not hero.mover.is_rolling() and frames < 10:
-		await physics_frame
-		frames += 1
-	_press(&"dodge", false)
-	ck(frames <= 2 and combat.state == combat.State.READY, "a roll during a swing starts within 2 physics frames (%d) and ends the swing" % frames)
-	while hero.mover.is_rolling():
-		await physics_frame
-	await create_timer(0.9).timeout
-	# Зірваний удар не б'є: ворог у зоні, перекат того ж кадру, що й удар
-	await _hero_at(bandit.hurt_rect().position.x - 30.0)
-	hero.mover.last_direction = 1
-	bandit.enemy_view.update_direction(-1)
-	bandit._face_shapes(-1)
-	hits.clear()
-	combat.perform_attack(1)
-	_press(&"dodge")
-	await physics_frame
-	_press(&"dodge", false)
-	await create_timer(0.4).timeout
-	ck(hits.is_empty(), "a swing cancelled before its hit lands deals no damage (%s)" % [hits])
-	while hero.mover.is_rolling():
-		await physics_frame
-	await create_timer(0.9).timeout
-	await _hero_at(arena_x)
-	# Важкий: замах зриває блок
-	combat.heavy_attack(1)
-	await physics_frame
-	ck(combat.state == combat.State.HEAVY_WINDUP, "the heavy wind-up is on")
-	_press(&"block")
-	frames = 0
-	while not combat.is_blocking() and frames < 10:
-		await physics_frame
-		frames += 1
-	ck(frames <= 2, "block during a heavy wind-up guards within 2 physics frames (%d)" % frames)
-	_press(&"block", false)
-	await create_timer(0.3).timeout
-	# Легкий удар зриває блок
-	combat.perform_attack(1)
-	await physics_frame
-	_press(&"block")
-	frames = 0
-	while not combat.is_blocking() and frames < 10:
-		await physics_frame
-		frames += 1
-	ck(frames <= 2, "block during a swing guards within 2 physics frames (%d)" % frames)
-	_press(&"block", false)
-	await create_timer(0.9).timeout
-	# Буфер: перекат натиснуто в збої — починається, щойно збій минає
-	combat.stagger(0.05, hero.global_position.x - 10.0)
-	_press(&"dodge")
-	await physics_frame
-	_press(&"dodge", false)
-	ck(not hero.mover.is_rolling(), "no roll while staggered")
-	frames = 0
-	while not hero.mover.is_rolling() and frames < 12:
-		await physics_frame
-		frames += 1
-	ck(hero.mover.is_rolling(), "a roll pressed a few frames early is buffered and starts after the stagger (%d frames)" % frames)
-	while hero.mover.is_rolling():
-		await physics_frame
-	await create_timer(0.9).timeout
-	# Замах навички не зривається
-	combat.state = combat.State.CAST_WINDUP
-	combat._state_left = 0.5
-	_press(&"dodge")
-	await physics_frame
-	_press(&"dodge", false)
-	ck(not hero.mover.is_rolling() and combat.state == combat.State.CAST_WINDUP, "a skill's wind-up is not cancelled by a roll")
-	combat.state = combat.State.READY
-	await create_timer(0.3).timeout
-	bandit.queue_free()
 
 
 ## [5] D444: шакал перед ривком — лише відблиск, червоної лінії немає.

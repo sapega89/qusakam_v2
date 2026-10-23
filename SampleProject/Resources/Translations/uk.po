@@ -2381,23 +2381,17 @@ msgstr "Журнал"
 msgid "Moving and Jumping"
 msgstr "Рух і стрибки"
 
-msgid "Training 1/6 — Attack"
-msgstr "Тренування 1/6 — Атака"
+msgid "Training 1/4 — Attack"
+msgstr "Тренування 1/4 — Атака"
 
-msgid "Training 2/6 — Combo"
-msgstr "Тренування 2/6 — Серія"
+msgid "Training 2/4 — Dodge or Block"
+msgstr "Тренування 2/4 — Ривок або блок"
 
-msgid "Training 3/6 — Dodge"
-msgstr "Тренування 3/6 — Ривок"
+msgid "Training 3/4 — Parry"
+msgstr "Тренування 3/4 — Парирування"
 
-msgid "Training 4/6 — Block"
-msgstr "Тренування 4/6 — Блок"
-
-msgid "Training 5/6 — Parry"
-msgstr "Тренування 5/6 — Парирування"
-
-msgid "Training 6/6 — Heavy Attack"
-msgstr "Тренування 6/6 — Важка атака"
+msgid "Training 4/4 — Heavy Attack"
+msgstr "Тренування 4/4 — Важка атака"
 
 msgid "Attacking"
 msgstr "Як атакувати"
@@ -2444,23 +2438,17 @@ msgstr "Журнал в ігровому меню стежить за істор
 msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
 msgstr "Рухайтеся — {move}. Натисніть {jump}, щоб стрибнути. {dodge} — ривок, двічі поспіль, навіть у повітрі."
 
-msgid "Training 1 of 6. Press {attack} to hit the bandit. Don't worry: while you learn, neither of you can fall."
-msgstr "Тренування 1 з 6. Натисніть {attack}, щоб ударити розбійника. Не хвилюйтеся: поки ви вчитеся, ніхто з вас не впаде."
+msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
+msgstr "Тренування 1 з 4. Швидко натисніть {attack} тричі: третій замах вибиває з рівноваги. Поки ви вчитеся, ніхто з вас не впаде. {cutscene_skip} — пропустити тренування."
 
-msgid "Training 2 of 6. Press {attack} three times in a row, quickly: the third swing is the finisher that staggers."
-msgstr "Тренування 2 з 6. Швидко натисніть {attack} тричі поспіль: третій замах — завершальний, він вибиває супротивника з рівноваги."
+msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard."
+msgstr "Тренування 2 з 4. Коли його зброя спалахує, проскочіть крізь удар ривком {dodge} або утримуйте {block}, щоб прийняти удар на захист."
 
-msgid "Training 3 of 6. When the bandit's weapon glints red, his blow is coming: press {dodge} to dash through it untouched."
-msgstr "Тренування 3 з 6. Коли зброя розбійника спалахує червоним, його удар уже близько: натисніть {dodge}, щоб ривком проскочити крізь нього неушкодженим."
+msgid "Training 3 of 4. Tap {block} right on the red glint: a parry. He reels, open to your blows."
+msgstr "Тренування 3 з 4. Коротко натисніть {block} саме на червоний спалах: це парирування. Він хитається, відкритий для ваших ударів."
 
-msgid "Training 4 of 6. Face the bandit and hold {block}: let his blow land on your guard. A blocked hit does no damage."
-msgstr "Тренування 4 з 6. Станьте обличчям до розбійника й утримуйте {block}: хай його удар прийде на ваш захист. Заблокований удар не завдає шкоди."
-
-msgid "Training 5 of 6. Tap {block} exactly when his weapon glints red: a parry. No damage, and he reels, open to your blows."
-msgstr "Тренування 5 з 6. Коротко натисніть {block} саме тоді, коли його зброя спалахує червоним: це парирування. Жодної шкоди, а він хитається, відкритий для ваших ударів."
-
-msgid "Training 6 of 6. Press {heavy_attack}: a slow wind-up, then a blow that breaks his guard. Strike when he is not swinging at you."
-msgstr "Тренування 6 з 6. Натисніть {heavy_attack}: повільний замах, а тоді удар, що пробиває його захист. Бийте, коли він не замахується на вас."
+msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
+msgstr "Тренування 4 з 4. Натисніть {heavy_attack}, коли він не замахується: повільний замах, а тоді удар, що пробиває його захист."
 
 msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
 msgstr "Попереду вороги! Натисніть {attack}, щоб замахнутися зброєю. Натискайте далі, щоб скласти серію з трьох замахів — чотирьох, коли зброя в кожній руці. Останній замах серії вибиває ворога з рівноваги."
@@ -2547,3 +2535,20 @@ msgstr "Пустельний лучник"
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A red glint on the arrowhead means the arrow flies now — block it, parry it back at him, roll through it or jump over it, then run him down."
 msgstr "Розбійник із коротким луком: тримається на відстані й відступає, коли ви підходите. Червоний відблиск на наконечнику — стріла летить саме зараз: заблокуйте її, відбийте парируванням назад у нього, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 
+msgid "Dash through the blow, or hold block."
+msgstr "Проскочіть крізь удар ривком або утримуйте блок."
+
+msgid "Quick Potion"
+msgstr "Швидке зілля"
+
+msgid "Drink a potion (quick slot)"
+msgstr "Випити зілля (швидкий слот)"
+
+msgid "Potions ×%d"
+msgstr "Зілля ×%d"
+
+msgid "Drink it in play with the quick slot (%s)"
+msgstr "Випийте його в грі зі швидкого слота (%s)"
+
+msgid "ST"
+msgstr "ST"

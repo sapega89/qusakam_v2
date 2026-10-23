@@ -18,6 +18,7 @@ const ACTIONS := [
 	["Attack (press again for a combo)", &"attack"],
 	["Heavy attack", &"heavy_attack"],
 	["Block (hold) / parry (tap on the red glint)", &"block"],
+	["Drink a potion (quick slot)", &"quick_potion"],
 	["Interact, talk, pick up", &"interact"],
 	["Next line of dialogue", &"dq_accept"],
 	["Skip a cutscene (hold)", &"cutscene_skip"],

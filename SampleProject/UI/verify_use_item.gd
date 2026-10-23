@@ -2,8 +2,8 @@ extends SceneTree
 
 ## Inventory actions (BACKLOG 9, D286) with real input — keys, mouse, gamepad:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_use_item.gd
-##   1. Enter on a potion heals Kusakam at once: no party choice, no confirmation, one potion spent.
-##   2. A double click and pad A do the same; at full HP the potion is kept and the bottom bar says why.
+##   1. Enter on a potion does not drink it (D504: potions are drunk in play, from the quick slot); the bar says so.
+##   2. A double click and pad A do not drink it either.
 ##   3. An ether restores SP.
 ##   4. A material opens the "Cannot Use" modal; pad B closes it, focus back on the row, nothing spent.
 ##   5. A weapon, armour and a helmet equip into their slots from the inventory.
@@ -53,33 +53,22 @@ func _initialize() -> void:
 	var inv: Node = menu.find_child("InventoryComponent", true, false)
 	var bar: Node = get_first_node_in_group("ui_bottom_bar")
 
-	print("[1] Enter on a potion heals right away")
+	print("[1] Enter on a potion does not drink it in the paused menu (D504)")
 	await _focus_row(inv, "potion")
 	await Kit.key(self, KEY_ENTER)
-	ck(ui.get_modal_layer().active_modal == null, "no confirmation modal")
-	ck(player.current_health == 95, "HP 20 → 95 (%d)" % player.current_health)
-	ck(inventory.get_item_count("potion") == potions - 1, "one potion spent")
-	var card_hp: String = get_first_node_in_group("ui_party_panel")._cards.get_child(0).get_node("Row/Info/Bars/Hp/Head/Value").text
-	ck(card_hp == "95/100", "party card follows (%s)" % card_hp)
+	ck(ui.get_modal_layer().active_modal == null, "no modal")
+	ck(player.current_health == 20, "HP stays 20 (%d)" % player.current_health)
+	ck(inventory.get_item_count("potion") == potions, "no potion spent")
 	var focus: Control = root.gui_get_focus_owner()
 	ck(focus == _row(inv, "potion"), "focus stays on the potion row (%s)" % (focus.get_path() if focus else "none"))
 	ck(inv._item_list.get_children().filter(func(r: Button) -> bool: return r.button_pressed).size() == 1, "one row selected")
-	ck(bar._hint_label.text == "Potion — HP 95 / 100.", "bottom bar shows the result (%s)" % bar._hint_label.text)
+	ck(bar._hint_label.text.begins_with("Drink it in play with the quick slot"), "bottom bar points to the quick slot (%s)" % bar._hint_label.text)
 
-	print("[2] Double click and pad A; full HP keeps the potion")
-	player.current_health = 10
+	print("[2] Double click and pad A do not drink it either")
 	await Kit.mouse(self, _row(inv, "potion"), true)
-	ck(player.current_health == 85, "double click: HP 10 → 85 (%d)" % player.current_health)
 	await _focus_row(inv, "potion")
 	await Kit.pad(self, JOY_BUTTON_A)
-	ck(player.current_health == 100, "pad A: HP 85 → 100 (%d)" % player.current_health)
-	ck(_row(inv, "potion") == null, "last potion left the list")
-	inventory.add_item("potion", 1)
-	await Kit.frames(self, 4)
-	await _focus_row(inv, "potion")
-	await Kit.key(self, KEY_ENTER)
-	ck(inventory.get_item_count("potion") == 1, "full HP: potion kept")
-	ck(bar._hint_label.text.ends_with("is already at full health."), "bottom bar explains (%s)" % bar._hint_label.text)
+	ck(player.current_health == 20 and inventory.get_item_count("potion") == potions, "HP %d, potions %d" % [player.current_health, inventory.get_item_count("potion")])
 
 	print("[3] Ether restores SP")
 	sm.spend_sp(sm.get_current_sp())

@@ -53,6 +53,7 @@
 		"ladder": {"bus": "SFX", "files": ["SFX/impactWood_light_000.ogg", "SFX/impactWood_light_001.ogg", "SFX/impactWood_light_002.ogg"], "volume_db": -10.0, "jitter": 0.1},
 		"door": {"bus": "SFX", "files": ["SFX/doorOpen_1.ogg", "SFX/doorOpen_2.ogg", "SFX/doorClose_1.ogg", "SFX/doorClose_2.ogg"], "volume_db": -4.0},
 		"pickup": {"bus": "SFX", "files": ["SFX/handleSmallLeather.ogg"], "volume_db": -4.0},
+		"potion": {"bus": "SFX", "files": ["SFX/cast_heal_release.ogg"], "volume_db": -6.0, "jitter": 0.0},
 		"coin": {"bus": "SFX", "files": ["SFX/handleCoins.ogg"], "volume_db": -4.0},
 		"level_up": {"bus": "SFX", "files": ["SFX/level_up.ogg"], "volume_db": -2.0, "jitter": 0.0},
 		"amb_desert_wind": {"bus": "Ambience", "files": ["Ambience/amb_desert_wind.ogg"], "jitter": 0.0},

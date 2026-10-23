@@ -1,8 +1,9 @@
 extends Node
 
-## Навчальний бій (BACKLOG 28, D-28a…D-28d, design/onboarding_plan.md): перший ворог гри вчить по одному руху —
-## удар, серія, ривок крізь удар, блок, парирування на червоний відблиск, важкий удар. Кожен урок чекає, доки
-## гравець зробить рух; урок — тема туторіалу lesson_* (уперше вікно з картинкою, далі плашка до виконання, D289).
+## Навчальний бій (BACKLOG 28, D-28a…D-28d, design/onboarding_plan.md), швидкий (D503): чотири уроки, кожен — одна
+## вдала дія: серія з завершальним ударом, ривок крізь удар або блок, парирування на червоний відблиск, важкий удар.
+## Урок — тема туторіалу lesson_* лише плашкою (без вікна на паузі), наступний — одразу, без таймерів;
+## cutscene_skip пропускає решту уроків. Теми все одно лягають у список Tutorial.
 ## Поки йдуть уроки, ні ворог, ні герой не гинуть (D-28c): здоровʼя не падає нижче 1 (min_health), а нижче
 ## SAFE_FRACTION — назад до повного.
 ## Village додає вузол перед появою бандита й викликає start(), коли бандит ожив; finished — уроки пройдено.
@@ -11,14 +12,12 @@ signal finished
 signal lesson_done(id: String)
 
 const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
-const LESSONS: Array[String] = ["lesson_attack", "lesson_combo", "lesson_dodge", "lesson_block", "lesson_parry", "lesson_heavy"]
+const LESSONS: Array[String] = ["lesson_attack", "lesson_defend", "lesson_parry", "lesson_heavy"]
 ## Загальні підказки бою, які уроки замінюють, — бачені, щоб не вискакували посеред навчання.
 const REPLACED_HINTS: Array[String] = ["attack", "block", "heavy_attack"]
 const SAFE_FRACTION := 0.4
 ## Ривок зараховано, якщо в цей момент удар ворога живий не далі за стільки пікселів.
 const DODGE_RANGE := 160.0
-## Пауза між уроками, щоб гравець побачив, що урок зараховано.
-const NEXT_DELAY := 0.8
 
 var lesson := -1
 var enemies: Array[Node] = []
@@ -59,6 +58,7 @@ func current_id() -> String:
 
 func _begin(i: int) -> void:
 	lesson = i
+	TutorialTopics.mark_seen(LESSONS[i])  # плашка, а не вікно на паузі (D503)
 	_display().show_hint(LESSONS[i], true, true)
 
 
@@ -67,16 +67,26 @@ func _complete(i: int) -> void:
 		return
 	var id := LESSONS[i]
 	_hide_banner()
-	lesson = i + 1  # поки йде пауза, жоден рух не зараховується двічі
 	lesson_done.emit(id)
-	AudioManager.play(&"coin")
-	if lesson == LESSONS.size():
-		_stop()
-		finished.emit()
+	AudioManager.play(&"coin")  # урок зараховано — чути, а наступний іде одразу
+	if i + 1 == LESSONS.size():
+		_finish()
 		return
-	lesson = -1
-	await get_tree().create_timer(NEXT_DELAY, false).timeout
 	_begin(i + 1)
+
+
+func _finish() -> void:
+	lesson = LESSONS.size()
+	_stop()
+	finished.emit()
+
+
+## Пропустити решту уроків (D503) — кнопка пропуску кат-сцени.
+func _unhandled_input(ev: InputEvent) -> void:
+	if lesson >= 0 and lesson < LESSONS.size() and ev.is_action_pressed(&"cutscene_skip"):
+		get_viewport().set_input_as_handled()
+		_hide_banner()
+		_finish()
 
 
 func _on_hit(target: Node, _damage: int) -> void:
@@ -84,30 +94,27 @@ func _on_hit(target: Node, _damage: int) -> void:
 		return
 	match lesson:
 		0:
-			if _combat.state == PlayerCombat.State.SWING:
-				_complete(0)
-		1:
 			if _combat.state == PlayerCombat.State.SWING and _combat.combo_step == _combat.combo_length() - 1:
-				_complete(1)
-		5:
+				_complete(0)
+		3:
 			if _combat.state == PlayerCombat.State.HEAVY_STRIKE:
-				_complete(5)
+				_complete(3)
 
 
-## Парирування — теж блок (ідеальний), тож зараховує й урок блоку.
+## Блок чи парирування зараховує урок захисту; парирування — урок парирування.
 func _on_guard(_attacker: Node, parry: bool) -> void:
-	if lesson == 3 or (lesson == 4 and parry):
+	if lesson == 1 or (lesson == 2 and parry):
 		_complete(lesson)
 
 
-## Ривок крізь удар: герой посеред ривка, а удар ворога поруч живий (хітбокс увімкнено на час удару).
+## Ривок крізь удар (урок захисту): герой посеред ривка, а удар ворога поруч живий (хітбокс увімкнено на час удару).
 func _physics_process(_delta: float) -> void:
-	if lesson != 2 or not _mover.is_rolling():
+	if lesson != 1 or not _mover.is_rolling():
 		return
 	for enemy in enemies:
 		if is_instance_valid(enemy) and enemy.hitbox.monitoring \
 				and enemy.global_position.distance_to(_player.global_position) <= DODGE_RANGE:
-			_complete(2)
+			_complete(1)
 			return
 
 

@@ -26,7 +26,6 @@ var _burn_tick := 0.0
 # === КОМПОНЕНТИ ===
 var enemy_logic: EnemyLogic = null
 var enemy_view: EnemyView = null
-var health_bar: HealthBar = null  # Unified HealthBar (ЭТАП 2.2 ✅)
 
 # === ПОСИЛАННЯ НА ВУЗЛИ ===
 @onready var hitbox: Area2D = $hitbox
@@ -180,9 +179,7 @@ func _initialize_components():
 	enemy_view.name = "EnemyView"
 	add_child(enemy_view)
 	enemy_view.initialize(self)
-
-	# Створюємо HP бар для ворога
-	_initialize_health_bar()
+	# D502: над звичайним ворогом смужки HP немає — шкоду читають зі спалаху, цифр і іскор; у боса — смужка вгорі екрана.
 
 	DebugLogger.info("DefaultEnemy: Components initialized", "Enemy")
 
@@ -192,44 +189,6 @@ func _initialize_components():
 ## Логіка ворога; бос підставляє свою (BossLogic, D301/D302).
 func _make_logic() -> EnemyLogic:
 	return EnemyLogic.new()
-
-func _initialize_health_bar():
-	"""Создает и настраивает HP бар для врага (только если это не босс)"""
-	# Проверяем, является ли враг боссом - у босса будет отдельный HP-бар на весь экран
-	if is_in_group(GameGroups.BOSS) or is_in_group(GameGroups.MINIBOSS):
-		DebugLogger.info("DefaultEnemy: Враг является боссом, пропускаем создание HP-бара над головой", "Enemy")
-		return
-
-	# Загружаем сцену HP бара
-	var health_bar_scene = load("res://SampleProject/Scenes/UI/enemy_health_bar.tscn")
-	if not health_bar_scene:
-		push_error("DefaultEnemy: Не удалось загрузить сцену enemy_health_bar.tscn")
-		return
-
-	# Создаем экземпляр HP бара
-	health_bar = health_bar_scene.instantiate() as HealthBar
-	if not health_bar:
-		push_error("DefaultEnemy: Не удалось создать HealthBar")
-		return
-
-	# Ensure it's configured as ENEMY type
-	health_bar.bar_type = HealthBar.HealthBarType.ENEMY
-
-	# Ищем UI CanvasLayer в сцене
-	var scene = get_tree().current_scene
-	if not scene:
-		call_deferred("_initialize_health_bar")
-		return
-
-	# HP-бари ворогів живуть у Game.tscn → UICanvas.
-	var canvas_layer: CanvasLayer = scene.get_node(^"UICanvas")
-
-	# Добавляем HP бар в CanvasLayer
-	canvas_layer.add_child(health_bar)
-
-	# Настраиваем HP бар для этого врага
-	# Схована до першого ушкодження (HealthBar._configure_enemy_bar)
-	health_bar.setup_for_entity(self, "Enemy")
 
 func _on_logic_state_changed(new_state: EnemyLogic.AIState):
 	"""Обробляє зміну стану з EnemyLogic"""
@@ -501,11 +460,6 @@ func die():
 	# Spawn explosive death particles
 	_spawn_death_particles()
 
-	# Видаляємо HP бар при смерті
-	if health_bar and is_instance_valid(health_bar):
-		health_bar.queue_free()
-		health_bar = null
-
 	# Анімацію смерті видно до кінця (F8: раніше ворог ховався одразу після її старту)
 	anim_player.play("death")
 	await anim_player.animation_finished
@@ -557,10 +511,6 @@ func revive(health_amount: int = -1):
 	visible = true
 	set_process(true)
 	set_physics_process(true)
-
-	# Відновлюємо HP бар, якщо він був видалений
-	if not health_bar or not is_instance_valid(health_bar):
-		_initialize_health_bar()
 
 	# Скидаємо візуальний стан
 	sprite.modulate = Color.WHITE
@@ -695,8 +645,3 @@ func _exit_tree() -> void:
 			enemy_logic.attack_started.disconnect(_on_logic_attack_started)
 		if enemy_logic.attack_ended.is_connected(_on_logic_attack_ended):
 			enemy_logic.attack_ended.disconnect(_on_logic_attack_ended)
-	# HP-бар живе в UICanvas гри, а не в кімнаті — без цього він лишався на екрані,
-	# коли кімнату вивантажували разом із живим ворогом.
-	if health_bar and is_instance_valid(health_bar):
-		health_bar.queue_free()
-		health_bar = null
