@@ -10,12 +10,13 @@
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import urllib.request
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, os.path.dirname(__file__))
 from comfy_backdrop import API, run, upload  # noqa: E402
@@ -336,6 +337,21 @@ OLDMAN_PIPE = (
     "in the same side view facing right, leaning on his walking staff with one hand and holding a long thin wooden pipe "
     "to his mouth with the other, his eyes half closed, content"
 )
+
+# Кандидати 2026-10-23 (D445, D449, D466–D472). {…} у base — лише з референсом Sapega (design, картинка 2): with_design()
+PIXEL_STYLE = (
+    "drawn in exactly the pixel art style of the character in picture 1: the same big square pixels, thick dark "
+    "outline and flat shading"
+)
+CHIBI_STYLE = (
+    "drawn in exactly the pixel art style, size and chibi proportions of the character in picture 1: the same big "
+    "square pixels, thick dark outline and flat shading"
+)
+SIDE_VIEW = (
+    "Strict side view: %(p)s head and body in profile facing right, %(p)s eye on the right side of %(p)s face, looking "
+    "ahead to the right, not at the viewer"
+)
+MAGENTA_BG = " Keep the plain flat magenta background."
 
 CHARACTERS = {
     "bandit": dict(
@@ -1909,6 +1925,236 @@ CHARACTERS = {
             ),
         ],
     ),
+    # Кандидати першого кадру (×4) для Sapega — `comfy_sprite.py <name> candidates` → design/shots/candidates/*.png,
+    # `comfy_sprite.py _all` — усі листи однією картинкою. Обрано N → seed = candidates[1][N-1][0], і design лишається,
+    # лише якщо там True (False — прибрати design); потім rows і кадри звичайним запуском (кеш віддасть той самий
+    # перший кадр). 1–2 — з референсом Sapega, 3–4 — лише текст (референс анфас тягне профіль у пів-оберта).
+    # D466 + D467: бос Лабораторії — людина-мантикора (НЕ ящур: Sapega «це не ящур»), Скорпікора. З референсом
+    # (він у пів-оберта ліворуч) обидва кандидати дивились ліворуч — напрям названо в частині {…}
+    "lab_boss_brute": dict(
+        candidates=("design/shots/candidates/lab_boss.png", [(71, True), (72, True), (101, False), (72, False)]),  # 3: зерно 71 дало зелену морду ящура
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/bosses/lab_boss.webp",
+        cell=(96, 112),
+        seed=71,
+        colors=16,
+        who="the same hulking black-spined manticore-man with the glowing green eyes, the long ringed ears, the toothy "
+        "grin, the green tunic with the red scorpion emblem, the brown belts, the curled spiny scorpion tail, the spiked "
+        "wooden club and the steel mace",
+        base="Replace the character in picture 1 with {the creature from picture 2, but turned to face the right side of "
+        "the picture: his muzzle pointing right, his tail curling behind him on the left; }a hulking manticore-man "
+        "brute — a "
+        "manticore-man, not a lizard, not a reptile and not a kobold: a broad feline beast face with a short flat nose, a "
+        "wide nasty grin full of small sharp teeth, glowing green eyes, long pointed ears pierced with small gold rings, "
+        "his whole body covered in shaggy black hide bristling with sharp black spines, no scales; a ragged dark green "
+        "tunic with a red scorpion emblem on the chest, brown leather belts and pouches round his waist, baggy dark green "
+        "trousers, clawed feet, a long spiny black tail curled up behind him like a scorpion's tail with a stinger at its "
+        "tip, a big spiked wooden club resting on his right shoulder and a steel mace hanging in his left hand — "
+        + PIXEL_STYLE
+        + ", much taller and bulkier than the reference character, filling the whole height of the picture. "
+        + SIDE_VIEW % {"p": "his"}
+        + ". He stands in a cocky swaggering pose, chest puffed out, with a smug drunken grin."
+        + MAGENTA_BG,
+    ),
+    # D468: той, хто напав на Майор Хол, — лисий воїн Скорпікори з сокирою; його гігантський скорпіон — окремо
+    "mayor_hall_boss": dict(
+        candidates=("design/shots/candidates/mayor_hall_boss.png", [(73, True), (74, True), (73, False), (74, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/bosses/mayor_hall_boss.webp",
+        cell=(96, 112),
+        seed=73,
+        colors=16,
+        who="the same bald muscular axe-warrior with the green face scarf, the ragged green tunic, the shoulder bag, the "
+        "spiked bracers, the black knee guards and the huge scorpion-marked axe",
+        base="Replace the character in picture 1 with {the bald warrior from picture 2, }a bald, heavily muscled "
+        "Scorpicore axe-warrior: tanned skin, green eyes, his face below the eyes wrapped in a green scarf, a ragged dark "
+        "green tunic hanging to his knees, a brown leather bag on a strap across his chest, a belt hung with small "
+        "scorpion trinkets, spiked leather bracers on his forearms, black steel knee guards, bare feet with clawed toes, "
+        "and a huge battle axe with one broad steel blade marked with a black scorpion sign — "
+        + PIXEL_STYLE
+        + ", a towering adult man much taller than the reference character, filling the whole height of the picture. "
+        + SIDE_VIEW % {"p": "his"}
+        + ". He stands ready to fight, gripping the huge axe in both hands, its blade low in front of him."
+        + MAGENTA_BG,
+    ),
+    # «facing right» без названих сторін — усі чотири кандидати дивились ліворуч (клешні зліва)
+    "giant_scorpion": dict(
+        candidates=("design/shots/candidates/giant_scorpion.png", [(75, True), (76, True), (75, False), (76, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/bosses/mayor_hall_boss.webp",
+        cell=(128, 80),
+        seed=75,
+        colors=16,
+        who="the same giant armoured scorpion with the glossy black plates with dark red edges, the huge pincers, the "
+        "spiky dark red legs and the curled tail with the big stinger",
+        base="Replace the character in picture 1 with {the giant scorpion lying on the floor in picture 2, }a giant "
+        "armoured scorpion: thick overlapping glossy black armour plates with dark red edges, two huge pincers held "
+        "forward, eight spiky dark red legs, a long segmented tail curled high over its back ending in a big sharp "
+        "stinger — "
+        + PIXEL_STYLE
+        + ", much bigger than the reference character: its body stretches across almost the whole width of the picture "
+        "and its raised tail reaches near the top edge. Strict side view, facing right: its head and its two huge "
+        "pincers at the right end of its body, reaching forward to the right edge of the picture; its tail starts at the "
+        "left end of its body and curls up over its back, the stinger pointing forward to the right; its legs on the "
+        "ground."
+        + MAGENTA_BG,
+    ),
+    # D467: алхімік (SCIENTIST, той, хто робить уколи) — з референсу Sapega; шприц лишається для кадрів inject.
+    # Фільтри маски — світлі: чорні на чорній масці зникали в блоці 16 px
+    "alchemist_v2": dict(
+        candidates=("design/shots/candidates/alchemist.png", [(77, True), (78, True), (77, False), (78, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/alchemist.webp",
+        cell=(64, 96),
+        seed=77,
+        colors=16,
+        who="the same thin alchemist with the long green hair, the red eyes, the black two-filter gas mask, the grey "
+        "scarf, the long dark robe, the wrapped forearms, the red scorpion emblem and the glass syringe",
+        base="Replace the character in picture 1 with {the man from picture 2, }a thin laboratory alchemist of the "
+        "Scorpicore clan: long messy green hair falling past his shoulders, red eyes, a black gas mask over his mouth "
+        "and nose with two big round light grey metal filters, a grey scarf wound around his neck, a long dark brown robe over black clothes "
+        "with a dark sash, bandage-wrapped forearms, a red scorpion emblem on the chest of his black shirt, a glass "
+        "syringe with green liquid in his right hand — "
+        + PIXEL_STYLE
+        + ", a tall thin adult man filling the whole height of the picture, seen whole from his head down to his dark "
+        "boots. "  # референс Sapega обрізаний по стегна — кандидати з ним були без ніг
+        + SIDE_VIEW % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D469: Малік з піксельного спрайта Sapega, без змії
+    "malik_v2": dict(
+        candidates=("design/shots/candidates/malik.png", [(79, True), (102, True), (79, False), (80, False)]),  # 2: зерно 80 дивилось ліворуч
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/malik_pixel.webp",
+        cell=(64, 96),
+        seed=79,
+        colors=16,
+        who="the same man in the white turban with the red jewel, the short dark beard, the green scarf, the white robe "
+        "with orange trim, the green cape with gold shoulder pieces, the belt with the green gem and the leather bag with "
+        "the clock",
+        base="Replace the character in picture 1 with {the man from picture 2, }a desert man: a white turban with a small "
+        "red jewel at the front and a cloth tail hanging behind, a short dark beard, green eyes, a green scarf round his "
+        "neck, a long white robe with orange trim, a long dark green cape with gold shoulder pieces, a brown belt with a "
+        "green gem, a gold pendant on his chest, a leather shoulder bag with a small round clock on its flap, brown "
+        "boots; no snake, no animal on his shoulders — "
+        + PIXEL_STYLE
+        + ", a tall adult man filling the whole height of the picture. "
+        + SIDE_VIEW % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D470: Уризен з піксельної версії Sapega; клітинка компаньйона 64×64, як зараз
+    "urizen_v2": dict(
+        candidates=("design/shots/candidates/urizen.png", [(81, True), (82, True), (81, False), (82, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/urizen_pixel.webp",
+        seed=81,
+        colors=16,
+        who="the same stocky bald priest with the small dark tattoo marks on his head, the sly half-smile, the brown "
+        "hooded robe over the dark grey tunic and the belt with the iron buckle",
+        base="Replace the character in picture 1 with {the man from picture 2, }a stocky chubby bald human priest: a "
+        "round face, small dark tattoo marks on the top of his bald head, a sly half-smile, a long brown hooded robe open "
+        "over a dark grey wrapped tunic, a brown belt with an iron buckle, brown shoes — "
+        + CHIBI_STYLE
+        + ". "
+        + SIDE_VIEW % {"p": "his"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D471: Алісія в пікселі героя (64×64); різні очі (зелене й синє) видно лише у фас — кандидат = профіль + фас
+    "alisia_v2": dict(
+        candidates=("design/shots/candidates/alisia.png", [(83, True), (84, True), (83, False), (84, False)]),
+        candidate_poses=[ALISIA_FRONT],
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/alisia_v2.webp",
+        seed=83,
+        colors=24,  # 16 губили синє око (рідкісний колір)
+        who="the same silver-haired huntress with the high ponytail, one green eye and one blue eye, the dark leather "
+        "and bronze armour, the fur collar, the tattered short cape and the wooden longbow",
+        base="Replace the character in picture 1 with {the girl from picture 2, }a cheerful young huntress: long "
+        "silver-grey hair in a high ponytail, heterochromia — one bright green eye and one bright blue eye, a soft smile, "
+        "dark brown leather armour with bronze plates and a fur collar, a tattered short dark brown cape and a wooden "
+        "longbow in her hand — "
+        + CHIBI_STYLE
+        + ". "
+        + SIDE_VIEW % {"p": "her"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D472 + Q82 (Sapega 2026-10-23): з референсу Sapega, але зі щитом із шипами, без цепа
+    "astrit_v2": dict(
+        candidates=("design/shots/candidates/astrit.png", [(85, True), (86, True), (85, False), (86, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        design="assets/references/npcs/astrit_v2.png",
+        seed=85,
+        colors=16,
+        who="the same fierce red-haired barbarian woman with the high ponytail, the scowl, the dark steel plate armour "
+        "with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
+        base="Replace the character in picture 1 with {the girl from picture 2, }a fierce barbarian woman: long fiery red "
+        "hair in a high ponytail, brown eyes, a fierce scowl, dark steel plate armour with bronze trim and big pauldrons, "
+        "a short red plaid skirt, a red cape, brown boots, and a big round dark steel shield with bronze spikes around "
+        "its rim and a small red flame emblem in its middle, held in front of her; no flail, no chain, no fireball — "
+        + CHIBI_STYLE
+        + ". "
+        + SIDE_VIEW % {"p": "her"}
+        + ". Standing idle."
+        + MAGENTA_BG,
+    ),
+    # D449: гвард-компаньйон — той самий, що варта біля воріт: перший кадр з кадру gate_guard, лише поза бійця
+    "companion_guard": dict(
+        candidates=("design/shots/candidates/companion_guard.png", [(87, False), (88, False), (89, False), (90, False)]),
+        ref="SampleProject/Assets/Characters/NPCs/gate_guard/sheet.png#0,0,64,96",
+        cell=(64, 96),
+        seed=87,
+        colors=16,
+        who="the same desert city guard with the pointed steel helmet wrapped in a white cloth, the short dark beard, the "
+        "red tabard with the golden disc over the chain shirt, the baggy sand-coloured trousers, the curved sword at his "
+        "belt and the long spear",
+        base="Keep this exact character — the desert city guard with the pointed steel helmet wrapped in a white cloth, "
+        "the short dark beard, the red tabard with the golden disc over the chain shirt, the baggy sand-coloured "
+        "trousers, the curved sword at his belt and the long spear — the same pixel art style, thick dark outline, flat "
+        "shading, colours, size and position. Change only the pose: standing ready to fight in the same side view "
+        "facing right, feet apart and knees slightly bent, the long spear held level in both hands at waist height, its "
+        "steel point forward to the right."
+        + MAGENTA_BG,
+    ),
+    # D445: літаючі вороги — гриф (надворі) і кажан (у лабораторії), профіль праворуч
+    "enemy_vulture": dict(
+        candidates=("design/shots/candidates/vulture.png", [(91, False), (92, False), (93, False), (94, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=91,
+        colors=16,
+        who="the same desert vulture with the dark brown and black feathers, the bare pinkish-red head and neck, the "
+        "pale neck ruff and the hooked beak",
+        base="Replace the character in picture 1 with a desert vulture: dark brown and black feathers, a bare wrinkled "
+        "pinkish-red head and neck, a ruff of pale feathers round the base of its neck, a hooked pale yellow beak, grey "
+        "talons tucked under its body, its broad ragged-tipped wings raised high above its back mid-flap — "
+        + PIXEL_STYLE
+        + ", a big bird flying in the middle of the picture, filling most of its width. "
+        + SIDE_VIEW % {"p": "its"}
+        + "."
+        + MAGENTA_BG,
+    ),
+    # «small», «a third of the width» — кажан завбільшки з грифа (крила на всю клітинку); розмір — відносно
+    # голови героя на картинці 1, як кошеня — відносно його пояса
+    "enemy_bat": dict(
+        candidates=("design/shots/candidates/bat.png", [(95, False), (96, False), (97, False), (98, False)]),
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=95,
+        colors=16,
+        who="the same small cave bat with the dark brown-grey fur, the big pointed ears, the tiny red eyes, the white "
+        "fangs and the leathery dark grey wings",
+        base="Replace the character in picture 1 with a small cave bat: dark brown-grey fur, big pointed ears, tiny "
+        "glowing red eyes, small white fangs, leathery dark grey wings with reddish-brown membranes between the finger "
+        "bones, raised high above its back mid-flap — "
+        + PIXEL_STYLE
+        + ". It is very small, no bigger than the head of the character in picture 1: the whole bat with its spread "
+        "wings fits inside a small square in the middle of the picture, a large empty magenta space all around it. "
+        + SIDE_VIEW % {"p": "its"}
+        + "."
+        + MAGENTA_BG,
+    ),
 }
 
 
@@ -2188,7 +2434,99 @@ def hero_palette():
     return np.array(sorted(cols), dtype=np.float32)
 
 
+def with_design(text, design):
+    """{…} у base — лише з референсом Sapega (design, картинка 2): «… with {the man from picture 2, }a tall …»."""
+    return re.sub(r"\{([^}]*)\}", r"\1" if design else "", text)
+
+
+def own_palette(smalls, colors):
+    """Палітра не-героя: colors кольорів з усіх кадрів, насиченість не вища за героєву (clamp_chroma)."""
+    every = np.concatenate([rgb[op] for rgb, op in smalls])
+    pim = Image.fromarray(every.astype(np.uint8)[None]).quantize(
+        colors, Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
+    )
+    return clamp_chroma(np.array(pim.getpalette()[: 3 * colors], dtype=np.float32).reshape(-1, 3))
+
+
+def to_palette(rgb, pal):
+    return pal[np.linalg.norm(rgb[:, :, None, :] - pal[None, None], axis=3).argmin(axis=2)]
+
+
+GREY = (110, 110, 120, 255)  # нейтральне тло листів кандидатів
+
+
+def candidates(char, cell):
+    """Лист кандидатів першого кадру для Sapega: ×4, номери 1–N («ref» — з його референсом, «text» — без), ліворуч герой
+    для масштабу. char["candidates"] = (png, [(зерно, з design?), ...]). candidate_poses — пози з першого кадру поруч
+    з ним, як їх зробить звичайний запуск (фас Алісиї: різні очі видно лише у фас)."""
+    out, variants = char["candidates"]
+    ref = enlarge(char["ref"], cell)
+    groups = []
+    for seed, use_design in variants:
+        design = char["design"] if use_design else None
+        base = edit(ref, with_design(char["base"], design), seed, design)
+        base_ref = base.copy()
+        base_ref[..., 3] = 255
+        imgs = [base] + [
+            edit(base_ref, KEEP.format(who=char["who"], pose=p), seed) for p in char.get("candidate_poses", [])
+        ]
+        small = [shrink(i, cell) for i in imgs]
+        pal = own_palette(small, char["colors"])
+        group = []
+        for rgb, op in small:
+            q, op = polish(to_palette(rgb, pal), op)
+            group.append(np.dstack([q, op * 255.0]).astype(np.uint8))
+        groups.append(group)
+    free()
+    tiles = [[np.asarray(load("SampleProject/Sprites/Player/Walk/1.png"))]] + groups
+    labels = ["hero"] + [f"{i + 1} {'ref' if d else 'text'}" for i, (_, d) in enumerate(variants)]
+    k, pad, top = 4, 32, 72
+    w = sum(sum(f.shape[1] for f in g) * k + pad for g in tiles) + pad
+    h = max(f.shape[0] for g in tiles for f in g) * k + top + pad
+    sheet = Image.new("RGBA", (w, h), GREY)
+    draw, font = ImageDraw.Draw(sheet), ImageFont.truetype("arial.ttf", 44)
+    x = pad
+    for group, label in zip(tiles, labels):
+        draw.text((x, 12), label, fill="white", font=font)
+        for f in group:
+            im = Image.fromarray(f).resize((f.shape[1] * k, f.shape[0] * k), Image.NEAREST)
+            sheet.alpha_composite(im, (x, h - pad - im.height))
+            x += im.width
+        x += pad
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    sheet.save(out)
+    print("candidates", out, sheet.size)
+
+
+def overview(out="design/shots/candidates/_all.png", max_w=2600):
+    """Усі листи кандидатів однією картинкою: кожен ×½ найближчим (×4 → ×2, піксель лишається чітким), з підписом."""
+    names = [c["candidates"][0] for c in CHARACTERS.values() if "candidates" in c]
+    ims = [(os.path.basename(n)[:-4], Image.open(n).convert("RGBA")) for n in names if os.path.exists(n)]
+    ims = [(n, im.resize((im.width // 2, im.height // 2), Image.NEAREST)) for n, im in ims]
+    font, pad, label = ImageFont.truetype("arial.ttf", 40), 24, 52
+    rows = [[]]
+    for item in ims:
+        if rows[-1] and sum(im.width + pad for _, im in rows[-1]) + item[1].width > max_w:
+            rows.append([])
+        rows[-1].append(item)
+    w = max(sum(im.width + pad for _, im in r) for r in rows) + pad
+    h = sum(max(im.height for _, im in r) + label + pad for r in rows) + pad
+    sheet = Image.new("RGBA", (w, h), (60, 60, 66, 255))
+    draw, y = ImageDraw.Draw(sheet), pad
+    for r in rows:
+        x = pad
+        for name, im in r:
+            draw.text((x, y), name, fill="white", font=font)
+            sheet.alpha_composite(im, (x, y + label))
+            x += im.width + pad
+        y += max(im.height for _, im in r) + label + pad
+    sheet.save(out)
+    print("overview", out, sheet.size, [n for n, _ in ims])
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "_all":
+        sys.exit(overview())
     char = CHARACTERS[sys.argv[1]]
     only = sys.argv[2:]
     MAGENTA_CUT_MIN = char.get("magenta_cut_min", -1)
@@ -2197,6 +2535,8 @@ if __name__ == "__main__":
     UP = char.get(
         "up", UP
     )  # менший блок для більшої клітинки: картинка моделі лишається ~1 Мп (меч, 96x96)
+    if only == ["candidates"]:
+        sys.exit(candidates(char, cell))
     ref = enlarge(char["ref"], cell)
     # base=None — перший кадр сам кадр художника (новий кадр героя, D239), інакше модель робить його з референсу
     # base="FILE:<png>" — готовий перший кадр (dual: кадр меча художника + кинджал, Scripts/Tools/dual_fixups.py)
@@ -2205,7 +2545,7 @@ if __name__ == "__main__":
         if char["base"] is None
         else enlarge(char["base"][5:], cell)
         if char["base"].startswith("FILE:")
-        else edit(ref, char["base"], seed, char.get("design"))
+        else edit(ref, with_design(char["base"], char.get("design")), seed, char.get("design"))
     )
     base_ref = base.copy()
     base_ref[..., 3] = 255
@@ -2277,14 +2617,7 @@ if __name__ == "__main__":
         pal_rgb = hero_palette()
     else:
         # палітра з усіх кадрів: фас Алісиї має синє око, якого в профілі (першому кадрі) немає — ставало сірим
-        every = np.concatenate([rgb[op] for rgb, op in small.values()])
-        pim = Image.fromarray(every.astype(np.uint8)[None]).quantize(
-            char["colors"], Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE
-        )
-        pal_rgb = np.array(
-            pim.getpalette()[: 3 * char["colors"]], dtype=np.float32
-        ).reshape(-1, 3)
-        pal_rgb = clamp_chroma(pal_rgb)
+        pal_rgb = own_palette(small.values(), char["colors"])
     floor = char.get(
         "floor", feet_row(op0)
     )  # ступні — на рядок першого кадру; floor — явно (лінія ніг героя 56)
@@ -2294,11 +2627,7 @@ if __name__ == "__main__":
     for r, (anim, poses) in enumerate(char["rows"]):
         for i, pose in enumerate(poses):
             rgb, op = small[(anim, i)]
-            q = pal_rgb[
-                np.linalg.norm(rgb[:, :, None, :] - pal_rgb[None, None], axis=3).argmin(
-                    axis=2
-                )
-            ]
+            q = to_palette(rgb, pal_rgb)
             if (
                 char.get("palette") != "hero"
             ):  # кадри героя — тільки кольори художника, без змін
