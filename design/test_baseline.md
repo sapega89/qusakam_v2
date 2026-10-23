@@ -151,4 +151,6 @@ passes through the player (D197), [1] one hit = one damage event, [1b] a miss, [
 Phys. Atk. and grows with the weapon (D199), [2b] invulnerability frames, [2c] enemy wind-up /
 facing / height / no friendly fire (D198); `verify_map_geometry` [5] every spawn point stands on a tile.
 
+> **2026-10-23, after round 11 (all eight branches merged) and the skill icons (D605, D635):** full suite **110/110 ALL PASS** on the first run. Companion tests re-run green after the v2 frames (D636) landed mid-suite.
+
 > **2026-10-23, after round 10 (all seven branches merged):** full suite 101/102; the one FAIL was a real merge interaction, `verify_onboarding` "a light hit does not pass Heavy" — the riposte (D575) reuses HEAVY_STRIKE, so `CombatTraining` now ignores riposting strikes for the Heavy lesson (02dc075f); re-run ALL PASS. Windows build sent.
