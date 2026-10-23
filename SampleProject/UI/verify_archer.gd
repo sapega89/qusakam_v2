@@ -110,7 +110,7 @@ func _spawn() -> void:
 	archer = point.spawn_enemy()
 	await create_timer(0.5).timeout
 	ck(archer != null and archer.get_script().resource_path.ends_with("ArcherEnemy.gd"), "the spawn point makes an ArcherEnemy (%s)" % archer)
-	ck(archer.enemy_stats.enemy_type == "archer" and archer.Max_Health == 60 and archer.enemy_stats.xp_reward == 25,
+	ck(archer.enemy_stats.enemy_type == "archer" and archer.Max_Health == archer.enemy_stats.max_health and archer.enemy_stats.xp_reward == 25,
 			"archer stats: HP %d, XP %d" % [archer.Max_Health, archer.enemy_stats.xp_reward])
 	ck(archer.is_on_floor(), "it stands on the road")
 	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
