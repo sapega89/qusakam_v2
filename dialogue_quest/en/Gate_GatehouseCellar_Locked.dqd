@@ -1,0 +1,3 @@
+// [DRAFT] D643 — the gatehouse cellar door, until the guard lets Kusakam down (gates.json → gatehouse_cellar).
+say|KUSAKAM|The guards' cellar. Better not go down there without leave.
+exit|

@@ -6,6 +6,18 @@
 			"title": "Grandfather's notes",
 			"text": "The barrier is growing quiet. Once it rang over the dunes so loudly that even the children heard it; now it is silent. Nobody prays to the statuette anymore, and the young ones say the Maiden fell asleep long ago. Perhaps they are right: without prayers she has no strength, and without her the barrier will not hold. The boy should be learning the prayers instead of chasing beetles. If the barrier falls asleep for good, they will find us. Someone must pray. Someone must stay.",
 			"draft": true
+		},
+		{
+			"id": "lizard_shrine_mural",
+			"title": "The shamans' mural",
+			"text": "The wall is painted in ochre and soot. A row of lizardfolk with staffs kneels around a small figure of a woman with spread wings; from her hands a pale ring spreads over the village and the dunes. Under every shaman a name has been scratched out and written again by a newer hand. The last figure in the row is small, unfinished, its staff only sketched. Someone left room for one more.",
+			"draft": true
+		},
+		{
+			"id": "dragon_mural",
+			"title": "The dragon on the wall",
+			"text": "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sun-less sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»",
+			"draft": true
 		}
 	]
 }

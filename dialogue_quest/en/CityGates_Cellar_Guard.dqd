@@ -1,0 +1,5 @@
+// [DRAFT] D643 — the guard lets Kusakam down into the gatehouse cellar (the TalkSpot in CityGates sets gatehouse_cellar_allowed). Bats: D558.
+say|GATE_GUARD|The cellar? Nobody's been down there for a week. Bats moved in — they bite, the vermin, and squeal till your ears ache.
+say|KUSAKAM|I can go down.
+say|GATE_GUARD|You? Well... Go on down, if you don't mind your hide. Whatever you find down there is yours. Just shut the door behind you.
+exit|

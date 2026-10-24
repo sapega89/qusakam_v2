@@ -1,0 +1,164 @@
+[gd_scene format=3 uid="uid://bsuxeons58smh"]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_back.png" id="r1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r2"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r3"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="r5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="r6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r7"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r8"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r9"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(1984, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(64, 992)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(64, 992)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4"]
+size = Vector2(160, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5"]
+size = Vector2(48, 420)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6"]
+size = Vector2(112, 112)
+
+[node name="BanditCamp" type="Node2D"]
+
+[node name="Far" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Far"]
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+
+[node name="Floor" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(864, 484)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(-32, 240)
+shape = SubResource("RectangleShape2D_2")
+
+[node name="WallRight" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(1760, 240)
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Arrival" type="Marker2D" parent="."]
+position = Vector2(96, 380)
+
+[node name="ExitDoor" parent="." instance=ExtResource("r2")]
+position = Vector2(96, 380)
+target_room = "res://SampleProject/Maps/DesertRoad.tscn"
+arrival = NodePath("BanditCampDoor")
+
+[node name="Interactable" parent="ExitDoor" index="1"]
+action_text = "Leave"
+
+[node name="Fight_Camp" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("r3")
+enemy_level = 4
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_CampTrigger")
+state_key = "enemies_camp"
+respawns = true
+spawn_in_waves = true
+wave_size = 3
+wave_delay = 2.0
+reward = Dictionary[String, int]({
+"camp_key": 1
+})
+
+[node name="Fight_CampTrigger" type="Area2D" parent="Fight_Camp"]
+position = Vector2(420, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Camp/Fight_CampTrigger"]
+shape = SubResource("RectangleShape2D_4")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Camp"]
+position = Vector2(700, 388)
+script = ExtResource("r4")
+enemy_type = "fast"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Camp"]
+position = Vector2(820, 388)
+script = ExtResource("r4")
+enemy_type = "melee"
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Camp"]
+position = Vector2(940, 388)
+script = ExtResource("r4")
+enemy_type = "shield"
+
+[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Camp"]
+position = Vector2(1120, 388)
+script = ExtResource("r4")
+enemy_type = "archer"
+
+[node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Camp"]
+position = Vector2(760, 388)
+script = ExtResource("r4")
+enemy_type = "melee"
+
+[node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_Camp"]
+position = Vector2(1040, 388)
+script = ExtResource("r4")
+enemy_type = "melee"
+big_kind = "bandit_brute"
+spawn_id = "Fight_Camp_BigSlot_BanditBrute_1"
+
+[node name="Gate_Stockade" parent="." instance=ExtResource("r5")]
+position = Vector2(1300, 420)
+gate_id = "camp_stockade"
+
+[node name="Sprite" parent="Gate_Stockade" index="0"]
+z_index = 1
+position = Vector2(0, -56)
+texture = ExtResource("r6")
+
+[node name="CollisionShape2D" parent="Gate_Stockade/Body" index="0"]
+position = Vector2(0, -210)
+shape = SubResource("RectangleShape2D_5")
+
+[node name="CollisionShape2D" parent="Gate_Stockade/Area" index="0"]
+position = Vector2(-48, -56)
+shape = SubResource("RectangleShape2D_6")
+
+[node name="Chest_Loot" parent="." instance=ExtResource("r7")]
+position = Vector2(1450, 420)
+contents = Dictionary[String, int]({
+"potion_lesser": 2,
+"herb": 3,
+"leather": 2
+})
+charm = "breaker_ring"
+
+[node name="ShortcutDoor" parent="." instance=ExtResource("r2")]
+position = Vector2(1640, 380)
+target_room = "res://SampleProject/Maps/DesertRoad.tscn"
+arrival = NodePath("CampShortcutDoor")
+sets_flag = "bandit_camp_shortcut"
+
+[node name="Interactable" parent="ShortcutDoor" index="1"]
+action_text = "Open the gate"
+
+[node name="RoomInstance" parent="." instance=ExtResource("r9")]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("r8")
+autoplay = true
+bus = &"Music"

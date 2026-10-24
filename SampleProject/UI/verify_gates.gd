@@ -19,6 +19,7 @@ const ELDER := "res://SampleProject/Maps/ElderHouse.tscn"
 const GATES := "res://SampleProject/Resources/Data/gates.json"
 const ITEMS := "res://SampleProject/Resources/Data/items.json"
 const LOCKED_DOOR := "res://SampleProject/Objects/LockedDoor.tscn"
+const ROOM_DOOR := "res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn"
 const TEST_DIR := "user://verify_gates/"
 const TEST_SLOT := 1
 ## Верх вежі ліворуч від ґрат (Ledge_TowerTop, верх y 158); центр героя — на 24 px вище ніг.
@@ -72,7 +73,7 @@ func _gate_doors() -> Array:
 		var state: SceneState = (load("res://SampleProject/Maps/" + file) as PackedScene).get_state()
 		for i in state.get_node_count():
 			var inst: PackedScene = state.get_node_instance(i)
-			if inst and inst.resource_path == LOCKED_DOOR:
+			if inst and inst.resource_path in [LOCKED_DOOR, ROOM_DOOR]:  # D643: брама прапорця буває й на RoomDoor
 				for p in state.get_node_property_count(i):
 					if state.get_node_property_name(i, p) == &"gate_id":
 						out.append(state.get_node_property_value(i, p))
@@ -107,7 +108,7 @@ func _initialize() -> void:
 				and FileAccess.file_exists("res://dialogue_quest/en/%s.dqd" % gate.locked_dialogue),
 				"%s: its locked line %s is in uk and en" % [id, gate.locked_dialogue])
 	var placed := _gate_doors()
-	ck(placed.all(func(id: String) -> bool: return gates.has(id)), "every LockedDoor in the rooms names a known gate (%s)" % [placed])
+	ck(placed.all(func(id: String) -> bool: return gates.has(id)), "every LockedDoor / gated RoomDoor in the rooms names a known gate (%s)" % [placed])
 	ck(gates.keys().all(func(id: String) -> bool: return placed.has(id)), "every gate stands in a room")
 
 	set_meta("start_new_game", true)

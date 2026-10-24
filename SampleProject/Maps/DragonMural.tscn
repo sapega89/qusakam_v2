@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://c4u87cxyqha6w"]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DragonMural/gen_back.png" id="r1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/StoryNote.tscn" id="r3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r4"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="r5"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(1120, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(64, 992)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(64, 992)
+
+[node name="DragonMural" type="Node2D"]
+
+[node name="Far" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Far"]
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+
+[node name="Floor" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(432, 484)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(-32, 240)
+shape = SubResource("RectangleShape2D_2")
+
+[node name="WallRight" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(896, 240)
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Arrival" type="Marker2D" parent="."]
+position = Vector2(96, 380)
+
+[node name="ExitDoor" parent="." instance=ExtResource("r2")]
+position = Vector2(96, 380)
+target_room = "res://SampleProject/Maps/Canyon.tscn"
+arrival = NodePath("DragonMuralDoor")
+
+[node name="Interactable" parent="ExitDoor" index="1"]
+action_text = "Leave"
+
+[node name="DragonMural" parent="." instance=ExtResource("r3")]
+position = Vector2(432, 320)
+story_id = "dragon_mural"
+
+[node name="Chest_Mural" parent="." instance=ExtResource("r4")]
+position = Vector2(740, 420)
+charm = "jackal_tooth_amulet"
+
+[node name="RoomInstance" parent="." instance=ExtResource("r6")]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("r5")
+autoplay = true
+bus = &"Music"

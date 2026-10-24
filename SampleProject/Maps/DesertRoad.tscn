@@ -28,6 +28,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/BreakableWall.tscn" id="breakable_wall"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="locked_door"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="bars_art"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="b1_door"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="b1_tent"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Objects/ladder.png" id="b1_ladder"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
@@ -483,3 +486,56 @@ bus = &"Music"
 
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(5160, 344)
+
+[node name="BanditCampTent" type="Sprite2D" parent="."]
+z_index = -1
+texture_filter = 1
+position = Vector2(2050, 262)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("b1_tent")
+offset = Vector2(0, -100)
+
+[node name="BanditCampDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(2050, 232)
+target_room = "res://SampleProject/Maps/BanditCamp.tscn"
+arrival = NodePath("ExitDoor")
+
+[node name="Interactable" parent="BanditCampDoor" index="1"]
+action_text = "Enter"
+
+[node name="MesaClimbLadder" type="Sprite2D" parent="."]
+z_index = -1
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(2800, 324)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("b1_ladder")
+offset = Vector2(0, -64)
+region_enabled = true
+region_rect = Rect2(0, 0, 16, 128)
+
+[node name="MesaClimbDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(2800, 296)
+target_room = "res://SampleProject/Maps/MesaClimb.tscn"
+arrival = NodePath("ExitDoor")
+
+[node name="Interactable" parent="MesaClimbDoor" index="1"]
+action_text = "Enter"
+
+[node name="CampShortcutTent" type="Sprite2D" parent="."]
+z_index = -1
+texture_filter = 1
+position = Vector2(4820, 392)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("b1_tent")
+flip_h = true
+offset = Vector2(0, -100)
+
+[node name="CampShortcutDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(4820, 356)
+target_room = "res://SampleProject/Maps/BanditCamp.tscn"
+arrival = NodePath("ShortcutDoor")
+gate_id = "camp_shortcut"
+
+[node name="Interactable" parent="CampShortcutDoor" index="1"]
+action_text = "Enter"

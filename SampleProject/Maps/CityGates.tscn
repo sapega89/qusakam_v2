@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/bandit_archer/sheet.png" id="archer_sheet"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_front.png" id="front_tex"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="b1_door"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/talk_spot.tscn" id="b1_talk"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_back.png" id="b1_cellar"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -272,3 +275,27 @@ position = Vector2(700, 344)
 
 [node name="city" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(1528, 344)
+
+[node name="CellarArch" type="Sprite2D" parent="."]
+z_index = -1
+texture_filter = 1
+position = Vector2(1090, 394)
+texture = ExtResource("b1_cellar")
+offset = Vector2(0, -85)
+region_enabled = true
+region_rect = Rect2(300, 40, 150, 170)
+
+[node name="CellarDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(1090, 356)
+target_room = "res://SampleProject/Maps/GatehouseCellar.tscn"
+arrival = NodePath("ExitDoor")
+gate_id = "gatehouse_cellar"
+
+[node name="Interactable" parent="CellarDoor" index="1"]
+action_text = "Enter"
+
+[node name="CellarTalk" parent="." instance=ExtResource("b1_talk")]
+position = Vector2(1200, 356)
+dialogue = "res://dialogue_quest/CityGates_Cellar_Guard.dqd"
+sets_flag = "gatehouse_cellar_allowed"
+after_flag = "city_gates_after_fight_complete"

@@ -3173,3 +3173,28 @@ msgstr "{ui_accept} Learn +1 · {skills_unpick} Undo · {skills_accept} Accept �
 
 msgid "Swear an oath in the City (level %d)"
 msgstr "Swear an oath in the City (level %d)"
+
+# ── Branch batch 1: side rooms, keys and story pieces (D643)
+msgid "Grandfather's Old Key"
+msgstr "Grandfather's Old Key"
+
+msgid "A worn bronze key with a lizard on its bow. It opens the family shrine in the cave under the bridge."
+msgstr "A worn bronze key with a lizard on its bow. It opens the family shrine in the cave under the bridge."
+
+msgid "Stockade Key"
+msgstr "Stockade Key"
+
+msgid "A heavy key from the bandit chief's belt. It opens the stockade of the bandit camp off the desert road."
+msgstr "A heavy key from the bandit chief's belt. It opens the stockade of the bandit camp off the desert road."
+
+msgid "The shamans' mural"
+msgstr "The shamans' mural"
+
+msgid "The wall is painted in ochre and soot. A row of lizardfolk with staffs kneels around a small figure of a woman with spread wings; from her hands a pale ring spreads over the village and the dunes. Under every shaman a name has been scratched out and written again by a newer hand. The last figure in the row is small, unfinished, its staff only sketched. Someone left room for one more."
+msgstr "The wall is painted in ochre and soot. A row of lizardfolk with staffs kneels around a small figure of a woman with spread wings; from her hands a pale ring spreads over the village and the dunes. Under every shaman a name has been scratched out and written again by a newer hand. The last figure in the row is small, unfinished, its staff only sketched. Someone left room for one more."
+
+msgid "The dragon on the wall"
+msgstr "The dragon on the wall"
+
+msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sun-less sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
+msgstr "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sun-less sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"

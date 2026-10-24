@@ -1,0 +1,127 @@
+[gd_scene format=3 uid="uid://nidweolightl"]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_back.png" id="r1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r2"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r3"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r5"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="r6"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(1984, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(64, 992)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(64, 992)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4"]
+size = Vector2(120, 480)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5"]
+size = Vector2(120, 480)
+
+[node name="GatehouseCellar" type="Node2D"]
+
+[node name="Far" type="Parallax2D" parent="."]
+z_index = -10
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Far"]
+texture_filter = 1
+position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+
+[node name="Bounds" type="StaticBody2D" parent="."]
+
+[node name="Floor" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(864, 484)
+shape = SubResource("RectangleShape2D_1")
+
+[node name="WallLeft" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(-32, 240)
+shape = SubResource("RectangleShape2D_2")
+
+[node name="WallRight" type="CollisionShape2D" parent="Bounds"]
+position = Vector2(1760, 240)
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Arrival" type="Marker2D" parent="."]
+position = Vector2(96, 380)
+
+[node name="ExitDoor" parent="." instance=ExtResource("r2")]
+position = Vector2(96, 380)
+target_room = "res://SampleProject/Maps/CityGates.tscn"
+arrival = NodePath("CellarDoor")
+
+[node name="Interactable" parent="ExitDoor" index="1"]
+action_text = "Leave"
+
+[node name="Fight_LoneBat" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("r3")
+enemy_level = 5
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_LoneBatTrigger")
+state_key = "enemies_lonebat"
+respawns = true
+
+[node name="Fight_LoneBatTrigger" type="Area2D" parent="Fight_LoneBat"]
+position = Vector2(320, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_LoneBat/Fight_LoneBatTrigger"]
+shape = SubResource("RectangleShape2D_4")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_LoneBat"]
+position = Vector2(560, 260)
+script = ExtResource("r4")
+enemy_type = "bat"
+
+[node name="Fight_Bats" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("r3")
+enemy_level = 5
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_BatsTrigger")
+state_key = "enemies_bats"
+respawns = true
+
+[node name="Fight_BatsTrigger" type="Area2D" parent="Fight_Bats"]
+position = Vector2(980, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Bats/Fight_BatsTrigger"]
+shape = SubResource("RectangleShape2D_5")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Bats"]
+position = Vector2(1200, 230)
+script = ExtResource("r4")
+enemy_type = "bat"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Bats"]
+position = Vector2(1320, 290)
+script = ExtResource("r4")
+enemy_type = "bat"
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Bats"]
+position = Vector2(1440, 240)
+script = ExtResource("r4")
+enemy_type = "bat"
+
+[node name="Chest_Cellar" parent="." instance=ExtResource("r5")]
+position = Vector2(1620, 420)
+contents = Dictionary[String, int]({
+"potion": 1
+})
+charm = "hermit_amulet"
+
+[node name="RoomInstance" parent="." instance=ExtResource("r7")]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+process_mode = 3
+stream = ExtResource("r6")
+autoplay = true
+bus = &"Music"

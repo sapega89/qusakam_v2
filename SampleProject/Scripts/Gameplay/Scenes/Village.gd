@@ -269,12 +269,23 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 		"OldMan_Decision":
 			quest_flag = "village_oldman_complete"
 			_give_oldman_gift()
+			_give_grandfather_key()
 		"LeavingVillage":
 			quest_flag = "village_left_complete"
 
 	if not quest_flag.is_empty():
 		game.set_quest_flag(quest_flag, true)
 		DebugLogger.info("🏘️ Village: Квест %s виконано" % quest_flag, "Village")
+
+## D643: старий ключ діда відмикає родинне святилище в Печері ящурів (gates.json → lizard_shrine). Один раз за гру;
+## окремо від спорядження, бо сейви, де спорядження вже дали, ключа ще не мають.
+func _give_grandfather_key() -> void:
+	var game := Game.get_singleton()
+	if game.get_quest_flag("village_grandfather_key"):
+		return
+	ServiceLocator.get_inventory_manager().add_item("grandfather_key", 1)
+	game.set_quest_flag("village_grandfather_key", true)
+
 
 ## Дід дає новачкові перше спорядження — один раз за гру (Sapega, 2026-10-12).
 func _give_oldman_gift() -> void:

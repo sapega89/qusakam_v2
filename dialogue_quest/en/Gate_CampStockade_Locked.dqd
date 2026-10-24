@@ -1,0 +1,3 @@
+// [DRAFT] D643 — the bandit camp's stockade without the key (gates.json → camp_stockade).
+say|KUSAKAM|The stockade is locked. Our sacks are behind it, I know them. Their leader must have the key.
+exit|

@@ -1,0 +1,18 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/TalkSpot.gd" id="1_talk"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_talk"]
+size = Vector2(112, 112)
+
+[node name="TalkSpot" type="Area2D"]
+script = ExtResource("1_talk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_talk")
+
+[node name="Interactable" type="Node2D" parent="."]
+script = ExtResource("2_interactable")
+prompt_offset = Vector2(0, -100)
+action_text = "Talk"

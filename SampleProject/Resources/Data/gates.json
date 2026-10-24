@@ -1,5 +1,5 @@
 {
-	"_comment": "D562: what opens a locked way inside a location. Each gate is a LockedDoor (Objects/LockedDoor.tscn, gate_id = the key here) and opens with exactly one of: \"key\" — an item from the inventory (consumed when \"consumes_key\"), the opened gate stays open (room_state opened_<node name>, in the save); \"flag\" — a quest flag an NPC talk sets, the gate is open while the flag holds (quest flags are in the save). \"locked_dialogue\" — the hero's line when he tries a closed gate (dialogue_quest/<id>.dqd, a KUSAKAM monologue in a bubble). Checked by verify_gates.gd.",
+	"_comment": "D562: what opens a locked way inside a location. Each gate is a LockedDoor (Objects/LockedDoor.tscn, gate_id = the key here) and opens with exactly one of: \"key\" — an item from the inventory (consumed when \"consumes_key\"), the opened gate stays open (room_state opened_<node name>, in the save); \"flag\" — a quest flag an NPC talk sets, the gate is open while the flag holds (quest flags are in the save). \"locked_dialogue\" — the hero's line when he tries a closed gate (dialogue_quest/<id>.dqd, a KUSAKAM monologue in a bubble). A flag gate can also stand on a RoomDoor (gate_id), a door off the main road that bars would block (D643). Checked by verify_gates.gd and verify_rooms_batch1.gd.",
 	"gates": {
 		"tower_stash": {
 			"key": "bandit_key",
@@ -9,6 +9,24 @@
 		"elder_attic": {
 			"flag": "village_oldman_complete",
 			"locked_dialogue": "Gate_ElderAttic_Locked"
+		},
+		"lizard_shrine": {
+			"key": "grandfather_key",
+			"consumes_key": true,
+			"locked_dialogue": "Gate_LizardShrine_Locked"
+		},
+		"camp_stockade": {
+			"key": "camp_key",
+			"consumes_key": true,
+			"locked_dialogue": "Gate_CampStockade_Locked"
+		},
+		"camp_shortcut": {
+			"flag": "bandit_camp_shortcut",
+			"locked_dialogue": "Gate_CampShortcut_Locked"
+		},
+		"gatehouse_cellar": {
+			"flag": "gatehouse_cellar_allowed",
+			"locked_dialogue": "Gate_GatehouseCellar_Locked"
 		}
 	}
 }

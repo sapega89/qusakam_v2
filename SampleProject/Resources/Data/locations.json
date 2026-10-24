@@ -4,13 +4,13 @@
 		{
 			"id": "canyon_of_whispers",
 			"name": "Canyon of Whispers",
-			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad"],
+			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb"],
 			"entries": ["Canyon"]
 		},
 		{
 			"id": "city",
 			"name": "The City",
-			"rooms": ["CityGates", "City", "MayorHall"],
+			"rooms": ["CityGates", "City", "MayorHall", "GatehouseCellar"],
 			"entries": ["CityGates"]
 		},
 		{
