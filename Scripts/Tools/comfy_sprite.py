@@ -157,6 +157,12 @@ SWORD_ON = (
     + SWORD
     + " in his near hand, the blade pointing %s"
 )
+# B124: у бігу й стрибку модель клала меч у дальню руку (атаки — у ближню); рука названа явно
+SWORD_ON_NEAR = SWORD_ON.replace(
+    " in his near hand,",
+    " in his near hand, his right hand, the arm on the side facing the viewer, the grip in front of his body and armour,"
+    " never his far left hand behind his body,",
+)
 # BACKLOG 42, A3: кинджал — з кадрів меча (той самий герой, поза й метал), меч замінено; удари — уколи, не дуги
 DAGGER = (
     "a short steel dagger with a small steel cross-guard and a brown grip, its blade only as long as his forearm, "
@@ -1172,18 +1178,27 @@ CHARACTERS = {
             (
                 "Run",
                 # кадри 1–2 модель темнила (броня й плащ майже чорні) — кольори названо; кадр 2 темний і після трьох спроб — без нього
+                # B124: лезо йде за ближньою рукою кадру художника — опущена/відведена рука тримає меч вниз/назад,
+                # інакше модель перекладала меч у дальню руку, щоб лезо дивилось угору
                 [
-                    SWORD_ON % ("Run/%d" % n, "forward and up")
-                    + (SWORD_COLOURS if n == 1 else "")
-                    for n in (1, 3, 4, 5, 6, 7, 8)
+                    SWORD_ON_NEAR % ("Run/%d" % n, way) + (SWORD_COLOURS if n == 1 else "")
+                    for n, way in (
+                        (1, "forward and up, his near hand raised forward at chest height exactly as drawn"),
+                        (3, "forward, almost level, his near hand forward at waist height exactly as drawn"),
+                        (4, "down and forward, low in front of his legs, his near arm hanging down by his hip exactly as drawn"),
+                        (5, "forward, almost level, his near hand forward at waist height exactly as drawn"),
+                        (6, "forward and down, his near hand low in front of his hip exactly as drawn"),
+                        (7, "down and back behind his leg, his near arm hanging down at his hip slightly back exactly as drawn"),
+                        (8, "back and down behind him, his near arm swung back behind his hip exactly as drawn"),
+                    )
                 ],
             ),
             (
                 "Air",
                 [
-                    SWORD_ON % ("Jump/2", "forward and up"),
-                    SWORD_ON % ("Jump/3", "forward and up"),
-                    SWORD_ON % ("Fall/2", "forward and up"),
+                    SWORD_ON_NEAR % ("Jump/2", "forward and up, his near hand raised forward at shoulder height exactly as drawn"),
+                    SWORD_ON_NEAR % ("Jump/3", "forward, his near arm stretched out forward at chest height exactly as drawn"),
+                    SWORD_ON_NEAR % ("Fall/2", "straight up, his near arm raised up beside his head exactly as drawn"),
                 ],
             ),
             (
