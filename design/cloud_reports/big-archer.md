@@ -14,7 +14,7 @@ Its one slot, DesertRoad `Fight_Mesa/BigSlot_HeavyArcher_4`, now spawns it. Its 
 arrow is aimed down into the hero's body (new `ArcherEnemy.max_tilt`, `Arrow.fall`). Ordinary archers still shoot level.
 **Not done / flagged:** two art defects (the hurt frame's background scrap shows while it is staggered; frame 9 is drawn
 facing left, so it is skipped). Also a D582 concern: the road's only archer is now an elite (below). D-IDs: **D693–D694**
-(text below). B rows fixed: none (two new B rows proposed). Full suite: SUITE_LINE
+(text below). B rows fixed: none (two new B rows proposed). Full suite: 117/117 PASS. Two scripts failed under suite load and pass alone; details below.
 
 ## D-ID text (for the register; next free after D692, siblings big-leader / big-scorpion run beside, renumber as needed)
 
@@ -74,7 +74,10 @@ enum line, `PLANNED`/`bases` in `verify_enemy_variety`, the voice-pitch line and
 - `verify_archer`: RESULT: ALL PASS. The arrow starts at (681, 328) for a bow at (680, 328), tilt 0.12, and reaches the
   hero at y 364 = his body centre. The hero loses 36 HP (elite damage at level 1 in the test room), and the parried
   arrow hits the heavy archer (375 → 339).
-- Full suite: SUITE_DETAIL
+- Full suite: **117/117 PASS**, but not in one run. `run_verify.sh` hit the 30-min background limit after 85 scripts:
+  83 PASS, plus `verify_audio` (2 FAIL) and `verify_bow` (1 FAIL). Both re-run alone: RESULT: ALL PASS. These are timing
+  failures under load. Neither touches the archer (the audio pitch table only gained a key). The other 32 scripts ran
+  afterwards, one by one: 32 PASS.
 - Shot `design/shots/big_archer/mesa.png`, four panels: (1) the Mesa second wave, with the hero, the shield-bearer in
   front and the heavy archer behind, visibly a head taller; (2) the draw (frame 8) with the yellow glint on the
   arrowhead; (3) ×3 zoom on the drawn bow and glint; (4) the arrow in flight, tilted down past the shield-bearer toward
