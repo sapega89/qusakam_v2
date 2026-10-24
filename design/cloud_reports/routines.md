@@ -152,3 +152,13 @@ the skill icons moved onto hud-v2's hex slots (`hotbar_slot.tscn` → `Icon/Art`
 
 Next, once their frames are pushed: lab-boss (D564 moveset on the D466 fight) and mayor-boss (D468, the scorpion only in
 the cutscene, D557); after Sapega's picks: the Laboratory curse (D589: Cthulhu flies, cursed jackals).
+
+Round 12 merged 2026-10-24 (integrator): bugfix-1 (D678), loose-ends (D679–D680), big-mobs (D681–D683), journal-notes
+(D684), charms (D685–D689), skills-dn (D690–D691); each branch's own D674+/D675+ renumbered after the register's D677.
+B rows fixed: B142, B144, B138, B141, B143, B120, B121 (bugfix-1) and B146 (the suite is green on both bosses); B145 stays
+open (not reproduced). Q89 (HUD location name) and Q90 (the priest's sky line) filed with defaults; Q87 marked default built
+(D684), still open for Sapega. Conflicts: only skills-dn (SkillTooltip.gd and skills_component.gd: the branch's
+rank_factor and layout plus charms' `SkillManager.sp_cost()`; en.po/uk.po both blocks); the theme was regenerated,
+unchanged. Merge interactions fixed: a big kind is live only with sheet, scene and stats (the cursed jackal's sheet had
+landed without its scene and broke the Lab spawns), and the attic chest moved off the grandfather's notes. Nothing skipped.
+Suite 117/117 ALL PASS.

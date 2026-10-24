@@ -169,14 +169,6 @@ the history, this note keeps only what is open.
 - **Severity:** blocker
 - **Found:** 2026-10-23, playtest of the round 12 build
 
-### B146 — the Mayor Hall boss misses D642 after the round 12 merge (the Lab boss is accepted, D676)
-- **Where:** the Lab boss (`cloud/lab-boss`) and the Mayor Hall boss (`cloud/mayor-boss`) after `cloud/difficulty` changed the hero's numbers (D668–D673)
-- **Expected:** D642: a boss kills the hero in 3–4 blows and falls to about 40 hits
-- **Got:** `verify_lab_boss` 2 FAIL — the balanced build dies in 2.6 blows (406 HP; mace 129, club 206) and needs 60 light hits (6800 HP); `verify_mayor_boss` 4 FAIL (see B144)
-- **Evidence:** local suite 2026-10-23: 106 PASS, 3 FAIL (`verify_objective_plaque` hung after 180 s, rerun)
-- **Severity:** blocker
-- **Found:** 2026-10-23, the round 12 merge
-
 ## Playtest intake — 2026-09-29 (Sapega)
 
 Reported in one pass, terse by design. Each row is **reported, not reproduced**
