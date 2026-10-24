@@ -11,8 +11,8 @@ extends SceneTree
 const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const MAPS_DIR := "res://SampleProject/Maps"
 const DEMO := {
-	"canyon_of_whispers": ["Canyon", "Village", "ElderHouse", "DesertRoad"],
-	"city": ["CityGates", "City", "MayorHall"],
+	"canyon_of_whispers": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb"],  # + бічні кімнати D643
+	"city": ["CityGates", "City", "MayorHall", "GatehouseCellar"],
 	"laboratory": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss"],
 }
 
