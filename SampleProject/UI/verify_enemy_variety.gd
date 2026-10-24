@@ -86,6 +86,7 @@ func _initialize() -> void:
 	_placements()
 	await _shield()
 	await _foam()
+	await _tower_guard()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -369,3 +370,117 @@ func _foam() -> void:
 	ck(not plain.get_node(^"Sprite2D").has_node(^"CursedFoam"), "an ordinary jackal has no foam")
 	jackal.queue_free()
 	plain.queue_free()
+
+
+## [8] Вартовий з баштовим щитом (D652, D693): живий великий вид — свій аркуш і сцена, поведінка щитоносця (спереду
+## щит, у спину тіло, важкий удар розбиває варту), але щит намальовано в кадрах: він не відлітає, а після збою знову
+## попереду. Числа еліти на рівнях, де стоять щитоносці (D642). Точок BigSlot_TowerShieldGuard_* немає (D682).
+func _tower_guard() -> void:
+	print("[8] The tower shield guard is live: its own art, the shield-bearer's behaviour, the guard comes back, elite numbers")
+	const ID := "tower_shield_guard"
+	ck(variety.available(ID) and variety.kind(ID).sheet.ends_with("shield_tower/sheet.png")
+			and spawn_script.scene_path(ID) == "res://SampleProject/Scenes/Characters/Enemies/enemy_tower_shield_guard.tscn", "its sheet, scene and stats exist")
+	var shield: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_shield.tres")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % ID)
+	ck(stats.enemy_type == ID and stats.tell == shield.tell and stats.max_health == shield.max_health
+			and is_equal_approx(stats.base_damage, shield.base_damage) and is_equal_approx(stats.attack_windup, shield.attack_windup)
+			and stats.xp_reward == shield.xp_reward,
+			"the shield-bearer's numbers: %s tell, base HP %d / damage %.0f / XP %d" % [stats.tell, stats.max_health, stats.base_damage, stats.xp_reward])
+
+	var guard: Node = load(spawn_script.scene_path(ID)).instantiate()
+	guard.enemy_stats = stats
+	guard.position = ARENA
+	game.map.add_child(guard)
+	await create_timer(0.3).timeout
+	guard.poise_max = 99
+	guard.poise = 99
+	guard.enemy_logic.last_direction = -1
+	guard._on_logic_direction_changed(-1)
+	guard.set_physics_process(false)  # стоїть і не б'є
+	var blocked: Array = []
+	var broken: Array = []
+	var staggered: Array = []
+	eb.enemy_shield_blocked.connect(func(e: Node, at: Vector2) -> void: blocked.append([e, at]))
+	eb.enemy_shield_broken.connect(func(e: Node, _at: Vector2) -> void: broken.append(e))
+	eb.enemy_staggered.connect(func(e: Node, t: float) -> void: staggered.append([e, t]))
+	var hp: int = guard.current_health
+	var shield_at: Node2D = guard.get_node(^"Sprite2D/Shield")
+
+	await _place_hero(guard, -45)
+	await _tap(&"attack")
+	await create_timer(0.5).timeout
+	ck(guard.current_health == hp and blocked.size() == 1 and blocked[0][0] == guard and guard.poise == 99,
+			"a light hit from the front: blocked (HP %d → %d, blocks %d, poise %d)" % [hp, guard.current_health, blocked.size(), guard.poise])
+	ck(guard.shield_up and shield_at.position.x < 0.0 and blocked[0][1].x < guard.global_position.x,
+			"the sparks come off the drawn shield, in front (left): %.0f px" % (blocked[0][1].x - guard.global_position.x))
+
+	await create_timer(1.0).timeout
+	await _place_hero(guard, 45)
+	await _tap(&"attack")
+	await create_timer(0.5).timeout
+	ck(guard.current_health < hp and blocked.size() == 1, "a hit in the back lands (HP %d → %d)" % [hp, guard.current_health])
+	hp = guard.current_health
+
+	await create_timer(1.0).timeout
+	guard.set_physics_process(true)  # збій спливає в _physics_process
+	await _place_hero(guard, -45)
+	await _tap(&"heavy_attack")
+	await create_timer(0.6).timeout
+	var guard_break: float = variety.shield().guard_break_stagger
+	ck(not guard.shield_up and broken == [guard] and guard.current_health == hp,
+			"a heavy attack from the front breaks the guard, the shield takes the blow (broken %d, HP %d)" % [broken.size(), guard.current_health])
+	ck(staggered.any(func(s: Array) -> bool: return s[0] == guard and is_equal_approx(s[1], guard_break))
+			and guard.enemy_view.staggered and guard.get_node(^"Sprite2D").frame == 12,
+			"guard break: staggered %.1f s on the hurt frame, the shield knocked aside (frame %d)" % [guard_break, guard.get_node(^"Sprite2D").frame])
+	ck(guard.has_node(^"Sprite2D/Shield"), "the tower shield stays in his hands (drawn in the frames)")
+	await _place_hero(guard, -45)
+	guard.take_damage(20, hero)  # удар спереду, поки герой ще виходить із важкого
+	ck(guard.current_health < hp and blocked.size() == 1, "guard broken: a light hit from the front lands (HP %d → %d)" % [hp, guard.current_health])
+	hp = guard.current_health
+
+	await create_timer(guard_break).timeout
+	guard.set_physics_process(false)
+	guard.enemy_logic.last_direction = -1
+	guard._on_logic_direction_changed(-1)
+	ck(guard.shield_up, "after the stagger he raises the shield again")
+	await _place_hero(guard, -45)
+	await _tap(&"attack")
+	await create_timer(0.5).timeout
+	ck(guard.current_health == hp and blocked.size() == 2, "a light hit from the front is blocked again (HP %d, blocks %d)" % [guard.current_health, blocked.size()])
+	guard.queue_free()
+
+	var placed: Array = []
+	for file in DirAccess.get_files_at("res://SampleProject/Maps"):
+		if not file.ends_with(".tscn"):
+			continue
+		var room: Node = load("res://SampleProject/Maps/" + file).instantiate()
+		for p: Node in room.find_children("*", "Node2D", true, false):
+			if p.get_script() == spawn_script and p.big_kind == ID:
+				placed.append("%s/%s/%s" % [file.get_basename(), p.get_parent().name, p.name])
+		room.free()
+	ck(placed.is_empty(), "no map places it yet (D682 made no tower-guard slot) (%s)" % [placed])
+	for level in [3, 10]:
+		var point: Node = spawn_script.new()
+		point.enemy_type = "shield"
+		point.big_kind = ID
+		ck(point.kind() == ID, "a shield point with big_kind tower_shield_guard spawns it")
+		var enemy: Node = load(spawn_script.scene_path(point.kind())).instantiate()
+		enemy.enemy_stats = point.enemy_stats()
+		enemy.level = level
+		enemy.position = ARENA + Vector2(0, 0)
+		game.map.add_child(enemy)
+		await process_frame
+		var grown: Dictionary = variety.level(level)
+		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * 1.5) and enemy.xp_reward == stats.xp_reward,
+				"level %d: an elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
+		enemy.queue_free()
+		point.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == ID)
+	var en: Translation = load("res://SampleProject/Resources/Translations/en.po")
+	var uk: Translation = load("res://SampleProject/Resources/Translations/uk.po")
+	ck(entry.size() == 1 and entry[0].name == "Tower Shield Guard" and en.get_message(entry[0].text) != StringName()
+			and String(uk.get_message(entry[0].name)) == "Вартовий з баштовим щитом" and uk.get_message(entry[0].text) != StringName(),
+			"bestiary: Tower Shield Guard, in English and Ukrainian")
+	await process_frame
