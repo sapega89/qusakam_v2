@@ -10,7 +10,7 @@ tags: [cloud, combat, enemies]
 **Summary.** Done: `tower_shield_guard` is a live big kind. It has its own scene on the shield-bearer's behaviour, the D693 sheet `Enemies/shield_tower/sheet.png`, hit shapes measured from its frames (D519, the shield is the front block), its own stats, and a bestiary entry in en and uk. A hit from the front lands in the shield, a hit from behind lands on the body, and a heavy hit breaks the guard. The shield is drawn in the frames, so it does not fly off: after the guard-break stagger he raises it again. It is an elite by kind (D681): 550 HP / 47 per hit at level 2, 600 / 55 at level 3, 1450 / 179 at level 10.
 **Not placed:** no map has a `BigSlot_TowerShieldGuard_*` slot (D682 made none), so nothing spawns it yet. I did not add one, because every shield-bearer place would break D582 (table below). The placement is a non-blocking **Q** for Sapega (below).
 Tests: `verify_enemy_variety` [8], `verify_hit_areas` [1] + [3], and `verify_difficulty` (an "unplaced" meeting at the Caravan's L3 and the Laboratory Lower's L10) all pass. Capture: `design/shots/big_guard/tower_guard_lone_shield.png`.
-D-IDs: **D694** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: SUITE_LINE
+D-IDs: **D694** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: `SUITE: ALL PASS` (117 PASS).
 
 ## D-ID text (for the register; the register ends at D693, sibling routines take numbers in parallel, renumber as needed)
 
@@ -65,5 +65,5 @@ Every place that has a shield-bearer today, and why it does not become a slot:
 - `verify_hit_areas`: RESULT: ALL PASS. `enemy_tower_shield_guard: hurtbox (-21, -53) 49×81 = drawn body`, `hitbox (0, -50) 31×78 = drawn strike`, `attack_range 42 starts a strike that reaches (body contact 40, reach 43)`, `[3]` hit at 3 px inside (39 damage), not hit at 6 px past.
 - `verify_enemy_variety`: RESULT: ALL PASS. [8]: blocked from the front (sparks 16 px in front), the back lands, heavy → guard broken (frame 12, 1.2 s), a front hit lands while staggered, the shield comes back up and blocks again, no slot on any map, elite at L3 600 HP / 54.6 and L10 1450 / 179.4, bestiary en/uk.
 - `verify_difficulty`: RESULT: ALL PASS. The rows `tower shield guard (unplaced) L3`: STRENGTH wins (10 hits needed, survives 5), SKILLS wins (12, survives 6); `L10`: STRENGTH loses (16, survives 3), SKILLS wins (12, survives 5).
-- Full suite: SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`): `SUITE: ALL PASS`, 117 PASS.
 - Shot `design/shots/big_guard/tower_guard_lone_shield.png`: (1) he walks at the hero with the shield in front, (2) the thrust over the shield's edge into the hero, (3) the guard broken: the shield knocked aside (hurt frame, staggered). He stands at `Fight_LoneShield`'s point, level 2, because he has no slot. His feet are on the same ground line as the hero's. The hero's drawn body overlaps the shield a little at contact. This is true of every enemy (the hero's 24-px body is narrower than his sprite) and is not this kind's issue.
