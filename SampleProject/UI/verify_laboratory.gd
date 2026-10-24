@@ -18,7 +18,7 @@ const LAB := "res://SampleProject/Maps/Laboratory.tscn"
 const TEST_DIR := "user://verify_laboratory/"
 const TEST_SLOT := 1
 ## Бій → [скільки ворогів, підлога поверху (y)].
-const FIGHTS := {"Fight_Upper": [3, 384.0], "Fight_Middle": [4, 864.0], "Fight_Lower": [4, 1344.0]}
+const FIGHTS := {"Fight_Upper": [3, 384.0], "Fight_Cursed": [1, 864.0], "Fight_Middle": [4, 864.0], "Fight_Lower": [4, 1344.0]}
 const UNLOCKS: Array[String] = ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete"]
 ## Ступні героя — на стільки нижче його центру.
 const FEET := 24.0
@@ -214,7 +214,7 @@ func _initialize() -> void:
 				"%s: a spawner with its own trigger zone" % fight)
 		ck(spawner.spawn_points.size() == FIGHTS[fight][0], "%s: %d spawn points (%d)" % [fight, FIGHTS[fight][0], spawner.spawn_points.size()])
 		keys[spawner.state_key] = true
-	ck(keys.size() == 3 and not keys.has("enemies"), "each fight remembers itself under its own key (%s)" % [keys.keys()])
+	ck(keys.size() == FIGHTS.size() and not keys.has("enemies"), "each fight remembers itself under its own key (%s)" % [keys.keys()])
 	for node_name in ["EnemySpawner", "StateChangeTrigger_Fight", "CompanionNPC_alisia", "StateChangeTrigger_LimitTest"]:
 		ck(not lab.has_node(node_name), "no %s" % node_name)
 	ck(game.get_objective() == "Fight through the laboratory", "objective (%s)" % game.get_objective())
@@ -262,6 +262,7 @@ func _initialize() -> void:
 	await _fought("Fight_Upper")
 	await _climb_down("top → middle")
 	ck(await _go(224.0, 1200), "middle storey west to the ladder (%s)" % game.player.global_position)
+	await _fought("Fight_Cursed")  # проклятий шакал сам-на-сам (D582); до lab_corridors_complete не лічиться, як і муха
 	await _fought("Fight_Middle")
 	ck(not game.get_quest_flag("lab_corridors_complete"), "two of three — the corridors are not done yet")
 	await _climb_down("middle → bottom")
@@ -272,7 +273,7 @@ func _initialize() -> void:
 	await _fought("Fight_Lower")
 	for i in 5: await physics_frame
 	# Бої йдуть один за одним швидше за спільний кулдаун (D515): частину натискань відмовлено — це правило, не збій.
-	ck(assists.size() >= 1 and assists.size() + denied.size() == 3,
+	ck(assists.size() >= 1 and assists.size() + denied.size() == FIGHTS.size(),
 			"a real F press in each fight sent an assist or was refused under the shared cooldown (%s / denied %s)" % [assists, denied])
 	ck(game.get_quest_flag("lab_corridors_complete"), "all three fights won → lab_corridors_complete")
 	ck(game.get_objective() == "Go deeper into the laboratory", "objective (%s)" % game.get_objective())

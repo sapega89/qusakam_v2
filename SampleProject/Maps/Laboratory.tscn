@@ -413,13 +413,13 @@ state_key = "enemies_cursed"
 respawns = true
 
 [node name="Trigger" type="Area2D" parent="Fight_Cursed" unique_id=1640100501]
-position = Vector2(1400, 688)
+position = Vector2(1330, 688)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Cursed/Trigger" unique_id=1640100502]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="BigSlot_JackalCursed_1" type="Node2D" parent="Fight_Cursed" unique_id=1640100503]
-position = Vector2(1150, 848)
+position = Vector2(1120, 848)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
 size = "medium"

@@ -160,9 +160,9 @@ const ROOMS := {
 			"Fight_Upper/BigSlot_BanditBrute_1": Vector2(1120, 368),
 			"Fight_Upper/EnemySpawnPoint2": Vector2(1400, 368),
 			"Fight_Upper/BigSlot_BanditBrute_3": Vector2(1600, 368),
-			# Проклятий шакал уперше — сам (D582): зразу під драбиною, на рівній підлозі між блоком і містком.
-			"Fight_Cursed/Trigger": Vector2(1400, 688),
-			"Fight_Cursed/BigSlot_JackalCursed_1": Vector2(1150, 848),
+			# Проклятий шакал уперше — сам (D582): зразу як герой зійде з блоку під драбиною, на рівній підлозі до містка.
+			"Fight_Cursed/Trigger": Vector2(1330, 688),
+			"Fight_Cursed/BigSlot_JackalCursed_1": Vector2(1120, 848),
 			"Fight_Middle/Trigger": Vector2(900, 688),
 			"Fight_Middle/EnemySpawnPoint1": Vector2(700, 848),
 			"Fight_Middle/EnemySpawnPoint2": Vector2(640, 848),
