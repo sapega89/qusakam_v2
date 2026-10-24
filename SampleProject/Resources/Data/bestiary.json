@@ -46,6 +46,11 @@
 			"text": "A starved wolf-jackal with glowing blue eyes and blue foam dripping from its jaws, one of the alchemist's experiments on the sky's curse. It hunts like a jackal, crouching before it leaps to bite, but it is bigger, hits far harder and takes many more blows. Block the white glint, parry the red one."
 		},
 		{
+			"kind": "jackal_pack_leader",
+			"name": "Jackal Pack Leader",
+			"text": "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+		},
+		{
 			"kind": "brass_collector",
 			"name": "The Brass Collector",
 			"text": "A hulking golem of brass and sandstone with a cage on its back — the Laboratory's catcher of people. Its blows are slow and heavy: roll out of the sweep, jump over the shockwave of its slam, and keep hitting — only a long chain breaks its stance."

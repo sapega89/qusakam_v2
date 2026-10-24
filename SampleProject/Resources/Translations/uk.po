@@ -2628,6 +2628,12 @@ msgstr "Проклятий шакал"
 msgid "A starved wolf-jackal with glowing blue eyes and blue foam dripping from its jaws, one of the alchemist's experiments on the sky's curse. It hunts like a jackal, crouching before it leaps to bite, but it is bigger, hits far harder and takes many more blows. Block the white glint, parry the red one."
 msgstr "Виснажений вовк-шакал із синіми очима, що світяться, і синьою піною на щелепах — один із дослідів алхіміка над прокляттям неба. Полює, як шакал: припадає до землі, а тоді стрибає й кусає, але він більший, б'є значно сильніше й витримує набагато більше ударів. Білий спалах — блокуйте, червоний — парируйте."
 
+msgid "Jackal Pack Leader"
+msgstr "Ватажок зграї шакалів"
+
+msgid "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+msgstr "Великий пошрамований шакал, що веде зграю, з порваним вухом і настовбурченою гривою. Полює, як інші: припадає до землі, а тоді стрибає й кусає, але б'є значно сильніше, витримує набагато більше ударів і приходить, коли зграя вже на вас. Білий спалах — блокуйте, червоний — парируйте."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Інстинкт відповіді [ЧЕРНЕТКА]"
 

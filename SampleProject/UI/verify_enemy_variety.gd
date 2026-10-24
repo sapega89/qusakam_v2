@@ -3,7 +3,8 @@ extends SceneTree
 ## Різновиди ворогів (D495, D560, D582, D652; design/enemy_variety_plan.md): розміри small / medium (спрайт, форми B128 і
 ## стати з enemy_variety.json), еліта як властивість виду (HP ×2.5, шкода ×1.5; великі види чекають на арт у точках
 ## BigSlot_*), щитоносець (удар спереду — у щит, у спину — по тілу, важкий розбиває щит і збиває його), розстановка по
-## кімнатах, проклята піна (D653) і проклятий шакал (D589, D649, D675): живий вид-еліта, сам-на-сам, потім пара.
+## кімнатах, проклята піна (D653) і проклятий шакал (D589, D649, D675), живий вид-еліта, сам-на-сам, потім пара;
+## ватажок зграї шакалів (D692): живий вид-еліта на місці BigSlot_JackalPackLeader_*.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_variety.gd
 
 const SCENES := {
@@ -12,6 +13,7 @@ const SCENES := {
 	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
 	"shield": "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn",
 	"jackal_cursed": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn",
+	"jackal_pack_leader": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_pack_leader.tscn",
 }
 const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
@@ -89,6 +91,7 @@ func _initialize() -> void:
 	await _shield()
 	await _foam()
 	_cursed_jackal()
+	await _pack_leader()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -436,6 +439,78 @@ func _cursed_jackal() -> void:
 			fly.append(String(p.get_parent().name))
 	ck(fly == ["Fight_Fly"] and lab.get_node(^"Fight_Fly").get_index() < lone.get_index(), "the fly stays one, alone, before the jackal (%s)" % [fly])
 	lab.free()
+
+## [6b] Ватажок зграї шакалів (D652, D692): живий вид-еліта з власним аркушем, поведінка шакала (enemy_fast), числа шакала
+## з множниками еліти й рівня бою (D642 — бій перевіряє verify_difficulty). Розстановка (D582, D682): кожна точка
+## BigSlot_JackalPackLeader_* спавнить його; у першій зустрічі поруч немає іншого великого чи проклятого виду.
+func _pack_leader() -> void:
+	print("[6b] The jackal pack leader (D652, D692): a live elite kind with the jackal's behaviour in its slots")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_jackal_pack_leader.tres")
+	var fast: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres")
+	ck(variety.available("jackal_pack_leader") and variety.is_elite("jackal_pack_leader")
+			and spawn_script.scene_path("jackal_pack_leader") == SCENES.jackal_pack_leader,
+			"its sheet, scene and stats exist: the kind spawns, and it is an elite")
+	var same := true
+	for prop in ["speed", "base_damage", "attack_windup", "lunge", "attack_cooldown", "attack_range", "max_health", "poise",
+			"combo_hits", "tell", "finisher_tell", "recovery", "back_off", "flying", "xp_reward"]:
+		same = same and stats.get(prop) == fast.get(prop)
+	ck(stats.enemy_type == "jackal_pack_leader" and same, "the jackal's behaviour and base numbers (enemy_fast), its own kind for the bestiary and the elite marks")
+	var sheet: Texture2D = load(variety.kind("jackal_pack_leader").sheet)
+	var enemy: Node = load(SCENES.jackal_pack_leader).instantiate()
+	var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
+	ck(sheet.resource_path.ends_with("Enemies/jackal_leader/sheet.png") and sheet.get_width() == 96 * sprite.hframes
+			and sheet.get_height() == 72 * sprite.vframes and sprite.hframes == 4 and sprite.vframes == 5,
+			"the D692 sheet, 96x72 cells, rows idle / walk / attack / hurt / death (%dx%d)" % [sprite.hframes, sprite.vframes])
+	var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
+	var frames := {}
+	for a: StringName in [&"idle", &"walk", &"attack", &"stagger", &"death"]:
+		frames[a] = HitAreas.anim_frames(anim, a, 0.0, INF)
+	ck(frames == {&"idle": [0, 1], &"walk": [4, 5, 6, 7], &"attack": [8, 9, 10], &"stagger": [12], &"death": [16, 17, 18]},
+			"animations play the sheet's rows (%s)" % [frames])
+	ck(not variety.kind("jackal_pack_leader").has("foam"), "no cursed foam: it is a living jackal, not one of the alchemist's beasts")
+	enemy.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == "jackal_pack_leader")
+	ck(entry.size() == 1 and _translated(entry[0].name) and _translated(entry[0].text), "bestiary entry, en and uk")
+
+	# Кожна точка ватажка в кожній кімнаті спавнить його; бій, де він уперше, — без іншого великого чи проклятого виду.
+	var placed: Array[String] = []
+	for file in DirAccess.get_files_at("res://SampleProject/Maps"):
+		if not file.ends_with(".tscn"):
+			continue
+		var room: Node = load("res://SampleProject/Maps/" + file).instantiate()
+		for p: Node in room.find_children("BigSlot_JackalPackLeader_*", "Node2D", true, false):
+			var fight: Node = p.get_parent()
+			var big: Array = []
+			for q: Node in fight.get_children():
+				if q.get_script() == spawn_script and variety.is_elite(q.kind()):
+					big.append(q.kind())
+			placed.append("%s %s/%s %s, big kinds in the fight %s" % [file.get_basename(), fight.name, p.name, p.kind(), big])
+			ck(p.kind() == "jackal_pack_leader" and p.big_kind == "jackal_pack_leader", "%s/%s spawns the pack leader" % [fight.name, p.name])
+		room.free()
+	print("  info pack leaders: %s" % ", ".join(placed))
+	ck(placed.size() == 1, "one slot: DesertRoad Fight_Dunes (%d)" % placed.size())
+
+	# Живий бій Fight_Dunes (рівень 2): перша хвиля — бандит і шакал, друга — ватажок сам, еліта рівня бою.
+	var dunes: Node = game.map.get_node(^"Fight_Dunes")
+	var kinds: Array = dunes.spawn_points.map(func(p: Node) -> String: return p.kind())
+	ck(kinds == ["melee", "fast", "jackal_pack_leader"] and dunes.wave_size == 2,
+			"Fight_Dunes: a bandit and a jackal first, the leader alone in the second wave, no other big kind (%s)" % [kinds])
+	dunes.spawn_all_enemies()
+	await create_timer(dunes.wave_delay + 0.5).timeout
+	var leader: Node = dunes.get_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4")
+	var grown: Dictionary = variety.level(dunes.enemy_level)
+	var marks: Dictionary = variety.elite()
+	ck(leader.scene_file_path == SCENES.jackal_pack_leader and leader.elite and leader.level == 2
+			and leader.Max_Health == roundi(stats.max_health * grown.health * marks.health)
+			and is_equal_approx(leader.base_damage, stats.base_damage * grown.damage * marks.damage),
+			"in the game it is the pack leader, an elite at the fight's level 2: HP %d, damage %.1f" % [leader.Max_Health, leader.base_damage])
+	var jackal: Node = load(SCENES.fast).instantiate()
+	var paws := [HitAreas.frame_rect(leader.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(jackal.get_node(^"Sprite2D"), 0).end.y]
+	jackal.free()
+	ck(absf(paws[0] - paws[1]) <= 1.0, "its drawn paws stand on a medium jackal's line (%.1f vs %.1f px below its centre)" % paws)
+	dunes.despawn_all_enemies()
+	await process_frame
 
 
 func _translated(text: String) -> bool:

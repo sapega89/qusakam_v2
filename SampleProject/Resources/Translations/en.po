@@ -2626,6 +2626,12 @@ msgstr "Cursed Jackal"
 msgid "A starved wolf-jackal with glowing blue eyes and blue foam dripping from its jaws, one of the alchemist's experiments on the sky's curse. It hunts like a jackal, crouching before it leaps to bite, but it is bigger, hits far harder and takes many more blows. Block the white glint, parry the red one."
 msgstr "A starved wolf-jackal with glowing blue eyes and blue foam dripping from its jaws, one of the alchemist's experiments on the sky's curse. It hunts like a jackal, crouching before it leaps to bite, but it is bigger, hits far harder and takes many more blows. Block the white glint, parry the red one."
 
+msgid "Jackal Pack Leader"
+msgstr "Jackal Pack Leader"
+
+msgid "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+msgstr "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Riposte Instinct [DRAFT]"
 

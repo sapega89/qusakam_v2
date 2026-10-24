@@ -25,7 +25,8 @@ const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHa
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
-		"jackal_cursed": "cursed jackal"}
+		"jackal_cursed": "cursed jackal",
+		"jackal_pack_leader": "jackal pack leader"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.
@@ -113,6 +114,11 @@ func _initialize() -> void:
 	var cursed := rows.filter(func(r: Dictionary) -> bool: return String(r.name).begins_with("elite cursed jackal"))
 	ck(cursed.size() >= 2 and cursed.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS")),
 			"cursed jackal rows: %s" % [cursed.map(func(r: Dictionary) -> String: return "%s %s %s" % [r.name, r.build, "wins" if r.wins else "loses"])])
+	print("[3c] the jackal pack leader (D652, D692) is a live elite of its own on the road, not a planned one, and meets [3]")
+	var leader := rows.filter(func(r: Dictionary) -> bool: return String(r.name).begins_with("elite jackal pack leader"))
+	ck(leader.size() >= 2 and rows.all(func(r: Dictionary) -> bool: return not String(r.name).begins_with("planned jackal_pack_leader"))
+			and leader.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL)),
+			"pack leader rows: %s" % [leader.map(func(r: Dictionary) -> String: return "%s at level %d %s %s, HP %d, hit %d" % [r.name, r.level, r.build, "wins" if r.wins else "loses", r.enemy_hp, r.enemy_hit])])
 
 	print("[4] a boss's heaviest move takes a big bite but never kills a full-HP hero at once (a death reads as a missed roll)")
 	for row in rows:

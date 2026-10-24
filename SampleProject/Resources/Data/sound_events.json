@@ -155,7 +155,7 @@
 		"DARK_PRIESTS": "dark_priests",
 		"BRASS_COLLECTOR": "brass_collector", "SCORPICORE_WARRIOR": "bandit_leader", "FIRE_DJINN": "fire_djinn", "LAB_BOSS": "bandit_leader", "MALIK": "malik", "PRISONER": "prisoner", "SCIENTIST": "scientist"
 	},
-	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05, "shield": 0.92, "vulture": 0.85, "bat": 1.6, "fly": 1.3, "jackal_cursed": 0.95},
+	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05, "shield": 0.92, "vulture": 0.85, "bat": 1.6, "fly": 1.3, "jackal_cursed": 0.95, "jackal_pack_leader": 1.0},
 	"music": {
 		"_comment": "D414, music_plan slice 3: full res:// paths, played by ProjectMusicController over the room's Music. PLACEHOLDERS until Sapega picks the CC0 tracks (slice 3b).",
 		"fight": "res://SampleProject/Resources/Audio/Music/time_for_adventure.mp3",
