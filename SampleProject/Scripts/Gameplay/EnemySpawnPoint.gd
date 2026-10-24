@@ -17,7 +17,7 @@ const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety
 
 ## Великий вид (D652), що стане тут, коли буде його арт (enemy_variety.json kinds.<id>.sheet); до того точка спавнить
 ## звичайний enemy_type. Такі точки звуться BigSlot_* — це місця, де розстановка D582 хотіла еліту чи великого ворога.
-@export_enum("none", "bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_crossbowman", "tower_shield_guard",
+@export_enum("none", "bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_archer", "tower_shield_guard",
 		"old_vulture", "jackal_cursed") var big_kind: String = "none"
 
 ## Спавнить при загрузке комнаты (если false, нужно вызвать spawn() вручную)

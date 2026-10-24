@@ -13,6 +13,9 @@ const ARROW_SCENE := preload("res://SampleProject/Scenes/Combat/arrow.tscn")
 ## Стріляє, лише коли герой на його висоті (±same_height px): стріли летять по прямій.
 @export var same_height: float = 48.0
 @export var arrow_speed: float = 420.0
+## Найкрутіший нахил пострілу, px униз (угору) на px польоту: 0 — стріла летить рівно з наконечника (звичайний лучник);
+## великий лучник (D652) тягне лук вище за голову героя й цілить у його тіло, не крутіше за max_tilt.
+@export var max_tilt: float = 0.0
 
 
 func _make_logic() -> EnemyLogic:
@@ -43,5 +46,16 @@ func start_attack(direction: int) -> void:
 	arrow.stagger_time = stagger_time
 	arrow.tell = enemy_logic.tell_kind
 	arrow.shooter = self
+	var from := global_position + enemy_view.weapon_point(direction)
+	arrow.fall = _tilt_to(from)
 	get_parent().add_child(arrow)
-	arrow.global_position = global_position + enemy_view.weapon_point(direction)
+	arrow.global_position = from
+
+
+## Нахил стріли з [param from] у центр тіла героя (його CollisionShape2D), обмежений max_tilt.
+func _tilt_to(from: Vector2) -> float:
+	if max_tilt == 0.0:
+		return 0.0
+	var body: Vector2 = player.get_node(^"CollisionShape2D").global_position
+	var dx := absf(body.x - from.x)
+	return clampf((body.y - from.y) / maxf(dx, 1.0), -max_tilt, max_tilt)

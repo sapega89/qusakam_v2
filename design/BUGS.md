@@ -160,13 +160,6 @@ the history, this note keeps only what is open.
 - **Severity:** minor (tooling)
 - **Found:** 2026-10-24, big-scorpion report
 
-### B147 — the heavy archer's attack skips its loose frame
-- **Where:** `cloud/big-archer` → `enemy_heavy_archer.tscn` attack animation (8 → 10)
-- **Expected:** draw 8 → loose 9 → recover 10
-- **Got:** frame 9 was drawn facing left, so the routine skipped it; the art is now fixed (D693)
-- **Severity:** minor
-- **Found:** 2026-10-24, big-archer report
-
 ### B145 — the game crashes going down from the Canyon
 - **Where:** `Maps/Canyon.tscn`, the way down; round 12 build (difficulty, lab-boss, mayor-boss, fliers merged)
 - **Expected:** the hero walks down out of the Canyon

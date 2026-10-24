@@ -2602,6 +2602,12 @@ msgstr "Desert Archer"
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 msgstr "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 
+msgid "Heavy Archer"
+msgstr "Heavy Archer"
+
+msgid "A stocky bandit in a dented cuirass with a heavy war bow. He draws above your head and looses down at you: slower than the short-bow archers, but every arrow bites deep and he barely flinches. A yellow glint on the arrowhead means block it, parry it back, roll through it or jump over it — then close in, he backs away slowly."
+msgstr "A stocky bandit in a dented cuirass with a heavy war bow. He draws above your head and looses down at you: slower than the short-bow archers, but every arrow bites deep and he barely flinches. A yellow glint on the arrowhead means block it, parry it back, roll through it or jump over it — then close in, he backs away slowly."
+
 msgid "Shield Bandit"
 msgstr "Shield Bandit"
 

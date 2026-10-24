@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="1_heavy_archer"]
+
+[resource]
+script = ExtResource("1_heavy_archer")
+enemy_type = "heavy_archer"
+speed = 45.0
+base_damage = 24.0
+attack_windup = 1.1
+attack_cooldown = 2.6
+attack_active_time = 0.1
+detection_range = 420.0
+attack_range = 380.0
+chase_range = 500.0
+max_health = 150
+poise = 3
+stagger_time = 0.35
+combo_hits = 1
+xp_reward = 25
+tell = "parry"
+finisher_tell = "parry"
+recovery = 0.4
+back_off = 0.0

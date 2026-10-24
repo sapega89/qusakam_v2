@@ -27,7 +27,8 @@ const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "a
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
 		"jackal_cursed": "cursed jackal",
 		"jackal_pack_leader": "jackal pack leader",
-		"armoured_scorpion": "armoured scorpion"}
+		"armoured_scorpion": "armoured scorpion",
+		"heavy_archer": "heavy archer"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.

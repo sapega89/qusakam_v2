@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Пустельний лучник (BACKLOG 40, design/ranged_plan.md, D386) у справжній фізиці DesertRoad: тримає дистанцію,
 ## перед кожним пострілом — червоний відблиск на наконечнику (4b), стріла б'є героя; блок, парирування (стріла летить
-## назад, D384), перекат і стрибок — справжніми подіями клавіатури й геймпада з InputMap.
+## назад, D384), перекат і стрибок — справжніми подіями клавіатури й геймпада з InputMap. Великий лучник (D652, D692)
+## з точки BigSlot_HeavyArcher: еліта на поведінці лучника, стріла з натягнутого лука летить униз у тіло героя.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_archer.gd
 
 var fails: Array[String] = []
@@ -96,6 +97,7 @@ func _initialize() -> void:
 	await _parry()
 	await _dodge()
 	await _jump()
+	await _heavy()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -359,3 +361,62 @@ func _jump() -> void:
 			await physics_frame
 			if hero.is_on_floor():
 				break
+
+## Великий лучник (D652, D692: лук) — та сама поведінка, своя сцена; лук натягнутий вище за голову героя, тож стріла
+## летить із наконечника вниз, у його тіло (ArcherEnemy.max_tilt), і від неї так само рятують блок, парирування, стрибок.
+func _heavy() -> void:
+	print("[8] The heavy archer from a BigSlot point (D652, D692): an elite on the archer's behaviour, bestiary")
+	archer.queue_free()
+	await create_timer(0.5).timeout
+	var point: Node2D = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd").new()
+	point.enemy_type = "archer"
+	point.big_kind = "heavy_archer"
+	point.spawn_id = "verify_heavy_archer"
+	game.map.add_child(point)
+	point.global_position = hero.global_position + Vector2(300, 8)
+	archer = point.spawn_enemy()
+	await create_timer(0.5).timeout
+	var stats: Resource = archer.enemy_stats
+	ck(archer.get_script().resource_path.ends_with("ArcherEnemy.gd") and stats.enemy_type == "heavy_archer" and archer.elite,
+			"the BigSlot point makes a heavy archer: an elite ArcherEnemy (HP %d, damage %.0f)" % [archer.Max_Health, archer.damage])
+	ck(archer.is_on_floor(), "it stands on the road")
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	ck(bestiary.enemies.any(func(e: Dictionary) -> bool: return e.kind == "heavy_archer" and e.name == "Heavy Archer"),
+			"bestiary entry 'Heavy Archer'")
+	ck(sl.get_game_manager().player_state.journal.enemies.has("heavy_archer"), "seen → in the journal's bestiary")
+	ck(root.get_node("AudioManager").enemy_voice_pitch.has("heavy_archer"), "a voice pitch for the heavy archer")
+
+	print("[9] Its arrow leaves the drawn bow's arrowhead and flies down into the hero's body")
+	await _ready_to_shoot()
+	var drew := false
+	var shot: Array = []
+	var t0 := Time.get_ticks_msec()
+	var seen := enemy_arrows.size()
+	while Time.get_ticks_msec() - t0 < 4000 and shot.is_empty():
+		await physics_frame
+		if archer.enemy_logic.is_attacking and archer.sprite.frame == 8:
+			drew = true
+		if enemy_arrows.size() > seen:
+			shot = [enemy_arrows[seen], arrow_times[seen]]
+	ck(drew, "the drawn-bow frame (8) during the wind-up")
+	ck(not shot.is_empty(), "then an arrow")
+	if shot.is_empty():
+		return
+	var arrow: Node = shot[0]
+	var bow: Vector2 = archer.global_position + archer.enemy_view.weapon_point(-1)
+	var body: CollisionShape2D = hero.get_node(^"CollisionShape2D")
+	var half: float = body.shape.get_rect().size.y / 2.0
+	ck(arrow.global_position.distance_to(bow) < 12.0, "from the drawn bow's arrowhead (%s, bow %s)" % [arrow.global_position, bow])
+	ck(bow.y < body.global_position.y - half, "the bow is drawn above the hero's head (%.0f, head %.0f)" % [bow.y, body.global_position.y - half])
+	var at_hero: float = arrow.global_position.y + arrow.fall * absf(body.global_position.x - arrow.global_position.x)
+	ck(arrow.direction == -1 and arrow.fall > 0.0 and arrow.fall <= archer.max_tilt and absf(at_hero - body.global_position.y) < half,
+			"aimed down at the hero's body (tilt %.2f, at the hero %.0f, body %.0f ± %.0f)" % [arrow.fall, at_hero, body.global_position.y, half])
+	var y0: float = arrow.global_position.y
+	await create_timer(0.15).timeout
+	if is_instance_valid(arrow):
+		ck(arrow.global_position.y > y0 and is_equal_approx(arrow.rotation, -atan(arrow.fall)), "it flies down along its tilt, nose first")
+	print("[10] The heavy archer's aimed arrows: hit, parry and jump work as against the desert archer")
+	await create_timer(1.0).timeout
+	await _hit()
+	await _parry()
+	await _jump()

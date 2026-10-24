@@ -2604,6 +2604,12 @@ msgstr "Пустельний лучник"
 msgid "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
 msgstr "Бандит із коротким луком: тримається на відстані й відступає, коли ви підходите. Жовтий відблиск на наконечнику — стріла ось-ось полетить: заблокуйте її, відбийте парируванням назад у нього, коли вона долітає, прокотіться крізь неї чи перестрибніть, а тоді наздоганяйте."
 
+msgid "Heavy Archer"
+msgstr "Важкий лучник"
+
+msgid "A stocky bandit in a dented cuirass with a heavy war bow. He draws above your head and looses down at you: slower than the short-bow archers, but every arrow bites deep and he barely flinches. A yellow glint on the arrowhead means block it, parry it back, roll through it or jump over it — then close in, he backs away slowly."
+msgstr "Кремезний бандит у пом'ятій кірасі з важким бойовим луком. Натягує тятиву вище за вашу голову й стріляє згори вниз: повільніший за лучників із коротким луком, але кожна стріла б'є боляче, а сам він ледь здригається від ударів. Жовтий спалах на наконечнику — блокуйте стрілу, відбийте її парируванням, перекотіться крізь неї чи перестрибніть, а тоді підходьте: відступає він повільно."
+
 msgid "Shield Bandit"
 msgstr "Бандит зі щитом"
 
