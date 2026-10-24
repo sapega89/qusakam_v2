@@ -204,6 +204,10 @@ func _initialize() -> void:
 	var cat_x: float = cat.global_position.x
 	var alisia_max := alisia_cell
 	var cat_moved := 0.0
+	var table_top: Vector2 = (cells.get_node(^"Marks/TableTop") as Node2D).global_position
+	var scientist_anim: AnimationPlayer = cells.get_node(^"Scientist/AnimationPlayer")
+	var lay_at_inject := false  # B127: на столі, коли алхімік колє
+	var sat_up_talking := false  # B127: сидить на столі під репліку Lab_Cells_Injection
 	var djinn_seen := false
 	var blasts := 0
 	var emotes := {}  # "Актор:вид" → true
@@ -218,6 +222,9 @@ func _initialize() -> void:
 			dm.current_dialogue_box.finish()
 			dm.current_dialogue_player.accept()
 		alisia_max = maxf(alisia_max, alisia_body.global_position.x)
+		var on_table := alisia_body.global_position.distance_to(table_top) < 1.0
+		lay_at_inject = lay_at_inject or (on_table and alisia_body.animation == &"lie" and scientist_anim.current_animation == "inject")
+		sat_up_talking = sat_up_talking or (on_table and alisia_body.animation == &"sit_up" and started.has("Lab_Cells_Injection") and dm.is_dialogue_active())
 		cat_moved = maxf(cat_moved, absf(cat.global_position.x - cat_x))
 		djinn_seen = djinn_seen or cells.find_children("*", "CharacterBody2D", false, false).any(
 				func(n: Node) -> bool: return n.is_in_group(&"enemies") and (n as Node2D).visible)
@@ -232,6 +239,9 @@ func _initialize() -> void:
 	for i in 30: await physics_frame
 	ck(started == CELLS_TALKS, "the beats in order (%s)" % [started])
 	ck(alisia_max > alisia_cell + 200.0 and absf(alisia_body.global_position.x - alisia_cell) < 1.0, "Alisia led to the table (x %.0f) and back to her cell" % alisia_max)
+	ck(lay_at_inject, "B127: Alisia lies on the operating table while the alchemist injects her")
+	ck(sat_up_talking, "B127: she sits up dazed on the table for the injection line, then is led back")
+	ck(alisia_body.animation == &"idle", "Alisia stands in her cell again (%s)" % alisia_body.animation)
 	ck(cat_moved < 1.0 and absf(alisia.global_position.x - alisia_node_x) < 1.0, "B126: the cat stays in cell 3 (moved %.0f px)" % cat_moved)
 	ck(djinn_seen and blasts > 0, "the djinn bursts out, explosions (%d at once)" % blasts)
 	for actor in REACTORS:

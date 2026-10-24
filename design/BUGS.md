@@ -64,14 +64,6 @@ the history, this note keeps only what is open.
 > Seeded with one real finding as a format example. This list is maintained by
 > whoever runs QA, not compiled in advance.
 
-### B127 — Nobody is laid on the operating table
-- **Where:** the same cutscene (D304: "Alisia is led to the operating table and injected by the alchemist").
-- **Expected:** Alisia lies on the operating table while the alchemist injects her, then gets up and is led back.
-- **Got:** she only walks up to the table; nobody is ever on it (Sapega: «на стіл ніхто нікого не поклав»).
-- **Needs art:** Alisia lying on her back (a frame or two, plus getting up). It goes in the ComfyUI art batch (comfy-sprite, from her existing sheet). Then the cutscene places her on the table top.
-- **Severity:** story.
-- **Found:** 2026-10-23, Sapega's playtest.
-
 ### B124 — The sword changes hands between running and attacking
 - **Where:** `SampleProject/Sprites/Player/Weapons/sword/` (`Run/1–7` against `Attack1–3`, `Heavy`, and the other folders); `Player.tscn` → library `sword`.
 - **Expected:** the same hand in every sword frame. The sword README says "held in the near hand"; keep that, unless the majority of frames is the other way.

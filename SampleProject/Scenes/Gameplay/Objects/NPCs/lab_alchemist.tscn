@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/alchemist/sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/alchemist/sheet_chibi.png" id="1_sheet"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -81,7 +81,7 @@ _data = {
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-offset = Vector2(0, -44)
+offset = Vector2(0, -30)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("1_sheet")
 hframes = 4
