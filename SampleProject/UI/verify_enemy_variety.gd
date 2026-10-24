@@ -4,7 +4,8 @@ extends SceneTree
 ## стати з enemy_variety.json), еліта як властивість виду (HP ×2.5, шкода ×1.5; великі види чекають на арт у точках
 ## BigSlot_*), щитоносець (удар спереду — у щит, у спину — по тілу, важкий розбиває щит і збиває його), розстановка по
 ## кімнатах, проклята піна (D653) і проклятий шакал (D589, D649, D675), живий вид-еліта, сам-на-сам, потім пара;
-## ватажок зграї шакалів (D692): живий вид-еліта на місці BigSlot_JackalPackLeader_*.
+## ватажок зграї шакалів (D692): живий вид-еліта на місці BigSlot_JackalPackLeader_*;
+## бандит-громило (D693): живий вид-еліта на місці BigSlot_BanditBrute_*.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_variety.gd
 
 const SCENES := {
@@ -14,6 +15,7 @@ const SCENES := {
 	"shield": "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn",
 	"jackal_cursed": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn",
 	"jackal_pack_leader": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_pack_leader.tscn",
+	"bandit_brute": "res://SampleProject/Scenes/Characters/Enemies/enemy_bandit_brute.tscn",
 }
 const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
@@ -94,6 +96,7 @@ func _initialize() -> void:
 	await _pack_leader()
 	await _armoured_scorpion()
 	await _old_vulture()
+	await _brute()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -256,8 +259,8 @@ func _placements() -> void:
 			"DesertRoad: a lone medium shield-bearer first")
 	var brute: Node = lone_elite.spawn_points[0]
 	ck(lone_elite.spawn_points.size() == 1 and brute.name == "BigSlot_BanditBrute_1" and brute.big_kind == "bandit_brute"
-			and brute.kind() == "melee" and brute.spawn_id == "Fight_LoneElite_EnemySpawnPoint1",
-			"DesertRoad: the lone elite's place waits for the bandit brute and spawns a bandit for now (spawn_id kept for saves)")
+			and brute.kind() == "bandit_brute" and brute.spawn_id == "Fight_LoneElite_EnemySpawnPoint1",
+			"DesertRoad: the lone elite is the bandit brute, alone (spawn_id kept for saves)")
 	var heavy: Node = map.get_node(^"Fight_Mesa").spawn_points[3]
 	ck(heavy.name == "BigSlot_HeavyArcher_4" and heavy.big_kind == "heavy_archer" and heavy.kind() == "heavy_archer"
 			and heavy.spawn_id == "Fight_Mesa_EnemySpawnPoint4",
@@ -305,7 +308,7 @@ func _placements() -> void:
 		room.free()
 	ck(ok_names, "a spawn point is named BigSlot_<Kind>_n exactly when it waits for a big kind")
 	ck(ok_kinds, "every point spawns a kind whose art exists, and a slot stands on its big kind's base")
-	ck(slots.size() == 12, "12 big slots: 5 on DesertRoad, 1 in the Bandit Camp (D643), 6 in the Laboratory (%d)" % slots.size())
+	ck(slots.size() == 11, "11 big slots: 4 on DesertRoad (the Dunes bandit is no slot, D582), 1 in the Bandit Camp (D643), 6 in the Laboratory (%d)" % slots.size())
 	print("  info big slots: %s" % ", ".join(slots))
 
 func _place_hero(target: Node, dx: float) -> void:
@@ -638,6 +641,87 @@ func _old_vulture() -> void:
 	ck(entry.size() == 1 and entry[0].name == "Old Vulture" and en.get_message(entry[0].name) != StringName() and en.get_message(entry[0].text) != StringName()
 			and String(uk.get_message(entry[0].name)) == "Старий гриф" and uk.get_message(entry[0].text) != StringName(),
 			"bestiary: Old Vulture, in English and Ukrainian")
+	await process_frame
+
+
+## [9] Бандит-громило (D652, D693): живий вид-еліта з власним аркушем на поведінці бандита (default_enemy) — повільний
+## важкий удар булавою в землю; тіло й HP бандита, множники еліти й рівня бою (D642 — бій перевіряє verify_difficulty).
+## Розстановка (D582, D682): кожна точка BigSlot_BanditBrute_* спавнить його; уперше — сам у Fight_LoneElite.
+func _brute() -> void:
+	print("[9] The bandit brute (D652, D693): a live elite kind on the bandit's behaviour with a slow heavy smash")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_bandit_brute.tres")
+	var melee: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
+	ck(variety.available("bandit_brute") and variety.is_elite("bandit_brute")
+			and spawn_script.scene_path("bandit_brute") == SCENES.bandit_brute,
+			"its sheet, scene and stats exist: the kind spawns, and it is an elite")
+	var same := true
+	for prop in ["base_damage", "max_health", "xp_reward", "detection_range", "chase_range", "flying"]:
+		same = same and stats.get(prop) == melee.get(prop)
+	ck(stats.enemy_type == "bandit_brute" and same, "the bandit's HP, blow and XP (enemy_melee), its own kind for the bestiary and the elite marks")
+	ck(stats.attack_windup > melee.attack_windup and stats.speed < melee.speed and stats.combo_hits == 1 and stats.tell == "dodge"
+			and stats.poise > melee.poise and stats.recovery > melee.recovery,
+			"a slow heavy smash: windup %.1f s (bandit %.1f), one blow, red glint (dodge only), walks %d (bandit %d), poise %d, recovery %.2f s"
+			% [stats.attack_windup, melee.attack_windup, stats.speed, melee.speed, stats.poise, stats.recovery])
+	var sheet: Texture2D = load(variety.kind("bandit_brute").sheet)
+	var enemy: Node = load(SCENES.bandit_brute).instantiate()
+	var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
+	ck(sheet.resource_path.ends_with("Enemies/bandit_brute/sheet.png") and sheet.get_width() == 96 * sprite.hframes
+			and sheet.get_height() == 96 * sprite.vframes and sprite.hframes == 4 and sprite.vframes == 5,
+			"the D693 sheet, 96x96 cells, rows idle / walk / attack / hurt / death (%dx%d)" % [sprite.hframes, sprite.vframes])
+	var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
+	var frames := {}
+	for a: StringName in [&"idle", &"walk", &"attack", &"stagger", &"death"]:
+		frames[a] = HitAreas.anim_frames(anim, a, 0.0, INF)
+	ck(frames == {&"idle": [0, 1], &"walk": [4, 5, 6, 7], &"attack": [8, 9, 10], &"stagger": [12], &"death": [16, 17, 18]},
+			"animations play the sheet's rows (%s)" % [frames])
+	var strike: float = anim.get_meta(&"attack_strike_time")
+	ck(HitAreas.anim_frames(anim, &"attack", 0.0, strike) == [8] and HitAreas.anim_frames(anim, &"attack", strike, strike + stats.attack_active_time) == [9],
+			"the club is over his shoulder for the whole windup, and the live strike is the smash into the ground (frame 9)")
+	var smash := HitAreas.frame_rect(sprite, 9)
+	var hit := HitAreas.shape_rect(enemy.get_node(^"hitbox/CollisionShape2D"))
+	ck(absf(hit.end.x - smash.end.x) <= 1.0 and absf(hit.end.y - smash.end.y) <= 1.0,
+			"the hitbox's front is the club on the ground (%.1f, floor %.1f; drawn %.1f, %.1f)" % [hit.end.x, hit.end.y, smash.end.x, smash.end.y])
+	ck(not variety.kind("bandit_brute").has("foam"), "no cursed foam: he is a man, not one of the alchemist's beasts")
+	enemy.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == "bandit_brute")
+	ck(entry.size() == 1 and _translated(entry[0].name) and _translated(entry[0].text), "bestiary entry, en and uk")
+
+	# Кожна точка громила в кожній кімнаті спавнить його.
+	var placed: Array[String] = []
+	for file in DirAccess.get_files_at("res://SampleProject/Maps"):
+		if not file.ends_with(".tscn"):
+			continue
+		var room: Node = load("res://SampleProject/Maps/" + file).instantiate()
+		for p: Node in room.find_children("BigSlot_BanditBrute_*", "Node2D", true, false):
+			var fight: Node = p.get_parent()
+			var big: Array = []
+			for q: Node in fight.get_children():
+				if q.get_script() == spawn_script and variety.is_elite(q.kind()):
+					big.append(q.kind())
+			placed.append("%s %s/%s L%d, elites in the fight %s" % [file.get_basename(), fight.name, p.name, fight.enemy_level, big])
+			ck(p.kind() == "bandit_brute" and p.enemy_type == "melee", "%s/%s spawns the bandit brute" % [fight.name, p.name])
+		room.free()
+	print("  info bandit brutes: %s" % ", ".join(placed))
+	ck(placed.size() == 4, "four slots: DesertRoad Fight_LoneElite, the Bandit Camp's Fight_Camp (D698), Laboratory Fight_Upper x2 (%d)" % placed.size())
+
+	# Живий бій Fight_LoneElite (рівень 2): громило сам, еліта рівня бою, ноги на лінії бандита.
+	var lone: Node = game.map.get_node(^"Fight_LoneElite")
+	ck(lone.spawn_points.size() == 1 and lone.enemy_level == 2, "Fight_LoneElite: the brute alone, the road's first elite (D582)")
+	lone.spawn_all_enemies()
+	await create_timer(0.5).timeout
+	var brute: Node = lone.get_node(^"Enemy_Fight_LoneElite_EnemySpawnPoint1")
+	var grown: Dictionary = variety.level(lone.enemy_level)
+	var marks: Dictionary = variety.elite()
+	ck(brute.scene_file_path == SCENES.bandit_brute and brute.elite and brute.level == 2
+			and brute.Max_Health == roundi(stats.max_health * grown.health * marks.health)
+			and is_equal_approx(brute.base_damage, stats.base_damage * grown.damage * marks.damage),
+			"in the game it is the bandit brute, an elite at the fight's level 2: HP %d, damage %.1f" % [brute.Max_Health, brute.base_damage])
+	var bandit: Node = load(SCENES.melee).instantiate()
+	var feet := [HitAreas.frame_rect(brute.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(bandit.get_node(^"Sprite2D"), 0).end.y]
+	bandit.free()
+	ck(absf(feet[0] - feet[1]) <= 1.0, "his drawn feet stand on a medium bandit's line (%.1f vs %.1f px below his centre)" % feet)
+	lone.despawn_all_enemies()
 	await process_frame
 
 

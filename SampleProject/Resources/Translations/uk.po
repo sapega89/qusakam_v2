@@ -2616,6 +2616,12 @@ msgstr "Бандит зі щитом"
 msgid "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 msgstr "Бандит за круглим щитом. Удари спереду відскакують від щита — розбийте його важким ударом або перекотіться крізь нього й бийте в спину. Без щита це звичайний бандит."
 
+msgid "Bandit Brute"
+msgstr "Бандит-громило"
+
+msgid "A hulking bandit in a red hood who drags a spiked two-handed club behind him. He is slow, but when he hoists the club over his shoulder, a red glint means get out of the way: the smash cannot be blocked, and it hits the ground hard enough to crush you. After it lands he needs a long moment to drag the club back. That is your opening."
+msgstr "Здоровенний бандит у червоному каптурі, що тягне за собою дворучну булаву з шипами. Він повільний, але коли закидає булаву на плече, червоний спалах — геть з дороги: удар не заблокувати, і він гупає в землю так, що розчавить. Після удару йому треба довго тягти булаву назад. Це ваш шанс."
+
 msgid "Vulture"
 msgstr "Гриф"
 

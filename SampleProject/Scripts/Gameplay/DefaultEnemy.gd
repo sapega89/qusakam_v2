@@ -544,6 +544,8 @@ func _calculate_coin_drop() -> int:
 	match enemy_stats.enemy_type:
 		"melee":
 			return randi_range(2, 4)  # 2-4 coins
+		"bandit_brute":
+			return randi_range(2, 4)  # D652: як бандит, чиє тіло він має
 		"tank":
 			return randi_range(4, 6)  # 4-6 coins (harder, more reward)
 		"armoured_scorpion":

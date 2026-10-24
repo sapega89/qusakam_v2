@@ -23,7 +23,7 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 ## Маршрут у порядку історії (verify_xp_curve: ROUTE + LAB_ROUTE).
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
-const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
+const KIND_NAMES := {"melee": "bandit", "bandit_brute": "bandit brute", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
 		"jackal_cursed": "cursed jackal",
 		"jackal_pack_leader": "jackal pack leader",
@@ -131,6 +131,11 @@ func _initialize() -> void:
 	ck(leader.size() >= 2 and rows.all(func(r: Dictionary) -> bool: return not String(r.name).begins_with("planned jackal_pack_leader"))
 			and leader.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL)),
 			"pack leader rows: %s" % [leader.map(func(r: Dictionary) -> String: return "%s at level %d %s %s, HP %d, hit %d" % [r.name, r.level, r.build, "wins" if r.wins else "loses", r.enemy_hp, r.enemy_hit])])
+	print("[3d] the bandit brute (D652, D693) is a live elite of its own, on the road and in the Laboratory, and meets [3]")
+	var brutes := rows.filter(func(r: Dictionary) -> bool: return String(r.name).begins_with("elite bandit brute"))
+	ck(brutes.size() >= 4 and rows.all(func(r: Dictionary) -> bool: return not String(r.name).begins_with("planned bandit_brute"))
+			and brutes.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL)),
+			"brute rows: %s" % [brutes.map(func(r: Dictionary) -> String: return "%s at level %d %s %s, HP %d, hit %d" % [r.name, r.level, r.build, "wins" if r.wins else "loses", r.enemy_hp, r.enemy_hit])])
 
 	print("[4] a boss's heaviest move takes a big bite but never kills a full-HP hero at once (a death reads as a missed roll)")
 	for row in rows:
