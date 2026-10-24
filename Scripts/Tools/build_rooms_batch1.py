@@ -2,13 +2,15 @@
 # D643, branch batch 1: пише п'ять бічних кімнат MetSys (SampleProject/Maps/<Room>.tscn) з backdrop-ів
 # Assets/Backgrounds/<Room>/gen_back.png. Розмітка кімнат — тут (числа в px; клітинка MetSys 864×480).
 #   python3 Scripts/Tools/build_rooms_batch1.py
-# Підлога, стіни й уступи — StaticBody2D-прямокутники (як PrideRock у Canyon), backdrop — дальній Parallax2D, як
+# Підлога й стіни — схований шар тайлів Foreground (як LabCells), уступи меси — односторонні StaticBody2D, backdrop — дальній Parallax2D, як
 # Lab/gen_far у LabCells. Перезапис затирає ручні правки в цих п'яти .tscn: правте тут.
+import base64
+import struct
 from pathlib import Path
 
 MAPS = Path(__file__).resolve().parents[2] / "SampleProject/Maps"
 CELL_W, CELL_H = 864, 480
-FLOOR = 420          # верх підлоги однорядної кімнати
+FLOOR = 416          # верх підлоги однорядної кімнати (рядок тайлів 13)
 STAND = FLOOR - 40   # де стоїть герой (і двері), як ExitDoor в ElderHouse
 
 UIDS = {
@@ -63,13 +65,19 @@ class Room:
         self.node('[node name="Sprite" type="Sprite2D" parent="Far"]\ntexture_filter = 1\nposition = Vector2(0, %g)\n'
                   'scale = Vector2(%g, %g)\ntexture = %s\ncentered = false' % (y, scale, scale, tex))
 
-    def bounds(self, floor_y: float) -> None:
-        self.node('[node name="Bounds" type="StaticBody2D" parent="."]')
-        for nm, cx, cy, w, h in [("Floor", self.w / 2, floor_y + 64, self.w + 256, 128),
-                                 ("WallLeft", -32, self.h / 2, 64, self.h + 512),
-                                 ("WallRight", self.w + 32, self.h / 2, 64, self.h + 512)]:
-            self.node('[node name="%s" type="CollisionShape2D" parent="Bounds"]\nposition = Vector2(%g, %g)\nshape = %s'
-                      % (nm, cx, cy, self.rect(w, h)))
+    def bounds(self, floor_row: int) -> None:
+        """Підлога (від рядка [floor_row] до низу) і бічні стіни — схований шар тайлів Foreground, як у LabCells:
+        видно намальовану підлогу backdrop-у, а verify_map_geometry бачить ті самі тайли, що й в інших кімнатах."""
+        cols, rows = self.w // 32, self.h // 32
+        cells = [(x, y) for y in range(floor_row, rows) for x in range(cols)]
+        cells += [(x, y) for y in range(0, floor_row) for x in (-1, cols)]
+        data = bytearray(b"\x00\x00")
+        for x, y in cells:
+            data += struct.pack("<hhHHHH", x, y, 1, 8, 7, 0)
+        tiles = self.res("TileSet", "res://SampleProject/Resources/DesertTileset.tres")
+        self.node('[node name="TileMap" type="Node2D" parent="."]')
+        self.node('[node name="Foreground" type="TileMapLayer" parent="TileMap"]\nvisible = false\n'
+                  'tile_map_data = PackedByteArray("%s")\ntile_set = %s' % (base64.b64encode(bytes(data)).decode(), tiles))
 
     def ledge(self, name: str, x0: float, x1: float, top: float, art: bool = True) -> None:
         """Односторонній уступ: верх на [top], від x0 до x1; вигляд — смуга верхньої плитки DesertTileset."""
@@ -163,7 +171,7 @@ def lizard_cave() -> None:
     r.node('[node name="TabletCover" type="Sprite2D" parent="Far"]\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
            'scale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false\nregion_enabled = true\nregion_rect = Rect2(276, 134, 64, 12)'
            % (554 * 1.5, 133 * 1.5 - 3, tex))
-    r.bounds(FLOOR)
+    r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "Canyon", "LizardCaveDoor")
     r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 32, "fast", ""),
@@ -180,7 +188,7 @@ def bandit_camp() -> None:
     місця медитації (SavePoint_BeforeCity)."""
     r = Room("BanditCamp", 2, 1)
     r.backdrop()
-    r.bounds(FLOOR)
+    r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "DesertRoad", "BanditCampDoor")
     r.fight("Fight_Camp", 420, 160, 4, [
@@ -201,12 +209,12 @@ def mesa_climb() -> None:
     """Підйом на месу: 1 клітинка завширшки, 2 заввишки. Стрибки по уступах (стрибок героя ~103 px, тут крок 72),
     уступи сусідніх кроків перекриваються на 40 px (стрибок з краю — прямо вгору крізь односторонній уступ); нагорі скриня зі зброєю з компромісом; над месою кружляють грифи (D558)."""
     r = Room("MesaClimb", 1, 2)
-    floor = r.h - 60
+    floor = r.h - 64
     # Картина на всю висоту кімнати: 960 / 324 ≈ 2.963, по центру; камера йде вгору — картина з нею 1:1.
     s = r.h / 324.0
     r.backdrop(scale=round(s, 4), y=0, scroll="Vector2(1, 1)", repeat=False)
     r.nodes[-1] = r.nodes[-1].replace("position = Vector2(0, 0)", "position = Vector2(%g, 0)" % round((r.w - 576 * s) / 2, 1))
-    r.bounds(floor)
+    r.bounds(floor // 32)
     r.marker("Arrival", 96, floor - 40)
     r.door("ExitDoor", 96, floor - 40, "DesertRoad", "MesaClimbDoor")
     needs_ledges(r)
@@ -225,7 +233,7 @@ def dragon_mural() -> None:
     """Печерка за тріснутою брилою каньйону: стародавній розпис дракона (StoryNote → Journal NOTES, D684) і скриня."""
     r = Room("DragonMural", 1, 1)
     r.backdrop()
-    r.bounds(FLOOR)
+    r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "Canyon", "DragonMuralDoor")
     r.note("DragonMural", 432, STAND - 20, "dragon_mural")
@@ -238,7 +246,7 @@ def gatehouse_cellar() -> None:
     далі троє; у кінці скриня."""
     r = Room("GatehouseCellar", 2, 1)
     r.backdrop()
-    r.bounds(FLOOR)
+    r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "CityGates", "CellarDoor")
     r.fight("Fight_LoneBat", 320, 120, 5, [("EnemySpawnPoint1", 560, 260, "bat", "")])

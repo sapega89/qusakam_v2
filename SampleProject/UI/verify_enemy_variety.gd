@@ -264,7 +264,7 @@ func _placements() -> void:
 		room.free()
 	ck(ok_names, "a spawn point is named BigSlot_<Kind>_n exactly when it waits for a big kind")
 	ck(ok_kinds, "every point spawns a kind whose art exists, and a slot stands on its big kind's base")
-	ck(slots.size() == 12, "12 big slots: 5 on DesertRoad, 7 in the Laboratory (%d)" % slots.size())
+	ck(slots.size() == 13, "13 big slots: 5 on DesertRoad, 1 in the Bandit Camp (D643), 7 in the Laboratory (%d)" % slots.size())
 	print("  info big slots: %s" % ", ".join(slots))
 
 func _place_hero(target: Node, dx: float) -> void:

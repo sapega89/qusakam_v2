@@ -1,22 +1,23 @@
 [gd_scene format=3 uid="uid://dqkh1e1q4c6cl"]
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MesaClimb/gen_back.png" id="r1"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Canyon_Terrain.png" id="r3"]
-[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r4"]
-[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r5"]
-[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r6"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r7"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r8"]
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Canyon_Terrain.png" id="r4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r5"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r6"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r7"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r8"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r9"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(1120, 128)
+size = Vector2(220, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(64, 1472)
+size = Vector2(220, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
-size = Vector2(64, 1472)
+size = Vector2(220, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4"]
 size = Vector2(220, 12)
@@ -37,18 +38,9 @@ size = Vector2(220, 12)
 size = Vector2(220, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_10"]
-size = Vector2(220, 12)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_11"]
-size = Vector2(220, 12)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_12"]
-size = Vector2(220, 12)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_13"]
 size = Vector2(484, 12)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_14"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_11"]
 size = Vector2(864, 320)
 
 [node name="MesaClimb" type="Node2D"]
@@ -64,25 +56,18 @@ scale = Vector2(2.963, 2.963)
 texture = ExtResource("r1")
 centered = false
 
-[node name="Bounds" type="StaticBody2D" parent="."]
+[node name="TileMap" type="Node2D" parent="."]
 
-[node name="Floor" type="CollisionShape2D" parent="Bounds"]
-position = Vector2(432, 964)
-shape = SubResource("RectangleShape2D_1")
-
-[node name="WallLeft" type="CollisionShape2D" parent="Bounds"]
-position = Vector2(-32, 480)
-shape = SubResource("RectangleShape2D_2")
-
-[node name="WallRight" type="CollisionShape2D" parent="Bounds"]
-position = Vector2(896, 480)
-shape = SubResource("RectangleShape2D_3")
+[node name="Foreground" type="TileMapLayer" parent="TileMap"]
+visible = false
+tile_map_data = PackedByteArray("AAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAcAAAADABwAAQAIAAcAAAAEABwAAQAIAAcAAAAFABwAAQAIAAcAAAAGABwAAQAIAAcAAAAHABwAAQAIAAcAAAAIABwAAQAIAAcAAAAJABwAAQAIAAcAAAAKABwAAQAIAAcAAAALABwAAQAIAAcAAAAMABwAAQAIAAcAAAANABwAAQAIAAcAAAAOABwAAQAIAAcAAAAPABwAAQAIAAcAAAAQABwAAQAIAAcAAAARABwAAQAIAAcAAAASABwAAQAIAAcAAAATABwAAQAIAAcAAAAUABwAAQAIAAcAAAAVABwAAQAIAAcAAAAWABwAAQAIAAcAAAAXABwAAQAIAAcAAAAYABwAAQAIAAcAAAAZABwAAQAIAAcAAAAaABwAAQAIAAcAAAAAAB0AAQAIAAcAAAABAB0AAQAIAAcAAAACAB0AAQAIAAcAAAADAB0AAQAIAAcAAAAEAB0AAQAIAAcAAAAFAB0AAQAIAAcAAAAGAB0AAQAIAAcAAAAHAB0AAQAIAAcAAAAIAB0AAQAIAAcAAAAJAB0AAQAIAAcAAAAKAB0AAQAIAAcAAAALAB0AAQAIAAcAAAAMAB0AAQAIAAcAAAANAB0AAQAIAAcAAAAOAB0AAQAIAAcAAAAPAB0AAQAIAAcAAAAQAB0AAQAIAAcAAAARAB0AAQAIAAcAAAASAB0AAQAIAAcAAAATAB0AAQAIAAcAAAAUAB0AAQAIAAcAAAAVAB0AAQAIAAcAAAAWAB0AAQAIAAcAAAAXAB0AAQAIAAcAAAAYAB0AAQAIAAcAAAAZAB0AAQAIAAcAAAAaAB0AAQAIAAcAAAD//wAAAQAIAAcAAAAbAAAAAQAIAAcAAAD//wEAAQAIAAcAAAAbAAEAAQAIAAcAAAD//wIAAQAIAAcAAAAbAAIAAQAIAAcAAAD//wMAAQAIAAcAAAAbAAMAAQAIAAcAAAD//wQAAQAIAAcAAAAbAAQAAQAIAAcAAAD//wUAAQAIAAcAAAAbAAUAAQAIAAcAAAD//wYAAQAIAAcAAAAbAAYAAQAIAAcAAAD//wcAAQAIAAcAAAAbAAcAAQAIAAcAAAD//wgAAQAIAAcAAAAbAAgAAQAIAAcAAAD//wkAAQAIAAcAAAAbAAkAAQAIAAcAAAD//woAAQAIAAcAAAAbAAoAAQAIAAcAAAD//wsAAQAIAAcAAAAbAAsAAQAIAAcAAAD//wwAAQAIAAcAAAAbAAwAAQAIAAcAAAD//w0AAQAIAAcAAAAbAA0AAQAIAAcAAAD//w4AAQAIAAcAAAAbAA4AAQAIAAcAAAD//w8AAQAIAAcAAAAbAA8AAQAIAAcAAAD//xAAAQAIAAcAAAAbABAAAQAIAAcAAAD//xEAAQAIAAcAAAAbABEAAQAIAAcAAAD//xIAAQAIAAcAAAAbABIAAQAIAAcAAAD//xMAAQAIAAcAAAAbABMAAQAIAAcAAAD//xQAAQAIAAcAAAAbABQAAQAIAAcAAAD//xUAAQAIAAcAAAAbABUAAQAIAAcAAAD//xYAAQAIAAcAAAAbABYAAQAIAAcAAAD//xcAAQAIAAcAAAAbABcAAQAIAAcAAAD//xgAAQAIAAcAAAAbABgAAQAIAAcAAAD//xkAAQAIAAcAAAAbABkAAQAIAAcAAAD//xoAAQAIAAcAAAAbABoAAQAIAAcAAAD//xsAAQAIAAcAAAAbABsAAQAIAAcAAAA=")
+tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 860)
+position = Vector2(96, 856)
 
-[node name="ExitDoor" parent="." instance=ExtResource("r2")]
-position = Vector2(96, 860)
+[node name="ExitDoor" parent="." instance=ExtResource("r3")]
+position = Vector2(96, 856)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("MesaClimbDoor")
 
@@ -96,7 +81,7 @@ position = Vector2(300, 828)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge1"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_4")
+shape = SubResource("RectangleShape2D_1")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge1"]
@@ -104,7 +89,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -113,7 +98,7 @@ position = Vector2(480, 756)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge2"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_5")
+shape = SubResource("RectangleShape2D_2")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge2"]
@@ -121,7 +106,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -130,7 +115,7 @@ position = Vector2(660, 684)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge3"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_6")
+shape = SubResource("RectangleShape2D_3")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge3"]
@@ -138,7 +123,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -147,7 +132,7 @@ position = Vector2(480, 612)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge4"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_7")
+shape = SubResource("RectangleShape2D_4")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge4"]
@@ -155,7 +140,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -164,7 +149,7 @@ position = Vector2(300, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge5"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_8")
+shape = SubResource("RectangleShape2D_5")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge5"]
@@ -172,7 +157,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -181,7 +166,7 @@ position = Vector2(120, 468)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge6"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_9")
+shape = SubResource("RectangleShape2D_6")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge6"]
@@ -189,7 +174,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -198,7 +183,7 @@ position = Vector2(300, 396)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge7"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_10")
+shape = SubResource("RectangleShape2D_7")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge7"]
@@ -206,7 +191,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -215,7 +200,7 @@ position = Vector2(480, 324)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge8"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_11")
+shape = SubResource("RectangleShape2D_8")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge8"]
@@ -223,7 +208,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -232,7 +217,7 @@ position = Vector2(660, 252)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge9"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_12")
+shape = SubResource("RectangleShape2D_9")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge9"]
@@ -240,7 +225,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 146.667, 22)
 
@@ -249,7 +234,7 @@ position = Vector2(622, 180)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ledges/Ledge_Top"]
 position = Vector2(0, 6)
-shape = SubResource("RectangleShape2D_13")
+shape = SubResource("RectangleShape2D_10")
 one_way_collision = true
 
 [node name="Art" type="Sprite2D" parent="Ledges/Ledge_Top"]
@@ -257,11 +242,11 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 14)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r3")
+texture = ExtResource("r4")
 region_enabled = true
 region_rect = Rect2(724, 140, 322.667, 22)
 
-[node name="Chest_Mesa" parent="." instance=ExtResource("r4")]
+[node name="Chest_Mesa" parent="." instance=ExtResource("r5")]
 position = Vector2(760, 180)
 contents = Dictionary[String, int]({
 "iron_halberd": 1
@@ -269,7 +254,7 @@ contents = Dictionary[String, int]({
 charm = "sand_runner_ring"
 
 [node name="Fight_Vultures" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
-script = ExtResource("r5")
+script = ExtResource("r6")
 enemy_level = 3
 auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_VulturesTrigger")
@@ -280,22 +265,22 @@ respawns = true
 position = Vector2(432, 640)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Vultures/Fight_VulturesTrigger"]
-shape = SubResource("RectangleShape2D_14")
+shape = SubResource("RectangleShape2D_11")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Vultures"]
 position = Vector2(300, 420)
-script = ExtResource("r6")
+script = ExtResource("r7")
 enemy_type = "vulture"
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Vultures"]
 position = Vector2(620, 300)
-script = ExtResource("r6")
+script = ExtResource("r7")
 enemy_type = "vulture"
 
-[node name="RoomInstance" parent="." instance=ExtResource("r8")]
+[node name="RoomInstance" parent="." instance=ExtResource("r9")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("r7")
+stream = ExtResource("r8")
 autoplay = true
 bus = &"Music"
