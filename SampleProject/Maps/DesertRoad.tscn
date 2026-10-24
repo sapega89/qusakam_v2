@@ -311,11 +311,10 @@ position = Vector2(2170, 240)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Dunes/Fight_DunesTrigger" unique_id=1881644014]
 shape = SubResource("RectangleShape2D_fight")
 
-[node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_Dunes" unique_id=279423724]
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Dunes" unique_id=279423724]
 position = Vector2(2250, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
-big_kind = "bandit_brute"
 spawn_id = "Fight_Dunes_EnemySpawnPoint1"
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Dunes" unique_id=136671725]
