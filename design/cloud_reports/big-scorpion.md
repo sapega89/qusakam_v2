@@ -12,7 +12,7 @@ measured from its frames (D519), elite numbers at each slot's level (D642), and 
 slots spawn it: DesertRoad `Fight_Caravan` (level 3) and Laboratory `Fight_Lower` (level 10). Neither is a first
 encounter with two big or cursed kinds (D582). The sheet came with its idle, attack and death cells facing **left**,
 so I mirrored them in place. Not done: nothing in scope. D-IDs: **D693, D694** (text below; renumber as needed).
-B rows fixed: none. New B row proposed: the generator's left-facing base (below). Full suite: SUITE_LINE
+B rows fixed: none. New B row proposed: the generator's left-facing base (below). Full suite: 117 PASS after the `verify_gates` fix (first run: 113 PASS, 4 FAIL, see Results).
 
 ## D-ID text (for the register; the next free numbers after D692, other routines run beside, renumber as needed)
 
@@ -50,7 +50,7 @@ next to a `BigSlot_BanditBrute_1`. Once both are live, `verify_difficulty` [0b] 
 - `Scripts/Gameplay/DefaultEnemy.gd`: a `_calculate_coin_drop` case after `tank`.
 - Tests: `verify_enemy_variety` gets a new [6] (live, the scorpion's behaviour, both slots spawn it, elite numbers at
   L3 / L10, bestiary en/uk). `verify_hit_areas` checks the new scene in [1] and its strike in [3]. `verify_difficulty`
-  gets the kind's name and the new [0b] D582 first-encounter check.
+  gets the kind's name and the new [0b] D582 first-encounter check. `verify_gates`: the hero is kept alive in the Caravan fight it wins for the key.
 - `UI/capture_armoured_scorpion.gd`: new, shot `design/shots/enemy_variety/armoured_scorpion.png`.
 
 Merge notes for `cloud/big-leader`: the same files will grow neighbouring lines (`sound_events.json` voice-pitch line,
@@ -66,7 +66,15 @@ uncommitted here.
   «attack_range 78 starts a strike that reaches (body contact 44, reach 84)», hit at 3 px inside, missed 6 px past).
 - `verify_difficulty`: RESULT: ALL PASS ([0b]: «armoured_scorpion first meets the hero in DesertRoad/Fight_Caravan,
   with no other big or cursed kind», the same for the fly in Lab `Fight_Fly`).
-- Full suite: SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`, 117 tests; the run was resumed after the background limit cut it at
+  `verify_crafting`): 113 PASS, 4 FAIL.
+  - `verify_cutscene`, `verify_damage_numbers` and `verify_demo_end` hung for 180 s. All three PASS on a re-run on this branch
+    and on `origin/feature/backlog`, so these were transient hangs, not this change.
+  - `verify_gates` (9 FAIL) **was this change**. The test parks the hero (about 100 HP) for 4 s, twice, inside the Caravan
+    fight to win the bandit key. The Caravan now holds the elite scorpion (sting 58.8), so the hero went down to 10 HP and
+    the game paused, and every later step failed. Fixed in the test, not the game: it is a gates test, so the hero gets
+    99999 HP for those waits, like `verify_hit_areas` does. Now `PASS  verify_gates`. It also shows the Caravan is a real
+    elite fight at level 3, as intended.
 - Shot `design/shots/enemy_variety/armoured_scorpion.png`: (1) the Caravan fight as spawned, with the big scorpion on
   the left and the jackal and shield-bearer behind; (2) the hero, the big scorpion and the ordinary one side by side;
   (3) the sting frame with F9 zones: yellow hurtbox, red hitbox from the centre toward the hero, white bodies.
