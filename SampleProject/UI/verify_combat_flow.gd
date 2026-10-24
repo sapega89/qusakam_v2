@@ -260,7 +260,12 @@ func _initialize() -> void:
 	game.player.damage_token.connect(func(d: int) -> void: hits_p.append(d))
 	var swing: float = attacker.attack_windup + attacker.attack_active_time + 0.15
 	await create_timer(0.6).timeout  # невразливість гравця з [2b] минула
-	game.player.global_position = Vector2(attacker.global_position.x + 40, game.player.global_position.y)
+	# Герой — на 6 px усередині намальованого удару ворога (D519: хітбокс — кадри удару; у шакала зграї кінчик
+	# укусу ближче за 40 px)
+	var strike: CollisionShape2D = attacker.get_node(^"hitbox/CollisionShape2D")
+	var reach: float = absf(strike.position.x) + (strike.shape as RectangleShape2D).size.x / 2.0 + 12.0 - 6.0
+	print("  info %s attacks, the hero %.1f px in front" % [attacker.enemy_stats.enemy_type, reach])
+	game.player.global_position = Vector2(attacker.global_position.x + reach, game.player.global_position.y)
 	await create_timer(0.2).timeout
 	attacker.enemy_logic.last_direction = 1
 	attacker.enemy_logic.perform_attack()
@@ -274,7 +279,7 @@ func _initialize() -> void:
 	attacker.enemy_logic.knockback_left = 0.0
 	await create_timer(0.6).timeout
 	hits_p.clear()
-	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
+	game.player.global_position = Vector2(attacker.global_position.x - reach, game.player.global_position.y)
 	await create_timer(0.2).timeout
 	attacker.enemy_logic.last_direction = 1
 	attacker.enemy_logic.perform_attack()  # гравець за спиною на початку замаху
@@ -284,11 +289,11 @@ func _initialize() -> void:
 
 	await create_timer(0.6).timeout
 	hits_p.clear()
-	game.player.global_position = Vector2(attacker.global_position.x + 40, game.player.global_position.y)
+	game.player.global_position = Vector2(attacker.global_position.x + reach, game.player.global_position.y)
 	attacker.enemy_logic.last_direction = 1
 	attacker.enemy_logic.perform_attack()
 	await create_timer(attacker.attack_windup - 0.25 + 0.05).timeout
-	game.player.global_position = Vector2(attacker.global_position.x - 40, game.player.global_position.y)
+	game.player.global_position = Vector2(attacker.global_position.x - reach, game.player.global_position.y)
 	attacker.enemy_logic.process_ai(0.0)
 	await create_timer(swing).timeout
 	ck(hits_p.is_empty(), "late in the wind-up the swing is committed: getting behind dodges it (got %s)" % [hits_p])

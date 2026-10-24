@@ -14,7 +14,7 @@
 	"kinds": {
 		"_note": "A kind spawns once its sheet exists (EnemyVariety.available). sizes: weights of the seeded roll in ordinary fights (RoomEnemySpawner.respawns); story fights take medium. A big kind (base = the ordinary kind it stands in for) has no art yet: its spawn point (EnemySpawnPoint.big_kind, a node named BigSlot_*) spawns the base kind until the sheet lands; then the kind needs its scene and Resources/Enemies/enemy_stats_<kind>.tres (verify_enemy_variety checks). foam: the cursed foam effect at the mouth (D653), frame pixels from the frame centre, facing right (jackal_cursed: its own 96x72 frames, the jaws of idle, walk and the bite).",
 		"melee": {"sheet": "res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
-		"fast": {"sheet": "res://SampleProject/Assets/Characters/Enemies/jackal/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
+		"fast": {"sheet": "res://SampleProject/Assets/Characters/Enemies/jackal_pack/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
 		"tank": {"sheet": "res://SampleProject/Assets/Characters/Enemies/scorpion/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
 		"archer": {"sheet": "res://SampleProject/Assets/Characters/Enemies/bandit_archer/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
 		"shield": {"sheet": "res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
