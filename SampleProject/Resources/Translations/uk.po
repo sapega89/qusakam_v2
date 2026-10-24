@@ -2622,6 +2622,12 @@ msgstr "Гриф"
 msgid "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
 msgstr "Падальник, що кружляє високо над пустелею, куди не дістане жоден клинок. Коли він підіймається і його дзьоб спалахує червоним, він пікірує прямо туди, де ви стоїте, — перекотіться під ним і бийте, поки він летить низько й набирає висоту."
 
+msgid "Old Vulture"
+msgstr "Старий гриф"
+
+msgid "A bald-necked vulture twice the size of the others, its wings wide enough to shade a cart. It circles out of reach like its smaller kin, and its beak glints red before the dive — but the dive hits like a falling rock, and it takes many blows before it drops. Roll under it, then strike while it skims low."
+msgstr "Голошиїй гриф, удвічі більший за інших, з крилами, що можуть затулити від сонця віз. Як і менші родичі, він кружляє там, куди не дістати, і перед піке його дзьоб спалахує червоним, — але б'є піке, мов камінь, що падає, і впаде він не від одного удару. Перекотіться під ним і бийте, поки він летить низько."
+
 msgid "Cave Bat"
 msgstr "Печерний кажан"
 

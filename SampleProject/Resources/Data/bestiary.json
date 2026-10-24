@@ -41,6 +41,11 @@
 			"text": "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
 		},
 		{
+			"kind": "old_vulture",
+			"name": "Old Vulture",
+			"text": "A bald-necked vulture twice the size of the others, its wings wide enough to shade a cart. It circles out of reach like its smaller kin, and its beak glints red before the dive — but the dive hits like a falling rock, and it takes many blows before it drops. Roll under it, then strike while it skims low."
+		},
+		{
 			"kind": "bat",
 			"name": "Cave Bat",
 			"text": "A small bat that hunts in packs in the dark. It flutters at you in a wavy line and bites, then darts away. A white glint means block the bite; one or two blows bring it down."

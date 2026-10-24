@@ -25,6 +25,8 @@ const KINDS := {
 	"res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/lab_boss.tscn": "",
 }
+## Летючі великі види: тіло з кадрів fly, удар — увесь кадр піке (його форму звіряє verify_flying_enemies [1]).
+const FLIERS := ["res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn"]
 
 var fails: Array[String] = []
 var game: Node
@@ -125,6 +127,17 @@ func _scenes() -> void:
 			ck(stats.attack_range > body_half + HERO_HALF and stats.attack_range <= hit.end.x + stats.lunge + HERO_HALF,
 					"%s: attack_range %.0f starts a strike that reaches (body contact %.0f, reach %.0f)" % [name, stats.attack_range, body_half + HERO_HALF, hit.end.x + stats.lunge + HERO_HALF])
 		enemy.free()
+	for path: String in FLIERS:
+		var enemy: Node = load(path).instantiate()
+		var twin: Node = load(path).instantiate()
+		var name := path.get_file().get_basename()
+		var drawn_body := HitAreas.body_rect(enemy.get_node("Sprite2D"), enemy.get_node("AnimationPlayer"))
+		ck(_near(HitAreas.shape_rect(enemy.get_node("Hurtbox/CollisionShape2D")), drawn_body), "%s: hurtbox = drawn body %s" % [name, drawn_body])
+		for node_path in ["Hurtbox/CollisionShape2D", "hitbox/CollisionShape2D"]:
+			var shape: Shape2D = enemy.get_node(node_path).shape
+			ck(shape.resource_local_to_scene and shape != twin.get_node(node_path).shape, "%s: %s is its own, not shared" % [name, node_path])
+		enemy.free()
+		twin.free()
 
 
 ## Шлейф, що зараз на героєві: межі кадрів його анімації, як він стоїть у світі (обличчям праворуч).

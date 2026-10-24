@@ -28,7 +28,8 @@ const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "a
 		"jackal_cursed": "cursed jackal",
 		"jackal_pack_leader": "jackal pack leader",
 		"armoured_scorpion": "armoured scorpion",
-		"heavy_archer": "heavy archer"}
+		"heavy_archer": "heavy archer",
+		"old_vulture": "old vulture"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.
@@ -78,6 +79,7 @@ func _initialize() -> void:
 	hero.set_physics_process(false)
 
 	var meetings := _meetings()
+	meetings.append(_unplaced("old_vulture", "DesertRoad/Fight_Caravan"))
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")
 	for fight: Dictionary in fights:
 		ck(fight.enemy == fight.hero, "%s: enemy_level %d, hero level %d" % [fight.fight, fight.enemy, fight.hero])
@@ -206,6 +208,15 @@ func _meetings() -> Array[Dictionary]:
 
 
 ## Одна бійка: герой рівня зустрічі зі збіркою [param build] проти справжнього ворога.
+## Живий великий вид, якого ще не поставлено на карту (D682 не дала старому грифу точки BigSlot_*): зустріч у бою
+## [param fight], де літає звичайний гриф, на його рівні — щоб числа еліти пройшли ту саму перевірку [3].
+func _unplaced(id: String, fight: String) -> Dictionary:
+	var at: Dictionary = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0]
+	return {"cls": "elite", "kind": id, "level": at.hero, "enemy_level": at.enemy, "city": false,
+			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id), "planned": false,
+			"name": "%s (unplaced) L%d" % [KIND_NAMES[id], at.enemy]}
+
+
 func _fight(meeting: Dictionary, build: String) -> Dictionary:
 	await _make_hero(meeting.level, meeting.city, build)
 	var enemy := _enemy(meeting)

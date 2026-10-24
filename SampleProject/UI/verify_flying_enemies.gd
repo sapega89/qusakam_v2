@@ -15,6 +15,8 @@ extends SceneTree
 const VULTURE := "res://SampleProject/Scenes/Characters/Enemies/enemy_vulture.tscn"
 const BAT := "res://SampleProject/Scenes/Characters/Enemies/enemy_bat.tscn"
 const FLY := "res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn"
+## Старий гриф (D652, D692): великий вид на поведінці грифа.
+const OLD_VULTURE := "res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn"
 const STATS := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
 const ARENA := Vector2(560, 368)
@@ -140,17 +142,20 @@ func _scenes() -> void:
 	var fs: Resource = load(STATS % "fly")
 	ck(fs.flying and fs.flight_attack == "bite" and fs.max_health == jackal.max_health and fs.base_damage == jackal.base_damage and fs.tell == "block",
 			"Cthulhu fly: the bat's bite, the jackal's HP and damage (D642: an ordinary enemy's numbers), elite on top")
-	for kind in ["vulture", "bat", "fly"]:
-		var enemy: Node = load({"vulture": VULTURE, "bat": BAT, "fly": FLY}[kind]).instantiate()
+	var os: Resource = load(STATS % "old_vulture")
+	ck(os.flying and os.flight_attack == "dive" and os.max_health == vs.max_health and os.base_damage == vs.base_damage and os.tell == vs.tell,
+			"old vulture: the vulture's dive, HP and damage (D642: elite on top, D652)")
+	for kind in ["vulture", "bat", "fly", "old_vulture"]:
+		var enemy: Node = load({"vulture": VULTURE, "bat": BAT, "fly": FLY, "old_vulture": OLD_VULTURE}[kind]).instantiate()
 		var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
 		var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
 		var stats: Resource = load(STATS % kind)
 		var body: Rect2 = hit_areas.body_rect(sprite, anim)
 		ck(_shape_rect(enemy, ^"Hurtbox/CollisionShape2D").is_equal_approx(body), "%s: hurtbox = the fly frames %s" % [kind, body])
 		var strike: Rect2 = hit_areas.strike_rect(sprite, anim, stats.attack_active_time)
-		if kind != "vulture":  # укус — зубами, від центру вперед (як у D519)
+		if not kind.ends_with("vulture"):  # укус — зубами, від центру вперед (як у D519)
 			strike = Rect2(Vector2(0, strike.position.y), Vector2(strike.end.x, strike.size.y))
-		ck(_shape_rect(enemy, ^"hitbox/CollisionShape2D").is_equal_approx(strike), "%s: hitbox = the %s frames %s" % [kind, "dive" if kind == "vulture" else "bite", strike])
+		ck(_shape_rect(enemy, ^"hitbox/CollisionShape2D").is_equal_approx(strike), "%s: hitbox = the %s frames %s" % [kind, "dive" if kind.ends_with("vulture") else "bite", strike])
 		enemy.free()
 
 ## [2] Ніколи не сідає: 2 с патруль без героя поруч, 4 с бій над героєм.
