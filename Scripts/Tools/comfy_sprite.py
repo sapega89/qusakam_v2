@@ -3692,6 +3692,7 @@ _pick(
 _brute = CHARACTERS["big_bandit_brute"]["rows"]
 _brute[2][1][2] = "still facing right in the same side view: lowering the huge spiked club back down behind him to drag it again"
 _brute[3] = ("hurt", ["still facing right in the same side view: staggering backwards from a hit, head thrown back, the club still in his hand; no effects, nothing else in the picture"])
+CHARACTERS["big_tower_guard"]["rows"][2][1][2] = "still facing right in the same view: back in his guard stance after the thrust, the tower shield held firmly in front of his body, the sword lowered at his side"
 CHARACTERS["big_tower_guard"]["pick"] = (
     "design/shots/candidates/picks/tower_guard_pick.png"
 )
