@@ -24,7 +24,8 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
-		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly"}
+		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
+		"jackal_cursed": "cursed jackal"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.
@@ -107,6 +108,11 @@ func _initialize() -> void:
 			ck(row.wins == (row.build == "SKILLS" or row.level < OATH_LEVEL), "%s at level %d, %s: %s (%d hits needed, %d blows taken, survives %d)"
 					% [row.name, row.level, row.build, "wins" if row.wins else "loses", row.dealt,
 					ceili(float(row.dealt) / OPENINGS[row.cls]), row.taken_flask - 1])
+
+	print("[3b] the cursed jackal (D589, D652) is a live elite of its own in the Laboratory, not a planned one, and meets [3]")
+	var cursed := rows.filter(func(r: Dictionary) -> bool: return String(r.name).begins_with("elite cursed jackal"))
+	ck(cursed.size() >= 2 and cursed.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS")),
+			"cursed jackal rows: %s" % [cursed.map(func(r: Dictionary) -> String: return "%s %s %s" % [r.name, r.build, "wins" if r.wins else "loses"])])
 
 	print("[4] a boss's heaviest move takes a big bite but never kills a full-HP hero at once (a death reads as a missed roll)")
 	for row in rows:

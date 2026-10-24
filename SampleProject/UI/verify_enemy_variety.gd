@@ -3,7 +3,7 @@ extends SceneTree
 ## Різновиди ворогів (D495, D560, D582, D652; design/enemy_variety_plan.md): розміри small / medium (спрайт, форми B128 і
 ## стати з enemy_variety.json), еліта як властивість виду (HP ×2.5, шкода ×1.5; великі види чекають на арт у точках
 ## BigSlot_*), щитоносець (удар спереду — у щит, у спину — по тілу, важкий розбиває щит і збиває його), розстановка по
-## кімнатах і проклята піна (D653).
+## кімнатах, проклята піна (D653) і проклятий шакал (D589, D649, D675): живий вид-еліта, сам-на-сам, потім пара.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_variety.gd
 
 const SCENES := {
@@ -11,7 +11,9 @@ const SCENES := {
 	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
 	"fast": "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn",
 	"shield": "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn",
+	"jackal_cursed": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn",
 }
+const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
 const ARENA := Vector2(560, 368)
 
@@ -86,6 +88,7 @@ func _initialize() -> void:
 	_placements()
 	await _shield()
 	await _foam()
+	_cursed_jackal()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -264,7 +267,7 @@ func _placements() -> void:
 		room.free()
 	ck(ok_names, "a spawn point is named BigSlot_<Kind>_n exactly when it waits for a big kind")
 	ck(ok_kinds, "every point spawns a kind whose art exists, and a slot stands on its big kind's base")
-	ck(slots.size() == 12, "12 big slots: 5 on DesertRoad, 7 in the Laboratory (%d)" % slots.size())
+	ck(slots.size() == 11, "11 big slots: 5 on DesertRoad, 6 in the Laboratory (%d)" % slots.size())
 	print("  info big slots: %s" % ", ".join(slots))
 
 func _place_hero(target: Node, dx: float) -> void:
@@ -331,13 +334,11 @@ func _shield() -> void:
 
 
 ## [5] Проклята піна (D653): ефект у шарі влучань, сяйні сині краплі з пащі, дзеркалиться з поглядом. Перевіряємо на
-## сцені шакала зі статами виду jackal_cursed (його аркуша ще немає — так гра його й не спавнить).
+## проклятому шакалі, як його спавнить гра (його сцена й стати).
 func _foam() -> void:
 	print("[5] The cursed foam (D653): glowing blue drops from the mouth, in the hit-VFX layer, on any kind with foam")
-	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").duplicate()
-	stats.enemy_type = "jackal_cursed"
-	var jackal: Node = load(SCENES.fast).instantiate()
-	jackal.enemy_stats = stats
+	var jackal: Node = load(SCENES.jackal_cursed).instantiate()
+	jackal.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_jackal_cursed.tres")
 	jackal.position = ARENA
 	game.map.add_child(jackal)
 	await create_timer(0.4).timeout
@@ -369,3 +370,77 @@ func _foam() -> void:
 	ck(not plain.get_node(^"Sprite2D").has_node(^"CursedFoam"), "an ordinary jackal has no foam")
 	jackal.queue_free()
 	plain.queue_free()
+
+
+## [6] Проклятий шакал (D589, D649, D652, D675): живий вид-еліта з власним аркушем, поведінка шакала (enemy_fast), числа
+## шакала з множниками еліти й рівня бою (D642 — бій перевіряє verify_difficulty). Розстановка (D582): уперше сам-на-сам
+## у коридорі середнього поверху, без мухи поруч; далі пара — друга хвиля нижнього бою перед босом; муха лишається одна.
+func _cursed_jackal() -> void:
+	print("[6] The cursed jackal (D589, D652): a live elite kind with the jackal's behaviour, alone first, then a pair")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_jackal_cursed.tres")
+	var fast: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres")
+	ck(variety.available("jackal_cursed") and variety.is_elite("jackal_cursed") and spawn_script.scene_path("jackal_cursed") == SCENES.jackal_cursed,
+			"its sheet, scene and stats exist: the kind spawns, and it is an elite")
+	var same := true
+	for prop in ["speed", "base_damage", "attack_windup", "lunge", "attack_cooldown", "attack_range", "max_health", "poise",
+			"combo_hits", "tell", "finisher_tell", "recovery", "back_off", "flying"]:
+		same = same and stats.get(prop) == fast.get(prop)
+	ck(stats.enemy_type == "jackal_cursed" and same, "the jackal's behaviour and base numbers (enemy_fast), its own kind for the bestiary and the elite marks")
+	var sheet: Texture2D = load(variety.kind("jackal_cursed").sheet)
+	var enemy: Node = load(SCENES.jackal_cursed).instantiate()
+	var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
+	ck(sheet.get_width() == 96 * sprite.hframes and sheet.get_height() == 72 * sprite.vframes and sprite.vframes == 5,
+			"96x72 cells, rows idle / walk / attack / hurt / death (%dx%d)" % [sprite.hframes, sprite.vframes])
+	var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
+	var frames := {}
+	for a: StringName in [&"idle", &"walk", &"attack", &"stagger", &"death"]:
+		frames[a] = HitAreas.anim_frames(anim, a, 0.0, INF)
+	ck(frames == {&"idle": [0, 1], &"walk": [4, 5, 6, 7], &"attack": [8, 9, 10], &"stagger": [12], &"death": [16, 17, 18]},
+			"animations play the sheet's rows (%s)" % [frames])
+	enemy.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == "jackal_cursed")
+	ck(entry.size() == 1 and _translated(entry[0].name) and _translated(entry[0].text), "bestiary entry, en and uk")
+
+	var lab: Node = load("res://SampleProject/Maps/Laboratory.tscn").instantiate()
+	var placed: Array[String] = []
+	var first := ""
+	for spawner: Node in lab.get_children():
+		if not spawner.has_node(^"Trigger"):
+			continue
+		var kinds: Array = []
+		for p: Node in spawner.find_children("*", "Node2D", true, false):
+			if p.get_script() == spawn_script:
+				kinds.append(p.kind())
+		if kinds.has("jackal_cursed"):
+			placed.append("%s %s" % [spawner.name, kinds])
+			if first.is_empty():
+				first = spawner.name
+				ck(kinds == ["jackal_cursed"] and spawner.enemy_level == 9, "%s: the first cursed jackal comes alone, nothing cursed beside it (%s)" % [spawner.name, kinds])
+	print("  info cursed jackals: %s" % ", ".join(placed))
+	ck(first == "Fight_Cursed", "the first one stands in the middle storey's corridor, under the ladder (%s)" % first)
+	var lone: Node2D = lab.get_node(^"Fight_Cursed")
+	var middle: Node2D = lab.get_node(^"Fight_Middle")
+	ck(lone.get_node(^"Trigger").position.x - middle.get_node(^"Trigger").position.x >= 400.0 and lone.get_node(^"BigSlot_JackalCursed_1").position.y == 848.0,
+			"room to learn it: the next fight's zone is 400+ px further west, the jackal on the floor")
+	var lower: Array = []
+	for p: Node in lab.get_node(^"Fight_Lower").get_children():
+		if p.get_script() == spawn_script:
+			lower.append(p.kind())
+	ck(lower.slice(2) == ["jackal_cursed", "jackal_cursed"] and lab.get_node(^"Fight_Lower").wave_size == 2,
+			"later: a pair, the second wave of the fight before the boss (%s)" % [lower])
+	ck(placed.size() == 2, "nowhere else: the lone one and the pair (%d fights)" % placed.size())
+	var fly: Array = []
+	for p: Node in lab.find_children("*", "Node2D", true, false):
+		if p.get_script() == spawn_script and p.kind() == "fly":
+			fly.append(String(p.get_parent().name))
+	ck(fly == ["Fight_Fly"] and lab.get_node(^"Fight_Fly").get_index() < lone.get_index(), "the fly stays one, alone, before the jackal (%s)" % [fly])
+	lab.free()
+
+
+func _translated(text: String) -> bool:
+	var ok := true
+	for lang in ["en", "uk"]:
+		var po: String = FileAccess.get_file_as_string("res://SampleProject/Resources/Translations/%s.po" % lang)
+		ok = ok and po.contains("msgid \"%s\"\nmsgstr \"" % text) and not po.contains("msgid \"%s\"\nmsgstr \"\"" % text)
+	return ok

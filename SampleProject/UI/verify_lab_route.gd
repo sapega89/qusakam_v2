@@ -25,7 +25,7 @@ const TEST_SLOT := 1
 const CELLS_TALKS: Array[String] = ["Lab_Cells_Arrival", "Lab_Cells_Injection", "Lab_Cells_Prisoner",
 		"Lab_Cells_Djinn", "Lab_Cells_Faint", "Lab_Cells_Awake"]
 ## Бій коридорів → підлога його поверху (y).
-const FIGHTS := {"Fight_Upper": 384.0, "Fight_Middle": 864.0, "Fight_Lower": 1344.0}
+const FIGHTS := {"Fight_Upper": 384.0, "Fight_Cursed": 864.0, "Fight_Middle": 864.0, "Fight_Lower": 1344.0}
 const FEET := 24.0
 
 var fails: Array[String] = []

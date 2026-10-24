@@ -558,6 +558,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(0, 1)  # D445: слабкий, ходить зграйкою
 		"fly":
 			return randi_range(0, 1)  # D589: стати кажана, еліта множить решту
+		"jackal_cursed":
+			return randi_range(1, 3)  # D589: як шакал, чиє тіло він має
 	push_error("DefaultEnemy: unknown enemy_type '%s'" % enemy_stats.enemy_type)
 	return 0
 

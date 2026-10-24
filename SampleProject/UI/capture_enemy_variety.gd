@@ -1,7 +1,6 @@
 extends SceneTree
 
-## Знімок D560, D652, D653: ряд розмірів (малий і середній бандит, шакал і шакал з проклятою піною — стати виду
-## jackal_cursed на кадрах звичайного шакала, поки його аркуша немає) і бій зі щитоносцем — удар спереду в щит
+## Знімок D560, D652, D653: ряд розмірів (малий і середній бандит, шакал і проклятий шакал з піною — своя сцена й стати) і бій зі щитоносцем — удар спереду в щит
 ## (іскри), важкий удар розбиває щит (щит відлітає, поза збою), удар без щита. Усе в одному design/shots/enemy_variety/
 ## shield_fight.png. Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_enemy_variety.gd
@@ -9,6 +8,7 @@ extends SceneTree
 const BANDIT := "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"
 const SHIELD := "res://SampleProject/Scenes/Characters/Enemies/enemy_shield.tscn"
 const JACKAL := "res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn"
+const JACKAL_CURSED := "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn"
 const PANEL := Vector2i(1100, 270)
 
 var game: Node
@@ -49,7 +49,7 @@ func _initialize() -> void:
 
 	# Ряд розмірів: малий і середній бандит, шакал, проклятий шакал з піною (D653)
 	var lineup: Array = []
-	var variants := [[BANDIT, "melee", "small"], [BANDIT, "melee", "medium"], [JACKAL, "fast", "medium"], [JACKAL, "jackal_cursed", "medium"]]
+	var variants := [[BANDIT, "melee", "small"], [BANDIT, "melee", "medium"], [JACKAL, "fast", "medium"], [JACKAL_CURSED, "jackal_cursed", "medium"]]
 	for i in variants.size():
 		lineup.append(_spawn(variants[i][0], variants[i][1], variants[i][2], Vector2(hero.global_position.x + 120.0 + i * 95.0, floor_y)))
 	for i in 40: await physics_frame
@@ -114,14 +114,10 @@ func _initialize() -> void:
 	quit()
 
 
-## [param kind] — вид з enemy_variety.json; jackal_cursed без власних статів бере шакалові з його enemy_type.
+## [param kind] — вид з enemy_variety.json.
 func _spawn(scene: String, kind: String, size_kind: String, at: Vector2) -> Node:
 	var e: Node = load(scene).instantiate()
-	if kind == "jackal_cursed":
-		e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").duplicate()
-		e.enemy_stats.enemy_type = kind
-	else:
-		e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
+	e.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
 	e.size_kind = size_kind
 	e.position = game.map.to_local(at - Vector2(0, 40))
 	game.map.add_child(e)

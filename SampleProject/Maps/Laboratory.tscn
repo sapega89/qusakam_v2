@@ -392,11 +392,10 @@ script = ExtResource("8_spawn_point")
 big_kind = "bandit_brute"
 spawn_id = "Fight_Upper_EnemySpawnPoint1"
 
-[node name="BigSlot_JackalCursed_2" type="Node2D" parent="Fight_Upper" unique_id=1640100104]
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Upper" unique_id=1640100104]
 position = Vector2(1400, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
-big_kind = "jackal_cursed"
 spawn_id = "Fight_Upper_EnemySpawnPoint2"
 
 [node name="BigSlot_BanditBrute_3" type="Node2D" parent="Fight_Upper" unique_id=1640100105]
@@ -404,6 +403,27 @@ position = Vector2(1600, 368)
 script = ExtResource("8_spawn_point")
 big_kind = "bandit_brute"
 spawn_id = "Fight_Upper_EnemySpawnPoint3"
+
+[node name="Fight_Cursed" type="Node2D" parent="." unique_id=1640100500 node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+enemy_level = 9
+auto_spawn_on_ready = false
+trigger_area = NodePath("Trigger")
+state_key = "enemies_cursed"
+respawns = true
+
+[node name="Trigger" type="Area2D" parent="Fight_Cursed" unique_id=1640100501]
+position = Vector2(1330, 688)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Cursed/Trigger" unique_id=1640100502]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="BigSlot_JackalCursed_1" type="Node2D" parent="Fight_Cursed" unique_id=1640100503]
+position = Vector2(1120, 848)
+script = ExtResource("8_spawn_point")
+enemy_type = "fast"
+size = "medium"
+big_kind = "jackal_cursed"
 
 [node name="Fight_Middle" type="Node2D" parent="." unique_id=1640100200 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -417,37 +437,35 @@ state_key = "enemies_middle"
 respawns = true
 
 [node name="Trigger" type="Area2D" parent="Fight_Middle" unique_id=1640100201]
-position = Vector2(1250, 688)
+position = Vector2(900, 688)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Middle/Trigger" unique_id=1640100202]
 shape = SubResource("RectangleShape2D_fight")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Middle" unique_id=1640100203]
-position = Vector2(1000, 848)
+position = Vector2(700, 848)
 script = ExtResource("8_spawn_point")
 
-[node name="BigSlot_JackalCursed_2" type="Node2D" parent="Fight_Middle" unique_id=1640100204]
-position = Vector2(900, 848)
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Middle" unique_id=1640100204]
+position = Vector2(640, 848)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
-big_kind = "jackal_cursed"
 spawn_id = "Fight_Middle_EnemySpawnPoint2"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Middle" unique_id=1640100205]
-position = Vector2(700, 848)
+position = Vector2(560, 848)
 script = ExtResource("8_spawn_point")
 enemy_type = "tank"
 
-[node name="BigSlot_JackalCursed_4" type="Node2D" parent="Fight_Middle" unique_id=1640100206]
-position = Vector2(600, 848)
+[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Middle" unique_id=1640100206]
+position = Vector2(480, 848)
 script = ExtResource("8_spawn_point")
 enemy_type = "fast"
-big_kind = "jackal_cursed"
 spawn_id = "Fight_Middle_EnemySpawnPoint4"
 
 [node name="Fight_Lower" type="Node2D" parent="." unique_id=1640100300 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
-enemy_level = 10
+enemy_level = 11
 auto_spawn_on_ready = false
 spawn_in_waves = true
 wave_size = 2
@@ -481,10 +499,12 @@ enemy_type = "fast"
 big_kind = "jackal_cursed"
 spawn_id = "Fight_Lower_EnemySpawnPoint3"
 
-[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Lower" unique_id=1640100306]
+[node name="BigSlot_JackalCursed_4" type="Node2D" parent="Fight_Lower" unique_id=1640100306]
 position = Vector2(1550, 1328)
 script = ExtResource("8_spawn_point")
-enemy_type = "tank"
+enemy_type = "fast"
+big_kind = "jackal_cursed"
+spawn_id = "Fight_Lower_EnemySpawnPoint4"
 
 [node name="Music" type="AudioStreamPlayer" parent="." unique_id=1785131967]
 process_mode = 3
