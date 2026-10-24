@@ -8,7 +8,7 @@ tags: [cloud, combat, enemies, laboratory]
 # Cloud report: lab-curse (the cursed jackals in the Laboratory)
 
 **Summary.** Done: `jackal_cursed` is a live elite kind. It has its own scene (the D675 sheet, hit shapes measured from its frames, D519) and its own stats (the jackal's `enemy_fast` behaviour and base numbers; elite ×2.5/×1.5 and the fight level give HP 1134 / hit 148 at L9 and 1258 / 169 at L11). The foam sits at its own jaws (D653), and it has a bestiary entry in en/uk. Placement (D582): one alone in a new `Fight_Cursed` on the middle storey, then a pair as the second wave of `Fight_Lower` before the boss. The fly is unchanged. The Upper/Middle cursed slots are now ordinary jackals. `Fight_Lower` `enemy_level` goes 10 → 11 (the lone jackal's XP). D-IDs: **D693–D694** (text below). B rows fixed: none.
-Full suite: SUITE_LINE
+Full suite: `SUITE: ALL PASS` (117 verify scripts).
 
 ## D-ID text (for the register; the next free numbers after D692, other routines run beside, renumber as needed)
 
