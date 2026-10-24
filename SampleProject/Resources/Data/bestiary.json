@@ -26,6 +26,11 @@
 			"text": "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 		},
 		{
+			"kind": "tower_shield_guard",
+			"name": "Tower Shield Guard",
+			"text": "A big armoured bandit behind a tall iron-bound tower shield. Blows from the front ring off it. A heavy attack knocks the shield aside for a moment; strike his body then, or roll past him and hit his back. He raises it again as soon as he steadies."
+		},
+		{
 			"kind": "vulture",
 			"name": "Vulture",
 			"text": "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."

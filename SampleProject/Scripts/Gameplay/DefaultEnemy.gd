@@ -552,6 +552,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(1, 3)  # D386: як fast
 		"shield":
 			return randi_range(3, 5)  # D560: між бандитом і скорпіоном
+		"tower_shield_guard":
+			return randi_range(3, 5)  # D652: як щитоносець, чиє тіло він має
 		"vulture":
 			return randi_range(1, 3)  # D445: як fast
 		"bat":

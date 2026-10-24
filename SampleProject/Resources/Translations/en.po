@@ -2602,6 +2602,12 @@ msgstr "Shield Bandit"
 msgid "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 msgstr "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 
+msgid "Tower Shield Guard"
+msgstr "Tower Shield Guard"
+
+msgid "A big armoured bandit behind a tall iron-bound tower shield. Blows from the front ring off it. A heavy attack knocks the shield aside for a moment; strike his body then, or roll past him and hit his back. He raises it again as soon as he steadies."
+msgstr "A big armoured bandit behind a tall iron-bound tower shield. Blows from the front ring off it. A heavy attack knocks the shield aside for a moment; strike his body then, or roll past him and hit his back. He raises it again as soon as he steadies."
+
 msgid "Vulture"
 msgstr "Vulture"
 

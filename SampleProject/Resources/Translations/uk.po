@@ -2604,6 +2604,12 @@ msgstr "Бандит зі щитом"
 msgid "A bandit behind a round shield. Blows from the front ring off it — break it with a heavy attack, or roll through him and strike his back. Without the shield he is just a bandit."
 msgstr "Бандит за круглим щитом. Удари спереду відскакують від щита — розбийте його важким ударом або перекотіться крізь нього й бийте в спину. Без щита це звичайний бандит."
 
+msgid "Tower Shield Guard"
+msgstr "Вартовий з баштовим щитом"
+
+msgid "A big armoured bandit behind a tall iron-bound tower shield. Blows from the front ring off it. A heavy attack knocks the shield aside for a moment; strike his body then, or roll past him and hit his back. He raises it again as soon as he steadies."
+msgstr "Великий бандит у броні за високим баштовим щитом, окутим залізом. Удари спереду відскакують від щита. Важкий удар на мить відбиває щит убік — тоді бийте по тілу, або перекотіться повз нього й бийте в спину. Щойно він оговтається, знову підніме щит."
+
 msgid "Vulture"
 msgstr "Гриф"
 
