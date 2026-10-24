@@ -24,7 +24,7 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
-		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly"}
+		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly", "tower_shield_guard": "tower shield guard"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.
@@ -74,6 +74,8 @@ func _initialize() -> void:
 	hero.set_physics_process(false)
 
 	var meetings := _meetings()
+	for fight in ["DesertRoad/Fight_Caravan", "Laboratory/Fight_Lower"]:
+		meetings.append(_tower_guard_at(fight))
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")
 	for fight: Dictionary in fights:
 		ck(fight.enemy == fight.hero, "%s: enemy_level %d, hero level %d" % [fight.fight, fight.enemy, fight.hero])
@@ -179,6 +181,15 @@ func _meetings() -> Array[Dictionary]:
 		xp.add_xp(room_xp)
 		room.free()
 	return out
+
+
+## Вартовий з баштовим щитом (D652, D693) — живий, але D682 не дала йому точки BigSlot_*: зустріч у бою [param fight],
+## де стоїть звичайний щитоносець, на його рівні — щоб числа еліти пройшли ту саму перевірку [3] до клятви й після.
+func _tower_guard_at(fight: String) -> Dictionary:
+	var at: Dictionary = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0]
+	return {"cls": "elite", "kind": "tower_shield_guard", "level": at.hero, "enemy_level": at.enemy, "city": fight.begins_with("Laboratory"),
+			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_tower_shield_guard.tres"), "planned": false,
+			"name": "%s (unplaced) L%d" % [KIND_NAMES.tower_shield_guard, at.enemy]}
 
 
 ## Одна бійка: герой рівня зустрічі зі збіркою [param build] проти справжнього ворога.
