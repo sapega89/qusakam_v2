@@ -36,16 +36,11 @@ func _initialize() -> void:
 	hero = game.player
 	hero.Max_Health = 9999
 	hero.current_health = 9999
-	# Перед зоною бою в дюнах (тригер на x 2170), на рівній підлозі.
-	hero.global_position = Vector2(1980, 340)
-	hero.velocity = Vector2.ZERO
 	await create_timer(0.6).timeout
 	var fight: Node = game.map.get_node(^"Fight_Dunes")
-	print("hero at %s, dialogue %s" % [hero.global_position, dm.is_dialogue_active()])
-	Input.action_press(&"move_right")
-	await _until(func() -> bool: return hero.global_position.x > 2200.0)
-	Input.action_release(&"move_right")
-	print("hero at %s, fight %s" % [hero.global_position, fight.fight_in_progress()])
+	# Вхід у зону бою (тригер на x 2170) — герой стає в неї, бій стартує сам.
+	hero.global_position = Vector2(2200, 340)
+	hero.velocity = Vector2.ZERO
 	hero.set_invulnerable(true, 30.0)
 	await _until(func() -> bool: return fight.has_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4"))
 	var leader: Node = fight.get_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4")
