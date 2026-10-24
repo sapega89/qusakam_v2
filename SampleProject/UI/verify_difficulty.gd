@@ -24,7 +24,8 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
-		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly"}
+		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
+		"heavy_archer": "heavy archer"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.

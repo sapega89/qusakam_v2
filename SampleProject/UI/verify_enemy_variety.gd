@@ -165,10 +165,10 @@ func _elites() -> void:
 			and not marks.has("outline_color"), "enemy_variety.json elite: HP x2.5, damage x1.5; no roll, no scale, no outline")
 	var elite_kinds: Array = variety.kind_ids().filter(func(id: String) -> bool: return variety.is_elite(id))
 	print("  info elite kinds: %s" % [elite_kinds])
-	const PLANNED := ["bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_crossbowman", "tower_shield_guard",
+	const PLANNED := ["bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_archer", "tower_shield_guard",
 			"old_vulture", "jackal_cursed"]
 	ck(variety.big_kinds() == PLANNED, "the planned big kinds have their slots (%s)" % [variety.big_kinds()])
-	var bases := {"bandit_brute": "melee", "jackal_pack_leader": "fast", "armoured_scorpion": "tank", "heavy_crossbowman": "archer",
+	var bases := {"bandit_brute": "melee", "jackal_pack_leader": "fast", "armoured_scorpion": "tank", "heavy_archer": "archer",
 			"tower_shield_guard": "shield", "old_vulture": "vulture", "jackal_cursed": "fast"}
 	for id: String in PLANNED:
 		var k: Dictionary = variety.kind(id)
@@ -205,7 +205,36 @@ func _elites() -> void:
 	fly_scene.free()
 	for e in [plain, fly]:
 		e.queue_free()
+	await _heavy_archer()
 	await process_frame
+
+## Великий лучник (D652, D692: лук, не арбалет) — живий вид: свій аркуш і сцена на поведінці лучника, еліта, більший
+## за звичайного лучника.
+func _heavy_archer() -> void:
+	ck(variety.available("heavy_archer") and variety.kind("heavy_archer").sheet.ends_with("/archer_heavy/sheet.png"),
+			"the heavy archer's sheet has landed (Enemies/archer_heavy, D692)")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_heavy_archer.tres")
+	var marks: Dictionary = variety.elite()
+	var heavy: Node = load(spawn_script.scene_path("heavy_archer")).instantiate()
+	heavy.enemy_stats = stats
+	heavy.position = ARENA + Vector2(200, 0)
+	game.map.add_child(heavy)
+	var archer: Node = load(spawn_script.scene_path("archer")).instantiate()
+	await process_frame
+	ck(heavy.get_script().resource_path.ends_with("ArcherEnemy.gd") and stats.enemy_type == "heavy_archer",
+			"the heavy archer runs on the archer's behaviour (ArcherEnemy)")
+	ck(heavy.elite and heavy.Max_Health == roundi(stats.max_health * marks.health)
+			and is_equal_approx(heavy.base_damage, stats.base_damage * marks.damage),
+			"the heavy archer is an elite: HP %d, damage %.1f" % [heavy.Max_Health, heavy.base_damage])
+	var big: Vector2 = _rect_size(heavy.get_node(^"Hurtbox/CollisionShape2D"))
+	var small: Vector2 = _rect_size(archer.get_node(^"Hurtbox/CollisionShape2D"))
+	var big_feet: float = heavy.get_node(^"Hurtbox/CollisionShape2D").position.y + big.y / 2.0
+	var small_feet: float = archer.get_node(^"Hurtbox/CollisionShape2D").position.y + small.y / 2.0
+	ck(big.y > small.y * 1.2 and absf(big_feet - small_feet) <= 1.0,
+			"bigger than a desert archer (drawn body %.0f vs %.0f px tall), drawn feet on its floor line (%.1f vs %.1f)"
+			% [big.y, small.y, big_feet, small_feet])
+	archer.free()
+	heavy.queue_free()
 
 ## [3] Розстановка (D582, D652): кожен новий вид спершу сам-на-сам на DesertRoad, далі в парі, юрби — біля скрині й перед
 ## босом. Де розстановка хотіла еліту чи великого — точка BigSlot_<вид>, що поки спавнить звичайний вид.
@@ -221,6 +250,10 @@ func _placements() -> void:
 	ck(lone_elite.spawn_points.size() == 1 and brute.name == "BigSlot_BanditBrute_1" and brute.big_kind == "bandit_brute"
 			and brute.kind() == "melee" and brute.spawn_id == "Fight_LoneElite_EnemySpawnPoint1",
 			"DesertRoad: the lone elite's place waits for the bandit brute and spawns a bandit for now (spawn_id kept for saves)")
+	var heavy: Node = map.get_node(^"Fight_Mesa").spawn_points[3]
+	ck(heavy.name == "BigSlot_HeavyArcher_4" and heavy.big_kind == "heavy_archer" and heavy.kind() == "heavy_archer"
+			and heavy.spawn_id == "Fight_Mesa_EnemySpawnPoint4",
+			"Mesa: the archer's place behind the shield-bearer spawns the heavy archer (spawn_id kept for saves)")
 	ck(lone_shield.spawn_points[0].global_position.x < map.get_node(^"Fight_Mesa").spawn_points[0].global_position.x,
 			"the lone shield-bearer comes before the Mesa pair")
 	var mesa: Array = map.get_node(^"Fight_Mesa").spawn_points.map(func(p: Node) -> String: return p.enemy_type)

@@ -362,11 +362,11 @@ position = Vector2(2990, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 
-[node name="BigSlot_HeavyCrossbowman_4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
+[node name="BigSlot_HeavyArcher_4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
 position = Vector2(3070, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "archer"
-big_kind = "heavy_crossbowman"
+big_kind = "heavy_archer"
 spawn_id = "Fight_Mesa_EnemySpawnPoint4"
 
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]

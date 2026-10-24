@@ -23,6 +23,8 @@ const HERO_ARROWS := &"hero_arrows"
 @export var strength: int = 0
 
 var direction: int = 1
+## Нахил польоту: px униз на px уздовж direction (0 — рівно; великий лучник цілить униз, ArcherEnemy.max_tilt).
+var fall: float = 0.0
 ## true — стріла героя (б'є ворогів), false — лучника (б'є героя).
 var hero_side: bool = true
 var damage: int = 0
@@ -51,13 +53,14 @@ func _ready() -> void:
 
 func _face() -> void:
 	$Sprite2D.flip_h = direction < 0
+	rotation = atan(fall) * direction
 	$CollisionShape2D.position.x = absf($CollisionShape2D.position.x) * direction
 
 
 func _physics_process(delta: float) -> void:
 	if _stuck:
 		return
-	position.x += direction * speed * delta
+	position += Vector2(direction, fall) * speed * delta
 	_flown += speed * delta
 	if _flown >= RANGE:
 		_fade(0.0)
@@ -73,6 +76,7 @@ func parried(by: Node2D) -> void:
 	hero_side = true
 	add_to_group(HERO_ARROWS)
 	direction = -direction
+	fall = -fall  # назад тією ж лінією
 	shooter = by
 	poise = PlayerCombat.POISE_LIGHT
 	strength = 0

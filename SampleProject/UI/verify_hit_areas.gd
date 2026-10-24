@@ -16,6 +16,7 @@ const KINDS := {
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn": "fast",
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn": "tank",
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn": "archer",
+	"res://SampleProject/Scenes/Characters/Enemies/enemy_heavy_archer.tscn": "heavy_archer",
 	"res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/scorpicore_warrior.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn": "",
@@ -100,7 +101,7 @@ func _scenes() -> void:
 		ck(enemy.get_node("Hurtbox").is_in_group(&"hurtbox") and enemy.get_node("Hurtbox").monitorable, "%s: the hurtbox can be hit" % name)
 		enemy.free()
 		twin.free()
-		if KINDS[path] == "archer":
+		if KINDS[path] in ["archer", "heavy_archer"]:
 			continue  # стріляє стрілами, хітбокса не має
 		enemy = load(path).instantiate()
 		sprite = enemy.get_node("Sprite2D")
