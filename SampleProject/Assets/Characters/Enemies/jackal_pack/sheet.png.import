@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byjqjpj1oo2oq"
-path="res://.godot/imported/sheet.png-d90bf924ca5019bfda2bd7b691d74821.ctex"
+uid="uid://cfe3mu6indwor"
+path="res://.godot/imported/sheet.png-5b17bced3aa16136f0acdc6da02fcae9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Characters/Enemies/jackal/sheet.png"
-dest_files=["res://.godot/imported/sheet.png-d90bf924ca5019bfda2bd7b691d74821.ctex"]
+source_file="res://SampleProject/Assets/Characters/Enemies/jackal_pack/sheet.png"
+dest_files=["res://.godot/imported/sheet.png-5b17bced3aa16136f0acdc6da02fcae9.ctex"]
 
 [params]
 

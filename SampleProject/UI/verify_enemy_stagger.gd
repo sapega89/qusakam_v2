@@ -2,17 +2,19 @@ extends SceneTree
 
 ## Поза збою ворога (D264, remaining_work Art 4): кожен ворог і бос зі stagger.png грає її весь збій — Sprite2D
 ## бере stagger.png (2 клітинки), кадр 0 «відкинутий», потім 1 «приголомшений»; по збою — знову свій sheet і
-## звичайна анімація. Помер у збої — смерть із кадрів sheet.
+## звичайна анімація. Помер у збої — смерть із кадрів sheet. Шакал зграї (D692/D693) stagger.png не має: його поза
+## збою — кадр hurt (12) власного листа на весь збій.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_stagger.gd
 
 ## Ім'я арту → [сцена, тип статів (Resources/Enemies/enemy_stats_<тип>.tres, як EnemySpawnPoint) або "" — бос несе свої].
 const ENEMIES := {
 	"bandit": ["res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn", "melee"],
-	"jackal": ["res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn", "fast"],
 	"scorpion": ["res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn", "tank"],
 	"brass_collector": ["res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn", ""],
 	"fire_djinn": ["res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn", ""],
 }
+const JACKAL := ["res://SampleProject/Scenes/Characters/Enemies/enemy_fast.tscn", "fast"]
+const JACKAL_HURT := 12
 const ARCHER := ["res://SampleProject/Scenes/Characters/Enemies/enemy_archer.tscn", "archer"]
 const NORMAL := ["idle", "walk", "attack"]
 const PARRY_STAGGER := 1.0
@@ -58,6 +60,7 @@ func _initialize() -> void:
 
 	for who in ENEMIES:
 		await _stagger(who, ENEMIES[who])
+	await _jackal_hurt_frame()
 	await _dies_in_stagger()
 	await _archer_keeps_tint()
 
@@ -98,6 +101,28 @@ func _stagger(who: String, scene: Array) -> void:
 	ck(String(anim.current_animation) in NORMAL and anim.speed_scale == 1.0 and sprite.frame < cells.x * cells.y,
 			"%s: back to a normal animation (%s ×%.2f, frame %d)" % [who, anim.current_animation, anim.speed_scale, sprite.frame])
 	ck(sprite.modulate == Color.WHITE, "%s: the tint is gone" % who)
+	enemy.queue_free()
+	await create_timer(0.2).timeout
+
+func _jackal_hurt_frame() -> void:
+	print("[jackal] stagger pose = the hurt frame of its own sheet for the whole stagger")
+	var enemy := _spawn(JACKAL)
+	await create_timer(0.6).timeout
+	var sprite: Sprite2D = enemy.get_node(^"Sprite2D")
+	var anim: AnimationPlayer = enemy.get_node(^"AnimationPlayer")
+	var sheet: Texture2D = sprite.texture
+	enemy.stagger(PARRY_STAGGER, hero.global_position.x)
+	await physics_frame  # сигнал іде до _physics_process ворогів — тінь ставить наступний
+	await physics_frame
+	ck(anim.current_animation == "stagger" and sprite.texture == sheet and sprite.frame == JACKAL_HURT,
+			"jackal: staggered shows its hurt frame (%s, %s, frame %d)" % [anim.current_animation, sprite.texture.resource_path.get_file(), sprite.frame])
+	ck(sprite.modulate.is_equal_approx(enemy.STUN_TINT), "jackal: the stun tint stays on top (%s)" % sprite.modulate)
+	await create_timer(PARRY_STAGGER * 0.6).timeout
+	ck(anim.current_animation == "stagger" and sprite.frame == JACKAL_HURT, "jackal: still the hurt frame at 60 %% of the stagger (frame %d)" % sprite.frame)
+	await create_timer(PARRY_STAGGER * 0.6).timeout
+	ck(String(anim.current_animation) in NORMAL and sprite.frame != JACKAL_HURT and sprite.texture == sheet,
+			"jackal: back to a normal animation (%s, frame %d)" % [anim.current_animation, sprite.frame])
+	ck(sprite.modulate == Color.WHITE, "jackal: the tint is gone")
 	enemy.queue_free()
 	await create_timer(0.2).timeout
 

@@ -6,6 +6,7 @@ extends SceneTree
 ## кімнатах і проклята піна (D653).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_variety.gd
 
+const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 const SCENES := {
 	"melee": "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn",
 	"tank": "res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn",
@@ -82,6 +83,7 @@ func _initialize() -> void:
 	await process_frame
 
 	await _sizes()
+	_pack_art()
 	await _elites()
 	_placements()
 	await _shield()
@@ -155,6 +157,28 @@ func _sizes() -> void:
 		var key := "DesertRoad.tscn/Fight_Dunes_EnemySpawnPoint%d" % i
 		stable = stable and variety.roll_size("fast", key) == variety.roll_size("fast", key)
 	ck(stable, "the same room and point roll the same every time")
+
+## [1b] Звичайний шакал — шакал зграї в стилі ватажка (D692/D693): аркуш jackal_pack 4×5 клітинок 96×72, ряди як у
+## ватажка (idle 0–1, walk 4–7, attack 8–10, hurt 12, death 16–18), лапи на лінії підлоги, де стоїть бандит.
+func _pack_art() -> void:
+	print("[1b] The ordinary jackal is the pack jackal (D692/D693): its sheet, the leader's rows, paws on the floor line")
+	var jackal: Node = load(SCENES.fast).instantiate()
+	var bandit: Node = load(SCENES.melee).instantiate()
+	var sprite: Sprite2D = jackal.get_node(^"Sprite2D")
+	var anim: AnimationPlayer = jackal.get_node(^"AnimationPlayer")
+	const SHEET := "res://SampleProject/Assets/Characters/Enemies/jackal_pack/sheet.png"
+	ck(sprite.texture.resource_path == SHEET and variety.kind("fast").sheet == SHEET and sprite.hframes == 4 and sprite.vframes == 5
+			and sprite.texture.get_size() == Vector2(384, 360), "enemy_fast and kinds.fast draw %s, 4x5 cells of 96x72" % SHEET.get_file())
+	var rows := {&"idle": [0, 1], &"walk": [4, 5, 6, 7], &"attack": [8, 9, 10], &"stagger": [12], &"death": [16, 17, 18]}
+	for a: StringName in rows:
+		ck(HitAreas.anim_frames(anim, a, 0.0, INF) == Array(rows[a], TYPE_INT, "", null), "%s: frames %s" % [a, rows[a]])
+	ck(sprite.texture.resource_path.get_base_dir().get_file() != "jackal" and not ResourceLoader.exists(
+			"res://SampleProject/Assets/Characters/Enemies/jackal/sheet.png"), "the old jackal art is gone")
+	var paws: float = HitAreas.body_rect(sprite, anim).end.y
+	var floor_line: float = HitAreas.body_rect(bandit.get_node(^"Sprite2D"), bandit.get_node(^"AnimationPlayer")).end.y
+	ck(is_equal_approx(paws, floor_line), "its drawn paws stand where the bandit's feet do (%.1f vs %.1f px below its centre)" % [paws, floor_line])
+	jackal.free()
+	bandit.free()
 
 ## [2] Еліта — властивість виду (D652): лише види з "elite": true мають множники D560 (HP ×2.5, шкода ×1.5); без контуру
 ## й без росту. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.

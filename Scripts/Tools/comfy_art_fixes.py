@@ -410,66 +410,8 @@ job(
     35,
     (96, 112),
 )
-# шакал — кадри Crusenho (48x48 у клітинці 96x72), опис словами. Модель малює його більшим за лист (спроба 2 —
-# 707 пікселів проти 521 в idle, ноги 13 px проти 8-9; «exactly as small» не зменшувало): scale зводить до розміру
-# листа (bbox до 36x29, ~520-580 пікселів)
-JK = ENEMY + "jackal/sheet.png"
-JK_WHO = "the same small spotted brown hyena-like jackal with the dark muzzle, the dark legs and the short dark tail"
-# спроба 1 («knocked back on its hind legs … head jerked up and back») — став дибки й дивився ліворуч; спроба 2
-# («pushed back onto its haunches … front legs stiff and braced forward») — задні ноги прямі, вищий і довгоногий,
-# довгий пухнастий хвіст до землі (в обох кадрах); спроба 3 («sitting back on its haunches … the same short dark
-# stubby tail») — сів, як пес, голова задрана (33 px заввишки й при 0.8), хвіст кільцем по землі; кадр 1 — хвіст
-# стирчить назад, як у бігу
-# спроба 4 («knocked back onto its haunches … head jerked up and back with the snout pointing up … mouth open in a
-# yelp») — знову сів і задер голову, як виє (41 px заввишки). Спроба 5 — два кандидати з idle, обидва «on all four»:
-# зерно 42 («flinching back … still standing on all four legs … its snout raised a little») — стоїть і дивиться вгору,
-# як виє, ноги світлі; узято зерно 43 — скавчить, передні ноги впираються назад, ноги темні, як у листі. Сісти на
-# задні з такою самою висотою модель не змогла жодного разу
-
-
-def jackal_tail_stub(frame):
-    """Кадр 0 (зерно 43, scale 0.83): хвіст моделі — 11 px по діагоналі до землі (рядки 59-69), у листі — короткий
-    темний обрубок (~6 px). Кінець хвоста (рядки 65-69 лівіше задньої ноги, x < 35) — геть, на рядку 64 — темний
-    кінчик між контурами, на 65 — 2 px контуру; лишається ~7 px, як у idle."""
-    out, tip = frame[64, 30].copy(), frame[65, 30].copy()
-    assert [tuple(c[:3]) for c in (out, tip, frame[68, 27])] == [
-        (0x25, 0x13, 0x1A),
-        (0x3D, 0x25, 0x3B),
-        (0x25, 0x13, 0x1A),
-    ], "jackal stagger 0: the long tail is not where it was — the model frame changed"
-    frame[65:70, :35] = 0
-    frame[64, 31:33] = tip
-    frame[65, 31:33] = out
-    return frame
-
-
-job(
-    "stagger_jackal0",
-    cell(JK, 0, 0, 96, 72),
-    (ENEMY + "jackal/stagger.png", (0, 0, 96, 72)),
-    "in the same side view facing right: recoiling from a heavy blow, crouching back on bent hind legs with all "
-    "four paws on the ground, its rump low, its front legs stiff and leaning back, its head tossed up with its mouth "
-    "open in a yelp, the same short dark tail hanging down as in the picture, no taller than in the picture, the "
-    "same tiny size, the same pixel art style",
-    JK_WHO,
-    43,
-    (96, 72),
-    scale=0.83,  # 36x29, 503 пікселі (idle 35x28, 521), плече ~20 px; 0.84 — вже 30 px заввишки
-    post=jackal_tail_stub,  # 33x29, 486 пікселів
-)
-# кадр 1 — з кадру смерті 20 (голова вже трохи нижче, хвіст звисає, як в idle), а не з idle
-job(
-    "stagger_jackal1",
-    cell(JK, 2, 3, 96, 72),
-    (ENEMY + "jackal/stagger.png", (96, 0, 96, 72)),
-    "in the same side view facing right: dazed after a heavy blow, its head hanging low to the ground, its legs "
-    "splayed and wobbling, the same body length and the same short dark tail hanging down as in the picture, the "
-    "same tiny size, the same pixel art style",
-    JK_WHO,
-    41,
-    (96, 72),
-    scale=0.9,  # 530 пікселів, ноги 8-9 px, тулуб завдовжки з idle (38x20: голова звисає наперед)
-)
+# шакал: стагер-кадри Crusenho-гієни прибрано — звичайний шакал тепер шакал зграї (D692/D693, comfy_sprite.py
+# jackal_pack), його поза збою — кадр hurt власного листа
 # скорпіон: дві спроби моделі (зерна 41, 42) — поза моделлю пака: друга клешня кільцем, око на клешні, видовжене
 # тіло. Стагер — його ж кадри смерті 1-2 (хвіст осідає; Crusenho, CC BY 4.0), лише скопійовані в stagger.png
 for k in range(2):

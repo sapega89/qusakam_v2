@@ -1,7 +1,8 @@
 """Листи ворогів зі спрайтів Crusenho (D229, CC BY 4.0 — «Crusenho Agus Hennihuno», crusenho.itch.io):
-tank = скорпіон (`3 Scorpio`), fast = гієна-шакал (`2 Hyena`) з assets/Complete_UI_Essential_Pack_Free/.
+tank = скорпіон (`3 Scorpio`) з assets/Complete_UI_Essential_Pack_Free/. Гієну-шакала (`2 Hyena`) замінив шакал
+зграї (D692/D693, `Enemies/jackal_pack/sheet.png` з comfy_sprite.py).
 
-Сітка та сама, що в сценах enemy_tank / enemy_fast: рядки idle / walk / attack / death, клітинка 96x72,
+Сітка та сама, що в сцені enemy_tank: рядки idle / walk / attack / death, клітинка 96x72,
 ступні на нижньому рядку клітинки, морда праворуч (у паку — ліворуч, віддзеркалюємо), тіло idle по центру.
 Кадри 48x48 без масштабу — у сцені ×1.5, як герой.
 Запуск: python Scripts/Tools/build_desert_enemy_sheets.py
@@ -14,7 +15,6 @@ CW, CH, F = 96, 72, 48
 
 ENEMIES = [  # (тека паку, префікс, тека в проєкті)
     ("3 Scorpio", "Scorpio", "scorpion"),
-    ("2 Hyena", "Hyena", "jackal"),
 ]
 
 for folder, prefix, name in ENEMIES:
