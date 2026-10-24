@@ -21,6 +21,7 @@ const KINDS := {
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_armoured_scorpion.tscn": "armoured_scorpion",
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_heavy_archer.tscn": "heavy_archer",
 	"res://SampleProject/Scenes/Characters/Enemies/enemy_bandit_brute.tscn": "bandit_brute",
+	"res://SampleProject/Scenes/Characters/Enemies/enemy_tower_shield_guard.tscn": "tower_shield_guard",
 	"res://SampleProject/Scenes/Characters/Bosses/brass_collector.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/scorpicore_warrior.tscn": "",
 	"res://SampleProject/Scenes/Characters/Bosses/fire_djinn.tscn": "",
@@ -235,7 +236,7 @@ func _enemy_strikes() -> void:
 	print("[3] An enemy's strike reaches only as far as it is drawn (B128)")
 	var hurt: Array = []
 	hero.damage_token.connect(func(d: int) -> void: hurt.append(d))
-	for case in [["default_enemy", "melee"], ["enemy_fast", "fast"], ["enemy_tank", "tank"], ["enemy_jackal_cursed", "jackal_cursed"], ["enemy_jackal_pack_leader", "jackal_pack_leader"], ["enemy_armoured_scorpion", "armoured_scorpion"], ["enemy_bandit_brute", "bandit_brute"]]:
+	for case in [["default_enemy", "melee"], ["enemy_fast", "fast"], ["enemy_tank", "tank"], ["enemy_jackal_cursed", "jackal_cursed"], ["enemy_jackal_pack_leader", "jackal_pack_leader"], ["enemy_armoured_scorpion", "armoured_scorpion"], ["enemy_bandit_brute", "bandit_brute"], ["enemy_tower_shield_guard", "tower_shield_guard"]]:
 		var enemy: Node = await _stand("res://SampleProject/Scenes/Characters/Enemies/%s.tscn" % case[0], case[1])
 		enemy.lunge = 0.0
 		for inside in [true, false]:

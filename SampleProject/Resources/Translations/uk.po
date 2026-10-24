@@ -2622,6 +2622,12 @@ msgstr "Бандит-громило"
 msgid "A hulking bandit in a red hood who drags a spiked two-handed club behind him. He is slow, but when he hoists the club over his shoulder, a red glint means get out of the way: the smash cannot be blocked, and it hits the ground hard enough to crush you. After it lands he needs a long moment to drag the club back. That is your opening."
 msgstr "Здоровенний бандит у червоному каптурі, що тягне за собою дворучну булаву з шипами. Він повільний, але коли закидає булаву на плече, червоний спалах — геть з дороги: удар не заблокувати, і він гупає в землю так, що розчавить. Після удару йому треба довго тягти булаву назад. Це ваш шанс."
 
+msgid "Tower Shield Guard"
+msgstr "Вартовий з баштовим щитом"
+
+msgid "A big armoured bandit behind a tall iron-bound tower shield. Blows from the front ring off it. A heavy attack knocks the shield aside for a moment; strike his body then, or roll past him and hit his back. He raises it again as soon as he steadies."
+msgstr "Великий бандит у броні за високим баштовим щитом, окутим залізом. Удари спереду відскакують від щита. Важкий удар на мить відбиває щит убік — тоді бийте по тілу, або перекотіться повз нього й бийте в спину. Щойно він оговтається, знову підніме щит."
+
 msgid "Vulture"
 msgstr "Гриф"
 
