@@ -42,7 +42,7 @@ centered = false
 
 [node name="TabletCover1" type="Sprite2D" parent="Back"]
 texture_filter = 1
-position = Vector2(831, 196.5)
+position = Vector2(-33, 196.5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("r1")
 centered = false
@@ -50,6 +50,15 @@ region_enabled = true
 region_rect = Rect2(276, 134, 64, 12)
 
 [node name="TabletCover2" type="Sprite2D" parent="Back"]
+texture_filter = 1
+position = Vector2(831, 196.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+region_enabled = true
+region_rect = Rect2(276, 134, 64, 12)
+
+[node name="TabletCover3" type="Sprite2D" parent="Back"]
 texture_filter = 1
 position = Vector2(1695, 196.5)
 scale = Vector2(1.5, 1.5)

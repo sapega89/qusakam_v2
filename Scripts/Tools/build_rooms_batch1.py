@@ -171,7 +171,7 @@ def lizard_cave() -> None:
     r.backdrop()
     # Псевдолітери на двох табличках backdrop-у (шов повтору: «sham|m mamit»): зверху — орнамент середньої таблички.
     tex = r.res("Texture2D", "res://SampleProject/Assets/Backgrounds/LizardCave/gen_back.png")
-    for i, sx in enumerate((554 * 1.5, 554 * 1.5 + 864)):
+    for i, sx in enumerate((554 * 1.5 - 864, 554 * 1.5, 554 * 1.5 + 864)):
         r.node('[node name="TabletCover%d" type="Sprite2D" parent="Back"]\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
                'scale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false\nregion_enabled = true\nregion_rect = Rect2(276, 134, 64, 12)'
                % (i + 1, sx, 133 * 1.5 - 3, tex))
