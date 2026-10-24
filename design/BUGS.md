@@ -167,6 +167,7 @@ the history, this note keeps only what is open.
 - **Evidence:** Sapega's playtest, 2026-10-23 («гра вилетіла… я спускався з каньйону»)
 - **Severity:** blocker
 - **Found:** 2026-10-23, playtest of the round 12 build
+- **Investigated:** `cloud/b145` (2026-10-24): not reproduced in 17 release-export descents on Linux; most likely a typed call on null (a release segfault, B142 class). Release builds now flush `godot.log` and keep GDScript call stacks, and `Game.load_room()` logs every room swap (D702), so the next crash names its line. `Scripts/Tools/export_drive.sh` replays descents in an export. Details: [[b145]].
 
 ## Playtest intake — 2026-09-29 (Sapega)
 
