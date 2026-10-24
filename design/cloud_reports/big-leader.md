@@ -7,7 +7,7 @@ tags: [cloud, combat, enemies]
 
 # Cloud report: big-leader (the jackal pack leader goes live, D652 / D692)
 
-**Summary.** Done: `jackal_pack_leader` is the first live big kind on the road. It has its own scene on the jackal's behaviour (`enemy_fast` numbers, the D692 sheet `Enemies/jackal_leader/sheet.png`), hit shapes measured from its frames (D519) and its own stats file. It is an elite through `kinds.jackal_pack_leader.elite` (D681), and the slot's level gives it D642 numbers: L2 454 HP / 41 hit. It has a bestiary entry in en/uk. There is one slot, `DesertRoad Fight_Dunes/BigSlot_JackalPackLeader_4`, and it now spawns the leader. D582 holds: no other big or cursed kind is in that fight, and the leader comes alone in the second wave, after a bandit and a jackal (its pack). Tests updated: `verify_enemy_variety` [6], `verify_difficulty` [3b], `verify_hit_areas` [1]/[3]. Capture: CAPTURE_LINE. D-IDs: **D695** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: SUITE_LINE
+**Summary.** Done: `jackal_pack_leader` is the first live big kind on the road. It has its own scene on the jackal's behaviour (`enemy_fast` numbers, the D692 sheet `Enemies/jackal_leader/sheet.png`), hit shapes measured from its frames (D519) and its own stats file. It is an elite through `kinds.jackal_pack_leader.elite` (D681), and the slot's level gives it D642 numbers: L2 454 HP / 41 hit. It has a bestiary entry in en/uk. There is one slot, `DesertRoad Fight_Dunes/BigSlot_JackalPackLeader_4`, and it now spawns the leader. D582 holds: no other big or cursed kind is in that fight, and the leader comes alone in the second wave, after a bandit and a jackal (its pack). Tests updated: `verify_enemy_variety` [6], `verify_difficulty` [3b], `verify_hit_areas` [1]/[3]. Capture: `design/shots/big_leader/pack_leader_dunes.png`. D-IDs: **D695** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: `SUITE: ALL PASS` (117 PASS).
 
 ## D-ID text (for the register; the next free number after D692, lab-curse took D693–D694, renumber as needed)
 
@@ -44,8 +44,14 @@ That is the only `BigSlot_JackalPackLeader_*` on any map (`verify_enemy_variety`
   «attack_range 80 starts a strike that reaches (body contact 28, reach 113)», hit at 3 px inside, missed at 6 px past.
 - `verify_difficulty`: RESULT: ALL PASS. Rows: `elite jackal pack leader L2  2 STRENGTH 130 41 37 4 8 454 47 9 yes`,
   `... SKILLS 148 41 37 4 9 454 44 10 yes`. The «planned jackal_pack_leader» row is gone (the slot is live).
-- Full suite: SUITE_DETAIL
-- Shot: SHOT_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`): `SUITE: ALL PASS`, 117 scripts PASS.
+- Shot: `design/shots/big_leader/pack_leader_dunes.png` (`UI/capture_big_leader.gd`). The hero steps into the
+  `Fight_Dunes` zone, and the log reads «spawned jackal_pack_leader elite=true HP 454 damage 41». Panel 1: the bandit and
+  the jackal are on the hero while the leader runs in from the east. Panel 2: the leader's bite (attack frame 10), beside
+  the jackal, clearly bigger than it and shorter than the hero. No visual defect found.
+- While I was writing the capture, `Input.action_press(&"move_right")` did not move the hero in that script. The capture
+  therefore places the hero inside the trigger. That limit belongs to the capture, not to the game, and the verify scripts
+  do not depend on it.
 
 ## Notes
 
