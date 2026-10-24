@@ -3348,6 +3348,103 @@ CHARACTERS["alisia_v2"]["rows"].append(
 )
 
 
+# D678: вибір великих мобів і повні кадри; громила й вартовий — нові кандидати, звичайні шакали — під стиль ватажка
+def _pick(name, seed, view, out, rows):
+    CHARACTERS[name].update(seed=seed, direction=view, out=out, rows=rows)
+
+
+def _humanoid_rows(weapon_windup, weapon_strike):
+    return [
+        ("idle", [None, "BOB:60"]),
+        (
+            "walk",
+            [
+                "walking to the right in the same view, his left leg stepping forward and his right leg back",
+                "walking to the right in the same view, both legs together under his body",
+                "walking to the right in the same view, his right leg stepping forward and his left leg back",
+                "walking to the right in the same view, both legs together under his body",
+            ],
+        ),
+        ("attack", [weapon_windup, weapon_strike, "recovering back into his stance after the attack"]),
+        ("hurt", ["recoiling backwards from a heavy hit, head thrown back"]),
+        (
+            "death",
+            ["staggering backwards, dropping his weapon", "fallen to his knees, arms limp", "lying on his back on the ground, eyes closed"],
+        ),
+    ]
+
+
+_pick("big_jackal_leader", 132, SIDE_VIEW % {"p": "its"}, "SampleProject/Assets/Characters/Enemies/jackal_leader/sheet.png", [
+    ("idle", [None, "BOB:40"]),
+    ("walk", [
+        "running fast to the right in the same view, its front legs stretched forward and its hind legs pushed back",
+        "running fast to the right in the same view, all four legs gathered under its body",
+        "running fast to the right in the same view, its front legs pushed back and its hind legs reaching forward",
+        "running fast to the right in the same view, all four legs gathered under its body",
+    ]),
+    ("attack", [
+        "crouching low on all four legs, head down, fangs bared, ready to leap",
+        "leaping forward through the air to the right, jaws wide open",
+        "biting down hard, landing on its front legs, jaws snapping shut",
+    ]),
+    ("hurt", ["recoiling from a hit, head tossed up, yelping"]),
+    ("death", ["staggering, legs buckling", "collapsing onto its side", "lying dead on its side, legs limp"]),
+])
+_pick("big_armoured_scorpion", 134, THREE_QUARTER % {"p": "its"}, "SampleProject/Assets/Characters/Enemies/scorpion_armoured/sheet.png", [
+    ("idle", [None, "BOB:52"]),
+    ("walk", [
+        "scuttling to the right in the same view, the legs on its near side reaching forward",
+        "scuttling to the right in the same view, the legs on its near side pushed back",
+    ]),
+    ("attack", [
+        "its tail drawn back high over its back, pincers spread wide open, about to strike",
+        "its tail lashed forward over its head, the stinger stabbing down in front of its pincers",
+        "both pincers snapping shut forward",
+    ]),
+    ("hurt", ["recoiling from a hit, pincers raised, its body tilted back"]),
+    ("death", ["staggering, legs buckling", "collapsing flat, tail limp", "lying upside down on its back, legs curled"]),
+])
+_pick("big_crossbowman", 137, THREE_QUARTER % {"p": "his"}, "SampleProject/Assets/Characters/Enemies/archer_heavy/sheet.png",
+      _humanoid_rows("raising the bow, drawing the string back to his cheek, aiming forward", "the arrow just loosed, the bow arm straight forward, the string hand pulled back"))
+_pick("big_old_vulture", 140, THREE_QUARTER % {"p": "its"}, "SampleProject/Assets/Characters/Enemies/vulture_old/sheet.png", [
+    ("fly", [None, "flying, its huge wings stretched out level with its body", "flying, its huge wings swept down below its body", "flying, its huge wings stretched out level with its body"]),
+    ("dive", ["diving steeply down to the right, wings folded back, talons thrust forward", "striking with its talons open, wings half spread, beak open", "pulling up out of the dive, wings spread wide and beating"]),
+    ("hurt", ["recoiling in mid-air from a hit, feathers ruffled, wings flung up"]),
+    ("death", ["tumbling in the air, wings limp", "falling head first, wings folded limp", "lying on its back on the ground, wings spread limp"]),
+])
+for _n in ("big_jackal_leader", "big_armoured_scorpion", "big_crossbowman", "big_old_vulture"):
+    CHARACTERS[_n]["who"] = CHARACTERS[_n]["who"]  # той самий опис з кандидата
+CHARACTERS["big_bandit_brute"]["base"] = CHARACTERS["big_bandit_brute"]["base"].replace(
+    "a heavy two-handed spiked club resting on his shoulder",
+    "dragging a huge heavy two-handed spiked club behind him with one hand, its heavy end scraping the ground behind his heels",
+)
+CHARACTERS["big_bandit_brute"]["candidates"] = ("design/shots/candidates/big_bandit_brute.png", [
+    (142, False, SIDE_VIEW % {"p": "his"}, "side"), (143, False, SIDE_VIEW % {"p": "his"}, "side"),
+    (142, False, THREE_QUARTER % {"p": "his"}, "3/4"), (143, False, THREE_QUARTER % {"p": "his"}, "3/4")])
+CHARACTERS["big_tower_guard"]["base"] = CHARACTERS["big_tower_guard"]["base"].replace(
+    "a big armoured man behind a tall rectangular wooden tower shield bound with iron",
+    "a big armoured man holding a tall rectangular wooden tower shield bound with iron firmly in front of his body, facing forward toward the enemy, the shield covering him from chin to knees, not on his back",
+)
+CHARACTERS["big_tower_guard"]["candidates"] = ("design/shots/candidates/big_tower_guard.png", [
+    (144, False, SIDE_VIEW % {"p": "his"}, "side"), (145, False, SIDE_VIEW % {"p": "his"}, "side"),
+    (144, False, THREE_QUARTER % {"p": "his"}, "3/4"), (145, False, THREE_QUARTER % {"p": "his"}, "3/4")])
+CHARACTERS["jackal_pack"] = dict(
+    candidates=("design/shots/candidates/jackal_pack.png", [
+        (146, False, SIDE_VIEW % {"p": "its"}, "side"), (147, False, SIDE_VIEW % {"p": "its"}, "side"),
+        (146, False, THREE_QUARTER % {"p": "its"}, "3/4"), (147, False, THREE_QUARTER % {"p": "its"}, "3/4")]),
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    cell=(96, 72),
+    up=12,
+    seed=146,
+    colors=16,
+    who="the same lean desert jackal with the dark brown fur and the lighter belly",
+    base="Replace the character in picture 1 with an ordinary desert jackal of the pack: a lean jackal with dark brown "
+    "fur, a lighter sandy belly and throat, tall pointed ears, a narrow snout with bared fangs, amber eyes, a bushy tail, "
+    "standing low and alert — " + PIXEL_STYLE + ", smaller and slimmer than the pack leader, about three quarters of "
+    "the picture wide. §." + MAGENTA_BG,
+)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())
