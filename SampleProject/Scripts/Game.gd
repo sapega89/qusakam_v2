@@ -386,11 +386,15 @@ func load_room(room_ref: String) -> void:
 	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
 	# синхронно, а MetSys.current_room одразу стає новою.
 	var old_map := map
+	# B145: падіння зібраної гри на зміні кімнати лишає в godot.log лише print (flush_stdout_on_print) —
+	# ці два рядки кажуть, яка заміна йшла і чи дійшла до кінця.
+	print("🚪 Game: room swap %s → %s" % [old_map.scene_file_path.get_file(), path.get_file()])
 	var old_room: Node = MetSys.get_current_room_instance()
 	old_room.get_parent().remove_child(old_room)
 	old_room.queue_free()
 	map = null
 	super.load_room(path)
+	print("🚪 Game: room swap done, %s in" % path.get_file())
 	old_map.queue_free()
 	tree.paused = was_paused
 	_lift_fade()

@@ -23,6 +23,7 @@ run/main_scene="res://SampleProject/MainMenu.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.6", "Forward Plus")
 run/max_fps=60
+run/flush_stdout_on_print=true
 config/icon="res://icon.svg"
 
 [audio]
@@ -54,6 +55,7 @@ DialogueQuest="*uid://dt3pmybyly12b"
 [debug]
 
 file_logging/max_log_files=50
+settings/gdscript/always_track_call_stacks=true
 
 [dialogue_quest]
 
