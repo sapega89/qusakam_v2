@@ -182,7 +182,9 @@ func _elites() -> void:
 			ck(ResourceLoader.exists(scene) and ResourceLoader.exists("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id),
 					"%s has its sheet, so it has its scene and stats" % id)
 		else:
-			ck(id in PLANNED, "%s: disabled until its sheet exists (%s)" % [id, variety.kind(id).sheet])
+			ck(id in PLANNED, "%s: disabled until its sheet, scene and stats exist (%s)" % [id, variety.kind(id).sheet])
+			if ResourceLoader.exists(variety.kind(id).sheet):
+				print("  INFO %s: the sheet has landed, the kind waits for its scene and stats" % id)
 
 	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_melee.tres")
 	var plain: Node = _spawn("melee", "medium", -200)

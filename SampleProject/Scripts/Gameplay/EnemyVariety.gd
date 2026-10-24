@@ -7,6 +7,7 @@ extends RefCounted
 ## Більший ворог — свій вид зі своїм артом, і саме ці види — еліта (D652); вид без аркуша ще не зʼявляється (available).
 
 const DATA_PATH := "res://SampleProject/Resources/Data/enemy_variety.json"
+const STATS_PATH := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 const SIZES: Array[String] = ["small", "medium"]
 
 static var _data: Dictionary = {}
@@ -61,9 +62,13 @@ static func is_elite(id: String) -> bool:
 	return kind(id).elite
 
 
-## Вид може зʼявитись, коли його аркуш уже є (D652: без арту — не спавниться).
+## Вид може зʼявитись, коли його аркуш уже є (D652: без арту — не спавниться). Великому виду ще потрібні його сцена
+## і статистика: аркуш може прийти раніше за них (jackal_cursed, D675), і тоді точка спавнила б порожню сцену.
 static func available(id: String) -> bool:
-	return ResourceLoader.exists(kind(id).sheet)
+	var k := kind(id)
+	if not ResourceLoader.exists(k.sheet):
+		return false
+	return not k.has("base") or (ResourceLoader.exists(k.scene) and ResourceLoader.exists(STATS_PATH % id))
 
 
 ## Розмір виду [param id] за його вагами sizes, засіяний [param key].
