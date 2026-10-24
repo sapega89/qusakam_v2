@@ -29,6 +29,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/urizen/enter.png" id="30_qp2sy"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Companions/alisia/lie.png" id="alisia_lie"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lock"]
 size = Vector2(16, 192)
@@ -261,6 +262,14 @@ region = Rect2(640, 0, 64, 64)
 atlas = ExtResource("26_6epdc")
 region = Rect2(704, 0, 64, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_alisia_lie"]
+atlas = ExtResource("alisia_lie")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_alisia_sit_up"]
+atlas = ExtResource("alisia_lie")
+region = Rect2(64, 0, 64, 64)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_v7718"]
 animations = [{
 "frames": [{
@@ -326,6 +335,22 @@ animations = [{
 "loop": true,
 "name": &"run",
 "speed": 16.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_alisia_lie")
+}],
+"loop": false,
+"name": &"lie",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_alisia_sit_up")
+}],
+"loop": false,
+"name": &"sit_up",
+"speed": 5.0
 }]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2d7bw"]
@@ -665,6 +690,9 @@ position = Vector2(925, 250)
 
 [node name="Table" type="Marker2D" parent="Marks" unique_id=1375022378]
 position = Vector2(925, 384)
+
+[node name="TableTop" type="Marker2D" parent="Marks" unique_id=1375022379]
+position = Vector2(925, 318)
 
 [node name="ScientistTable" type="Marker2D" parent="Marks" unique_id=1911081280]
 position = Vector2(850, 384)

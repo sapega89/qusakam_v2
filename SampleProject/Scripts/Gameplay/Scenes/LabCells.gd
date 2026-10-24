@@ -2,7 +2,8 @@ extends Node2D
 
 ## Камери лабораторії (BACKLOG 17, D303–D305, design/lab_story_plan.md, біти 4–6).
 ##   CUTSCENE — одна кат-сцена (D308, пропуск — до пробудження): Кусакам у клітці; алхімік веде Алісию до
-##              операційного столу й колє її (кішка лишається в камері, B126); заводять в'язня, схожого на бандита;
+##              операційного столу, вона лежить на ньому, поки він колє, і сідає приголомшена (B127; кішка лишається
+##              в камері, B126); заводять в'язня, схожого на бандита;
 ##              він вигукує закляття вигаданою мовою (Q64) — з нього виривається вогняний джин і тікає крізь стелю;
 ##              вибухи, землетрус, Кусакам непритомніє. Алхімік і в'язні в камерах реагують (Cutscene.react, D460):
 ##              «!» на крик, крапля поту на джина, біль від вибуху поруч. Темрява — і він прокидається: ґрати зникли,
@@ -35,6 +36,8 @@ const DJINN_FEET := Vector2(0, -16)
 const PAN_TIME := 1.0
 const LEAD_TIME := 1.6
 const INJECT_HOLD := 0.6
+## Алісія лежить на столі до уколу (B127).
+const LIE_HOLD := 0.5
 const PRISONER_WALK := 2.4
 const SHOUT_SHAKE := 0.6
 const DJINN_RISE := 0.8
@@ -94,20 +97,27 @@ func _cells_cutscene() -> void:
 	cs.player.get_node(^"Sprite2D").flip_h = false
 	await cs.say("Lab_Cells_Arrival")
 
-	# Алісию виводять із камери до столу й колють; кішка лишається в камері (B126) — іде лише її спрайт
+	# Алісию виводять із камери й кладуть на операційний стіл (B127): лежить на спині, укол, сідає приголомшена,
+	# злазить і йде назад; кішка лишається в камері (B126) — іде лише її спрайт
 	await cs.pan_to(($Marks/Look as Node2D).global_position, PAN_TIME)
 	var alisia: Node2D = $CompanionNPC_alisia
 	var alisia_body: AnimatedSprite2D = $CompanionNPC_alisia/Sprite
-	var cell_x := alisia_body.global_position.x
+	var cell := alisia_body.global_position
+	var table_x := ($Marks/Table as Node2D).global_position.x
 	$Bars/Bars3.hide()
 	_walk(scientist, ($Marks/ScientistTable as Node2D).global_position, LEAD_TIME, cs)
-	await _run(alisia_body, Vector2(($Marks/Table as Node2D).global_position.x, alisia_body.global_position.y), LEAD_TIME, cs)
+	await _run(alisia_body, Vector2(table_x, cell.y), LEAD_TIME, cs)
+	alisia_body.global_position = ($Marks/TableTop as Node2D).global_position  # кадри lie — разом зі своїм кам'яним ложем
+	alisia_body.play(&"lie")
+	await cs.wait(LIE_HOLD)
 	_play(scientist, &"inject")
 	await cs.react(alisia, &"pain")  # здригається від уколу (D460)
 	await cs.wait(INJECT_HOLD)
 	_play(scientist, &"idle")
+	alisia_body.play(&"sit_up")
 	await cs.say("Lab_Cells_Injection")
-	await _run(alisia_body, Vector2(cell_x, alisia_body.global_position.y), LEAD_TIME, cs)
+	alisia_body.global_position = Vector2(table_x, cell.y)
+	await _run(alisia_body, cell, LEAD_TIME, cs)
 	$Bars/Bars3.show()
 
 	# В'язня заводять зі сходу; закляття (Q64) — і з нього виривається джин
