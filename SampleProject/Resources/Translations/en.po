@@ -2608,6 +2608,12 @@ msgstr "Vulture"
 msgid "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
 msgstr "A carrion bird that circles high over the open desert, out of reach of any blade. When it rises and its beak glints red it is about to dive straight at where you stand — roll under it, then strike while it skims low and climbs back."
 
+msgid "Old Vulture"
+msgstr "Old Vulture"
+
+msgid "A bald-necked vulture twice the size of the others, its wings wide enough to shade a cart. It circles out of reach like its smaller kin, and its beak glints red before the dive — but the dive hits like a falling rock, and it takes many blows before it drops. Roll under it, then strike while it skims low."
+msgstr "A bald-necked vulture twice the size of the others, its wings wide enough to shade a cart. It circles out of reach like its smaller kin, and its beak glints red before the dive — but the dive hits like a falling rock, and it takes many blows before it drops. Roll under it, then strike while it skims low."
+
 msgid "Cave Bat"
 msgstr "Cave Bat"
 

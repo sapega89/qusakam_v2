@@ -86,6 +86,7 @@ func _initialize() -> void:
 	_placements()
 	await _shield()
 	await _foam()
+	await _old_vulture()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -369,3 +370,56 @@ func _foam() -> void:
 	ck(not plain.get_node(^"Sprite2D").has_node(^"CursedFoam"), "an ordinary jackal has no foam")
 	jackal.queue_free()
 	plain.queue_free()
+
+
+## [7] Старий гриф (D652, D692): живий великий вид — свій аркуш і сцена, поведінка грифа (летить, піке), числа еліти
+## на рівні бою (D642). Точок BigSlot_OldVulture_* немає (D682): перший гриф дороги — звичайний і сам (D582), а в
+## Каравані вже є великий скорпіон. Тест бере точку грифа з big_kind = old_vulture на рівнях дороги, де літають грифи.
+func _old_vulture() -> void:
+	print("[7] The old vulture is live: its own art, the vulture's behaviour, elite numbers at the road's levels")
+	const ID := "old_vulture"
+	ck(variety.available(ID) and variety.kind(ID).sheet.ends_with("vulture_old/sheet.png")
+			and variety.kind(ID).scene == "res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn", "its sheet, scene and stats exist")
+	var vulture: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_vulture.tres")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % ID)
+	ck(stats.enemy_type == ID and stats.flying and stats.flight_attack == vulture.flight_attack and stats.tell == vulture.tell
+			and stats.max_health == vulture.max_health and is_equal_approx(stats.base_damage, vulture.base_damage)
+			and is_equal_approx(stats.attack_windup, vulture.attack_windup) and is_equal_approx(stats.hover_height, vulture.hover_height)
+			and stats.xp_reward == vulture.xp_reward,
+			"the vulture's behaviour: flies, %s, %s tell, base HP %d / damage %.0f / XP %d as the vulture"
+			% [stats.flight_attack, stats.tell, stats.max_health, stats.base_damage, stats.xp_reward])
+	var placed: Array = []
+	for file in DirAccess.get_files_at("res://SampleProject/Maps"):
+		if not file.ends_with(".tscn"):
+			continue
+		var room: Node = load("res://SampleProject/Maps/" + file).instantiate()
+		for p: Node in room.find_children("*", "Node2D", true, false):
+			if p.get_script() == spawn_script and (p.big_kind == ID or p.enemy_type == ID):
+				placed.append("%s/%s" % [file.get_basename(), p.get_parent().name])
+		room.free()
+	ck(placed.is_empty(), "no map places it yet (D682 made no old-vulture slot) (%s)" % [placed])
+	for level in [2, 3]:
+		var point: Node = spawn_script.new()
+		point.enemy_type = "vulture"
+		point.big_kind = ID
+		ck(point.kind() == ID and spawn_script.scene_path(point.kind()) == variety.kind(ID).scene, "a vulture point with big_kind old_vulture spawns it")
+		var enemy: Node = load(variety.kind(ID).scene).instantiate()
+		enemy.enemy_stats = point.enemy_stats()
+		enemy.level = level
+		enemy.position = ARENA + Vector2(0, -150)
+		game.map.add_child(enemy)
+		await process_frame
+		var grown: Dictionary = variety.level(level)
+		ck(enemy.elite and enemy.size_kind == "medium" and enemy.flying and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * 1.5) and enemy.xp_reward == stats.xp_reward,
+				"level %d: a flying elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
+		enemy.queue_free()
+		point.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == ID)
+	var en: Translation = load("res://SampleProject/Resources/Translations/en.po")
+	var uk: Translation = load("res://SampleProject/Resources/Translations/uk.po")
+	ck(entry.size() == 1 and entry[0].name == "Old Vulture" and en.get_message(entry[0].name) != StringName() and en.get_message(entry[0].text) != StringName()
+			and String(uk.get_message(entry[0].name)) == "Старий гриф" and uk.get_message(entry[0].text) != StringName(),
+			"bestiary: Old Vulture, in English and Ukrainian")
+	await process_frame

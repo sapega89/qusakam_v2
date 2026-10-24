@@ -554,6 +554,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(3, 5)  # D560: між бандитом і скорпіоном
 		"vulture":
 			return randi_range(1, 3)  # D445: як fast
+		"old_vulture":
+			return randi_range(1, 3)  # D652: старий гриф — числа грифа, еліта множить решту
 		"bat":
 			return randi_range(0, 1)  # D445: слабкий, ходить зграйкою
 		"fly":

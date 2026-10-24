@@ -1,0 +1,126 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/vulture_old/sheet.png" id="2_sheet"]
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "walk"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_attack"]
+resource_name = "attack"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [4, 5, 6]
+}
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "death"
+length = 0.6
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [12, 13, 14]
+}
+
+[sub_resource type="Animation" id="Animation_stagger"]
+resource_name = "stagger"
+length = 1.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
+[sub_resource type="RectangleShape2D" id="Shape_strike"]
+resource_local_to_scene = true
+size = Vector2(88, 91)
+
+[sub_resource type="RectangleShape2D" id="Shape_hurt"]
+resource_local_to_scene = true
+size = Vector2(96, 93)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_old_vulture"]
+_data = {
+&"attack": SubResource("Animation_attack"),
+&"death": SubResource("Animation_death"),
+&"idle": SubResource("Animation_idle"),
+&"walk": SubResource("Animation_walk"),
+&"stagger": SubResource("Animation_stagger")
+}
+
+[node name="EnemyOldVulture" instance=ExtResource("1_base")]
+
+[node name="Sprite2D" parent="." index="2"]
+metadata/tell_at = Vector2(24, -10)
+texture = ExtResource("2_sheet")
+offset = Vector2(0, 0)
+scale = Vector2(1, 1)
+hframes = 4
+vframes = 4
+frame = 0
+
+[node name="AnimationPlayer" parent="." index="3"]
+libraries/ = SubResource("AnimationLibrary_old_vulture")
+metadata/attack_strike_time = 0.6
+
+[node name="CollisionShape2D" parent="hitbox"]
+position = Vector2(-4, -0.5)
+shape = SubResource("Shape_strike")
+
+[node name="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -1.5)
+shape = SubResource("Shape_hurt")
