@@ -90,6 +90,12 @@ Sapega's notes on the Tails of Iron map reference, 2026-10-24:
   detour is only on the way **to** the gate.
 - «ще більше, може до села треба добігти якось, десь спуститись, десь піднятись» — the way from the bridge to the
   village is a mountain path, a scree slide down into a stream gorge and a climb up rock ledges (v3).
+- «там шакали і грифи, але чи буде їх цікаво бити кулаками? думаю, ні; тоді просто біг від бою до села, просто
+  красиві пейзажі. І поки біжимо, на фоні можна розповісти, що горить село, дим якийсь зі сторони села, що впав
+  бар'єр. І в селі, до речі, мають бути, мабуть, руїни, і все підпалене» — the way from the bridge to the village
+  (path, scree, gorge, ledges) has **no fights**: the hero has only fists then. It is a run through landscapes that
+  tell the story in the background: smoke rising from the village side, the fallen barrier. The **village is in
+  ruins and burnt** (new backdrop art; check the village story beats against it).
 - «каньйон — це маленька локація, вона створена тільки для медитації і як начальна» — the Canyon stays small (start and
   meditation, 4 screens as today).
 
