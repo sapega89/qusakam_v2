@@ -75,6 +75,29 @@ cave chamber whose wall is a faded dragon mural; a stone gatehouse cellar with b
 
 Out of this batch: the City rooftops, the tavern attic, the Mayor Hall archive, the Laboratory branches (batch 2).
 
+## Region v2 — Canyon of Whispers at Tails of Iron scale (Sapega, 2026-10-24, draft in Figma `544:6590`)
+
+Sapega's notes on the Tails of Iron map reference, 2026-10-24:
+- «карта відчувається дуже довгою, в нас так само має бути» — the region is long: about 62 screens instead of 18.
+- «можливо мають бути переходи, щоби було відчутно, що ти заходиш кудись, але дорога має бути цільною, щоби
+  відчувалось, що ти кудись біжиш» — the **road is one seamless run** (MetSys borders, no doors, about 20 screens from
+  the canyon floor to the gates); side places (caves, camp, ruins, houses) are entered **through doors with a fade**.
+- «по дорозі до міста ти добігти не можеш, і треба спуститись в якусь печеру, прохід» — before the gates the road is
+  cut by a **chasm**: down into a dry river bed, along an old **aqueduct** underground, up again at the gate approach.
+  From the far side the hero drops a bridge over the chasm, and the road becomes continuous (a shortcut).
+- «шлях у місто через браму — це нормально, бо ми захистили того, на кого напали» / «щоб дійти до локації брама,
+  треба пройти десь» — the City is still entered **through the gate** after the fight for the attacked guard; the
+  detour is only on the way **to** the gate.
+- «каньйон — це маленька локація, вона створена тільки для медитації і як начальна» — the Canyon stays small (start and
+  meditation, 4 screens as today).
+
+Three levels: the top (canyon, bridge, village, the grandfather's house and attic), the road, and the underground
+(the cave under the bridge as the way down with a ladder lowered later from below, the lizard caves under the road
+with the shrine, the old ruins behind the bandit leader's key as an optional loop into the aqueduct). Side branches up:
+the Mesa climb to the Mesa top, the bandit camp on the dunes with its gate as a shortcut to Zahra's Rest. Secrets: the
+dragon mural, the smugglers' stash. Waiting on Sapega's OK of the drawing, then backdrops (ComfyUI) and one routine
+(memory: map work in one routine).
+
 ## What exists today
 | Thing | Where | State |
 |---|---|---|
