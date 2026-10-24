@@ -1,23 +1,26 @@
 {
-	"_comment": "D565, D458: the demo's three locations, each a set of MetSys rooms (scene names in SampleProject/Maps). entries — rooms the hero first comes into the location by. D492's respawn rule works per location: coming back into a location the hero has left brings its ordinary enemies back. Read by Scripts/Systems/LocationDB.gd; checked by verify_locations.gd. The world-map position is slice 2's (world_structure_plan), not set here.",
+	"_comment": "D565, D458: the demo's three locations, each a set of MetSys rooms (scene names in SampleProject/Maps). entries — rooms the hero first comes into the location by. D492's respawn rule works per location: coming back into a location the hero has left brings its ordinary enemies back. Read by Scripts/Systems/LocationDB.gd; checked by verify_locations.gd. map_pos — the top-left corner of the location's pin plate on the World Map tab, in 1920×1080 frame pixels (Figma 539:6472, world_map_spec).",
 	"locations": [
 		{
 			"id": "canyon_of_whispers",
 			"name": "Canyon of Whispers",
 			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb"],
-			"entries": ["Canyon"]
+			"entries": ["Canyon"],
+			"map_pos": [1380, 430]
 		},
 		{
 			"id": "city",
 			"name": "The City",
 			"rooms": ["CityGates", "City", "MayorHall", "GatehouseCellar"],
-			"entries": ["CityGates"]
+			"entries": ["CityGates"],
+			"map_pos": [1200, 260]
 		},
 		{
 			"id": "laboratory",
 			"name": "The Laboratory",
 			"rooms": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss"],
-			"entries": ["LabCells"]
+			"entries": ["LabCells"],
+			"map_pos": [1580, 120]
 		}
 	]
 }
