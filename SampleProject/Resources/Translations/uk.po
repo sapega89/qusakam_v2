@@ -2401,6 +2401,12 @@ msgstr "Шакал"
 msgid "Giant Scorpion"
 msgstr "Велетенський скорпіон"
 
+msgid "Armoured Scorpion"
+msgstr "Броньований скорпіон"
+
+msgid "A scorpion the size of a cart, plated in thick sand-yellow armour. Like its smaller kin it shrugs off blows to the front and will not flinch; its tail rises high before the sting comes down, and the pincers snap shut after it. Roll behind it and work at its back — it takes a long time to fall."
+msgstr "Скорпіон завбільшки з віз, закутий у товсту пісочно-жовту броню. Як і менші родичі, він майже не відчуває ударів спереду й не збивається з атаки; хвіст високо здіймається перед жалом, а за ним стуляються клешні. Перекотіться йому за спину й бийте ззаду — падає він довго."
+
 msgid "The Brass Collector"
 msgstr "Мідний Збирач"
 

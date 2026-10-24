@@ -86,6 +86,7 @@ func _initialize() -> void:
 	_placements()
 	await _shield()
 	await _foam()
+	await _armoured_scorpion()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -369,3 +370,43 @@ func _foam() -> void:
 	ck(not plain.get_node(^"Sprite2D").has_node(^"CursedFoam"), "an ordinary jackal has no foam")
 	jackal.queue_free()
 	plain.queue_free()
+
+
+## [6] Броньований скорпіон (D652, D692): живий великий вид — свій аркуш і сцена, поведінка скорпіона (tank), числа еліти
+## на рівні бою (D642); обидві його точки BigSlot_ArmouredScorpion_* спавнять його; є в бестіарії англійською й українською.
+func _armoured_scorpion() -> void:
+	print("[6] The armoured scorpion is live: its own art, the scorpion's behaviour, elite numbers at its fight's level")
+	const ID := "armoured_scorpion"
+	ck(variety.available(ID) and variety.kind(ID).sheet.ends_with("scorpion_armoured/sheet.png"), "its sheet, scene and stats exist")
+	var tank: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_tank.tres")
+	var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % ID)
+	ck(stats.enemy_type == ID and stats.super_armor == tank.super_armor and is_equal_approx(stats.front_damage, tank.front_damage)
+			and stats.tell == tank.tell and stats.finisher_tell == tank.finisher_tell and stats.max_health == tank.max_health
+			and is_equal_approx(stats.base_damage, tank.base_damage) and is_equal_approx(stats.attack_windup, tank.attack_windup),
+			"the scorpion's behaviour: armoured front x%.1f, super armour, %s tell, base HP %d / damage %.0f as the scorpion"
+			% [stats.front_damage, stats.tell, stats.max_health, stats.base_damage])
+	for slot: Array in [["DesertRoad", "Fight_Caravan"], ["Laboratory", "Fight_Lower"]]:
+		var room: Node = load("res://SampleProject/Maps/%s.tscn" % slot[0]).instantiate()
+		var point: Node = room.get_node(NodePath("%s/BigSlot_ArmouredScorpion_1" % slot[1]))
+		var level: int = point.get_parent().enemy_level
+		ck(point.kind() == ID and spawn_script.scene_path(point.kind()) == variety.kind(ID).scene,
+				"%s/%s: BigSlot_ArmouredScorpion_1 spawns it" % slot)
+		var enemy: Node = load(variety.kind(ID).scene).instantiate()
+		enemy.enemy_stats = point.enemy_stats()
+		enemy.level = level
+		enemy.position = ARENA
+		game.map.add_child(enemy)
+		await process_frame
+		var grown: Dictionary = variety.level(level)
+		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * 1.5) and enemy.xp_reward == stats.xp_reward,
+				"%s, level %d: an elite, HP %d, damage %.1f, XP %d" % [slot[1], level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
+		enemy.queue_free()
+		room.free()
+	var bestiary: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/bestiary.json"))
+	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == ID)
+	var en: Translation = load("res://SampleProject/Resources/Translations/en.po")
+	var uk: Translation = load("res://SampleProject/Resources/Translations/uk.po")
+	ck(entry.size() == 1 and en.get_message(entry[0].name) != StringName() and en.get_message(entry[0].text) != StringName() and entry[0].name == "Armoured Scorpion" and String(uk.get_message(entry[0].name)) == "Броньований скорпіон"
+			and uk.get_message(entry[0].text) != StringName(), "bestiary: Armoured Scorpion, in English and Ukrainian")
+	await process_frame

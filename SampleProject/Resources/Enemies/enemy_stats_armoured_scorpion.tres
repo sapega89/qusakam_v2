@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/EnemyStats.gd" id="1_armoured_scorpion"]
+
+[resource]
+script = ExtResource("1_armoured_scorpion")
+enemy_type = "armoured_scorpion"
+speed = 50.0
+base_damage = 28.0
+attack_windup = 1.0
+attack_active_time = 0.25
+super_armor = true
+front_damage = 0.3
+attack_cooldown = 2.0
+detection_range = 300.0
+attack_range = 66.0
+chase_range = 350.0
+max_health = 215
+poise = 6
+stagger_time = 0.6
+combo_hits = 1
+xp_reward = 70
+tell = "dodge"
+finisher_tell = "dodge"
+recovery = 0.7
+back_off = 0.0
