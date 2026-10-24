@@ -2399,6 +2399,12 @@ msgstr "Jackal"
 msgid "Giant Scorpion"
 msgstr "Giant Scorpion"
 
+msgid "Armoured Scorpion"
+msgstr "Armoured Scorpion"
+
+msgid "A scorpion the size of a cart, plated in thick sand-yellow armour. Like its smaller kin it shrugs off blows to the front and will not flinch; its tail rises high before the sting comes down, and the pincers snap shut after it. Roll behind it and work at its back — it takes a long time to fall."
+msgstr "A scorpion the size of a cart, plated in thick sand-yellow armour. Like its smaller kin it shrugs off blows to the front and will not flinch; its tail rises high before the sting comes down, and the pincers snap shut after it. Roll behind it and work at its back — it takes a long time to fall."
+
 msgid "The Brass Collector"
 msgstr "The Brass Collector"
 

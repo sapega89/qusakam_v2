@@ -153,6 +153,13 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
+### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
+- **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
+- **Expected:** a regenerated sheet faces one way in every row
+- **Got:** idle, attack and death are built from the candidate (seed 134, three-quarter), which faces left, while walk and hurt are prompted "to the right". The committed sheet was fixed by mirroring the cells; a re-run of the generator mixes them again. Needs `FLIP` on those rows or a right-facing base. Check the other D692 picks (`jackal_leader`, `archer_heavy`, `vulture_old`) the same way: idle and walk should face the same way.
+- **Severity:** minor (tooling)
+- **Found:** 2026-10-24, big-scorpion report
+
 ### B147 — the heavy archer's attack skips its loose frame
 - **Where:** `cloud/big-archer` → `enemy_heavy_archer.tscn` attack animation (8 → 10)
 - **Expected:** draw 8 → loose 9 → recover 10

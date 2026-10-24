@@ -546,6 +546,8 @@ func _calculate_coin_drop() -> int:
 			return randi_range(2, 4)  # 2-4 coins
 		"tank":
 			return randi_range(4, 6)  # 4-6 coins (harder, more reward)
+		"armoured_scorpion":
+			return randi_range(6, 9)  # D652: великий броньований скорпіон, еліта
 		"fast":
 			return randi_range(1, 3)  # 1-3 coins
 		"archer":

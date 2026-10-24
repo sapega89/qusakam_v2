@@ -26,7 +26,8 @@ const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
 		"jackal_cursed": "cursed jackal",
-		"jackal_pack_leader": "jackal pack leader"}
+		"jackal_pack_leader": "jackal pack leader",
+		"armoured_scorpion": "armoured scorpion"}
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
 ## Очки атрибутів SKILLS-збірки на кожен рівень.
@@ -79,6 +80,14 @@ func _initialize() -> void:
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")
 	for fight: Dictionary in fights:
 		ck(fight.enemy == fight.hero, "%s: enemy_level %d, hero level %d" % [fight.fight, fight.enemy, fight.hero])
+	print("[0b] D582: a big or cursed kind that is live meets the hero first with no other big or cursed kind beside it")
+	var met := {}
+	for fight: Dictionary in fights:
+		for id: String in fight.big:
+			if Variety.available(id) and not met.has(id):
+				met[id] = true
+				var others: Array = fight.big.filter(func(other: String) -> bool: return other != id)
+				ck(others.is_empty(), "%s first meets the hero in %s, with no other big or cursed kind (%s)" % [id, fight.fight, others])
 	var rows: Array[Dictionary] = []
 	print("    the table: H = enemy hits that kill the hero, N = hero hits that kill it (flask in H+F)")
 	print("    %-26s %3s %-8s %5s %4s %4s %3s %4s %5s %4s %4s %s" % ["enemy", "lvl", "build", "HP", "hit", "got", "H", "H+F", "e.HP", "atk", "N", "wins"])
@@ -166,7 +175,9 @@ func _meetings() -> Array[Dictionary]:
 				var fight: String = "%s/%s" % [room_name, spawner.name if spawner else node.name]
 				if not starts.has(fight):
 					starts[fight] = xp.current_level
-					fights.append({"fight": fight, "hero": xp.current_level, "enemy": spawner.enemy_level if spawner else 1})
+					fights.append({"fight": fight, "hero": xp.current_level, "enemy": spawner.enemy_level if spawner else 1, "big": []})
+				if Variety.is_elite(node.kind()) or node.big_kind != "none":
+					fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0].big.append(node.kind() if node.big_kind == "none" else node.big_kind)
 				var enemy_level: int = spawner.enemy_level if spawner else 1
 				var kind: String = node.kind()
 				var kinds: Array[bool] = [Variety.is_elite(kind)]

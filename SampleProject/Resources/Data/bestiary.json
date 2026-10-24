@@ -16,6 +16,11 @@
 			"text": "Armoured from the front: blows to its shell do little, and a stun will not stop its sting. Its wind-up is long — roll behind it and strike its back."
 		},
 		{
+			"kind": "armoured_scorpion",
+			"name": "Armoured Scorpion",
+			"text": "A scorpion the size of a cart, plated in thick sand-yellow armour. Like its smaller kin it shrugs off blows to the front and will not flinch; its tail rises high before the sting comes down, and the pincers snap shut after it. Roll behind it and work at its back — it takes a long time to fall."
+		},
+		{
 			"kind": "archer",
 			"name": "Desert Archer",
 			"text": "A bandit with a short bow who keeps his distance and backs away when you close in. A yellow glint on the arrowhead means the arrow is about to fly — block it, parry it back at him as it arrives, roll through it or jump over it, then run him down."
