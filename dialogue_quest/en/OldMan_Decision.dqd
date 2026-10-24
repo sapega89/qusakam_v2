@@ -2,4 +2,6 @@ say|GRANDFATHER|You need to catch up with the bandits. They took our relic. It's
 say|GRANDFATHER|Take my old copper sword and leather armor. I've no use for them anymore, but you'll need them.
 // [DRAFT] D621 — Grandfather lets Kusakam into the attic (his flag village_oldman_complete opens the hatch, gates.json → elder_attic), D583 / D562.
 say|GRANDFATHER|And one more thing... behind the rug in my house there's a ladder to the attic. My old notes are up there. You may go up now.
+// [DRAFT] D643 — Grandfather gives the old key to the family shrine in Lizard Cave (gates.json → lizard_shrine).
+say|GRANDFATHER|And take this key. Under the bridge, in the lizard cave, is our family shrine. Our shamans prayed there while there was still someone to pray. Look at the walls — maybe you'll understand something.
 exit|

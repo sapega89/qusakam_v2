@@ -520,6 +520,30 @@
 			"max_stack": 1,
 			"sell_price": 0,
 			"buy_price": 0
+		},
+		{
+			"id": "grandfather_key",
+			"name": "Grandfather's Old Key",
+			"description": "A worn bronze key with a lizard on its bow. It opens the family shrine in the cave under the bridge.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
+		},
+		{
+			"id": "camp_key",
+			"name": "Stockade Key",
+			"description": "A heavy key from the bandit chief's belt. It opens the stockade of the bandit camp off the desert road.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
 		}
 	]
 }

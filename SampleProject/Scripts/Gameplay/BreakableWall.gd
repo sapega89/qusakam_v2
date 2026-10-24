@@ -19,7 +19,7 @@ var is_broken := false
 
 
 func _ready() -> void:
-	if Game.get_singleton().get_room_state(_room(), _state_key(), false):
+	if was_broken():
 		queue_free()
 		return
 	_hurt.area_entered.connect(_on_area_entered)
@@ -51,6 +51,12 @@ func smash() -> void:
 	tween.tween_property(_sprite, ^"modulate:a", 0.0, BREAK_TIME)
 	tween.tween_callback(func() -> void: _sprite.visible = false)
 	broken.emit()
+
+
+## Розбита раніше (стан кімнати). Так питають двері за брилою (RoomDoor.cover): вузол розбитої брили ще живе
+## до кінця кадру, у якому вона себе звільняє.
+func was_broken() -> bool:
+	return Game.get_singleton().get_room_state(_room(), _state_key(), false)
 
 
 func _room() -> String:

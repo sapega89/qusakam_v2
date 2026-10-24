@@ -3183,3 +3183,33 @@ msgstr "{ui_accept} Вивчити +1 · {skills_unpick} Відмінити · {
 
 msgid "Swear an oath in the City (level %d)"
 msgstr "Складіть присягу в Місті (рівень %d)"
+
+# ── Branch batch 1: side rooms, keys and story pieces (D643)
+
+msgid "Grandfather's Old Key"
+msgstr "Старий дідів ключ"
+
+msgid "A worn bronze key with a lizard on its bow. It opens the family shrine in the cave under the bridge."
+msgstr "Потертий бронзовий ключ з ящуром на голівці. Відмикає родинне святилище в печері під містком."
+
+msgid "Stockade Key"
+msgstr "Ключ від частоколу"
+
+msgid "A heavy key from the bandit chief's belt. It opens the stockade of the bandit camp off the desert road."
+msgstr "Важкий ключ із пояса ватажка бандитів. Відмикає частокіл табору бандитів біля пустельної дороги."
+
+# [ЧЕРНЕТКА] D643
+msgid "The shamans' mural"
+msgstr "Розпис шаманів"
+
+# [ЧЕРНЕТКА] D643
+msgid "The wall is painted in ochre and soot. A row of lizardfolk with staffs kneels around a small figure of a woman with spread wings; from her hands a pale ring spreads over the village and the dunes. Under every shaman a name has been scratched out and written again by a newer hand. The last figure in the row is small, unfinished, its staff only sketched. Someone left room for one more."
+msgstr "Стіну розписано вохрою і кіптявою. Ряд ящурів із палицями стоїть навколішки довкола маленької жінки з розгорнутими крилами; з її рук блідим колом розходиться світло над селом і дюнами. Під кожним шаманом імʼя вишкрябано й написано знову, новішою рукою. Остання постать у ряду маленька, недомальована, її палицю лише накреслено. Хтось лишив місце ще для одного."
+
+# [ЧЕРНЕТКА] D643
+msgid "The dragon on the wall"
+msgstr "Дракон на стіні"
+
+# [ЧЕРНЕТКА] D643
+msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sunless sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
+msgstr "Дракон займає всю стіну: крила над скелями, хвіст обвиває небо без сонця. Унизу крихітні люди стоять навколішки з дарами. Фарба потріскалася, вона старша за будь-яке село в каньйоні. Живі дракона не бачили, а той, хто це малював, бачив: кожну луску виведено так, ніби її рахували. Біля його лап давня рука написала один рядок, і вцілів лише кінець: «...і двічі він не проситиме»."

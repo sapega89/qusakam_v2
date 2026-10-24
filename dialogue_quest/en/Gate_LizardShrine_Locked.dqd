@@ -1,0 +1,3 @@
+// [DRAFT] D643 — Kusakam touches the family shrine's bars without the key (gates.json → lizard_shrine).
+say|KUSAKAM|Bars, and a lizard carved on the lock. Just like the one on Grandfather's chest... He must have the key.
+exit|

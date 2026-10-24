@@ -19,7 +19,9 @@ const STATS := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
 const ARENA := Vector2(560, 368)
 const FLOOR_Y := 384.0
-const OUTDOORS := ["Canyon", "DesertRoad", "CityGates"]
+const OUTDOORS := ["Canyon", "DesertRoad", "CityGates", "MesaClimb"]
+## D558/D643: кажани живуть лише в льоху під брамою.
+const BAT_ROOMS := ["GatehouseCellar"]
 
 var fails: Array[String] = []
 
@@ -373,7 +375,7 @@ func _placements() -> void:
 			if p.get_script() != spawn_script:
 				continue
 			if p.enemy_type == "bat":
-				ck(false, "%s: no bats in the demo (no cave room; the Laboratory gets the Cthulhu flies, D589)" % file)
+				ck(file.get_basename() in BAT_ROOMS, "%s: a bat only in the gatehouse cellar (D643; the Laboratory gets the Cthulhu flies, D589)" % file)
 			if p.enemy_type == "fly":
 				var spawner: Node = p.get_parent()
 				flies.append([file.get_basename(), spawner.get_child_count() - 1, p.kind(), p.size])
