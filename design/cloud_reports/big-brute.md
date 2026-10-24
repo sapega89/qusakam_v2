@@ -10,7 +10,7 @@ tags: [cloud, combat, enemies]
 **Summary.** Done: `bandit_brute` is a live elite kind. It has its own scene on the bandit's behaviour (`default_enemy`) and the D693 sheet. Its attack is a slow, heavy smash: a 1.0 s windup with the club over his shoulder, then one blow into the ground behind a red glint (dodge only). Its hit shapes are measured from its frames (D519), and the hitbox front is the club on the ground. Its elite numbers come from the kind and the slot's level (D642): L2 523 HP / 43 per hit, L8 1235 / 140. It has a bestiary entry in en/uk.
 Placements: `DesertRoad Fight_LoneElite` (alone, the road's first elite, D582) and `Laboratory Fight_Upper` ×2 (a pair at L8). **The `Fight_Dunes` slot is an ordinary bandit again**, so the pack leader's fight keeps one big kind (D582; the big-leader routine asked for this call).
 Tests: `verify_enemy_variety` [3]/[9], `verify_difficulty` [3c], `verify_hit_areas` [1]/[3]. Capture: `design/shots/big_brute/bandit_brute_lone_elite.png`.
-D-IDs: **D694, D695** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: SUITE_LINE
+D-IDs: **D694, D695** (text below; the orchestrator renumbers). B rows fixed: none. Full suite: `SUITE: 3 FAIL` (114 PASS). All three are hangs in UI tests that do not touch enemies. Run alone, `verify_skill_screen` and `verify_use_item` pass. `verify_party_panel` hangs the same way on an untouched `feature/backlog`, so the hang predates this branch.
 
 ## D-ID text (for the register; the next free numbers after D693, renumber as needed)
 
@@ -56,7 +56,9 @@ D-IDs: **D694, D695** (text below; the orchestrator renumbers). B rows fixed: no
   elite bandit brute L8   8 STRENGTH  238  140 104  3  4  1235  77  15 no
   elite bandit brute L8   8 SKILLS    304  140  84  4  6  1235  74  11 yes
   ```
-- Full suite: SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`): 114 PASS, 3 FAIL, all `RESULT: HUNG — killed after 180 s, 0 SCRIPT ERROR`: `verify_party_panel`, `verify_skill_screen`, `verify_use_item`.
+  Run alone, `verify_skill_screen` and `verify_use_item` give `SUITE: ALL PASS`, so they hung only under the full suite's load.
+  `verify_party_panel` hangs alone too, both on this branch and on a clean `origin/feature/backlog` worktree. It stops at the same line both times: «UIManager: change_state requested=GameMenuState» after «[1] Party of one». So the hang predates this branch and is not from the brute. Not filed as a B row, because routines do not edit BUGS.md. Orchestrator: worth a B-ID (the sibling reports saw 117 PASS, so it may depend on the machine or the timing).
 
 ### Capture
 `design/shots/big_brute/bandit_brute_lone_elite.png` (`capture_big_brute.gd`, log: «spawned bandit_brute elite=true level 2 HP 523 damage 43»). Panel 1: he drags the club toward the hero along the road. Panel 2: the windup, club over his shoulder. Panel 3: the smash, club head on the ground at the hero's feet. On screen he stands about 1.5× the hero's height, and his feet are on the floor line. Nothing here differs from Figma: enemies have no Figma frame.
