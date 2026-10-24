@@ -12,7 +12,7 @@ tags: [cloud, art, npcs, companions, laboratory]
 - Not done: `village_elder.tscn` still shows Malik's **old** sheet (D438 removes that invented elder; it is not Malik). The City Gates guard NPC keeps his adult sheet, but `GATE_GUARD.tres` speaks with the companion guard's portrait, so it is now the chibi head (redrawn with the adult NPCs, D598).
 - D-IDs below: D693, D694 (the orchestrator renumbers). B rows fixed: **B127**.
 - Tests: `verify_chibi_npcs` (new) ALL PASS, `verify_lab_cells` ALL PASS (+3 B127 rows), `verify_companions` ALL PASS, `verify_dialogue_speaker` ALL PASS.
-- Full suite: SUITE_LINE
+- Full suite: `SUITE: ALL PASS` (118 verify scripts, including the new one).
 - The comfy-sprite skill (`.claude/skills/comfy-sprite/SKILL.md`) is not in this checkout (there is no `.claude/`), so I did not read its Wiring section. I followed the companion layout (D636: 64×64, feet on row 58, offset (-32, -58), scale 1.5) and measured the feet rows myself.
 
 ## D-ID text
