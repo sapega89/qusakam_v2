@@ -57,7 +57,7 @@ arrival = NodePath("DragonMuralDoor")
 action_text = "Leave"
 
 [node name="DragonMural" parent="." instance=ExtResource("r3")]
-position = Vector2(432, 320)
+position = Vector2(432, 360)
 story_id = "dragon_mural"
 
 [node name="Chest_Mural" parent="." instance=ExtResource("r4")]

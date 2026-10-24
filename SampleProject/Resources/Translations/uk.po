@@ -3205,5 +3205,5 @@ msgid "The dragon on the wall"
 msgstr "Дракон на стіні"
 
 # [ЧЕРНЕТКА] D643
-msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sun-less sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
+msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sunless sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
 msgstr "Дракон займає всю стіну: крила над скелями, хвіст обвиває небо без сонця. Унизу крихітні люди стоять навколішки з дарами. Фарба потріскалася, вона старша за будь-яке село в каньйоні. Живі дракона не бачили, а той, хто це малював, бачив: кожну луску виведено так, ніби її рахували. Біля його лап давня рука написала один рядок, і вцілів лише кінець: «...і двічі він не проситиме»."

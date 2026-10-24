@@ -228,7 +228,7 @@ def dragon_mural() -> None:
     r.bounds(FLOOR)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "Canyon", "DragonMuralDoor")
-    r.note("DragonMural", 432, STAND - 60, "dragon_mural")
+    r.note("DragonMural", 432, STAND - 20, "dragon_mural")
     r.chest("Chest_Mural", 740, FLOOR, charm="jackal_tooth_amulet")
     r.write()
 
