@@ -2620,6 +2620,12 @@ msgstr "Cthulhu Fly"
 msgid "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
 msgstr "A man-sized fly with glowing blue eyes and tentacles for a mouth, one of the alchemist's experiments on the sky's curse. It hovers out of the way of your feet, closes in and slashes with its claws, then pulls back. A white glint means block the claws; it is tougher than it looks."
 
+msgid "Jackal Pack Leader"
+msgstr "Jackal Pack Leader"
+
+msgid "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+msgstr "The big scarred jackal that leads the pack, with a torn ear and a bristling mane. It hunts like the others, crouching before it leaps to bite, but it hits far harder and takes many more blows, and it comes when its pack is already on you. Block the white glint, parry the red one."
+
 msgid "Riposte Instinct [DRAFT]"
 msgstr "Riposte Instinct [DRAFT]"
 
