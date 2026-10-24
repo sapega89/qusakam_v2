@@ -75,7 +75,7 @@ cave chamber whose wall is a faded dragon mural; a stone gatehouse cellar with b
 
 Out of this batch: the City rooftops, the tavern attic, the Mayor Hall archive, the Laboratory branches (batch 2).
 
-## Region v2 — Canyon of Whispers at Tails of Iron scale (Sapega, 2026-10-24, draft in Figma `544:6590`)
+## Region v2 — Canyon of Whispers at Tails of Iron scale (Sapega, 2026-10-24, draft in Figma `545:6590`)
 
 Sapega's notes on the Tails of Iron map reference, 2026-10-24:
 - «карта відчувається дуже довгою, в нас так само має бути» — the region is long: about 62 screens instead of 18.
@@ -88,6 +88,8 @@ Sapega's notes on the Tails of Iron map reference, 2026-10-24:
 - «шлях у місто через браму — це нормально, бо ми захистили того, на кого напали» / «щоб дійти до локації брама,
   треба пройти десь» — the City is still entered **through the gate** after the fight for the attacked guard; the
   detour is only on the way **to** the gate.
+- «ще більше, може до села треба добігти якось, десь спуститись, десь піднятись» — the way from the bridge to the
+  village is a mountain path, a scree slide down into a stream gorge and a climb up rock ledges (v3).
 - «каньйон — це маленька локація, вона створена тільки для медитації і як начальна» — the Canyon stays small (start and
   meditation, 4 screens as today).
 
