@@ -41,30 +41,32 @@ func _initialize() -> void:
 		if node.is_in_group(&"enemies"):
 			node.queue_free()
 	var caravan: Node = game.map.get_node(^"Fight_Caravan")
-	hero.global_position = Vector2(caravan.get_node(^"BigSlot_ArmouredScorpion_1").global_position.x - 200.0, hero.global_position.y)
+	# Герой поза дальністю виявлення (300), поки вороги зʼявляються: ніхто не б'є, підказка блоку не вискакує
+	hero.global_position = Vector2(caravan.get_node(^"BigSlot_ArmouredScorpion_1").global_position.x - 600.0, hero.global_position.y)
 	await create_timer(0.6).timeout
-	caravan.spawn_all_enemies()
-	await create_timer(1.2).timeout
-	var big: Node = game.map.get_node(^"Enemy_Fight_Caravan_EnemySpawnPoint1")
-	var small: Node = game.map.get_node(^"Enemy_Fight_Caravan_EnemySpawnPoint5")
+	await caravan.spawn_all_enemies()  # хвилями по двоє (spawn_in_waves)
+	await create_timer(0.8).timeout
+	var big: Node = caravan.get_node(^"BigSlot_ArmouredScorpion_1").spawned_enemy
+	var small: Node = caravan.get_node(^"EnemySpawnPoint5").spawned_enemy
 	print("big: %s HP %d, damage %.1f, elite %s; small: %s HP %d" % [big.enemy_stats.enemy_type, big.Max_Health, big.base_damage,
 			big.elite, small.enemy_stats.enemy_type, small.Max_Health])
-	var enemies: Array = game.map.find_children("Enemy_Fight_Caravan_*", "CharacterBody2D", true, false)
+	var enemies: Array = caravan.spawn_points.map(func(p: Node) -> Node: return p.spawned_enemy)
 	for e: Node in enemies:
 		e.set_physics_process(false)
 		e.velocity = Vector2.ZERO
-		e.enemy_logic.last_direction = -1
-		e.enemy_view.update_direction(-1)
-		e._face_shapes(-1)
 		e.anim_player.play(&"idle")
-	await create_timer(0.3).timeout
+	_face_left(enemies)
+	hero.global_position.x = big.global_position.x - 200.0
+	await create_timer(1.0).timeout
+	_face_left(enemies)
 	await _grab(Vector2(big.global_position.x + 160.0, big.global_position.y), 0.85)
 
 	# Поруч: герой, великий і звичайний скорпіон
 	small.global_position = Vector2(big.global_position.x + 170.0, small.global_position.y)
 	hero.global_position = Vector2(big.global_position.x - 130.0, hero.global_position.y)
 	hero.mover.last_direction = 1
-	await create_timer(0.3).timeout
+	await create_timer(1.0).timeout
+	_face_left([big, small])
 	await _grab(big.global_position + Vector2(40, 0), 1.6)
 
 	# Удар жалом із F9-зонами
@@ -75,7 +77,8 @@ func _initialize() -> void:
 	big.anim_player.seek(0.72, true)
 	big.anim_player.pause()
 	big.hitbox.monitorable = true
-	await create_timer(0.2).timeout
+	await create_timer(1.0).timeout
+	_face_left([big])
 	await _grab(big.global_position + Vector2(0, -10), 2.0)
 
 	var out := Image.create(PANEL.x, PANEL.y * panels.size(), false, Image.FORMAT_RGBA8)
@@ -85,6 +88,13 @@ func _initialize() -> void:
 	out.save_png(ProjectSettings.globalize_path(OUT))
 	print("saved ", OUT)
 	quit()
+
+
+## Вороги дивляться ліворуч, на героя (кадри намальовано обличчям праворуч).
+func _face_left(enemies: Array) -> void:
+	for e: Node in enemies:
+		e.enemy_logic.last_direction = -1
+		e._on_logic_direction_changed(-1)
 
 
 ## Панель [constant PANEL] навколо точки світу [param world], збільшена в [param zoom] раз (менше 1 — ширший кадр).

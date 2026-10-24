@@ -91,11 +91,11 @@ size = Vector2(64, 32)
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(60, 91.25)
+size = Vector2(72.5, 91.25)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(131.25, 92.5)
+size = Vector2(127.5, 92.5)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_armoured_scorpion"]
 _data = {
@@ -112,7 +112,7 @@ _data = {
 shape = SubResource("Shape_body")
 
 [node name="Sprite2D" parent="." index="2"]
-metadata/tell_at = Vector2(8, -34)
+metadata/tell_at = Vector2(-14, -34)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, -14)
 scale = Vector2(1.25, 1.25)
@@ -125,9 +125,9 @@ libraries/ = SubResource("AnimationLibrary_armoured_scorpion")
 metadata/attack_strike_time = 0.7
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(30, -16.875)
+position = Vector2(36.25, -16.875)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(-1.875, -17.5)
+position = Vector2(3.75, -17.5)
 shape = SubResource("Shape_hurt")
