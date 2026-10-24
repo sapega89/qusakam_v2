@@ -125,7 +125,7 @@ position = Vector2(0, 90)
 shape = SubResource("RectangleShape2D_hatch_reach")
 
 [node name="GrandfatherNotes" parent="Attic" instance=ExtResource("8_note")]
-position = Vector2(592, 400)
+position = Vector2(640, 400)
 story_id = "grandfather_notes"
 
 [node name="CollisionShape2D" parent="Attic/GrandfatherNotes" index="2"]
@@ -137,7 +137,7 @@ position = Vector2(248, 424)
 item_id = "potion_lesser"
 
 [node name="Chest_Attic" parent="Attic" instance=ExtResource("10_chest")]
-position = Vector2(520, 448)
+position = Vector2(480, 448)
 charm = "grandfathers_ring"
 
 [node name="RoomInstance" parent="." instance=ExtResource("2_room")]
