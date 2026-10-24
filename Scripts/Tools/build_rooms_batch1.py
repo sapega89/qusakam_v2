@@ -2,8 +2,8 @@
 # D643, branch batch 1: пише п'ять бічних кімнат MetSys (SampleProject/Maps/<Room>.tscn) з backdrop-ів
 # Assets/Backgrounds/<Room>/gen_back.png. Розмітка кімнат — тут (числа в px; клітинка MetSys 864×480).
 #   python3 Scripts/Tools/build_rooms_batch1.py
-# Підлога й стіни — схований шар тайлів Foreground (як LabCells), уступи меси — односторонні StaticBody2D, backdrop — дальній Parallax2D, як
-# Lab/gen_far у LabCells. Перезапис затирає ручні правки в цих п'яти .tscn: правте тут.
+# Підлога й стіни — схований шар тайлів Foreground (як LabCells), уступи меси — односторонні StaticBody2D, backdrop —
+# спрайти, що йдуть разом зі світом (намальована кімната). Перезапис затирає ручні правки в цих п'яти .tscn: правте тут.
 import base64
 import struct
 from pathlib import Path
@@ -58,12 +58,15 @@ class Room:
         self.nodes.append(text.strip("\n"))
 
     # ── будівельні блоки ──────────────────────────────────────────────────────────────────────────
-    def backdrop(self, scale: float = 1.5, y: float = -3.0, scroll: str = "Vector2(0.4, 1)", repeat: bool = True) -> None:
+    def backdrop(self, scale: float = 1.5, x: float = 0.0, y: float = -3.0) -> None:
+        """Backdrop — намальована кімната: по спрайту на кожну колонку клітинок, разом зі світом (не Parallax2D:
+        його підлога — це підлога кімнати, і verify_map_geometry має бачити її намальованою під тайлами)."""
         tex = self.res("Texture2D", "res://SampleProject/Assets/Backgrounds/%s/gen_back.png" % BACKDROP[self.name])
-        rep = "\nrepeat_size = Vector2(%g, 0)\nrepeat_times = 4" % (576 * scale) if repeat else ""
-        self.node('[node name="Far" type="Parallax2D" parent="."]\nz_index = -10\nscroll_scale = %s%s' % (scroll, rep))
-        self.node('[node name="Sprite" type="Sprite2D" parent="Far"]\ntexture_filter = 1\nposition = Vector2(0, %g)\n'
-                  'scale = Vector2(%g, %g)\ntexture = %s\ncentered = false' % (y, scale, scale, tex))
+        self.node('[node name="Back" type="Node2D" parent="."]\nz_index = -10')
+        step = 576 * scale
+        for i in range(max(1, round(self.w / step))):
+            self.node('[node name="Sprite%d" type="Sprite2D" parent="Back"]\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
+                      'scale = Vector2(%g, %g)\ntexture = %s\ncentered = false' % (i + 1, x + i * step, y, scale, scale, tex))
 
     def bounds(self, floor_row: int) -> None:
         """Підлога (від рядка [floor_row] до низу) і бічні стіни — схований шар тайлів Foreground, як у LabCells:
@@ -168,14 +171,15 @@ def lizard_cave() -> None:
     r.backdrop()
     # Псевдолітери на двох табличках backdrop-у (шов повтору: «sham|m mamit»): зверху — орнамент середньої таблички.
     tex = r.res("Texture2D", "res://SampleProject/Assets/Backgrounds/LizardCave/gen_back.png")
-    r.node('[node name="TabletCover" type="Sprite2D" parent="Far"]\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
-           'scale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false\nregion_enabled = true\nregion_rect = Rect2(276, 134, 64, 12)'
-           % (554 * 1.5, 133 * 1.5 - 3, tex))
+    for i, sx in enumerate((554 * 1.5, 554 * 1.5 + 864)):
+        r.node('[node name="TabletCover%d" type="Sprite2D" parent="Back"]\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
+               'scale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false\nregion_enabled = true\nregion_rect = Rect2(276, 134, 64, 12)'
+               % (i + 1, sx, 133 * 1.5 - 3, tex))
     r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "Canyon", "LizardCaveDoor")
-    r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 32, "fast", ""),
-                                                ("EnemySpawnPoint2", 900, FLOOR - 32, "fast", "")])
+    r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 16, "fast", ""),
+                                                ("EnemySpawnPoint2", 900, FLOOR - 16, "fast", "")])
     r.gate("Gate_Shrine", 1240, "lizard_shrine")
     r.note("ShamanMural", 1440, STAND - 20, "lizard_shrine_mural")
     r.chest("Chest_Shrine", 1600, FLOOR, charm="deep_gourd_amulet")
@@ -192,12 +196,12 @@ def bandit_camp() -> None:
     r.marker("Arrival", 96, STAND)
     r.door("ExitDoor", 96, STAND, "DesertRoad", "BanditCampDoor")
     r.fight("Fight_Camp", 420, 160, 4, [
-        ("EnemySpawnPoint1", 700, FLOOR - 32, "fast", ""),
-        ("EnemySpawnPoint2", 820, FLOOR - 32, "melee", ""),
-        ("EnemySpawnPoint3", 940, FLOOR - 32, "shield", ""),
-        ("EnemySpawnPoint4", 1120, FLOOR - 32, "archer", ""),
-        ("EnemySpawnPoint5", 760, FLOOR - 32, "melee", ""),
-        ("BigSlot_BanditBrute_1", 1040, FLOOR - 32, "melee", "bandit_brute"),
+        ("EnemySpawnPoint1", 700, FLOOR - 16, "fast", ""),
+        ("EnemySpawnPoint2", 820, FLOOR - 16, "melee", ""),
+        ("EnemySpawnPoint3", 940, FLOOR - 16, "shield", ""),
+        ("EnemySpawnPoint4", 1120, FLOOR - 16, "archer", ""),
+        ("EnemySpawnPoint5", 760, FLOOR - 16, "melee", ""),
+        ("BigSlot_BanditBrute_1", 1040, FLOOR - 16, "melee", "bandit_brute"),
     ], waves=3, reward={"camp_key": 1})
     r.gate("Gate_Stockade", 1300, "camp_stockade")
     r.chest("Chest_Loot", 1450, FLOOR, contents={"potion_lesser": 2, "herb": 3, "leather": 2}, charm="breaker_ring")
@@ -210,10 +214,9 @@ def mesa_climb() -> None:
     уступи сусідніх кроків перекриваються на 40 px (стрибок з краю — прямо вгору крізь односторонній уступ); нагорі скриня зі зброєю з компромісом; над месою кружляють грифи (D558)."""
     r = Room("MesaClimb", 1, 2)
     floor = r.h - 64
-    # Картина на всю висоту кімнати: 960 / 324 ≈ 2.963, по центру; камера йде вгору — картина з нею 1:1.
+    # Картина на всю висоту кімнати: 960 / 324 ≈ 2.963, по центру.
     s = r.h / 324.0
-    r.backdrop(scale=round(s, 4), y=0, scroll="Vector2(1, 1)", repeat=False)
-    r.nodes[-1] = r.nodes[-1].replace("position = Vector2(0, 0)", "position = Vector2(%g, 0)" % round((r.w - 576 * s) / 2, 1))
+    r.backdrop(scale=round(s, 4), x=round((r.w - 576 * s) / 2, 1), y=0)
     r.bounds(floor // 32)
     r.marker("Arrival", 96, floor - 40)
     r.door("ExitDoor", 96, floor - 40, "DesertRoad", "MesaClimbDoor")

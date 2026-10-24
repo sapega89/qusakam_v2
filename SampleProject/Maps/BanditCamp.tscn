@@ -22,15 +22,19 @@ size = Vector2(112, 112)
 
 [node name="BanditCamp" type="Node2D"]
 
-[node name="Far" type="Parallax2D" parent="."]
+[node name="Back" type="Node2D" parent="."]
 z_index = -10
-scroll_scale = Vector2(0.4, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 4
 
-[node name="Sprite" type="Sprite2D" parent="Far"]
+[node name="Sprite1" type="Sprite2D" parent="Back"]
 texture_filter = 1
 position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+
+[node name="Sprite2" type="Sprite2D" parent="Back"]
+texture_filter = 1
+position = Vector2(864, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("r1")
 centered = false
@@ -74,32 +78,32 @@ position = Vector2(420, 240)
 shape = SubResource("RectangleShape2D_1")
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Camp"]
-position = Vector2(700, 384)
+position = Vector2(700, 400)
 script = ExtResource("r5")
 enemy_type = "fast"
 
 [node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Camp"]
-position = Vector2(820, 384)
+position = Vector2(820, 400)
 script = ExtResource("r5")
 enemy_type = "melee"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Camp"]
-position = Vector2(940, 384)
+position = Vector2(940, 400)
 script = ExtResource("r5")
 enemy_type = "shield"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Camp"]
-position = Vector2(1120, 384)
+position = Vector2(1120, 400)
 script = ExtResource("r5")
 enemy_type = "archer"
 
 [node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Camp"]
-position = Vector2(760, 384)
+position = Vector2(760, 400)
 script = ExtResource("r5")
 enemy_type = "melee"
 
 [node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_Camp"]
-position = Vector2(1040, 384)
+position = Vector2(1040, 400)
 script = ExtResource("r5")
 enemy_type = "melee"
 big_kind = "bandit_brute"

@@ -17,15 +17,19 @@ size = Vector2(120, 480)
 
 [node name="GatehouseCellar" type="Node2D"]
 
-[node name="Far" type="Parallax2D" parent="."]
+[node name="Back" type="Node2D" parent="."]
 z_index = -10
-scroll_scale = Vector2(0.4, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 4
 
-[node name="Sprite" type="Sprite2D" parent="Far"]
+[node name="Sprite1" type="Sprite2D" parent="Back"]
 texture_filter = 1
 position = Vector2(0, -3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("r1")
+centered = false
+
+[node name="Sprite2" type="Sprite2D" parent="Back"]
+texture_filter = 1
+position = Vector2(864, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("r1")
 centered = false
