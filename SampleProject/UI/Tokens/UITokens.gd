@@ -502,6 +502,8 @@ const FIGMA_FONT_TYPES: Array[StringName] = [
 	# Карта World Map: написи стоять у плашках і клітинках 150×84 фіксованого розміру (world_map_spec).
 	&"MapPinName", &"MapPinNameLocked", &"MapPinState", &"MapCardTitle", &"MapCardText", &"MapRoomName",
 	&"MapPassage", &"MapLegendTitle",
+	# Кнопки нових очок на HUD (D723) — поруч із панеллю героя, тим самим розміром, що й HUD v2.
+	&"NewPointsCount", &"NewPointsCaption", &"NewPointsKey",
 ]
 const SIZE_HUD_NAME := 26        # Bold, UPPER, tracking 3
 const HUD_NAME_SPACING := 3
@@ -513,6 +515,30 @@ const SIZE_HUD_SP_COST := 13     # Bold
 const SIZE_HUD_KEY := 14         # Bold
 const SIZE_HUD_COOLDOWN := 22    # Bold
 const SIZE_HUD_COUNT := 16       # Bold
+
+# ── Нові очки, як у Diablo II (D723, Sapega: «треба підсвічувати, щоб воно якось горіло»): світна кнопка на HUD
+# і світна вкладка з лічильником у Game Menu. Спільний компонент — UI/Components/points_glow.tscn. Світіння —
+# те саме золото, що й у готового слота хотбара (HUD_GLOW_COLOR); пульс м'якший і довший за пульс асисту.
+const POINTS_GLOW_COLOR := HUD_GLOW_COLOR
+const POINTS_GLOW_SIZE := 10                 # px тіні-сяйва навколо рамки
+const POINTS_GLOW_ALPHA := 0.55              # сяйво на піку
+const POINTS_GLOW_BORDER := 2                # px золотої рамки
+const POINTS_GLOW_TAB_FILL := Color(HUD_GLOW_COLOR, 0.12)  # підсвітка таблички вкладки
+const POINTS_GLOW_PULSE_TIME := 1.6          # с, повний цикл
+const POINTS_GLOW_MIN := 0.35                # найтьмяніша точка пульсу (модуляція)
+const POINTS_BADGE_BG := ACCENT              # лічильник на вкладці: золота пігулка
+const POINTS_BADGE_TEXT := HUD_INK
+const POINTS_BADGE_PAD_H := 8
+const POINTS_BADGE_RADIUS := 10
+const NEW_POINTS_BG := Color(HUD_INK, HUD_PILL_ALPHA)   # кнопка на HUD — як пігулка зілля
+const NEW_POINTS_BORDER := HUD_RIM
+const NEW_POINTS_TEXT := HUD_GOLD_LIGHT
+const NEW_POINTS_PAD_H := 14
+const NEW_POINTS_PAD_V := 8
+const NEW_POINTS_RADIUS := 6
+const SIZE_NEW_POINTS_COUNT := 22    # Bold, «+5»
+const SIZE_NEW_POINTS_CAPTION := 18  # SemiBold, «Нові вміння»
+const SIZE_NEW_POINTS_KEY := 14      # Bold, клавіша (SIZE_HUD_KEY)
 
 # ── Вікно навичок Dragon Nest (D674, Figma 533:6472, design/shots/figma_skills_dragon_nest.png) ──────────
 const SKILL_SLOT_SIZE := 64            # клітинка навички — квадрат з іконкою

@@ -14,6 +14,7 @@
 [ext_resource type="Theme" uid="uid://bfe1cbr8www03" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="14_theme"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/tutorial_component.tscn" id="15_tutorial"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Menus/Game/controls_component.tscn" id="16_controls"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/points_glow.tscn" id="20_points_glow"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_tabs"]
 
@@ -114,6 +115,10 @@ metadata/tab = "Skills"
 metadata/unlock_flag = "village_oldman_healed"
 metadata/panel = NodePath("../../Content/ContentRoot/SkillsComponent")
 
+[node name="PointsGlow" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar/SkillsButton" instance=ExtResource("20_points_glow")]
+layout_mode = 1
+halo_type = &"PointsGlowTab"
+
 [node name="StatusButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="6" unique_id=637554608]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 45)
@@ -129,6 +134,10 @@ metadata/label = "Status"
 metadata/tab = "Status"
 metadata/unlock_flag = "village_oldman_gift"
 metadata/panel = NodePath("../../Content/ContentRoot/StatusScroll")
+
+[node name="PointsGlow" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar/StatusButton" instance=ExtResource("20_points_glow")]
+layout_mode = 1
+halo_type = &"PointsGlowTab"
 
 [node name="MiscButton" type="Button" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar" index="7" unique_id=387709923]
 unique_name_in_owner = true
@@ -162,6 +171,7 @@ layout_mode = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+metadata/hide_party_column = true
 
 [node name="OptionsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=965329663 instance=ExtResource("8_options")]
 visible = false
@@ -174,6 +184,7 @@ layout_mode = 2
 [node name="SkillsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1162974634 instance=ExtResource("10_skills")]
 visible = false
 layout_mode = 2
+metadata/hide_party_column = true
 
 [node name="StatusScroll" type="ScrollContainer" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot" unique_id=1591566730]
 visible = false
@@ -181,6 +192,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
+metadata/hide_party_column = true
 
 [node name="StatsComponent" parent="BaseMenu/HBoxContainer/CentralPanel/Center/Content/ContentRoot/StatusScroll" unique_id=1060168446 instance=ExtResource("11_stats")]
 layout_mode = 2

@@ -3331,3 +3331,24 @@ msgstr "Lab Cells"
 
 msgid "Lab Boss"
 msgstr "Lab Boss"
+
+msgid "New skills"
+msgstr "New skills"
+
+msgid "New attributes"
+msgstr "New attributes"
+
+msgid "Attribute points: %d · in Status"
+msgstr "Attribute points: %d · in Status"
+
+msgid "New skill points: open Skills"
+msgstr "New skill points: open Skills"
+
+msgid "New attribute points: open Status"
+msgstr "New attribute points: open Status"
+
+msgid "Open Skills (New Skills)"
+msgstr "Open Skills (New Skills)"
+
+msgid "Open Status (New Attributes)"
+msgstr "Open Status (New Attributes)"

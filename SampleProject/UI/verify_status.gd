@@ -12,6 +12,8 @@ func ck(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	await process_frame; await process_frame
+	root.size = Vector2i(1920, 1080)  # headless скидає вікно до 64×64, а миша клікає в координатах 1920×1080
+	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: вікно туторіалу не забирає ввід
 	# Меню існує лише в запущеній грі (Game, гравець, нижня панель) — тест відкриває його там само.
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
@@ -82,7 +84,7 @@ func _initialize() -> void:
 	print("[3b] attribute points (D335): unspent in the header, spent per attribute")
 	var attrs: Node = sl.get_attribute_manager()
 	ck(st._attr_points_value.text == str(attrs.get_unspent()), "unspent attribute points shown (%s)" % st._attr_points_value.text)
-	ck(st._point_attrs.get_children().map(func(p): return p.get_child(0).text) == ["Strength", "Agility", "Vitality", "Wisdom"], "four attributes from data")
+	ck(st._attr_rows_box.get_children().map(func(r): return r.get_node(^"Name").text) == ["Strength", "Agility", "Vitality", "Wisdom"], "four attribute rows from data, with − / + (D722)")
 	var body: Control = st.get_node(^"Columns/Center/Body")
 	ck(body.get_combined_minimum_size().y <= st.size.y, "Status still fits its height (%d of %d)" % [body.get_combined_minimum_size().y, st.size.y])
 
@@ -96,8 +98,76 @@ func _initialize() -> void:
 	var atk_before: String = st._left_attrs.get_child(0).get_child(0).get_child(2).text
 	ck(attrs.spend({"strength": 2, "wisdom": 1}) == 0, "spent 2 Strength, 1 Wisdom")
 	for i in 2: await process_frame
-	ck(st._point_attrs.get_node(^"strength/Value").text == "2" and st._point_attrs.get_node(^"wisdom/Value").text == "1", "the spent points show per attribute")
+	ck(st._attr_rows_box.get_node(^"strength/Value").text == "2" and st._attr_rows_box.get_node(^"wisdom/Value").text == "1", "the spent points show per attribute")
 	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == int(atk_before) + 2, "Phys. Atk. +2 from Strength (%s → %s)" % [atk_before, st._left_attrs.get_child(0).get_child(0).get_child(2).text])
+
+	print("[4b] spending in Status changes the stat shown there (D722)")
+	var vit_row: Control = st._attr_rows_box.get_node(^"vitality")
+	var hp_max_before: String = st._hp_meter.get_node(^"Head/Max").text
+	var vit_before: int = attrs.get_points("vitality")
+	await _mouse(vit_row.get_node(^"Plus"))
+	ck(vit_row.get_node(^"Value").text == "%d +1" % vit_before and st._accept_button.visible and attrs.get_points("vitality") == vit_before,
+			"+ marks a point, nothing spent yet (%s)" % vit_row.get_node(^"Value").text)
+	ck(st._attr_points_value.text == str(attrs.get_unspent() - 1), "the header counts the pick (%s)" % st._attr_points_value.text)
+	await _mouse(st._accept_button)
+	for i in 2: await process_frame
+	ck(attrs.get_points("vitality") == vit_before + 1 and st._hp_meter.get_node(^"Head/Max").text != hp_max_before,
+			"Accept spends it and Max. HP on Status grows (%s → %s)" % [hp_max_before, st._hp_meter.get_node(^"Head/Max").text])
+	var atk_now := int(st._left_attrs.get_child(0).get_child(0).get_child(2).text)
+	await _mouse(st._attr_rows_box.get_node(^"strength/Plus"))
+	await _key(KEY_F)
+	for i in 2: await process_frame
+	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == atk_now + 1, "key F accepts a Strength point: Phys. Atk. +1")
+	await _mouse(st._attr_rows_box.get_node(^"agility/Plus"))
+	await _key(KEY_ESCAPE)
+	await process_frame
+	ck(st.plan.is_empty() and st.is_visible_in_tree(), "Esc drops the pick, Status stays open")
+
+	print("[4c] pad and keyboard reach every attribute row and its − / +")
+	var buttons: Array = []
+	for row: Control in st._attr_rows_box.get_children():
+		buttons.append(row.get_node(^"Minus"))
+		buttons.append(row.get_node(^"Plus"))
+	menu.focus_router.focus_tabs()
+	await process_frame
+	await _pad(JOY_BUTTON_DPAD_RIGHT)  # з вкладки у вміст (FocusRouter)
+	var entered: Control = root.gui_get_focus_owner()
+	ck(entered in buttons, "D-pad right from the tab lands on an attribute button (%s)" % (entered.name if entered else "none"))
+	# Куди дістає хрестовина: сусіди фокуса (ті самі, за якими GUI рухає фокус на ui_left/right/up/down).
+	var reached: Array = [entered]
+	var queue: Array = [entered]
+	while not queue.is_empty():
+		var at: Control = queue.pop_front()
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			var next: Control = at.find_valid_focus_neighbor(side)
+			if next != null and st.is_ancestor_of(next) and not next in reached:
+				reached.append(next)
+				queue.append(next)
+	var missing: Array = buttons.filter(func(b: Control) -> bool: return not b in reached)
+	ck(missing.is_empty(), "the D-pad reaches every − / + of the %d attribute rows %s" % [buttons.size() / 2, missing.map(func(b): return b.get_path())])
+	await _pad(JOY_BUTTON_DPAD_DOWN)
+	await _pad(JOY_BUTTON_DPAD_RIGHT)
+	ck(root.gui_get_focus_owner() in buttons, "real D-pad presses move between the buttons (%s)" % root.gui_get_focus_owner().name)
+	st._attr_rows_box.get_node(^"wisdom/Plus").grab_focus()
+	await process_frame
+	await _pad(JOY_BUTTON_A)
+	await _key(KEY_ENTER)
+	ck(st.plan.attribute_points("wisdom") == 2, "pad A and Enter on + pick Wisdom twice")
+	await _pad(JOY_BUTTON_X)
+	await _key(KEY_BACKSPACE)
+	ck(st.plan.attribute_points("wisdom") == 0, "pad X and Backspace take them back")
+	await _key(KEY_LEFT)
+	ck(root.gui_get_focus_owner() == st._attr_rows_box.get_node(^"wisdom/Minus"), "Left from + reaches −")
+
+	print("[4d] rows, − / + and points left are inside the window and nothing covers them, 1920×1080 and 1280×720")
+	for size: Vector2i in [Vector2i(1920, 1080), Vector2i(1280, 720)]:
+		DisplayServer.window_set_size(size)
+		root.size = size
+		for i in 4: await process_frame
+		_audit_status(st, menu, "%dx%d" % [size.x, size.y])
+	DisplayServer.window_set_size(Vector2i(1920, 1080))
+	root.size = Vector2i(1920, 1080)
+	for i in 2: await process_frame
 
 	print("[5] party panel swap")
 	var party: Node = get_first_node_in_group("ui_party_column")
@@ -118,6 +188,63 @@ func _initialize() -> void:
 	ck(get_first_node_in_group("game_menu") == null, "menu closes from Status flow")
 	ck(not paused, "game unpauses")
 	_done()
+
+## Кожен рядок атрибута з − / +, і «очок лишилось» — у вікні, у видимій частині прокрутки Status і не під
+## іншою видимою панеллю (колонка партії, бічна панель, нижня смуга).
+func _audit_status(st: Node, menu: Node, label: String) -> void:
+	var canvas := root.get_visible_rect()
+	var scroll: Control = st.get_parent()
+	var covers: Array[Control] = [menu.get_node(^"BaseMenu/HBoxContainer/RightPanel"), menu.find_child("Sidebar", true, false),
+			get_first_node_in_group("ui_bottom_bar")]
+	var shown: Array[Control] = [st._attr_points_value]
+	for row: Control in st._attr_rows_box.get_children():
+		shown.append_array([row.get_node(^"Name"), row.get_node(^"Value"), row.get_node(^"Minus"), row.get_node(^"Plus")])
+	var bad: Array[String] = []
+	for c in shown:
+		var r := c.get_global_rect()
+		if not c.is_visible_in_tree() or not canvas.encloses(r) or not scroll.get_global_rect().encloses(r):
+			bad.append("%s outside" % c.get_path().get_concatenated_names().get_file())
+		for cover in covers:
+			if cover.is_visible_in_tree() and cover.get_global_rect().intersects(r):
+				bad.append("%s under %s" % [c.name, cover.name])
+	ck(bad.is_empty(), "%s: %d attribute controls in view, none covered %s" % [label, shown.size(), bad])
+
+
+func _mouse(node: Control) -> void:
+	var pos: Vector2 = node.get_global_rect().get_center()
+	var motion := InputEventMouseMotion.new()
+	motion.position = pos
+	motion.global_position = pos
+	root.push_input(motion)
+	await process_frame
+	for pressed in [true, false]:
+		var ev := InputEventMouseButton.new()
+		ev.button_index = MOUSE_BUTTON_LEFT
+		ev.pressed = pressed
+		ev.position = pos
+		ev.global_position = pos
+		root.push_input(ev)
+		await process_frame
+
+
+func _pad(button: JoyButton) -> void:
+	for pressed in [true, false]:
+		var ev := InputEventJoypadButton.new()
+		ev.button_index = button
+		ev.pressed = pressed
+		root.push_input(ev)
+		await process_frame
+
+
+func _key(code: Key) -> void:
+	for pressed in [true, false]:
+		var ev := InputEventKey.new()
+		ev.keycode = code
+		ev.physical_keycode = code
+		ev.pressed = pressed
+		root.push_input(ev)
+		await process_frame
+
 
 func _done() -> void:
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

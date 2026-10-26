@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Очки атрибутів (BACKLOG 44, D335): 5 за рівень, що дає очко (attributes.json), збереження, скидання (D282),
-## і вкладення на екрані Skills тим самим «вибрати → Accept» (D330) — мишею, клавішами й геймпадом.
+## і вкладення на екрані Status (D722) тим самим «вибрати → Accept» (D330) — мишею, клавішами й геймпадом.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_attributes.gd
 
 var fails: Array[String] = []
@@ -136,17 +136,16 @@ func _initialize() -> void:
 	quit(0 if fails.is_empty() else 1)
 
 
-## Екран Skills: блок атрибутів у тому ж «вибрати → Accept» (D330, D331).
+## Екран Status: рядки атрибутів у тому ж «вибрати → Accept» (D330, D331), поруч зі статами (D722).
 func _screen(sl: Node, gm: Node, sm: Node, attrs: Node) -> void:
-	print("[4] The Skills screen: + / − are pending until Accept")
+	print("[4] The Status screen: + / − are pending until Accept")
 	sl.get_ui_manager().open_game_menu()
 	for i in 14: await process_frame
 	var menu: Node = get_first_node_in_group("game_menu")
-	menu.switch_to_tab("Skills")
+	menu.switch_to_tab("Status")
 	for i in 8: await process_frame
-	var ui: Node = menu.find_child("SkillsComponent", true, false)
-	await _mouse(ui._attributes_button)  # D674: атрибути — за кнопкою Attributes унизу вікна навичок
-	ck(ui._attr_panel.visible, "the Attributes button opens the attribute rows")
+	var ui: Node = menu.find_child("StatsComponent", true, false)
+	ck(ui._attr_rows_box.is_visible_in_tree(), "the attribute rows are on Status (D722)")
 	var rows: Dictionary = ui._attribute_rows
 	ck(rows.keys() == attrs.attribute_ids(), "four attribute rows from data")
 	ck(ui._attr_points_value.text == "15", "15 points to spend shown (%s)" % ui._attr_points_value.text)

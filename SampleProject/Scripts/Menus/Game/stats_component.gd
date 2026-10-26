@@ -10,7 +10,12 @@ extends BaseMenuComponent
 ##   рівень і досвід — XPManager
 ##
 ## Кадр Figma має праву колонку-портрет 640 замість панелі партії, тому на час
-## показу Status панель партії ховається (див. _set_party_panel_visible).
+## показу Status панель партії ховається (game_menu.tscn: metadata/hide_party_column, B151).
+##
+## Очки атрибутів (D335) вкладаються тут, поруч зі статами, які вони міняють (D722, Sapega: «атрибути треба
+## в статусі виставляти»). Рядки %AttributeRow і їхня логіка перенесені з вікна навичок; правила ті самі (D330):
+## + позначає очко в SkillPlan, − / X / Backspace знімає, витрачає лише Accept (кнопка, Y / F), Esc / B з
+## позначеним — скидає позначене, інша вкладка — теж. Скидання вкладеного — Reset all на вкладці Skills (D628).
 
 const PLACEHOLDER := "—"
 ## Рядки й картки — шаблони зі сцени (D117): %WeaponBox, %PointAttr, %AttrRow (обидві колонки), %CompanionCard.
@@ -22,8 +27,11 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 @onready var _next_level_value: Label = %NextLevelValue
 @onready var _jp_value: Label = %JPValue
 @onready var _attr_points_value: Label = %AttrPointsValue
-@onready var _point_attrs: HBoxContainer = %PointAttrs
-@onready var _point_attr: HBoxContainer = %PointAttr
+@onready var _attr_rows_box: GridContainer = %AttrRows
+@onready var _attr_row_template: HBoxContainer = %AttributeRow
+@onready var _pending_label: Label = %AttrPendingLabel
+@onready var _cancel_button: Button = %AttrCancelButton
+@onready var _accept_button: Button = %AttrAcceptButton
 @onready var _primary_job: Label = %PrimaryJobName
 @onready var _secondary_job: Label = %SecondaryJobName
 @onready var _secondary_job_column: VBoxContainer = %SecondaryJob
@@ -41,6 +49,10 @@ const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 @onready var _companion_card: PanelContainer = %CompanionCard
 ## Кнопки карток, вже під'єднані (duplicate() копіює meta, тож не за meta-прапорцем).
 var _wired: Dictionary = {}
+## Позначені, ще не прийняті очки атрибутів (D330). Навичок тут не позначають.
+var plan: SkillPlan
+var _attributes: AttributeManager = null
+var _attribute_rows: Dictionary = {}  # attribute_id -> HBoxContainer
 
 ## Рядки атрибутів з кадру: (підпис, метод GameManager, чи це частка 0..1).
 const LEFT_ROWS: Array[Array] = [
@@ -76,6 +88,12 @@ func _initialize_component() -> void:
 	# Гліфи рядків і типів зброї — акцентом, як у Figma 58:719 (шаблони, тож копії успадкують).
 	(_attr_row.get_node(^"Row/Icon") as TextureRect).self_modulate = UITokens.ACCENT
 	(_weapon_box.get_node(^"Icon") as TextureRect).self_modulate = UITokens.ACCENT
+	_attributes = ServiceLocator.get_attribute_manager()
+	plan = SkillPlan.new(ServiceLocator.get_skill_manager(), _attributes)
+	plan.changed.connect(update_display)
+	_build_attribute_rows()
+	_cancel_button.pressed.connect(cancel_plan)
+	_accept_button.pressed.connect(accept_plan)
 	_connect_live_sources()
 	update_display()
 
@@ -149,7 +167,7 @@ func _update_header() -> void:
 
 	# JP (D149) — той самий формат, що й на вкладці Skills.
 	_jp_value.text = tr("%d JP") % ServiceLocator.get_skill_manager().get_job_points()
-	_attr_points_value.text = str(ServiceLocator.get_attribute_manager().get_unspent())  # D335: ще не вкладені
+	_attr_points_value.text = str(plan.attribute_points_left())  # D335: ще не вкладені, без позначених
 
 
 # ── Робота / зброя ──────────────────────────────────────────────────────────
@@ -185,19 +203,120 @@ func _update_attributes() -> void:
 	_fill_meter(_sp_meter, "Max. SP", sm.get_current_sp(), sm.get_max_sp())
 	_fill_rows(_left_attrs, LEFT_ROWS)
 	_fill_rows(_right_attrs, RIGHT_ROWS)
-	_fill_point_attrs()
+	_refresh_attributes()
 
 
-## Вкладені очки атрибутів (D335) — назва й число, з даних attributes.json; що вони дають, уже в рядках нижче.
-func _fill_point_attrs() -> void:
-	var attributes: AttributeManager = ServiceLocator.get_attribute_manager()
-	var ids := attributes.attribute_ids()
-	var pairs := RowFill.fill(_point_attrs, _point_attr, ids.size())
-	for i in pairs.size():
+# ── Очки атрибутів (D335, D722; перенесено з вікна навичок) ────────────────
+
+## Рядки атрибутів — з attributes.json (D335): назва, що дає очко, вкладено (+ позначено), − / +.
+func _build_attribute_rows() -> void:
+	var ids: Array = _attributes.attribute_ids()
+	var rows := RowFill.fill(_attr_rows_box, _attr_row_template, ids.size())
+	_rename(rows, ids)
+	for i in rows.size():
 		var attribute_id: String = ids[i]
-		pairs[i].name = attribute_id
-		pairs[i].get_node(^"Caption").text = String(attributes.get_definition(attribute_id).name)
-		pairs[i].get_node(^"Value").text = str(attributes.get_points(attribute_id))
+		var definition: Dictionary = _attributes.get_definition(attribute_id)
+		var row: HBoxContainer = rows[i]
+		row.get_node(^"Name").text = String(definition.name)
+		row.get_node(^"Gives").text = _gives_text(_attributes.preview(attribute_id, 1))
+		row.tooltip_text = String(definition.description)
+		var minus: Button = row.get_node(^"Minus")
+		var plus: Button = row.get_node(^"Plus")
+		minus.pressed.connect(_unpick_attribute.bind(attribute_id))
+		plus.pressed.connect(_pick_attribute.bind(attribute_id))
+		for button in [minus, plus]:
+			button.gui_input.connect(_on_attribute_input.bind(attribute_id))
+		_attribute_rows[attribute_id] = row
+
+
+## Імена рядків з даних. Спершу тимчасові — щоб нове ім'я не зіткнулося зі старим іменем сусіда
+## (інакше Godot мовчки дописує до нього число).
+func _rename(rows: Array, names: Array) -> void:
+	for i in rows.size():
+		rows[i].name = "_%d" % i
+	for i in rows.size():
+		rows[i].name = String(names[i])
+
+
+## Що дає одне очко — коротко, з даних: «+1 atk», «+4 HP», «+2 SP · +1% power · …».
+func _gives_text(gives: Dictionary) -> String:
+	var parts: Array[String] = []
+	for stat: String in gives:
+		var value: float = gives[stat]
+		match stat:
+			"attack": parts.append(tr("+%d atk") % roundi(value))
+			"max_health": parts.append(tr("+%d HP") % roundi(value))
+			"max_sp": parts.append(tr("+%d SP") % roundi(value))
+			"crit_chance": parts.append(tr("+%s%% crit") % _percent(value))
+			"dodge_chance": parts.append(tr("+%s%% evade") % _percent(value))
+			"attack_speed": parts.append(tr("+%s%% speed") % _percent(value))
+			"skill_power": parts.append(tr("+%s%% power") % _percent(value))
+			"sp_per_hit": parts.append(tr("+%s SP per hit") % String.num(value, 2))
+			_: assert(false, "StatsComponent: no text for attribute stat %s" % stat)
+	return " · ".join(parts)
+
+
+func _percent(fraction: float) -> String:
+	return String.num(fraction * 100.0, 1).trim_suffix(".0")
+
+
+func _refresh_attributes() -> void:
+	for attribute_id: String in _attribute_rows:
+		var row: HBoxContainer = _attribute_rows[attribute_id]
+		var picked := plan.attribute_points(attribute_id)
+		var spent := _attributes.get_points(attribute_id)
+		row.get_node(^"Value").text = "%d +%d" % [spent, picked] if picked > 0 else str(spent)
+		row.get_node(^"Minus").disabled = picked == 0
+		row.get_node(^"Plus").disabled = plan.attribute_points_left() <= 0
+	_cancel_button.visible = not plan.is_empty()
+	_accept_button.visible = not plan.is_empty()
+	_pending_label.visible = not plan.is_empty()
+	if not plan.is_empty():
+		_pending_label.text = tr("To spend: ") + tr("attribute points: %d") % (_attributes.get_unspent() - plan.attribute_points_left())
+
+
+func _pick_attribute(attribute_id: String) -> void:
+	plan.pick_attribute(attribute_id)
+
+
+func _unpick_attribute(attribute_id: String) -> void:
+	plan.unpick_attribute(attribute_id)
+
+
+## Accept (кнопка, Y / F): витратити позначене.
+func accept_plan() -> void:
+	if plan.is_empty():
+		return
+	plan.accept()
+
+
+## Cancel (кнопка, Esc / B): відкинути позначене.
+func cancel_plan() -> void:
+	plan.clear()
+
+
+func _on_attribute_input(event: InputEvent, attribute_id: String) -> void:
+	if event.is_action_pressed(&"skills_unpick"):
+		_unpick_attribute(attribute_id)
+		accept_event()
+
+
+## Esc / B з позначеним лише скидає позначене (D330), друге Esc — як завжди (FocusRouter, game_menu).
+## _shortcut_input іде раніше за їхній _unhandled_input; модалка поверх меню забирає фокус — тоді не чіпаємо.
+func _shortcut_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or plan.is_empty() or not event.is_action_pressed(&"ui_cancel"):
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused != null and not is_ancestor_of(focused):
+		return
+	cancel_plan()
+	get_viewport().set_input_as_handled()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if is_visible_in_tree() and event.is_action_pressed(&"skills_accept") and not plan.is_empty():
+		accept_plan()
+		get_viewport().set_input_as_handled()
 
 
 func _fill_rows(container: VBoxContainer, rows: Array[Array]) -> void:
@@ -287,21 +406,12 @@ func focus_companions() -> void:
 	(get_parent() as ScrollContainer).ensure_control_visible(_companions)
 
 
-# ── Панель партії ───────────────────────────────────────────────────────────
-
-## Figma menu-status має праву колонку-портрет 640 замість панелі партії.
-## Ховаємо її на час показу; прибереться на етапі спільного шелу.
-func _set_party_panel_visible(value: bool) -> void:
-	var panel: Node = get_tree().get_first_node_in_group(&"ui_party_column")
-	if panel:
-		panel.visible = value
-
-
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree():
 		# game_menu ховає панель-предка, а не сам компонент, тому власний
 		# visible лишається true — питаємо саме про видимість у дереві.
 		var shown := is_visible_in_tree()
-		_set_party_panel_visible(not shown)
 		if shown:
 			update_display()
+		elif plan != null:
+			plan.clear()  # D330: з екрана пішли — позначене не витрачається

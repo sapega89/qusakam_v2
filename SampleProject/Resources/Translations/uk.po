@@ -3346,3 +3346,24 @@ msgstr "Камери лабораторії"
 # [ЧЕРНЕТКА]
 msgid "Lab Boss"
 msgstr "Серце лабораторії"
+
+msgid "New skills"
+msgstr "Нові вміння"
+
+msgid "New attributes"
+msgstr "Нові атрибути"
+
+msgid "Attribute points: %d · in Status"
+msgstr "Очки атрибутів: %d · у вкладці «Стан»"
+
+msgid "New skill points: open Skills"
+msgstr "Нові очки навичок: відкрити «Навички»"
+
+msgid "New attribute points: open Status"
+msgstr "Нові очки атрибутів: відкрити «Стан»"
+
+msgid "Open Skills (New Skills)"
+msgstr "Відкрити навички (нові вміння)"
+
+msgid "Open Status (New Attributes)"
+msgstr "Відкрити стан (нові атрибути)"

@@ -298,18 +298,16 @@ func _initialize() -> void:
 	await _key(KEY_3)
 	ck(sm.get_equipped_skill(2) != "toughness", "the hotbar key does nothing for a passive")
 
-	print("[9] Attributes behind the Attributes button; Reset all only at a meditation spot (D335, D628, D629)")
+	print("[9] Only skills here: attributes wait in Status (D722); Reset all only at a meditation spot (D628, D629)")
 	var attrs: Node = sl.get_attribute_manager()
-	ck(ui._attributes_button.text == "Attributes %d" % attrs.get_unspent() and not ui._attr_panel.visible, "the button names the unspent points")
-	await _mouse(ui._attributes_button)
-	ck(ui._attr_panel.visible and not ui._detail.visible, "it swaps the detail panel for the attributes")
-	var strength: int = attrs.get_points("strength")
-	await _mouse(ui._attribute_rows["strength"].get_node(^"Plus"))
-	ck(ui._attribute_rows["strength"].get_node(^"Value").text == "%d +1" % strength and ui._accept_button.visible, "+ marks a point")
-	await _mouse(ui._accept_button)
-	ck(attrs.get_points("strength") == strength + 1, "Accept spends it")
-	await _mouse(ui._attributes_button)
-	ck(ui._detail.visible and not ui._attr_panel.visible, "pressed again: back to the skill")
+	ck(ui.find_child("AttrPanel", true, false) == null and ui.find_child("AttributesButton", true, false) == null
+			and ui.find_child("AttributeRow", true, false) == null, "no attribute panel, button or rows on the Skills screen")
+	ck(attrs.get_unspent() > 0 and ui._attr_points_hint.visible and ui._attr_points_hint.text == "Attribute points: %d · in Status" % attrs.get_unspent(),
+			"the points bar says how many attribute points wait in Status (%s)" % ui._attr_points_hint.text)
+	ck(ui._detail.visible, "the side panel shows the skill")
+	attrs.spend({"strength": attrs.get_unspent()})
+	await process_frame
+	ck(not ui._attr_points_hint.visible, "none left: the hint goes")
 	ck(sm.can_respec() == R.NOT_MEDITATING and ui._reset_all_button.disabled and ui._reset_all_button.tooltip_text == "Reset at a meditation spot",
 			"Reset all is closed away from a meditation spot")
 

@@ -34,6 +34,7 @@ func _initialize() -> void:
 	_game_over(theme)
 	_setup_progress_bar(theme)
 	_hud_v2(theme)
+	_new_points(theme)
 	_skill_window(theme)
 	_world_map(theme)
 	_setup_scrollbars(theme)
@@ -1336,6 +1337,53 @@ func _hud_v2(theme: Theme) -> void:
 	var pill := _box(Color(UITokens.HUD_INK, UITokens.HUD_PILL_ALPHA), UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0)
 	pill.set_corner_radius_all(UITokens.HUD_PILL_RADIUS)
 	theme.set_stylebox("panel", "HudCountPill", pill)
+
+
+# ── Нові очки (D723): сяйво, лічильник на вкладці, кнопка на HUD ────────────
+
+func _new_points(theme: Theme) -> void:
+	# Сяйво навколо кнопки HUD: золота рамка й тінь без заливки; пульсує вузол (points_glow.gd).
+	var halo := _box(Color(0, 0, 0, 0), UITokens.POINTS_GLOW_COLOR, UITokens.POINTS_GLOW_BORDER, 0, 0)
+	halo.set_corner_radius_all(UITokens.NEW_POINTS_RADIUS)
+	halo.shadow_color = Color(UITokens.POINTS_GLOW_COLOR, UITokens.POINTS_GLOW_ALPHA)
+	halo.shadow_size = UITokens.POINTS_GLOW_SIZE
+	theme.set_type_variation("PointsGlow", "Panel")
+	theme.set_stylebox("panel", "PointsGlow", halo)
+	# На вкладці бічної панелі — та сама табличка-стрілка, золота рамка й легка золота підсвітка.
+	theme.set_type_variation("PointsGlowTab", "Panel")
+	var tab_glow := _arrow_plate(UITokens.POINTS_GLOW_TAB_FILL, UITokens.POINTS_GLOW_COLOR, UITokens.POINTS_GLOW_BORDER)
+	theme.set_stylebox("panel", "PointsGlowTab", tab_glow)
+	theme.set_type_variation("PointsBadge", "PanelContainer")
+	var badge := _box(UITokens.POINTS_BADGE_BG, UITokens.POINTS_BADGE_BG, 0, UITokens.POINTS_BADGE_PAD_H, 0)
+	badge.set_corner_radius_all(UITokens.POINTS_BADGE_RADIUS)
+	theme.set_stylebox("panel", "PointsBadge", badge)
+	theme.set_type_variation("PointsBadgeLabel", "Label")
+	theme.set_font("font", "PointsBadgeLabel", _font_bold)
+	theme.set_font_size("font_size", "PointsBadgeLabel", UITokens.SIZE_CAPTION)
+	theme.set_color("font_color", "PointsBadgeLabel", UITokens.POINTS_BADGE_TEXT)
+	# Кнопка на HUD: темна пігулка з рамкою HUD_RIM, як пігулка зілля; наведена / у фокусі — золота рамка.
+	theme.set_type_variation("NewPointsButton", "Button")
+	var plate := _box(UITokens.NEW_POINTS_BG, UITokens.NEW_POINTS_BORDER, UITokens.BORDER_WIDTH,
+			UITokens.NEW_POINTS_PAD_H, UITokens.NEW_POINTS_PAD_V)
+	plate.set_corner_radius_all(UITokens.NEW_POINTS_RADIUS)
+	var lit := plate.duplicate() as StyleBoxFlat
+	lit.border_color = UITokens.POINTS_GLOW_COLOR
+	for state in ["normal", "disabled"]:
+		theme.set_stylebox(state, "NewPointsButton", plate)
+	for state in ["hover", "pressed", "hover_pressed"]:
+		theme.set_stylebox(state, "NewPointsButton", lit)
+	theme.set_stylebox("focus", "NewPointsButton", _focus_ring(UITokens.NEW_POINTS_PAD_H, UITokens.NEW_POINTS_PAD_V))
+	var labels := {
+		"NewPointsCount": [_font_bold, UITokens.SIZE_NEW_POINTS_COUNT, UITokens.NEW_POINTS_TEXT],
+		"NewPointsCaption": [_font_semibold, UITokens.SIZE_NEW_POINTS_CAPTION, UITokens.NEW_POINTS_TEXT],
+		"NewPointsKey": [_font_bold, UITokens.SIZE_NEW_POINTS_KEY, UITokens.HUD_INK],
+	}
+	for name in labels:
+		var spec: Array = labels[name]
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, spec[0])
+		theme.set_font_size("font_size", name, spec[1])
+		theme.set_color("font_color", name, spec[2])
 
 
 ## Заливка смуги: колір і світла смужка зверху (білий HUD_BAR_HIGHLIGHT поверх кольору), утоплена на [param inset] px.

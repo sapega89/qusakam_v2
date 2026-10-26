@@ -36,6 +36,8 @@ const ACTIONS := [
 	["Previous / next menu tab", &"menu_prev_tab"],
 	["Skills screen: accept the picks", &"skills_accept"],
 	["Skills screen: undo a pick", &"skills_unpick"],
+	["New skill points: open Skills", &"open_skills_tab"],
+	["New attribute points: open Status", &"open_status_tab"],
 ]
 
 @onready var _list: VBoxContainer = %ActionList
