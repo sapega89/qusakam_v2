@@ -71,19 +71,19 @@ light shafts / a warm glow, foreground rubble at the bottom (Decor, darkened, sc
 
 | Room | Door | Backdrop at the door | Verdict | Fix |
 |---|---|---|---|---|
-| Canyon | LizardCaveDoor | was a painted mouth at x 950, right by the descent | ✅ | moved to x 2150 with `cave_mouth` (rooms-look, D729) |
-| Canyon | DragonMuralDoor | `cave_mouth` behind the boulder | ✅ | rooms-look (D729) |
+| Canyon | LizardCaveDoor | was a painted mouth at x 950, right by the descent | ✅ | moved to x 2150 with `cave_mouth` (rooms-look, D747) |
+| Canyon | DragonMuralDoor | `cave_mouth` behind the boulder | ✅ | rooms-look (D747) |
 | Village | ElderDoor | the house's painted wooden door | ✅ | — |
-| DesertRoad | BanditCampDoor | `palisade_gate` on the mound | ✅ | rooms-look (D729) |
-| DesertRoad | MesaClimbDoor | `mesa_cleft` (the painted ladder sprite removed) | ✅ | rooms-look (D729) |
-| DesertRoad | CampShortcutDoor | `palisade_gate` | ✅ | rooms-look (D729) |
+| DesertRoad | BanditCampDoor | `palisade_gate` on the mound | ✅ | rooms-look (D747) |
+| DesertRoad | MesaClimbDoor | `mesa_cleft` (the painted ladder sprite removed) | ✅ | rooms-look (D747) |
+| DesertRoad | CampShortcutDoor | `palisade_gate` | ✅ | rooms-look (D747) |
 | CityGates | CellarDoor | dark arch with cobwebs | ✅ | — |
-| ElderHouse | ExitDoor (96, 802) | `door_elder` | ✅ | rooms-look (D729) |
+| ElderHouse | ExitDoor (96, 802) | `door_elder` | ✅ | rooms-look (D747) |
 | LizardCave | ExitDoor (320, 376) | the lit cave opening (moved from x 96 at a lizard shrine, `cloud/elder-home`, D716) | ✅ | — |
-| DragonMural | ExitDoor (120, 362) | `cave_mouth` | ✅ | rooms-look (D729) |
-| BanditCamp | ExitDoor (136, 366) | `palisade_gate` | ✅ | rooms-look (D729) |
-| BanditCamp | ShortcutDoor (1640, 366) | `palisade_gate` | ✅ | rooms-look (D729) |
-| MesaClimb | ExitDoor (120, 811) | `mesa_cleft` | ✅ | rooms-look (D729) |
+| DragonMural | ExitDoor (120, 362) | `cave_mouth` | ✅ | rooms-look (D747) |
+| BanditCamp | ExitDoor (136, 366) | `palisade_gate` | ✅ | rooms-look (D747) |
+| BanditCamp | ShortcutDoor (1640, 366) | `palisade_gate` | ✅ | rooms-look (D747) |
+| MesaClimb | ExitDoor (120, 811) | `mesa_cleft` | ✅ | rooms-look (D747) |
 | GatehouseCellar | ExitDoor (96, 376) | foot of the stairs up | ⚠ | at the top of the stairs, or a door there — the stairs are only painted (flat floor at y 416, no step to stand on), so the door stays (D716) |
 
 ## Edge passages (MapData borders = 1)
@@ -93,9 +93,9 @@ walks through a painted wall:
 
 | Passage | Backdrop | Verdict | Fix |
 |---|---|---|---|
-| City (10,3) right → MayorHall (11,3) left | `palace_door` on both sides, a door pair, border closed | ✅ | rooms-look (D729) |
-| LabCells (13,3) right ↔ Laboratory (14,3) left | `lab_door` on both sides, a door pair, border closed | ✅ | rooms-look (D729) |
-| Laboratory (15,5) right ↔ LabBoss (16,5) left | `lab_door` on both sides, a door pair, border closed | ✅ | rooms-look (D729) |
+| City (10,3) right → MayorHall (11,3) left | `palace_door` on both sides, a door pair, border closed | ✅ | rooms-look (D747) |
+| LabCells (13,3) right ↔ Laboratory (14,3) left | `lab_door` on both sides, a door pair, border closed | ✅ | rooms-look (D747) |
+| Laboratory (15,5) right ↔ LabBoss (16,5) left | `lab_door` on both sides, a door pair, border closed | ✅ | rooms-look (D747) |
 | LabBoss (17,5) right → LaboratoryOutside (18,5) left | iron portcullis / oasis | ✅ | — |
 | Canyon (0,2) down | a drop | ✅ | — |
 
@@ -106,5 +106,5 @@ walks through a painted wall:
 - Platforms: one-way ledges are a strip cut out of a texture with nothing under them (MesaClimb 10, DesertRoad 2,
   ElderHouse 1), plus solid ledges in the Canyon's lower cell and the lab rooms (thin bars on the furnace wall in
   LabBoss). Each needs what holds it up (A15).
-- rooms-look (D733, D734): ladders draw `ladder_wood` / `ladder_iron`; supports under MesaClimb's 10 ledges, 5 canyon
+- rooms-look (D751, D752): ladders draw `ladder_wood` / `ladder_iron`; supports under MesaClimb's 10 ledges, 5 canyon
   lower-cell ledges, 8 lab bars and 2 LabBoss bars; the shop roof, tower top and attic hatch stand on painted buildings.

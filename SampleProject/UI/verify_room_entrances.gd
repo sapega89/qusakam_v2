@@ -23,8 +23,8 @@ const ROOMS := ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "
 const PAINTED := {
 	"Village/ElderDoor": "the house's painted wooden door",
 	"CityGates/CellarDoor": "the dark arch with cobwebs",
-	"LizardCave/ExitDoor": "the lit cave opening (D716)",
-	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D716)",
+	"LizardCave/ExitDoor": "the lit cave opening (D729)",
+	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D729)",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.
