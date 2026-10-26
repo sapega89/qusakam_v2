@@ -11,7 +11,7 @@ static var _locations: Array = []
 static var _by_room: Dictionary = {}
 
 
-## Усі локації в порядку файла: {id, name, rooms, entries}.
+## Усі локації в порядку файла: {id, name, rooms, entries, map_pos}.
 static func all() -> Array:
 	_load()
 	return _locations
@@ -41,6 +41,12 @@ static func of_scene(scene_path: String) -> String:
 ## Назва локації мовою гри (ключ — англійська назва, D121).
 static func title(id: String) -> String:
 	return TranslationServer.translate(location(id).name)
+
+
+## Де стоїть шпилька локації на вкладці World Map — лівий верхній кут плашки в кадрі 1920×1080 (world_map_spec).
+static func map_pos(id: String) -> Vector2:
+	var pos: Array = location(id).map_pos
+	return Vector2(pos[0], pos[1])
 
 
 static func _load() -> void:

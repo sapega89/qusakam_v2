@@ -76,6 +76,16 @@ func _set_open(instant: bool = true) -> void:
 		_sprite.visible = false
 
 
+## Чи брама [param gate_id] вузла [param node_name] у кімнаті [param room] (ключ стану кімнати MetSys) ще закрита —
+## та сама умова, що в _ready, але без сцени: карта World Map питає її для кімнат, де героя немає (world_map_spec).
+static func is_locked(gate_id: String, room: String, node_name: String) -> bool:
+	var gate: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH)).gates[gate_id]
+	var game := Game.get_singleton()
+	if gate.has("key"):
+		return not game.get_room_state(room, "opened_%s" % node_name, false)
+	return not game.get_quest_flag(gate.flag)
+
+
 func _room() -> String:
 	return get_node(^"/root/MetSys").map_data.get_room_from_scene_path(owner.scene_file_path, false)
 
