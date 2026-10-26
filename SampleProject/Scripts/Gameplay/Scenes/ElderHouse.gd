@@ -162,17 +162,15 @@ func _give_oldman_gift() -> void:
 	inventory.add_item("leather_armor", 1)
 	game.set_quest_flag("village_oldman_gift", true)
 	ServiceLocator.get_ui_manager().show_obtained({"copper_sword": 1, "leather_armor": 1})  # BACKLOG 33
-	# Висить, доки не вдягне зброю
-	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
+	# «?» чекає, доки не вдягне зброю (D726)
+	get_tree().get_first_node_in_group(&"tip_tray").show_tip(OLDMAN_GIFT)
 	EventBus.equipment_equipped.connect(_on_gift_equipped)
 
 func _on_gift_equipped(_character_id: String, slot_id: String, _item_id: String) -> void:
 	if not slot_id in EquipmentManager.WEAPON_SLOTS:
 		return
 	EventBus.equipment_equipped.disconnect(_on_gift_equipped)
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()
+	get_tree().get_first_node_in_group(&"tip_tray").retire(OLDMAN_GIFT)
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
@@ -182,9 +180,3 @@ func advance_state() -> void:
 func _set_objective(text: String, target: StringName = &"") -> void:
 	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
 	Game.get_singleton().set_objective(text, target)
-
-## Вийшов із дому, не вдягнувши подарунок, — підказка йде разом із домом (її ховає лише дім, як колись село).
-func _exit_tree() -> void:
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint != null and hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()

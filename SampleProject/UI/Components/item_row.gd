@@ -19,6 +19,8 @@ signal row_activated(index: int)
 @onready var _name_label: Label = $Row/Text/NameLabel
 @onready var _sub_label: Label = $Row/Text/SubLabel
 @onready var _count_label: Label = $Row/CountLabel
+## B152, D720: вдягнений предмет має знак «Equipped» (UI/Badge 222:4746 — LevelBadge з теми) перед кількістю.
+@onready var _equipped_badge: Control = $Row/EquippedBadge
 
 var index: int = -1
 
@@ -40,7 +42,7 @@ func _apply_icon_style() -> void:
 		_icon_bg.theme_type_variation = &"IconSlot" if button_pressed else &"IconSlotFramed"
 
 
-## [code]item[/code] — словник із _load_inventory_items(): id, name, desc, icon, count.
+## [code]item[/code] — словник із _load_inventory_items(): id, name, desc, icon, count, equipped_slot ("" — не вдягнений).
 func set_item(item: Dictionary, row_index: int) -> void:
 	index = row_index
 	_name_label.text = String(item.get("name", ""))
@@ -51,6 +53,11 @@ func set_item(item: Dictionary, row_index: int) -> void:
 	# Другий рядок у Figma порожній — лишаємо під майбутній підзаголовок.
 	_sub_label.text = String(item.get("subtitle", ""))
 	_sub_label.visible = not _sub_label.text.is_empty()
+	_equipped_badge.visible = String(item.get("equipped_slot", "")) != ""
+
+
+func is_equipped_shown() -> bool:
+	return _equipped_badge.visible
 
 
 func _on_pressed() -> void:

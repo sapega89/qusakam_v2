@@ -25,7 +25,7 @@ const TABS := {
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await process_frame
 	await process_frame
 	var sl: Node = root.get_node_or_null("ServiceLocator")

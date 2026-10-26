@@ -29,7 +29,7 @@ func _initialize() -> void:
 	await process_frame
 	var sl: Node = root.get_node("ServiceLocator")
 	var save_system: Node = root.get_node("SaveSystem")
-	save_system.settings_module.settings.tutorial_windows = false
+	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
 	save_system.set_save_dir(TEST_DIR)
 	ck(save_system.get_slot_path(TEST_SLOT).begins_with(TEST_DIR), "tests write only to %s" % TEST_DIR)
 	save_system.set_current_slot(TEST_SLOT)

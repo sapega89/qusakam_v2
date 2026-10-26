@@ -8,6 +8,8 @@ extends SceneTree
 ## слот на хотбарі: готовий / на полі / кулдаун. Туторіал вибору — D463.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_companions.gd
 
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
+
 var fails: Array[String] = []
 
 func ck(ok: bool, label: String) -> void:
@@ -94,7 +96,7 @@ func _stars(enemy: Node) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -281,17 +283,20 @@ func _initialize() -> void:
 	ui.close_game_menu()
 	for i in 10: await process_frame
 
-	print("[10] D463: the picker tutorial window — frames, the assist key, a button to Status → Companions")
+	print("[10] D463, D718: the picker tutorial — a «?» first, its window has frames, the assist key, a button to Status → Companions")
 	var settings: Dictionary = root.get_node("SaveSystem").settings_module.settings
 	var seen: Array = sl.get_game_manager().player_state.seen_tutorials
-	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
+	var tray: Node = get_first_node_in_group(&"tip_tray")
 	var layer: Node = ui.get_modal_layer()
-	settings.tutorial_windows = true
+	settings.hints = true
 	seen.erase("choose_companions")
-	hint.show_hint("choose_companions")
+	tray.show_tip("choose_companions")
 	for i in 6: await process_frame
+	ck(layer.active_modal == null and not paused and tray.ids() == ["choose_companions"], "D718: a «?» waits, no window, the game runs (%s)" % [tray.ids()])
+	await Kit.key(self, KEY_T)  # підказки досі були вимкнені — у стосі лише ця тема
+	for i in 4: await process_frame
 	var window: Control = layer.active_modal
-	ck(window != null and window.scene_file_path.ends_with("tutorial_menu.tscn") and paused, "a tutorial window opens and pauses the game")
+	ck(window != null and window.scene_file_path.ends_with("tutorial_menu.tscn") and paused, "T opens the tutorial window and pauses the game")
 	ck(window.get_node("%Title").text == "Choosing Companions", "on the picker topic (%s)" % window.get_node("%Title").text)
 	ck(window.frames.size() > 1, "its frames play (%d)" % window.frames.size())
 	ck(window.get_node("%HintBar").visible and window.get_node("%Key").text != "", "the assist key is shown (%s)" % window.get_node("%Key").text)
@@ -305,18 +310,15 @@ func _initialize() -> void:
 	ck(focus != null and focus.name == "Select" and menu.find_child("CompanionCards", true, false).is_ancestor_of(focus), "focus is on a companion card (%s)" % [focus])
 	ui.close_game_menu()
 	for i in 10: await process_frame
-	# Інші підказки (перше вбивство охоронцем) могли стати в чергу, поки вікна були ввімкнені — дивимось лише на свою тему.
-	hint.show_hint("choose_companions")
-	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.current_hint != "choose_companions",
-			"it fires once: a second time queues no window and shows no banner")
+	# Інші підказки (перше вбивство охоронцем) могли стати в чергу, поки підказки були ввімкнені — дивимось лише на свою тему.
+	tray.show_tip("choose_companions")
+	ck(not tray.has("choose_companions"), "it fires once (D727): a second time puts no «?»")
 	if layer.active_modal != null:
 		layer.active_modal.cancelled.emit()
-	hint.force_hide()
 	seen.erase("choose_companions")
-	settings.tutorial_windows = false
-	hint.show_hint("choose_companions")
-	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.is_showing and hint.current_hint == "choose_companions",
-			"Tutorial windows Off → the plain hint banner instead (%s)" % hint.current_hint)
+	settings.hints = false
+	tray.show_tip("choose_companions")
+	ck(not tray.has("choose_companions") and not "choose_companions" in seen, "Hints Off (D728) → no «?», the topic is not marked seen")
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()

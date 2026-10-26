@@ -15,6 +15,8 @@ const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates
 const CHEVRON := preload("res://SampleProject/Assets/UI/Icons/chevron.svg")
 const ICON_DIR := "res://SampleProject/Assets/UI/Icons/shop_cat_%s.svg"
 
+const MenuNavKeys := preload("res://SampleProject/UI/Components/menu_nav_keys.gd")
+
 @onready var base_menu: Control = $BaseMenu
 @onready var _sidebar: Container = $BaseMenu/HBoxContainer/CentralPanel/Center/Sidebar
 @onready var _categories: VBoxContainer = %Categories
@@ -87,6 +89,11 @@ func _build_categories() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _modal_open():
+		return
+	var by := MenuNavKeys.letter_step(event)
+	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D721: W/S гортають рядки, як стрілки
+		get_viewport().set_input_as_handled()
+		MenuNavKeys.move_focus(_rows, by)
 		return
 	if event.is_action_pressed(&"ui_cancel"):
 		get_viewport().set_input_as_handled()

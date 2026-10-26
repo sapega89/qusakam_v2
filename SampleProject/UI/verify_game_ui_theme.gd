@@ -55,7 +55,7 @@ func _initialize() -> void:
 		for size_name in theme.get_font_size_list(t):
 			var px := theme.get_font_size(size_name, t)
 			_check(px >= UITokens.INGAME_LABEL_MIN, "D474: %s/%s = %d ≥ %d" % [t, size_name, px, UITokens.INGAME_LABEL_MIN])
-	for t in ["DialogueText", "NpcMenuItem", "HudQuestTitle", "TutorialBody", "TutorialBanner"]:
+	for t in ["DialogueText", "NpcMenuItem", "HudQuestTitle", "TutorialBody"]:
 		for size_name in theme.get_font_size_list(t):
 			_check(theme.get_font_size(size_name, t) >= UITokens.INGAME_BODY_MIN, "D474: body %s/%s ≥ %d" % [t, size_name, UITokens.INGAME_BODY_MIN])
 	_check(theme.get_font_size("font_size", "QuestTitle") == UITokens.font_px(UITokens.SIZE_BODY)

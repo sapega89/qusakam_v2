@@ -321,6 +321,18 @@ func load_player_data():
 	print("💾 SaveSystem: Player data loaded from %s" % file_path)
 	return true
 
+## D727: теми підказок, які бачили в сейвах цього проходження, з усіх слотів — Load ранішого сейва їх не повертає.
+func seen_tutorials_of(playthrough_id: String) -> Array:
+	var out: Array = []
+	for slot in range(1, SLOT_COUNT + 1):
+		var path := get_player_data_path(slot)
+		if not FileAccess.file_exists(path):
+			continue
+		var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+		if data is Dictionary and "player" in data and String(data.player.get("playthrough_id", "")) == playthrough_id:
+			out.append_array(data.player.seen_tutorials)
+	return out
+
 # ============================================================================
 # СОХРАНЕНИЕ НАСТРОЕК
 # ============================================================================

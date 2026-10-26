@@ -58,10 +58,10 @@ func _initialize() -> void:
 	await _drain(dm)
 	await _shot("hud")
 
-	var hints: Node = get_nodes_in_group(&"tutorial_hint_display")[0]
-	hints._show_banner("oldman_gift", true, true)  # плашка, не вікно: тема ще не бачена
-	await _shot("tutorial_banner")
-	hints.force_hide()
+	var tray: Node = get_first_node_in_group(&"tip_tray")
+	tray.show_tip("oldman_gift")  # D726: плашки немає — підказка лише «?»
+	await _shot("tutorial_tip")
+	tray.clear()
 
 	var player: Node2D = game.player
 	var npc: Node2D = load(MERCHANT).instantiate()

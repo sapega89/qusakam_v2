@@ -17,7 +17,7 @@ func _initialize() -> void:
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	await process_frame
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	root.size = Vector2i(1920, 1080)
 	set_meta("start_new_game", true)
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()

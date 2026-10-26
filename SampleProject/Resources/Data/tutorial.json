@@ -42,42 +42,6 @@
 			"frames": "move_jump"
 		},
 		{
-			"id": "lesson_attack",
-			"hint_topic": true,
-			"title": "Training 1/4 — Attack",
-			"text": "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training.",
-			"key": "{attack}",
-			"hint": "Press it three times quickly.",
-			"frames": "combo"
-		},
-		{
-			"id": "lesson_defend",
-			"hint_topic": true,
-			"title": "Training 2/4 — Dodge or Block",
-			"text": "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it.",
-			"key": "{dodge}",
-			"hint": "Dash through the blow, or hold block.",
-			"frames": "dodge"
-		},
-		{
-			"id": "lesson_parry",
-			"hint_topic": true,
-			"title": "Training 3/4 — Parry",
-			"text": "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte.",
-			"key": "{block}",
-			"hint": "Tap it as the yellow-glint blow lands to parry.",
-			"frames": "parry"
-		},
-		{
-			"id": "lesson_heavy",
-			"hint_topic": true,
-			"title": "Training 4/4 — Heavy Attack",
-			"text": "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard.",
-			"key": "{heavy_attack}",
-			"hint": "Button for a heavy attack.",
-			"frames": "heavy"
-		},
-		{
 			"id": "attack",
 			"hint_topic": true,
 			"title": "Attacking",
@@ -103,6 +67,33 @@
 			"key": "{block}",
 			"hint": "Hold to block; tap it as a yellow-glint blow lands to parry. Roll from a red glint.",
 			"frames": "parry"
+		},
+		{
+			"id": "tell_block",
+			"hint_topic": true,
+			"title": "White Glint",
+			"text": "A white glint on an enemy's weapon: this blow can be blocked. Hold {block} to take it on your guard.",
+			"key": "{block}",
+			"hint": "Hold to block a white-glint blow.",
+			"frames": "block"
+		},
+		{
+			"id": "tell_parry",
+			"hint_topic": true,
+			"title": "Yellow Glint",
+			"text": "A yellow glint on an enemy's weapon: this blow can be parried. Tap {block} just as it lands.",
+			"key": "{block}",
+			"hint": "Tap it as a yellow-glint blow lands.",
+			"frames": "parry"
+		},
+		{
+			"id": "tell_dodge",
+			"hint_topic": true,
+			"title": "Red Glint",
+			"text": "A red glint on an enemy's weapon: this blow cannot be blocked or parried. Dodge it with {dodge}.",
+			"key": "{dodge}",
+			"hint": "Dash out of a red-glint blow.",
+			"frames": "dodge"
 		},
 		{
 			"id": "first_kill",

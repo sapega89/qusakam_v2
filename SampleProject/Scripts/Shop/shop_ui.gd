@@ -16,6 +16,8 @@ const ROW_SCENE := preload("res://SampleProject/UI/Components/shop_row.tscn")
 const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 const ICON_DIR := "res://SampleProject/Assets/UI/Icons/shop_cat_%s.svg"
 
+const MenuNavKeys := preload("res://SampleProject/UI/Components/menu_nav_keys.gd")
+
 @onready var base_menu: Control = $BaseMenu
 @onready var _buy_tab: Button = %BuyTab
 @onready var _sell_tab: Button = %SellTab
@@ -96,6 +98,11 @@ func _input(event):
 		if not _buying.is_empty() and (event.is_action_pressed(&"ui_left") or event.is_action_pressed(&"ui_right")):
 			get_viewport().set_input_as_handled()
 			_set_quantity(_quantity + (1 if event.is_action_pressed(&"ui_right") else -1))
+		return
+	var by := MenuNavKeys.letter_step(event)
+	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D721: W/S гортають рядки, як стрілки
+		get_viewport().set_input_as_handled()
+		MenuNavKeys.move_focus(_rows, by)
 		return
 	if event.is_action_pressed(&"ui_cancel"):
 		get_viewport().set_input_as_handled()

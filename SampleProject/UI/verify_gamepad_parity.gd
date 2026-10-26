@@ -32,7 +32,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	var ss: Node = root.get_node("ServiceLocator").get_save_system()
 	ss.set_save_dir(TEST_DIR)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: підказки банером, без вікон
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	_actions()
 	await _main_menu()
 	var game: Node = await Kit.boot(self)
@@ -292,6 +292,23 @@ func _choice_menu() -> void:
 	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
 	await Kit.pad(self, JOY_BUTTON_A)
 	ck(picked == ["No"], "D-pad + A picks an answer (%s)" % [picked])
+	# D721: W/S і стрілки гортають відповіді з клавіатури, Enter вибирає.
+	choices.hide()
+	choices.choices = PackedStringArray(["Yes", "Maybe", "No"])
+	choices.show()
+	await Kit.frames(self, 3)
+	await Kit.key(self, KEY_S)
+	ck(_focus() != null and _focus().text == "Maybe", "D721: S moves to the next answer (%s)" % (_focus().text if _focus() is Button else "-"))
+	await Kit.key(self, KEY_S)
+	await Kit.key(self, KEY_S)
+	ck(_focus().text == "No", "D721: S stops at the last answer (%s)" % _focus().text)
+	await Kit.key(self, KEY_W)
+	ck(_focus().text == "Maybe", "D721: W moves back (%s)" % _focus().text)
+	await Kit.key(self, KEY_UP)
+	ck(_focus().text == "Yes", "D721: the Up arrow moves too (%s)" % _focus().text)
+	await Kit.key(self, KEY_DOWN)
+	await Kit.key(self, KEY_ENTER)
+	ck(picked == ["No", "Maybe"], "D721: Enter picks the answer W/S/arrows reached (%s)" % [picked])
 	layer.queue_free()
 	await Kit.frames(self, 2)
 

@@ -38,7 +38,7 @@ func _lucky(chance: float) -> void:
 func _initialize() -> void:
 	rolls.calm()
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await process_frame
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")

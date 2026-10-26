@@ -13,6 +13,8 @@ const ROW_SCENE := preload("res://SampleProject/UI/Components/shop_row.tscn")
 const MODAL_TEMPLATES := preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 const SERVICE := preload("res://SampleProject/Scripts/Crafting/enchanting_service.gd")
 
+const MenuNavKeys := preload("res://SampleProject/UI/Components/menu_nav_keys.gd")
+
 @onready var base_menu: Control = $BaseMenu
 @onready var _rows: VBoxContainer = %Rows
 @onready var _empty: Label = %EmptyLabel
@@ -40,6 +42,11 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _modal_open():
+		return
+	var by := MenuNavKeys.letter_step(event)
+	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D721: W/S гортають рядки, як стрілки
+		get_viewport().set_input_as_handled()
+		MenuNavKeys.move_focus(_rows, by)
 		return
 	if event.is_action_pressed(&"ui_cancel"):
 		get_viewport().set_input_as_handled()

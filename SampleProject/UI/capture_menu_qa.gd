@@ -21,7 +21,7 @@ func _shot(name: String) -> void:
 func _initialize() -> void:
 	_dir = OS.get_cmdline_user_args()[0]
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	var game: Node = await Kit.boot(self)
 	await Kit.drain(self)
 	var sl: Node = root.get_node("ServiceLocator")

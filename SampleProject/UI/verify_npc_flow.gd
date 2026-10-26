@@ -91,7 +91,7 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	var sl: Node = root.get_node("ServiceLocator")
 	var dm: Node = sl.get_dialogue_manager()
 	dm.bubble_time_scale = 0.0
@@ -214,12 +214,14 @@ func _initialize() -> void:
 	root.push_input(_action(&"ui_down"))
 	for i in 2: await process_frame
 	ck(_focused_label() == labels[1], "Down moves to the next row (%s)" % _focused_label())
+	ck(priest.npc_menu.is_engaged and _hero.event, "D721: the first menu key takes the menu and holds the hero")
 	root.push_input(_action(&"ui_up"))
 	for i in 2: await process_frame
 	ck(_focused_label() == labels[0], "Up moves back (%s)" % _focused_label())
 	root.push_input(_action(&"ui_cancel"))
 	for i in 4: await process_frame
 	ck(not priest.npc_menu.visible, "ui_cancel closes it, and it stays closed while the hero stands there")
+	ck(not _hero.event, "D721: closing lets the hero go")
 	root.push_input(_action(&"interact"))
 	for i in 4: await process_frame
 	ck(priest.npc_menu.visible, "E opens it again")

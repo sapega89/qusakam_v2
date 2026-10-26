@@ -114,12 +114,12 @@
 		{
 			"file": "tutorial.json",
 			"path": "topics[].title",
-			"shown": "tutorial_component, TutorialHintDisplay"
+			"shown": "tutorial_component, tip_tray (підказка «?»)"
 		},
 		{
 			"file": "tutorial.json",
 			"path": "topics[].text",
-			"shown": "TutorialTopics.resolved → вікно туторіалу, підказка"
+			"shown": "TutorialTopics.resolved → вікно туторіалу"
 		},
 		{
 			"file": "tutorial.json",

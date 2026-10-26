@@ -33,7 +33,7 @@ func _initialize() -> void:
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	root.get_node("SaveSystem").settings_module.settings.hints = true  # D726: the Healing Palm tip is a «?»
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var sl: Node = root.get_node("ServiceLocator")
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
@@ -69,11 +69,10 @@ func _initialize() -> void:
 	xp.add_xp(100)
 	ck(xp.get_level() == 2 and sm.can_unlock("healing_palm") == R.OK, "level 2: Healing Palm can be learned (level %d)" % xp.get_level())
 	await create_timer(4.0).timeout
-	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
-	ck(hint.is_showing and hint.current_hint == "healing_palm" and hint.hint_label.text.contains("Healing Palm"),
-			"the level-up hint asks to learn Healing Palm (%s)" % hint.current_hint)
+	var tray: Node = get_first_node_in_group(&"tip_tray")
+	ck(tray.has("healing_palm"), "the level-up «?» asks to learn Healing Palm (%s)" % [tray.ids()])
 	await create_timer(5.0).timeout
-	ck(hint.is_showing and hint.current_hint == "healing_palm", "…and stays until it is learned")
+	ck(tray.has("healing_palm"), "…and waits until it is learned")
 	# Як гравець: Esc → Skills, клік по вузлу Healing Palm, Enter (позначити), Accept (D330).
 	game.set_quest_flag("village_oldman_healed", true)  # вкладку Skills відкриває сюжет
 	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64 — клік мимо меню
@@ -116,7 +115,7 @@ func _initialize() -> void:
 		await process_frame
 	ck(sm.is_unlocked("healing_palm") and sm.get_rank("healing_palm") == 1, "Accept learns it, rank 1")
 	ck(sm.get_equipped_skill(0) == "healing_palm", "a learned active skill goes on the first free hotbar slot (%s)" % sm.get_equipped_skill(0))
-	ck(not hint.is_showing, "the hint goes away once Healing Palm is learned")
+	ck(not tray.has("healing_palm"), "its «?» goes away once Healing Palm is learned")
 	ui.close_game_menu()
 	for i in 8: await process_frame
 	ck(sm.can_unlock("fire_strike") == R.LEVEL_TOO_LOW, "Fire Strike locked below level 6")

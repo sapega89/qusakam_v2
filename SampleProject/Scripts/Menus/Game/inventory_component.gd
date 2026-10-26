@@ -49,6 +49,10 @@ func _initialize_component() -> void:
 	var inventory_manager := _get_inventory_manager()
 	if not inventory_manager.inventory_changed.is_connected(_on_inventory_changed):
 		inventory_manager.inventory_changed.connect(_on_inventory_changed)
+	# Вдягнули / зняли — знак «Equipped» на рядку міняється одразу (D720).
+	if not EventBus.equipment_equipped.is_connected(_on_equipment_changed):
+		EventBus.equipment_equipped.connect(_on_equipment_changed)
+		EventBus.equipment_unequipped.connect(_on_equipment_changed)
 
 	_load_inventory_items()
 	_select_category(&"all")
@@ -138,7 +142,18 @@ func _make_entry(item_id: String, count: int, item_data: Dictionary) -> Dictiona
 		"icon": item_database.get_item_icon(item_id),
 		"count": count,
 		"item_data": item_data,
+		"equipped_slot": _equipped_slot(item_id),
 	}
+
+
+## Слот, у якому цей предмет зараз на герої, або "" (D720). Предмет лишається в сумці й вдягнений.
+func _equipped_slot(item_id: String) -> String:
+	var equipment: Dictionary = game_manager.player_state.get("equipment", {})
+	for slot_id in equipment:
+		var worn = equipment[slot_id]
+		if worn is Dictionary and String(worn.get("id", "")) == item_id:
+			return String(slot_id)
+	return ""
 
 
 ## Фільтр за типом через індекс ItemDatabase (items_by_type).
@@ -214,6 +229,8 @@ func _use_hint(item: Dictionary) -> String:
 		return tr("Drink it in play with the quick slot (%s)") % InputGlyphs.label(&"quick_potion")
 	if _heal_amount(item) > 0:
 		return "Double-click or Enter to use"
+	if String(item.get("equipped_slot", "")) != "":
+		return tr("Equipped — double-click or Enter to unequip (%s)") % _get_slot_display_name(item.equipped_slot)
 	var slot_id := _get_slot_for_item(item)
 	if slot_id != "":
 		return tr("Double-click or Enter to equip (%s)") % _get_slot_display_name(slot_id)
@@ -228,6 +245,10 @@ func update_display() -> void:
 	_load_inventory_items()
 	_refresh_tab_availability()
 	_apply_filter()
+
+
+func _on_equipment_changed(_character_id: String, _slot_id: String, _item_id: String = "") -> void:
+	_on_inventory_changed()
 
 
 ## Зміна сумки (випите зілля) — виділення лишається на тому ж місці, а не стрибає на перший рядок.
@@ -282,6 +303,8 @@ func _on_row_activated(index: int) -> void:
 		_set_bar_hint(_use_hint(item))
 	elif _heal_amount(item) > 0:
 		_drink(item)
+	elif String(item.get("equipped_slot", "")) != "":
+		_unequip(item)  # D720: вдягнений — зняти, а не вдягати вдруге
 	elif _get_slot_for_item(item) != "":
 		_equip(item)
 	else:
@@ -326,6 +349,15 @@ func _equip(item: Dictionary) -> void:
 	emit_item_equipped(String(item.get("id", "")), slot_id)
 	_focus_selected_row()
 	_set_bar_hint.call_deferred(tr("%s equipped — %s.") % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
+
+
+## Вдягнений предмет — знімаємо тим самим штатним API (EquipmentManager → EventBus → CharacterManager), D720.
+func _unequip(item: Dictionary) -> void:
+	var slot_id := String(item.equipped_slot)
+	var character = game_manager.get_active_character()
+	_get_equipment_manager().unequip_item(String(character.character_id), slot_id)
+	_focus_selected_row()
+	_set_bar_hint.call_deferred(tr("%s unequipped — %s.") % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 
 
 func _focus_selected_row() -> void:

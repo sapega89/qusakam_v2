@@ -6,6 +6,7 @@ extends SceneTree
 ## реплiку FightWithBandit. Раніше другий запит ховав живе вікно першого й губився.
 ## Після бою — до дому діда (ElderDoor): розмова з ним, лікування, рішення, ключ — усередині (D438), вихід — тими
 ## самими дверима назад, а тоді LeavingVillage.
+## D725: бій — звичайний, без тренування; прапорці уроків старого сейва (training_*_done) нічого не міняють.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_village_fight.gd
 
 const VILLAGE := "res://SampleProject/Maps/Village.tscn"
@@ -58,7 +59,7 @@ func _enemies_active(village: Node) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -74,6 +75,7 @@ func _initialize() -> void:
 	var flags: Dictionary = game.get_quest_flags().duplicate()
 	for f in ["canyon_intro_complete", "canyon_exploration_complete", "canyon_abduction_complete"]:
 		flags[f] = true
+	flags["training_lesson_attack_done"] = true  # сейв, зроблений посеред старого тренування (D719)
 	game.set_quest_flags(flags)
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
@@ -118,11 +120,17 @@ func _initialize() -> void:
 	ck(_enemies_active(village), "the bandit is active")
 	ck(not game.player.event, "the player is unlocked")
 	ck(not paused, "the game is not paused")
+	ck(not village.find_children("*", "Node", true, false).any(func(n: Node) -> bool:
+			return n.get_script() != null and String(n.get_script().resource_path).ends_with("CombatTraining.gd")),
+			"D725: no combat training in the fight")
+	ck(game.current_objective == "Defeat the bandit in the street", "objective: the ordinary fight at once (%s)" % game.current_objective)
+	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Gameplay/CombatTraining.gd"), "the training script is gone")
 
-	print("[4] Killing the bandit finishes the street fight")
+	print("[4] Killing the bandit with real damage finishes the street fight")
 	for n in village.find_children("*", "CharacterBody2D", true, false):
 		if n.is_in_group(&"enemies") and n.is_alive():
-			n.die()
+			ck(n.min_health == 0, "the bandit can fall: no training floor on his HP (%d)" % n.min_health)
+			n.take_damage(n.Max_Health * 10)
 	for i in 20: await process_frame
 	ck(game.get_quest_flag("village_fight_complete"), "village_fight_complete set")
 	ck(village.get_current_state_name() == "CHECK_HOUSE", "on to the house (%s)" % village.get_current_state_name())
@@ -138,7 +146,7 @@ func _initialize() -> void:
 
 	print("[6] Through his door: the old man is inside, heals Kusakam and does not ask to be healed (D252, D261, D438)")
 	var sm: Node = sl.get_skill_manager()
-	var hint: Node = get_first_node_in_group("tutorial_hint_display")
+	var tray: Node = get_first_node_in_group(&"tip_tray")
 	game.player.take_damage(30)
 	elder_door.get_node(^"Interactable").interacted.emit()
 	for i in 120:
@@ -168,7 +176,7 @@ func _initialize() -> void:
 	ck(game.player.get_children().any(func(c: Node) -> bool: return c.scene_file_path.ends_with("HealingPalm.tscn")),
 			"the healing light wraps Kusakam on screen, no narration line (D437)")
 	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "the Village teaches no Healing Palm, slot 1 empty")
-	ck(hint.current_hint != "healing_palm", "no Healing Palm tutorial in the Village (%s)" % hint.current_hint)
+	ck(not tray.has("healing_palm"), "no Healing Palm tutorial in the Village (%s)" % [tray.ids()])
 
 	print("[7] Straight on to his decision, the gift and the key")
 	ck(not started.has("OldMan_Treated"), "no 'after you healed me' talk (%s)" % [started])
