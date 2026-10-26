@@ -171,7 +171,7 @@ func _load_with(flags: Dictionary, slot_path: String) -> void:
 func _initialize() -> void:
 	await process_frame
 	var save_system: Node = root.get_node("SaveSystem")
-	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
+	save_system.settings_module.settings.hints = true  # D726: the picker tip (D463) is a «?», checked below
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(TEST_SLOT)
 	var slot_path: String = save_system.get_slot_path(TEST_SLOT)
@@ -289,7 +289,8 @@ func _initialize() -> void:
 	_free_ok(met, "played")
 	var cm: Node = sl.get_companion_manager()
 	ck(met.party.is_empty() and cm.get_unlocked().size() == 3, "all three available, none in the party until picked, D464 (%s)" % [met.party])
-	ck("choose_companions" in sl.get_game_manager().player_state.seen_tutorials, "the picker tutorial fired once more than one can be chosen (D463)")
+	ck("choose_companions" in sl.get_game_manager().player_state.seen_tutorials and get_first_node_in_group(&"tip_tray").has("choose_companions"),
+			"the picker tutorial «?» fired once more than one can be chosen (D463)")
 	Input.parse_input_event(_key(KEY_F, true))
 	await physics_frame
 	Input.parse_input_event(_key(KEY_F, false))

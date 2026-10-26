@@ -11,7 +11,7 @@ date: 2026-10-26
 1. The combat training is gone. The first Village fight is an ordinary fight. Three «?» tips explain the white, yellow and red glints. 2. The hint banner window is gone, and every tip is a «?».
 3. Every tip shows once per playthrough. That holds after a room reload, a death, a load of an earlier save or a new session; New Game starts fresh. 4. **Settings → Game → Hints** On/Off (default On) is one gate in `TipTray.show_tip`.
 **D-IDs:** D725, D726, D727, D728 (text below). **B rows fixed:** none new. UC1/B151's banner no longer exists (D726).
-**Full suite:** FULL_SUITE_LINE
+**Full suite:** `SUITE: 6 FAIL` (116 PASS). verify_lab_cells was mine and is fixed (now ALL PASS); the other 5 also failed on the ui-critic baseline, so they are not from this branch.
 **Touched verifies:** all green (list below). **MASTER_PLAN** §3: rows HT1–HT4 👀 → `integrator`.
 **For integrator:** `cloud/elder-home` conflicts in `Village.gd`, and its new `ElderHouse.gd` still calls the removed hint window. Steps are under "Merging with elder-home".
 
@@ -56,7 +56,15 @@ The Hints row sits between Screen Shake and Damage Numbers. It uses the same On/
 
 ## Full suite
 
-FULL_SUITE_DETAIL
+`Scripts/Tools/run_verify.sh` on this branch: **SUITE: 6 FAIL**, 116 PASS.
+- `verify_lab_cells` — mine (the test turned hints off and then checked the picker tip). Fixed afterwards: hints on, and it checks the «?»; it now gives **ALL PASS**.
+- The other five also failed on ui-critic's head, 4e957a5e (baseline run here before any change of mine: 8 FAIL, incl. `verify_onboarding`, `verify_tutorial_hints` and `verify_audio`). They are not this branch's, and they go to `integrator`:
+  - `verify_dialogue_speaker` — hangs; Compile Error `Identifier not found: DialogueQuest` in `dqd_parser.gd:172` (test preloads before autoloads).
+  - `verify_gamepad_parity` — 1 FAIL.
+  - `verify_npc_arrival` — 10 FAIL around D454/D721 (ui-critic's NPC menu) and `Arrow.gd`/`PlayerCombat.gd` parse errors at compile time.
+  - `verify_save_load_room` — Godot aborts in `DialogueManager._play_bubbles` (DialogueManager.gd:355), no RESULT.
+  - `verify_tasks` — 1 FAIL (the task list).
+- `verify_audio` failed on the baseline and passed here.
 
 ## Merging with elder-home (for integrator)
 
