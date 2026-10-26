@@ -18,7 +18,6 @@ enum State {
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
 const OLDMAN_GIFT := "oldman_gift"
-const CombatTraining = preload("res://SampleProject/Scripts/Gameplay/CombatTraining.gd")
 ## D437: дідове лікування видно, а не розказано — те саме світло, що й у Healing Palm (D271).
 const HEALING_LIGHT := preload("res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn")
 
@@ -32,8 +31,6 @@ signal state_complete(state: State)
 
 # Enemy spawner reference
 var enemy_spawner: RoomEnemySpawner = null
-## Уроки бою з бандитом (BACKLOG 28, D-28a) — живуть, доки бій не скінчився.
-var training: CombatTraining = null
 
 func _ready() -> void:
 	# ServiceLocator — autoload, а не Engine-синглтон: has_singleton() тут завжди
@@ -185,12 +182,10 @@ func _show_healing_light(player: Node2D) -> void:
 ## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як
 ## зависання. Бій закінчується лише смертю ворогів (_on_all_enemies_defeated).
 ## Гравець вийшов посеред бою — повертаємо тих самих ворогів без репліки (D152).
-## Бандит — перший ворог гри, тож бій починається з уроків (D-28a): спершу шість рухів, потім «добий його».
-## Повернувся посеред бою — уроки з першого непройденого, пройдені не повторюються (D719; було D-28d — з першого).
+## D725: звичайний бій, без тренування (Sapega, 2026-10-26: «прибрати тренування бою») — колір відблиску ворога
+## пояснюють «?»-підказки (TutorialManager); прапорці training_*_done старих сейвів нічого не значать.
 func _start_fight(dialogue_id: String, run_id: int) -> void:
 	var resumed: bool = enemy_spawner.fight_in_progress()
-	training = CombatTraining.new()  # до появи бандита: загальні підказки бою стають баченими
-	add_child(training)
 	_spawn_enemies_for_fight()
 	if not resumed:
 		_set_enemies_active(false)
@@ -198,11 +193,6 @@ func _start_fight(dialogue_id: String, run_id: int) -> void:
 		if run_id != state_run_id:
 			return
 		_set_enemies_active(true)
-	_set_objective("Learn to fight: follow the lesson")
-	training.start(enemy_spawner.spawned_enemies)
-	await training.finished
-	if run_id != state_run_id:
-		return
 	_set_objective("Defeat the bandit in the street")
 
 ## Вимкнений вузол не думає й не має фізики (disable_mode REMOVE) — ні руху, ні удару.
@@ -297,17 +287,15 @@ func _give_oldman_gift() -> void:
 	inventory.add_item("leather_armor", 1)
 	game.set_quest_flag("village_oldman_gift", true)
 	ServiceLocator.get_ui_manager().show_obtained({"copper_sword": 1, "leather_armor": 1})  # BACKLOG 33
-	# Висить, доки не вдягне зброю
-	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
+	# «?» чекає, доки не вдягне зброю (D726)
+	get_tree().get_first_node_in_group(&"tip_tray").show_tip(OLDMAN_GIFT)
 	EventBus.equipment_equipped.connect(_on_gift_equipped)
 
 func _on_gift_equipped(_character_id: String, slot_id: String, _item_id: String) -> void:
 	if not slot_id in EquipmentManager.WEAPON_SLOTS:
 		return
 	EventBus.equipment_equipped.disconnect(_on_gift_equipped)
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()
+	get_tree().get_first_node_in_group(&"tip_tray").retire(OLDMAN_GIFT)
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
@@ -342,9 +330,6 @@ func _on_all_enemies_defeated() -> void:
 	# STREET_FIGHT і бандит відродиться.
 	var game = Game.get_singleton()
 	game.set_quest_flag("village_fight_complete", true)
-	if training != null:
-		training.queue_free()
-		training = null
 
 	advance_state()
 
@@ -355,9 +340,3 @@ func _get_dialogue_manager() -> Node:
 	# _execute_step() одразу викликав advance_state(), і вся машина станів
 	# пролітала до кінця без жодного діалогу і без жодного прапорця.
 	return ServiceLocator.get_dialogue_manager()
-
-## Пішов із села, не вдягнувши подарунок, — підказка йде разом із селом (її ховає лише село).
-func _exit_tree() -> void:
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint != null and hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()

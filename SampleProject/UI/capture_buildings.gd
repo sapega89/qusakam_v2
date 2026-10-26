@@ -16,7 +16,7 @@ var out_dir := ""
 func _initialize() -> void:
 	out_dir = OS.get_cmdline_user_args()[0]
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	game = await Kit.boot(self)
 	for flag in ["village_abduction_complete", "village_arrival_complete", "village_fight_complete",
 			"village_afterfight_complete", "village_oldman_met", "village_oldman_healed",

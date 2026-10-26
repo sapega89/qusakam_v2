@@ -216,9 +216,9 @@ func _acquaintance() -> void:
 	await cs.camera_back(PAN_TIME)
 	cs.end()
 	game.set_objective("Fight through the laboratory")
-	# D463: уперше є з кого вибирати — вікно туторіалу про вибір у Status (або плашка, якщо вікна вимкнено)
+	# D463: уперше є з кого вибирати — «?» про вибір у Status (D726)
 	if companions.get_unlocked().size() > 1:
-		(get_tree().get_first_node_in_group(&"tutorial_hint_display") as TutorialHintDisplay).show_hint(CHOOSE_COMPANIONS_TOPIC)
+		get_tree().get_first_node_in_group(&"tip_tray").show_tip(CHOOSE_COMPANIONS_TOPIC)
 
 
 ## Після кат-сцени: ґрати зникли, камера героя відчинена, алхімік утік, в'язень лежить біля столу.

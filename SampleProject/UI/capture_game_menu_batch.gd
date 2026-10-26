@@ -19,22 +19,27 @@ func _shot(name: String) -> void:
 func _initialize() -> void:
 	_dir = OS.get_cmdline_user_args()[0]
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = true
+	root.get_node("SaveSystem").settings_module.settings.hints = true
 	var game: Node = await Kit.boot(self)
 	var sl: Node = root.get_node("ServiceLocator")
 	var ui: Node = sl.get_ui_manager()
 	var layer: Node = ui.get_modal_layer()
 
-	# 12: the movement hint opens its window after the intro talk.
+	# 12: the movement tip is a «?» (D726); T opens its window.
+	var tray: Node = get_first_node_in_group(&"tip_tray")
 	for i in 300:
-		if layer.active_modal != null:
+		if tray.has("movement"):
 			break
 		await process_frame
+	await Kit.key(self, KEY_T)
+	await Kit.frames(self, 4)
 	await _shot("fb12_hint_window_keyboard")
 	await Kit.pad(self, JOY_BUTTON_B)
 	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
 	root.get_node("EventBus").player_staggered.emit(0.3)
-	for i in 300:
+	await Kit.frames(self, 4)
+	await Kit.pad(self, JOY_BUTTON_DPAD_LEFT)
+	for i in 30:
 		if layer.active_modal != null:
 			break
 		await process_frame
@@ -98,10 +103,10 @@ func _initialize() -> void:
 	await Kit.mouse(self, layer.active_modal.settings_button)
 	var options: Node = menu.find_child("OptionsComponent", true, false)
 	options.switch_to_tab("game")
-	await _shot("fb12_settings_tutorial_windows")
+	await _shot("fb12_settings_hints")
 
-	# 13: Journal sections (hints as banners here, so no window covers the menu).
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	# 13: Journal sections.
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	ui.close_game_menu()
 	await Kit.frames(self, 6)
 	sl.get_dialogue_manager().start_dialogue("res://dialogue_quest/OldMan_Outside.dqd")
@@ -126,5 +131,5 @@ func _initialize() -> void:
 	await _shot("fb13_characters")
 	await Kit.mouse(self, journal.get_node("%BestiaryTab"))
 	await _shot("fb13_bestiary")
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = true
+	root.get_node("SaveSystem").settings_module.settings.hints = true
 	quit()

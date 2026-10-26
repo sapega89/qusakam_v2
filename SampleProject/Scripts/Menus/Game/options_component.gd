@@ -213,9 +213,9 @@ func _build_rows() -> void:
 			_add_segment_row("Screen Shake", ["On", "Off"],
 					0 if _cfg_get("screen_shake") else 1, _on_screen_shake_changed)
 			_add_separator()
-			# D289: підказка відкриває вікно туторіалу; Off — лише плашка внизу.
-			_add_segment_row("Tutorial Windows", ["On", "Off"],
-					0 if _cfg_get("tutorial_windows") else 1, _on_tutorial_windows_changed)
+			# D728: Off — жодної «?»-підказки; підказки взаємодії («E Open») і сюжет лишаються.
+			_add_segment_row("Hints", ["On", "Off"],
+					0 if _cfg_get("hints") else 1, _on_hints_changed)
 			_add_separator()
 			# D66: цифри урону над героєм і ворогами (DamageNumbers)
 			_add_segment_row("Damage Numbers", ["On", "Off"],
@@ -394,8 +394,11 @@ func _on_screen_shake_changed(index: int) -> void:
 	_rebuild_list()
 
 
-func _on_tutorial_windows_changed(index: int) -> void:
-	_cfg_set("tutorial_windows", index == 0)
+## Вимкнули посеред гри — «?», що чекали, зникають (TipTray.clear); увімкнули — нові підказки відтепер, без пропущених.
+func _on_hints_changed(index: int) -> void:
+	_cfg_set("hints", index == 0)
+	if index == 1:
+		get_tree().call_group(&"tip_tray", &"clear")
 	_apply_and_save()
 	_rebuild_list()
 

@@ -969,8 +969,8 @@ msgstr "English"
 msgid "Ukrainian"
 msgstr "Ukrainian"
 
-msgid "Tutorial Windows"
-msgstr "Tutorial Windows"
+msgid "Hints"
+msgstr "Hints"
 
 msgid "Text Speed"
 msgstr "Text Speed"
@@ -1675,9 +1675,6 @@ msgstr "Make a decision"
 
 msgid "Leave the village"
 msgstr "Leave the village"
-
-msgid "Learn to fight: follow the lesson"
-msgstr "Learn to fight: follow the lesson"
 
 msgid "Defeat the bandit in the street"
 msgstr "Defeat the bandit in the street"
@@ -2448,18 +2445,6 @@ msgstr "The Journal"
 msgid "Moving and Jumping"
 msgstr "Moving and Jumping"
 
-msgid "Training 1/4 — Attack"
-msgstr "Training 1/4 — Attack"
-
-msgid "Training 2/4 — Dodge or Block"
-msgstr "Training 2/4 — Dodge or Block"
-
-msgid "Training 3/4 — Parry"
-msgstr "Training 3/4 — Parry"
-
-msgid "Training 4/4 — Heavy Attack"
-msgstr "Training 4/4 — Heavy Attack"
-
 msgid "Attacking"
 msgstr "Attacking"
 
@@ -2504,18 +2489,6 @@ msgstr "The Journal in the game menu follows the story. Quests lists each part o
 
 msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
 msgstr "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
-
-msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
-msgstr "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
-
-msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
-msgstr "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
-
-msgid "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
-msgstr "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
-
-msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
-msgstr "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
 
 msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
 msgstr "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
@@ -2562,17 +2535,11 @@ msgstr "Button to jump."
 msgid "Button for a light attack."
 msgstr "Button for a light attack."
 
-msgid "Press it three times quickly."
-msgstr "Press it three times quickly."
-
 msgid "Button to dash; twice in a row for a double dash."
 msgstr "Button to dash; twice in a row for a double dash."
 
 msgid "Hold it to block."
 msgstr "Hold it to block."
-
-msgid "Tap it as the yellow-glint blow lands to parry."
-msgstr "Tap it as the yellow-glint blow lands to parry."
 
 msgid "Button for a heavy attack."
 msgstr "Button for a heavy attack."
@@ -2772,9 +2739,6 @@ msgstr "Needs %d more JP spent in the %s tree."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "This tree's JP cap is reached (%d JP)."
-
-msgid "Dash through the blow, or hold block."
-msgstr "Dash through the blow, or hold block."
 
 msgid "Quick Potion"
 msgstr "Quick Potion"
@@ -3332,33 +3296,44 @@ msgstr "Lab Cells"
 msgid "Lab Boss"
 msgstr "Lab Boss"
 
-# D718: підказки «?»
 msgid "Open a tutorial tip (?)"
 msgstr "Open a tutorial tip (?)"
 
 msgid "Open Tip"
 msgstr "Open Tip"
 
-# D719: тренування — один рядок на урок
-msgid "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
-msgstr "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
-
-msgid "2/4 · His weapon glints: dash {dodge} or hold {block}"
-msgstr "2/4 · His weapon glints: dash {dodge} or hold {block}"
-
-msgid "3/4 · Yellow glint: tap {block} as the blow lands"
-msgstr "3/4 · Yellow glint: tap {block} as the blow lands"
-
-msgid "4/4 · {heavy_attack} while he is not swinging"
-msgstr "4/4 · {heavy_attack} while he is not swinging"
-
-# D720: вдягнене в інвентарі
 msgid "Equipped — double-click or Enter to unequip (%s)"
 msgstr "Equipped — double-click or Enter to unequip (%s)"
 
 msgid "%s unequipped — %s."
 msgstr "%s unequipped — %s."
 
-# D722: проклацати діалог
 msgid "Next line of dialogue (hold: run to the next choice)"
 msgstr "Next line of dialogue (hold: run to the next choice)"
+
+msgid "White Glint"
+msgstr "White Glint"
+
+msgid "Yellow Glint"
+msgstr "Yellow Glint"
+
+msgid "Red Glint"
+msgstr "Red Glint"
+
+msgid "A white glint on an enemy's weapon: this blow can be blocked. Hold {block} to take it on your guard."
+msgstr "A white glint on an enemy's weapon: this blow can be blocked. Hold {block} to take it on your guard."
+
+msgid "A yellow glint on an enemy's weapon: this blow can be parried. Tap {block} just as it lands."
+msgstr "A yellow glint on an enemy's weapon: this blow can be parried. Tap {block} just as it lands."
+
+msgid "A red glint on an enemy's weapon: this blow cannot be blocked or parried. Dodge it with {dodge}."
+msgstr "A red glint on an enemy's weapon: this blow cannot be blocked or parried. Dodge it with {dodge}."
+
+msgid "Hold to block a white-glint blow."
+msgstr "Hold to block a white-glint blow."
+
+msgid "Tap it as a yellow-glint blow lands."
+msgstr "Tap it as a yellow-glint blow lands."
+
+msgid "Dash out of a red-glint blow."
+msgstr "Dash out of a red-glint blow."

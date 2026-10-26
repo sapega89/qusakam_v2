@@ -24,7 +24,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	await process_frame
 	var tag: String = OS.get_cmdline_user_args()[0]
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
@@ -37,7 +37,6 @@ func _initialize() -> void:
 	for i in 16: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	await create_timer(2.5).timeout
-	get_first_node_in_group("tutorial_hint_display").modulate.a = 0.0
 	hero = game.player
 	hero.Max_Health = 9999
 	hero.current_health = 9999

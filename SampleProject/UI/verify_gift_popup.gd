@@ -56,7 +56,7 @@ func _initialize() -> void:
 	# Headless скидає вікно до 64×64 (verify_misc_destinations) — клік мишею по кнопці модалки міряє 1920×1080.
 	root.size = Vector2i(1920, 1080)
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()

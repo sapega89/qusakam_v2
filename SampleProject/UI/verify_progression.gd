@@ -40,7 +40,7 @@ func _room_of(scene_path: String) -> String:
 func _initialize() -> void:
 	await process_frame
 	root.get_node("SaveSystem").set_save_dir(TEST_DIR)  # тести не чіпають справжніх сейвів
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	sl = root.get_node("ServiceLocator")
 	game = await Kit.boot(self)
 	var xp: Node = sl.get_xp_manager()

@@ -508,9 +508,8 @@ func _tutorial(theme: Theme) -> void:
 		"TutorialBody": [_font_regular, UITokens.SIZE_TUTORIAL_BODY, UITokens.TEXT_PRIMARY],
 		"TutorialHint": [_font_regular, UITokens.SIZE_ROW_TITLE, UITokens.TEXT_PRIMARY],
 		"KeyBadgeLabel": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
-		# Вікно туторіалу й плашка підказки — ігрові поверхні (D474); KeyBadgeLabel лишається в Controls.
+		# Вікно туторіалу й «?» підказки — ігрові поверхні (D474); KeyBadgeLabel лишається в Controls.
 		"TutorialKeyLabel": [_font_bold, UITokens.SIZE_SMALL, UITokens.TEXT_PRIMARY],
-		"TutorialBanner": [_font_regular, UITokens.SIZE_BODY, UITokens.TEXT_PRIMARY],
 	}
 	for name in labels:
 		theme.set_type_variation(name, "Label")

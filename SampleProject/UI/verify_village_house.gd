@@ -44,7 +44,7 @@ func _walk_to_door(action: StringName, door: Area2D) -> void:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	game = await Kit.boot(self)
 	# Сюжет села пройдено: кімната не запускає своїх розмов, перевіряємо лише двері.
 	for flag in ["village_abduction_complete", "village_arrival_complete", "village_fight_complete",

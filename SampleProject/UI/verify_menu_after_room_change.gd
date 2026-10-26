@@ -31,7 +31,7 @@ var _closures: Dictionary = {}   # шлях → усе, що він тягне (
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	var game: Node = await Kit.boot(self)
 	game.player.set_invulnerable(true)
 	var ui: Node = root.get_node("ServiceLocator").get_ui_manager()

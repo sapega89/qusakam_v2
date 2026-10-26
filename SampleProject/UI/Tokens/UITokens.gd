@@ -100,7 +100,7 @@ const INGAME_FONT_TYPES: Array[StringName] = [
 	&"DialogueName", &"DialogueText", &"DialogueChoice",
 	&"NpcMenuItem", &"NpcMenuItemOn",
 	&"HudQuestCaption", &"HudQuestTitle",
-	&"TutorialBody", &"TutorialHint", &"TutorialKeyLabel", &"TutorialBanner",
+	&"TutorialBody", &"TutorialHint", &"TutorialKeyLabel",
 ]
 
 
@@ -328,10 +328,6 @@ const LOOT_TOAST_FADE := 0.4         # поява і згасання, секу�
 const LOOT_FEED_MAX := 4             # більше тостів — найстаріший іде одразу
 const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ матеріалу вистачає
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
-# Плашка підказки в грі (B151): у Figma кадру немає — стоїть угорі по центру під панеллю квесту, далеко від героя
-# й ворогів посеред екрана; ширина стала, висота росте вниз під текст (uk довша за en).
-const HINT_BANNER_WIDTH := 720
-const HINT_BANNER_SLIDE := SPACE_2XL      # поява/зникнення: зсув угору, px
 # Підказки як у Lineage II (D718): тема туторіалу — «?» біля лівого краю під панеллю героя, світиться, доки не відкрили.
 const TIP_ICON_SIZE := 48                 # сторона значка «?», px
 const TIP_TRAY_GAP := SPACE_SM            # між значками в стосі

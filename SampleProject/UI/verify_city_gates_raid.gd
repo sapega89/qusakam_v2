@@ -64,7 +64,7 @@ func _covers(sprite: Sprite2D, player: Node2D, chest: bool) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: hints as banners, the game never pauses under a window
+	root.get_node("SaveSystem").settings_module.settings.hints = true  # D726: the guard's tip is a «?»
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -145,8 +145,8 @@ func _initialize() -> void:
 	ck(not room.get_node(^"Raid").visible, "cutscene bandits replaced by the real ones")
 	ck(not player.event, "control back")
 	ck(sl.get_companion_manager()._guard_offered, "the guard is offered")
-	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
-	ck(hint.current_hint == "call_guard", "call_guard hint (%s)" % hint.current_hint)
+	var tray: Node = get_first_node_in_group(&"tip_tray")
+	ck(tray.has("call_guard"), "call_guard «?» (%s)" % [tray.ids()])
 
 	print("[6] Coming back mid-fight does not replay the raid")
 	started.clear()
