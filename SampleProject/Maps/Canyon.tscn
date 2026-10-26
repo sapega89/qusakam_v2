@@ -121,7 +121,7 @@ texture = ExtResource("x6")
 offset = Vector2(-55, 0)
 
 [node name="Support2" parent="Supports" instance=ExtResource("x5")]
-position = Vector2(600, 482)
+position = Vector2(548, 482)
 texture = ExtResource("x6")
 offset = Vector2(-55, 0)
 

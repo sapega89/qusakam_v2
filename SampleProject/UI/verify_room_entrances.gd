@@ -97,8 +97,11 @@ func _initialize() -> void:
 	print("[4] Through every door both ways (real E)")
 	for room: String in ROOMS:
 		await _visit(room)
+		var names: Array[String] = []
 		for door: Node in _doors(game.map):
-			await _through(room, door.name)
+			names.append(door.name)
+		for door_name: String in names:
+			await _through(room, door_name)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -112,7 +115,9 @@ func _open_everything() -> void:
 			game.set_quest_flag(gates[id].flag, true)
 	for flag: String in ["lab_cells_cutscene_complete", "lab_acquaintance_complete"]:
 		game.set_quest_flag(flag, true)
-	root.get_node("ServiceLocator").get_skill_manager().swear_oath("paladin")
+	var sl: Node = root.get_node("ServiceLocator")
+	sl.get_xp_manager().add_xp(100000)  # клятва — з 5-го рівня
+	ck(sl.get_skill_manager().swear_oath("paladin") == 0, "the oath sworn (the mayor's door opens with it)")
 
 
 func _visit(room: String) -> void:
@@ -154,8 +159,21 @@ func _space() -> PhysicsDirectSpaceState2D:
 func _floor_below(p: Vector2, reach: float = 1200.0) -> float:
 	var q := PhysicsRayQueryParameters2D.create(p, p + Vector2(0, reach))
 	q.exclude = [game.player.get_rid()]
-	var hit := _space().intersect_ray(q)
-	return hit.position.y if not hit.is_empty() else INF
+	for i in 8:
+		var hit := _space().intersect_ray(q)
+		if hit.is_empty():
+			return INF
+		if not (hit.collider is CharacterBody2D):  # вороги й NPC — не підлога
+			return hit.position.y
+		q.exclude = q.exclude + [hit.rid]
+	return INF
+
+
+func _solid_at(p: Vector2) -> bool:
+	var q := PhysicsPointQueryParameters2D.new()
+	q.position = p
+	q.exclude = [game.player.get_rid()]
+	return not _space().intersect_point(q, 1).is_empty()
 
 
 func _check_doors(room: String) -> void:
@@ -255,7 +273,9 @@ func _check_front(room: String) -> void:
 		var x: float = maxf(r.position.x - drift, 0.0)
 		while x <= minf(r.end.x, size.x):
 			if hanging:
-				worst = minf(worst, _floor_below(Vector2(x, r.end.y)) - r.end.y)
+				# Над стелею чи стіною (точка під краєм — у твердому) героя бути не може.
+				if not _solid_at(Vector2(x, r.end.y + 2.0)):
+					worst = minf(worst, _floor_below(Vector2(x, r.end.y)) - r.end.y)
 			else:
 				var walk: float = _floor_below(Vector2(x, row_top - 1.0))
 				if walk <= r.position.y:
@@ -298,18 +318,21 @@ func _check_cover(room: String) -> void:
 		var at := s.global_position
 		game.place_player(Vector2(at.x, at.y - 40.0))
 		game.player.velocity = Vector2.ZERO
-		for i in 30: await physics_frame
+		for i in 4: await physics_frame
+		(game.player.get_node(^"Camera2D") as Camera2D).reset_smoothing()
+		for i in 10: await physics_frame
 		var canvas := game.get_viewport().get_canvas_transform()
 		var target: Rect2
 		if s in fights:
-			target = Rect2(vw / 3.0, -10000.0, vw / 3.0, 20000.0)
+			var vh: float = game.get_viewport().get_visible_rect().size.y
+			target = Rect2(vw / 3.0, vh / 4.0, vw / 3.0, vh / 2.0)  # середина кадру, де йде бій
 		else:
 			var art: Node = game.map.get_node_or_null(NodePath(s.name + "Entrance"))
 			var world: Rect2 = art.opening_rect() if art != null else Rect2(at.x - 24.0, at.y - 80.0, 48.0, 80.0)
 			target = canvas * world
 		for o: CanvasItem in occluders:
 			var r: Rect2 = o.get_global_transform_with_canvas() * _local_rect(o)
-			ck(not r.intersects(target), "%s: %s does not cover %s %s" % [room, o.name, "the fight's middle at" if s in fights else "", s.name])
+			ck(not r.intersects(target), "%s: %s does not cover %s%s (%s vs %s, hero x %.0f)" % [room, o.name, "the fight's middle at " if s in fights else "", s.name, r, target, game.player.global_position.x])
 
 
 func _local_rect(ci: CanvasItem) -> Rect2:

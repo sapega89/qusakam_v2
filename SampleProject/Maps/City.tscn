@@ -248,12 +248,6 @@ texture = ExtResource("x5")
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
-position = Vector2(1900, 520)
+position = Vector2(1910, 520)
 scale = Vector2(3, 3)
 
-[node name="OccluderRock2" type="Sprite2D" parent="FrontDark"]
-texture_filter = 1
-position = Vector2(3000, 520)
-scale = Vector2(2.2, 2.2)
-texture = ExtResource("x5")
-offset = Vector2(-78, -114)

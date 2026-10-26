@@ -142,6 +142,6 @@ position = Vector2(1950, 0)
 position = Vector2(700, 480)
 
 [node name="Pillar2" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1700, 480)
+position = Vector2(1610, 480)
 
 [node name="TopShade" parent="." instance=ExtResource("x4")]

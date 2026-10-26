@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Resources/Lighting/fg_pillar.tres" id="1_pillar"]
 
 [node name="FgPillar" type="Sprite2D"]
-scale = Vector2(2, 80)
+scale = Vector2(2, 60)
 texture = ExtResource("1_pillar")
 centered = false
 offset = Vector2(-32, -8)

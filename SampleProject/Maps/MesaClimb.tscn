@@ -302,10 +302,6 @@ bus = &"Music"
 [node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
 position = Vector2(90, 0)
 
-[node name="Roots2" parent="FrontDark" instance=ExtResource("x4")]
-position = Vector2(250, 0)
-flip_h = true
-
 [node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
 position = Vector2(200, 1010)
 

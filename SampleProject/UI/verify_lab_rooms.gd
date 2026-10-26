@@ -58,6 +58,7 @@ func _walk_into(action: StringName, room: String, label: String) -> void:
 func _door_into(door: String, room: String, label: String) -> void:
 	var before := _room()
 	var node: Area2D = game.map.get_node(door)
+	var arrival: NodePath = node.arrival
 	game.place_player(node.global_position)
 	for i in 30: await physics_frame
 	ck(node.interactable.player_nearby and node.interactable.enabled, "%s: %s offers Enter" % [label, door])
@@ -67,7 +68,7 @@ func _door_into(door: String, room: String, label: String) -> void:
 	var p: Node2D = game.player
 	ck(_room() == room, "%s: %s → %s (%s)" % [label, before, room, _room()])
 	ck(p.is_on_floor(), "%s: the hero stands on the floor (%s)" % [label, p.global_position])
-	var back: Node2D = game.map.get_node(node.arrival)
+	var back: Node2D = game.map.get_node(arrival)
 	ck(absf(p.global_position.x - back.global_position.x) < 48.0, "%s: in front of %s, the door back (x %.0f)" % [label, back.name, p.global_position.x])
 
 func _initialize() -> void:
