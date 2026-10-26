@@ -3240,3 +3240,94 @@ msgstr "The dragon on the wall"
 
 msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sunless sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
 msgstr "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sunless sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
+
+# ── World Map, два рівні (world_map_spec, D458, D487, D565)
+msgid "you are here"
+msgstr "you are here"
+
+msgid "visited"
+msgstr "visited"
+
+msgid "locked"
+msgstr "locked"
+
+msgid "Explored %d%% · Chests %d/%d"
+msgstr "Explored %d%% · Chests %d/%d"
+
+msgid "A — open the location map"
+msgstr "A — open the location map"
+
+msgid "Location map · B — back to the world map"
+msgstr "Location map · B — back to the world map"
+
+msgid "Left / Right — choose a location. A — open its map."
+msgstr "Left / Right — choose a location. A — open its map."
+
+msgid "B — back to the world map."
+msgstr "B — back to the world map."
+
+msgid "LEGEND"
+msgstr "LEGEND"
+
+msgid "a room you have been in"
+msgstr "a room you have been in"
+
+msgid "saw the entrance, not entered yet"
+msgstr "saw the entrance, not entered yet"
+
+msgid "you"
+msgstr "you"
+
+msgid "meditation (save)"
+msgstr "meditation (save)"
+
+msgid "chest"
+msgstr "chest"
+
+msgid "locked door"
+msgstr "locked door"
+
+msgid "quest"
+msgstr "quest"
+
+msgid "exit to another location"
+msgstr "exit to another location"
+
+msgid "↕ ladder"
+msgstr "↕ ladder"
+
+msgid "↓ drop"
+msgstr "↓ drop"
+
+msgid "Canyon"
+msgstr "Canyon"
+
+msgid "Elder House"
+msgstr "Elder House"
+
+msgid "Lizard Cave"
+msgstr "Lizard Cave"
+
+msgid "Dragon Mural"
+msgstr "Dragon Mural"
+
+msgid "Bandit Camp"
+msgstr "Bandit Camp"
+
+msgid "Mesa Climb"
+msgstr "Mesa Climb"
+
+msgid "Mayor Hall"
+msgstr "Mayor Hall"
+
+msgid "Gatehouse Cellar"
+msgstr "Gatehouse Cellar"
+
+msgid "Laboratory Outside"
+msgstr "Laboratory Outside"
+
+msgid "Lab Cells"
+msgstr "Lab Cells"
+
+msgid "Lab Boss"
+msgstr "Lab Boss"

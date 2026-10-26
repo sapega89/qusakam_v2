@@ -3249,3 +3249,100 @@ msgstr "Дракон на стіні"
 # [ЧЕРНЕТКА] D643
 msgid "A dragon fills the whole wall, its wings over the cliffs and its tail wound around the sunless sky. Tiny people kneel below with offerings. The paint is cracked and older than any village in the canyon. Nobody alive has seen a dragon, but whoever painted this had: every scale is drawn as if counted. At its feet the old hand wrote one line, and only the end of it survives: «...and it will not ask twice.»"
 msgstr "Дракон займає всю стіну: крила над скелями, хвіст обвиває небо без сонця. Унизу крихітні люди стоять навколішки з дарами. Фарба потріскалася, вона старша за будь-яке село в каньйоні. Живі дракона не бачили, а той, хто це малював, бачив: кожну луску виведено так, ніби її рахували. Біля його лап давня рука написала один рядок, і вцілів лише кінець: «...і двічі він не проситиме»."
+
+# ── World Map, два рівні (world_map_spec, D458, D487, D565)
+msgid "you are here"
+msgstr "ви тут"
+
+msgid "visited"
+msgstr "відвідано"
+
+msgid "locked"
+msgstr "закрито"
+
+msgid "Explored %d%% · Chests %d/%d"
+msgstr "Досліджено %d%% · Скрині %d/%d"
+
+msgid "A — open the location map"
+msgstr "A — відкрити карту локації"
+
+msgid "Location map · B — back to the world map"
+msgstr "Карта локації · B — до карти світу"
+
+msgid "Left / Right — choose a location. A — open its map."
+msgstr "Вліво / вправо — вибрати локацію. A — відкрити її карту."
+
+msgid "B — back to the world map."
+msgstr "B — назад до карти світу."
+
+msgid "LEGEND"
+msgstr "ЛЕГЕНДА"
+
+msgid "a room you have been in"
+msgstr "кімната, де ти був"
+
+msgid "saw the entrance, not entered yet"
+msgstr "бачив вхід, ще не заходив"
+
+msgid "you"
+msgstr "ти"
+
+msgid "meditation (save)"
+msgstr "медитація (збереження)"
+
+msgid "chest"
+msgstr "скриня"
+
+msgid "locked door"
+msgstr "замкнено"
+
+msgid "quest"
+msgstr "завдання"
+
+msgid "exit to another location"
+msgstr "вихід в іншу локацію"
+
+msgid "↕ ladder"
+msgstr "↕ драбина"
+
+msgid "↓ drop"
+msgstr "↓ спуск"
+
+# Назви кімнат на карті локації: ключ — імʼя сцени словами (LocationMap.room_title). [ЧЕРНЕТКА] — крім тих, що з кадру 539:6615.
+msgid "Canyon"
+msgstr "Каньйон"
+
+msgid "Elder House"
+msgstr "Дім діда"
+
+msgid "Lizard Cave"
+msgstr "Печера ящерів"
+
+msgid "Dragon Mural"
+msgstr "Розпис дракона"
+
+msgid "Bandit Camp"
+msgstr "Табір бандитів"
+
+msgid "Mesa Climb"
+msgstr "Підйом на Месу"
+
+# [ЧЕРНЕТКА]
+msgid "Mayor Hall"
+msgstr "Зала мера"
+
+# [ЧЕРНЕТКА]
+msgid "Gatehouse Cellar"
+msgstr "Підвал брами"
+
+# [ЧЕРНЕТКА]
+msgid "Laboratory Outside"
+msgstr "Біля лабораторії"
+
+# [ЧЕРНЕТКА]
+msgid "Lab Cells"
+msgstr "Камери лабораторії"
+
+# [ЧЕРНЕТКА]
+msgid "Lab Boss"
+msgstr "Серце лабораторії"

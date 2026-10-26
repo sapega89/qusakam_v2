@@ -499,6 +499,9 @@ const HUD_BADGE_NEUTRAL := 0.45
 const FIGMA_FONT_TYPES: Array[StringName] = [
 	&"VitalsName", &"VitalsLabel", &"VitalsValue", &"BindBadge", &"CooldownLabel",
 	&"HudClass", &"HudLevel", &"HudSpCost", &"HudCount",
+	# Карта World Map: написи стоять у плашках і клітинках 150×84 фіксованого розміру (world_map_spec).
+	&"MapPinName", &"MapPinNameLocked", &"MapPinState", &"MapCardTitle", &"MapCardText", &"MapRoomName",
+	&"MapPassage", &"MapLegendTitle",
 ]
 const SIZE_HUD_NAME := 26        # Bold, UPPER, tracking 3
 const HUD_NAME_SPACING := 3
@@ -535,3 +538,53 @@ const SKILL_BUTTON_WIDTH := 180
 const SKILL_HEADING_SPACING := 3                # tracking заголовків дерев і «SKILLS»
 const SIZE_SKILL_WINDOW_TITLE := 30             # «SKILLS»
 const SIZE_SKILL_RANK := 13                     # «2 / 3» під клітинкою
+
+# ── Карта World Map, два рівні (D458, D487, D565; design/world_map_spec.md, Figma 539:6472 / 539:6615) ───────
+# Рівень 1 — світ: шпилька на локацію і картка вибраної.
+const MAP_PLATE := Color("121217", 0.9)            # плашка шпильки
+const MAP_PLATE_LOCKED := Color("121217", 0.6)     # ще не досягнута локація
+const MAP_CARD_BG := Color("121217", 0.88)         # картка локації й легенда
+const MAP_GOLD := Color("d9ad4d")                  # рамка плашки, крапка «відвідано», назва в картці
+const MAP_HERE := Color("d9261a")                  # «ви тут»: крапка й рамка
+const MAP_LOCKED := Color("8c8c8c")                # крапка й назва закритої локації
+const MAP_PIN_NAME := Color("f0d6a0")              # назва на плашці (виміряно з кадру)
+const MAP_PIN_RADIUS := 18
+const MAP_PIN_BORDER := 2                          # Figma 1.5 px; StyleBoxFlat бере цілі
+const MAP_PIN_HERE_BORDER := 3
+const MAP_PIN_SELECTED_BORDER := 3                 # вибрана (не «тут») — та сама золота рамка, товща
+const MAP_PIN_PAD_H := 14
+const MAP_PIN_PAD_V := 6
+const MAP_PIN_DOT := 18
+const MAP_CARD_RADIUS := 6
+const MAP_CARD_PAD_H := 20
+const MAP_CARD_PAD_V := 16
+const SIZE_MAP_PIN_NAME := 24
+const SIZE_MAP_PIN_STATE := 12
+const SIZE_MAP_CARD_TITLE := 30
+const SIZE_MAP_CARD_TEXT := 16
+const SIZE_MAP_LEGEND_TITLE := 20
+# Рівень 2 — локація: кімнати з клітинок MetSys під пергаментною вуаллю.
+const MAP_VEIL := Color("eddbb8", 0.93)
+const MAP_CELL := Vector2(150, 84)                 # клітинка MetSys 864×480 у тій самій пропорції
+const MAP_ROOM_FILL := Color("d1b585")
+const MAP_INK := Color("3d2917")
+const MAP_ROOM_BORDER := 3.0
+const MAP_SEEN_ALPHA := 0.45                       # бачив вхід, ще не заходив: пунктир чорнилом
+const MAP_SEEN_BORDER := 2.0
+const MAP_SEEN_DASH := 10.0
+const MAP_SEEN_GAP := 8.0
+const MAP_ROOM_NAME_PAD := Vector2(10, 4)
+const MAP_ICON := 26.0
+const MAP_ICON_BORDER := 2.0
+const MAP_ICON_GLYPH := Color("ffffff")
+const MAP_ICON_HERO := Color("bf1a0d")
+const MAP_ICON_SAVE := Color("4073bf")
+const MAP_ICON_CHEST := MAP_GOLD
+const MAP_ICON_OPENED_ALPHA := 0.4                 # відкрита скриня приглушена
+const MAP_ICON_LOCKED := Color("808080")
+const MAP_ICON_QUEST := Color("e6991a")
+const MAP_ICON_EXIT := MAP_INK
+const MAP_PASSAGE := Color("a8321e")               # «↕ драбина», «↓ спуск» — червоне чорнило
+const SIZE_MAP_ROOM := 18
+const SIZE_MAP_PASSAGE := 13
+const MAP_LEGEND_SWATCH := 14.0                    # квадратик кімнати в легенді

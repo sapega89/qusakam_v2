@@ -35,6 +35,7 @@ func _initialize() -> void:
 	_setup_progress_bar(theme)
 	_hud_v2(theme)
 	_skill_window(theme)
+	_world_map(theme)
 	_setup_scrollbars(theme)
 	_setup_line_edit(theme)
 	_setup_slider(theme)
@@ -1359,6 +1360,53 @@ func _setup_progress_bar(theme: Theme) -> void:
 
 
 # ── Скролбари (Figma UI/Scrollbar — 10px, без заокруглень) ──────────────────
+
+## Карта World Map (world_map_spec): шпильки локацій, картка, легенда, вуаль рівня 2 і написи на них.
+func _world_map(theme: Theme) -> void:
+	var labels := {
+		"MapPinName": [_font_bold, UITokens.SIZE_MAP_PIN_NAME, UITokens.MAP_PIN_NAME],
+		"MapPinNameLocked": [_font_bold, UITokens.SIZE_MAP_PIN_NAME, UITokens.MAP_LOCKED],
+		"MapPinState": [_font_bold, UITokens.SIZE_MAP_PIN_STATE, UITokens.TEXT_PRIMARY],
+		"MapCardTitle": [_font_bold, UITokens.SIZE_MAP_CARD_TITLE, UITokens.MAP_GOLD],
+		"MapCardText": [_font_regular, UITokens.SIZE_MAP_CARD_TEXT, UITokens.TEXT_PRIMARY],
+		"MapLegendTitle": [_font_bold, UITokens.SIZE_MAP_LEGEND_TITLE, UITokens.MAP_GOLD],
+		"MapRoomName": [_font_bold, UITokens.SIZE_MAP_ROOM, UITokens.MAP_INK],
+		"MapPassage": [_font_bold, UITokens.SIZE_MAP_PASSAGE, UITokens.MAP_PASSAGE],
+	}
+	for name in labels:
+		var spec: Array = labels[name]
+		theme.set_type_variation(name, "Label")
+		theme.set_font("font", name, spec[0])
+		theme.set_font_size("font_size", name, spec[1])
+		theme.set_color("font_color", name, spec[2])
+	var plates := {
+		"MapPin": [UITokens.MAP_PLATE, UITokens.MAP_GOLD, UITokens.MAP_PIN_BORDER],
+		"MapPinSelected": [UITokens.MAP_PLATE, UITokens.MAP_GOLD, UITokens.MAP_PIN_SELECTED_BORDER],
+		"MapPinHere": [UITokens.MAP_PLATE, UITokens.MAP_HERE, UITokens.MAP_PIN_HERE_BORDER],
+		"MapPinLocked": [UITokens.MAP_PLATE_LOCKED, UITokens.MAP_GOLD, UITokens.MAP_PIN_BORDER],
+	}
+	for name in plates:
+		var spec: Array = plates[name]
+		var plate := _box(spec[0], spec[1], spec[2], UITokens.MAP_PIN_PAD_H, UITokens.MAP_PIN_PAD_V)
+		plate.set_corner_radius_all(UITokens.MAP_PIN_RADIUS)
+		theme.set_type_variation(name, "PanelContainer")
+		theme.set_stylebox("panel", name, plate)
+	var dots := {"MapPinDotHere": UITokens.MAP_HERE, "MapPinDotVisited": UITokens.MAP_GOLD,
+		"MapPinDotLocked": UITokens.MAP_LOCKED}
+	for name in dots:
+		var dot := _box(dots[name], dots[name], 0, 0, 0)
+		@warning_ignore("integer_division")
+		dot.set_corner_radius_all(UITokens.MAP_PIN_DOT / 2)
+		theme.set_type_variation(name, "Panel")
+		theme.set_stylebox("panel", name, dot)
+	var card := _box(UITokens.MAP_CARD_BG, UITokens.MAP_GOLD, UITokens.BORDER_WIDTH,
+			UITokens.MAP_CARD_PAD_H, UITokens.MAP_CARD_PAD_V)
+	card.set_corner_radius_all(UITokens.MAP_CARD_RADIUS)
+	theme.set_type_variation("MapCard", "PanelContainer")
+	theme.set_stylebox("panel", "MapCard", card)
+	theme.set_type_variation("MapVeil", "Panel")
+	theme.set_stylebox("panel", "MapVeil", _box(UITokens.MAP_VEIL, UITokens.MAP_VEIL, 0, 0, 0))
+
 
 func _setup_scrollbars(theme: Theme) -> void:
 	# Товщину смуги дають поля стилю (B18: з нульовими полями смуга була 0px — невидима).
