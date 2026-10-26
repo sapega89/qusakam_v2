@@ -187,6 +187,20 @@ func _frames() -> void:
 	await create_timer(0.2).timeout
 	ck(String(anim.current_animation) == "bow/Idle", "in combat the hero stands with the bow lowered (%s)" % anim.current_animation)
 	ck(not hero.get_node("WeaponMount/Pivot").visible, "no overlay sprite for the bow")
+	# B110: у стрибку, на вершині, у падінні, при приземленні, у блоці й від удару лук теж у руці —
+	# ті самі імена й темп, що в базовій бібліотеці й у меча, тож body_animation() бере кадри лука
+	for name in ["Jump", "Apex", "Fall", "Land", "Block", "Hurt"]:
+		var played: StringName = hero.body_animation(StringName(name))
+		hero.play_body(StringName(name))
+		anim.advance(0.0)
+		var tex: Texture2D = hero.get_node("Sprite2D").texture
+		var a: Animation = anim.get_animation(played)
+		var base: Animation = anim.get_animation(StringName(name))
+		ck(played == StringName("bow/" + name) and anim.current_animation == played
+				and tex.resource_path.contains("/Weapons/bow/") and tex.get_size() == Vector2(96, 96)
+				and is_equal_approx(a.length, base.length) and a.loop_mode == base.loop_mode,
+				"%s with the bow: %s, frame %s, %.2f s like the base" % [name, played, tex.resource_path.trim_prefix("res://SampleProject/Sprites/Player/Weapons/") if tex else "-", a.length if a else 0.0])
+	hero.play_body(&"Idle")
 
 ## [2] Швидкий постріл: на натискання, стріла по прямій, рух не стоїть (D380, D382).
 func _quick_shot() -> void:

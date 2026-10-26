@@ -66,7 +66,7 @@ tags: [plan, orchestrator, status]
 | ID | Що | Хто | Статус |
 |---|---|---|---|
 | A1 | B124 — меч у неправильній руці між бігом і атакою: Run 1–7 і Air 1–3 перемальовано, лезо за ближньою рукою кожного кадру | 🖥 | ✅ замінено на A13 v3 |
-| A2 | B110 — лук в інших позах (Air 1–3, Block, Hurt, Roll) → `AnimationLibrary_bow` | 🖥→☁ | ⬜ |
+| A2 | B110 — лук в інших позах (Air 1–3, Block, Hurt, Roll) → `AnimationLibrary_bow` | 🖥→☁ | 🔄 `bow-wire`: підключено, не перевірено — хмара не змогла завантажити Godot; лишилось `--import` і `verify_bow` |
 | A3 | Фон Lizard Cave: прибрати псевдолітери | 🖥 | ⬜ |
 | A4 | Трава — idle-аркуш (BACKLOG 19) | 🖥→☁ | ⬜ |
 | A5 | Скрині: поза Raise ([[chests_plan]]) | 🖥→☁ | ⬜ |
