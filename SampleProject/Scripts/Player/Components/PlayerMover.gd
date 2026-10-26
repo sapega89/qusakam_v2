@@ -56,6 +56,9 @@ var roll_length: float = 0.0
 var roll_ready_in: float = 0.0  # до повернення ривків: останній ривок + roll_cooldown
 var dash_charges: int = 2
 var roll_direction: int = 1
+## Ривок почався в повітрі (D264): летить рівно. Ривок із землі, що зійшов з уступу, падає під звичайною
+## гравітацією, зберігаючи горизонтальну швидкість (Sapega 2026-10-24).
+var air_dash: bool = false
 ## Драбина, по якій зараз лізе герой (Ladder.gd), або null. Скидає Player.on_enter при переході кімнати.
 var climbing: Node2D = null
 ## Рух вимкнено боєм (збій, D264) — Player ставить щокадру з PlayerCombat.locks_movement().
@@ -114,7 +117,8 @@ func jump_buffered() -> bool:
 	return _jump_buffer > 0.0
 
 
-## Перекат-ривок (D200, D264): dash_charges_max підряд, з землі й у повітрі (у повітрі — рівно, без падіння).
+## Перекат-ривок (D200, D264): dash_charges_max підряд, з землі й у повітрі (почався в повітрі — рівно, без падіння;
+## почався на землі — з уступу падає).
 ## Невразливість — на весь ривок. Напрямок — куди тиснуть, інакше куди дивиться герой. Повертає, чи ривок почався.
 func start_roll() -> bool:
 	if not can_roll():
@@ -124,6 +128,7 @@ func start_roll() -> bool:
 	last_direction = roll_direction
 	roll_length = roll_duration * roll_factor()
 	roll_time_left = roll_length
+	air_dash = not player.is_on_floor()
 	dash_charges -= 1
 	roll_ready_in = roll_length + roll_cooldown
 	player.set_invulnerable(true, roll_length)
@@ -183,8 +188,8 @@ func physics_move(delta: float) -> void:
 		# Під час перекату — рівна швидкість, без стрибка й керування
 		roll_time_left -= delta
 		player.velocity.x = roll_direction * roll_distance / roll_duration
-		if not player.is_on_floor():
-			player.velocity.y = 0.0  # ривок у повітрі — рівно, без падіння
+		if air_dash and not player.is_on_floor():
+			player.velocity.y = 0.0  # ривок, початий у повітрі, — рівно, без падіння
 	elif is_climbing() or _grab_ladder():
 		_climb()
 	else:
