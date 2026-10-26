@@ -1,90 +1,96 @@
 ---
 type: report
-tags: [cloud, integrator, round-13]
+tags: [cloud, integrator, round-14]
 ---
 
-# Integrator — round 13 (2026-10-24 → 2026-10-26)
+# Integrator — round 14 (2026-10-26)
 
-**Summary.** All eleven branches are merged into `feature/backlog` in order, none skipped: lab-curse, chibi-npcs,
-rooms-1, b145, big-leader, big-scorpion, big-archer, big-vulture, big-brute, big-guard, jackal-pack. D-IDs were renumbered
-to **D694–D712**, after the orchestrator's D693 picks row, and are in [[figma_decision_register]] in order with no
-duplicates. B rows fixed: B127 and B147. Filed: B148, plus **B149** today. B145 stays open with better crash logging.
-Q91–Q97 are filed in [[questions_for_sapega]] with defaults, none blocking.
-**Full suite: 116/119, `SUITE: 3 FAIL` on the first run.** All three were merge interactions, fixed in the tests, and
-each passes when re-run alone. The full suite was not run a second time.
+**Summary.** `cloud/dash-fix` and `cloud/world-map` are merged into `feature/backlog`. Godot 4.6.2 ran in this sandbox,
+so everything the two branches left unrun has now been run. Register rows: **D713** (a dash keeps the state it started
+in), **D714** (both World Map frames approved), **D715** (the two-level World Map as built). **B150** is fixed (the
+dash-fix bug, which the branch had called B149). **Q98** (what is a secret) and **Q99** (wells) are filed with
+defaults. **B149 is fixed at the root** (the menu deadlock against the room preloader). **The dash plays the new
+frames**, with no roll or spin. `cloud/hard-fights` is not merged, because it is still running.
+**Full suite: 121/121, `SUITE: ALL PASS` on the first run.**
 
 ## Merged
 
-| Branch | D-IDs (register) | B | Q | Conflicts |
+| Branch | D-IDs | B | Q | Conflicts |
 |---|---|---|---|---|
-| lab-curse | D694, D695 | — | — | none |
-| chibi-npcs | D696, D697 | B127 fixed | — | none |
-| rooms-1 | D698–D701 | — | Q91–Q93 | `verify_enemy_variety` big-slot count |
-| b145 | D702 | B145 open (+ investigation line) | — | none |
-| big-leader | D703 | — | — | bestiary, sound_events, en/uk.po, `DefaultEnemy._coin_drop`, three verify scripts |
-| big-scorpion | D704, D705 | B148 filed | — | enemy_variety.json, sound_events, three verify scripts |
-| big-archer | D706, D707 | B147 fixed | Q94 | enemy_variety.json, sound_events, two verify scripts, the sheet's `.import` |
-| big-vulture | D708 | — | Q95 | enemy_variety.json, sound_events, two verify scripts |
-| big-brute | D709, D710 | — | Q96 | sound_events, three verify scripts |
-| big-guard | D711 | — | Q97 | bestiary, en/uk.po, enemy_variety.json, sound_events, three verify scripts |
-| jackal-pack | D712 | — | — | none in text; a duplicate `HitAreas` preload |
+| dash-fix | D713 (was D713) | B150 fixed (was "B149") | — | none |
+| world-map | D714, D715 (were D713, D714) | — | Q98, Q99 | none |
 
-Every conflict was additive: each branch added its own kind, and all kinds were kept.
+The references were renumbered in both reports and in [[MASTER_PLAN]]; no code comment cited the IDs.
+**History note:** both merges were made as merge commits, but a plain `git pull --rebase` before the first push flattened
+them into linear commits (`7a3b75cc` dash-fix, `8ac6d57f`…`01297bc5` world-map). The content is identical. Rewriting a
+pushed shared branch was not worth the risk, and every later pull used `--rebase=merges`.
 
-## Merge interactions fixed
+## What the branches left unrun, now run
 
-During the merges (2026-10-24, inside the merge commits):
-1. `verify_hit_areas` [3] strikes five kinds in a row, and the fifth found the hero already dead. Each strike case now
-   starts the hero at full HP.
-2. rooms-1's Bandit Camp slot now spawns the brute too, so the brute has four slots. `verify_enemy_variety` counts them.
-3. jackal-pack and big-leader both added `const HitAreas = preload(...)`, which made a parse error. One is kept.
+- Theme regenerated: `GameUITheme.tres` now has the map types (`MapPin*`, `MapCard*`, `MapRoomName`, `MapPassage`,
+  `MapVeil`, `MapLegendTitle`).
+- First runs: `verify_world_map`, `verify_responsive`, `verify_souls_combat`, `verify_combat_flow` and
+  `verify_combat_player` were ALL PASS. Three failed and were fixed, one commit each:
+  1. `verify_dash` [a] «loses height every frame in the air». The game was right: in the frame where the hero leaves
+     the edge, `move_and_slide` still stands on it, the same as walking off a ledge. From the next frame on, he falls
+     (16 → 163 px/s, landing in 12 frames while still dashing). The check now starts from the frame after the edge.
+  2. `verify_game_ui_theme` «HUD v2 text at its Figma size». world-map added eight types to `FIGMA_FONT_TYPES`; the
+     check's size list now has them and their tokens.
+  3. `verify_locale` [1] uk: `world_map_pin.tscn` had a placeholder name «Location». The code always sets the name,
+     so the placeholder is gone.
+- `capture_world_map` was skipped (it needs a window): the orchestrator captures it locally.
 
-After the merges (2026-10-26, one commit each):
-4. **`verify_main_menu`**: `RESULT: ALL PASS, 2 SCRIPT ERROR` (`Could not preload … HealingPalm.tscn` at `Village.gd:23`).
-   The test freed the game and quit while the RoomPreloader was still loading the Canyon's new door target, LizardCave.
-   It now waits for `room_preloader.busy()`, as `verify_graphics_quality` already did. Re-run: ALL PASS, 0 SCRIPT ERROR.
-5. **`verify_skill_screen` and `verify_skill_trees_ui`**: `RESULT: HUNG — killed after 180 s`. `verify_skill_screen`
-   hung in 2 of 3 runs even when run alone. gdb shows a deadlock: the main thread waits inside the `load()` that opens
-   the game menu, while a worker loading the Canyon's neighbours waits on a lock the main thread holds. Round 13 gave the
-   Canyon more and heavier neighbours to preload (the side rooms and the elite scenes). Both tests now wait for the
-   preloader before opening the menu: 6/6 ALL PASS each. **The game itself can still hang this way, so B149 is filed**
-   (major): open the menu right after a room change and it may freeze.
+## B149 — the root cause and the fix
 
-## What Sapega should test first in the build
+- **Repro:** `verify_skill_screen` without its preloader wait, 8 copies in parallel. It hung about 1 run in 7 (gdb
+  attached to each hung process; release binary, so addresses only, plus `--verbose` load logs).
+- **What collides:** `game_menu_state.gd` had `const GAME_MENU_SCENE = preload(".../game_menu.tscn")`. A preload
+  loads the scene while the script compiles, and compilation holds the GDScript cache's global mutex. `game_menu.tscn`
+  shares `base_menu.tscn`, `bottom_bar.tscn` and `party_status_panel.tscn` with `shop_menu.tscn`. SceneWarmer pins
+  the shop into RoomPreloader, which loads it with `load_threaded_request`.
+  - The main thread (holding the mutex) reached `base_menu.tscn`, found it in progress on the worker, and waited.
+  - The worker, inside `shop_menu.tscn → base_menu.tscn → …`, needed the same mutex to compile a script, and waited
+    for ever.
+  - `tutorial_component.gd` → `preload(tutorial_menu.tscn)` → `bottom_bar.tscn` had the same pattern.
+- **Fix:** both load at open time, outside any compilation (`game_menu_state.gd`, `tutorial_component.gd`). The menu
+  scene is kept in a `static var` after the first opening. There is no wait or retry. The two skill tests no longer
+  wait for `room_preloader.busy()`.
+- **Proof:** the same repro passed 48/48 with no hang.
+- **New `verify_menu_after_room_change`:**
+  - [1] A static rule, in both directions: no script in the game menu's tree preloads a scene that shares a scripted
+    scene with the rooms or the warm-up list. It fails on the old code and names both preloads.
+  - [2] The first opening of the menu while the shop is reloading in the background.
+  - [3] 15 room changes, with the menu and its Skills tab opened in the first frame of each new room (the preloader
+    was busy at 11 of them). No hang.
 
-1. **B145 crash log.** Walk down out of the Canyon several times. If the game crashes, send `godot.log`. Release builds
-   now flush it line by line and keep GDScript call stacks (D702). The last lines `🚪 Game: room swap X → Y` and
-   `… done` show which room swap died.
-2. **B149.** Right after entering a room (especially the Canyon), open the game menu (Skills tab) at once. If the game
-   freezes, that is B149.
-3. **The new elites, and where each one stands:**
-   - **Jackal pack leader**: DesertRoad `Fight_Dunes`, L2 (454 HP, hits for 41). The first elite on the road.
-   - **Armoured scorpion**: DesertRoad `Fight_Caravan` (L3) and Laboratory `Fight_Lower` (L10).
-   - **Heavy archer**: DesertRoad `Fight_Mesa` (L3), in a pair. The road has no ordinary archer before it (Q94). Its
-     arrow is aimed down from a bow drawn above the hero's head (D707).
-   - **Bandit brute**: DesertRoad `Fight_LoneElite` (alone), the Bandit Camp's `Fight_Camp`, and Laboratory
-     `Fight_Upper` ×2. The camp can be reached before the lone fight (Q96). `Fight_Dunes` is an ordinary bandit again.
-   - **Old vulture** and **tower shield guard**: live, but **not placed**, so nothing spawns them yet (Q95, Q97).
-   - The ordinary jackal now draws the pack-jackal sheet (D712).
-4. **The five side rooms** (D698):
-   - **LizardCave**: a cave mouth east of the canyon exit. Its gate needs Grandfather's Old Key, which comes from his
-     decision talk.
-   - **DragonMural**: behind a cracked boulder on the canyon plateau, broken by a heavy blow.
-   - **BanditCamp**: through a tent on the Desert Road dune top. Inside are waves of enemies, the Stockade Key and a
-     shortcut out by `SavePoint_BeforeCity` (Q93).
-   - **MesaClimb**: up a ladder off the Desert Road.
-   - **GatehouseCellar**: at City Gates, opened by talking to the gate guard (TalkSpot, D700).
+## Dash art
 
-   The canyon rooms can only be reached before the descent (Q91).
-5. **The cursed jackals in the Laboratory** (D695): first one alone in the new `Fight_Cursed` on the middle storey (L9),
-   then a pair as the second wave of `Fight_Lower`. A fight never holds two cursed kinds.
-6. **The chibi NPCs** (D696, D697): Malik, the alchemist and the companion guard on their chibi sheets, with new
-   portraits. In LabCells, Alisia lies on the operating table for the injection and sits up dazed (B127).
-   `village_elder.tscn` still shows Malik's old sheet.
+In `Player.tscn`, the `Roll` animation (name kept) now uses `Sprites/Player/Dash/1.png` for 0–0.05 s, `2.png` held to
+0.25 s and `3.png` to 0.3 s; the length is still 0.3 s. Every frame is 64×64 with its lowest opaque row at 56, the same
+as Idle, Walk and the old Roll, so every `Sprite2D:offset` key is (0, 0). Idle and Run use (0, 0) too, so the feet do
+not jump or sink. The Roll PNGs stay in the repo; their ext_resources are gone from `Player.tscn`. The weapon libraries
+have no Roll, so every weapon falls back to this one. `verify_dash` [d] checks the frames, the times and the feet line.
+`verify_weapon_animations`, `verify_combat_player`, `verify_combat_flow`, `verify_hit_areas` and `verify_souls_combat`
+all PASS.
+
+## What Sapega should check first in the build
+
+1. **The World Map tab, two levels.**
+   - Level 1: pins over the illustrated map. The hero's location is selected, and the card shows explored % and chests.
+     Left and Right walk the pins; A opens a visited location.
+   - Level 2: the location's rooms on parchment, with explored, seen (dashed) and hidden cells, icons, passages and a
+     legend. B returns to level 1.
+   - Nothing has been compared with the Figma frames yet: the shot is the orchestrator's next step. No secrets count
+     (Q98) and no «криниця» (Q99).
+2. **A dash off a step.** Dash from the floor over the edge of a step or ledge: the hero falls at dash speed and does
+   not hover. A dash started in the air still flies level (D713).
+3. **The new dash frames.** A low push-off, a long mid-dash with the cape streaming back, and a braking stop, with no
+   rolling. Look at the start and end of the dash next to Idle and Run for a jump or a sink in the feet.
+4. **The menu right after a room change.** Enter a room (the Canyon is the heaviest) and open the game menu (Skills
+   tab) at once, several times. It should never freeze (B149).
 
 ## Not done / next
 
-- B149: the game-side fix. One option is that the menu (or any main-thread `load()` of a heavy scene) waits while
-  `RoomPreloader.busy()`, or the warm-up preloads the skills window. Not done, because it is outside an integrator's
-  scope.
-- Q91–Q97 are open for Sapega. The defaults are built.
+- `capture_world_map` and the comparison with Figma `539:6472` / `539:6615` (needs a window; orchestrator).
+- `cloud/hard-fights` waits for its own integration.
+- Q98 and Q99 are open for Sapega, with their defaults built.

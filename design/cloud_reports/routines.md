@@ -176,3 +176,15 @@ kind found him dead), the Bandit Camp slot spawns the brute (four brute slots), 
 After the merges, two more (2026-10-26): `verify_main_menu` waits for the room preloader before quitting (rooms-1's
 LizardCave was still loading), and the two skill-window tests wait for it before opening the menu (a deadlock, B149).
 Suite 116/119 on the first run, the three re-run ALL PASS.
+
+Round 14 merged 2026-10-26 (integrator-14): dash-fix (D713, B150 fixed; the branch called it B149) and world-map
+(D714 frames approved, D715 the build; Q98 secrets, Q99 wells). Neither branch had run a test (their sandboxes had no
+Godot). Both merged cleanly, but a plain `pull --rebase` flattened the two merge commits into linear commits before the
+first push. The content is the same, and `--rebase=merges` was used after that. The theme was regenerated with the map
+types. Three tolerances and leftovers were fixed in the tests or scenes: `verify_dash` [a], `verify_game_ui_theme` (map
+types in the Figma-size list) and `world_map_pin.tscn`'s English placeholder (`verify_locale`). **B149 fixed at the
+root:** `game_menu_state.gd` preloaded `game_menu.tscn`, so the menu loaded while that script compiled, with the GDScript
+cache mutex held. The menu shares base_menu/bottom_bar/party_status_panel with `shop_menu.tscn`, which SceneWarmer loads
+on a preloader worker. The menu and `tutorial_component.gd`'s window now `load()` at open time, and the
+skill tests' waits are gone. `verify_menu_after_room_change` guards it. Dash art: Roll plays `Dash/1–3`. Not merged:
+`cloud/hard-fights` (still running). Suite 121/121 ALL PASS on the first run.
