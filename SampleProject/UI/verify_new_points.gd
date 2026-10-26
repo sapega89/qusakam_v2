@@ -1,11 +1,11 @@
 extends SceneTree
 
-## Нові очки, як у Diablo II (D723), і колонка партії над вікном навичок (B151).
+## Нові очки, як у Diablo II (D742), і колонка партії над вікном навичок (B156).
 ## Sapega, плейтест 2026-10-26: «панель скілів закрила панель атрибутів … там наче її закриває паті-панель з Кусакамом»,
 ## «треба підсвічувати, щоб воно якось горіло», «може кнопку як в Діабло 2?».
 ##   godot --headless --path . --script res://SampleProject/UI/verify_new_points.gd
 ##
-## [1] B151: Status → Skills (і інші шляхи) — колонка партії схована, панель навички в кадрі, 1920×1080 і 1280×720.
+## [1] B156: Status → Skills (і інші шляхи) — колонка партії схована, панель навички в кадрі, 1920×1080 і 1280×720.
 ## [2] HUD: поки вкладку не відкрито сюжетом — кнопок немає; відкрито — дві світні кнопки з «+N», підписом і клавішею,
 ##     не на панелі героя, хотбарі, квест-панелі й стрічці здобичі.
 ## [3] Клік і клавіша (K, C, хрестовина ліворуч) відкривають меню одразу на Skills / Status.
@@ -172,7 +172,7 @@ func _initialize() -> void:
 	InputGlyphs.using_gamepad = false
 	hud.refresh()
 
-	print("[1] B151: the party column never covers the skill side panel")
+	print("[1] B156: the party column never covers the skill side panel")
 	for size: Vector2i in [Vector2i(1920, 1080), Vector2i(1280, 720)]:
 		await _set_window(size)
 		for path in [["Skills"], ["Status", "Skills"], ["World Map", "Skills"], ["Status", "World Map", "Skills"], ["Skills", "Status"], ["Skills", "Inventory"]]:

@@ -15,7 +15,7 @@ const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
 @onready var focus_router: FocusRouter = $FocusRouter
 ## Колонка партії (base_menu RightPanel). Чи ховає її вкладка — metadata/hide_party_column на панелі в game_menu.tscn.
 @onready var _party_column: Control = $BaseMenu/HBoxContainer/RightPanel
-## Світні вкладки нових очок (D723): points_glow.tscn на кнопках Skills і Status.
+## Світні вкладки нових очок (D742): points_glow.tscn на кнопках Skills і Status.
 @onready var _skills_glow: Control = %SkillsButton.get_node(^"PointsGlow")
 @onready var _status_glow: Control = %StatusButton.get_node(^"PointsGlow")
 
@@ -45,7 +45,7 @@ func _ready() -> void:
 	focus_router.focus_tabs()
 
 
-## Вкладки Skills і Status світяться з лічильником, поки чекають очки навичок / атрибутів (D723); закрита — ні.
+## Вкладки Skills і Status світяться з лічильником, поки чекають очки навичок / атрибутів (D742); закрита — ні.
 func _refresh_point_glows() -> void:
 	_skills_glow.set_count(0 if %SkillsButton.disabled else ServiceLocator.get_skill_manager().get_job_points())
 	_status_glow.set_count(0 if %StatusButton.disabled else ServiceLocator.get_attribute_manager().get_unspent())
@@ -116,7 +116,7 @@ func switch_to_tab(tab_name: String) -> void:
 
 
 ## Видима рівно одна панель ContentRoot — і та, що не має своєї кнопки (Tutorial).
-## Колонку партії ставимо тут, одним місцем, після перемикання (B151): раніше кожна панель ховала й повертала
+## Колонку партії ставимо тут, одним місцем, після перемикання (B156): раніше кожна панель ховала й повертала
 ## її сама, і Status, ховаючись після показу Skills, повертав колонку поверх панелі навички.
 func _show_only(panel: Node) -> void:
 	for child in panel.get_parent().get_children():

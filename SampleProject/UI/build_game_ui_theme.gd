@@ -1339,7 +1339,7 @@ func _hud_v2(theme: Theme) -> void:
 	theme.set_stylebox("panel", "HudCountPill", pill)
 
 
-# ── Нові очки (D723): сяйво, лічильник на вкладці, кнопка на HUD ────────────
+# ── Нові очки (D742): сяйво, лічильник на вкладці, кнопка на HUD ────────────
 
 func _new_points(theme: Theme) -> void:
 	# Сяйво навколо кнопки HUD: золота рамка й тінь без заливки; пульсує вузол (points_glow.gd).

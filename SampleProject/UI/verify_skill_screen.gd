@@ -298,7 +298,7 @@ func _initialize() -> void:
 	await _key(KEY_3)
 	ck(sm.get_equipped_skill(2) != "toughness", "the hotbar key does nothing for a passive")
 
-	print("[9] Only skills here: attributes wait in Status (D722); Reset all only at a meditation spot (D628, D629)")
+	print("[9] Only skills here: attributes wait in Status (D741); Reset all only at a meditation spot (D628, D629)")
 	var attrs: Node = sl.get_attribute_manager()
 	ck(ui.find_child("AttrPanel", true, false) == null and ui.find_child("AttributesButton", true, false) == null
 			and ui.find_child("AttributeRow", true, false) == null, "no attribute panel, button or rows on the Skills screen")

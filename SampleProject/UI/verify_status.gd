@@ -84,7 +84,7 @@ func _initialize() -> void:
 	print("[3b] attribute points (D335): unspent in the header, spent per attribute")
 	var attrs: Node = sl.get_attribute_manager()
 	ck(st._attr_points_value.text == str(attrs.get_unspent()), "unspent attribute points shown (%s)" % st._attr_points_value.text)
-	ck(st._attr_rows_box.get_children().map(func(r): return r.get_node(^"Name").text) == ["Strength", "Agility", "Vitality", "Wisdom"], "four attribute rows from data, with − / + (D722)")
+	ck(st._attr_rows_box.get_children().map(func(r): return r.get_node(^"Name").text) == ["Strength", "Agility", "Vitality", "Wisdom"], "four attribute rows from data, with − / + (D741)")
 	var body: Control = st.get_node(^"Columns/Center/Body")
 	ck(body.get_combined_minimum_size().y <= st.size.y, "Status still fits its height (%d of %d)" % [body.get_combined_minimum_size().y, st.size.y])
 
@@ -101,7 +101,7 @@ func _initialize() -> void:
 	ck(st._attr_rows_box.get_node(^"strength/Value").text == "2" and st._attr_rows_box.get_node(^"wisdom/Value").text == "1", "the spent points show per attribute")
 	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == int(atk_before) + 2, "Phys. Atk. +2 from Strength (%s → %s)" % [atk_before, st._left_attrs.get_child(0).get_child(0).get_child(2).text])
 
-	print("[4b] spending in Status changes the stat shown there (D722)")
+	print("[4b] spending in Status changes the stat shown there (D741)")
 	var vit_row: Control = st._attr_rows_box.get_node(^"vitality")
 	var hp_max_before: String = st._hp_meter.get_node(^"Head/Max").text
 	var vit_before: int = attrs.get_points("vitality")

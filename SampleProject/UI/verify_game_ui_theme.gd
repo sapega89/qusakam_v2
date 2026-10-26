@@ -73,7 +73,7 @@ func _initialize() -> void:
 			"MapPinName": UITokens.SIZE_MAP_PIN_NAME, "MapPinNameLocked": UITokens.SIZE_MAP_PIN_NAME, "MapPinState": UITokens.SIZE_MAP_PIN_STATE,
 			"MapCardTitle": UITokens.SIZE_MAP_CARD_TITLE, "MapCardText": UITokens.SIZE_MAP_CARD_TEXT, "MapRoomName": UITokens.SIZE_MAP_ROOM,
 			"MapPassage": UITokens.SIZE_MAP_PASSAGE, "MapLegendTitle": UITokens.SIZE_MAP_LEGEND_TITLE,
-			# Кнопки нових очок на HUD (D723) — поруч із панеллю героя, розміром HUD v2.
+			# Кнопки нових очок на HUD (D742) — поруч із панеллю героя, розміром HUD v2.
 			"NewPointsCount": UITokens.SIZE_NEW_POINTS_COUNT, "NewPointsCaption": UITokens.SIZE_NEW_POINTS_CAPTION,
 			"NewPointsKey": UITokens.SIZE_NEW_POINTS_KEY}
 	_check(figma.keys().all(func(t: String) -> bool: return theme.get_font_size("font_size", t) == figma[t])

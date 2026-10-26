@@ -8,7 +8,7 @@ extends BaseMenuComponent
 ## бейдж рівня на невивченій (червоний, поки герой нижче), «+», коли можна взяти ще ранг.
 ## Праворуч — деталі (D334): назва, вид, ранг зараз і далі, ефект зараз і на наступному ранзі, SP, перезарядка,
 ## рівень, Learn +1 і Reset. Унизу — очки навичок, бюджети дерев (D497), скільки очок атрибутів чекає у Status
-## (D722: атрибути вкладаються там), Cancel / Accept плану і Reset all (платне скидання на місці медитації, D628/D629).
+## (D741: атрибути вкладаються там), Cancel / Accept плану і Reset all (платне скидання на місці медитації, D628/D629).
 ##
 ## Нічого не витрачається одним натисканням (D330): Learn +1 позначає ранг у SkillPlan, витрачає лише Accept.
 ## UI НЕ редагує player_state і НЕ дублює правила: чому навичка недоступна — завжди вердикт SkillManager
@@ -544,7 +544,7 @@ func _refresh_bottom_bar() -> void:
 		parts.append("%s %d / %d" % [_tree_name(tree_id), _skill_manager.tree_spent(tree_id, unlocked, ranks),
 				_skill_database.tree_cap(tree_id)])
 	_budgets.text = "  ·  ".join(parts)
-	# D722: атрибути вкладаються у Status — тут лише скільки їх там чекає.
+	# D741: атрибути вкладаються у Status — тут лише скільки їх там чекає.
 	_attr_points_hint.visible = _attributes.get_unspent() > 0
 	_attr_points_hint.text = tr("Attribute points: %d · in Status") % _attributes.get_unspent()
 

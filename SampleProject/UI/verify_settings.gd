@@ -786,7 +786,7 @@ func _device_tabs(input_menu: Node) -> void:
 	ck(_binding_cells(list, "Attack") == [lmb, "", ""],
 			"B19: Attack on the keyboard tab = the left mouse button only %s" % str(_binding_cells(list, "Attack")))
 	var key_r := InputEventKey.new()
-	key_r.physical_keycode = KEY_J  # вільна клавіша: K — open_skills_tab (D723)
+	key_r.physical_keycode = KEY_J  # вільна клавіша: K — open_skills_tab (D742)
 	key_r.pressed = true
 	var pad_touch := InputEventJoypadButton.new()
 	pad_touch.button_index = JOY_BUTTON_TOUCHPAD

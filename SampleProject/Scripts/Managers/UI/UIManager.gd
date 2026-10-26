@@ -163,7 +163,7 @@ func open_companion_picker() -> void:
 	await get_tree().process_frame
 	menu.find_child("StatsComponent", true, false).focus_companions()
 
-## Світна кнопка нових очок на HUD (D723): Game Menu одразу на вкладці [param tab_name] (Skills або Status).
+## Світна кнопка нових очок на HUD (D742): Game Menu одразу на вкладці [param tab_name] (Skills або Status).
 func open_game_menu_on(tab_name: String) -> void:
 	if current_state_name != "GameMenuState":
 		open_game_menu()

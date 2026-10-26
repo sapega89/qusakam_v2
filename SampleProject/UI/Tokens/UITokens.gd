@@ -520,7 +520,7 @@ const FIGMA_FONT_TYPES: Array[StringName] = [
 	# Карта World Map: написи стоять у плашках і клітинках 150×84 фіксованого розміру (world_map_spec).
 	&"MapPinName", &"MapPinNameLocked", &"MapPinState", &"MapCardTitle", &"MapCardText", &"MapRoomName",
 	&"MapPassage", &"MapLegendTitle",
-	# Кнопки нових очок на HUD (D723) — поруч із панеллю героя, тим самим розміром, що й HUD v2.
+	# Кнопки нових очок на HUD (D742) — поруч із панеллю героя, тим самим розміром, що й HUD v2.
 	&"NewPointsCount", &"NewPointsCaption", &"NewPointsKey",
 ]
 const SIZE_HUD_NAME := 26        # Bold, UPPER, tracking 3
@@ -534,7 +534,7 @@ const SIZE_HUD_KEY := 14         # Bold
 const SIZE_HUD_COOLDOWN := 22    # Bold
 const SIZE_HUD_COUNT := 16       # Bold
 
-# ── Нові очки, як у Diablo II (D723, Sapega: «треба підсвічувати, щоб воно якось горіло»): світна кнопка на HUD
+# ── Нові очки, як у Diablo II (D742, Sapega: «треба підсвічувати, щоб воно якось горіло»): світна кнопка на HUD
 # і світна вкладка з лічильником у Game Menu. Спільний компонент — UI/Components/points_glow.tscn. Світіння —
 # те саме золото, що й у готового слота хотбара (HUD_GLOW_COLOR); пульс м'якший і довший за пульс асисту.
 const POINTS_GLOW_COLOR := HUD_GLOW_COLOR
