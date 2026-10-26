@@ -15,7 +15,8 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | `Land/1.png` | Land (after a fall, standing still) | generated: a deep landing squat (`hero_smooth`, D262) |
 | `Jump/1–2.png` | Jump | generated: the crouch before the take-off, rising in side view |
 | `Fall/1.png` | Fall | generated: arms up, cape up |
-| `Roll/1–6.png` | Roll | generated duck and curled ball; the ball turned 90°/180°/270°; the exit is `Jump/1` |
+| `Dash/1–3.png` | Roll (the dash; name kept for the code) | Sapega: no rolling or spinning. 1 push off low (0–0.05 s), 2 mid-dash with the cape streaming back (held to 0.25 s), 3 the braking stop (to 0.3 s); feet on row 56, offset 0 (integrator-14) |
+| `Roll/1–6.png` | not used since round 14 (kept) | the old roll: generated duck and curled ball; the ball turned 90°/180°/270° |
 | `Climb/1–2.png` | Climb | generated from behind, alternating arm and leg |
 | `Meditate/1–2.png` | Meditate (Canyon summit cutscene, D257) | generated: sitting cross-legged, eyes closed; frame 2 = BOB breathing (`hero_meditate`) |
 | `Hurt/1.png` | Hurt (stagger, D264) | generated: recoiling from a hit to the chest (`hero_combat`) |
