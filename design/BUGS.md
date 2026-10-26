@@ -154,6 +154,8 @@ the history, this note keeps only what is open.
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
 > **Fixed 2026-10-26 (integrator-14):** **B150** (`cloud/dash-fix`, D713; the branch called it B149): a ground dash off a ledge or a step hovered level instead of falling. `PlayerMover.air_dash`: only a dash started in the air stays level. `verify_dash`.
+> **Closed 2026-10-27: B145** (the exe crashed going down from the Canyon, Sapega's playtest 2026-10-23) — not reproduced in round 13 (`cloud/b145`), and Sapega: «то вже давно не вилітає при спуску». Release builds keep flushing logs with call stacks, so a return would leave a trace.
+
 > **Fixed 2026-10-26 (`cloud/ui-critic`, integrated on the PC):**
 > - **B151** — The tutorial hint banner overflowed its box (long uk texts hung out) and was drawn over the hero, e.g. the block/parry hint on DesertRoad and the combo lesson in the Village. Critic, round 13: «Текст підказки не влазить, це дивно, і чому він на персонажі». Root: the text was set while the node was hidden, so its minimum size was stale (as in B122), and its fixed place was bottom-centre, where the camera keeps the hero. ✅ fixed in `cloud/ui-critic` 9984499b (D731); `verify_tutorial_hints` [6] written, not run
 > - **B152** — The inventory did not show which gear is worn. Enter on a worn item equipped it again and said "… equipped" every time. Critic, round 13: «Не видно в інвентарі, що спорядження споряджене, але коли клацаю, то постійно «споряджено»». ✅ fixed in `cloud/ui-critic` 7e3ebbe5 (D734); `verify_use_item` [5b] written, not run
@@ -169,54 +171,7 @@ the history, this note keeps only what is open.
 - **Severity:** minor (tooling)
 - **Found:** 2026-10-24, big-scorpion report
 
-### B145 — the game crashes going down from the Canyon
-- **Where:** `Maps/Canyon.tscn`, the way down; round 12 build (difficulty, lab-boss, mayor-boss, fliers merged)
-- **Expected:** the hero walks down out of the Canyon
-- **Got:** the exported Windows build closes (crash); the log was rotated away (5 files kept, now 50)
-- **Evidence:** Sapega's playtest, 2026-10-23 («гра вилетіла… я спускався з каньйону»)
-- **Severity:** blocker
-- **Found:** 2026-10-23, playtest of the round 12 build
-- **Investigated:** `cloud/b145` (2026-10-24): not reproduced in 17 release-export descents on Linux; most likely a typed call on null (a release segfault, B142 class). Release builds now flush `godot.log` and keep GDScript call stacks, and `Game.load_room()` logs every room swap (D702), so the next crash names its line. `Scripts/Tools/export_drive.sh` replays descents in an export. Details: [[b145]].
 
-## Playtest intake — 2026-09-29 (Sapega)
-
-Reported in one pass, terse by design. Each row is **reported, not reproduced**
-unless it says otherwise. Do not fix from these rows alone — they are a queue,
-not a diagnosis. Promote a row to a full B-ID when it has been reproduced.
-
-Before treating any row as a bug, ask whether it was ever built. In play,
-"agreed but never implemented" is indistinguishable from "broken" — and several
-of these turned out to be exactly that. Check [[figma_decision_register]] for a
-D-ID first; if one exists, the row belongs in [[BACKLOG]] → *Agreed but never
-built*, not here.
-
-| ID | Report | Status after a first look |
-|---|---|---|
-| P1 | Attack has no animation and deals no damage; assumed to follow from having no weapon | ⚠️ **cause is not the weapon.** `Player.tscn` already has the `Attack` animation (`:139`), all four `PlayerCombat` exports wired (`:181–184`), `DamageApplier.base_damage = 15`. `perform_attack()` also falls back to a 0.2 s damage window when no animation exists (`PlayerCombat.gd:75`). Needs reproduction — the real cause is elsewhere. |
-| P2 | No weapon in the game | Unverified. Check whether the player is meant to start equipped and whether any map grants a weapon — related to **Q2 / D88** (no production map gives an inventory item). |
-| P3 | Dialogues | Too terse to act on. Needs one sentence: which NPC, what happens instead. Note the dialogue presentation layer is unbuilt — [[BACKLOG]], D110. |
-| P4 | "Дід" NPC never appears; should be a placeholder cube | ✅ **done 2026-10-12.** The story logic and trigger already existed (`Village.gd` `OLD_MAN_*`, `Village.tscn` → `StateChangeTrigger_OldManOutside` at (1582, 344)); only the visual was missing. Added `OldMan` `Sprite2D` under that trigger, frame 0 of `SampleProject/Assets/Characters/old_man_idle.png` (copied from the gitignored `assets/bosses/1 Old_man/` on 2026-10-14 so Village loads from a fresh clone), ×2, facing left. Static — no idle animation. |
-| P5 | No merchant and no blacksmith; should be placeholder cubes somewhere on the desert | ✅ **not a bug — known unbuilt work.** Both scenes exist and are tested but are placed **only in `Maps/City.tscn`**. This is **D81** in [[BACKLOG]] → "Merchant / Blacksmith on production maps". Desert placement was never done. |
-
----
-
----
-
-## Parked observations
-
-Things that look wrong to whoever was testing, but that **no source says are
-wrong** — not in Figma, not in a token, not in a mapping, not in a decision.
-
-Parked on purpose. **Do not act on an O-ID.** It does not block a PASS, does not
-become a task, and is not a Q-ID — nobody is being asked anything yet. It sits
-here until Sapega either turns it into a decision (→ D-ID), a question (→ Q-ID)
-or deletes it.
-
-The point: a tester's unsourced opinion is how a screen gets quietly redesigned
-by whoever looked at it last. Writing it down costs one line and keeps the
-option open without acting on it.
-
-```markdown
 ### O<n> — <what you noticed>
 - **Where:** <screen / node>
 - **Why it bothered you:** one sentence
