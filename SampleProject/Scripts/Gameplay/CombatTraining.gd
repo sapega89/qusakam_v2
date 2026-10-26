@@ -4,6 +4,9 @@ extends Node
 ## вдала дія: серія з завершальним ударом, ривок крізь удар або блок, парирування на червоний відблиск, важкий удар.
 ## Урок — тема туторіалу lesson_* лише плашкою (без вікна на паузі), наступний — одразу, без таймерів;
 ## cutscene_skip пропускає решту уроків. Теми все одно лягають у список Tutorial.
+## D719 (як у Tails of Iron — спаринг, а не ланцюг перерв): на плашці один рядок уроку (prompt у tutorial.json, повний
+## текст — у списку Tutorial); пройдений урок памʼятає прапорець квесту training_<id>_done і більше не повторюється —
+## вийшов із села посеред уроків (чи пропустив їх) і повернувся до живого бандита — тренування йде з першого непройденого.
 ## Поки йдуть уроки, ні ворог, ні герой не гинуть (D-28c): здоровʼя не падає нижче 1 (min_health), а нижче
 ## SAFE_FRACTION — назад до повного.
 ## Village додає вузол перед появою бандита й викликає start(), коли бандит ожив; finished — уроки пройдено.
@@ -16,6 +19,8 @@ const LESSONS: Array[String] = ["lesson_attack", "lesson_defend", "lesson_parry"
 ## Загальні підказки бою, які уроки замінюють, — бачені, щоб не вискакували посеред навчання.
 const REPLACED_HINTS: Array[String] = ["attack", "block", "heavy_attack"]
 const SAFE_FRACTION := 0.4
+## Прапорець квесту пройденого уроку (у сейві з рештою прапорців).
+const DONE_FLAG := "training_%s_done"
 ## Ривок зараховано, якщо в цей момент удар ворога живий не далі за стільки пікселів.
 const DODGE_RANGE := 160.0
 
@@ -44,7 +49,23 @@ func start(fight_enemies: Array[Node]) -> void:
 	for body: CombatBody2D in _bodies():
 		body.min_health = 1
 		_link(body.health_changed, _keep_alive.bind(body))
-	_begin(0)
+	var first := _next_undone(0)
+	if first < 0:
+		_finish.call_deferred()  # усе вже пройдено; відкладено — Village ще не чекає на finished
+		return
+	_begin(first)
+
+
+static func is_done(id: String) -> bool:
+	return Game.get_singleton().get_quest_flag(DONE_FLAG % id) == true
+
+
+## Перший непройдений урок, починаючи з [param from], або -1.
+func _next_undone(from: int) -> int:
+	for i in range(from, LESSONS.size()):
+		if not is_done(LESSONS[i]):
+			return i
+	return -1
 
 
 func _link(sig: Signal, call: Callable) -> void:
@@ -66,13 +87,15 @@ func _complete(i: int) -> void:
 	if i != lesson:
 		return
 	var id := LESSONS[i]
+	Game.get_singleton().set_quest_flag(DONE_FLAG % id, true)
 	_hide_banner()
 	lesson_done.emit(id)
 	AudioManager.play(&"coin")  # урок зараховано — чути, а наступний іде одразу
-	if i + 1 == LESSONS.size():
+	var next := _next_undone(i + 1)
+	if next < 0:
 		_finish()
 		return
-	_begin(i + 1)
+	_begin(next)
 
 
 func _finish() -> void:

@@ -127,6 +127,11 @@
 			"shown": "TutorialTopics.resolved → підпис бейджа кнопки"
 		},
 		{
+			"file": "tutorial.json",
+			"path": "topics[].prompt",
+			"shown": "TutorialTopics.resolved → один рядок уроку тренування на плашці (D719)"
+		},
+		{
 			"file": "pathfinder_classes.json",
 			"path": "classes.*.name",
 			"shown": "stats_component._primary_job (поки порожні)"

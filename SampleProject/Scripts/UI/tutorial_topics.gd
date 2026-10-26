@@ -38,7 +38,8 @@ static func available() -> Array:
 static func resolved(topic: Dictionary) -> Dictionary:
 	var out := topic.duplicate()
 	# Текст і підпис — мовою гри (ключ — англійський текст з tutorial.json, BACKLOG 31); key — назва кнопки.
-	for field in ["text", "hint"]:
+	# prompt — один рядок уроку тренування на плашці (D719); у вікні й списку — повний text.
+	for field in ["text", "hint", "prompt"]:
 		out[field] = InputGlyphs.resolve(TranslationServer.translate(String(topic.get(field, ""))))
 	out.key = InputGlyphs.resolve(String(topic.get("key", "")))
 	return out

@@ -3338,3 +3338,16 @@ msgstr "Open a tutorial tip (?)"
 
 msgid "Open Tip"
 msgstr "Open Tip"
+
+# D719: тренування — один рядок на урок
+msgid "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
+msgstr "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
+
+msgid "2/4 · His weapon glints: dash {dodge} or hold {block}"
+msgstr "2/4 · His weapon glints: dash {dodge} or hold {block}"
+
+msgid "3/4 · Yellow glint: tap {block} as the blow lands"
+msgstr "3/4 · Yellow glint: tap {block} as the blow lands"
+
+msgid "4/4 · {heavy_attack} while he is not swinging"
+msgstr "4/4 · {heavy_attack} while he is not swinging"

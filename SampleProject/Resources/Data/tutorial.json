@@ -48,6 +48,7 @@
 			"text": "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training.",
 			"key": "{attack}",
 			"hint": "Press it three times quickly.",
+			"prompt": "1/4 · {attack} three times quickly · {cutscene_skip}: skip",
 			"frames": "combo"
 		},
 		{
@@ -57,6 +58,7 @@
 			"text": "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it.",
 			"key": "{dodge}",
 			"hint": "Dash through the blow, or hold block.",
+			"prompt": "2/4 · His weapon glints: dash {dodge} or hold {block}",
 			"frames": "dodge"
 		},
 		{
@@ -66,6 +68,7 @@
 			"text": "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte.",
 			"key": "{block}",
 			"hint": "Tap it as the yellow-glint blow lands to parry.",
+			"prompt": "3/4 · Yellow glint: tap {block} as the blow lands",
 			"frames": "parry"
 		},
 		{
@@ -75,6 +78,7 @@
 			"text": "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard.",
 			"key": "{heavy_attack}",
 			"hint": "Button for a heavy attack.",
+			"prompt": "4/4 · {heavy_attack} while he is not swinging",
 			"frames": "heavy"
 		},
 		{

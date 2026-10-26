@@ -115,8 +115,10 @@ func _notification(what: int) -> void:
 		_set_text(current_hint)
 
 
+## Урок тренування — його один рядок (prompt, D719), решта тем — повний текст.
 func _set_text(hint_key: String) -> void:
-	hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(hint_key)).text
+	var topic := TutorialTopics.resolved(TutorialTopics.by_id(hint_key))
+	hint_label.text = topic.prompt if topic.prompt != "" else topic.text
 	_queue_refit()
 
 
