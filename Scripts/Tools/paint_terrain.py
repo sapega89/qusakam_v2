@@ -91,7 +91,45 @@ MATERIALS = {
         "bottom: along the top a row of polished cream marble floor tiles with a thin golden inlay line, below them "
         "a band of carved sandstone blocks with a repeating geometric frieze, seen straight on",
     ),
+    # Поверхня, по якій ходиш, трохи згори (Sapega 2026-10-26: «немає відчуття, що персонаж ходить під текстурами — а в нас
+    # є»; Tails of Iron: видно верх підлоги, ступні стоять на ньому). Смуга FLOOR px над лінією колізії, за героєм.
+    "sand_floor": dict(
+        seed=361,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of desert ground seen from above at a low angle, packed golden sand with small "
+        "pebbles, scattered tiny stones and a few small tufts of dry grass, evenly detailed, the sand fills the entire "
+        "image edge to edge",
+    ),
+    "cobble_floor": dict(
+        seed=363,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of an old road seen from above at a low angle, small rounded worn sandstone cobbles "
+        "of different sizes set in packed sand, sand and tiny pebbles between them, evenly detailed, the road fills "
+        "the entire image edge to edge",
+    ),
+    "oasis_floor": dict(
+        seed=365,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of oasis ground seen from above at a low angle, short lush green grass with small "
+        "patches of damp sand and tiny white flowers, evenly detailed, it fills the entire image edge to edge",
+    ),
+    "marble_floor": dict(
+        seed=367,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of a palace floor seen from above at a low angle, polished cream marble tiles with "
+        "thin golden inlay lines between them, soft reflections, evenly detailed, it fills the entire image edge to edge",
+    ),
 }
+# Верх кромки → поверхня над нею.
+FLOOR_OF = {"sand_top": "sand_floor", "cobble_top": "cobble_floor", "oasis_top": "oasis_floor", "hall_floor": "marble_floor"}
 
 # Картинка (= <кімната>_<вузол> з build_terrain.gd) → тіло, верх, кольорів у палітрі.
 PAINT = {
@@ -108,6 +146,8 @@ PAINT = {
 FLAT = 6  # верхні px під кромкою не стираються: стоїш рівно на колізії
 KEEP = 8  # px смуги поверхні під кромкою цілком
 FADE = 8  # далі смуга переходить у тіло плямами
+FLOOR = 12  # px поверхні над кромкою (за героєм): ступні стоять на ній, а не на краю розрізу
+FLOOR_RAGGED = 3  # дальній край поверхні нерівний на стільки px
 
 
 def generate(layer):
@@ -237,12 +277,26 @@ def paint(name, body_name, top_name, colors):
     outline = solid & ((side == 1) | (up == 1)) & (down > 1)
     rgb[outline] = outline_color
 
+    # Поверхня над кромкою: рядки текстури «згори» знизу вгору — від ближнього краю до дальнього, дальній темніший
+    # і з нерівним краєм; лише в повітря над кромкою.
+    opaque = solid.copy()
+    floor, _ = material(FLOOR_OF[top_name])
+    fh = len(floor)
+    edge_y, edge_x = np.nonzero(solid & (down == 1))
+    reach = FLOOR - np.round(noise1d(w, seed + 3, 6.0) * FLOOR_RAGGED).astype(np.int32)
+    fx = (edge_x + ox) % floor.shape[1]
+    for r in range(1, FLOOR + 1):
+        y = edge_y - r
+        ok = (y >= 0) & (r <= reach[edge_x])
+        ok &= ~solid[np.clip(y, 0, h - 1), edge_x]
+        shade = 1.0 - 0.28 * (r / FLOOR) ** 1.5
+        rgb[y[ok], edge_x[ok]] = floor[(fh - 1 - (r - 1) * 2) % fh, fx[ok]] * shade
+        opaque[y[ok], edge_x[ok]] = True
+
     # Смуга поверхні по кожній кромці (тверде, над ним повітря), лінія землі смуги — на кромці.
     top, top_opaque = material(top_name)
     th = len(top)
     top, top_opaque, ground = flatten(top, top_opaque)
-    opaque = solid.copy()
-    edge_y, edge_x = np.nonzero(solid & (down == 1))
     sx = (edge_x + 37 * edge_y + ox) % top.shape[1]
     blots = rng.random((64, 64))
     for r in range(th):
