@@ -30,13 +30,16 @@ const SKILL_ORDER := ["toughness", "shield_block", "weapon_training", "radiant_s
 const OATH := "paladin"
 const OATH_LEVEL := 5
 ## Бої маршруту: кімната, бій (RoomEnemySpawner) або бос, клас (single — один звичайний, group — 3+, elite, boss).
+## Сусідні бої — у різних кімнатах: Game.load_room не перевантажує кімнату, що вже стоїть.
 const FIGHTS := [
 	{"name": "lone bandit (Village)", "room": "Village", "fight": "EnemySpawner", "cls": "single"},
 	{"name": "road's first fight: 2 bandits, 2 jackals", "room": "DesertRoad", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "City Gates: 2 bandits, archer", "room": "CityGates", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "lone bandit brute", "room": "DesertRoad", "fight": "Fight_LoneElite", "cls": "elite"},
-	{"name": "cursed jackal", "room": "Laboratory", "fight": "Fight_Cursed", "cls": "elite"},
+	{"name": "Lab middle: bandit, 2 jackals, scorpion", "room": "Laboratory", "fight": "Fight_Middle", "cls": "group"},
 	{"name": "Mayor Hall boss", "room": "MayorHall", "boss": "ScorpicoreWarrior", "cls": "boss"},
+	{"name": "Caravan: armoured scorpion and 4", "room": "DesertRoad", "fight": "Fight_Caravan", "cls": "group"},
+	{"name": "cursed jackal", "room": "Laboratory", "fight": "Fight_Cursed", "cls": "elite"},
 	{"name": "Laboratory boss", "room": "LabBoss", "boss": "Mercenary", "cls": "boss"},
 ]
 ## Сюжетні прапорці перед кожним боєм: кімната одразу в стані свого бою.
@@ -69,6 +72,9 @@ var hero_hits := 0
 var cleaves := 0
 ## Удари ворогів, що прийшли, поки герой невразливий після попереднього удару (не перекат).
 var iframed := 0
+## Скільки разів HP героя виросло (фляга подіяла) і HP кадром раніше.
+var heals := 0
+var _hp_before := 0
 var _last_hit_frame := -10
 var swings := {}
 var strikes := {}
@@ -143,9 +149,9 @@ func _verdict(row: Dictionary) -> String:
 
 
 func _print_row(row: Dictionary) -> void:
-	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d parry %d block %d roll %d | together %d (%.1fs) | hero hits %d (%d cleaved) | strikes in i-frames %d"
+	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d/%d parry %d block %d roll %d | together %d (%.1fs) | hero hits %d (%d cleaved) | strikes in i-frames %d"
 			% [row.bot, row.build, row.name, row.level, _verdict(row), roundi(row.hp_left * 100), roundi(row.enemy_left * 100),
-			row.time, row.hits, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed])
+			row.time, row.hits, row.heals, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed])
 	for line: String in row.enemies:
 		print("        " + line)
 
@@ -185,7 +191,7 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	if fight.room == "MayorHall":
 		game.map.current_state = game.map.State.FIGHT  # черга й пролам (QueueTrigger) — кат-сцена до бою
 	await physics_frame
-	_place_hero(_start_spot(fight))  # одразу: старі координати героя в новій кімнаті можуть бути за її межею (MetSys)
+	_place_hero(_start_spot(fight, false))  # одразу: старі координати героя в новій кімнаті можуть бути за її межею (MetSys)
 	if game.room_changing:
 		await game.room_change_finished
 	await _settle()
@@ -203,6 +209,15 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	else:
 		spawner = await _start_fight(fight)
 	hero.defeat_handler = func() -> void: pass  # без Game Over і кат-сцени поразки: бій міряє тест
+	if OS.get_environment("MASHER_DEBUG") == "3":
+		var hs: Vector2 = hero.combat._hitbox_shape().size
+		print("DEBUG reach hero: center %s size %s → front %.0f; body half %.0f" % [hero.combat.hitbox_center, hs, hero.combat.hitbox_center.x + hs.x / 2.0,
+				(hero.get_node(^"CollisionShape2D").shape.get_rect().size.x) / 2.0])
+		for e: Node in get_nodes_in_group(&"enemies"):
+			var es: Vector2 = e.hitbox_collision.shape.get_rect().size * e.global_scale
+			var hurt: Vector2 = e.hurt_collision.shape.get_rect().size * e.global_scale
+			print("DEBUG reach %s: attack_range %.0f strike front %.0f hurt half %.0f body half %.0f" % [e.enemy_stats.enemy_type, e.attack_range,
+					absf(e._strike_x) * e.global_scale.x + es.x / 2.0, hurt.x / 2.0, e.get_node(^"CollisionShape2D").shape.get_rect().size.x * e.global_scale.x / 2.0])
 	if OS.get_environment("MASHER_DEBUG") != "":
 		print("DEBUG start: event=%s hero=%s enemies=%s dialogue=%s" % [hero.event, hero.global_position,
 				get_nodes_in_group(&"enemies").map(func(e: Node) -> Vector2: return e.global_position), sl.get_dialogue_manager().is_dialogue_active()])
@@ -211,6 +226,8 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	hero_hits = 0
 	cleaves = 0
 	iframed = 0
+	heals = 0
+	_hp_before = hero.current_health
 	swings = {}
 	strikes = {}
 	stagger_time = {}
@@ -242,6 +259,9 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 				total_hp += enemy.Max_Health
 				_track(enemy)
 		_watch(tracked, dt)
+		if hero.current_health > _hp_before and not hero.is_dead:
+			heals += 1
+		_hp_before = hero.current_health
 		var alive := tracked.filter(func(e: Node) -> bool: return is_instance_valid(e) and e.is_alive())
 		if hero.is_dead or (alive.is_empty() and not _spawning and not tracked.is_empty()):
 			break
@@ -274,7 +294,7 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 			"won": not hero.is_dead and left_hp == 0 and t < CAP, "capped": t >= CAP and not hero.is_dead,
 			"hp_left": float(maxi(hero.current_health, 0)) / hero.Max_Health, "enemy_left": float(left_hp) / maxi(total_hp, 1),
 			"time": t, "hits": hits_taken, "flasks": flasks, "parries": parries, "blocks": blocks, "rolls": rolls,
-			"together": together, "together_time": together_time, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "enemies": lines}
+			"together": together, "together_time": together_time, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -302,24 +322,36 @@ func _settle() -> void:
 	ck(false, "the room settles before the fight (dialogue %s, hero in event %s)" % [sl.get_dialogue_manager().is_dialogue_active(), hero.event])
 
 
-## Де герой починає бій: до 260 px ліворуч від найлівішої точки бою чи від місця боса — на тій самій підлозі
-## (ближче, якщо там уступ чи стіна), як герой, що прийшов зліва й зістрибнув на арену.
-func _start_spot(fight: Dictionary) -> Vector2:
-	var at: Node2D
+## Де герой починає бій: за 260 px від крайньої точки бою (чи від місця боса) — ліворуч, а коли там стіна чи інша
+## підлога, то праворуч; ближче, якщо далі уступ, — на тій самій підлозі, з якої прийшов би герой. Одразу після
+## завантаження кімнати (фізика ще не готова) — без звіту про невдачу ([param report]).
+func _start_spot(fight: Dictionary, report: bool = true) -> Vector2:
+	var points: Array[Node2D] = []
 	if fight.has("boss"):
 		var room: Node = game.map
-		at = room.get_node(^"Marks/WarriorStand") if room.has_node(^"Marks/WarriorStand") else room.get_node(NodePath(fight.boss))
+		points.append(room.get_node(^"Marks/WarriorStand") if room.has_node(^"Marks/WarriorStand") else room.get_node(NodePath(fight.boss)))
 	else:
-		var spawner: Node = game.map.find_child(fight.fight, true, false)
-		at = spawner.spawn_points[0]
-		for point: Node2D in spawner.spawn_points:
-			if point.global_position.x < at.global_position.x:
-				at = point
-	var floor_y := _floor_at(at.global_position.x, at.global_position.y)
-	var x: float = at.global_position.x - 260.0
-	while absf(_floor_at(x, at.global_position.y) - floor_y) > 2.0 and x < at.global_position.x - 60.0:
-		x += 10.0
-	return Vector2(x, at.global_position.y - 8.0)
+		for point: Node2D in game.map.find_child(fight.fight, true, false).spawn_points:
+			points.append(point)
+	points.sort_custom(func(a: Node2D, b: Node2D) -> bool: return a.global_position.x < b.global_position.x)
+	for side: int in [-1, 1]:
+		var at: Node2D = points[0] if side < 0 else points[-1]
+		var floor_y := _floor_at(at.global_position.x, at.global_position.y)
+		for gap in range(260, 50, -10):
+			var x: float = at.global_position.x + side * gap
+			if absf(_floor_at(x, at.global_position.y) - floor_y) <= 2.0 and _open(at.global_position, x):
+				return Vector2(x, at.global_position.y - 8.0)
+	if report:
+		ck(false, "%s: a start spot on the fight's floor" % fight.name)
+	return points[0].global_position
+
+
+## Між точкою [param from] і x на її висоті немає стіни.
+func _open(from: Vector2, x: float) -> bool:
+	var ray := PhysicsRayQueryParameters2D.create(from, Vector2(x, from.y))
+	ray.collision_mask = 1
+	ray.exclude = get_nodes_in_group(&"enemies").map(func(e: Node) -> RID: return e.get_rid())
+	return game.map.get_world_2d().direct_space_state.intersect_ray(ray).is_empty()
 
 
 ## Верх підлоги під точкою (x, y): промінь донизу з 16 px над нею.

@@ -89,6 +89,8 @@ var hover_height := 0.0
 var dive_speed := 0.0
 ## Скільки тіл (вороги й герой) летючий уже не помічає (_ignore_bodies).
 var _ignored_count := -1
+## Скільки ворогів кімнати наземний уже пропускає крізь себе (_pass_allies).
+var _allies_count := -1
 ## Падіння мертвого летючого на землю, с.
 const FALL_TIME := 0.45
 ## Стійкість повертається повністю, якщо стільки секунд ворога ніхто не бив.
@@ -368,6 +370,7 @@ func _physics_process(delta: float) -> void:
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); наземному — лише X-рух, летючому — увесь.
 	var move: Vector2 = enemy_logic.process_physics(delta)
+	enemy_view.walk_pace(enemy_logic.pace)
 	current_state = enemy_logic.current_state
 	state_timer = enemy_logic.state_timer
 	lost_player_timer = enemy_logic.lost_player_timer
@@ -375,6 +378,7 @@ func _physics_process(delta: float) -> void:
 		_fly(move)
 		return
 	velocity.x = move.x
+	_pass_allies()
 
 	# Применяем гравитацию из project settings
 	if not is_on_floor():
@@ -386,6 +390,17 @@ func _physics_process(delta: float) -> void:
 	# Применяем движение с физикой
 	move_and_slide()
 	slide_off_bodies(delta)
+
+## Бій групою (D713): наземні вороги проходять один крізь одного (героя тіло ворога й далі зупиняє, D443). Інакше
+## в коридорі героя діставав лише передній, а решта стояла за ним у черзі й чекала, доки його вб'ють.
+func _pass_allies() -> void:
+	var allies: Array = GameGroups.get_nodes_in_group(GameGroups.ENEMIES)
+	if allies.size() == _allies_count:
+		return
+	_allies_count = allies.size()
+	for body: Node in allies:
+		if body != self and body is PhysicsBody2D:
+			add_collision_exception_with(body)
 
 ## Летючий (D445): рух у повітрі без гравітації; удар героя дістає його лише низько (reachable).
 func _fly(move: Vector2) -> void:

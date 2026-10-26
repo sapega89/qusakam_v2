@@ -103,6 +103,12 @@ const LOOK_AHEAD := 8.0
 const FLOOR_PROBE := 16.0
 ## Відхід після серії триває не довше за back_off / speed + BACK_OFF_SLACK с.
 const BACK_OFF_SLACK := 0.4
+## Біг до бою (D713): далі за RUN_FROM × engage_range від героя ворог біжить у RUN_PACE раз швидше за крок — група
+## бою приходить разом, а не по одному, поки герой добиває переднього.
+const RUN_PACE := 1.8
+const RUN_FROM := 2.5
+## Темп ходи зараз: 1 — крок, RUN_PACE — біг (EnemyView пришвидшує анімацію walk так само).
+var pace: float = 1.0
 var _shuffle_t: float = 0.0
 ## Скільки ударів героя ворог прийняв, чекаючи перерви (provoked).
 var _hits_waiting: int = 0
@@ -256,10 +262,11 @@ func handle_chase_state(delta: float):
 		return
 
 	var direction_x: float = player.global_position.x - enemy.global_position.x
+	pace = RUN_PACE if distance_to_player_x > engage_range() * RUN_FROM else 1.0
 	if abs(direction_x) <= 5.0:
 		velocity.x = 0
 	else:
-		_walk(1 if direction_x > 0 else -1, speed)
+		_walk(1 if direction_x > 0 else -1, speed * pace)
 
 func _give_up() -> void:
 	change_state(AIState.RETURN_HOME)
@@ -309,14 +316,16 @@ func _hold_spacing(dx: float, delta: float) -> void:
 func _hero_opened(adx: float) -> bool:
 	return adx <= attack_range * 1.5 and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP]
 
-## Удар героя влучив (D713): поки ворог чекає перерви між серіями, enemy.answer_hits таких ударів скасовують решту
-## перерви — він б'є у відповідь (з тим самим замахом і підказкою).
+## Удар героя влучив (D713): поки ворог чекає перерви між серіями чи відходить після серії, enemy.answer_hits таких
+## ударів скасовують решту перерви — він б'є у відповідь (з тим самим замахом і підказкою).
 func provoked() -> void:
 	if enemy.answer_hits <= 0 or is_attacking or enemy.is_dead:
 		return
 	_hits_waiting += 1
 	if _hits_waiting >= enemy.answer_hits:
 		attack_ready_in = 0.0
+		if current_state == AIState.RETREAT:
+			change_state(AIState.ATTACK)  # відходив після серії — розвертається й б'є
 
 ## Після серії (D504): відходить на back_off px, якщо є куди; tank (back_off 0) лишається на місці.
 func _decide_after_attack() -> void:
@@ -346,6 +355,7 @@ func change_state(new_state: AIState):
 	if current_state == new_state:
 		return
 	current_state = new_state
+	pace = 1.0
 	state_timer = 0.0
 	state_changed.emit(new_state)
 
