@@ -15,6 +15,17 @@ player sees it), from `godot --path . --resolution 1920x1080 --script res://Samp
 The door logic is already symmetric: every `RoomDoor` leads back to the door it came from (`arrival`). What is wrong is
 the picture: most doors inside rooms stand at x 96 at the left edge where nothing is painted.
 
+## How an entrance looks — Tails of Iron (Sapega's reference, 2026-10-26)
+
+![[refs/toi_cave_entrance.png]]
+
+«прохід в печеру — ось дивись, як зроблено в Tails of Iron»: the cave entrance is a dark arch **at the foot of the
+stone mass the hero walks on** — he stands on top of that same wall. The opening is cut into the playfield's own
+material (the same stones as the ground and the ledge), framed by stone blocks and plants, dark inside; it is part of
+the walkable foreground, not a picture in the far backdrop and not a separate object standing on the floor. So an
+entrance is a piece of terrain: a rock or masonry block in the room's own material with the opening at its base, its
+top flat enough to be ground (a ledge the hero can stand on where the room needs it), its foot on the floor line.
+
 ## Doors (`room_door.tscn`, invisible; the backdrop must show the opening)
 
 | Room | Door | Backdrop at the door | Verdict | Fix |
