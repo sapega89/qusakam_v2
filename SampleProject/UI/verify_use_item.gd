@@ -7,6 +7,8 @@ extends SceneTree
 ##   3. An ether restores SP.
 ##   4. A material opens the "Cannot Use" modal; pad B closes it, focus back on the row, nothing spent.
 ##   5. A weapon, armour and a helmet equip into their slots from the inventory.
+##   5b. B152, D720: an equipped item carries the Equipped mark; Enter / a double click / pad A on it unequips it and
+##       the bar says so; once more equips it again.
 ##   6. An empty potion stack leaves the list.
 ##   7. The potion line ascends Lesser < Potion < Medium < Large in heal, price and description (B108, D357).
 
@@ -108,6 +110,32 @@ func _initialize() -> void:
 	await Kit.pad(self, JOY_BUTTON_A)
 	ck(character.equipment.get("head") is Dictionary and character.equipment["head"].id == "iron_helmet", "head slot: iron_helmet")
 	ck(bar._hint_label.text.contains("equipped"), "bottom bar confirms (%s)" % bar._hint_label.text)
+
+	print("[5b] B152, D720: the Equipped mark, and Unequip on an equipped item")
+	for id in ["iron_sword", "iron_armor", "iron_helmet"]:
+		ck(_row(inv, id).is_equipped_shown(), "%s shows the Equipped mark" % id)
+	var mark: Label = _row(inv, "iron_sword").get_node(^"Row/EquippedBadge/Label")
+	ck(mark.is_visible_in_tree() and mark.text == "Equipped", "the mark reads Equipped (%s)" % mark.text)
+	var plain: Array = inv.items.filter(func(it: Dictionary) -> bool: return it.equipped_slot == "")
+	ck(not plain.is_empty() and plain.all(func(it: Dictionary) -> bool: return not _row(inv, it.id).is_equipped_shown()),
+			"items not worn carry no mark")
+	await _focus_row(inv, "iron_sword")
+	ck(_row(inv, "iron_sword").tooltip_text.contains("unequip"), "its use hint offers Unequip (%s)" % _row(inv, "iron_sword").tooltip_text)
+	await Kit.key(self, KEY_ENTER)
+	ck(character.equipment.get("sword") == null, "Enter on the worn sword unequips it")
+	ck(bar._hint_label.text.contains("unequipped") and bar._hint_label.text.contains("Iron Sword"), "the bar says it was unequipped (%s)" % bar._hint_label.text)
+	ck(not _row(inv, "iron_sword").is_equipped_shown(), "the mark is gone")
+	await Kit.key(self, KEY_ENTER)
+	ck(character.equipment.get("sword") is Dictionary and character.equipment["sword"].id == "iron_sword", "Enter again equips it")
+	ck(bar._hint_label.text.contains("equipped") and not bar._hint_label.text.contains("unequipped"), "the bar says equipped (%s)" % bar._hint_label.text)
+	ck(_row(inv, "iron_sword").is_equipped_shown(), "the mark is back")
+	await Kit.mouse(self, _row(inv, "iron_armor"), true)
+	ck(character.equipment.get("body") == null and not _row(inv, "iron_armor").is_equipped_shown(), "a double click unequips the armour")
+	await _focus_row(inv, "iron_helmet")
+	await Kit.pad(self, JOY_BUTTON_A)
+	ck(character.equipment.get("head") == null, "pad A unequips the helmet")
+	await Kit.pad(self, JOY_BUTTON_A)
+	ck(character.equipment.get("head") is Dictionary, "pad A again equips it")
 
 	print("[6] An empty stack leaves the list")
 	inventory.remove_item("potion", inventory.get_item_count("potion"))
