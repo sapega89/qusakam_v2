@@ -154,13 +154,7 @@ the history, this note keeps only what is open.
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
 > **Fixed 2026-10-26 (integrator-14):** **B150** (`cloud/dash-fix`, D713; the branch called it B149): a ground dash off a ledge or a step hovered level instead of falling. `PlayerMover.air_dash`: only a dash started in the air stays level. `verify_dash`.
-
-### B149 — opening the game menu while rooms preload in the background can deadlock
-- **Where:** `RoomPreloader.gd` (`load_threaded_request` of the current room's neighbours) against a main-thread `load()` when `UIManager.open_game_menu()` builds the skills window
-- **Expected:** the menu opens whatever the preloader is doing
-- **Got:** the process freezes: the main thread waits inside a resource load for a worker, a worker waits on a mutex the main thread holds (gdb, 2026-10-26). `verify_skill_screen` hung in 2 of 3 runs alone, `verify_skill_trees_ui` once under suite load: `RESULT: HUNG — killed after 180 s, 0 SCRIPT ERROR`. Round 13 widened the window: the Canyon now preloads rooms-1's side rooms and the new elite scenes. Both tests now wait for `room_preloader.busy()` before opening the menu (12/12 ALL PASS); the game itself does not.
-- **Severity:** major (a hang soon after a room change, if the player opens the menu at once)
-- **Found:** 2026-10-26, round 13 integration suite
+> **B149** (integrator-14): opening the game menu while RoomPreloader loaded in the background could deadlock. Root cause: `game_menu_state.gd` `preload`ed `game_menu.tscn`, so the menu scene was loaded while that script compiled, with the GDScript cache mutex held. The menu shares `base_menu.tscn`, `bottom_bar.tscn` and `party_status_panel.tscn` with `shop_menu.tscn`, which SceneWarmer pins into the preloader. The main thread waited for the worker's task on that shared scene, and the worker waited for the cache mutex to compile its scripts (gdb + `--verbose`, 2026-10-26). `tutorial_component.gd` → `tutorial_menu.tscn` → `bottom_bar.tscn` had the same pattern. Both now `load()` at open time; the menu scene is kept in a static var after the first open. `verify_menu_after_room_change` (new): [1] no script in the menu tree preloads a scene that shares a scripted scene with the rooms or the warm-up (both directions), [2] the first opening while the shop reloads in the background, [3] 15 room changes with the menu opened at once. The repro (`verify_skill_screen` without its wait) hung about 1 run in 7 before the fix and passed 48/48 after; the skill tests no longer wait for the preloader.
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
