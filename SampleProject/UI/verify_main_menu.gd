@@ -173,6 +173,9 @@ func _initialize() -> void:
 	while root.has_node(^"ScreenFade") and Time.get_ticks_msec() - t1 < 10000:
 		await process_frame
 	ck(not root.has_node(^"ScreenFade"), "light again in the room (%d ms after the click)" % (Time.get_ticks_msec() - t1))
+	# Сусіди Canyon (з rooms-1 — і LizardCave) вантажаться у фоні; вихід посеред цього дає Parse Error у лозі.
+	while current_scene.room_preloader.busy():
+		await process_frame
 	current_scene.queue_free()
 	for i in 3: await process_frame
 
