@@ -280,8 +280,18 @@ func _no_stamina() -> void:
 	ck(rows == ["HP", "SP"], "the hero panel shows HP and SP, no ST; XP is its own bar (D552: %s)" % [rows])
 	# Десять перекатів поспіль — кожен починається (раніше п'ятий уже не мав витривалості)
 	await _hero_at(arena_x)
+	# Тут лише витривалість: ворогів поруч спинено — тепер вони відповідають на бій (D713) і збили б героя посеред серії
+	var frozen: Array = []
 	var rolls := 0
 	for i in 10:
+		# і ті, що зʼявились, коли перекат заніс героя в зону бою секції
+		for e: Node in get_nodes_in_group(&"enemies"):
+			if e.is_physics_processing():
+				e.set_physics_process(false)
+				frozen.append(e)
+		while frozen.any(func(e: Node) -> bool: return is_instance_valid(e) and e.enemy_logic.is_attacking):
+			await physics_frame  # замах, що вже йшов, — корутина на таймерах, доходить до кінця
+		await _until_ready()
 		await _tap(&"dodge")
 		for f in 3: await physics_frame
 		if hero.mover.is_rolling():
@@ -291,6 +301,9 @@ func _no_stamina() -> void:
 		await _until_ready()
 		for f in 30: await physics_frame
 	ck(rolls == 10, "ten rolls in a row all start (%d)" % rolls)
+	for e: Node in frozen:
+		if is_instance_valid(e):
+			e.set_physics_process(true)
 	# Блок тримає будь-скільки звичайних ударів: без шкоди й без збою
 	await _hero_at_bandit()
 	_press(&"block")
