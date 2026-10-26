@@ -28,7 +28,7 @@ func _shot() -> Image:
 func _initialize() -> void:
 	await process_frame
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()

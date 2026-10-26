@@ -14,7 +14,7 @@ The HUD had no location-name element, so nothing was removed. A test checks that
 **D-ID:** D717 (register text unchanged; "Built by routine `hints-toggle`" → `quest-panel`). **B rows fixed:** none.
 **Full suite:** `SUITE: 7 FAIL` on 7b5cb081. After merging hints-toggle's head, `verify_lab_cells` and `verify_audio` are ALL PASS. The 5 left are hints-toggle's ui-critic baseline failures, not from this branch.
 **MASTER_PLAN** §3: row QP1 / D717 👀 → `integrator`.
-**ID clash for the orchestrator:** ui-critic's report also used D717, for the hint banner placement, which D726 has since removed. The register's D717 is this quest-panel decision. ui-critic's banner D717 needs another number or should be dropped.
+**ID clash for the orchestrator:** ui-critic's report also used D717, for the hint banner placement, which D744 has since removed. The register's D717 is this quest-panel decision. ui-critic's banner D717 needs another number or should be dropped.
 
 ## What changed
 
