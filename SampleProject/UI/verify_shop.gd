@@ -122,7 +122,7 @@ func _merchant_items() -> Array:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	await process_frame
 	# Меню існує лише в запущеній грі (Game, гравець, нижня панель) — тест відкриває його там само.

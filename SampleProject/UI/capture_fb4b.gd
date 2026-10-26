@@ -16,7 +16,7 @@ func _initialize() -> void:
 	out_dir = args[0] if not args.is_empty() else ProjectSettings.globalize_path("res://design/shots")
 	root.size = Vector2i(1920, 1080)
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	set_meta("start_new_game", true)
 	sl = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0

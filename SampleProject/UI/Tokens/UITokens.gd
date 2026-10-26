@@ -328,7 +328,7 @@ const LOOT_TOAST_FADE := 0.4         # поява і згасання, секу�
 const LOOT_FEED_MAX := 4             # більше тостів — найстаріший іде одразу
 const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ матеріалу вистачає
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
-# Підказки як у Lineage II (D718): тема туторіалу — «?» біля лівого краю під панеллю героя, світиться, доки не відкрили.
+# Підказки як у Lineage II (D732): тема туторіалу — «?» біля лівого краю під панеллю героя, світиться, доки не відкрили.
 const TIP_ICON_SIZE := 48                 # сторона значка «?», px
 const TIP_TRAY_GAP := SPACE_SM            # між значками в стосі
 const TIP_GLOW := Color(1.6, 1.4, 0.8)    # modulate на піку світіння (над 1.0 — яскравіше, тепле золото)

@@ -20,7 +20,7 @@ var panels: Array[Image] = []
 func _initialize() -> void:
 	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")
 	eb = root.get_node("EventBus")

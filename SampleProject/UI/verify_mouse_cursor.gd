@@ -46,7 +46,7 @@ func _click(pos: Vector2) -> void:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	root.size = Vector2i(1920, 1080)
 	set_meta("start_new_game", true)

@@ -59,7 +59,7 @@ func _initialize() -> void:
 	await _shot("hud")
 
 	var tray: Node = get_first_node_in_group(&"tip_tray")
-	tray.show_tip("oldman_gift")  # D726: плашки немає — підказка лише «?»
+	tray.show_tip("oldman_gift")  # D744: плашки немає — підказка лише «?»
 	await _shot("tutorial_tip")
 	tray.clear()
 

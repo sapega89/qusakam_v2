@@ -92,7 +92,7 @@ func _key(code: Key) -> void:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	await process_frame
 	# Headless скидає вікно до 64×64 на першому кадрі, а тест клікає мишею в координатах 1920×1080.
@@ -632,9 +632,9 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	for i in 3: await process_frame
 	ck(TranslationServer.get_locale().begins_with(lang), "locale %s applied" % TranslationServer.get_locale())
 	# Підписи клітинок перекладені — натискаємо за індексом (0 — On, 1 — Off).
-	# D728: Hints — у вкладці Game, де стояли Tutorial Windows; за замовчуванням On.
+	# D746: Hints — у вкладці Game, де стояли Tutorial Windows; за замовчуванням On.
 	ck(_row(opts, "Hints") != null and _row(opts, "Tutorial Windows") == null and module.default_settings["hints"] == true
-			and not module.settings.has("tutorial_windows"), "Hints row in Game, On by default; no Tutorial Windows row (D728)")
+			and not module.settings.has("tutorial_windows"), "Hints row in Game, On by default; no Tutorial Windows row (D746)")
 	_press_at(opts, "Hints", 1)
 	for i in 3: await process_frame
 	_press_at(opts, "Damage Numbers", 1)
@@ -697,7 +697,7 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	for i in 3: await process_frame
 	ck(_segments(opts, "Auto-Save")[0].theme_type_variation == &"SettingsSegmentOn", "Auto-Save row shows On after the reload")
 	ck(module.settings["hints"] == false and _segments(opts, "Hints")[1].theme_type_variation == &"SettingsSegmentOn",
-			"Hints Off survives the reload (D728)")
+			"Hints Off survives the reload (D746)")
 
 	print("[22c] Restore Default Settings puts every row back")
 	opts._on_restore_pressed()
@@ -717,7 +717,7 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))
 	save_system._on_room_entered("probe")
 	ck(str_to_var(FileAccess.get_file_as_string(slot_path))["current_room"] == ":test", "Auto-Save Off: a room change saves nothing")
-	module.settings["hints"] = false  # D728: no «?» tips in the rest of the test
+	module.settings["hints"] = false  # D746: no «?» tips in the rest of the test
 
 
 const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")

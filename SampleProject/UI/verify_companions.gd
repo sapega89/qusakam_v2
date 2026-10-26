@@ -96,7 +96,7 @@ func _stars(enemy: Node) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -292,7 +292,7 @@ func _initialize() -> void:
 	seen.erase("choose_companions")
 	tray.show_tip("choose_companions")
 	for i in 6: await process_frame
-	ck(layer.active_modal == null and not paused and tray.ids() == ["choose_companions"], "D718: a «?» waits, no window, the game runs (%s)" % [tray.ids()])
+	ck(layer.active_modal == null and not paused and tray.ids() == ["choose_companions"], "D732: a «?» waits, no window, the game runs (%s)" % [tray.ids()])
 	await Kit.key(self, KEY_T)  # підказки досі були вимкнені — у стосі лише ця тема
 	for i in 4: await process_frame
 	var window: Control = layer.active_modal
@@ -312,13 +312,13 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	# Інші підказки (перше вбивство охоронцем) могли стати в чергу, поки підказки були ввімкнені — дивимось лише на свою тему.
 	tray.show_tip("choose_companions")
-	ck(not tray.has("choose_companions"), "it fires once (D727): a second time puts no «?»")
+	ck(not tray.has("choose_companions"), "it fires once (D745): a second time puts no «?»")
 	if layer.active_modal != null:
 		layer.active_modal.cancelled.emit()
 	seen.erase("choose_companions")
 	settings.hints = false
 	tray.show_tip("choose_companions")
-	ck(not tray.has("choose_companions") and not "choose_companions" in seen, "Hints Off (D728) → no «?», the topic is not marked seen")
+	ck(not tray.has("choose_companions") and not "choose_companions" in seen, "Hints Off (D746) → no «?», the topic is not marked seen")
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()

@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Hints like Lineage II (BACKLOG 12, D289, D718), every tip a «?» (D726), real input:
+## Hints like Lineage II (BACKLOG 12, D289, D732), every tip a «?» (D744), real input:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_tutorial_hints.gd
 ##   1. After the Canyon intro the movement tip (WASD) is a «?» like any other — no banner; its window names A / D.
 ##   2. The first enemy: the attack «?»; its window names the pad button (X) after pad input, Left Mouse after a key.
@@ -8,10 +8,10 @@ extends SceneTree
 ##      top one; T / D-pad left opens the oldest (paused, LB after pad input), a click opens another; each «?» goes.
 ##   4. Game Menu → Misc → Tutorial (mouse): the seen topics are listed after the general ones, unseen are not;
 ##      a click opens that topic.
-##   5. D728: Settings → Game → Hints: Off (mouse click) clears the waiting «?»; a route that would fire several tips
+##   5. D746: Settings → Game → Hints: Off (mouse click) clears the waiting «?»; a route that would fire several tips
 ##      (kill, level up, every glint colour, Healing Palm) puts none and marks none seen; an interaction prompt
 ##      («Open» at a chest) still shows; Off survives a save and a load. On again: new tips from then on, no flood.
-##   6. D726: no tip text ever shows outside the «?» delivery — every hint topic, en and uk, leaves no label on screen
+##   6. D744: no tip text ever shows outside the «?» delivery — every hint topic, en and uk, leaves no label on screen
 ##      with its text, and no script but the tip tray and the tutorial screens reads a topic's text.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -55,7 +55,7 @@ func _initialize() -> void:
 
 	var tray: Node = get_first_node_in_group(&"tip_tray")
 
-	print("[1] Movement (WASD) tip: a «?», no banner, the game runs (D726)")
+	print("[1] Movement (WASD) tip: a «?», no banner, the game runs (D744)")
 	for i in 600:
 		if tray.has("movement"):
 			break
@@ -149,7 +149,7 @@ func _initialize() -> void:
 	await Kit.pad(self, JOY_BUTTON_B)
 	ck(_window() == null and get_first_node_in_group("game_menu") != null, "B back to the list, menu open")
 
-	print("[5] D728: Settings → Game → Hints Off — no «?» at all, prompts stay")
+	print("[5] D746: Settings → Game → Hints Off — no «?» at all, prompts stay")
 	await Kit.mouse(self, menu.misc_button)
 	await Kit.frames(self, 6)
 	await Kit.mouse(self, ui.get_modal_layer().active_modal.settings_button)
@@ -192,7 +192,7 @@ func _initialize() -> void:
 	chest.queue_free()
 	enemy.queue_free()
 	var saved: Dictionary = root.get_node("SaveSystem").player_data_module.save()
-	ck(saved.seen_tutorials == seen and saved.has("playthrough_id"), "seen topics and the playthrough are saved with the player (D727)")
+	ck(saved.seen_tutorials == seen and saved.has("playthrough_id"), "seen topics and the playthrough are saved with the player (D745)")
 	var save_system: Node = root.get_node("SaveSystem")
 	save_system.settings_module.settings = save_system.settings_module.default_settings.duplicate()
 	save_system.load_game_settings()
@@ -247,10 +247,10 @@ func _tip_text_on_screen(id: String) -> String:
 	return ""
 
 
-## D726: кожна тема-підказка, en і uk, — лише «?»: жодного її тексту на екрані; і жоден скрипт гри, крім TipTray
+## D744: кожна тема-підказка, en і uk, — лише «?»: жодного її тексту на екрані; і жоден скрипт гри, крім TipTray
 ## і екранів туторіалу, не читає текст теми (TutorialTopics.resolved).
 func _no_tip_text_outside() -> void:
-	print("[6] D726: no tip text outside the «?» delivery (en, uk; code)")
+	print("[6] D744: no tip text outside the «?» delivery (en, uk; code)")
 	var tray: Node = get_first_node_in_group(&"tip_tray")
 	var loc: Node = root.get_node("LocalizationManager")
 	var seen: Array = root.get_node("ServiceLocator").get_game_manager().player_state.seen_tutorials

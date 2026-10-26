@@ -321,7 +321,7 @@ func load_player_data():
 	print("💾 SaveSystem: Player data loaded from %s" % file_path)
 	return true
 
-## D727: теми підказок, які бачили в сейвах цього проходження, з усіх слотів — Load ранішого сейва їх не повертає.
+## D745: теми підказок, які бачили в сейвах цього проходження, з усіх слотів — Load ранішого сейва їх не повертає.
 func seen_tutorials_of(playthrough_id: String) -> Array:
 	var out: Array = []
 	for slot in range(1, SLOT_COUNT + 1):

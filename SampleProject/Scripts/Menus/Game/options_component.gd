@@ -217,7 +217,7 @@ func _build_rows() -> void:
 			_add_segment_row("Screen Shake", ["On", "Off"],
 					0 if _cfg_get("screen_shake") else 1, _on_screen_shake_changed)
 			_add_separator()
-			# D728: Off — жодної «?»-підказки; підказки взаємодії («E Open») і сюжет лишаються.
+			# D746: Off — жодної «?»-підказки; підказки взаємодії («E Open») і сюжет лишаються.
 			_add_segment_row("Hints", ["On", "Off"],
 					0 if _cfg_get("hints") else 1, _on_hints_changed)
 			_add_separator()

@@ -36,7 +36,7 @@ var target: Node
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	await process_frame
 	var actives: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills.filter(

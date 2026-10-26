@@ -15,7 +15,7 @@ func _initialize() -> void:
 	DisplayServer.window_set_size(Vector2i(1920, 1080))
 	await process_frame
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
@@ -38,7 +38,7 @@ func _initialize() -> void:
 	get_first_node_in_group("game_menu").switch_to_tab("Misc")
 	for i in 10: await process_frame
 	var opts: Node = get_first_node_in_group("settings_screen")
-	root.get_node("SaveSystem").settings_module.settings.hints = true  # рядок Hints (D728) — у типовому стані, On
+	root.get_node("SaveSystem").settings_module.settings.hints = true  # рядок Hints (D746) — у типовому стані, On
 	var args := {}
 	for arg in OS.get_cmdline_user_args():
 		var pair: PackedStringArray = arg.trim_prefix("--").split("=")

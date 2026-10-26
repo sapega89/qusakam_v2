@@ -73,7 +73,7 @@ func _initialize() -> void:
 	Spawner = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
 	Variety = load("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 	Boss = load("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd")
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	game = await Kit.boot(self)
 	sl = root.get_node("ServiceLocator")
 	hero = game.player

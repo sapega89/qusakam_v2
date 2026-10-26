@@ -221,7 +221,7 @@ func _acquaintance() -> void:
 	await cs.camera_back(PAN_TIME)
 	cs.end()
 	game.set_objective("Fight through the laboratory")
-	# D463: уперше є з кого вибирати — «?» про вибір у Status (D726)
+	# D463: уперше є з кого вибирати — «?» про вибір у Status (D744)
 	if companions.get_unlocked().size() > 1:
 		get_tree().get_first_node_in_group(&"tip_tray").show_tip(CHOOSE_COMPANIONS_TOPIC)
 

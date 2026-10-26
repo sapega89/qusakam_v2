@@ -24,7 +24,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	await process_frame
 	var tag: String = OS.get_cmdline_user_args()[0]
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0

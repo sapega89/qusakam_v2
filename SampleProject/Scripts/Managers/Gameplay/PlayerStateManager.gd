@@ -73,8 +73,8 @@ static func _initial_state() -> Dictionary:
 		"current_scene": "VillageScene",
 		"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
 		"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
-		"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial); D727 — раз за проходження
-		# D727: проходження, якому належить сейв, — нова гра дає нове; сейви одного проходження зводять seen_tutorials.
+		"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial); D745 — раз за проходження
+		# D745: проходження, якому належить сейв, — нова гра дає нове; сейви одного проходження зводять seen_tutorials.
 		"playthrough_id": "%d-%d" % [int(Time.get_unix_time_from_system()), randi()],
 		"journal": {"people": [], "enemies": {}, "stories": []},  # D290: люди, вороги (kind → вбито); D621: шматки історії
 		"job_points": 0,

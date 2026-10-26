@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Кожна підказка — раз за проходження, за першої нагоди (D727; Sapega, 2026-10-26: «тільки один раз за гру це
-## вискакує, коли перший раз зустрічається, так само і WASD»), і три «?» про колір відблиску ворога (D725, D504):
+## Кожна підказка — раз за проходження, за першої нагоди (D745; Sapega, 2026-10-26: «тільки один раз за гру це
+## вискакує, коли перший раз зустрічається, так само і WASD»), і три «?» про колір відблиску ворога (D743, D504):
 ##   1. New Game: the WASD (movement) «?» once.
 ##   2. Each glint colour on an enemy in view — white, yellow, red — gives its «?» once (block / parry / dodge, the
 ##      button from the input map); the same colour again, or a glint off screen, gives none.
@@ -107,7 +107,7 @@ func _initialize() -> void:
 	tray.clear()
 	ck(game.save_game(), "an earlier save in slot 1 (only movement seen)")
 
-	print("[2] D725: each glint colour in view gives its «?» once")
+	print("[2] D743: each glint colour in view gives its «?» once")
 	var far := _enemy(4000.0)
 	_glint(far, &"parry")
 	await process_frame

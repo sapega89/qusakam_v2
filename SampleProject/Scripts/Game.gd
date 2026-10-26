@@ -169,7 +169,7 @@ func _initialize_save_and_room() -> void:
 	ServiceLocator.get_skill_manager().clear_cooldowns()
 	# B79: рівень, досвід, стан героя й речі — теж з чистого; сейв нижче відновить свої (PlayerDataModule, InventoryModule).
 	ServiceLocator.get_xp_manager().reset()
-	var tips_before := TutorialTopics.snapshot()  # D727: бачені підказки цього проходження переживають завантаження
+	var tips_before := TutorialTopics.snapshot()  # D745: бачені підказки цього проходження переживають завантаження
 	ServiceLocator.get_game_manager().get_node(^"PlayerStateManager").reset_player_state()
 	ServiceLocator.get_character_manager().initialize_characters()  # ростер бере чистий стан і синхронізує клас (B55)
 	ServiceLocator.get_inventory_manager().clear()

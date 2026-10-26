@@ -25,7 +25,7 @@ func _initialize() -> void:
 	var ui: Node = sl.get_ui_manager()
 	var layer: Node = ui.get_modal_layer()
 
-	# 12: the movement tip is a «?» (D726); T opens its window.
+	# 12: the movement tip is a «?» (D744); T opens its window.
 	var tray: Node = get_first_node_in_group(&"tip_tray")
 	for i in 300:
 		if tray.has("movement"):
@@ -106,7 +106,7 @@ func _initialize() -> void:
 	await _shot("fb12_settings_hints")
 
 	# 13: Journal sections.
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	ui.close_game_menu()
 	await Kit.frames(self, 6)
 	sl.get_dialogue_manager().start_dialogue("res://dialogue_quest/OldMan_Outside.dqd")

@@ -67,7 +67,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	sl = root.get_node("ServiceLocator")
 	var save_system: Node = root.get_node("SaveSystem")
-	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
+	save_system.settings_module.settings.hints = false  # D746: no «?» tips in this run
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(TEST_SLOT)
 	sl.get_dialogue_manager().bubble_time_scale = 0.0

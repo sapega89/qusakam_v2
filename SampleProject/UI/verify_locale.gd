@@ -57,7 +57,7 @@ func ck(ok: bool, label: String) -> void:
 func _initialize() -> void:
 	await process_frame
 	var settings: Dictionary = root.get_node("SaveSystem").settings_module.settings
-	settings.hints = false  # D728: no «?» tips in this run
+	settings.hints = false  # D746: no «?» tips in this run
 	root.get_node("SaveSystem").set_save_dir(TEST_DIR)  # мова пишеться у файл налаштувань — не в справжній
 	var loc: Node = root.get_node("LocalizationManager")
 	var saved_language: String = loc.get_language()

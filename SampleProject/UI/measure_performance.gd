@@ -179,7 +179,7 @@ func _initialize() -> void:
 	bus = root.get_node("EventBus")
 	dm = root.get_node("ServiceLocator").get_dialogue_manager()
 	dm.bubble_time_scale = 0.0
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	vp = root.get_viewport_rid()
 	RenderingServer.viewport_set_measure_render_time(vp, true)
 	process_frame.connect(_on_frame)

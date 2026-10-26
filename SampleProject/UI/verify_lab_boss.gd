@@ -302,7 +302,7 @@ func _numbers() -> void:
 func _initialize() -> void:
 	await process_frame
 	var save_system: Node = root.get_node("SaveSystem")
-	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
+	save_system.settings_module.settings.hints = false  # D746: no «?» tips in this run
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(TEST_SLOT)
 	var slot_path: String = save_system.get_slot_path(TEST_SLOT)

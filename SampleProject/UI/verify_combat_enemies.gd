@@ -59,7 +59,7 @@ func _tap(action: StringName) -> void:
 func _initialize() -> void:
 	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")

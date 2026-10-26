@@ -21,7 +21,7 @@ var default_settings = {
 	"fps_limit": 60,
 	"brightness": 50,  # D428: 0–100, 50 = без змін (DisplayManager.set_brightness)
 	"language": "en",  # BACKLOG 31: англійська — основна мова (D121); українська — у Settings → Game → Language
-	"hints": true,  # D728: Off — жодної «?»-підказки (TipTray.show_tip); підказки взаємодії й сюжет лишаються
+	"hints": true,  # D746: Off — жодної «?»-підказки (TipTray.show_tip); підказки взаємодії й сюжет лишаються
 	"damage_numbers": true,  # D66: цифри урону над героєм і ворогами (DamageNumbers)
 	"auto_save": false,  # D413: автосейв при переході між кімнатами (SaveSystem._on_room_entered); вимкнено — лише SavePoint
 	"text_speed": "default",  # D425: одне з TEXT_SPEEDS — набір у вікні діалогу й час репліки в облачку
@@ -69,7 +69,7 @@ func load_data(data: Dictionary) -> void:
 func read(data: Dictionary) -> void:
 	# Новий ключ налаштувань, якого ще немає у файлі, бере значення за замовчуванням.
 	settings = default_settings.merged(data, true)
-	settings.erase("tutorial_windows")  # D726: вікна-плашки підказок немає — налаштування теж (його місце взяв hints)
+	settings.erase("tutorial_windows")  # D744: вікна-плашки підказок немає — налаштування теж (його місце взяв hints)
 
 ## Применяет настройки к игре
 func apply_settings() -> void:

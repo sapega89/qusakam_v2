@@ -1,6 +1,6 @@
 extends Node2D
 
-## Тема «?»-підказки (TipTray) для охоронця (D209, D726).
+## Тема «?»-підказки (TipTray) для охоронця (D209, D744).
 const CALL_GUARD := "call_guard"
 const COMPANIONS_HINT := "companions"
 
@@ -221,7 +221,7 @@ func _on_assist_called(companion_id: String) -> void:
 		_tips().retire(CALL_GUARD)
 		_tips().show_tip(COMPANIONS_HINT)
 
-## Підказки — «?» (D726).
+## Підказки — «?» (D744).
 func _tips() -> Node:
 	return get_tree().get_first_node_in_group(&"tip_tray")
 

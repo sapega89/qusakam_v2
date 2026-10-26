@@ -5,7 +5,7 @@ class_name TutorialManager
 ## Triggers tutorial hints based on gameplay events
 
 const HEALING_PALM := "healing_palm"
-## D725: підказка першого кольору підказки удару ворога (EnemyLogic.TELL_*, D504) — тема tell_<колір>.
+## D743: підказка першого кольору підказки удару ворога (EnemyLogic.TELL_*, D504) — тема tell_<колір>.
 const TELL_TOPIC := "tell_%s"
 
 ## Вбивства за сесію — друге вбивство вчить важкого удару.
@@ -14,7 +14,7 @@ var _kills := 0
 func _initialize() -> void:
 	_connect_events()
 
-## Усі підказки — «?» через TipTray.show_tip (D726): там же брама Hints і «раз за проходження» (D727, D728).
+## Усі підказки — «?» через TipTray.show_tip (D744): там же брама Hints і «раз за проходження» (D745, D746).
 ## Поза Game.tscn (меню, тести менеджерів) TipTray немає — і підказок немає.
 func _tray() -> Node:
 	return get_tree().get_first_node_in_group(&"tip_tray")
@@ -44,7 +44,7 @@ func _on_enemy_died(_enemy_id: String, _position: Vector2) -> void:
 func _on_player_staggered(_duration: float) -> void:
 	_tray().show_tip("block")
 
-## D725 (Sapega, 2026-10-26: «знаки питання, щоб пояснити, що таке жовте свічення і червоне свічення у ворога»):
+## D743 (Sapega, 2026-10-26: «знаки питання, щоб пояснити, що таке жовте свічення і червоне свічення у ворога»):
 ## уперше герой бачить відблиск цього кольору на ворогові — «?» з тим, що він означає і яка кнопка на нього.
 ## «Бачить» — ворог у кадрі камери, а не десь за краєм екрана.
 func _on_enemy_tell_shown(enemy: Node, kind: StringName) -> void:

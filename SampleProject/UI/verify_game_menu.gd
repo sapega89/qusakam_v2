@@ -22,7 +22,7 @@ func ck(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	# [0] «сцена окремо (F6), без гри» прибрано разом із запасними шляхами: меню потребує гру.
 	await process_frame
 	await process_frame

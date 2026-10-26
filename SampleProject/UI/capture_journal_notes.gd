@@ -19,7 +19,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	await process_frame
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	set_meta("start_new_game", true)  # нова гра, а не slot_01 з user://
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)

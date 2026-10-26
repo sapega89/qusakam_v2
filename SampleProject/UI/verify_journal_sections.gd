@@ -42,7 +42,7 @@ func _spawn(game: Node, kind: String) -> Node:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	var game: Node = await Kit.boot(self)
 	var sl: Node = root.get_node("ServiceLocator")
 	game.set_quest_flag("village_abduction_complete", true)  # Journal відкрита сюжетом (D151)

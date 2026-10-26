@@ -6,7 +6,7 @@ extends SceneTree
 ## реплiку FightWithBandit. Раніше другий запит ховав живе вікно першого й губився.
 ## Після бою — до дому діда (ElderDoor): розмова з ним, лікування, рішення, ключ — усередині (D438), вихід — тими
 ## самими дверима назад, а тоді LeavingVillage.
-## D725: бій — звичайний, без тренування; прапорці уроків старого сейва (training_*_done) нічого не міняють.
+## D743: бій — звичайний, без тренування; прапорці уроків старого сейва (training_*_done) нічого не міняють.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_village_fight.gd
 
 const VILLAGE := "res://SampleProject/Maps/Village.tscn"
@@ -59,7 +59,7 @@ func _enemies_active(village: Node) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)
@@ -75,7 +75,7 @@ func _initialize() -> void:
 	var flags: Dictionary = game.get_quest_flags().duplicate()
 	for f in ["canyon_intro_complete", "canyon_exploration_complete", "canyon_abduction_complete"]:
 		flags[f] = true
-	flags["training_lesson_attack_done"] = true  # сейв, зроблений посеред старого тренування (D719)
+	flags["training_lesson_attack_done"] = true  # сейв, зроблений посеред старого тренування (D733)
 	game.set_quest_flags(flags)
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
@@ -122,7 +122,7 @@ func _initialize() -> void:
 	ck(not paused, "the game is not paused")
 	ck(not village.find_children("*", "Node", true, false).any(func(n: Node) -> bool:
 			return n.get_script() != null and String(n.get_script().resource_path).ends_with("CombatTraining.gd")),
-			"D725: no combat training in the fight")
+			"D743: no combat training in the fight")
 	ck(game.current_objective == "Defeat the bandit in the street", "objective: the ordinary fight at once (%s)" % game.current_objective)
 	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Gameplay/CombatTraining.gd"), "the training script is gone")
 

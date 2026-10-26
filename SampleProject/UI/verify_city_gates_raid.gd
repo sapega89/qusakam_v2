@@ -64,7 +64,7 @@ func _covers(sprite: Sprite2D, player: Node2D, chest: bool) -> bool:
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.hints = true  # D726: the guard's tip is a «?»
+	root.get_node("SaveSystem").settings_module.settings.hints = true  # D744: the guard's tip is a «?»
 	await process_frame
 	await process_frame
 	set_meta("start_new_game", true)

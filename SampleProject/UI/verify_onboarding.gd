@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Навчання (BACKLOG 28, design/onboarding_plan.md, D-28e…D-28h), справжнім вводом: вікна туторіалу крутять кадри з
 ## гри; Misc → Controls відкривається кліками й називає кожну дію для обох пристроїв; ціль на плашці веде до мітки.
-## Тренування бою в селі прибрано (D725) — що перший бій звичайний, перевіряє verify_village_fight.
+## Тренування бою в селі прибрано (D743) — що перший бій звичайний, перевіряє verify_village_fight.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_onboarding.gd
 
 ## Скрипти гри — load() уже в _initialize(): preload компілював би їх до автозавантажень (EventBus, ServiceLocator).
@@ -52,7 +52,7 @@ func _initialize() -> void:
 	TutorialTopics = load(TUTORIAL_TOPICS)
 	TopicWindow = load(TOPIC_WINDOW)
 	TutorialMenu = load(TUTORIAL_MENU)
-	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
 	root.size = Vector2i(1920, 1080)  # кліки влучають туди, де намальовано (input_kit)
 	set_meta("start_new_game", true)
