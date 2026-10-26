@@ -39,6 +39,15 @@ report and its task. This note is the shared part, so the prompts stay short. Ro
 - While working, run only the tests your change touches; the full suite once, at the end.
 - Look at as few screenshots as you need, and never twice; put before and after into one image.
 
+## Waiting for a routine before you
+Some routines continue another routine's branch (both change the same code). Sapega (2026-10-26): «навіщо когось чекати?
+чого одразу не запустити?» — so they start at once and wait in the cloud instead of on a fixed hour. If your prompt
+says you continue after `<prev>` and `origin/cloud/<prev>` has no `design/cloud_reports/<prev>.md` yet, wait for it,
+one tool call at a time, each at most 9 minutes, nothing else in between (cheap):
+`for i in $(seq 1 9); do git fetch -q origin && git cat-file -e origin/cloud/<prev>:design/cloud_reports/<prev>.md 2>/dev/null && echo READY && break; sleep 55; done`
+Repeat until it prints READY, up to 8 hours in all; then branch from it as your prompt says and start. If 8 hours
+pass, write your report saying so and stop.
+
 ## Report
 `design/cloud_reports/<name>.md`, committed and pushed at the end. It opens with a summary of at most 8 lines: what is
 done and what is not, the D-ID text, the B rows fixed, the full-suite line. Details (file:line, RESULT lines, shots)
