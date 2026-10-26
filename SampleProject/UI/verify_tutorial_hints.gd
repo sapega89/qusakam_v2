@@ -1,14 +1,16 @@
 extends SceneTree
 
-## Every hint is a tutorial window (BACKLOG 12, D289), real input:
+## Hints like Lineage II (BACKLOG 12, D289, D718), real input:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_tutorial_hints.gd
-##   1. After the Canyon intro the movement hint opens the tutorial window, the game paused; keyboard names (A / D).
-##   2. Pad B closes it, the game runs again; the next hint (first enemy) names the pad button (X) after pad input.
-##   3. The hero is hit: Block and Parry names LB on the pad; Esc closes it.
+##   1. After the Canyon intro the movement hint is a brief banner (essential), the game runs; keyboard names (A / D).
+##   2. The first enemy: the attack banner names the pad button (X) after pad input, Left Mouse after a key.
+##   3. The hero is hit, then a kill: two glowing «?» stack at the left edge, the game never stops; the open key is on the
+##      top one; T opens the oldest (Block and Parry, paused, LB after pad input), a click opens the other; each «?» goes.
 ##   4. Game Menu → Misc → Tutorial (mouse): the seen topics are listed after the general ones, unseen are not;
 ##      a click opens that topic.
 ##   5. Settings → Game → Tutorial Windows: Off (mouse click). The next hint (second kill = heavy attack) is a
-##      banner, no window, and still lands in the list. Seen topics are saved with the player.
+##      banner, no «?», and still lands in the list. Seen topics are saved with the player.
+##   6. B151: every banner fits its text in en and uk at every window size, on top, clear of the hero.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const TextFit = preload("res://SampleProject/UI/text_fit.gd")
@@ -23,15 +25,6 @@ func ck(ok: bool, label: String) -> void:
 func _window() -> Node:
 	var modal: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer().active_modal
 	return modal if modal != null and modal.has_method("open_id") else null
-
-
-func _wait_window() -> Node:
-	for i in 300:
-		if _window() != null:
-			break
-		await process_frame
-	await Kit.frames(self, 3)
-	return _window()
 
 
 func _title() -> String:
@@ -56,11 +49,57 @@ func _initialize() -> void:
 	var ui: Node = sl.get_ui_manager()
 	await Kit.key(self, KEY_RIGHT)  # клавіатура — останній пристрій
 
-	print("[1] Movement hint opens the tutorial window")
-	await _wait_window()
-	ck(_title() == "Moving and Jumping", "window on the movement topic (%s)" % _title())
-	ck(paused, "the game is paused under it")
-	ck(_body().contains("A / D") and _body().contains("Space"), "keyboard names (%s)" % _body())
+	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
+	var tray: Node = hint.tip_tray
+
+	print("[1] Movement hint: a brief banner, the game runs (D718)")
+	for i in 600:
+		if hint.current_hint == "movement":
+			break
+		await process_frame
+	ck(hint.is_showing and hint.current_hint == "movement", "movement banner shows (%s)" % hint.current_hint)
+	ck(_window() == null and not paused, "no window, the game is not paused")
+	ck(hint.hint_label.text.contains("A / D") and hint.hint_label.text.contains("Space"), "keyboard names (%s)" % hint.hint_label.text)
+	ck(tray.ids().is_empty(), "an essential topic puts no «?» (%s)" % [tray.ids()])
+
+	print("[2] The first enemy: the attack banner follows the device")
+	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)  # геймпад — останній пристрій
+	root.get_node("EventBus").enemy_spawned.emit("test_enemy", Vector2.ZERO)
+	await Kit.frames(self, 4)
+	ck(hint.current_hint == "attack" and hint.hint_label.text.contains("Press X"), "attack banner names X on the pad (%s)" % hint.hint_label.text)
+	ck(_window() == null and not paused, "still no window")
+	await Kit.key(self, KEY_SPACE)
+	ck(hint.hint_label.text.contains("Left Mouse"), "switching to the keyboard renames it (%s)" % hint.hint_label.text)
+	hint.force_hide()
+	root.get_node("EventBus").enemy_spawned.emit("test_enemy_2", Vector2.ZERO)
+	await Kit.frames(self, 10)
+	ck(not hint.is_showing and tray.ids().is_empty(), "a seen topic does not show again")
+
+	print("[3] D718: a hit and a kill — two «?» at the left edge, opened when the player wants")
+	root.get_node("EventBus").player_staggered.emit(0.3)
+	root.get_node("EventBus").enemy_died.emit("e0", Vector2.ZERO)
+	await Kit.frames(self, 6)
+	ck(tray.ids() == ["block", "first_kill"], "two tips wait, oldest first (%s)" % [tray.ids()])
+	ck(_window() == null and not paused and not hint.is_showing, "no window, no banner, the game runs")
+	var top: Control = tray.icon_of("block")
+	var second: Control = tray.icon_of("first_kill")
+	var screen: Rect2 = tray.get_viewport_rect()
+	ck(top.is_visible_in_tree() and top.get_global_rect().position.x < screen.size.x * 0.1 and second.get_global_rect().position.y > top.get_global_rect().end.y - 1.0,
+			"at the left edge, stacked (%s, %s)" % [top.get_global_rect(), second.get_global_rect()])
+	ck(top.get_node(^"Badge/Mark").text == "?" and top.get_node(^"Key").visible and top.get_node(^"Key").text == "T" and not second.get_node(^"Key").visible,
+			"«?» with the open key on the top one only (%s)" % top.get_node(^"Key").text)
+	var glow_from: Color = top.get_node(^"Badge").modulate
+	await Kit.frames(self, 20)
+	ck(top.get_node(^"Badge").modulate != glow_from, "it glows (modulate %s → %s)" % [glow_from, top.get_node(^"Badge").modulate])
+	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(top.get_node(^"Key").text == "D-pad", "after pad input the key reads D-pad (%s)" % top.get_node(^"Key").text)
+	await Kit.pad(self, JOY_BUTTON_DPAD_LEFT)
+	await Kit.frames(self, 3)
+	ck(_title() == "Block and Parry" and paused, "D-pad left opens the oldest, the game paused (%s)" % _title())
+	ck(_body().contains("Hold LB"), "block topic names LB (%s)" % _body())
+	# B143, D573/D574: жовтий відблиск — парирування, червоний — ухилитися
+	ck(_body().contains("glints yellow") and _body().contains("A red glint cannot be blocked or parried") and not _body().contains("glints red"),
+			"block topic: yellow = parry, red = roll (B143)")
 	# D474: вікно туторіалу ×1.5 (тіло ≥ 24, клавіша ≥ 20), уміщається в екран — нічого не обрізано.
 	var win: Control = _window()
 	ck(win.get_node("%Body").get_theme_font_size(&"font_size") >= UITokens.INGAME_BODY_MIN
@@ -68,34 +107,17 @@ func _initialize() -> void:
 			"D474: window body %d px, key %d px" % [win.get_node("%Body").get_theme_font_size(&"font_size"), win.get_node("%Key").get_theme_font_size(&"font_size")])
 	var win_clip: String = TextFit.clipped(win)
 	ck(win_clip == "", "D474: nothing clipped in the tutorial window (%s)" % win_clip)
-
-	print("[2] Pad B closes; the next hint names pad buttons")
-	await Kit.pad(self, JOY_BUTTON_B)
-	ck(_window() == null and not paused, "pad B closed it, game runs")
-	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)  # геймпад — останній пристрій
-	root.get_node("EventBus").enemy_spawned.emit("test_enemy", Vector2.ZERO)
-	await _wait_window()
-	ck(_title() == "Attacking" and _body().contains("Press X"), "attack topic names X on the pad (%s)" % _body())
-	ck(_window().get_node("%Key").text == "X", "key badge X (%s)" % _window().get_node("%Key").text)
-	await Kit.key(self, KEY_SPACE)
-	ck(_body().contains("Left Mouse"), "switching to the keyboard renames it (%s)" % _body())
-	await Kit.pad(self, JOY_BUTTON_B)
-	ck(_window() == null, "closed")
-	root.get_node("EventBus").enemy_spawned.emit("test_enemy_2", Vector2.ZERO)
-	await Kit.frames(self, 10)
-	ck(_window() == null, "a seen topic does not open again")
-
-	print("[3] First hit on the hero: block and parry")
-	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
-	root.get_node("EventBus").player_staggered.emit(0.3)
-	await _wait_window()
-	ck(_title() == "Block and Parry" and _body().contains("Hold LB"), "block topic names LB (%s)" % _body())
-	# B143, D573/D574: жовтий відблиск — парирування, червоний — ухилитися
-	ck(_body().contains("glints yellow") and _body().contains("A red glint cannot be blocked or parried") and not _body().contains("glints red"),
-			"block topic: yellow = parry, red = roll (B143)")
+	ck(tray.ids() == ["first_kill"], "its «?» is gone (%s)" % [tray.ids()])
 	await Kit.key(self, KEY_ESCAPE)
-	ck(_window() == null and not paused, "Esc closed it")
+	ck(_window() == null and not paused, "Esc closed it, the game runs")
 	ck(get_first_node_in_group("game_menu") == null, "Esc did not open the Game Menu")
+	ck(tray.icon_of("first_kill").get_node(^"Key").visible, "the open key moved to the next «?»")
+	await Kit.mouse(self, tray.icon_of("first_kill"))
+	ck(_title() == "Experience and Coins" and paused, "a click on the «?» opens its topic (%s)" % _title())
+	await Kit.pad(self, JOY_BUTTON_B)
+	ck(_window() == null and not paused and tray.ids().is_empty(), "pad B closed it; no «?» left")
+	await Kit.key(self, KEY_T)
+	ck(_window() == null, "T with no tip waiting opens nothing")
 
 	print("[4] Seen topics are in the Tutorial list")
 	await Kit.key(self, KEY_ESCAPE)
@@ -109,7 +131,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 6)
 	var listed: Array = _topics_listed(menu)
 	ck(listed.slice(0, 4) == ["Basic Controls", "The Map", "Saving Your Progress", "The Journal"], "general topics first (%s)" % [listed])
-	ck(listed.slice(4) == ["Moving and Jumping", "Attacking", "Block and Parry"], "then the seen hints (%s)" % [listed.slice(4)])
+	ck(listed.slice(4) == ["Moving and Jumping", "Attacking", "Block and Parry", "Experience and Coins"], "then the seen hints (%s)" % [listed.slice(4)])
 	var rows: Array = menu.get_node("%TutorialComponent").get_node("%TopicList").get_children().filter(func(r: Control) -> bool: return r.visible)
 	await Kit.mouse(self, rows[6])
 	ck(_title() == "Block and Parry", "a click opens that topic (%s)" % _title())
@@ -134,11 +156,9 @@ func _initialize() -> void:
 	await Kit.key(self, KEY_ESCAPE)
 	await Kit.frames(self, 6)
 	ck(get_first_node_in_group("game_menu") == null, "menu closed")
-	root.get_node("EventBus").enemy_died.emit("e1", Vector2.ZERO)
-	root.get_node("EventBus").enemy_died.emit("e2", Vector2.ZERO)
+	root.get_node("EventBus").enemy_died.emit("e2", Vector2.ZERO)  # друге вбивство — важкий удар
 	await Kit.frames(self, 10)
-	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
-	ck(_window() == null, "no window with the setting off")
+	ck(_window() == null and tray.ids().is_empty(), "no window and no «?» with the setting off")
 	ck(hint.is_showing and hint.hint_label.text != "", "a banner instead (%s: %s)" % [hint.current_hint, hint.hint_label.text])
 	await Kit.frames(self, 3)
 	# D474: плашка ×1.5 (≥ 24 px) росте вгору під текст — нічого не обрізано.

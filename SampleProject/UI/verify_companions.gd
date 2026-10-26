@@ -8,6 +8,8 @@ extends SceneTree
 ## слот на хотбарі: готовий / на полі / кулдаун. Туторіал вибору — D463.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_companions.gd
 
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
+
 var fails: Array[String] = []
 
 func ck(ok: bool, label: String) -> void:
@@ -281,7 +283,7 @@ func _initialize() -> void:
 	ui.close_game_menu()
 	for i in 10: await process_frame
 
-	print("[10] D463: the picker tutorial window — frames, the assist key, a button to Status → Companions")
+	print("[10] D463, D718: the picker tutorial — a «?» first, its window has frames, the assist key, a button to Status → Companions")
 	var settings: Dictionary = root.get_node("SaveSystem").settings_module.settings
 	var seen: Array = sl.get_game_manager().player_state.seen_tutorials
 	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
@@ -290,8 +292,11 @@ func _initialize() -> void:
 	seen.erase("choose_companions")
 	hint.show_hint("choose_companions")
 	for i in 6: await process_frame
+	ck(layer.active_modal == null and not paused and hint.tip_tray.has("choose_companions"), "D718: a «?» waits, no window, the game runs")
+	await Kit.key(self, KEY_T)  # вікна досі були вимкнені — у стосі лише ця тема
+	for i in 4: await process_frame
 	var window: Control = layer.active_modal
-	ck(window != null and window.scene_file_path.ends_with("tutorial_menu.tscn") and paused, "a tutorial window opens and pauses the game")
+	ck(window != null and window.scene_file_path.ends_with("tutorial_menu.tscn") and paused, "T opens the tutorial window and pauses the game")
 	ck(window.get_node("%Title").text == "Choosing Companions", "on the picker topic (%s)" % window.get_node("%Title").text)
 	ck(window.frames.size() > 1, "its frames play (%d)" % window.frames.size())
 	ck(window.get_node("%HintBar").visible and window.get_node("%Key").text != "", "the assist key is shown (%s)" % window.get_node("%Key").text)
@@ -307,15 +312,15 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	# Інші підказки (перше вбивство охоронцем) могли стати в чергу, поки вікна були ввімкнені — дивимось лише на свою тему.
 	hint.show_hint("choose_companions")
-	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.current_hint != "choose_companions",
-			"it fires once: a second time queues no window and shows no banner")
+	ck(not hint.tip_tray.has("choose_companions") and hint.current_hint != "choose_companions",
+			"it fires once: a second time puts no «?» and shows no banner")
 	if layer.active_modal != null:
 		layer.active_modal.cancelled.emit()
 	hint.force_hide()
 	seen.erase("choose_companions")
 	settings.tutorial_windows = false
 	hint.show_hint("choose_companions")
-	ck(not hint._pending.any(func(e: Array) -> bool: return e[0] == "choose_companions") and hint.is_showing and hint.current_hint == "choose_companions",
+	ck(not hint.tip_tray.has("choose_companions") and hint.is_showing and hint.current_hint == "choose_companions",
 			"Tutorial windows Off → the plain hint banner instead (%s)" % hint.current_hint)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

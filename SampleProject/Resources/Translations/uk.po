@@ -3346,3 +3346,10 @@ msgstr "Камери лабораторії"
 # [ЧЕРНЕТКА]
 msgid "Lab Boss"
 msgstr "Серце лабораторії"
+
+# D718: підказки «?»
+msgid "Open a tutorial tip (?)"
+msgstr "Відкрити підказку туторіалу (?)"
+
+msgid "Open Tip"
+msgstr "Відкрити підказку"

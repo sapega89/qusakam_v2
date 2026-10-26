@@ -332,6 +332,11 @@ const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину
 # й ворогів посеред екрана; ширина стала, висота росте вниз під текст (uk довша за en).
 const HINT_BANNER_WIDTH := 720
 const HINT_BANNER_SLIDE := SPACE_2XL      # поява/зникнення: зсув угору, px
+# Підказки як у Lineage II (D718): тема туторіалу — «?» біля лівого краю під панеллю героя, світиться, доки не відкрили.
+const TIP_ICON_SIZE := 48                 # сторона значка «?», px
+const TIP_TRAY_GAP := SPACE_SM            # між значками в стосі
+const TIP_GLOW := Color(1.6, 1.4, 0.8)    # modulate на піку світіння (над 1.0 — яскравіше, тепле золото)
+const TIP_GLOW_TIME := 0.9                # півперіод пульсу, с
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)
