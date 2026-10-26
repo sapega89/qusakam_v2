@@ -32,9 +32,10 @@ top flat enough to be ground (a ledge the hero can stand on where the room needs
 screenshot): the top of the frame is darker (the cave ceiling), hanging leaves and roots sit in front of the hero and
 partly cover the view, plants grow at the bottom of the frame in the foreground, a lamp and light shafts give the
 light. Our enclosed rooms (LizardCave, DragonMural, GatehouseCellar, MesaClimb, BanditCamp, ElderHouse) have no
-Parallax2D layer at all, and the others have at most a 1.25 strip. Art: `Decor/hanging_vines`, `hanging_chain_web`
-(cellar, lab), `fg_ferns` (comfy_decor, sway). In a room: a foreground layer closer than the hero (Parallax2D scroll
-above 1, drawn over the hero, darker by modulate), hanging pieces along the top edge, ferns along the bottom, never
+Parallax2D layer at all, and the others have at most a 1.25 strip. Art: `Decor/hanging_roots` (dry roots and sandstone
+stalactites — the caves are in the desert, Sapega: «може бути сиро, а може бути сухо… ліани — така собі ідея»),
+`hanging_chain_web` (cellar, lab), `fg_scrub` (dry thorny brush; comfy_decor, sway). In a room: a foreground layer closer than the hero (Parallax2D scroll
+above 1, drawn over the hero, darker by modulate), hanging pieces along the top edge, dry scrub along the bottom, never
 over a door, an NPC, a chest or the hero's path at head height for long; plus a dark gradient from the top of the
 screen in caves and cellars.
 
