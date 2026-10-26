@@ -140,6 +140,28 @@ DECOR = {
         "the doorway stands on the bottom edge of the image alone, nothing behind it, flat empty background all "
         f"around, {LIGHT}, {cb.MAGENTA}",
     ),
+    # Передній план печер (Sapega 2026-10-26, Tails of Iron: зверху темніше, листя й коріння перед камерою закривають
+    # вид). Висять від верхнього краю кадру й гойдаються; у кімнаті — шар ближче за героя, темніший (modulate).
+    "hanging_vines": dict(
+        seed=241, size=(1024, 768), key="magenta", colors=10, kind="sway", anchor=(0.5, 0.0), amp=2.0, main=False,
+        crop=(0.09, 0), dark=150,  # згори модель малює світле небо між гілками — передній план лише темний
+        canvas=(170, 120), box=(4, 0, 166, 120),
+        prompt="a dense cluster of long hanging vines and thin roots with small dark green leaves dangling straight "
+        "down from the top edge of the image, some strands long and some short, wide empty space below and on both "
+        f"sides, {LIGHT}, {cb.MAGENTA}",
+    ),
+    "hanging_chain_web": dict(
+        seed=242, size=(768, 1024), key="green", colors=8, kind="sway", anchor=(0.5, 0.0), amp=1.0, main=False,
+        canvas=(90, 130), box=(4, 0, 86, 130),
+        prompt="one rusty iron chain and torn grey cobwebs hanging straight down from the top edge of the image, a "
+        f"few dusty strands, wide empty space below and on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
+    "fg_ferns": dict(
+        seed=243, size=(1024, 640), key="magenta", colors=10, kind="sway", anchor=(0.5, 1.0), amp=1.5, main=False,
+        canvas=(150, 70), box=(4, 2, 146, 70),
+        prompt="one low clump of broad dark green fern fronds and tall grass growing up from the bottom edge of the "
+        f"image, wide empty space above and on both sides, {LIGHT}, {cb.MAGENTA}",
+    ),
 }
 FRAMES = 4  # sway: 0, +amp, 0, -amp (синус); flicker — 3
 FLICKER = (1.0, 0.72, 1.18)
@@ -224,6 +246,8 @@ def build(name, d):
     t, btm = d.get("crop", (0, 0))  # частки кадру згори / знизу: стеля й підлога, які модель домальовує попри підказку
     img = img[int(t * len(img)) : len(img) - int(btm * len(img))]
     a = key(img, d["key"], d.get("warm", 0), d.get("bgv", 175))
+    if "dark" in d:  # лише темні px: світлі плями — фон, що просвічує між гілками
+        a *= img.mean(axis=2) < d["dark"]
     if d.get("main", True):
         a = fx.main_shape(a)
     else:  # тонкі частини (стовбур, ланцюжок) розмикання стерло б — лише найбільша зв'язна пляма
