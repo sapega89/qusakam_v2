@@ -111,6 +111,7 @@ tags: [plan, orchestrator, status]
 | HT2 / D744 | Sapega 26.10: «вікно підказки прибрати взагалі, перенести все в туторіали» — плашки немає, кожна підказка лише «?» | ☁ | 👀 `cloud/hints-toggle`, `verify_tutorial_hints` зелений → `integrator`; знімає плашку UC1 і «рух/удар плашкою» UC2 |
 | HT3 / D745 | Sapega 26.10: «тільки один раз за гру… так само і WASD» — кожна підказка раз за проходження: кімната, смерть, ранній сейв, новий запуск | ☁ | 👀 `cloud/hints-toggle`, `verify_tips_once` зелений → `integrator` |
 | HT4 / D746 | Sapega 26.10: «якщо вимкнені підказки, то підказок не має бути» — Settings → Game → Hints On/Off | ☁ | 👀 `cloud/hints-toggle`, `verify_settings`, `verify_tutorial_hints` зелені, знімок `design/shots/hints_toggle_game.png` → `integrator` |
+| QP1 / D717 | Sapega 26.10: «квест зверху не показуй — показав, і хай зникне; тільки при переході між зонами можна ще раз показати»; назви локації на HUD немає (остаточно) — плашка квесту: зміна цілі чи вхід в іншу локацію → `OBJECTIVE_PLAQUE_HOLD` с → гасне; меню, діалог, кімната в тій самій локації її не повертають; під час діалогу / кат-сцени її немає | ☁ | 👀 `cloud/quest-panel`, `verify_objective_plaque` зелений, знімок `design/shots/quest_panel_d717.png` → `integrator` |
 | B124, B110 | див. A1, A2 | | |
 
 ## 4. Системи з попередніх планів (☁, якщо не сказано інше)

@@ -1,6 +1,8 @@
 extends Control
 class_name UICombatHudTop
 
+const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
+
 ## Верхній ряд бойового HUD: квест + валюта + кнопка меню.
 ## Figma: Game Scene / Combat HUD → Quest Info Panel (434:6580)
 ## та Currency & Settings (434:6586).
@@ -8,10 +10,10 @@ class_name UICombatHudTop
 ## Нових механік немає — прив'язки ті самі, що у віджетів, які цей ряд замінює:
 ## ObjectiveHUD (Game.objective_updated) і CoinCounter (EventBus.coins_changed).
 ##
-## Плашка цілі (BACKLOG 37, Q39) не висить постійно: з'являється, коли ціль з'явилась чи змінилась, тримається
-## OBJECTIVE_PLAQUE_HOLD с і гасне. Знову показується, коли гравець виходить із будь-якого меню: Game Menu, магазин,
-## кузня, вікно підказки ставлять дерево на паузу — край «пауза → гра» (SceneTree.process_frame іде й під паузою);
-## діалог паузи не ставить — EventBus.dialogue_finished.
+## Плашка цілі (BACKLOG 37, Q39; D717) не висить постійно: з'являється, коли ціль з'явилась чи змінилась і коли
+## герой заходить в іншу локацію (LocationDB, не кожна кімната), тримається OBJECTIVE_PLAQUE_HOLD с і гасне.
+## Вихід із меню чи діалогу її більше не повертає (D717: «показав, і хай зникне»). Під час діалогу чи кат-сцени
+## (Player.event) її немає: показ, що припав на них, чекає їхнього кінця.
 
 @onready var _quest_panel: PanelContainer = %QuestPanel
 @onready var _quest_title: Label = %QuestTitle
@@ -21,14 +23,15 @@ class_name UICombatHudTop
 @onready var _menu_button: Button = %MenuButton
 
 var _plaque_tween: Tween = null
-var _was_paused: bool = false
+## Локація поточної кімнати (D717): плашка — лише коли вона змінилась.
+var _location: String = ""
+## Показ попросили, поки йшов діалог / кат-сцена — покажемо, щойно вони скінчаться.
+var _plaque_pending: bool = false
 
 
 func _ready() -> void:
 	add_to_group(&"combat_hud_top")
 	_menu_button.pressed.connect(_on_menu_pressed)
-	_was_paused = get_tree().paused
-	EventBus.dialogue_finished.connect(_on_dialogue_finished)
 
 	if not EventBus.coins_changed.is_connected(_on_coins_changed):
 		EventBus.coins_changed.connect(_on_coins_changed)
@@ -53,6 +56,10 @@ func _connect_objective() -> void:
 		return
 	if not game.objective_updated.is_connected(_on_objective_updated):
 		game.objective_updated.connect(_on_objective_updated)
+	if not game.room_loaded.is_connected(_on_room_loaded):
+		game.room_loaded.connect(_on_room_loaded)
+	if game.map != null:
+		_location = LocationDB.of_scene(game.map.scene_file_path)  # перша кімната: плашку дає сама ціль
 	_on_objective_updated(game.current_objective)
 
 
@@ -63,12 +70,27 @@ func _on_objective_updated(text: String) -> void:
 	show_plaque()
 
 
+## D717: інша локація — плашка ще раз; кімната всередині тієї самої — ні.
+func _on_room_loaded() -> void:
+	var location: String = LocationDB.of_scene(Game.get_singleton().map.scene_file_path)
+	if location == _location:
+		return
+	_location = location
+	show_plaque()
+
+
 ## Плашка з'являється, тримається OBJECTIVE_PLAQUE_HOLD с і гасне (modulate), якщо ціль є.
+## Під час діалогу чи кат-сцени — лише запам'ятовуємо, показ буде після них.
 func show_plaque() -> void:
 	if _plaque_tween:
 		_plaque_tween.kill()
 	if not _quest_panel.visible:
 		return
+	if _story_holds_screen():
+		_quest_panel.modulate.a = 0.0
+		_plaque_pending = true
+		return
+	_plaque_pending = false
 	_plaque_tween = create_tween()  # під паузою (меню) стоїть разом із HUD
 	_plaque_tween.tween_property(_quest_panel, ^"modulate:a", 1.0, UITokens.OBJECTIVE_PLAQUE_FADE)
 	_plaque_tween.tween_interval(UITokens.OBJECTIVE_PLAQUE_HOLD)
@@ -79,15 +101,25 @@ func is_plaque_shown() -> bool:
 	return _quest_panel.visible and _quest_panel.modulate.a > 0.0
 
 
+func is_plaque_pending() -> bool:
+	return _plaque_pending
+
+
+## Діалог чи кат-сцена тримають екран: діалог (DialogueManager) або героя тримає подія (Player.event).
+func _story_holds_screen() -> bool:
+	var game := Game.get_singleton()
+	if game != null and game.player != null and game.player.event:
+		return true
+	return ServiceLocator.get_dialogue_manager().is_dialogue_active()
+
+
+## Діалог почався, поки плашка видна, — ховаємо її одразу й покажемо після; скінчився — показуємо відкладене.
 func _on_frame() -> void:
-	var paused: bool = get_tree().paused
-	if _was_paused and not paused:
-		show_plaque()  # вийшли з меню
-	_was_paused = paused
-
-
-func _on_dialogue_finished(_dialogue_id: String) -> void:
-	show_plaque()
+	if _story_holds_screen():
+		if is_plaque_shown():
+			show_plaque()
+	elif _plaque_pending:
+		show_plaque()
 
 
 ## Ближче за стільки px — ціль тут, стрілка ховається.
