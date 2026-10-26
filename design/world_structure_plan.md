@@ -109,6 +109,20 @@ the Mesa climb to the Mesa top, the bandit camp on the dunes with its gate as a 
 dragon mural, the smugglers' stash. Waiting on Sapega's OK of the drawing, then backdrops (ComfyUI) and one routine
 (memory: map work in one routine).
 
+### How rooms must look (Sapega, 2026-10-26) — applies to every room, old and new
+- «важливо, щоби проходи в ті карти були в правильних місцях, не просто прохід посеред бекграунду, а десь якийсь
+  підходящий бекграунд, або якийсь вхід, або колодязь» — **every passage is explained by the backdrop**: a door, an
+  arch, a cave mouth, a gap in a fence, a well shaft, stairs, a hole in the floor. Nothing opens in the middle of a
+  painted wall, a cliff face or the sky. Each passage on the region graphs carries its kind, and a room's backdrop is
+  generated with its passages painted in at their places.
+- «драбини — то все добре, але вони мають бути в стилі гри, а вони зараз відрізняються» — ladders stay, but are redrawn
+  in the backdrops' style (today a 16×8 procedural tile from `Scripts/Tools/draw_ladder.py`), one look per material:
+  wood for the road and the village, iron rungs in stone for the city cellars and the laboratory.
+- «треба перемалювати платформи так, щоб вони були частиною інтер'єру, а не просто так висіли в повітрі» — **no
+  platform floats**: a ledge grows out of the rock under it, a plank rests on posts or beams, a stone balcony stands on
+  corbels, a lab grate hangs on brackets. Today's platforms are a strip cut from a texture (`MesaClimb.tscn` `Ledges/*/Art`,
+  `region_rect`), with nothing under them.
+
 ## What exists today
 | Thing | Where | State |
 |---|---|---|
