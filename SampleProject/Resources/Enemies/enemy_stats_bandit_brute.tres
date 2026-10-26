@@ -21,5 +21,5 @@ combo_hits = 1
 xp_reward = 30
 tell = "dodge"
 finisher_tell = "dodge"
-recovery = 0.7
+recovery = 0.5
 back_off = 0.0

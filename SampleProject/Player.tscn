@@ -1491,6 +1491,7 @@ sprite = NodePath("../Sprite2D")
 animation_player = NodePath("../AnimationPlayer")
 hitbox = NodePath("../Hitbox")
 damage_applier = NodePath("../Hitbox/DamageApplier")
+stagger_push = 20.0
 
 [node name="PlayerMover" type="Node" parent="." unique_id=1011079369]
 script = ExtResource("5_mover")

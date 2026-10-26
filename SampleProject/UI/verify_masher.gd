@@ -53,6 +53,8 @@ const PRESS_EVERY := 0.1
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
+## Швидкість стріли лучника (arrow.tscn, Arrow.speed), px/с.
+const ARROW_SPEED := 900.0
 
 var fails: Array[String] = []
 var game: Node
@@ -444,7 +446,9 @@ func _on_swing(enemy: Node) -> void:
 
 func _on_telegraph(enemy: Node) -> void:
 	swings[enemy.get_instance_id()].told += 1
-	_telegraphs.append({"enemy": enemy, "tell": enemy.enemy_logic.tell_kind, "strike_in": enemy.enemy_logic.tell_time,
+	# Стріла лучника долітає за відстань / швидкість стріли після пострілу — блок має стояти тоді
+	var flight: float = absf(enemy.global_position.x - hero.global_position.x) / ARROW_SPEED if enemy.enemy_logic.get_script().resource_path.ends_with("ArcherLogic.gd") else 0.0
+	_telegraphs.append({"enemy": enemy, "tell": enemy.enemy_logic.tell_kind, "strike_in": enemy.enemy_logic.tell_time + flight,
 			"boss": enemy.get_script() == Boss, "kind": enemy.enemy_logic.get("last_move").get("kind", "combo") if enemy.get_script() == Boss else "swing"})
 
 
