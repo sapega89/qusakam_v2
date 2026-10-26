@@ -162,3 +162,17 @@ rank_factor and layout plus charms' `SkillManager.sp_cost()`; en.po/uk.po both b
 unchanged. Merge interactions fixed: a big kind is live only with sheet, scene and stats (the cursed jackal's sheet had
 landed without its scene and broke the Lab spawns), and the attic chest moved off the grandfather's notes. Nothing skipped.
 Suite 117/117 ALL PASS.
+
+Round 13 merged 2026-10-24 and 2026-10-26 (integrator): lab-curse (D694–D695), chibi-npcs (D696–D697), rooms-1
+(D698–D701), b145 (D702), big-leader (D703), big-scorpion (D704–D705), big-archer (D706–D707), big-vulture (D708),
+big-brute (D709–D710), big-guard (D711), jackal-pack (D712); D693 is the orchestrator's second picks row. B rows fixed:
+B127 (chibi-npcs) and B147 (the heavy archer's frame 9 is back in its attack, after the D693 redraw); B145 stays open with
+better crash logging; B148 (the generator's left-facing scorpion) filed. Q91–Q93 (rooms-1) and Q94–Q97 (where the archer,
+vulture, brute and tower guard first stand) filed with defaults. Conflicts were all additive: `enemy_variety.json`,
+`bestiary.json`, `sound_events.json`, en/uk.po, `verify_difficulty` KIND_NAMES, and `verify_hit_areas` and
+`verify_enemy_variety` kinds and checks (all kinds kept). The big-slot count settled at the end as the brute and the
+rooms landed. Merge interactions fixed during the merges: `verify_hit_areas` strikes start the hero at full HP (the fifth
+kind found him dead), the Bandit Camp slot spawns the brute (four brute slots), and one of two `HitAreas` preloads.
+After the merges, two more (2026-10-26): `verify_main_menu` waits for the room preloader before quitting (rooms-1's
+LizardCave was still loading), and the two skill-window tests wait for it before opening the menu (a deadlock, B149).
+Suite 116/119 on the first run, the three re-run ALL PASS.
