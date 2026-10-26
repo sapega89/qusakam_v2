@@ -30,17 +30,26 @@ contracts, no god for the neutral path).
    the grandfather's decision, the wounded in the burning village, the Caravan (help / take the reward / walk past), the
    lone brute's key and the Bandit Camp (spare / bargain / leave), Alisia (heal / bargain / leave). Text marked as
    drafts for Sapega.
-5. **The oath finds the hero.** When he has reached the oath level (5) and the City, the keeper of his strongest
-   leaning comes to him (a short scene at his next meditation or on the City street: «я бачив, як ти б'єшся / що ти
-   зробив»), and offers the oath. **Accept** → sworn (permanent, as today). **Refuse** → the keeper leaves; any oath can
-   still be taken later from the meditation menu («Присяга»), the leading one marked. No three keepers standing in a row.
+5. **The census at the City Gate chooses the oath** (Sapega, 2026-10-26: «може тоді персонажа просто питають, кому він
+   служить?», «як у Morrowind сузір'я», «перепис біля брами — це цікаво»). After the gate fight (the hero defended the
+   one who was attacked) the gate scribe (new NPC `gate_scribe`, art drawn) writes the stranger into the city book: since
+   the barrier fell and refugees come, the guard first looks into his eyes for the blue of the curse (D587), then asks
+   his name, where from, and whom he serves, with 3–5 short what-would-you-do questions (Morrowind's class questions).
+   The answers plus the leanings above make the scribe's suggestion («схоже, ти з тих, хто стоїть за Самаля» / «…хто
+   живе угодами» / «…хто йде сам»). Then a star map with three constellations — the Sun of Samal, the Seal of the
+   Contract, the Wanderer without a god (the blue day sky is cursed; the night stars still remember the old gods) — the
+   suggested one lit, any can be chosen; «ще не знаю» leaves it open and the scribe can be asked again later. The oath's
+   skill tree opens at level 5 (at once if he is already 5). Permanent, as today.
 6. **A quiet hint, not a number.** The Journal's character page shows three emblems that grow brighter with each
    leaning; one «?» tip (once per playthrough, D-ID of hints-toggle) explains that the way he fights and acts draws a
    path to him.
 
+## The keepers become ordinary people
+The priest of Samal, the priest of contracts (replaces the witch: «теж жрець, просто в чорному, і в золоті, бо контрактів
+багато підписав»; new art `contract_priest`) and the dervish stay in the City as plain NPCs who talk about their path;
+they give no oath and no menu.
+
 ## Defaults until Sapega says otherwise
-- The offer comes at level 5 after reaching the City; the keeper NPCs stay in the City only as the people who come to
-  him (no menu row of three).
 - Leanings are hidden as numbers, visible as emblem brightness.
 - The deed choices are drafts written by the routine and read by Sapega.
 
