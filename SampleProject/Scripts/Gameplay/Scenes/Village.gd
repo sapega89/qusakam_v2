@@ -1,26 +1,22 @@
 extends Node2D
 
 ## 🏘️ Village Scene Manager
-## States: ABDUCTION_CUTSCENE, ARRIVAL, STREET_FIGHT, OLD_MAN_OUTSIDE, OLD_MAN_HEALING, OLD_MAN_DECISION, LEAVING_VILLAGE
-## D252/D261: дід лікує Кусакама, але сам лікування не просить — Длань вивчається на 2-му рівні.
+## States: ABDUCTION_CUTSCENE, ARRIVAL, STREET_FIGHT, CHECK_HOUSE, LEAVING_VILLAGE
+## Діда на вулиці немає: після бою герой іде до свого дому (ElderDoor), і вся розмова з дідом — там
+## (ElderHouse.gd, D438; Sapega 2026-10-26). Село чекає на village_oldman_complete, а тоді — LeavingVillage.
 ## Follows Robust State-Flow Pattern
 
 enum State {
 	ABDUCTION_CUTSCENE,
 	ARRIVAL,
 	STREET_FIGHT,
-	OLD_MAN_OUTSIDE,
-	OLD_MAN_HEALING,
-	OLD_MAN_DECISION,
+	CHECK_HOUSE,
 	LEAVING_VILLAGE
 }
 
 enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
 
-const OLDMAN_GIFT := "oldman_gift"
 const CombatTraining = preload("res://SampleProject/Scripts/Gameplay/CombatTraining.gd")
-## D437: дідове лікування видно, а не розказано — те саме світло, що й у Healing Palm (D271).
-const HEALING_LIGHT := preload("res://SampleProject/Scenes/FX/Skills/HealingPalm.tscn")
 
 @export var current_state: State = State.ABDUCTION_CUTSCENE:
 	set(val):
@@ -54,20 +50,17 @@ func _ready() -> void:
 	# той самий стан ДВІЧІ — другий start_dialogue() перебивав перший і
 	# DialogueQuest ішов у "Auto-recovering: Dialogue was active but hidden",
 	# ховаючи вікно. Гравець лишався в ABDUCTION_CUTSCENE без жодного способу
-	# його завершити, а тригери ARRIVAL/OLD_MAN_OUTSIDE відсіювались по стану.
+	# його завершити, а тригер ARRIVAL відсіювався по стану.
 	_determine_initial_state()
 
 func _determine_initial_state() -> void:
 	"""Визначає початковий стейт на основі квестових флагів"""
 	var game = Game.get_singleton()
-	if game.get_quest_flag("village_left_complete"):
+	# Розмова з дідом (met → healed → complete) іде в ElderHouse; село до її кінця лише кличе до дому.
+	if game.get_quest_flag("village_left_complete") or game.get_quest_flag("village_oldman_complete"):
 		current_state = State.LEAVING_VILLAGE
-	elif game.get_quest_flag("village_oldman_complete") or game.get_quest_flag("village_oldman_healed"):
-		current_state = State.OLD_MAN_DECISION
-	elif game.get_quest_flag("village_oldman_met"):
-		current_state = State.OLD_MAN_HEALING
 	elif game.get_quest_flag("village_fight_complete"):
-		current_state = State.OLD_MAN_OUTSIDE
+		current_state = State.CHECK_HOUSE
 	elif game.get_quest_flag("village_arrival_complete"):
 		current_state = State.STREET_FIGHT
 	elif game.get_quest_flag("village_abduction_complete"):
@@ -109,9 +102,8 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 	match state:
 		# УВАГА: гілки "вже пройдено" МУСЯТЬ викликати advance_state().
 		# Ланцюг станів рухається тільки через нього (див. сеттер current_state),
-		# тож голий return зупиняв машину назавжди: гравець говорив з дідом,
-		# наступний стан бачив уже виставлений прапорець, мовчки виходив — і
-		# LeavingVillage не запускався ніколи, а з ним і village_left_complete.
+		# тож голий return зупиняв машину назавжди: наступний стан бачив уже
+		# виставлений прапорець, мовчки виходив — і далі не йшло нічого.
 		State.ABDUCTION_CUTSCENE:
 			if game.get_quest_flag("village_abduction_complete"):
 				DebugLogger.info("🏘️ Village: Катсцена викрадення вже відбулася, пропускаємо", "Village")
@@ -135,51 +127,17 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 			# і журнал застрягав на цій цілі.
 			game.set_quest_flag("village_arrival_complete", true)
 			_start_fight("FightWithBandit", run_id)
-		State.OLD_MAN_OUTSIDE:
-			# D140: після бою — «О ні, дім!», далі гравець сам іде до діда (тригер біля дерева).
+		State.CHECK_HOUSE:
+			# D140/D438: після бою — «О ні, дім!», далі гравець сам іде до свого дому: стрілка — на ElderDoor
+			# (мітка house). Розмову з дідом веде ElderHouse; повернувшись після неї, герой застає LEAVING_VILLAGE.
 			_set_objective("Check on the house", &"house")
 			if not game.get_quest_flag("village_afterfight_complete"):
 				_play_dialogue("Village_AfterFight", run_id)
-		State.OLD_MAN_HEALING:
-			# Кожна розмова з дідом має свій прапорець: met → healed → complete.
-			if game.get_quest_flag("village_oldman_healed"):
-				DebugLogger.info("🏘️ Village: Гілка діда вже завершена, пропускаємо", "Village")
-				advance_state()
-				return
-			_set_objective("Talk to the old man", &"old_man")
-			_talk_to_old_man(run_id)
-		State.OLD_MAN_DECISION:
-			if game.get_quest_flag("village_oldman_complete"):
-				advance_state()
-				return
-			_set_objective("Make a decision")
-			_execute_step(StepType.DIALOGUE, "OldMan_Decision", run_id)
 		State.LEAVING_VILLAGE:
 			if game.get_quest_flag("village_left_complete"):
 				return  # останній стан, просувати нікуди
 			_set_objective("Leave the village", &"canyon_bridge")
 			_execute_step(StepType.DIALOGUE, "LeavingVillage", run_id)
-
-## Тригер біля діда лише перемикає стан; розмову веде сцена, щоб діалоги йшли
-## по черзі (раніше OldMan_Outside і OldMan_Healing стартували одночасно)
-## і кожен ставив свій прапорець. Дід лікує Кусакама (D140) — HP до повного.
-func _talk_to_old_man(run_id: int) -> void:
-	if not Game.get_singleton().get_quest_flag("village_oldman_met"):
-		await _play_dialogue("OldMan_Outside", run_id)
-		if run_id != state_run_id: return
-	await _play_dialogue("OldMan_Healing", run_id)
-	if run_id != state_run_id: return
-	var player: CombatBody2D = Game.get_singleton().player
-	player.heal_damage(player.Max_Health)
-	_show_healing_light(player)
-	advance_state()
-
-## Репліку «Тепле світло огортає Кусакама» прибрано (D437): світло огортає героя на екрані й гасне саме.
-func _show_healing_light(player: Node2D) -> void:
-	var light: Node2D = HEALING_LIGHT.instantiate()
-	player.add_child(light)
-	(light.get_node(^"AnimationPlayer") as AnimationPlayer).animation_finished.connect(
-			func(_charge: StringName) -> void: light.release(), CONNECT_ONE_SHOT)
 
 ## Спершу зʼявляється бандит, потім репліки (Sapega, 2026-10-15). Поки діалог тримає гравця
 ## (DialogueManager), ворог вимкнений — інакше бив би нерухомого гравця, що виглядало як
@@ -223,8 +181,8 @@ func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
 
 	if run_id != state_run_id: return
 
-	# ARRIVAL/OLD_MAN_OUTSIDE чекають на тригер у сцені.
-	if current_state not in [State.ARRIVAL, State.OLD_MAN_OUTSIDE]:
+	# ARRIVAL чекає на тригер у сцені, CHECK_HOUSE — на розмову з дідом у його домі.
+	if current_state not in [State.ARRIVAL, State.CHECK_HOUSE]:
 		advance_state()
 
 func _play_dialogue(dialogue_id: String, run_id: int) -> void:
@@ -260,54 +218,15 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 		# "FightWithBandit" тут свідомо відсутній: це репліка-насмішка ПЕРЕД боєм.
 		# Ставити village_fight_complete по її завершенню означало б зарахувати
 		# бій до того, як бандит зʼявився. Прапорець ставиться після перемоги.
-		"OldMan_Outside":
-			quest_flag = "village_oldman_met"
-		"OldMan_Healing":
-			quest_flag = "village_oldman_healed"
+		# Розмови з дідом (OldMan_*) ставлять свої прапорці в ElderHouse.gd.
 		"Village_AfterFight":
 			quest_flag = "village_afterfight_complete"
-		"OldMan_Decision":
-			quest_flag = "village_oldman_complete"
-			_give_oldman_gift()
-			_give_grandfather_key()
 		"LeavingVillage":
 			quest_flag = "village_left_complete"
 
 	if not quest_flag.is_empty():
 		game.set_quest_flag(quest_flag, true)
 		DebugLogger.info("🏘️ Village: Квест %s виконано" % quest_flag, "Village")
-
-## D643: старий ключ діда відмикає родинне святилище в Печері ящурів (gates.json → lizard_shrine). Один раз за гру;
-## окремо від спорядження, бо сейви, де спорядження вже дали, ключа ще не мають.
-func _give_grandfather_key() -> void:
-	var game := Game.get_singleton()
-	if game.get_quest_flag("village_grandfather_key"):
-		return
-	ServiceLocator.get_inventory_manager().add_item("grandfather_key", 1)
-	game.set_quest_flag("village_grandfather_key", true)
-
-
-## Дід дає новачкові перше спорядження — один раз за гру (Sapega, 2026-10-12).
-func _give_oldman_gift() -> void:
-	var game := Game.get_singleton()
-	var inventory: InventoryManager = ServiceLocator.get_inventory_manager()
-	if game.get_quest_flag("village_oldman_gift"):
-		return
-	inventory.add_item("copper_sword", 1)
-	inventory.add_item("leather_armor", 1)
-	game.set_quest_flag("village_oldman_gift", true)
-	ServiceLocator.get_ui_manager().show_obtained({"copper_sword": 1, "leather_armor": 1})  # BACKLOG 33
-	# Висить, доки не вдягне зброю
-	get_tree().get_first_node_in_group(&"tutorial_hint_display").show_hint(OLDMAN_GIFT, true, true)
-	EventBus.equipment_equipped.connect(_on_gift_equipped)
-
-func _on_gift_equipped(_character_id: String, slot_id: String, _item_id: String) -> void:
-	if not slot_id in EquipmentManager.WEAPON_SLOTS:
-		return
-	EventBus.equipment_equipped.disconnect(_on_gift_equipped)
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()
 
 func advance_state() -> void:
 	state_complete.emit(current_state)
@@ -355,9 +274,3 @@ func _get_dialogue_manager() -> Node:
 	# _execute_step() одразу викликав advance_state(), і вся машина станів
 	# пролітала до кінця без жодного діалогу і без жодного прапорця.
 	return ServiceLocator.get_dialogue_manager()
-
-## Пішов із села, не вдягнувши подарунок, — підказка йде разом із селом (її ховає лише село).
-func _exit_tree() -> void:
-	var hint: TutorialHintDisplay = get_tree().get_first_node_in_group(&"tutorial_hint_display")
-	if hint != null and hint.current_hint == OLDMAN_GIFT:
-		hint.force_hide()

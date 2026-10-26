@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://cc6mfds6x6pox" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="7_spawner"]
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/grandfather.tscn" id="story_npc"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn" id="backdrop"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_houses.png" id="houses"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_back.png" id="back"]
@@ -161,20 +160,6 @@ dialogue_path = "res://dialogue_quest/ArrivalToVillage.dqd"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_ArrivalToVillage"]
 shape = SubResource("CircleShape2D_save")
 
-[node name="StateChangeTrigger_OldManOutside" type="Area2D" parent="."]
-position = Vector2(1582, 344)
-script = ExtResource("6_trigger")
-target_state = "OLD_MAN_HEALING"
-require_state = "OLD_MAN_OUTSIDE"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_OldManOutside"]
-shape = SubResource("CircleShape2D_save")
-
-[node name="OldManQuest" parent="." instance=ExtResource("story_npc")]
-position = Vector2(1572, 396)
-quest_flag = "village_oldman_complete"
-quest_dialogue = "OldMan_Decision"
-
 [node name="ElderDoor" parent="." instance=ExtResource("room_door")]
 position = Vector2(2163, 344)
 target_room = "res://SampleProject/Maps/ElderHouse.tscn"
@@ -201,10 +186,7 @@ bus = &"Music"
 position = Vector2(150, 344)
 
 [node name="house" type="Marker2D" parent="ObjectiveTargets"]
-position = Vector2(1582, 344)
-
-[node name="old_man" type="Marker2D" parent="ObjectiveTargets"]
-position = Vector2(1572, 396)
+position = Vector2(2163, 344)
 
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(24, 344)

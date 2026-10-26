@@ -59,7 +59,7 @@ func _initialize() -> void:
 	# 3. Село: жовтий «!» над дідом, поки сюжетне завдання не видано.
 	for flag in ["village_abduction_complete", "village_arrival_complete", "village_fight_complete", "village_afterfight_complete"]:
 		game.set_quest_flag(flag, true)
-	await game.teleport_to_room("res://SampleProject/Maps/Village.tscn", ^"ElderDoor")
+	await game.teleport_to_room("res://SampleProject/Maps/ElderHouse.tscn", ^"ExitDoor")  # дід у своєму домі (D438)
 	for i in 60: await physics_frame
 	await _drain(dm)
 	var old_man: NpcBase = game.map.get_node(^"OldManQuest")

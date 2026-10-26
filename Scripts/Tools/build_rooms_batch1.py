@@ -12,6 +12,7 @@ MAPS = Path(__file__).resolve().parents[2] / "SampleProject/Maps"
 CELL_W, CELL_H = 864, 480
 FLOOR = 416          # верх підлоги однорядної кімнати (рядок тайлів 13)
 STAND = FLOOR - 40   # де стоїть герой (і двері), як ExitDoor в ElderHouse
+CAVE_MOUTH_X = 320   # LizardCave: отвір печери на backdrop-і, куди ведуть двері з Canyon
 
 UIDS = {
     "LizardCave": "cn3wosqkjakdb",
@@ -176,8 +177,10 @@ def lizard_cave() -> None:
                'scale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false\nregion_enabled = true\nregion_rect = Rect2(276, 134, 64, 12)'
                % (i + 1, sx, 133 * 1.5 - 3, tex))
     r.bounds(FLOOR // 32)
-    r.marker("Arrival", 96, STAND)
-    r.door("ExitDoor", 96, STAND, "Canyon", "LizardCaveDoor")
+    # Вихід — у освітленому отворі печери на backdrop-і (x ≈ 215 текстури × 1.5), а не біля святилища ящура на x 96:
+    # герой виходить тим, чим зайшов (Sapega 2026-10-26, room_art_audit).
+    r.marker("Arrival", CAVE_MOUTH_X, STAND)
+    r.door("ExitDoor", CAVE_MOUTH_X, STAND, "Canyon", "LizardCaveDoor")
     r.fight("Fight_CaveLizards", 520, 120, 2, [("EnemySpawnPoint1", 760, FLOOR - 16, "fast", ""),
                                                 ("EnemySpawnPoint2", 900, FLOOR - 16, "fast", "")])
     r.gate("Gate_Shrine", 1240, "lizard_shrine")

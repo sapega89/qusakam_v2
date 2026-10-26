@@ -27,12 +27,12 @@ the picture: most doors inside rooms stand at x 96 at the left edge where nothin
 | DesertRoad | CampShortcutDoor | open sand by the obelisk | ❌ | the camp's back gate in a palisade (art) |
 | CityGates | CellarDoor | dark arch with cobwebs | ✅ | — |
 | ElderHouse | ExitDoor (96, 824) | wall by the fireplace, no door | ❌ | a wooden door in the clay wall (art) |
-| LizardCave | ExitDoor (96, 376) | a lizard shrine; the lit cave opening is further right | ❌ | move the door to the opening |
+| LizardCave | ExitDoor (320, 376) | the lit cave opening (moved from x 96 at a lizard shrine, `cloud/elder-home`, D716) | ✅ | — |
 | DragonMural | ExitDoor (96, 376) | in front of the mural | ❌ | a tunnel mouth (art) |
 | BanditCamp | ExitDoor (96, 376) | open sand | ❌ | the stockade gate from inside (art) |
 | BanditCamp | ShortcutDoor (1640, 376) | next to a barrel | ❌ | the back gate from inside (art) |
 | MesaClimb | ExitDoor (96, 856) | rocks | ❌ | the path's opening (art) |
-| GatehouseCellar | ExitDoor (96, 376) | foot of the stairs up | ⚠ | at the top of the stairs, or a door there |
+| GatehouseCellar | ExitDoor (96, 376) | foot of the stairs up | ⚠ | at the top of the stairs, or a door there — the stairs are only painted (flat floor at y 416, no step to stand on), so the door stays (D716) |
 
 ## Edge passages (MapData borders = 1)
 

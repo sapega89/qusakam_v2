@@ -34,7 +34,7 @@ func _initialize() -> void:
 		["LabCells", ^"Arrival", ^"Malik", "malik", ""],
 		["LabCells", ^"Arrival", ^"Scientist", "alchemist", ""],
 		["City", ^"OathPriest", ^"OathPriest", "priestess", "work"],
-		["Village", ^"Arrival", ^"OldManQuest", "grandfather", "idle"],
+		["ElderHouse", ^"Arrival", ^"OldManQuest", "grandfather", "idle"],
 	]:
 		await _room(spot[0], spot[1])
 		var npc: Node2D = game.map.get_node(spot[2])

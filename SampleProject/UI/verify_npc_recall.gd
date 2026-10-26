@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Пункт Quest у сюжетного NPC (design/npc_recall_plan.md; D158, D161, D169): дід у Village.
+## Пункт Quest у сюжетного NPC (design/npc_recall_plan.md; D158, D161, D169): дід у своєму домі (ElderHouse, D438).
 ## Розмова перечитується лише для показу — без DialogueQuest, без dialogue_started/finished.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_npc_recall.gd
 
@@ -44,8 +44,8 @@ func _initialize() -> void:
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)
 
-	print("[1] The old man in the Village carries the main quest (D169)")
-	var village: SceneState = (load("res://SampleProject/Maps/Village.tscn") as PackedScene).get_state()
+	print("[1] The old man in his house carries the main quest (D169, D438)")
+	var village: SceneState = (load("res://SampleProject/Maps/ElderHouse.tscn") as PackedScene).get_state()
 	var found := false
 	for i in village.get_node_count():
 		var inst: PackedScene = village.get_node_instance(i)
@@ -54,14 +54,14 @@ func _initialize() -> void:
 			for p in village.get_node_property_count(i):
 				props[village.get_node_property_name(i, p)] = village.get_node_property_value(i, p)
 			found = props.get("quest_flag") == "village_oldman_complete" and props.get("quest_dialogue") == "OldMan_Decision"
-	ck(found, "Village has a StoryNpc on the old man: village_oldman_complete → OldMan_Decision")
+	ck(found, "ElderHouse has a StoryNpc on the old man: village_oldman_complete → OldMan_Decision")
 	ck(not DqdReader.lines("res://dialogue_quest/OldMan_Decision.dqd").is_empty(), "OldMan_Decision has lines to replay")
 
 	print("[2] Quest appears once the quest is given")
 	var npc: Node = load(STORY_NPC).instantiate()
 	npc.quest_flag = "verify_recall_given"
 	npc.quest_dialogue = "OldMan_Decision"
-	npc.character_id = "GRANDFATHER"  # як OldManQuest у Village (голос привітання, D277)
+	npc.character_id = "GRANDFATHER"  # як OldManQuest в ElderHouse (голос привітання, D277)
 	game.add_child(npc)
 	await process_frame
 	ck(_labels(npc).is_empty() and not npc.interactable.enabled, "before: no entries, no prompt")
