@@ -96,6 +96,9 @@ Sapega's notes on the Tails of Iron map reference, 2026-10-24:
   (path, scree, gorge, ledges) has **no fights**: the hero has only fists then. It is a run through landscapes that
   tell the story in the background: smoke rising from the village side, the fallen barrier. The **village is in
   ruins and burnt** (new backdrop art; check the village story beats against it).
+- «повернення в каньйон не має, або воно має бути досяжним аж наприкінці гри, тому не критично» (2026-10-26) — no
+  way back to the Canyon during the game; the ladder under the bridge is an end-game unlock at most. This also
+  answers rooms-1's open question (the canyon branches are visited before the descent).
 - «каньйон — це маленька локація, вона створена тільки для медитації і як начальна» — the Canyon stays small (start and
   meditation, 4 screens as today).
 
