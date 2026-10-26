@@ -216,6 +216,9 @@ func _initialize() -> void:
 	if not box.is_finished():
 		await _tap(_pad_a())
 		ck(box.is_finished(), "pad A shows the whole line at once")
+	var space := InputEventKey.new()
+	space.physical_keycode = KEY_SPACE
+	ck(InputMap.event_is_action(space, &"dq_accept"), "Space is a dialogue key too (Sapega: «пробіл пролістує діалоги»)")
 	await _drain(dm)
 	dm.bubble_time_scale = 1.0
 	dm.start_dialogue("res://dialogue_quest/Canyon_AbductionCutscene.dqd", true)
