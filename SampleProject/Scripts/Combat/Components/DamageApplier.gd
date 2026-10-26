@@ -29,6 +29,8 @@ var is_active: bool = false
 
 ## Список цілей, які вже отримали ушкодження в цій атаці
 var hit_targets: Array[Node] = []
+## Скільки цілей бере одна атака (0 — без меж; легкий удар героя — одну, D713).
+var max_targets: int = 0
 
 ## Сигнал успішного попадання
 signal damage_applied(target: Node, damage: int)
@@ -92,6 +94,8 @@ func _on_hitbox_body_entered(body: Node2D) -> void:
 	
 	# Перевіряємо, чи ця ціль вже отримала ушкодження
 	if body in hit_targets:
+		return
+	if max_targets > 0 and hit_targets.size() >= max_targets:
 		return
 	
 	# Шукаємо HealthComponent у цілі

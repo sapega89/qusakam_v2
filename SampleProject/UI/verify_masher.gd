@@ -64,6 +64,12 @@ var city_rooms := {}
 
 ## Стан одного бою (заповнює _watch).
 var hits_taken := 0
+## Влучання героя в ворогів і скільки з них — у другого-третього ворога тим самим ударом.
+var hero_hits := 0
+var cleaves := 0
+## Удари ворогів, що прийшли, поки герой невразливий після попереднього удару (не перекат).
+var iframed := 0
+var _last_hit_frame := -10
 var swings := {}
 var strikes := {}
 var stagger_time := {}
@@ -137,9 +143,9 @@ func _verdict(row: Dictionary) -> String:
 
 
 func _print_row(row: Dictionary) -> void:
-	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d parry %d block %d roll %d | together %d (%.1fs)"
+	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d parry %d block %d roll %d | together %d (%.1fs) | hero hits %d (%d cleaved) | strikes in i-frames %d"
 			% [row.bot, row.build, row.name, row.level, _verdict(row), roundi(row.hp_left * 100), roundi(row.enemy_left * 100),
-			row.time, row.hits, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time])
+			row.time, row.hits, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed])
 	for line: String in row.enemies:
 		print("        " + line)
 
@@ -178,6 +184,7 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	await game.load_room("res://SampleProject/Maps/%s.tscn" % fight.room)
 	if fight.room == "MayorHall":
 		game.map.current_state = game.map.State.FIGHT  # черга й пролам (QueueTrigger) — кат-сцена до бою
+	await physics_frame
 	_place_hero(_start_spot(fight))  # одразу: старі координати героя в новій кімнаті можуть бути за її межею (MetSys)
 	if game.room_changing:
 		await game.room_change_finished
@@ -201,6 +208,9 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 				get_nodes_in_group(&"enemies").map(func(e: Node) -> Vector2: return e.global_position), sl.get_dialogue_manager().is_dialogue_active()])
 
 	hits_taken = 0
+	hero_hits = 0
+	cleaves = 0
+	iframed = 0
 	swings = {}
 	strikes = {}
 	stagger_time = {}
@@ -212,6 +222,7 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	rolls = 0
 	_telegraphs = []
 	var tracked: Array[Node] = []
+	var ids: Array[int] = []  # ідентифікатори tracked: мертвий ворог звільняється раніше за звіт
 	var total_hp := 0
 	var t := 0.0
 	var press_left := 0.0
@@ -227,11 +238,15 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 		for enemy: Node in enemies:
 			if is_instance_valid(enemy) and not enemy in tracked:
 				tracked.append(enemy)
+				ids.append(enemy.get_instance_id())
 				total_hp += enemy.Max_Health
 				_track(enemy)
 		_watch(tracked, dt)
 		var alive := tracked.filter(func(e: Node) -> bool: return is_instance_valid(e) and e.is_alive())
 		if hero.is_dead or (alive.is_empty() and not _spawning and not tracked.is_empty()):
+			break
+		if tracked.is_empty() and t > 10.0:
+			ck(false, "%s: the fight's enemies appear" % fight.name)
 			break
 		press_left -= dt
 		if bot == "MASHER":
@@ -243,8 +258,9 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	_release_all()
 	var left_hp := 0
 	var lines: Array[String] = []
-	for enemy: Node in tracked:
-		var id := enemy.get_instance_id()
+	for i in tracked.size():
+		var enemy: Node = tracked[i]
+		var id: int = ids[i]
 		var alive_now: bool = is_instance_valid(enemy) and enemy.is_alive()
 		if alive_now:
 			left_hp += enemy.current_health
@@ -253,12 +269,12 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 			times += " %s %.1f" % [phase, swings[id].get(phase, 0.0)]
 		lines.append("%-22s %s: swings %2d, told %2d, struck %2d, broken before tell %2d / after %2d | time:%s" % [swings[id].name,
 				"alive" if alive_now else "dead ", swings[id].n, swings[id].told, strikes.get(id, 0), swings[id].n - swings[id].told,
-				swings[id].told - strikes.get(id, 0), times])
+				swings[id].told - strikes.get(id, 0), times + " | strikes at dx " + " ".join(swings[id].get("at", []))])
 	var row := {"bot": bot, "build": build, "name": fight.name, "cls": fight.cls, "level": level,
 			"won": not hero.is_dead and left_hp == 0 and t < CAP, "capped": t >= CAP and not hero.is_dead,
 			"hp_left": float(maxi(hero.current_health, 0)) / hero.Max_Health, "enemy_left": float(left_hp) / maxi(total_hp, 1),
 			"time": t, "hits": hits_taken, "flasks": flasks, "parries": parries, "blocks": blocks, "rolls": rolls,
-			"together": together, "together_time": together_time, "enemies": lines}
+			"together": together, "together_time": together_time, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "enemies": lines}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -286,18 +302,31 @@ func _settle() -> void:
 	ck(false, "the room settles before the fight (dialogue %s, hero in event %s)" % [sl.get_dialogue_manager().is_dialogue_active(), hero.event])
 
 
-## Де герой починає бій: за 260 px ліворуч від найлівішої точки бою чи від місця боса.
+## Де герой починає бій: до 260 px ліворуч від найлівішої точки бою чи від місця боса — на тій самій підлозі
+## (ближче, якщо там уступ чи стіна), як герой, що прийшов зліва й зістрибнув на арену.
 func _start_spot(fight: Dictionary) -> Vector2:
+	var at: Node2D
 	if fight.has("boss"):
 		var room: Node = game.map
-		var stand: Node2D = room.get_node(^"Marks/WarriorStand") if room.has_node(^"Marks/WarriorStand") else room.get_node(NodePath(fight.boss))
-		return Vector2(stand.global_position.x - 260.0, stand.global_position.y)
-	var spawner: Node = game.map.find_child(fight.fight, true, false)
-	var first: Node2D = spawner.spawn_points[0]
-	for point: Node2D in spawner.spawn_points:
-		if point.global_position.x < first.global_position.x:
-			first = point
-	return Vector2(first.global_position.x - 260.0, first.global_position.y - 8.0)
+		at = room.get_node(^"Marks/WarriorStand") if room.has_node(^"Marks/WarriorStand") else room.get_node(NodePath(fight.boss))
+	else:
+		var spawner: Node = game.map.find_child(fight.fight, true, false)
+		at = spawner.spawn_points[0]
+		for point: Node2D in spawner.spawn_points:
+			if point.global_position.x < at.global_position.x:
+				at = point
+	var floor_y := _floor_at(at.global_position.x, at.global_position.y)
+	var x: float = at.global_position.x - 260.0
+	while absf(_floor_at(x, at.global_position.y) - floor_y) > 2.0 and x < at.global_position.x - 60.0:
+		x += 10.0
+	return Vector2(x, at.global_position.y - 8.0)
+
+
+## Верх підлоги під точкою (x, y): промінь донизу з 16 px над нею.
+func _floor_at(x: float, y: float) -> float:
+	var ray := PhysicsRayQueryParameters2D.create(Vector2(x, y - 16.0), Vector2(x, y + 120.0))
+	ray.collision_mask = 1
+	return game.map.get_world_2d().direct_space_state.intersect_ray(ray).get("position", Vector2(x, INF)).y
 
 
 ## Бій кімнати [param fight]: решта боїв кімнати вимкнена, герой за 260 px ліворуч від найближчої точки (на її підлозі).
@@ -380,9 +409,17 @@ func _on_telegraph(enemy: Node) -> void:
 			"boss": enemy.get_script() == Boss, "kind": enemy.enemy_logic.get("last_move").get("kind", "combo") if enemy.get_script() == Boss else "swing"})
 
 
-func _on_damage(target: Node, _source: Node, _amount: int, _critical: bool) -> void:
+func _on_damage(target: Node, source: Node, _amount: int, _critical: bool) -> void:
 	if target == hero:
 		hits_taken += 1
+		if is_instance_valid(source):
+			source.set_meta(&"masher_landed", true)
+	elif source == hero:
+		hero_hits += 1
+		var frame := Engine.get_physics_frames()
+		if frame - _last_hit_frame <= 2:
+			cleaves += 1
+		_last_hit_frame = frame
 
 
 ## Кожен кадр: збій ворогів, удари (хітбокс увімкнувся), кілька замахів разом.
@@ -418,6 +455,15 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 		var on: bool = enemy.hitbox.monitoring
 		if on and not enemy.get_meta(&"masher_on", false):
 			strikes[id] += 1
+			swings[id]["at"] = swings[id].get("at", []) + ["%d%s" % [roundi(absf(hero.global_position.x - enemy.global_position.x)), "i" if hero.is_invulnerable else ""]]
+		if on and not enemy.get_meta(&"masher_on", false):
+			enemy.set_meta(&"masher_landed", false)
+		if on and hero.is_invulnerable and not hero.mover.is_rolling() and not enemy.get_meta(&"masher_iframed", false) \
+				and not enemy.get_meta(&"masher_landed", false):
+			enemy.set_meta(&"masher_iframed", true)
+			iframed += 1
+		if not on:
+			enemy.set_meta(&"masher_iframed", false)
 		enemy.set_meta(&"masher_on", on)
 		if logic.is_attacking and not logic.recovering:
 			attacking += 1

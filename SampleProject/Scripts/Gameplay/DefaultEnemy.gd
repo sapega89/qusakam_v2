@@ -79,6 +79,8 @@ var finisher_tell: StringName = EnemyLogic.TELL_DODGE
 var recovery := 0.5
 var back_off := 0.0
 var knockback_immune := false
+## Відповідь на удари (D713, EnemyStats.answer_hits; 0 — ніколи).
+var answer_hits := 0
 ## Летючий ворог (D445): EnemyStats.flying — без гравітації, логіка FlyingLogic; спосіб удару, висота над героєм,
 ## швидкість піке.
 var flying := false
@@ -190,6 +192,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 	finisher_tell = StringName(stats.finisher_tell)
 	recovery = stats.recovery
 	back_off = stats.back_off
+	answer_hits = stats.answer_hits
 	flying = stats.flying
 	flight_attack = stats.flight_attack
 	hover_height = stats.hover_height
@@ -305,11 +308,6 @@ func hurt_rect() -> Rect2:
 		return Rect2()
 	var size: Vector2 = hurt_collision.shape.get_rect().size * global_scale
 	return Rect2(hurt_collision.global_position - size / 2.0, size)
-
-
-## Докуди сягає удар — передній край хітбокса від центру ворога, px світу.
-func hit_reach() -> float:
-	return (absf(_strike_x) + hitbox_collision.shape.get_rect().size.x / 2.0) * absf(global_scale.x)
 
 
 ## Форми удару й тіла-цілі — за поглядом, як і кадри (спрайт дзеркалиться навколо центру ворога).
@@ -728,9 +726,12 @@ func take_damage(amount: int, source: Node = null, critical: bool = false) -> vo
 	if source is Node2D and front_damage < 1.0 and facing != 0 and signf(source.global_position.x - global_position.x) == facing:
 		amount = maxi(1, roundi(amount * front_damage))
 	# D535: Embers Within — палаючий ворог отримує більше від героя (його удару, навички, стріли), не від тиків підпалу
-	if burn_left > 0.0 and source != null and (source.is_in_group(GameGroups.PLAYER) or (source is Arrow and source.hero_side)):
+	var from_hero: bool = source != null and (source.is_in_group(GameGroups.PLAYER) or (source is Arrow and source.hero_side))
+	if burn_left > 0.0 and from_hero:
 		amount = roundi(amount * (1.0 + ServiceLocator.get_skill_manager().passive_value("burning_damage")))
 	super.take_damage(amount, source, critical)
+	if from_hero:
+		enemy_logic.provoked()
 
 func start_attack(direction: int) -> void:
 	_face_shapes(direction)
