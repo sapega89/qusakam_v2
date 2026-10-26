@@ -283,6 +283,13 @@ BOW_DRAW = (
     "in the same side view facing right, the same size: standing sideways with his feet apart, his far arm stretched "
     "straight forward at shoulder height holding the bow upright in front of him, an arrow nocked on the string, "
 )
+# B110: лук у позах, де його не було (стрибок, блок, удар) — кадр героя той самий, лук у дальній руці
+BOW_ON = (
+    "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
+    "the picture, only now holding "
+    + BOW
+    + " in his far hand, %s, no arrow, no sword"
+)
 BOW_GLOW = (
     ", the arrowhead and the arrow shaft glowing with a bright pale yellow light, a small yellow glow around the "
     "arrowhead only, the bow and the hero unchanged"
@@ -1814,6 +1821,12 @@ CHARACTERS = {
                     + SWORD_SIZE,
                 ],
             ),
+            (
+                "Air",
+                [BOW_ON % (f, "the bow held upright beside his body, the string toward the viewer") for f in ("Jump/2", "Jump/3", "Fall/2")],
+            ),
+            ("Block", [BOW_ON % ("Block/1", "the bow held low and upright beside him, out of the way of his guard")]),
+            ("Hurt", [BOW_ON % ("Hurt/1", "his bow arm flung back behind him still gripping the bow")]),
             # Run — не тут: ON: перемальовував тіла й лук стрибав довжиною (арт-директор); Scripts/Tools/bow_fixups.py
         ],
     ),
