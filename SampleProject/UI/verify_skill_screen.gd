@@ -97,6 +97,7 @@ func _initialize() -> void:
 	while xp.get_level() < 5:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
 	sm.add_job_points(6)  # 4 за рівні 2–5 + 6 = 10
+	ck(sm.swear_oath("paladin") == R.OK, "the census gave the Paladin path (D727: Skills shows the base and the chosen tree, D728)")
 
 	sl.get_ui_manager().open_game_menu()
 	for i in 14: await process_frame
@@ -146,7 +147,7 @@ func _initialize() -> void:
 	ck(is_equal_approx(ui._rows["fortitude"].get_node(^"Art").modulate.a, UITokens.SKILL_LOCKED_ICON_ALPHA), "a locked icon is dimmed (D605)")
 	ck(ui._rows["toughness"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_PASSIVE and ui._rows["fire_strike"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_ACTIVE,
 			"icon tints by kind (D605)")
-	ck(ui.node_state("radiant_smite") == S.LOCKED and _badge(ui, "radiant_smite").theme_type_variation == &"SkillLevelBadgeLabel", "Radiant Smite before the oath: locked, Lv 5 not red")
+	ck(ui.node_state("radiant_smite") == S.LOCKED and _badge(ui, "radiant_smite").theme_type_variation == &"SkillLevelBadgeLabel", "Radiant Smite before 3 JP in the base tree: locked, Lv 5 not red")
 	ck(ui.node_state("dash_strike") == S.LOCKED and ui._reason_text("dash_strike") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): coming later")
 
 	print("[3] Detail panel: rank, effect now → next, costs (D334, D674)")
@@ -203,18 +204,22 @@ func _initialize() -> void:
 			break
 		await _pad(JOY_BUTTON_DPAD_UP)
 	ck(_focus() in ui._tree_tabs.get_children(), "D-pad up reaches the tabs (%s)" % (_focus().name if _focus() else "none"))
+	var visible_tabs: Array = ui._tree_tabs.get_children().filter(func(t: Control) -> bool: return t.visible)
+	ck(visible_tabs.map(func(t: Button) -> String: return t.text) == ["Holy Warrior", "Paladin"], "only the base and the chosen path's tabs (D728)")
 	for i in 4:
-		if _focus() == ui._tree_tabs.get_child(3):
+		if _focus() == visible_tabs[1]:
 			break
 		await _pad(JOY_BUTTON_DPAD_RIGHT)
 	await _pad(JOY_BUTTON_A)
 	for i in 2: await process_frame
-	ck(ui._shown_oath == "warden" and ui._rows.has("bulwark") and not ui._rows.has("radiant_smite"), "A on the Warden tab shows its tree")
+	ck(_focus() == visible_tabs[1] or ui._rows.values().has(_focus()), "the D-pad stays on the visible tabs (%s)" % (_focus().name if _focus() else "none"))
+	ck(ui._shown_oath == "paladin" and ui._rows.has("radiant_smite") and not ui._rows.has("bulwark"), "A on the Paladin tab keeps its tree")
 
 	print("[6] A picked prerequisite opens its skill; undoing it drops the skill (cascade)")
 	# D497: навичка клятви 5-го рівня — від 3 JP у стовбурі; два вже вкладено, третє дасть позначений Shield Block.
 	ck(sm.unlock_skill("devotion") == R.OK and sm.unlock_skill("weapon_training") == R.OK, "2 JP already in the base tree")
-	ck(sm.swear_oath("warden") == R.OK, "swore the Warden oath")
+	sl.get_game_manager().player_state.oath = ""  # інша гра: перепис дав шлях без бога
+	ck(sm.swear_oath("warden") == R.OK, "the Warden path chosen instead")
 	for i in 2: await process_frame
 	var trained: Array = ui._links(ui._left_panel).links.filter(func(l): return l[0] == ui._rows["weapon_training"])
 	ck(trained.size() == 2 and trained.all(func(l): return bool(l[2])), "learned Weapon Training: its two lines are gold")
