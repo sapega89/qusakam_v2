@@ -3,7 +3,7 @@ class_name DQChoiceMenu
 
 signal choice_made(choice: String)
 
-## Kusakam, D721: W/S теж гортають відповіді, як стрілки й хрестовина (стік лишається штатній навігації Godot).
+## Kusakam, D735: W/S теж гортають відповіді, як стрілки й хрестовина (стік лишається штатній навігації Godot).
 const MenuNavKeys := preload("res://SampleProject/UI/Components/menu_nav_keys.gd")
 
 var choices: PackedStringArray = [] : set = set_choices, get = get_choices

@@ -19,7 +19,7 @@ signal row_activated(index: int)
 @onready var _name_label: Label = $Row/Text/NameLabel
 @onready var _sub_label: Label = $Row/Text/SubLabel
 @onready var _count_label: Label = $Row/CountLabel
-## B152, D720: вдягнений предмет має знак «Equipped» (UI/Badge 222:4746 — LevelBadge з теми) перед кількістю.
+## B152, D734: вдягнений предмет має знак «Equipped» (UI/Badge 222:4746 — LevelBadge з теми) перед кількістю.
 @onready var _equipped_badge: Control = $Row/EquippedBadge
 
 var index: int = -1

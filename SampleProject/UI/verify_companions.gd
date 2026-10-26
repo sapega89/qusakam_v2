@@ -283,7 +283,7 @@ func _initialize() -> void:
 	ui.close_game_menu()
 	for i in 10: await process_frame
 
-	print("[10] D463, D718: the picker tutorial — a «?» first, its window has frames, the assist key, a button to Status → Companions")
+	print("[10] D463, D732: the picker tutorial — a «?» first, its window has frames, the assist key, a button to Status → Companions")
 	var settings: Dictionary = root.get_node("SaveSystem").settings_module.settings
 	var seen: Array = sl.get_game_manager().player_state.seen_tutorials
 	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
@@ -292,7 +292,7 @@ func _initialize() -> void:
 	seen.erase("choose_companions")
 	hint.show_hint("choose_companions")
 	for i in 6: await process_frame
-	ck(layer.active_modal == null and not paused and hint.tip_tray.has("choose_companions"), "D718: a «?» waits, no window, the game runs")
+	ck(layer.active_modal == null and not paused and hint.tip_tray.has("choose_companions"), "D732: a «?» waits, no window, the game runs")
 	await Kit.key(self, KEY_T)  # вікна досі були вимкнені — у стосі лише ця тема
 	for i in 4: await process_frame
 	var window: Control = layer.active_modal

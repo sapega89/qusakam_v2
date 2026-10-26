@@ -42,10 +42,10 @@ func _wait(cond: Callable, max_s: float) -> bool:
 	return cond.call()
 
 
-## D722: Enter під час набору — уся репліка, наступне — наступна; утримання гонить репліки до вибору й не далі;
+## D736: Enter під час набору — уся репліка, наступне — наступна; утримання гонить репліки до вибору й не далі;
 ## вибір — лише справжнім натисканням; після вибору утримання знову гонить до кінця. Тимчасовий .dqd з вибором.
 func _click_through(dm: Node, box: Control) -> void:
-	print("[5] D722: a press shows the typing line whole, the next press moves on; holding runs to the choice, never past it")
+	print("[5] D736: a press shows the typing line whole, the next press moves on; holding runs to the choice, never past it")
 	const PATH := "user://verify_dialogue_skip.dqd"
 	var lines: Array[String] = ["The road is long and the sand is deep, grandson.", "I know, grandfather. I will walk it anyway.",
 		"Then take water, and take your time with it.", "Water I have. Time I do not.",

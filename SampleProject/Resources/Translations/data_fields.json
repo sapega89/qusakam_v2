@@ -129,7 +129,7 @@
 		{
 			"file": "tutorial.json",
 			"path": "topics[].prompt",
-			"shown": "TutorialTopics.resolved → один рядок уроку тренування на плашці (D719)"
+			"shown": "TutorialTopics.resolved → один рядок уроку тренування на плашці (D733)"
 		},
 		{
 			"file": "pathfinder_classes.json",

@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Hints like Lineage II (BACKLOG 12, D289, D718), real input:
+## Hints like Lineage II (BACKLOG 12, D289, D732), real input:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_tutorial_hints.gd
 ##   1. After the Canyon intro the movement hint is a brief banner (essential), the game runs; keyboard names (A / D).
 ##   2. The first enemy: the attack banner names the pad button (X) after pad input, Left Mouse after a key.
@@ -52,7 +52,7 @@ func _initialize() -> void:
 	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
 	var tray: Node = hint.tip_tray
 
-	print("[1] Movement hint: a brief banner, the game runs (D718)")
+	print("[1] Movement hint: a brief banner, the game runs (D732)")
 	for i in 600:
 		if hint.current_hint == "movement":
 			break
@@ -75,7 +75,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 10)
 	ck(not hint.is_showing and tray.ids().is_empty(), "a seen topic does not show again")
 
-	print("[3] D718: a hit and a kill — two «?» at the left edge, opened when the player wants")
+	print("[3] D732: a hit and a kill — two «?» at the left edge, opened when the player wants")
 	root.get_node("EventBus").player_staggered.emit(0.3)
 	root.get_node("EventBus").enemy_died.emit("e0", Vector2.ZERO)
 	await Kit.frames(self, 6)

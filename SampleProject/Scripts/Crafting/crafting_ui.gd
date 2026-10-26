@@ -91,7 +91,7 @@ func _input(event: InputEvent) -> void:
 	if _modal_open():
 		return
 	var by := MenuNavKeys.letter_step(event)
-	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D721: W/S гортають рядки, як стрілки
+	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D735: W/S гортають рядки, як стрілки
 		get_viewport().set_input_as_handled()
 		MenuNavKeys.move_focus(_rows, by)
 		return

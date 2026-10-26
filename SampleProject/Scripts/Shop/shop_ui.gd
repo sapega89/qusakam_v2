@@ -100,7 +100,7 @@ func _input(event):
 			_set_quantity(_quantity + (1 if event.is_action_pressed(&"ui_right") else -1))
 		return
 	var by := MenuNavKeys.letter_step(event)
-	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D721: W/S гортають рядки, як стрілки
+	if by != 0 and MenuNavKeys.has_focus_in(_rows):  # D735: W/S гортають рядки, як стрілки
 		get_viewport().set_input_as_handled()
 		MenuNavKeys.move_focus(_rows, by)
 		return

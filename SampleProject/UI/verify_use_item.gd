@@ -7,7 +7,7 @@ extends SceneTree
 ##   3. An ether restores SP.
 ##   4. A material opens the "Cannot Use" modal; pad B closes it, focus back on the row, nothing spent.
 ##   5. A weapon, armour and a helmet equip into their slots from the inventory.
-##   5b. B152, D720: an equipped item carries the Equipped mark; Enter / a double click / pad A on it unequips it and
+##   5b. B152, D734: an equipped item carries the Equipped mark; Enter / a double click / pad A on it unequips it and
 ##       the bar says so; once more equips it again.
 ##   6. An empty potion stack leaves the list.
 ##   7. The potion line ascends Lesser < Potion < Medium < Large in heal, price and description (B108, D357).
@@ -111,7 +111,7 @@ func _initialize() -> void:
 	ck(character.equipment.get("head") is Dictionary and character.equipment["head"].id == "iron_helmet", "head slot: iron_helmet")
 	ck(bar._hint_label.text.contains("equipped"), "bottom bar confirms (%s)" % bar._hint_label.text)
 
-	print("[5b] B152, D720: the Equipped mark, and Unequip on an equipped item")
+	print("[5b] B152, D734: the Equipped mark, and Unequip on an equipped item")
 	for id in ["iron_sword", "iron_armor", "iron_helmet"]:
 		ck(_row(inv, id).is_equipped_shown(), "%s shows the Equipped mark" % id)
 	var mark: Label = _row(inv, "iron_sword").get_node(^"Row/EquippedBadge/Label")

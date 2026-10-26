@@ -115,7 +115,7 @@ func _initialize() -> void:
 	ck(game.current_objective == "Defeat the bandit in the street", "after the lessons: finish him (%s)" % game.current_objective)
 	ck(not hint.is_showing or not hint.current_hint.begins_with("lesson_"), "no lesson banner left")
 
-	print("[1b] D719: one line per lesson; passed lessons are flagged and never come back")
+	print("[1b] D733: one line per lesson; passed lessons are flagged and never come back")
 	ck(CombatTraining.LESSONS.all(func(id: String) -> bool: return CombatTraining.is_done(id)), "all four lessons are flagged done")
 	var again: Node = CombatTraining.new()
 	village.add_child(again)
@@ -141,7 +141,7 @@ func _initialize() -> void:
 	var took := Time.get_ticks_msec() - started
 	ck(took < CHAIN_LIMIT_MS, "the whole chain took %.1f s (< %d s)" % [took / 1000.0, CHAIN_LIMIT_MS / 1000])
 
-	print("[2a] D719: leave mid-training and come back — it goes on from the next lesson, the passed one is not repeated")
+	print("[2a] D733: leave mid-training and come back — it goes on from the next lesson, the passed one is not repeated")
 	_reset_lessons()
 	buttons = KEYBOARD
 	var first_go: Node = CombatTraining.new()
@@ -536,7 +536,7 @@ func _drain(dm: Node) -> void:
 			return
 
 
-## Новий забіг уроків у тому самому тесті: прапорці пройдених уроків (D719) знято.
+## Новий забіг уроків у тому самому тесті: прапорці пройдених уроків (D733) знято.
 func _reset_lessons() -> void:
 	for id: String in CombatTraining.LESSONS:
 		game.set_quest_flag(CombatTraining.DONE_FLAG % id, false)

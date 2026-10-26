@@ -49,7 +49,7 @@ func _initialize_component() -> void:
 	var inventory_manager := _get_inventory_manager()
 	if not inventory_manager.inventory_changed.is_connected(_on_inventory_changed):
 		inventory_manager.inventory_changed.connect(_on_inventory_changed)
-	# Вдягнули / зняли — знак «Equipped» на рядку міняється одразу (D720).
+	# Вдягнули / зняли — знак «Equipped» на рядку міняється одразу (D734).
 	if not EventBus.equipment_equipped.is_connected(_on_equipment_changed):
 		EventBus.equipment_equipped.connect(_on_equipment_changed)
 		EventBus.equipment_unequipped.connect(_on_equipment_changed)
@@ -146,7 +146,7 @@ func _make_entry(item_id: String, count: int, item_data: Dictionary) -> Dictiona
 	}
 
 
-## Слот, у якому цей предмет зараз на герої, або "" (D720). Предмет лишається в сумці й вдягнений.
+## Слот, у якому цей предмет зараз на герої, або "" (D734). Предмет лишається в сумці й вдягнений.
 func _equipped_slot(item_id: String) -> String:
 	var equipment: Dictionary = game_manager.player_state.get("equipment", {})
 	for slot_id in equipment:
@@ -304,7 +304,7 @@ func _on_row_activated(index: int) -> void:
 	elif _heal_amount(item) > 0:
 		_drink(item)
 	elif String(item.get("equipped_slot", "")) != "":
-		_unequip(item)  # D720: вдягнений — зняти, а не вдягати вдруге
+		_unequip(item)  # D734: вдягнений — зняти, а не вдягати вдруге
 	elif _get_slot_for_item(item) != "":
 		_equip(item)
 	else:
@@ -351,7 +351,7 @@ func _equip(item: Dictionary) -> void:
 	_set_bar_hint.call_deferred(tr("%s equipped — %s.") % [String(item.get("name", "")), _get_slot_display_name(slot_id)])
 
 
-## Вдягнений предмет — знімаємо тим самим штатним API (EquipmentManager → EventBus → CharacterManager), D720.
+## Вдягнений предмет — знімаємо тим самим штатним API (EquipmentManager → EventBus → CharacterManager), D734.
 func _unequip(item: Dictionary) -> void:
 	var slot_id := String(item.equipped_slot)
 	var character = game_manager.get_active_character()

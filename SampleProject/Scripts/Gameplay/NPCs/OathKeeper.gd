@@ -78,4 +78,4 @@ func _open_confirm(kind: StringName) -> void:
 	interactable.enabled = false
 	npc_menu.setup(menu_entries())
 	npc_menu.open()
-	npc_menu.engage()  # підтвердження клятви гравець відкрив сам — меню вже його (D721)
+	npc_menu.engage()  # підтвердження клятви гравець відкрив сам — меню вже його (D735)

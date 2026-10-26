@@ -93,13 +93,13 @@ func _initialize() -> void:
 		if not dm.is_replaying():
 			break
 		shown.append(box.text)
-		# D722: «далі» під час набору показує всю репліку одразу, наступне — наступна репліка
+		# D736: «далі» під час набору показує всю репліку одразу, наступне — наступна репліка
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()
 		await process_frame
 		press_completes = press_completes and box.is_finished() and box.text == shown[-1]
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()  # далі
 		await process_frame
-	ck(press_completes, "D722: a press while a line types shows it whole, the next press moves on")
+	ck(press_completes, "D736: a press while a line types shows it whole, the next press moves on")
 	var expected := DqdReader.lines("res://dialogue_quest/OldMan_Decision.dqd").map(func(l): return l.text)
 	ck(shown.slice(0, expected.size()) == expected, "every line, in order (%s)" % str(shown))
 	ck(shown.size() == expected.size() + 1 and shown[-1].begins_with("Current objective: "),

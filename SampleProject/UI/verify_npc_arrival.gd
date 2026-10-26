@@ -75,20 +75,20 @@ func _focused_label(npc: NpcBase) -> String:
 	return (focused as Button).text if focused is Button and focused.get_parent() == npc.npc_menu else ""
 
 
-## D721: W/S, стрілки й хрестовина гортають меню; перша ж клавіша бере його — герой не йде, не стрибає й не бʼє,
+## D735: W/S, стрілки й хрестовина гортають меню; перша ж клавіша бере його — герой не йде, не стрибає й не бʼє,
 ## доки меню не закрито (Esc відпускає).
 func _menu_takes_the_hero(npc: NpcBase, player: CharacterBody2D) -> void:
 	var labels: Array = npc.npc_menu.get_children().map(func(b: Button) -> String: return b.text)
-	ck(not player.event, "D721: before a menu key the hero is free")
+	ck(not player.event, "D735: before a menu key the hero is free")
 	await _key(KEY_S)
-	ck(npc.npc_menu.is_engaged and player.event, "D721: S takes the menu and holds the hero")
-	ck(labels.size() < 2 or _focused_label(npc) == labels[1], "D721: S moves to the next row (%s)" % _focused_label(npc))
+	ck(npc.npc_menu.is_engaged and player.event, "D735: S takes the menu and holds the hero")
+	ck(labels.size() < 2 or _focused_label(npc) == labels[1], "D735: S moves to the next row (%s)" % _focused_label(npc))
 	await _key(KEY_W)
-	ck(_focused_label(npc) == labels[0], "D721: W moves back (%s)" % _focused_label(npc))
+	ck(_focused_label(npc) == labels[0], "D735: W moves back (%s)" % _focused_label(npc))
 	await _key(KEY_DOWN)
-	ck(labels.size() < 2 or _focused_label(npc) == labels[1], "D721: Down arrow moves too (%s)" % _focused_label(npc))
+	ck(labels.size() < 2 or _focused_label(npc) == labels[1], "D735: Down arrow moves too (%s)" % _focused_label(npc))
 	await _tap(&"ui_up")
-	ck(_focused_label(npc) == labels[0], "D721: Up / D-pad up moves back (%s)" % _focused_label(npc))
+	ck(_focused_label(npc) == labels[0], "D735: Up / D-pad up moves back (%s)" % _focused_label(npc))
 	var at: Vector2 = player.global_position
 	Input.action_press(&"move_right")
 	for i in 10: await physics_frame
@@ -96,11 +96,11 @@ func _menu_takes_the_hero(npc: NpcBase, player: CharacterBody2D) -> void:
 	await _tap(&"jump")
 	await _tap(&"attack")
 	for i in 4: await physics_frame
-	ck(player.global_position.distance_to(at) < 1.0 and player.velocity == Vector2.ZERO, "D721: walk and jump do nothing behind the menu (moved %.1f)" % player.global_position.distance_to(at))
-	ck(player.combat.state == PlayerCombat.State.READY, "D721: attack does nothing behind the menu (%s)" % player.combat.state)
-	ck(npc.npc_menu.visible, "D721: the menu stays open")
+	ck(player.global_position.distance_to(at) < 1.0 and player.velocity == Vector2.ZERO, "D735: walk and jump do nothing behind the menu (moved %.1f)" % player.global_position.distance_to(at))
+	ck(player.combat.state == PlayerCombat.State.READY, "D735: attack does nothing behind the menu (%s)" % player.combat.state)
+	ck(npc.npc_menu.visible, "D735: the menu stays open")
 	await _tap(&"ui_cancel")
-	ck(not npc.npc_menu.visible and not player.event, "D721: Esc / B closes it and lets the hero go")
+	ck(not npc.npc_menu.visible and not player.event, "D735: Esc / B closes it and lets the hero go")
 
 
 ## Меню NPC відкрите саме (D454) — або, якщо гравець його закрив, E відкриває знову; у меню — справжні

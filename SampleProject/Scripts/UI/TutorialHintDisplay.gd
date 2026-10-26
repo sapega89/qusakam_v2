@@ -1,9 +1,9 @@
 extends Control
 class_name TutorialHintDisplay
 
-## Підказки (BACKLOG 12, D289, D718). Кожна підказка — тема туторіалу (Resources/Data/tutorial.json, hint_topic);
+## Підказки (BACKLOG 12, D289, D732). Кожна підказка — тема туторіалу (Resources/Data/tutorial.json, hint_topic);
 ## тема лишається в списку Tutorial (player_state.seen_tutorials).
-## D718 (як у Lineage II): уперше тема не відкриває вікно на паузі, а кладе «?» у TipTray біля лівого краю — гра йде;
+## D732 (як у Lineage II): уперше тема не відкриває вікно на паузі, а кладе «?» у TipTray біля лівого краю — гра йде;
 ## гравець відкриває тему кліком чи open_tip, коли схоче, і тоді вікно туторіалу (tutorial_menu.tscn у ModalLayer) — на паузі.
 ## Лише перші основні керування (ESSENTIAL: рух, удар) показуються одразу, коротко — плашкою, щойно гра вільна.
 ## Settings → Game → Tutorial Windows: Off — замість «?» коротка плашка, як раніше.
@@ -13,7 +13,7 @@ class_name TutorialHintDisplay
 const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 const TopicWindow = preload("res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn")
-## D718: лише ці теми першого разу — плашкою, без «?».
+## D732: лише ці теми першого разу — плашкою, без «?».
 const ESSENTIAL: Array[String] = ["movement", "attack"]
 
 @onready var hint_label: Label = $Banner/Panel/MarginContainer/HintLabel
@@ -115,7 +115,7 @@ func _notification(what: int) -> void:
 		_set_text(current_hint)
 
 
-## Урок тренування — його один рядок (prompt, D719), решта тем — повний текст.
+## Урок тренування — його один рядок (prompt, D733), решта тем — повний текст.
 func _set_text(hint_key: String) -> void:
 	var topic := TutorialTopics.resolved(TutorialTopics.by_id(hint_key))
 	hint_label.text = topic.prompt if topic.prompt != "" else topic.text
