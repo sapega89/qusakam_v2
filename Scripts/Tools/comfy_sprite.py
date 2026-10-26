@@ -635,6 +635,172 @@ CHARACTERS = {
             ),
         ],
     ),
+    # D725 + перепис біля Брами (Sapega 2026-10-26): замість відьми — жрець бога угод, «теж жрець, просто в чорному, і в
+    # золоті, бо контрактів багато підписав»; писар варти біля Брами записує новоприбулих і дивиться їм в очі (D587).
+    "contract_priest": dict(
+        out="SampleProject/Assets/Characters/NPCs/contract_priest/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=31,
+        colors=16,
+        who="the same stern priest of the god of contracts in the long black robes heavily embroidered with gold, the black "
+        "hood with a gold rim, the gold chains and many gold rings, and the thick black ledger with gold clasps",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a stern rich priest of the god of contracts, a tall adult man filling the whole height of the picture, in "
+        "long black robes heavily embroidered with gold, a black hood with a gold rim, heavy gold chains on his chest, many "
+        "gold rings on his fingers, a sealed gold scroll case on his belt, holding a thick ledger bound in black leather "
+        "with gold clasps against his chest. Strict side view: his head and body in profile facing right, his eye and nose "
+        "on the right side of his face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, both eyes visible, the black hood with "
+                    "the gold rim, the gold chains on his chest, the black ledger with gold clasps held in both hands",
+                    "BOB:56:front:0",
+                ],
+            ),
+            (
+                "work",
+                [
+                    "holding the black ledger open in front of him and reading a contract in it, his head bent over it"
+                    + SAME,
+                    "FROM:work:0:pressing a gold seal ring onto the open page of the ledger, sealing a contract" + SAME,
+                    "FROM:work:0:closing the ledger with a satisfied look, the gold clasps shut" + SAME,
+                ],
+            ),
+        ],
+    ),
+    "gate_scribe": dict(
+        out="SampleProject/Assets/Characters/NPCs/gate_scribe/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=32,
+        colors=16,
+        who="the same tired city gate scribe in the plain sand-coloured robe, the small round red cap, the ink-stained "
+        "fingers, the wooden writing board with the open ledger and the long quill",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a tired city gate scribe, a thin adult man filling the whole height of the picture, in a plain "
+        "sand-coloured robe with a brown sash, a small round red cap, a short grey beard, ink-stained fingers, holding a "
+        "wooden writing board with an open ledger in one arm and a long quill in the other hand. Strict side view: his head "
+        "and body in profile facing right, his eye and nose on the right side of his face, looking ahead to the right. "
+        "Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "front",
+                [
+                    "turned to face the viewer: a front view of him standing idle, both eyes visible, the small round red "
+                    "cap, the writing board with the open ledger held against his chest, the quill in his hand",
+                    "BOB:56:front:0",
+                ],
+            ),
+            (
+                "work",
+                [
+                    "writing in the open ledger on his writing board with the long quill, his head bent over it" + SAME,
+                    "FROM:work:0:leaning forward and peering closely ahead through a small round brass lens held up to his "
+                    "eye, checking someone's eyes" + SAME,
+                    "FROM:work:0:dipping the quill in a small ink pot clipped to the writing board" + SAME,
+                ],
+            ),
+        ],
+    ),
+    # Жителі міста (Sapega 2026-10-26: «місто треба показати живим, щоб NPC ходили по ньому … не артом, а додати
+    # жителів»): містяни, що ходять маршрутами (routine city-life); idle + крок.
+    "townsfolk_water_carrier": dict(
+        out="SampleProject/Assets/Characters/NPCs/townsfolk_water_carrier/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=41,
+        colors=16,
+        who="the same woman of the desert city carrying a clay water jar on her shoulder, in a long ochre dress and a blue head scarf",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a woman of the desert city, a tall adult filling the whole height of the picture, in a long ochre dress and a blue head scarf, carrying a big clay water jar on her shoulder with one hand. Strict side view: the head and body in profile facing right, the eye and nose on the right side "
+        "of the face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "walk",
+                [
+                    "walking to the right, left leg stepping forward, right leg back",
+                    "walking to the right, legs passing each other, feet together",
+                    "walking to the right, right leg stepping forward, left leg back",
+                    "walking to the right, legs passing each other, body slightly raised",
+                ],
+            ),
+        ],
+    ),
+    "townsfolk_porter": dict(
+        out="SampleProject/Assets/Characters/NPCs/townsfolk_porter/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=42,
+        colors=16,
+        who="the same city porter carrying a wooden crate, in a short brown tunic, baggy trousers and a white turban",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a strong city porter, a tall adult man filling the whole height of the picture, in a short brown tunic, baggy grey trousers and a white turban, carrying a wooden crate on his back held by a strap. Strict side view: the head and body in profile facing right, the eye and nose on the right side "
+        "of the face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "walk",
+                [
+                    "walking to the right, left leg stepping forward, right leg back",
+                    "walking to the right, legs passing each other, feet together",
+                    "walking to the right, right leg stepping forward, left leg back",
+                    "walking to the right, legs passing each other, body slightly raised",
+                ],
+            ),
+        ],
+    ),
+    "townsfolk_old_man": dict(
+        out="SampleProject/Assets/Characters/NPCs/townsfolk_old_man/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=43,
+        colors=16,
+        who="the same old city man with the long white beard, the dark green robe and the walking cane",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: an old man of the desert city, filling the whole height of the picture, slightly bent, with a long white beard, a dark green robe, a small white cap and a wooden walking cane in his hand. Strict side view: the head and body in profile facing right, the eye and nose on the right side "
+        "of the face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "walk",
+                [
+                    "walking to the right, left leg stepping forward, right leg back",
+                    "walking to the right, legs passing each other, feet together",
+                    "walking to the right, right leg stepping forward, left leg back",
+                    "walking to the right, legs passing each other, body slightly raised",
+                ],
+            ),
+        ],
+    ),
+    "townsfolk_merchant_woman": dict(
+        out="SampleProject/Assets/Characters/NPCs/townsfolk_merchant_woman/sheet.png",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        cell=(64, 96),
+        seed=44,
+        colors=16,
+        who="the same city merchant woman in the red and gold dress carrying a basket of fruit",
+        base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
+        "shading: a merchant woman of the desert city, a tall adult filling the whole height of the picture, in a red dress with a gold sash and a light veil, carrying a round woven basket of oranges and dates on her hip. Strict side view: the head and body in profile facing right, the eye and nose on the right side "
+        "of the face, looking ahead to the right. Keep the plain flat magenta background.",
+        rows=[
+            ("idle", [None, "BOB:56"]),
+            (
+                "walk",
+                [
+                    "walking to the right, left leg stepping forward, right leg back",
+                    "walking to the right, legs passing each other, feet together",
+                    "walking to the right, right leg stepping forward, left leg back",
+                    "walking to the right, legs passing each other, body slightly raised",
+                ],
+            ),
+        ],
+    ),
     "dervish": dict(
         out="SampleProject/Assets/Characters/NPCs/dervish/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
