@@ -25,6 +25,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -51,6 +53,48 @@ size = Vector2(16, 480)
 
 [node name="Laboratory" type="Node2D" unique_id=223979029]
 script = ExtResource("1_lab")
+
+[node name="Supports" type="Node2D" parent="."]
+
+[node name="Support1" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(608, 322)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(864, 258)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support3" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1216, 354)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support4" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(384, 802)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support5" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(992, 770)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support6" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1424, 802)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support7" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(976, 1250)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support8" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1456, 1250)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1819634211]
 
@@ -898,11 +942,13 @@ region_rect = Rect2(0, 0, 576, 116)
 z_index = -1
 position = Vector2(1504, 384)
 script = ExtResource("11_uub52")
+art = "iron"
 
 [node name="Ladder2" type="Node2D" parent="." unique_id=318415434 instance=ExtResource("10_fg77m")]
 z_index = -1
 position = Vector2(224, 864)
 script = ExtResource("11_uub52")
+art = "iron"
 
 [node name="FrontDark" parent="." instance=ExtResource("x4")]
 

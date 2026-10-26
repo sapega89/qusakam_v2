@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x5"]
 
 [sub_resource type="RectangleShape2D" id="Shape_gates"]
 size = Vector2(32, 320)
@@ -43,6 +45,18 @@ size = Vector2(16, 448)
 
 [node name="LabBoss" type="Node2D" unique_id=1056084547]
 script = ExtResource("12_labboss")
+
+[node name="Supports" type="Node2D" parent="."]
+
+[node name="Support1" parent="Supports" instance=ExtResource("x4")]
+position = Vector2(448, 290)
+texture = ExtResource("x5")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Supports" instance=ExtResource("x4")]
+position = Vector2(1288, 290)
+texture = ExtResource("x5")
+offset = Vector2(-55, 0)
 
 [node name="TileMap" type="Node2D" parent="." unique_id=314302720]
 

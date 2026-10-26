@@ -1,18 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Ladder.gd" id="1_ladder"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Objects/ladder.png" id="2_tex"]
 
 [node name="Ladder" type="Node2D"]
 z_index = -1
-script = ExtResource("1_ladder")
-
-[node name="Sprite" type="Sprite2D" parent="."]
 texture_filter = 1
-texture_repeat = 2
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("2_tex")
-centered = false
-offset = Vector2(-8, 0)
-region_enabled = true
-region_rect = Rect2(0, 0, 16, 320)
+script = ExtResource("1_ladder")

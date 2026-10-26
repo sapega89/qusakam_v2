@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/ledge_rock/ledge_rock_sheet.png" id="x8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -315,3 +317,63 @@ flip_h = true
 position = Vector2(800, 1010)
 
 [node name="TopShade" parent="." instance=ExtResource("x6")]
+
+[node name="Support" parent="Ledges/Ledge1" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge2" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge3" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge4" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge5" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge6" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge7" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge8" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge9" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(-150, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support3" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(150, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
