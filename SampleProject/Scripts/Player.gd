@@ -437,7 +437,7 @@ func on_enter():
 	# Тому питаємо DialogueManager, чи блокування зараз законне.
 	if event:
 		var dm = ServiceLocator.get_dialogue_manager() if ServiceLocator else null
-		if dm and dm.is_dialogue_active():
+		if dm and dm.is_story_busy():  # D737: і монолог облачком тримає героя
 			DebugLogger.info("Player: on_enter() - event=true через активний діалог, залишаємо блокування", "Player")
 		else:
 			DebugLogger.warning("Player: on_enter() - event залип без діалогу, скидаємо до false", "Player")

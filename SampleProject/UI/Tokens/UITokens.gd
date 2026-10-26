@@ -340,6 +340,12 @@ const TIP_GLOW_TIME := 0.9                # півперіод пульсу, с
 # Вікно діалогу (D722): утримання «далі» гонить репліки до наступного вибору.
 const DIALOGUE_HOLD_SKIP := 0.45          # с утримання, після яких починається прогін
 const DIALOGUE_SKIP_STEP := 0.08          # с між репліками під час прогону
+# D738: набір репліки (вікно й облачко розмови) — літер/с при Text Speed Default; було 24 (D254), Quick — ×2.
+const DIALOGUE_LETTERS_PER_SECOND := 48.0
+# D739: набрана репліка йде далі сама: пауза = довжина × per_char, не менше min і не довше max (с). Вибір чекає.
+const DIALOGUE_AUTO_MIN := 1.5
+const DIALOGUE_AUTO_PER_CHAR := 0.02      # 75 літер і коротше — 1.5 с, 125 і довше — 2.5 с
+const DIALOGUE_AUTO_MAX := 2.5
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)

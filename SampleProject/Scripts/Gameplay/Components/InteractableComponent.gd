@@ -112,6 +112,8 @@ func _place_prompt() -> void:
 	_prompt.position = prompt_offset - Vector2(_prompt.size.x * 0.5, _prompt.size.y) * _prompt.scale
 
 
-## Не взаємодіємо, поки відкрите меню чи модалка.
+## Не взаємодіємо, поки відкрите меню чи модалка — і поки йде розмова сюжету (D737): героя вона тримає, а E під час
+## читання відчиняла двері в іншу кімнату посеред репліки. Репліки мимохідь (барки) не заважають.
 func _gameplay_input_allowed() -> bool:
-	return ServiceLocatorHelper.get_service_locator().get_ui_manager().is_gameplay_input_allowed()
+	var locator: Node = ServiceLocatorHelper.get_service_locator()
+	return locator.get_ui_manager().is_gameplay_input_allowed() and not locator.get_dialogue_manager().is_story_busy()

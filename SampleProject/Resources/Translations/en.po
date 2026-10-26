@@ -981,6 +981,9 @@ msgstr "Default"
 msgid "Quick"
 msgstr "Quick"
 
+msgid "Auto-Advance"
+msgstr "Auto-Advance"
+
 msgid "Screen Shake"
 msgstr "Screen Shake"
 

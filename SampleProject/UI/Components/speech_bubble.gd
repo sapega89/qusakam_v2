@@ -1,7 +1,7 @@
 extends Node2D
 
-## Облачко над головою (D178): монологи Кусакама показуються тут, а не в боксі діалогу, і гравець
-## при цьому ходить. Вузол — дочірній гравцеві, тож іде за ним; flip_h крутить лише спрайт.
+## Облачко над головою (D178): монологи Кусакама показуються тут, а не в боксі діалогу; героя тримає, поки
+## монолог іде (D737). Вузол — дочірній гравцеві, тож іде за ним; flip_h крутить лише спрайт.
 ## Початок координат — вістря хвоста. Арт тимчасовий (D160 чекає малюнків Sapega).
 
 const BODY := preload("res://SampleProject/Assets/UI/Dialogue/bubble_body.png")
@@ -10,6 +10,11 @@ const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
 ## Набрано [param count] літер репліки (type_out) — бурмотіння голосом мовця (D277).
 signal typed(text: String, count: int)
+
+## Набір type_out(), поки він іде.
+var _typing: Tween
+## Крок, що домотує будь-який набір до кінця (finish_typing).
+const FINISH_STEP := 3600.0
 
 var _panel := PanelContainer.new()
 var _label := Label.new()
@@ -64,8 +69,20 @@ func show_line(text: String) -> void:
 func type_out(seconds: float) -> void:
 	_label.visible_characters = 0
 	if seconds > 0.0:
-		await create_tween().tween_method(_type_to, 0, _label.text.length(), seconds).finished
+		_typing = create_tween()
+		_typing.tween_method(_type_to, 0, _label.text.length(), seconds)
+		await _typing.finished
+		_typing = null
 	_label.visible_ratio = 1.0
+
+
+## D738: «далі» під час набору — уся репліка одразу (як у вікні діалогу): твін домотується, type_out повертається.
+func is_typing() -> bool:
+	return _typing != null
+
+
+func finish_typing() -> void:
+	_typing.custom_step(FINISH_STEP)
 
 
 ## Остання літера з'являється лише з кінцем type_out: is_typed() не має стати true раніше, ніж набір повернувся.

@@ -25,7 +25,9 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 
 	has_triggered = true
-	_show_combat_context()
+	# D737: текст зони бою не лягає на розмову — після неї, якщо герой ще тут; вийшов — зона знову чекає входу.
+	ServiceLocator.get_dialogue_manager().when_story_free_inside(self, _show_combat_context,
+			func() -> void: has_triggered = false)
 
 func _show_combat_context() -> void:
 	"""Displays the combat context message"""

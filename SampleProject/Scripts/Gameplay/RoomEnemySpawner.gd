@@ -148,7 +148,10 @@ func _on_trigger_body_entered(body: Node2D) -> void:
 	if not body.is_in_group(GameGroups.PLAYER):
 		return
 	trigger_area.body_entered.disconnect(_on_trigger_body_entered)
-	spawn_all_enemies()
+	# D737: посеред розмови бій не починається (вороги били б героя, якого тримає розмова) — після неї, якщо герой
+	# ще в зоні; вийшов — зона знову чекає входу.
+	ServiceLocator.get_dialogue_manager().when_story_free_inside(trigger_area, spawn_all_enemies,
+			func() -> void: trigger_area.body_entered.connect(_on_trigger_body_entered))
 
 ## Бій уже йшов і гравець вийшов посеред нього — повертаємось без репліки (D152).
 func fight_in_progress() -> bool:

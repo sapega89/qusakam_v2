@@ -63,6 +63,8 @@ var _require_state_internal: String = ""
 @export var action_mode: ActionMode = ActionMode.BOTH  # Режим: Стан, Діалог або обидва
 
 var has_triggered: bool = false
+## D737: герой зайшов посеред розмови — тригер чекає її кінця в DialogueManager (другий вхід не ставить його вдруге).
+var _waiting: bool = false
 
 # Статический флаг для отслеживания показанных предупреждений (на уровне класса)
 
@@ -82,6 +84,20 @@ func _on_body_entered(body: Node2D) -> void:
 	# Проверяем, что это игрок
 	if not body.is_in_group(GameGroups.PLAYER):
 		DebugLogger.info("🔄 StateChangeTrigger: Об'єкт не є гравцем, ігноруємо", "StateChangeTrigger")
+		return
+	if _waiting:
+		return
+	# D737 / B154: посеред розмови тригер не губиться і не стрибає в неї — спрацьовує, щойно розмови скінчаться.
+	# Тоді ж і перевірки стану: розмова сама могла довести сцену до require_state (раніше герой стояв у зоні,
+	# стан ще був старий, тригер відсіювався, а нового входу вже не було). Сюжетний тригер спрацьовує, навіть якщо
+	# герой встиг вийти із зони: він фіксує місце в сюжеті, а не «стоїть тут».
+	_waiting = true
+	ServiceLocator.get_dialogue_manager().when_story_free(_fire)
+
+
+func _fire() -> void:
+	_waiting = false
+	if has_triggered and one_shot:
 		return
 
 	# Проверяем требуемое состояние (если указано)

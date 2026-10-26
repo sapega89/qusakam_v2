@@ -25,13 +25,15 @@ var default_settings = {
 	"damage_numbers": true,  # D66: цифри урону над героєм і ворогами (DamageNumbers)
 	"auto_save": false,  # D413: автосейв при переході між кімнатами (SaveSystem._on_room_entered); вимкнено — лише SavePoint
 	"text_speed": "default",  # D425: одне з TEXT_SPEEDS — набір у вікні діалогу й час репліки в облачку
+	"auto_advance": true,  # D739: набрана репліка йде далі сама після паузи (UITokens.DIALOGUE_AUTO_*); вибір чекає
 	"screen_shake": true,  # D426: вимкнено — камера не смикається (VFXHooks._kick_camera, Cutscene.shake)
 	# D554: одне з GraphicsQuality.QUALITIES. Значення за замовчуванням ставить _ready() за назвою відеокарти:
 	# слабка вбудована (D553) — "low". Файл налаштувань без цього ключа (перший запуск) бере те саме.
 	"graphics_quality": "high",
 }
 
-## D425: Text Speed → у скільки разів швидше за D254 / D178 (Default — 24 літери/с і 2 с + 0.05 с/літеру, до 6 с).
+## D425: Text Speed → у скільки разів швидше за D254 / D178 (Default — UITokens.DIALOGUE_LETTERS_PER_SECOND, D738,
+## і 2 с + 0.05 с/літеру, до 6 с).
 const TEXT_SPEEDS: Dictionary = {"default": 1.0, "quick": 2.0}
 
 # Текущие настройки
@@ -77,6 +79,11 @@ func apply_settings() -> void:
 ## D425: множник швидкості тексту — його читають вікно діалогу (GameDialogueBox) і облачка (DialogueManager).
 func text_speed_factor() -> float:
 	return TEXT_SPEEDS[settings["text_speed"]]
+
+
+## D739: Settings → Game → Auto-Advance — вікно діалогу (GameDialogueBox) і облачко розмови (DialogueManager).
+func auto_advance_enabled() -> bool:
+	return settings["auto_advance"]
 
 
 ## D426: чи смикати камеру — VFXHooks._kick_camera і Cutscene.shake.

@@ -208,6 +208,10 @@ func _build_rows() -> void:
 			_add_segment_row("Text Speed", ["Default", "Quick"],
 					SettingsModule.TEXT_SPEEDS.keys().find(String(_cfg_get("text_speed"))), _on_text_speed_changed)
 			_add_separator()
+			# D739: набрана репліка йде далі сама; Off — лише «далі» (Enter / клік / A).
+			_add_segment_row("Auto-Advance", ["On", "Off"],
+					0 if _cfg_get("auto_advance") else 1, _on_auto_advance_changed)
+			_add_separator()
 			# Figma 17:632: Screen Shake одразу за Text Speed.
 			# D426: Off — камера не смикається від ударів і вибухів; вібрація геймпада лишається.
 			_add_segment_row("Screen Shake", ["On", "Off"],
@@ -384,6 +388,12 @@ func _on_quality_changed(index: int) -> void:
 
 func _on_text_speed_changed(index: int) -> void:
 	_cfg_set("text_speed", SettingsModule.TEXT_SPEEDS.keys()[index])
+	_apply_and_save()
+	_rebuild_list()
+
+
+func _on_auto_advance_changed(index: int) -> void:
+	_cfg_set("auto_advance", index == 0)
 	_apply_and_save()
 	_rebuild_list()
 

@@ -127,10 +127,11 @@ func _initialize() -> void:
 	await _until(func() -> bool: return cloud.visible, 2.0)
 	var cloud_label: Label = cloud.get_child(0).get_child(0)
 	ck(cloud_label.text.begins_with("What is that?"), "the cloud opens on Kusakam's first line, no narration (D437: '%s')" % cloud_label.text.left(30))
-	# Набір — як у вікні (24 літери/с) і не пропускається: Enter посеред набору нічого не робить.
+	# Набір — як у вікні (D738: Enter посеред набору показує всю репліку одразу, наступний Enter — наступна).
 	var first_line := cloud_label.text
+	ck(not cloud.is_typed(), "the first line is still typing")
 	await _press_accept_key()
-	ck(cloud_label.text == first_line and not cloud.is_typed(), "Enter while the line types does nothing (%.2f typed)" % cloud_label.visible_ratio)
+	ck(cloud_label.text == first_line and cloud.is_typed(), "D738: Enter while the line types shows the whole line at once (%.2f typed)" % cloud_label.visible_ratio)
 	var x_talk := player0.global_position.x
 	Input.action_press(&"move_right")
 	Input.action_press(&"attack")

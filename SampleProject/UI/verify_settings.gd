@@ -642,8 +642,16 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	_press_at(opts, "Text Speed", 1)
 	for i in 3: await process_frame
 	box_rate.append(_typed_in_one_second())
-	ck(module.settings["text_speed"] == "quick" and box_rate == [24, 48],
-			"Text Speed Quick: the dialogue box types 48 letters/s, not 24 (%s)" % str(box_rate))
+	ck(box_rate[0] == 48 and module.settings["text_speed"] == "quick" and box_rate == [48, 96],
+			"D738: Default types 48 letters/s (was 24), Quick 96 (%s)" % str(box_rate))
+	# D739: Auto-Advance — рядок одразу за Text Speed, On за замовчуванням, Off зберігається.
+	ck(_row(opts, "Auto-Advance") != null and module.settings["auto_advance"] == true, "D739: Auto-Advance row present, On by default")
+	_press_at(opts, "Auto-Advance", 1)
+	for i in 3: await process_frame
+	ck(module.settings["auto_advance"] == false and not module.auto_advance_enabled(), "D739: Auto-Advance Off stored")
+	_press_at(opts, "Auto-Advance", 0)
+	for i in 3: await process_frame
+	ck(module.settings["auto_advance"] == true, "D739: Auto-Advance On again")
 	ck(is_equal_approx(SPEECH_BUBBLE.seconds_for("x".repeat(40)) / module.text_speed_factor(), 2.0),
 			"Text Speed Quick: a 40-letter cloud line holds 2 s, not 4 s (D178 / D425)")
 	ck(await _camera_kicks(), "Screen Shake On: a hit kicks the camera")
@@ -717,7 +725,7 @@ func _typed_in_one_second() -> int:
 	var box: Node = (load(DIALOGUE_BOX) as PackedScene).instantiate()
 	root.add_child(box)
 	box.set_process(false)
-	box.settings.letters_per_second = 24.0  # як у dialogue_box_settings.tres (аддон міг лишити тег [speed])
+	box.settings.letters_per_second = UITokens.DIALOGUE_LETTERS_PER_SECOND  # D738 (аддон міг лишити тег [speed])
 	box.text = "x".repeat(200)
 	box.start_progressing(0)
 	box._process(1.01)  # трохи понад 1 с: сума кроків 1/48 с з плаваючою комою недобирає останню літеру

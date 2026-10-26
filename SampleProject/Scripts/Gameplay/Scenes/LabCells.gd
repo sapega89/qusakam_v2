@@ -178,7 +178,12 @@ func _cells_cutscene() -> void:
 
 
 func _on_step_out(body: Node2D) -> void:
-	if current_state == State.AWAKE and body.is_in_group(GameGroups.PLAYER):
+	if body.is_in_group(GameGroups.PLAYER):
+		ServiceLocator.get_dialogue_manager().when_story_free(_step_out)  # D737: посеред розмови — після неї
+
+
+func _step_out() -> void:
+	if current_state == State.AWAKE:
 		_acquaintance()
 
 

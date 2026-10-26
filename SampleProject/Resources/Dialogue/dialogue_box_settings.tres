@@ -5,7 +5,7 @@
 [resource]
 script = ExtResource("1_box")
 text_finished_marker_enabled = false
-letters_per_second = 24.0
+letters_per_second = 48.0
 layout_direction_box = 0
 layout_direction_name = 3
 layout_direction_text = 0
