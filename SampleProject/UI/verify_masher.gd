@@ -17,7 +17,7 @@ extends SceneTree
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Гра йде в SPEED раз швидше за годинник, а фізика — у SPEED раз частіше: крок фізики той самий, 1/60 с.
-const SPEED := 3.0
+const SPEED := 4.0
 ## Бій довше за CAP с ігрового часу — нічия (рахується як «не переміг»).
 const CAP := 150.0
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
@@ -44,7 +44,7 @@ const FIGHTS := [
 ]
 ## Сюжетні прапорці перед кожним боєм: кімната одразу в стані свого бою.
 const FLAGS := {"desert_road_fight_complete": false, "city_gates_intro_complete": true, "city_gates_fight_complete": false,
-		"city_gates_after_fight_complete": false, "lab_boss_talk_complete": true, "lab_boss_fight_complete": false}
+		"city_gates_after_fight_complete": false, "lab_boss_talk_complete": false, "lab_boss_fight_complete": false}
 ## Масер п'є флягу нижче цієї частки HP; GOOD — нижче своєї, коли ніхто поруч не замахується.
 const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
@@ -189,8 +189,9 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 	for flag: String in FLAGS:
 		game.set_quest_flag(flag, FLAGS[flag])
 	await game.load_room("res://SampleProject/Maps/%s.tscn" % fight.room)
-	if fight.room == "MayorHall":
-		game.map.current_state = game.map.State.FIGHT  # черга й пролам (QueueTrigger) — кат-сцена до бою
+	if fight.has("boss"):
+		# Бос спить (стан до бою), а вступна кат-сцена (черга й пролам, розмова) не почнеться: бій почне _start_boss
+		game.map.current_state = game.map.State.FIGHT
 	await physics_frame
 	_place_hero(_start_spot(fight, false))  # одразу: старі координати героя в новій кімнаті можуть бути за її межею (MetSys)
 	if game.room_changing:
