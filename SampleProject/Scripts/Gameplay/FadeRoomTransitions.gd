@@ -31,10 +31,7 @@ func _on_room_changed(target_room: String) -> void:
 	var offset := Vector2(to_coords - from_coords) * MetSys.settings.in_game_cell_size
 	_player.position -= offset
 	_player.position += Vector2(signf(offset.x), signf(offset.y)) * EDGE_NUDGE
-	# У камери ввімкнено position_smoothing: без скидання вона повзла б через усю кімнату до героя.
-	var camera: Camera2D = _player.get_node(^"Camera2D")
-	camera.reset_smoothing()
-	camera.force_update_scroll()
+	# Камеру на героя ставить Game._lift_fade() — відкладено, тобто вже після цього зсуву, ще під чорним (B153).
 
 	if game.room_changing:
 		await game.room_change_finished

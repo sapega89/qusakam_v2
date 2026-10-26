@@ -239,7 +239,7 @@ func _initialize_save_and_room() -> void:
 		place_player(ServiceLocator.get_player_state_manager().get_player_position())
 		player.restore_health(ServiceLocator.get_player_state_manager().get_player_health().current)
 	elif start_new_game:
-		await get_tree().process_frame  # Ждём загрузки комнаты
+		# Кімната вже додана (як і для сейву): ставимо в тому ж кадрі, тоді камера стане на героя ще під чорним (B153).
 		_position_player_at_start()
 
 	# Перехід пішки крізь край кімнати — через затемнення (D434), як двері й телепорти: усі йдуть через load_room().
@@ -337,6 +337,8 @@ var _last_load_room_path: String = ""
 ## D434: екран гасне, кімната довантажується (зазвичай уже готова у фоні, RoomPreloader), стара міняється на нову
 ## під чорним, і екран світлішає. Гра на цей час на паузі, але кадри йдуть — нічого не зависає.
 ## Повертається одразу після заміни, коли екран ще чорний: викликач ставить гравця, і лише тоді його видно.
+## Камера (B153): межі нової кімнати — тут, одразу після заміни; на героя вона стає в _lift_fade(), уже після того,
+## як викликач його поставив, — до першого світлого кадру. Ні межі, ні згладжування не рухають видимий кадр.
 ## Кінець появи — сигнал room_change_finished.
 func load_room(room_ref: String) -> void:
 	_load_room_call_count += 1
@@ -360,9 +362,12 @@ func load_room(room_ref: String) -> void:
 	if map == null:
 		# Перша кімната гри. Без старої мапи базовий load_room() синхронний.
 		super.load_room(path)
+		_fit_camera_to_room()
 		if ScreenFade.is_on(self):
 			room_changing = true
-			_lift_fade()
+			_lift_fade.call_deferred()
+		else:
+			_snap_camera.call_deferred()
 		return
 
 	while room_changing:
@@ -394,14 +399,17 @@ func load_room(room_ref: String) -> void:
 	old_room.queue_free()
 	map = null
 	super.load_room(path)
+	_fit_camera_to_room()
 	print("🚪 Game: room swap done, %s in" % path.get_file())
 	old_map.queue_free()
 	tree.paused = was_paused
-	_lift_fade()
+	_lift_fade.call_deferred()
 
 
-## Поява після заміни кімнати. Без await у load_room(): викликач ставить гравця в тому ж кадрі, до першого світлого.
+## Поява після заміни кімнати. Відкладена (call_deferred) у load_room(): викликач ставить гравця в тому ж кадрі
+## (прохід, двері, телепорт кат-сцени, завантаження сейву), а камера стає на нього ще під чорним (B153).
 func _lift_fade() -> void:
+	_snap_camera()
 	await ScreenFade.from_black(self, UITokens.ROOM_FADE_TIME)
 	room_changing = false
 	room_change_finished.emit()
@@ -459,13 +467,7 @@ func init_room():
 	DebugLogger.info("Game: Поточна позиція гравця ДО init_room: %s" % player.global_position, "Game")
 	DebugLogger.info("Game: MetSys.last_player_position: %s" % MetSys.last_player_position, "Game")
 	
-	var room_instance = MetSys.get_current_room_instance()
-	if is_instance_valid(room_instance):
-		room_instance.adjust_camera_limits($Player/Camera2D)
-		_raise_camera_bottom($Player/Camera2D)
-		DebugLogger.info("Game: RoomInstance знайдено: %s" % room_instance.name, "Game")
-	else:
-		push_warning("Game: No RoomInstance found in current room!")
+	# Межі камери вже виставив load_room() (_fit_camera_to_room, B153): тут, відкладено, вони мінялися б на видимому кадрі.
 	
 	# ВАЖЛИВО: Чекаємо, поки MetSys модуль переходів завершить позиціонування
 	# MetSys використовує RoomTransitions.gd для обробки переходів між кімнатами
@@ -498,6 +500,21 @@ func init_room():
 ## верх кадру тоді виходить за верхній край кімнати, де його закривають шари задника. Підлогу кімнати задає
 ## metadata/camera_floor_y у її .tscn; кімнати без неї (усередині) тримають межі клітинок MetSys.
 const CAMERA_GROUND_SHARE := 0.15
+
+## B153: межі камери нової кімнати — у load_room() одразу після заміни, поки екран чорний і героя ще не поставлено.
+func _fit_camera_to_room() -> void:
+	var camera: Camera2D = $Player/Camera2D
+	MetSys.get_current_room_instance().adjust_camera_limits(camera)
+	_raise_camera_bottom(camera)
+
+
+## B153: камера миттєво на герої — згладжування (position_smoothing) не тягне її через кімнату на очах у гравця.
+## Кат-сцена, що відчепила камеру (top_level), сама веде її і повертає (Cutscene.attach_camera).
+func _snap_camera() -> void:
+	var camera: Camera2D = $Player/Camera2D
+	camera.reset_smoothing()
+	camera.force_update_scroll()
+
 
 func _raise_camera_bottom(camera: Camera2D) -> void:
 	if not map.has_meta(&"camera_floor_y"):
