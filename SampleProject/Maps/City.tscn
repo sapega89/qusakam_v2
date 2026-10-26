@@ -20,11 +20,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_chapel.png" id="chapel_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_front.png" id="front_tex"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/City.gd" id="city_script"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="gate_guard"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/banner.tscn" id="decor_banner"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x6"]
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
 
@@ -74,12 +78,6 @@ offset = Vector2(0, 64)
 region_enabled = true
 region_rect = Rect2(0, 64, 576, 212)
 
-[node name="Front" parent="." instance=ExtResource("front_plane")]
-
-[node name="Sprite" parent="Front" index="0"]
-position = Vector2(0, 40)
-texture = ExtResource("front_tex")
-
 [node name="TileMap" type="Node2D" parent="." unique_id=913459423]
 position = Vector2(0, -160)
 
@@ -115,10 +113,16 @@ centered = false
 
 [node name="DervishTent" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(2136, 131)
+position = Vector2(2076, 131)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("tent_art")
 centered = false
+
+[node name="MayorHallDoorEntrance" parent="." instance=ExtResource("x2")]
+z_index = 0
+position = Vector2(2480, 384)
+texture = ExtResource("x3")
+offset = Vector2(-50, -104)
 
 [node name="Decor" type="Node2D" parent="."]
 
@@ -209,6 +213,14 @@ position = Vector2(2560, 240)
 [node name="Collision" type="CollisionShape2D" parent="MayorHallGate"]
 shape = SubResource("RectangleShape2D_gate")
 
+[node name="MayorHallDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(2480, 300)
+target_room = "res://SampleProject/Maps/MayorHall.tscn"
+arrival = NodePath("CityDoor")
+
+[node name="Interactable" parent="MayorHallDoor" index="1"]
+action_text = "Enter"
+
 [node name="GateTalk" type="Area2D" parent="."]
 position = Vector2(2462, 340)
 
@@ -225,3 +237,23 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x4")]
+
+[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(500, 520)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("x5")
+offset = Vector2(-78, -114)
+
+[node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
+position = Vector2(1900, 520)
+scale = Vector2(3, 3)
+
+[node name="OccluderRock2" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(3000, 520)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("x5")
+offset = Vector2(-78, -114)

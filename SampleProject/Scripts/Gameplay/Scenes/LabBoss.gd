@@ -165,8 +165,10 @@ func _set_boss_awake(awake: bool) -> void:
 	boss.bar.visible = awake
 
 
+## Зала замкнена: стіна на заході й двері в коридори (CorridorDoor) разом.
 func _set_arena_locked(locked: bool) -> void:
 	$ArenaWall/Collision.set_deferred(&"disabled", not locked)
+	($CorridorDoor as RoomDoor).interactable.enabled = not locked
 
 
 func _set_gates_open(open: bool) -> void:

@@ -9,6 +9,10 @@
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
 
 [node name="DragonMural" type="Node2D"]
 
@@ -60,3 +64,24 @@ process_mode = 3
 stream = ExtResource("r6")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x3")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(60, 0)
+
+[node name="Roots2" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(420, 0)
+flip_h = true
+
+[node name="Roots3" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(780, 0)
+
+[node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(250, 530)
+
+[node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(620, 530)
+flip_h = true
+
+[node name="TopShade" parent="." instance=ExtResource("x6")]

@@ -8,6 +8,6 @@ blend_mode = 1
 [node name="ExitLight" type="Sprite2D"]
 z_index = -1
 material = SubResource("CanvasItemMaterial_add")
-position = Vector2(0, -52)
+position = Vector2(0, -10)
 scale = Vector2(2.5, 2)
 texture = ExtResource("1_light")

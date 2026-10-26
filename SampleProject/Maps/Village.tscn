@@ -15,10 +15,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_grandpa_house.png" id="grandpa_house_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_elder_house.png" id="elder_house_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="room_door"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_front.png" id="front_tex"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/banner.tscn" id="decor_banner"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x2"]
 
 [sub_resource type="Gradient" id="Gradient_veil"]
 colors = PackedColorArray(0.839, 0.839, 0.878, 0, 0.839, 0.839, 0.878, 0.4)
@@ -79,12 +79,6 @@ centered = false
 offset = Vector2(0, 112)
 region_enabled = true
 region_rect = Rect2(0, 112, 576, 164)
-
-[node name="Front" parent="." instance=ExtResource("front_plane")]
-
-[node name="Sprite" parent="Front" index="0"]
-position = Vector2(0, 160)
-texture = ExtResource("front_tex")
 
 [node name="TileMap" type="Node2D" parent="."]
 
@@ -190,3 +184,21 @@ position = Vector2(2163, 344)
 
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(24, 344)
+
+[node name="FrontDark" parent="." instance=ExtResource("x1")]
+
+[node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("decor_palm")]
+position = Vector2(400, 520)
+scale = Vector2(3, 3)
+
+[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(1800, 520)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("x2")
+offset = Vector2(-78, -114)
+
+[node name="OccluderPalm2" parent="FrontDark" instance=ExtResource("decor_palm")]
+position = Vector2(3000, 520)
+scale = Vector2(3, 3)
+flip_h = true

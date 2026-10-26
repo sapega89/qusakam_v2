@@ -1,10 +1,11 @@
 [gd_scene format=3]
 
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/TopShade.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://SampleProject/Resources/Lighting/top_shade.tres" id="1_shade"]
 
-[node name="TopShade" type="Parallax2D"]
+[node name="TopShade" type="Node2D"]
 z_index = 19
-scroll_scale = Vector2(0, 0)
+script = ExtResource("1_script")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 scale = Vector2(110, 3.2)

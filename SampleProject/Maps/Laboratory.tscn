@@ -20,6 +20,11 @@
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -37,6 +42,12 @@ height = 256
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
+
+[sub_resource type="RectangleShape2D" id="Shape_WestWall"]
+size = Vector2(16, 448)
+
+[sub_resource type="RectangleShape2D" id="Shape_EastWall"]
+size = Vector2(16, 480)
 
 [node name="Laboratory" type="Node2D" unique_id=223979029]
 script = ExtResource("1_lab")
@@ -300,6 +311,44 @@ frame = 2
 speed_scale = 1.2
 
 [node name="RoomInstance" parent="." unique_id=891762722 instance=ExtResource("3_t6xmk")]
+
+[node name="CellsDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(64.25, 384)
+texture = ExtResource("x3")
+offset = Vector2(-36, -88)
+
+[node name="CellsDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(56, 309.75)
+target_room = "res://SampleProject/Maps/LabCells.tscn"
+arrival = NodePath("CorridorDoor")
+
+[node name="Interactable" parent="CellsDoor" index="1"]
+action_text = "Enter"
+
+[node name="WestWall" type="StaticBody2D" parent="."]
+position = Vector2(-8, 224)
+
+[node name="Collision" type="CollisionShape2D" parent="WestWall"]
+shape = SubResource("Shape_WestWall")
+
+[node name="BossDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(1672.25, 1344)
+texture = ExtResource("x3")
+offset = Vector2(-36, -88)
+
+[node name="BossDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(1664, 1269.75)
+target_room = "res://SampleProject/Maps/LabBoss.tscn"
+arrival = NodePath("CorridorDoor")
+
+[node name="Interactable" parent="BossDoor" index="1"]
+action_text = "Enter"
+
+[node name="EastWall" type="StaticBody2D" parent="."]
+position = Vector2(1736, 1200)
+
+[node name="Collision" type="CollisionShape2D" parent="EastWall"]
+shape = SubResource("Shape_EastWall")
 
 [node name="SavePoint_Entrance" type="Area2D" parent="." unique_id=1381269548]
 position = Vector2(200, 344)
@@ -854,3 +903,14 @@ script = ExtResource("11_uub52")
 z_index = -1
 position = Vector2(224, 864)
 script = ExtResource("11_uub52")
+
+[node name="FrontDark" parent="." instance=ExtResource("x4")]
+
+[node name="Pillar1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(1500, 480)
+
+[node name="Pillar2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(100, 960)
+
+[node name="Pillar3" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(1300, 1440)

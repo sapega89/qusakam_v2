@@ -17,6 +17,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/giant_scorpion.tscn" id="16_scorpion"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="music_track"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Hall/gen_wall.png" id="wall"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="x3"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_syofx"]
 atlas = ExtResource("6_1wkxm")
@@ -524,6 +527,9 @@ size = Vector2(552, 120)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gvasp"]
 size = Vector2(16, 448)
 
+[sub_resource type="RectangleShape2D" id="Shape_WestWall"]
+size = Vector2(16, 448)
+
 [node name="MayorHall" type="Node2D" unique_id=1804178272]
 script = ExtResource("6_mayor_hall")
 
@@ -621,6 +627,25 @@ scale = Vector2(2.5, 2.5)
 texture = ExtResource("14_d8hbo")
 centered = false
 offset = Vector2(-36, -96)
+
+[node name="CityDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(96, 384)
+texture = ExtResource("x3")
+offset = Vector2(-50, -104)
+
+[node name="CityDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(96, 300)
+target_room = "res://SampleProject/Maps/City.tscn"
+arrival = NodePath("MayorHallDoor")
+
+[node name="Interactable" parent="CityDoor" index="1"]
+action_text = "Enter"
+
+[node name="WestWall" type="StaticBody2D" parent="."]
+position = Vector2(-8, 224)
+
+[node name="Collision" type="CollisionShape2D" parent="WestWall"]
+shape = SubResource("Shape_WestWall")
 
 [node name="BarrierWest" type="StaticBody2D" parent="." unique_id=1424955913]
 position = Vector2(-8, 224)

@@ -15,6 +15,9 @@
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="12_trigger"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
 size = Vector2(128, 12)
@@ -193,3 +196,14 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x3")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(150, 480)
+
+[node name="Roots2" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(700, 480)
+flip_h = true
+
+[node name="TopShade" parent="." instance=ExtResource("x5")]

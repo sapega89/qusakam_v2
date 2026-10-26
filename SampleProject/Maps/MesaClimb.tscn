@@ -11,6 +11,10 @@
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r9"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -290,3 +294,24 @@ process_mode = 3
 stream = ExtResource("r8")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x3")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(90, 0)
+
+[node name="Roots2" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(250, 0)
+flip_h = true
+
+[node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(200, 1010)
+
+[node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(520, 1010)
+flip_h = true
+
+[node name="Scrub3" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(800, 1010)
+
+[node name="TopShade" parent="." instance=ExtResource("x6")]
