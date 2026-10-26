@@ -2282,8 +2282,8 @@ msgstr "Посеред села йому заступив дорогу банд�
 msgid "Kusakam beat the bandit and went looking for the old man."
 msgstr "Кусакам здолав бандита й пішов шукати старого."
 
-msgid "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
-msgstr "Він знайшов старого біля його зруйнованого дому. Старий зцілив його останніми силами, а тоді розповів, що бандити викрали реліквію — ключ до всього."
+msgid "He found the old man in his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+msgstr "Він знайшов старого в його зруйнованому домі. Старий зцілив його останніми силами, а тоді розповів, що бандити викрали реліквію — ключ до всього."
 
 msgid "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
 msgstr "Кусакам покинув спорожніле село, поклявшись піти слідом за бандитами. Та спершу його кликав назад каньйон."

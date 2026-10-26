@@ -1,8 +1,9 @@
 extends SceneTree
 
-## Дім старости в кінці села (BACKLOG 38): герой сам іде (справжнє «праворуч») до дверей, E відкриває їх — кімната
-## ElderHouse, камера в її межах; усередині стоїть староста; стіни не випускають крізь край; ліворуч до виходу,
-## pad Y — назад у Village біля дверей, камера знову в межах села. Будинки діда й старости стоять у селі за героєм.
+## Дім діда в кінці села (BACKLOG 38, D438): герой сам іде (справжнє «праворуч») до дверей, E відкриває їх — кімната
+## ElderHouse, камера в її межах; усередині стоїть дід (на вулиці його немає, вигаданого старости теж); стіни не
+## випускають крізь край; ліворуч до виходу, pad Y — назад у Village біля тих самих дверей, камера знову в межах села.
+## Обидва намальовані будинки стоять у селі за героєм.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_village_house.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -62,10 +63,9 @@ func _initialize() -> void:
 		var house: Sprite2D = game.map.get_node(n)
 		ck(house.z_index < hero_z and house.get_index() < game.map.get_node(^"Terrain").get_index(),
 				"%s is drawn behind the hero, before the terrain (z %d)" % [n, house.z_index])
-	var grandfather: Node2D = game.map.get_node(^"OldManQuest")
-	var gp: Sprite2D = game.map.get_node(^"GrandpaHouse")
-	ck(gp.get_rect().has_point(gp.to_local(grandfather.global_position + Vector2(0, -40))),
-			"the grandfather stands in front of his house (x %.0f)" % grandfather.global_position.x)
+	# Sapega 2026-10-26: «дід мав бути в своєму домі» — на вулиці ні діда, ні його тригера.
+	ck(not game.map.has_node(^"OldManQuest") and not game.map.has_node(^"StateChangeTrigger_OldManOutside"),
+			"no grandfather and no meeting trigger in the street")
 	var door: Area2D = game.map.get_node(^"ElderDoor")
 	var house: Sprite2D = game.map.get_node(^"ElderHouse")
 	ck(house.get_rect().has_point(house.to_local(door.global_position)), "the door is on the elder's house (x %.0f)" % door.global_position.x)
@@ -85,9 +85,11 @@ func _initialize() -> void:
 	var exit: Area2D = game.map.get_node(^"ExitDoor")
 	ck(game.player.global_position.distance_to(exit.global_position) < 48.0, "the hero arrives at the exit door")
 	_check_camera("ElderHouse")
-	var elder: Node2D = game.map.get_node(^"VillageElder")
-	var elder_sprite: Sprite2D = elder.get_node(^"Sprite2D")
-	ck(elder.visible and elder.z_index + elder_sprite.z_index < hero_z + 1, "the village elder stands inside, behind the hero (D291)")
+	var grandfather: Node2D = game.map.get_node(^"OldManQuest")
+	var grandfather_sprite: Sprite2D = grandfather.get_node(^"Sprite2D")
+	ck(grandfather.visible and grandfather.z_index + grandfather_sprite.z_index < hero_z + 1,
+			"the grandfather stands inside his house, behind the hero (D291, D438)")
+	ck(not game.map.has_node(^"VillageElder"), "no invented village elder (D438)")
 
 	print("[3] The house walls hold: walk to each end")
 	Input.action_press(&"move_right")

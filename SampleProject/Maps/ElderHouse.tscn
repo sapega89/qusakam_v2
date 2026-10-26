@@ -4,13 +4,15 @@
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/ElderHouse/gen_wall.png" id="3_wall"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="4_door"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/village_elder.tscn" id="5_elder"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/grandfather.tscn" id="5_grandfather"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/Ladder.tscn" id="6_ladder"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="7_locked"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/StoryNote.tscn" id="8_note"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="9_pickup"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="10_chest"]
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/ElderHouse.gd" id="11_house"]
+[ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="12_trigger"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
 size = Vector2(128, 12)
@@ -24,7 +26,11 @@ size = Vector2(192, 160)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_notes_reach"]
 size = Vector2(112, 96)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_oldman"]
+radius = 32.0
+
 [node name="ElderHouse" type="Node2D"]
+script = ExtResource("11_house")
 
 [node name="Wall" type="Sprite2D" parent="."]
 z_index = -10
@@ -153,8 +159,27 @@ arrival = NodePath("ElderDoor")
 [node name="Interactable" parent="ExitDoor" index="1"]
 action_text = "Leave"
 
-[node name="VillageElder" parent="." instance=ExtResource("5_elder")]
-position = Vector2(560, 864)
+[node name="StateChangeTrigger_OldMan" type="Area2D" parent="."]
+position = Vector2(570, 824)
+script = ExtResource("12_trigger")
+target_state = "OLD_MAN_HEALING"
+require_state = "OLD_MAN_WAITING"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StateChangeTrigger_OldMan"]
+shape = SubResource("CircleShape2D_oldman")
+
+[node name="OldManQuest" parent="." instance=ExtResource("5_grandfather")]
+position = Vector2(560, 876)
+quest_flag = "village_oldman_complete"
+quest_dialogue = "OldMan_Decision"
+
+[node name="ObjectiveTargets" type="Node2D" parent="."]
+
+[node name="old_man" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(560, 876)
+
+[node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
+position = Vector2(96, 824)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

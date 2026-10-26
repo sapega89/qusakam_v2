@@ -2280,8 +2280,8 @@ msgstr "A bandit stopped him in the middle of the village."
 msgid "Kusakam beat the bandit and went looking for the old man."
 msgstr "Kusakam beat the bandit and went looking for the old man."
 
-msgid "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
-msgstr "He found the old man by his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+msgid "He found the old man in his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
+msgstr "He found the old man in his ruined house. The old man healed him with the last of his strength. Then the old man told him the bandits had stolen the relic — the key to everything."
 
 msgid "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."
 msgstr "Kusakam left the empty village, sworn to follow the bandits. But first, the canyon was calling him back."

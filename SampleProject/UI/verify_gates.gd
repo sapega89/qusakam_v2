@@ -184,7 +184,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 10)
 	ck(started.has("Gate_ElderAttic_Locked"), "E on the shut hatch: Kusakam's line (%s)" % [started])
 	await Kit.drain(self)
-	game.set_quest_flag("village_oldman_complete", true)  # те, що ставить кінець OldMan_Decision (Village.gd)
+	game.set_quest_flag("village_oldman_complete", true)  # те, що ставить кінець OldMan_Decision (ElderHouse.gd)
 	await Kit.frames(self, 30)
 	ck(hatch.is_open and hatch.get_node("Body/CollisionShape2D").disabled, "the flag opens the hatch at once")
 	await _stand(game, Vector2(384.0, 600.0))

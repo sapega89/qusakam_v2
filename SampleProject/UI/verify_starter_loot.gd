@@ -20,6 +20,16 @@ func _finish_dialogue(dm: Node) -> void:
 		dm.current_dialogue_player.accept()
 		await process_frame
 
+## Закриває модалку (подарунок діда, D129) кнопкою у фокусі — як Enter.
+func _close_modal(sl: Node) -> void:
+	var layer: Node = sl.get_ui_manager().get_modal_layer()
+	for i in 30:
+		if layer.active_modal:
+			layer.active_modal.get_viewport().gui_get_focus_owner().pressed.emit()
+			for j in 4: await process_frame
+			return
+		await process_frame
+
 func _initialize() -> void:
 	await process_frame
 	await process_frame
@@ -60,8 +70,9 @@ func _initialize() -> void:
 		merchant.free()
 
 	print("[3] The old man's gift arrives once")
-	# Справжня кімната: подарунок показує підказку через дерево, а голий скрипт села без кімнати не стартує
-	var village: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
+	# Справжня кімната: подарунок показує підказку через дерево, а голий скрипт дому без кімнати не стартує.
+	# Дід дає його у своєму домі (D438).
+	var village: Node = load("res://SampleProject/Maps/ElderHouse.tscn").instantiate()
 	game.add_child(village)
 	village._give_oldman_gift()
 	village._give_oldman_gift()
@@ -83,7 +94,7 @@ func _initialize() -> void:
 	inv.remove_item("leather_armor", 1)
 	var started: Array[String] = []
 	var swords_at_start: Dictionary = {}  # розмова → скільки мечів було, коли вона почалась
-	# Лише розмови Village: Canyon (стартова кімната) паралельно грає свій вступ.
+	# Лише розмови діда й LeavingVillage: Canyon (стартова кімната) паралельно грає свій вступ.
 	sl.get_dialogue_manager().dialogue_started.connect(func(id: String) -> void:
 		var talk := id.get_file().get_basename()
 		if talk.begins_with("OldMan_") or talk == "LeavingVillage":
@@ -97,22 +108,34 @@ func _initialize() -> void:
 		for i in 10: await process_frame
 		if not dm.is_dialogue_active():
 			break
-	# Справжня кімната (з EnemySpawner), а не голий скрипт — у грі Village без неї не буває.
-	var v2: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
+	# Справжня кімната, а не голий скрипт: дід у своєму домі (ElderHouse, D438).
+	var v2: Node = load("res://SampleProject/Maps/ElderHouse.tscn").instantiate()
 	root.add_child(v2)
 	for i in 4: await process_frame
-	ck(v2.get_current_state_name() == "OLD_MAN_OUTSIDE", "waits for the player at the tree (%s)" % v2.get_current_state_name())
+	ck(v2.get_current_state_name() == "OLD_MAN_WAITING", "waits for the player beside him in his house (%s)" % v2.get_current_state_name())
 	v2.change_state_by_name("OLD_MAN_HEALING")  # що робить тригер
 	for i in 4: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
 	for i in 4: await process_frame
 	# D261: дід лікування не просить — після OldMan_Healing одразу рішення й подарунок.
-	ck(started == ["OldMan_Outside", "OldMan_Healing", "OldMan_Decision", "LeavingVillage"], "talks in order, once each, no heal request (%s)" % [started])
+	ck(started == ["OldMan_Outside", "OldMan_Healing", "OldMan_Decision"], "talks in order, once each, no heal request (%s)" % [started])
 	ck(swords_at_start.get("OldMan_Decision", -1) == 0, "no gift before the last talk starts")
-	ck(swords_at_start.get("LeavingVillage", -1) == 1, "gift is there once the last talk is over")
 	ck(game.get_quest_flag("village_oldman_met") and game.get_quest_flag("village_oldman_healed") and game.get_quest_flag("village_oldman_complete"), "met → healed → complete flags set")
 	ck(inv.get_item_count("copper_sword") == 1 and inv.get_item_count("leather_armor") == 1, "gift arrives after the last talk")
-	ck(v2.get_current_state_name() == "LEAVING_VILLAGE", "then on to leaving (%s)" % v2.get_current_state_name())
+	ck(v2.get_current_state_name() == "DONE", "the house is done (%s)" % v2.get_current_state_name())
 	v2.queue_free()
+	for i in 4: await process_frame
+	await _close_modal(sl)  # «You obtained:» подарунка — гравець закриває його ще в домі
+
+	print("[5] Back outside, the village moves on to leaving")
+	var v3: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
+	root.add_child(v3)
+	for i in 4: await process_frame
+	await _finish_dialogue(sl.get_dialogue_manager())
+	for i in 4: await process_frame
+	ck(v3.get_current_state_name() == "LEAVING_VILLAGE" and started.back() == "LeavingVillage", "LeavingVillage plays outside (%s, %s)" % [v3.get_current_state_name(), started])
+	ck(swords_at_start.get("LeavingVillage", -1) == 1, "gift is there once the grandfather's talks are over")
+	ck(game.get_quest_flag("village_left_complete"), "village_left_complete set")
+	v3.queue_free()
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

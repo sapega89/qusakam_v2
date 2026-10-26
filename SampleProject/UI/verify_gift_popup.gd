@@ -121,10 +121,10 @@ func _initialize() -> void:
 	var flags: Dictionary = game.get_quest_flags().duplicate()
 	flags["village_fight_complete"] = true
 	game.set_quest_flags(flags)
-	var village: Node = load("res://SampleProject/Maps/Village.tscn").instantiate()
-	root.add_child(village)
+	var house: Node = load("res://SampleProject/Maps/ElderHouse.tscn").instantiate()  # дід у своєму домі (D438)
+	root.add_child(house)
 	for i in 4: await process_frame
-	village.change_state_by_name("OLD_MAN_HEALING")
+	house.change_state_by_name("OLD_MAN_HEALING")  # що робить тригер біля діда
 	for i in 4: await process_frame
 	var clean: bool = await _drain(dm, layer)
 	ck(clean, "no popup while the talks run")
@@ -135,7 +135,7 @@ func _initialize() -> void:
 	enter.keycode = KEY_ENTER
 	await _tap(enter)
 	ck(layer.active_modal == null and not ui.has_pending_obtained(), "Enter closes it, nothing else pending")
-	village.queue_free()
+	house.queue_free()
 	for i in 4: await process_frame
 
 	print("[3] A task reward and a task's hand-out open the popup; pad A and a click close it")

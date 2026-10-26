@@ -39,6 +39,7 @@ const NOT_GAMEPLAY := {
 const EARLY_ROOMS := {
 	"Canyon": "res://SampleProject/Scripts/Gameplay/Scenes/Canyon.gd",
 	"Village": "res://SampleProject/Scripts/Gameplay/Scenes/Village.gd",
+	"ElderHouse": "res://SampleProject/Scripts/Gameplay/Scenes/ElderHouse.gd",  # розмова з дідом (D438)
 	"DesertRoad": "res://SampleProject/Scripts/Gameplay/Scenes/DesertRoad.gd",
 	"CityGates": "res://SampleProject/Scripts/Gameplay/Scenes/CityGates.gd",
 }
@@ -47,7 +48,7 @@ const NO_WALK := ["Find a way forward", "Descend to the road", "Learn to fight: 
 ## Уже за ранніми кроками: ціль у місті (City), мітки — разом із планом міста.
 const BEYOND_EARLY := ["Find the laboratory"]
 ## Цілі, що лишаються в наступній кімнаті: мітка з тим самим id мусить бути і там.
-const CARRIED := {"canyon_bridge": ["Village", "Canyon"], "city_gates": ["DesertRoad", "CityGates"]}
+const CARRIED := {"canyon_bridge": ["ElderHouse", "Village", "Canyon"], "city_gates": ["DesertRoad", "CityGates"]}
 
 var fails: Array[String] = []
 var game: Node

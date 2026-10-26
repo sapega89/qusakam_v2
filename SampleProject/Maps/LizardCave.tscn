@@ -75,10 +75,10 @@ tile_map_data = PackedByteArray("AAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 376)
+position = Vector2(320, 376)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(96, 376)
+position = Vector2(320, 376)
 target_room = "res://SampleProject/Maps/Canyon.tscn"
 arrival = NodePath("LizardCaveDoor")
 

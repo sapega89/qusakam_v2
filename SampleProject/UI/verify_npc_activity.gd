@@ -9,7 +9,7 @@ const NPC_DIR := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/"
 const NPCS := [
 	["blacksmith", "City", true],
 	["merchant", "DesertRoad", true],
-	["grandfather", "Village", true],
+	["grandfather", "ElderHouse", true],  # дід у своєму домі (D438)
 	["oath_priest", "City", true],
 	["oath_witch", "City", true],
 	["oath_dervish", "City", true],

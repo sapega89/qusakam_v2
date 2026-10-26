@@ -4,7 +4,12 @@ extends SceneTree
 ## гра застопорилась, не можу рухатись»).
 ## Тригер прибуття міняє стан на STREET_FIGHT І грає ArrivalToVillage; стан запускає свою
 ## реплiку FightWithBandit. Раніше другий запит ховав живе вікно першого й губився.
+## Після бою — до дому діда (ElderDoor): розмова з ним, лікування, рішення, ключ — усередині (D438), вихід — тими
+## самими дверима назад, а тоді LeavingVillage.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_village_fight.gd
+
+const VILLAGE := "res://SampleProject/Maps/Village.tscn"
+const HOUSE := "res://SampleProject/Maps/ElderHouse.tscn"
 
 var fails: Array[String] = []
 
@@ -27,6 +32,16 @@ func _drain(dm: Node) -> void:
 		for i in 10: await process_frame
 		if not dm.is_dialogue_active():
 			return
+
+## Закриває модалку (подарунок діда, D129) кнопкою у фокусі — як Enter.
+func _close_modal(sl: Node) -> void:
+	var layer: Node = sl.get_ui_manager().get_modal_layer()
+	for i in 30:
+		if layer.active_modal:
+			layer.active_modal.get_viewport().gui_get_focus_owner().pressed.emit()
+			for j in 4: await process_frame
+			return
+		await process_frame
 
 func _enemy_count(village: Node) -> int:
 	var count := 0
@@ -110,21 +125,38 @@ func _initialize() -> void:
 			n.die()
 	for i in 20: await process_frame
 	ck(game.get_quest_flag("village_fight_complete"), "village_fight_complete set")
-	ck(village.get_current_state_name() == "OLD_MAN_OUTSIDE", "on to the old man (%s)" % village.get_current_state_name())
+	ck(village.get_current_state_name() == "CHECK_HOUSE", "on to the house (%s)" % village.get_current_state_name())
 
-	print("[5] \"Oh no, the house!\" (D140)")
+	print("[5] \"Oh no, the house!\" (D140): the arrow leads to his door")
 	ck(started.has("Village_AfterFight"), "the after-fight line plays (%s)" % [started])
 	ck(game.current_objective == "Check on the house", "objective: Check on the house (%s)" % game.current_objective)
+	var elder_door: Area2D = village.get_node(^"ElderDoor")
+	ck(game.objective_marker() != null and game.objective_marker().global_position == elder_door.global_position,
+			"the objective points at the house door ElderDoor (%s)" % [game.objective_marker()])
+	ck(not village.has_node(^"OldManQuest"), "the grandfather is not in the street (D438)")
 	await _drain(dm)
 
-	print("[6] The old man heals Kusakam and does not ask to be healed (D252, D261)")
+	print("[6] Through his door: the old man is inside, heals Kusakam and does not ask to be healed (D252, D261, D438)")
 	var sm: Node = sl.get_skill_manager()
 	var hint: Node = get_first_node_in_group("tutorial_hint_display")
 	game.player.take_damage(30)
-	game.player.global_position = Vector2(1582, 344)
+	elder_door.get_node(^"Interactable").interacted.emit()
+	for i in 120:
+		if game.map.scene_file_path == HOUSE:
+			break
+		await process_frame
+	for i in 20: await process_frame
+	var house: Node = game.map
+	ck(house.scene_file_path == HOUSE, "ElderDoor → ElderHouse (%s)" % house.scene_file_path.get_file())
+	ck(game.player.global_position.distance_to(house.get_node(^"ExitDoor").global_position) < 48.0,
+			"the hero stands at the house's door he came in by (%s)" % game.player.global_position)
+	ck(house.get_current_state_name() == "OLD_MAN_WAITING", "the old man waits inside (%s)" % house.get_current_state_name())
+	ck(game.current_objective == "Talk to the old man" and game.objective_marker() == house.get_node(^"ObjectiveTargets/old_man"),
+			"objective: Talk to the old man, the arrow on him (%s)" % game.current_objective)
+	game.player.global_position = house.get_node(^"StateChangeTrigger_OldMan").global_position
 	game.player.velocity = Vector2.ZERO
 	for i in 30: await process_frame
-	ck(village.get_current_state_name() == "OLD_MAN_HEALING", "the tree trigger starts the old man's scene")
+	ck(house.get_current_state_name() == "OLD_MAN_HEALING", "the trigger beside him starts the old man's scene in his house")
 	# Українське джерело (DqdReader читає файл мовою гри — тут англійську).
 	var healing_source := FileAccess.get_file_as_string("res://dialogue_quest/OldMan_Healing.dqd")
 	ck(not healing_source.contains("Длань") and not healing_source.contains("твоя черга"),
@@ -138,10 +170,37 @@ func _initialize() -> void:
 	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "the Village teaches no Healing Palm, slot 1 empty")
 	ck(hint.current_hint != "healing_palm", "no Healing Palm tutorial in the Village (%s)" % hint.current_hint)
 
-	print("[7] Straight on to his decision and the gift")
+	print("[7] Straight on to his decision, the gift and the key")
 	ck(not started.has("OldMan_Treated"), "no 'after you healed me' talk (%s)" % [started])
 	ck(started.has("OldMan_Decision"), "then the decision and the gift (%s)" % [started])
-	ck(game.get_quest_flag("village_oldman_healed") and game.get_quest_flag("village_oldman_complete"), "healed → complete flags set")
+	ck(game.get_quest_flag("village_oldman_met") and game.get_quest_flag("village_oldman_healed")
+			and game.get_quest_flag("village_oldman_complete"), "met → healed → complete flags set, in the house")
+	ck(game.get_quest_flag("village_grandfather_key") and sl.get_inventory_manager().get_item_count("grandfather_key") == 1,
+			"Grandfather's old key, once")
+	ck(house.get_current_state_name() == "DONE" and game.current_objective == "Leave the village"
+			and game.objective_marker() == house.get_node(^"ObjectiveTargets/canyon_bridge"),
+			"objective: Leave the village, the arrow on the house door (%s)" % game.current_objective)
+	ck(house.get_node(^"ObjectiveTargets/canyon_bridge").global_position == house.get_node(^"ExitDoor").global_position,
+			"the house's canyon_bridge mark is its door")
+
+	print("[7b] Out through the same door: back at ElderDoor, then leaving the village")
+	await _drain(dm)
+	await _close_modal(sl)  # «You obtained:» подарунка діда
+	house.get_node(^"ExitDoor").get_node(^"Interactable").interacted.emit()
+	for i in 120:
+		if game.map.scene_file_path == VILLAGE:
+			break
+		await process_frame
+	for i in 20: await process_frame
+	village = game.map
+	ck(village.scene_file_path == VILLAGE, "ExitDoor → Village (%s)" % village.scene_file_path.get_file())
+	ck(game.player.global_position.distance_to(village.get_node(^"ElderDoor").global_position) < 48.0,
+			"the hero comes out at ElderDoor, the door he went in by (%s)" % game.player.global_position)
+	ck(village.get_current_state_name() == "LEAVING_VILLAGE" and started.has("LeavingVillage"),
+			"outside: on to leaving, Kusakam's 'time to go' (%s)" % village.get_current_state_name())
+	await _drain(dm)
+	for i in 10: await process_frame
+	ck(game.get_quest_flag("village_left_complete"), "village_left_complete set (the canyon gate opens on it)")
 	print("[8] The Skills tab lists Kusakam's skills")
 	ui.open_game_menu()
 	for i in 16: await process_frame

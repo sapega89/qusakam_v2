@@ -3,7 +3,7 @@ extends SceneTree
 ## Бічні кімнати D643 (branch batch 1) справжнім вводом:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_rooms_batch1.gd
 ##   1. Дані: кожна кімната на карті MetSys і рівно в одній локації, брами в gates.json, розписи в journal_stories.
-##   2. Печера ящурів: вхід у каньйоні (E); ґрати святилища без ключа — репліка, герой стоїть; дідова розмова дає ключ
+##   2. Печера ящурів: вхід у каньйоні (E) → герой у намальованому отворі печери, вихід — ним же назад до входу; ґрати святилища без ключа — репліка, герой стоїть; дідова розмова дає ключ
 ##      один раз; E відмикає (ключ витрачено); розпис → журнал; скриня → Deep Gourd Amulet.
 ##   3. Розпис дракона: двері за брилою на плато не відповідають, легкий удар брилу лише хитає, важкий — розбиває;
 ##      E — у печерку; розпис → журнал; скриня → Jackal Tooth Amulet.
@@ -183,6 +183,12 @@ func _initialize() -> void:
 	print("[2] Lizard Cave: the cave by the bridge, the shrine behind Grandfather's key")
 	await _room("Canyon", ^"Arrival")
 	await _enter("LizardCaveDoor", "LizardCave")
+	var cave_exit: Node2D = game.map.get_node("ExitDoor")
+	# Sapega 2026-10-26: зайшов отвором — виходиш ним; отвір печери намальовано на x ≈ 320, біля святилища на x 96 — ні.
+	ck(cave_exit.position.x == 320.0 and game.map.get_node("Arrival").position == cave_exit.position,
+			"the cave's exit stands in the painted cave opening (x %.0f), the Arrival with it" % cave_exit.position.x)
+	ck(player.global_position.distance_to(cave_exit.global_position) < 48.0,
+			"the hero arrives at that opening, the door he came by (%s)" % player.global_position)
 	var shrine: Node = game.map.get_node("Gate_Shrine")
 	ck(_kinds("Fight_CaveLizards") == ["fast", "fast"], "a few small enemies in the open part (%s)" % [_kinds("Fight_CaveLizards")])
 	await _stand(Vector2(1100, 380))
@@ -194,7 +200,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 10)
 	ck(started.has("Gate_LizardShrine_Locked") and not shrine.is_open, "no key: Kusakam's line, the bars stay shut")
 	await Kit.drain(self)
-	await _room("Village", ^"Arrival")
+	await _room("ElderHouse", ^"ExitDoor")  # дід у своєму домі (D438), розмова — ElderHouse.gd
 	game.map._complete_quest_for_dialogue("OldMan_Decision")
 	await Kit.frames(self, 6)
 	await _close_modal()
@@ -214,6 +220,8 @@ func _initialize() -> void:
 	await _room("LizardCave", ^"ExitDoor")
 	ck(game.map.get_node("Gate_Shrine").is_open and game.map.get_node("Chest_Shrine").is_open, "a room reload: the bars open, the chest open")
 	await _enter("ExitDoor", "Canyon")
+	ck(player.global_position.distance_to(game.map.get_node("LizardCaveDoor").global_position) < 48.0,
+			"out of the cave: back at the cave mouth in the Canyon (%s)" % player.global_position)
 
 	print("[3] Dragon Mural: the boulder on the plateau hides the way in")
 	var door: Node = game.map.get_node("DragonMuralDoor")
