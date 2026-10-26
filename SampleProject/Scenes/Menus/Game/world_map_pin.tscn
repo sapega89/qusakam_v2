@@ -1,0 +1,32 @@
+[gd_scene format=3]
+
+[node name="WorldMapPin" type="PanelContainer"]
+mouse_filter = 2
+theme_type_variation = &"MapPin"
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Dot" type="Panel" parent="Row"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"MapPinDotVisited"
+
+[node name="Text" type="VBoxContainer" parent="Row"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = -6
+
+[node name="Name" type="Label" parent="Row/Text"]
+layout_mode = 2
+theme_type_variation = &"MapPinName"
+text = "Location"
+
+[node name="State" type="Label" parent="Row/Text"]
+layout_mode = 2
+theme_type_variation = &"MapPinState"
+text = "visited"

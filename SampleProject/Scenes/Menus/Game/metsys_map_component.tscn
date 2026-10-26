@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://cgqw1w6vyrphj_new"]
+[gd_scene load_steps=4 format=3 uid="uid://cgqw1w6vyrphj_new"]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/metsys_map_component.gd" id="1_metsys_map"]
+[ext_resource type="Script" path="res://SampleProject/UI/Components/map_icon.gd" id="2_map_icon"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_rule"]
 color = Color(0.83137256, 0.6862745, 0.21568628, 1)
@@ -16,8 +17,15 @@ grow_vertical = 2
 focus_mode = 2
 script = ExtResource("1_metsys_map")
 
-[node name="TopDraw" type="Control" parent="."]
-z_index = 5
+[node name="Frame" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+mouse_filter = 2
+
+[node name="Level1" type="Control" parent="Frame"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,93 +34,271 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="TitleBlock" type="VBoxContainer" parent="."]
+[node name="Pins" type="Control" parent="Frame/Level1"]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -200.0
-offset_top = 50.0
-offset_right = 200.0
-offset_bottom = 127.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Card" type="PanelContainer" parent="Frame/Level1"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 368.0
+offset_top = 790.0
+offset_right = 782.0
+offset_bottom = 912.0
+mouse_filter = 2
+theme_type_variation = &"MapCard"
+
+[node name="Rows" type="VBoxContainer" parent="Frame/Level1/Card"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="CardName" type="Label" parent="Frame/Level1/Card/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapCardTitle"
+text = "Canyon of Whispers"
+
+[node name="CardStats" type="Label" parent="Frame/Level1/Card/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+auto_translate_mode = 2
+text = "Explored 0% · Chests 0/0"
+
+[node name="CardHint" type="Label" parent="Frame/Level1/Card/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "A — open the location map"
+
+[node name="Level2" type="Control" parent="Frame"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Veil" type="Panel" parent="Frame/Level2"]
+layout_mode = 0
+offset_left = 320.0
+offset_right = 1920.0
+offset_bottom = 1016.0
+mouse_filter = 2
+theme_type_variation = &"MapVeil"
+
+[node name="Rooms" type="Control" parent="Frame/Level2"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 0
+offset_left = 340.0
+offset_top = 160.0
+offset_right = 1480.0
+offset_bottom = 990.0
+mouse_filter = 2
+
+[node name="Grid" type="Control" parent="Frame/Level2/Rooms"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Legend" type="PanelContainer" parent="Frame/Level2"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1500.0
+offset_top = 700.0
+offset_right = 1794.0
+offset_bottom = 880.0
+mouse_filter = 2
+theme_type_variation = &"MapCard"
+
+[node name="Rows" type="VBoxContainer" parent="Frame/Level2/Legend"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+theme_type_variation = &"MapLegendTitle"
+text = "LEGEND"
+
+[node name="Room" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="Control" parent="Frame/Level2/Legend/Rows/Room"]
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"room"
+
+[node name="Text" type="Label" parent="Frame/Level2/Legend/Rows/Room"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "a room you have been in"
+
+[node name="Seen" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="Control" parent="Frame/Level2/Legend/Rows/Seen"]
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"room_seen"
+
+[node name="Text" type="Label" parent="Frame/Level2/Legend/Rows/Seen"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "saw the entrance, not entered yet"
+
+[node name="HeroSave" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Hero" type="Control" parent="Frame/Level2/Legend/Rows/HeroSave"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"hero"
+
+[node name="HeroText" type="Label" parent="Frame/Level2/Legend/Rows/HeroSave"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "you"
+
+[node name="Save" type="Control" parent="Frame/Level2/Legend/Rows/HeroSave"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"save"
+
+[node name="SaveText" type="Label" parent="Frame/Level2/Legend/Rows/HeroSave"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "meditation (save)"
+
+[node name="Objects" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Chest" type="Control" parent="Frame/Level2/Legend/Rows/Objects"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"chest"
+
+[node name="ChestText" type="Label" parent="Frame/Level2/Legend/Rows/Objects"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "chest"
+
+[node name="Locked" type="Control" parent="Frame/Level2/Legend/Rows/Objects"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"locked"
+
+[node name="LockedText" type="Label" parent="Frame/Level2/Legend/Rows/Objects"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "locked door"
+
+[node name="Quest" type="Control" parent="Frame/Level2/Legend/Rows/Objects"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"quest"
+
+[node name="QuestText" type="Label" parent="Frame/Level2/Legend/Rows/Objects"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "quest"
+
+[node name="Exit" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="Control" parent="Frame/Level2/Legend/Rows/Exit"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"exit"
+
+[node name="Text" type="Label" parent="Frame/Level2/Legend/Rows/Exit"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "exit to another location"
+
+[node name="TitleBlock" type="VBoxContainer" parent="Frame"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 880.0
+offset_top = 50.0
+offset_right = 1680.0
+offset_bottom = 140.0
 mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="MapTitle" type="Label" parent="TitleBlock"]
+[node name="MapTitle" type="Label" parent="Frame/TitleBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"MapTitle"
 text = "KHALAHAS"
 horizontal_alignment = 1
 
-[node name="SubRow" type="HBoxContainer" parent="TitleBlock"]
+[node name="SubRow" type="HBoxContainer" parent="Frame/TitleBlock"]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="LineLeft" type="HSeparator" parent="TitleBlock/SubRow"]
+[node name="LineLeft" type="HSeparator" parent="Frame/TitleBlock/SubRow"]
 custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/separator = SubResource("StyleBoxLine_rule")
 
-[node name="MapSubtitle" type="Label" parent="TitleBlock/SubRow"]
+[node name="MapSubtitle" type="Label" parent="Frame/TitleBlock/SubRow"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"MapSubtitle"
 text = "The Desert Kingdoms"
 horizontal_alignment = 1
 
-[node name="LineRight" type="HSeparator" parent="TitleBlock/SubRow"]
+[node name="LineRight" type="HSeparator" parent="Frame/TitleBlock/SubRow"]
 custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/separator = SubResource("StyleBoxLine_rule")
-
-[node name="ExploredPanel" type="PanelContainer" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 48.0
-offset_top = -96.0
-offset_right = 256.0
-offset_bottom = -48.0
-grow_vertical = 0
-theme_type_variation = &"SidePanel"
-
-[node name="Row" type="HBoxContainer" parent="ExploredPanel"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ExploredCaption" type="Label" parent="ExploredPanel/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_type_variation = &"MicroLabel"
-text = "EXPLORED"
-
-[node name="PercentLabel" type="Label" parent="ExploredPanel/Row"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"MetaValueAccent"
-text = "000%"
-horizontal_alignment = 2
-
-[node name="InfoLabel" type="Label" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -33.0
-offset_right = 300.0
-grow_vertical = 0
-theme_type_variation = &"SmallLabel"
