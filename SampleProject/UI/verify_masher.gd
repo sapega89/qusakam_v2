@@ -232,19 +232,6 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 	else:
 		spawner = await _start_fight(fight)
 	hero.defeat_handler = func() -> void: pass  # без Game Over і кат-сцени поразки: бій міряє тест
-	if OS.get_environment("MASHER_DEBUG") == "3":
-		var hs: Vector2 = hero.combat._hitbox_shape().size
-		print("DEBUG reach hero: center %s size %s → front %.0f; body half %.0f" % [hero.combat.hitbox_center, hs, hero.combat.hitbox_center.x + hs.x / 2.0,
-				(hero.get_node(^"CollisionShape2D").shape.get_rect().size.x) / 2.0])
-		for e: Node in get_nodes_in_group(&"enemies"):
-			var es: Vector2 = e.hitbox_collision.shape.get_rect().size * e.global_scale
-			var hurt: Vector2 = e.hurt_collision.shape.get_rect().size * e.global_scale
-			print("DEBUG reach %s: attack_range %.0f strike front %.0f hurt half %.0f body half %.0f" % [e.enemy_stats.enemy_type, e.attack_range,
-					absf(e._strike_x) * e.global_scale.x + es.x / 2.0, hurt.x / 2.0, e.get_node(^"CollisionShape2D").shape.get_rect().size.x * e.global_scale.x / 2.0])
-	if OS.get_environment("MASHER_DEBUG") != "":
-		print("DEBUG start: event=%s hero=%s enemies=%s dialogue=%s" % [hero.event, hero.global_position,
-				get_nodes_in_group(&"enemies").map(func(e: Node) -> Vector2: return e.global_position), sl.get_dialogue_manager().is_dialogue_active()])
-
 	hits_taken = 0
 	hero_hits = 0
 	cleaves = 0
@@ -502,20 +489,6 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 				else "cooldown" if logic.current_state == logic.AIState.ATTACK and logic.attack_ready_in > 0.0 \
 				else "ready" if logic.current_state == logic.AIState.ATTACK else "other"
 		swings[id][phase] = swings[id].get(phase, 0.0) + dt
-		if OS.get_environment("MASHER_DEBUG") == "2" and Engine.get_physics_frames() % 90 == 0:
-			var space: PhysicsDirectSpaceState2D = enemy.get_world_2d().direct_space_state
-			var shape: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
-			var ahead: float = enemy.global_position.x - (shape.shape.get_rect().size.x * enemy.global_scale.x / 2.0 + 8.0)
-			var wall := PhysicsRayQueryParameters2D.create(enemy.global_position, Vector2(ahead, enemy.global_position.y))
-			wall.exclude = logic._bodies()
-			var ground := PhysicsRayQueryParameters2D.create(Vector2(ahead, enemy.global_position.y), Vector2(ahead, logic._feet_y(enemy) + 16.0))
-			ground.exclude = logic._bodies()
-			var w := space.intersect_ray(wall)
-			var g := space.intersect_ray(ground)
-			print("DEBUG rays: wall %s n %s at %s ground %s feet %.1f pos %s" % [w.get("collider"), w.get("normal"), w.get("position"), g.get("position"), logic._feet_y(enemy), enemy.global_position])
-			print("DEBUG %s %s strike %.1f token %s attackers %d dx %.0f dy feet %.0f notice %s state %s ready_in %.2f home %.0f x %.0f" % [enemy.name, phase, logic.strike_range(), "%s/%s" % [logic.can_step(-1), logic.can_step(1)], logic.attackers(),
-					hero.global_position.x - enemy.global_position.x, logic._feet_y(hero) - logic._feet_y(enemy), logic.can_notice(hero),
-					logic.current_state, logic.attack_ready_in, logic.home_position.x, enemy.global_position.x])
 		var on: bool = enemy.hitbox.monitoring
 		if on and not enemy.get_meta(&"masher_on", false):
 			strikes[id] += 1
