@@ -4,7 +4,9 @@
 
 # UI Implementation Rules
 
-Figma is the visual source of truth.
+Figma is the visual reference: inspiration, not the source of truth (Sapega, 2026-10-26: «фігма була для
+натхнення, а не як source of truth»). How the game looks is decided by Sapega's notes, his playtests and the
+D-IDs; where the game and Figma differ, readability and his word win.
 Existing Godot gameplay code is the behavioral source of truth.
 
 - Do not redesign the UI.
@@ -29,7 +31,7 @@ Existing Godot gameplay code is the behavioral source of truth.
 1. Run Godot
 2. Check for errors
 3. Capture/inspect the rendered UI
-4. Compare against Figma
+4. Compare against Figma and Sapega's notes (readability first)
 5. Fix visual differences
 6. Test navigation and gameplay integration
 
