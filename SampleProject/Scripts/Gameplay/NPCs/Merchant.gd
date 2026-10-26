@@ -166,6 +166,7 @@ func _load_merchant_items() -> Array:
 	return merchant_data.items.duplicate()
 
 func _exit_tree() -> void:
+	super._exit_tree()
 	# Закриваємо магазин якщо він відкритий
 	if is_shop_open:
 		close_shop()

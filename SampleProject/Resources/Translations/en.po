@@ -3331,3 +3331,34 @@ msgstr "Lab Cells"
 
 msgid "Lab Boss"
 msgstr "Lab Boss"
+
+# D718: підказки «?»
+msgid "Open a tutorial tip (?)"
+msgstr "Open a tutorial tip (?)"
+
+msgid "Open Tip"
+msgstr "Open Tip"
+
+# D719: тренування — один рядок на урок
+msgid "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
+msgstr "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
+
+msgid "2/4 · His weapon glints: dash {dodge} or hold {block}"
+msgstr "2/4 · His weapon glints: dash {dodge} or hold {block}"
+
+msgid "3/4 · Yellow glint: tap {block} as the blow lands"
+msgstr "3/4 · Yellow glint: tap {block} as the blow lands"
+
+msgid "4/4 · {heavy_attack} while he is not swinging"
+msgstr "4/4 · {heavy_attack} while he is not swinging"
+
+# D720: вдягнене в інвентарі
+msgid "Equipped — double-click or Enter to unequip (%s)"
+msgstr "Equipped — double-click or Enter to unequip (%s)"
+
+msgid "%s unequipped — %s."
+msgstr "%s unequipped — %s."
+
+# D722: проклацати діалог
+msgid "Next line of dialogue (hold: run to the next choice)"
+msgstr "Next line of dialogue (hold: run to the next choice)"

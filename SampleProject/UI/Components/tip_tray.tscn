@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/tip_tray.gd" id="1_tray"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+
+[node name="TipTray" type="VBoxContainer"]
+offset_left = 24.0
+offset_top = 246.0
+offset_right = 124.0
+offset_bottom = 246.0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_tray")
+
+[node name="TipIcon" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+
+[node name="Badge" type="PanelContainer" parent="TipIcon"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"KeyBadge"
+
+[node name="Mark" type="Label" parent="TipIcon/Badge"]
+layout_mode = 2
+theme_type_variation = &"TutorialKeyLabel"
+text = "?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Key" type="Label" parent="TipIcon"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"TutorialKeyLabel"

@@ -115,6 +115,19 @@ func _initialize() -> void:
 	ck(game.current_objective == "Defeat the bandit in the street", "after the lessons: finish him (%s)" % game.current_objective)
 	ck(not hint.is_showing or not hint.current_hint.begins_with("lesson_"), "no lesson banner left")
 
+	print("[1b] D719: one line per lesson; passed lessons are flagged and never come back")
+	ck(CombatTraining.LESSONS.all(func(id: String) -> bool: return CombatTraining.is_done(id)), "all four lessons are flagged done")
+	var again: Node = CombatTraining.new()
+	village.add_child(again)
+	var again_done := [false]
+	again.finished.connect(func() -> void: again_done[0] = true)
+	again.start(village.enemy_spawner.spawned_enemies)
+	for i in 4: await process_frame
+	ck(again_done[0] and again.current_id() == "" and not (hint.is_showing and hint.current_hint.begins_with("lesson_")),
+			"a training with every lesson done ends at once, no banner (%s)" % again.current_id())
+	again.queue_free()
+	_reset_lessons()
+
 	print("[2] Gamepad: the same four lessons with pad buttons, each move once, under a minute (D503)")
 	buttons = PAD
 	var pad_training: Node = CombatTraining.new()
@@ -127,6 +140,39 @@ func _initialize() -> void:
 	await _run_lessons("pad", false)
 	var took := Time.get_ticks_msec() - started
 	ck(took < CHAIN_LIMIT_MS, "the whole chain took %.1f s (< %d s)" % [took / 1000.0, CHAIN_LIMIT_MS / 1000])
+
+	print("[2a] D719: leave mid-training and come back — it goes on from the next lesson, the passed one is not repeated")
+	_reset_lessons()
+	buttons = KEYBOARD
+	var first_go: Node = CombatTraining.new()
+	village.add_child(first_go)
+	training = first_go
+	first_go.start(village.enemy_spawner.spawned_enemies)
+	await _wait_lesson("lesson_attack")
+	var loc: Node = root.get_node("LocalizationManager")
+	for lang in ["en", "uk"]:
+		loc.apply_language(lang)
+		for i in 3: await process_frame
+		ck(hint.hint_label.get_line_count() == 1, "%s: the lesson is one line (%s)" % [lang, hint.hint_label.text])
+	loc.apply_language("en")
+	await _until(_combo, "lesson_attack", "keyboard")
+	await _wait_lesson("lesson_defend")
+	first_go.queue_free()  # пішов із села посеред уроку захисту
+	for i in 4: await process_frame
+	ck(not hint.is_showing or not hint.current_hint.begins_with("lesson_"), "leaving takes the lesson banner away")
+	var second_go: Node = CombatTraining.new()
+	village.add_child(second_go)
+	training = second_go
+	var seen_lessons: Array[String] = []
+	second_go.lesson_done.connect(func(id: String) -> void: seen_lessons.append(id))
+	second_go.start(village.enemy_spawner.spawned_enemies)
+	for i in 4: await process_frame
+	ck(second_go.current_id() == "lesson_defend", "back again: the training goes on at Dodge or Block (%s)" % second_go.current_id())
+	ck(hint.current_hint == "lesson_defend" and hint.hint_label.get_line_count() == 1, "its one line shows (%s)" % hint.hint_label.text)
+	ck(not paused and root.get_node("ServiceLocator").get_ui_manager().get_modal_layer().active_modal == null, "no popup, no pause")
+	second_go.queue_free()
+	for i in 4: await process_frame
+	_reset_lessons()
 
 	print("[2b] The skip button skips the rest of the training (D503)")
 	var skip_training: Node = CombatTraining.new()
@@ -176,7 +222,7 @@ func _run_lessons(device: String, wrong_moves: bool = true) -> void:
 		await _tap("block")  # плашка бере назви кнопок з останнього пристрою — спершу кнопка геймпада
 	var hint: Node = get_first_node_in_group("tutorial_hint_display")
 	var glyph: String = "X" if device == "pad" else "Left Mouse"
-	ck(hint.current_hint == "lesson_attack" and hint.hint_label.text.contains("Press %s three times" % glyph),
+	ck(hint.current_hint == "lesson_attack" and hint.hint_label.text.contains("%s three times" % glyph),
 			"%s: the banner names the %s button (%s)" % [device, device, hint.hint_label.text])
 	if wrong_moves:
 		await _face()
@@ -488,3 +534,9 @@ func _drain(dm: Node) -> void:
 		for i in 10: await process_frame
 		if not dm.is_dialogue_active():
 			return
+
+
+## Новий забіг уроків у тому самому тесті: прапорці пройдених уроків (D719) знято.
+func _reset_lessons() -> void:
+	for id: String in CombatTraining.LESSONS:
+		game.set_quest_flag(CombatTraining.DONE_FLAG % id, false)

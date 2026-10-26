@@ -69,6 +69,19 @@ mouse_filter = 2
 theme_type_variation = &"SmallLabel"
 text_overrun_behavior = 3
 
+[node name="EquippedBadge" type="PanelContainer" parent="Row"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_type_variation = &"LevelBadge"
+
+[node name="Label" type="Label" parent="Row/EquippedBadge"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"LevelBadgeLabel"
+text = "Equipped"
+
 [node name="CountLabel" type="Label" parent="Row"]
 unique_name_in_owner = true
 layout_mode = 2

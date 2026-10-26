@@ -5,6 +5,7 @@ class_name NpcBase
 ## Figma: npc-menu-merchant 164:1302, npc-menu-blacksmith 176:1357.
 ##   поруч → NpcActionMenu відкривається саме, без підказки [E] (D454) → interact → дія.
 ## Меню без паузи: світ живе, гравець біжить і стрибає; відійшов від NPC — меню закрилось (D155).
+## D721: перша клавіша меню (W/S, вгору/вниз) бере його — герой стоїть без руху й дій, доки пункт не вибрано чи меню не закрито.
 ## Є що дати — знак над головою (D442, D452) і репліка мимохідь, коли герой пробігає поруч.
 ##
 ## Нащадки перевизначають menu_entries(), quest_marker() і _on_npc_choice(). Показуються лише пункти
@@ -54,6 +55,8 @@ var _chatted: bool = false
 var _greeted: bool = false
 ## Гравець закрив меню (ui_cancel) — саме воно не відкривається, поки герой не відійде; E відкриває знову.
 var _dismissed: bool = false
+## Меню взяте (D721) — героя тримаємо ми, ми ж і відпускаємо.
+var _hero_held: bool = false
 
 
 func _ready() -> void:
@@ -72,6 +75,7 @@ func _ready() -> void:
 	add_child(npc_menu)
 	npc_menu.chosen.connect(_on_menu_chosen)
 	npc_menu.cancelled.connect(_dismiss_npc_menu)
+	npc_menu.engaged.connect(_hold_hero)
 	interactable.player_exited.connect(_on_player_left)
 	interactable.player_entered.connect(_on_player_came)
 	interactable.show_prompt = false  # D454: меню відкривається саме — підказки [E] немає
@@ -201,7 +205,23 @@ func _can_open_menu() -> bool:
 
 func _close_npc_menu() -> void:
 	npc_menu.visible = false
+	_release_hero()
 	refresh_availability()
+
+
+## D721: поки меню взяте, герой не ходить, не стрибає й не бʼє (той самий замок, що й у діалозі).
+func _hold_hero() -> void:
+	_hero_held = true
+	get_tree().call_group(GameGroups.PLAYER, "set_movement_enabled", false)
+
+
+## Відпускає, лише якщо тримали ми; поверх уже йде розмова — її замок лишається (DialogueManager відпустить сам).
+func _release_hero() -> void:
+	if not _hero_held:
+		return
+	_hero_held = false
+	if not ServiceLocatorHelper.get_service_locator().get_dialogue_manager().is_dialogue_active():
+		get_tree().call_group(GameGroups.PLAYER, "set_movement_enabled", true)
 
 
 ## ui_cancel: меню геть, доки герой не відійде (або не натисне E).
@@ -232,6 +252,11 @@ func chatter_anchor() -> Vector2:
 	return sprite.transform * Vector2(rect.get_center().x, rect.position.y)
 
 
+## Кімната змінилась, поки меню було взяте, — героя не лишаємо замороженим.
+func _exit_tree() -> void:
+	_release_hero()
+
+
 func _on_player_left() -> void:
 	_dismissed = false
 	if npc_menu.visible:
@@ -260,6 +285,7 @@ func _on_quest_chosen() -> void:
 	interactable.enabled = false
 	npc_menu.setup(rows)
 	npc_menu.open()
+	npc_menu.engage()  # список квестів гравець відкрив сам — меню вже його (D721)
 
 
 ## Рядок «task:<id>» — завдання NPC; будь-який інший id — дія нащадка (основний квест StoryNpc, Craft, Buy…).

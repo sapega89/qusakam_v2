@@ -88,19 +88,18 @@ func _initialize() -> void:
 	ck(dm.is_replaying() and dm.is_dialogue_active() and box.visible, "replay shows the dialogue box")
 	ck(box.name_text == "Grandfather", "speaker name from the DialogueQuest characters (%s)" % box.name_text)
 	var shown: Array[String] = []
-	var typing_holds := true
+	var press_completes := true
 	for i in 40:
 		if not dm.is_replaying():
 			break
 		shown.append(box.text)
-		# D254: поки репліка набирається, «далі» нічого не робить — ні дописати, ні перейти
+		# D722: «далі» під час набору показує всю репліку одразу, наступне — наступна репліка
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()
 		await process_frame
-		typing_holds = typing_holds and not box.is_finished() and box.text == shown[-1]
-		box.finish()  # тест не чекає набору
+		press_completes = press_completes and box.is_finished() and box.text == shown[-1]
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()  # далі
 		await process_frame
-	ck(typing_holds, "D254: accept while a line is typing neither completes it nor moves on")
+	ck(press_completes, "D722: a press while a line types shows it whole, the next press moves on")
 	var expected := DqdReader.lines("res://dialogue_quest/OldMan_Decision.dqd").map(func(l): return l.text)
 	ck(shown.slice(0, expected.size()) == expected, "every line, in order (%s)" % str(shown))
 	ck(shown.size() == expected.size() + 1 and shown[-1].begins_with("Current objective: "),
