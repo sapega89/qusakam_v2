@@ -9,7 +9,6 @@ extends Control
 const MiscMenuModalScene = preload("res://SampleProject/Scenes/Menus/Game/misc_menu_modal.tscn")
 const MODAL_TEMPLATES = preload("res://SampleProject/Scripts/UI/modal_templates.gd")
 const ICON_LOCK := preload("res://SampleProject/Assets/UI/Icons/lock.svg")
-const SCENE_PATH := "res://SampleProject/Scenes/Menus/Game/game_menu.tscn"
 
 @onready var _tabs: ButtonGroup = (%InventoryButton as Button).button_group
 @onready var misc_button: Button = %MiscButton
@@ -44,20 +43,6 @@ func _ready() -> void:
 	_refresh_point_glows()
 	focus_router.set_active_tab(current_tab_name)
 	focus_router.focus_tabs()
-
-
-## Чи відкрита сюжетом вкладка [param tab_name] — за metadata/unlock_flag її кнопки в game_menu.tscn, без
-## створення меню. HUD-кнопки нових очок (D723) не кличуть у закриту вкладку.
-static func is_tab_unlocked(tab_name: String) -> bool:
-	var state := (load(SCENE_PATH) as PackedScene).get_state()
-	for node in state.get_node_count():
-		var props := {}
-		for i in state.get_node_property_count(node):
-			props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
-		if props.get("metadata/tab") == tab_name:
-			return not props.has("metadata/unlock_flag") or bool(Game.get_singleton().get_quest_flag(props["metadata/unlock_flag"]))
-	assert(false, "GameMenu: no tab '%s'" % tab_name)
-	return false
 
 
 ## Вкладки Skills і Status світяться з лічильником, поки чекають очки навичок / атрибутів (D723); закрита — ні.

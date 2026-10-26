@@ -7,7 +7,8 @@ extends VBoxContainer
 ## Skills або Status. Витратив — кнопка зникає. Кнопки немає, поки вкладку не відкрито сюжетом (game_menu.tscn,
 ## metadata/unlock_flag), і на час діалогу, як і підказок; кат-сцена ховає весь UICanvas сама (Cutscene).
 
-const GameMenu = preload("res://SampleProject/Scripts/Menus/Game/game_menu.gd")
+## Сцена меню читається load() під час гри, не preload: preload сцени меню під час компіляції скрипта — це B149.
+const GAME_MENU_SCENE := "res://SampleProject/Scenes/Menus/Game/game_menu.tscn"
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 @onready var _skills: Button = %SkillPoints
@@ -38,11 +39,25 @@ func _connect_game() -> void:
 
 ## Скільки очок кожна кнопка показує зараз: 0 — кнопки немає.
 func skill_points() -> int:
-	return ServiceLocator.get_skill_manager().get_job_points() if GameMenu.is_tab_unlocked("Skills") else 0
+	return ServiceLocator.get_skill_manager().get_job_points() if is_tab_unlocked("Skills") else 0
 
 
 func attribute_points() -> int:
-	return ServiceLocator.get_attribute_manager().get_unspent() if GameMenu.is_tab_unlocked("Status") else 0
+	return ServiceLocator.get_attribute_manager().get_unspent() if is_tab_unlocked("Status") else 0
+
+
+## Чи відкрита сюжетом вкладка [param tab_name]: metadata/unlock_flag її кнопки в game_menu.tscn (D151) — з SceneState,
+## без створення меню; правило те саме, що в game_menu._lock_tabs.
+static func is_tab_unlocked(tab_name: String) -> bool:
+	var state := (load(GAME_MENU_SCENE) as PackedScene).get_state()
+	for node in state.get_node_count():
+		var props := {}
+		for i in state.get_node_property_count(node):
+			props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
+		if props.get("metadata/tab") == tab_name:
+			return not props.has("metadata/unlock_flag") or bool(Game.get_singleton().get_quest_flag(props["metadata/unlock_flag"]))
+	assert(false, "HudNewPoints: no tab '%s' in the game menu" % tab_name)
+	return false
 
 
 func refresh() -> void:
