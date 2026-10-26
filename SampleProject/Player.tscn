@@ -24,12 +24,9 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Land/1.png" id="land1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Jump/2.png" id="jump2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Fall/1.png" id="fall1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/1.png" id="roll1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/2.png" id="roll2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/3.png" id="roll3"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/4.png" id="roll4"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/5.png" id="roll5"]
-[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Roll/6.png" id="roll6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Dash/1.png" id="dash1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Dash/2.png" id="dash2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Dash/3.png" id="dash3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Climb/1.png" id="climb1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Climb/2.png" id="climb2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/1.png" id="meditate1"]
@@ -287,10 +284,10 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2, 0.25),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.05, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [ExtResource("roll1"), ExtResource("roll2"), ExtResource("roll3"), ExtResource("roll4"), ExtResource("roll5"), ExtResource("roll6")]
+"values": [ExtResource("dash1"), ExtResource("dash2"), ExtResource("dash3")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -299,10 +296,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.05, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(0, 0), Vector2(0, 0)]
 }
 
 

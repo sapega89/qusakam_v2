@@ -91,7 +91,45 @@ MATERIALS = {
         "bottom: along the top a row of polished cream marble floor tiles with a thin golden inlay line, below them "
         "a band of carved sandstone blocks with a repeating geometric frieze, seen straight on",
     ),
+    # Поверхня, по якій ходиш, трохи згори (Sapega 2026-10-26: «немає відчуття, що персонаж ходить під текстурами — а в нас
+    # є»; Tails of Iron: видно верх підлоги, ступні стоять на ньому). Смуга FLOOR px над лінією колізії, за героєм.
+    "sand_floor": dict(
+        seed=361,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of desert ground seen from above at a low angle, packed golden sand with small "
+        "pebbles, scattered tiny stones and a few small tufts of dry grass, evenly detailed, the sand fills the entire "
+        "image edge to edge",
+    ),
+    "cobble_floor": dict(
+        seed=363,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of an old road seen from above at a low angle, small rounded worn sandstone cobbles "
+        "of different sizes set in packed sand, sand and tiny pebbles between them, evenly detailed, the road fills "
+        "the entire image edge to edge",
+    ),
+    "oasis_floor": dict(
+        seed=365,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of oasis ground seen from above at a low angle, short lush green grass with small "
+        "patches of damp sand and tiny white flowers, evenly detailed, it fills the entire image edge to edge",
+    ),
+    "marble_floor": dict(
+        seed=367,
+        h=512,
+        f=6,
+        key=None,
+        prompt="a seamless texture of a palace floor seen from above at a low angle, polished cream marble tiles with "
+        "thin golden inlay lines between them, soft reflections, evenly detailed, it fills the entire image edge to edge",
+    ),
 }
+# Верх кромки → поверхня над нею.
+FLOOR_OF = {"sand_top": "sand_floor", "cobble_top": "cobble_floor", "oasis_top": "oasis_floor", "hall_floor": "marble_floor"}
 
 # Картинка (= <кімната>_<вузол> з build_terrain.gd) → тіло, верх, кольорів у палітрі.
 PAINT = {
@@ -106,8 +144,12 @@ PAINT = {
 }
 
 FLAT = 6  # верхні px під кромкою не стираються: стоїш рівно на колізії
-KEEP = 8  # px смуги поверхні під кромкою цілком
-FADE = 8  # далі смуга переходить у тіло плямами
+# Дорога як у Tails of Iron (Sapega 2026-10-26, скрін дороги біля млина): ступні стоять ПОСЕРЕД смуги поверхні,
+# видимої трохи згори, — FAR px за ними до нерівного дальнього краю з кущиками, NEAR px перед ними до ближньої кромки
+# з тінню; нижче не розріз шарів, а темна товща землі.
+FAR = 18
+NEAR = 12
+FAR_RAGGED = 4  # дальній край нерівний на стільки px
 
 
 def generate(layer):
@@ -229,33 +271,62 @@ def paint(name, body_name, top_name, colors):
     pad = np.pad(np.minimum(down, 400).astype(np.float32), ((0, 0), (k // 2, k // 2)), mode="edge")
     c = np.cumsum(pad, axis=1)
     smooth = (c[:, k - 1 :] - np.concatenate([np.zeros((h, 1)), c[:, :-k]], axis=1)) / k
-    depth = np.clip((smooth - 30) / 220.0, 0, 1)
-    rgb *= (1 - 0.45 * depth)[..., None]
+    depth = np.clip((smooth - NEAR) / 60.0, 0, 1)
+    rgb *= (1 - 0.6 * depth)[..., None]
     rgb *= np.where((side >= 2) & (side <= 4), 0.84, 1.0)[..., None]
     rgb *= np.where((up >= 2) & (up <= 6), 0.72, 1.0)[..., None]
     outline_color = np.percentile(body.reshape(-1, 3), 3, axis=0) * 0.55
     outline = solid & ((side == 1) | (up == 1)) & (down > 1)
     rgb[outline] = outline_color
 
-    # Смуга поверхні по кожній кромці (тверде, над ним повітря), лінія землі смуги — на кромці.
-    top, top_opaque = material(top_name)
-    th = len(top)
-    top, top_opaque, ground = flatten(top, top_opaque)
+    # Поверхня: від NEAR px під кромкою (ближній край) до FAR px над нею (дальній), рядки текстури «згори» — ближні
+    # знизу, дальні згори; дальнє темніше. Над кромкою — лише в повітря, під нею — лише в тіло цієї ж кромки.
     opaque = solid.copy()
+    top, top_opaque = material(top_name)
+    floor, _ = material(FLOOR_OF[top_name])
+    if top_name != "oasis_top":  # зелена травичка, яку модель кладе в пісок і бруківку, — суха, як у верху смуги
+        green = floor[..., 1] > floor[..., 0] + 12
+        floor[green] = floor[green].mean(axis=-1, keepdims=True) * np.array([1.12, 1.0, 0.78])
+    # Колір поверхні — у палітрі верху кімнати (модель малює поверхню «згори» холоднішою): середнє й розкид кольору
+    # переносяться з непрозорих px смуги верху.
+    tm, ts = top[top_opaque].mean(axis=0), top[top_opaque].std(axis=0)
+    fm, fs = floor.reshape(-1, 3).mean(axis=0), floor.reshape(-1, 3).std(axis=0)
+    # один множник на всі канали: окремий на канал зсуває відтінок темних px (червоний у нуль — бірюза)
+    floor = np.clip((floor - fm) * (ts.mean() / max(fs.mean(), 1e-3)) * 0.8 + tm, 0, 255)
+    fh = len(floor)
     edge_y, edge_x = np.nonzero(solid & (down == 1))
-    sx = (edge_x + 37 * edge_y + ox) % top.shape[1]
-    blots = rng.random((64, 64))
-    for r in range(th):
-        y = edge_y - ground + r
-        ok = (y >= 0) & (y < h) & top_opaque[r, sx]
-        if r >= ground:  # під кромкою — лише в тілі цієї ж кромки
+    reach = FAR - np.round(noise1d(w, seed + 3, 6.0) * FAR_RAGGED).astype(np.int32)
+    fx = (edge_x + ox) % floor.shape[1]
+    for r in range(-NEAR + 1, FAR + 1):
+        y = edge_y - r
+        ok = (y >= 0) & (y < h)
+        if r > 0:
+            ok &= (r <= reach[edge_x]) & ~solid[np.clip(y, 0, h - 1), edge_x]
+        else:
             ok &= solid[np.clip(y, 0, h - 1), edge_x]
-            if r >= ground + KEEP:  # нижче — у тіло плямами 3×3 px, не рівною лінією
-                ok &= blots[y // 3 % 64, edge_x // 3 % 64] > (r - ground - KEEP) / FADE
-        rgb[y[ok], edge_x[ok]] = top[r, sx[ok]]
+        t = (r + NEAR) / (FAR + NEAR)  # 0 — ближній край, 1 — дальній
+        # крайні рядки текстури модель домальовує чимось іншим (зелень унизу) — лише середні 80 %
+        rgb[y[ok], edge_x[ok]] = floor[int((0.9 - 0.8 * t) * (fh - 1)), fx[ok]] * (1.04 - 0.32 * t**1.3)
+        opaque[y[ok], edge_x[ok]] = True
+    # Ближня кромка: тінь під смугою — поверхня читається як верх товщі, а не як смужка.
+    for d, k in enumerate((0.5, 0.65, 0.8)):
+        y = edge_y + NEAR + d
+        ok = (y < h) & solid[np.clip(y, 0, h - 1), edge_x]
+        rgb[y[ok], edge_x[ok]] *= k
+
+    # Кущики й камінці смуги верху — на дальньому краї, стирчать над ним у повітря.
+    top, top_opaque, ground = flatten(top, top_opaque)
+    if MATERIALS[top_name]["key"] == "green":  # облямівка ключа: зеленуваті px — це фон, не трава
+        top_opaque = top_opaque & ~(top[..., 1] > top[..., 0] + 20)
+    sx = (edge_x + 37 * edge_y + ox) % top.shape[1]
+    for r in range(ground + 1):
+        y = edge_y - reach[edge_x] - ground + r
+        ok = (y >= 0) & (y < h) & top_opaque[r, sx] & ~solid[np.clip(y, 0, h - 1), edge_x]
+        rgb[y[ok], edge_x[ok]] = top[r, sx[ok]] * 0.8
         opaque[y[ok], edge_x[ok]] = True
 
-    out = cb.quantize(rgb, opaque, colors, "octree")
+    # ×1.04 світлішає ближній край: без обрізання яскравий червоний переповнює uint8 і стає 0 (бірюзові px)
+    out = cb.quantize(np.clip(rgb, 0, 255), opaque, colors, "octree")
     os.makedirs(OUT, exist_ok=True)
     Image.fromarray(out).save(OUT + name + ".png")
     print("drawn", OUT + name + ".png", flush=True)

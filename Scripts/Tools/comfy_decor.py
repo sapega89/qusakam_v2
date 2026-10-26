@@ -92,6 +92,128 @@ DECOR = {
         prompt="one single small cluster of glowing pale green crystals growing from a dark grey rock, sharp "
         f"hexagonal crystal points, bright mint green glow in their cores, the rock rests on the bottom edge of the image, {LIGHT}, {cb.MAGENTA}",
     ),
+    # Входи (Sapega 2026-10-26: прохід має бути пояснений фоном — двері, вхід, колодязь). Нерухомі, один кадр;
+    # стоять на рядку підлоги біля RoomDoor ([[room_art_audit]]).
+    "door_elder": dict(
+        seed=211, size=(512, 768), key="magenta", colors=12, kind="static", canvas=(52, 76), box=(0, 0, 52, 76),
+        prompt="one single arched doorway seen from the front: a closed door of vertical dark brown planks with two "
+        "black iron bands and a round iron ring handle, set in a narrow arch frame of pale sandstone blocks, a flat "
+        "stone step at its foot on the bottom edge of the image, the doorway stands alone with wide empty space on both "
+        f"sides and above, {LIGHT}, {cb.MAGENTA}",
+    ),
+    # Прохід — щонайменше 56 px заввишки (герой 47 px у тому ж масштабі 1.5): розмір задає висота, не ширина.
+    "cave_mouth": dict(
+        seed=232, size=(768, 768), key="green", colors=12, kind="static", crop=(0, 0.05), canvas=(110, 100),
+        box=(0, 0, 110, 100),
+        prompt="one single face of a red sandstone cliff with a large dark cave entrance in it, the entrance is a tall "
+        "rough arch that reaches two thirds of the way up the rock, deep darkness inside, the rock face stands on the "
+        f"bottom edge of the image alone with wide empty space on both sides and above, {LIGHT}, {cb.CHROMA}",
+    ),
+    "palisade_gate": dict(
+        seed=213, size=(1024, 768), key="green", colors=12, kind="static", crop=(0, 0.1), canvas=(150, 100),
+        box=(0, 0, 150, 100),
+        prompt="one single wooden palisade gate of a desert bandit camp: tall rough sharpened log posts lashed with "
+        "rope, a gate of lashed logs standing half open, the dark gap of the open gate as tall as the posts, a torn "
+        "red cloth tied to one post, a short stretch of palisade on both sides, standing on the bottom edge of the "
+        f"image alone with wide empty space above, {LIGHT}, {cb.CHROMA}",
+    ),
+    "mesa_cleft": dict(
+        seed=234, size=(768, 768), key="green", colors=12, kind="static", crop=(0, 0.05), canvas=(110, 110),
+        box=(0, 0, 110, 110),
+        prompt="one single block of red and orange sandstone cliff with a tall narrow passage cut through it from "
+        "the ground, rough stone steps rise inside the passage into shadow, the rock is the same warm red sandstone on "
+        "both sides of the passage and above it, the block stands on the bottom edge of the image alone with wide empty "
+        f"space on both sides and above, {LIGHT}, {cb.CHROMA}",
+    ),
+    "palace_door": dict(
+        seed=235, size=(640, 768), key="magenta", colors=14, kind="static", crop=(0, 0.04), canvas=(100, 120),
+        box=(0, 0, 100, 120),
+        prompt="one single heavy closed double door of dark brown wood with rows of brass studs, filling a grand "
+        "pointed arch of pale sandstone with a carved frame and a band of blue tiles, two stone steps in front, the "
+        "doorway stands on the bottom edge of the image alone, nothing behind it, flat empty background all around, "
+        f"{LIGHT}, {cb.MAGENTA}",
+    ),
+    "lab_door": dict(
+        seed=236, size=(512, 768), key="magenta", colors=12, kind="static", canvas=(72, 100), box=(0, 0, 72, 100),
+        prompt="one single arched doorway made of dark grey stone blocks with a heavy riveted iron door inside the "
+        "arch, a small round glowing green window in the door, a copper pipe running along the outside of the arch, "
+        "the doorway stands on the bottom edge of the image alone, nothing behind it, flat empty background all "
+        f"around, {LIGHT}, {cb.MAGENTA}",
+    ),
+    # Передній план печер (Sapega 2026-10-26, Tails of Iron: зверху темніше, листя й коріння перед камерою закривають
+    # вид). Висять від верхнього краю кадру й гойдаються; у кімнаті — шар ближче за героя, темніший (modulate).
+    # Печери в пустелі сухі (Sapega: «може бути сиро, а може бути сухо, бо це печера в пустелі; ліани — така собі
+    # ідея»): згори сухе коріння й натічні камені з пісковику, знизу колючий чагарник і суха трава.
+    "hanging_roots": dict(
+        seed=252, size=(1024, 768), key="green", colors=10, kind="sway", anchor=(0.5, 0.0), amp=1.0, main=False,
+        crop=(0.04, 0),
+        canvas=(170, 120), box=(4, 0, 166, 120),
+        prompt="a cluster of dry bare twisted roots of desert shrubs hanging down from the top edge of the image, "
+        "pale brown and dusty ochre, no leaves, a few short pointed sandstone stalactites between them, some roots "
+        f"long and some short, wide empty space below and on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
+    "hanging_chain_web": dict(
+        seed=242, size=(768, 1024), key="green", colors=8, kind="sway", anchor=(0.5, 0.0), amp=1.0, main=False,
+        canvas=(90, 130), box=(4, 0, 86, 130),
+        prompt="one rusty iron chain and torn grey cobwebs hanging straight down from the top edge of the image, a "
+        f"few dusty strands, wide empty space below and on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
+    "fg_scrub": dict(
+        seed=253, size=(1024, 640), key="magenta", colors=10, kind="sway", anchor=(0.5, 1.0), amp=1.0, main=False,
+        canvas=(150, 70), box=(4, 2, 146, 70),
+        prompt="one low clump of dry thorny desert brush with bare grey-brown twigs, tufts of dry yellow grass and a "
+        "few small sandstone rocks growing from the bottom edge of the image, wide empty space above and on both "
+        f"sides, {LIGHT}, {cb.MAGENTA}",
+    ),
+    # Драбини в стилі гри (A14, Sapega 2026-10-26: «драбини мають бути в стилі гри») і платформи з опорами (A15: «щоб
+    # були частиною інтер'єру, а не просто так висіли в повітрі»). Драбину Ladder.tscn повторює по вертикалі: з високої
+    # генерації вирізається один період щаблів.
+    "ladder_wood": dict(
+        seed=261, size=(384, 1024), key="magenta", colors=10, kind="static", canvas=(26, 180), box=(0, 0, 26, 180),
+        prompt="one single tall wooden ladder standing straight up, seen straight from the front, two rough wooden "
+        "rails lashed with rope to evenly spaced round wooden rungs, it reaches from the top edge to the bottom edge of "
+        f"the image, wide empty space on both sides, {LIGHT}, {cb.MAGENTA}",
+    ),
+    "ladder_iron": dict(
+        seed=272, size=(384, 1024), key="green", colors=10, kind="static", canvas=(26, 180), box=(0, 0, 26, 180),
+        prompt="a vertical row of evenly spaced U-shaped rusty iron rungs hammered into a strip of dark grey stone "
+        "blocks, seen straight from the front, flat, from the top edge to the bottom edge of the image, wide empty "
+        f"space on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
+    "ledge_rock": dict(
+        seed=263, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 64), box=(0, 0, 110, 64),
+        prompt="one single jutting ledge of red sandstone rock seen from the side: a flat walkable top surface with a "
+        "little sand and dry grass on it, under it the rock body tapers down to a rough point like a shelf growing out "
+        f"of a cliff, wide empty space around it, {LIGHT}, {cb.CHROMA}",
+    ),
+    # Платформи: суворо збоку, як тайл 2D-платформера (модель за «seen from the side» малювала ізометрію з тінню).
+    "plank_posts": dict(
+        seed=274, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 84), box=(0, 0, 110, 84),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal wooden walkway, its top "
+        "a straight level line of plank ends, held up by two thin vertical wooden posts going straight down with one "
+        "diagonal brace between them, the posts reach the bottom edge of the image, wide empty space around it, "
+        f"{LIGHT}, {cb.CHROMA}",
+    ),
+    "stone_balcony": dict(
+        seed=275, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 56), box=(0, 0, 110, 56),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal pale sandstone ledge, "
+        "its top a straight level line, under it two carved stone corbels shaped like quarter circles, wide empty "
+        f"space around it, {LIGHT}, {cb.CHROMA}",
+    ),
+    "lab_grate": dict(
+        seed=276, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 48), box=(0, 0, 110, 48),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal dark iron girder "
+        "platform, its top a straight level line, riveted, held from below by two triangular iron brackets, wide empty "
+        f"space around it, {LIGHT}, {cb.CHROMA}",
+    ),
+    # BACKLOG 19: трава гойдається (живий світ, D392) — кущик сухої пустельної трави, основа нерухома.
+    "grass": dict(
+        seed=282, size=(768, 512), key="green", colors=8, kind="sway", anchor=(0.5, 1.0), amp=1.5, main=False,
+        crop=(0, 0.12), canvas=(44, 30), box=(2, 1, 42, 30),
+        prompt="one single bushy clump of dry desert grass with thick wide blades fanning upward and bending outward, "
+        "straw yellow and ochre with warm highlights, the clump rises from a single point at the bottom edge of the "
+        f"image, wide empty space above and on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
 }
 FRAMES = 4  # sway: 0, +amp, 0, -amp (синус); flicker — 3
 FLICKER = (1.0, 0.72, 1.18)
@@ -176,6 +298,8 @@ def build(name, d):
     t, btm = d.get("crop", (0, 0))  # частки кадру згори / знизу: стеля й підлога, які модель домальовує попри підказку
     img = img[int(t * len(img)) : len(img) - int(btm * len(img))]
     a = key(img, d["key"], d.get("warm", 0), d.get("bgv", 175))
+    if "dark" in d:  # лише темні px: світлі плями — фон, що просвічує між гілками
+        a *= img.mean(axis=2) < d["dark"]
     if d.get("main", True):
         a = fx.main_shape(a)
     else:  # тонкі частини (стовбур, ланцюжок) розмикання стерло б — лише найбільша зв'язна пляма
@@ -200,6 +324,8 @@ def build(name, d):
         frames = [
             sway(img, a, d, np.sin(2 * np.pi * i / FRAMES)) for i in range(FRAMES)
         ]
+    elif d["kind"] == "static":
+        frames = [(img, a)]
     else:
         frames = [(img, a)] * len(FLICKER)
     cw, ch = d["canvas"]

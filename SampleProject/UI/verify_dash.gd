@@ -146,5 +146,39 @@ func _initialize() -> void:
 			level = false
 	ck(level, "level for the whole dash (dy %.1f)" % (hero.global_position.y - y0))
 
+	print("[d] The dash art (Sapega: no rolling): Roll plays the three Dash frames, feet on the Idle line")
+	var player: AnimationPlayer = hero.get_node(^"AnimationPlayer")
+	var roll: Animation = player.get_animation(&"Roll")
+	var tex_track: int = roll.find_track(^"Sprite2D:texture", Animation.TYPE_VALUE)
+	var off_track: int = roll.find_track(^"Sprite2D:offset", Animation.TYPE_VALUE)
+	var paths: Array[String] = []
+	var times: Array[float] = []
+	for k in roll.track_get_key_count(tex_track):
+		paths.append((roll.track_get_key_value(tex_track, k) as Texture2D).resource_path.trim_prefix("res://SampleProject/Sprites/Player/"))
+		times.append(snappedf(roll.track_get_key_time(tex_track, k), 0.001))
+	ck(paths == ["Dash/1.png", "Dash/2.png", "Dash/3.png"] and times == [0.0, 0.05, 0.25] and is_equal_approx(roll.length, 0.3),
+			"Roll = Dash 1 (0–0.05 s), 2 (to 0.25 s), 3 (to 0.3 s) %s %s, length %.2f" % [paths, times, roll.length])
+	var idle: Animation = player.get_animation(&"Idle")
+	var idle_tex: Texture2D = idle.track_get_key_value(idle.find_track(^"Sprite2D:texture", Animation.TYPE_VALUE), 0)
+	var idle_off: Vector2 = idle.track_get_key_value(idle.find_track(^"Sprite2D:offset", Animation.TYPE_VALUE), 0)
+	var idle_feet: float = _lowest_row(idle_tex) + idle_off.y
+	var feet: Array[float] = []
+	for k in roll.track_get_key_count(tex_track):
+		var off: Vector2 = roll.value_track_interpolate(off_track, roll.track_get_key_time(tex_track, k))
+		var tex: Texture2D = roll.track_get_key_value(tex_track, k)
+		feet.append(_lowest_row(tex) + off.y + (idle_tex.get_height() - tex.get_height()) / 2.0)
+	ck(feet.all(func(f: float) -> bool: return is_equal_approx(f, idle_feet)),
+			"the feet stay on the Idle line (Idle %.1f, Dash %s)" % [idle_feet, feet])
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
+
+
+## Найнижчий непрозорий рядок кадру (там стоять ноги).
+func _lowest_row(tex: Texture2D) -> int:
+	var image: Image = tex.get_image()
+	for y in range(image.get_height() - 1, -1, -1):
+		for x in image.get_width():
+			if image.get_pixel(x, y).a > 0.16:
+				return y
+	return -1

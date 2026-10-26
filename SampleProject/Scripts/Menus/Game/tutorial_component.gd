@@ -9,7 +9,9 @@ extends Control
 ## новий class_name лише після перескану, і скрипт до того не парсився.
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
-const TopicWindow = preload("res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn")
+## B149: вікно вантажиться при відкритті, не preload'ом (як GameMenuState): воно ділить bottom_bar.tscn зі сценами,
+## які RoomPreloader вантажить у фоні.
+const TOPIC_WINDOW_PATH := "res://SampleProject/Scenes/Menus/Game/tutorial_menu.tscn"
 
 @onready var _list: VBoxContainer = %TopicList
 @onready var _row: Button = %TopicRow
@@ -33,7 +35,7 @@ func _fill() -> void:
 ## Тема на весь екран поверх меню.
 func open_topic(i: int) -> void:
 	var layer = ServiceLocator.get_ui_manager().get_modal_layer()
-	layer.show_custom_modal(TopicWindow)
+	layer.show_custom_modal(load(TOPIC_WINDOW_PATH) as PackedScene)
 	layer.active_modal.show_topic(i)
 
 

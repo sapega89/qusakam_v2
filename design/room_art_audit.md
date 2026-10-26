@@ -15,6 +15,58 @@ player sees it), from `godot --path . --resolution 1920x1080 --script res://Samp
 The door logic is already symmetric: every `RoomDoor` leads back to the door it came from (`arrival`). What is wrong is
 the picture: most doors inside rooms stand at x 96 at the left edge where nothing is painted.
 
+## How an entrance looks — Tails of Iron (Sapega's reference, 2026-10-26)
+
+![[refs/toi_cave_entrance.png]]
+
+«прохід в печеру — ось дивись, як зроблено в Tails of Iron»: the cave entrance is a dark arch **at the foot of the
+stone mass the hero walks on** — he stands on top of that same wall. The opening is cut into the playfield's own
+material (the same stones as the ground and the ledge), framed by stone blocks and plants, dark inside; it is part of
+the walkable foreground, not a picture in the far backdrop and not a separate object standing on the floor. So an
+entrance is a piece of terrain: a rock or masonry block in the room's own material with the opening at its base, its
+top flat enough to be ground (a ledge the hero can stand on where the room needs it), its foot on the floor line.
+
+## Cave mood — Tails of Iron (Sapega, 2026-10-26)
+
+«подивись, як зроблена печера: там темніше зверху, якесь листя, передній фон закриває вид, і це красиво» (a ToI cave
+screenshot): the top of the frame is darker (the cave ceiling), hanging leaves and roots sit in front of the hero and
+partly cover the view, plants grow at the bottom of the frame in the foreground, a lamp and light shafts give the
+light. Our enclosed rooms (LizardCave, DragonMural, GatehouseCellar, MesaClimb, BanditCamp, ElderHouse) have no
+Parallax2D layer at all, and the others have at most a 1.25 strip. Art: `Decor/hanging_roots` (dry roots and sandstone
+stalactites — the caves are in the desert, Sapega: «може бути сиро, а може бути сухо… ліани — така собі ідея»),
+`hanging_chain_web` (cellar, lab), `fg_scrub` (dry thorny brush; comfy_decor, sway). In a room: a foreground layer closer than the hero (Parallax2D scroll
+above 1, drawn over the hero, darker by modulate), hanging pieces along the top edge, dry scrub along the bottom, never
+over a door, an NPC, a chest or the hero's path at head height for long; plus a dark gradient from the top of the
+screen in caves and cellars.
+
+Outdoors too (Sapega: «передній план паралаксу був би прикольним, якби він іноді частково закривав огляд»): the
+front parallax may **sometimes** cover part of the view — a tall dark palm, rock or ruin wall passing in front every
+screen or two (scroll 1.25–1.4, darkened) — but not as a constant band at the hero's feet: the brown strip of fences
+and plants that now runs right under the walk line (Village, road) makes the hero look as if he walks under the
+ground. The walkable ground itself is redrawn by the orchestrator (`paint_terrain.py`, a surface band with depth).
+
+## Castle corridor — Tails of Iron (Sapega, 2026-10-26: «коридор у замку, і придивись, як там вихід зроблений»)
+
+- **The exit is lit.** A plain wooden door stands in the wall on the floor line, framed by the masonry, and a warm
+  shaft of light falls on it from above; the rest of the corridor is dim. The eye finds the way out without a marker.
+  → every RoomDoor gets a soft warm light on its entrance (a light shaft or a glow sprite / PointLight2D), stronger
+  than the room around it.
+- **Foreground pillars.** Wide dark pillars pass in front of the view at intervals (front parallax), and a dark band
+  frames the top and the bottom of the frame: the playfield is a lit strip between darkness.
+- **The floor** is a strip of stone cobbles with a light top surface the characters stand on, darkness below it.
+
+## City gate — Tails of Iron (Sapega, 2026-10-26: «подивись, як брама зроблена; у нас теж вже непогано, але могло
+бути краще»)
+
+- The gate is a door **at the foot of the tower**, on the walk line, under a lit arch; the road runs straight into it.
+- **Light and smoke:** slanted light shafts through the smoke, fires burning behind the ruins, a dark vignette at the
+  top (tree canopy) — the scene has depth from light, not only from layers.
+- **Foreground rubble** along the bottom edge: dark broken stakes, stones and debris in front of the road, partly
+  covering the lowest strip of the view.
+- **The road** is uneven cobbles and rubble with a visible top surface; characters stand on it.
+Our CityGates: keep the walls and banners; add the lit door at the foot of the gate tower where the gate fight ends,
+light shafts / a warm glow, foreground rubble at the bottom (Decor, darkened, scroll 1.25–1.4), the new floor surface.
+
 ## Doors (`room_door.tscn`, invisible; the backdrop must show the opening)
 
 | Room | Door | Backdrop at the door | Verdict | Fix |
