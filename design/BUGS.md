@@ -155,6 +155,8 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-26 (integrator-14):** **B150** (`cloud/dash-fix`, D713; the branch called it B149): a ground dash off a ledge or a step hovered level instead of falling. `PlayerMover.air_dash`: only a dash started in the air stays level. `verify_dash`.
 
+> **Fixed 2026-10-26 (`cloud/camera-transitions`):** **B153** — Sapega's playtest: «камера скаче багато де, передивись переходи між кімнатами». Measured by `verify_camera_transitions` (every edge passage and door both ways, the cutscene ends, new game and loading a save, run/jump/drop from every cell of every room): 13 of 14 doors jumped 35–246 px in one visible frame and slid up to 1 s after the fade-in; a new game and a loaded save jumped 74 / 43 px and slid 0.75 s. Edge passages, the cutscene ends and the rooms themselves were already still. Cause: the door / teleport path never reset `position_smoothing`, and the room's limits were set later, deferred, in `init_room()`. Fix, one place for every change (`Game.load_room()`): the new room's limits right after the swap (`_fit_camera_to_room`), the caller places the hero, then `_lift_fade()` (deferred) snaps the camera (`reset_smoothing` + `force_update_scroll`) before the first lit frame; a new game places the hero in the same frame. D483's ground share and D434's fade unchanged. Report: [[cloud_reports/camera-transitions]].
+
 ### B149 — opening the game menu while rooms preload in the background can deadlock
 - **Where:** `RoomPreloader.gd` (`load_threaded_request` of the current room's neighbours) against a main-thread `load()` when `UIManager.open_game_menu()` builds the skills window
 - **Expected:** the menu opens whatever the preloader is doing
