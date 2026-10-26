@@ -6,6 +6,9 @@ tags: [oaths, skills, story, combat]
 
 # The oath chooses you — deeds and fighting style (Sapega, 2026-10-26)
 
+> **Latest (overrides any routine prompt that mentions a star map or constellations):** no star map — the census is a
+> short dialogue with the gate scribe, see item 5.
+
 Sapega: the problem with the oaths is not the lore but how they are presented: «як три NPC — виглядає дуже дивно, і
 персонаж не захоче до них підходити»; a separate quest — «а навіщо?»; «ми не хочемо закривати Майор Хол через нестачу
 скілів (як зараз)». From the brainstorm he picked: **deeds choose the oath** and **the fighting style chooses the oath**
@@ -30,16 +33,20 @@ contracts, no god for the neutral path).
    the grandfather's decision, the wounded in the burning village, the Caravan (help / take the reward / walk past), the
    lone brute's key and the Bandit Camp (spare / bargain / leave), Alisia (heal / bargain / leave). Text marked as
    drafts for Sapega.
-5. **The census at the City Gate chooses the oath** (Sapega, 2026-10-26: «може тоді персонажа просто питають, кому він
-   служить?», «як у Morrowind сузір'я», «перепис біля брами — це цікаво»). After the gate fight (the hero defended the
-   one who was attacked) the gate scribe (new NPC `gate_scribe`, art drawn) writes the stranger into the city book: since
-   the barrier fell and refugees come, the guard first looks into his eyes for the blue of the curse (D587), then asks
-   his name, where from, and whom he serves, with 3–5 short what-would-you-do questions (Morrowind's class questions).
-   The answers plus the leanings above make the scribe's suggestion («схоже, ти з тих, хто стоїть за Самаля» / «…хто
-   живе угодами» / «…хто йде сам»). Then a star map with three constellations — the Sun of Samal, the Seal of the
-   Contract, the Wanderer without a god (the blue day sky is cursed; the night stars still remember the old gods) — the
-   suggested one lit, any can be chosen; «ще не знаю» leaves it open and the scribe can be asked again later. The oath's
-   skill tree opens at level 5 (at once if he is already 5). Permanent, as today.
+5. **The census at the City Gate: a short talk, no star map** (Sapega, 2026-10-26: «ой, ні, сузір'я не треба, треба
+   пару питань, по типу кому служиш і так далі. Ти кажеш «я не знаю», він питає «любиш те або те, робиш так або так» і
+   пропонує служити одному з трьох, але радить того-то. А гравець такий: та ні, краще той»). After the gate fight (the
+   hero defended the one who was attacked) the gate scribe (`gate_scribe`) checks his eyes for the blue of the curse
+   (D587) and writes him into the city book in a short dialogue:
+   - «Ім'я? Звідки?» then **«Кому служиш?»** with the answers: Samal / the god of contracts / nobody, I walk on my own /
+     «Не знаю».
+   - On «Не знаю» the scribe asks two or three quick this-or-that questions («любиш те чи те, робиш так чи так»,
+     drafts), and then names the three paths and **advises one** — the one his answers and the leanings above point to
+     («Раджу тобі Самаля»).
+   - The player can take the advice or say **«Та ні, краще…»** and pick another of the three, or still «Ще подумаю»
+     (the scribe can be asked again later).
+   - The chosen path is the oath (permanent, the existing SkillManager oath ids); its tree opens at level 5, at once if
+     he is already 5. It is all one dialogue in the normal dialogue box — no star map, no separate screen.
 6. **A quiet hint, not a number.** The Journal's character page shows three emblems that grow brighter with each
    leaning; one «?» tip (once per playthrough, D-ID of hints-toggle) explains that the way he fights and acts draws a
    path to him.
