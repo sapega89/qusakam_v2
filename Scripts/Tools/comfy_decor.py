@@ -206,6 +206,14 @@ DECOR = {
         "platform, its top a straight level line, riveted, held from below by two triangular iron brackets, wide empty "
         f"space around it, {LIGHT}, {cb.CHROMA}",
     ),
+    # BACKLOG 19: трава гойдається (живий світ, D392) — кущик сухої пустельної трави, основа нерухома.
+    "grass": dict(
+        seed=282, size=(768, 512), key="green", colors=8, kind="sway", anchor=(0.5, 1.0), amp=1.5, main=False,
+        crop=(0, 0.12), canvas=(44, 30), box=(2, 1, 42, 30),
+        prompt="one single bushy clump of dry desert grass with thick wide blades fanning upward and bending outward, "
+        "straw yellow and ochre with warm highlights, the clump rises from a single point at the bottom edge of the "
+        f"image, wide empty space above and on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
 }
 FRAMES = 4  # sway: 0, +amp, 0, -amp (синус); flicker — 3
 FLICKER = (1.0, 0.72, 1.18)
