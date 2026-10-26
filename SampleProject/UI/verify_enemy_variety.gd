@@ -356,7 +356,7 @@ func _placements() -> void:
 		room.free()
 	ck(ok_names, "a spawn point is named BigSlot_<Kind>_n exactly when it waits for a big kind")
 	ck(ok_kinds, "every point spawns a kind whose art exists, and a slot stands on its big kind's base")
-	ck(slots.size() == 11, "11 big slots: 3 on DesertRoad (the Dunes bandit and the Mesa archer are no slots, D582, D719), 2 in the Bandit Camp (D643, D719), 6 in the Laboratory (%d)" % slots.size())
+	ck(slots.size() == 13, "13 big slots: 4 on DesertRoad (the Dunes bandit and the Mesa archer are no slots, D582, D719; the old vulture's chest, D722), 2 in the Bandit Camp (D643, D719), 7 in the Laboratory (the tower guard's chest, D724) (%d)" % slots.size())
 	print("  info big slots: %s" % ", ".join(slots))
 
 func _place_hero(target: Node, dx: float) -> void:
@@ -664,7 +664,7 @@ func _old_vulture() -> void:
 			if p.get_script() == spawn_script and (p.big_kind == ID or p.enemy_type == ID):
 				placed.append("%s/%s" % [file.get_basename(), p.get_parent().name])
 		room.free()
-	ck(placed.is_empty(), "no map places it yet (D682 made no old-vulture slot) (%s)" % [placed])
+	ck(placed == ["DesertRoad/Fight_OldVulture"], "D722: its one place is DesertRoad Fight_OldVulture, alone over a chest (%s)" % [placed])
 	for level in [2, 3]:
 		var point: Node = spawn_script.new()
 		point.enemy_type = "vulture"
@@ -859,7 +859,7 @@ func _tower_guard() -> void:
 			if p.get_script() == spawn_script and p.big_kind == ID:
 				placed.append("%s/%s/%s" % [file.get_basename(), p.get_parent().name, p.name])
 		room.free()
-	ck(placed.is_empty(), "no map places it yet (D682 made no tower-guard slot) (%s)" % [placed])
+	ck(placed == ["Laboratory/Fight_TowerGuard/BigSlot_TowerShieldGuard_1"], "D724: its one place is Laboratory Fight_TowerGuard, alone over a chest (%s)" % [placed])
 	for level in [3, 10]:
 		var point: Node = spawn_script.new()
 		point.enemy_type = "shield"

@@ -7,13 +7,14 @@ extends SceneTree
 ##      один раз; E відмикає (ключ витрачено); розпис → журнал; скриня → Deep Gourd Amulet.
 ##   3. Розпис дракона: двері за брилою на плато не відповідають, легкий удар брилу лише хитає, важкий — розбиває;
 ##      E — у печерку; розпис → журнал; скриня → Jackal Tooth Amulet.
-##   4. Табір бандитів: дорога (E) → табір; ворота з дороги біля медитації зачинені (репліка); частокіл без ключа
+##   4. Табір бандитів: двері табору на дорозі без ключа — репліка (D723); громило-одинак (Fight_LoneElite) дає
+##      ключ табору, E ним відмикає двері (ключ витрачено) → табір; ворота з дороги біля медитації зачинені (репліка); частокіл без ключа
 ##      не пускає; бій → Stockade Key один раз (двічі після повернення ворогів); частокіл відмикається; скриня з
 ##      награбованим + Breaker's Ring; задні ворота зсередини → дорога біля медитації, і тепер з дороги вони ведуть у табір.
 ##   5. Меса: дорога (E) → низ; стрибками по уступах нагору; скриня → Iron Halberd + Sand Runner's Ring; грифи (D558).
 ##   6. Льох під брамою: двері зачинені (репліка); вартовий говорить лише після бою біля брами; розмова → двері
 ##      відчинені; кажани: спершу один, далі троє (D582); скриня → Hermit's Amulet.
-##   7. Сейв → завантаження: скрині відкриті, ґрати відчинені, брила розбита, шорткат і льох відчинені, обидва
+##   7. Сейв → завантаження: скрині відкриті, ґрати відчинені, брила розбита, двері табору, шорткат і льох відчинені, обидва
 ##      розписи в журналі, ключів немає.
 ## Пише лише в user://verify_rooms_batch1/.
 
@@ -253,7 +254,23 @@ func _initialize() -> void:
 	ck(started.has("Gate_CampShortcut_Locked") and game.map.scene_file_path == MAPS % "DesertRoad",
 			"the camp gate by the meditation spot is barred from inside (%s)" % [started])
 	await Kit.drain(self)
+	var camp_door: Node = game.map.get_node("BanditCampDoor")
+	ck(camp_door.gate_id == "camp_door" and not camp_door.is_open(), "D723: the camp door is shut before the lone brute")
+	await _stand(camp_door.global_position)
+	started.clear()
+	await Kit.key(self, KEY_E)
+	await Kit.frames(self, 20)
+	ck(started.has("Gate_CampDoor_Locked") and game.map.scene_file_path == MAPS % "DesertRoad",
+			"no key: Kusakam says the door needs a key, the hero stays on the road (%s)" % [started])
+	await Kit.drain(self)
+	var lone: Node = game.map.get_node("Fight_LoneElite")
+	ck(lone.reward == {"bandit_camp_key": 1}, "the lone brute's fight carries the camp key")
+	player.Max_Health = 99999  # тест дверей, не бою
+	player.current_health = player.Max_Health
+	await _win("Fight_LoneElite")
+	ck(inventory.get_item_count("bandit_camp_key") == 1, "the brute drops the camp key (%d)" % inventory.get_item_count("bandit_camp_key"))
 	await _enter("BanditCampDoor", "BanditCamp")
+	ck(inventory.get_item_count("bandit_camp_key") == 0, "the key opens the camp door and is used up")
 	var kinds := _kinds("Fight_Camp")
 	ck(kinds.size() >= 5 and game.map.get_node("Fight_Camp/BigSlot_BanditBrute_1").big_kind == "bandit_brute",
 			"a hard group fight with an elite (%s)" % [kinds])
@@ -366,6 +383,8 @@ func _initialize() -> void:
 	await _room("DragonMural", ^"ExitDoor")
 	ck(game.map.get_node("Chest_Mural").is_open, "the mural chest stays open")
 	await _room("DesertRoad", ^"Arrival_Start")
+	ck(game.map.get_node("BanditCampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
+			"the camp door stays open, its key gone")
 	ck(game.map.get_node("CampShortcutDoor").is_open(), "the camp shortcut stays open")
 	await _room("CityGates", ^"Arrival")
 	ck(game.map.get_node("CellarDoor").is_open(), "the cellar stays open")

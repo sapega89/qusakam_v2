@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x6"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="x8_chest"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -496,6 +497,36 @@ position = Vector2(1600, 368)
 script = ExtResource("8_spawn_point")
 big_kind = "bandit_brute"
 spawn_id = "Fight_Upper_EnemySpawnPoint3"
+
+[node name="Fight_TowerGuard" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+enemy_level = 9
+auto_spawn_on_ready = false
+trigger_area = NodePath("Trigger")
+state_key = "enemies_towerguard"
+respawns = true
+
+[node name="Trigger" type="Area2D" parent="Fight_TowerGuard"]
+position = Vector2(1580, 688)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_TowerGuard/Trigger"]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="BigSlot_TowerShieldGuard_1" type="Node2D" parent="Fight_TowerGuard"]
+position = Vector2(1630, 848)
+script = ExtResource("8_spawn_point")
+enemy_type = "shield"
+size = "medium"
+big_kind = "tower_shield_guard"
+spawn_id = "Fight_TowerGuard_EnemySpawnPoint1"
+
+[node name="Chest_TowerGuard" parent="." instance=ExtResource("x8_chest")]
+position = Vector2(1668, 864)
+contents = Dictionary[String, int]({
+"hi_potion": 1,
+"silver_ingot": 2
+})
+guard = NodePath("../Fight_TowerGuard")
 
 [node name="Fight_Cursed" type="Node2D" parent="." unique_id=1640100500 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")

@@ -11,11 +11,19 @@ extends SceneTree
 ##      Gate_ElderAttic_Locked; дід каже про горище в OldMan_Decision, і його прапорець village_oldman_complete
 ##      відчиняє ляду одразу; герой вилазить на горище.
 ##   4. Сейв → завантаження: ґрати й ляда відчинені, ключ не повертається.
+##   5. D722: скриню старого грифа на дорозі (за караваном) стереже бій без зони: повз неї герой іде спокійно; E будить
+##      грифа — він сам, старий гриф рівня 4; поки він живий, скриня не відчиняється; після нього — відчиняється.
+##   6. D724: у Лабораторії, на схід від драбини (дорога далі — на захід), зона будить баштового вартового — сам;
+##      скриня за ним відчиняється лише після нього. Обидва бої звичайні (D492): повернення ворогів скриню не закриває.
+##   7. D723: двері табору бандитів на дорозі — ключова брама camp_door. Сейв, де героя в таборі не було, — двері
+##      зачинені; старий сейв, зроблений у таборі (до D723), — двері відчинені без ключа.
 ## Пише лише в user://verify_gates/.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
 const ELDER := "res://SampleProject/Maps/ElderHouse.tscn"
+const LAB := "res://SampleProject/Maps/Laboratory.tscn"
+const CAMP := "res://SampleProject/Maps/BanditCamp.tscn"
 const GATES := "res://SampleProject/Resources/Data/gates.json"
 const ITEMS := "res://SampleProject/Resources/Data/items.json"
 const LOCKED_DOOR := "res://SampleProject/Objects/LockedDoor.tscn"
@@ -204,7 +212,98 @@ func _initialize() -> void:
 	for i in 20: await physics_frame
 	ck(game.map.get_node("Cage_TowerStash").is_open, "the cage still open")
 	ck(inventory.get_item_count("bandit_key") == 0, "the key does not come back")
+
+	game.player.Max_Health = 99999
+	game.player.current_health = game.player.Max_Health
+	print("[5] D722: the old vulture's chest on the road")
+	var vulture_fight: Node = game.map.get_node("Fight_OldVulture")
+	var vulture_chest: Node = game.map.get_node("Chest_OldVulture")
+	ck(vulture_fight.trigger_area == null and vulture_fight.respawns and vulture_fight.enemy_level == 4,
+			"an ordinary fight (D492) at level 4, the hero's after the Caravan (D642), with no zone on the road")
+	ck(vulture_fight.spawn_points.size() == 1 and vulture_fight.spawn_points[0].kind() == "old_vulture",
+			"its one point is the old vulture (%s)" % [vulture_fight.spawn_points.map(func(p: Node) -> String: return p.kind())])
+	ck(vulture_chest.position.x > game.map.get_node("Fight_Caravan/Fight_CaravanTrigger").position.x
+			and vulture_chest.get_node(vulture_chest.guard) == vulture_fight, "the chest stands after the Caravan, guarded by it")
+	await _stand(game, vulture_chest.global_position + Vector2(-260, -40))
+	await _hold(&"move_right", 1.2)
+	for i in 10: await physics_frame
+	ck(game.player.global_position.x > vulture_chest.global_position.x + 40.0 and not vulture_fight.fight_in_progress(),
+			"walking by the chest does not wake the vulture (x %.0f)" % game.player.global_position.x)
+	await _guarded_chest(game, vulture_chest, vulture_fight, "enemy_old_vulture.tscn", {"potion_lesser": 2, "mana_crystal": 2})
+
+	print("[6] D724: the tower shield guard's chest in the Laboratory")
+	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	for i in 20: await physics_frame
+	var guard_fight: Node = game.map.get_node("Fight_TowerGuard")
+	var guard_chest: Node = game.map.get_node("Chest_TowerGuard")
+	var ladder: Node2D = game.map.get_node("Ladder1")
+	ck(guard_fight.respawns and guard_fight.enemy_level == 9 and guard_fight.spawn_points.size() == 1
+			and guard_fight.spawn_points[0].kind() == "tower_shield_guard", "an ordinary level-9 fight, one tower shield guard")
+	ck(guard_fight.trigger_area.global_position.x - 32.0 > ladder.global_position.x + 32.0
+			and guard_chest.global_position.x > guard_fight.trigger_area.global_position.x
+			and game.map.get_node("Fight_Cursed/Trigger").global_position.x < ladder.global_position.x,
+			"the pocket east of the ladder's foot: the way on goes west, this is off it")
+	ck(guard_chest.get_node(guard_chest.guard) == guard_fight, "the chest is guarded by that fight")
+	await _stand(game, Vector2(ladder.global_position.x, 840.0))
+	ck(not guard_fight.fight_in_progress(), "down the ladder: no fight yet")
+	await _hold(&"move_right", 0.5)
+	for i in 30: await physics_frame
+	ck(guard_fight.fight_in_progress() and guard_fight.get_alive_enemies_count() == 1, "stepping east wakes the guard, alone")
+	await _guarded_chest(game, guard_chest, guard_fight, "enemy_tower_shield_guard.tscn", {"hi_potion": 1, "silver_ingot": 2})
+
+	print("[7] D723: the camp door, and old saves made in the camp")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
+	for i in 20: await physics_frame
+	ck(game.map.get_node("BanditCampDoor").gate_id == "camp_door" and not game.map.get_node("BanditCampDoor").is_open(),
+			"a save that never entered the camp: its door is locked")
+	await game.teleport_to_room(CAMP, ^"ExitDoor")  # сейв, зроблений у таборі до D723
+	for i in 20: await physics_frame
+	ck(game.save_game(), "saved in the camp")
+	game.queue_free()
+	for i in 4: await process_frame
+	game = await _boot()
+	ck(game.map.scene_file_path == CAMP, "loaded in the camp")
+	await game.teleport_to_room(ROAD, ^"Arrival_Start")
+	for i in 20: await physics_frame
+	ck(game.map.get_node("BanditCampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
+			"the old save keeps the camp door open, without a key")
+	ck(game.map.get_node("Chest_OldVulture").is_open, "the vulture's chest stays open")
+	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	for i in 20: await physics_frame
+	ck(game.map.get_node("Chest_TowerGuard").is_open, "the guard's chest stays open")
 	_finish()
+
+
+## Скриня під вартою: поки вартовий живий, E її не відчиняє (на дорозі E його й будить); після нього — відчиняє;
+## повернення ворогів (D492) її не закриває.
+func _guarded_chest(game: Node, chest: Node, fight: Node, scene: String, items: Dictionary) -> void:
+	var inventory: Node = sl.get_inventory_manager()
+	await _stand(game, chest.global_position + Vector2(-40, -40))
+	ck(chest.get_node("Interactable").player_nearby, "%s offers \"Open\"" % chest.name)
+	await Kit.key(self, KEY_E)
+	for i in 30: await physics_frame
+	var alive: Array = fight.spawned_enemies.filter(func(e: Node) -> bool: return is_instance_valid(e) and e.is_alive())
+	ck(alive.size() == 1 and alive[0].scene_file_path.ends_with(scene) and alive[0].level == fight.enemy_level,
+			"%s: one enemy, %s, level %d (%s)" % [chest.name, scene, fight.enemy_level, alive.map(func(e: Node) -> String: return e.scene_file_path.get_file())])
+	ck(not chest.is_open, "%s stays shut while its guard lives" % chest.name)
+	await Kit.key(self, KEY_E)
+	for i in 10: await physics_frame
+	ck(not chest.is_open and fight.get_alive_enemies_count() == 1, "%s: E again — still shut, no second guard" % chest.name)
+	for enemy: Node in alive:
+		enemy.die()
+	await create_timer(1.5).timeout
+	ck(fight.fight_cleared(), "%s: the guard is beaten" % chest.name)
+	var before := {}
+	for id: String in items: before[id] = inventory.get_item_count(id)
+	await _stand(game, chest.global_position + Vector2(-40, -40))
+	await Kit.key(self, KEY_E)
+	await create_timer(2.2).timeout
+	await _close_modal()
+	ck(chest.is_open, "%s opens after its guard" % chest.name)
+	for id: String in items:
+		ck(inventory.get_item_count(id) == before[id] + items[id], "%s: %s × %d" % [chest.name, id, items[id]])
+	game.reset_ordinary_fights()  # вороги повертаються, як після медитації (D492)
+	ck(fight.fight_won() and chest.is_open, "%s: the fight's return does not shut the chest" % chest.name)
 
 
 func _finish() -> void:

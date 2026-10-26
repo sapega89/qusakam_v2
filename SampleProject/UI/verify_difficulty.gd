@@ -80,10 +80,11 @@ func _initialize() -> void:
 	hero.set_physics_process(false)
 
 	var meetings := _meetings()
-	meetings.append(_unplaced("old_vulture", "DesertRoad/Fight_Caravan"))
 	meetings.append(_side_room("heavy_archer", "BanditCamp", ^"Fight_Camp"))
-	for fight in ["DesertRoad/Fight_Caravan", "Laboratory/Fight_Lower"]:
-		meetings.append(_tower_guard_at(fight))
+	print("[0a] D722, D724: the old vulture and the tower shield guard first stand alone in optional fights guarding a chest")
+	for fight: String in ["DesertRoad/Fight_OldVulture", "Laboratory/Fight_TowerGuard"]:
+		var at: Array = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)
+		ck(at.size() == 1 and at[0].optional and at[0].big.size() == 1, "%s: optional, one elite (%s)" % [fight, at[0].big if at.size() == 1 else []])
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")
 	for fight: Dictionary in fights:
 		ck(fight.enemy == fight.hero, "%s: enemy_level %d, hero level %d" % [fight.fight, fight.enemy, fight.hero])
@@ -181,13 +182,19 @@ func _meetings() -> Array[Dictionary]:
 		var room: Node = (load("res://SampleProject/Maps/%s.tscn" % room_name) as PackedScene).instantiate()
 		var starts := {}
 		var room_xp := 0
+		# D722, D724: бій, що стереже скриню (Chest.guard), — необовʼязковий: його можна оминути, тож його XP у
+		# маршрут не йде (як бічні кімнати поза ROUTE), а рівень бою — рівень героя там, де він стоїть.
+		var optional: Array = room.find_children("Chest_*", "", true, false) \
+				.filter(func(c: Node) -> bool: return not (c.get(&"guard") as NodePath).is_empty()) \
+				.map(func(c: Node) -> Node: return c.get_node(c.get(&"guard")))
 		for node: Node in room.find_children("*", "", true, false):
 			if node.get_script() == SpawnPoint:
 				var spawner: Node = node.get_parent() if node.get_parent().get_script() == Spawner else null
 				var fight: String = "%s/%s" % [room_name, spawner.name if spawner else node.name]
 				if not starts.has(fight):
 					starts[fight] = xp.current_level
-					fights.append({"fight": fight, "hero": xp.current_level, "enemy": spawner.enemy_level if spawner else 1, "big": []})
+					fights.append({"fight": fight, "hero": xp.current_level, "enemy": spawner.enemy_level if spawner else 1, "big": [],
+							"optional": optional.has(spawner)})
 				if Variety.is_elite(node.kind()) or node.big_kind != "none":
 					fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0].big.append(node.kind() if node.big_kind == "none" else node.big_kind)
 				var enemy_level: int = spawner.enemy_level if spawner else 1
@@ -206,7 +213,8 @@ func _meetings() -> Array[Dictionary]:
 					out.append({"cls": "elite" if elite else "ordinary", "kind": kind, "level": starts[fight],
 							"enemy_level": enemy_level, "city": city, "stats": node.enemy_stats(), "planned": planned,
 							"name": "%s L%d" % [label, enemy_level]})
-				xp.add_xp(node.enemy_stats().xp_reward)
+				if not optional.has(spawner):
+					xp.add_xp(node.enemy_stats().xp_reward)
 			elif node.get_script() == Boss:
 				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city,
 						"scene": node.scene_file_path})
@@ -214,15 +222,6 @@ func _meetings() -> Array[Dictionary]:
 		xp.add_xp(room_xp)
 		room.free()
 	return out
-
-
-## Вартовий з баштовим щитом (D652, D693) — живий, але D682 не дала йому точки BigSlot_*: зустріч у бою [param fight],
-## де стоїть звичайний щитоносець, на його рівні — щоб числа еліти пройшли ту саму перевірку [3] до клятви й після.
-func _tower_guard_at(fight: String) -> Dictionary:
-	var at: Dictionary = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0]
-	return {"cls": "elite", "kind": "tower_shield_guard", "level": at.hero, "enemy_level": at.enemy, "city": fight.begins_with("Laboratory"),
-			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_tower_shield_guard.tres"), "planned": false,
-			"name": "%s (unplaced) L%d" % [KIND_NAMES.tower_shield_guard, at.enemy]}
 
 
 ## Великий вид, що вперше стоїть у бічній кімнаті поза ROUTE (D719: великий лучник — у таборі бандитів, D698): зустріч
@@ -240,15 +239,6 @@ func _side_room(id: String, room_name: String, fight: NodePath) -> Dictionary:
 
 
 ## Одна бійка: герой рівня зустрічі зі збіркою [param build] проти справжнього ворога.
-## Живий великий вид, якого ще не поставлено на карту (D682 не дала старому грифу точки BigSlot_*): зустріч у бою
-## [param fight], де літає звичайний гриф, на його рівні — щоб числа еліти пройшли ту саму перевірку [3].
-func _unplaced(id: String, fight: String) -> Dictionary:
-	var at: Dictionary = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)[0]
-	return {"cls": "elite", "kind": id, "level": at.hero, "enemy_level": at.enemy, "city": false,
-			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id), "planned": false,
-			"name": "%s (unplaced) L%d" % [KIND_NAMES[id], at.enemy]}
-
-
 func _fight(meeting: Dictionary, build: String) -> Dictionary:
 	await _make_hero(meeting.level, meeting.city, build)
 	var enemy := _enemy(meeting)

@@ -278,6 +278,9 @@ auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_LoneEliteTrigger")
 state_key = "enemies_loneelite"
 respawns = true
+reward = Dictionary[String, int]({
+"bandit_camp_key": 1
+})
 
 [node name="Fight_LoneEliteTrigger" type="Area2D" parent="Fight_LoneElite"]
 position = Vector2(4300, 240)
@@ -413,6 +416,29 @@ position = Vector2(3760, 220)
 script = ExtResource("8_spawn_point")
 enemy_type = "vulture"
 
+[node name="Fight_OldVulture" type="Node2D" parent="."]
+script = ExtResource("7_spawner")
+enemy_level = 4
+auto_spawn_on_ready = false
+state_key = "enemies_oldvulture"
+respawns = true
+
+[node name="BigSlot_OldVulture_1" type="Node2D" parent="Fight_OldVulture"]
+position = Vector2(4740, 200)
+script = ExtResource("8_spawn_point")
+enemy_type = "vulture"
+size = "medium"
+big_kind = "old_vulture"
+spawn_id = "Fight_OldVulture_EnemySpawnPoint1"
+
+[node name="Chest_OldVulture" parent="." instance=ExtResource("chest")]
+position = Vector2(4680, 384)
+contents = Dictionary[String, int]({
+"potion_lesser": 2,
+"mana_crystal": 2
+})
+guard = NodePath("../Fight_OldVulture")
+
 [node name="Ladder_Shop" parent="." instance=ExtResource("ladder")]
 position = Vector2(1464, 153)
 height = 231.0
@@ -498,6 +524,7 @@ offset = Vector2(-75, -87)
 position = Vector2(2050, 206.5)
 target_room = "res://SampleProject/Maps/BanditCamp.tscn"
 arrival = NodePath("ExitDoor")
+gate_id = "camp_door"
 
 [node name="Interactable" parent="BanditCampDoor" index="1"]
 action_text = "Enter"

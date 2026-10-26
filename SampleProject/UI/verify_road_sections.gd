@@ -4,7 +4,8 @@ extends SceneTree
 ##   1. Each section fight (dunes, mesa, caravan) waits for the hero: no enemy until he walks into its zone, then its
 ##      own enemies appear on the floor; the story fight at the start (EnemySpawner) is not touched.
 ##   2. A finished section fight stays finished when the hero comes back (its own room-state key, D152).
-##   3. No gift lies on the road (D583): the pickups and the chest are up in branches (verify_road_secrets walks them).
+##   3. No gift lies on the road (D583): the pickups and the chest are up in branches (verify_road_secrets walks them);
+##      the one chest on the road is guarded by an optional fight (the old vulture, D722).
 ##   4. The road ends at CityGates: walking off the east edge loads CityGates.
 ##   5. Every ledge can be climbed again with one jump at a time (BACKLOG 32, no double jump): no rise between
 ##      neighbouring tile columns is higher than a jump, and from the floor on both sides of each raised top the
@@ -134,8 +135,11 @@ func _initialize() -> void:
 		await create_timer(2.0).timeout
 		ck(_alive(spawner).is_empty(), "%s: nobody comes back" % fight)
 
-	print("[3] No gift lies on the road (D583): every pickup and chest is up in a branch")
+	print("[3] No gift lies on the road (D583): every pickup and chest is up in a branch, or guarded by an optional fight (D722)")
 	var gifts := road.get_children().filter(func(n: Node) -> bool: return n.scene_file_path in ["res://SampleProject/Objects/ItemPickup.tscn", "res://SampleProject/Objects/Chest.tscn"])
+	var guarded := gifts.filter(func(n: Node) -> bool: return n.get(&"guard") != null and not (n.get(&"guard") as NodePath).is_empty())
+	ck(guarded.map(func(n: Node) -> String: return n.name) == ["Chest_OldVulture"], "one chest on the road, guarded by the old vulture (%s)" % [guarded])
+	gifts = gifts.filter(func(n: Node) -> bool: return not guarded.has(n))
 	ck(gifts.size() == 3, "three gifts on the road, all in branches (%d)" % gifts.size())
 	for gift: Node2D in gifts:
 		ck(gift.global_position.y < 200.0, "%s is above the road (y %.0f), not on it" % [gift.name, gift.global_position.y])
