@@ -1,14 +1,14 @@
 extends SceneTree
 
 ## Живий світ (BACKLOG 7 + 19):
-##   1. Кожна відкрита кімната має передній план `Front` (Parallax2D) над героєм (z більший за z гравця),
-##      scroll_scale.x > 1, depth blur, текстура задана; його непрозорий верх не вище лінії підлоги героя.
+##   1. Кожна відкрита кімната має передній план `FrontDark` (Parallax2D) над героєм (z більший за z гравця),
+##      scroll_scale.x > 1, затемнений; смуги під ногами (`Front`) немає — замість неї повз проходять темні заслони
+##      (Occluder*), D732. Що вони не дістають лінії ходу й не закривають дверей — verify_room_entrances.
 ##   2. Декор (банери, пальми, лампи, кристали, пил) — AnimatedSprite2D з циклом `idle` у кожній кімнаті зі списку;
 ##      сусіди в кімнаті не крутяться в одній фазі; кожна сцена декору справді анімується в дереві.
 ##   3. Хмари пливуть самі (без вводу) у небі обох задників і в високому небі Каньйону.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_living_world.gd
 
-const FRONT_BLUR := "res://SampleProject/Resources/Materials/depth_blur_front.tres"
 const PLAYER_SCENE := "res://SampleProject/Player.tscn"
 const DECOR_DIR := "res://SampleProject/Scenes/Backgrounds/Decor/%s.tscn"
 const BACKDROPS := [
@@ -73,19 +73,15 @@ func _max_z(node: Node, parent_z: int) -> int:
 func _check_fronts(player_z: int) -> void:
 	for room: String in FRONT_ROOMS:
 		var map: Node = load("res://SampleProject/Maps/%s.tscn" % room).instantiate()
-		var front := map.get_node_or_null(^"Front") as Parallax2D
-		ck(front != null, "%s: Front Parallax2D exists" % room)
+		ck(map.get_node_or_null(^"Front") == null, "%s: no front band under the hero's feet (D732)" % room)
+		var front := map.get_node_or_null(^"FrontDark") as Parallax2D
+		ck(front != null, "%s: FrontDark Parallax2D exists" % room)
 		if front:
-			ck(front.z_index > player_z, "%s: Front z %d is above the player (max z %d)" % [room, front.z_index, player_z])
-			ck(front.scroll_scale.x > 1.0, "%s: Front scroll %.2f > 1" % [room, front.scroll_scale.x])
-			ck(front.repeat_size.x > 0.0 and front.repeat_times >= 2, "%s: Front repeats along the room" % room)
-			var sprite := front.get_node_or_null(^"Sprite") as Sprite2D
-			ck(sprite != null and sprite.texture != null, "%s: Front sprite has a texture" % room)
-			if sprite and sprite.texture:
-				ck(sprite.material != null and sprite.material.resource_path == FRONT_BLUR, "%s: Front uses depth_blur_front" % room)
-				var top_row := sprite.texture.get_image().get_used_rect().position.y
-				var top := front.position.y + sprite.position.y + top_row * sprite.scale.y
-				ck(top >= FRONT_ROOMS[room], "%s: Front starts at y %.0f, not above the platform line %.0f" % [room, top, FRONT_ROOMS[room]])
+			ck(front.z_index > player_z, "%s: FrontDark z %d is above the player (max z %d)" % [room, front.z_index, player_z])
+			ck(front.scroll_scale.x > 1.0, "%s: FrontDark scroll %.2f > 1" % [room, front.scroll_scale.x])
+			ck(front.modulate.v < 0.5, "%s: FrontDark is darkened (%s)" % [room, front.modulate])
+			ck(front.get_children().any(func(c: Node) -> bool: return String(c.name).begins_with("Occluder")),
+					"%s: tall dark occluders pass in front" % room)
 		map.free()
 
 
