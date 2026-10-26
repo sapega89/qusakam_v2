@@ -328,6 +328,10 @@ const LOOT_TOAST_FADE := 0.4         # поява і згасання, секу�
 const LOOT_FEED_MAX := 4             # більше тостів — найстаріший іде одразу
 const STATUS_INCREASE := Color("2ecc71")  # Figma status/increase — ✓ матеріалу вистачає
 const CURRENCY_SYMBOL := "₹"       # ціни в рядках магазину (Figma)
+# Плашка підказки в грі (B151): у Figma кадру немає — стоїть угорі по центру під панеллю квесту, далеко від героя
+# й ворогів посеред екрана; ширина стала, висота росте вниз під текст (uk довша за en).
+const HINT_BANNER_WIDTH := 720
+const HINT_BANNER_SLIDE := SPACE_2XL      # поява/зникнення: зсув угору, px
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)

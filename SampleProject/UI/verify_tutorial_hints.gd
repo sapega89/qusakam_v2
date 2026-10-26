@@ -12,6 +12,7 @@ extends SceneTree
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const TextFit = preload("res://SampleProject/UI/text_fit.gd")
+const TutorialTopics = preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
@@ -151,5 +152,43 @@ func _initialize() -> void:
 	settings.tutorial_windows = true
 	root.get_node("SaveSystem").save_game_settings()  # клік Off записав файл налаштувань — повертаємо
 
+	await _banner_fits()
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
+
+
+## B151: плашка росте під свій текст у en і uk за кожного розміру вікна і стоїть угорі, не на герої й не посеред екрана.
+func _banner_fits() -> void:
+	print("[6] B151: every banner fits its text (en, uk; 1280×720 … 2560×1440) and keeps clear of the hero")
+	var hint: Node = get_first_node_in_group(&"tutorial_hint_display")
+	var loc: Node = root.get_node("LocalizationManager")
+	var hero: Node2D = get_first_node_in_group(&"player")
+	var sprite: Sprite2D = hero.get_node(^"Sprite2D")
+	var bad: Array[String] = []
+	var checked := 0
+	for size: Vector2i in [Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(2560, 1440)]:
+		root.size = size
+		for lang in ["en", "uk"]:
+			loc.apply_language(lang)
+			for topic: Dictionary in TutorialTopics.all().filter(func(t: Dictionary) -> bool: return t.get("hint_topic", false)):
+				TutorialTopics.mark_seen(topic.id)  # повтор (force) — завжди плашка
+				hint.show_hint(topic.id, true, true)
+				await Kit.frames(self, 4)
+				var box: Rect2 = hint.panel.get_global_rect()
+				var screen: Rect2 = hint.get_viewport_rect()
+				var hero_box: Rect2 = sprite.get_global_transform_with_canvas() * sprite.get_rect()
+				var clip: String = TextFit.clipped(hint.panel)
+				checked += 1
+				if clip != "":
+					bad.append("%s %s %s: %s" % [size, lang, topic.id, clip])
+				elif not screen.encloses(box):
+					bad.append("%s %s %s: %s off screen" % [size, lang, topic.id, box])
+				elif box.intersects(hero_box):
+					bad.append("%s %s %s: %s over the hero %s" % [size, lang, topic.id, box, hero_box])
+				elif box.end.y > screen.size.y / 3.0:
+					bad.append("%s %s %s: %s reaches the middle of the screen" % [size, lang, topic.id, box])
+				hint.force_hide()
+	loc.apply_language("en")
+	root.size = Vector2i(1920, 1080)
+	ck(checked > 0 and bad.is_empty(), "%d banners fit, on top, clear of the hero (%s)" % [checked, "; ".join(bad.slice(0, 3))])

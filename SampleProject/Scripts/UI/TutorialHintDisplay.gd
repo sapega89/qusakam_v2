@@ -18,9 +18,10 @@ const TopicWindow = preload("res://SampleProject/Scenes/Menus/Game/tutorial_menu
 var current_hint: String = ""
 var is_showing: bool = false
 var display_duration: float = 4.0
-## Місце плашки зі сцени (над панеллю навичок); анімація зсуває від нього, а не від нуля — інакше плашка лягала на панель.
-## Зсуваємо весь вузол, не плашку: плашка росте вгору під текст (D474), і її власна позиція міняється з висотою.
+## Місце плашки зі сцени — угорі по центру під панеллю квесту (B151: унизу вона лягала на героя); анімація зсуває
+## весь вузол від нього, не плашку: плашка росте вниз під текст (D474), і її власні відступи міняються з висотою.
 var _rest_y: float
+var _refit_queued := false
 ## Теми, що чекають на вільну гру, щоб відкрити вікно: [id, sticky].
 var _pending: Array = []
 ## Вікно відкрили ми — ми ж і знімаємо паузу.
@@ -30,6 +31,10 @@ func _ready() -> void:
 	visible = false
 	is_showing = false
 	_rest_y = position.y
+	var margins: MarginContainer = $Panel/MarginContainer
+	hint_label.custom_minimum_size.x = UITokens.HINT_BANNER_WIDTH \
+			- margins.get_theme_constant(&"margin_left") - margins.get_theme_constant(&"margin_right")
+	hint_label.minimum_size_changed.connect(_queue_refit)
 	# Перша тема гри — рух, за дві секунди після входу (вікно дочекається кінця вступного діалогу).
 	await get_tree().create_timer(2.0).timeout
 	show_hint("movement")
@@ -37,7 +42,7 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if InputGlyphs.note_event(event) and is_showing:
-		hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(current_hint)).text
+		_set_text(current_hint)
 
 
 ## Перша поява теми — вікно (або плашка, якщо вікна вимкнено); повтор — лише з [param force], плашкою.
@@ -81,7 +86,7 @@ func _show_banner(hint_key: String, force: bool, sticky: bool) -> void:
 	if is_showing and not force:
 		return
 	current_hint = hint_key
-	hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(hint_key)).text
+	_set_text(hint_key)
 	is_showing = true
 	_animate_in()
 	if sticky:
@@ -93,13 +98,38 @@ func _show_banner(hint_key: String, force: bool, sticky: bool) -> void:
 ## Текст підказки складається один раз у _show_banner; при зміні мови показану підказку перекладаємо заново.
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and is_showing:
-		hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(current_hint)).text
+		_set_text(current_hint)
+	elif what == NOTIFICATION_VISIBILITY_CHANGED and visible:
+		_queue_refit()
+
+
+func _set_text(hint_key: String) -> void:
+	hint_label.text = TutorialTopics.resolved(TutorialTopics.by_id(hint_key)).text
+	_queue_refit()
+
+
+## B151 (як B122 у вікні діалогу): текст міняли, поки вузол схований, а Godot не оновлює для схованого вузла
+## запамʼятований мінімальний розмір — плашка лишалась висотою попереднього тексту, і довгий (uk) звисав за неї.
+## Тож розмір плашки задають відступи, щоразу як міняється текст чи видимість: ширина стала, низ — під текст.
+func _queue_refit() -> void:
+	if _refit_queued or not is_node_ready():
+		return
+	_refit_queued = true
+	_refit.call_deferred()
+
+
+func _refit() -> void:
+	_refit_queued = false
+	var fit := panel.get_combined_minimum_size()
+	panel.offset_left = -fit.x / 2.0
+	panel.offset_right = fit.x / 2.0
+	panel.offset_bottom = panel.offset_top + fit.y
 
 func _animate_in() -> void:
-	"""Animates hint sliding in from bottom"""
+	"""Animates hint sliding in from above"""
 	visible = true
 	panel.modulate.a = 0.0
-	position.y = _rest_y + 50
+	position.y = _rest_y - UITokens.HINT_BANNER_SLIDE
 
 	var tween = create_tween()
 	tween.set_parallel(true)
@@ -111,7 +141,7 @@ func _animate_out() -> void:
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
-	tween.tween_property(self, "position:y", _rest_y + 50, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(self, "position:y", _rest_y - UITokens.HINT_BANNER_SLIDE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 
 	await tween.finished
 	visible = false
