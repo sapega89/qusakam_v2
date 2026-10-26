@@ -778,7 +778,7 @@ func _device_tabs(input_menu: Node) -> void:
 	ck(_binding_cells(list, "Attack") == [lmb, "", ""],
 			"B19: Attack on the keyboard tab = the left mouse button only %s" % str(_binding_cells(list, "Attack")))
 	var key_r := InputEventKey.new()
-	key_r.physical_keycode = KEY_K
+	key_r.physical_keycode = KEY_J  # вільна клавіша: K — open_skills_tab (D723)
 	key_r.pressed = true
 	var pad_touch := InputEventJoypadButton.new()
 	pad_touch.button_index = JOY_BUTTON_TOUCHPAD
@@ -788,13 +788,13 @@ func _device_tabs(input_menu: Node) -> void:
 	mouse_x.pressed = true
 	ck(window._is_recordable_input(key_r) and window._is_recordable_input(mouse_x) and not window._is_recordable_input(pad_touch),
 			"the keyboard tab's Assign window takes keys and mouse buttons, not the pad")
-	# Клавіатура: друга комірка Attack ← K; геймпад Attack не чіпається.
+	# Клавіатура: друга комірка Attack ← J; геймпад Attack не чіпається.
 	# Як після кліку на комірку (_on_button_pressed), але без вікна Assign: подію даємо самі.
 	list.editing_action_name = "attack"
 	list.editing_action_group = 1
-	list.add_action_event("K", key_r)
+	list.add_action_event("J", key_r)
 	for i in 2: await process_frame
-	ck(_binding_cells(list, "Attack") == [lmb, "K", ""], "a keyboard rebind fills the keyboard slot %s" % str(_binding_cells(list, "Attack")))
+	ck(_binding_cells(list, "Attack") == [lmb, "J", ""], "a keyboard rebind fills the keyboard slot %s" % str(_binding_cells(list, "Attack")))
 
 	input_menu.get_node(^"%GamepadTab").pressed.emit()
 	for i in 3: await process_frame
@@ -819,7 +819,7 @@ func _device_tabs(input_menu: Node) -> void:
 	list.reset()
 	for i in 2: await process_frame
 	ck(_binding_cells(list, "Attack") == ["Button X", "", ""], "gamepad Reset restores Button X")
-	ck(InputMap.action_get_events(&"attack").any(func(e: InputEvent) -> bool: return e is InputEventKey and e.physical_keycode == KEY_K),
+	ck(InputMap.action_get_events(&"attack").any(func(e: InputEvent) -> bool: return e is InputEventKey and e.physical_keycode == KEY_J),
 			"gamepad Reset leaves the keyboard rebind")
 	input_menu.get_node(^"%KeyboardTab").pressed.emit()
 	for i in 3: await process_frame

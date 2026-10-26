@@ -47,17 +47,27 @@ func attribute_points() -> int:
 
 
 ## Чи відкрита сюжетом вкладка [param tab_name]: metadata/unlock_flag її кнопки в game_menu.tscn (D151) — з SceneState,
-## без створення меню; правило те саме, що в game_menu._lock_tabs.
+## без створення меню; правило те саме, що в game_menu._lock_tabs. Прапорці читаються один раз.
 static func is_tab_unlocked(tab_name: String) -> bool:
-	var state := (load(GAME_MENU_SCENE) as PackedScene).get_state()
-	for node in state.get_node_count():
-		var props := {}
-		for i in state.get_node_property_count(node):
-			props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
-		if props.get("metadata/tab") == tab_name:
-			return not props.has("metadata/unlock_flag") or bool(Game.get_singleton().get_quest_flag(props["metadata/unlock_flag"]))
-	assert(false, "HudNewPoints: no tab '%s' in the game menu" % tab_name)
-	return false
+	var flags := _tab_unlock_flags()
+	assert(flags.has(tab_name), "HudNewPoints: no tab '%s' in the game menu" % tab_name)
+	return flags[tab_name] == "" or bool(Game.get_singleton().get_quest_flag(flags[tab_name]))
+
+
+static var _flags_cache: Dictionary = {}
+
+
+## Вкладка → прапорець, що її відкриває ("" — відкрита завжди), з game_menu.tscn.
+static func _tab_unlock_flags() -> Dictionary:
+	if _flags_cache.is_empty():
+		var state := (load(GAME_MENU_SCENE) as PackedScene).get_state()
+		for node in state.get_node_count():
+			var props := {}
+			for i in state.get_node_property_count(node):
+				props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
+			if props.has("metadata/tab"):
+				_flags_cache[props["metadata/tab"]] = String(props.get("metadata/unlock_flag", ""))
+	return _flags_cache
 
 
 func refresh() -> void:

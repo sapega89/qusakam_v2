@@ -13,7 +13,7 @@ tags: [cloud, ui, skills, status, hud]
 **D723:** while points wait, two glowing Diablo II-style buttons sit on the HUD under the hero panel («Нові вміння» / «Нові атрибути»). They are opened by a click, K / C, or D-pad left. The Skills and Status sidebar tabs also glow, with a count. Everything goes dark once the points are spent.
 **Not done:** no Figma frame was read, because Figma MCP is local-only (MASTER_PLAN rules). The design docs say that neither frame has attribute spending (D691: «not in the frame»; Status `58:719` predates D335), and D716 makes Figma an inspiration only.
 D-ID text: D722, D723 (below). B rows fixed: B151 (below). No Q.
-Full suite: SUITE_LINE
+Full suite: one full run, 122 verifies: 120 PASS, 2 FAIL, both from this branch and both fixed, then re-run on their own (PASS): `verify_settings` rebound Attack to K as a free key, and K now opens Skills (the test uses J now); `verify_demo_end` failed because the HUD walked the menu SceneState on every refresh, which was slow enough to delay the finale's HUD fade (the tab flags are now read once and cached). Re-run after the fix: `verify_new_points`, `verify_demo_end`, `verify_menu_after_room_change`, `verify_settings`: PASS. The container restarted twice during the suite, so it was finished in resumable chunks.
 
 Base: `origin/feature/backlog` at `bcdc05ea`. `integrator-14` had not merged `cloud/world-map` with a merge commit. Its work is already in `feature/backlog`, rebased and integrated in round 14 (`764ceea3` … `090cb098`, D714/D715). This branch builds on that. Merging `origin/cloud/world-map` again only conflicted on its own report and pin scene, so it was aborted. There is no newer orchestrator note on this task in `MASTER_PLAN.md` or `figma_decision_register.md`; it is only the launch line on 2026-10-26.
 
@@ -69,7 +69,7 @@ Base: `origin/feature/backlog` at `bcdc05ea`. `integrator-14` had not merged `cl
 - `verify_new_points` — ALL PASS (B151 six paths × 2 sizes; HUD only with an open tab; +N / caption / K / C; clear of vitals, hotbar, quest panel, loot feed at both sizes; click (Alt), K, C, D-pad left; pad glyph on one button; tabs glow and badge; stop after Accept / JP spent; buttons gone; hidden in dialogue).
 - `verify_status` — ALL PASS ([4b] Accept → Max. HP 290 → 294 on Status, F → Phys. Atk. +1, Esc drops; [4c] D-pad from the tab lands on a row, every − / + of the 4 rows reachable, A / Enter / X / Backspace / Left; [4d] 17 controls in view and uncovered at 1920×1080 and 1280×720).
 - `verify_attributes`, `verify_skill_screen`, `verify_skills_ui`, `verify_world_map`, `verify_game_menu`, `verify_locale`, `verify_game_ui_theme`, `verify_scripts_compile` — ALL PASS.
-- Full suite: SUITE_LINE
+- Full suite: one full run, 122 verifies: 120 PASS, 2 FAIL, both from this branch and both fixed, then re-run on their own (PASS): `verify_settings` rebound Attack to K as a free key, and K now opens Skills (the test uses J now); `verify_demo_end` failed because the HUD walked the menu SceneState on every refresh, which was slow enough to delay the finale's HUD fade (the tab flags are now read once and cached). Re-run after the fix: `verify_new_points`, `verify_demo_end`, `verify_menu_after_room_change`, `verify_settings`: PASS. The container restarted twice during the suite, so it was finished in resumable chunks.
 
 ## Shots (`design/shots/skills_party/`)
 
