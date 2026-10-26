@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Кадри BACKLOG 22 у справжньому вікні: хранителі клятв у місті, меню клятви, екран Skills з деревами.
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_skill_trees.gd -- <тека>
-## Пише fb22_*.png у теку.
+## Пише fb22_*.png у теку. Меню відкривається, як у гравця (B151): Esc, потім клік по вкладці в бічній панелі,
+## а вікно Paladin — дорогою Sapega з плейтесту: Status → Skills, з колонкою партії, як у грі.
 
 var game: Node
 var sl: Node
@@ -63,11 +64,7 @@ func _initialize() -> void:
 	sm.unlock_skill("healing_palm")
 	sm.unlock_skill("devotion")
 	var ui_manager: Node = sl.get_ui_manager()
-	ui_manager.open_game_menu()
-	for i in 14: await process_frame
-	var menu: Node = get_first_node_in_group("game_menu")
-	menu.switch_to_tab("Skills")
-	for i in 10: await process_frame
+	var menu: Node = await _open_menu_like_player(["Skills"])
 	menu.find_child("SkillsComponent", true, false)._rows["devotion"].grab_focus()
 	for i in 4: await process_frame
 	await _shot("fb22_skills_before_oath")
@@ -76,19 +73,41 @@ func _initialize() -> void:
 
 	sm.swear_oath("paladin")
 	sm.unlock_skill("radiant_smite")
-	ui_manager.open_game_menu()
-	for i in 14: await process_frame
-	menu = get_first_node_in_group("game_menu")
-	menu.switch_to_tab("Skills")
-	for i in 10: await process_frame
+	menu = await _open_menu_like_player(["Status", "Skills"])
 	var skills: Node = menu.find_child("SkillsComponent", true, false)
 	skills._rows["radiant_smite"].grab_focus()
 	for i in 4: await process_frame
 	await _shot("fb22_skills_paladin")
-	skills.show_tree("dark_knight")
-	for i in 4: await process_frame
-	await _shot("fb22_skills_dark_tab")
+	# Кадру «вкладка Dark Knight» після клятви немає: гравець її не відкриє — інші клятви закриті (D489),
+	# а show_tree() з коду падав на клітинках, яких немає на екрані.
 	quit(0)
+
+
+## Esc (дія game_menu) відкриває меню; далі — клік мишею по кожній вкладці [param tabs] у бічній панелі.
+func _open_menu_like_player(tabs: Array) -> Node:
+	for pressed in [true, false]:
+		var ev := InputEventKey.new()
+		ev.keycode = KEY_ESCAPE
+		ev.physical_keycode = KEY_ESCAPE
+		ev.pressed = pressed
+		root.push_input(ev)
+		await process_frame
+	for i in 14: await process_frame
+	var menu: Node = get_first_node_in_group("game_menu")
+	for tab: String in tabs:
+		var button: Control = menu.get_node("%%%sButton" % tab)
+		var pos := button.get_global_rect().get_center()
+		for pressed in [true, false]:
+			var click := InputEventMouseButton.new()
+			click.button_index = MOUSE_BUTTON_LEFT
+			click.pressed = pressed
+			click.position = pos
+			click.global_position = pos
+			root.push_input(click)
+			await process_frame
+		for i in 10: await process_frame
+	assert(menu.current_tab_name == tabs[-1], "capture_skill_trees: the menu is not on %s" % tabs[-1])
+	return menu
 
 
 func _finish_dialogue() -> void:

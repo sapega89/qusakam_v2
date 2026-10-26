@@ -75,7 +75,6 @@ func _notification(what: int) -> void:
 func set_map_active(active: bool) -> void:
 	is_map_active = active
 	process_mode = Node.PROCESS_MODE_ALWAYS if active else Node.PROCESS_MODE_DISABLED
-	_set_party_panel_visible(active)
 	if active:
 		_place_frame()
 		_build_world()
@@ -86,20 +85,6 @@ func set_map_active(active: bool) -> void:
 ## Кадр 1920×1080 у координатах полотна: шпильки, картка й легенда стоять у координатах кадру Figma.
 func _place_frame() -> void:
 	_frame.global_position = Vector2.ZERO
-
-
-## Figma-кадри карти без колонки партії, як Status (stats_component). Ховаємо відкладено: game_menu показує
-## панель і ховає попередню в одному проході, а та, ховаючись, повертає колонку.
-func _set_party_panel_visible(map_shown: bool) -> void:
-	if map_shown:
-		_hide_party_panel.call_deferred()
-	else:
-		get_tree().get_first_node_in_group(&"ui_party_column").visible = true
-
-
-func _hide_party_panel() -> void:
-	if is_visible_in_tree():
-		get_tree().get_first_node_in_group(&"ui_party_column").visible = false
 
 
 # ── Рівень 1 — світ ─────────────────────────────────────────────────────────

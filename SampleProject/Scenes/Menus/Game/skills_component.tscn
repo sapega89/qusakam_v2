@@ -387,78 +387,6 @@ focus_mode = 2
 theme_type_variation = &"SkillResetButton"
 text = "Reset"
 
-[node name="AttrPanel" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="AttrHeader" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="AttrTitle" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"SkillDetailName"
-text = "Attributes"
-
-[node name="AttrPointsCaption" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"SkillBottomCaption"
-text = "Points"
-uppercase = true
-
-[node name="AttrPointsValue" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrHeader"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"SkillPointsValue"
-text = "0"
-
-[node name="AttrRule" type="HSeparator" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
-layout_mode = 2
-theme_type_variation = &"SkillDetailRule"
-
-[node name="AttrRows" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="AttributeRow" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Name" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"AttrLabel"
-
-[node name="Gives" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"MutedLabel"
-clip_text = true
-text_overrun_behavior = 3
-
-[node name="Value" type="Label" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
-custom_minimum_size = Vector2(56, 0)
-layout_mode = 2
-theme_type_variation = &"AttrValue"
-horizontal_alignment = 2
-
-[node name="Minus" type="Button" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
-custom_minimum_size = Vector2(36, 36)
-layout_mode = 2
-text = "−"
-
-[node name="Plus" type="Button" parent="Window/Center/Body/Columns/SidePanel/AttrPanel/AttrRows/AttributeRow"]
-custom_minimum_size = Vector2(36, 36)
-layout_mode = 2
-text = "+"
-
 [node name="BottomRule" type="HSeparator" parent="Window/Center/Body"]
 layout_mode = 2
 theme_type_variation = &"SkillBarRule"
@@ -508,13 +436,12 @@ focus_mode = 2
 theme_type_variation = &"SkillLearnButton"
 text = "Accept"
 
-[node name="AttributesButton" type="Button" parent="Window/Center/Body/PointsBar"]
+[node name="AttrPointsHint" type="Label" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-focus_mode = 2
-theme_type_variation = &"SkillTextButton"
-toggle_mode = true
-text = "Attributes"
+size_flags_vertical = 4
+theme_type_variation = &"SkillVerdict"
 
 [node name="ResetAllButton" type="Button" parent="Window/Center/Body/PointsBar"]
 unique_name_in_owner = true

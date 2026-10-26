@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/loot_feed.tscn" id="16_lootfeed"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hud_xp_bar.tscn" id="17_hudxp"]
 [ext_resource type="PackedScene" uid="uid://ieswd7jymiqi" path="res://SampleProject/Scenes/DialogueSystem.tscn" id="11_dialogue"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/hud_new_points.tscn" id="30_hud_new_points"]
 
 [sub_resource type="GDScript" id="GDScript_u7odr"]
 resource_name = "MapWindow"
@@ -367,6 +368,8 @@ layout_mode = 1
 [node name="CombatHudTop" parent="UICanvas/CombatHUD" instance=ExtResource("14_hudtop")]
 
 [node name="LootFeed" parent="UICanvas/CombatHUD" instance=ExtResource("16_lootfeed")]
+
+[node name="HudNewPoints" parent="UICanvas/CombatHUD" instance=ExtResource("30_hud_new_points")]
 
 [connection signal="draw" from="UI/MapWindow/TopDraw" to="UI/MapWindow" method="_on_top_draw"]
 

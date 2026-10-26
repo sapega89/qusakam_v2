@@ -72,9 +72,12 @@ func _initialize() -> void:
 			# World Map (D715): написи в плашках і клітинках фіксованого розміру.
 			"MapPinName": UITokens.SIZE_MAP_PIN_NAME, "MapPinNameLocked": UITokens.SIZE_MAP_PIN_NAME, "MapPinState": UITokens.SIZE_MAP_PIN_STATE,
 			"MapCardTitle": UITokens.SIZE_MAP_CARD_TITLE, "MapCardText": UITokens.SIZE_MAP_CARD_TEXT, "MapRoomName": UITokens.SIZE_MAP_ROOM,
-			"MapPassage": UITokens.SIZE_MAP_PASSAGE, "MapLegendTitle": UITokens.SIZE_MAP_LEGEND_TITLE}
+			"MapPassage": UITokens.SIZE_MAP_PASSAGE, "MapLegendTitle": UITokens.SIZE_MAP_LEGEND_TITLE,
+			# Кнопки нових очок на HUD (D723) — поруч із панеллю героя, розміром HUD v2.
+			"NewPointsCount": UITokens.SIZE_NEW_POINTS_COUNT, "NewPointsCaption": UITokens.SIZE_NEW_POINTS_CAPTION,
+			"NewPointsKey": UITokens.SIZE_NEW_POINTS_KEY}
 	_check(figma.keys().all(func(t: String) -> bool: return theme.get_font_size("font_size", t) == figma[t])
-			and figma.size() == UITokens.FIGMA_FONT_TYPES.size(), "HUD v2 and World Map text at its Figma size (26 / 16 / 18 / 14 / 22 …)")
+			and figma.size() == UITokens.FIGMA_FONT_TYPES.size(), "HUD v2, World Map and new-points text at its Figma size (26 / 16 / 18 / 14 / 22 …)")
 	var panel := theme.get_stylebox("panel", "PanelContainer") as StyleBoxFlat
 	_check(panel != null and panel.bg_color == UITokens.SURFACE, "PanelContainer bg == SURFACE")
 	_check(panel != null and panel.corner_radius_top_left == UITokens.RADIUS, "PanelContainer radius == 0")

@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/hud_new_points.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/new_points_button.tscn" id="2_button"]
+
+[node name="HudNewPoints" type="VBoxContainer"]
+offset_left = 32.0
+offset_top = 240.0
+offset_right = 372.0
+offset_bottom = 356.0
+mouse_filter = 2
+theme_override_constants/separation = 12
+script = ExtResource("1_hud")
+
+[node name="SkillPoints" parent="." instance=ExtResource("2_button")]
+unique_name_in_owner = true
+layout_mode = 2
+caption_key = "New skills"
+
+[node name="AttributePoints" parent="." instance=ExtResource("2_button")]
+unique_name_in_owner = true
+layout_mode = 2
+caption_key = "New attributes"

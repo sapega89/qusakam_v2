@@ -240,28 +240,83 @@ stretch_mode = 5
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Header" type="Label" parent="Columns/Center/Body/AttributesSection"]
+[node name="AttrHeader" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection"]
 layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Header" type="Label" parent="Columns/Center/Body/AttributesSection/AttrHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_type_variation = &"SectionHeader"
 text = "Attributes"
 
-[node name="PointAttrs" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection"]
+[node name="AttrPendingLabel" type="Label" parent="Columns/Center/Body/AttributesSection/AttrHeader"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-theme_override_constants/separation = 32
+size_flags_vertical = 4
+theme_type_variation = &"SkillVerdict"
 
-[node name="PointAttr" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection/PointAttrs"]
+[node name="AttrCancelButton" type="Button" parent="Columns/Center/Body/AttributesSection/AttrHeader"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillResetButton"
+text = "Cancel"
+
+[node name="AttrAcceptButton" type="Button" parent="Columns/Center/Body/AttributesSection/AttrHeader"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+focus_mode = 2
+theme_type_variation = &"SkillLearnButton"
+text = "Accept"
+
+[node name="AttrRows" type="GridContainer" parent="Columns/Center/Body/AttributesSection"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/h_separation = 40
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="AttributeRow" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection/AttrRows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="Caption" type="Label" parent="Columns/Center/Body/AttributesSection/PointAttrs/PointAttr"]
+[node name="Name" type="Label" parent="Columns/Center/Body/AttributesSection/AttrRows/AttributeRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"AttrLabel"
 
-[node name="Value" type="Label" parent="Columns/Center/Body/AttributesSection/PointAttrs/PointAttr"]
+[node name="Gives" type="Label" parent="Columns/Center/Body/AttributesSection/AttrRows/AttributeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_type_variation = &"MutedLabel"
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="Value" type="Label" parent="Columns/Center/Body/AttributesSection/AttrRows/AttributeRow"]
+custom_minimum_size = Vector2(56, 0)
 layout_mode = 2
 theme_type_variation = &"AttrValue"
+horizontal_alignment = 2
+
+[node name="Minus" type="Button" parent="Columns/Center/Body/AttributesSection/AttrRows/AttributeRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+focus_mode = 2
+text = "−"
+
+[node name="Plus" type="Button" parent="Columns/Center/Body/AttributesSection/AttrRows/AttributeRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+focus_mode = 2
+text = "+"
 
 [node name="AttrColumns" type="HBoxContainer" parent="Columns/Center/Body/AttributesSection"]
 layout_mode = 2

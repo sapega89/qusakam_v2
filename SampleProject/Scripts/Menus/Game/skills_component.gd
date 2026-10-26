@@ -7,13 +7,13 @@ extends BaseMenuComponent
 ## передумовою, лінія золота, коли передумову вивчено або позначено. На клітинці — іконка (тон D605), ранг під нею,
 ## бейдж рівня на невивченій (червоний, поки герой нижче), «+», коли можна взяти ще ранг.
 ## Праворуч — деталі (D334): назва, вид, ранг зараз і далі, ефект зараз і на наступному ранзі, SP, перезарядка,
-## рівень, Learn +1 і Reset; або атрибути (D335) — кнопкою Attributes унизу. Унизу — очки навичок, бюджети дерев
-## (D497), Cancel / Accept плану і Reset all (платне скидання на місці медитації, D628/D629).
+## рівень, Learn +1 і Reset. Унизу — очки навичок, бюджети дерев (D497), скільки очок атрибутів чекає у Status
+## (D722: атрибути вкладаються там), Cancel / Accept плану і Reset all (платне скидання на місці медитації, D628/D629).
 ##
 ## Нічого не витрачається одним натисканням (D330): Learn +1 позначає ранг у SkillPlan, витрачає лише Accept.
 ## UI НЕ редагує player_state і НЕ дублює правила: чому навичка недоступна — завжди вердикт SkillManager
 ## (через SkillPlan.can_pick). Розкладка — у сцені (один шаблон клітинки %Cell, вкладки %TreeTab, факту %Fact,
-## слота %Slot1, атрибута %AttributeRow); копії дає RowFill (ui_rows.gd), стилі — тема (UITokens, D674).
+## слота %Slot1); копії дає RowFill (ui_rows.gd), стилі — тема (UITokens, D674).
 ##
 ## SP героя тут свідомо НЕ показується (рішення D27): це бойовий ресурс, його місце — бойовий HUD.
 
@@ -52,14 +52,10 @@ enum NodeState { LEARNED, PICKED, CAN_LEARN, LOCKED }
 @onready var _hotbar_box: VBoxContainer = %HotbarBox
 @onready var _hotbar_slots: GridContainer = %HotbarSlots
 @onready var _slot_template: Button = %Slot1
-@onready var _attr_panel: VBoxContainer = %AttrPanel
-@onready var _attr_rows_box: VBoxContainer = %AttrRows
-@onready var _attr_row_template: HBoxContainer = %AttributeRow
-@onready var _attr_points_value: Label = %AttrPointsValue
 @onready var _pending_label: Label = %PendingLabel
 @onready var _cancel_button: Button = %CancelButton
 @onready var _accept_button: Button = %AcceptButton
-@onready var _attributes_button: Button = %AttributesButton
+@onready var _attr_points_hint: Label = %AttrPointsHint
 @onready var _reset_all_button: Button = %ResetAllButton
 
 ## Що позначено, але ще не прийнято (D330).
@@ -68,7 +64,6 @@ var _selected_id: String = ""
 var _slot_group := ButtonGroup.new()
 var _rows: Dictionary = {}  # skill_id -> Button (клітинка навички)
 var _shown_oath: String = ""
-var _attribute_rows: Dictionary = {}  # attribute_id -> HBoxContainer
 var _slot_buttons: Array[Button] = []
 ## Клітинки, яким уже під'єднано сигнали (RowFill перевикористовує їх між перебудовами).
 var _wired: Dictionary = {}
@@ -87,13 +82,11 @@ func _initialize_component() -> void:
 	plan.changed.connect(_refresh)
 	_connect_live_sources()
 	_build_tabs()
-	_build_attribute_rows()
 	_build_slot_buttons()
 	_learn_button.pressed.connect(pick_selected)
 	_reset_button.pressed.connect(reset_selected)
 	_cancel_button.pressed.connect(cancel_plan)
 	_accept_button.pressed.connect(accept_plan)
-	_attributes_button.toggled.connect(_on_attributes_toggled)
 	_reset_all_button.pressed.connect(ask_reset_all)
 	for panel: PanelContainer in [_left_panel, _right_panel]:
 		var grid: GridContainer = _grid(panel)
@@ -155,49 +148,6 @@ func _build_tabs() -> void:
 		var tab: Button = tabs[i]
 		tab.text = _tree_name(tree_ids[i])
 		tab.pressed.connect(show_tree.bind(tree_ids[i]))
-
-
-## Рядки атрибутів — з attributes.json (D335): назва, що дає очко, вкладено (+ позначено), − / +.
-func _build_attribute_rows() -> void:
-	var ids: Array = _attributes.attribute_ids()
-	var rows := RowFill.fill(_attr_rows_box, _attr_row_template, ids.size())
-	_rename(rows, ids)
-	for i in rows.size():
-		var attribute_id: String = ids[i]
-		var definition: Dictionary = _attributes.get_definition(attribute_id)
-		var row: HBoxContainer = rows[i]
-		row.get_node(^"Name").text = String(definition.name)
-		row.get_node(^"Gives").text = _gives_text(_attributes.preview(attribute_id, 1))
-		row.tooltip_text = String(definition.description)
-		var minus: Button = row.get_node(^"Minus")
-		var plus: Button = row.get_node(^"Plus")
-		minus.pressed.connect(_unpick_attribute.bind(attribute_id))
-		plus.pressed.connect(_pick_attribute.bind(attribute_id))
-		for button in [minus, plus]:
-			button.gui_input.connect(_on_attribute_input.bind(attribute_id))
-		_attribute_rows[attribute_id] = row
-
-
-## Що дає одне очко — коротко, з даних: «+1 atk», «+4 HP», «+2 SP · +1% power · …».
-func _gives_text(gives: Dictionary) -> String:
-	var parts: Array[String] = []
-	for stat: String in gives:
-		var value: float = gives[stat]
-		match stat:
-			"attack": parts.append(tr("+%d atk") % roundi(value))
-			"max_health": parts.append(tr("+%d HP") % roundi(value))
-			"max_sp": parts.append(tr("+%d SP") % roundi(value))
-			"crit_chance": parts.append(tr("+%s%% crit") % _percent(value))
-			"dodge_chance": parts.append(tr("+%s%% evade") % _percent(value))
-			"attack_speed": parts.append(tr("+%s%% speed") % _percent(value))
-			"skill_power": parts.append(tr("+%s%% power") % _percent(value))
-			"sp_per_hit": parts.append(tr("+%s SP per hit") % String.num(value, 2))
-			_: assert(false, "SkillsComponent: no text for attribute stat %s" % stat)
-	return " · ".join(parts)
-
-
-func _percent(fraction: float) -> String:
-	return String.num(fraction * 100.0, 1).trim_suffix(".0")
 
 
 ## Слоти хотбара (D331, вісім — D549): кнопка ставить вибрану вивчену активну навичку в слот.
@@ -268,7 +218,6 @@ func _refresh() -> void:
 	_refresh_cells()
 	_refresh_links()
 	_refresh_detail()
-	_refresh_attributes()
 	_refresh_bottom_bar()
 	_publish_details(_selected_id)
 
@@ -583,26 +532,7 @@ func _refresh_hotbar(definition: SkillDefinition) -> void:
 		_slot_buttons[slot].set_pressed_no_signal(held == definition.id)
 
 
-# ── Атрибути і нижня смуга ──────────────────────────────────────────────────
-
-## Кнопка Attributes перемикає праву панель між деталями навички й атрибутами (D335 лишається на цьому екрані).
-func _on_attributes_toggled(on: bool) -> void:
-	_attr_panel.visible = on
-	_detail.visible = not on
-
-
-func _refresh_attributes() -> void:
-	_attr_points_value.text = str(plan.attribute_points_left())
-	_attributes_button.text = tr("Attributes %d") % plan.attribute_points_left() if plan.attribute_points_left() > 0 \
-			else tr("Attributes")
-	for attribute_id: String in _attribute_rows:
-		var row: HBoxContainer = _attribute_rows[attribute_id]
-		var picked := plan.attribute_points(attribute_id)
-		var spent := _attributes.get_points(attribute_id)
-		row.get_node(^"Value").text = "%d +%d" % [spent, picked] if picked > 0 else str(spent)
-		row.get_node(^"Minus").disabled = picked == 0
-		row.get_node(^"Plus").disabled = plan.attribute_points_left() <= 0
-
+# ── Нижня смуга ─────────────────────────────────────────────────────────────
 
 ## Очки навичок після плану, бюджети дерев (D497: «Holy Warrior 9 / 14 · Paladin 12 / 12»), план, Reset all.
 func _refresh_bottom_bar() -> void:
@@ -614,18 +544,15 @@ func _refresh_bottom_bar() -> void:
 		parts.append("%s %d / %d" % [_tree_name(tree_id), _skill_manager.tree_spent(tree_id, unlocked, ranks),
 				_skill_database.tree_cap(tree_id)])
 	_budgets.text = "  ·  ".join(parts)
+	# D722: атрибути вкладаються у Status — тут лише скільки їх там чекає.
+	_attr_points_hint.visible = _attributes.get_unspent() > 0
+	_attr_points_hint.text = tr("Attribute points: %d · in Status") % _attributes.get_unspent()
 
 	_cancel_button.visible = not plan.is_empty()
 	_accept_button.visible = not plan.is_empty()
 	_pending_label.visible = not plan.is_empty()
 	if not plan.is_empty():
-		var pending: Array[String] = []
-		if plan.has_skill_picks():
-			pending.append(tr("%d JP") % plan.jp_cost())
-		var attribute_points := _attributes.get_unspent() - plan.attribute_points_left()
-		if attribute_points > 0:
-			pending.append(tr("attribute points: %d") % attribute_points)
-		_pending_label.text = tr("To spend: ") + ", ".join(pending)
+		_pending_label.text = tr("To spend: ") + tr("%d JP") % plan.jp_cost()
 
 	# D629: Reset all — платне скидання (D628), лише на місці медитації.
 	var verdict := _skill_manager.can_respec()
@@ -668,14 +595,6 @@ func unpick_selected() -> bool:
 func reset_selected() -> void:
 	while unpick_selected():
 		pass
-
-
-func _pick_attribute(attribute_id: String) -> void:
-	plan.pick_attribute(attribute_id)
-
-
-func _unpick_attribute(attribute_id: String) -> void:
-	plan.unpick_attribute(attribute_id)
 
 
 ## Accept (кнопка, Y / F): витратити все позначене.
@@ -726,12 +645,6 @@ func _on_row_input(event: InputEvent, skill_id: String) -> void:
 	elif event.is_action_pressed(&"skills_unpick"):
 		_on_row_selected(skill_id)
 		unpick_selected()
-		accept_event()
-
-
-func _on_attribute_input(event: InputEvent, attribute_id: String) -> void:
-	if event.is_action_pressed(&"skills_unpick"):
-		_unpick_attribute(attribute_id)
 		accept_event()
 
 
@@ -791,9 +704,6 @@ func _describe(definition: SkillDefinition) -> String:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree():
 		var shown := is_visible_in_tree()
-		var party := get_tree().get_first_node_in_group(&"ui_party_column")
-		if party:
-			party.visible = not shown
 		if shown:
 			update_display()
 		elif plan != null:
