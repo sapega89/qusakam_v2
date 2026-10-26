@@ -10,7 +10,7 @@ tags: [cloud, routine, rooms, art, map]
 - Not done: dark pillars are not in MayorHall and LabBoss (whole-room arenas, so no spot is clear of the fight); no `capture_maps.gd` run (the orchestrator does it on the PC); the canyon's lower-cell supports were not checked by eye (the start-of-game camera does not follow there).
 - D-IDs (next free after D728; the integrator renumbers): **D747** entrances, **D748** lit exits, **D749** cave mood, **D750** foreground, **D751** ladders, **D752** platforms (texts below).
 - B rows fixed: none.
-- Full suite: FULLSUITE
+- Full suite: **121 / 122 PASS**. `verify_onboarding` fails 2 checks («hero +0 px from the house: arrow «» (←)», «a talk step has no arrow»), and fails identically on the base commit `0d96039e` (elder-home + feature/backlog, before this routine), so it is not from this branch: the village arrow after D716 moved the grandfather into ElderHouse → integrator. (The suite ran in two parts: the 30-min background limit cut the first run at 85 scripts.)
 - Rooms changed (for `capture_maps.gd`): Canyon, Village, ElderHouse, DesertRoad, LizardCave, DragonMural, BanditCamp, MesaClimb, CityGates, GatehouseCellar, City, MayorHall, LabCells, Laboratory, LabBoss, LaboratoryOutside (all 16).
 
 ## D-ID rows (for `figma_decision_register.md`)
@@ -36,8 +36,8 @@ tags: [cloud, routine, rooms, art, map]
 
 **Tests**
 - New: `verify_room_entrances.gd`, 491 checks. For every RoomDoor: entrance art or a listed painted opening; foot on the floor (±2 px); door centred in the opening; the hero fits; ADD light behind the hero; arrival leads back. Inner borders closed, cells kept. Canyon cave ≥ 3/4 screen from `Descent/Edge` and `CanyonExitTrigger`. Front layers never reach the walk line except `Occluder*`/`Pillar*`; outdoor rooms have occluders and no band; shaded rooms have the dark layer and the top shade at the view's top. Occluders and pillars don't cover doors, NPCs or chests with the camera on them, nor the middle of a fight. Ladder material per room. Every one-way ledge and every listed tile ledge has a support. Real E through every door both ways.
-- Changed (they walked through the now-closed edges): `verify_lab_rooms`, `verify_lab_cells` [7], `verify_laboratory` [2], `verify_lab_route` (pad: stick to the door, Y), `verify_progression` [2] (the oath enables the palace door; the east edge stays a wall).
-- RESULT lines: room_entrances ALL PASS; rooms_batch1, lab_rooms, lab_cells, laboratory, progression, lab_route, mayor_hall, lab_boss, ladders, world_map, map_geometry, quiet_transitions, save_load_room ALL PASS.
+- Changed: `verify_living_world` [1] (the outdoor foreground is `FrontDark` with occluders, no `Front` band, D732); (they walked through the now-closed edges) `verify_lab_rooms`, `verify_lab_cells` [7], `verify_laboratory` [2], `verify_lab_route` (pad: stick to the door, Y), `verify_progression` [2] (the oath enables the palace door; the east edge stays a wall).
+- RESULT lines: room_entrances ALL PASS; rooms_batch1, lab_rooms, lab_cells, laboratory, progression, lab_route, mayor_hall, lab_boss, ladders, world_map, map_geometry, quiet_transitions, save_load_room, living_world ALL PASS.
 
 ## Notes for the orchestrator
 - `GatehouseCellar` ExitDoor stays at the foot of the painted stairs (D729). The CityGates `CellarArch` is still a hard-edged rectangle of cellar art pasted on the wall; with the light it reads as a way in, but a framed arch would sit better (art).
