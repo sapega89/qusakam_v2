@@ -25,8 +25,9 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	if absf(player.global_position.y - enemy.global_position.y) > enemy.same_height:
 		return
-	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494); натягують разом не більше двох (жетон, D504)
-	if attack_ready_in <= 0.0 and token_free():
+	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494); натягують разом не більше двох (жетон, D504).
+	# Герой п'є флягу чи замахується важким на виду (D713) — стріляє, не чекаючи кінця перерви.
+	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free():
 		attack_ready_in = enemy.attack_cooldown
 		perform_attack()
 
@@ -46,6 +47,11 @@ func handle_retreat_state(_delta: float) -> void:
 	if away != last_direction:
 		direction_changed.emit(away)
 		last_direction = away
+
+
+## Лучник карає відкритого героя з усієї своєї дальності.
+func _punish_range() -> float:
+	return attack_range
 
 
 ## Після пострілу лучник лишається в бою на місці (базова логіка вирішувала б за HP — тікати чи гнатися).

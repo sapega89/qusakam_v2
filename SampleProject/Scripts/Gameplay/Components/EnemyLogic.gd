@@ -312,9 +312,15 @@ func _hold_spacing(dx: float, delta: float) -> void:
 	else:
 		velocity.x = 0
 
-## Герой відкрився поруч (critique §B): замах важкого удару чи навички в досяжності півтори attack_range.
+## Герой відкрився поруч (critique §B): замах важкого удару чи навички (і фляга — Healing Palm, D504) або зілля
+## (D713) у досяжності _punish_range().
 func _hero_opened(adx: float) -> bool:
-	return adx <= attack_range * 1.5 and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP]
+	return adx <= _punish_range() and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP,
+			PlayerCombat.State.DRINK]
+
+## Звідки ворог карає відкритого героя: ближній — з півтори attack_range.
+func _punish_range() -> float:
+	return attack_range * 1.5
 
 ## Удар героя влучив (D713): поки ворог чекає перерви між серіями чи відходить після серії, enemy.answer_hits таких
 ## ударів скасовують решту перерви — він б'є у відповідь (з тим самим замахом і підказкою).

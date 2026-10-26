@@ -184,7 +184,6 @@ func _apply_stats(stats: EnemyStats) -> void:
 	lunge = stats.lunge
 	super_armor = stats.super_armor
 	front_damage = stats.front_damage
-	knockback_immune = stats.knockback_immune
 	poise_max = stats.poise
 	poise = poise_max
 	stagger_time = stats.stagger_time
@@ -231,6 +230,10 @@ func _apply_variety() -> void:
 		health *= marks.health
 		hit *= marks.damage
 		xp *= marks.xp
+		# D713: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
+		poise_max = roundi(poise_max * marks.poise)
+		poise = poise_max
+		knockback_immune = marks.knockback_immune
 	if kind.has("foam"):
 		_add_foam(Vector2(kind.foam[0], kind.foam[1]))
 	Max_Health = roundi(Max_Health * health)
