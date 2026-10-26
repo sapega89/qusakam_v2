@@ -9,9 +9,18 @@ var has_triggered: bool = false
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
+## D737: посеред розмови — після неї (ServiceLocator → DialogueManager.when_story_free); кат-сцена спуску — подія
+## сюжету, тож іде й тоді, коли герой уже відійшов від краю.
+var _waiting: bool = false
+
 func _on_body_entered(body: Node2D) -> void:
-	if has_triggered or not body.is_in_group(GameGroups.PLAYER):
+	if has_triggered or _waiting or not body.is_in_group(GameGroups.PLAYER):
 		return
+	_waiting = true
+	ServiceLocator.get_dialogue_manager().when_story_free(_fire)
+
+func _fire() -> void:
+	_waiting = false
 	# owner — кімната Canyon, у сцені якої стоїть тригер. Раніше тут брали current_scene,
 	# а це завжди Game, тож кат-сцена не запускалась ніколи. Canyon сам вирішує, чи вже час
 	# (до повернення з села край — просто край, місток стоїть).

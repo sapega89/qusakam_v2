@@ -982,6 +982,9 @@ msgstr "Звичайна"
 msgid "Quick"
 msgstr "Швидка"
 
+msgid "Auto-Advance"
+msgstr "Автогортання"
+
 msgid "Screen Shake"
 msgstr "Тряска екрана"
 

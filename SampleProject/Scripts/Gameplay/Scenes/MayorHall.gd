@@ -57,7 +57,12 @@ func get_current_state_name() -> String:
 
 
 func _on_queue_trigger(body: Node2D) -> void:
-	if current_state == State.QUEUE and body.is_in_group(GameGroups.PLAYER):
+	if body.is_in_group(GameGroups.PLAYER):
+		ServiceLocator.get_dialogue_manager().when_story_free(_start_queue)  # D737: посеред розмови — після неї
+
+
+func _start_queue() -> void:
+	if current_state == State.QUEUE:
 		_queue_and_burst()
 
 

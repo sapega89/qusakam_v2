@@ -80,7 +80,12 @@ func _enter(state: State) -> void:
 
 
 func _on_talk_trigger(body: Node2D) -> void:
-	if current_state == State.WAIT and body.is_in_group(GameGroups.PLAYER):
+	if body.is_in_group(GameGroups.PLAYER):
+		ServiceLocator.get_dialogue_manager().when_story_free(_start_talk)  # D737: посеред розмови — після неї
+
+
+func _start_talk() -> void:
+	if current_state == State.WAIT:
 		_enter(State.TALK)
 
 

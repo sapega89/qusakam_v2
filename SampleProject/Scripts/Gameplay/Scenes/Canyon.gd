@@ -483,6 +483,9 @@ func _play_dialogue(dialogue_id: String, run_id: int, in_cloud: bool = false) ->
 				DebugLogger.info("🏜️ Canyon: ✅ Діалог %s завершено" % dialogue_id, "Canyon")
 				# Завершуємо квест на основі діалогу ПЕРЕД скиданням прапорця
 				_complete_quest_for_dialogue(dialogue_id)
+				# B154: розмова скінчилась — прапорець знімаємо ДО паузи. За ці 0.1 с спрацьовують тригери, що чекали
+				# кінця розмови (D737), і діалог стану, який вони вмикають, раніше відкидався тут як «вже програється інший».
+				_is_dialogue_playing = false
 				# Додаємо невелику затримку після завершення діалогу
 				await get_tree().create_timer(0.1).timeout
 				break

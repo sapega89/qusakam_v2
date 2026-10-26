@@ -24,6 +24,10 @@ var _queue: Array[String] = []
 var _lines_held := false
 var _held_lines: Array[Array] = []
 
+# D737: тригери, у які герой зайшов, поки йшла розмова, — [дія, зона або null, re-arm або null]. Спрацьовують
+# по черзі, коли розмов (і їхньої черги) не лишилось: жоден не губиться і жоден не стрибає посеред репліки.
+var _pending_triggers: Array[Array] = []
+
 # Сигналы
 signal dialogue_started(timeline_name: String)
 signal dialogue_finished(timeline_name: String)
@@ -123,6 +127,43 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	current_dialogue_player.play_sections(sections, timeline_name)
 	return true
 
+## D737: розмова сюжету зараз іде, стоїть у черзі чи чекає приземлення (B123). Репліки мимохідь (барки,
+## say_in_passing) сюди не входять: вони не тримають героя й не притримують тригерів.
+func is_story_busy() -> bool:
+	return is_dialogue_active() or _bubble_playing or _lines_held or not _queue.is_empty()
+
+
+## D737: тригер сюжету / бою / двері. Вільно — [param action] одразу; посеред розмови — після неї, по черзі з
+## іншими тригерами (B154). Тригер, чия кімната пішла разом зі сценою, іде з нею (його дія вже не дійсна).
+func when_story_free(action: Callable) -> void:
+	if is_story_busy():
+		_pending_triggers.append([action, null, null])
+	else:
+		action.call()
+
+
+## D737: подія входу, що має сенс, лише поки герой у [param area] (текст зони бою, бій секції). Відкладена
+## подія після розмови перевіряє, чи він ще там: так — [param action], вийшов — [param rearm] (подія знову чекає входу).
+func when_story_free_inside(area: Area2D, action: Callable, rearm: Callable) -> void:
+	if is_story_busy():
+		_pending_triggers.append([action, area, rearm])
+	else:
+		action.call()
+
+
+func _fire_pending_triggers() -> void:
+	while not _pending_triggers.is_empty() and not is_story_busy():
+		var pending: Array = _pending_triggers.pop_front()
+		var action: Callable = pending[0]
+		if not action.is_valid():
+			continue  # кімната тригера пішла (перехід, вихід у меню) — її події пішли з нею
+		var area: Area2D = pending[1]
+		if area != null and not area.overlaps_body(Game.get_singleton().player):
+			(pending[2] as Callable).call()
+		else:
+			action.call()
+
+
 ## B123: поки кат-сцена садить героя на землю, жодна розмова не починається (перша репліка — вже на підлозі).
 func hold_lines() -> void:
 	_lines_held = true
@@ -137,6 +178,7 @@ func release_lines(play: bool = true) -> void:
 	if play:
 		for line: Array in held:
 			start_dialogue(line[0], line[1])
+	_fire_pending_triggers()  # D737: нічого не чекало приземлення — тригери, що чекали, ідуть зараз
 
 
 func _on_dialogue_quest_started(dialogue_id: String):
@@ -181,9 +223,13 @@ func _on_dialogue_quest_ended(dialogue_id: String):
 	_start_next_queued.call_deferred()
 
 func _start_next_queued() -> void:
-	if _queue.is_empty() or is_dialogue_active() or _bubble_playing:
+	if is_dialogue_active() or _bubble_playing:
 		return
-	start_dialogue(_queue.pop_front())
+	if not _queue.is_empty():
+		start_dialogue(_queue.pop_front())
+		return
+	# D737: розмов не лишилось — тригери, у які герой зайшов тим часом, спрацьовують по черзі.
+	_fire_pending_triggers()
 
 func _unpause_player_after_dialogue():
 	"""Відновлює управління гравцем після діалогу"""
@@ -211,7 +257,7 @@ func _on_dialogue_quest_signal(params: Array):
 ## йде далі (вікно — accept(), облачко — як dq_accept). Між розмовами пропускати нічого.
 func skip_line() -> void:
 	if _bubble_playing:
-		_bubble_skip = true
+		_press_bubble()
 	elif is_dialogue_active():
 		current_dialogue_box.accept()
 
@@ -277,11 +323,12 @@ func _end_replay() -> void:
 	_replaying = false
 	_unpause_player_after_dialogue()
 	replay_finished.emit()
+	_start_next_queued.call_deferred()  # D737: що стало в чергу за час повтору
 
 
 # ── Монологи облачками (D178) ────────────────────────────────────────────────
 # Розмова, де кожну репліку каже гравець, іде облачком над його головою: репліки міняються
-# самі за часом, гравець ходить, вікно діалогу не відкривається. Для сцен це звичайний діалог:
+# самі за часом, герой стоїть (D737; до того — ходив), вікно діалогу не відкривається. Для сцен це звичайний діалог:
 # dialogue_started / dialogue_finished з тим самим шляхом, черга та сама.
 
 const SPEECH_BUBBLE := preload("res://SampleProject/UI/Components/speech_bubble.gd")
@@ -314,11 +361,20 @@ func _on_bubble_gone(bubble: Node2D) -> void:
 	_bubble_playing = false
 	_cloud_talk = false
 	_queue.clear()
+	_pending_triggers.clear()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _bubble_playing and not get_tree().paused and event.is_action_pressed(&"dq_accept"):
-		_bubble_skip = true
+		_press_bubble()
 		get_viewport().set_input_as_handled()
+
+
+## D738: «далі» в облачку — як у вікні: репліка, що набирається, з'являється вся одразу; набрана — наступна.
+func _press_bubble() -> void:
+	if _bubble != null and _bubble.is_typing():
+		_bubble.finish_typing()
+	else:
+		_bubble_skip = true
 
 
 func is_bubble_playing() -> bool:
@@ -330,14 +386,15 @@ func _is_monologue(path: String) -> bool:
 	return not lines.is_empty() and lines.all(func(line: Dictionary) -> bool: return line.speaker in PLAYER_SPEAKERS)
 
 
-## [param talk] (D263): репліка набирається з тією ж швидкістю, що й у вікні (D254, не пропускається), далі —
-## лише dq_accept; гравець заблокований. Інакше — монолог D178: репліки міняються за часом, гравець ходить.
+## [param talk] (D263): репліка набирається з тією ж швидкістю, що й у вікні; «далі» посеред набору показує її всю
+## (D738), після — наступна; набрана йде далі сама після паузи (D739, Settings → Auto-Advance); гравець заблокований. Інакше — монолог D178: репліки міняються за часом, герой стоїть (D737).
 func _play_bubbles(path: String, talk: bool = false) -> void:
 	_bubble_playing = true
 	_cloud_talk = talk
 	_find_dialogue_system_in_scene()  # вікно мусить бути підключене й для наступних розмов
-	if talk:
-		_pause_player_for_dialogue()
+	# D737: монолог сюжету тримає героя, як і вікно: раніше (D178) він ішов далі й проходив наступний тригер,
+	# поки читав. Не тримають лише репліки мимохідь (say_in_passing).
+	_pause_player_for_dialogue()
 	dialogue_started.emit(path)
 	var bubble: Node2D = SPEECH_BUBBLE.new()
 	_bubble = bubble
@@ -357,9 +414,14 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 			# Облачко висить над героєм — у такій розмові говорить лише він (або ремарка того, що він бачить).
 			assert(line.speaker == "" or line.speaker in PLAYER_SPEAKERS, "DialogueManager: cloud talk %s has speaker %s" % [path, line.speaker])
 			await bubble.type_out(text.length() / (letters_per_second * SaveSystem.settings_module.text_speed_factor()) * bubble_time_scale)
+			# D739: набрана репліка йде далі сама після паузи (як у вікні); натискання — одразу.
+			var auto: bool = SaveSystem.settings_module.auto_advance_enabled()
+			var wait: float = current_dialogue_box.auto_advance_delay(text)  # живий час, без bubble_time_scale
 			_bubble_skip = false
-			while not _bubble_skip and _bubble == bubble:
+			while not _bubble_skip and _bubble == bubble and (not auto or wait > 0.0):
 				await get_tree().process_frame
+				if not get_tree().paused:
+					wait -= get_process_delta_time()
 			if _bubble != bubble:
 				return
 			continue
@@ -375,8 +437,7 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 	bubble.queue_free()
 	_bubble_playing = false
 	_cloud_talk = false
-	if talk:
-		_unpause_player_after_dialogue()
+	_unpause_player_after_dialogue()
 	dialogue_finished.emit.call_deferred(path)
 	EventBus.dialogue_finished.emit.call_deferred(path)
 	_start_next_queued.call_deferred()
