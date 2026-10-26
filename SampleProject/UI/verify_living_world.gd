@@ -3,7 +3,7 @@ extends SceneTree
 ## Живий світ (BACKLOG 7 + 19):
 ##   1. Кожна відкрита кімната має передній план `FrontDark` (Parallax2D) над героєм (z більший за z гравця),
 ##      scroll_scale.x > 1, затемнений; смуги під ногами (`Front`) немає — замість неї повз проходять темні заслони
-##      (Occluder*), D732. Що вони не дістають лінії ходу й не закривають дверей — verify_room_entrances.
+##      (Occluder*), D750. Що вони не дістають лінії ходу й не закривають дверей — verify_room_entrances.
 ##   2. Декор (банери, пальми, лампи, кристали, пил) — AnimatedSprite2D з циклом `idle` у кожній кімнаті зі списку;
 ##      сусіди в кімнаті не крутяться в одній фазі; кожна сцена декору справді анімується в дереві.
 ##   3. Хмари пливуть самі (без вводу) у небі обох задників і в високому небі Каньйону.
@@ -73,7 +73,7 @@ func _max_z(node: Node, parent_z: int) -> int:
 func _check_fronts(player_z: int) -> void:
 	for room: String in FRONT_ROOMS:
 		var map: Node = load("res://SampleProject/Maps/%s.tscn" % room).instantiate()
-		ck(map.get_node_or_null(^"Front") == null, "%s: no front band under the hero's feet (D732)" % room)
+		ck(map.get_node_or_null(^"Front") == null, "%s: no front band under the hero's feet (D750)" % room)
 		var front := map.get_node_or_null(^"FrontDark") as Parallax2D
 		ck(front != null, "%s: FrontDark Parallax2D exists" % room)
 		if front:
