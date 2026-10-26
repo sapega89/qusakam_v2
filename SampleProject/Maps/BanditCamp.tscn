@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r8"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r9"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png" id="x2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(160, 480)
@@ -47,10 +49,15 @@ tile_map_data = PackedByteArray("AAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 376)
+position = Vector2(136, 366.5)
+
+[node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(130, 416)
+texture = ExtResource("x2")
+offset = Vector2(-75, -87)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(96, 376)
+position = Vector2(136, 366.5)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("BanditCampDoor")
 
@@ -135,8 +142,13 @@ contents = Dictionary[String, int]({
 })
 charm = "breaker_ring"
 
+[node name="ShortcutDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(1634, 416)
+texture = ExtResource("x2")
+offset = Vector2(-75, -87)
+
 [node name="ShortcutDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(1640, 376)
+position = Vector2(1640, 366.5)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("CampShortcutDoor")
 sets_flag = "bandit_camp_shortcut"

@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[node name="FrontDark" type="Parallax2D"]
+z_index = 20
+modulate = Color(0.3, 0.26, 0.34, 1)
+scroll_scale = Vector2(1.3, 1)

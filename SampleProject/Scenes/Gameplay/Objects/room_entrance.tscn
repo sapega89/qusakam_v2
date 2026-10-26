@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEntrance.gd" id="1_entrance"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="2_art"]
+
+[node name="RoomEntrance" type="Sprite2D"]
+z_index = -2
+texture_filter = 1
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_art")
+centered = false
+offset = Vector2(-55, -100)
+script = ExtResource("1_entrance")

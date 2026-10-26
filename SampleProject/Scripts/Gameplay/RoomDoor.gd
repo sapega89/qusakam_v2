@@ -9,6 +9,7 @@ extends Area2D
 ## ([member gate_id]): поки прапорця немає, E — репліка героя (locked_dialogue), а не перехід. Брама-ґрати
 ## (LockedDoor) тут не годиться: її тіло перегородило б саму дорогу. Так само двері можуть ховатися за брилою на
 ## задньому плані ([member cover]): поки її не розбито важким ударом, дверей не видно (жодної підказки).
+## Кожен вихід освітлений (ExitLight у room_door.tscn): теплий м'який відсвіт на вході, як двері коридору замку в Tails of Iron.
 
 const GATES_PATH := "res://SampleProject/Resources/Data/gates.json"
 
@@ -24,6 +25,7 @@ const GATES_PATH := "res://SampleProject/Resources/Data/gates.json"
 @export var cover: NodePath
 
 @onready var interactable: InteractableComponent = $Interactable
+@onready var exit_light: Sprite2D = $ExitLight
 
 var _gate: Dictionary = {}
 
@@ -37,7 +39,10 @@ func _ready() -> void:
 		var wall: Node = get_node(cover)
 		if not wall.was_broken():
 			interactable.enabled = false
-			wall.broken.connect(func() -> void: interactable.enabled = true)
+			exit_light.hide()
+			wall.broken.connect(func() -> void:
+				interactable.enabled = true
+				exit_light.show())
 	interactable.interacted.connect(_on_interacted)
 
 

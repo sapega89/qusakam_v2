@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomDoor.gd" id="1_door"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/exit_light.tscn" id="3_light"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(64, 96)
@@ -16,3 +17,5 @@ shape = SubResource("RectangleShape2D_door")
 script = ExtResource("2_interactable")
 prompt_offset = Vector2(0, -88)
 action_text = "Enter"
+
+[node name="ExitLight" parent="." instance=ExtResource("3_light")]

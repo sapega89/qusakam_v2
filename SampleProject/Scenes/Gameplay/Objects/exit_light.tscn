@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Resources/Lighting/exit_light.tres" id="1_light"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_add"]
+blend_mode = 1
+
+[node name="ExitLight" type="Sprite2D"]
+z_index = -1
+material = SubResource("CanvasItemMaterial_add")
+position = Vector2(0, -52)
+scale = Vector2(2.5, 2)
+texture = ExtResource("1_light")

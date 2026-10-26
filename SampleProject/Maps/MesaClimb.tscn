@@ -9,6 +9,8 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r7"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r8"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -63,10 +65,15 @@ tile_map_data = PackedByteArray("AAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 856)
+position = Vector2(120, 811.25)
+
+[node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(126.75, 896)
+texture = ExtResource("x2")
+offset = Vector2(-55, -110)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(96, 856)
+position = Vector2(120, 811.25)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("MesaClimbDoor")
 

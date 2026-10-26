@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="b1_door"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/BreakableWall.tscn" id="b1_wall"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="x2"]
 
 [sub_resource type="Gradient" id="Gradient_sky"]
 colors = PackedColorArray(0.31, 0.53, 0.86, 1, 0.769, 0.859, 0.906, 1)
@@ -607,25 +609,18 @@ position = Vector2(2570, 344)
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(860, 240)
 
-[node name="LizardCaveMouth" type="Polygon2D" parent="."]
-z_index = -1
-position = Vector2(950, 392)
-color = Color(0.16, 0.09, 0.15, 1)
-polygon = PackedVector2Array(-52, 0, -50, -48, -38, -86, -14, -108, 10, -112, 34, -96, 48, -64, 54, 0)
+[node name="LizardCaveDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(2159, 384)
+texture = ExtResource("x2")
+offset = Vector2(-55, -100)
 
 [node name="LizardCaveDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(950, 356)
+position = Vector2(2150, 330)
 target_room = "res://SampleProject/Maps/LizardCave.tscn"
 arrival = NodePath("ExitDoor")
 
 [node name="Interactable" parent="LizardCaveDoor" index="1"]
 action_text = "Enter"
-
-[node name="DragonMuralCrack" type="Polygon2D" parent="."]
-z_index = -2
-position = Vector2(1450, 218)
-color = Color(0.16, 0.09, 0.15, 1)
-polygon = PackedVector2Array(-34, 0, -30, -34, -36, -58, -18, -80, -4, -96, 10, -84, 26, -64, 22, -36, 36, 0)
 
 [node name="Wall_Mural" parent="." instance=ExtResource("b1_wall")]
 position = Vector2(1450, 218)
@@ -636,8 +631,13 @@ z_index = -1
 scale = Vector2(1, 1)
 offset = Vector2(0, -50)
 
+[node name="DragonMuralDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(1459, 216)
+texture = ExtResource("x2")
+offset = Vector2(-55, -100)
+
 [node name="DragonMuralDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(1450, 190)
+position = Vector2(1450, 162)
 target_room = "res://SampleProject/Maps/DragonMural.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Mural")

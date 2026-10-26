@@ -13,6 +13,8 @@
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/ElderHouse.gd" id="11_house"]
 [ext_resource type="Script" uid="uid://dorfkqera68v3" path="res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd" id="12_trigger"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="x2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
 size = Vector2(128, 12)
@@ -149,10 +151,15 @@ charm = "grandfathers_ring"
 [node name="RoomInstance" parent="." instance=ExtResource("2_room")]
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 824)
+position = Vector2(96, 802.5)
+
+[node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(97.5, 864)
+texture = ExtResource("x2")
+offset = Vector2(-26, -76)
 
 [node name="ExitDoor" parent="." instance=ExtResource("4_door")]
-position = Vector2(96, 824)
+position = Vector2(96, 802.5)
 target_room = "res://SampleProject/Maps/Village.tscn"
 arrival = NodePath("ElderDoor")
 
@@ -179,7 +186,7 @@ quest_dialogue = "OldMan_Decision"
 position = Vector2(560, 876)
 
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
-position = Vector2(96, 824)
+position = Vector2(96, 802.5)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
