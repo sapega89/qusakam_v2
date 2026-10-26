@@ -285,10 +285,34 @@ func _placements() -> void:
 	ck(lone_elite.spawn_points.size() == 1 and brute.name == "BigSlot_BanditBrute_1" and brute.big_kind == "bandit_brute"
 			and brute.kind() == "bandit_brute" and brute.spawn_id == "Fight_LoneElite_EnemySpawnPoint1",
 			"DesertRoad: the lone elite is the bandit brute, alone (spawn_id kept for saves)")
-	var heavy: Node = map.get_node(^"Fight_Mesa").spawn_points[3]
-	ck(heavy.name == "BigSlot_HeavyArcher_4" and heavy.big_kind == "heavy_archer" and heavy.kind() == "heavy_archer"
-			and heavy.spawn_id == "Fight_Mesa_EnemySpawnPoint4",
-			"Mesa: the archer's place behind the shield-bearer spawns the heavy archer (spawn_id kept for saves)")
+	# D719: перший лучник дороги — звичайний, на рівні бою; великий лучник уперше — у таборі бандитів.
+	var mesa_archer: Node = map.get_node(^"Fight_Mesa").spawn_points[3]
+	ck(mesa_archer.name == "EnemySpawnPoint4" and mesa_archer.big_kind == "none" and mesa_archer.kind() == "archer"
+			and mesa_archer.spawn_id == "Fight_Mesa_EnemySpawnPoint4",
+			"Mesa (D719): the archer's place behind the shield-bearer is the ordinary archer (spawn_id kept for saves)")
+	var road_archers: Array = []
+	for p: Node in map.find_children("*", "Node2D", true, false):
+		if p.get_script() == spawn_script and p.kind() in ["archer", "heavy_archer"]:
+			road_archers.append("%s/%s %s" % [p.get_parent().name, p.name, p.kind()])
+	ck(road_archers == ["Fight_Mesa/EnemySpawnPoint4 archer"],
+			"DesertRoad (D719): no heavy archer on the road, its one archer is the Mesa's ordinary one (%s)" % [road_archers])
+	var camp_room: Node = load("res://SampleProject/Maps/BanditCamp.tscn").instantiate()
+	var camp: Array = []
+	for p: Node in camp_room.get_node(^"Fight_Camp").get_children():
+		if p.get_script() == spawn_script:
+			camp.append(p)
+	var camp_heavy: Array = camp.filter(func(p: Node) -> bool: return p.big_kind == "heavy_archer")
+	ck(camp_heavy.size() == 1 and camp_heavy[0].name == "BigSlot_HeavyArcher_4" and camp_heavy[0].kind() == "heavy_archer"
+			and camp_heavy[0].enemy_type == "archer" and camp_heavy[0].spawn_id == "Fight_Camp_EnemySpawnPoint4",
+			"Bandit Camp (D719): one heavy archer among the camp's bandits, on the old archer point (spawn_id kept)")
+	# Хвилі по 3 (D698): громило в першій, великий лучник у другій, за щитоносцем — дві еліти не стоять разом.
+	var waves: Array = camp.map(func(p: Node) -> String: return p.kind())
+	var wave_size: int = camp_room.get_node(^"Fight_Camp").wave_size
+	ck(waves.slice(0, wave_size).has("bandit_brute") and not waves.slice(0, wave_size).has("heavy_archer")
+			and waves.slice(wave_size).has("heavy_archer") and not waves.slice(wave_size).has("bandit_brute")
+			and waves.slice(wave_size).has("shield"),
+			"Bandit Camp: the brute in wave 1, the heavy archer in wave 2 behind a shield-bearer, never side by side (%s)" % [waves])
+	camp_room.free()
 	ck(lone_shield.spawn_points[0].global_position.x < map.get_node(^"Fight_Mesa").spawn_points[0].global_position.x,
 			"the lone shield-bearer comes before the Mesa pair")
 	var mesa: Array = map.get_node(^"Fight_Mesa").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
@@ -332,7 +356,7 @@ func _placements() -> void:
 		room.free()
 	ck(ok_names, "a spawn point is named BigSlot_<Kind>_n exactly when it waits for a big kind")
 	ck(ok_kinds, "every point spawns a kind whose art exists, and a slot stands on its big kind's base")
-	ck(slots.size() == 11, "11 big slots: 4 on DesertRoad (the Dunes bandit is no slot, D582), 1 in the Bandit Camp (D643), 6 in the Laboratory (%d)" % slots.size())
+	ck(slots.size() == 11, "11 big slots: 3 on DesertRoad (the Dunes bandit and the Mesa archer are no slots, D582, D719), 2 in the Bandit Camp (D643, D719), 6 in the Laboratory (%d)" % slots.size())
 	print("  info big slots: %s" % ", ".join(slots))
 
 func _place_hero(target: Node, dx: float) -> void:

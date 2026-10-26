@@ -81,6 +81,7 @@ func _initialize() -> void:
 
 	var meetings := _meetings()
 	meetings.append(_unplaced("old_vulture", "DesertRoad/Fight_Caravan"))
+	meetings.append(_side_room("heavy_archer", "BanditCamp", ^"Fight_Camp"))
 	for fight in ["DesertRoad/Fight_Caravan", "Laboratory/Fight_Lower"]:
 		meetings.append(_tower_guard_at(fight))
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")
@@ -222,6 +223,20 @@ func _tower_guard_at(fight: String) -> Dictionary:
 	return {"cls": "elite", "kind": "tower_shield_guard", "level": at.hero, "enemy_level": at.enemy, "city": fight.begins_with("Laboratory"),
 			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_tower_shield_guard.tres"), "planned": false,
 			"name": "%s (unplaced) L%d" % [KIND_NAMES.tower_shield_guard, at.enemy]}
+
+
+## Великий вид, що вперше стоїть у бічній кімнаті поза ROUTE (D719: великий лучник — у таборі бандитів, D698): зустріч
+## на рівні того бою (рівень бічної кімнати задано, D698), щоб числа еліти пройшли ту саму перевірку [3].
+func _side_room(id: String, room_name: String, fight: NodePath) -> Dictionary:
+	var room: Node = (load("res://SampleProject/Maps/%s.tscn" % room_name) as PackedScene).instantiate()
+	var spawner: Node = room.get_node(fight)
+	var slots: Array = spawner.get_children().filter(func(n: Node) -> bool: return n.get_script() == SpawnPoint and n.big_kind == id)
+	ck(slots.size() == 1 and slots[0].kind() == id, "%s first stands in %s/%s (D719)" % [id, room_name, fight])
+	var level: int = spawner.enemy_level
+	room.free()
+	return {"cls": "elite", "kind": id, "level": level, "enemy_level": level, "city": false,
+			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id), "planned": false,
+			"name": "%s (%s) L%d" % [KIND_NAMES[id], room_name, level]}
 
 
 ## Одна бійка: герой рівня зустрічі зі збіркою [param build] проти справжнього ворога.

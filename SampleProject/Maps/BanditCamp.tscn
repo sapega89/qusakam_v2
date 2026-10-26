@@ -94,27 +94,29 @@ position = Vector2(820, 400)
 script = ExtResource("r5")
 enemy_type = "melee"
 
-[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Camp"]
-position = Vector2(940, 400)
-script = ExtResource("r5")
-enemy_type = "shield"
-
-[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Camp"]
-position = Vector2(1120, 400)
-script = ExtResource("r5")
-enemy_type = "archer"
-
-[node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Camp"]
-position = Vector2(760, 400)
-script = ExtResource("r5")
-enemy_type = "melee"
-
 [node name="BigSlot_BanditBrute_1" type="Node2D" parent="Fight_Camp"]
 position = Vector2(1040, 400)
 script = ExtResource("r5")
 enemy_type = "melee"
 big_kind = "bandit_brute"
 spawn_id = "Fight_Camp_BigSlot_BanditBrute_1"
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Camp"]
+position = Vector2(940, 400)
+script = ExtResource("r5")
+enemy_type = "shield"
+
+[node name="BigSlot_HeavyArcher_4" type="Node2D" parent="Fight_Camp"]
+position = Vector2(1120, 400)
+script = ExtResource("r5")
+enemy_type = "archer"
+big_kind = "heavy_archer"
+spawn_id = "Fight_Camp_EnemySpawnPoint4"
+
+[node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Camp"]
+position = Vector2(760, 400)
+script = ExtResource("r5")
+enemy_type = "melee"
 
 [node name="Gate_Stockade" parent="." instance=ExtResource("r6")]
 position = Vector2(1300, 416)
