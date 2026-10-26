@@ -188,7 +188,7 @@ func _bite(enemy: Node2D, side: float, color: Color, size: float) -> void:
 
 ## Піке: смуга від тіла назад уздовж польоту — до героя, куди FlyingLogic і пікірує.
 func _dive(enemy: Node2D, color: Color, size: float) -> void:
-	var along := (GameGroups.get_player().global_position - enemy.global_position).normalized()
+	var along: Vector2 = ((GameGroups.get_player() as Node2D).global_position - enemy.global_position).normalized()
 	_play(&"thrust", false, _center(enemy), Vector2(LINE_LENGTH * 1.3, 1.0) * size, (-along).angle(), color)
 	smear_shown.emit(enemy, &"dive")
 
