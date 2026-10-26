@@ -55,6 +55,18 @@ ground. The walkable ground itself is redrawn by the orchestrator (`paint_terrai
   frames the top and the bottom of the frame: the playfield is a lit strip between darkness.
 - **The floor** is a strip of stone cobbles with a light top surface the characters stand on, darkness below it.
 
+## City gate — Tails of Iron (Sapega, 2026-10-26: «подивись, як брама зроблена; у нас теж вже непогано, але могло
+бути краще»)
+
+- The gate is a door **at the foot of the tower**, on the walk line, under a lit arch; the road runs straight into it.
+- **Light and smoke:** slanted light shafts through the smoke, fires burning behind the ruins, a dark vignette at the
+  top (tree canopy) — the scene has depth from light, not only from layers.
+- **Foreground rubble** along the bottom edge: dark broken stakes, stones and debris in front of the road, partly
+  covering the lowest strip of the view.
+- **The road** is uneven cobbles and rubble with a visible top surface; characters stand on it.
+Our CityGates: keep the walls and banners; add the lit door at the foot of the gate tower where the gate fight ends,
+light shafts / a warm glow, foreground rubble at the bottom (Decor, darkened, scroll 1.25–1.4), the new floor surface.
+
 ## Doors (`room_door.tscn`, invisible; the backdrop must show the opening)
 
 | Room | Door | Backdrop at the door | Verdict | Fix |
