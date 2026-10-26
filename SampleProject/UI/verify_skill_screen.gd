@@ -91,6 +91,10 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	# Вікно скілів вантажиться на головному потоці; поки RoomPreloader у фоні вантажить сусідів Canyon (з round 13 —
+	# бічні кімнати й нові вороги), такий load() часом стає в deadlock із воркером (B149). Чекаємо, поки стихне.
+	while game.room_preloader.busy():
+		await process_frame
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	var R = load("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd").Result

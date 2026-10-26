@@ -153,6 +153,13 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
+### B149 — opening the game menu while rooms preload in the background can deadlock
+- **Where:** `RoomPreloader.gd` (`load_threaded_request` of the current room's neighbours) against a main-thread `load()` when `UIManager.open_game_menu()` builds the skills window
+- **Expected:** the menu opens whatever the preloader is doing
+- **Got:** the process freezes: the main thread waits inside a resource load for a worker, a worker waits on a mutex the main thread holds (gdb, 2026-10-26). `verify_skill_screen` hung in 2 of 3 runs alone, `verify_skill_trees_ui` once under suite load: `RESULT: HUNG — killed after 180 s, 0 SCRIPT ERROR`. Round 13 widened the window: the Canyon now preloads rooms-1's side rooms and the new elite scenes. Both tests now wait for `room_preloader.busy()` before opening the menu (12/12 ALL PASS); the game itself does not.
+- **Severity:** major (a hang soon after a room change, if the player opens the menu at once)
+- **Found:** 2026-10-26, round 13 integration suite
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row
