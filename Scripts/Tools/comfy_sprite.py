@@ -447,16 +447,10 @@ CHARACTERS = {
             (
                 "attack",
                 [
-                    # A17 (Sapega 2026-10-26: «виразніші пози — замах, віддача, змазані кадри при ударі»)
-                    "anticipation: crouched low and coiled back, his weight on his back leg, his body twisted away, the "
-                    "scimitar drawn far back behind him over his shoulder, about to strike, still facing right",
-                    "the strike: lunging far forward on his bent front leg, his body stretched out low, his sword arm "
-                    "fully extended forward, the scimitar swept through in front of him leaving a wide pale curved "
-                    "motion smear arc behind the blade, his cloak flying back, facing right",
-                    "follow-through: the scimitar swung all the way down past his front knee, his body bent forward "
-                    "over his front leg, his cloak whipping forward, facing right",
-                    "recovering: pulling back up from the lunge, his front foot stepping back, the scimitar coming back "
-                    "up in front of him, facing right",
+                    "winding up, the scimitar raised high behind his head",
+                    "slashing down and forward with the scimitar, lunging on his front leg",
+                    "follow-through after the slash, the scimitar pointing down in front of him, leaning forward",
+                    "recovering back into his fighting stance",
                 ],
             ),
             (
