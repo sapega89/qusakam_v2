@@ -588,3 +588,15 @@ const MAP_PASSAGE := Color("a8321e")               # «↕ драбина», «�
 const SIZE_MAP_ROOM := 18
 const SIZE_MAP_PASSAGE := 13
 const MAP_LEGEND_SWATCH := 14.0                    # квадратик кімнати в легенді
+
+# Шлейфи ударів ворогів (A17, EnemyStrikeFX): не білий, жовтий і червоний — то кольори підказок (D504).
+const ENEMY_SMEAR_STEEL := Color("8fd0ff")         # шабля, щит бандита
+const ENEMY_SMEAR_DUST := Color("d8a76a")          # кийок громила, пил удару об землю
+const ENEMY_SMEAR_VENOM := Color("8ef06a")         # жало скорпіона, сокира Скорпікори
+const ENEMY_SMEAR_FANG := Color("e6d2ff")          # щелепи шакала
+const ENEMY_SMEAR_CURSE := Color("b26bff")         # проклятий шакал, кажан, муха
+const ENEMY_SMEAR_FEATHER := Color("c9b79a")       # піке грифа
+const ENEMY_SMEAR_MERC := Color("5fd6a8")          # булава й кийок найманця
+const ENEMY_SMEAR_BRASS := Color("c0845a")         # мідь Brass Collector
+const ENEMY_SMEAR_DJINN := Color("7aa8ff")         # джин
+const ENEMY_SMEAR_ALPHA := 0.9

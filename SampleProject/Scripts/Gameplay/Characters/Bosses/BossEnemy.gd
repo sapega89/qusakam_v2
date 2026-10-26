@@ -85,6 +85,7 @@ func start_attack(direction: int) -> void:
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true
 	enemy_view.on_strike()
+	EventBus.enemy_struck.emit(self, strike_move(), Vector2(direction, 0))
 
 
 ## Замах ходу видно: у сцені боса на кожен свій kind (не combo) дві анімації — "<kind>" (замах) і "<kind>_strike" (удар).
@@ -117,6 +118,13 @@ func taunt(key: String) -> void:
 
 func strike(move: Dictionary) -> void:
 	_pose(move.kind + "_strike")
+	if move.kind == "slam":  # удар об землю — без хітбокса (шкоду несе хвиля), кадр удару — тут
+		EventBus.enemy_struck.emit(self, &"slam", Vector2(enemy_logic.last_direction if enemy_logic.last_direction != 0 else 1, 0))
+
+
+## Ривок боса — charge (BossLogic._charge вмикає хітбокс через start_attack), серія — swing.
+func strike_move() -> StringName:
+	return &"charge" if enemy_logic.last_move.get("kind", "") == "charge" else super.strike_move()
 
 
 ## Поза ходу — одразу: стоп-кадр удару (Engine.time_scale = 0) інакше лишав на екрані позу замаху, бо ключ

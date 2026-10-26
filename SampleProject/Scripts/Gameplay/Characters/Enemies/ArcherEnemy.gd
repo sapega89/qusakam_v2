@@ -50,6 +50,7 @@ func start_attack(direction: int) -> void:
 	arrow.fall = _tilt_to(from)
 	get_parent().add_child(arrow)
 	arrow.global_position = from
+	EventBus.enemy_struck.emit(self, &"shot", Vector2(direction, arrow.fall * direction).normalized())
 
 
 ## Нахил стріли з [param from] у центр тіла героя (його CollisionShape2D), обмежений max_tilt.

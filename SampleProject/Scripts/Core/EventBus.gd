@@ -161,6 +161,15 @@ signal attack_started(attacker: Node, target: Node)
 ## Ворог показав підказку удару (D504): [param kind] — EnemyLogic.TELL_BLOCK / TELL_PARRY / TELL_DODGE (свій звук у SoundHooks).
 signal enemy_tell_shown(enemy: Node, kind: StringName)
 
+## Кадр удару ворога (A17): хітбокс щойно ожив (DefaultEnemy.start_attack), лучник пустив стрілу, бос ударив slam.
+## [param move] — DefaultEnemy.strike_move(): &"swing", &"lunge", &"bite", &"dive", &"charge", &"slam", &"shot";
+## зброю (вигляд шлейфа) EnemyStrikeFX бере з enemy_type. [param direction] — куди йде удар (x = ±1 для наземних).
+@warning_ignore("unused_signal")
+signal enemy_struck(enemy: Node2D, move: StringName, direction: Vector2)
+## Стріла лучника влучила в героя, у блок чи застрягла в стіні (A17): дрібні іскри в [param at], світові px.
+@warning_ignore("unused_signal")
+signal arrow_landed(at: Vector2, tell: StringName)
+
 ## Щитоносець (D560): щит прийняв удар спереду / важкий удар розбив щит; [param at] — де щит, світові px (іскри, звук).
 @warning_ignore("unused_signal")
 signal enemy_shield_blocked(enemy: Node2D, at: Vector2)

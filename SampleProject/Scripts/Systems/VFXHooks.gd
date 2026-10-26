@@ -18,6 +18,8 @@ const HIT_IMPACT_SCENE := preload("res://SampleProject/Scenes/FX/HitImpact.tscn"
 const PARRY_SPARK_SCENE := preload("res://SampleProject/Scenes/FX/ParrySpark.tscn")
 const HURT_VIGNETTE_SCENE := preload("res://SampleProject/Scenes/FX/HurtVignette.tscn")
 const InputGlyphs := preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
+## Шлейфи ударів ворогів і босів (A17) — дитина цього вузла.
+const ENEMY_STRIKE_FX := preload("res://SampleProject/Scripts/FX/EnemyStrikeFX.gd")
 const BLOCK_SPARK_SCALE := 0.5
 ## Розтин по героєві — червонуватий, щоб не плутати з його власними ударами.
 const HERO_CUT_TINT := Color(1.0, 0.45, 0.4)
@@ -54,10 +56,19 @@ const KICK_TIME := 0.16
 const ULTIMATE_SHAKE := 9.0
 const ULTIMATE_SHAKE_TIME := 0.5
 
+## Удар, що зняв щонайменше HEAVY_HURT_SHARE від повного HP героя, і удар еліти б'ють як важкий (A17: тряска й
+## завмирання — за шкодою; еліти й боси — сильніше).
+const HEAVY_HURT_SHARE := 0.2
+
 var hurt_vignette: CanvasLayer
+var enemy_strike_fx: Node
 
 ## Тряска камери почалась (strength px, seconds с); emitted навіть за Screen Shake Off — тоді камера стоїть.
 signal shake_started(strength: float, seconds: float)
+## Удар по героєві показано: розтин у точці контакту, завмирання й тряска рівня [param tier] (HURT_FEEL; verify_enemy_fx).
+signal hurt_shown(tier: int)
+## Іскри блоку чи парирування героя (verify_enemy_fx).
+signal guard_shown(parry: bool)
 
 
 func _init() -> void:
@@ -87,6 +98,9 @@ func _connect_to_event_bus() -> void:
 	EventBus.skill_used.connect(_on_skill_used)
 	hurt_vignette = HURT_VIGNETTE_SCENE.instantiate()
 	add_child(hurt_vignette)
+	enemy_strike_fx = ENEMY_STRIKE_FX.new()
+	enemy_strike_fx.name = "EnemyStrikeFX"
+	add_child(enemy_strike_fx)
 
 
 ## ============================================
@@ -108,12 +122,13 @@ func _on_player_landed(fall_height: float) -> void:
 ## Удар по героєві (4b): розтин з боку удару (D268) — більший, завмирання довше, ніж від його власних ударів,
 ## поштовх камери від ворога, червоні краї екрана, сильна вібрація. Важкий удар (is_big_hurt) — ще сильніше.
 ## Поза Hurt і відкидання — PlayerCombat.stagger (D264); рядок HP трясеться сам (player_vitals_panel).
-func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bool) -> void:
+func _on_damage_received(target: Node, source: Node, amount: int, _critical: bool) -> void:
 	if not target.is_in_group(GameGroups.PLAYER):
 		return
 	# Без джерела (пастка, падіння) — розтин по центру тіла
 	var side: float = 0.0 if source == null else signf(source.global_position.x - target.global_position.x)
-	var feel: Dictionary = HURT_FEEL[hurt_tier(source)]
+	var tier := hurt_tier_for(source, amount, target.Max_Health)
+	var feel: Dictionary = HURT_FEEL[tier]
 	var impact := _spawn_impact(target, side)
 	impact.modulate = HERO_CUT_TINT
 	impact.scale = Vector2.ONE * feel.cut
@@ -123,6 +138,7 @@ func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bo
 	hurt_vignette.pulse(feel.vignette, feel.fade)
 	rumble(feel.rumble)
 	flash_hero(target)
+	hurt_shown.emit(tier)
 
 
 ## Білий спалах героя (D581): кадри героя на мить стають білими й гаснуть за HURT_FLASH_TIME.
@@ -138,6 +154,16 @@ static func hurt_tier(source: Node) -> int:
 	if source != null and source.is_in_group(GameGroups.BOSS):
 		return 2
 	return 1 if is_big_hurt(source) else 0
+
+
+## Сила удару по героєві з його шкодою (A17): звичайний удар еліти або такий, що зняв HEAVY_HURT_SHARE повного HP
+## [param max_health], — важкий (1); бос лишається 2.
+static func hurt_tier_for(source: Node, amount: int, max_health: int) -> int:
+	var tier := hurt_tier(source)
+	if tier > 0:
+		return tier
+	var elite: bool = source != null and source.is_in_group(GameGroups.ENEMIES) and source.elite
+	return 1 if elite or amount >= max_health * HEAVY_HURT_SHARE else 0
 
 
 ## Важкий удар по героєві: той, що пробив би блок (tank, фінішер серії, D264), або удар боса.
@@ -224,6 +250,7 @@ func _on_guard(attacker: Node2D, parry: bool) -> void:
 	spark.global_position = hero.global_position.lerp(attacker.global_position, 0.4)
 	spark.scale = Vector2.ONE * (1.0 if parry else BLOCK_SPARK_SCALE)
 	spark.emitting = true
+	guard_shown.emit(parry)
 	if parry:
 		ServiceLocator.get_time_manager().hitstop(PARRY_HITSTOP)
 		_kick_camera(Vector2(signf(attacker.global_position.x - hero.global_position.x), 0.0), PARRY_KICK)
