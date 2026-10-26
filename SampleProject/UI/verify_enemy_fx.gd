@@ -162,7 +162,7 @@ func _swings() -> void:
 		var enemy := await _spawn(kind)
 		await _strike(enemy, SWING_PARTS[kind], kind)
 		if kind.ends_with("archer"):
-			var arrow: Node = enemy.get_parent().get_children().filter(func(n: Node) -> bool: return n is Arrow).back()
+			var arrow: Node = enemy.get_parent().get_children().filter(func(n: Node) -> bool: return n.get_script() == load("res://SampleProject/Scripts/Combat/Arrow.gd")).back()
 			var streak: Sprite2D = arrow.get_node(^"Streak")
 			ck(streak.visible and streak.modulate == load("res://SampleProject/Scripts/FX/EnemyTell.gd").GLINT_OUTER[arrow.tell],
 					"%s: the arrow trails a streak in its tell colour" % kind)

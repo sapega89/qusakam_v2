@@ -56,7 +56,8 @@ func _click_through(dm: Node, box: Control) -> void:
 	file.close()
 	var player: Node = dm.current_dialogue_player
 	var choices: Control = box.choice_menu
-	player.play_sections(DQDqdParser.parse_from_file(PATH), PATH)
+	# парсер — load після старту: як class_name він компілювався б разом із тестом, раніше за автозавантаження DialogueQuest
+	player.play_sections(load("res://addons/dialogue_quest/scripts/systems/dqd/dqd_parser.gd").parse_from_file(PATH), PATH)
 	for i in 3: await process_frame
 	ck(box.visible and not box.is_finished() and box.text == lines[0], "the first line is typing")
 	await _enter(true)
