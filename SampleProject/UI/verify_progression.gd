@@ -64,7 +64,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 20)
 	var city: Node = game.map
 	var gate_shape: CollisionShape2D = city.get_node("MayorHallGate/Collision")
-	var hall_door: RoomDoor = city.get_node("MayorHallDoor")
+	var hall_door: Area2D = city.get_node("MayorHallDoor")
 	ck(not gate_shape.disabled and not hall_door.interactable.enabled, "the east wall collides, the palace door is shut")
 	ck(city.get_node("GuardLeft").scene_file_path.ends_with("gate_guard.tscn") and city.get_node("GuardRight").scene_file_path.ends_with("gate_guard.tscn"),
 			"two gate guards at the door")

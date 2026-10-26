@@ -107,7 +107,7 @@ func _fight_frame() -> void:
 ## Герой іде (справжній ввід) до x [param target]; стіна — стрибок. Бої по дорозі добиваються (_fight_frame).
 ## Справжнім «праворуч» до дверей [param door] (кімнати лабораторії з'єднані дверима, room_art_audit), E — у [param room].
 func _through_door(door: NodePath, room: String) -> void:
-	var node: RoomDoor = game.map.get_node(door)
+	var node: Area2D = game.map.get_node(door)
 	Input.action_press(&"move_right")
 	for i in 900:
 		await physics_frame

@@ -57,7 +57,7 @@ func _walk_into(action: StringName, room: String, label: String) -> void:
 ## Герой біля дверей [param door], E; чекає кімнату [param room]: герой на підлозі біля дверей, що ведуть назад.
 func _door_into(door: String, room: String, label: String) -> void:
 	var before := _room()
-	var node: RoomDoor = game.map.get_node(door)
+	var node: Area2D = game.map.get_node(door)
 	game.place_player(node.global_position)
 	for i in 30: await physics_frame
 	ck(node.interactable.player_nearby and node.interactable.enabled, "%s: %s offers Enter" % [label, door])

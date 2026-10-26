@@ -335,7 +335,7 @@ func _initialize() -> void:
 	ck(started.is_empty(), "no talk replays (%s)" % [started])
 
 	print("[7] The hero walks east to the iron door and goes into the corridors (real move_right, E)")
-	var corridor_door: RoomDoor = game.map.get_node(^"CorridorDoor")
+	var corridor_door: Area2D = game.map.get_node(^"CorridorDoor")
 	_press(&"move_right")
 	await _until(func() -> bool: return game.player.global_position.x >= corridor_door.global_position.x - 8.0, 20.0)
 	_press(&"move_right", false)

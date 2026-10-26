@@ -136,9 +136,14 @@ func _first_door_or_arrival(room: String) -> NodePath:
 func _doors(scene: Node) -> Array[Node]:
 	var out: Array[Node] = []
 	for n: Node in scene.get_children():
-		if n is RoomDoor:
+		if _is_door(n):
 			out.append(n)
 	return out
+
+
+## RoomDoor за скриптом: class_name у SceneTree-скрипті компілюється раніше за автолоади.
+func _is_door(n: Node) -> bool:
+	return n is Area2D and n.get_script() != null and (n.get_script() as Script).resource_path.ends_with("/RoomDoor.gd")
 
 
 func _space() -> PhysicsDirectSpaceState2D:
@@ -154,7 +159,7 @@ func _floor_below(p: Vector2, reach: float = 1200.0) -> float:
 
 
 func _check_doors(room: String) -> void:
-	for door: RoomDoor in _doors(game.map):
+	for door: Area2D in _doors(game.map):
 		var key := "%s/%s" % [room, door.name]
 		var light: Sprite2D = door.get_node(^"ExitLight")
 		ck(light.texture.resource_path == EXIT_LIGHT and (light.material as CanvasItemMaterial).blend_mode == CanvasItemMaterial.BLEND_MODE_ADD
@@ -162,7 +167,7 @@ func _check_doors(room: String) -> void:
 		ck(light.z_index + door.z_index < game.player.z_index, "%s: the light is behind the hero" % key)
 		var target: Node = (load(door.target_room) as PackedScene).instantiate()
 		var back: Node = target.get_node_or_null(door.arrival)
-		ck(back is RoomDoor and back.target_room == MAPS % room and String(back.arrival) == String(door.name),
+		ck(back != null and _is_door(back) and back.target_room == MAPS % room and String(back.arrival) == String(door.name),
 				"%s: arrives at %s:%s, which leads back to this door" % [key, door.target_room.get_file().get_basename(), door.arrival])
 		target.free()
 		if PAINTED.has(key):
@@ -198,7 +203,7 @@ func _check_not_covering(key: String, art: Sprite2D) -> void:
 
 
 func _subject_kind(n: Node) -> String:
-	if n is RoomDoor:
+	if _is_door(n):
 		return "door"
 	if n.scene_file_path.contains("/NPCs/") or n.scene_file_path.ends_with("grandfather.tscn"):
 		return "NPC"
@@ -349,7 +354,7 @@ func _through(room: String, door_name: String) -> void:
 	await game.teleport_to_room(MAPS % room, NodePath(door_name))
 	for i in 20: await physics_frame
 	await Kit.drain(self)
-	var door: RoomDoor = game.map.get_node(NodePath(door_name))
+	var door: Area2D = game.map.get_node(NodePath(door_name))
 	var target: String = door.target_room
 	var arrival: String = door.arrival
 	game.place_player(door.global_position)
