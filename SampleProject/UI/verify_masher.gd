@@ -248,8 +248,12 @@ func _run(fight: Dictionary, bot: String, build: String) -> Dictionary:
 		var alive_now: bool = is_instance_valid(enemy) and enemy.is_alive()
 		if alive_now:
 			left_hp += enemy.current_health
-		lines.append("%-22s %s: swings %2d, struck %2d, broken %2d, staggered %4.1fs" % [swings[id].name, "alive" if alive_now else "dead ",
-				swings[id].n, strikes.get(id, 0), swings[id].n - strikes.get(id, 0), stagger_time.get(id, 0.0)])
+		var times := ""
+		for phase: String in ["chase", "ready", "cooldown", "swing", "recover", "stun", "knock", "other"]:
+			times += " %s %.1f" % [phase, swings[id].get(phase, 0.0)]
+		lines.append("%-22s %s: swings %2d, told %2d, struck %2d, broken before tell %2d / after %2d | time:%s" % [swings[id].name,
+				"alive" if alive_now else "dead ", swings[id].n, swings[id].told, strikes.get(id, 0), swings[id].n - swings[id].told,
+				swings[id].told - strikes.get(id, 0), times])
 	var row := {"bot": bot, "build": build, "name": fight.name, "cls": fight.cls, "level": level,
 			"won": not hero.is_dead and left_hp == 0 and t < CAP, "capped": t >= CAP and not hero.is_dead,
 			"hp_left": float(maxi(hero.current_health, 0)) / hero.Max_Health, "enemy_left": float(left_hp) / maxi(total_hp, 1),
@@ -354,7 +358,7 @@ func _place_hero(at: Vector2) -> void:
 
 func _track(enemy: Node) -> void:
 	var id := enemy.get_instance_id()
-	swings[id] = {"n": 0, "name": "%s%s" % ["elite " if enemy.elite else "", enemy.enemy_type if "enemy_type" in enemy and enemy.enemy_type != "" else enemy.name]}
+	swings[id] = {"n": 0, "told": 0, "name": "%s%s" % ["elite " if enemy.elite else "", enemy.enemy_type if "enemy_type" in enemy and enemy.enemy_type != "" else enemy.name]}
 	strikes[id] = 0
 	enemy.enemy_logic.attack_started.connect(_on_swing.bind(enemy))
 	enemy.enemy_logic.attack_telegraphed.connect(_on_telegraph.bind(enemy))
@@ -371,6 +375,7 @@ func _on_swing(enemy: Node) -> void:
 
 
 func _on_telegraph(enemy: Node) -> void:
+	swings[enemy.get_instance_id()].told += 1
 	_telegraphs.append({"enemy": enemy, "tell": enemy.enemy_logic.tell_kind, "strike_in": enemy.enemy_logic.tell_time,
 			"boss": enemy.get_script() == Boss, "kind": enemy.enemy_logic.get("last_move").get("kind", "combo") if enemy.get_script() == Boss else "swing"})
 
@@ -390,6 +395,16 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 		var logic: Node = enemy.enemy_logic
 		if logic.stun_left > 0.0 or logic.knockback_left > 0.0 and not logic.is_attacking:
 			stagger_time[id] = stagger_time.get(id, 0.0) + dt
+		var phase := "stun" if logic.stun_left > 0.0 else "knock" if logic.knockback_left > 0.0 \
+				else "recover" if logic.recovering else "swing" if logic.is_attacking \
+				else "chase" if logic.current_state == logic.AIState.CHASE \
+				else "cooldown" if logic.current_state == logic.AIState.ATTACK and logic.attack_ready_in > 0.0 \
+				else "ready" if logic.current_state == logic.AIState.ATTACK else "other"
+		swings[id][phase] = swings[id].get(phase, 0.0) + dt
+		if OS.get_environment("MASHER_DEBUG") == "2" and Engine.get_physics_frames() % 90 == 0:
+			print("DEBUG %s %s dx %.0f dy feet %.0f notice %s state %s ready_in %.2f home %.0f x %.0f" % [enemy.name, phase,
+					hero.global_position.x - enemy.global_position.x, logic._feet_y(hero) - logic._feet_y(enemy), logic.can_notice(hero),
+					logic.current_state, logic.attack_ready_in, logic.home_position.x, enemy.global_position.x])
 		var on: bool = enemy.hitbox.monitoring
 		if on and not enemy.get_meta(&"masher_on", false):
 			strikes[id] += 1
