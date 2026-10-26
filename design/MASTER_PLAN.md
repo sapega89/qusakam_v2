@@ -135,6 +135,7 @@ tags: [plan, orchestrator, status]
 | S16 | Активні плани — закрити або виписати хвости: ranged, hero_weapon_animation, onboarding, localization, npc_recall, lab_boss, lab_story, world_expansion | — | ⬜ |
 | S17 | Село: більше бігу до діда | BACKLOG | ⛔ до «гра проходиться», спитати Sapega |
 | S18 | Сценарій прологу | HANDOFF | ⛔ Sapega відклав |
+| S19 | Аудит навичок: 76 навичок (обробник, поза, VFX, іконка, вердикт), щит — переробити 5 щитових навичок без щита (рекомендація) чи дати герою щит; форма базового дерева й одного дерева шляху (D728); черга поз і VFX | [[skills_audit]], D725–D728 | 👀 `cloud/skills-audit`, чекає вибору Sapega |
 
 ## 5. Питання й рішення Sapega (👤)
 
