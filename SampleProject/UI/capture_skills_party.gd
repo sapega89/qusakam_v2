@@ -17,7 +17,7 @@ func _initialize() -> void:
 	await process_frame
 	suffix = "%dx%d" % [root.size.x, root.size.y]
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D289
 	sl = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()

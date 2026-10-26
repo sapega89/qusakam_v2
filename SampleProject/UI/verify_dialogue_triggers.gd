@@ -110,7 +110,7 @@ func _moves(player: Node2D) -> float:
 func _initialize() -> void:
 	await process_frame
 	var settings: Node = root.get_node("SaveSystem").settings_module
-	settings.settings.tutorial_windows = false
+	settings.settings.hints = false
 	await process_frame
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")

@@ -13,7 +13,7 @@ func ck(ok: bool, label: String) -> void:
 func _initialize() -> void:
 	await process_frame; await process_frame
 	root.size = Vector2i(1920, 1080)  # headless скидає вікно до 64×64, а миша клікає в координатах 1920×1080
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: вікно туторіалу не забирає ввід
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D289: вікно туторіалу не забирає ввід
 	# Меню існує лише в запущеній грі (Game, гравець, нижня панель) — тест відкриває його там само.
 	set_meta("start_new_game", true)
 	root.get_node("ServiceLocator").get_dialogue_manager().bubble_time_scale = 0.0  # облачка (D178) без очікування

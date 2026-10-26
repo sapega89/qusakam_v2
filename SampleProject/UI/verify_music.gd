@@ -65,7 +65,7 @@ func _fight_music() -> void:
 	var fight: AudioStream = am.music["fight"]
 	var boss: AudioStream = am.music["boss"]
 	ck(fight != null and boss != null and fight != boss, "sound_events.json → music: fight and boss tracks load, different")
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	set_meta("start_new_game", true)
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)

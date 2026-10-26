@@ -8,6 +8,7 @@ const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreload
 const SceneWarmer := preload("res://SampleProject/Scripts/Gameplay/SceneWarmer.gd")
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
+const TutorialTopics := preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
 ## D492: у room_state кімнати — {ключ бою: регіон} її звичайних боїв, тих, що повертаються.
 const ORDINARY_FIGHTS_KEY := "ordinary_fights"
 
@@ -168,6 +169,7 @@ func _initialize_save_and_room() -> void:
 	ServiceLocator.get_skill_manager().clear_cooldowns()
 	# B79: рівень, досвід, стан героя й речі — теж з чистого; сейв нижче відновить свої (PlayerDataModule, InventoryModule).
 	ServiceLocator.get_xp_manager().reset()
+	var tips_before := TutorialTopics.snapshot()  # D727: бачені підказки цього проходження переживають завантаження
 	ServiceLocator.get_game_manager().get_node(^"PlayerStateManager").reset_player_state()
 	ServiceLocator.get_character_manager().initialize_characters()  # ростер бере чистий стан і синхронізує клас (B55)
 	ServiceLocator.get_inventory_manager().clear()
@@ -195,6 +197,7 @@ func _initialize_save_and_room() -> void:
 		# КРИТИЧНО: Загружаем quest flags ДО вызова load_room()
 		# Это гарантирует что quest flags будут доступны когда сцена загрузится
 		_load_full_game_data_from_save_system()		
+		TutorialTopics.carry_over(tips_before)
 
 		# Імʼя кімнати MetSys (":uid") — єдине джерело. Окремий
 		# current_room_scene_path склеював папку з цим імʼям у неіснуючий шлях,

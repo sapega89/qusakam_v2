@@ -32,7 +32,7 @@ func _initialize() -> void:
 	root.size = Vector2i(1920, 1080)
 	var ss: Node = root.get_node("ServiceLocator").get_save_system()
 	ss.set_save_dir(TEST_DIR)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: підказки банером, без вікон
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	_actions()
 	await _main_menu()
 	var game: Node = await Kit.boot(self)

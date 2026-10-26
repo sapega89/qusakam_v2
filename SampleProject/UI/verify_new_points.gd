@@ -95,7 +95,7 @@ func _initialize() -> void:
 	await process_frame
 	root.size = Vector2i(1920, 1080)  # headless скидає вікно до 64×64, а миша клікає в координатах 1920×1080
 	set_meta("start_new_game", true)
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D289
 	var sl: Node = root.get_node("ServiceLocator")
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
 	var game: Node = load("res://SampleProject/Game.tscn").instantiate()

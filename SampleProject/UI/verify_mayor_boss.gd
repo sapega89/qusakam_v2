@@ -54,7 +54,7 @@ func _initialize() -> void:
 	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()  # D393: без крита й ухилення — шкода точна
 	await process_frame
 	var save_system: Node = root.get_node("SaveSystem")
-	save_system.settings_module.settings.tutorial_windows = false  # D289
+	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(TEST_SLOT)
 	await process_frame

@@ -19,7 +19,7 @@ func _initialize() -> void:
 	await process_frame
 	set_meta("start_new_game", true)
 	sl = root.get_node("ServiceLocator")
-	sl.get_save_system().settings_module.settings.tutorial_windows = false  # D289
+	sl.get_save_system().settings_module.settings.hints = false  # D728: no «?» tips in this run
 	sl.get_dialogue_manager().bubble_time_scale = 0.0
 	game = load("res://SampleProject/Game.tscn").instantiate()
 	root.add_child(game)

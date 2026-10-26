@@ -903,8 +903,8 @@ msgstr "Режим екрана, розмір вікна, обмеження ч�
 msgid "Adjust volume levels."
 msgstr "Налаштуйте гучність."
 
-msgid "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
-msgstr "Мова інтерфейсу, швидкість тексту діалогів, чи відкривають підказки вікна навчання, чи труситься камера, чи видно цифри урону і чи зберігається гра при кожному переході між кімнатами."
+msgid "Choose the interface language, how fast dialogue text runs, whether tips («?») show, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
+msgstr "Мова інтерфейсу, швидкість тексту діалогів, чи показуються підказки («?»), чи труситься камера, чи видно цифри урону і чи зберігається гра при кожному переході між кімнатами."
 
 msgid "Select an action to rebind it."
 msgstr "Оберіть дію, щоб перепризначити її."
@@ -969,8 +969,8 @@ msgstr "Англійська"
 msgid "Ukrainian"
 msgstr "Українська"
 
-msgid "Tutorial Windows"
-msgstr "Вікна навчання"
+msgid "Hints"
+msgstr "Підказки"
 
 # settings-2 (D425–D428): чернетки для Sapega
 msgid "Text Speed"
@@ -1679,9 +1679,6 @@ msgstr "Ухваліть рішення"
 
 msgid "Leave the village"
 msgstr "Покиньте село"
-
-msgid "Learn to fight: follow the lesson"
-msgstr "Навчіться битися: виконуйте урок"
 
 msgid "Defeat the bandit in the street"
 msgstr "Здолайте бандита на вулиці"
@@ -2453,18 +2450,6 @@ msgstr "Журнал"
 msgid "Moving and Jumping"
 msgstr "Рух і стрибки"
 
-msgid "Training 1/4 — Attack"
-msgstr "Тренування 1/4 — Атака"
-
-msgid "Training 2/4 — Dodge or Block"
-msgstr "Тренування 2/4 — Ривок або блок"
-
-msgid "Training 3/4 — Parry"
-msgstr "Тренування 3/4 — Парирування"
-
-msgid "Training 4/4 — Heavy Attack"
-msgstr "Тренування 4/4 — Важка атака"
-
 msgid "Attacking"
 msgstr "Як атакувати"
 
@@ -2509,18 +2494,6 @@ msgstr "Журнал в ігровому меню стежить за істор
 
 msgid "Move with {move}. Press {jump} to jump. {dodge} dashes — twice in a row, even in the air."
 msgstr "Рухайтеся — {move}. Натисніть {jump}, щоб стрибнути. {dodge} — ривок, двічі поспіль, навіть у повітрі."
-
-msgid "Training 1 of 4. Press {attack} three times quickly: the third swing staggers. While you learn, neither of you can fall. {cutscene_skip} skips the training."
-msgstr "Тренування 1 з 4. Швидко натисніть {attack} тричі: третій замах вибиває з рівноваги. Поки ви вчитеся, ніхто з вас не впаде. {cutscene_skip} — пропустити тренування."
-
-msgid "Training 2 of 4. When his weapon glints, dash through the blow with {dodge} or hold {block} to take it on your guard. A red glint cannot be blocked: dodge it."
-msgstr "Тренування 2 з 4. Коли його зброя спалахує, проскочіть крізь удар ривком {dodge} або утримуйте {block}, щоб прийняти удар на захист. Червоний відблиск не заблокувати: ухиляйтеся."
-
-msgid "Training 3 of 4. A yellow glint means a blow you can parry: tap {block} just as it lands. No damage, he reels, and your next attack is a heavy riposte."
-msgstr "Тренування 3 з 4. Жовтий відблиск — удар, який можна парирувати: коротко натисніть {block} саме тоді, коли він падає. Жодної шкоди, він хитається, а ваш наступний удар — важкий рипост."
-
-msgid "Training 4 of 4. Press {heavy_attack} while he is not swinging: a slow wind-up, then a blow that breaks his guard."
-msgstr "Тренування 4 з 4. Натисніть {heavy_attack}, коли він не замахується: повільний замах, а тоді удар, що пробиває його захист."
 
 msgid "Enemies ahead! Press {attack} to swing your weapon. Keep pressing to chain a combo of three swings — four with a weapon in each hand. The last swing of a combo staggers."
 msgstr "Попереду вороги! Натисніть {attack}, щоб замахнутися зброєю. Натискайте далі, щоб скласти серію з трьох замахів — чотирьох, коли зброя в кожній руці. Останній замах серії вибиває ворога з рівноваги."
@@ -2567,17 +2540,11 @@ msgstr "Кнопка стрибка."
 msgid "Button for a light attack."
 msgstr "Кнопка легкої атаки."
 
-msgid "Press it three times quickly."
-msgstr "Швидко натисніть її тричі."
-
 msgid "Button to dash; twice in a row for a double dash."
 msgstr "Кнопка ривка; двічі поспіль — подвійний ривок."
 
 msgid "Hold it to block."
 msgstr "Утримуйте її, щоб блокувати."
-
-msgid "Tap it as the yellow-glint blow lands to parry."
-msgstr "Коротко натисніть її, коли падає удар із жовтим відблиском, щоб парирувати."
 
 msgid "Button for a heavy attack."
 msgstr "Кнопка важкої атаки."
@@ -2777,9 +2744,6 @@ msgstr "Потрібно вкласти ще %d ОН у дерево «%s»."
 
 msgid "This tree's JP cap is reached (%d JP)."
 msgstr "Ліміт ОН цього дерева вичерпано (%d ОН)."
-
-msgid "Dash through the blow, or hold block."
-msgstr "Проскочіть крізь удар ривком або утримуйте блок."
 
 msgid "Quick Potion"
 msgstr "Швидке зілля"
@@ -3357,19 +3321,6 @@ msgstr "Відкрити підказку туторіалу (?)"
 msgid "Open Tip"
 msgstr "Відкрити підказку"
 
-# D719: тренування — один рядок на урок
-msgid "1/4 · {attack} three times quickly · {cutscene_skip}: skip"
-msgstr "1/4 · {attack} тричі швидко · {cutscene_skip}: пропустити"
-
-msgid "2/4 · His weapon glints: dash {dodge} or hold {block}"
-msgstr "2/4 · Відблиск: ривок {dodge} або блок {block}"
-
-msgid "3/4 · Yellow glint: tap {block} as the blow lands"
-msgstr "3/4 · Жовтий відблиск: {block}, щойно падає удар"
-
-msgid "4/4 · {heavy_attack} while he is not swinging"
-msgstr "4/4 · {heavy_attack}, поки він не замахується"
-
 # D720: вдягнене в інвентарі
 msgid "Equipped — double-click or Enter to unequip (%s)"
 msgstr "Споряджено: подвійний клік або Enter — зняти (%s)"
@@ -3394,3 +3345,31 @@ msgid "Open Skills (New Skills)"
 msgstr "Відкрити навички (нові вміння)"
 msgid "Open Status (New Attributes)"
 msgstr "Відкрити стан (нові атрибути)"
+
+# D725: «?» про колір підказки удару ворога (D504)
+msgid "White Glint"
+msgstr "Білий відблиск"
+
+msgid "Yellow Glint"
+msgstr "Жовтий відблиск"
+
+msgid "Red Glint"
+msgstr "Червоний відблиск"
+
+msgid "A white glint on an enemy's weapon: this blow can be blocked. Hold {block} to take it on your guard."
+msgstr "Білий відблиск на зброї ворога: цей удар можна заблокувати. Утримуйте {block}, щоб прийняти його на захист."
+
+msgid "A yellow glint on an enemy's weapon: this blow can be parried. Tap {block} just as it lands."
+msgstr "Жовтий відблиск на зброї ворога: цей удар можна парирувати. Коротко натисніть {block}, щойно він падає."
+
+msgid "A red glint on an enemy's weapon: this blow cannot be blocked or parried. Dodge it with {dodge}."
+msgstr "Червоний відблиск на зброї ворога: цей удар не заблокувати й не парирувати. Ухиліться від нього ривком {dodge}."
+
+msgid "Hold to block a white-glint blow."
+msgstr "Утримуйте, щоб заблокувати удар із білим відблиском."
+
+msgid "Tap it as a yellow-glint blow lands."
+msgstr "Коротко натисніть, коли падає удар із жовтим відблиском."
+
+msgid "Dash out of a red-glint blow."
+msgstr "Ривком ухиліться від удару з червоним відблиском."

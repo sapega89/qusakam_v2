@@ -43,7 +43,7 @@ var rows: Array[String] = []
 func _initialize() -> void:
 	Engine.max_fps = 60
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289: підказки банерами, гра не стає
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D289: підказки банерами, гра не стає
 	game = await Kit.boot(self)
 	metsys = root.get_node("MetSys")
 	camera = game.player.get_node(^"Camera2D")

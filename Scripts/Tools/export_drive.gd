@@ -66,7 +66,7 @@ func _drain_dialogue() -> void:
 
 func _run(scenario: String) -> void:
 	_log("scenario %s" % scenario)
-	SaveSystem.settings_module.settings.tutorial_windows = false
+	SaveSystem.settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await _frames(30)
 	# Як кнопка «Нова гра» в MainMenu: прапорець, SceneLoader.
 	get_tree().set_meta("start_new_game", true)

@@ -174,7 +174,7 @@ func _meet(game: Node, sl: Node, room: String, start: NodePath, npc_name: String
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false  # D289
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	_z_order()
 	set_meta("start_new_game", true)
 	var sl: Node = root.get_node("ServiceLocator")

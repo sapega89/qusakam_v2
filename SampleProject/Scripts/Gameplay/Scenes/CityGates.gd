@@ -1,6 +1,6 @@
 extends Node2D
 
-## Ключ підказки TutorialHintDisplay для охоронця (D209).
+## Тема «?»-підказки (TipTray) для охоронця (D209, D726).
 const CALL_GUARD := "call_guard"
 const COMPANIONS_HINT := "companions"
 
@@ -212,17 +212,18 @@ func _spawn_enemies_for_fight() -> void:
 	DebugLogger.info("🏰 CityGates: Enemies spawning for fight", "Scene")
 	# D209: охоронець — перший асист-туторіал: кнопка асисту кличе його, його удар закінчує бій
 	ServiceLocator.get_companion_manager().offer_guard(true)
-	_hint().show_hint(CALL_GUARD, true, true)
+	_tips().show_tip(CALL_GUARD)
 	if not EventBus.assist_called.is_connected(_on_assist_called):
 		EventBus.assist_called.connect(_on_assist_called)
 
 func _on_assist_called(companion_id: String) -> void:
 	if companion_id == "guard":
-		_hint().force_hide()
-		_hint().show_hint(COMPANIONS_HINT, true)
+		_tips().retire(CALL_GUARD)
+		_tips().show_tip(COMPANIONS_HINT)
 
-func _hint() -> TutorialHintDisplay:
-	return get_tree().get_first_node_in_group(&"tutorial_hint_display")
+## Підказки — «?» (D726).
+func _tips() -> Node:
+	return get_tree().get_first_node_in_group(&"tip_tray")
 
 ## Пішли з воріт посеред бою (смерть, портал) — охоронця більше не пропонують.
 func _exit_tree() -> void:
@@ -232,8 +233,7 @@ func _exit_tree() -> void:
 func _on_all_enemies_defeated() -> void:
 	"""Обработчик когда все враги убиты"""
 	ServiceLocator.get_companion_manager().offer_guard(false)
-	if _hint().current_hint == CALL_GUARD:
-		_hint().force_hide()
+	_tips().retire(CALL_GUARD)
 	DebugLogger.info("🏰 CityGates: All enemies defeated, advancing state", "Scene")
 	# Переходим к следующему state после победы
 	if current_state == State.FIGHT_LOOP:

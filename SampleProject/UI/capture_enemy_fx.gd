@@ -29,7 +29,7 @@ var arena_x: float
 
 func _initialize() -> void:
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false
 	root.get_node("DisplayManager").graphics_quality.apply("high")
 	await process_frame
 	set_meta("start_new_game", true)

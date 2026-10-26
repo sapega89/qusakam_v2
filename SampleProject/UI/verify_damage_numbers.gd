@@ -83,7 +83,7 @@ func _initialize() -> void:
 	var save_system: Node = root.get_node("SaveSystem")
 	# Налаштування пишуться у файл слота — тест не чіпає справжніх сейвів гравця.
 	save_system.set_save_dir(TEST_DIR)
-	save_system.settings_module.settings.tutorial_windows = false  # D289
+	save_system.settings_module.settings.hints = false  # D728: no «?» tips in this run
 	await process_frame
 	root.size = Vector2i(1920, 1080)
 	set_meta("start_new_game", true)

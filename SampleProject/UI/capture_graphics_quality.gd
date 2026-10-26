@@ -14,7 +14,7 @@ func _initialize() -> void:
 		if arg.begins_with("room="):
 			room = arg.trim_prefix("room=")
 	await process_frame
-	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
+	root.get_node("SaveSystem").settings_module.settings.hints = false  # D728: no «?» tips in this run
 	var game: Node = await Kit.boot(self)
 	print("CAPTURE booted in %s" % game.map.scene_file_path.get_file())
 	game.player.set_invulnerable(true)
