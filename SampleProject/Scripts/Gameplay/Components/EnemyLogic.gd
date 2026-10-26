@@ -94,6 +94,8 @@ static var _attackers: Array[EnemyLogic] = []
 
 ## Між ударами (D504): тримається на attack_range + WAIT_GAP від героя й переступає на ±SHUFFLE px.
 const WAIT_GAP := 40.0
+## Тіла торкаються, якщо між ними не більше стільки px (strike_range).
+const CONTACT_SLACK := 6.0
 const SHUFFLE := 12.0
 const SPACING_SPEED := 0.5
 ## Помічає героя (B139) лише на своєму поверсі (ноги на ±NOTICE_DY px) або коли бачить його (промінь без стін).
@@ -267,7 +269,7 @@ func _give_up() -> void:
 
 ## Звідки ворог починає бій (стан ATTACK): трохи поза своєю досяжністю.
 func engage_range() -> float:
-	return attack_range + WAIT_GAP
+	return strike_range() + WAIT_GAP
 
 ## Бій ближнього ворога (D504): готовий і є вільний жетон — заходить на attack_range і б'є; інакше чекає поза
 ## досяжністю й переступає. Герой відкрився (важкий замах чи каст поруч) — б'є одразу, не чекаючи перерви.
@@ -283,13 +285,24 @@ func handle_attack_state(delta: float):
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
 	if (attack_ready_in <= 0.0 or _hero_opened(adx)) and token_free():
-		if adx <= attack_range:
+		# Ближче не ступити (уступ, стіна): б'є звідси, якщо удар дістане героя (D713) — а не стоїть біля уступу вічно
+		if adx <= strike_range() or (not can_step(toward) and adx <= enemy.hit_reach() + _half_width(player)):
 			attack_ready_in = enemy.attack_cooldown
 			perform_attack()
 		else:
 			_step(toward, speed)
 		return
 	_hold_spacing(dx, delta)
+
+## Звідки ворог б'є: attack_range, а якщо тіла торкаються раніше (герой уперся в ворога), — з дотику (D713).
+## Інакше ворог з attack_range, меншою за дотик тіл (бандит-громило: 50 проти 52), упирався в героя й не бив зовсім.
+func strike_range() -> float:
+	return maxf(attack_range, _half_width(enemy) + _half_width(player) + CONTACT_SLACK)
+
+## Півширина тіла (форма CollisionShape2D) разом із її зсувом від центру, px світу.
+static func _half_width(body: Node2D) -> float:
+	var shape: CollisionShape2D = body.get_node(^"CollisionShape2D")
+	return (shape.shape.get_rect().size.x / 2.0 + absf(shape.position.x)) * absf(body.global_scale.x)
 
 ## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно).
 func _hold_spacing(dx: float, delta: float) -> void:
@@ -486,7 +499,10 @@ func can_step(dir: int) -> bool:
 	var bodies := _bodies()
 	var wall := PhysicsRayQueryParameters2D.create(enemy.global_position, Vector2(ahead_x, enemy.global_position.y))
 	wall.exclude = bodies
-	if not space.intersect_ray(wall).is_empty():
+	var hit := space.intersect_ray(wall)
+	# Схил, яким тіло може йти (кут до вертикалі не більший за floor_max_angle), — не стіна (D713): інакше ворог
+	# ставав біля підніжжя пагорба, а герой бив його з пагорба безкарно.
+	if not hit.is_empty() and absf(Vector2.UP.angle_to(hit.normal)) > enemy.floor_max_angle:
 		return false
 	var ground := PhysicsRayQueryParameters2D.create(Vector2(ahead_x, enemy.global_position.y), Vector2(ahead_x, _feet_y(enemy) + FLOOR_PROBE))
 	ground.exclude = bodies

@@ -180,6 +180,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 	lunge = stats.lunge
 	super_armor = stats.super_armor
 	front_damage = stats.front_damage
+	knockback_immune = stats.knockback_immune
 	poise_max = stats.poise
 	poise = poise_max
 	stagger_time = stats.stagger_time
@@ -304,6 +305,11 @@ func hurt_rect() -> Rect2:
 		return Rect2()
 	var size: Vector2 = hurt_collision.shape.get_rect().size * global_scale
 	return Rect2(hurt_collision.global_position - size / 2.0, size)
+
+
+## Докуди сягає удар — передній край хітбокса від центру ворога, px світу.
+func hit_reach() -> float:
+	return (absf(_strike_x) + hitbox_collision.shape.get_rect().size.x / 2.0) * absf(global_scale.x)
 
 
 ## Форми удару й тіла-цілі — за поглядом, як і кадри (спрайт дзеркалиться навколо центру ворога).
@@ -789,14 +795,18 @@ func hit_stagger_time() -> float:
 
 ## Поштовх легкого удару (4b): [param push] px, замах не зриває.
 func nudge(push: float) -> void:
-	if not knockback_immune:
+	if not knockback_immune and not holds_ground():
 		enemy_logic.start_knockback(push, false)
 
-## Відкидання від удару (булава, D203): [param push] px, знак — напрямок. Бос не відкидається (B134); замах після
-## підказки відкидання не зриває (EnemyLogic.start_knockback).
+## Відкидання від удару (булава, D203): [param push] px, знак — напрямок. Бос не відкидається (B134).
 func knockback(push: float) -> void:
-	if not knockback_immune:
+	if not knockback_immune and not holds_ground():
 		enemy_logic.start_knockback(push)
+
+## Замах і удар стоять на місці (D713): поштовх їх не зсуває й не зриває — серію ламає лише збій (стійкість, парирування).
+## Інакше кожен фінішер героя відкидав ворога з його дальності посеред замаху, і той не бив зовсім.
+func holds_ground() -> bool:
+	return enemy_logic.is_attacking and not enemy_logic.recovering
 
 ## Вмикає / вимикає всі колізії ворога: тіло, hitbox, зона-ціль, зона виявлення.
 func _set_collisions_disabled(disabled: bool) -> void:

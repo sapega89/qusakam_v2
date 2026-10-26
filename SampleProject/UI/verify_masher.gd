@@ -402,7 +402,17 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 				else "ready" if logic.current_state == logic.AIState.ATTACK else "other"
 		swings[id][phase] = swings[id].get(phase, 0.0) + dt
 		if OS.get_environment("MASHER_DEBUG") == "2" and Engine.get_physics_frames() % 90 == 0:
-			print("DEBUG %s %s dx %.0f dy feet %.0f notice %s state %s ready_in %.2f home %.0f x %.0f" % [enemy.name, phase,
+			var space: PhysicsDirectSpaceState2D = enemy.get_world_2d().direct_space_state
+			var shape: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
+			var ahead: float = enemy.global_position.x - (shape.shape.get_rect().size.x * enemy.global_scale.x / 2.0 + 8.0)
+			var wall := PhysicsRayQueryParameters2D.create(enemy.global_position, Vector2(ahead, enemy.global_position.y))
+			wall.exclude = logic._bodies()
+			var ground := PhysicsRayQueryParameters2D.create(Vector2(ahead, enemy.global_position.y), Vector2(ahead, logic._feet_y(enemy) + 16.0))
+			ground.exclude = logic._bodies()
+			var w := space.intersect_ray(wall)
+			var g := space.intersect_ray(ground)
+			print("DEBUG rays: wall %s n %s at %s ground %s feet %.1f pos %s" % [w.get("collider"), w.get("normal"), w.get("position"), g.get("position"), logic._feet_y(enemy), enemy.global_position])
+			print("DEBUG %s %s strike %.1f token %s attackers %d dx %.0f dy feet %.0f notice %s state %s ready_in %.2f home %.0f x %.0f" % [enemy.name, phase, logic.strike_range(), "%s/%s" % [logic.can_step(-1), logic.can_step(1)], logic.attackers(),
 					hero.global_position.x - enemy.global_position.x, logic._feet_y(hero) - logic._feet_y(enemy), logic.can_notice(hero),
 					logic.current_state, logic.attack_ready_in, logic.home_position.x, enemy.global_position.x])
 		var on: bool = enemy.hitbox.monitoring
