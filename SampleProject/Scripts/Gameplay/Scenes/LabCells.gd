@@ -61,6 +61,8 @@ var current_state: State = State.CUTSCENE
 
 func _ready() -> void:
 	$StepOutTrigger.body_entered.connect(_on_step_out)
+	# Двері в коридори — за ґратами (ExitDoor): відчиняються разом із ними.
+	($CorridorDoor as RoomDoor).interactable.enabled = false
 	var game := Game.get_singleton()
 	if game.get_quest_flag("lab_acquaintance_complete"):
 		current_state = State.FREE
@@ -246,6 +248,7 @@ func _lay_out_free() -> void:
 
 func _open_door(seconds: float) -> void:
 	$ExitDoor/Collision.set_deferred(&"disabled", true)
+	($CorridorDoor as RoomDoor).interactable.enabled = true
 	var sprite: Sprite2D = $ExitDoor/Sprite
 	if seconds <= 0.0:
 		sprite.hide()

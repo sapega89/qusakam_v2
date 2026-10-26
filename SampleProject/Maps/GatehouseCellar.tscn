@@ -8,6 +8,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r6"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="r7"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r8"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_chain_web.tscn" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -114,3 +118,30 @@ process_mode = 3
 stream = ExtResource("r7")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x1")]
+
+[node name="Web1" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(200, 0)
+
+[node name="Web2" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(640, 0)
+flip_h = true
+
+[node name="Web3" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(1100, 0)
+
+[node name="Web4" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(1560, 0)
+flip_h = true
+
+[node name="Web5" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(1950, 0)
+
+[node name="Pillar1" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(700, 480)
+
+[node name="Pillar2" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(1610, 480)
+
+[node name="TopShade" parent="." instance=ExtResource("x4")]

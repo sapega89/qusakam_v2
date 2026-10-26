@@ -26,6 +26,10 @@ const RAISE_SECONDS := 1.2
 @export var charm: String = ""
 ## Скриня, поставлена в кімнату, відкривається один раз. false — поза кімнатою (тести).
 @export var persistent: bool = true
+## D722, D724: бій (RoomEnemySpawner кімнати), що стереже скриню; порожньо — скриню ніхто не стереже. Поки бій не
+## виграно, скриня не відчиняється. Бій без своєї зони (trigger_area) будить сама скриня: E — і вартовий нападає
+## (на дорозі немає бічної стежки, тож бій можна оминути, лише не чіпаючи скрині).
+@export var guard: NodePath
 
 var is_open := false
 ## Де предмет над героєм — позиція Found у сцені (Found top_level, тож позицію беремо раз).
@@ -63,6 +67,12 @@ func _ready() -> void:
 func _on_interacted() -> void:
 	if is_open:
 		return
+	if not guard.is_empty():
+		var spawner: RoomEnemySpawner = get_node(guard)
+		if not spawner.fight_won():
+			if spawner.trigger_area == null and spawner.get_alive_enemies_count() == 0:
+				spawner.spawn_all_enemies()
+			return
 	var inventory = ServiceLocatorHelper.get_manager("get_inventory_manager")
 	for item_id: String in contents:
 		if inventory == null or not inventory.add_item(item_id, contents[item_id]):

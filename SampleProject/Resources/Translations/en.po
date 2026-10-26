@@ -3354,3 +3354,9 @@ msgstr "Tap it as a yellow-glint blow lands."
 
 msgid "Dash out of a red-glint blow."
 msgstr "Dash out of a red-glint blow."
+# D723 — ключ від табору бандитів (громило-одинак на дорозі)
+msgid "Bandit Camp Key"
+msgstr "Bandit Camp Key"
+
+msgid "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road."
+msgstr "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road."

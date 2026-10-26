@@ -155,7 +155,7 @@ func _classify(node: Node, pos: Vector2, room: String, room_key: String, origin:
 		_mark(KIND_CHEST_OPEN if opened else KIND_CHEST, pos, room, origin)
 	elif node is RoomDoor:
 		var door: RoomDoor = node
-		if door.gate_id != "" and LockedDoor.is_locked(door.gate_id, room_key, node.name):
+		if door.gate_id != "" and RoomDoor.locked(door.gate_id, room_key, node.name, door.target_room):
 			_mark(KIND_LOCKED, pos, room, origin)
 		elif LocationDB.of_scene(door.target_room) != id:
 			_mark(KIND_EXIT, pos, room, origin)

@@ -20,6 +20,14 @@
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="music_track"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="x8_chest"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -38,8 +46,56 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+[sub_resource type="RectangleShape2D" id="Shape_WestWall"]
+size = Vector2(16, 448)
+
+[sub_resource type="RectangleShape2D" id="Shape_EastWall"]
+size = Vector2(16, 480)
+
 [node name="Laboratory" type="Node2D" unique_id=223979029]
 script = ExtResource("1_lab")
+
+[node name="Supports" type="Node2D" parent="."]
+
+[node name="Support1" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(608, 322)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(864, 258)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support3" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1216, 354)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support4" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(384, 802)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support5" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(992, 770)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support6" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1424, 802)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support7" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(976, 1250)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
+
+[node name="Support8" parent="Supports" instance=ExtResource("x6")]
+position = Vector2(1456, 1250)
+texture = ExtResource("x7")
+offset = Vector2(-55, 0)
 
 [node name="TileMap" type="Node2D" parent="." unique_id=1819634211]
 
@@ -301,6 +357,44 @@ speed_scale = 1.2
 
 [node name="RoomInstance" parent="." unique_id=891762722 instance=ExtResource("3_t6xmk")]
 
+[node name="CellsDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(64.25, 384)
+texture = ExtResource("x3")
+offset = Vector2(-36, -88)
+
+[node name="CellsDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(56, 309.75)
+target_room = "res://SampleProject/Maps/LabCells.tscn"
+arrival = NodePath("CorridorDoor")
+
+[node name="Interactable" parent="CellsDoor" index="1"]
+action_text = "Enter"
+
+[node name="WestWall" type="StaticBody2D" parent="."]
+position = Vector2(-8, 224)
+
+[node name="Collision" type="CollisionShape2D" parent="WestWall"]
+shape = SubResource("Shape_WestWall")
+
+[node name="BossDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(1672.25, 1344)
+texture = ExtResource("x3")
+offset = Vector2(-36, -88)
+
+[node name="BossDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(1664, 1269.75)
+target_room = "res://SampleProject/Maps/LabBoss.tscn"
+arrival = NodePath("CorridorDoor")
+
+[node name="Interactable" parent="BossDoor" index="1"]
+action_text = "Enter"
+
+[node name="EastWall" type="StaticBody2D" parent="."]
+position = Vector2(1736, 1200)
+
+[node name="Collision" type="CollisionShape2D" parent="EastWall"]
+shape = SubResource("Shape_EastWall")
+
 [node name="SavePoint_Entrance" type="Area2D" parent="." unique_id=1381269548]
 position = Vector2(200, 344)
 script = ExtResource("5_save")
@@ -403,6 +497,36 @@ position = Vector2(1600, 368)
 script = ExtResource("8_spawn_point")
 big_kind = "bandit_brute"
 spawn_id = "Fight_Upper_EnemySpawnPoint3"
+
+[node name="Fight_TowerGuard" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("7_spawner")
+enemy_level = 9
+auto_spawn_on_ready = false
+trigger_area = NodePath("Trigger")
+state_key = "enemies_towerguard"
+respawns = true
+
+[node name="Trigger" type="Area2D" parent="Fight_TowerGuard"]
+position = Vector2(1580, 688)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_TowerGuard/Trigger"]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="BigSlot_TowerShieldGuard_1" type="Node2D" parent="Fight_TowerGuard"]
+position = Vector2(1630, 848)
+script = ExtResource("8_spawn_point")
+enemy_type = "shield"
+size = "medium"
+big_kind = "tower_shield_guard"
+spawn_id = "Fight_TowerGuard_EnemySpawnPoint1"
+
+[node name="Chest_TowerGuard" parent="." instance=ExtResource("x8_chest")]
+position = Vector2(1668, 864)
+contents = Dictionary[String, int]({
+"hi_potion": 1,
+"silver_ingot": 2
+})
+guard = NodePath("../Fight_TowerGuard")
 
 [node name="Fight_Cursed" type="Node2D" parent="." unique_id=1640100500 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
@@ -849,8 +973,21 @@ region_rect = Rect2(0, 0, 576, 116)
 z_index = -1
 position = Vector2(1504, 384)
 script = ExtResource("11_uub52")
+art = "iron"
 
 [node name="Ladder2" type="Node2D" parent="." unique_id=318415434 instance=ExtResource("10_fg77m")]
 z_index = -1
 position = Vector2(224, 864)
 script = ExtResource("11_uub52")
+art = "iron"
+
+[node name="FrontDark" parent="." instance=ExtResource("x4")]
+
+[node name="Pillar1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(1500, 480)
+
+[node name="Pillar2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(100, 960)
+
+[node name="Pillar3" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(1300, 1440)

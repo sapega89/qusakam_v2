@@ -199,5 +199,7 @@ func _scorpion_walk(cs: Cutscene, to: Vector2, coming_in: bool) -> void:
 		scorpion.hide()
 
 
+## Захід зачинено на час бою: бар'єр і двері в місто (CityDoor) разом.
 func _set_barrier(on: bool) -> void:
 	$BarrierWest/Collision.set_deferred(&"disabled", not on)
+	($CityDoor as RoomDoor).interactable.enabled = not on

@@ -64,7 +64,8 @@ func _initialize() -> void:
 	await Kit.frames(self, 20)
 	var city: Node = game.map
 	var gate_shape: CollisionShape2D = city.get_node("MayorHallGate/Collision")
-	ck(not gate_shape.disabled, "the gate collides")
+	var hall_door: Area2D = city.get_node("MayorHallDoor")
+	ck(not gate_shape.disabled and not hall_door.interactable.enabled, "the east wall collides, the palace door is shut")
 	ck(city.get_node("GuardLeft").scene_file_path.ends_with("gate_guard.tscn") and city.get_node("GuardRight").scene_file_path.ends_with("gate_guard.tscn"),
 			"two gate guards at the door")
 	ck(game.get_objective() == "Swear an oath with the oath keepers" and game.objective_marker() == city.get_node("ObjectiveTargets/oath_keepers"),
@@ -88,7 +89,7 @@ func _initialize() -> void:
 	dm.bubble_time_scale = 0.0
 	ck(sl.get_skill_manager().swear_oath("paladin") == 0, "the paladin oath sworn")
 	await Kit.frames(self, 4)
-	ck(gate_shape.disabled, "the gate opens with the oath")
+	ck(hall_door.interactable.enabled and not gate_shape.disabled, "the oath opens the palace door (the east edge stays a wall)")
 	ck(game.get_objective() == "Find the laboratory", "objective after the oath (%s)" % game.get_objective())
 
 	print("[3] A save point: meditate, then the save screen; leaving it stands him up (D447)")

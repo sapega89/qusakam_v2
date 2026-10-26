@@ -176,6 +176,15 @@ func _hold_until(action: StringName, cond: Callable, max_s: float) -> void:
 	for i in 10: await physics_frame
 
 ## Лівий стік, доки [param cond].
+## Кімнати лабораторії з'єднані дверима (room_art_audit): стіком на схід до [param door], Y (interact) — у [param room].
+func _door_by_stick(door: NodePath, room: String) -> void:
+	var node: Node2D = game.map.get_node(door)
+	await _stick_until(1.0, func() -> bool: return game.player.global_position.x >= node.global_position.x - 8.0, 12.0)
+	await _pad_tap(JOY_BUTTON_Y)
+	await _until(func() -> bool: return _room() == room, 15.0)
+	for i in 10: await physics_frame
+
+
 func _stick_until(x: float, cond: Callable, max_s: float) -> void:
 	_stick(x)
 	await _until(cond, max_s)
@@ -359,8 +368,8 @@ func _initialize() -> void:
 	ck(sl.get_companion_manager().get_unlocked().size() == 3 and sl.get_companion_manager().get_party().is_empty() and game.get_quest_flag("task_malik_escort_taken"), "three assists available, none picked yet (D464), Malik's task taken")
 	for id in ["alisia", "astrit", "urizen"]:  # як гравець у Status
 		sl.get_companion_manager().toggle_party(id)
-	await _stick_until(1.0, func() -> bool: return _room() == LAB, 12.0)
-	ck(_room() == LAB, "stick east into the corridors (%s)" % _room())
+	await _door_by_stick(^"CorridorDoor", LAB)
+	ck(_room() == LAB, "stick east to the iron door, Y → the corridors (%s)" % _room())
 
 	print("[3] The corridors: the save prompt speaks pad; three fights; save at PreBoss with the pad; load")
 	_tough()
@@ -388,8 +397,8 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("lab_corridors_complete"), "lab_corridors_complete")
 	ck(await _go(400.0), "back to SavePoint_PreBoss")
 	await _save_at("SavePoint_PreBoss")
-	await _stick_until(1.0, func() -> bool: return _room() == BOSS, 15.0)
-	ck(_room() == BOSS, "stick east into the boss hall (%s)" % _room())
+	await _door_by_stick(^"BossDoor", BOSS)
+	ck(_room() == BOSS, "stick east to the iron door, Y → the boss hall (%s)" % _room())
 
 	print("[4] The mercenary: pad Y skips the talk; losing → the cloak → Game Over; pad A Resume → the last save")
 	started.clear()
@@ -422,7 +431,7 @@ func _initialize() -> void:
 	ck(not game.map.get_node(^"Fight_Lower").fight_in_progress(), "the lower fight is back after the meditation (D492)")
 	_tough()
 	ck(await _go(1600.0), "through the lower fight again (%s)" % game.player.global_position)
-	await _stick_until(1.0, func() -> bool: return _room() == BOSS, 15.0)
+	await _door_by_stick(^"BossDoor", BOSS)
 	await _stick_until(1.0, func() -> bool: return _state() != "WAIT", 8.0)
 	ck(_state() == "TALK", "the talk again — it was not in the save (%s)" % _state())
 	await _hold_skip(false, func() -> bool: return _state() == "FIGHT" and not game.player.event)

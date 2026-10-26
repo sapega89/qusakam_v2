@@ -3373,3 +3373,9 @@ msgstr "Коротко натисніть, коли падає удар із ж�
 
 msgid "Dash out of a red-glint blow."
 msgstr "Ривком ухиліться від удару з червоним відблиском."
+# D723 — ключ від табору бандитів (громило-одинак на дорозі)
+msgid "Bandit Camp Key"
+msgstr "Ключ від табору бандитів"
+
+msgid "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road."
+msgstr "Великий ключ-кільце на ремінці з пояса громила. Відмикає двері табору бандитів на дюні біля пустельної дороги."

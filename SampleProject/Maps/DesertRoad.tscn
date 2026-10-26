@@ -20,8 +20,6 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_shrine.png" id="shrine_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="item_pickup"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="chest"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_plane.tscn" id="front_plane"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Road/gen_front.png" id="front_tex"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="decor_dust"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/Ladder.tscn" id="ladder"]
@@ -30,7 +28,11 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="bars_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="b1_door"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="b1_tent"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Objects/ladder.png" id="b1_ladder"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
@@ -72,12 +74,6 @@ centered = false
 offset = Vector2(0, 80)
 region_enabled = true
 region_rect = Rect2(0, 80, 576, 244)
-
-[node name="Front" parent="." instance=ExtResource("front_plane")]
-
-[node name="Sprite" parent="Front" index="0"]
-position = Vector2(0, 52)
-texture = ExtResource("front_tex")
 
 [node name="TileMap" type="Node2D" parent="." unique_id=857881542]
 
@@ -282,6 +278,9 @@ auto_spawn_on_ready = false
 trigger_area = NodePath("Fight_LoneEliteTrigger")
 state_key = "enemies_loneelite"
 respawns = true
+reward = Dictionary[String, int]({
+"bandit_camp_key": 1
+})
 
 [node name="Fight_LoneEliteTrigger" type="Area2D" parent="Fight_LoneElite"]
 position = Vector2(4300, 240)
@@ -364,11 +363,10 @@ position = Vector2(2990, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
 
-[node name="BigSlot_HeavyArcher_4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
+[node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Mesa" unique_id=512310753]
 position = Vector2(3070, 304)
 script = ExtResource("8_spawn_point")
 enemy_type = "archer"
-big_kind = "heavy_archer"
 spawn_id = "Fight_Mesa_EnemySpawnPoint4"
 
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]
@@ -417,6 +415,29 @@ enemy_type = "tank"
 position = Vector2(3760, 220)
 script = ExtResource("8_spawn_point")
 enemy_type = "vulture"
+
+[node name="Fight_OldVulture" type="Node2D" parent="."]
+script = ExtResource("7_spawner")
+enemy_level = 4
+auto_spawn_on_ready = false
+state_key = "enemies_oldvulture"
+respawns = true
+
+[node name="BigSlot_OldVulture_1" type="Node2D" parent="Fight_OldVulture"]
+position = Vector2(4740, 200)
+script = ExtResource("8_spawn_point")
+enemy_type = "vulture"
+size = "medium"
+big_kind = "old_vulture"
+spawn_id = "Fight_OldVulture_EnemySpawnPoint1"
+
+[node name="Chest_OldVulture" parent="." instance=ExtResource("chest")]
+position = Vector2(4680, 384)
+contents = Dictionary[String, int]({
+"potion_lesser": 2,
+"mana_crystal": 2
+})
+guard = NodePath("../Fight_OldVulture")
 
 [node name="Ladder_Shop" parent="." instance=ExtResource("ladder")]
 position = Vector2(1464, 153)
@@ -494,27 +515,27 @@ scale = Vector2(0.6, 0.6)
 texture = ExtResource("b1_tent")
 offset = Vector2(0, -100)
 
+[node name="BanditCampDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(2044, 256)
+texture = ExtResource("x2")
+offset = Vector2(-75, -87)
+
 [node name="BanditCampDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(2050, 232)
+position = Vector2(2050, 206.5)
 target_room = "res://SampleProject/Maps/BanditCamp.tscn"
 arrival = NodePath("ExitDoor")
+gate_id = "camp_door"
 
 [node name="Interactable" parent="BanditCampDoor" index="1"]
 action_text = "Enter"
 
-[node name="MesaClimbLadder" type="Sprite2D" parent="."]
-z_index = -1
-texture_filter = 1
-texture_repeat = 2
-position = Vector2(2800, 324)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("b1_ladder")
-offset = Vector2(0, -64)
-region_enabled = true
-region_rect = Rect2(0, 0, 16, 128)
+[node name="MesaClimbDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(2806.75, 320)
+texture = ExtResource("x3")
+offset = Vector2(-55, -110)
 
 [node name="MesaClimbDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(2800, 296)
+position = Vector2(2800, 235.25)
 target_room = "res://SampleProject/Maps/MesaClimb.tscn"
 arrival = NodePath("ExitDoor")
 
@@ -530,11 +551,45 @@ texture = ExtResource("b1_tent")
 flip_h = true
 offset = Vector2(0, -100)
 
+[node name="CampShortcutDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(4814, 384)
+texture = ExtResource("x2")
+offset = Vector2(-75, -87)
+
 [node name="CampShortcutDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(4820, 356)
+position = Vector2(4820, 334.5)
 target_room = "res://SampleProject/Maps/BanditCamp.tscn"
 arrival = NodePath("ShortcutDoor")
 gate_id = "camp_shortcut"
 
 [node name="Interactable" parent="CampShortcutDoor" index="1"]
 action_text = "Enter"
+
+[node name="FrontDark" parent="." instance=ExtResource("x4")]
+
+[node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("decor_palm")]
+position = Vector2(600, 520)
+scale = Vector2(3, 3)
+
+[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(1120, 520)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("x5")
+offset = Vector2(-78, -114)
+
+[node name="OccluderPalm2" parent="FrontDark" instance=ExtResource("decor_palm")]
+position = Vector2(3450, 520)
+scale = Vector2(3, 3)
+flip_h = true
+
+[node name="OccluderRock2" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(4800, 520)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("x5")
+offset = Vector2(-78, -114)
+
+[node name="OccluderPalm3" parent="FrontDark" instance=ExtResource("decor_palm")]
+position = Vector2(6200, 520)
+scale = Vector2(3, 3)

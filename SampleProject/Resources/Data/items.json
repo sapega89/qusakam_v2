@@ -544,6 +544,18 @@
 			"max_stack": 1,
 			"sell_price": 0,
 			"buy_price": 0
+		},
+		{
+			"id": "bandit_camp_key",
+			"name": "Bandit Camp Key",
+			"description": "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
 		}
 	]
 }

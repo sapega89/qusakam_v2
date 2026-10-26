@@ -1,0 +1,3 @@
+// [DRAFT] D723 — the bandit camp's door from the road without the key (gates.json → camp_door).
+say|KUSAKAM|The camp door is locked, and I have no key. One of them carries it — that brute with the club guarding the road further on.
+exit|

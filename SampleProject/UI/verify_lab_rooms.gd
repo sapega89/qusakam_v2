@@ -1,13 +1,13 @@
 extends SceneTree
 
-## Лабораторія на кімнати (D303, черга 9.4): герой сам іде (справжнє натискання «праворуч») LabCells → коридори
-## (Laboratory, верхній поверх) → назад і знову → з нижнього поверху в LabBoss (джин уже переможений) → LaboratoryOutside. На кожному переході:
-## нова кімната, герой на її підлозі біля краю, на тій самій висоті, що й перед дверима.
+## Лабораторія на кімнати (D303, черга 9.4): LabCells → коридори (Laboratory, верхній поверх) → назад і знову →
+## з нижнього поверху в LabBoss (джин уже переможений) — дверима (справжнє E, room_art_audit: прохід крізь намальовану
+## стіну став парою залізних дверей); з LabBoss герой сам іде («праворуч») крізь ґрати в LaboratoryOutside.
+## На кожному переході: нова кімната, герой на її підлозі біля дверей, якими вийде назад, або біля краю.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_rooms.gd
 
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const CELLS := "res://SampleProject/Maps/LabCells.tscn"
-## Нижній поверх коридорів перед виходом у LabBoss (праворуч від тесту межі — він не спрацює).
-const BOTTOM_EXIT := Vector2(1560, 1340)
 
 var fails: Array[String] = []
 var game: Node
@@ -54,6 +54,23 @@ func _walk_into(action: StringName, room: String, label: String) -> void:
 	var edge: float = 0.0 if action == &"move_right" else game.map.get_node(^"RoomInstance").get_size().x
 	ck(absf(p.position.x - edge) < 260.0, "%s: just inside the edge (x %.0f, edge %.0f)" % [label, p.position.x, edge])
 
+## Герой біля дверей [param door], E; чекає кімнату [param room]: герой на підлозі біля дверей, що ведуть назад.
+func _door_into(door: String, room: String, label: String) -> void:
+	var before := _room()
+	var node: Area2D = game.map.get_node(door)
+	var arrival: NodePath = node.arrival
+	game.place_player(node.global_position)
+	for i in 30: await physics_frame
+	ck(node.interactable.player_nearby and node.interactable.enabled, "%s: %s offers Enter" % [label, door])
+	await Kit.key(self, KEY_E)
+	await _until(func() -> bool: return _room() == room, 20.0)
+	for i in 40: await physics_frame
+	var p: Node2D = game.player
+	ck(_room() == room, "%s: %s → %s (%s)" % [label, before, room, _room()])
+	ck(p.is_on_floor(), "%s: the hero stands on the floor (%s)" % [label, p.global_position])
+	var back: Node2D = game.map.get_node(arrival)
+	ck(absf(p.global_position.x - back.global_position.x) < 48.0, "%s: in front of %s, the door back (x %.0f)" % [label, back.name, p.global_position.x])
+
 func _initialize() -> void:
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
@@ -81,19 +98,17 @@ func _initialize() -> void:
 		ck(game.map.has_node(n), "LabCells has %s" % n)
 
 	print("[2] East out of the cells into the corridors' top storey, and back")
-	await _walk_into(&"move_right", "Laboratory", "cells → corridors")
-	await _walk_into(&"move_left", "LabCells", "corridors → cells")
-	await _walk_into(&"move_right", "Laboratory", "cells → corridors again")
+	await _door_into("CorridorDoor", "Laboratory", "cells → corridors")
+	await _door_into("CellsDoor", "LabCells", "corridors → cells")
+	await _door_into("CorridorDoor", "Laboratory", "cells → corridors again")
 	await _drain(dm)
 
 	print("[3] From the corridors' bottom storey east into the boss hall (the mercenary already beaten — the gates are up)")
 	# Бій і замкнена зала — verify_lab_boss.gd (9.7); тут лише двері.
 	for flag in ["lab_boss_talk_complete", "lab_boss_fight_complete", "lab_after_boss_complete"]:
 		game.set_quest_flag(flag, true)
-	game.player.global_position = BOTTOM_EXIT
-	for i in 30: await physics_frame
 	await _drain(dm)
-	await _walk_into(&"move_right", "LabBoss", "corridors → boss hall")
+	await _door_into("BossDoor", "LabBoss", "corridors → boss hall")
 	ck(game.map.has_node("Gates"), "the boss hall has its gates")
 
 	print("[4] Through the boss hall out into the open")

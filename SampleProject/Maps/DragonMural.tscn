@@ -7,6 +7,12 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r5"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="r6"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
 
 [node name="DragonMural" type="Node2D"]
 
@@ -28,10 +34,15 @@ tile_map_data = PackedByteArray("AAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 376)
+position = Vector2(120, 362)
+
+[node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(129, 416)
+texture = ExtResource("x2")
+offset = Vector2(-55, -100)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(96, 376)
+position = Vector2(120, 362)
 target_room = "res://SampleProject/Maps/Canyon.tscn"
 arrival = NodePath("DragonMuralDoor")
 
@@ -53,3 +64,24 @@ process_mode = 3
 stream = ExtResource("r6")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x3")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(60, 0)
+
+[node name="Roots2" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(420, 0)
+flip_h = true
+
+[node name="Roots3" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(780, 0)
+
+[node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(250, 530)
+
+[node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(620, 530)
+flip_h = true
+
+[node name="TopShade" parent="." instance=ExtResource("x6")]

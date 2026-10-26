@@ -14,6 +14,11 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Bosses/lab_boss.tscn" id="13_boss"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/crystal.tscn" id="decor_crystal"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/lamp.tscn" id="decor_lamp"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x5"]
 
 [sub_resource type="RectangleShape2D" id="Shape_gates"]
 size = Vector2(32, 320)
@@ -35,8 +40,23 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
+[sub_resource type="RectangleShape2D" id="Shape_WestWall"]
+size = Vector2(16, 448)
+
 [node name="LabBoss" type="Node2D" unique_id=1056084547]
 script = ExtResource("12_labboss")
+
+[node name="Supports" type="Node2D" parent="."]
+
+[node name="Support1" parent="Supports" instance=ExtResource("x4")]
+position = Vector2(448, 290)
+texture = ExtResource("x5")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Supports" instance=ExtResource("x4")]
+position = Vector2(1288, 290)
+texture = ExtResource("x5")
+offset = Vector2(-55, 0)
 
 [node name="TileMap" type="Node2D" parent="." unique_id=314302720]
 
@@ -157,6 +177,25 @@ position = Vector2(400, 224)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TalkTrigger" unique_id=1892093044]
 shape = SubResource("Shape_talk")
+
+[node name="CorridorDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(72.25, 384)
+texture = ExtResource("x3")
+offset = Vector2(-36, -88)
+
+[node name="CorridorDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(64, 309.75)
+target_room = "res://SampleProject/Maps/Laboratory.tscn"
+arrival = NodePath("BossDoor")
+
+[node name="Interactable" parent="CorridorDoor" index="1"]
+action_text = "Enter"
+
+[node name="WestWall" type="StaticBody2D" parent="."]
+position = Vector2(-8, 224)
+
+[node name="Collision" type="CollisionShape2D" parent="WestWall"]
+shape = SubResource("Shape_WestWall")
 
 [node name="ArenaWall" type="StaticBody2D" parent="." unique_id=1892093045]
 position = Vector2(-8, 224)

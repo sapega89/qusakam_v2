@@ -13,6 +13,7 @@ extends SceneTree
 ## Пише лише в user://verify_laboratory/ (set_save_dir) — справжні сейви не чіпає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_laboratory.gd
 
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const CELLS := "res://SampleProject/Maps/LabCells.tscn"
 const LAB := "res://SampleProject/Maps/Laboratory.tscn"
 const TEST_DIR := "user://verify_laboratory/"
@@ -104,6 +105,24 @@ func _fight_frame() -> void:
 				enemy.die()
 
 ## Герой іде (справжній ввід) до x [param target]; стіна — стрибок. Бої по дорозі добиваються (_fight_frame).
+## Справжнім «праворуч» до дверей [param door] (кімнати лабораторії з'єднані дверима, room_art_audit), E — у [param room].
+func _through_door(door: NodePath, room: String) -> void:
+	var node: Area2D = game.map.get_node(door)
+	Input.action_press(&"move_right")
+	for i in 900:
+		await physics_frame
+		if game.player.global_position.x >= node.global_position.x - 8.0:
+			break
+	Input.action_release(&"move_right")
+	for i in 20: await physics_frame
+	await Kit.key(self, KEY_E)
+	for i in 300:
+		await physics_frame
+		if _room() == room:
+			break
+	for i in 20: await physics_frame
+
+
 func _go(target: float, max_frames := 900) -> bool:
 	var jump_left := 0
 	for i in max_frames:
@@ -246,14 +265,8 @@ func _initialize() -> void:
 	for i in 30: await physics_frame
 	await _drain(dm)
 	ck(_room() == "LabCells", "start in the cells (%s)" % _room())
-	Input.action_press(&"move_right")
-	for i in 600:
-		await physics_frame
-		if _room() == "Laboratory":
-			break
-	Input.action_release(&"move_right")
-	for i in 20: await physics_frame
-	ck(_room() == "Laboratory" and game.player.global_position.y < 400.0, "walked east into the corridors' top storey (%s, %s)" % [_room(), game.player.global_position])
+	await _through_door(^"CorridorDoor", "Laboratory")
+	ck(_room() == "Laboratory" and game.player.global_position.y < 400.0, "walked east and through the iron door into the corridors' top storey (%s, %s)" % [_room(), game.player.global_position])
 	for fight: String in FIGHTS:
 		ck(_alive(game.map.get_node(fight)).is_empty(), "%s: no enemy before the hero comes" % fight)
 	assists.clear()
@@ -278,13 +291,8 @@ func _initialize() -> void:
 	ck(game.get_quest_flag("lab_corridors_complete"), "all three fights won → lab_corridors_complete")
 	ck(game.get_objective() == "Go deeper into the laboratory", "objective (%s)" % game.get_objective())
 	ck(game.player.is_alive(), "the hero lived through the corridors")
-	Input.action_press(&"move_right")
-	for i in 300:
-		await physics_frame
-		if _room() == "LabBoss":
-			break
-	Input.action_release(&"move_right")
-	ck(_room() == "LabBoss", "walked east out of the bottom storey into LabBoss (%s)" % _room())
+	await _through_door(^"BossDoor", "LabBoss")
+	ck(_room() == "LabBoss", "walked east to the iron door and through it into LabBoss (%s)" % _room())
 	for i in 20: await physics_frame
 
 	print("[3] Load the save made before the bottom fight: the two won fights stay won, the third waits")

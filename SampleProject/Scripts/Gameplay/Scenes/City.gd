@@ -1,16 +1,17 @@
 extends Node2D
 
-## 🏙️ Місто (D488): двері до зали мера (MayorHallGate на східному краї) зачинені, доки герой не дав клятву
+## 🏙️ Місто (D488): двері до зали мера (MayorHallDoor — двері палацу між вартовими) зачинені, доки герой не дав клятву
 ## (player_state.oath, D280; хранителі клятв у місті — з 5-го рівня). Біля дверей двоє вартових у вигляді
 ## вартових воріт (D449); підійшов без клятви — правий каже в облачку, що до мера пускають лише присяглих,
-## а ціль веде до хранителів клятв. Ґанок зі сходами й брамою (ComfyUI, стиль тла міста) — пізніше.
+## а ціль веде до хранителів клятв. Між містом і залою — двері, а не край кімнати (room_art_audit): MayorHallGate на
+## східному краї — стіна, що лишається завжди.
 
 const GUARD_LINE := "res://dialogue_quest/City_MayorHall_Guard.dqd"
 const OATH_OBJECTIVE := "Swear an oath with the oath keepers"
 ## Ціль після клятви — та сама, що місто дає з воріт (CityGates.gd).
 const AFTER_OATH_OBJECTIVE := "Find the laboratory"
 
-@onready var gate: StaticBody2D = $MayorHallGate
+@onready var door: RoomDoor = $MayorHallDoor
 @onready var guard: Node2D = $GuardRight
 
 
@@ -27,7 +28,7 @@ func is_gate_open() -> bool:
 
 
 func _update_gate() -> void:
-	($MayorHallGate/Collision as CollisionShape2D).set_deferred(&"disabled", is_gate_open())
+	door.interactable.enabled = is_gate_open()
 
 
 func _on_oath_sworn(_oath_id: String) -> void:

@@ -11,6 +11,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r9"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="r10"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -141,3 +145,38 @@ process_mode = 3
 stream = ExtResource("r10")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x1")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(120, 0)
+
+[node name="Roots2" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(520, 0)
+flip_h = true
+
+[node name="Roots3" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(980, 0)
+
+[node name="Roots4" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(1420, 0)
+flip_h = true
+
+[node name="Roots5" parent="FrontDark" instance=ExtResource("x2")]
+position = Vector2(1850, 0)
+
+[node name="Scrub1" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(300, 530)
+
+[node name="Scrub2" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(760, 530)
+flip_h = true
+
+[node name="Scrub3" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(1250, 530)
+
+[node name="Scrub4" parent="FrontDark" instance=ExtResource("x3")]
+position = Vector2(1700, 530)
+flip_h = true
+
+[node name="TopShade" parent="." instance=ExtResource("x4")]

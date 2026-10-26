@@ -9,6 +9,14 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r7"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r8"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/ledge_rock/ledge_rock_sheet.png" id="x8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -63,10 +71,15 @@ tile_map_data = PackedByteArray("AAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 856)
+position = Vector2(120, 811.25)
+
+[node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(126.75, 896)
+texture = ExtResource("x2")
+offset = Vector2(-55, -110)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(96, 856)
+position = Vector2(120, 811.25)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("MesaClimbDoor")
 
@@ -283,3 +296,80 @@ process_mode = 3
 stream = ExtResource("r8")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("x3")]
+
+[node name="Roots1" parent="FrontDark" instance=ExtResource("x4")]
+position = Vector2(90, 0)
+
+[node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(200, 1010)
+
+[node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(520, 1010)
+flip_h = true
+
+[node name="Scrub3" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(800, 1010)
+
+[node name="TopShade" parent="." instance=ExtResource("x6")]
+
+[node name="Support" parent="Ledges/Ledge1" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge2" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge3" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge4" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge5" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge6" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge7" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge8" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge9" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(-150, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support2" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(0, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)
+
+[node name="Support3" parent="Ledges/Ledge_Top" instance=ExtResource("x7")]
+position = Vector2(150, 4)
+texture = ExtResource("x8")
+offset = Vector2(-55, 0)

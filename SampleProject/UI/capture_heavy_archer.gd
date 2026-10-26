@@ -1,8 +1,8 @@
 extends SceneTree
 
-## Знімок великого лучника (D652, D692) у його першому місці: DesertRoad Fight_Mesa, друга хвиля — щитоносець попереду,
-## великий лучник (BigSlot_HeavyArcher_4) позаду. Панелі: стоять поруч із героєм; натяг (кадр 8) з жовтим відблиском на
-## наконечнику; стріла летить униз у героя; ×3 на натягнутий лук. Усе в одному design/shots/big_archer/mesa.png.
+## Знімок великого лучника (D652, D692) у його першому місці (D719): BanditCamp Fight_Camp, друга хвиля — щитоносець
+## попереду, великий лучник (BigSlot_HeavyArcher_4) позаду. Панелі: стоять поруч із героєм; натяг (кадр 8) з жовтим відблиском на
+## наконечнику; стріла летить униз у героя; ×3 на натягнутий лук. Усе в одному design/shots/big_archer/camp.png.
 ## Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_heavy_archer.gd
 
@@ -36,6 +36,8 @@ func _initialize() -> void:
 		dm.current_dialogue_player.accept()
 		await process_frame
 	await create_timer(1.0).timeout
+	await game.teleport_to_room("res://SampleProject/Maps/BanditCamp.tscn", ^"Arrival")
+	await create_timer(0.6).timeout
 	hero = game.player
 	hero.Max_Health = 9999
 	hero.current_health = 9999
@@ -47,16 +49,16 @@ func _initialize() -> void:
 			arrows.append(n))
 	await create_timer(0.6).timeout
 
-	# Друга хвиля Mesa в її справжніх точках
-	var mesa: Node = game.map.get_node(^"Fight_Mesa")
-	mesa.trigger_area.set_deferred(&"monitoring", false)  # лише ця хвиля, без решти бою
+	# Друга хвиля табору в її справжніх точках
+	var camp: Node = game.map.get_node(^"Fight_Camp")
+	camp.trigger_area.set_deferred(&"monitoring", false)  # лише ця хвиля, без решти бою
 	await physics_frame
-	var bearer: Node = mesa.get_node(^"EnemySpawnPoint3").spawn_enemy()
-	var heavy: Node = mesa.get_node(^"BigSlot_HeavyArcher_4").spawn_enemy()
+	var bearer: Node = camp.get_node(^"EnemySpawnPoint3").spawn_enemy()
+	var heavy: Node = camp.get_node(^"BigSlot_HeavyArcher_4").spawn_enemy()
 	await process_frame
 	heavy.enemy_logic.attack_ready_in = 1.0e9  # перший постріл — коли все стоїть на місцях
 	for i in 30: await physics_frame
-	hero.global_position = Vector2(heavy.global_position.x - 220.0, heavy.global_position.y - 30.0)  # на столовій горі
+	hero.global_position = Vector2(heavy.global_position.x - 220.0, heavy.global_position.y - 30.0)
 	for i in 60: await physics_frame
 	bearer.set_physics_process(false)
 	bearer.enemy_logic.last_direction = -1
@@ -84,7 +86,7 @@ func _initialize() -> void:
 	var sheet := Image.create(PANEL.x, PANEL.y * panels.size(), false, Image.FORMAT_RGBA8)
 	for i in panels.size():
 		sheet.blit_rect(panels[i], Rect2i(Vector2i.ZERO, PANEL), Vector2i(0, i * PANEL.y))
-	var out := ProjectSettings.globalize_path("res://design/shots/big_archer/mesa.png")
+	var out := ProjectSettings.globalize_path("res://design/shots/big_archer/camp.png")
 	DirAccess.make_dir_recursive_absolute(out.get_base_dir())
 	sheet.save_png(out)
 	print("saved ", out)
