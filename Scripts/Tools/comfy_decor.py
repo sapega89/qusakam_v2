@@ -101,39 +101,44 @@ DECOR = {
         "stone step at its foot on the bottom edge of the image, the doorway stands alone with wide empty space on both "
         f"sides and above, {LIGHT}, {cb.MAGENTA}",
     ),
+    # Прохід — щонайменше 56 px заввишки (герой 47 px у тому ж масштабі 1.5): розмір задає висота, не ширина.
     "cave_mouth": dict(
-        seed=212, size=(640, 768), key="magenta", colors=12, kind="static", crop=(0, 0.2), canvas=(68, 84), box=(0, 0, 68, 84),
-        prompt="one single rounded outcrop of rough terracotta red sandstone with a tall irregular arched cave "
-        "entrance in its middle, deep darkness inside the entrance, a few small rocks at its foot, the outcrop stands "
-        f"on the bottom edge of the image alone with wide empty space on both sides and above, {LIGHT}, {cb.MAGENTA}",
+        seed=232, size=(768, 768), key="green", colors=12, kind="static", crop=(0, 0.05), canvas=(110, 100),
+        box=(0, 0, 110, 100),
+        prompt="one single face of a red sandstone cliff with a large dark cave entrance in it, the entrance is a tall "
+        "rough arch that reaches two thirds of the way up the rock, deep darkness inside, the rock face stands on the "
+        f"bottom edge of the image alone with wide empty space on both sides and above, {LIGHT}, {cb.CHROMA}",
     ),
     "palisade_gate": dict(
-        seed=213, size=(768, 768), key="green", colors=12, kind="static", crop=(0, 0.18), canvas=(92, 100), box=(0, 0, 92, 100),
+        seed=213, size=(1024, 768), key="green", colors=12, kind="static", crop=(0, 0.1), canvas=(150, 100),
+        box=(0, 0, 150, 100),
         prompt="one single wooden palisade gate of a desert bandit camp: tall rough sharpened log posts lashed with "
-        "rope, a gate of lashed logs standing half open showing a dark gap between them, a torn red cloth tied to "
-        f"one post, the gate and its two posts stand on the bottom edge of the image alone with wide empty space on both "
-        f"sides and above, {LIGHT}, {cb.CHROMA}",
+        "rope, a gate of lashed logs standing half open, the dark gap of the open gate as tall as the posts, a torn "
+        "red cloth tied to one post, a short stretch of palisade on both sides, standing on the bottom edge of the "
+        f"image alone with wide empty space above, {LIGHT}, {cb.CHROMA}",
     ),
     "mesa_cleft": dict(
-        seed=224, size=(768, 768), key="magenta", colors=12, kind="static", crop=(0, 0.1), canvas=(76, 100), box=(0, 0, 76, 100),
-        prompt="one single wide block of red sandstone cliff with a tall narrow dark passage cut through its middle "
-        "from the ground up, rough stone steps rise inside the passage into the darkness, rock on both sides of the "
-        "passage, the block stands on the bottom edge of the image alone with wide empty space on both sides and above, "
-        f"{LIGHT}, {cb.MAGENTA}",
+        seed=234, size=(768, 768), key="green", colors=12, kind="static", crop=(0, 0.05), canvas=(110, 110),
+        box=(0, 0, 110, 110),
+        prompt="one single block of red and orange sandstone cliff with a tall narrow passage cut through it from "
+        "the ground, rough stone steps rise inside the passage into shadow, the rock is the same warm red sandstone on "
+        "both sides of the passage and above it, the block stands on the bottom edge of the image alone with wide empty "
+        f"space on both sides and above, {LIGHT}, {cb.CHROMA}",
     ),
     "palace_door": dict(
-        seed=225, size=(640, 768), key="magenta", colors=14, kind="static", crop=(0, 0.06),
-        canvas=(88, 110), box=(0, 0, 88, 110),
+        seed=235, size=(640, 768), key="magenta", colors=14, kind="static", crop=(0, 0.04), canvas=(100, 120),
+        box=(0, 0, 100, 120),
         prompt="one single heavy closed double door of dark brown wood with rows of brass studs, filling a grand "
         "pointed arch of pale sandstone with a carved frame and a band of blue tiles, two stone steps in front, the "
-        "doorway stands on the bottom edge of the image alone with wide empty space on both sides and above, "
+        "doorway stands on the bottom edge of the image alone, nothing behind it, flat empty background all around, "
         f"{LIGHT}, {cb.MAGENTA}",
     ),
     "lab_door": dict(
-        seed=216, size=(512, 768), key="magenta", colors=12, kind="static", canvas=(60, 86), box=(0, 0, 60, 86),
-        prompt="one single heavy riveted iron door in an archway of dark grey stone bricks, copper pipes running "
-        "along the arch, a small round glowing green window in the door, the arch stands on the bottom edge of the "
-        f"image alone with wide empty space on both sides and above, {LIGHT}, {cb.MAGENTA}",
+        seed=236, size=(512, 768), key="magenta", colors=12, kind="static", canvas=(72, 100), box=(0, 0, 72, 100),
+        prompt="one single arched doorway made of dark grey stone blocks with a heavy riveted iron door inside the "
+        "arch, a small round glowing green window in the door, a copper pipe running along the outside of the arch, "
+        "the doorway stands on the bottom edge of the image alone, nothing behind it, flat empty background all "
+        f"around, {LIGHT}, {cb.MAGENTA}",
     ),
 }
 FRAMES = 4  # sway: 0, +amp, 0, -amp (синус); flicker — 3
