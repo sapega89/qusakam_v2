@@ -11,9 +11,9 @@ tags: [cloud, combat, movement, dash]
 - **Not done: no test was run.** The sandbox refused to execute the downloaded Godot 4.6.2 binary (ROUTINE_RULES setup 2),
   so `verify_dash`, the touched verifies and the full suite are **unrun**. Run before merging:
   `Scripts/Tools/run_verify.sh dash`, `souls_combat`, `combat_flow`, `combat_player`, then the full suite.
-- **D-ID (next free, D713):** *D713 — A dash keeps the state it started in: started in the air it flies level (D264); started
+- **D-ID (D713):** *D713 — A dash keeps the state it started in: started in the air it flies level (D264); started
   on the floor, it falls under normal gravity once it leaves the floor, at full dash speed. Sapega 2026-10-24 playtest:
-  «коли я роблю деш на ступеньці, то я парю в повітрі».* B row (next free, B149): "Ground dash off a ledge/step hovers
+  «коли я роблю деш на ступеньці, то я парю в повітрі».* B row (B150; the report said B149, taken by the menu deadlock): "Ground dash off a ledge/step hovers
   level instead of falling" — fixed here.
 - **Full suite:** not run (see above).
 

@@ -153,6 +153,8 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
+> **Fixed 2026-10-26 (integrator-14):** **B150** (`cloud/dash-fix`, D713; the branch called it B149): a ground dash off a ledge or a step hovered level instead of falling. `PlayerMover.air_dash`: only a dash started in the air stays level. `verify_dash`.
+
 ### B149 — opening the game menu while rooms preload in the background can deadlock
 - **Where:** `RoomPreloader.gd` (`load_threaded_request` of the current room's neighbours) against a main-thread `load()` when `UIManager.open_game_menu()` builds the skills window
 - **Expected:** the menu opens whatever the preloader is doing
