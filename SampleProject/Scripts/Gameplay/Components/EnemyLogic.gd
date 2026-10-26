@@ -107,6 +107,8 @@ const BACK_OFF_SLACK := 0.4
 ## бою приходить разом, а не по одному, поки герой добиває переднього.
 const RUN_PACE := 1.8
 const RUN_FROM := 2.5
+## На удар (з engage_range на attack_range) ворог заходить у STEP_IN_PACE раз швидше за крок.
+const STEP_IN_PACE := 1.4
 ## Темп ходи зараз: 1 — крок, RUN_PACE — біг (EnemyView пришвидшує анімацію walk так само).
 var pace: float = 1.0
 var _shuffle_t: float = 0.0
@@ -292,12 +294,14 @@ func handle_attack_state(delta: float):
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
 	if (attack_ready_in <= 0.0 or _hero_opened(adx)) and token_free():
+		pace = 1.0 if adx <= attack_range else STEP_IN_PACE  # D713: заходить бити швидше — не бреде під клинком героя
 		if adx <= attack_range:
 			attack_ready_in = enemy.attack_cooldown
 			perform_attack()
 		else:
-			_step(toward, speed)
+			_step(toward, speed * pace)
 		return
+	pace = 1.0
 	_hold_spacing(dx, delta)
 
 ## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно).
