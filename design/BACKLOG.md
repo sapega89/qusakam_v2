@@ -572,3 +572,5 @@ D48: keep the third-party maaacks Controls widget or own the rebinding UI.
 - **Finished work** → [[runtime_ui_completion_plan]] slices 0–8. Skills, shop,
   blacksmith, save/load, main menu, game over and the combat HUD are **built** —
   do not re-plan them.
+
+- **The oath chooses the hero** (D725, 2026-10-26) — [[oath_affinity_plan]]; routine `oath-affinity`.
