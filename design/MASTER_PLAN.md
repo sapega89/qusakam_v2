@@ -38,7 +38,7 @@ tags: [plan, orchestrator, status]
 | R13.10 | `cloud/big-guard` — вартовий з баштовим щитом | ☁ | ✅ злито |
 | R13.11 | `cloud/jackal-pack` — звичайні шакали в стилі вожака | ☁ | ✅ злито |
 | R13.12 | `integrator-13` + `integrator-13b` (після ліміту 24.10) — злиття всього + B147 | ☁ | ✅ набір 116/119, 3 тести виправлено, заведено B149 |
-| R13.13 | Збірка Windows → Sapega | 🖥 | 🔄 збирається |
+| R13.13 | Збірка Windows → Sapega | 🖥 | ✅ `build/windows/Qusakam.exe` 26.10 21:36 (без world-map, dash-fix, hard-fights) |
 | R13.14 | Плейтест збірки: нові моби, бічні кімнати, B145 (новий лог) | 👤 | ⏳ R13.13 |
 
 ## 1. Карта як у Tails of Iron (D458, D487, D565) — головне
