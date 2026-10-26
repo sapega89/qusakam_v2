@@ -9,6 +9,7 @@ extends SceneTree
 ## (B53) починає з потрібного біту. Двері на схід ведуть у коридори (move_right).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_cells.gd
 
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const CELLS := "res://SampleProject/Maps/LabCells.tscn"
 const CORRIDORS := "res://SampleProject/Maps/Laboratory.tscn"
 const TEST_DIR := "user://verify_lab_cells/"
@@ -333,10 +334,15 @@ func _initialize() -> void:
 	_free_ok(_snap(), "loaded after the acquaintance")
 	ck(started.is_empty(), "no talk replays (%s)" % [started])
 
-	print("[7] The hero walks out east into the corridors (real move_right)")
+	print("[7] The hero walks east to the iron door and goes into the corridors (real move_right, E)")
+	var corridor_door: RoomDoor = game.map.get_node(^"CorridorDoor")
 	_press(&"move_right")
-	await _until(func() -> bool: return game.map != null and game.map.scene_file_path == CORRIDORS, 20.0)
+	await _until(func() -> bool: return game.player.global_position.x >= corridor_door.global_position.x - 8.0, 20.0)
 	_press(&"move_right", false)
+	for i in 20: await physics_frame
+	ck(corridor_door.interactable.enabled and corridor_door.interactable.player_nearby, "the door to the corridors offers Enter")
+	await Kit.key(self, KEY_E)
+	await _until(func() -> bool: return game.map != null and game.map.scene_file_path == CORRIDORS, 20.0)
 	ck(game.map != null and game.map.scene_file_path == CORRIDORS, "in the corridors (%s)" % (game.map.scene_file_path if game.map else "null"))
 
 	game.queue_free()
