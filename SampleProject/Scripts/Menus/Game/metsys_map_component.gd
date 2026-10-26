@@ -159,11 +159,11 @@ func _update_world() -> void:
 		title.text = LocationDB.title(id)
 		title.theme_type_variation = &"MapPinNameLocked" if state == PIN_LOCKED else &"MapPinName"
 		(pin.get_node(^"Row/Text/State") as Label).text = tr(PIN_TEXT[state])
-	var id: String = location_ids[selected]
-	var data: LocationMap = maps[id]
-	%CardName.text = LocationDB.title(id)
+	var chosen: String = location_ids[selected]
+	var data: LocationMap = maps[chosen]
+	%CardName.text = LocationDB.title(chosen)
 	%CardStats.text = tr("Explored %d%% · Chests %d/%d") % [data.explored_percent(), data.chests_opened, data.chests_total]
-	%CardHint.visible = pin_state(id) != PIN_LOCKED
+	%CardHint.visible = pin_state(chosen) != PIN_LOCKED
 
 
 ## Рівень 2 відкривається лише для локації, де герой бував.
