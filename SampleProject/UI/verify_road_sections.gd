@@ -100,6 +100,8 @@ func _initialize() -> void:
 	var road: Node = game.map
 	var player: CharacterBody2D = game.player
 
+	# Секції тут — лише хто й коли зʼявляється; бої тепер важкі (D713), і герой першого рівня серед груп не мусить вижити
+	player.min_health = 1
 	print("[1] Section fights wait for the hero")
 	ck(_alive(road.get_node("EnemySpawner")).is_empty(), "the story fight stays done (no enemy at the start)")
 	for fight: String in FIGHTS:

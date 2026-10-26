@@ -138,6 +138,7 @@ func _initialize() -> void:
 	# Тест брам, не бою: у каравані тепер еліта (броньований скорпіон, D652), і за 4 с серед п'ятьох ворогів герой падав
 	game.player.Max_Health = 99999
 	game.player.current_health = game.player.Max_Health
+	game.player.min_health = 1  # D713: бої важчі; Max_Health скидає refresh_max_health, а min_health — ні
 	for round in 2:
 		game.player.global_position = Vector2(caravan.trigger_area.global_position.x, 200.0)
 		await create_timer(4.0).timeout
