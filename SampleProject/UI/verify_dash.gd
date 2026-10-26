@@ -114,15 +114,17 @@ func _initialize() -> void:
 		if mover.is_rolling() and absf(hero.velocity.x - mover.roll_distance / mover.roll_duration) > 0.5:
 			vx_ok = false
 		if not hero.is_on_floor():
-			left_floor = true
-			if y <= prev_y:
+			# Кадр, у якому move_and_slide ще стоїть на краю, висоти не втрачає (як і крок із виступу без ривка);
+			# з наступного кадру — падіння.
+			if left_floor and y <= prev_y:
 				falling_ok = false
+			left_floor = true
 		elif left_floor:
 			landed_rolling = mover.is_rolling()
 			break
 		prev_y = y
 	ck(left_floor, "the dash leaves the step")
-	ck(falling_ok, "loses height every frame in the air")
+	ck(falling_ok, "loses height every frame in the air after the edge frame")
 	ck(vx_ok, "keeps the dash's horizontal speed while falling")
 	ck(landed_rolling and absf(hero.global_position.y - (floor_y - FEET)) < 1.5,
 			"lands on the lower platform before the dash ends (y %.1f, still dashing %s)" % [hero.global_position.y, landed_rolling])
