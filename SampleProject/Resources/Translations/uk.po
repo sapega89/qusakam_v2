@@ -903,8 +903,8 @@ msgstr "Режим екрана, розмір вікна, обмеження ч�
 msgid "Adjust volume levels."
 msgstr "Налаштуйте гучність."
 
-msgid "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
-msgstr "Мова інтерфейсу, швидкість тексту діалогів, чи відкривають підказки вікна навчання, чи труситься камера, чи видно цифри урону і чи зберігається гра при кожному переході між кімнатами."
+msgid "Choose the interface language, how fast dialogue text runs, whether tips («?») show, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
+msgstr "Мова інтерфейсу, швидкість тексту діалогів, чи показуються підказки («?»), чи труситься камера, чи видно цифри урону і чи зберігається гра при кожному переході між кімнатами."
 
 msgid "Select an action to rebind it."
 msgstr "Оберіть дію, щоб перепризначити її."

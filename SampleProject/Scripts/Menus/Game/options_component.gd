@@ -35,7 +35,7 @@ const TABS := [
 const TAB_HINTS := {
 	"display": "Set the display mode, window size, frame rate limit, screen brightness and graphics quality.",
 	"audio": "Adjust volume levels.",
-	"game": "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change.",
+	"game": "Choose the interface language, how fast dialogue text runs, whether tips («?») show, whether the camera shakes, whether damage numbers show and whether the game saves on every room change.",
 	"controls": "Select an action to rebind it.",
 }
 

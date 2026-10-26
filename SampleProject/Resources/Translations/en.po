@@ -903,8 +903,8 @@ msgstr "Set the display mode, window size, frame rate limit, screen brightness a
 msgid "Adjust volume levels."
 msgstr "Adjust volume levels."
 
-msgid "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
-msgstr "Choose the interface language, how fast dialogue text runs, whether hints open tutorial windows, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
+msgid "Choose the interface language, how fast dialogue text runs, whether tips («?») show, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
+msgstr "Choose the interface language, how fast dialogue text runs, whether tips («?») show, whether the camera shakes, whether damage numbers show and whether the game saves on every room change."
 
 msgid "Select an action to rebind it."
 msgstr "Select an action to rebind it."
