@@ -42,6 +42,12 @@
 			"met_in": "village"
 		},
 		{
+			"id": "GATE_SCRIBE",
+			"title": "City Gates scribe",
+			"text": "Writes newcomers into the city book at the gates: name, where from, whom they serve. He looks every stranger in the eye for the blue of the sky's curse.",
+			"met_in": "city_gates"
+		},
+		{
 			"id": "GATE_GUARD",
 			"title": "City Gates guard",
 			"text": "Keeps the gates of the City. He fought at Kusakam's side when bandits raided the gates.",
@@ -61,20 +67,20 @@
 		},
 		{
 			"id": "OATH_PRIEST",
-			"title": "Priest of the Sky — oath of the Paladin",
-			"text": "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins.",
+			"title": "Priestess of Samal — the Paladin's path",
+			"text": "Priestess of Samal in the City. She tells of the Paladin's path: stand between the weak and the blow.",
 			"met_in": "city"
 		},
 		{
 			"id": "OATH_WITCH",
-			"title": "Witch — oath of the Dark Knight",
-			"text": "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins.",
+			"title": "Priest of contracts — the Dark Knight's path",
+			"text": "A priest in the City, in black and gold for all the contracts he has signed. He tells of the Dark Knight's path.",
 			"met_in": "city"
 		},
 		{
 			"id": "OATH_DERVISH",
-			"title": "Sand dervish — oath of the Warden of Balance",
-			"text": "Keeper of the Warden's oath in the City. He can also unlearn skills for coins.",
+			"title": "Sand dervish — the Warden of Balance's path, no god",
+			"text": "A sand dervish in the City who serves no god. He tells of the Warden of Balance's path.",
 			"met_in": "city"
 		},
 		{

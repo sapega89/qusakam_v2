@@ -173,8 +173,12 @@ func set_choice_menu(value: DQChoiceMenu) -> void:
 func get_choice_menu() -> DQChoiceMenu:
 	return choice_menu
 
+## Kusakam, D727: поки видно відповіді, «далі» — це вибір відповіді у фокусі (як Enter на кнопці). Гра кличе
+## dialogue_box.accept через DialogueQuest.Inputs; цей вхід — для verify_*.gd, що проганяють розмови.
 func accept() -> void:
-	if dialogue_box and dialogue_box.visible:
+	if choice_menu and choice_menu.visible:
+		choice_menu.choose_focused()
+	elif dialogue_box and dialogue_box.visible:
 		dialogue_box.accept()
 
 ## Returns an array consisting of dictionaries with three variables:

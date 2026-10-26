@@ -9,6 +9,14 @@ class_name DialoguePaths
 
 const ROOT := "res://dialogue_quest/"
 const EN_DIR := "en/"
+## D718: ім'я бога контрактів ще не назване (Q-ID у звіті oath-census) — один ключ локалізації; у .dqd — ${contract_god}.
+const CONTRACT_GOD := "the god of contracts"
+const CONTRACT_GOD_FLAG := "contract_god"
+
+
+## Те саме для тексту, який читають без програвача (DqdReader).
+static func solve_names(text: String) -> String:
+	return text.replace("${%s}" % CONTRACT_GOD_FLAG, TranslationServer.translate(CONTRACT_GOD))
 
 
 ## Шлях до файлу [param path] (український шлях розмови) для поточної мови.

@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_scribe.tscn" id="scribe"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -187,6 +188,9 @@ position = Vector2(1270, 384)
 
 [node name="Sprite2D" parent="GuardRight" index="0"]
 flip_h = true
+
+[node name="GateScribe" parent="." instance=ExtResource("scribe")]
+position = Vector2(1150, 384)
 
 [node name="RaidTrigger" type="Area2D" parent="." unique_id=806456742]
 position = Vector2(700, 192)

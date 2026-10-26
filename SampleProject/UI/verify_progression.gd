@@ -58,39 +58,28 @@ func _initialize() -> void:
 	bar._update_display()
 	ck(bar.xp_label.text == tr("MAX") and bar.progress_bar.value == 100.0, "XP bar: '%s', %d%%" % [bar.xp_label.text, bar.progress_bar.value])
 
-	print("[2] The Mayor Hall door stays shut until an oath is sworn (D488)")
+	print("[2] The Mayor Hall door is open without an oath (D725: the D488 gate is gone)")
 	ck(sl.get_skill_manager().get_oath() == "", "no oath yet")
 	await game.teleport_to_room(CITY, ^"SavePoint")
 	await Kit.frames(self, 20)
 	var city: Node = game.map
 	var gate_shape: CollisionShape2D = city.get_node("MayorHallGate/Collision")
 	var hall_door: Area2D = city.get_node("MayorHallDoor")
-	ck(not gate_shape.disabled and not hall_door.interactable.enabled, "the east wall collides, the palace door is shut")
+	ck(hall_door.interactable.enabled and not gate_shape.disabled, "the palace door opens without an oath (the east edge stays a wall)")
 	ck(city.get_node("GuardLeft").scene_file_path.ends_with("gate_guard.tscn") and city.get_node("GuardRight").scene_file_path.ends_with("gate_guard.tscn"),
 			"two gate guards at the door")
-	ck(game.get_objective() == "Swear an oath with the oath keepers" and game.objective_marker() == city.get_node("ObjectiveTargets/oath_keepers"),
-			"objective → the oath keepers (%s)" % game.get_objective())
-	var dm: Node = sl.get_dialogue_manager()
-	dm.bubble_time_scale = 1.0  # облачко має протриматись, щоб його побачити
-	game.player.global_position = Vector2(2300, 360)
+	ck(not city.has_node("GateTalk") and not city.has_node("ObjectiveTargets/oath_keepers")
+			and not FileAccess.file_exists("res://dialogue_quest/City_MayorHall_Guard.dqd"), "no guard line and no oath objective at the door")
+	ck(game.get_objective() != "Swear an oath with the oath keepers", "the objective is not «swear an oath» (%s)" % game.get_objective())
+	game.player.global_position = hall_door.global_position + Vector2(-20, 40)
 	await Kit.frames(self, 10)
-	Input.action_press(&"move_right")
-	var bubble_seen := false
-	for i in 150:
+	hall_door.interactable.interacted.emit()
+	for i in 120:
 		await physics_frame
-		bubble_seen = bubble_seen or dm.chatter_bubble(city.get_node("GuardRight")) != null
-	Input.action_release(&"move_right")
-	ck(bubble_seen, "the right guard speaks in a bubble at the door")
-	ck(game.map == city and game.player.global_position.x < 2545.0, "the hero is stopped at the door (x %.0f)" % game.player.global_position.x)
-	var lines: Array[Dictionary] = preload("res://SampleProject/Scripts/Systems/dqd_reader.gd").lines("res://dialogue_quest/City_MayorHall_Guard.dqd")
-	ck(lines.size() == 1 and lines[0].speaker == "GATE_GUARD", "the line is the gate guard's")
-	for path in ["res://dialogue_quest/City_MayorHall_Guard.dqd", "res://dialogue_quest/en/City_MayorHall_Guard.dqd"]:
-		ck(FileAccess.get_file_as_string(path).contains("[ЧЕРНЕТКА]"), "%s marked [ЧЕРНЕТКА]" % path.get_file())
-	dm.bubble_time_scale = 0.0
-	ck(sl.get_skill_manager().swear_oath("paladin") == 0, "the paladin oath sworn")
-	await Kit.frames(self, 4)
-	ck(hall_door.interactable.enabled and not gate_shape.disabled, "the oath opens the palace door (the east edge stays a wall)")
-	ck(game.get_objective() == "Find the laboratory", "objective after the oath (%s)" % game.get_objective())
+		if game.map != city:
+			break
+	ck(game.map != city and String(game.map.scene_file_path).ends_with("MayorHall.tscn"), "the hero walks into the Mayor Hall with no oath")
+	await Kit.drain(self)
 
 	print("[3] A save point: meditate, then the save screen; leaving it stands him up (D447)")
 	await game.teleport_to_room(CITY, ^"SavePoint")

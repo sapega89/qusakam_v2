@@ -495,6 +495,8 @@ func refresh_max_health() -> void:
 ## парирована стріла лучника летить назад (Arrow.parried, D384).
 ## Ухилення (D393): mitigated_damage дав 0 — удару немає зовсім (ні невразливості, ні збою), лише слово над героєм.
 func take_damage(damage: int, source: Node = null, critical: bool = false) -> void:
+	if is_invulnerable and mover.is_rolling() and (source is DefaultEnemy or source is Arrow):
+		EventBus.player_dodged_through.emit(source)
 	if is_invulnerable or is_dead:
 		return
 	var guard := combat.guard_against(source)

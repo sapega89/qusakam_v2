@@ -48,6 +48,13 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		MenuNavKeys.move_focus(_buttons_container, by)
 
+## Kusakam, D727: відповідь у фокусі (немає фокуса — перша), як натиснута.
+func choose_focused() -> void:
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused == null or focused.get_parent() != _buttons_container:
+		focused = _buttons_container.get_child(0)
+	(focused as Button).pressed.emit()
+
 func get_choices() -> PackedStringArray:
 	return choices
 

@@ -156,6 +156,14 @@
 			"frames": "companion_picker",
 			"open": "companions",
 			"open_label": "Open Companions"
+		},
+		{
+			"id": "paths",
+			"hint_topic": true,
+			"title": "Paths",
+			"text": "The way you fight and act draws a path to you. Blocks and parries lean towards Samal; trading blood for blows, towards the Contract; dodging and fights won untouched, towards the path with no god; and so do some of your choices. The emblems on the Journal's Characters page grow brighter with each leaning. You choose your path at the census by the City Gate.",
+			"key": "",
+			"hint": ""
 		}
-	]
+]
 }

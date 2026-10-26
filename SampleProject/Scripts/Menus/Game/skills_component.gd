@@ -222,8 +222,7 @@ func _rename(rows: Array, names: Array) -> void:
 ## Вкладка (клавіатура, геймпад, миша): базове дерево — фокус у ліву панель; клятва — показати її праворуч
 ## (після клятви інші клятви закриті, D489) і фокус туди.
 func show_tree(tree_id: String) -> void:
-	if tree_id != "":
-		_shown_oath = tree_id
+	assert(tree_id == "" or tree_id == _skill_manager.get_oath(), "SkillsComponent: only the chosen path's tree is shown (D728)")
 	update_display()
 	var cells := _cells_of(tree_id)
 	if not cells.is_empty() and is_visible_in_tree():
@@ -239,15 +238,13 @@ func _tree_name(tree_id: String) -> String:
 func update_display() -> void:
 	if not is_node_ready() or _skill_manager == null:
 		return
-	var sworn := _skill_manager.get_oath()
-	if sworn != "":
-		_shown_oath = sworn
-	elif _shown_oath.is_empty():
-		_shown_oath = String(_skill_database.oaths.keys()[0])
+	# D728: базове дерево і лише дерево обраного шляху; інших двох не видно зовсім (ні вкладок, ні панелі).
+	_shown_oath = _skill_manager.get_oath()
 	for tab: Button in _tree_tabs.get_children():
 		var tree_id := "" if tab.name == "Base" else String(tab.name)
-		tab.set_pressed_no_signal(tree_id == "" or tree_id == _shown_oath)
-		tab.disabled = sworn != "" and tree_id != "" and tree_id != sworn
+		tab.visible = tree_id == "" or tree_id == _shown_oath
+		tab.set_pressed_no_signal(tab.visible)
+	_right_panel.visible = _shown_oath != ""
 	# Перебудова звільняє клітинки — фокус клавіатури/геймпада повертаємо на вибрану.
 	var focused := get_viewport().gui_get_focus_owner()
 	var had_row_focus := focused != null and focused in _rows.values()
@@ -309,7 +306,7 @@ func _links(panel: PanelContainer) -> Control:
 func _rebuild_trees() -> void:
 	_rows.clear()
 	var trunk := _tree_skills("")
-	var oath := _tree_skills(_shown_oath)
+	var oath := _tree_skills(_shown_oath) if _shown_oath != "" else []
 	# Чесний порожній стан: немає жодної навички для цього героя.
 	var has_any := not trunk.is_empty() or not oath.is_empty()
 	_columns.visible = has_any
@@ -317,7 +314,8 @@ func _rebuild_trees() -> void:
 	if not has_any:
 		return
 	_fill_panel(_left_panel, "", trunk)
-	_fill_panel(_right_panel, _shown_oath, oath)
+	if _shown_oath != "":
+		_fill_panel(_right_panel, _shown_oath, oath)
 
 
 ## Панель дерева: заголовок, стан клятви і сітка SKILL_GRID_COLUMNS × SKILL_GRID_ROWS з клітинок за slot.
@@ -329,8 +327,8 @@ func _fill_panel(panel: PanelContainer, tree_id: String, definitions: Array) -> 
 		status.text = ""
 	else:
 		heading.text = "%s · %s" % [_tree_name(tree_id), tr(String(_skill_database.get_oath(tree_id).tree))]
-		status.text = "" if _skill_manager.get_oath() == tree_id \
-				else tr("Swear an oath in the City (level %d)") % int(_skill_database.get_oath(tree_id).level)
+		var opens := int(_skill_database.get_oath(tree_id).level)
+		status.text = tr("Opens at level %d") % opens if _hero_level() < opens else ""
 	status.visible = not status.text.is_empty()
 	var by_cell := {}
 	for definition: SkillDefinition in definitions:
@@ -559,7 +557,7 @@ func _reason_text(skill_id: String) -> String:
 			var missing: Array = definition.prerequisites.filter(func(id: String) -> bool: return not id in plan.planned_unlocked())
 			return tr("Needs %s first.") % ", ".join(missing.map(func(id: String) -> String: return tr(String(_skill_database.get_skill(id).name))))
 		SkillManager.Result.NO_OATH:
-			return tr("Swear an oath in the City (level %d).") % int(_skill_database.get_oath(definition.oath).level)
+			return tr("Choose your path at the census by the City Gate.")
 		SkillManager.Result.OTHER_OATH:
 			return tr("Sworn to another oath.")
 		SkillManager.Result.BASE_TREE_GATE:

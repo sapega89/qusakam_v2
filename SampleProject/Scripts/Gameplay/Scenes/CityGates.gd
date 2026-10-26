@@ -94,7 +94,7 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				_set_objective("Find the laboratory")
 				return
 			_set_objective("Enter the city", &"city")
-			_execute_step(StepType.DIALOGUE, "CityGates_AfterFight", run_id)
+			_after_fight(run_id)
 		State.TO_CITY:
 			_set_objective("Find the laboratory")
 			# Перехід до Laboratory обробляється автоматично через MetSys room connections
@@ -150,6 +150,16 @@ func _complete_quest_for_dialogue(dialogue_id: String) -> void:
 			game.set_quest_flag("city_gates_intro_complete", true)
 		"CityGates_AfterFight":
 			game.set_quest_flag("city_gates_after_fight_complete", true)
+
+## Після бою — перепис у писаря біля брами (D727, D728: клятва обирається тут), тоді думка героя про лабораторію.
+## Клятва вже є (старий сейв) — перепису немає.
+func _after_fight(run_id: int) -> void:
+	var scribe: Node = $GateScribe
+	if scribe.census_pending():
+		await scribe.start_census()
+		if run_id != state_run_id:
+			return
+	_execute_step(StepType.DIALOGUE, "CityGates_AfterFight", run_id)
 
 ## Напад бандитів (BACKLOG feedback 18): RaidTrigger забирає керування, камера пливе до брами (D437: без слів автора),
 ## CityGates_Raid (варта кличе до зброї), бандити (Raid/Bandits) біжать дорогою до варти й стають на точки спавну

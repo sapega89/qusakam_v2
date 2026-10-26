@@ -2,8 +2,22 @@
 // then Malik names himself and leads on — the malik_escort task is taken without a menu (D305). Formerly Lab_Malik_Quest.
 say|MALIK|Hey, you! Still alive? What a racket that was... Who are you?
 say|ASTRIT|Astrit. My shield remembers everyone who ever put me behind bars.
-say|URIZEN|Urizen, priest of the God of Contracts.
+say|URIZEN|Urizen. My god is ${contract_god}.
 say|ALISIA|Alisia. And this is my cat. Whatever they injected me with burns from the inside... but I'm still standing.
+// [DRAFT] D725 — a deed: Alisia (support / bargain / leave her, OathLeanings)
+choice|Hold on. Once we're out, we'll find something to put it out|They injected you with something valuable? Someone might pay for that|You're standing, so walk on your own
+branch|choice|Hold on. Once we're out, we'll find something to put it out
+signal|leaning|samal
+say|ALISIA|Thank you... I'll remember that.
+branch|end
+branch|choice|They injected you with something valuable? Someone might pay for that
+signal|leaning|contract
+say|ALISIA|One more word and the cat scratches you.
+branch|end
+branch|choice|You're standing, so walk on your own
+signal|leaning|none
+say|ALISIA|I will.
+branch|end
 say|KUSAKAM|Kusakam. I'm looking for my family's relic — and the ones who stole it.
 say|MALIK|Malik, a humble merchant. Get me out of here, and at my humble place every one of you gets gold. Lots of gold.
 say|MALIK|Alright — come with me!

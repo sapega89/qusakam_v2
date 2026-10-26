@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/OathKeeper.gd" id="1_keeper"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Components/InteractableComponent.gd" id="2_interactable"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/witch/sheet.png" id="3_sprite"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/contract_priest/sheet.png" id="3_sprite"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/NpcActivity.gd" id="act_script"]
 
 [sub_resource type="Animation" id="Animation_idle"]
@@ -74,8 +74,8 @@ sworn_dialogue = "res://dialogue_quest/City_Oath_Witch_Sworn.dqd"
 profile_faces_left = false
 talk_dialogue = "res://dialogue_quest/City_Oath_Witch_Talk.dqd"
 chatter_dialogue = "res://dialogue_quest/City_Oath_Witch_Chatter.dqd"
-quest_bark_dialogue = "res://dialogue_quest/City_Oath_Witch_Bark.dqd"
 character_id = "OATH_WITCH"
+greets = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1

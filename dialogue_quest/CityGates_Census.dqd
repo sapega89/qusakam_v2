@@ -1,0 +1,106 @@
+// [ЧЕРНЕТКА] D727, D728 — перепис біля брами (oath_affinity_plan п. 5): писар дивиться героєві в очі (прокляття неба, D587),
+// пише його в міську книгу й питає, кому він служить. «Не знаю» — два-три питання, тоді три шляхи й порада
+// (відповіді + нахили, OathLeanings); гравець бере пораду або «Та ні, краще…». Вибір — клятва, назавжди, тут і зараз.
+say|GATE_SCRIBE|Стій, рубако. Бій бієм, а перепис переписом. Ходи-но до мене.
+say|GATE_SCRIBE|Глянь сюди... ближче. Очі не сині. Небо тебе ще не взяло. Добре.
+say|GATE_SCRIBE|Ім'я? Звідки?
+say|KUSAKAM|Кусакам. З села під каньйоном.
+say|GATE_SCRIBE|Кусакам, з-під каньйону... Записав. А тепер — кому служиш? Хто твій бог, так і запишу.
+choice|Самаль|${contract_god}|Ніхто. Я ходжу сам|Не знаю
+branch|choice|Самаль
+signal|census|pick|samal
+say|GATE_SCRIBE|Самаль. Світло й щит. Записав.
+branch|end
+branch|choice|${contract_god}
+signal|census|pick|contract
+say|GATE_SCRIBE|${contract_god}. Ціна й договір. Записав.
+branch|end
+branch|choice|Ніхто. Я ходжу сам
+signal|census|pick|none
+say|GATE_SCRIBE|Без бога. Сам собі шлях. Так і пишу.
+branch|end
+branch|choice|Не знаю
+say|GATE_SCRIBE|Не знаєш... Таких тут половина. Тоді скажи мені от що.
+say|GATE_SCRIBE|На базарі двоє б'ють одного. Що робиш?
+choice|Стаю за слабшого|Дивлюсь, хто більше заплатить|Обходжу. Не моя бійка
+branch|choice|Стаю за слабшого
+signal|census|answer|samal
+branch|end
+branch|choice|Дивлюсь, хто більше заплатить
+signal|census|answer|contract
+branch|end
+branch|choice|Обходжу. Не моя бійка
+signal|census|answer|none
+branch|end
+say|GATE_SCRIBE|Щит чи меч?
+choice|Щит: удар треба втримати|Меч: удар за удар, хай і кров'ю|Ні те, ні те: ноги
+branch|choice|Щит: удар треба втримати
+signal|census|answer|samal
+branch|end
+branch|choice|Меч: удар за удар, хай і кров'ю
+signal|census|answer|contract
+branch|end
+branch|choice|Ні те, ні те: ноги
+signal|census|answer|none
+branch|end
+say|GATE_SCRIBE|Дав слово, а воно тобі на шкоду. Тримаєш?
+choice|Тримаю, бо дав|Тримаю, якщо заплачено|Моє слово: сам дав, сам і заберу
+branch|choice|Тримаю, бо дав
+signal|census|answer|samal
+branch|end
+branch|choice|Тримаю, якщо заплачено
+signal|census|answer|contract
+branch|end
+branch|choice|Моє слово: сам дав, сам і заберу
+signal|census|answer|none
+branch|end
+signal|census|advise
+say|GATE_SCRIBE|Шляхів у місті три. Самаль — хто стає за інших: світло й щит.
+say|GATE_SCRIBE|${contract_god} — хто платить і бере: договір і ціна.
+say|GATE_SCRIBE|А хто без бога — ходить своїм кроком і ні перед ким не схиляється.
+branch|flag|census_advice_samal
+say|GATE_SCRIBE|Я на людей надивився. Раджу тобі Самаля.
+choice|Пиши: Самаль|Та ні, краще ${contract_god}|Та ні, краще без бога
+branch|choice|Пиши: Самаль
+signal|census|pick|samal
+branch|end
+branch|choice|Та ні, краще ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|choice|Та ні, краще без бога
+signal|census|pick|none
+branch|end
+branch|end
+branch|flag|census_advice_contract
+say|GATE_SCRIBE|Я на людей надивився. Раджу тобі ${contract_god}.
+choice|Пиши: ${contract_god}|Та ні, краще Самаль|Та ні, краще без бога
+branch|choice|Пиши: ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|choice|Та ні, краще Самаль
+signal|census|pick|samal
+branch|end
+branch|choice|Та ні, краще без бога
+signal|census|pick|none
+branch|end
+branch|end
+branch|flag|census_advice_none
+say|GATE_SCRIBE|Я на людей надивився. Тобі — без бога.
+choice|Пиши: без бога|Та ні, краще Самаль|Та ні, краще ${contract_god}
+branch|choice|Пиши: без бога
+signal|census|pick|none
+branch|end
+branch|choice|Та ні, краще Самаль
+signal|census|pick|samal
+branch|end
+branch|choice|Та ні, краще ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|end
+say|GATE_SCRIBE|Так і пишу. Слово в книзі міста назад не стирають.
+branch|end
+branch|flag|census_low_level
+say|GATE_SCRIBE|Сила шляху прийде з досвідом — коли дійдеш до п'ятого рівня.
+branch|end
+say|GATE_SCRIBE|Усе. Проходь, Кусакаме. Місто тепер знає твоє ім'я.
+exit|

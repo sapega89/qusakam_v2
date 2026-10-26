@@ -74,7 +74,6 @@ sworn_dialogue = "res://dialogue_quest/City_Oath_Priest_Sworn.dqd"
 profile_faces_left = true
 talk_dialogue = "res://dialogue_quest/City_Oath_Priest_Talk.dqd"
 chatter_dialogue = "res://dialogue_quest/City_Oath_Priest_Chatter.dqd"
-quest_bark_dialogue = "res://dialogue_quest/City_Oath_Priest_Bark.dqd"
 character_id = "OATH_PRIEST"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

@@ -1,5 +1,5 @@
-// [DRAFT] D281 — the sand dervish Kesh: oath of Balance, Warden of Balance (BACKLOG 22)
-say|OATH_DERVISH|The sand knows neither light nor darkness. Only balance.
-say|OATH_DERVISH|Swear to the sands and you will become a Warden of Balance: steadfastness, a shield and a calm hand.
-say|OATH_DERVISH|The oath is for life. From the fifth level, I will hear you.
+// [DRAFT] D718, D726 — the sand dervish Kesh: the Warden of Balance's path, no god
+say|OATH_DERVISH|I pray neither to Samal nor to his neighbours. Sand serves nobody. Only balance.
+say|OATH_DERVISH|Whoever walks with no god is a Warden of Balance: steadfastness, a shield and a calm hand. Expect no blessing, only your own feet.
+say|OATH_DERVISH|The path is chosen at the gate, with the scribe. I only whirl.
 exit|

@@ -118,6 +118,8 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	current_dialogue_box.visible = true
 	# dialogue_started шле _on_dialogue_quest_started (колбек DialogueQuest). Файл — мовою гри, а id розмови
 	# лишається українським шляхом, який чекають слухачі dialogue_finished (DialoguePaths, BACKLOG 31).
+	# D718: ім'я бога контрактів мовою гри — ${contract_god} у репліках і відповідях
+	DialogueQuest.Flags.set_flag(DialoguePaths.CONTRACT_GOD_FLAG, tr(DialoguePaths.CONTRACT_GOD))
 	var sections: Array[DQDqdParser.DqdSection] = DQDqdParser.parse_from_file(DialoguePaths.localized(timeline_name))
 	assert(not sections.is_empty(), "DialogueManager: %s has no lines" % timeline_name)
 	current_dialogue_player.play_sections(sections, timeline_name)

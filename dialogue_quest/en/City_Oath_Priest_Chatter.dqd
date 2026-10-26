@@ -1,4 +1,4 @@
-// [DRAFT] D571 — Sister Ilvane, an oath keeper, in passing (D338)
-say|OATH_PRIEST|I pray with my eyes lowered, child. The light does not need to be looked at.
-say|OATH_PRIEST|The gods hear those who tremble too.
+// [DRAFT] D571, D718 — Sister Ilvane, priestess of Samal, in passing (D338)
+say|OATH_PRIEST|I pray with my eyes lowered, child. Nobody may look up any more.
+say|OATH_PRIEST|Samal hears those who tremble too.
 exit|

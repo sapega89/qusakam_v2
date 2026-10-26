@@ -61,6 +61,7 @@ func save() -> Dictionary:
 	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
 	data["skill_charges"] = player_state.get("skill_charges", {}).duplicate()  # D504: заряди фляги
 	data["oath"] = player_state.oath  # D280
+	data["leanings"] = player_state.leanings.duplicate()  # D725
 	data["attribute_points"] = player_state.attribute_points  # D335
 	data["attributes"] = player_state.attributes.duplicate()
 	var xp: XPManager = ServiceLocator.get_xp_manager()  # B79: рівень і досвід переживають сейв
@@ -144,6 +145,10 @@ func load_data(data: Dictionary) -> void:
 	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
 	player_state.skill_charges = data.get("skill_charges", {}).duplicate()  # D504: сейв без зарядів — фляга повна
 	player_state.oath = String(data.get("oath", ""))  # D280: сейв без клятви — клятви немає
+	# D725: сейв без нахилів — усі нулі
+	var leanings: Dictionary = data.get("leanings", {})
+	player_state.leanings = {"samal": float(leanings.get("samal", 0.0)), "contract": float(leanings.get("contract", 0.0)),
+		"none": float(leanings.get("none", 0.0))}
 	ServiceLocator.get_xp_manager().restore(int(data.level), int(data.xp))  # B79
 	# D335: сейв до очок атрибутів — нічого не вкладено, а невкладених стільки, скільки дали б рівні.
 	var spent_attributes: Dictionary = {}

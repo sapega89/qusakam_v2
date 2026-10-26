@@ -29,14 +29,12 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x6"]
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gate"]
 size = Vector2(32, 480)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate_talk"]
-size = Vector2(164, 120)
 
 [node name="City" type="Node2D" unique_id=1536537228]
 script = ExtResource("city_script")
@@ -221,16 +219,7 @@ arrival = NodePath("CityDoor")
 [node name="Interactable" parent="MayorHallDoor" index="1"]
 action_text = "Enter"
 
-[node name="GateTalk" type="Area2D" parent="."]
-position = Vector2(2462, 340)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GateTalk"]
-shape = SubResource("RectangleShape2D_gate_talk")
-
 [node name="ObjectiveTargets" type="Node2D" parent="."]
-
-[node name="oath_keepers" type="Marker2D" parent="ObjectiveTargets"]
-position = Vector2(1610, 344)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3

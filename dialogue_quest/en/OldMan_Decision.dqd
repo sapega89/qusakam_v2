@@ -1,4 +1,18 @@
 say|GRANDFATHER|You need to catch up with the bandits. They took our relic. It's the key to everything.
+// [DRAFT] D725 — a deed: the answer to Grandfather feeds a leaning (OathLeanings: Samal / contract / no god)
+choice|I'll bring the relic back. And no one will hurt our people again|What's in it for me?|I'll go. Then I'll see whose business it is
+branch|choice|I'll bring the relic back. And no one will hurt our people again
+signal|leaning|samal
+say|GRANDFATHER|That's how your father spoke.
+branch|end
+branch|choice|What's in it for me?
+signal|leaning|contract
+say|GRANDFATHER|You'll get your kin back. Is that too little?
+branch|end
+branch|choice|I'll go. Then I'll see whose business it is
+signal|leaning|none
+say|GRANDFATHER|You live by your own mind. Well, that's a way too.
+branch|end
 say|GRANDFATHER|Take my old copper sword and leather armor. I've no use for them anymore, but you'll need them.
 // [DRAFT] D621 — Grandfather lets Kusakam into the attic (his flag village_oldman_complete opens the hatch, gates.json → elder_attic), D583 / D562.
 say|GRANDFATHER|And one more thing... behind the rug in my house there's a ladder to the attic. My old notes are up there. You may go up now.

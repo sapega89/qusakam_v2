@@ -2015,17 +2015,17 @@ msgstr "Зцілювальні руки"
 msgid "Aura of Resolve"
 msgstr "Аура рішучості"
 
-msgid "Sky's Grace"
-msgstr "Благодать неба"
+msgid "Samal's Grace"
+msgstr "Благодать Самаля"
 
-msgid "Skyfall Blessing"
-msgstr "Благословення з небес"
+msgid "Samal's Blessing"
+msgstr "Благословення Самаля"
 
 msgid "Aura of Valour"
 msgstr "Аура звитяги"
 
-msgid "Judgement of the Sky"
-msgstr "Суд неба"
+msgid "Judgement of Samal"
+msgstr "Суд Самаля"
 
 msgid "Unbroken Vow"
 msgstr "Непорушна обітниця"
@@ -2102,8 +2102,8 @@ msgstr "+3 до атаки."
 msgid "Take 5% less damage."
 msgstr "На 5% менше отриманої шкоди."
 
-msgid "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
-msgstr "Удар, сповнений небесного світла, по всьому, що перед вами; приголомшує першого ворога."
+msgid "A strike charged with Samal's light at everything in front of you; dazes the first enemy."
+msgstr "Удар, сповнений світла Самаля, по всьому, що перед вами; приголомшує першого ворога."
 
 msgid "Your healing restores 25% more."
 msgstr "Ваше зцілення відновлює на 25% більше."
@@ -2120,8 +2120,8 @@ msgstr "Удар по всьому, що перед вами, і зціленн�
 msgid "+25 Max HP."
 msgstr "+25 до макс. HP."
 
-msgid "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
-msgstr "Обрушує небо на все, що перед вами; вибух перескакує ще на одного ворога й приголомшує першого."
+msgid "Call Samal's light down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+msgstr "Обрушує світло Самаля на все, що перед вами; вибух перескакує ще на одного ворога й приголомшує першого."
 
 msgid "Take a further 8% less damage."
 msgstr "Ще на 8% менше отриманої шкоди."
@@ -2328,14 +2328,14 @@ msgstr "Дід Кусакама"
 msgid "City Gates guard"
 msgstr "Охоронець Міської брами"
 
-msgid "Priest of the Sky — oath of the Paladin"
-msgstr "Жриця Неба — присяга Паладина"
+msgid "Priestess of Samal — the Paladin's path"
+msgstr "Жриця Самаля — шлях Паладина"
 
-msgid "Witch — oath of the Dark Knight"
-msgstr "Відьма — присяга Темного лицаря"
+msgid "Priest of contracts — the Dark Knight's path"
+msgstr "Жрець контрактів — шлях Темного лицаря"
 
-msgid "Sand dervish — oath of the Warden of Balance"
-msgstr "Піщаний дервіш — присяга Вартового рівноваги"
+msgid "Sand dervish — the Warden of Balance's path, no god"
+msgstr "Піщаний дервіш — шлях Вартового рівноваги, без бога"
 
 msgid "Hunter"
 msgstr "Мисливиця"
@@ -2370,14 +2370,14 @@ msgstr "Кує й поліпшує зброю та обладунки."
 msgid "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
 msgstr "Купець із Пустельної дороги, чий караван бандити пригнали до Міської брами. Щойно браму звільнили, він рушив за своїм товаром до Міста й поставив там свій прилавок."
 
-msgid "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
-msgstr "Хранителька присяги Паладина в Місті. Перед нею Святий воїн присягає світлу; за монети вона також допоможе розучити навички."
+msgid "Priestess of Samal in the City. She tells of the Paladin's path: stand between the weak and the blow."
+msgstr "Жриця Самаля в Місті. Розповідає про шлях Паладина: стати між слабким і ударом."
 
-msgid "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
-msgstr "Хранителька присяги Темного лицаря в Місті. За монети вона також допоможе розучити навички."
+msgid "A priest in the City, in black and gold for all the contracts he has signed. He tells of the Dark Knight's path."
+msgstr "Жрець у Місті, у чорному й золоті — стільки договорів підписав. Розповідає про шлях Темного лицаря."
 
-msgid "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
-msgstr "Хранитель присяги Вартового рівноваги в Місті. За монети він також допоможе розучити навички."
+msgid "A sand dervish in the City who serves no god. He tells of the Warden of Balance's path."
+msgstr "Піщаний дервіш у Місті, що не служить жодному богові. Розповідає про шлях Вартового рівноваги."
 
 msgid "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
 msgstr "Мисливиця з білим тигреням поруч; одне її око зелене, друге — блакитне."
@@ -3363,3 +3363,46 @@ msgstr "Коротко натисніть, коли падає удар із ж�
 
 msgid "Dash out of a red-glint blow."
 msgstr "Ривком ухиліться від удару з червоним відблиском."
+
+# oath-census (D725–D728, D718)
+msgid "the god of contracts"
+msgstr "Бог контрактів"
+
+msgid "Gate scribe"
+msgstr "Писар біля брами"
+
+msgid "Priest of contracts"
+msgstr "Жрець контрактів"
+
+msgid "City Gates scribe"
+msgstr "Писар міської брами"
+
+msgid "Writes newcomers into the city book at the gates: name, where from, whom they serve. He looks every stranger in the eye for the blue of the sky's curse."
+msgstr "Записує прибульців у міську книгу біля брами: ім'я, звідки, кому служать. Кожному чужинцеві дивиться в очі — чи не сині вони від прокляття неба."
+
+msgid "Census"
+msgstr "Перепис"
+
+msgid "Opens at level %d"
+msgstr "Відкривається з рівня %d"
+
+msgid "Choose your path at the census by the City Gate."
+msgstr "Шлях обирають на переписі біля міської брами."
+
+msgid "PATHS"
+msgstr "ШЛЯХИ"
+
+msgid "Samal"
+msgstr "Самаль"
+
+msgid "Contract"
+msgstr "Контракт"
+
+msgid "No god"
+msgstr "Без бога"
+
+msgid "Paths"
+msgstr "Шляхи"
+
+msgid "The way you fight and act draws a path to you. Blocks and parries lean towards Samal; trading blood for blows, towards the Contract; dodging and fights won untouched, towards the path with no god; and so do some of your choices. The emblems on the Journal's Characters page grow brighter with each leaning. You choose your path at the census by the City Gate."
+msgstr "Те, як ти б'єшся і що робиш, веде тебе до одного зі шляхів. Блоки й парирування — до Самаля; удар за удар ціною крові — до Контракту; ухилення й бої без жодної подряпини — до шляху без бога; так само й деякі твої вибори. Герби на сторінці «Персонажі» в Журналі яскравішають з кожним нахилом. Шлях обирають на переписі біля міської брами."

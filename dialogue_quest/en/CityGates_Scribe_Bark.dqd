@@ -1,0 +1,3 @@
+// [DRAFT] D727 — the scribe calls the hero while the census is still to do (an old save with no oath)
+say|GATE_SCRIBE|Hey, swordsman! Over here, the census isn't done yet.
+exit|
