@@ -15,6 +15,7 @@ const RANGE := 720.0
 const STICK_TIME := 0.6
 const FADE_TIME := 0.2
 const HERO_ARROWS := &"hero_arrows"
+const EnemyTell := preload("res://SampleProject/Scripts/FX/EnemyTell.gd")
 
 @export var speed: float = 900.0
 ## Заряджена стріла героя йде крізь ворогів (кожного влучає раз) і зупиняється лише об стіну.
@@ -49,10 +50,21 @@ func _ready() -> void:
 	_face()
 	if hero_side:
 		add_to_group(HERO_ARROWS)
+	_streak()
+
+
+## Смуга за стрілою лучника (A17) кольору її підказки (D504): видно, чи її парирувати; стріла героя — без смуги.
+## Парирована стріла (уже героя) смугу гасить.
+func _streak() -> void:
+	var streak: Sprite2D = $Streak
+	streak.visible = not hero_side
+	streak.modulate = EnemyTell.GLINT_OUTER[tell]
 
 
 func _face() -> void:
 	$Sprite2D.flip_h = direction < 0
+	$Streak.flip_h = direction < 0
+	$Streak.position.x = -absf($Streak.position.x) * direction
 	rotation = atan(fall) * direction
 	$CollisionShape2D.position.x = absf($CollisionShape2D.position.x) * direction
 
@@ -83,6 +95,7 @@ func parried(by: Node2D) -> void:
 	_flown = 0.0
 	_hit.clear()
 	_face()
+	_streak()
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -115,11 +128,14 @@ func _strike(body: Node2D) -> void:
 	_hit.append(body)
 	body.take_damage(damage, self)
 	if not hero_side:
+		EventBus.arrow_landed.emit(global_position, tell)
 		queue_free()  # влучила чи зламалась об блок; парирована — уже стріла героя й летить назад
 
 
 func _stick() -> void:
 	_stuck = true
+	if not hero_side:
+		EventBus.arrow_landed.emit(global_position, tell)
 	set_deferred(&"monitoring", false)
 	AudioManager.play(&"arrow_wall")
 	_fade(STICK_TIME)

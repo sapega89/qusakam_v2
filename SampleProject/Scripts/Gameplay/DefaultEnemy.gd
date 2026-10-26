@@ -732,6 +732,14 @@ func start_attack(direction: int) -> void:
 	hitbox_damage.enable_damage()
 	hitbox.monitoring = true
 	enemy_view.on_strike()
+	EventBus.enemy_struck.emit(self, strike_move(), Vector2(direction, 0))
+
+## Що за удар на кадрі удару (EventBus.enemy_struck, ефекти A17): летючий — свій спосіб (dive / bite), удар із ривком —
+## lunge, решта — swing. Бос перевизначає (charge).
+func strike_move() -> StringName:
+	if flying:
+		return StringName(flight_attack)
+	return &"lunge" if lunge > 0.0 else &"swing"
 
 func end_attack() -> void:
 	hitbox.set_deferred(&"monitoring", false)  # збій (D264) приходить із body_entered хітбокса героя
