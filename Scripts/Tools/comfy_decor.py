@@ -165,6 +165,47 @@ DECOR = {
         "few small sandstone rocks growing from the bottom edge of the image, wide empty space above and on both "
         f"sides, {LIGHT}, {cb.MAGENTA}",
     ),
+    # Драбини в стилі гри (A14, Sapega 2026-10-26: «драбини мають бути в стилі гри») і платформи з опорами (A15: «щоб
+    # були частиною інтер'єру, а не просто так висіли в повітрі»). Драбину Ladder.tscn повторює по вертикалі: з високої
+    # генерації вирізається один період щаблів.
+    "ladder_wood": dict(
+        seed=261, size=(384, 1024), key="magenta", colors=10, kind="static", canvas=(26, 180), box=(0, 0, 26, 180),
+        prompt="one single tall wooden ladder standing straight up, seen straight from the front, two rough wooden "
+        "rails lashed with rope to evenly spaced round wooden rungs, it reaches from the top edge to the bottom edge of "
+        f"the image, wide empty space on both sides, {LIGHT}, {cb.MAGENTA}",
+    ),
+    "ladder_iron": dict(
+        seed=272, size=(384, 1024), key="green", colors=10, kind="static", canvas=(26, 180), box=(0, 0, 26, 180),
+        prompt="a vertical row of evenly spaced U-shaped rusty iron rungs hammered into a strip of dark grey stone "
+        "blocks, seen straight from the front, flat, from the top edge to the bottom edge of the image, wide empty "
+        f"space on both sides, {LIGHT}, {cb.CHROMA}",
+    ),
+    "ledge_rock": dict(
+        seed=263, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 64), box=(0, 0, 110, 64),
+        prompt="one single jutting ledge of red sandstone rock seen from the side: a flat walkable top surface with a "
+        "little sand and dry grass on it, under it the rock body tapers down to a rough point like a shelf growing out "
+        f"of a cliff, wide empty space around it, {LIGHT}, {cb.CHROMA}",
+    ),
+    # Платформи: суворо збоку, як тайл 2D-платформера (модель за «seen from the side» малювала ізометрію з тінню).
+    "plank_posts": dict(
+        seed=274, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 84), box=(0, 0, 110, 84),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal wooden walkway, its top "
+        "a straight level line of plank ends, held up by two thin vertical wooden posts going straight down with one "
+        "diagonal brace between them, the posts reach the bottom edge of the image, wide empty space around it, "
+        f"{LIGHT}, {cb.CHROMA}",
+    ),
+    "stone_balcony": dict(
+        seed=275, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 56), box=(0, 0, 110, 56),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal pale sandstone ledge, "
+        "its top a straight level line, under it two carved stone corbels shaped like quarter circles, wide empty "
+        f"space around it, {LIGHT}, {cb.CHROMA}",
+    ),
+    "lab_grate": dict(
+        seed=276, size=(768, 512), key="green", colors=12, kind="static", canvas=(110, 48), box=(0, 0, 110, 48),
+        prompt="a flat 2D platformer tile in strict orthographic side view: a short horizontal dark iron girder "
+        "platform, its top a straight level line, riveted, held from below by two triangular iron brackets, wide empty "
+        f"space around it, {LIGHT}, {cb.CHROMA}",
+    ),
 }
 FRAMES = 4  # sway: 0, +amp, 0, -amp (синус); flicker — 3
 FLICKER = (1.0, 0.72, 1.18)
