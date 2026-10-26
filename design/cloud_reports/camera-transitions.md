@@ -14,7 +14,8 @@ tags: [cloud, camera, rooms]
 - Edge passages, the two cutscene ends that change rooms and running/jumping/dropping inside every room were already still.
 - No new D-ID. B row: **B153** (B151/B152 are taken by `cloud/ui-critic`), filed in `design/BUGS.md` as fixed;
   `design/MASTER_PLAN.md` § 3 row B153.
-- Full suite: FULLSUITE
+- Full suite (one run): `SUITE: 2 FAIL`, 120 PASS — `verify_audio` (hero_hurt SFX not heard) and
+  `verify_combat_enemies` (a tell 481 ms before its strike); neither touches the camera, each re-run alone: ALL PASS.
 
 ## What changed
 
@@ -54,8 +55,73 @@ the camera. `-- <digits>` runs only those sections, `dump` prints the frames aro
 
 Before = `feature/backlog` code with the final probe (`Game.gd` and `FadeRoomTransitions.gd` stashed); after = this branch.
 
-TABLE
+| Passage | Before: biggest visible one-frame move, px | Before: slide after fade, s | After: move, px | After: slide, s |
+|---|---|---|---|---|
+| Canyon right → Village | 0.0 | 0.00 | 0.0 | 0.00 |
+| Village left → Canyon | 0.0 | 0.00 | 0.0 | 0.00 |
+| DesertRoad right → CityGates | 0.0 | 0.00 | 0.0 | 0.00 |
+| CityGates left → DesertRoad | 0.0 | 0.00 | 0.0 | 0.00 |
+| City left → CityGates | 0.0 | 0.00 | 0.0 | 0.00 |
+| City right → MayorHall | 0.0 | 0.00 | 0.0 | 0.00 |
+| MayorHall left → City | 0.0 | 0.00 | 0.0 | 0.00 |
+| LabCells right → Laboratory | 0.0 | 0.00 | 0.0 | 0.00 |
+| Laboratory left → LabCells | 0.0 | 0.00 | 0.0 | 0.00 |
+| Laboratory right → LabBoss | 0.0 | 0.00 | 0.0 | 0.00 |
+| LabBoss left → Laboratory | 0.0 | 0.00 | 0.0 | 0.00 |
+| BanditCamp door ExitDoor → DesertRoad | 134.0 | 0.92 | 0.0 | 0.00 |
+| BanditCamp door ShortcutDoor → DesertRoad | 246.0 | 0.48 | 0.0 | 0.00 |
+| Canyon door LizardCaveDoor → LizardCave | 62.2 | 0.00 | 0.0 | 0.00 |
+| Canyon door DragonMuralDoor → DragonMural | 10.7 | 0.00 | 0.0 | 0.00 |
+| CityGates door CellarDoor → GatehouseCellar | 72.9 | 0.00 | 0.0 | 0.00 |
+| DesertRoad door BanditCampDoor → BanditCamp | 94.6 | 0.08 | 0.0 | 0.00 |
+| DesertRoad door MesaClimbDoor → MesaClimb | 42.8 | 0.13 | 0.0 | 0.00 |
+| DesertRoad door CampShortcutDoor → BanditCamp | 0.0 | 0.00 | 0.0 | 0.00 |
+| DragonMural door ExitDoor → Canyon | 84.3 | 0.85 | 0.0 | 0.00 |
+| ElderHouse door ExitDoor → Village | 141.9 | 0.93 | 0.0 | 0.00 |
+| GatehouseCellar door ExitDoor → CityGates | 51.5 | 0.78 | 0.0 | 0.00 |
+| LizardCave door ExitDoor → Canyon | 40.4 | 0.77 | 0.0 | 0.00 |
+| MesaClimb door ExitDoor → DesertRoad | 199.0 | 1.00 | 0.0 | 0.00 |
+| Village door ElderDoor → ElderHouse | 35.5 | 0.08 | 0.0 | 0.00 |
+| BanditCamp inside (camera move beyond the hero's, px) | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| Canyon inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| City inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| CityGates inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| DesertRoad inside | 4.8 more than the hero | — | 4.8 more than the hero | — |
+| DragonMural inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| ElderHouse inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| GatehouseCellar inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| LabBoss inside | 5.8 more than the hero | — | 5.8 more than the hero | — |
+| LabCells inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| Laboratory inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| LizardCave inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| MayorHall inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| MesaClimb inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| Village inside | 0.0 more than the hero | — | 0.0 more than the hero | — |
+| Canyon descent cutscene → DesertRoad | 0.0 | 0.00 | 0.0 | 0.00 |
+| MayorHall defeat cutscene → LabCells | 0.0 | 0.00 | 0.0 | 0.00 |
+| new game → Canyon | 74.1 | 0.00 | 0.0 | 0.00 |
+| load → DesertRoad | 43.2 | 0.75 | 0.0 | 0.00 |
+| LabBoss right → LaboratoryOutside | 0.0 | 0.00 | 0.0 | 0.00 |
+
 
 ## RESULT lines
 
-RESULTS
+- `verify_camera_transitions` (sections 1, 2, 4, 5, 6): ALL PASS, ~130 s; before the fix 25 FAIL (the same probe
+  with all sections, old `Game.gd` / `FadeRoomTransitions.gd`).
+- `verify_camera_rooms` (section 3): ALL PASS, ~106 s. Split from the first so each stays under run_verify's 180 s.
+- Touched verifies, each ALL PASS: canyon_exit, city_gates_raid, cutscene, demo_end, gates, lab_boss, lab_cells,
+  lab_rooms, lab_route, laboratory, mayor_boss, mayor_hall (once empty under a 400 s timeout while the lock was busy;
+  alone 60 s, ALL PASS), quiet_transitions, room_preload, room_state, rooms_batch1, save_load, save_load_room,
+  village_fight, village_house.
+- Full suite: `SUITE: 2 FAIL`, 120 PASS — verify_audio, verify_combat_enemies (flaky under load, both ALL PASS alone).
+
+## Notes for the orchestrator
+
+- The routine prompt asked to file the B row in `design/BUGS.md` and a § 3 row in `design/MASTER_PLAN.md`, which
+  ROUTINE_RULES reserves for the orchestrator. I followed the prompt; both are one-line additions (BUGS.md after the
+  B150 note, MASTER_PLAN.md after B-hard) and should merge cleanly.
+- `SampleProject/Assets/Backgrounds/Decor/*_sheet.png.import` (9 files) were generated by the headless import and are
+  committed; they are deterministic, so a branch that adds the same files will not conflict.
+- Headless measurement runs at `Engine.max_fps = 60`; the first frame after a heavy load has a long delta, so the fade
+  tween can jump to ~0.45 alpha in one step — that is why the boots were visible at all and why the snap must happen
+  before the first lit frame, not "soon after".
