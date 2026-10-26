@@ -45,6 +45,16 @@ screen or two (scroll 1.25–1.4, darkened) — but not as a constant band at th
 and plants that now runs right under the walk line (Village, road) makes the hero look as if he walks under the
 ground. The walkable ground itself is redrawn by the orchestrator (`paint_terrain.py`, a surface band with depth).
 
+## Castle corridor — Tails of Iron (Sapega, 2026-10-26: «коридор у замку, і придивись, як там вихід зроблений»)
+
+- **The exit is lit.** A plain wooden door stands in the wall on the floor line, framed by the masonry, and a warm
+  shaft of light falls on it from above; the rest of the corridor is dim. The eye finds the way out without a marker.
+  → every RoomDoor gets a soft warm light on its entrance (a light shaft or a glow sprite / PointLight2D), stronger
+  than the room around it.
+- **Foreground pillars.** Wide dark pillars pass in front of the view at intervals (front parallax), and a dark band
+  frames the top and the bottom of the frame: the playfield is a lit strip between darkness.
+- **The floor** is a strip of stone cobbles with a light top surface the characters stand on, darkness below it.
+
 ## Doors (`room_door.tscn`, invisible; the backdrop must show the opening)
 
 | Room | Door | Backdrop at the door | Verdict | Fix |
