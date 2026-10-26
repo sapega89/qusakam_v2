@@ -26,6 +26,67 @@ func _drain(dm: Node) -> void:
 			return
 
 
+func _enter(pressed: bool) -> void:
+	var key := InputEventKey.new()
+	key.keycode = KEY_ENTER
+	key.physical_keycode = KEY_ENTER
+	key.pressed = pressed
+	Input.parse_input_event(key)
+	for i in 2: await process_frame
+
+
+func _wait(cond: Callable, max_s: float) -> bool:
+	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
+	while not cond.call() and Time.get_ticks_msec() < deadline:
+		await process_frame
+	return cond.call()
+
+
+## D722: Enter під час набору — уся репліка, наступне — наступна; утримання гонить репліки до вибору й не далі;
+## вибір — лише справжнім натисканням; після вибору утримання знову гонить до кінця. Тимчасовий .dqd з вибором.
+func _click_through(dm: Node, box: Control) -> void:
+	print("[5] D722: a press shows the typing line whole, the next press moves on; holding runs to the choice, never past it")
+	const PATH := "user://verify_dialogue_skip.dqd"
+	var lines: Array[String] = ["The road is long and the sand is deep, grandson.", "I know, grandfather. I will walk it anyway.",
+		"Then take water, and take your time with it.", "Water I have. Time I do not.",
+		"After the choice the talk goes on.", "And then it ends."]
+	var dqd := "say|GRANDFATHER|%s\nsay|KUSAKAM|%s\nsay|GRANDFATHER|%s\nsay|KUSAKAM|%s\nchoice|Yes|No\nsay|GRANDFATHER|%s\nsay|KUSAKAM|%s\nexit|\n" % lines
+	var file := FileAccess.open(PATH, FileAccess.WRITE)
+	file.store_string(dqd)
+	file.close()
+	var player: Node = dm.current_dialogue_player
+	var choices: Control = box.choice_menu
+	player.play_sections(DQDqdParser.parse_from_file(PATH), PATH)
+	for i in 3: await process_frame
+	ck(box.visible and not box.is_finished() and box.text == lines[0], "the first line is typing")
+	await _enter(true)
+	await _enter(false)
+	ck(box.is_finished() and box.text == lines[0], "Enter while it types shows the whole line at once")
+	await _enter(true)
+	await _enter(false)
+	ck(box.text == lines[1] and not box.is_finished(), "the next Enter goes to the next line (%s)" % box.text)
+	await _enter(true)
+	var reached := await _wait(func() -> bool: return choices.visible, 4.0)
+	ck(reached and box.text == lines[3], "holding Enter runs the lines up to the choice (%s)" % box.text)
+	for i in 30: await process_frame  # тримають і далі
+	ck(choices.visible and box.text == lines[3], "the choice is never skipped while the button is held")
+	ck(get_first_node_in_group(&"player").event, "the hero is held while the choice is open")
+	await _enter(false)
+	for i in 4: await process_frame
+	ck(choices.visible, "releasing after the run does not pick or skip anything")
+	var picked: Array[String] = []
+	choices.choice_made.connect(func(c: String) -> void: picked.append(c))
+	await _enter(true)
+	await _enter(false)
+	await _wait(func() -> bool: return not choices.visible, 1.0)
+	ck(picked == ["Yes"] and box.text == lines[4], "a real press picks the answer, the talk goes on (%s, %s)" % [picked, box.text])
+	await _enter(true)
+	var ended := await _wait(func() -> bool: return not dm.is_dialogue_active(), 4.0)
+	await _enter(false)
+	ck(ended, "holding again runs to the end")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
+
+
 ## Справжній ввід «далі» (dq_accept): клавіатура, пад або миша — по черзі, як грає тестер.
 func _advance(dm: Node, device: int) -> void:
 	dm.current_dialogue_box.finish()  # D254: репліка мусить бути набрана, інакше «далі» нічого не робить
@@ -141,6 +202,8 @@ func _initialize() -> void:
 	var name_row: Control = box.get_node("%NameMargin")
 	ck(name_row.get_parent() == box.get_node("Margin/Rows") and name_row.get_index() == 0, "NameMargin is the first child of Margin/Rows")
 	ck(name_row.mouse_filter == Control.MOUSE_FILTER_IGNORE and box.get_node("%Name").mouse_filter == Control.MOUSE_FILTER_IGNORE, "NameMargin and Name ignore the mouse")
+
+	await _click_through(dm, box)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

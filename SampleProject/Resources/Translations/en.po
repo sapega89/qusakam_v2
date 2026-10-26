@@ -3358,3 +3358,7 @@ msgstr "Equipped — double-click or Enter to unequip (%s)"
 
 msgid "%s unequipped — %s."
 msgstr "%s unequipped — %s."
+
+# D722: проклацати діалог
+msgid "Next line of dialogue (hold: run to the next choice)"
+msgstr "Next line of dialogue (hold: run to the next choice)"

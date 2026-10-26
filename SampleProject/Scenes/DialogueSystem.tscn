@@ -15,8 +15,9 @@ dialogue_box = NodePath("../DialogueBox")
 choice_menu = NodePath("../ChoiceMenu")
 settings = ExtResource("8_player_settings")
 
-[node name="DialogueBox" parent="." instance=ExtResource("2_dialogue_box")]
+[node name="DialogueBox" parent="." node_paths=PackedStringArray("choice_menu") instance=ExtResource("2_dialogue_box")]
 theme = ExtResource("5_game_ui_theme")
+choice_menu = NodePath("../ChoiceMenu")
 
 [node name="ChoiceMenu" parent="." instance=ExtResource("3_choice_menu")]
 theme = ExtResource("5_game_ui_theme")

@@ -21,7 +21,7 @@ const ACTIONS := [
 	["Block (hold) / parry (tap as a yellow-glint blow lands)", &"block"],
 	["Drink a potion (quick slot)", &"quick_potion"],
 	["Interact, talk, pick up", &"interact"],
-	["Next line of dialogue", &"dq_accept"],
+	["Next line of dialogue (hold: run to the next choice)", &"dq_accept"],
 	["Skip a cutscene (hold)", &"cutscene_skip"],
 	["Skill slot 1", &"skill_slot_1"],
 	["Skill slot 2", &"skill_slot_2"],

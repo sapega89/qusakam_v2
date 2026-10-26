@@ -3373,3 +3373,7 @@ msgstr "Споряджено: подвійний клік або Enter — зн�
 
 msgid "%s unequipped — %s."
 msgstr "%s знято — %s."
+
+# D722: проклацати діалог
+msgid "Next line of dialogue (hold: run to the next choice)"
+msgstr "Наступна репліка (утримати — до наступного вибору)"
