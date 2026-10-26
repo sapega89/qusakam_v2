@@ -6,8 +6,9 @@ tags: [oaths, skills, story, combat]
 
 # The oath chooses you — deeds and fighting style (Sapega, 2026-10-26)
 
-> **Latest (overrides any routine prompt that mentions a star map or constellations):** no star map — the census is a
-> short dialogue with the gate scribe, see item 5.
+> **Latest (overrides any routine prompt that differs):** no star map — the census is a short dialogue with the gate
+> scribe (item 5); the path is chosen there and then, no «ще подумаю»; the Skills screen shows only the chosen path's
+> tree (item 7).
 
 Sapega: the problem with the oaths is not the lore but how they are presented: «як три NPC — виглядає дуже дивно, і
 персонаж не захоче до них підходити»; a separate quest — «а навіщо?»; «ми не хочемо закривати Майор Хол через нестачу
@@ -43,13 +44,18 @@ contracts, no god for the neutral path).
    - On «Не знаю» the scribe asks two or three quick this-or-that questions («любиш те чи те, робиш так чи так»,
      drafts), and then names the three paths and **advises one** — the one his answers and the leanings above point to
      («Раджу тобі Самаля»).
-   - The player can take the advice or say **«Та ні, краще…»** and pick another of the three, or still «Ще подумаю»
-     (the scribe can be asked again later).
+   - The player takes the advice or says **«Та ні, краще…»** and picks another of the three. The choice is made
+     there and then — no «ще подумаю», no coming back later (Sapega: «фолбек тут не треба, просто вибрав шлях і
+     іди далі»).
    - The chosen path is the oath (permanent, the existing SkillManager oath ids); its tree opens at level 5, at once if
      he is already 5. It is all one dialogue in the normal dialogue box — no star map, no separate screen.
 6. **A quiet hint, not a number.** The Journal's character page shows three emblems that grow brighter with each
    leaning; one «?» tip (once per playthrough, D-ID of hints-toggle) explains that the way he fights and acts draws a
    path to him.
+
+7. **One skill set, not three** (Sapega: «в нас буде один з трьох наборів скілів, всі три показувати не треба»). The
+   Skills screen shows the base tree (Holy Warrior) and, once the path is chosen, only that path's tree — the other two
+   oath trees are not shown at all (no locked tabs, no previews). Before the census only the base tree shows.
 
 ## The keepers become ordinary people
 The priest of Samal, the priest of contracts (replaces the witch: «теж жрець, просто в чорному, і в золоті, бо контрактів
