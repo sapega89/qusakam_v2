@@ -324,10 +324,10 @@ func _game_over() -> void:
 	await Kit.frames(self, 3)
 	var key: Label = screen.get_node("%Footer/Keycap/KeyLabel")
 	ck(_focus() != null and screen.is_ancestor_of(_focus()), "a button has focus (%s)" % _focus())
-	ck(key.text == "A", "pad: footer key A (%s)" % key.text)
-	await Kit.key(self, KEY_SHIFT)
+	# Попередній крок (D735) закінчився клавіатурою.
 	ck(key.text == "ENTER", "keyboard: footer key ENTER (%s)" % key.text)
 	await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(key.text == "A", "pad: footer key A (%s)" % key.text)
 	layer.queue_free()
 	await Kit.frames(self, 2)
 
