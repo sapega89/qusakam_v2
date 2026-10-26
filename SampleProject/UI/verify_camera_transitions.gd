@@ -5,8 +5,9 @@ extends SceneTree
 ## (RoomDoor, E) в обидва боки; кожен кадр від початку переходу до 1,5 с після повної появи пишемо центр екрана камери,
 ## її межі, прозорість затемнення й позицію героя. Стрибок — видима камера зсунулась більш ніж на JUMP_PX за кадр,
 ## або ще повзе після кінця появи, або межі змінились, коли екран видно. Потім завантаження сейву й усередині
-## кожної кімнати: біг і стрибки з кожної клітинки, падіння з уступів — кадри, де камера рушила набагато більше героя.
-##   godot --headless --path . --script res://SampleProject/UI/verify_camera_transitions.gd
+## кожної кімнати (verify_camera_rooms.gd): біг і стрибки з кожної клітинки, падіння з уступів — кадри, де камера
+## рушила набагато більше героя.
+##   godot --headless --path . --script res://SampleProject/UI/verify_camera_transitions.gd [-- 12345 dump]
 
 const Kit := preload("res://SampleProject/UI/input_kit.gd")
 ## Шляхи, а не preload: class_name RoomDoor тягне ServiceLocator, якого компілятор SceneTree-скрипта ще не бачить.
@@ -48,22 +49,24 @@ func _initialize() -> void:
 	game.player.set_invulnerable(true)
 
 	var only := "".join(OS.get_cmdline_user_args())  # -- 2 : лише розділ [2] (налагодження)
-	if only == "" or only.contains("1"):
+	if only == "" or only == "dump":
+		only = _sections() + only
+	if only.contains("1"):
 		await _edges()
-	if only == "" or only.contains("2"):
+	if only.contains("2"):
 		await _all_doors()
-	if only == "" or only.contains("3"):
+	if only.contains("3"):
 		print("[3] Inside rooms: run, jump, drop")
 		for room: String in _rooms():
 			if room != DEMO_END_ROOM:
 				await _inside(room)
-	if only == "" or only.contains("4"):
+	if only.contains("4"):
 		print("[4] Cutscenes that end in another room")
 		await _cutscenes()
-	if only == "" or only.contains("5"):
+	if only.contains("5"):
 		print("[5] New game and loading a save, from the menu's black screen")
 		await _boots()
-	if only == "" or only.contains("1"):
+	if only.contains("1"):
 		print("[6] Into the demo-end room, last")
 		for p: Dictionary in _edge_passages():
 			if p.to == DEMO_END_ROOM:
@@ -74,6 +77,12 @@ func _initialize() -> void:
 	for r in rows:
 		print(r)
 	_done()
+
+
+## Розділи цього файлу. Біг усередині кімнат ([3]) — у verify_camera_rooms.gd: разом вони довші за 180 с
+## run_verify.sh.
+func _sections() -> String:
+	return "1245"
 
 
 func _edges() -> void:
