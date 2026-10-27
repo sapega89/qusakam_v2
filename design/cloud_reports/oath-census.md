@@ -19,7 +19,7 @@ tags: [cloud, oaths, census, skills]
   - Two of the five deeds in the plan, «wounded in the burning village» and «Bandit Camp / brute's key»: no dialogue beat exists for them.
 - **D-IDs (calls beyond the plan):** OC1–OC7 below, numbered **D757–D763** on the PC (2026-10-27). OCB1 is **B160**.
 - **B rows:** none fixed. One new defect is filed below (OCB1).
-- **Full suite:** see the end of this report. Every failure left on the branch also fails on the base merge `419aa49e`.
+- **Full suite:** 115 PASS, 9 FAIL. Eight of the failures also fail on the base merge; the ninth (`verify_combat_player`) is a flake that passed on re-run.
 
 ## What changed (file:line pointers)
 
@@ -122,4 +122,7 @@ The Alisia deed comes after the census, so it only shows in the emblems.
 - Captures: `SampleProject/UI/capture_oath_census.gd` → `design/shots/oath_census/` (census_scribe, census_serve, census_advice, census_en, journal_emblems, priests). `capture_skill_trees.gd` no longer shoots the removed oath menu or the other trees.
 
 ## Full suite
-FULL_SUITE_LINE
+`Scripts/Tools/run_verify.sh`: **115 PASS, 9 FAIL**.
+- 8 of the failures also fail on the base merge `419aa49e` (elites-first + hints-toggle), checked one by one: `verify_dialogue_speaker` (hangs: the parser is compiled before the autoloads), `verify_gamepad_parity`, `verify_living_world`, `verify_npc_arrival`, `verify_onboarding`, `verify_save_load_room`, `verify_tasks`, `verify_xp_curve`.
+- `verify_combat_player` («ten rolls in a row all start (9)») is a timing flake: it passed in the first full run and again on its own re-run.
+- The first full run also showed regressions from this work in `verify_lab_cells`, `verify_starter_loot` and `verify_npc_arrival` (Arrow's compile order). All three are fixed (OC3, OC7, Arrow reaches EventBus at runtime). `verify_npc_arrival` still fails, as it does on the base.
