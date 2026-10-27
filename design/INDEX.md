@@ -12,6 +12,8 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 
 ---
 
+- [[asset_verdicts_2026-10-27]] — the art queue from the asset catalog verdicts
+
 ## Start here
 
 | Note | What it answers |
