@@ -456,6 +456,8 @@ const MEDITATION_SIT_HOLD := 1.5
 const MEDITATION_PAN_TIME := 3.5
 const MEDITATION_LOOK_HOLD := 1.0
 const MEDITATION_RETURN_TIME := 1.2
+## D815: тема туторіалу, якою перша медитація каже, що в героя є навички (tutorial.json).
+const STARTING_SKILLS_TOPIC := "starting_skills"
 
 func _on_abduction_cutscene_state(run_id: int) -> void:
 	var game := Game.get_singleton()
@@ -475,6 +477,9 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	cs.player.get_node(^"Sprite2D").flip_h = true
 	cs.set_pose(&"Meditate")
 	await cs.wait(MEDITATION_SIT_HOLD)
+	# D815: у медитації прокидаються блок і хіл, з якими він почав, — і гра каже, які вони, на які кнопки й де решта.
+	ServiceLocator.get_skill_manager().awaken_skills()
+	await _tell_starting_skills()
 	await cs.pan_to($Meditation/Look.global_position, MEDITATION_PAN_TIME)
 	await cs.wait(MEDITATION_LOOK_HOLD)
 
@@ -491,6 +496,18 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	cs.end()
 	game.set_objective("Pursue the kidnappers", &"village")
 	_after_abduction_cutscene()
+
+## D815: тема «Your Skills» — «?» і одразу її вікно (TipTray, D744), гра на паузі, доки гравець його не закрив.
+## Hints Off (D746) чи тему вже бачили в цьому проходженні (D745) — нічого. Вікно не відкрилось (гра не вільна) —
+## «?» чекає, як кожна підказка.
+func _tell_starting_skills() -> void:
+	var tray: Node = get_tree().get_first_node_in_group(&"tip_tray")
+	tray.show_tip(STARTING_SKILLS_TOPIC)
+	if not tray.has(STARTING_SKILLS_TOPIC):
+		return
+	tray.open_tip(STARTING_SKILLS_TOPIC)
+	if not tray.has(STARTING_SKILLS_TOPIC):
+		await ServiceLocator.get_ui_manager().get_modal_layer().modal_closed
 
 func _on_to_village_state(run_id: int) -> void:
 	"""Обробка стейту TO_VILLAGE - діалог та підготовка до переходу через проходи між сценами"""

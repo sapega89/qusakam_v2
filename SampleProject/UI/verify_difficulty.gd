@@ -15,7 +15,8 @@ extends SceneTree
 ## Удар героя — легка серія (COMBO_DAMAGE) без криту, зі спини (панцир tank, щит shield-bearer); удар ворога —
 ## звичайний удар (у боса — удар комбо), герой не блокує й не ухиляється. «Перемагає»: за бій у N ударів герой
 ## пропускає ceil(N / OPENINGS) ударів (OPENINGS — скільки разів добрий гравець б'є на кожен пропущений удар)
-## і має пережити їх із флягою (Healing Palm, усі заряди).
+## і має пережити їх із флягою (Healing Palm, усі заряди; з 1-го рівня, D815). Shield Block (D815, задарма) діє лише
+## крізь блок (D809), а герой тут не блокує — у цих числах він 0.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_difficulty.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -301,12 +302,13 @@ func _make_hero(level: int, city: bool, build: String) -> void:
 	var attrs: Node = sl.get_attribute_manager()
 	var gm: Node = sl.get_game_manager()
 	sm._forget_all()
+	# D815: обидві збірки починають з Shield Block і Healing Palm задарма; бої маршруту — після медитації в каньйоні.
+	sm.grant_starting_skills()
+	sm.awaken_skills()
 	sl.get_xp_manager().restore(level, 0)
 	attrs._set_unspent(attrs.points_for_level(level))
 	sm._set_job_points(sm.JP_PER_LEVEL * (level - 1))
 	gm.player_state.oath = OATH if build == "SKILLS" and level >= OATH_LEVEL else ""
-	if level >= 2:
-		sm.unlock_skill("healing_palm")  # фляга (D504) — в обох збірок, без JP
 	sm.refill_charges()
 	var hero_id: String = gm.get_active_character().character_id
 	var em: Node = sl.get_equipment_manager()

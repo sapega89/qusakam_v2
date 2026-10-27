@@ -266,6 +266,8 @@ signal oath_sworn(oath_id: String)
 signal leanings_changed()
 ## Навички скинуто за монети (D282) чи безкоштовно (D490): усе забуто, refunded очок повернуто, клятва лишилась.
 signal skills_reset(refunded: int)
+## D815: перша медитація — навички героя (стартові й будь-які вивчені) почали діяти.
+signal skills_awakened()
 ## Невкладених очок атрибутів стало current (D335): рівень, вкладення, скидання.
 signal attribute_points_changed(current: int, previous: int)
 ## Змінилось, скільки очок вкладено в атрибути (D335) — Max HP, SP, атака перераховуються.

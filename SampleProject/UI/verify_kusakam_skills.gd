@@ -62,8 +62,19 @@ func _initialize() -> void:
 	ck(sm.get_current_sp() == 20, "no SP over time (%d)" % sm.get_current_sp())
 	sm.restore_sp(30)
 
-	print("[2b] Healing Palm is learned at the first level-up (D252, D261); strikes at level 6 for skill points (D149)")
-	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "no skills at New Game")
+	print("[2a] D815: New Game starts with Shield Block and Healing Palm (slot 1), asleep until the first meditation")
+	ck(sm.is_unlocked("shield_block") and sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "healing_palm",
+			"Shield Block and Healing Palm learned at New Game, Healing Palm in slot 1 (%s)" % [sm.get_equipped_skills()])
+	ck(sm.can_use_skill("healing_palm") == R.NOT_AWAKENED, "Healing Palm not usable before the meditation")
+	# Далі — шлях навчання будь-якої навички через екран; Длань — та сама, тож герой без навичок (стан до D815).
+	var state: Dictionary = sl.get_game_manager().player_state
+	state.unlocked_skills = []
+	state.starting_skills = []
+	state.skills_awakened = true
+	sm._commit_loadout(["", "", "", "", "", "", "", ""])
+
+	print("[2b] Healing Palm learned through the Skills screen at level 2 (D252, D261); strikes at level 6 for skill points (D149)")
+	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "no skills once the starting ones are taken away")
 	ck(sm.can_unlock("healing_palm") == R.LEVEL_TOO_LOW, "Healing Palm locked at level 1")
 	var xp: Node = sl.get_xp_manager()
 	xp.add_xp(100)

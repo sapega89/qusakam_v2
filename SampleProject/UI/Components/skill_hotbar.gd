@@ -11,7 +11,7 @@ class_name UISkillHotbar
 ## навичку. Другого таймера перезарядки в HUD немає — час береться з менеджера.
 
 const SkillSlotInput = preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
-## Недоступний слот (немає SP, не та зброя) — уся група слота тьмяніє (Figma 434:6628, Bind 4).
+## Недоступний слот (немає SP, не та зброя, навички ще не прокинулись — D815) — уся група слота тьмяніє (Figma 434:6628, Bind 4).
 const UNAVAILABLE_ALPHA := 0.4
 
 @onready var _slots_root: Control = %Slots
@@ -42,6 +42,7 @@ func _connect_live_sources() -> void:
 		[EventBus.weapon_in_hand_changed, _on_weapon_changed],
 		[EventBus.input_device_changed, _on_input_device_changed],
 		[EventBus.charms_changed, refresh],  # D592: ціна в SP з оберегом
+		[EventBus.skills_awakened, refresh],  # D815: до першої медитації слоти тьмяні
 	]:
 		if not pair[0].is_connected(pair[1]):
 			pair[0].connect(pair[1])

@@ -64,6 +64,8 @@ func _initialize() -> void:
 	var started: Array[String] = []
 	dm.dialogue_started.connect(func(id: String) -> void: started.append(id.get_file().get_basename()))
 
+	ck(not sl.get_skill_manager().skills_awakened(), "D815: the starting skills sleep until the summit meditation")
+
 	print("[0] The abduction waits for the climb: on the summit Kusakam sits to meditate, the camera drifts left, the raid (Sapega, 2026-10-20)")
 	await _enter_canyon(game, {"canyon_intro_complete": true})
 	ck(game.map.get_current_state_name() == "EXPLORATION", "waits in EXPLORATION (%s)" % game.map.get_current_state_name())
@@ -104,6 +106,7 @@ func _initialize() -> void:
 	ck(absf(player0.global_position.x - x_seat) < 1.0 and anim0.current_animation == "Meditate", "move_right does nothing, he keeps sitting")
 	ck(not started.has("VillageAbduction"), "the raid waits until the camera has drifted")
 	await _until(func() -> bool: return started.has("VillageAbduction"), 10.0)
+	ck(sl.get_skill_manager().skills_awakened(), "D815: the meditation wakes the starting skills (Hints Off: no window)")
 	var drift: float = x_sit - camera0.get_screen_center_position().x
 	ck(drift > 200.0, "the camera drifted left before the raid (%.0f px)" % drift)
 	var fade: CanvasLayer = root.get_node_or_null(^"ScreenFade")

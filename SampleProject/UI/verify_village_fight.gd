@@ -175,7 +175,8 @@ func _initialize() -> void:
 	ck(game.player.current_health == game.player.Max_Health, "the old man healed Kusakam to full")
 	ck(game.player.get_children().any(func(c: Node) -> bool: return c.scene_file_path.ends_with("HealingPalm.tscn")),
 			"the healing light wraps Kusakam on screen, no narration line (D437)")
-	ck(not sm.is_unlocked("healing_palm") and sm.get_equipped_skill(0) == "", "the Village teaches no Healing Palm, slot 1 empty")
+	ck(sm.is_starting_skill("healing_palm") and sm.get_equipped_skill(0) == "healing_palm",
+			"the Village teaches no Healing Palm: it is the starting one in slot 1 (D815, %s)" % [sm.get_equipped_skills()])
 	ck(not tray.has("healing_palm"), "no Healing Palm tutorial in the Village (%s)" % [tray.ids()])
 
 	print("[7] Straight on to his decision, the gift and the key")
