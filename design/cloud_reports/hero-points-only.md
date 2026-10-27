@@ -9,7 +9,8 @@ tags: [cloud, routines, progression, balance]
 - **UI:** the level-up notification (D436) drops its Max HP and Damage rows and keeps Attribute Points and Job Points. Two tutorial texts no longer promise automatic HP and damage (en + uk).
 - **verify_difficulty: 11 FAIL → 14 FAIL.** No assertion was loosened. All 11 earlier FAILs come from D840 (pre-D840 base: 5 FAIL) and stay the same. The **3 new FAILs are all in the STRENGTH build.** That build puts every point into Strength, so its HP now comes only from gear (120 at levels 3–4, 168 from level 5 to level 12): **[3]** it now loses the armoured scorpion at L3 before the oath, and **[4]** Scorpicore's and the Mercenary's heaviest moves now kill it at full HP in one hit. This is the cost of D841, not a bug in the change. See Q below.
 - **D-ID text:** §1. **B rows fixed:** none.
-- **Full suite:** running (this line is updated when it finishes)
+- **verify_lab_boss: ALL PASS → 2 FAIL (new, from D841).** Its D676 "balanced" hero puts his points in evenly (19/19/19/18 at L16), so he gets less Vitality and Strength than 2/2/1. He now dies in 2.3 blows (needs 2.5–4) and needs 67 light hits (needs 35–65). No set of per-point values passes both this and verify_difficulty (§4). Not loosened.
+- **Full suite:** `SUITE: 5 FAIL in 13 min 13 s, J=4`. verify_difficulty (14, above) and verify_lab_boss (2, new) are real. verify_enemy_scaling (1 FAIL) fails the same way on `cloud/enemy-scaling` and is not mine. verify_combat_flow (2) and verify_repeat_load (1, node count 628 → 629) fail only under J=4 load: each passed alone on this branch and on the base.
 - **Godot ran** (4.6.2). Tests: verify_attributes, verify_level_up, verify_xp_curve, verify_status, verify_progression, verify_combat_stats, verify_starting_skills, verify_save_load, verify_scripts_compile — ALL PASS; verify_difficulty 14 FAIL (above). `Maps/` is untouched.
 
 ## 1. D-ID text
@@ -115,11 +116,25 @@ NEW  FAIL Mercenary [DRAFT], STRENGTH: its heaviest move (288) kills in 1 hits
 
 Pre-D840 base (merge-base with feature/backlog) for reference: 5 FAIL (scorpion L9 [1], shield-bearer L11 [1], Scorpicore [2], Mercenary [2], armoured scorpion L11 SKILLS [3]).
 
-## 4. Proposed Q (for the orchestrator to file and ask)
+## 4. verify_lab_boss and the values I tried
+
+| Strength / pt | Vitality / pt | lab_boss balanced: blows to die (2.5–4) | light hits (35–65) | verify_difficulty |
+|---|---|---|---|---|
+| (before: 1 + 2/lv) | (4 + 10/lv) | 2.6 (406 HP) | 60 (Atk 100) | 11 FAIL |
+| **2 (×0.75, built)** | **9** | 2.3 (351 HP) ✗ | 67 (Atk 89) ✗ | 14 FAIL |
+| 2.2 (×0.75) | 10 | 2.4 (370 HP) ✗ | 65 (Atk 92) ✗ | 13 FAIL (+ [5] reads per_point as int) |
+| 2.2 (×0.75) | 11 | 2.5 (389 HP) ✓ | 65 (Atk 92) ✗ | 14 FAIL, new: vulture L2 SKILLS survives 7 hits ([1] wants 5–6), boss N 32 / 28 |
+
+Lab_boss's to_die needs Vitality ≥ 11, and that gives the SKILLS hero too much HP early ([1]). Its to_kill needs Strength ≥ ~2.3, and that drops the D840 boss N further below 34. I kept the values that keep the sim's SKILLS hero exact, because the task names verify_difficulty as the judge.
+
+## 5. Proposed Qs (for the orchestrator to file and ask)
+
+**Q: the evenly spread hero (verify_lab_boss, D676).** Each point now gives a fixed amount, so a focused build gets the old value back and an even 4-way split does not: at L16 he is 55 HP / 11 Atk short. Options: (a) accept, and judge D676's numbers on the 2/2/1 build; (b) raise Vitality to 11 and retune [1]'s early window; (c) give Agility/Wisdom a small HP/Atk share. Default: (a).
+
 
 **Q: the all-Strength hero with D841.** He now gets no HP from levels (gear only: 168 HP at level 12). He is one-shot by Scorpicore's and the Mercenary's heaviest move ([4]), and he loses the pre-oath armoured scorpion ([3]). Options: (a) accept: a glass-cannon build is meant to die to a boss's big move, so [4] should be judged on the SKILLS hero only (a product call; I did not change the check); (b) give Strength a little HP per point (e.g. +2), which blurs the attributes; (c) raise base HP / armour HP. My default if nobody answers: (a). The point of D841 and the pillars («a build through profession and skills») is that a build has a cost.
 
-## 5. Files
+## 6. Files
 
 - `SampleProject/Scripts/Managers/XPManager.gd` — stat_bonuses / get_hp_bonus / get_damage_bonus removed.
 - `SampleProject/Resources/Data/xp_curve.json` — hp_per_level / damage_per_level removed; `_growth` says D841.
