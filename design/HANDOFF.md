@@ -32,7 +32,7 @@ MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 | rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
 | hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
 | scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
-| art agent (local, ComfyUI) | — | — | shields + mouse, H4, **M6a-1** (`4cca758a`, `design/shots/m6a1_path_scree.png`) done and sent; **idle until Sapega reviews M6a-1** (m6_backdrops: each batch seen before the next). Open: the fallen barrier's look (lore never says — blocks only the barrier plane), the waymarker reads as a ribboned pillar, the smoke's foot floats in the scree's top frame, the gorge-wall ledges may read walkable. Then M6a-2 (gorge + ledges, world-anchored from 1728 px), M6a-3 (burnt village) |
+| art agent (local, ComfyUI) | — | — | M6a-1 approved (D795–D797: «дим класний», «шар крутий»; `4cca758a`, `bb522cb3`). Now **M6a-2a**: the barrier to full screen width (D797) + Stream Gorge → `design/shots/m6a2_gorge.png`. Then M6a-2b rock ledges (the plume's source at the village passage, the sketch's upper strip), M6a-3 burnt village |
 
 ## 2b. Tests (Sapega 2026-10-27: «зроби»)
 `run_verify.sh` now runs 4 tests at a time, each with its own empty user:// (`0e901b13`; g* subset 1:49 → 0:56), and prints
