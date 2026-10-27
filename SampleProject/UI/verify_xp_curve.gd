@@ -4,8 +4,9 @@ extends SceneTree
 ## through the real XPManager. The kills are read from the room scenes (every EnemySpawnPoint) and the rewards from
 ## their EnemyStats — change a fight or a reward and this re-checks where level 5 lands.
 ##   1. The curve comes from Resources/Data/xp_curve.json.
-##   2. Level 2 on the Desert Road (Healing Palm there, D252); level < 5 until the City Gates fight is done.
-##   3. Level 5 on the last City Gates kill — the hero enters the City able to swear the oath (D280).
+##   2. Level 2 on the Desert Road (Healing Palm there, D252); level < 5 when the City Gates fight starts.
+##   3. Level 5 by the end of the City Gates fight — the census after it gives the oath (D280, D726); the optional
+##      old vulture (D722) may bring it a kill or two early.
 ##   4. Straight on through the Mayor Hall and the Laboratory (D492): level 16–17 when the Laboratory ends.
 ##   5. A little farming — the Laboratory corridors again, at most FARM_ROUNDS times — reaches the cap (20, D488).
 ##   6. At the cap XP no longer counts.
@@ -59,8 +60,6 @@ func _initialize() -> void:
 				continue
 			var stats = point.enemy_stats()
 			ck(stats.xp_reward > 0, "%s %s (%s) gives XP" % [room_name, point.name, point.enemy_type])
-			if room_name == "CityGates":
-				ck(xp.current_level < OATH_LEVEL, "level %d before the City Gates kill %s" % [xp.current_level, point.name])
 			xp.add_xp(stats.xp_reward)
 			total += stats.xp_reward
 			kills.append(point.enemy_type)

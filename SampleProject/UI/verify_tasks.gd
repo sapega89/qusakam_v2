@@ -93,6 +93,20 @@ func _initialize() -> void:
 	ck(inv.get_item_count("coin") - coins == ench.cost("iron_sword"), "the enchanting fee comes back (%d)" % (inv.get_item_count("coin") - coins))
 	ck(inv.get_item_count("iron_sword+1") == 1, "the +1 sword stays with the player")
 	ck(not _labels(smith).has("Quest"), "no tasks left → no Quest")
+	# Нагорода — «You obtained:» (BACKLOG 33); поки вона відкрита, меню NPC не відкривається. Гравець закриває її Enter.
+	var layer: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer()
+	for i in 30:
+		if layer.active_modal: break
+		await process_frame
+	ck(layer.active_modal != null, "the reward shows «You obtained:»")
+	var ui: Node = root.get_node("ServiceLocator").get_ui_manager()
+	for i in 120:  # нагороди йдуть чергою — по одному вікну
+		var ok_button: Control = layer.active_modal.get_viewport().gui_get_focus_owner() if layer.active_modal else null
+		if ok_button != null:
+			ok_button.pressed.emit()  # кнопка у фокусі — як Enter (фокус ставиться кадром пізніше за вікно)
+		elif layer.active_modal == null and not ui.has_pending_obtained():
+			break
+		await process_frame
 
 	print("[4] Two open tasks → a list; the chosen row runs, not the first (D161, GitHub #29)")
 	var TASKS: GDScript = load("res://SampleProject/Scripts/Tasks/task_service.gd")

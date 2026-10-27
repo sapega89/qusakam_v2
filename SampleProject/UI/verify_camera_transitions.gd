@@ -93,7 +93,8 @@ func _edges() -> void:
 	game.set_quest_flag("lab_cells_cutscene_complete", true)
 	game.set_quest_flag("lab_acquaintance_complete", true)
 	var passages := _edge_passages()
-	ck(passages.size() >= 14, "found %d edge passages (both directions)" % passages.size())
+	# D747: три внутрішні проходи стали парами дверей (межі MapData закриті) — 14 → 8; двері перевіряє [2].
+	ck(passages.size() >= 8, "found %d edge passages (both directions)" % passages.size())
 	for p: Dictionary in passages:
 		if p.room == DEMO_END_ROOM:
 			print("  --  %s %s: the demo ends in this room, there is no way back" % [_short(p.room), DIR_NAMES[p.dir]])
@@ -263,7 +264,10 @@ func _door(room: String, door_path: NodePath) -> void:
 	var door: Node2D = game.map.get_node(door_path)
 	var label := "%s door %s → %s" % [_room_name(), door.name, (door.target_room as String).get_file().get_basename()]
 	if door.gate_id != "":
-		game.set_quest_flag(door._gate.flag, true)
+		if door._gate.has("key"):  # D723: двері табору відмикає ключ громила
+			root.get_node("ServiceLocator").get_inventory_manager().add_item(door._gate.key, 1)
+		else:
+			game.set_quest_flag(door._gate.flag, true)
 	door.interactable.enabled = true
 	# Герой стає за 40 px від дверей на їхній висоті (двері стоять там, де стоїть герой) і сам доходить до них:
 	# Area2D не бачить тіла, поставленого просто на неї.

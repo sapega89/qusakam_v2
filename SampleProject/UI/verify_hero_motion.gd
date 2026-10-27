@@ -48,11 +48,18 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
-	for i in 300:
-		if not dm.is_dialogue_active(): break
-		dm.current_dialogue_box.finish()  # D254
-		dm.current_dialogue_player.accept()
-		await process_frame
+	# D737: розмова сюжету тримає героя, і монолог облачком теж. Вступ Каньйону — два монологи з паузою ~0,1 с між ними,
+	# тож чекаємо, доки сюжет мовчить пів секунди поспіль; облачка — прискорені.
+	dm.bubble_time_scale = 0.05
+	var quiet := 0
+	var deadline := Time.get_ticks_msec() + 60000
+	while quiet < 30 and Time.get_ticks_msec() < deadline:
+		quiet = 0 if dm.is_story_busy() else quiet + 1
+		if dm.is_dialogue_active():
+			dm.current_dialogue_box.finish()  # D254
+			dm.current_dialogue_player.accept()
+		await physics_frame
+	dm.bubble_time_scale = 1.0
 	var pl: Node = game.player
 	var anim: AnimationPlayer = pl.get_node("AnimationPlayer")
 	for i in 30: await physics_frame

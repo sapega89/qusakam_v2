@@ -381,6 +381,12 @@ func is_bubble_playing() -> bool:
 	return _bubble_playing
 
 
+## Облачко ще те, що грає. Звільнене облачко в Godot дорівнює null, тож після _on_bubble_gone (_bubble = null)
+## саме «_bubble == bubble» лишалось true, і монолог ішов далі на мертвому облачку (завантаження посеред монологу).
+func _is_current(bubble: Variant) -> bool:  # Variant: звільнений вузол не проходить перевірку типу аргументу
+	return is_instance_valid(bubble) and _bubble == bubble
+
+
 func _is_monologue(path: String) -> bool:
 	var lines: Array[Dictionary] = DQD_READER.lines(path)
 	return not lines.is_empty() and lines.all(func(line: Dictionary) -> bool: return line.speaker in PLAYER_SPEAKERS)
@@ -418,20 +424,20 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 			var auto: bool = SaveSystem.settings_module.auto_advance_enabled()
 			var wait: float = current_dialogue_box.auto_advance_delay(text)  # живий час, без bubble_time_scale
 			_bubble_skip = false
-			while not _bubble_skip and _bubble == bubble and (not auto or wait > 0.0):
+			while not _bubble_skip and _is_current(bubble) and (not auto or wait > 0.0):
 				await get_tree().process_frame
 				if not get_tree().paused:
 					wait -= get_process_delta_time()
-			if _bubble != bubble:
+			if not _is_current(bubble):
 				return
 			continue
 		# process_always = false: відкрите меню (пауза) тримає репліку.
 		var timer := get_tree().create_timer(SPEECH_BUBBLE.seconds_for(line.text) / SaveSystem.settings_module.text_speed_factor()
 				* bubble_time_scale, false)
 		_bubble_skip = false
-		while timer.time_left > 0.0 and not _bubble_skip and _bubble == bubble:
+		while timer.time_left > 0.0 and not _bubble_skip and _is_current(bubble):
 			await get_tree().process_frame
-		if _bubble != bubble:
+		if not _is_current(bubble):
 			return  # облачко пішло разом зі сценою — _on_bubble_gone уже все скинув
 	_bubble = null
 	bubble.queue_free()

@@ -97,7 +97,7 @@ func _menu_takes_the_hero(npc: NpcBase, player: CharacterBody2D) -> void:
 	await _tap(&"attack")
 	for i in 4: await physics_frame
 	ck(player.global_position.distance_to(at) < 1.0 and player.velocity == Vector2.ZERO, "D735: walk and jump do nothing behind the menu (moved %.1f)" % player.global_position.distance_to(at))
-	ck(player.combat.state == PlayerCombat.State.READY, "D735: attack does nothing behind the menu (%s)" % player.combat.state)
+	ck(player.combat.state == load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").State.READY, "D735: attack does nothing behind the menu (%s)" % player.combat.state)
 	ck(npc.npc_menu.visible, "D735: the menu stays open")
 	await _tap(&"ui_cancel")
 	ck(not npc.npc_menu.visible and not player.event, "D735: Esc / B closes it and lets the hero go")

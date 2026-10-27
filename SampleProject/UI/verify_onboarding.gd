@@ -217,7 +217,8 @@ func _check_arrow(village: Node) -> void:
 	var arrow: Label = hud.get_node(^"%Direction")
 	game.set_objective("Check on the house", &"house")
 	var house: Vector2 = village.get_node(^"ObjectiveTargets/house").global_position
-	for case: Array in [[-600.0, "→"], [600.0, "←"], [0.0, ""]]:
+	# +300, не +600: за 2592 px уже сусідня кімната — перехід ставив гру на паузу, і стрілка не оновлювалась.
+	for case: Array in [[-600.0, "→"], [300.0, "←"], [0.0, ""]]:
 		hero.global_position = Vector2(house.x + case[0], house.y - 20.0)
 		hero.velocity = Vector2.ZERO
 		for i in 3: await process_frame

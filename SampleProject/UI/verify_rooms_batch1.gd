@@ -301,7 +301,12 @@ func _initialize() -> void:
 	print("[5] Mesa Climb: up the ledges to the chest; vultures overhead")
 	await _enter("MesaClimbDoor", "MesaClimb")
 	ck(_kinds("Fight_Vultures") == ["vulture", "vulture"], "vultures circle the mesa (%s)" % [_kinds("Fight_Vultures")])
-	game.map.get_node("Fight_Vultures").trigger_area.monitoring = false  # підйом, а не бій: грифів перевіряє verify_fliers
+	# Підйом, а не бій: грифів перевіряє verify_fliers. Двері стоять у зоні бою — грифи вже злетіли, і пікірування
+	# збивало героя з уступу біля скрині (залежно від таймінгу), тож прибираємо їх.
+	var vultures: Node = game.map.get_node("Fight_Vultures")
+	vultures.trigger_area.monitoring = false
+	for enemy: Node in vultures.spawned_enemies:
+		enemy.queue_free()
 	var ledges: Array = game.map.get_node("Ledges").get_children()
 	var at: Node2D = null
 	for ledge: Node2D in ledges:

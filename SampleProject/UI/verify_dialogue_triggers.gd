@@ -75,10 +75,12 @@ func _pad_a() -> InputEvent:
 
 
 ## Тригер сюжету (лише діалог) у кімнаті, як ті, що стоять у сценах.
-func _trigger(game: Node, dialogue_id: String) -> StateChangeTrigger:
-	var trigger := StateChangeTrigger.new()
+## load(), не клас: SceneTree-тест компілюється раніше за автозавантаження, а StateChangeTrigger тягне ServiceLocator.
+func _trigger(game: Node, dialogue_id: String) -> Area2D:
+	var script: GDScript = load("res://SampleProject/Scripts/Gameplay/StateChangeTrigger.gd")
+	var trigger: Area2D = script.new()
 	trigger.dialogue_id = dialogue_id
-	trigger.action_mode = StateChangeTrigger.ActionMode.DIALOGUE_ONLY
+	trigger.action_mode = script.ActionMode.DIALOGUE_ONLY
 	game.map.add_child(trigger)
 	trigger.owner = game.map
 	return trigger
@@ -258,10 +260,10 @@ func _initialize() -> void:
 	ck(box.get_text() == line2, "Auto-Advance Off: the line waits for a press")
 	settings.settings.auto_advance = true
 	await _drain(dm)
-	var sections: Array[DQDqdParser.DqdSection] = DQDqdParser.parse_from_text("say|KUSAKAM|Pick one.\nchoice|Yes|No\nexit|\n")
 	dm._find_dialogue_system_in_scene()
 	box.visible = true
-	dm.current_dialogue_player.play_sections(sections, "res://dialogue_quest/verify_choice")
+	dm.current_dialogue_player.play_sections(load("res://addons/dialogue_quest/scripts/systems/dqd/dqd_parser.gd")
+			.parse_from_text("say|KUSAKAM|Pick one.\nchoice|Yes|No\nexit|\n"), "res://dialogue_quest/verify_choice")
 	for i in 3: await process_frame
 	box.finish()
 	var choice_menu: Control = dm.current_dialogue_player.choice_menu

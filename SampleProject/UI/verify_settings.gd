@@ -691,7 +691,7 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	ck(absf(audio.get_music_volume() - 0.2) < 0.02 and absf(audio.get_ambient_volume() - 0.4) < 0.02,
 			"volumes re-applied after the reload")
 	ck(display.brightness == 80 and display.get_node(^"%Brightness").visible, "brightness re-applied after the reload")
-	ck(_typed_in_one_second() == 48 and not await _camera_kicks(), "Text Speed Quick and Screen Shake Off act after the reload")
+	ck(_typed_in_one_second() == 96 and not await _camera_kicks(), "Text Speed Quick and Screen Shake Off act after the reload")
 	ck(TranslationServer.get_locale().begins_with(lang), "language re-applied after the reload")
 	opts.switch_to_tab("game")
 	for i in 3: await process_frame
@@ -711,7 +711,7 @@ func _every_row(opts: Node, module: Node, save_system: Node, loc: Node) -> void:
 	ck(TranslationServer.get_locale().begins_with(String(module.default_settings["language"])), "default language applied")
 	ck(absf(audio.get_ambient_volume() - 1.0) < 0.01 and display.brightness == 50
 			and not display.get_node(^"%Brightness").visible, "Ambient 100 and Brightness 50 restored")
-	ck(_typed_in_one_second() == 24 and await _camera_kicks(), "Text Speed Default and Screen Shake On restored")
+	ck(_typed_in_one_second() == 48 and await _camera_kicks(), "Text Speed Default and Screen Shake On restored")
 	var on_disk: Dictionary = str_to_var(FileAccess.get_file_as_string(save_system.get_settings_path()))
 	ck(on_disk == module.default_settings, "defaults written to the settings file")
 	FileAccess.open(slot_path, FileAccess.WRITE).store_string(var_to_str({"current_room": ":test"}))

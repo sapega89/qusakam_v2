@@ -431,15 +431,26 @@ func reset_map_starting_coords():
 func teleport_to_room(room_path: String, arrival: NodePath) -> void:
 	await load_room(room_path)
 	var target: Node2D = map.get_node(arrival)
-	place_player(target.global_position)
+	_place_on_floor(target.global_position)
 	if room_changing:
 		await room_change_finished
+
+
+## Точка появи (двері, Arrival) стоїть трохи над підлогою. Героя ставимо одразу на підлогу під нею, ще під чорним:
+## інакше після появи камера пів секунди доїжджала за його падінням (B153: двері LabCells → Laboratory, 0,45 с).
+## Підлоги ближче за ARRIVAL_DROP немає — він падає сам, як і раніше.
+const ARRIVAL_DROP := 128.0
+func _place_on_floor(at: Vector2) -> void:
+	place_player(at)
+	var drop: KinematicCollision2D = (player as CharacterBody2D).move_and_collide(Vector2(0.0, ARRIVAL_DROP), true)
+	if drop != null:
+		player.global_position += drop.get_travel()
 
 ## Нова гра: гравець на мітці Arrival стартової кімнати. Точки збереження бувають
 ## не в кожній кімнаті (до DesertRoad їх немає), тож старт від них не залежить.
 func _position_player_at_start() -> void:
 	var arrival: Node2D = map.get_node(^"Arrival")
-	place_player(arrival.global_position)
+	_place_on_floor(arrival.global_position)
 	DebugLogger.info("Game: Positioned player at Arrival for new game: %s" % player.global_position, "Game")
 
 var _init_room_called_for_room: String = ""
