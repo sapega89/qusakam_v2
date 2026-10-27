@@ -1,21 +1,21 @@
 | Room | objects | judged | off | too big | worst | worst ratio | unknown | backdrops |
 |---|---|---|---|---|---|---|---|---|
-| BanditCamp | 13 | 10 | 10 | 4 | `Back/Props/Sprite` (sack_pot) | x3.86 | 0 | 3 |
-| DesertRoad | 42 | 20 | 20 | 4 | `Decor/Palm1` (tree) | x0.27 | 0 | 8 |
-| Village | 14 | 8 | 8 | 2 | `Decor/Palm1` (tree) | x0.27 | 0 | 10 |
-| LaboratoryOutside | 7 | 3 | 3 | 0 | `Decor/Palm1` (tree) | x0.27 | 0 | 9 |
-| Canyon | 49 | 4 | 4 | 0 | `Meditation/Shrine` (door_locked) | x0.39 | 0 | 10 |
-| City | 33 | 21 | 21 | 4 | `FrontDark/OccluderPalm1` (tree) | x0.42 | 0 | 9 |
-| CityGates | 15 | 8 | 8 | 2 | `FrontDark/OccluderPalm1` (tree) | x0.42 | 0 | 8 |
+| BanditCamp | 27 | 24 | 10 | 4 | `Back/Props/Sprite` (sack_pot) | x3.86 | 0 | 3 |
+| DesertRoad | 86 | 64 | 20 | 4 | `Decor/Palm1` (tree) | x0.27 | 0 | 8 |
+| Village | 53 | 47 | 8 | 2 | `Decor/Palm1` (tree) | x0.27 | 0 | 10 |
+| LaboratoryOutside | 30 | 26 | 3 | 0 | `Decor/Palm1` (tree) | x0.27 | 0 | 9 |
+| Canyon | 70 | 25 | 4 | 0 | `Meditation/Shrine` (door_locked) | x0.39 | 0 | 10 |
+| City | 39 | 27 | 21 | 4 | `FrontDark/OccluderPalm1` (tree) | x0.42 | 0 | 9 |
+| CityGates | 35 | 28 | 8 | 2 | `FrontDark/OccluderPalm1` (tree) | x0.42 | 0 | 8 |
 | LabCells | 22 | 3 | 3 | 1 | `Table/Sprite` (table_bench) | x2.25 | 0 | 4 |
-| LizardCave | 18 | 11 | 11 | 11 | `FrontDark/Scrub1` (bush) | x1.97 | 0 | 3 |
-| MesaClimb | 30 | 5 | 5 | 4 | `FrontDark/Scrub1` (bush) | x1.97 | 0 | 3 |
+| LizardCave | 20 | 13 | 11 | 11 | `FrontDark/Scrub1` (bush) | x1.97 | 0 | 3 |
+| MesaClimb | 35 | 10 | 5 | 4 | `FrontDark/Scrub1` (bush) | x1.97 | 0 | 3 |
 | DragonMural | 9 | 4 | 4 | 3 | `FrontDark/Scrub1` (bush) | x1.97 | 1 | 3 |
 | Laboratory | 48 | 7 | 7 | 1 | `Fight_Middle/EnemySpawnPoint1` (npc_adult) | x0.51 | 0 | 12 |
-| ElderHouse | 10 | 3 | 3 | 1 | `ExitDoorEntrance` (door) | x0.68 | 0 | 2 |
+| ElderHouse | 12 | 4 | 3 | 1 | `ExitDoorEntrance` (door) | x0.68 | 1 | 2 |
 | LabBoss | 14 | 2 | 2 | 1 | `CorridorDoorEntrance` (door) | x0.79 | 0 | 4 |
-| GatehouseCellar | 11 | 1 | 1 | 1 | `Chest_Cellar` (chest) | x1.21 | 0 | 3 |
-| MayorHall | 10 | 1 | 1 | 0 | `CityDoorEntrance` (door) | x0.93 | 0 | 2 |
+| GatehouseCellar | 13 | 3 | 1 | 1 | `Chest_Cellar` (chest) | x1.21 | 0 | 3 |
+| MayorHall | 12 | 1 | 1 | 0 | `CityDoorEntrance` (door) | x0.93 | 2 | 2 |
 
 | # | Room | object | category (keyword) | plane | drawn px | target art px | target px | ratio | scale | texture | fix |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -60,14 +60,14 @@
 | 39 | Laboratory | `Fight_Middle/EnemySpawnPoint1` | npc_adult (melee) | 1.0 | 73.5 | 96 | 144.0 | x0.51 too small | 1.5 | `Assets/Characters/Enemies/bandit/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 40 | Laboratory | `Fight_Lower/EnemySpawnPoint2` | npc_adult (shield) | 1.0 | 73.5 | 96 | 144.0 | x0.51 too small | 1.5 | `Assets/Characters/Enemies/bandit/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 41 | Village | `EnemySpawner/EnemySpawnPoint1` | npc_adult (melee) | 1.0 | 73.5 | 96 | 144.0 | x0.51 too small | 1.5 | `Assets/Characters/Enemies/bandit/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 42 | Laboratory | `Fight_TowerGuard/BigSlot_TowerShieldGuard_1` | npc_adult (guard) | 1.0 | 81.0 | 96 | 144.0 | x0.56 too small | 1 | `Assets/Characters/Enemies/shield_tower/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 43 | BanditCamp | `Gate_Stockade` | gate_big (gate) | 1.0 | 415.5 | 160 | 240.0 | x1.73 too big | 1.5 | `Assets/Backgrounds/BanditCamp/gen_gate.png` | regenerate at 160 art px tall (240 world px) |
-| 44 | LizardCave | `Gate_Shrine` | gate_big (gate) | 1.0 | 415.5 | 160 | 240.0 | x1.73 too big | 1.5 | `Assets/Backgrounds/LizardCave/gen_gate.png` | regenerate at 160 art px tall (240 world px) |
-| 45 | BanditCamp | `Fight_Camp/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 86.0 | 96 | 144.0 | x0.60 too small | 1 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 46 | DesertRoad | `Fight_LoneElite/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 86.0 | 96 | 144.0 | x0.60 too small | 1 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 47 | Laboratory | `Fight_Upper/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 86.0 | 96 | 144.0 | x0.60 too small | 1 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 48 | ElderHouse | `ExitDoorEntrance` | door (entrance) | 1.0 | 114.0 | 112 | 168.0 | x0.68 too small | 1.5 | `Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png` | regenerate at 112 art px tall (168 world px) |
-| 49 | DesertRoad | `Shrine` | door_locked (shrine) | 1.0 | 280.5 | 128 | 192.0 | x1.46 too big | 1.5 | `Assets/Backgrounds/Road/gen_shrine.png` | regenerate at 128 art px tall (192 world px) |
+| 42 | BanditCamp | `Gate_Stockade` | gate_big (gate) | 1.0 | 415.5 | 160 | 240.0 | x1.73 too big | 1.5 | `Assets/Backgrounds/BanditCamp/gen_gate.png` | regenerate at 160 art px tall (240 world px) |
+| 43 | LizardCave | `Gate_Shrine` | gate_big (gate) | 1.0 | 415.5 | 160 | 240.0 | x1.73 too big | 1.5 | `Assets/Backgrounds/LizardCave/gen_gate.png` | regenerate at 160 art px tall (240 world px) |
+| 44 | ElderHouse | `ExitDoorEntrance` | door (entrance) | 1.0 | 114.0 | 112 | 168.0 | x0.68 too small | 1.5 | `Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 45 | Laboratory | `Fight_TowerGuard/BigSlot_TowerShieldGuard_1` | npc_adult (guard) | 1.0 | 97.2 | 96 | 144.0 | x0.68 too small | 1.2 | `Assets/Characters/Enemies/shield_tower/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 46 | DesertRoad | `Shrine` | door_locked (shrine) | 1.0 | 280.5 | 128 | 192.0 | x1.46 too big | 1.5 | `Assets/Backgrounds/Road/gen_shrine.png` | regenerate at 128 art px tall (192 world px) |
+| 47 | BanditCamp | `Fight_Camp/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 98.9 | 96 | 144.0 | x0.69 too small | 1.15 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 48 | DesertRoad | `Fight_LoneElite/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 98.9 | 96 | 144.0 | x0.69 too small | 1.15 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 49 | Laboratory | `Fight_Upper/BigSlot_BanditBrute_1` | npc_adult (bandit) | 1.0 | 98.9 | 96 | 144.0 | x0.69 too small | 1.15 | `Assets/Characters/Enemies/bandit_brute/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 50 | City | `Forge` | house_storey (forge) | 1.0 | 309.0 | 144 | 216.0 | x1.43 too big | 1.5 | `Assets/Backgrounds/City/gen_forge.png` | regenerate at 144 art px tall (216 world px) |
 | 51 | City | `WitchHut` | house_storey (hut) | 1.0 | 304.5 | 144 | 216.0 | x1.41 too big | 1.5 | `Assets/Backgrounds/City/gen_witch_hut.png` | regenerate at 144 art px tall (216 world px) |
 | 52 | BanditCamp | `Fight_Camp/BigSlot_HeavyArcher_4` | npc_adult (archer) | 1.0 | 102.0 | 96 | 144.0 | x0.71 too small | 1.2 | `Assets/Characters/Enemies/archer_heavy/sheet.png` | regenerate at 96 art px tall (144 world px) |
@@ -76,14 +76,14 @@
 | 55 | LizardCave | `Back/Shrines/ShrineB2` | door_locked (shrine) | 0.9 | 235.5 | 115 | 172.5 | x1.37 too big | 1.5 | `Assets/Backgrounds/LizardCave/gen_shrine_b.png` | regenerate at 115 art px tall (172.5 world px) |
 | 56 | LabCells | `Prisoner` | npc_adult (prisoner) | 1.0 | 105.0 | 96 | 144.0 | x0.73 too small | 1.5 | `Assets/Characters/NPCs/prisoner/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 57 | City | `Chapel` | house_storey (chapel) | 1.0 | 291.0 | 144 | 216.0 | x1.35 too big | 1.5 | `Assets/Backgrounds/City/gen_chapel.png` | regenerate at 144 art px tall (216 world px) |
-| 58 | City | `Crowd/OldMan1` | npc_adult (old_man) | 1.0 | 108.0 | 96 | 144.0 | x0.75 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 59 | City | `Crowd/OldMan2` | npc_adult (old_man) | 1.0 | 108.0 | 96 | 144.0 | x0.75 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 60 | Village | `ElderHouse` | house_storey (house) | 1.0 | 286.5 | 144 | 216.0 | x1.33 too big | 1.5 | `Assets/Backgrounds/Village/gen_elder_house.png` | regenerate at 144 art px tall (216 world px) |
+| 58 | City | `Crowd/OldMan2` | npc_adult (old_man) | 1.0 | 108.0 | 96 | 144.0 | x0.75 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 59 | Village | `ElderHouse` | house_storey (house) | 1.0 | 286.5 | 144 | 216.0 | x1.33 too big | 1.5 | `Assets/Backgrounds/Village/gen_elder_house.png` | regenerate at 144 art px tall (216 world px) |
+| 60 | CityGates | `GateScribe` | npc_adult (scribe) | 1.0 | 109.5 | 96 | 144.0 | x0.76 too small | 1.5 | `Assets/Characters/NPCs/gate_scribe/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 61 | BanditCamp | `FrontDark/Crate1` | crate (crate) | 1.3 | 82.5 | 42 | 63.0 | x1.31 too big | 1.5 | `Assets/Backgrounds/Decor/fg_camp/crate.png` | regenerate at 42 art px tall (63 world px) |
 | 62 | CityGates | `GatePassage` | gate_big (gate) | 1.0 | 313.0 | 160 | 240.0 | x1.30 too big | 1.5 | `Assets/Backgrounds/Gates/gen_passage_back.png` | regenerate at 160 art px tall (240 world px) |
-| 63 | City | `OathDervish` | npc_adult (dervish) | 1.0 | 111.0 | 96 | 144.0 | x0.77 too small | 1.5 | `Assets/Characters/NPCs/dervish/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 64 | BanditCamp | `ExitDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
-| 65 | BanditCamp | `ShortcutDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 63 | BanditCamp | `ExitDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 64 | BanditCamp | `ShortcutDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 65 | City | `Crowd/OldMan1` | npc_adult (old_man) | 1.0 | 112.5 | 96 | 144.0 | x0.78 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 66 | DesertRoad | `BanditCampDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
 | 67 | DesertRoad | `CampShortcutDoorEntrance` | door (entrance) | 1.0 | 130.5 | 112 | 168.0 | x0.78 too small | 1.5 | `Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png` | regenerate at 112 art px tall (168 world px) |
 | 68 | LizardCave | `Back/Shrines/ShrineA1` | door_locked (shrine) | 0.9 | 220.5 | 115 | 172.5 | x1.28 too big | 1.5 | `Assets/Backgrounds/LizardCave/gen_shrine_a.png` | regenerate at 115 art px tall (172.5 world px) |
@@ -95,35 +95,35 @@
 | 74 | Laboratory | `BossDoorEntrance` | door (entrance) | 1.0 | 132.0 | 112 | 168.0 | x0.79 too small | 1.5 | `Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png` | regenerate at 112 art px tall (168 world px) |
 | 75 | City | `DervishTent` | tent (tent) | 1.0 | 301.5 | 160 | 240.0 | x1.26 too big | 1.5 | `Assets/Backgrounds/City/gen_dervish_tent.png` | regenerate at 160 art px tall (240 world px) |
 | 76 | Village | `GrandpaHouse` | house_storey (house) | 1.0 | 271.5 | 144 | 216.0 | x1.26 too big | 1.5 | `Assets/Backgrounds/Village/gen_grandpa_house.png` | regenerate at 144 art px tall (216 world px) |
-| 77 | CityGates | `GateScribe` | npc_adult (scribe) | 1.0 | 118.5 | 96 | 144.0 | x0.82 too small | 1.5 | `Assets/Characters/NPCs/gate_scribe/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 78 | BanditCamp | `Chest_Loot` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 79 | DesertRoad | `Chest_OldVulture` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 80 | DesertRoad | `Chest_TowerStash` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 81 | DragonMural | `Chest_Mural` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 82 | ElderHouse | `Attic/Chest_Attic` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 83 | GatehouseCellar | `Chest_Cellar` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 84 | Laboratory | `Chest_TowerGuard` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 85 | LizardCave | `Chest_Shrine` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 86 | MesaClimb | `Chest_Mesa` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
-| 87 | City | `Crowd/MerchantWoman1` | npc_adult (merchant) | 1.0 | 120.0 | 96 | 144.0 | x0.83 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_merchant_woman/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 88 | DesertRoad | `Shop` | house_storey (shop) | 1.0 | 259.5 | 144 | 216.0 | x1.20 too big | 1.5 | `Assets/Backgrounds/Road/gen_shop.png` | regenerate at 144 art px tall (216 world px) |
-| 89 | DesertRoad | `Merchant` | npc_adult (merchant) | 1.0 | 121.5 | 96 | 144.0 | x0.84 too small | 1.5 | `Assets/Characters/NPCs/merchant/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 90 | City | `Crowd/MerchantWoman2` | npc_adult (merchant) | 1.0 | 124.5 | 96 | 144.0 | x0.86 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_merchant_woman/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 91 | City | `OathPriest` | npc_adult (priest) | 1.0 | 124.5 | 96 | 144.0 | x0.86 too small | 1.5 | `Assets/Characters/NPCs/priest/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 92 | City | `Crowd/Porter2` | npc_adult (porter) | 1.0 | 126.0 | 96 | 144.0 | x0.88 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_porter/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 93 | Canyon | `LizardCaveDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
-| 94 | Canyon | `DragonMuralDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
-| 95 | City | `Crowd/Porter1` | npc_adult (porter) | 1.0 | 127.5 | 96 | 144.0 | x0.89 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_porter/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 96 | DragonMural | `ExitDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
-| 97 | City | `Crowd/WaterCarrier1` | npc_adult (water_carrier) | 1.0 | 129.0 | 96 | 144.0 | x0.90 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_water_carrier/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 98 | ElderHouse | `OldManQuest` | npc_adult (old_man) | 1.0 | 129.0 | 96 | 144.0 | x0.90 too small | 1.5 | `Assets/Characters/NPCs/old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 99 | LabBoss | `Gates/Sprite` | gate_big (gate) | 1.0 | 265.5 | 160 | 240.0 | x1.11 too big | 1.5 | `Assets/Backgrounds/Lab/gen_gates.png` | regenerate at 160 art px tall (240 world px) |
-| 100 | City | `Crowd/WaterCarrier2` | npc_adult (water_carrier) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_water_carrier/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 101 | City | `OathWitch` | npc_adult (witch) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/contract_priest/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 102 | City | `GuardLeft` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 103 | City | `GuardRight` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 104 | CityGates | `GuardLeft` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
-| 105 | CityGates | `GuardRight` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 77 | BanditCamp | `Chest_Loot` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 78 | DesertRoad | `Chest_OldVulture` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 79 | DesertRoad | `Chest_TowerStash` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 80 | DragonMural | `Chest_Mural` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 81 | ElderHouse | `Attic/Chest_Attic` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 82 | GatehouseCellar | `Chest_Cellar` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 83 | Laboratory | `Chest_TowerGuard` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 84 | LizardCave | `Chest_Shrine` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 85 | MesaClimb | `Chest_Mesa` | chest (chest) | 1.0 | 43.5 | 24 | 36.0 | x1.21 too big | 1.5 | `Assets/Props/Chest/Closed/1.png` | regenerate at 24 art px tall (36 world px) |
+| 86 | City | `Crowd/WaterCarrier1` | npc_adult (water_carrier) | 1.0 | 120.0 | 96 | 144.0 | x0.83 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_water_carrier/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 87 | City | `Crowd/Porter2` | npc_adult (porter) | 1.0 | 120.0 | 96 | 144.0 | x0.83 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_porter/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 88 | City | `Crowd/MerchantWoman2` | npc_adult (merchant) | 1.0 | 120.0 | 96 | 144.0 | x0.83 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_merchant_woman/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 89 | City | `OathPriest` | npc_adult (priest) | 1.0 | 120.0 | 96 | 144.0 | x0.83 too small | 1.5 | `Assets/Characters/NPCs/priest/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 90 | DesertRoad | `Shop` | house_storey (shop) | 1.0 | 259.5 | 144 | 216.0 | x1.20 too big | 1.5 | `Assets/Backgrounds/Road/gen_shop.png` | regenerate at 144 art px tall (216 world px) |
+| 91 | City | `Crowd/Porter1` | npc_adult (porter) | 1.0 | 121.5 | 96 | 144.0 | x0.84 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_porter/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 92 | City | `OathDervish` | npc_adult (dervish) | 1.0 | 121.5 | 96 | 144.0 | x0.84 too small | 1.5 | `Assets/Characters/NPCs/dervish/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 93 | DesertRoad | `Merchant` | npc_adult (merchant) | 1.0 | 121.5 | 96 | 144.0 | x0.84 too small | 1.5 | `Assets/Characters/NPCs/merchant/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 94 | City | `Crowd/MerchantWoman1` | npc_adult (merchant) | 1.0 | 126.0 | 96 | 144.0 | x0.88 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_merchant_woman/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 95 | Canyon | `LizardCaveDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 96 | Canyon | `DragonMuralDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 97 | CityGates | `GuardRight` | npc_adult (guard) | 1.0 | 127.5 | 96 | 144.0 | x0.89 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 98 | DragonMural | `ExitDoorEntrance` | door (entrance) | 1.0 | 150.0 | 112 | 168.0 | x0.89 too small | 1.5 | `Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png` | regenerate at 112 art px tall (168 world px) |
+| 99 | ElderHouse | `OldManQuest` | npc_adult (old_man) | 1.0 | 127.5 | 96 | 144.0 | x0.89 too small | 1.5 | `Assets/Characters/NPCs/old_man/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 100 | City | `Crowd/WaterCarrier2` | npc_adult (water_carrier) | 1.0 | 129.0 | 96 | 144.0 | x0.90 too small | 1.5 | `Assets/Characters/NPCs/townsfolk_water_carrier/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 101 | City | `OathWitch` | npc_adult (witch) | 1.0 | 129.0 | 96 | 144.0 | x0.90 too small | 1.5 | `Assets/Characters/NPCs/contract_priest/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 102 | CityGates | `GuardLeft` | npc_adult (guard) | 1.0 | 129.0 | 96 | 144.0 | x0.90 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 103 | LabBoss | `Gates/Sprite` | gate_big (gate) | 1.0 | 265.5 | 160 | 240.0 | x1.11 too big | 1.5 | `Assets/Backgrounds/Lab/gen_gates.png` | regenerate at 160 art px tall (240 world px) |
+| 104 | City | `GuardLeft` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
+| 105 | City | `GuardRight` | npc_adult (guard) | 1.0 | 130.5 | 96 | 144.0 | x0.91 too small | 1.5 | `Assets/Characters/NPCs/gate_guard/sheet.png` | regenerate at 96 art px tall (144 world px) |
 | 106 | City | `MayorHallDoorEntrance` | door (entrance) | 1.0 | 156.0 | 112 | 168.0 | x0.93 too small | 1.5 | `Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png` | regenerate at 112 art px tall (168 world px) |
 | 107 | MayorHall | `CityDoorEntrance` | door (entrance) | 1.0 | 156.0 | 112 | 168.0 | x0.93 too small | 1.5 | `Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png` | regenerate at 112 art px tall (168 world px) |
 | 108 | City | `Anvil` | table_bench (anvil) | 1.0 | 45.0 | 32 | 48.0 | x0.94 too small | 1.5 | `Assets/Characters/NPCs/blacksmith/anvil.png` | regenerate at 32 art px tall (48 world px) |
@@ -137,7 +137,9 @@
 | monster | — | — | 16 | 0 | 0 | 0 | — |
 | sky | — | — | 18 | 0 | 0 | 0 | — |
 | companion | — | — | 8 | 0 | 0 | 0 | — |
-| npc_adult | 96 | 144 | 35 | 0 | 0 | 35 | x0.75 |
+| npc_adult | 96 | 144 | 35 | 0 | 0 | 35 | x0.76 |
+| critter_tiny | 12 | 18 | 9 | 9 | 0 | 0 | x1.00 |
+| critter | 24 | 36 | 15 | 15 | 0 | 0 | x1.00 |
 | chest | 24 | 36 | 9 | 0 | 9 | 0 | x1.21 |
 | door_locked | 128 | 192 | 7 | 0 | 6 | 1 | x1.37 |
 | gate_big | 160 | 240 | 4 | 0 | 4 | 0 | x1.73 |
@@ -151,10 +153,13 @@
 | crate | 32 | 48 | 1 | 0 | 1 | 0 | x1.31 |
 | sack_pot | 24 | 36 | 1 | 0 | 1 | 0 | x3.86 |
 | bush | 24 | 36 | 9 | 0 | 9 | 0 | x1.97 |
-| unknown | — | — | 1 | 0 | 0 | 0 | — |
+| grass | 16 | 24 | 153 | 153 | 0 | 0 | x0.95 |
+| unknown | — | — | 4 | 0 | 0 | 0 | — |
 
 Unknown objects (no keyword):
 - DragonMural: `Back/Dragon` 202 px
+- ElderHouse: `Ambience/LightShaft1` 256 px
+- MayorHall: `Ambience/LightShaft1` 256 px, `Ambience/LightShaft2` 256 px
 
 Backdrop planes (not measured as objects):
 - BanditCamp: `Back/Far/Sprite` x0.4 1728x486, `Back/Mid/Sprite` x0.8 864x486, `Back/Floor/Sprite` x1.0 864x68
