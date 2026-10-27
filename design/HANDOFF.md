@@ -44,6 +44,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | secrets | `trig_01MATNrpE73ups6FydJzmJq7` | — | D765 |
 | secrets-icon | `trig_01Xi3DvX6rxb5i4WM8LyrPLN` | secrets | found secrets on the map |
 | map-pan | `trig_01BE9fUzLv58LaCY8TvsAK8W` | secrets-icon | drag / zoom the map like Octopath Traveler |
+| ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
 
 ## 3. Art lane (ComfyUI, local)
 
