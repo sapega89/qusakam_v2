@@ -138,7 +138,7 @@ tags: [plan, orchestrator, status]
 | S11 | Кращі українські голоси (`uk_UA-ukrainian_tts-medium`) | remaining_work | ✅ як тимчасове рішення (Sapega 27.10): `uk_UA-ukrainian_tts-medium` (MIT, дані CC0) |
 | S12 | Налаштування без системи: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди | D43–D48 | ✅ усе є в Settings: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди (D425–D428) |
 | S13 | Поверхні без дизайну: сповіщення про рівень, HP ворога, тост «ціль оновлено», екран кінця демо — Figma (🖥) → ☁ | figma_coverage §1 | ✅ усі чотири є: сповіщення про рівень (`verify_level_up`), HP ворога (`HealthBar`), плашка цілі (QP1), кінець демо (`verify_demo_end`) |
-| S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | 🔄 routine `perf-check` (27.10): перевіряє slices 1–3, 6 і заміряє до/після; slice 7 чекає Q83 (який слабкий ПК) |
+| S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | 🔄 `perf-check`: slices 1–3, 6 ✅ (зливає `integrate-29`); слабкий ПК (Sapega 27.10): i5-6600, 16 ГБ, Intel HD 530 — за D611 там якість High; чи гальмує — питання |
 | S15 | Аудит рішень D179+ проти коду | [[decision_audit]] | 🔄 routine `decision-audit-2` (27.10): D179–D330 |
 | S16 | Активні плани — закрити або виписати хвости: ranged, hero_weapon_animation, onboarding, localization, npc_recall, lab_boss, lab_story, world_expansion | — | 🔄 routine `decision-audit-2` (27.10): хвости кожного плану |
 | S17 | Село: більше бігу до діда | BACKLOG | ✅ закрито (Sapega 27.10): біг до села дає дорога M1a (стежка, осипище, ущелина, уступи) |
