@@ -18,7 +18,7 @@ Each batch is one ComfyUI run (< 1 h, own sheet), in this order. Mark ✅ with t
 
 | # | Batch | Items | Status |
 |---|---|---|---|
-| A1 | Sapega's noted fixes | main menu background: the same beautiful art, but a desert instead of the forest and a lizard (ящур) instead of the human (`UI/main_menu_background.jpg`); boss shockwave more expressive (`FX/Bosses/shockwave.png`); hero Climb with alternating arms and legs (`Sprites/Player/Climb/`) | ⬜ |
+| A1 | Sapega's noted fixes | main menu background: the same beautiful art, but a desert instead of the forest and a lizard (ящур) instead of the human (`UI/main_menu_background.jpg`); boss shockwave more expressive (`FX/Bosses/shockwave.png`); hero Climb with alternating arms and legs (`Sprites/Player/Climb/`) | ✅ Climb `4711b42f`, shockwave `999a1a1b`, menu (candidate C2: the hero's sand-yellow lizard, painterly-prompted Qwen-Image-Edit of the original) — commit below; sheet `design/shots/a1_menu_shockwave_climb.png`, waits for Sapega's look |
 | A2 | ~~NPCs → chibi~~ | cancelled (D816). Left from the notes: the merchant becomes **an older, cunning rat-folk** (normal proportions). NPC size (B188, 96 art) stays open until Sapega asks for the redraw | ⏸ |
 | A4 | Alchemist (fix) | the alchemist's normal sheet, fix without a note (own call) | ⬜ |
 | A5 | Road planes redraw | MountainPath `gen_far`, `gen_waymarker`; StreamGorge `gen_mid`, `gen_plume`; ScreeSlide `gen_scree`, MountainPath `gen_plume` (fix); the Rock Ledges redo (cliff like the gorge walls, a wider plateau with a gate/breach, 3–4 burnt houses at the right size, D796) | ⬜ |
