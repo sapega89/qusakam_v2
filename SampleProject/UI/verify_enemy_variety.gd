@@ -195,11 +195,11 @@ func _pack_art() -> void:
 ## удари героя її не відкидають — D713); без контуру
 ## й без росту. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.
 func _elites() -> void:
-	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x1.6 and no knockback (D713); no outline, no growth; big kinds wait for their art")
+	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x2.0 and no knockback (D713, D776); no outline, no growth; big kinds wait for their art")
 	var marks: Dictionary = variety.elite()
-	ck(is_equal_approx(marks.health, 2.5) and is_equal_approx(marks.damage, 2.3) and is_equal_approx(marks.poise, 1.6) and marks.knockback_immune
+	ck(is_equal_approx(marks.health, 2.5) and is_equal_approx(marks.damage, 2.3) and is_equal_approx(marks.poise, 2.0) and marks.knockback_immune
 			and not marks.has("chance") and not marks.has("scale") and not marks.has("outline_color"),
-			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x1.6, not pushed; no roll, no scale, no outline")
+			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x2.0, not pushed; no roll, no scale, no outline")
 	var elite_kinds: Array = variety.kind_ids().filter(func(id: String) -> bool: return variety.is_elite(id))
 	print("  info elite kinds: %s" % [elite_kinds])
 	const PLANNED := ["bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_archer", "tower_shield_guard",

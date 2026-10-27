@@ -6,7 +6,8 @@ extends SceneTree
 ##       лишається кулдауном (B-9); буфер натискань 0.2 с крізь збій, буфер стрибка, стрибок зриває відновлення;
 ##   [3] витривалість (D775): ціни ударів і перекату, порожня шкала — ні удару, ні перекату, спалах; відновлення; блок;
 ##   [4] зілля зі швидкого слота: одна кнопка, у реальному часі, герой стоїть; удар до ковтка — зілля пропало;
-##   [5] над звичайним ворогом смужки HP немає (D502).
+##   [5] над звичайним ворогом смужки HP немає (D502);
+##   [6] шкала стійкості над ворогом (D776): набирається, спадає, повна — збій; три удари серії не збивають.
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_combat_player.gd
 
@@ -443,4 +444,36 @@ func _no_enemy_bar() -> void:
 	for i in 10: await physics_frame
 	ck(bars.call() == before, "no HealthBar appears for a bandit, even hurt (%d → %d)" % [before, bars.call()])
 	ck(not "health_bar" in extra, "the enemy has no health_bar at all")
+	await _poise_bar(extra)
 	extra.queue_free()
+
+
+## [6] Шкала стійкості (D776): є в кожного ворога; набирається з ударами, спадає без них; повна — збій і порожня.
+## Скільки ударів — не важить: три легкі удари серії звичайного ворога не збивають.
+func _poise_bar(enemy: Node) -> void:
+	print("[6] Every enemy has a poise bar: it fills with hits, drains without them, and a full bar staggers (D776)")
+	var bar: Control = enemy.get_children().filter(func(n: Node) -> bool: return n.name == "PoiseBar").front()
+	var fill: ProgressBar = bar.get_node(^"Bar")
+	var staggered := [0]
+	var bus: Node = root.get_node("EventBus")
+	var on_stagger := func(e: Node, _d: float) -> void:
+		if e == enemy:
+			staggered[0] += 1
+	bus.enemy_staggered.connect(on_stagger)
+	for i in 3:
+		enemy.take_poise(PlayerCombat.POISE_LIGHT, hero.global_position.x)
+	await process_frame
+	ck(staggered[0] == 0 and is_equal_approx(fill.value, 3.0) and bar.visible,
+			"a three-hit combo fills 3 of %d and does not stagger (D776: no stagger from the third hit)" % enemy.poise_max)
+	var held: float = fill.value
+	enemy.set_physics_process(true)  # спадає на кроках фізики ворога
+	await create_timer(enemy.POISE_DRAIN_DELAY + 1.0).timeout
+	enemy.set_physics_process(false)
+	ck(fill.value < held, "without hits the bar drains (%.1f → %.1f)" % [held, fill.value])
+	enemy.take_poise(PlayerCombat.POISE_HEAVY, hero.global_position.x, &"heavy")
+	ck(PlayerCombat.POISE_HEAVY >= 4 * PlayerCombat.POISE_LIGHT, "a heavy fills %d, a light %d" % [PlayerCombat.POISE_HEAVY, PlayerCombat.POISE_LIGHT])
+	enemy.take_poise(enemy.poise_max, hero.global_position.x, &"heavy")
+	await process_frame
+	ck(staggered[0] == 1 and enemy.last_stagger_source == &"" and is_zero_approx(fill.value) and enemy.is_staggered(),
+			"a full bar staggers the enemy and empties (%.1f)" % fill.value)
+	bus.enemy_staggered.disconnect(on_stagger)
