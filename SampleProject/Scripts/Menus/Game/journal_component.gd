@@ -16,14 +16,14 @@ extends BaseMenuComponent
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
+const SideStories = preload("res://SampleProject/Scripts/Systems/side_stories.gd")
 const EMPTY_TEXT := "No journal entries yet."
-## load(), не preload: сервіс тягне Game (як у NpcBase).
-const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
 
 ## Розділи журналу (BACKLOG 13, D290; Notes — Q87): вкладки над списком, ті самі колонки «список + текст».
 ## [id, заголовок сторінки, підпис списку, порожній стан]
 const SECTIONS := {
 	"quests": ["Quests", "", "No journal entries yet."],
+	"side": ["Side Stories", "", "No side stories here yet."],
 	"characters": ["Characters", "PEOPLE MET", "You have not met anyone yet."],
 	"bestiary": ["Bestiary", "ENEMIES MET", "No enemies met yet."],
 	"notes": ["Notes", "NOTES FOUND", "No notes found yet."],
@@ -41,8 +41,12 @@ const FIELDS := ["id", "title", "state", "objectives", "description", "group", "
 ## kind: "" — звичайний пункт; HINT — підказка під ціллю (D159): рядок без вибору.
 const HINT := "hint"
 
-## Позначка стану підетапу в списку. Закритий підетап не відкривається.
-const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
+## Позначка стану підетапу в списку. Закритий підетап не відкривається. Побічна історія: ◆ — триває, ✓ — скінчена (D767).
+const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○", "active": "◆"}
+## Розділи, де список поділено рядками-заголовками локацій (D181, D767).
+const GROUPED := ["quests", "side"]
+## Мітка стану в картці побічної історії (D767).
+const STORY_STATES := {"done": "Completed", "active": "In progress"}
 
 @onready var _eyebrow: Label = %Eyebrow
 @onready var _heading: Label = %Heading
@@ -64,8 +68,22 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _list_header: Label = %ListHeader
 @onready var _objective_line: Label = %ObjectiveLine
 @onready var _empty_state: Label = %EmptyState
-@onready var _tabs: Dictionary = {"quests": %QuestsTab, "characters": %CharactersTab, "bestiary": %BestiaryTab,
-	"notes": %NotesTab}
+@onready var _tabs: Dictionary = {"quests": %QuestsTab, "side": %SideTab, "characters": %CharactersTab,
+	"bestiary": %BestiaryTab, "notes": %NotesTab}
+## Побічні історії (D767, Figma 192:1636): замовник над назвою, мітки стану й локації, його слова, кінець, нагороди;
+## внизу — вкладки локацій (All + кожна з locations.json).
+@onready var _client_label: Label = %ClientLabel
+@onready var _story_tags: HBoxContainer = %StoryTags
+@onready var _state_tag: Label = %StateTagText
+@onready var _region_tag: Label = %RegionTagText
+@onready var _quote: Label = %QuoteText
+@onready var _outcome_caption: Label = %OutcomeCaption
+@onready var _outcome: Label = %OutcomeText
+@onready var _rewards_caption: Label = %RewardsCaption
+@onready var _reward_list: VBoxContainer = %RewardList
+@onready var _reward_line: Label = %RewardLine
+@onready var _region_tabs: HBoxContainer = %RegionTabs
+@onready var _region_tab: Button = %RegionTab
 ## Characters — картка персонажа (D486, Figma 192:1754): зліва пергамент зі світлом над місцем зустрічі,
 ## справа ілюстрація (поки — портрет D321, nearest), під нею епітет та ім'я. ←/→ — інша людина, A / Enter — опис.
 @onready var _card: HBoxContainer = %PersonCard
@@ -84,6 +102,8 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 var entries: Array = []
 var selected_id: String = ""
 var section: String = "quests"
+## Фільтр сторінки побічних історій: SideStories.ALL або id локації.
+var region: String = SideStories.ALL
 
 var _game: Node = null
 var _wired: Dictionary = {}  # рядки списку, вже під'єднані до сигналів
@@ -117,6 +137,7 @@ func _initialize_component() -> void:
 func select_section(id: String) -> void:
 	section = id
 	selected_id = ""
+	region = SideStories.ALL
 	for tab_id: String in _tabs:
 		(_tabs[tab_id] as Button).set_pressed_no_signal(tab_id == id)
 	_heading.text = SECTIONS[id][0]
@@ -128,6 +149,8 @@ func _load() -> void:
 	match section:
 		"quests":
 			_load_story()
+		"side":
+			set_entries(SideStories.entries(region))
 		"characters":
 			set_entries(JournalRecords.people().map(func(p: Dictionary) -> Dictionary:
 				return {"id": p.id, "title": p.name, "group": p.title, "description": p.text, "portrait": p.portrait,
@@ -200,15 +223,7 @@ func _load_story() -> void:
 			if zone.state == "current":
 				current_id = zone.id
 				_append_live_objective(bucket, zone, objectives, group)
-	# Завдання NPC (quests.json, D293): кожне взяте — пункт із ціллю в групі своєї локації; здане — з позначкою.
-	var TASKS: GDScript = load(TASKS_PATH)
-	for task: Dictionary in TASKS.tasks():
-		var status: String = TASKS.status(task)
-		if status != "":
-			by_location[task.location].append({"id": "task/" + task.id, "title": tr(task.title),
-				"group": LocationDB.location(task.location).name,
-				"state": "done" if status == TASKS.DONE else "current",
-				"description": "%s\n\n%s" % [tr(task.description), tr("Goal: %s") % tr(task.objective)]})
+	# Завдання NPC — не тут, а на сторінці побічних історій (D767).
 	var items: Array = []
 	for loc_items: Array in by_location.values():
 		items.append_array(loc_items)
@@ -270,6 +285,7 @@ func _normalize(raw: Dictionary) -> Dictionary:
 		"kind": String(raw.get("kind", "")),
 		"portrait": raw.get("portrait") as Texture2D,
 		"place": Dictionary(raw.get("place", {})),
+		"side": Dictionary(raw.get("side", {})),
 	}
 
 
@@ -293,6 +309,8 @@ func update_display() -> void:
 	if not is_node_ready():
 		return
 	_refresh_objective()
+	if section == "side":
+		_refresh_regions()  # до рядків: останній рядок посилається вниз на вкладку локації
 	_rebuild_rows()
 	var has_entries: bool = not entries.is_empty()
 	var as_card := section == "characters"
@@ -300,6 +318,7 @@ func update_display() -> void:
 	if as_card:
 		_refresh_emblems()
 	_columns.visible = has_entries and not as_card
+	_region_tabs.visible = section == "side"
 	_card.visible = has_entries and as_card
 	_empty_state.visible = not has_entries
 	if not has_entries:
@@ -324,13 +343,13 @@ func _refresh_objective() -> void:
 
 func _rebuild_rows() -> void:
 	# Завдання — заголовок групи (локація, D181) рядком перед її першим пунктом; інші розділи — один підпис над списком.
-	var caption: String = "" if section == "quests" else SECTIONS[section][1]
+	var caption: String = "" if section in GROUPED else SECTIONS[section][1]
 	_list_header.text = caption.to_upper()
 	_list_header.visible = not caption.is_empty()
 	var lines: Array = []
 	var group := ""
 	for entry: Dictionary in entries:
-		if section == "quests" and entry.group != group and entry.group != "":
+		if section in GROUPED and entry.group != group and entry.group != "":
 			group = entry.group
 			lines.append({"header": group})
 		lines.append(entry)
@@ -395,6 +414,14 @@ func _link_tab_and_list(rows: Array) -> void:
 	var first: Button = focusable[0]
 	first.focus_neighbor_top = first.get_path_to(tab)
 	tab.focus_neighbor_bottom = tab.get_path_to(first)
+	# Побічні історії: ↓ з останнього рядка — на вкладки локацій унизу, ↑ з них — назад у список (D767).
+	var last: Button = focusable[-1]
+	last.focus_neighbor_bottom = NodePath()
+	if section == "side":
+		var region_tab: Button = _region_button(region)
+		last.focus_neighbor_bottom = last.get_path_to(region_tab)
+		for button: Button in _region_tabs.get_children():
+			button.focus_neighbor_top = button.get_path_to(last)
 
 
 func _on_row_pressed(row: Button) -> void:
@@ -438,7 +465,68 @@ func _show_detail(id: String) -> void:
 	_objectives_caption.visible = not objectives.is_empty()
 	var lines := RowFill.fill(_objective_list, _objective_line, objectives.size())
 	for i in lines.size():
-		lines[i].text = "◇  %s" % String(objectives[i])
+		lines[i].text = "◇  %s" % tr(String(objectives[i]))
+	_show_side_story(entry)
+
+
+## Картка побічної історії (D767): замовник, мітки стану й локації, його слова, кінець (лише скінченої) і нагороди.
+## В інших записах цих вузлів не видно.
+func _show_side_story(entry: Dictionary) -> void:
+	var side: Dictionary = entry.side
+	var is_story := not side.is_empty()
+	_detail_state.visible = _detail_state.visible and not is_story
+	for node: Control in [_client_label, _story_tags, _quote]:
+		node.visible = is_story
+	var done: bool = is_story and entry.state == SideStories.DONE
+	_outcome_caption.visible = done
+	_outcome.visible = done
+	var rewards: Array = side.get("rewards", [])
+	_rewards_caption.visible = not rewards.is_empty()
+	_reward_list.visible = not rewards.is_empty()
+	var reward_rows := RowFill.fill(_reward_list, _reward_line, rewards.size())
+	for i in reward_rows.size():
+		reward_rows[i].text = "◆  %s" % rewards[i]
+	if not is_story:
+		return
+	_client_label.text = (tr("Client: %s") % tr(String(side.client))).to_upper()
+	_state_tag.text = tr(STORY_STATES[entry.state]).to_upper()
+	_region_tag.text = tr(String(side.location)).to_upper()
+	_quote.text = tr("“%s”") % tr(String(side.quote))
+	_outcome.text = tr(String(side.outcome))
+
+
+## Вкладки локацій під списком побічних історій: All і кожна локація з locations.json, у порядку файла.
+## Мишею, Enter / A на вкладці; ↓ з останнього рядка списку — сюди.
+func _refresh_regions() -> void:
+	var ids: Array = [SideStories.ALL]
+	for loc: Dictionary in LocationDB.all():
+		ids.append(loc.id)
+	var buttons := RowFill.fill(_region_tabs, _region_tab, ids.size())
+	for i in buttons.size():
+		var button: Button = buttons[i]
+		var id: String = ids[i]
+		if not _wired.has(button):
+			_wired[button] = true
+			button.pressed.connect(func() -> void: select_region(button.get_meta(&"region")))
+		button.name = "Region_%s" % id
+		button.set_meta(&"region", id)
+		button.text = (tr("All") if id == SideStories.ALL else tr(String(LocationDB.location(id).name))).to_upper()
+		button.set_pressed_no_signal(id == region)
+
+
+func _region_button(id: String) -> Button:
+	for button: Button in _region_tabs.get_children():
+		if button.get_meta(&"region", "") == id:
+			return button
+	assert(false, "JournalComponent: no region tab %s" % id)
+	return null
+
+
+## Сторінка побічних історій — лише історії локації [param id] (SideStories.ALL — усі). Фокус лишається на вкладці.
+func select_region(id: String) -> void:
+	region = id
+	selected_id = ""
+	set_entries(SideStories.entries(region))
 
 
 # ── Characters: картка персонажа (D486) ───────────────────────────────────────

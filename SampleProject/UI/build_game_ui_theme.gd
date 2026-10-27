@@ -271,6 +271,7 @@ func _setup_button_variations(theme: Theme) -> void:
 	_icon_button(theme)
 	_filter_button(theme)
 	_list_row(theme)
+	_side_story(theme)
 	_tutorial(theme)
 	_skill_row(theme)
 	_settings_segment(theme)
@@ -499,6 +500,24 @@ func _list_row(theme: Theme) -> void:
 		var box := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, UITokens.SPACE_XS)
 		box.content_margin_left = pad_h + 2 * UITokens.SPACE_XL
 		theme.set_stylebox(state, hint, box)
+
+
+## Картка побічної історії в Журналі (D767, Figma journal-side-stories 192:1636): мітки стану й локації
+## (рамка accent, без фону) і слова замовника курсивом (нахил шрифту — курсивного накреслення немає).
+func _side_story(theme: Theme) -> void:
+	theme.set_type_variation("StoryTag", "PanelContainer")
+	theme.set_stylebox("panel", "StoryTag", _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH,
+			UITokens.STORY_TAG_PADDING_H, UITokens.STORY_TAG_PADDING_V))
+	theme.set_type_variation("StoryTagLabel", "Label")
+	theme.set_font("font", "StoryTagLabel", _font_semibold)
+	theme.set_font_size("font_size", "StoryTagLabel", UITokens.SIZE_SMALL)
+	theme.set_color("font_color", "StoryTagLabel", UITokens.ACCENT)
+	var slanted := _weight(_font_regular.base_font, UITokens.WEIGHT_REGULAR)
+	slanted.variation_transform = Transform2D(Vector2(1, 0), Vector2(UITokens.QUOTE_SLANT, 1), Vector2.ZERO)
+	theme.set_type_variation("StoryQuote", "Label")
+	theme.set_font("font", "StoryQuote", slanted)
+	theme.set_font_size("font_size", "StoryQuote", UITokens.SIZE_BODY_SM)
+	theme.set_color("font_color", "StoryQuote", UITokens.TEXT_SECONDARY)
 
 
 ## Figma tutorial-content 135:1260 — повноекранне вікно туторіалу (D126).

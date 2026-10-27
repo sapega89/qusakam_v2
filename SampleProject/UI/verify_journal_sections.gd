@@ -83,6 +83,8 @@ func _initialize() -> void:
 	await Kit.frames(self, 4)
 	journal = await _open_journal(sl)
 	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
+	ck(journal.section == "side", "pad RB → Side Stories (D767)")
+	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
 	ck(journal.section == "characters", "pad RB → Characters")
 	await Kit.key(self, KEY_E)
 	ck(journal.section == "bestiary" and journal._heading.text == "Bestiary", "key E → Bestiary")
@@ -96,12 +98,14 @@ func _initialize() -> void:
 	await Kit.key(self, KEY_Q)
 	ck(journal.section == "characters", "key Q → Characters")
 	await Kit.pad(self, JOY_BUTTON_LEFT_SHOULDER)
+	ck(journal.section == "side", "pad LB → Side Stories")
+	await Kit.pad(self, JOY_BUTTON_LEFT_SHOULDER)
 	ck(journal.section == "quests", "pad LB → Quests")
 	var first_row: Control = journal._entry_list.get_children().filter(func(r: Control) -> bool: return r.visible and r.focus_mode != Control.FOCUS_NONE)[0]
 	first_row.grab_focus()
 	await process_frame
 	for i in 3:
-		if root.gui_get_focus_owner() in [journal.get_node("%QuestsTab"), journal.get_node("%CharactersTab"), journal.get_node("%BestiaryTab")]:
+		if root.gui_get_focus_owner() in [journal.get_node("%QuestsTab"), journal.get_node("%SideTab"), journal.get_node("%CharactersTab"), journal.get_node("%BestiaryTab")]:
 			break
 		await Kit.pad(self, JOY_BUTTON_DPAD_UP)
 	var tab: Control = root.gui_get_focus_owner()

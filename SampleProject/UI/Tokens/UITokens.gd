@@ -486,6 +486,10 @@ const SIZE_CARD_EPITHET := 16          # SemiBold, UPPER, accent
 const SIZE_CARD_PLACE := 14            # SemiBold, UPPER, accent — назва місця
 const CARD_PLACE_SPACING := 2
 const CARD_DESCRIPTION_WIDTH := 560
+## Побічні історії Журналу (D767, Figma 192:1636): слова замовника — курсив; у шрифті курсиву немає, тож нахил.
+const QUOTE_SLANT := 0.2               # зсув x на одиницю висоти гліфа
+const STORY_TAG_PADDING_H := SPACE_SM  # мітки стану й локації в картці історії
+const STORY_TAG_PADDING_V := SPACE_2XS
 
 
 # ── HUD v2 (D453, D476, D485, D549, D552; Figma 501:6611 панель героя, 497:6587 хотбар, 515:6662 XP) ─

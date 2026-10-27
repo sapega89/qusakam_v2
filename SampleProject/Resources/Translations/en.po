@@ -3567,3 +3567,67 @@ msgstr "A few more steps and we are out in the open air."
 # [DRAFT] D159
 msgid "We made it out. A hard road — but we made it."
 msgstr "We made it out. A hard road — but we made it."
+
+# ── Журнал: сторінка побічних історій (D767; SideStories → journal_component)
+msgid "SIDE STORIES"
+msgstr "SIDE STORIES"
+
+msgid "Side Stories"
+msgstr "Side Stories"
+
+msgid "No side stories here yet."
+msgstr "No side stories here yet."
+
+msgid "Client: %s"
+msgstr "Client: %s"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "In progress"
+msgstr "In progress"
+
+msgid "“%s”"
+msgstr "“%s”"
+
+msgid "All"
+msgstr "All"
+
+msgid "OUTCOME"
+msgstr "OUTCOME"
+
+msgid "REWARDS"
+msgstr "REWARDS"
+
+# [DRAFT] D767
+msgid "Those same bandits looted my caravan and drove it to the City Gates."
+msgstr "Those same bandits looted my caravan and drove it to the City Gates."
+
+# [DRAFT] D767
+msgid "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+msgstr "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+
+# [DRAFT] D767
+msgid "A helmet you forged yourself sits better on the head than a bought one."
+msgstr "A helmet you forged yourself sits better on the head than a bought one."
+
+# [DRAFT] D767
+msgid "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+msgstr "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+
+# [DRAFT] D767
+msgid "Now for real learning. Enchant these two into one and bring it to show me."
+msgstr "Now for real learning. Enchant these two into one and bring it to show me."
+
+# [DRAFT] D767
+msgid "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+msgstr "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+
+# [DRAFT] D767
+msgid "My humble place holds gold for everyone who leads me out of here."
+msgstr "My humble place holds gold for everyone who leads me out of here."
+
+# [DRAFT] D767
+msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+msgstr "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+
