@@ -145,11 +145,11 @@ def draw_chart(probe: dict, scale: dict, out: Path) -> None:
     total_h = title_h + sum(s["height"] for s in shelves) + MARGIN
     im = Image.new("RGB", (CHART_W, total_h), BG)
     d = ImageDraw.Draw(im)
-    d.text((MARGIN, 12), "World scale chart (draft, world_scale.json) — 1 px = 1 world px; grid = 1 H = %d world px "
-           "(64 art px x1.5); green line = the hero's drawn figure %.1f px; grey box = chart target" % (unit, fig),
+    d.text((MARGIN, 12), "World scale chart, exact (world_scale.json; Sapega 2026-10-27: H = 64 art px) — 1 px = 1 world px; grid = 1 H = %d "
+           "world px (64 art px x1.5); green line = the hero's drawn figure %.1f px; grey box = the exact target" % (unit, fig),
            fill=TEXT, font=f_big)
-    d.text((MARGIN, 38), "red = off the chart (ratio = drawn / target, +-1 art px is ok); on a parallax plane the target "
-           "is x the plane factor; rooms listed under each sprite", fill=DIM, font=f_small)
+    d.text((MARGIN, 38), "red = off the chart (ratio = drawn / target; only +-1 art px is ok); on a parallax plane the target "
+           "is round(art px x plane factor) x1.5; rooms listed under each sprite", fill=DIM, font=f_small)
     y = title_h
     for s in shelves:
         base = y + s["height"] - 40
@@ -223,8 +223,6 @@ def room_grids(probe: dict, scale: dict, shots: Path) -> None:
 
 
 def tables(probe: dict, scale: dict, out: Path) -> None:
-    unit = scale["unit"]["world_px"]
-    fig = probe["hero"]["figure_world_px"]
     lines: list[str] = []
     stats = []
     for room in probe["rooms"]:
@@ -233,13 +231,11 @@ def tables(probe: dict, scale: dict, out: Path) -> None:
         bad = [o for o in judged if offender(o)]
         big = [o for o in bad if o["verdict"] == "too big"]
         worst = max(bad, key=badness) if bad else None
-        # Інша одиниця: H = намальована фігура героя (70.5 px), цілі × fig/unit.
-        alt_bad = [o for o in judged if abs(o["height_world"] - o["target_world"] * fig / unit) > 1.5 * fig / unit]
-        stats.append((badness(worst) if worst else 0.0, room, judged, bad, big, worst, alt_bad))
+        stats.append((badness(worst) if worst else 0.0, room, judged, bad, big, worst))
     stats.sort(key=lambda s: (-s[0], -len(s[3])))
     lines.append("| Room | objects | judged | off | too big | worst | worst ratio | unknown | backdrops |")
     lines.append("|---|---|---|---|---|---|---|---|---|")
-    for b, room, judged, bad, big, worst, _alt in stats:
+    for b, room, judged, bad, big, worst in stats:
         unknown = len([o for o in room["objects"] if o["verdict"] == "unknown"])
         w = "`%s` (%s)" % (worst["path"], worst["category"]["id"]) if worst else "—"
         lines.append("| %s | %d | %d | %d | %d | %s | %s | %d | %d |" % (room["room"], len(room["objects"]), len(judged), len(bad),
@@ -247,15 +243,16 @@ def tables(probe: dict, scale: dict, out: Path) -> None:
     lines.append("")
     every = [(room["room"], o) for room in probe["rooms"] for o in room["objects"] if o.get("ratio") and offender(o)]
     every.sort(key=lambda ro: -badness(ro[1]))
-    lines.append("| # | Room | object | category (keyword) | plane | drawn px | target px | ratio | scale | texture |")
-    lines.append("|---|---|---|---|---|---|---|---|---|---|")
+    lines.append("| # | Room | object | category (keyword) | plane | drawn px | target art px | target px | ratio | scale | texture | fix |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for i, (room, o) in enumerate(every, 1):
         sc = o["parts"][0]["scale"]
-        lines.append("| %d | %s | `%s` | %s (%s) | %s | %.1f | %.1f | x%.2f %s | %s | `%s` |" % (
-            i, room, o["path"], o["category"]["id"], o["category"]["keyword"], o["plane"], o["height_world"], o["target_world"],
-            o["ratio"], o["verdict"], "%g" % abs(sc[1]), o["textures"][0].removeprefix("res://SampleProject/")))
+        lines.append("| %d | %s | `%s` | %s (%s) | %s | %.1f | %s | %.1f | x%.2f %s | %s | `%s` | %s |" % (
+            i, room, o["path"], o["category"]["id"], o["category"]["keyword"], o["plane"], o["height_world"], o.get("target_art"),
+            o["target_world"], o["ratio"], o["verdict"], "%g" % abs(sc[1]), o["textures"][0].removeprefix("res://SampleProject/"),
+            o.get("fix", "")))
     lines.append("")
-    lines.append("| Category | target px | n | ok | too big | too small | median ratio | median ratio vs figure-H |")
+    lines.append("| Category | art px | world px | n | ok | too big | too small | median ratio |")
     lines.append("|---|---|---|---|---|---|---|---|")
     by: dict[str, list] = {}
     for room in probe["rooms"]:
@@ -269,10 +266,10 @@ def tables(probe: dict, scale: dict, out: Path) -> None:
         rs = sorted(o["ratio"] for o in judged)
         med = rs[len(rs) // 2] if rs else None
         tgt = next((c["art_px"] for c in scale["categories"] if c["id"] == cat), None)
-        lines.append("| %s | %s | %d | %d | %d | %d | %s | %s |" % (
-            cat, ("%g" % (tgt * 1.5)) if tgt else "—", len(objs), len([o for o in judged if o["verdict"] == "ok"]),
+        lines.append("| %s | %s | %s | %d | %d | %d | %d | %s |" % (
+            cat, tgt if tgt else "—", ("%g" % (tgt * 1.5)) if tgt else "—", len(objs), len([o for o in judged if o["verdict"] == "ok"]),
             len([o for o in judged if o["verdict"] == "too big"]), len([o for o in judged if o["verdict"] == "too small"]),
-            ("x%.2f" % med) if med else "—", ("x%.2f" % (med * unit / fig)) if med else "—"))
+            ("x%.2f" % med) if med else "—"))
     lines.append("")
     lines.append("Unknown objects (no keyword):")
     for room in probe["rooms"]:
