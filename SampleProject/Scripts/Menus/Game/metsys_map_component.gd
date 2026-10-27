@@ -7,11 +7,15 @@ extends Control
 ## Рівень 2 — кімнати локації з клітинок MetSys (LocationMap): досліджені залиті, з баченим входом — пунктиром, решта
 ## не малюються; назви кімнат, значки об'єктів, підписи драбин і спусків, легенда. B / Esc — назад на рівень 1.
 ## Вкладка відкривається на рівні 1 (вона зветься World Map; кадри не кажуть інакше — рішення рутини, звіт world-map).
+## Обидва рівні — полотно (map-pan, як в Octopath Traveler): ліва кнопка миші тягне карту 1:1 і відпускає з ковзанням,
+## коліщатко масштабує навколо курсора; правий стік / WASD (на рівні 2 ще й стрілки) рухають, тригери / Q-E
+## масштабують. Під курсором шпилька вибирається, кімната підсвічується з карткою; клац без тягнення відкриває.
 ## Розкладка й стилі — у сцені й темі (UITokens), тут поведінка й малювання клітинок.
 
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const LocationMap := preload("res://SampleProject/Scripts/Systems/LocationMap.gd")
 const MapIcon := preload("res://SampleProject/UI/Components/map_icon.gd")
+const MapCamera := preload("res://SampleProject/Scripts/Menus/Game/map_camera.gd")
 const PIN_SCENE := preload("res://SampleProject/Scenes/Menus/Game/world_map_pin.tscn")
 
 enum Level { WORLD, LOCATION }
@@ -22,6 +26,7 @@ const PIN_LOCKED := &"locked"
 const PIN_PLATE := {&"here": &"MapPinHere", &"visited": &"MapPin", &"locked": &"MapPinLocked"}
 const PIN_DOT := {&"here": &"MapPinDotHere", &"visited": &"MapPinDotVisited", &"locked": &"MapPinDotLocked"}
 const PIN_TEXT := {&"here": "you are here", &"visited": "visited", &"locked": "locked"}
+const PAN_HINT := "Drag or stick — move the map. Wheel or Q / E — zoom."
 const PASSAGE_TEXT := {&"ladder": "↕ ladder", &"drop": "↓ drop"}
 ## Значки, які видно й у клітинці з баченим входом: вхід і брама видно з порога.
 const SEEN_KINDS: Array[StringName] = [&"locked", &"exit"]
@@ -37,8 +42,21 @@ var maps: Dictionary = {}
 ## Локація рівня 2.
 var shown_id := ""
 
+## Камери рівнів: світ (тло меню й шпильки, координати кадру) і локація (Grid у координатах Rooms).
+var world_camera: MapCamera = MapCamera.new()
+var room_camera: MapCamera = MapCamera.new()
+## Кімната під курсором (або під центром вікна після стіка / клавіш) на рівні 2; "" — жодної.
+var hovered_room := ""
+
 ## Ліва верхня клітинка рамки рівня 2 (найменші x, y намальованих клітинок).
 var _grid_min := Vector2i.ZERO
+## Ліва кнопка затиснута: звідки почали і скільки пройшли (клац чи тягнення).
+var _dragging := false
+var _drag_travel := 0.0
+var _drag_velocity := Vector2.ZERO
+var _drag_last_motion := 0
+## Тло меню (ілюстрована мапа BaseMenu) — рівень 1 рухає саме його.
+var _background: Control
 var _world_title := ""
 var _world_subtitle := ""
 
@@ -56,6 +74,9 @@ func _ready() -> void:
 	_world_title = _title.text
 	_world_subtitle = _subtitle.text
 	_grid.draw.connect(_draw_cells)
+	for bg: Node in get_tree().get_nodes_in_group(&"menu_map_background"):
+		if bg.get_parent().is_ancestor_of(self):
+			_background = bg
 	ServiceLocator.get_ui_manager().ui_refresh_requested.connect(_refresh_texts)
 	# Видимість задає сцена меню (D116); тут лише підлаштовуємо обробку під неї. Відкладено: нижня панель і колонка
 	# партії стоять у дереві після карти й ще не готові.
@@ -75,10 +96,15 @@ func _notification(what: int) -> void:
 func set_map_active(active: bool) -> void:
 	is_map_active = active
 	process_mode = Node.PROCESS_MODE_ALWAYS if active else Node.PROCESS_MODE_DISABLED
+	_dragging = false
 	if active:
 		_place_frame()
 		_build_world()
 		show_world()
+	else:
+		# Тло меню спільне з іншими вкладками — віддаємо його в кадрі Figma.
+		_background.scale = Vector2.ONE
+		_background.position = Vector2.ZERO
 	_publish_hints()
 
 
@@ -104,10 +130,17 @@ func _build_world() -> void:
 		var pin: PanelContainer = PIN_SCENE.instantiate()
 		pin.name = location_ids[i]
 		_pins.add_child(pin)
-		pin.position = LocationDB.map_pos(location_ids[i])
 		if pin_state(location_ids[i]) == PIN_HERE:
 			selected = i
-	_update_world()
+	# Вікно — область вмісту (між бічною панеллю й нижньою смугою); полотно — кадр 1920×1080 тла.
+	# Найменший масштаб — тло ще вкриває вікно; відкривається в масштабі кадру Figma (1) на «ви тут».
+	var view: Rect2 = _pins.get_rect()
+	var cover: float = maxf(view.size.x / _frame.size.x, view.size.y / _frame.size.y)
+	world_camera.zoom = 1.0
+	world_camera.setup(view, _frame.size, cover, UITokens.MAP_ZOOM_MAX)
+	_update_world()  # назви на плашках задають їхній розмір, а з ним і центр шпильки
+	world_camera.center_on(pin_center(selected))
+	_apply_world_camera()
 
 
 ## here — герой у цій локації; visited — бував; locked — ще не досягнута.
@@ -131,6 +164,30 @@ func show_world() -> void:
 func select(index: int) -> void:
 	selected = clampi(index, 0, location_ids.size() - 1)
 	_update_world()
+
+
+## Центр шпильки в координатах кадру (масштаб 1): плашка стоїть лівим верхнім кутом у map_pos.
+func pin_center(index: int) -> Vector2:
+	var pin: Control = _pins.get_child(index)
+	return LocationDB.map_pos(location_ids[index]) + pin.get_combined_minimum_size() / 2.0
+
+
+## Тло й шпильки за камерою світу. Шпильки не масштабуються (читаються за будь-якого масштабу), лише їдуть.
+func _apply_world_camera() -> void:
+	_background.scale = Vector2.ONE * world_camera.zoom
+	_background.position = world_camera.offset
+	for i in location_ids.size():
+		var pin: Control = _pins.get_child(i)
+		var center: Vector2 = world_camera.to_view(pin_center(i))
+		pin.position = center - pin.get_combined_minimum_size() / 2.0 - _pins.position
+
+
+## Індекс шпильки під точкою екрана або -1.
+func pin_at(screen: Vector2) -> int:
+	for i in location_ids.size():
+		if (_pins.get_child(i) as Control).get_global_rect().has_point(screen):
+			return i
+	return -1
 
 
 func _update_world() -> void:
@@ -163,6 +220,7 @@ func open_location(id: String) -> void:
 	_title.text = LocationDB.title(id).to_upper()
 	_subtitle.text = tr("Location map · B — back to the world map")
 	_build_location()
+	_dragging = false
 	_publish_hints()
 
 
@@ -181,14 +239,67 @@ func _build_location() -> void:
 			hi = Vector2i(maxi(hi.x, c.x), maxi(hi.y, c.y))
 	_grid_min = lo
 	_grid.size = Vector2(hi - lo + Vector2i.ONE) * UITokens.MAP_CELL
-	# Велика локація стискається в рамку, мала стоїть у натуральний розмір посередині.
+	# Найменший масштаб — уся локація в рамці (мала — у натуральний розмір посередині); відкривається в
+	# натуральному розмірі клітинки 150×84 на герої — велика локація далі тягнеться.
 	var fit: float = minf(1.0, minf(_rooms.size.x / _grid.size.x, _rooms.size.y / _grid.size.y))
-	_grid.scale = Vector2.ONE * fit
-	_grid.position = (_rooms.size - _grid.size * fit) / 2.0
+	room_camera.zoom = 1.0
+	room_camera.setup(Rect2(Vector2.ZERO, _rooms.size), _grid.size, fit, UITokens.MAP_ZOOM_MAX)
 	_add_room_names(data)
 	_add_passages(data)
 	_add_icons(data)
+	var hero := Vector3i.MAX
+	var hero_at := Vector2(0.5, 0.5)
+	for marker: Dictionary in data.markers:
+		if marker.kind == LocationMap.KIND_HERO:
+			hero = marker.cell
+			hero_at = marker.at
+	if hero != Vector3i.MAX:
+		var r := cell_rect(hero)
+		room_camera.center_on(r.position + hero_at * r.size)
+	_apply_room_camera()
+	_set_hovered_room(data.cells.get(hero, ""))
+
+
+func _apply_room_camera() -> void:
+	_grid.scale = Vector2.ONE * room_camera.zoom
+	_grid.position = room_camera.offset
+
+
+## Намальована кімната під точкою екрана або "".
+func room_at(screen: Vector2) -> String:
+	var data: LocationMap = maps[shown_id]
+	var p := room_camera.to_content(screen - _rooms.global_position)
+	if not Rect2(Vector2.ZERO, _rooms.size).has_point(screen - _rooms.global_position):
+		return ""
+	for c: Vector3i in data.cells:
+		if data.state(c) != LocationMap.Cell.HIDDEN and cell_rect(c).has_point(p):
+			return data.cells[c]
+	return ""
+
+
+## Підсвітка кімнати й її картка: назва (або «?») і скрині кімнати.
+func _set_hovered_room(room: String) -> void:
+	if room == hovered_room and %RoomCard.visible == (room != ""):
+		return
+	hovered_room = room
+	%RoomCard.visible = room != ""
 	_grid.queue_redraw()
+	if room == "":
+		return
+	var data: LocationMap = maps[shown_id]
+	if data.room_explored(room):
+		var opened := 0
+		var total := 0
+		for marker: Dictionary in data.markers:
+			if data.cells[marker.cell] == room and marker.kind in [LocationMap.KIND_CHEST, LocationMap.KIND_CHEST_OPEN]:
+				total += 1
+				opened += int(marker.kind == LocationMap.KIND_CHEST_OPEN)
+		%RoomName.text = LocationMap.room_title(room)
+		%RoomStats.text = tr("Chests %d/%d") % [opened, total]
+	else:
+		%RoomName.text = "?"
+		%RoomStats.text = tr("saw the entrance, not entered yet")
+	%RoomCard.reset_size()
 
 
 ## Прямокутник клітинки в координатах Grid.
@@ -209,6 +320,11 @@ func _draw_cells() -> void:
 		elif state == LocationMap.Cell.SEEN:
 			MapIcon.dashed_rect(_grid, r, Color(UITokens.MAP_INK, UITokens.MAP_SEEN_ALPHA), UITokens.MAP_SEEN_BORDER,
 					UITokens.MAP_SEEN_DASH, UITokens.MAP_SEEN_GAP)
+	if hovered_room == "":
+		return
+	for c: Vector3i in data.cells:
+		if data.cells[c] == hovered_room and data.state(c) != LocationMap.Cell.HIDDEN:
+			_grid.draw_rect(cell_rect(c), UITokens.MAP_GOLD, false, UITokens.MAP_ROOM_HOVER_BORDER)
 
 
 ## Назва — у першій клітинці кімнати, лише для досліджених; «?» — для кімнати, від якої бачено тільки вхід.
@@ -274,24 +390,145 @@ func _add_icons(data: LocationMap) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if not is_map_active:
 		return
+	if event is InputEventMouseButton or event is InputEventMouseMotion:
+		_mouse_input(event)
+		return
 	if level == Level.LOCATION:
 		if event.is_action_pressed(&"ui_cancel"):
 			show_world()
 			accept_event()
 		elif _is_direction(event):
-			accept_event()  # фокус лишається на карті
+			accept_event()  # фокус лишається на карті; стрілки рухають карту в _process
 		return
 	if event.is_action_pressed(&"ui_right"):
 		select(selected + 1)
+		world_camera.reveal(pin_center(selected), UITokens.MAP_REVEAL_MARGIN)
 		accept_event()
 	elif event.is_action_pressed(&"ui_left") and selected > 0:
 		select(selected - 1)
+		world_camera.reveal(pin_center(selected), UITokens.MAP_REVEAL_MARGIN)
 		accept_event()
 	elif event.is_action_pressed(&"ui_up") or event.is_action_pressed(&"ui_down"):
 		accept_event()
 	elif event.is_action_pressed(&"ui_accept"):
 		open_location(location_ids[selected])
 		accept_event()
+
+
+## Миша: ліва кнопка тягне (клац без тягнення відкриває шпильку), коліщатко масштабує, рух вибирає.
+func _mouse_input(event: InputEvent) -> void:
+	var at: Vector2 = (event as InputEventMouse).global_position
+	var button := event as InputEventMouseButton
+	if button != null and button.pressed and button.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		var factor: float = UITokens.MAP_ZOOM_STEP if button.button_index == MOUSE_BUTTON_WHEEL_UP \
+				else 1.0 / UITokens.MAP_ZOOM_STEP
+		_camera().zoom_at(_to_camera(at), factor)
+		_apply_camera()
+		accept_event()
+	elif button != null and button.button_index == MOUSE_BUTTON_LEFT:
+		if button.pressed:
+			_dragging = true
+			_drag_travel = 0.0
+			_drag_velocity = Vector2.ZERO
+			_camera().velocity = Vector2.ZERO
+			_camera().goal = null
+			grab_focus()
+		elif _dragging:
+			_dragging = false
+			if _drag_travel <= UITokens.MAP_DRAG_SLOP:
+				_click(at)
+			elif Time.get_ticks_msec() - _drag_last_motion <= UITokens.MAP_GLIDE_STALE * 1000.0:
+				_camera().velocity = _drag_velocity.limit_length(UITokens.MAP_GLIDE_MAX)
+		accept_event()
+	elif event is InputEventMouseMotion:
+		var motion := event as InputEventMouseMotion
+		if _dragging:
+			_drag_travel += motion.relative.length()
+			_drag_velocity = motion.velocity
+			_drag_last_motion = Time.get_ticks_msec()
+			_camera().pan(motion.relative)
+			_apply_camera()
+			accept_event()
+		_hover(at)
+
+
+## Під курсором: на рівні 1 вибирається шпилька (картка за нею), на рівні 2 підсвічується кімната.
+func _hover(at: Vector2) -> void:
+	if level == Level.WORLD:
+		var i := pin_at(at)
+		if i >= 0 and i != selected:
+			select(i)
+	else:
+		_set_hovered_room(room_at(at))
+
+
+func _click(at: Vector2) -> void:
+	if level == Level.WORLD and pin_at(at) >= 0:
+		select(pin_at(at))
+		open_location(location_ids[selected])
+
+
+func _camera() -> MapCamera:
+	return world_camera if level == Level.WORLD else room_camera
+
+
+## Точка екрана в координатах вікна камери: рівень 1 — кадр (Frame стоїть у нулі), рівень 2 — Rooms.
+func _to_camera(at: Vector2) -> Vector2:
+	return at if level == Level.WORLD else at - _rooms.global_position
+
+
+func _apply_camera() -> void:
+	if level == Level.WORLD:
+		_apply_world_camera()
+	else:
+		_apply_room_camera()
+
+
+## Стік, клавіші й тригери тримаються — карта їде й масштабується щокадру; ковзання після миші — теж тут.
+func _process(delta: float) -> void:
+	if not is_map_active:
+		return
+	var cam := _camera()
+	var moved := false
+	if has_focus():
+		var dir := _pan_input()
+		if dir != Vector2.ZERO:
+			cam.velocity = Vector2.ZERO
+			cam.pan(-dir * UITokens.MAP_PAN_SPEED * delta)
+			moved = true
+		var zoom_dir := _zoom_input()
+		if zoom_dir != 0.0:
+			cam.zoom_at(cam.view.get_center(), pow(UITokens.MAP_ZOOM_RATE, zoom_dir * delta))
+			moved = true
+	if not _dragging and cam.step(delta):
+		moved = true
+	if not moved:
+		return
+	_apply_camera()
+	# Без миші вибір — під центром вікна (на рівні 2 — кімната там, куди дивишся).
+	if level == Level.LOCATION and not _dragging:
+		_set_hovered_room(room_at(_rooms.global_position + cam.view.get_center()))
+
+
+## Напрям погляду: правий стік і WASD; на рівні 2 ще стрілки, D-pad і лівий стік (на рівні 1 вони вибирають шпильку).
+func _pan_input() -> Vector2:
+	var dir := Vector2(Input.get_joy_axis(0, JOY_AXIS_RIGHT_X), Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y))
+	if dir.length() < UITokens.MAP_STICK_DEADZONE:
+		dir = Vector2.ZERO
+	dir += Vector2(float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A)),
+			float(Input.is_physical_key_pressed(KEY_S)) - float(Input.is_physical_key_pressed(KEY_W)))
+	if level == Level.LOCATION:
+		dir += Input.get_vector(&"ui_left", &"ui_right", &"ui_up", &"ui_down", UITokens.MAP_STICK_DEADZONE)
+	return dir.limit_length(1.0)
+
+
+## +1 — ближче (правий тригер, E), −1 — далі (лівий тригер, Q).
+func _zoom_input() -> float:
+	var z: float = Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) - Input.get_joy_axis(0, JOY_AXIS_TRIGGER_LEFT)
+	if absf(z) < UITokens.MAP_STICK_DEADZONE:
+		z = 0.0
+	z += Input.get_action_strength(&"menu_next_tab") - Input.get_action_strength(&"menu_prev_tab")
+	return clampf(z, -1.0, 1.0)
 
 
 func _is_direction(event: InputEvent) -> bool:
@@ -305,9 +542,9 @@ func _publish_hints() -> void:
 	if not is_map_active:
 		bar.set_context_hint("")
 	elif level == Level.WORLD:
-		bar.set_context_hint("Left / Right — choose a location. A — open its map.")
+		bar.set_context_hint("%s %s" % [tr("Left / Right — choose a location. A — open its map."), tr(PAN_HINT)])
 	else:
-		bar.set_context_hint("B — back to the world map.")
+		bar.set_context_hint("%s %s" % [tr(PAN_HINT), tr("B — back to the world map.")])
 
 
 func _refresh_texts() -> void:

@@ -253,6 +253,9 @@ func _initialize() -> void:
 	ck(menu.get_node("FocusRouter").focus_mode == "Content" or map.has_focus(), "focus stays on the map")
 	ck(get_first_node_in_group("game_menu") != null, "B on level 2 does not close the menu")
 
+	await _canvas_checks(map, here_id)
+	here_pin = map.get_node("%Pins").get_node(here_id)  # шпильки зібрано наново
+
 	print("[8] uk text through the localisation tables")
 	var locale: String = TranslationServer.get_locale()
 	TranslationServer.set_locale("uk")
@@ -284,6 +287,261 @@ func _initialize() -> void:
 	ui.close_game_menu()
 	for i in 5: await process_frame
 	_done()
+
+
+func _mouse_button(index: MouseButton, pressed: bool, at: Vector2) -> InputEventMouseButton:
+	var ev := InputEventMouseButton.new()
+	ev.button_index = index
+	ev.pressed = pressed
+	ev.global_position = at
+	ev.position = at
+	return ev
+
+
+func _mouse_motion(at: Vector2, relative: Vector2, velocity := Vector2.ZERO, held := true) -> InputEventMouseMotion:
+	var ev := InputEventMouseMotion.new()
+	ev.global_position = at
+	ev.position = at
+	ev.relative = relative
+	ev.velocity = velocity
+	ev.button_mask = MOUSE_BUTTON_MASK_LEFT if held else 0
+	return ev
+
+
+## Тягнути мишею від [param from] на [param delta] кількома кроками й відпустити.
+func _drag(map: Control, from: Vector2, delta: Vector2, steps := 4, velocity := Vector2.ZERO) -> void:
+	map._gui_input(_mouse_button(MOUSE_BUTTON_LEFT, true, from))
+	for i in steps:
+		map._gui_input(_mouse_motion(from + delta * (i + 1) / steps, delta / steps, velocity))
+	map._gui_input(_mouse_button(MOUSE_BUTTON_LEFT, false, from + delta))
+
+
+func _wheel(map: Control, at: Vector2, up: bool, times := 1) -> void:
+	for i in times:
+		map._gui_input(_mouse_button(MOUSE_BUTTON_WHEEL_UP if up else MOUSE_BUTTON_WHEEL_DOWN, true, at))
+
+
+func _key(code: Key, pressed: bool) -> void:
+	var ev := InputEventKey.new()
+	ev.physical_keycode = code
+	ev.keycode = code
+	ev.pressed = pressed
+	Input.parse_input_event(ev)
+
+
+func _joy_axis(axis: JoyAxis, value: float) -> void:
+	var ev := InputEventJoypadMotion.new()
+	ev.device = 0
+	ev.axis = axis
+	ev.axis_value = value
+	Input.parse_input_event(ev)
+
+
+## Карта-полотно (map-pan, як в Octopath Traveler): тягнути, ковзати, масштабувати, край, клац проти тягнення, клавіші й стік.
+func _canvas_checks(map: Control, here_id: String) -> void:
+	var cam: RefCounted = map.world_camera
+	var bg: Control = map._background
+	var view: Rect2 = cam.view
+	var covers := func() -> bool:
+		return Rect2(bg.position, bg.size * bg.scale).encloses(view)
+
+	print("[10] level 1: opens in the Figma frame's scale on the hero; the parchment always covers the view")
+	map.set_map_active(true)
+	await process_frame
+	ck(map.level == WORLD and is_equal_approx(cam.zoom, 1.0), "level 1 opens at zoom 1 (%.3f)" % cam.zoom)
+	var here_i: int = map.location_ids.find(here_id)
+	var want: Vector2 = view.get_center() - map.pin_center(here_i)
+	var expect_off := Vector2(clampf(want.x, view.end.x - 1920.0, view.position.x), clampf(want.y, view.end.y - 1080.0, view.position.y))
+	ck(cam.offset.is_equal_approx(expect_off), "centred on the hero as far as the edges allow (%s, want %s)" % [cam.offset, expect_off])
+	ck(covers.call(), "parchment covers the view at the start")
+	ck(is_equal_approx(bg.scale.x, cam.zoom) and bg.position.is_equal_approx(cam.offset), "menu background follows the camera")
+
+	print("[11] level 1: the wheel zooms around the cursor and clamps")
+	var at := Vector2(1100, 500)
+	var under: Vector2 = cam.to_content(at)
+	_wheel(map, at, true)
+	ck(is_equal_approx(cam.zoom, UITokens.MAP_ZOOM_STEP), "one notch zooms in by MAP_ZOOM_STEP (%.3f)" % cam.zoom)
+	ck(cam.to_content(at).distance_to(under) < 0.5, "the point under the cursor stays put (%s -> %s)" % [under, cam.to_content(at)])
+	var pin0: Control = map.get_node("%Pins").get_child(0)
+	var c0: Vector2 = pin0.global_position + pin0.get_combined_minimum_size() / 2.0
+	ck(c0.distance_to(cam.to_view(map.pin_center(0))) < 1.0, "pins ride with the map, not scaled (%s)" % c0)
+	ck(is_equal_approx(pin0.scale.x, 1.0), "pin keeps its size")
+	_wheel(map, at, true, 30)
+	ck(is_equal_approx(cam.zoom, UITokens.MAP_ZOOM_MAX), "zoom in stops at MAP_ZOOM_MAX (%.3f)" % cam.zoom)
+	ck(covers.call(), "parchment covers the view at the maximum")
+	_wheel(map, at, false, 60)
+	ck(is_equal_approx(cam.zoom, cam.zoom_min) and cam.zoom_min < 1.0, "zoom out stops at the fitted minimum (%.3f)" % cam.zoom)
+	ck(covers.call(), "parchment still covers the view at the minimum (never leaves it)")
+
+	print("[12] level 1: a drag pans by the mouse delta 1:1 and stops at the edge")
+	_wheel(map, view.get_center(), true, 8)
+	cam.center_on(Vector2(960, 540))
+	map._apply_camera()
+	var before: Vector2 = cam.offset
+	_drag(map, Vector2(1000, 500), Vector2(-80, -40))
+	ck(cam.offset.is_equal_approx(before + Vector2(-80, -40)), "drag moves the map by the delta (%s -> %s)" % [before, cam.offset])
+	ck(map.level == WORLD, "a drag does not open anything")
+	_drag(map, Vector2(1000, 500), Vector2(6000, 6000))
+	ck(cam.offset.is_equal_approx(view.position), "a long drag stops at the top-left edge (%s)" % cam.offset)
+	ck(covers.call(), "after the drag the parchment still covers the view")
+	_drag(map, Vector2(1000, 500), Vector2(-9000, -9000))
+	ck(cam.offset.is_equal_approx(view.end - Vector2(1920, 1080) * cam.zoom), "and at the bottom-right edge (%s)" % cam.offset)
+
+	print("[13] level 1: release with speed glides, then the glide stops at the edge")
+	cam.center_on(Vector2(960, 540))
+	map._apply_camera()
+	before = cam.offset
+	_drag(map, Vector2(1000, 500), Vector2(40, 0), 2, Vector2(1500, 0))
+	var after_drag: Vector2 = cam.offset
+	for i in 10: await process_frame
+	ck(cam.offset.x > after_drag.x + 1.0, "the map keeps sliding after release (%.1f -> %.1f)" % [after_drag.x, cam.offset.x])
+	for i in 120: await process_frame
+	ck(cam.velocity == Vector2.ZERO, "the glide dies out")
+	ck(covers.call(), "the glide never shows past the parchment")
+
+	print("[14] level 1: hover selects a pin; a short click opens it, a drag over it does not")
+	map.set_map_active(true)
+	await process_frame
+	var here_pin: Control = map.get_node("%Pins").get_child(here_i)
+	var pin_at: Vector2 = here_pin.get_global_rect().get_center()
+	var other: int = 0 if here_i != 0 else 1
+	map.select(other)
+	map._gui_input(_mouse_motion(pin_at, Vector2(2, 0), Vector2.ZERO, false))
+	ck(map.selected == here_i, "hovering a pin selects it")
+	ck(map.get_node("%CardName").text == map.LocationDB.title(here_id), "and shows its card")
+	_drag(map, pin_at, Vector2(UITokens.MAP_DRAG_SLOP + 6.0, 0), 3)
+	ck(map.level == WORLD, "a drag of more than MAP_DRAG_SLOP px over a pin does not open it")
+	map._gui_input(_mouse_motion(map.get_node("%Pins").get_child(here_i).get_global_rect().get_center(), Vector2.ZERO, Vector2.ZERO, false))
+	pin_at = map.get_node("%Pins").get_child(here_i).get_global_rect().get_center()
+	_drag(map, pin_at, Vector2(3, 0), 1)
+	await process_frame
+	ck(map.level == LOCATION and map.shown_id == here_id, "a short click (3 px) opens the location")
+
+	print("[15] level 2: opens at the cell's own size on the hero, hero's room highlighted with its card")
+	var rcam: RefCounted = map.room_camera
+	var grid: Control = map.get_node("%Grid")
+	var rooms: Control = map.get_node("%Rooms")
+	ck(is_equal_approx(rcam.zoom, maxf(1.0, rcam.zoom_min)), "level 2 opens at zoom 1 (%.3f)" % rcam.zoom)
+	ck(grid.position.is_equal_approx(rcam.offset) and is_equal_approx(grid.scale.x, rcam.zoom), "the grid follows its camera")
+	var data: RefCounted = map.maps[here_id]
+	var hero_room: String = data.cells[root.get_node("MetSys").get_current_coords()]
+	# Уся локація досліджена (лише в памʼяті MetSys) — тоді вона більша за рамку й є куди тягнути.
+	var met: Node = root.get_node("MetSys")
+	var probed: Array[Vector3i] = []
+	for c: Vector3i in data.cells:
+		if not met.is_cell_discovered(c, false):
+			met.save_data.explore_cell(c)
+			probed.append(c)
+	map.open_location(here_id)
+	await process_frame
+	ck(map.hovered_room == hero_room and map.get_node("%RoomCard").visible, "hero's room %s highlighted, card shown" % hero_room)
+	ck(map.get_node("%RoomName").text == map.LocationMap.room_title(hero_room), "room card names it (%s)" % map.get_node("%RoomName").text)
+	ck(map.get_node("%RoomStats").text.begins_with("Chests "), "room card counts its chests (%s)" % map.get_node("%RoomStats").text)
+
+	print("[16] level 2: wheel zooms around the cursor and clamps; drag pans and stops at the edge")
+	var r_at: Vector2 = rooms.global_position + rooms.size / 2.0 + Vector2(30, 20)
+	_wheel(map, r_at, true, 30)
+	ck(is_equal_approx(rcam.zoom, UITokens.MAP_ZOOM_MAX), "level 2 zoom in stops at MAP_ZOOM_MAX")
+	rcam.center_on(rcam.content / 2.0)
+	var r_under: Vector2 = rcam.to_content(r_at - rooms.global_position)
+	_wheel(map, r_at, false)
+	var r_now: Vector2 = rcam.to_content(r_at - rooms.global_position)
+	for axis in 2:  # вісь, де локація менша за рамку, стоїть по центру — там точка їде законно
+		if rcam.content[axis] * rcam.zoom > rcam.view.size[axis]:
+			ck(absf(r_now[axis] - r_under[axis]) < 0.5, "the room point under the cursor stays put on axis %d (%.1f -> %.1f)"
+					% [axis, r_under[axis], r_now[axis]])
+	_wheel(map, r_at, false, 60)
+	ck(is_equal_approx(rcam.zoom, rcam.zoom_min), "level 2 zoom out stops at the fit (%.3f)" % rcam.zoom)
+	ck(Rect2(Vector2.ZERO, rooms.size).encloses(Rect2(grid.position, grid.size * grid.scale).grow(-0.5)), "at the fit the whole location is in the frame")
+	_wheel(map, r_at, true, 30)
+	before = rcam.offset
+	_drag(map, r_at, Vector2(-30, 25))
+	ck(rcam.offset.is_equal_approx(before + Vector2(-30, 25)), "drag moves the rooms by the delta (%s -> %s)" % [before, rcam.offset])
+	_drag(map, r_at, Vector2(-9000, -9000))
+	ck(rcam.offset.is_equal_approx(rcam.view.end - grid.size * rcam.zoom), "a long drag stops at the far edge (%s)" % rcam.offset)
+	ck(map.level == LOCATION, "dragging on level 2 keeps level 2")
+
+	print("[17] level 2: hover highlights a room and shows its card; empty space hides it")
+	rcam.zoom = rcam.zoom_min
+	rcam.setup(rcam.view, rcam.content, rcam.zoom_min, rcam.zoom_max)
+	map._apply_camera()
+	var hover_room := ""
+	var hover_at := Vector2.ZERO
+	for c: Vector3i in data.cells:
+		if data.state(c) == map.LocationMap.Cell.EXPLORED and data.cells[c] != hero_room:
+			hover_room = data.cells[c]
+			hover_at = rooms.global_position + rcam.to_view(map.cell_rect(c).get_center())
+			break
+	map._gui_input(_mouse_motion(hover_at, Vector2(1, 0), Vector2.ZERO, false))
+	ck(hover_room != "" and map.hovered_room == hover_room, "hovering %s highlights it" % hover_room)
+	ck(map.get_node("%RoomName").text == map.LocationMap.room_title(hover_room), "its card shows")
+	map._gui_input(_mouse_motion(rooms.global_position + Vector2(2, 2), Vector2(1, 0), Vector2.ZERO, false))
+	ck(map.hovered_room == "" and not map.get_node("%RoomCard").visible, "empty parchment: no highlight, no card")
+
+	print("[18] keys and pad: WASD / arrows / right stick pan, Q-E / triggers zoom")
+	map.grab_focus()
+	await process_frame
+	_wheel(map, r_at, true, 30)
+	rcam.center_on(rcam.content / 2.0)
+	map._apply_camera()
+	before = rcam.offset
+	_key(KEY_D, true)
+	for i in 6: await process_frame
+	_key(KEY_D, false)
+	ck(rcam.offset.x < before.x - 1.0, "D moves the view right on level 2 (%.1f -> %.1f)" % [before.x, rcam.offset.x])
+	before = rcam.offset
+	Input.action_press(&"ui_left")
+	for i in 6: await process_frame
+	Input.action_release(&"ui_left")
+	ck(rcam.offset.x > before.x + 1.0, "the left arrow moves the view left on level 2")
+	before = rcam.offset
+	_joy_axis(JOY_AXIS_RIGHT_Y, 1.0)
+	for i in 6: await process_frame
+	_joy_axis(JOY_AXIS_RIGHT_Y, 0.0)
+	ck(rcam.offset.y < before.y - 1.0, "the right stick moves the view down (%.1f -> %.1f)" % [before.y, rcam.offset.y])
+	var z: float = rcam.zoom
+	Input.action_press(&"menu_prev_tab")
+	for i in 6: await process_frame
+	Input.action_release(&"menu_prev_tab")
+	ck(rcam.zoom < z, "Q zooms out (%.3f -> %.3f)" % [z, rcam.zoom])
+	z = rcam.zoom
+	_joy_axis(JOY_AXIS_TRIGGER_RIGHT, 1.0)
+	for i in 6: await process_frame
+	_joy_axis(JOY_AXIS_TRIGGER_RIGHT, 0.0)
+	ck(rcam.zoom > z, "the right trigger zooms in (%.3f -> %.3f)" % [z, rcam.zoom])
+	map._gui_input(_action(&"ui_cancel"))
+	await process_frame
+	ck(map.level == WORLD, "B still goes back to level 1")
+	for c: Vector3i in probed:
+		met.save_data.discovered_cells.erase(c)
+	map.grab_focus()
+	_wheel(map, view.get_center(), true, 4)
+	cam.center_on(Vector2(960, 540))
+	map._apply_camera()
+	before = cam.offset
+	var sel: int = map.selected
+	_key(KEY_W, true)
+	for i in 6: await process_frame
+	_key(KEY_W, false)
+	ck(cam.offset.y > before.y + 1.0 and map.selected == sel, "W pans level 1 up and keeps the selected pin")
+	before = cam.offset
+	_joy_axis(JOY_AXIS_RIGHT_X, -1.0)
+	for i in 6: await process_frame
+	_joy_axis(JOY_AXIS_RIGHT_X, 0.0)
+	ck(cam.offset.x > before.x + 1.0, "the right stick pans level 1")
+	z = cam.zoom
+	Input.action_press(&"menu_next_tab")
+	for i in 6: await process_frame
+	Input.action_release(&"menu_next_tab")
+	ck(cam.zoom > z, "E zooms level 1 in (%.3f -> %.3f)" % [z, cam.zoom])
+	map.select(here_i)
+	map._gui_input(_action(&"ui_right"))
+	ck(map.selected != here_i or map.location_ids.size() == 1, "left / right still choose pins on level 1")
+	for i in 60: await process_frame
+	var sel_center: Vector2 = cam.to_view(map.pin_center(map.selected))
+	ck(view.has_point(sel_center), "the view follows the pin chosen by keys (%s)" % sel_center)
+	map.set_map_active(true)
+	await process_frame
 
 
 func _done() -> void:

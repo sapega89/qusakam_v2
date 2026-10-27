@@ -633,6 +633,20 @@ const MAP_PASSAGE := Color("a8321e")               # «↕ драбина», «�
 const SIZE_MAP_ROOM := 18
 const SIZE_MAP_PASSAGE := 13
 const MAP_LEGEND_SWATCH := 14.0                    # квадратик кімнати в легенді
+# Карта-полотно (map-pan): тягнути, ковзати, масштабувати, як в Octopath Traveler.
+const MAP_ZOOM_MAX := 2.5                          # найбільший масштаб (1 = кадр Figma / клітинка 150×84)
+const MAP_ZOOM_STEP := 1.15                        # один клац коліщатка
+const MAP_ZOOM_RATE := 2.0                         # тригери / Q-E: у стільки разів за секунду
+const MAP_PAN_SPEED := 900.0                       # стік / клавіші, px/с на повному нахилі
+const MAP_STICK_DEADZONE := 0.2
+const MAP_DRAG_SLOP := 6.0                         # рух миші до відпускання, далі якого клац — уже не клац
+const MAP_GLIDE_FRICTION := 6.0                    # ковзання після відпускання гасне як e^(−6t): шлях ≈ v / 6
+const MAP_GLIDE_MAX := 3000.0                      # px/с
+const MAP_GLIDE_MIN := 20.0                        # px/с — нижче ковзання зупиняється
+const MAP_GLIDE_STALE := 0.1                       # с: миша стояла довше перед відпусканням — без ковзання
+const MAP_FOLLOW_RATE := 12.0                      # під'їзд до вибраної клавішами шпильки
+const MAP_REVEAL_MARGIN := 120.0                   # шпилька ближче до краю вікна — камера під'їжджає
+const MAP_ROOM_HOVER_BORDER := 4.0                 # кімната під курсором: золота рамка MAP_GOLD
 
 # Шлейфи ударів ворогів (A17, EnemyStrikeFX): не білий, жовтий і червоний — то кольори підказок (D504).
 const ENEMY_SMEAR_STEEL := Color("8fd0ff")         # шабля, щит бандита
