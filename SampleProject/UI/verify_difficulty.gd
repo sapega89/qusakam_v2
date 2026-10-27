@@ -337,6 +337,9 @@ func _make_hero(level: int, city: bool, build: String) -> void:
 				if not sm.is_unlocked(id) and sm.can_unlock(id) == sm.Result.OK:
 					sm.unlock_skill(id)
 					learned = true
+					# Після кожної покупки — знову з початку SKILL_ORDER: навичка, що чекала порогу D497, іде раніше за
+					# нижчі в списку. З безкоштовним Shield Block (D815) поріг Radiant Smite настає посеред проходу.
+					break
 		for id: String in _actives():
 			while sm.can_upgrade(id) == sm.Result.OK:
 				sm.upgrade_skill(id)
