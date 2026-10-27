@@ -53,6 +53,9 @@ const INPUT_BUFFER := 0.2
 ## Зілля зі швидкого слота (D504): герой стоїть DRINK_TIME с, лікує на DRINK_HEAL_AT с; удар до того — зілля пропало.
 const DRINK_TIME := 0.8
 const DRINK_HEAL_AT := 0.5
+## Легкий удар серії (не фінішер) застрягає в першому ворогові (D713): групу не косять легкими ударами, як одного
+## ворога, — це роблять фінішер, важкий удар і рипост, що беруть усіх у зоні удару.
+const LIGHT_TARGETS := 1
 ## Легкий удар без відкидання зброї штовхає ворога на стільки px (4b).
 const HIT_PUSH := 8.0
 ## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
@@ -235,9 +238,11 @@ func hit_damage() -> int:
 	var damage: int = gm.calculate_physical_damage()
 	return roundi(damage * CRIT_DAMAGE) if critical else damage
 
-## Удар, що зараз вийде: сила, крит і бонус по збитому ворогу (D592, Breaker's Ring).
-func _load_hit(amount: int) -> void:
+## Удар, що зараз вийде: сила, крит, бонус по збитому ворогу (D592, Breaker's Ring) і скільки ворогів він бере
+## ([param targets], 0 — усіх у зоні удару).
+func _load_hit(amount: int, targets: int = 0) -> void:
 	damage_applier.current_damage = amount
+	damage_applier.max_targets = targets
 	damage_applier.critical = critical
 	damage_applier.staggered_bonus = Charms.effect(&"staggered_damage")
 
@@ -431,7 +436,7 @@ func perform_attack(last_direction: int) -> void:
 	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
-	_load_hit(roundi(hit_damage() * _combo_damage()[combo_step]))
+	_load_hit(roundi(hit_damage() * _combo_damage()[combo_step]), 0 if finisher else LIGHT_TARGETS)
 
 	# flip_h більше не чіпаємо: єдине джерело — Player._update_facing().
 	var body: StringName = SWING_ANIMATIONS.get(_category, &"Attack")

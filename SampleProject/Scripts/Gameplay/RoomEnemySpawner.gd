@@ -261,6 +261,19 @@ func _connect_enemy_signals(enemy: Node) -> void:
 	"""Подключается к сигналам врага"""
 	# B49: CombatBody2D сигналізує смерть через entity_died, не died
 	enemy.entity_died.connect(_on_enemy_died.bind(enemy))
+	enemy.ready.connect(func() -> void: enemy.enemy_logic.state_changed.connect(_rouse.bind(enemy)), CONNECT_ONE_SHOT)
+
+## Бій — одна група (D713): хто з ворогів бою кинувся на героя, той піднімає решту, і вони не чекають, доки герой
+## підійде до кожного по черзі.
+## Стан — int: тип EnemyLogic тут замкнув би коло залежностей (ServiceLocator → … → спавнер → EnemyLogic → PlayerCombat).
+func _rouse(state: int, enemy: Node) -> void:
+	var states: Dictionary = enemy.enemy_logic.AIState
+	if state != states.CHASE:
+		return
+	for other: Node in spawned_enemies:
+		if other != enemy and is_instance_valid(other) and other.is_alive() \
+				and other.enemy_logic.current_state in [states.IDLE, states.RETURN_HOME]:
+			other.enemy_logic.change_state(states.CHASE)
 
 func _on_enemy_died(enemy: Node) -> void:
 	"""Обработчик смерти врага"""

@@ -1609,6 +1609,7 @@ size = Vector2(40, 32)
 z_index = 1
 platform_floor_layers = 0
 script = ExtResource("1_ecbsx")
+invulnerability_duration = 0.1
 metadata/player = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1406405041]
@@ -1667,6 +1668,7 @@ sprite = NodePath("../Sprite2D")
 animation_player = NodePath("../AnimationPlayer")
 hitbox = NodePath("../Hitbox")
 damage_applier = NodePath("../Hitbox/DamageApplier")
+stagger_push = 20.0
 
 [node name="PlayerMover" type="Node" parent="." unique_id=1011079369]
 script = ExtResource("5_mover")

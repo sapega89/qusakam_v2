@@ -103,7 +103,17 @@ const LOOK_AHEAD := 8.0
 const FLOOR_PROBE := 16.0
 ## Відхід після серії триває не довше за back_off / speed + BACK_OFF_SLACK с.
 const BACK_OFF_SLACK := 0.4
+## Біг до бою (D713): далі за RUN_FROM × engage_range від героя ворог біжить у RUN_PACE раз швидше за крок — група
+## бою приходить разом, а не по одному, поки герой добиває переднього.
+const RUN_PACE := 1.8
+const RUN_FROM := 2.5
+## На удар (з engage_range на attack_range) ворог заходить у STEP_IN_PACE раз швидше за крок.
+const STEP_IN_PACE := 1.4
+## Темп ходи зараз: 1 — крок, RUN_PACE — біг (EnemyView пришвидшує анімацію walk так само).
+var pace: float = 1.0
 var _shuffle_t: float = 0.0
+## Скільки ударів героя ворог прийняв, чекаючи перерви (provoked).
+var _hits_waiting: int = 0
 var _back_off_from: float = 0.0
 
 # Посилання на гравця
@@ -254,10 +264,11 @@ func handle_chase_state(delta: float):
 		return
 
 	var direction_x: float = player.global_position.x - enemy.global_position.x
+	pace = RUN_PACE if distance_to_player_x > engage_range() * RUN_FROM else 1.0
 	if abs(direction_x) <= 5.0:
 		velocity.x = 0
 	else:
-		_walk(1 if direction_x > 0 else -1, speed)
+		_walk(1 if direction_x > 0 else -1, speed * pace)
 
 func _give_up() -> void:
 	change_state(AIState.RETURN_HOME)
@@ -283,12 +294,14 @@ func handle_attack_state(delta: float):
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
 	if (attack_ready_in <= 0.0 or _hero_opened(adx)) and token_free():
+		pace = 1.0 if adx <= attack_range else STEP_IN_PACE  # D713: заходить бити швидше — не бреде під клинком героя
 		if adx <= attack_range:
 			attack_ready_in = enemy.attack_cooldown
 			perform_attack()
 		else:
-			_step(toward, speed)
+			_step(toward, speed * pace)
 		return
+	pace = 1.0
 	_hold_spacing(dx, delta)
 
 ## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно).
@@ -303,9 +316,26 @@ func _hold_spacing(dx: float, delta: float) -> void:
 	else:
 		velocity.x = 0
 
-## Герой відкрився поруч (critique §B): замах важкого удару чи навички в досяжності півтори attack_range.
+## Герой відкрився поруч (critique §B): замах важкого удару чи навички (і фляга — Healing Palm, D504) або зілля
+## (D713) у досяжності _punish_range().
 func _hero_opened(adx: float) -> bool:
-	return adx <= attack_range * 1.5 and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP]
+	return adx <= _punish_range() and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP,
+			PlayerCombat.State.DRINK]
+
+## Звідки ворог карає відкритого героя: ближній — з півтори attack_range.
+func _punish_range() -> float:
+	return attack_range * 1.5
+
+## Удар героя влучив (D713): поки ворог чекає перерви між серіями чи відходить після серії, enemy.answer_hits таких
+## ударів скасовують решту перерви — він б'є у відповідь (з тим самим замахом і підказкою).
+func provoked() -> void:
+	if enemy.answer_hits <= 0 or is_attacking or enemy.is_dead:
+		return
+	_hits_waiting += 1
+	if _hits_waiting >= enemy.answer_hits:
+		attack_ready_in = 0.0
+		if current_state == AIState.RETREAT:
+			change_state(AIState.ATTACK)  # відходив після серії — розвертається й б'є
 
 ## Після серії (D504): відходить на back_off px, якщо є куди; tank (back_off 0) лишається на місці.
 func _decide_after_attack() -> void:
@@ -335,6 +365,7 @@ func change_state(new_state: AIState):
 	if current_state == new_state:
 		return
 	current_state = new_state
+	pace = 1.0
 	state_timer = 0.0
 	state_changed.emit(new_state)
 
@@ -380,6 +411,7 @@ func _interrupted() -> bool:
 func perform_attack():
 	"""Серія ударів (D265): замах, підказка, потім удар хітбоксом у бік погляду (D198); після серії — відновлення."""
 	is_attacking = true
+	_hits_waiting = 0
 	attack_broken = false
 	_hold_token()
 	var tells := _swing_tells()
