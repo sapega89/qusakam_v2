@@ -5,6 +5,7 @@ extends SceneTree
 ## Пише лише в user://verify_save_load_room/ (set_save_dir) — справжні сейви не чіпає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_save_load_room.gd
 
+const Kit := preload("res://SampleProject/UI/input_kit.gd")
 const TEST_DIR := "user://verify_save_load_room/"
 const TEST_SLOT := 1
 
@@ -52,7 +53,8 @@ func _initialize() -> void:
 	# герой стає на землю, і екран зберігає через Game.save_game() (LoadGameMenu._save_via_game).
 	var save_point: Node2D = game.map.get_node(^"SavePoint_BeforeCity")
 	save_point.call(&"_on_interacted")
-	await create_timer(save_point.MEDITATE_SIT_TIME + 0.3).timeout  # D447: спершу герой сідає медитувати
+	# D447, D764: спершу герой застрибує на камінь (HOP_TIME) і сідає медитувати (MEDITATE_SIT_TIME).
+	await create_timer(save_point.HOP_TIME + save_point.MEDITATE_SIT_TIME + 0.3).timeout
 	var ui = root.get_node("ServiceLocator").get_ui_manager()
 	ck(ui.current_state_name == "SaveGameState", "the save point opens the save screen (%s)" % ui.current_state_name)
 	ui.close_state()
@@ -93,6 +95,37 @@ func _initialize() -> void:
 			"level and XP restored (level %d, %d XP; saved %d, %d) — B79" % [xp.current_level, xp.current_xp, saved_level, saved_xp])
 	ck(game.player.current_health == 37 and game.player.Max_Health == saved_max,
 			"the saved HP is back, not full (%d/%d, saved 37/%d) — B138" % [game.player.current_health, game.player.Max_Health, saved_max])
+
+	print("[3] Load Game from the slot menu: a real click fades to black, SceneLoader loads the game, light again in the saved room (D434, performance_plan slice 6)")
+	game.queue_free()
+	for i in 4: await process_frame
+	root.size = Vector2i(1920, 1080)  # headless-вікно 64×64: картка поза ним не ловить мишу
+	change_scene_to_file("res://SampleProject/Scenes/Menus/LoadGameMenu.tscn")  # як Continue в головному меню
+	for i in 10: await process_frame
+	var menu: Node = current_scene
+	var entered: Array = [false]
+	root.get_node("EventBus").room_entered.connect(func(_r: String) -> void: entered[0] = true, CONNECT_ONE_SHOT)
+	await Kit.mouse(self, menu._cards[TEST_SLOT - 1].card)
+	ck(ScreenFade.is_on(root) and current_scene == menu, "the click starts a fade on the slot menu")
+	var light_while_loading := false
+	var t0 := Time.get_ticks_msec()
+	while not (current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn") \
+			and Time.get_ticks_msec() - t0 < 10000:
+		light_while_loading = light_while_loading or (not is_instance_valid(menu) and not ScreenFade.is_black(root))
+		await process_frame
+	ck(current_scene != null and current_scene.scene_file_path == "res://SampleProject/Game.tscn", "Game becomes current_scene")
+	ck(not light_while_loading, "the screen stays black between the menu and the room")
+	while not entered[0] and Time.get_ticks_msec() - t0 < 10000:
+		await process_frame
+	while ScreenFade.is_on(root) and Time.get_ticks_msec() - t0 < 10000:
+		await process_frame
+	game = current_scene
+	ck(entered[0] and not ScreenFade.is_on(root), "room_entered fires, light again (%d ms after the click)" % (Time.get_ticks_msec() - t0))
+	ck(metsys.get_current_room_name() == road_room and game.player.global_position.distance_to(saved_pos) < 4.0,
+			"in the saved room at the save point (%s, %s)" % [metsys.get_current_room_name(), game.player.global_position])
+	while game.room_preloader.busy():  # вихід посеред фонового завантаження дає Parse Error у лозі
+		await process_frame
+	game.queue_free()
 
 	for f in DirAccess.get_files_at(TEST_DIR):
 		DirAccess.remove_absolute(TEST_DIR + f)
