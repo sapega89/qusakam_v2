@@ -134,8 +134,8 @@ tags: [plan, orchestrator, status]
 | S3 | `RoomStoryFlow` — одна база замість 6 копій стану кімнат | code_review §3.1 | ✅ злито (integrate-28) — D779: `RoomStoryFlow.gd`, 7 кімнат на ньому (−436 рядків), SceneStateManager прибрано; MayorHall і LabCells лишились як є |
 | S4 | Чистка плагінів: свої fsm, interaction_system, ModalDialog; свої меню замість Maaack | D242 | ✅ шматок 1 злито (integrate-28) — D780: свій `ui_state_machine.gd`, `addons/fsm` і `addons/interaction_system` видалено; ⬜ шматок 2 ModalDialog; шматок 3 свої меню — коли наступного разу чіпатимемо меню (D242) |
 | S5 | Сюжетна подача діалогів (Figma `36:65`) і повнотілий арт у сценах | D111, D112 | 🔄 routine `story-dialogue` (27.10): подача за фреймом `36:65` (`design/refs/figma_36_65_story_dialogue.png`), повнотілі картки зі спрайтів |
-| S6 | Підказки під ціллю в Журналі (`hint`/`from`) — тексти пише Claude чернеткою | D159, D571 | 🔄 routine `journal-hints` (27.10): підказки-чернетки під кожною ціллю основного шляху |
-| S7 | Журнал: квести згруповані за містом | D181 | 🔄 routine `journal-hints` (27.10): групи за локацією з `locations.json` |
+| S6 | Підказки під ціллю в Журналі (`hint`/`from`) — тексти пише Claude чернеткою | D159, D571 | ✅ злито (integrate-28) — D781: `hint`/`from` у всіх 19 цілях `story.json`, рядок підказки під поточною ціллю; тексти — чернетки `[ЧЕРНЕТКА] D159` |
+| S7 | Журнал: квести згруповані за містом | D181 | ✅ злито (integrate-28) — D781: заголовки локацій з `locations.json`, завдання NPC у своїй локації; звірка з Figma `192:1636` — ще ні (🖥) |
 | S8 | Журнал: побічні завдання (Figma `192:1636`) | npc_recall_plan s4 | 🔄 routine `side-stories` (27.10, після `journal-hints`): сторінка побічних історій з NPC-завдань за фреймом `192:1636` |
 | S9 | Зачарування slice 3 — квест коваля | [[enchanting_plan]] | ✅ збудовано 2026-10-15 (D175) |
 | S10 | Музика боїв 3b — Claude підбирає CC0-треки | D569 | ✅ бій — `heavy_battle.mp3` (Davieplier, CC0; Sapega 27.10: «для бою норм», D771); бос — ще заглушка |

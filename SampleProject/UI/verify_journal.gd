@@ -82,7 +82,18 @@ func _initialize() -> void:
 	var titles: Array = zone_items.map(func(e): return e.title)
 	ck(titles == ["Canyon I", "Village", "Canyon II", "Desert Road", "City Gates", "Laboratory — Cells", "Laboratory", "Laboratory — Outside"],
 			"8 quest items, one per sub-stage (%s)" % str(titles))
-	ck(journal._list_header.visible and journal._list_header.text == "PROLOGUE", "stage header above the items")
+	# D181: групи — локації з locations.json, заголовок рядком перед першим пунктом групи; підпис над списком схований.
+	ck(not journal._list_header.visible, "no single caption above the quest list")
+	ck(_headers(journal) == ["CANYON OF WHISPERS", "THE CITY", "THE LABORATORY"],
+			"quests grouped under their locations (%s)" % str(_headers(journal)))
+	var group_row: Button = journal._entry_list.get_child(0)
+	ck(group_row.theme_type_variation == &"ListGroupRow" and group_row.focus_mode == Control.FOCUS_NONE
+			and group_row.get_theme_color(&"font_disabled_color") == tokens.ACCENT,
+			"the location header is a non-selectable accent caption row")
+	ck(_row(journal, "city_gates").get_index() > _header_index(journal, "THE CITY")
+			and _row(journal, "lab_cells").get_index() > _header_index(journal, "THE LABORATORY")
+			and _row(journal, "desert_road").get_index() < _header_index(journal, "THE CITY"),
+			"each item sits under its own location (Desert Road in the Canyon, D565)")
 	ck(journal._columns.visible and not journal._empty_state.visible, "list/detail shown, empty state hidden")
 	var canyon_row: Button = _row(journal, "canyon")
 	ck(canyon_row.text.begins_with("●"), "fresh game: Canyon I marked current (%s)" % canyon_row.text)
@@ -96,7 +107,27 @@ func _initialize() -> void:
 	ck(journal.entries.filter(func(e): return e.parent == "village").is_empty(), "a locked item shows no objectives")
 	ck(journal.selected_id == "canyon" and journal._detail_title.text == "Canyon I",
 			"the current item is open on the right")
-	ck(journal._detail_state.text == "PROLOGUE", "item text is headed by its stage")
+	ck(journal._detail_state.text == "CANYON OF WHISPERS", "item text is headed by its location (%s)" % journal._detail_state.text)
+
+	print("[2b] D159: a hint from whoever gave it, under the current objective only")
+	var hint_row: Button = _row(journal, "canyon/0/hint")
+	ck(hint_row != null and hint_row.get_index() == first_objective.get_index() + 1,
+			"the hint row is right under its objective")
+	if hint_row != null:
+		ck(hint_row.text.begins_with("Kusakam: “Grandfather always says"), "hint text with its speaker (%s)" % hint_row.text)
+		ck(hint_row.theme_type_variation == &"ListHintRow" and hint_row.disabled
+				and hint_row.focus_mode == Control.FOCUS_NONE, "the hint is a ListHintRow, not selectable")
+		ck(hint_row.get_theme_color(&"font_disabled_color") == tokens.TEXT_SECONDARY, "hint colour from tokens")
+	TranslationServer.set_locale("uk")
+	journal.select_section("quests")
+	for i in 2: await process_frame
+	hint_row = _row(journal, "canyon/0/hint")
+	ck(hint_row != null and hint_row.text.begins_with("Кусакам: «Дід завжди каже"),
+			"uk: «…» and the translated speaker (%s)" % (hint_row.text if hint_row else "none"))
+	ck(_headers(journal)[0] == "КАНЬЙОН ШЕПОТІВ", "uk: location header translated (%s)" % _headers(journal)[0])
+	TranslationServer.set_locale("en")
+	journal.select_section("quests")
+	for i in 2: await process_frame
 	ck(_visible(journal._objective_list) == 0, "objectives are on the left, not in the text")
 	var seen: Array = _texts(journal, [])
 	var leaked: Array = []
@@ -167,6 +198,17 @@ func _initialize() -> void:
 		ck(_row(journal, "village/0") != null and _row(journal, "village/0").text.ends_with("Head to the village"),
 				"the next sub-stage shows its first objective")
 		ck(not village_row.disabled and village_row.text.begins_with("●"), "Village unlocked as current")
+		ck(_row(journal, "canyon/1/hint") == null and _row(journal, "village/0/hint") != null,
+				"D159: a done objective drops its hint, the new current one shows its own")
+		game_node.set_quest_flag("task_malik_escort_taken", true)
+		game_node.set_objective("Head to the village")
+		for i in 3: await process_frame
+		var task_row: Button = _row(journal, "task/malik_escort")
+		ck(task_row != null and task_row.get_index() > _row(journal, "lab_outside").get_index()
+				and _row(journal, "lab_outside").get_index() > _header_index(journal, "THE LABORATORY"),
+				"D181: an NPC task stands in its location's group, after its story items (%s)"
+				% str(task_row.get_index() if task_row else -1))
+		game_node.set_quest_flag("task_malik_escort_taken", false)
 		ck(journal.selected_id == "canyon/0", "open item kept while it is still reachable")
 		village_row.grab_focus()
 		for i in 2: await process_frame
@@ -260,6 +302,18 @@ func _row(journal: Node, id: String) -> Button:
 		if row.visible and row.get_meta(&"entry_id", "") == id:
 			return row
 	return null
+
+
+func _headers(journal: Node) -> Array:
+	return journal._entry_list.get_children().filter(func(r: Button) -> bool:
+		return r.visible and r.theme_type_variation == &"ListGroupRow").map(func(r: Button) -> String: return r.text)
+
+
+func _header_index(journal: Node, text: String) -> int:
+	for row: Button in journal._entry_list.get_children():
+		if row.visible and row.theme_type_variation == &"ListGroupRow" and row.text == text:
+			return row.get_index()
+	return -1
 
 
 func _visible(container: Node) -> int:

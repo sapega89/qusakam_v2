@@ -3490,3 +3490,83 @@ msgstr "They check your eyes first. Blue eyes don't get in."
 
 msgid "Since the barrier fell, the road's full of bandits."
 msgstr "Since the barrier fell, the road's full of bandits."
+
+# ── Журнал: підказки під ціллю, від того, хто її дав (D159; GameFlow → journal_component)
+msgid "%s: “%s”"
+msgstr "%s: “%s”"
+
+# [DRAFT] D159
+msgid "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+msgstr "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+
+# [DRAFT] D159
+msgid "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+msgstr "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+
+# [DRAFT] D159
+msgid "Bandits are leading our people away! Back through the canyon to the village, fast."
+msgstr "Bandits are leading our people away! Back through the canyon to the village, fast."
+
+# [DRAFT] D159
+msgid "I'll go down the street to the middle of the village — someone has to be there."
+msgstr "I'll go down the street to the middle of the village — someone has to be there."
+
+# [DRAFT] D159
+msgid "A bandit is blocking the street. He won't let me pass without a fight."
+msgstr "A bandit is blocking the street. He won't let me pass without a fight."
+
+# [DRAFT] D159
+msgid "I have to get home and see if Grandfather is alive."
+msgstr "I have to get home and see if Grandfather is alive."
+
+# [DRAFT] D159
+msgid "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+msgstr "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+
+# [DRAFT] D159
+msgid "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+msgstr "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+
+# [DRAFT] D159
+msgid "The bandits who took my caravan are still on the road. Mind them."
+msgstr "The bandits who took my caravan are still on the road. Mind them."
+
+# [DRAFT] D159
+msgid "The bandits' trail runs along the road straight to the city gates."
+msgstr "The bandits' trail runs along the road straight to the city gates."
+
+# [DRAFT] D159
+msgid "Bandits at the gates! Help us hold them!"
+msgstr "Bandits at the gates! Help us hold them!"
+
+# [DRAFT] D159
+msgid "The gates are clear. Into the city."
+msgstr "The gates are clear. Into the city."
+
+# [DRAFT] D159
+msgid "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+msgstr "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+
+# [DRAFT] D159
+msgid "The bars are open. I'm going out before anyone comes back."
+msgstr "The bars are open. I'm going out before anyone comes back."
+
+# [DRAFT] D159
+msgid "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+msgstr "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+
+# [DRAFT] D159
+msgid "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+msgstr "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+
+# [DRAFT] D159
+msgid "The mercenary is down and the gates are open. Out, to freedom."
+msgstr "The mercenary is down and the gates are open. Out, to freedom."
+
+# [DRAFT] D159
+msgid "A few more steps and we are out in the open air."
+msgstr "A few more steps and we are out in the open air."
+
+# [DRAFT] D159
+msgid "We made it out. A hard road — but we made it."
+msgstr "We made it out. A hard road — but we made it."

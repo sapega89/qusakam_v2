@@ -481,6 +481,25 @@ func _list_row(theme: Theme) -> void:
 		box.content_margin_bottom = sub_pad_v
 		theme.set_stylebox(state, sub, box)
 
+	# Заголовок групи в списку журналу (D181, смуга регіону Figma 192:1636): рядок-напис у стилі QuestCaption —
+	# без фону, не вибирається.
+	var group := "ListGroupRow"
+	theme.set_type_variation(group, t)
+	theme.set_font("font", group, _font_regular)
+	theme.set_font_size("font_size", group, UITokens.SIZE_SMALL)
+	theme.set_color("font_disabled_color", group, UITokens.ACCENT)
+	for state in ["normal", "hover", "pressed", "disabled"]:  # focus — спільне кільце від ListRow
+		theme.set_stylebox(state, group, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, UITokens.SPACE_SM))
+	# Підказка під ціллю (D159): ще глибше за підпункт, дрібніше й приглушено, без фону, не вибирається.
+	var hint := "ListHintRow"
+	theme.set_type_variation(hint, sub)
+	theme.set_font_size("font_size", hint, UITokens.SIZE_SMALL)
+	theme.set_color("font_disabled_color", hint, UITokens.TEXT_SECONDARY)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var box := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, UITokens.SPACE_XS)
+		box.content_margin_left = pad_h + 2 * UITokens.SPACE_XL
+		theme.set_stylebox(state, hint, box)
+
 
 ## Figma tutorial-content 135:1260 — повноекранне вікно туторіалу (D126).
 func _tutorial(theme: Theme) -> void:

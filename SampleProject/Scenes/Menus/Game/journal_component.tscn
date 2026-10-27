@@ -207,6 +207,7 @@ theme_type_variation = &"QuestCaption"
 text = "—"
 
 [node name="ListScroll" type="ScrollContainer" parent="Margin/Page/Columns/ListColumn"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0

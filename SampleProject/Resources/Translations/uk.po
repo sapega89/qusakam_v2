@@ -3511,3 +3511,83 @@ msgstr "Спершу дивляться в очі. Синьооких не пу�
 
 msgid "Since the barrier fell, the road's full of bandits."
 msgstr "Відколи впав бар'єр, на дорозі повно бандитів."
+
+# ── Журнал: підказки під ціллю, від того, хто її дав (D159; GameFlow → journal_component)
+msgid "%s: “%s”"
+msgstr "%s: «%s»"
+
+# [ЧЕРНЕТКА] D159
+msgid "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+msgstr "Дід завжди каже слухати духів. Вилізу на скелю, до каменя на вершині, — може, там вони щось скажуть."
+
+# [ЧЕРНЕТКА] D159
+msgid "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+msgstr "Сяду на камінь і подихаю тишею — може, вона підкаже шлях."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bandits are leading our people away! Back through the canyon to the village, fast."
+msgstr "Бандити ведуть наших! Назад через каньйон, до села, — швидше."
+
+# [ЧЕРНЕТКА] D159
+msgid "I'll go down the street to the middle of the village — someone has to be there."
+msgstr "Пройду вулицею до середини села — хтось же там має бути."
+
+# [ЧЕРНЕТКА] D159
+msgid "A bandit is blocking the street. He won't let me pass without a fight."
+msgstr "Бандит заступив вулицю. Без бою він мене не пропустить."
+
+# [ЧЕРНЕТКА] D159
+msgid "I have to get home and see if Grandfather is alive."
+msgstr "Треба бігти додому й глянути, чи дід живий."
+
+# [ЧЕРНЕТКА] D159
+msgid "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+msgstr "Наздожени бандитів. Іди в бік каньйону і вийди на дорогу в пустелі."
+
+# [ЧЕРНЕТКА] D159
+msgid "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+msgstr "З краю каньйону, біля містка, можна злізти вниз, на пустельну дорогу."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bandits who took my caravan are still on the road. Mind them."
+msgstr "Бандити, що забрали мій караван, досі на дорозі. Стережися їх."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bandits' trail runs along the road straight to the city gates."
+msgstr "Слід бандитів веде дорогою просто до міської брами."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bandits at the gates! Help us hold them!"
+msgstr "Бандити біля брами! Допоможи втримати ворота!"
+
+# [ЧЕРНЕТКА] D159
+msgid "The gates are clear. Into the city."
+msgstr "Брама вільна. Тепер — у місто."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+msgstr "Ґрати, клітка, чужі голоси... Треба роздивитися, куди мене притягли."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bars are open. I'm going out before anyone comes back."
+msgstr "Ґрати відчинені. Виходжу, поки ніхто не повернувся."
+
+# [ЧЕРНЕТКА] D159
+msgid "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+msgstr "Вихід — унизу, за трьома поверхами охорони. Ведіть — я одразу за вами."
+
+# [ЧЕРНЕТКА] D159
+msgid "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+msgstr "Найманець хоче дідів плащ. Не віддам — значить, битимемось."
+
+# [ЧЕРНЕТКА] D159
+msgid "The mercenary is down and the gates are open. Out, to freedom."
+msgstr "Найманець лежить, ворота відчинені. Вперед, на волю."
+
+# [ЧЕРНЕТКА] D159
+msgid "A few more steps and we are out in the open air."
+msgstr "Ще кілька кроків — і ми на волі."
+
+# [ЧЕРНЕТКА] D159
+msgid "We made it out. A hard road — but we made it."
+msgstr "Ми вийшли. Важкий був шлях — але ми змогли."
