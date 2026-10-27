@@ -185,3 +185,14 @@ None blocks work. Each default holds until Sapega answers.
 | Q104 | Indoor pillars (depth-critics Q-c, D750) | Keep them pure black silhouettes, or show a faint rim and their masonry? | Unchanged (black). |
 | Q105 | Mid-plane props (depth-critics Q-d) | May a prop on a middle plane show its feet sliding along the floor line, or must a floor lip always hide that join? Applies to every M6 prop plane. | A lip hides it. |
 | Q106 | Pixel snapping (depth-critics Q-e) | Only if B180 is fixed by turning pixel snapping off: is slightly softer pixel art in motion acceptable? | Not asked until B180 is confirmed. |
+
+## Opened 2026-10-28 (orchestrator; Sapega: «питання запиши в питання»)
+
+| # | Area | Question | Default until answered |
+|---|---|---|---|
+| Q107 | Rock Ledges (A5, `design/shots/m6a2b_ledges.png`) | The burnt houses past the village wall stand on a ×0.6 plane so three fit over the plateau at the chart size (D814); at ×0.85 only 1.5 fit. OK? | ×0.6, three houses. |
+| Q108 | Rock Ledges smoke (D796) | The big plume now ends in the gorge; on the ledges the smoke rises only from the burning roofs. Also a plume overhead there? | Roof smoke only. |
+| Q109 | Balance (P9, D822) | After `playtest-tuning` the sim may still lose to the tower shield guard L9, armoured scorpion L11, scorpion L9 (the sim never blocks). Keep (players block) or tune those enemies? | Re-judge after the tuning lands; keep if only those. |
+| Q110 | Hero death (B184, `design/shots/hero_death.png`) | Are the faces in Death frames 1 and 3 fine now? | Kept. |
+| Q111 | Main menu (A1 + D818, `design/shots/a1_menu_shockwave_climb.png`, `menu_effects.gif`) | The new desert art is flatter and more cartoon-like than the old painting; with the live effects, keep it? Notes on the effects? | Keep both. |
+| Q112 | The bandit (BACKLOG) | «все гуд, окрім бандита» — what is wrong with the bandit: proportions, face, palette, size? | Waits; its size fix (B187) goes with it. |
