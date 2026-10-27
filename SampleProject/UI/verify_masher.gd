@@ -57,8 +57,8 @@ const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
-## GOOD відпочиває за стільки px поза досяжністю ворога (D775).
-const GOOD_REST_GAP := 60.0
+## GOOD відпочиває на стільки px від найближчого ворога (D775), коли їх лишилось один-два.
+const GOOD_REST_GAP := 150.0
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
@@ -1301,8 +1301,8 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 		return heavy_due
 	# Відпочиває (D775) — відходить з досяжності найближчого, щоб шкала набиралась повним темпом, а не в блоці
 	if _resting:
-		var keep: float = target.enemy_logic.attack_range + target.lunge + GOOD_REST_GAP
-		_hold_move(-signi(int(dx)) if absf(dx) < keep else 0)
+		# у групі з 3+ відходити нікуди — стоїть і блокує
+		_hold_move(-signi(int(dx)) if absf(dx) < GOOD_REST_GAP and alive.size() <= 2 else 0)
 		return heavy_due
 	_hold_move(signi(int(dx)) if absf(dx) > 24.0 else 0)
 	if press and not winding and absf(dx) < 90.0 and _cast_best():
