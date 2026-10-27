@@ -502,7 +502,7 @@ func _list_row(theme: Theme) -> void:
 		theme.set_stylebox(state, hint, box)
 
 
-## Картка побічної історії в Журналі (D767, Figma journal-side-stories 192:1636): мітки стану й локації
+## Картка побічної історії в Журналі (D791, Figma journal-side-stories 192:1636): мітки стану й локації
 ## (рамка accent, без фону) і слова замовника курсивом (нахил шрифту — курсивного накреслення немає).
 func _side_story(theme: Theme) -> void:
 	theme.set_type_variation("StoryTag", "PanelContainer")

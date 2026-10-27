@@ -3588,7 +3588,7 @@ msgstr "A few more steps and we are out in the open air."
 msgid "We made it out. A hard road — but we made it."
 msgstr "We made it out. A hard road — but we made it."
 
-# ── Журнал: сторінка побічних історій (D767; SideStories → journal_component)
+# ── Журнал: сторінка побічних історій (D791; SideStories → journal_component)
 msgid "SIDE STORIES"
 msgstr "SIDE STORIES"
 
@@ -3619,35 +3619,35 @@ msgstr "OUTCOME"
 msgid "REWARDS"
 msgstr "REWARDS"
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "Those same bandits looted my caravan and drove it to the City Gates."
 msgstr "Those same bandits looted my caravan and drove it to the City Gates."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
 msgstr "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "A helmet you forged yourself sits better on the head than a bought one."
 msgstr "A helmet you forged yourself sits better on the head than a bought one."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
 msgstr "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "Now for real learning. Enchant these two into one and bring it to show me."
 msgstr "Now for real learning. Enchant these two into one and bring it to show me."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
 msgstr "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "My humble place holds gold for everyone who leads me out of here."
 msgstr "My humble place holds gold for everyone who leads me out of here."
 
-# [DRAFT] D767
+# [DRAFT] D791
 msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
 msgstr "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
 

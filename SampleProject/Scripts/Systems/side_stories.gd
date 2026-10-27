@@ -1,6 +1,6 @@
 extends RefCounted
 
-## Побічні історії Журналу (D180, D767; Figma journal-side-stories 192:1636) — без окремого списку:
+## Побічні історії Журналу (D180, D791; Figma journal-side-stories 192:1636) — без окремого списку:
 ## кожне завдання NPC з quests.json, яке герой узяв або здав, — побічна історія.
 ## Порядок — локації з locations.json, у кожній — завдання в порядку quests.json.
 ##   const SideStories = preload("res://SampleProject/Scripts/Systems/side_stories.gd")

@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Журнал → Побічні історії (D767, Figma journal-side-stories 192:1636), справжній ввід:
+## Журнал → Побічні історії (D791, Figma journal-side-stories 192:1636), справжній ввід:
 ##   godot --headless --path . --script res://SampleProject/UI/verify_side_stories.gd
 ##   1. Порожня сторінка до першого завдання; вкладки локацій унизу: All + кожна з locations.json.
 ##   2. Узяте в коваля «Шолом» → рядок «◆» під «THE CITY»; картка: замовник, мітки стану й локації, його слова, ціль,
@@ -149,7 +149,7 @@ func _initialize() -> void:
 	var drafts_ok := tasks.all(func(t: Dictionary) -> bool:
 		return ["quote", "outcome"].all(func(k: String) -> bool:
 			var key := 'msgid "%s"' % String(t[k]).replace('"', '\\"')
-			return po_uk.contains("# [ЧЕРНЕТКА] D767\n" + key) and po_en.contains("# [DRAFT] D767\n" + key)))
+			return po_uk.contains("# [ЧЕРНЕТКА] D791\n" + key) and po_en.contains("# [DRAFT] D791\n" + key)))
 	ck(drafts_ok, "every task's quote and outcome is a draft in uk.po and en.po")
 	TranslationServer.set_locale("en")
 

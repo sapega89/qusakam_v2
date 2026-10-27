@@ -204,7 +204,7 @@ func _initialize() -> void:
 		game_node.set_objective("Head to the village")
 		for i in 3: await process_frame
 		ck(journal.entries.all(func(e: Dictionary) -> bool: return not e.id.contains("malik_escort")),
-				"D767: an NPC task is a side story, not a row on the Quests page")
+				"D791: an NPC task is a side story, not a row on the Quests page")
 		game_node.set_quest_flag("task_malik_escort_taken", false)
 		ck(journal.selected_id == "canyon/0", "open item kept while it is still reachable")
 		village_row.grab_focus()

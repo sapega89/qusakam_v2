@@ -1,5 +1,5 @@
 {
-	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають; needs_flag — прапорець, без якого не здати (D293). description — передісторія для Журналу, objective — що зробити (D311). location — локація з locations.json, під якою завдання стоїть у Журналі (D181). quote — слова замовника, outcome — чим скінчилось (сторінка «Побічні історії», D767).",
+	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають; needs_flag — прапорець, без якого не здати (D293). description — передісторія для Журналу, objective — що зробити (D311). location — локація з locations.json, під якою завдання стоїть у Журналі (D181). quote — слова замовника, outcome — чим скінчилось (сторінка «Побічні історії», D791).",
 	"tasks": [
 		{
 			"id": "merchant_caravan",

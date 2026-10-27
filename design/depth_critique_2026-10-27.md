@@ -62,7 +62,7 @@ every critic.
   lantern, the bat (as a D774 critter), the lizard shrines.
 - **Triage:**
   - LizardCave: **B162** (not new), plus an amendment: the sky behind the openings becomes its own plane.
-  - BanditCamp and GatehouseCellar: new **M6 art rows**. These confirm slice-1's B-new-1 and B-new-3. BanditCamp's
+  - BanditCamp and GatehouseCellar: new **M6 art rows**. These confirm slice-1's B-new-1 (B172) and B-new-3 (B174). BanditCamp's
     foreground is already M6 Batch 0 (D774).
 
 ### 2. CityGates: the ×1.3 rock parks over the hero at the camera limit — **[×3] AD + MT + PL** — high
@@ -76,7 +76,7 @@ every critic.
 - **Fix (code):** place every FrontDark occluder so that at both camera limits it rests off-view or at an edge
   (screen x < 0 or > ~1700). Add a check that tests every ×1.3 occluder at both camera limits, next to
   `verify_room_entrances`.
-- **Triage:** new **B row**.
+- **Triage:** new **B row** (B177).
 
 ### 3. The camera stops and starts hard at room limits — **[×1] MT**, confirmed in code — high
 - **Where:** 9 of 16 rooms, each time the camera reaches a limit (e.g. BanditCamp ~1.05 s and ~4.7 s), as sharp
@@ -88,7 +88,7 @@ every critic.
   differences vanish at that moment.
 - **Fix (code):** `SampleProject/Game.tscn:191` `Player/Camera2D`: `limit_smoothed = true`. Position smoothing
   is already on, and this property is missing.
-- **Triage:** new **B row**.
+- **Triage:** new **B row** (B176).
 
 ### 4. FrontDark rock: its painted foot stands on the road and skates — **[×1] PL** (MT: the same rock in four rooms) — high
 - **Where:** CityGates 1.5–3.5 s, DesertRoad 1.5–3.5 s, LaboratoryOutside 2.0–3.5 s, Village 2.5–3.0 s
@@ -99,7 +99,7 @@ every critic.
   into a conveyor belt. It also reads as an obstacle the hero walks through.
 - **Fix (code):** move each rock down until its painted foot is below the view, or crop the PNG's transparent
   bottom rows. PL suspects these rows lift the painted foot ~60 px above the node; the PNG alpha was not checked.
-- **Triage:** new **B row** (contradicts D750). Medium–high confidence.
+- **Triage:** new **B row** (B178) (contradicts D750). Medium–high confidence.
 
 ### 5. Single-screen rooms: no parallax at all, plus a camera twitch — **[×3] AD + MT + PL (static camera)** — high (depth) / medium (twitch)
 - **Where:** DragonMural, ElderHouse, MayorHall and MesaClimb. Probe: feet x = 2.25 × world x, and `speed_x` is
@@ -112,7 +112,7 @@ every critic.
   - Twitch (code): in `Game.gd` around 530–540, where the limits are set, lock the camera to the room centre when
     the room is less than ~32 px wider than the view.
   - Depth: needs a product call.
-- **Triage:** new **B row** for the twitch, and **Q for Sapega** (below: Q-a).
+- **Triage:** new **B row** (B179) for the twitch, and **Q for Sapega** (below: Q-a, filed as Q102).
 
 ### 6. Featureless black pillars indoors — **[×3] AD + MT + PL** — low–medium
 - **Where:** GatehouseCellar 1.5–3.5 s (it cuts into the hero at 2.0 s); LabCells 2.0–3.5 s (filmstrip).
@@ -122,7 +122,7 @@ every critic.
   the camera. The eye has nothing to track.
 - **Fix (art lane):** keep it dark, but add a faint warm rim toward the room's lamps, a capital and base, and a
   slight vertical ramp (contrast ~0.06–0.08). Narrow it and keep it off the hero's resting spots.
-- **Triage:** a **Q for Sapega** (Q-c: this refines the approved D750 look), then an **M6 art row**.
+- **Triage:** a **Q for Sapega** (Q-c, filed as Q104: this refines the approved D750 look), then an **M6 art row**.
 
 ### 7. Sub-pixel judder of parallax planes — **[×1] MT** — medium (medium confidence)
 - **Where:** LabBoss 1.1–2.4 s (band 30 %), LaboratoryOutside 0.2–2.4 s (band 55 %), Canyon 1.3–2.0 s (band
@@ -135,7 +135,7 @@ every critic.
 - **Why it breaks depth:** the planes that carry the depth shimmer against a smooth floor.
 - **Fix (code):** (a) round the camera's final position to whole world pixels every frame, or (b) turn the snap
   off. Option (b) softens the pixel art in motion.
-- **Triage:** new **B row**. A **Q** (Q-e) only if (b) is chosen. Needs a re-film at 60 fps to PNG to confirm.
+- **Triage:** new **B row** (B180). A **Q** (Q-e, filed as Q106) only if (b) is chosen. Needs a re-film at 60 fps to PNG to confirm.
 
 ### 8. Tile floor in ElderHouse and MayorHall; dead floor band in LabBoss and LabCells — **[×2] AD + PL** — medium
 - **Where:** all cells, the bottom ~20 % of the view.
@@ -148,13 +148,13 @@ every critic.
   on the walk line. Add an occasional low near object at the sides.
 - **Triage:** new **M6 art row**.
 
-### 9. The hero's drawn feet are ~12 world px below his collision — **[×1] PL** (also slice 1's Q-new) — medium
+### 9. The hero's drawn feet are ~12 world px below his collision — **[×1] PL** (also slice 1's Q-new, filed as Q101, answered by D787) — medium
 - **Where:** every room and every screen (`hero_sprite_bottom_px` = +26.2 screen px). On flat floors with
   their top at 0 (ElderHouse, MayorHall, LabBoss, LabCells, Laboratory) the feet sink into the floor. In road rooms
   it falls inside the D559 band.
 - **Fix (code):** first confirm the row is the sprite, not a child effect: the probe counts every CanvasItem under
   Player. Then align the `Sprite2D` offset or the collision shape.
-- **Triage:** slice 1 filed this as a **Q** (Q-f). PL would make it a B row once a 1:1 re-film crop of the feet
+- **Triage:** slice 1 filed this as a **Q** (Q-f = Q101, answered: D787). PL would make it a B row once a 1:1 re-film crop of the feet
   confirms it. Kept as the Q.
 
 ### 10. The palm crown at hero height; occluders bunch up — **[×2] PL + MT (the same stamp in four rooms)** — medium
@@ -164,7 +164,7 @@ every critic.
   stands. The identical rock and palm recur in Canyon, DesertRoad, Village and LaboratoryOutside.
 - **Fix:** keep the palm off arrival and rest spots and space the occluders out (layout). A shorter or taller palm
   variant, and one or two occluder variants per biome (art lane).
-- **Triage:** **Q for Sapega** (Q-b) on hero cover, plus an **M6 art row** for the variants.
+- **Triage:** **Q for Sapega** (Q-b, filed as Q103) on hero cover, plus an **M6 art row** for the variants.
 
 ### 11. Laboratory: the planes move as one slab vertically — **[×2] MT + PL** — medium
 - **Where:** ~0.9–1.6 s, filmstrip 1.0 → 1.5, slit-scan bands 55 % and 80 %.
@@ -174,7 +174,7 @@ every critic.
   (×0.75) has its foot 11 px above the ×1.0 floor top, so it skates on the floor.
 - **Fix (code):** set `scroll_scale.y` equal to x on the Atmosphere planes, and check the texture height or
   `repeat_size.y` so no plane edge comes into view. Close the gap under the floor (a slab or a lower-storey plane).
-- **Triage:** new **B row** (vertical scroll). **Q for Sapega** (Q-d) on where mid-plane props meet the floor.
+- **Triage:** new **B row** (B181) (vertical scroll). **Q for Sapega** (Q-d, filed as Q105) on where mid-plane props meet the floor.
   MesaClimb probably needs the same; it needs a re-film with the climb.
 
 ### 12. Landmarks tiled twice per view — **[×1] AD** (MT and PL saw the repeats in GatehouseCellar and LizardCave) — medium
@@ -193,7 +193,7 @@ every critic.
 - **Fix (art lane):** the B162 cut, with a floor plane whose top is flat on the walk line. Move the big boulder to
   ×0.85 or make it collision. Add dark rock spurs or a dry bush low at the corners and a root at the top, ×1.3.
 - **Triage:** **M6 art rows**: add MesaClimb to Batch 0 (D774) and give it the B162 cut. This confirms slice-1's
-  B-new-2.
+  B-new-2 (B173).
 
 ### 14. BanditCamp: painted barrels on the walk line — **[×2] AD + PL** — medium
 - **Where:** 3.0–3.5 s. The hero runs in front of, or over, the barrel and sacks painted at the bottom.
@@ -223,7 +223,7 @@ every critic.
 - **What:** in `drifting_clouds.tscn`, Cloud2 (×0.12) has autoscroll −9 px/s and Cloud3 (×0.2) has −4. The
   farther cloud drifts more than twice as fast. Seen in all six outdoor rooms, in slit-scan band 30 %.
 - **Fix (code):** make autoscroll grow with scroll_scale (e.g. ×0.12 → −3.5, ×0.15 → −5, ×0.2 → −6).
-- **Triage:** new **B row**.
+- **Triage:** new **B row** (B182).
 
 ### 18. Outdoor road less contrasty than the plane behind it — **[×1] AD** — low
 - **What:** Terrain contrast is lower than the middle plane's in four rooms: DesertRoad 0.12 vs Mid 0.19, City

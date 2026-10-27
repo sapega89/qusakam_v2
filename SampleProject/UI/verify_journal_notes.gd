@@ -44,7 +44,7 @@ func _open_notes() -> Node:
 	await Kit.mouse(self, menu.get_node("%JournalButton"))
 	await Kit.frames(self, 6)
 	var journal: Node = menu.find_child("JournalComponent", true, false)
-	await Kit.key(self, KEY_E)  # Quests → Side Stories (D767)
+	await Kit.key(self, KEY_E)  # Quests → Side Stories (D791)
 	await Kit.key(self, KEY_E)
 	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
 	await Kit.key(self, KEY_E)

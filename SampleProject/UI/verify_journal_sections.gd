@@ -83,7 +83,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 4)
 	journal = await _open_journal(sl)
 	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
-	ck(journal.section == "side", "pad RB → Side Stories (D767)")
+	ck(journal.section == "side", "pad RB → Side Stories (D791)")
 	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
 	ck(journal.section == "characters", "pad RB → Characters")
 	await Kit.key(self, KEY_E)

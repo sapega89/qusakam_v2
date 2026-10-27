@@ -41,11 +41,11 @@ const FIELDS := ["id", "title", "state", "objectives", "description", "group", "
 ## kind: "" — звичайний пункт; HINT — підказка під ціллю (D159): рядок без вибору.
 const HINT := "hint"
 
-## Позначка стану підетапу в списку. Закритий підетап не відкривається. Побічна історія: ◆ — триває, ✓ — скінчена (D767).
+## Позначка стану підетапу в списку. Закритий підетап не відкривається. Побічна історія: ◆ — триває, ✓ — скінчена (D791).
 const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○", "active": "◆"}
-## Розділи, де список поділено рядками-заголовками локацій (D181, D767).
+## Розділи, де список поділено рядками-заголовками локацій (D181, D791).
 const GROUPED := ["quests", "side"]
-## Мітка стану в картці побічної історії (D767).
+## Мітка стану в картці побічної історії (D791).
 const STORY_STATES := {"done": "Completed", "active": "In progress"}
 
 @onready var _eyebrow: Label = %Eyebrow
@@ -70,7 +70,7 @@ const STORY_STATES := {"done": "Completed", "active": "In progress"}
 @onready var _empty_state: Label = %EmptyState
 @onready var _tabs: Dictionary = {"quests": %QuestsTab, "side": %SideTab, "characters": %CharactersTab,
 	"bestiary": %BestiaryTab, "notes": %NotesTab}
-## Побічні історії (D767, Figma 192:1636): замовник над назвою, мітки стану й локації, його слова, кінець, нагороди;
+## Побічні історії (D791, Figma 192:1636): замовник над назвою, мітки стану й локації, його слова, кінець, нагороди;
 ## внизу — вкладки локацій (All + кожна з locations.json).
 @onready var _client_label: Label = %ClientLabel
 @onready var _story_tags: HBoxContainer = %StoryTags
@@ -223,7 +223,7 @@ func _load_story() -> void:
 			if zone.state == "current":
 				current_id = zone.id
 				_append_live_objective(bucket, zone, objectives, group)
-	# Завдання NPC — не тут, а на сторінці побічних історій (D767).
+	# Завдання NPC — не тут, а на сторінці побічних історій (D791).
 	var items: Array = []
 	for loc_items: Array in by_location.values():
 		items.append_array(loc_items)
@@ -414,7 +414,7 @@ func _link_tab_and_list(rows: Array) -> void:
 	var first: Button = focusable[0]
 	first.focus_neighbor_top = first.get_path_to(tab)
 	tab.focus_neighbor_bottom = tab.get_path_to(first)
-	# Побічні історії: ↓ з останнього рядка — на вкладки локацій унизу, ↑ з них — назад у список (D767).
+	# Побічні історії: ↓ з останнього рядка — на вкладки локацій унизу, ↑ з них — назад у список (D791).
 	var last: Button = focusable[-1]
 	last.focus_neighbor_bottom = NodePath()
 	if section == "side":
@@ -469,7 +469,7 @@ func _show_detail(id: String) -> void:
 	_show_side_story(entry)
 
 
-## Картка побічної історії (D767): замовник, мітки стану й локації, його слова, кінець (лише скінченої) і нагороди.
+## Картка побічної історії (D791): замовник, мітки стану й локації, його слова, кінець (лише скінченої) і нагороди.
 ## В інших записах цих вузлів не видно.
 func _show_side_story(entry: Dictionary) -> void:
 	var side: Dictionary = entry.side

@@ -8,8 +8,8 @@ tags: [handoff, orchestrator]
 Where the orchestrator session left off (Sapega asked for a fresh session to free the context). The plan with every
 status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
-**Registers:** next free **D775**, **B163**. `feature/backlog` has D764, D765, D771–D773; D766–D770 exist only on
-`integrate-27` (hard-fights-2's, renumbered) until it is merged back.
+**Registers:** next free **D794**, **B185**, **Q107** (integrate-29 filed D787–D793, B171–B184, Q101–Q106). They exist
+on `cloud/integrate-29` until `feature/backlog` takes it.
 
 ## 1. Finish first (local, in this order)
 
@@ -20,10 +20,10 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
    `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
 3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
-   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates made; **Sapega picked: b (brass portcullis) in the cave, c (lashed poles) replaces the Lab bars in Bandit Camp, a and d kept for M6 locked doors** — wiring by the art agent; D-ID + B-ID after integrate-28) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
-   in [[m6_backdrops]]; its D-ID after integrate-28) → **redo hero Death frames 1 and 3** (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя» — frame 1 a swirl for an eye, frame 3 a red slit; keep 2 and 4) → plane
-   cuts like B162 for Bandit Camp ✅ (`7f999a13`), Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
-   depth-critics triage after integrate-28) → M6.
+   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates made; **Sapega picked: b (brass portcullis) in the cave, c (lashed poles) replaces the Lab bars in Bandit Camp, a and d kept for M6 locked doors** — wiring by the art agent; **D793**, **B183** ✅ `1180bc96`) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
+   in [[m6_backdrops]]; **D792**) → **redo hero Death frames 1 and 3** (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя» — frame 1 a swirl for an eye, frame 3 a red slit; keep 2 and 4; **B184**, redrawn `dab3d2ea`, open until seen in the game) → plane
+   cuts like B162 for Bandit Camp ✅ (`7f999a13`), Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows: **B173** Dragon Mural / Mesa Climb, **B174** Gatehouse Cellar;
+   Bandit Camp **B172** ✅, Mayor Hall foreground **B175** ✅; depth-critics' camera/plane rows **B176–B182**, its Qs **Q102–Q106**) → M6.
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
 
 ## 2. In the cloud (merge each when its report lands; renumber D from D775)
@@ -45,9 +45,9 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
 | integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
 | integrate-28 | `trig_01EYt8kXZd2aYYa2Gy1xowCP` | integrate-27 | merges the 11 reported routines (enemy-ai … ambient-critters, not side-stories / depth-*), renumbers from D775 / B163, full suite; then fast-forward `feature/backlog` |
-| hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — file its D-ID **after** integrate-28 (it numbers from D775) |
+| hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — **D787** (integrate-29), answers Q101 |
 | perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
-| hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — D-ID after integrate-28 |
+| hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — **D788** (integrate-29) |
 | integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | integrate-28, hero-shadow | merges side-stories, hero-feet+shadow, perf-check, depth-film, depth-critics, feature/backlog; files the pending D/B (atmosphere, gates, Death frames, depth B rows); then fast-forward `feature/backlog` |
 | fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | A9: every effect filmed in the game → GIFs + sheets in `design/shots/fx/` for Sapega's notes |
 | scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | A25: size chart data, a probe of every object's drawn height, the chart picture `design/shots/scale_chart.png` — it may have started on the old draft (≈70 px, ranges): on merge, set `world_scale.json` to the plan's exact table (H = 64 art px, one size per category, ±1 px) and re-run the probe and `scale_chart.py` |

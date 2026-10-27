@@ -209,7 +209,7 @@ func _initialize() -> void:
 	get_first_node_in_group("game_menu").switch_to_tab("Journal")
 	for i in 10: await process_frame
 	var journal: Node = get_first_node_in_group("journal_screen")
-	journal.select_section("side")  # завдання NPC — побічні історії (D767)
+	journal.select_section("side")  # завдання NPC — побічні історії (D791)
 	var titles: Array = journal.entries.map(func(e: Dictionary) -> String: return e.title)
 	ck(titles.has("The Stolen Caravan") and titles.has("The Helmet"), "journal lists the tasks (%s)" % [titles])
 	var helmet: Array = journal.entries.filter(func(e: Dictionary) -> bool: return e.title == "The Helmet")
