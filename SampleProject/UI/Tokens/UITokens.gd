@@ -561,6 +561,7 @@ const SIZE_NEW_POINTS_KEY := 14      # Bold, клавіша (SIZE_HUD_KEY)
 # ── Вікно навичок Dragon Nest (D674, Figma 533:6472, design/shots/figma_skills_dragon_nest.png) ──────────
 const SKILL_SLOT_SIZE := 64            # клітинка навички — квадрат з іконкою
 const SKILL_SLOT_ICON_INSET := 8       # іконка всередині рамки
+const SKILL_HOTBAR_SLOT_SIZE := 40     # слот хотбара в панелі деталей: вісім в один ряд (skills v2)
 const SKILL_GRID_GAP_H := 52           # між стовпцями (крок 116 px у кадрі)
 const SKILL_GRID_GAP_V := 24           # від підпису рангу до наступного ряду
 const SKILL_GRID_COLUMNS := 4
