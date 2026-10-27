@@ -34,7 +34,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_old_man.tscn" id="tf_old"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_merchant_woman.tscn" id="tf_woman"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/town_prop.tscn" id="town_prop"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/meditation_stone.tscn" id="ms_stone"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="meditation_art"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -263,8 +263,15 @@ script = ExtResource("4_save")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint" unique_id=1616236613]
 shape = SubResource("CircleShape2D_save")
 
-[node name="MeditationStone" parent="SavePoint" instance=ExtResource("ms_stone")]
-position = Vector2(0, 104)
+[node name="Spot" type="Sprite2D" parent="SavePoint"]
+texture_filter = 1
+position = Vector2(-66, 22)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint"]
+position = Vector2(0, 86)
 
 [node name="Merchant" parent="." unique_id=174666615 instance=ExtResource("10_merchant")]
 position = Vector2(800, 396)

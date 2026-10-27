@@ -3,29 +3,62 @@ type: reference
 tags: [handoff, orchestrator]
 ---
 
-# Handoff — 2026-10-24 morning
+# Handoff — 2026-10-27, day
 
-Where the orchestrator session left off, for the next session to pick up. Registers: next free **D693**, **B147**.
+Where the orchestrator session left off (Sapega asked for a fresh session to free the context). The plan with every
+status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
-## Running in the cloud (round 13, fired 07:53 UTC)
-| Routine | Branch | Task |
-|---|---|---|
-| rooms-1 (`trig_016osGBbqVCbe12sbHYKGvBh`) | cloud/rooms-1 | the five D643 side rooms with their backdrops |
-| chibi-npcs (`trig_01TiXvBBfPWYrkrRUKcj7rEw`) | cloud/chibi-npcs | Malik, alchemist, guard on chibi sheets (D677); Alisia on the table (B127) |
-| lab-curse (`trig_01JVxvY38yqsVZYsaVxNZ1sA`) | cloud/lab-curse | cursed jackals in the Laboratory (D649, D653, D675) |
+**Registers:** next free **D775**, **B163**. `feature/backlog` has D764, D765, D771–D773; D766–D770 exist only on
+`integrate-27` (hard-fights-2's, renumbered) until it is merged back.
 
-Merge them like round 12: create an `integrator` routine (copy `trig_01KDVwmbR1H9KZ6Pz47ovPrz`'s prompt, change the branch list), then build Windows locally and send it.
+## 1. Finish first (local, in this order)
 
-## Art lane (ComfyUI, local)
-- Waiting for Sapega's pick: the new **bandit brute** (drags the club) and **tower-shield guard** (shield in front) candidates, and **jackal_pack** candidates (not generated yet).
-- Then full frames: `big_jackal_leader`, `big_armoured_scorpion`, `big_crossbowman` (a bow), `big_old_vulture` have picks and rows (D692) but **no frames yet** — run `comfy_sprite.py <name>` with `COMFY_MAX=4`, a `/free` between runs.
-- Memory: background ComfyUI jobs get reaped when the session idles. Run in the foreground in chunks (`timeout 580`), or restart after a reap without asking (memory note). 96-px cells need `up=12`.
-- Still to draw: B124 sword in the wrong hand, B110 the bow; the Lizard Cave backdrop's pseudo-letters.
-- After the frames: a cloud routine wires the big kinds (big-mobs left disabled slots, D681–D683).
+1. **`integrate-27` → the cloud** (Sapega 27.10). Pushed; routine `integrate-27` (`trig_01GjxkDd7Y8XLhKUpJKKo56D`)
+   fixes `verify_flying_enemies` (vulture ×1.25 swoop) and `verify_city_gates_raid`, merges `feature/backlog`, runs the
+   meditation tests and the full suite, commits the `heavy_battle.mp3.import`, pushes `cloud/integrate-27`. When its
+   report lands: fast-forward (or merge) `feature/backlog` to it (stash `project.godot` around it).
+2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
+   `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
+3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
+   agent at a time — B162 → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons → M6.
+4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
 
-## Open
-- **B145** — the exported game crashed going down from the Canyon; not reproduced; logs now keep 50 files.
-- Q89, Q90 (from loose-ends) — read them to Sapega in plain words.
-- `main` is 450+ commits behind; update it (PR + fast-forward) on Sapega's word once B145 is understood.
-- A second local Claude session also commits here (the Cthulhu fly, D654–D655); its uncommitted `verify_difficulty.gd` edit is in `git stash@{0}`.
-- Last: secrets in locations. Postponed by Sapega: old art redraw (chibi + three-quarter), the prologue script, the pixel UI skin and font.
+## 2. In the cloud (merge each when its report lands; renumber D from D775)
+
+| Routine | Trigger | Waits for | Task |
+|---|---|---|---|
+| enemy-ai | `trig_01TcJLwHcQtb8KqkrptmVq7D` | — | enemies try to kill |
+| stamina-poise | `trig_018ru9S2zWjNgkwyUjndckNC` | enemy-ai | relaunched 06:13 UTC (the first run waited 8 h and gave up) |
+| room-story-flow | `trig_01MEJ6rh44P3wZwpfenyWXsG` | — | S3 |
+| plugins-fsm | `trig_01YY9Xmo6EvTU28AYoNEuu6r` | — | S4 slice 1 |
+| journal-hints | `trig_0194EUuEt97ps71hVSBof79E` | — | S6, S7 |
+| side-stories | `trig_019hyUUSNnQ2yXz7U228Xa95` | journal-hints | S8 (ref `design/refs/figma_192_1636_side_stories.png`) |
+| decision-audit-2 | `trig_01GLVCtEb2QatMqx4Wee1Air` | — | S15 (D179–D330), S16 |
+| story-dialogue | `trig_01VekVCseD32fdUH9fCsGY5P` | — | S5 (ref `design/refs/figma_36_65_story_dialogue.png`) |
+| secrets | `trig_01MATNrpE73ups6FydJzmJq7` | — | D765 |
+| secrets-icon | `trig_01Xi3DvX6rxb5i4WM8LyrPLN` | secrets | found secrets on the map |
+| map-pan | `trig_01BE9fUzLv58LaCY8TvsAK8W` | secrets-icon | drag / zoom the map like Octopath Traveler |
+| ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
+| depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
+| integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
+| depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
+
+## 3. Art lane (ComfyUI, local)
+
+- **M6** — [[m6_backdrops]]: all graphs are accepted (M1 D721, M3 D773, M4 D772). Rules from Sapega today: several
+  layers per room, something to look at on every screen; interesting things (idols, statues) are their own props on
+  their own parallax plane, in the same place.
+- **First: B162, the Lizard Cave.** Its one backdrop holds three planes; cut them apart (front = floor, foreground
+  rocks, ceiling; middle = walls, tunnel, idol shrines; back = sky, bridge, far canyon), each on a Parallax2D, the front
+  floor on the walk line. A first try with Qwen-Image-Edit is in `design/shots/candidates/cave_planes/` (script
+  `cave_planes.py`): the back plane came out well; the middle kept the floor and the front kept the shrines — try
+  other seeds or prompts, or build the masks from the edits (front = not magenta in the front edit, minus the shrine
+  boxes).
+- Ladders (memory note): floors join by openings in the floor; ladders only where a place would have one (attic, a
+  house wall, a well).
+
+## 4. Waiting on Sapega
+
+S19 shield (rework the 5 shield skills or give the hero a shield), `iron_shield`, the «Holy Warrior» name, the base +
+one path tree; Q100 (the god of contracts' name); Q88 (HUD text size); the D-pad left shared by «?» and the new-points
+buttons; P1 (112 agent/routine-call D-IDs to confirm) and P2 (60 `[ЧЕРНЕТКА]` lines).

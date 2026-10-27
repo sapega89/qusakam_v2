@@ -290,6 +290,11 @@ func body_animation(base: StringName) -> StringName:
 		name = StringName("%s/Attack%d" % [library, combat.combo_step + 1])
 	return name if $AnimationPlayer.has_animation(name) else base
 
+## Тіло стоїть, а видно героя зсунутим на [param offset] (D764: сідає на місце медитації у фоні кімнати).
+func set_visual_offset(offset: Vector2) -> void:
+	$Sprite2D.position = offset
+	$WeaponMount.position = offset
+
 ## Єдиний вхід для анімацій тіла героя: [param base] — базове ім'я, грає версію зброї в руці.
 func play_body(base: StringName, speed: float = 1.0) -> void:
 	_body_library = weapon_view.body_library()

@@ -157,8 +157,8 @@
 	},
 	"enemy_voice_pitch": {"melee": 1.0, "fast": 1.15, "tank": 0.75, "archer": 1.05, "shield": 0.92, "vulture": 0.85, "bat": 1.6, "fly": 1.3, "jackal_cursed": 0.95, "jackal_pack_leader": 1.0, "armoured_scorpion": 0.6, "heavy_archer": 0.9, "old_vulture": 0.7, "bandit_brute": 0.8, "tower_shield_guard": 0.8},
 	"music": {
-		"_comment": "D414, music_plan slice 3: full res:// paths, played by ProjectMusicController over the room's Music. PLACEHOLDERS until Sapega picks the CC0 tracks (slice 3b).",
-		"fight": "res://SampleProject/Resources/Audio/Music/time_for_adventure.mp3",
+		"_comment": "D414, music_plan slice 3: full res:// paths, played by ProjectMusicController over the room's Music. fight: Sapega's pick (D771, slice 3b); boss: still the placeholder.",
+		"fight": "res://SampleProject/Resources/Audio/Music/heavy_battle.mp3",
 		"boss": "res://SampleProject/Resources/Audio/Music/sunblade_horizon.ogg"
 	}
 }

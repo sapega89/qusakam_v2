@@ -2,7 +2,7 @@
 # interact садить героя медитувати (D447, кадри Meditate, як у каньйоні) і тоді відкриває Save Slot Selection
 # у режимі SAVE (D75); вихід з екрана його підводить. Медитація повертає звичайних ворогів (D492, Game.meditate()).
 # Автозбереження при дотику прибрано (Q5): зберігаємо лише свідомо через підказку.
-# Місце медитації — камінь зі спіраллю з каньйону (`meditation_stone.tscn`, D764) на підлозі під точкою.
+# Місце медитації (D764) — частина фону кімнати (`Spot`), герой застрибує на нього (`Seat`), сідає, а встаючи — зістрибує.
 extends Area2D
 
 ## Offset для позиции спавна (относительно SavePoint)
@@ -13,6 +13,9 @@ extends Area2D
 
 ## D447: скільки герой сидить, перш ніж відкриється екран збереження (с).
 const MEDITATE_SIT_TIME := 0.8
+## D764: стрибок на місце медитації й назад — час (с) і висота дуги над прямою (px).
+const HOP_TIME := 0.3
+const HOP_ARC := 14.0
 
 var interactable: InteractableComponent = null
 ## Герой уже сидить тут — повторне натискання нічого не робить.
@@ -56,6 +59,9 @@ func _on_interacted() -> void:
 func _meditate(player: Node2D, game: Game) -> void:
 	meditating = true
 	player.set_movement_enabled(false)
+	var seat_offset: Vector2 = $Seat.global_position - player.global_position
+	player.play_body(&"Jump")
+	await _hop(player, Vector2.ZERO, seat_offset)
 	player.play_body(&"Meditate")
 	game.meditate()
 	meditation_started.emit()
@@ -63,7 +69,18 @@ func _meditate(player: Node2D, game: Game) -> void:
 	var ui_manager: Node = ServiceLocator.get_ui_manager()
 	ui_manager.open_save_game()
 	await (ui_manager.current_state as Node).tree_exiting
+	player.play_body(&"Fall")
+	await _hop(player, seat_offset, Vector2.ZERO)
 	player.play_body(&"Idle")
 	player.set_movement_enabled(true)
 	meditating = false
 	meditation_finished.emit()
+
+
+## Тіло героя стоїть на підлозі (звідси й сейв), а видно його — дугою від [param from] до [param to]: так він сідає
+## на місце медитації у фоні й сходить із нього.
+func _hop(player: Node2D, from: Vector2, to: Vector2) -> void:
+	var tween := create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.tween_method(func(t: float) -> void:
+		player.set_visual_offset(from.lerp(to, t) + Vector2(0.0, -HOP_ARC * sin(PI * t))), 0.0, 1.0, HOP_TIME)
+	await tween.finished

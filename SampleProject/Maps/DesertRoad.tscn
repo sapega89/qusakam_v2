@@ -33,7 +33,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/meditation_stone.tscn" id="ms_stone"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="meditation_art"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
@@ -184,8 +184,15 @@ script = ExtResource("5_save")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_BeforeCity" unique_id=890959548]
 shape = SubResource("CircleShape2D_save")
 
-[node name="MeditationStone" parent="SavePoint_BeforeCity" instance=ExtResource("ms_stone")]
-position = Vector2(0, 40)
+[node name="Spot" type="Sprite2D" parent="SavePoint_BeforeCity"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_BeforeCity"]
+position = Vector2(0, 22)
 
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=1070670507]
 script = ExtResource("7_spawner")

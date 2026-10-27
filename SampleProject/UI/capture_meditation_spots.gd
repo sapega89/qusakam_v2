@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Камінь медитації на точках збереження (D447, D764): герой сидить на ньому. Потрібне вікно:
-##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_meditation_stones.gd -- <out_dir>
+## Місця медитації на точках збереження (D447, D764): герой сидить на місці у фоні (Seat). Потрібне вікно:
+##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_meditation_spots.gd -- <out_dir>
 ## Файли: <out_dir>/meditation_<кімната>_<точка>.png
 
 const SHOTS := [
@@ -28,9 +28,13 @@ func _initialize() -> void:
 	for shot: Array in SHOTS:
 		await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % shot[0], shot[1])
 		for i in 60: await physics_frame
+		var point: Node2D = game.map.get_node(shot[1])
+		game.player.global_position.x = point.global_position.x
 		game.player.set_movement_enabled(false)
 		game.player.play_body(&"Meditate")
+		game.player.set_visual_offset(point.get_node("Seat").global_position - game.player.global_position)
 		await create_timer(1.5).timeout
 		root.get_texture().get_image().save_png("%s/meditation_%s_%s.png" % [out_dir, shot[0], shot[1]])
+		game.player.set_visual_offset(Vector2.ZERO)
 		game.player.set_movement_enabled(true)
 	quit()
