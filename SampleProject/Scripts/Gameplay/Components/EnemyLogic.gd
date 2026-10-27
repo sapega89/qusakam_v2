@@ -155,6 +155,66 @@ var _flank_rest: float = -1.0
 ## Куди йде обхід: -1 / 1 — бік героя, на який ворог переходить; 0 — не обходить.
 var flank_side: int = 0
 var _flank_left: float = 0.0
+## Розум бою (D775, Sapega 26.10: «щоб вони хотіли вбити персонажа, а не просто бачили, рухались і били по повітрю»).
+## Удар починається, лише коли дістане героя в мить удару: де герой буде за замах — з його швидкості (не далі
+## PREDICT_MAX px), мінус скільки ворог підступить за стеження замаху (WINDUP_CREEP своєї швидкості, до підказки).
+const PREDICT_MAX := 90.0
+const WINDUP_CREEP := 0.6
+const REACH_MARGIN := 4.0
+## Перерва між серіями — attack_cooldown × RHYTHM_MIN…RHYTHM_MAX (не метроном).
+const RHYTHM_MIN := 0.7
+const RHYTHM_MAX := 1.3
+## Герой приземлився — відкритий LAND_OPEN с; щитоносець відповідає на удар героя, що скінчився, COUNTER_OPEN с.
+const LAND_OPEN := 0.35
+const COUNTER_OPEN := 0.4
+## Ухил легкого виду (answer_swing "evade") від важкого героя: з шансом EVADE_CHANCE на замах, за EVADE_REACT с
+## реакції — відскок на EVADE_DIST px за EVADE_TIME с (спрайт підстрибує на EVADE_HOP px). Досяжність важкого —
+## PlayerCombat.strike_reach + півтіла ворога + HEAVY_SLACK.
+const EVADE_CHANCE := 0.7
+const EVADE_REACT := 0.1
+const EVADE_DIST := 70.0
+const EVADE_TIME := 0.22
+const EVADE_HOP := 10.0
+const HEAVY_SLACK := 12.0
+## Фінт еліти: раз на FEINT_EVERY_MIN…FEINT_EVERY_MAX серій перший замах — поза замаху FEINT_TIME с без підказки, що
+## обривається (показана підказка не бреше, D504), FEINT_PAUSE с — і справжній замах з підказкою.
+const FEINT_EVERY_MIN := 2
+const FEINT_EVERY_MAX := 4
+const FEINT_TIME := 0.3
+const FEINT_PAUSE := 0.2
+## Герой утік (перекат, стрибок, відхід) — ворог біжить за ним (RUN_PACE), щойно той віддаляється швидше за AWAY_SPEED px/с.
+const AWAY_SPEED := 60.0
+## Що ворог щойно вирішив (D775): close_in, punish, evade, guard, wait_block, space_out, feint, follow, press, kite,
+## reposition, lead — для тестів (verify_masher) і журналу.
+signal tactic(name: StringName)
+## Де ворог бачив героя востаннє: загубив з очей — іде туди, а не стоїть (D775).
+var _last_seen_x := 0.0
+var _has_seen := false
+var _hero_was_air := false
+var _land_left := 0.0
+var _counter_left := 0.0
+var _hero_state: int = -1
+## Рішення щодо поточного замаху важкого героя: ухилитись (кубик EVADE_CHANCE) і за скільки с.
+var _evade_planned := false
+var _evade_wait := 0.0
+var _dash_left := 0.0
+var _dash_speed := 0.0
+var _guarding := false
+## Цей замах уже підступав за героєм (close_in — раз на замах).
+var _crept := false
+## Скільки ще серій до фінту еліти (-1 — ще не кинуто).
+var _feint_in := -1
+## Найдовший крок ворога на удар, px (_strike_step).
+const STRIKE_STEP := 24.0
+## Скільки ще триває стеження замаху (до підказки), с.
+var _track_left := 0.0
+## Замах обривається, лише коли герой іде геть і буде далі за досяжність щонайменше на ABANDON_SLACK px.
+const ABANDON_SLACK := 16.0
+var _waiting_block := false
+## Скільки с ворог чекає, поки герой опустить блок; довше за BLOCK_PATIENCE — б'є в блок.
+var _block_wait := 0.0
+const BLOCK_PATIENCE := 1.2
+
 ## Шакал, що зараз учепився в героя (для тестів і HUD).
 static func latched() -> EnemyLogic:
 	return _latched if is_instance_valid(_latched) else null
@@ -245,13 +305,42 @@ func process_ai(delta: float):
 
 	if not player or not is_instance_valid(player):
 		player = GameGroups.get_player()
+	_read_hero(delta)
 
-	# Атака вже почалась — доводимо її до кінця на місці
+	if _dash_left > 0.0:
+		_dash_left -= delta
+		velocity.x = _dash_speed if can_step(signi(int(signf(_dash_speed)))) else 0.0
+		return
+
+	# Атака вже почалась — доводимо її до кінця; до підказки ворог стежить за героєм і підступає, щоб удар дістав (D775)
 	if is_attacking:
 		velocity.x = 0
 		if winding_up:
 			_face_player()
+			if _abandon_due():
+				attack_broken = true  # до підказки: герой утік з-під удару — не б'є в повітря, а йде за ним (D775)
+				tactic.emit(&"follow")
+				return
+			if _creeps() and absf(_predicted_dx(TELL_LEAD)) > strike_reach() - REACH_MARGIN:
+				_step(last_direction, speed * WINDUP_CREEP)
+				if not _crept:
+					_crept = true
+					tactic.emit(&"close_in")
 		return
+
+	# Читає героя (D775): легкий відскакує з-під важкого, щитоносець стає щитом до удару — і в бою, і відходячи, і в погоні
+	if current_state in [AIState.CHASE, AIState.ATTACK, AIState.RETREAT] and player and is_instance_valid(player) and flank_side == 0:
+		var hero_dx: float = player.global_position.x - enemy.global_position.x
+		if _evade_due(absf(hero_dx)):
+			_evade(-1 if hero_dx > 0.0 else 1)
+			return
+		if _evade_planned and _evade_wait > 0.0 and _evade_due(absf(hero_dx), true):
+			velocity.x = 0  # побачив замах важкого — уже не замахується сам, за мить відскочить
+			return
+		if _guard_due(absf(hero_dx)):
+			velocity.x = 0
+			_face_player()
+			return
 
 	match current_state:
 		AIState.IDLE:
@@ -292,8 +381,9 @@ func handle_chase_state(delta: float):
 
 	var distance_to_player_x = abs(player.global_position.x - enemy.global_position.x)
 
-	# Leash: якщо відійшли надто далеко від дому — припиняємо переслідування і йдемо назад
-	if abs(enemy.global_position.x - home_position.x) > leash_range:
+	# Leash: якщо відійшли надто далеко від дому — припиняємо переслідування і йдемо назад; але не посеред бою, коли герой
+	# ще ближче за chase_range (B165: перекотився чи відійшов — ворог іде за ним, а не додому)
+	if abs(enemy.global_position.x - home_position.x) > leash_range and distance_to_player_x > chase_range:
 		_give_up()
 		return
 
@@ -306,11 +396,22 @@ func handle_chase_state(delta: float):
 			return
 	else:
 		lost_player_timer = 0.0
+	# Загубив з очей (стрибнув на уступ, за стіну, B139) — іде туди, де бачив його востаннє, і чекає там (D775); не бачив
+	# узагалі (лише зона виявлення крізь стіну) — стоїть
 	if not noticed:
-		velocity.x = 0
+		var to_seen := _last_seen_x - enemy.global_position.x
+		pace = 1.0
+		if _has_seen and absf(to_seen) > 8.0:
+			_walk(1 if to_seen > 0.0 else -1, speed)
+		else:
+			velocity.x = 0
 		return
+	_last_seen_x = player.global_position.x
+	_has_seen = true
 
 	if _lunge_due(distance_to_player_x):
+		if _hero_opened(distance_to_player_x):
+			tactic.emit(&"punish")
 		perform_lunge()
 		return
 
@@ -319,13 +420,17 @@ func handle_chase_state(delta: float):
 		return
 
 	var direction_x: float = player.global_position.x - enemy.global_position.x
-	pace = RUN_PACE if distance_to_player_x > engage_range() * RUN_FROM else 1.0
+	var away := _hero_moving_away()
+	pace = RUN_PACE if distance_to_player_x > engage_range() * RUN_FROM or away else 1.0
+	if away and state_timer < delta * 1.5:
+		tactic.emit(&"press")  # тисне героя, що відходить: біжить за ним
 	if abs(direction_x) <= 5.0:
 		velocity.x = 0
 	else:
 		_walk(1 if direction_x > 0 else -1, speed * pace)
 
 func _give_up() -> void:
+	_has_seen = false
 	change_state(AIState.RETURN_HOME)
 	player_lost.emit()
 	chase_cooldown_timer = 0.0
@@ -347,24 +452,53 @@ func handle_attack_state(delta: float):
 	var dx: float = player.global_position.x - enemy.global_position.x
 	var adx := absf(dx)
 	if adx > engage_range() * 1.2 or not can_notice(player):
+		tactic.emit(&"follow")  # герой відійшов чи перекотився геть — одразу за ним (D775)
 		change_state(AIState.CHASE)
 		return
+	_last_seen_x = player.global_position.x
+	_has_seen = true
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
+	var opened := _hero_opened(adx)
+	var due := attack_ready_in <= 0.0 or opened
+	# Герой блокує обличчям до ворога, а удар можна заблокувати — не лізе в блок: обходить чи чекає вікна (D775); стоїть
+	# у блоці довше за BLOCK_PATIENCE — б'є в блок (блок їсть витривалість, D504)
+	_block_wait = _block_wait + delta if due and _blocked_out() else 0.0
+	if due and _blocked_out() and _block_wait <= BLOCK_PATIENCE:
+		if not _waiting_block:
+			_waiting_block = true
+			tactic.emit(&"wait_block")
+		pace = 1.0
+		if _flank_rest <= 0.0 and not is_instance_valid(_flanker) and not enemy.flying and _side_open(toward):
+			_start_flank(toward)
+			return
+		_hold_spacing(dx, delta)
+		return
+	_waiting_block = false
 	if _lunge_due(adx):
+		if opened:
+			tactic.emit(&"punish")
 		perform_lunge()
 		return
-	if (attack_ready_in <= 0.0 or _hero_opened(adx)) and token_free():
-		pace = 1.0 if adx <= attack_range else STEP_IN_PACE  # D754: заходить бити швидше — не бреде під клинком героя
-		if adx <= attack_range:
-			attack_ready_in = enemy.attack_cooldown
+	if due and token_free():
+		if swing_fits(enemy.attack_windup):
+			pace = 1.0
+			if opened:
+				tactic.emit(&"punish")
+			_rest_after_swing()
 			perform_attack()
 		else:
+			pace = STEP_IN_PACE  # D754: заходить бити швидше — не бреде під клинком героя
 			_step(toward, speed * pace)
 		return
 	pace = 1.0
 	if _flank_due(toward):
 		_start_flank(toward)
+		return
+	# У досяжності, а бити ще рано (перерва, жетон): відходить з-під удару; нема куди — б'є (D775: не стоїть перед героєм)
+	if adx <= strike_reach() and not can_step(-toward) and token_free() and swing_fits(enemy.attack_windup):
+		_rest_after_swing()
+		perform_attack()
 		return
 	_hold_spacing(dx, delta)
 
@@ -441,27 +575,174 @@ func _release_hero_pass() -> void:
 	enemy.remove_collision_exception_with(player)
 	player.remove_collision_exception_with(enemy)
 
-## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно).
+## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно);
+## у досяжності удару героя чи далеко від своєї відстані — повним кроком (D775: не стоїть під клинком, тисне того, хто відходить).
 func _hold_spacing(dx: float, delta: float) -> void:
 	_shuffle_t += delta
 	var err: float = absf(dx) - engage_range() - sin(_shuffle_t * 2.0) * SHUFFLE
 	var toward := 1 if dx > 0.0 else -1
+	var pace_now := SPACING_SPEED if absf(err) < WAIT_GAP * 0.5 and absf(dx) > strike_reach() else 1.0
 	if err < -4.0:
-		_step(-toward, speed * SPACING_SPEED)
+		_step(-toward, speed * pace_now)
 	elif err > 4.0:
-		_step(toward, speed * SPACING_SPEED)
+		_step(toward, speed * pace_now)
 	else:
 		velocity.x = 0
 
-## Герой відкрився поруч (critique §B): замах важкого удару чи навички (і фляга — Healing Palm, D504) або зілля
-## (D754) у досяжності _punish_range().
+## Герой відкрився поруч (critique §B, D775) у досяжності _punish_range(): замах важкого удару чи навички, фляга
+## (Healing Palm, D504) або зілля (D754), відновлення після важкого, кінець своєї серії, щойно приземлився; щитоносцеві —
+## щойно скінчився удар, що він прийняв на щит.
 func _hero_opened(adx: float) -> bool:
-	return adx <= _punish_range() and player.combat.state in [PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.CAST_WINDUP,
-			PlayerCombat.State.DRINK]
+	# Вікно карає один: хтось уже б'є — решта чекає свого ритму (D775, гурт не налітає всім гуртом на кожне вікно)
+	if adx > _punish_range() or _attackers.any(func(l: EnemyLogic) -> bool: return l != self and is_instance_valid(l) and l.is_attacking):
+		return false
+	var combat: PlayerCombat = player.combat
+	if combat.state in [PlayerCombat.State.HEAVY_RECOVERY, PlayerCombat.State.CAST_WINDUP, PlayerCombat.State.DRINK]:
+		return true
+	# Замах важкого карає лише той, хто його приймає (trade); легкий відскакує, щитоносець стає щитом (D775)
+	if combat.state == PlayerCombat.State.HEAVY_WINDUP:
+		return enemy.enemy_stats.answer_swing == "trade"
+	if _punishes_combo_end() and combat.state == PlayerCombat.State.READY and combat.grip != &"bow" \
+			and combat.attack_cooldown > enemy.attack_windup - TELL_LEAD:
+		return true  # серія скінчилась — герой у відновленні фінішера й побачить підказку, ще не маючи чим відповісти
+	return _land_left > 0.0 or _counter_left > 0.0
 
-## Звідки ворог карає відкритого героя: ближній — з півтори attack_range.
+## Чи карає вид кінець серії героя (бос — лише великі вікна: відновлення важкого, флягу, каст, приземлення).
+func _punishes_combo_end() -> bool:
+	return true
+
+## Стежить за героєм кожен кадр: приземлення, новий замах важкого (кубик ухилу), кінець удару, прийнятого на щит.
+func _read_hero(delta: float) -> void:
+	_land_left = maxf(_land_left - delta, 0.0)
+	_counter_left = maxf(_counter_left - delta, 0.0)
+	_evade_wait = maxf(_evade_wait - delta, 0.0)
+	if not player or not is_instance_valid(player):
+		return
+	var air: bool = not player.is_on_floor()
+	if _hero_was_air and not air:
+		_land_left = LAND_OPEN
+	_hero_was_air = air
+	var state: int = player.combat.state
+	if state != _hero_state:
+		if state == PlayerCombat.State.HEAVY_WINDUP:
+			_evade_planned = randf() < EVADE_CHANCE
+			_evade_wait = EVADE_REACT
+		if _guarding and not _hero_swinging():
+			_guarding = false
+			_counter_left = COUNTER_OPEN
+		_hero_state = state
+
+## Іде удар героя (легкий чи важкий, замах чи сам удар).
+func _hero_swinging() -> bool:
+	return player.combat.state in [PlayerCombat.State.SWING, PlayerCombat.State.HEAVY_WINDUP, PlayerCombat.State.HEAVY_STRIKE]
+
+## Герой дивиться на ворога.
+func _hero_faces_me() -> bool:
+	return signf(enemy.global_position.x - player.global_position.x) == float(player.last_direction)
+
+## Герой іде (котиться) від ворога швидше за AWAY_SPEED.
+func _hero_moving_away() -> bool:
+	return player.velocity.x * signf(player.global_position.x - enemy.global_position.x) > AWAY_SPEED
+
+## Важкий героя дістане ворога: його досяжність, півтіла ворога й запас.
+func _in_heavy_reach(adx: float) -> bool:
+	return adx <= player.combat.strike_reach(true) + enemy.body_rect().size.x / 2.0 + HEAVY_SLACK
+
+## Легкий вид бачить замах важкого, що його дістане, і (кубик EVADE_CHANCE, реакція EVADE_REACT) відскакує; [param reacting] —
+## ще в реакції (не рахує її).
+func _evade_due(adx: float, reacting: bool = false) -> bool:
+	return enemy.enemy_stats.answer_swing == "evade" and _evade_planned and (reacting or _evade_wait <= 0.0) \
+			and player.combat.state == PlayerCombat.State.HEAVY_WINDUP and _hero_faces_me() and _in_heavy_reach(adx)
+
+## Відскок назад ([param away]) з-під удару: EVADE_DIST px за EVADE_TIME с з підскоком спрайта; край уступу спиняє.
+func _evade(away: int) -> void:
+	_evade_planned = false
+	if not can_step(away):
+		return
+	tactic.emit(&"evade")
+	_dash_left = EVADE_TIME
+	_dash_speed = away * EVADE_DIST / EVADE_TIME
+	velocity.x = _dash_speed
+	enemy.enemy_view.hop(EVADE_HOP, EVADE_TIME)
+
+## Щитоносець (answer_swing "guard") на удар героя, що його дістане: стоїть щитом до героя, не лізе під удар (а коли
+## удар скінчився — відповідає, _counter_left).
+func _guard_due(adx: float) -> bool:
+	if enemy.enemy_stats.answer_swing != "guard" or not _hero_swinging() or not _hero_faces_me():
+		return false
+	if adx > player.combat.strike_reach(player.combat.state != PlayerCombat.State.SWING) + enemy.body_rect().size.x / 2.0 + HEAVY_SLACK:
+		return false
+	if not _guarding:
+		_guarding = true
+		tactic.emit(&"guard")
+	return true
+
+## Герой блокує обличчям до ворога, а удар ворога блок бере (не червоний) — бити в блок марно.
+func _blocked_out() -> bool:
+	return player.combat.is_blocking() and _hero_faces_me() and StringName(enemy.tell) != TELL_DODGE
+
+## Досяжність удару ворога до краю тіла героя, px від центру ворога.
+func strike_reach() -> float:
+	return enemy.strike_reach() + player.body_rect().size.x / 2.0
+
+## Де буде герой (dx від ворога) за [param time] с: з його швидкості, не далі PREDICT_MAX px.
+func _predicted_dx(time: float) -> float:
+	return player.global_position.x - enemy.global_position.x + clampf(player.velocity.x * time, -PREDICT_MAX, PREDICT_MAX)
+
+## Удар із замахом [param windup] дістане героя в мить удару (D775): де герой буде (з його швидкості), мінус скільки ворог
+## підступить за стеження замаху, — у досяжності; і герой не над хітбоксом (у стрибку вгору).
+func swing_fits(windup: float) -> bool:
+	var creep := speed * WINDUP_CREEP * maxf(windup - TELL_LEAD, 0.0) if _creeps() else 0.0
+	if absf(_predicted_dx(windup)) - creep > strike_reach() - REACH_MARGIN:
+		return false
+	return player.is_on_floor() or player.velocity.y > 0.0 or _feet_y(player) > _feet_y(enemy) - enemy.hitbox_collision.shape.get_rect().size.y * absf(enemy.hitbox_collision.global_transform.get_scale().y)
+
+## Де по висоті буде центр героя за [param time] с (D775): у стрибку — з його швидкості й тяжіння, не нижче за підлогу
+## ворога (лучник натягує, коли герой буде на його висоті в мить пострілу, і цілить туди).
+func _hero_y_at(time: float) -> float:
+	if player.is_on_floor():
+		return player.global_position.y
+	var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+	var y: float = player.global_position.y + player.velocity.y * time + 0.5 * gravity * time * time
+	return minf(y, enemy.global_position.y)
+
+## Наступний удар серії ще дістане героя і не піде в його блок (D775). Бос б'є серію свого ходу до кінця (BossLogic).
+func _series_fits(windup: float) -> bool:
+	return swing_fits(windup) and not _blocked_out()
+
+## Замах до підказки вже не дістане героя (D775): той котиться чи йде геть, і де він буде в мить удару, мінус крок
+## ворога до підказки, — далі за досяжність. Випад і бос — ні (ривок і так летить туди, де герой був; візерунок боса).
+func _abandon_due() -> bool:
+	if lunging or not _abandons() or not (player.mover.is_rolling() or _hero_moving_away()):
+		return false
+	var creep := speed * WINDUP_CREEP * _track_left if _creeps() else 0.0
+	return absf(_predicted_dx(_track_left + TELL_LEAD)) - creep > strike_reach() + ABANDON_SLACK
+
+func _abandons() -> bool:
+	return true
+
+## Удар із кроком (D775, як у героя — D504: відступити на крок не рятує, рятує перекат): герой трохи далі за досяжність
+## (до STRIKE_STEP px) у бік удару — ворог ступає на удар.
+func _strike_step(direction: int) -> void:
+	var dx: float = player.global_position.x - enemy.global_position.x
+	var gap := absf(dx) - strike_reach() + REACH_MARGIN
+	if not _creeps() or gap <= 0.0 or signf(dx) != float(direction) or not can_step(direction):
+		return
+	start_knockback(direction * minf(gap, STRIKE_STEP), false)
+
+## Чи підступає ворог за героєм під час замаху (до підказки). Лучник і випад — ні.
+func _creeps() -> bool:
+	return not lunging
+
+## Перерва до наступної серії — attack_cooldown зі змінним ритмом (D775).
+func _rest_after_swing() -> void:
+	attack_ready_in = enemy.attack_cooldown * randf_range(RHYTHM_MIN, RHYTHM_MAX)
+
+## Звідки ворог карає відкритого героя: ближній — з півтори attack_range, але щонайменше зі своєї відстані бою (D775:
+## заходить бити того, хто відкрився, а не чекає, поки той підійде).
 func _punish_range() -> float:
-	return attack_range * 1.5
+	var stats: EnemyStats = enemy.enemy_stats
+	return maxf(maxf(attack_range * 1.5, engage_range()), stats.lunge_to if stats.lunge_chance > 0.0 else 0.0)
 
 ## Удар героя влучив (D754): поки ворог чекає перерви між серіями чи відходить після серії, enemy.answer_hits таких
 ## ударів скасовують решту перерви — він б'є у відповідь (з тим самим замахом і підказкою).
@@ -474,12 +755,14 @@ func provoked() -> void:
 		if current_state == AIState.RETREAT:
 			change_state(AIState.ATTACK)  # відходив після серії — розвертається й б'є
 
-## Після серії (D504): відходить на back_off px, якщо є куди; tank (back_off 0) лишається на місці.
+## Після серії (D504): відходить на back_off px і щонайменше з досяжності удару героя (D775: не стоїть перед ним), якщо є куди.
 func _decide_after_attack() -> void:
 	if current_state != AIState.ATTACK or enemy.is_dead:
 		return
-	if enemy.back_off > 0.0 and player and is_instance_valid(player):
+	# Герой уже поза досяжністю (відкотився, відійшов) — не відходить, а йде за ним
+	if player and is_instance_valid(player) and absf(player.global_position.x - enemy.global_position.x) <= _hero_reach() + WAIT_GAP:
 		_back_off_from = enemy.global_position.x
+		tactic.emit(&"space_out")
 		change_state(AIState.RETREAT)
 
 ## Відхід після серії: задкує обличчям до героя, доки не відійде на back_off, далі нема куди або час вийшов (позаду
@@ -489,13 +772,23 @@ func handle_retreat_state(_delta: float) -> void:
 		change_state(AIState.IDLE)
 		return
 	_face_player()
+	# Герой відкрився (D775) — не відходить, а розвертається карати
+	if _hero_opened(absf(player.global_position.x - enemy.global_position.x)) and token_free():
+		change_state(AIState.ATTACK)
+		return
 	var away := -1 if player.global_position.x > enemy.global_position.x else 1
 	var walked := absf(enemy.global_position.x - _back_off_from)
-	if walked >= enemy.back_off or not can_step(away) or state_timer > enemy.back_off / speed + BACK_OFF_SLACK:
+	var clear := absf(player.global_position.x - enemy.global_position.x) > _hero_reach()
+	var limit := maxf(enemy.back_off, _hero_reach()) / speed + BACK_OFF_SLACK
+	if (walked >= enemy.back_off and clear) or not can_step(away) or state_timer > limit:
 		velocity.x = 0
 		change_state(AIState.ATTACK)
 		return
 	velocity.x = away * speed
+
+## Звідки дістає удар героя (серія з фінішером), px від центру героя до центру ворога.
+func _hero_reach() -> float:
+	return player.combat.strike_reach(false) + enemy.body_rect().size.x / 2.0
 
 func change_state(new_state: AIState):
 	"""Змінює стан AI"""
@@ -550,12 +843,22 @@ func perform_attack():
 	is_attacking = true
 	_hits_waiting = 0
 	attack_broken = false
+	_crept = false
 	_hold_token()
+	if _can_feint() and not _hero_opened(0.0):
+		if _feint_in < 0:
+			_feint_in = randi_range(FEINT_EVERY_MIN, FEINT_EVERY_MAX)
+		_feint_in -= 1
+		if _feint_in == 0:
+			_feint_in = -1
+			await _feint()
 	var tells := _swing_tells()
 	for i in tells.size():
 		if _interrupted():
 			break
 		var windup: float = enemy.attack_windup if i == 0 else COMBO_WINDUP
+		if i > 0 and not _series_fits(windup):
+			break  # герой поза досяжністю наступного удару серії — не б'є в повітря (D775)
 		finisher = tells.size() > 1 and i == tells.size() - 1
 		tell_kind = tells[i]
 		swing_windup = windup
@@ -570,6 +873,8 @@ func perform_attack():
 		enemy.start_attack(direction)
 		if enemy.lunge > 0.0:
 			start_knockback(direction * enemy.lunge, false)  # ривок разом з ударом (fast)
+		else:
+			_strike_step(direction)
 		await get_tree().create_timer(enemy.attack_active_time, false).timeout
 		enemy.end_attack()
 		committed = false
@@ -583,11 +888,31 @@ func perform_attack():
 	attack_ended.emit()
 	_decide_after_attack()
 
+## Чи вид фінтує (D775): еліти.
+func _can_feint() -> bool:
+	return enemy.elite
+
+## Фінт (D775): поза замаху без підказки FEINT_TIME с, обрив, FEINT_PAUSE с — далі справжній замах. Підказка (D504) не
+## показується, тож показана підказка й далі означає удар.
+func _feint() -> void:
+	tactic.emit(&"feint")
+	swing_windup = FEINT_TIME + TELL_LEAD
+	attack_started.emit()
+	winding_up = true
+	await get_tree().create_timer(FEINT_TIME, false).timeout
+	winding_up = false
+	enemy.enemy_view.on_attack_ended()
+	await get_tree().create_timer(FEINT_PAUSE, false).timeout
+
 ## Час випаду (D768): ворог готовий, жетон вільний, герой на його підлозі на відстані lunge_from–lunge_to і є куди
 ## ступити — і кубик lunge_chance випав.
 func _lunge_due(adx: float) -> bool:
 	var stats: EnemyStats = enemy.enemy_stats
-	if stats.lunge_chance <= 0.0 or attack_ready_in > 0.0 or _lunge_rest > 0.0 or not token_free():
+	if stats.lunge_chance <= 0.0 or _lunge_rest > 0.0 or not token_free():
+		return false
+	if attack_ready_in > 0.0 and not _hero_opened(adx) and not _hero_moving_away():
+		return false  # перерва; але відкритого чи того, хто відходить, наздоганяє випадом (D775)
+	if StringName(stats.lunge_tell) != TELL_DODGE and _blocked_out() and _block_wait <= BLOCK_PATIENCE:
 		return false
 	if adx < stats.lunge_from or adx > stats.lunge_to or absf(_feet_y(player) - _feet_y(enemy)) > LUNGE_DY:
 		return false
@@ -611,6 +936,7 @@ func perform_lunge() -> void:
 	tell_kind = StringName(stats.lunge_tell)
 	swing_windup = stats.lunge_windup
 	_face_player()
+	tactic.emit(&"close_in")  # випадом іде на відстань удару (D775)
 	attack_started.emit()
 	EventBus.attack_started.emit(enemy, player)
 	await wind_up(stats.lunge_windup)
@@ -630,7 +956,7 @@ func perform_lunge() -> void:
 	committed = false
 	tell_kind = enemy.tell
 	_release_token()
-	attack_ready_in = enemy.attack_cooldown
+	_rest_after_swing()
 	_lunge_rest = LUNGE_REST
 	if not _interrupted() and not latched_on:
 		await _recover(_recovery_time())
@@ -721,8 +1047,16 @@ func wind_up(windup: float) -> void:
 	committed = false
 	var track := windup - TELL_LEAD
 	if track > 0.0:
-		await get_tree().create_timer(track, false).timeout
+		# Покадрово, щоб замах, який уже не дістане героя, обірвати одразу (D775, _abandon_due); таймер стоїть на паузі
+		var timer := get_tree().create_timer(track, false)
+		while timer.time_left > 0.0 and not _interrupted():
+			_track_left = timer.time_left
+			await get_tree().physics_frame
+	_track_left = 0.0
 	winding_up = false
+	# Підказка іншого ще горить — своя чекає його удару (D775: підказки групи не накладаються, на кожну є відповідь)
+	while _attackers.any(func(l: EnemyLogic) -> bool: return l != self and is_instance_valid(l) and l.committed) and not _interrupted():
+		await get_tree().create_timer(0.05, false).timeout
 	if _interrupted():
 		return
 	committed = true
@@ -741,6 +1075,9 @@ func token_free() -> bool:
 	if self in _attackers:
 		return true
 	if _attackers.size() >= max_attackers():
+		return false
+	# Підказка іншого вже горить — новий замах чекає її удару (D775: удари групи читаються по одному, а не падають разом)
+	if _attackers.any(func(l: EnemyLogic) -> bool: return l.committed):
 		return false
 	var side := _hero_side()
 	return _attackers.all(func(l: EnemyLogic) -> bool: return l._hero_side() == side)
@@ -841,6 +1178,12 @@ func set_velocity(new_velocity: Vector2):
 
 func handle_return_home_state(_delta: float) -> void:
 	"""Повертає ворога на позицію спавну по X (без примусових аренд)"""
+	# Герой знову поруч і на виду (B163) — до бою, а не впиратись у нього дорогою додому
+	if chase_cooldown_timer >= chase_cooldown and player and is_instance_valid(player) \
+			and absf(player.global_position.x - enemy.global_position.x) <= detection_range and can_notice(player):
+		chase_cooldown_timer = 0.0
+		change_state(AIState.CHASE)
+		return
 	var dx = home_position.x - enemy.global_position.x
 	if abs(dx) <= 5.0:
 		velocity.x = 0

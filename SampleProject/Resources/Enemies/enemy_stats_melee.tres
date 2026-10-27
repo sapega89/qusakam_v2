@@ -17,6 +17,7 @@ max_health = 190
 poise = 14
 combo_chance = 1.0
 answer_hits = 1
+answer_swing = "evade"
 stagger_time = 0.25
 combo_hits = 2
 xp_reward = 30

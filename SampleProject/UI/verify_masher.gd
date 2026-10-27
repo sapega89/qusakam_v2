@@ -67,6 +67,15 @@ const SURROUND := 0.3
 const BOSS_MASH := 12.0
 const BOSS_WAIT := 6.0
 const BOSS_WAIT_GAP := 86
+## [6] (D775): вправа на кожен вид окремо, на рівній землі DesertRoad (як verify_combat_enemies): герой перекочується
+## й стрибає геть, відходить, блокує, б'є важким і легким, іде на лучника; вид має вжити своїх рішень (EnemyLogic.tactic).
+const DRILL_KINDS := ["melee", "shield", "tank", "bandit_brute", "tower_shield_guard", "fast", "jackal_pack_leader", "jackal_cursed",
+		"armoured_scorpion", "archer", "heavy_archer"]
+## Ціль D775: удари ближніх видів, що не дістали героя, — менше за цю частку; простій у досяжності — не довше; після
+## переката чи стрибка ворог знову в бою не пізніше.
+const WHIFF_MAX := 0.15
+const IDLE_MAX := 1.0
+const REENGAGE_MAX := 1.5
 ## Швидкість стріли лучника (arrow.tscn, Arrow.speed), px/с.
 const ARROW_SPEED := 900.0
 
@@ -116,6 +125,27 @@ var latches := 0
 var _was_latched := false
 ## Бій ще випускає хвилі (RoomEnemySpawner.all_enemies_spawned не прийшов).
 var _spawning := false
+## D775 (розум ворогів): удари хітбоксом і ті, що не дістали героя; простій у досяжності; ухиляння героя (перекат,
+## стрибок) і чи вороги його втратили; застрягання й падіння — по бою і по виду ворога (_ai_kinds["бот|вид"]).
+var whiffs := 0
+var dodged := 0
+var melee_strikes := 0
+var idle_reach := 0.0
+var idle_max := 0.0
+var idle_max_who := ""
+var evasions := 0
+var lost := 0
+var reengage: Array[float] = []
+var stuck := 0
+var fell := 0
+var dumb: Array[String] = []
+var _chasers: Array[Dictionary] = []
+var _was_rolling := false
+var _was_air := false
+var _bot := ""
+var _ai_kinds := {}
+## Яких рішень чекати від виду (D775) — з вправи [6].
+var _expect := {}
 
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -195,6 +225,14 @@ func _initialize() -> void:
 			ck(surround[bot] >= SURROUND, "%s: in some group fight enemies stand on both sides of the hero %d%% of the time (before D770: 0-3%%)"
 					% [bot, roundi(surround[bot] * 100)])
 
+	# MASHER_ONLY=DRILL — лише вправа [6]
+	if OS.get_environment("MASHER_ONLY") in ["", "DRILL"]:
+		print("[6] each kind answers the hero: follows a roll or a jump, keeps pressure, reads a heavy, a swing and a block (D775)")
+		await _drill()
+	if not _ai_kinds.is_empty():
+		_print_ai_table()
+		_check_ai(rows)
+
 	sl.get_time_manager().set_time_scale(1.0)
 	Engine.physics_ticks_per_second = 60
 	Engine.max_fps = 60
@@ -253,7 +291,11 @@ func _boss_meeting(fight: Dictionary) -> void:
 			landed[0] += 1
 	root.get_node("EventBus").damage_received.connect(count)
 	var started := [0]
-	var on_swing := func() -> void: started[0] += 1
+	var on_swing := func() -> void:
+		started[0] += 1
+		if OS.get_environment("MASHER_DEBUG") != "":
+			print("      boss %s move %s dx %d ready %.2f hero %s" % [fight.boss, boss.enemy_logic.last_move.get("kind", "?"), roundi(boss.global_position.x - hero.global_position.x),
+					boss.enemy_logic.attack_ready_in, hero.combat.State.keys()[hero.combat.state]])
 	boss.enemy_logic.attack_started.connect(on_swing)
 	t = 0.0
 	var press := 0.0
@@ -265,6 +307,10 @@ func _boss_meeting(fight: Dictionary) -> void:
 		if press <= 0.0:
 			_tap(&"attack")
 			press = PRESS_EVERY
+		if OS.get_environment("MASHER_DEBUG") != "" and boss.hitbox.monitoring and not boss.get_meta(&"dbg_on", false):
+			print("      boss strike dx %d hero inv %s state %s hp %d" % [roundi(boss.global_position.x - hero.global_position.x), hero.is_invulnerable,
+					hero.combat.State.keys()[hero.combat.state], hero.current_health])
+		boss.set_meta(&"dbg_on", boss.hitbox.monitoring)
 	var mash_hits: int = landed[0]
 	var mash_swings: int = started[0]
 	ck(mash_hits >= 2, "%s: on a hero who stands and mashes the boss swings %d times and its weapon lands %d (in %.1f s, hero %s)"
@@ -296,6 +342,252 @@ func _boss_meeting(fight: Dictionary) -> void:
 	hero.defeat_handler = Callable()
 
 
+## D775: перевірки розуму ворогів по всіх боях і вправі.
+func _check_ai(rows: Array[Dictionary]) -> void:
+	print("[7] enemies mean to kill: few swings at the air, no idling in reach, no dumb moves, each kind's own answers (D775)")
+	for bot: String in ["MASHER", "GOOD"]:
+		var strikes_n := 0
+		var whiffs_n := 0
+		var longest := 0.0
+		var who := ""
+		var dumb_n := 0
+		for row in rows:
+			if row.bot != bot:
+				continue
+			strikes_n += row.melee_strikes
+			whiffs_n += row.whiffs
+			dumb_n += row.stuck + row.fell + row.lost
+			if row.idle_max > longest:
+				longest = row.idle_max
+				who = "%s: %s" % [row.name, row.idle_max_who]
+		if strikes_n > 0:
+			ck(float(whiffs_n) / strikes_n < WHIFF_MAX, "%s: melee swings at the air (cannot reach the hero at the strike, and he did not roll or jump): %d of %d (%d%%, target < %d%%)"
+					% [bot, whiffs_n, strikes_n, roundi(100.0 * whiffs_n / strikes_n), roundi(WHIFF_MAX * 100)])
+			ck(longest <= IDLE_MAX, "%s: longest stretch an enemy idles in reach without swinging %.2f s (<= %.1f s; %s)" % [bot, longest, IDLE_MAX, who])
+			ck(dumb_n == 0, "%s: no enemy stuck at a wall or ledge, none falls off, none loses the hero after a roll or a jump (%d cases)" % [bot, dumb_n])
+	if _expect.is_empty():
+		return
+	var drill: Dictionary = {}
+	for key: String in _ai_kinds:
+		if key.begins_with("DRILL|"):
+			drill[key.trim_prefix("DRILL|")] = _ai_kinds[key]
+	var drill_strikes := 0
+	var drill_whiffs := 0
+	for kind: String in drill:
+		drill_strikes += drill[kind].strikes
+		drill_whiffs += drill[kind].whiffs
+	ck(float(drill_whiffs) / maxi(drill_strikes, 1) < WHIFF_MAX, "drill (the hero rolls, jumps, walks off, blocks): melee swings at the air %d of %d (%d%%, target < %d%%)"
+			% [drill_whiffs, drill_strikes, roundi(100.0 * drill_whiffs / maxi(drill_strikes, 1)), roundi(WHIFF_MAX * 100)])
+	for kind: String in _expect:
+		var k: Dictionary = drill[kind]
+		if k.evasions > 0:
+			ck(k.lost == 0 and _mean(k.reengage) <= REENGAGE_MAX, "%s: after %d rolls and jumps away it loses the hero %d times, back in the fight in %.2f s on average (<= %.1f s)"
+					% [kind, k.evasions, k.lost, _mean(k.reengage), REENGAGE_MAX])
+		var used: Dictionary = {}
+		for key: String in _ai_kinds:
+			if key.ends_with("|" + kind):
+				for name: StringName in _ai_kinds[key].tactics:
+					used[name] = true
+		var missing: Array = (_expect[kind] as Array).filter(func(name: StringName) -> bool: return not used.has(name))
+		ck(missing.is_empty(), "%s uses its own answers %s (missing %s)" % [kind, _expect[kind], missing])
+
+
+## Вправа [6] (D775): кожен вид сам на сам з героєм, що має 99999 HP, на рівній землі.
+func _drill() -> void:
+	_bot = "DRILL"
+	swings = {}
+	strikes = {}
+	game.set_room_states({})
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
+	await _settle()
+	hero = game.player
+	_release_all()
+	for enemy: Node in get_nodes_in_group(&"enemies"):
+		enemy.queue_free()
+	if hero.is_dead:
+		hero.revive()
+	hero.is_dying = false
+	await _make_hero(8, true, "SKILLS")
+	hero.defeat_handler = func() -> void: pass
+	var base: Vector2 = hero.global_position + Vector2(700.0, 0.0)
+	for kind: String in DRILL_KINDS:
+		# MASHER_KIND=<вид> — лише цей вид у вправі (для налагодження)
+		if OS.get_environment("MASHER_KIND") not in ["", kind]:
+			continue
+		seed(hash("drill|" + kind))
+		_place_hero(base)
+		hero.Max_Health = 99999
+		hero.current_health = hero.Max_Health
+		var enemy: Node = load("res://SampleProject/Scenes/Characters/Enemies/%s.tscn" % ("default_enemy" if kind == "melee" else "enemy_" + kind)).instantiate()
+		if enemy.enemy_stats == null:
+			enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
+		enemy.position = game.map.to_local(base + Vector2(220.0, -40.0))
+		game.map.add_child(enemy)
+		_track(enemy)
+		var name := _kind(enemy)
+		var stats: EnemyStats = enemy.enemy_stats
+		if _melee(enemy):
+			_expect[name] = [&"follow", &"space_out", &"punish", &"close_in"]
+			# ухил від важкого — лише тим, хто між ударами стоїть у досяжності важкого (шакал тримається далі й так)
+			var heavy_reach: float = hero.combat.strike_reach(true) + enemy.body_rect().size.x / 2.0
+			if stats.answer_swing == "guard" or stats.answer_swing == "evade" and enemy.enemy_logic.engage_range() <= heavy_reach:
+				_expect[name].append(StringName(stats.answer_swing))
+			if stats.tell != "dodge":
+				_expect[name].append(&"wait_block")
+		else:
+			_expect[name] = [&"kite", &"lead"]
+		if enemy.elite:
+			_expect[name].append(&"feint")
+		dumb = []
+		await _drill_kind(enemy, base, _expect[name])
+		for line: String in dumb:
+			print("        dumb: " + line)
+		_release_all()
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+		await Kit.frames(self, 4)
+		if hero.is_dead:
+			hero.revive()
+		hero.is_dying = false
+
+
+## Герой забрів далі за 300 px від середини арени — назад на середину (ворог іде за ним), щоб вправа не впиралась у стіну.
+func _drill_recentre(enemy: Node, base: Vector2) -> void:
+	if absf(hero.global_position.x - base.x) <= 300.0:
+		return
+	_release_all()
+	_place_hero(base)
+	await _drill_wait(enemy, 0.2)
+
+
+## Чекає (кадрами фізики, з обліком _watch) до [param seconds] с або поки [param done] не скаже true.
+func _drill_wait(enemy: Node, seconds: float, done: Callable = Callable()) -> void:
+	var t := 0.0
+	var one: Array[Node] = [enemy]
+	while t < seconds and is_instance_valid(enemy) and enemy.is_alive():
+		await physics_frame
+		var dt: float = Engine.time_scale / Engine.physics_ticks_per_second
+		t += dt
+		_watch(one, dt)
+		hero.current_health = hero.Max_Health
+		if OS.get_environment("MASHER_DEBUG") != "" and Engine.get_physics_frames() % 15 == 0:
+			var logic: Node = enemy.enemy_logic
+			print("      dbg %s t%.2f dx %d %s atk %s ready %.2f hero %s air %s roll %s vx %d" % [_kind(enemy), t, roundi(enemy.global_position.x - hero.global_position.x),
+					logic.AIState.keys()[logic.current_state], logic.is_attacking, logic.attack_ready_in, hero.combat.State.keys()[hero.combat.state],
+					not hero.is_on_floor(), hero.mover.is_rolling(), roundi(enemy.velocity.x)])
+		if done.is_valid() and done.call():
+			return
+
+
+## Вправа одного виду. Фази повторюються (до своєї межі), доки вид не вжив очікуваних рішень [param expect] — вправа
+## дає нагоду, а не перевіряє удачу кидків.
+func _drill_kind(enemy: Node, base: Vector2, expect: Array) -> void:
+	var logic: Node = enemy.enemy_logic
+	var missing := func(names: Array) -> bool:
+		var tactics: Dictionary = _ai(enemy).tactics
+		return names.any(func(t: StringName) -> bool: return t in expect and not tactics.has(t))
+	logic.leash_range = 3000.0  # як у бою кімнати: вправа не мірить повідок (дім — місце появи)
+	logic.on_player_detected(hero)
+	var engaged := func() -> bool: return logic.current_state == logic.AIState.ATTACK and not logic.is_attacking \
+			and absf(enemy.global_position.x - hero.global_position.x) <= logic.engage_range() * 1.2
+	var side := func() -> int: return signi(int(signf(enemy.global_position.x - hero.global_position.x)))
+	if _melee(enemy):
+		# (а) перекат і стрибок геть і крізь ворога (за спину), по разу: ворог має піти за ним і знову стати до бою
+		for i in 4:
+			var evade: StringName = [&"dodge", &"jump"][i % 2]
+			await _drill_recentre(enemy, base)
+			await _drill_wait(enemy, 4.0, engaged)
+			_hold_move(-side.call() if i < 2 else side.call())
+			await _drill_wait(enemy, 0.05)
+			_action(evade, true)
+			await _drill_wait(enemy, 0.1)
+			_action(evade, false)
+			await _drill_wait(enemy, 0.5)
+			_hold_move(0)
+			await _drill_wait(enemy, 2.5)
+		# (б) відходить 1.5 с — ворог тисне
+		await _drill_recentre(enemy, base)
+		await _drill_wait(enemy, 4.0, engaged)
+		_hold_move(-side.call())
+		await _drill_wait(enemy, 1.5)
+		_hold_move(0)
+		# (в) блок 3 с обличчям до ворога, двічі (до чотирьох, доки не дочекається вікна)
+		for i in 4:
+			if i >= 2 and not missing.call([&"wait_block"]):
+				break
+			await _drill_recentre(enemy, base)
+			await _drill_wait(enemy, 4.0, engaged)
+			_hold_move(side.call())
+			await _drill_wait(enemy, 0.05)
+			_hold_move(0)
+			_set_block(true)
+			await _drill_wait(enemy, 3.0)
+			_set_block(false)
+		# (г) важкий тричі й серія легких двічі в досяжності
+		var n := 0
+		var strikes: Array[StringName] = [&"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"attack", &"attack"]
+		for extra in 8:
+			strikes.append(&"heavy_attack")
+		for k in strikes.size():
+			var strike: StringName = strikes[k]
+			if k >= 8 and not missing.call([&"punish", &"evade", &"guard"]):
+				break
+			# через раз: відповідь на удар ворога (щойно він у позі відновлення поруч) чи підхід до нього в його перерві
+			await _drill_recentre(enemy, base)
+			var reach: float = hero.combat.strike_reach(true) + enemy.body_rect().size.x / 2.0
+			var near := func() -> bool: return absf(enemy.global_position.x - hero.global_position.x) <= reach - 6.0
+			if n % 2 == 0:
+				await _drill_wait(enemy, 6.0, func() -> bool: return logic.recovering and near.call())
+				_hold_move(side.call())
+				await _drill_wait(enemy, 0.02)
+			else:
+				await _drill_wait(enemy, 4.0, func() -> bool: return engaged.call() and logic.attack_ready_in > 0.6)
+				_hold_move(side.call())
+				await _drill_wait(enemy, 1.5, near)
+			_hold_move(0)
+			n += 1
+			if strike == &"heavy_attack":
+				for i in 8:
+					if hero.combat.state == hero.combat.State.HEAVY_WINDUP:
+						break
+					_tap(strike)
+					await _drill_wait(enemy, 0.08)
+			else:
+				for i in 3:
+					_tap(strike)
+					await _drill_wait(enemy, 0.3)
+			await _drill_wait(enemy, 1.5)
+	else:
+		# (д) лучник: герой іде на нього, потім стрибає на місці — відступ, обхід, випередження (п'ять разів, до десяти)
+		for i in 10:
+			if i >= 5 and not missing.call([&"kite", &"lead", &"feint"]):
+				break
+			await _drill_recentre(enemy, base)
+			await _drill_wait(enemy, 4.0, engaged)
+			_hold_move(side.call())
+			await _drill_wait(enemy, 1.5)
+			_hold_move(0)
+			await _drill_wait(enemy, 1.0)
+			_action(&"jump", true)
+			await _drill_wait(enemy, 0.1)
+			_action(&"jump", false)
+			await _drill_wait(enemy, 1.5)
+			_hold_move(-side.call())
+			await _drill_wait(enemy, 0.6)
+			_hold_move(0)
+
+
+## D775: по боту й виду ворога — удари, промахи, простій у досяжності, ухиляння героя, втрати, повернення в бій.
+func _print_ai_table() -> void:
+	print("    AI by kind (D775): bot | kind | strikes | at the air (%) | dodged | idle in reach s (longest) | evasions | lost | re-engage avg s | tactics")
+	var keys := _ai_kinds.keys()
+	keys.sort()
+	for key: String in keys:
+		var k: Dictionary = _ai_kinds[key]
+		print("    %-40s %3d %3d (%3d%%) %3d | %5.1f (%.2f) | %2d %2d %s | %s" % [key, k.strikes, k.whiffs, roundi(100.0 * k.whiffs / maxi(k.strikes, 1)), k.dodged,
+				k.idle, k.idle_max, k.evasions, k.lost, "%.2f" % _mean(k.reengage) if not k.reengage.is_empty() else "-", k.tactics])
+
+
 ## Те, чого вимагає D642: MASHER перемагає одного звичайного ворога, втративши HP, і програє решті; GOOD перемагає.
 func _as_expected(row: Dictionary) -> bool:
 	if row.bot == "GOOD":
@@ -312,6 +604,11 @@ func _print_row(row: Dictionary) -> void:
 			% [row.bot, row.build, row.name, row.level, _verdict(row), roundi(row.hp_left * 100), roundi(row.enemy_left * 100),
 			row.time, row.hits, row.heals, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed,
 			row.contact, "%d%%" % roundi(row.both * 100) if row.both >= 0.0 else "-", row.lunges, row.latches])
+	print("        AI (D775): melee strikes %d: at the air %d, dodged %d | idle in reach %.1fs, longest %.2fs (%s) | evasions %d, lost %d, re-engage %s | stuck %d, fell %d"
+			% [row.melee_strikes, row.whiffs, row.dodged, row.idle_reach, row.idle_max, row.idle_max_who, row.evasions, row.lost,
+			"%.2fs avg" % _mean(row.reengage) if not row.reengage.is_empty() else "-", row.stuck, row.fell])
+	for line: String in row.dumb:
+		print("        dumb: " + line)
 	for line: String in row.enemies:
 		print("        " + line)
 
@@ -394,6 +691,22 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 	lunges = 0
 	latches = 0
 	_was_latched = false
+	whiffs = 0
+	dodged = 0
+	melee_strikes = 0
+	idle_reach = 0.0
+	idle_max = 0.0
+	idle_max_who = ""
+	evasions = 0
+	lost = 0
+	reengage = []
+	stuck = 0
+	fell = 0
+	dumb = []
+	_chasers = []
+	_was_rolling = false
+	_was_air = false
+	_bot = bot
 	var tracked: Array[Node] = []
 	var ids: Array[int] = []  # ідентифікатори tracked: мертвий ворог звільняється раніше за звіт
 	var total_hp := 0
@@ -447,15 +760,17 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 		var times := ""
 		for phase: String in ["chase", "ready", "cooldown", "swing", "recover", "stun", "knock", "other"]:
 			times += " %s %.1f" % [phase, swings[id].get(phase, 0.0)]
-		lines.append("%-22s %s: swings %2d, told %2d, struck %2d, broken before tell %2d / after %2d | time:%s" % [swings[id].name,
-				"alive" if alive_now else "dead ", swings[id].n, swings[id].told, strikes.get(id, 0), swings[id].n - swings[id].told,
+		lines.append("%-22s %s: landed %d, swings %2d, told %2d, struck %2d, broken before tell %2d / after %2d | time:%s" % [swings[id].name,
+				"alive" if alive_now else "dead ", swings[id].get("landed", 0), swings[id].n, swings[id].told, strikes.get(id, 0), swings[id].n - swings[id].told,
 				swings[id].told - strikes.get(id, 0), times + " | strikes at dx " + " ".join(swings[id].get("at", []))])
 	var row := {"bot": bot, "build": build, "name": fight.name + (" (2nd try)" if attempt > 0 else ""), "cls": fight.cls, "level": level,
 			"won": not hero.is_dead and left_hp == 0 and t < CAP, "capped": t >= CAP and not hero.is_dead,
 			"hp_left": float(maxi(hero.current_health, 0)) / hero.Max_Health, "enemy_left": float(left_hp) / maxi(total_hp, 1),
 			"time": t, "hits": hits_taken, "flasks": flasks, "parries": parries, "blocks": blocks, "rolls": rolls,
 			"together": together, "together_time": together_time, "contact": contact, "lunges": lunges, "latches": latches,
-			"both": float(both_frames) / near_frames if near_frames > 0 else -1.0, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
+			"both": float(both_frames) / near_frames if near_frames > 0 else -1.0, "whiffs": whiffs, "dodged": dodged, "melee_strikes": melee_strikes,
+			"idle_reach": idle_reach, "idle_max": idle_max, "idle_max_who": idle_max_who, "evasions": evasions, "lost": lost,
+			"reengage": reengage, "stuck": stuck, "fell": fell, "dumb": dumb, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -587,15 +902,63 @@ func _place_hero(at: Vector2) -> void:
 
 func _track(enemy: Node) -> void:
 	var id := enemy.get_instance_id()
-	swings[id] = {"n": 0, "told": 0, "name": "%s%s" % ["elite " if enemy.elite else "", enemy.enemy_type if "enemy_type" in enemy and enemy.enemy_type != "" else enemy.name]}
+	swings[id] = {"n": 0, "told": 0, "name": "%s%s" % ["elite " if enemy.elite else "", enemy.name if enemy.get_script() == Boss else enemy.enemy_stats.enemy_type]}
 	strikes[id] = 0
 	enemy.enemy_logic.attack_started.connect(_on_swing.bind(enemy))
 	enemy.enemy_logic.attack_telegraphed.connect(_on_telegraph.bind(enemy))
+	enemy.enemy_logic.tactic.connect(_on_tactic.bind(enemy))
+	_ai(enemy)
+
+
+## Рішення ворога (D775: EnemyLogic.tactic) — по виду.
+func _on_tactic(name: StringName, enemy: Node) -> void:
+	var tactics: Dictionary = _ai(enemy).tactics
+	tactics[name] = tactics.get(name, 0) + 1
+	if OS.get_environment("MASHER_DEBUG") != "":
+		print("      tactic %s %s" % [_kind(enemy), name])
 
 
 ## Замах ворога: інший ворог уже замахується чи б'є — «разом».
+## Вид ворога для звіту D775 (бос — за назвою).
+func _kind(enemy: Node) -> String:
+	return swings[enemy.get_instance_id()].name
+
+
+func _ai(enemy: Node) -> Dictionary:
+	var key := "%s|%s" % [_bot, _kind(enemy)]
+	if not _ai_kinds.has(key):
+		_ai_kinds[key] = {"strikes": 0, "whiffs": 0, "dodged": 0, "idle": 0.0, "idle_max": 0.0, "evasions": 0, "lost": 0, "reengage": [] as Array[float], "tactics": {}}
+	return _ai_kinds[key]
+
+
+func _mean(values: Array[float]) -> float:
+	var sum := 0.0
+	for v in values:
+		sum += v
+	return sum / maxi(values.size(), 1)
+
+
+## Ближній ворог (б'є хітбоксом з землі): не лучник і не летючий.
+func _melee(enemy: Node) -> bool:
+	return not enemy.flying and not enemy.enemy_logic.get_script().resource_path.ends_with("ArcherLogic.gd")
+
+
+## Хітбокс удару ворога у світі.
+func _hit_rect(enemy: Node) -> Rect2:
+	var shape: CollisionShape2D = enemy.hitbox_collision
+	var size: Vector2 = (shape.shape.get_rect().size * shape.global_transform.get_scale()).abs()
+	return Rect2(shape.global_position - size / 2.0, size)
+
+
+## Досяжність удару: дальній край хітбокса від центру ворога, ривок удару (lunge) і півтіла героя.
+func _reach(enemy: Node) -> float:
+	var rect := _hit_rect(enemy)
+	return maxf(absf(rect.position.x - enemy.global_position.x), absf(rect.end.x - enemy.global_position.x)) + enemy.lunge + hero.body_rect().size.x / 2.0
+
+
 func _on_swing(enemy: Node) -> void:
 	swings[enemy.get_instance_id()].n += 1
+	enemy.set_meta(&"masher_dodged", false)
 	if enemy.enemy_logic.get(&"lunging"):
 		lunges += 1
 	for other: Node in get_nodes_in_group(&"enemies"):
@@ -619,6 +982,12 @@ func _on_damage(target: Node, source: Node, _amount: int, _critical: bool) -> vo
 		hits_taken += 1
 		if is_instance_valid(source):
 			source.set_meta(&"masher_landed", true)
+			var shooter: Node = source.get(&"shooter") if source.get(&"shooter") != null else source
+			if swings.has(shooter.get_instance_id()):
+				swings[shooter.get_instance_id()].landed = swings[shooter.get_instance_id()].get("landed", 0) + 1
+			if OS.get_environment("MASHER_DEBUG") != "" and shooter is Node2D and "enemy_logic" in shooter:
+				print("      hit by %s dx %d tell %s lunging %s hero %s rolling %s roll_ready %.2f" % [shooter.name, roundi(shooter.global_position.x - hero.global_position.x),
+						shooter.enemy_logic.tell_kind, shooter.enemy_logic.get(&"lunging"), hero.combat.State.keys()[hero.combat.state], hero.mover.is_rolling(), hero.mover.roll_ready_in])
 	elif source == hero:
 		hero_hits += 1
 		var frame := Engine.get_physics_frames()
@@ -649,6 +1018,21 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 			swings[id]["at"] = swings[id].get("at", []) + ["%d%s" % [roundi(absf(hero.global_position.x - enemy.global_position.x)), "i" if hero.is_invulnerable else ""]]
 		if on and not enemy.get_meta(&"masher_on", false):
 			enemy.set_meta(&"masher_landed", false)
+		# D775: удар не дістав героя — хітбокс жодного кадру не торкнувся його тіла. Герой за замах і удар котився чи
+		# стрибав — це ухил (dodged), інакше — удар у повітря (whiffs)
+		if logic.is_attacking and (hero.mover.is_rolling() or not hero.is_on_floor()):
+			enemy.set_meta(&"masher_dodged", true)
+		if on and _hit_rect(enemy).intersects(hero.body_rect()):
+			enemy.set_meta(&"masher_reached", true)
+		if not on and enemy.get_meta(&"masher_on", false) and _melee(enemy):
+			melee_strikes += 1
+			_ai(enemy).strikes += 1
+			if not enemy.get_meta(&"masher_reached", false):
+				var key := &"dodged" if enemy.get_meta(&"masher_dodged", false) else &"whiffs"
+				set(key, get(key) + 1)
+				_ai(enemy)[key] += 1
+			enemy.set_meta(&"masher_reached", false)
+		_watch_ai(enemy, logic, dt)
 		if on and hero.is_invulnerable and not hero.mover.is_rolling() and not enemy.get_meta(&"masher_iframed", false) \
 				and not enemy.get_meta(&"masher_landed", false):
 			enemy.set_meta(&"masher_iframed", true)
@@ -672,6 +1056,7 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 		near_frames += 1
 		if sides.has(1.0) and sides.has(-1.0):
 			both_frames += 1
+	_watch_evasions(tracked, dt)
 	var holder: Node = EnemyLogicScript.latched()
 	if holder != null and not _was_latched:
 		latches += 1
@@ -679,6 +1064,81 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 	for tg: Dictionary in _telegraphs:
 		tg.strike_in -= dt
 	_telegraphs = _telegraphs.filter(func(tg: Dictionary) -> bool: return tg.strike_in > -0.4 and is_instance_valid(tg.enemy))
+
+
+## D775: простій у досяжності (ближній ворог стоїть, не б'є й не ходить, а герой на його підлозі в досяжності удару),
+## застряг (хоче до героя, а стоїть перед стіною чи уступом довше 1 с), упав (довше 0.4 с у повітрі без відкидання).
+func _watch_ai(enemy: Node, logic: Node, dt: float) -> void:
+	if not _melee(enemy) or hero.is_dead:
+		return
+	var dx: float = hero.global_position.x - enemy.global_position.x
+	var same_floor: bool = absf(EnemyLogicScript._feet_y(hero) - EnemyLogicScript._feet_y(enemy)) <= 24.0
+	var free: bool = not logic.is_attacking and logic.stun_left <= 0.0 and logic.knockback_left <= 0.0 and logic.flank_side == 0 \
+			and EnemyLogicScript.latched() != logic
+	var idle: bool = free and absf(enemy.velocity.x) < 5.0 and absf(dx) <= _reach(enemy) and same_floor
+	var run: float = enemy.get_meta(&"masher_idle", 0.0)
+	run = run + dt if idle else 0.0
+	enemy.set_meta(&"masher_idle", run)
+	if idle:
+		idle_reach += dt
+		_ai(enemy).idle += dt
+		_ai(enemy).idle_max = maxf(_ai(enemy).idle_max, run)
+		if run > idle_max:
+			idle_max = run
+			idle_max_who = "%s at dx %d, %s, ready in %.1f" % [_kind(enemy), roundi(absf(dx)), logic.AIState.keys()[logic.current_state], logic.attack_ready_in]
+	var wants: bool = free and logic.current_state in [logic.AIState.CHASE, logic.AIState.ATTACK] and absf(dx) > _reach(enemy) \
+			and absf(enemy.velocity.x) < 5.0 and not logic.can_step(signi(int(signf(dx))))
+	var blocked: float = enemy.get_meta(&"masher_blocked", 0.0)
+	blocked = blocked + dt if wants else 0.0
+	if blocked > 1.0 and enemy.get_meta(&"masher_blocked", 0.0) <= 1.0:
+		stuck += 1
+		dumb.append("%s stuck at %s facing a wall or ledge, hero dx %d dy %d" % [_kind(enemy), enemy.global_position.round(), roundi(dx), roundi(hero.global_position.y - enemy.global_position.y)])
+	enemy.set_meta(&"masher_blocked", blocked)
+	var air: float = enemy.get_meta(&"masher_air", 0.0)
+	air = air + dt if not enemy.is_on_floor() and logic.knockback_left <= 0.0 and not logic.get(&"lunging") else 0.0
+	if air > 0.4 and enemy.get_meta(&"masher_air", 0.0) <= 0.4:
+		fell += 1
+		dumb.append("%s fell at %s (%s)" % [_kind(enemy), enemy.global_position.round(), logic.AIState.keys()[logic.current_state]])
+	enemy.set_meta(&"masher_air", air)
+
+
+## D775: герой ухилився (почав перекат чи стрибнув) — ближні вороги поруч мають піти за ним і знову стати до бою
+## (на свою відстань бою, у стан ATTACK), щойно він знову на землі. Додому чи 4 с без бою, хоч героя й видно, — втратили.
+func _watch_evasions(tracked: Array[Node], dt: float) -> void:
+	var rolling: bool = hero.mover.is_rolling()
+	var air: bool = not hero.is_on_floor()
+	if (rolling and not _was_rolling) or (air and not _was_air and hero.velocity.y < -100.0):
+		evasions += 1
+		for c: Dictionary in _chasers:
+			c.t = 0.0  # знову ухилився — час іде від останнього ухилу
+		for enemy: Node in tracked:
+			if is_instance_valid(enemy) and enemy.is_alive() and _melee(enemy) \
+					and absf(enemy.global_position.x - hero.global_position.x) <= enemy.enemy_logic.engage_range() * 1.5 \
+					and not _chasers.any(func(c: Dictionary) -> bool: return c.enemy == enemy):
+				_chasers.append({"enemy": enemy, "t": 0.0})
+				_ai(enemy).evasions += 1
+	_was_rolling = rolling
+	_was_air = air
+	var left: Array[Dictionary] = []
+	for c: Dictionary in _chasers:
+		var enemy: Node = c.enemy
+		if not is_instance_valid(enemy) or not enemy.is_alive() or hero.is_dead:
+			continue
+		c.t += dt
+		var logic: Node = enemy.enemy_logic
+		# Втратив — пішов додому чи 4 с не в бою, хоч героя й видно (герой на іншому поверсі за стіною — B139, не втрата)
+		if (logic.current_state in [logic.AIState.IDLE, logic.AIState.RETURN_HOME] or c.t > 4.0) and logic.can_notice(hero):
+			lost += 1
+			_ai(enemy).lost += 1
+			dumb.append("%s lost the hero after he %s (%s, dx %d)" % [_kind(enemy), "rolled or jumped", logic.AIState.keys()[logic.current_state], roundi(hero.global_position.x - enemy.global_position.x)])
+			continue
+		if not rolling and not air and (logic.is_attacking or logic.current_state == logic.AIState.ATTACK) \
+				and absf(enemy.global_position.x - hero.global_position.x) <= logic.engage_range():
+			reengage.append(c.t)
+			_ai(enemy).reengage.append(c.t)
+			continue
+		left.append(c)
+	_chasers = left
 
 
 func _nearest(alive: Array) -> Node:

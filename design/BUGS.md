@@ -179,6 +179,12 @@ the history, this note keeps only what is open.
 
 > **Open 2026-10-27:** **B162** — in the Lizard Cave the hero runs on air (Sapega: «в печері ми бігаємо наче не по землі, а по повітрю»): the room is one baked backdrop (`LizardCave/gen_back.png` ×1.5, two copies) whose painted floor is uneven and does not meet the flat collision floor, and the room has no floor band (A16 covered only the outdoor rooms). Fix (Sapega: «там є три плани — передній, середній і задній, їх треба порізати»): cut the backdrop into its three planes, each on its own parallax, the front plane's floor on the walk line; the idol shrines stay where they are (M6, [[m6_backdrops]]).
 
+> **Fixed 2026-10-27 (`cloud/enemy-ai`, D775; integrate-28, the branch called them B162–B165):**
+> - **B163** — An enemy walking home (RETURN_HOME) ignored the hero. If he stood in its way it pushed against him and never fought again. Found by `verify_combat_enemies` [7] once D775 made enemies walk to where they last saw him. Fix: walking home, it goes back to the chase when it sees him within its detection range (after the chase cooldown).
+> - **B164** — `PlayerMover._release_passed`: an enemy freed during a roll through it (a room swap) stayed in the typed `_passing` array. `erase()` of a freed object fails, so the error repeated every physics frame: 368 712 errors in one `verify_masher` run. Fix: freed entries are filtered out first.
+> - **B165** — Mid-fight, an enemy past its leash gave up and walked home while the hero stood 80–350 px away. In `verify_masher`, GOOD lost a bandit, a jackal and a tank this way after rolls (Caravan, Lab middle, road's first fight). Fix: the leash ends the chase only when the hero is beyond the enemy's chase range.
+> - **B166** — Bosses stood idle up to 1.29 s with the hero inside their combo reach (fixed rest of 1.0–1.3 s, Mayor Hall and Laboratory). Fix: a boss whose hero stands in its combo reach for more than 0.7 s strikes (`BossLogic.REACH_PATIENCE`); the rest varies ×0.7–1.3.
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row

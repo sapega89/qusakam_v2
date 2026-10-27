@@ -297,6 +297,10 @@ func _staggers() -> void:
 		tell_nodes.append(target.get_children().filter(func(c: Node) -> bool: return c.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd")).size())
 	target.enemy_logic.attack_telegraphed.connect(on_tell)
 	var strikes: Array = []
+	# D775: серія б'є, лише доки дістає героя — герой у досяжності, невразливий (удари не відкидають його)
+	var hero_was: Vector2 = hero.global_position
+	hero.global_position = target.global_position + Vector2(-30, 0)
+	hero.is_invulnerable = true
 	target.enemy_logic.perform_attack()
 	var swing_end: int = Time.get_ticks_msec() + roundi((target.attack_windup + 2 * target.enemy_logic.COMBO_WINDUP + 3 * target.attack_active_time + 0.3) * 1000)
 	var was_on := false
@@ -306,6 +310,8 @@ func _staggers() -> void:
 			strikes.append(Time.get_ticks_msec())
 		was_on = target.hitbox.monitoring
 	target.enemy_logic.attack_telegraphed.disconnect(on_tell)
+	hero.is_invulnerable = false
+	hero.global_position = hero_was
 	var leads: Array = []
 	for i in mini(tells.size(), strikes.size()):
 		leads.append(strikes[i] - tells[i])
