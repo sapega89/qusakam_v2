@@ -87,11 +87,11 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(22.5, 57.75)
+size = Vector2(33.75, 86.625)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(38.25, 63)
+size = Vector2(57.375, 94.5)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fly"]
 _data = {
@@ -105,10 +105,11 @@ _data = {
 [node name="EnemyFly" instance=ExtResource("1_base")]
 
 [node name="Sprite2D" parent="." index="2"]
+position = Vector2(0, 0)
 metadata/tell_at = Vector2(10, -19)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, 0)
-scale = Vector2(0.75, 0.75)
+scale = Vector2(1.125, 1.125)
 hframes = 4
 vframes = 4
 frame = 0
@@ -118,9 +119,9 @@ libraries/ = SubResource("AnimationLibrary_fly")
 metadata/attack_strike_time = 0.4
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(11.25, 0.375)
+position = Vector2(16.875, 0.5625)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(-2.625, -2.25)
+position = Vector2(-3.9375, -3.375)
 shape = SubResource("Shape_hurt")

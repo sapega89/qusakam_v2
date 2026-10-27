@@ -116,6 +116,49 @@ var _shuffle_t: float = 0.0
 var _hits_waiting: int = 0
 var _back_off_from: float = 0.0
 
+## Випад (D739, EnemyStats.lunge_*): ривок з ударом за LUNGE_TIME с; не частіше, ніж раз на LUNGE_REST с; кинув кубик
+## і не вийшло — наступний кидок за LUNGE_REROLL с. Ривок спиняється за LUNGE_SHORT px до місця, де стояв герой
+## (тіло героя спинить і раніше, D443), а хітбокс живий увесь ривок.
+const LUNGE_TIME := 0.2
+const LUNGE_REST := 2.5
+const LUNGE_REROLL := 0.8
+const LUNGE_SHORT := 10.0
+## Випад лише по героєві на своїй підлозі (ноги на ±LUNGE_DY px).
+const LUNGE_DY := 24.0
+var _lunge_rest: float = 0.0
+## Іде випад (замах, ривок, відновлення).
+var lunging: bool = false
+## Стрибок шакала (D740): висота дуги спрайта, px; учепився — LATCH_BITE_AT с до укусу (стоп-кадр LATCH_HITSTOP с),
+## LATCH_TIME с усього, тоді герой відштовхує його (SHOVE_TIME с пози) на SHOVE_PUSH px, шакал падає й LATCH_STUN с
+## оговтується. Укус — LATCH_BITE шкоди удару. Учепитись може лише один шакал.
+const POUNCE_HOP := 34.0
+const LATCH_BITE_AT := 0.35
+const LATCH_HITSTOP := 0.09
+const LATCH_TIME := 0.9
+const LATCH_BITE := 1.3
+const SHOVE_TIME := 0.25
+const SHOVE_PUSH := 160.0
+const LATCH_STUN := 0.6
+static var _latched: EnemyLogic = null
+
+## Обхід (D741, Tails of Iron): група не стоїть у черзі з одного боку героя. Ворог, що чекає позаду іншого, а з того
+## боку героя нікого, проходить крізь героя (тіла пропускають одне одного лише на цей прохід, як перекат героя, D443)
+## швидким кроком FLANK_PACE на свою дистанцію з того боку. Один обхідник на раз; кожен — не частіше за FLANK_REST с
+## (перший — через випадкові 0–FLANK_REST с після початку бою); прохід — не довше FLANK_TIME с.
+const FLANK_PACE := 2.2
+const FLANK_REST := 3.0
+const FLANK_TIME := 1.6
+## Хто з союзників рахується в бою: на своїй підлозі, ближче за FLANK_NEAR px до героя.
+const FLANK_NEAR := 320.0
+static var _flanker: EnemyLogic = null
+var _flank_rest: float = -1.0
+## Куди йде обхід: -1 / 1 — бік героя, на який ворог переходить; 0 — не обходить.
+var flank_side: int = 0
+var _flank_left: float = 0.0
+## Шакал, що зараз учепився в героя (для тестів і HUD).
+static func latched() -> EnemyLogic:
+	return _latched if is_instance_valid(_latched) else null
+
 # Посилання на гравця
 var player: Node = null
 var player_in_area: bool = false
@@ -164,6 +207,10 @@ func initialize(enemy_node: CharacterBody2D):
 
 func _exit_tree() -> void:
 	_release_token()
+	if _flanker == self:
+		_flanker = null
+	if _latched == self:
+		_latched = null
 
 func process_physics(delta: float) -> Vector2:
 	"""Обробляє фізику та повертає нову швидкість"""
@@ -172,6 +219,10 @@ func process_physics(delta: float) -> Vector2:
 	state_timer += delta
 	chase_cooldown_timer += delta
 	attack_ready_in = maxf(attack_ready_in - delta, 0.0)
+	_lunge_rest = maxf(_lunge_rest - delta, 0.0)
+	if _flank_rest < 0.0:
+		_flank_rest = randf() * FLANK_REST
+	_flank_rest = maxf(_flank_rest - delta, 0.0)
 
 	process_ai(delta)
 	return velocity
@@ -259,6 +310,10 @@ func handle_chase_state(delta: float):
 		velocity.x = 0
 		return
 
+	if _lunge_due(distance_to_player_x):
+		perform_lunge()
+		return
+
 	if distance_to_player_x <= engage_range():
 		change_state(AIState.ATTACK)
 		return
@@ -286,6 +341,9 @@ func handle_attack_state(delta: float):
 	if not player or not is_instance_valid(player):
 		change_state(AIState.IDLE)
 		return
+	if flank_side != 0:
+		_flank_step(delta)
+		return
 	var dx: float = player.global_position.x - enemy.global_position.x
 	var adx := absf(dx)
 	if adx > engage_range() * 1.2 or not can_notice(player):
@@ -293,6 +351,9 @@ func handle_attack_state(delta: float):
 		return
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
+	if _lunge_due(adx):
+		perform_lunge()
+		return
 	if (attack_ready_in <= 0.0 or _hero_opened(adx)) and token_free():
 		pace = 1.0 if adx <= attack_range else STEP_IN_PACE  # D754: заходить бити швидше — не бреде під клинком героя
 		if adx <= attack_range:
@@ -302,7 +363,83 @@ func handle_attack_state(delta: float):
 			_step(toward, speed * pace)
 		return
 	pace = 1.0
+	if _flank_due(toward):
+		_start_flank(toward)
+		return
 	_hold_spacing(dx, delta)
+
+## Час обходу (D741): ворог чекає, з його боку героя є ще хтось ближчий до героя, з іншого — нікого, і той бік
+## вільний (підлога, без стіни).
+func _flank_due(toward: int) -> bool:
+	if _flank_rest > 0.0 or enemy.flying or (is_instance_valid(_flanker) and _flanker != self):
+		return false
+	var hero_x: float = player.global_position.x
+	var my_gap := absf(hero_x - enemy.global_position.x)
+	var nearer_here := false
+	for body: Node in get_tree().get_nodes_in_group(GameGroups.ENEMIES):
+		if body == enemy or not body is DefaultEnemy or body.is_dead or body.flying:
+			continue
+		var gap: float = body.global_position.x - hero_x
+		if absf(gap) > FLANK_NEAR or absf(_feet_y(body) - _feet_y(enemy)) > LUNGE_DY:
+			continue
+		if signf(gap) == float(toward):
+			return false  # з того боку вже хтось є
+		if absf(gap) < my_gap:
+			nearer_here = true
+	if not nearer_here:
+		return false
+	return _side_open(toward)
+
+## За героєм у бік [param dir] є куди стати: без стіни між героєм і тим місцем і з підлогою там.
+func _side_open(dir: int) -> bool:
+	var hero: Node2D = player
+	var to := Vector2(hero.global_position.x + dir * engage_range(), enemy.global_position.y)
+	var space := enemy.get_world_2d().direct_space_state
+	var wall := PhysicsRayQueryParameters2D.create(Vector2(hero.global_position.x, enemy.global_position.y), to)
+	wall.exclude = _bodies()
+	if not space.intersect_ray(wall).is_empty():
+		return false
+	var ground := PhysicsRayQueryParameters2D.create(to, Vector2(to.x, _feet_y(enemy) + FLOOR_PROBE))
+	ground.exclude = _bodies()
+	return not space.intersect_ray(ground).is_empty()
+
+func _start_flank(toward: int) -> void:
+	_flanker = self
+	flank_side = toward
+	_flank_left = FLANK_TIME
+	enemy.add_collision_exception_with(player)
+	player.add_collision_exception_with(enemy)
+
+## Прохід крізь героя на його інший бік (D741); дійшов (на engage_range з того боку), уперся чи вийшов час — кінець.
+func _flank_step(delta: float) -> void:
+	_flank_left -= delta
+	var target_x: float = player.global_position.x + flank_side * engage_range()
+	var left := target_x - enemy.global_position.x
+	pace = FLANK_PACE
+	if _flank_left <= 0.0 or absf(left) <= 8.0 or not can_step(signi(int(signf(left)))):
+		_end_flank()
+		return
+	_walk(1 if left > 0.0 else -1, speed * FLANK_PACE)
+
+func _end_flank() -> void:
+	flank_side = 0
+	pace = 1.0
+	velocity.x = 0.0
+	_flank_rest = FLANK_REST
+	if _flanker == self:
+		_flanker = null
+	_face_player()
+	_release_hero_pass()
+
+## Виняток тіл знімається, щойно ворог уже не в героєві (інакше фізика розштовхувала б їх).
+func _release_hero_pass() -> void:
+	if not is_instance_valid(player):
+		return
+	if enemy.body_rect().intersects(player.body_rect()):
+		get_tree().create_timer(0.1, false).timeout.connect(_release_hero_pass)
+		return
+	enemy.remove_collision_exception_with(player)
+	player.remove_collision_exception_with(enemy)
 
 ## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно).
 func _hold_spacing(dx: float, delta: float) -> void:
@@ -446,6 +583,128 @@ func perform_attack():
 	attack_ended.emit()
 	_decide_after_attack()
 
+## Час випаду (D739): ворог готовий, жетон вільний, герой на його підлозі на відстані lunge_from–lunge_to і є куди
+## ступити — і кубик lunge_chance випав.
+func _lunge_due(adx: float) -> bool:
+	var stats: EnemyStats = enemy.enemy_stats
+	if stats.lunge_chance <= 0.0 or attack_ready_in > 0.0 or _lunge_rest > 0.0 or not token_free():
+		return false
+	if adx < stats.lunge_from or adx > stats.lunge_to or absf(_feet_y(player) - _feet_y(enemy)) > LUNGE_DY:
+		return false
+	if not can_step(1 if player.global_position.x > enemy.global_position.x else -1):
+		return false
+	if randf() >= stats.lunge_chance:
+		_lunge_rest = LUNGE_REROLL
+		return false
+	return true
+
+## Випад (D739): короткий замах із підказкою lunge_tell, ривок з живим хітбоксом туди, де герой стояв у мить підказки,
+## поза відновлення. Шакал (pounce, D740) стрибає: влучив — учепився (_latch), а не вкусив з льоту.
+func perform_lunge() -> void:
+	var stats: EnemyStats = enemy.enemy_stats
+	is_attacking = true
+	lunging = true
+	_hits_waiting = 0
+	attack_broken = false
+	_hold_token()
+	finisher = false
+	tell_kind = StringName(stats.lunge_tell)
+	swing_windup = stats.lunge_windup
+	_face_player()
+	attack_started.emit()
+	EventBus.attack_started.emit(enemy, player)
+	await wind_up(stats.lunge_windup)
+	var latched_on := false
+	if not _interrupted():
+		var direction := last_direction if last_direction != 0 else 1
+		var gap: float = absf(player.global_position.x - enemy.global_position.x) - LUNGE_SHORT
+		enemy.start_attack(direction)
+		start_knockback(direction * maxf(gap, 0.0), false, LUNGE_TIME)
+		if stats.pounce:
+			enemy.hitbox_damage.disable_damage()  # стрибок не кусає з льоту: учепився — кусає (_latch)
+			enemy.enemy_view.hop(POUNCE_HOP, LUNGE_TIME)
+			latched_on = await _pounce(direction)
+		else:
+			await get_tree().create_timer(LUNGE_TIME, false).timeout
+		enemy.end_attack()
+	committed = false
+	tell_kind = enemy.tell
+	_release_token()
+	attack_ready_in = enemy.attack_cooldown
+	_lunge_rest = LUNGE_REST
+	if not _interrupted() and not latched_on:
+		await _recover(_recovery_time())
+	lunging = false
+	is_attacking = false
+	attack_ended.emit()
+	_decide_after_attack()
+
+## Стрибок (D740): поки летить, торкнувся героя — перекат (невразливість) крізь нього проносить; блок відбиває шакала
+## назад (жовтий — парирує); інакше вчепився. Уже вчепився інший — звичайний укус з льоту. true — учепився.
+func _pounce(direction: int) -> bool:
+	var left := LUNGE_TIME
+	while left > 0.0 and not _interrupted():
+		await get_tree().physics_frame
+		left -= get_physics_process_delta_time()
+		if not _touches_hero():
+			continue
+		var hero: Node = player
+		if hero.is_invulnerable or hero.is_dead:
+			continue
+		var guard: StringName = hero.combat.guard_against(enemy)
+		if guard == &"parry":
+			enemy.parried(hero)
+			EventBus.player_parried.emit(enemy)
+			return false
+		if guard == &"block":
+			EventBus.player_blocked.emit(enemy)
+			start_knockback(-direction * SHOVE_PUSH * 0.5, false)
+			return false
+		if latched() != null:
+			hero.take_damage(roundi(enemy.damage), enemy)
+			return false
+		await _latch(direction)
+		return true
+	return false
+
+## Хітбокс стрибка торкнувся тіла героя (удари ворогів б'ють саме тіло, DamageApplier).
+func _touches_hero() -> bool:
+	return enemy.hitbox.overlaps_body(player)
+
+## Учепився (D740): не стан, а коротка сцена бою. Герой стоїть (PlayerCombat.hold, поза Hurt), шакал висить на ньому
+## в позі укусу; за LATCH_BITE_AT с — укус зі стоп-кадром; на LATCH_TIME герой відштовхує його (поза Block), шакал
+## відлітає на SHOVE_PUSH px, падає й оговтується LATCH_STUN с. Збили чи вбили шакала посеред — герой вільний.
+func _latch(direction: int) -> void:
+	_latched = self
+	var hero: Node = player
+	knockback_left = 0.0
+	velocity = Vector2.ZERO
+	enemy.end_attack()
+	hero.combat.hold(enemy, LATCH_TIME + SHOVE_TIME)
+	var body_gap: float = enemy.get_node(^"CollisionShape2D").shape.get_rect().size.x * 0.5
+	enemy.global_position.x = hero.global_position.x - direction * body_gap
+	enemy.enemy_view.latch_pose()
+	var t := 0.0
+	var bitten := false
+	while t < LATCH_TIME and not enemy.is_dead and stun_left <= 0.0 and not hero.is_dead:
+		await get_tree().physics_frame
+		t += get_physics_process_delta_time()
+		enemy.global_position.x = hero.global_position.x - direction * body_gap
+		if not bitten and t >= LATCH_BITE_AT:
+			bitten = true
+			ServiceLocator.get_time_manager().hitstop(LATCH_HITSTOP)
+			hero.take_damage(roundi(enemy.damage * LATCH_BITE), enemy)
+	_latched = null
+	if hero.is_dead:
+		return
+	hero.combat.shove(SHOVE_TIME)
+	if not enemy.is_dead:
+		start_knockback(-direction * SHOVE_PUSH, false, SHOVE_TIME)
+		enemy.enemy_view.hop(POUNCE_HOP * 0.6, SHOVE_TIME)
+		stun_left = maxf(stun_left, LATCH_STUN)
+		if enemy.enemy_view.has_stagger_pose():
+			enemy.enemy_view.play_stagger(LATCH_STUN)
+
 ## Поза відновлення [param time] с (D504): ворог стоїть у позі удару; збій її обриває (і стоїть уже збитий).
 func _recover(time: float) -> void:
 	recovering = true
@@ -475,10 +734,20 @@ func wind_up(windup: float) -> void:
 static func max_attackers() -> int:
 	return int(EnemyVariety.data().pressure.max_attackers)
 
-## Жетон вільний: замахуються менше за max_attackers() інших ворогів (або цей уже має жетон).
+## Жетон вільний: замахуються менше за max_attackers() інших ворогів (або цей уже має жетон), і всі вони — з того
+## самого боку героя (D741): оточений герой мусить розвертатись, але б'ють його з одного боку за раз — блок рятує.
 func token_free() -> bool:
 	_attackers = _attackers.filter(func(l: EnemyLogic) -> bool: return is_instance_valid(l) and l.is_attacking)
-	return self in _attackers or _attackers.size() < max_attackers()
+	if self in _attackers:
+		return true
+	if _attackers.size() >= max_attackers():
+		return false
+	var side := _hero_side()
+	return _attackers.all(func(l: EnemyLogic) -> bool: return l._hero_side() == side)
+
+## З якого боку героя ворог: -1 — ліворуч, 1 — праворуч.
+func _hero_side() -> int:
+	return 1 if enemy.global_position.x >= player.global_position.x else -1
 
 ## Скільки ворогів зараз тримає жетон удару (для тестів).
 static func attackers() -> int:

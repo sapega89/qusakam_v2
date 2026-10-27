@@ -64,6 +64,8 @@ var attack_windup := 0.4
 var attack_active_time := 0.2
 ## D208: ривок під час удару (px) і броня від оглушення під час замаху.
 var lunge := 0.0
+## Під яку швидкість намальовано крок walk (EnemyStats.stride_speed, D738).
+var stride_speed := 70.0
 var super_armor := false
 var front_damage := 1.0
 ## Souls-lite (D264, D265): стійкість, збій героя від удару, комбо.
@@ -182,6 +184,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 	attack_windup = stats.attack_windup
 	attack_active_time = stats.attack_active_time
 	lunge = stats.lunge
+	stride_speed = stats.stride_speed if stats.stride_speed > 0.0 else stats.speed
 	super_armor = stats.super_armor
 	front_damage = stats.front_damage
 	poise_max = stats.poise
@@ -373,7 +376,7 @@ func _physics_process(delta: float) -> void:
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); наземному — лише X-рух, летючому — увесь.
 	var move: Vector2 = enemy_logic.process_physics(delta)
-	enemy_view.walk_pace(enemy_logic.pace)
+	enemy_view.walk_pace(enemy_logic.pace * speed / stride_speed)
 	current_state = enemy_logic.current_state
 	state_timer = enemy_logic.state_timer
 	lost_player_timer = enemy_logic.lost_player_timer

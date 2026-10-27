@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_old_vulture")
 enemy_type = "old_vulture"
-speed = 120.0
+speed = 200.0
+stride_speed = 120.0
 base_damage = 23.0
 attack_windup = 0.6
 attack_active_time = 0.6

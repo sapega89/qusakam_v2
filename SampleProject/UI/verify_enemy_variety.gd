@@ -448,6 +448,8 @@ func _foam() -> void:
 			"the horror jackal is an elite (HP %d)" % jackal.Max_Health)
 	jackal.set_physics_process(false)  # стоїть: погляд задає тест
 	jackal.enemy_logic.set_physics_process(false)
+	jackal.enemy_view._offset_to(0.0, 0.01)  # нахил замаху (більший шакал D737 дістає героя з точки тесту) — геть
+	await create_timer(0.05).timeout
 	jackal._on_logic_direction_changed(1)
 	for i in 2: await process_frame  # process_frame приходить раніше за _process вузлів
 	var right: Vector2 = foam.position - sprite.get_rect().get_center()
@@ -473,7 +475,8 @@ func _cursed_jackal() -> void:
 	ck(variety.available("jackal_cursed") and variety.is_elite("jackal_cursed") and spawn_script.scene_path("jackal_cursed") == SCENES.jackal_cursed,
 			"its sheet, scene and stats exist: the kind spawns, and it is an elite")
 	var same := true
-	for prop in ["speed", "base_damage", "attack_windup", "lunge", "attack_cooldown", "attack_range", "max_health", "poise",
+	# attack_range і lunge — від свого намальованого розміру (D737): удар дістає туди, куди сягає кадр (verify_hit_areas)
+	for prop in ["speed", "base_damage", "attack_windup", "attack_cooldown", "max_health", "poise",
 			"combo_hits", "tell", "finisher_tell", "recovery", "back_off", "flying"]:
 		same = same and stats.get(prop) == fast.get(prop)
 	ck(stats.enemy_type == "jackal_cursed" and same, "the jackal's behaviour and base numbers (enemy_fast), its own kind for the bestiary and the elite marks")
@@ -539,7 +542,8 @@ func _pack_leader() -> void:
 			and spawn_script.scene_path("jackal_pack_leader") == SCENES.jackal_pack_leader,
 			"its sheet, scene and stats exist: the kind spawns, and it is an elite")
 	var same := true
-	for prop in ["speed", "base_damage", "attack_windup", "lunge", "attack_cooldown", "attack_range", "max_health", "poise",
+	# attack_range і lunge — від свого намальованого розміру (D737): удар дістає туди, куди сягає кадр (verify_hit_areas)
+	for prop in ["speed", "base_damage", "attack_windup", "attack_cooldown", "max_health", "poise",
 			"combo_hits", "tell", "finisher_tell", "recovery", "back_off", "flying", "xp_reward"]:
 		same = same and stats.get(prop) == fast.get(prop)
 	ck(stats.enemy_type == "jackal_pack_leader" and same, "the jackal's behaviour and base numbers (enemy_fast), its own kind for the bestiary and the elite marks")

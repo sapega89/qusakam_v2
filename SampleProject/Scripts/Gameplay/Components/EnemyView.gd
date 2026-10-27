@@ -29,6 +29,8 @@ var staggered := false
 var _sheet: Texture2D
 var _hframes := 1
 var _vframes := 1
+var _base_offset_y := 0.0
+var _hop: Tween
 
 const STATE_ANIMATIONS := {
 	EnemyLogic.AIState.IDLE: "idle",
@@ -46,6 +48,7 @@ func initialize(enemy_node: CharacterBody2D) -> void:
 	_sheet = sprite2d.texture
 	_hframes = sprite2d.hframes
 	_vframes = sprite2d.vframes
+	_base_offset_y = sprite2d.offset.y
 
 func update_state(new_state: EnemyLogic.AIState) -> void:
 	"""Оновлює анімацію на основі стану"""
@@ -57,7 +60,7 @@ func update_state(new_state: EnemyLogic.AIState) -> void:
 		return  # зіграє після збою
 	anim_player.play(animation_name)
 
-## Біг (D754, EnemyLogic.pace): кадри ходи — у темпі руху.
+## Біг (D713, EnemyLogic.pace): кадри ходи — у темпі руху (і в темпі швидкості виду щодо його кроку, D738).
 func walk_pace(pace: float) -> void:
 	if not staggered and anim_player.current_animation == &"walk":
 		anim_player.speed_scale = pace
@@ -132,6 +135,23 @@ func on_attack_ended() -> void:
 	# Повертаємося до анімації поточного стану
 	if current_animation != "attack":
 		anim_player.play(current_animation)
+
+## Стрибок (D740, шакал): спрайт злітає на [param height] px дугою за [param time] с і падає назад (тіло лишається
+## на підлозі — це лише видно).
+func hop(height: float, time: float) -> void:
+	if _hop:
+		_hop.kill()
+	var base_y: float = _base_offset_y
+	_hop = create_tween()
+	_hop.tween_property(sprite2d, ^"offset:y", base_y - height / _base_scale.y, time * 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	_hop.tween_property(sprite2d, ^"offset:y", base_y, time * 0.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+
+## Учепився (D740): кадр укусу attack застигає, доки герой не відштовхне шакала.
+func latch_pose() -> void:
+	anim_player.speed_scale = 1.0
+	anim_player.play(&"attack")
+	anim_player.seek(anim_player.get_meta(&"attack_strike_time"), true)
+	anim_player.speed_scale = 0.0
 
 ## Чи є в ворога поза збою (кадри є не в усіх: лучник — ні, тоді лишається тінь STUN_TINT).
 func has_stagger_pose() -> bool:

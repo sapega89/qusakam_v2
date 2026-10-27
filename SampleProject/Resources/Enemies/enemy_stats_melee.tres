@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_melee")
 enemy_type = "melee"
-speed = 70.0
+speed = 180.0
+stride_speed = 70.0
 base_damage = 24.0
 attack_windup = 0.7
 attack_cooldown = 1.0
@@ -23,3 +24,8 @@ tell = "parry"
 finisher_tell = "dodge"
 recovery = 0.45
 back_off = 80.0
+lunge_from = 120
+lunge_to = 240
+lunge_windup = 0.5
+lunge_tell = "block"
+lunge_chance = 0.6

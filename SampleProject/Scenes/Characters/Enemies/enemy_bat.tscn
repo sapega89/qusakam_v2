@@ -87,11 +87,11 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(12, 29.25)
+size = Vector2(16, 39)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(28.5, 31.5)
+size = Vector2(38, 42)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_bat"]
 _data = {
@@ -105,10 +105,11 @@ _data = {
 [node name="EnemyBat" instance=ExtResource("1_base")]
 
 [node name="Sprite2D" parent="." index="2"]
+position = Vector2(0, 0)
 metadata/tell_at = Vector2(8, -8)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, 0)
-scale = Vector2(0.75, 0.75)
+scale = Vector2(1, 1)
 hframes = 4
 vframes = 4
 frame = 0
@@ -118,9 +119,9 @@ libraries/ = SubResource("AnimationLibrary_bat")
 metadata/attack_strike_time = 0.4
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(6, -1.875)
+position = Vector2(8, -2.5)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(-2.25, -3)
+position = Vector2(-3, -4)
 shape = SubResource("Shape_hurt")

@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_armoured_scorpion")
 enemy_type = "armoured_scorpion"
-speed = 50.0
+speed = 130.0
+stride_speed = 50.0
 base_damage = 28.0
 attack_windup = 1.0
 attack_active_time = 0.25
