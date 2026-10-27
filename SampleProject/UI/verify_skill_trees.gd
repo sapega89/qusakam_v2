@@ -142,7 +142,7 @@ func _initialize() -> void:
 			"Healing Palm heals (25 + Elem. Atk.) × 1.06 × 1.25 = %d (%d)" % [palm_heal, player.current_health - hp])
 	# Blood Pact — чужа клятва; стат перевіряємо прямо через стан (дерево тут ні до чого).
 	gm.player_state.unlocked_skills.append("blood_pact")
-	player.take_damage(40)
+	player.current_health = player.Max_Health - 40  # не take_damage: Shield Block зрізав би удар
 	hp = player.current_health
 	var dummy := Dummy.new()
 	game.add_child(dummy)

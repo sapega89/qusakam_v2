@@ -163,11 +163,12 @@ func _item_and_grip() -> void:
 	await process_frame
 	ck(em.get_grip() == &"bow" and hero.combat.grip == &"bow", "the bow in hand → grip bow (%s)" % hero.combat.grip)
 	ck(em.get_off_hand_item().is_empty(), "no off-hand weapon with a bow")
-	var with_bow: int = hero.mitigated_damage(100)
+	var with_bow: int = hero.mitigated_damage(100, true)
 	hero.combat.grip = &"one_handed"
-	var with_sword_and_shield: int = hero.mitigated_damage(100)
+	var with_sword_and_shield: int = hero.mitigated_damage(100, true)
 	hero.combat.grip = &"bow"
-	ck(with_bow > with_sword_and_shield, "no Shield Block with the bow (%d vs %d one-handed)" % [with_bow, with_sword_and_shield])
+	# Щит — закляття блоку (Sapega 2026-10-27): Shield Block на пробитий блок не залежить від хвату.
+	ck(with_bow == with_sword_and_shield, "Shield Block works with the bow too (%d vs %d one-handed)" % [with_bow, with_sword_and_shield])
 	ck(hero.combat.attack_cooldown_time == bow.weapon_profile.cooldown, "shot tempo from the profile (%.2f s)" % hero.combat.attack_cooldown_time)
 
 func _frames() -> void:

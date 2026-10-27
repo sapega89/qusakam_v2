@@ -534,7 +534,8 @@ func _heal_on_block(blocked: int) -> void:
 
 
 ## Ухилення (D393) — кидок з шансом GameManager.calculate_dodge_chance: 0, удар не влучив.
-## [param through_block] — удар пробив утриманий блок: тоді діють Shield Block / Bulwark (щит — закляття блоку).
+## [param through_block] — удар пробив утриманий блок: лише тоді діють Shield Block / Bulwark. Щит — закляття блоку,
+## не предмет (Sapega 2026-10-27), тож ні щит у спорядженні, ні хват не потрібні.
 func mitigated_damage(damage: int, through_block: bool = false) -> int:
 	var gm := ServiceLocator.get_game_manager()
 	if CombatRolls.roll(gm.calculate_dodge_chance()):

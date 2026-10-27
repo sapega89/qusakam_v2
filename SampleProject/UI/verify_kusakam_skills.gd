@@ -272,7 +272,9 @@ func _initialize() -> void:
 			"the shield's defense %d lowers a 40 hit to %d (was %d)" % [defense, player.mitigated_damage(40), bare_hit])
 	ck(player.Max_Health == gm.calculate_max_health(), "armour defense raises Max HP too (%d)" % player.Max_Health)
 	ck(sm.unlock_skill("shield_block") == R.OK, "Shield Block learned")
-	ck(player.mitigated_damage(40) == roundi(40 * 100.0 / (100 + defense) * 0.8), "Shield Block takes 20 %% more off (%d)" % player.mitigated_damage(40))
+	# Щит — закляття блоку (Sapega 2026-10-27): Shield Block знімає 20 % лише з удару, що пробив блок.
+	ck(player.mitigated_damage(40) == roundi(40 * 100.0 / (100 + defense)) and player.mitigated_damage(40, true) == roundi(40 * 100.0 / (100 + defense) * 0.8),
+			"Shield Block takes 20 %% more off a blow through the block (%d), none off an open hit (%d)" % [player.mitigated_damage(40, true), player.mitigated_damage(40)])
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)

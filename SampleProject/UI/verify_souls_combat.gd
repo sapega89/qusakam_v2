@@ -478,7 +478,7 @@ func _hero_moves(sl: Node) -> void:
 	target.stagger_time = 0.6
 	hp0 = hero.current_health
 	hero.take_damage(20, target)
-	ck(got.size() == 1 and hp0 - hero.current_health == hero.mitigated_damage(20, true), "guard broken: staggered (%s), %d HP lost" % [got, hp0 - hero.current_health])
+	ck(got.size() == 1 and hp0 - hero.current_health == hero.mitigated_damage(20), "guard broken: staggered (%s), %d HP lost" % [got, hp0 - hero.current_health])
 	target.stagger_time = 0.25
 	_press(&"block", false)
 	await create_timer(1.0).timeout
@@ -569,14 +569,14 @@ func _weapons(sl: Node) -> void:
 	await process_frame
 	ck(em.get_grip() == &"two_handed" and hero.combat.grip == &"two_handed", "the halberd is two-handed (%s)" % em.get_grip())
 	equip.call("shield", "iron_shield")
+	await process_frame
+	var unskilled: int = hero.mitigated_damage(100, true)
 	sl.get_skill_manager().add_job_points(1)  # Shield Block коштує 1 JP; герой тесту — 1-го рівня, без очок
 	sl.get_skill_manager().unlock_skill("shield_block")
-	await process_frame
-	var two_handed: int = hero.mitigated_damage(100)
 	# Щит — закляття блоку, не спорядження (Sapega 2026-10-27, skills_audit): Shield Block діє з будь-якою зброєю,
 	# але лише на удар, що пробив блок.
-	ck(sl.get_skill_manager().passive_value("shield_block") > 0.0 and hero.mitigated_damage(100, true) < two_handed,
-			"Shield Block softens a blow through the block even with the two-handed halberd (%d vs %d)" % [hero.mitigated_damage(100, true), two_handed])
+	ck(hero.mitigated_damage(100, true) < unskilled and hero.mitigated_damage(100) == unskilled,
+			"Shield Block softens a blow through the block even with the two-handed halberd (%d vs %d), not an open hit" % [hero.mitigated_damage(100, true), unskilled])
 	em.unequip_item(who, "polearm")
 	equip.call("sword", "iron_sword")
 	await process_frame
