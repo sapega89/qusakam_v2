@@ -1032,4 +1032,4 @@ offset = Vector2(-32, -58)
 [node name="FrontDark" parent="." instance=ExtResource("x4")]
 
 [node name="Pillar1" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(1100, 480)
+position = Vector2(1015, 480)

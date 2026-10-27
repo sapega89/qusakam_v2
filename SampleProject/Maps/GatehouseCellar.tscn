@@ -196,7 +196,7 @@ centered = false
 
 [node name="Pillar2" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(1556, -40)
+position = Vector2(1760, -40)
 scale = Vector2(2, 2)
 texture = ExtResource("p6")
 centered = false

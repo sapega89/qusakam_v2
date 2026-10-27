@@ -977,10 +977,10 @@ art = "iron"
 [node name="FrontDark" parent="." instance=ExtResource("x4")]
 
 [node name="Pillar1" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(1500, 480)
+position = Vector2(754, 480)
 
 [node name="Pillar2" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(100, 960)
+position = Vector2(655, 960)
 
 [node name="Pillar3" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(1300, 1440)
+position = Vector2(1015, 1440)

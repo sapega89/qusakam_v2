@@ -336,13 +336,14 @@ after_flag = "city_gates_after_fight_complete"
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(300, 520)
+position = Vector2(763, 520)
 scale = Vector2(2.2, 2.2)
 texture = ExtResource("x2")
+centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1700, 520)
+position = Vector2(1808, 520)
 scale = Vector2(3, 3)
 
 [node name="Rubble1" type="Sprite2D" parent="FrontDark"]

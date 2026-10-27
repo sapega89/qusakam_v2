@@ -210,7 +210,7 @@ bus = &"Music"
 
 [node name="OccluderRopes1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(480, 300)
+position = Vector2(591, 302)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("fg2")
 centered = false
@@ -224,7 +224,7 @@ centered = false
 
 [node name="OccluderRopes2" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(982, 300)
+position = Vector2(885, 302)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("fg2")
 centered = false
