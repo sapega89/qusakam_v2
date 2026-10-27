@@ -716,6 +716,15 @@ func stagger(duration: float, from_x: float) -> void:
 	player.mover.push(away * stagger_push, stagger_push_time)
 	EventBus.player_staggered.emit(duration)
 
+## Смерть героя (H1): усе, що йшло, зірвано (як збій), кнопки й черга скинуті — бій вільний і нічого не почне.
+func stop_all() -> void:
+	_break_action()
+	cancel_attack()
+	held_by = null
+	block_held = false
+	shot_held = false
+	_buffer_left = 0.0
+
 ## Зриває дію, що йшла (удар, каст, зілля, рипост, постріл), — від збою чи хватки.
 func _break_action() -> void:
 	if state in [State.SWING, State.HEAVY_STRIKE]:

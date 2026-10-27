@@ -34,6 +34,8 @@ var is_dying: bool = false  # Флаг, що гравець зараз вмир�
 ## Поразка в сюжетному бою (D301/D302): якщо задано, смерть кличе його замість екрана Game Over
 ## (програний бій з Brass Collector — у Лабораторію). Кімната ставить і сама ж знімає; оживляє героя теж вона.
 var defeat_handler: Callable
+## Поза смерті (H1, D138): кадри Death 1–4 раз, 4-й тримається; стільки секунд лишилось до Game Over / респавну.
+var death_left: float = 0.0
 
 # Components — дочірні вузли Player.tscn (а не створені через .new()), щоб їхні
 # @export-параметри були доступні для налаштування в інспекторі.
@@ -104,6 +106,10 @@ func _physics_process(delta: float) -> void:
 	# Діагностика: перевіряємо process_mode
 	if process_mode == Node.PROCESS_MODE_DISABLED:
 		DebugLogger.physics_warning("Player: process_mode = DISABLED! Рух заблоковано!", "player_process_mode")
+		return
+
+	if death_left > 0.0:
+		_dying(delta)
 		return
 
 	if event:
@@ -323,10 +329,34 @@ func die() -> void:
 	# Вызываем родительский die() для установки is_dead и эмита сигналов
 	super.die()
 
+	# Програний сюжетний бій (D301/D302) — не смерть: герой лишається при тямі, далі кат-сцена кімнати.
 	if defeat_handler.is_valid():
 		defeat_handler.call()
 		return
 
+	# H1 (D138): спершу поза смерті з вимкненим керуванням; Game Over чи респавн — коли вона дограла (_dying).
+	event = true
+	combat.stop_all()
+	mover.climbing = null  # з драбини падає на підлогу
+	mover.roll_time_left = 0.0
+	_roll_buffer = 0.0
+	$Sprite2D.modulate.a = 1.0
+	animation = &"Death"
+	play_body(&"Death")
+	death_left = $AnimationPlayer.current_animation_length
+
+
+## Поза смерті йде (H1): тіло падає на підлогу й стоїть, кадри грає AnimationPlayer; дограла — далі смерть як була.
+func _dying(delta: float) -> void:
+	mover.locked = true
+	mover.physics_move(delta)
+	kill_cooldown = maxf(kill_cooldown - delta, 0.0)
+	death_left -= delta
+	if death_left <= 0.0:
+		_after_death()
+
+
+func _after_death() -> void:
 	# Figma game-over-screen 41:83: екран Game Over замість миттєвого респавну.
 	# Якщо показати нікуди (немає поточної сцени) — стара поведінка.
 	if GameOverScreen.present(self):
@@ -354,8 +384,12 @@ func kill():
 	else:
 		DebugLogger.warning("Player: reset_position = ZERO! Використовуємо поточну позицію.", "Player")
 
-	# Скидаємо флаги смерті и восстанавливаем здоровье для респавна
+	# Скидаємо флаги смерті и восстанавливаем здоровье для респавна; герой знову на ногах і керований (H1)
 	is_dead = false
+	death_left = 0.0
+	event = false
+	animation = &"Idle"
+	play_body(&"Idle")
 	is_dying = false
 	current_health = Max_Health
 	stamina.refill()
