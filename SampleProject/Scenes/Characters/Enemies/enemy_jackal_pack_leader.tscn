@@ -112,7 +112,7 @@ position = Vector2(0, -4.8)
 shape = SubResource("Shape_body")
 
 [node name="Sprite2D" parent="." index="2"]
-position = Vector2(0, -8.4)
+position = Vector2(0, -20.9)
 metadata/tell_at = Vector2(22, -20)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, 0)

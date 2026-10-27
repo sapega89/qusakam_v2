@@ -58,6 +58,8 @@ func _mark() -> void:
 	played.clear()
 
 func _initialize() -> void:
+	# D393: кидки крита й ухилення з CALM_SEED — удари по героєві не ухиляються випадково (5 %), звук болю чути завжди
+	load("res://SampleProject/Scripts/Combat/CombatRolls.gd").calm()
 	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	await process_frame
