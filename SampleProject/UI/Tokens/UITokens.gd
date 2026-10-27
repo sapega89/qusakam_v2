@@ -628,6 +628,7 @@ const MAP_ICON_OPENED_ALPHA := 0.4                 # відкрита скрин
 const MAP_ICON_LOCKED := Color("808080")
 const MAP_ICON_QUEST := Color("e6991a")
 const MAP_ICON_EXIT := MAP_INK
+const MAP_ICON_SECRET := Color("7a4fb3")            # знайдений секрет (D765): фіалковий, далеко від синьої медитації
 const MAP_PASSAGE := Color("a8321e")               # «↕ драбина», «↓ спуск» — червоне чорнило
 const SIZE_MAP_ROOM := 18
 const SIZE_MAP_PASSAGE := 13

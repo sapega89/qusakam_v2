@@ -1,7 +1,7 @@
 extends Control
 
 ## Значок карти локації (World Map, рівень 2; design/world_map_spec.md, Figma 539:6615): коло з чорнильною рамкою
-## і білим знаком — герой, медитація, скриня, замкнено, завдання, вихід; або зразок кімнати в легенді.
+## і білим знаком — герой, медитація, скриня, замкнено, завдання, вихід, знайдений секрет; або зразок кімнати в легенді.
 ## Знаки намальовано лініями, не шрифтом: у Cormorant Garamond немає ☗ ✦ ⚿. Розмір — менша сторона вузла.
 
 const FILL := {
@@ -11,11 +11,12 @@ const FILL := {
 	&"locked": UITokens.MAP_ICON_LOCKED,
 	&"quest": UITokens.MAP_ICON_QUEST,
 	&"exit": UITokens.MAP_ICON_EXIT,
+	&"secret": UITokens.MAP_ICON_SECRET,
 }
 ## Знак намальовано в клітинці 26×26 (Figma); [member size] його масштабує.
 const GRID := 26.0
 
-## hero / save / chest / locked / quest / exit — значок; room / room_seen — зразок кімнати в легенді.
+## hero / save / chest / locked / quest / exit / secret — значок; room / room_seen — зразок кімнати в легенді.
 @export var kind: StringName = &"hero":
 	set(value):
 		kind = value
@@ -68,6 +69,11 @@ func _draw() -> void:
 			draw_line(c + Vector2(-6, 0) * u, c + Vector2(6, 0) * u, g, 2.0 * u)
 			draw_polyline(PackedVector2Array([c + Vector2(1, -5) * u, c + Vector2(6, 0) * u, c + Vector2(1, 5) * u]),
 					g, 2.0 * u)
+		&"secret":
+			# Замкова шпарина: не зірка (✦ — медитація) і не дужка замка (⚿ — замкнено).
+			draw_circle(c + Vector2(0, -3) * u, 3.5 * u, g)
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-1.5, -1) * u, c + Vector2(1.5, -1) * u,
+					c + Vector2(3, 7) * u, c + Vector2(-3, 7) * u]), g)
 
 
 ## Пунктирна рамка: штрих [param dash], проміжок [param gap] (Figma 10/8; draw_dashed_line дає лише рівні).

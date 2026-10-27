@@ -188,6 +188,62 @@ func _initialize() -> void:
 		for room: String in loc.rooms:
 			ck(src.find('"%s"' % room) < 0, "nothing hard-coded for room %s" % room)
 
+	print("[6b] every icon kind of the spec comes from the real rooms; an opened chest dims")
+	var kinds_seen: Dictionary[StringName, bool] = {}
+	for loc: Dictionary in LocationDB.all():
+		var loc_data: RefCounted = LocationMap.new(loc.id)
+		var chest_marks := 0
+		for m: Dictionary in loc_data.markers:
+			kinds_seen[m.kind] = true
+			chest_marks += int(m.kind == LocationMap.KIND_CHEST or m.kind == LocationMap.KIND_CHEST_OPEN)
+		ck(chest_marks == loc_data.chests_total, "%s: an icon for every chest (%d/%d)" % [loc.id, chest_marks, loc_data.chests_total])
+	for kind: StringName in [&"hero", &"save", &"chest", &"locked", &"quest", &"exit"]:
+		ck(kinds_seen.has(kind), "the real rooms give a %s icon" % kind)
+	var chest_cell := Vector3i.MAX
+	var chest_id := ""
+	for loc: Dictionary in LocationDB.all():
+		var loc_data: RefCounted = LocationMap.new(loc.id)
+		for m: Dictionary in loc_data.markers:
+			if chest_cell == Vector3i.MAX and m.kind == LocationMap.KIND_CHEST:
+				chest_cell = m.cell
+				chest_id = loc.id
+	var chest_room: String = LocationMap.new(chest_id).cells[chest_cell]
+	var chest_key: String = met.map_data.get_room_from_scene_path(
+			(met.settings.map_root_folder as String).path_join(chest_room + ".tscn"), false)
+	var chest_scene: Node = (load((met.settings.map_root_folder as String).path_join(chest_room + ".tscn")) as PackedScene).instantiate()
+	var chest_names: Array = chest_scene.find_children("*", "Chest", true, false).map(func(n: Node) -> String: return n.name)
+	chest_scene.free()
+	var was_explored: bool = met.is_cell_discovered(chest_cell, false)
+	met.save_data.explore_cell(chest_cell)
+	map.set_map_active(true)  # як при відкритті вкладки: LocationMap збирається з поточного стану гри
+	map.open_location(chest_id)
+	await process_frame
+	var chest_icon := func() -> Control:
+		for child in grid.get_children():
+			if child.has_meta(&"marker") and map.cell_rect(chest_cell).has_point(child.position + child.size / 2.0) \
+					and child.get(&"kind") == &"chest":
+				return child
+		return null
+	var closed_icon: Control = chest_icon.call()
+	ck(closed_icon != null and not closed_icon.get(&"dimmed") and closed_icon.modulate.a == 1.0,
+			"a closed chest in %s is bright" % chest_room)
+	for chest_name: String in chest_names:
+		boot_game.set_room_state(chest_key, "opened_%s" % chest_name, true)
+	map.set_map_active(true)
+	map.open_location(chest_id)
+	await process_frame
+	var open_icon: Control = chest_icon.call()
+	ck(open_icon != null and open_icon.get_meta(&"marker") == LocationMap.KIND_CHEST_OPEN and open_icon.get(&"dimmed")
+			and is_equal_approx(open_icon.modulate.a, UITokens.MAP_ICON_OPENED_ALPHA), "after opening %s it dims" % [chest_names])
+	for chest_name: String in chest_names:
+		boot_game.set_room_state(chest_key, "opened_%s" % chest_name, false)
+	if not was_explored:
+		met.save_data.discovered_cells.erase(chest_cell)
+	map.set_map_active(true)
+	here_pin = map.get_node("%Pins").get_node(here_id)  # шпильки зібрано наново
+	map.open_location(here_id)
+	await process_frame
+
 	print("[7] B goes back to level 1; other keys keep the focus on the map")
 	map._gui_input(_action(&"ui_left"))
 	ck(map.level == LOCATION, "left on level 2 does nothing")

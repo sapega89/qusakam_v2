@@ -3263,6 +3263,9 @@ msgstr "quest"
 msgid "exit to another location"
 msgstr "exit to another location"
 
+msgid "secret (found)"
+msgstr "secret (found)"
+
 msgid "↕ ladder"
 msgstr "↕ ladder"
 

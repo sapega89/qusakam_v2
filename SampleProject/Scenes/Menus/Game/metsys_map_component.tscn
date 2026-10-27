@@ -261,6 +261,24 @@ layout_mode = 2
 theme_type_variation = &"MapCardText"
 text = "exit to another location"
 
+[node name="Secret" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="Control" parent="Frame/Level2/Legend/Rows/Secret"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"secret"
+
+[node name="Text" type="Label" parent="Frame/Level2/Legend/Rows/Secret"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "secret (found)"
+
 [node name="TitleBlock" type="VBoxContainer" parent="Frame"]
 unique_name_in_owner = true
 layout_mode = 0
