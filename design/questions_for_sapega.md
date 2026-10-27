@@ -4,7 +4,7 @@ Open questions from the Runtime UI Completion plan (`runtime_ui_completion_plan.
 None blocks the start of the work. Each has a **default** that will be used until
 answered, and names the slice it affects.
 
-> ## Open now (2026-10-21): **Q66 remainder** (subclass / prestige stage names only — the oath is permanent ✅ D280, respec ✅ D282). Everything else is answered: Q1–Q28 → D88–D115 (2026-09-29), Q29–Q35, Q38, Q39, Q48, Q51, Q53, Q57–Q60, Q2 on 2026-10-21 (summary row D318), Q11 → D97, Q52 → D301/D302, Q56 → D246/D248/D249, Q61–Q63 → D240–D242, Q64, Q65 → D255.
+> ## ~~Open now (2026-10-21): **Q66 remainder**~~ — closed 2026-10-27, names confirmed (D260). (subclass / prestige stage names only — the oath is permanent ✅ D280, respec ✅ D282). Everything else is answered: Q1–Q28 → D88–D115 (2026-09-29), Q29–Q35, Q38, Q39, Q48, Q51, Q53, Q57–Q60, Q2 on 2026-10-21 (summary row D318), Q11 → D97, Q52 → D301/D302, Q56 → D246/D248/D249, Q61–Q63 → D240–D242, Q64, Q65 → D255.
 >
 > Sapega answered **Q1–Q28** in one pass. The decisions are recorded as
 > **D88–D115** in [[figma_decision_register]] §8. Q1 needed no decision.
@@ -139,7 +139,7 @@ None blocks; each default is what the game does now.
 | Q63 ✅ D242 | Menus | Replace the Maaack menus template (MainMenu base class, input remapping) with our own code the next time the Figma menus are touched? | Keep Maaack. |
 | Q64 ✅ answered 2026-10-21 (invented incantation OK; play_feedback_queue) | Laboratory story (BACKLOG 17) | The prisoner's shout before the fire djinn bursts out — Sapega said «аллах акбар». It reads as the Muslim-terrorist stereotype (offence, Steam reports). | Until answered: an incantation in an invented language |
 | Q65 ✅ D255 | Mayor Hall queue (BACKLOG 16) | Does Алісия stand in the Mayor Hall queue too, with Астрит and Уризен, before the wall bursts? | ✅ Answered → D255 (Sapega «так»). |
-| Q66 (respec ✅ D282, 2026-10-21; ✅ 2026-10-23 the oath is permanent → D570; stage names stay drafts) | Class path (D260) | Respec rules, the four stages and their names (oath level 5 confirmed — Sapega asks for a bigger world to reach it, BACKLOG 23) | Oath from level 5 in the City; points reset for a price, oath permanent; stages and names as in D260 — **applied** as D280 (oath), D282 (respec 10 coins × level), D281 (NPC names) |
+| Q66 ✅ 2026-10-27, stage names confirmed («так», D260) (respec ✅ D282, 2026-10-21; ✅ 2026-10-23 the oath is permanent → D570; stage names stay drafts) | Class path (D260) | Respec rules, the four stages and their names (oath level 5 confirmed — Sapega asks for a bigger world to reach it, BACKLOG 23) | Oath from level 5 in the City; points reset for a price, oath permanent; stages and names as in D260 — **applied** as D280 (oath), D282 (respec 10 coins × level), D281 (NPC names) |
 | Q67 (✅ 2026-10-23: Claude writes drafts → D571) | NPC chatter (BACKLOG 35, D338) | The chatter route is built but no NPC has lines. Who says what in passing, and in which language (dialogue `.dqd` is Ukrainian today)? Candidates: the City Gates guards, the caravan merchant on the road, the smith at the forge, the oath NPCs. | Default: silent until lines exist (`NpcBase.chatter_dialogue` empty). Non-blocking. Filed by integration-1 from `cloud/settings-cleanup`. |
 | Q68 (✅ 2026-10-23: «бандит» → D566) | Words (BACKLOG 31, D357) | The bandits: «бандит» (the part-1 UI objectives) or «розбійник» (the data and speaker names since `cloud/localization-2`)? Pick one word for the whole game. | «розбійник» in data and speakers; objectives keep «бандит» until answered. |
 
