@@ -32,7 +32,14 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 | rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
 | hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
 | scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
-| art agent (local, ComfyUI) | — | — | §3 items 1–2 **done** (`52b32d62`, `4326ef73`, `92beb61c`; sheets sent to Sapega, no verdict yet). Item 3 (H4) running: `Raise/2` wired, the pillar floor mark redrawn → `design/shots/h4_raise_mark.png`. Then item 4 (M6a). Its calls to file as D-IDs: shield 31 art px (0.65 of the drawn 48-px figure), alpha 210 light / 170 glass, gold +20 % warm with a sky-blue edge, navy cracks; mouse 12 px sitting |
+| art agent (local, ComfyUI) | — | — | §3 items 1–3 **done**, sheets sent to Sapega, no verdict yet: shields + mouse (`52b32d62`, `4326ef73`, `92beb61c`), H4 (`1a204139` Raise/2, `59b73e2c` pillar mark). Now **M6a-1** (mountain path + scree slide → `design/shots/m6a1_path_scree.png`); then M6a-2 (gorge + ledges), M6a-3 (burnt village) |
+
+## 2b. Tests (Sapega 2026-10-27: «зроби»)
+`run_verify.sh` now runs 4 tests at a time, each with its own empty user:// (`0e901b13`; g* subset 1:49 → 0:56), and prints
+the 10 slowest; ROUTINE_RULES: after a fix re-run only the failed tests. **Next, after integrate-29 is merged:** one local
+full run for the time table, then an audit agent (worktree, `godot-dev`) deletes verify scripts whose every check another
+script covers and lists partial overlaps (clusters: skills ×13 — wait for skills-v2; combat ×14; lab ×6; NPC ×5; the
+early «Phase 5.x» UI checks ×12; settings ×3).
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
@@ -51,6 +58,12 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 - Next page when integrate-29 and side-stories are merged: the dialogue review ([[dialogue_review_plan]]).
 
 ## 5. Decisions today still to get D-IDs (if integrate-29 did not file them)
+Art-lane calls (agent calls, Sapega to confirm): the shield 31 art px tall (0.65 of the drawn 48-px figure, in front of
+the chest), alpha 210 light / 170 glass with a solid 1-px edge, gold +20 % warm with a sky-blue edge, navy cracks; the
+mouse 12 art px sitting (16×16 cells, idle 2 / run 4); Raise 1 → 2 (0.08 s) → 3 (0.16 s, held), the potion drink
+plays it too; the pillar mark 48×14 on the hero's feet line (Mark y 22.5, Fire y 29 — the old mark sat on the wall
+base), Mark and Fire unshaded (one material), pulse low 0.8. Note: the djinn is not fought anywhere since D466 —
+the pillar is seen only in a capture.
 Critter placements (moth — attic, bat — cellar, mouse — cellar and houses, pigeon — City); the shield is a spell with a
 glass-shield variant (S19, [[skills_audit]]); the 33 skills accepted as drafted; Q66 closed (names, D260 marked);
 shortcuts = blocked where seen, opened from the far side with a lever ([[world_structure_plan]]); M14 folded into M7;
