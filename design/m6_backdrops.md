@@ -43,7 +43,7 @@ The ledge the hero walks on is the floor plane, behind him, not foreground.
 
 | Room | Kind | Screens | Passages to paint | Status |
 |---|---|---|---|---|
-| Lizard Cave (exists) | underground | — | the lizard idol shrines become separate props; the wall behind them is repainted without them | ⬜ first |
+| Lizard Cave (exists) | underground | — | the lizard idol shrines become separate props; the wall behind them is repainted without them | ✅ B162 (`cccb333c`): far / wall / shrines / floor planes |
 | Mountain path | outdoor, main | 2 | — | ⬜ |
 | Scree slide | outdoor, main, falls | 1×2 | a scree run down | ⬜ |
 | Stream gorge | outdoor, main | 3 | — | ⬜ |

@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://cn3wosqkjakdb"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_back.png" id="r1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_far.png" id="p1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_wall.png" id="p2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_shrine_a.png" id="p3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_shrine_b.png" id="p4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_floor.png" id="p5"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r4"]
@@ -35,46 +39,81 @@ size = Vector2(240, 80)
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Sprite1" type="Sprite2D" parent="Back"]
+[node name="Far" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(313, 0)
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(1728, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Back/Far"]
 texture_filter = 1
 position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p1")
 centered = false
 
-[node name="Sprite2" type="Sprite2D" parent="Back"]
+[node name="Wall" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(106.6667, 0)
+scroll_scale = Vector2(0.8, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 3
+
+[node name="Sprite" type="Sprite2D" parent="Back/Wall"]
 texture_filter = 1
-position = Vector2(864, -3)
+position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p2")
 centered = false
 
-[node name="TabletCover1" type="Sprite2D" parent="Back"]
-texture_filter = 1
-position = Vector2(-33, 196.5)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
-centered = false
-region_enabled = true
-region_rect = Rect2(276, 134, 64, 12)
+[node name="Shrines" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(53.3333, 0)
+scroll_scale = Vector2(0.9, 1)
 
-[node name="TabletCover2" type="Sprite2D" parent="Back"]
+[node name="ShrineB0" type="Sprite2D" parent="Back/Shrines"]
 texture_filter = 1
-position = Vector2(831, 196.5)
+position = Vector2(-123, 159)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p4")
 centered = false
-region_enabled = true
-region_rect = Rect2(276, 134, 64, 12)
 
-[node name="TabletCover3" type="Sprite2D" parent="Back"]
+[node name="ShrineA1" type="Sprite2D" parent="Back/Shrines"]
 texture_filter = 1
-position = Vector2(1695, 196.5)
+position = Vector2(378, 186)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p3")
 centered = false
-region_enabled = true
-region_rect = Rect2(276, 134, 64, 12)
+
+[node name="ShrineB1" type="Sprite2D" parent="Back/Shrines"]
+texture_filter = 1
+position = Vector2(741, 159)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p4")
+centered = false
+
+[node name="ShrineA2" type="Sprite2D" parent="Back/Shrines"]
+texture_filter = 1
+position = Vector2(1242, 186)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p3")
+centered = false
+
+[node name="ShrineB2" type="Sprite2D" parent="Back/Shrines"]
+texture_filter = 1
+position = Vector2(1605, 159)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p4")
+centered = false
+
+[node name="Floor" type="Parallax2D" parent="Back"]
+repeat_size = Vector2(864, 0)
+repeat_times = 3
+
+[node name="Sprite" type="Sprite2D" parent="Back/Floor"]
+texture_filter = 1
+position = Vector2(0, 416)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p5")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
 

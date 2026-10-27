@@ -67,6 +67,23 @@ LAYERS = {
         quant="octree",
         prompt="the back wall of a sandstone cave under a canyon bridge seen straight on: warm orange and ochre rock, a narrow side tunnel at the right glowing faintly, in the middle a small carved shrine of the lizard shaman family with a stone lizard idol, offering bowls and old prayer cloths, shafts of dusty light from cracks in the ceiling, rocky floor along the bottom",
     ),
+    # B162: смуга підлоги печери ящурів на лінії ходьби (план ×1.0 за героєм), кольори — палітрою gen_back (cave_planes.py)
+    "LizardCave/gen_floor": dict(
+        seed=411,
+        rows=56,
+        top=0,
+        crop=True,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        prompt="a side cross-section of a thick sandstone cave floor spanning the full width and filling the frame from "
+        "top to bottom: along the top a flat level walking surface of worn pale orange flagstones with a thin light edge, "
+        "below it layered dark violet and maroon rock with cracks and a few small pebbles, seen straight on",
+    ),
     "BanditCamp/gen_back": dict(
         seed=303,
         rows=H,
