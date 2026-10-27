@@ -82,7 +82,6 @@ func _initialize() -> void:
 	await process_frame
 	ck(weapon_view.visible and _weapon_shown(player), "the weapon is drawn before death (in hand %s)" % weapon_view.visible)
 	var x0: float = player.global_position.x
-	var kill_time: int = Time.get_ticks_msec()
 	player.take_damage(99999)
 	ck(player.is_dead and player.event and player.animation == "Death", "dead: controls off, Death playing (%s)" % player.animation)
 	Input.action_press(&"move_right")
@@ -94,7 +93,7 @@ func _initialize() -> void:
 	while elapsed < 1.5:
 		await physics_frame
 		await process_frame
-		elapsed = (Time.get_ticks_msec() - kill_time) / 1000.0
+		elapsed += 1.0 / Engine.physics_ticks_per_second  # у фізичних кроках, не в годиннику (B186)
 		var f := _frame(player)
 		if frames.is_empty() or frames[-1] != f:
 			frames.append(f)
