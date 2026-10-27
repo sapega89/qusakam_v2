@@ -348,6 +348,12 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** nothing for slice 1 (defaults in the plan: 30 s return, 160 px scare distance).
 - **Resume:** slice 1 — `AmbientCritter.gd` + `critter_bat.tscn`, two bats in `LizardCave/FrontDark`, `verify_ambient_critters.gd`.
 
+### Dialogue review: every draft line signed off, and the oath — [[dialogue_review_plan]]
+- **Exists:** ~144 lines marked `[ЧЕРНЕТКА]` / `[DRAFT]` in `uk.po` / `en.po` (chatter, task givers, oath census, charms,
+  journal hints, side stories); the oath is a menu choice (D281, item 27 below has the ideas).
+- **Waits on:** `integrate-28` and `side-stories` merged; the oath waits on Sapega.
+- **Resume:** slice 1 — `Scripts/Tools/dialogue_review.py` builds the review page from the `.po` files (like the P1 page).
+
 ### Depth critics from video — [[depth_critics_plan]]
 - **Exists:** stills only (`capture_*.gd`, `playthrough.gd`); no video, nothing measures a plane's speed.
 - **Waits on:** nothing.
