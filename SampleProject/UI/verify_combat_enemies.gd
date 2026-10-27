@@ -91,6 +91,7 @@ func _initialize() -> void:
 	await _committed_swings()
 	await _boss_pause()
 	await _floors_and_ledges()
+	await _jumps_up()
 	await _token()
 	await _recovery_and_back_off()
 	await _lunges_and_pounce()
@@ -529,6 +530,37 @@ func _floors_and_ledges() -> void:
 	ck(not bandit.enemy_logic.can_step(1) and bandit.enemy_logic.can_step(-1), "a wall ahead blocks the step, open floor behind does not")
 	wall.queue_free()
 	await _done(bandit)
+
+
+## [7b] B198, D830: герой на сходинці — наземний ворог вистрибує до нього, а не стоїть унизу.
+func _jumps_up() -> void:
+	print("[7b] B198: the hero on a step is reached: a ground enemy jumps up to him")
+	hero.global_position = Vector2(arena_x - 700.0, floor_y)
+	await physics_frame
+	var bandit: Node = await _spawn(BANDIT, -80.0)
+	var feet0: float = bandit.global_position.y
+	var bottom: float = bandit.body_collision.global_position.y + bandit.body_collision.shape.get_rect().end.y
+	var rise := 40.0
+	var step := _static_box(Vector2(arena_x + 200.0, bottom - rise / 2.0), Vector2(240, rise))
+	for i in 3: await physics_frame
+	hero.global_position = Vector2(arena_x + 120.0, bottom - rise - 40.0)  # на сходинці, за 200 px від бандита
+	hero.velocity = Vector2.ZERO
+	for i in 20: await physics_frame
+	ck(hero.is_on_floor() and absf(bandit.enemy_logic._feet_y(hero) - (bottom - rise)) < 2.0, "the hero stands on a %.0f px step" % rise)
+	bandit.enemy_logic.player = hero
+	bandit.set_physics_process(true)
+	var up := false
+	for i in 240:  # 4 с
+		await physics_frame
+		_heal()
+		if bandit.is_on_floor() and absf(bandit.global_position.y - (feet0 - rise)) < 2.0:
+			up = true
+			break
+	ck(up, "the bandit jumps onto the step (y %.0f, floor %.0f, step top %.0f)" % [bandit.global_position.y, feet0, feet0 - rise])
+	step.queue_free()
+	await _done(bandit)
+	hero.global_position = Vector2(arena_x, floor_y)
+	await create_timer(0.5).timeout
 
 
 func _static_box(center: Vector2, size: Vector2) -> StaticBody2D:

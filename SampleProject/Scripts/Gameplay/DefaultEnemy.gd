@@ -420,6 +420,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		# На полу - сбрасываем вертикальную скорость
 		velocity.y = 0
+	if enemy_logic.jump_speed > 0.0:
+		velocity.y = -enemy_logic.jump_speed  # B198: вистрибує на сходинку до героя
+		enemy_logic.jump_speed = 0.0
 
 	# Применяем движение с физикой
 	move_and_slide()

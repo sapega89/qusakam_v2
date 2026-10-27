@@ -101,6 +101,20 @@ const NOTICE_DY := 64.0
 ## Крок уперед можливий (B139): без стіни на LOOK_AHEAD px за краєм тіла й з підлогою не глибше FLOOR_PROBE px під ногами.
 const LOOK_AHEAD := 8.0
 const FLOOR_PROBE := 16.0
+## B198, D830: герой стоїть на сходинці чи уступі вище — наземний ворог вистрибує до нього, а не стоїть унизу. Стрибає
+## в бою (CHASE, ATTACK), коли ноги героя на підлозі вище за його на JUMP_MIN–JUMP_RISE px, а по X герой ближче за
+## JUMP_NEAR px і ворог уже біля підніжжя сходинки чи під героєм (engage_range); не частіше, ніж раз на JUMP_REST с. Злітає на висоту сходинки + JUMP_CLEAR px і в польоті йде до героя
+## своєю швидкістю (край уступу в повітрі його не спиняє).
+const JUMP_MIN := 12.0
+const JUMP_RISE := 72.0
+const JUMP_NEAR := 160.0
+const JUMP_CLEAR := 16.0
+const JUMP_REST := 0.8
+## Швидкість вистрибування вгору, px/s: DefaultEnemy віддає її тілу й обнуляє (0 — не стрибає).
+var jump_speed: float = 0.0
+## У стрибку (B198): напрямок польоту, 0 — на підлозі.
+var airborne_dir: int = 0
+var _jump_rest: float = 0.0
 ## Відхід після серії триває не довше за back_off / speed + BACK_OFF_SLACK с.
 const BACK_OFF_SLACK := 0.4
 ## Біг до бою (D754): далі за RUN_FROM × engage_range від героя ворог біжить у RUN_PACE раз швидше за крок — група
@@ -280,6 +294,7 @@ func process_physics(delta: float) -> Vector2:
 	chase_cooldown_timer += delta
 	attack_ready_in = maxf(attack_ready_in - delta, 0.0)
 	_lunge_rest = maxf(_lunge_rest - delta, 0.0)
+	_jump_rest = maxf(_jump_rest - delta, 0.0)
 	if _flank_rest < 0.0:
 		_flank_rest = randf() * FLANK_REST
 	_flank_rest = maxf(_flank_rest - delta, 0.0)
@@ -310,6 +325,16 @@ func process_ai(delta: float):
 	if _dash_left > 0.0:
 		_dash_left -= delta
 		velocity.x = _dash_speed if can_step(signi(int(signf(_dash_speed)))) else 0.0
+		return
+
+	if airborne_dir != 0:
+		if is_on_floor and jump_speed == 0.0:
+			airborne_dir = 0  # приземлився
+		else:
+			velocity.x = airborne_dir * speed
+			return
+	if not is_attacking and _jump_due():
+		_jump()
 		return
 
 	# Атака вже почалась — доводимо її до кінця; до підказки ворог стежить за героєм і підступає, щоб удар дістав (D775)
@@ -1139,6 +1164,28 @@ func can_step(dir: int) -> bool:
 	var ground := PhysicsRayQueryParameters2D.create(Vector2(ahead_x, enemy.global_position.y), Vector2(ahead_x, _feet_y(enemy) + FLOOR_PROBE))
 	ground.exclude = bodies
 	return not space.intersect_ray(ground).is_empty()
+
+## Герой на сходинці чи уступі над ворогом і досяжний стрибком (B198, JUMP_*).
+func _jump_due() -> bool:
+	if enemy.flying or not is_on_floor or _jump_rest > 0.0 or not player.is_on_floor():
+		return false
+	if current_state != AIState.CHASE and current_state != AIState.ATTACK:
+		return false
+	var rise: float = _feet_y(enemy) - _feet_y(player)
+	var dx: float = player.global_position.x - enemy.global_position.x
+	if rise < JUMP_MIN or rise > JUMP_RISE or absf(dx) > JUMP_NEAR or not can_notice(player):
+		return false
+	# Біля підніжжя сходинки (стіна попереду) чи під героєм на уступі — звідти стрибок долітає
+	return not can_step(1 if dx > 0.0 else -1) or absf(dx) <= engage_range()
+
+## Стрибок до героя (B198): швидкість — щоб злетіти на висоту його ніг + JUMP_CLEAR, у польоті — до нього.
+func _jump() -> void:
+	var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+	jump_speed = sqrt(2.0 * gravity * (_feet_y(enemy) - _feet_y(player) + JUMP_CLEAR))
+	airborne_dir = 1 if player.global_position.x > enemy.global_position.x else -1
+	_jump_rest = JUMP_REST
+	_face_player()
+	velocity.x = airborne_dir * speed
 
 ## Іде в бік [param dir], повернувшись туди обличчям; край уступу чи стіна — стоїть.
 func _walk(dir: int, walk_speed: float) -> void:
