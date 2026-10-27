@@ -363,7 +363,7 @@ func _stamina() -> void:
 	var held: float = st.current
 	await create_timer(1.0).timeout
 	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 3.0,
-			"held, the bar refills at a third of the pace (+%.0f in 1 s)" % (st.current - held))
+			"held, the bar refills at half the pace (+%.0f in 1 s)" % (st.current - held))
 	st.refill()
 	var hp: int = hero.current_health
 	var left: float = st.current

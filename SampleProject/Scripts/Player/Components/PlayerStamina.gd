@@ -19,9 +19,9 @@ const COST_ROLL := 22.0
 const COST_BLOCK := 10.0
 ## Підняти блок; поки його тримають, шкала набирається лише з цією часткою темпу.
 const BLOCK_RAISE := 5.0
-const BLOCK_REGEN := 0.3
+const BLOCK_REGEN := 0.5
 const REGEN := 100.0
-const REGEN_DELAY := 0.5
+const REGEN_DELAY := 0.4
 ## Виснажений герой знову діє, щойно шкала набрала стільки.
 const RECOVER_AT := 30.0
 
