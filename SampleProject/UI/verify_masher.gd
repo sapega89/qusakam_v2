@@ -13,7 +13,7 @@ extends SceneTree
 ## Перевірки (D642): [1] MASHER перемагає одного звичайного ворога, але втрачає HP; [2] MASHER (обидві збірки) програє
 ## кожній еліті, обом босам і групі з 3+; [3] GOOD перемагає їх (SKILLS); [4] бос, як його зустрічає гравець (вхід у
 ## кімнату, кат-сцена, смужка боса, музика бою), б'є зброєю героя, що стоїть і тисне удар, і героя, що чекає трохи поза
-## досяжністю сокири (B154); [5] вороги роблять випади (D739), шакал учепився в масера (D740), а група стоїть з обох боків
+## досяжністю сокири (B154); [8] масер вибиває витривалість за півтори серії, вороги б'ють у порожню шкалу (D775); [5] вороги роблять випади (D739), шакал учепився в масера (D740), а група стоїть з обох боків
 ## героя (D741). Кожен бій друкує ще: за скільки с вороги дійшли до героя, яку частку часу вони були з обох боків, випади й хватки.
 ## Бій групи хаотичний (кадр туди-сюди — інша гілка): не той результат — друга спроба з іншими кидками, і вимога —
 ## хоч в одній з двох.
@@ -57,6 +57,8 @@ const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
+## [8] (D775): удари й важкі масера на одну шкалу — серія з трьох і важкий, і ще удар (півтори серії).
+const MASHER_BAR_SWINGS := 6
 ## GOOD відпочиває на стільки px від найближчого ворога (D775), коли їх лишилось один-два.
 const GOOD_REST_GAP := 150.0
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
@@ -249,6 +251,16 @@ func _initialize() -> void:
 		for bot: String in surround:
 			ck(surround[bot] >= SURROUND, "%s: in some group fight enemies stand on both sides of the hero %d%% of the time (before D741: 0-3%%)"
 					% [bot, roundi(surround[bot] * 100)])
+
+	if not rows.is_empty():
+		print("[8] stamina (D775): the masher runs dry within a combo and a half and enemies strike into his empty bar")
+		var empty_hits := {"MASHER": 0, "GOOD": 0}
+		for row in rows:
+			if row.bot == "MASHER":
+				ck(row.exhausts >= 1 and not row.bar_swings.is_empty() and row.bar_swings.max() <= MASHER_BAR_SWINGS,
+						"%s, %s: ran dry %d×, at most %d swings a bar" % [row.name, row.build, row.exhausts, roundi(row.bar_swings.max()) if not row.bar_swings.is_empty() else -1])
+			empty_hits[row.bot] += row.hits_empty
+		ck(empty_hits.MASHER >= 10, "enemies land %d blows on the masher while his bar is empty" % empty_hits.MASHER)
 
 	# MASHER_ONLY=DRILL — лише вправа [6]
 	if OS.get_environment("MASHER_ONLY") in ["", "DRILL"] and OS.get_environment("MASHER_NODRILL") == "":
