@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Дерева навичок і шлях класу (BACKLOG 22, D279–D285) у справжній грі: дані, одне очко за рівень,
 ## клятва (рівень 5, раз і назавжди), блокування чужих дерев, нові пасивки, збереження клятви, скидання за монети.
@@ -52,6 +53,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	Kit.pre_d815_hero(self)  # D815: this test buys skills and counts JP from a hero who has none
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	var gm: Node = sl.get_game_manager()

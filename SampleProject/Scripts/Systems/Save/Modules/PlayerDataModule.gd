@@ -59,6 +59,8 @@ func save() -> Dictionary:
 	data["job_points"] = player_state.get("job_points", 0)
 	data["equipped_skills"] = player_state.get("equipped_skills", []).duplicate()
 	data["skill_ranks"] = player_state.get("skill_ranks", {}).duplicate()
+	data["starting_skills"] = player_state.starting_skills.duplicate()  # D815
+	data["skills_awakened"] = player_state.skills_awakened
 	data["skill_charges"] = player_state.get("skill_charges", {}).duplicate()  # D504: заряди фляги
 	data["oath"] = player_state.oath  # D280
 	data["leanings"] = player_state.leanings.duplicate()  # D725
@@ -143,6 +145,9 @@ func load_data(data: Dictionary) -> void:
 			loadout.append(String(entry))
 		player_state.equipped_skills = loadout
 	player_state.skill_ranks = data.get("skill_ranks", {}).duplicate()
+	# D815: сейв до стартових навичок — нічого не дано задарма й порогу немає (навички діють, як і тоді).
+	player_state.starting_skills = data.get("starting_skills", []).duplicate()
+	player_state.skills_awakened = bool(data.get("skills_awakened", true))
 	player_state.skill_charges = data.get("skill_charges", {}).duplicate()  # D504: сейв без зарядів — фляга повна
 	player_state.oath = String(data.get("oath", ""))  # D280: сейв без клятви — клятви немає
 	# D725: сейв без нахилів — усі нулі

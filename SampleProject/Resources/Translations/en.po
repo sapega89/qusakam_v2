@@ -2515,6 +2515,12 @@ msgstr "Each level raises your HP and damage and gives a skill point. Spend poin
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 
+msgid "Your Skills [DRAFT]"
+msgstr "Your Skills [DRAFT]"
+
+msgid "You have skills. Grandfather's teaching wakes as you meditate. Shield Block: hold {block} to block, and a blow that breaks through your block hurts 20% less. Healing Palm: press {skill_slot_1} to heal — three sips, refilled each time you save. Press {game_menu} and open Skills to see them and the skills you can learn next. [DRAFT]"
+msgstr "You have skills. Grandfather's teaching wakes as you meditate. Shield Block: hold {block} to block, and a blow that breaks through your block hurts 20% less. Healing Palm: press {skill_slot_1} to heal — three sips, refilled each time you save. Press {game_menu} and open Skills to see them and the skills you can learn next. [DRAFT]"
+
 msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
 msgstr "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
 

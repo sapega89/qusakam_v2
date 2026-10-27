@@ -71,7 +71,9 @@ static func _initial_state() -> Dictionary:
 		"max_potions": 5,
 		"player_position": Vector2(100, 549),
 		"current_scene": "VillageScene",
-		"unlocked_skills": [],  # Длань лікування вчить дід у селі (D148)
+		"unlocked_skills": [],  # D815: нова гра дає STARTING_SKILLS (SkillManager.grant_starting_skills)
+		"starting_skills": [],  # D815: що з вивченого дано задарма на старті (скидання їх не забирає)
+		"skills_awakened": true,  # D815: нова гра ставить false до першої медитації; стан без нової гри — без порогу
 		"companion_party": [],  # D220: хто ходить з героєм, у порядку черги асисту
 		"seen_tutorials": [],  # D289: теми підказок, які гравець уже бачив (список Tutorial); D745 — раз за проходження
 		# D745: проходження, якому належить сейв, — нова гра дає нове; сейви одного проходження зводять seen_tutorials.

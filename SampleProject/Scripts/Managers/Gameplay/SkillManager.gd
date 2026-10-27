@@ -48,6 +48,7 @@ enum Result {
 	BASE_TREE_GATE,  # D497: у дерево базового класу вкладено замало JP для навички професії
 	PLANNED,  # D535: навичка v2 є в даних, але ще не збудована — ні вивчити, ні застосувати
 	NOT_MEDITATING,  # D592: скидання — лише на місці медитації (D447)
+	NOT_AWAKENED,  # D815: навички героя прокидаються на першій медитації (вершина каньйону, D257)
 }
 
 ## D260/D279: одне очко навичок (JP) за кожен рівень персонажа (було 2, D149).
@@ -56,6 +57,9 @@ const JP_PER_LEVEL := 1
 ## Числа тимчасові (звіт cloud/skills-v2).
 const RESPEC_COINS_PER_JP := 10
 const RESPEC_MIN_COINS := 10
+## D815 (Sapega 2026-10-27): з цим герой починає гру — вивчене без очок, ранг 1; до першої медитації не діє.
+## Shield Block — без щита (D809), Healing Palm — фляга (D504), єдиний хіл базового дерева.
+const STARTING_SKILLS: Array[String] = ["shield_block", "healing_palm"]
 ## D674: ранги — з даних кожної навички (SkillDefinition.max_rank / rank_jp / rank_bonus): активні до 5, пасивки до 3.
 
 ## D504: SP не відновлюється з часом — його дають влучання героя (удар, стріла) і парирування.
@@ -238,6 +242,8 @@ func _rank_factor(skill_id: String) -> float:
 ## Сума вивчених пасивок на показник [param stat] з урахуванням рангу (D207): Toughness → "max_health",
 ## Shield Block → "shield_block". Умовна пасивка (D496) рахується, лише поки її умова виконана. Нічого не вивчено — 0.
 func passive_value(stat: String) -> float:
+	if not skills_awakened():
+		return 0.0
 	var total := 0.0
 	for skill_id in get_unlocked_skills():
 		var definition: SkillDefinition = skill_database.get_skill(skill_id)
@@ -297,6 +303,8 @@ func can_use_skill(skill_id: String) -> Result:
 		return Result.NOT_UNLOCKED
 	if not definition.is_active():
 		return Result.NOT_ACTIVE
+	if not skills_awakened():
+		return Result.NOT_AWAKENED
 	if is_skill_on_cooldown(skill_id):
 		return Result.ON_COOLDOWN
 	if sp_cost(definition) > get_current_sp():
@@ -402,6 +410,47 @@ func get_unlocked_skills() -> Array:
 
 func is_unlocked(skill_id: String) -> bool:
 	return skill_id in get_unlocked_skills()
+
+
+# ── Стартові навички (D815) ─────────────────────────────────────────────────
+
+## Нова гра (Game._initialize_save_and_room): STARTING_SKILLS вивчені задарма (ранг 1), активна — на перший вільний
+## слот хотбара (D261), і всі навички сплять до першої медитації (awaken_skills).
+func grant_starting_skills() -> void:
+	var state := _state()
+	var unlocked: Array = state["unlocked_skills"]
+	for skill_id in STARTING_SKILLS:
+		if not skill_id in unlocked:
+			unlocked.append(skill_id)
+			EventBus.skill_unlocked.emit(skill_id)
+		var free_slot := _loadout().find("")
+		if skill_database.get_skill(skill_id).is_active() and get_slot_of_skill(skill_id) == -1 and free_slot != -1:
+			equip_skill(skill_id, free_slot)
+	state["starting_skills"] = STARTING_SKILLS.duplicate()
+	state["skills_awakened"] = false
+	_announce_max_sp()
+
+
+## Перша медитація (Canyon, вершина скелі): навички діють — хотбар перестає їх тьмянити.
+func awaken_skills() -> void:
+	_state()["skills_awakened"] = true
+	EventBus.skills_awakened.emit()
+	_announce_max_sp()
+
+
+## Стан без нової гри (сейв до D815, тести менеджерів) — без порогу, навички діють.
+func skills_awakened() -> bool:
+	return bool(_state().get("skills_awakened", true))
+
+
+## Дана задарма на старті (D815) — перший ранг не коштував JP.
+func is_starting_skill(skill_id: String) -> bool:
+	return skill_id in _state().get("starting_skills", [])
+
+
+## JP за вивчення (без рангів): стартова навичка — 0.
+func _paid_jp_cost(definition: SkillDefinition) -> int:
+	return 0 if is_starting_skill(definition.id) else definition.jp_cost
 
 
 # ── Job Points ──────────────────────────────────────────────────────────────
@@ -533,7 +582,7 @@ func tree_spent(tree: String, unlocked: Array = get_unlocked_skills(), ranks: Di
 		var definition: SkillDefinition = skill_database.get_skill(skill_id)
 		if definition.oath == tree:
 			var rank: int = ranks.get(skill_id, maxi(1, get_rank(skill_id)))
-			total += definition.jp_cost + (rank - 1) * definition.rank_jp
+			total += _paid_jp_cost(definition) + (rank - 1) * definition.rank_jp
 	return total
 
 
@@ -606,7 +655,7 @@ func spent_points() -> int:
 	var total := 0
 	for skill_id in get_unlocked_skills():
 		var definition: SkillDefinition = skill_database.get_skill(skill_id)
-		total += definition.jp_cost + (get_rank(skill_id) - 1) * definition.rank_jp
+		total += _paid_jp_cost(definition) + (get_rank(skill_id) - 1) * definition.rank_jp
 	return total
 
 
@@ -616,7 +665,8 @@ func respec_price() -> int:
 
 
 func can_respec() -> Result:
-	if get_unlocked_skills().is_empty() and _attributes().spent_total() == 0:
+	# Стартові навички (D815) скидання не забирає — лише їхні ранги.
+	if spent_points() == 0 and get_unlocked_skills().all(is_starting_skill) and _attributes().spent_total() == 0:
 		return Result.NOTHING_TO_RESET
 	if not is_meditating():
 		return Result.NOT_MEDITATING
@@ -625,6 +675,7 @@ func can_respec() -> Result:
 	return Result.OK
 
 
+## D815: стартові навички лишаються (ранг 1, на своєму слоті хотбара).
 ## D592: забуває все, повертає всі очки навичок (кожне дерево — у межах свого ліміту, D497) і атрибутів (D335),
 ## спорожнює хотбар; коштує монет і робиться лише на місці медитації (D447). Клятва лишається (D570).
 func respec() -> Result:
@@ -652,9 +703,10 @@ func tree_budgets() -> Dictionary:
 func _forget_all() -> void:
 	var refund := spent_points()
 	var state := _state()
-	state["unlocked_skills"] = []
+	var kept: Array = get_unlocked_skills().filter(is_starting_skill)
+	state["unlocked_skills"] = kept
 	state["skill_ranks"] = {}
-	_commit_loadout(["", "", "", ""])
+	_commit_loadout(_loadout().map(func(skill_id: String) -> String: return skill_id if skill_id in kept else ""))
 	_cooldowns.clear()
 	add_job_points(refund)
 	_attributes().reset()

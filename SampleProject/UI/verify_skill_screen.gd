@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Вікно навичок Dragon Nest (D674; до того BACKLOG 43, D330–D334) справжнім вводом: миша, клавіші, InputEventJoypadButton.
 ## Вміщається без прокрутки, клітинки за slot з лініями, розміри з UITokens, стани клітинок (бейдж рівня, ранг, «+»),
@@ -91,6 +92,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	Kit.pre_d815_hero(self)  # D815: this test buys skills and counts JP from a hero who has none
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	var SkillManagerScript = load("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd")

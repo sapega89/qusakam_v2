@@ -62,6 +62,7 @@ func _initialize() -> void:
 	await create_timer(2.5).timeout
 	hero = game.player
 	sm = sl.get_skill_manager()
+	sm.awaken_skills()  # D815: DesertRoad comes after the Canyon meditation
 	em = sl.get_equipment_manager()
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group(&"enemies"):
@@ -78,7 +79,8 @@ func _initialize() -> void:
 	var xp: Node = sl.get_xp_manager()
 	while xp.get_level() < 6:
 		xp.add_xp(1000)
-	for id in ["healing_palm", "fire_strike", "electric_strike"]:
+	ck(sm.is_unlocked("healing_palm") and sm.get_slot_of_skill("healing_palm") == 0, "healing_palm learned from the start, on slot 1 (D815)")
+	for id in ["fire_strike", "electric_strike"]:
 		ck(sm.unlock_skill(id) == 0 and sm.get_slot_of_skill(id) >= 0, "%s learned and on the hotbar (slot %d)" % [id, sm.get_slot_of_skill(id)])
 	var who: String = sl.get_game_manager().get_active_character().character_id
 	var items: Node = sl.get_item_database()

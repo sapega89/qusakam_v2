@@ -22,6 +22,21 @@ static func boot(tree: SceneTree) -> Node:
 	return game
 
 
+## D815: a New Game hero starts with Shield Block and Healing Palm, asleep until the Canyon meditation. A test about
+## buying skills and counting JP takes them away again — the hero as before D815: nothing learned, empty hotbar, awake.
+static func pre_d815_hero(tree: SceneTree) -> void:
+	var sm: Node = tree.root.get_node("ServiceLocator").get_skill_manager()
+	var state: Dictionary = tree.root.get_node("ServiceLocator").get_game_manager().player_state
+	state.unlocked_skills = []
+	state.skill_ranks = {}
+	state.starting_skills = []
+	state.skills_awakened = true
+	var empty: Array = []
+	empty.resize(sm.SLOT_COUNT)
+	empty.fill("")
+	sm._commit_loadout(empty)
+
+
 static func drain(tree: SceneTree) -> void:
 	var dm: Node = tree.root.get_node("ServiceLocator").get_dialogue_manager()
 	for round in 10:

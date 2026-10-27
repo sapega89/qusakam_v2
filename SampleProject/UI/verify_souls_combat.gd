@@ -579,8 +579,9 @@ func _weapons(sl: Node) -> void:
 	equip.call("shield", "iron_shield")
 	await process_frame
 	var unskilled: int = hero.mitigated_damage(100, true)
-	sl.get_skill_manager().add_job_points(1)  # Shield Block коштує 1 JP; герой тесту — 1-го рівня, без очок
-	sl.get_skill_manager().unlock_skill("shield_block")
+	# D815: Shield Block вивчений з нової гри, але спить до медитації в каньйоні — «unskilled» вище міряно без нього.
+	ck(sl.get_skill_manager().is_unlocked("shield_block"), "Shield Block learned from the start (D815)")
+	sl.get_skill_manager().awaken_skills()
 	# Щит — закляття блоку, не спорядження (Sapega 2026-10-27, skills_audit): Shield Block діє з будь-якою зброєю,
 	# але лише на удар, що пробив блок.
 	ck(hero.mitigated_damage(100, true) < unskilled and hero.mitigated_damage(100) == unskilled,

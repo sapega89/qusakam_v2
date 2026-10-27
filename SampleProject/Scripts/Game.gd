@@ -215,6 +215,7 @@ func _initialize_save_and_room() -> void:
 		boss_flags.clear()
 		location_flags.clear()
 		room_state.clear()
+		ServiceLocator.get_skill_manager().grant_starting_skills()  # D815: блок і хіл — з першої хвилини
 
 	# Initialize room when it changes.
 	if not room_loaded.is_connected(init_room):

@@ -2517,6 +2517,12 @@ msgstr "Кожен рівень додає HP і шкоди та дає очко
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Новий рівень! Можна вивчити «Цілющу долоню»: натисніть {game_menu}, відкрийте «Навички», виберіть її й підтвердьте. Вона потрапить на панель швидкого доступу; натисніть {skill_slot_1}, щоб зцілитися."
 
+msgid "Your Skills [DRAFT]"
+msgstr "Ваші навички [ЧЕРНЕТКА]"
+
+msgid "You have skills. Grandfather's teaching wakes as you meditate. Shield Block: hold {block} to block, and a blow that breaks through your block hurts 20% less. Healing Palm: press {skill_slot_1} to heal — three sips, refilled each time you save. Press {game_menu} and open Skills to see them and the skills you can learn next. [DRAFT]"
+msgstr "У вас є навички. Дідова наука прокидається під час медитації. «Блок щитом»: утримуйте {block}, щоб блокувати, — удар, що пробиває блок, завдає на 20% менше шкоди. «Цілюща долоня»: натисніть {skill_slot_1}, щоб зцілитися, — три ковтки, які поповнюються щоразу, коли ви зберігаєтеся. Натисніть {game_menu} і відкрийте «Навички», щоб побачити їх і те, що можна вивчити далі. [ЧЕРНЕТКА]"
+
 msgid "Grandfather gave you a sword and armour — press {game_menu}, open Inventory and use them to equip, or choose a slot in Equipment."
 msgstr "Дід дав вам меч і обладунок: натисніть {game_menu}, відкрийте «Інвентар» і скористайтеся ними, щоб спорядитися, або оберіть місце в «Спорядженні»."
 

@@ -314,6 +314,7 @@ func _census_direct() -> void:
 	await _lines_until_choice(dm)
 	ck(not shown.any(func(l: String) -> bool: return l.contains("level five")), "at level 5 no «wait for level 5» line")
 	await Kit.drain(self)
+	Kit.pre_d815_hero(self)  # D815: Shield Block would be free — the gate counts 3 paid JP
 	sm.add_job_points(6)
 	for id in ["toughness", "shield_block", "devotion"]:
 		sm.unlock_skill(id)

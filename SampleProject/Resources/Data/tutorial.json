@@ -121,6 +121,15 @@
 			"frames": "heal"
 		},
 		{
+			"id": "starting_skills",
+			"hint_topic": true,
+			"title": "Your Skills [DRAFT]",
+			"text": "You have skills. Grandfather's teaching wakes as you meditate. Shield Block: hold {block} to block, and a blow that breaks through your block hurts 20% less. Healing Palm: press {skill_slot_1} to heal — three sips, refilled each time you save. Press {game_menu} and open Skills to see them and the skills you can learn next. [DRAFT]",
+			"key": "{skill_slot_1}",
+			"hint": "Button for the first skill slot.",
+			"frames": "heal"
+		},
+		{
 			"id": "oldman_gift",
 			"hint_topic": true,
 			"title": "Equipping Gear",
