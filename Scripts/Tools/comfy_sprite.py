@@ -4040,6 +4040,41 @@ CHARACTERS["critter_pigeon"] = dict(
 )
 
 
+# Атмосфера (A23, ambient_critters_plan зріз 2b): метелик менший за жайворонка (у польоті ~25 px), клітинка героя →
+# crop 40x40 (32 не вміщає: крила вгору — 36 px заввишки). Блакитний метелик і міль — його ж кадри в інших кольорах
+# (Scripts/Tools/draw_atmosphere.py): згенерована міль вийшла завбільшки з жайворонка, і крила в кадрах не рухались.
+# Крила вгору / вниз — з кадру польоту (FROM:fly:1), як у птаха; «розкриті» повторюється (той самий кадр з кешу).
+BUG_SIZE = (
+    ". It is tiny, about a third of the size of the head of the character in picture 1: the whole insect fits inside a "
+    "small square at the bottom middle of the picture, a large empty magenta space all around it. "
+)
+BUG_OPEN = (
+    "in the same side view facing right, just as tiny as before: flying in mid-air, not sitting, its wings spread wide "
+    "open to both sides, seen from the side and a little from above so the pattern of the wings shows, its legs tucked"
+)
+BUG_UP = "FROM:fly:1:in the same side view facing right, just as tiny as before: its wings raised and closed together straight up above its back, its body unchanged, still flying"
+BUG_DOWN = "FROM:fly:1:in the same side view facing right, just as tiny as before: in the middle of a downstroke, both wings swept down below its body, its body level as in flight, still flying"
+CHARACTERS["critter_butterfly"] = dict(
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    seed=121,
+    colors=8,
+    crop=(40, 40),
+    out="SampleProject/Assets/Characters/Critters/butterfly.png",
+    who="the same tiny desert butterfly with the orange wings, the white spots, the dark brown wing edges and the thin "
+    "dark body",
+    base="Replace the character in picture 1 with a tiny desert butterfly: bright orange wings with white spots and "
+    "dark brown edges and veins, a thin dark body, two thin antennae, sitting on the ground with its wings closed "
+    "together upright above its back — "
+    + PIXEL_STYLE
+    + BUG_SIZE
+    + SIDE_VIEW % {"p": "its"}
+    + "."
+    + MAGENTA_BG,
+    # сидячи «крила розкрито» модель лишала закритими — другий кадр сидіння той самий, що розкриті крила в польоті
+    rows=[("perch", [None, BUG_OPEN]), ("fly", [BUG_UP, BUG_OPEN, BUG_DOWN, BUG_OPEN])],
+)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())

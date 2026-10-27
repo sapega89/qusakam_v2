@@ -12,5 +12,16 @@ Facing right, the feet (lowest pixel) on the bottom row of the cell; scenes flip
 |---|---|---|---|
 | `bird.png` | 48×48 | `perch` 2 (frame 2: head and body 1 px lower, `BOB`) | `fly` 4: wings up, level, downstroke, level |
 | `pigeon.png` | 56×56 (bigger bird, wings up are 50 px) | `perch` 2 (`BOB`) | `fly` 4: wings up, level, downstroke, level (feet down — a take-off) |
+| `butterfly.png` | 40×40 (in flight ~25 px, perched ~10×14 — smaller than the lark) | `perch` 2: wings closed, wings open | `fly` 4: wings up, open, downstroke, open |
+| `butterfly_blue.png` | 40×40 | the same frames, hue turned to an oasis blue | |
+| `moth.png` | 40×40 | the same frames, dusty grey-brown (caves, night interiors) | |
+
+**Atmosphere (A23, slice 2b).** `butterfly.png` — `comfy_sprite.py critter_butterfly` (Qwen-Image-Edit-2511, as the
+birds), seed 121; the perched "wings open" frame is the flight's open-wing frame (the model kept the wings shut when
+sitting). `butterfly_blue.png` and `moth.png` are its frames recoloured by `Scripts/Tools/draw_atmosphere.py` (a
+generated moth came out lark-sized with wings that did not move between frames). The same script draws the particle
+textures, not AI-generated: `glow_firefly.png` (9×9, warm core, 3 alpha steps), `glow_spore.png` (7×7, pale core, cold
+halo), `glow_dust.png` (3×3 mote), `glow_shaft.png` (16×96 light streak, low alpha), colours from the Lizard Cave
+palette. Sheet: `design/shots/atmosphere_sprites.png`. Placement is the room routine's (`m6_backdrops`).
 
 The bat critter uses the enemy sheet `Enemies/bat/sheet.png` (`critter_bat.tscn`). Sound: `critter_flap`.
