@@ -2,10 +2,13 @@
 
 importer="mp3"
 type="AudioStreamMP3"
+uid="uid://dxxhyew646dix"
+path="res://.godot/imported/heavy_battle.mp3-676e9c0d26b6f49e155fa4b38aa07f43.mp3str"
 
 [deps]
 
 source_file="res://SampleProject/Resources/Audio/Music/heavy_battle.mp3"
+dest_files=["res://.godot/imported/heavy_battle.mp3-676e9c0d26b6f49e155fa4b38aa07f43.mp3str"]
 
 [params]
 
