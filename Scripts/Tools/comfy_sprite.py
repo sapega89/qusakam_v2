@@ -3323,6 +3323,40 @@ def from_file(path):
     return im[..., :3], im[..., 3] > 128
 
 
+def scale(img, f):
+    """Картинка моделі, зменшена в f разів довкола середини низу, на кольорі її рамки (shrink міряє фон по рамці).
+    Силует товщає на чверть блоку з кожного боку (колір найближчого пікселя персонажа): інакше лінії, тонші за пів
+    блоку, — хвіст миші при f 0,25 — зникали в shrink."""
+    from scipy import ndimage
+
+    h, w = img.shape[:2]
+    small = Image.fromarray(img).resize((round(w * f), round(h * f)), Image.NEAREST)
+    bg = tuple(int(c) for c in np.median(img[:12].reshape(-1, img.shape[2]), axis=0))
+    out = Image.new(small.mode, (w, h), bg)
+    out.paste(small, ((w - small.width) // 2, h - small.height))
+    out = np.asarray(out).copy()
+    fg = np.linalg.norm(out[..., :3].astype(np.float32) - np.array(bg[:3], np.float32), axis=2) > 75
+    dist, (iy, ix) = ndimage.distance_transform_edt(~fg, return_indices=True)
+    grow = (dist > 0) & (dist <= UP / 4)
+    out[grow] = out[iy[grow], ix[grow]]
+    return out
+
+
+def fit_height(base, cell, height):
+    """Множник, з яким перший кадр після shrink і контуру polish має рівно height арт-px заввишки: найближчий до
+    пропорційної оцінки з сітки довкола неї (округлення блоків стрибає через 1 px — ітерація ходила 11 ↔ 13)."""
+
+    def tall(f):
+        rows = np.nonzero(polish(*shrink(scale(base, f), cell))[1].any(axis=1))[0]
+        return rows[-1] - rows[0] + 1
+
+    f0 = height / tall(1.0)
+    for f in sorted(np.linspace(f0 * 0.8, f0 * 1.2, 41), key=lambda f: abs(f - f0)):
+        if tall(f) == height:
+            return f
+    sys.exit(f"height {height}: no scale near {f0:.3f} gives it")
+
+
 def regrid(img, cell):
     """Згенерований кадр, зведений до сітки клітинки й знову ×16 на пурпурі — чистий референс для FROM:."""
     rgb, op = shrink(img, cell)
@@ -4088,6 +4122,38 @@ CHARACTERS["critter_butterfly"] = dict(
 )
 
 
+# Миша (R2, ambient_critters_plan): сидить, а коли герой близько — біжить підлогою в нору. Рівно 12 арт-px заввишки
+# сидячи (world_scale_plan: метелик, міль, миша) — height; модель малює більшою, кадри зменшуються одним множником.
+# Біг — галоп: витягнута → посередині → згорнута → посередині (той самий кадр з кешу); з першого кадру бігу (FROM),
+# бо з сидячої пози модель лишала мишу сидіти (як птаха — стояти).
+MOUSE_RUN = (
+    "in the same side view facing right, just as small as before: running fast to the right on all four legs, its "
+    "body stretched long and low to the ground, its front legs reaching far forward and its hind legs pushed far back, "
+    "its long tail streaming straight out behind"
+)
+MOUSE_MID = "FROM:run:0:in the same side view facing right, just as small as before: in the middle of a fast run on all four legs, its body level and low, its front paws under its chin and its hind paws under its tail touching the ground, its long tail streaming out behind"
+MOUSE_GATHER = "FROM:run:0:in the same side view facing right, just as small as before: in mid-leap of a fast run, its back arched up, all four legs gathered together under its belly, its long tail streaming out behind"
+CHARACTERS["critter_mouse"] = dict(
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    seed=131,
+    colors=8,
+    height=12,
+    crop=(16, 16),  # кадри до 14 px завширшки, сидячи рівно 12 заввишки
+    out="SampleProject/Assets/Characters/Critters/mouse.png",
+    who="the same small sandy-brown desert mouse with the pale cream belly, the big round pink-lined ears, the black "
+    "bead eye, the pink nose and the long thin tail",
+    base="Replace the character in picture 1 with a small desert mouse: sandy-brown fur, a pale cream belly, big "
+    "round ears with pink insides, a black bead eye, a small pink nose, short thin whiskers, a long thin tail lying "
+    "on the ground behind it, sitting up on its hind legs on the ground with its small front paws held at its chest — "
+    + PIXEL_STYLE
+    + ". It is small, about the size of the head of the character in picture 1: the whole mouse fits inside a square "
+    "standing on the ground at the bottom middle of the picture, a large empty magenta space all around it. "
+    + SIDE_VIEW % {"p": "its"}
+    + "."
+    + MAGENTA_BG,
+    rows=[("idle", [None, "BOB:56"]), ("run", [MOUSE_RUN, MOUSE_MID, MOUSE_GATHER, MOUSE_MID])],
+)
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())
@@ -4166,6 +4232,13 @@ if __name__ == "__main__":
         sys.exit(
             f"{len(frames)}/{total} frames cached — run the remaining animations, then the sheet is built"
         )
+    if "height" in char:
+        # world_scale_plan: точна висота першого кадру в арт-px; розмір у підказці модель не тримає (метелик вийшов
+        # 19 px замість 12) — усі згенеровані кадри зменшуються одним множником, рух між ними лишається
+        f = fit_height(base, cell, char["height"])
+        frames = {k: v if isinstance(v, str) else scale(v, f) for k, v in frames.items()}
+        base = scale(base, f)
+        print("height", char["height"], "scale", round(f, 3))
     small = {k: shrink(v, cell) for k, v in frames.items() if not isinstance(v, str)}
     for k, pose in frames.items():
         if isinstance(pose, str):
