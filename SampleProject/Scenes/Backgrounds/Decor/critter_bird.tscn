@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/AmbientCritter.gd" id="script"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Critters/bird.png" id="sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0_1"]
+atlas = ExtResource("sheet")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1_0"]
+atlas = ExtResource("sheet")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1_1"]
+atlas = ExtResource("sheet")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1_2"]
+atlas = ExtResource("sheet")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1_3"]
+atlas = ExtResource("sheet")
+region = Rect2(144, 48, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_critter"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1_3")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0_1")
+}],
+"loop": true,
+"name": &"perch",
+"speed": 2.0
+}]
+
+[node name="CritterBird" type="Node2D"]
+script = ExtResource("script")
+scare_distance = 160.0
+scare_height = 320.0
+return_delay = 30.0
+flight = Vector2(360, -560)
+flight_time = 1.4
+perch_animation = &"perch"
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.2, 1.2)
+sprite_frames = SubResource("SpriteFrames_critter")
+animation = &"perch"
+centered = false
+offset = Vector2(-24, -48)
+
+[node name="Perch" type="VisibleOnScreenNotifier2D" parent="."]
+rect = Rect2(-28.8, -57.6, 57.6, 57.6)

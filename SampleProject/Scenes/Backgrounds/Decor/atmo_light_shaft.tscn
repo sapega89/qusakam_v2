@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Critters/glow_shaft.png" id="shaft"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_motes.tscn" id="motes"]
+
+[sub_resource type="CanvasItemMaterial" id="Material_add"]
+blend_mode = 1
+
+[node name="LightShaft" type="Node2D"]
+
+[node name="Ray" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.75, 0.35)
+material = SubResource("Material_add")
+texture_filter = 1
+rotation = -0.22
+scale = Vector2(3.5, 2.6)
+texture = ExtResource("shaft")
+centered = false
+offset = Vector2(-8, 0)
+
+[node name="Motes" parent="." instance=ExtResource("motes")]
+position = Vector2(-28, 125)
+rotation = -0.22

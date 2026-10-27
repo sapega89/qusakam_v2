@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Critters/glow_dust.png" id="tex"]
+
+[sub_resource type="CanvasItemMaterial" id="Material_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_fade"]
+offsets = PackedFloat32Array(0, 0.22, 0.3, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0, 1, 1, 1, 0)
+
+[node name="Sparks" type="CPUParticles2D"]
+material = SubResource("Material_add")
+texture_filter = 1
+texture = ExtResource("tex")
+amount = 8
+lifetime = 3.0
+explosiveness = 0.9
+emission_shape = 1
+emission_sphere_radius = 4.0
+direction = Vector2(0, -1)
+spread = 50.0
+gravity = Vector2(0, 160)
+initial_velocity_min = 40.0
+initial_velocity_max = 80.0
+scale_amount_min = 0.7
+scale_amount_max = 1.2
+color = Color(1, 0.65, 0.25, 1)
+color_ramp = SubResource("Gradient_fade")

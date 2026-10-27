@@ -76,6 +76,7 @@ func _initialize() -> void:
 		_check_doors(room)
 		_check_front(room)
 		await _check_cover(room)
+		await _check_limits(room)
 		_check_ladders(room)
 		_check_supports(room)
 
@@ -333,6 +334,37 @@ func _check_cover(room: String) -> void:
 		for o: CanvasItem in occluders:
 			var r: Rect2 = o.get_global_transform_with_canvas() * _local_rect(o)
 			ck(not r.intersects(target), "%s: %s does not cover %s%s (%s vs %s, hero x %.0f)" % [room, o.name, "the fight's middle at " if s in fights else "", s.name, r, target, game.player.global_position.x])
+
+
+## B177: камера на межі кімнати стоїть — заслон ×1.3 тоді теж стоїть. Біля обох меж він поза кадром або лише
+## краєм (зовнішні LIMIT_EDGE кадру), а не стоїть над героєм. B178: заслон, що сягає нижче ніг героя, ставить
+## намальовану основу нижче кадру — інакше вона їде по дорозі.
+const LIMIT_EDGE := 0.12
+
+
+func _check_limits(room: String) -> void:
+	var occluders := _front_items(game.map).filter(_is_occluder)
+	if occluders.is_empty():
+		return
+	var size: Vector2 = game.map.get_node(^"RoomInstance").get_size()
+	var y: float = game.player.global_position.y - 40.0
+	var view: Rect2 = game.get_viewport().get_visible_rect()
+	var edge: float = view.size.x * LIMIT_EDGE
+	for x: float in [40.0, size.x - 40.0]:
+		game.place_player(Vector2(x, y))
+		game.player.velocity = Vector2.ZERO
+		for i in 4: await physics_frame
+		(game.player.get_node(^"Camera2D") as Camera2D).reset_smoothing()
+		for i in 10: await physics_frame
+		var feet: float = game.player.get_global_transform_with_canvas().origin.y
+		for o: CanvasItem in occluders:
+			var drawn: Rect2 = o.get_global_transform_with_canvas() * _local_rect(o)
+			if drawn.end.y > feet and drawn.position.y < view.size.y and x < size.x / 2.0:
+				ck(drawn.end.y >= view.size.y, "%s: %s has its foot below the view (%.0f of %.0f)" % [room, o.name, drawn.end.y, view.size.y])
+			var seen: Rect2 = drawn.intersection(view)
+			var ok: bool = seen.size.x <= 0.0 or seen.position.x >= view.size.x - edge or seen.end.x <= edge
+			ck(ok, "%s: %s rests off the middle at the %s camera limit (seen x %.0f-%.0f of %.0f)" % [room, o.name,
+					"left" if x < size.x / 2.0 else "right", seen.position.x, seen.end.x, view.size.x])
 
 
 func _local_rect(ci: CanvasItem) -> Rect2:

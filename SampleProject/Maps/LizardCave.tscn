@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_fireflies.tscn" id="rd_fireflies"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -124,6 +125,13 @@ tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(320, 376)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Fireflies1" parent="Ambience" instance=ExtResource("rd_fireflies")]
+position = Vector2(1040, 250)
+emission_rect_extents = Vector2(520, 110)
+amount = 16
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
 position = Vector2(320, 376)

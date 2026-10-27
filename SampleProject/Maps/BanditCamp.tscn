@@ -18,6 +18,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="fg1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_camp/rope_stake.png" id="fg2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_camp/crate.png" id="fg3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(160, 480)
@@ -90,6 +94,88 @@ tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(136, 366.5)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+position = Vector2(864, 250)
+emission_rect_extents = Vector2(864, 140)
+amount = 16
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(1180, 416)
+perch_flip = true
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("rd_butterfly")]
+position = Vector2(760, 396)
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(760, 416)
+frame = 1
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(260, 416)
+frame = 2
+speed_scale = 1.18
+flip_h = true
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(290, 416)
+frame = 2
+speed_scale = 0.84
+flip_h = true
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(308, 416)
+frame = 3
+speed_scale = 0.9
+
+[node name="Tuft5" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(480, 416)
+frame = 0
+speed_scale = 0.86
+
+[node name="Tuft6" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(501, 416)
+frame = 1
+speed_scale = 1.15
+
+[node name="Tuft7" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(540, 416)
+frame = 1
+speed_scale = 0.93
+flip_h = true
+
+[node name="Tuft8" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(751, 416)
+frame = 3
+speed_scale = 0.83
+
+[node name="Tuft9" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(991, 416)
+frame = 3
+speed_scale = 1.13
+
+[node name="Tuft10" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1009, 416)
+frame = 3
+speed_scale = 0.95
+flip_h = true
+
+[node name="Tuft11" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1267, 416)
+frame = 3
+speed_scale = 0.95
+
+[node name="Tuft12" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1291, 416)
+frame = 1
+speed_scale = 0.85
+flip_h = true
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
 position = Vector2(130, 416)
@@ -210,7 +296,7 @@ bus = &"Music"
 
 [node name="OccluderRopes1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(480, 300)
+position = Vector2(591, 302)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("fg2")
 centered = false
@@ -224,7 +310,7 @@ centered = false
 
 [node name="OccluderRopes2" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(982, 300)
+position = Vector2(885, 302)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("fg2")
 centered = false

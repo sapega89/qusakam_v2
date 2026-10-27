@@ -26,6 +26,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_porter.tscn" id="tf_porter"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_old_man.tscn" id="tf_old"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_merchant_woman.tscn" id="tf_woman"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -208,6 +211,123 @@ speed = 14
 pause_min = 4.0
 pause_max = 9.0
 
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+position = Vector2(864, 250)
+emission_rect_extents = Vector2(864, 140)
+amount = 16
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(360, 384)
+
+[node name="Lark2" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(1560, 384)
+perch_flip = true
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(40, 384)
+frame = 1
+speed_scale = 0.91
+flip_h = true
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(243, 384)
+frame = 3
+speed_scale = 0.92
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(403, 384)
+frame = 0
+speed_scale = 0.91
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(426, 384)
+frame = 2
+speed_scale = 1.12
+flip_h = true
+
+[node name="Tuft5" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(459, 384)
+frame = 1
+speed_scale = 0.86
+
+[node name="Tuft6" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(548, 384)
+frame = 0
+speed_scale = 0.85
+flip_h = true
+
+[node name="Tuft7" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(567, 384)
+frame = 2
+speed_scale = 0.88
+
+[node name="Tuft8" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(709, 384)
+frame = 0
+speed_scale = 1.15
+
+[node name="Tuft9" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(728, 384)
+frame = 2
+speed_scale = 0.87
+flip_h = true
+
+[node name="Tuft10" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(759, 384)
+frame = 1
+speed_scale = 0.91
+
+[node name="Tuft11" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(881, 384)
+frame = 2
+speed_scale = 0.84
+
+[node name="Tuft12" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(900, 384)
+frame = 2
+speed_scale = 0.91
+flip_h = true
+
+[node name="Tuft13" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1380, 384)
+frame = 0
+speed_scale = 0.97
+
+[node name="Tuft14" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1400, 384)
+frame = 3
+speed_scale = 0.98
+flip_h = true
+
+[node name="Tuft15" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1428, 384)
+frame = 3
+speed_scale = 1.04
+flip_h = true
+
+[node name="Tuft16" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1550, 384)
+frame = 3
+speed_scale = 1.15
+
+[node name="Tuft17" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1569, 384)
+frame = 1
+speed_scale = 1.0
+flip_h = true
+
+[node name="Tuft18" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1600, 384)
+frame = 0
+speed_scale = 1.13
+flip_h = true
+
 [node name="GuardLeft" parent="." unique_id=1846200204 instance=ExtResource("gate_guard")]
 position = Vector2(1200, 384)
 chatter_dialogue = "res://dialogue_quest/CityGates_Guard_Chatter.dqd"
@@ -336,13 +456,14 @@ after_flag = "city_gates_after_fight_complete"
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(300, 520)
+position = Vector2(763, 520)
 scale = Vector2(2.2, 2.2)
 texture = ExtResource("x2")
+centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1700, 520)
+position = Vector2(1808, 520)
 scale = Vector2(3, 3)
 
 [node name="Rubble1" type="Sprite2D" parent="FrontDark"]

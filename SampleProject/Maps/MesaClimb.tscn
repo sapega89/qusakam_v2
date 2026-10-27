@@ -21,6 +21,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x7"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/ledge_rock/ledge_rock_sheet.png" id="x8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -93,6 +96,41 @@ tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(120, 811.25)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+position = Vector2(432, 480)
+emission_rect_extents = Vector2(432, 400)
+amount = 16
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("rd_butterfly")]
+position = Vector2(816, 876)
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(816, 896)
+frame = 1
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(238, 540)
+frame = 3
+speed_scale = 0.93
+flip_h = true
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(352, 540)
+frame = 3
+speed_scale = 0.92
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(373, 540)
+frame = 2
+speed_scale = 1.16
+flip_h = true
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
 position = Vector2(126.75, 896)
@@ -335,9 +373,10 @@ position = Vector2(800, 1010)
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(880, 1080)
+position = Vector2(777, 1080)
 scale = Vector2(2.2, 2.2)
 texture = ExtResource("p4")
+centered = false
 offset = Vector2(-78, -114)
 
 [node name="TopShade" parent="." instance=ExtResource("x6")]

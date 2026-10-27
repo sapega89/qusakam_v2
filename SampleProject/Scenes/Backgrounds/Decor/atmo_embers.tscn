@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Critters/glow_firefly.png" id="tex"]
+
+[sub_resource type="CanvasItemMaterial" id="Material_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_fade"]
+offsets = PackedFloat32Array(0, 0.15, 0.3, 0.45, 0.65, 0.8, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.9, 1, 1, 1, 0.35, 1, 1, 1, 0.85, 1, 1, 1, 0.3, 1, 1, 1, 0.8, 1, 1, 1, 0)
+
+[node name="Embers" type="CPUParticles2D"]
+material = SubResource("Material_add")
+texture_filter = 1
+texture = ExtResource("tex")
+amount = 16
+lifetime = 9.0
+preprocess = 9.0
+emission_shape = 3
+emission_rect_extents = Vector2(400, 110)
+direction = Vector2(0, -1)
+spread = 30.0
+gravity = Vector2(0, -3)
+initial_velocity_min = 3.0
+initial_velocity_max = 9.0
+tangential_accel_min = -6.0
+tangential_accel_max = 6.0
+scale_amount_min = 1.2
+scale_amount_max = 1.8
+color = Color(1, 0.55, 0.25, 0.75)
+color_ramp = SubResource("Gradient_fade")
