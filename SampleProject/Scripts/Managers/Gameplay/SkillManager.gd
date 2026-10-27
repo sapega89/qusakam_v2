@@ -325,6 +325,11 @@ func _has_required_weapon(definition: SkillDefinition) -> bool:
 
 # ── SP за влучання і парирування (D504) ────────────────────────────────────
 
+## Зараз б'є навичка (use_skill): її влучання — удар навички (VFXHooks.hit_strength, D828).
+func is_skill_hitting() -> bool:
+	return _skill_effect_running
+
+
 ## Влучання героя чи його стріли у ворога; удари навичок і компаньйонів SP не дають.
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	if _skill_effect_running:
