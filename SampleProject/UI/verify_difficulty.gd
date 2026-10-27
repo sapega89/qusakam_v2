@@ -215,6 +215,10 @@ func _meetings() -> Array[Dictionary]:
 							"name": "%s L%d" % [label, enemy_level]})
 				if not optional.has(spawner):
 					xp.add_xp(node.enemy_stats().xp_reward)
+					# D817: досвід за перемогу над боєм — після його останнього ворога
+					if spawner and node == spawner.find_children("*", "", true, false).filter(
+							func(n: Node) -> bool: return n.get_script() == SpawnPoint).back():
+						xp.add_xp(spawner.win_xp)
 			elif node.get_script() == Boss:
 				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city,
 						"scene": node.scene_file_path})

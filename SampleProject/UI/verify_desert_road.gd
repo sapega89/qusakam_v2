@@ -75,7 +75,7 @@ func _initialize() -> void:
 	ck(not FileAccess.file_exists("res://dialogue_quest/DesertRoad_Monologue.dqd") and not FileAccess.file_exists("res://dialogue_quest/en/DesertRoad_Fight.dqd"),
 			"the road's talks are cut (en and uk)")
 	ck(road.get_node_or_null("StateChangeTrigger_DesertMonologue") == null, "no monologue trigger on the road")
-	ck(_enemies(road).size() == 4, "all 4 enemies stand on the road at once (%d)" % _enemies(road).size())
+	ck(_enemies(road).size() == 3, "all 3 enemies stand on the road at once, D817 (%d)" % _enemies(road).size())
 	var hero_x: float = road.get_node("ArrivalFromCanyon").global_position.x
 	for enemy in _enemies(road):
 		ck(enemy.global_position.x - hero_x > enemy.detection_range,

@@ -47,7 +47,7 @@ func _initialize() -> void:
 	await caravan.spawn_all_enemies()  # хвилями по двоє (spawn_in_waves)
 	await create_timer(0.8).timeout
 	var big: Node = caravan.get_node(^"BigSlot_ArmouredScorpion_1").spawned_enemy
-	var small: Node = caravan.get_node(^"EnemySpawnPoint5").spawned_enemy
+	var small: Node = caravan.get_node(^"EnemySpawnPoint3").spawned_enemy  # D817: звичайного скорпіона в каравані немає — бандит
 	print("big: %s HP %d, damage %.1f, elite %s; small: %s HP %d" % [big.enemy_stats.enemy_type, big.Max_Health, big.base_damage,
 			big.elite, small.enemy_stats.enemy_type, small.Max_Health])
 	var enemies: Array = caravan.spawn_points.map(func(p: Node) -> Node: return p.spawned_enemy)

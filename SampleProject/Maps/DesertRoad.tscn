@@ -448,6 +448,7 @@ speed_scale = 0.84
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=1070670507]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
+win_xp = 25
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=796924420]
 position = Vector2(800, 368)
@@ -461,11 +462,6 @@ enemy_type = "fast"
 [node name="EnemySpawnPoint3" type="Node2D" parent="EnemySpawner" unique_id=1992080142]
 position = Vector2(1000, 368)
 script = ExtResource("8_spawn_point")
-
-[node name="EnemySpawnPoint4" type="Node2D" parent="EnemySpawner" unique_id=1488247937]
-position = Vector2(1100, 368)
-script = ExtResource("8_spawn_point")
-enemy_type = "fast"
 
 [node name="Controller_Gate" type="Node2D" parent="." unique_id=1236399617]
 script = ExtResource("9_gate")
@@ -546,11 +542,12 @@ script = ExtResource("7_spawner")
 enemy_level = 2
 auto_spawn_on_ready = false
 spawn_in_waves = true
-wave_size = 2
+wave_size = 1
 wave_delay = 1.5
 trigger_area = NodePath("Fight_DunesTrigger")
 state_key = "enemies_dunes"
 respawns = true
+win_xp = 25
 
 [node name="Fight_DunesTrigger" type="Area2D" parent="Fight_Dunes" unique_id=722591254]
 position = Vector2(2170, 240)
@@ -563,11 +560,6 @@ position = Vector2(2250, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "melee"
 spawn_id = "Fight_Dunes_EnemySpawnPoint1"
-
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Dunes" unique_id=136671725]
-position = Vector2(2330, 368)
-script = ExtResource("8_spawn_point")
-enemy_type = "fast"
 
 [node name="BigSlot_JackalPackLeader_4" type="Node2D" parent="Fight_Dunes" unique_id=758727549]
 position = Vector2(2490, 368)
@@ -586,22 +578,13 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_MesaTrigger")
 state_key = "enemies_mesa"
 respawns = true
+win_xp = 70
 
 [node name="Fight_MesaTrigger" type="Area2D" parent="Fight_Mesa" unique_id=914293600]
 position = Vector2(2700, 240)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Mesa/Fight_MesaTrigger" unique_id=1238355335]
 shape = SubResource("RectangleShape2D_fight")
-
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Mesa" unique_id=868970614]
-position = Vector2(2830, 304)
-script = ExtResource("8_spawn_point")
-enemy_type = "tank"
-
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Mesa" unique_id=379823433]
-position = Vector2(2910, 304)
-script = ExtResource("8_spawn_point")
-enemy_type = "fast"
 
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Mesa" unique_id=1658975055]
 position = Vector2(2990, 304)
@@ -614,6 +597,11 @@ script = ExtResource("8_spawn_point")
 enemy_type = "archer"
 spawn_id = "Fight_Mesa_EnemySpawnPoint4"
 
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Mesa" unique_id=379823433]
+position = Vector2(2910, 304)
+script = ExtResource("8_spawn_point")
+enemy_type = "fast"
+
 [node name="Fight_Caravan" type="Node2D" parent="." unique_id=674198346 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
 enemy_level = 3
@@ -624,6 +612,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_CaravanTrigger")
 state_key = "enemies_caravan"
 respawns = true
+win_xp = 72
 reward = Dictionary[String, int]({
 "bandit_key": 1
 })
@@ -644,22 +633,12 @@ spawn_id = "Fight_Caravan_EnemySpawnPoint1"
 [node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Caravan" unique_id=1077175829]
 position = Vector2(3800, 368)
 script = ExtResource("8_spawn_point")
-enemy_type = "fast"
+enemy_type = "melee"
 
 [node name="EnemySpawnPoint4" type="Node2D" parent="Fight_Caravan" unique_id=153186663]
 position = Vector2(3880, 368)
 script = ExtResource("8_spawn_point")
 enemy_type = "shield"
-
-[node name="EnemySpawnPoint5" type="Node2D" parent="Fight_Caravan" unique_id=327418003]
-position = Vector2(3960, 368)
-script = ExtResource("8_spawn_point")
-enemy_type = "tank"
-
-[node name="EnemySpawnPoint6" type="Node2D" parent="Fight_Caravan"]
-position = Vector2(3760, 220)
-script = ExtResource("8_spawn_point")
-enemy_type = "vulture"
 
 [node name="Fight_OldVulture" type="Node2D" parent="."]
 script = ExtResource("7_spawner")

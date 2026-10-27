@@ -41,11 +41,20 @@ const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 ## <state_key>_reward, у сейві); повернення ворогів (D492) її не повторює. Порожньо — без здобичі.
 @export var reward: Dictionary[String, int] = {}
 
+## D817: досвід за перемогу над усім боєм, понад досвід його ворогів, — щоразу, як бій добито (і після повернення
+## ворогів, D492). Групи дороги стали меншими (не більше трьох), а дорога дає той самий досвід, що й до того (D297).
+@export var win_xp: int = 0
+
 ## Список всех spawn points в комнате
 var spawn_points: Array[EnemySpawnPoint] = []
 
 ## Список всех заспавненных врагов
 var spawned_enemies: Array[Node] = []
+
+## D817: цей запуск бою ще спавнить хвилі / скільки його ворогів убито / чи вже заплатив win_xp.
+var _spawning := false
+var _killed := 0
+var _win_paid := false
 
 ## Бій цього спавнера в Game.room_state[state_key] (D152): {spawn_id: HP} живих ворогів; -1 — HP ще
 ## невідоме (ворог не встиг зʼявитись). Немає ключа — бій не починали. Вбитих у словнику немає.
@@ -132,6 +141,9 @@ func spawn_all_enemies() -> void:
 	if respawns:
 		Game.get_singleton().register_ordinary_fight(_room, state_key, _region)
 
+	_spawning = true
+	_killed = 0
+	_win_paid = false
 	if spawn_in_waves:
 		await _spawn_in_waves()
 	else:
@@ -139,6 +151,8 @@ func spawn_all_enemies() -> void:
 		# await), тож Godot сварився REDUNDANT_AWAIT. _spawn_in_waves() корутина —
 		# там await лишається.
 		_spawn_immediately()
+	_spawning = false
+	_pay_win_xp()  # останнього вбили, поки чекала порожня хвиля
 
 	all_enemies_spawned.emit()
 	DebugLogger.info("RoomEnemySpawner: All enemies spawned (%d total)" % spawned_enemies.size(), "RoomEnemySpawner")
@@ -278,6 +292,7 @@ func _rouse(state: int, enemy: Node) -> void:
 func _on_enemy_died(enemy: Node) -> void:
 	"""Обработчик смерти врага"""
 	spawned_enemies.erase(enemy)
+	_killed += 1
 	DebugLogger.info("RoomEnemySpawner: Enemy died, %d remaining" % get_alive_enemies_count(), "RoomEnemySpawner")
 
 	# Проверяем все ли враги убиты
@@ -286,6 +301,14 @@ func _on_enemy_died(enemy: Node) -> void:
 		DebugLogger.info("RoomEnemySpawner: All enemies defeated!", "RoomEnemySpawner")
 	if not reward.is_empty():
 		_grant_reward.call_deferred()  # після того, як _track() викреслив убитого зі стану бою
+	_pay_win_xp()
+
+## D817: бій добито в цьому запуску — усі хвилі вийшли, живих немає — win_xp герою, один раз за запуск.
+func _pay_win_xp() -> void:
+	if win_xp == 0 or _spawning or _win_paid or _killed == 0 or not spawned_enemies.is_empty():
+		return
+	_win_paid = true
+	ServiceLocator.get_xp_manager().add_xp(win_xp)
 
 const REWARD_SUFFIX := "_reward"
 

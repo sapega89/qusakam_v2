@@ -400,7 +400,7 @@ func _placements() -> void:
 	var road: Array = vultures.filter(func(v: Array) -> bool: return v[0] == "DesertRoad")
 	ck(road.all(func(v: Array) -> bool: return v[2].x >= first.position.x or v[1] == "Fight_LoneVulture"), "no vulture on the road before the lone one")
 	var caravan: Array = map.get_node(^"Fight_Caravan").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
-	ck(caravan.back() == "vulture" and caravan.size() > 1, "later a vulture joins the Caravan's ground fight, last (%s)" % [caravan])
+	ck(not caravan.has("vulture"), "D817: no vulture in the Caravan's group any more (a bandit, a shield-bearer, the scorpion) (%s)" % [caravan])
 	var lone_x: float = first.global_position.x
 	for name in ["Fight_LoneShield", "Fight_Dunes"]:
 		var zone: Area2D = map.get_node(NodePath(name)).trigger_area

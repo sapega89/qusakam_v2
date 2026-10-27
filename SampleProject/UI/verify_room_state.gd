@@ -91,7 +91,7 @@ func _initialize() -> void:
 		await create_timer(1.0).timeout
 		await _drain(dm)
 	var enemies := _enemies(game)
-	ck(enemies.size() == 4, "4 enemies on the road (%d)" % enemies.size())
+	ck(enemies.size() == 3, "3 enemies on the road, D817 (%d)" % enemies.size())
 	var hurt: Node = enemies[0]
 	var hurt_name := String(hurt.name)
 	hurt.take_damage(30)
@@ -106,7 +106,7 @@ func _initialize() -> void:
 	await create_timer(WAVES_TIME).timeout  # DesertRoad спавнить хвилями: 2 + 2 через 1.5 с
 	ck(not started.has("DesertRoad_Fight"), "the fight line is not played again (%s)" % [started])
 	enemies = _enemies(game)
-	ck(enemies.size() == 3, "3 enemies back — the killed one stays dead (%d)" % enemies.size())
+	ck(enemies.size() == 2, "2 enemies back — the killed one stays dead (%d)" % enemies.size())
 	var back: Node = _by_name(enemies, hurt_name)
 	ck(back != null and back.current_health == hurt_hp, "the hurt one keeps its HP (%s, was %d)" % [back.current_health if back else "gone", hurt_hp])
 
@@ -120,7 +120,7 @@ func _initialize() -> void:
 	await create_timer(WAVES_TIME).timeout
 	ck(not started.has("DesertRoad_Fight"), "no fight line after loading (%s)" % [started])
 	enemies = _enemies(game)
-	ck(enemies.size() == 3, "3 enemies after loading (%d)" % enemies.size())
+	ck(enemies.size() == 2, "2 enemies after loading (%d)" % enemies.size())
 	back = _by_name(enemies, hurt_name)
 	ck(back != null and back.current_health == hurt_hp, "HP survives the save (%s, was %d)" % [back.current_health if back else "gone", hurt_hp])
 	for e in enemies:

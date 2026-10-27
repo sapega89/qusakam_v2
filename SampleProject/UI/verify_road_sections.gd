@@ -7,13 +7,19 @@ extends SceneTree
 ##   3. No gift lies on the road (D583): the pickups and the chest are up in branches (verify_road_secrets walks them);
 ##      the one chest on the road is guarded by an optional fight (the old vulture, D722).
 ##   4. The road ends at CityGates: walking off the east edge loads CityGates.
+##   1b. D817: every group fight on the road is a bandit and a jackal or two bandits and a jackal (lone fights stay
+##      lone), and winning a group pays its win_xp on top of its enemies' XP.
 ##   5. Every ledge can be climbed again with one jump at a time (BACKLOG 32, no double jump): no rise between
 ##      neighbouring tile columns is higher than a jump, and from the floor on both sides of each raised top the
 ##      hero gets onto it with real move/jump input — the east side too, where he lands after dropping off.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_road_sections.gd
 
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
-const FIGHTS := {"Fight_Dunes": 3, "Fight_Mesa": 4, "Fight_Caravan": 5}  # D617: a bandit from each went to the lone fights; D445: a vulture joins the caravan
+const FIGHTS := {"Fight_Dunes": 2, "Fight_Mesa": 3, "Fight_Caravan": 3}  # D817: a bandit and a jackal, or two bandits and a jackal
+## D817: in a road group the "bandits" are the bandit gang (bandit, shield-bearer, archer), the "jackal" its one beast
+## (jackal, scorpion, vulture; their big kinds stand on the same base).
+const GANG := ["melee", "shield", "archer"]
+const BEASTS := ["fast", "tank", "vulture"]
 
 ## A jump lifts the hero ~103 px (PlayerMover.jump_velocity, default gravity); a rise is climbable up to 3 tiles.
 const JUMP_RISE := 96
@@ -122,10 +128,29 @@ func _initialize() -> void:
 					break
 				await physics_frame
 			ck(enemy.is_on_floor(), "%s: %s stands on the floor (y %.0f)" % [fight, enemy.name, enemy.global_position.y])
+		var gained: Array[int] = [0]
+		var count_xp := func(amount: int, _total: int) -> void: gained[0] += amount
+		root.get_node("ServiceLocator").get_xp_manager().xp_gained.connect(count_xp)
+		var due: int = spawner.win_xp
 		for enemy in alive:
+			due += enemy.xp_reward
 			enemy.die()
 		for i in 6: await physics_frame
 		ck(_alive(spawner).is_empty(), "%s: won" % fight)
+		root.get_node("ServiceLocator").get_xp_manager().xp_gained.disconnect(count_xp)
+		ck(spawner.win_xp > 0 and gained[0] == due,
+				"%s: the win pays its enemies' XP and win_xp %d (+%d, expected +%d)" % [fight, spawner.win_xp, gained[0], due])
+
+	print("[1b] D817: a road group is a bandit and a jackal, or two bandits and a jackal; lone fights stay lone")
+	for spawner: Node in road.get_children().filter(func(n: Node) -> bool: return n.get_script() == road.get_node("EnemySpawner").get_script()):
+		var types: Array = spawner.spawn_points.map(func(p: Node) -> String: return p.enemy_type)
+		if types.size() == 1:
+			ck(spawner.win_xp == 0, "%s: lone (%s), no win_xp" % [spawner.name, types])
+			continue
+		var gang: int = types.filter(func(t: String) -> bool: return t in GANG).size()
+		var beasts: int = types.filter(func(t: String) -> bool: return t in BEASTS).size()
+		ck(beasts == 1 and gang in [1, 2] and gang + beasts == types.size(),
+				"%s: %d bandit(s) and one beast (%s)" % [spawner.name, gang, types])
 
 	print("[2] A won section stays won")
 	await game.teleport_to_room(ROAD, ^"Arrival_Start")
