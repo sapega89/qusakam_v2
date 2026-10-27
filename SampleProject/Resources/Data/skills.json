@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned` (v2 slice 1). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned`, with provisional SP, damage and `draft` numbers (v2 slice 1); the shield skills need no shield item, the shield is a block spell (skills audit, Sapega 2026-10-27). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -17,13 +17,13 @@
       "icon": "res:// path",
       "vfx": "res:// .tscn of the cast effect (SkillCastFX: 'charge' during the wind-up, 'release' on completion) - active only (D271)",
       "heal": "int >= 0 - HP restored on the target (D142: an ally next to the hero, else the hero)",
-      "damage": "int >= 0 - damage to everything in front of the hero (D142)",
+      "damage": "int >= 0 - damage to everything in front of the hero (D142), or to move.hits",
       "required_weapons": "[equipment slot] - usable only while one of these slots holds a weapon (D141)",
       "burn": "{dps: int, duration: float} - sets the target burning (D207); a new burn refreshes",
       "chain": "{radius: px, ratio: 0..1} - also hits the nearest other enemy within radius of the first target (D207)",
       "stun": "float seconds - stuns the first target; cancels a wind-up in progress (D207)",
       "passive": "{stat: max_health | shield_block | max_sp | attack | damage_reduction | heal_power | sp_per_hit | lifesteal | poise | skill_damage | crit_chance | heavy_poise | block_heal | burning_damage | roll_length, value, condition?: {type: below_hp (value = HP fraction) | after_parry | after_skill (value = seconds)}} - passive only (D207, D284, D496); a conditional passive counts only while its condition holds",
-      "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release)} - active only, required; a stagger during the wind-up interrupts (D259, D271)",
+      "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release), windup_pose?, release_pose?, move_pose?: whole Player.tscn animation names (move_pose only with move)} - active only, required; a stagger during the wind-up interrupts (D259, D271)",
       "oath": "String - the tree: \"\" = Holy Warrior trunk (everyone), else an id in oaths; such a skill needs that oath sworn (D280)",
       "damage_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to damage (B137)",
       "heal_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to heal (B137)",
@@ -32,7 +32,12 @@
       "synergies": "[{skill: passive id of the same tree, per_rank: fraction}] - each rank of that passive adds per_rank to this skill's damage and heal (D496)",
       "base_jp": "int >= 0 - JP that must be spent in the base class tree before this profession skill can be learned (D497)",
       "planned": "bool - in the data but not built yet: cannot be learned or cast, the skills screen shows it locked as 'Coming later' (D535, v2 slice 1)",
-      "slot": "[column 0-3, row 0-4] - D674: the skill's cell in its tree panel; an in-tree prerequisite sits in the row right above"
+      "draft": "{name: number} - planned only: provisional numbers for the mechanic the skill's build slice adds (distances in px, times in s, shares 0..1); no code reads them until that slice (v2 slice 1)",
+      "slot": "[column 0-3, row 0-4] - D674: the skill's cell in its tree panel; an in-tree prerequisite sits in the row right above",
+      "move": "{kind: dash | leap, distance: px, time: s (dash), height: px (leap), hits: first | front | around, reach: px (around)} - the hero moves between wind-up and strike (v2 slice 3, D-sv2m): a dash pushes forward (bodies block, D443) and, with hits first, strikes as soon as an enemy is in strike reach; with hits front it runs its whole time into the body; a leap lands before the first enemy ahead, never behind it, and strikes on landing; first = the nearest enemy in front, front = all in front (D142), around = all within reach px on both sides. Starts without an enemy in front, from the ground only; a whiff costs its SP",
+      "knockback": "px >= 0 - pushes each hit enemy away from the hero (like a mace, D203)",
+      "lifesteal": "0..1 - that share of the skill's damage heals the hero",
+      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -256,7 +261,7 @@
       "id": "shield_block",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_block.png",
       "name": "Shield Block",
-      "description": "Take 20% less damage while a shield is equipped.",
+      "description": "Take 20% less damage from a blow that breaks through your block.",
       "class_id": "",
       "skill_type": "passive",
       "jp_cost": 1,
@@ -1218,7 +1223,7 @@
       "id": "bulwark",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/bulwark.png",
       "name": "Bulwark",
-      "description": "Take a further 10% less damage while a shield is equipped.",
+      "description": "Take a further 10% less damage from a blow that breaks through your block.",
       "class_id": "",
       "oath": "warden",
       "skill_type": "passive",
@@ -1557,7 +1562,34 @@
       },
       "required_level": 1,
       "prerequisites": [],
-      "planned": true,
+      "sp_cost": 5,
+      "cooldown": 0.0,
+      "damage": 22,
+      "damage_scaling": {
+        "phys": 1.6,
+        "elem": 0.0
+      },
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.15,
+        "release": 0.3,
+        "windup_pose": "HeavyWindup",
+        "move_pose": "Roll",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "dash",
+        "distance": 180,
+        "time": 0.18,
+        "hits": "first"
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         0
@@ -1580,6 +1612,16 @@
       "required_level": 3,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 6,
+      "cooldown": 0.0,
+      "damage": 26,
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.0
+      },
+      "draft": {
+        "launch_s": 0.8
+      },
       "slot": [
         0,
         1
@@ -1589,7 +1631,7 @@
       "id": "shield_bash",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_bash.png",
       "name": "Shield Bash [DRAFT]",
-      "description": "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]",
+      "description": "Breaks an enemy's wind-up and deals heavy guard damage. [DRAFT]",
       "class_id": "",
       "oath": "",
       "skill_type": "active",
@@ -1602,6 +1644,17 @@
       "required_level": 4,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 5,
+      "cooldown": 0.0,
+      "damage": 14,
+      "damage_scaling": {
+        "phys": 1.0,
+        "elem": 0.0
+      },
+      "stun": 0.4,
+      "draft": {
+        "poise_x": 2.5
+      },
       "slot": [
         3,
         1
@@ -1626,6 +1679,17 @@
         "rising_slash"
       ],
       "planned": true,
+      "sp_cost": 9,
+      "cooldown": 0.0,
+      "damage": 34,
+      "damage_scaling": {
+        "phys": 2.2,
+        "elem": 0.0
+      },
+      "draft": {
+        "radius_px": 140,
+        "knockdown_s": 1.2
+      },
       "slot": [
         0,
         2
@@ -1648,6 +1712,17 @@
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 9,
+      "cooldown": 0.0,
+      "damage": 40,
+      "damage_scaling": {
+        "phys": 2.3,
+        "elem": 0.4
+      },
+      "draft": {
+        "range_px": 520,
+        "speed_px_s": 900
+      },
       "slot": [
         0,
         4
@@ -1670,6 +1745,13 @@
       "required_level": 12,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "draft": {
+        "attack_bonus": 0.15,
+        "duration_s": 8.0,
+        "flinch_radius_px": 160
+      },
       "slot": [
         2,
         4
@@ -1694,6 +1776,16 @@
         "shield_bash"
       ],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "damage": 55,
+      "damage_scaling": {
+        "phys": 3.0,
+        "elem": 0.0
+      },
+      "draft": {
+        "stance_s": 0.8
+      },
       "slot": [
         3,
         2
@@ -1757,7 +1849,7 @@
       "id": "shield_charge",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_charge.png",
       "name": "Shield Charge [DRAFT]",
-      "description": "Run forward behind your shield and knock enemies back. [DRAFT]",
+      "description": "Run forward behind a shield of light and knock enemies back. [DRAFT]",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",
@@ -1769,8 +1861,40 @@
       },
       "required_level": 5,
       "prerequisites": [],
-      "planned": true,
+      "sp_cost": 6,
+      "cooldown": 0.0,
+      "damage": 24,
+      "damage_scaling": {
+        "phys": 1.7,
+        "elem": 0.0
+      },
       "base_jp": 3,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.2,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "move_pose": "Run",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "dash",
+        "distance": 220,
+        "time": 0.35,
+        "hits": "front"
+      },
+      "knockback": 120,
+      "synergies": [
+        {
+          "skill": "aura_of_resolve",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "zealous_answer",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         0
@@ -1795,6 +1919,16 @@
         "radiant_smite"
       ],
       "planned": true,
+      "sp_cost": 9,
+      "cooldown": 0.0,
+      "damage": 40,
+      "damage_scaling": {
+        "phys": 2.2,
+        "elem": 0.6
+      },
+      "draft": {
+        "range_px": 600
+      },
       "base_jp": 6,
       "slot": [
         1,
@@ -1818,6 +1952,13 @@
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "draft": {
+        "absorb": 60,
+        "absorb_elem": 1.0,
+        "duration_s": 5.0
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -1841,6 +1982,14 @@
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 12,
+      "cooldown": 0.0,
+      "draft": {
+        "radius_px": 150,
+        "duration_s": 6.0,
+        "enemy_dps": 6,
+        "heal_per_s": 3
+      },
       "base_jp": 6,
       "slot": [
         3,
@@ -1864,6 +2013,12 @@
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 8,
+      "cooldown": 0.0,
+      "draft": {
+        "assist_damage": 0.4,
+        "assist_duration": 0.5
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -1888,8 +2043,39 @@
       "prerequisites": [
         "shield_charge"
       ],
-      "planned": true,
+      "sp_cost": 14,
+      "cooldown": 0.0,
+      "damage": 58,
+      "damage_scaling": {
+        "phys": 3.0,
+        "elem": 0.6
+      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "leap",
+        "distance": 200,
+        "height": 80,
+        "hits": "around",
+        "reach": 160
+      },
+      "synergies": [
+        {
+          "skill": "zealous_answer",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "consecrated_ground",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         1
@@ -1914,6 +2100,17 @@
         "lightspear"
       ],
       "planned": true,
+      "sp_cost": 12,
+      "cooldown": 0.0,
+      "damage": 20,
+      "damage_scaling": {
+        "phys": 1.0,
+        "elem": 1.0
+      },
+      "stun": 1.2,
+      "draft": {
+        "radius_px": 200
+      },
       "base_jp": 6,
       "slot": [
         1,
@@ -1924,7 +2121,7 @@
       "id": "shield_of_faith",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/shield_of_faith.png",
       "name": "Shield of Faith [DRAFT]",
-      "description": "A block with a shield heals you for 25% of the blocked damage. [DRAFT]",
+      "description": "A blow you hold off with a block heals you for 25% of its damage. [DRAFT]",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "passive",
@@ -1964,8 +2161,40 @@
       },
       "required_level": 5,
       "prerequisites": [],
-      "planned": true,
+      "sp_cost": 6,
+      "cooldown": 0.0,
+      "damage": 24,
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.0
+      },
       "base_jp": 3,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.15,
+        "release": 0.3,
+        "windup_pose": "HeavyWindup",
+        "move_pose": "Roll",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "dash",
+        "distance": 200,
+        "time": 0.2,
+        "hits": "first"
+      },
+      "lifesteal": 0.3,
+      "synergies": [
+        {
+          "skill": "blood_pact",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "relentless",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         0
@@ -1988,6 +2217,16 @@
       "required_level": 8,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 8,
+      "cooldown": 0.0,
+      "damage": 18,
+      "damage_scaling": {
+        "phys": 1.2,
+        "elem": 0.4
+      },
+      "draft": {
+        "range_px": 420
+      },
       "base_jp": 6,
       "slot": [
         3,
@@ -2013,6 +2252,13 @@
         "blood_pact"
       ],
       "planned": true,
+      "sp_cost": 4,
+      "cooldown": 0.0,
+      "draft": {
+        "hp_cost": 0.1,
+        "hits": 3,
+        "damage_bonus": 0.5
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -2038,6 +2284,20 @@
         "searing_hex"
       ],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "damage": 44,
+      "damage_scaling": {
+        "phys": 2.4,
+        "elem": 0.5
+      },
+      "burn": {
+        "dps": 4,
+        "duration": 2.0
+      },
+      "draft": {
+        "width_px": 260
+      },
       "base_jp": 6,
       "slot": [
         0,
@@ -2061,6 +2321,13 @@
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "draft": {
+        "radius_px": 220,
+        "fear_s": 2.0,
+        "flinch_s": 0.4
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -2086,6 +2353,18 @@
         "night_reaper"
       ],
       "planned": true,
+      "sp_cost": 12,
+      "cooldown": 0.0,
+      "damage": 30,
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.6
+      },
+      "draft": {
+        "pool_px": 160,
+        "duration_s": 5.0,
+        "pool_dps": 7
+      },
       "base_jp": 6,
       "slot": [
         0,
@@ -2111,6 +2390,17 @@
         "blood_rush"
       ],
       "planned": true,
+      "sp_cost": 14,
+      "cooldown": 0.0,
+      "damage": 70,
+      "damage_scaling": {
+        "phys": 3.5,
+        "elem": 0.6
+      },
+      "draft": {
+        "hp_threshold": 0.2,
+        "sp_refund": 10
+      },
       "base_jp": 6,
       "slot": [
         3,
@@ -2161,8 +2451,40 @@
       },
       "required_level": 5,
       "prerequisites": [],
-      "planned": true,
+      "sp_cost": 5,
+      "cooldown": 0.0,
+      "damage": 26,
+      "damage_scaling": {
+        "phys": 1.8,
+        "elem": 0.0
+      },
       "base_jp": 3,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.08,
+        "release": 0.25,
+        "windup_pose": "HeavyWindup",
+        "move_pose": "Roll",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "dash",
+        "distance": 160,
+        "time": 0.15,
+        "hits": "first"
+      },
+      "invulnerable": 0.25,
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "light_feet",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         0
@@ -2185,6 +2507,13 @@
       "required_level": 8,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 8,
+      "cooldown": 0.0,
+      "draft": {
+        "cone_px": 180,
+        "blind_s": 3.0,
+        "miss_chance": 0.6
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -2210,6 +2539,17 @@
         "balanced_strike"
       ],
       "planned": true,
+      "sp_cost": 9,
+      "cooldown": 0.0,
+      "damage": 16,
+      "damage_scaling": {
+        "phys": 1.0,
+        "elem": 0.0
+      },
+      "stun": 0.3,
+      "draft": {
+        "poise_x": 3.0
+      },
       "base_jp": 6,
       "slot": [
         0,
@@ -2233,6 +2573,17 @@
       "required_level": 10,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 9,
+      "cooldown": 0.0,
+      "damage": 36,
+      "damage_scaling": {
+        "phys": 2.2,
+        "elem": 0.0
+      },
+      "draft": {
+        "range_px": 160,
+        "knockdown_s": 1.0
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -2258,6 +2609,12 @@
         "sand_veil"
       ],
       "planned": true,
+      "sp_cost": 10,
+      "cooldown": 0.0,
+      "draft": {
+        "stance_s": 1.0,
+        "reflect_ratio": 1.0
+      },
       "base_jp": 6,
       "slot": [
         2,
@@ -2281,6 +2638,17 @@
       "required_level": 15,
       "prerequisites": [],
       "planned": true,
+      "sp_cost": 0,
+      "cooldown": 0.0,
+      "heal": 30,
+      "heal_scaling": {
+        "phys": 0.0,
+        "elem": 1.0
+      },
+      "draft": {
+        "channel_s": 1.5,
+        "sp_restore": 8
+      },
       "base_jp": 6,
       "slot": [
         1,
@@ -2305,8 +2673,40 @@
       "prerequisites": [
         "wind_step"
       ],
-      "planned": true,
+      "sp_cost": 15,
+      "cooldown": 0.0,
+      "damage": 62,
+      "damage_scaling": {
+        "phys": 3.2,
+        "elem": 0.0
+      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.4,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "Land"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
+      "move": {
+        "kind": "leap",
+        "distance": 200,
+        "height": 80,
+        "hits": "around",
+        "reach": 240
+      },
+      "stun": 1.2,
+      "synergies": [
+        {
+          "skill": "rooted_resolve",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dervish_rhythm",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         1

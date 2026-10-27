@@ -247,7 +247,7 @@ theme_type_variation = &"TreePanel"
 [node name="Detail" type="VBoxContainer" parent="Window/Center/Body/Columns/SidePanel"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
 [node name="Header" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
 layout_mode = 2
@@ -307,7 +307,7 @@ autowrap_mode = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 8
+theme_override_constants/v_separation = 4
 columns = 2
 
 [node name="Fact" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/DetailGrid"]
@@ -355,15 +355,43 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-columns = 2
+columns = 8
 
 [node name="Slot1" type="Button" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox/HotbarSlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 2
+theme_type_variation = &"SkillSlot"
 toggle_mode = true
-clip_text = true
+
+[node name="Art" type="TextureRect" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox/HotbarSlots/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Key" type="PanelContainer" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox/HotbarSlots/Slot1"]
+layout_mode = 1
+offset_left = -4.0
+offset_top = -6.0
+mouse_filter = 2
+theme_type_variation = &"SkillLevelBadge"
+
+[node name="Label" type="Label" parent="Window/Center/Body/Columns/SidePanel/Detail/HotbarBox/HotbarSlots/Slot1/Key"]
+layout_mode = 2
+theme_type_variation = &"SkillLevelBadgeLabel"
+text = "1"
 
 [node name="ButtonRow" type="HBoxContainer" parent="Window/Center/Body/Columns/SidePanel/Detail"]
 layout_mode = 2

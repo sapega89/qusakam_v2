@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/MoveSkillFX.gd" id="fx"]
+
+[node name="MoveSkill" type="Node2D"]
+z_index = 250
+script = ExtResource("fx")
+metadata/_doc = "Effect of the movement skills (v2 slice 3): existing frames until the art lane draws their own"
+
+[node name="Hand" type="Marker2D" parent="."]
+position = Vector2(36, -2)
+scale = Vector2(1.3, 1.3)
+metadata/_doc = "release: the strike smear (SlashTrail) at the hand, WeaponView.SMEAR_SCALE"
+
+[node name="Feet" type="Marker2D" parent="."]
+position = Vector2(0, 24)
+metadata/_doc = "release: the ground under the hero (body collision bottom)"
+
+[node name="Pillar" type="Marker2D" parent="."]
+scale = Vector2(1.5, 1.5)
+metadata/_doc = "release: scale of a light pillar (Skyfall Blessing beam, as OathSkill.tscn)"

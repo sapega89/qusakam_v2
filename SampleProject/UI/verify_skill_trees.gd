@@ -85,7 +85,7 @@ func _initialize() -> void:
 			data_ok = false
 			print("    planned is only for the v2 draft actives (D535): ", d.id)
 		elif d.is_active() and not d.planned:
-			if d.cast_pose == "" or not ResourceLoader.exists(d.vfx):
+			if d.release_pose == "" or not ResourceLoader.exists(d.vfx):
 				data_ok = false
 				print("    active without a cast or effect: ", d.id)
 			elif not load(d.vfx).instantiate() is Node2D:
@@ -142,7 +142,7 @@ func _initialize() -> void:
 			"Healing Palm heals (25 + Elem. Atk.) × 1.06 × 1.25 = %d (%d)" % [palm_heal, player.current_health - hp])
 	# Blood Pact — чужа клятва; стат перевіряємо прямо через стан (дерево тут ні до чого).
 	gm.player_state.unlocked_skills.append("blood_pact")
-	player.take_damage(40)
+	player.current_health = player.Max_Health - 40  # не take_damage: Shield Block зрізав би удар
 	hp = player.current_health
 	var dummy := Dummy.new()
 	game.add_child(dummy)
