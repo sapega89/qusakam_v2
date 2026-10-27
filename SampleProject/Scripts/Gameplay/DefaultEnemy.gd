@@ -5,6 +5,8 @@ const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.
 const CURSED_FOAM = preload("res://SampleProject/Scenes/FX/CursedFoam.tscn")
 const FLYING_LOGIC = preload("res://SampleProject/Scripts/Gameplay/Components/FlyingLogic.gd")
 const POISE_BAR = preload("res://SampleProject/UI/Components/poise_bar.tscn")
+const STAMINA_BAR = preload("res://SampleProject/UI/Components/enemy_stamina_bar.tscn")
+const ENEMY_STAMINA = preload("res://SampleProject/Scripts/Gameplay/Components/EnemyStamina.gd")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -108,6 +110,8 @@ const POISE_BREAK_STAGGER := 0.6
 const PARRY_STAGGER := 1.0
 const STAGGER_PUSH := 30.0
 var _poise_drain_in := 0.0
+## Витривалість (D824, EnemyStamina): кожен удар її коштує; вичерпав — видихається.
+var stamina: Node
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -280,6 +284,13 @@ func _add_foam(mouth: Vector2) -> void:
 
 func _initialize_components():
 	"""Ініціалізує EnemyLogic та EnemyView"""
+	# D824: витривалість — до логіки, та платить нею за кожен удар
+	stamina = ENEMY_STAMINA.new()
+	stamina.name = "EnemyStamina"
+	add_child(stamina)
+	stamina.setup(enemy_stats.enemy_type, is_in_group(GameGroups.BOSS))
+	stamina.winded.connect(_on_winded)
+
 	# Створюємо EnemyLogic
 	enemy_logic = _make_logic()
 	enemy_logic.name = "EnemyLogic"
@@ -307,11 +318,24 @@ func _initialize_components():
 	# Перевіряємо, чи гравець вже знаходиться в зоні виявлення
 	call_deferred("_check_existing_player_in_detection_area")
 
-## Шкала стійкості над головою (D777): над верхнім краєм тіла, видно, поки ворог у бою чи шкала не спала.
+## Шкала стійкості над головою (D777): над верхнім краєм тіла, видно, поки ворог у бою чи шкала не спала. Під нею —
+## тонка смужка витривалості (D824), лише поки ворог у бою.
 func _add_poise_bar() -> void:
 	var bar: Control = POISE_BAR.instantiate()
 	add_child(bar)
 	bar.track(self)
+	var strip: Control = STAMINA_BAR.instantiate()
+	bar.add_child(strip)
+	strip.track(self)
+
+## Видихнувся (D824): стоїть [param time] с — тінь оглушення й поза збою, без удару, ухилу й щита; звук — SoundHooks.
+func _on_winded(time: float) -> void:
+	if is_dead:
+		return
+	enemy_logic.stun_left = maxf(enemy_logic.stun_left, time)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_winded.emit(self, time)
 
 ## Ворог у бою (женеться, б'є чи стоїть збитий) — тоді над ним шкала стійкості, як смужка боса.
 func is_engaged() -> bool:

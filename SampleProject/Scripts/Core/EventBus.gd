@@ -180,6 +180,9 @@ signal enemy_shield_broken(enemy: Node2D, at: Vector2)
 ## герой парирував удар, каст навички зірвано ударом (D259 — SP і кулдаун усе одно списано).
 @warning_ignore("unused_signal")
 signal enemy_staggered(enemy: Node, duration: float)
+## Ворог вичерпав витривалість і видихнувся на [param duration] с (D824, EnemyStamina) — глухий видих, як у героя.
+@warning_ignore("unused_signal")
+signal enemy_winded(enemy: Node, duration: float)
 @warning_ignore("unused_signal")
 signal player_staggered(duration: float)
 @warning_ignore("unused_signal")

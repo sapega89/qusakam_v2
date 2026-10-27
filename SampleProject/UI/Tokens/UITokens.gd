@@ -183,6 +183,13 @@ const POISE_BAR_WIDTH := 56
 const POISE_BAR_HEIGHT := 5
 const POISE_BAR_GAP := 10
 const BOSS_POISE_HEIGHT := 6
+## Витривалість ворога (D824, enemy_stamina_bar.tscn): тонка смужка під шкалою стійкості — колір рядка ST героя;
+## вичерпана — червона (той самий колір, що спалах порожнього ST). Розміри над ворогом (px світу) і в смужці боса.
+const ENEMY_STAMINA_FILL := STAMINA_FILL
+const ENEMY_STAMINA_SPENT := STAMINA_EMPTY_FLASH
+const ENEMY_STAMINA_HEIGHT := 3
+const ENEMY_STAMINA_GAP := 1
+const BOSS_STAMINA_HEIGHT := 4
 
 # ── Розміри екрана Settings (Figma: settings-* 17:280 / 17:409 / 17:632) ────
 const SIZE_OPTIONS_TITLE := 38  # Bold — "OPTIONS" у верхній секції

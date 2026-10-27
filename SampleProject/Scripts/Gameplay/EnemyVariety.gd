@@ -39,6 +39,22 @@ static func shield() -> Dictionary:
 	return data().shield
 
 
+## Витривалість виду [param id] (D824): рядок виду, інакше його base (еліта), інакше default — поверх default; еліта —
+## max × elite.max. Бос ([param boss]) — свій рядок boss поверх default.
+static func stamina(id: String, boss: bool) -> Dictionary:
+	var table: Dictionary = data().stamina
+	var out: Dictionary = table.default.duplicate()
+	if boss:
+		out.merge(table.boss, true)
+		return out
+	var k := kind(id)
+	var row: Dictionary = table.kinds.get(id, table.kinds.get(k.get("base", ""), {}))
+	out.merge(row, true)
+	if k.elite:
+		out.max = float(out.max) * float(table.elite.max)
+	return out
+
+
 ## Вид [param id] з kinds: sheet, elite, sizes; великий вид ще base і scene, проклятий — foam.
 static func kind(id: String) -> Dictionary:
 	return data().kinds[id]

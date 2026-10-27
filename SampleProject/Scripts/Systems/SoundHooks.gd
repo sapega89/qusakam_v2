@@ -27,6 +27,8 @@ func _ready() -> void:
 		AudioManager.play(&"hit_armour"))
 	EventBus.player_parried.connect(_on_parried)
 	EventBus.enemy_staggered.connect(func(_enemy: Node, _duration: float) -> void: AudioManager.play(&"stagger"))
+	# D824: ворог видихнувся — той самий глухий видих, що й виснажений герой (D776)
+	EventBus.enemy_winded.connect(func(_enemy: Node, _duration: float) -> void: AudioManager.play(&"stamina_empty"))
 	EventBus.combat_state_changed.connect(_on_combat_state_changed)
 	EventBus.boss_fight_changed.connect(_on_boss_fight_changed)
 	EventBus.skill_cast_started.connect(_on_cast_started)
