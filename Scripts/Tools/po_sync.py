@@ -19,6 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8bit\\n"
 """
+DRAFT = re.compile(r"# \[ЧЕРНЕТКА\] (D\d+)")
 
 
 def parse(path: Path) -> list:
@@ -52,6 +53,8 @@ def main() -> int:
     out = [HEADER]
     for comments, key, _ in uk:
         out += [c for c in comments if c.startswith("# ──")]
+        # Позначка чернетки з номером рішення (D571, D159) — і в en.po, англійською.
+        out += ["# [DRAFT] " + m[1] for c in comments if (m := DRAFT.fullmatch(c))]
         out += [f'msgid "{key}"', f'msgstr "{key}"', ""]
     (DIR / "en.po").write_text("\n".join(out), encoding="utf-8", newline="\n")
     print(f"en.po: {len(uk)} keys")

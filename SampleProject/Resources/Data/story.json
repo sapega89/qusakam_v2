@@ -7,8 +7,10 @@
 				{
 					"id": "canyon", "title": "Canyon I", "scene": "Canyon", "story_state": "CANYON",
 					"objectives": [
-						{"flag": "canyon_exploration_complete", "text": "Explore the Canyon"},
-						{"flag": "canyon_abduction_complete", "text": "Find a way forward"}
+						{"flag": "canyon_exploration_complete", "text": "Explore the Canyon",
+						 "hint": "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there.", "from": "KUSAKAM"},
+						{"flag": "canyon_abduction_complete", "text": "Find a way forward",
+						 "hint": "I'll sit on the stone and breathe the silence — maybe it will show me the way.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
 						{"flag": "canyon_intro_complete", "text": "Kusakam grumbled about the old man and wondered why the spirits would not make him a shaman yet."},
@@ -19,11 +21,16 @@
 				{
 					"id": "village", "title": "Village", "scene": "Village", "story_state": "VILLAGE",
 					"objectives": [
-						{"flag": "village_abduction_complete", "text": "Head to the village"},
-						{"flag": "village_arrival_complete", "text": "Reach the village center"},
-						{"flag": "village_fight_complete", "text": "Defeat the bandit in the street"},
-						{"flag": "village_oldman_met", "text": "Check on the house"},
-						{"flag": "village_left_complete", "text": "Leave the village"}
+						{"flag": "village_abduction_complete", "text": "Head to the village",
+						 "hint": "Bandits are leading our people away! Back through the canyon to the village, fast.", "from": "KUSAKAM"},
+						{"flag": "village_arrival_complete", "text": "Reach the village center",
+						 "hint": "I'll go down the street to the middle of the village — someone has to be there.", "from": "KUSAKAM"},
+						{"flag": "village_fight_complete", "text": "Defeat the bandit in the street",
+						 "hint": "A bandit is blocking the street. He won't let me pass without a fight.", "from": "KUSAKAM"},
+						{"flag": "village_oldman_met", "text": "Check on the house",
+						 "hint": "I have to get home and see if Grandfather is alive.", "from": "KUSAKAM"},
+						{"flag": "village_left_complete", "text": "Leave the village",
+						 "hint": "Catch up with the bandits. Head toward the canyon and come out on the road in the desert.", "from": "GRANDFATHER"}
 					],
 					"chronicle": [
 						{"flag": "village_abduction_complete", "text": "Bandits had raided the village and were taking everyone away."},
@@ -36,7 +43,8 @@
 				{
 					"id": "canyon_relic", "title": "Canyon II", "scene": "Canyon", "story_state": "CANYON",
 					"objectives": [
-						{"flag": "canyon_exit_complete", "text": "Descend to the road"}
+						{"flag": "canyon_exit_complete", "text": "Descend to the road",
+						 "hint": "From the edge of the canyon, by the bridge, you can climb down to the desert road.", "from": "GRANDFATHER"}
 					],
 					"chronicle": [
 						{"flag": "canyon_exit_complete", "text": "Armoured and ready, Kusakam began the climb down into the desert."}
@@ -45,7 +53,8 @@
 				{
 					"id": "desert_road", "title": "Desert Road", "scene": "DesertRoad", "story_state": "DESERT_ROAD",
 					"objectives": [
-						{"flag": "desert_road_fight_complete", "text": "Defeat the enemies on the road"}
+						{"flag": "desert_road_fight_complete", "text": "Defeat the enemies on the road",
+						 "hint": "The bandits who took my caravan are still on the road. Mind them.", "from": "MERCHANT"}
 					],
 					"chronicle": [
 						{"flag": "desert_road_fight_complete", "text": "Enemies blocked the road. Kusakam fought his way through."}
@@ -54,9 +63,12 @@
 				{
 					"id": "city_gates", "title": "City Gates", "scene": "CityGates", "story_state": "CITY_GATES",
 					"objectives": [
-						{"flag": "city_gates_intro_complete", "text": "Approach the city gates"},
-						{"flag": "city_gates_fight_complete", "text": "Defeat the bandits"},
-						{"flag": "city_gates_after_fight_complete", "text": "Enter the city"}
+						{"flag": "city_gates_intro_complete", "text": "Approach the city gates",
+						 "hint": "The bandits' trail runs along the road straight to the city gates.", "from": "KUSAKAM"},
+						{"flag": "city_gates_fight_complete", "text": "Defeat the bandits",
+						 "hint": "Bandits at the gates! Help us hold them!", "from": "GATE_GUARD"},
+						{"flag": "city_gates_after_fight_complete", "text": "Enter the city",
+						 "hint": "The gates are clear. Into the city.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
 						{"flag": "city_gates_intro_complete", "text": "He reached the great city gates and found the way barred."},
@@ -67,8 +79,10 @@
 				{
 					"id": "lab_cells", "title": "Laboratory — Cells", "scene": "LabCells", "story_state": "LABORATORY",
 					"objectives": [
-						{"flag": "lab_cells_cutscene_complete", "text": "Find out where you are"},
-						{"flag": "lab_acquaintance_complete", "text": "Step out of the cell"}
+						{"flag": "lab_cells_cutscene_complete", "text": "Find out where you are",
+						 "hint": "Bars, a cage, strange voices... I have to look around and see where they dragged me.", "from": "KUSAKAM"},
+						{"flag": "lab_acquaintance_complete", "text": "Step out of the cell",
+						 "hint": "The bars are open. I'm going out before anyone comes back.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
 						{"flag": "lab_cells_cutscene_complete", "text": "He came to in a laboratory cell and watched a fire djinn tear its way out of a prisoner and burst through the ceiling."},
@@ -78,9 +92,12 @@
 				{
 					"id": "laboratory", "title": "Laboratory", "scene": "Laboratory", "story_state": "LABORATORY",
 					"objectives": [
-						{"flag": "lab_corridors_complete", "text": "Fight through the laboratory"},
-						{"flag": "lab_boss_fight_complete", "text": "Defeat the mercenary"},
-						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory"}
+						{"flag": "lab_corridors_complete", "text": "Fight through the laboratory",
+						 "hint": "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you.", "from": "MALIK"},
+						{"flag": "lab_boss_fight_complete", "text": "Defeat the mercenary",
+						 "hint": "The mercenary wants Grandfather's cloak. I won't give it up — so we fight.", "from": "KUSAKAM"},
+						{"flag": "lab_after_boss_complete", "text": "Leave the laboratory",
+						 "hint": "The mercenary is down and the gates are open. Out, to freedom.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
 						{"flag": "lab_corridors_complete", "text": "He fought his way down through three storeys of the laboratory's guards."},
@@ -91,8 +108,10 @@
 				{
 					"id": "lab_outside", "title": "Laboratory — Outside", "scene": "LaboratoryOutside", "story_state": "LAB_OUTSIDE",
 					"objectives": [
-						{"flag": "lab_outside_complete", "text": "Leave the laboratory"},
-						{"flag": "demo_end_complete", "text": "Finish the demo"}
+						{"flag": "lab_outside_complete", "text": "Leave the laboratory",
+						 "hint": "A few more steps and we are out in the open air.", "from": "MALIK"},
+						{"flag": "demo_end_complete", "text": "Finish the demo",
+						 "hint": "We made it out. A hard road — but we made it.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
 						{"flag": "lab_outside_complete", "text": "They stepped out of the laboratory into the open air. It was a hard journey — but they made it."}

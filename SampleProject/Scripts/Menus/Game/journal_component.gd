@@ -15,6 +15,7 @@ extends BaseMenuComponent
 ## новий class_name лише після перескану, і скрипт до того не парсився.
 const RowFill = preload("res://SampleProject/UI/Components/ui_rows.gd")
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
+const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const EMPTY_TEXT := "No journal entries yet."
 ## load(), не preload: сервіс тягне Game (як у NpcBase).
 const TASKS_PATH := "res://SampleProject/Scripts/Tasks/task_service.gd"
@@ -36,7 +37,9 @@ const PATH_EMBLEMS := {"Samal": ["samal", "radiant_smite"], "Contract": ["contra
 
 ## Мінімальний контракт запису. Реальні дані згодом мапимо сюди,
 ## не перебудовуючи сцену.
-const FIELDS := ["id", "title", "state", "objectives", "description", "group", "parent"]
+const FIELDS := ["id", "title", "state", "objectives", "description", "group", "parent", "kind"]
+## kind: "" — звичайний пункт; HINT — підказка під ціллю (D159): рядок без вибору.
+const HINT := "hint"
 
 ## Позначка стану підетапу в списку. Закритий підетап не відкривається.
 const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
@@ -46,6 +49,7 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _objective_panel: PanelContainer = %Objective
 @onready var _objective_text: Label = %ObjectiveText
 @onready var _columns: HBoxContainer = %Columns
+@onready var _list_scroll: ScrollContainer = %ListScroll
 @onready var _entry_list: VBoxContainer = %EntryList
 @onready var _detail: VBoxContainer = %Detail
 @onready var _detail_title: Label = %DetailTitle
@@ -166,34 +170,48 @@ func _on_objective_updated(_text: String) -> void:
 			_load_story()
 
 
-## Етапи сюжету з GameFlow → пункти журналу (по одному на підетап).
+## Етапи сюжету з GameFlow → пункти журналу (по одному на підетап), згруповані за локацією
+## з locations.json (D181, D565): заголовок групи — назва локації, групи в порядку файла.
 ## Без GameFlow (сцена без гри) — порожній журнал.
 func _load_story() -> void:
 	var stages: Array = ServiceLocator.get_game_flow().journal_entries()
-	var items: Array = []
+	var by_location: Dictionary = {}
+	for loc: Dictionary in LocationDB.all():
+		by_location[loc.id] = []
 	var current_id := ""
 	for stage in stages:
 		for zone in stage.zones:
+			var bucket: Array = by_location[zone.location]
+			var group: String = LocationDB.location(zone.location).name
 			# Абзаци склеюються — кожен перекладаємо до склеювання (ключ — абзац, BACKLOG 31).
 			var description := "\n\n".join(zone.get("chronicle", []).map(func(c: String) -> String: return tr(c)))
-			items.append({"id": zone.id, "title": zone.title, "state": zone.state,
-				"group": stage.title, "description": description})
+			bucket.append({"id": zone.id, "title": zone.title, "state": zone.state,
+				"group": group, "description": description})
 			# Цілі — підпункти під своїм підетапом; справа показують текст підетапу (D125).
 			var objectives: Array = zone.get("objectives", [])
 			for i in objectives.size():
-				items.append({"id": "%s/%d" % [zone.id, i], "title": objectives[i].text,
-					"state": objectives[i].state, "group": stage.title, "parent": zone.id})
+				var objective_id := "%s/%d" % [zone.id, i]
+				bucket.append({"id": objective_id, "title": objectives[i].text,
+					"state": objectives[i].state, "group": group, "parent": zone.id})
+				# Під поточною ціллю — підказка від того, хто її дав (D159); виконаній вона вже ні до чого.
+				if objectives[i].state == "current":
+					bucket.append({"id": objective_id + "/" + HINT, "title": hint_line(objectives[i]),
+						"group": group, "parent": objective_id, "kind": HINT})
 			if zone.state == "current":
 				current_id = zone.id
-				_append_live_objective(items, zone, objectives, stage.title)
-	# Завдання NPC (quests.json, D293): кожне взяте — пункт із ціллю; здане — з позначкою.
+				_append_live_objective(bucket, zone, objectives, group)
+	# Завдання NPC (quests.json, D293): кожне взяте — пункт із ціллю в групі своєї локації; здане — з позначкою.
 	var TASKS: GDScript = load(TASKS_PATH)
 	for task: Dictionary in TASKS.tasks():
 		var status: String = TASKS.status(task)
 		if status != "":
-			items.append({"id": "task/" + task.id, "title": tr(task.title), "group": "Tasks",
+			by_location[task.location].append({"id": "task/" + task.id, "title": tr(task.title),
+				"group": LocationDB.location(task.location).name,
 				"state": "done" if status == TASKS.DONE else "current",
 				"description": "%s\n\n%s" % [tr(task.description), tr("Goal: %s") % tr(task.objective)]})
+	var items: Array = []
+	for loc_items: Array in by_location.values():
+		items.append_array(loc_items)
 	# Обраний пункт лишається, поки він доступний; інакше — поточний підетап.
 	var keep := false
 	for item in items:
@@ -201,6 +219,12 @@ func _load_story() -> void:
 	if not keep:
 		selected_id = current_id
 	set_entries(items)
+
+
+## Рядок підказки під ціллю (D159): «Дід: «…»» — ім'я мовця DialogueQuest і речення мовою гри.
+func hint_line(objective: Dictionary) -> String:
+	var speaker: String = DialogueQuest.CharacterDB.get_character_registry()[objective.from].character_name
+	return tr("%s: “%s”") % [tr(speaker), tr(objective.hint)]
 
 
 ## Поточна ціль з HUD (Game.current_objective, напр. «Return to the village», Q39 → BACKLOG 37) — ще й підпунктом
@@ -243,6 +267,7 @@ func _normalize(raw: Dictionary) -> Dictionary:
 		"description": tr(String(raw.get("description", ""))),
 		"group": tr(String(raw.get("group", ""))),
 		"parent": String(raw.get("parent", "")),
+		"kind": String(raw.get("kind", "")),
 		"portrait": raw.get("portrait") as Texture2D,
 		"place": Dictionary(raw.get("place", {})),
 	}
@@ -298,29 +323,58 @@ func _refresh_objective() -> void:
 
 
 func _rebuild_rows() -> void:
-	# ponytail: один заголовок — етап першого пункту; коли з'явиться другий етап,
-	# заголовки треба вставляти рядками між групами.
-	var group: String = (entries[0].group if not entries.is_empty() else "") if section == "quests" else SECTIONS[section][1]
-	_list_header.text = group.to_upper()
-	_list_header.visible = not group.is_empty()
-	var rows := RowFill.fill(_entry_list, _entry_row, entries.size())
+	# Завдання — заголовок групи (локація, D181) рядком перед її першим пунктом; інші розділи — один підпис над списком.
+	var caption: String = "" if section == "quests" else SECTIONS[section][1]
+	_list_header.text = caption.to_upper()
+	_list_header.visible = not caption.is_empty()
+	var lines: Array = []
+	var group := ""
+	for entry: Dictionary in entries:
+		if section == "quests" and entry.group != group and entry.group != "":
+			group = entry.group
+			lines.append({"header": group})
+		lines.append(entry)
+	var rows := RowFill.fill(_entry_list, _entry_row, lines.size())
+	var selected_row: Button = null
+	var last_row: Button = null
 	for i in rows.size():
 		var row: Button = rows[i]
-		var entry: Dictionary = entries[i]
-		row.name = "Entry_%s" % entry.id
-		var mark: String = ZONE_MARKS.get(entry.state, "")
-		row.text = "%s  %s" % [mark, entry.title] if mark != "" else entry.title
-		row.theme_type_variation = &"ListSubRow" if entry.parent != "" else &"ListRow"
-		row.disabled = entry.state == "locked"
-		row.focus_mode = Control.FOCUS_NONE if row.disabled else Control.FOCUS_ALL
-		row.set_meta(&"entry_id", entry.id)
-		row.set_pressed_no_signal(entry.id == selected_id)
+		var entry: Dictionary = lines[i]
 		# Не через meta: duplicate() копіює meta з шаблону, і копії лишалися б без сигналів.
 		if not _wired.has(row):
 			_wired[row] = true
 			row.pressed.connect(_on_row_pressed.bind(row))
 			# Стрілки ↑/↓ по списку одразу показують текст пункту справа.
 			row.focus_entered.connect(_on_row_focused.bind(row))
+		if entry.has("header"):
+			row.name = "Group_%s" % entry.header
+			row.text = String(entry.header).to_upper()
+			row.theme_type_variation = &"ListGroupRow"
+			row.autowrap_mode = TextServer.AUTOWRAP_OFF
+			row.disabled = true
+			row.focus_mode = Control.FOCUS_NONE
+			row.set_meta(&"entry_id", "")
+			row.set_pressed_no_signal(false)
+			continue
+		row.name = "Entry_%s" % entry.id
+		var mark: String = ZONE_MARKS.get(entry.state, "")
+		row.text = "%s  %s" % [mark, entry.title] if mark != "" else entry.title
+		var is_hint: bool = entry.kind == HINT
+		row.theme_type_variation = &"ListHintRow" if is_hint else &"ListSubRow" if entry.parent != "" else &"ListRow"
+		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART if is_hint else TextServer.AUTOWRAP_OFF
+		row.disabled = entry.state == "locked" or is_hint
+		row.focus_mode = Control.FOCUS_NONE if row.disabled else Control.FOCUS_ALL
+		row.set_meta(&"entry_id", entry.id)
+		row.set_pressed_no_signal(entry.id == selected_id)
+		if entry.id == selected_id:
+			selected_row = row
+			last_row = row
+		elif selected_row != null and entry.id.begins_with(selected_id + "/"):
+			last_row = row
+	# Довгий список (кілька локацій): обраний пункт і його цілі з підказкою — у видимій частині.
+	if selected_row != null:
+		_list_scroll.ensure_control_visible.call_deferred(last_row)
+		_list_scroll.ensure_control_visible.call_deferred(selected_row)
 	_link_tab_and_list(rows)
 
 
