@@ -12,7 +12,7 @@ branch: cloud/skills-v2-move
 - **Poses** reuse existing frames: HeavyWindup → Roll / Run / Jump + Fall → HeavyStrike / Land. **Effects** reuse existing ones: the hero's strike smears, the Skyfall Blessing beam as light pillars, and a scaled-up LandingDust as the sand wave. **Shield Charge shows no shield yet.** The shield is a spell that drops from the sky (skills_audit, S19), and its art has not landed. The list of missing art is below.
 - **Dune Quake "knocks down"** with the existing stun for 1.2 s. The knocked-down state comes in slice 6.
 - **Tests:** a new `verify_skill_moves` (12 sections, ALL PASS). Also ALL PASS: `verify_skill_rules`, `verify_combat_flow`, `verify_scripts_compile`, `verify_skills_combat`, `verify_skill_screen`, `verify_skill_trees`, `verify_skill_trees_ui`, `verify_skill_ranks`, `verify_oath`.
-- **Full suite:** SUITE_LINE
+- **Full suite:** `SUITE: 7 FAIL`. Five of them are the known failures that the skills-v2-data and skills-v2-screen reports list, and they fail the same way without this branch: `verify_map_geometry`, `verify_progression`, `verify_save_load`, `verify_save_load_room` and `verify_difficulty`. `verify_city_gates_raid` passed on one re-run (the same timing flake skills-v2-screen saw). `verify_skill_fx` was this branch's: it requires each active to have its own frames (D279). It now lets the movement skills use the borrowed effect until their art lands, and passes. (The first suite run gave 133 FAIL from a local import mishap, not a code fault: the imported `heavy_battle.mp3` was missing. It was re-imported and the suite re-run.)
 - No B rows fixed. The D-ID text is below (placeholder D-sv2m).
 
 ## D-ID text (for the orchestrator; placeholder D-sv2m)
@@ -60,6 +60,7 @@ branch: cloud/skills-v2-move
   - [11] BUSY in the air;
   - [12] data.
 - `verify_skill_rules` [11]: 22 planned actives (was 28), the 6 are built. The planned example moved from Dash Strike to Rising Slash.
+- `verify_skill_fx` [1]: the movement skills use `MoveSkill.tscn`, the borrowed effect. Their own frames, and the D279 "no shared frames" check for them, come with the art lane.
 - `verify_skill_screen`: the "coming later" example is Rising Slash. `verify_skill_trees`: the built-active check reads `release_pose`.
 - Capture: `capture_skill_moves.gd` makes one sheet, 6 rows × windup / move / strike (`skill_moves_sheet.png` in the session scratchpad). The first look showed the leaps landing with the hero's sprite inside the enemy (body-to-body, 4 px). `LEAP_GAP` went from 4 to 24 for that.
 
