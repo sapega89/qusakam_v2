@@ -44,7 +44,15 @@ func start(fight_enemies: Array[Node]) -> void:
 	for body: CombatBody2D in _bodies():
 		body.min_health = 1
 		_link(body.health_changed, _keep_alive.bind(body))
+	_set_training(true)
 	_begin(0)
+
+
+## Поки йдуть уроки, вороги б'ють і в блок і не відскакують з-під важкого (EnemyLogic.in_training, D764).
+func _set_training(on: bool) -> void:
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			enemy.enemy_logic.in_training = on
 
 
 func _link(sig: Signal, call: Callable) -> void:
@@ -138,6 +146,7 @@ func _stop() -> void:
 	set_physics_process(false)
 	for body: CombatBody2D in _bodies():
 		body.min_health = 0
+	_set_training(false)
 	for link: Array in _links:
 		var sig: Signal = link[0]
 		if not sig.is_null():

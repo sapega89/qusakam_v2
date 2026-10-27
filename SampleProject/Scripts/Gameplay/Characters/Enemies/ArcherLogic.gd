@@ -36,7 +36,7 @@ func handle_attack_state(_delta: float) -> void:
 	velocity.x = 0
 	_face_player()
 	var away: int = -1 if dx > 0.0 else 1
-	# Герой підходить (D742): відступає раніше, коли той іде на лучника; а в куті — проходить крізь героя на інший бік
+	# Герой підходить (D764): відступає раніше, коли той іде на лучника; а в куті — проходить крізь героя на інший бік
 	var closing: bool = player.velocity.x * signf(-dx) > AWAY_SPEED
 	if absf(dx) < enemy.keep_away * (CLOSING_KEEP if closing else 1.0):
 		if _can_back_away(away):
@@ -50,7 +50,7 @@ func handle_attack_state(_delta: float) -> void:
 			return
 	if absf(_hero_y_at(enemy.attack_windup) - enemy.global_position.y) > enemy.same_height:
 		return
-	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494), зі змінним ритмом (D742); натягують разом не більше
+	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494), зі змінним ритмом (D764); натягують разом не більше
 	# двох (жетон, D504). Герой п'є флягу чи замахується важким на виду (D713) — стріляє, не чекаючи кінця перерви.
 	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free():
 		_rest_after_swing()

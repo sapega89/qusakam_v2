@@ -297,7 +297,7 @@ func _staggers() -> void:
 		tell_nodes.append(target.get_children().filter(func(c: Node) -> bool: return c.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd")).size())
 	target.enemy_logic.attack_telegraphed.connect(on_tell)
 	var strikes: Array = []
-	# D742: серія б'є, лише доки дістає героя — герой у досяжності, невразливий (удари не відкидають його)
+	# D764: серія б'є, лише доки дістає героя — герой у досяжності, невразливий (удари не відкидають його)
 	var hero_was: Vector2 = hero.global_position
 	hero.global_position = target.global_position + Vector2(-30, 0)
 	hero.is_invulnerable = true

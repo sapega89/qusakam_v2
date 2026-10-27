@@ -127,6 +127,8 @@ func _win(spawner_name: String) -> void:
 	var spawner: Node = game.map.get_node(spawner_name)
 	game.player.global_position = Vector2(spawner.trigger_area.global_position.x, game.player.global_position.y)
 	for round in 12:
+		# Тут кімната, а не бій: вороги тепер справді б'ють (D764), поки скрипт їх добиває, — герой не має загинути
+		game.player.current_health = game.player.Max_Health
 		await create_timer(1.5).timeout
 		for enemy in spawner.get_children().filter(func(n: Node) -> bool: return n.is_in_group(&"enemies") and n.is_alive()):
 			enemy.die()

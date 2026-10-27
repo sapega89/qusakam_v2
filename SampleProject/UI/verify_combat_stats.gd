@@ -137,7 +137,7 @@ func _initialize() -> void:
 			"more dexterity, a shorter swing (x%.2f: %.3f s)" % [faster, combat._state_left])
 	attributes.dexterity = dex
 
-	print("[4] Enemy tempo from EnemyStats.attack_cooldown (B111, D394), not a metronome: x0.7-1.3 (D742)")
+	print("[4] Enemy tempo from EnemyStats.attack_cooldown (B111, D394), not a metronome: x0.7-1.3 (D764)")
 	ck(not "attack_cooldown" in enemies[0].enemy_logic, "EnemyLogic keeps no tempo of its own")
 	var tempos := {}
 	hero.Max_Health = 9999  # тут лише темп: чотири серії D642 інакше вбивають героя рівня 1, і пауза Game Over зупиняє бій
@@ -159,7 +159,7 @@ func _initialize() -> void:
 		while logic.is_attacking:
 			await physics_frame
 	ck(tempos.has("fast") and tempos.fast >= 0.8 * 0.7 - 0.001 and tempos.fast <= 0.8 * 1.3 + 0.001,
-			"the fast enemy swings every 0.8 s, x0.7-1.3 (D713, was D642's 1.0; D742) (%s)" % [tempos])
+			"the fast enemy swings every 0.8 s, x0.7-1.3 (D713, was D642's 1.0; D764) (%s)" % [tempos])
 
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

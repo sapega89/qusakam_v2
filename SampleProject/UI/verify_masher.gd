@@ -67,11 +67,11 @@ const SURROUND := 0.3
 const BOSS_MASH := 12.0
 const BOSS_WAIT := 6.0
 const BOSS_WAIT_GAP := 86
-## [6] (D742): вправа на кожен вид окремо, на рівній землі DesertRoad (як verify_combat_enemies): герой перекочується
+## [6] (D764): вправа на кожен вид окремо, на рівній землі DesertRoad (як verify_combat_enemies): герой перекочується
 ## й стрибає геть, відходить, блокує, б'є важким і легким, іде на лучника; вид має вжити своїх рішень (EnemyLogic.tactic).
 const DRILL_KINDS := ["melee", "shield", "tank", "bandit_brute", "tower_shield_guard", "fast", "jackal_pack_leader", "jackal_cursed",
 		"armoured_scorpion", "archer", "heavy_archer"]
-## Ціль D742: удари ближніх видів, що не дістали героя, — менше за цю частку; простій у досяжності — не довше; після
+## Ціль D764: удари ближніх видів, що не дістали героя, — менше за цю частку; простій у досяжності — не довше; після
 ## переката чи стрибка ворог знову в бою не пізніше.
 const WHIFF_MAX := 0.15
 const IDLE_MAX := 1.0
@@ -125,7 +125,7 @@ var latches := 0
 var _was_latched := false
 ## Бій ще випускає хвилі (RoomEnemySpawner.all_enemies_spawned не прийшов).
 var _spawning := false
-## D742 (розум ворогів): удари хітбоксом і ті, що не дістали героя; простій у досяжності; ухиляння героя (перекат,
+## D764 (розум ворогів): удари хітбоксом і ті, що не дістали героя; простій у досяжності; ухиляння героя (перекат,
 ## стрибок) і чи вороги його втратили; застрягання й падіння — по бою і по виду ворога (_ai_kinds["бот|вид"]).
 var whiffs := 0
 var dodged := 0
@@ -144,7 +144,7 @@ var _was_rolling := false
 var _was_air := false
 var _bot := ""
 var _ai_kinds := {}
-## Яких рішень чекати від виду (D742) — з вправи [6].
+## Яких рішень чекати від виду (D764) — з вправи [6].
 var _expect := {}
 
 func ck(ok: bool, label: String) -> void:
@@ -227,7 +227,7 @@ func _initialize() -> void:
 
 	# MASHER_ONLY=DRILL — лише вправа [6]
 	if OS.get_environment("MASHER_ONLY") in ["", "DRILL"]:
-		print("[6] each kind answers the hero: follows a roll or a jump, keeps pressure, reads a heavy, a swing and a block (D742)")
+		print("[6] each kind answers the hero: follows a roll or a jump, keeps pressure, reads a heavy, a swing and a block (D764)")
 		await _drill()
 	if not _ai_kinds.is_empty():
 		_print_ai_table()
@@ -342,9 +342,9 @@ func _boss_meeting(fight: Dictionary) -> void:
 	hero.defeat_handler = Callable()
 
 
-## D742: перевірки розуму ворогів по всіх боях і вправі.
+## D764: перевірки розуму ворогів по всіх боях і вправі.
 func _check_ai(rows: Array[Dictionary]) -> void:
-	print("[7] enemies mean to kill: few swings at the air, no idling in reach, no dumb moves, each kind's own answers (D742)")
+	print("[7] enemies mean to kill: few swings at the air, no idling in reach, no dumb moves, each kind's own answers (D764)")
 	for bot: String in ["MASHER", "GOOD"]:
 		var strikes_n := 0
 		var whiffs_n := 0
@@ -392,7 +392,7 @@ func _check_ai(rows: Array[Dictionary]) -> void:
 		ck(missing.is_empty(), "%s uses its own answers %s (missing %s)" % [kind, _expect[kind], missing])
 
 
-## Вправа [6] (D742): кожен вид сам на сам з героєм, що має 99999 HP, на рівній землі.
+## Вправа [6] (D764): кожен вид сам на сам з героєм, що має 99999 HP, на рівній землі.
 func _drill() -> void:
 	_bot = "DRILL"
 	swings = {}
@@ -559,9 +559,9 @@ func _drill_kind(enemy: Node, base: Vector2) -> void:
 			_hold_move(0)
 
 
-## D742: по боту й виду ворога — удари, промахи, простій у досяжності, ухиляння героя, втрати, повернення в бій.
+## D764: по боту й виду ворога — удари, промахи, простій у досяжності, ухиляння героя, втрати, повернення в бій.
 func _print_ai_table() -> void:
-	print("    AI by kind (D742): bot | kind | strikes | at the air (%) | dodged | idle in reach s (longest) | evasions | lost | re-engage avg s | tactics")
+	print("    AI by kind (D764): bot | kind | strikes | at the air (%) | dodged | idle in reach s (longest) | evasions | lost | re-engage avg s | tactics")
 	var keys := _ai_kinds.keys()
 	keys.sort()
 	for key: String in keys:
@@ -586,7 +586,7 @@ func _print_row(row: Dictionary) -> void:
 			% [row.bot, row.build, row.name, row.level, _verdict(row), roundi(row.hp_left * 100), roundi(row.enemy_left * 100),
 			row.time, row.hits, row.heals, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed,
 			row.contact, "%d%%" % roundi(row.both * 100) if row.both >= 0.0 else "-", row.lunges, row.latches])
-	print("        AI (D742): melee strikes %d: at the air %d, dodged %d | idle in reach %.1fs, longest %.2fs (%s) | evasions %d, lost %d, re-engage %s | stuck %d, fell %d"
+	print("        AI (D764): melee strikes %d: at the air %d, dodged %d | idle in reach %.1fs, longest %.2fs (%s) | evasions %d, lost %d, re-engage %s | stuck %d, fell %d"
 			% [row.melee_strikes, row.whiffs, row.dodged, row.idle_reach, row.idle_max, row.idle_max_who, row.evasions, row.lost,
 			"%.2fs avg" % _mean(row.reengage) if not row.reengage.is_empty() else "-", row.stuck, row.fell])
 	for line: String in row.dumb:
@@ -892,7 +892,7 @@ func _track(enemy: Node) -> void:
 	_ai(enemy)
 
 
-## Рішення ворога (D742: EnemyLogic.tactic) — по виду.
+## Рішення ворога (D764: EnemyLogic.tactic) — по виду.
 func _on_tactic(name: StringName, enemy: Node) -> void:
 	var tactics: Dictionary = _ai(enemy).tactics
 	tactics[name] = tactics.get(name, 0) + 1
@@ -901,7 +901,7 @@ func _on_tactic(name: StringName, enemy: Node) -> void:
 
 
 ## Замах ворога: інший ворог уже замахується чи б'є — «разом».
-## Вид ворога для звіту D742 (бос — за назвою).
+## Вид ворога для звіту D764 (бос — за назвою).
 func _kind(enemy: Node) -> String:
 	return swings[enemy.get_instance_id()].name
 
@@ -1000,7 +1000,7 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 			swings[id]["at"] = swings[id].get("at", []) + ["%d%s" % [roundi(absf(hero.global_position.x - enemy.global_position.x)), "i" if hero.is_invulnerable else ""]]
 		if on and not enemy.get_meta(&"masher_on", false):
 			enemy.set_meta(&"masher_landed", false)
-		# D742: удар не дістав героя — хітбокс жодного кадру не торкнувся його тіла. Герой за замах і удар котився чи
+		# D764: удар не дістав героя — хітбокс жодного кадру не торкнувся його тіла. Герой за замах і удар котився чи
 		# стрибав — це ухил (dodged), інакше — удар у повітря (whiffs)
 		if logic.is_attacking and (hero.mover.is_rolling() or not hero.is_on_floor()):
 			enemy.set_meta(&"masher_dodged", true)
@@ -1048,7 +1048,7 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 	_telegraphs = _telegraphs.filter(func(tg: Dictionary) -> bool: return tg.strike_in > -0.4 and is_instance_valid(tg.enemy))
 
 
-## D742: простій у досяжності (ближній ворог стоїть, не б'є й не ходить, а герой на його підлозі в досяжності удару),
+## D764: простій у досяжності (ближній ворог стоїть, не б'є й не ходить, а герой на його підлозі в досяжності удару),
 ## застряг (хоче до героя, а стоїть перед стіною чи уступом довше 1 с), упав (довше 0.4 с у повітрі без відкидання).
 func _watch_ai(enemy: Node, logic: Node, dt: float) -> void:
 	if not _melee(enemy) or hero.is_dead:
@@ -1084,7 +1084,7 @@ func _watch_ai(enemy: Node, logic: Node, dt: float) -> void:
 	enemy.set_meta(&"masher_air", air)
 
 
-## D742: герой ухилився (почав перекат чи стрибнув) — ближні вороги поруч мають піти за ним і знову стати до бою
+## D764: герой ухилився (почав перекат чи стрибнув) — ближні вороги поруч мають піти за ним і знову стати до бою
 ## (на свою відстань бою, у стан ATTACK), щойно він знову на землі. Додому чи 4 с без бою, хоч героя й видно, — втратили.
 func _watch_evasions(tracked: Array[Node], dt: float) -> void:
 	var rolling: bool = hero.mover.is_rolling()

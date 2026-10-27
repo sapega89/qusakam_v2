@@ -31,7 +31,7 @@ const COMBO_MARGIN := 6.0
 ## Черга дійшла до серії, а герой трохи далі за її досяжність (до COMBO_STEP_IN px) — бос заходить бити, а не пропускає
 ## серію заради іншого ходу.
 const COMBO_STEP_IN := 60.0
-## D742: герой стоїть у досяжності серії довше за REACH_PATIENCE с — бос б'є, не чекаючи кінця перерви (не стоїть перед
+## D764: герой стоїть у досяжності серії довше за REACH_PATIENCE с — бос б'є, не чекаючи кінця перерви (не стоїть перед
 ## ним); відкритого героя (EnemyLogic._hero_opened) карає з досяжності серії й кроку до неї.
 const REACH_PATIENCE := 0.7
 var _reach_wait := 0.0
@@ -54,7 +54,7 @@ func _punish_range() -> float:
 
 
 ## Бос між ходами тримає свою відстань (preferred_range, B154), а не відходить з досяжності, і не фінтує: його візерунок
-## і так читається (D742).
+## і так читається (D764).
 func _decide_after_attack() -> void:
 	pass
 
@@ -71,7 +71,7 @@ func _abandons() -> bool:
 	return false
 
 
-## Бос карає лише великі вікна (D742): відновлення важкого й приземлення; флягу, каст і кінець серії — ні (його
+## Бос карає лише великі вікна (D764): відновлення важкого й приземлення; флягу, каст і кінець серії — ні (його
 ## візерунок і так тисне, а вікно для ковтка біля боса герой має вибороти відходом).
 func _hero_opened(adx: float) -> bool:
 	if adx > _punish_range():
@@ -193,7 +193,7 @@ func _recovery_time() -> float:
 ## Перерва EnemyStats.attack_cooldown боса (D394) рахується від кінця ходу, а не від замаху: довгий замах боса інакше з'їдав би
 ## всю перерву, і новий хід починався б одразу після удару — героєві ніколи бити у відповідь.
 func _rest() -> void:
-	attack_ready_in = enemy.attack_cooldown * randf_range(RHYTHM_MIN, RHYTHM_MAX)  # не метроном (D742)
+	attack_ready_in = enemy.attack_cooldown * randf_range(RHYTHM_MIN, RHYTHM_MAX)  # не метроном (D764)
 
 
 func _fits(move: Dictionary, dx: float) -> bool:

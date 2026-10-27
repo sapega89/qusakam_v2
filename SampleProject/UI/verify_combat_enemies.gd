@@ -184,7 +184,7 @@ func _tells() -> void:
 		enemy.child_entered_tree.connect(on_child)
 		sounds.clear()
 		var strikes: Array = []
-		# D742: серія б'є, лише доки дістає героя — герой стоїть у досяжності, невразливий (удари не відкидають його)
+		# D764: серія б'є, лише доки дістає героя — герой стоїть у досяжності, невразливий (удари не відкидають його)
 		hero.global_position = Vector2(enemy.global_position.x - 30.0, floor_y)
 		hero.is_invulnerable = true
 		enemy.enemy_logic.last_direction = -1
@@ -603,7 +603,7 @@ func _lunges_and_pounce() -> void:
 	# Бандит: герой за 180 px, поза досяжністю удару (40 px), — випад дістає
 	var bandit: Node = await _spawn(BANDIT, 0.0, false)
 	bandit.enemy_logic._lunge_rest = 60.0  # сам не кидається: випади тут веде тест
-	# Спершу спокій, тоді герой на місце (D742: щойно приземлений герой — відкритий, і ворог кинувся б карати сам)
+	# Спершу спокій, тоді герой на місце (D764: щойно приземлений герой — відкритий, і ворог кинувся б карати сам)
 	bandit.enemy_logic.player = hero
 	await _quiet(bandit)
 	await _place(bandit, -180)
@@ -753,12 +753,12 @@ func _recovery_and_back_off() -> void:
 		await physics_frame
 	while tank.enemy_logic.is_attacking:
 		await physics_frame
-	# D742: після удару й tank (back_off 0) виходить з досяжності удару героя, а не стоїть перед ним
+	# D764: після удару й tank (back_off 0) виходить з досяжності удару героя, а не стоїть перед ним
 	ck(tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT, "the tank steps back out of the hero's reach after its swing (state %d)" % tank.enemy_logic.current_state)
 	while tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT:
 		await physics_frame
 	var gap: float = absf(tank.global_position.x - hero.global_position.x)
-	ck(gap > tank.enemy_logic._hero_reach(), "it stops %.0f px from him, past his reach %.0f px (D742)" % [gap, tank.enemy_logic._hero_reach()])
+	ck(gap > tank.enemy_logic._hero_reach(), "it stops %.0f px from him, past his reach %.0f px (D764)" % [gap, tank.enemy_logic._hero_reach()])
 	hero.is_invulnerable = false
 	tank.set_physics_process(false)
 	await _done(tank)

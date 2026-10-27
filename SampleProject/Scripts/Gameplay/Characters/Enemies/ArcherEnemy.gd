@@ -52,13 +52,13 @@ func start_attack(direction: int) -> void:
 	arrow.global_position = from
 
 
-## Нахил стріли з [param from] у центр тіла героя (його CollisionShape2D) там, де він буде, коли стріла долетить (D742),
+## Нахил стріли з [param from] у центр тіла героя (його CollisionShape2D) там, де він буде, коли стріла долетить (D764),
 ## обмежений max_tilt.
 func _tilt_to(from: Vector2) -> float:
 	if max_tilt == 0.0:
 		return 0.0
 	var body: Vector2 = player.get_node(^"CollisionShape2D").global_position
-	# Випереджає (D742): цілить туди, де тіло героя буде, коли стріла долетить
+	# Випереджає (D764): цілить туди, де тіло героя буде, коли стріла долетить
 	var flight := absf(body.x - from.x) / arrow_speed
 	body += Vector2(player.velocity.x * flight, enemy_logic._hero_y_at(flight) - player.global_position.y)
 	var dx := absf(body.x - from.x)
