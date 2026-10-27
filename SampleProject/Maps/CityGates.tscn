@@ -21,6 +21,12 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_scribe.tscn" id="scribe"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/TownsfolkCrowd.gd" id="tf_crowd"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_water_carrier.tscn" id="tf_water"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_porter.tscn" id="tf_porter"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_old_man.tscn" id="tf_old"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_merchant_woman.tscn" id="tf_woman"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -174,6 +180,35 @@ position = Vector2(900, 344)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SkyCeiling" unique_id=1846200203]
 shape = SubResource("WorldBoundary_sky")
 
+[node name="Crowd" type="Node2D" parent="."]
+script = ExtResource("tf_crowd")
+lines = PackedStringArray("The scribe asks everyone the same: whom do you serve?", "We walked three days from the burnt villages.", "They check your eyes first. Blue eyes don't get in.", "Since the barrier fell, the road's full of bandits.")
+with_flag = "city_gates_fight_complete"
+
+[node name="Porter1" parent="Crowd" instance=ExtResource("tf_porter")]
+position = Vector2(1000, 384)
+stops = PackedFloat32Array(1000, 1012)
+doorways = PackedFloat32Array()
+speed = 14
+pause_min = 4.0
+pause_max = 9.0
+
+[node name="OldMan1" parent="Crowd" instance=ExtResource("tf_old")]
+position = Vector2(950, 384)
+stops = PackedFloat32Array(950, 958)
+doorways = PackedFloat32Array()
+speed = 10
+pause_min = 4.0
+pause_max = 9.0
+
+[node name="MerchantWoman1" parent="Crowd" instance=ExtResource("tf_woman")]
+position = Vector2(896, 384)
+stops = PackedFloat32Array(896, 908)
+doorways = PackedFloat32Array()
+speed = 14
+pause_min = 4.0
+pause_max = 9.0
+
 [node name="GuardLeft" parent="." unique_id=1846200204 instance=ExtResource("gate_guard")]
 position = Vector2(1200, 384)
 chatter_dialogue = "res://dialogue_quest/CityGates_Guard_Chatter.dqd"
@@ -187,6 +222,9 @@ position = Vector2(1270, 384)
 
 [node name="Sprite2D" parent="GuardRight" index="0"]
 flip_h = true
+
+[node name="GateScribe" parent="." instance=ExtResource("scribe")]
+position = Vector2(1150, 384)
 
 [node name="RaidTrigger" type="Area2D" parent="." unique_id=806456742]
 position = Vector2(700, 192)

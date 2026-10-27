@@ -27,6 +27,7 @@ func _connect_events() -> void:
 	EventBus.skill_unlocked.connect(_on_skill_unlocked)
 	EventBus.player_staggered.connect(_on_player_staggered)
 	EventBus.enemy_tell_shown.connect(_on_enemy_tell_shown)
+	EventBus.leanings_changed.connect(_on_leanings_changed)
 
 ## Рух — TipTray сам, коли зʼявився в Game.
 
@@ -64,6 +65,12 @@ func _on_player_leveled_up(_new_level: int, _old_level: int) -> void:
 		tray.show_tip(HEALING_PALM)
 		return
 	tray.show_tip("level_up")
+
+## D725 (oath_affinity_plan п. 6): перший нахил до шляху — «?» про те, що стиль бою й вчинки ведуть до шляху; раз за проходження.
+func _on_leanings_changed() -> void:
+	var tray: Node = _tray()
+	if tray != null:  # поза Game.tscn (тести менеджерів) підказок немає
+		tray.show_tip("paths")
 
 func _on_skill_unlocked(skill_id: String) -> void:
 	var tray: Node = _tray()

@@ -1,0 +1,106 @@
+// [DRAFT] D727, D728 — the census at the City Gate (oath_affinity_plan item 5): the scribe looks into the hero's eyes (the sky's curse, D587),
+// writes him into the city book and asks whom he serves. «I don't know» — two or three questions, then the three paths and his advice
+// (answers + leanings, OathLeanings); the player takes it or says «No, rather…». The choice is the oath, for good, here and now.
+say|GATE_SCRIBE|Hold it, swordsman. A fight's a fight, but the census is the census. Come over here.
+say|GATE_SCRIBE|Look at me... closer. Your eyes aren't blue. The sky hasn't taken you yet. Good.
+say|GATE_SCRIBE|Name? Where from?
+say|KUSAKAM|Kusakam. From the village below the canyon.
+say|GATE_SCRIBE|Kusakam, from below the canyon... Written. Now: whom do you serve? Who is your god? I'll write it as you say it.
+choice|Samal|${contract_god}|Nobody. I walk on my own|I don't know
+branch|choice|Samal
+signal|census|pick|samal
+say|GATE_SCRIBE|Samal. Light and shield. Written.
+branch|end
+branch|choice|${contract_god}
+signal|census|pick|contract
+say|GATE_SCRIBE|${contract_god}. Price and bargain. Written.
+branch|end
+branch|choice|Nobody. I walk on my own
+signal|census|pick|none
+say|GATE_SCRIBE|No god. Your own road. So I write.
+branch|end
+branch|choice|I don't know
+say|GATE_SCRIBE|You don't know... Half of them don't. Then tell me this.
+say|GATE_SCRIBE|In the market two men beat a third. What do you do?
+choice|I stand by the weaker one|I see who pays more|I walk around. Not my fight
+branch|choice|I stand by the weaker one
+signal|census|answer|samal
+branch|end
+branch|choice|I see who pays more
+signal|census|answer|contract
+branch|end
+branch|choice|I walk around. Not my fight
+signal|census|answer|none
+branch|end
+say|GATE_SCRIBE|Shield or sword?
+choice|Shield: a blow must be held|Sword: blow for blow, even if it costs blood|Neither: my feet
+branch|choice|Shield: a blow must be held
+signal|census|answer|samal
+branch|end
+branch|choice|Sword: blow for blow, even if it costs blood
+signal|census|answer|contract
+branch|end
+branch|choice|Neither: my feet
+signal|census|answer|none
+branch|end
+say|GATE_SCRIBE|You gave your word, and now it hurts you. Do you keep it?
+choice|I keep it, because I gave it|I keep it, if it was paid for|My word: I gave it, I can take it back
+branch|choice|I keep it, because I gave it
+signal|census|answer|samal
+branch|end
+branch|choice|I keep it, if it was paid for
+signal|census|answer|contract
+branch|end
+branch|choice|My word: I gave it, I can take it back
+signal|census|answer|none
+branch|end
+signal|census|advise
+say|GATE_SCRIBE|There are three roads in this city. Samal, for those who stand up for others: light and shield.
+say|GATE_SCRIBE|${contract_god}, for those who pay and take: bargain and price.
+say|GATE_SCRIBE|And those with no god walk at their own pace and bow to no one.
+branch|flag|census_advice_samal
+say|GATE_SCRIBE|I've seen enough people. My advice: Samal.
+choice|Write it: Samal|No, rather ${contract_god}|No, rather no god
+branch|choice|Write it: Samal
+signal|census|pick|samal
+branch|end
+branch|choice|No, rather ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|choice|No, rather no god
+signal|census|pick|none
+branch|end
+branch|end
+branch|flag|census_advice_contract
+say|GATE_SCRIBE|I've seen enough people. My advice: ${contract_god}.
+choice|Write it: ${contract_god}|No, rather Samal|No, rather no god
+branch|choice|Write it: ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|choice|No, rather Samal
+signal|census|pick|samal
+branch|end
+branch|choice|No, rather no god
+signal|census|pick|none
+branch|end
+branch|end
+branch|flag|census_advice_none
+say|GATE_SCRIBE|I've seen enough people. You: no god.
+choice|Write it: no god|No, rather Samal|No, rather ${contract_god}
+branch|choice|Write it: no god
+signal|census|pick|none
+branch|end
+branch|choice|No, rather Samal
+signal|census|pick|samal
+branch|end
+branch|choice|No, rather ${contract_god}
+signal|census|pick|contract
+branch|end
+branch|end
+say|GATE_SCRIBE|So I write. A word in the city book is never scraped out.
+branch|end
+branch|flag|census_low_level
+say|GATE_SCRIBE|The strength of your road comes with experience, once you reach level five.
+branch|end
+say|GATE_SCRIBE|That's all. Go on through, Kusakam. The city knows your name now.
+exit|

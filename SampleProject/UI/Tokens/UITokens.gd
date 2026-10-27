@@ -371,6 +371,7 @@ const EMOTE_SURPRISE := ACCENT          # «!»
 const EMOTE_CONFUSION := TEXT_PRIMARY   # «?»
 const EMOTE_SILENCE := TEXT_SECONDARY   # «…»
 const EMOTE_FEAR := SP_FILL             # крапля поту
+const EMOTE_LOVE := HURT_RED            # серце (кіт у Місті, D740)
 const EMOTE_SCALE := 3.0                # значок 10–12 px × 3: читається поруч зі спрайтами акторів (×1.5 від 64 px)
 const EMOTE_GAP := 4.0                  # світові px між маківкою і низом значка
 const EMOTE_POP := 0.12                 # значок вискакує, секунд
@@ -477,6 +478,9 @@ const CARD_MAP_ZOOM := 1.6             # пергамент більший за 
 const CARD_LIGHT_RADIUS := 0.16        # світле коло, частка висоти мапи
 const CARD_LIGHT_SOFTNESS := 0.20      # м'який край світла
 const CARD_SHADE := Color("111118", 0.94)  # пергамент поза світлом
+## Герби шляхів у Журналі (D725, oath_affinity_plan п. 6): іконки навичок шляху, яскравіші з нахилом.
+const PATH_EMBLEM_SIZE := Vector2(48, 48)
+const PATH_EMBLEM_DIM := 0.2           # яскравість і непрозорість герба без нахилу; найсильніший — 1.0
 const CARD_EPITHET_SPACING := 6        # tracking епітета
 const SIZE_CARD_EPITHET := 16          # SemiBold, UPPER, accent
 const SIZE_CARD_PLACE := 14            # SemiBold, UPPER, accent — назва місця

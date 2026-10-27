@@ -1,11 +1,11 @@
 [gd_resource type="Resource" script_class="DQCharacter" load_steps=2 format=3]
 
 [ext_resource type="Script" uid="uid://co7cwxc08de1r" path="res://addons/dialogue_quest/scripts/systems/character/resources/character.gd" id="1_character"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/witch/portrait.tres" id="portrait"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/contract_priest/portrait.tres" id="portrait"]
 
 [resource]
 script = ExtResource("1_character")
 portrait = ExtResource("portrait")
-color = Color(0.7, 0.45, 0.9, 1)
+color = Color(0.85, 0.7, 0.3, 1)
 character_id = "OATH_WITCH"
-character_name = "Morrow"
+character_name = "Priest of contracts"

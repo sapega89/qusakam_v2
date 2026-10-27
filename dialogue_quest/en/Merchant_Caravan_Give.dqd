@@ -1,4 +1,16 @@
 // [DRAFT] D293, D311 (queue 8b) — the merchant's quest "The Stolen Caravan"
 say|MERCHANT|Those same bandits looted my caravan and drove it off to the city gate.
+// [DRAFT] D725 — a deed: help / bargain / walk past (OathLeanings); the task is taken either way
+choice|I'll help. Bandits have no place here|And how much will you pay?|The gate is on my way anyway
+branch|choice|I'll help. Bandits have no place here
+signal|leaning|samal
+branch|end
+branch|choice|And how much will you pay?
+signal|leaning|contract
+say|MERCHANT|I won't be stingy. A merchant never forgets a debt.
+branch|end
+branch|choice|The gate is on my way anyway
+signal|leaning|none
+branch|end
 say|MERCHANT|Chase them away from the gate. I'll follow my goods — look for me in the city.
 exit|

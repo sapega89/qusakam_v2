@@ -47,19 +47,19 @@
       "tree": "Light",
       "level": 5,
       "jp_cap": 12,
-      "keeper": "Sister Ilvane, priest of the Sky",
+      "keeper": "Sister Ilvane, priestess of Samal",
       "subclasses": [
-        "Sky Warden",
+        "Samal's Warden",
         "Dragon Crusader"
       ],
-      "prestige": "Avatar of the Sky"
+      "prestige": "Avatar of Samal"
     },
     "dark_knight": {
       "name": "Dark Knight",
       "tree": "Dark",
       "level": 5,
       "jp_cap": 12,
-      "keeper": "Morrow the witch",
+      "keeper": "The priest of contracts",
       "subclasses": [
         "Lord of Ash",
         "Oathreaper"
@@ -414,7 +414,7 @@
       "id": "radiant_smite",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/radiant_smite.png",
       "name": "Radiant Smite",
-      "description": "A strike charged with the light of the sky at everything in front of you; dazes the first enemy.",
+      "description": "A strike charged with Samal's light at everything in front of you; dazes the first enemy.",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",
@@ -512,7 +512,7 @@
     {
       "id": "skys_grace",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/skys_grace.png",
-      "name": "Sky's Grace",
+      "name": "Samal's Grace",
       "description": "Gain 0.5 more SP from every hit and parry.",
       "class_id": "",
       "oath": "paladin",
@@ -538,7 +538,7 @@
     {
       "id": "skyfall_blessing",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/skyfall_blessing.png",
-      "name": "Skyfall Blessing",
+      "name": "Samal's Blessing",
       "description": "Strike everything in front of you and heal an ally next to you, or yourself.",
       "class_id": "",
       "oath": "paladin",
@@ -617,8 +617,8 @@
     {
       "id": "judgement_of_the_sky",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/judgement_of_the_sky.png",
-      "name": "Judgement of the Sky",
-      "description": "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first.",
+      "name": "Judgement of Samal",
+      "description": "Call Samal's light down on everything in front of you; the blast leaps to one more enemy and dazes the first.",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",

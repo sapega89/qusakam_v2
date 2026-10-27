@@ -49,11 +49,9 @@ func _initialize() -> void:
 
 	hero.global_position = Vector2(1470, 360)
 	for i in 30: await physics_frame
-	priest._on_interacted()
-	for i in 6: await process_frame
-	priest._on_menu_chosen(&"oath")
+	priest._on_interacted()  # D726: лише Talk — клятву дає перепис біля брами
 	for i in 10: await process_frame
-	await _shot("fb22_oath_choice")
+	await _shot("fb22_priest_menu")
 	priest._close_npc_menu()
 
 	# У місті сюжет уже відкрив вкладки меню (game_menu.tscn metadata/unlock_flag).
@@ -77,9 +75,7 @@ func _initialize() -> void:
 	var skills: Node = menu.find_child("SkillsComponent", true, false)
 	skills._rows["radiant_smite"].grab_focus()
 	for i in 4: await process_frame
-	await _shot("fb22_skills_paladin")
-	# Кадру «вкладка Dark Knight» після клятви немає: гравець її не відкриє — інші клятви закриті (D489),
-	# а show_tree() з коду падав на клітинках, яких немає на екрані.
+	await _shot("fb22_skills_paladin")  # D728: інших дерев шляхів не видно
 	quit(0)
 
 

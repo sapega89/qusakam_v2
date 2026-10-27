@@ -2,6 +2,7 @@ extends ManagerBase
 class_name SkillManager
 
 const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
+const OathLeanings = preload("res://SampleProject/Scripts/Systems/OathLeanings.gd")
 
 ## 🎓 SkillManager — бойові/класові навички, Job Points і SP.
 ##
@@ -80,6 +81,8 @@ var _sp_debt := 0.0
 var _since: Dictionary = {"after_parry": INF, "after_skill": INF}
 ## Поки навичка б'є (use_skill), її влучання не дають SP (D504: SP — за удари й парирування).
 var _skill_effect_running := false
+## Приховані нахили до шляхів (D725): стиль бою і вчинки → порада писаря на переписі.
+var leanings: OathLeanings = null
 
 
 func _initialize() -> void:
@@ -92,6 +95,8 @@ func _initialize() -> void:
 	EventBus.game_saving.connect(_on_game_saving)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	EventBus.charms_changed.connect(_on_charms_changed)
+	leanings = OathLeanings.new(_state)
+	add_child(leanings)
 
 
 ## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
@@ -331,7 +336,7 @@ func _on_player_parried(_attacker: Node) -> void:
 	gain_sp(SP_PER_PARRY + sp_per_hit_bonus())
 
 
-## Пасивки (Sky's Grace) і Wisdom (D335): +SP до кожного влучання й парирування.
+## Пасивки (Samal's Grace) і Wisdom (D335): +SP до кожного влучання й парирування.
 func sp_per_hit_bonus() -> float:
 	return passive_value("sp_per_hit") + _attributes().bonus("sp_per_hit")
 
@@ -573,12 +578,11 @@ func can_swear_oath(oath_id: String) -> Result:
 		return Result.UNKNOWN_OATH
 	if get_oath() != "":
 		return Result.OATH_SWORN
-	if _player_level() < int(skill_database.get_oath(oath_id).level):
-		return Result.LEVEL_TOO_LOW
 	return Result.OK
 
 
-## Клятва дається один раз і назавжди (Q66): відкриває дерево клятви.
+## Клятва дається один раз і назавжди (Q66), на переписі біля брами (D727, D728) за будь-якого рівня:
+## дерево клятви відкривається з її рівня (skills.json → oaths.level, навички — required_level), одразу, якщо вже досяг.
 func swear_oath(oath_id: String) -> Result:
 	var verdict := can_swear_oath(oath_id)
 	if verdict != Result.OK:

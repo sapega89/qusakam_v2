@@ -95,6 +95,7 @@ func _initialize() -> void:
 	db.class_jp_cap = 1000000  # D497: фікстури коштують десятки й тисячі JP — ліміт дерева тут ні до чого
 	gm.player_state["unlocked_skills"] = ["ta_learned"]
 	gm.player_state["job_points"] = 50
+	gm.player_state["oath"] = "paladin"  # D728: дерево шляху видно лише після перепису
 	sm.set_max_sp(40)
 	sm.restore_sp(25)
 	ui.update_display()

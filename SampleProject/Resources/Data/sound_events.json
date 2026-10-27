@@ -149,7 +149,7 @@
 	},
 	"voices": {
 		"KUSAKAM": "kusakam", "GRANDFATHER": "grandfather", "BLACKSMITH": "blacksmith",
-		"MERCHANT": "merchant", "PRIEST": "priest", "OATH_PRIEST": "oath_priest", "OATH_WITCH": "oath_witch", "OATH_DERVISH": "oath_dervish", "GATE_GUARD": "guard", "VILLAGER_1": "villager", "MARKET_TRADER": "villager",
+		"MERCHANT": "merchant", "PRIEST": "priest", "OATH_PRIEST": "oath_priest", "OATH_WITCH": "priest", "GATE_SCRIBE": "villager", "OATH_DERVISH": "oath_dervish", "GATE_GUARD": "guard", "VILLAGER_1": "villager", "MARKET_TRADER": "villager",
 		"BANDIT_1": "bandit", "BANDIT_2": "bandit", "BANDIT_LEADER": "bandit_leader", "ENEMY": "enemy",
 		"ALISIA": "alisia", "ASTRIT": "astrit", "URIZEN": "urizen", "GNOME_MECHANIC": "gnome", "SUAN": "suan",
 		"DARK_PRIESTS": "dark_priests",

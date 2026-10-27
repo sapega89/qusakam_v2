@@ -1,4 +1,4 @@
-// [DRAFT] D281 — Sister Ilvane after the Paladin's oath (BACKLOG 22)
-say|OATH_PRIEST|The Sky has accepted your oath, Paladin.
-say|OATH_PRIEST|Shine for the weak. And if you have lost your way in your learning — I will help you begin again, for an offering.
+// [DRAFT] D718, D726 — Sister Ilvane to one who serves Samal
+say|OATH_PRIEST|You are written down under Samal, Paladin. Shine for the weak.
+say|OATH_PRIEST|When the shield grows heavy, remember whom it covers.
 exit|

@@ -1,6 +1,6 @@
 extends Sprite2D
 
-## Емоція над головою актора кат-сцени (D460): «!» подив, «?» розгубленість, «…» мовчання, крапля поту — страх.
+## Емоція над головою актора кат-сцени (D460): «!» подив, «?» розгубленість, «…» мовчання, крапля поту — страх, серце — ласка (D740).
 ## Ставить Cutscene.react(): вузол — над маківкою, значок стоїть на ньому низом; вискакує, тримається, гасне й зникає.
 
 const ICONS := {
@@ -8,12 +8,14 @@ const ICONS := {
 	&"confusion": preload("res://SampleProject/Assets/UI/Icons/emote_confusion.svg"),
 	&"silence": preload("res://SampleProject/Assets/UI/Icons/emote_silence.svg"),
 	&"fear": preload("res://SampleProject/Assets/UI/Icons/emote_fear.svg"),
+	&"love": preload("res://SampleProject/Assets/UI/Icons/emote_love.svg"),
 }
 const COLORS := {
 	&"surprise": UITokens.EMOTE_SURPRISE,
 	&"confusion": UITokens.EMOTE_CONFUSION,
 	&"silence": UITokens.EMOTE_SILENCE,
 	&"fear": UITokens.EMOTE_FEAR,
+	&"love": UITokens.EMOTE_LOVE,
 }
 
 var kind: StringName

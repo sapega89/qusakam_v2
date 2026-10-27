@@ -30,6 +30,9 @@ const SECTIONS := {
 const PLACEHOLDER := "—"
 ## Ідентифікатор підпункту поточної цілі з HUD під поточним підетапом (BACKLOG 37).
 const LIVE_OBJECTIVE := "live_objective"
+## Герби шляхів (D725): вузол у %PathEmblems → шлях OathLeanings і навичка шляху, чия іконка — герб.
+const PATH_EMBLEMS := {"Samal": ["samal", "radiant_smite"], "Contract": ["contract", "blood_pact"],
+	"NoGod": ["none", "balanced_strike"]}
 
 ## Мінімальний контракт запису. Реальні дані згодом мапимо сюди,
 ## не перебудовуючи сцену.
@@ -72,6 +75,7 @@ const ZONE_MARKS := {"done": "✓", "current": "●", "locked": "○"}
 @onready var _illustration: TextureRect = %Illustration
 @onready var _epithet: Label = %Epithet
 @onready var _card_name: Label = %CardName
+@onready var _path_emblems: HBoxContainer = %PathEmblems
 
 var entries: Array = []
 var selected_id: String = ""
@@ -96,6 +100,12 @@ func _initialize_component() -> void:
 	%NextButton.pressed.connect(show_next_person.bind(1))
 	_card.gui_input.connect(_on_card_input)
 	_map_view.resized.connect(_place_parchment)
+	for node_name: String in PATH_EMBLEMS:
+		var icon: TextureRect = _path_emblems.get_node(node_name + "/Icon")
+		var skill: SkillDefinition = SkillDatabase.get_skill(PATH_EMBLEMS[node_name][1])
+		icon.texture = load(skill.icon)
+		icon.self_modulate = skill.icon_tint()
+		icon.custom_minimum_size = UITokens.PATH_EMBLEM_SIZE
 	select_section("quests")
 
 
@@ -261,6 +271,9 @@ func update_display() -> void:
 	_rebuild_rows()
 	var has_entries: bool = not entries.is_empty()
 	var as_card := section == "characters"
+	_path_emblems.visible = as_card
+	if as_card:
+		_refresh_emblems()
 	_columns.visible = has_entries and not as_card
 	_card.visible = has_entries and as_card
 	_empty_state.visible = not has_entries
@@ -375,6 +388,23 @@ func _show_detail(id: String) -> void:
 
 
 # ── Characters: картка персонажа (D486) ───────────────────────────────────────
+
+## Яскравість гербів — частка кожного нахилу від найсильнішого (OathLeanings.shares); чисел гравець не бачить.
+func _refresh_emblems() -> void:
+	var shares: Dictionary = ServiceLocator.get_skill_manager().leanings.shares()
+	for node_name: String in PATH_EMBLEMS:
+		var bright := lerpf(UITokens.PATH_EMBLEM_DIM, 1.0, shares[PATH_EMBLEMS[node_name][0]])
+		(_path_emblems.get_node(node_name) as Control).modulate = Color(bright, bright, bright, bright)
+
+
+## Яскравість герба шляху [param path] (0..1) — для тестів і знімків.
+func emblem_brightness(path: String) -> float:
+	for node_name: String in PATH_EMBLEMS:
+		if PATH_EMBLEMS[node_name][0] == path:
+			return (_path_emblems.get_node(node_name) as Control).modulate.a
+	assert(false, "JournalComponent: no emblem for %s" % path)
+	return 0.0
+
 
 func _show_person(id: String) -> void:
 	var entry: Dictionary = _entry(id)

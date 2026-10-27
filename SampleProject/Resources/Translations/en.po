@@ -2016,17 +2016,17 @@ msgstr "Mending Hands"
 msgid "Aura of Resolve"
 msgstr "Aura of Resolve"
 
-msgid "Sky's Grace"
-msgstr "Sky's Grace"
+msgid "Samal's Grace"
+msgstr "Samal's Grace"
 
-msgid "Skyfall Blessing"
-msgstr "Skyfall Blessing"
+msgid "Samal's Blessing"
+msgstr "Samal's Blessing"
 
 msgid "Aura of Valour"
 msgstr "Aura of Valour"
 
-msgid "Judgement of the Sky"
-msgstr "Judgement of the Sky"
+msgid "Judgement of Samal"
+msgstr "Judgement of Samal"
 
 msgid "Unbroken Vow"
 msgstr "Unbroken Vow"
@@ -2103,8 +2103,8 @@ msgstr "+3 attack."
 msgid "Take 5% less damage."
 msgstr "Take 5% less damage."
 
-msgid "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
-msgstr "A strike charged with the light of the sky at everything in front of you; dazes the first enemy."
+msgid "A strike charged with Samal's light at everything in front of you; dazes the first enemy."
+msgstr "A strike charged with Samal's light at everything in front of you; dazes the first enemy."
 
 msgid "Your healing restores 25% more."
 msgstr "Your healing restores 25% more."
@@ -2121,8 +2121,8 @@ msgstr "Strike everything in front of you and heal an ally next to you, or yours
 msgid "+25 Max HP."
 msgstr "+25 Max HP."
 
-msgid "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
-msgstr "Call the sky down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+msgid "Call Samal's light down on everything in front of you; the blast leaps to one more enemy and dazes the first."
+msgstr "Call Samal's light down on everything in front of you; the blast leaps to one more enemy and dazes the first."
 
 msgid "Take a further 8% less damage."
 msgstr "Take a further 8% less damage."
@@ -2329,14 +2329,14 @@ msgstr "Kusakam's grandfather"
 msgid "City Gates guard"
 msgstr "City Gates guard"
 
-msgid "Priest of the Sky — oath of the Paladin"
-msgstr "Priest of the Sky — oath of the Paladin"
+msgid "Priestess of Samal — the Paladin's path"
+msgstr "Priestess of Samal — the Paladin's path"
 
-msgid "Witch — oath of the Dark Knight"
-msgstr "Witch — oath of the Dark Knight"
+msgid "Priest of contracts — the Dark Knight's path"
+msgstr "Priest of contracts — the Dark Knight's path"
 
-msgid "Sand dervish — oath of the Warden of Balance"
-msgstr "Sand dervish — oath of the Warden of Balance"
+msgid "Sand dervish — the Warden of Balance's path, no god"
+msgstr "Sand dervish — the Warden of Balance's path, no god"
 
 msgid "Hunter"
 msgstr "Hunter"
@@ -2371,14 +2371,14 @@ msgstr "Forges and improves weapons and armour."
 msgid "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
 msgstr "A trader on the Desert Road whose caravan the bandits drove to the City Gates. Once the gates were clear he followed his goods into the City and set up his stall there."
 
-msgid "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
-msgstr "Keeper of the Paladin's oath in the City. Before her a Holy Warrior swears to the light; she can also unlearn skills for coins."
+msgid "Priestess of Samal in the City. She tells of the Paladin's path: stand between the weak and the blow."
+msgstr "Priestess of Samal in the City. She tells of the Paladin's path: stand between the weak and the blow."
 
-msgid "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
-msgstr "Keeper of the Dark Knight's oath in the City. She can also unlearn skills for coins."
+msgid "A priest in the City, in black and gold for all the contracts he has signed. He tells of the Dark Knight's path."
+msgstr "A priest in the City, in black and gold for all the contracts he has signed. He tells of the Dark Knight's path."
 
-msgid "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
-msgstr "Keeper of the Warden's oath in the City. He can also unlearn skills for coins."
+msgid "A sand dervish in the City who serves no god. He tells of the Warden of Balance's path."
+msgstr "A sand dervish in the City who serves no god. He tells of the Warden of Balance's path."
 
 msgid "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
 msgstr "A hunter with a white tiger cub at her side; one of her eyes is green, the other blue."
@@ -3360,3 +3360,130 @@ msgstr "Bandit Camp Key"
 
 msgid "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road."
 msgstr "A big ring key on a strap from the brute's belt. It opens the door of the bandit camp on the dune by the desert road."
+
+msgid "the god of contracts"
+msgstr "the god of contracts"
+
+msgid "Gate scribe"
+msgstr "Gate scribe"
+
+msgid "Priest of contracts"
+msgstr "Priest of contracts"
+
+msgid "City Gates scribe"
+msgstr "City Gates scribe"
+
+msgid "Writes newcomers into the city book at the gates: name, where from, whom they serve. He looks every stranger in the eye for the blue of the sky's curse."
+msgstr "Writes newcomers into the city book at the gates: name, where from, whom they serve. He looks every stranger in the eye for the blue of the sky's curse."
+
+msgid "Census"
+msgstr "Census"
+
+msgid "Opens at level %d"
+msgstr "Opens at level %d"
+
+msgid "Choose your path at the census by the City Gate."
+msgstr "Choose your path at the census by the City Gate."
+
+msgid "PATHS"
+msgstr "PATHS"
+
+msgid "Samal"
+msgstr "Samal"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "No god"
+msgstr "No god"
+
+msgid "Paths"
+msgstr "Paths"
+
+msgid "The way you fight and act draws a path to you. Blocks and parries lean towards Samal; trading blood for blows, towards the Contract; dodging and fights won untouched, towards the path with no god; and so do some of your choices. The emblems on the Journal's Characters page grow brighter with each leaning. You choose your path at the census by the City Gate."
+msgstr "The way you fight and act draws a path to you. Blocks and parries lean towards Samal; trading blood for blows, towards the Contract; dodging and fights won untouched, towards the path with no god; and so do some of your choices. The emblems on the Journal's Characters page grow brighter with each leaning. You choose your path at the census by the City Gate."
+
+# ── Живе Місто: жителі, речі, які можна тикнути (D740)
+msgid "Drink"
+msgstr "Drink"
+
+msgid "Pet"
+msgstr "Pet"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Look"
+msgstr "Look"
+
+msgid "Notice Board"
+msgstr "Notice Board"
+
+msgid "By order of the mayor: whoever looks at the sky too long and whose eyes turn blue is to be reported to the guard."
+msgstr "By order of the mayor: whoever looks at the sky too long and whose eyes turn blue is to be reported to the guard."
+
+msgid "Refugees from the villages: the census is at the City Gate. No census, no bread."
+msgstr "Refugees from the villages: the census is at the City Gate. No census, no bread."
+
+msgid "Lost: a grey goat answering to Pistachio. Reward at the fruit stall."
+msgstr "Lost: a grey goat answering to Pistachio. Reward at the fruit stall."
+
+msgid "Cool water. You feel better."
+msgstr "Cool water. You feel better."
+
+msgid "Here you are, fresh from the oasis."
+msgstr "Here you are, fresh from the oasis."
+
+msgid "Not enough coins, friend."
+msgstr "Not enough coins, friend."
+
+msgid "Prrr…"
+msgstr "Prrr…"
+
+msgid "A few coins at the bottom."
+msgstr "A few coins at the bottom."
+
+msgid "A lamp burns before Samal's sign. Someone still prays here."
+msgstr "A lamp burns before Samal's sign. Someone still prays here."
+
+msgid "They say the barrier over the villages is asleep. Who's next?"
+msgstr "They say the barrier over the villages is asleep. Who's next?"
+
+msgid "More refugees at the gate again. Where will we put them all?"
+msgstr "More refugees at the gate again. Where will we put them all?"
+
+msgid "Don't look up too long. My neighbour's eyes went blue."
+msgstr "Don't look up too long. My neighbour's eyes went blue."
+
+msgid "A blue-eyed one wandered the market yesterday. Didn't know his own name."
+msgstr "A blue-eyed one wandered the market yesterday. Didn't know his own name."
+
+msgid "Bread costs twice what it did in spring."
+msgstr "Bread costs twice what it did in spring."
+
+msgid "Water's dearer than oil these days."
+msgstr "Water's dearer than oil these days."
+
+msgid "The mayor sees no one. The queue's been there since dawn."
+msgstr "The mayor sees no one. The queue's been there since dawn."
+
+msgid "The mayor counts coins while the city counts refugees."
+msgstr "The mayor counts coins while the city counts refugees."
+
+msgid "Mind the cart, stranger!"
+msgstr "Mind the cart, stranger!"
+
+msgid "Samal keep you, traveller."
+msgstr "Samal keep you, traveller."
+
+msgid "The scribe asks everyone the same: whom do you serve?"
+msgstr "The scribe asks everyone the same: whom do you serve?"
+
+msgid "We walked three days from the burnt villages."
+msgstr "We walked three days from the burnt villages."
+
+msgid "They check your eyes first. Blue eyes don't get in."
+msgstr "They check your eyes first. Blue eyes don't get in."
+
+msgid "Since the barrier fell, the road's full of bandits."
+msgstr "Since the barrier fell, the road's full of bandits."

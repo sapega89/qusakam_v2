@@ -1,5 +1,5 @@
-// [DRAFT] D281 — Sister Ilvane, priestess of the Sky: oath of Light, Paladin (BACKLOG 22)
-say|OATH_PRIEST|The Sky shines on all alike, child. No sun, no stars — only light.
-say|OATH_PRIEST|Whoever swears to the Sky becomes a Paladin: their strike carries light, their hands heal.
-say|OATH_PRIEST|The oath is given once and forever. When you are ready — from the fifth level — come and tell me.
+// [DRAFT] D718, D726 — Sister Ilvane, priestess of Samal: the Paladin's path; no oath here (it is given at the census by the gate, D727)
+say|OATH_PRIEST|Samal does not ask to be looked at, child. He asks you to stand between the weak and the blow.
+say|OATH_PRIEST|Whoever serves Samal is a Paladin: their strike carries light, their hands heal.
+say|OATH_PRIEST|The path is chosen at the gate, when the scribe asks whom you serve. I only tell where it leads.
 exit|

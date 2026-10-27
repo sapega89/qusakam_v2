@@ -189,6 +189,9 @@ signal player_blocked(attacker: Node)
 ## Герой ухилився від удару (D393, Player.mitigated_damage): шкоди немає — слово над ним (DamageNumbers).
 @warning_ignore("unused_signal")
 signal player_evaded(attacker: Node)
+## Перекат героя пройшов крізь удар ворога (oath_affinity_plan: нахил «без бога» — ухилення, D725).
+@warning_ignore("unused_signal")
+signal player_dodged_through(attacker: Node)
 ## Почався / скінчився бій героя (D268): зброя з-за спини в руку й назад.
 @warning_ignore("unused_signal")
 signal combat_state_changed(in_combat: bool)
@@ -251,6 +254,9 @@ signal skill_unlocked(skill_id: String)
 signal skill_upgraded(skill_id: String, rank: int)
 ## Герой присягнув клятві (D280): "paladin" / "dark_knight" / "warden". Назавжди.
 signal oath_sworn(oath_id: String)
+## Нахили до шляхів змінились (OathLeanings, D725) — герби в Журналі.
+@warning_ignore("unused_signal")
+signal leanings_changed()
 ## Навички скинуто за монети (D282) чи безкоштовно (D490): усе забуто, refunded очок повернуто, клятва лишилась.
 signal skills_reset(refunded: int)
 ## Невкладених очок атрибутів стало current (D335): рівень, вкладення, скидання.

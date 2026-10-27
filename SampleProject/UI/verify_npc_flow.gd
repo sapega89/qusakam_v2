@@ -151,12 +151,13 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	await _close_popups(sl)
 
-	print("[4] Oath keepers: a crest until the hero swears an oath, then gone on all of them (D452)")
+	print("[4] The gate scribe: a crest while the census waits, none on the path priests (D452, D726)")
+	game.set_quest_flag("city_gates_fight_complete", true)
 	var priest: NpcBase = _spawn(world, "oath_priest.tscn", far + Vector2(2400, 0))
-	var witch: NpcBase = _spawn(world, "oath_witch.tscn", far + Vector2(3200, 0))
+	var witch: NpcBase = _spawn(world, "gate_scribe.tscn", far + Vector2(3200, 0))
 	await process_frame
-	ck(priest.marker.kind == &"oath" and witch.marker.kind == &"oath" and priest.marker.visible, "the crest over the priestess and the witch")
-	ck(priest.marker.pattern() == QuestMarker.CREST and smith.marker.pattern() == QuestMarker.EXCLAIM, "crest vs \"!\" shapes")
+	ck(witch.marker.kind == &"oath" and witch.marker.visible and priest.marker.kind == &"", "the crest over the scribe, not over the priestess")
+	ck(witch.marker.pattern() == QuestMarker.CREST and smith.marker.pattern() == QuestMarker.EXCLAIM, "crest vs \"!\" shapes")
 
 	print("[5] A quest giver calls out once per visit as the hero passes; without a quest he keeps quiet (D452)")
 	dm.bubble_time_scale = 1.0  # облачко живе seconds_for() — тест має його побачити
@@ -164,8 +165,8 @@ func _initialize() -> void:
 	for i in 2: await process_frame
 	var bubble: Node2D = dm.chatter_bubble(witch)
 	var bark: String = dm._stage_tag.sub(dm.DQD_READER.lines(witch.quest_bark_dialogue)[0].text, "")
-	ck(bubble != null, "the witch calls out in a cloud")
-	ck(witch.quest_bark_dialogue.ends_with("City_Oath_Witch_Bark.dqd") and bark != "", "her bark line: %s" % bark)
+	ck(bubble != null, "the scribe calls out in a cloud")
+	ck(witch.quest_bark_dialogue.ends_with("CityGates_Scribe_Bark.dqd") and bark != "", "his bark line: %s" % bark)
 	ck(not witch.marker.visible, "the crest steps aside while the cloud is up")
 	ck(witch.npc_menu.visible, "and her menu opens alongside (D454)")
 	await _leave()
@@ -177,7 +178,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(dm.chatter_bubble(witch) == null, "once per visit: no second call")
 	await _leave()
-	for file: String in ["merchant.tscn", "blacksmith.tscn", "grandfather.tscn", "oath_priest.tscn", "oath_witch.tscn", "oath_dervish.tscn"]:
+	for file: String in ["merchant.tscn", "blacksmith.tscn", "grandfather.tscn", "gate_scribe.tscn"]:
 		var path: String = (load(NPC_DIR + file) as PackedScene).instantiate().quest_bark_dialogue
 		var en: String = path.replace("dialogue_quest/", "dialogue_quest/en/")
 		ck(FileAccess.get_file_as_string(path).contains("[ЧЕРНЕТКА]") and FileAccess.get_file_as_string(en).contains("[DRAFT]"),
@@ -199,6 +200,9 @@ func _initialize() -> void:
 	dm.bubble_time_scale = 0.0
 
 	print("[6] The menu opens by itself and is not modal (D454)")
+	priest.queue_free()
+	priest = _spawn(world, "merchant.tscn", far + Vector2(2400, 0))
+	await process_frame
 	priest.talk_dialogue = TALK
 	priest.refresh_availability()
 	await _go(priest)
@@ -241,14 +245,13 @@ func _initialize() -> void:
 	ck(priest.npc_menu.visible, "coming back opens it again")
 	await _leave()
 
-	print("[4b] Swearing an oath takes the crest off every keeper")
+	print("[4b] The oath, chosen at the census, takes the crest off the scribe")
 	var xp: Node = sl.get_xp_manager()
 	while xp.get_level() < 5:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
-	sl.get_skill_manager().swear_oath(priest.oath_id)
+	sl.get_skill_manager().swear_oath("paladin")
 	await process_frame
-	ck(not priest.marker.visible and not witch.marker.visible and priest.marker.kind == &"" and witch.marker.kind == &"",
-			"no crest once sworn (on the priestess and the witch)")
+	ck(not witch.marker.visible and witch.marker.kind == &"", "no crest once sworn")
 
 	for i in 4: await process_frame
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

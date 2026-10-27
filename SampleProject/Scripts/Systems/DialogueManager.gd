@@ -122,6 +122,8 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	current_dialogue_box.visible = true
 	# dialogue_started шле _on_dialogue_quest_started (колбек DialogueQuest). Файл — мовою гри, а id розмови
 	# лишається українським шляхом, який чекають слухачі dialogue_finished (DialoguePaths, BACKLOG 31).
+	# D718: ім'я бога контрактів мовою гри — ${contract_god} у репліках і відповідях
+	DialogueQuest.Flags.set_flag(DialoguePaths.CONTRACT_GOD_FLAG, tr(DialoguePaths.CONTRACT_GOD))
 	var sections: Array[DQDqdParser.DqdSection] = DQDqdParser.parse_from_file(DialoguePaths.localized(timeline_name))
 	assert(not sections.is_empty(), "DialogueManager: %s has no lines" % timeline_name)
 	current_dialogue_player.play_sections(sections, timeline_name)
@@ -255,10 +257,11 @@ func _on_dialogue_quest_signal(params: Array):
 
 ## Пропуск кат-сцени (D308): cutscene_skip_prompt кличе щокадру — репліка набирається до кінця, наступного кадру
 ## йде далі (вікно — accept(), облачко — як dq_accept). Між розмовами пропускати нічого.
+## Відповідь (вчинок D725, перепис D727) пропуск не вибирає за гравця: розмова чекає на неї, далі пропуск іде сам.
 func skip_line() -> void:
 	if _bubble_playing:
 		_press_bubble()
-	elif is_dialogue_active():
+	elif is_dialogue_active() and not current_dialogue_player.choice_menu.visible:
 		current_dialogue_box.accept()
 
 func is_dialogue_active() -> bool:

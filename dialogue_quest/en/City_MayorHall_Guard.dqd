@@ -1,3 +1,0 @@
-// [DRAFT] [ЧЕРНЕТКА] D488 — the guard at the Mayor Hall door while the hero has sworn no oath (chatter bubble)
-say|GATE_GUARD|Only the sworn may stand before the mayor.
-exit|

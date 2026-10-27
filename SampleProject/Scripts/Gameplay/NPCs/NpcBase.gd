@@ -29,6 +29,8 @@ const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 @export var quest_bark_dialogue: String = ""
 ## Хто це в DialogueQuest (character_id) — його голос вітає героя, коли той сам заговорив (D277).
 @export var character_id: String = ""
+## Чи є в голосу привітання (greet_<голос> у sound_events.json). Писар і жрець контрактів (D726) ще без записаних.
+@export var greets: bool = true
 
 ## Поза розмови (talk) на аркуші дивиться ліворуч — інакше праворуч; NPC повертається нею до героя (D243).
 @export var profile_faces_left: bool = false
@@ -193,7 +195,7 @@ func _open_menu() -> void:
 	npc_menu.setup(entries)
 	npc_menu.open()
 	# Герой підійшов — меню і є початок розмови (D454); привітання голосом раз за кімнату, не на кожен підхід.
-	if not _greeted:
+	if greets and not _greeted:
 		_greeted = true
 		get_node(^"/root/AudioManager").hooks.greet(character_id)  # не ідентифікатор: тести компілюють NpcBase до автолоадів
 
