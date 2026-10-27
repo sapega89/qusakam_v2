@@ -41,6 +41,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
 | depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
 | integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
+| integrate-28 | `trig_01EYt8kXZd2aYYa2Gy1xowCP` | integrate-27 | merges the 11 reported routines (enemy-ai … ambient-critters, not side-stories / depth-*), renumbers from D775 / B163, full suite; then fast-forward `feature/backlog` |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
