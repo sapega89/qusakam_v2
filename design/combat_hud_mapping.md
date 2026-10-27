@@ -92,7 +92,7 @@ production skills, targeting system, controller bindings.
 
 ## HUD v2 hero panel (D453, D476, D485): measured spec, 2026-10-23
 
-**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 198 (the plate and, under it, the F and Q chips). In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. There is no stamina row: stamina is out for now (D551). The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
+**Figma:** component `UI/HUD/HeroPanel v2` `501:6611`, 520 × 198 (the plate and, under it, the F and Q chips). In-game placement: frame `492:6543`, top left. Shot: `design/shots/figma_hero_panel_v2.png`. **Stamina is back (D775, 2026-10-27)**: the ST row returns where the Figma revision of 2026-10-23 for D537 put it (commit `48bac628`: plate 470 × 144, rows 22 px apart), so the panel is 520 × 220 and everything under the name rule moved to that revision's positions. The 8-slot hotbar v2 (`497:6587`, D549) is specified below and built in the same routine.
 
 **Assets:** all in `SampleProject/Assets/UI/HUD/hero_panel/`.
 
@@ -108,24 +108,25 @@ production skills, targeting system, controller bindings.
 
 | Element | Position, size | Look |
 |---|---|---|
-| Plate | (0, 14) 470 × 122 | `plate.svg` |
-| Portrait | (14, 29) 104 × 92 | The hero portrait (`CharacterManager.HERO_PORTRAIT`, D534), nearest-filtered, clipped to the hexagon `M26 2H78L102 46L78 90H26L2 46Z` over a `#15141C` fill. `portrait_ring.svg` sits on top |
-| Level badge | (51, 107) 30 × 30 | `level_diamond.svg`. The level number is centred: Cormorant Bold 15, `#0B0B10` |
+| Plate | (0, 14) 470 × 144 | `plate.svg` (the 144-tall D549 revision) |
+| Portrait | (14, 40) 104 × 92 | The hero portrait (`CharacterManager.HERO_PORTRAIT`, D534), nearest-filtered, clipped to the hexagon `M26 2H78L102 46L78 90H26L2 46Z` over a `#15141C` fill. `portrait_ring.svg` sits on top |
+| Level badge | (51, 118) 30 × 30 | `level_diamond.svg`. The level number is centred: Cormorant Bold 15, `#0B0B10` |
 | Name | (134, 22) | "KUSAKAM": Cormorant Bold 26, `#F1D77A`, uppercase, letter spacing 3 |
 | Class | right edge at x 440, top 30 | Cormorant Regular 16, `#CFC8B0`. The sworn oath's name; "Holy Warrior" before the oath (as Status, D532) |
 | Rule | (134, 56) 300 × 1 | Accent `#D4AF37` at 60 % |
-| HP row | label y 68, bar y 72, value y 66, h 14 | Fill `#2ECC71` |
-| SP row | label y 92, bar y 96, value y 90, h 14 | Fill `#3498DB` |
-| Curl | (462, 53) 44 × 44 | `curl.svg`, `flip_h` |
-| F chip, the assist | (134, 136) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 176) with "F" |
-| Q chip, potions | (200, 136) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 160) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 176) with "Q" |
+| HP row | label y 62, bar y 66, value y 60, h 14 | Fill `#2ECC71` |
+| SP row | label y 84, bar y 88, value y 82, h 14 | Fill `#3498DB` |
+| ST row | label y 106, bar y 110, value y 104, h 14 | Fill `UITokens.STAMINA_FILL` `#E67E22`; flashes `UITokens.STAMINA_EMPTY_FLASH` when an exhausted hero tries to act (D775) |
+| Curl | (462, 64) 44 × 44 | `curl.svg`, `flip_h` |
+| F chip, the assist | (134, 158) 52 × 46 | `chip.svg` with the next or active companion's portrait, the D525 states (ready, active with the pulse, cooldown dimmed with the seconds) and the refused-press shake. Key badge (the hotbar's `key_badge.svg`) at (149, 198) with "F" |
+| Q chip, potions | (200, 158) 52 × 46 | `chip.svg` with the potion icon. The count sits in a pill at the chip's bottom right, (238, 182) 23 × 20: `#0B0B10` at 90 %, a 1 px `#8A6F22` border, radius 10, text Cormorant Bold 16 `#F1D77A`. Key badge at (215, 198) with "Q" |
 
 **Rows:**
 - Each label is at x 134: Cormorant Bold 16, `#CFC8B0`.
 - Each bar is at x 168, 200 wide.
 - Each value is right-aligned to x 442: Cormorant SemiBold 18, white.
 - The bar background is black at 60 % with a 1 px `#8A6F22` border. The fill is inset 1 px.
-- HP and SP have a 3 px top highlight of white at 25 %. XP is not in this panel: it is the full-width bar below (D552).
+- HP, SP and ST have a 3 px top highlight of white at 25 %. XP is not in this panel: it is the full-width bar below (D552).
 - Colours go through `UITokens`: reuse the existing tokens, and add one only where none exists.
 
 **The potion and the assist live here** (Sapega, 2026-10-23: «QF прибери з панелі», meaning out of the hotbar). The old "Q Potions ×N" text line (D538) becomes the Q chip, and the assist slot leaves the hotbar for the F chip.
@@ -192,3 +193,14 @@ The curls are `../hero_panel/curl.svg`: the left one as drawn, the right one mir
 - Hero panel at (24, 24), top left.
 - Hotbar centred: x 570, y 942, so 4 px above the XP bar.
 - XP bar at y 1070.
+
+## Poise bar (D776, 2026-10-27)
+
+No Figma frame. One shared component, `SampleProject/UI/Components/poise_bar.tscn` (theme type `PoiseBar`: `HUD_BAR_BG` track, 1 px `HUD_RIM` border, `UITokens.POISE_FILL` `#F1C40F` fill inset 1 px). It fills with the hero's poise damage (`DefaultEnemy.take_poise`), drains when the enemy is not hit, and empties when a full bar staggers.
+
+| Where | Size | Visible |
+|---|---|---|
+| Over every ordinary enemy (`DefaultEnemy._add_poise_bar`) | `POISE_BAR_WIDTH` 56 × `POISE_BAR_HEIGHT` 5 world px, `POISE_BAR_GAP` 10 px over the top of the hurtbox, centred on the body | while the enemy chases, strikes or is staggered, or while its bar is not empty (D502 still holds: no HP bar) |
+| In the boss bar, under the HP bar (`boss_health_bar.tscn` → `BossPoise`) | full width × `BOSS_POISE_HEIGHT` 6 | with the boss bar |
+
+Shot: `design/shots/stamina_poise.png` (hero panel with ST at 40 %, a bandit's bar at 55 %, the Scorpicore's at 40 %).
