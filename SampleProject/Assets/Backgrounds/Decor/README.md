@@ -15,3 +15,18 @@ AI-generated: drawn by the local ComfyUI with **Qwen-Image** (Alibaba Qwen, Apac
 | `lamp/` | 3 | 28×20 | flame flicker 1.0/0.72/1.18 | stands on the last row |
 | `crystal/` | 3 | 24×26 | glow flicker | stands on the last row |
 | `dust/` | 6 | 64×64 | motes drift on closed loops | none — tileable overlay; **procedural** (no model) |
+
+## Foreground pieces (D774, Batch 0)
+
+Single frames for the dark foreground layer `Scenes/Backgrounds/foreground_dark.tscn` (`FrontDark`, ×1.3, modulate
+0.3/0.26/0.34 — they read as dark silhouettes). Made by `Scripts/Tools/comfy_backdrop.py` (layers `Decor/fg_hall/*`,
+`Decor/fg_camp/*`): one generation per piece on the green key, keyed, downscaled to the game pixel, quantised.
+AI-generated: **Qwen-Image** (Alibaba Qwen, Apache 2.0) + Qwen-Image-Lightning LoRA (lightx2v, Apache 2.0).
+
+| file | px | where |
+|---|---|---|
+| `fg_hall/chandelier.png` | 97×96 | Mayor Hall, hangs from the top |
+| `fg_hall/banner.png` | 97×110 | Mayor Hall, hangs from the top (rod + cloth) |
+| `fg_hall/column.png` | 131×352 | Mayor Hall, the screen's sides (taller than the screen) |
+| `fg_camp/rope_stake.png` | 129×119 | Bandit Camp, a stake with two guy ropes |
+| `fg_camp/crate.png` | 103×55 | Bandit Camp, low at an edge, below the walk line |

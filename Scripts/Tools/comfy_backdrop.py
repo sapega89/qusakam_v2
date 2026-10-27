@@ -928,6 +928,98 @@ LAYERS = {
         # картинка — стара з кешу, перемальована: --repaint 165-255 --denoise 0.9 (арт-директор, artA1A2; на 0.75
         # абажур ставав жаровнею з другим вогнем)
     ),
+    # D774 Batch 0: передній план зали мера й табору бандитів — окремі предмети в FrontDark (×1.3, темний силует),
+    # тож деталі й колір тут другорядні: важить обрис.
+    "Decor/fg_hall/chandelier": dict(
+        seed=701,
+        rows=200,
+        top=0,
+        small=2,
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=10,
+        prompt="one single large ornate brass chandelier hanging on a short chain seen exactly from the side: a wide "
+        "ring of curved brass arms holding small candles, hanging glass drops under the ring, a pointed finial at the "
+        "bottom, the chain reaching the top edge, floating alone in the middle of the frame and filling a third of its "
+        f"width, empty space all around it, {CHROMA}",
+    ),
+    "Decor/fg_hall/banner": dict(
+        seed=703,
+        rows=240,
+        top=0,
+        small=2,
+        cut=(100, 197),  # жердина — на всю ширину кадру: лише прапор між золотими кулями
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=10,
+        prompt="one single long narrow hanging cloth banner seen straight on: deep red cloth with a golden border and a "
+        "plain golden disc with a raised rim in its upper half, hanging from a horizontal wooden rod with round golden "
+        "knobs at the top edge, the bottom cut into a swallowtail with two golden tassels, floating alone in the middle "
+        f"of the frame and filling a tenth of its width, empty space on both sides, {CHROMA}",
+    ),
+    "Decor/fg_hall/column": dict(
+        seed=715,
+        rows=440,  # колона від верху екрана до низу: 324 пікселі гри (486 світу) і запас
+        top=0,
+        cut=(220, 353),  # праворуч — тінь колони на тлі (той самий колір, що й тінь ствола: силует трохи несиметричний)
+        keep=397,  # нижче — смуга підлоги (рядки полотна: предмет починається з рядка 45)
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=10,
+        # «straight on» і «orthographic elevation» давали ізометрію з тінню й стінами обабіч
+        prompt="a flat front elevation of one single tall sandstone column, perfectly symmetrical: a rectangular "
+        "base, a straight shaft with vertical fluting, a rectangular capital, only the front face visible, no top "
+        "surface and no side surfaces visible, no shadow, no floor, no walls, centred in the frame with wide empty space "
+        f"on both sides, filling the frame from the bottom edge to the top edge, {CHROMA}",
+    ),
+    "Decor/fg_camp/rope_stake": dict(
+        seed=717,
+        rows=H,
+        top=0,
+        small=2,
+        keep=131,  # нижче — смуга піску на всю ширину
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=8,
+        # «мотузки здіймаються вгору» — кілок у горбі піску; «жердина з відтяжками» — цілий намет із смугою землі
+        prompt="one single wooden tent stake with two thick taut parallel ropes tied to its head, the ropes rising in "
+        "a straight steep diagonal line from the stake at the bottom edge to the top edge of the frame, nothing else: "
+        "no tent, no pole, no ground, no sand, the stake and the ropes alone in the middle of the frame with wide empty "
+        f"space on both sides, seen from the side, {CHROMA}",
+    ),
+    "Decor/fg_camp/crate": dict(
+        seed=709,
+        rows=120,
+        top=0,
+        small=2,
+        cut=(102, 205),  # смуга землі на всю ширину
+        seam="none",
+        trim=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=8,
+        prompt="one single big battered wooden crate with dark iron corner brackets and a thick rope tied around it, "
+        "a sack leaning against it, seen exactly from the side, standing alone in the middle of the frame and filling a "
+        f"fifth of its width, empty space on both sides, its base resting on the bottom edge, {CHROMA}",
+    ),
 }
 
 
@@ -1242,8 +1334,9 @@ if __name__ == "__main__":
                 np.roll(strip_opaque, -rise, axis=0),
             )
         rgb, opaque = (
-            np.zeros((H, strip.shape[1], 3)),
-            np.zeros((H, strip.shape[1]), bool),
+            # предмет, вищий за екран (колона переднього плану), — полотно під нього
+            np.zeros((max(H, layer["top"] + len(strip)), strip.shape[1], 3)),
+            np.zeros((max(H, layer["top"] + len(strip)), strip.shape[1]), bool),
         )
         rgb[layer["top"] : layer["top"] + len(strip)] = strip
         opaque[layer["top"] : layer["top"] + len(strip)] = strip_opaque
@@ -1294,7 +1387,9 @@ if __name__ == "__main__":
         ):  # латка: стовпці sx.. на місце dx.. (по колу — шар безшовний)
             out[y0:y1, (dx + np.arange(w)) % W] = out[y0:y1, (sx + np.arange(w)) % W]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
-            if layer["seam"] == "drop":  # окрема хмара: крихти довкола (шум ключа) розтягли б рамку — лише найбільша пляма
+            if (
+                layer["seam"] == "drop"
+            ):  # окрема хмара: крихти довкола (шум ключа) розтягли б рамку — лише найбільша пляма
                 from scipy import ndimage
 
                 labels, n = ndimage.label(out[..., 3] > 0)
