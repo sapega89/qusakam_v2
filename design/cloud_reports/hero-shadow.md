@@ -13,7 +13,7 @@ tags: [cloud, art, hero]
 - **Proposed D-ID:** «D-new» below. **B rows fixed:** none.
 - New check `verify_hero_shadow` (ALL PASS). Shot `design/shots/hero_shadow.png`. Texture tool `Scripts/Tools/draw_hero_shadow.gd`.
 - **Changed from the prompt:** alpha is 0.6 on the ground and 0.35 at the top, not 0.45 and 0.15. At 0.15 the half-size blob could not be seen on the DesertRoad stones at game scale. The values are exports on `Player.tscn → Shadow`.
-- Full suite once at the end: SUITE_LINE
+- Full suite once at the end: `SUITE: 3 FAIL`. progression, save_load and save_load_room fail the same way they did on hero-feet and feature/backlog (a save point without `Seat`, `SavePoint.gd:62`). None comes from this change.
 
 ## D-new (proposed; Sapega 2026-10-27: «треба якусь тінь кусакаму, може як в MK1: коли стрибає, то на підлозі видно кружечок»)
 | D-new | DECISION | **The hero casts an MK1 blob shadow** (Sapega 2026-10-27: «треба якусь тінь кусакаму, може як в MK1: коли стрибає, то на підлозі видно кружечок»). A soft, dark pixel ellipse (26×6, three alpha steps, near-black `#100A10`, ×1.5, nearest) lies on the floor under the hero's body. Standing, it sits on his collision bottom, which is the walk line (the band's middle in road rooms, D559). In the air it stays on the world floor straight below him, found by a downward ray (characters are skipped). It shrinks linearly to half size and fades from 0.6 to 0.35 alpha up to the top of a plain jump (103 px), and stays that way above it. With no floor within 240 px (a pit) or on a ladder it is not drawn. It is drawn behind the hero's drawing and in front of floors and backdrops, at the hero's own z. Only the body counts: the D764 meditation hop moves the drawing, and the shadow stays on the floor. `Player.tscn → Shadow` (`HeroShadow.gd`). `verify_hero_shadow` checks it. Enemies and NPCs: not yet. |
@@ -56,7 +56,11 @@ tags: [cloud, art, hero]
   - Laboratory Ladder1: drawn on the bridge, hidden on the ladder.
 - verify_combat_flow, verify_souls_combat, verify_ladders, verify_scripts_compile, verify_hero_feet: **ALL PASS**.
 - verify_progression **4 FAIL** (`pose: Jump`, `then the save screen opens (NullState)`, `leaving the screen gives him his feet back`, `he stands up (Meditate)`). These are the same lines hero-feet reported as failing on untouched `origin/feature/backlog` (the save point without `Seat`, `SavePoint.gd:62`). Pre-existing, not from this change.
-- Full suite: SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`), once, at the end: **`SUITE: 3 FAIL`**. Every other script passes.
+  - verify_progression (4): the lines above.
+  - verify_save_load (2, plus the SCRIPT ERROR `SavePoint.gd:62 _meditate` on a null `Seat`).
+  - verify_save_load_room (2: the save screen does not open (NullState); B82 position).
+  - All three are the pre-existing failures the hero-feet report showed on untouched `origin/feature/backlog`. B candidate (already raised by hero-feet): the save point these tests use has no `Seat` marker (D764).
 
 ## Shot
 `design/shots/hero_shadow.png`, 2×2, each cell 600×560 screen px around the shadow:
