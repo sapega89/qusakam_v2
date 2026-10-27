@@ -34,6 +34,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/meditation_stone.tscn" id="ms_stone"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
 
@@ -51,6 +52,12 @@ size = Vector2(168, 108)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_stash_reach"]
 size = Vector2(232, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_ShopRoofRubble"]
+size = Vector2(120, 50)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_TowerStash"]
+size = Vector2(64, 48)
 
 [node name="DesertRoad" type="Node2D" unique_id=1561391997]
 script = ExtResource("1_desert")
@@ -580,3 +587,15 @@ offset = Vector2(-78, -114)
 [node name="OccluderPalm3" parent="FrontDark" instance=ExtResource("decor_palm")]
 position = Vector2(6200, 520)
 scale = Vector2(3, 3)
+
+[node name="SecretArea_ShopRoofRubble" parent="." instance=ExtResource("secret_area")]
+position = Vector2(1222, 125)
+
+[node name="CollisionShape2D" parent="SecretArea_ShopRoofRubble" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_ShopRoofRubble")
+
+[node name="SecretArea_TowerStash" parent="." instance=ExtResource("secret_area")]
+position = Vector2(2372, 140)
+
+[node name="CollisionShape2D" parent="SecretArea_TowerStash" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_TowerStash")

@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
 size = Vector2(128, 12)
@@ -33,6 +34,9 @@ size = Vector2(112, 96)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_oldman"]
 radius = 32.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_Attic"]
+size = Vector2(240, 88)
 
 [node name="ElderHouse" type="Node2D"]
 script = ExtResource("11_house")
@@ -207,3 +211,9 @@ position = Vector2(700, 480)
 flip_h = true
 
 [node name="TopShade" parent="." instance=ExtResource("x5")]
+
+[node name="SecretArea_Attic" parent="Attic" instance=ExtResource("secret_area")]
+position = Vector2(560, 400)
+
+[node name="CollisionShape2D" parent="Attic/SecretArea_Attic" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_Attic")

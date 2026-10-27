@@ -70,7 +70,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"MapCardText"
 auto_translate_mode = 2
-text = "Explored 0% · Chests 0/0"
+text = "Explored 0% · Chests 0/0 · Secrets 0/0"
 
 [node name="CardHint" type="Label" parent="Frame/Level1/Card/Rows"]
 unique_name_in_owner = true
