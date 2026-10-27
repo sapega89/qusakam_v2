@@ -71,7 +71,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
 **Critter placements, Sapega 27.10:** moth in Grandfather's attic, a bat in the cellar («миша летюча»), pigeon in the City, and a running mouse that hides in a hole (cellar, houses; new art next in ComfyUI) — [[ambient_critters_plan]]; D-ID after integrate-29.
 
-**Shield (S19), Sapega 27.10:** a shield sprite drawn over the existing frames (Block/1, a Heavy frame for Shield Bash, Run for Shield Charge) only in those three uses («просто щит поверх намалювати»); the 5 shield skills stay — D-ID after integrate-29; FX art now, code after hero-shadow.
+**Shield (S19), Sapega 27.10, final:** a SPELL, not gear (Pathfinder): a magic shield drops from the sky over the existing Block art; two blocks — the shield block and the glass shield block (it shatters and damages whoever hit it); the iron-shield sprite `e5cb5681` is superseded — art next in ComfyUI, code after hero-shadow, D-ID after integrate-29.
 
 **S1 page:** https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — his verdicts on the 33 new skills (db collection `verdicts`, doc = skill slug) → `skill_trees_plan.md` v2.
 

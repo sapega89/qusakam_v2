@@ -29,11 +29,15 @@ what to do. Background: [[skill_trees_plan]], D279, D491, D535, D626, D718.
   no mace and no dagger exist anywhere in the world (Electric Strike runs on the Mesa halberd only).
 - **Overlaps:** 29 skills repeat another one's stat or move (five «take X% less damage», three «+attack», three «+max
   HP», three «after a parry, skills hit harder», three dashes, two slams, two spears, two shouts).
-- **Sapega's answer (2026-10-27):** neither a nor b — **the shield shows only in the shield skills**: the equipped
-  shield appears on the hero while he blocks and during the shield strikes (Shield Bash, Shield Charge) and is hidden the
-  rest of the time; the 5 shield skills stay. Then (same day): «Арт блоку є. Використовуй наявні, там же просто намалювати ефект» and then «Просто щит поверх намалювати»: a **shield sprite drawn over the existing frames** (Block/1 for blocking, an
-  existing Heavy/punch frame for Shield Bash, the Run frames for Shield Charge) — no new hero frames, no light effect;
-  then showing it in code only in those three uses (after `hero-shadow`, which edits Player.tscn). D-ID after integrate-29.
+- **Sapega's answer (2026-10-27), final:** «щит можна було просто підставити зверху на існуючий арт. Він його носити
+  із собою не буде, він буде просто з'являтись з неба, бо це магія з Pathfinder. Блок щитом і блок скляним щитом,
+  який, коли розбивається, наносить урон тому, хто по ньому б'є». So the shield is **a spell, not gear**: a magic
+  shield drops from the sky in front of him over the existing Block art, holds while he blocks and fades. Two kinds:
+  the **shield block** and the **glass shield block** — a glass shield that cracks under hits and, when it breaks,
+  its shards damage whoever hit it. The shield skills no longer need a shield item (the audit's gear gap is gone).
+  Art (🖥): the magic shield (appear from above, hold shimmer, fade) and the glass shield (appear, crack, shatter),
+  drawn over Block/1; the iron-shield sprite `Sprites/Player/Shields/iron_shield` (`e5cb5681`) is superseded.
+  Code (☁, after `hero-shadow`): the spell, the glass shield's break damage, no gear check. D-ID after integrate-29.
 - **Recommendation (superseded by his answer above):** rework the 5 shield skills into shield-free ones (proposal a), drop the shield from the hero's
   gear, and reshape each path tree into one kit (below). Art queue at the end: 14 hero poses, 30 VFX.
 
