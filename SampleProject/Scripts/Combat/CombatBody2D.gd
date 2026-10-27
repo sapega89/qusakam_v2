@@ -156,9 +156,10 @@ func slide_off_bodies(delta: float) -> void:
 	var under := KinematicCollision2D.new()
 	if not test_move(global_transform, Vector2(0, STANDING_PROBE), under) or not under.get_collider() is CombatBody2D:
 		return
-	if under.get_normal().y > -0.5:
-		return  # торкається боком, а не стоїть зверху
 	var other: CombatBody2D = under.get_collider()
+	# На ріжку чужого тіла нормаль бічна, а ноги — на його верху: це теж «стоїть зверху» (B194)
+	if under.get_normal().y > -0.5 and body_rect().end.y > other.body_rect().position.y + STANDING_PROBE:
+		return  # торкається боком, а не стоїть зверху
 	var away := 1.0 if global_position.x >= other.global_position.x else -1.0
 	var step := Vector2(away * SLIDE_OFF_SPEED * delta, 0)
 	if move_and_collide(step) != null:
