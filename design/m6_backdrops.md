@@ -21,7 +21,10 @@ statues, pipes with steam, birds, a story detail in the distance. No screen is j
 **Interesting things are their own props** (Sapega 2026-10-27: «от як ящури в печері — вони цікаві, то треба було
 зробити їх як окрема частина інтер'єру»). A shrine, an idol, a statue, a machine or a cart is generated alone and
 placed once in the room where it makes sense, like the forge and the chapel. It is not baked into a tiling backdrop,
-where it repeats every screen. The wall layers stay calmer, so these props read.
+where it repeats every screen. The wall layers stay calmer, so these props read. Each prop sits on its own plane
+with its own parallax, between the wall and the hero («на тому ж місці, але наче ми їх оббігаємо, типу паралакс»):
+running past, it slides against the wall behind it, and the room gets depth. The Lizard Cave keeps its idol shrines
+where they are today, cut out onto such a plane.
 
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 
