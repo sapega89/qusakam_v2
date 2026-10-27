@@ -35,6 +35,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/1.png" id="meditate1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Meditate/2.png" id="meditate2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Hurt/1.png" id="hurt1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Death/1.png" id="death1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Death/2.png" id="death2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Death/3.png" id="death3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Death/4.png" id="death4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/1.png" id="heavy1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/2.png" id="heavy2"]
 [ext_resource type="Texture2D" uid="uid://s7wjy8oog06u" path="res://SampleProject/Sprites/Player/Raise/1.png" id="raise1"]
@@ -445,6 +449,35 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("land1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, 0)]
+}
+
+
+[sub_resource type="Animation" id="Animation_death"]
+resource_name = "Death"
+length = 0.75
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("death1"), ExtResource("death2"), ExtResource("death3"), ExtResource("death4")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -1590,6 +1623,7 @@ _data = {
 &"CastStormWindup": SubResource("Animation_cast_storm_windup"),
 &"CastStormRelease": SubResource("Animation_cast_storm_release"),
 &"Climb": SubResource("Animation_climb"),
+&"Death": SubResource("Animation_death"),
 &"Fall": SubResource("Animation_fall"),
 &"HeavyStrike": SubResource("Animation_heavy_strike"),
 &"HeavyWindup": SubResource("Animation_heavy_windup"),

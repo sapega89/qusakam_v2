@@ -389,7 +389,8 @@ func _refresh_links() -> void:
 			for prerequisite: String in _skill_database.get_skill(skill_id).prerequisites:
 				# Передумова з іншого дерева (Bulwark ← Shield Block) — без лінії: вона в сусідній панелі.
 				if _rows.has(prerequisite) and _rows[prerequisite].get_parent().get_parent() == grid:
-					links.append([_rows[prerequisite], slot, prerequisite in planned])
+					# Від клітинки передумови разом з підписом рангу — лінія не перекреслює «1 / 3».
+					links.append([_rows[prerequisite].get_parent(), slot, prerequisite in planned])
 		_links(panel).set_links(links)
 
 
@@ -431,7 +432,9 @@ func _refresh_detail() -> void:
 		_add_fact(facts, tr("Effect"), _now_next(effect_now, effect_next))
 	if definition.is_active():
 		_add_fact(facts, tr("SP cost"), str(_skill_manager.sp_cost(definition)) if definition.sp_cost > 0 else PLACEHOLDER)
-		_add_fact(facts, tr("Cooldown"), tr("%s s") % String.num(definition.cooldown, 1) if definition.cooldown > 0.0 else PLACEHOLDER)
+		# Перезарядка лише в ультимейтів (D504) — рядок «—» в інших нічого не каже, а місця на 19 навичок мало.
+		if definition.cooldown > 0.0:
+			_add_fact(facts, tr("Cooldown"), tr("%s s") % String.num(definition.cooldown, 1))
 	_add_fact(facts, tr("Required level"), str(definition.required_level))
 	_add_fact(facts, tr("Rank cost"), tr("%d JP") % (definition.jp_cost if rank == 0 else definition.rank_jp))
 	if not definition.required_weapons.is_empty():
@@ -525,9 +528,15 @@ func _refresh_hotbar(definition: SkillDefinition) -> void:
 	_hotbar_box.visible = definition.is_active() and _skill_manager.is_unlocked(definition.id)
 	for slot in _slot_buttons.size():
 		var held := _skill_manager.get_equipped_skill(slot)
-		var held_name := tr(String(_skill_database.get_skill(held).name)) if held != "" else tr("empty")
-		_slot_buttons[slot].text = "%d · %s" % [slot + 1, held_name]
-		_slot_buttons[slot].set_pressed_no_signal(held == definition.id)
+		var held_skill: SkillDefinition = _skill_database.get_skill(held) if held != "" else null
+		var button := _slot_buttons[slot]
+		# Вісім слотів в один ряд, як хотбар у бою: іконка навички, номер клавіші в кутку, назва — у підказці.
+		button.tooltip_text = "%d · %s" % [slot + 1, tr(String(held_skill.name)) if held_skill else tr("empty")]
+		var art: TextureRect = button.get_node(^"Art")
+		art.texture = load(held_skill.icon) if held_skill else null
+		art.self_modulate = held_skill.icon_tint() if held_skill else Color.WHITE
+		button.get_node(^"Key/Label").text = str(slot + 1)
+		button.set_pressed_no_signal(held == definition.id)
 
 
 # ── Нижня смуга ─────────────────────────────────────────────────────────────

@@ -801,9 +801,10 @@ func cast_skill(skill_id: String) -> Result:
 	if verdict != Result.OK:
 		return _fail(skill_id, verdict)
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
-	assert(definition.cast_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
+	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
 	var player: Node = _default_source()
-	if definition.damage > 0 and SkillTargeting.enemies_in_front(player).is_empty():
+	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
+	if definition.damage > 0 and not definition.moves() and SkillTargeting.enemies_in_front(player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
 		return _fail(skill_id, Result.BUSY)
@@ -836,8 +837,11 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		if target != null:
 			targets.append(target)
 		else:
-			targets = SkillTargeting.enemies_in_front(effect_source)
+			targets = SkillTargeting.skill_targets(definition, effect_source)
 		if targets.is_empty():
+			# D812: навичка руху вже перенесла героя — промах коштує SP, як зірваний каст (D259)
+			if definition.moves():
+				_pay(definition)
 			return _fail(skill_id, Result.NO_TARGET)
 		var hit := false
 		var amount := skill_damage(skill_id)
@@ -846,6 +850,7 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 			if combat_executor.execute(definition, effect_source, each, amount):
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
+				combat_executor.apply_move_riders(definition, effect_source, each, amount)
 		if not hit:
 			_skill_effect_running = false
 			return _fail(skill_id, Result.EFFECT_FAILED)

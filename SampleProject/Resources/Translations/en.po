@@ -617,8 +617,8 @@ msgstr "+%d max SP"
 msgid "+%d attack"
 msgstr "+%d attack"
 
-msgid "−%s%% damage with a shield"
-msgstr "−%s%% damage with a shield"
+msgid "−%s%% damage through a block"
+msgstr "−%s%% damage through a block"
 
 msgid "−%s%% damage taken"
 msgstr "−%s%% damage taken"
@@ -2095,8 +2095,8 @@ msgstr "A crackling strike at everything in front of you; jumps to one more enem
 msgid "+10 Max HP."
 msgstr "+10 Max HP."
 
-msgid "Take 20% less damage while a shield is equipped."
-msgstr "Take 20% less damage while a shield is equipped."
+msgid "Take 20% less damage from a blow that breaks through your block."
+msgstr "Take 20% less damage from a blow that breaks through your block."
 
 msgid "+5 max SP."
 msgstr "+5 max SP."
@@ -2155,8 +2155,8 @@ msgstr "Your weapon hits heal you for a further 10% of the damage dealt."
 msgid "A measured strike at everything in front of you; stuns the first enemy."
 msgstr "A measured strike at everything in front of you; stuns the first enemy."
 
-msgid "Take a further 10% less damage while a shield is equipped."
-msgstr "Take a further 10% less damage while a shield is equipped."
+msgid "Take a further 10% less damage from a blow that breaks through your block."
+msgstr "Take a further 10% less damage from a blow that breaks through your block."
 
 msgid "Your hits break an enemy's stance 30% faster."
 msgstr "Your hits break an enemy's stance 30% faster."
@@ -2836,8 +2836,8 @@ msgstr "An upward cut that throws light enemies into the air. [DRAFT]"
 msgid "Shield Bash [DRAFT]"
 msgstr "Shield Bash [DRAFT]"
 
-msgid "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
-msgstr "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
+msgid "Breaks an enemy's wind-up and deals heavy guard damage. [DRAFT]"
+msgstr "Breaks an enemy's wind-up and deals heavy guard damage. [DRAFT]"
 
 msgid "Ground Slam [DRAFT]"
 msgstr "Ground Slam [DRAFT]"
@@ -2878,8 +2878,8 @@ msgstr "Your heavy attack breaks an enemy's guard 30% faster. [DRAFT]"
 msgid "Shield Charge [DRAFT]"
 msgstr "Shield Charge [DRAFT]"
 
-msgid "Run forward behind your shield and knock enemies back. [DRAFT]"
-msgstr "Run forward behind your shield and knock enemies back. [DRAFT]"
+msgid "Run forward behind a shield of light and knock enemies back. [DRAFT]"
+msgstr "Run forward behind a shield of light and knock enemies back. [DRAFT]"
 
 msgid "Lightspear [DRAFT]"
 msgstr "Lightspear [DRAFT]"
@@ -2920,8 +2920,8 @@ msgstr "A flash that dazes every enemy around you and clears burning and curses 
 msgid "Shield of Faith [DRAFT]"
 msgstr "Shield of Faith [DRAFT]"
 
-msgid "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
-msgstr "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
+msgid "A blow you hold off with a block heals you for 25% of its damage. [DRAFT]"
+msgstr "A blow you hold off with a block heals you for 25% of its damage. [DRAFT]"
 
 msgid "Blood Rush [DRAFT]"
 msgstr "Blood Rush [DRAFT]"
@@ -3022,8 +3022,8 @@ msgstr "Your roll goes 20% further and keeps you invulnerable 20% longer. [DRAFT
 msgid "heavy attack +%s%% poise damage"
 msgstr "heavy attack +%s%% poise damage"
 
-msgid "a shield block heals %s%%"
-msgstr "a shield block heals %s%%"
+msgid "a held block heals %s%%"
+msgstr "a held block heals %s%%"
 
 msgid "+%s%% damage to burning enemies"
 msgstr "+%s%% damage to burning enemies"

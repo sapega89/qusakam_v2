@@ -32,6 +32,12 @@ func _press(action: StringName, pressed: bool = true) -> void:
 	ev.pressed = pressed
 	Input.parse_input_event(ev)
 
+## Чекає [param seconds] у фізичних кроках, а не в часі кадрів: удар і хітбокс ідуть у фізиці, а на зайнятій машині
+## таймер кадрів випереджає фізику (B186).
+func _physics_wait(seconds: float) -> void:
+	for i in ceili(seconds * Engine.physics_ticks_per_second):
+		await physics_frame
+
 func _tap(action: StringName) -> void:
 	_press(action)
 	await physics_frame
@@ -191,11 +197,11 @@ func _weapon_type(library: String, slots: Array, ids: Array, swings: int) -> voi
 	var strikes: Array = []
 	for i in swings:
 		await _tap(&"attack")
-		await create_timer(0.06).timeout  # кадр удару (0.05 с від початку) — хітбокс увімкнений
+		await _physics_wait(0.06)  # кадр удару (0.05 с від початку) — хітбокс увімкнений
 		var swing: Animation = anim.get_animation(anim.current_animation)
 		strikes.append(hitbox.monitoring and not wv.pivot.visible and not wv.off_pivot.visible
 				and sprite.texture == swing.track_get_key_value(0, 1))
-		await create_timer(0.25).timeout  # удар (0.3 с) скінчився — наступне натискання не в черзі
+		await _physics_wait(0.25)  # удар (0.3 с) скінчився — наступне натискання не в черзі
 	await create_timer(1.0).timeout
 	var expected: Array = []
 	for i in swings:

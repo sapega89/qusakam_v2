@@ -10,7 +10,7 @@ const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 const Charms := preload("res://SampleProject/Scripts/Systems/Charms.gd")
 
-enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, HEAVY_RECOVERY, BLOCK, STAGGER, CAST_WINDUP, CAST_RELEASE, SHOOT, DRAW, CHARGED, DRINK }
+enum State { READY, SWING, HEAVY_WINDUP, HEAVY_STRIKE, HEAVY_RECOVERY, BLOCK, STAGGER, CAST_WINDUP, CAST_MOVE, CAST_RELEASE, SHOOT, DRAW, CHARGED, DRINK }
 
 # External references
 @export var sprite: Sprite2D
@@ -154,6 +154,10 @@ var _in_combat: bool = false
 var casting_skill: String = ""
 var _cast: SkillDefinition
 var _cast_fx: SkillCastFX
+## Стрибок навички руху вже відірвався від землі (D812): наступний дотик землі — удар приземлення.
+var _leap_airborne: bool = false
+## Стрибок навички, що не приземлився за свій час (уступ униз), б'є не пізніше, ніж за стільки с понад нього.
+const LEAP_TIMEOUT := 0.6
 
 var is_attacking: bool:
 	get:
@@ -301,6 +305,8 @@ func _physics_process(delta: float) -> void:
 				perform_attack(player.last_direction)
 		return
 	_state_left -= delta
+	if state == State.CAST_MOVE:
+		_move_phase()
 	if _arrow_due and SHOT_TIME - _state_left >= QUICK_RELEASE:
 		_loose(false)
 	if state == State.SWING:
@@ -329,6 +335,11 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 			held_by = null
 		State.CAST_WINDUP:
+			if _cast.moves():
+				_start_move()
+			else:
+				_release_cast()
+		State.CAST_MOVE:
 			_release_cast()
 		State.CAST_RELEASE:
 			state = State.READY
@@ -400,7 +411,7 @@ func owns_animation() -> bool:
 func locks_movement() -> bool:
 	if state == State.SWING:
 		return player.is_on_floor()
-	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.HEAVY_RECOVERY, State.BLOCK, State.CAST_WINDUP, State.CAST_RELEASE, State.DRAW, State.CHARGED, State.DRINK]
+	return state in [State.STAGGER, State.HEAVY_WINDUP, State.HEAVY_STRIKE, State.HEAVY_RECOVERY, State.BLOCK, State.CAST_WINDUP, State.CAST_MOVE, State.CAST_RELEASE, State.DRAW, State.CHARGED, State.DRINK]
 
 ## Погляд не змінюється, доки удар не вийшов (D504, B136): замах і удар серії, весь важкий удар.
 func locks_facing() -> bool:
@@ -582,9 +593,10 @@ func _loose(charged: bool) -> void:
 	EventBus.player_shot.emit(player, charged)
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
-## вивільнення: SkillManager.use_skill застосовує ефект. false — герой зайнятий.
+## вивільнення: SkillManager.use_skill застосовує ефект. Навичка руху (D812) між ними рухає героя (_start_move) і
+## починається лише з землі. false — герой зайнятий.
 func begin_cast(definition: SkillDefinition) -> bool:
-	if state != State.READY:
+	if state != State.READY or (definition.moves() and not player.is_on_floor()):
 		return false
 	state = State.CAST_WINDUP
 	_state_left = definition.cast_windup
@@ -593,7 +605,7 @@ func begin_cast(definition: SkillDefinition) -> bool:
 	combo_step = 0
 	casting_skill = definition.id
 	_cast = definition
-	_play(StringName(definition.cast_pose + "Windup"))
+	_play(StringName(definition.windup_pose))
 	_cast_fx = load(definition.vfx).instantiate()
 	_cast_fx.skill = definition
 	_cast_fx.scale.x = _direction
@@ -601,12 +613,48 @@ func begin_cast(definition: SkillDefinition) -> bool:
 	EventBus.skill_cast_started.emit(definition.id)
 	return true
 
+## Рух навички (D812): ривок — поштовх уперед на move_distance px за move_time с, тіла зупиняють (D443); стрибок —
+## угору на move_height px і вперед на SkillCombatExecutor.leap_distance (не за першого ворога). Удар каст іще може зірвати.
+func _start_move() -> void:
+	state = State.CAST_MOVE
+	if _cast.invulnerable > 0.0:
+		player.set_invulnerable(true, _cast.invulnerable)
+	if _cast.move_kind == "leap":
+		var time := SkillCombatExecutor.leap_time(_cast.move_height)
+		_state_left = time + LEAP_TIMEOUT
+		_leap_airborne = false
+		player.velocity.y = -SkillCombatExecutor.leap_speed(_cast.move_height)
+		player.mover.push(_direction * SkillCombatExecutor.leap_distance(_cast, player, _direction), time)
+		_play(&"Jump")
+		return
+	_state_left = _cast.move_time
+	player.mover.push(_direction * _cast.move_distance, _cast.move_time)
+	_play(StringName(_cast.move_pose))
+	_move_phase()
+
+## Кадр руху: ривок, що ріже першого (move_hits "first"), б'є, щойно ворог у досяжності удару перед героєм; натиск
+## ("front", Shield Charge) біжить увесь свій час, доки тіло ворога не зупинить (D443), і б'є всіх перед собою;
+## стрибок — щойно приземлився.
+func _move_phase() -> void:
+	if _cast.move_kind == "leap":
+		if not player.is_on_floor():
+			_leap_airborne = true
+			var pose := &"Jump" if player.velocity.y < 0.0 else &"Fall"
+			if player.animation != pose:
+				_play(pose)
+		elif _leap_airborne:
+			_release_cast()
+	elif _cast.move_hits == "first" and not SkillTargeting.enemies_in_front(player).is_empty():
+		_release_cast()
+
 func _release_cast() -> void:
 	var skill_id := casting_skill
 	casting_skill = ""
+	if state == State.CAST_MOVE:
+		player.mover.stop_push()
 	state = State.CAST_RELEASE
 	_state_left = _cast.cast_release
-	_play(StringName(_cast.cast_pose + "Release"))
+	_play(StringName(_cast.release_pose))
 	_cast_fx.release()
 	_cast_fx = null
 	ServiceLocator.get_skill_manager().use_skill(skill_id, null, player)
@@ -716,10 +764,21 @@ func stagger(duration: float, from_x: float) -> void:
 	player.mover.push(away * stagger_push, stagger_push_time)
 	EventBus.player_staggered.emit(duration)
 
+## Смерть героя (H1): усе, що йшло, зірвано (як збій), кнопки й черга скинуті — бій вільний і нічого не почне.
+func stop_all() -> void:
+	_break_action()
+	cancel_attack()
+	held_by = null
+	block_held = false
+	shot_held = false
+	_buffer_left = 0.0
+
 ## Зриває дію, що йшла (удар, каст, зілля, рипост, постріл), — від збою чи хватки.
 func _break_action() -> void:
 	if state in [State.SWING, State.HEAVY_STRIKE]:
 		_set_hitbox_active(false, _direction)
+	if state == State.CAST_MOVE:
+		player.mover.stop_push()  # зірваний ривок не несе далі (і мертвого героя теж, H1)
 	_hit_on = false
 	_drink_heal = 0  # зілля, яке не встигло подіяти, пропало
 	riposting = false

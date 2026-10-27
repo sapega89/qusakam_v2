@@ -577,18 +577,18 @@ func _weapons(sl: Node) -> void:
 	await process_frame
 	ck(em.get_grip() == &"two_handed" and hero.combat.grip == &"two_handed", "the halberd is two-handed (%s)" % em.get_grip())
 	equip.call("shield", "iron_shield")
-	sl.get_skill_manager().unlock_skill("shield_block")
 	await process_frame
-	var with_shield: int = hero.mitigated_damage(100)
+	var unskilled: int = hero.mitigated_damage(100, true)
+	sl.get_skill_manager().add_job_points(1)  # Shield Block коштує 1 JP; герой тесту — 1-го рівня, без очок
+	sl.get_skill_manager().unlock_skill("shield_block")
+	# Щит — закляття блоку, не спорядження (Sapega 2026-10-27, skills_audit): Shield Block діє з будь-якою зброєю,
+	# але лише на удар, що пробив блок.
+	ck(hero.mitigated_damage(100, true) < unskilled and hero.mitigated_damage(100) == unskilled,
+			"Shield Block softens a blow through the block even with the two-handed halberd (%d vs %d), not an open hit" % [hero.mitigated_damage(100, true), unskilled])
 	em.unequip_item(who, "polearm")
 	equip.call("sword", "iron_sword")
 	await process_frame
 	ck(hero.combat.grip == &"one_handed", "sword + shield is one-handed (%s)" % hero.combat.grip)
-	var one_handed_mitigation: int = hero.mitigated_damage(100)
-	equip.call("polearm", "iron_halberd")  # вдягнена зброя — в руці (D475)
-	await process_frame
-	ck(hero.mitigated_damage(100) > one_handed_mitigation or sl.get_skill_manager().passive_value("shield_block") == 0.0,
-			"no Shield Block with a two-handed weapon (%d vs %d)" % [hero.mitigated_damage(100), one_handed_mitigation])
 	em.unequip_item(who, "shield")
 	em.unequip_item(who, "polearm")
 	equip.call("dagger", "iron_dagger")

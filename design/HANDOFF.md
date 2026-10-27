@@ -9,7 +9,7 @@ Fresh session on purpose (Sapega: «ти дуже багато тримаєш в
 (the old one: [[archive/MASTER_PLAN_2026-10-24]]); what waits on Sapega or was deferred is in [[BACKLOG]] → «Moved out of
 MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D807**, **B187**, **Q107** (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
+**Registers:** next free **D813**, **B195**, **Q107** (integrate-30 filed D807–D812, B187–B194) (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
 `feature/backlog`). Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
 ## 1. First, when you start
@@ -23,15 +23,15 @@ MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 | Routine / agent | Trigger | Waits for | Task |
 |---|---|---|---|
 | integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | — | I29 (see the plan) |
-| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | every effect filmed → `design/shots/fx/` GIFs for Sapega's notes (BACKLOG A9) |
+| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | ✅ злито (integrate-30) — every effect filmed → `design/shots/fx/` GIFs for Sapega's notes (BACKLOG A9) |
 | scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | **reported**; it may use the old draft (≈70 px, ranges): set `world_scale.json` to the exact table (H = 64 art px) and re-run the probe + `scale_chart.py`, then send Sapega the chart (R4) |
-| skills-v2-data | `trig_01Pq52MBQ8GTvV5YddP6xi1J` | — | H3 slice 1 |
-| skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | H3 slice 2 |
-| skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | H3 slice 3; then create ranged → stance (+ H2 shields) → control |
+| skills-v2-data | `trig_01Pq52MBQ8GTvV5YddP6xi1J` | — | ✅ злито (integrate-30) — H3 slice 1 |
+| skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | ✅ злито (integrate-30) — H3 slice 2 |
+| skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | ✅ злито (integrate-30) — H3 slice 3; then create ranged → stance (+ H2 shields) → control |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | — | **reported**, merged by integrate-29 |
 | rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | — | **merged** (`ea78e45c`): R2 + R3, D798–D805, B176–B178 / B180–B182 fixed; the mouse waits for a ground run into a hole |
-| hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
-| scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
+| hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | ✅ злито (integrate-30) — H1: the Death animation wired |
+| scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | ✅ злито (integrate-30) — R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
 | art agent (local, ComfyUI) | — | — | M6a-1 approved (D795–D797: «дим класний», «шар крутий»; `4cca758a`, `bb522cb3`). Now **M6a-2a**: the barrier to full screen width (D797) + Stream Gorge → `design/shots/m6a2_gorge.png`. Then M6a-2b rock ledges (the plume's source at the village passage, the sketch's upper strip), M6a-3 burnt village |
 
 ## 2b. Tests (Sapega 2026-10-27: «зроби»)

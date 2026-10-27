@@ -44,13 +44,13 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | Lv | Skill | Kind | Does | |
 |---|---|---|---|---|
 | 1 | Toughness | passive | +max HP | exists |
-| 1 | Shield Block | passive | less damage with a shield | exists |
+| 1 | Shield Block | passive | less damage from a blow that breaks through the block (no shield item) | exists |
 | 1 | **Dash Strike** | active | dashes forward and cuts the first enemy, stops at it (bodies block, D443) | new |
 | 2 | Healing Palm | active | the 3-sip flask (D527) | exists |
 | 3 | Devotion | passive | +max SP | exists |
 | 3 | **Rising Slash** | active | an upward cut that throws light enemies into the air | new |
 | 4 | Weapon Training | passive | +attack | exists |
-| 4 | **Shield Bash** | active | breaks a wind-up and deals heavy guard damage (D495); uses the pommel when there is no shield | new |
+| 4 | **Shield Bash** | active | breaks a wind-up and deals heavy guard damage (D495) | new |
 | 6 | Fire Strike | active | burns | exists |
 | 6 | Electric Strike | active | stuns, chains to one more enemy | exists |
 | 8 | Riposte Instinct | passive | after a parry, skills hit harder | exists (draft) |
@@ -84,7 +84,7 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | 15 | **Heaven's Anvil** | active | leap and slam, pillars of light on both sides | new |
 | 18 | Unbroken Vow | passive | less damage | exists |
 | 18 | **Radiant Flare** | active | a flash that dazes every enemy around and clears burning and curses from the hero | new |
-| 18 | **Shield of Faith** | passive | a block with a shield heals a little | new |
+| 18 | **Shield of Faith** | passive | a held block heals a little (no shield item) | new |
 | 20 | Judgement of the Sky | ultimate | the oath's ultimate (D528) | exists |
 
 ### Dark Knight: 10 active, 9 passive
@@ -116,7 +116,7 @@ No skill puts the hero behind an enemy (Sapega: «за спину ми ніко�
 | Lv | Skill | Kind | Does | |
 |---|---|---|---|---|
 | 5 | Balanced Strike | active | measured strike, stuns | exists |
-| 5 | Bulwark | passive | less damage with a shield | exists |
+| 5 | Bulwark | passive | less damage from a blow that breaks through the block (no shield item) | exists |
 | 5 | **Wind Step** | active | a quick step forward with a cut and a moment of invulnerability | new |
 | 8 | Sand Stance | passive | faster guard break | exists |
 | 8 | Still Water | passive | after a parry, less damage | exists (draft) |
@@ -173,6 +173,16 @@ Around the skills themselves the work also needs:
 - Slice 1, then slice 2.
 - Slices 3–6 in any order. In slice 6, Soul Harvest waits for the guard bar.
 - Slice 7 runs alongside the rest.
+
+**Slice 1 state (2026-10-27, `cloud/skills-v2-data`).** Rows, the planned state, the 5 passives and the caps came with
+`cloud/skills-v2` (D626, D627). This pass gives the 28 planned actives provisional numbers (SP, damage + scaling,
+stun / burn / heal where the D207 shapes fit; the new mechanics' distances and times in a `draft` block no code reads
+yet; no cooldowns, D504) and drops the shield gear check: Shield Block / Bulwark cut a blow that breaks through a held
+block, Shield of Faith heals on any held block, Shield Bash / Shield Charge texts lose the shield. The shield is a block
+spell (S19 final answer). **Still to come, in a later slice:** the spell itself (a magic shield drops from the sky over
+Block/1, holds while he blocks, fades) and the glass-shield block (cracks under hits; when it breaks, its shards damage
+the attacker), with their art. Until then the shield skills work in the numbers with no shield on screen. The
+`iron_shield` item and the `shield` slot stay as plain armour; whether they leave the hero's gear is open.
 
 **Open:** Q86 (hotbar slots, answered: D549). Icons for every skill: [[skill_icons_brief]].
 
