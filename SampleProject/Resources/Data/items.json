@@ -556,6 +556,42 @@
 			"max_stack": 1,
 			"sell_price": 0,
 			"buy_price": 0
+		},
+		{
+			"id": "leader_key",
+			"name": "Chief's Iron Key",
+			"description": "A long iron key from the bandit chief's belt, green with old water. It opens the grate over the well at Zahra's Rest.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
+		},
+		{
+			"id": "mayor_key",
+			"name": "Mayor's Desk Key",
+			"description": "A small brass key from the mayor's desk. It opens the bookshelf door to his archive.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
+		},
+		{
+			"id": "alchemist_key",
+			"name": "Alchemist's Key",
+			"description": "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom.",
+			"type": "key_item",
+			"category": "key",
+			"rarity": "uncommon",
+			"stackable": false,
+			"max_stack": 1,
+			"sell_price": 0,
+			"buy_price": 0
 		}
 	]
 }

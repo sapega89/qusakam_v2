@@ -542,18 +542,19 @@ func _on_relic_pickup_state(run_id: int) -> void:
 
 ## Кат-сцена спуску (D256, Sapega «я не хочу падати з мосту»): керування забрано, місток падає, Кусакам
 ## каже своє, підходить до краю й злазить униз за камінь переднього плану (ForegroundRock), камера пливе
-## вгору до синього неба (HighSky), затемнення — і він на дорозі. Герой не падає й не дістає шкоди: його
+## вгору до синього неба (HighSky), затемнення — і він у печері під мостом (M7, граф Каньйону: «спуск ↓, згори лише
+## вниз»): звідти провалами вниз до виходу з печери на дорогу. Герой не падає й не дістає шкоди: його
 ## фізика стоїть (event), рух — твінами між мітками Descent/Edge і Descent/Below. Прочитаний діалог не повторюється.
 const DESCENT_WALK_TIME := 0.7
 const DESCENT_CLIMB_TIME := 2.6
 const DESCENT_PAUSE := 0.5
 const DESCENT_PAN_TIME := 4.0
 const DESCENT_SKY_HOLD := 1.2
-const DESERT_ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
+const CAVE_UNDER_BRIDGE := "res://SampleProject/Maps/CaveUnderBridge.tscn"
 
 func _on_exit_cutscene_state(run_id: int) -> void:
 	var game := Game.get_singleton()
-	game.preload_room(DESERT_ROAD)  # кат-сцена довга — дорога встигне завантажитись у фоні (performance_plan, slice 3)
+	game.preload_room(CAVE_UNDER_BRIDGE)  # кат-сцена довга — печера встигне завантажитись у фоні (performance_plan, slice 3)
 	var cs := Cutscene.new()
 	cs.detach_camera()
 	if not $Bridge.is_collapsed():
@@ -581,7 +582,7 @@ func _on_exit_cutscene_state(run_id: int) -> void:
 
 	# Межі камери виставить нова кімната. Після телепорту цієї кімнати вже немає: телепорт не чекаємо (жодного
 	# await на ній), світло після заміни кімнати повертає сам Game.load_room() (D434).
-	game.teleport_to_room(DESERT_ROAD, ^"ArrivalFromCanyon")
+	game.teleport_to_room(CAVE_UNDER_BRIDGE, ^"Arrival")
 	cs.end()
 
 func _on_to_desert_road_state(run_id: int) -> void:

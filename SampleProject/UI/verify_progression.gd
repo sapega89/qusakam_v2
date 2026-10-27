@@ -12,6 +12,8 @@ extends SceneTree
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const CITY := "res://SampleProject/Maps/City.tscn"
+## Двері палацу між вартовими — на площі палацу, кінці вулиці за ринком (M7, D773).
+const SQUARE := "res://SampleProject/Maps/PalaceSquare.tscn"
 const LAB := "res://SampleProject/Maps/Laboratory.tscn"
 const CELLS := "res://SampleProject/Maps/LabCells.tscn"
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
@@ -60,12 +62,12 @@ func _initialize() -> void:
 
 	print("[2] The Mayor Hall door is open without an oath (D725: the D488 gate is gone)")
 	ck(sl.get_skill_manager().get_oath() == "", "no oath yet")
-	await game.teleport_to_room(CITY, ^"SavePoint")
+	await game.teleport_to_room(SQUARE, ^"Arrival")
 	await Kit.frames(self, 20)
 	var city: Node = game.map
-	var gate_shape: CollisionShape2D = city.get_node("MayorHallGate/Collision")
 	var hall_door: Area2D = city.get_node("MayorHallDoor")
-	ck(hall_door.interactable.enabled and not gate_shape.disabled, "the palace door opens without an oath (the east edge stays a wall)")
+	var east: Object = root.get_node("MetSys").map_data.get_cell_at(Vector3i(28, 5, 0))
+	ck(hall_door.interactable.enabled and east.get_border(0) == 0, "the palace door opens without an oath (the east edge stays a wall)")
 	ck(city.get_node("GuardLeft").scene_file_path.ends_with("gate_guard.tscn") and city.get_node("GuardRight").scene_file_path.ends_with("gate_guard.tscn"),
 			"two gate guards at the door")
 	ck(not city.has_node("GateTalk") and not city.has_node("ObjectiveTargets/oath_keepers")

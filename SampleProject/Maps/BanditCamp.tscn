@@ -201,7 +201,8 @@ spawn_in_waves = true
 wave_size = 3
 wave_delay = 2.0
 reward = Dictionary[String, int]({
-"camp_key": 1
+"camp_key": 1,
+"leader_key": 1
 })
 
 [node name="Fight_CampTrigger" type="Area2D" parent="Fight_Camp"]

@@ -1,0 +1,3 @@
+// [DRAFT] M7 — the alchemist's storeroom door without the key from his table in the corridor (gates.json → alchemist_store).
+say|KUSAKAM|The storeroom is locked. The alchemist would not carry the key far: somewhere here, on his table.
+exit|

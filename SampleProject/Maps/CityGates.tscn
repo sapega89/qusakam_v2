@@ -29,6 +29,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_2"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -472,3 +474,13 @@ position = Vector2(900, 530)
 scale = Vector2(0.9, 0.9)
 texture = ExtResource("x2")
 offset = Vector2(-78, -114)
+
+[node name="RooftopsDoorEntrance" parent="." instance=ExtResource("m7_1")]
+position = Vector2(300, 384)
+texture = ExtResource("m7_2")
+
+[node name="RooftopsDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(298.5, 322.5)
+target_room = "res://SampleProject/Maps/Rooftops.tscn"
+arrival = NodePath("SlideDoor")
+gate_id = "city_rooftops"

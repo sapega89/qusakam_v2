@@ -1,0 +1,3 @@
+// [DRAFT] M7 — the grate between the aqueduct and the gatehouse cellar, until the lever in the cellar opens it (gates.json → aqueduct_cellar).
+say|KUSAKAM|Bars. A cellar on the other side, I can hear it drip. The lever must be over there.
+exit|

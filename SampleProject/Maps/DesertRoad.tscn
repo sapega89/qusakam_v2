@@ -39,6 +39,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="m7_1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
 size = Vector2(64, 480)
@@ -831,3 +832,13 @@ position = Vector2(2372, 140)
 
 [node name="CollisionShape2D" parent="SecretArea_TowerStash" index="0"]
 shape = SubResource("RectangleShape2D_SecretArea_TowerStash")
+
+[node name="LizardCavesDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(4400, 384)
+texture = ExtResource("m7_1")
+
+[node name="LizardCavesDoor" parent="." instance=ExtResource("b1_door")]
+position = Vector2(4391, 330)
+target_room = "res://SampleProject/Maps/LizardCaves.tscn"
+arrival = NodePath("RoadDoor")
+gate_id = "lizard_caves_shortcut"

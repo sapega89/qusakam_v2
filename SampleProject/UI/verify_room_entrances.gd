@@ -1,5 +1,7 @@
 extends SceneTree
 
+## TIMEOUT: 900
+
 ## Кожен прохід пояснений картинкою, і виходиш тим, чим зайшов (M11/M12, room_art_audit, Sapega 2026-10-26):
 ##   godot --headless --path . --script res://SampleProject/UI/verify_room_entrances.gd
 ##   1. Кожен RoomDoor: арт входу (room_entrance.tscn) або намальований отвір з аудиту (✅); низ арту на підлозі
@@ -18,7 +20,11 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 const TEST_DIR := "user://verify_room_entrances/"
 const ROOMS := ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb",
-		"CityGates", "GatehouseCellar", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
+		"CityGates", "GatehouseCellar", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside",
+		# M7: кімнати графів регіонів
+		"CanyonFloor", "SmugglersStash", "LizardCaves", "MesaTop", "ZahraRest", "OldRuins", "Aqueduct", "GateApproach",
+		"PalaceSquare", "Rooftops", "PigeonLoft", "TavernAttic", "MayorArchive", "Cistern", "CisternStash",
+		"AlchemistCorridor", "AlchemistStore", "MalikStash", "CollapsedDrain"]
 ## Двері, чий отвір намальований у самому тлі (аудит: ✅), — їм окремий арт не потрібен.
 const PAINTED := {
 	"Village/ElderDoor": "the house's painted wooden door",
@@ -30,9 +36,9 @@ const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.
 const HERO_HEIGHT := 70.0
 ## Колишні проходи крізь край: [клітинка, сторона (0 праворуч, 2 ліворуч)] — тепер стіна.
-const CLOSED_BORDERS := [[Vector3i(10, 3, 0), 0], [Vector3i(11, 3, 0), 2], [Vector3i(13, 3, 2), 0],
+const CLOSED_BORDERS := [[Vector3i(28, 5, 0), 0], [Vector3i(29, 5, 0), 2], [Vector3i(13, 3, 2), 0],
 		[Vector3i(14, 3, 2), 2], [Vector3i(15, 5, 2), 0], [Vector3i(16, 5, 2), 2]]
-const EDGE_DOORS := {"City": "MayorHallDoor", "MayorHall": "CityDoor", "LabCells": "CorridorDoor",
+const EDGE_DOORS := {"PalaceSquare": "MayorHallDoor", "MayorHall": "CityDoor", "LabCells": "CorridorDoor",
 		"Laboratory": "CellsDoor", "LabBoss": "CorridorDoor"}
 ## Темний передній шар і темрява згори (Sapega: печера «темніше зверху, листя… передній фон закриває вид»).
 const SHADED := ["LizardCave", "DragonMural", "GatehouseCellar", "MesaClimb", "ElderHouse"]
@@ -125,10 +131,14 @@ func _visit(room: String) -> void:
 	await game.teleport_to_room(MAPS % room, _first_door_or_arrival(room))
 	for i in 20: await physics_frame
 	await Kit.drain(self)
-	var wall: Node = game.map.get_node_or_null(^"Wall_Mural")
-	if wall != null and not wall.was_broken():
-		wall.smash()
-		for i in 10: await physics_frame
+	# Двері за брилою (Wall_Mural у каньйоні, M7: дошки голубника, тріснуті стіни схованок) — брилу розбито.
+	for door: Node in _doors(game.map):
+		if door.cover.is_empty():
+			continue
+		var wall: Node = door.get_node_or_null(door.cover)  # розбита раніше брила вже прибрала себе
+		if wall != null and not wall.was_broken():
+			wall.smash()
+			for i in 10: await physics_frame
 
 
 func _first_door_or_arrival(room: String) -> NodePath:

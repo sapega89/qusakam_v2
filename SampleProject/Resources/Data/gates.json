@@ -32,6 +32,41 @@
 		"gatehouse_cellar": {
 			"flag": "gatehouse_cellar_allowed",
 			"locked_dialogue": "Gate_GatehouseCellar_Locked"
+		},
+		"lizard_caves_shortcut": {
+			"flag": "lizard_caves_shortcut_open",
+			"locked_dialogue": "Gate_LizardCavesShortcut_Locked"
+		},
+		"ruins_well": {
+			"key": "leader_key",
+			"consumes_key": true,
+			"locked_dialogue": "Gate_RuinsWell_Locked"
+		},
+		"aqueduct_cellar": {
+			"flag": "aqueduct_cellar_open",
+			"locked_dialogue": "Gate_AqueductCellar_Locked"
+		},
+		"cistern_cellar": {
+			"flag": "cistern_cellar_open",
+			"locked_dialogue": "Gate_CisternCellar_Locked"
+		},
+		"city_rooftops": {
+			"flag": "city_rooftops_slide",
+			"locked_dialogue": "Gate_CityRooftops_Locked"
+		},
+		"mayor_archive": {
+			"key": "mayor_key",
+			"consumes_key": true,
+			"locked_dialogue": "Gate_MayorArchive_Locked"
+		},
+		"alchemist_store": {
+			"key": "alchemist_key",
+			"consumes_key": true,
+			"locked_dialogue": "Gate_AlchemistStore_Locked"
+		},
+		"malik_stash": {
+			"flag": "lab_acquaintance_complete",
+			"locked_dialogue": "Gate_MalikStash_Locked"
 		}
 	}
 }

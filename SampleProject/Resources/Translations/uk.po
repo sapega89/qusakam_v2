@@ -3678,3 +3678,111 @@ msgstr "У моєму скромному куточку знайдеться з�
 msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
 msgstr "Малік вийшов з Лабораторії й дихає вільним повітрям. Його скромний куточок — і золото — чекають далі в дорозі."
 
+# [ЧЕРНЕТКА] M7: кімнати графів регіонів (LocationMap.room_title — імʼя сцени словами), важіль, нові ключі.
+msgid "Mountain Path"
+msgstr "Гірська стежка"
+
+msgid "Scree Slide"
+msgstr "Осипище"
+
+msgid "Stream Gorge"
+msgstr "Ущелина струмка"
+
+msgid "Rock Ledges"
+msgstr "Скельні уступи"
+
+msgid "Cave Under Bridge"
+msgstr "Печера під мостом"
+
+msgid "Cave Exit"
+msgstr "Вихід з печери"
+
+msgid "Canyon Floor"
+msgstr "Дно каньйону"
+
+msgid "Smugglers Stash"
+msgstr "Схованка контрабандистів"
+
+msgid "Lizard Caves"
+msgstr "Печери ящерів"
+
+msgid "Mesa Top"
+msgstr "Вершина Меси"
+
+msgid "Zahra Rest"
+msgstr "Зарин привал"
+
+msgid "Dunes"
+msgstr "Дюни"
+
+msgid "Chasm"
+msgstr "Провалля"
+
+msgid "Dry Riverbed"
+msgstr "Сухе русло"
+
+msgid "Aqueduct"
+msgstr "Акведук"
+
+msgid "Old Ruins"
+msgstr "Старі руїни"
+
+msgid "Gate Approach"
+msgstr "Підхід до брами"
+
+msgid "Craft Quarter"
+msgstr "Ремісничий квартал"
+
+msgid "Palace Square"
+msgstr "Площа палацу"
+
+msgid "Rooftops"
+msgstr "Дахи"
+
+msgid "Pigeon Loft"
+msgstr "Голубник"
+
+msgid "Tavern Attic"
+msgstr "Горище таверни"
+
+msgid "Mayor Archive"
+msgstr "Архів мера"
+
+msgid "Cistern"
+msgstr "Цистерна під ринком"
+
+msgid "Cistern Stash"
+msgstr "Схованка в цистерні"
+
+msgid "Alchemist Corridor"
+msgstr "Коридор алхіміка"
+
+msgid "Alchemist Store"
+msgstr "Комора алхіміка"
+
+msgid "Malik Stash"
+msgstr "Схованка Маліка"
+
+msgid "Collapsed Drain"
+msgstr "Обвалений дренаж"
+
+msgid "Pull"
+msgstr "Потягти"
+
+msgid "Chief's Iron Key"
+msgstr "Залізний ключ ватажка"
+
+msgid "A long iron key from the bandit chief's belt, green with old water. It opens the grate over the well at Zahra's Rest."
+msgstr "Довгий залізний ключ з пояса ватажка бандитів, зелений від старої води. Ним відмикають ґрати над криницею на Зариному привалі."
+
+msgid "Mayor's Desk Key"
+msgstr "Ключ від столу мера"
+
+msgid "A small brass key from the mayor's desk. It opens the bookshelf door to his archive."
+msgstr "Маленький латунний ключ зі столу мера. Ним відчиняють двері-шафу до його архіву."
+
+msgid "Alchemist's Key"
+msgstr "Ключ алхіміка"
+
+msgid "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."
+msgstr "Ключ зі скляною намистиною на кільці, забутий на столі алхіміка. Ним відмикають його комору."

@@ -1042,3 +1042,22 @@ offset = Vector2(-32, -58)
 
 [node name="Pillar1" parent="FrontDark" instance=ExtResource("x5")]
 position = Vector2(1015, 480)
+
+[node name="StashDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(1450, 384)
+texture = ExtResource("x3")
+
+[node name="StashDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(1441.75, 309.75)
+target_room = "res://SampleProject/Maps/MalikStash.tscn"
+arrival = NodePath("SlabDoor")
+gate_id = "malik_stash"
+
+[node name="DrainDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(900, 384)
+texture = ExtResource("x3")
+
+[node name="DrainDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(891.75, 309.75)
+target_room = "res://SampleProject/Maps/CollapsedDrain.tscn"
+arrival = NodePath("HatchDoor")

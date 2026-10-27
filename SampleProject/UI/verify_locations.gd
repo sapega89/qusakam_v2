@@ -11,9 +11,14 @@ extends SceneTree
 const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const MAPS_DIR := "res://SampleProject/Maps"
 const DEMO := {
-	"canyon_of_whispers": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb"],  # + бічні кімнати D643
-	"city": ["CityGates", "City", "MayorHall", "GatehouseCellar"],
-	"laboratory": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss"],
+	# + бічні кімнати D643, + кімнати графів регіонів M7 (design/refs/room_graph_M*.png)
+	"canyon_of_whispers": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb",
+			"MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "CaveUnderBridge", "CaveExit", "CanyonFloor", "SmugglersStash",
+			"LizardCaves", "MesaTop", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "OldRuins", "GateApproach"],
+	"city": ["CityGates", "City", "MayorHall", "GatehouseCellar", "CraftQuarter", "PalaceSquare", "Rooftops", "PigeonLoft",
+			"TavernAttic", "MayorArchive", "Cistern", "CisternStash"],
+	"laboratory": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash",
+			"CollapsedDrain"],
 }
 
 var fails: Array[String] = []

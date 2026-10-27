@@ -21,11 +21,9 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/City.gd" id="city_script"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="gate_guard"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/banner.tscn" id="decor_banner"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x6"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/TownsfolkCrowd.gd" id="tf_crowd"]
@@ -38,12 +36,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="rd_pigeon"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gate"]
-size = Vector2(32, 480)
 
 [node name="City" type="Node2D" unique_id=1536537228]
 script = ExtResource("city_script")
@@ -166,12 +162,6 @@ position = Vector2(2072, 384)
 frame = 3
 speed_scale = 0.91
 flip_h = true
-
-[node name="MayorHallDoorEntrance" parent="." instance=ExtResource("x2")]
-z_index = 0
-position = Vector2(2480, 384)
-texture = ExtResource("x3")
-offset = Vector2(-50, -104)
 
 [node name="Decor" type="Node2D" parent="."]
 
@@ -344,32 +334,6 @@ position = Vector2(1915, 396)
 [node name="OathDervish" parent="." instance=ExtResource("9_oath_dervish")]
 position = Vector2(2330, 396)
 
-[node name="GuardLeft" parent="." instance=ExtResource("gate_guard")]
-position = Vector2(2440, 396)
-
-[node name="Sprite2D" parent="GuardLeft" index="0"]
-flip_h = true
-
-[node name="GuardRight" parent="." instance=ExtResource("gate_guard")]
-position = Vector2(2520, 396)
-
-[node name="Sprite2D" parent="GuardRight" index="0"]
-flip_h = true
-
-[node name="MayorHallGate" type="StaticBody2D" parent="."]
-position = Vector2(2560, 240)
-
-[node name="Collision" type="CollisionShape2D" parent="MayorHallGate"]
-shape = SubResource("RectangleShape2D_gate")
-
-[node name="MayorHallDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(2480, 300)
-target_room = "res://SampleProject/Maps/MayorHall.tscn"
-arrival = NodePath("CityDoor")
-
-[node name="Interactable" parent="MayorHallDoor" index="1"]
-action_text = "Enter"
-
 [node name="ObjectiveTargets" type="Node2D" parent="."]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
@@ -383,3 +347,30 @@ bus = &"Music"
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
 position = Vector2(1910, 520)
 scale = Vector2(3, 3)
+
+[node name="RooftopsDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(880, 384)
+texture = ExtResource("m7_1")
+
+[node name="RooftopsDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(878.5, 322.5)
+target_room = "res://SampleProject/Maps/Rooftops.tscn"
+arrival = NodePath("LadderDoor")
+
+[node name="TavernAtticDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(2450, 384)
+texture = ExtResource("m7_1")
+
+[node name="TavernAtticDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(2448.5, 322.5)
+target_room = "res://SampleProject/Maps/TavernAttic.tscn"
+arrival = NodePath("LadderDoor")
+
+[node name="CisternDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(2540, 384)
+texture = ExtResource("m7_1")
+
+[node name="CisternDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(2538.5, 322.5)
+target_room = "res://SampleProject/Maps/Cistern.tscn"
+arrival = NodePath("WellDoor")

@@ -1,0 +1,3 @@
+// [DRAFT] M7 — the bookshelf door to the mayor's archive without the key from his desk (gates.json → mayor_archive).
+say|KUSAKAM|The bookshelf stands too straight, and there is a keyhole at its foot. The key must be in the mayor's desk.
+exit|

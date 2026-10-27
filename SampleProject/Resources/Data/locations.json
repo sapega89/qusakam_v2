@@ -4,21 +4,21 @@
 		{
 			"id": "canyon_of_whispers",
 			"name": "Canyon of Whispers",
-			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb"],
+			"rooms": ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb", "MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "CaveUnderBridge", "CaveExit", "CanyonFloor", "SmugglersStash", "LizardCaves", "MesaTop", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "OldRuins", "GateApproach"],
 			"entries": ["Canyon"],
 			"map_pos": [1380, 430]
 		},
 		{
 			"id": "city",
 			"name": "The City",
-			"rooms": ["CityGates", "City", "MayorHall", "GatehouseCellar"],
+			"rooms": ["CityGates", "City", "MayorHall", "GatehouseCellar", "CraftQuarter", "PalaceSquare", "Rooftops", "PigeonLoft", "TavernAttic", "MayorArchive", "Cistern", "CisternStash"],
 			"entries": ["CityGates"],
 			"map_pos": [1200, 260]
 		},
 		{
 			"id": "laboratory",
 			"name": "The Laboratory",
-			"rooms": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss"],
+			"rooms": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash", "CollapsedDrain"],
 			"entries": ["LabCells"],
 			"map_pos": [1580, 120]
 		}
