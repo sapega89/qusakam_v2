@@ -411,6 +411,9 @@ func _drill() -> void:
 	hero.defeat_handler = func() -> void: pass
 	var base: Vector2 = hero.global_position + Vector2(700.0, 0.0)
 	for kind: String in DRILL_KINDS:
+		# MASHER_KIND=<вид> — лише цей вид у вправі (для налагодження)
+		if OS.get_environment("MASHER_KIND") not in ["", kind]:
+			continue
 		seed(hash("drill|" + kind))
 		_place_hero(base)
 		hero.Max_Health = 99999
@@ -436,7 +439,7 @@ func _drill() -> void:
 		if enemy.elite:
 			_expect[name].append(&"feint")
 		dumb = []
-		await _drill_kind(enemy, base)
+		await _drill_kind(enemy, base, _expect[name])
 		for line: String in dumb:
 			print("        dumb: " + line)
 		_release_all()
@@ -476,8 +479,13 @@ func _drill_wait(enemy: Node, seconds: float, done: Callable = Callable()) -> vo
 			return
 
 
-func _drill_kind(enemy: Node, base: Vector2) -> void:
+## Вправа одного виду. Фази повторюються (до своєї межі), доки вид не вжив очікуваних рішень [param expect] — вправа
+## дає нагоду, а не перевіряє удачу кидків.
+func _drill_kind(enemy: Node, base: Vector2, expect: Array) -> void:
 	var logic: Node = enemy.enemy_logic
+	var missing := func(names: Array) -> bool:
+		var tactics: Dictionary = _ai(enemy).tactics
+		return names.any(func(t: StringName) -> bool: return t in expect and not tactics.has(t))
 	logic.leash_range = 3000.0  # як у бою кімнати: вправа не мірить повідок (дім — місце появи)
 	logic.on_player_detected(hero)
 	var engaged := func() -> bool: return logic.current_state == logic.AIState.ATTACK and not logic.is_attacking \
@@ -503,8 +511,10 @@ func _drill_kind(enemy: Node, base: Vector2) -> void:
 		_hold_move(-side.call())
 		await _drill_wait(enemy, 1.5)
 		_hold_move(0)
-		# (в) блок 3 с обличчям до ворога, двічі
-		for i in 2:
+		# (в) блок 3 с обличчям до ворога, двічі (до чотирьох, доки не дочекається вікна)
+		for i in 4:
+			if i >= 2 and not missing.call([&"wait_block"]):
+				break
 			await _drill_recentre(enemy, base)
 			await _drill_wait(enemy, 4.0, engaged)
 			_hold_move(side.call())
@@ -515,7 +525,13 @@ func _drill_kind(enemy: Node, base: Vector2) -> void:
 			_set_block(false)
 		# (г) важкий тричі й серія легких двічі в досяжності
 		var n := 0
-		for strike: StringName in [&"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"attack", &"attack"]:
+		var strikes: Array[StringName] = [&"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"heavy_attack", &"attack", &"attack"]
+		for extra in 8:
+			strikes.append(&"heavy_attack")
+		for k in strikes.size():
+			var strike: StringName = strikes[k]
+			if k >= 8 and not missing.call([&"punish", &"evade", &"guard"]):
+				break
 			# через раз: відповідь на удар ворога (щойно він у позі відновлення поруч) чи підхід до нього в його перерві
 			await _drill_recentre(enemy, base)
 			var reach: float = hero.combat.strike_reach(true) + enemy.body_rect().size.x / 2.0
@@ -542,8 +558,10 @@ func _drill_kind(enemy: Node, base: Vector2) -> void:
 					await _drill_wait(enemy, 0.3)
 			await _drill_wait(enemy, 1.5)
 	else:
-		# (д) лучник: герой іде на нього, потім стрибає на місці — відступ, обхід, випередження
-		for i in 5:
+		# (д) лучник: герой іде на нього, потім стрибає на місці — відступ, обхід, випередження (п'ять разів, до десяти)
+		for i in 10:
+			if i >= 5 and not missing.call([&"kite", &"lead", &"feint"]):
+				break
 			await _drill_recentre(enemy, base)
 			await _drill_wait(enemy, 4.0, engaged)
 			_hold_move(side.call())
@@ -1091,6 +1109,8 @@ func _watch_evasions(tracked: Array[Node], dt: float) -> void:
 	var air: bool = not hero.is_on_floor()
 	if (rolling and not _was_rolling) or (air and not _was_air and hero.velocity.y < -100.0):
 		evasions += 1
+		for c: Dictionary in _chasers:
+			c.t = 0.0  # знову ухилився — час іде від останнього ухилу
 		for enemy: Node in tracked:
 			if is_instance_valid(enemy) and enemy.is_alive() and _melee(enemy) \
 					and absf(enemy.global_position.x - hero.global_position.x) <= enemy.enemy_logic.engage_range() * 1.5 \
