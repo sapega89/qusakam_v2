@@ -119,9 +119,9 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	scale.x = player.last_direction
-	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить
+	# Поза боєм зброї не видно; у перекаті-ривку герой згорнутий у клубок — зброя з нього не стирчить; мертвий (H1) — без неї
 	var in_frame: bool = _drawn_in_frame()
-	pivot.visible = not sheathed and not player.mover.is_rolling() and not _open_palm() and not in_frame and _category not in DRAWN_ONLY
+	pivot.visible = not sheathed and not player.is_dead and not player.mover.is_rolling() and not _open_palm() and not in_frame and _category not in DRAWN_ONLY
 	if _body_material.get_shader_parameter(&"active") != in_frame:
 		_body_material.set_shader_parameter(&"active", in_frame)
 	off_pivot.visible = _dual and pivot.visible
