@@ -6,6 +6,7 @@ class_name UILootFeed
 ## додається до нього (монети з одного моба падають по одній) і подовжує його. Тост тримається LOOT_TOAST_HOLD с і
 ## гасне; більше LOOT_FEED_MAX — найстаріший іде одразу. Вигляд — шаблон Toast у сцені (PanelContainer теми HUD).
 ## Дарунки й нагороди сюди не йдуть — їм модалка «You obtained:» (UIManager.show_obtained).
+## Знайдений секрет (D765, EventBus.secret_found) — той самий тост без іконки: «Secret found».
 
 @onready var _template: PanelContainer = %Toast
 
@@ -14,6 +15,7 @@ func _ready() -> void:
 	add_to_group(&"loot_feed")
 	_template.visible = false
 	EventBus.loot_picked_up.connect(add_loot)
+	EventBus.secret_found.connect(_on_secret_found)
 
 
 func add_loot(item_id: String, amount: int) -> void:
@@ -35,6 +37,24 @@ func add_loot(item_id: String, amount: int) -> void:
 	_play(toast)
 
 
+## Тост лише з текстом [param text] (без іконки й лічильника): кожен — свій, не зливається з іншими.
+func add_note(text: String) -> void:
+	var toast := _template.duplicate() as PanelContainer
+	toast.set_meta(&"item_id", "")
+	add_child(toast)
+	move_child(toast, 1)  # 0 — шаблон
+	toast.visible = true
+	toast.modulate.a = 0.0
+	(toast.get_node(^"Row/Icon") as TextureRect).visible = false
+	(toast.get_node(^"Row/Text") as Label).text = text
+	_trim()
+	_play(toast)
+
+
+func _on_secret_found(_room: String, _secret: String) -> void:
+	add_note(tr("Secret found"))
+
+
 ## Живі тости, найновіший першим.
 func toasts() -> Array[PanelContainer]:
 	var out: Array[PanelContainer] = []
@@ -46,7 +66,7 @@ func toasts() -> Array[PanelContainer]:
 
 func _live_toast(item_id: String) -> PanelContainer:
 	for toast: PanelContainer in toasts():
-		if toast.get_meta(&"item_id") == item_id:
+		if item_id != "" and toast.get_meta(&"item_id") == item_id:
 			return toast
 	return null
 

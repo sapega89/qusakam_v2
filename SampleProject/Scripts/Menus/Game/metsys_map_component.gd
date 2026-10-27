@@ -147,7 +147,8 @@ func _update_world() -> void:
 	var chosen: String = location_ids[selected]
 	var data: LocationMap = maps[chosen]
 	%CardName.text = LocationDB.title(chosen)
-	%CardStats.text = tr("Explored %d%% · Chests %d/%d") % [data.explored_percent(), data.chests_opened, data.chests_total]
+	%CardStats.text = tr("Explored %d%% · Chests %d/%d · Secrets %d/%d") % [data.explored_percent(), data.chests_opened,
+		data.chests_total, data.secrets_found, data.secrets_total]
 	%CardHint.visible = pin_state(chosen) != PIN_LOCKED
 
 

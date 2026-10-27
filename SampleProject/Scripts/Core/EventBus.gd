@@ -461,6 +461,15 @@ signal item_added(item_id: String, quantity: int)
 @warning_ignore("unused_signal")
 signal loot_picked_up(item_id: String, amount: int)
 
+## Герой уперше ввійшов у SecretArea кімнати (D765) — секрет знайдено, стан уже в room_state.
+## Слухає стрічка HUD (loot_feed.gd): тост «Secret found».
+##
+## Args:
+##     room (String): кімната MetSys (як у room_state)
+##     secret (String): імʼя вузла SecretArea
+@warning_ignore("unused_signal")
+signal secret_found(room: String, secret: String)
+
 ## Емітується при видаленні предмета з інвентаря.
 ##
 ## Args:

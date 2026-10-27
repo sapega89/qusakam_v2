@@ -89,11 +89,11 @@ func _initialize() -> void:
 	var data_here: RefCounted = map.maps[here_id]
 	ck(map.get_node("%CardName").text == LocationDB.title(here_id), "card shows the selected location")
 	var stats: String = map.get_node("%CardStats").text
-	ck(stats == "Explored %d%% · Chests %d/%d" % [data_here.explored_percent(), data_here.chests_opened, data_here.chests_total],
-			"card counts come from the data (%s)" % stats)
+	ck(stats == "Explored %d%% · Chests %d/%d · Secrets %d/%d" % [data_here.explored_percent(), data_here.chests_opened,
+			data_here.chests_total, data_here.secrets_found, data_here.secrets_total], "card counts come from the data (%s)" % stats)
 	ck(data_here.explored_percent() > 0 and data_here.explored_percent() <= 100, "explored %% is real (%d)" % data_here.explored_percent())
 	ck(data_here.chests_total > 0, "chests counted from the rooms (%d)" % data_here.chests_total)
-	ck(stats.findn("secret") < 0, "no secrets line: nothing in the data marks a secret")
+	ck(data_here.secrets_total > 0, "secrets counted from the SecretArea nodes of the rooms (D765, %d)" % data_here.secrets_total)
 
 	print("[4] the explored / seen / hidden rule")
 	var cells: Dictionary = data_here.cells

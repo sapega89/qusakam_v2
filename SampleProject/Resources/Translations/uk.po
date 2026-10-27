@@ -3234,8 +3234,11 @@ msgstr "відвідано"
 msgid "locked"
 msgstr "закрито"
 
-msgid "Explored %d%% · Chests %d/%d"
-msgstr "Досліджено %d%% · Скрині %d/%d"
+msgid "Explored %d%% · Chests %d/%d · Secrets %d/%d"
+msgstr "Досліджено %d%% · Скрині %d/%d · Секрети %d/%d"
+
+msgid "Secret found"
+msgstr "Секрет знайдено"
 
 msgid "A — open the location map"
 msgstr "A — відкрити карту локації"
