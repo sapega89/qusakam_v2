@@ -61,6 +61,12 @@ its script, a small bird sheet (perch + fly), a wing-flap sound event, placement
 - Atmosphere rule ([[m6_backdrops]], Sapega 2026-10-27): a small butterfly sheet (perch 2, fly 4, two colourings) and a
   moth, plus a soft firefly / spore glow sprite for the particles; README with the AI disclosure.
 
+### Sapega's placements (2026-10-27)
+«Міль на горищі діда, миша в підвалі, голуб в місті»: the **moth** lives in Grandfather's attic (ElderHouse attic), a
+**mouse** in the cellar (GatehouseCellar; it scurries along the floor into a hole when the hero comes near and comes
+back later — new art: a small mouse sheet, `idle` 2 and `run` 4, side view), the **pigeon** in the City. Bats stay in
+the Lizard Cave; butterflies and the lark outdoors.
+
 ### Slice 3 — every room (☁, the one room routine)
 - Birds in the outdoor rooms and the City, bats in the caves, cellars and Laboratory rooms, one to three per room, with
   the foreground pieces of D774 (MayorHall, BanditCamp get theirs first — [[m6_backdrops]]).
