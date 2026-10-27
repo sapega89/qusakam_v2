@@ -602,6 +602,9 @@ func _hero_opened(adx: float) -> bool:
 	var combat: PlayerCombat = player.combat
 	if combat.state in [PlayerCombat.State.HEAVY_RECOVERY, PlayerCombat.State.CAST_WINDUP, PlayerCombat.State.DRINK]:
 		return true
+	# Герой вибив витривалість (D775): ні удару, ні перекату — вікно ворога
+	if player.stamina.exhausted:
+		return true
 	# Замах важкого карає лише той, хто його приймає (trade); легкий відскакує, щитоносець стає щитом (D764)
 	if combat.state == PlayerCombat.State.HEAVY_WINDUP:
 		return enemy.enemy_stats.answer_swing == "trade"
