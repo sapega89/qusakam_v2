@@ -149,17 +149,23 @@ FX = {
         "white hot yellow core, orange flames, red tongues at the edges, flat bottom, front view, "
         + GREEN,
     ),
+    # H4: стара мітка (тонкий овал жарин 48x10, 6 кольорів) у грі читалась блідою плямою. Тепер — коло рун згори,
+    # стиснуте в овал на підлозі (stretch): біло-жовте ядро, помаранчеве кільце, червоний обідок і темний контур
+    # 1 px. Ширина з контуром — x 6..40 = 35 px × 2.05 (Mark у boss_pillar.tscn) = 72 px світу, як width стовпа.
     "boss_mark": dict(
         seed=23,
-        size=(1024, 512),
+        size=(1024, 1024),
         key="green",
-        colors=6,
+        colors=7,
         kind="sprite",
-        canvas=(48, 10),
-        box=(0, 0, 48, 10),
+        canvas=(48, 14),
+        box=(7, 1, 40, 13),
+        stretch=True,
+        outline=(61, 11, 16),
         frames=["Bosses/mark"],
-        prompt="a single flat glowing ellipse of red hot embers and cracks on the ground seen from a low side angle, "
-        "a thin wide horizontal oval, orange glow, " + GREEN,
+        prompt="a single round magic circle of fire seen from directly above, a solid filled disc: a white hot "
+        "yellow center, a wide ring of bright orange glowing fire runes around it, a deep red outer rim, flat, "
+        "no flames rising, centered, " + GREEN,
     ),
     "boss_shockwave": dict(
         seed=24,
@@ -464,6 +470,8 @@ def fit(img, a, fx):
     x0, y0, x1, y1 = fx["box"]
     k = min((x1 - x0) / a.shape[1], (y1 - y0) / a.shape[0])
     w, h = max(1, round(a.shape[1] * k)), max(1, round(a.shape[0] * k))
+    if fx.get("stretch"):  # заповнити box цілком (коло згори → овал на підлозі), пропорції не зберігаються
+        w, h = x1 - x0, y1 - y0
 
     def down(m):
         return np.asarray(
