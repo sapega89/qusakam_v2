@@ -16,7 +16,7 @@ const COST_HEAVY := 30.0
 const COST_SHOT := 10.0
 const COST_CHARGED := 25.0
 const COST_ROLL := 25.0
-const COST_BLOCK := 15.0
+const COST_BLOCK := 10.0
 ## Підняти блок; поки його тримають, шкала набирається лише з цією часткою темпу.
 const BLOCK_RAISE := 5.0
 const BLOCK_REGEN := 0.3
@@ -50,9 +50,12 @@ func can_act() -> bool:
 	return not exhausted
 
 
-func spend(cost: float) -> void:
+## [param pause] — відкласти відновлення на REGEN_DELAY (усе, крім підняття блоку: його ціна відновлення не спиняє, інакше
+## блок на кожну підказку тримав би шкалу порожньою).
+func spend(cost: float, pause: bool = true) -> void:
 	current = maxf(0.0, current - cost)
-	_delay = REGEN_DELAY
+	if pause:
+		_delay = REGEN_DELAY
 	if current <= 0.0:
 		exhausted = true
 	_emit()
