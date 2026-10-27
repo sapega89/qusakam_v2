@@ -31,9 +31,10 @@ Scripts/Tools/run_verify.sh
 Scripts/Tools/run_verify.sh combat_flow
 ```
 
-**Test suite:** ~70 headless SceneTree scripts `SampleProject/UI/verify_*.gd`
+**Test suite:** ~135 headless SceneTree scripts `SampleProject/UI/verify_*.gd`
 (`ls SampleProject/UI/verify_*.gd` for the current count), each prints
-`RESULT: ALL PASS` or `RESULT: N FAIL`.
+`RESULT: ALL PASS` or `RESULT: N FAIL`. Tests that measure real time carry `## SERIAL` and run
+alone after the rest; what each script covers — `design/test_audit_2026-10-27.md`.
 - There are **no GUT tests**, and the GUT addon itself was removed (D240).
 - Read the `RESULT:` line, not the exit code: every run of this project segfaults on
   shutdown (exit 139), see `design/test_baseline.md`.
