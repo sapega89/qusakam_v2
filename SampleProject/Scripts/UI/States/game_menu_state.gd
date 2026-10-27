@@ -24,7 +24,3 @@ func _exit_state() -> void:
 	menu_instance = null
 	if get_tree().paused:
 		get_tree().paused = false
-
-func _physics_process(_delta: float) -> void:
-	pass
-

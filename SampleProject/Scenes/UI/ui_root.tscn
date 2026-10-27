@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/ui_root.gd" id="1_ui_root"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/modal_layer.tscn" id="2_modal_layer"]
-[ext_resource type="Script" path="res://addons/fsm/FiniteStateMachine.gd" id="3_fsm"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/States/ui_state_machine.gd" id="3_fsm"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/States/null_state.tscn" id="4_null_state"]
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="5_game_ui_theme"]
 

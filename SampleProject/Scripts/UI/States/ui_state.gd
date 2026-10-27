@@ -1,4 +1,4 @@
-extends "res://addons/fsm/FSMState.gd"
+extends Node
 class_name UIState
 
 signal finished(payload: Dictionary)
@@ -21,7 +21,4 @@ func _enter_state() -> void:
 	pass
 
 func _exit_state() -> void:
-	pass
-
-func _physics_process(_delta: float) -> void:
 	pass
