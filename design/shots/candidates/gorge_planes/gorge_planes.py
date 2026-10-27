@@ -43,12 +43,21 @@ KEEP, RAMP = (
     110,
     144,
 )  # у кожному шматку: перші 110 стовпців лишаються, до 144 маска м'яко спадає
+# шматок 0 — перші 144 стовпці лишаються (рівно смуга, яку build бере зі стіни осипища: без прямого шва на стовпці 144,
+# A5), до 178 маска спадає
+KEEP0, RAMP0 = 144, 178
+PATCH0 = (190, 420, 160)  # стовпці латки шматка 0 і початок її напрямної в шматку 1 (A5)
 CHUNKS = (0, 432, 864)  # три шматки по 576 (вікно моделі), кожен продовжує попередній
 # гребінь (рядки стіни осипища; рядок кадру = рядок − 237): від осипища ~283, далі 290–318 (небо — смуга 50–80 px,
 # далина майже вся за стіною), на сході — сідловина до ~380 (рядок кадру ~143): крізь неї видно небо, клуб і стебло диму
+# A5: шпиль стіни осипища (її стовпці 534–576, вище кадру) — тут стовпці 102–144; він продовжується до ~170 і спадає,
+# а не обривається квадратним пеньком на стику
 RIM = [
     (0, 283),
-    (150, 268),
+    (100, 283),
+    (102, 232),
+    (172, 232),
+    (196, 268),
     (260, 300),
     (420, 290),
     (560, 312),
@@ -61,6 +70,7 @@ RIM = [
     (1330, 300),
     (1440, 288),
 ]
+WALL_SEED = 821  # 801 — щілини до дна між окремими столовими горами (A5)
 WALL_TEXT = (
     "the far wall of a deep mountain gorge: tall rugged red-orange and ochre sandstone cliffs with horizontal rock "
     "strata, ledges and cracks, filling the whole width and continuing from the rim at the top all the way down to the "
@@ -215,14 +225,34 @@ def gen():
         hgt = -(-len(guide) // 16) * 16
         guide = np.concatenate([guide, np.repeat(guide[-1:], hgt - len(guide), 0)])
         x = np.arange(W * K)
-        keep = np.clip(
-            (RAMP * K - x) / ((RAMP - KEEP) * K), 0, 1
-        )  # 1 — лишити, 0 — перемалювати
+        k0, r0 = (KEEP, RAMP) if i else (KEEP0, RAMP0)
+        keep = np.clip((r0 * K - x) / ((r0 - k0) * K), 0, 1)  # 1 — лишити, 0 — перемалювати
         alpha = np.repeat((keep * 255).astype(np.uint8)[None, :, None], hgt, axis=0)
         name = cb.upload(np.concatenate([guide, alpha], 2), f"gorge_wall_{i}.png")
-        out = cb.run(cb.graph(WALL_TEXT, 801 + i, hgt, name, 0.9))[: (R1 - R0) * K]
+        out = cb.run(cb.graph(WALL_TEXT, WALL_SEED + i, hgt, name, 0.9))[: (R1 - R0) * K]
         Image.fromarray(out.astype(np.uint8)).save(raw(f"wall_{i}"))
         print("wall", i, flush=True)
+    # A5: у шматку 0 (сід 821) стовпці 190–420 вийшли пласким піском — перемальовуються поверх скелі шматка 1 (його
+    # стовпці 160–390 — напрямна), краї смуги м'яко зливаються з сусідами
+    if not os.path.exists(raw("wall_0_fixed")):
+        w0 = np.asarray(Image.open(raw("wall_0")).convert("RGB")).copy()
+        p0, p1, src = PATCH0
+        guide = w0.copy()
+        w1 = np.asarray(Image.open(raw("wall_1")).convert("RGB"))
+        guide[:, p0 * K : p1 * K] = w1[:, src * K : (src + p1 - p0) * K]
+        guide = np.asarray(Image.fromarray(guide).filter(ImageFilter.GaussianBlur(3)))
+        hgt = -(-len(guide) // 16) * 16
+        pad = lambda a: np.concatenate([a, np.repeat(a[-1:], hgt - len(a), 0)])
+        x = np.arange(W * K)
+        ramp = np.clip(np.maximum(p0 * K - x, x - p1 * K) / (12 * K), 0, 1)  # 0 — смуга, 1 — лишити
+        alpha = np.repeat((ramp * 255).astype(np.uint8)[None, :, None], hgt, axis=0)
+        guide = np.where(ramp[None, :, None] > 0, w0, guide)
+        name = cb.upload(np.concatenate([pad(guide), alpha], 2), "gorge_wall_0_fix.png")
+        out = cb.run(cb.graph(WALL_TEXT, WALL_SEED + 10, hgt, name, 0.75))[: len(w0)]
+        wt = (1 - ramp)[None, :, None]
+        Image.fromarray((out * wt + w0 * (1 - wt)).astype(np.uint8)).save(raw("wall_0"))
+        Image.fromarray(np.zeros((1, 1), np.uint8)).save(raw("wall_0_fixed"))  # позначка: латка вже є
+        print("wall 0 fixed", flush=True)
     # берег: уся кімната одним полотном (5184×240 px генерації), img2img за напрямною
     if not os.path.exists(raw(f"bank_{GROUND_SEED}")):
         img, _ = bank_guide()
@@ -273,6 +303,10 @@ def build():
     out[..., :3] = np.round(out[..., :3] * (1 - h) + cb.HAZE * h).astype(np.uint8)
     scree = np.asarray(Image.open(pp.SC + "gen_mid.png"))
     out[:, : W - SEAM_COL] = scree[R0:R1, SEAM_COL:]  # стик з осипищем — його ж пікселі
+    # A5: продовження шпиля осипища (стовпці 144–176) — схилом донизу, а не прямою стінкою: над лінією
+    # (144, 0) → (176, 52) прозоро
+    ys, xs = np.mgrid[: len(out), : out.shape[1]]
+    out[(xs > W - SEAM_COL) & (xs < 200) & (ys < (xs - (W - SEAM_COL)) * 52 / 32), 3] = 0
     Image.fromarray(out).save(SG + "gen_mid.png")
     print("mid", out.shape, flush=True)
     # берег: форма — напрямна (верх далекого краю), колір — генерація; нижче лінії ходьби — палітра gen_ground (як дно

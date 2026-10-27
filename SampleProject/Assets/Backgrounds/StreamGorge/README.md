@@ -16,8 +16,9 @@ plane with factor f is drawn at anchor − f × camera; the gorge's camera is at
 
 - sky, `MountainPath/gen_barrier.png` (×0.1, anchor (115, 4)), `MountainPath/gen_far.png` (×0.3, tile) — shared with
   the path and the scree, so they go on from where the scree left them; the far peaks are mostly behind the wall.
-- `gen_plume.png` (654×169) — the gorge's own smoke plane (D796: bigger than the path's 589×149): the same generation
-  as `MountainPath/gen_plume.png`, scaled to 0.85 of a 3× reduction and hazed 0.2. ×0.35, anchor (967, 97). Sapega:
+- `gen_plume.png` (655×176) — the gorge's own smoke plane (D796: bigger than the path's 491×132): the same generation
+  as `MountainPath/gen_plume.png` (A5, seed 733: ash grey with lit tops, ragged tip — the old near-black puff dominated
+  the corner), a plain 3× reduction, hazed 0.25. ×0.35, anchor (978, 90). Sapega:
   the smoke must read as the burnt village beyond the next screen, never as a fire in the gorge — so its stem is never
   in view: at the left end the thin tip shows over the rim, in the middle the body crosses the sky, at the right end the
   puff sits in the upper right corner and the stem bends down beyond the east edge; the stem's cut bottom (frame row
@@ -25,7 +26,11 @@ plane with factor f is drawn at anchor − f × camera; the gorge's camera is at
 - `gen_mid.png` (1440×340) — the far wall of the gorge, ×0.75, anchor (1296, 232); its rows are the Scree Slide wall's
   rows 232–572 and its columns 0–144 are that wall's columns 432–576 (the same place in the world), so the wall goes on
   at the border. The rim is 45–110 px below the frame top (a band of sky with the barrier), lower in the east (to
-  ~140–190) where the smoke shows. Same 12 colours as the path ridge, the same extra haze from row 253 as the scree's
+  ~140–190) where the smoke shows. A5 (redrawn, chunks seed 821–823): the old wall had a square rock stub with a
+  straight edge at column 144 (the end of the scree's spire) and narrow slots down to the bottom between separate mesas;
+  now the first 144 columns are kept exactly in the generation, the spire goes on to ~176 and slopes down (cut above
+  the line (144, 0) → (176, 52)), and the wall is one continuous face (columns 190–420 repainted once, they came out
+  flat sand). Same 12 colours as the path ridge, the same extra haze from row 253 as the scree's
   wall, so its ledges don't read as walkable.
 - `gen_ground.png` (1728×80) — the bank and the stream, ×1.0, room-sized, anchor (1728, 570) = room row 250. Row 27
   (room y 277 art, 416 world — the same as the scree's floor) is the walk line: the lightest ground colour, a shadow row

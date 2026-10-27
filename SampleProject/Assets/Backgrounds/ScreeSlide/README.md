@@ -22,6 +22,8 @@ Back to front (art px; scale 1.5; scroll factor on both axes, so on the way down
 - `gen_scree.png` (576×640) — the scree slope and the rock under it, ×1.0, room-sized; transparent above the surface.
   The surface, in world px (room-local) — the collision follows it: flat (0, 416) → (96, 416), slope down to
   (720, 896) (about 38°, under the 45° floor limit), flat (720, 896) → (864, 896), the gorge floor and the exit east.
-  A light lip row on the surface, a shadow row under it.
+  A light lip row on the surface, a shadow row under it. A5 (fixed): on the slope itself (not the flat ends, which
+  carry the path's and the gorge's floor) the solid bright orange band read as a lava stream; up to three quarters of
+  its orange pixels became 2×2 specks of light sandstone and grey-violet stone from the same palette — loose gravel.
 - `MountainPath/gen_front.png` — the D750 occluder in the lower-left corner, inside the rock under the slope, below
   the hero's path.

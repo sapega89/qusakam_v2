@@ -20,19 +20,25 @@ Back to front (art px; the scene draws them at scale 1.5; scroll factor on both 
   edge to edge at the Scree Slide (camera x 1152), starts at x 115 at the path's start and drifts west 0.1 px per px
   walked. Apex at frame row ~7, cut bottom at row 263, below the deepest valley of `gen_far` (223). The hole is at x
   136–272 of the image. Also used by the Scree Slide and the Stream Gorge.
-- `gen_far.png` (576×324) — distant bare rocky mountains, hazed, filled down; seamless tile. ×0.3. Also used by the
-  Scree Slide.
-- `gen_plume.png` (589×149) — the smoke of the burning village as a long plume blown west across the sky (Sapega's
-  sketch, 27.10): thin tail on the left, widening, a big rounded puff, and on the right a stem bending down to the
-  source, cut at the bottom (`keep`). ×0.4, in front of `gen_far`, behind `gen_mid`; top-left at art (475, −20) with the
-  camera at the path's left end. So the hero walks under it toward its source: at the path's start only ~100 px of the
-  tail come in at the right edge near the top, at its end the tip is mid-screen, and on the Scree Slide the whole plume
+- `gen_far.png` (576×324) — a continuous distant range of bare rocky peaks, hazed, filled down; seamless tile. ×0.3.
+  Also used by the Scree Slide and the gorge. A5 (redrawn): the first version (seed 501) was separate rock lumps on a
+  flat plain; now `path_planes.py far` paints it over a guide of two periodic ridges (img2img, seed 532), so the range
+  is unbroken and the tile seamless; the deepest valley is row 213 (asserted above the barrier's cut, 263).
+- `gen_plume.png` (491×132) — the smoke of the burning village as a long plume blown west across the sky (Sapega's
+  sketch, 27.10): a ragged pointed tip on the left, widening, a big rounded puff, and on the right a stem bending down
+  to the source, cut at the bottom (`keep`). A5 (fixed): new generation (seed 733) in ash grey and warm brownish grey
+  with lit tops instead of the near-black charcoal one, its tip ragged instead of a ruler-straight line. ×0.4, in front
+  of `gen_far`, behind `gen_mid`; top-left at art (572, −12) with the camera at the path's left end (the stem, column
+  471, at the same world x as before). So the hero walks under it toward its source: at the path's start the tip just
+  comes in at the right edge near the top, at its end the tip is mid-screen, and on the Scree Slide the whole plume
   is in view with the puff at the east edge and the stem beyond it. ×0.4, not ×0.5: between the path's start and the
-  scree the camera covers 1152 × f px of the plane, and the plume is 568 px to the stem. Also used by the Scree Slide.
+  scree the camera covers 1152 × f px of the plane, and the plume is ~470 px to the stem. Also used by the Scree Slide.
 - `gen_mid.png` (576×324) — a ridge of red sandstone cliffs and spires with dry thorn bushes, filled down; seamless
   tile. ×0.75.
-- `gen_waymarker.png` (42×57) — a broken stone waymarker with a carved spiral and a blue ribbon, the one story prop.
-  ×0.9, 57 art px = 1 H × 0.9 (world_scale_plan; ±1 px rounding), feet 2 px under the walk line.
+- `gen_waymarker.png` (73×57) — a weathered sandstone standing stone with its tip broken off, a carved spiral rune and
+  an arrow pointing east, flat stones and sand at its foot: the one story prop. A5 (redrawn, seed 521): the first one
+  (a square pillar with a blue ribbon) read as a wrapped gift. ×0.9, 57 art px = 1 H × 0.9 (world_scale_plan; ±1 px
+  rounding), feet 2 px under the walk line.
 - `gen_ground.png` (576×49) — the rocky path under the hero; row 0 is the walk line (world y 416); seamless tile.
   ×1.0.
 - `gen_front.png` (193×212) — a dark rock spire with a dead tree: the D750 occluder (`foreground_dark.tscn`, ×1.3,

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2r55ne64qnl6"
-path="res://.godot/imported/gen_plume.png-3dd51b9ca051a11aa71fe24bb4077664.ctex"
+uid="uid://ba25u622bm8o7"
+path="res://.godot/imported/gen_village_wall.png-de148355da92f8f690163d98f2836e22.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/RockLedges/gen_plume.png"
-dest_files=["res://.godot/imported/gen_plume.png-3dd51b9ca051a11aa71fe24bb4077664.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/RockLedges/gen_village_wall.png"
+dest_files=["res://.godot/imported/gen_village_wall.png-de148355da92f8f690163d98f2836e22.ctex"]
 
 [params]
 

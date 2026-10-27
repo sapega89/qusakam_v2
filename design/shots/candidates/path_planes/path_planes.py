@@ -221,6 +221,23 @@ def build():
         & (px[..., 1] >= px[..., 2] - 10)
     )
     out[green, :3] = pal[len(pal) // 2]
+    # A5: на схилі суцільна яскраво-помаранчева смуга читалася як лава. Там, де схил (не рівні входи — вони тягнуть
+    # підлогу стежки й ущелини), помаранчеві пікселі смуги — у плямки (2×2) світлого пісковику й сіро-фіолетового
+    # каменю з тієї ж палітри: осип, а не потік
+    rng = np.random.default_rng(612)
+    hot = (pal.sum(1) > 380) & (pal[:, 0] - pal[:, 2] > 150)  # (246,89,58), (247,113,81)
+    tan = pal[np.argmin(np.abs(pal - [230, 145, 99]).sum(1))]
+    stone = pal[np.argmin(np.abs(pal - [155, 95, 144]).sum(1))]
+    xs = np.arange(W)
+    ramp = np.clip(np.minimum(xs - SLOPE[1][0], SLOPE[2][0] - xs) / 40, 0, 1) * 0.75
+    pick = rng.random((SH // 2 + 1, W // 2 + 1))
+    pick = np.repeat(np.repeat(pick, 2, 0), 2, 1)[:SH, :W]
+    kind = np.repeat(np.repeat(rng.random((SH // 2 + 1, W // 2 + 1)), 2, 0), 2, 1)[:SH, :W]
+    px = out[..., :3].astype(np.float32)
+    is_hot = (np.abs(px[..., None, :] - pal[hot][None, None]).sum(-1) < 1).any(-1)
+    swap = is_hot & (pick < ramp[None, :]) & (out[..., 3] > 0)
+    out[swap & (kind < 0.6), :3] = tan
+    out[swap & (kind >= 0.6), :3] = stone
     Image.fromarray(out).save(SC + "gen_scree.png")
     print("scree", out.shape, "green fixed", int(green.sum()), flush=True)
     barrier()
@@ -257,7 +274,7 @@ FRONT_DARK = np.array([0.3, 0.26, 0.34])  # foreground_dark.tscn (D750)
 # джерела (зріз keep унизу праворуч, стовпці від 568) — за краєм кадру. Звідси множник: між правим краєм кадру на початку
 # стежки й на осипищі — 1152·f px плану, а шлейф лише 568 до стебла, тож при ×0.5 або хвоста не видно, або стебло в кадрі
 PLUME_F = 0.4
-PLUME_AT = (475, -20)  # лівий верхній кут шлейфу в арті при камері 0: кінчик (рядок 83) — у верхній третині неба
+PLUME_AT = (572, -12)  # лівий верхній кут шлейфу в арті при камері 0 (A5: генерація 733, стебло — стовпець 471 — там само, де було)
 # лівий верхній кут купола (D797): при камері осипища (x 1152) купол рівно на весь кадр, на початку стежки — від x 115
 # (над сходом, де село), в ущелині зсувається ліворуч; вершина в рядку ~7, нижній зріз (рядок 263) — за горами
 # (найглибша долина далини — 223). Пролам — x 136–272 купола
@@ -378,5 +395,71 @@ def sheet():
     print("sheet", out.size, flush=True)
 
 
+# --- далина (A5) ---------------------------------------------------------------------------------------------------
+# Генерація текстом (501) дала окремі скелі на пласкій рівнині з бруківкою внизу; 521–523 — ланцюги й каньйон у
+# перспективі. Тепер напрямна: суцільне пасмо — два ряди вершин (задній вищий і світліший), періодичні по ширині, тож
+# шар безшовний; модель домальовує скелю (img2img), колір — 8 кольорів старої далини, серпанок шару
+FAR_SEED = 532  # 531 — вершини до верхнього краю (тло не знайшлося)
+FAR_ROWS, FAR_TOP = 240, 84  # як у шару MountainPath/gen_far: смуга з рядка 84, до низу суцільно
+
+
+def far_guide():
+    old = np.asarray(Image.open(MP + "gen_far.png").convert("RGBA"))
+    pal = palette(MP + "gen_far.png") if old[..., 3].any() else None
+    x = np.arange(W) / W * 2 * np.pi
+    rng = np.random.default_rng(FAR_SEED)
+
+    def ridge(base, amp, n):
+        """Вершини від base угору на 0..amp рядків; гармоніки періоду W — безшовно."""
+        h = sum(np.abs(np.sin(k * x / 2 + rng.uniform(0, np.pi))) / k**0.7 for k in range(1, n + 1))
+        return base - amp * (h - h.min()) / (h.max() - h.min())
+
+    back, front = ridge(130, 85, 9), ridge(190, 45, 12)  # верх смуги — рядок 84 шару: вершини з рядка ~130
+    g = np.zeros((FAR_ROWS, W, 3), np.uint8)
+    g[:] = (0, 255, 0)
+    ys = np.arange(FAR_ROWS)[:, None]
+    g[ys >= back[None, :]] = pal[-2]
+    g[(ys >= back[None, :]) & ((np.arange(W)[None, :] // 7 + ys // 5) % 4 == 0)] = pal[3]  # тіні схилів
+    g[ys >= front[None, :]] = pal[-4]
+    g[(ys >= front[None, :]) & ((np.arange(W)[None, :] // 5 + ys // 4) % 3 == 0)] = pal[1]
+    big = Image.fromarray(g).resize((W * K, FAR_ROWS * K), Image.NEAREST).filter(ImageFilter.GaussianBlur(4))
+    return np.asarray(big)
+
+
+def far():
+    layer = cb.LAYERS["MountainPath/gen_far"]
+    path = raw(f"far_{FAR_SEED}")
+    if not os.path.exists(path):
+        g = far_guide()
+        rgba = np.concatenate([g, np.zeros((*g.shape[:2], 1), np.uint8)], 2)
+        name = cb.upload(rgba, "far_guide.png")
+        text = (
+            "a distant range of tall jagged bare rocky mountains with sharp peaks and deep valleys between them, "
+            "a lower ridge in front of taller peaks, the rock continuing down to the bottom edge, dusty rose and sandy "
+            f"violet rock with violet shadows, {cb.CHROMA}, {cb.STYLE}"
+        )
+        out = cb.run(cb.graph(text, FAR_SEED, FAR_ROWS * K, name, 0.7))
+        Image.fromarray(out.astype(np.uint8)).save(path)
+        print("far raw", flush=True)
+    r = np.asarray(Image.open(path).convert("RGB"), np.float32)
+    # безшовність: напрямна періодична, тож краї генерації майже сходяться; шов виводиться на середину (зсув на пів
+    # ширини) і там 24 px генерації змішуються з розмитою по горизонталі копією — у далині за серпанком шва не видно
+    r = np.roll(r, W * K // 2, axis=1)
+    soft = np.asarray(Image.fromarray(r.astype(np.uint8)).filter(ImageFilter.BoxBlur(12)), np.float32)
+    t = np.clip(1 - np.abs(np.arange(W * K) - W * K // 2) / 24, 0, 1)[None, :, None]
+    r = soft * t + r * (1 - t)
+    rgb, opaque = cb.shrink(r, "green", layer.get("spill", 0))
+    rgb, opaque = cb.fill_down(rgb, opaque)
+    rgb = rgb * (1 - layer["haze"]) + cb.HAZE * layer["haze"]
+    full = np.zeros((H, W, 3)), np.zeros((H, W), bool)
+    full[0][FAR_TOP:] = rgb
+    full[1][FAR_TOP:] = opaque
+    q = cb.quantize(full[0], full[1], layer["colors"])
+    Image.fromarray(q).save(MP + "gen_far.png")
+    deep = max(int(np.argmax(q[:, x, 3] > 0)) for x in range(W))
+    assert deep < 263, f"найглибша долина далини — рядок {deep}: під нею видно низ бар'єра (263)"
+    print("far", q.shape, "deepest valley", deep, flush=True)
+
+
 if __name__ == "__main__":
-    {"gen": gen, "build": build, "barrier": barrier, "sheet": sheet}[sys.argv[1]]()
+    {"gen": gen, "build": build, "barrier": barrier, "sheet": sheet, "far": far}[sys.argv[1]]()

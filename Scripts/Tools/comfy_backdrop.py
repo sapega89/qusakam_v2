@@ -1065,6 +1065,9 @@ LAYERS = {
     # M6a-1: дорога від мосту до села — гірська стежка й осипище (спільні далина, дим і передній план; збирає
     # design/shots/candidates/path_planes/path_planes.py). Бар'єр (прозорий купол із проламом, D795) — там же.
     "MountainPath/gen_far": dict(
+        # 501 — окремі скелі на пласкій рівнині з бруківкою внизу, а не гірське пасмо. A5: шар малює path_planes.py
+        # far (img2img за напрямною — суцільне пасмо, безшовне); тут лише налаштування й текст (521–523 текстом — ланцюги,
+        # каньйон у перспективі)
         seed=501,
         rows=240,
         top=84,
@@ -1082,7 +1085,10 @@ LAYERS = {
     # краю екрану починається дим, потім ми підходимо до села»): тонкий кінчик на заході, широке тіло, на сході
     # спускається до джерела за східним краєм. Ширший за екран: width — ширина генерації в px гри при SCALE
     "MountainPath/gen_plume": dict(
-        seed=722,  # 721 — стіна праворуч, 723 — клуб на пів неба; 722 — тонкий кінчик, клуб праворуч, стебло донизу
+        # 721 — стіна праворуч, 723 — клуб на пів неба; 722 — тонкий кінчик, клуб праворуч, стебло донизу, але
+        # вугільно-чорний і важкий, з рівною лінією замість кінчика (A5: перемалювати / виправити). Попелясто-сірий
+        # (A5): 731, 732 — тіло до лівого краю, без кінчика; 733 — гострий кінчик, світлі верхи клубів, стебло донизу
+        seed=733,
         rows=288,
         width=864,
         block=4,  # 648 px: шлейф займає верх неба, а не пів екрана
@@ -1102,8 +1108,8 @@ LAYERS = {
         "across the sky: at the right edge of the frame it is thick, wide and billowing in heavy rounded puffs, bending "
         "down toward the bottom right corner, and toward the left it grows steadily thinner and narrower until it ends "
         "in a thin ragged wispy pointed tip in the left third of the frame, the left quarter of the frame completely "
-        "empty, charcoal grey and dark violet smoke, the plume floating in the upper half of the frame with empty space "
-        f"above it, {CHROMA}",
+        "empty, soft ash grey and warm brownish grey smoke with darker grey undersides and ragged torn edges, the plume "
+        f"floating in the upper half of the frame with empty space above it, {CHROMA}",
     ),
     "MountainPath/gen_mid": dict(
         seed=505,
@@ -1143,7 +1149,7 @@ LAYERS = {
         f"red-orange and dark violet rock strata with cracks down to the bottom edge, seen straight on, {CHROMA} above the ground",
     ),
     "MountainPath/gen_waymarker": dict(
-        seed=513,
+        seed=521,  # 513 — стовп зі стрічкою читався як подарунок (A5: перемалювати)
         rows=220,
         top=0,
         height=58,  # 1 H (64 арту) на плані ×0.9 — world_scale_plan
@@ -1158,9 +1164,10 @@ LAYERS = {
         colors=12,
         quant="octree",
         # 509/512 — стовп на схилі з піском і травою: модель домальовує стежку до «waymarker of a mountain path»
-        prompt="one single small broken square sandstone pillar, cracked across with its top corner broken off, a "
-        "carved spiral rune and a carved arrow on its front face, a faded blue cloth ribbon tied around its middle, seen "
-        "exactly from the side, the object alone floating in the middle of the frame and filling a sixth of its width, "
+        prompt="one single small weathered stone waymarker of an old desert road: a short rough tapering sandstone "
+        "standing stone, cracked across with its tip broken off, a carved spiral rune and a carved arrow pointing right on "
+        "its face, a few flat stones stacked against its foot, seen exactly from the side, the object alone floating in "
+        "the middle of the frame and filling a sixth of its width, "
         "the whole pillar visible with its flat bottom edge, no ground, no grass, no shadow, empty space all around it, "
         f"warm light on the top, cool violet shadows in the recesses, {CHROMA}",
     ),
@@ -1207,21 +1214,13 @@ LAYERS = {
     ),
 }
 # шлейф ущелини (D796: ближчий і більший) — та сама генерація, що й на стежці (кеш). Сапега: «дим має бути видно, що за
-# наступним екраном спалене село» — тож трохи менший, ніж був (×3 давав клуб на пів неба над власною стіною ущелини):
-# height — висота всього диму з обрізаним стеблом у px шару (сира 716 рядків → ×0.85 від зменшення в 3 рази)
+# наступним екраном спалене село». A5: нова генерація (733) світліша, тож клуб у куті вже не тисне; зменшення в 3
+# рази (655 px завширшки, як було) і серпанок 0.25 — далі за гребенем. keep — рядок сирої 744 (над димарем) / 3
 LAYERS["StreamGorge/gen_plume"] = {
     **LAYERS["MountainPath/gen_plume"],
     "block": 3,
-    "height": 203,
-    "keep": 211,  # рядок сирої 744 (зріз стебла) × 0.85 / 3
-    "haze": 0.2,  # далі за гребенем — блідіший
-}
-# скельні уступи (M6a-2b): найбільший шлейф дороги (D796) — дим спаленого села просто за проходом; сира × 1.12 / 3
-LAYERS["RockLedges/gen_plume"] = {
-    **LAYERS["MountainPath/gen_plume"],
-    "block": 3,
-    "height": 267,
-    "keep": 278,
+    "keep": 248,
+    "haze": 0.25,
 }
 
 
