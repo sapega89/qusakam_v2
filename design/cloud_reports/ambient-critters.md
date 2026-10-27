@@ -9,7 +9,8 @@ tags: [cloud, routines, living-world]
 (ALL PASS, 0 SCRIPT ERROR), `verify_room_entrances` ALL PASS, capture `design/shots/ambient_critters_cave.png`.
 **Not done:** slices 2 (bird sheet, wing sound) and 3 (every room) — as planned.
 **D-ID (next free, as built):** D775, text below. **B rows fixed:** none.
-**Full suite:** running (updated when it finishes)
+**Full suite:** `SUITE: 4 FAIL` (129 PASS) — all four also fail with the bats removed, so they come from `feature/backlog`, not this branch:
+`verify_save_load`, `verify_save_load_room`, `verify_progression` (the save point never opens the save screen; `SavePoint.gd:62` `_meditate` null `global_position`, D764's meditation spot), `verify_city_gates_raid` (the hero does not fall after the teleport).
 **Environment note:** `Resources/Audio/Music/heavy_battle.mp3.import` on `feature/backlog` lacks `uid`/`path`/`dest_files`;
 the first `--import` rewrites it, and without that rewrite AudioManager asserts on `music fight` and every sound event
 is unknown (dozens of SCRIPT ERRORs in any test). It came in with `41629a64` (D771); not committed here (outside
@@ -50,4 +51,10 @@ this task) — the orchestrator should commit the imported version.
 - `verify_ambient_critters`: `RESULT: ALL PASS`, 0 SCRIPT ERROR.
 - `verify_room_entrances`: `RESULT: ALL PASS`, 0 SCRIPT ERROR — incl. `LizardCave: Sprite hangs clear of the hero's
   head` for both bats (234 px at y 150; now y 130).
-- Full suite: running (updated when it finishes)
+- Full suite (`Scripts/Tools/run_verify.sh`): `SUITE: 4 FAIL`, 129 PASS.
+  - `verify_city_gates_raid — 1 FAIL: the hero falls after the teleport (y 360.0 -> 360.0)`
+  - `verify_progression — 4 FAIL: pose: Jump, then the save screen opens (NullState), …, he stands up (Meditate)`
+  - `verify_save_load — 2 FAIL, 1 SCRIPT ERROR` — `Invalid access to 'global_position' on null instance` at `SavePoint.gd:62` `_meditate`
+  - `verify_save_load_room — 2 FAIL: the save point opens the save screen (NullState), hero is back at the save point — B82`
+  - Re-run `verify_save_load_room` and `verify_city_gates_raid` with `LizardCave.tscn` reset to `origin/feature/backlog`
+    (no bats): the same FAIL lines. None of the four visits the Lizard Cave. Pre-existing; for the orchestrator.
