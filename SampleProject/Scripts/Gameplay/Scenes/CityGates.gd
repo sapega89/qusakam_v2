@@ -1,4 +1,4 @@
-extends Node2D
+extends "res://SampleProject/Scripts/Gameplay/Scenes/RoomStoryFlow.gd"
 
 ## Тема «?»-підказки (TipTray) для охоронця (D209, D744).
 const CALL_GUARD := "call_guard"
@@ -7,7 +7,7 @@ const COMPANIONS_HINT := "companions"
 ## 🏰 City Gates Scene Manager
 ## States: APPROACH, RAID_CUTSCENE, FIGHT_LOOP, AFTER_FIGHT_DIALOGUE, TO_CITY
 ## Кусакам іде дорогою до брами; RaidTrigger переводить APPROACH → RAID_CUTSCENE (бандити нападають на браму),
-## далі бій з асистом охоронця (D209).
+## далі бій з асистом охоронця (D209). Машина станів — RoomStoryFlow.
 
 enum State {
 	APPROACH,
@@ -19,35 +19,18 @@ enum State {
 
 const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
 
-enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
-
-@export var current_state: State = State.APPROACH:
-	set(val):
-		current_state = val
-		_on_state_changed(val)
-
-var state_run_id: int = 0
-signal state_complete(state: State)
-
 # Enemy spawner reference
 var enemy_spawner: RoomEnemySpawner = null
 
-func _ready() -> void:
-	var loc = ServiceLocator
-	if not loc.is_node_ready():
-		await loc.ready
-
+func _prepare() -> void:
 	# Находим EnemySpawner
 	enemy_spawner = $EnemySpawner
 	enemy_spawner.all_enemies_defeated.connect(_on_all_enemies_defeated)
 	DebugLogger.info("🏰 CityGates: EnemySpawner found and connected", "Scene")
 
-	# Присвоєння запускає сеттер → _on_state_changed().
-	current_state = _initial_state()
-
 ## Стан при вході — за прапорцями. Раніше завжди стартували зі вступу, а він при
 ## прочитаному вступі просто виходив: повернувшись у кімнату, бій не починався ніколи.
-func _initial_state() -> State:
+func _initial_state() -> int:
 	var game := Game.get_singleton()
 	if game.get_quest_flag("city_gates_after_fight_complete"):
 		return State.TO_CITY
@@ -57,21 +40,13 @@ func _initial_state() -> State:
 		return State.FIGHT_LOOP
 	return State.APPROACH
 
-## Для StateChangeTrigger (RaidTrigger: require_state / target_state).
-func get_current_state_name() -> String:
-	return State.keys()[current_state]
+func _dialogue_flags() -> Dictionary:
+	return {
+		"CityGates_Raid": "city_gates_intro_complete",
+		"CityGates_AfterFight": "city_gates_after_fight_complete",
+	}
 
-func change_state_by_name(state_name: String) -> void:
-	current_state = State[state_name]
-
-func _on_state_changed(new_state: State) -> void:
-	state_run_id += 1
-	var run_id = state_run_id
-	DebugLogger.info("🏰 CityGates: Entering state %s (RunID: %d)" % [State.keys()[new_state], run_id], "Scene")
-
-	_apply_state_logic(new_state, run_id)
-
-func _apply_state_logic(state: State, run_id: int) -> void:
+func _apply_state_logic(state: int, run_id: int) -> void:
 	var game = Game.get_singleton()
 	match state:
 		State.APPROACH:
@@ -111,46 +86,6 @@ func _start_fight(dialogue_id: String, run_id: int) -> void:
 			return
 	_spawn_enemies_for_fight()
 
-func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
-	match type:
-		StepType.DIALOGUE:
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.COMBAT:
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.LOOP:
-			await get_tree().create_timer(1.0).timeout
-		StepType.TRANSITION:
-			await get_tree().create_timer(0.5).timeout
-
-	if run_id != state_run_id: return
-	advance_state()
-
-func _play_dialogue(dialogue_id: String, run_id: int) -> void:
-	var dm = _get_dialogue_manager()
-	if not dm: return
-
-	var path = "res://dialogue_quest/" + dialogue_id + ".dqd"
-	dm.start_dialogue(path)
-
-	while true:
-		var finished_id = await EventBus.dialogue_finished
-		if finished_id == path or finished_id == dialogue_id:
-			# Завершуємо квест після діалогу
-			_complete_quest_for_dialogue(dialogue_id)
-			break
-		if run_id != state_run_id: return
-
-func _complete_quest_for_dialogue(dialogue_id: String) -> void:
-	"""Встановлює квестові флаги для діалогів"""
-	var game = Game.get_singleton()
-	if not game: return
-
-	match dialogue_id:
-		"CityGates_Raid":
-			game.set_quest_flag("city_gates_intro_complete", true)
-		"CityGates_AfterFight":
-			game.set_quest_flag("city_gates_after_fight_complete", true)
-
 ## Після бою — перепис у писаря біля брами (D727, D728: клятва обирається тут), тоді думка героя про лабораторію.
 ## Клятва вже є (старий сейв) — перепису немає.
 func _after_fight(run_id: int) -> void:
@@ -159,7 +94,7 @@ func _after_fight(run_id: int) -> void:
 		await scribe.start_census()
 		if run_id != state_run_id:
 			return
-	_execute_step(StepType.DIALOGUE, "CityGates_AfterFight", run_id)
+	_dialogue_then_advance("CityGates_AfterFight", run_id)
 
 ## Напад бандитів (BACKLOG feedback 18): RaidTrigger забирає керування, камера пливе до брами (D437: без слів автора),
 ## CityGates_Raid (варта кличе до зброї), бандити (Raid/Bandits) біжать дорогою до варти й стають на точки спавну
@@ -197,23 +132,6 @@ func _raid_cutscene(run_id: int) -> void:
 	cs.end()
 	advance_state()
 
-func advance_state() -> void:
-	state_complete.emit(current_state)
-	if current_state < State.TO_CITY:
-		current_state = (current_state + 1) as State
-	else:
-		# Перехід до Laboratory обробляється автоматично через MetSys room connections
-		DebugLogger.info("🏰 CityGates: Стейт TO_CITY досягнуто - перехід обробляється через MetSys", "Scene")
-
-func _set_objective(text: String, target: StringName = &"") -> void:
-	"""Встановлює об'єктив для гравця; target — мітка ObjectiveTargets/<target>, куди вказує стрілка (D-28h)"""
-	var game = Game.get_singleton()
-	game.set_objective(text, target)
-
-func _get_dialogue_manager() -> Node:
-	return ServiceLocator.get_dialogue_manager()
-	return null
-
 func _spawn_enemies_for_fight() -> void:
 	"""Спавнить врагов для боя"""
 	# Бандити кат-сцени стоять на точках спавну — їх замінюють справжні вороги.
@@ -245,7 +163,4 @@ func _on_all_enemies_defeated() -> void:
 	ServiceLocator.get_companion_manager().offer_guard(false)
 	_tips().retire(CALL_GUARD)
 	DebugLogger.info("🏰 CityGates: All enemies defeated, advancing state", "Scene")
-	# Переходим к следующему state после победы
-	if current_state == State.FIGHT_LOOP:
-		Game.get_singleton().set_quest_flag("city_gates_fight_complete", true)
-		advance_state()
+	_fight_won(State.FIGHT_LOOP, "city_gates_fight_complete")

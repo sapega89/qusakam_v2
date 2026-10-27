@@ -131,7 +131,7 @@ tags: [plan, orchestrator, status]
 |---|---|---|---|
 | S1 | Дерева навичок v2: 33 нові навички | D535, [[skill_trees_plan]] | ⏳ Sapega читає список |
 | S2 | Підклас на 40 і престиж на 70 | D260, Q66 | ⏳ назви від Sapega |
-| S3 | `RoomStoryFlow` — одна база замість 6 копій стану кімнат | code_review §3.1 | 🔄 routine `room-story-flow` (27.10) |
+| S3 | `RoomStoryFlow` — одна база замість 6 копій стану кімнат | code_review §3.1 | ✅ злито (integrate-28) — D779: `RoomStoryFlow.gd`, 7 кімнат на ньому (−436 рядків), SceneStateManager прибрано; MayorHall і LabCells лишились як є |
 | S4 | Чистка плагінів: свої fsm, interaction_system, ModalDialog; свої меню замість Maaack | D242 | 🔄 шматок 1 (fsm, interaction_system) — routine `plugins-fsm` (27.10); ⬜ шматок 2 ModalDialog; шматок 3 свої меню — коли наступного разу чіпатимемо меню (D242) |
 | S5 | Сюжетна подача діалогів (Figma `36:65`) і повнотілий арт у сценах | D111, D112 | 🔄 routine `story-dialogue` (27.10): подача за фреймом `36:65` (`design/refs/figma_36_65_story_dialogue.png`), повнотілі картки зі спрайтів |
 | S6 | Підказки під ціллю в Журналі (`hint`/`from`) — тексти пише Claude чернеткою | D159, D571 | 🔄 routine `journal-hints` (27.10): підказки-чернетки під кожною ціллю основного шляху |
