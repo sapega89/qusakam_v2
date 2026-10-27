@@ -112,7 +112,7 @@ func _strike(body: Node2D) -> void:
 	# Перекат (невразливість) — стріла пролітає крізь героя
 	if body.is_invulnerable:
 		if body.is_in_group(GameGroups.PLAYER) and body.mover.is_rolling():
-			EventBus.player_dodged_through.emit(self)  # нахил «без бога» (OathLeanings)
+			get_node(^"/root/EventBus").player_dodged_through.emit(self)  # нахил «без бога» (OathLeanings); тести компілюють Arrow до автолоадів
 		return
 	_hit.append(body)
 	body.take_damage(damage, self)

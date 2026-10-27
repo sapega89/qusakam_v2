@@ -211,10 +211,11 @@ func _on_dialogue_quest_signal(params: Array):
 
 ## Пропуск кат-сцени (D308): cutscene_skip_prompt кличе щокадру — репліка набирається до кінця, наступного кадру
 ## йде далі (вікно — accept(), облачко — як dq_accept). Між розмовами пропускати нічого.
+## Відповідь (вчинок D725, перепис D727) пропуск не вибирає за гравця: розмова чекає на неї, далі пропуск іде сам.
 func skip_line() -> void:
 	if _bubble_playing:
 		_bubble_skip = true
-	elif is_dialogue_active():
+	elif is_dialogue_active() and not current_dialogue_player.choice_menu.visible:
 		current_dialogue_box.accept()
 
 func is_dialogue_active() -> bool:

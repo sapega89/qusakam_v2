@@ -112,7 +112,12 @@ func _skip_to(state: String, press: InputEvent, release: InputEvent) -> void:
 	Input.parse_input_event(press)
 	await create_timer(1.2, true, false, true).timeout
 	Input.parse_input_event(release)
-	await _until(func() -> bool: return _settled(state), 20.0)
+	# Відповідь (вчинок D725) пропуск не вибирає — гравець відповідає Enter, далі пропуск іде сам.
+	await _until(func() -> bool:
+		if sl.get_dialogue_manager().is_dialogue_active() and sl.get_dialogue_manager().current_dialogue_player.choice_menu.visible:
+			Input.parse_input_event(_key(KEY_ENTER, true))
+			Input.parse_input_event(_key(KEY_ENTER, false))
+		return _settled(state), 20.0)
 	for i in 30: await physics_frame
 
 func _snap() -> Dictionary:
