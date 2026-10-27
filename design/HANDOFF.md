@@ -17,7 +17,7 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
    contains integrate-28: 11 routines, D775–D786, B163–B169, suite 3 FAIL / 132 PASS — read which and why).
 2. Merge `origin/cloud/integrate-29` into `feature/backlog`. **MASTER_PLAN.md will conflict**: keep the new plan (ours)
    and mark I29 ✅; the old rows it touched live in the archive. Then push and rebuild the exe (X1).
-3. Then start R2+R3 (`rooms-dressing`, one room routine) and H1 (Death wiring) in the cloud — briefs in the plan rows.
+3. R2+R3 (`rooms-dressing`) and H1 (`hero-death`) are already created and wait for integrate-29 in the cloud; merge them when they report.
 
 ## 2. Running now
 | Routine / agent | Trigger | Waits for | Task |
@@ -29,6 +29,9 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 | skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | H3 slice 2 |
 | skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | H3 slice 3; then create ranged → stance (+ H2 shields) → control |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | — | **reported**, merged by integrate-29 |
+| rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
+| hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
+| scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
 | art agent (local, ComfyUI) | — | — | §3 items 1–2 running (started 2026-10-27 afternoon): the magic and glass shield effects over Block/1 (`FX/Shield/`), the iron-shield sprite removed, the mouse critter. When it reports: push, send Sapega `design/shots/shield_spells.png` and `critters_mouse.png`, start §3 item 3 → 4 (M6a) |
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
