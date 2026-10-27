@@ -5,18 +5,18 @@
 [resource]
 script = ExtResource("1_archer")
 enemy_type = "archer"
-speed = 130.0
+speed = 100.0
 stride_speed = 60.0
 base_damage = 24.0
 attack_windup = 0.9
-attack_cooldown = 1.6
+attack_cooldown = 2.0
 attack_active_time = 0.1
 detection_range = 420.0
 attack_range = 380.0
 chase_range = 500.0
 max_health = 150
 poise = 6
-stagger_time = 0.25
+stagger_time = 0.12
 combo_hits = 1
 xp_reward = 25
 tell = "parry"

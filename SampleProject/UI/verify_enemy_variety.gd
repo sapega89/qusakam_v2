@@ -192,14 +192,13 @@ func _pack_art() -> void:
 	bandit.free()
 
 ## [2] Еліта — властивість виду (D652): лише види з "elite": true мають множники D560 (HP ×2.5; шкода ×2.3 і стійкість ×1.6,
-## удари героя її не відкидають — D754); без контуру
-## й без росту. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.
+## удари героя її не відкидають — D754); без контуру; D829: росте на elite.scale понад свою сцену. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.
 func _elites() -> void:
-	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x2.0 and no knockback (D754, D777); no outline, no growth; big kinds wait for their art")
+	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x2.0 and no knockback (D754, D777); no outline, grown x1.25 (D829); big kinds wait for their art")
 	var marks: Dictionary = variety.elite()
 	ck(is_equal_approx(marks.health, 2.5) and is_equal_approx(marks.damage, 2.3) and is_equal_approx(marks.poise, 2.0) and marks.knockback_immune
-			and not marks.has("chance") and not marks.has("scale") and not marks.has("outline_color"),
-			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x2.0, not pushed; no roll, no scale, no outline")
+			and not marks.has("chance") and is_equal_approx(marks.scale, 1.25) and not marks.has("outline_color"),
+			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x2.0, not pushed, grown x1.25 (D829); no roll, no outline")
 	var elite_kinds: Array = variety.kind_ids().filter(func(id: String) -> bool: return variety.is_elite(id))
 	print("  info elite kinds: %s" % [elite_kinds])
 	const PLANNED := ["bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_archer", "tower_shield_guard",
@@ -237,8 +236,8 @@ func _elites() -> void:
 			and fly.xp_reward == roundi(fly_stats.xp_reward * marks.xp),
 			"the Cthulhu fly is an elite: HP %d, damage %.1f, XP %d" % [fly.Max_Health, fly.base_damage, fly.xp_reward])
 	var fly_scene: Node = load("res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn").instantiate()
-	ck(_near(fly.get_node(^"Sprite2D").scale, fly_scene.get_node(^"Sprite2D").scale) and fly.get_node(^"Sprite2D").material == null
-			and plain.get_node(^"Sprite2D").material == null, "an elite is its own art: no outline glow, not scaled up")
+	ck(_near(fly.get_node(^"Sprite2D").scale, fly_scene.get_node(^"Sprite2D").scale * marks.scale) and fly.get_node(^"Sprite2D").material == null
+			and plain.get_node(^"Sprite2D").material == null, "an elite is its own art: no outline glow, grown x%.2f over its scene (D829)" % marks.scale)
 	fly_scene.free()
 	for e in [plain, fly]:
 		e.queue_free()

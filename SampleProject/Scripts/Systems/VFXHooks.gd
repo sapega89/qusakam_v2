@@ -203,11 +203,13 @@ func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 		rumble(feel.rumble)
 
 
-## Сила удару: 3 — рипост (D575), 2 — важкий удар героя, 1 — удар із відкиданням (фінішер серії, булава D203,
-## компаньйон D209), 0 — легкий. Стріла героя (D381) несе свою: швидка 0, заряджена 2.
+## Сила удару: 3 — рипост (D575) і удар навички (D828: навичка — великий удар), 2 — важкий удар героя, 1 — удар із
+## відкиданням (фінішер серії, булава D203, компаньйон D209), 0 — легкий. Стріла героя (D381) несе свою: швидка 0, заряджена 2.
 static func hit_strength(source: Node) -> int:
 	if source.is_in_group(HERO_ARROWS):
 		return source.strength
+	if source.is_in_group(GameGroups.PLAYER) and ServiceLocator.get_skill_manager().is_skill_hitting():
+		return 3
 	if source.is_in_group(GameGroups.PLAYER) and source.combat.state == source.combat.State.HEAVY_STRIKE:
 		return 3 if source.combat.riposting else 2
 	return 1 if is_heavy_hit(source) else 0

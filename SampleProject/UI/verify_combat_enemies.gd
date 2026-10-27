@@ -91,9 +91,11 @@ func _initialize() -> void:
 	await _committed_swings()
 	await _boss_pause()
 	await _floors_and_ledges()
+	await _jumps_up()
 	await _token()
 	await _recovery_and_back_off()
 	await _lunges_and_pounce()
+	await _jackal_on_floor()
 	await _boss_patterns()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -530,6 +532,37 @@ func _floors_and_ledges() -> void:
 	await _done(bandit)
 
 
+## [7b] B198, D830: герой на сходинці — наземний ворог вистрибує до нього, а не стоїть унизу.
+func _jumps_up() -> void:
+	print("[7b] B198: the hero on a step is reached: a ground enemy jumps up to him")
+	hero.global_position = Vector2(arena_x - 700.0, floor_y)
+	await physics_frame
+	var bandit: Node = await _spawn(BANDIT, -80.0)
+	var feet0: float = bandit.global_position.y
+	var bottom: float = bandit.body_collision.global_position.y + bandit.body_collision.shape.get_rect().end.y
+	var rise := 40.0
+	var step := _static_box(Vector2(arena_x + 200.0, bottom - rise / 2.0), Vector2(240, rise))
+	for i in 3: await physics_frame
+	hero.global_position = Vector2(arena_x + 120.0, bottom - rise - 40.0)  # на сходинці, за 200 px від бандита
+	hero.velocity = Vector2.ZERO
+	for i in 20: await physics_frame
+	ck(hero.is_on_floor() and absf(bandit.enemy_logic._feet_y(hero) - (bottom - rise)) < 2.0, "the hero stands on a %.0f px step" % rise)
+	bandit.enemy_logic.player = hero
+	bandit.set_physics_process(true)
+	var up := false
+	for i in 240:  # 4 с
+		await physics_frame
+		_heal()
+		if bandit.is_on_floor() and absf(bandit.global_position.y - (feet0 - rise)) < 2.0:
+			up = true
+			break
+	ck(up, "the bandit jumps onto the step (y %.0f, floor %.0f, step top %.0f)" % [bandit.global_position.y, feet0, feet0 - rise])
+	step.queue_free()
+	await _done(bandit)
+	hero.global_position = Vector2(arena_x, floor_y)
+	await create_timer(0.5).timeout
+
+
 func _static_box(center: Vector2, size: Vector2) -> StaticBody2D:
 	var body := StaticBody2D.new()
 	var shape := CollisionShape2D.new()
@@ -700,6 +733,46 @@ func _lunges_and_pounce() -> void:
 	for j: Node in pair:
 		await _done(j)
 	eb.damage_received.disconnect(count)
+	_heal()
+
+
+## [10b] B197: шакал бігає підлогою. Між ударами (стан ATTACK: підступає, тримає відстань) він іде кроком, а не ковзає
+## в застиглому кадрі стрибка; тіло на підлозі, а спрайт поза стрибком стоїть на своєму місці.
+func _jackal_on_floor() -> void:
+	print("[10b] B197: the jackal runs on the floor between lunges, not gliding in its leap frame")
+	var jackal: Node = await _spawn(JACKAL, 260.0, false)
+	await _place(jackal, -260)
+	var ground: float = jackal.global_position.y
+	var base_y: float = jackal.enemy_view._base_offset_y
+	var logic: Node = jackal.enemy_logic
+	var px: float = jackal.global_position.x
+	var free_moves := 0
+	var glides := {}
+	var off_floor := 0
+	var lifted := 0
+	var attacks := 0
+	for i in 600:  # 10 с живого бою
+		await physics_frame
+		_heal()
+		var dx: float = absf(jackal.global_position.x - px)
+		px = jackal.global_position.x
+		if logic.is_attacking:
+			attacks += 1
+		if absf(jackal.global_position.y - ground) > 2.0:
+			off_floor += 1
+		var free: bool = not logic.is_attacking and logic.knockback_left <= 0.0 and logic.stun_left <= 0.0 				and logic._dash_left <= 0.0 and not jackal.enemy_view.staggered
+		if not free:
+			continue
+		if absf(jackal.sprite.offset.y - base_y) > 0.5:
+			lifted += 1
+		if dx > 1.0:
+			free_moves += 1
+			if jackal.anim_player.current_animation != &"walk":
+				glides[jackal.anim_player.current_animation] = glides.get(jackal.anim_player.current_animation, 0) + 1
+	ck(off_floor == 0 and lifted == 0, "the jackal's body stays on the floor and its drawing on its feet outside a leap (off floor %d frames, sprite lifted %d)" % [off_floor, lifted])
+	ck(attacks > 0 and free_moves > 20 and glides.is_empty(),
+			"moving between bites it runs in its walk frames (%d moving frames, %d attacking; other poses %s)" % [free_moves, attacks, glides])
+	await _done(jackal)
 	_heal()
 
 

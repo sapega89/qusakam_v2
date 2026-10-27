@@ -341,11 +341,14 @@ func _staggers() -> void:
 	hero.take_damage(5, target)
 	ck(got.size() == 1 and hero.combat.is_staggered(), "the hit staggers the hero (%s)" % [got])
 	ck(hero.get_node("AnimationPlayer").current_animation == &"Hurt", "the hurt animation plays (%s)" % hero.get_node("AnimationPlayer").current_animation)
+	# D825: мікрозбій короткий (0.12 с у бандита, було 0.25) — удар пробуємо ще в ньому, відкидання міряємо на його кінці:
+	# за 0.12 с поштовх відносить героя на ~16 px (старий тест міряв ~21 px на 0.15 с збою в 0.25 с), тож поріг 10 px, а не 20
 	Input.action_press(&"move_right")
-	await create_timer(0.15).timeout
-	ck(hero.global_position.x < x_before - 20.0, "pushed away from the enemy, not walking into it (%.0f px)" % (hero.global_position.x - x_before))
 	await _tap(&"attack")
-	ck(not hero.combat.is_attacking, "no attack while staggered")
+	ck(hero.combat.is_staggered() and not hero.combat.is_attacking, "no attack while staggered")
+	while hero.combat.is_staggered():
+		await physics_frame
+	ck(hero.global_position.x < x_before - 10.0, "pushed away from the enemy, not walking into it (%.0f px)" % (hero.global_position.x - x_before))
 	target.global_position.x += 300  # D443: герой іде праворуч — ворог не має стати на шляху
 	await create_timer(0.3).timeout
 	var x_free: float = hero.global_position.x

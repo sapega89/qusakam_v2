@@ -5,12 +5,12 @@
 [resource]
 script = ExtResource("1_bandit_brute")
 enemy_type = "bandit_brute"
-speed = 140.0
+speed = 110.0
 stride_speed = 55.0
 base_damage = 24.0
 attack_windup = 0.85
 attack_active_time = 0.2
-attack_cooldown = 2.0
+attack_cooldown = 2.5
 detection_range = 300.0
 attack_range = 57.5
 chase_range = 400.0

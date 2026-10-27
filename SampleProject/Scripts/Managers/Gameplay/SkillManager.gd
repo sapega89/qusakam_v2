@@ -325,6 +325,11 @@ func _has_required_weapon(definition: SkillDefinition) -> bool:
 
 # ── SP за влучання і парирування (D504) ────────────────────────────────────
 
+## Зараз б'є навичка (use_skill): її влучання — удар навички (VFXHooks.hit_strength, D828).
+func is_skill_hitting() -> bool:
+	return _skill_effect_running
+
+
 ## Влучання героя чи його стріли у ворога; удари навичок і компаньйонів SP не дають.
 func _on_damage_dealt(source: Node, target: Node, _amount: int) -> void:
 	if _skill_effect_running:
@@ -587,8 +592,15 @@ func tree_spent(tree: String, unlocked: Array = get_unlocked_skills(), ranks: Di
 
 
 ## Скільки JP ще бракує в дереві базового класу, щоб відкрити навичку професії (0 — досить або порогу немає).
+## D827: стартова навичка базового дерева (Блок щитом, D815) іде в поріг своєю ціною, хоч і дана задарма; ліміт
+## дерева й повернення при скиданні її не рахують (tree_spent, spent_points).
 func base_jp_missing(skill_id: String, unlocked: Array = get_unlocked_skills(), ranks: Dictionary = {}) -> int:
-	return maxi(0, skill_database.get_skill(skill_id).base_jp - tree_spent("", unlocked, ranks))
+	var granted := 0
+	for id: String in unlocked:
+		var definition: SkillDefinition = skill_database.get_skill(id)
+		if definition.oath == "" and is_starting_skill(id):
+			granted += definition.jp_cost
+	return maxi(0, skill_database.get_skill(skill_id).base_jp - tree_spent("", unlocked, ranks) - granted)
 
 
 ## Вивчає навичку: перевірка → списання JP → запис у player_state → сигнал.

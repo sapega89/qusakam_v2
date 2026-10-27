@@ -5,12 +5,12 @@
 [resource]
 script = ExtResource("1_jackal_pack_leader")
 enemy_type = "jackal_pack_leader"
-speed = 200.0
+speed = 160.0
 stride_speed = 120.0
 base_damage = 23.0
 attack_windup = 0.55
 lunge = 78
-attack_cooldown = 0.8
+attack_cooldown = 0.95
 detection_range = 350.0
 attack_range = 104
 chase_range = 450.0
@@ -19,7 +19,7 @@ poise = 12
 combo_chance = 0.75
 answer_hits = 1
 answer_swing = "evade"
-stagger_time = 0.2
+stagger_time = 0.1
 combo_hits = 3
 xp_reward = 25
 tell = "block"

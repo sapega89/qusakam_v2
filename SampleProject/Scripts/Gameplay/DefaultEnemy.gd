@@ -222,7 +222,8 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 ## Розмір, еліта (D560, D652) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
 ## і форми (B128: що видно, те й б'є) ростуть від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом
-## із хітбоксом. Еліта — це вид зі своїм артом (D652): вона не росте й не має контуру, лише множники.
+## із хітбоксом. Еліта — це вид зі своїм артом (D652), без контуру; D829: ще й росте на elite.scale понад розмір своєї сцени,
+## щоб її було видно серед звичайних.
 func _apply_variety() -> void:
 	var kind: Dictionary = EnemyVariety.kind(enemy_stats.enemy_type)
 	elite = kind.elite
@@ -239,6 +240,7 @@ func _apply_variety() -> void:
 		health *= marks.health
 		hit *= marks.damage
 		xp *= marks.xp
+		grow *= marks.scale
 		# D754: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
 		poise_max = roundi(poise_max * marks.poise)
 		poise = poise_max
@@ -401,7 +403,8 @@ func _physics_process(delta: float) -> void:
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); наземному — лише X-рух, летючому — увесь.
 	var move: Vector2 = enemy_logic.process_physics(delta)
-	enemy_view.walk_pace(enemy_logic.pace * speed / stride_speed)
+	var moving: bool = not move.is_zero_approx() and enemy_logic.knockback_left <= 0.0
+	enemy_view.walk_pace(enemy_logic.pace * speed / stride_speed, moving, enemy_logic.is_attacking)
 	current_state = enemy_logic.current_state
 	state_timer = enemy_logic.state_timer
 	lost_player_timer = enemy_logic.lost_player_timer
@@ -417,6 +420,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		# На полу - сбрасываем вертикальную скорость
 		velocity.y = 0
+	if enemy_logic.jump_speed > 0.0:
+		velocity.y = -enemy_logic.jump_speed  # B198: вистрибує на сходинку до героя
+		enemy_logic.jump_speed = 0.0
 
 	# Применяем движение с физикой
 	move_and_slide()

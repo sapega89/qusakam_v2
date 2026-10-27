@@ -144,7 +144,7 @@
       "prerequisites": [],
       "sp_cost": 6,
       "cooldown": 0.0,
-      "damage": 30,
+      "damage": 60,
       "required_weapons": [
         "sword",
         "dagger"
@@ -161,8 +161,8 @@
       "vfx": "res://SampleProject/Scenes/FX/Skills/FireStrike.tscn",
       "oath": "",
       "damage_scaling": {
-        "phys": 1.95,
-        "elem": 0.3
+        "phys": 3.9,
+        "elem": 0.6
       },
       "synergies": [
         {
@@ -196,7 +196,7 @@
       "prerequisites": [],
       "sp_cost": 8,
       "cooldown": 0.0,
-      "damage": 38,
+      "damage": 76,
       "required_weapons": [
         "polearm",
         "mace"
@@ -214,8 +214,8 @@
       "vfx": "res://SampleProject/Scenes/FX/Skills/ElectricStrike.tscn",
       "oath": "",
       "damage_scaling": {
-        "phys": 1.8,
-        "elem": 0.5
+        "phys": 3.6,
+        "elem": 1.0
       },
       "synergies": [
         {
@@ -434,7 +434,7 @@
       "sp_cost": 6,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 36,
+      "damage": 72,
       "stun": 0.3,
       "cast": {
         "windup": 0.5,
@@ -443,8 +443,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 2.1,
-        "elem": 0.4
+        "phys": 4.2,
+        "elem": 0.8
       },
       "synergies": [
         {
@@ -561,7 +561,7 @@
       "sp_cost": 12,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 42,
+      "damage": 84,
       "heal": 20,
       "cast": {
         "windup": 0.6,
@@ -570,8 +570,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 2.4,
-        "elem": 0.4
+        "phys": 4.8,
+        "elem": 0.8
       },
       "heal_scaling": {
         "phys": 0.0,
@@ -640,7 +640,7 @@
       "sp_cost": 16,
       "cooldown": 60.0,
       "required_weapons": [],
-      "damage": 80,
+      "damage": 160,
       "chain": {
         "radius": 160,
         "ratio": 0.6
@@ -653,8 +653,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 4.0,
-        "elem": 1.0
+        "phys": 8.0,
+        "elem": 2.0
       },
       "ultimate": true,
       "synergies": [
@@ -810,7 +810,7 @@
       "sp_cost": 6,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 27,
+      "damage": 54,
       "burn": {
         "dps": 5,
         "duration": 4.0
@@ -822,8 +822,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 1.95,
-        "elem": 0.5
+        "phys": 3.9,
+        "elem": 1.0
       },
       "synergies": [
         {
@@ -940,7 +940,7 @@
       "sp_cost": 12,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 51,
+      "damage": 102,
       "burn": {
         "dps": 6,
         "duration": 3.0
@@ -952,8 +952,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 2.7,
-        "elem": 0.4
+        "phys": 5.4,
+        "elem": 0.8
       },
       "synergies": [
         {
@@ -1018,7 +1018,7 @@
       "sp_cost": 18,
       "cooldown": 60.0,
       "required_weapons": [],
-      "damage": 90,
+      "damage": 180,
       "chain": {
         "radius": 160,
         "ratio": 0.5
@@ -1034,8 +1034,8 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 4.5,
-        "elem": 0.8
+        "phys": 9.0,
+        "elem": 1.6
       },
       "ultimate": true,
       "synergies": [
@@ -1191,7 +1191,7 @@
       "sp_cost": 5,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 39,
+      "damage": 78,
       "stun": 0.5,
       "cast": {
         "windup": 0.35,
@@ -1200,7 +1200,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 2.1,
+        "phys": 4.2,
         "elem": 0.0
       },
       "synergies": [
@@ -1322,7 +1322,7 @@
       "sp_cost": 10,
       "cooldown": 0.0,
       "required_weapons": [],
-      "damage": 45,
+      "damage": 90,
       "chain": {
         "radius": 140,
         "ratio": 0.6
@@ -1334,7 +1334,7 @@
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/OathSkill.tscn",
       "damage_scaling": {
-        "phys": 2.7,
+        "phys": 5.4,
         "elem": 0.0
       },
       "synergies": [
@@ -1564,9 +1564,9 @@
       "prerequisites": [],
       "sp_cost": 5,
       "cooldown": 0.0,
-      "damage": 22,
+      "damage": 44,
       "damage_scaling": {
-        "phys": 1.6,
+        "phys": 3.2,
         "elem": 0.0
       },
       "required_weapons": [],
@@ -1614,9 +1614,9 @@
       "planned": true,
       "sp_cost": 6,
       "cooldown": 0.0,
-      "damage": 26,
+      "damage": 52,
       "damage_scaling": {
-        "phys": 1.8,
+        "phys": 3.6,
         "elem": 0.0
       },
       "draft": {
@@ -1646,9 +1646,9 @@
       "planned": true,
       "sp_cost": 5,
       "cooldown": 0.0,
-      "damage": 14,
+      "damage": 28,
       "damage_scaling": {
-        "phys": 1.0,
+        "phys": 2.0,
         "elem": 0.0
       },
       "stun": 0.4,
@@ -1681,9 +1681,9 @@
       "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
-      "damage": 34,
+      "damage": 68,
       "damage_scaling": {
-        "phys": 2.2,
+        "phys": 4.4,
         "elem": 0.0
       },
       "draft": {
@@ -1714,10 +1714,10 @@
       "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
-      "damage": 40,
+      "damage": 80,
       "damage_scaling": {
-        "phys": 2.3,
-        "elem": 0.4
+        "phys": 4.6,
+        "elem": 0.8
       },
       "draft": {
         "range_px": 520,
@@ -1778,9 +1778,9 @@
       "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "damage": 55,
+      "damage": 110,
       "damage_scaling": {
-        "phys": 3.0,
+        "phys": 6.0,
         "elem": 0.0
       },
       "draft": {
@@ -1863,9 +1863,9 @@
       "prerequisites": [],
       "sp_cost": 6,
       "cooldown": 0.0,
-      "damage": 24,
+      "damage": 48,
       "damage_scaling": {
-        "phys": 1.7,
+        "phys": 3.4,
         "elem": 0.0
       },
       "base_jp": 3,
@@ -1921,10 +1921,10 @@
       "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
-      "damage": 40,
+      "damage": 80,
       "damage_scaling": {
-        "phys": 2.2,
-        "elem": 0.6
+        "phys": 4.4,
+        "elem": 1.2
       },
       "draft": {
         "range_px": 600
@@ -2045,10 +2045,10 @@
       ],
       "sp_cost": 14,
       "cooldown": 0.0,
-      "damage": 58,
+      "damage": 116,
       "damage_scaling": {
-        "phys": 3.0,
-        "elem": 0.6
+        "phys": 6.0,
+        "elem": 1.2
       },
       "base_jp": 6,
       "required_weapons": [],
@@ -2102,10 +2102,10 @@
       "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
-      "damage": 20,
+      "damage": 40,
       "damage_scaling": {
-        "phys": 1.0,
-        "elem": 1.0
+        "phys": 2.0,
+        "elem": 2.0
       },
       "stun": 1.2,
       "draft": {
@@ -2163,9 +2163,9 @@
       "prerequisites": [],
       "sp_cost": 6,
       "cooldown": 0.0,
-      "damage": 24,
+      "damage": 48,
       "damage_scaling": {
-        "phys": 1.8,
+        "phys": 3.6,
         "elem": 0.0
       },
       "base_jp": 3,
@@ -2219,10 +2219,10 @@
       "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
-      "damage": 18,
+      "damage": 36,
       "damage_scaling": {
-        "phys": 1.2,
-        "elem": 0.4
+        "phys": 2.4,
+        "elem": 0.8
       },
       "draft": {
         "range_px": 420
@@ -2286,10 +2286,10 @@
       "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "damage": 44,
+      "damage": 88,
       "damage_scaling": {
-        "phys": 2.4,
-        "elem": 0.5
+        "phys": 4.8,
+        "elem": 1.0
       },
       "burn": {
         "dps": 4,
@@ -2355,10 +2355,10 @@
       "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
-      "damage": 30,
+      "damage": 60,
       "damage_scaling": {
-        "phys": 1.8,
-        "elem": 0.6
+        "phys": 3.6,
+        "elem": 1.2
       },
       "draft": {
         "pool_px": 160,
@@ -2392,10 +2392,10 @@
       "planned": true,
       "sp_cost": 14,
       "cooldown": 0.0,
-      "damage": 70,
+      "damage": 140,
       "damage_scaling": {
-        "phys": 3.5,
-        "elem": 0.6
+        "phys": 7.0,
+        "elem": 1.2
       },
       "draft": {
         "hp_threshold": 0.2,
@@ -2453,9 +2453,9 @@
       "prerequisites": [],
       "sp_cost": 5,
       "cooldown": 0.0,
-      "damage": 26,
+      "damage": 52,
       "damage_scaling": {
-        "phys": 1.8,
+        "phys": 3.6,
         "elem": 0.0
       },
       "base_jp": 3,
@@ -2541,9 +2541,9 @@
       "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
-      "damage": 16,
+      "damage": 32,
       "damage_scaling": {
-        "phys": 1.0,
+        "phys": 2.0,
         "elem": 0.0
       },
       "stun": 0.3,
@@ -2575,9 +2575,9 @@
       "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
-      "damage": 36,
+      "damage": 72,
       "damage_scaling": {
-        "phys": 2.2,
+        "phys": 4.4,
         "elem": 0.0
       },
       "draft": {
@@ -2675,9 +2675,9 @@
       ],
       "sp_cost": 15,
       "cooldown": 0.0,
-      "damage": 62,
+      "damage": 124,
       "damage_scaling": {
-        "phys": 3.2,
+        "phys": 6.4,
         "elem": 0.0
       },
       "base_jp": 6,

@@ -132,9 +132,10 @@ func _scenes() -> void:
 	var vs: Resource = load(STATS % "vulture")
 	var bs: Resource = load(STATS % "bat")
 	ck(vs.flying and vs.flight_attack == "dive" and bs.flying and bs.flight_attack == "bite", "both kinds fly: the vulture dives, the bat bites")
-	ck(vs.max_health == jackal.max_health and vs.base_damage == jackal.base_damage and vs.speed == jackal.speed
+	# D826 сповільнив лише наземних (шакал 200 → 160); гриф лишає швидкість D767
+	ck(vs.max_health == jackal.max_health and vs.base_damage == jackal.base_damage and is_equal_approx(vs.speed, 200.0)
 			and is_equal_approx(vs.attack_windup, 0.6) and vs.tell == "dodge",
-			"vulture: the jackal's HP %d, damage %d, speed %d, a 0.6 s wind-up, a red tell" % [vs.max_health, vs.base_damage, vs.speed])
+			"vulture: the jackal's HP %d and damage %d, speed %d (D767; D826 slowed only ground kinds), a 0.6 s wind-up, a red tell" % [vs.max_health, vs.base_damage, vs.speed])
 	# XP — менше за шакала: два грифи на дорозі не мають зсунути рівень 5 з останнього вбивства біля воріт (D280, verify_xp_curve)
 	ck(vs.xp_reward * 2 < 15, "vulture XP %d: the oath level still lands on the last City Gates kill" % vs.xp_reward)
 	ck(bs.max_health == roundi(jackal.max_health / 2.0) and is_equal_approx(bs.base_damage, roundf(jackal.base_damage / 2.0)) and bs.tell == "block",

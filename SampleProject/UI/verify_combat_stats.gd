@@ -158,8 +158,8 @@ func _initialize() -> void:
 		# D504: замахуються разом не більше двох (жетон) — наступний ворог чекав би, доки цей не скінчить
 		while logic.is_attacking:
 			await physics_frame
-	ck(tempos.has("fast") and tempos.fast >= 0.8 * 0.7 - 0.001 and tempos.fast <= 0.8 * 1.3 + 0.001,
-			"the fast enemy swings every 0.8 s, x0.7-1.3 (D754, was D642's 1.0; D775) (%s)" % [tempos])
+	ck(tempos.has("fast") and tempos.fast >= 0.95 * 0.7 - 0.001 and tempos.fast <= 0.95 * 1.3 + 0.001,
+			"the fast enemy swings every 0.95 s, x0.7-1.3 (D826, was D754's 0.8; D775) (%s)" % [tempos])
 
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

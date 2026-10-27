@@ -134,13 +134,28 @@ func _initialize() -> void:
 	var expected := roundi((fire.damage + fire.damage_phys * phys + fire.damage_elem * elem) * (1.0 + sm.synergy_bonus("fire_strike")))
 	ck(sm.skill_damage("fire_strike") == expected, "Fire Strike = 20 + 1.3 × %d + 0.3 × %d = %d (%d)" % [phys, elem, expected, sm.skill_damage("fire_strike")])
 	ck(sm.skill_damage("fire_strike") > phys, "a skill hits harder than a light swing (%d > %d)" % [sm.skill_damage("fire_strike"), phys])
+	# D828: навичка — вагомий удар: кожна збудована бойова активна вже на 1-му ранзі й на 20-му рівні (де Phys. Atk. найбільший
+	# щодо бази навички) б'є сильніше за всю легку серію. Заплановані (planned) — ще з попередніми числами D808.
+	var combo: float = 0.0
+	for share: float in load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").COMBO_DAMAGE:
+		combo += share * phys
+	var weak: Array[String] = []
+	for definition in db.get_all_skills():
+		if definition.is_active() and not definition.planned and definition.damage > 0 and sm.skill_damage(definition.id, 1) <= combo:
+			weak.append("%s %d" % [definition.id, sm.skill_damage(definition.id, 1)])
+	ck(weak.is_empty(), "every built attack skill outhits a whole light combo (combo %.0f; not above it: %s)" % [combo, weak])
 	var strength_before: int = sm.skill_damage("fire_strike")
 	sl.get_attribute_manager().spend({"strength": 5})
 	ck(sm.skill_damage("fire_strike") > strength_before, "more Phys. Atk. → more skill damage (%d → %d)" % [strength_before, sm.skill_damage("fire_strike")])
 	var hp0: int = enemy.current_health
 	sm.restore_sp(100)
+	var feel: Array = []
+	var on_hit := func(source: Node, _target: Node, _amount: int) -> void: feel.append(load("res://SampleProject/Scripts/Systems/VFXHooks.gd").hit_strength(source))
+	bus.damage_dealt.connect(on_hit)
 	ck(sm.use_skill("fire_strike", enemy) == R.OK and hp0 - enemy.current_health == sm.skill_damage("fire_strike"),
 			"the hit deals the scaled damage (%d)" % (hp0 - enemy.current_health))
+	bus.damage_dealt.disconnect(on_hit)
+	ck(feel == [3], "a skill hit lands with the heaviest feel, like a riposte: hitstop, shake, sound (D828, strengths %s)" % [feel])
 	ck(not sm.is_skill_on_cooldown("fire_strike"), "no cooldown on an ordinary skill (D504)")
 
 	print("[3] SP from hits and parries, not over time (D504)")
