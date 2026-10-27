@@ -27,7 +27,7 @@ track wins over it; when both end, the room's own `Music` stream comes back. Pat
 
 | Use | Track | Status |
 |---|---|---|
-| fight | time_for_adventure.mp3 (the menu's track) | **placeholder** — the CC0 pick is slice 3b (Sapega) |
+| fight | heavy_battle.mp3 — «Heavy battle music» by Davieplier, OpenGameArt, **CC0** (the author asks for a credit: «Credit my name in your project»), loop | Sapega's pick 2026-10-27 (D771) |
 | boss | sunblade_horizon.ogg (City Gates' track) | **placeholder** — the CC0 pick is slice 3b (Sapega) |
 
 Provisional (Q38 — Sapega: "connect it somehow for now"). Checked by `verify_music.gd`.
