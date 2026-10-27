@@ -68,6 +68,10 @@ func _initialize() -> void:
 	var info := {"arrival": str(arrival), "start": [player.global_position.x, player.global_position.y]}
 	var bounds: Rect2 = _room_bounds()
 	var dir: float = 1.0 if bounds.get_center().x >= player.global_position.x else -1.0
+	# Сюжет кімнати, що зупинив героя (LaboratoryOutside: екран кінця демо), — лише у фільмі пускаємо його знову.
+	info["movement_was_off"] = player.event
+	if player.event:
+		player.set_movement_enabled(true)
 	phase = "run_out"
 	RenderingServer.frame_pre_draw.connect(_sample)
 	var start: Vector2 = player.global_position
@@ -343,8 +347,9 @@ func _solo_pass() -> Dictionary:
 	var owner_of: Dictionary = {}
 	for p: int in planes.size():
 		owner_of[planes[p].node] = p
-		for item: CanvasItem in planes[p].items:
-			owner_of[item] = p
+		for item: Variant in planes[p].items:
+			if is_instance_valid(item):
+				owner_of[item] = p
 	var old_clear: Color = RenderingServer.get_default_clear_color()
 	var world_env: WorldEnvironment = game.get_node("WorldEnvironment")
 	var env: Environment = world_env.environment
