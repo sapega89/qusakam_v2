@@ -62,6 +62,7 @@
 		"coin": {"bus": "SFX", "files": ["SFX/handleCoins.ogg"], "volume_db": -4.0},
 		"secret_found": {"bus": "SFX", "files": ["SFX/impactBell_heavy_000.ogg", "SFX/impactBell_heavy_001.ogg"], "pitch": 2.4, "volume_db": -12.0, "jitter": 0.0},
 		"level_up": {"bus": "SFX", "files": ["SFX/level_up.ogg"], "volume_db": -2.0, "jitter": 0.0},
+		"critter_flap": {"bus": "SFX", "files": ["SFX/critter_flap.ogg"], "volume_db": -8.0, "jitter": 0.1},
 		"amb_desert_wind": {"bus": "Ambience", "files": ["Ambience/amb_desert_wind.ogg"], "jitter": 0.0},
 		"amb_canyon_echo": {"bus": "Ambience", "files": ["Ambience/amb_canyon_echo.ogg"], "volume_db": 3.0, "jitter": 0.0},
 		"amb_village": {"bus": "Ambience", "files": ["Ambience/amb_village.ogg"], "jitter": 0.0},

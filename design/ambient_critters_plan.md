@@ -57,10 +57,16 @@ its script, a small bird sheet (perch + fly), a wing-flap sound event, placement
   sheet. Commit at once.
 - A soft wing-flap sound (CC0) as `sound_events.json` → `critter_flap`, played on take-off.
 
+### Slice 2b — butterflies and glow (🖥 ComfyUI)
+- Atmosphere rule ([[m6_backdrops]], Sapega 2026-10-27): a small butterfly sheet (perch 2, fly 4, two colourings) and a
+  moth, plus a soft firefly / spore glow sprite for the particles; README with the AI disclosure.
+
 ### Slice 3 — every room (☁, the one room routine)
 - Birds in the outdoor rooms and the City, bats in the caves, cellars and Laboratory rooms, one to three per room, with
   the foreground pieces of D774 (MayorHall, BanditCamp get theirs first — [[m6_backdrops]]).
-- New M6 rooms get critters as they are built (M7).
+- The atmosphere effects of [[m6_backdrops]] in every existing room: one or two per room, fitted to the place, on
+  `GraphicsQuality`; the Canyon's dust swirls are the reference.
+- New M6 rooms get critters and their atmosphere as they are built (M7).
 
 ## Order and dependencies
 `1 → 3`; `2` runs in parallel with `1` on the PC. Slice 3 waits for the map routines that edit the same room scenes

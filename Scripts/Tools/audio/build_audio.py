@@ -157,6 +157,20 @@ def stage_combat(dl: Path, repo: Path) -> None:
     shutil.copy(ui / "error_001.ogg", sfx / "cast_interrupt.ogg")
 
 
+def critter_flap(repo: Path) -> None:
+    """Ambient critters take off (A21, D774): three quick soft flaps cut from cloth rustles, pitched up, fading away."""
+    rpg = repo / "assets/kenney_rpg-audio/Audio"
+    flaps = [
+        fade(band(pitch(cut(load(rpg / f"cloth{i}.ogg"), start, 0.14), 1.3), 300, 5000), 0.01, 0.06)
+        for i, start in ((2, 0.06), (3, 0.04), (4, 0.02))
+    ]
+    flaps = [f / np.abs(f).max() for f in flaps]  # the cloths differ 2x in level: the gains below set the fade
+    save(
+        mix((flaps[0], 0.0, 1.0), (flaps[1], 0.14, 0.8), (flaps[2], 0.27, 0.6)),
+        repo / "SampleProject/Assets/Audio/SFX/critter_flap.ogg",
+    )
+
+
 def stage_world(dl: Path, repo: Path) -> None:
     sfx = repo / "SampleProject/Assets/Audio/SFX"
     ui_dir = repo / "SampleProject/Assets/Audio/UI"
@@ -190,6 +204,7 @@ def stage_world(dl: Path, repo: Path) -> None:
     ]:
         shutil.copy(rpg / f"{name}.ogg", sfx / f"{name}.ogg")
     shutil.copy(ui / "confirmation_001.ogg", sfx / "level_up.ogg")
+    critter_flap(repo)
     for name in ["tick_002", "click_001", "switch_002", "scroll_001"]:
         shutil.copy(ui / f"{name}.ogg", ui_dir / f"{name}.ogg")
 
