@@ -11,7 +11,9 @@ extends SceneTree
 ## Звіт по кожному бою: хто переміг, HP героя, час, скільки ударів ворога влучило, скільки секунд кожен ворог
 ## стояв збитий (збій, оглушення, відкидання), скільки замахів зірвано й скільки разів кілька ворогів били разом.
 ## Перевірки (D642): [1] MASHER перемагає одного звичайного ворога, але втрачає HP; [2] MASHER (обидві збірки) програє
-## кожній еліті, обом босам і групі з 3+; [3] GOOD перемагає їх (SKILLS).
+## кожній еліті, обом босам і групі з 3+; [3] GOOD перемагає їх (SKILLS); [4] бос, як його зустрічає гравець (вхід у
+## кімнату, кат-сцена, смужка боса, музика бою), б'є зброєю героя, що стоїть і тисне удар, і героя, що чекає трохи поза
+## досяжністю сокири (B154).
 ## Бій групи хаотичний (кадр туди-сюди — інша гілка): не той результат — друга спроба з іншими кидками, і вимога —
 ## хоч в одній з двох.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_masher.gd
@@ -55,6 +57,11 @@ const PRESS_EVERY := 0.1
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
+## [4] (B154): скільки с герой стоїть і тисне біля боса; скільки с чекає за спиною боса і на якій відстані від нього
+## (досяжність серії боса — 69–72 px, межа його відпочинку між ходами була 90 px).
+const BOSS_MASH := 12.0
+const BOSS_WAIT := 6.0
+const BOSS_WAIT_GAP := 86
 ## Швидкість стріли лучника (arrow.tscn, Arrow.speed), px/с.
 const ARROW_SPEED := 900.0
 
@@ -150,11 +157,110 @@ func _initialize() -> void:
 		if row.bot == "GOOD":
 			ck(row.won, "%s, %s: %s with %d%% HP" % [row.name, row.build, _verdict(row), roundi(row.hp_left * 100)])
 
+	print("[4] each boss, met as the player meets it, swings its weapon and lands it (B154)")
+	for fight: Dictionary in FIGHTS:
+		if fight.cls == "boss":
+			await _boss_meeting(fight)
+
 	sl.get_time_manager().set_time_scale(1.0)
 	Engine.physics_ticks_per_second = 60
 	Engine.max_fps = 60
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
+
+
+## Бос через справжній початок бою (B154): герой заходить у кімнату з Arrival, іде праворуч до тригера, кат-сцену
+## дочитано — бій. (а) Герой стоїть і тисне легкий удар BOSS_MASH с; (б) герой за спиною боса, за BOSS_WAIT_GAP px, просто
+## стоїть BOSS_WAIT с. В обох бос має влучити зброєю (джерело шкоди — сам бос, не хвиля): раніше в (б) він стояв
+## на 89 px, поза досяжністю серії (69 px), і лише бив об землю.
+func _boss_meeting(fight: Dictionary) -> void:
+	var level: int = levels["%s/%s" % [fight.room, fight.boss]]
+	game.set_room_states({})
+	for flag: String in FLAGS:
+		game.set_quest_flag(flag, FLAGS[flag])
+	if hero.is_dead:
+		hero.revive()
+	hero.is_dying = false
+	var music := [false]
+	var on_fight := func(_room: Node, on: bool) -> void: music[0] = music[0] or on
+	root.get_node("EventBus").boss_fight_changed.connect(on_fight)
+	await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % fight.room, ^"Arrival")
+	await _settle()
+	hero = game.player
+	_release_all()
+	await _make_hero(level, city_rooms[fight.room], "SKILLS")
+	var room: Node = game.map
+	var boss: Node = room.get_node(NodePath(fight.boss))
+	var dm: Node = sl.get_dialogue_manager()
+	_hold_move(1)
+	var t := 0.0
+	while room.get_current_state_name() != "FIGHT" and t < 120.0:
+		if room.get_current_state_name() != "QUEUE" and room.get_current_state_name() != "WAIT":
+			_hold_move(0)
+		if dm.is_dialogue_active():
+			dm.current_dialogue_box.finish()
+			dm.current_dialogue_player.accept()
+		await physics_frame
+		t += Engine.time_scale / Engine.physics_ticks_per_second
+	_release_all()
+	root.get_node("EventBus").boss_fight_changed.disconnect(on_fight)
+	ck(room.get_current_state_name() == "FIGHT", "%s: the room's intro leads to the fight (%s)" % [fight.name, room.get_current_state_name()])
+	ck(boss.bar.visible and music[0], "%s: the boss bar is up and the fight music started (bar %s, boss_fight_changed %s)" % [fight.name, boss.bar.visible, music[0]])
+	hero.defeat_handler = func() -> void: pass
+	for connection: Dictionary in boss.entity_died.get_connections():
+		if connection.callable.get_object() == room:
+			boss.entity_died.disconnect(connection.callable)
+	# (а) стоїть і тисне: обличчям до боса (крок до нього — і стоп), далі лише удар
+	_hold_move(signi(int(boss.global_position.x - hero.global_position.x)))
+	await physics_frame
+	_hold_move(0)
+	var landed := [0, 0]
+	var count := func(target: Node, source: Node, _amount: int, _critical: bool) -> void:
+		if target == hero and source == boss:
+			landed[0] += 1
+	root.get_node("EventBus").damage_received.connect(count)
+	var started := [0]
+	var on_swing := func() -> void: started[0] += 1
+	boss.enemy_logic.attack_started.connect(on_swing)
+	t = 0.0
+	var press := 0.0
+	while t < BOSS_MASH and not hero.is_dead:
+		await physics_frame
+		var dt: float = Engine.time_scale / Engine.physics_ticks_per_second
+		t += dt
+		press -= dt
+		if press <= 0.0:
+			_tap(&"attack")
+			press = PRESS_EVERY
+	var mash_hits: int = landed[0]
+	var mash_swings: int = started[0]
+	ck(mash_hits >= 2, "%s: on a hero who stands and mashes the boss swings %d times and its weapon lands %d (in %.1f s, hero %s)"
+			% [fight.name, mash_swings, mash_hits, t, "down" if hero.is_dead else "standing"])
+	# (б) за спиною боса, трохи поза досяжністю його серії, і просто стоїть
+	if hero.is_dead:
+		hero.revive()
+	hero.is_dying = false
+	hero.current_health = hero.Max_Health
+	var side := -signf(hero.global_position.x - boss.global_position.x)
+	_place_hero(Vector2(boss.global_position.x + side * BOSS_WAIT_GAP, hero.global_position.y))
+	_hold_move(int(-side))
+	await physics_frame
+	_hold_move(0)
+	landed[0] = 0
+	started[0] = 0
+	t = 0.0
+	while t < BOSS_WAIT and not hero.is_dead:
+		await physics_frame
+		t += Engine.time_scale / Engine.physics_ticks_per_second
+	ck(landed[0] >= 1, "%s: on a hero who waits %d px behind it the boss swings %d times and its weapon lands %d (in %.1f s)"
+			% [fight.name, BOSS_WAIT_GAP, started[0], landed[0], t])
+	root.get_node("EventBus").damage_received.disconnect(count)
+	boss.enemy_logic.attack_started.disconnect(on_swing)
+	boss.process_mode = Node.PROCESS_MODE_DISABLED
+	if hero.is_dead:
+		hero.revive()
+	hero.is_dying = false
+	hero.defeat_handler = Callable()
 
 
 ## Те, чого вимагає D642: MASHER перемагає одного звичайного ворога, втративши HP, і програє решті; GOOD перемагає.

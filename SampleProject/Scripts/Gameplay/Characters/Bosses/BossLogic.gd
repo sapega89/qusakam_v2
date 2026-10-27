@@ -3,7 +3,7 @@ extends EnemyLogic
 ## Ходи боса (D301, D302, design/lab_boss_plan.md). Хід обирається не випадково, а за візерунком (D504): BossEnemy.pattern
 ## (у другій фазі — pattern_phase2) — це черга kind; береться перший наступний у черзі хід, у чию дальність зараз
 ## потрапляє герой і який не повторює щойно зроблений (повтор — лише коли нічого іншого не підходить). Жоден не
-## підходить — бос іде до героя. Між ходами бос не стоїть: тримається на своїй preferred_range.
+## підходить — бос іде до героя. Між ходами бос не стоїть: тримається на своїй preferred_range, а ближній — у досяжності своєї серії (B154).
 ## combo — серія ударів хітбоксом з фіксованою довжиною й підказками (tells, у другій фазі tells_phase2); інші — свої:
 ##   charge   — ривок на distance px з живим хітбоксом;
 ##   slam     — ударна хвиля по підлозі на radius px в обидва боки, героя в повітрі не зачіпає;
@@ -25,6 +25,12 @@ const FIREBALL_GAP := 0.35
 ## Між ходами бос іде до preferred_range, якщо відхилився більше ніж на PREFERRED_BAND px, на частці своєї швидкості.
 const PREFERRED_BAND := 30.0
 const REPOSITION_SPEED := 0.6
+## B154: ближній бос між ходами стоїть не далі, ніж на COMBO_MARGIN px усередині досяжності своєї серії (combo), — інакше
+## герой, що просто стоїть за 70–90 px, бачив лише хвилі й ковтки, а сокира й булава не долітали ніколи.
+const COMBO_MARGIN := 6.0
+## Черга дійшла до серії, а герой трохи далі за її досяжність (до COMBO_STEP_IN px) — бос заходить бити, а не пропускає
+## серію заради іншого ходу.
+const COMBO_STEP_IN := 60.0
 
 ## Останній обраний хід — для тестів і журналу.
 var last_move: Dictionary = {}
@@ -53,16 +59,24 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
+	var adx := absf(dx)
 	if attack_ready_in <= 0.0:
-		if _fits_any(absf(dx)):
+		var reach := _combo_reach()
+		if _next_kind() == "combo" and adx > reach and adx <= reach + COMBO_STEP_IN:
+			_step(toward, speed)
+		elif _fits_any(adx):
 			attack_ready_in = enemy.attack_cooldown
 			perform_attack()
 		else:
 			_step(toward, speed)
 		return
-	var err: float = absf(dx) - enemy.preferred_range
-	if absf(err) > PREFERRED_BAND:
-		_step(toward if err > 0.0 else -toward, speed * REPOSITION_SPEED)
+	var far: float = enemy.preferred_range + PREFERRED_BAND
+	if enemy.preferred_range <= _combo_reach():
+		far = minf(far, _combo_reach() - COMBO_MARGIN)
+	if adx > far:
+		_step(toward, speed * REPOSITION_SPEED)
+	elif adx < enemy.preferred_range - PREFERRED_BAND:
+		_step(-toward, speed * REPOSITION_SPEED)
 	else:
 		velocity.x = 0
 
@@ -145,6 +159,23 @@ func _rest() -> void:
 
 func _fits(move: Dictionary, dx: float) -> bool:
 	return dx >= move.get("min_range", 0.0) and dx <= move.get("max_range", INF) and enemy.phase >= move.get("phase", 1)
+
+
+## Найдальша досяжність серії (combo) у цій фазі; немає серії — 0.
+func _combo_reach() -> float:
+	var reach := 0.0
+	for move: Dictionary in enemy.moves:
+		if move.kind == "combo" and enemy.phase >= move.get("phase", 1):
+			reach = maxf(reach, move.max_range)
+	return reach
+
+
+## Наступний kind у черзі візерунка (той, з якого pick_move почне пошук).
+func _next_kind() -> String:
+	var pattern: PackedStringArray = enemy.pattern_phase2 if enemy.phase >= 2 and not enemy.pattern_phase2.is_empty() else enemy.pattern
+	if enemy.phase != _pattern_phase or pattern.is_empty():
+		return pattern[0] if not pattern.is_empty() else ""
+	return pattern[pattern_at % pattern.size()]
 
 
 func _fits_any(dx: float) -> bool:
