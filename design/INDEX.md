@@ -16,7 +16,7 @@ Conventions: [[#Frontmatter schema]] · [[#Linking rules]]
 
 | Note | What it answers |
 |---|---|
-| [[MASTER_PLAN]] | **The plan with statuses** (2026-10-24): everything left, who does it (cloud / local / Sapega), in order |
+| [[MASTER_PLAN]] | **The plan with statuses** (new 2026-10-27): only what is being finished now, who does it, in order; the previous one: [[archive/MASTER_PLAN_2026-10-24]] |
 | [[BACKLOG]] | **What is not built yet**, and what blocks each item |
 | [[BUGS]] | **What is built but wrong** — open B-IDs, filed by QA |
 | [[questions_for_sapega]] | Open **Q-IDs** — decisions waiting on Sapega, each with a provisional default |
