@@ -29,7 +29,7 @@ class MeditationSpot extends Node:
 
 
 class Dummy extends Node2D:
-	func take_poise(_amount: int, _from_x: float) -> void:
+	func take_poise(_amount: float, _from_x: float, _source: StringName = &"light") -> void:
 		pass
 	func nudge(_push: float) -> void:
 		pass
