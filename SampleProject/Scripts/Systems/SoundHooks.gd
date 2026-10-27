@@ -19,6 +19,8 @@ func _ready() -> void:
 	EventBus.damage_received.connect(_on_damage_received)
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.player_blocked.connect(func(_attacker: Node) -> void: AudioManager.play(&"block"))
+	# D776: виснажений герой пробує діяти — глухий видих; не частіше, ніж раз на спалах рядка ST
+	EventBus.player_stamina_refused.connect(_on_stamina_refused)
 	EventBus.enemy_shield_blocked.connect(func(_enemy: Node2D, _at: Vector2) -> void: AudioManager.play(&"block"))
 	EventBus.enemy_shield_broken.connect(func(_enemy: Node2D, _at: Vector2) -> void:
 		AudioManager.play(&"hit_heavy")
@@ -39,6 +41,17 @@ func _ready() -> void:
 	EventBus.player_died.connect(func() -> void: AudioManager.play(&"hero_death"))
 	EventBus.assist_called.connect(func(id: String) -> void: AudioManager.play(StringName("call_" + id)))
 	EventBus.assist_denied.connect(func(_id: String) -> void: AudioManager.play(&"assist_denied"))
+
+
+var _refused_at := -1000.0
+
+
+func _on_stamina_refused() -> void:
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _refused_at < UITokens.STAMINA_FLASH_TIME:
+		return
+	_refused_at = now
+	AudioManager.play(&"stamina_empty")
 
 
 ## Навичка, чий замах звучить: її вивільнення — свій звук (пасивні й навички без касту — без звуку).

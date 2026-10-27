@@ -281,6 +281,7 @@ func _staggers() -> void:
 	ck(target.enemy_logic.attack_broken and not target.hitbox.monitoring, "the swing never came (broken %s, hitbox %s)" % [target.enemy_logic.attack_broken, target.hitbox.monitoring])
 
 	print("[2] An enemy combo: three swings, the last a finisher (D265)")
+	target.enemy_logic._lunge_rest = 60.0  # випад (D768) тут ні до чого: серію тест веде сам (perform_attack)
 	await create_timer(1.0).timeout
 	swings.clear()
 	target.combo_hits = 3
@@ -296,6 +297,10 @@ func _staggers() -> void:
 		tell_nodes.append(target.get_children().filter(func(c: Node) -> bool: return c.get_script() == preload("res://SampleProject/Scripts/FX/EnemyTell.gd")).size())
 	target.enemy_logic.attack_telegraphed.connect(on_tell)
 	var strikes: Array = []
+	# D775: серія б'є, лише доки дістає героя — герой у досяжності, невразливий (удари не відкидають його)
+	var hero_was: Vector2 = hero.global_position
+	hero.global_position = target.global_position + Vector2(-30, 0)
+	hero.is_invulnerable = true
 	target.enemy_logic.perform_attack()
 	var swing_end: int = Time.get_ticks_msec() + roundi((target.attack_windup + 2 * target.enemy_logic.COMBO_WINDUP + 3 * target.attack_active_time + 0.3) * 1000)
 	var was_on := false
@@ -305,6 +310,8 @@ func _staggers() -> void:
 			strikes.append(Time.get_ticks_msec())
 		was_on = target.hitbox.monitoring
 	target.enemy_logic.attack_telegraphed.disconnect(on_tell)
+	hero.is_invulnerable = false
+	hero.global_position = hero_was
 	var leads: Array = []
 	for i in mini(tells.size(), strikes.size()):
 		leads.append(strikes[i] - tells[i])
@@ -412,6 +419,7 @@ func _hero_moves(sl: Node) -> void:
 	await create_timer(1.0).timeout
 
 	print("[5] Heavy attack: a rooted wind-up, then 1.5x with knockback (4b: not double)")
+	hero.stamina.refill()  # серії [4] витратили витривалість (D776); тут — лише сам важкий удар
 	hits.clear()
 	target.poise_max = 3
 	target.poise = 3

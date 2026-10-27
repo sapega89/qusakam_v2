@@ -78,6 +78,7 @@ func journal_entries() -> Array:
 		var active := false
 		for zone in _zone_states(stage):
 			zones.append({"id": zone.id, "title": zone.title, "state": zone.state,
+				"location": LocationDB.of_room(zone.scene),
 				"chronicle": _chronicle(zone, flags), "objectives": _objectives(zone, flags)})
 			active = active or zone.state == "current"
 		entries.append({
@@ -91,13 +92,15 @@ func journal_entries() -> Array:
 
 ## Цілі підетапу, видимі в журналі: виконані лишаються, наступна — поточна,
 ## далі нічого (D125). У пройденому підетапі всі виконані; у закритому — жодної.
+## hint — речення під ціллю в Журналі, from — id мовця DialogueQuest, що її дав (D159).
 func _objectives(zone: Dictionary, flags: Dictionary) -> Array:
 	if zone.state == "locked":
 		return []
 	var out: Array = []
 	for objective in zone.objectives:
 		var done: bool = zone.state == "done" or flags.get(objective.flag, false)
-		out.append({"text": objective.text, "state": "done" if done else "current"})
+		out.append({"text": objective.text, "state": "done" if done else "current", "hint": objective.hint,
+			"from": objective.from})
 		if not done:
 			break
 	return out

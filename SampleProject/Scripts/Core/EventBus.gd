@@ -207,6 +207,13 @@ signal player_heavy_windup(player: Node, direction: int)
 signal player_bow_drawn(player: Node)
 @warning_ignore("unused_signal")
 signal player_shot(player: Node, charged: bool)
+## Витривалість героя змінилась (D776, PlayerStamina): рядок ST панелі героя; [param exhausted] — дійшла до нуля
+## й ще не набрала PlayerStamina.RECOVER_AT.
+@warning_ignore("unused_signal")
+signal player_stamina_changed(current: float, maximum: float, exhausted: bool)
+## Виснажений герой спробував ударити, вистрілити чи перекотитись (D776): спалах рядка ST і звук.
+@warning_ignore("unused_signal")
+signal player_stamina_refused()
 @warning_ignore("unused_signal")
 signal skill_interrupted(skill_id: String)
 ## Почався замах касту навички (D271) — звук замаху (D276).
@@ -453,6 +460,15 @@ signal item_added(item_id: String, quantity: int)
 ##     amount (int): Кількість
 @warning_ignore("unused_signal")
 signal loot_picked_up(item_id: String, amount: int)
+
+## Герой уперше ввійшов у SecretArea кімнати (D765) — секрет знайдено, стан уже в room_state.
+## Слухає стрічка HUD (loot_feed.gd): тост «Secret found».
+##
+## Args:
+##     room (String): кімната MetSys (як у room_state)
+##     secret (String): імʼя вузла SecretArea
+@warning_ignore("unused_signal")
+signal secret_found(room: String, secret: String)
 
 ## Емітується при видаленні предмета з інвентаря.
 ##

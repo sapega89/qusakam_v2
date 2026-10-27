@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cvj8rtfs0dj2e"]
+[gd_scene load_steps=9 format=3 uid="uid://cvj8rtfs0dj2e"]
 
 [ext_resource type="Script" path="res://SampleProject/UI/Components/list_row.gd" id="9_list_row"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Menus/Game/journal_component.gd" id="1_journal"]
@@ -11,6 +11,8 @@ shader = ExtResource("3_light")
 [sub_resource type="ButtonGroup" id="ButtonGroup_entries"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_sections"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_regions"]
 
 [node name="JournalComponent" type="Control"]
 layout_mode = 3
@@ -75,6 +77,14 @@ toggle_mode = true
 button_pressed = true
 button_group = SubResource("ButtonGroup_sections")
 text = "QUESTS"
+
+[node name="SideTab" type="Button" parent="Margin/Page/SectionTabs"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_sections")
+text = "SIDE STORIES"
 
 [node name="CharactersTab" type="Button" parent="Margin/Page/SectionTabs"]
 unique_name_in_owner = true
@@ -207,6 +217,7 @@ theme_type_variation = &"QuestCaption"
 text = "—"
 
 [node name="ListScroll" type="ScrollContainer" parent="Margin/Page/Columns/ListColumn"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
@@ -255,6 +266,13 @@ layout_mode = 2
 expand_mode = 1
 stretch_mode = 4
 
+[node name="ClientLabel" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"SettingsEyebrow"
+text = "—"
+
 [node name="DetailTitle" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -267,8 +285,42 @@ layout_mode = 2
 theme_type_variation = &"SettingsEyebrow"
 text = "—"
 
+[node name="StoryTags" type="HBoxContainer" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StateTag" type="PanelContainer" parent="Margin/Page/Columns/DetailScroll/Detail/StoryTags"]
+layout_mode = 2
+theme_type_variation = &"StoryTag"
+
+[node name="StateTagText" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail/StoryTags/StateTag"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StoryTagLabel"
+text = "—"
+
+[node name="RegionTag" type="PanelContainer" parent="Margin/Page/Columns/DetailScroll/Detail/StoryTags"]
+layout_mode = 2
+theme_type_variation = &"StoryTag"
+
+[node name="RegionTagText" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail/StoryTags/RegionTag"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"StoryTagLabel"
+text = "—"
+
 [node name="DetailRule" type="HSeparator" parent="Margin/Page/Columns/DetailScroll/Detail"]
 layout_mode = 2
+
+[node name="QuoteText" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"StoryQuote"
+text = "—"
+autowrap_mode = 3
 
 [node name="DetailDescription" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
 unique_name_in_owner = true
@@ -295,6 +347,41 @@ layout_mode = 2
 theme_type_variation = &"CardBody"
 text = "—"
 autowrap_mode = 3
+
+[node name="OutcomeCaption" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "OUTCOME"
+
+[node name="OutcomeText" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"CardBody"
+text = "—"
+autowrap_mode = 3
+
+[node name="RewardsCaption" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"SectionLabel"
+text = "REWARDS"
+
+[node name="RewardList" type="VBoxContainer" parent="Margin/Page/Columns/DetailScroll/Detail"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RewardLine" type="Label" parent="Margin/Page/Columns/DetailScroll/Detail/RewardList"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"CardBody"
+text = "—"
 
 [node name="PersonCard" type="HBoxContainer" parent="Margin/Page"]
 unique_name_in_owner = true
@@ -433,3 +520,17 @@ theme_type_variation = &"SlotItemEmpty"
 text = "No journal entries yet."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="RegionTabs" type="HBoxContainer" parent="Margin/Page"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="RegionTab" type="Button" parent="Margin/Page/RegionTabs"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_regions")
+text = "—"

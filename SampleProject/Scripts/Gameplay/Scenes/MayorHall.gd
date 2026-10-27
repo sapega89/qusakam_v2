@@ -126,6 +126,15 @@ func _fight() -> void:
 	game.preload_room(LAB_ROOM)  # бій закінчиться телепортом у лабораторію за будь-якого результату (performance_plan, slice 3)
 	warrior.anim_player.process_mode = Node.PROCESS_MODE_INHERIT
 	warrior.process_mode = Node.PROCESS_MODE_INHERIT
+	# B159: зала замкнена — бос бачить і переслідує героя в будь-якому її кутку, а дім — там, де він став після
+	# кат-сцени (інакше починав бій з ходу «додому» й міг кинути героя); смужка боса — одразу, як у LabBoss.
+	var room_width: float = $RoomInstance.get_size().x
+	var logic: EnemyLogic = warrior.enemy_logic
+	logic.detection_range = room_width
+	logic.chase_range = room_width
+	logic.leash_range = room_width
+	logic.home_position = warrior.global_position
+	logic.on_player_detected(game.player)
 	EventBus.boss_fight_changed.emit(self, true)
 
 

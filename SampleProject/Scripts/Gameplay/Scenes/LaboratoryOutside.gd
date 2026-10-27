@@ -1,39 +1,18 @@
-extends Node2D
+extends "res://SampleProject/Scripts/Gameplay/Scenes/RoomStoryFlow.gd"
 
 ## 🌳 Laboratory Outside Scene Manager
 ## States: EXIT_LAB, DEMO_CLOSING
-## Follows Robust State-Flow Pattern
+## Машина станів — RoomStoryFlow.
 
 enum State {
 	EXIT_LAB,
 	DEMO_CLOSING
 }
 
-enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
+func _dialogue_flags() -> Dictionary:
+	return {"Demo_End": "demo_end_complete"}
 
-@export var current_state: State = State.EXIT_LAB:
-	set(val):
-		current_state = val
-		_on_state_changed(val)
-
-var state_run_id: int = 0
-signal state_complete(state: State)
-
-func _ready() -> void:
-	var loc = ServiceLocator
-	if not loc.is_node_ready():
-		await loc.ready
-
-	_on_state_changed(current_state)
-
-func _on_state_changed(new_state: State) -> void:
-	state_run_id += 1
-	var run_id = state_run_id
-	DebugLogger.info("🌳 LabOutside: Entering state %s (RunID: %d)" % [State.keys()[new_state], run_id], "Scene")
-
-	_apply_state_logic(new_state, run_id)
-
-func _apply_state_logic(state: State, run_id: int) -> void:
+func _apply_state_logic(state: int, run_id: int) -> void:
 	var game = Game.get_singleton()
 	match state:
 		State.EXIT_LAB:
@@ -51,63 +30,11 @@ func _apply_state_logic(state: State, run_id: int) -> void:
 				_show_demo_end_screen()
 				return
 			_set_objective("Finish the demo")
-			_execute_step(StepType.DIALOGUE, "Demo_End", run_id)
+			_dialogue_then_advance("Demo_End", run_id)
 
-func _execute_step(type: StepType, dialogue_id: String, run_id: int) -> void:
-	match type:
-		StepType.DIALOGUE:
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.COMBAT:
-			await _play_dialogue(dialogue_id, run_id)
-		StepType.LOOP:
-			await get_tree().create_timer(1.0).timeout
-		StepType.TRANSITION:
-			await get_tree().create_timer(0.5).timeout
-
-	if run_id != state_run_id: return
-
-	# Після DEMO_CLOSING показуємо екран завершення
-	if current_state == State.DEMO_CLOSING:
-		_show_demo_end_screen()
-	else:
-		advance_state()
-
-func _play_dialogue(dialogue_id: String, run_id: int) -> void:
-	var dm = _get_dialogue_manager()
-	if not dm: 
-		await get_tree().create_timer(0.5).timeout
-		return
-
-	var path = "res://dialogue_quest/" + dialogue_id + ".dqd"
-	var started = await dm.start_dialogue(path)
-	if not started:
-		DebugLogger.warning("🌳 LabOutside: Не вдалося запустити діалог: %s" % dialogue_id, "Scene")
-		return
-
-	while true:
-		var finished_id = await EventBus.dialogue_finished
-		if finished_id == path or finished_id == dialogue_id:
-			DebugLogger.info("🌳 LabOutside: Діалог %s завершено" % dialogue_id, "Scene")
-			# Завершуємо квест після діалогу
-			_complete_quest_for_dialogue(dialogue_id)
-			break
-		if run_id != state_run_id: return
-
-func _complete_quest_for_dialogue(dialogue_id: String) -> void:
-	"""Встановлює квестові флаги для діалогів"""
-	var game = Game.get_singleton()
-	if not game: return
-
-	match dialogue_id:
-		"Demo_End":
-			game.set_quest_flag("demo_end_complete", true)
-
-func advance_state() -> void:
-	state_complete.emit(current_state)
-	if current_state < State.DEMO_CLOSING:
-		current_state = (current_state + 1) as State
-	else:
-		_show_demo_end_screen()
+## Після DEMO_CLOSING — екран завершення.
+func _on_story_end() -> void:
+	_show_demo_end_screen()
 
 func _show_demo_end_screen() -> void:
 	"""Показує екран завершення демо"""
@@ -166,12 +93,3 @@ func _transition_to_main_menu() -> void:
 	var main_menu_path = "res://SampleProject/MainMenu.tscn"
 	get_tree().change_scene_to_file(main_menu_path)
 	DebugLogger.info("🌳 LabOutside: Перехід до головного меню виконано", "Scene")
-
-func _set_objective(text: String) -> void:
-	"""Встановлює об'єктив для гравця"""
-	var game = Game.get_singleton()
-	game.set_objective(text)
-
-func _get_dialogue_manager() -> Node:
-	return ServiceLocator.get_dialogue_manager()
-	return null

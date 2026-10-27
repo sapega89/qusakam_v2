@@ -279,8 +279,16 @@ func _initialize() -> void:
 ## повернення ворогів (D492) її не закриває.
 func _guarded_chest(game: Node, chest: Node, fight: Node, scene: String, items: Dictionary) -> void:
 	var inventory: Node = sl.get_inventory_manager()
+	# Вартовий, якого вже розбудили, карає героя, що щойно «приземлився» біля скрині (D775), і відкидає його від неї —
+	# поки перевіряємо підказку, він стоїть.
+	for enemy: Node in fight.spawned_enemies:
+		if is_instance_valid(enemy):
+			enemy.process_mode = Node.PROCESS_MODE_DISABLED
 	await _stand(game, chest.global_position + Vector2(-40, -40))
 	ck(chest.get_node("Interactable").player_nearby, "%s offers \"Open\"" % chest.name)
+	for enemy: Node in fight.spawned_enemies:
+		if is_instance_valid(enemy):
+			enemy.process_mode = Node.PROCESS_MODE_INHERIT
 	await Kit.key(self, KEY_E)
 	for i in 30: await physics_frame
 	var alive: Array = fight.spawned_enemies.filter(func(e: Node) -> bool: return is_instance_valid(e) and e.is_alive())

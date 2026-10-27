@@ -24,7 +24,7 @@ MASTER_PLAN 2026-10-27»). Оркестратор оновлює статус т
 ## 1. Злити те, що вже зроблено (☁)
 | ID | Що | Хто | Статус |
 |---|---|---|---|
-| I29 | `integrate-29`: side-stories, hero-feet + hero-shadow (A24), perf-check (S14), depth-film + depth-critics (A22), арт з ПК; номери D787+ | ☁ | 🔄 → потім перевести `feature/backlog` на неї |
+| I29 | `integrate-29`: side-stories, hero-feet + hero-shadow (A24), perf-check (S14), depth-film + depth-critics (A22), арт з ПК; номери D787+ | ☁ | ✅ злито в `feature/backlog` (D787–D793, B171–B184, Q102–Q106; набір: 6 FAIL → лишились B170 `combat_flow` [2c] і `masher` HUNG) |
 | I30 | Наступне злиття: `fx-film`, `scale-probe`, `skills-v2-*` у міру звітів | ☁ | ⬜ |
 
 ## 2. Наявні кімнати — доробити (одна room routine, після I29)

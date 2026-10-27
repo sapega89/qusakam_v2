@@ -1,0 +1,104 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/StoryDialogueBox.gd" id="1_box"]
+[ext_resource type="Resource" path="res://SampleProject/Resources/Dialogue/story_dialogue_box_settings.tres" id="2_settings"]
+[ext_resource type="PackedScene" uid="uid://bqhktmbt3febd" path="res://addons/dialogue_quest/prefabs/ui/dialogue/components/bobbing_marker/bobbing_marker.tscn" id="3_marker"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
+
+[node name="StoryDialogueBox" type="PanelContainer"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -792.0
+offset_top = -390.0
+offset_right = 792.0
+offset_bottom = -260.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"WindowPanel"
+script = ExtResource("1_box")
+settings = ExtResource("2_settings")
+
+[node name="Rows" type="VBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NameMargin" type="MarginContainer" parent="Rows"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NameRows" type="VBoxContainer" parent="Rows/NameMargin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Name" type="Label" parent="Rows/NameMargin/NameRows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+uppercase = true
+
+[node name="NameRule" type="ColorRect" parent="Rows/NameMargin/NameRows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RowTop" type="HBoxContainer" parent="Rows"]
+visible = false
+layout_mode = 2
+
+[node name="AutoButton" type="Button" parent="Rows/RowTop"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="SkipButton" type="Button" parent="Rows/RowTop"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="RowMiddle" type="HBoxContainer" parent="Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="DialogueText" type="RichTextLabel" parent="Rows/RowMiddle"]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_type_variation = &"DialogueText"
+bbcode_enabled = true
+fit_content = true
+visible_characters_behavior = 1
+
+[node name="BobbingMarker" parent="Rows/RowMiddle" instance=ExtResource("3_marker")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 48)
+layout_mode = 2
+size_flags_vertical = 8
+icon_visible = false
+
+[node name="Icon" parent="Rows/RowMiddle/BobbingMarker" index="0"]
+offset_left = 16.0
+offset_top = 24.0
+offset_right = 28.0
+offset_bottom = 36.0
+texture = ExtResource("4_diamond")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PortraitBackground" type="PanelContainer" parent="Rows/RowMiddle"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Portrait" type="TextureRect" parent="Rows/RowMiddle/PortraitBackground"]
+unique_name_in_owner = true
+layout_mode = 2

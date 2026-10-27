@@ -109,6 +109,16 @@ func _initialize() -> void:
 	var xp: Node = sl.get_xp_manager()
 	var hud: Node = game.find_child("HudNewPoints", true, false)
 	ck(hud != null, "HudNewPoints is on the CombatHUD")
+	# Прапорці вкладок на HUD — копія metadata/unlock_flag з game_menu.tscn (сцену на старті не вантажимо, perf-check).
+	var state: SceneState = (load(GameMenuState.GAME_MENU_SCENE_PATH) as PackedScene).get_state()
+	var scene_flags := {}
+	for node in state.get_node_count():
+		var props := {}
+		for i in state.get_node_property_count(node):
+			props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
+		if props.has("metadata/tab") and hud.get_script().TAB_UNLOCK_FLAGS.has(props["metadata/tab"]):
+			scene_flags[props["metadata/tab"]] = String(props.get("metadata/unlock_flag", ""))
+	ck(scene_flags == hud.get_script().TAB_UNLOCK_FLAGS, "the HUD's tab flags match game_menu.tscn (%s)" % scene_flags)
 	var skills_btn: Button = hud.get_node(^"%SkillPoints")
 	var attrs_btn: Button = hud.get_node(^"%AttributePoints")
 	for flag in ["village_oldman_healed", "village_oldman_gift"]:

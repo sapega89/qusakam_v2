@@ -160,10 +160,11 @@ func _pass_through_enemies() -> void:
 
 
 func _release_passed() -> void:
+	# Ворог зник посеред переката (кімнату замінено, B164): звільнений об'єкт типізований масив не дає стерти (erase),
+	# і помилка сипалась щокадру — прибираємо фільтром
+	_passing.assign(_passing.filter(func(enemy) -> bool: return is_instance_valid(enemy)))
 	for enemy in _passing.duplicate():
-		if not is_instance_valid(enemy):
-			_passing.erase(enemy)
-		elif not player.body_rect().intersects(enemy.body_rect()):
+		if not player.body_rect().intersects(enemy.body_rect()):
 			player.remove_collision_exception_with(enemy)
 			_passing.erase(enemy)
 

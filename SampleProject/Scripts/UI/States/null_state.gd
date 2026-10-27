@@ -6,6 +6,3 @@ func _enter_state() -> void:
 
 func _exit_state() -> void:
 	pass
-
-func _physics_process(_delta: float) -> void:
-	pass

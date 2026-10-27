@@ -149,8 +149,8 @@ DebugLogger.error("Error", "Category")
 
 Enabled editor plugins (`project.godot` → `[editor_plugins]`): **CustomRunner**,
 **MetroidvaniaSystem** (+ its EditorExtension), **ModalDialog**, **dialogue_quest**,
-**maaacks_menus_template**. Also in `addons/` without a plugin entry: `fsm`,
-`interaction_system`. Everything else was removed in D240.
+**maaacks_menus_template**. Everything else was removed in D240; `fsm` and
+`interaction_system` gave way to our own UI state machine (`Scripts/UI/States/ui_state_machine.gd`, S4).
 
 ## Important Systems
 

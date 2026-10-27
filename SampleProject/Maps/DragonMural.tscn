@@ -16,6 +16,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_DragonMural"]
+size = Vector2(360, 80)
 
 [node name="DragonMural" type="Node2D"]
 
@@ -109,3 +113,9 @@ position = Vector2(620, 530)
 flip_h = true
 
 [node name="TopShade" parent="." instance=ExtResource("x6")]
+
+[node name="SecretArea_DragonMural" parent="." instance=ExtResource("secret_area")]
+position = Vector2(432, 376)
+
+[node name="CollisionShape2D" parent="SecretArea_DragonMural" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_DragonMural")

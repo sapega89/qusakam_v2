@@ -1,6 +1,7 @@
 extends Node
 class_name GameDialogueManager
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
+const StoryDialogues = preload("res://SampleProject/Scripts/Systems/story_dialogues.gd")
 
 ## 💬 GameDialogueManager - Менеджер диалогов через DialogueQuest
 ## Интегрирует DialogueQuest с игровой системой
@@ -116,6 +117,8 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 		_play_bubbles(timeline_name)
 		return true
 	_find_dialogue_system_in_scene()
+	if StoryDialogues.is_story(timeline_name):
+		_use_story_box(timeline_name)
 	current_dialogue_box.set_text("")
 	current_dialogue_box.set_name_text("")
 	current_dialogue_box.set_portrait_image(null)
@@ -128,6 +131,24 @@ func start_dialogue(timeline_name: String, in_cloud: bool = false) -> bool:
 	assert(not sections.is_empty(), "DialogueManager: %s has no lines" % timeline_name)
 	current_dialogue_player.play_sections(sections, timeline_name)
 	return true
+
+## D110–D112: сюжетна розмова (story_dialogues.gd) іде вікном сюжетної подачі (Scenes/UI/story_dialogue.tscn) —
+## темна сцена, назва локації, картки героя й співрозмовника. Плеєр DialogueQuest той самий, лише з іншим вікном;
+## наступна розмова знову бере звичайне (_find_dialogue_system_in_scene).
+func _use_story_box(timeline_name: String) -> void:
+	var story: Control = Game.get_singleton().get_node(^"DialogueSystem/StoryDialogue")
+	current_dialogue_box = story.box
+	current_dialogue_player.dialogue_box = current_dialogue_box
+	if not current_dialogue_box.text_shown.is_connected(_on_letter_shown):
+		current_dialogue_box.text_shown.connect(_on_letter_shown)
+		current_dialogue_box.all_text_shown.connect(_on_line_shown)
+	story.open(timeline_name, Game.get_singleton().map.scene_file_path)
+
+
+## Зараз відкрита сюжетна подача (verify_story_dialogue, captures).
+func is_story_presentation() -> bool:
+	return is_dialogue_active() and Game.get_singleton().get_node(^"DialogueSystem/StoryDialogue").visible
+
 
 ## D737: розмова сюжету зараз іде, стоїть у черзі чи чекає приземлення (B123). Репліки мимохідь (барки,
 ## say_in_passing) сюди не входять: вони не тримають героя й не притримують тригерів.

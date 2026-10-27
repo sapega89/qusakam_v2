@@ -173,6 +173,16 @@ const BAR_HEIGHT := 6
 const BAR_WIDTH := 180
 const HP_FILL := Color("2ecc71")
 const SP_FILL := Color("3498db")
+const STAMINA_FILL := Color("e67e22")  # витривалість (D537, D776), рядок ST панелі героя
+## Порожня витривалість (D776): рядок ST блимає цим кольором, коли виснажений герой пробує діяти.
+const STAMINA_EMPTY_FLASH := Color("e74c3c")
+const STAMINA_FLASH_TIME := 0.35
+## Шкала стійкості ворога (D777, poise_bar.tscn): заливка, розміри над ворогом (px світу) і під смужкою боса.
+const POISE_FILL := Color("f1c40f")
+const POISE_BAR_WIDTH := 56
+const POISE_BAR_HEIGHT := 5
+const POISE_BAR_GAP := 10
+const BOSS_POISE_HEIGHT := 6
 
 # ── Розміри екрана Settings (Figma: settings-* 17:280 / 17:409 / 17:632) ────
 const SIZE_OPTIONS_TITLE := 38  # Bold — "OPTIONS" у верхній секції
@@ -314,7 +324,7 @@ const BUBBLE_MARGIN := 24          # поле 9-slice у bubble_body.png
 const BUBBLE_PADDING := 14         # від контуру до тексту
 const BUBBLE_TAIL_OVERLAP := 10    # хвіст заходить на нижній контур тіла
 const BUBBLE_MAX_WIDTH := 360      # ширше — перенос рядка
-const BUBBLE_OFFSET_Y := -56       # над головою гравця, світові px
+const BUBBLE_OFFSET_Y := -70       # над головою гравця, світові px (малюнок піднято на 13,5, hero-feet)
 const BUBBLE_INK := Color("141018")
 const BUBBLE_SECONDS_MIN := 2.0    # репліка висить: min + довжина × per_char, не довше max
 const BUBBLE_SECONDS_PER_CHAR := 0.05
@@ -342,6 +352,20 @@ const DIALOGUE_LETTERS_PER_SECOND := 48.0
 const DIALOGUE_AUTO_MIN := 1.5
 const DIALOGUE_AUTO_PER_CHAR := 0.02      # 75 літер і коротше — 1.5 с, 125 і довше — 2.5 с
 const DIALOGUE_AUTO_MAX := 2.5
+# Сюжетна подача розмови (D110–D112, Figma conversation-dialog-choices 36:65 у кадрі 1920×1080): темна сцена, назва
+# локації вгорі ліворуч під тонкою лінією, дві високі картки на весь зріст (герой ліворуч, мовець праворуч), вікно
+# репліки впоперек нижньої середини, підказки клавіш унизу.
+const STORY_SCRIM := Color("000000", 0.72)       # темніше за OVERLAY: сцена лишається видно, але не відволікає
+const STORY_MARGIN := 64                          # лівий/верхній край назви (Figma 47,50 при 1400 → 64)
+const SIZE_STORY_CHAPTER := 36                    # Bold, UPPER (Figma 36)
+const STORY_CHAPTER_RULE := 600                   # довжина лінії під назвою (Figma 438 при 1400)
+const STORY_RULE := Color("d4af37", 0.45)         # тонка лінія під назвою та під ім'ям мовця
+const STORY_BOX_WIDTH := 1584                     # вікно репліки (Figma 1156 при 1400, аудит діалогів)
+const STORY_BOX_BOTTOM := 260                     # від низу кадру до низу вікна; над ним — місце для відповідей
+const STORY_CARD_SIZE := Vector2(216, 336)        # картка на весь зріст: клітинка 64×96 ×3 + поле SPACE_MD
+const STORY_CARD_GAP := 48                        # від низу картки до верху вікна репліки
+const STORY_CARD_IDLE := Color(0.45, 0.45, 0.5)   # modulate картки того, хто зараз мовчить
+const STORY_HINTS_BOTTOM := 72                    # підказки клавіш над нижнім краєм (Figma 722 при 788)
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)
@@ -486,6 +510,10 @@ const SIZE_CARD_EPITHET := 16          # SemiBold, UPPER, accent
 const SIZE_CARD_PLACE := 14            # SemiBold, UPPER, accent — назва місця
 const CARD_PLACE_SPACING := 2
 const CARD_DESCRIPTION_WIDTH := 560
+## Побічні історії Журналу (D791, Figma 192:1636): слова замовника — курсив; у шрифті курсиву немає, тож нахил.
+const QUOTE_SLANT := 0.2               # зсув x на одиницю висоти гліфа
+const STORY_TAG_PADDING_H := SPACE_SM  # мітки стану й локації в картці історії
+const STORY_TAG_PADDING_V := SPACE_2XS
 
 
 # ── HUD v2 (D453, D476, D485, D549, D552; Figma 501:6611 панель героя, 497:6587 хотбар, 515:6662 XP) ─
@@ -628,10 +656,25 @@ const MAP_ICON_OPENED_ALPHA := 0.4                 # відкрита скрин
 const MAP_ICON_LOCKED := Color("808080")
 const MAP_ICON_QUEST := Color("e6991a")
 const MAP_ICON_EXIT := MAP_INK
+const MAP_ICON_SECRET := Color("7a4fb3")            # знайдений секрет (D765): фіалковий, далеко від синьої медитації
 const MAP_PASSAGE := Color("a8321e")               # «↕ драбина», «↓ спуск» — червоне чорнило
 const SIZE_MAP_ROOM := 18
 const SIZE_MAP_PASSAGE := 13
 const MAP_LEGEND_SWATCH := 14.0                    # квадратик кімнати в легенді
+# Карта-полотно (map-pan): тягнути, ковзати, масштабувати, як в Octopath Traveler.
+const MAP_ZOOM_MAX := 2.5                          # найбільший масштаб (1 = кадр Figma / клітинка 150×84)
+const MAP_ZOOM_STEP := 1.15                        # один клац коліщатка
+const MAP_ZOOM_RATE := 2.0                         # тригери / Q-E: у стільки разів за секунду
+const MAP_PAN_SPEED := 900.0                       # стік / клавіші, px/с на повному нахилі
+const MAP_STICK_DEADZONE := 0.2
+const MAP_DRAG_SLOP := 6.0                         # рух миші до відпускання, далі якого клац — уже не клац
+const MAP_GLIDE_FRICTION := 6.0                    # ковзання після відпускання гасне як e^(−6t): шлях ≈ v / 6
+const MAP_GLIDE_MAX := 3000.0                      # px/с
+const MAP_GLIDE_MIN := 20.0                        # px/с — нижче ковзання зупиняється
+const MAP_GLIDE_STALE := 0.1                       # с: миша стояла довше перед відпусканням — без ковзання
+const MAP_FOLLOW_RATE := 12.0                      # під'їзд до вибраної клавішами шпильки
+const MAP_REVEAL_MARGIN := 120.0                   # шпилька ближче до краю вікна — камера під'їжджає
+const MAP_ROOM_HOVER_BORDER := 4.0                 # кімната під курсором: золота рамка MAP_GOLD
 
 # Шлейфи ударів ворогів (A17, EnemyStrikeFX): не білий, жовтий і червоний — то кольори підказок (D504).
 const ENEMY_SMEAR_STEEL := Color("8fd0ff")         # шабля, щит бандита

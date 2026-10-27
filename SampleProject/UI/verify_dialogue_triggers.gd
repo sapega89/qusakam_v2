@@ -204,6 +204,7 @@ func _initialize() -> void:
 			"the box types %.0f letters/s (was 24)" % box.settings.letters_per_second)
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 3: await process_frame
+	box = dm.current_dialogue_box  # Зала мера — сюжетна подача (D111): своє вікно, та сама поведінка
 	var line1: String = box.get_text()
 	ck(not box.is_finished(), "line 1 is typing")
 	await _tap(_left_click())
@@ -245,6 +246,7 @@ func _initialize() -> void:
 	settings.settings.auto_advance = true
 	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 3: await process_frame
+	box = dm.current_dialogue_box  # Зала мера — сюжетна подача (D111): своє вікно, та сама поведінка
 	line1 = box.get_text()
 	box.finish()
 	var delay: float = box.auto_advance_delay(line1)
@@ -261,6 +263,7 @@ func _initialize() -> void:
 	settings.settings.auto_advance = true
 	await _drain(dm)
 	dm._find_dialogue_system_in_scene()
+	box = dm.current_dialogue_box
 	box.visible = true
 	dm.current_dialogue_player.play_sections(load("res://addons/dialogue_quest/scripts/systems/dqd/dqd_parser.gd")
 			.parse_from_text("say|KUSAKAM|Pick one.\nchoice|Yes|No\nexit|\n"), "res://dialogue_quest/verify_choice")

@@ -325,7 +325,7 @@ func _spawn_smear(kind: StringName, upward: bool, size: float) -> void:
 	player.add_child(trail)
 	var at := _smear_at(kind, upward)
 	var scale_by := _smear_scale(kind, size, 0.0 if kind == &"punch" else _reach())  # голі руки — спрайта зброї немає
-	trail.position = Vector2(at.x * scale.x, at.y)
+	trail.position = position + Vector2(at.x * scale.x, at.y)  # від малюнка героя (WeaponMount стоїть, де він)
 	trail.scale = Vector2(scale_by * scale.x, scale_by)
 	trail.play(kind, upward and kind == &"arc")
 
@@ -352,6 +352,7 @@ func _smear_scale(kind: StringName, size: float, length: float) -> float:
 
 ## Що намальовано звичайним ударом зброї [param item] ({} — голі руки): непрозорі межі шлейфа, px від центру героя
 ## обличчям праворуч (B128). Хітбокс удару (PlayerCombat) — від центру героя до краю цього шлейфа, на його висоту.
+## Висота — від малюнка героя: WeaponMount стоїть там, де Sprite2D (ноги на низу колізії).
 func drawn_swing_rect(item: Dictionary) -> Rect2:
 	var kind := &"punch"
 	var size := 1.0
@@ -363,7 +364,7 @@ func drawn_swing_rect(item: Dictionary) -> Rect2:
 			size = (length + thrust_reach) / SMEAR_LENGTH  # як _stab без фінішера
 	var scale_by := _smear_scale(kind, size, length)
 	var frames := _trail_rect(kind)
-	return Rect2(_smear_at(kind, false) + frames.position * scale_by, frames.size * scale_by)
+	return Rect2(position + _smear_at(kind, false) + frames.position * scale_by, frames.size * scale_by)
 
 
 ## Непрозорі межі кадрів шлейфа [param kind] у px SlashTrail (до масштабу), як їх ставить SlashTrail.play.

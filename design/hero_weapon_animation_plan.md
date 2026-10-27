@@ -6,6 +6,12 @@ tags: [combat, animation, art]
 
 # Kusakam animated holding each weapon — plan (BACKLOG 42)
 
+## Tails (2026-10-27)
+
+Checked against the code by routine `decision-audit-2` (MASTER_PLAN S16). Every other slice is built.
+
+- Slice 7, the bare-hands combat stance (optional): `Player.tscn:1646-1652` has no fists library, and there are no `Sprites/Player/Weapons/bare*` frames. It waits on art.
+
 Sapega 2026-10-21 «він має мати анімацію, як він тримає меч, і анімацію, як він тримає інші типи зброї»;
 2026-10-22 weapon variants by palette swap. Builds on [[souls_combat_plan]] (D264–D270: combo, heavy, block,
 hurt, grips D267, sheathing D268). Figma: none (the hero is not a UI screen). Art: comfy-sprite (D239), batch

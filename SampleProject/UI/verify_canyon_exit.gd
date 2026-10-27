@@ -249,6 +249,9 @@ func _initialize() -> void:
 	ck(falls.is_empty(), "no Fall animation: Kusakam climbs, he does not fall")
 	ck(player.current_health == hp, "no damage (%d → %d)" % [hp, player.current_health])
 
+	# performance_plan slice 3: кат-сцена попросила дорогу заздалегідь — телепорт бере готову сцену, а не вантажить її.
+	ck(game.room_preloader.is_held("res://SampleProject/Maps/DesertRoad.tscn"), "the road is loaded in the background before the cutscene's teleport")
+
 	print("[4] The cutscene ends on the road")
 	await _until(func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn"), 8.0)
 	for i in 30: await process_frame

@@ -11,6 +11,7 @@ extends SceneTree
 
 const STORY := "res://SampleProject/Resources/Data/story.json"
 const SCENES_DIR := "res://SampleProject/Scripts/Gameplay/Scenes/"
+const LocationDB = preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 
 var fails: Array[String] = []
 func ck(ok: bool, label: String) -> void:
@@ -51,6 +52,19 @@ func _initialize() -> void:
 		for beat in zone.get("chronicle", []):
 			ck(source.contains('"%s"' % beat.flag), "%s chronicle: %s exists in scene code" % [zone.title, beat.flag])
 		ck(not zone.get("chronicle", []).is_empty(), "%s has a chronicle" % zone.title)
+
+	print("[2b] D159: every objective has a hint and who gave it, a draft in both .po files")
+	var speakers: Dictionary = root.get_node("DialogueQuest").CharacterDB.get_character_registry()
+	var uk_po := FileAccess.get_file_as_string("res://SampleProject/Resources/Translations/uk.po")
+	var en_po := FileAccess.get_file_as_string("res://SampleProject/Resources/Translations/en.po")
+	for zone in stage.zones:
+		ck(LocationDB.all().any(func(loc: Dictionary) -> bool: return zone.scene in loc.rooms),
+				"%s is in a location of locations.json (D181)" % zone.title)
+		for objective in zone.objectives:
+			ck(speakers.has(objective.from), "'%s' hint from %s, a DialogueQuest speaker" % [objective.text, objective.from])
+			var key := 'msgid "%s"' % objective.hint
+			ck(uk_po.contains("# [ЧЕРНЕТКА] D159\n" + key) and en_po.contains("# [DRAFT] D159\n" + key),
+					"'%s' hint is a draft in uk.po and en.po" % objective.text)
 
 	print("[3] states follow the flags")
 	game.set_quest_flags({})

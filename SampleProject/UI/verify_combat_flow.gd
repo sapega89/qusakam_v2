@@ -352,6 +352,7 @@ func _initialize() -> void:
 	await create_timer(mover.roll_duration + 0.1).timeout
 
 	print("[2d'] Fall faces where the hero moves, both ways (Sapega 2026-10-20 «анімація падіння в одну сторону»)")
+	var stand: Vector2 = pl.global_position
 	for dir: StringName in [&"move_left", &"move_right"]:
 		pl.global_position.y -= 300.0
 		Input.action_press(dir)
@@ -361,6 +362,10 @@ func _initialize() -> void:
 				"falling while holding %s: anim %s, flip_h %s" % [dir, pl.animation, falling_left])
 		Input.action_release(dir)
 		await create_timer(0.8).timeout  # приземлився
+	# Назад на підлогу, звідки підняли: швидкі вороги (D767) встигають підійти, і герой падав би комусь на голову
+	pl.global_position = stand
+	pl.velocity = Vector2.ZERO
+	await create_timer(0.3).timeout
 
 	print("[2e] Enemy types: the tank's long armoured swing, the fast one's lunge (D208)")
 	var type_hits: Array = []
@@ -370,8 +375,9 @@ func _initialize() -> void:
 	var tank = enemies[0]
 	tank._apply_stats(load("res://SampleProject/Resources/Enemies/enemy_stats_tank.tres"))
 	tank.current_health = tank.Max_Health
-	tank.global_position = Vector2(pl.global_position.x + 40, tank.global_position.y)  # B128: удар бандита-сцени сягає 34.5 px
 	await create_timer(0.6).timeout
+	# Ставимо вже після очікування: живий AI ходить швидко (D767) і за 0.6 с відійшов би (B128: удар бандита-сцени сягає 34.5 px)
+	tank.global_position = Vector2(pl.global_position.x + 40, tank.global_position.y)
 	tank.enemy_logic.last_direction = -1
 	tank.enemy_logic.perform_attack()
 	await create_timer(0.5).timeout
@@ -398,6 +404,7 @@ func _initialize() -> void:
 	tank.global_position.x = pl.global_position.x - 400
 	var fast = enemies.filter(func(e: Node) -> bool: return e.enemy_stats.enemy_type == "fast")[0]
 	fast.set_physics_process(true)  # ривок рухає тіло
+	fast.enemy_logic._lunge_rest = 60.0  # стрибок шакала (D769) тут ні до чого: удар тест веде сам (perform_attack)
 	await create_timer(0.6).timeout
 	# Ставимо вже після очікування: живий AI за 0.6 с відходить (B128: укус 34.5 + ривок 60 + пів героя 12 > 100)
 	fast.global_position = Vector2(pl.global_position.x + 100, fast.global_position.y)

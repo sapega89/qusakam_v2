@@ -87,11 +87,11 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(26.25, 43.5)
+size = Vector2(42, 69.6)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(60.75, 42.75)
+size = Vector2(97.2, 68.4)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jackal"]
 _data = {
@@ -102,13 +102,21 @@ _data = {
 &"stagger": SubResource("Animation_stagger")
 }
 
+[sub_resource type="RectangleShape2D" id="Shape_body"]
+size = Vector2(51.2, 51.2)
+
 [node name="EnemyFast" instance=ExtResource("1_base")]
 
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0, -9.6)
+shape = SubResource("Shape_body")
+
 [node name="Sprite2D" parent="." index="2"]
+position = Vector2(0, -29.6)
 metadata/tell_at = Vector2(29, 13)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, 8)
-scale = Vector2(0.75, 0.75)
+scale = Vector2(1.2, 1.2)
 hframes = 4
 vframes = 5
 frame = 0
@@ -119,9 +127,9 @@ libraries/ = SubResource("AnimationLibrary_jackal")
 metadata/attack_strike_time = 0.225
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(13.125, 6.75)
+position = Vector2(21, -6.3)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(-2.625, 7.125)
+position = Vector2(-4.2, -5.7)
 shape = SubResource("Shape_hurt")

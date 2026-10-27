@@ -1,11 +1,14 @@
 {
-	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають; needs_flag — прапорець, без якого не здати (D293). description — передісторія для Журналу, objective — що зробити (D311).",
+	"_comment": "Завдання NPC у стилі Stoneshard (D162, D175): видав → умова → нагорода. Стан — прапорці task_<id>_taken / task_<id>_done. after — id завдання, після якого це відкривається. gives/needs/reward — {item_id: кількість}; needs лише показують, не забирають; needs_flag — прапорець, без якого не здати (D293). description — передісторія для Журналу, objective — що зробити (D311). location — локація з locations.json, під якою завдання стоїть у Журналі (D181). quote — слова замовника, outcome — чим скінчилось (сторінка «Побічні історії», D791).",
 	"tasks": [
 		{
 			"id": "merchant_caravan",
 			"giver": "merchant",
+			"location": "city",
 			"title": "The Stolen Caravan",
 			"description": "The bandits Kusakam is chasing robbed a merchant's caravan on the Desert Road and drove it to the City Gates. The merchant follows his goods to the City.",
+			"quote": "Those same bandits looted my caravan and drove it to the City Gates.",
+			"outcome": "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt.",
 			"objective": "Drive the bandits from the City Gates, then find the Merchant in the City, just past the gates",
 			"give_dialogue": "Merchant_Caravan_Give",
 			"done_dialogue": "Merchant_Caravan_Done",
@@ -17,8 +20,11 @@
 		{
 			"id": "smith_helmet",
 			"giver": "blacksmith",
+			"location": "city",
 			"title": "The Helmet",
 			"description": "The City's blacksmith saw what the bandits' maces left of the gate guards. He will not sell Kusakam a helmet: one you forged yourself sits better than one you bought. His word holds like a contract before the god of deals: show him the finished helmet and he pays back every coin it cost.",
+			"quote": "A helmet you forged yourself sits better on the head than a bought one.",
+			"outcome": "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word.",
 			"objective": "Buy 2 Iron Ingots and 1 Leather from the Merchant past the City gates, forge an Iron Helmet at the Blacksmith's anvil (12 coins), then show it to the Blacksmith",
 			"give_dialogue": "Smith_Helmet_Give",
 			"done_dialogue": "Smith_Helmet_Done",
@@ -29,9 +35,12 @@
 		{
 			"id": "smith_enchant",
 			"giver": "blacksmith",
+			"location": "city",
 			"after": "smith_helmet",
 			"title": "The Enchantment",
 			"description": "The Blacksmith hands Kusakam two Iron Swords to learn enchanting on.",
+			"quote": "Now for real learning. Enchant these two into one and bring it to show me.",
+			"outcome": "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice.",
 			"objective": "Enchant the two Iron Swords into an Iron Sword +1 and show it to the Blacksmith",
 			"give_dialogue": "Smith_Enchant_Give",
 			"done_dialogue": "Smith_Enchant_Done",
@@ -42,8 +51,11 @@
 		{
 			"id": "malik_escort",
 			"giver": "malik",
+			"location": "laboratory",
 			"title": "The Humble Place",
 			"description": "Malik, a talkative merchant from the last cell, swore that his humble place holds gold for everyone who leads him out of the Laboratory. Nobody asked whether they agreed: he simply follows, quiet as a shadow.",
+			"quote": "My humble place holds gold for everyone who leads me out of here.",
+			"outcome": "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road.",
 			"objective": "Lead Malik out of the Laboratory",
 			"give_dialogue": "Lab_Acquaintance",
 			"done_dialogue": "",

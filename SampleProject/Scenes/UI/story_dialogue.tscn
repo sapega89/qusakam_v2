@@ -1,0 +1,116 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/UI/story_dialogue.gd" id="1_story"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/UI/story_dialogue_box.tscn" id="3_box"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/bottom_bar.tscn" id="4_hints"]
+
+[node name="StoryDialogue" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_story")
+
+[node name="Scrim" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Chapter" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+mouse_filter = 2
+
+[node name="ChapterTitle" type="Label" parent="Chapter"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TitleLabel"
+uppercase = true
+
+[node name="ChapterRule" type="ColorRect" parent="Chapter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(600, 1)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+
+[node name="HeroCard" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -792.0
+offset_top = -774.0
+offset_right = -576.0
+offset_bottom = -438.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CardPanel"
+
+[node name="HeroFrame" type="TextureRect" parent="HeroCard"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+expand_mode = 1
+
+[node name="SpeakerCard" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 576.0
+offset_top = -774.0
+offset_right = 792.0
+offset_bottom = -438.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CardPanel"
+
+[node name="SpeakerFrame" type="TextureRect" parent="SpeakerCard"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+expand_mode = 1
+flip_h = true
+
+[node name="Box" parent="." instance=ExtResource("3_box")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="Hints" parent="." instance=ExtResource("4_hints")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -792.0
+offset_top = -136.0
+offset_right = 792.0
+offset_bottom = -72.0
+mouse_filter = 2
+theme_type_variation = &"PlainPanel"

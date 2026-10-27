@@ -1,6 +1,6 @@
 ---
 type: plan
-status: active
+status: done  # 2026-10-27 decision-audit-2: every slice is built in code
 tags: [onboarding, tutorial, combat, feedback]
 ---
 

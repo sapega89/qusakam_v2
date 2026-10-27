@@ -13,6 +13,7 @@ extends EnemyLogic
 
 const DIVE := &"dive"
 const BITE := &"bite"
+const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 ## Патруль біля дому: пливе на ±PATROL px з частотою PATROL_RATE, похитуючись на ±BOB px.
 const PATROL := 60.0
 const PATROL_RATE := 0.7
@@ -55,6 +56,9 @@ var _target := Vector2.ZERO
 var _lunge_dir := Vector2.ZERO
 ## Куди кажан відлітає після укусу.
 var _away := Vector2.ZERO
+## На скільки px намальоване дно виросло з арт (D766, meta «grown» спрайта — у скільки разів): на стільки вище
+## його висота біля героя й дно піке чи укусу, бо тіло (і з ним шлях) лишилось колишнім.
+var _lift := 0.0
 
 
 func initialize(enemy_node: CharacterBody2D) -> void:
@@ -62,6 +66,16 @@ func initialize(enemy_node: CharacterBody2D) -> void:
 	style = StringName(enemy.flight_attack)
 	hover_height = enemy.hover_height
 	dive_speed = enemy.dive_speed
+	_lift = _art_growth()
+
+
+## Приріст намальованого дна (px вниз від центру): кадри польоту й удару — ті, що на екрані біля героя.
+func _art_growth() -> float:
+	var sprite: Sprite2D = enemy.sprite
+	var grown: float = sprite.get_meta(&"grown", 1.0)
+	var drawn := HitAreas.body_rect(sprite, enemy.anim_player).merge(
+			HitAreas.strike_rect(sprite, enemy.anim_player, enemy.attack_active_time))
+	return maxf(drawn.end.y - sprite.position.y, 0.0) * (1.0 - 1.0 / grown)
 
 
 ## Чи дістане його удар героя: кажана — завжди, грифа — лише низько.
@@ -149,7 +163,7 @@ func _chase(delta: float) -> void:
 ## відстані удару, коли готовий, і трохи далі (WAIT_GAP), поки чекає.
 func _station(can_strike: bool) -> Vector2:
 	var hero: Node2D = player
-	var height := _feet_y(hero) - hover_height
+	var height := _feet_y(hero) - hover_height - _lift
 	if style == DIVE:
 		return Vector2(hero.global_position.x + cos(_t * ORBIT_RATE) * ORBIT_X, height + sin(_t * ORBIT_RATE * 2.0) * ORBIT_Y)
 	var side := -1.0 if hero.global_position.x > enemy.global_position.x else 1.0
@@ -161,7 +175,7 @@ func _in_reach(station: Vector2) -> bool:
 	var dx := absf(player.global_position.x - enemy.global_position.x)
 	if style == DIVE:
 		return dx <= attack_range and enemy.global_position.distance_to(station) <= ORBIT_READY
-	return dx <= attack_range and absf(enemy.global_position.y - (_feet_y(player) - hover_height)) <= WAVE + 12.0
+	return dx <= attack_range and absf(enemy.global_position.y - (_feet_y(player) - hover_height - _lift)) <= WAVE + 12.0
 
 
 ## Летить до [param point] зі швидкістю [param fly_speed], біля самої точки — повільніше. [param face_travel] —
@@ -195,8 +209,9 @@ func _home() -> void:
 	_fly_to(home_position, return_home_speed, true)
 
 
+## Куди б'є: центр героя, вище на приріст арту (_lift).
 func _hero_centre() -> Vector2:
-	return (player as Node2D).global_position
+	return (player as Node2D).global_position - Vector2(0.0, _lift)
 
 
 ## Рух під час удару. Поки йде замах до підказки — ціль іде за героєм; після підказки вона зафіксована.

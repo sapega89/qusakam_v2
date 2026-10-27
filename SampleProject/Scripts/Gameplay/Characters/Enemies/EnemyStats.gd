@@ -9,6 +9,9 @@ class_name EnemyStats
 
 @export_group("Movement")
 @export var speed: float = 70.0
+## Під яку швидкість намальовано крок анімації walk, px/с (D767): темп walk — speed / stride_speed, щоб ноги не ковзали,
+## коли ворог ходить швидше. 0 — та сама, що speed.
+@export var stride_speed: float = 0.0
 
 @export_group("Combat")
 @export var base_damage: float = 10.0
@@ -36,9 +39,24 @@ class_name EnemyStats
 @export var recovery: float = 0.5
 ## На скільки px ворог відходить після серії (D504, critique §B); 0 — лишається на місці (tank).
 @export var back_off: float = 0.0
+## Як вид відповідає на удар героя (D775): trade — приймає (броня, кара по відновленню); evade — легкий: бачить замах
+## важкого й відскакує з-під нього, потім карає відновлення; guard — щитоносець: на замах героя стає щитом до нього й
+## не лізе під удар, а відповідає, щойно удар скінчився.
+@export_enum("trade", "evade", "guard") var answer_swing: String = "trade"
 ## Відповідь на удари (D754): стільки ударів героя, поки ворог чекає перерви між серіями, — і він б'є одразу, не
 ## чекаючи її кінця (0 — ніколи). Той, хто б'є без упину, наривається на удар; хто б'є у вікно й захищається — ні.
 @export var answer_hits: int = 0
+## Випад (D768): з середньої відстані (lunge_from–lunge_to px від героя) — короткий замах lunge_windup з підказкою
+## lunge_tell, тоді ривок з ударом туди, де герой стояв у мить підказки. Стояти трохи поза досяжністю вже не безпечно;
+## ухилитись — перекотитись крізь ривок або заблокувати його. lunge_chance — шанс обрати випад, коли ворог готовий
+## бити, а герой на цій відстані (0 — випаду немає).
+@export var lunge_from: float = 0.0
+@export var lunge_to: float = 0.0
+@export var lunge_windup: float = 0.5
+@export_enum("block", "parry", "dodge") var lunge_tell: String = "block"
+@export var lunge_chance: float = 0.0
+## Шакал (D769): випад — стрибок; влучив — учепився й кусає (EnemyLogic._latch): герой стоїть, укус, тоді відштовхує.
+@export var pounce: bool = false
 
 @export_group("Flight")
 ## Летючий ворог (D445, D558): без гравітації, тіло не зупиняє героя й інших ворогів (лише стіни), логіка —

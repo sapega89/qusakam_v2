@@ -36,12 +36,11 @@ mouse_filter = 2
 
 [node name="Pins" type="Control" parent="Frame/Level1"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+clip_contents = true
+layout_mode = 0
+offset_left = 320.0
+offset_right = 1920.0
+offset_bottom = 1016.0
 mouse_filter = 2
 
 [node name="Card" type="PanelContainer" parent="Frame/Level1"]
@@ -70,7 +69,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"MapCardText"
 auto_translate_mode = 2
-text = "Explored 0% · Chests 0/0"
+text = "Explored 0% · Chests 0/0 · Secrets 0/0"
 
 [node name="CardHint" type="Label" parent="Frame/Level1/Card/Rows"]
 unique_name_in_owner = true
@@ -111,6 +110,36 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
+
+[node name="RoomCard" type="PanelContainer" parent="Frame/Level2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 1500.0
+offset_top = 160.0
+offset_right = 1794.0
+offset_bottom = 240.0
+mouse_filter = 2
+theme_type_variation = &"MapCard"
+
+[node name="Rows" type="VBoxContainer" parent="Frame/Level2/RoomCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="RoomName" type="Label" parent="Frame/Level2/RoomCard/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapCardTitle"
+auto_translate_mode = 2
+text = "Lizard Cave"
+
+[node name="RoomStats" type="Label" parent="Frame/Level2/RoomCard/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+auto_translate_mode = 2
+text = "Chests 0/0"
 
 [node name="Legend" type="PanelContainer" parent="Frame/Level2"]
 unique_name_in_owner = true
@@ -260,6 +289,24 @@ kind = &"exit"
 layout_mode = 2
 theme_type_variation = &"MapCardText"
 text = "exit to another location"
+
+[node name="Secret" type="HBoxContainer" parent="Frame/Level2/Legend/Rows"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" type="Control" parent="Frame/Level2/Legend/Rows/Secret"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("2_map_icon")
+kind = &"secret"
+
+[node name="Text" type="Label" parent="Frame/Level2/Legend/Rows/Secret"]
+layout_mode = 2
+theme_type_variation = &"MapCardText"
+text = "secret (found)"
 
 [node name="TitleBlock" type="VBoxContainer" parent="Frame"]
 unique_name_in_owner = true

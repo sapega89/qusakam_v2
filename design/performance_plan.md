@@ -7,7 +7,8 @@ tags: [performance, loading, rendering]
 
 # Performance — weak-PC lag and room-change freezes — plan
 
-**Measured, nothing fixed.** 2026-10-23. Sapega: the game lags badly on a weak PC, although it is small, and moving
+**Slices 1–6 built; 1, 2, 3 and 6 checked and closed 2026-10-27** ([[perf-check]]: tests and a before/after table).
+Slice 7 waits on Q83. First measured 2026-10-23. Sapega: the game lags badly on a weak PC, although it is small, and moving
 between locations freezes it with no loading screen. Figma: no loading-screen frame exists. The only "loading" in
 `design/` is the Maaack `SceneLoader` row in [[ui_theme_scope_audit]].
 
@@ -261,7 +262,8 @@ How to read the table:
 Sequential; each ships on its own. "Measure" means rerunning `measure_performance.gd` and comparing the named rows
 with this plan's tables.
 
-### Slice 1 — Quiet room changes (no decision)
+### Slice 1 — Quiet room changes (no decision) — ✅ done (perf-check 2026-10-27)
+State: a room change prints 2 lines (the B145 `room swap` pair), New Game 4; `verify_quiet_transitions`.
 - `Scripts/Game.gd`: delete the temporary `DebugLogger.current_level = DebugLogger.LogLevel.INFO` (`:50-51`). Delete,
   or downgrade to `DebugLogger.verbose()`, the diagnostic `print()`s in `_ready`, `_initialize_save_and_room`,
   `load_room` and `init_room` (48 in the file). The INFO lines from Player, GateController, StateChangeTrigger and
@@ -273,7 +275,9 @@ with this plan's tables.
   frames in debug.
 - Commit: `Slice 1 of performance_plan: room changes stop printing`.
 
-### Slice 2 — Neighbour rooms load in the background (removes the walk-transition freeze)
+### Slice 2 — Neighbour rooms load in the background (removes the walk-transition freeze) — ✅ done (perf-check 2026-10-27)
+State: walk load+instantiate 17–53 → 1.4–2.6 ms; the walk goes through `FadeRoomTransitions` (D434), not the scroll;
+`verify_room_preload` [1], [2].
 - New `SampleProject/Scripts/Gameplay/RoomPreloader.gd`, a **MetSysModule** like `ScrollingRoomTransitions`, added
   next to it (`Game.gd:257`). On `room_loaded` it calls `ResourceLoader.load_threaded_request()` for every
   `MetSys.get_current_room_instance().get_neighbor_rooms()` (`RoomInstance.gd:144`). Each frame (`process_frame`) it
@@ -290,7 +294,9 @@ with this plan's tables.
   13–48 ms to the add_child+`_ready` share (4–12 ms).
 - Commit: `Slice 2 of performance_plan: neighbour rooms load in the background`.
 
-### Slice 3 — Doors and story teleports preload their target (no decision)
+### Slice 3 — Doors and story teleports preload their target (no decision) — ✅ done (perf-check 2026-10-27)
+State: `verify_room_preload` [3] (ElderHouse), `verify_canyon_exit` (DesertRoad held before the cutscene teleport),
+`verify_mayor_boss` (LabCells held from the fight's start).
 - `RoomPreloader` also requests every `RoomDoor` target in the current room (`RoomDoor.gd:24`). The two story
   teleports request their target when their cutscene starts: `Canyon.gd:694` → DesertRoad (first visit 152 ms) and
   `MayorHall.gd:151` → LabCells (60 ms).
@@ -322,7 +328,11 @@ with this plan's tables.
   should show no `EnemySpawner` / `Fight_*` subtree above 10 ms in `PERF load` / `again`.
 - Commit: `Slice 5 of performance_plan: first-use scenes warm in the background`.
 
-### Slice 6 — New Game and Load Game through a threaded load behind a fade to black (D434)
+### Slice 6 — New Game and Load Game through a threaded load behind a fade to black (D434) — ✅ done (perf-check 2026-10-27)
+State: the click frame is 0.2 ms (was 275–331); `verify_main_menu` [6] (New Game), `verify_save_load_room` [3]
+(Load Game). **Not as written below:** the threaded request covers `Game.tscn` only; the first room still loads on
+the main thread in `_initialize_save_and_room()`, under black (Canyon 237–240 ms on llvmpipe). Making it threaded
+would make the first `load_room()` asynchronous for every boot path; left as is.
 - `MainMenu.gd:123` and `LoadGameMenu.gd:151` call `SceneLoader.load_scene(GAME)` instead of `change_scene_to_file()`.
   `scene_loader.gd:94` already does `load_threaded_request` and shows `loading_screen_path`; that becomes a plain black screen
   with the D434 fade instead of Maaack's example.

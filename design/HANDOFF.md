@@ -9,8 +9,8 @@ Fresh session on purpose (Sapega: «ти дуже багато тримаєш в
 (the old one: [[archive/MASTER_PLAN_2026-10-24]]); what waits on Sapega or was deferred is in [[BACKLOG]] → «Moved out of
 MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** `integrate-29` is assigning D787–D793+ and the next B rows; after it lands, the next free numbers are in
-its report — write them here. Do not file IDs on `feature/backlog` while an integrator runs (they collide).
+**Registers:** next free **D794**, **B185**, **Q107** (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
+`feature/backlog`). Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
 ## 1. First, when you start
 1. `git fetch`; read `design/cloud_reports/integrate-29.md` on `origin/cloud/integrate-29` when it exists (it already

@@ -180,15 +180,27 @@ func _drawn_sprites(room: Node) -> Array:
 	for s: Sprite2D in room.find_children("*", "Sprite2D", true, false):
 		var xf := Transform2D.IDENTITY
 		var shown := true
+		var copies: Array[float] = [0.0]
 		var n: Node = s
 		while n != room:
-			if n is Parallax2D or n is CanvasItem and not (n as CanvasItem).visible:
+			if n is CanvasItem and not (n as CanvasItem).visible:
 				shown = false
+			if n is Parallax2D:
+				# План, що рухається разом зі світом (scroll_scale 1, без зсуву), — намальована підлога (B162); з повтором —
+				# ще копії через repeat_size. Решта планів пливе відносно кімнати й підлогу не малює.
+				var plane := n as Parallax2D
+				if plane.scroll_scale != Vector2.ONE or plane.scroll_offset != Vector2.ZERO:
+					shown = false
+				elif plane.repeat_size.x > 0.0:
+					for k in range(-plane.repeat_times, plane.repeat_times + 1):
+						if k != 0:
+							copies.append(k * plane.repeat_size.x)
 			if n is Node2D:
 				xf = (n as Node2D).transform * xf
 			n = n.get_parent()
 		if shown and s.texture:
-			out.append([s, xf.affine_inverse(), s.texture.get_image()])
+			for dx in copies:
+				out.append([s, (Transform2D(0.0, Vector2(dx, 0.0)) * xf).affine_inverse(), s.texture.get_image()])
 	return out
 
 

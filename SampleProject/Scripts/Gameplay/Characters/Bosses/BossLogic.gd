@@ -25,6 +25,12 @@ const FIREBALL_GAP := 0.35
 ## Між ходами бос іде до preferred_range, якщо відхилився більше ніж на PREFERRED_BAND px, на частці своєї швидкості.
 const PREFERRED_BAND := 30.0
 const REPOSITION_SPEED := 0.6
+## Відкритого героя (EnemyLogic._hero_opened) бос карає з досяжності своєї серії (combo) і ще до COMBO_STEP_IN px за нею.
+const COMBO_STEP_IN := 60.0
+## D775: герой стоїть у досяжності серії довше за REACH_PATIENCE с — бос б'є, не чекаючи кінця перерви (не стоїть перед
+## ним).
+const REACH_PATIENCE := 0.7
+var _reach_wait := 0.0
 
 ## Останній обраний хід — для тестів і журналу.
 var last_move: Dictionary = {}
@@ -39,11 +45,41 @@ func token_free() -> bool:
 	return true
 
 
+func _punish_range() -> float:
+	return _combo_reach() + COMBO_STEP_IN
+
+
+## Бос між ходами тримає свою відстань (preferred_range, B159), а не відходить з досяжності, і не фінтує: його візерунок
+## і так читається (D775).
+func _decide_after_attack() -> void:
+	pass
+
+
+func _can_feint() -> bool:
+	return false
+
+
+func _series_fits(_windup: float) -> bool:
+	return true
+
+
+func _abandons() -> bool:
+	return false
+
+
+## Бос карає лише великі вікна (D775): відновлення важкого й приземлення; флягу, каст і кінець серії — ні (його
+## візерунок і так тисне, а вікно для ковтка біля боса герой має вибороти відходом).
+func _hero_opened(adx: float) -> bool:
+	if adx > _punish_range():
+		return false
+	return player.combat.state == PlayerCombat.State.HEAVY_RECOVERY or _land_left > 0.0
+
+
 func _hold_token() -> void:
 	pass
 
 
-func handle_attack_state(_delta: float) -> void:
+func handle_attack_state(delta: float) -> void:
 	if not player or not is_instance_valid(player):
 		change_state(AIState.IDLE)
 		return
@@ -53,9 +89,15 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
-	if attack_ready_in <= 0.0:
+	var adx := absf(dx)
+	_reach_wait = _reach_wait + delta if adx <= _combo_reach() else 0.0
+	var opened := _hero_opened(adx)
+	if attack_ready_in <= 0.0 or opened or _reach_wait > REACH_PATIENCE:
 		if _fits_any(dx):
-			attack_ready_in = enemy.attack_cooldown
+			_reach_wait = 0.0
+			if opened:
+				tactic.emit(&"punish")
+			_rest_after_swing()
 			perform_attack()
 		else:
 			_step(toward, speed)
@@ -144,7 +186,7 @@ func _recovery_time() -> float:
 ## Перерва EnemyStats.attack_cooldown боса (D394) рахується від кінця ходу, а не від замаху: довгий замах боса інакше з'їдав би
 ## всю перерву, і новий хід починався б одразу після удару — героєві ніколи бити у відповідь.
 func _rest() -> void:
-	attack_ready_in = enemy.attack_cooldown
+	attack_ready_in = enemy.attack_cooldown * randf_range(RHYTHM_MIN, RHYTHM_MAX)  # не метроном (D775)
 
 
 ## Ривок (charge) дістає лише на свою смугу — distance плюс melee_reach (та сама, що креслить підказка, D522): з далі він
@@ -181,6 +223,15 @@ func _must_close(dx: float) -> bool:
 		kind = pattern[(at + 1) % pattern.size()]
 	return enemy.moves.any(func(m: Dictionary) -> bool: return m.kind == kind and enemy.phase >= m.get("phase", 1) and absf(dx) > _reach(m) \
 			and _reach(m) >= enemy.preferred_range)
+
+
+## Найдальша досяжність серії (combo) у цій фазі; немає серії — 0.
+func _combo_reach() -> float:
+	var reach := 0.0
+	for move: Dictionary in enemy.moves:
+		if move.kind == "combo" and enemy.phase >= move.get("phase", 1):
+			reach = maxf(reach, _reach(move))
+	return reach
 
 
 func _pattern() -> PackedStringArray:

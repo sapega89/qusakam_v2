@@ -20,6 +20,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x7"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/ledge_rock/ledge_rock_sheet.png" id="x8"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(220, 12)
@@ -53,6 +54,9 @@ size = Vector2(484, 12)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_11"]
 size = Vector2(864, 320)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_MesaTop"]
+size = Vector2(240, 52)
 
 [node name="MesaClimb" type="Node2D"]
 
@@ -397,3 +401,9 @@ offset = Vector2(-55, 0)
 position = Vector2(150, 4)
 texture = ExtResource("x8")
 offset = Vector2(-55, 0)
+
+[node name="SecretArea_MesaTop" parent="." instance=ExtResource("secret_area")]
+position = Vector2(700, 150)
+
+[node name="CollisionShape2D" parent="SecretArea_MesaTop" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_MesaTop")

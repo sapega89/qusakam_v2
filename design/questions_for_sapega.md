@@ -174,3 +174,14 @@ None blocks work. Each default holds until Sapega answers.
 | Q93 | Bandit Camp shortcut (D698, `cloud/rooms-1`) | Zahra's Rest is not built, so the Bandit Camp shortcut comes out by the road's meditation spot (`SavePoint_BeforeCity`, x 4820). Where should it come out? | By `SavePoint_BeforeCity`, as built, until Zahra's Rest exists. |
 | Q98 | World Map card (D715) | The frame's card shows «Секрети c/d». Nothing in the data marks a secret: no field in `locations.json`, no node type, no MapData symbol. `BreakableWall` hides passages but is not marked as a secret. What is a secret: a room flagged in `locations.json` (`secret_rooms`), a node (`SecretArea` that counts when entered), or a breakable wall that counts when broken? | The card shows only explored % and chests until something marks secrets. **✅ D765** (Sapega 2026-10-27: схована зона, рахується при вході) |
 | Q100 | The god of contracts' name (D718, `cloud/oath-census`) | The contract path's god has no name yet («забув назву, тому поки бог контрактів»). What is his name? | «the god of contracts» / «Бог контрактів»: one localisation key (`DialoguePaths.CONTRACT_GOD`, used as `${contract_god}` in the census, the priest's lines and Urizen's line). Naming him is one change in `en.po` / `uk.po`; Ukrainian lines are written so the name stays in the nominative. |
+
+## Opened by the depth films and critics, 2026-10-27 — [[depth_critique_2026-10-27]] (filed by integrate-29)
+
+| # | Area | Question | Default until answered |
+|---|---|---|---|
+| ~~Q101~~ | Hero feet (depth-film «Q-new», depth-critics Q-f) | ~~The hero's drawn feet are 12 world px below his collision box in every room. Intended 3/4 look, or move the sprite / box?~~ **Answered** (Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі») → **D787**, built by `cloud/hero-feet`. | — |
+| Q102 | One-screen rooms (depth-critics Q-a) | DragonMural, ElderHouse, MayorHall and MesaClimb cannot show parallax. Make them ≥ 1.3 screens wide, or keep them as still pictures whose depth comes from painting, foreground and living props? | Keep the size; fix the twitch (B179). |
+| Q103 | Foreground palm (depth-critics Q-b) | May the foreground palm cross the hero himself, or only the scene around him? | Not over arrival or rest spots. |
+| Q104 | Indoor pillars (depth-critics Q-c, D750) | Keep them pure black silhouettes, or show a faint rim and their masonry? | Unchanged (black). |
+| Q105 | Mid-plane props (depth-critics Q-d) | May a prop on a middle plane show its feet sliding along the floor line, or must a floor lip always hide that join? Applies to every M6 prop plane. | A lip hides it. |
+| Q106 | Pixel snapping (depth-critics Q-e) | Only if B180 is fixed by turning pixel snapping off: is slightly softer pixel art in motion acceptable? | Not asked until B180 is confirmed. |

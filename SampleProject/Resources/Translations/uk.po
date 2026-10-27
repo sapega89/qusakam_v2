@@ -799,6 +799,10 @@ msgstr "Взаємодіяти, говорити, підняти"
 msgid "Next line of dialogue"
 msgstr "Наступна репліка"
 
+# Сюжетна подача розмови (D110): утримання «далі» гонить репліки до вибору (D736)
+msgid "Hold: skip to the choice"
+msgstr "Утримання: до вибору"
+
 msgid "Skip a cutscene (hold)"
 msgstr "Пропустити катсцену (тримати)"
 
@@ -2757,6 +2761,9 @@ msgstr "Зілля ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Випийте його в грі зі швидкого слота (%s)"
 
+msgid "ST"
+msgstr "ВТ"
+
 msgid "MAX"
 msgstr "МАКС"
 
@@ -3064,8 +3071,8 @@ msgstr "Парирування лікує 5% вашого макс. HP. [ЧЕР�
 msgid "Sand Runner's Ring [DRAFT]"
 msgstr "Перстень піщаного бігуна [ЧЕРНЕТКА]"
 
-msgid "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
-msgstr "Ви не можете блокувати чи парирувати, зате перекат триває на 30% довше. [ЧЕРНЕТКА]"
+msgid "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
+msgstr "Ви не можете блокувати чи парирувати, зате перекат триває на 30% довше й коштує на 30% менше витривалості. [ЧЕРНЕТКА]"
 
 msgid "Hermit's Amulet [DRAFT]"
 msgstr "Амулет відлюдника [ЧЕРНЕТКА]"
@@ -3227,8 +3234,11 @@ msgstr "відвідано"
 msgid "locked"
 msgstr "закрито"
 
-msgid "Explored %d%% · Chests %d/%d"
-msgstr "Досліджено %d%% · Скрині %d/%d"
+msgid "Explored %d%% · Chests %d/%d · Secrets %d/%d"
+msgstr "Досліджено %d%% · Скрині %d/%d · Секрети %d/%d"
+
+msgid "Secret found"
+msgstr "Секрет знайдено"
 
 msgid "A — open the location map"
 msgstr "A — відкрити карту локації"
@@ -3241,6 +3251,13 @@ msgstr "Вліво / вправо — вибрати локацію. A — ві�
 
 msgid "B — back to the world map."
 msgstr "B — назад до карти світу."
+
+# map-pan: карта-полотно, картка кімнати
+msgid "Drag or stick — move the map. Wheel or Q / E — zoom."
+msgstr "Тягни або стік — рухати карту. Коліщатко або Q / E — масштаб."
+
+msgid "Chests %d/%d"
+msgstr "Скрині %d/%d"
 
 msgid "LEGEND"
 msgstr "ЛЕГЕНДА"
@@ -3268,6 +3285,9 @@ msgstr "завдання"
 
 msgid "exit to another location"
 msgstr "вихід в іншу локацію"
+
+msgid "secret (found)"
+msgstr "секрет (знайдений)"
 
 msgid "↕ ladder"
 msgstr "↕ драбина"
@@ -3508,3 +3528,147 @@ msgstr "Спершу дивляться в очі. Синьооких не пу�
 
 msgid "Since the barrier fell, the road's full of bandits."
 msgstr "Відколи впав бар'єр, на дорозі повно бандитів."
+
+# ── Журнал: підказки під ціллю, від того, хто її дав (D159; GameFlow → journal_component)
+msgid "%s: “%s”"
+msgstr "%s: «%s»"
+
+# [ЧЕРНЕТКА] D159
+msgid "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+msgstr "Дід завжди каже слухати духів. Вилізу на скелю, до каменя на вершині, — може, там вони щось скажуть."
+
+# [ЧЕРНЕТКА] D159
+msgid "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+msgstr "Сяду на камінь і подихаю тишею — може, вона підкаже шлях."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bandits are leading our people away! Back through the canyon to the village, fast."
+msgstr "Бандити ведуть наших! Назад через каньйон, до села, — швидше."
+
+# [ЧЕРНЕТКА] D159
+msgid "I'll go down the street to the middle of the village — someone has to be there."
+msgstr "Пройду вулицею до середини села — хтось же там має бути."
+
+# [ЧЕРНЕТКА] D159
+msgid "A bandit is blocking the street. He won't let me pass without a fight."
+msgstr "Бандит заступив вулицю. Без бою він мене не пропустить."
+
+# [ЧЕРНЕТКА] D159
+msgid "I have to get home and see if Grandfather is alive."
+msgstr "Треба бігти додому й глянути, чи дід живий."
+
+# [ЧЕРНЕТКА] D159
+msgid "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+msgstr "Наздожени бандитів. Іди в бік каньйону і вийди на дорогу в пустелі."
+
+# [ЧЕРНЕТКА] D159
+msgid "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+msgstr "З краю каньйону, біля містка, можна злізти вниз, на пустельну дорогу."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bandits who took my caravan are still on the road. Mind them."
+msgstr "Бандити, що забрали мій караван, досі на дорозі. Стережися їх."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bandits' trail runs along the road straight to the city gates."
+msgstr "Слід бандитів веде дорогою просто до міської брами."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bandits at the gates! Help us hold them!"
+msgstr "Бандити біля брами! Допоможи втримати ворота!"
+
+# [ЧЕРНЕТКА] D159
+msgid "The gates are clear. Into the city."
+msgstr "Брама вільна. Тепер — у місто."
+
+# [ЧЕРНЕТКА] D159
+msgid "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+msgstr "Ґрати, клітка, чужі голоси... Треба роздивитися, куди мене притягли."
+
+# [ЧЕРНЕТКА] D159
+msgid "The bars are open. I'm going out before anyone comes back."
+msgstr "Ґрати відчинені. Виходжу, поки ніхто не повернувся."
+
+# [ЧЕРНЕТКА] D159
+msgid "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+msgstr "Вихід — унизу, за трьома поверхами охорони. Ведіть — я одразу за вами."
+
+# [ЧЕРНЕТКА] D159
+msgid "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+msgstr "Найманець хоче дідів плащ. Не віддам — значить, битимемось."
+
+# [ЧЕРНЕТКА] D159
+msgid "The mercenary is down and the gates are open. Out, to freedom."
+msgstr "Найманець лежить, ворота відчинені. Вперед, на волю."
+
+# [ЧЕРНЕТКА] D159
+msgid "A few more steps and we are out in the open air."
+msgstr "Ще кілька кроків — і ми на волі."
+
+# [ЧЕРНЕТКА] D159
+msgid "We made it out. A hard road — but we made it."
+msgstr "Ми вийшли. Важкий був шлях — але ми змогли."
+
+# ── Журнал: сторінка побічних історій (D791; SideStories → journal_component)
+msgid "SIDE STORIES"
+msgstr "ПОБІЧНІ ІСТОРІЇ"
+
+msgid "Side Stories"
+msgstr "Побічні історії"
+
+msgid "No side stories here yet."
+msgstr "Тут ще немає побічних історій."
+
+msgid "Client: %s"
+msgstr "Замовник: %s"
+
+msgid "Completed"
+msgstr "Скінчено"
+
+msgid "In progress"
+msgstr "Триває"
+
+msgid "“%s”"
+msgstr "«%s»"
+
+msgid "All"
+msgstr "Усі"
+
+msgid "OUTCOME"
+msgstr "ЧИМ СКІНЧИЛОСЬ"
+
+msgid "REWARDS"
+msgstr "НАГОРОДА"
+
+# [ЧЕРНЕТКА] D791
+msgid "Those same bandits looted my caravan and drove it to the City Gates."
+msgstr "Ті самі бандити розграбували мій караван і погнали його до міської брами."
+
+# [ЧЕРНЕТКА] D791
+msgid "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+msgstr "Брама вільна, і вози каравану в місті. Торговець заплатив, як обіцяв: торговець боргів не забуває."
+
+# [ЧЕРНЕТКА] D791
+msgid "A helmet you forged yourself sits better on the head than a bought one."
+msgstr "Шолом, який сам скував, на голові сидить краще за куплений."
+
+# [ЧЕРНЕТКА] D791
+msgid "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+msgstr "Заклепки вийшли криві, та шолом тримає. Коваль повернув кожну монету, як домовлялись: коваль слова не ламає."
+
+# [ЧЕРНЕТКА] D791
+msgid "Now for real learning. Enchant these two into one and bring it to show me."
+msgstr "Тепер справжня наука. Зачаруй ці два мечі в один і принеси показати."
+
+# [ЧЕРНЕТКА] D791
+msgid "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+msgstr "Меч співає в руці. Коваль лишив його Кусакамові й не взяв з учня плати за зачарування."
+
+# [ЧЕРНЕТКА] D791
+msgid "My humble place holds gold for everyone who leads me out of here."
+msgstr "У моєму скромному куточку знайдеться золото для кожного, хто виведе мене звідси."
+
+# [ЧЕРНЕТКА] D791
+msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+msgstr "Малік вийшов з Лабораторії й дихає вільним повітрям. Його скромний куточок — і золото — чекають далі в дорозі."
+

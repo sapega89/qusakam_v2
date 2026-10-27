@@ -125,12 +125,14 @@ func _initialize() -> void:
 		root.get_node("DialogueQuest").Inputs.accept_pressed.emit()
 		await process_frame
 
-	print("[5] The old man's decision names its speaker and shows his portrait (BACKLOG 36); no Auto/Skip buttons")
-	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
+	# Рішення діда — сюжетна розмова (D111): її показує сюжетна подача з картками (verify_story_dialogue);
+	# звичайне вікно з портретом перевіряє розмова писаря після перепису.
+	print("[5] A talk names its speaker and shows his portrait (BACKLOG 36); no Auto/Skip buttons")
+	dm.start_dialogue("res://dialogue_quest/CityGates_Scribe_Talk.dqd")
 	for i in 5: await process_frame
 	var name_label: Label = box.get_node(^"%Name")
-	ck(name_label.is_visible_in_tree() and name_label.text == "Grandfather", "the box names the grandfather ('%s')" % name_label.text)
-	ck(box.get_node(^"%PortraitBackground").visible, "the grandfather's portrait frame is shown")
+	ck(name_label.is_visible_in_tree() and name_label.text == "Gate scribe", "the box names the scribe ('%s')" % name_label.text)
+	ck(box.get_node(^"%PortraitBackground").visible, "the scribe's portrait frame is shown")
 	# B10: у вікні немає кнопок Auto/Skip — репліку гортає лише «далі» (D254, Figma npc-dialog-simple 36:6).
 	for b in [^"%AutoButton", ^"%SkipButton"]:
 		ck(not box.get_node(b).is_visible_in_tree(), "no %s in the dialogue box — B10" % String(b).trim_prefix("%"))

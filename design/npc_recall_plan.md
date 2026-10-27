@@ -6,6 +6,14 @@ tags: [backlog, dialogue, journal]
 
 # NPC quests: recall, hints, side quests — plan
 
+## Tails (2026-10-27)
+
+Checked against the code by routine `decision-audit-2` (MASTER_PLAN S16). Every other slice is built.
+
+- Slice 1, objective hints (D159; per D571 Claude drafts the texts): `story.json` has no `hint` / `from` key, `GameFlow.gd:94-104` `_objectives()` emits only `{text, state}`, the Journal shows no hint line, and no `verify_*` checks any of it.
+- Slice 3, speech-bubble art (D160): the mechanism is built (`speech_bubble.gd`), but `Assets/UI/Dialogue/bubble_body.png` and `bubble_tail.png` are still Claude's temporary art. It waits on Sapega's art.
+- The 2026-10-21 note below is out of date for slices 2 and 4. Both are built in their superseded form: the Quest entry (D161 / D390, `NpcBase.gd:143-158`) and `quests.json` (D175).
+
 > **Partly built (checked 2026-10-21).** Built: Quest at the old man (slice 2a, D169, `verify_npc_recall.gd`), speech bubbles (slice 3, D178/D263, `UI/Components/speech_bubble.gd`), Blacksmith tasks (D175, `quests.json`, `verify_tasks.gd`). **Not built:** objective hints (slice 1, D159 — no `hint` key in `story.json`), Remind at any NPC (slice 2, D158/D161 — no Remind entry in the NPC menu code), side quests in `story.json` (slice 4, D162).
 
 ~~**Nothing implemented.**~~ 2026-10-14 (outdated, see the banner). Asked by Sapega: "ми маємо мати можливість перечитати те,

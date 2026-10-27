@@ -799,6 +799,10 @@ msgstr "Interact, talk, pick up"
 msgid "Next line of dialogue"
 msgstr "Next line of dialogue"
 
+# Сюжетна подача розмови (D110): утримання «далі» гонить репліки до вибору (D736)
+msgid "Hold: skip to the choice"
+msgstr "Hold: skip to the choice"
+
 msgid "Skip a cutscene (hold)"
 msgstr "Skip a cutscene (hold)"
 
@@ -2755,6 +2759,9 @@ msgstr "Potions ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Drink it in play with the quick slot (%s)"
 
+msgid "ST"
+msgstr "ST"
+
 msgid "MAX"
 msgstr "MAX"
 
@@ -3060,8 +3067,8 @@ msgstr "A parry heals 5% of your max HP. [DRAFT]"
 msgid "Sand Runner's Ring [DRAFT]"
 msgstr "Sand Runner's Ring [DRAFT]"
 
-msgid "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
-msgstr "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
+msgid "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
+msgstr "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
 
 msgid "Hermit's Amulet [DRAFT]"
 msgstr "Hermit's Amulet [DRAFT]"
@@ -3218,8 +3225,11 @@ msgstr "visited"
 msgid "locked"
 msgstr "locked"
 
-msgid "Explored %d%% · Chests %d/%d"
-msgstr "Explored %d%% · Chests %d/%d"
+msgid "Explored %d%% · Chests %d/%d · Secrets %d/%d"
+msgstr "Explored %d%% · Chests %d/%d · Secrets %d/%d"
+
+msgid "Secret found"
+msgstr "Secret found"
 
 msgid "A — open the location map"
 msgstr "A — open the location map"
@@ -3232,6 +3242,13 @@ msgstr "Left / Right — choose a location. A — open its map."
 
 msgid "B — back to the world map."
 msgstr "B — back to the world map."
+
+# map-pan: карта-полотно, картка кімнати
+msgid "Drag or stick — move the map. Wheel or Q / E — zoom."
+msgstr "Drag or stick — move the map. Wheel or Q / E — zoom."
+
+msgid "Chests %d/%d"
+msgstr "Chests %d/%d"
 
 msgid "LEGEND"
 msgstr "LEGEND"
@@ -3259,6 +3276,9 @@ msgstr "quest"
 
 msgid "exit to another location"
 msgstr "exit to another location"
+
+msgid "secret (found)"
+msgstr "secret (found)"
 
 msgid "↕ ladder"
 msgstr "↕ ladder"
@@ -3487,3 +3507,147 @@ msgstr "They check your eyes first. Blue eyes don't get in."
 
 msgid "Since the barrier fell, the road's full of bandits."
 msgstr "Since the barrier fell, the road's full of bandits."
+
+# ── Журнал: підказки під ціллю, від того, хто її дав (D159; GameFlow → journal_component)
+msgid "%s: “%s”"
+msgstr "%s: “%s”"
+
+# [DRAFT] D159
+msgid "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+msgstr "Grandfather always says to listen to the spirits. I'll climb to the stone on top of the rock — maybe they will say something there."
+
+# [DRAFT] D159
+msgid "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+msgstr "I'll sit on the stone and breathe the silence — maybe it will show me the way."
+
+# [DRAFT] D159
+msgid "Bandits are leading our people away! Back through the canyon to the village, fast."
+msgstr "Bandits are leading our people away! Back through the canyon to the village, fast."
+
+# [DRAFT] D159
+msgid "I'll go down the street to the middle of the village — someone has to be there."
+msgstr "I'll go down the street to the middle of the village — someone has to be there."
+
+# [DRAFT] D159
+msgid "A bandit is blocking the street. He won't let me pass without a fight."
+msgstr "A bandit is blocking the street. He won't let me pass without a fight."
+
+# [DRAFT] D159
+msgid "I have to get home and see if Grandfather is alive."
+msgstr "I have to get home and see if Grandfather is alive."
+
+# [DRAFT] D159
+msgid "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+msgstr "Catch up with the bandits. Head toward the canyon and come out on the road in the desert."
+
+# [DRAFT] D159
+msgid "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+msgstr "From the edge of the canyon, by the bridge, you can climb down to the desert road."
+
+# [DRAFT] D159
+msgid "The bandits who took my caravan are still on the road. Mind them."
+msgstr "The bandits who took my caravan are still on the road. Mind them."
+
+# [DRAFT] D159
+msgid "The bandits' trail runs along the road straight to the city gates."
+msgstr "The bandits' trail runs along the road straight to the city gates."
+
+# [DRAFT] D159
+msgid "Bandits at the gates! Help us hold them!"
+msgstr "Bandits at the gates! Help us hold them!"
+
+# [DRAFT] D159
+msgid "The gates are clear. Into the city."
+msgstr "The gates are clear. Into the city."
+
+# [DRAFT] D159
+msgid "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+msgstr "Bars, a cage, strange voices... I have to look around and see where they dragged me."
+
+# [DRAFT] D159
+msgid "The bars are open. I'm going out before anyone comes back."
+msgstr "The bars are open. I'm going out before anyone comes back."
+
+# [DRAFT] D159
+msgid "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+msgstr "The way out is at the bottom, past three floors of guards. Lead on — I'm right behind you."
+
+# [DRAFT] D159
+msgid "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+msgstr "The mercenary wants Grandfather's cloak. I won't give it up — so we fight."
+
+# [DRAFT] D159
+msgid "The mercenary is down and the gates are open. Out, to freedom."
+msgstr "The mercenary is down and the gates are open. Out, to freedom."
+
+# [DRAFT] D159
+msgid "A few more steps and we are out in the open air."
+msgstr "A few more steps and we are out in the open air."
+
+# [DRAFT] D159
+msgid "We made it out. A hard road — but we made it."
+msgstr "We made it out. A hard road — but we made it."
+
+# ── Журнал: сторінка побічних історій (D791; SideStories → journal_component)
+msgid "SIDE STORIES"
+msgstr "SIDE STORIES"
+
+msgid "Side Stories"
+msgstr "Side Stories"
+
+msgid "No side stories here yet."
+msgstr "No side stories here yet."
+
+msgid "Client: %s"
+msgstr "Client: %s"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "In progress"
+msgstr "In progress"
+
+msgid "“%s”"
+msgstr "“%s”"
+
+msgid "All"
+msgstr "All"
+
+msgid "OUTCOME"
+msgstr "OUTCOME"
+
+msgid "REWARDS"
+msgstr "REWARDS"
+
+# [DRAFT] D791
+msgid "Those same bandits looted my caravan and drove it to the City Gates."
+msgstr "Those same bandits looted my caravan and drove it to the City Gates."
+
+# [DRAFT] D791
+msgid "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+msgstr "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+
+# [DRAFT] D791
+msgid "A helmet you forged yourself sits better on the head than a bought one."
+msgstr "A helmet you forged yourself sits better on the head than a bought one."
+
+# [DRAFT] D791
+msgid "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+msgstr "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+
+# [DRAFT] D791
+msgid "Now for real learning. Enchant these two into one and bring it to show me."
+msgstr "Now for real learning. Enchant these two into one and bring it to show me."
+
+# [DRAFT] D791
+msgid "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+msgstr "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+
+# [DRAFT] D791
+msgid "My humble place holds gold for everyone who leads me out of here."
+msgstr "My humble place holds gold for everyone who leads me out of here."
+
+# [DRAFT] D791
+msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+msgstr "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+

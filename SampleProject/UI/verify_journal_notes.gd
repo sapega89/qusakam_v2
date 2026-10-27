@@ -44,6 +44,7 @@ func _open_notes() -> Node:
 	await Kit.mouse(self, menu.get_node("%JournalButton"))
 	await Kit.frames(self, 6)
 	var journal: Node = menu.find_child("JournalComponent", true, false)
+	await Kit.key(self, KEY_E)  # Quests → Side Stories (D791)
 	await Kit.key(self, KEY_E)
 	await Kit.pad(self, JOY_BUTTON_RIGHT_SHOULDER)
 	await Kit.key(self, KEY_E)
@@ -81,7 +82,7 @@ func _initialize() -> void:
 	print("[1] The fourth tab, empty at the start")
 	var journal: Node = await _open_notes()
 	var tabs: Array = journal.get_node("%SectionTabs").get_children().map(func(t: Button) -> String: return t.text)
-	ck(tabs == ["QUESTS", "CHARACTERS", "BESTIARY", "NOTES"], "tabs: %s" % [tabs])
+	ck(tabs == ["QUESTS", "SIDE STORIES", "CHARACTERS", "BESTIARY", "NOTES"], "tabs: %s" % [tabs])
 	ck(journal.section == "notes" and journal.get_node("%NotesTab").button_pressed and journal._heading.text == "Notes",
 			"E, RB, E → Notes (%s)" % journal.section)
 	ck(journal._empty_state.visible and journal._empty_state.text == "No notes found yet." and not journal._columns.visible,

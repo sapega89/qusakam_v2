@@ -271,6 +271,7 @@ func _setup_button_variations(theme: Theme) -> void:
 	_icon_button(theme)
 	_filter_button(theme)
 	_list_row(theme)
+	_side_story(theme)
 	_tutorial(theme)
 	_skill_row(theme)
 	_settings_segment(theme)
@@ -481,6 +482,43 @@ func _list_row(theme: Theme) -> void:
 		box.content_margin_bottom = sub_pad_v
 		theme.set_stylebox(state, sub, box)
 
+	# Заголовок групи в списку журналу (D181, смуга регіону Figma 192:1636): рядок-напис у стилі QuestCaption —
+	# без фону, не вибирається.
+	var group := "ListGroupRow"
+	theme.set_type_variation(group, t)
+	theme.set_font("font", group, _font_regular)
+	theme.set_font_size("font_size", group, UITokens.SIZE_SMALL)
+	theme.set_color("font_disabled_color", group, UITokens.ACCENT)
+	for state in ["normal", "hover", "pressed", "disabled"]:  # focus — спільне кільце від ListRow
+		theme.set_stylebox(state, group, _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, UITokens.SPACE_SM))
+	# Підказка під ціллю (D159): ще глибше за підпункт, дрібніше й приглушено, без фону, не вибирається.
+	var hint := "ListHintRow"
+	theme.set_type_variation(hint, sub)
+	theme.set_font_size("font_size", hint, UITokens.SIZE_SMALL)
+	theme.set_color("font_disabled_color", hint, UITokens.TEXT_SECONDARY)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var box := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, pad_h, UITokens.SPACE_XS)
+		box.content_margin_left = pad_h + 2 * UITokens.SPACE_XL
+		theme.set_stylebox(state, hint, box)
+
+
+## Картка побічної історії в Журналі (D791, Figma journal-side-stories 192:1636): мітки стану й локації
+## (рамка accent, без фону) і слова замовника курсивом (нахил шрифту — курсивного накреслення немає).
+func _side_story(theme: Theme) -> void:
+	theme.set_type_variation("StoryTag", "PanelContainer")
+	theme.set_stylebox("panel", "StoryTag", _box(Color(0, 0, 0, 0), UITokens.ACCENT, UITokens.BORDER_WIDTH,
+			UITokens.STORY_TAG_PADDING_H, UITokens.STORY_TAG_PADDING_V))
+	theme.set_type_variation("StoryTagLabel", "Label")
+	theme.set_font("font", "StoryTagLabel", _font_semibold)
+	theme.set_font_size("font_size", "StoryTagLabel", UITokens.SIZE_SMALL)
+	theme.set_color("font_color", "StoryTagLabel", UITokens.ACCENT)
+	var slanted := _weight(_font_regular.base_font, UITokens.WEIGHT_REGULAR)
+	slanted.variation_transform = Transform2D(Vector2(1, 0), Vector2(UITokens.QUOTE_SLANT, 1), Vector2.ZERO)
+	theme.set_type_variation("StoryQuote", "Label")
+	theme.set_font("font", "StoryQuote", slanted)
+	theme.set_font_size("font_size", "StoryQuote", UITokens.SIZE_BODY_SM)
+	theme.set_color("font_color", "StoryQuote", UITokens.TEXT_SECONDARY)
+
 
 ## Figma tutorial-content 135:1260 — повноекранне вікно туторіалу (D126).
 func _tutorial(theme: Theme) -> void:
@@ -686,6 +724,13 @@ func _setup_panels(theme: Theme) -> void:
 		theme.set_type_variation(spec[0], "ProgressBar")
 		theme.set_stylebox("background", spec[0], _box(UITokens.SURFACE, UITokens.SURFACE, 0, 0, 0))
 		theme.set_stylebox("fill", spec[0], _box(spec[1], spec[1], 0, 0, 0))
+	# D777: шкала стійкості ворога — тонка, на темному тлі з рамкою, як смуги HUD.
+	theme.set_type_variation("PoiseBar", "ProgressBar")
+	theme.set_stylebox("background", "PoiseBar", _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0))
+	var poise_fill := _box(UITokens.POISE_FILL, UITokens.POISE_FILL, 0, 0, 0)
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		poise_fill.set_expand_margin(side, -UITokens.BORDER_WIDTH)
+	theme.set_stylebox("fill", "PoiseBar", poise_fill)
 	# Невидима кнопка поверх картки: вибір цілі (D127). Видно лише фокус / наведення.
 	theme.set_type_variation("CardSelect", "Button")
 	var none := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0, 0)
@@ -1318,7 +1363,7 @@ func _save_slots(theme: Theme) -> void:
 # ── HUD v2: смуги HP / SP і XP на всю ширину, пігулка зілля (combat_hud_mapping → HUD v2) ──
 
 func _hud_v2(theme: Theme) -> void:
-	for spec in [["HudHpBar", UITokens.HP_FILL], ["HudSpBar", UITokens.SP_FILL]]:
+	for spec in [["HudHpBar", UITokens.HP_FILL], ["HudSpBar", UITokens.SP_FILL], ["HudStBar", UITokens.STAMINA_FILL]]:
 		theme.set_type_variation(spec[0], "ProgressBar")
 		var track := _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0)
 		theme.set_stylebox("background", spec[0], track)

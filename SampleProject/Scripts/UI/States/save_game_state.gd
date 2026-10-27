@@ -17,9 +17,5 @@ func _exit_state() -> void:
 		menu_instance.queue_free()
 	menu_instance = null
 
-func _physics_process(_delta: float) -> void:
-	pass
-
 func _on_menu_closed(action: String = "") -> void:
 	finish({"action": action})
-

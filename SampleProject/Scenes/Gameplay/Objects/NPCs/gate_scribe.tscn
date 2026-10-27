@@ -78,7 +78,7 @@ greets = false
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-offset = Vector2(0, -43)
+offset = Vector2(0, -41)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_sprite")
 hframes = 3

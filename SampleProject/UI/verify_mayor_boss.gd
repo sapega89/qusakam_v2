@@ -234,6 +234,12 @@ func _hall() -> void:
 		await process_frame
 	for i in 10: await physics_frame
 	ck(hall.get_current_state_name() == "FIGHT", "the cutscene ends in the fight")
+	# performance_plan slice 3: бій закінчиться телепортом у LabCells — кімната вантажиться у фоні вже з його початку.
+	var lab_cells := "res://SampleProject/Maps/LabCells.tscn"
+	var held_by := Time.get_ticks_msec() + 3000
+	while not game.room_preloader.is_held(lab_cells) and Time.get_ticks_msec() < held_by:
+		await process_frame
+	ck(game.room_preloader.is_held(lab_cells), "the fight's teleport target (LabCells) is loaded in the background")
 	ck(seen and anims.has(&"walk") and anims.has(&"sting"), "the scorpion came out of the breach and reared (%s)" % [anims])
 	ck(not scorpion.visible, "it went back into the breach before the fight")
 	ck(hurt.is_empty(), "the scorpion did no damage (hits %s)" % [hurt])

@@ -93,6 +93,7 @@ func _initialize() -> void:
 	await _floors_and_ledges()
 	await _token()
 	await _recovery_and_back_off()
+	await _lunges_and_pounce()
 	await _boss_patterns()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -183,6 +184,9 @@ func _tells() -> void:
 		enemy.child_entered_tree.connect(on_child)
 		sounds.clear()
 		var strikes: Array = []
+		# D775: серія б'є, лише доки дістає героя — герой стоїть у досяжності, невразливий (удари не відкидають його)
+		hero.global_position = Vector2(enemy.global_position.x - 30.0, floor_y)
+		hero.is_invulnerable = true
 		enemy.enemy_logic.last_direction = -1
 		enemy.enemy_logic.perform_attack()
 		var was_on := false
@@ -193,6 +197,7 @@ func _tells() -> void:
 			was_on = enemy.hitbox.monitoring
 		eb.enemy_tell_shown.disconnect(on_tell)
 		enemy.child_entered_tree.disconnect(on_child)
+		hero.is_invulnerable = false
 		var kinds: Array = shown.map(func(s: Array) -> String: return s[0])
 		var leads: Array = []
 		for i in mini(shown.size(), strikes.size()):
@@ -537,7 +542,7 @@ func _static_box(center: Vector2, size: Vector2) -> StaticBody2D:
 	return body
 
 
-## [8] Жетон: замахуються одночасно не більше двох; третій чекає й переступає.
+## [8] Жетон: замахуються одночасно не більше max_attackers(), і лише з одного боку героя (D770); решта чекає й переступає.
 func _token() -> void:
 	var most: int = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd").max_attackers()
 	print("[8] At most %d enemies wind up at once (attack token, D642)" % most)
@@ -548,7 +553,7 @@ func _token() -> void:
 	var last: Node = crowd[-1]
 	await _place(crowd[1], -30)
 	for e: Node in crowd:
-		e.global_position.x = hero.global_position.x + (30.0 if e != a else -30.0)
+		e.global_position.x = hero.global_position.x + 30.0  # D770: жетон беруть лише з одного боку героя — тут усі з правого
 		e.enemy_logic.player = hero
 		e.enemy_logic.change_state(e.enemy_logic.AIState.ATTACK)
 		e.enemy_logic.attack_ready_in = 0.0
@@ -559,12 +564,151 @@ func _token() -> void:
 	for i in most + 1:
 		expected.append(i < most)
 	ck(states == expected and a.enemy_logic.attackers() == most, "%d swing, the last waits (%s, tokens %d)" % [most, states, a.enemy_logic.attackers()])
+	last.set_physics_process(false)  # чекає на місці: живий AI переступав би чи обходив героя (D770)
 	while a.enemy_logic.is_attacking and not a.enemy_logic.recovering:
 		await physics_frame
+	last.set_physics_process(true)
+	last.global_position.x = hero.global_position.x + 30.0  # удари перших відштовхнули героя (усі вони з одного боку)
 	last.enemy_logic.handle_attack_state(0.016)
 	ck(last.enemy_logic.is_attacking, "once one recovers, its token passes to the last")
 	for e: Node in crowd:
 		await _done(e)
+	# D770: з другого боку героя не замахуються, поки б'ють з цього (оточений герой блоком рятується від одного боку за раз)
+	var right: Node = await _spawn(BANDIT, 200.0)
+	var left: Node = await _spawn(BANDIT, 260.0)
+	for e: Node in [right, left]:
+		e.global_position.x = hero.global_position.x + (30.0 if e == right else -30.0)
+		e.enemy_logic.player = hero
+		e.enemy_logic.change_state(e.enemy_logic.AIState.ATTACK)
+		e.enemy_logic.attack_ready_in = 0.0
+	right.enemy_logic.handle_attack_state(0.016)
+	left.enemy_logic.handle_attack_state(0.016)
+	ck(right.enemy_logic.is_attacking and not left.enemy_logic.is_attacking,
+			"an enemy on the hero's other side waits while this side swings (D770: right %s, left %s)" % [right.enemy_logic.is_attacking, left.enemy_logic.is_attacking])
+	for e: Node in [right, left]:
+		await _done(e)
+
+
+## [10] Випад і стрибок шакала (D768, D769): бандит з середньої відстані робить ривок з ударом; шакал стрибає — влучив,
+## учепився: герой стоїть, укус — лише за LATCH_BITE_AT с, тоді герой відштовхує шакала й вільний; блок і перекат крізь
+## стрибок рятують; учепитись може лише один шакал.
+func _lunges_and_pounce() -> void:
+	print("[10] Lunges from mid range; the jackal's pounce latches, bites after a beat and is shoved off; block and roll beat it (D768, D769)")
+	var logic_script: Script = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd")
+	var hits := [0]
+	var count := func(target: Node, _source: Node, _amount: int, _critical: bool) -> void:
+		if target == hero:
+			hits[0] += 1
+	eb.damage_received.connect(count)
+	# Бандит: герой за 180 px, поза досяжністю удару (40 px), — випад дістає
+	var bandit: Node = await _spawn(BANDIT, 0.0, false)
+	bandit.enemy_logic._lunge_rest = 60.0  # сам не кидається: випади тут веде тест
+	# Спершу спокій, тоді герой на місце (D775: щойно приземлений герой — відкритий, і ворог кинувся б карати сам)
+	bandit.enemy_logic.player = hero
+	await _quiet(bandit)
+	await _place(bandit, -180)
+	var x0: float = bandit.global_position.x
+	hits[0] = 0
+	bandit.enemy_logic.perform_lunge()
+	await create_timer(bandit.enemy_stats.lunge_windup + logic_script.LUNGE_TIME + 0.15).timeout
+	ck(hits[0] >= 1 and x0 - bandit.global_position.x >= 100.0, "a bandit lunges %.0f px from 180 px away and lands (%d hit)" % [x0 - bandit.global_position.x, hits[0]])
+	await _done(bandit)
+	_heal()
+	# Шакал: герой стоїть за 200 px
+	var jackal: Node = await _spawn(JACKAL, 0.0, false)
+	jackal.enemy_logic._lunge_rest = 60.0
+	jackal.enemy_logic._lunge_rest = 60.0
+	jackal.enemy_logic.player = hero
+	await _quiet(jackal)
+	await _place(jackal, -200)
+	hits[0] = 0
+	jackal.enemy_logic.perform_lunge()
+	var t := 0.0
+	while logic_script.latched() == null and t < 1.5:
+		await physics_frame
+		t += 1.0 / Engine.physics_ticks_per_second
+	ck(logic_script.latched() == jackal.enemy_logic and hero.combat.is_held() and hits[0] == 0,
+			"the pounce latches on: the hero is held, no damage yet (latched %s, held %s)" % [logic_script.latched() != null, hero.combat.is_held()])
+	var since := 0.0
+	while hits[0] == 0 and since < 1.5:
+		await physics_frame
+		since += 1.0 / Engine.physics_ticks_per_second
+	ck(absf(since - logic_script.LATCH_BITE_AT) <= 0.1 and hits[0] == 1, "the bite lands %.2f s after the latch (beat %.2f s), one bite" % [since, logic_script.LATCH_BITE_AT])
+	while hero.combat.is_held():
+		await physics_frame
+	await create_timer(0.3).timeout
+	ck(logic_script.latched() == null and absf(jackal.global_position.x - hero.global_position.x) >= 100.0 and hero.combat.state == hero.combat.State.READY,
+			"the hero shoves the jackal off (%.0f px away) and is free" % absf(jackal.global_position.x - hero.global_position.x))
+	await create_timer(1.0).timeout
+	_heal()
+	# Блок: білий відблиск — стрибок відбито, не вчепився
+	jackal.enemy_logic._lunge_rest = 60.0
+	await _quiet(jackal)
+	await _place(jackal, -200)
+	_press(&"block")
+	await create_timer(0.1).timeout
+	var latched_once := [false]
+	hits[0] = 0
+	jackal.enemy_logic.perform_lunge()
+	t = 0.0
+	while t < jackal.enemy_stats.lunge_windup + logic_script.LUNGE_TIME + 0.2:
+		await physics_frame
+		t += 1.0 / Engine.physics_ticks_per_second
+		latched_once[0] = latched_once[0] or logic_script.latched() != null
+	_press(&"block", false)
+	ck(not latched_once[0] and hits[0] == 0, "a block turns the pounce away (latched %s, hits %d)" % [latched_once[0], hits[0]])
+	await create_timer(1.2).timeout
+	# Перекат крізь стрибок: невразливий — шакал пролітає
+	jackal.enemy_logic._lunge_rest = 60.0
+	await _quiet(jackal)
+	await _place(jackal, -200)
+	latched_once[0] = false
+	hero.mover.last_direction = 1
+	hits[0] = 0
+	jackal.enemy_logic.perform_lunge()
+	t = 0.0
+	var rolled := false
+	while t < jackal.enemy_stats.lunge_windup + logic_script.LUNGE_TIME + 0.3:
+		await physics_frame
+		t += 1.0 / Engine.physics_ticks_per_second
+		if not rolled and t >= jackal.enemy_stats.lunge_windup - 0.05:
+			rolled = true
+			_tap(&"dodge")
+		latched_once[0] = latched_once[0] or logic_script.latched() != null
+	ck(not latched_once[0] and hits[0] == 0, "a roll through the pounce (latched %s, hits %d)" % [latched_once[0], hits[0]])
+	await _done(jackal)
+	_heal()
+	# Двоє стрибають разом — учепився один, другий кусає з льоту
+	var pair: Array[Node] = [await _spawn(JACKAL, 0.0, false), await _spawn(JACKAL, 400.0, false)]
+	for j: Node in pair:
+		j.enemy_logic._lunge_rest = 60.0
+	for j: Node in pair:
+		await _quiet(j)
+	await _place(pair[0], 200)
+	var holders := {}
+	hits[0] = 0
+	for j: Node in pair:
+		j.enemy_logic.player = hero
+		j.enemy_logic.perform_lunge()
+	t = 0.0
+	while t < 1.6:
+		await physics_frame
+		t += 1.0 / Engine.physics_ticks_per_second
+		if logic_script.latched() != null:
+			holders[logic_script.latched()] = true
+	ck(holders.size() == 1, "two pounce at once: one latches (%d latched), the other bites in passing (%d hits)" % [holders.size(), hits[0]])
+	for j: Node in pair:
+		await _done(j)
+	eb.damage_received.disconnect(count)
+	_heal()
+
+
+## Живий AI не б'є й не кидається сам, поки випад веде тест: удари — лише ті, що тест почав.
+func _quiet(enemy: Node) -> void:
+	while enemy.enemy_logic.is_attacking:
+		await physics_frame
+	enemy.enemy_logic.attack_ready_in = 60.0
+	enemy.enemy_logic._lunge_rest = 60.0
 
 
 ## [9] Відновлення після серії й відхід: ворог не стоїть на місці.
@@ -609,7 +753,12 @@ func _recovery_and_back_off() -> void:
 		await physics_frame
 	while tank.enemy_logic.is_attacking:
 		await physics_frame
-	ck(tank.enemy_logic.current_state == tank.enemy_logic.AIState.ATTACK, "the tank never retreats (state %d)" % tank.enemy_logic.current_state)
+	# D775: після удару й tank (back_off 0) виходить з досяжності удару героя, а не стоїть перед ним
+	ck(tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT, "the tank steps back out of the hero's reach after its swing (state %d)" % tank.enemy_logic.current_state)
+	while tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT:
+		await physics_frame
+	var gap: float = absf(tank.global_position.x - hero.global_position.x)
+	ck(gap > tank.enemy_logic._hero_reach(), "it stops %.0f px from him, past his reach %.0f px (D775)" % [gap, tank.enemy_logic._hero_reach()])
 	hero.is_invulnerable = false
 	tank.set_physics_process(false)
 	await _done(tank)

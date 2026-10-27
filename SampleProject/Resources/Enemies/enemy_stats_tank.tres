@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_tank")
 enemy_type = "tank"
-speed = 50.0
+speed = 130.0
+stride_speed = 50.0
 base_damage = 28.0
 attack_windup = 1.0
 attack_active_time = 0.25

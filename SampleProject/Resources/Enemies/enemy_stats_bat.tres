@@ -5,11 +5,12 @@
 [resource]
 script = ExtResource("1_bat")
 enemy_type = "bat"
-speed = 120.0
+speed = 170.0
+stride_speed = 120.0
 base_damage = 12.0
 attack_windup = 0.55
 attack_active_time = 0.2
-lunge = 40.0
+lunge = 53.3
 attack_cooldown = 1.0
 poise = 1
 stagger_time = 0.2
@@ -21,7 +22,7 @@ flying = true
 flight_attack = "bite"
 hover_height = 40.0
 detection_range = 300.0
-attack_range = 50.0
+attack_range = 66.7
 chase_range = 400.0
 max_health = 83
 xp_reward = 12

@@ -51,6 +51,11 @@ func _ready() -> void:
 	enemy_logic.player_detected.connect(bar.show)
 
 
+## Шкала стійкості боса — у його смужці вгорі екрана (boss_health_bar.tscn), не над головою (D777).
+func _add_poise_bar() -> void:
+	pass
+
+
 ## Бос — не вид з enemy_variety.json (D652): без розміру, еліти й рівня бою, його числа — свої (D671).
 func _apply_variety() -> void:
 	pass

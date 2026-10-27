@@ -135,7 +135,7 @@ func _initialize() -> void:
 	print("[9] XP and level: the full-width bar along the bottom and the level diamond (D552)")
 	var xp: Node = sl.get_xp_manager()
 	ck(xp != null, "xp manager present")
-	ck(not vitals._rows_by_id.has("XP") and not vitals._rows_by_id.has("ST"), "the hero panel has only HP and SP (D551, D552)")
+	ck(not vitals._rows_by_id.has("XP") and vitals._rows_by_id.keys() == ["HP", "SP", "ST"], "the hero panel has HP, SP and ST, no XP (D776, D552)")
 	var xp_bar: ProgressBar = get_first_node_in_group("hud_xp_bar")
 	ck(xp_bar != null and xp_bar.get_parent() == hud_root, "the XP bar lives in the themed HUD")
 	if xp and xp_bar:
@@ -169,7 +169,7 @@ func _initialize() -> void:
 				"hotbar centred, 4 px above the XP bar (gap %.1f)" % gap)
 
 	print("[9b] the hero panel v2: layout, portrait, class, Q chip")
-	ck(vitals.position == Vector2(24, 24) and vitals.size == Vector2(520, 198), "panel at (24, 24), 520 × 198")
+	ck(vitals.position == Vector2(24, 24) and vitals.size == Vector2(520, 220), "panel at (24, 24), 520 × 220 (the ST row, plate 144 tall, D776)")
 	ck(vitals.get_node(^"%Portrait").texture == load("res://SampleProject/Sprites/Player/portrait.tres"), "hero portrait (D534)")
 	ck(vitals.get_node(^"%Portrait").texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "portrait nearest-filtered")
 	ck((vitals.get_node(^"%PortraitMask") as Polygon2D).clip_children == CanvasItem.CLIP_CHILDREN_AND_DRAW, "portrait clipped to the hexagon")
@@ -180,7 +180,7 @@ func _initialize() -> void:
 	var chip: Control = vitals.get_node(^"%PotionChip")
 	ck(chip.get_node(^"Pill/Count").text == "×%d" % load("res://SampleProject/Scripts/Combat/QuickPotion.gd").count(), "Q chip counts the potions")
 	ck(chip.get_node(^"Badge/Key").text == "Q", "Q chip badge names the key")
-	ck(vitals.get_node(^"%AssistChip").position == Vector2(134, 136) and chip.position == Vector2(200, 136), "F and Q chips under the plate")
+	ck(vitals.get_node(^"%AssistChip").position == Vector2(134, 158) and chip.position == Vector2(200, 158), "F and Q chips under the plate")
 	var hp_fill: StyleBoxFlat = _row_bar(vitals, "HP").get_theme_stylebox("fill")
 	ck(hp_fill.bg_color == tokens.HP_FILL and hp_fill.border_width_top == tokens.HUD_BAR_HIGHLIGHT_ROW, "HP fill with a 3 px highlight")
 

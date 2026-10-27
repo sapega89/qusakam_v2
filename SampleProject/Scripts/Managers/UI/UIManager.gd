@@ -2,6 +2,7 @@ extends ManagerBase
 class_name UIManager
 
 const UI_ROOT_SCENE = preload("res://SampleProject/Scenes/UI/ui_root.tscn")
+const UIStateMachine = preload("res://SampleProject/Scripts/UI/States/ui_state_machine.gd")
 const STATE_SCENES = {
 	"GameMenuState": "res://SampleProject/Scenes/UI/States/game_menu_state.tscn",
 	"SaveGameState": "res://SampleProject/Scenes/UI/States/save_game_state.tscn",
@@ -15,7 +16,7 @@ const STATE_SCENES = {
 # Кешовані посилання на UI елементи
 
 var ui_root: Node = null
-var state_machine: Node = null
+var state_machine: UIStateMachine = null
 var state_root: Control = null
 var modal_layer: Node = null
 var current_state: Node = null
@@ -60,7 +61,7 @@ func _disconnect_all_signals() -> void:
 
 
 # ============================================
-# UI ROOT / FSM
+# UI ROOT / STATE MACHINE
 # ============================================
 
 func _ensure_ui_root() -> void:
@@ -79,11 +80,8 @@ func _initialize_ui_references() -> void:
 	state_root = ui_root.get_state_root()
 	modal_layer = ui_root.get_modal_layer()
 
-	if state_machine:
-		var state = state_machine.get("state")
-		if state:
-			current_state = state
-			current_state_name = str(state.name)
+	current_state = state_machine.state
+	current_state_name = str(current_state.name)
 
 ## UIRoot будується й у головному меню (B54): Load → Delete там теж показує модалку.
 func get_state_root() -> Control:
@@ -116,11 +114,9 @@ func change_state(state_name: String, payload: Dictionary = {}, return_state_nam
 	state_machine.add_child(new_state)
 	new_state.setup(self, payload, return_state_name, return_payload)
 	new_state.finished.connect(_on_state_finished.bind(new_state), CONNECT_ONE_SHOT)
-	var previous_state = null
-	if state_machine:
-		previous_state = state_machine.get("state")
-	state_machine._change_state(new_state)
-	if previous_state and is_instance_valid(previous_state):
+	var previous_state: UIState = state_machine.state
+	state_machine.change_state(new_state)
+	if is_instance_valid(previous_state):
 		previous_state.queue_free()
 	current_state = new_state
 	current_state_name = state_name

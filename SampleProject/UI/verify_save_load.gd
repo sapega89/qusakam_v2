@@ -282,6 +282,9 @@ func _initialize() -> void:
 	var s_label := Label.new()
 	s_label.name = "Label"
 	sp.add_child(s_label)
+	var seat := Marker2D.new()  # D764: місце медитації у фоні, куди герой застрибує
+	seat.name = "Seat"
+	sp.add_child(seat)
 	root.add_child(sp)
 	await process_frame
 	ck(sp.interactable != null and sp.interactable.action_text == "Save", "prompt reads \"Save\"")
@@ -295,7 +298,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(DirAccess.get_files_at(TEST_DIR).size() == files_before, "walking onto the save point writes nothing")
 	sp.interactable.interacted.emit()
-	await create_timer(sp.MEDITATE_SIT_TIME + 0.3).timeout  # D447: спершу герой сідає медитувати
+	await create_timer(sp.HOP_TIME + sp.MEDITATE_SIT_TIME + 0.3).timeout  # D447, D764: спершу герой застрибує на місце й сідає
 	ck(ui.current_state_name == "SaveGameState", "interact opens Save Slot Selection (%s)" % ui.current_state_name)
 	var save_menu := get_first_node_in_group(&"save_slot_menu")
 	ck(save_menu != null and save_menu.mode == "save", "opened in SAVE mode")

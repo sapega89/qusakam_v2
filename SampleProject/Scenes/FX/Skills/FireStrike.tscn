@@ -72,7 +72,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0, 0.07, 0.4),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(26, -4), Vector2(44, -4), Vector2(52, -4)]
+"values": [Vector2(26, -17.5), Vector2(44, -17.5), Vector2(52, -17.5)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -111,7 +111,7 @@ script = ExtResource("fx")
 metadata/_doc = "Fire Strike cast (D271)"
 
 [node name="Flames" type="CPUParticles2D" parent="."]
-position = Vector2(10, 22)
+position = Vector2(10, 8.5)
 emitting = false
 amount = 44
 lifetime = 0.4
@@ -129,13 +129,13 @@ color_ramp = SubResource("Grad_fire")
 [node name="Crescent" type="Sprite2D" parent="."]
 visible = false
 texture_filter = 1
-position = Vector2(44, -4)
+position = Vector2(44, -17.5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("arc")
 flip_h = true
 
 [node name="Embers" type="CPUParticles2D" parent="."]
-position = Vector2(60, -4)
+position = Vector2(60, -17.5)
 emitting = false
 amount = 20
 lifetime = 0.7

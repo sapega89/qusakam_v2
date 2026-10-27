@@ -19,6 +19,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="x5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -28,6 +30,9 @@ size = Vector2(210, 416)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
 size = Vector2(112, 112)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_Shrine"]
+size = Vector2(240, 80)
 
 [node name="LizardCave" type="Node2D"]
 
@@ -218,4 +223,16 @@ position = Vector2(1250, 530)
 position = Vector2(1700, 530)
 flip_h = true
 
+[node name="Bat1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(620, 130)
+
+[node name="Bat2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(960, 130)
+
 [node name="TopShade" parent="." instance=ExtResource("x4")]
+
+[node name="SecretArea_Shrine" parent="." instance=ExtResource("secret_area")]
+position = Vector2(1440, 376)
+
+[node name="CollisionShape2D" parent="SecretArea_Shrine" index="0"]
+shape = SubResource("RectangleShape2D_SecretArea_Shrine")

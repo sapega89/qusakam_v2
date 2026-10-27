@@ -5,9 +5,9 @@
 
 [node name="HudNewPoints" type="VBoxContainer"]
 offset_left = 32.0
-offset_top = 240.0
+offset_top = 262.0
 offset_right = 372.0
-offset_bottom = 356.0
+offset_bottom = 378.0
 mouse_filter = 2
 theme_override_constants/separation = 12
 script = ExtResource("1_hud")

@@ -1,0 +1,30 @@
+---
+type: report
+branch: cloud/side-stories
+tags: [cloud, journal, tasks]
+---
+
+# Cloud report: side-stories (MASTER_PLAN S8, npc_recall_plan slice 4)
+
+**Summary**
+- Done: the Journal has a new **Side Stories** tab, right after Quests. Every NPC task the hero has taken or finished (quests.json + `task_service` flags, no new list) appears there under its location's header: `◆` while active, `✓` once done. The card shows the client (DialogueQuest name and portrait), the title, a state tag and a location tag, the client's quote, the background text, then the goal while active or the outcome once done, and the rewards. Location tabs along the bottom: All + one per location. Works with mouse, keyboard and gamepad. Tasks are no longer rows on the Quests page.
+- Not done: no check against Figma `192:1636`. `design/refs/figma_192_1636_side_stories.png` **does not exist** in the repo, and Figma can't be reached from the cloud. The layout follows the task description and the Journal's existing two columns.
+- **D767** (next free after journal-hints' D766; renumber if taken): text below. Quote and outcome texts are drafts: `[ЧЕРНЕТКА] D767` / `[DRAFT] D767`.
+- B rows fixed: none.
+- Full suite: `SUITE: 3 FAIL` (130 PASS). `verify_npc_arrival` was mine (it looked for tasks on the Quests page) and now passes: ALL PASS. `verify_camera_rooms` passes alone (ALL PASS), so it was a flake. `verify_masher` fails on base `cloud/journal-hints` too (a different fight each run), so it isn't caused by this branch.
+
+## D767 text (ROUTINE CALL)
+| D767 | ROUTINE CALL | **Journal: Side Stories page built** (`cloud/side-stories`; D180, D175, D181, D766; Figma `192:1636`). A fifth Journal tab **Side Stories** («Побічні історії») sits between Quests and Characters. Q/E and LB/RB cycle through it. **No separate list:** every `quests.json` task with `task_<id>_taken` or `_done` is a side story (`Scripts/Systems/side_stories.gd`). It is grouped under location header rows (`locations.json` order, the D181 rows). The mark is `◆` while it runs and `✓` when done. **Tasks leave the Quests page** (amends D766, which put them at the end of their location's group there): a story shown on two pages was a duplicate. **Card:** the client's portrait, then `CLIENT: <name>` («ЗАМОВНИК: …»). The client is the DialogueQuest character whose id is `giver` in capitals, so the name and portrait match the dialogue box (D321). Then the title, two accent-outlined tags (state `In progress`/`Completed`, «Триває»/«Скінчено», and the location), the client's quote in a slanted face (`StoryQuote`, the font has no italic, `UITokens.QUOTE_SLANT`) in “ ” / « », and the task's background text. While the story runs, its objective shows under OBJECTIVES. Once it is done, OUTCOME shows instead. REWARDS lists `Item × n`, as in «You obtained:», and is hidden when the reward is empty (Malik). **New `quests.json` fields** `quote` and `outcome`, for all 4 tasks. The quotes come from the givers' own give-dialogue lines. The texts are drafts, `[ЧЕРНЕТКА]`/`[DRAFT]` D767. **Location tabs** run along the bottom of the page: All + each location of `locations.json`, in the same `TabButton` look as the section tabs. Use the mouse, or ↓ from the last row to a tab, then ←/→ and Enter/A. ↑ goes back to the list. The tab keeps focus after a press. A location with no stories shows «No side stories here yet.». |
+
+## Details
+- `SampleProject/Scripts/Systems/side_stories.gd` (new, preloaded): `entries(region)`, `reward_lines()`, plus the client lookup with an assert for an unknown giver.
+- `SampleProject/Scripts/Menus/Game/journal_component.gd`: `SECTIONS["side"]`, `%SideTab`, the `active` mark `◆`, `GROUPED` (header rows on Quests and Side), `_show_side_story()`, `_refresh_regions()` / `select_region()` / `_region_button()`. The `side` dictionary goes through `_normalize`. The focus link runs last row ↔ location tab. The NPC-task block in `_load_story()` is removed.
+- `SampleProject/Scenes/Menus/Game/journal_component.tscn`: `SideTab`, then in `Detail`: `ClientLabel`, `StoryTags` (`StateTag`/`RegionTag`), `QuoteText`, `OutcomeCaption`/`OutcomeText`, `RewardsCaption`/`RewardList`/`RewardLine`. `RegionTabs`/`RegionTab` (template) sit at the bottom of the page.
+- Theme: the `StoryTag`, `StoryTagLabel` and `StoryQuote` variations in `build_game_ui_theme.gd` (`_side_story`). Tokens: `QUOTE_SLANT`, `STORY_TAG_PADDING_H/V`. `GameUITheme.tres` was regenerated.
+- en.po / uk.po: 10 UI keys plus 8 draft texts, appended by hand. `po_sync.py` was not run, because of the 8 en-only keys journal-hints reported.
+- Tests: the new `verify_side_stories.gd` passes (ALL PASS). It covers the empty page, the location tabs, a taken Helmet as `◆` under THE CITY with the full card, the task's absence from Quests, the Helmet turned in as `✓` with the outcome, region tabs by D-pad/keys/Enter/mouse, the uk texts, and the drafts in both .po files. These also pass (ALL PASS): `verify_journal` (its D181 task check now says the task is *not* on Quests), `verify_journal_sections` and `verify_journal_notes` (tab order has a new stop), `verify_tasks`, `verify_story_journal`, `verify_locale`, `verify_npc_recall`, `verify_npc_arrival`, and `verify_game_ui_theme` (ALL CHECKS PASSED).
+- Shots: `design/shots/journal_side_en_1920.png` and `journal_side_uk_1920.png` (new `capture_journal_side.gd`). They show the Caravan card done, the Helmet done, and the Enchantment and Malik active.
+- Seen in the shot, not fixed:
+  - Cormorant's own `◆` glyph is small, so the active mark reads almost like a bullet, the same as the existing `●`/`◇` marks.
+  - At 1080p a long outcome pushes REWARDS below the fold of the detail column. The column scrolls with the mouse wheel, but it has no keyboard scroll, the same as the Quests detail. Candidate B-row for the orchestrator.
+- Not committed: four `.uid` files that Godot generated for other routines' scripts, plus `capture_journal_quests.gd.uid`. They were already untracked when this run started.
