@@ -68,6 +68,9 @@ func _initialize() -> void:
 	if only.contains("5"):
 		print("[5] New game and loading a save, from the menu's black screen")
 		await _boots()
+	if only.contains("7"):
+		print("[7] Pixel grid and the room limits (B180, B176)")
+		await _grid_and_limits()
 	if only.contains("1"):
 		print("[6] Into the demo-end room, last")
 		for p: Dictionary in _edge_passages():
@@ -84,7 +87,7 @@ func _initialize() -> void:
 ## Розділи цього файлу. Біг усередині кімнат ([3]) — у verify_camera_rooms.gd: разом вони довші за 180 с
 ## run_verify.sh.
 func _sections() -> String:
-	return "1245"
+	return "12457"
 
 
 func _edges() -> void:
@@ -505,3 +508,64 @@ func _done() -> void:
 	else:
 		print("RESULT: %d FAIL" % fails.size())
 	quit()
+
+
+## B180: полотно й кожен шар паралаксу — на одній сітці пікселів світу (крок = zoom), небо ×0 нерухоме, шар з ×k
+## щокадру рухається рівно на k кроків камери. B176: межа кімнати — камера сповільнюється й рушає плавно.
+func _grid_and_limits() -> void:
+	await _go("Canyon.tscn", Vector2(500.0, 340.0))
+	var planes: Array[Node] = game.map.find_children("*", "Parallax2D", true, false)
+	var last_canvas := INF
+	var last: Dictionary[Node, float] = {}
+	var off_grid := 0
+	var off_ratio := 0
+	var moved := 0
+	Input.action_press(&"move_right")
+	for f in 70:
+		await process_frame
+		var cx: float = root.get_canvas_transform().origin.x
+		if absf(cx / camera.zoom.x - roundf(cx / camera.zoom.x)) > 0.01:
+			off_grid += 1
+		for p: Parallax2D in planes:
+			var px: float = p.get_global_transform_with_canvas().origin.x
+			if last.has(p) and last_canvas != INF and f > 10 and (p.autoscroll.x == 0.0):
+				var want: float = (cx - last_canvas) * p.scroll_scale.x
+				if absf((px - last[p]) - want) > 0.05:
+					off_ratio += 1
+			last[p] = px
+		if last_canvas != INF and cx != last_canvas:
+			moved += 1
+		last_canvas = cx
+	Input.action_release(&"move_right")
+	ck(moved > 30, "Canyon: the camera follows the run (%d moving frames)" % moved)
+	ck(off_grid == 0, "the canvas stays on whole world pixels (%d frames off)" % off_grid)
+	ck(off_ratio == 0, "every still plane moves exactly its factor × the camera's step (%d plane-frames off)" % off_ratio)
+
+	await _go("BanditCamp.tscn", Vector2(60.0, 380.0))
+	var steps := await _run_steps(110)
+	var biggest_rise := 0.0
+	for i in range(1, steps.size()):
+		biggest_rise = maxf(biggest_rise, absf(steps[i]) - absf(steps[i - 1]))
+	var top_speed: float = steps.map(absf).max()
+	ck(top_speed > 4.0 * camera.zoom.x and biggest_rise <= 2.0 * camera.zoom.x + 0.01,
+			"leaving the left limit the camera eases in (biggest one-frame rise %.2f px, up to %.2f px a frame)" % [biggest_rise, top_speed])
+	await _go("BanditCamp.tscn", Vector2(900.0, 380.0))
+	steps = await _run_steps(140)
+	var biggest_drop := 0.0
+	for i in range(1, steps.size()):
+		biggest_drop = maxf(biggest_drop, absf(steps[i - 1]) - absf(steps[i]))
+	ck(steps[-1] == 0.0 and biggest_drop <= 2.0 * camera.zoom.x + 0.01,
+			"reaching the right limit it slows down, no hard stop (biggest one-frame drop %.2f px)" % biggest_drop)
+
+
+func _run_steps(frames: int) -> Array[float]:
+	var out: Array[float] = []
+	var last: float = root.get_canvas_transform().origin.x
+	Input.action_press(&"move_right")
+	for f in frames:
+		await process_frame
+		var cx: float = root.get_canvas_transform().origin.x
+		out.append(cx - last)
+		last = cx
+	Input.action_release(&"move_right")
+	return out
