@@ -15,7 +15,10 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 | What | Where | Task | When it reports |
 |---|---|---|---|
 | `fewer-road-enemies` | ☁ `trig_01YMTKTqVyu8aFA3CYpNLRp5` | D817: DesertRoad groups ≤ bandit + jackal or two bandits + jackal | it may not have run Godot (the cloud classifier blocks the download now and then): merge, then run its tests locally in a worktree |
-| `world-rooms` | ☁ `trig_0199FwJ19fwAHb4RcSm3FjMo` | M7: every room of M1/M3/M4 now on placeholder backdrops (graphs in `design/refs/room_graph_M*.png`); pushes after each region | merge each region as it lands; run its tests locally if the cloud could not; rebuild the exe |
+| `world-rooms` | ☁ `trig_0199FwJ19fwAHb4RcSm3FjMo` | M7 **Canyon** on placeholder backdrops (its prompt also covers City and Lab — merge only its Canyon slice; City/Lab come from the two routines below, Sapega: «розбити на регіони») | merge the Canyon push |
+| `rooms-city` | ☁ `trig_01Eqok3DZCxs6TVcwtYQGn8Q` | M7 City region only (M3) | merge |
+| `rooms-lab` | ☁ `trig_01EWiH9f4dELT3EzAsQb2zt1` | M7 Laboratory region only (M4), no platforms/ladders | merge after `flat-road-lab` |
+| `wire-art` | ☁ `trig_01FEuvNNspn9Qr36pPxSNUby` | wire shields, status icons, mouse; leftovers | merge |
 | `playtest-tuning` | 🖥 worktree agent (godot-dev) | B197 the jackal flies; D825 shorter micro-stun; D826 slower enemies; D827 free Shield Block = 1 point toward the D497 gate; then D828 skills hit hard, D829 bigger elites, B198 enemies jump up to a step | merge its branch, file its D-IDs, rebuild, send Sapega the verify_difficulty table |
 
 ## 2. Next, in order
