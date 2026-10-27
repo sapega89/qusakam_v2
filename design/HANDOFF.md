@@ -8,7 +8,7 @@ tags: [handoff, orchestrator]
 The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art queue). Deferred items are in [[BACKLOG]] →
 «Moved out of MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D833**, **B199**, **Q113**. Do not file IDs on `feature/backlog` while an integrator runs.
+**Registers:** next free **D835**, **B199**, **Q114**. Do not file IDs on `feature/backlog` while an integrator runs.
 **Exe:** `build/windows/Qusakam.exe` 2026-10-27 23:35 (menu effects, B195 fix, starting skills). Rebuild after each merge.
 
 ## 1. Running now

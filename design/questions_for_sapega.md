@@ -196,3 +196,4 @@ None blocks work. Each default holds until Sapega answers.
 | Q110 | Hero death (B184, `design/shots/hero_death.png`) | Are the faces in Death frames 1 and 3 fine now? | Kept. |
 | Q111 | Main menu (A1 + D818, `design/shots/a1_menu_shockwave_climb.png`, `menu_effects.gif`) | The new desert art is flatter and more cartoon-like than the old painting; with the live effects, keep it? Notes on the effects? | Keep both. |
 | Q112 | The bandit (BACKLOG) | «все гуд, окрім бандита» — what is wrong with the bandit: proportions, face, palette, size? | Waits; its size fix (B187) goes with it. |
+| Q113 | Laboratory storey joins (D832, D772) | With the platforms gone, the storeys still join by two ladders under flush hatches — the only way back up. (a) keep the ladders + hatches; (b) plain drop holes, no ladders, the Laboratory one-way until the lever lift (M7); (c) drop holes plus a step-free way back now (ramp or lift, needs art). | (a) keep. |
