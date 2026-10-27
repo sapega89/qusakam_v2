@@ -1,8 +1,8 @@
-extends Node2D
+extends "res://SampleProject/Scripts/Gameplay/Scenes/RoomStoryFlow.gd"
 
 ## 🏜️ Canyon Scene Manager
 ## States: INTRO, MONOLOGUE, EXPLORATION, CUTSCENE_ABDUCTION, TO_VILLAGE, RELIC_PICKUP, TO_DESERT_ROAD
-## Follows Robust State-Flow Pattern (StepType + Guards + Addressable Dialogues)
+## Машина станів — RoomStoryFlow; тут — свій _ready (брами), свої кат-сцени й «прочитано» без руху далі.
 
 enum State {
 	INTRO,
@@ -17,16 +17,7 @@ enum State {
 
 const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
 
-enum StepType { DIALOGUE, COMBAT, LOOP, TRANSITION }
-
-@export var current_state: State = State.INTRO:
-	set(val):
-		current_state = val
-		_on_state_changed(val)
-
-var state_run_id: int = 0
 var _previous_state: State = State.INTRO  # Предыдущее состояние для события
-signal state_complete(state: State)
 
 var _canyon_ready_called: bool = false
 var _canyon_ready_room: String = ""
@@ -292,22 +283,6 @@ func trigger_abduction_cutscene() -> void:
 	if current_state == State.EXPLORATION:
 		current_state = State.CUTSCENE_ABDUCTION
 
-func change_state_by_name(state_name: String) -> void:
-	"""Изменяет состояние по имени (для StateChangeTrigger)"""
-	var state_key = state_name.to_upper()
-
-	# Пытаемся найти состояние в enum
-	if State.keys().has(state_key):
-		var new_state = State[state_key]
-		current_state = new_state
-		DebugLogger.info("🏜️ Canyon: State changed to %s via StateChangeTrigger" % state_key, "Canyon")
-	else:
-		DebugLogger.warning("🏜️ Canyon: Unknown state name: %s" % state_name, "Canyon")
-
-func get_current_state_name() -> String:
-	"""Возвращает имя текущего состояния (для проверки в триггерах)"""
-	return State.keys()[current_state]
-
 ## Кат-сцена спуску (CanyonExitTrigger на краю плато біля містка, D256). Лише після повернення з села;
 ## повертає, чи запущено.
 func trigger_exit_cutscene() -> bool:
@@ -316,60 +291,32 @@ func trigger_exit_cutscene() -> bool:
 	current_state = State.EXIT_CUTSCENE
 	return true
 
-func _on_state_changed(new_state: State) -> void:
+func _on_state_changed(new_state: int) -> void:
 	"""Вызывается при изменении current_state через setter"""
 	if not is_node_ready():
 		return
 
-	# Инкрементируем ID прогона, чтобы остановить старые асинхронные задачи
-	state_run_id += 1
-	var run_id = state_run_id
-
-	DebugLogger.info("🏜️ Canyon: >>> STATE CHANGED TO: %s (RunID: %d)" % [State.keys()[new_state], run_id], "Canyon")
-
 	# Оновлюємо ворота при кожній зміні стану
 	# Використовуємо call_deferred, щоб переконатися, що GateControllers готові
 	call_deferred("_update_gates_for_state", new_state)
+	# TO_VILLAGE після села лише ставить ціль «Return to the village» (_on_to_village_state) — без авто-переходу.
+	super(new_state)
 
-	# Якщо це стан TO_VILLAGE і гравець вже був у Village, не запускаємо логіку переходу
-	# щоб уникнути автоматичного переходу назад до Village
-	if new_state == State.TO_VILLAGE:
-		var game = Game.get_singleton()
-		if game.get_quest_flag("village_abduction_complete", false):
-			DebugLogger.info("🏜️ Canyon: Стан TO_VILLAGE, але гравець вже був у Village - пропускаємо автоматичний перехід", "Canyon")
-			# Встановлюємо об'єктив, але не запускаємо діалог
-			game.set_objective("Return to the village", &"village")
-			# Емітуємо подію зміни стану
-			_emit_state_changed_event(_previous_state, new_state)
-			_previous_state = new_state
-			return
-
-	# Эмитим событие смены состояния
-	_emit_state_changed_event(_previous_state, new_state)
-
-	# Сохраняем текущее состояние как предыдущее
-	_previous_state = new_state
-
-	DebugLogger.info("🏜️ Canyon: Entering state %s (RunID: %d)" % [State.keys()[new_state], run_id], "Scene")
-
-	_apply_state_logic(new_state, run_id)
-
-func _emit_state_changed_event(old_state: State, new_state: State) -> void:
+func _announce_state(new_state: int) -> void:
 	"""Эмитит событие смены состояния через EventBus"""
-	var old_state_name = State.keys()[old_state] if old_state >= 0 else "NONE"
-	var new_state_name = State.keys()[new_state]
+	EventBus.scene_state_changed.emit(room_id(), State.keys()[_previous_state], State.keys()[new_state])
+	_previous_state = new_state as State
 
-	# Один канал для всіх сцен — EventBus (як Village і DesertRoad).
-	EventBus.scene_state_changed.emit("Canyon", old_state_name, new_state_name)
+func _dialogue_flags() -> Dictionary:
+	return {
+		"Canyon_StartMonologue": "canyon_intro_complete",
+		"Canyon_Exploration": "canyon_exploration_complete",
+		"Canyon_AbductionCutscene": "canyon_abduction_complete",
+		"Canyon_ExitCutscene": "canyon_exit_complete",
+	}
 
-func _apply_state_logic(state: Variant, run_id: int) -> void:
-	# Приводим Variant к State для совместимости с базовым классом
-	if not state is State:
-		DebugLogger.warning("🏜️ Canyon: _apply_state_logic получил неверный тип состояния: %s" % typeof(state), "Canyon")
-		return
-
-	var canyon_state = state as State
-	match canyon_state:
+func _apply_state_logic(state: int, run_id: int) -> void:
+	match state:
 		State.INTRO:
 			# Начало - игрок появляется в каньоне
 			_on_intro_state(run_id)
@@ -397,117 +344,41 @@ func _apply_state_logic(state: Variant, run_id: int) -> void:
 		_:
 			DebugLogger.warning("🏜️ Canyon: Неизвестное состояние: %s" % state, "Canyon")
 
-func _execute_step(type: StepType, dialogue_id: String, run_id: int, in_cloud: bool = false) -> void:
-	var step_name = StepType.keys()[type]
-	DebugLogger.info("🏜️ Canyon: 🎯 ВИКОНУЄМО ДІЮ: %s (діалог: %s)" % [step_name, dialogue_id if not dialogue_id.is_empty() else "N/A"], "Canyon")
-
-	match type:
-		StepType.DIALOGUE:
-			# Перевіряємо, чи діалог вже був прочитаний
-			if _is_dialogue_completed(dialogue_id):
-				DebugLogger.info("🏜️ Canyon: ⏭️ Діалог %s вже був прочитаний, пропускаємо" % dialogue_id, "Canyon")
-				# Не запускаємо діалог, але все одно позначаємо квест як виконаний (якщо потрібно)
-				# _complete_quest_for_dialogue(dialogue_id) - не викликаємо, бо квест вже виконаний
-				return
-
-			DebugLogger.info("🏜️ Canyon: 💬 ДІЯ: Запуск діалогу %s" % dialogue_id, "Canyon")
-			await _play_dialogue(dialogue_id, run_id, in_cloud)
-			# Завершаємо квести після діалогів
-			_complete_quest_for_dialogue(dialogue_id)
-		StepType.COMBAT:
-			DebugLogger.info("🏜️ Canyon: ⚔️ ДІЯ: Запуск бою (діалог: %s)" % dialogue_id, "Canyon")
-			await _play_dialogue(dialogue_id, run_id)
-			# Завершаємо квести після бою
-			_complete_quest_for_dialogue(dialogue_id)
-		StepType.LOOP:
-			DebugLogger.info("🏜️ Canyon: 🔄 ДІЯ: Очікування 1 секунда (LOOP)", "Canyon")
-			await get_tree().create_timer(1.0).timeout
-		StepType.TRANSITION:
-			DebugLogger.info("🏜️ Canyon: 🚪 ДІЯ: Перехід (очікування 0.5 секунди)", "Canyon")
-			await get_tree().create_timer(0.5).timeout
-
-	if run_id != state_run_id: 
+## Діалог стану. Прочитаний (_is_dialogue_completed) не повторюється і далі НЕ веде; дограний — веде далі,
+## крім EXPLORATION і CUTSCENE_ABDUCTION: ті чекають тригера зони або дій гравця.
+func _dialogue_step(dialogue_id: String, run_id: int, in_cloud: bool = false) -> void:
+	if _is_dialogue_completed(dialogue_id):
+		DebugLogger.info("🏜️ Canyon: ⏭️ Діалог %s вже був прочитаний, пропускаємо" % dialogue_id, "Canyon")
+		return
+	await _play_dialogue(dialogue_id, run_id, in_cloud)
+	# Прапорець — і тоді, коли стан змінився посеред діалогу.
+	_complete_quest_for_dialogue(dialogue_id)
+	if run_id != state_run_id:
 		DebugLogger.info("🏜️ Canyon: ⚠️ Стейт змінився під час виконання дії, перериваємо", "Canyon")
 		return
-
-	# EXPLORATION та CUTSCENE_ABDUCTION не переходять автоматично - чекають триггера або дій гравця
 	if current_state != State.EXPLORATION and current_state != State.CUTSCENE_ABDUCTION:
-		DebugLogger.info("🏜️ Canyon: ➡️ Переходимо до наступного стейту (поточний: %s)" % State.keys()[current_state], "Canyon")
 		advance_state()
-	else:
-		DebugLogger.info("🏜️ Canyon: ⏸️ Стейт %s - очікуємо триггера зони або дій гравця" % State.keys()[current_state], "Canyon")
 
 var _is_dialogue_playing: bool = false
 
-func _play_dialogue(dialogue_id: String, run_id: int, in_cloud: bool = false) -> void:
-	"""Програє діалог через DialogueManager"""
+## Один діалог зараз: другий запит, поки грає перший, відкидається.
+func _play_dialogue(dialogue_id: String, run_id: int, in_cloud: bool = false) -> bool:
 	if state_run_id != run_id or dialogue_id.is_empty():
-		return
+		return false
 
 	if _is_dialogue_playing:
 		DebugLogger.info("🏜️ Canyon: Діалог %s проігноровано, вже програється інший" % dialogue_id, "Canyon")
-		return
+		return false
 
 	_is_dialogue_playing = true
-	DebugLogger.info("🏜️ Canyon: ⏩ Запуск діалогу: %s" % dialogue_id, "Canyon")
-
-	var dm = _get_dialogue_manager()
-	if not dm:
-		DebugLogger.warning("🏜️ Canyon: ❌ DialogueManager не знайдено! Діалог %s не запущено" % dialogue_id, "Canyon")
-		return
-
-	# Спробуємо кілька варіантів шляху
-	var possible_paths = [
-		"res://dialogue_quest/" + dialogue_id + ".dqd",
-		"res://dialogue_quest/dialogues/" + dialogue_id + ".dqd"
-	]
-
-	var path = ""
-	for test_path in possible_paths:
-		if ResourceLoader.exists(test_path) or FileAccess.file_exists(test_path):
-			path = test_path
-			break
-
-	if path.is_empty():
-		path = "res://dialogue_quest/" + dialogue_id + ".dqd"
-
-	DebugLogger.info("🏜️ Canyon: 📂 Шлях до діалогу: %s" % path, "Canyon")
-
-	var started = await dm.start_dialogue(path, in_cloud)
-	if started:
-		DebugLogger.info("🏜️ Canyon: ✅ Діалог %s успішно запущено, очікуємо завершення..." % dialogue_id, "Canyon")
-
-		while true:
-			var finished_id = await EventBus.dialogue_finished
-			if finished_id == path or finished_id == dialogue_id:
-				DebugLogger.info("🏜️ Canyon: ✅ Діалог %s завершено" % dialogue_id, "Canyon")
-				# Завершуємо квест на основі діалогу ПЕРЕД скиданням прапорця
-				_complete_quest_for_dialogue(dialogue_id)
-				# B154: розмова скінчилась — прапорець знімаємо ДО паузи. За ці 0.1 с спрацьовують тригери, що чекали
-				# кінця розмови (D737), і діалог стану, який вони вмикають, раніше відкидався тут як «вже програється інший».
-				_is_dialogue_playing = false
-				# Додаємо невелику затримку після завершення діалогу
-				await get_tree().create_timer(0.1).timeout
-				break
-			if run_id != state_run_id: 
-				DebugLogger.info("🏜️ Canyon: ⚠️ Стейт змінився під час діалогу, перериваємо очікування", "Canyon")
-				_is_dialogue_playing = false
-				return
-
-		_is_dialogue_playing = false
-	else:
-		_is_dialogue_playing = false
-		DebugLogger.warning("🏜️ Canyon: ❌ Не вдалося запустити діалог %s (шлях: %s)" % [dialogue_id, path], "Canyon")
-
-func advance_state() -> void:
-	state_complete.emit(current_state)
-	# EXIT_CUTSCENE переходит в TO_DESERT_ROAD
-	if current_state == State.EXIT_CUTSCENE:
-		current_state = State.TO_DESERT_ROAD
-	elif current_state < State.TO_DESERT_ROAD:
-		current_state = (current_state + 1) as State
-	# Переходи між сценами обробляються автоматично через MetSys room connections
-	# Не потрібно викликати ручні переходи - MetSys сам обробить перехід, коли гравець доходить до межі кімнати
+	var finished: bool = await super(dialogue_id, run_id, in_cloud)
+	# B154: розмова скінчилась — прапорець знімаємо ДО паузи. За ці 0.1 с спрацьовують тригери, що чекали
+	# кінця розмови (D737), і діалог стану, який вони вмикають, раніше відкидався тут як «вже програється інший».
+	_is_dialogue_playing = false
+	if finished:
+		# Додаємо невелику затримку після завершення діалогу
+		await get_tree().create_timer(0.1).timeout
+	return finished
 
 func set_state_for_relic_pickup() -> void:
 	"""Вызывается при возврате из деревни для подбора реликвии"""
@@ -534,11 +405,6 @@ func _on_quest_flag_changed(quest_id: String, value: Variant) -> void:
 				current_state = State.RELIC_PICKUP
 				_previous_state = State.TO_VILLAGE
 
-func _get_dialogue_manager() -> Node:
-	DebugLogger.info("🏜️ Canyon: Отримуємо DialogueManager через ServiceLocator...", "Canyon")
-
-	return ServiceLocator.get_dialogue_manager()
-
 # ============================================================================
 # State Handlers - Конкретні дії для кожного стейту
 # ============================================================================
@@ -555,7 +421,7 @@ func _on_intro_state(run_id: int) -> void:
 
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск вступного діалогу Canyon_Intro", "Canyon")
 	# Запускаємо вступний діалог
-	await _execute_step(StepType.DIALOGUE, "Canyon_Intro", run_id)
+	await _dialogue_step("Canyon_Intro", run_id)
 	# Після діалогу
 	Game.get_singleton().set_objective("Explore the Canyon", &"shrine")
 
@@ -570,7 +436,7 @@ func _on_monologue_state(run_id: int) -> void:
 
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Запуск монологу Canyon_StartMonologue", "Canyon")
 	# Запускаємо монолог
-	await _execute_step(StepType.DIALOGUE, "Canyon_StartMonologue", run_id)
+	await _dialogue_step("Canyon_StartMonologue", run_id)
 	# Після монологу можна відкрити першу браму або активувати наступний тригер
 
 func _on_exploration_state(run_id: int) -> void:
@@ -600,7 +466,7 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 
 	var cs := Cutscene.new()
 	await cs.walk_hero($Meditation/Seat.global_position, MEDITATION_WALK_TIME)
-	await _execute_step(StepType.DIALOGUE, "Canyon_Exploration", run_id)
+	await _dialogue_step("Canyon_Exploration", run_id)
 	if run_id != state_run_id:
 		return
 	game.set_objective("Find a way forward")
@@ -621,7 +487,7 @@ func _on_abduction_cutscene_state(run_id: int) -> void:
 	await ScreenFade.from_black(self)
 	await cs.camera_back(MEDITATION_RETURN_TIME)
 	# Розмова — у білому облачці над ним, керування заблоковане до її кінця (D263).
-	await _execute_step(StepType.DIALOGUE, "Canyon_AbductionCutscene", run_id, true)
+	await _dialogue_step("Canyon_AbductionCutscene", run_id, true)
 	cs.end()
 	game.set_objective("Pursue the kidnappers", &"village")
 	_after_abduction_cutscene()
@@ -706,7 +572,9 @@ func _on_to_desert_road_state(run_id: int) -> void:
 	DebugLogger.info("🏜️ Canyon: ========== СТЕЙТ TO_DESERT_ROAD ЗАПУЩЕНО (RunID: %d) ==========" % run_id, "Canyon")
 	DebugLogger.info("🏜️ Canyon: 📍 ДІЯ: Перехід до пустельної дороги", "Canyon")
 	# Виконуємо перехід
-	await _execute_step(StepType.TRANSITION, "", run_id)
+	await get_tree().create_timer(0.5).timeout
+	if run_id == state_run_id:
+		advance_state()
 	# Перехід до пустельної дороги обробляється автоматично через MetSys room connections
 
 # ============================================================================
@@ -770,31 +638,3 @@ func _find_gate_controller(gate_name: String) -> Node:
 				return grandchild
 
 	return null
-
-func _complete_quest_for_dialogue(dialogue_id: String) -> void:
-	"""Завершує квест на основі діалогу"""
-	var quest_id = ""
-
-	match dialogue_id:
-		"Canyon_StartMonologue":
-			quest_id = "canyon_intro_complete"
-		"Canyon_Exploration":
-			quest_id = "canyon_exploration_complete"
-		"Canyon_AbductionCutscene":
-			quest_id = "canyon_abduction_complete"
-		"Canyon_ExitCutscene":
-			quest_id = "canyon_exit_complete"
-		_:
-			# Якщо діалог не має відповідного квеста, не робимо нічого
-			DebugLogger.info("🏜️ Canyon: Діалог %s не пов'язаний з квестами" % dialogue_id, "Canyon")
-			return
-
-	if not quest_id.is_empty():
-		_complete_quest(quest_id)
-
-func _complete_quest(quest_id: String) -> void:
-	"""Завершує квест і встановлює флаг"""
-	var game = Game.get_singleton()
-	# Встановлюємо флаг завершення квеста (quest_id вже містить _complete зазвичай)
-	game.set_quest_flag(quest_id, true)
-	DebugLogger.info("🏜️ Canyon: Квест %s завершено" % quest_id, "Canyon")
