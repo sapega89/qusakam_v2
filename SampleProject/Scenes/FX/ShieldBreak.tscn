@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/shield_break_1.png" id="f1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/shield_break_2.png" id="f2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/shield_break_3.png" id="f3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Hit/shield_break_4.png" id="f4"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_break"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("f1")}, {"duration": 1.0, "texture": ExtResource("f2")}, {"duration": 1.0, "texture": ExtResource("f3")}, {"duration": 1.0, "texture": ExtResource("f4")}], "loop": false, "name": &"break", "speed": 12.0}]
+
+[node name="ShieldBreak" type="AnimatedSprite2D"]
+z_index = 250
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_break")
+animation = &"break"

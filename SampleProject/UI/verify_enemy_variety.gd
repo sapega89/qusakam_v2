@@ -778,11 +778,31 @@ func _brute() -> void:
 	await process_frame
 
 
+## Розбитий вартовий: зона-ціль, хітбокс і тіло — з малюнка без щита (B128, як міряє verify_hit_areas), attack_range
+## меншає на стільки, на скільки коротшав удар. Вартовий дивиться ліворуч — зони дзеркальні.
+func _check_broken_areas(guard: Node, range_before: float, reach_before: float) -> void:
+	var sprite: Sprite2D = guard.enemy_view.rest_sprite()
+	var mirror := func(r: Rect2) -> Rect2: return Rect2(-r.end.x, r.position.y, r.size.x, r.size.y)
+	var body: Rect2 = mirror.call(HitAreas.body_rect(sprite, guard.anim_player))
+	var strike := HitAreas.strike_rect(sprite, guard.anim_player, guard.attack_active_time)
+	var reach: Rect2 = mirror.call(Rect2(0.0, strike.position.y, strike.end.x, strike.size.y))
+	var hurt := HitAreas.shape_rect(guard.get_node(^"Hurtbox/CollisionShape2D"))
+	var hit := HitAreas.shape_rect(guard.get_node(^"hitbox/CollisionShape2D"))
+	ck(hurt.is_equal_approx(body) and hit.is_equal_approx(reach), "broken: hurtbox %s = the shieldless body, hitbox %s = its strike" % [hurt, hit])
+	var body_half: float = guard.get_node(^"CollisionShape2D").shape.get_rect().end.x
+	ck(is_equal_approx(body_half, -body.position.x), "broken: the blocking body's front is his own front, %.1f px" % body_half)
+	const HERO_HALF := 12.0  # verify_hit_areas
+	ck(guard.attack_range > body_half + HERO_HALF and is_equal_approx(guard.attack_range - strike.end.x, range_before - reach_before)
+			and is_equal_approx(guard.enemy_logic.attack_range, guard.attack_range),
+			"broken: attack_range %.1f → %.1f, as much closer as his strike got shorter (%.1f → %.1f); past body contact %.1f"
+			% [range_before, guard.attack_range, reach_before, strike.end.x, body_half + HERO_HALF])
+	sprite.free()
+
+
 ## [8] Вартовий з баштовим щитом (D652, D693): живий великий вид — свій аркуш і сцена, поведінка щитоносця (спереду
-## щит, у спину тіло, важкий удар розбиває варту), але щит намальовано в кадрах: він не відлітає, а після збою знову
-## попереду. Числа еліти на рівнях, де стоять щитоносці (D642). Точок BigSlot_TowerShieldGuard_* немає (D682).
+## щит, у спину тіло, важкий удар розбиває щит): щит розлітається скалками, і вартовий далі без щита (D843). Числа еліти на рівнях, де стоять щитоносці (D642). Точок BigSlot_TowerShieldGuard_* немає (D682).
 func _tower_guard() -> void:
-	print("[8] The tower shield guard is live: its own art, the shield-bearer's behaviour, the guard comes back, elite numbers")
+	print("[8] The tower shield guard is live: its own art, the shield-bearer's behaviour, a broken shield stays broken, elite numbers")
 	const ID := "tower_shield_guard"
 	ck(variety.available(ID) and variety.kind(ID).sheet.ends_with("shield_tower/sheet.png")
 			and spawn_script.scene_path(ID) == "res://SampleProject/Scenes/Characters/Enemies/enemy_tower_shield_guard.tscn", "its sheet, scene and stats exist")
@@ -829,6 +849,17 @@ func _tower_guard() -> void:
 
 	await create_timer(1.0).timeout
 	guard.set_physics_process(true)  # збій спливає в _physics_process
+	var range_before: float = guard.attack_range
+	var reach_before := HitAreas.shape_rect(guard.get_node(^"hitbox/CollisionShape2D")).size.x
+	var bursts: Array[Dictionary] = []
+	game.map.child_entered_tree.connect(func(n: Node) -> void:
+		if n is AnimatedSprite2D and (n as AnimatedSprite2D).animation == &"break":
+			var seen := func() -> void:
+				var still: Sprite2D = guard.enemy_view.rest_sprite()
+				bursts.append({transform = n.global_transform, offset = n.offset, flip_h = n.flip_h, cell = guard.global_transform * Transform2D(0.0, still.scale, 0.0, still.position),
+						frames = n.sprite_frames.get_frame_count(&"break"), texture = n.sprite_frames.get_frame_texture(&"break", 0).resource_path})
+				still.free()
+			seen.call_deferred())
 	await _place_hero(guard, -45)
 	await _tap(&"heavy_attack")
 	await create_timer(0.6).timeout
@@ -838,21 +869,43 @@ func _tower_guard() -> void:
 	ck(staggered.any(func(s: Array) -> bool: return s[0] == guard and is_equal_approx(s[1], guard_break))
 			and guard.enemy_view.staggered and guard.get_node(^"Sprite2D").frame == 12,
 			"guard break: staggered %.1f s on the hurt frame, the shield knocked aside (frame %d)" % [guard_break, guard.get_node(^"Sprite2D").frame])
-	ck(guard.has_node(^"Sprite2D/Shield"), "the tower shield stays in his hands (drawn in the frames)")
+	var sprite: Sprite2D = guard.get_node(^"Sprite2D")
+	ck(sprite.texture == guard.noshield_sheet and guard.noshield_sheet.resource_path.ends_with("shield_tower/sheet_noshield.png"),
+			"the shield is gone from his frames: the shieldless sheet (D843)")
+	ck(bursts.size() == 1 and bursts[0].frames == 4 and bursts[0].texture.ends_with("shield_break_1.png"),
+			"the shield bursts into shards (shield_break_1-4): %d burst" % bursts.size())
+	if bursts.size() == 1:
+		var burst: Dictionary = bursts[0]
+		ck(burst.transform.is_equal_approx(burst.cell) and burst.offset == Vector2(0, -13) and burst.flip_h and sprite.flip_h,
+				"the shards stand on his cell at rest (scale %.2f), mirrored to his facing (left)" % burst.transform.get_scale().x)
+	var tracks: Array[String] = []
+	for anim_name in guard.anim_player.get_animation_list():
+		var anim: Animation = guard.anim_player.get_animation(anim_name)
+		for t in anim.get_track_count():
+			if String(anim.track_get_path(t)).ends_with(":texture"):
+				tracks.append("%s/%d" % [anim_name, t])
+	ck(tracks.is_empty(), "no animation of his keys Sprite2D:texture, so nothing puts the shield back %s" % [tracks])
+	_check_broken_areas(guard, range_before, reach_before)
 	await _place_hero(guard, -45)
 	guard.take_damage(20, hero)  # удар спереду, поки герой ще виходить із важкого
 	ck(guard.current_health < hp and blocked.size() == 1, "guard broken: a light hit from the front lands (HP %d → %d)" % [hp, guard.current_health])
 	hp = guard.current_health
 
-	await create_timer(guard_break).timeout
+	await create_timer(guard_break + 0.5).timeout
 	guard.set_physics_process(false)
 	guard.enemy_logic.last_direction = -1
 	guard._on_logic_direction_changed(-1)
-	ck(guard.shield_up, "after the stagger he raises the shield again")
+	ck(not guard.shield_up and sprite.texture == guard.noshield_sheet, "after the stagger the shield does not come back (D843)")
+	ck(game.map.get_children().all(func(n: Node) -> bool: return not (n is AnimatedSprite2D and n.animation == &"break")),
+			"the shards are gone once they have played")
 	await _place_hero(guard, -45)
 	await _tap(&"attack")
 	await create_timer(0.5).timeout
-	ck(guard.current_health == hp and blocked.size() == 2, "a light hit from the front is blocked again (HP %d, blocks %d)" % [guard.current_health, blocked.size()])
+	ck(guard.current_health < hp and blocked.size() == 1, "a light hit from the front still lands (HP %d → %d, blocks %d)" % [hp, guard.current_health, blocked.size()])
+	for anim_name in [&"walk", &"attack", &"stagger", &"idle"]:
+		guard.anim_player.play(anim_name)
+		guard.anim_player.advance(0.3)
+	ck(sprite.texture == guard.noshield_sheet, "playing his animations keeps the shieldless sheet")
 	guard.queue_free()
 
 	var placed: Array = []
