@@ -3,6 +3,7 @@ class_name RoomEnemySpawner
 
 const EnemyVariety := preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
+const EnemyScaling := preload("res://SampleProject/Scripts/Gameplay/EnemyScaling.gd")
 
 ## 🏠 RoomEnemySpawner - Управляет спавном врагов в комнате
 ## Автоматически находит все EnemySpawnPoint в комнате и спавнит врагов
@@ -208,6 +209,7 @@ func _spawn(spawn_point: EnemySpawnPoint) -> void:
 		# еліта — властивість виду (D652), ворог бере її сам.
 		enemy.size_kind = variant_size(spawn_point)
 		enemy.level = enemy_level
+		enemy.zone_offset = EnemyScaling.zone_offset(get_parent().scene_file_path.get_file().get_basename())
 		spawned_enemies.append(enemy)
 		_connect_enemy_signals(enemy)
 		_track(enemy, spawn_point.spawn_id)

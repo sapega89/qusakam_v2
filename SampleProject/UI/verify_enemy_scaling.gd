@@ -1,15 +1,17 @@
 extends SceneTree
 
-## Рівень ворогів за героєм (D840; EnemyScaling): рівень ворога = max(підлога, рівень героя + зсув виду), не вище
-## XPManager.MAX_LEVEL. Підлога звичайного й еліти — enemy_level бою (D670), боса — рівень, під який зроблено його числа
-## (enemy_variety.json scaling.boss_levels). Зсув: звичайний 0, еліта +1, бос +2.
-##   [1] формула на рівнях героя 1, 5, 10, 20 і підлогах 1, 9;
+## Рівень ворогів за героєм (D840; EnemyScaling), часткове: рівень ворога = підлога + зсув зони + зсув виду
+## + ⌊max(0, герой − підлога) × 0.5⌋, не вище XPManager.MAX_LEVEL. Підлога звичайного й еліти — enemy_level бою (D670),
+## боса — рівень, під який зроблено його числа (enemy_variety.json scaling.boss_levels). Зсув виду: звичайний 0, еліта +1,
+## бос +2; зсув зони — scaling.zone_offsets за кімнатою (Laboratory +1, BanditCamp +1, решта 0; у боса зони немає).
+##   [1] формула на рівнях героя 1, 5, 10, 20 — підлоги 1, 4, 9, 19 і зони 0, +1 — і дані зон;
 ##   [2] звичайний бандит: рівень, HP і шкода за таблицями levels, досвід не росте (D670, verify_xp_curve);
 ##   [3] еліта (бандит-громило): рівень +1, HP і шкода з множниками еліти, досвід — свій;
-##   [4] підлога: бій 9-го рівня не слабшає перед героєм 1-го і 5-го;
-##   [5] боси (Brass Collector, Scorpicore, Fire Djinn, Mercenary): рівень +2 від своєї підлоги, HP і шкода — відношення
+##   [4] підлога: бій 9-го рівня не слабшає перед героєм 1-го і 5-го й росте на половину відриву героя 20-го;
+##   [5] боси (Brass Collector, Scorpicore, Fire Djinn, Mercenary): підлога + 2 + половина відриву, HP і шкода — відношення
 ##       таблиць levels до підлоги, ходи й досвід ті самі;
-##   [6] повернення ворогів (D492): після медитації бій Dunes зʼявляється на новому рівні героя.
+##   [6] повернення ворогів (D492): після медитації бій Dunes зʼявляється на новому рівні героя;
+##   [7] зона: вороги бою Лабораторії (Fight_Fly, рівень 8) стоять на сходинку вище, ніж той самий бій без зони.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_enemy_scaling.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -50,6 +52,7 @@ func _initialize() -> void:
 	await _floor()
 	await _bosses()
 	await _respawn()
+	await _zone()
 
 	xp.restore(1, 0)
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -57,20 +60,29 @@ func _initialize() -> void:
 
 
 func _formula() -> void:
-	print("[1] the formula: max(floor, hero + offset), capped at 20; offsets ordinary 0, elite +1, boss +2")
-	var offsets: Dictionary = Variety.data().scaling.offsets
+	print("[1] the formula: floor + zone + kind + ⌊max(0, hero − floor) × 0.5⌋, capped at 20; kinds ordinary 0, elite +1, boss +2")
+	var scaling: Dictionary = Variety.data().scaling
+	var offsets: Dictionary = scaling.offsets
 	ck(int(offsets.ordinary) == 0 and int(offsets.elite) == 1 and int(offsets.boss) == 2, "offsets %s" % [offsets])
+	ck(Scaling.HERO_LEAD_SHARE == 0.5, "an enemy gains half the hero's lead over its floor (%s)" % Scaling.HERO_LEAD_SHARE)
+	ck(Scaling.zone_offset("Laboratory") == 1 and Scaling.zone_offset("BanditCamp") == 1 and Scaling.zone_offset("DesertRoad") == 0
+			and Scaling.zone_offset("LabBoss") == 0 and scaling.zone_offsets.size() == 2,
+			"zones: Laboratory +1, Bandit Camp +1, every other room 0 (%s)" % [scaling.zone_offsets])
+	# [підлога, зона] → герой → [звичайний, еліта, бос]
 	var expect := {
-		1: {1: [1, 2, 3], 5: [5, 6, 7], 10: [10, 11, 12], 20: [20, 20, 20]},
-		9: {1: [9, 9, 9], 5: [9, 9, 9], 10: [10, 11, 12], 20: [20, 20, 20]},
+		[1, 0]: {1: [1, 2, 3], 5: [3, 4, 5], 10: [5, 6, 7], 20: [10, 11, 12]},
+		[4, 1]: {1: [5, 6, 7], 5: [5, 6, 7], 10: [8, 9, 10], 20: [13, 14, 15]},
+		[9, 0]: {1: [9, 10, 11], 5: [9, 10, 11], 10: [9, 10, 11], 20: [14, 15, 16]},
+		[9, 1]: {1: [10, 11, 12], 5: [10, 11, 12], 10: [10, 11, 12], 20: [15, 16, 17]},
+		[19, 1]: {1: [20, 20, 20], 5: [20, 20, 20], 10: [20, 20, 20], 20: [20, 20, 20]},
 	}
-	for floor_level: int in expect:
+	for room: Array in expect:
 		for hero: int in HERO_LEVELS:
 			var got := []
 			for kind: String in ["ordinary", "elite", "boss"]:
-				got.append(Scaling.scaled_level(floor_level, hero, kind))
-			ck(got == expect[floor_level][hero], "floor %d, hero %d: ordinary / elite / boss %s (expected %s)"
-					% [floor_level, hero, got, expect[floor_level][hero]])
+				got.append(Scaling.scaled_level(room[0], room[1], hero, kind))
+			ck(got == expect[room][hero], "floor %d, zone +%d, hero %d: ordinary / elite / boss %s (expected %s)"
+					% [room[0], room[1], hero, got, expect[room][hero]])
 
 
 ## Ворог виду [param kind] з підлогою [param floor_level] — як його ставить RoomEnemySpawner (розмір medium), поза
@@ -110,42 +122,45 @@ func _check_stats(enemy: Node, kind: String, level: int, label: String) -> void:
 
 
 func _ordinary() -> void:
-	print("[2] an ordinary bandit from a level-1 fight stands at the hero's level")
+	print("[2] an ordinary bandit from a level-1 fight gains half the hero's lead: hero 1 / 5 / 10 / 20 → 1 / 3 / 5 / 10")
+	var want := {1: 1, 5: 3, 10: 5, 20: 10}
 	for hero: int in HERO_LEVELS:
 		xp.restore(hero, 0)
 		var bandit := _spawn("melee", 1)
 		await process_frame
-		_check_stats(bandit, "melee", hero, "hero %d, bandit" % hero)
+		_check_stats(bandit, "melee", want[hero], "hero %d, bandit" % hero)
 		bandit.queue_free()
 	await process_frame
 
 
 func _elite() -> void:
-	print("[3] an elite (bandit brute) from a level-1 fight stands one above the hero, at most 20")
+	print("[3] an elite (bandit brute) from a level-1 fight stands one above an ordinary one: 2 / 4 / 6 / 11")
 	ck(Variety.is_elite("bandit_brute"), "the bandit brute is an elite kind")
+	var want := {1: 2, 5: 4, 10: 6, 20: 11}
 	for hero: int in HERO_LEVELS:
 		xp.restore(hero, 0)
 		var brute := _spawn("bandit_brute", 1)
 		await process_frame
-		_check_stats(brute, "bandit_brute", mini(hero + 1, 20), "hero %d, elite bandit brute" % hero)
+		_check_stats(brute, "bandit_brute", want[hero], "hero %d, elite bandit brute" % hero)
 		brute.queue_free()
 	await process_frame
 
 
 func _floor() -> void:
-	print("[4] the floor: a level-9 fight does not get weaker for a low hero")
+	print("[4] the floor: a level-9 fight does not get weaker for a low hero and grows by half a hero 20's lead: 9 / 9 / 9 / 14")
+	var want := {1: 9, 5: 9, 10: 9, 20: 14}
 	for hero: int in HERO_LEVELS:
 		xp.restore(hero, 0)
 		var scorpion := _spawn("tank", 9)
 		await process_frame
-		_check_stats(scorpion, "tank", maxi(9, hero), "hero %d, scorpion of a level-9 fight" % hero)
+		_check_stats(scorpion, "tank", want[hero], "hero %d, scorpion of a level-9 fight" % hero)
 		ck(scorpion.level == 9, "hero %d: its fight level (floor) stays 9 (%d)" % [hero, scorpion.level])
 		scorpion.queue_free()
 	await process_frame
 
 
 func _bosses() -> void:
-	print("[5] bosses: two above the hero, never below the level their numbers were made for; moves and XP unchanged")
+	print("[5] bosses: two above the level their numbers were made for, plus half the hero's lead over it; moves and XP unchanged")
 	for id: String in BOSSES:
 		var floor_level: int = Scaling.boss_level(id)
 		for hero: int in HERO_LEVELS:
@@ -155,7 +170,7 @@ func _bosses() -> void:
 			var moves: Array = boss.moves.duplicate(true)
 			_add(boss)
 			await process_frame
-			var level: int = clampi(maxi(floor_level, hero + 2), 1, 20)
+			var level: int = mini(floor_level + 2 + maxi(0, hero - floor_level) / 2, 20)
 			var at: Dictionary = Variety.level(floor_level)
 			var now: Dictionary = Variety.level(level)
 			ck(boss.level == floor_level and boss.scaled_level == level
@@ -196,10 +211,37 @@ func _respawn() -> void:
 		for enemy: Node in spawner.spawned_enemies:
 			enemy.process_mode = Node.PROCESS_MODE_DISABLED
 			got.append(enemy.scaled_level)
-			want.append(Scaling.scaled_level(2, hero_level, "elite" if enemy.elite else "ordinary"))
+			want.append(Scaling.scaled_level(2, 0, hero_level, "elite" if enemy.elite else "ordinary"))
 		ck(not got.is_empty() and got == want, "hero %d: the Dunes enemies stand at %s (expected %s)" % [hero_level, got, want])
 		for enemy: Node in spawner.spawned_enemies:
 			enemy.queue_free()
 		spawner.spawned_enemies.clear()
 		await process_frame
 		game.meditate()  # D492: бій забуває своїх — наступний запуск спавнить усіх заново
+		# У грі вороги повертаються з новим завантаженням кімнати, тобто з новими точками; ці вже spawn_once.
+		for point: Node in spawner.spawn_points:
+			point.has_spawned = false
+
+
+func _zone() -> void:
+	print("[7] a zone: the Laboratory's fights stand one step above the same fight elsewhere (zone +1)")
+	xp.restore(1, 0)
+	await game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_Entrance/Seat")
+	await Kit.frames(self, 16)
+	await Kit.drain(self)
+	for node in game.map.find_children("*", "CharacterBody2D", true, false):
+		if node.is_in_group(&"enemies"):
+			node.queue_free()
+	await process_frame
+	var spawner: Node = game.map.get_node(^"Fight_Fly")
+	await spawner.spawn_all_enemies()
+	await Kit.frames(self, 4)
+	var got: Array = []
+	for enemy: Node in spawner.spawned_enemies:
+		enemy.process_mode = Node.PROCESS_MODE_DISABLED
+		got.append([enemy.zone_offset, enemy.scaled_level, enemy.scaled_level - Scaling.scaled_level(8, 0, 1, "elite" if enemy.elite else "ordinary")])
+	ck(spawner.enemy_level == 8 and not got.is_empty() and got.all(func(g: Array) -> bool: return g[0] == 1 and g[2] == 1),
+			"hero 1, Laboratory/Fight_Fly (level 8): [zone, level, steps above the zone-less fight] %s" % [got])
+	for enemy: Node in spawner.spawned_enemies:
+		enemy.queue_free()
+	await process_frame

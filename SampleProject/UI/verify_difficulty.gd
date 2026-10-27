@@ -3,12 +3,13 @@ extends SceneTree
 ## Складність (D642): чи бій досі важкий. Безголова симуляція рахує з тих самих формул, що й гра — Player.max HP і
 ## mitigated_damage, PlayerCombat.hit_damage і серія, SkillManager.skill_damage / skill_heal, справжні вороги з
 ## EnemyStats і enemy_variety.json (розмір, еліта) і боси зі своїх сцен — без жодної копії чисел. Рівень ворога — за
-## рівнем героя (D840, EnemyScaling): звичайний на рівні героя, еліта +1, бос +2, не нижче рівня бою (у боса — свого).
+## рівнем героя (D840, EnemyScaling, часткове): рівень бою (у боса — свій) + зсув зони + зсув виду (еліта +1, бос +2)
+## + половина відриву героя над рівнем бою.
 ## Рівень, на якому герой стрічає кожного ворога, — з XP-кривої й порядку кімнат (як verify_xp_curve), спорядження —
 ## те, що дає маршрут: мідний меч і шкіряна броня діда до Міста, із Міста — залізні меч, броня й щит (крамниці).
 ## Дві збірки: STRENGTH — усі очки атрибутів у Strength, JP не витрачені; SKILLS — очки 2 Strength / 2 Vitality /
 ## 1 Wisdom за рівень, JP на активні й пасивні навички дерева (Paladin після клятви).
-##   [0c] рівень кожного ворога — max(підлога, герой + зсув виду) (D840);
+##   [0c] рівень кожного ворога — підлога + зона + вид + ⌊max(0, герой − підлога) × 0.5⌋ (D840);
 ##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів і валить ворога за 4–6 своїх;
 ##   [2] бос: валить героя за 3–4 удари, падає приблизно за 40 (34–46) ударів SKILLS-героя;
 ##   [3] еліта (вид-еліта й заплановані великі види в точках BigSlot_*, D652) і бос: SKILLS-герой перемагає, STRENGTH — ні;
@@ -62,6 +63,7 @@ var Rolls: Script
 var SpawnPoint: Script
 var Spawner: Script
 var Variety: Script
+var Scaling: Script
 var Boss: Script
 
 func ck(ok: bool, label: String) -> void:
@@ -75,6 +77,7 @@ func _initialize() -> void:
 	SpawnPoint = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 	Spawner = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
 	Variety = load("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
+	Scaling = load("res://SampleProject/Scripts/Gameplay/EnemyScaling.gd")
 	Boss = load("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd")
 	root.get_node("SaveSystem").settings_module.settings.hints = false  # D746: no «?» tips in this run
 	game = await Kit.boot(self)
@@ -101,7 +104,7 @@ func _initialize() -> void:
 				ck(others.is_empty(), "%s first meets the hero in %s, with no other big or cursed kind (%s)" % [id, fight.fight, others])
 	var rows: Array[Dictionary] = []
 	print("    the table: H = enemy hits that kill the hero, N = hero hits that kill it (flask in H+F)")
-	print("    e.lv = the enemy's level at this hero (D840: max(its floor, hero + 0 / +1 elite / +2 boss))")
+	print("    e.lv = the enemy's level at this hero (D840: floor + zone + 0 / +1 elite / +2 boss + half the hero's lead)")
 	print("    %-26s %3s %4s %-8s %5s %4s %4s %3s %4s %5s %4s %4s %s" % ["enemy", "lvl", "e.lv", "build", "HP", "hit", "got", "H", "H+F", "e.HP", "atk", "N", "wins"])
 	for meeting: Dictionary in meetings:
 		for build: String in ["STRENGTH", "SKILLS"]:
@@ -110,13 +113,15 @@ func _initialize() -> void:
 			print("    %-26s %3d %4d %-8s %5d %4d %4d %3d %4d %5d %4d %4d %s" % [row.name, row.level, row.scaled, build, row.hero_hp, row.enemy_hit,
 					row.got, row.taken, row.taken_flask, row.enemy_hp, row.atk, row.dealt, "yes" if row.wins else "no"])
 
-	print("[0c] D840: every enemy meets the hero at max(its floor, hero level + its kind's offset); on the straight route the")
-	print("     floor is the hero's level, so ordinary enemies stand at it, elites one above, bosses two above or their own floor")
+	print("[0c] D840: every enemy meets the hero at floor + zone + its kind's offset + ⌊max(0, hero − floor) × 0.5⌋; on the")
+	print("     straight route the floor is the hero's level, so ordinary enemies stand at it (+ zone), elites one above,")
+	print("     bosses two above their own floor (+ half the hero's lead over it)")
 	var offsets: Dictionary = Variety.data().scaling.offsets
 	for row in rows:
 		var floor_level: int = row.floor
-		ck(row.scaled == clampi(maxi(floor_level, row.level + int(offsets[row.offset_kind])), 1, 20),
-				"%s, hero %d: level %d (floor %d, %s +%d)" % [row.name, row.level, row.scaled, floor_level, row.offset_kind, offsets[row.offset_kind]])
+		var want: int = clampi(floor_level + row.zone + int(offsets[row.offset_kind]) + floori(maxi(0, row.level - floor_level) * Scaling.HERO_LEAD_SHARE), 1, 20)
+		ck(row.scaled == want, "%s, hero %d: level %d (floor %d, zone +%d, %s +%d)"
+				% [row.name, row.level, row.scaled, floor_level, row.zone, row.offset_kind, offsets[row.offset_kind]])
 
 	print("[1] an ordinary enemy: 5–6 hits kill the SKILLS hero, 4–6 of his kill it")
 	for row in rows:
@@ -223,7 +228,7 @@ func _meetings() -> Array[Dictionary]:
 					var label: String = ("planned %s as %s" % [node.big_kind, KIND_NAMES[kind]]) if planned \
 							else "%s%s" % ["elite " if elite else "", KIND_NAMES[kind]]
 					out.append({"cls": "elite" if elite else "ordinary", "kind": kind, "level": starts[fight],
-							"enemy_level": enemy_level, "city": city, "stats": node.enemy_stats(), "planned": planned,
+							"enemy_level": enemy_level, "zone": Scaling.zone_offset(room_name), "city": city, "stats": node.enemy_stats(), "planned": planned,
 							"name": "%s L%d" % [label, enemy_level]})
 				if not optional.has(spawner):
 					xp.add_xp(node.enemy_stats().xp_reward)
@@ -232,7 +237,7 @@ func _meetings() -> Array[Dictionary]:
 							func(n: Node) -> bool: return n.get_script() == SpawnPoint).back():
 						xp.add_xp(spawner.win_xp)
 			elif node.get_script() == Boss:
-				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city,
+				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city, "zone": 0,
 						"scene": node.scene_file_path})
 				room_xp += node.enemy_stats.xp_reward
 		xp.add_xp(room_xp)
@@ -249,7 +254,7 @@ func _side_room(id: String, room_name: String, fight: NodePath) -> Dictionary:
 	ck(slots.size() == 1 and slots[0].kind() == id, "%s first stands in %s/%s (D719)" % [id, room_name, fight])
 	var level: int = spawner.enemy_level
 	room.free()
-	return {"cls": "elite", "kind": id, "level": level, "enemy_level": level, "city": false,
+	return {"cls": "elite", "kind": id, "level": level, "enemy_level": level, "zone": Scaling.zone_offset(room_name), "city": false,
 			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id), "planned": false,
 			"name": "%s (%s) L%d" % [KIND_NAMES[id], room_name, level]}
 
@@ -262,7 +267,7 @@ func _fight(meeting: Dictionary, build: String) -> Dictionary:
 	await process_frame
 	var hit: int = roundi(enemy.damage)
 	var row := {"cls": meeting.cls, "name": meeting.name, "level": meeting.level, "build": build, "hero_hp": hero.Max_Health,
-			"enemy_hit": hit, "enemy_hp": enemy.Max_Health, "scaled": enemy.scaled_level, "floor": enemy.level,
+			"enemy_hit": hit, "enemy_hp": enemy.Max_Health, "scaled": enemy.scaled_level, "floor": enemy.level, "zone": meeting.zone,
 			"offset_kind": "boss" if meeting.cls == "boss" else ("elite" if enemy.elite else "ordinary")}
 	row.taken = _hits_to_kill_hero(hit, 0)
 	Rolls.calm()
@@ -298,6 +303,7 @@ func _enemy(meeting: Dictionary) -> Node:
 	enemy.enemy_stats = meeting.stats
 	enemy.size_kind = "medium"
 	enemy.level = meeting.enemy_level
+	enemy.zone_offset = meeting.zone
 	if meeting.planned:
 		enemy.ready.connect(_as_elite.bind(enemy))
 	return enemy
