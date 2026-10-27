@@ -125,8 +125,9 @@ func _bot_fight(style: StringName) -> void:
 	bandit.position = game.map.to_local(hero.global_position + Vector2(90.0, -30.0))
 	game.map.add_child(bandit)
 	await Kit.frames(self, 4)
-	bandit.Max_Health = 150
-	bandit.current_health = 150
+	# 300 HP: бандит не б'є серією в блок (D775), тож блоків за бій менше — бій довший, щоб їх набралося на нахил
+	bandit.Max_Health = 300
+	bandit.current_health = 300
 	var logic: Node = bandit.enemy_logic
 	# Бот відповідає на кожен замах двома ударами — інакше збиває бандита раніше, ніж той замахнеться (D264)
 	var counters := [0]
