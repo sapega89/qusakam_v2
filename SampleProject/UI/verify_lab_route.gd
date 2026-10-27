@@ -11,7 +11,8 @@ extends SceneTree
 ##      (коридори перед залою, бос не почався).
 ##   5. Знову в залу: розмова (Tab) → бій → перемога справжньою attack → брама → на схід у LaboratoryOutside;
 ##      розмови кнопкою A → екран кінця демо, один; назад у залу й знову надвір — екран знову, розмови не повторюються
-##      (B66); «Return» кнопкою A → головне меню.
+##      (B66); «Return» кнопкою A → головне меню. Фінал D473 уперше — кожен крок: HUD гасне, камера пливе в небо,
+##      музика тихо наростає, потім титул і кнопка у фокусі (був verify_demo_end.gd).
 ## Пише лише в user://verify_lab_route/ (set_save_dir) — справжні сейви не чіпає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_route.gd
 
@@ -446,6 +447,7 @@ func _initialize() -> void:
 	started.clear()
 	game.player.global_position = Vector2(1300, 380)
 	for i in 10: await physics_frame
+	node_added.connect(_on_finale_start)
 	await _stick_until(1.0, func() -> bool: return _room() == OUTSIDE, 10.0)
 	ck(_room() == OUTSIDE, "stick east through the gates, out of the Laboratory (%s)" % _room())
 	await _until(func() -> bool: return dm.is_dialogue_active(), 6.0)
@@ -460,7 +462,7 @@ func _initialize() -> void:
 	ck(game.player.is_on_floor() and game.player.global_position.y > arrival_y + 8.0,
 			"the hero stands on the grass outside (y %.0f, below the Arrival mark %.0f, on floor %s) — B141" % [game.player.global_position.y, arrival_y, game.player.is_on_floor()])
 	var screen: Control = _end_screens()[0]
-	await _finale(screen)
+	await _finale(screen, true)
 	ck(screen.get_viewport().gui_get_focus_owner() == screen.return_button, "Return has the focus")
 
 	print("[6] B66: back into the hall and out again — the screen again, the talks not again")
@@ -477,7 +479,7 @@ func _initialize() -> void:
 	ck(_end_screens().size() == 1, "the demo end screen again, one (%d)" % _end_screens().size())
 	ck(started.is_empty(), "the closing talks do not replay (%s)" % [started])
 	screen = _end_screens()[0]
-	await _finale(screen)
+	await _finale(screen, false)
 	ck(screen.get_viewport().gui_get_focus_owner() == screen.return_button, "Return has the focus again")
 	await _pad_tap(JOY_BUTTON_A)
 	await _until(func() -> bool: return current_scene != null and current_scene.scene_file_path.ends_with("MainMenu.tscn"), 5.0)
@@ -491,10 +493,37 @@ func _initialize() -> void:
 	quit(0 if fails.is_empty() else 1)
 
 
+## D473: стан фіналу в мить, коли він почався (екран щойно додано, play_finale поставив перший кадр, панорама ще
+## не рушила). Коли тест бачить LaboratoryOutside, розмова вже скінчилась і екран уже є, — і доки тест дійде до
+## _finale, панорама вже в небі. Поки екрана не було — значення, що провалюють перевірки [5b].
+var finale_start := {"title_hidden": false, "button_off": false, "control_off": false, "y": -INF, "db": INF}
+
+func _on_finale_start(node: Node) -> void:
+	if node.get_script() == null or not node.get_script().resource_path.ends_with("DemoEndScreen.gd") or finale_start.y != -INF:
+		return
+	(func() -> void:
+		var camera: Camera2D = game.player.get_node(^"Camera2D")
+		finale_start = {"title_hidden": node.get_node(^"VBoxContainer/GameTitle").modulate.a == 0.0,
+				"button_off": node.return_button.disabled, "control_off": game.player.event,
+				"y": camera.get_screen_center_position().y, "db": (game.map.get_node(^"Music") as AudioStreamPlayer).volume_db}
+	).call_deferred()
+
+
 ## D473: кнопка з'являється, коли фінал дограв (HUD гасне, камера в небо, титул); вікно туторіалу ставить гру на паузу — закриваємо.
-func _finale(screen: Control) -> void:
+## steps — ще й кожен крок фіналу (перевірки колишнього verify_demo_end.gd); його початок записує _on_finale_start.
+func _finale(screen: Control, steps: bool) -> void:
 	var shown := [false]
 	screen.finale_shown.connect(func() -> void: shown[0] = true)
+	var title: Control = screen.get_node(^"VBoxContainer/GameTitle")
+	var camera: Camera2D = game.player.get_node(^"Camera2D")
+	if steps:
+		print("[5b] The finale (D473), step by step")
+		ck(finale_start.title_hidden and finale_start.button_off, "title hidden and button off while the finale plays")
+		ck(finale_start.control_off, "control is off")
+		await create_timer(screen.HUD_FADE + 0.3).timeout
+		var hud: CanvasItem = game.get_node(^"UICanvas/CombatHUD")
+		ck(hud.modulate.a == 0.0, "the HUD faded out (%.2f)" % hud.modulate.a)
+		ck(camera.top_level, "the camera left the hero")
 	var modals: Node = root.get_node("ServiceLocator").get_ui_manager().get_modal_layer()
 	var deadline := Time.get_ticks_msec() + 15000
 	while not shown[0] and Time.get_ticks_msec() < deadline:
@@ -502,3 +531,15 @@ func _finale(screen: Control) -> void:
 			modals._close_with_result("", modals.active_modal)
 		await process_frame
 	ck(shown[0], "the finale played to the end (D473)")
+	if not steps:
+		return
+	var music: AudioStreamPlayer = game.map.get_node(^"Music")
+	var sky_top: float = game.map.get_node(^"HighSky").global_position.y
+	var view_h: float = screen.get_viewport_rect().size.y / camera.zoom.y
+	var end_y := camera.get_screen_center_position().y
+	ck(end_y < finale_start.y - 300.0 and absf(end_y - (sky_top + view_h / 2.0)) < 2.0, "the camera rose into the sky (%.0f → %.0f, sky top %.0f)" % [finale_start.y, end_y, sky_top])
+	ck(music.volume_db > finale_start.db and music.pitch_scale < 1.0, "the music swelled low (%.1f → %.1f dB, pitch %.2f)" % [finale_start.db, music.volume_db, music.pitch_scale])
+	ck(title.modulate.a == 1.0 and screen.get_node(^"VBoxContainer/Farewell").modulate.a == 1.0, "title and farewell shown")
+	ck(screen.get_node(^"VBoxContainer/GameTitle/TitleLabel").get_theme_font_size(&"font_size") == UITokens.SIZE_TITLE_KHALAHAS, "the main menu's title")
+	ck(not screen.return_button.disabled, "Return to Main Menu enabled")
+	ck(screen.return_button.theme_type_variation == &"ModalButtonOn", "the kit HexButton")

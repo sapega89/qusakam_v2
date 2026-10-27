@@ -305,7 +305,9 @@ func _release() -> void:
 	for layer in _hud:
 		layer.visible = true
 	_hud.clear()
-	Engine.time_scale = 1.0
+	# Масштаб часу — TimeManager'а (у грі 1.0): голе 1.0 стирало масштаб, який тримав TimeManager (стоп-кадр, verify_masher
+	# з SPEED 4), і далі гра йшла в 1× з кроком фізики, якого в грі немає.
+	Engine.time_scale = ServiceLocator.get_time_manager().time_scale
 
 
 func _skip() -> void:

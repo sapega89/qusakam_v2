@@ -83,6 +83,7 @@ Read-only findings. No decisions made inside them.
 - [[service_locator_audit]]
 - [[combat_critique_2026-10-23]] — the combat against a 2D souls-like bar: the top 10, the hero's action matrix, enemy movement, 10 bugs
 - [[decision_audit]] — did the D-IDs become code?
+- [[test_audit_2026-10-27]] — every `verify_*.gd`: keep / delete / merge / speed up, where the suite's time goes
 - [[play_feedback_queue]] — Sapega's play feedback 2026-10-20: the order to run BACKLOG items 1–23, rules, what is open
 - [[code_review_2026-10-19]] — the whole game: the B73 room leak, plugins keep / own / remove, maintainability (Q61–Q63)
 - [[investigation_pathfinder_classes]]
