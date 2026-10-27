@@ -21,7 +21,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
    `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
 3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
    agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates made; **Sapega picked: b (brass portcullis) in the cave, c (lashed poles) replaces the Lab bars in Bandit Camp, a and d kept for M6 locked doors** — wiring by the art agent; D-ID + B-ID after integrate-28) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
-   in [[m6_backdrops]]; its D-ID after integrate-28) → plane
+   in [[m6_backdrops]]; its D-ID after integrate-28) → **redo hero Death frames 1 and 3** (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя» — frame 1 a swirl for an eye, frame 3 a red slit; keep 2 and 4) → plane
    cuts like B162 for Bandit Camp, Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
    depth-critics triage after integrate-28) → M6.
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
