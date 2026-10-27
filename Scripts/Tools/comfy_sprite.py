@@ -1121,17 +1121,18 @@ CHARACTERS = {
         seed=1,
         palette="hero",
         floor=56,  # як у кадрів художника: на драбині герой не просідає на 3 px
+        base=None,
         who="the same small lizard knight seen from behind, with the steel armour, dark red cape and tail",
-        base="Keep this exact character: the same small lizard knight with the same steel armour, red cape, tail and colours, the "
-        "same pixel art style with a thick dark outline and flat shading. Change only his pose and view: climbing pose seen from "
-        "behind, both arms raised high as if gripping a ladder rung above his head, one leg lifted; no ladder is drawn. Keep the "
-        "plain flat magenta background.",
+        # Кадри зроблені моделлю 2026-10 (base: «climbing pose seen from behind, both arms raised high … one leg lifted»,
+        # другий: «… the other leg lifted and the arms one rung lower»). A1 (Sapega 27.10: «має бути зміна рук і ніг»):
+        # кадр 1 — колишній другий (ліва рука й права нога вгорі), кадр 2 — його дзеркало (права рука й ліва нога);
+        # зі спини дзеркало і є чергування, а герой лишається тим самим до пікселя. Перезапуск нічого не генерує.
         rows=[
             (
                 "Climb",
                 [
-                    None,
-                    "the same climbing pose seen from behind, but the other leg lifted and the arms one rung lower",
+                    "FILE:SampleProject/Sprites/Player/Climb/1.png",
+                    "FLIP:Climb:0",
                 ],
             )
         ],

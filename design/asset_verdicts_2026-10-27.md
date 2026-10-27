@@ -12,24 +12,22 @@ generator `Scripts/Tools/asset_catalog.py`): **347 ok, 48 fix, 29 remove**. His 
 goes only once the new one is wired; a fix without a note is the art lane's own call, shown as a before | after sheet.
 Unused leftovers were deleted at once (`fdb739c9`).
 
-**Every character is chibi except the bosses (D816)** — NPCs, companions, human enemies and creatures; sizes from the chart (D814).
+**Like Skul (D816): only Kusakam and his companions are chibi**; NPCs and enemies keep normal proportions and are not redrawn into chibi; the «чібі» notes on NPC cards are void.
 
 Each batch is one ComfyUI run (< 1 h, own sheet), in this order. Mark ✅ with the commit.
 
 | # | Batch | Items | Status |
 |---|---|---|---|
 | A1 | Sapega's noted fixes | main menu background: the same beautiful art, but a desert instead of the forest and a lizard (ящур) instead of the human (`UI/main_menu_background.jpg`); boss shockwave more expressive (`FX/Bosses/shockwave.png`); hero Climb with alternating arms and legs (`Sprites/Player/Climb/`) | ⬜ |
-| A2 | NPCs → chibi, 1 | «чібі» on every NPC sheet, **at the exact adult size 96 art = 144 px** (D814, fixes B188 with A3–A4) (D677/D598 chibi style, as `alchemist/sheet_chibi.png`, `malik/sheet_chibi.png`): blacksmith, merchant (**an older, cunning rat-folk**), old_man, priest, contract_priest | ⬜ |
-| A3 | NPCs → chibi, 2 | dervish, gate_guard, gate_scribe, malik (main sheet), prisoner, witch | ⬜ |
-| A4 | NPCs → chibi, 3 | townsfolk_merchant_woman, townsfolk_old_man, townsfolk_porter, townsfolk_water_carrier; alchemist (fix) | ⬜ |
+| A2 | ~~NPCs → chibi~~ | cancelled (D816). Left from the notes: the merchant becomes **an older, cunning rat-folk** (normal proportions). NPC size (B188, 96 art) stays open until Sapega asks for the redraw | ⏸ |
+| A4 | Alchemist (fix) | the alchemist's normal sheet, fix without a note (own call) | ⬜ |
 | A5 | Road planes redraw | MountainPath `gen_far`, `gen_waymarker`; StreamGorge `gen_mid`, `gen_plume`; ScreeSlide `gen_scree`, MountainPath `gen_plume` (fix); the Rock Ledges redo (cliff like the gorge walls, a wider plateau with a gate/breach, 3–4 burnt houses at the right size, D796) | ⬜ |
 | A6 | Shield phases redraw | `FX/Shield/magic/drop_*`, `fade_*`, `glass/shatter_*` (H2) | ⬜ |
 | A7 | In-game art redraw | Brass Collector `sheet.png` + `stagger.png`; Canyon dust (`Decor/dust`); hit flash `FX/Hit/cut_*`; `Terrain/Canyon_Gorge.png`; tutorial `basic_controls.png`, `journal.png`; `Sprites/Collectible.png`; tilesets `Sprites/DarkTiles.png`, `DesertTiles.png` (the tile grid must stay the same) | ⬜ |
 | A8 | Fixes, own call: places | BanditCamp `gen_floor`, `gen_mid`; Cellar `gen_back`; the 7 `Terrain/*_Terrain.png`; `Laboratory/lamp.png` | ⬜ |
 | A9 | Fixes, own call: effects and items | skill FX radiant_smite, searing_hex, second_wind (charge + release), skyfall_blessing release, withering_grasp; smears `punch_*`, `thrust_*`; `Companions/coin.png`; `Weapons/iron_halberd.png`; hero `Block/1.png`; tutorial `saving.png`, `the_map.png` | ⬜ |
-| A10 | Enemies → chibi at the chart size (B187, D816) | humans: `bandit*`, `bandit_archer` at 96 art; elites `shield_tower`, `bandit_brute`, `archer_heavy` at 120 art (D766, D814) | ⬜ |
-| A10b | Creatures → chibi (D816) | jackals (`jackal_pack`, `jackal_leader`, `jackal_cursed`), scorpions (`scorpion`, `scorpion_armoured`), vultures, `bat`, `cthulhu_fly` — sizes from the chart | ⬜ |
+| A10 | Scale: enemies (B187) | normal proportions (D816): `bandit_archer` at 96 art (the bandit itself is a BACKLOG item, Sapega); elites `shield_tower`, `bandit_brute`, `archer_heavy` at 120 art (D766, D814) | ⬜ |
 | A11 | Scale: palms (chart #2–3) | `palm_sheet` at 256 art (4 H); the FrontDark occluder palms use the same palm ×1.3 on its plane | ⬜ |
 | A12 | Scale: doors, gates, houses (B190, B192) | locked gates `gen_gate.png` (BanditCamp, LizardCave) at 128 art; door sheets (`palisade_gate`, `lab_door`, `cave_mouth`, `palace_door`, `door_elder`) at 112 art, `mesa_cleft` re-cut; City `CityNear`, Village `Houses` painted doors to the exact door; City forge one storey 144 art | ⬜ |
 | A13 | Scale: props (B189, B191) | BanditCamp `Back/Mid` + `gen_sacks`, Cellar `gen_mid`, ElderHouse `Wall` repainted without props + props at exact sizes (barrel 32 art…); `fg_scrub_sheet` 2:1 downsample | ⬜ |
-| A14 | Companions → chibi at the chart size (D816) | `alisia`, `astrit` (its `enter` is a copy of `run` — draw a real one), `urizen`, `cat`; the guard and the D677 chibi sheets (Malik, alchemist) redrawn at 96 art | ⬜ |
+| A14 | Companions (stay chibi, D816) | `astrit` `enter` is a copy of `run` — draw a real one | ⬜ |

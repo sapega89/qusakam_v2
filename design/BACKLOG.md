@@ -352,8 +352,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 Sapega: «те, що не закрито, винесемо з плану». The old plan: [[archive/MASTER_PLAN_2026-10-24]].
 - **Effects polish (A9, item 30)** — waits on his notes; `fx-film` films every effect (GIFs + sheets in
   `design/shots/fx/`). Resume: send him the GIFs, collect «ok / change» per effect, one art batch.
-- **Chibi + three-quarter redraw of old characters (A10, D597, D598)** — deferred by Sapega until the pillars are done.
-  Order when it starts: bandit and jackal, archer and scorpion, then the adult NPCs.
+- **The bandit's look** (Sapega 27.10: «в нас все гуд, окрім бандита, але його просто запиши в беклог») — every other
+  character stays as it is (D816 replaced the chibi redraw of D597/D598: only Kusakam and his companions are chibi). Ask
+  Sapega what is wrong with the bandit when this starts; its size fix (B187, 96 art) goes with it.
 - **Pixel UI skin and font (A11, D239)** — deferred; the 2026-10-23 HUD comparison is `design/shots/ui_style/hud_compare.png`.
 - **Prologue script (S18)** — deferred; the lore idea: the barrier bursts when Kusakam sits to meditate.
 - **Q88, HUD text size** — keep as is / scale the hero panel and hotbar together ×1.25 / text only.
