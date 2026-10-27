@@ -6,6 +6,79 @@
 [ext_resource type="Texture2D" uid="uid://dhg6aatho4sux" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
 [ext_resource type="Texture2D" uid="uid://d3ydvjex0ur42" path="res://SampleProject/Assets/UI/Icons/chevron.svg" id="5_chevron"]
 [ext_resource type="AudioStream" uid="uid://b4poleiv8umrm" path="res://SampleProject/Resources/Audio/Music/time_for_adventure.mp3" id="music_track"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="fx_sand"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_embers.tscn" id="fx_embers"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="fx_shaft"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Critters/glow_firefly.png" id="fx_glow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Clouds/gen_cloud_1.png" id="fx_cloud"]
+
+[sub_resource type="CanvasItemMaterial" id="Material_fx_add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_fx_cloud"]
+offsets = PackedFloat32Array(0, 0.12, 0.88, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Animation" id="Animation_fx_reset"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ImageSpace/SwordAt/SwordGlow:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 0.8, 0.45, 0.55)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ImageSpace/Rays:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.65)]
+}
+
+[sub_resource type="Animation" id="Animation_fx_breathe"]
+length = 6.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ImageSpace/SwordAt/SwordGlow:modulate")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.5, 3, 4.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 0.8, 0.45, 0.55), Color(1, 0.8, 0.45, 1), Color(1, 0.8, 0.45, 0.55), Color(1, 0.8, 0.45, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ImageSpace/Rays:modulate")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.65), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fx"]
+_data = {
+&"RESET": SubResource("Animation_fx_reset"),
+&"breathe": SubResource("Animation_fx_breathe")
+}
 
 [node name="MainMenu" type="Control" unique_id=1653698011]
 layout_mode = 3
@@ -38,6 +111,123 @@ mouse_filter = 2
 texture = ExtResource("3_bg")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="BackgroundFX" type="AspectRatioContainer" parent="Background"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+ratio = 1.7917
+stretch_mode = 3
+
+[node name="ImageSpace" type="Control" parent="Background/BackgroundFX"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SkyAt" type="Control" parent="Background/BackgroundFX/ImageSpace"]
+layout_mode = 1
+anchor_top = 0.05
+anchor_bottom = 0.05
+mouse_filter = 2
+
+[node name="Clouds" type="CPUParticles2D" parent="Background/BackgroundFX/ImageSpace/SkyAt"]
+position = Vector2(-320, 0)
+texture_filter = 2
+texture = ExtResource("fx_cloud")
+amount = 6
+lifetime = 220.0
+preprocess = 220.0
+emission_shape = 3
+emission_rect_extents = Vector2(10, 70)
+direction = Vector2(1, 0)
+spread = 0.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 8.0
+initial_velocity_max = 11.0
+scale_amount_min = 2.6
+scale_amount_max = 3.4
+color = Color(0.85, 0.75, 1, 0.13)
+color_ramp = SubResource("Gradient_fx_cloud")
+
+[node name="Rays" type="Node2D" parent="Background/BackgroundFX/ImageSpace"]
+
+[node name="RayLeftAt" type="Control" parent="Background/BackgroundFX/ImageSpace/Rays"]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Shaft" parent="Background/BackgroundFX/ImageSpace/Rays" instance=ExtResource("fx_shaft")]
+modulate = Color(1, 0.88, 0.8, 1)
+position = Vector2(330, -40)
+scale = Vector2(2.6, 2.6)
+
+[node name="Shaft2" parent="Background/BackgroundFX/ImageSpace/Rays" instance=ExtResource("fx_shaft")]
+modulate = Color(1, 0.88, 0.8, 0.8)
+position = Vector2(500, -40)
+scale = Vector2(1.8, 2.8)
+
+[node name="Shaft3" parent="Background/BackgroundFX/ImageSpace/Rays" instance=ExtResource("fx_shaft")]
+modulate = Color(1, 0.88, 0.8, 0.8)
+position = Vector2(1300, -40)
+scale = Vector2(2.2, 2.4)
+
+[node name="GroundAt" type="Control" parent="Background/BackgroundFX/ImageSpace"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.8
+anchor_right = 0.5
+anchor_bottom = 0.8
+mouse_filter = 2
+
+[node name="Sand" parent="Background/BackgroundFX/ImageSpace/GroundAt" instance=ExtResource("fx_sand")]
+amount = 40
+emission_rect_extents = Vector2(1050, 170)
+direction = Vector2(1, -0.05)
+spread = 12.0
+initial_velocity_min = 14.0
+initial_velocity_max = 30.0
+scale_amount_min = 1.5
+scale_amount_max = 2.5
+color = Color(1, 0.85, 0.6, 0.4)
+
+[node name="Embers" parent="Background/BackgroundFX/ImageSpace/GroundAt" instance=ExtResource("fx_embers")]
+position = Vector2(0, 40)
+amount = 18
+emission_rect_extents = Vector2(820, 120)
+scale_amount_min = 1.8
+scale_amount_max = 2.6
+color = Color(1, 0.6, 0.3, 0.95)
+
+[node name="SwordAt" type="Control" parent="Background/BackgroundFX/ImageSpace"]
+layout_mode = 1
+anchor_left = 0.5407
+anchor_top = 0.793
+anchor_right = 0.5407
+anchor_bottom = 0.793
+mouse_filter = 2
+
+[node name="SwordGlow" type="Node2D" parent="Background/BackgroundFX/ImageSpace/SwordAt"]
+modulate = Color(1, 0.8, 0.45, 0.55)
+rotation = 0.59
+
+[node name="Halo" type="Sprite2D" parent="Background/BackgroundFX/ImageSpace/SwordAt/SwordGlow"]
+material = SubResource("Material_fx_add")
+scale = Vector2(16, 7)
+texture = ExtResource("fx_glow")
+
+[node name="Blade" type="Sprite2D" parent="Background/BackgroundFX/ImageSpace/SwordAt/SwordGlow"]
+material = SubResource("Material_fx_add")
+scale = Vector2(9, 1.6)
+texture = ExtResource("fx_glow")
+
+[node name="Pulse" type="AnimationPlayer" parent="Background/BackgroundFX"]
+libraries = {
+&"": SubResource("AnimationLibrary_fx")
+}
+autoplay = &"breathe"
 
 [node name="MenuOverlay" type="ColorRect" parent="." unique_id=954305093]
 unique_name_in_owner = true

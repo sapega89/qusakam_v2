@@ -89,6 +89,29 @@ func _initialize() -> void:
 	ck(theme.get_color("icon_normal_color", "MainMenuItem").a == 0.0, "inactive item hides the pointer")
 	ck(theme.get_color("icon_focus_color", "MainMenuItemOn").a == 1.0, "active item shows the pointer")
 
+	print("[3b] Live effects over the art (D818)")
+	var fx: Control = menu.background.get_node("BackgroundFX")
+	ck(fx.is_visible_in_tree() and menu.background.get_index() < menu.get_node("%MenuOverlay").get_index(),
+			"effects ride on the art, under the darkening overlay")
+	# Світіння має лежати на яскравому клинку картинки за справжнього масштабу (stretch keep-aspect-covered).
+	var glow: Node2D = fx.get_node("ImageSpace/SwordAt/SwordGlow")
+	var img: Image = menu.background.texture.get_image()
+	var bg_size: Vector2 = menu.background.size
+	var tex_size := Vector2(img.get_size())
+	var k: float = maxf(bg_size.x / tex_size.x, bg_size.y / tex_size.y)
+	var px: Vector2 = (glow.global_position - menu.background.global_position - (bg_size - tex_size * k) / 2.0) / k
+	var lum: float = img.get_pixelv(Vector2i(px.round())).get_luminance()
+	ck(lum > 0.8, "sword glow sits on the blade: image px %s, luminance %.2f" % [px.round(), lum])
+	var a0: float = glow.modulate.a
+	await create_timer(0.7).timeout
+	ck(not is_equal_approx(glow.modulate.a, a0), "sword glow pulses (alpha %.2f → %.2f)" % [a0, glow.modulate.a])
+	var sand: CPUParticles2D = fx.get_node("ImageSpace/GroundAt/Sand")
+	var gq: Node = root.get_node("DisplayManager").graphics_quality
+	gq.apply("low")
+	ck(sand.amount == 20, "Low halves the sand (D554): %d" % sand.amount)
+	gq.apply("high")
+	ck(sand.amount == 40, "High restores the sand: %d" % sand.amount)
+
 	print("[4] Continue only when a save exists (D72)")
 	ck(cont.disabled and cont.focus_mode == Control.FOCUS_NONE, "no saves → Continue disabled")
 	ck(new_game.find_valid_focus_neighbor(SIDE_BOTTOM) == settings, "focus skips the disabled Continue")
