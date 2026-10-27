@@ -3984,6 +3984,62 @@ _pick(
 )
 
 
+# Птахи-критери (A21 зріз 2, ambient_critters_plan): малі, тікають від героя. Генеруються в клітинці героя (його кадр
+# 64x64 — стиль і масштаб), лист ріжеться до crop; помах крил — три пози, «рівно» повторюється (кадр з кешу).
+# Крила вгору/вниз з першого кадру лишали птаха стояти на ногах — їх зроблено з кадру польоту (FROM:fly:1)
+BIRD_LEVEL = (
+    "in the same side view facing right, just as small as before: flying in mid-air, not standing, its wings "
+    "stretched out level with its body, its legs tucked up under its belly"
+)
+BIRD_UP = "FROM:fly:1:in the same side view facing right, just as small as before: its wings raised up high above its back, its body and tucked legs unchanged"
+# «wings swept down» складав крила, птах ніби сидить — тут удар крил униз названо прямо
+BIRD_DOWN = (
+    "FROM:fly:1:in the same side view facing right, just as small as before: in the middle of a downstroke, both "
+    "wings bent down below its belly, the wing tips hanging lower than its tail, its body level as in flight and its "
+    "legs tucked, not standing"
+)
+# розмір відносно голови героя, як у кажана; «as tall as the boot» дало птаха на всю картинку
+BIRD_SIZE = (
+    ". It is very small, about half the size of the head of the character in picture 1: the whole bird fits inside a "
+    "small square standing on the ground at the bottom middle of the picture, a large empty magenta space all around it. "
+)
+CHARACTERS["critter_bird"] = dict(
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    seed=111,
+    colors=12,
+    crop=(48, 48),  # 32x32 не вміщає: птах завбільшки з голову героя, крила вгору — ще вище
+    out="SampleProject/Assets/Characters/Critters/bird.png",
+    who="the same small sandy-brown desert lark with the pale belly, the dark-streaked back, the small crest and the "
+    "short pointed beak",
+    base="Replace the character in picture 1 with a small desert lark: sandy-brown feathers with dark streaks on its "
+    "back and wings, a pale cream belly, a small crest on its head, a short pointed dark beak, a black eye, thin legs, "
+    "standing on the ground with its wings folded — "
+    + PIXEL_STYLE
+    + BIRD_SIZE
+    + SIDE_VIEW % {"p": "its"}
+    + "."
+    + MAGENTA_BG,
+    rows=[("perch", [None, "BOB:52"]), ("fly", [BIRD_UP, BIRD_LEVEL, BIRD_DOWN, BIRD_LEVEL])],
+)
+# Голуб для Міста — той самий розмір і пози, свій опис і зерно
+CHARACTERS["critter_pigeon"] = dict(
+    CHARACTERS["critter_bird"],
+    seed=112,
+    crop=(56, 56),  # голуб більший за жайворонка: крила вгору — 50 px
+    out="SampleProject/Assets/Characters/Critters/pigeon.png",
+    who="the same small grey city pigeon with the blue-grey body, the darker grey head, the green and purple sheen on "
+    "its neck, the two dark bars on its wings and the pink feet",
+    base="Replace the character in picture 1 with a small city pigeon: a plump blue-grey body, a darker grey head, a "
+    "green and purple sheen on its neck, two dark bars across its folded wings, a dark tail tip, a short dark beak with "
+    "a white spot at its base, an orange eye, short pink feet, standing on the ground with its wings folded — "
+    + PIXEL_STYLE
+    + BIRD_SIZE
+    + SIDE_VIEW % {"p": "its"}
+    + "."
+    + MAGENTA_BG,
+)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())
@@ -4143,6 +4199,18 @@ if __name__ == "__main__":
         prop = np.zeros((ch, cw, 4), np.uint8)
         prop[y0:y1, x0:x1] = first[y0:y1, x0:x1]
         Image.fromarray(prop).save(prop_out)
+    if "crop" in char:
+        # малий критер: лист у меншій клітинці, одне вікно для всіх кадрів (рух між ними лишається), низ — ступні
+        nw, nh = char["crop"]
+        cells = sheet.reshape(len(char["rows"]), ch, cols, cw, 4).transpose(0, 2, 1, 3, 4)
+        xs = np.nonzero(cells[..., 3].any(axis=(0, 1, 2)))[0]
+        ys = np.nonzero(cells[..., 3].any(axis=(0, 1, 3)))[0]
+        x0, y0 = (xs[0] + xs[-1] + 1 - nw) // 2, floor + 1 - nh
+        assert xs[-1] - xs[0] < nw and ys[0] >= y0 and x0 >= 0 and x0 + nw <= cw, (
+            f"frames do not fit {nw}x{nh}: x {xs[0]}..{xs[-1]}, y {ys[0]}..{ys[-1]}"
+        )
+        sheet = cells[:, :, y0 : y0 + nh, x0 : x0 + nw].transpose(0, 2, 1, 3, 4)
+        sheet = np.ascontiguousarray(sheet).reshape(len(char["rows"]) * nh, cols * nw, 4)
     if (
         "out" in char
     ):  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере
