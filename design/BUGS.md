@@ -230,6 +230,7 @@ the history, this note keeps only what is open.
 > - **B196** (open) — the cutscene's «Hold Tab to skip» prompt is drawn over the bottom-right «Escape Close» hint of the «Your Skills» window at the summit meditation (`design/shots/starting_skills.png`).
 > - **B197** (open) — the jackal (the dog) flies instead of running on the ground («собака літає, а не …», Sapega playtest 2026-10-27).
 > - **B198** (open) — standing on a step, the hero cannot be reached: ground enemies do not jump up to him (Sapega playtest 2026-10-28).
+> - **B199** (open, `cloud/fight-occluders`) — during a fight a foreground rock gets in the way and hides the fight («під час бою камінь заважає», Sapega playtest 2026-10-28).
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
