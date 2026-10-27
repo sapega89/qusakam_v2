@@ -1,0 +1,349 @@
+{
+ "floor_gap_px": {
+  "frames_on_floor": 161,
+  "max": 0.07476806640625,
+  "median": 0.07476806640625
+ },
+ "frozen_enemies": 0,
+ "hero_z": 1,
+ "hidden_ui": [
+  "/root/GameManager/UIManager/UIRoot/UILayer",
+  "/root/GameManager/UIManager/UIRoot/ModalLayer",
+  "/root/GameManager/VFXHooks/HurtVignette",
+  "/root/DisplayManager/BrightnessLayer",
+  "/root/ModalDialogGlobal",
+  "/root/TransitionCanvasLayer",
+  "/root/Game/UI",
+  "/root/Game/UICanvas",
+  "/root/Game/DialogueSystem",
+  "/root/Game/MouseCursor/Shield"
+ ],
+ "info": {
+  "arrival": "Arrival",
+  "film_frames": [
+   105,
+   287
+  ],
+  "run_back_px": -900.833396911621,
+  "run_out_px": 900.862365722656,
+  "start": [
+   96.0,
+   391.9833984375
+  ]
+ },
+ "layers": [
+  {
+   "items": 1,
+   "kind": "camera",
+   "order": 15,
+   "path": "Player/Camera2D",
+   "screens": {
+    "far": {
+     "contrast": 0.298086889580649,
+     "coverage": 0.00560185185185185,
+     "painted_top_px": null,
+     "saturation": 0.424174058416801,
+     "value": 0.416130268406635,
+     "visible": 0.00559413580246914
+    },
+    "mid": {
+     "contrast": 0.298997322226322,
+     "coverage": 0.0054320987654321,
+     "painted_top_px": null,
+     "saturation": 0.417763712437935,
+     "value": 0.42908860742912,
+     "visible": 0.0054320987654321
+    },
+    "stand": {
+     "contrast": 0.29685045204442,
+     "coverage": 0.00544753086419753,
+     "painted_top_px": null,
+     "saturation": 0.418022544453837,
+     "value": 0.425859890826377,
+     "visible": 0.00544753086419753
+    }
+   },
+   "speed_x": null,
+   "speed_y": null,
+   "z": 1
+  },
+  {
+   "items": 2,
+   "kind": "room",
+   "order": 282,
+   "path": "Back",
+   "screens": {
+    "far": {
+     "contrast": 0.181120862006835,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.528178215343045,
+     "value": 0.269120870185301,
+     "visible": 0.697646604938272
+    },
+    "mid": {
+     "contrast": 0.180372223525997,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.529638373502013,
+     "value": 0.266658952105971,
+     "visible": 0.69783950617284
+    },
+    "stand": {
+     "contrast": 0.181420850749464,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.529180625286643,
+     "value": 0.268320509362622,
+     "visible": 0.756358024691358
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": -10
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 288,
+   "path": "ExitDoor",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "contrast": 0.0126314150277381,
+     "coverage": 0.00139660493827161,
+     "painted_top_px": null,
+     "saturation": 0.445755124504385,
+     "value": 0.962401199588052,
+     "visible": 0.000648148148148148
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 296,
+   "path": "Fight_LoneBat",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 3,
+   "kind": "room",
+   "order": 300,
+   "path": "Fight_Bats",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 306,
+   "path": "Chest_Cellar",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 315,
+   "path": "RoomInstance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 7,
+   "kind": "parallax",
+   "order": 317,
+   "path": "FrontDark",
+   "repeat_size": [
+    0.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.0280401797070217,
+     "coverage": 0.146875,
+     "painted_top_px": null,
+     "saturation": 0.511629674661095,
+     "value": 0.0282866905453053,
+     "visible": 0.146875
+    },
+    "mid": {
+     "contrast": 0.0331116328753953,
+     "coverage": 0.147253086419753,
+     "painted_top_px": null,
+     "saturation": 0.512664760461101,
+     "value": 0.0283992128620593,
+     "visible": 0.147253086419753
+    },
+    "stand": {
+     "contrast": 0.0382825293400015,
+     "coverage": 0.0739043209876543,
+     "painted_top_px": null,
+     "saturation": 0.51531913845271,
+     "value": 0.0357605728213961,
+     "visible": 0.0739043209876543
+    }
+   },
+   "scroll_scale": [
+    1.29999995231628,
+    1.0
+   ],
+   "speed_x": 1.3,
+   "speed_y": null,
+   "z": 20
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 325,
+   "path": "TopShade",
+   "screens": {
+    "far": {
+     "contrast": 0.00441821085152106,
+     "coverage": 0.188888888888889,
+     "painted_top_px": null,
+     "saturation": 0.552201640976746,
+     "value": 0.0285301590518923,
+     "visible": 0.149884259259259
+    },
+    "mid": {
+     "contrast": 0.00441821085152106,
+     "coverage": 0.188888888888889,
+     "painted_top_px": null,
+     "saturation": 0.552201640976746,
+     "value": 0.0285301590518923,
+     "visible": 0.149475308641975
+    },
+    "stand": {
+     "contrast": 0.00441821085152106,
+     "coverage": 0.188888888888889,
+     "painted_top_px": null,
+     "saturation": 0.552201640976746,
+     "value": 0.0285301590518923,
+     "visible": 0.163641975308642
+    }
+   },
+   "speed_x": 0.0,
+   "speed_y": null,
+   "z": 19
+  }
+ ],
+ "movie_fps": 30,
+ "room": "GatehouseCellar",
+ "screens": {
+  "far": {
+   "feet_screen": [
+    960.27734375,
+    935.831787109375
+   ],
+   "hero": [
+    996.862365722656,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  },
+  "mid": {
+   "feet_screen": [
+    960.277099609375,
+    935.831787109375
+   ],
+   "hero": [
+    546.43115234375,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  },
+  "stand": {
+   "feet_screen": [
+    216.065231323242,
+    935.831787109375
+   ],
+   "hero": [
+    96.0289916992188,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  }
+ },
+ "view": [
+  1920.0,
+  1080.0
+ ],
+ "zoom": 2.25
+}

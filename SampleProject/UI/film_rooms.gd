@@ -12,13 +12,19 @@ extends SceneTree
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## Перевага міток старту: перша наявна серед дітей кімнати.
 const ARRIVALS: Array[String] = ["Arrival", "Arrival_Start"]
-const TICKS := 60
+## Лише у фільмі: сюжет кімнати вже пройдено, щоб вхідна кат-сцена не забрала камеру й героя (LabCells без цього
+## тримає камеру на камерах в'язнів, а героя — у сцені).
+const STORY_DONE := {
+	"LabCells": ["lab_cells_cutscene_complete", "lab_acquaintance_complete"],
+}
 const RUN_FRAMES := 150  # 2,5 с в один бік
 const JUMP_AT := 60
 const JUMP_HOLD := 18
 const STAND_FRAMES := 60
 ## Скільки кадрів без руху вважаємо «уперся в стіну».
 const BLOCKED_FRAMES := 20
+## Біг зупиняється за стільки px від краю кімнати: за краєм MetSys перемикає кімнату.
+const EDGE_MARGIN := 64.0
 ## Кроки швидкості, що вважаються різними планами (×камери).
 const SPEED_STEP := 0.05
 ## Розмір зменшеного кадру для середніх значень плану.
@@ -57,6 +63,8 @@ func _initialize() -> void:
 	enemy_script = load("res://SampleProject/Scripts/Gameplay/DefaultEnemy.gd")  # не class_name: autoload ще нема при компіляції
 	physics_frame.connect(_freeze_enemies)
 	node_added.connect(_mute_trigger)
+	for flag: String in STORY_DONE.get(room_name, []):
+		game.set_quest_flag(flag, true)
 	var arrival: NodePath = _arrival(MAPS % room_name)
 	await game.teleport_to_room(MAPS % room_name, arrival)
 	for i in 30: await physics_frame
@@ -70,6 +78,10 @@ func _initialize() -> void:
 	var dir: float = 1.0 if bounds.get_center().x >= player.global_position.x else -1.0
 	# Сюжет кімнати, що зупинив героя (LaboratoryOutside: екран кінця демо), — лише у фільмі пускаємо його знову.
 	info["movement_was_off"] = player.event
+	var camera: Camera2D = player.get_node("Camera2D")
+	if camera.top_level:
+		push_error("film_rooms: %s starts with the camera detached from the hero" % room_name)
+	info["camera_detached"] = camera.top_level
 	if player.event:
 		player.set_movement_enabled(true)
 	phase = "run_out"
@@ -86,6 +98,8 @@ func _initialize() -> void:
 	await process_frame
 	RenderingServer.frame_pre_draw.disconnect(_sample)
 	info["film_frames"] = [samples[0].frame, samples[-1].frame]
+	if not game.map.scene_file_path.ends_with("/%s.tscn" % room_name):
+		push_error("film_rooms: the hero left %s for %s" % [room_name, game.map.scene_file_path])
 	# Соло на трьох екранах проходу: там, де стоїть (старт і кінець), посередині, на розвороті. Кадри — після фільму.
 	var screens: Dictionary = {"stand": await _solo_pass()}
 	for spot: String in ["mid", "far"]:
@@ -126,6 +140,7 @@ func _run(dir: float, with_jump: bool) -> float:
 	var from_x: float = player.global_position.x
 	var still: int = 0
 	var last_x: float = from_x
+	var bounds: Rect2 = _room_bounds()
 	Input.action_press(action)
 	for i: int in RUN_FRAMES:
 		if with_jump and i == JUMP_AT:
@@ -136,6 +151,9 @@ func _run(dir: float, with_jump: bool) -> float:
 		still = still + 1 if absf(player.global_position.x - last_x) < 0.5 else 0
 		last_x = player.global_position.x
 		if i > BLOCKED_FRAMES and still >= BLOCKED_FRAMES and not (with_jump and i < JUMP_AT + JUMP_HOLD):
+			break
+		var x: float = player.global_position.x
+		if (dir < 0.0 and x < bounds.position.x + EDGE_MARGIN) or (dir > 0.0 and x > bounds.end.x - EDGE_MARGIN):
 			break
 	Input.action_release(action)
 	Input.action_release(&"jump")
@@ -162,10 +180,13 @@ func _freeze_enemies() -> void:
 
 
 ## Лише у фільмі: зони кімнати (сюжетні тригери, розмови, двері, точки збереження) не реагують на героя — кат-сцена
-## чи діалог забрали б у нього керування посеред проходу. Вмикаються ще до _ready кімнати.
+## чи діалог забрали б у нього керування посеред проходу. Вмикаються ще до _ready кімнати. Фінал демо
+## (LaboratoryOutside, D473) заморожений: інакше його твін відчепив би камеру й повів угору.
 func _mute_trigger(node: Node) -> void:
 	if node is Area2D and game.is_ancestor_of(node) and not game.player.is_ancestor_of(node):
 		(node as Area2D).monitoring = false
+	elif node.scene_file_path.ends_with("/DemoEndScreen.tscn"):
+		node.process_mode = Node.PROCESS_MODE_DISABLED
 
 
 func _drain() -> void:
