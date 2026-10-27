@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7tfvtcan441d"
-path="res://.godot/imported/gen_smoke.png-a91f02905093dcf92b44ecda5fef600b.ctex"
+uid="uid://b8e7quin5atqg"
+path="res://.godot/imported/gen_plume.png-2408bd0bb940e2d9b518cfa0d6814d47.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Assets/Backgrounds/MountainPath/gen_smoke.png"
-dest_files=["res://.godot/imported/gen_smoke.png-a91f02905093dcf92b44ecda5fef600b.ctex"]
+source_file="res://SampleProject/Assets/Backgrounds/MountainPath/gen_plume.png"
+dest_files=["res://.godot/imported/gen_plume.png-2408bd0bb940e2d9b518cfa0d6814d47.ctex"]
 
 [params]
 

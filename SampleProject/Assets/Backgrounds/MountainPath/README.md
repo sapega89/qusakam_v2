@@ -5,17 +5,27 @@
 walk line by `design/shots/candidates/path_planes/path_planes.py`. A Steam release has to disclose AI-generated content.
 
 The room: outdoor, main road, 2 cells (1728 × 480 world), between the bridge (west) and the Scree Slide (east). No
-fights; the story is in the background: smoke over the village to the east. The fallen barrier is **not** drawn
-(the lore never says what it looks like). Review: `design/shots/m6a1_path_scree.png`.
+fights; the story is in the background: a plume of smoke blown west from the village, and the fallen barrier — a
+cracked glass dome over the east (D795). Review: `design/shots/m6a1_path_scree.png`.
 
 Back to front (art px; the scene draws them at scale 1.5; scroll factor on both axes):
 
 - sky: the shared pack sky `DesertOasis/bg4/plan5.png` and drifting clouds, as the canyon (×0).
-- `gen_smoke.png` (100×141) — two columns of dark smoke from the burning village. ×0.1, **behind** `gen_far`; its foot
-  at art row 226 (world y 339), below the deepest valley of `gen_far` (row 223), so the mountains hide where it rises.
-  On the review sheet it sits at art x 380 with the camera at the path's left end. Also used by the Scree Slide.
+- `gen_barrier.png` (456×205) — the fallen barrier (Sapega: «прозорий шар в небі з тріщиною»): a huge faint glass dome
+  with a jagged broken-out hole and cracks in its upper left. Drawn by the model as light on black
+  (`path_planes.py gen`, seed 701); brightness became alpha in four steps — body 0.1, streaks 0.18, outline 0.3, crack
+  edges 0.45 — in one pale cold white (236, 246, 255). ×0.1, the farthest plane after the sky; top-left at art
+  (260, 23) with the camera at the path's left end, so its cut bottom (row 228) stays below the deepest valley of
+  `gen_far` (223). The hole is at x 108–215 of the image. Also used by the Scree Slide.
 - `gen_far.png` (576×324) — distant bare rocky mountains, hazed, filled down; seamless tile. ×0.3. Also used by the
   Scree Slide.
+- `gen_plume.png` (589×149) — the smoke of the burning village as a long plume blown west across the sky (Sapega's
+  sketch, 27.10): thin tail on the left, widening, a big rounded puff, and on the right a stem bending down to the
+  source, cut at the bottom (`keep`). ×0.4, in front of `gen_far`, behind `gen_mid`; top-left at art (475, −20) with the
+  camera at the path's left end. So the hero walks under it toward its source: at the path's start only ~100 px of the
+  tail come in at the right edge near the top, at its end the tip is mid-screen, and on the Scree Slide the whole plume
+  is in view with the puff at the east edge and the stem beyond it. ×0.4, not ×0.5: between the path's start and the
+  scree the camera covers 1152 × f px of the plane, and the plume is 568 px to the stem. Also used by the Scree Slide.
 - `gen_mid.png` (576×324) — a ridge of red sandstone cliffs and spires with dry thorn bushes, filled down; seamless
   tile. ×0.75.
 - `gen_waymarker.png` (42×57) — a broken stone waymarker with a carved spiral and a blue ribbon, the one story prop.

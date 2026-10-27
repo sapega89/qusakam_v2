@@ -1063,7 +1063,7 @@ LAYERS = {
         f"fifth of its width, empty space on both sides, its base resting on the bottom edge, {CHROMA}",
     ),
     # M6a-1: дорога від мосту до села — гірська стежка й осипище (спільні далина, дим і передній план; збирає
-    # design/shots/candidates/path_planes/path_planes.py). Бар'єр не малюємо: лор не каже, який він на вигляд.
+    # design/shots/candidates/path_planes/path_planes.py). Бар'єр (прозорий купол із проламом, D795) — там же.
     "MountainPath/gen_far": dict(
         seed=501,
         rows=240,
@@ -1078,26 +1078,32 @@ LAYERS = {
         "dusty rose and sandy violet rock with violet shadows, spanning the full width and reaching the bottom edge, "
         f"{CHROMA}",
     ),
-    # дим над селом — окремий предмет за далекими горами (×0.15), а не в плитці далини: інакше він повторюється
-    "MountainPath/gen_smoke": dict(
-        seed=503,
-        rows=H,
+    # дим над селом — довгий шлейф, який вітер несе на захід через усе небо стежки (Сапега, ескіз 27.10: «десь з-за
+    # краю екрану починається дим, потім ми підходимо до села»): тонкий кінчик на заході, широке тіло, на сході
+    # спускається до джерела за східним краєм. Ширший за екран: width — ширина генерації в px гри при SCALE
+    "MountainPath/gen_plume": dict(
+        seed=722,  # 721 — стіна праворуч, 723 — клуб на пів неба; 722 — тонкий кінчик, клуб праворуч, стебло донизу
+        rows=288,
+        width=864,
+        block=4,  # 648 px: шлейф займає верх неба, а не пів екрана
+        keep=186,  # нижче — димар і смуга землі, які модель ставить під джерелом
         top=0,
-        small=2,  # далекий дим — удвічі менший за повний кадр, у пікселях гри
-        spill=8,  # «помаранчевий жар» біля основи модель малює оливковим
         seam="none",
         trim=True,
-        keep=148,  # нижче — смуга мурованої землі, яку модель стелить під димом
-        cut=(85, 191),
+        blob=True,
+        spill=8,
+        khaki=True,  # оливкові відблиски зеленого тла на верхах клубів
         key="green",
         shade=0,
         fill=False,
         haze=0.1,
         colors=8,
-        prompt="two columns of thick dark smoke rising high into the air, a tall one and a smaller one beside it, "
-        "billowing up in heavy rounded puffs of charcoal grey and dark violet, a faint orange ember glow at their narrow "
-        "bases, the columns leaning and spreading to the right at the top, alone in the middle of the frame with empty "
-        f"space on both sides, their bases on the bottom edge, {CHROMA}",
+        prompt="one long horizontal plume of dark smoke blown sideways by a strong wind, drifting from right to left "
+        "across the sky: at the right edge of the frame it is thick, wide and billowing in heavy rounded puffs, bending "
+        "down toward the bottom right corner, and toward the left it grows steadily thinner and narrower until it ends "
+        "in a thin ragged wispy pointed tip in the left third of the frame, the left quarter of the frame completely "
+        "empty, charcoal grey and dark violet smoke, the plume floating in the upper half of the frame with empty space "
+        f"above it, {CHROMA}",
     ),
     "MountainPath/gen_mid": dict(
         seed=505,
@@ -1180,7 +1186,7 @@ LAYERS = {
 }
 
 
-def graph(text, seed, height, image=None, denoise=1.0):
+def graph(text, seed, height, image=None, denoise=1.0, width=GW):
     """Граф API ComfyUI; з image — перемальовує лише прозору смугу цієї картинки."""
     g = {
         "unet": (
@@ -1212,7 +1218,7 @@ def graph(text, seed, height, image=None, denoise=1.0):
         "neg": ("CLIPTextEncode", {"clip": ["clip", 0], "text": ""}),  # cfg 1 — не діє
         "latent": (
             "EmptySD3LatentImage",
-            {"width": GW, "height": height, "batch_size": 1},
+            {"width": width, "height": height, "batch_size": 1},
         ),
         "sample": (
             "KSampler",
@@ -1298,9 +1304,10 @@ def seam_pass(img, layer, text, height):
 
 
 def cache_path(layer):
-    tag = json.dumps(
-        [layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]]
-    )
+    tag = [layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]]
+    if layer.get("width"):  # ширший за екран шар (шлейф диму); без width ключ кешу старий
+        tag.append(layer["width"])
+    tag = json.dumps(tag)
     return os.path.join(CACHE, hashlib.sha1(tag.encode()).hexdigest()[:16] + ".png")
 
 
@@ -1347,7 +1354,7 @@ def generate(layer):
         return np.asarray(Image.open(path).convert("RGB"), dtype=np.float32)
     height = -(-layer["rows"] * SCALE // 16) * 16  # сторони латента кратні 16
     text = f"{layer['prompt']}, {STYLE}"
-    img = run(graph(text, layer["seed"], height))
+    img = run(graph(text, layer["seed"], height, width=layer.get("width", W) * SCALE))
     if layer["seam"] == "model":
         img = seam_pass(
             np.roll(img, GW // 2, axis=1), layer, text, height
@@ -1549,11 +1556,13 @@ if __name__ == "__main__":
                 & (px[..., 1] > px[..., 0] + 15)
                 & (px[..., 1] >= px[..., 2] - 10)
             )
-            if layer.get("khaki"):  # хакі-кромка скелі: зелене тло, змішане з пісковиком (MountainPath/gen_mid)
+            # хакі-кромка скелі: зелене тло, змішане з пісковиком (MountainPath/gen_mid); поріг 20 ловить і оливкові
+            # відблиски на клубах gen_plume (gen_mid від нього не змінився)
+            if layer.get("khaki"):
                 tinted |= (
                     (out[..., 3] > 0)
                     & (np.abs(px[..., 0] - px[..., 1]) < 25)
-                    & (px[..., 1] > px[..., 2] + 25)
+                    & (px[..., 1] > px[..., 2] + 20)
                 )
             clean = (out[..., 3] > 0) & ~tinted
             if tinted.any() and clean.any():

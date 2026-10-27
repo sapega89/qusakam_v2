@@ -11,11 +11,14 @@ Stream Gorge, which continues east from the lower cell. Review: `design/shots/m6
 
 Back to front (art px; scale 1.5; scroll factor on both axes, so on the way down the far plane sinks behind the rim):
 
-- sky, `MountainPath/gen_smoke.png` (×0.1), `MountainPath/gen_far.png` (×0.3) — shared with the path, shifted by
-  −factor × 1728 world px (the path's width), so they go on from where the path left them.
+- sky, `MountainPath/gen_barrier.png` (×0.1), `MountainPath/gen_far.png` (×0.3), `MountainPath/gen_plume.png` (×0.4) —
+  shared with the path, shifted by −factor × 1728 world px (the path's width), so they go on from where the path left
+  them. Here the whole smoke plume is in view, its puff at the east edge and its stem beyond the edge; on the way down
+  it rises out of the frame.
 - `gen_mid.png` (576×640) — the far wall of the gorge, ×0.75; drawn for this room's only camera x, no further shift.
   Rows 0–252 are `MountainPath/gen_mid.png` rolled 288 art px (the phase the path's tile reaches at the border);
-  below, the gorge wall, in the same 12 colours.
+  below, the gorge wall, in the same 12 colours, hazed further so its ledges don't read as walkable (D795): +0.35
+  toward the sky haze, reached in 8 steps over the 64 rows under row 253, so there is no seam with the ridge.
 - `gen_scree.png` (576×640) — the scree slope and the rock under it, ×1.0, room-sized; transparent above the surface.
   The surface, in world px (room-local) — the collision follows it: flat (0, 416) → (96, 416), slope down to
   (720, 896) (about 38°, under the 45° floor limit), flat (720, 896) → (864, 896), the gorge floor and the exit east.

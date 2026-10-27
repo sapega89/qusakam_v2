@@ -1,9 +1,9 @@
 """M6a-1: гірська стежка (2 екрани) і осипище (1×2) — дорога від мосту до села, без боїв (world_structure_plan v3).
 Шари стежки робить comfy_backdrop.py (MountainPath/gen_*); тут — два шари осипища, яких одним текстом не зробити,
-обрізка смуги землі й аркуш для Сапеги.
-  python -B design/shots/candidates/path_planes/path_planes.py gen    — ComfyUI: стіна ущелини під гребенем gen_mid і
-                                                                       схил осипу за напрямною (сирі PNG поруч)
-  python -B design/shots/candidates/path_planes/path_planes.py build  — (scipy) плани осипища, рядок 0 gen_ground
+бар'єр (світло на чорному → прозорість), обрізка смуги землі й аркуш для Сапеги.
+  python -B design/shots/candidates/path_planes/path_planes.py gen    — ComfyUI: стіна ущелини під гребенем gen_mid,
+                                                                       схил осипу за напрямною, бар'єр (сирі PNG поруч)
+  python -B design/shots/candidates/path_planes/path_planes.py build  — (scipy) плани осипища, рядок 0 gen_ground, gen_barrier
   python -B design/shots/candidates/path_planes/path_planes.py sheet  — design/shots/m6a1_path_scree.png
 
 Одиниці — пікселі арту (світ = ×1.5). Стежка 1152×320 (1728×480 світу), осипище 576×640 (864×960), праворуч від
@@ -33,6 +33,32 @@ PATH_W = 1152  # ширина стежки — осипище починаєть
 MID_F = 0.75
 ROLL = round(MID_F * PATH_W) % W  # фаза плитки gen_mid, яку бачить осипище (288)
 KEEP_MID = 253  # рядки gen_mid, що в осипищі лишаються як є; нижче — стіна ущелини
+# бар'єр — величезний прозорий купол над селом із тріщиною (Сапега: «прозорий шар в небі з тріщиною»); лор кольору не
+# дає («дзвенів над дюнами»), тож модель малює світло на чорному, а колір і прозорість — наші (build)
+BARRIER_SEED = 701  # ширший і пласкіший купол; 702 — вужчий
+BARRIER_CROP = (
+    188,
+    72,
+    1556,
+    688,
+)  # x0, y0, x1, y1 сирої: купол без «підлоги» й обідка внизу (вони за горами)
+BARRIER_BLOCK = 3  # px генерації на px арту: купол 456×205 — чотири п'ятих екрана, вершина над усіма горами
+BARRIER_ALPHA = (0.1, 0.18, 0.3, 0.45)  # тіло (за ним видно пролам), відблиски, обрис, кромки тріщини
+BARRIER_TINT = np.array(
+    [236, 246, 255], np.float32
+)  # блідо-біле скло з холодним відтінком (лор кольору не дає)
+WALL_HAZE = 0.35  # додатковий серпанок стіни ущелини під гребенем: уступи не мають читатися як підлога (D795)
+WALL_RAMP = (
+    64  # рядків від KEEP_MID, за які серпанок наростає (8 сходинок, без дизерингу)
+)
+BARRIER_TEXT = (
+    "a gigantic faint transparent dome of magical glass seen from very far away, a thin shimmering hemisphere shell "
+    "of pale white light, its curved base resting on the bottom edge of the frame and its arc filling the whole width, "
+    "only its thin bright outline and a few faint streaks of reflection on its surface, the inside of the dome dark "
+    "and empty, a long jagged crack running down across its upper left part with a large shard broken out of the "
+    "shell leaving a jagged hole, thin cracks branching from the hole, no ground, no landscape, nothing else, on a "
+    "pure solid black background, flat matte painting for a 2D game, clean simple shapes"
+)
 
 
 def raw(name):
@@ -62,7 +88,9 @@ def gen():
     if not os.path.exists(raw("scree_mid_603")):
         g = mid_guide()
         y = np.arange(SH * K)
-        keep = np.clip(((KEEP_MID + 34) * K - y) / (34 * K), 0, 1)  # 1 — лишити, 0 — перемалювати
+        keep = np.clip(
+            ((KEEP_MID + 34) * K - y) / (34 * K), 0, 1
+        )  # 1 — лишити, 0 — перемалювати
         alpha = np.repeat((keep * 255).astype(np.uint8)[:, None, None], W * K, axis=1)
         name = cb.upload(np.concatenate([g, alpha], 2), "scree_mid.png")
         text = (
@@ -119,6 +147,11 @@ def gen():
         out = cb.run(cb.graph(text, 611, SH * K, name, 0.8))
         Image.fromarray(out.astype(np.uint8)).save(raw("scree_611"))
         print("scree_611", flush=True)
+    # бар'єр, що впав (D795): світло на чорному тлі — яскравість стане прозорістю (build)
+    if not os.path.exists(raw(f"barrier_{BARRIER_SEED}")):
+        out = cb.run(cb.graph(BARRIER_TEXT, BARRIER_SEED, 976))
+        Image.fromarray(out.astype(np.uint8)).save(raw(f"barrier_{BARRIER_SEED}"))
+        print(f"barrier_{BARRIER_SEED}", flush=True)
     cb.urllib.request.urlopen(
         cb.urllib.request.Request(
             cb.API + "/free",
@@ -160,6 +193,10 @@ def build():
     out = np.zeros((SH, W, 4), np.uint8)
     out[..., :3] = to_palette(rgb, palette(MP + "gen_mid.png"))
     out[..., 3] = opaque * 255
+    # стіна під гребенем — у серпанку, як далина: сходинками по 8 рядків від KEEP_MID, тож шва з гребенем немає
+    step = np.clip((np.arange(SH) - KEEP_MID) // (WALL_RAMP // 8) + 1, 0, 8) / 8
+    h = (WALL_HAZE * step)[:, None, None]
+    out[..., :3] = np.round(out[..., :3] * (1 - h) + cb.HAZE * h).astype(np.uint8)
     out[: len(mid)][:KEEP_MID] = mid[:KEEP_MID]
     Image.fromarray(out).save(SC + "gen_mid.png")
     # схил: колір — генерація в палітрі gen_ground, форма — точно SLOPE (по ній карта ставить колізію)
@@ -186,10 +223,39 @@ def build():
     out[green, :3] = pal[len(pal) // 2]
     Image.fromarray(out).save(SC + "gen_scree.png")
     print("scree", out.shape, "green fixed", int(green.sum()), flush=True)
+    barrier()
+
+
+def barrier():
+    """Бар'єр, що впав: модель малює світле скло на чорному; яскравість стає прозорістю (BARRIER_ALPHA), колір —
+    BARRIER_TINT. Нижче BARRIER_CROP — обідок і «підлога», які модель ставить під купол: їх ховають гори."""
+    x0, y0, x1, y1 = BARRIER_CROP
+    r = np.asarray(
+        Image.open(raw(f"barrier_{BARRIER_SEED}")).convert("RGB"), np.float32
+    )
+    lum = r[y0:y1, x0:x1].mean(2)
+    b = BARRIER_BLOCK
+    h, w = lum.shape[0] // b, lum.shape[1] // b
+    lum = lum[: h * b, : w * b].reshape(h, b, w, b).mean((1, 3))
+    # пороги яскравості сирої (0–255): тло ~3, тіло ~70, відблиски ~130, обрис ~200, кромки ~240
+    level = np.digitize(lum, [40, 100, 160, 215])
+    out = np.zeros((h, w, 4), np.uint8)
+    out[..., :3] = BARRIER_TINT
+    out[..., 3] = np.round(np.array((0,) + BARRIER_ALPHA)[level] * 255)
+    Image.fromarray(out).save(MP + "gen_barrier.png")
+    print("barrier", out.shape, [int((level == i).sum()) for i in range(5)], flush=True)
 
 
 # --- аркуш ---------------------------------------------------------------------------------------------------------
 FRONT_DARK = np.array([0.3, 0.26, 0.34])  # foreground_dark.tscn (D750)
+# шлейф диму (Сапега, ескіз 27.10): вітер несе дим із села на захід через усе небо; герой біжить під ним на схід.
+# Один план на стежку й осипище, прив'язаний до світу: на початку стежки — лише хвіст біля правого краю кадру (100 px),
+# наприкінці — кінчик посередині й тіло до краю, на осипищі — увесь шлейф, клуб біля східного краю, а стебло до
+# джерела (зріз keep унизу праворуч, стовпці від 568) — за краєм кадру. Звідси множник: між правим краєм кадру на початку
+# стежки й на осипищі — 1152·f px плану, а шлейф лише 568 до стебла, тож при ×0.5 або хвоста не видно, або стебло в кадрі
+PLUME_F = 0.4
+PLUME_AT = (475, -20)  # лівий верхній кут шлейфу в арті при камері 0: кінчик (рядок 83) — у верхній третині неба
+BARRIER_AT = (260, 23)  # лівий верхній кут купола: село й шлейф — під куполом, пролам (x 108–215 купола) видно над горами
 
 
 def img(path):
@@ -198,16 +264,19 @@ def img(path):
 
 def planes(room):
     """(картинка, множник, якір у світі арту при камері 0, плитка) — від заднього до переднього."""
-    smoke, way, front = (
-        img(MP + "gen_smoke.png"),
+    way, front = (
         img(MP + "gen_waymarker.png"),
         img(MP + "gen_front.png"),
     )
     front[..., :3] *= FRONT_DARK
+    barrier = img(MP + "gen_barrier.png")
     p = [
         (img(B + "DesertOasis/bg4/plan5.png"), 0.0, (0, 0), W),
-        (smoke, 0.1, (380, 226 - len(smoke)), None),  # основа нижче найглибшої долини далини (рядок 223)
+        # бар'єр — за горами й шлейфом, спільний для доріг (×0.1, прив'язаний до світу); нижній зріз купола — рядок 228,
+        # нижче найглибшої долини далини (223), тож його ховають гори
+        (barrier, 0.1, BARRIER_AT, None),
         (img(MP + "gen_far.png"), 0.3, (0, 0), W),
+        (img(MP + "gen_plume.png"), PLUME_F, PLUME_AT, None),
     ]
     if room == "path":
         g = img(MP + "gen_ground.png")
@@ -226,16 +295,17 @@ def planes(room):
     return p
 
 
-def view(room, cx, cy, hero):
-    """Кадр 576×324 арту: камера (cx, cy) — лівий верхній кут кадру у світі; y-множник = x-множник."""
+def view(room, cx, cy, hero, n=None):
+    """Кадр 576×324 арту: камера (cx, cy) — лівий верхній кут кадру у світі; y-множник = x-множник. n — лише n
+    задніх планів (без героя)."""
     c = np.zeros((H, W, 4), np.float32)
     c[..., 3] = 255
-    for im, f, (ax, ay), tile in planes(room):
+    for im, f, (ax, ay), tile in planes(room)[:n]:
         x0, y0 = round(ax - f * cx), round(ay - f * cy)
         xs = [x0] if tile is None else range(x0 % tile - tile, W, tile)
         for x in xs:
             paste(c, im, x, y0)
-        if f == 1.0:  # герой — у площині ×1.0, перед підлогою, за реквізитом ×1.3
+        if f == 1.0 and hero:  # герой — у площині ×1.0, перед підлогою, за реквізитом ×1.3
             paste(c, hero[2], hero[0] - cx, hero[1] - cy - len(hero[2]))
     return c
 
@@ -259,24 +329,36 @@ def sheet():
     hw = len(hero[0])
     shots = [
         (
-            "Mountain path: camera at the room's left end",
+            "1/3 of the approach. Mountain path, camera at the room's left end: only the plume's tail, east (plume x0.4)",
             view("path", 0, 0, (288 - hw // 2, WALK, hero)),
         ),
         (
-            "Mountain path: camera one screen right (far x0.3, mid x0.75, waymarker x0.9, ground x1, front x1.3)",
+            "2/3. Mountain path, one screen right (far x0.3, mid x0.75, waymarker x0.9, ground x1, front x1.3)",
             view("path", W, 0, (W + 288 - hw // 2, WALK, hero)),
         ),
         (
-            "Scree slide, top: the frame right after the border (planes continue from the path)",
+            "3/3. Scree slide, top, right after the border: the whole plume, its source beyond the east edge",
             view("scree", PATH_W, 0, (PATH_W + 30, WALK, hero)),
         ),
         (
             "Scree slide: camera one screen down (on the gorge floor; far sinks behind the rim)",
             view("scree", PATH_W, 316, (PATH_W + 500, FLOOR, hero)),
         ),
+        (
+            "The fallen barrier (x0.1), x2 crop: path camera mid-room; the broken hole over the far peaks",
+            np.asarray(
+                Image.fromarray(view("path", 288, 0, None).astype(np.uint8))
+                .crop((242, 60, 530, 222))
+                .resize((W, H), Image.NEAREST)
+            ).astype(np.float32),
+        ),
+        (
+            "The barrier plane alone: sky and barrier (scree top camera, no mountains)",
+            view("scree", PATH_W, 0, None, 2),
+        ),
     ]
     tw, th, lab = 960, 540, 28
-    out = Image.new("RGB", (tw * 2 + 12, (th + lab) * 2 + 12), (24, 22, 28))
+    out = Image.new("RGB", (tw * 2 + 12, (th + lab) * 3 + 24), (24, 22, 28))
     d = ImageDraw.Draw(out)
     font = ImageFont.load_default()
     for i, (title, v) in enumerate(shots):
