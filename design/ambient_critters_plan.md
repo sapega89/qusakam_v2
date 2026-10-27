@@ -69,6 +69,12 @@ near and comes back later — in the cellar under the bat and in the house inter
 `idle` 2 and `run` 4, side view; the behaviour is `AmbientCritter` with a ground path instead of a flight. Bats stay in
 the Lizard Cave; butterflies and the lark outdoors.
 
+**Mouse — not placed yet (rooms-dressing, 2026-10-27).** The sheet `Critters/mouse.png` has landed (12 art px sitting),
+but the mouse needs what the others do not: a ground path to a hole instead of a flight, and the hole itself (a painted
+gap at a wall foot in the GatehouseCellar and the house interiors). Next room-routine slice: `AmbientCritter` gets a
+`run_to` (a Marker2D child: the hole), `critter_mouse.tscn` (scale 18 / 12 = 1.5, the sheet is drawn at 12 px), one
+in the cellar under the bats and one in ElderHouse; `verify_ambient_critters` [5] then lists it in `LIVES`.
+
 ### Slice 3 — every room (☁, the one room routine)
 - Birds in the outdoor rooms and the City, bats in the caves, cellars and Laboratory rooms, one to three per room, with
   the foreground pieces of D774 (MayorHall, BanditCamp get theirs first — [[m6_backdrops]]).

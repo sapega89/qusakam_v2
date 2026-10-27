@@ -4,13 +4,17 @@
     python rooms_dressing_sheet.py OUT.png pairs WIDTH  label=before.png|after.png ...
 
 COLS — кадрів у ряду; «pairs» — кожен рядок: «до» ліворуч, «після» праворуч. WIDTH — ширина одного кадру.
+Шлях може мати «@x0,y0,x1,y1» — виріз кадру (пікселі 1920×1080) перед масштабуванням.
 """
 import sys
 from PIL import Image, ImageDraw
 
 
 def tile(path: str, w: int) -> Image.Image:
+    path, _, box = path.partition("@")
     im = Image.open(path).convert("RGB")
+    if box:
+        im = im.crop(tuple(int(v) for v in box.split(",")))
     return im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
 
 
@@ -27,6 +31,10 @@ def main() -> None:
         rows = []
         for name, paths in items:
             before, after = paths.split("|")
+            if "@" in after or "@" not in before:
+                pass
+            else:
+                after += "@" + before.split("@")[1]
             a, b = tile(before, w), tile(after, w)
             label(a, name + " - before")
             label(b, name + " - after")
