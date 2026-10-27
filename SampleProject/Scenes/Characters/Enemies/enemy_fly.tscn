@@ -107,6 +107,7 @@ _data = {
 [node name="Sprite2D" parent="." index="2"]
 position = Vector2(0, 0)
 metadata/tell_at = Vector2(10, -19)
+metadata/grown = 1.5
 texture = ExtResource("2_sheet")
 offset = Vector2(0, 0)
 scale = Vector2(1.125, 1.125)
