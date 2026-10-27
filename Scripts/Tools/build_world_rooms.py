@@ -50,7 +50,7 @@ OPENING = {"door_elder": (14, 7, 22, 56), "cave_mouth": (34, 38, 30, 52), "palis
 #   far/mid: (текстура, scroll), floor: (текстура, region y), fill: колір землі під смугою.
 KITS = {
     "path": {"far": ("MountainPath/gen_far.png", 0.3), "mid": ("MountainPath/gen_mid.png", 0.75),
-             "floor": ("MountainPath/gen_ground.png", 0), "fill": "Color(0.29, 0.2, 0.16, 1)",
+             "floor": ("MountainPath/gen_ground.png", 0), "fill": "Color(0.29, 0.2, 0.16, 1)", "sky": "Color(0.56, 0.74, 0.9, 1)",
              "music": "canyon_echoes", "ambience": "amb_canyon_echo", "surface": "sand", "interior": False},
     "desert": {"far": ("BanditCamp/gen_far.png", 0.4), "mid": ("Road/gen_mid.png", 0.8),
                "floor": ("BanditCamp/gen_floor.png", 0), "fill": "Color(0.36, 0.24, 0.17, 1)",
@@ -68,7 +68,7 @@ KITS = {
              "floor": ("Hall/gen_floor.png", 0), "fill": "Color(0.16, 0.11, 0.09, 1)",
              "music": "scorchlight_mirage", "ambience": "amb_hall", "surface": "wood", "interior": True},
     "city": {"far": ("City/gen_far.png", 0.4), "mid": ("City/gen_near.png", 0.8),
-             "floor": ("Terrain/City_Terrain.png", 256), "fill": "Color(0.3, 0.22, 0.17, 1)",
+             "floor": ("Terrain/City_Terrain.png", 256), "fill": "Color(0.3, 0.22, 0.17, 1)", "sky": "Color(0.62, 0.78, 0.9, 1)",
              "music": "scorchlight_mirage", "ambience": "amb_city_crowd", "surface": "stone", "interior": False},
     "lab": {"far": ("Lab/gen_far.png", 0.4), "mid": ("Lab/gen_mid.png", 0.8),
             "floor": ("Lab/gen_slab.png", 0), "fill": "Color(0.1, 0.1, 0.12, 1)",
@@ -388,6 +388,10 @@ class Room(Scene):
 
     def backdrop(self) -> None:
         self.node('[node name="Back" type="Node2D" parent="."]\nz_index = -10')
+        if self.kit.get("sky"):
+            # Далекий план має прозоре небо: тло неба на всю кімнату.
+            self.node('[node name="Sky" type="Polygon2D" parent="Back"]\ncolor = %s\npolygon = PackedVector2Array(%g, %g, %g, %g, %g, %g, %g, %g)'
+                      % (self.kit["sky"], -CELL_W, -CELL_H, self.w + CELL_W, -CELL_H, self.w + CELL_W, self.h, -CELL_W, self.h))
         for plane in ("far", "mid"):
             if self.kit[plane] is None:
                 continue
