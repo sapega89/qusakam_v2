@@ -3252,6 +3252,13 @@ msgstr "Вліво / вправо — вибрати локацію. A — ві�
 msgid "B — back to the world map."
 msgstr "B — назад до карти світу."
 
+# map-pan: карта-полотно, картка кімнати
+msgid "Drag or stick — move the map. Wheel or Q / E — zoom."
+msgstr "Тягни або стік — рухати карту. Коліщатко або Q / E — масштаб."
+
+msgid "Chests %d/%d"
+msgstr "Скрині %d/%d"
+
 msgid "LEGEND"
 msgstr "ЛЕГЕНДА"
 

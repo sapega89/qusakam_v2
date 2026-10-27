@@ -57,4 +57,35 @@ func _initialize() -> void:
 	await _shot("level1_world")
 	map.open_location(map.location_ids[map.selected])
 	await _shot("level2_location")
+	await _pan_shots(map)
 	quit(0)
+
+
+## map-pan: кожен рівень віддалений (найменший масштаб) і наближений, у design/shots/map_pan/ і одним кадром 2×2.
+func _pan_shots(map: Control) -> void:
+	var out := "res://design/shots/map_pan"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(out))
+	var shots: Array[Image] = []
+	for level in 2:
+		if level == 0:
+			map.show_world()
+		else:
+			map.open_location(map.location_ids[map.selected])
+		var cam: RefCounted = map.world_camera if level == 0 else map.room_camera
+		for zoom_in in [false, true]:
+			cam.zoom = cam.zoom_max * 0.8 if zoom_in else cam.zoom_min
+			cam.setup(cam.view, cam.content, cam.zoom_min, cam.zoom_max)
+			cam.center_on(map.pin_center(map.selected) if level == 0 else cam.content / 2.0)
+			map._apply_camera()
+			await Kit.frames(self, 6)
+			await RenderingServer.frame_post_draw
+			var shot: Image = root.get_texture().get_image()
+			var name := "level%d_%s" % [level + 1, "in" if zoom_in else "out"]
+			shot.save_png(ProjectSettings.globalize_path("%s/%s.png" % [out, name]))
+			shot.resize(960, 540, Image.INTERPOLATE_BILINEAR)
+			shots.append(shot)
+	var grid := Image.create(1920, 1080, false, shots[0].get_format())
+	for i in shots.size():
+		grid.blit_rect(shots[i], Rect2i(0, 0, 960, 540), Vector2i((i % 2) * 960, (i / 2) * 540))
+	grid.save_png(ProjectSettings.globalize_path("%s/out_vs_in.png" % out))
+	print("shot map_pan")

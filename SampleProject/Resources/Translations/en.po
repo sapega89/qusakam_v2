@@ -3243,6 +3243,13 @@ msgstr "Left / Right — choose a location. A — open its map."
 msgid "B — back to the world map."
 msgstr "B — back to the world map."
 
+# map-pan: карта-полотно, картка кімнати
+msgid "Drag or stick — move the map. Wheel or Q / E — zoom."
+msgstr "Drag or stick — move the map. Wheel or Q / E — zoom."
+
+msgid "Chests %d/%d"
+msgstr "Chests %d/%d"
+
 msgid "LEGEND"
 msgstr "LEGEND"
 
