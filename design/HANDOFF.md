@@ -9,7 +9,7 @@ Fresh session on purpose (Sapega: «ти дуже багато тримаєш в
 (the old one: [[archive/MASTER_PLAN_2026-10-24]]); what waits on Sapega or was deferred is in [[BACKLOG]] → «Moved out of
 MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D814**, **B195**, **Q107** (integrate-30 filed D807–D812, B187–B194) (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
+**Registers:** next free **D815**, **B195**, **Q107** (integrate-30 filed D807–D812, B187–B194) (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
 `feature/backlog`). Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
 ## 1. First, when you start
