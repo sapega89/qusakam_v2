@@ -29,7 +29,7 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 | skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | H3 slice 2 |
 | skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | H3 slice 3; then create ranged → stance (+ H2 shields) → control |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | — | **reported**, merged by integrate-29 |
-| art agent (local) | — | — | R1 **done and pushed** (`f8539dd2`); the ComfyUI lane is free — start §3 item 1 |
+| art agent (local, ComfyUI) | — | — | §3 items 1–2 running (started 2026-10-27 afternoon): the magic and glass shield effects over Block/1 (`FX/Shield/`), the iron-shield sprite removed, the mouse critter. When it reports: push, send Sapega `design/shots/shield_spells.png` and `critters_mouse.png`, start §3 item 3 → 4 (M6a) |
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
