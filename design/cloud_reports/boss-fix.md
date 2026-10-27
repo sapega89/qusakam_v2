@@ -3,17 +3,17 @@ type: report
 tags: [cloud, routines, combat, bosses]
 ---
 
-# boss-fix — «боси не б'ють» (B154)
+# boss-fix — «боси не б'ють» (B159)
 
 **Summary.** Done: the root cause is found and fixed in `BossLogic.gd`. Both bosses (the LabBoss mercenary and the MayorHall Scorpicore axe-warrior) now swing their weapons and land hits, and the new `verify_boss_hits` covers it. Only the slam's shockwave ever hit before.
 The cause: between moves the boss rested up to 90 px from the hero, outside its own combo reach (72 / 69 px). So the pattern always replaced combo with a slam or drink that reaches farther. The Scorpicore charge fired from up to 600 px, but its line is only about 387 px, so it stopped 4 px short.
-B row fixed: **B154** (text below, for the orchestrator to put in `BUGS.md`; per ROUTINE_RULES this routine does not edit it). No new D-ID: the fix follows D504/D522 as written.
+B row fixed: **B159** (text below, for the orchestrator to put in `BUGS.md`; per ROUTINE_RULES this routine does not edit it). No new D-ID: the fix follows D504/D522 as written.
 Not done: no balance tuning, no `Maps/*` edits. Brass collector and fire djinn are not used by any room; `verify_bosses` still passes for them.
 Full suite: **114 / 124 PASS, 10 FAIL**. None of the 10 is in boss code: 2 pass on a rerun (`audio`, `camera_transitions`), 2 fail the same way on the base code (`enemy_fx`, `npc_arrival`), and 6 fail in UI and dialogue areas this routine did not touch (see the end).
 
-## B154 (for `design/BUGS.md`)
+## B159 (for `design/BUGS.md`)
 
-> **Fixed 2026-10-26 (`cloud/boss-fix`):** **B154** — Sapega's playtest of the round-13 build: «боси не б'ють». In both boss fights, started through the room, the boss never used its weapon. The LabBoss mercenary did slam → drink → slam, and the MayorHall axe-warrior did a charge that stopped short, then slams. Only the floor shockwave hit a hero who stood still, and a hero in the air or out of its radius was never hit. Root cause in `BossLogic.handle_attack_state`: between moves the boss rested at `preferred_range` ± `PREFERRED_BAND` (60 ± 30 px). That is outside its combo `max_range` (72 / 69 px). When ready, `_fits_any` accepted the far-reaching slam/drink, so `pick_move` skipped the combo every time. The charge `max_range` was 600 px, but its line (D522) is `distance` + `melee_reach` ≈ 387 px. Fix: the rest band ends at the reach of the move the boss rests for (`_rest_reach`). When the next pattern move is out of reach, the boss walks in (`_must_close`); only a charge may stand in, because it closes the gap itself. A charge fits only within its line (`_reach`). `verify_boss_hits` (new), `verify_combat_enemies` [10] (Brass «only charge» distance 400 → 360, plus 420 px = no move).
+> **Fixed 2026-10-26 (`cloud/boss-fix`):** **B159** — Sapega's playtest of the round-13 build: «боси не б'ють». In both boss fights, started through the room, the boss never used its weapon. The LabBoss mercenary did slam → drink → slam, and the MayorHall axe-warrior did a charge that stopped short, then slams. Only the floor shockwave hit a hero who stood still, and a hero in the air or out of its radius was never hit. Root cause in `BossLogic.handle_attack_state`: between moves the boss rested at `preferred_range` ± `PREFERRED_BAND` (60 ± 30 px). That is outside its combo `max_range` (72 / 69 px). When ready, `_fits_any` accepted the far-reaching slam/drink, so `pick_move` skipped the combo every time. The charge `max_range` was 600 px, but its line (D522) is `distance` + `melee_reach` ≈ 387 px. Fix: the rest band ends at the reach of the move the boss rests for (`_rest_reach`). When the next pattern move is out of reach, the boss walks in (`_must_close`); only a charge may stand in, because it closes the gap itself. A charge fits only within its line (`_reach`). `verify_boss_hits` (new), `verify_combat_enemies` [10] (Brass «only charge» distance 400 → 360, plus 420 px = no move).
 
 ## How it was found
 
