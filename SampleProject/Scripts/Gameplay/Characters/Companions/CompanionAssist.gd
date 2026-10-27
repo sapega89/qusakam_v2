@@ -27,10 +27,9 @@ const EXIT_RUN := 320.0
 ## Присідання при приземленні: масштаб і час повернення.
 const LAND_SQUASH := Vector2(1.18, 0.82)
 const LAND_SQUASH_TIME := 0.14
-## Рядок ступнів героя нижче його центру: Sprite2D по центру, ×1,5, ступні на рядку 56 кадру 64 px — (56 − 32) × 1,5;
-## зсув (-32, -58) компаньйонів ставить їхній рядок ступнів (58) так само на початок вузла. Не низ колізії (24):
-## спрайти героя й ворогів малюють ступні на ~13 px нижче за неї, і компаньйони висіли над дорогою.
-const HERO_FEET := 36.0
+## Рядок ступнів героя нижче його центру — низ його колізії: малюнок героя стоїть на ньому (hero-feet, verify_hero_feet);
+## зсув (-32, -58) компаньйонів ставить їхній рядок ступнів (58) так само на початок вузла.
+const HERO_FEET := 24.0
 ## Де компаньйон стає: позаду героя (монети, кішка) і перед ворогом (наскок) — не на них.
 const STAND_BEHIND := 70.0
 const STAND_BEFORE_TARGET := 55.0
@@ -208,7 +207,9 @@ func _strike(hero: Node2D, target: Node2D) -> void:
 			_spawn_fx(WIND_ARC, global_position + Vector2(_dir * 30.0, 0.0), _dir)
 			for enemy in _enemies_in_front(hero):
 				_hit(enemy)
-				_spawn_fx(KNOCKBACK_PUFF, enemy.global_position + Vector2(-_dir * 10.0, HERO_FEET), _dir)
+				var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")  # пил — під ногами ворога, на низу його тіла
+				_spawn_fx(KNOCKBACK_PUFF, Vector2(enemy.global_position.x - _dir * 10.0,
+						body.global_position.y + body.shape.get_rect().end.y * enemy.global_scale.y), _dir)
 		Mode.POUNCE:
 			if target != null and target.is_alive():
 				_hit(target)
