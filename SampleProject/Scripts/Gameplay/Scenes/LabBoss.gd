@@ -1,4 +1,4 @@
-extends Node2D
+extends "res://SampleProject/Scripts/Gameplay/Scenes/RoomStoryFlow.gd"
 
 ## Зала боса — кінець лабораторії (BACKLOG 17 + 6, D307, design/lab_story_plan.md біти 8–9). Бос — найманець,
 ## людина-мантикора (D466, D555, D564, lab_boss.tscn); вогняний джин лишився в кат-сцені камер (D459).
@@ -11,6 +11,7 @@ extends Node2D
 ## Стан при вході — з прапорців (B53): розмова вже була (сейв посеред бою) → бій одразу, без повтору;
 ## lab_boss_fight_complete → OPEN; lab_after_boss_complete → брама вже піднята.
 ## Гачок для кінця демо (черга 9.8): прапорець lab_after_boss_complete — шлях на схід відкрито.
+## Машина станів — RoomStoryFlow; розмови — кат-сцени (Cutscene.say), тож діалогів і прапорців діалогів тут немає.
 
 const Cutscene = preload("res://SampleProject/Scripts/Systems/Cutscenes/Cutscene.gd")
 const BossEnemy = preload("res://SampleProject/Scripts/Gameplay/Characters/Bosses/BossEnemy.gd")
@@ -25,24 +26,20 @@ const GATE_LIFT := 200.0
 ## Де бос стає перед героєм, коли забирає плащ.
 const TAKE_CLOAK_GAP := 60.0
 
-var current_state: State = State.WAIT
-var state_run_id := 0
 @onready var boss: BossEnemy = $Mercenary
 @onready var gate_sprite: Sprite2D = $Gates/Sprite
 @onready var gate_closed_y: float = gate_sprite.position.y
 
 
-func _ready() -> void:
+func _prepare() -> void:
 	$TalkTrigger.body_entered.connect(_on_talk_trigger)
 	boss.entity_died.connect(_on_boss_died)
 	boss.enemy_view.update_direction(-1)  # обличчям до входу
-	var state := _initial_state()
-	if state == State.OPEN:
+	if _initial_state() == State.OPEN:
 		boss.queue_free()  # переможений раніше
-	_enter(state)
 
 
-func _initial_state() -> State:
+func _initial_state() -> int:
 	var game := Game.get_singleton()
 	if game.get_quest_flag("lab_boss_fight_complete"):
 		return State.OPEN
@@ -51,13 +48,7 @@ func _initial_state() -> State:
 	return State.WAIT
 
 
-func get_current_state_name() -> String:
-	return State.keys()[current_state]
-
-
-func _enter(state: State) -> void:
-	current_state = state
-	state_run_id += 1
+func _apply_state_logic(state: int, _run_id: int) -> void:
 	var game := Game.get_singleton()
 	match state:
 		State.WAIT:
@@ -86,7 +77,7 @@ func _on_talk_trigger(body: Node2D) -> void:
 
 func _start_talk() -> void:
 	if current_state == State.WAIT:
-		_enter(State.TALK)
+		current_state = State.TALK
 
 
 ## Розмова — одна кат-сцена: пропуск (утримання Tab / Y) домотує її до того самого бою.
@@ -100,7 +91,7 @@ func _talk() -> void:
 	await cs.camera_back(PAN_TIME * 0.5)
 	cs.end()
 	if run_id == state_run_id:
-		_enter(State.FIGHT)
+		current_state = State.FIGHT
 
 
 func _fight() -> void:
@@ -121,8 +112,7 @@ func _fight() -> void:
 
 ## Бос переміг: підходить до героя, забирає плащ (BACKLOG 17) — і звичайний Game Over.
 func _on_hero_defeated() -> void:
-	current_state = State.CLOAK
-	state_run_id += 1
+	current_state = State.CLOAK  # у CLOAK стан нічого не запускає; новий state_run_id зупиняє старі гілки
 	var player: Node2D = Game.get_singleton().player
 	player.defeat_handler = Callable()
 	EventBus.boss_fight_changed.emit(self, false)
@@ -146,7 +136,7 @@ func _on_boss_died() -> void:
 	Game.get_singleton().player.defeat_handler = Callable()
 	EventBus.boss_fight_changed.emit(self, false)
 	Game.get_singleton().set_quest_flag("lab_boss_fight_complete", true)
-	_enter(State.OPEN)
+	current_state = State.OPEN
 
 
 ## Перемога: репліка Кусакама, камера до брами, брама вгору — одна кат-сцена.
