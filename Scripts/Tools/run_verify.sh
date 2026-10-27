@@ -41,7 +41,14 @@ export -f run_one
 
 out=$(mktemp)
 begin=$SECONDS
-printf '%s\n' SampleProject/UI/verify_${1:-*}.gd | xargs -P "$J" -I{} bash -c 'run_one {}' | tee "$out"
+# Тест, що міряє реальний час (хітстоп у мс, падіння за таймером), пише в шапці «## SERIAL»:
+# під навантаженням сусідніх тестів його виміри пливуть, тож він іде після решти, сам.
+files=(SampleProject/UI/verify_${1:-*}.gd)
+serial=$(grep -l "^## SERIAL" "${files[@]}")
+{
+	printf '%s\n' "${files[@]}" | grep -v -x -F "${serial:-//}" | xargs -P "$J" -I{} bash -c 'run_one {}'
+	[[ -n $serial ]] && echo "$serial" | xargs -P 1 -I{} bash -c 'run_one {}'
+} | tee "$out"
 failed=$(grep -c '^FAIL' "$out")
 echo "Slowest:"; awk '/^(PASS|FAIL)/{print "  " $3 " s  " $2}' "$out" | sort -rn | head -10
 echo "SUITE: $([[ $failed -eq 0 ]] && echo "ALL PASS" || echo "$failed FAIL") in $(((SECONDS - begin) / 60)) min $(((SECONDS - begin) % 60)) s, J=$J"
