@@ -129,8 +129,8 @@ tags: [plan, orchestrator, status]
 | S7 | Журнал: квести згруповані за містом | D181 | 🔄 routine `journal-hints` (27.10): групи за локацією з `locations.json` |
 | S8 | Журнал: побічні завдання (Figma `192:1636`) | npc_recall_plan s4 | ⬜ 🖥 спершу прочитати фрейм `192:1636` (після M3/M4) |
 | S9 | Зачарування slice 3 — квест коваля | [[enchanting_plan]] | ✅ збудовано 2026-10-15 (D175) |
-| S10 | Музика боїв 3b — Claude підбирає CC0-треки | D569 | ⬜ 🖥 шукаю 2–3 безкоштовні бойові треки — ти обереш |
-| S11 | Кращі українські голоси (`uk_UA-ukrainian_tts-medium`) | remaining_work | ⬜ 🖥 завантажити голос з huggingface на ПК |
+| S10 | Музика боїв 3b — Claude підбирає CC0-треки | D569 | ⏳ твій вибір: 27.10 надіслано 3 треки — The Eternal Sands (Hitctrl, CC-BY 3.0), Arabesque (brainiac256, CC-BY 3.0), Heavy battle (Davieplier, CC0) |
+| S11 | Кращі українські голоси (`uk_UA-ukrainian_tts-medium`) | remaining_work | 👀 27.10: привітання українською — новий голос `uk_UA-ukrainian_tts-medium` (MIT, дані CC0), чоловіки — mykyta, жінки — lada/tetiana; послухай |
 | S12 | Налаштування без системи: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди | D43–D48 | ✅ усе є в Settings: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди (D425–D428) |
 | S13 | Поверхні без дизайну: сповіщення про рівень, HP ворога, тост «ціль оновлено», екран кінця демо — Figma (🖥) → ☁ | figma_coverage §1 | ✅ усі чотири є: сповіщення про рівень (`verify_level_up`), HP ворога (`HealthBar`), плашка цілі (QP1), кінець демо (`verify_demo_end`) |
 | S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | ⬜ 🖥 заміри кадрів на ПК; slice 7 чекає Q83/Q84 |
