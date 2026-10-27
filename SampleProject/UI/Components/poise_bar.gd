@@ -45,8 +45,8 @@ func _process(_delta: float) -> void:
 		_follow()
 
 
-## Над верхнім краєм тіла ворога (форма тіла росте з розміром, D560), по центру.
+## Над головою: верхній край зони влучання (вона облягає намальоване тіло, B128, і росте з розміром, D560), по центру тіла.
 func _follow() -> void:
-	var body: CollisionShape2D = _enemy.body_collision
-	var top: float = body.position.y - body.shape.get_rect().size.y / 2.0
-	position = Vector2(body.position.x - size.x / 2.0, top - UITokens.POISE_BAR_GAP - size.y)
+	var hurt: CollisionShape2D = _enemy.hurt_collision
+	var top: float = hurt.global_position.y - hurt.shape.get_rect().size.y * absf(hurt.global_scale.y) / 2.0
+	global_position = Vector2(_enemy.body_collision.global_position.x - size.x / 2.0, top - UITokens.POISE_BAR_GAP - size.y)
