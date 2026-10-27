@@ -971,9 +971,12 @@ func perform_lunge() -> void:
 ## Стрибок (D769): поки летить, торкнувся героя — перекат (невразливість) крізь нього проносить; блок відбиває шакала
 ## назад (жовтий — парирує); інакше вчепився. Уже вчепився інший — звичайний укус з льоту. true — учепився.
 func _pounce(direction: int) -> bool:
+	# B195: кадри чекаємо на дереві, взятому на старті. Сцену міняють (завантаження сейву) — ворог виходить з дерева
+	# раніше, ніж звільняється; get_tree() тоді null, `await null` не чекає, і в релізній збірці цикл вішав гру.
+	var tree := get_tree()
 	var left := LUNGE_TIME
 	while left > 0.0 and not _interrupted():
-		await get_tree().physics_frame
+		await tree.physics_frame
 		left -= get_physics_process_delta_time()
 		if not _touches_hero():
 			continue
@@ -1015,8 +1018,9 @@ func _latch(direction: int) -> void:
 	enemy.enemy_view.latch_pose()
 	var t := 0.0
 	var bitten := false
+	var tree := get_tree()  # B195, як у _pounce()
 	while t < LATCH_TIME and not enemy.is_dead and stun_left <= 0.0 and not hero.is_dead:
-		await get_tree().physics_frame
+		await tree.physics_frame
 		t += get_physics_process_delta_time()
 		enemy.global_position.x = hero.global_position.x - direction * body_gap
 		if not bitten and t >= LATCH_BITE_AT:
@@ -1046,26 +1050,29 @@ func _recover(time: float) -> void:
 ## одразу. Зірваний замах (збій, оглушення) підказки не дає.
 ## Таймери замаху й удару стоять, поки гра на паузі (меню, вікно туторіалу D289).
 func wind_up(windup: float) -> void:
+	# B195: кадри й таймери чекаємо на дереві, взятому на старті. Сцену міняють (завантаження сейву) — ворог виходить з дерева
+	# раніше, ніж звільняється; get_tree() тоді null, `await null` не чекає, і в релізній збірці цикл вішав гру.
+	var tree := get_tree()
 	winding_up = true
 	committed = false
 	var track := windup - TELL_LEAD
 	if track > 0.0:
 		# Покадрово, щоб замах, який уже не дістане героя, обірвати одразу (D775, _abandon_due); таймер стоїть на паузі
-		var timer := get_tree().create_timer(track, false)
+		var timer := tree.create_timer(track, false)
 		while timer.time_left > 0.0 and not _interrupted():
 			_track_left = timer.time_left
-			await get_tree().physics_frame
+			await tree.physics_frame
 	_track_left = 0.0
 	winding_up = false
 	# Підказка іншого ще горить — своя чекає його удару (D775: підказки групи не накладаються, на кожну є відповідь)
 	while _attackers.any(func(l: EnemyLogic) -> bool: return l != self and is_instance_valid(l) and l.committed) and not _interrupted():
-		await get_tree().create_timer(0.05, false).timeout
+		await tree.create_timer(0.05, false).timeout
 	if _interrupted():
 		return
 	committed = true
 	tell_time = minf(windup, TELL_LEAD)
 	attack_telegraphed.emit()
-	await get_tree().create_timer(tell_time, false).timeout
+	await tree.create_timer(tell_time, false).timeout
 
 ## Скільки ворогів замахуються одночасно (D642: тиск групи) — enemy_variety.json "pressure".
 static func max_attackers() -> int:

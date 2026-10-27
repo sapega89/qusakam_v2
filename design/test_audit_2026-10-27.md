@@ -208,6 +208,7 @@ are not full coverage are named, with the follow-up that would fold them.
 | `verify_pause` | 10 | keep | Pause = game menu contract (Phase 5.11). Most lines overlap full_regression / game_menu / misc_modal; unique: UIManager GameMenuState, toggle open/close, reopen on Inventory, «no PauseMenu» guard (follow-up 2). |
 | `verify_progression` | 20 | keep | D447/D488/D492; unique. |
 | `verify_quiet_transitions` | 5 | keep | Log lines per transition; unique (follow-up 2). |
+| `verify_repeat_load` | 10 | keep | B195: five loads in a row from the slot menu (nodes, orphans, EventBus flat) and five Game Over loads beside a swinging enemy; frozen-frame watchdog; unique. |
 | `verify_responsive` | 8 | keep | Canvas composition at other resolutions; unique. |
 | `verify_road_sections` | 64 | keep | Desert Road sections and ledges; unique. |
 | `verify_room_entrances` | 105 | keep | Door art/opening/front layer/ladders + every door both ways; unique. Merge candidate with camera_transitions' door walk (follow-up 1). |
