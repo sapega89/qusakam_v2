@@ -88,15 +88,15 @@ tracks/0/keys = {
 
 [sub_resource type="RectangleShape2D" id="Shape_body"]
 resource_local_to_scene = true
-size = Vector2(56, 32)
+size = Vector2(67.2, 38.4)
 
 [sub_resource type="RectangleShape2D" id="Shape_strike"]
 resource_local_to_scene = true
-size = Vector2(31, 78)
+size = Vector2(37.2, 93.6)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(49, 81)
+size = Vector2(58.8, 97.2)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_tower_shield_guard"]
 _data = {
@@ -111,13 +111,15 @@ _data = {
 script = ExtResource("3_guard")
 
 [node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0, -3.2)
 shape = SubResource("Shape_body")
 
 [node name="Sprite2D" parent="." index="2"]
+position = Vector2(0, -5.6)
 metadata/tell_at = Vector2(-14, -46)
 texture = ExtResource("2_sheet")
 offset = Vector2(0, -13)
-scale = Vector2(1, 1)
+scale = Vector2(1.2, 1.2)
 hframes = 4
 vframes = 5
 frame = 0
@@ -127,11 +129,11 @@ libraries/ = SubResource("AnimationLibrary_tower_shield_guard")
 metadata/attack_strike_time = 0.5
 
 [node name="CollisionShape2D" parent="hitbox"]
-position = Vector2(15.5, -11)
+position = Vector2(18.6, -18.8)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(3.5, -12.5)
+position = Vector2(4.2, -20.6)
 shape = SubResource("Shape_hurt")
 
 [node name="Shield" type="Node2D" parent="Sprite2D" index="0"]

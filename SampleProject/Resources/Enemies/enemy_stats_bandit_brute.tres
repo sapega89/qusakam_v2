@@ -5,13 +5,14 @@
 [resource]
 script = ExtResource("1_bandit_brute")
 enemy_type = "bandit_brute"
-speed = 55.0
+speed = 140.0
+stride_speed = 55.0
 base_damage = 24.0
 attack_windup = 0.85
 attack_active_time = 0.2
 attack_cooldown = 2.0
 detection_range = 300.0
-attack_range = 50.0
+attack_range = 57.5
 chase_range = 400.0
 max_health = 190
 poise = 16
@@ -23,3 +24,8 @@ tell = "dodge"
 finisher_tell = "dodge"
 recovery = 0.5
 back_off = 0.0
+lunge_from = 120
+lunge_to = 240
+lunge_windup = 0.6
+lunge_tell = "block"
+lunge_chance = 0.5

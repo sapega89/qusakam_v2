@@ -321,6 +321,7 @@ func _physics_process(delta: float) -> void:
 			state = State.READY
 		State.STAGGER:
 			state = State.READY
+			held_by = null
 		State.CAST_WINDUP:
 			_release_cast()
 		State.CAST_RELEASE:
@@ -662,10 +663,42 @@ func guard_against(source: Node) -> StringName:
 		return &""
 	return &"parry" if tell == EnemyLogic.TELL_PARRY and _block_time <= PARRY_WINDOW else &"block"
 
+## Шакал учепився (D740): не стан, а сцена бою — герой стоїть [param duration] с у позі Hurt, доки той кусає (удари
+## посеред неї збою не додають), наприкінці відштовхує його (shove). Дія, що йшла, зірвана, як від збою.
+var held_by: Node = null
+
+func hold(by: Node, duration: float) -> void:
+	_break_action()
+	held_by = by
+	state = State.STAGGER
+	_state_left = duration
+	_play(&"Hurt")
+	EventBus.player_staggered.emit(duration)
+
+## Кінець хватки (D740): герой відштовхує шакала — поза Block на [param duration] с, далі вільний.
+func shove(duration: float) -> void:
+	_state_left = duration
+	_play(&"Block")
+
+func is_held() -> bool:
+	return held_by != null and state == State.STAGGER
+
 ## Удар ворога збив героя (D264): дія, що йшла, зірвана, герой відлітає від [param from_x] і [param duration] с
 ## не керується. «Вороги інколи заморожують героя» (D253) — довгий збій від tank і фінішера серії.
 ## Каст навички, що йшов, зірвано (D259): SP і кулдаун списуються, ефекту немає.
 func stagger(duration: float, from_x: float) -> void:
+	if is_held():
+		return  # укус шакала, що вчепився, — частина його хватки (hold), а не новий збій
+	_break_action()
+	state = State.STAGGER
+	_state_left = duration
+	_play(&"Hurt")
+	var away: float = signf(player.global_position.x - from_x)
+	player.mover.push(away * stagger_push, stagger_push_time)
+	EventBus.player_staggered.emit(duration)
+
+## Зриває дію, що йшла (удар, каст, зілля, рипост, постріл), — від збою чи хватки.
+func _break_action() -> void:
 	if state in [State.SWING, State.HEAVY_STRIKE]:
 		_set_hitbox_active(false, _direction)
 	_hit_on = false
@@ -677,15 +710,9 @@ func stagger(duration: float, from_x: float) -> void:
 		casting_skill = ""
 		_cast_fx.cancel()
 		_cast_fx = null
-	state = State.STAGGER
-	_state_left = duration
 	_queued = false
 	_arrow_due = false
 	_chain_left = 0.0
-	_play(&"Hurt")
-	var away: float = signf(player.global_position.x - from_x)
-	player.mover.push(away * stagger_push, stagger_push_time)
-	EventBus.player_staggered.emit(duration)
 
 func _set_hitbox_active(active: bool, last_direction: int) -> void:
 	if active:

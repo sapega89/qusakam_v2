@@ -281,6 +281,7 @@ func _staggers() -> void:
 	ck(target.enemy_logic.attack_broken and not target.hitbox.monitoring, "the swing never came (broken %s, hitbox %s)" % [target.enemy_logic.attack_broken, target.hitbox.monitoring])
 
 	print("[2] An enemy combo: three swings, the last a finisher (D265)")
+	target.enemy_logic._lunge_rest = 60.0  # випад (D739) тут ні до чого: серію тест веде сам (perform_attack)
 	await create_timer(1.0).timeout
 	swings.clear()
 	target.combo_hits = 3

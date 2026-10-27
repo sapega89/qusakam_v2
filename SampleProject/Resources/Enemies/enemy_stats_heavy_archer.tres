@@ -5,7 +5,8 @@
 [resource]
 script = ExtResource("1_heavy_archer")
 enemy_type = "heavy_archer"
-speed = 45.0
+speed = 110.0
+stride_speed = 45.0
 base_damage = 24.0
 attack_windup = 1.1
 attack_cooldown = 2.6

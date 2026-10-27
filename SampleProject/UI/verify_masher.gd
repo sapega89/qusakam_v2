@@ -13,12 +13,15 @@ extends SceneTree
 ## Перевірки (D642): [1] MASHER перемагає одного звичайного ворога, але втрачає HP; [2] MASHER (обидві збірки) програє
 ## кожній еліті, обом босам і групі з 3+; [3] GOOD перемагає їх (SKILLS); [4] бос, як його зустрічає гравець (вхід у
 ## кімнату, кат-сцена, смужка боса, музика бою), б'є зброєю героя, що стоїть і тисне удар, і героя, що чекає трохи поза
-## досяжністю сокири (B154).
+## досяжністю сокири (B154); [5] вороги роблять випади (D739), шакал учепився в масера (D740), а група стоїть з обох боків
+## героя (D741). Кожен бій друкує ще: за скільки с вороги дійшли до героя, яку частку часу вони були з обох боків, випади й хватки.
 ## Бій групи хаотичний (кадр туди-сюди — інша гілка): не той результат — друга спроба з іншими кидками, і вимога —
 ## хоч в одній з двох.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_masher.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
+## Поруч героя для «з обох боків» (D741), px — як EnemyLogic.FLANK_NEAR.
+const FLANK_NEAR := 320.0
 
 ## Гра йде в SPEED раз швидше за годинник, а фізика — у SPEED раз частіше: крок фізики той самий, 1/60 с.
 const SPEED := 4.0
@@ -59,6 +62,8 @@ const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
 ## [4] (B154): скільки с герой стоїть і тисне біля боса; скільки с чекає за спиною боса і на якій відстані від нього
 ## (досяжність серії боса — 69–72 px, межа його відпочинку між ходами була 90 px).
+## [5] (D741): у найкращому бою групи вороги з обох боків героя хоч таку частку часу.
+const SURROUND := 0.3
 const BOSS_MASH := 12.0
 const BOSS_WAIT := 6.0
 const BOSS_WAIT_GAP := 86
@@ -73,6 +78,7 @@ var Boss: Script
 var Rolls: Script
 var SpawnPoint: Script
 var Spawner: Script
+var EnemyLogicScript: Script
 ## Рівень героя на початку кожного бою: "<кімната>/<бій>" → рівень (XP-крива, порядок кімнат).
 var levels := {}
 var city_rooms := {}
@@ -98,6 +104,16 @@ var parries := 0
 var blocks := 0
 var rolls := 0
 var _telegraphs: Array[Dictionary] = []
+## Ігровий час до першого контакту (хтось із ворогів на своїй engage_range від героя) — як швидко вороги закривають
+## відстань (D738); -1 — не було.
+var contact := -1.0
+## Кадри, коли поруч (FLANK_NEAR) хоч двоє наземних ворогів, і з них — коли вороги з обох боків героя (D741).
+var near_frames := 0
+var both_frames := 0
+## Випади (D739) і хватки шакала (D740).
+var lunges := 0
+var latches := 0
+var _was_latched := false
 ## Бій ще випускає хвилі (RoomEnemySpawner.all_enemies_spawned не прийшов).
 var _spawning := false
 
@@ -112,6 +128,7 @@ func _initialize() -> void:
 	SpawnPoint = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
 	Spawner = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
 	Rolls = load("res://SampleProject/Scripts/Combat/CombatRolls.gd")
+	EnemyLogicScript = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd")
 	root.get_node("SaveSystem").settings_module.settings.tutorial_windows = false
 	game = await Kit.boot(self)
 	sl = root.get_node("ServiceLocator")
@@ -161,6 +178,22 @@ func _initialize() -> void:
 	for fight: Dictionary in FIGHTS:
 		if fight.cls == "boss":
 			await _boss_meeting(fight)
+	if not rows.is_empty():
+		print("[5] enemies lunge, jackals latch on, and a group stands on both sides of the hero (D739-D741)")
+		var lunged := 0
+		var latched := 0
+		var surround := {"MASHER": 0.0, "GOOD": 0.0}
+		for row in rows:
+			lunged += row.lunges
+			if row.bot == "MASHER":
+				latched += row.latches
+			if row.cls == "group":
+				surround[row.bot] = maxf(surround[row.bot], row.both)
+		ck(lunged >= 5, "enemies lunge from mid range (%d lunges in all fights)" % lunged)
+		ck(latched >= 1, "a jackal's pounce latches on a hero who does not block or roll (%d times)" % latched)
+		for bot: String in surround:
+			ck(surround[bot] >= SURROUND, "%s: in some group fight enemies stand on both sides of the hero %d%% of the time (before D741: 0-3%%)"
+					% [bot, roundi(surround[bot] * 100)])
 
 	sl.get_time_manager().set_time_scale(1.0)
 	Engine.physics_ticks_per_second = 60
@@ -275,9 +308,10 @@ func _verdict(row: Dictionary) -> String:
 
 
 func _print_row(row: Dictionary) -> void:
-	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d/%d parry %d block %d roll %d | together %d (%.1fs) | hero hits %d (%d cleaved) | strikes in i-frames %d"
+	print("    %-6s %-8s %-42s L%-2d %-8s hero HP %3d%% enemy HP %3d%% %5.1fs hits %2d flasks %d/%d parry %d block %d roll %d | together %d (%.1fs) | hero hits %d (%d cleaved) | strikes in i-frames %d | contact %.1fs | both sides %s | lunges %d latches %d"
 			% [row.bot, row.build, row.name, row.level, _verdict(row), roundi(row.hp_left * 100), roundi(row.enemy_left * 100),
-			row.time, row.hits, row.heals, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed])
+			row.time, row.hits, row.heals, row.flasks, row.parries, row.blocks, row.rolls, row.together, row.together_time, row.hero_hits, row.cleaves, row.iframed,
+			row.contact, "%d%%" % roundi(row.both * 100) if row.both >= 0.0 else "-", row.lunges, row.latches])
 	for line: String in row.enemies:
 		print("        " + line)
 
@@ -354,6 +388,12 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 	blocks = 0
 	rolls = 0
 	_telegraphs = []
+	contact = -1.0
+	near_frames = 0
+	both_frames = 0
+	lunges = 0
+	latches = 0
+	_was_latched = false
 	var tracked: Array[Node] = []
 	var ids: Array[int] = []  # ідентифікатори tracked: мертвий ворог звільняється раніше за звіт
 	var total_hp := 0
@@ -375,6 +415,10 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 				total_hp += enemy.Max_Health
 				_track(enemy)
 		_watch(tracked, dt)
+		if contact < 0.0:
+			for e: Node in tracked:
+				if is_instance_valid(e) and e.is_alive() and absf(e.global_position.x - hero.global_position.x) <= e.enemy_logic.engage_range():
+					contact = t
 		if hero.current_health > _hp_before and not hero.is_dead:
 			heals += 1
 		_hp_before = hero.current_health
@@ -410,7 +454,8 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 			"won": not hero.is_dead and left_hp == 0 and t < CAP, "capped": t >= CAP and not hero.is_dead,
 			"hp_left": float(maxi(hero.current_health, 0)) / hero.Max_Health, "enemy_left": float(left_hp) / maxi(total_hp, 1),
 			"time": t, "hits": hits_taken, "flasks": flasks, "parries": parries, "blocks": blocks, "rolls": rolls,
-			"together": together, "together_time": together_time, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
+			"together": together, "together_time": together_time, "contact": contact, "lunges": lunges, "latches": latches,
+			"both": float(both_frames) / near_frames if near_frames > 0 else -1.0, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -551,6 +596,8 @@ func _track(enemy: Node) -> void:
 ## Замах ворога: інший ворог уже замахується чи б'є — «разом».
 func _on_swing(enemy: Node) -> void:
 	swings[enemy.get_instance_id()].n += 1
+	if enemy.enemy_logic.get(&"lunging"):
+		lunges += 1
 	for other: Node in get_nodes_in_group(&"enemies"):
 		if other != enemy and is_instance_valid(other) and other.is_alive() and other.enemy_logic.is_attacking \
 				and not other.enemy_logic.recovering:
@@ -563,6 +610,7 @@ func _on_telegraph(enemy: Node) -> void:
 	# Стріла лучника долітає за відстань / швидкість стріли після пострілу — блок має стояти тоді
 	var flight: float = absf(enemy.global_position.x - hero.global_position.x) / ARROW_SPEED if enemy.enemy_logic.get_script().resource_path.ends_with("ArcherLogic.gd") else 0.0
 	_telegraphs.append({"enemy": enemy, "tell": enemy.enemy_logic.tell_kind, "strike_in": enemy.enemy_logic.tell_time + flight,
+			"lunge": enemy.enemy_logic.get(&"lunging") == true,
 			"boss": enemy.get_script() == Boss, "kind": enemy.enemy_logic.get("last_move").get("kind", "combo") if enemy.get_script() == Boss else "swing"})
 
 
@@ -612,6 +660,22 @@ func _watch(tracked: Array[Node], dt: float) -> void:
 			attacking += 1
 	if attacking >= 2:
 		together_time += dt
+	var sides := {}
+	var near := 0
+	for enemy: Node in tracked:
+		if is_instance_valid(enemy) and enemy.is_alive() and not enemy.flying:
+			var gap: float = enemy.global_position.x - hero.global_position.x
+			if absf(gap) <= FLANK_NEAR:
+				near += 1
+				sides[signf(gap)] = true
+	if near >= 2:
+		near_frames += 1
+		if sides.has(1.0) and sides.has(-1.0):
+			both_frames += 1
+	var holder: Node = EnemyLogicScript.latched()
+	if holder != null and not _was_latched:
+		latches += 1
+	_was_latched = holder != null
 	for tg: Dictionary in _telegraphs:
 		tg.strike_in -= dt
 	_telegraphs = _telegraphs.filter(func(tg: Dictionary) -> bool: return tg.strike_in > -0.4 and is_instance_valid(tg.enemy))
@@ -662,6 +726,8 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 		if not enemy.is_alive() or tg.strike_in < -0.25:
 			continue
 		var reach: float = enemy.enemy_logic.attack_range + enemy.lunge + 70.0
+		if tg.lunge:
+			reach = enemy.enemy_stats.lunge_to + 70.0  # випад (D739) дістає з середньої відстані
 		if tg.boss and tg.kind in ["slam", "charge"]:
 			reach = 1000.0
 		if absf(enemy.global_position.x - hero.global_position.x) > reach:
