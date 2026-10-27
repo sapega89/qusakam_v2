@@ -165,7 +165,7 @@ func _initialize() -> void:
 
 	print("[2] A story dialogue holds the hero, a bark does not")
 	started.clear()
-	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
+	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 3: await process_frame
 	ck(player.event, "the dialogue window holds the hero")
 	var moved: float = await _moves(player)
@@ -202,7 +202,7 @@ func _initialize() -> void:
 	var box: Node = dm.current_dialogue_box
 	ck(is_equal_approx(box.settings.letters_per_second, UITokens.DIALOGUE_LETTERS_PER_SECOND) and UITokens.DIALOGUE_LETTERS_PER_SECOND >= 48.0,
 			"the box types %.0f letters/s (was 24)" % box.settings.letters_per_second)
-	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
+	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 3: await process_frame
 	var line1: String = box.get_text()
 	ck(not box.is_finished(), "line 1 is typing")
@@ -243,7 +243,7 @@ func _initialize() -> void:
 
 	print("[4] D739: a typed line goes on by itself; Off — it waits; a choice waits")
 	settings.settings.auto_advance = true
-	dm.start_dialogue("res://dialogue_quest/OldMan_Decision.dqd")
+	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
 	for i in 3: await process_frame
 	line1 = box.get_text()
 	box.finish()
