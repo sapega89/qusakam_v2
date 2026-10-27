@@ -1,7 +1,8 @@
 extends RefCounted
 
 ## Дані однієї локації для карти World Map (design/world_map_spec.md, D458, D565): клітинки MetSys її кімнат, стан кожної
-## (досліджена / бачений вхід / схована), об'єкти кімнат (герой, медитація, скрині, замкнені брами, завдання, виходи)
+## (досліджена / бачений вхід / схована), об'єкти кімнат (герой, медитація, скрині, замкнені брами, завдання, виходи,
+## знайдені секрети)
 ## і переходи між клітинками (драбина, спуск). Усе — з MapData MetSys, стану гри й сцен кімнат: кімнати перебудовують
 ## (world_structure_plan Region v2/v3), тож тут нічого не задано під окрему кімнату.
 ##   const LocationMap = preload("res://SampleProject/Scripts/Systems/LocationMap.gd")
@@ -21,6 +22,7 @@ const KIND_CHEST_OPEN := &"chest_open"
 const KIND_LOCKED := &"locked"
 const KIND_QUEST := &"quest"
 const KIND_EXIT := &"exit"
+const KIND_SECRET := &"secret"
 const PASSAGE_LADDER := &"ladder"
 const PASSAGE_DROP := &"drop"
 
@@ -45,7 +47,8 @@ var markers: Array[Dictionary] = []
 var passages: Array[Dictionary] = []
 var chests_total := 0
 var chests_opened := 0
-## D765: вузли SecretArea в кімнатах локації і скільки з них герой уже знайшов (на мапі значка немає — це секрет).
+## D765: вузли SecretArea в кімнатах локації і скільки з них герой уже знайшов. Знайдений має значок на мапі, незнайдений —
+## ні (інакше мапа видала б секрет).
 var secrets_total := 0
 var secrets_found := 0
 
@@ -175,7 +178,10 @@ func _classify(node: Node, pos: Vector2, room: String, room_key: String, origin:
 			_mark(KIND_LOCKED, pos, room, origin)
 	elif _has_script(node, SECRET_AREA_SCRIPT):
 		secrets_total += 1
-		secrets_found += int(Game.get_singleton().get_room_state(room_key, SecretArea.state_key(node.name), false))
+		var found: bool = Game.get_singleton().get_room_state(room_key, SecretArea.state_key(node.name), false)
+		secrets_found += int(found)
+		if found:
+			_mark(KIND_SECRET, pos, room, origin)
 	elif _has_script(node, LADDER_SCRIPT):
 		var top := _cell_of(pos, origin)
 		var bottom := _cell_of(pos + Vector2(0, node.get(&"height")), origin)

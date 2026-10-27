@@ -3279,6 +3279,9 @@ msgstr "завдання"
 msgid "exit to another location"
 msgstr "вихід в іншу локацію"
 
+msgid "secret (found)"
+msgstr "секрет (знайдений)"
+
 msgid "↕ ladder"
 msgstr "↕ драбина"
 

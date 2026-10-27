@@ -189,6 +189,8 @@ the history, this note keeps only what is open.
 > - **B167** (fixed by `cloud/journal-hints`, D781) — D181 was not built: the Journal grouped quests by story stage («PROLOGUE») and «Tasks», not by city/location (`journal_component.gd:176-196`). journal-hints now groups the Quests list under one header per location of `locations.json`.
 > - **B168** (open) — D459 (amends D304) is not built: in the cells cutscene the prisoner does not burst into flame; `LabCells.gd:134` still plays `collapse` and then fades the djinn in. Needs the sacrifice animation (frames or an FX) before the djinn appears.
 
+> **Open 2026-10-27 (`cloud/secrets-icon`, filed by integrate-28):** **B169** — the World Map legend's «saw the entrance, not entered yet» swatch cannot be seen: it is drawn as a 45 % ink dashed square (`map_icon.gd` `room_seen`) on the dark `MapCard` plate, ink on near-black (`design/shots/secrets/map_legend.png`). Proposed fix: draw the legend swatch in `MAP_ROOM_FILL` or a light token, checked against Figma `539:6615` (🖥).
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row

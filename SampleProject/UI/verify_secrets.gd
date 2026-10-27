@@ -2,6 +2,7 @@ extends SceneTree
 
 ## Секрети мапи (D765, Q98): невидима SecretArea рахується знайденою при першому вході героя, це живе в стані кімнати
 ## й переживає сейв; картка World Map показує «Secrets c/d» з вузлів кімнат локації; дзвін і тост «Secret found».
+## Карта рівня 2 малює знайдений секрет його значком на місці вузла, незнайдений — ніяк; рядок легенди.
 ## Пише лише в user://verify_secrets/ (set_save_dir) — справжні сейви не чіпає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_secrets.gd
 
@@ -78,6 +79,33 @@ func _card_stats(ui: Node) -> String:
 	return text
 
 
+## Значки рівня 2 локації [param id] ({marker, kind, dimmed, size}) і чи є в легенді рядок секрету: вкладка World Map,
+## open_location.
+func _level2_icons(ui: Node, id: String) -> Array[Dictionary]:
+	ui.open_game_menu()
+	for i in 14: await process_frame
+	var menu: Node = get_first_node_in_group("game_menu")
+	menu.switch_to_tab(WORLD_MAP_TAB)
+	for i in 8: await process_frame
+	var map: Control = menu.find_child("MetSysMapComponent", true, false)
+	map.open_location(id)
+	await process_frame
+	var out: Array[Dictionary] = []
+	for child: Node in map.get_node("%Grid").get_children():
+		if child.has_meta(&"marker"):
+			out.append({"marker": child.get_meta(&"marker"), "kind": child.get(&"kind"), "dimmed": child.get(&"dimmed"),
+					"size": (child as Control).size})
+	var legend: Control = map.get_node("%Legend")
+	legend_secret_ok = (legend.get_node(^"Rows/Secret/Icon").get(&"kind") == &"secret"
+			and (legend.get_node(^"Rows/Secret/Text") as Label).text == "secret (found)" and legend.is_visible_in_tree())
+	ui.close_game_menu()
+	for i in 8: await process_frame
+	return out
+
+
+var legend_secret_ok := false
+
+
 func _initialize() -> void:
 	await process_frame
 	await process_frame
@@ -126,6 +154,8 @@ func _initialize() -> void:
 		var data: RefCounted = LocationMap.new(id)
 		ck(data.secrets_total == per_location[id] and data.secrets_found == 0,
 				"%s: %d/%d = nodes %d" % [id, data.secrets_found, data.secrets_total, per_location[id]])
+		ck(not data.markers.any(func(m: Dictionary) -> bool: return m.kind == LocationMap.KIND_SECRET),
+				"%s: no secret icon while none is found" % id)
 
 	print("[3] entering counts once: chime and «Secret found» toast")
 	await game.teleport_to_room(MURAL_ROOM, ^"Arrival")
@@ -150,6 +180,26 @@ func _initialize() -> void:
 	ck(found_events.size() == 1, "walking in again does not count twice (%d)" % found_events.size())
 	var stats: String = await _card_stats(root.get_node("ServiceLocator").get_ui_manager())
 	ck(stats.ends_with("Secrets 1/%d" % per_location["canyon_of_whispers"]), "the card shows the found secret (%s)" % stats)
+	var canyon: RefCounted = LocationMap.new("canyon_of_whispers")
+	var secret_marks: Array = canyon.markers.filter(func(m: Dictionary) -> bool: return m.kind == LocationMap.KIND_SECRET)
+	ck(secret_marks.size() == 1, "one secret marker, the found one (%d)" % secret_marks.size())
+	var mural_room: String = MURAL_ROOM.get_file().get_basename()
+	ck(not secret_marks.is_empty() and canyon.cells[secret_marks[0].cell] == mural_room, "the marker sits in %s" % mural_room)
+	var cell_px: Vector2 = met.settings.in_game_cell_size
+	var origin := Vector3i.MAX
+	for c: Vector3i in canyon.cells:
+		if canyon.cells[c] == mural_room:
+			origin = Vector3i(mini(origin.x, c.x), mini(origin.y, c.y), c.z)
+	if not secret_marks.is_empty():
+		var at: Vector2 = (Vector2(secret_marks[0].cell.x - origin.x, secret_marks[0].cell.y - origin.y)
+				+ (secret_marks[0].at as Vector2)) * cell_px
+		ck(at.is_equal_approx(area.position), "at the SecretArea's position (%s = %s)" % [at, area.position])
+	var icons: Array[Dictionary] = await _level2_icons(root.get_node("ServiceLocator").get_ui_manager(), "canyon_of_whispers")
+	var drawn: Array = icons.filter(func(i: Dictionary) -> bool: return i.marker == &"secret")
+	ck(drawn.size() == 1 and drawn[0].kind == &"secret" and not drawn[0].dimmed,
+			"level 2 draws the found secret's icon (%d)" % drawn.size())
+	ck(not drawn.is_empty() and drawn[0].size == Vector2.ONE * UITokens.MAP_ICON, "the same 26 px circle")
+	ck(legend_secret_ok, "the legend has «secret (found)» with the icon")
 
 	print("[4] saved and loaded like an opened chest")
 	ck(game.save_game(), "save_game()")
