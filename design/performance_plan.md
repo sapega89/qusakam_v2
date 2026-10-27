@@ -345,6 +345,9 @@ would make the first `load_room()` asynchronous for every boot path; left as is.
 - Commit: `Slice 6 of performance_plan: New Game loads behind a fade to black (D434)`.
 
 ### Slice 7 — The GPU budget on weak PCs — **blocked on Q83, then Q84**
+> 2026-10-27: built as D554 (Quality High / Low, `cloud/perf-gfx`) for the HD 3000. Sapega then sent the weak PC: **i5-6600,
+> 16 GB, Intel HD Graphics 530** — D611 gives it *High* on the first run. Open: does the game lag there on High? If so,
+> the first-run rule moves the HD 5xx/6xx to Low (amend D611), or the numbers come from `measure_performance.gd` on it.
 - First run `measure_performance.gd` on the weak PC, or get its GPU (Q83). If its GPU frame is under ~10 ms, stop
   here.
 - Otherwise build the option Sapega picks in Q84, for example a Graphics row in Settings ([[settings_plan]]) that turns

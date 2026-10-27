@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtnukgk27by5i"
-path="res://.godot/imported/shield.png-402f78ce83a8bdaced2cbb9673b049de.ctex"
+uid="uid://b81wdfp8a1wfd"
+path="res://.godot/imported/shatter_3.png-8eca5f309694aee86182dda994b98b39.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://SampleProject/Sprites/Player/Shields/iron_shield/shield.png"
-dest_files=["res://.godot/imported/shield.png-402f78ce83a8bdaced2cbb9673b049de.ctex"]
+source_file="res://SampleProject/Assets/FX/Shield/glass/shatter_3.png"
+dest_files=["res://.godot/imported/shatter_3.png-8eca5f309694aee86182dda994b98b39.ctex"]
 
 [params]
 

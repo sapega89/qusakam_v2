@@ -15,6 +15,7 @@ Facing right, the feet (lowest pixel) on the bottom row of the cell; scenes flip
 | `butterfly.png` | 40×40 (in flight ~25 px, perched ~10×14 — smaller than the lark) | `perch` 2: wings closed, wings open | `fly` 4: wings up, open, downstroke, open |
 | `butterfly_blue.png` | 40×40 | the same frames, hue turned to an oasis blue | |
 | `moth.png` | 40×40 | the same frames, dusty grey-brown (caves, night interiors) | |
+| `mouse.png` | 16×16 (sitting exactly 12 art px tall, running 10–11 × 14) | `idle` 2: sitting up, frame 2 head and shoulders 1 px lower (`BOB:56`, the sniff / whisker twitch) | `run` 4: stretched, mid, gathered (tail up), mid (frame 2 repeated) |
 
 **Atmosphere (A23, slice 2b).** `butterfly.png` — `comfy_sprite.py critter_butterfly` (Qwen-Image-Edit-2511, as the
 birds), seed 121; the perched "wings open" frame is the flight's open-wing frame (the model kept the wings shut when
@@ -25,3 +26,5 @@ halo), `glow_dust.png` (3×3 mote), `glow_shaft.png` (16×96 light streak, low a
 palette. Sheet: `design/shots/atmosphere_sprites.png`. Placement is the room routine's (`m6_backdrops`).
 
 The bat critter uses the enemy sheet `Enemies/bat/sheet.png` (`critter_bat.tscn`). Sound: `critter_flap`.
+
+**Mouse (R2).** `mouse.png` — a desert mouse that runs along the floor into a hole when the hero comes near; `comfy_sprite.py critter_mouse` (Qwen-Image-Edit-2511, as the birds), seed 131, the run frames from the first run frame (`FROM:run:0`). The model drew it about 45 art px tall whatever the prompt asked, so the `height=12` option scales every generated frame by one factor (0.245) until the sitting frame is exactly 12 art px with its outline ([[world_scale_plan]]: butterfly, moth, mouse); the silhouette is thickened by a quarter block first, or the 1-px tail vanished. Sheet next to the hero: `design/shots/critters_mouse.png`. The hole and the placement are the room routine's.
