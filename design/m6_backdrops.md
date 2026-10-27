@@ -1,0 +1,58 @@
+---
+type: plan
+status: active
+tags: [art, comfyui, rooms, M6]
+---
+
+# M6 — backdrops for the new rooms (ComfyUI, the PC)
+
+The room graphs are accepted (M5: M1 `545:6590`, M3 `557:6590`, M4 `560:6590`). Every new room needs its backdrop
+before the one map routine (M7) builds it. Each passage is painted where the graph puts it (D747): a door, an arch, a
+cave mouth, a well shaft, a hole in the floor. Ladders only where a place would really have one (an attic hatch, a
+well, a ladder up a house wall). Tool: `comfy_backdrop.py` (the `comfy-backdrop` skill); props like the forge and the
+chapel stand on the floor line. Sapega sees each batch in a capture before the next one.
+
+## Batch 1 — Canyon of Whispers (M1 v3), story order
+
+| Room | Kind | Screens | Passages to paint | Status |
+|---|---|---|---|---|
+| Mountain path | outdoor, main | 2 | — | ⬜ |
+| Scree slide | outdoor, main, falls | 1×2 | a scree run down | ⬜ |
+| Stream gorge | outdoor, main | 3 | — | ⬜ |
+| Rock ledges | outdoor, main, climbs | 1×2 | ledges up (no floating platforms, A15) | ⬜ |
+| Cave under the bridge | underground | 1×3 | the cave mouth; the way down | ⬜ |
+| Grandfather's attic | interior | 1 | the hatch with its ladder | ⬜ |
+| Smugglers' stash | secret | 1 | a cracked wall | ⬜ |
+| Mesa top | side | 4 | — | ⬜ |
+| Zahra's Rest (oasis) | main | 2 | — (`Backgrounds/DesertOasis/` is empty) | ⬜ |
+| Dunes | main | 4 | the camp path | ⬜ |
+| Old ruins | underground | 4 | the leader's key gate | ⬜ |
+| Chasm | main | 1 | the bridge dropped from the far side | ⬜ |
+| Dry riverbed | underground | 1×2 | the climb out | ⬜ |
+| Aqueduct | underground | 4 | the way up to the gate approach | ⬜ |
+| Gate approach | main | 2 | the City gate | ⬜ |
+| M1a: smoke over the village, the fallen barrier; the burnt village | background story | — | — | ⬜ |
+
+## Batch 2 — the City (M3)
+
+| Room | Kind | Screens | Passages to paint | Status |
+|---|---|---|---|---|
+| Craft quarter | main | 3 | the forge and chapel fronts stand there (props exist) | ⬜ |
+| Palace square | main | 2 | the palace doors, the alley down | ⬜ |
+| Rooftops | side | 3 | a ladder up a house wall; the drop to the gate | ⬜ |
+| Pigeon loft | secret | 1 | loose boards | ⬜ |
+| Tavern attic | interior | 2 | the hatch with its ladder behind the stall | ⬜ |
+| Mayor's archive | interior | 1 | the bookshelf door | ⬜ |
+| Cistern under the market | underground | 3 | the well shaft; the grate into the gate cellar | ⬜ |
+| Cistern stash | secret | 2 | a cracked wall | ⬜ |
+
+## Batch 3 — the Laboratory (M4 v2)
+
+| Room | Kind | Screens | Passages to paint | Status |
+|---|---|---|---|---|
+| Floors 1–3 (zigzag) | main | 5 each | an opening in the floor at alternate ends | ⬜ (today's `Lab/` layers, longer) |
+| Alchemist's corridor | side | 3 | stairs up from floor 1 | ⬜ |
+| Alchemist's storeroom | interior | 2 | a locked door | ⬜ |
+| Malik's stash | secret | 2 | the loose slab in his cell | ⬜ |
+| Collapsed drain | underground | 7 | the grate in floor 3; the hatch into the cells | ⬜ |
+| Courtyard (finale) | main | 1 | — (one room with the demo's finale) | ⬜ |
