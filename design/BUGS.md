@@ -232,6 +232,7 @@ the history, this note keeps only what is open.
 > - **B198** (fixed, `playtest-tuning` `8881bc0e`: ground enemies jump up to a hero 12–72 px higher within 160 px) — standing on a step, the hero cannot be reached: ground enemies do not jump up to him (Sapega playtest 2026-10-28).
 > - **B199** (open, `cloud/fight-occluders`) — during a fight a foreground rock gets in the way and hides the fight («під час бою камінь заважає», Sapega playtest 2026-10-28).
 > - **B200** (open, `cloud/shield-elites`) — the shield-bearer's shield does not disappear («не пропадає щит з моба зі щитом, чомусь не ясно чому» / «бо не малювали без щита? але ми ж розбиваємо щит», Sapega playtest 2026-10-28). Cause: there are no shieldless frames, so a broken shield stays in hand. Fix: art lane draws the shield-bearer and tower shield guard without a shield (same poses and cells), then a cloud routine swaps to them when the shield breaks and bursts the shield into shards.
+> - **B201** (open, `cloud/ladder-holes`) — where a ladder goes through a floor the floor is cut into odd chopped pieces: a raw black rectangle with sliced plank ends around the ladder («в нас якісь обрізані куски там, де драбина, і це дивно, має бути лаконічно», Sapega playtest 2026-10-28, `design/refs/sapega_b201_ladder_hole.png`).
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
