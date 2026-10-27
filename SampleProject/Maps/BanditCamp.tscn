@@ -12,6 +12,9 @@
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r10"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="fg1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_camp/rope_stake.png" id="fg2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_camp/crate.png" id="fg3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(160, 480)
@@ -165,3 +168,27 @@ process_mode = 3
 stream = ExtResource("r9")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("fg1")]
+
+[node name="OccluderRopes1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(480, 300)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg2")
+centered = false
+
+[node name="Crate1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(560, 434)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg3")
+centered = false
+
+[node name="OccluderRopes2" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(982, 300)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg2")
+centered = false
+flip_h = true
