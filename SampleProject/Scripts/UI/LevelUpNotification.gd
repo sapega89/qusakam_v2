@@ -2,8 +2,8 @@ extends Control
 class_name LevelUpNotification
 
 ## Сповіщення про рівень (D436, Figma UI/Notification/LevelUp 484:6490): угорі по центру, під панеллю квесту.
-## Рядки — те, що реально дає один рівень: Max HP і шкода (XPManager.stat_bonuses), очки атрибутів
-## (attributes.json → AttributeManager.points_per_level), очки навичок (SkillManager.JP_PER_LEVEL).
+## Рядки — те, що реально дає один рівень: очки атрибутів (attributes.json → AttributeManager.points_per_level)
+## і очки навичок (SkillManager.JP_PER_LEVEL). HP і шкоди рівень сам не дає (D841) — їх рядків немає.
 ## Гру не ставить на паузу; кілька рівнів поспіль ідуть у черзі. На кепі (D541) XPManager рівня не дає — сповіщення немає.
 
 const FADE_IN := 0.3
@@ -11,8 +11,6 @@ const HOLD := 3.0
 const FADE_OUT := 0.3
 
 @onready var _level: Label = %LevelLabel
-@onready var _max_hp: Label = $Panel/Column/Rows/MaxHp/Value
-@onready var _damage: Label = $Panel/Column/Rows/Damage/Value
 @onready var _attribute_points: Label = $Panel/Column/Rows/AttributePoints/Value
 @onready var _job_points: Label = $Panel/Column/Rows/JobPoints/Value
 
@@ -49,10 +47,7 @@ func pending() -> int:
 
 
 func _show_next() -> void:
-	var xp: XPManager = ServiceLocator.get_xp_manager()
 	_level.text = tr("Level %d") % _queue[0]
-	_max_hp.text = "+%d" % int(xp.stat_bonuses["hp_per_level"])
-	_damage.text = "+%d" % int(xp.stat_bonuses["damage_per_level"])
 	_attribute_points.text = "+%d" % ServiceLocator.get_attribute_manager().points_per_level
 	_job_points.text = "+%d" % SkillManager.JP_PER_LEVEL
 	visible = true

@@ -60,38 +60,6 @@ layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"LevelUpRows"
 
-[node name="MaxHp" type="HBoxContainer" parent="Panel/Column/Rows"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Label" type="Label" parent="Panel/Column/Rows/MaxHp"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"LevelUpRowLabel"
-text = "Max HP"
-
-[node name="Value" type="Label" parent="Panel/Column/Rows/MaxHp"]
-layout_mode = 2
-theme_type_variation = &"LevelUpRowValue"
-text = "+20"
-horizontal_alignment = 2
-
-[node name="Damage" type="HBoxContainer" parent="Panel/Column/Rows"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Label" type="Label" parent="Panel/Column/Rows/Damage"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"LevelUpRowLabel"
-text = "Damage"
-
-[node name="Value" type="Label" parent="Panel/Column/Rows/Damage"]
-layout_mode = 2
-theme_type_variation = &"LevelUpRowValue"
-text = "+5"
-horizontal_alignment = 2
-
 [node name="AttributePoints" type="HBoxContainer" parent="Panel/Column/Rows"]
 layout_mode = 2
 mouse_filter = 2

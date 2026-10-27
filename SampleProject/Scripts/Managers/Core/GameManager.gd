@@ -204,23 +204,24 @@ func _active_equipment_stats() -> Dictionary:
 	return character.get_equipment_stats() if character else {}
 
 
-## Max HP — і в меню, і в грі (D205): витривалість, броня, бонус рівня, пасивки (Toughness).
+## Max HP — і в меню, і в грі (D205): витривалість, броня, пасивки (Toughness), Vitality. Рівень сам HP не дає (D841).
 func calculate_max_health() -> int:
 	var attributes := _active_attributes()
 	if not attributes:
 		return 0
-	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) + level_and_passive_health()
+	return StatCalculator.calculate_max_health(attributes, _active_equipment_stats()) + passive_and_attribute_health()
 
 
-## Частина Max HP, що не залежить від речей: бонус рівня, пасивки, Vitality (D335). Equipment рахує «без речей» з нею ж.
-func level_and_passive_health() -> int:
-	return ServiceLocator.get_xp_manager().get_hp_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("max_health")) \
+## Частина Max HP, що не залежить від речей: пасивки, Vitality (D335); рівень сам нічого не додає (D841).
+## Equipment рахує «без речей» з нею ж.
+func passive_and_attribute_health() -> int:
+	return roundi(ServiceLocator.get_skill_manager().passive_value("max_health")) \
 			+ roundi(ServiceLocator.get_attribute_manager().bonus("max_health"))
 
 
-## Частина Phys. Atk., що не залежить від речей: бонус рівня, пасивки (D284), Strength (D335).
-func level_and_passive_attack() -> int:
-	return ServiceLocator.get_xp_manager().get_damage_bonus() + roundi(ServiceLocator.get_skill_manager().passive_value("attack")) \
+## Частина Phys. Atk., що не залежить від речей: пасивки (D284), Strength (D335); рівень сам нічого не додає (D841).
+func passive_and_attribute_attack() -> int:
+	return roundi(ServiceLocator.get_skill_manager().passive_value("attack")) \
 			+ roundi(ServiceLocator.get_attribute_manager().bonus("attack"))
 
 
@@ -230,12 +231,12 @@ func with_attribute_ratio(stat: String, base: float) -> float:
 	return attributes.capped(stat, base + attributes.bonus(stat))
 
 
-## Phys. Atk. — і в меню, і в ударі гравця (D199): сила, атака спорядження й бонус рівня.
+## Phys. Atk. — і в меню, і в ударі гравця (D199): сила, атака спорядження, пасивки й Strength (рівень сам — ні, D841).
 func calculate_physical_damage() -> int:
 	var attributes := _active_attributes()
 	if not attributes:
 		return 0
-	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + level_and_passive_attack()
+	return StatCalculator.calculate_physical_damage(attributes, _active_equipment_stats()) + passive_and_attribute_attack()
 
 
 func calculate_magic_damage() -> int:

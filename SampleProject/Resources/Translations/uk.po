@@ -2508,11 +2508,11 @@ msgstr "Натисніть {heavy_attack} для важкої атаки: пов
 msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
 msgstr "Утримуйте {block}, щоб блокувати: удар спереду не завдає шкоди (важкий удар чи останній удар серії пробиває захист). Коли зброя ворога спалахує жовтим, коротко натисніть {block}, щойно падає удар, — це парирування: жодної шкоди, а нападник утрачає рівновагу й відкритий для контрудару. Червоний відблиск не заблокувати й не парирувати: перекотіться геть."
 
-msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
-msgstr "Переможені вороги лишають XP і монети. Шкала XP заповнюється з кожною перемогою; коли вона повна, ви отримуєте новий рівень, а з ним HP, шкоду й очко навичок."
+msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up and get attribute points and a skill point to spend."
+msgstr "Переможені вороги лишають XP і монети. Шкала XP заповнюється з кожною перемогою; коли вона повна, ви отримуєте новий рівень, а з ним очки атрибутів і очко навичок, які витрачаєте самі."
 
-msgid "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
-msgstr "Кожен рівень додає HP і шкоди та дає очко навичок. Витрачайте очки в ігровому меню, у розділі «Навички»."
+msgid "A level does not make you stronger by itself: it gives attribute points and a skill point. Spend them in the game menu, under Status and Skills."
+msgstr "Рівень сам вас не посилює: він дає очки атрибутів і очко навичок. Витрачайте їх в ігровому меню, у розділах «Стан» і «Навички»."
 
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Новий рівень! Можна вивчити «Цілющу долоню»: натисніть {game_menu}, відкрийте «Навички», виберіть її й підтвердьте. Вона потрапить на панель швидкого доступу; натисніть {skill_slot_1}, щоб зцілитися."
