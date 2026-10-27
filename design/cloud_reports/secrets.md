@@ -14,7 +14,7 @@ like a chest), event `secret_found` (bus SFX, the parry bell at pitch 2.4, −12
 loot feed. The card reads «Explored N% · Chests a/b · Secrets c/d». Secrets get no level-2 map icon, which would give them
 away. Placed: DragonMural, DesertRoad shop-roof rubble and tower-top stash, LizardCave shrine, ElderHouse attic, Mesa
 top, Gatehouse Cellar. The Laboratory has none: its branches (drain, storeroom, Malik's stash) are not built.»
-B rows fixed: none. Full suite: SUITE_LINE
+B rows fixed: none. Full suite: `SUITE: 1 FAIL`, which is `verify_city_gates_raid` «the hero falls after the teleport». It fails the same way on `origin/feature/backlog`, so this branch did not cause it (see Tests).
 
 ## What was built
 - `SampleProject/Scripts/Gameplay/SecretArea.gd:15` `_ready`: skips watching once found. `:31` `_on_body_entered`:
@@ -57,6 +57,10 @@ Totals: Canyon of Whispers 6, City 1, Laboratory 0.
 - `verify_world_map`: `RESULT: ALL PASS`. The card check now includes «Secrets c/d», and the old «no secrets line»
   check now requires `secrets_total > 0`.
 - `verify_save_load`: `RESULT: ALL PASS`. `verify_desert_road`: `RESULT: ALL PASS`.
+- Full suite (`run_verify.sh`): `SUITE: 1 FAIL`, which is `verify_city_gates_raid`: `the hero falls after the teleport
+  (y 360.0 -> 360.0)`. It still fails on a re-run and fails identically on a clean worktree of `origin/feature/backlog`.
+  CityGates has no SecretArea and this branch does not touch it. It needs a B-ID from the orchestrator. It probably
+  comes from the hero's arrival in CityGates (last changed in 67b9f428 / the city-life merge).
 - Capture: `SampleProject/UI/capture_secrets.gd` writes `design/shots/secrets/card_vs_figma.png`, with Figma `539:6472`
   on top and the game below in en and uk. The third item sits on the stats line as in the frame. The font and the
   separator spacing differ by D715 (Cormorant Garamond, the game's only font), so there is no new B-ID.
