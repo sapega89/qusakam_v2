@@ -425,6 +425,76 @@ for k in range(2):
         (96, 72),
     )
 
+# --- B200: вартовий з баштовим щитом без щита (sheet_noshield.png) — ті самі клітинки 96×96, пози, ступні й палітра;
+# щит прибрано, вільна рука — порожній кулак. Кадри 16-17 (смерть) і так без щита — скопійовано як є.
+TOWER = ENEMY + "shield_tower/sheet.png"
+TOWER_NS = ENEMY + "shield_tower/sheet_noshield.png"
+TOWER_WHO = "a big armoured bandit guard in grey plate armour with a spiked steel helmet and a red face scarf"
+NO_SHIELD = (
+    "keeping exactly the same pose, armour, helmet, red scarf, sword, size and position as in the picture; only "
+    "remove the tall brown wooden shield completely: there is no shield anywhere in the picture, "
+)
+for idx, rest in (
+    (
+        0,
+        "his grey armoured chest and front arm visible where the shield was, his front hand an empty fist held in front of his belly",
+    ),
+    (
+        1,
+        "his grey armoured chest and front arm visible where the shield was, his front hand an empty fist held in front of his belly",
+    ),
+    (
+        4,
+        "his grey armoured body and front leg visible where the shield was, his front arm bent with an empty fist in front of his chest",
+    ),
+    (
+        5,
+        "his grey armoured body and front leg visible where the shield was, his front arm bent with an empty fist in front of his chest",
+    ),
+    (
+        6,
+        "his grey armoured body and front leg visible where the shield was, his front arm bent with an empty fist in front of his chest",
+    ),
+    (
+        7,
+        "his grey armoured body and front leg visible where the shield was, his front arm bent with an empty fist in front of his chest",
+    ),
+    (
+        8,
+        "the sword still raised high over his head, his grey armoured body and legs visible where the shield was, his other hand an empty fist in front of his chest",
+    ),
+    (
+        9,
+        "the same sword thrust straight forward from his hand at the same height, his grey armoured body and legs visible where the shield was",
+    ),
+    (
+        10,
+        "the same sword held low pointing down, his grey armoured body and legs visible where the shield was, his other hand an empty fist",
+    ),
+    (
+        12,
+        "nothing behind his shoulder and head, only his grey armour, his arm thrown up behind him with an empty hand",
+    ),
+    (16, None),
+    (17, None),
+    (
+        18,
+        "he lies on the bare ground, his grey armoured body visible where the shield was under him",
+    ),
+):
+    job(
+        "noshield_tower%d" % idx,
+        cell(TOWER, idx % 4, idx // 4, 96, 96),
+        (TOWER_NS, (idx % 4 * 96, idx // 4 * 96, 96, 96)),
+        NO_SHIELD + rest if rest else None,
+        TOWER_WHO,
+        200,
+        (96, 96),
+        12,
+        TOWER,
+        src_wt=True,
+    )
+
 
 # --- зала боса: руни на стіні читались латиницею (DPOB над піччю, кільця обабіч) — перемальовано лише їхні
 # прямокутники схваленої картинки з кешу comfy_backdrop (denoise 0.65), підказка шару в comfy_backdrop.py — нова ---
@@ -518,7 +588,12 @@ def crop(im, box):
 def palette(j):
     if j["palette"] == "hero":
         return cs.hero_palette()
-    px = np.asarray(git_png(j["src"][0])).reshape(-1, 4)
+    # шлях — палітра цього листа з робочого дерева (джерело, якого ще немає в SRC_REV)
+    px = np.asarray(
+        Image.open(j["palette"]).convert("RGBA")
+        if j["palette"]
+        else git_png(j["src"][0])
+    ).reshape(-1, 4)
     return np.array(sorted({tuple(c[:3]) for c in px if c[3] > 128}), np.float32)
 
 
@@ -557,8 +632,15 @@ def run_job(name):
         a = np.asarray(src, np.float32)
         rgb, op = cs.bob((a[..., :3], a[..., 3] > 128), j["bob"])
         frame = np.dstack([rgb, op * 255.0]).astype(np.uint8)
-    elif j["pose"] is None:  # без моделі — кадр із SRC_REV, лише erase
-        frame = np.asarray(crop(git_png(j["src"][0]), j["src"][1])).copy()
+    elif (
+        j["pose"] is None
+    ):  # без моделі — кадр із SRC_REV (чи робочого дерева), лише erase
+        src_im = (
+            Image.open(j["src"][0]).convert("RGBA")
+            if j["src_wt"]
+            else git_png(j["src"][0])
+        )
+        frame = np.asarray(crop(src_im, j["src"][1])).copy()
     else:
         src = crop(
             Image.open(j["src"][0]).convert("RGBA")
@@ -617,10 +699,12 @@ def run_job(name):
         sheet = (
             Image.open(path).convert("RGBA")
             if os.path.exists(path)
-            else Image.new("RGBA", (box[0] + w, h))
+            else Image.new("RGBA", (box[0] + w, box[1] + h))
         )
-        if sheet.width < box[0] + w:
-            grown = Image.new("RGBA", (box[0] + w, sheet.height))
+        if sheet.width < box[0] + w or sheet.height < box[1] + h:
+            grown = Image.new(
+                "RGBA", (max(sheet.width, box[0] + w), max(sheet.height, box[1] + h))
+            )
             grown.paste(sheet, (0, 0))
             sheet = grown
         sheet.paste(Image.fromarray(frame), box[:2])
