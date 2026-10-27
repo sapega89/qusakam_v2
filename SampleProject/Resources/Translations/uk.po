@@ -617,8 +617,8 @@ msgstr "+%d до макс. SP"
 msgid "+%d attack"
 msgstr "+%d до атаки"
 
-msgid "−%s%% damage with a shield"
-msgstr "−%s%% шкоди зі щитом"
+msgid "−%s%% damage through a block"
+msgstr "−%s%% шкоди крізь блок"
 
 msgid "−%s%% damage taken"
 msgstr "−%s%% отриманої шкоди"
@@ -2093,8 +2093,8 @@ msgstr "Тріскучий удар по всьому, що перед вами;
 msgid "+10 Max HP."
 msgstr "+10 до макс. HP."
 
-msgid "Take 20% less damage while a shield is equipped."
-msgstr "На 20% менше шкоди, коли у вас щит."
+msgid "Take 20% less damage from a blow that breaks through your block."
+msgstr "На 20% менше шкоди від удару, що пробиває ваш блок."
 
 msgid "+5 max SP."
 msgstr "+5 до макс. SP."
@@ -2153,8 +2153,8 @@ msgstr "Удари зброєю зцілюють вас ще на 10% завда
 msgid "A measured strike at everything in front of you; stuns the first enemy."
 msgstr "Виважений удар по всьому, що перед вами; оглушує першого ворога."
 
-msgid "Take a further 10% less damage while a shield is equipped."
-msgstr "Ще на 10% менше шкоди, коли у вас щит."
+msgid "Take a further 10% less damage from a blow that breaks through your block."
+msgstr "Ще на 10% менше шкоди від удару, що пробиває ваш блок."
 
 msgid "Your hits break an enemy's stance 30% faster."
 msgstr "Ваші удари ламають стійкість ворога на 30% швидше."
@@ -2833,8 +2833,8 @@ msgstr "Удар знизу вгору, що підкидає легких во�
 msgid "Shield Bash [DRAFT]"
 msgstr "Удар щитом [ЧЕРНЕТКА]"
 
-msgid "Breaks an enemy's wind-up and deals heavy guard damage; strikes with the pommel when you have no shield. [DRAFT]"
-msgstr "Зриває замах ворога й сильно б'є по його стійкості; без щита — удар руків'ям. [ЧЕРНЕТКА]"
+msgid "Breaks an enemy's wind-up and deals heavy guard damage. [DRAFT]"
+msgstr "Зриває замах ворога й сильно б'є по його стійкості. [ЧЕРНЕТКА]"
 
 msgid "Ground Slam [DRAFT]"
 msgstr "Удар об землю [ЧЕРНЕТКА]"
@@ -2875,8 +2875,8 @@ msgstr "Ваша важка атака ламає стійкість ворог�
 msgid "Shield Charge [DRAFT]"
 msgstr "Натиск щитом [ЧЕРНЕТКА]"
 
-msgid "Run forward behind your shield and knock enemies back. [DRAFT]"
-msgstr "Біжите вперед за щитом і відкидаєте ворогів. [ЧЕРНЕТКА]"
+msgid "Run forward behind a shield of light and knock enemies back. [DRAFT]"
+msgstr "Біжите вперед за щитом світла й відкидаєте ворогів. [ЧЕРНЕТКА]"
 
 msgid "Lightspear [DRAFT]"
 msgstr "Спис світла [ЧЕРНЕТКА]"
@@ -2917,8 +2917,8 @@ msgstr "Спалах, що приголомшує всіх ворогів нав
 msgid "Shield of Faith [DRAFT]"
 msgstr "Щит віри [ЧЕРНЕТКА]"
 
-msgid "A block with a shield heals you for 25% of the blocked damage. [DRAFT]"
-msgstr "Блок щитом зцілює вас на 25% заблокованої шкоди. [ЧЕРНЕТКА]"
+msgid "A blow you hold off with a block heals you for 25% of its damage. [DRAFT]"
+msgstr "Удар, який ви втримали блоком, зцілює вас на 25% його шкоди. [ЧЕРНЕТКА]"
 
 msgid "Blood Rush [DRAFT]"
 msgstr "Кривавий ривок [ЧЕРНЕТКА]"
@@ -3019,8 +3019,8 @@ msgstr "Ваш перекат на 20% довший, і невразливіст
 msgid "heavy attack +%s%% poise damage"
 msgstr "важка атака +%s%% шкоди стійкості"
 
-msgid "a shield block heals %s%%"
-msgstr "блок щитом лікує %s%%"
+msgid "a held block heals %s%%"
+msgstr "утриманий блок зцілює на %s%%"
 
 msgid "+%s%% damage to burning enemies"
 msgstr "+%s%% шкоди палаючим ворогам"

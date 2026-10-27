@@ -111,11 +111,13 @@ func _initialize() -> void:
 			"caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP")
 	for tree in ["", "paladin", "dark_knight", "warden"]:
 		var full := 0
+		var maxed := 0
 		for d in db.get_all_skills():
 			if d.oath == tree:
 				full += d.jp_cost
-		ck(db.tree_cap(tree) < full and full > xp.MAX_LEVEL - 1, "tab '%s': learning all 19 costs %d JP, over its cap %d and over the %d JP of level %d"
-				% [tree, full, db.tree_cap(tree), xp.MAX_LEVEL - 1, xp.MAX_LEVEL])
+				maxed += d.jp_cost + (d.max_rank - 1) * d.rank_jp
+		ck(db.tree_cap(tree) < full and full > xp.MAX_LEVEL - 1, "tab '%s': learning all 19 costs %d JP (all at top rank %d), over its cap %d and over the %d JP of level %d"
+				% [tree, full, maxed, db.tree_cap(tree), xp.MAX_LEVEL - 1, xp.MAX_LEVEL])
 
 	print("[2] Skill power scales with Phys. Atk. and Elem. Atk. (B137)")
 	_level_to(xp, 20)
@@ -291,6 +293,10 @@ func _initialize() -> void:
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
 	ck(planned.size() == 28 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "28 planned actives, all [DRAFT] (%d)" % planned.size())
+	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
+	var unnumbered: Array = raw.filter(func(e: Dictionary) -> bool:
+			return e.get("planned", false) and (not e.has("sp_cost") or e.get("draft", {}).is_empty() or not ResourceLoader.exists(e.icon)))
+	ck(unnumbered.is_empty(), "every planned active has provisional SP, `draft` numbers and its icon %s" % [unnumbered.map(func(e): return e.id)])
 	var refused := true
 	for d in planned:
 		if sm.can_unlock(d.id) != R.PLANNED or sm.unlock_skill(d.id) != R.PLANNED:
@@ -321,10 +327,10 @@ func _initialize() -> void:
 	for id in ["healing_palm", "fire_strike", "electric_strike", "toughness", "shield_block", "mending_hands"]:
 		sm.unlock_skill(id)
 	ck(sm.unlock_skill("shield_of_faith") == R.OK, "Shield of Faith learned (6 base JP, Mending Hands)")
-	sl.get_equipment_manager().equip_item(gm.get_active_character().character_id, "shield", "iron_shield", items.get_item("iron_shield"))
+	ck(gm.player_state.equipment.get("shield") == null, "no shield item: the shield is a block spell (Sapega 2026-10-27)")
 	player.current_health = player.Max_Health - 50
 	player._heal_on_block(40)
-	ck(player.current_health == player.Max_Health - 40, "a blocked 40 hit with a shield heals 10 (25 %%): %d" % (player.Max_Health - player.current_health))
+	ck(player.current_health == player.Max_Health - 40, "a held block of a 40 hit heals 10 (25 %%) without a shield item: %d" % (player.Max_Health - player.current_health))
 	gm.player_state.unlocked_skills.append("embers_within")  # клятва Dark Knight — стат перевіряємо прямо через стан
 	enemy.burn_left = 0.0  # Fire Strike і ультимативна з попередніх розділів могли підпалити
 	enemy.current_health = enemy.Max_Health

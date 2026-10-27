@@ -514,7 +514,7 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
 			_heal_on_block(damage)
 			return
-	var dealt := mitigated_damage(damage)
+	var dealt := mitigated_damage(damage, guard == &"block")
 	if dealt == 0:
 		EventBus.player_evaded.emit(source)
 		return
@@ -525,28 +525,23 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 	combat.stagger(source.hit_stagger_time(), source.global_position.x)
 
 
-## D535: Shield of Faith — утриманий блок щитом лікує частку заблокованої шкоди.
+## D535: Shield of Faith — утриманий блок лікує частку заблокованої шкоди. Щит — закляття блоку, не спорядження
+## (відповідь Sapega 2026-10-27, skills_audit), тож предмет «щит» не потрібен.
 func _heal_on_block(blocked: int) -> void:
-	if not _shield_in_hand():
-		return
 	var healed := roundi(blocked * ServiceLocator.get_skill_manager().passive_value("block_heal"))
 	if healed > 0:
 		heal_damage(healed)
 
 
-## Щит працює, лише якщо руки вільні від дворучної зброї (D267) і лука (D383).
-func _shield_in_hand() -> bool:
-	return ServiceLocator.get_game_manager().player_state.equipment.get("shield") != null and combat.grip not in [&"two_handed", &"bow"]
-
-
 ## Ухилення (D393) — кидок з шансом GameManager.calculate_dodge_chance: 0, удар не влучив.
-func mitigated_damage(damage: int) -> int:
+## [param through_block] — удар пробив утриманий блок: тоді діють Shield Block / Bulwark (щит — закляття блоку).
+func mitigated_damage(damage: int, through_block: bool = false) -> int:
 	var gm := ServiceLocator.get_game_manager()
 	if CombatRolls.roll(gm.calculate_dodge_chance()):
 		return 0
 	var result: float = damage * 100.0 / (100.0 + gm.calculate_physical_defense())
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	if _shield_in_hand():
+	if through_block:
 		result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("shield_block"))
 	result *= 1.0 - minf(MAX_SKILL_REDUCTION, skills.passive_value("damage_reduction"))  # D284
 	return maxi(1, roundi(result))
