@@ -799,6 +799,10 @@ msgstr "Взаємодіяти, говорити, підняти"
 msgid "Next line of dialogue"
 msgstr "Наступна репліка"
 
+# Сюжетна подача розмови (D110): утримання «далі» гонить репліки до вибору (D736)
+msgid "Hold: skip to the choice"
+msgstr "Утримання: до вибору"
+
 msgid "Skip a cutscene (hold)"
 msgstr "Пропустити катсцену (тримати)"
 

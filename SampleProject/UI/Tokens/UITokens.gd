@@ -342,6 +342,20 @@ const DIALOGUE_LETTERS_PER_SECOND := 48.0
 const DIALOGUE_AUTO_MIN := 1.5
 const DIALOGUE_AUTO_PER_CHAR := 0.02      # 75 літер і коротше — 1.5 с, 125 і довше — 2.5 с
 const DIALOGUE_AUTO_MAX := 2.5
+# Сюжетна подача розмови (D110–D112, Figma conversation-dialog-choices 36:65 у кадрі 1920×1080): темна сцена, назва
+# локації вгорі ліворуч під тонкою лінією, дві високі картки на весь зріст (герой ліворуч, мовець праворуч), вікно
+# репліки впоперек нижньої середини, підказки клавіш унизу.
+const STORY_SCRIM := Color("000000", 0.72)       # темніше за OVERLAY: сцена лишається видно, але не відволікає
+const STORY_MARGIN := 64                          # лівий/верхній край назви (Figma 47,50 при 1400 → 64)
+const SIZE_STORY_CHAPTER := 36                    # Bold, UPPER (Figma 36)
+const STORY_CHAPTER_RULE := 600                   # довжина лінії під назвою (Figma 438 при 1400)
+const STORY_RULE := Color("d4af37", 0.45)         # тонка лінія під назвою та під ім'ям мовця
+const STORY_BOX_WIDTH := 1584                     # вікно репліки (Figma 1156 при 1400, аудит діалогів)
+const STORY_BOX_BOTTOM := 260                     # від низу кадру до низу вікна; над ним — місце для відповідей
+const STORY_CARD_SIZE := Vector2(216, 336)        # картка на весь зріст: клітинка 64×96 ×3 + поле SPACE_MD
+const STORY_CARD_GAP := 48                        # від низу картки до верху вікна репліки
+const STORY_CARD_IDLE := Color(0.45, 0.45, 0.5)   # modulate картки того, хто зараз мовчить
+const STORY_HINTS_BOTTOM := 72                    # підказки клавіш над нижнім краєм (Figma 722 при 788)
 # NPC-меню (Figma: npc-interaction-menu у 164:1302 / 176:1357, UI/Menu Item 248:62)
 const NPC_MENU_WIDTH := 200
 const NPC_MENU_GAP := -BORDER_WIDTH  # рядки перекривають спільну рамку: між ними 1px, не 2 (B40)

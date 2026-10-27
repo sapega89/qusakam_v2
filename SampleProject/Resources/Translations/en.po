@@ -799,6 +799,10 @@ msgstr "Interact, talk, pick up"
 msgid "Next line of dialogue"
 msgstr "Next line of dialogue"
 
+# Сюжетна подача розмови (D110): утримання «далі» гонить репліки до вибору (D736)
+msgid "Hold: skip to the choice"
+msgstr "Hold: skip to the choice"
+
 msgid "Skip a cutscene (hold)"
 msgstr "Skip a cutscene (hold)"
 
