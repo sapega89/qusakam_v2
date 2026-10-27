@@ -1346,8 +1346,15 @@ CHARACTERS = {
                     "in the same side view facing right: bending forward on slightly bent knees, both empty hands "
                     "reaching down and forward in front of him as if picking something up, the cape hanging behind him",
                     # кадр 2 (долоні чашею низько перед животом) не вдався за три спроби (арт-директор, artA1A2):
-                    # руки під самою мордою, предмету нема місця, раз — фас. None з base=None — файл не пишеться
-                    None,
+                    # руки під самою мордою, предмету нема місця, раз — фас. H4 (2026-10-27): проміжний між 1 і 3 —
+                    # з кадру 1 (ON:, плащ і стійка ті самі), руки йдуть угору перед ним на висоті морди; з 5
+                    # кандидатів (з Walk/1, з Raise/1, з Raise/3; зерна 22/23) — справжня середина руху. З Raise/3
+                    # модель притискала долоні до рота, з Walk/1 і нижче — руки на грудях, стрибок до 3 лишався
+                    "ON:SampleProject/Sprites/Player/Raise/1.png:in the same side view facing right, the same size: "
+                    "almost standing up straight from the bend, his knees only slightly bent, both arms raised forward "
+                    "and up at a 45 degree angle, his two open empty hands together held up in front of him above the "
+                    "height of his eye, well in front of his face, his whole face, eye and snout fully visible and "
+                    "uncovered, looking ahead to the right, the cape hanging behind him",
                     # над головою — свій кадр, не Heavy/1 (замах атаки з плащем на вітрі); руки позаду голови, щоб
                     # обличчя не ховалось
                     "in the same side view facing right, the same size: standing straight with his feet planted apart, "

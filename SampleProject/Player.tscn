@@ -35,6 +35,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/1.png" id="heavy1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Heavy/2.png" id="heavy2"]
 [ext_resource type="Texture2D" uid="uid://s7wjy8oog06u" path="res://SampleProject/Sprites/Player/Raise/1.png" id="raise1"]
+[ext_resource type="Texture2D" uid="uid://bgok2tyt13hqe" path="res://SampleProject/Sprites/Player/Raise/2.png" id="raise2"]
 [ext_resource type="Texture2D" uid="uid://bjrq235igxpty" path="res://SampleProject/Sprites/Player/Raise/3.png" id="raise3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Block/1.png" id="block1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/CastPalm/1.png" id="cast_palm1"]
@@ -553,10 +554,10 @@ tracks/0/path = NodePath("Sprite2D:texture")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.15),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.08, 0.16),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [ExtResource("raise1"), ExtResource("raise3")]
+"values": [ExtResource("raise1"), ExtResource("raise2"), ExtResource("raise3")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false

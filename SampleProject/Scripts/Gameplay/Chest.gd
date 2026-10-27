@@ -15,7 +15,7 @@ signal opened(contents: Dictionary)
 const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
 
 ## Поза героя, поки предмет над головою: анімація "Raise" у Player.tscn (арт A1 «hero_raise»: Raise/1 нахил,
-## Raise/3 руки над головою — тримається до кінця; Raise/2 у репо немає, B91).
+## Raise/2 руки йдуть угору (H4), Raise/3 руки над головою — тримається до кінця; B91).
 const HERO_POSE := &"Raise"
 ## Скільки предмет висить над героєм, перш ніж відкриється модалка.
 const RAISE_SECONDS := 1.2
