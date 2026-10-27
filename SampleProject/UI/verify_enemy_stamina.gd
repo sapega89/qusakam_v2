@@ -1,5 +1,6 @@
 extends SceneTree
 
+## SERIAL: [8] рахує удари за 40 с гри — поруч із паралельними тестами темп пливе.
 ## Витривалість ворогів (D824, design/enemy_stamina_plan.md, EnemyStamina): числа з enemy_variety.json, удар платить у мить
 ## удару, шкала набирається, поки ворог не б'є; не вистачає на удар — не б'є; удар, що її вичерпав, кінчає серію, і ворог
 ## видихається (стоїть, тінь, звук, червона смужка); смужка під шкалою стійкості видна лише в бою; бос б'є свій візерунок
@@ -315,7 +316,7 @@ func _rates() -> void:
 		var without := await _count(path, true)
 		var ratio := float(with_st.strikes) / maxf(1.0, float(without.strikes))
 		print("  %s: %d strikes, winded %d× with stamina; %d without (×%.2f)" % [STATS[path], with_st.strikes, with_st.winded, without.strikes, ratio])
-		ck(ratio >= 0.6, "%s keeps at least 60 %% of its tempo (×%.2f)" % [STATS[path], ratio])
+		ck(ratio >= 0.7, "%s keeps at least 70 %% of its tempo (×%.2f)" % [STATS[path], ratio])
 		ck(with_st.winded >= 1 or with_st.breaths >= 1, "%s runs short at least once (winded %d, catch_breath %d)" % [STATS[path], with_st.winded, with_st.breaths])
 
 func _count(path: String, endless: bool) -> Dictionary:

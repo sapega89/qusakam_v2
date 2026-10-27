@@ -259,6 +259,10 @@ func _initialize() -> void:
 		if e != attacker:
 			e.global_position.x = attacker.global_position.x + 600
 	attacker.combo_hits = 1  # тут — один удар D198; серії (D265) — verify_souls_combat
+	# D824: попередні кроки витратили витривалість шакала; фізика вимкнена, тож і подих (stun) не минає — свіжий ворог
+	attacker.stamina.refill()
+	attacker.stamina.winded_left = 0.0
+	attacker.enemy_logic.stun_left = 0.0
 	var hits_p: Array = []
 	game.player.damage_token.connect(func(d: int) -> void: hits_p.append(d))
 	var swing: float = attacker.attack_windup + attacker.attack_active_time + 0.15
@@ -411,6 +415,9 @@ func _initialize() -> void:
 	type_hits.clear()
 	var fast_x0: float = fast.global_position.x
 	fast.enemy_logic.last_direction = -1
+	fast.stamina.refill()  # D824: [2c] і живий AI витратили його витривалість — ривок тут зі свіжою
+	fast.stamina.winded_left = 0.0
+	fast.enemy_logic.stun_left = 0.0
 	fast.enemy_logic.perform_attack()
 	await create_timer(fast.attack_windup + fast.attack_active_time + 0.1).timeout
 	ck(fast_x0 - fast.global_position.x >= 40.0, "the fast enemy lunges forward (%.0f px)" % (fast_x0 - fast.global_position.x))

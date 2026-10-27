@@ -190,6 +190,7 @@ func _tells() -> void:
 		hero.global_position = Vector2(enemy.global_position.x - 30.0, floor_y)
 		hero.is_invulnerable = true
 		enemy.enemy_logic.last_direction = -1
+		enemy.stamina.refill()  # D824: ШІ вже бив героя, поки той стояв поруч, — серія тут з повною витривалістю
 		enemy.enemy_logic.perform_attack()
 		var was_on := false
 		while enemy.enemy_logic.is_attacking:

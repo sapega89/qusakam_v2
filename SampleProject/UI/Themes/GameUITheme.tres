@@ -283,7 +283,7 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.5411765, 0.43529412, 0.13333334, 1)
+border_color = Color(0.90588236, 0.29803923, 0.23529412, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cxcw3"]
 content_margin_left = 0.0
