@@ -1206,11 +1206,22 @@ LAYERS = {
         f"light on the tops, cool violet shadows in the cracks, {CHROMA}",
     ),
 }
-# шлейф ущелини (D796: ближчий і більший) — та сама генерація, що й на стежці (кеш), зменшена в 3 рази, а не в 4
+# шлейф ущелини (D796: ближчий і більший) — та сама генерація, що й на стежці (кеш). Сапега: «дим має бути видно, що за
+# наступним екраном спалене село» — тож трохи менший, ніж був (×3 давав клуб на пів неба над власною стіною ущелини):
+# height — висота всього диму з обрізаним стеблом у px шару (сира 716 рядків → ×0.85 від зменшення в 3 рази)
 LAYERS["StreamGorge/gen_plume"] = {
     **LAYERS["MountainPath/gen_plume"],
     "block": 3,
-    "keep": 248,  # 186 рядків стежки × 4/3
+    "height": 203,
+    "keep": 211,  # рядок сирої 744 (зріз стебла) × 0.85 / 3
+    "haze": 0.2,  # далі за гребенем — блідіший
+}
+# скельні уступи (M6a-2b): найбільший шлейф дороги (D796) — дим спаленого села просто за проходом; сира × 1.12 / 3
+LAYERS["RockLedges/gen_plume"] = {
+    **LAYERS["MountainPath/gen_plume"],
+    "block": 3,
+    "height": 267,
+    "keep": 278,
 }
 
 
@@ -1333,7 +1344,9 @@ def seam_pass(img, layer, text, height):
 
 def cache_path(layer):
     tag = [layer["prompt"], STYLE, layer["seed"], layer["rows"], layer["seam"]]
-    if layer.get("width"):  # ширший за екран шар (шлейф диму); без width ключ кешу старий
+    if layer.get(
+        "width"
+    ):  # ширший за екран шар (шлейф диму); без width ключ кешу старий
         tag.append(layer["width"])
     tag = json.dumps(tag)
     return os.path.join(CACHE, hashlib.sha1(tag.encode()).hexdigest()[:16] + ".png")
@@ -1439,7 +1452,9 @@ def fit_height(img, h):
     bg = np.median(img[:24].reshape(-1, 3), axis=0)
     labels, n = ndimage.label(np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE)
     sizes = ndimage.sum(np.ones(labels.shape), labels, range(1, n + 1))
-    ys = np.nonzero((labels == 1 + int(np.argmax(sizes))).any(axis=1))[0]  # лише сам предмет, без крихт довкола
+    ys = np.nonzero((labels == 1 + int(np.argmax(sizes))).any(axis=1))[
+        0
+    ]  # лише сам предмет, без крихт довкола
     f = h / (ys.max() - ys.min() + 1)
     size = (round(img.shape[1] * f), round(img.shape[0] * f))
     return np.asarray(

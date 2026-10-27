@@ -84,9 +84,11 @@ WATER = np.array(
     [[46, 84, 112], [70, 122, 146], [112, 168, 184], [196, 226, 232]], np.float32
 )
 
-# шлейф (D796): власний план ущелини, ×0.5 — ближчий за спільний ×0.4 стежки й осипища, у 4/3 більший; ліворуч над
-# гребенем лише верх тіла, посередині клуб біля правого краю, праворуч клуб і стебло, що йде за сідловину
-PLUME_F = 0.5
+# шлейф (D796): власний план ущелини, більший за спільний шлейф стежки й осипища (654 проти 589). Сапега: «дим має бути
+# видно, що за наступним екраном спалене село» — стебло ніколи не в кадрі: праворуч клуб у правому верхньому куті, а
+# стебло нахиляється за східний край; ×0.35 (далеко, за наступним екраном) — ліворуч над гребенем тіло, посередині
+# тіло через усе небо, праворуч клуб біля краю
+PLUME_F = 0.35
 FRONT_F = 1.3
 
 
@@ -330,10 +332,10 @@ def planes(stem_only=False):
 
 
 def plume_at(plume):
-    """Якір шлейфу: при камері правого краю стебло (зріз внизу) — у сідловині, x ~300 кадру, низ — у рядку кадру 170,
-    нижче дна сідловини (~147)."""
+    """Якір шлейфу: при камері правого краю стебло (зріз внизу) — за східним краєм кадру (x 600), низ — у рядку кадру 155 (верх клубу трохи за верхнім краєм),
+    нижче гребеня біля правого краю (~51), тож у кадрі й частина стебла під гребенем схована стіною."""
     stem = np.nonzero(plume[-1, :, 3])[0].mean()
-    return (300 - stem + PLUME_F * CX[2], 170 - len(plume) + PLUME_F * CY)
+    return (600 - stem + PLUME_F * CX[2], 155 - len(plume) + PLUME_F * CY)
 
 
 def check_stem():
@@ -382,11 +384,11 @@ def sheet():
             view(ps, CX[0], CY, (X0 + 60, feet, hero)),
         ),
         (
-            "Stream gorge, middle (barrier x0.1, far x0.3, plume x0.5, wall x0.75, bank x1, front x1.3)",
+            "Stream gorge, middle (barrier x0.1, far x0.3, plume x0.35, wall x0.75, bank x1, front x1.3)",
             view(ps, CX[1], CY, (CX[1] + 288 - hw // 2, feet, hero)),
         ),
         (
-            "Stream gorge, right end: the plume's puff and stem over the east notch; the rock ledges follow (east)",
+            "Stream gorge, right end: the plume's puff in the corner, its stem bends down beyond the east edge (the village); the rock ledges follow",
             view(ps, CX[2], CY, (CX[2] + 400, feet, hero)),
         ),
     ]
