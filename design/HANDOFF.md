@@ -47,6 +47,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | integrate-28 | `trig_01EYt8kXZd2aYYa2Gy1xowCP` | integrate-27 | merges the 11 reported routines (enemy-ai … ambient-critters, not side-stories / depth-*), renumbers from D775 / B163, full suite; then fast-forward `feature/backlog` |
 | hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — file its D-ID **after** integrate-28 (it numbers from D775) |
 | perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
+| hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — D-ID after integrate-28 |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
