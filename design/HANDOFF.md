@@ -45,6 +45,8 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | secrets-icon | `trig_01Xi3DvX6rxb5i4WM8LyrPLN` | secrets | found secrets on the map |
 | map-pan | `trig_01BE9fUzLv58LaCY8TvsAK8W` | secrets-icon | drag / zoom the map like Octopath Traveler |
 | ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
+| depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
+| depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
 
