@@ -19,6 +19,11 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 | `playtest-tuning` | 🖥 worktree agent (godot-dev) | B197 the jackal flies; D825 shorter micro-stun; D826 slower enemies; D827 free Shield Block = 1 point toward the D497 gate; then D828 skills hit hard, D829 bigger elites, B198 enemies jump up to a step | merge its branch, file its D-IDs, rebuild, send Sapega the verify_difficulty table |
 
 ## 2. Next, in order
+0. **Wire the art that lies unused** (Sapega: «чому не всі арти підключені?»; the catalog's unused list): the shield spells
+   (H2: magic + glass phases on block, glass shards hurt the attacker), the status icons (bleeding, burning, cursed, stunned),
+   the mouse with its hole (ambient_critters_plan), and the road planes onto `world-rooms`' new rooms; then either wire or
+   delete the leftovers (old front planes, plank_posts, stone_balcony, Sprites/MC.png, kit icons, old Roll). From now on
+   every art batch ends with its wiring. The 8 cloud branches with unmerged commits hold only report tails — nothing lost.
 1. **P6 / D824 enemy stamina** — a new system: `plan-missing-system` → `design/enemy_stamina_plan.md` (mirror the hero's
    PlayerStamina D776), then build it (worktree agent) after `playtest-tuning` (both touch EnemyLogic).
 2. **P5 / D830** — the Desert Road floor flat, no steps (Sapega: «на дорозі не має бути сходинок»); after `fewer-road-enemies` merges (same scene).
