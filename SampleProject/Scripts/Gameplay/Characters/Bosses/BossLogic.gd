@@ -54,15 +54,19 @@ func handle_attack_state(_delta: float) -> void:
 	_face_player()
 	var toward := 1 if dx > 0.0 else -1
 	if attack_ready_in <= 0.0:
-		if _fits_any(absf(dx)):
+		if _fits_any(dx):
 			attack_ready_in = enemy.attack_cooldown
 			perform_attack()
 		else:
 			_step(toward, speed)
 		return
-	var err: float = absf(dx) - enemy.preferred_range
-	if absf(err) > PREFERRED_BAND:
-		_step(toward if err > 0.0 else -toward, speed * REPOSITION_SPEED)
+	# Між ходами — не далі за досяжність ходу, заради якого бос тримає preferred_range (B-boss): інакше він стояв поза
+	# дальністю серії (combo), і візерунок щоразу підміняв її хвилею чи ковтком, що дістають далі, — зброєю не бив ніколи.
+	var far := minf(enemy.preferred_range + PREFERRED_BAND, _rest_reach())
+	if absf(dx) > far:
+		_step(toward, speed * REPOSITION_SPEED)
+	elif absf(dx) < minf(enemy.preferred_range - PREFERRED_BAND, far):
+		_step(-toward, speed * REPOSITION_SPEED)
 	else:
 		velocity.x = 0
 
@@ -143,12 +147,53 @@ func _rest() -> void:
 	attack_ready_in = enemy.attack_cooldown
 
 
+## Ривок (charge) дістає лише на свою смугу — distance плюс melee_reach (та сама, що креслить підказка, D522): з далі він
+## спиняється перед героєм, не зачепивши (B-boss).
+func _reach(move: Dictionary) -> float:
+	var far: float = move.get("max_range", INF)
+	if move.kind == "charge":
+		far = minf(far, float(move.distance) + enemy.melee_reach)
+	return far
+
+
 func _fits(move: Dictionary, dx: float) -> bool:
-	return dx >= move.get("min_range", 0.0) and dx <= move.get("max_range", INF) and enemy.phase >= move.get("phase", 1)
+	return dx >= move.get("min_range", 0.0) and dx <= _reach(move) and enemy.phase >= move.get("phase", 1)
 
 
+## Час ходити: є хід, що дістає з [param dx] (герой праворуч — додатне). Коли наступний хід візерунка ще не дістає
+## (_must_close), бос не б'є тим, що дістає далі, а підходить — хіба що дістає ривок, він сам скорочує відстань: хвиля
+## чи ковток лишили б боса там, де він стоїть, і серію (combo) знову б підмінило (B-boss).
 func _fits_any(dx: float) -> bool:
-	return enemy.moves.any(func(m: Dictionary) -> bool: return _fits(m, dx))
+	var closing := _must_close(dx)
+	return enemy.moves.any(func(m: Dictionary) -> bool: return _fits(m, absf(dx)) and (not closing or m.kind == "charge"))
+
+
+## Наступний хід візерунка ще не дістає до героя, а підійти є куди (B-boss): бос іде до нього, а не підміняє його ходом,
+## що дістає далі. Так лише з ходом, що дістає з preferred_range (заради нього бос там і стоїть: найманець і сокирник —
+## серія); джин, що тримається далеко, по серію не йде. Наступний — той, що не повторює щойно зроблений.
+func _must_close(dx: float) -> bool:
+	var pattern: PackedStringArray = _pattern()
+	if pattern.is_empty() or not can_step(1 if dx > 0.0 else -1):
+		return false
+	var at := pattern_at if enemy.phase == _pattern_phase else 0
+	var kind := pattern[at % pattern.size()]
+	if kind == last_move.get("kind", ""):
+		kind = pattern[(at + 1) % pattern.size()]
+	return enemy.moves.any(func(m: Dictionary) -> bool: return m.kind == kind and enemy.phase >= m.get("phase", 1) and absf(dx) > _reach(m) \
+			and _reach(m) >= enemy.preferred_range)
+
+
+func _pattern() -> PackedStringArray:
+	return enemy.pattern_phase2 if enemy.phase >= 2 and not enemy.pattern_phase2.is_empty() else enemy.pattern
+
+
+## Найкоротша досяжність ходу цієї фази, що ще дістає з preferred_range (найманець і сокирник — серія, джин — куля).
+func _rest_reach() -> float:
+	var near := INF
+	for move: Dictionary in enemy.moves:
+		if enemy.phase >= move.get("phase", 1) and _reach(move) >= enemy.preferred_range:
+			near = minf(near, _reach(move))
+	return near
 
 
 ## Хід за візерунком (D504): наступний у черзі kind, що підходить за відстанню й фазою і не повторює останній хід;
@@ -158,7 +203,7 @@ func pick_move() -> Dictionary:
 		_pattern_phase = enemy.phase
 		pattern_at = 0
 	var dx := absf(player.global_position.x - enemy.global_position.x)
-	var pattern: PackedStringArray = enemy.pattern_phase2 if enemy.phase >= 2 and not enemy.pattern_phase2.is_empty() else enemy.pattern
+	var pattern := _pattern()
 	var repeat := {}
 	var repeat_at := -1
 	for step in pattern.size():

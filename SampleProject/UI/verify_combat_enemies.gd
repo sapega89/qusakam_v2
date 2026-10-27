@@ -633,8 +633,9 @@ func _boss_patterns() -> void:
 	var mid := _sequence(brass, 200.0, 6)
 	ck(mid == ["slam", "charge", "slam", "charge", "slam", "charge"], "Brass at 200 px: %s" % [mid])
 	ck(_sequence(brass, 200.0, 6) == mid, "the same situation gives the same moves")
-	var far := _sequence(brass, 400.0, 3)
-	ck(far == ["charge", "charge", "charge"], "Brass at 400 px: only the charge fits, so it repeats (%s)" % [far])
+	var far := _sequence(brass, 360.0, 3)
+	ck(far == ["charge", "charge", "charge"], "Brass at 360 px: only the charge fits, so it repeats (%s)" % [far])
+	ck(_sequence(brass, 420.0, 1) == [""], "at 420 px the charge stops short (distance 320 + melee_reach 63, B-boss): no move")
 	ck(_sequence(brass, 900.0, 1) == [""], "nothing in range: no move (it walks in instead)")
 	brass.global_position.x = hero.global_position.x + 400.0
 	# Фіксована серія: 2 удари, у другій фазі — 3
