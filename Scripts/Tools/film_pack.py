@@ -124,6 +124,10 @@ def violations(d: dict) -> list:
     planes = [p for p in d["layers"] if p["kind"] != "camera" and p["speed_x"] is not None
               and not (p["z"] > hero_z and abs(p["speed_x"]) < SPEED_EPS)]
     spots = list(d["screens"])
+    if not planes:
+        # The room fits the view: the camera does not pan, so no plane can show its speed.
+        out.append("the camera does not pan (the room fits the view): no parallax is possible, depth only from "
+                   "overlap, value and scale")
     # 1. A plane drawn behind another (z, then tree order) moves faster than it, on a screen where both show.
     for a in sorted(planes, key=lambda p: (p["z"], p["order"])):
         nearer = [b for b in planes if (b["z"], b["order"]) > (a["z"], a["order"])
@@ -134,7 +138,7 @@ def violations(d: dict) -> list:
             out.append(f"out of speed order: `{a['path']}` (z {a['z']}, ×{a['speed_x']:.2f}) is drawn behind "
                        f"but moves faster than {names}")
     # 2. At least three distinct speeds on every screen.
-    for s in spots:
+    for s in spots if planes else []:
         speeds = sorted({round(p["speed_x"] / SPEED_STEP) * SPEED_STEP for p in planes if seen_on(p, s)})
         if len(speeds) < 3:
             out.append(f"screen `{s}` (hero x {d['screens'][s]['hero'][0]:.0f}): {len(speeds)} distinct speeds "
@@ -147,11 +151,12 @@ def violations(d: dict) -> list:
             out.append(f"screen `{s}`: no plane has a painted top at the hero's feet (within 80 px; what is "
                        f"there is solid from above, e.g. one baked backdrop)")
             continue
-        # The floor art is the widest plane with a top there (props such as a shrine are narrow).
-        floor = max(cands, key=lambda p: p["screens"][s].get("visible", 0.0))
+        # The floor art: a ×1.0 plane with a top there if there is one, the widest such (a shrine is narrow).
+        flat = [p for p in cands if p["speed_x"] is not None and abs(p["speed_x"] - 1.0) <= FLOOR_SPEED_EPS]
+        floor = max(flat or cands, key=lambda p: p["screens"][s].get("visible", 0.0))
         top = floor["screens"][s]["painted_top_px"] / zoom
         speed = floor["speed_x"]
-        if speed is None or abs(speed - 1.0) > FLOOR_SPEED_EPS:
+        if speed is not None and abs(speed - 1.0) > FLOOR_SPEED_EPS:
             out.append(f"screen `{s}`: the floor plane `{floor['path']}` moves at ×{speed}, not ×1.0")
         if abs(top) > FLOOR_TOP_WORLD_PX:
             where = "above" if top < 0 else "below"
