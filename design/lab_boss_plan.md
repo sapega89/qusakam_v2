@@ -1,6 +1,6 @@
 ---
 type: plan
-status: in-progress
+status: done  # 2026-10-27 decision-audit-2: every slice is built in code
 ---
 
 # Bosses — the Mayor Hall boss and the Laboratory boss — plan

@@ -6,6 +6,12 @@ tags: [world, map, xp, feedback]
 
 # World expansion — plan (BACKLOG 23)
 
+## Tails (2026-10-27)
+
+Checked against the code by routine `decision-audit-2` (MASTER_PLAN S16). Every other slice is built.
+
+- Slice 4, landmarks (D299): the art is in (`DesertRoad.tscn:18-20` `gen_tower`, `gen_wreck`, `gen_shrine`). The `fb23_*` captures along the road were never taken.
+
 > **Ledge A's Potion is now an Iron Ingot** (potions removed in 4b, D261): `DesertRoad.tscn` `ItemPickup`s are `iron_ingot`, `herb`; ledge C holds a **chest** with Mana Crystal × 2 since cloud/chests ([[chests_plan]]). The Laboratory part moved to [[lab_story_plan]] (D303, queue 9.4–9.8).
 
 **Sapega 2026-10-20:** no new location names. City, CityGates, Village and Canyon stay as they are. Before the City
