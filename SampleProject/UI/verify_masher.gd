@@ -57,8 +57,6 @@ const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
-## GOOD (D775): перестає бити, коли витривалості менше за удар і перекат разом; знову б'є з цієї частки шкали.
-const GOOD_STAMINA_GO := 0.6
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
@@ -162,6 +160,7 @@ var hits_empty := 0
 var refused := 0
 var staggers := {}
 var _now := 0.0
+var rested := 0.0
 
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -635,7 +634,7 @@ func _print_row(row: Dictionary) -> void:
 			% [row.hero_swings, "%.1f" % _mean(row.bar_swings) if not row.bar_swings.is_empty() else "-", row.exhausts,
 			"%.2fs" % _mean(row.recover) if not row.recover.is_empty() else "-", "%.2fs" % _mean(row.refill) if not row.refill.is_empty() else "-",
 			row.hits_empty, row.hits, row.refused])
-	print("        poise (D776): staggers %s" % [row.staggers])
+	print("        poise (D776): staggers %s | GOOD held back for stamina %.1fs" % [row.staggers, row.rested])
 	for line: String in row.dumb:
 		print("        dumb: " + line)
 	for line: String in row.enemies:
@@ -701,6 +700,7 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 	hits_taken = 0
 	hero.stamina.refill()
 	_resting = false
+	rested = 0.0
 	hero_swings = 0
 	_bar_swings = 0
 	bar_swings = []
@@ -816,7 +816,7 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 			"idle_reach": idle_reach, "idle_max": idle_max, "idle_max_who": idle_max_who, "evasions": evasions, "lost": lost,
 			"reengage": reengage, "stuck": stuck, "fell": fell, "dumb": dumb, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines,
 			"hero_swings": hero_swings, "bar_swings": bar_swings, "exhausts": exhausts, "recover": recover_times, "refill": refill_times,
-			"hits_empty": hits_empty, "refused": refused, "staggers": staggers.duplicate()}
+			"hits_empty": hits_empty, "refused": refused, "staggers": staggers.duplicate(), "rested": rested}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -1240,7 +1240,7 @@ func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 
 ## GOOD: не б'є, коли поруч замах; жовте й біле — блок (жовте — парирування, далі рипост), червоне — ривок геть;
 ## фляга, коли ніхто не замахується; навичка, коли є SP. Витривалість (D775): тримає запас на перекат — нижче
-## ціни удару й перекату разом не б'є, доки шкала не набере GOOD_STAMINA_GO; котиться лише від червоного удару, що дістає.
+## ціни удару й перекату разом не б'є; котиться лише від червоного удару, що дістає.
 func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	var target := _nearest(alive)
 	if target == null:
@@ -1290,10 +1290,9 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 			_tap(&"attack")
 		return heavy_due
 	var st: Node = hero.stamina
-	if st.current < st.roll_cost() + st.COST_LIGHT:
-		_resting = true
-	elif st.current >= st.MAX * GOOD_STAMINA_GO:
-		_resting = false
+	_resting = st.exhausted or st.current < st.roll_cost() + st.COST_LIGHT
+	if _resting:
+		rested += Engine.time_scale / Engine.physics_ticks_per_second
 	# Легкий удар можна зірвати блоком чи перекатом на відновленні (D456) — його б'ють і тоді, коли хтось замахується;
 	# фляга й навичка (замах не зривається) — лише коли поруч ніхто не замахується
 	if not winding and float(hero.current_health) / hero.Max_Health < GOOD_FLASK_AT and _flask():
