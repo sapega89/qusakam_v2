@@ -5,12 +5,12 @@
 [resource]
 script = ExtResource("1_fast")
 enemy_type = "fast"
-speed = 200.0
+speed = 160.0
 stride_speed = 120.0
 base_damage = 23.0
 attack_windup = 0.55
 lunge = 96
-attack_cooldown = 0.8
+attack_cooldown = 0.95
 detection_range = 350.0
 attack_range = 128
 chase_range = 450.0
@@ -19,7 +19,7 @@ poise = 12
 combo_chance = 0.75
 answer_hits = 1
 answer_swing = "evade"
-stagger_time = 0.2
+stagger_time = 0.1
 combo_hits = 3
 xp_reward = 25
 tell = "block"
