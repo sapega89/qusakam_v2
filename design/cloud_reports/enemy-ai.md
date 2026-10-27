@@ -14,7 +14,7 @@ Measured in `verify_masher` (both bots, every fight) plus a new per-kind drill [
 
 GOOD wins all nine on the first try. MASHER beats only the lone bandit, in both builds. `verify_masher`: `RESULT: ALL PASS`.
 D-ID: D764 (§6). B rows fixed: B162, B163, B164, B165 (§6).
-Full suite: see §7.
+Full suite: `SUITE: 4 FAIL`, 116 PASS (§7). `verify_masher` hits the suite's 180 s limit and passes alone. `verify_combat_player` was fixed after the run and passes alone. `verify_audio` and `verify_souls_combat` fail only under suite load and pass alone.
 Not done: poses for the new moves (evade hop, guard, feint) are missing (§5). Bosses keep their patterns and do not feint.
 
 ## 0. What was measured, and how (verify_masher)
