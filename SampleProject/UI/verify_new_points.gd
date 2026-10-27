@@ -109,6 +109,11 @@ func _initialize() -> void:
 	var xp: Node = sl.get_xp_manager()
 	var hud: Node = game.find_child("HudNewPoints", true, false)
 	ck(hud != null, "HudNewPoints is on the CombatHUD")
+	# Кнопки чекають, поки SceneWarmer довантажить Game Menu у фоні (з неї — прапорці вкладок).
+	var menu_by := Time.get_ticks_msec() + 15000
+	while not hud.visible and Time.get_ticks_msec() < menu_by:
+		await process_frame
+	ck(hud.visible and game.room_preloader.is_held(GameMenuState.GAME_MENU_SCENE_PATH), "the buttons wait for the Game Menu warmed in the background")
 	var skills_btn: Button = hud.get_node(^"%SkillPoints")
 	var attrs_btn: Button = hud.get_node(^"%AttributePoints")
 	for flag in ["village_oldman_healed", "village_oldman_gift"]:

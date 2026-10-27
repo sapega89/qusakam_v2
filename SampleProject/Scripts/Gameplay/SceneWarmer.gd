@@ -31,6 +31,7 @@ func paths() -> Array[String]:
 		out.append(EnemySpawnPoint.STATS_PATH % enemy_type)
 	out.append(Merchant.SHOP_SCENE)
 	out.append(GameOverScreen.SCENE_PATH)
+	out.append(GameMenuState.GAME_MENU_SCENE_PATH)  # перше відкриття меню і кнопки нових очок на HUD (hud_new_points)
 	for skill_id: String in ServiceLocator.get_skill_manager().get_unlocked_skills():
 		out.append_array(_skill_paths(skill_id))
 	return out

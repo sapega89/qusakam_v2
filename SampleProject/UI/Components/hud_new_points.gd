@@ -31,8 +31,12 @@ func _ready() -> void:
 
 
 ## Game стає синглтоном у власному _ready, тобто після HUD, — прапорці квестів слухаємо кадром пізніше.
+## Прапорці вкладок читаються з game_menu.tscn, а це вся Game Menu: синхронний load() тут компілював її на старті
+## гри (~0,6 с під чорним, perf-check). Кнопки зʼявляються, коли меню довантажить у фоні SceneWarmer.
 func _connect_game() -> void:
 	Game.get_singleton().quest_flag_changed.connect(func(_id: String, _value: Variant) -> void: refresh())
+	while not ResourceLoader.has_cached(GAME_MENU_SCENE):
+		await get_tree().process_frame
 	visible = true
 	refresh()
 

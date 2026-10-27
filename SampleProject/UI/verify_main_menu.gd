@@ -155,6 +155,16 @@ func _initialize() -> void:
 	for i in 40: await process_frame  # меню проявляється
 	var entered: Array = [false]
 	root.get_node("EventBus").room_entered.connect(func(_r: String) -> void: entered[0] = true, CONNECT_ONE_SHOT)
+	# perf-check: кнопки нових очок на HUD читають прапорці вкладок з game_menu.tscn. Раніше вони вантажили всю
+	# Game Menu синхронно ще до першої кімнати (~0,6 с під чорним); тепер чекають, поки її догріє фон (SceneWarmer,
+	# стартує з першою кімнатою) — тож на room_loaded вони ще не ввімкнулись.
+	var menu_at_room: Array = [true, false]  # [кнопки вже ввімкнені, room_loaded побачено]
+	var on_game := func(n: Node) -> void:
+		if n.get_parent() == root and n.has_signal(&"room_loaded"):  # Game (ім'я класу тут ще не компілюється)
+			n.room_loaded.connect(func() -> void:
+				menu_at_room[0] = n.find_child("HudNewPoints", true, false).visible
+				menu_at_room[1] = true, CONNECT_ONE_SHOT)
+	node_added.connect(on_game)
 	# performance_plan slice 6: від кліку до повного чорного кожен кадр — звичайний кадр меню; Game.tscn
 	# вантажиться у фоні вже під чорним (раніше клік заморожував екран на 275 ms).
 	var longest_lit: Array[int] = [0, Time.get_ticks_usec()]  # [найдовший кадр, мкс попереднього кадру]
@@ -181,6 +191,8 @@ func _initialize() -> void:
 	while not entered[0] and Time.get_ticks_msec() - t1 < 10000:
 		await process_frame
 	ck(entered[0], "room_entered fires")
+	node_added.disconnect(on_game)
+	ck(menu_at_room[1] and not menu_at_room[0], "the HUD buttons do not load the Game Menu before the first room (room_loaded seen %s)" % menu_at_room[1])
 	while root.has_node(^"ScreenFade") and Time.get_ticks_msec() - t1 < 10000:
 		await process_frame
 	ck(not root.has_node(^"ScreenFade"), "light again in the room (%d ms after the click)" % (Time.get_ticks_msec() - t1))
