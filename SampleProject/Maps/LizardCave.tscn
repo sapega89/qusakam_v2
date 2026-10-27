@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_roots.tscn" id="x2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="x5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -178,5 +179,11 @@ position = Vector2(1250, 530)
 [node name="Scrub4" parent="FrontDark" instance=ExtResource("x3")]
 position = Vector2(1700, 530)
 flip_h = true
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(620, 130)
+
+[node name="Bat2" parent="FrontDark" instance=ExtResource("x5")]
+position = Vector2(960, 130)
 
 [node name="TopShade" parent="." instance=ExtResource("x4")]
