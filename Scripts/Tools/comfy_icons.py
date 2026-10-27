@@ -13,7 +13,7 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 sys.path.insert(0, os.path.dirname(__file__))
 from comfy_backdrop import run, upload  # noqa: E402
@@ -502,8 +502,80 @@ def models_main(names):
     print("sheet", MODELS_DIR + ".png", sheet.size)
 
 
+# Іконки оберегів (A6, design/charms_plan.md §3): як іконки предметів (SampleProject/Assets/UI/Icons/Items/*.png, 36×36) —
+# сіра плитка з рамкою й білими кутиками, на ній темний контурний знак ~20×20 зі згладженим краєм. Плитка — crystal.png
+# без знака; знак малює Qwen-Image (Apache 2.0, текст у картинку, без моделі правок) товстими темними лініями на
+# зеленому, ключ — key_green, далі альфа знака стискається до 20 px і кладеться кольором знака предметів.
+CHARMS_RAW = "design/shots/candidates/charm_icons"
+CHARMS_OUT = "SampleProject/Assets/UI/Icons/Items/charms"
+ITEMS = "SampleProject/Assets/UI/Icons/Items"
+GLYPH, GLYPH_BOX, TILE_BG = (58, 58, 66), 20, (122, 122, 125)
+CHARMS = {  # кільце — просто обідок із прикрасою; амулет — на шнурку з петлею
+    "grandfathers_ring": "an old plain signet ring with a flat square top, seen at a slight angle from above",
+    "sand_runner_ring": "a ring with a small swept-back bird wing on its side",
+    "hermit_amulet": "a pendant amulet shaped like a small hanging lantern, on a cord with a loop at the top",
+    "breaker_ring": "a ring with a big round stone on top, a jagged crack running through the stone",
+    "deep_gourd_amulet": "a pendant amulet shaped like a small round gourd flask with a stopper, on a cord with a loop",
+    "jackal_tooth_amulet": "a pendant of one long curved animal fang, hanging from a cord with a loop at the top",
+}
+CHARM_PROMPT = (
+    "A simple flat line icon of {subject}: bold very thick uniform dark charcoal outline strokes only, like a small "
+    "user interface icon, no fill, no shading, no colour, one single object centred and filling two thirds of the "
+    "frame, on a solid flat chroma key green (#00FF00) background. No text, no frame, no border."
+)
+
+
+def charm_tile(raw):
+    """Сирий кадр → плитка 36×36 у манері іконок предметів. Знак — темні лінії (не «все, що не тло»: перстень діда
+    модель поставила на зелений квадрат у світлій рамці, і ключ за рамкою взяв квадрат за знак)."""
+    a = (np.clip((110.0 - raw.max(axis=2)) / 50.0, 0, 1) * 255).astype(np.uint8)
+    ys, xs = np.nonzero(a > 24)
+    mask = Image.fromarray(a[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1])
+    k = GLYPH_BOX / max(mask.size)
+    size = (max(1, round(mask.width * k)), max(1, round(mask.height * k)))
+    # лінії моделі в 20 px виходили в 1 px і бліді; у предметів — ~2 px: товщаємо на 4× більшому кадрі на 1 px з боку (на 2 — злипались)
+    mask = mask.resize((size[0] * 4, size[1] * 4), Image.LANCZOS).filter(ImageFilter.MaxFilter(3))
+    mask = mask.resize(size, Image.LANCZOS)
+    tile = Image.open(os.path.join(ITEMS, "crystal.png")).convert("RGBA")
+    tile.paste(TILE_BG + (255,), (4, 4, 32, 32))  # знак кристала геть, рамка й кутики лишаються
+    glyph = Image.new("RGBA", mask.size, GLYPH + (255,))
+    glyph.putalpha(mask)
+    tile.alpha_composite(glyph, ((36 - mask.width) // 2, (36 - mask.height) // 2))
+    return tile
+
+
+def charms_main(names):
+    import comfy_backdrop as cb
+
+    os.makedirs(os.path.join(CHARMS_RAW, "raw"), exist_ok=True)
+    os.makedirs(CHARMS_OUT, exist_ok=True)
+    cb.GW = 1024  # graph() читає ширину з модуля
+    for ci, (cid, subject) in enumerate(CHARMS.items()):
+        path = os.path.join(CHARMS_RAW, "raw", cid + ".png")
+        if not os.path.exists(path) or cid in names:
+            Image.fromarray(run(cb.graph(CHARM_PROMPT.format(subject=subject), 1500 + ci, 1024)).astype(np.uint8)).save(path)
+            print("generated", cid, flush=True)
+        charm_tile(np.asarray(Image.open(path).convert("RGB"))).save(os.path.join(CHARMS_OUT, cid + ".png"))
+    free()
+    # лист ×4: шість оберегів і два предмети для порівняння
+    tiles = [(c, Image.open(os.path.join(CHARMS_OUT, c + ".png"))) for c in CHARMS]
+    tiles += [(n, Image.open(os.path.join(ITEMS, n + ".png"))) for n in ("crystal", "potion")]
+    font = ImageFont.truetype("arial.ttf", 15)
+    cell, pad = 144, 16
+    sheet = Image.new("RGB", (pad + len(tiles) * (cell + pad), cell + 2 * pad + 30), (29, 29, 39))
+    d = ImageDraw.Draw(sheet)
+    for i, (name, tile) in enumerate(tiles):
+        x = pad + i * (cell + pad)
+        sheet.paste(tile.convert("RGB").resize((cell, cell), Image.NEAREST), (x, pad))
+        d.text((x, cell + pad + 6), name.replace("_amulet", "").replace("_ring", " ring")[:20], fill="white", font=font)
+    sheet.save("design/shots/charm_icons.png")
+    print("sheet design/shots/charm_icons.png", sheet.size)
+
+
 if __name__ == "__main__":
-    if sys.argv[1:2] == ["--models"]:
+    if sys.argv[1:2] == ["--charms"]:
+        charms_main(sys.argv[2:])
+    elif sys.argv[1:2] == ["--models"]:
         models_main(sys.argv[2:] or ["hand_palm", "sword", "fire"])
     elif sys.argv[1:2] == ["--assets-k"]:
         assets_k_main(sys.argv[2:])

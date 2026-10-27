@@ -20,6 +20,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="x1"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="x3"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="fg1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/column.png" id="fg2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/chandelier.png" id="fg3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/banner.png" id="fg4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_syofx"]
 atlas = ExtResource("6_1wkxm")
@@ -688,3 +692,41 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="FrontDark" parent="." instance=ExtResource("fg1")]
+
+[node name="PillarL" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(-290, -28)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg2")
+centered = false
+
+[node name="PillarR" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(640, -28)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg2")
+centered = false
+flip_h = true
+
+[node name="Banner1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(-83, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg4")
+centered = false
+
+[node name="Chandelier" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(199, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg3")
+centered = false
+
+[node name="Banner2" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(457, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("fg4")
+centered = false

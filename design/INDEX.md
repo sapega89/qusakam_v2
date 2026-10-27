@@ -63,6 +63,8 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[enemy_variety_plan]] — D495: size variants, elites, shield-bearers (Q85)
 - [[flying_enemies_plan]] — D445: vultures outdoors, bats indoors; art → movement and attack → placement (Q74)
 - [[ambient_critters_plan]] — D774: a foreground in every room; bats and birds that fly off when the hero comes near and come back later
+- [[world_scale_plan]] — one size chart (in hero heights) for props, doors, NPCs and critters; a probe finds what is too big
+- [[dialogue_review_plan]] — every `[ЧЕРНЕТКА]` dialogue line read and signed off by Sapega on a review page; the oath design
 - [[depth_critics_plan]] — visual critics judge depth from a film of each room and a probe of every plane, not from stills
 - [[music_plan]] — ✅ music plays: a `Music` node in every room and the Main Menu; Q38 answered 2026-10-21 (keep the tracks)
 

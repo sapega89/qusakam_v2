@@ -20,9 +20,9 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
    `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
 3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
-   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates in the shrine style, floor to ceiling; B-ID after integrate-28) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
-   in [[m6_backdrops]]; its D-ID after integrate-28) → plane
-   cuts like B162 for Bandit Camp, Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
+   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates made; **Sapega picked: b (brass portcullis) in the cave, c (lashed poles) replaces the Lab bars in Bandit Camp, a and d kept for M6 locked doors** — wiring by the art agent; D-ID + B-ID after integrate-28) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
+   in [[m6_backdrops]]; its D-ID after integrate-28) → **redo hero Death frames 1 and 3** (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя» — frame 1 a swirl for an eye, frame 3 a red slit; keep 2 and 4) → plane
+   cuts like B162 for Bandit Camp ✅ (`7f999a13`), Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
    depth-critics triage after integrate-28) → M6.
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
 
@@ -48,6 +48,9 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — file its D-ID **after** integrate-28 (it numbers from D775) |
 | perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — D-ID after integrate-28 |
+| integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | integrate-28, hero-shadow | merges side-stories, hero-feet+shadow, perf-check, depth-film, depth-critics, feature/backlog; files the pending D/B (atmosphere, gates, Death frames, depth B rows); then fast-forward `feature/backlog` |
+| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | A9: every effect filmed in the game → GIFs + sheets in `design/shots/fx/` for Sapega's notes |
+| scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | A25: size chart data, a probe of every object's drawn height, the chart picture `design/shots/scale_chart.png` — it may have started on the old draft (≈70 px, ranges): on merge, set `world_scale.json` to the plan's exact table (H = 64 art px, one size per category, ±1 px) and re-run the probe and `scale_chart.py` |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
@@ -65,6 +68,12 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
   house wall, a well).
 
 ## 4. Waiting on Sapega
+
+**Critter placements, Sapega 27.10:** moth in Grandfather's attic, a bat in the cellar («миша летюча»), pigeon in the City, and a running mouse that hides in a hole (cellar, houses; new art next in ComfyUI) — [[ambient_critters_plan]]; D-ID after integrate-29.
+
+**Shield (S19), Sapega 27.10:** a shield sprite drawn over the existing frames (Block/1, a Heavy frame for Shield Bash, Run for Shield Charge) only in those three uses («просто щит поверх намалювати»); the 5 shield skills stay — D-ID after integrate-29; FX art now, code after hero-shadow.
+
+**S1 page:** https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — his verdicts on the 33 new skills (db collection `verdicts`, doc = skill slug) → `skill_trees_plan.md` v2.
 
 **P1 page:** https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — his verdicts on the 112 agent/routine calls land in its db (`ArtifactData list`, collection `answers`, doc = D-ID: `verdict` yes/no/change, `note`); apply them to the register.
 

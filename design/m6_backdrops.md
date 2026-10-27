@@ -43,12 +43,16 @@ dust in the window light, candle flicker. Small, slow, low alpha, mostly behind 
 the middle of a fight, never mistaken for an enemy or a pickup; particle counts follow `GraphicsQuality` (Low halves
 them, D554). Sprites (a butterfly, a moth, a firefly glow) are art-lane work; the placement is the room routine's.
 
+**Everything at the world's scale** (a player via Sapega 2026-10-27: everything is too big next to the hero): props,
+doors and painted objects follow the size chart of [[world_scale_plan]] — the hero is exactly 1 H = 64 art px, a door
+112 art px, a barrel 32 — exact sizes, no «about» (Sapega); prompts name the size against the hero, and planes further back shrink with their factor.
+
 ## Batch 0 — existing rooms with no foreground (D774)
 
 | Room | What goes in front | Status |
 |---|---|---|
-| Mayor Hall (arena) | a chandelier and banners at the top, columns at the sides | ⬜ |
-| Bandit Camp (arena) | tent ropes and stakes at the sides, a dark crate low | ⬜ |
+| Mayor Hall (arena) | a chandelier and banners at the top, columns at the sides | ✅ `a927d524` |
+| Bandit Camp (arena) | tent ropes and stakes at the sides, a dark crate low | ✅ `a927d524` (a stake with two guy ropes, A-shape) |
 
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 

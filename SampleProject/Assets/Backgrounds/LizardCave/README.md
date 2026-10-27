@@ -19,3 +19,7 @@ Placed in `SampleProject/Maps/LizardCave.tscn` → `Back` (z −10), back to fro
 `gen_back.png` is no longer in the scene; it is the source the planes are cut from. The planes' `scroll_offset` puts
 them where `gen_back.png` was when the camera is at the room's left end (Parallax2D counts from a camera centre of
 960, the viewport's half width, not from the room).
+- `gen_gate.png` — the shrine gate (`Gate_Shrine`, a LockedDoor; Grandfather's Old Key): a brass portcullis in a carved
+  arch, floor to ceiling. Candidate `gate_b` of `design/shots/candidates/cave_gate/cave_gate.py` (Qwen-Image, Apache
+  2.0, in the cave's 16 colours), picked by Sapega 2026-10-27. Its body spans the arch (210 px) so the hero stops at
+  its near face; the whole gate fades when it opens.

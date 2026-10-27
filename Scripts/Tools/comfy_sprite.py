@@ -143,6 +143,8 @@ WALK = [
 ]
 
 SAME = ", everything else exactly the same"
+# обличчя героя, назване в позі, де голова нахиляється (Death 1 і 3: без нього — завиток чи щілина замість ока)
+HERO_FACE = "his round pale head with the one big red eye and the small closed mouth exactly as in the reference"
 # BACKLOG 42 (арт A3): меч героя — той самий у кожному кадрі; ON: — кадр художника, до якого модель лише додає меч
 SWORD = "a short straight steel sword with a simple steel cross-guard and a brown grip"
 # у клітинці 96x96 модель збільшувала героя на ~30 % (заповнювала порожнє місце) — розмір словами, як у кошеняти
@@ -1370,16 +1372,27 @@ CHARACTERS = {
             (
                 "Death",
                 [
-                    # «struck by a fatal blow» малювало червону рану на грудях — без удару, лише хитання
-                    "in the same side view facing right: staggering backwards and losing his balance, leaning far "
-                    "back, his head lolling back, eyes closed, both arms dropping limp in front of him, his back foot "
-                    "stumbling, no blood, the steel armour and the dark red cape still on him",
+                    # «struck by a fatal blow» малювало червону рану на грудях — без удару, лише хитання.
+                    # Sapega «у кадрах 1 і 3 дивне обличчя»: «head lolling back, eyes closed» малювало завиток замість
+                    # ока — голова пряма, обличчя назване (FACE); з 5 кандидатів (зерна 24/31/7) цей — найясніше
+                    # хитання назад (передня нога в повітрі) з його власним обличчям
+                    "in the same side view facing right: staggering backwards, off balance, his body leaning back from "
+                    "the hips, his head upright as in the reference, "
+                    + HERO_FACE
+                    + ", both arms hanging limp forward, "
+                    "his front foot lifted off the ground, his weight on his back heel, no blood, the steel armour and "
+                    "the dark red cape still on him",
                     "in the same side view facing right: collapsed down onto both knees, his body slumped forward, "
                     "his big head hanging down, eyes closed, both arms hanging limp at his sides, the steel armour on "
                     "him, the dark red cape draped on the ground behind him",
-                    "in the same side view facing right: toppling over backwards from his knees, his whole body tilted "
-                    "far back towards the ground on the left, eyes closed, arms limp, the steel armour on him, the dark "
-                    "red cape trailing under him",
+                    # «eyes closed» на нахиленій голові давало червону щілину; FROM:Death:1 (з колін) — дрібне око або
+                    # фас: з першого кадру, кут названо, обличчя назване
+                    "in the same side view facing right: falling over backwards, his body slanted far back at a 45 "
+                    "degree angle with his back towards the ground on the left and his bent legs on the right, arms "
+                    "limp, "
+                    + HERO_FACE
+                    + ", his face in profile looking up to the upper right, the steel armour on "
+                    "him, the dark red cape trailing under him",
                     # перша спроба — голова безлика овальна потилиця: обличчя назване
                     "lying flat on his back on the ground, completely still, seen from the side: his body stretched "
                     "out level along the ground, his big head resting on the ground on the left with his face in "
@@ -4037,6 +4050,41 @@ CHARACTERS["critter_pigeon"] = dict(
     + SIDE_VIEW % {"p": "its"}
     + "."
     + MAGENTA_BG,
+)
+
+
+# Атмосфера (A23, ambient_critters_plan зріз 2b): метелик менший за жайворонка (у польоті ~25 px), клітинка героя →
+# crop 40x40 (32 не вміщає: крила вгору — 36 px заввишки). Блакитний метелик і міль — його ж кадри в інших кольорах
+# (Scripts/Tools/draw_atmosphere.py): згенерована міль вийшла завбільшки з жайворонка, і крила в кадрах не рухались.
+# Крила вгору / вниз — з кадру польоту (FROM:fly:1), як у птаха; «розкриті» повторюється (той самий кадр з кешу).
+BUG_SIZE = (
+    ". It is tiny, about a third of the size of the head of the character in picture 1: the whole insect fits inside a "
+    "small square at the bottom middle of the picture, a large empty magenta space all around it. "
+)
+BUG_OPEN = (
+    "in the same side view facing right, just as tiny as before: flying in mid-air, not sitting, its wings spread wide "
+    "open to both sides, seen from the side and a little from above so the pattern of the wings shows, its legs tucked"
+)
+BUG_UP = "FROM:fly:1:in the same side view facing right, just as tiny as before: its wings raised and closed together straight up above its back, its body unchanged, still flying"
+BUG_DOWN = "FROM:fly:1:in the same side view facing right, just as tiny as before: in the middle of a downstroke, both wings swept down below its body, its body level as in flight, still flying"
+CHARACTERS["critter_butterfly"] = dict(
+    ref="SampleProject/Sprites/Player/Walk/1.png",
+    seed=121,
+    colors=8,
+    crop=(40, 40),
+    out="SampleProject/Assets/Characters/Critters/butterfly.png",
+    who="the same tiny desert butterfly with the orange wings, the white spots, the dark brown wing edges and the thin "
+    "dark body",
+    base="Replace the character in picture 1 with a tiny desert butterfly: bright orange wings with white spots and "
+    "dark brown edges and veins, a thin dark body, two thin antennae, sitting on the ground with its wings closed "
+    "together upright above its back — "
+    + PIXEL_STYLE
+    + BUG_SIZE
+    + SIDE_VIEW % {"p": "its"}
+    + "."
+    + MAGENTA_BG,
+    # сидячи «крила розкрито» модель лишала закритими — другий кадр сидіння той самий, що розкриті крила в польоті
+    rows=[("perch", [None, BUG_OPEN]), ("fly", [BUG_UP, BUG_OPEN, BUG_DOWN, BUG_OPEN])],
 )
 
 
