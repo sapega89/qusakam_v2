@@ -18,3 +18,18 @@ to disclose AI-generated content. Replaces the Figma NPC art of D107 and the old
 | `malik/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_malik.tscn` → LabCells Malik (D303) | row 0 idle profile (faces right), row 1 walk, row 2 front; feet row 91 |
 | `prisoner/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_prisoner.tscn` → LabCells Prisoner (D303) | idle, walk, shout, collapse, front; feet row 91 |
 | `alchemist/sheet.png` | `Scenes/Gameplay/Objects/NPCs/lab_alchemist.tscn` → LabCells Scientist (D303) | idle, walk, inject, front; feet row 91 |
+
+## Townsfolk (D740) — art not committed yet
+
+The City walkers (`Scenes/Gameplay/Objects/NPCs/Townsfolk/`, `Scripts/Gameplay/NPCs/Townsfolk.gd`) expect
+`townsfolk_{water_carrier,porter,old_man,merchant_woman}/sheet.png`: 64×96 cells, 4 columns, row 0 `idle` 0–1,
+row 1 `walk` 4–7 (profile, facing right), feet row 91. **None of the four is committed yet.** Until they are, each kind's
+scene points at a stand-in sheet with a tint (`Sprite2D.modulate`); when the art lands, set that scene's `texture` to the
+new sheet, `vframes` to its row count, and clear `modulate`:
+
+| Kind scene | Stand-in now | Tint |
+|---|---|---|
+| `townsfolk_water_carrier.tscn` | `blacksmith/sheet.png` | cool blue |
+| `townsfolk_porter.tscn` | `prisoner/sheet.png` | warm |
+| `townsfolk_old_man.tscn` | `malik/sheet.png` | warm |
+| `townsfolk_merchant_woman.tscn` | `merchant/sheet.png` | green |
