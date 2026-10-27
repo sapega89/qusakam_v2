@@ -18,7 +18,7 @@ func _initialize() -> void:
 	root.get_node("SaveSystem").settings_module.settings.hints = false
 	root.get_node("SaveSystem").set_save_dir("user://capture_fight_occluders/")
 	var game: Node = await Kit.boot(self)
-	await game.teleport_to_room(ROOM, ^"")
+	await game.teleport_to_room(ROOM, ^"ArrivalFromCanyon")
 	await Kit.frames(self, 20)
 	await Kit.drain(self)
 	var spawner: Node = game.map.get_node(SPAWNER)
