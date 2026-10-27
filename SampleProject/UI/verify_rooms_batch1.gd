@@ -58,6 +58,11 @@ func _room(room: String, at: NodePath) -> void:
 	await Kit.drain(self)
 
 
+## Де стати, щоб брама запропонувала «Open»: її Area — біля ближньої грані арки, тіло брами — на всю її ширину.
+func _open_spot(gate: Node) -> float:
+	return gate.get_node(^"Area/CollisionShape2D").global_position.x
+
+
 func _stand(at: Vector2) -> void:
 	game.player.set_movement_enabled(true)
 	game.place_player(at)
@@ -211,7 +216,7 @@ func _initialize() -> void:
 	ck(inventory.get_item_count("grandfather_key") == 1, "Grandfather's decision talk gives the old key once (%d)" % inventory.get_item_count("grandfather_key"))
 	await _room("LizardCave", ^"ExitDoor")
 	shrine = game.map.get_node("Gate_Shrine")
-	await _stand(Vector2(1180, 380))
+	await _stand(Vector2(_open_spot(shrine), 380))
 	await Kit.key(self, KEY_E)
 	await create_timer(0.6).timeout
 	ck(shrine.is_open and shrine.get_node("Body/CollisionShape2D").disabled, "with the key, E unlocks the shrine")
@@ -286,7 +291,7 @@ func _initialize() -> void:
 		await _room("BanditCamp", ^"ExitDoor")
 	await _win("Fight_Camp")
 	stockade = game.map.get_node("Gate_Stockade")
-	await _stand(Vector2(1240, 380))
+	await _stand(Vector2(_open_spot(stockade), 380))
 	await Kit.key(self, KEY_E)
 	await create_timer(0.6).timeout
 	ck(stockade.is_open and inventory.get_item_count("camp_key") == 0, "the key unlocks the stockade and is used up")

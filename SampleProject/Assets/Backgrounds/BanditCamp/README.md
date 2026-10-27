@@ -17,3 +17,8 @@ Placed in `SampleProject/Maps/BanditCamp.tscn` → `Back` (z −10), back to fro
   line y 416, a drawn light edge with a shadow row under it. `Back/Floor`, ×1.0, repeats.
 
 `gen_back.png` is no longer in the scene; it is the source the planes are cut from.
+
+`gen_gate.png` — the stockade gate (`Gate_Stockade`, a LockedDoor; the camp key): lashed poles, lizard skulls and a
+brass lock, floor to ceiling. Candidate `gate_c` of `design/shots/candidates/cave_gate/cave_gate.py` (Qwen-Image,
+Apache 2.0, AI-generated), picked by Sapega 2026-10-27. Its body spans the poles (184 px) so the hero stops at their
+near face; the whole gate fades when it opens.

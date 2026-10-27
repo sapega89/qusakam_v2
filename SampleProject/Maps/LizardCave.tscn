@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r4"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="r6"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="r7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_gate.png" id="r7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/StoryNote.tscn" id="r8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r9"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="r10"]
@@ -24,7 +24,7 @@
 size = Vector2(120, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(48, 416)
+size = Vector2(210, 416)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
 size = Vector2(112, 112)
@@ -158,15 +158,15 @@ gate_id = "lizard_shrine"
 
 [node name="Sprite" parent="Gate_Shrine" index="0"]
 z_index = 1
-position = Vector2(0, -56)
+position = Vector2(0, -207.75)
 texture = ExtResource("r7")
 
 [node name="CollisionShape2D" parent="Gate_Shrine/Body" index="0"]
-position = Vector2(0, -208)
+position = Vector2(-6, -208)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="CollisionShape2D" parent="Gate_Shrine/Area" index="0"]
-position = Vector2(-48, -56)
+position = Vector2(-135, -56)
 shape = SubResource("RectangleShape2D_3")
 
 [node name="ShamanMural" parent="." instance=ExtResource("r8")]

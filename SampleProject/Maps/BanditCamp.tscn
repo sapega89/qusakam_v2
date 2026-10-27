@@ -9,7 +9,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r4"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="r5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="r6"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="r7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_gate.png" id="r7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="r8"]
 [ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="r9"]
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r10"]
@@ -23,7 +23,7 @@
 size = Vector2(160, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(48, 416)
+size = Vector2(184, 416)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
 size = Vector2(112, 112)
@@ -164,15 +164,15 @@ gate_id = "camp_stockade"
 
 [node name="Sprite" parent="Gate_Stockade" index="0"]
 z_index = 1
-position = Vector2(0, -56)
+position = Vector2(0, -207.75)
 texture = ExtResource("r7")
 
 [node name="CollisionShape2D" parent="Gate_Stockade/Body" index="0"]
-position = Vector2(0, -208)
+position = Vector2(10, -208)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="CollisionShape2D" parent="Gate_Stockade/Area" index="0"]
-position = Vector2(-48, -56)
+position = Vector2(-105, -56)
 shape = SubResource("RectangleShape2D_3")
 
 [node name="Chest_Loot" parent="." instance=ExtResource("r8")]
