@@ -32,7 +32,7 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 | rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
 | hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
 | scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
-| art agent (local, ComfyUI) | — | — | §3 items 1–2 running (started 2026-10-27 afternoon): the magic and glass shield effects over Block/1 (`FX/Shield/`), the iron-shield sprite removed, the mouse critter. When it reports: push, send Sapega `design/shots/shield_spells.png` and `critters_mouse.png`, start §3 item 3 → 4 (M6a) |
+| art agent (local, ComfyUI) | — | — | §3 items 1–2 **done** (`52b32d62`, `4326ef73`, `92beb61c`; sheets sent to Sapega, no verdict yet). Item 3 (H4) running: `Raise/2` wired, the pillar floor mark redrawn → `design/shots/h4_raise_mark.png`. Then item 4 (M6a). Its calls to file as D-IDs: shield 31 art px (0.65 of the drawn 48-px figure), alpha 210 light / 170 glass, gold +20 % warm with a sky-blue edge, navy cracks; mouse 12 px sitting |
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
