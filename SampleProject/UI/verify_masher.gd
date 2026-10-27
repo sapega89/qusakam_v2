@@ -57,6 +57,8 @@ const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
+## GOOD відпочиває за стільки px поза досяжністю ворога (D775).
+const GOOD_REST_GAP := 60.0
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
@@ -1240,7 +1242,7 @@ func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 
 ## GOOD: не б'є, коли поруч замах; жовте й біле — блок (жовте — парирування, далі рипост), червоне — ривок геть;
 ## фляга, коли ніхто не замахується; навичка, коли є SP. Витривалість (D775): тримає запас на перекат — нижче
-## ціни удару й перекату разом не б'є; котиться лише від червоного удару, що дістає.
+## ціни удару й перекату разом не б'є, а відходить з досяжності, поки шкала набирається; котиться лише від червоного удару, що дістає.
 func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	var target := _nearest(alive)
 	if target == null:
@@ -1296,6 +1298,11 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	# Легкий удар можна зірвати блоком чи перекатом на відновленні (D456) — його б'ють і тоді, коли хтось замахується;
 	# фляга й навичка (замах не зривається) — лише коли поруч ніхто не замахується
 	if not winding and float(hero.current_health) / hero.Max_Health < GOOD_FLASK_AT and _flask():
+		return heavy_due
+	# Відпочиває (D775) — відходить з досяжності найближчого, щоб шкала набиралась повним темпом, а не в блоці
+	if _resting:
+		var keep: float = target.enemy_logic.attack_range + target.lunge + GOOD_REST_GAP
+		_hold_move(-signi(int(dx)) if absf(dx) < keep else 0)
 		return heavy_due
 	_hold_move(signi(int(dx)) if absf(dx) > 24.0 else 0)
 	if press and not winding and absf(dx) < 90.0 and _cast_best():

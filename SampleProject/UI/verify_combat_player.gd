@@ -354,13 +354,17 @@ func _stamina() -> void:
 	# Блок: утримання й прийнятий удар коштують; з порожньою шкалою блок слабкий — пів шкоди і збій
 	await _hero_at_bandit()
 	st.refill()
+	st.spend(50.0)
+	await create_timer(st.REGEN_DELAY + 0.1).timeout
+	var before_raise: float = st.current
 	_press(&"block")
-	await create_timer(0.4).timeout  # мимо вікна парирування
-	ck(st.current < st.MAX, "raising the block spends stamina (%.0f)" % st.current)
+	for f in 2: await physics_frame
+	ck(st.current < before_raise - st.BLOCK_RAISE + 2.0, "raising the block costs %d (%.0f → %.0f)" % [st.BLOCK_RAISE, before_raise, st.current])
 	var held: float = st.current
 	await create_timer(1.0).timeout
-	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 1.0,
+	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 3.0,
 			"held, the bar refills at a third of the pace (+%.0f in 1 s)" % (st.current - held))
+	st.refill()
 	var hp: int = hero.current_health
 	var left: float = st.current
 	hero.take_damage(20, bandit)
