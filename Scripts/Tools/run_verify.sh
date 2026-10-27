@@ -44,6 +44,8 @@ begin=$SECONDS
 # Тест, що міряє реальний час (хітстоп у мс, падіння за таймером), пише в шапці «## SERIAL»:
 # під навантаженням сусідніх тестів його виміри пливуть, тож він іде після решти, сам.
 files=(SampleProject/UI/verify_${1:-*}.gd)
+# Тест із «## MANUAL» у шапці йде лише на прямий запит (run_verify.sh masher), не в повному прогоні.
+[[ -z $1 ]] && mapfile -t files < <(grep -L "^## MANUAL" "${files[@]}")
 serial=$(grep -l "^## SERIAL" "${files[@]}")
 {
 	printf '%s\n' "${files[@]}" | grep -v -x -F "${serial:-//}" | xargs -P "$J" -I{} bash -c 'run_one {}'
