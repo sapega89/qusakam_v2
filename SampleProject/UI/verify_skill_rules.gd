@@ -292,7 +292,12 @@ func _initialize() -> void:
 
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	ck(planned.size() == 28 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "28 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D-sv2m) збудував 6 навичок руху — запланованих лишилось 22
+	ck(planned.size() == 22 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "22 planned actives, all [DRAFT] (%d)" % planned.size())
+	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
+	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
+			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),
+			"the 6 movement skills are built: learnable, with a cast, an effect and synergies (%s)" % [moves.map(func(d) -> String: return d.id)])
 	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
 	var unnumbered: Array = raw.filter(func(e: Dictionary) -> bool:
 			return e.get("planned", false) and (not e.has("sp_cost") or e.get("draft", {}).is_empty() or not ResourceLoader.exists(e.icon)))
@@ -303,12 +308,12 @@ func _initialize() -> void:
 			refused = false
 			print("    learnable: ", d.id)
 	ck(refused and sm.get_unlocked_skills().is_empty(), "level 20, %d JP, sworn: every planned skill → PLANNED, nothing learned" % sm.get_job_points())
-	gm.player_state.unlocked_skills.append("dash_strike")  # навіть якщо потрапила в стан (старий сейв) — не б'є
+	gm.player_state.unlocked_skills.append("rising_slash")  # навіть якщо потрапила в стан (старий сейв) — не б'є
 	sm.restore_sp(100)
-	ck(sm.can_use_skill("dash_strike") == R.PLANNED and sm.cast_skill("dash_strike") == R.PLANNED and sm.use_skill("dash_strike", enemy) == R.PLANNED,
+	ck(sm.can_use_skill("rising_slash") == R.PLANNED and sm.cast_skill("rising_slash") == R.PLANNED and sm.use_skill("rising_slash", enemy) == R.PLANNED,
 			"a planned skill in the state still cannot be cast or used")
-	ck(sm.can_upgrade("dash_strike") == R.PLANNED, "nor ranked up")
-	gm.player_state.unlocked_skills.erase("dash_strike")
+	ck(sm.can_upgrade("rising_slash") == R.PLANNED, "nor ranked up")
+	gm.player_state.unlocked_skills.erase("rising_slash")
 	var plan_v2 = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
 	ck(plan_v2.can_pick("lightspear") == R.PLANNED, "the skill screen's plan refuses it too")
 

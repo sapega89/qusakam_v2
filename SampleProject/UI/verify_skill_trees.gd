@@ -85,7 +85,7 @@ func _initialize() -> void:
 			data_ok = false
 			print("    planned is only for the v2 draft actives (D535): ", d.id)
 		elif d.is_active() and not d.planned:
-			if d.cast_pose == "" or not ResourceLoader.exists(d.vfx):
+			if d.release_pose == "" or not ResourceLoader.exists(d.vfx):
 				data_ok = false
 				print("    active without a cast or effect: ", d.id)
 			elif not load(d.vfx).instantiate() is Node2D:

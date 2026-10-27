@@ -149,7 +149,7 @@ func _initialize() -> void:
 	ck(ui._rows["toughness"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_PASSIVE and ui._rows["fire_strike"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_ACTIVE,
 			"icon tints by kind (D605)")
 	ck(ui.node_state("radiant_smite") == S.LOCKED and _badge(ui, "radiant_smite").theme_type_variation == &"SkillLevelBadgeLabel", "Radiant Smite before 3 JP in the base tree: locked, Lv 5 not red")
-	ck(ui.node_state("dash_strike") == S.LOCKED and ui._reason_text("dash_strike") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): coming later")
+	ck(ui.node_state("rising_slash") == S.LOCKED and ui._reason_text("rising_slash") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): coming later")
 
 	print("[3] Detail panel: rank, effect now → next, costs (D334, D674)")
 	await _mouse(ui._rows["fire_strike"])

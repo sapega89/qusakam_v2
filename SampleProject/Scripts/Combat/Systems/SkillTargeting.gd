@@ -27,6 +27,37 @@ static func enemies_in_front(player: Node2D) -> Array[Node]:
 	return out
 
 
+## Найближчий до героя з тих, кого б'є удар перед ним (D-sv2m: ривок ріже першого ворога на шляху), або порожньо.
+static func first_in_front(player: Node2D) -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in enemies_in_front(player):
+		if out.is_empty() or absf(enemy.global_position.x - player.global_position.x) < absf(out[0].global_position.x - player.global_position.x):
+			out.clear()
+			out.append(enemy)
+	return out
+
+
+## Живі вороги, чия зона-ціль у [param reach] px по обидва боки від тіла героя (D-sv2m: удар приземлення).
+static func enemies_around(player: Node2D, reach: float) -> Array[Node]:
+	var body: Rect2 = player.body_rect()
+	var area := body.grow_individual(reach, 0.0, reach, 0.0)
+	var out: Array[Node] = []
+	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy.is_alive() and area.intersects(enemy.hurt_rect()):
+			out.append(enemy)
+	return out
+
+
+## Кого б'є навичка без явної цілі: навичка руху — за move_hits, решта — усі перед героєм (D142).
+static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	match definition.move_hits:
+		"first":
+			return first_in_front(player)
+		"around":
+			return enemies_around(player, definition.move_reach)
+	return enemies_in_front(player)
+
+
 ## Ланцюг (D207): найближчий живий ворог у [param radius] від [param from], крім уже вражених.
 static func chain_target(from: Node2D, exclude: Array[Node], radius: float) -> Node:
 	var best: Node = null
