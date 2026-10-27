@@ -94,6 +94,7 @@ func _initialize() -> void:
 	await _token()
 	await _recovery_and_back_off()
 	await _lunges_and_pounce()
+	await _jackal_on_floor()
 	await _boss_patterns()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
@@ -700,6 +701,46 @@ func _lunges_and_pounce() -> void:
 	for j: Node in pair:
 		await _done(j)
 	eb.damage_received.disconnect(count)
+	_heal()
+
+
+## [10b] B197: шакал бігає підлогою. Між ударами (стан ATTACK: підступає, тримає відстань) він іде кроком, а не ковзає
+## в застиглому кадрі стрибка; тіло на підлозі, а спрайт поза стрибком стоїть на своєму місці.
+func _jackal_on_floor() -> void:
+	print("[10b] B197: the jackal runs on the floor between lunges, not gliding in its leap frame")
+	var jackal: Node = await _spawn(JACKAL, 260.0, false)
+	await _place(jackal, -260)
+	var ground: float = jackal.global_position.y
+	var base_y: float = jackal.enemy_view._base_offset_y
+	var logic: Node = jackal.enemy_logic
+	var px: float = jackal.global_position.x
+	var free_moves := 0
+	var glides := {}
+	var off_floor := 0
+	var lifted := 0
+	var attacks := 0
+	for i in 600:  # 10 с живого бою
+		await physics_frame
+		_heal()
+		var dx: float = absf(jackal.global_position.x - px)
+		px = jackal.global_position.x
+		if logic.is_attacking:
+			attacks += 1
+		if absf(jackal.global_position.y - ground) > 2.0:
+			off_floor += 1
+		var free: bool = not logic.is_attacking and logic.knockback_left <= 0.0 and logic.stun_left <= 0.0 				and logic._dash_left <= 0.0 and not jackal.enemy_view.staggered
+		if not free:
+			continue
+		if absf(jackal.sprite.offset.y - base_y) > 0.5:
+			lifted += 1
+		if dx > 1.0:
+			free_moves += 1
+			if jackal.anim_player.current_animation != &"walk":
+				glides[jackal.anim_player.current_animation] = glides.get(jackal.anim_player.current_animation, 0) + 1
+	ck(off_floor == 0 and lifted == 0, "the jackal's body stays on the floor and its drawing on its feet outside a leap (off floor %d frames, sprite lifted %d)" % [off_floor, lifted])
+	ck(attacks > 0 and free_moves > 20 and glides.is_empty(),
+			"moving between bites it runs in its walk frames (%d moving frames, %d attacking; other poses %s)" % [free_moves, attacks, glides])
+	await _done(jackal)
 	_heal()
 
 

@@ -401,7 +401,8 @@ func _physics_process(delta: float) -> void:
 
 	# AI — EnemyLogic (створюється в _initialize_components() завжди); наземному — лише X-рух, летючому — увесь.
 	var move: Vector2 = enemy_logic.process_physics(delta)
-	enemy_view.walk_pace(enemy_logic.pace * speed / stride_speed)
+	var moving: bool = not move.is_zero_approx() and enemy_logic.knockback_left <= 0.0
+	enemy_view.walk_pace(enemy_logic.pace * speed / stride_speed, moving, enemy_logic.is_attacking)
 	current_state = enemy_logic.current_state
 	state_timer = enemy_logic.state_timer
 	lost_player_timer = enemy_logic.lost_player_timer

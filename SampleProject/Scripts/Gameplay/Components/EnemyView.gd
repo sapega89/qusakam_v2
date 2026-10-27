@@ -61,8 +61,18 @@ func update_state(new_state: EnemyLogic.AIState) -> void:
 	anim_player.play(animation_name)
 
 ## Біг (D754, EnemyLogic.pace): кадри ходи — у темпі руху (і в темпі швидкості виду щодо його кроку, D767).
-func walk_pace(pace: float) -> void:
-	if not staggered and anim_player.current_animation == &"walk":
+## B197: стан ATTACK — це й проміжки між ударами (підступає, тримає відстань, обходить); там ворог, що рухається
+## [param moving], іде кроком, а той, що стоїть, — idle. Без цього він ковзав у застиглому кадрі удару: шакал — у кадрі
+## стрибка, тож «літав» над підлогою. Поки йде удар ([param swinging]) — поза удару.
+func walk_pace(pace: float, moving: bool, swinging: bool) -> void:
+	if staggered:
+		return
+	if current_animation == "attack" and not swinging:
+		var pose: StringName = &"walk" if moving else &"idle"
+		if anim_player.current_animation != pose:
+			anim_player.speed_scale = 1.0
+			anim_player.play(pose)
+	if anim_player.current_animation == &"walk":
 		anim_player.speed_scale = pace
 
 func update_direction(direction: int) -> void:
