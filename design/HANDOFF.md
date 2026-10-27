@@ -49,6 +49,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — D-ID after integrate-28 |
 | integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | integrate-28, hero-shadow | merges side-stories, hero-feet+shadow, perf-check, depth-film, depth-critics, feature/backlog; files the pending D/B (atmosphere, gates, Death frames, depth B rows); then fast-forward `feature/backlog` |
+| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | A9: every effect filmed in the game → GIFs + sheets in `design/shots/fx/` for Sapega's notes |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
