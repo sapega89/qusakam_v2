@@ -8,7 +8,7 @@ tags: [handoff, orchestrator]
 Where the orchestrator session left off (Sapega asked for a fresh session to free the context). The plan with every
 status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
-**Registers:** next free **D774**, **B163**. `feature/backlog` has D764, D765, D771–D773; D766–D770 exist only on
+**Registers:** next free **D775**, **B163**. `feature/backlog` has D764, D765, D771–D773; D766–D770 exist only on
 `integrate-27` (hard-fights-2's, renumbered) until it is merged back.
 
 ## 1. Finish first (local, in this order)
@@ -29,7 +29,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 3. **Commit the import** of `Resources/Audio/Music/heavy_battle.mp3` (its `.import` was hand-written, Godot adds the uid).
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
 
-## 2. In the cloud (merge each when its report lands; renumber D from D774)
+## 2. In the cloud (merge each when its report lands; renumber D from D775)
 
 | Routine | Trigger | Waits for | Task |
 |---|---|---|---|

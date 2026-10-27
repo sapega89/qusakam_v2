@@ -343,6 +343,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** Q74 (where they live, how they fight, numbers — defaults in the plan) and the ComfyUI art batch.
 - **Resume:** slice 0 — add `enemy_vulture` / `enemy_bat` to `Scripts/Tools/comfy_sprite.py` and render a ×4 candidate sheet for Sapega.
 
+### Ambient critters and a foreground in every room — [[ambient_critters_plan]] (D774)
+- **Exists:** `FrontDark` foregrounds in 13 of 16 rooms (D749, D750); the enemy bat's sheet; no critter scene, no small bird.
+- **Waits on:** nothing for slice 1 (defaults in the plan: 30 s return, 160 px scare distance).
+- **Resume:** slice 1 — `AmbientCritter.gd` + `critter_bat.tscn`, two bats in `LizardCave/FrontDark`, `verify_ambient_critters.gd`.
+
 ### Skill trees v2: 19 skills a tab — [[skill_trees_plan]] → *v2* (D535)
 - **Exists:** the base tree has 10 skills (3 active) and each oath has 11 (3 active); `SkillCombatExecutor` has one hit shape and three poses.
 - **Waits on:** Sapega reading the draft list of 33 new skills (28 active, 5 passive); Q86 (hotbar slots) for the HUD only.

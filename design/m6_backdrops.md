@@ -26,6 +26,19 @@ with its own parallax, between the wall and the hero («на тому ж міс�
 running past, it slides against the wall behind it, and the room gets depth. The Lizard Cave keeps its idol shrines
 where they are today, cut out onto such a plane.
 
+**Every room has a foreground** (D774, Sapega 2026-10-27: «всюди, в кожній кімнаті, в кожному притулку має бути
+передній фон»). Each room below gets its piece in front of the hero with its backdrop: an interior piece (a column, a
+beam, a lamp, crates) or the outdoor occluders of D750, never over a door, an NPC or the middle of a fight. Some of it
+is alive: a bat or a bird that flies off when the hero comes near and comes back later — [[ambient_critters_plan]].
+The ledge the hero walks on is the floor plane, behind him, not foreground.
+
+## Batch 0 — existing rooms with no foreground (D774)
+
+| Room | What goes in front | Status |
+|---|---|---|
+| Mayor Hall (arena) | a chandelier and banners at the top, columns at the sides | ⬜ |
+| Bandit Camp (arena) | tent ropes and stakes at the sides, a dark crate low | ⬜ |
+
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 
 | Room | Kind | Screens | Passages to paint | Status |

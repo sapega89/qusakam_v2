@@ -62,6 +62,7 @@ Runnable specs. One per system, sliced so each slice ships on its own.
 - [[playable_heroes_plan]] — D498, future: four heroes picked at New Game, co-op like Castle Crashers
 - [[enemy_variety_plan]] — D495: size variants, elites, shield-bearers (Q85)
 - [[flying_enemies_plan]] — D445: vultures outdoors, bats indoors; art → movement and attack → placement (Q74)
+- [[ambient_critters_plan]] — D774: a foreground in every room; bats and birds that fly off when the hero comes near and come back later
 - [[music_plan]] — ✅ music plays: a `Music` node in every room and the Main Menu; Q38 answered 2026-10-21 (keep the tracks)
 
 ## Audits
