@@ -11,7 +11,7 @@ and probes each visual plane every frame; `Scripts/Tools/film_pack.py` makes a f
 (filmstrip.jpg, slitscan.jpg, layers.json; 13 MB, no video in git). A full run takes **~19 min** (1124 s for 16 films, 50–93 s a
 room) plus **75 s** to pack. Probe: measured speeds match every `Parallax2D.scroll_scale` to ±0.002; no room has a plane out
 of speed order. Proposed: 5 B rows and 1 Q (below); the outdoor «floor painted 21–27 px above the collision» is D559, not a bug.
-Not done (by the plan): `verify_depth.gd`, the critics (slice 2). No D-ID, no B row fixed. Full suite: SUITE_LINE
+Not done (by the plan): `verify_depth.gd`, the critics (slice 2). No D-ID, no B row fixed. Full suite: `SUITE: 4 FAIL` — all red on the base too (below), none from this branch.
 
 ## What was built
 - `SampleProject/UI/film_rooms.gd` — one Godot run per room (Movie Maker writes one file per run):
@@ -110,7 +110,16 @@ runs along the band's middle, so the road shows above and below the hero's feet�
 
 ## Tests
 - `verify_scripts_compile`: RESULT: ALL PASS.
-- Full suite (`Scripts/Tools/run_verify.sh`): SUITE_DETAIL
+- Full suite (`Scripts/Tools/run_verify.sh`, 3030 s, run while the films were recording): `SUITE: 4 FAIL` —
+  `verify_city_gates_raid` (1 FAIL «the hero falls after the teleport»; ALL PASS when re-run alone: CPU contention with
+  the films), `verify_progression` (4 FAIL: the save point's sit and save screen), `verify_save_load` (2 FAIL + SCRIPT ERROR
+  `SavePoint.gd:62` `$Seat` on null), `verify_save_load_room` (2 FAIL: the save point does not open the save screen).
+  The last three fail the same alone, and on a clean worktree of `origin/feature/backlog` (7accd1d7) `verify_save_load_room`
+  and `verify_progression` give the identical RESULT lines: the D764 meditation seat, not this branch (it changes no game
+  code). Proposed B row for the orchestrator: **B-new-5 — the save point used by `verify_save_load*` / `verify_progression`
+  has no `Seat`, so `SavePoint._meditate` errors and the save screen never opens** (D764 follow-up).
+- The base also lacks the importer's fields in `heavy_battle.mp3.import`: on the clean worktree every run asserts
+  «AudioManager: music fight → heavy_battle.mp3 not found» and «unknown sound event …»; this branch commits the fixed file.
 
 ## Probe tables (all rooms)
 `seen` = the largest share of the view the plane really shows on the three screens (after occlusion); value / contrast /
