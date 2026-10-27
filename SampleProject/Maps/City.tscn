@@ -27,7 +27,6 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x6"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/TownsfolkCrowd.gd" id="tf_crowd"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_water_carrier.tscn" id="tf_water"]
@@ -341,13 +340,6 @@ autoplay = true
 bus = &"Music"
 
 [node name="FrontDark" parent="." instance=ExtResource("x4")]
-
-[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
-texture_filter = 1
-position = Vector2(500, 520)
-scale = Vector2(2.2, 2.2)
-texture = ExtResource("x5")
-offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
 position = Vector2(1910, 520)
