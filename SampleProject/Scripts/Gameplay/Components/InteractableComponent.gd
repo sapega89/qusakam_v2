@@ -45,6 +45,7 @@ var _area: Area2D = null
 func _ready() -> void:
 	# Підказка має малюватись над спрайтами об'єкта.
 	z_index = 20
+	set_process(false)
 	_area = get_parent() as Area2D
 	if _area == null:
 		push_error("InteractableComponent: parent must be an Area2D (%s)" % get_path())
@@ -96,11 +97,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	interacted.emit()
 
 
+## Поки герой у зоні — щокадру: розмова, меню чи модалка могли початись або скінчитись. Під час них E нічого не робить,
+## тож і підказки не видно (B160: «Enter» дверей погреба світився за відповідями перепису).
+func _process(_delta: float) -> void:
+	_refresh_visibility()
+
+
 func _refresh_visibility() -> void:
-	if _prompt:
-		_prompt.visible = show_prompt and enabled and player_nearby
-		if _prompt.visible:
-			_place_prompt()
+	set_process(player_nearby)
+	if _prompt == null:
+		return
+	var shown: bool = show_prompt and enabled and player_nearby and _gameplay_input_allowed()
+	if shown and not _prompt.visible:
+		_place_prompt()
+	_prompt.visible = shown
 
 
 ## Підказка по центру над точкою компонента; ширина за вмістом (D84).

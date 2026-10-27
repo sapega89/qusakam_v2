@@ -124,6 +124,13 @@ func _initialize() -> void:
 	ck(hits[0] == 1, "interact action fires `interacted`")
 	comp._unhandled_input(_press(&"ui_accept"))
 	ck(hits[0] == 1, "ui_accept (Space/Enter) no longer interacts")
+	var dm: Node = root.get_node("ServiceLocator").get_dialogue_manager()
+	dm._lines_held = true  # сюжет тримає героя (D737) — як розмова перепису
+	await process_frame
+	ck(not cprompt.visible, "story dialogue hides the prompt of a door the hero stands at (B160)")
+	dm._lines_held = false
+	await process_frame
+	ck(cprompt.visible, "the prompt comes back after the dialogue")
 	comp.enabled = false
 	ck(not cprompt.visible, "disabled component hides the prompt")
 	comp._unhandled_input(_press(&"interact"))
