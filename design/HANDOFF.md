@@ -36,6 +36,8 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
    A14, A4. Each with a before | after sheet sent to Sapega.
 5. **M6a-3** burnt village (D796: the Village's own houses, scorched, not ruined) after A5.
 
+**Burnt village (M6a-3, `785e7f49`)** is made, not wired: after `world-rooms`' Canyon slice merges (it may touch Village.tscn), swap the four Village textures for `_burnt`, open the regions (Back 0,0,576,324; Houses 0,0,576,276; offsets 0), darken the Backdrop modulate ~(0.72,0.66,0.68), green palms/banners/butterflies/larks/pollen → charred/embers. The village is burnt in every state the game uses.
+
 ## 3. Rules learned today
 - **Tests:** the full suite runs 4 at a time with its own user:// per test, `## SERIAL` real-time tests last, `## MANUAL`
   (`verify_masher`) skipped (D806). Tests run in the cloud by preference (memory: tests-in-cloud), but cloud routines
