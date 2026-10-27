@@ -2,10 +2,8 @@
 # interact садить героя медитувати (D447, кадри Meditate, як у каньйоні) і тоді відкриває Save Slot Selection
 # у режимі SAVE (D75); вихід з екрана його підводить. Медитація повертає звичайних ворогів (D492, Game.meditate()).
 # Автозбереження при дотику прибрано (Q5): зберігаємо лише свідомо через підказку.
-# Арт місця медитації (килимок, камінне коло, D447) ще не зроблений — поки що старе синє коло з «S».
+# Місце медитації — камінь зі спіраллю з каньйону (`meditation_stone.tscn`, D764) на підлозі під точкою.
 extends Area2D
-
-const WORLD_UI := preload("res://SampleProject/UI/Components/world_ui.gd")
 
 ## Offset для позиции спавна (относительно SavePoint)
 @export var spawn_offset: Vector2 = Vector2(0, 0)
@@ -33,10 +31,6 @@ func _ready() -> void:
 	interactable.action_text = "Save"
 	add_child(interactable)
 	interactable.interacted.connect(_on_interacted)
-	# Коло й «S» тримають екранний розмір під збільшеною камерою (D170), як підказка.
-	var label: Label = $Label
-	label.pivot_offset = label.size * 0.5
-	label.scale = WORLD_UI.screen_scale(self)
 
 func _on_interacted() -> void:
 	if meditating:
@@ -73,8 +67,3 @@ func _meditate(player: Node2D, game: Game) -> void:
 	player.set_movement_enabled(true)
 	meditating = false
 	meditation_finished.emit()
-
-func _draw() -> void:
-	# Draws the circle.
-	draw_set_transform(Vector2.ZERO, 0.0, WORLD_UI.screen_scale(self))
-	$CollisionShape2D.shape.draw(get_canvas_item(), Color.BLUE)
