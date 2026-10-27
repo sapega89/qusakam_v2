@@ -98,7 +98,7 @@ func _stagger(who: String, scene: Array) -> void:
 	await create_timer(PARRY_STAGGER * 0.6).timeout
 	ck(sprite.texture == sheet and Vector2i(sprite.hframes, sprite.vframes) == cells,
 			"%s: its sheet back after the stagger (%s, %dx%d)" % [who, sprite.texture.resource_path.get_file(), sprite.hframes, sprite.vframes])
-	# Хода — у темпі руху виду (D738: speed / stride_speed, і біг — enemy_logic.pace), решта — 1
+	# Хода — у темпі руху виду (D767: speed / stride_speed, і біг — enemy_logic.pace), решта — 1
 	var tempo: float = enemy.enemy_logic.pace * enemy.speed / enemy.stride_speed if anim.current_animation == &"walk" else 1.0
 	ck(String(anim.current_animation) in NORMAL and is_equal_approx(anim.speed_scale, tempo) and sprite.frame < cells.x * cells.y,
 			"%s: back to a normal animation (%s ×%.2f, frame %d)" % [who, anim.current_animation, anim.speed_scale, sprite.frame])

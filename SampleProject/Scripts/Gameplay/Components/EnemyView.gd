@@ -60,7 +60,7 @@ func update_state(new_state: EnemyLogic.AIState) -> void:
 		return  # зіграє після збою
 	anim_player.play(animation_name)
 
-## Біг (D713, EnemyLogic.pace): кадри ходи — у темпі руху (і в темпі швидкості виду щодо його кроку, D738).
+## Біг (D754, EnemyLogic.pace): кадри ходи — у темпі руху (і в темпі швидкості виду щодо його кроку, D767).
 func walk_pace(pace: float) -> void:
 	if not staggered and anim_player.current_animation == &"walk":
 		anim_player.speed_scale = pace
@@ -136,7 +136,7 @@ func on_attack_ended() -> void:
 	if current_animation != "attack":
 		anim_player.play(current_animation)
 
-## Стрибок (D740, шакал): спрайт злітає на [param height] px дугою за [param time] с і падає назад (тіло лишається
+## Стрибок (D769, шакал): спрайт злітає на [param height] px дугою за [param time] с і падає назад (тіло лишається
 ## на підлозі — це лише видно).
 func hop(height: float, time: float) -> void:
 	if _hop:
@@ -146,7 +146,7 @@ func hop(height: float, time: float) -> void:
 	_hop.tween_property(sprite2d, ^"offset:y", base_y - height / _base_scale.y, time * 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	_hop.tween_property(sprite2d, ^"offset:y", base_y, time * 0.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 
-## Учепився (D740): кадр укусу attack застигає, доки герой не відштовхне шакала.
+## Учепився (D769): кадр укусу attack застигає, доки герой не відштовхне шакала.
 func latch_pose() -> void:
 	anim_player.speed_scale = 1.0
 	anim_player.play(&"attack")

@@ -538,7 +538,7 @@ func _static_box(center: Vector2, size: Vector2) -> StaticBody2D:
 	return body
 
 
-## [8] Жетон: замахуються одночасно не більше max_attackers(), і лише з одного боку героя (D741); решта чекає й переступає.
+## [8] Жетон: замахуються одночасно не більше max_attackers(), і лише з одного боку героя (D770); решта чекає й переступає.
 func _token() -> void:
 	var most: int = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd").max_attackers()
 	print("[8] At most %d enemies wind up at once (attack token, D642)" % most)
@@ -549,7 +549,7 @@ func _token() -> void:
 	var last: Node = crowd[-1]
 	await _place(crowd[1], -30)
 	for e: Node in crowd:
-		e.global_position.x = hero.global_position.x + 30.0  # D741: жетон беруть лише з одного боку героя — тут усі з правого
+		e.global_position.x = hero.global_position.x + 30.0  # D770: жетон беруть лише з одного боку героя — тут усі з правого
 		e.enemy_logic.player = hero
 		e.enemy_logic.change_state(e.enemy_logic.AIState.ATTACK)
 		e.enemy_logic.attack_ready_in = 0.0
@@ -560,7 +560,7 @@ func _token() -> void:
 	for i in most + 1:
 		expected.append(i < most)
 	ck(states == expected and a.enemy_logic.attackers() == most, "%d swing, the last waits (%s, tokens %d)" % [most, states, a.enemy_logic.attackers()])
-	last.set_physics_process(false)  # чекає на місці: живий AI переступав би чи обходив героя (D741)
+	last.set_physics_process(false)  # чекає на місці: живий AI переступав би чи обходив героя (D770)
 	while a.enemy_logic.is_attacking and not a.enemy_logic.recovering:
 		await physics_frame
 	last.set_physics_process(true)
@@ -569,7 +569,7 @@ func _token() -> void:
 	ck(last.enemy_logic.is_attacking, "once one recovers, its token passes to the last")
 	for e: Node in crowd:
 		await _done(e)
-	# D741: з другого боку героя не замахуються, поки б'ють з цього (оточений герой блоком рятується від одного боку за раз)
+	# D770: з другого боку героя не замахуються, поки б'ють з цього (оточений герой блоком рятується від одного боку за раз)
 	var right: Node = await _spawn(BANDIT, 200.0)
 	var left: Node = await _spawn(BANDIT, 260.0)
 	for e: Node in [right, left]:
@@ -580,16 +580,16 @@ func _token() -> void:
 	right.enemy_logic.handle_attack_state(0.016)
 	left.enemy_logic.handle_attack_state(0.016)
 	ck(right.enemy_logic.is_attacking and not left.enemy_logic.is_attacking,
-			"an enemy on the hero's other side waits while this side swings (D741: right %s, left %s)" % [right.enemy_logic.is_attacking, left.enemy_logic.is_attacking])
+			"an enemy on the hero's other side waits while this side swings (D770: right %s, left %s)" % [right.enemy_logic.is_attacking, left.enemy_logic.is_attacking])
 	for e: Node in [right, left]:
 		await _done(e)
 
 
-## [10] Випад і стрибок шакала (D739, D740): бандит з середньої відстані робить ривок з ударом; шакал стрибає — влучив,
+## [10] Випад і стрибок шакала (D768, D769): бандит з середньої відстані робить ривок з ударом; шакал стрибає — влучив,
 ## учепився: герой стоїть, укус — лише за LATCH_BITE_AT с, тоді герой відштовхує шакала й вільний; блок і перекат крізь
 ## стрибок рятують; учепитись може лише один шакал.
 func _lunges_and_pounce() -> void:
-	print("[10] Lunges from mid range; the jackal's pounce latches, bites after a beat and is shoved off; block and roll beat it (D739, D740)")
+	print("[10] Lunges from mid range; the jackal's pounce latches, bites after a beat and is shoved off; block and roll beat it (D768, D769)")
 	var logic_script: Script = load("res://SampleProject/Scripts/Gameplay/Components/EnemyLogic.gd")
 	var hits := [0]
 	var count := func(target: Node, _source: Node, _amount: int, _critical: bool) -> void:

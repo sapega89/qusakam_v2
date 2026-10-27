@@ -13,14 +13,14 @@ extends SceneTree
 ## Перевірки (D642): [1] MASHER перемагає одного звичайного ворога, але втрачає HP; [2] MASHER (обидві збірки) програє
 ## кожній еліті, обом босам і групі з 3+; [3] GOOD перемагає їх (SKILLS); [4] бос, як його зустрічає гравець (вхід у
 ## кімнату, кат-сцена, смужка боса, музика бою), б'є зброєю героя, що стоїть і тисне удар, і героя, що чекає трохи поза
-## досяжністю сокири (B154); [5] вороги роблять випади (D739), шакал учепився в масера (D740), а група стоїть з обох боків
-## героя (D741). Кожен бій друкує ще: за скільки с вороги дійшли до героя, яку частку часу вони були з обох боків, випади й хватки.
+## досяжністю сокири (B159); [5] вороги роблять випади (D768), шакал учепився в масера (D769), а група стоїть з обох боків
+## героя (D770). Кожен бій друкує ще: за скільки с вороги дійшли до героя, яку частку часу вони були з обох боків, випади й хватки.
 ## Бій групи хаотичний (кадр туди-сюди — інша гілка): не той результат — друга спроба з іншими кидками, і вимога —
 ## хоч в одній з двох.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_masher.gd
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
-## Поруч героя для «з обох боків» (D741), px — як EnemyLogic.FLANK_NEAR.
+## Поруч героя для «з обох боків» (D770), px — як EnemyLogic.FLANK_NEAR.
 const FLANK_NEAR := 320.0
 
 ## Гра йде в SPEED раз швидше за годинник, а фізика — у SPEED раз частіше: крок фізики той самий, 1/60 с.
@@ -60,9 +60,9 @@ const PRESS_EVERY := 0.1
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
-## [4] (B154): скільки с герой стоїть і тисне біля боса; скільки с чекає за спиною боса і на якій відстані від нього
+## [4] (B159): скільки с герой стоїть і тисне біля боса; скільки с чекає за спиною боса і на якій відстані від нього
 ## (досяжність серії боса — 69–72 px, межа його відпочинку між ходами була 90 px).
-## [5] (D741): у найкращому бою групи вороги з обох боків героя хоч таку частку часу.
+## [5] (D770): у найкращому бою групи вороги з обох боків героя хоч таку частку часу.
 const SURROUND := 0.3
 const BOSS_MASH := 12.0
 const BOSS_WAIT := 6.0
@@ -105,12 +105,12 @@ var blocks := 0
 var rolls := 0
 var _telegraphs: Array[Dictionary] = []
 ## Ігровий час до першого контакту (хтось із ворогів на своїй engage_range від героя) — як швидко вороги закривають
-## відстань (D738); -1 — не було.
+## відстань (D767); -1 — не було.
 var contact := -1.0
-## Кадри, коли поруч (FLANK_NEAR) хоч двоє наземних ворогів, і з них — коли вороги з обох боків героя (D741).
+## Кадри, коли поруч (FLANK_NEAR) хоч двоє наземних ворогів, і з них — коли вороги з обох боків героя (D770).
 var near_frames := 0
 var both_frames := 0
-## Випади (D739) і хватки шакала (D740).
+## Випади (D768) і хватки шакала (D769).
 var lunges := 0
 var latches := 0
 var _was_latched := false
@@ -174,12 +174,12 @@ func _initialize() -> void:
 		if row.bot == "GOOD":
 			ck(row.won, "%s, %s: %s with %d%% HP" % [row.name, row.build, _verdict(row), roundi(row.hp_left * 100)])
 
-	print("[4] each boss, met as the player meets it, swings its weapon and lands it (B154)")
+	print("[4] each boss, met as the player meets it, swings its weapon and lands it (B159)")
 	for fight: Dictionary in FIGHTS:
 		if fight.cls == "boss":
 			await _boss_meeting(fight)
 	if not rows.is_empty():
-		print("[5] enemies lunge, jackals latch on, and a group stands on both sides of the hero (D739-D741)")
+		print("[5] enemies lunge, jackals latch on, and a group stands on both sides of the hero (D768-D770)")
 		var lunged := 0
 		var latched := 0
 		var surround := {"MASHER": 0.0, "GOOD": 0.0}
@@ -192,7 +192,7 @@ func _initialize() -> void:
 		ck(lunged >= 5, "enemies lunge from mid range (%d lunges in all fights)" % lunged)
 		ck(latched >= 1, "a jackal's pounce latches on a hero who does not block or roll (%d times)" % latched)
 		for bot: String in surround:
-			ck(surround[bot] >= SURROUND, "%s: in some group fight enemies stand on both sides of the hero %d%% of the time (before D741: 0-3%%)"
+			ck(surround[bot] >= SURROUND, "%s: in some group fight enemies stand on both sides of the hero %d%% of the time (before D770: 0-3%%)"
 					% [bot, roundi(surround[bot] * 100)])
 
 	sl.get_time_manager().set_time_scale(1.0)
@@ -202,7 +202,7 @@ func _initialize() -> void:
 	quit()
 
 
-## Бос через справжній початок бою (B154): герой заходить у кімнату з Arrival, іде праворуч до тригера, кат-сцену
+## Бос через справжній початок бою (B159): герой заходить у кімнату з Arrival, іде праворуч до тригера, кат-сцену
 ## дочитано — бій. (а) Герой стоїть і тисне легкий удар BOSS_MASH с; (б) герой за спиною боса, за BOSS_WAIT_GAP px, просто
 ## стоїть BOSS_WAIT с. В обох бос має влучити зброєю (джерело шкоди — сам бос, не хвиля): раніше в (б) він стояв
 ## на 89 px, поза досяжністю серії (69 px), і лише бив об землю.
@@ -727,7 +727,7 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 			continue
 		var reach: float = enemy.enemy_logic.attack_range + enemy.lunge + 70.0
 		if tg.lunge:
-			reach = enemy.enemy_stats.lunge_to + 70.0  # випад (D739) дістає з середньої відстані
+			reach = enemy.enemy_stats.lunge_to + 70.0  # випад (D768) дістає з середньої відстані
 		if tg.boss and tg.kind in ["slam", "charge"]:
 			reach = 1000.0
 		if absf(enemy.global_position.x - hero.global_position.x) > reach:

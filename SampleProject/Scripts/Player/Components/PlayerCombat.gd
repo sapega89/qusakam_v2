@@ -663,7 +663,7 @@ func guard_against(source: Node) -> StringName:
 		return &""
 	return &"parry" if tell == EnemyLogic.TELL_PARRY and _block_time <= PARRY_WINDOW else &"block"
 
-## Шакал учепився (D740): не стан, а сцена бою — герой стоїть [param duration] с у позі Hurt, доки той кусає (удари
+## Шакал учепився (D769): не стан, а сцена бою — герой стоїть [param duration] с у позі Hurt, доки той кусає (удари
 ## посеред неї збою не додають), наприкінці відштовхує його (shove). Дія, що йшла, зірвана, як від збою.
 var held_by: Node = null
 
@@ -675,7 +675,7 @@ func hold(by: Node, duration: float) -> void:
 	_play(&"Hurt")
 	EventBus.player_staggered.emit(duration)
 
-## Кінець хватки (D740): герой відштовхує шакала — поза Block на [param duration] с, далі вільний.
+## Кінець хватки (D769): герой відштовхує шакала — поза Block на [param duration] с, далі вільний.
 func shove(duration: float) -> void:
 	_state_left = duration
 	_play(&"Block")

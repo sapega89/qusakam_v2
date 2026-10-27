@@ -9,7 +9,7 @@ class_name EnemyStats
 
 @export_group("Movement")
 @export var speed: float = 70.0
-## Під яку швидкість намальовано крок анімації walk, px/с (D738): темп walk — speed / stride_speed, щоб ноги не ковзали,
+## Під яку швидкість намальовано крок анімації walk, px/с (D767): темп walk — speed / stride_speed, щоб ноги не ковзали,
 ## коли ворог ходить швидше. 0 — та сама, що speed.
 @export var stride_speed: float = 0.0
 
@@ -42,7 +42,7 @@ class_name EnemyStats
 ## Відповідь на удари (D754): стільки ударів героя, поки ворог чекає перерви між серіями, — і він б'є одразу, не
 ## чекаючи її кінця (0 — ніколи). Той, хто б'є без упину, наривається на удар; хто б'є у вікно й захищається — ні.
 @export var answer_hits: int = 0
-## Випад (D739): з середньої відстані (lunge_from–lunge_to px від героя) — короткий замах lunge_windup з підказкою
+## Випад (D768): з середньої відстані (lunge_from–lunge_to px від героя) — короткий замах lunge_windup з підказкою
 ## lunge_tell, тоді ривок з ударом туди, де герой стояв у мить підказки. Стояти трохи поза досяжністю вже не безпечно;
 ## ухилитись — перекотитись крізь ривок або заблокувати його. lunge_chance — шанс обрати випад, коли ворог готовий
 ## бити, а герой на цій відстані (0 — випаду немає).
@@ -51,7 +51,7 @@ class_name EnemyStats
 @export var lunge_windup: float = 0.5
 @export_enum("block", "parry", "dodge") var lunge_tell: String = "block"
 @export var lunge_chance: float = 0.0
-## Шакал (D740): випад — стрибок; влучив — учепився й кусає (EnemyLogic._latch): герой стоїть, укус, тоді відштовхує.
+## Шакал (D769): випад — стрибок; влучив — учепився й кусає (EnemyLogic._latch): герой стоїть, укус, тоді відштовхує.
 @export var pounce: bool = false
 
 @export_group("Flight")

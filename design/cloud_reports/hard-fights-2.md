@@ -6,13 +6,13 @@ tags: [cloud, combat, difficulty, bosses]
 # Cloud report: hard-fights-2
 
 **Summary.** Done: all five of Sapega's notes, all in the existing enemy move system (`EnemyLogic` / `BossLogic`).
-(a) **B154 (fixed):** the bosses did not swing at a hero who stood just out of reach. They rested 30–90 px from the hero, but their combo only reaches 69–72 px, so between 70 and 90 px they only slammed and drank. The Mayor Hall fight also showed no boss bar and started the boss walking "home". (b) Speeds go up 1.25–2.6× (D738). (c) Lunges from 120–260 px (D739), and the jackal's pounce, latch, bite and shove (D740). (d) Elites, the jackals, the vulture and the bat are bigger (D737). (e) Enemies walk round the hero to his other side. The token is now 2, all from one side (D741).
+(a) **B159 (fixed):** the bosses did not swing at a hero who stood just out of reach. They rested 30–90 px from the hero, but their combo only reaches 69–72 px, so between 70 and 90 px they only slammed and drank. The Mayor Hall fight also showed no boss bar and started the boss walking "home". (b) Speeds go up 1.25–2.6× (D767). (c) Lunges from 120–260 px (D768), and the jackal's pounce, latch, bite and shove (D769). (d) Elites, the jackals, the vulture and the bat are bigger (D766). (e) Enemies walk round the hero to his other side. The token is now 2, all from one side (D770).
 `verify_masher` ALL PASS. MASHER beats the lone bandit at 63 % HP and loses everything else in both builds; GOOD wins all nine, no second tries needed. The new [4] (bosses met through their real intro) fails 3 checks on the old code and passes now.
-D-IDs: D737–D741 (text in §6). B rows fixed: B154.
+D-IDs: D766–D770 (text in §6). B rows fixed: B159.
 Not done: new poses (list in §5, for the orchestrator). Bosses got no lunge move.
-Full suite: `SUITE: 1 FAIL` (`verify_enemy_stagger`, which expected walk at ×1.0; fixed for D738 and green when re-run alone), §7.
+Full suite: `SUITE: 1 FAIL` (`verify_enemy_stagger`, which expected walk at ×1.0; fixed for D767 and green when re-run alone), §7.
 
-## 1. (a) The bosses do not hit: B154
+## 1. (a) The bosses do not hit: B159
 
 **Reproduced** with the real room start: Arrival marker, walk right into the trigger, the cutscene read through (and also skipped with a Tab hold), the boss bar, `boss_fight_changed`. Checked in the round-13 build (`2a935ba9`), in `cloud/hard-fights`, headless and in a window.
 - The hero walks into the boss and mashes: both bosses hit. In the window this was 9 swings and 7 hits in 25 s.
@@ -37,7 +37,7 @@ Full suite: `SUITE: 1 FAIL` (`verify_enemy_stagger`, which expected walk at ×1.
 | Laboratory: stands and mashes | 4 swings, 2 land | 3 swings, 2 land |
 | Laboratory: waits 86 px behind | **1 swing, 0 land** | 2 swings, 1 lands |
 
-## 2. (b) Speeds (D738)
+## 2. (b) Speeds (D767)
 
 The hero walks at 300 px/s, ramping to 400 (`PlayerMover.speed_min/max`). Enemies chase at `speed`, run at ×1.8 (`RUN_PACE`) when far, and step in to strike at ×1.4.
 
@@ -55,7 +55,7 @@ The hero walks at 300 px/s, ramping to 400 (`PlayerMover.speed_min/max`). Enemie
 Light kinds now run faster than the hero walks; heavy kinds run slower than he walks, but not slowly. New `EnemyStats.stride_speed` (the old speed): the walk animation plays at `pace × speed / stride_speed`, so the feet don't slide.
 Measured in `verify_masher`: the time from the start (hero 260 px from the fight's nearest point) to the first enemy at its engage range was 0.9–1.0 s before and 0.6–0.7 s after, in every non-boss fight.
 
-## 3. (c) Lunges and the jackal pounce (D739, D740)
+## 3. (c) Lunges and the jackal pounce (D768, D769)
 
 New `EnemyStats` fields `lunge_from / lunge_to / lunge_windup / lunge_tell / lunge_chance / pounce`, and the move `EnemyLogic.perform_lunge()`:
 - **When.** The enemy is ready, the token is free, the hero is on its floor at `lunge_from`–`lunge_to`, and there is ground ahead; then a `lunge_chance` roll. A failed roll is retried after 0.8 s; lunges come at most once per 2.5 s (`LUNGE_REST`).
@@ -77,7 +77,7 @@ Tested in `verify_combat_enemies` [10]:
 
 In `verify_masher` (all fights): 15 lunges for the masher, 5 latches on the masher, 0 on GOOD (it blocks white tells). Bosses keep their charges; I did not give them a lunge.
 
-## 4. (d) Sizes (D737)
+## 4. (d) Sizes (D766)
 
 Drawn height = the opaque bounding box of the idle frame × the sprite scale. "Width" covers idle + walk frames, which for fliers is the wingspan. The hero is 52×72.
 
@@ -115,17 +115,17 @@ Shot: `design/shots/enemy_sizes/before_after.png` (`capture_enemy_sizes.gd`). Th
 5. The jackal's pounce in the air: a stretched leap frame (now: the attack frames on an arc).
 6. The bandit's lunge stab: a forward thrust with the arm extended (now: the slash frames during the dash).
 7. The brute's and the leader's rush: shoulder down, mid-stride (now: attack frames during the dash).
-8. An enemy rolling or slipping past the hero (D741): now a fast walk through him. A dodge or roll strip for the bandits and a leap for the jackals would sell it.
+8. An enemy rolling or slipping past the hero (D770): now a fast walk through him. A dodge or roll strip for the bandits and a leap for the jackals would sell it.
 
 ## 6. D-ID text (next free numbers at writing; the integrator renumbers)
 
-| D737 | Sapega 26.10 | **Enemy sizes** («шакали молодші і громила якісь дуже маленькі, вони мають бути більшими»; «елітки мають бути більшими за Кусакама, і грифи й летючі миші теж якісь дуже крихітні»). Every elite is bigger than Kusakam and bigger than the kind it grows from: brute 1.37× his height, tower shield guard 1.35×, heavy archer 1.42×, armoured scorpion 1.28× (and 1.8× his height in length), Cthulhu fly 1.22×, pack leader 112 px long and cursed jackal 104 px (the hero is 72 px tall), old vulture 96 px wingspan. The pack jackal grows ×1.6 (about 85 % of the leader, who stays the biggest jackal), the vulture ×1.25 (wingspan 74 px ≥ his height), the bat ×1.33 (38 px, half his height). The art grows in its scene from the drawn feet, with the hit and hurt areas (B128) and the reach (`attack_range`, `lunge`). Fliers keep their bodies, so their paths stay clear of floors and ceilings. Table: `cloud_reports/hard-fights-2` §4. |
-| D738 | Sapega 26.10 | **Enemies close in fast** («вороги якось повільно рухаються»). The hero walks at 300–400 px/s. Bandit 70 → 180 px/s, jackals 120 → 200, shield-bearers 55 → 150, brute 55 → 140, scorpions 50 → 130, archers 60 → 130 / 45 → 110, vultures 120 → 200, bat 170, fly 150. Light kinds run (×1.8) faster than he walks; heavy kinds run slower but are not sluggish. The walk cycle keeps its stride (`EnemyStats.stride_speed`). From the start to the first contact: 0.9–1.0 s before, 0.6–0.7 s after. Provisional. |
-| D739 | Sapega 26.10 | **Lunges** («може треба якісь випади робити, щоб було складніше ухилитись»). Melee kinds lunge from mid range: a short wind-up (0.5–0.6 s) with a white D504 tell, then a 0.2 s dash with the strike, to where the hero stood at the tell. Standing just out of reach is not safe; a roll through it or a block beats it. Bandits stab (120–240 px, chance 0.6), shield-bearers 120–220 (0.4), the brute and the pack leader rush (120–240 / 150–260). At most one lunge per 2.5 s per enemy. Part of `EnemyLogic` (`perform_lunge`, `EnemyStats.lunge_*`). Bosses keep their charges. |
-| D740 | Sapega 26.10 | **The jackal's pounce** («собака напригувати має, коли кусає»; «анімацію, як вона мене кусає, з затримкою»; «не стан як стан, а як я чекаю, поки пройде анімація кусання, і щоб ще я типу відштовхнув її після укуса»). The jackal's lunge is a leap that does not bite in flight. If it connects, it latches on, as a short scripted beat and not a status effect. The hero is held, the bite lands 0.35 s later with a hit-stop, and at 0.9 s the hero shoves the jackal off: it is thrown 160 px, lands and is stunned 0.6 s. Only one jackal latches at a time; a second one bites in passing. A roll under it or a block beats it. Poses still missing: `cloud_reports/hard-fights-2` §5. |
-| D741 | Sapega 26.10 | **A group surrounds the hero** («в бою я дивлюсь — в них [Tails of Iron] вороги ходять один через одного, перекатуються, тобто не стоять в черзі, як в нас»). Ground enemies already pass through allies (D714). An enemy waiting behind another, with no one on the hero's other side, now walks through the hero at ×2.2 pace to its distance on that side. It is one walker at a time, each at most once per 3 s; only that pass lets the two bodies through each other, and otherwise the hero still cannot walk through enemies (D443). The attack token is 2 again (D576; D642 had 3), and a new attacker takes it only from the side the current attackers are on, so the hero has to turn but is struck from one side at a time. `verify_masher`: groups of 3+ had enemies on both sides of the hero 0–3 % of the time before, up to 87 % after. |
+| D766 | Sapega 26.10 | **Enemy sizes** («шакали молодші і громила якісь дуже маленькі, вони мають бути більшими»; «елітки мають бути більшими за Кусакама, і грифи й летючі миші теж якісь дуже крихітні»). Every elite is bigger than Kusakam and bigger than the kind it grows from: brute 1.37× his height, tower shield guard 1.35×, heavy archer 1.42×, armoured scorpion 1.28× (and 1.8× his height in length), Cthulhu fly 1.22×, pack leader 112 px long and cursed jackal 104 px (the hero is 72 px tall), old vulture 96 px wingspan. The pack jackal grows ×1.6 (about 85 % of the leader, who stays the biggest jackal), the vulture ×1.25 (wingspan 74 px ≥ his height), the bat ×1.33 (38 px, half his height). The art grows in its scene from the drawn feet, with the hit and hurt areas (B128) and the reach (`attack_range`, `lunge`). Fliers keep their bodies, so their paths stay clear of floors and ceilings. Table: `cloud_reports/hard-fights-2` §4. |
+| D767 | Sapega 26.10 | **Enemies close in fast** («вороги якось повільно рухаються»). The hero walks at 300–400 px/s. Bandit 70 → 180 px/s, jackals 120 → 200, shield-bearers 55 → 150, brute 55 → 140, scorpions 50 → 130, archers 60 → 130 / 45 → 110, vultures 120 → 200, bat 170, fly 150. Light kinds run (×1.8) faster than he walks; heavy kinds run slower but are not sluggish. The walk cycle keeps its stride (`EnemyStats.stride_speed`). From the start to the first contact: 0.9–1.0 s before, 0.6–0.7 s after. Provisional. |
+| D768 | Sapega 26.10 | **Lunges** («може треба якісь випади робити, щоб було складніше ухилитись»). Melee kinds lunge from mid range: a short wind-up (0.5–0.6 s) with a white D504 tell, then a 0.2 s dash with the strike, to where the hero stood at the tell. Standing just out of reach is not safe; a roll through it or a block beats it. Bandits stab (120–240 px, chance 0.6), shield-bearers 120–220 (0.4), the brute and the pack leader rush (120–240 / 150–260). At most one lunge per 2.5 s per enemy. Part of `EnemyLogic` (`perform_lunge`, `EnemyStats.lunge_*`). Bosses keep their charges. |
+| D769 | Sapega 26.10 | **The jackal's pounce** («собака напригувати має, коли кусає»; «анімацію, як вона мене кусає, з затримкою»; «не стан як стан, а як я чекаю, поки пройде анімація кусання, і щоб ще я типу відштовхнув її після укуса»). The jackal's lunge is a leap that does not bite in flight. If it connects, it latches on, as a short scripted beat and not a status effect. The hero is held, the bite lands 0.35 s later with a hit-stop, and at 0.9 s the hero shoves the jackal off: it is thrown 160 px, lands and is stunned 0.6 s. Only one jackal latches at a time; a second one bites in passing. A roll under it or a block beats it. Poses still missing: `cloud_reports/hard-fights-2` §5. |
+| D770 | Sapega 26.10 | **A group surrounds the hero** («в бою я дивлюсь — в них [Tails of Iron] вороги ходять один через одного, перекатуються, тобто не стоять в черзі, як в нас»). Ground enemies already pass through allies (D755). An enemy waiting behind another, with no one on the hero's other side, now walks through the hero at ×2.2 pace to its distance on that side. It is one walker at a time, each at most once per 3 s; only that pass lets the two bodies through each other, and otherwise the hero still cannot walk through enemies (D443). The attack token is 2 again (D576; D642 had 3), and a new attacker takes it only from the side the current attackers are on, so the hero has to turn but is struck from one side at a time. `verify_masher`: groups of 3+ had enemies on both sides of the hero 0–3 % of the time before, up to 87 % after. |
 
-**B154** (fixed 2026-10-27, `cloud/hard-fights-2`). Sapega's playtest of the round-13 build: «боси не б'ють». Between moves both bosses rested 30–90 px from the hero, but their combo reaches only 69–72 px. A hero standing 70–90 px away (just out of reach, or after rolling past) never saw a weapon swing, only slams and drinks. The Mayor Hall fight also started without the boss bar, with the boss walking back to its pre-cutscene spot and with the default leash. Fix: `BossLogic` keeps a melee boss inside its combo's reach and steps in when the combo is next in its pattern; `MayorHall._fight()` sets the hall-wide ranges, the new home and the bar, as `LabBoss` does. Test: `verify_masher` [4] (through the real intro; 3 FAIL on the old code).
+**B159** (fixed 2026-10-27, `cloud/hard-fights-2`). Sapega's playtest of the round-13 build: «боси не б'ють». Between moves both bosses rested 30–90 px from the hero, but their combo reaches only 69–72 px. A hero standing 70–90 px away (just out of reach, or after rolling past) never saw a weapon swing, only slams and drinks. The Mayor Hall fight also started without the boss bar, with the boss walking back to its pre-cutscene spot and with the default leash. Fix: `BossLogic` keeps a melee boss inside its combo's reach and steps in when the combo is next in its pattern; `MayorHall._fight()` sets the hall-wide ranges, the new home and the bar, as `LabBoss` does. Test: `verify_masher` [4] (through the real intro; 3 FAIL on the old code).
 
 ## 7. Tests
 
@@ -153,17 +153,17 @@ Tuning on the way:
 Combat verifies, each run alone: `verify_combat_enemies`, `verify_souls_combat`, `verify_combat_flow`, `verify_difficulty`, `verify_enemy_variety`, `verify_lab_boss`, `verify_mayor_boss`, `verify_mayor_hall`, `verify_bosses`, `verify_flying_enemies`, `verify_hit_areas`, `verify_combat_stats`, `verify_combat_player`: all `RESULT: ALL PASS`.
 
 Tests changed to follow the new decisions:
-- `verify_combat_enemies` [8]: the crowd stands on one side of the hero, and a new check that the other side waits (D741); the waiting enemy is held in place during the hand-off. New [10] for lunges and the pounce.
+- `verify_combat_enemies` [8]: the crowd stands on one side of the hero, and a new check that the other side waits (D770); the waiting enemy is held in place during the hand-off. New [10] for lunges and the pounce.
 - `verify_souls_combat` [2], `verify_combat_flow` [2e]: the scripted series and bite pause the live AI's own lunge.
 - `verify_combat_flow` [2e]: the tank is placed after the wait; [2d'] puts the hero back on the floor (faster enemies walked under him and he landed on a bandit's head).
 - `verify_enemy_variety`: jackal elites' reach follows their size, and the foam check settles the wind-up lean first.
 
-Full suite (Linux, Godot 4.6.2, run once): `SUITE: 1 FAIL`, 119 PASS. The failure was `verify_enemy_stagger` (2 checks): after a stagger, the walk plays at the kind's stride tempo (D738, e.g. ×2.57 for the bandit), and the test expected ×1.0. The check now expects `pace × speed / stride_speed` for walk; re-run alone: `RESULT: ALL PASS`.
+Full suite (Linux, Godot 4.6.2, run once): `SUITE: 1 FAIL`, 119 PASS. The failure was `verify_enemy_stagger` (2 checks): after a stagger, the walk plays at the kind's stride tempo (D767, e.g. ×2.57 for the bandit), and the test expected ×1.0. The check now expects `pace × speed / stride_speed` for walk; re-run alone: `RESULT: ALL PASS`.
 
 ## 8. Files
 
 - Behaviour:
-  - `Scripts/Gameplay/Characters/Bosses/BossLogic.gd`, `Scripts/Gameplay/Scenes/MayorHall.gd` (B154);
+  - `Scripts/Gameplay/Characters/Bosses/BossLogic.gd`, `Scripts/Gameplay/Scenes/MayorHall.gd` (B159);
   - `Scripts/Gameplay/Components/EnemyLogic.gd` (lunge, pounce and latch, flank, side token);
   - `Scripts/Gameplay/Components/EnemyView.gd` (hop, latch pose, walk tempo);
   - `Scripts/Gameplay/DefaultEnemy.gd` (`stride_speed`);
@@ -177,5 +177,5 @@ Full suite (Linux, Godot 4.6.2, run once): `SUITE: 1 FAIL`, 119 PASS. The failur
 ## 9. Open points (no Q-ID blocks)
 
 - The road's first fight at level 1 is now sharp even for GOOD (17 % HP left; one of three full runs needed a second try earlier in tuning). The lever is the room (one jackal fewer), which belongs to the rooms routine, or the jackal's `lunge_chance`.
-- B154 is filed in `design/BUGS.md` as fixed (the prompt asked for it). The decision register is not edited (ROUTINE_RULES): D737–D741 are above for the integrator.
+- B159 is filed in `design/BUGS.md` as fixed (the prompt asked for it). The decision register is not edited (ROUTINE_RULES): D766–D770 are above for the integrator.
 - Numbers are provisional, for playtest.

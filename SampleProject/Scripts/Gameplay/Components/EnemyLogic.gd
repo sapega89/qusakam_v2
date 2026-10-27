@@ -116,7 +116,7 @@ var _shuffle_t: float = 0.0
 var _hits_waiting: int = 0
 var _back_off_from: float = 0.0
 
-## Випад (D739, EnemyStats.lunge_*): ривок з ударом за LUNGE_TIME с; не частіше, ніж раз на LUNGE_REST с; кинув кубик
+## Випад (D768, EnemyStats.lunge_*): ривок з ударом за LUNGE_TIME с; не частіше, ніж раз на LUNGE_REST с; кинув кубик
 ## і не вийшло — наступний кидок за LUNGE_REROLL с. Ривок спиняється за LUNGE_SHORT px до місця, де стояв герой
 ## (тіло героя спинить і раніше, D443), а хітбокс живий увесь ривок.
 const LUNGE_TIME := 0.2
@@ -128,7 +128,7 @@ const LUNGE_DY := 24.0
 var _lunge_rest: float = 0.0
 ## Іде випад (замах, ривок, відновлення).
 var lunging: bool = false
-## Стрибок шакала (D740): висота дуги спрайта, px; учепився — LATCH_BITE_AT с до укусу (стоп-кадр LATCH_HITSTOP с),
+## Стрибок шакала (D769): висота дуги спрайта, px; учепився — LATCH_BITE_AT с до укусу (стоп-кадр LATCH_HITSTOP с),
 ## LATCH_TIME с усього, тоді герой відштовхує його (SHOVE_TIME с пози) на SHOVE_PUSH px, шакал падає й LATCH_STUN с
 ## оговтується. Укус — LATCH_BITE шкоди удару. Учепитись може лише один шакал.
 const POUNCE_HOP := 34.0
@@ -141,7 +141,7 @@ const SHOVE_PUSH := 160.0
 const LATCH_STUN := 0.6
 static var _latched: EnemyLogic = null
 
-## Обхід (D741, Tails of Iron): група не стоїть у черзі з одного боку героя. Ворог, що чекає позаду іншого, а з того
+## Обхід (D770, Tails of Iron): група не стоїть у черзі з одного боку героя. Ворог, що чекає позаду іншого, а з того
 ## боку героя нікого, проходить крізь героя (тіла пропускають одне одного лише на цей прохід, як перекат героя, D443)
 ## швидким кроком FLANK_PACE на свою дистанцію з того боку. Один обхідник на раз; кожен — не частіше за FLANK_REST с
 ## (перший — через випадкові 0–FLANK_REST с після початку бою); прохід — не довше FLANK_TIME с.
@@ -368,7 +368,7 @@ func handle_attack_state(delta: float):
 		return
 	_hold_spacing(dx, delta)
 
-## Час обходу (D741): ворог чекає, з його боку героя є ще хтось ближчий до героя, з іншого — нікого, і той бік
+## Час обходу (D770): ворог чекає, з його боку героя є ще хтось ближчий до героя, з іншого — нікого, і той бік
 ## вільний (підлога, без стіни).
 func _flank_due(toward: int) -> bool:
 	if _flank_rest > 0.0 or enemy.flying or (is_instance_valid(_flanker) and _flanker != self):
@@ -410,7 +410,7 @@ func _start_flank(toward: int) -> void:
 	enemy.add_collision_exception_with(player)
 	player.add_collision_exception_with(enemy)
 
-## Прохід крізь героя на його інший бік (D741); дійшов (на engage_range з того боку), уперся чи вийшов час — кінець.
+## Прохід крізь героя на його інший бік (D770); дійшов (на engage_range з того боку), уперся чи вийшов час — кінець.
 func _flank_step(delta: float) -> void:
 	_flank_left -= delta
 	var target_x: float = player.global_position.x + flank_side * engage_range()
@@ -583,7 +583,7 @@ func perform_attack():
 	attack_ended.emit()
 	_decide_after_attack()
 
-## Час випаду (D739): ворог готовий, жетон вільний, герой на його підлозі на відстані lunge_from–lunge_to і є куди
+## Час випаду (D768): ворог готовий, жетон вільний, герой на його підлозі на відстані lunge_from–lunge_to і є куди
 ## ступити — і кубик lunge_chance випав.
 func _lunge_due(adx: float) -> bool:
 	var stats: EnemyStats = enemy.enemy_stats
@@ -598,8 +598,8 @@ func _lunge_due(adx: float) -> bool:
 		return false
 	return true
 
-## Випад (D739): короткий замах із підказкою lunge_tell, ривок з живим хітбоксом туди, де герой стояв у мить підказки,
-## поза відновлення. Шакал (pounce, D740) стрибає: влучив — учепився (_latch), а не вкусив з льоту.
+## Випад (D768): короткий замах із підказкою lunge_tell, ривок з живим хітбоксом туди, де герой стояв у мить підказки,
+## поза відновлення. Шакал (pounce, D769) стрибає: влучив — учепився (_latch), а не вкусив з льоту.
 func perform_lunge() -> void:
 	var stats: EnemyStats = enemy.enemy_stats
 	is_attacking = true
@@ -639,7 +639,7 @@ func perform_lunge() -> void:
 	attack_ended.emit()
 	_decide_after_attack()
 
-## Стрибок (D740): поки летить, торкнувся героя — перекат (невразливість) крізь нього проносить; блок відбиває шакала
+## Стрибок (D769): поки летить, торкнувся героя — перекат (невразливість) крізь нього проносить; блок відбиває шакала
 ## назад (жовтий — парирує); інакше вчепився. Уже вчепився інший — звичайний укус з льоту. true — учепився.
 func _pounce(direction: int) -> bool:
 	var left := LUNGE_TIME
@@ -671,7 +671,7 @@ func _pounce(direction: int) -> bool:
 func _touches_hero() -> bool:
 	return enemy.hitbox.overlaps_body(player)
 
-## Учепився (D740): не стан, а коротка сцена бою. Герой стоїть (PlayerCombat.hold, поза Hurt), шакал висить на ньому
+## Учепився (D769): не стан, а коротка сцена бою. Герой стоїть (PlayerCombat.hold, поза Hurt), шакал висить на ньому
 ## в позі укусу; за LATCH_BITE_AT с — укус зі стоп-кадром; на LATCH_TIME герой відштовхує його (поза Block), шакал
 ## відлітає на SHOVE_PUSH px, падає й оговтується LATCH_STUN с. Збили чи вбили шакала посеред — герой вільний.
 func _latch(direction: int) -> void:
@@ -735,7 +735,7 @@ static func max_attackers() -> int:
 	return int(EnemyVariety.data().pressure.max_attackers)
 
 ## Жетон вільний: замахуються менше за max_attackers() інших ворогів (або цей уже має жетон), і всі вони — з того
-## самого боку героя (D741): оточений герой мусить розвертатись, але б'ють його з одного боку за раз — блок рятує.
+## самого боку героя (D770): оточений герой мусить розвертатись, але б'ють його з одного боку за раз — блок рятує.
 func token_free() -> bool:
 	_attackers = _attackers.filter(func(l: EnemyLogic) -> bool: return is_instance_valid(l) and l.is_attacking)
 	if self in _attackers:

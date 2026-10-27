@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Знімок D737: розміри видів поруч із Кусакамом — три ряди (бандити, звірі, летючі), кожен вид у позі idle на
+## Знімок D766: розміри видів поруч із Кусакамом — три ряди (бандити, звірі, летючі), кожен вид у позі idle на
 ## підлозі DesertRoad (летючі — над нею). design/shots/enemy_sizes/<OUT або lineup>.png. Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_enemy_sizes.gd
 

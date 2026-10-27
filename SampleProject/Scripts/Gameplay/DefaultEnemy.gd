@@ -64,7 +64,7 @@ var attack_windup := 0.4
 var attack_active_time := 0.2
 ## D208: ривок під час удару (px) і броня від оглушення під час замаху.
 var lunge := 0.0
-## Під яку швидкість намальовано крок walk (EnemyStats.stride_speed, D738).
+## Під яку швидкість намальовано крок walk (EnemyStats.stride_speed, D767).
 var stride_speed := 70.0
 var super_armor := false
 var front_damage := 1.0
