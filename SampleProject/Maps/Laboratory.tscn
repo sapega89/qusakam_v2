@@ -28,7 +28,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x6"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="x8_chest"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/meditation_stone.tscn" id="ms_stone"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="meditation_art"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -403,9 +403,15 @@ script = ExtResource("5_save")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_Entrance" unique_id=786256651]
 shape = SubResource("CircleShape2D_save")
 
-[node name="MeditationStone" parent="SavePoint_Entrance" instance=ExtResource("ms_stone")]
-position = Vector2(0, 40)
-modulate = Color(0.7, 0.66, 0.84, 1)
+[node name="Spot" type="Sprite2D" parent="SavePoint_Entrance"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_Entrance"]
+position = Vector2(0, 22)
 
 [node name="SavePoint_PreBoss" type="Area2D" parent="." unique_id=554301916]
 position = Vector2(400, 1304)
@@ -414,9 +420,15 @@ script = ExtResource("5_save")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_PreBoss" unique_id=719468695]
 shape = SubResource("CircleShape2D_save")
 
-[node name="MeditationStone" parent="SavePoint_PreBoss" instance=ExtResource("ms_stone")]
-position = Vector2(0, 40)
-modulate = Color(0.7, 0.66, 0.84, 1)
+[node name="Spot" type="Sprite2D" parent="SavePoint_PreBoss"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("meditation_art")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_PreBoss"]
+position = Vector2(0, 22)
 
 [node name="Fight_Fly" type="Node2D" parent="." unique_id=1640100400 node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("7_spawner")
