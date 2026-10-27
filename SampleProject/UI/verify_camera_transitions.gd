@@ -1,6 +1,6 @@
 extends SceneTree
 
-## TIMEOUT: 2400
+## TIMEOUT: 900
 
 ## Камера на переходах між кімнатами (B153, Sapega 2026-10-26: «камера скаче багато де, передивись переходи між
 ## кімнатами»). Герой справжнім вводом проходить КОЖЕН прохід крізь край (MetSys borders ≥ 1) і КОЖНІ двері
@@ -460,9 +460,9 @@ func _cutscenes() -> void:
 	game.set_quest_flags(flags)
 	await _go("Canyon.tscn", Vector2(1000, 370))
 	var samples := await _record(func() -> void: Input.action_press(&"move_left"),
-			func() -> void: Input.action_release(&"move_left"), "DesertRoad.tscn")
+			func() -> void: Input.action_release(&"move_left"), "CaveUnderBridge.tscn")
 	Input.action_release(&"move_left")
-	_judge("Canyon descent cutscene → DesertRoad", samples, "DesertRoad.tscn")
+	_judge("Canyon descent cutscene → CaveUnderBridge (M7)", samples, "CaveUnderBridge.tscn")
 	game.set_quest_flag("lab_cells_cutscene_complete", false)  # після залу мера — сама кат-сцена прибуття
 	game.set_quest_flag("lab_acquaintance_complete", false)
 	await _go("MayorHall.tscn", Vector2.ZERO, false)

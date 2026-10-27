@@ -19,7 +19,9 @@ const FLY := "res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn"
 const OLD_VULTURE := "res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn"
 const STATS := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 ## Рівна підлога DesertRoad (y 384) до сюжетного бою — тут тест ставить своїх ворогів.
-const ARENA := Vector2(560, 368)
+## M7: на 200 px східніше, ніж було, — «герой далеко позаду птаха» (ARENA.x − 600) лишається на дорозі: на захід від
+## x 0 тепер вихід з печери, і герой пішов би з кімнати.
+const ARENA := Vector2(760, 368)
 const FLOOR_Y := 384.0
 const OUTDOORS := ["Canyon", "DesertRoad", "CityGates", "MesaClimb"]
 ## D558/D643: кажани живуть лише в льоху під брамою.
@@ -163,6 +165,8 @@ func _never_lands() -> void:
 	print("[2] A flier never lands")
 	for kind in ["vulture", "bat"]:
 		hero.global_position = Vector2(ARENA.x - 600.0, FLOOR_Y - 24.0)
+		# Птах з'являється, коли фізика вже бачить героя далеко: інакше зона виявлення застає його на старому місці.
+		for i in 2: await physics_frame
 		var home := Vector2(ARENA.x, 250.0)
 		var enemy: Node = _spawn(VULTURE if kind == "vulture" else BAT, kind, home)
 		await physics_frame

@@ -17,6 +17,10 @@
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
+[node name="Sky" type="Polygon2D" parent="Back"]
+color = Color(0.62, 0.78, 0.9, 1)
+polygon = PackedVector2Array(-864, -480, 3456, -480, 3456, 480, -864, 480)
+
 [node name="Far" type="Parallax2D" parent="Back"]
 scroll_scale = Vector2(0.4, 1)
 repeat_size = Vector2(864, 0)
