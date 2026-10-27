@@ -38,7 +38,7 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 
 **Burnt village (M6a-3, `785e7f49`)** is made, not wired: after `world-rooms`' Canyon slice merges (it may touch Village.tscn), swap the four Village textures for `_burnt`, open the regions (Back 0,0,576,324; Houses 0,0,576,276; offsets 0), darken the Backdrop modulate ~(0.72,0.66,0.68), green palms/banners/butterflies/larks/pollen → charred/embers. The village is burnt in every state the game uses.
 
-**D840 correction at merge:** `enemy-scaling` was briefed with full scaling (max(room, hero + offset)); Sapega then asked for partial scaling and per-zone offsets (D840's later sentences). When it reports, change its single formula to room + zone offset + ⌊(hero − room) × 0.5⌋ (one constant) before merging, and re-run verify_enemy_scaling / verify_difficulty.
+**D840 partial scaling:** done in the cloud by `scaling-partial` (`trig` created 2026-10-27 23:20 UTC, waits for `enemy-scaling`); merge order enemy-scaling → scaling-partial → hero-points-only (the last two both branch from enemy-scaling; resolve verify_difficulty by re-running it).
 
 ## 3. Rules learned today
 - **Tests:** the full suite runs 4 at a time with its own user:// per test, `## SERIAL` real-time tests last, `## MANUAL`
