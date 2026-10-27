@@ -47,8 +47,8 @@ them, D554). Sprites (a butterfly, a moth, a firefly glow) are art-lane work; th
 
 | Room | What goes in front | Status |
 |---|---|---|
-| Mayor Hall (arena) | a chandelier and banners at the top, columns at the sides | ⬜ |
-| Bandit Camp (arena) | tent ropes and stakes at the sides, a dark crate low | ⬜ |
+| Mayor Hall (arena) | a chandelier and banners at the top, columns at the sides | ✅ `a927d524` |
+| Bandit Camp (arena) | tent ropes and stakes at the sides, a dark crate low | ✅ `a927d524` (a stake with two guy ropes, A-shape) |
 
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 
