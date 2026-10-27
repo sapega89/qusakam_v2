@@ -17,7 +17,7 @@ anchors_preset = 0
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 544.0
-offset_bottom = 222.0
+offset_bottom = 244.0
 mouse_filter = 2
 script = ExtResource("1_vitals")
 
@@ -26,14 +26,14 @@ layout_mode = 0
 offset_left = 0
 offset_top = 14
 offset_right = 470
-offset_bottom = 136
+offset_bottom = 158
 mouse_filter = 2
 texture = ExtResource("2_plate")
 
 [node name="PortraitMask" type="Polygon2D" parent="."]
 unique_name_in_owner = true
 clip_children = 2
-position = Vector2(14, 29)
+position = Vector2(14, 40)
 polygon = PackedVector2Array(26, 2, 78, 2, 102, 46, 78, 90, 26, 90, 2, 46)
 
 [node name="Portrait" type="TextureRect" parent="PortraitMask"]
@@ -51,9 +51,9 @@ stretch_mode = 6
 [node name="Ring" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 14
-offset_top = 29
+offset_top = 40
 offset_right = 118
-offset_bottom = 121
+offset_bottom = 132
 mouse_filter = 2
 texture = ExtResource("3_ring")
 
@@ -104,9 +104,9 @@ mouse_filter = 2
 [node name="Label" type="Label" parent="VitalsBars/HP"]
 layout_mode = 0
 offset_left = 134
-offset_top = 62
+offset_top = 56
 offset_right = 168
-offset_bottom = 96
+offset_bottom = 90
 mouse_filter = 2
 theme_type_variation = &"VitalsLabel"
 text = "HP"
@@ -116,9 +116,9 @@ vertical_alignment = 1
 [node name="Bar" type="ProgressBar" parent="VitalsBars/HP"]
 layout_mode = 0
 offset_left = 168
-offset_top = 72
+offset_top = 66
 offset_right = 368
-offset_bottom = 86
+offset_bottom = 80
 mouse_filter = 2
 theme_type_variation = &"HudHpBar"
 show_percentage = false
@@ -126,9 +126,9 @@ show_percentage = false
 [node name="Value" type="Label" parent="VitalsBars/HP"]
 layout_mode = 0
 offset_left = 340
-offset_top = 60
+offset_top = 54
 offset_right = 442
-offset_bottom = 98
+offset_bottom = 92
 mouse_filter = 2
 theme_type_variation = &"VitalsValue"
 text = "— / —"
@@ -143,9 +143,9 @@ mouse_filter = 2
 [node name="Label" type="Label" parent="VitalsBars/SP"]
 layout_mode = 0
 offset_left = 134
-offset_top = 86
+offset_top = 78
 offset_right = 168
-offset_bottom = 120
+offset_bottom = 112
 mouse_filter = 2
 theme_type_variation = &"VitalsLabel"
 text = "SP"
@@ -155,9 +155,9 @@ vertical_alignment = 1
 [node name="Bar" type="ProgressBar" parent="VitalsBars/SP"]
 layout_mode = 0
 offset_left = 168
-offset_top = 96
+offset_top = 88
 offset_right = 368
-offset_bottom = 110
+offset_bottom = 102
 mouse_filter = 2
 theme_type_variation = &"HudSpBar"
 show_percentage = false
@@ -165,9 +165,48 @@ show_percentage = false
 [node name="Value" type="Label" parent="VitalsBars/SP"]
 layout_mode = 0
 offset_left = 340
-offset_top = 84
+offset_top = 76
 offset_right = 442
-offset_bottom = 122
+offset_bottom = 114
+mouse_filter = 2
+theme_type_variation = &"VitalsValue"
+text = "— / —"
+horizontal_alignment = 2
+vertical_alignment = 1
+auto_translate_mode = 2
+
+[node name="ST" type="Control" parent="VitalsBars"]
+layout_mode = 0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="VitalsBars/ST"]
+layout_mode = 0
+offset_left = 134
+offset_top = 100
+offset_right = 168
+offset_bottom = 134
+mouse_filter = 2
+theme_type_variation = &"VitalsLabel"
+text = "ST"
+horizontal_alignment = 0
+vertical_alignment = 1
+
+[node name="Bar" type="ProgressBar" parent="VitalsBars/ST"]
+layout_mode = 0
+offset_left = 168
+offset_top = 110
+offset_right = 368
+offset_bottom = 124
+mouse_filter = 2
+theme_type_variation = &"HudStBar"
+show_percentage = false
+
+[node name="Value" type="Label" parent="VitalsBars/ST"]
+layout_mode = 0
+offset_left = 340
+offset_top = 98
+offset_right = 442
+offset_bottom = 136
 mouse_filter = 2
 theme_type_variation = &"VitalsValue"
 text = "— / —"
@@ -178,9 +217,9 @@ auto_translate_mode = 2
 [node name="LevelDiamond" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 51
-offset_top = 107
+offset_top = 118
 offset_right = 81
-offset_bottom = 137
+offset_bottom = 148
 mouse_filter = 2
 texture = ExtResource("4_level")
 
@@ -201,9 +240,9 @@ auto_translate_mode = 2
 [node name="Curl" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 462
-offset_top = 53
+offset_top = 64
 offset_right = 506
-offset_bottom = 97
+offset_bottom = 108
 mouse_filter = 2
 texture = ExtResource("5_curl")
 flip_h = true
@@ -211,9 +250,9 @@ flip_h = true
 [node name="AssistChip" type="Control" parent="."]
 layout_mode = 0
 offset_left = 134
-offset_top = 136
+offset_top = 158
 offset_right = 186
-offset_bottom = 182
+offset_bottom = 204
 mouse_filter = 2
 unique_name_in_owner = true
 script = ExtResource("9_assist")
@@ -291,9 +330,9 @@ auto_translate_mode = 2
 [node name="PotionChip" type="Control" parent="."]
 layout_mode = 0
 offset_left = 200
-offset_top = 136
+offset_top = 158
 offset_right = 252
-offset_bottom = 182
+offset_bottom = 204
 mouse_filter = 2
 unique_name_in_owner = true
 

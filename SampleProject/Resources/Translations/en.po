@@ -2755,6 +2755,9 @@ msgstr "Potions ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Drink it in play with the quick slot (%s)"
 
+msgid "ST"
+msgstr "ST"
+
 msgid "MAX"
 msgstr "MAX"
 
@@ -3060,8 +3063,8 @@ msgstr "A parry heals 5% of your max HP. [DRAFT]"
 msgid "Sand Runner's Ring [DRAFT]"
 msgstr "Sand Runner's Ring [DRAFT]"
 
-msgid "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
-msgstr "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
+msgid "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
+msgstr "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
 
 msgid "Hermit's Amulet [DRAFT]"
 msgstr "Hermit's Amulet [DRAFT]"

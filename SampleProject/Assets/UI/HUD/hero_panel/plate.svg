@@ -1,8 +1,8 @@
-<svg width="470" height="122" viewBox="0 0 470 122" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M2 8H444L466 61L444 114H2V8Z" fill="url(#plate_fill)" fill-opacity="0.94" stroke="#D4AF37" stroke-width="2"/>
-<path d="M8 14H438L456 61L438 108H8V14Z" stroke="#4A4552"/>
+<svg width="470" height="144" viewBox="0 0 470 144" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 8H444L466 72L444 136H2V8Z" fill="url(#plate_fill)" fill-opacity="0.94" stroke="#D4AF37" stroke-width="2"/>
+<path d="M8 14H438L456 72L438 130H8V14Z" stroke="#4A4552"/>
 <defs>
-<linearGradient id="plate_fill" x1="2" y1="8" x2="2" y2="114" gradientUnits="userSpaceOnUse">
+<linearGradient id="plate_fill" x1="2" y1="8" x2="2" y2="136" gradientUnits="userSpaceOnUse">
 <stop stop-color="#1D1D27"/>
 <stop offset="1" stop-color="#0B0B10"/>
 </linearGradient>

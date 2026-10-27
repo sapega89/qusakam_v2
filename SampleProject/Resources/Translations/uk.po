@@ -2757,6 +2757,9 @@ msgstr "Зілля ×%d"
 msgid "Drink it in play with the quick slot (%s)"
 msgstr "Випийте його в грі зі швидкого слота (%s)"
 
+msgid "ST"
+msgstr "ВТ"
+
 msgid "MAX"
 msgstr "МАКС"
 
@@ -3064,8 +3067,8 @@ msgstr "Парирування лікує 5% вашого макс. HP. [ЧЕР�
 msgid "Sand Runner's Ring [DRAFT]"
 msgstr "Перстень піщаного бігуна [ЧЕРНЕТКА]"
 
-msgid "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]"
-msgstr "Ви не можете блокувати чи парирувати, зате перекат триває на 30% довше. [ЧЕРНЕТКА]"
+msgid "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]"
+msgstr "Ви не можете блокувати чи парирувати, зате перекат триває на 30% довше й коштує на 30% менше витривалості. [ЧЕРНЕТКА]"
 
 msgid "Hermit's Amulet [DRAFT]"
 msgstr "Амулет відлюдника [ЧЕРНЕТКА]"

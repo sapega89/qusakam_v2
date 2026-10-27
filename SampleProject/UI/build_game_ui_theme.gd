@@ -686,6 +686,13 @@ func _setup_panels(theme: Theme) -> void:
 		theme.set_type_variation(spec[0], "ProgressBar")
 		theme.set_stylebox("background", spec[0], _box(UITokens.SURFACE, UITokens.SURFACE, 0, 0, 0))
 		theme.set_stylebox("fill", spec[0], _box(spec[1], spec[1], 0, 0, 0))
+	# D777: шкала стійкості ворога — тонка, на темному тлі з рамкою, як смуги HUD.
+	theme.set_type_variation("PoiseBar", "ProgressBar")
+	theme.set_stylebox("background", "PoiseBar", _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0))
+	var poise_fill := _box(UITokens.POISE_FILL, UITokens.POISE_FILL, 0, 0, 0)
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		poise_fill.set_expand_margin(side, -UITokens.BORDER_WIDTH)
+	theme.set_stylebox("fill", "PoiseBar", poise_fill)
 	# Невидима кнопка поверх картки: вибір цілі (D127). Видно лише фокус / наведення.
 	theme.set_type_variation("CardSelect", "Button")
 	var none := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0, 0)
@@ -1318,7 +1325,7 @@ func _save_slots(theme: Theme) -> void:
 # ── HUD v2: смуги HP / SP і XP на всю ширину, пігулка зілля (combat_hud_mapping → HUD v2) ──
 
 func _hud_v2(theme: Theme) -> void:
-	for spec in [["HudHpBar", UITokens.HP_FILL], ["HudSpBar", UITokens.SP_FILL]]:
+	for spec in [["HudHpBar", UITokens.HP_FILL], ["HudSpBar", UITokens.SP_FILL], ["HudStBar", UITokens.STAMINA_FILL]]:
 		theme.set_type_variation(spec[0], "ProgressBar")
 		var track := _box(UITokens.HUD_BAR_BG, UITokens.HUD_RIM, UITokens.BORDER_WIDTH, 0, 0)
 		theme.set_stylebox("background", spec[0], track)

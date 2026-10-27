@@ -28,11 +28,11 @@ func take_damage(amount: int, source: Node = null, critical: bool = false) -> vo
 		EventBus.enemy_shield_blocked.emit(self, shield.global_position)
 
 
-func take_poise(amount: int, from_x: float) -> void:
+func take_poise(amount: float, from_x: float, source: StringName = &"light") -> void:
 	if _blocked_hit:
 		_blocked_hit = false
 		return
-	super.take_poise(amount, from_x)
+	super.take_poise(amount, from_x, source)
 
 
 func _from_front(source: Node) -> bool:

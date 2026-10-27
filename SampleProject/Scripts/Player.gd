@@ -14,6 +14,8 @@ const MAX_SKILL_REDUCTION := 0.75
 const CombatRolls := preload("res://SampleProject/Scripts/Combat/CombatRolls.gd")
 const QuickPotion := preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
 const SkillSlotInput := preload("res://SampleProject/Scripts/UI/skill_slot_input.gd")
+## Слабкий блок (D537, D776): удар, прийнятий на блок з порожньою витривалістю, проходить з такою часткою шкоди і збиває.
+const WEAK_BLOCK_DAMAGE := 0.5
 
 var reset_position: Vector2
 # Indicates that the player has an event happening and can't be controlled.
@@ -38,6 +40,8 @@ var defeat_handler: Callable
 @onready var combat: PlayerCombat = $PlayerCombat
 @onready var mover: PlayerMover = $PlayerMover
 @onready var weapon_view: Node2D = $WeaponMount
+## Витривалість (D776, PlayerStamina.gd).
+@onready var stamina: Node = $PlayerStamina
 ## Бібліотека кадрів зброї, з якої зараз грають анімації тіла (&"" — базові кадри), BACKLOG 42.
 var _body_library: StringName = &""
 ## Буфер перекату (D456, D504): натиснутий завчасно чекає PlayerCombat.INPUT_BUFFER с — і крізь збій.
@@ -196,11 +200,13 @@ func _physics_process(delta: float) -> void:
 
 ## Перекат (D200); на відновленні удару — зриває його (D456, D504). Натиснутий завчасно (удар, збій, каст, ривки ще
 ## не повернулись, другий ривок ще рано) — чекає PlayerCombat.INPUT_BUFFER с у _physics_process і починається, щойно
-## можна. Витривалості немає (D551).
+## можна. Виснажений герой не котиться (D776): спалах шкали й звук, буфер скинуто.
 func _try_roll() -> void:
 	if not mover.can_roll() or (combat.owns_animation() and not combat.can_cancel_attack()):
 		return
 	_roll_buffer = 0.0
+	if not stamina.try_spend(stamina.roll_cost()):
+		return
 	if combat.can_cancel_attack():
 		combat.cancel_attack()
 	mover.start_roll()
@@ -349,6 +355,7 @@ func kill():
 	is_dead = false
 	is_dying = false
 	current_health = Max_Health
+	stamina.refill()
 	health_changed.emit(current_health, Max_Health, true)
 
 	# Викликаємо load_room тільки якщо це не призведе до циклу
@@ -511,9 +518,14 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 		return
 	if guard == &"block":
 		EventBus.player_blocked.emit(source)
+		# D776: прийнятий удар коштує витривалості; з порожньою блок слабкий — пів шкоди і збій
+		var weak: bool = stamina.is_empty()
+		stamina.spend(stamina.COST_BLOCK)
 		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
-			_heal_on_block(damage)
-			return
+			if not weak:
+				_heal_on_block(damage)
+				return
+			damage = roundi(damage * WEAK_BLOCK_DAMAGE)
 	var dealt := mitigated_damage(damage)
 	if dealt == 0:
 		EventBus.player_evaded.emit(source)

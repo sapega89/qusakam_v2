@@ -1,6 +1,7 @@
 extends RefCounted
 
-## Вага броні (D592; без витривалості — D551): легка — довший перекат, важка — більше захисту й коротший перекат.
+## Вага броні (D592): легка — довший і дешевший перекат, швидша витривалість; важка — більше захисту, коротший і
+## дорожчий перекат, повільніша витривалість (D776, витривалість повернуто).
 ## Клас задає вдягнений обладунок (слот body, items.json "weight"); без обладунку — armour_weight.json "unarmoured".
 ## Без автозавантажень: скрипт тягне GameCharacter, а його компілюють і тести до появи автозавантажень.
 ##   const ArmourWeight = preload("res://SampleProject/Scripts/Systems/ArmourWeight.gd")
@@ -33,3 +34,13 @@ static func roll_length_of(item: Dictionary) -> float:
 ## Захист, що додає клас ваги обладунку [param item] (GameCharacter.get_equipment_stats).
 static func defense_of(item: Dictionary) -> int:
 	return int(row(class_of(item)).defense)
+
+
+## Частка, на яку перекат дорожчий за витривалістю (мінус — дешевший), з обладунком [param item] (D776).
+static func roll_stamina_of(item: Dictionary) -> float:
+	return float(row(class_of(item)).roll_stamina)
+
+
+## Частка, на яку витривалість відновлюється швидше (мінус — повільніше), з обладунком [param item] (D776).
+static func stamina_regen_of(item: Dictionary) -> float:
+	return float(row(class_of(item)).stamina_regen)
