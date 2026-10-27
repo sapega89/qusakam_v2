@@ -51,6 +51,9 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | integrate-28, hero-shadow | merges side-stories, hero-feet+shadow, perf-check, depth-film, depth-critics, feature/backlog; files the pending D/B (atmosphere, gates, Death frames, depth B rows); then fast-forward `feature/backlog` |
 | fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | A9: every effect filmed in the game → GIFs + sheets in `design/shots/fx/` for Sapega's notes |
 | scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | A25: size chart data, a probe of every object's drawn height, the chart picture `design/shots/scale_chart.png` — it may have started on the old draft (≈70 px, ranges): on merge, set `world_scale.json` to the plan's exact table (H = 64 art px, one size per category, ±1 px) and re-run the probe and `scale_chart.py` |
+| skills-v2-data | `trig_01Pq52MBQ8GTvV5YddP6xi1J` | — | S1 slice 1: the 33 rows, 5 passives, no shield gear check, JP caps |
+| skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | S1 slice 2: the Skills screen at 19 a tab |
+| skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | S1 slice 3: dash and leap-slam skills; then create ranged → stance (+ the shield spell and the glass shield) → control |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
