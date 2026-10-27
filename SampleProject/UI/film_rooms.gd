@@ -56,6 +56,7 @@ func _initialize() -> void:
 	await _drain()
 	enemy_script = load("res://SampleProject/Scripts/Gameplay/DefaultEnemy.gd")  # не class_name: autoload ще нема при компіляції
 	physics_frame.connect(_freeze_enemies)
+	node_added.connect(_mute_trigger)
 	var arrival: NodePath = _arrival(MAPS % room_name)
 	await game.teleport_to_room(MAPS % room_name, arrival)
 	for i in 30: await physics_frame
@@ -156,6 +157,13 @@ func _freeze_enemies() -> void:
 		dm.current_dialogue_player.accept()
 
 
+## Лише у фільмі: зони кімнати (сюжетні тригери, розмови, двері, точки збереження) не реагують на героя — кат-сцена
+## чи діалог забрали б у нього керування посеред проходу. Вмикаються ще до _ready кімнати.
+func _mute_trigger(node: Node) -> void:
+	if node is Area2D and game.is_ancestor_of(node) and not game.player.is_ancestor_of(node):
+		(node as Area2D).monitoring = false
+
+
 func _drain() -> void:
 	for i in 400:
 		if not dm.is_dialogue_active():
@@ -204,7 +212,16 @@ func _collect_planes() -> void:
 		if not by_root.has(plane_root):
 			# Порядок малювання: z, потім порядок у дереві.
 			var plane := {"node": plane_root, "items": [] as Array[CanvasItem], "kind": _kind(plane_root, camera),
-					"z": _abs_z(plane_root), "order": order[plane_root]}
+					"z": _abs_z(plane_root), "order": order[plane_root],
+					"path": str(game.map.get_path_to(plane_root)) if game.map.is_ancestor_of(plane_root)
+							else str(game.get_path_to(plane_root))}
+			if plane_root is Parallax2D:
+				# Знято зараз: до кінця фільму вузол може звільнитися (ефект).
+				var px: Parallax2D = plane_root
+				var scale: Vector2 = px.get_global_transform_with_canvas().get_scale()
+				plane["parallax"] = {"scroll_scale": [px.scroll_scale.x, px.scroll_scale.y],
+						"autoscroll": [px.autoscroll.x, px.autoscroll.y], "repeat_size": [px.repeat_size.x, px.repeat_size.y],
+						"period": [absf(px.repeat_size.x * scale.x), absf(px.repeat_size.y * scale.y)]}
 			by_root[plane_root] = plane
 			planes.append(plane)
 		(by_root[plane_root].items as Array[CanvasItem]).append(node as CanvasItem)
@@ -281,6 +298,9 @@ func _sample() -> void:
 	var feet: Vector2 = _feet(player)
 	var pos: Array = []
 	for plane: Dictionary in planes:
+		if not is_instance_valid(plane.node):  # план, що зник сам (ефект) — стоїть, де був
+			pos.append(samples[-1].planes[pos.size()])
+			continue
 		var o: Vector2 = (plane.node as CanvasItem).get_global_transform_with_canvas().origin
 		pos.append([o.x, o.y])
 	var gap: Variant = null
@@ -313,6 +333,7 @@ func _solo_pass() -> Dictionary:
 	for node: Node in _all(game):
 		if node is CanvasItem and not _in_ui(node):
 			everything.append(node as CanvasItem)
+	# Вузли, що зникають самі (ефекти, спливні числа), за час соло можуть звільнитися — їх пропускаємо.
 	var saved_mod: Array[Color] = []
 	var saved_vis: Array[bool] = []
 	for item: CanvasItem in everything:
@@ -338,13 +359,21 @@ func _solo_pass() -> Dictionary:
 			hero_items.append(node as CanvasItem)
 	# Останній «план» — сам герой: де насправді його намальовані ступні відносно колізії.
 	for p: int in planes.size() + 1:
+		if p < planes.size() and not is_instance_valid(planes[p].node):
+			var none := PackedByteArray()
+			none.resize(STATS_SIZE.x * STATS_SIZE.y)
+			out[p] = {"coverage": 0.0, "mask": none, "gone": true}
+			continue
 		var plane_root: CanvasItem = planes[p].node if p < planes.size() else player
 		var mine: Dictionary = {}
 		var items: Array = planes[p].items if p < planes.size() else hero_items
-		for item: CanvasItem in items:
-			mine[item] = true
+		for item: Variant in items:
+			if is_instance_valid(item):
+				mine[item] = true
 		for i: int in everything.size():
 			var item: CanvasItem = everything[i]
+			if not is_instance_valid(item):
+				continue
 			item.self_modulate = saved_mod[i]
 			item.visible = saved_vis[i]
 			if mine.has(item):
@@ -361,8 +390,9 @@ func _solo_pass() -> Dictionary:
 			out[p] = _stats(black, white, feet_screen)
 	_occlude(out)
 	for i: int in everything.size():
-		everything[i].self_modulate = saved_mod[i]
-		everything[i].visible = saved_vis[i]
+		if is_instance_valid(everything[i]):
+			everything[i].self_modulate = saved_mod[i]
+			everything[i].visible = saved_vis[i]
 	RenderingServer.set_default_clear_color(old_clear)
 	world_env.environment = env
 	await process_frame
@@ -483,19 +513,15 @@ func _write(info: Dictionary, screens: Dictionary) -> void:
 	var layers: Array = []
 	for p: int in planes.size():
 		var plane: Dictionary = planes[p]
-		var node: CanvasItem = plane.node
-		var entry := {"path": str(game.map.get_path_to(node)) if game.map.is_ancestor_of(node) else str(game.get_path_to(node)),
-				"kind": plane.kind, "z": plane.z, "order": plane.order, "items": (plane.items as Array).size(),
+		var entry := {"path": plane.path, "kind": plane.kind, "z": plane.z, "order": plane.order, "items": (plane.items as Array).size(),
 				"speed_x": _speed(film, p, 0, zoom), "speed_y": _speed(film, p, 1, zoom), "screens": {}}
 		if plane.kind == "camera":
 			# Вузол камери — ціль, а не центр кадру (згладжування); пил на ній летить у світових координатах.
 			entry.speed_x = null
 			entry.speed_y = null
-		if node is Parallax2D:
-			var px: Parallax2D = node
-			entry["scroll_scale"] = [px.scroll_scale.x, px.scroll_scale.y]
-			entry["autoscroll"] = [px.autoscroll.x, px.autoscroll.y]
-			entry["repeat_size"] = [px.repeat_size.x, px.repeat_size.y]
+		if plane.has("parallax"):
+			for key: String in ["scroll_scale", "autoscroll", "repeat_size"]:
+				entry[key] = plane.parallax[key]
 		for spot: String in screens:
 			entry.screens[spot] = screens[spot][p]
 		layers.append(entry)
@@ -536,13 +562,11 @@ func _speed(film: Array[Dictionary], p: int, axis: int, zoom: float) -> Variant:
 		cams.append(float(s.cam[axis]))
 	if cams.max() - cams.min() < 24.0:
 		return null
-	var node: CanvasItem = planes[p].node
 	var period: float = 0.0
 	var drift: bool = false
-	if node is Parallax2D:
-		var px: Parallax2D = node
-		period = absf(px.repeat_size[axis] * node.get_global_transform_with_canvas().get_scale()[axis])
-		drift = px.autoscroll[axis] != 0.0
+	if planes[p].has("parallax"):
+		period = planes[p].parallax.period[axis]
+		drift = planes[p].parallax.autoscroll[axis] != 0.0
 	var k: int = 3 if drift else 2
 	var m: Array = []
 	for i: int in k:
