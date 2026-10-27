@@ -1,0 +1,3 @@
+// [DRAFT] M7 — the way up from the lizard caves onto the road, until the lever in the caves opens it (gates.json → lizard_caves_shortcut).
+say|KUSAKAM|Bars. Behind them a dark passage runs down, under the road. They must open from the other side.
+exit|

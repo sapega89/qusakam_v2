@@ -19,6 +19,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="rd_bat"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="rd_spores"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="m7_2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/lever.tscn" id="m7_3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -224,3 +227,27 @@ position = Vector2(600, 130)
 
 [node name="Bat2" parent="FrontDark" instance=ExtResource("rd_bat")]
 position = Vector2(1400, 130)
+
+[node name="AqueductDoorEntrance" parent="." instance=ExtResource("m7_1")]
+position = Vector2(300, 416)
+texture = ExtResource("m7_2")
+
+[node name="AqueductDoor" parent="." instance=ExtResource("r3")]
+position = Vector2(291, 362)
+target_room = "res://SampleProject/Maps/Aqueduct.tscn"
+arrival = NodePath("CellarDoor")
+gate_id = "aqueduct_cellar"
+
+[node name="CisternDoorEntrance" parent="." instance=ExtResource("m7_1")]
+position = Vector2(1450, 416)
+texture = ExtResource("m7_2")
+
+[node name="CisternDoor" parent="." instance=ExtResource("r3")]
+position = Vector2(1441, 362)
+target_room = "res://SampleProject/Maps/Cistern.tscn"
+arrival = NodePath("CellarDoor")
+gate_id = "cistern_cellar"
+
+[node name="AqueductLever" parent="." instance=ExtResource("m7_3")]
+position = Vector2(420, 416)
+sets_flag = "aqueduct_cellar_open"

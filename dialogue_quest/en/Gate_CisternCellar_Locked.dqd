@@ -1,0 +1,3 @@
+// [DRAFT] M7 — the grate between the gatehouse cellar and the cistern, until it is opened from the cistern below (gates.json → cistern_cellar).
+say|KUSAKAM|A grate in the wall, and stale water smells behind it. It only opens from the other side.
+exit|

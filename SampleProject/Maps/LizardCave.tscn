@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_fireflies.tscn" id="rd_fireflies"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="m7_2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -244,3 +246,12 @@ position = Vector2(1440, 376)
 
 [node name="CollisionShape2D" parent="SecretArea_Shrine" index="0"]
 shape = SubResource("RectangleShape2D_SecretArea_Shrine")
+
+[node name="DeepCavesDoorEntrance" parent="." instance=ExtResource("m7_1")]
+position = Vector2(150, 416)
+texture = ExtResource("m7_2")
+
+[node name="DeepCavesDoor" parent="." instance=ExtResource("r3")]
+position = Vector2(141, 362)
+target_room = "res://SampleProject/Maps/LizardCaves.tscn"
+arrival = NodePath("ShrineDoor")

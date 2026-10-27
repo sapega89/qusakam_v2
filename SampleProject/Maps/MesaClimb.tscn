@@ -446,3 +446,12 @@ position = Vector2(700, 150)
 
 [node name="CollisionShape2D" parent="SecretArea_MesaTop" index="0"]
 shape = SubResource("RectangleShape2D_SecretArea_MesaTop")
+
+[node name="MesaTopDoorEntrance" parent="." instance=ExtResource("x1")]
+position = Vector2(480, 180)
+texture = ExtResource("x2")
+
+[node name="MesaTopDoor" parent="." instance=ExtResource("r3")]
+position = Vector2(473.25, 95.25)
+target_room = "res://SampleProject/Maps/MesaTop.tscn"
+arrival = NodePath("ClimbDoor")

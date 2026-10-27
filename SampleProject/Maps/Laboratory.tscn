@@ -876,3 +876,21 @@ position = Vector2(655, 960)
 
 [node name="Pillar3" parent="FrontDark" instance=ExtResource("x5")]
 position = Vector2(1015, 1440)
+
+[node name="StairsDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(330, 384)
+texture = ExtResource("x3")
+
+[node name="StairsDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(321.75, 309.75)
+target_room = "res://SampleProject/Maps/AlchemistCorridor.tscn"
+arrival = NodePath("StairsDoor")
+
+[node name="DrainDoorEntrance" parent="." instance=ExtResource("x2")]
+position = Vector2(1200, 1344)
+texture = ExtResource("x3")
+
+[node name="DrainDoor" parent="." instance=ExtResource("x1")]
+position = Vector2(1191.75, 1269.75)
+target_room = "res://SampleProject/Maps/CollapsedDrain.tscn"
+arrival = NodePath("GrateDoor")

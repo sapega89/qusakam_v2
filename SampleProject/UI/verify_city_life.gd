@@ -115,9 +115,10 @@ func _initialize() -> void:
 	var blockers := {}
 	for npc: Node in city.find_children("*", "NpcBase", true, false):
 		blockers[npc.name] = (npc as Node2D).global_position.x
-	for node_name: String in ["GuardLeft", "GuardRight", "SavePoint", "ForgeDoor", "MayorHallDoor", "Anvil"]:
+	# Вартові й двері палацу тепер на площі палацу (M7); на ринку — двері на дахи, на горище й люк у цистерну.
+	for node_name: String in ["SavePoint", "ForgeDoor", "Anvil", "RooftopsDoor", "TavernAtticDoor", "CisternDoor"]:
 		blockers[node_name] = (city.get_node(node_name) as Node2D).global_position.x
-	ck(blockers.size() >= 10, "%d doors / NPCs to keep clear of" % blockers.size())
+	ck(blockers.size() >= 9, "%d doors / NPCs to keep clear of" % blockers.size())
 	var props: Array[Node] = city.get_node(^"Props").get_children()
 	for w: Node2D in walkers:
 		var stops: PackedFloat32Array = w.get(&"stops")

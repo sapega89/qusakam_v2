@@ -3657,3 +3657,111 @@ msgstr "My humble place holds gold for everyone who leads me out of here."
 msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
 msgstr "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
 
+# [DRAFT] M7: rooms of the region graphs (LocationMap.room_title — the scene name in words), the lever, the new keys.
+msgid "Mountain Path"
+msgstr "Mountain Path"
+
+msgid "Scree Slide"
+msgstr "Scree Slide"
+
+msgid "Stream Gorge"
+msgstr "Stream Gorge"
+
+msgid "Rock Ledges"
+msgstr "Rock Ledges"
+
+msgid "Cave Under Bridge"
+msgstr "Cave Under The Bridge"
+
+msgid "Cave Exit"
+msgstr "Cave Exit"
+
+msgid "Canyon Floor"
+msgstr "Canyon Floor"
+
+msgid "Smugglers Stash"
+msgstr "Smugglers' Stash"
+
+msgid "Lizard Caves"
+msgstr "Lizard Caves"
+
+msgid "Mesa Top"
+msgstr "Mesa Top"
+
+msgid "Zahra Rest"
+msgstr "Zahra's Rest"
+
+msgid "Dunes"
+msgstr "Dunes"
+
+msgid "Chasm"
+msgstr "Chasm"
+
+msgid "Dry Riverbed"
+msgstr "Dry Riverbed"
+
+msgid "Aqueduct"
+msgstr "Aqueduct"
+
+msgid "Old Ruins"
+msgstr "Old Ruins"
+
+msgid "Gate Approach"
+msgstr "Gate Approach"
+
+msgid "Craft Quarter"
+msgstr "Craft Quarter"
+
+msgid "Palace Square"
+msgstr "Palace Square"
+
+msgid "Rooftops"
+msgstr "Rooftops"
+
+msgid "Pigeon Loft"
+msgstr "Pigeon Loft"
+
+msgid "Tavern Attic"
+msgstr "Tavern Attic"
+
+msgid "Mayor Archive"
+msgstr "Mayor's Archive"
+
+msgid "Cistern"
+msgstr "Cistern"
+
+msgid "Cistern Stash"
+msgstr "Cistern Stash"
+
+msgid "Alchemist Corridor"
+msgstr "Alchemist's Corridor"
+
+msgid "Alchemist Store"
+msgstr "Alchemist's Storeroom"
+
+msgid "Malik Stash"
+msgstr "Malik's Stash"
+
+msgid "Collapsed Drain"
+msgstr "Collapsed Drain"
+
+msgid "Pull"
+msgstr "Pull"
+
+msgid "Chief's Iron Key"
+msgstr "Chief's Iron Key"
+
+msgid "A long iron key from the bandit chief's belt, green with old water. It opens the grate over the well at Zahra's Rest."
+msgstr "A long iron key from the bandit chief's belt, green with old water. It opens the grate over the well at Zahra's Rest."
+
+msgid "Mayor's Desk Key"
+msgstr "Mayor's Desk Key"
+
+msgid "A small brass key from the mayor's desk. It opens the bookshelf door to his archive."
+msgstr "A small brass key from the mayor's desk. It opens the bookshelf door to his archive."
+
+msgid "Alchemist's Key"
+msgstr "Alchemist's Key"
+
+msgid "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."
+msgstr "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."

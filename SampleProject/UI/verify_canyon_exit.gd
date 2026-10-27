@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Медитація на вершині скелі (feedback 8): викрадення — лише після підйому й медитації.
 ## Спуск з каньйону (D256): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
-## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже на дорозі. До села — просто край.
+## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже в печері під мостом (M7), звідки
+## провалами вниз виходить на дорогу. До села — просто край.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
 
 
@@ -252,19 +253,33 @@ func _initialize() -> void:
 	ck(falls.is_empty(), "no Fall animation: Kusakam climbs, he does not fall")
 	ck(player.current_health == hp, "no damage (%d → %d)" % [hp, player.current_health])
 
-	# performance_plan slice 3: кат-сцена попросила дорогу заздалегідь — телепорт бере готову сцену, а не вантажить її.
-	ck(game.room_preloader.is_held("res://SampleProject/Maps/DesertRoad.tscn"), "the road is loaded in the background before the cutscene's teleport")
+	# performance_plan slice 3: кат-сцена попросила печеру заздалегідь — телепорт бере готову сцену, а не вантажить її.
+	ck(game.room_preloader.is_held("res://SampleProject/Maps/CaveUnderBridge.tscn"), "the cave under the bridge is loaded in the background before the cutscene's teleport")
 
-	print("[4] The cutscene ends on the road")
-	await _until(func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn"), 8.0)
+	print("[4] The cutscene ends in the cave under the bridge (M7), the way down to the road")
+	await _until(func() -> bool: return game.map.scene_file_path.ends_with("CaveUnderBridge.tscn"), 8.0)
 	for i in 30: await process_frame
-	ck(game.map.scene_file_path.ends_with("DesertRoad.tscn"), "player is on the Desert Road (%s)" % game.map.scene_file_path)
-	var arrival: Node2D = game.map.get_node("ArrivalFromCanyon")
+	ck(game.map.scene_file_path.ends_with("CaveUnderBridge.tscn"), "player is in the cave under the bridge (%s)" % game.map.scene_file_path)
+	var arrival: Node2D = game.map.get_node("Arrival")
 	ck(absf(player.global_position.x - arrival.global_position.x) < 48.0,
-			"player stands at ArrivalFromCanyon (x=%.0f)" % player.global_position.x)
-	ck(game.get_quest_flag("canyon_exit_complete"), "canyon_exit_complete set")
+			"player stands at its Arrival (x=%.0f)" % player.global_position.x)
 	ck(not player.event, "the player can move")
 	ck(not camera.top_level and camera.position == Vector2.ZERO, "the camera follows the hero again")
+	# Згори лише вниз, зигзагом: провал праворуч, тоді ліворуч, тоді посередині — вихід з печери; праворуч — дорога.
+	var cave: Node = game.map
+	for step: Array in [[&"move_right", 480.0 + 384.0], [&"move_left", 960.0 + 384.0]]:
+		Input.action_press(step[0])
+		await _until(func() -> bool: return player.global_position.y > step[1] - 60.0 or game.map != cave, 10.0)
+		Input.action_release(step[0])
+		ck(player.global_position.y > step[1] - 60.0, "%s to the hole, down a storey (y %.0f)" % [step[0], player.global_position.y])
+	for room: String in ["CaveExit.tscn", "DesertRoad.tscn"]:
+		Input.action_press(&"move_right")
+		await _until(func() -> bool: return game.map.scene_file_path.ends_with(room), 20.0)
+		Input.action_release(&"move_right")
+		ck(game.map.scene_file_path.ends_with(room), "on to %s (%s, hero %s)" % [room, game.map.scene_file_path, player.global_position])
+	await _until(func() -> bool: return not game.room_changing, 5.0)  # прохід краєм тримає гру на паузі до кінця появи
+	for i in 30: await process_frame
+	ck(game.get_quest_flag("canyon_exit_complete"), "canyon_exit_complete set on the road")
 
 	print("[5] Enter shows the next bubble line at once (Sapega, 2026-10-16)")
 	await _drain(dm)
