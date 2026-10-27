@@ -159,7 +159,6 @@ func _initialize() -> void:
 	print("[4] Strikes need the right weapon (D141)")
 	for slot in equipment.keys():
 		equipment[slot] = null
-	var state: Dictionary = sl.get_game_manager().player_state
 	state.weapon_in_hand = ""
 	ck(sm.can_use_skill("fire_strike") == R.WRONG_WEAPON, "Fire Strike refused bare-handed")
 	# D202: навички дивляться на зброю в руці. Вдягаємо справжнім шляхом (EquipmentManager → CharacterManager).

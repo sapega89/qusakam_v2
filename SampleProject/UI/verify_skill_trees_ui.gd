@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Вікно навичок Dragon Nest (D674) справжнім вводом: до перепису — лише базове дерево; після — базове й дерево обраного
 ## шляху, інших двох немає (D728); фокус з клітинок на вкладки, вивчення — Learn +1 + Accept (D330).
@@ -68,6 +69,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	Kit.pre_d815_hero(self)  # D815: this test buys skills and counts JP from a hero who has none
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	while xp.get_level() < 5:

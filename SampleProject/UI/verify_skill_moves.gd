@@ -110,6 +110,7 @@ func _initialize() -> void:
 		e.queue_free()  # вороги кімнати — далі лише наші
 	player = game.player
 	sm = sl.get_skill_manager()
+	sm.awaken_skills()  # D815: DesertRoad comes after the Canyon meditation
 	R = load("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd").Result
 	State = load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").State
 	bus = root.get_node("EventBus")

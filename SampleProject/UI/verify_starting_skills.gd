@@ -94,7 +94,7 @@ func _initialize() -> void:
 	_learned_asleep("new game")
 	ck(sm.get_job_points() == 0 and sm.spent_points() == 0, "no skill points spent (JP %d, spent %d)" % [sm.get_job_points(), sm.spent_points()])
 	ck(sm.tree_spent("") == 0, "the base tree counts nothing paid for them (%d)" % sm.tree_spent(""))
-	ck(is_equal_approx(_hotbar_alpha(), UISkillHotbar.UNAVAILABLE_ALPHA), "the hotbar slot is dimmed like any unusable one (α %.2f)" % _hotbar_alpha())
+	ck(is_equal_approx(_hotbar_alpha(), load("res://SampleProject/UI/Components/skill_hotbar.gd").UNAVAILABLE_ALPHA), "the hotbar slot is dimmed like any unusable one (α %.2f)" % _hotbar_alpha())
 	ck(sm.cast_slot(0) == R.NOT_AWAKENED, "pressing the slot does nothing")
 	ck(not "starting_skills" in sl.get_game_manager().player_state.seen_tutorials, "no message before the meditation")
 

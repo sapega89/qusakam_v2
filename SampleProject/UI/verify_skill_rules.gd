@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Правила навичок з рішень Sapega 2026-10-23 у справжній грі: сила від атаки героя (B137), SP за влучання й парирування
 ## без перезарядок поза ультимативними (D504), фляга Healing Palm (D504), ультимативні навички професій (D491),
@@ -55,6 +56,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	Kit.pre_d815_hero(self)  # D815: this test buys skills and counts JP from a hero who has none
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	var gm: Node = sl.get_game_manager()

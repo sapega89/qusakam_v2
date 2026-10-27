@@ -189,7 +189,8 @@ func _combat() -> void:
 	var xp: Node = sl.get_xp_manager()
 	while xp.get_level() < 6:
 		xp.add_xp(1000)
-	ck(sm.unlock_skill("healing_palm") == 0, "Healing Palm learned")
+	ck(sm.is_unlocked("healing_palm"), "Healing Palm learned (from the start, D815)")
+	sm.awaken_skills()  # D815: this road comes after the Canyon meditation
 	var slot := StringName("skill_slot_%d" % (sm.get_slot_of_skill("healing_palm") + 1))
 	sm.restore_sp(999)
 	hero.current_health = hero.Max_Health - 50

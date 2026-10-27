@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Клятва (D280; D725–D728, oath_affinity_plan): троє жерців шляхів стоять у City звичайними NPC — лише розмова,
 ## меню клятви немає (D726); жрець контрактів — у чорному й золоті замість відьми. Клятву дає перепис біля брами
@@ -114,6 +115,7 @@ func _initialize() -> void:
 	ck(sm.can_unlock("radiant_smite") == load("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd").Result.LEVEL_TOO_LOW, "its skills wait for level 5")
 	while xp.get_level() < 5:
 		xp.add_xp(xp.xp_for_next_level - xp.current_xp)
+	Kit.pre_d815_hero(self)  # D815: Shield Block would be free — the gate counts 3 paid JP
 	sm.add_job_points(5)
 	for id in ["toughness", "shield_block", "devotion"]:  # D497: навичка клятви — від 3 JP у стовбурі
 		sm.unlock_skill(id)

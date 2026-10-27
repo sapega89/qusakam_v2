@@ -83,6 +83,7 @@ func _initialize() -> void:
 	await create_timer(2.5).timeout
 	hero = game.player
 	sm = sl.get_skill_manager()
+	sm.awaken_skills()  # D815: DesertRoad comes after the Canyon meditation
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group(&"enemies"):
 			node.set_physics_process(false)

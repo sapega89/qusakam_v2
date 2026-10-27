@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Ранги навичок (D674): дані кожної навички (rank.max / jp / bonus, slot), активні до 5, пасивки до 3, ціна рангу в JP
 ## з даних, сила росте з рангом (ушкодження, лікування, підпал, пасивка), ліміт дерева рахує ранги, план (SkillPlan),
@@ -39,6 +40,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	await _drain(sl.get_dialogue_manager())
+	Kit.pre_d815_hero(self)  # D815: this test buys skills and counts JP from a hero who has none
 	var sm: Node = sl.get_skill_manager()
 	var xp: Node = sl.get_xp_manager()
 	var gm: Node = sl.get_game_manager()

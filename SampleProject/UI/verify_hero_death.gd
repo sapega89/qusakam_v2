@@ -151,6 +151,7 @@ func _initialize() -> void:
 	player.kill_cooldown = 0.0
 	var sm: Node = sl.get_skill_manager()
 	var cast_move: int = load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").State.CAST_MOVE
+	sm.awaken_skills()  # D815: skills sleep until the Canyon meditation
 	sl.get_game_manager().player_state.unlocked_skills.append("dash_strike")
 	sm.set_max_sp(1000)
 	sm.restore_sp(1000)

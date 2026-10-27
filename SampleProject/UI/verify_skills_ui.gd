@@ -1,4 +1,5 @@
 extends SceneTree
+const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Самоперевірка екрана Skills (Phase 5.6; вікно Dragon Nest — D674).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skills_ui.gd
@@ -90,6 +91,7 @@ func _initialize() -> void:
 
 	print("[2] populated (test fixtures)")
 	var fixtures: Array = _for_active_class(FIXTURES, gm.get_active_character())
+	Kit.pre_d815_hero(self)  # D815: the starting skills are not in the fixtures — off the hotbar too
 	db.load_from_array(fixtures)
 	sm.skill_database = db
 	db.class_jp_cap = 1000000  # D497: фікстури коштують десятки й тисячі JP — ліміт дерева тут ні до чого
