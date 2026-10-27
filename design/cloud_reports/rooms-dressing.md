@@ -10,7 +10,7 @@ tags: [cloud, routines, rooms]
 - **R3 done, each at the root:** B176 (eased room limits), B177 (no ×1.3 occluder parks mid-frame at a camera limit; CityGates rock), B178 (rock foot below the view: the sprites were `centered` *and* foot-offset), B180 (planes on the camera's world-pixel grid), B181 (Laboratory vertical factors), B182 (clouds in depth order), GatehouseCellar `Pillar2` off the hero (R1 tail).
 - **R2 done:** critter scenes for every sheet (lark, pigeon, butterfly, blue butterfly, moth) at the exact world-scale sizes, placed in 11 rooms; one or two atmosphere effects in all 16 rooms (Low halves 16+); grass tufts along 8 outdoor walk lines. **Not done:** the mouse — its sheet has landed, but it needs a ground path and a hole (note in [[ambient_critters_plan]]).
 - **Proposed D-IDs** (routine calls, text below): D-rd1 world-pixel camera, D-rd2 eased limits, D-rd3 occluders at camera limits, D-rd4 Laboratory vertical parallax, D-rd5 one wind for the clouds, D-rd6 critters, D-rd7 atmosphere per room, D-rd8 grass. **B rows fixed:** B176, B177, B178, B180, B181, B182. Q106 need not be asked (snap stays on).
-- Full suite: SUITE_RESULT
+- Full suite (once, at the end): `SUITE: 2 FAIL`, 136 PASS — `verify_masher` HUNG (as in integrate-29), `verify_combat_feel` «a bandit dropped on the hero slides off» flaky and not this routine's: it fails 2 of 2 on the base commit `54ffa86a`, 1 of 2 here.
 
 ## Proposed D-IDs (orchestrator: number them, do not edit the text's meaning)
 | ID | Kind | Text |
@@ -78,4 +78,6 @@ New files: `Scenes/Backgrounds/Decor/critter_{bird,pigeon,butterfly,butterfly_bl
 Made by `SampleProject/UI/capture_rooms_dressing.gd` (window) and `Scripts/Tools/rooms_dressing_sheet.py`; "before" from a worktree at `54ffa86a`.
 
 ## Commits
-SUITE_COMMITS
+`655722a3` camera snap + eased limits · `2b000c10` planes in Camera2D's frame, Laboratory vertical, clouds ·
+`ad10a694` occluders and rock feet · `b1b612ef` R2 critters, atmosphere, grass · `246b6d5a` sheets + mouse note ·
+this report.
