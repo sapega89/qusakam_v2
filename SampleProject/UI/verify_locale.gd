@@ -479,10 +479,6 @@ func _walk_npcs(game: Node) -> void:
 		npc.interactable.interacted.emit()
 		await Kit.frames(self, 4)
 		_scan(npc.npc_menu, "NPC menu/" + npc_name)
-		if npc_name == "oath_priest":
-			npc.npc_menu.chosen.emit(&"oath")
-			await Kit.frames(self, 4)
-			_scan(npc.npc_menu, "NPC menu/oath confirm")
 		npc.queue_free()
 		await Kit.frames(self, 3)
 

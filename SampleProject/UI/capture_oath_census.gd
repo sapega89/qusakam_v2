@@ -68,6 +68,8 @@ func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
 	out = args[0] if not args.is_empty() else ProjectSettings.globalize_path("res://design/shots/oath_census")
 	DirAccess.make_dir_recursive_absolute(out)
+	await process_frame
+	await process_frame
 	root.get_node("SaveSystem").settings_module.settings.hints = false
 	var game: Node = await Kit.boot(self)
 	var sl: Node = root.get_node("ServiceLocator")
