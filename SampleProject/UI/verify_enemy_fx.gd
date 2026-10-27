@@ -211,7 +211,8 @@ func _guard() -> void:
 	hero.global_position = Vector2(bandit.global_position.x - 40.0, floor_y)
 	hero.velocity = Vector2.ZERO
 	hero.mover.last_direction = 1
-	while hero.is_invulnerable or Engine.time_scale < 1.0:
+	# Удар боса в [2] збиває героя (B159: боси б'ють) — блок не підняти, доки збій не мине.
+	while hero.is_invulnerable or Engine.time_scale < 1.0 or hero.combat.state != hero.combat.State.READY:
 		await physics_frame
 	guards.clear()
 	_press(&"block")
