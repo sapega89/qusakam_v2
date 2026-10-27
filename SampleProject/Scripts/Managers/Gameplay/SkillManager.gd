@@ -803,7 +803,7 @@ func cast_skill(skill_id: String) -> Result:
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
 	var player: Node = _default_source()
-	# Навичка руху (D-sv2m) — сама шлях до ворога: починається й без ворога перед героєм
+	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
 	if definition.damage > 0 and not definition.moves() and SkillTargeting.enemies_in_front(player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
@@ -839,7 +839,7 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		else:
 			targets = SkillTargeting.skill_targets(definition, effect_source)
 		if targets.is_empty():
-			# D-sv2m: навичка руху вже перенесла героя — промах коштує SP, як зірваний каст (D259)
+			# D812: навичка руху вже перенесла героя — промах коштує SP, як зірваний каст (D259)
 			if definition.moves():
 				_pay(definition)
 			return _fail(skill_id, Result.NO_TARGET)

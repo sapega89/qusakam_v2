@@ -91,7 +91,7 @@ func push(distance: float, duration: float) -> void:
 	_push_left = duration
 
 
-## Поштовх скінчився раніше (навичка руху вдарила, D-sv2m).
+## Поштовх скінчився раніше (навичка руху вдарила, D812).
 func stop_push() -> void:
 	_push_left = 0.0
 

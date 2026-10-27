@@ -89,13 +89,13 @@ var cast_windup: float = 0.0
 var cast_release: float = 0.0
 var cast_pose: String = ""
 ## Пози тіла фаз касту — анімації Player.tscn. За умовчанням з префікса: cast_pose + "Windup" / "Release";
-## навичка руху (D-sv2m) бере наявні кадри (HeavyWindup, Roll, Run, Jump, HeavyStrike, Land) — свої пози прийдуть з арту.
+## навичка руху (D812) бере наявні кадри (HeavyWindup, Roll, Run, Jump, HeavyStrike, Land) — свої пози прийдуть з арту.
 var windup_pose: String = ""
 var release_pose: String = ""
 ## Поза, поки герой рухається (лише навички руху): ривок — Roll чи Run; стрибок — Jump/Fall за швидкістю.
 var move_pose: String = ""
 
-## Навички руху (v2 зріз 3, D-sv2m): герой рухається під час навички, тіла зупиняють (D443), за спину — ніхто.
+## Навички руху (v2 зріз 3, D812): герой рухається під час навички, тіла зупиняють (D443), за спину — ніхто.
 ## move_kind: "" — без руху; "dash" — ривок уперед на move_distance px за move_time с, до першого ворога в досяжності удару;
 ## "leap" — стрибок угору на move_height px і вперед до move_distance px, але не далі за першого ворога; удар — при приземленні.
 var move_kind: String = ""
@@ -227,7 +227,7 @@ func rank_factor(rank: int) -> float:
 	return 1.0 + rank_bonus * (maxi(1, rank) - 1)
 
 
-## Навичка руху (D-sv2m): герой рухається між замахом і ударом.
+## Навичка руху (D812): герой рухається між замахом і ударом.
 func moves() -> bool:
 	return move_kind != ""
 

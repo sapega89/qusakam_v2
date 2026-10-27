@@ -27,7 +27,7 @@ static func enemies_in_front(player: Node2D) -> Array[Node]:
 	return out
 
 
-## Найближчий до героя з тих, кого б'є удар перед ним (D-sv2m: ривок ріже першого ворога на шляху), або порожньо.
+## Найближчий до героя з тих, кого б'є удар перед ним (D812: ривок ріже першого ворога на шляху), або порожньо.
 static func first_in_front(player: Node2D) -> Array[Node]:
 	var out: Array[Node] = []
 	for enemy in enemies_in_front(player):
@@ -37,7 +37,7 @@ static func first_in_front(player: Node2D) -> Array[Node]:
 	return out
 
 
-## Живі вороги, чия зона-ціль у [param reach] px по обидва боки від тіла героя (D-sv2m: удар приземлення).
+## Живі вороги, чия зона-ціль у [param reach] px по обидва боки від тіла героя (D812: удар приземлення).
 static func enemies_around(player: Node2D, reach: float) -> Array[Node]:
 	var body: Rect2 = player.body_rect()
 	var area := body.grow_individual(reach, 0.0, reach, 0.0)

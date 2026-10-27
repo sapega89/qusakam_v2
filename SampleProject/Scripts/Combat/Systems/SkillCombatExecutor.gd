@@ -41,7 +41,7 @@ func apply_status(definition: SkillDefinition, target: Node, burn_dps: int) -> v
 		target.stun(definition.stun)
 
 
-## Навички руху (D-sv2m) після влучання: відкидання від героя на knockback px і lifesteal — частка [param amount]
+## Навички руху (D812) після влучання: відкидання від героя на knockback px і lifesteal — частка [param amount]
 ## лікує героя (як Blood Pact у PlayerCombat._hit_effects). Ціль — ворог.
 func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node2D, amount: int) -> void:
 	if definition.knockback > 0.0:
@@ -52,7 +52,7 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 		source.heal_damage(drained)
 
 
-# ── Рух (D-sv2m) ─────────────────────────────────────────────────────────────
+# ── Рух (D812) ─────────────────────────────────────────────────────────────
 ## Герой рухається тілом (PlayerMover.push і гравітація), тож тіла ворогів зупиняють його самі (D443): ривок
 ## спиняється, щойно перший ворог у досяжності удару; стрибок не летить далі за першого ворога попереду — за спину
 ## ніхто не потрапляє (Sapega: «за спину ми нікому не зможемо забігти»).

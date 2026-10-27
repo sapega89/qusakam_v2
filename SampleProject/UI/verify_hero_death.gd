@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Смерть героя (H1, D138): кадри Death 1–4 по черзі раз, 4-й тримається; керування вимкнене, зброї не видно,
 ## тінь (D788) лежить на підлозі під тілом; Game Over — лише коли поза дограла; респавн (kill) ставить героя на ноги
-## й повертає керування. Смерть у повітрі — тіло падає на підлогу під час пози.
+## й повертає керування. Смерть у повітрі — тіло падає на підлогу під час пози; смерть посеред ривка (D812) — тіло не їде далі.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_hero_death.gd
 
 const DEATH := "res://SampleProject/Sprites/Player/Death/%d.png"
@@ -144,6 +144,30 @@ func _initialize() -> void:
 			break
 	ck(player.is_on_floor() and _frame(player) == 4, "lying on the floor at the end (on floor %s, frame %d)" % [player.is_on_floor(), _frame(player)])
 	ck(shadow.visible and absf(shadow.global_position.y - _feet(player)) < 0.5, "the shadow is back under the body")
+	_close_game_over()
+
+	print("[4] Death during a dash (D812): the body stops where he died, the dash does not carry it on")
+	player.kill()
+	for i in 30: await physics_frame
+	player.kill_cooldown = 0.0
+	var sm: Node = sl.get_skill_manager()
+	var cast_move: int = load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").State.CAST_MOVE
+	sl.get_game_manager().player_state.unlocked_skills.append("dash_strike")
+	sm.set_max_sp(1000)
+	sm.restore_sp(1000)
+	ck(sm.cast_skill("dash_strike") == 0, "Dash Strike starts")
+	for i in 60:
+		if player.combat.state == cast_move:
+			break
+		await physics_frame
+	ck(player.combat.state == cast_move, "the hero is dashing")
+	var x2: float = player.global_position.x
+	player.take_damage(99999)
+	for i in 120:
+		await physics_frame
+		if get_first_node_in_group(&"game_over_screen") != null:
+			break
+	ck(player.is_dead and absf(player.global_position.x - x2) < 2.0, "the body stayed where he died (%.1f px)" % (player.global_position.x - x2))
 	_close_game_over()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))

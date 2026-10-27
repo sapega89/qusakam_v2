@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Навички руху (v2 зріз 3, D-sv2m) у справжньому вікні: замах, рух і удар кожної по ворогу на DesertRoad,
+## Навички руху (v2 зріз 3, D812) у справжньому вікні: замах, рух і удар кожної по ворогу на DesertRoad,
 ## один аркуш 3 × 6 вирізок 480×320 (рядок — навичка).
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_skill_moves.gd -- <тека>
 

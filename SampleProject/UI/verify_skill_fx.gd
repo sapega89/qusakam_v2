@@ -46,7 +46,7 @@ func _initialize() -> void:
 	var owner_of: Dictionary = {}
 	for skill in actives:
 		if skill.has("move"):
-			# D-sv2m: навички руху (v2 зріз 3) позичають наявні ефекти, поки арт-лінія не намалює їхні кадри
+			# D812: навички руху (v2 зріз 3) позичають наявні ефекти, поки арт-лінія не намалює їхні кадри
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: borrowed effect until its art (MoveSkill.tscn)" % skill.id)
 			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)

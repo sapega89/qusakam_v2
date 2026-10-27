@@ -103,15 +103,15 @@ The probe cannot separate objects inside a full plane. New this run: the Gatehou
 
 The new cellar plane made its barrels **bigger** than the old one did (1.3 H against the old 1.05 H): the cellar is now the worst painted-barrel room. The new DragonMural (wall, frame, dragon), MesaClimb (mesa, boulders) and floor planes hold no charted props.
 
-## Proposed B rows (not written to BUGS.md; the orchestrator numbers them)
+## Proposed B rows (filed as B187–B192 by integrate-30)
 | B | Where | Defect |
 |---|---|---|
-| B-new-1 | `enemy_bandit*`, `bandit_archer`, `shield_tower`, `bandit_brute`, `archer_heavy` sheets | Human enemies are 73.5–102 px. The exact chart wants 96 art = 144 px (D172 ×1.5), and the elites have no exact row yet. Fix: regenerate at 96 art. |
-| B-new-2 | All 35 adult NPC sheets (City crowd, guards, merchant, scribe, priests, dervish, old man, prisoner) | 105–130.5 px against the exact 144 px (96 art). Fix: regenerate at 96 art. |
-| B-new-3 | BanditCamp `Back/Mid` + `Back/Props/Sprite` (`gen_sacks`); **GatehouseCellar `Back/Mid` (`Cellar/gen_mid.png`, new)**; ElderHouse `Wall` | Painted barrels, sacks and amphorae are 1–1.3 H, ×2.5–3.9 of the chart (barrel 26 art on a 0.8 plane). This is the player's «everything is so big». Fix: repaint the planes without props and add props at the exact size. |
-| B-new-4 | `Gate_Stockade` (BanditCamp), `Gate_Shrine` (LizardCave): `gen_gate.png` | 415.5 px against a locked gate in a room, 128 art = 192 px (×2.16). Fix: regenerate at 128 art. |
-| B-new-5 | `fg_scrub_sheet` on FrontDark (DragonMural, LizardCave, MesaClimb) | 91.5 px against 31 art = 46.5 px on the 1.3 plane. Fix: a 2:1 downsample of the sheet gives 45.75 px (exact within ±1 art). |
-| B-new-6 | City `CityNear`, Village `Houses` planes; every door sheet (`palisade_gate`, `lab_door`, `cave_mouth`, `palace_door`, `door_elder`) | Painted doors are about 0.4× the exact door (95 art on a 0.85 plane). The door sheets are 114–156 px against 168 (112 art). Fix: regenerate at 112 art. `mesa_cleft` needs only a 2-row re-cut. |
+| B187 | `enemy_bandit*`, `bandit_archer`, `shield_tower`, `bandit_brute`, `archer_heavy` sheets | Human enemies are 73.5–102 px. The exact chart wants 96 art = 144 px (D172 ×1.5), and the elites have no exact row yet. Fix: regenerate at 96 art. |
+| B188 | All 35 adult NPC sheets (City crowd, guards, merchant, scribe, priests, dervish, old man, prisoner) | 105–130.5 px against the exact 144 px (96 art). Fix: regenerate at 96 art. |
+| B189 | BanditCamp `Back/Mid` + `Back/Props/Sprite` (`gen_sacks`); **GatehouseCellar `Back/Mid` (`Cellar/gen_mid.png`, new)**; ElderHouse `Wall` | Painted barrels, sacks and amphorae are 1–1.3 H, ×2.5–3.9 of the chart (barrel 26 art on a 0.8 plane). This is the player's «everything is so big». Fix: repaint the planes without props and add props at the exact size. |
+| B190 | `Gate_Stockade` (BanditCamp), `Gate_Shrine` (LizardCave): `gen_gate.png` | 415.5 px against a locked gate in a room, 128 art = 192 px (×2.16). Fix: regenerate at 128 art. |
+| B191 | `fg_scrub_sheet` on FrontDark (DragonMural, LizardCave, MesaClimb) | 91.5 px against 31 art = 46.5 px on the 1.3 plane. Fix: a 2:1 downsample of the sheet gives 45.75 px (exact within ±1 art). |
+| B192 | City `CityNear`, Village `Houses` planes; every door sheet (`palisade_gate`, `lab_door`, `cave_mouth`, `palace_door`, `door_elder`) | Painted doors are about 0.4× the exact door (95 art on a 0.85 plane). The door sheets are 114–156 px against 168 (112 art). Fix: regenerate at 112 art. `mesa_cleft` needs only a 2-row re-cut. |
 
 ## Open for Sapega (not blocking, carried from scale-probe)
 The exact values are the plan's draft. Four rows decide most of the regeneration list:

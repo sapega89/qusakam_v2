@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Навички руху (v2 зріз 3, D-sv2m) у справжній грі, на DesertRoad, по справжніх ворогах:
+## Навички руху (v2 зріз 3, D812) у справжній грі, на DesertRoad, по справжніх ворогах:
 ##   ривок (Dash Strike, Shield Charge, Blood Rush, Wind Step) і стрибок з ударом (Heaven's Anvil, Dune Quake).
 ## Тіла зупиняють (D443), за спину ворога ніхто не потрапляє, промах коштує SP, удар по героєві зриває рух.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skill_moves.gd
@@ -121,7 +121,7 @@ func _initialize() -> void:
 	var home: float = player.global_position.x
 	ck(player.is_on_floor(), "the hero stands on the DesertRoad floor (x %.0f)" % home)
 
-	print("[1] Dash Strike with nobody near: the hero dashes its distance, the whiff costs SP (D-sv2m)")
+	print("[1] Dash Strike with nobody near: the hero dashes its distance, the whiff costs SP (D812)")
 	var sp: int = sm.get_current_sp()
 	var failed: Array = []
 	var on_fail := func(id: String, reason: int) -> void: failed.append([id, reason])

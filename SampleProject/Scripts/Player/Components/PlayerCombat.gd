@@ -154,7 +154,7 @@ var _in_combat: bool = false
 var casting_skill: String = ""
 var _cast: SkillDefinition
 var _cast_fx: SkillCastFX
-## Стрибок навички руху вже відірвався від землі (D-sv2m): наступний дотик землі — удар приземлення.
+## Стрибок навички руху вже відірвався від землі (D812): наступний дотик землі — удар приземлення.
 var _leap_airborne: bool = false
 ## Стрибок навички, що не приземлився за свій час (уступ униз), б'є не пізніше, ніж за стільки с понад нього.
 const LEAP_TIMEOUT := 0.6
@@ -593,7 +593,7 @@ func _loose(charged: bool) -> void:
 	EventBus.player_shot.emit(player, charged)
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
-## вивільнення: SkillManager.use_skill застосовує ефект. Навичка руху (D-sv2m) між ними рухає героя (_start_move) і
+## вивільнення: SkillManager.use_skill застосовує ефект. Навичка руху (D812) між ними рухає героя (_start_move) і
 ## починається лише з землі. false — герой зайнятий.
 func begin_cast(definition: SkillDefinition) -> bool:
 	if state != State.READY or (definition.moves() and not player.is_on_floor()):
@@ -613,7 +613,7 @@ func begin_cast(definition: SkillDefinition) -> bool:
 	EventBus.skill_cast_started.emit(definition.id)
 	return true
 
-## Рух навички (D-sv2m): ривок — поштовх уперед на move_distance px за move_time с, тіла зупиняють (D443); стрибок —
+## Рух навички (D812): ривок — поштовх уперед на move_distance px за move_time с, тіла зупиняють (D443); стрибок —
 ## угору на move_height px і вперед на SkillCombatExecutor.leap_distance (не за першого ворога). Удар каст іще може зірвати.
 func _start_move() -> void:
 	state = State.CAST_MOVE
@@ -777,6 +777,8 @@ func stop_all() -> void:
 func _break_action() -> void:
 	if state in [State.SWING, State.HEAVY_STRIKE]:
 		_set_hitbox_active(false, _direction)
+	if state == State.CAST_MOVE:
+		player.mover.stop_push()  # зірваний ривок не несе далі (і мертвого героя теж, H1)
 	_hit_on = false
 	_drink_heal = 0  # зілля, яке не встигло подіяти, пропало
 	riposting = false
