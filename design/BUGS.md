@@ -224,6 +224,9 @@ the history, this note keeps only what is open.
 > - **B192** (open, art lane; scale-exact B-new-6) — City `CityNear`, Village `Houses` planes; every door sheet (`palisade_gate`, `lab_door`, `cave_mouth`, `palace_door`, `door_elder`): Painted doors are about 0.4× the exact door (95 art on a 0.85 plane). The door sheets are 114–156 px against 168 (112 art). Fix: regenerate at 112 art. `mesa_cleft` needs only a 2-row re-cut.
 > - **B193** (fixed, integrate-30) — a hero killed during a movement skill slid on for the rest of the dash (190 px in `verify_hero_death` [4]): the H1 death pose (D807) locks the mover, but `PlayerMover` lets a running `push` win over `locked`, and `PlayerCombat._break_action` (death and stagger) did not end the push. Now `_break_action` stops the push in `CAST_MOVE`.
 > - **B194** (fixed, integrate-30; hero-death's «needs its own B row») — a fighter dropped on another sometimes stayed on his head: `verify_combat_feel` [2] «a bandit dropped on the hero slides off» failed ~2 of 5 runs alone (y 327.9 vs 368.0), not a load flake. The bandit slid to the hero's top corner (x +28), where the 2 px down-probe in `CombatBody2D.slide_off_bodies` reports a side normal (1, 0), so it was taken for «touching side» and the slide stopped, while `move_and_slide` kept him standing on the corner. Now a side normal still counts as standing on top when the feet are at the other body's top; 6 of 6 runs green.
+>
+> **Playtest 2026-10-27 (Sapega, exe 22:29):**
+> - **B195** (open, `bug-third-load`) — the game freezes on or after the third load of a save («після третього завантаження гри або під час нього гра зависає»).
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
