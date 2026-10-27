@@ -1183,6 +1183,34 @@ LAYERS = {
         f"width, with empty space on both sides, its base resting on the bottom edge, warm light on the top, cool violet "
         f"shadows in the cracks, {CHROMA}",
     ),
+    # M6a-2a: ущелина зі струмком (збирає design/shots/candidates/gorge_planes/gorge_planes.py). Заслін D750 біля води:
+    # валуни з сухим очеретом (×1.3, затемнений модуляцією сцени)
+    "StreamGorge/gen_front": dict(
+        seed=811,
+        rows=240,
+        top=0,
+        seam="none",
+        trim=True,
+        keep=188,  # нижче — смуга землі на всю ширину
+        cut=(170, 412),
+        spill=10,
+        khaki=True,
+        key="green",
+        shade=0.3,
+        fill=False,
+        haze=0,
+        colors=8,
+        prompt="one single cluster of three large rounded boulders with tall dry tan reeds and rushes growing between "
+        "them, their thin stalks and seed heads reaching high above the stones, standing alone in the middle of the frame "
+        "and filling a third of its width, with empty space on both sides, its base resting on the bottom edge, warm "
+        f"light on the tops, cool violet shadows in the cracks, {CHROMA}",
+    ),
+}
+# шлейф ущелини (D796: ближчий і більший) — та сама генерація, що й на стежці (кеш), зменшена в 3 рази, а не в 4
+LAYERS["StreamGorge/gen_plume"] = {
+    **LAYERS["MountainPath/gen_plume"],
+    "block": 3,
+    "keep": 248,  # 186 рядків стежки × 4/3
 }
 
 

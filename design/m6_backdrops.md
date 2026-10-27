@@ -61,7 +61,7 @@ doors and painted objects follow the size chart of [[world_scale_plan]] — the 
 | Lizard Cave (exists) | underground | — | the lizard idol shrines become separate props; the wall behind them is repainted without them | ✅ B162 (`cccb333c`): far / wall / shrines / floor planes |
 | Mountain path | outdoor, main | 2 | — | 🔄 art M6a-1 (`Backgrounds/MountainPath/`: barrier ×0.1 (cracked glass dome), far ×0.3, smoke plume ×0.4 blown west, mid ×0.75, waymarker ×0.9, ground, front — M6a-1b, D795), waiting for Sapega’s look at `shots/m6a1_path_scree.png` |
 | Scree slide | outdoor, main, falls | 1×2 | a scree run down | 🔄 art M6a-1 (`Backgrounds/ScreeSlide/`: gorge-wall mid ×0.75 with hazed ledges, slope ×1.0 with its surface polyline in the README; shares the path’s barrier, far, plume, front), same review |
-| Stream gorge | outdoor, main | 3 | — | ⬜ |
+| Stream gorge | outdoor, main | 3 | — | 🔄 art M6a-2a (`Backgrounds/StreamGorge/`: shared barrier ×0.1 (now full screen width, D797) and far ×0.3, own plume ×0.5, far wall ×0.75 continuing the scree’s, bank + stream ×1.0, reed-boulder front ×1.3), waiting for Sapega’s look at `shots/m6a2_gorge.png` |
 | Rock ledges | outdoor, main, climbs | 1×2 | ledges up (no floating platforms, A15) | ⬜ |
 | Cave under the bridge | underground | 1×3 | the cave mouth; the way down | ⬜ |
 | Grandfather's attic | interior | 1 | the hatch with its ladder | ⬜ |
