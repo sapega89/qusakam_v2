@@ -210,6 +210,10 @@ the history, this note keeps only what is open.
 > - **B184** (art lane; filed open, redrawn on `feature/backlog` `dab3d2ea`) — the hero's Death frames 1 and 3 had odd faces (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя»: frame 1 a swirl for an eye, frame 3 a red slit; 2 and 4 kept). `Sprites/Player/Death/1.png` and `3.png` are redrawn (MASTER_PLAN A7 ✅); the row stays open until Sapega sees them in the game (the frames are not wired yet, A7: ☁ after hero-feet).
 >
 > Not filed (already fixed by integrate-28 `ac8206d9`): hero-feet's / perf-check's / depth-film's B-new-5 candidate, «the save point in `verify_save_load*` / `verify_progression` has no `Seat` (D764)».
+>
+> **From the test audit (2026-10-27, [[test_audit_2026-10-27]]):**
+> - **B185** (fixed, `57774570`) — `Cutscene._release()` set `Engine.time_scale = 1.0`, wiping the scale `TimeManager` holds (hitstop, a test's SPEED). In the game TimeManager holds 1.0, so players saw nothing; `verify_masher` [4] and [6] ran after the boss intro at 1× with a 1/240 s physics step the game never uses. Now it restores `TimeManager.time_scale`.
+> - **B186** (open, tests) — load flakes: a test waits for a physics result with a wall-clock deadline (`_until` copies in 11 scripts) or a process-time `create_timer`, so a busy machine cuts the wait short. Seen: `verify_combat_feel` [2] (`create_timer(1.2)` for a slide → wait 72 physics frames), `verify_combat_flow` [2c] (B170 may be the same), `verify_masher` [7] idle 1.08–1.46 s vs 1.0 s and [3] once. Fix: one shared `_until` in `input_kit.gd` that counts physics steps (as `verify_city_gates_raid` now does, `f9eca192`); until then rerun a FAIL alone before calling it a regression.
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)

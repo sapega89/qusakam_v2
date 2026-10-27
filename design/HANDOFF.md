@@ -9,7 +9,7 @@ Fresh session on purpose (Sapega: «ти дуже багато тримаєш в
 (the old one: [[archive/MASTER_PLAN_2026-10-24]]); what waits on Sapega or was deferred is in [[BACKLOG]] → «Moved out of
 MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D794**, **B185**, **Q107** (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
+**Registers:** next free **D794**, **B187**, **Q107** (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
 `feature/backlog`). Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
 ## 1. First, when you start
@@ -41,7 +41,7 @@ full run for the time table, then an audit agent (worktree, `godot-dev`) deletes
 script covers and lists partial overlaps (clusters: skills ×13 — wait for skills-v2; combat ×14; lab ×6; NPC ×5; the
 early «Phase 5.x» UI checks ×12; settings ×3).
 
-**Test audit** (local agent, worktree, `godot-dev`): delete / merge / speed up overlapping verify scripts → `design/test_audit_2026-10-27.md`; merge its branch when it reports. Full suite at J=4 before it: 14 min 17 s, sum 3305 s; `## SERIAL` tag for real-time tests (city_gates_raid, hit_feel, masher), masher TIMEOUT 480.
+**Test audit** merged (`5b9e8c21`, [[test_audit_2026-10-27]]): 2 scripts gone (lab_rooms covered, demo_end → lab_route), city_gates_raid in game time, B185 fixed, B186 open (wall-clock waits → load flakes). Wall time did not drop: it is the real-time tail (masher ~350 s) and headless frames capped at ~145/s by `low_processor_usage_mode_sleep_usec`. Follow-ups listed in the audit (one door walk instead of two after rooms-dressing; small merges; game-time speed-up of combat_enemies, audio, archer, combat_flow, bosses). Full suite at J=4: 14–20 min, sum ≈ 3400 s; `## SERIAL` for hit_feel, masher; masher TIMEOUT 480.
 **Exe** rebuilt after integrate-29 (15:58). **Ask Sapega:** the local uncommitted `scorpicore_warrior.tscn` edit (slam 1.5, charge 1.3; from an agent's autostash of 24.10, not his) contradicts D678 (×1.3 / ×1.15) — revert on his word.
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
