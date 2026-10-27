@@ -13,20 +13,14 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
 ## 1. Finish first (local, in this order)
 
-1. **Merge `hard-fights-2`.** It is merged and renumbered on `integrate-27` in the worktree `D:\Projects\ngp-integrate`
-   (`65a1e5db`; boss-fix's `BossLogic` kept, hard-fights-2's `MayorHall._fight()` taken, B159 note in BUGS). Its full
-   suite finished with **2 FAIL**, both to fix before merging:
-   - `verify_flying_enemies`: «vulture: never touches the floor (lowest feet y 383, floor 384)» — D766 grew the vulture
-     ×1.25, so its lowest swoop now reaches the floor; lift its flight path by the new height (not the test margin).
-   - `verify_city_gates_raid`: «the hero falls after the teleport (y 360.0 -> 360.0)» — run it alone first (it may be
-     timing); if it stays red, read the check against hard-fights-2's changes.
-   Then `git merge feature/backlog` into `integrate-27` (expect the register's tail and MASTER_PLAN to
-   conflict: keep both sides' rows), and fast-forward `feature/backlog` (stash `project.godot` around it).
-2. **Check the meditation spot in the game** (D764, committed `5db238da` without a game run):
-   `capture_meditation_spots.gd` (window, `-- <out_dir>`), then `verify_progression`, `verify_save_load_room`,
-   `verify_city_life`, `verify_laboratory`, `verify_scripts_compile`. The hero hops (`SavePoint._hop`,
-   `Player.set_visual_offset`) onto the `Seat` marker on the stone; show Sapega the shots.
-3. **Commit the import** of `Resources/Audio/Music/heavy_battle.mp3` (its `.import` was hand-written, Godot adds the uid).
+1. **`integrate-27` → the cloud** (Sapega 27.10). Pushed; routine `integrate-27` (`trig_01GjxkDd7Y8XLhKUpJKKo56D`)
+   fixes `verify_flying_enemies` (vulture ×1.25 swoop) and `verify_city_gates_raid`, merges `feature/backlog`, runs the
+   meditation tests and the full suite, commits the `heavy_battle.mp3.import`, pushes `cloud/integrate-27`. When its
+   report lands: fast-forward (or merge) `feature/backlog` to it (stash `project.godot` around it).
+2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
+   `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
+3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
+   agent at a time — B162 → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons → M6.
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
 
 ## 2. In the cloud (merge each when its report lands; renumber D from D775)
@@ -46,6 +40,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | map-pan | `trig_01BE9fUzLv58LaCY8TvsAK8W` | secrets-icon | drag / zoom the map like Octopath Traveler |
 | ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
 | depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
+| integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
