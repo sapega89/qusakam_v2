@@ -7,8 +7,10 @@ extends VBoxContainer
 ## Skills або Status. Витратив — кнопка зникає. Кнопки немає, поки вкладку не відкрито сюжетом (game_menu.tscn,
 ## metadata/unlock_flag), і на час діалогу, як і підказок; кат-сцена ховає весь UICanvas сама (Cutscene).
 
-## Сцена меню читається load() під час гри, не preload: preload сцени меню під час компіляції скрипта — це B149.
-const GAME_MENU_SCENE := "res://SampleProject/Scenes/Menus/Game/game_menu.tscn"
+## Прапорці, що відкривають вкладки (metadata/unlock_flag їхніх кнопок у game_menu.tscn, D151; "" — відкрита завжди).
+## Копія, а не читання сцени: load() game_menu.tscn — це вся Game Menu, і на старті гри він компілював її на головному
+## потоці (~0,6 с під чорним, perf-check); фоном її вантажити не можна (B149). verify_new_points звіряє копію зі сценою.
+const TAB_UNLOCK_FLAGS := {"Skills": "village_oldman_healed", "Status": "village_oldman_gift"}
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
 
 @onready var _skills: Button = %SkillPoints
@@ -31,12 +33,8 @@ func _ready() -> void:
 
 
 ## Game стає синглтоном у власному _ready, тобто після HUD, — прапорці квестів слухаємо кадром пізніше.
-## Прапорці вкладок читаються з game_menu.tscn, а це вся Game Menu: синхронний load() тут компілював її на старті
-## гри (~0,6 с під чорним, perf-check). Кнопки зʼявляються, коли меню довантажить у фоні SceneWarmer.
 func _connect_game() -> void:
 	Game.get_singleton().quest_flag_changed.connect(func(_id: String, _value: Variant) -> void: refresh())
-	while not ResourceLoader.has_cached(GAME_MENU_SCENE):
-		await get_tree().process_frame
 	visible = true
 	refresh()
 
@@ -50,28 +48,11 @@ func attribute_points() -> int:
 	return ServiceLocator.get_attribute_manager().get_unspent() if is_tab_unlocked("Status") else 0
 
 
-## Чи відкрита сюжетом вкладка [param tab_name]: metadata/unlock_flag її кнопки в game_menu.tscn (D151) — з SceneState,
-## без створення меню; правило те саме, що в game_menu._lock_tabs. Прапорці читаються один раз.
+## Чи відкрита сюжетом вкладка [param tab_name] — правило те саме, що в game_menu._lock_tabs.
 static func is_tab_unlocked(tab_name: String) -> bool:
-	var flags := _tab_unlock_flags()
-	assert(flags.has(tab_name), "HudNewPoints: no tab '%s' in the game menu" % tab_name)
-	return flags[tab_name] == "" or bool(Game.get_singleton().get_quest_flag(flags[tab_name]))
-
-
-static var _flags_cache: Dictionary = {}
-
-
-## Вкладка → прапорець, що її відкриває ("" — відкрита завжди), з game_menu.tscn.
-static func _tab_unlock_flags() -> Dictionary:
-	if _flags_cache.is_empty():
-		var state := (load(GAME_MENU_SCENE) as PackedScene).get_state()
-		for node in state.get_node_count():
-			var props := {}
-			for i in state.get_node_property_count(node):
-				props[state.get_node_property_name(node, i)] = state.get_node_property_value(node, i)
-			if props.has("metadata/tab"):
-				_flags_cache[props["metadata/tab"]] = String(props.get("metadata/unlock_flag", ""))
-	return _flags_cache
+	assert(TAB_UNLOCK_FLAGS.has(tab_name), "HudNewPoints: no tab '%s' in TAB_UNLOCK_FLAGS" % tab_name)
+	var flag: String = TAB_UNLOCK_FLAGS[tab_name]
+	return flag == "" or bool(Game.get_singleton().get_quest_flag(flag))
 
 
 func refresh() -> void:
