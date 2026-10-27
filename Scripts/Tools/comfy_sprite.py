@@ -1356,6 +1356,40 @@ CHARACTERS = {
             )
         ],
     ),
+    # Смерть героя (MASTER_PLAN A7, D138): удар і хитання назад, на коліна, падає навзнак, лежить на спині.
+    # «face down» дає дві голови — лише «on his back»; спорядження названо в кожній позі, щоб не зникало.
+    "hero_death": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=24,
+        floor=56,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, the brown belt, the dark red cape and the tail",
+        rows=[
+            (
+                "Death",
+                [
+                    # «struck by a fatal blow» малювало червону рану на грудях — без удару, лише хитання
+                    "in the same side view facing right: staggering backwards and losing his balance, leaning far "
+                    "back, his head lolling back, eyes closed, both arms dropping limp in front of him, his back foot "
+                    "stumbling, no blood, the steel armour and the dark red cape still on him",
+                    "in the same side view facing right: collapsed down onto both knees, his body slumped forward, "
+                    "his big head hanging down, eyes closed, both arms hanging limp at his sides, the steel armour on "
+                    "him, the dark red cape draped on the ground behind him",
+                    "in the same side view facing right: toppling over backwards from his knees, his whole body tilted "
+                    "far back towards the ground on the left, eyes closed, arms limp, the steel armour on him, the dark "
+                    "red cape trailing under him",
+                    # перша спроба — голова безлика овальна потилиця: обличчя назване
+                    "lying flat on his back on the ground, completely still, seen from the side: his body stretched "
+                    "out level along the ground, his big head resting on the ground on the left with his face in "
+                    "profile turned up, his closed eye and his snout clearly visible, the snout pointing up at the sky, "
+                    "his feet on the right, both arms limp, the steel armour on his chest, the dark red cape spread on "
+                    "the ground under him, the tail lying on the ground",
+                ],
+            )
+        ],
+    ),
     # Герой з одноручним мечем у кадрі (BACKLOG 42, арт A3): клітинка 96x96 (меч виходить за 64x64), піксель — блок
     # 12, щоб картинка лишилась ~1,3 Мп; кадр художника 64x64 стоїть у ній з (16, 32), ступні на рядку 88 (= 56).
     # Бойові пози — з першого кадру (той самий меч), біг і стрибок — ON: з кадрів художника (модель лише додає меч).
