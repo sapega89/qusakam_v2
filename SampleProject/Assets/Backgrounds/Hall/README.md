@@ -7,3 +7,4 @@ pixel (576×324, ×1.5 in the game) and a few colours. A Steam release has to di
 | File | Use |
 |---|---|
 | `gen_wall.png` | MayorHall: the wall Sprite2D — arched niches, carved columns, red banners with a plain golden disc (Q57), frieze and plinth |
+| `gen_floor.png` | MayorHall: the Floor Sprite2D right after TileMap (y 384, over the tile floor, which stays as collision): polished marble with a red runner over sandstone blocks; layer `Hall/gen_floor`, cut and put in the wall's colours by `design/shots/candidates/floor_strips/floor_strips.py` |

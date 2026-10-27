@@ -3,80 +3,55 @@ type: reference
 tags: [handoff, orchestrator]
 ---
 
-# Handoff — 2026-10-27, day
+# Handoff — 2026-10-27, afternoon
 
-Where the orchestrator session left off (Sapega asked for a fresh session to free the context). The plan with every
-status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
+Fresh session on purpose (Sapega: «ти дуже багато тримаєш в контексті»). The plan is the new, short [[MASTER_PLAN]]
+(the old one: [[archive/MASTER_PLAN_2026-10-24]]); what waits on Sapega or was deferred is in [[BACKLOG]] → «Moved out of
+MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D775**, **B163**. `feature/backlog` has D764, D765, D771–D773; D766–D770 exist only on
-`integrate-27` (hard-fights-2's, renumbered) until it is merged back.
+**Registers:** `integrate-29` is assigning D787–D793+ and the next B rows; after it lands, the next free numbers are in
+its report — write them here. Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
-## 1. Finish first (local, in this order)
+## 1. First, when you start
+1. `git fetch`; read `design/cloud_reports/integrate-29.md` on `origin/cloud/integrate-29` when it exists (it already
+   contains integrate-28: 11 routines, D775–D786, B163–B169, suite 3 FAIL / 132 PASS — read which and why).
+2. Merge `origin/cloud/integrate-29` into `feature/backlog`. **MASTER_PLAN.md will conflict**: keep the new plan (ours)
+   and mark I29 ✅; the old rows it touched live in the archive. Then push and rebuild the exe (X1).
+3. R2+R3 (`rooms-dressing`) and H1 (`hero-death`) are already created and wait for integrate-29 in the cloud; merge them when they report.
 
-1. **`integrate-27` → the cloud** (Sapega 27.10). Pushed; routine `integrate-27` (`trig_01GjxkDd7Y8XLhKUpJKKo56D`)
-   fixes `verify_flying_enemies` (vulture ×1.25 swoop) and `verify_city_gates_raid`, merges `feature/backlog`, runs the
-   meditation tests and the full suite, commits the `heavy_battle.mp3.import`, pushes `cloud/integrate-27`. When its
-   report lands: fast-forward (or merge) `feature/backlog` to it (stash `project.godot` around it).
-2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
-   `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
-3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
-   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons + **the Lizard Cave gate** (Sapega 27.10, a crop of `Gate_Shrine`: «це треба переробити» — it borrows the Lab's jail bars `Lab/gen_bars.png`, waist-high while its body is 416 px tall; 2×2 candidates made; **Sapega picked: b (brass portcullis) in the cave, c (lashed poles) replaces the Lab bars in Bandit Camp, a and d kept for M6 locked doors** — wiring by the art agent; D-ID + B-ID after integrate-28) → butterflies, a moth and a firefly glow (A23, the atmosphere rule
-   in [[m6_backdrops]]; its D-ID after integrate-28) → **redo hero Death frames 1 and 3** (Sapega 27.10: «у кадрах 1 і 3 дивне обличчя» — frame 1 a swirl for an eye, frame 3 a red slit; keep 2 and 4) → plane
-   cuts like B162 for Bandit Camp ✅ (`7f999a13`), Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
-   depth-critics triage after integrate-28) → M6.
-4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
-
-## 2. In the cloud (merge each when its report lands; renumber D from D775)
-
-| Routine | Trigger | Waits for | Task |
+## 2. Running now
+| Routine / agent | Trigger | Waits for | Task |
 |---|---|---|---|
-| enemy-ai | `trig_01TcJLwHcQtb8KqkrptmVq7D` | — | enemies try to kill |
-| stamina-poise | `trig_018ru9S2zWjNgkwyUjndckNC` | enemy-ai | relaunched 06:13 UTC (the first run waited 8 h and gave up) |
-| room-story-flow | `trig_01MEJ6rh44P3wZwpfenyWXsG` | — | S3 |
-| plugins-fsm | `trig_01YY9Xmo6EvTU28AYoNEuu6r` | — | S4 slice 1 |
-| journal-hints | `trig_0194EUuEt97ps71hVSBof79E` | — | S6, S7 |
-| side-stories | `trig_019hyUUSNnQ2yXz7U228Xa95` | journal-hints | S8 (ref `design/refs/figma_192_1636_side_stories.png`) |
-| decision-audit-2 | `trig_01GLVCtEb2QatMqx4Wee1Air` | — | S15 (D179–D330), S16 |
-| story-dialogue | `trig_01VekVCseD32fdUH9fCsGY5P` | — | S5 (ref `design/refs/figma_36_65_story_dialogue.png`) |
-| secrets | `trig_01MATNrpE73ups6FydJzmJq7` | — | D765 |
-| secrets-icon | `trig_01Xi3DvX6rxb5i4WM8LyrPLN` | secrets | found secrets on the map |
-| map-pan | `trig_01BE9fUzLv58LaCY8TvsAK8W` | secrets-icon | drag / zoom the map like Octopath Traveler |
-| ambient-critters | `trig_01Vvg7wKJZhBCgGk9zvAbMHN` | — | D774 slice 1: bats in the Lizard Cave fly off and come back later |
-| depth-film | `trig_011DaLyWuBRKkSJKpe51aWDe` | — | A22: film every room with real input + per-plane probe, packs in `design/shots/depth/` |
-| integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
-| integrate-28 | `trig_01EYt8kXZd2aYYa2Gy1xowCP` | integrate-27 | merges the 11 reported routines (enemy-ai … ambient-critters, not side-stories / depth-*), renumbers from D775 / B163, full suite; then fast-forward `feature/backlog` |
-| hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — file its D-ID **after** integrate-28 (it numbers from D775) |
-| perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
-| hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | hero-feet | A24: an MK1 blob shadow under the hero (Sapega 27.10) — D-ID after integrate-28 |
-| integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | integrate-28, hero-shadow | merges side-stories, hero-feet+shadow, perf-check, depth-film, depth-critics, feature/backlog; files the pending D/B (atmosphere, gates, Death frames, depth B rows); then fast-forward `feature/backlog` |
-| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | A9: every effect filmed in the game → GIFs + sheets in `design/shots/fx/` for Sapega's notes |
-| scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | A25: size chart data, a probe of every object's drawn height, the chart picture `design/shots/scale_chart.png` — it may have started on the old draft (≈70 px, ranges): on merge, set `world_scale.json` to the plan's exact table (H = 64 art px, one size per category, ±1 px) and re-run the probe and `scale_chart.py` |
-| depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
+| integrate-29 | `trig_013BwjzmMBKhfMPaMMvX65Vy` | — | I29 (see the plan) |
+| fx-film | `trig_012PS9H1zFeGbai2EpsuCitj` | — | every effect filmed → `design/shots/fx/` GIFs for Sapega's notes (BACKLOG A9) |
+| scale-probe | `trig_01QzZV3gTqsGcK5c9taCodyV` | — | **reported**; it may use the old draft (≈70 px, ranges): set `world_scale.json` to the exact table (H = 64 art px) and re-run the probe + `scale_chart.py`, then send Sapega the chart (R4) |
+| skills-v2-data | `trig_01Pq52MBQ8GTvV5YddP6xi1J` | — | H3 slice 1 |
+| skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | H3 slice 2 |
+| skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | H3 slice 3; then create ranged → stance (+ H2 shields) → control |
+| hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | — | **reported**, merged by integrate-29 |
+| rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
+| hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
+| scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
+| art agent (local, ComfyUI) | — | — | §3 items 1–2 running (started 2026-10-27 afternoon): the magic and glass shield effects over Block/1 (`FX/Shield/`), the iron-shield sprite removed, the mouse critter. When it reports: push, send Sapega `design/shots/shield_spells.png` and `critters_mouse.png`, start §3 item 3 → 4 (M6a) |
 
-## 3. Art lane (ComfyUI, local)
+## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
+1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
+   existing Block art and fades; a glass shield cracks and shatters (its shards hurt the attacker). Over `Block/1`;
+   the iron-shield sprite `Sprites/Player/Shields/iron_shield` (`e5cb5681`) is superseded — remove it then.
+2. **Mouse critter** (idle 2, run 4, side view; it runs into a hole) — for R2.
+3. **H4**: `Raise/2`, the faint mark under a column (A8).
+4. **M6a → M6b → M6c → M6d** backdrops ([[m6_backdrops]]: several planes, props on their own plane, foreground,
+   atmosphere, exact sizes from [[world_scale_plan]]). M7 starts once M6a is in.
+5. **H3 art**: the hero poses and VFX the skills-v2 routines list as missing (icons already exist, Figma sheets 10–15).
 
-- **M6** — [[m6_backdrops]]: all graphs are accepted (M1 D721, M3 D773, M4 D772). Rules from Sapega today: several
-  layers per room, something to look at on every screen; interesting things (idols, statues) are their own props on
-  their own parallax plane, in the same place.
-- **First: B162, the Lizard Cave.** Its one backdrop holds three planes; cut them apart (front = floor, foreground
-  rocks, ceiling; middle = walls, tunnel, idol shrines; back = sky, bridge, far canyon), each on a Parallax2D, the front
-  floor on the walk line. A first try with Qwen-Image-Edit is in `design/shots/candidates/cave_planes/` (script
-  `cave_planes.py`): the back plane came out well; the middle kept the floor and the front kept the shrines — try
-  other seeds or prompts, or build the masks from the edits (front = not magenta in the front edit, minus the shrine
-  boxes).
-- Ladders (memory note): floors join by openings in the floor; ladders only where a place would have one (attic, a
-  house wall, a well).
+## 4. Sapega's pages
+- P1 (done): https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — all 112 agent calls confirmed.
+- S1: https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — the draft was accepted as is; the page stays for later fixes
+  (db `verdicts`).
+- Next page when integrate-29 and side-stories are merged: the dialogue review ([[dialogue_review_plan]]).
 
-## 4. Waiting on Sapega
-
-**Critter placements, Sapega 27.10:** moth in Grandfather's attic, a bat in the cellar («миша летюча»), pigeon in the City, and a running mouse that hides in a hole (cellar, houses; new art next in ComfyUI) — [[ambient_critters_plan]]; D-ID after integrate-29.
-
-**Shield (S19), Sapega 27.10:** a shield sprite drawn over the existing frames (Block/1, a Heavy frame for Shield Bash, Run for Shield Charge) only in those three uses («просто щит поверх намалювати»); the 5 shield skills stay — D-ID after integrate-29; FX art now, code after hero-shadow.
-
-**S1 page:** https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — his verdicts on the 33 new skills (db collection `verdicts`, doc = skill slug) → `skill_trees_plan.md` v2.
-
-**P1 page:** https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — his verdicts on the 112 agent/routine calls land in its db (`ArtifactData list`, collection `answers`, doc = D-ID: `verdict` yes/no/change, `note`); apply them to the register.
-
-S19 shield (rework the 5 shield skills or give the hero a shield), `iron_shield`, the «Holy Warrior» name, the base +
-one path tree; Q100 (the god of contracts' name); Q88 (HUD text size); the D-pad left shared by «?» and the new-points
-buttons; P1 (112 agent/routine-call D-IDs to confirm) and P2 (60 `[ЧЕРНЕТКА]` lines).
+## 5. Decisions today still to get D-IDs (if integrate-29 did not file them)
+Critter placements (moth — attic, bat — cellar, mouse — cellar and houses, pigeon — City); the shield is a spell with a
+glass-shield variant (S19, [[skills_audit]]); the 33 skills accepted as drafted; Q66 closed (names, D260 marked);
+shortcuts = blocked where seen, opened from the far side with a lever ([[world_structure_plan]]); M14 folded into M7;
+world scale: H = 64 art px, exact sizes ([[world_scale_plan]]).

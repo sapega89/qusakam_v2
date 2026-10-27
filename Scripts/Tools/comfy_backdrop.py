@@ -908,6 +908,42 @@ LAYERS = {
             f"{CHROMA}"
         ),
     ),
+    # Підлоги інтер'єрів замість бежевої плитки (критики глибини 2026-10-27, знахідка 8): смуга від лінії ходьби до низу
+    # кадру (64 рядки = 96 px світу), кольори — палітрою стіни кімнати (floor_strips.py)
+    "Hall/gen_floor": dict(
+        seed=611,
+        rows=64,
+        top=0,
+        crop=True,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="a side cross-section of the floor of a grand sandstone palace hall spanning the full width and filling "
+        "the frame from top to bottom: along the top a flat level walking surface of polished cream marble slabs with a "
+        "long dark red carpet runner with thin golden borders lying along it, below it the front face of the floor of "
+        "large dressed sandstone blocks with thin dark joints in warm shadow, seen straight on",
+    ),
+    "ElderHouse/gen_floor": dict(
+        seed=613,
+        rows=64,
+        top=0,
+        crop=True,
+        seam="model",
+        key=None,
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=16,
+        quant="octree",
+        prompt="a side cross-section of the floor of an old village house spanning the full width and filling the frame "
+        "from top to bottom: along the top a flat level walking surface of worn brown wooden floor planks with scuffs, "
+        "gaps and a few nail heads, below it a thick dark wooden floor beam and a low wall of plastered adobe in warm "
+        "shadow, seen straight on",
+    ),
     # Дім старости зсередини (BACKLOG 38): стіна-екран кімнати, як Hall/gen_wall у залі мера.
     "ElderHouse/gen_wall": dict(
         seed=385,
