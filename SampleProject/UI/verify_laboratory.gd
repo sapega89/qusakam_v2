@@ -9,7 +9,7 @@ extends SceneTree
 ##      (усі три асисти з LabCells, D305). Три бої добито → lab_corridors_complete, ціль «Go deeper into the laboratory».
 ##   3. Сейв перед нижнім боєм → завантаження: два добиті бої не повертаються, нижній чекає героя й починається.
 ##   4. Сейв після всіх трьох → завантаження: жоден бій не повертається, хоч герой проходить крізь усі зони.
-##   5. B83: кожен місток — 96 px над тим, звідки на нього стрибають; герой стає на нього одним справжнім стрибком.
+##   5. D832: у коридорах немає містків і блоків — кожен поверх порожній від підлоги до стелі (лише люки драбин).
 ## Пише лише в user://verify_laboratory/ (set_save_dir) — справжні сейви не чіпає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_laboratory.gd
 
@@ -23,16 +23,9 @@ const FIGHTS := {"Fight_Upper": [3, 384.0], "Fight_Cursed": [1, 864.0], "Fight_M
 const UNLOCKS: Array[String] = ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete"]
 ## Ступні героя — на стільки нижче його центру.
 const FEET := 24.0
-## Найвищий підйом, на який стає один стрибок (~103 px, без подвійного).
-const JUMP_RISE := 96.0
-## Містки коридорів: [назва, x від, x до, верх (y), звідки стрибають: точка старту героя (ступні)].
-const BRIDGES := [
-	["floor A bridge", 768.0, 960.0, 256.0, Vector2(680, 320)],  # з блоку 512–704 (верх 320)
-	["floor B bridge", 896.0, 1088.0, 768.0, Vector2(992, 864)],
-	["floor C west bridge", 896.0, 1056.0, 1248.0, Vector2(976, 1344)],
-	["floor C east bridge", 1376.0, 1536.0, 1248.0, Vector2(1456, 1344)],
-]
-## Односторонні тайли над драбинами — не містки для стрибка (рядок, колонка).
+## Поверхи A, B, C: рядки тайлів від стелі до підлоги (D832 — між ними нічого, ні містків, ні блоків).
+const STOREYS: Array[Vector2i] = [Vector2i(2, 11), Vector2i(15, 26), Vector2i(30, 41)]
+## Односторонні тайли над драбинами — люки в підлозі, не містки (колонка, рядок).
 const LADDER_HOLES := [Vector2i(46, 12), Vector2i(47, 12), Vector2i(6, 27), Vector2i(7, 27)]
 
 var fails: Array[String] = []
@@ -178,6 +171,12 @@ func _stays_cleared(fight: String) -> void:
 func _fought(fight: String) -> void:
 	var trigger: Node2D = game.map.get_node(fight).trigger_area
 	var count: int = FIGHTS[fight][0]
+	# Хвилі по 2 через 1.5 с: рівним поверхом (D832) герой доходить до краю раніше за останню хвилю — чекаємо її.
+	for i in 300:
+		if game.map.is_fight_cleared(NodePath(fight)):
+			break
+		await physics_frame
+		_fight_frame()
 	ck(started_at.has(fight) and absf(started_at[fight] - trigger.global_position.x) < 60.0,
 			"%s waited for the hero: the first enemy came when he reached its zone (hero x %s, zone x %.0f)"
 			% [fight, started_at.get(fight, "never"), trigger.global_position.x])
@@ -324,43 +323,18 @@ func _initialize() -> void:
 		await _stays_cleared(fight)
 	ck(game.get_objective() == "Go deeper into the laboratory", "objective after the load (%s)" % game.get_objective())
 
-	print("[5] B83: every bridge is one real jump up")
+	print("[5] D832: no platforms — every storey is open from its floor to its ceiling")
 	var fg: TileMapLayer = game.map.get_node("TileMap/Foreground")
-	var bridge_cells := 0
-	var stray: Array[Vector2i] = []
+	var inside: Array[Vector2i] = []
+	var one_way: Array[Vector2i] = []
 	for cell: Vector2i in fg.get_used_cells():
 		if fg.get_cell_atlas_coords(cell).y == 0 and not LADDER_HOLES.has(cell):
-			bridge_cells += 1
-			var hit := BRIDGES.filter(func(b: Array) -> bool:
-				return cell.x * 32 >= b[1] and cell.x * 32 < b[2] and cell.y * 32 == b[3])
-			if hit.size() != 1:
-				stray.append(cell)
-	ck(stray.is_empty(), "every one-way tile belongs to a listed bridge (stray %s)" % [stray])
-	var listed := 0
-	for b: Array in BRIDGES:
-		listed += int((b[2] - b[1]) / 32.0)
-	ck(bridge_cells == listed, "the listed bridges are all there is (%d tiles, listed %d)" % [bridge_cells, listed])
-	for b: Array in BRIDGES:
-		var from: Vector2 = b[4]
-		ck(from.y - b[3] <= JUMP_RISE, "%s: %.0f px above where the hero jumps from" % [b[0], from.y - b[3]])
-		var p: CharacterBody2D = game.player
-		p.global_position = from - Vector2(0, FEET + 4.0)
-		p.velocity = Vector2.ZERO
-		for i in 30: await physics_frame
-		var mid: float = (b[1] + b[2]) / 2.0
-		var on_top := false
-		Input.action_press(&"jump")
-		for i in 120:
-			await physics_frame
-			if i == 18:
-				Input.action_release(&"jump")
-			_steer(&"move_right", p.global_position.x < mid - 40.0)
-			_steer(&"move_left", p.global_position.x > mid + 40.0)
-			if i > 10 and p.is_on_floor():
-				on_top = absf(p.global_position.y + FEET - b[3]) < 4.0
-				break
-		_release_all()
-		ck(on_top, "%s: one jump lands on top (y %.0f)" % [b[0], p.global_position.y + FEET])
+			one_way.append(cell)
+		for storey: Vector2i in STOREYS:
+			if cell.x > 0 and cell.x < 53 and cell.y >= storey.x and cell.y <= storey.y:
+				inside.append(cell)
+	ck(one_way.is_empty(), "no one-way tile but the ladder hatches (%s)" % [one_way])
+	ck(inside.is_empty(), "nothing stands between a storey's floor and its ceiling (%s)" % [inside])
 
 	for f in DirAccess.get_files_at(TEST_DIR):
 		DirAccess.remove_absolute(TEST_DIR + f)
