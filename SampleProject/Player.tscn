@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/PlayerStamina.gd" id="stamina"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/HeroShadow.gd" id="hero_shadow"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Shadow/shadow.png" id="shadow_tex"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/FX/ShieldSpell.tscn" id="shield_spell"]
 [ext_resource type="Texture2D" uid="uid://b6ddhedt2v5ut" path="res://SampleProject/Sprites/Player/Run/1.png" id="r1"]
 [ext_resource type="Texture2D" uid="uid://be1t6ppf85jnn" path="res://SampleProject/Sprites/Player/Run/2.png" id="r2"]
 [ext_resource type="Texture2D" uid="uid://k1sjmeart71i" path="res://SampleProject/Sprites/Player/Run/3.png" id="r3"]
@@ -1687,6 +1688,9 @@ position = Vector2(9, 21)
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
 centered = false
+
+[node name="ShieldSpell" parent="." instance=ExtResource("shield_spell")]
+position = Vector2(0, -13.5)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=305643042]
 libraries/ = SubResource("AnimationLibrary_player")

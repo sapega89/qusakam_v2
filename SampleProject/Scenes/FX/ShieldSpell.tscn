@@ -1,0 +1,136 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/ShieldSpell.gd" id="1_spell"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_1.png" id="magic_drop_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_2.png" id="magic_drop_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_3.png" id="magic_drop_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/hold_1.png" id="magic_hold_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/hold_2.png" id="magic_hold_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/fade_1.png" id="magic_fade_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/fade_2.png" id="magic_fade_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/appear_1.png" id="glass_appear_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/appear_2.png" id="glass_appear_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/hold_1.png" id="glass_hold_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/crack_1.png" id="glass_crack_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/crack_2.png" id="glass_crack_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/shatter_1.png" id="glass_shatter_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/shatter_2.png" id="glass_shatter_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/glass/shatter_3.png" id="glass_shatter_3"]
+
+[sub_resource type="CanvasItemMaterial" id="Glow"]
+light_mode = 1
+
+[sub_resource type="SpriteFrames" id="MagicFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("magic_drop_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("magic_drop_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("magic_drop_3")
+}],
+"loop": false,
+"name": &"drop",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("magic_hold_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("magic_hold_2")
+}],
+"loop": true,
+"name": &"hold",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("magic_fade_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("magic_fade_2")
+}],
+"loop": false,
+"name": &"fade",
+"speed": 10.0
+}]
+
+[sub_resource type="SpriteFrames" id="GlassFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("glass_appear_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("glass_appear_2")
+}],
+"loop": false,
+"name": &"appear",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("glass_hold_1")
+}],
+"loop": true,
+"name": &"hold",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("glass_crack_1")
+}],
+"loop": true,
+"name": &"crack_1",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("glass_crack_2")
+}],
+"loop": true,
+"name": &"crack_2",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("glass_shatter_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("glass_shatter_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("glass_shatter_3")
+}],
+"loop": false,
+"name": &"shatter",
+"speed": 12.0
+}]
+
+[node name="ShieldSpell" type="Node2D"]
+z_index = 1
+script = ExtResource("1_spell")
+
+[node name="Magic" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+material = SubResource("Glow")
+position = Vector2(12, -96)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("MagicFrames")
+animation = &"drop"
+centered = false
+
+[node name="Glass" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+material = SubResource("Glow")
+position = Vector2(12, -48)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("GlassFrames")
+animation = &"appear"
+centered = false

@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="rd_bat"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_mouse.tscn" id="rd_mouse"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="rd_spores"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
@@ -168,6 +169,9 @@ contents = Dictionary[String, int]({
 "potion": 1
 })
 charm = "hermit_amulet"
+
+[node name="Mouse1" parent="." instance=ExtResource("rd_mouse")]
+position = Vector2(1320, 416)
 
 [node name="RoomInstance" parent="." instance=ExtResource("r8")]
 

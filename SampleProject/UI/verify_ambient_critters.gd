@@ -13,6 +13,7 @@ extends SceneTree
 ##      кажани грають critter_flap, метелики й міль — ні.
 ##   6. Атмосфера: у кожній кімнаті одне-два тихі ефекти; Low (D554) удвічі ріже ті, де частинок ≥ 16, High вертає.
 ##   7. Трава (A4): кущики стоять на підлозі, позаду героя, не біля скрині чи підбирання.
+##   8. Миша (D803, ambient_critters_plan): сидить на підлозі; злякана — біжить підлогою (run) у свою нору й зникає.
 ## Затримка вкорочується через експортовану змінну — тест не чекає 30 с. Пише лише в user://verify_ambient_critters/.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -24,7 +25,7 @@ const DECOR := "res://SampleProject/Scenes/Backgrounds/Decor/"
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## Висота в пікселях арту (world_scale_plan: «bat, pigeon, lark» 24, «butterfly, moth, mouse» 12); світ = арт × 1.5.
 const ART_HEIGHT := {"critter_bat": 24, "critter_bird": 24, "critter_pigeon": 24, "critter_butterfly": 12,
-		"critter_butterfly_blue": 12, "critter_moth": 12}
+		"critter_butterfly_blue": 12, "critter_moth": 12, "critter_mouse": 12}
 const GRASS_ART := 16
 ## Хто де живе (R2, Sapega 2026-10-27): кімната → {сцена: скільки}.
 const LIVES := {
@@ -37,8 +38,8 @@ const LIVES := {
 	"BanditCamp": {"critter_bird": 1, "critter_butterfly": 1},
 	"MesaClimb": {"critter_butterfly": 1},
 	"LizardCave": {"critter_bat": 2},
-	"GatehouseCellar": {"critter_bat": 2},
-	"ElderHouse": {"critter_moth": 1},
+	"GatehouseCellar": {"critter_bat": 2, "critter_mouse": 1},
+	"ElderHouse": {"critter_moth": 1, "critter_mouse": 1},
 }
 ## Атмосфера кожної кімнати (m6_backdrops «Every room has atmosphere»); Canyon — еталонні вихори пилу Decor/Dust*.
 const AIR := {
@@ -178,6 +179,8 @@ func _rooms() -> void:
 			var kind: String = c.scene_file_path.get_file().get_basename()
 			var flaps: bool = kind in ["critter_bat", "critter_bird", "critter_pigeon"]
 			ck(heard.has(&"critter_flap") == flaps, "%s: %s %s on take-off" % [room, c.name, "flaps (critter_flap)" if flaps else "is silent"])
+			if kind == "critter_mouse":
+				await _check_mouse(room, c)
 		print("[6] %s: the air" % room)
 		var effects := _effects(room)
 		ck(effects.size() >= 1 and effects.size() <= 2, "%s: one or two quiet effects %s" % [room, effects.keys()])
@@ -286,6 +289,17 @@ func _check_grass(room: String) -> void:
 				near += 1
 	ck(off_floor == 0, "%s: every tuft stands on the floor (%d off)" % [room, off_floor])
 	ck(near == 0, "%s: no tuft at a chest, pickup or door (%d)" % [room, near])
+
+
+## [8] Миша не летить: біжить по підлозі (y не змінюється) до нори й там зникає.
+func _check_mouse(room: String, mouse: Node2D) -> void:
+	print("[8] %s: the mouse runs into its hole" % room)
+	var sprite: AnimatedSprite2D = mouse.sprite
+	await _frames(3)
+	ck(sprite.animation == &"run" and is_zero_approx(sprite.position.y) and sprite.position.x > 0.0,
+			"%s: it runs along the floor toward the hole (%s at %s)" % [room, sprite.animation, sprite.position])
+	await _seconds(absf(mouse.hole.position.x) / mouse.run_speed + 0.3)
+	ck(mouse.is_away() and not sprite.visible, "%s: and is gone in the hole" % room)
 
 
 func _bats() -> Array[Node2D]:
