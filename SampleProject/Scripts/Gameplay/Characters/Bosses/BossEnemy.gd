@@ -56,9 +56,17 @@ func _add_poise_bar() -> void:
 	pass
 
 
-## Бос — не вид з enemy_variety.json (D652): без розміру, еліти й рівня бою, його числа — свої (D671).
+## Бос — не вид з enemy_variety.json (D652): без розміру й еліти, його числа — свої (D671). D840: вони зроблені під рівень
+## scaling.boss_levels (підлога), а бос стає на рівень героя + 2 і росте від своєї підлоги за тими ж таблицями levels.
+## Ходи, візерунок і замахи не міняються; досвід — теж (D670).
 func _apply_variety() -> void:
-	pass
+	level = EnemyScaling.boss_level(enemy_stats.enemy_type)
+	scaled_level = EnemyScaling.scaled_level(level, EnemyScaling.hero_level(), "boss")
+	var grown: Dictionary = EnemyScaling.boss_growth(level, scaled_level)
+	Max_Health = roundi(Max_Health * grown.health)
+	current_health = Max_Health
+	base_damage *= grown.damage
+	damage = base_damage
 
 
 ## Стан ATTACK у боса — це очікування між ходами, а не удар: замість анімації attack (фальшивий замах) — спокій.

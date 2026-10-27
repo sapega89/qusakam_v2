@@ -2,11 +2,13 @@ extends SceneTree
 
 ## Складність (D642): чи бій досі важкий. Безголова симуляція рахує з тих самих формул, що й гра — Player.max HP і
 ## mitigated_damage, PlayerCombat.hit_damage і серія, SkillManager.skill_damage / skill_heal, справжні вороги з
-## EnemyStats і enemy_variety.json (розмір, еліта) і боси зі своїх сцен — без жодної копії чисел.
+## EnemyStats і enemy_variety.json (розмір, еліта) і боси зі своїх сцен — без жодної копії чисел. Рівень ворога — за
+## рівнем героя (D840, EnemyScaling): звичайний на рівні героя, еліта +1, бос +2, не нижче рівня бою (у боса — свого).
 ## Рівень, на якому герой стрічає кожного ворога, — з XP-кривої й порядку кімнат (як verify_xp_curve), спорядження —
 ## те, що дає маршрут: мідний меч і шкіряна броня діда до Міста, із Міста — залізні меч, броня й щит (крамниці).
 ## Дві збірки: STRENGTH — усі очки атрибутів у Strength, JP не витрачені; SKILLS — очки 2 Strength / 2 Vitality /
 ## 1 Wisdom за рівень, JP на активні й пасивні навички дерева (Paladin після клятви).
+##   [0c] рівень кожного ворога — max(підлога, герой + зсув виду) (D840);
 ##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів і валить ворога за 4–6 своїх;
 ##   [2] бос: валить героя за 3–4 удари, падає приблизно за 40 (34–46) ударів SKILLS-героя;
 ##   [3] еліта (вид-еліта й заплановані великі види в точках BigSlot_*, D652) і бос: SKILLS-герой перемагає, STRENGTH — ні;
@@ -99,13 +101,22 @@ func _initialize() -> void:
 				ck(others.is_empty(), "%s first meets the hero in %s, with no other big or cursed kind (%s)" % [id, fight.fight, others])
 	var rows: Array[Dictionary] = []
 	print("    the table: H = enemy hits that kill the hero, N = hero hits that kill it (flask in H+F)")
-	print("    %-26s %3s %-8s %5s %4s %4s %3s %4s %5s %4s %4s %s" % ["enemy", "lvl", "build", "HP", "hit", "got", "H", "H+F", "e.HP", "atk", "N", "wins"])
+	print("    e.lv = the enemy's level at this hero (D840: max(its floor, hero + 0 / +1 elite / +2 boss))")
+	print("    %-26s %3s %4s %-8s %5s %4s %4s %3s %4s %5s %4s %4s %s" % ["enemy", "lvl", "e.lv", "build", "HP", "hit", "got", "H", "H+F", "e.HP", "atk", "N", "wins"])
 	for meeting: Dictionary in meetings:
 		for build: String in ["STRENGTH", "SKILLS"]:
 			var row := await _fight(meeting, build)
 			rows.append(row)
-			print("    %-26s %3d %-8s %5d %4d %4d %3d %4d %5d %4d %4d %s" % [row.name, row.level, build, row.hero_hp, row.enemy_hit,
+			print("    %-26s %3d %4d %-8s %5d %4d %4d %3d %4d %5d %4d %4d %s" % [row.name, row.level, row.scaled, build, row.hero_hp, row.enemy_hit,
 					row.got, row.taken, row.taken_flask, row.enemy_hp, row.atk, row.dealt, "yes" if row.wins else "no"])
+
+	print("[0c] D840: every enemy meets the hero at max(its floor, hero level + its kind's offset); on the straight route the")
+	print("     floor is the hero's level, so ordinary enemies stand at it, elites one above, bosses two above or their own floor")
+	var offsets: Dictionary = Variety.data().scaling.offsets
+	for row in rows:
+		var floor_level: int = row.floor
+		ck(row.scaled == clampi(maxi(floor_level, row.level + int(offsets[row.offset_kind])), 1, 20),
+				"%s, hero %d: level %d (floor %d, %s +%d)" % [row.name, row.level, row.scaled, floor_level, row.offset_kind, offsets[row.offset_kind]])
 
 	print("[1] an ordinary enemy: 5–6 hits kill the SKILLS hero, 4–6 of his kill it")
 	for row in rows:
@@ -251,7 +262,8 @@ func _fight(meeting: Dictionary, build: String) -> Dictionary:
 	await process_frame
 	var hit: int = roundi(enemy.damage)
 	var row := {"cls": meeting.cls, "name": meeting.name, "level": meeting.level, "build": build, "hero_hp": hero.Max_Health,
-			"enemy_hit": hit, "enemy_hp": enemy.Max_Health}
+			"enemy_hit": hit, "enemy_hp": enemy.Max_Health, "scaled": enemy.scaled_level, "floor": enemy.level,
+			"offset_kind": "boss" if meeting.cls == "boss" else ("elite" if enemy.elite else "ordinary")}
 	row.taken = _hits_to_kill_hero(hit, 0)
 	Rolls.calm()
 	row.got = hero.mitigated_damage(hit)

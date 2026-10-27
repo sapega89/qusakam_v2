@@ -232,9 +232,12 @@ func _elites() -> void:
 	await process_frame
 	ck(not plain.elite and plain.Max_Health == stats.max_health and is_equal_approx(plain.base_damage, stats.base_damage),
 			"a bandit is not an elite: HP %d, damage %.1f" % [plain.Max_Health, plain.base_damage])
-	ck(fly.elite and fly.Max_Health == roundi(fly_stats.max_health * 2.5) and is_equal_approx(fly.base_damage, fly_stats.base_damage * marks.damage)
+	# D840: еліта стоїть на рівень вище героя (рівень 1 тут) — множники рівня 2 понад еліту
+	var fly_grown: Dictionary = variety.level(fly.scaled_level)
+	ck(fly.elite and fly.scaled_level == 2 and fly.Max_Health == roundi(fly_stats.max_health * fly_grown.health * 2.5)
+			and is_equal_approx(fly.base_damage, fly_stats.base_damage * fly_grown.damage * marks.damage)
 			and fly.xp_reward == roundi(fly_stats.xp_reward * marks.xp),
-			"the Cthulhu fly is an elite: HP %d, damage %.1f, XP %d" % [fly.Max_Health, fly.base_damage, fly.xp_reward])
+			"the Cthulhu fly is an elite (level %d, D840): HP %d, damage %.1f, XP %d" % [fly.scaled_level, fly.Max_Health, fly.base_damage, fly.xp_reward])
 	var fly_scene: Node = load("res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn").instantiate()
 	ck(_near(fly.get_node(^"Sprite2D").scale, fly_scene.get_node(^"Sprite2D").scale * marks.scale) and fly.get_node(^"Sprite2D").material == null
 			and plain.get_node(^"Sprite2D").material == null, "an elite is its own art: no outline glow, grown x%.2f over its scene (D829)" % marks.scale)
@@ -259,9 +262,10 @@ func _heavy_archer() -> void:
 	await process_frame
 	ck(heavy.get_script().resource_path.ends_with("ArcherEnemy.gd") and stats.enemy_type == "heavy_archer",
 			"the heavy archer runs on the archer's behaviour (ArcherEnemy)")
-	ck(heavy.elite and heavy.Max_Health == roundi(stats.max_health * marks.health)
-			and is_equal_approx(heavy.base_damage, stats.base_damage * marks.damage),
-			"the heavy archer is an elite: HP %d, damage %.1f" % [heavy.Max_Health, heavy.base_damage])
+	var grown: Dictionary = variety.level(heavy.scaled_level)  # D840: еліта — рівень героя + 1
+	ck(heavy.elite and heavy.scaled_level == 2 and heavy.Max_Health == roundi(stats.max_health * grown.health * marks.health)
+			and is_equal_approx(heavy.base_damage, stats.base_damage * grown.damage * marks.damage),
+			"the heavy archer is an elite (level %d, D840): HP %d, damage %.1f" % [heavy.scaled_level, heavy.Max_Health, heavy.base_damage])
 	var big: Vector2 = _rect_size(heavy.get_node(^"Hurtbox/CollisionShape2D"))
 	var small: Vector2 = _rect_size(archer.get_node(^"Hurtbox/CollisionShape2D"))
 	var big_feet: float = heavy.get_node(^"Hurtbox/CollisionShape2D").position.y + big.y / 2.0
@@ -443,8 +447,9 @@ func _foam() -> void:
 	var core: Color = drops.color_ramp.get_color(0)
 	var tint: Color = drops.color_ramp.get_color(1)
 	ck(core.get_luminance() > 0.85 and tint.b > tint.r + 0.3 and tint.b > tint.g, "the foam glows: a near-white core fading to blue (%s → %s)" % [core, tint])
-	ck(jackal.elite and jackal.Max_Health == roundi(load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").max_health * 2.5),
-			"the horror jackal is an elite (HP %d)" % jackal.Max_Health)
+	ck(jackal.elite and jackal.Max_Health == roundi(load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").max_health
+			* variety.level(jackal.scaled_level).health * 2.5),
+			"the horror jackal is an elite (level %d, D840: hero + 1; HP %d)" % [jackal.scaled_level, jackal.Max_Health])
 	jackal.set_physics_process(false)  # стоїть: погляд задає тест
 	jackal.enemy_logic.set_physics_process(false)
 	jackal.enemy_view._offset_to(0.0, 0.01)  # нахил замаху (більший шакал D766 дістає героя з точки тесту) — геть

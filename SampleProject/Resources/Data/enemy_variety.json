@@ -9,6 +9,11 @@
 		"health": [1.0, 1.1, 1.2, 1.35, 1.9, 2.1, 2.35, 2.6, 2.75, 2.9, 3.05, 3.2, 3.35, 3.5, 3.65, 3.8, 3.95, 4.1, 4.25, 4.4],
 		"damage": [1.0, 1.2, 1.4, 1.6, 2.2, 2.8, 3.4, 3.9, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6]
 	},
+	"scaling": {
+		"_note": "D840: an enemy's level follows the hero's. Effective level = max(floor, hero level + offsets[kind]), at most XPManager.MAX_LEVEL (EnemyScaling.scaled_level). The floor of an ordinary enemy or an elite is its fight's enemy_level (D670); a boss's is boss_levels, the level its numbers were made for (Brass Collector and Scorpicore 5, D671/D678; Fire Djinn 12, D671; Mercenary 16, D661). HP and damage follow the effective level through levels.health / levels.damage (a boss: their ratio to its floor). XP does not follow the level (D670), so the route levels up as before (verify_xp_curve). Recomputed on every spawn, so a D492 respawn rescales.",
+		"offsets": {"ordinary": 0, "elite": 1, "boss": 2},
+		"boss_levels": {"brass_collector": 5, "scorpicore_warrior": 5, "fire_djinn": 12, "lab_boss": 16}
+	},
 	"pressure": {"_note": "D642: how many enemies may wind up at once (EnemyLogic attack token, D576 had 2, D642 3). D770: 2 again, and all from one side of the hero: enemies now arrive fast and stand on both sides.", "max_attackers": 2},
 	"elite": {"_note": "D560's multipliers, only for kinds with \"elite\": true (D652). D754, D777: poise multiplies the kind's poise (x2.0: elites have a big poise bar), and an elite is not pushed by the hero's hits, like a boss (B134). D829: scale grows every elite from its feet on top of its scene size (D766), so it reads apart from its ordinary kind.", "scale": 1.25, "health": 2.5, "damage": 2.3, "xp": 1.0, "poise": 2.0, "knockback_immune": true},
 	"kinds": {
