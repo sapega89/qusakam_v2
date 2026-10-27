@@ -325,7 +325,8 @@ func _stamina() -> void:
 			while combat.state != combat.State.READY:
 				await physics_frame
 	ck(st.exhausted and swings[0] <= 6, "mashing runs the bar dry within a combo and a half (%d swings and heavies)" % swings[0])
-	await _until_ready()
+	while combat.state != combat.State.READY:  # не _until_ready: його 0.7 с шкала встигла б набратись
+		await physics_frame
 	var before: int = swings[0]
 	await _tap(&"attack")
 	for f in 3: await physics_frame
@@ -363,7 +364,7 @@ func _stamina() -> void:
 	var held: float = st.current
 	await create_timer(1.0).timeout
 	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 3.0,
-			"held, the bar refills at a third of the pace (+%.0f in 1 s)" % (st.current - held))
+			"held, the bar refills at half the pace (+%.0f in 1 s)" % (st.current - held))
 	st.refill()
 	var hp: int = hero.current_health
 	var left: float = st.current

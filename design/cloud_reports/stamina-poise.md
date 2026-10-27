@@ -5,13 +5,14 @@ tags: [cloud, combat, stamina, poise]
 
 # Cloud report: stamina-poise
 
-**Summary.** Done: stamina is back for the hero (D776), with an **ST** row under SP. The row sits where the Figma revision for D537 had it (`48bac628`: plate 470 × 144). A poise bar is on every enemy and boss (D777). The combo's third hit no longer staggers (D778). Both bots read stamina.
-- **MASHER** runs dry after 2.7–5 swings a bar (3.8 on average, a combo and a half at most). 49 of the 81 blows he takes land while his bar is empty. He still beats the lone bandit (63 % HP left, was 82 %) and loses every elite, boss and group of 3+.
-- **GOOD** (stops swinging below swing + roll, rolls once a red tell, steps out of reach to refill) wins all nine.
-- **Tests:** `verify_masher` ALL PASS (with the drill), and the combat, HUD, boss and difficulty verifies all pass. Full suite: see §7.
-- **D-IDs:** D776–D778 (§6). No B rows.
-- **Not done:** no art for the stagger-by-poise flash; the D535 stamina skill drafts (Steady Breath and the others) were not brought back (Q in §6).
-- **Branch:** `cloud/stamina-poise-2`. `cloud/stamina-poise` holds a stale "not started" report from an earlier run of this routine on an older base. Force-pushing over it was refused, so this work is on `-2`. Merge `-2` and drop the old one.
+**Summary.** Done: stamina is back for the hero (D776), with an **ST** row under SP. The row sits where the Figma revision for D537 had it (`48bac628`: plate 470 × 144). A poise bar is on every enemy and boss (D777). The combo's third hit no longer staggers (D778). An exhausted hero is an opening enemies punish. Both bots read stamina.
+- **MASHER** runs dry after 2.5–5 swings a bar (3.7 on average, a combo and a half at most). **49 of the 80** blows he takes land while his bar is empty. He still beats the lone bandit (45–63 % HP left, was 82 %) and loses every elite, boss and group of 3+.
+- **GOOD** (stops swinging below swing + roll, two rolls in a group, one roll per red tell, steps out of reach to refill) wins 8 of 9 every run.
+- **Not done: GOOD vs the Caravan** (armoured elite + 4) is a coin flip in full runs. It won on the 1st or 2nd try in 2 of 5 full runs and 3 of 3 alone after the last tuning; it lost both tries in the final run. More tuning is needed (§3).
+- Other gaps: no stamina skills (Q in §6); no art for the poise-break flash.
+- `verify_masher` final run: `RESULT: 2 FAIL`. One is that Caravan row. The other is a D775 AI bound, an enemy idling in reach for 1.02 s against ≤ 1.0, which flakes ±0.4 s between runs. Everything else is green, including the new [8].
+- **D-IDs:** D776–D778 (§6). No B rows. Full suite: `SUITE: 3 FAIL`, 117 PASS (§7); after fixes, the two real failures pass alone.
+- **Branch:** `cloud/stamina-poise-2`. `cloud/stamina-poise` holds a stale "not started" report from an earlier run of this routine; force-pushing over it was refused. Merge `-2` and drop the old one.
 
 ## 1. Stamina (D776), restored from D537 / `c526ad3e`, removed by D551 / `88c85227`
 
@@ -26,12 +27,12 @@ Brought back from git history and extended (`Scripts/Player/Components/PlayerSta
 | roll | 20 | **22** × armour weight (light −20 %, heavy +20 %) × Sand Runner's Ring (−30 %) |
 | raising the block | – | **5** (does not pause the refill) |
 | a blocked hit | 15 | **10** |
-| refill | 60/s after 0.5 s | **100/s after 0.5 s**; while the block is held, 30 %; armour weight light +10 %, heavy −15 % |
+| refill | 60/s after 0.5 s | **100/s after 0.4 s**; while the block is held, 50 %; armour weight light +10 %, heavy −15 % |
 | empty | no roll; attacks still work | **exhausted**: no swing, heavy, shot or roll until the bar is back to **30**; each refused press flashes the ST row red (`UITokens.STAMINA_EMPTY_FLASH`, 0.35 s) and plays `stamina_empty` (throttled to the flash) |
 | weak block | blocked hit on an empty bar: ½ damage and a stagger | same (`Player.WEAK_BLOCK_DAMAGE`) |
 
 Restored as they were: `EventBus.player_stamina_changed` (now with `exhausted`), the `ST` / `ВТ` strings and `UITokens.STAMINA_FILL` `#E67E22`. New: `player_stamina_refused`, theme type `HudStBar`. The parry and the riposte cost nothing.
-- **Timings:** the empty bar lets the hero act again after 0.5 + 30/100 = **0.8 s** and is full after **1.5 s** of standing still. Measured in `verify_combat_player` [3]: acts again in < 1.4 s, full in < 2.2 s.
+- **Timings:** the empty bar lets the hero act again after 0.4 + 30/100 = **0.7 s** and is full after **1.4 s** of standing still. Measured in `verify_combat_player` [3]: acts again **0.57 s** and full **1.27 s** after the last refused press.
 - **Hooks:** armour weight (`armour_weight.json` `roll_stamina`, `stamina_regen`; `ArmourWeight.roll_stamina_of`, `stamina_regen_of`). Sand Runner's Ring gets `roll_stamina −0.3`, and its text says so (en/uk). No skill mentions stamina now: D551 swapped the four D535 drafts, and Light Feet stays a longer roll.
 - **HUD:** `player_vitals_panel.tscn` uses the D549 revision layout. The plate is 144 tall; the rows are HP 66, SP 88 and ST 110; the portrait is at y 40, the level badge at y 118 and the curl at y 64; the chips are at y 158; the panel is 520 × 220. `design/combat_hud_mapping.md` is updated.
 
@@ -88,17 +89,20 @@ Shot: `design/shots/stamina_poise.png`. Top left: the hero panel with ST at 40 %
 2. Holding the block drained 8/s and stopped the refill, so GOOD sat exhausted for up to 20 s in groups. Holding the block now refills at 30 % instead.
 3. Raising the block paused the refill, so GOOD, blocking every tell, never refilled against bosses. Raising now costs 5 without the pause, and a blocked hit 10.
 4. GOOD rested until 60 %: it lost both bosses with 11–14 swings in 30 s. It now swings whenever a swing and a roll fit, and steps 150 px back to rest when one or two enemies are left.
-5. Finally light 20 → 18, roll 25 → 22, refill 90 → 100/s. The masher still runs dry on his 5th swing at most.
+5. Light 20 → 18, roll 25 → 22, refill 90 → 100/s. The masher still runs dry on his 5th swing at most.
+6. GOOD kept one roll in reserve in groups and lost the Caravan to its chain of red tells. It now keeps two in a group of 3+.
+7. Holding the block now refills at 50 % (was 30 %) and the refill starts after 0.4 s (was 0.5); the masher never blocks, so only blockers gain. Caravan alone: 3 of 3 first-try wins (17, 36, 55 % HP). In the final full run it still lost both tries (0 % after 30 s and 53 s). Earlier full runs: won at 25 %, won at 36 %, lost, lost. **Open:** the Caravan is the one fight GOOD does not win reliably. Next levers to try: the elite armoured scorpion's poise (×2.0 → ×1.6, so ripostes keep it down longer), or a smaller blocked-hit cost.
+8. The table above is from `m_final` (refill 0.5 s / block 30 %). The final run (`m_end`) has the same picture. MASHER: 49 of 80 blows in empty windows, 3.7 swings a bar, lone bandit won at 45 / 63 %. GOOD: 0 of 31 blows in empty windows, ran dry 5×, HP left 52–100 % in the eight fights it won.
 
 ## 4. Bots (`verify_masher`)
 
 - **MASHER:** presses as before. With an empty bar he does not press; the game would refuse anyway. He stands in the enemy's face.
-- **GOOD:** below roll cost + light cost (or exhausted) he does not swing. With one or two enemies left he steps to 150 px from the nearest; in a group he holds his ground and blocks. He rolls once per red tell.
+- **GOOD:** below roll cost (two rolls against 3+ enemies) + light cost, or exhausted, he does not swing. With one or two enemies left he steps to 150 px from the nearest; in a group he holds his ground and blocks. He rolls once per red tell.
 - **New [8]:** the masher runs dry in every fight, at most 6 swings and heavies a bar; at least 10 blows land on him in empty windows. The new per-fight lines `ST (D776)` and `poise (D777)` give the numbers above. `MASHER_NODRILL=1` skips the drill.
 
 ## 5. Tests
 
-- `verify_combat_player`:
+- `verify_combat_player` (also: an exhausted hero is an opening, `EnemyLogic._hero_opened`):
   - [3] rewritten for stamina: the costs, mashing runs dry ≤ 6 swings, an empty bar refuses a swing and a roll with a flash, the hero acts again and the bar refills, raising and holding the block, the weak block;
   - new [6] for the poise bar: three combo hits fill 3 of 14 and do not stagger, the bar drains, a heavy is ≥ 4 lights, a full bar staggers and empties.
 
@@ -107,13 +111,13 @@ Shot: `design/shots/stamina_poise.png`. Top left: the hero panel with ST at 40 %
 - `verify_combat_hud` (panel 520 × 220, rows HP/SP/ST, chips at y 158): ALL PASS.
 - `verify_combat_enemies`, `verify_enemy_stagger`, `verify_bosses`, `verify_difficulty` (unchanged, green): ALL PASS.
 - `verify_enemy_variety` (elite poise ×2.0): ALL PASS.
-- `verify_masher` (both bots, drill): ALL PASS.
+- `verify_masher` (both bots, drill): `m_final` ALL PASS. Final run `m_end` after the last tuning: 2 FAIL (GOOD Caravan; a D775 idle bound at 1.02 s); [8] passes, 49 blows in empty windows.
 - There is no `verify_hud_v2`; the HUD v2 checks live in `verify_combat_hud`.
 - Capture: `capture_stamina_poise.gd` → `design/shots/stamina_poise.png`.
 
 ## 6. D-IDs (next free at writing: D776; the integrator renumbers)
 
-| D776 | OVERRIDE (reverses D551, restores D537) | **Stamina is back** (Sapega 2026-10-26: «а ще все-таки енергію гравцю треба додати, бо бити без передиху — це круто, але тоді ворог не буде встигати вдарити або провести атаку»). `PlayerStamina` (D537's, from `c526ad3e`), max 100. Costs: light swing 18, heavy 30 at its wind-up, quick and charged shots 10 / 25, roll 22, raising the block 5, a blocked hit 10. Parry and riposte are free. Refill: 100/s once 0.5 s pass without spending; 30 % while the block is held. At zero the hero is exhausted: no swing, heavy, shot or roll until the bar is back to 30 (0.8 s from empty; full in 1.5 s). Each refused press flashes the ST row red and plays a dull sound. A blocked hit on an empty bar is a weak block (½ damage and a stagger, as D537). Armour weight prices the roll (light −20 %, heavy +20 %) and the refill (light +10 %, heavy −15 %); Sand Runner's Ring makes rolls 30 % cheaper. HUD: the ST row under SP at the Figma D549 revision's place (plate 470 × 144, panel 520 × 220). Tuned with `verify_masher`: a masher runs dry within a combo and a half (3–5 swings), and 60 % of the blows he takes land while his bar is empty. All numbers are provisional. |
+| D776 | OVERRIDE (reverses D551, restores D537) | **Stamina is back** (Sapega 2026-10-26: «а ще все-таки енергію гравцю треба додати, бо бити без передиху — це круто, але тоді ворог не буде встигати вдарити або провести атаку»). `PlayerStamina` (D537's, from `c526ad3e`), max 100. Costs: light swing 18, heavy 30 at its wind-up, quick and charged shots 10 / 25, roll 22, raising the block 5, a blocked hit 10. Parry and riposte are free. Refill: 100/s once 0.4 s pass without spending; half pace while the block is held. At zero the hero is exhausted: no swing, heavy, shot or roll until the bar is back to 30 (0.7 s from empty; full in 1.4 s), and enemies treat him as an opening. Each refused press flashes the ST row red and plays a dull sound. A blocked hit on an empty bar is a weak block (½ damage and a stagger, as D537). Armour weight prices the roll (light −20 %, heavy +20 %) and the refill (light +10 %, heavy −15 %); Sand Runner's Ring makes rolls 30 % cheaper. HUD: the ST row under SP at the Figma D549 revision's place (plate 470 × 144, panel 520 × 220). Tuned with `verify_masher`: a masher runs dry within a combo and a half (3–5 swings), and 49 of the 80 blows he takes land while his bar is empty. All numbers are provisional. |
 | D777 | OVERRIDE | **A poise bar on every enemy and boss** (Sapega 2026-10-26: «шкала стану має бути в усіх»). Each hero hit fills it by its poise damage: light 1, heavy 5 (was 3), parry 40 % of the bar (and its stagger as before), riposte the whole bar. It drains at 20 % a second after 1.2 s without a hit (was: a full reset after 2 s). Full: a 0.6 s stagger and the bar empties. Big poise: elites ×2.0 (was ×1.6); bosses Scorpicore 45, Mercenary 55, Brass Collector 40, Fire Djinn 35 (were 10–16). One component (`poise_bar.tscn`, theme type `PoiseBar`, `UITokens.POISE_*`): over an ordinary enemy, 56 × 5 px over its head, shown while it fights or its bar is not empty; in the boss bar, a row under HP. D502 stands: no HP bar over ordinary enemies. |
 | D778 | OVERRIDE (amends D265, D754) | **No stagger from the third hit** (Sapega 2026-10-26: «стан з третього удару — це глупо і дуже дивно»). The combo finisher's 40 px push (`finisher_knockback`) froze the enemy and broke its wind-up on every third swing; it is gone, and the finisher's poise is a light's (was 2). Only the poise bar staggers by hits. The finisher keeps ×1.4 damage and its cleave. |
 
@@ -123,4 +127,9 @@ No B rows fixed.
 
 ## 7. Full suite
 
-(filled below)
+`Scripts/Tools/run_verify.sh` (Linux, Godot 4.6.2), run once before the last tuning round: **`SUITE: 3 FAIL`, 117 PASS**.
+- `verify_masher`: HUNG at the suite's 180 s limit, as on enemy-ai; a full run takes about 40 minutes and is run alone (§5).
+- `verify_skill_trees`: 1 FAIL. Its dummy enemy's `take_poise` had the old two-argument signature. Fixed (it takes the source); alone: ALL PASS.
+- `verify_skill_trees_ui`: HUNG under suite load; alone: ALL PASS.
+
+After the suite I changed only stamina constants, GOOD's rules, `EnemyLogic._hero_opened` and test wording. The touched verifies were re-run alone: `combat_player`, `souls_combat`, `combat_enemies` and `combat_flow` all ALL PASS; `verify_masher` as in §5.

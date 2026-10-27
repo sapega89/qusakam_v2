@@ -1304,7 +1304,8 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 			_tap(&"attack")
 		return heavy_due
 	var st: Node = hero.stamina
-	_resting = st.exhausted or st.current < st.roll_cost() + st.COST_LIGHT
+	# запас — перекат (у групі з 3+ — два: червоні удари там ідуть один за одним) і ще удар
+	_resting = st.exhausted or st.current < st.roll_cost() * (2 if alive.size() >= 3 else 1) + st.COST_LIGHT
 	if _resting:
 		rested += Engine.time_scale / Engine.physics_ticks_per_second
 	# Легкий удар можна зірвати блоком чи перекатом на відновленні (D456) — його б'ють і тоді, коли хтось замахується;
