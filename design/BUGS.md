@@ -153,6 +153,8 @@ the history, this note keeps only what is open.
 
 > **Fixed 2026-10-23:** B128 (`cloud/combat-feel`, D519): hit areas are measured from the drawn frames, and shapes are local to their scene. B125 (D520): bodies block and slide off, so the boss no longer hangs on the hero.
 
+> **Fixed 2026-10-27 (`cloud/hard-fights-2`):** **B154** — the bosses do not hit. Sapega's playtest of the round-13 build: «боси не б'ють». Between moves both bosses rested 30–90 px from the hero, but their combo reaches only 69–72 px. A hero standing 70–90 px away (just out of reach, or after a roll past) never saw the axe or the mace, only slams and drinks. The Mayor Hall fight also started without the boss bar and with the boss walking back to its pre-cutscene spot. Fix: `BossLogic` keeps a melee boss inside its combo's reach and steps in when the combo is next; `MayorHall._fight()` sets the hall-wide ranges, the new home and the bar, as `LabBoss` does. Test: `verify_masher` [4], the boss met through its room's real intro (3 FAIL on the old code). Report: [[cloud_reports/hard-fights-2]].
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row
