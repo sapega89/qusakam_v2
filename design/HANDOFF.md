@@ -14,9 +14,13 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 ## 1. Finish first (local, in this order)
 
 1. **Merge `hard-fights-2`.** It is merged and renumbered on `integrate-27` in the worktree `D:\Projects\ngp-integrate`
-   (`65a1e5db`; boss-fix's `BossLogic` kept, hard-fights-2's `MayorHall._fight()` taken, B159 note in BUGS). The full
-   suite was running there when the session ended; if `logs/` there is incomplete, run it again (one suite at a time,
-   never two). Then `git merge feature/backlog` into `integrate-27` (expect the register's tail and MASTER_PLAN to
+   (`65a1e5db`; boss-fix's `BossLogic` kept, hard-fights-2's `MayorHall._fight()` taken, B159 note in BUGS). Its full
+   suite finished with **2 FAIL**, both to fix before merging:
+   - `verify_flying_enemies`: «vulture: never touches the floor (lowest feet y 383, floor 384)» — D766 grew the vulture
+     ×1.25, so its lowest swoop now reaches the floor; lift its flight path by the new height (not the test margin).
+   - `verify_city_gates_raid`: «the hero falls after the teleport (y 360.0 -> 360.0)» — run it alone first (it may be
+     timing); if it stays red, read the check against hard-fights-2's changes.
+   Then `git merge feature/backlog` into `integrate-27` (expect the register's tail and MASTER_PLAN to
    conflict: keep both sides' rows), and fast-forward `feature/backlog` (stash `project.godot` around it).
 2. **Check the meditation spot in the game** (D764, committed `5db238da` without a game run):
    `capture_meditation_spots.gd` (window, `-- <out_dir>`), then `verify_progression`, `verify_save_load_room`,
