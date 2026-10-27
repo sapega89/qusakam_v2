@@ -191,6 +191,8 @@ the history, this note keeps only what is open.
 
 > **Open 2026-10-27 (`cloud/secrets-icon`, filed by integrate-28):** **B169** — the World Map legend's «saw the entrance, not entered yet» swatch cannot be seen: it is drawn as a 45 % ink dashed square (`map_icon.gd` `room_seen`) on the dark `MapCard` plate, ink on near-black (`design/shots/secrets/map_legend.png`). Proposed fix: draw the legend swatch in `MAP_ROOM_FILL` or a light token, checked against Figma `539:6615` (🖥).
 
+> **Open 2026-10-27 (integrate-28):** **B170** — `verify_combat_flow` [2c] «the swing hits the player in front once» / «… hits the player behind» fail in about 2 of 10 runs on the integrate-28 head (green in suite #1 and in every run before stamina-poise-2's last commits and feature/backlog's 2nd merge). In a failing run the scripted swing of the «fast» enemy (the hero 6 px inside its hitbox, its own physics off) lands no hit: no damage, no block, parry, evade or dodge event. Once the wind-up ends, `winding_up` is false and `is_attacking` true for 40+ frames with no strike, and once the attacker had lunged the wrong way past a hero placed on its other side. Suspects: D775's «one tell at a time» hold (`EnemyLogic.wind_up`, waits on any other enemy's `committed` flag, also one frozen by the test) and the fast kind's strike lunge (`start_knockback(lunge)`). Per-frame logging hides it (5 of 5 green with logging on). Not fixed: needs a deterministic repro first.
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row

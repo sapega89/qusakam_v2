@@ -9,11 +9,14 @@ tags: [cloud, routines, integration]
 - All merges are done. Order: `enemy-ai`, `stamina-poise-2` (twice, see §2), `room-story-flow`, `plugins-fsm`, `journal-hints`, `decision-audit-2`, `story-dialogue`, `secrets`, `secrets-icon`, `map-pan`, `ambient-critters`, then `feature/backlog` (twice, it moved during the run).
 - `stamina-poise` → **`stamina-poise-2`**: the branch named in the prompt holds only an 8-hour «not started» report. The real work is on `-2`, built on enemy-ai, and its report asks to merge `-2` and drop the old one.
 - New D-IDs: **D775–D786**.
-- B rows: **B163–B166** fixed (enemy-ai), **B167** fixed (by journal-hints), **B168** and **B169** open.
+- B rows: **B163–B166** fixed (enemy-ai), **B167** fixed (by journal-hints), **B168**, **B169** and **B170** (a combat_flow flake) open.
 - Godot ran in this session (integrate-27's could not get it).
 - Fixed at the root: three save tests red on `feature/backlog` since D764's hop; story-dialogue's 3 FAILs (the branch never ran Godot); and 5 interplay failures from the first full suite.
-- Full suite: SUITE_LINE
-- `verify_masher` alone: MASHER_LINE
+- Full suite #2, final head: `SUITE: 3 FAIL`, 132 PASS.
+  - `verify_masher`: HUNG at the 180 s limit, as always.
+  - `verify_audio`: passes alone.
+  - `verify_combat_flow` [2c]: flaky, about 2 of 10 runs → **B170**, open.
+- `verify_masher` alone: `RESULT: 1 FAIL`. GOOD: longest idle in reach 1.30 s against ≤ 1.0 (Lab middle, a jackal). This is the bound stamina-poise-2 reported as flaking ±0.4 s; its other open row (the Caravan) passed in this run.
 
 ## Setup
 - Godot 4.6.2 downloaded and `--import` run.
@@ -168,5 +171,18 @@ Each failure, fixed at the root and then passing alone:
   - **For Sapega (not blocking):** in a short real fight, a pure blocker who is never hit now gets as much «none» as «Samal».
 - **`verify_masher`:** HUNG at the suite's 180 s limit, as in every routine's run. It is run alone (see the top).
 
-## Full suite #2 (final head)
-SUITE2
+## Full suite #2 (final head, after stamina-poise-2's last commits and feature/backlog's 2nd merge): `SUITE: 3 FAIL`, 132 PASS
+- **`verify_masher`:** HUNG at 180 s. Alone: 1 FAIL, the D775 idle-in-reach bound (1.30 s against ≤ 1.0), already reported as flaky by stamina-poise-2. Not loosened.
+- **`verify_audio`:** 1 FAIL under suite load; ALL PASS alone. Known flaky under load (`test_baseline.md`).
+- **`verify_combat_flow`** [2c]: 2 FAIL.
+  - Flaky: the 2 FAIL in about 2 of 10 runs alone; ALL PASS in suite #1 and in the other runs.
+  - Not caused by the stamina refill retune: with the old values it fails too.
+  - Narrowed to the «fast» enemy's scripted swing landing no hit (see **B170**). Left open rather than guarded in the test.
+- After the 5 fixes from suite #1, these also passed alone on the final head: `verify_combat_player`, `skill_trees`, `combat_hud`, `oath_census`, `combat_enemies`, `souls_combat`, `scripts_compile`.
+
+## Not done
+- `verify_masher` is not green alone: the 1.30 s idle bound.
+- B170 (combat_flow flake): no deterministic repro.
+- No captures were taken: story dialogue against Figma `36:65`, and the D782/D785 shots.
+- `design/BACKLOG.md` was not edited (S4 slice 1 is done, BACKLOG:358).
+- The old `cloud/stamina-poise` branch was not merged; it holds only the stale report.
