@@ -151,6 +151,14 @@ func _initialize() -> void:
 			"dialogue player has autoplay and skip off (B10, D254)")
 	for b: Button in [dbox.get_auto_button(), dbox.get_skip_button()]:
 		_check(not b.visible, "%s is hidden (B10)" % b.name)
+	# Сюжетна подача (D110): той самий GameUITheme, вікно — WindowPanel теми (непрозоре, акцентна рамка).
+	var story: Control = dsys.get_node("StoryDialogue")
+	_check(story.theme == theme, "StoryDialogue.theme is GameUITheme (D110)")
+	var spanel: StyleBox = story.box.get_theme_stylebox("panel")
+	_check(spanel == theme.get_stylebox("panel", "WindowPanel") and (spanel as StyleBoxFlat).bg_color.a == 1.0,
+			"the story box is the theme's opaque WindowPanel")
+	for b: Button in [story.box.get_auto_button(), story.box.get_skip_button()]:
+		_check(not b.visible, "story %s is hidden (B10)" % b.name)
 	dsys.queue_free()
 
 	print("\n[3c] One focus look in every menu (Q33, BACKLOG 41)")

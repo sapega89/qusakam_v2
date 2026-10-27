@@ -155,16 +155,20 @@ func _initialize() -> void:
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)  # вступ стартової кімнати
 
-	print("[1] The old man's talk: Kusakam, then the grandfather (D437: no narration line first)")
-	dm.start_dialogue("res://dialogue_quest/OldMan_Outside.dqd")
+	# Розмови діда й Зали мера — сюжетні (D111): їх показує сюжетна подача (verify_story_dialogue). Звичайне вікно
+	# перевіряють розмови, що лишились у ньому: вартовий біля льоху й коваль.
+	print("[1] The cellar guard's talk: the guard, Kusakam, the guard (D437: no narration line first)")
+	dm.start_dialogue("res://dialogue_quest/CityGates_Cellar_Guard.dqd")
 	for i in 6: await process_frame
 	var box: Control = dm.current_dialogue_box
 	ck(box.visible, "the dialogue box is open")
-	_check_line(box, "Kusakam", true)
-	await _advance(dm, 1)
-	_check_line(box, "Grandfather", true)
+	_check_line(box, "Guard", true)
 	var portrait: TextureRect = box.get_node("%Portrait")
-	ck(portrait.texture.resource_path.ends_with("old_man/portrait.tres"), "the grandfather's own face (%s)" % portrait.texture.resource_path)
+	ck(portrait.texture.resource_path.ends_with("gate_guard/portrait.tres"), "the guard's own face (%s)" % portrait.texture.resource_path)
+	await _advance(dm, 1)
+	_check_line(box, "Kusakam", true)
+	await _advance(dm, 0)
+	_check_line(box, "Guard", true)
 	await _advance(dm, 2)
 	for i in 10: await process_frame
 	ck(not dm.is_dialogue_active(), "the talk ends on a mouse click")
@@ -183,14 +187,12 @@ func _initialize() -> void:
 					narration.append("%s%s:%d" % [dir.trim_prefix("res://dialogue_quest/"), file, n])
 	ck(narration.is_empty(), "every say line has a speaker (%s)" % [narration])
 
-	print("[2] The Mayor Hall queue: each companion with her / his portrait (D243–D245); a second start_dialogue after one has ended still grows the box (B122)")
-	dm.start_dialogue("res://dialogue_quest/City_MayorHall.dqd")
+	print("[2] A second start_dialogue after one has ended still grows the box (B122)")
+	dm.start_dialogue("res://dialogue_quest/Smith_Enchant_Give.dqd")
 	for i in 6: await process_frame
-	_check_line(box, "Kusakam", true)
-	for who: Array in [["Urizen", "urizen"], ["Astrit", "astrit"], ["Alisia", "alisia"]]:
-		await _advance(dm, 0)
-		_check_line(box, who[0], true)
-		ck(portrait.texture.resource_path.ends_with("%s/portrait.tres" % who[1]), "%s: the companion portrait (%s)" % [who[0], portrait.texture.resource_path])
+	ck(dm.current_dialogue_box == box, "the smith talks in the same window")
+	_check_line(box, "Blacksmith", true)
+	ck(portrait.texture.resource_path.ends_with("blacksmith/portrait.tres"), "the smith's own face (%s)" % portrait.texture.resource_path)
 	await _drain(dm)
 
 	print("[3] A speaker without art keeps the name and shows no empty frame")
