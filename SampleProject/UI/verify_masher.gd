@@ -58,8 +58,7 @@ const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
 ## GOOD (D775): перестає бити, коли витривалості менше за удар і перекат разом; знову б'є з цієї частки шкали.
-const GOOD_STAMINA_STOP := 45.0
-const GOOD_STAMINA_GO := 0.9
+const GOOD_STAMINA_GO := 0.6
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
@@ -1241,7 +1240,7 @@ func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 
 ## GOOD: не б'є, коли поруч замах; жовте й біле — блок (жовте — парирування, далі рипост), червоне — ривок геть;
 ## фляга, коли ніхто не замахується; навичка, коли є SP. Витривалість (D775): тримає запас на перекат — нижче
-## GOOD_STAMINA_STOP не б'є, доки шкала не набере GOOD_STAMINA_GO; котиться лише від червоного удару, що дістає.
+## ціни удару й перекату разом не б'є, доки шкала не набере GOOD_STAMINA_GO; котиться лише від червоного удару, що дістає.
 func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	var target := _nearest(alive)
 	if target == null:
@@ -1291,7 +1290,7 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 			_tap(&"attack")
 		return heavy_due
 	var st: Node = hero.stamina
-	if st.current < GOOD_STAMINA_STOP:
+	if st.current < st.roll_cost() + st.COST_LIGHT:
 		_resting = true
 	elif st.current >= st.MAX * GOOD_STAMINA_GO:
 		_resting = false

@@ -660,7 +660,9 @@ func drink(heal: int) -> bool:
 func is_drinking() -> bool:
 	return state == State.DRINK
 
+## Блок (D775): підняти щит коштує PlayerStamina.BLOCK_RAISE; на порожній шкалі блок є, але слабкий (Player.take_damage).
 func _start_block() -> void:
+	player.stamina.spend(player.stamina.BLOCK_RAISE)
 	state = State.BLOCK
 	_block_time = 0.0
 	_chain_left = 0.0

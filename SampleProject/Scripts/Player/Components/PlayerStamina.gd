@@ -1,8 +1,9 @@
 extends Node
 
 ## Витривалість героя (D537, повернута Sapega 2026-10-27, D775). Її витрачають легкий і важкий удари, постріли,
-## перекат, утримання блоку й удар, прийнятий на блок. Відновлюється швидко, коли герой REGEN_DELAY с нічого не
-## витрачав: REGEN за секунду (вага обладунку змінює темп). Дійшла до нуля — герой виснажений: ні удару, ні пострілу,
+## перекат, блок (підняти щит — BLOCK_RAISE, кожен прийнятий удар — COST_BLOCK) . Відновлюється швидко, коли герой
+## REGEN_DELAY с нічого не витрачав: REGEN за секунду (вага обладунку змінює темп), а поки блок тримають — лише
+## BLOCK_REGEN цього. Дійшла до нуля — герой виснажений: ні удару, ні пострілу,
 ## ні перекату, доки шкала не набере RECOVER_AT; спроба — спалах шкали й звук (EventBus.player_stamina_refused), а не
 ## тиша. Блок на порожній шкалі слабкий (Player.take_damage). Числа — design/cloud_reports/stamina-poise.md.
 
@@ -16,10 +17,11 @@ const COST_SHOT := 10.0
 const COST_CHARGED := 25.0
 const COST_ROLL := 25.0
 const COST_BLOCK := 15.0
-## Утримання блоку, за секунду.
-const BLOCK_DRAIN := 8.0
-const REGEN := 75.0
-const REGEN_DELAY := 0.6
+## Підняти блок; поки його тримають, шкала набирається лише з цією часткою темпу.
+const BLOCK_RAISE := 5.0
+const BLOCK_REGEN := 0.3
+const REGEN := 90.0
+const REGEN_DELAY := 0.5
 ## Виснажений герой знову діє, щойно шкала набрала стільки.
 const RECOVER_AT := 30.0
 
@@ -76,14 +78,7 @@ func refill() -> void:
 
 func _physics_process(delta: float) -> void:
 	var combat: PlayerCombat = player.combat
-	if combat.is_blocking():
-		current = maxf(0.0, current - BLOCK_DRAIN * delta)
-		_delay = REGEN_DELAY
-		if current <= 0.0:
-			exhausted = true
-		_emit()
-		return
-	if player.mover.is_rolling() or combat.state != PlayerCombat.State.READY:
+	if player.mover.is_rolling() or combat.state not in [PlayerCombat.State.READY, PlayerCombat.State.BLOCK]:
 		_delay = REGEN_DELAY
 		return
 	if _delay > 0.0:
@@ -91,7 +86,8 @@ func _physics_process(delta: float) -> void:
 		return
 	if current >= MAX:
 		return
-	var rate: float = REGEN * (1.0 + ArmourWeight.stamina_regen_of(player.mover.worn_armour()))
+	var rate: float = REGEN * (1.0 + ArmourWeight.stamina_regen_of(player.mover.worn_armour())) \
+			* (BLOCK_REGEN if combat.is_blocking() else 1.0)
 	current = minf(MAX, current + rate * delta)
 	if exhausted and current >= RECOVER_AT:
 		exhausted = false

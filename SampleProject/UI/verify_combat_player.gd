@@ -355,7 +355,11 @@ func _stamina() -> void:
 	st.refill()
 	_press(&"block")
 	await create_timer(0.4).timeout  # мимо вікна парирування
-	ck(st.current < st.MAX, "holding the block spends stamina (%.0f)" % st.current)
+	ck(st.current < st.MAX, "raising the block spends stamina (%.0f)" % st.current)
+	var held: float = st.current
+	await create_timer(1.0).timeout
+	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 1.0,
+			"held, the bar refills at a third of the pace (+%.0f in 1 s)" % (st.current - held))
 	var hp: int = hero.current_health
 	var left: float = st.current
 	hero.take_damage(20, bandit)
