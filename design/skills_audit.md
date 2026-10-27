@@ -29,7 +29,11 @@ what to do. Background: [[skill_trees_plan]], D279, D491, D535, D626, D718.
   no mace and no dagger exist anywhere in the world (Electric Strike runs on the Mesa halberd only).
 - **Overlaps:** 29 skills repeat another one's stat or move (five «take X% less damage», three «+attack», three «+max
   HP», three «after a parry, skills hit harder», three dashes, two slams, two spears, two shouts).
-- **Recommendation:** rework the 5 shield skills into shield-free ones (proposal a), drop the shield from the hero's
+- **Sapega's answer (2026-10-27):** neither a nor b — **the shield shows only in the shield skills**: the equipped
+  shield appears on the hero while he blocks and during the shield strikes (Shield Bash, Shield Charge) and is hidden the
+  rest of the time; the 5 shield skills stay. Needs: shield art over the Block pose and the two strike poses (art lane),
+  then the show/hide in code (after `hero-shadow`, which edits Player.tscn). D-ID after integrate-29.
+- **Recommendation (superseded by his answer above):** rework the 5 shield skills into shield-free ones (proposal a), drop the shield from the hero's
   gear, and reshape each path tree into one kit (below). Art queue at the end: 14 hero poses, 30 VFX.
 
 ## 1. The 76 skills

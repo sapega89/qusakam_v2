@@ -68,6 +68,8 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
 ## 4. Waiting on Sapega
 
+**Shield (S19), Sapega 27.10:** the equipped shield shows only while blocking and in Shield Bash / Shield Charge; the 5 shield skills stay — D-ID after integrate-29; art over Block + two strike poses, then code after hero-shadow.
+
 **S1 page:** https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — his verdicts on the 33 new skills (db collection `verdicts`, doc = skill slug) → `skill_trees_plan.md` v2.
 
 **P1 page:** https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — his verdicts on the 112 agent/routine calls land in its db (`ArtifactData list`, collection `answers`, doc = D-ID: `verdict` yes/no/change, `note`); apply them to the register.
