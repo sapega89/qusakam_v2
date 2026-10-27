@@ -1,5 +1,5 @@
 {
-	"description": "Charms: rings and amulets that change a rule (D592, Hollow Knight style), read by Scripts/Systems/Charms.gd. Each charm gives and takes; numbers are provisional (design/charms_plan.md). Effects: parry_heal = share of max HP healed per parry; no_block = 1 turns block (and parry) off; roll_length = roll lasts longer by this share; skill_sp_cost = share added to every skill's SP cost; skill_heal = share added to every skill heal (the flask too); staggered_damage = extra share of hero melee damage on a staggered or stunned enemy; flask_charges = extra flask sips; flask_heal = share added to each sip; sp_on_kill = SP per kill. Icons are stand-ins until charm art exists.",
+	"description": "Charms: rings and amulets that change a rule (D592, Hollow Knight style), read by Scripts/Systems/Charms.gd. Each charm gives and takes; numbers are provisional (design/charms_plan.md). Effects: parry_heal = share of max HP healed per parry; no_block = 1 turns block (and parry) off; roll_length = roll lasts longer by this share; roll_stamina = share added to the roll's stamina cost (D775); skill_sp_cost = share added to every skill's SP cost; skill_heal = share added to every skill heal (the flask too); staggered_damage = extra share of hero melee damage on a staggered or stunned enemy; flask_charges = extra flask sips; flask_heal = share added to each sip; sp_on_kill = SP per kill. Icons are stand-ins until charm art exists.",
 	"slots": {
 		"total": 3,
 		"at_start": 2
@@ -17,9 +17,9 @@
 			"id": "sand_runner_ring",
 			"kind": "ring",
 			"name": "Sand Runner's Ring [DRAFT]",
-			"description": "You cannot block or parry, but your roll lasts 30% longer. [DRAFT]",
+			"description": "You cannot block or parry, but your roll lasts 30% longer and costs 30% less stamina. [DRAFT]",
 			"icon_path": "res://SampleProject/Assets/UI/Icons/Items/crystal.png",
-			"effects": {"no_block": 1.0, "roll_length": 0.3}
+			"effects": {"no_block": 1.0, "roll_length": 0.3, "roll_stamina": -0.3}
 		},
 		{
 			"id": "hermit_amulet",

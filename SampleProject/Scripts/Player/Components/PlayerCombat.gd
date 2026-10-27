@@ -58,8 +58,6 @@ const DRINK_HEAL_AT := 0.5
 const LIGHT_TARGETS := 1
 ## Легкий удар без відкидання зброї штовхає ворога на стільки px (4b).
 const HIT_PUSH := 8.0
-## Фінішер серії відкидає ворога (px) і бʼє стійкість удвічі.
-@export var finisher_knockback: float = 40.0
 ## Важкий удар (D264): замах (його можна збити), удар, відновлення; множник, відкидання.
 ## Відновлення (D504) — стан, герой стоїть; перекат чи блок зривають лише останні HEAVY_CANCEL_LAST с.
 @export var heavy_windup: float = 0.4
@@ -68,10 +66,11 @@ const HIT_PUSH := 8.0
 const HEAVY_CANCEL_LAST := 0.3
 @export var heavy_damage: float = 1.5
 @export var heavy_knockback: float = 70.0
-## Скільки стійкості ворога (D265) забирає удар.
+## Скільки стійкості ворога (D265, шкала стійкості D776) забирає удар. Кожен удар серії — однаково (D776: ні збою, ні
+## відкидання «з третього удару»); важкий і парирування — набагато більше (частка POISE_PARRY від стійкості ворога).
 const POISE_LIGHT := 1
-const POISE_FINISHER := 2
-const POISE_HEAVY := 3
+const POISE_HEAVY := 5
+const POISE_PARRY := 0.4
 ## Блок (D264, 4b): удар спереду шкоди не завдає; парирування — удар у перші PARRY_WINDOW с блоку.
 ## Ворог показує підказку за EnemyLogic.TELL_LEAD (0.45 с) до удару (D504): блок у останні PARRY_WINDOW с — парирування.
 ## Колір підказки вирішує (guard_against): білий удар лише блокують, жовтий ще й парирують, червоний — ні те, ні те.
@@ -140,6 +139,8 @@ var _buffer_left: float = 0.0
 ## Зілля, що п'ють: скільки HP воно дасть (0 — уже дало або зірване).
 var _drink_heal: int = 0
 var _poise: int = POISE_LIGHT
+## Чим б'є поточний удар — для DefaultEnemy.last_stagger_source (звіт verify_masher, D776).
+var _poise_source: StringName = &"light"
 ## Кнопку блоку тримають (Player._unhandled_input); блок починається, щойно герой вільний.
 var block_held: bool = false
 var _block_time: float = 0.0
@@ -213,18 +214,18 @@ func _hitbox_shape() -> RectangleShape2D:
 
 ## Влучання: відкидання і стійкість ворога (D265).
 func _on_damage_applied(target: Node, damage: int) -> void:
-	_hit_effects(target, damage, _poise, knockback, player.global_position.x)
+	_hit_effects(target, damage, _poise, knockback, player.global_position.x, _poise_source)
 
 ## Влучання стріли героя (D381): та сама стійкість, пасивки й відкидання, що й від удару, — від точки, звідки летіла
 ## стріла ([param from_x]); підстрелений ворог повертається до героя, навіть якщо ще його не бачив.
 func on_arrow_hit(target: Node, damage: int, poise: int, push: float, from_x: float) -> void:
-	_hit_effects(target, damage, poise, push, from_x)
+	_hit_effects(target, damage, poise, push, from_x, &"heavy" if poise >= POISE_HEAVY else &"light")
 	target.enemy_logic.on_player_detected(player)
 
 ## Стійкість — першою: її збій штовхає ворога на 30 px, а відкидання удару (булава, фінішер, важкий) — далі й перекриває.
-func _hit_effects(target: Node, damage: int, poise: int, push: float, from_x: float) -> void:
+func _hit_effects(target: Node, damage: int, poise: int, push: float, from_x: float, source: StringName) -> void:
 	var skills: SkillManager = ServiceLocator.get_skill_manager()
-	target.take_poise(roundi(poise * (1.0 + skills.passive_value("poise"))), from_x)  # D284
+	target.take_poise(roundi(poise * (1.0 + skills.passive_value("poise"))), from_x, source)  # D284
 	var drained := roundi(damage * skills.passive_value("lifesteal"))  # D284: Blood Pact
 	if drained > 0:
 		player.heal_damage(drained)
@@ -426,6 +427,9 @@ func perform_attack(last_direction: int) -> void:
 	if state != State.READY or attack_cooldown > 0:
 		_buffer(&"light")
 		return
+	# D775: виснажений герой не б'є — спалах шкали й звук
+	if not player.stamina.try_spend(player.stamina.COST_LIGHT):
+		return
 	combo_step = combo_step + 1 if _chain_left > 0.0 else 0
 	_chain_left = 0.0
 	var finisher := combo_step == combo_length() - 1
@@ -438,8 +442,9 @@ func perform_attack(last_direction: int) -> void:
 	# Між ударами серії можна розвернутись (D504): удар іде туди, куди тиснуть
 	_direction = player.mover.face_input(last_direction)
 	_step(FINISHER_STEP if finisher else SWING_STEP)
-	knockback = maxf(_weapon_knockback, finisher_knockback) if finisher else _weapon_knockback
-	_poise = _poise_of(POISE_FINISHER if finisher else POISE_LIGHT)
+	knockback = _weapon_knockback
+	_poise = _poise_of(POISE_LIGHT)
+	_poise_source = &"light"
 	if finisher:
 		attack_cooldown = attack_cooldown_time  # відновлення після серії
 	_load_hit(roundi(hit_damage() * _combo_damage()[combo_step]), 0 if finisher else LIGHT_TARGETS)
@@ -467,6 +472,8 @@ func heavy_attack(last_direction: int) -> void:
 	if state != State.READY or attack_cooldown > 0:
 		_buffer(&"heavy")
 		return
+	if not player.stamina.try_spend(player.stamina.COST_HEAVY):
+		return
 	state = State.HEAVY_WINDUP
 	_state_left = heavy_windup
 	_direction = player.mover.face_input(last_direction)
@@ -492,6 +499,7 @@ func _strike_heavy() -> void:
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	# D535: Heavy Hand — важкий удар б'є по стійкості сильніше
 	_poise = roundi(_poise_of(POISE_HEAVY) * (1.0 + ServiceLocator.get_skill_manager().passive_value("heavy_poise")))
+	_poise_source = &"heavy"
 	_load_hit(roundi(hit_damage() * heavy_damage))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
@@ -509,6 +517,7 @@ func _riposte(last_direction: int) -> void:
 	_state_left = heavy_strike_time
 	knockback = maxf(_weapon_knockback, heavy_knockback)
 	_poise = RIPOSTE_POISE
+	_poise_source = &"riposte"
 	_load_hit(roundi(hit_damage() * RIPOSTE_DAMAGE))
 	_step(HEAVY_STEP)
 	_play(&"HeavyStrike")
@@ -521,7 +530,7 @@ func _quick_shot(last_direction: int) -> void:
 	if state == State.SHOOT or (state == State.READY and attack_cooldown > 0):
 		_queued = true
 		return
-	if state != State.READY:
+	if state != State.READY or not player.stamina.try_spend(player.stamina.COST_SHOT):
 		return
 	state = State.SHOOT
 	_state_left = SHOT_TIME
@@ -535,6 +544,7 @@ func _quick_shot(last_direction: int) -> void:
 func release_shot() -> void:
 	shot_held = false
 	if state == State.CHARGED:
+		player.stamina.spend(player.stamina.COST_CHARGED)
 		_loose(true)
 		state = State.SHOOT
 		_state_left = RELEASE_TIME
@@ -544,6 +554,8 @@ func release_shot() -> void:
 
 ## Натяг (D380): рух стоїть DRAW_TIME с, далі лук заряджений.
 func _start_draw() -> void:
+	if not player.stamina.can_act():
+		return
 	state = State.DRAW
 	_state_left = DRAW_TIME
 	_queued = false

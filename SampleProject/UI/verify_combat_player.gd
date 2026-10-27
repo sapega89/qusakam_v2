@@ -4,7 +4,7 @@ extends SceneTree
 ##   [1] удар саджає героя з кроком уперед; погляд не змінюється, доки удар не вийшов (B136);
 ##   [2] перекат і блок зривають удар лише на відновленні, замах важкого — ніколи; недобуте відновлення важкого
 ##       лишається кулдауном (B-9); буфер натискань 0.2 с крізь збій, буфер стрибка, стрибок зриває відновлення;
-##   [3] витривалості немає (D551): ні вузла, ні рядка ST; перекати й блок не вичерпуються;
+##   [3] витривалість (D775): ціни ударів і перекату, порожня шкала — ні удару, ні перекату, спалах; відновлення; блок;
 ##   [4] зілля зі швидкого слота: одна кнопка, у реальному часі, герой стоїть; удар до ковтка — зілля пропало;
 ##   [5] над звичайним ворогом смужки HP немає (D502).
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
@@ -90,7 +90,7 @@ func _initialize() -> void:
 
 	await _commitment()
 	await _cancel_rules()
-	await _no_stamina()
+	await _stamina()
 	await _potion(sl)
 	await _no_enemy_bar()
 
@@ -214,8 +214,9 @@ func _cancel_rules() -> void:
 	ck(hero.mover.is_rolling(), "a roll cuts the heavy's recovery late in it")
 	ck(combat.attack_cooldown > left - 0.05, "the rest of the recovery stays a cooldown (%.2f of %.2f s, B-9)" % [combat.attack_cooldown, left])
 	await _until_ready()
-	# Буфер 0.2 с — і крізь збій
+	# Буфер 0.2 с — і крізь збій (повна витривалість: важкий і перекати вище її витратили, тут міряють лише буфер)
 	await _hero_at(arena_x)
+	hero.stamina.refill()
 	combat.stagger(0.15, hero.global_position.x - 10.0)
 	await _tap(&"dodge")
 	ck(not hero.mover.is_rolling(), "no roll while staggered")
@@ -270,51 +271,103 @@ func _cancel_rules() -> void:
 	await _until_ready()
 
 
-## [3] Витривалості немає (D551; скасовує D537).
-func _no_stamina() -> void:
-	print("[3] No stamina: no node, no HUD row; rolls and blocks never run dry (D551)")
-	ck(not hero.has_node(^"PlayerStamina") and not ("stamina" in hero), "the hero has no PlayerStamina node or field")
-	ck(not ResourceLoader.exists("res://SampleProject/Scripts/Player/Components/PlayerStamina.gd"), "PlayerStamina.gd is gone")
-	ck(not root.get_node("EventBus").has_signal(&"player_stamina_changed"), "EventBus has no player_stamina_changed")
+## [3] Витривалість (D775; повертає D537, скасовує D551).
+func _stamina() -> void:
+	print("[3] Stamina: swings, the heavy, rolls and the block spend it; empty = no swing or roll until it refills (D775)")
+	var st: Node = hero.stamina
+	var bus: Node = root.get_node("EventBus")
 	var rows: Array = get_first_node_in_group(&"player_vitals_panel")._rows.get_children().map(func(r: Node) -> String: return r.name)
-	ck(rows == ["HP", "SP"], "the hero panel shows HP and SP, no ST; XP is its own bar (D552: %s)" % [rows])
-	# Десять перекатів поспіль — кожен починається (раніше п'ятий уже не мав витривалості)
+	ck(rows == ["HP", "SP", "ST"], "the hero panel shows HP, SP and ST under SP; XP is its own bar (D552: %s)" % [rows])
+	var refused := [0]
+	bus.player_stamina_refused.connect(func() -> void: refused[0] += 1)
+	var swings := [0]
+	bus.player_attacked.connect(func(_p: Node, _d: int) -> void: swings[0] += 1)
 	await _hero_at(arena_x)
-	# Тут лише витривалість: ворогів поруч спинено — тепер вони відповідають на бій (D713) і збили б героя посеред серії
+	# Тут лише витривалість: ворогів поруч спинено — вони відповідають на бій (D713) і збили б героя посеред серії
 	var frozen: Array = []
-	var rolls := 0
-	for i in 10:
-		# і ті, що зʼявились, коли перекат заніс героя в зону бою секції
-		for e: Node in get_nodes_in_group(&"enemies"):
-			if e.is_physics_processing():
-				e.set_physics_process(false)
-				frozen.append(e)
-		while frozen.any(func(e: Node) -> bool: return is_instance_valid(e) and e.enemy_logic.is_attacking):
-			await physics_frame  # замах, що вже йшов, — корутина на таймерах, доходить до кінця
-		await _until_ready()
-		await _tap(&"dodge")
-		for f in 3: await physics_frame
-		if hero.mover.is_rolling():
-			rolls += 1
-		while hero.mover.is_rolling():
-			await physics_frame
-		await _until_ready()
-		for f in 30: await physics_frame
-	ck(rolls == 10, "ten rolls in a row all start (%d)" % rolls)
+	for e: Node in get_nodes_in_group(&"enemies"):
+		if e.is_physics_processing():
+			e.set_physics_process(false)
+			frozen.append(e)
+	await _until_ready()
+	st.refill()
+	# Ціни
+	await _tap(&"attack")
+	ck(is_equal_approx(st.current, st.MAX - st.COST_LIGHT), "a light swing costs %d (%.0f left)" % [st.COST_LIGHT, st.current])
+	await _until_ready()
+	for f in 60: await physics_frame
+	st.refill()
+	await _tap(&"heavy_attack")
+	ck(is_equal_approx(st.current, st.MAX - st.COST_HEAVY), "the heavy costs %d at its wind-up (%.0f left)" % [st.COST_HEAVY, st.current])
+	await _until_ready()
+	st.refill()
+	await _tap(&"dodge")
+	for f in 3: await physics_frame
+	ck(hero.mover.is_rolling() and is_equal_approx(st.current, st.MAX - st.roll_cost()), "a roll costs %d (%.0f left)" % [st.roll_cost(), st.current])
+	while hero.mover.is_rolling():
+		await physics_frame
+	# Мішанина: тиснути удар без упину — шкала порожніє за півтори серії, далі ні удару, ні перекату
+	await _until_ready()
+	for f in 60: await physics_frame
+	st.refill()
+	swings[0] = 0
+	refused[0] = 0
+	var t := 0.0
+	while not st.exhausted and t < 6.0:
+		await _tap(&"attack")
+		for f in 6: await physics_frame
+		t += 0.1
+		if combat.combo_step == combat.combo_length() - 1 and combat.state == combat.State.READY and combat.attack_cooldown > 0.0:
+			while combat.attack_cooldown > 0.0:
+				await physics_frame
+			await _tap(&"heavy_attack")
+			while combat.state != combat.State.READY:
+				await physics_frame
+	ck(st.exhausted and swings[0] <= 6, "mashing runs the bar dry within a combo and a half (%d swings and heavies)" % swings[0])
+	await _until_ready()
+	var before: int = swings[0]
+	await _tap(&"attack")
+	for f in 3: await physics_frame
+	await _tap(&"dodge")
+	for f in 3: await physics_frame
+	ck(swings[0] == before and not hero.mover.is_rolling(), "empty: a swing and a roll are refused")
+	ck(refused[0] >= 2, "each refusal flashes the ST row and sounds (%d refusals)" % refused[0])
+	ck(get_first_node_in_group(&"player_vitals_panel")._rows_by_id["ST"].modulate != Color.WHITE, "the ST row is flashing")
+	# Відновлення: швидко після паузи, діяти можна з RECOVER_AT
+	var waited := 0.0
+	while st.exhausted:
+		await physics_frame
+		waited += 1.0 / Engine.physics_ticks_per_second
+	ck(waited < 1.4 and st.current >= st.RECOVER_AT, "the hero acts again after %.2f s (bar %.0f)" % [waited, st.current])
+	while st.current < st.MAX:
+		await physics_frame
+		waited += 1.0 / Engine.physics_ticks_per_second
+	ck(waited < 2.2, "the empty bar is full again in %.2f s" % waited)
+	await _tap(&"attack")
+	for f in 3: await physics_frame
+	ck(swings[0] == before + 1, "after the refill the hero swings again")
+	await _until_ready()
 	for e: Node in frozen:
 		if is_instance_valid(e):
 			e.set_physics_process(true)
-	# Блок тримає будь-скільки звичайних ударів: без шкоди й без збою
+	# Блок: утримання й прийнятий удар коштують; з порожньою шкалою блок слабкий — пів шкоди і збій
 	await _hero_at_bandit()
+	st.refill()
 	_press(&"block")
 	await create_timer(0.4).timeout  # мимо вікна парирування
+	ck(st.current < st.MAX, "holding the block spends stamina (%.0f)" % st.current)
 	var hp: int = hero.current_health
-	for i in 8:
-		hero.take_damage(20, bandit)
-	ck(hero.current_health == hp and not combat.is_staggered(), "eight blocked hits in a row: no HP lost, no stagger (−%d)" % (hp - hero.current_health))
+	var left: float = st.current
+	hero.take_damage(20, bandit)
+	ck(hero.current_health == hp and not combat.is_staggered() and st.current <= left - st.COST_BLOCK + 0.5,
+			"a blocked hit: no HP lost, no stagger, −%d stamina" % st.COST_BLOCK)
+	st.spend(st.MAX)
+	hero.take_damage(20, bandit)
+	ck(hero.current_health < hp and combat.is_staggered(), "a blocked hit on an empty bar: a weak block, HP lost and staggered (−%d)" % (hp - hero.current_health))
 	_press(&"block", false)
 	await create_timer(0.3).timeout
 	hero.current_health = hero.Max_Health
+	st.refill()
 	await _until_ready()
 
 

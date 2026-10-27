@@ -4,6 +4,7 @@ const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_reco
 const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
 const CURSED_FOAM = preload("res://SampleProject/Scenes/FX/CursedFoam.tscn")
 const FLYING_LOGIC = preload("res://SampleProject/Scripts/Gameplay/Components/FlyingLogic.gd")
+const POISE_BAR = preload("res://SampleProject/UI/Components/poise_bar.tscn")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -68,9 +69,13 @@ var lunge := 0.0
 var stride_speed := 70.0
 var super_armor := false
 var front_damage := 1.0
-## Souls-lite (D264, D265): стійкість, збій героя від удару, комбо.
+## Souls-lite (D264, D265): стійкість, збій героя від удару, комбо. poise — скільки стійкості ще лишилось; шкала
+## стійкості (D776, poise_bar.tscn) показує набране: poise_max − poise.
+signal poise_changed(filled: float, maximum: float)
 var poise_max := 3
-var poise := 3
+var poise: float = 3.0
+## Чим вибито стійкість чи збито ворога востаннє (&"light", &"heavy", &"riposte", &"parry", …) — звіт verify_masher.
+var last_stagger_source: StringName = &""
 var stagger_time := 0.25
 var combo_hits := 1
 var combo_chance := 0.5
@@ -95,13 +100,14 @@ var _ignored_count := -1
 var _allies_count := -1
 ## Падіння мертвого летючого на землю, с.
 const FALL_TIME := 0.45
-## Стійкість повертається повністю, якщо стільки секунд ворога ніхто не бив.
-const POISE_RESET_TIME := 2.0
+## Шкала стійкості (D776) спадає, коли ворога стільки секунд ніхто не бив: POISE_DRAIN частки poise_max за секунду.
+const POISE_DRAIN_DELAY := 1.2
+const POISE_DRAIN := 0.2
 ## Збій від вичерпаної стійкості й від парирування героя, с; відкидання при збої, px.
 const POISE_BREAK_STAGGER := 0.6
 const PARRY_STAGGER := 1.0
 const STAGGER_PUSH := 30.0
-var _poise_reset_left := 0.0
+var _poise_drain_in := 0.0
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -236,6 +242,7 @@ func _apply_variety() -> void:
 		# D713: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
 		poise_max = roundi(poise_max * marks.poise)
 		poise = poise_max
+		poise_changed.emit(0.0, poise_max)
 		knockback_immune = marks.knockback_immune
 	if kind.has("foam"):
 		_add_foam(Vector2(kind.foam[0], kind.foam[1]))
@@ -288,11 +295,24 @@ func _initialize_components():
 	add_child(enemy_view)
 	enemy_view.initialize(self)
 	# D502: над звичайним ворогом смужки HP немає — шкоду читають зі спалаху, цифр і іскор; у боса — смужка вгорі екрана.
+	# D776: шкала стійкості є в кожного — над звичайним ворогом своя, у боса — під його смужкою HP (BossEnemy).
+	_add_poise_bar()
 
 	DebugLogger.info("DefaultEnemy: Components initialized", "Enemy")
 
 	# Перевіряємо, чи гравець вже знаходиться в зоні виявлення
 	call_deferred("_check_existing_player_in_detection_area")
+
+## Шкала стійкості над головою (D776): над верхнім краєм тіла, видно, поки ворог у бою чи шкала не спала.
+func _add_poise_bar() -> void:
+	var bar: Control = POISE_BAR.instantiate()
+	add_child(bar)
+	bar.track(self)
+
+## Ворог у бою (женеться, б'є чи стоїть збитий) — тоді над ним шкала стійкості, як смужка боса.
+func is_engaged() -> bool:
+	return is_alive() and (enemy_logic.is_attacking or enemy_logic.stun_left > 0.0
+			or enemy_logic.current_state in [EnemyLogic.AIState.CHASE, EnemyLogic.AIState.ATTACK])
 
 ## Логіка ворога; бос підставляє свою (BossLogic, D301/D302).
 func _make_logic() -> EnemyLogic:
@@ -372,10 +392,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_tick_burn(delta)
-	if _poise_reset_left > 0.0:
-		_poise_reset_left -= delta
-		if _poise_reset_left <= 0.0:
-			poise = poise_max
+	_drain_poise(delta)
 	if enemy_view.staggered and enemy_logic.stun_left <= 0.0:
 		enemy_view.end_stagger()
 	sprite.modulate = STUN_TINT if enemy_logic.stun_left > 0.0 else (BURN_TINT if burn_left > 0.0 else Color.WHITE)
@@ -790,15 +807,28 @@ func _tick_burn(delta: float) -> void:
 		_burn_tick += 1.0
 		take_damage(burn_dps)
 
-## Удар героя відбирає [param amount] стійкості (D265); вичерпана — ворог збитий: замах зірвано, стоїть POISE_BREAK_STAGGER.
-func take_poise(amount: int, from_x: float) -> void:
+## Удар героя ([param source]: light, heavy, riposte, parry) набирає шкалу стійкості на [param amount] (D265, D776); повна —
+## ворог збитий: замах зірвано, стоїть POISE_BREAK_STAGGER, шкала порожня. Скільки ударів — не важить, лише набране.
+func take_poise(amount: float, from_x: float, source: StringName = &"light") -> void:
 	if is_dead:
 		return
-	_poise_reset_left = POISE_RESET_TIME
+	_poise_drain_in = POISE_DRAIN_DELAY
 	poise -= amount
-	if poise <= 0:
+	if poise <= 0.0:
 		poise = poise_max
+		last_stagger_source = source
 		stagger(POISE_BREAK_STAGGER, from_x)
+	poise_changed.emit(poise_max - poise, poise_max)
+
+## Шкала спадає, поки ворога не б'ють (D776).
+func _drain_poise(delta: float) -> void:
+	if _poise_drain_in > 0.0:
+		_poise_drain_in -= delta
+		return
+	if poise >= poise_max:
+		return
+	poise = minf(poise_max, poise + poise_max * POISE_DRAIN * delta)
+	poise_changed.emit(poise_max - poise, poise_max)
 
 ## Збій (D264): удар не відбудеться, ворог стоїть і відлітає трохи від героя (бос — ні). Броня tank тут не рятує.
 func stagger(duration: float, from_x: float) -> void:
@@ -808,14 +838,17 @@ func stagger(duration: float, from_x: float) -> void:
 	if not knockback_immune:
 		enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
 	EventBus.enemy_staggered.emit(self, duration)
+	last_stagger_source = &""  # наступний збій без джерела (щит розбито, навичка) — «інше»
 
 ## Ворог збитий чи оглушений (стагер, парирування, стійкість, оглушення навички) — для Breaker's Ring (D592).
 func is_staggered() -> bool:
 	return enemy_logic.stun_left > 0.0
 
-## Герой парирував цей удар (D264).
+## Герой парирував цей удар (D264): збій і велика частка шкали стійкості (D776, PlayerCombat.POISE_PARRY).
 func parried(by: Node2D) -> void:
+	last_stagger_source = &"parry"
 	stagger(PARRY_STAGGER, by.global_position.x)
+	take_poise(poise_max * PlayerCombat.POISE_PARRY, by.global_position.x, &"parry")
 
 ## Скільки збиває героя удар, що зараз іде: фінішер серії — довше (D264: «вороги інколи заморожують героя»).
 func hit_stagger_time() -> float:

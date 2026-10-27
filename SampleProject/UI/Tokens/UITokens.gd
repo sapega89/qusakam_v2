@@ -173,6 +173,16 @@ const BAR_HEIGHT := 6
 const BAR_WIDTH := 180
 const HP_FILL := Color("2ecc71")
 const SP_FILL := Color("3498db")
+const STAMINA_FILL := Color("e67e22")  # витривалість (D537, D775), рядок ST панелі героя
+## Порожня витривалість (D775): рядок ST блимає цим кольором, коли виснажений герой пробує діяти.
+const STAMINA_EMPTY_FLASH := Color("e74c3c")
+const STAMINA_FLASH_TIME := 0.35
+## Шкала стійкості ворога (D776, poise_bar.tscn): заливка, розміри над ворогом (px світу) і під смужкою боса.
+const POISE_FILL := Color("f1c40f")
+const POISE_BAR_WIDTH := 56
+const POISE_BAR_HEIGHT := 5
+const POISE_BAR_GAP := 10
+const BOSS_POISE_HEIGHT := 6
 
 # ── Розміри екрана Settings (Figma: settings-* 17:280 / 17:409 / 17:632) ────
 const SIZE_OPTIONS_TITLE := 38  # Bold — "OPTIONS" у верхній секції

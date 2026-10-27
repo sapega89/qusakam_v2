@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/boss_health_bar.gd" id="1_bar"]
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/poise_bar.tscn" id="3_poise"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_surface"]
 content_margin_left = 16.0
@@ -58,3 +59,8 @@ theme_type_variation = &"HpBar"
 max_value = 100.0
 value = 100.0
 show_percentage = false
+
+[node name="BossPoise" parent="Panel/Column" instance=ExtResource("3_poise")]
+unique_name_in_owner = true
+layout_mode = 2
+floating = false

@@ -57,6 +57,9 @@ const MASHER_FLASK_AT := 0.35
 const GOOD_FLASK_AT := 0.45
 ## Як часто бот тисне удар, с ігрового часу.
 const PRESS_EVERY := 0.1
+## GOOD (D775): перестає бити, коли витривалості менше за удар і перекат разом; знову б'є з цієї частки шкали.
+const GOOD_STAMINA_STOP := 45.0
+const GOOD_STAMINA_GO := 0.9
 ## GOOD: блок — за стільки с до удару (парирування — у перші PlayerCombat.PARRY_WINDOW с блоку); ривок — за стільки.
 const BLOCK_LEAD := 0.18
 const ROLL_LEAD := 0.12
@@ -146,6 +149,20 @@ var _bot := ""
 var _ai_kinds := {}
 ## Яких рішень чекати від виду (D764) — з вправи [6].
 var _expect := {}
+## Витривалість (D775) і стійкість (D776) за бій: удари героя, ціна ударів, виснаження, удари ворогів у вікна порожньої
+## шкали, збої ворогів за джерелом.
+var hero_swings := 0
+var _bar_swings := 0
+var bar_swings: Array[float] = []
+var exhausts := 0
+var _exhausted_at := -1.0
+var _was_exhausted := false
+var recover_times: Array[float] = []
+var refill_times: Array[float] = []
+var hits_empty := 0
+var refused := 0
+var staggers := {}
+var _now := 0.0
 
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -166,6 +183,14 @@ func _initialize() -> void:
 	root.get_node("EventBus").damage_received.connect(_on_damage)
 	root.get_node("EventBus").player_parried.connect(func(_s: Node) -> void: parries += 1)
 	root.get_node("EventBus").player_blocked.connect(func(_s: Node) -> void: blocks += 1)
+	root.get_node("EventBus").player_attacked.connect(func(_p: Node, _d: int) -> void:
+		hero_swings += 1
+		_bar_swings += 1)
+	root.get_node("EventBus").player_stamina_refused.connect(func() -> void: refused += 1)
+	root.get_node("EventBus").player_stamina_changed.connect(_on_stamina)
+	root.get_node("EventBus").enemy_staggered.connect(func(enemy: Node, _d: float) -> void:
+		var source := String(enemy.last_stagger_source) if enemy.last_stagger_source != &"" else "other"
+		staggers[source] = staggers.get(source, 0) + 1)
 	_levels()
 	Engine.physics_ticks_per_second = roundi(60 * SPEED)
 	# Кадр на крок фізики, як у грі на 60 к/с: таймери замахів (create_timer) спрацьовують на кадрах — за ліміту кадрів
@@ -226,7 +251,7 @@ func _initialize() -> void:
 					% [bot, roundi(surround[bot] * 100)])
 
 	# MASHER_ONLY=DRILL — лише вправа [6]
-	if OS.get_environment("MASHER_ONLY") in ["", "DRILL"]:
+	if OS.get_environment("MASHER_ONLY") in ["", "DRILL"] and OS.get_environment("MASHER_NODRILL") == "":
 		print("[6] each kind answers the hero: follows a roll or a jump, keeps pressure, reads a heavy, a swing and a block (D764)")
 		await _drill()
 	if not _ai_kinds.is_empty():
@@ -607,6 +632,11 @@ func _print_row(row: Dictionary) -> void:
 	print("        AI (D764): melee strikes %d: at the air %d, dodged %d | idle in reach %.1fs, longest %.2fs (%s) | evasions %d, lost %d, re-engage %s | stuck %d, fell %d"
 			% [row.melee_strikes, row.whiffs, row.dodged, row.idle_reach, row.idle_max, row.idle_max_who, row.evasions, row.lost,
 			"%.2fs avg" % _mean(row.reengage) if not row.reengage.is_empty() else "-", row.stuck, row.fell])
+	print("        ST (D775): hero swings %d | swings per bar %s | ran dry %d× | acts again after %s, full after %s | enemy hits in empty windows %d of %d | refused presses %d"
+			% [row.hero_swings, "%.1f" % _mean(row.bar_swings) if not row.bar_swings.is_empty() else "-", row.exhausts,
+			"%.2fs" % _mean(row.recover) if not row.recover.is_empty() else "-", "%.2fs" % _mean(row.refill) if not row.refill.is_empty() else "-",
+			row.hits_empty, row.hits, row.refused])
+	print("        poise (D776): staggers %s" % [row.staggers])
 	for line: String in row.dumb:
 		print("        dumb: " + line)
 	for line: String in row.enemies:
@@ -670,6 +700,20 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 		spawner = await _start_fight(fight)
 	hero.defeat_handler = func() -> void: pass  # без Game Over і кат-сцени поразки: бій міряє тест
 	hits_taken = 0
+	hero.stamina.refill()
+	_resting = false
+	hero_swings = 0
+	_bar_swings = 0
+	bar_swings = []
+	exhausts = 0
+	_exhausted_at = -1.0
+	_was_exhausted = false
+	recover_times = []
+	refill_times = []
+	hits_empty = 0
+	refused = 0
+	staggers = {}
+	_now = 0.0
 	hero_hits = 0
 	cleaves = 0
 	iframed = 0
@@ -717,6 +761,7 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 		await physics_frame
 		var dt: float = Engine.time_scale / Engine.physics_ticks_per_second
 		t += dt
+		_now = t
 		if spawner:
 			for enemy: Node in spawner.spawned_enemies:
 				if is_instance_valid(enemy) and not enemy in enemies:
@@ -770,7 +815,9 @@ func _run(fight: Dictionary, bot: String, build: String, attempt: int) -> Dictio
 			"together": together, "together_time": together_time, "contact": contact, "lunges": lunges, "latches": latches,
 			"both": float(both_frames) / near_frames if near_frames > 0 else -1.0, "whiffs": whiffs, "dodged": dodged, "melee_strikes": melee_strikes,
 			"idle_reach": idle_reach, "idle_max": idle_max, "idle_max_who": idle_max_who, "evasions": evasions, "lost": lost,
-			"reengage": reengage, "stuck": stuck, "fell": fell, "dumb": dumb, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines}
+			"reengage": reengage, "stuck": stuck, "fell": fell, "dumb": dumb, "hero_hits": hero_hits, "cleaves": cleaves, "iframed": iframed, "heals": heals, "enemies": lines,
+			"hero_swings": hero_swings, "bar_swings": bar_swings, "exhausts": exhausts, "recover": recover_times, "refill": refill_times,
+			"hits_empty": hits_empty, "refused": refused, "staggers": staggers.duplicate()}
 	# Що лишилось — геть, щоб наступна кімната почалась начисто
 	for enemy: Node in tracked:
 		if is_instance_valid(enemy):
@@ -977,9 +1024,28 @@ func _on_telegraph(enemy: Node) -> void:
 			"boss": enemy.get_script() == Boss, "kind": enemy.enemy_logic.get("last_move").get("kind", "combo") if enemy.get_script() == Boss else "swing"})
 
 
+## Шкала витривалості: удари до виснаження, виснаження, скільки до дії й до повної (D775).
+func _on_stamina(current: float, maximum: float, exhausted: bool) -> void:
+	if exhausted and not _was_exhausted:
+		exhausts += 1
+		_exhausted_at = _now
+		bar_swings.append(float(_bar_swings))
+		_bar_swings = 0
+	elif not exhausted and _was_exhausted:
+		recover_times.append(_now - _exhausted_at)
+	if current >= maximum:
+		if _exhausted_at >= 0.0:
+			refill_times.append(_now - _exhausted_at)
+			_exhausted_at = -1.0
+		_bar_swings = 0
+	_was_exhausted = exhausted
+
+
 func _on_damage(target: Node, source: Node, _amount: int, _critical: bool) -> void:
 	if target == hero:
 		hits_taken += 1
+		if hero.stamina.exhausted:
+			hits_empty += 1
 		if is_instance_valid(source):
 			source.set_meta(&"masher_landed", true)
 			var shooter: Node = source.get(&"shooter") if source.get(&"shooter") != null else source
@@ -1150,6 +1216,7 @@ func _nearest(alive: Array) -> Node:
 
 
 ## MASHER: іде на найближчого, тисне легкий удар; щойно серія скінчилась — важкий; фляга нижче MASHER_FLASK_AT.
+## Витривалість (D775) він читає лише так: порожня — не тисне (і так не вдарить), стоїть упритул, доки шкала не дасть.
 func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 	var target := _nearest(alive)
 	if target == null:
@@ -1162,6 +1229,8 @@ func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 	var combat: Node = hero.combat
 	if combat.combo_step == combat.combo_length() - 1 and combat.attack_cooldown > 0.0 and combat.state == combat.State.READY:
 		heavy_due = true
+	if press and hero.stamina.exhausted:
+		return heavy_due
 	if press:
 		if heavy_due and combat.state == combat.State.READY:
 			_tap(&"heavy_attack")
@@ -1171,7 +1240,8 @@ func _masher(alive: Array, press: bool, heavy_due: bool) -> bool:
 
 
 ## GOOD: не б'є, коли поруч замах; жовте й біле — блок (жовте — парирування, далі рипост), червоне — ривок геть;
-## фляга, коли ніхто не замахується; навичка, коли є SP.
+## фляга, коли ніхто не замахується; навичка, коли є SP. Витривалість (D775): тримає запас на перекат — нижче
+## GOOD_STAMINA_STOP не б'є, доки шкала не набере GOOD_STAMINA_GO; котиться лише від червоного удару, що дістає.
 func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	var target := _nearest(alive)
 	if target == null:
@@ -1203,10 +1273,12 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 		var from: float = threat.enemy.global_position.x
 		if threat.tell == &"dodge":
 			_set_block(false)
-			if threat.strike_in <= ROLL_LEAD and threat.strike_in > -0.05 and not hero.mover.is_rolling():
+			# Один перекат на удар (D775): другий ривок поспіль лише палить витривалість
+			if threat.strike_in <= ROLL_LEAD and threat.strike_in > -0.05 and not hero.mover.is_rolling() and not threat.get("rolled", false):
 				_hold_move(-signi(int(from - hero.global_position.x)) if from != hero.global_position.x else -1)
 				if hero.mover.can_roll():
 					_tap(&"dodge")
+					threat.rolled = true
 					rolls += 1
 			return heavy_due
 		_hold_move(signi(int(from - hero.global_position.x)) if absf(from - hero.global_position.x) > 1.0 else 0)  # лицем до удару
@@ -1218,6 +1290,11 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 		if press:
 			_tap(&"attack")
 		return heavy_due
+	var st: Node = hero.stamina
+	if st.current < GOOD_STAMINA_STOP:
+		_resting = true
+	elif st.current >= st.MAX * GOOD_STAMINA_GO:
+		_resting = false
 	# Легкий удар можна зірвати блоком чи перекатом на відновленні (D456) — його б'ють і тоді, коли хтось замахується;
 	# фляга й навичка (замах не зривається) — лише коли поруч ніхто не замахується
 	if not winding and float(hero.current_health) / hero.Max_Health < GOOD_FLASK_AT and _flask():
@@ -1225,9 +1302,13 @@ func _good(alive: Array, press: bool, heavy_due: bool, _t: float) -> bool:
 	_hold_move(signi(int(dx)) if absf(dx) > 24.0 else 0)
 	if press and not winding and absf(dx) < 90.0 and _cast_best():
 		return heavy_due
-	if press:
+	if press and not _resting:
 		_tap(&"attack")
 	return heavy_due
+
+
+## GOOD відпочиває: шкала витривалості нижче запасу, ще не набралась (D775).
+var _resting := false
 
 
 ## Фляга (Healing Palm, D504) зі свого слота хотбара, якщо є заряд. true — натиснуто.

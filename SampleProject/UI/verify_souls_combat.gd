@@ -419,6 +419,7 @@ func _hero_moves(sl: Node) -> void:
 	await create_timer(1.0).timeout
 
 	print("[5] Heavy attack: a rooted wind-up, then 1.5x with knockback (4b: not double)")
+	hero.stamina.refill()  # серії [4] витратили витривалість (D775); тут — лише сам важкий удар
 	hits.clear()
 	target.poise_max = 3
 	target.poise = 3

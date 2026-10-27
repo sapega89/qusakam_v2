@@ -4,7 +4,8 @@ class_name UIPlayerVitalsPanel
 ## Панель героя v2, вгорі ліворуч (D453, D476, D485). Figma: UI/HUD/HeroPanel v2 (501:6611).
 ## Виміри: design/combat_hud_mapping.md → HUD v2 hero panel. Розкладка — у player_vitals_panel.tscn.
 ##
-## Портрет у шестикутнику, ромб рівня, ім'я й клас, рядки HP і SP. Витривалості немає (D551), XP — смуга на всю
+## Портрет у шестикутнику, ромб рівня, ім'я й клас, рядки HP, SP і ST (витривалість, D775: рядок з Figma 501:6611 ревізії
+## D549, плитка 470 × 144). Виснажений герой пробує діяти — рядок ST блимає (UITokens.STAMINA_EMPTY_FLASH). XP — смуга на всю
 ## ширину внизу (D552, hud_xp_bar). Під плиткою — чипи F (асист, hud_assist_chip.gd) і Q (зілля з лічильником, D538).
 ## Значення беруться з наявних власників — вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
@@ -15,6 +16,7 @@ const QuickPotion = preload("res://SampleProject/Scripts/Combat/QuickPotion.gd")
 const HURT_SHAKE := 4.0
 const HURT_TIME := 0.3
 var _hurt: Tween
+var _st_flash: Tween
 
 @onready var _name_label: Label = %VitalsName
 @onready var _level_label: Label = %LevelValue
@@ -46,6 +48,8 @@ func _ready() -> void:
 		EventBus.player_respawned.connect(_on_player_respawned)
 	if not EventBus.damage_received.is_connected(_on_damage_received):
 		EventBus.damage_received.connect(_on_damage_received)
+	EventBus.player_stamina_changed.connect(_on_stamina_changed)
+	EventBus.player_stamina_refused.connect(_on_stamina_refused)
 	EventBus.inventory_updated.connect(_refresh_potion)
 	EventBus.input_device_changed.connect(func(_pad: bool) -> void: _refresh_potion())
 	if _xp_manager:
@@ -58,6 +62,20 @@ func _ready() -> void:
 
 func _on_sp_changed(_current: int, _max: int) -> void:
 	refresh()
+
+
+func _on_stamina_changed(current: float, maximum: float, _exhausted: bool) -> void:
+	_set_row("ST", roundi(current), roundi(maximum))
+
+
+## Виснажений герой пробує ударити чи перекотитись (D775): рядок ST спалахує червоним і гасне.
+func _on_stamina_refused() -> void:
+	if _st_flash and _st_flash.is_running():
+		return
+	var row: Control = _rows_by_id["ST"]
+	row.modulate = UITokens.STAMINA_EMPTY_FLASH
+	_st_flash = create_tween()
+	_st_flash.tween_property(row, ^"modulate", Color.WHITE, UITokens.STAMINA_FLASH_TIME)
 
 
 ## Чип Q (D538 → HUD v2): кнопка за пристроєм і все зілля лікування в сумці в пігулці «×3».
@@ -146,9 +164,11 @@ func refresh() -> void:
 	var player: Node = _ensure_player()
 	if player:
 		_set_row("HP", int(player.current_health), int(player.Max_Health))
+		_set_row("ST", roundi(player.stamina.current), roundi(player.stamina.MAX))
 	else:
 		# Джерело не резолвиться — показуємо це чесно, а не повний бар.
 		_set_row_unknown("HP")
+		_set_row_unknown("ST")
 	_refresh_potion()
 	if _skill_manager:
 		_set_row("SP", _skill_manager.get_current_sp(), _skill_manager.get_max_sp())
