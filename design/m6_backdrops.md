@@ -12,6 +12,12 @@ cave mouth, a well shaft, a hole in the floor. Ladders only where a place would 
 well, a ladder up a house wall). Tool: `comfy_backdrop.py` (the `comfy-backdrop` skill); props like the forge and the
 chapel stand on the floor line. Sapega sees each batch in a capture before the next one.
 
+**Interesting, in several layers** (Sapega 2026-10-27: «фони мають бути цікавими, можливо не один шар»). Each room gets
+at least three planes: a far one (sky and distance, slow parallax ×0.3–0.5), a middle one (buildings, rocks, machines,
+×0.7–0.85) and the room's own wall at ×1.0 with its passages painted in; outdoors also the dark foreground that passes
+now and then (D750). Every screen has something to look at that tells the place: smoke, banners, lamps, broken
+statues, pipes with steam, birds, a story detail in the distance. No screen is just a repeated texture.
+
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 
 | Room | Kind | Screens | Passages to paint | Status |
