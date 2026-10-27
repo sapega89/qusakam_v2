@@ -348,6 +348,11 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** nothing for slice 1 (defaults in the plan: 30 s return, 160 px scare distance).
 - **Resume:** slice 1 — `AmbientCritter.gd` + `critter_bat.tscn`, two bats in `LizardCave/FrontDark`, `verify_ambient_critters.gd`.
 
+### Depth critics from video — [[depth_critics_plan]]
+- **Exists:** stills only (`capture_*.gd`, `playthrough.gd`); no video, nothing measures a plane's speed.
+- **Waits on:** nothing.
+- **Resume:** slice 1 — `film_rooms.gd` (Movie Maker, real input), the per-plane probe, `film_pack.py` (filmstrip + slit-scan).
+
 ### Skill trees v2: 19 skills a tab — [[skill_trees_plan]] → *v2* (D535)
 - **Exists:** the base tree has 10 skills (3 active) and each oath has 11 (3 active); `SkillCombatExecutor` has one hit shape and three poses.
 - **Waits on:** Sapega reading the draft list of 33 new skills (28 active, 5 passive); Q86 (hotbar slots) for the HUD only.
