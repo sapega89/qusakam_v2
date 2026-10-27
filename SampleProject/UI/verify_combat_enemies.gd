@@ -184,6 +184,9 @@ func _tells() -> void:
 		enemy.child_entered_tree.connect(on_child)
 		sounds.clear()
 		var strikes: Array = []
+		# D742: серія б'є, лише доки дістає героя — герой стоїть у досяжності, невразливий (удари не відкидають його)
+		hero.global_position = Vector2(enemy.global_position.x - 30.0, floor_y)
+		hero.is_invulnerable = true
 		enemy.enemy_logic.last_direction = -1
 		enemy.enemy_logic.perform_attack()
 		var was_on := false
@@ -194,6 +197,7 @@ func _tells() -> void:
 			was_on = enemy.hitbox.monitoring
 		eb.enemy_tell_shown.disconnect(on_tell)
 		enemy.child_entered_tree.disconnect(on_child)
+		hero.is_invulnerable = false
 		var kinds: Array = shown.map(func(s: Array) -> String: return s[0])
 		var leads: Array = []
 		for i in mini(shown.size(), strikes.size()):
@@ -599,10 +603,11 @@ func _lunges_and_pounce() -> void:
 	# Бандит: герой за 180 px, поза досяжністю удару (40 px), — випад дістає
 	var bandit: Node = await _spawn(BANDIT, 0.0, false)
 	bandit.enemy_logic._lunge_rest = 60.0  # сам не кидається: випади тут веде тест
-	await _place(bandit, -180)
-	var x0: float = bandit.global_position.x
+	# Спершу спокій, тоді герой на місце (D742: щойно приземлений герой — відкритий, і ворог кинувся б карати сам)
 	bandit.enemy_logic.player = hero
 	await _quiet(bandit)
+	await _place(bandit, -180)
+	var x0: float = bandit.global_position.x
 	hits[0] = 0
 	bandit.enemy_logic.perform_lunge()
 	await create_timer(bandit.enemy_stats.lunge_windup + logic_script.LUNGE_TIME + 0.15).timeout
@@ -613,10 +618,9 @@ func _lunges_and_pounce() -> void:
 	var jackal: Node = await _spawn(JACKAL, 0.0, false)
 	jackal.enemy_logic._lunge_rest = 60.0
 	jackal.enemy_logic._lunge_rest = 60.0
-	await _place(jackal, -200)
-	hits[0] = 0
 	jackal.enemy_logic.player = hero
 	await _quiet(jackal)
+	await _place(jackal, -200)
 	hits[0] = 0
 	jackal.enemy_logic.perform_lunge()
 	var t := 0.0
@@ -639,12 +643,11 @@ func _lunges_and_pounce() -> void:
 	_heal()
 	# Блок: білий відблиск — стрибок відбито, не вчепився
 	jackal.enemy_logic._lunge_rest = 60.0
+	await _quiet(jackal)
 	await _place(jackal, -200)
-	hits[0] = 0
 	_press(&"block")
 	await create_timer(0.1).timeout
 	var latched_once := [false]
-	await _quiet(jackal)
 	hits[0] = 0
 	jackal.enemy_logic.perform_lunge()
 	t = 0.0
@@ -657,11 +660,10 @@ func _lunges_and_pounce() -> void:
 	await create_timer(1.2).timeout
 	# Перекат крізь стрибок: невразливий — шакал пролітає
 	jackal.enemy_logic._lunge_rest = 60.0
+	await _quiet(jackal)
 	await _place(jackal, -200)
-	hits[0] = 0
 	latched_once[0] = false
 	hero.mover.last_direction = 1
-	await _quiet(jackal)
 	hits[0] = 0
 	jackal.enemy_logic.perform_lunge()
 	t = 0.0
@@ -680,11 +682,10 @@ func _lunges_and_pounce() -> void:
 	var pair: Array[Node] = [await _spawn(JACKAL, 0.0, false), await _spawn(JACKAL, 400.0, false)]
 	for j: Node in pair:
 		j.enemy_logic._lunge_rest = 60.0
-	await _place(pair[0], 200)
-	hits[0] = 0
-	var holders := {}
 	for j: Node in pair:
 		await _quiet(j)
+	await _place(pair[0], 200)
+	var holders := {}
 	hits[0] = 0
 	for j: Node in pair:
 		j.enemy_logic.player = hero
@@ -752,7 +753,12 @@ func _recovery_and_back_off() -> void:
 		await physics_frame
 	while tank.enemy_logic.is_attacking:
 		await physics_frame
-	ck(tank.enemy_logic.current_state == tank.enemy_logic.AIState.ATTACK, "the tank never retreats (state %d)" % tank.enemy_logic.current_state)
+	# D742: після удару й tank (back_off 0) виходить з досяжності удару героя, а не стоїть перед ним
+	ck(tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT, "the tank steps back out of the hero's reach after its swing (state %d)" % tank.enemy_logic.current_state)
+	while tank.enemy_logic.current_state == tank.enemy_logic.AIState.RETREAT:
+		await physics_frame
+	var gap: float = absf(tank.global_position.x - hero.global_position.x)
+	ck(gap > tank.enemy_logic._hero_reach(), "it stops %.0f px from him, past his reach %.0f px (D742)" % [gap, tank.enemy_logic._hero_reach()])
 	hero.is_invulnerable = false
 	tank.set_physics_process(false)
 	await _done(tank)

@@ -203,6 +203,11 @@ func apply_weapon_profile() -> void:
 		_weapon_knockback = profile.knockback
 	knockback = _weapon_knockback
 
+## Як далеко від центру героя б'є його удар, px (D742: ворог читає замах героя): дальній край хітбокса й крок удару —
+## важкого ([param heavy]) чи фінішера серії.
+func strike_reach(heavy: bool) -> float:
+	return hitbox_center.x + _hitbox_shape().size.x / 2.0 + (HEAVY_STEP if heavy else FINISHER_STEP)
+
 func _hitbox_shape() -> RectangleShape2D:
 	return hitbox.get_node(^"CollisionShape2D").shape
 

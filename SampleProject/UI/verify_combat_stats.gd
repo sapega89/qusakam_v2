@@ -137,7 +137,7 @@ func _initialize() -> void:
 			"more dexterity, a shorter swing (x%.2f: %.3f s)" % [faster, combat._state_left])
 	attributes.dexterity = dex
 
-	print("[4] Enemy tempo from EnemyStats.attack_cooldown (B111, D394)")
+	print("[4] Enemy tempo from EnemyStats.attack_cooldown (B111, D394), not a metronome: x0.7-1.3 (D742)")
 	ck(not "attack_cooldown" in enemies[0].enemy_logic, "EnemyLogic keeps no tempo of its own")
 	var tempos := {}
 	hero.Max_Health = 9999  # тут лише темп: чотири серії D642 інакше вбивають героя рівня 1, і пауза Game Over зупиняє бій
@@ -152,12 +152,14 @@ func _initialize() -> void:
 		logic.attack_ready_in = 0.0
 		logic.handle_attack_state(0.0)
 		tempos[e.enemy_stats.enemy_type] = logic.attack_ready_in
-		ck(is_equal_approx(logic.attack_ready_in, e.enemy_stats.attack_cooldown),
-				"%s (%s) waits its stats' %.2f s (%.2f)" % [e.name, e.enemy_stats.enemy_type, e.enemy_stats.attack_cooldown, logic.attack_ready_in])
+		var cooldown: float = e.enemy_stats.attack_cooldown
+		ck(logic.attack_ready_in >= cooldown * logic.RHYTHM_MIN - 0.001 and logic.attack_ready_in <= cooldown * logic.RHYTHM_MAX + 0.001,
+				"%s (%s) waits its stats' %.2f s x%.1f-%.1f (%.2f)" % [e.name, e.enemy_stats.enemy_type, cooldown, logic.RHYTHM_MIN, logic.RHYTHM_MAX, logic.attack_ready_in])
 		# D504: замахуються разом не більше двох (жетон) — наступний ворог чекав би, доки цей не скінчить
 		while logic.is_attacking:
 			await physics_frame
-	ck(tempos.has("fast") and is_equal_approx(tempos.fast, 0.8), "the fast enemy swings every 0.8 s (D713, was D642's 1.0) (%s)" % [tempos])
+	ck(tempos.has("fast") and tempos.fast >= 0.8 * 0.7 - 0.001 and tempos.fast <= 0.8 * 1.3 + 0.001,
+			"the fast enemy swings every 0.8 s, x0.7-1.3 (D713, was D642's 1.0; D742) (%s)" % [tempos])
 
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

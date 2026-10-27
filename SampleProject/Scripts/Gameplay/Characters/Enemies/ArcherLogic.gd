@@ -5,6 +5,21 @@ extends EnemyLogic
 ## уступу; між ними — стоїть і стріляє (perform_attack базової логіки: натяг із відблиском, потім стріла), лише коли
 ## герой на його висоті.
 
+## Герой іде на лучника — той відступає вже з CLOSING_KEEP × keep_away; у куті ближче за CORNERED × keep_away — обходить.
+const CLOSING_KEEP := 1.3
+const CORNERED := 0.6
+
+
+## Лучник не підступає під час натягу.
+func _creeps() -> bool:
+	return false
+
+
+## Натяг не обривається: стріла летить по прямій туди, куди він цілив.
+func _abandons() -> bool:
+	return false
+
+
 ## Лучник починає стріляти з самого attack_range — без запасу ближнього бою (EnemyLogic.WAIT_GAP).
 func engage_range() -> float:
 	return attack_range
@@ -20,15 +35,27 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	velocity.x = 0
 	_face_player()
-	if absf(dx) < enemy.keep_away and _can_back_away(-1 if dx > 0.0 else 1):
-		change_state(AIState.RETREAT)
+	var away: int = -1 if dx > 0.0 else 1
+	# Герой підходить (D742): відступає раніше, коли той іде на лучника; а в куті — проходить крізь героя на інший бік
+	var closing: bool = player.velocity.x * signf(-dx) > AWAY_SPEED
+	if absf(dx) < enemy.keep_away * (CLOSING_KEEP if closing else 1.0):
+		if _can_back_away(away):
+			tactic.emit(&"kite")
+			change_state(AIState.RETREAT)
+			return
+		if absf(dx) < enemy.keep_away * CORNERED and _flank_rest <= 0.0 and not is_instance_valid(_flanker) and _side_open(-away):
+			tactic.emit(&"reposition")
+			_start_flank(-away)
+			change_state(AIState.RETREAT)
+			return
+	if absf(_hero_y_at(enemy.attack_windup) - enemy.global_position.y) > enemy.same_height:
 		return
-	if absf(player.global_position.y - enemy.global_position.y) > enemy.same_height:
-		return
-	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494); натягують разом не більше двох (жетон, D504).
-	# Герой п'є флягу чи замахується важким на виду (D713) — стріляє, не чекаючи кінця перерви.
+	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494), зі змінним ритмом (D742); натягують разом не більше
+	# двох (жетон, D504). Герой п'є флягу чи замахується важким на виду (D713) — стріляє, не чекаючи кінця перерви.
 	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free():
-		attack_ready_in = enemy.attack_cooldown
+		_rest_after_swing()
+		if not player.is_on_floor() or absf(player.velocity.x) > AWAY_SPEED:
+			tactic.emit(&"lead")  # стріляє туди, де герой буде (ArcherEnemy._tilt_to, висота — _hero_y_at)
 		perform_attack()
 
 
@@ -36,6 +63,11 @@ func handle_attack_state(_delta: float) -> void:
 func handle_retreat_state(_delta: float) -> void:
 	if not player or not is_instance_valid(player):
 		change_state(AIState.IDLE)
+		return
+	if flank_side != 0:
+		_flank_step(_delta)
+		if flank_side == 0:
+			change_state(AIState.ATTACK)
 		return
 	var dx: float = player.global_position.x - enemy.global_position.x
 	var away: int = -1 if dx > 0.0 else 1

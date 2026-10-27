@@ -318,6 +318,12 @@ func hurt_rect() -> Rect2:
 	return Rect2(hurt_collision.global_position - size / 2.0, size)
 
 
+## Досяжність удару, px від центру ворога (D742): дальній край хітбокса (форма з кадрів, B128) і ривок удару (lunge).
+func strike_reach() -> float:
+	var width: float = hitbox_collision.shape.get_rect().size.x * absf(hitbox_collision.global_transform.get_scale().x)
+	return absf(hitbox_collision.global_position.x - global_position.x) + width / 2.0 + lunge
+
+
 ## Форми удару й тіла-цілі — за поглядом, як і кадри (спрайт дзеркалиться навколо центру ворога).
 func _face_shapes(direction: int) -> void:
 	if direction != 0:
