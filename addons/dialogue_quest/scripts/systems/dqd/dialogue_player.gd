@@ -460,7 +460,10 @@ func _handle_choice(section: DQDqdParser.DqdSection.SectionChoice) -> void:
 	choice_menu.choices = section.choices
 	choice_menu.show()
 	var choice_made: String = await choice_menu.choice_made
+	# Kusakam, D727: фокус відпускаємо до того, як сховати кнопки, — інакше наступне вікно (подарунок діда) його не бере
+	choice_menu.get_viewport().gui_release_focus()
 	choice_menu.hide()
+	choice_menu.choices = []
 	DialogueQuest.Flags.make_choice(choice_made)
 
 func _handle_exit(section: DQDqdParser.DqdSection.SectionExit) -> void:

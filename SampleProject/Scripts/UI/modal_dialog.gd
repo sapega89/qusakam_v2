@@ -15,6 +15,9 @@ signal chosen(result: String)
 var _custom_buttons: Array[Button] = []
 ## Власна кнопка скасування (is_cancel) — її натискає B / Esc.
 var _custom_cancel: Button = null
+## Кнопка за замовчуванням: поки модалка відкрита, фокус без власника повертається до неї — після відповіді в розмові
+## (D727) відкладене grab_focus губилось, і подарунок діда не закривався з клавіатури.
+var _default_button: Button = null
 
 func setup(data: Dictionary) -> void:
 	_apply_icon(data.get("icon", null))
@@ -80,6 +83,7 @@ func _build_custom_buttons(buttons: Array) -> void:
 			_custom_cancel = button
 		if is_default:
 			button.call_deferred("grab_focus")
+			_default_button = button
 
 	if confirm_button:
 		confirm_button.visible = false
@@ -139,3 +143,8 @@ func _on_button_pressed(button_id: String, is_cancel: bool) -> void:
 		confirmed.emit()
 	elif result == "cancel" or is_cancel:
 		cancelled.emit()
+
+
+func _process(_delta: float) -> void:
+	if _default_button != null and _default_button.is_visible_in_tree() and get_viewport().gui_get_focus_owner() == null:
+		_default_button.grab_focus()
