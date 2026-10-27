@@ -68,6 +68,8 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 
 ## 4. Waiting on Sapega
 
+**S1 page:** https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv — his verdicts on the 33 new skills (db collection `verdicts`, doc = skill slug) → `skill_trees_plan.md` v2.
+
 **P1 page:** https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — his verdicts on the 112 agent/routine calls land in its db (`ArtifactData list`, collection `answers`, doc = D-ID: `verdict` yes/no/change, `note`); apply them to the register.
 
 S19 shield (rework the 5 shield skills or give the hero a shield), `iron_shield`, the «Holy Warrior» name, the base +
