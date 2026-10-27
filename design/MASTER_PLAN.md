@@ -143,8 +143,8 @@ tags: [plan, orchestrator, status]
 | S12 | Налаштування без системи: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди | D43–D48 | ✅ усе є в Settings: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди (D425–D428) |
 | S13 | Поверхні без дизайну: сповіщення про рівень, HP ворога, тост «ціль оновлено», екран кінця демо — Figma (🖥) → ☁ | figma_coverage §1 | ✅ усі чотири є: сповіщення про рівень (`verify_level_up`), HP ворога (`HealthBar`), плашка цілі (QP1), кінець демо (`verify_demo_end`) |
 | S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | ⬜ 🖥 заміри кадрів на ПК; slice 7 чекає Q83/Q84 |
-| S15 | Аудит рішень D179+ проти коду | [[decision_audit]] | 🔄 routine `decision-audit-2` (27.10): D179–D330 |
-| S16 | Активні плани — закрити або виписати хвости: ranged, hero_weapon_animation, onboarding, localization, npc_recall, lab_boss, lab_story, world_expansion | — | 🔄 routine `decision-audit-2` (27.10): хвости кожного плану |
+| S15 | Аудит рішень D179+ проти коду | [[decision_audit]] | ✅ злито (integrate-28) — Run 6: D179–D330, ✅ 138 · ❌ 1 · ➖ 13; далі з D331; B167 (D181, тепер збудовано) і B168 (D459 — в'язень не спалахує) |
+| S16 | Активні плани — закрити або виписати хвости: ranged, hero_weapon_animation, onboarding, localization, npc_recall, lab_boss, lab_story, world_expansion | — | ✅ злито (integrate-28) — ranged, onboarding, localization, lab_boss → `done`; хвости: hero_weapon_animation s7 (кулаки, арт), npc_recall s3 (арт бульбашок; s1 зроблено journal-hints), lab_story s9 і world_expansion s4 (знімки fb17/fb23) |
 | S17 | Село: більше бігу до діда | BACKLOG | ⛔ до «гра проходиться», спитати Sapega |
 | S18 | Сценарій прологу | HANDOFF | ⛔ Sapega відклав |
 | S19 | Аудит навичок: 76 навичок (обробник, поза, VFX, іконка, вердикт), щит — переробити 5 щитових навичок без щита (рекомендація) чи дати герою щит; форма базового дерева й одного дерева шляху (D728); черга поз і VFX | [[skills_audit]], D725–D728 | ⏳ твій вибір: щит (переробити 5 навичок без щита чи дати щит), форма дерев (документ злито) |

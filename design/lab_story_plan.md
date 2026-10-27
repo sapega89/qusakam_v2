@@ -5,6 +5,12 @@ status: in-progress  # 2026-10-21: rows 9.1–9.5 built; rest = queue rows 9.6�
 
 # The Mayor Hall and the Laboratory story — plan
 
+## Tails (2026-10-27)
+
+Checked against the code by routine `decision-audit-2` (MASTER_PLAN S16). Every other slice is built.
+
+- Slice 9, demo end and full route: the code is built (`LaboratoryOutside.gd:49,103`, `verify_lab_route`, `verify_demo_end`). The `fb17_*` captures and their contact sheet were never taken (that needs a display), and the exe rebuild cannot be checked from the repo.
+
 BACKLOG **16** (Mayor Hall queue, the wall bursts, the "unbeatable" boss), **17** (the rewritten Laboratory story),
 **6** (the Laboratory boss) and the Laboratory part of **23** (the Laboratory split into screens) as one story block.
 Sapega was asleep for the whole pass ([[play_feedback_queue]] rules): every call below is an **agent call recorded as a

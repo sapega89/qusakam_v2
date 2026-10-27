@@ -185,6 +185,10 @@ the history, this note keeps only what is open.
 > - **B165** — Mid-fight, an enemy past its leash gave up and walked home while the hero stood 80–350 px away. In `verify_masher`, GOOD lost a bandit, a jackal and a tank this way after rolls (Caravan, Lab middle, road's first fight). Fix: the leash ends the chase only when the hero is beyond the enemy's chase range.
 > - **B166** — Bosses stood idle up to 1.29 s with the hero inside their combo reach (fixed rest of 1.0–1.3 s, Mayor Hall and Laboratory). Fix: a boss whose hero stands in its combo reach for more than 0.7 s strikes (`BossLogic.REACH_PATIENCE`); the rest varies ×0.7–1.3.
 
+> **From `cloud/decision-audit-2` (D179–D330 audit, integrate-28):**
+> - **B167** (fixed by `cloud/journal-hints`, D781) — D181 was not built: the Journal grouped quests by story stage («PROLOGUE») and «Tasks», not by city/location (`journal_component.gd:176-196`). journal-hints now groups the Quests list under one header per location of `locations.json`.
+> - **B168** (open) — D459 (amends D304) is not built: in the cells cutscene the prisoner does not burst into flame; `LabCells.gd:134` still plays `collapse` and then fades the djinn in. Needs the sacrifice animation (frames or an FX) before the djinn appears.
+
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
 - **Expected:** a regenerated sheet faces one way in every row
