@@ -6,7 +6,7 @@ extends SceneTree
 ## підказка свого кольору й удар (булава — біла, жовта; палиця — червона хвиля), ковток — вікно без підказки й шкоди,
 ## з кпином в облачку; друга фаза. Сейв посеред бою → бій одразу, без розмови. Програш → найманець забирає плащ,
 ## звичайний Game Over. Перемога (останній удар — справжня attack) → репліка, брама піднімається, колізії немає; на
-## місток — одним справжнім стрибком (B83); герой іде на схід у LaboratoryOutside. Наприкінці — числа D642.
+## місці колишніх містків стрибок повертає на підлогу — містків немає (D832); герой іде на схід у LaboratoryOutside. Наприкінці — числа D642.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_lab_boss.gd
 
 const HALL := "res://SampleProject/Maps/LabBoss.tscn"
@@ -14,8 +14,8 @@ const TEST_DIR := "user://verify_lab_boss/"
 const TEST_SLOT := 1
 ## Асисти відкриває 9.5 (LabCells); тут — лише для тесту.
 const ASSIST_FLAGS: Array[String] = ["lab_companion_01_complete", "lab_companion_02_complete", "lab_companion_03_complete"]
-## Містки для ухилів (build_laboratory.gd, рядок 9): верх — y 288, x 352–544 і 1216–1408.
-const BRIDGES: Array[Vector2] = [Vector2(448, 288), Vector2(1312, 288)]
+## Де були містки для ухилів (верх y 288, x 352–544 і 1216–1408); D832 їх прибрав — зала рівна.
+const FORMER_BRIDGES: Array[Vector2] = [Vector2(448, 288), Vector2(1312, 288)]
 
 var fails: Array[String] = []
 var game: Node
@@ -146,7 +146,7 @@ func _fight_state_ok(s: Dictionary, label: String) -> void:
 	ck(s.flags.get("lab_boss_talk_complete", false) and not s.flags.get("lab_boss_fight_complete", false), "%s: talk flag set, fight not won" % label)
 	ck(_music() == root.get_node("AudioManager").music["boss"], "%s: the boss track plays (D414)" % label)
 
-## Справжній стрибок з підлоги під містком: герой стає на нього (односторонній — знизу проходить наскрізь).
+## Справжній стрибок з підлоги там, де був місток: D832 — нагорі нема на що стати, герой знову на підлозі (y 384).
 ## Ступні — низ колізії героя; на підлозі (y 384) вони на feet px нижче за його позицію.
 func _jump_onto(bridge: Vector2, label: String) -> void:
 	var p: CharacterBody2D = game.player
@@ -162,7 +162,8 @@ func _jump_onto(bridge: Vector2, label: String) -> void:
 		top = minf(top, p.global_position.y)
 		await physics_frame
 	_press(&"jump", false)
-	ck(p.is_on_floor() and absf(p.global_position.y + feet - bridge.y) < 4.0, "%s: one real jump lands on it (feet y %.0f, top %.0f; apex feet %.0f)" % [label, p.global_position.y + feet, bridge.y, top + feet])
+	ck(top + feet < bridge.y and p.is_on_floor() and absf(p.global_position.y + feet - 384.0) < 4.0,
+			"%s: the jump rises past the old top and lands back on the floor (feet y %.0f; apex feet %.0f)" % [label, p.global_position.y + feet, top + feet])
 
 ## Бос робить лише хід [param kind]; герой — за [param dx] px від нього (мінус — ліворуч). Повертає підказки
 ## (EventBus.enemy_tell_shown), пози (AnimationPlayer) і втрату HP героя за хід; [param during] кличеться, коли хід почався.
@@ -481,9 +482,9 @@ func _initialize() -> void:
 	ck(game.get_objective() == "Leave the laboratory", "objective (%s)" % game.get_objective())
 	ck(not game.player.event and _hud_visible(), "control and HUD back")
 
-	print("[9] B83: each dodge bridge is one real jump up")
-	for i in BRIDGES.size():
-		await _jump_onto(BRIDGES[i], "bridge %d" % (i + 1))
+	print("[9] D832: no dodge bridges left — a jump where one was lands back on the floor")
+	for i in FORMER_BRIDGES.size():
+		await _jump_onto(FORMER_BRIDGES[i], "former bridge %d" % (i + 1))
 
 	print("[10] The hero walks east out of the Laboratory")
 	game.player.global_position = Vector2(1300, 380)

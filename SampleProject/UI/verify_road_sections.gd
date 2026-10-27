@@ -9,9 +9,8 @@ extends SceneTree
 ##   4. The road ends at CityGates: walking off the east edge loads CityGates.
 ##   1b. D817: every group fight on the road is a bandit and a jackal or two bandits and a jackal (lone fights stay
 ##      lone), and winning a group pays its win_xp on top of its enemies' XP.
-##   5. Every ledge can be climbed again with one jump at a time (BACKLOG 32, no double jump): no rise between
-##      neighbouring tile columns is higher than a jump, and from the floor on both sides of each raised top the
-##      hero gets onto it with real move/jump input — the east side too, where he lands after dropping off.
+##   5. D830 «на дорозі не має бути сходинок»: the floor is flat — no tile above the floor row, and a ray down at every
+##      32 px of the road meets the floor at y 384 (the dune, mesa and caravan steps of D296 are gone).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_road_sections.gd
 
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
@@ -20,20 +19,6 @@ const FIGHTS := {"Fight_Dunes": 2, "Fight_Mesa": 3, "Fight_Caravan": 3}  # D817:
 ## (jackal, scorpion, vulture; their big kinds stand on the same base).
 const GANG := ["melee", "shield", "archer"]
 const BEASTS := ["fast", "tank", "vulture"]
-
-## A jump lifts the hero ~103 px (PlayerMover.jump_velocity, default gravity); a rise is climbable up to 3 tiles.
-const JUMP_RISE := 96
-## The hero's origin stands this far above his feet (on the floor at y 384 he is at y 360).
-const FEET := 24.0
-## Raised tops of the road (D296): [name, x from, x to, top y, floor x west of the rise, floor x east of it] in room px.
-const LEDGES := [
-	["dune step", 1856.0, 1984.0, 320.0, 1650.0, 2380.0], ["dune rock", 1984.0, 2112.0, 256.0, 1650.0, 2380.0],
-	["dune east step", 2112.0, 2176.0, 320.0, 1650.0, 2380.0],
-	["mesa plateau", 2752.0, 3136.0, 320.0, 2550.0, 3530.0], ["mesa end rock", 3136.0, 3264.0, 256.0, 2550.0, 3530.0],
-	["mesa east step", 3264.0, 3328.0, 320.0, 2550.0, 3530.0],
-	["caravan step", 3968.0, 4096.0, 320.0, 3770.0, 4460.0], ["caravan rock", 4096.0, 4192.0, 256.0, 3770.0, 4460.0],
-	["caravan east step", 4192.0, 4256.0, 320.0, 3770.0, 4460.0],
-]
 
 var fails: Array[String] = []
 
@@ -50,42 +35,6 @@ func _hold(action: StringName, seconds: float) -> void:
 	Input.action_press(action)
 	await create_timer(seconds).timeout
 	Input.action_release(action)
-
-
-## The hero on the low floor to one side of a ledge's rise heads for its middle — walking, jumping whenever a wall stops
-## him, letting go of the stick once he is above the top — until he stands on it. Returns [made it, where he was].
-func _climb(player: CharacterBody2D, ledge: Array, side: int) -> Array:
-	var from_x: float = ledge[4] if side < 0 else ledge[5]
-	var mid: float = (ledge[1] + ledge[2]) / 2.0
-	var half: float = (ledge[2] - ledge[1]) / 2.0 - 16.0
-	player.global_position = Vector2(from_x, 360.0)
-	player.velocity = Vector2.ZERO
-	for i in 30: await physics_frame
-	var jump_left := 0
-	var made := false
-	for i in 300:
-		await physics_frame
-		var p := player.global_position
-		if player.is_on_floor() and absf(p.x - mid) < half and absf(p.y + FEET - ledge[3]) < 12.0:
-			made = true
-			break
-		_steer(&"move_right", p.x < mid - half)
-		_steer(&"move_left", p.x > mid + half)
-		if jump_left > 0:
-			jump_left -= 1
-			if jump_left == 0:
-				Input.action_release(&"jump")
-		elif player.is_on_floor() and player.is_on_wall():
-			Input.action_press(&"jump")
-			jump_left = 18
-	for action: StringName in [&"move_right", &"move_left", &"jump"]:
-		Input.action_release(action)
-	return [made, player.global_position]
-
-
-func _steer(action: StringName, on: bool) -> void:
-	if on: Input.action_press(action)
-	else: Input.action_release(action)
 
 
 func _initialize() -> void:
@@ -171,21 +120,26 @@ func _initialize() -> void:
 	for gift: Node2D in gifts:
 		ck(gift.global_position.y < 200.0, "%s is above the road (y %.0f), not on it" % [gift.name, gift.global_position.y])
 
-	print("[5] Every ledge can be climbed back onto (BACKLOG 32)")
+	print("[5] D830: the road is flat — no step or ledge where the hero walks")
 	var fg: TileMapLayer = game.map.get_node("TileMap/Foreground")
-	var tops := {}  # column → top row of its ground
+	var raised: Array[int] = []  # колонки, де щось стоїть над підлогою (рядок 12, y 384)
 	for c: Vector2i in fg.get_used_cells():
-		tops[c.x] = mini(tops.get(c.x, 999), c.y)
-	var cols: Array = tops.keys()
-	cols.sort()
-	var worst := 0
-	for i in range(1, cols.size()):
-		worst = maxi(worst, absi(tops[cols[i]] - tops[cols[i - 1]]))
-	ck(worst * 32 <= JUMP_RISE, "no rise between neighbouring columns is above one jump (worst %d px)" % (worst * 32))
-	for ledge: Array in LEDGES:
-		for side: int in [-1, 1]:
-			var r: Array = await _climb(player, ledge, side)
-			ck(r[0], "%s from the %s: on top (%.0f, %.0f)" % [ledge[0], "west" if side < 0 else "east", r[1].x, r[1].y])
+		if c.y < 12 and not raised.has(c.x):
+			raised.append(c.x)
+	ck(raised.is_empty(), "every tile column tops out at the floor y 384 (raised columns %s)" % [raised])
+	# Справжнім променем згори вниз, як падає герой: під кожними 32 px дороги — підлога y 384 (дахи крамниці й
+	# башти — уступи над дорогою, вище за y 200, їх промінь не бачить).
+	var space := player.get_world_2d().direct_space_state
+	var bumps: Array[String] = []
+	for x in range(16, 5184, 32):
+		var q := PhysicsRayQueryParameters2D.create(Vector2(x, 200.0), Vector2(x, 600.0), fg.tile_set.get_physics_layer_collision_layer(0))
+		var hit: Dictionary = space.intersect_ray(q)
+		while not hit.is_empty() and not hit.collider is TileMapLayer:  # тіла на дорозі (вороги, скриня) — не підлога
+			q.exclude = q.exclude + [hit.rid]
+			hit = space.intersect_ray(q)
+		if hit.is_empty() or absf((hit.position as Vector2).y - 384.0) > 0.5:
+			bumps.append("x %d → %s" % [x, "nothing" if hit.is_empty() else str((hit.position as Vector2).y)])
+	ck(bumps.is_empty(), "the floor under the whole road is at y 384 (%s)" % [bumps])
 
 	print("[4] The east edge leads to CityGates")
 	player.global_position = Vector2(5100.0, 340.0)
