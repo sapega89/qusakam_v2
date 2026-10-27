@@ -288,7 +288,7 @@ func _placements() -> void:
 			and brute.kind() == "bandit_brute" and brute.spawn_id == "Fight_LoneElite_EnemySpawnPoint1",
 			"DesertRoad: the lone elite is the bandit brute, alone (spawn_id kept for saves)")
 	# D719: перший лучник дороги — звичайний, на рівні бою; великий лучник уперше — у таборі бандитів.
-	var mesa_archer: Node = map.get_node(^"Fight_Mesa").spawn_points[3]
+	var mesa_archer: Node = map.get_node(^"Fight_Mesa").spawn_points[1]
 	ck(mesa_archer.name == "EnemySpawnPoint4" and mesa_archer.big_kind == "none" and mesa_archer.kind() == "archer"
 			and mesa_archer.spawn_id == "Fight_Mesa_EnemySpawnPoint4",
 			"Mesa (D719): the archer's place behind the shield-bearer is the ordinary archer (spawn_id kept for saves)")
@@ -318,9 +318,9 @@ func _placements() -> void:
 	ck(lone_shield.spawn_points[0].global_position.x < map.get_node(^"Fight_Mesa").spawn_points[0].global_position.x,
 			"the lone shield-bearer comes before the Mesa pair")
 	var mesa: Array = map.get_node(^"Fight_Mesa").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
-	ck(mesa.slice(2) == ["shield", "archer"], "Mesa: the second wave is a shield-bearer in front and an archer behind (%s)" % [mesa])
+	ck(mesa == ["shield", "archer", "fast"], "Mesa (D817): the first wave is a shield-bearer in front and an archer behind, a jackal follows (%s)" % [mesa])
 	var caravan: Array = map.get_node(^"Fight_Caravan").spawn_points.map(func(p: Node) -> String: return p.enemy_type)
-	ck(caravan.has("shield") and caravan.size() == 5, "Caravan (guards the chest): a big group with a shield-bearer and a vulture (D445) (%s)" % [caravan])
+	ck(caravan == ["tank", "melee", "shield"], "Caravan (D817): the armoured scorpion with a bandit and a shield-bearer, no more (%s)" % [caravan])
 	var story: Node = map.get_node(^"EnemySpawner")
 	var story_sizes: Array = story.spawn_points.map(func(p: Node) -> String: return story.variant_size(p))
 	ck(story_sizes.all(func(s: String) -> bool: return s == "medium"), "the story fight keeps medium sizes (%s)" % [story_sizes])
@@ -583,11 +583,11 @@ func _pack_leader() -> void:
 	print("  info pack leaders: %s" % ", ".join(placed))
 	ck(placed.size() == 1, "one slot: DesertRoad Fight_Dunes (%d)" % placed.size())
 
-	# Живий бій Fight_Dunes (рівень 2): перша хвиля — бандит і шакал, друга — ватажок сам, еліта рівня бою.
+	# Живий бій Fight_Dunes (рівень 2): перша хвиля — бандит, друга — ватажок сам (D817), еліта рівня бою.
 	var dunes: Node = game.map.get_node(^"Fight_Dunes")
 	var kinds: Array = dunes.spawn_points.map(func(p: Node) -> String: return p.kind())
-	ck(kinds == ["melee", "fast", "jackal_pack_leader"] and dunes.wave_size == 2,
-			"Fight_Dunes: a bandit and a jackal first, the leader alone in the second wave, no other big kind (%s)" % [kinds])
+	ck(kinds == ["melee", "jackal_pack_leader"] and dunes.wave_size == 1,
+			"Fight_Dunes (D817): a bandit first, the leader alone in the second wave, no other big kind (%s)" % [kinds])
 	dunes.spawn_all_enemies()
 	await create_timer(dunes.wave_delay + 0.5).timeout
 	var leader: Node = dunes.get_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4")

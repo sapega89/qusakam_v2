@@ -59,7 +59,7 @@ func _initialize() -> void:
 	await _finish_dialogue(sl.get_dialogue_manager())  # репліка перед боєм
 	await create_timer(2.5).timeout
 	var enemies: Array = _enemies(road)
-	ck(enemies.size() == 4, "4 enemies spawned (%d)" % enemies.size())
+	ck(enemies.size() == 3, "3 enemies spawned, D817 (%d)" % enemies.size())
 
 	print("[0] Enemies appear on the floor at their points and move with the room (B61)")
 	var points: Array = road.get_node("EnemySpawner").get_children().filter(func(p: Node) -> bool: return p.is_in_group(&"enemy_spawn_points"))
@@ -73,7 +73,7 @@ func _initialize() -> void:
 	road.position.x -= 100.0
 
 	print("[0b] An enemy dropped onto the player slides off to the floor (B58, D443)")
-	var dropped = enemies[3]
+	var dropped = enemies[0]
 	dropped.set_physics_process(true)
 	game.player.global_position = Vector2(dropped.global_position.x, game.player.global_position.y)
 	game.player.velocity = Vector2.ZERO
@@ -84,11 +84,11 @@ func _initialize() -> void:
 	# за 2 с реального часу фізика встигала менше кроків, і ворог ще не доїжджав до підлоги.
 	for i in 240:
 		await physics_frame
-		if dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0:
+		if dropped.is_on_floor() and absf(dropped.global_position.y - points[0].global_position.y) < 1.0:
 			break
-	ck(dropped.is_on_floor() and absf(dropped.global_position.y - points[3].global_position.y) < 1.0,
+	ck(dropped.is_on_floor() and absf(dropped.global_position.y - points[0].global_position.y) < 1.0,
 			"the enemy stands on the floor, not on the player (enemy y %.1f, floor-level %.1f, player y %.1f)"
-			% [dropped.global_position.y, points[3].global_position.y, game.player.global_position.y])
+			% [dropped.global_position.y, points[0].global_position.y, game.player.global_position.y])
 
 	print("[1] The player hits an enemy")
 	# Удари героя міряємо по ворогах, що стоять: живий AI б'є з випадковими серіями (D265), а з D264 кожен

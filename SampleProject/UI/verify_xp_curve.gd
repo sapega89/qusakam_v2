@@ -2,7 +2,7 @@ extends SceneTree
 
 ## XP curve (BACKLOG 23, design/world_expansion_plan.md, D297): the intended route to the City, played kill by kill
 ## through the real XPManager. The kills are read from the room scenes (every EnemySpawnPoint) and the rewards from
-## their EnemyStats — change a fight or a reward and this re-checks where level 5 lands.
+## their EnemyStats (plus a fight's win_xp, D817) — change a fight or a reward and this re-checks where level 5 lands.
 ##   1. The curve comes from Resources/Data/xp_curve.json.
 ##   2. Level 2 on the Desert Road (Healing Palm there, D252); level < 5 when the City Gates fight starts.
 ##   3. Level 5 by the end of the City Gates fight — the census after it gives the oath (D280, D726); the optional
@@ -24,6 +24,7 @@ const FARM_ROUNDS := 2
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 var fails: Array[String] = []
+var spawner_script: Script
 
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
@@ -34,6 +35,7 @@ func _initialize() -> void:
 	await process_frame
 	var xp = root.get_node("ServiceLocator").get_xp_manager()
 	var spawn_point_script: Script = load("res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd")
+	spawner_script = load("res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd")
 
 	print("[1] the curve is data")
 	var curve: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/xp_curve.json"))
@@ -63,6 +65,11 @@ func _initialize() -> void:
 			xp.add_xp(stats.xp_reward)
 			total += stats.xp_reward
 			kills.append(point.enemy_type)
+		for spawner: Node in room.find_children("*", "Node2D", true, false):
+			if spawner.get_script() == spawner_script and spawner.win_xp > 0:  # D817: досвід за перемогу над боєм
+				xp.add_xp(spawner.win_xp)
+				total += spawner.win_xp
+				kills.append("%s win +%d" % [spawner.name, spawner.win_xp])
 		room.free()
 		print("    %-10s %2d kills %s → %d XP, level %d → %d" % [room_name, kills.size(), kills, total, level_before, xp.current_level])
 		if room_name == "DesertRoad":
@@ -127,5 +134,7 @@ func _room_xp(room_name: String, spawn_point_script: Script) -> int:
 			sum += node.enemy_stats().xp_reward
 		elif "enemy_stats" in node and node.enemy_stats is EnemyStats:
 			sum += node.enemy_stats.xp_reward
+		elif node.get_script() == spawner_script:
+			sum += node.win_xp  # D817
 	room.free()
 	return sum
