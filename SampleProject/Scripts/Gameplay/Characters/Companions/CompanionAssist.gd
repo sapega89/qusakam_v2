@@ -243,7 +243,8 @@ func _show_stun_stars(enemy: Node2D) -> void:
 	stars.duration = stun
 	var body: CollisionShape2D = enemy.get_node(^"CollisionShape2D")
 	enemy.add_child(stars)
-	stars.global_position = body.global_position - Vector2(0.0, body.shape.get_rect().size.y * enemy.global_scale.y / 2.0 + STARS_ABOVE)
+	var lift: float = (enemy.get_node(^"Sprite2D") as Node2D).position.y * enemy.global_scale.y  # малюнок над колізією (hero-feet)
+	stars.global_position = body.global_position - Vector2(0.0, body.shape.get_rect().size.y * enemy.global_scale.y / 2.0 + STARS_ABOVE - lift)
 
 
 ## Ефект у кімнаті (не на компаньйоні: він тікає раніше, ніж ефект догасне), дзеркалений у бік удару.

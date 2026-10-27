@@ -125,10 +125,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.05, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, -1), Vector2(0, -2), Vector2(0, -1), Vector2(0, 0)]
 }
 
 
@@ -272,10 +272,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, -1), Vector2(0, -2), Vector2(0, 0), Vector2(0, -1), Vector2(0, -2), Vector2(0, -1), Vector2(0, -2)]
 }
 
 
@@ -331,10 +331,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, 0), Vector2(0, -1), Vector2(0, 0)]
 }
 
 
@@ -651,10 +651,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.05, 0.24),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(0, 0)]
+"values": [Vector2(0, -1), Vector2(0, -2), Vector2(0, 0)]
 }
 
 
@@ -884,10 +884,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.114, 0.342, 0.457, 0.571, 0.685),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(0, -16)]
+"values": [Vector2(0, -17), Vector2(0, -16), Vector2(0, -17), Vector2(0, -18), Vector2(0, -16), Vector2(0, -17)]
 }
 
 [sub_resource type="Animation" id="Animation_sword_jump"]
@@ -1025,10 +1025,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(0, -16)]
+"values": [Vector2(0, -16), Vector2(0, -14), Vector2(0, -16)]
 }
 
 [sub_resource type="Animation" id="Animation_sword_attack_2"]
@@ -1081,10 +1081,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.13, 0.21),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
-"values": [Vector2(0, -16)]
+"values": [Vector2(0, -16), Vector2(0, -13), Vector2(0, -16)]
 }
 
 [sub_resource type="Animation" id="Animation_sword_heavy_windup"]
@@ -1137,10 +1137,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [Vector2(0, -16)]
+"values": [Vector2(0, -16), Vector2(0, -14)]
 }
 
 [sub_resource type="Animation" id="Animation_sword_block"]
@@ -1251,10 +1251,10 @@ tracks/1/path = NodePath("Sprite2D:offset")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.133, 0.267, 0.667),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [Vector2(0, -16)]
+"values": [Vector2(0, -17), Vector2(0, -16), Vector2(0, -17), Vector2(0, -18)]
 }
 
 [sub_resource type="Animation" id="Animation_bow_attack_1"]
@@ -1619,10 +1619,12 @@ shape = SubResource("RectangleShape2D_yj7bn")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1346982558]
 texture_filter = 1
 material = SubResource("ShaderMaterial_weapon_palette")
+position = Vector2(0, -13.5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w1")
 
 [node name="WeaponMount" type="Node2D" parent="."]
+position = Vector2(0, -13.5)
 script = ExtResource("weapon_view")
 
 [node name="Pivot" type="Node2D" parent="WeaponMount"]

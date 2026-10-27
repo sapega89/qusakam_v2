@@ -158,6 +158,7 @@ script = ExtResource("3_health_component")
 shape = SubResource("RectangleShape2D_enemy_collision")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1343955624]
+position = Vector2(0, -12.5)
 metadata/tell_at = Vector2(3, -26)
 texture_filter = 1
 offset = Vector2(0, -6)
@@ -171,6 +172,7 @@ libraries/ = SubResource("AnimationLibrary_enemy")
 metadata/attack_strike_time = 0.4
 
 [node name="hitbox" type="Area2D" parent="." unique_id=1700052958]
+position = Vector2(0, -12.5)
 monitoring = false
 monitorable = false
 
@@ -183,6 +185,7 @@ script = ExtResource("2_damage_applier")
 target_group = &"player"
 
 [node name="Hurtbox" type="Area2D" parent="." groups=["hurtbox"]]
+position = Vector2(0, -12.5)
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]

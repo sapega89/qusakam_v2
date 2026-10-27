@@ -40,6 +40,7 @@ func spawn(target: Node2D, text: String, color: Color, font_size: int, critical:
 		return null
 	var body: CollisionShape2D = target.get_node(^"CollisionShape2D")
 	var top: float = body.global_position.y - body.shape.get_rect().size.y * absf(target.global_scale.y) / 2.0
+	top += (target.get_node(^"Sprite2D") as Node2D).position.y * absf(target.global_scale.y)  # малюнок піднято над колізією (hero-feet)
 	var number: Node2D = DAMAGE_NUMBER_SCENE.instantiate()
 	target.get_parent().add_child(number)
 	number.global_position = Vector2(body.global_position.x + UITokens.DAMAGE_NUMBER_SPREAD[_spread], top - UITokens.DAMAGE_NUMBER_GAP)

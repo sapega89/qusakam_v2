@@ -38,6 +38,9 @@ var defeat_handler: Callable
 @onready var combat: PlayerCombat = $PlayerCombat
 @onready var mover: PlayerMover = $PlayerMover
 @onready var weapon_view: Node2D = $WeaponMount
+## Де стоїть малюнок героя відносно тіла (Player.tscn: Sprite2D і WeaponMount): ноги кадру (рядок 56) — на низу
+## колізії (D-new hero-feet, verify_hero_feet). Ефекти, прив'язані до намальованого героя, зсуваються на нього ж.
+@onready var visual_base: Vector2 = $Sprite2D.position
 ## Бібліотека кадрів зброї, з якої зараз грають анімації тіла (&"" — базові кадри), BACKLOG 42.
 var _body_library: StringName = &""
 ## Буфер перекату (D456, D504): натиснутий завчасно чекає PlayerCombat.INPUT_BUFFER с — і крізь збій.
@@ -292,8 +295,8 @@ func body_animation(base: StringName) -> StringName:
 
 ## Тіло стоїть, а видно героя зсунутим на [param offset] (D764: сідає на місце медитації у фоні кімнати).
 func set_visual_offset(offset: Vector2) -> void:
-	$Sprite2D.position = offset
-	$WeaponMount.position = offset
+	$Sprite2D.position = visual_base + offset
+	$WeaponMount.position = visual_base + offset
 
 ## Єдиний вхід для анімацій тіла героя: [param base] — базове ім'я, грає версію зброї в руці.
 func play_body(base: StringName, speed: float = 1.0) -> void:
@@ -464,7 +467,7 @@ func _spawn_level_up_vfx() -> void:
 		if particles:
 			# Add to scene root (not player child, so it persists if player moves)
 			get_tree().current_scene.add_child(particles)
-			particles.global_position = global_position
+			particles.global_position = global_position + visual_base
 			particles.z_index = 200  # Above gameplay, below flash
 
 	DebugLogger.verbose("Player: Spawned level up VFX", "Player")

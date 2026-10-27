@@ -12,23 +12,23 @@ texture_filter = 1
 scale = Vector2(1.5, 1.5)
 
 [node name="CastPalm" type="Marker2D" parent="."]
-position = Vector2(9, 0)
+position = Vector2(9, -13.5)
 metadata/_doc = "charge: palms pressed together at the chest (HealingPalm Aura)"
 
 [node name="CastFire" type="Marker2D" parent="."]
-position = Vector2(21, 9)
+position = Vector2(21, -4.5)
 metadata/_doc = "charge: the hand held low behind (WeaponView.CAST_POSES CastFireWindup)"
 
 [node name="CastStorm" type="Marker2D" parent="."]
-position = Vector2(-7, -33)
+position = Vector2(-7, -46.5)
 metadata/_doc = "charge: the hand raised to the sky (WeaponView.CAST_POSES CastStormWindup)"
 
 [node name="Hand" type="Marker2D" parent="."]
-position = Vector2(36, -2)
+position = Vector2(36, -15.5)
 metadata/_doc = "release: the hand pushed forward (CastFireRelease / CastStormRelease)"
 
 [node name="ArcEdge" type="Marker2D" parent="."]
-position = Vector2(84, -4)
+position = Vector2(84, -17.5)
 metadata/_doc = "release: outer edge of a crescent slash, over the strike reach"
 
 [node name="GroundFront" type="Marker2D" parent="."]
@@ -40,5 +40,5 @@ position = Vector2(0, 24)
 metadata/_doc = "release: the hero's feet (body collision bottom)"
 
 [node name="Centre" type="Marker2D" parent="."]
-position = Vector2(0, 4)
+position = Vector2(0, -9.5)
 metadata/_doc = "release: the hero's body centre"

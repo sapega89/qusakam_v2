@@ -191,6 +191,7 @@ position = Vector2(0, -34)
 shape = SubResource("Shape_body")
 
 [node name="Sprite2D" parent="."]
+position = Vector2(0, -5)
 offset = Vector2(0, -40)
 metadata/tell_at = Vector2(-26, -44)
 metadata/tell_at_attack_finisher = Vector2(26, -46)
@@ -207,9 +208,15 @@ metadata/attack_strike_time = 0.35
 position = Vector2(0, -20)
 shape = SubResource("Shape_detection")
 
+[node name="hitbox" parent="."]
+position = Vector2(0, -5)
+
 [node name="CollisionShape2D" parent="hitbox"]
 position = Vector2(33.75, -48.75)
 shape = SubResource("Shape_strike")
+
+[node name="Hurtbox" parent="."]
+position = Vector2(0, -5)
 
 [node name="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(1.5, -59.25)

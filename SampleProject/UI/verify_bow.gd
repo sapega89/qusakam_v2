@@ -179,9 +179,11 @@ func _frames() -> void:
 		var ok := a != null
 		if ok:
 			var tex: Texture2D = a.track_get_key_value(a.find_track(^"Sprite2D:texture", Animation.TYPE_VALUE), 0)
+			# −16 — клітинка 96 на ноги 64-ї; ключі бігу ще садять ноги на підлогу на 1–2 px (verify_hero_feet)
+			var offset: Vector2 = a.track_get_key_value(a.find_track(^"Sprite2D:offset", Animation.TYPE_VALUE), 0)
 			ok = tex.resource_path.contains("/Weapons/bow/") and tex.get_size() == Vector2(96, 96) \
-					and a.track_get_key_value(a.find_track(^"Sprite2D:offset", Animation.TYPE_VALUE), 0) == Vector2(0, -16)
-		ck(ok, "bow/%s: bow frames, offset (0, -16)" % name)
+					and offset.x == 0.0 and absf(offset.y + 16.0) <= 2.0
+		ck(ok, "bow/%s: bow frames, offset (0, -16 ±2)" % name)
 	await _stand_hero(hero.global_position.x)
 	hero.combat._combat_left = hero.combat.COMBAT_LINGER  # бій: лук у руці
 	await create_timer(0.2).timeout
@@ -225,7 +227,8 @@ func _quick_shot() -> void:
 		if arrow == null:
 			continue
 		var start: Vector2 = arrow.global_position
-		ck(absf(start.x - hero.global_position.x - hero.combat.ARROW_FROM.x) < 40.0 and absf(start.y - hero.global_position.y - hero.combat.ARROW_FROM.y) < 2.0,
+		ck(absf(start.x - hero.global_position.x - hero.combat.ARROW_FROM.x) < 40.0
+				and absf(start.y - hero.global_position.y - hero.visual_base.y - hero.combat.ARROW_FROM.y) < 2.0,
 				"%s: the arrow leaves from the nocked arrowhead (%s vs hero %s)" % [kind, start, hero.global_position])
 		await create_timer(0.2).timeout
 		if is_instance_valid(arrow):
