@@ -20,7 +20,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 2. **Show Sapega the meditation spot in the game** (D764; its tests run in `integrate-27`): after the merge,
    `capture_meditation_spots.gd` (window, `-- <out_dir>`); the hero hops onto the `Seat` marker on the stone.
 3. **Art day** (Sapega 27.10: «за сьогодні згенеруємо все, що треба з плану»; no cloud GPU — «дорого»): one ComfyUI
-   agent at a time — B162 → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons → plane
+   agent at a time — B162 ✅ (`cccb333c`) → the bird + hero Death frames → Mayor Hall / Bandit Camp foreground + charm icons → plane
    cuts like B162 for Bandit Camp, Gatehouse Cellar, Dragon Mural, Mesa Climb (depth-film's B rows; file them with the
    depth-critics triage after integrate-28) → M6.
 4. **Rebuild** `build/windows/Qusakam.exe` and tell Sapega (SendUserFile caps at 30 MiB; he runs it from that path).
