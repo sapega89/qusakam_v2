@@ -12,6 +12,8 @@ MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 **Registers:** next free **D817**, **B195**, **Q107** (integrate-30 filed D807–D812, B187–B194) (integrate-29 filed D787–D793, B171–B184, Q101–Q106; merged into
 `feature/backlog`). Do not file IDs on `feature/backlog` while an integrator runs (they collide).
 
+**⏸ PAUSED 2026-10-27 ~20:45 UTC (Sapega restarts the PC and the session): no new ComfyUI generation and no local agents until he says to resume.** The art queue is [[asset_verdicts_2026-10-27]] (A1 was running: main menu desert + lizard, boss shockwave, Climb; check `git log` and `git status` for what landed). Cloud keeps running: `starting-skills` (`trig_01MzJM9mPeKevqJy18ekNdnB`, D815) — merge it when it reports, tests in the cloud (memory: tests-in-cloud). Waiting on Sapega: Death frames 1 and 3 (B184, `design/shots/hero_death.png`), the Rock Ledges redo (A5), the gorge sheet.
+
 ## 1. First, when you start
 1. `git fetch`; read `design/cloud_reports/integrate-29.md` on `origin/cloud/integrate-29` when it exists (it already
    contains integrate-28: 11 routines, D775–D786, B163–B169, suite 3 FAIL / 132 PASS — read which and why).
