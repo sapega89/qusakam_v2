@@ -43,6 +43,10 @@ dust in the window light, candle flicker. Small, slow, low alpha, mostly behind 
 the middle of a fight, never mistaken for an enemy or a pickup; particle counts follow `GraphicsQuality` (Low halves
 them, D554). Sprites (a butterfly, a moth, a firefly glow) are art-lane work; the placement is the room routine's.
 
+**Everything at the world's scale** (a player via Sapega 2026-10-27: everything is too big next to the hero): props,
+doors and painted objects follow the size chart of [[world_scale_plan]] — the hero is 1 H ≈ 70 world px, a door
+1.6–1.8 H, a barrel 0.5 H; prompts name the size against the hero, and planes further back shrink with their factor.
+
 ## Batch 0 — existing rooms with no foreground (D774)
 
 | Room | What goes in front | Status |
