@@ -807,7 +807,8 @@ texture_scale = 1.6
 [node name="Far1" type="Parallax2D" parent="Atmosphere" unique_id=1246687018]
 modulate = Color(0.6, 0.58, 0.72, 1)
 z_index = -10
-scroll_scale = Vector2(0.4, 1)
+scroll_scale = Vector2(0.4, 0.4)
+scroll_offset = Vector2(0, -180)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -822,7 +823,8 @@ centered = false
 [node name="Mid1" type="Parallax2D" parent="Atmosphere" unique_id=1738320521]
 modulate = Color(0.7, 0.66, 0.8, 1)
 z_index = -9
-scroll_scale = Vector2(0.75, 1)
+scroll_scale = Vector2(0.75, 0.75)
+scroll_offset = Vector2(0, 45)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -857,7 +859,8 @@ region_rect = Rect2(0, 0, 576, 116)
 [node name="Far2" type="Parallax2D" parent="Atmosphere" unique_id=465986462]
 modulate = Color(0.6, 0.58, 0.72, 1)
 z_index = -10
-scroll_scale = Vector2(0.4, 1)
+scroll_scale = Vector2(0.4, 0.4)
+scroll_offset = Vector2(0, -180)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -872,7 +875,8 @@ centered = false
 [node name="Mid2" type="Parallax2D" parent="Atmosphere" unique_id=15446778]
 modulate = Color(0.7, 0.66, 0.8, 1)
 z_index = -9
-scroll_scale = Vector2(0.75, 1)
+scroll_scale = Vector2(0.75, 0.75)
+scroll_offset = Vector2(0, -75)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -908,7 +912,8 @@ region_rect = Rect2(0, 0, 576, 116)
 [node name="Far3" type="Parallax2D" parent="Atmosphere" unique_id=131506068]
 modulate = Color(0.6, 0.58, 0.72, 1)
 z_index = -10
-scroll_scale = Vector2(0.4, 1)
+scroll_scale = Vector2(0.4, 0.4)
+scroll_offset = Vector2(0, -180)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 
@@ -923,7 +928,8 @@ centered = false
 [node name="Mid3" type="Parallax2D" parent="Atmosphere" unique_id=913474540]
 modulate = Color(0.7, 0.66, 0.8, 1)
 z_index = -9
-scroll_scale = Vector2(0.75, 1)
+scroll_scale = Vector2(0.75, 0.75)
+scroll_offset = Vector2(0, -165)
 repeat_size = Vector2(864, 0)
 repeat_times = 4
 

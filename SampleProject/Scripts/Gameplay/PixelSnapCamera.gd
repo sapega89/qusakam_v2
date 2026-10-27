@@ -4,7 +4,8 @@ extends Camera2D
 ## а згладжена камера стоїть між пікселями — тож кожен шар (навіть небо ×0) щокадру стрибав на ±1 піксель світу
 ## відносно підлоги. Тут, після внутрішнього оновлення Camera2D у тому ж кадрі (той самий вузол: спершу
 ## INTERNAL_PROCESS), лівий верхній кут кадру доводиться до цілого пікселя світу — і для полотна, і для кожного
-## шару (його screen_offset): підлога й шари рухаються однаковими цілими кроками, нерухоме лишається нерухомим.
+## шару: його screen_offset — те, що дає шарам сама Camera2D, «центр кадру − розмір вікна / 2», з округленого кута.
+## Підлога й шари рухаються однаковими цілими кроками, нерухоме лишається нерухомим.
 
 var _planes: Array[Parallax2D] = []
 
@@ -34,6 +35,8 @@ func _process(_delta: float) -> void:
 	var top_left: Vector2 = (-canvas.origin / zoom).round()
 	canvas.origin = -top_left * zoom
 	viewport.canvas_transform = canvas
+	var size: Vector2 = viewport.get_visible_rect().size
+	var screen_offset: Vector2 = top_left + size / zoom / 2.0 - size / 2.0
 	for p: Parallax2D in _planes:
 		if not p.ignore_camera_scroll and p.get_viewport() == viewport:
-			p.screen_offset = top_left
+			p.screen_offset = screen_offset

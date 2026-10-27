@@ -515,6 +515,15 @@ func _done() -> void:
 func _grid_and_limits() -> void:
 	await _go("Canyon.tscn", Vector2(500.0, 340.0))
 	var planes: Array[Node] = game.map.find_children("*", "Parallax2D", true, false)
+	# Округлення зсуває шар не більше ніж на піксель світу від того, куди його ставить сама Camera2D.
+	var front: Parallax2D = game.map.get_node(^"FrontDark")
+	var snapped_x: float = front.get_global_transform_with_canvas().origin.x
+	camera.set_process(false)
+	camera.force_update_scroll()
+	var raw_x: float = front.get_global_transform_with_canvas().origin.x
+	camera.set_process(true)
+	await process_frame
+	ck(absf(snapped_x - raw_x) <= camera.zoom.x * 1.3 + 0.01, "the snap keeps a x1.3 plane where Camera2D puts it (%.2f px apart)" % (snapped_x - raw_x))
 	var last_canvas := INF
 	var last: Dictionary[Node, float] = {}
 	var off_grid := 0
@@ -537,6 +546,13 @@ func _grid_and_limits() -> void:
 			moved += 1
 		last_canvas = cx
 	Input.action_release(&"move_right")
+	# B182: вітер один на всі хмари — дальша (менший множник) пливе повільніше, швидкість ∝ множнику.
+	var winds: Array[float] = []
+	for p: Parallax2D in planes:
+		if p.autoscroll.x != 0.0:
+			winds.append(p.autoscroll.x / p.scroll_scale.x)
+	ck(winds.size() >= 4 and winds.all(func(w: float) -> bool: return absf(w - winds[0]) < 0.01),
+			"clouds drift in depth order: autoscroll / factor is one wind for all (%s)" % [winds])
 	ck(moved > 30, "Canyon: the camera follows the run (%d moving frames)" % moved)
 	ck(off_grid == 0, "the canvas stays on whole world pixels (%d frames off)" % off_grid)
 	ck(off_ratio == 0, "every still plane moves exactly its factor × the camera's step (%d plane-frames off)" % off_ratio)

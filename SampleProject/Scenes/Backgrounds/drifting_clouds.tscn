@@ -10,7 +10,7 @@
 [node name="Cloud1" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.15, 1)
 repeat_size = Vector2(1728, 0)
-autoscroll = Vector2(-6, 0)
+autoscroll = Vector2(-4.5, 0)
 repeat_times = 2
 
 [node name="Sprite" type="Sprite2D" parent="Cloud1"]
@@ -25,7 +25,7 @@ centered = false
 [node name="Cloud2" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.12, 1)
 repeat_size = Vector2(1728, 0)
-autoscroll = Vector2(-9, 0)
+autoscroll = Vector2(-3.6, 0)
 repeat_times = 2
 
 [node name="Sprite" type="Sprite2D" parent="Cloud2"]
@@ -40,7 +40,7 @@ centered = false
 [node name="Cloud3" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.2, 1)
 repeat_size = Vector2(1728, 0)
-autoscroll = Vector2(-4, 0)
+autoscroll = Vector2(-6, 0)
 repeat_times = 2
 
 [node name="Sprite" type="Sprite2D" parent="Cloud3"]
