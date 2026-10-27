@@ -15,7 +15,9 @@ report and its task. This note is the shared part, so the prompts stay short. Ro
    `export G=/tmp/godot/Godot_v4.6.2-stable_linux.x86_64 TEST_LOCK=/tmp/godot_test_lock`;
    `$G --headless --path . --import > /tmp/import.log 2>&1` once.
 3. One test: `Scripts/Tools/godot_locked.sh --headless --path . --script res://SampleProject/UI/verify_<area>.gd 2>&1 | grep -E '^RESULT|^  FAIL|SCRIPT ERROR|Parse Error'`
-   (exit 139 is normal). The full suite once, at the end: `Scripts/Tools/run_verify.sh | grep -v '^PASS'`.
+   (exit 139 is normal). The full suite once, at the end: `Scripts/Tools/run_verify.sh | grep -v '^PASS'` (4 tests at
+   a time, each with its own empty user://; it prints the 10 slowest). After a fix, re-run only the tests that failed
+   (`Scripts/Tools/run_verify.sh <name>`), never the whole suite again.
 4. Captures need a window: `xvfb-run -a -s "-screen 0 1920x1080x24" $G --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_<x>.gd`.
 
 ## Rules
