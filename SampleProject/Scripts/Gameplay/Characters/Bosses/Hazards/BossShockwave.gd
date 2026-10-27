@@ -14,5 +14,6 @@ func _ready() -> void:
 		var dir := -1.0 if side == $Left else 1.0
 		side.flip_h = dir < 0
 		tween.tween_property(side, ^"position:x", dir * radius, TIME)
-		tween.tween_property(side, ^"modulate:a", 0.0, TIME).set_ease(Tween.EASE_IN)
+		# A1: перші пів шляху хвиля повна (раніше тьмяніла від першої миті й на середині була напівпрозора)
+		tween.tween_property(side, ^"modulate:a", 0.0, TIME * 0.5).set_delay(TIME * 0.5)
 	tween.chain().tween_callback(queue_free)

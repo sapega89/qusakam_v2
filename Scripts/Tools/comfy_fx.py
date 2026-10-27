@@ -167,18 +167,22 @@ FX = {
         "yellow center, a wide ring of bright orange glowing fire runes around it, a deep red outer rim, flat, "
         "no flames rising, centered, " + GREEN,
     ),
+    # A1 (Sapega 27.10: «більш виразний має бути»): стара бежева хвиля пилу на пурпурі (знебарвлення пурпуру
+    # стягувало червоний до зеленого + 40 — помаранч ставав беж) у темній залі зливалась із підлогою. Тепер — гребінь
+    # піску з білим переднім краєм і помаранчевим нутром на зеленому, темний контур 1 px; полотно те саме 56x28.
     "boss_shockwave": dict(
         seed=24,
         size=(1024, 512),
-        key="magenta",
-        colors=6,
+        key="green",
+        colors=7,
         kind="sprite",
         canvas=(56, 28),
         box=(0, 0, 56, 28),
+        outline=(40, 16, 20),
         frames=["Bosses/shockwave"],
-        prompt="a single ground shockwave of sandy dust and small rock chunks rolling to the right, a low curling "
-        "wave of beige dust, tallest at its right front edge, flat bottom, side view, "
-        + MAGENTA,
+        prompt="a single ground shockwave rolling to the right, a tall curling crest of thick orange and tan sand "
+        "dust like a breaking wave, a bright white yellow glowing front edge, flat bottom along the ground, side view, "
+        + GREEN,
     ),
     "explosion": dict(
         seed=25,
