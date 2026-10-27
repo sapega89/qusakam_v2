@@ -120,7 +120,9 @@ def violations(d: dict) -> list:
     out = []
     hero_z = d["hero_z"]
     zoom = d["zoom"]
-    planes = [p for p in d["layers"] if p["kind"] != "camera" and p["speed_x"] is not None]
+    # A plane in front of the hero pinned to the view (TopShade, D749) is a screen overlay, not a depth plane.
+    planes = [p for p in d["layers"] if p["kind"] != "camera" and p["speed_x"] is not None
+              and not (p["z"] > hero_z and abs(p["speed_x"]) < SPEED_EPS)]
     spots = list(d["screens"])
     # 1. A plane drawn behind another (z, then tree order) moves faster than it, on a screen where both show.
     for a in sorted(planes, key=lambda p: (p["z"], p["order"])):
@@ -142,9 +144,11 @@ def violations(d: dict) -> list:
         cands = [p for p in d["layers"] if p["kind"] != "camera" and p["z"] <= hero_z
                  and p["screens"][s].get("painted_top_px") is not None]
         if not cands:
-            out.append(f"screen `{s}`: no plane is painted at the hero's feet (nothing within 80 px under him)")
+            out.append(f"screen `{s}`: no plane has a painted top at the hero's feet (within 80 px; what is "
+                       f"there is solid from above, e.g. one baked backdrop)")
             continue
-        floor = max(cands, key=lambda p: (p["z"], -abs(p["screens"][s]["painted_top_px"])))
+        # The floor art is the widest plane with a top there (props such as a shrine are narrow).
+        floor = max(cands, key=lambda p: p["screens"][s].get("visible", 0.0))
         top = floor["screens"][s]["painted_top_px"] / zoom
         speed = floor["speed_x"]
         if speed is None or abs(speed - 1.0) > FLOOR_SPEED_EPS:
