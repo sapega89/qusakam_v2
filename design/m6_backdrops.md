@@ -74,7 +74,8 @@ doors and painted objects follow the size chart of [[world_scale_plan]] — the 
 | Dry riverbed | underground | 1×2 | the climb out | ⬜ |
 | Aqueduct | underground | 4 | the way up to the gate approach | ⬜ |
 | Gate approach | main | 2 | the City gate | ⬜ |
-| M1a: smoke over the village, the fallen barrier; the burnt village | background story | — | — | ⬜ |
+| Village, burnt (M6a-3) | outdoor, main | 3 | — | 🔄 art M6a-3 (`Backgrounds/Village/*_burnt.png`: back row, houses row, grandfather’s and elder’s houses after the fire — same sizes, anchors and silhouettes, walls whole, soot, awnings to frames, embers in windows, smoke from eight roofs and a smoke veil in the back row (D796); RockLedges’ three burnt houses rebuilt from the same row, so the two rooms match and the hollow shells are gone), not wired yet, waiting for Sapega’s look at `shots/m6a3_burnt_village.png` and `shots/m6a3_ledges_to_village.png` |
+| M1a: smoke over the village, the fallen barrier; the burnt village | background story | — | — | 🔄 the burnt village: M6a-3 above |
 
 ## Batch 2 — the City (M3)
 

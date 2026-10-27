@@ -47,14 +47,15 @@ at anchor − f × camera).
   `gen_mid.png` columns 1296–1439 (same pixels at the border); further east a fourth outpainted chunk, the rim falling
   toward the valley where the village is. Same 12 colours and extra haze as the gorge's wall. In the top frame it sinks
   to the bottom: the hero has climbed above the gorge.
-- `gen_burnt_houses.png` (429×218) — three burnt village houses beyond the wall, ×0.6, anchor (2296, 87)
+- `gen_burnt_houses.png` (380×278) — three burnt village houses beyond the wall, ×0.6, anchor (2296, 27)
   (bottom-left at frame (222, 305) in the top frame). The Village's own houses (the blue-awning, the red-awning and the
   next one, set a little apart) repainted after the fire (Sapega: «все село спалене … з цегли, то не розбиті, але
   спалені»): walls whole, soot over doors and windows, awnings burnt to frames, roof beams charred, a glow in a window,
   and a short column of grey smoke from each roof leaning west — the room's only smoke (A5: the big plume that filled
   the top half is gone; the road's plume ends in the gorge, its stem going down right here). At the Village row's
-  size: a wall ~83 art = a 144 storey × 0.6 (D814). Holes the key cut through a house are filled with its darkest
-  colour (a gutted inside, not mountains through a wall). The ground under them goes 45 rows further down so the breach
+  size: a wall ~83 art = a 144 storey × 0.6 (D814). M6a-3: rebuilt by `village_burnt.py` from the
+  Village's `gen_houses_burnt.png` (the same three houses, so the ledges and the village match); its silhouette is
+  the original row's, so no house is a hollow shell any more. The ground under them goes 45 rows further down so the breach
   shows a yard; their base is behind the wall at every camera y (`build` asserts it).
 - `gen_village_wall.png` (384×432) — the village's outer wall of clay bricks on the cliff top behind the plateau, ×0.9,
   anchor (3302, 185) (top-left at frame (192, 185) in the top frame): a broken west end, a breach near the east end
