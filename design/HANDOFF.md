@@ -20,7 +20,7 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 ## 2. Next, in order
 1. **P6 / D824 enemy stamina** — a new system: `plan-missing-system` → `design/enemy_stamina_plan.md` (mirror the hero's
    PlayerStamina D776), then build it (worktree agent) after `playtest-tuning` (both touch EnemyLogic).
-2. **P5 / D830** — remove the steps where Sapega fought: ask him which room (DesertRoad waits for `fewer-road-enemies`).
+2. **P5 / D830** — the Desert Road floor flat, no steps (Sapega: «на дорозі не має бути сходинок»); after `fewer-road-enemies` merges (same scene).
 3. **P8 / B196** — «Hold Tab to skip» over the «Your Skills» window.
 4. **Art queue** [[asset_verdicts_2026-10-27]] on the PC, one ComfyUI agent at a time: A5 (road planes + the Rock Ledges
    redo) → A6 (shield phases) → A7 (Brass Collector, dust, hit flash, tiles, tutorial pics) → A8/A9 → A10–A13 (scale) →
