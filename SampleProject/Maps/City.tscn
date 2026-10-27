@@ -35,6 +35,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_merchant_woman.tscn" id="tf_woman"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/town_prop.tscn" id="town_prop"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="meditation_art"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="rd_pigeon"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -121,6 +124,48 @@ position = Vector2(2076, 131)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("tent_art")
 centered = false
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+position = Vector2(1296, 250)
+emission_rect_extents = Vector2(1296, 140)
+amount = 24
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Pigeon1" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(380, 384)
+
+[node name="Pigeon2" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(560, 384)
+perch_flip = true
+
+[node name="Pigeon3" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(1360, 384)
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(40, 384)
+frame = 0
+speed_scale = 0.86
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(58, 384)
+frame = 0
+speed_scale = 1.15
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(2050, 384)
+frame = 0
+speed_scale = 0.94
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(2072, 384)
+frame = 3
+speed_scale = 0.91
+flip_h = true
 
 [node name="MayorHallDoorEntrance" parent="." instance=ExtResource("x2")]
 z_index = 0
@@ -338,4 +383,3 @@ bus = &"Music"
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
 position = Vector2(1910, 520)
 scale = Vector2(3, 3)
-

@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_chain_web.tscn" id="x2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="rd_bat"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="rd_spores"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 480)
@@ -96,6 +98,13 @@ tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(96, 376)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Spores1" parent="Ambience" instance=ExtResource("rd_spores")]
+position = Vector2(1000, 250)
+emission_rect_extents = Vector2(560, 110)
+amount = 16
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
 position = Vector2(96, 376)
@@ -209,3 +218,9 @@ position = Vector2(1560, 376)
 
 [node name="CollisionShape2D" parent="SecretArea_Cellar" index="0"]
 shape = SubResource("RectangleShape2D_SecretArea_Cellar")
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("rd_bat")]
+position = Vector2(600, 130)
+
+[node name="Bat2" parent="FrontDark" instance=ExtResource("rd_bat")]
+position = Vector2(1400, 130)

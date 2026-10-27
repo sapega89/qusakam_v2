@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_scrub.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x6"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="rd_spores"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_SecretArea_DragonMural"]
 size = Vector2(360, 80)
@@ -63,6 +64,13 @@ tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(120, 362)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Spores1" parent="Ambience" instance=ExtResource("rd_spores")]
+position = Vector2(470, 250)
+emission_rect_extents = Vector2(300, 110)
+amount = 16
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
 position = Vector2(129, 416)

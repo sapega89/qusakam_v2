@@ -8,6 +8,11 @@ extends SceneTree
 ##   3. Поки її місце в кадрі, вона не вертається, хоч затримка й минула; поза кадром — не раніше затримки;
 ##      після затримки з місцем поза кадром — знову висить.
 ##   4. Вихід з кімнати й повернення не скидає часу: кажан і далі відсутня, поки затримка не мине.
+##   5. R2, кожна кімната: хто де живе (план rooms-dressing), розмір сидячої — точно за таблицею world_scale_plan
+##      (× множник шару), жодна не сидить біля дверей, NPC, скрині чи підбирання і не посеред бою; злітаючи, птахи й
+##      кажани грають critter_flap, метелики й міль — ні.
+##   6. Атмосфера: у кожній кімнаті одне-два тихі ефекти; Low (D554) удвічі ріже ті, де частинок ≥ 16, High вертає.
+##   7. Трава (A4): кущики стоять на підлозі, позаду героя, не біля скрині чи підбирання.
 ## Затримка вкорочується через експортовану змінну — тест не чекає 30 с. Пише лише в user://verify_ambient_critters/.
 
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
@@ -15,6 +20,35 @@ const Critter = preload("res://SampleProject/Scripts/Gameplay/AmbientCritter.gd"
 const CAVE := "res://SampleProject/Maps/LizardCave.tscn"
 const CANYON := "res://SampleProject/Maps/Canyon.tscn"
 const TEST_DIR := "user://verify_ambient_critters/"
+const DECOR := "res://SampleProject/Scenes/Backgrounds/Decor/"
+const MAPS := "res://SampleProject/Maps/%s.tscn"
+## Висота в пікселях арту (world_scale_plan: «bat, pigeon, lark» 24, «butterfly, moth, mouse» 12); світ = арт × 1.5.
+const ART_HEIGHT := {"critter_bat": 24, "critter_bird": 24, "critter_pigeon": 24, "critter_butterfly": 12,
+		"critter_butterfly_blue": 12, "critter_moth": 12}
+const GRASS_ART := 16
+## Хто де живе (R2, Sapega 2026-10-27): кімната → {сцена: скільки}.
+const LIVES := {
+	"Canyon": {"critter_bird": 2, "critter_butterfly": 1},
+	"Village": {"critter_bird": 2, "critter_butterfly": 2},
+	"DesertRoad": {"critter_bird": 3, "critter_butterfly": 2},
+	"CityGates": {"critter_bird": 2},
+	"City": {"critter_pigeon": 3},
+	"LaboratoryOutside": {"critter_bird": 1, "critter_butterfly_blue": 2},
+	"BanditCamp": {"critter_bird": 1, "critter_butterfly": 1},
+	"MesaClimb": {"critter_butterfly": 1},
+	"LizardCave": {"critter_bat": 2},
+	"GatehouseCellar": {"critter_bat": 2},
+	"ElderHouse": {"critter_moth": 1},
+}
+## Атмосфера кожної кімнати (m6_backdrops «Every room has atmosphere»); Canyon — еталонні вихори пилу Decor/Dust*.
+const AIR := {
+	"Canyon": ["dust"], "Village": ["atmo_pollen"], "DesertRoad": ["atmo_pollen", "dust"], "CityGates": ["atmo_pollen"],
+	"City": ["atmo_pollen"], "LaboratoryOutside": ["atmo_pollen"], "BanditCamp": ["atmo_pollen"], "MesaClimb": ["atmo_pollen"],
+	"LizardCave": ["atmo_fireflies"], "DragonMural": ["atmo_spores"], "GatehouseCellar": ["atmo_spores"],
+	"ElderHouse": ["atmo_light_shaft"], "MayorHall": ["atmo_light_shaft"], "LabCells": ["atmo_steam"],
+	"Laboratory": ["atmo_steam", "atmo_sparks"], "LabBoss": ["atmo_embers", "atmo_steam"],
+}
+const GRASS_ROOMS := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "LaboratoryOutside", "BanditCamp", "MesaClimb"]
 
 var fails: Array[String] = []
 var game: Node
@@ -112,8 +146,146 @@ func _initialize() -> void:
 	await _frames(4)
 	ck(not again.is_away() and again.sprite.visible, "with the delay over it is back")
 
+	await _rooms()
+
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
+
+
+func _rooms() -> void:
+	var audio: Node = root.get_node("AudioManager")
+	var heard: Array[StringName] = []
+	audio.sound_played.connect(func(event: StringName, _s: AudioStream, _b: StringName, _p: float) -> void: heard.append(event))
+	var quality: Node = root.get_node("DisplayManager").graphics_quality
+	for room: String in AIR:
+		await game.teleport_to_room(MAPS % room, _first_door(room))
+		await _frames(10)
+		await Kit.drain(self)
+		print("[5] %s: who lives here" % room)
+		var critters := _bats()
+		var counts := {}
+		for c: Node2D in critters:
+			var kind: String = c.scene_file_path.get_file().get_basename()
+			counts[kind] = counts.get(kind, 0) + 1
+		ck(counts == LIVES.get(room, {}), "%s: %s" % [room, counts])
+		for c: Node2D in critters:
+			_check_size(room, c)
+			_check_clear(room, c)
+		Critter.left_at.clear()
+		for c: Node2D in critters:
+			heard.clear()
+			c._fly_off(1.0)
+			var kind: String = c.scene_file_path.get_file().get_basename()
+			var flaps: bool = kind in ["critter_bat", "critter_bird", "critter_pigeon"]
+			ck(heard.has(&"critter_flap") == flaps, "%s: %s %s on take-off" % [room, c.name, "flaps (critter_flap)" if flaps else "is silent"])
+		print("[6] %s: the air" % room)
+		var effects := _effects(room)
+		ck(effects.size() >= 1 and effects.size() <= 2, "%s: one or two quiet effects %s" % [room, effects.keys()])
+		ck(effects.keys().all(func(k: String) -> bool: return k in AIR[room]), "%s: fitted to the place (%s)" % [room, AIR[room]])
+		var emitters: Array[Node] = game.map.find_children("*", "CPUParticles2D", true, false)
+		var high := {}
+		for e: Node in emitters:
+			high[e] = e.amount
+		quality.apply("low")
+		ck(emitters.all(func(e: Node) -> bool: return e.amount == (ceili(high[e] / 2.0) if high[e] >= 16 else high[e])),
+				"%s: Low halves every emitter of 16+ particles, keeps the small ones" % room)
+		quality.apply("high")
+		ck(emitters.all(func(e: Node) -> bool: return e.amount == high[e]), "%s: High brings them back" % room)
+		if room in GRASS_ROOMS:
+			print("[7] %s: grass" % room)
+			_check_grass(room)
+
+
+## Перші двері кімнати (у частини кімнат немає Arrival).
+func _first_door(room: String) -> NodePath:
+	var scene: Node = (load(MAPS % room) as PackedScene).instantiate()
+	var path := ^"Arrival"
+	for n: Node in scene.get_children():
+		if _kind(n) == "door":
+			path = NodePath(n.name)
+			break
+	scene.free()
+	return path
+
+
+## Сидяча — точно за таблицею: непрозора висота кадру сидіння × масштаб = арт × 1.5 × множник шару (±1 піксель арту).
+func _check_size(room: String, c: Node2D) -> void:
+	var kind: String = c.scene_file_path.get_file().get_basename()
+	var sprite: AnimatedSprite2D = c.sprite
+	var anim: StringName = &"fly" if c.perch_animation == &"" else c.perch_animation
+	var image: Image = sprite.sprite_frames.get_frame_texture(anim, 0).get_image()
+	var factor: float = (c.get_parent() as Parallax2D).scroll_scale.x if c.get_parent() is Parallax2D else 1.0
+	var want: float = roundf(ART_HEIGHT[kind] * factor) * 1.5
+	var drawn: float = image.get_used_rect().size.y * sprite.scale.y
+	ck(absf(drawn - want) <= 1.5, "%s: %s perched is %.1f world px, the chart says %.1f" % [room, c.name, drawn, want])
+
+
+## Не біля дверей, NPC, скрині чи підбирання (96 px), не посеред бою (200 px від тригера), на кімнатному плані.
+func _check_clear(room: String, c: Node2D) -> void:
+	var at := c.global_position
+	for n: Node in game.map.get_children():
+		if not (n is Node2D):
+			continue
+		var kind := _kind(n)
+		var p: Vector2 = (n as Node2D).global_position
+		if kind != "" and absf(p.y - at.y) < 240.0:
+			ck(absf(p.x - at.x) >= 96.0, "%s: %s keeps off the %s %s (%.0f px)" % [room, c.name, kind, n.name, absf(p.x - at.x)])
+		if String(n.name).begins_with("Fight_"):
+			for t: Node in n.get_children():
+				if t is Area2D and absf((t as Area2D).global_position.y - at.y) < 480.0:
+					ck(absf((t as Area2D).global_position.x - at.x) >= 200.0, "%s: %s is not in the middle of %s" % [room, c.name, n.name])
+
+
+func _kind(n: Node) -> String:
+	var script: Script = n.get_script()
+	if script != null and script.resource_path.ends_with("/RoomDoor.gd"):
+		return "door"
+	if n.scene_file_path.ends_with("Chest.tscn"):
+		return "chest"
+	if n.scene_file_path.ends_with("ItemPickup.tscn"):
+		return "pickup"
+	if n.scene_file_path.contains("/NPCs/") or n.scene_file_path.ends_with("grandfather.tscn"):
+		return "NPC"
+	return ""
+
+
+func _effects(room: String) -> Dictionary:
+	var out := {}
+	var holders: Array[Node] = []
+	for name: NodePath in [^"Ambience", ^"Decor"]:
+		var holder: Node = game.map.get_node_or_null(name)
+		if holder != null:
+			holders.append(holder)
+	for holder: Node in holders:
+		for e: Node in holder.get_children():
+			var kind: String = e.scene_file_path.get_file().get_basename()
+			if kind.begins_with("atmo_") or kind == "dust":
+				out[kind] = true
+	return out
+
+
+func _check_grass(room: String) -> void:
+	var holder: Node2D = game.map.get_node(^"Grass")
+	var tufts: Array[Node] = holder.get_children()
+	ck(tufts.size() >= 4, "%s: tufts along the walk line (%d)" % [room, tufts.size()])
+	ck(holder.z_index < game.player.z_index, "%s: grass behind the hero" % room)
+	var space: PhysicsDirectSpaceState2D = game.map.get_world_2d().direct_space_state
+	var off_floor := 0
+	var near := 0
+	for t: AnimatedSprite2D in tufts:
+		var used: float = t.sprite_frames.get_frame_texture(&"idle", 0).get_image().get_used_rect().end.y * t.scale.y
+		if absf(used - GRASS_ART * 1.5) > 1.5:
+			ck(false, "%s: %s is %.1f world px tall, the chart says %d" % [room, t.name, used, GRASS_ART * 1.5])
+		var q := PhysicsRayQueryParameters2D.create(t.global_position + Vector2(0, -6), t.global_position + Vector2(0, 24))
+		q.exclude = [game.player.get_rid()]
+		var hit: Dictionary = space.intersect_ray(q)
+		if hit.is_empty() or absf(hit.position.y - t.global_position.y) > 1.0:
+			off_floor += 1
+		for n: Node in game.map.get_children():
+			if _kind(n) in ["chest", "pickup", "door"] and (n as Node2D).global_position.distance_to(t.global_position) < 64.0:
+				near += 1
+	ck(off_floor == 0, "%s: every tuft stands on the floor (%d off)" % [room, off_floor])
+	ck(near == 0, "%s: no tuft at a chest, pickup or door (%d)" % [room, near])
 
 
 func _bats() -> Array[Node2D]:

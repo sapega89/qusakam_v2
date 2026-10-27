@@ -13,6 +13,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.png" id="finale_clouds"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly_blue.tscn" id="rd_butterfly_blue"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 
 [sub_resource type="Gradient" id="Gradient_finale_sky"]
 colors = PackedColorArray(0.13, 0.24, 0.52, 1, 0.7686, 0.8588, 0.9059, 1)
@@ -117,6 +121,140 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+position = Vector2(864, 250)
+emission_rect_extents = Vector2(864, 140)
+amount = 16
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(260, 384)
+
+[node name="ButterflyBlue1" parent="Critters" instance=ExtResource("rd_butterfly_blue")]
+position = Vector2(700, 364)
+
+[node name="ButterflyBlue2" parent="Critters" instance=ExtResource("rd_butterfly_blue")]
+position = Vector2(1250, 364)
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(700, 384)
+frame = 1
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1250, 384)
+frame = 1
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(40, 384)
+frame = 3
+speed_scale = 0.91
+flip_h = true
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(58, 384)
+frame = 3
+speed_scale = 1.14
+
+[node name="Tuft5" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(180, 384)
+frame = 2
+speed_scale = 0.92
+flip_h = true
+
+[node name="Tuft6" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(200, 384)
+frame = 2
+speed_scale = 0.81
+flip_h = true
+
+[node name="Tuft7" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(367, 384)
+frame = 1
+speed_scale = 1.12
+
+[node name="Tuft8" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(385, 384)
+frame = 3
+speed_scale = 0.98
+
+[node name="Tuft9" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(514, 384)
+frame = 2
+speed_scale = 0.94
+flip_h = true
+
+[node name="Tuft10" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(533, 384)
+frame = 2
+speed_scale = 1.0
+
+[node name="Tuft11" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(646, 384)
+frame = 0
+speed_scale = 0.91
+flip_h = true
+
+[node name="Tuft12" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(676, 384)
+frame = 0
+speed_scale = 1.01
+flip_h = true
+
+[node name="Tuft13" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(775, 384)
+frame = 2
+speed_scale = 0.98
+flip_h = true
+
+[node name="Tuft14" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(804, 384)
+frame = 3
+speed_scale = 1.09
+flip_h = true
+
+[node name="Tuft15" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(947, 384)
+frame = 0
+speed_scale = 0.98
+
+[node name="Tuft16" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1120, 384)
+frame = 1
+speed_scale = 1.17
+
+[node name="Tuft17" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1234, 384)
+frame = 3
+speed_scale = 1.04
+flip_h = true
+
+[node name="Tuft18" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1429, 384)
+frame = 2
+speed_scale = 0.84
+flip_h = true
+
+[node name="Tuft19" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1554, 384)
+frame = 3
+speed_scale = 1.05
+
+[node name="Tuft20" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1573, 384)
+frame = 0
+speed_scale = 1.18
+
+[node name="Tuft21" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1683, 384)
+frame = 1
+speed_scale = 1.03
+flip_h = true
 
 [node name="FrontDark" parent="." instance=ExtResource("x1")]
 

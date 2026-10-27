@@ -29,6 +29,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="x8_chest"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="meditation_art"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_sparks.tscn" id="rd_sparks"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_steam.tscn" id="rd_steam"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -357,6 +359,20 @@ frame = 2
 speed_scale = 1.2
 
 [node name="RoomInstance" parent="." unique_id=891762722 instance=ExtResource("3_t6xmk")]
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Steam1" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(420, 384)
+
+[node name="Steam2" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(1150, 864)
+
+[node name="Steam3" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(1000, 1344)
+
+[node name="Sparks1" parent="Ambience" instance=ExtResource("rd_sparks")]
+position = Vector2(1400, 1330)
 
 [node name="CellsDoorEntrance" parent="." instance=ExtResource("x2")]
 position = Vector2(64.25, 384)

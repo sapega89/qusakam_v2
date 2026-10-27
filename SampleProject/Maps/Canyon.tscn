@@ -26,6 +26,9 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x5"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/ledge_rock/ledge_rock_sheet.png" id="x6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
 
 [sub_resource type="Gradient" id="Gradient_sky"]
 colors = PackedColorArray(0.31, 0.53, 0.86, 1, 0.769, 0.859, 0.906, 1)
@@ -623,6 +626,123 @@ process_mode = 3
 stream = ExtResource("music_track")
 autoplay = true
 bus = &"Music"
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(430, 384)
+
+[node name="Lark2" parent="Critters" instance=ExtResource("rd_bird")]
+position = Vector2(2420, 384)
+perch_flip = true
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("rd_butterfly")]
+position = Vector2(700, 364)
+
+[node name="Grass" type="Node2D" parent="."]
+
+[node name="Tuft1" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(700, 384)
+frame = 1
+
+[node name="Tuft2" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(60, 384)
+frame = 3
+speed_scale = 0.98
+
+[node name="Tuft3" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(81, 384)
+frame = 1
+speed_scale = 1.12
+flip_h = true
+
+[node name="Tuft4" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(114, 384)
+frame = 1
+speed_scale = 0.84
+flip_h = true
+
+[node name="Tuft5" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(181, 384)
+frame = 3
+speed_scale = 1.19
+
+[node name="Tuft6" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(369, 384)
+frame = 0
+speed_scale = 1.13
+flip_h = true
+
+[node name="Tuft7" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(387, 384)
+frame = 1
+speed_scale = 1.15
+
+[node name="Tuft8" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(578, 384)
+frame = 3
+speed_scale = 1.04
+flip_h = true
+
+[node name="Tuft9" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(599, 384)
+frame = 2
+speed_scale = 1.0
+
+[node name="Tuft10" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(628, 384)
+frame = 2
+speed_scale = 0.96
+
+[node name="Tuft11" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(698, 384)
+frame = 1
+speed_scale = 1.01
+flip_h = true
+
+[node name="Tuft12" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(725, 384)
+frame = 0
+speed_scale = 0.96
+
+[node name="Tuft13" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(857, 384)
+frame = 0
+speed_scale = 0.89
+
+[node name="Tuft14" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1960, 384)
+frame = 3
+speed_scale = 0.97
+
+[node name="Tuft15" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1981, 384)
+frame = 2
+speed_scale = 0.93
+flip_h = true
+
+[node name="Tuft16" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(1996, 384)
+frame = 3
+speed_scale = 1.1
+flip_h = true
+
+[node name="Tuft17" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(2258, 384)
+frame = 1
+speed_scale = 0.98
+flip_h = true
+
+[node name="Tuft18" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(2421, 384)
+frame = 3
+speed_scale = 0.85
+flip_h = true
+
+[node name="Tuft19" parent="Grass" instance=ExtResource("rd_grass")]
+position = Vector2(2442, 384)
+frame = 0
+speed_scale = 0.91
 
 [node name="FrontDark" parent="." instance=ExtResource("x3")]
 

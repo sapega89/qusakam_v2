@@ -35,6 +35,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_steam.tscn" id="rd_steam"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lock"]
 size = Vector2(16, 192)
@@ -675,6 +676,14 @@ position = Vector2(300, 288)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StepOutTrigger" unique_id=469013297]
 shape = SubResource("RectangleShape2D_step")
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Steam1" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(260, 384)
+
+[node name="Steam2" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(1150, 384)
 
 [node name="CorridorDoorEntrance" parent="." instance=ExtResource("x2")]
 position = Vector2(1648.25, 384)

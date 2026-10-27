@@ -19,6 +19,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/platform_support.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_grate/lab_grate_sheet.png" id="x5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_embers.tscn" id="rd_embers"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_steam.tscn" id="rd_steam"]
 
 [sub_resource type="RectangleShape2D" id="Shape_gates"]
 size = Vector2(32, 320)
@@ -177,6 +179,19 @@ position = Vector2(400, 224)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TalkTrigger" unique_id=1892093044]
 shape = SubResource("Shape_talk")
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Embers1" parent="Ambience" instance=ExtResource("rd_embers")]
+position = Vector2(864, 300)
+emission_rect_extents = Vector2(700, 100)
+amount = 16
+
+[node name="Steam1" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(300, 384)
+
+[node name="Steam2" parent="Ambience" instance=ExtResource("rd_steam")]
+position = Vector2(1450, 384)
 
 [node name="CorridorDoorEntrance" parent="." instance=ExtResource("x2")]
 position = Vector2(72.25, 384)

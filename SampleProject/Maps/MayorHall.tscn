@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/column.png" id="fg2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/chandelier.png" id="fg3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/banner.png" id="fg4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="rd_shaft"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_syofx"]
 atlas = ExtResource("6_1wkxm")
@@ -639,6 +640,14 @@ scale = Vector2(2.5, 2.5)
 texture = ExtResource("14_d8hbo")
 centered = false
 offset = Vector2(-36, -96)
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("rd_shaft")]
+position = Vector2(330, 40)
+
+[node name="LightShaft2" parent="Ambience" instance=ExtResource("rd_shaft")]
+position = Vector2(600, 40)
 
 [node name="CityDoorEntrance" parent="." instance=ExtResource("x2")]
 position = Vector2(96, 384)
