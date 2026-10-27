@@ -126,7 +126,7 @@ tags: [plan, orchestrator, status]
 
 | ID | Що | Джерело | Статус |
 |---|---|---|---|
-| S1 | Дерева навичок v2: 33 нові навички | D535, [[skill_trees_plan]] | 🔄 сторінка https://claude.ai/artifact/C19YzVs1KYFu9GuKBfwJuv (33 нові навички, так / ні / змінити; db `verdicts`) |
+| S1 | Дерева навичок v2: 33 нові навички | D535, [[skill_trees_plan]] | 🔄 чернетку прийнято як є (Sapega 27.10: «залишити як є, потім поправити»); routines `skills-v2-data` → `skills-v2-screen` → `skills-v2-move` (далі ranged, stance+щити, control); арт (33 іконки, пози, ефекти) — 🖥 |
 | S2 | Підклас на 40 і престиж на 70 | D260, Q66 | ✅ назви підтверджено (Sapega 27.10, D260); будувати — з деревами v2 |
 | S3 | `RoomStoryFlow` — одна база замість 6 копій стану кімнат | code_review §3.1 | 🔄 routine `room-story-flow` (27.10) |
 | S4 | Чистка плагінів: свої fsm, interaction_system, ModalDialog; свої меню замість Maaack | D242 | 🔄 шматок 1 (fsm, interaction_system) — routine `plugins-fsm` (27.10); ⬜ шматок 2 ModalDialog; шматок 3 свої меню — коли наступного разу чіпатимемо меню (D242) |
