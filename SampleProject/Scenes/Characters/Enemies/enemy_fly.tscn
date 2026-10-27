@@ -119,9 +119,15 @@ frame = 0
 libraries/ = SubResource("AnimationLibrary_fly")
 metadata/attack_strike_time = 0.4
 
+[node name="hitbox" parent="."]
+position = Vector2(0, 0)
+
 [node name="CollisionShape2D" parent="hitbox"]
 position = Vector2(16.875, 0.5625)
 shape = SubResource("Shape_strike")
+
+[node name="Hurtbox" parent="."]
+position = Vector2(0, 0)
 
 [node name="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(-3.9375, -3.375)

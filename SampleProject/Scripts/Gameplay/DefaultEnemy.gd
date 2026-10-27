@@ -261,7 +261,9 @@ func _grow(factor: float) -> void:
 	body_collision.shape = body_collision.shape.duplicate()
 	for shape: CollisionShape2D in [body_collision, hitbox_collision, hurt_collision]:
 		(shape.shape as RectangleShape2D).size *= factor
-		shape.position = Vector2(shape.position.x * factor, feet + (shape.position.y - feet) * factor)
+		# Зони удару й цілі стоять там, де малюнок (зсув зони = зсув Sprite2D, hero-feet): масштаб від ніг — для суми
+		var area_y: float = 0.0 if shape == body_collision else (shape.get_parent() as Node2D).position.y
+		shape.position = Vector2(shape.position.x * factor, feet + (area_y + shape.position.y - feet) * factor - area_y)
 	sprite.scale *= factor
 	sprite.position = Vector2(sprite.position.x * factor, feet + (sprite.position.y - feet) * factor)
 	attack_range *= factor

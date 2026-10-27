@@ -181,6 +181,7 @@ func _spawn_impact(target: Node2D, side: float) -> HitImpact:
 	var impact: HitImpact = HIT_IMPACT_SCENE.instantiate()
 	target.get_parent().add_child(impact)
 	impact.global_position = body.global_position + Vector2(side * half_width, 0)
+	impact.global_position.y += (target.get_node(^"Sprite2D") as Node2D).position.y * target.global_scale.y  # на висоті малюнка (hero-feet)
 	impact.set_direction(-int(side))
 	return impact
 
@@ -247,7 +248,7 @@ func _on_guard(attacker: Node2D, parry: bool) -> void:
 	var spark: CPUParticles2D = PARRY_SPARK_SCENE.instantiate()
 	spark.finished.connect(spark.queue_free)
 	hero.get_parent().add_child(spark)
-	spark.global_position = hero.global_position.lerp(attacker.global_position, 0.4)
+	spark.global_position = (hero.global_position + hero.visual_base).lerp(attacker.global_position, 0.4)
 	spark.scale = Vector2.ONE * (1.0 if parry else BLOCK_SPARK_SCALE)
 	spark.emitting = true
 	guard_shown.emit(parry)

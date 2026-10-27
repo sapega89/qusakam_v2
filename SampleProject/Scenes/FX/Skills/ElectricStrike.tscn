@@ -125,13 +125,13 @@ metadata/_doc = "Electric Strike cast (D271)"
 [node name="SkyBolt" type="Sprite2D" parent="."]
 visible = false
 texture_filter = 1
-position = Vector2(-7, -130)
+position = Vector2(-7, -143.5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("bolt")
 rotation = 1.5708
 
 [node name="Crackle" type="CPUParticles2D" parent="."]
-position = Vector2(-7, -70)
+position = Vector2(-7, -83.5)
 emitting = false
 amount = 22
 lifetime = 0.16
@@ -148,12 +148,12 @@ color_ramp = SubResource("Grad_spark")
 [node name="Bolt" type="Sprite2D" parent="."]
 visible = false
 texture_filter = 1
-position = Vector2(98, 2)
+position = Vector2(98, -11.5)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("bolt")
 
 [node name="Sparks" type="CPUParticles2D" parent="."]
-position = Vector2(158, 2)
+position = Vector2(158, -11.5)
 emitting = false
 amount = 12
 lifetime = 0.25

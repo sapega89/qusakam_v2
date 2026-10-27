@@ -92,7 +92,7 @@ const GUARD_BREAK := 0.6
 ## Відпустили раніше — лук опускається без стріли. Важкий удар з луком — одразу натяг.
 const ARROW_SCENE := preload("res://SampleProject/Scenes/Combat/arrow.tscn")
 const CHARGED_ARROW_SCENE := preload("res://SampleProject/Scenes/Combat/arrow_charged.tscn")
-## Наконечник накладеної стріли в кадрах лука, px світу від центру героя обличчям праворуч
+## Наконечник накладеної стріли в кадрах лука, px світу від центру спрайта героя (Player.visual_base) обличчям праворуч
 ## (Weapons/bow/README.md: (76, 61) у клітинці 96×96, зсув (0, −16), ×1.5).
 const ARROW_FROM := Vector2(42, -5)
 const QUICK_SHOT_DAMAGE := 0.7
@@ -578,7 +578,7 @@ func _loose(charged: bool) -> void:
 	arrow.poise = POISE_HEAVY if charged else POISE_LIGHT
 	arrow.knockback = maxf(_weapon_knockback, CHARGED_KNOCKBACK) if charged else _weapon_knockback
 	Game.get_singleton().map.add_child(arrow)
-	arrow.global_position = player.global_position + Vector2(ARROW_FROM.x * _direction, ARROW_FROM.y)
+	arrow.global_position = player.global_position + player.visual_base + Vector2(ARROW_FROM.x * _direction, ARROW_FROM.y)
 	EventBus.player_shot.emit(player, charged)
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім

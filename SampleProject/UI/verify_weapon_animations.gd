@@ -171,8 +171,9 @@ func _weapon_type(library: String, slots: Array, ids: Array, swings: int) -> voi
 			"out of combat: no weapon frames, palette off (%s)" % wv.body_library())
 	await _fight(true)
 	var sprite: Sprite2D = hero.get_node("Sprite2D")
+	# Зсув клітинки 96 — (0, −16); ключі анімації ще садять ноги на підлогу до 6 рядків (verify_hero_feet, алебарда −12)
 	ck(anim.current_animation == StringName(library + "/Idle") and not wv.pivot.visible and not wv.off_pivot.visible
-			and sprite.offset == Vector2(0, -16) and material.get_shader_parameter(&"active"),
+			and sprite.offset.x == 0.0 and absf(sprite.offset.y + 16.0) <= 6.0 and material.get_shader_parameter(&"active"),
 			"combat idle: %s, overlay hidden, 96×96 offset, palette on (overlay %s / %s)" % [anim.current_animation, wv.pivot.visible, wv.off_pivot.visible])
 
 	Input.action_press(&"move_right")
