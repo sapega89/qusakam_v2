@@ -44,6 +44,8 @@ early «Phase 5.x» UI checks ×12; settings ×3).
 **Test audit** merged (`5b9e8c21`, [[test_audit_2026-10-27]]): 2 scripts gone (lab_rooms covered, demo_end → lab_route), city_gates_raid in game time, B185 fixed, B186 open (wall-clock waits → load flakes). Wall time did not drop: it is the real-time tail (masher ~350 s) and headless frames capped at ~145/s by `low_processor_usage_mode_sleep_usec`. Follow-ups listed in the audit (one door walk instead of two after rooms-dressing; small merges; game-time speed-up of combat_enemies, audio, archer, combat_flow, bosses). Full suite at J=4: 14–20 min, sum ≈ 3400 s; `## SERIAL` for hit_feel, masher; masher TIMEOUT 480.
 **Exe** rebuilt after integrate-29 (15:58). **Ask Sapega:** the local uncommitted `scorpicore_warrior.tscn` edit (slam 1.5, charge 1.3; from an agent's autostash of 24.10, not his) contradicts D678 (×1.3 / ×1.15) — revert on his word.
 
+**integrate-30** (`trig_014p84j6pihvRknqsNn8mnKj`, started 19:58 UTC): merges hero-death, skills-v2-data/screen/move, scale-exact (+ its probe and chart, Godot was blocked in its session), fx-film; IDs from D807 / B187; the full suite in the cloud (Sapega 27.10: tests run in the cloud, not on the PC) incl. camera_transitions 1 FAIL and combat_flow [2c]. When it reports: merge, rebuild the exe, send Sapega scale_chart.png and the fx GIFs.
+
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
    existing Block art and fades; a glass shield cracks and shatters (its shards hurt the attacker). Over `Block/1`;
