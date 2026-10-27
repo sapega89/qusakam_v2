@@ -326,6 +326,14 @@ func _potion(sl: Node) -> void:
 		inventory.remove_item(id, inventory.get_item_count(id))
 	for id in ["potion_lesser", "potion", "hi_potion"]:
 		inventory.add_item(id, 1)
+	# Тут лише зілля: вороги поруч спинено — вони карають ковток (D713, D764) і вже не кидають героя посеред бою (B164)
+	var frozen: Array[Node] = []
+	for e: Node in get_nodes_in_group(&"enemies"):
+		if e.is_physics_processing():
+			e.set_physics_process(false)
+			frozen.append(e)
+	while frozen.any(func(e: Node) -> bool: return is_instance_valid(e) and e.enemy_logic.is_attacking):
+		await physics_frame
 	await _hero_at(arena_x)
 	hero.Max_Health = 500
 	hero.current_health = 440
@@ -357,6 +365,9 @@ func _potion(sl: Node) -> void:
 	await _until_ready()
 	hero.Max_Health = 99999
 	hero.current_health = hero.Max_Health
+	for e: Node in frozen:
+		if is_instance_valid(e):
+			e.set_physics_process(true)
 
 
 ## [5] D502: над звичайним ворогом смужки HP немає — ні одразу, ні після удару.
