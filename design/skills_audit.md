@@ -31,9 +31,9 @@ what to do. Background: [[skill_trees_plan]], D279, D491, D535, D626, D718.
   HP», three «after a parry, skills hit harder», three dashes, two slams, two spears, two shouts).
 - **Sapega's answer (2026-10-27):** neither a nor b — **the shield shows only in the shield skills**: the equipped
   shield appears on the hero while he blocks and during the shield strikes (Shield Bash, Shield Charge) and is hidden the
-  rest of the time; the 5 shield skills stay. Then (same day): «Арт блоку є. Використовуй наявні, там же просто намалювати ефект» — no
-  shield sprite: the existing Block pose (and existing frames for bash/charge) with a **shield-of-light effect**
-  (`FX/Shield/block`, `bash`, `charge`, comfy_fx like D273), then playing it in code (after `hero-shadow`, which edits Player.tscn). D-ID after integrate-29.
+  rest of the time; the 5 shield skills stay. Then (same day): «Арт блоку є. Використовуй наявні, там же просто намалювати ефект» and then «Просто щит поверх намалювати»: a **shield sprite drawn over the existing frames** (Block/1 for blocking, an
+  existing Heavy/punch frame for Shield Bash, the Run frames for Shield Charge) — no new hero frames, no light effect;
+  then showing it in code only in those three uses (after `hero-shadow`, which edits Player.tscn). D-ID after integrate-29.
 - **Recommendation (superseded by his answer above):** rework the 5 shield skills into shield-free ones (proposal a), drop the shield from the hero's
   gear, and reshape each path tree into one kit (below). Art queue at the end: 14 hero poses, 30 VFX.
 
