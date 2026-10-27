@@ -32,6 +32,17 @@ beam, a lamp, crates) or the outdoor occluders of D750, never over a door, an NP
 is alive: a bat or a bird that flies off when the hero comes near and comes back later — [[ambient_critters_plan]].
 The ledge the hero walks on is the floor plane, behind him, not foreground.
 
+**Every room has atmosphere: something alive in the air** (Sapega 2026-10-27: «нам треба зробити атмосферу гри, тому треба
+додавати якісь ефекти світіння або бабочки — таке вже щось схоже є в каньйоні, на це приємно дивитись»; the room routine
+does it in every room it builds). Today only the Canyon and the Desert Road have it (the dust swirls
+`Scenes/Backgrounds/Decor/dust.tscn`, `Decor/Dust1–4`, and the `AmbientDust` particles in `Game.tscn`). Each room gets
+one or two quiet effects that fit the place: outdoors and the oasis — butterflies, dragonflies by water, drifting sand
+and pollen, dust in the light; caves — glowing spores or fireflies, dust in a light shaft, drips that glint; the City —
+dust in sunbeams, chimney smoke, lantern glow; the Laboratory — steam, sparks, the glow of vials and lamps; interiors —
+dust in the window light, candle flicker. Small, slow, low alpha, mostly behind the hero; never over a door, an NPC or
+the middle of a fight, never mistaken for an enemy or a pickup; particle counts follow `GraphicsQuality` (Low halves
+them, D554). Sprites (a butterfly, a moth, a firefly glow) are art-lane work; the placement is the room routine's.
+
 ## Batch 0 — existing rooms with no foreground (D774)
 
 | Room | What goes in front | Status |
