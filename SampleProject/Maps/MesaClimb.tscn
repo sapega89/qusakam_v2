@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dqkh1e1q4c6cl"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MesaClimb/gen_back.png" id="r1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MesaClimb/gen_mesa.png" id="p1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MesaClimb/gen_boulders.png" id="p2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MesaClimb/gen_floor.png" id="p3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="p4"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Canyon_Terrain.png" id="r4"]
@@ -60,11 +63,25 @@ size = Vector2(240, 52)
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Sprite1" type="Sprite2D" parent="Back"]
+[node name="Mesa" type="Sprite2D" parent="Back"]
 texture_filter = 1
 position = Vector2(-421.3, 0)
 scale = Vector2(2.963, 2.963)
-texture = ExtResource("r1")
+texture = ExtResource("p1")
+centered = false
+
+[node name="Boulders" type="Sprite2D" parent="Back"]
+texture_filter = 1
+position = Vector2(-421.3, 0)
+scale = Vector2(2.963, 2.963)
+texture = ExtResource("p2")
+centered = false
+
+[node name="Floor" type="Sprite2D" parent="Back"]
+texture_filter = 1
+position = Vector2(-225, 896)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p3")
 centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
@@ -315,6 +332,13 @@ flip_h = true
 
 [node name="Scrub3" parent="FrontDark" instance=ExtResource("x5")]
 position = Vector2(800, 1010)
+
+[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(880, 1080)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("p4")
+offset = Vector2(-78, -114)
 
 [node name="TopShade" parent="." instance=ExtResource("x6")]
 

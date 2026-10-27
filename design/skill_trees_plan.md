@@ -17,7 +17,7 @@ no graph ([[skills_ui_mapping]]). Feedback rules: [[play_feedback_queue]]. Build
 
 ## v2: 19 skills per tab (D535), draft for Sapega, 2026-10-23
 
-**Status: planned. The list is waiting for Sapega to read it.** He counted Dragon Nest's Gladiator: 19 skills in the Warrior tab and 19 in the Gladiator tab, with **10 active and 9 passive** in each, and not all of them can be learned. After `cloud/skills-data` our base tree has 10 skills (3 active) and each oath has 11 (3 active).
+**Status: accepted as drafted** (Sapega 2026-10-27: «я поки готовий залишити як є, потім, якщо що, поправити, тому генеруй так, як задумав»); building now. The shield skills follow S19's final answer: the shield is a spell that drops from the sky, and there is a glass-shield block whose shards hurt the attacker when it breaks ([[skills_audit]]). He counted Dragon Nest's Gladiator: 19 skills in the Warrior tab and 19 in the Gladiator tab, with **10 active and 9 passive** in each, and not all of them can be learned. After `cloud/skills-data` our base tree has 10 skills (3 active) and each oath has 11 (3 active).
 
 The draft adds **33 new skills**:
 - the base tree gets 7 actives and 2 passives;

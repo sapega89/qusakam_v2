@@ -7,5 +7,6 @@ pixel (576×324, ×1.5 in the game) and 16 colours. A Steam release has to discl
 | File | Use |
 |---|---|
 | `gen_wall.png` | `Maps/ElderHouse.tscn` → Wall (y −64, so its floor row ~299 meets the tile floor at y 384; BACKLOG 38): the room's wall Sprite2D, like `Hall/gen_wall.png` in the Mayor Hall — adobe walls under dark ceiling beams, two shuttered windows, hanging carpets and a parchment, shelves with pots, a clay hearth with a fire and a tall clay jar beside it, a stone plinth and floor along the bottom; seamless left–right. x 165–268 repainted (`--repaint`) — the first version had a fabric-shade table lamp on the floor and a dark blob on the floor line |
+| `gen_floor.png` | `Maps/ElderHouse.tscn` → Floor Sprite2D right after TileMap (y 864, over the tile floor, which stays as collision): worn planks, a floor beam and an adobe footing; layer `ElderHouse/gen_floor`, cut, patched and put in the wall's colours by `design/shots/candidates/floor_strips/floor_strips.py` |
 
 The outside of the house is `../Village/gen_elder_house.png`.

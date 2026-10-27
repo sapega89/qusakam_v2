@@ -22,6 +22,14 @@ markers (`UI/Map/Marker` `222:4785`), but no location map.
 
 ## Curiosity map (D583, D562, D565), draft for Sapega, 2026-10-23
 
+**Shortcut, as Sapega means it** (2026-10-27: «якщо не було можливості пройти по верху, то я можу пройти по низу або ще
+якось і потім відкрити заблокований шлях з іншого боку ричагом якимось»): the direct way is blocked where the player
+first sees it (a gate, a grate, a raised bridge, a fallen beam); he goes round — below, through a side room — reaches the
+far side and opens it there with a **lever** (or a winch, a bolt); from then on it stays open (saved) and the way back is
+short. The lever does not exist in code yet (`grep -ri lever Scripts Objects` → 0 hits): M7 builds one `Lever`
+interactable (pull animation and sound, a saved flag, it opens a `LockedDoor`-like gate, bridge or grate it names; from
+the near side the gate says it opens from the other side).
+
 **Rule:** nothing lies free on the main road. Every branch ends in a **chest**, a **piece of story** or a **shortcut** back to a meditation spot. Paths open with **keys** or **NPC talks**, never with new abilities. Optional fights guard the best chests (D582: crowds are hard).
 
 ### 1. Canyon of Whispers (the canyon, the village, the road, Zahra's Rest)
