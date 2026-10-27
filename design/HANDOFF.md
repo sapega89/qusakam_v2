@@ -29,7 +29,7 @@ its report — write them here. Do not file IDs on `feature/backlog` while an in
 | skills-v2-screen | `trig_01EarsZ2Bq1ztEWDEcvumshx` | skills-v2-data | H3 slice 2 |
 | skills-v2-move | `trig_01S8vAyhUS4sr9wgVj1AQ1eX` | skills-v2-screen | H3 slice 3; then create ranged → stance (+ H2 shields) → control |
 | hero-shadow | `trig_01HbdpMkejiuyv4BN1jvoqCX` | — | **reported**, merged by integrate-29 |
-| art agent (local, ComfyUI) | — | — | R1: planes for GatehouseCellar, DragonMural, MesaClimb; floors of MayorHall, ElderHouse. When it reports: push, send Sapega `design/shots/planes_batch2.png` |
+| art agent (local) | — | — | R1 **done and pushed** (`f8539dd2`); the ComfyUI lane is free — start §3 item 1 |
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
