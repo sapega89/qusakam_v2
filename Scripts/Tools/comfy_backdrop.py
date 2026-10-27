@@ -988,7 +988,10 @@ LAYERS = {
         rows=240,
         top=0,
         small=2,
-        cut=(100, 197),  # жердина — на всю ширину кадру: лише прапор між золотими кулями
+        cut=(
+            100,
+            197,
+        ),  # жердина — на всю ширину кадру: лише прапор між золотими кулями
         seam="none",
         trim=True,
         key="green",
@@ -1005,7 +1008,10 @@ LAYERS = {
         seed=715,
         rows=440,  # колона від верху екрана до низу: 324 пікселі гри (486 світу) і запас
         top=0,
-        cut=(220, 353),  # праворуч — тінь колони на тлі (той самий колір, що й тінь ствола: силует трохи несиметричний)
+        cut=(
+            220,
+            353,
+        ),  # праворуч — тінь колони на тлі (той самий колір, що й тінь ствола: силует трохи несиметричний)
         keep=397,  # нижче — смуга підлоги (рядки полотна: предмет починається з рядка 45)
         seam="none",
         trim=True,
@@ -1055,6 +1061,121 @@ LAYERS = {
         prompt="one single big battered wooden crate with dark iron corner brackets and a thick rope tied around it, "
         "a sack leaning against it, seen exactly from the side, standing alone in the middle of the frame and filling a "
         f"fifth of its width, empty space on both sides, its base resting on the bottom edge, {CHROMA}",
+    ),
+    # M6a-1: дорога від мосту до села — гірська стежка й осипище (спільні далина, дим і передній план; збирає
+    # design/shots/candidates/path_planes/path_planes.py). Бар'єр не малюємо: лор не каже, який він на вигляд.
+    "MountainPath/gen_far": dict(
+        seed=501,
+        rows=240,
+        top=84,
+        seam="model",
+        key="green",
+        shade=0,
+        fill=True,
+        haze=0.35,
+        colors=8,
+        prompt="a distant range of tall jagged bare rocky mountains with sharp peaks and deep valleys between them, "
+        "dusty rose and sandy violet rock with violet shadows, spanning the full width and reaching the bottom edge, "
+        f"{CHROMA}",
+    ),
+    # дим над селом — окремий предмет за далекими горами (×0.15), а не в плитці далини: інакше він повторюється
+    "MountainPath/gen_smoke": dict(
+        seed=503,
+        rows=H,
+        top=0,
+        small=2,  # далекий дим — удвічі менший за повний кадр, у пікселях гри
+        spill=8,  # «помаранчевий жар» біля основи модель малює оливковим
+        seam="none",
+        trim=True,
+        keep=148,  # нижче — смуга мурованої землі, яку модель стелить під димом
+        cut=(85, 191),
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0.1,
+        colors=8,
+        prompt="two columns of thick dark smoke rising high into the air, a tall one and a smaller one beside it, "
+        "billowing up in heavy rounded puffs of charcoal grey and dark violet, a faint orange ember glow at their narrow "
+        "bases, the columns leaning and spreading to the right at the top, alone in the middle of the frame with empty "
+        f"space on both sides, their bases on the bottom edge, {CHROMA}",
+    ),
+    "MountainPath/gen_mid": dict(
+        seed=505,
+        rows=200,
+        top=124,
+        seam="model",
+        key="green",
+        spill=10,  # сіро-оливкова кромка скелі на зеленому тлі
+        khaki=True,
+        shade=0,
+        fill=True,
+        haze=0.2,
+        colors=12,
+        quant="octree",
+        prompt="a ridge of rugged mountain cliffs and tall rock spires, red-orange and ochre sandstone with horizontal "
+        "rock strata, a few dry brown thorn bushes clinging to the ledges, spanning the full width and reaching the "
+        f"bottom edge, warm light on the tops, cool violet shadows in the cracks, {CHROMA}",
+    ),
+    # смуга стежки під ногами (×1.0, рядок 0 — лінія ходьби), як LizardCave/gen_floor
+    "MountainPath/gen_ground": dict(
+        seed=508,
+        rows=80,
+        top=0,
+        crop=True,
+        seam="model",
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        # 507 — плита з обрізаними краями; 508 без ключа — блакитне небо над землею: небо — ключ, рядок 0 знаходить
+        # path_planes.py (перший суцільний рядок)
+        prompt="a side cross-section of solid rocky mountain ground filling the lower four fifths of the frame and "
+        "spanning the full width edge to edge: its top is a flat level walking surface of packed reddish dirt and flat "
+        "stones with a thin light edge and a few pebbles, continuing past the left and right edges, below it layered "
+        f"red-orange and dark violet rock strata with cracks down to the bottom edge, seen straight on, {CHROMA} above the ground",
+    ),
+    "MountainPath/gen_waymarker": dict(
+        seed=513,
+        rows=220,
+        top=0,
+        height=58,  # 1 H (64 арту) на плані ×0.9 — world_scale_plan
+        seam="none",
+        trim=True,
+        blob=True,
+        spill=12,  # оливкова трава, яку модель садить під стовпом
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        # 509/512 — стовп на схилі з піском і травою: модель домальовує стежку до «waymarker of a mountain path»
+        prompt="one single small broken square sandstone pillar, cracked across with its top corner broken off, a "
+        "carved spiral rune and a carved arrow on its front face, a faded blue cloth ribbon tied around its middle, seen "
+        "exactly from the side, the object alone floating in the middle of the frame and filling a sixth of its width, "
+        "the whole pillar visible with its flat bottom edge, no ground, no grass, no shadow, empty space all around it, "
+        f"warm light on the top, cool violet shadows in the recesses, {CHROMA}",
+    ),
+    # заслін переднього плану (D750: FrontDark ×1.3, затемнений модуляцією сцени)
+    "MountainPath/gen_front": dict(
+        seed=511,
+        rows=240,
+        top=0,
+        seam="none",
+        trim=True,
+        keep=224,  # нижче — смуга землі на всю ширину
+        cut=(205, 410),
+        key="green",
+        shade=0.3,
+        fill=False,
+        haze=0,
+        colors=8,
+        prompt="one single tall jagged rock spire with a dead twisted leafless tree growing from a crack near its "
+        "top, its dry branches reaching sideways, standing alone in the middle of the frame and filling a third of its "
+        f"width, with empty space on both sides, its base resting on the bottom edge, warm light on the top, cool violet "
+        f"shadows in the cracks, {CHROMA}",
     ),
 }
 
@@ -1275,6 +1396,22 @@ def shrink(img, key, spill=0, block=SCALE):
     ] >= block * block / 2
 
 
+def fit_height(img, h):
+    """Предмет рівно h px генерації заввишки (рамка всього, що не фон): точні розміри world_scale_plan — сира
+    генерація масштабується до зменшення, тож піксельна сітка шару лишається цілою."""
+    from scipy import ndimage
+
+    bg = np.median(img[:24].reshape(-1, 3), axis=0)
+    labels, n = ndimage.label(np.linalg.norm(img - bg, axis=2) > KEY_DISTANCE)
+    sizes = ndimage.sum(np.ones(labels.shape), labels, range(1, n + 1))
+    ys = np.nonzero((labels == 1 + int(np.argmax(sizes))).any(axis=1))[0]  # лише сам предмет, без крихт довкола
+    f = h / (ys.max() - ys.min() + 1)
+    size = (round(img.shape[1] * f), round(img.shape[0] * f))
+    return np.asarray(
+        Image.fromarray(img.astype(np.uint8)).resize(size, Image.LANCZOS), np.float32
+    )
+
+
 def drop_edges(opaque):
     """Прибирає все, що торкається бічних чи нижнього краю: краї порожні — шар безшовний, а «земля»,
     яку модель домальовує під хмарами, зникає."""
@@ -1355,12 +1492,11 @@ if __name__ == "__main__":
             repaint(layer, x0, x1, d)
         # small — предмет, який модель малює завеликим: пікселі гри з більшого блоку; block — сам блок (ціле число
         # пікселів генерації на піксель гри, SCALE = 3 — без зменшення), коли потрібне не кратне SCALE зменшення
-        strip, strip_opaque = shrink(
-            generate(layer),
-            layer["key"],
-            layer.get("spill", 0),
-            layer.get("block", SCALE * layer.get("small", 1)),
-        )
+        block = layer.get("block", SCALE * layer.get("small", 1))
+        raw = generate(layer)
+        if layer.get("height"):  # height — точна висота предмета в пікселях шару
+            raw = fit_height(raw, layer["height"] * block)
+        strip, strip_opaque = shrink(raw, layer["key"], layer.get("spill", 0), block)
         if layer["seam"] == "drop":
             # предмети в повітрі — під верх шару: модель ставить їх посередині, де їх ховають скелі
             strip_opaque = drop_edges(strip_opaque)
@@ -1413,6 +1549,12 @@ if __name__ == "__main__":
                 & (px[..., 1] > px[..., 0] + 15)
                 & (px[..., 1] >= px[..., 2] - 10)
             )
+            if layer.get("khaki"):  # хакі-кромка скелі: зелене тло, змішане з пісковиком (MountainPath/gen_mid)
+                tinted |= (
+                    (out[..., 3] > 0)
+                    & (np.abs(px[..., 0] - px[..., 1]) < 25)
+                    & (px[..., 1] > px[..., 2] + 25)
+                )
             clean = (out[..., 3] > 0) & ~tinted
             if tinted.any() and clean.any():
                 pal = np.unique(px[clean], axis=0)
@@ -1424,8 +1566,8 @@ if __name__ == "__main__":
             out[y0:y1, (dx + np.arange(w)) % W] = out[y0:y1, (sx + np.arange(w)) % W]
         if layer.get("trim"):  # предмет, а не екран: лише його рамка
             if (
-                layer["seam"] == "drop"
-            ):  # окрема хмара: крихти довкола (шум ключа) розтягли б рамку — лише найбільша пляма
+                layer["seam"] == "drop" or layer.get("blob")
+            ):  # окрема хмара чи предмет: крихти довкола (шум ключа) розтягли б рамку — лише найбільша пляма
                 from scipy import ndimage
 
                 labels, n = ndimage.label(out[..., 3] > 0)

@@ -59,8 +59,8 @@ doors and painted objects follow the size chart of [[world_scale_plan]] — the 
 | Room | Kind | Screens | Passages to paint | Status |
 |---|---|---|---|---|
 | Lizard Cave (exists) | underground | — | the lizard idol shrines become separate props; the wall behind them is repainted without them | ✅ B162 (`cccb333c`): far / wall / shrines / floor planes |
-| Mountain path | outdoor, main | 2 | — | ⬜ |
-| Scree slide | outdoor, main, falls | 1×2 | a scree run down | ⬜ |
+| Mountain path | outdoor, main | 2 | — | 🔄 art M6a-1 (`Backgrounds/MountainPath/`: smoke ×0.1, far ×0.3, mid ×0.75, waymarker ×0.9, ground, front; barrier not drawn — lore has no look), waiting for Sapega’s look at `shots/m6a1_path_scree.png` |
+| Scree slide | outdoor, main, falls | 1×2 | a scree run down | 🔄 art M6a-1 (`Backgrounds/ScreeSlide/`: gorge-wall mid ×0.75, slope ×1.0 with its surface polyline in the README; shares the path’s far, smoke, front), same review |
 | Stream gorge | outdoor, main | 3 | — | ⬜ |
 | Rock ledges | outdoor, main, climbs | 1×2 | ledges up (no floating platforms, A15) | ⬜ |
 | Cave under the bridge | underground | 1×3 | the cave mouth; the way down | ⬜ |
