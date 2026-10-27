@@ -1,0 +1,1039 @@
+{
+ "floor_gap_px": {
+  "frames_on_floor": 111,
+  "max": 0.0748291015625,
+  "median": 0.074737548828125
+ },
+ "frozen_enemies": 0,
+ "hero_z": 1,
+ "hidden_ui": [
+  "/root/GameManager/UIManager/UIRoot/UILayer",
+  "/root/GameManager/UIManager/UIRoot/ModalLayer",
+  "/root/GameManager/VFXHooks/HurtVignette",
+  "/root/DisplayManager/BrightnessLayer",
+  "/root/ModalDialogGlobal",
+  "/root/TransitionCanvasLayer",
+  "/root/Game/UI",
+  "/root/Game/UICanvas",
+  "/root/Game/DialogueSystem",
+  "/root/Game/MouseCursor/Shield"
+ ],
+ "info": {
+  "arrival": "SavePoint_Entrance",
+  "film_frames": [
+   105,
+   243
+  ],
+  "run_back_px": -217.798034667969,
+  "run_out_px": 732.716857910156,
+  "start": [
+   200.0,
+   359.99609375
+  ]
+ },
+ "layers": [
+  {
+   "items": 1,
+   "kind": "camera",
+   "order": 15,
+   "path": "Player/Camera2D",
+   "screens": {
+    "far": {
+     "contrast": 0.297850994263593,
+     "coverage": 0.00533179012345679,
+     "painted_top_px": null,
+     "saturation": 0.42143605309601,
+     "value": 0.42227157928482,
+     "visible": 0.00533179012345679
+    },
+    "mid": {
+     "contrast": 0.292872805555861,
+     "coverage": 0.005625,
+     "painted_top_px": null,
+     "saturation": 0.419618473608926,
+     "value": 0.417959553999526,
+     "visible": 0.005625
+    },
+    "stand": {
+     "contrast": 0.292854021838858,
+     "coverage": 0.00561728395061728,
+     "painted_top_px": null,
+     "saturation": 0.419631607250261,
+     "value": 0.418146617253214,
+     "visible": 0.00561728395061728
+    }
+   },
+   "speed_x": null,
+   "speed_y": null,
+   "z": 1
+  },
+  {
+   "items": 8,
+   "kind": "room",
+   "order": 282,
+   "path": "Supports",
+   "screens": {
+    "far": {
+     "contrast": 0.22346010500209,
+     "coverage": 0.0301388888888889,
+     "painted_top_px": null,
+     "saturation": 0.457013514584354,
+     "value": 0.388420890181093,
+     "visible": 0.0051929012345679
+    },
+    "mid": {
+     "contrast": 0.222034427048147,
+     "coverage": 0.020108024691358,
+     "painted_top_px": 49.047119140625,
+     "saturation": 0.45632181112738,
+     "value": 0.388120594650336,
+     "visible": 0.0051929012345679
+    },
+    "stand": {
+     "contrast": 0.223460105002109,
+     "coverage": 0.0200925925925926,
+     "painted_top_px": null,
+     "saturation": 0.457013514584354,
+     "value": 0.388420890181096,
+     "visible": 0.0051929012345679
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 22,
+   "kind": "room",
+   "order": 293,
+   "path": "Surfaces",
+   "screens": {
+    "far": {
+     "contrast": 0.17612361808577,
+     "coverage": 0.256836419753086,
+     "painted_top_px": -0.18621826171875,
+     "saturation": 0.490979706560761,
+     "value": 0.2844937860913,
+     "visible": 0.255925925925926
+    },
+    "mid": {
+     "contrast": 0.173538763443118,
+     "coverage": 0.265462962962963,
+     "painted_top_px": 0.047119140625,
+     "saturation": 0.490940702921664,
+     "value": 0.276892198720756,
+     "visible": 0.261010802469136
+    },
+    "stand": {
+     "contrast": 0.174273462728875,
+     "coverage": 0.246875,
+     "painted_top_px": 0.0003662109375,
+     "saturation": 0.489033692841997,
+     "value": 0.285450669074549,
+     "visible": 0.243896604938272
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 5,
+   "kind": "room",
+   "order": 316,
+   "path": "Decor",
+   "screens": {
+    "far": {
+     "contrast": 0.256778566394077,
+     "coverage": 0.00506172839506173,
+     "painted_top_px": null,
+     "saturation": 0.480987109992167,
+     "value": 0.494952933456086,
+     "visible": 0.00506172839506173
+    },
+    "mid": {
+     "contrast": 0.193937619229998,
+     "coverage": 0.00472222222222222,
+     "painted_top_px": -46.952880859375,
+     "saturation": 0.563789887180428,
+     "value": 0.420017379226598,
+     "visible": 0.00212962962962963
+    },
+    "stand": {
+     "contrast": 0.167755906332274,
+     "coverage": 0.00493827160493827,
+     "painted_top_px": null,
+     "saturation": 0.503812891206717,
+     "value": 0.427440274937786,
+     "visible": 0.00493827160493827
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 322,
+   "path": "RoomInstance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 323,
+   "path": "CellsDoorEntrance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": -2
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 324,
+   "path": "CellsDoor",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 334,
+   "path": "BossDoorEntrance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": -2
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 335,
+   "path": "BossDoor",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 345,
+   "path": "SavePoint_Entrance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "contrast": 0.175742409962368,
+     "coverage": 0.0109413580246914,
+     "painted_top_px": null,
+     "saturation": 0.418582093090592,
+     "value": 0.475700666232535,
+     "visible": 0.0109413580246914
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 354,
+   "path": "SavePoint_PreBoss",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 363,
+   "path": "Fight_Fly",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 3,
+   "kind": "room",
+   "order": 367,
+   "path": "Fight_Upper",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 373,
+   "path": "Fight_TowerGuard",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 377,
+   "path": "Chest_TowerGuard",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 386,
+   "path": "Fight_Cursed",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 4,
+   "kind": "room",
+   "order": 390,
+   "path": "Fight_Middle",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 4,
+   "kind": "room",
+   "order": 397,
+   "path": "Fight_Lower",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "items": 11,
+   "kind": "room",
+   "order": 405,
+   "path": "Atmosphere",
+   "screens": {
+    "far": {
+     "contrast": 0.346505814536871,
+     "coverage": 0.00192901234567901,
+     "painted_top_px": null,
+     "saturation": 0.477888130809033,
+     "value": 0.584721694847304,
+     "visible": 0.00192901234567901
+    },
+    "mid": {
+     "contrast": 0.335650831180468,
+     "coverage": 0.00189814814814815,
+     "painted_top_px": null,
+     "saturation": 0.470907539031194,
+     "value": 0.578227935055137,
+     "visible": 0.00189814814814815
+    },
+    "stand": {
+     "contrast": 0.35668401763599,
+     "coverage": 0.000979938271604938,
+     "painted_top_px": null,
+     "saturation": 0.484632417776287,
+     "value": 0.59122159186201,
+     "visible": 0.000979938271604938
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": 0
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 429,
+   "path": "Atmosphere/Far1",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.0370370326465728,
+     "coverage": 0.674074074074074,
+     "painted_top_px": null,
+     "saturation": 0.63533632167331,
+     "value": 0.0605084860326989,
+     "visible": 0.238888888888889
+    },
+    "mid": {
+     "contrast": 0.0367784157965336,
+     "coverage": 0.807407407407407,
+     "painted_top_px": null,
+     "saturation": 0.644238643614797,
+     "value": 0.0566604475611224,
+     "visible": 0.337229938271605
+    },
+    "stand": {
+     "contrast": 0.0373040168594894,
+     "coverage": 0.674074074074074,
+     "painted_top_px": null,
+     "saturation": 0.634669501353661,
+     "value": 0.0607958889959526,
+     "visible": 0.237739197530864
+    }
+   },
+   "scroll_scale": [
+    0.400000005960464,
+    1.0
+   ],
+   "speed_x": 0.4,
+   "speed_y": 1.0,
+   "z": -10
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 431,
+   "path": "Atmosphere/Mid1",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.0486485096746587,
+     "coverage": 0.375131172839506,
+     "painted_top_px": null,
+     "saturation": 0.613279836814717,
+     "value": 0.0949371822312355,
+     "visible": 0.231990740740741
+    },
+    "mid": {
+     "contrast": 0.0489704000541465,
+     "coverage": 0.378595679012346,
+     "painted_top_px": null,
+     "saturation": 0.614064385956635,
+     "value": 0.0955127848542138,
+     "visible": 0.238086419753086
+    },
+    "stand": {
+     "contrast": 0.049205888358248,
+     "coverage": 0.375378086419753,
+     "painted_top_px": -10.9996337890625,
+     "saturation": 0.615331110790674,
+     "value": 0.0955898727292998,
+     "visible": 0.24599537037037
+    }
+   },
+   "scroll_scale": [
+    0.75,
+    1.0
+   ],
+   "speed_x": 0.75,
+   "speed_y": 1.0,
+   "z": -9
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 433,
+   "path": "Atmosphere/Front1",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.00473909390999129,
+     "coverage": 0.00499228395061728,
+     "painted_top_px": null,
+     "saturation": 0.426299896901942,
+     "value": 0.0832099371333862,
+     "visible": 0.00499228395061728
+    },
+    "mid": {
+     "contrast": 0.0364690001728512,
+     "coverage": 0.0205246913580247,
+     "painted_top_px": null,
+     "saturation": 0.702984997179659,
+     "value": 0.0344951432355623,
+     "visible": 0.0205246913580247
+    },
+    "stand": {
+     "contrast": 0.00475087536504889,
+     "coverage": 0.00499228395061728,
+     "painted_top_px": null,
+     "saturation": 0.426328119868463,
+     "value": 0.0832048660507422,
+     "visible": 0.00499228395061728
+    }
+   },
+   "scroll_scale": [
+    1.25,
+    1.0
+   ],
+   "speed_x": 1.25,
+   "speed_y": 1.0,
+   "z": 20
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 435,
+   "path": "Atmosphere/Far2",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.0217121529512401,
+     "coverage": 0.337037037037037,
+     "painted_top_px": null,
+     "saturation": 0.721516786158876,
+     "value": 0.0297997196138783,
+     "visible": 0.173009259259259
+    },
+    "mid": {
+     "contrast": 0.0161948720503475,
+     "coverage": 0.203703703703704,
+     "painted_top_px": null,
+     "saturation": 0.742537894797596,
+     "value": 0.0253117701747729,
+     "visible": 0.0469984567901235
+    },
+    "stand": {
+     "contrast": 0.021812219815371,
+     "coverage": 0.337037037037037,
+     "painted_top_px": null,
+     "saturation": 0.720657662357521,
+     "value": 0.0299707527322676,
+     "visible": 0.172631172839506
+    }
+   },
+   "scroll_scale": [
+    0.400000005960464,
+    1.0
+   ],
+   "speed_x": 0.4,
+   "speed_y": 1.0,
+   "z": -10
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 437,
+   "path": "Atmosphere/Mid2",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "scroll_scale": [
+    0.75,
+    1.0
+   ],
+   "speed_x": 0.75,
+   "speed_y": 1.0,
+   "z": -9
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 439,
+   "path": "Atmosphere/Front2",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "contrast": 0.0144475782053072,
+     "coverage": 0.0776774691358025,
+     "painted_top_px": null,
+     "saturation": 0.789839851867228,
+     "value": 0.0134812818340687,
+     "visible": 0.0776774691358025
+    },
+    "mid": {
+     "contrast": 0.00639099157165014,
+     "coverage": 0.0625154320987654,
+     "painted_top_px": null,
+     "saturation": 0.789390845095795,
+     "value": 0.0118972513977408,
+     "visible": 0.0550771604938272
+    },
+    "stand": {
+     "contrast": 0.0144214772901205,
+     "coverage": 0.078016975308642,
+     "painted_top_px": null,
+     "saturation": 0.789965669798894,
+     "value": 0.0134447540570279,
+     "visible": 0.078016975308642
+    }
+   },
+   "scroll_scale": [
+    1.25,
+    1.0
+   ],
+   "speed_x": 1.25,
+   "speed_y": 1.0,
+   "z": 20
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 441,
+   "path": "Atmosphere/Far3",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "scroll_scale": [
+    0.400000005960464,
+    1.0
+   ],
+   "speed_x": 0.4,
+   "speed_y": 1.0,
+   "z": -10
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 443,
+   "path": "Atmosphere/Mid3",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "scroll_scale": [
+    0.75,
+    1.0
+   ],
+   "speed_x": 0.75,
+   "speed_y": 1.0,
+   "z": -9
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 1,
+   "kind": "parallax",
+   "order": 445,
+   "path": "Atmosphere/Front3",
+   "repeat_size": [
+    864.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "scroll_scale": [
+    1.25,
+    1.0
+   ],
+   "speed_x": 1.25,
+   "speed_y": 1.0,
+   "z": 20
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 447,
+   "path": "Ladder1",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": -1
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 448,
+   "path": "Ladder2",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": 1.0,
+   "z": -1
+  },
+  {
+   "autoscroll": [
+    0.0,
+    0.0
+   ],
+   "items": 3,
+   "kind": "parallax",
+   "order": 449,
+   "path": "FrontDark",
+   "repeat_size": [
+    0.0,
+    0.0
+   ],
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "contrast": 0.00540811243855785,
+     "coverage": 0.0152854938271605,
+     "painted_top_px": null,
+     "saturation": 0.511768917822841,
+     "value": 0.0201543813310275,
+     "visible": 0.0152854938271605
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "scroll_scale": [
+    1.29999995231628,
+    1.0
+   ],
+   "speed_x": 1.3,
+   "speed_y": 1.0,
+   "z": 20
+  }
+ ],
+ "movie_fps": 30,
+ "room": "Laboratory",
+ "screens": {
+  "far": {
+   "feet_screen": [
+    960.225463867188,
+    594.186218261719
+   ],
+   "hero": [
+    932.716857910156,
+    359.9716796875
+   ],
+   "hero_sprite_bottom_px": 25.8137817382812
+  },
+  "mid": {
+   "feet_screen": [
+    959.907958984375,
+    593.952880859375
+   ],
+   "hero": [
+    566.3583984375,
+    295.942047119141
+   ],
+   "hero_sprite_bottom_px": 26.047119140625
+  },
+  "stand": {
+   "feet_screen": [
+    959.919372558594,
+    593.999633789062
+   ],
+   "hero": [
+    716.074768066406,
+    359.925262451172
+   ],
+   "hero_sprite_bottom_px": 26.0003662109375
+  }
+ },
+ "view": [
+  1920.0,
+  1080.0
+ ],
+ "zoom": 2.25
+}

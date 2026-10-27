@@ -1,0 +1,352 @@
+{
+ "floor_gap_px": {
+  "frames_on_floor": 161,
+  "max": 0.07476806640625,
+  "median": 0.07476806640625
+ },
+ "frozen_enemies": 0,
+ "hero_z": 1,
+ "hidden_ui": [
+  "/root/GameManager/UIManager/UIRoot/UILayer",
+  "/root/GameManager/UIManager/UIRoot/ModalLayer",
+  "/root/GameManager/VFXHooks/HurtVignette",
+  "/root/DisplayManager/BrightnessLayer",
+  "/root/ModalDialogGlobal",
+  "/root/TransitionCanvasLayer",
+  "/root/Game/UI",
+  "/root/Game/UICanvas",
+  "/root/Game/DialogueSystem",
+  "/root/Game/MouseCursor/Shield"
+ ],
+ "info": {
+  "arrival": "Arrival",
+  "film_frames": [
+   105,
+   287
+  ],
+  "run_back_px": -900.833404541016,
+  "run_out_px": 900.865966796875,
+  "start": [
+   136.0,
+   391.991333007812
+  ]
+ },
+ "layers": [
+  {
+   "items": 1,
+   "kind": "camera",
+   "order": 15,
+   "path": "Player/Camera2D",
+   "screens": {
+    "far": {
+     "contrast": 0.296299136939784,
+     "coverage": 0.0054320987654321,
+     "painted_top_px": null,
+     "saturation": 0.419802927209326,
+     "value": 0.425503848335274,
+     "visible": 0.0054320987654321
+    },
+    "mid": {
+     "contrast": 0.297090160223237,
+     "coverage": 0.00543981481481481,
+     "painted_top_px": null,
+     "saturation": 0.41783176881052,
+     "value": 0.42577981582607,
+     "visible": 0.00543981481481481
+    },
+    "stand": {
+     "contrast": 0.295843201022843,
+     "coverage": 0.00533179012345679,
+     "painted_top_px": null,
+     "saturation": 0.410124355037875,
+     "value": 0.430615424875098,
+     "visible": 0.00533179012345679
+    }
+   },
+   "speed_x": null,
+   "speed_y": null,
+   "z": 1
+  },
+  {
+   "items": 2,
+   "kind": "room",
+   "order": 282,
+   "path": "Back",
+   "screens": {
+    "far": {
+     "contrast": 0.206204069226057,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.367342682994879,
+     "value": 0.579223265942404,
+     "visible": 0.966373456790123
+    },
+    "mid": {
+     "contrast": 0.206717894137984,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.367413525121447,
+     "value": 0.57729922930703,
+     "visible": 0.983217592592593
+    },
+    "stand": {
+     "contrast": 0.206997262353251,
+     "coverage": 1.0,
+     "painted_top_px": null,
+     "saturation": 0.367704164563437,
+     "value": 0.577303977141112,
+     "visible": 0.959166666666667
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": -10
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 288,
+   "path": "ExitDoorEntrance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "contrast": 0.176285067026722,
+     "coverage": 0.0113425925925926,
+     "painted_top_px": null,
+     "saturation": 0.490319027248233,
+     "value": 0.4425761750314,
+     "visible": 0.0113425925925926
+    },
+    "stand": {
+     "contrast": 0.195796434300234,
+     "coverage": 0.0387191358024691,
+     "painted_top_px": null,
+     "saturation": 0.544084229043402,
+     "value": 0.382088048658237,
+     "visible": 0.0344444444444444
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": -2
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 289,
+   "path": "ExitDoor",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "contrast": 0.0127349429690288,
+     "coverage": 0.00140432098765432,
+     "painted_top_px": null,
+     "saturation": 0.445980516807013,
+     "value": 0.962333798850774,
+     "visible": 0.0010570987654321
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 6,
+   "kind": "room",
+   "order": 297,
+   "path": "Fight_Camp",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 306,
+   "path": "Gate_Stockade",
+   "screens": {
+    "far": {
+     "contrast": 0.0974764551330493,
+     "coverage": 0.0244675925925926,
+     "painted_top_px": null,
+     "saturation": 0.30004757662113,
+     "value": 0.202942785503049,
+     "visible": 0.0244675925925926
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 317,
+   "path": "Chest_Loot",
+   "screens": {
+    "far": {
+     "contrast": 0.171641115364791,
+     "coverage": 0.00372685185185185,
+     "painted_top_px": null,
+     "saturation": 0.512413088824199,
+     "value": 0.332064121357872,
+     "visible": 0.00372685185185185
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 326,
+   "path": "ShortcutDoorEntrance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": -2
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 327,
+   "path": "ShortcutDoor",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  },
+  {
+   "items": 1,
+   "kind": "room",
+   "order": 335,
+   "path": "RoomInstance",
+   "screens": {
+    "far": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "mid": {
+     "coverage": 0.0,
+     "visible": 0.0
+    },
+    "stand": {
+     "coverage": 0.0,
+     "visible": 0.0
+    }
+   },
+   "speed_x": 1.0,
+   "speed_y": null,
+   "z": 0
+  }
+ ],
+ "movie_fps": 30,
+ "room": "BanditCamp",
+ "screens": {
+  "far": {
+   "feet_screen": [
+    960.27685546875,
+    935.831787109375
+   ],
+   "hero": [
+    1036.86596679688,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  },
+  "mid": {
+   "feet_screen": [
+    960.277099609375,
+    935.831787109375
+   ],
+   "hero": [
+    586.432983398438,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  },
+  "stand": {
+   "feet_screen": [
+    306.073150634766,
+    935.831787109375
+   ],
+   "hero": [
+    136.032516479492,
+    391.925231933594
+   ],
+   "hero_sprite_bottom_px": 26.168212890625
+  }
+ },
+ "view": [
+  1920.0,
+  1080.0
+ ],
+ "zoom": 2.25
+}
