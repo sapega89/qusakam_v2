@@ -137,15 +137,15 @@ func _done(enemy: Node) -> void:
 	await create_timer(0.3).timeout
 
 
-## [1] D494 → D642 → D713: перерви коротші за колишні (D494 сповільнив їх у ×1.5, D642 повернув), удар сильніший,
+## [1] D494 → D642 → D754: перерви коротші за колишні (D494 сповільнив їх у ×1.5, D642 повернув), удар сильніший,
 ## замах не коротший за підказку.
 func _numbers() -> void:
-	print("[1] D642, D713: cooldowns shorter than the pre-D494 tempo, harder hits, readable wind-ups")
+	print("[1] D642, D754: cooldowns shorter than the pre-D494 tempo, harder hits, readable wind-ups")
 	var lead := 0.45
 	for kind: String in OLD_COOLDOWN:
 		var stats: Resource = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % kind)
 		ck(stats.attack_cooldown < OLD_COOLDOWN[kind] and stats.base_damage > OLD_DAMAGE[kind] and stats.attack_windup >= lead,
-				"%s: cooldown %.2f s (shorter than %.2f, D713), damage %.0f (was %.0f), wind-up %.2f s" % [kind, stats.attack_cooldown, OLD_COOLDOWN[kind], stats.base_damage, OLD_DAMAGE[kind], stats.attack_windup])
+				"%s: cooldown %.2f s (shorter than %.2f, D754), damage %.0f (was %.0f), wind-up %.2f s" % [kind, stats.attack_cooldown, OLD_COOLDOWN[kind], stats.base_damage, OLD_DAMAGE[kind], stats.attack_windup])
 		ck(stats.tell in KINDS and stats.finisher_tell in KINDS and stats.recovery > 0.0, "%s: tell %s, finisher %s, recovery %.2f s" % [kind, stats.tell, stats.finisher_tell, stats.recovery])
 	for path in [BRASS, DJINN]:
 		var boss: Node = load(path).instantiate()
@@ -362,9 +362,9 @@ func _riposte() -> void:
 	await _done(bandit)
 
 
-## [5] B134, D713: замах і удар стоять на місці (відкидання їх не зсуває й не зриває), зриває лише збій; боси не відкидаються.
+## [5] B134, D754: замах і удар стоять на місці (відкидання їх не зсуває й не зриває), зриває лише збій; боси не відкидаються.
 func _committed_swings() -> void:
-	print("[5] B134, D713: a swing holds its ground — only a poise break stops it; bosses ignore knockback")
+	print("[5] B134, D754: a swing holds its ground — only a poise break stops it; bosses ignore knockback")
 	var bandit: Node = await _spawn(BANDIT, 200.0)
 	bandit.combo_hits = 1
 	await _place(bandit, -400)
@@ -376,7 +376,7 @@ func _committed_swings() -> void:
 	await physics_frame
 	var held: bool = absf(bandit.global_position.x - x_swing) < 1.0
 	var struck := await _struck(bandit)
-	ck(struck and held, "knockback during the wind-up neither moves it nor breaks the swing (D713; moved %s, struck %s)" % [not held, struck])
+	ck(struck and held, "knockback during the wind-up neither moves it nor breaks the swing (D754; moved %s, struck %s)" % [not held, struck])
 	while bandit.enemy_logic.is_attacking:  # серія дійшла до кінця — поза відновлення
 		await physics_frame
 	await create_timer(0.3).timeout

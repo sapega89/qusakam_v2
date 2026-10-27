@@ -57,7 +57,7 @@ func update_state(new_state: EnemyLogic.AIState) -> void:
 		return  # зіграє після збою
 	anim_player.play(animation_name)
 
-## Біг (D713, EnemyLogic.pace): кадри ходи — у темпі руху.
+## Біг (D754, EnemyLogic.pace): кадри ходи — у темпі руху.
 func walk_pace(pace: float) -> void:
 	if not staggered and anim_player.current_animation == &"walk":
 		anim_player.speed_scale = pace

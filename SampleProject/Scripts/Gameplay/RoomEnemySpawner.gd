@@ -263,7 +263,7 @@ func _connect_enemy_signals(enemy: Node) -> void:
 	enemy.entity_died.connect(_on_enemy_died.bind(enemy))
 	enemy.ready.connect(func() -> void: enemy.enemy_logic.state_changed.connect(_rouse.bind(enemy)), CONNECT_ONE_SHOT)
 
-## Бій — одна група (D713): хто з ворогів бою кинувся на героя, той піднімає решту, і вони не чекають, доки герой
+## Бій — одна група (D754): хто з ворогів бою кинувся на героя, той піднімає решту, і вони не чекають, доки герой
 ## підійде до кожного по черзі.
 ## Стан — int: тип EnemyLogic тут замкнув би коло залежностей (ServiceLocator → … → спавнер → EnemyLogic → PlayerCombat).
 func _rouse(state: int, enemy: Node) -> void:

@@ -26,7 +26,7 @@ func handle_attack_state(_delta: float) -> void:
 	if absf(player.global_position.y - enemy.global_position.y) > enemy.same_height:
 		return
 	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494); натягують разом не більше двох (жетон, D504).
-	# Герой п'є флягу чи замахується важким на виду (D713) — стріляє, не чекаючи кінця перерви.
+	# Герой п'є флягу чи замахується важким на виду (D754) — стріляє, не чекаючи кінця перерви.
 	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free():
 		attack_ready_in = enemy.attack_cooldown
 		perform_attack()

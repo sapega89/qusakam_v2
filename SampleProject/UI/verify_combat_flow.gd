@@ -172,7 +172,7 @@ func _initialize() -> void:
 	game.player.combat.perform_attack(1)
 	await create_timer(0.5).timeout
 	ck(hits.size() == 1, "the halberd reaches an enemy 70 px away (events %s)" % [hits])
-	# Тут міряємо поштовх булави, а не відповідь ворога на удар (D713): ворог, що замахується, стоїть на місці
+	# Тут міряємо поштовх булави, а не відповідь ворога на удар (D754): ворог, що замахується, стоїть на місці
 	target.answer_hits = 0
 	target.enemy_logic.attack_ready_in = 99.0
 	target.set_physics_process(true)

@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Різновиди ворогів (D495, D560, D582, D652; design/enemy_variety_plan.md): розміри small / medium (спрайт, форми B128 і
-## стати з enemy_variety.json), еліта як властивість виду (HP ×2.5, шкода ×2.3, D713; великі види чекають на арт у точках
+## стати з enemy_variety.json), еліта як властивість виду (HP ×2.5, шкода ×2.3, D754; великі види чекають на арт у точках
 ## BigSlot_*), щитоносець (удар спереду — у щит, у спину — по тілу, важкий розбиває щит і збиває його), розстановка по
 ## кімнатах, проклята піна (D653) і проклятий шакал (D589, D649, D675), живий вид-еліта, сам-на-сам, потім пара;
 ## ватажок зграї шакалів (D692): живий вид-еліта на місці BigSlot_JackalPackLeader_*;
@@ -192,10 +192,10 @@ func _pack_art() -> void:
 	bandit.free()
 
 ## [2] Еліта — властивість виду (D652): лише види з "elite": true мають множники D560 (HP ×2.5; шкода ×2.3 і стійкість ×1.6,
-## удари героя її не відкидають — D713); без контуру
+## удари героя її не відкидають — D754); без контуру
 ## й без росту. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.
 func _elites() -> void:
-	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x1.6 and no knockback (D713); no outline, no growth; big kinds wait for their art")
+	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x1.6 and no knockback (D754); no outline, no growth; big kinds wait for their art")
 	var marks: Dictionary = variety.elite()
 	ck(is_equal_approx(marks.health, 2.5) and is_equal_approx(marks.damage, 2.3) and is_equal_approx(marks.poise, 1.6) and marks.knockback_immune
 			and not marks.has("chance") and not marks.has("scale") and not marks.has("outline_color"),

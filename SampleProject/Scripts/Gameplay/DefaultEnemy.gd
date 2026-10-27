@@ -79,7 +79,7 @@ var finisher_tell: StringName = EnemyLogic.TELL_DODGE
 var recovery := 0.5
 var back_off := 0.0
 var knockback_immune := false
-## Відповідь на удари (D713, EnemyStats.answer_hits; 0 — ніколи).
+## Відповідь на удари (D754, EnemyStats.answer_hits; 0 — ніколи).
 var answer_hits := 0
 ## Летючий ворог (D445): EnemyStats.flying — без гравітації, логіка FlyingLogic; спосіб удару, висота над героєм,
 ## швидкість піке.
@@ -230,7 +230,7 @@ func _apply_variety() -> void:
 		health *= marks.health
 		hit *= marks.damage
 		xp *= marks.xp
-		# D713: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
+		# D754: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
 		poise_max = roundi(poise_max * marks.poise)
 		poise = poise_max
 		knockback_immune = marks.knockback_immune
@@ -394,7 +394,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	slide_off_bodies(delta)
 
-## Бій групою (D713): наземні вороги проходять один крізь одного (героя тіло ворога й далі зупиняє, D443). Інакше
+## Бій групою (D754): наземні вороги проходять один крізь одного (героя тіло ворога й далі зупиняє, D443). Інакше
 ## в коридорі героя діставав лише передній, а решта стояла за ним у черзі й чекала, доки його вб'ють.
 func _pass_allies() -> void:
 	var allies: Array = GameGroups.get_nodes_in_group(GameGroups.ENEMIES)
@@ -830,7 +830,7 @@ func knockback(push: float) -> void:
 	if not knockback_immune and not holds_ground():
 		enemy_logic.start_knockback(push)
 
-## Замах і удар стоять на місці (D713): поштовх їх не зсуває й не зриває — серію ламає лише збій (стійкість, парирування).
+## Замах і удар стоять на місці (D754): поштовх їх не зсуває й не зриває — серію ламає лише збій (стійкість, парирування).
 ## Інакше кожен фінішер героя відкидав ворога з його дальності посеред замаху, і той не бив зовсім.
 func holds_ground() -> bool:
 	return enemy_logic.is_attacking and not enemy_logic.recovering
