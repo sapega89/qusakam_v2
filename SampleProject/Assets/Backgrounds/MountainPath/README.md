@@ -11,12 +11,15 @@ cracked glass dome over the east (D795). Review: `design/shots/m6a1_path_scree.p
 Back to front (art px; the scene draws them at scale 1.5; scroll factor on both axes):
 
 - sky: the shared pack sky `DesertOasis/bg4/plan5.png` and drifting clouds, as the canyon (×0).
-- `gen_barrier.png` (456×205) — the fallen barrier (Sapega: «прозорий шар в небі з тріщиною»): a huge faint glass dome
-  with a jagged broken-out hole and cracks in its upper left. Drawn by the model as light on black
-  (`path_planes.py gen`, seed 701); brightness became alpha in four steps — body 0.1, streaks 0.18, outline 0.3, crack
-  edges 0.45 — in one pale cold white (236, 246, 255). ×0.1, the farthest plane after the sky; top-left at art
-  (260, 23) with the camera at the path's left end, so its cut bottom (row 228) stays below the deepest valley of
-  `gen_far` (223). The hole is at x 108–215 of the image. Also used by the Scree Slide.
+- `gen_barrier.png` (576×259) — the fallen barrier (Sapega: «прозорий шар в небі з тріщиною»): a huge faint glass dome
+  with a jagged broken-out hole and cracks in its upper left, as wide as the screen (D797; was 456, four fifths). Drawn
+  by the model as light on black (`path_planes.py gen`, seed 701) and area-averaged to 576 px (`path_planes.py
+  barrier`: the same raw, reduced 2.375× instead of 3×, so the art pixels stay sharp); brightness became alpha in four
+  steps — body 0.1, streaks 0.18, outline 0.3, crack edges 0.45 — in one pale cold white (236, 246, 255). ×0.1, the
+  farthest plane after the sky; top-left at art (115, 4) with the camera at the path's left end: it fills the frame
+  edge to edge at the Scree Slide (camera x 1152), starts at x 115 at the path's start and drifts west 0.1 px per px
+  walked. Apex at frame row ~7, cut bottom at row 263, below the deepest valley of `gen_far` (223). The hole is at x
+  136–272 of the image. Also used by the Scree Slide and the Stream Gorge.
 - `gen_far.png` (576×324) — distant bare rocky mountains, hazed, filled down; seamless tile. ×0.3. Also used by the
   Scree Slide.
 - `gen_plume.png` (589×149) — the smoke of the burning village as a long plume blown west across the sky (Sapega's

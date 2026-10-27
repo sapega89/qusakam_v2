@@ -42,7 +42,7 @@ BARRIER_CROP = (
     1556,
     688,
 )  # x0, y0, x1, y1 сирої: купол без «підлоги» й обідка внизу (вони за горами)
-BARRIER_BLOCK = 3  # px генерації на px арту: купол 456×205 — чотири п'ятих екрана, вершина над усіма горами
+BARRIER_W = W  # ширина купола в арті — на весь екран (D797; було 456 — чотири п'ятих), 576×259
 BARRIER_ALPHA = (0.1, 0.18, 0.3, 0.45)  # тіло (за ним видно пролам), відблиски, обрис, кромки тріщини
 BARRIER_TINT = np.array(
     [236, 246, 255], np.float32
@@ -234,12 +234,15 @@ def barrier():
         Image.open(raw(f"barrier_{BARRIER_SEED}")).convert("RGB"), np.float32
     )
     lum = r[y0:y1, x0:x1].mean(2)
-    b = BARRIER_BLOCK
-    h, w = lum.shape[0] // b, lum.shape[1] // b
-    lum = lum[: h * b, : w * b].reshape(h, b, w, b).mean((1, 3))
+    # та сама сира, менше зменшення (2.375 замість 3): середнє по площі (BOX), як раніше блоки 3×3, тож пікселі арту
+    # лишаються різкими, а купол, тріщина й пролам більшають у 1.26 раза
+    h = round(lum.shape[0] * BARRIER_W / lum.shape[1])
+    lum = np.asarray(
+        Image.fromarray(lum.astype(np.float32)).resize((BARRIER_W, h), Image.BOX)
+    )
     # пороги яскравості сирої (0–255): тло ~3, тіло ~70, відблиски ~130, обрис ~200, кромки ~240
     level = np.digitize(lum, [40, 100, 160, 215])
-    out = np.zeros((h, w, 4), np.uint8)
+    out = np.zeros((h, BARRIER_W, 4), np.uint8)
     out[..., :3] = BARRIER_TINT
     out[..., 3] = np.round(np.array((0,) + BARRIER_ALPHA)[level] * 255)
     Image.fromarray(out).save(MP + "gen_barrier.png")
@@ -255,7 +258,10 @@ FRONT_DARK = np.array([0.3, 0.26, 0.34])  # foreground_dark.tscn (D750)
 # стежки й на осипищі — 1152·f px плану, а шлейф лише 568 до стебла, тож при ×0.5 або хвоста не видно, або стебло в кадрі
 PLUME_F = 0.4
 PLUME_AT = (475, -20)  # лівий верхній кут шлейфу в арті при камері 0: кінчик (рядок 83) — у верхній третині неба
-BARRIER_AT = (260, 23)  # лівий верхній кут купола: село й шлейф — під куполом, пролам (x 108–215 купола) видно над горами
+# лівий верхній кут купола (D797): при камері осипища (x 1152) купол рівно на весь кадр, на початку стежки — від x 115
+# (над сходом, де село), в ущелині зсувається ліворуч; вершина в рядку ~7, нижній зріз (рядок 263) — за горами
+# (найглибша долина далини — 223). Пролам — x 136–272 купола
+BARRIER_AT = (115, 4)
 
 
 def img(path):
@@ -272,7 +278,7 @@ def planes(room):
     barrier = img(MP + "gen_barrier.png")
     p = [
         (img(B + "DesertOasis/bg4/plan5.png"), 0.0, (0, 0), W),
-        # бар'єр — за горами й шлейфом, спільний для доріг (×0.1, прив'язаний до світу); нижній зріз купола — рядок 228,
+        # бар'єр — за горами й шлейфом, спільний для доріг (×0.1, прив'язаний до світу); нижній зріз купола — рядок 263,
         # нижче найглибшої долини далини (223), тож його ховають гори
         (barrier, 0.1, BARRIER_AT, None),
         (img(MP + "gen_far.png"), 0.3, (0, 0), W),
@@ -348,7 +354,7 @@ def sheet():
             "The fallen barrier (x0.1), x2 crop: path camera mid-room; the broken hole over the far peaks",
             np.asarray(
                 Image.fromarray(view("path", 288, 0, None).astype(np.uint8))
-                .crop((242, 60, 530, 222))
+                .crop((130, 0, 418, 162))
                 .resize((W, H), Image.NEAREST)
             ).astype(np.float32),
         ),
@@ -373,4 +379,4 @@ def sheet():
 
 
 if __name__ == "__main__":
-    {"gen": gen, "build": build, "sheet": sheet}[sys.argv[1]]()
+    {"gen": gen, "build": build, "barrier": barrier, "sheet": sheet}[sys.argv[1]]()
