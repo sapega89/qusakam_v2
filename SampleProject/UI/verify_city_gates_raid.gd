@@ -1,6 +1,5 @@
 extends SceneTree
 
-## SERIAL: міряє реальний час (падіння за таймером / хітстоп у мс) — поруч із паралельними тестами виміри пливуть.
 ## Ворота міста (BACKLOG feedback 18): над головою небо (стелі з тайлів немає, вгору з кімнати не вийти),
 ## біля брами — варта; Кусакам підходить дорогою — кат-сцена нападу бандитів (керування забрано, камера до брами,
 ## CityGates, бандити біжать на точки спавну, CityGates_Raid, камера назад), далі бій з асистом охоронця (D209).
@@ -34,10 +33,13 @@ func _drain_one(dm: Node, started: Array[String]) -> void:
 		dm.current_dialogue_player.accept()
 		await process_frame
 
+## Чекає не довше max_s с ігрового часу — кроків фізики, не годинника: під навантаженням сусідніх тестів кадр буває
+## довшим за max_physics_steps_per_frame кроків, гра відстає від годинника, і 4 с годинника ставали менше 4 с гри.
 func _until(cond: Callable, max_s: float) -> void:
-	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
-	while not cond.call() and Time.get_ticks_msec() < deadline:
-		await process_frame
+	for i in ceili(max_s * Engine.physics_ticks_per_second):
+		if cond.call():
+			return
+		await physics_frame
 
 func _enemies(room: Node) -> Array:
 	return room.find_children("*", "CharacterBody2D", true, false).filter(
