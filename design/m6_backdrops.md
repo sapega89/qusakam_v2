@@ -18,10 +18,16 @@ at least three planes: a far one (sky and distance, slow parallax ×0.3–0.5), 
 now and then (D750). Every screen has something to look at that tells the place: smoke, banners, lamps, broken
 statues, pipes with steam, birds, a story detail in the distance. No screen is just a repeated texture.
 
+**Interesting things are their own props** (Sapega 2026-10-27: «от як ящури в печері — вони цікаві, то треба було
+зробити їх як окрема частина інтер'єру»). A shrine, an idol, a statue, a machine or a cart is generated alone and
+placed once in the room where it makes sense, like the forge and the chapel. It is not baked into a tiling backdrop,
+where it repeats every screen. The wall layers stay calmer, so these props read.
+
 ## Batch 1 — Canyon of Whispers (M1 v3), story order
 
 | Room | Kind | Screens | Passages to paint | Status |
 |---|---|---|---|---|
+| Lizard Cave (exists) | underground | — | the lizard idol shrines become separate props; the wall behind them is repainted without them | ⬜ first |
 | Mountain path | outdoor, main | 2 | — | ⬜ |
 | Scree slide | outdoor, main, falls | 1×2 | a scree run down | ⬜ |
 | Stream gorge | outdoor, main | 3 | — | ⬜ |
