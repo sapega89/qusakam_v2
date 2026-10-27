@@ -222,7 +222,8 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 ## Розмір, еліта (D560, D652) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
 ## і форми (B128: що видно, те й б'є) ростуть від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом
-## із хітбоксом. Еліта — це вид зі своїм артом (D652): вона не росте й не має контуру, лише множники.
+## із хітбоксом. Еліта — це вид зі своїм артом (D652), без контуру; D829: ще й росте на elite.scale понад розмір своєї сцени,
+## щоб її було видно серед звичайних.
 func _apply_variety() -> void:
 	var kind: Dictionary = EnemyVariety.kind(enemy_stats.enemy_type)
 	elite = kind.elite
@@ -239,6 +240,7 @@ func _apply_variety() -> void:
 		health *= marks.health
 		hit *= marks.damage
 		xp *= marks.xp
+		grow *= marks.scale
 		# D754: еліта стійкіша (легка серія її не збиває) і не відлітає від ударів героя, як бос (B134)
 		poise_max = roundi(poise_max * marks.poise)
 		poise = poise_max
