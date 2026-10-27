@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/StoryDialogueBox.gd" id="1_box"]
-[ext_resource type="Resource" path="res://SampleProject/Resources/Dialogue/dialogue_box_settings.tres" id="2_settings"]
+[ext_resource type="Resource" path="res://SampleProject/Resources/Dialogue/story_dialogue_box_settings.tres" id="2_settings"]
 [ext_resource type="PackedScene" uid="uid://bqhktmbt3febd" path="res://addons/dialogue_quest/prefabs/ui/dialogue/components/bobbing_marker/bobbing_marker.tscn" id="3_marker"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/diamond_sm.svg" id="4_diamond"]
 

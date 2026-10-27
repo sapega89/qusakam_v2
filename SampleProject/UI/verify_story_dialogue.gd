@@ -133,19 +133,20 @@ func _initialize() -> void:
 	var title: Label = view.get_node(^"%ChapterTitle")
 	var location: String = sl.get_game_flow().location_title(game.map.scene_file_path)
 	ck(title.text == location and title.text != "", "the chapter title is the location (D565): '%s'" % title.text)
-	ck(title.get_global_rect().position.x < root.size.x * 0.1 and title.get_global_rect().position.y < root.size.y * 0.1, "the title sits top-left")
+	var screen: Vector2 = view.get_viewport_rect().size  # полотно 1920×1080 (вікно root у headless — 64×64)
+	ck(title.get_global_rect().position.x < screen.x * 0.1 and title.get_global_rect().position.y < screen.y * 0.1, "the title sits top-left")
 	var rule: Control = view.get_node(^"%ChapterRule")
 	ck(rule.get_global_rect().position.y > title.get_global_rect().position.y and rule.size.y <= 2.0, "a thin rule under the title")
 	var hero_card: Control = view.get_node(^"%HeroCard")
 	var speaker_card: Control = view.get_node(^"%SpeakerCard")
 	_check_card(view, hero_card, view.get_node(^"%HeroFrame"), story.HERO, story)
 	_check_card(view, speaker_card, view.get_node(^"%SpeakerFrame"), "GRANDFATHER", story)
-	ck(hero_card.get_global_rect().get_center().x < root.size.x * 0.5 and speaker_card.get_global_rect().get_center().x > root.size.x * 0.5,
+	ck(hero_card.get_global_rect().get_center().x < screen.x * 0.5 and speaker_card.get_global_rect().get_center().x > screen.x * 0.5,
 			"the hero is on the left, the speaker on the right")
 	var box_rect: Rect2 = box.get_global_rect()
 	ck(hero_card.get_global_rect().end.y < box_rect.position.y and speaker_card.get_global_rect().end.y < box_rect.position.y,
 			"the cards stand above the dialogue box")
-	ck(view.get_global_rect().encloses(box_rect) and box_rect.position.y > root.size.y * 0.5, "the box lies across the lower middle")
+	ck(view.get_global_rect().encloses(box_rect) and box_rect.position.y > screen.y * 0.5, "the box lies across the lower middle")
 	ck(not box.get_node(^"%PortraitBackground").visible, "no portrait in the story box: the cards show who speaks")
 	ck(box.get_node(^"%Name").text == "Kusakam", "line 1: Kusakam's name over the line")
 	ck(hero_card.modulate == Color.WHITE and speaker_card.modulate != Color.WHITE, "the hero speaks: his card is lit, the other dimmed")
