@@ -32,7 +32,7 @@ MASTER_PLAN 2026-10-27». Reply to Sapega in Ukrainian.
 | rooms-dressing | `trig_01B18JHqmgqV3VCnxrCTiH5N` | integrate-29 | R2 + R3: critters, atmosphere, grass in every existing room; the critics' fixes. The ONE room routine while it runs |
 | hero-death | `trig_01ScrX4599bqUCazXRG2Gi61` | integrate-29 | H1: the Death animation wired |
 | scale-exact | `trig_014Ca3d11T1YfgLfR3yg4AQE` | — | R4: the exact table (H = 64 art px), probe re-run, the chart → send Sapega for «ок» |
-| art agent (local, ComfyUI) | — | — | §3 items 1–3 **done**, sheets sent to Sapega, no verdict yet: shields + mouse (`52b32d62`, `4326ef73`, `92beb61c`), H4 (`1a204139` Raise/2, `59b73e2c` pillar mark). Now **M6a-1** (mountain path + scree slide → `design/shots/m6a1_path_scree.png`); then M6a-2 (gorge + ledges), M6a-3 (burnt village) |
+| art agent (local, ComfyUI) | — | — | shields + mouse, H4, **M6a-1** (`4cca758a`, `design/shots/m6a1_path_scree.png`) done and sent; **idle until Sapega reviews M6a-1** (m6_backdrops: each batch seen before the next). Open: the fallen barrier's look (lore never says — blocks only the barrier plane), the waymarker reads as a ribboned pillar, the smoke's foot floats in the scree's top frame, the gorge-wall ledges may read walkable. Then M6a-2 (gorge + ledges, world-anchored from 1728 px), M6a-3 (burnt village) |
 
 ## 2b. Tests (Sapega 2026-10-27: «зроби»)
 `run_verify.sh` now runs 4 tests at a time, each with its own empty user:// (`0e901b13`; g* subset 1:49 → 0:56), and prints
@@ -40,6 +40,9 @@ the 10 slowest; ROUTINE_RULES: after a fix re-run only the failed tests. **Next,
 full run for the time table, then an audit agent (worktree, `godot-dev`) deletes verify scripts whose every check another
 script covers and lists partial overlaps (clusters: skills ×13 — wait for skills-v2; combat ×14; lab ×6; NPC ×5; the
 early «Phase 5.x» UI checks ×12; settings ×3).
+
+**Test audit** (local agent, worktree, `godot-dev`): delete / merge / speed up overlapping verify scripts → `design/test_audit_2026-10-27.md`; merge its branch when it reports. Full suite at J=4 before it: 14 min 17 s, sum 3305 s; `## SERIAL` tag for real-time tests (city_gates_raid, hit_feel, masher), masher TIMEOUT 480.
+**Exe** rebuilt after integrate-29 (15:58). **Ask Sapega:** the local uncommitted `scorpicore_warrior.tscn` edit (slam 1.5, charge 1.3; from an agent's autostash of 24.10, not his) contradicts D678 (×1.3 / ×1.15) — revert on his word.
 
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
