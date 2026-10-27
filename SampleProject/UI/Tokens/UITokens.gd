@@ -365,6 +365,7 @@ const EMOTE_SURPRISE := ACCENT          # «!»
 const EMOTE_CONFUSION := TEXT_PRIMARY   # «?»
 const EMOTE_SILENCE := TEXT_SECONDARY   # «…»
 const EMOTE_FEAR := SP_FILL             # крапля поту
+const EMOTE_LOVE := HURT_RED            # серце (кіт у Місті, D740)
 const EMOTE_SCALE := 3.0                # значок 10–12 px × 3: читається поруч зі спрайтами акторів (×1.5 від 64 px)
 const EMOTE_GAP := 4.0                  # світові px між маківкою і низом значка
 const EMOTE_POP := 0.12                 # значок вискакує, секунд

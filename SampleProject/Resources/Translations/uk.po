@@ -3406,3 +3406,89 @@ msgstr "Шляхи"
 
 msgid "The way you fight and act draws a path to you. Blocks and parries lean towards Samal; trading blood for blows, towards the Contract; dodging and fights won untouched, towards the path with no god; and so do some of your choices. The emblems on the Journal's Characters page grow brighter with each leaning. You choose your path at the census by the City Gate."
 msgstr "Те, як ти б'єшся і що робиш, веде тебе до одного зі шляхів. Блоки й парирування — до Самаля; удар за удар ціною крові — до Контракту; ухилення й бої без жодної подряпини — до шляху без бога; так само й деякі твої вибори. Герби на сторінці «Персонажі» в Журналі яскравішають з кожним нахилом. Шлях обирають на переписі біля міської брами."
+
+# ── Живе Місто: жителі, речі, які можна тикнути (D740)
+
+msgid "Drink"
+msgstr "Пити"
+
+msgid "Pet"
+msgstr "Погладити"
+
+msgid "Search"
+msgstr "Обшукати"
+
+msgid "Look"
+msgstr "Оглянути"
+
+msgid "Notice Board"
+msgstr "Дошка оголошень"
+
+msgid "By order of the mayor: whoever looks at the sky too long and whose eyes turn blue is to be reported to the guard."
+msgstr "Наказ мера: про кожного, хто задовго дивиться в небо й у кого посиніли очі, — повідомити варту."
+
+msgid "Refugees from the villages: the census is at the City Gate. No census, no bread."
+msgstr "Біженцям із сіл: перепис — біля міської брами. Без перепису хліба не дають."
+
+msgid "Lost: a grey goat answering to Pistachio. Reward at the fruit stall."
+msgstr "Загубилася сіра коза, відгукується на Фісташку. Винагорода — біля фруктового прилавка."
+
+msgid "Cool water. You feel better."
+msgstr "Прохолодна вода. Одразу легше."
+
+msgid "Here you are, fresh from the oasis."
+msgstr "Тримай, свіже, з оазису."
+
+msgid "Not enough coins, friend."
+msgstr "Бракує монет, друже."
+
+msgid "Prrr…"
+msgstr "Мрррр…"
+
+msgid "A few coins at the bottom."
+msgstr "На дні — кілька монет."
+
+msgid "A lamp burns before Samal's sign. Someone still prays here."
+msgstr "Перед знаком Самаля горить лампадка. Хтось тут ще молиться."
+
+msgid "They say the barrier over the villages is asleep. Who's next?"
+msgstr "Кажуть, бар'єр над селами заснув. Хто наступний?"
+
+msgid "More refugees at the gate again. Where will we put them all?"
+msgstr "Біля брами знову біженці. Куди ж їх усіх подіти?"
+
+msgid "Don't look up too long. My neighbour's eyes went blue."
+msgstr "Не дивись довго вгору. У сусіда очі посиніли."
+
+msgid "A blue-eyed one wandered the market yesterday. Didn't know his own name."
+msgstr "Учора по ринку блукав синьоокий. Власного імені не пам'ятав."
+
+msgid "Bread costs twice what it did in spring."
+msgstr "Хліб удвічі дорожчий, ніж навесні."
+
+msgid "Water's dearer than oil these days."
+msgstr "Вода нині дорожча за олію."
+
+msgid "The mayor sees no one. The queue's been there since dawn."
+msgstr "Мер нікого не приймає. Черга стоїть від світанку."
+
+msgid "The mayor counts coins while the city counts refugees."
+msgstr "Мер рахує монети, а місто — біженців."
+
+msgid "Mind the cart, stranger!"
+msgstr "Обережно, віз, чужинцю!"
+
+msgid "Samal keep you, traveller."
+msgstr "Хай береже тебе Самаль, мандрівнику."
+
+msgid "The scribe asks everyone the same: whom do you serve?"
+msgstr "Писар усіх питає одне: кому служиш?"
+
+msgid "We walked three days from the burnt villages."
+msgstr "Ми три дні йшли від спалених сіл."
+
+msgid "They check your eyes first. Blue eyes don't get in."
+msgstr "Спершу дивляться в очі. Синьооких не пускають."
+
+msgid "Since the barrier fell, the road's full of bandits."
+msgstr "Відколи впав бар'єр, на дорозі повно бандитів."

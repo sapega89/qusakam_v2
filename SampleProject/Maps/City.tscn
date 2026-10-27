@@ -29,6 +29,12 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="x6"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/NPCs/TownsfolkCrowd.gd" id="tf_crowd"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_water_carrier.tscn" id="tf_water"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_porter.tscn" id="tf_porter"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_old_man.tscn" id="tf_old"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/Townsfolk/townsfolk_merchant_woman.tscn" id="tf_woman"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/town_prop.tscn" id="town_prop"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -142,6 +148,113 @@ region_enabled = true
 region_rect = Rect2(0, 240, 1728, 59)
 
 [node name="RoomInstance" parent="." unique_id=1633453511 instance=ExtResource("2_room")]
+
+[node name="Crowd" type="Node2D" parent="."]
+script = ExtResource("tf_crowd")
+lines = PackedStringArray("They say the barrier over the villages is asleep. Who's next?", "More refugees at the gate again. Where will we put them all?", "Don't look up too long. My neighbour's eyes went blue.", "A blue-eyed one wandered the market yesterday. Didn't know his own name.", "Bread costs twice what it did in spring.", "Water's dearer than oil these days.", "The mayor sees no one. The queue's been there since dawn.", "The mayor counts coins while the city counts refugees.", "Mind the cart, stranger!", "Samal keep you, traveller.")
+
+[node name="WaterCarrier1" parent="Crowd" instance=ExtResource("tf_water")]
+position = Vector2(95, 396)
+stops = PackedFloat32Array(95, 410, 1440)
+doorways = PackedFloat32Array(95)
+speed = 40
+
+[node name="Porter1" parent="Crowd" instance=ExtResource("tf_porter")]
+position = Vector2(180, 396)
+stops = PackedFloat32Array(180, 1407, 2000)
+doorways = PackedFloat32Array(1407)
+speed = 52
+
+[node name="OldMan1" parent="Crowd" instance=ExtResource("tf_old")]
+position = Vector2(700, 396)
+stops = PackedFloat32Array(700, 960)
+doorways = PackedFloat32Array()
+speed = 22
+
+[node name="MerchantWoman1" parent="Crowd" instance=ExtResource("tf_woman")]
+position = Vector2(180, 396)
+stops = PackedFloat32Array(180, 700, 1340)
+doorways = PackedFloat32Array()
+speed = 32
+
+[node name="WaterCarrier2" parent="Crowd" instance=ExtResource("tf_water")]
+position = Vector2(1440, 396)
+stops = PackedFloat32Array(1440, 2050, 1800)
+doorways = PackedFloat32Array()
+speed = 36
+
+[node name="Porter2" parent="Crowd" instance=ExtResource("tf_porter")]
+position = Vector2(1407, 396)
+stops = PackedFloat32Array(1407, 2240, 540)
+doorways = PackedFloat32Array(1407)
+speed = 56
+
+[node name="OldMan2" parent="Crowd" instance=ExtResource("tf_old")]
+position = Vector2(1780, 396)
+stops = PackedFloat32Array(1780, 2050)
+doorways = PackedFloat32Array()
+speed = 24
+
+[node name="MerchantWoman2" parent="Crowd" instance=ExtResource("tf_woman")]
+position = Vector2(95, 396)
+stops = PackedFloat32Array(95, 400, 990)
+doorways = PackedFloat32Array(95)
+speed = 30
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="NoticeBoard" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(240, 396)
+kind = 0
+title = "Notice Board"
+lines = PackedStringArray("By order of the mayor: whoever looks at the sky too long and whose eyes turn blue is to be reported to the guard.", "Refugees from the villages: the census is at the City Gate. No census, no bread.", "Lost: a grey goat answering to Pistachio. Reward at the fruit stall.")
+
+[node name="Interactable" parent="Props/NoticeBoard" index="3"]
+action_text = "Read"
+
+[node name="Well" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(1500, 396)
+kind = 1
+lines = PackedStringArray("Cool water. You feel better.")
+item_id = "potion_lesser"
+
+[node name="Interactable" parent="Props/Well" index="3"]
+action_text = "Drink"
+
+[node name="FruitStall" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(340, 396)
+kind = 2
+lines = PackedStringArray("Here you are, fresh from the oasis.", "Not enough coins, friend.")
+item_id = "potion_lesser"
+
+[node name="Interactable" parent="Props/FruitStall" index="3"]
+action_text = "Buy"
+
+[node name="Cat" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(2120, 396)
+kind = 3
+lines = PackedStringArray("Prrr…")
+bubble_anchor = Vector2(0, -40)
+
+[node name="Interactable" parent="Props/Cat" index="3"]
+action_text = "Pet"
+
+[node name="Crate" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(470, 396)
+kind = 4
+lines = PackedStringArray("A few coins at the bottom.")
+coins = 5
+
+[node name="Interactable" parent="Props/Crate" index="3"]
+action_text = "Search"
+
+[node name="Shrine" parent="Props" instance=ExtResource("town_prop")]
+position = Vector2(1720, 396)
+kind = 5
+lines = PackedStringArray("A lamp burns before Samal's sign. Someone still prays here.")
+
+[node name="Interactable" parent="Props/Shrine" index="3"]
+action_text = "Look"
 
 [node name="SavePoint" type="Area2D" parent="." unique_id=1461170938]
 position = Vector2(600, 280)
