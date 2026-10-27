@@ -22,6 +22,7 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 | `playtest-tuning` | 🖥 worktree agent (godot-dev) | B197 the jackal flies; D825 shorter micro-stun; D826 slower enemies; D827 free Shield Block = 1 point toward the D497 gate; then D828 skills hit hard, D829 bigger elites, B198 enemies jump up to a step | merge its branch, file its D-IDs, rebuild, send Sapega the verify_difficulty table |
 
 ## 2. Next, in order
+00. **B200 first in the art lane** after M6b-1: shieldless frames of the shield-bearer and the tower shield guard (same poses, cells, feet); then a cloud routine wires the swap on shield break + shards.
 0. **Wire the art that lies unused** (Sapega: «чому не всі арти підключені?»; the catalog's unused list): the shield spells
    (H2: magic + glass phases on block, glass shards hurt the attacker), the status icons (bleeding, burning, cursed, stunned),
    the mouse with its hole (ambient_critters_plan), and the road planes onto `world-rooms`' new rooms; then either wire or

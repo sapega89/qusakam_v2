@@ -231,7 +231,7 @@ the history, this note keeps only what is open.
 > - **B197** (fixed, `playtest-tuning` `89995e64`: between bites the jackal glided in its leap frame — EnemyView.walk_pace now plays walk/idle unless a swing runs) — the jackal (the dog) flies instead of running on the ground («собака літає, а не …», Sapega playtest 2026-10-27).
 > - **B198** (fixed, `playtest-tuning` `8881bc0e`: ground enemies jump up to a hero 12–72 px higher within 160 px) — standing on a step, the hero cannot be reached: ground enemies do not jump up to him (Sapega playtest 2026-10-28).
 > - **B199** (open, `cloud/fight-occluders`) — during a fight a foreground rock gets in the way and hides the fight («під час бою камінь заважає», Sapega playtest 2026-10-28).
-> - **B200** (open, `cloud/shield-elites`) — the shield-bearer's shield does not disappear («не пропадає щит з моба зі щитом, чомусь не ясно чому», Sapega playtest 2026-10-28, exe 01:01).
+> - **B200** (open, `cloud/shield-elites`) — the shield-bearer's shield does not disappear («не пропадає щит з моба зі щитом, чомусь не ясно чому» / «бо не малювали без щита? але ми ж розбиваємо щит», Sapega playtest 2026-10-28). Cause: there are no shieldless frames, so a broken shield stays in hand. Fix: art lane draws the shield-bearer and tower shield guard without a shield (same poses and cells), then a cloud routine swaps to them when the shield breaks and bursts the shield into shards.
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
