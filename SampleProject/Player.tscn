@@ -5,6 +5,8 @@
 [ext_resource type="Script" uid="uid://h3d7bkg37nqk" path="res://SampleProject/Scripts/Player/Components/PlayerCombat.gd" id="4_combat"]
 [ext_resource type="Script" uid="uid://bqkuvbuwvc351" path="res://SampleProject/Scripts/Player/Components/PlayerMover.gd" id="5_mover"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/WeaponView.gd" id="weapon_view"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Player/Components/HeroShadow.gd" id="hero_shadow"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Shadow/shadow.png" id="shadow_tex"]
 [ext_resource type="Texture2D" uid="uid://b6ddhedt2v5ut" path="res://SampleProject/Sprites/Player/Run/1.png" id="r1"]
 [ext_resource type="Texture2D" uid="uid://be1t6ppf85jnn" path="res://SampleProject/Sprites/Player/Run/2.png" id="r2"]
 [ext_resource type="Texture2D" uid="uid://k1sjmeart71i" path="res://SampleProject/Sprites/Player/Run/3.png" id="r3"]
@@ -1615,6 +1617,12 @@ metadata/player = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1406405041]
 position = Vector2(0, 4)
 shape = SubResource("RectangleShape2D_yj7bn")
+
+[node name="Shadow" type="Node2D" parent="."]
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+script = ExtResource("hero_shadow")
+texture = ExtResource("shadow_tex")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1346982558]
 texture_filter = 1

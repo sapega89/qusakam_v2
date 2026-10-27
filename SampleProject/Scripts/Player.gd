@@ -423,6 +423,7 @@ func on_enter():
 	var old_reset_position = reset_position
 	reset_position = position
 	mover.climbing = null  # драбина лишилась у старій кімнаті (D225)
+	$Shadow.reset()  # тінь не лишається зі зсувом зі старої кімнати (hero-shadow)
 
 	# Діагностика: перевіряємо, чи не змінилася позиція після встановлення reset_position (DEBUG)
 	# TODO: Remove this diagnostic logging after confirming teleportation bug is fixed
