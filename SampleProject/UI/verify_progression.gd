@@ -90,13 +90,15 @@ func _initialize() -> void:
 	save_point.interactable.interacted.emit()
 	await Kit.frames(self, 3)
 	ck(save_point.meditating and game.player.event, "the hero sits and cannot move")
+	ck(String(anim.current_animation).ends_with("Jump"), "D764: first he hops onto the meditation spot (%s)" % anim.current_animation)
+	await create_timer(save_point.HOP_TIME + 0.1).timeout
 	ck(String(anim.current_animation).ends_with("Meditate"), "pose: %s" % anim.current_animation)
 	ck(ui.current_state_name != "SaveGameState", "the save screen waits until he sits")
-	await create_timer(save_point.MEDITATE_SIT_TIME + 0.2).timeout
+	await create_timer(save_point.MEDITATE_SIT_TIME).timeout
 	ck(ui.current_state_name == "SaveGameState", "then the save screen opens (%s)" % ui.current_state_name)
 	ck(String(anim.current_animation).ends_with("Meditate"), "he meditates while it is open (%s)" % anim.current_animation)
 	ui.close_state()
-	await Kit.frames(self, 4)
+	await create_timer(save_point.HOP_TIME + 0.1).timeout  # D764: і зістрибує назад
 	ck(not save_point.meditating and not game.player.event, "leaving the screen gives him his feet back")
 	ck(String(anim.current_animation).ends_with("Idle"), "he stands up (%s)" % anim.current_animation)
 	ck(game.player.is_on_floor(), "on the floor all along, not hanging at the circle's height")
