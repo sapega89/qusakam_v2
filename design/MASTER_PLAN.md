@@ -136,7 +136,7 @@ tags: [plan, orchestrator, status]
 | S11 | Кращі українські голоси (`uk_UA-ukrainian_tts-medium`) | remaining_work | ✅ як тимчасове рішення (Sapega 27.10): `uk_UA-ukrainian_tts-medium` (MIT, дані CC0) |
 | S12 | Налаштування без системи: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди | D43–D48 | ✅ усе є в Settings: роздільність, ліміт FPS, яскравість, ambient, швидкість тексту, тряска, цифри шкоди (D425–D428) |
 | S13 | Поверхні без дизайну: сповіщення про рівень, HP ворога, тост «ціль оновлено», екран кінця демо — Figma (🖥) → ☁ | figma_coverage §1 | ✅ усі чотири є: сповіщення про рівень (`verify_level_up`), HP ворога (`HealthBar`), плашка цілі (QP1), кінець демо (`verify_demo_end`) |
-| S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | ⬜ 🖥 заміри кадрів на ПК; slice 7 чекає Q83/Q84 |
+| S14 | Продуктивність: slices 1–3, 6 були в WIP-коміті «untested» `3046e46f` — перевірити й закрити | [[performance_plan]] | 🔄 routine `perf-check` (27.10): перевіряє slices 1–3, 6 і заміряє до/після; slice 7 чекає Q83 (який слабкий ПК) |
 | S15 | Аудит рішень D179+ проти коду | [[decision_audit]] | 🔄 routine `decision-audit-2` (27.10): D179–D330 |
 | S16 | Активні плани — закрити або виписати хвости: ranged, hero_weapon_animation, onboarding, localization, npc_recall, lab_boss, lab_story, world_expansion | — | 🔄 routine `decision-audit-2` (27.10): хвости кожного плану |
 | S17 | Село: більше бігу до діда | BACKLOG | ⛔ до «гра проходиться», спитати Sapega |
@@ -163,7 +163,7 @@ tags: [plan, orchestrator, status]
 | Q98 | Карта: що вважати секретом | ✅ D765: схована зона `SecretArea`, рахується при вході → routine `secrets` (27.10) |
 | Q99 | Карта: чи потрібні криниці як окремий прохід | ✅ так — D720 |
 | Q-нов | Каньйон: повернення з дороги | ✅ лише наприкінці гри (Sapega 26.10) |
-| P1 | Підтвердити «agent call» D-ID (D300+) | ⬜ 👤 112 рішень «agent / routine call» — зберу на одну сторінку, коли скажеш |
+| P1 | Підтвердити «agent call» D-ID (D300+) | 🔄 сторінка https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk (112 рішень, так / ні / змінити); відповіді читаю `ArtifactData list answers` |
 | P2 | Прочитати всі `[ЧЕРНЕТКА]` репліки (uk/en), ідеї для клятви (BACKLOG 27) | ⬜ 👤 60 реплік `[ЧЕРНЕТКА]` у діалогах (+ підказки з `journal-hints`) |
 | P3 | Видалити рядок 141 у своєму `playthrough.gd` | ✅ 27.10 прибрав рядок за тебе (у твоєму локальному файлі, без коміту) |
 

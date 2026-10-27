@@ -45,6 +45,7 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
 | integrate-27 | `trig_01GjxkDd7Y8XLhKUpJKKo56D` | — | finish `integrate-27` (see §1.1) |
 | integrate-28 | `trig_01EYt8kXZd2aYYa2Gy1xowCP` | integrate-27 | merges the 11 reported routines (enemy-ai … ambient-critters, not side-stories / depth-*), renumbers from D775 / B163, full suite; then fast-forward `feature/backlog` |
 | hero-feet | `trig_01CnwNk3itjwafHhA8cxFXpo` | — | Sapega 27.10: «підняти спрайт, щоб ноги стояли точно на підлозі» (the hero is drawn 11–12 px below his collision, depth-film's Q) — file its D-ID **after** integrate-28 (it numbers from D775) |
+| perf-check | `trig_01TkkGrZ5f8WuUZawgzHL7MX` | — | S14: close performance slices 1–3, 6 (WIP `3046e46f`), before/after numbers |
 | depth-critics | `trig_01SZJkm6bj2ys1JevyvFs1UY` | depth-film | A22: three critics (art director, motion, player) → `depth_critique_2026-10-27.md`; send Sapega the mp4s from the PC |
 
 ## 3. Art lane (ComfyUI, local)
@@ -62,6 +63,8 @@ status is [[MASTER_PLAN]]; its journal at the bottom says what changed today.
   house wall, a well).
 
 ## 4. Waiting on Sapega
+
+**P1 page:** https://claude.ai/artifact/TTw9d4LafTG574jTXRKGkk — his verdicts on the 112 agent/routine calls land in its db (`ArtifactData list`, collection `answers`, doc = D-ID: `verdict` yes/no/change, `note`); apply them to the register.
 
 S19 shield (rework the 5 shield skills or give the hero a shield), `iron_shield`, the «Holy Warrior» name, the base +
 one path tree; Q100 (the god of contracts' name); Q88 (HUD text size); the D-pad left shared by «?» and the new-points
