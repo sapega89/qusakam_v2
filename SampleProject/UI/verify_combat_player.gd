@@ -325,7 +325,8 @@ func _stamina() -> void:
 			while combat.state != combat.State.READY:
 				await physics_frame
 	ck(st.exhausted and swings[0] <= 6, "mashing runs the bar dry within a combo and a half (%d swings and heavies)" % swings[0])
-	await _until_ready()
+	while combat.state != combat.State.READY:  # не _until_ready: його 0.7 с шкала встигла б набратись
+		await physics_frame
 	var before: int = swings[0]
 	await _tap(&"attack")
 	for f in 3: await physics_frame
