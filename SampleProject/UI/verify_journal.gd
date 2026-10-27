@@ -203,11 +203,8 @@ func _initialize() -> void:
 		game_node.set_quest_flag("task_malik_escort_taken", true)
 		game_node.set_objective("Head to the village")
 		for i in 3: await process_frame
-		var task_row: Button = _row(journal, "task/malik_escort")
-		ck(task_row != null and task_row.get_index() > _row(journal, "lab_outside").get_index()
-				and _row(journal, "lab_outside").get_index() > _header_index(journal, "THE LABORATORY"),
-				"D181: an NPC task stands in its location's group, after its story items (%s)"
-				% str(task_row.get_index() if task_row else -1))
+		ck(journal.entries.all(func(e: Dictionary) -> bool: return not e.id.contains("malik_escort")),
+				"D767: an NPC task is a side story, not a row on the Quests page")
 		game_node.set_quest_flag("task_malik_escort_taken", false)
 		ck(journal.selected_id == "canyon/0", "open item kept while it is still reachable")
 		village_row.grab_focus()

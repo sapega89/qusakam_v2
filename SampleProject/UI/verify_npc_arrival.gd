@@ -209,11 +209,12 @@ func _initialize() -> void:
 	get_first_node_in_group("game_menu").switch_to_tab("Journal")
 	for i in 10: await process_frame
 	var journal: Node = get_first_node_in_group("journal_screen")
+	journal.select_section("side")  # завдання NPC — побічні історії (D767)
 	var titles: Array = journal.entries.map(func(e: Dictionary) -> String: return e.title)
 	ck(titles.has("The Stolen Caravan") and titles.has("The Helmet"), "journal lists the tasks (%s)" % [titles])
 	var helmet: Array = journal.entries.filter(func(e: Dictionary) -> bool: return e.title == "The Helmet")
-	ck(not helmet.is_empty() and "god of deals" in helmet[0].description and "Goal: Buy 2 Iron Ingots and 1 Leather" in helmet[0].description
-			and "anvil" in helmet[0].description, "The Helmet: lore + a clear goal in the Journal (D311) (%s)" % [helmet])
+	ck(not helmet.is_empty() and "god of deals" in helmet[0].description and helmet[0].objectives.size() == 1
+			and String(helmet[0].objectives[0]).begins_with("Buy 2 Iron Ingots and 1 Leather") and "anvil" in helmet[0].objectives[0], "The Helmet: lore + a clear goal in the Journal (D311) (%s)" % [helmet])
 	sl.get_ui_manager().close_game_menu()
 	for i in 10: await process_frame
 

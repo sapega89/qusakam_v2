@@ -3608,3 +3608,67 @@ msgstr "Ще кілька кроків — і ми на волі."
 # [ЧЕРНЕТКА] D159
 msgid "We made it out. A hard road — but we made it."
 msgstr "Ми вийшли. Важкий був шлях — але ми змогли."
+
+# ── Журнал: сторінка побічних історій (D767; SideStories → journal_component)
+msgid "SIDE STORIES"
+msgstr "ПОБІЧНІ ІСТОРІЇ"
+
+msgid "Side Stories"
+msgstr "Побічні історії"
+
+msgid "No side stories here yet."
+msgstr "Тут ще немає побічних історій."
+
+msgid "Client: %s"
+msgstr "Замовник: %s"
+
+msgid "Completed"
+msgstr "Скінчено"
+
+msgid "In progress"
+msgstr "Триває"
+
+msgid "“%s”"
+msgstr "«%s»"
+
+msgid "All"
+msgstr "Усі"
+
+msgid "OUTCOME"
+msgstr "ЧИМ СКІНЧИЛОСЬ"
+
+msgid "REWARDS"
+msgstr "НАГОРОДА"
+
+# [ЧЕРНЕТКА] D767
+msgid "Those same bandits looted my caravan and drove it to the City Gates."
+msgstr "Ті самі бандити розграбували мій караван і погнали його до міської брами."
+
+# [ЧЕРНЕТКА] D767
+msgid "The City Gates are free and the caravan's wagons rolled into the City. The Merchant paid as he promised: a merchant does not forget a debt."
+msgstr "Брама вільна, і вози каравану в місті. Торговець заплатив, як обіцяв: торговець боргів не забуває."
+
+# [ЧЕРНЕТКА] D767
+msgid "A helmet you forged yourself sits better on the head than a bought one."
+msgstr "Шолом, який сам скував, на голові сидить краще за куплений."
+
+# [ЧЕРНЕТКА] D767
+msgid "The rivets came out crooked, but the helmet holds. The Blacksmith paid back every coin, as agreed: a smith does not break his word."
+msgstr "Заклепки вийшли криві, та шолом тримає. Коваль повернув кожну монету, як домовлялись: коваль слова не ламає."
+
+# [ЧЕРНЕТКА] D767
+msgid "Now for real learning. Enchant these two into one and bring it to show me."
+msgstr "Тепер справжня наука. Зачаруй ці два мечі в один і принеси показати."
+
+# [ЧЕРНЕТКА] D767
+msgid "The sword sings in the hand. The Blacksmith let Kusakam keep it and took no enchanting fee from his apprentice."
+msgstr "Меч співає в руці. Коваль лишив його Кусакамові й не взяв з учня плати за зачарування."
+
+# [ЧЕРНЕТКА] D767
+msgid "My humble place holds gold for everyone who leads me out of here."
+msgstr "У моєму скромному куточку знайдеться золото для кожного, хто виведе мене звідси."
+
+# [ЧЕРНЕТКА] D767
+msgid "Malik is out of the Laboratory and breathes free air. His humble place, and its gold, wait further down the road."
+msgstr "Малік вийшов з Лабораторії й дихає вільним повітрям. Його скромний куточок — і золото — чекають далі в дорозі."
+
