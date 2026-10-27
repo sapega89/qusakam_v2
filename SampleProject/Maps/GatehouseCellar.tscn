@@ -1,6 +1,11 @@
 [gd_scene format=3 uid="uid://nidweolightl"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_back.png" id="r1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_far.png" id="p1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_mid.png" id="p2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_stairs.png" id="p3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_lantern.png" id="p4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_floor.png" id="p5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_column.png" id="p6"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r4"]
@@ -10,7 +15,6 @@
 [ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="r8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/hanging_chain_web.tscn" id="x2"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/fg_pillar.tscn" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
@@ -24,18 +28,59 @@ size = Vector2(120, 480)
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Sprite1" type="Sprite2D" parent="Back"]
+[node name="Far" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(266.6667, 0)
+scroll_scale = Vector2(0.5, 1)
+repeat_size = Vector2(1728, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Back/Far"]
 texture_filter = 1
 position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p1")
 centered = false
 
-[node name="Sprite2" type="Sprite2D" parent="Back"]
+[node name="Mid" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(106.6667, 0)
+scroll_scale = Vector2(0.8, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 3
+
+[node name="Sprite" type="Sprite2D" parent="Back/Mid"]
 texture_filter = 1
-position = Vector2(864, -3)
+position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("r1")
+texture = ExtResource("p2")
+centered = false
+
+[node name="Props" type="Parallax2D" parent="Back"]
+scroll_offset = Vector2(53.3333, 0)
+scroll_scale = Vector2(0.9, 1)
+
+[node name="Stairs" type="Sprite2D" parent="Back/Props"]
+texture_filter = 1
+position = Vector2(76.5, 228)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p3")
+centered = false
+
+[node name="Lantern" type="Sprite2D" parent="Back/Props"]
+texture_filter = 1
+position = Vector2(100.5, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p4")
+centered = false
+
+[node name="Floor" type="Parallax2D" parent="Back"]
+repeat_size = Vector2(1728, 0)
+repeat_times = 2
+
+[node name="Sprite" type="Sprite2D" parent="Back/Floor"]
+texture_filter = 1
+position = Vector2(0, 416)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("p5")
 centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
@@ -138,10 +183,19 @@ flip_h = true
 [node name="Web5" parent="FrontDark" instance=ExtResource("x2")]
 position = Vector2(1950, 0)
 
-[node name="Pillar1" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(700, 480)
+[node name="Pillar1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(646, -40)
+scale = Vector2(2, 2)
+texture = ExtResource("p6")
+centered = false
 
-[node name="Pillar2" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1610, 480)
+[node name="Pillar2" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(1556, -40)
+scale = Vector2(2, 2)
+texture = ExtResource("p6")
+centered = false
+flip_h = true
 
 [node name="TopShade" parent="." instance=ExtResource("x4")]
