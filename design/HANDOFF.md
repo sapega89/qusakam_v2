@@ -46,6 +46,8 @@ early «Phase 5.x» UI checks ×12; settings ×3).
 
 **integrate-30** (`trig_014p84j6pihvRknqsNn8mnKj`, started 19:58 UTC): merges hero-death, skills-v2-data/screen/move, scale-exact (+ its probe and chart, Godot was blocked in its session), fx-film; IDs from D807 / B187; the full suite in the cloud (Sapega 27.10: tests run in the cloud, not on the PC) incl. camera_transitions 1 FAIL and combat_flow [2c]. When it reports: merge, rebuild the exe, send Sapega scale_chart.png and the fx GIFs.
 
+**Asset catalog** (Sapega: «ассет пак … що є, чого немає, поправити існуюче»): https://claude.ai/artifact/Qxty8beDtyy71ULkuvmocf — 459 cards (810 files), 44 unused, 49 missing items, 34 duplicate groups; generator `Scripts/Tools/asset_catalog.py`. His verdicts: ArtifactData `list` collection `verdicts` ({key, status ok|fix|remove, note}) → art-lane tasks.
+
 ## 3. Art lane next (ComfyUI, one agent at a time; commit with `-- <paths>`)
 1. **H2 shields** — Sapega's final word: the shield is a spell (Pathfinder): a magic shield drops from the sky over the
    existing Block art and fades; a glass shield cracks and shatters (its shards hurt the attacker). Over `Block/1`;
