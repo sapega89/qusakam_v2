@@ -390,7 +390,7 @@ LIVING = {
     "AlchemistStore": dict(critters=[("critter_moth", 0, 900, {"hover": 200})], air=[("atmo_motes", 0, 900, 250)]),
     "MalikStash": dict(critters=[("critter_moth", 0, 400, {"hover": 200})], air=[("atmo_motes", 0, 700, 250)]),
     "CollapsedDrain": dict(fights=[("Fight_Drain", 0, 2000, 9, 0, [("tank", 2160), ("fast", 2260)])],
-                           critters=[("critter_bat", 0, 4200)], air=[spores(3000, 2800, 32)]),
+                           critters=[("critter_bat", 0, 4200)], air=[spores(3200, 2800, 32)]),  # центр поза GrateDoor (x 3000)
 }
 
 

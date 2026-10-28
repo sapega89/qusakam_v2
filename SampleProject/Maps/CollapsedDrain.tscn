@@ -194,7 +194,7 @@ spawn_id = "Fight_Drain_EnemySpawnPoint2"
 [node name="Ambience" type="Node2D" parent="."]
 
 [node name="Spores1" parent="Ambience" instance=ExtResource("w15")]
-position = Vector2(3000, 250)
+position = Vector2(3200, 250)
 emission_rect_extents = Vector2(2800, 110)
 amount = 32
 
