@@ -31,6 +31,9 @@ recolours only the weapon metal.
 | `Attack3/1–3` | 3 | coiled, deep lunging stab, recovery with the dagger at the hip (finisher) |
 | `Block/1` | 1 | dagger crosswise before the face |
 | `Hurt/1` | 1 | recoil, head thrown back |
+| `LungeCut/1–3` | 3 | H3 (below): crouched, dagger low and forward-down at the hip, the front hand empty; the dash, dagger low forward-down; the cut, dagger straight forward at chest height |
+| `ShieldCharge/1–3` | 3 | H3: braced, dagger level forward at chin height; the run, dagger level forward; the bash, dagger forward-up |
+| `LeapSlam/1–3` | 3 | H3: crouched to spring, dagger low forward-down; in the air, dagger raised behind his head, the front hand open (from `Heavy/1`); the slam, dagger down-forward to the ground |
 | `Heavy/1–3` | 3 | wind-up: the dagger drawn back behind his head, the other hand open forward; heavy downward stab, blade down-forward at knee height; recovery, crouched, dagger before the chest (added later, see below) |
 
 **Added later (remaining_work Art 3): `Heavy/1–3` and `Attack2/2–3`** — `Scripts/Tools/comfy_art_fixes.py
@@ -51,3 +54,20 @@ Earlier history: three attempts at `Heavy` (from the first frame, from `Attack1/
 `Attack2/2–3` (from `Attack2/1`) all drew a second dagger or a sword-length blade.
 
 Isolated single pixels (no 8-neighbour, keying dirt) are dropped from every frame by the tool (`Hurt/1` had four).
+
+**H3 movement-skill poses (D812, not wired)** — `Scripts/Tools/comfy_sprite.py hero_weapon_dagger_h3` (same model, seed
+52), each frame `ON:` the hero's bare-handed pose (`SampleProject/Sprites/Player/LungeCut|ShieldCharge|LeapSlam/N`, the
+64×64 frame at (16, 32) of the 96×96 cell) with only the dagger added, so the body is exactly the base pose; `LeapSlam/2` is
+`ON:` this set's `Heavy/1` instead (from the base frame the raised fists read as ears and the model grew a third hand
+holding the dagger). `specks=8` drops the motion strokes the model drew by the tail. Then `python Scripts/Tools/h3_eye_fixups.py`, then `weapon_key_fixups.py`
+(its `MANUAL` rectangles for these frames: the `LungeCut/1` blade back to the key, the `ShieldCharge/1` guard; eye glints, chest plates, a vambrace and boots off the key). Feet on row 88, the artist's colours. Contact sheet:
+`design/shots/h3_weapon_variants_1.png`.
+
+- The dagger stays a dagger: blades 12–24 px measured end to end (the set's own `CombatIdle/1` is 24, `Attack3/2` 19).
+  Every prompt names it («the dagger blade no longer than his head is wide, only one dagger»).
+- Rejected: `LungeCut/1` with a second dagger in the open front hand (now named empty); `ShieldCharge/1` three times
+  `ON:` with the blade up or slanted (a 24–28 px sword over the snout) and once `FROM:ShieldCharge:2` (the hero ~20 %
+  bigger) — kept: `ON:` with the level wording of `ShieldCharge/2`; `LeapSlam/2` with a grey wisp beside the open hand
+  (the hand now named empty).
+- `ShieldCharge/2`: twice the model drew the eye as a target (a red ring with a dark cross) — `Scripts/Tools/h3_eye_fixups.py`
+  copies the eye (x 54–64, rows 48–56) from the hero's own `ShieldCharge/2`; the head lies on it pixel for pixel.
