@@ -400,11 +400,17 @@ A9_OUTLINE = {
     "radiant_smite": (92, 52, 12),  # золото, темно-бурштиновий контур
     "skyfall_blessing": (92, 52, 12),  # лише удар (заряд-перо не мінявся)
     "searing_hex": (44, 14, 78),  # фіолетовий вогонь, індиго, без червоного
-    "withering_grasp": (150, 214, 92),  # чорно-фіолетова тінь, хворобливо-зелене світло по краю
+    "withering_grasp": (
+        150,
+        214,
+        92,
+    ),  # чорно-фіолетова тінь, хворобливо-зелене світло по краю
     "second_wind": (18, 96, 96),  # м'ятний вітер зцілення, бірюзовий контур
 }
 for _id, _outline in A9_OUTLINE.items():
-    for _fx in [FX[_id + "_release"]] + ([] if _id == "skyfall_blessing" else [FX[_id + "_charge"]]):
+    for _fx in [FX[_id + "_release"]] + (
+        [] if _id == "skyfall_blessing" else [FX[_id + "_charge"]]
+    ):
         _fx["outline"] = _outline
         _fx["box"] = (1, 1, _fx["canvas"][0] - 1, _fx["canvas"][1] - 1)
     FX[_id + "_release"]["heavy"] = True
@@ -418,6 +424,71 @@ FX["skyfall_blessing_release"]["taper"] = 0.25
 # Q124 (A13): заряд «Пекучого прокляття» модель малює зіркою — п'ятикутною в колі (пентаграма) за «six-pointed star»,
 # шестикутною за «hexagon» — тож знак без зірки малює скрипт (draw_hex_sigil), генерації заряду більше немає.
 del FX["searing_hex_charge"]
+
+# H3 (D812, D828): удари навичок руху, кожна свого кольору, 1-px контур і важкий удар, як A9. Шлейф ривку, нитка
+# випивання, вітер і кільце удару малює скрипт (draw_dash_trail, draw_drain, draw_wind, draw_slam_ring).
+MOVE_FX = {
+    # Кривавий порив: дуга крові (не чорна з багряним краєм, як Eclipse Cleave) — яскраво-червона, краплі
+    "blood_rush_arc": (
+        "arc",
+        61,
+        (1024, 1024),
+        (56, 72),
+        (64, 6, 18),
+        (255, 196, 196),
+        "a single blood red sword "
+        "slash crescent, a thick curved arc bulging to the right like the right half of a ring, its body bright "
+        "blood red, a deep crimson inner edge, a thin pale pink highlight line along its outer edge, small round "
+        "blood droplets flying off its outer edge, tapering points at the top and the bottom, centered",
+    ),
+    # Небесне ковадло: стовп світла росте з землі (не промінь з неба, як Skyfall Blessing) — біле золото, блакить
+    "heavens_anvil_pillar": (
+        "up",
+        62,
+        (512, 1024),
+        (32, 96),
+        (22, 34, 100),
+        (255, 255, 255),
+        # перша спроба — тонкий промінь-олівець на смузі землі: стовп названо широким, без землі
+        "a single very wide thick vertical column of holy light shooting straight up, the column fills the middle "
+        "third of the picture's width, straight parallel sides, a white hot core, pale gold light, an azure blue "
+        "outer edge, small white four-pointed sparkles around it, its top fading into short rays, no ground, no "
+        "floor, nothing below it, front view",
+    ),
+    # Дюнний поштовх: хвиля піску по землі (зліва направо; ліворуч — flip_h), охра й умбра, не помаранч боса
+    "dune_quake_wave": (
+        "up",
+        63,
+        (1024, 512),
+        (56, 28),
+        (58, 32, 12),
+        (255, 240, 200),
+        "a single low wave of "
+        "sand bursting up from the ground and rolling to the right, side view, a curling crest of ochre sand with a "
+        "bright pale sand front edge, brown rock chunks thrown up in front of it, dust spraying back to the left, a "
+        "flat bottom",
+    ),
+}
+for _name, (_kind, _seed, _size, _canvas, _outline, _flash, _prompt) in MOVE_FX.items():
+    _skill, _part = _name.rsplit("_", 1)
+    FX[_name] = dict(
+        seed=_seed,
+        size=_size,
+        key="magenta"
+        if _skill == "dune_quake"
+        else "green",  # пісок на пурпурі, як balanced_strike
+        colors=8,
+        kind=_kind,  # up — низом на землю (heavy бере кадри не з виду)
+        canvas=_canvas,
+        box=(1, 1, _canvas[0] - 1, _canvas[1] - 1),
+        frames=[f"Skills/{_skill}/{_part}_{i}" for i in range(1, 4)],
+        prompt=f"{_prompt}, {MAGENTA if _skill == 'dune_quake' else GREEN}",
+        outline=_outline,
+        heavy=True,
+        flash=_flash,
+    )
+# хвилю модель поставила на смугу пляжу (ключ брав пісок за фон) — низ генерації відрізано, лишається плаский низ
+FX["dune_quake_wave"]["crop"] = 0.72
 
 
 def generate(name, fx):
@@ -474,7 +545,9 @@ def fit(img, a, fx):
     x0, y0, x1, y1 = fx["box"]
     k = min((x1 - x0) / a.shape[1], (y1 - y0) / a.shape[0])
     w, h = max(1, round(a.shape[1] * k)), max(1, round(a.shape[0] * k))
-    if fx.get("stretch"):  # заповнити box цілком (коло згори → овал на підлозі), пропорції не зберігаються
+    if fx.get(
+        "stretch"
+    ):  # заповнити box цілком (коло згори → овал на підлозі), пропорції не зберігаються
         w, h = x1 - x0, y1 - y0
 
     def down(m):
@@ -507,7 +580,10 @@ def taper(m, part):
     for y in range(ys[0], ys[0] + n):
         xs = np.nonzero(m[y])[0]
         if len(xs):
-            mid, half = (xs[0] + xs[-1]) / 2, (xs[-1] - xs[0] + 1) / 2 * (y - ys[0] + 1) / n
+            mid, half = (
+                (xs[0] + xs[-1]) / 2,
+                (xs[-1] - xs[0] + 1) / 2 * (y - ys[0] + 1) / n,
+            )
             m[y, : int(np.ceil(mid - half))] = False
             m[y, int(mid + half) + 1 :] = False
     return m
@@ -539,7 +615,12 @@ def grow(q, k):
 
 
 CUT_ANGLE = 35  # градусів угору-праворуч (знизу зліва вгору направо), як було; ліворуч — flip_h сцени
-CUT_COLORS = ((255, 255, 255), (206, 240, 255), (128, 200, 246), (58, 110, 196))  # ядро, світло, лід, обвідка
+CUT_COLORS = (
+    (255, 255, 255),
+    (206, 240, 255),
+    (128, 200, 246),
+    (58, 110, 196),
+)  # ядро, світло, лід, обвідка
 
 
 def draw_cut(size=64, half=31.0, width=4.2):
@@ -551,7 +632,9 @@ def draw_cut(size=64, half=31.0, width=4.2):
     c = (size - 1) / 2
     yy, xx = np.mgrid[:size, :size].astype(np.float32)
     t = np.radians(CUT_ANGLE)
-    u = (xx - c) * np.cos(t) - (yy - c) * np.sin(t)  # уздовж розрізу, + — угору праворуч
+    u = (xx - c) * np.cos(t) - (yy - c) * np.sin(
+        t
+    )  # уздовж розрізу, + — угору праворуч
     v = (xx - c) * np.sin(t) + (yy - c) * np.cos(t)  # поперек
 
     def lens(u0, u1, w, dv=0.0, side=0):
@@ -562,33 +645,48 @@ def draw_cut(size=64, half=31.0, width=4.2):
         inside = (np.abs(vv) <= w * k + 0.35) & (k > 0)
         if side:
             inside &= vv * side >= -0.5
-        level = np.where(np.abs(vv) <= w * k * 0.35, 0, np.where(np.abs(vv) <= w * k * 0.75, 1, 2))
+        level = np.where(
+            np.abs(vv) <= w * k * 0.35, 0, np.where(np.abs(vv) <= w * k * 0.75, 1, 2)
+        )
         return inside, level
 
     def paint(parts):
         return paint_cut(parts, (size, size))
 
-    cross = (np.abs(u) <= 0.9) & (np.abs(v) <= 12) | (np.abs(u) <= 1.6) & (np.abs(v) <= 5)
+    cross = (np.abs(u) <= 0.9) & (np.abs(v) <= 12) | (np.abs(u) <= 1.6) & (
+        np.abs(v) <= 5
+    )
     cross_level = np.where(np.abs(v) <= 5, 0, 1)
     return [
         paint([lens(-half, half * 0.35, width * 0.45)]),
         paint([lens(-half, half, width), (cross, cross_level)]),
-        paint([lens(-half * 0.9, half * 0.95, width * 0.55, 2.0, 1), lens(-half * 0.95, half * 0.9, width * 0.55, -2.0, -1)]),
-        paint([lens(-half * 0.7, half * 0.75, 0.6, 3.0), lens(-half * 0.75, half * 0.7, 0.6, -3.0)]),
+        paint(
+            [
+                lens(-half * 0.9, half * 0.95, width * 0.55, 2.0, 1),
+                lens(-half * 0.95, half * 0.9, width * 0.55, -2.0, -1),
+            ]
+        ),
+        paint(
+            [
+                lens(-half * 0.7, half * 0.75, 0.6, 3.0),
+                lens(-half * 0.75, half * 0.7, 0.6, -3.0),
+            ]
+        ),
     ]
 
 
-def paint_cut(parts, shape):
-    """Частини (маска, рівень 0 ядро / 1 світло / 2 лід) → RGBA кольорами CUT_COLORS, синя 1-px обвідка навколо."""
+def paint_cut(parts, shape, colors=CUT_COLORS):
+    """Частини (маска, рівень 0 ядро / 1 світло / 2 лід) → RGBA кольорами colors (ядро, світло, лід, обвідка),
+    1-px обвідка навколо."""
     rgba = np.zeros(shape + (4,), np.uint8)
     body = np.zeros(shape, bool)
     for inside, level in parts:
         for lv in (2, 1, 0):  # світліше поверх
             m = inside & (level == lv)
-            rgba[m] = (*CUT_COLORS[lv], 255)
+            rgba[m] = (*colors[lv], 255)
         body |= inside
     ring = ndimage.binary_dilation(body) & ~body
-    rgba[ring] = (*CUT_COLORS[3], 255)
+    rgba[ring] = (*colors[3], 255)
     return rgba
 
 
@@ -607,11 +705,19 @@ def draw_thrust(w=72, h=24, tip=70):
     v, t = yy - (h - 1) / 2, xx / tip
 
     def needle(width, start):
-        hw = np.where(t <= 0.84, width * np.clip((t - start) / (0.84 - start), 0, 1) ** 1.6, width * (1 - t) / 0.16)
+        hw = np.where(
+            t <= 0.84,
+            width * np.clip((t - start) / (0.84 - start), 0, 1) ** 1.6,
+            width * (1 - t) / 0.16,
+        )
         return band(v, hw)
 
     outs = []
-    for width, start, lines in ((3.6, 0.0, (16, 50)), (2.6, 0.25, (36, 60)), (1.7, 0.55, None)):
+    for width, start, lines in (
+        (3.6, 0.0, (16, 50)),
+        (2.6, 0.25, (36, 60)),
+        (1.7, 0.55, None),
+    ):
         out = paint_cut([needle(width, start)], (h, w))
         if lines:
             out[[5, h - 6], lines[0] : lines[1]] = (*CUT_COLORS[2], 255)
@@ -628,9 +734,13 @@ def draw_punch(size=28):
     def streak(x0, x1, width):  # лінза, найширша на 0.7 довжини
         t = (xx - x0) / (x1 - x0)
         k = np.where(t < 0.7, (t - 0.7) / 0.7, (t - 0.7) / 0.3)
-        return band(yy - c, np.where((t >= 0) & (t <= 1), width * np.clip(1 - k**2, 0, 1), 0))
+        return band(
+            yy - c, np.where((t >= 0) & (t <= 1), width * np.clip(1 - k**2, 0, 1), 0)
+        )
 
-    def shock(cx, r, width, span, gap=0.0):  # дуга кола радіуса r праворуч від cx, гостра на кінцях
+    def shock(
+        cx, r, width, span, gap=0.0
+    ):  # дуга кола радіуса r праворуч від cx, гостра на кінцях
         ang = np.degrees(np.abs(np.arctan2(yy - c, xx - cx)))
         k = np.where(ang < gap, 0, np.clip(1 - (ang / span) ** 2, 0, 1))
         return band(np.hypot(xx - cx, yy - c) - r, width * k)
@@ -646,7 +756,12 @@ def draw_hex_sigil(size=32):
     """Q124: знак прокляття без зірки — кільце, у ньому шестикутник (лише контур), між ними шість рисок-рун навпроти
     його сторін (не вершин — зірки не складають), світла цятка в центрі, фіолетовий вогник згори; кольори й контур
     A9. Кадри як у заряду з моделі: росте з центру (1–2) → повний (3) → тонший пульс (4)."""
-    deep, violet, lilac, white = (110, 40, 190), (160, 90, 240), (210, 170, 255), (245, 230, 255)
+    deep, violet, lilac, white = (
+        (110, 40, 190),
+        (160, 90, 240),
+        (210, 170, 255),
+        (245, 230, 255),
+    )
     q = np.zeros((size, size, 4), np.uint8)
     cx, cy = 15.5, 17.5
     yy, xx = np.mgrid[:size, :size].astype(np.float32)
@@ -662,28 +777,142 @@ def draw_hex_sigil(size=32):
     def line(a, b, colour):
         n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) * 2) + 1
         for t in np.linspace(0, 1, n):
-            q[int(round(a[1] + (b[1] - a[1]) * t)), int(round(a[0] + (b[0] - a[0]) * t))] = colour + (255,)
+            q[
+                int(round(a[1] + (b[1] - a[1]) * t)),
+                int(round(a[0] + (b[0] - a[0]) * t)),
+            ] = colour + (255,)
 
-    hexagon = [(cx + 7.5 * np.cos(np.radians(60 * k)), cy + 7.5 * np.sin(np.radians(60 * k))) for k in range(6)]
+    hexagon = [
+        (cx + 7.5 * np.cos(np.radians(60 * k)), cy + 7.5 * np.sin(np.radians(60 * k)))
+        for k in range(6)
+    ]
     for k in range(6):
         line(hexagon[k], hexagon[(k + 1) % 6], white)
         a = np.radians(60 * k + 30)  # навпроти середини сторони
-        line((cx + 8.6 * np.cos(a), cy + 8.6 * np.sin(a)), (cx + 10.2 * np.cos(a), cy + 10.2 * np.sin(a)), violet)
+        line(
+            (cx + 8.6 * np.cos(a), cy + 8.6 * np.sin(a)),
+            (cx + 10.2 * np.cos(a), cy + 10.2 * np.sin(a)),
+            violet,
+        )
     put((np.abs(xx - cx) < 1) & (np.abs(yy - cy) < 1), white)
     put(((np.abs(xx - cx) < 2) & (np.abs(yy - cy) < 2)) & (q[..., 3] == 0), violet)
     # вогник над кільцем: ширина рядка від вершини вниз, зміщення язика ліворуч / праворуч
-    for y, (x0, x1) in enumerate([(16, 16), (15, 16), (15, 17), (14, 17), (14, 18), (13, 18)]):
+    for y, (x0, x1) in enumerate(
+        [(16, 16), (15, 16), (15, 17), (14, 17), (14, 18), (13, 18)]
+    ):
         for x in range(x0, x1 + 1):
             inner = x0 < x < x1 and y >= 2
-            q[y, x] = (white if inner and x == 16 else lilac if inner else violet) + (255,)
+            q[y, x] = (white if inner and x == 16 else lilac if inner else violet) + (
+                255,
+            )
     q[3, 19] = q[2, 12] = violet + (255,)
-    pulse = q.copy()  # пульс — кільце на піксель тонше (ерозія з'їла б однопіксельний шестикутник)
+    pulse = (
+        q.copy()
+    )  # пульс — кільце на піксель тонше (ерозія з'їла б однопіксельний шестикутник)
     pulse[(d >= 12.4) & (d < 13.0), 3] = 0
     outs = [grow(q, 0.45), grow(q, 0.75), q, pulse]
     for out in outs:
         mask = out[..., 3] > 0
         out[ndimage.binary_dilation(mask) & ~mask] = A9_OUTLINE["searing_hex"] + (255,)
     return outs
+
+
+# H3 (D812): кольори навичок руху — ядро, світло, тінь, обвідка (Dash Strike бере кольори розтину, CUT_COLORS).
+BLOOD = ((255, 196, 196), (232, 48, 60), (150, 14, 32), (58, 6, 16))
+WIND = ((255, 255, 255), (196, 255, 240), (72, 208, 196), (14, 62, 84))
+SLAM = ((255, 255, 255), (255, 236, 190), (214, 168, 96), (62, 38, 22))
+
+
+def lens_x(xx, x0, x1, width, peak=0.75):
+    """Півширина лінзи вздовж x від x0 до x1: гостра з обох кінців, найширша на частці peak (не кругла голова —
+    A9: комета з круглою головою читалась як постріл)."""
+    t = (xx - x0) / (x1 - x0)
+    k = np.where(t < peak, t / peak, (1 - t) / (1 - peak))
+    return np.where((t >= 0) & (t <= 1), width * np.clip(k, 0, 1) ** 0.8, 0)
+
+
+def draw_dash_trail(w=56, h=40):
+    """Шлейф ривку (Dash Strike, Blood Rush, Wind Step, Shield Charge): чотири лінії швидкості за спиною героя,
+    правий край полотна — його спина. 1 — повні, 2 — коротші (хвости підтягуються до героя), 3 — тонкі обривки.
+    Кольори розтину, синя обвідка. Без моделі: не AI."""
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+    rows = ((7, 0.30, 1.6), (16, 0.0, 2.6), (25, 0.12, 2.2), (33, 0.42, 1.4))  # y, початок (частка), півширина
+    out = []
+    for start, k in ((0.0, 1.0), (0.35, 0.75), (0.65, 0.45)):
+        parts = [band(yy - y, lens_x(xx, w * (s + (1 - s) * start), w - 2, hw * k)) for y, s, hw in rows]
+        out.append(paint_cut(parts, (h, w)))
+    return out
+
+
+def draw_drain(w=64, h=20):
+    """Кривавий порив: нитка крові тече від ворога (праворуч) до героя (ліворуч) хвилею, краплі вздовж.
+    1 — відривається від ворога, 2 — уся довжина, 3 — доходить до героя, тонша. Без моделі: не AI."""
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+    mid = (h - 1) / 2 + 2.5 * np.sin(xx * 2 * np.pi / 36)
+
+    def ribbon(x0, x1, width):
+        t = (xx - x0) / (x1 - x0)
+        hw = np.where((t >= 0) & (t <= 1), width * np.clip(np.sin(np.pi * t), 0, 1) ** 0.7, 0)
+        return band(yy - mid, hw)
+
+    def drops(xs):
+        m = np.zeros((h, w), bool)
+        for x in xs:
+            y = int(round((h - 1) / 2 + 2.5 * np.sin(x * 2 * np.pi / 36) + (5 if x % 2 else -5)))
+            m[y : y + 2, x : x + 2] = True
+        return m, np.full((h, w), 1)
+
+    return [
+        paint_cut([ribbon(34, 63, 2.2), drops((44, 55))], (h, w), BLOOD),
+        paint_cut([ribbon(6, 62, 2.4), drops((15, 30, 47))], (h, w), BLOOD),
+        paint_cut([ribbon(0, 30, 1.6), drops((6,))], (h, w), BLOOD),
+    ]
+
+
+def draw_wind(w=72, h=24):
+    """Крок вітру: три довгі тонкі вигнуті смуги вітру (лінзи, гострі з обох кінців), хвіст головної закручений у
+    завиток; кольори — біло-аквамаринові, темно-бірюзова обвідка. 1 — повні з завитком, 2 — коротші й тонші, хвости
+    підтягнуті вперед, 3 — лише передні кінці. Без моделі: не AI."""
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+
+    def line(y, bow, x0, x1, width):  # дуга, вигнута вгору на bow px посередині
+        t = (xx - x0) / (x1 - x0)
+        return band(yy - (y - bow * 4 * t * (1 - t)), lens_x(xx, x0, x1, width, 0.7))
+
+    def curl(cx, cy, r, width):  # завиток: коло без верхньої правої чверті, низом зливається з хвостом смуги
+        ang = np.degrees(np.arctan2(yy - cy, xx - cx))
+        return band(np.hypot(xx - cx, yy - cy) - r, np.where((ang > -100) & (ang < -10), 0, width))
+
+    return [
+        paint_cut([line(16, 3, 8, 71, 2.6), line(8, 2, 26, 64, 1.2), line(21, 1, 34, 60, 0.9), curl(10, 12.5, 3.5, 0.9)],
+                  (h, w), WIND),
+        paint_cut([line(16, 3, 26, 71, 2.0), line(8, 2, 40, 66, 0.9)], (h, w), WIND),
+        paint_cut([line(16, 3, 48, 71, 1.4)], (h, w), WIND),
+    ]
+
+
+def draw_slam_ring(w=96, h=24):
+    """Кільце удару об землю (Heaven's Anvil, Dune Quake): сплющений еліпс на лінії ніг (центр (47.5, 14)), передня
+    половина ширша за задню; 1 — мале й товсте, біле ядро, 2 — ширше, 3 — найширше, тонке, розірване спереду й
+    ззаду на дві дуги з боків. Кремово-біле, темно-бура обвідка. Без моделі: не AI."""
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+    cx, cy = (w - 1) / 2, 14.0
+
+    def ring(rx, ry, width, gap=0.0):
+        dx, dy = (xx - cx) / rx, (yy - cy) / ry
+        r = np.hypot(dx, dy)
+        grad = np.hypot(dx / rx, dy / ry) / np.maximum(r, 1e-6)
+        d = (r - 1) / np.maximum(grad, 1e-6)  # відстань до еліпса в px
+        hw = np.where(yy >= cy, width, width * 0.6)  # задня половина тонша (далі від глядача)
+        if gap:
+            hw = np.where(np.abs(xx - cx) < rx * gap, 0, hw)
+        return band(d, hw)
+
+    return [
+        paint_cut([ring(16, 4, 1.8)], (h, w), SLAM),
+        paint_cut([ring(30, 6.5, 1.4)], (h, w), SLAM),
+        paint_cut([ring(44, 8.5, 0.9, gap=0.55)], (h, w), SLAM),
+    ]
 
 
 def frames(kind, opaque):
@@ -713,13 +942,21 @@ def frames(kind, opaque):
 
 
 if __name__ == "__main__":
-    drawn = {"hit_cut": ("Hit/cut_%d", draw_cut), "thrust": ("Smear/thrust_%d", draw_thrust),
-             "punch": ("Smear/punch_%d", draw_punch),
-             "searing_hex_charge": ("Skills/searing_hex/charge_%d", draw_hex_sigil)}  # малює скрипт, без моделі
+    drawn = {
+        "hit_cut": ("Hit/cut_%d", draw_cut),
+        "thrust": ("Smear/thrust_%d", draw_thrust),
+        "punch": ("Smear/punch_%d", draw_punch),
+        "searing_hex_charge": ("Skills/searing_hex/charge_%d", draw_hex_sigil),
+        "dash_trail": ("Smear/dash_%d", draw_dash_trail),
+        "blood_rush_drain": ("Skills/blood_rush/drain_%d", draw_drain),
+        "wind_step_streak": ("Skills/wind_step/streak_%d", draw_wind),
+        "slam_ring": ("Smear/slam_ring_%d", draw_slam_ring),
+    }  # малює скрипт, без моделі
     names = sys.argv[1:] or [*FX, *drawn]
     for name in names:
         if name in drawn:
             for i, out in enumerate(drawn[name][1](), 1):
+                os.makedirs(os.path.dirname(OUT + drawn[name][0]), exist_ok=True)
                 Image.fromarray(out).save(OUT + drawn[name][0] % i + ".png")
                 print("wrote", OUT + drawn[name][0] % i + ".png")
             continue
@@ -764,11 +1001,17 @@ if __name__ == "__main__":
                     out[ndimage.binary_dilation(mask) & ~mask] = fx["outline"] + (255,)
         else:
             outs = []
-            masks = [opaque, opaque, erode(opaque, 1)] if fx.get("heavy") else frames(fx["kind"], opaque)
+            masks = (
+                [opaque, opaque, erode(opaque, 1)]
+                if fx.get("heavy")
+                else frames(fx["kind"], opaque)
+            )
             for i, mask in enumerate(masks):
                 outs.append(q.copy())
                 outs[-1][..., 3] = mask.astype(np.uint8) * 255
-                if fx.get("heavy") and i == 0:  # спалах удару: кольори розпечені до білого (чи до кольору flash)
+                if (
+                    fx.get("heavy") and i == 0
+                ):  # спалах удару: кольори розпечені до білого (чи до кольору flash)
                     hot = np.array(fx.get("flash", (255, 255, 255)), np.float32)
                     outs[-1][..., :3] = hot - (hot - outs[-1][..., :3]) * 0.3
                 if "outline" in fx:

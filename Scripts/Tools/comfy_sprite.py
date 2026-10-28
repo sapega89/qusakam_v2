@@ -299,9 +299,7 @@ BOW_DRAW = (
 # B110: лук у позах, де його не було (стрибок, блок, удар) — кадр героя той самий, лук у дальній руці
 BOW_ON = (
     "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
-    "the picture, only now holding "
-    + BOW
-    + " in his far hand, %s, no arrow, no sword"
+    "the picture, only now holding " + BOW + " in his far hand, %s, no arrow, no sword"
 )
 BOW_GLOW = (
     ", the arrowhead and the arrow shaft glowing with a bright pale yellow light, a small yellow glow around the "
@@ -679,8 +677,10 @@ CHARACTERS = {
                 [
                     "holding the black ledger open in front of him and reading a contract in it, his head bent over it"
                     + SAME,
-                    "FROM:work:0:pressing a gold seal ring onto the open page of the ledger, sealing a contract" + SAME,
-                    "FROM:work:0:closing the ledger with a satisfied look, the gold clasps shut" + SAME,
+                    "FROM:work:0:pressing a gold seal ring onto the open page of the ledger, sealing a contract"
+                    + SAME,
+                    "FROM:work:0:closing the ledger with a satisfied look, the gold clasps shut"
+                    + SAME,
                 ],
             ),
         ],
@@ -712,10 +712,12 @@ CHARACTERS = {
             (
                 "work",
                 [
-                    "writing in the open ledger on his writing board with the long quill, his head bent over it" + SAME,
+                    "writing in the open ledger on his writing board with the long quill, his head bent over it"
+                    + SAME,
                     "FROM:work:0:leaning forward and peering closely ahead through a small round brass lens held up to his "
                     "eye, checking someone's eyes" + SAME,
-                    "FROM:work:0:dipping the quill in a small ink pot clipped to the writing board" + SAME,
+                    "FROM:work:0:dipping the quill in a small ink pot clipped to the writing board"
+                    + SAME,
                 ],
             ),
         ],
@@ -1428,6 +1430,104 @@ CHARACTERS = {
             )
         ],
     ),
+    # H3 (D812, звіт skills-v2-move «For the art lane»): пози навичок руху, кожна замах → рух → удар; руки порожні —
+    # зброю малює WeaponView (кадри зброї — пізніше). Випад-розтин (Dash Strike / Blood Rush / Wind Step).
+    "hero_lunge": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=25,
+        floor=56,
+        specks=8,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "LungeCut",
+                [
+                    # «ready for a wide horizontal cut» — модель домалювала великий клинок: руки названо порожніми
+                    "in the same side view facing right, the same size: crouched low and leaning far forward, ready to "
+                    "dash, the front knee bent and the back leg stretched behind him, his front arm pulled back with "
+                    "the empty fist at his rear hip, the other hand open low in front of him, both hands empty with no "
+                    "weapon, his head upright looking ahead to the right, the cape hanging behind him",
+                    # «rushing» дав риски руху під ногами й кулак уперед; формула Dash/2 + кулак назад
+                    "in the same side view facing right, the same size: in the middle of a fast low dash forward, both "
+                    "feet just off the ground, his body low and leaning forward almost level, his front fist held back "
+                    "at his rear hip, the other hand forward, both hands empty, the cape and tail streaming straight "
+                    "back behind him; not rolling, not spinning, his head upright looking ahead to the right, no "
+                    "motion lines",
+                    "in the same side view facing right, the same size: the end of a fast horizontal cut, a deep low "
+                    "lunge with the front knee bent far forward and the back leg stretched straight behind, his front "
+                    "arm swept straight forward at chest height with the empty fist clenched, the other arm flung back, "
+                    "leaning into the cut, his head upright looking ahead to the right, the cape flying behind him, no "
+                    "weapon in his hands, no motion lines",
+                ],
+            )
+        ],
+    ),
+    # Shield Charge: біг за піднятим передпліччям — щит світла (H2, Assets/FX/Shield/magic) малюється поверх.
+    "hero_charge": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=25,
+        floor=56,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "ShieldCharge",
+                [
+                    "in the same side view facing right, the same size: bracing to charge, crouched in a low wide "
+                    "stance with the front foot forward, his front forearm raised in front of his chest with the empty "
+                    "fist clenched at chin height as if holding up a shield, the elbow forward, the rear fist at his "
+                    "hip, his head ducked slightly, his eye visible looking ahead to the right, the cape hanging behind "
+                    "him",
+                    "in the same side view facing right, the same size: charging forward at a run, leaning far forward, "
+                    "his front leg stepping forward and the back leg pushing off, his front forearm raised in front of "
+                    "his chest with the empty fist clenched at chin height like holding up a shield, his rear arm "
+                    "pumping back, his head low looking ahead to the right, the cape streaming straight back behind "
+                    "him, no motion lines",
+                    "in the same side view facing right, the same size: ramming forward with his front shoulder, the "
+                    "front foot planted far forward on a bent knee and the back leg straight, his front forearm and "
+                    "shoulder thrust forward at chest height in a hard bash, the rear fist at his hip, leaning his whole "
+                    "weight into the blow, his head upright looking ahead to the right, the cape flying behind him, no "
+                    "motion lines",
+                ],
+            )
+        ],
+    ),
+    # Heaven's Anvil / Dune Quake: присів → стрибок з піднятими кулаками → удар об землю.
+    "hero_leap": dict(
+        frames_out="SampleProject/Sprites/Player",
+        ref="SampleProject/Sprites/Player/Walk/1.png",
+        seed=25,
+        floor=56,
+        palette="hero",
+        base=None,
+        who="the same small lizard knight with the steel armour, dark red cape and tail",
+        rows=[
+            (
+                "LeapSlam",
+                [
+                    "in the same side view facing right, the same size: crouched very low on deeply bent knees, coiled "
+                    "to spring high up, both empty fists held together low at his rear hip, leaning forward, his head "
+                    "upright looking ahead to the right, the cape hanging behind him",
+                    # «as if lifting a big hammer» — модель дала молот і напівфас; «both empty fists above his head» з Walk/1 —
+                    # голова стала меншою (кулакам бракувало місця в клітинці): ON: з Heavy/1, де кулаки вже над головою
+                    "ON:SampleProject/Sprites/Player/Heavy/1.png:in the same side view facing right, the same size: "
+                    "keeping both empty fists raised high above his head exactly as in the picture, but now in the air "
+                    "at the top of a high jump, both knees bent and tucked up under him, his feet off the ground, his "
+                    "big round head the same size, looking ahead to the right, the cape flying up behind him, no "
+                    "weapon, no motion lines",
+                    "in the same side view facing right, the same size: landing a heavy slam, crouched very low with "
+                    "one knee on the ground and the other foot planted forward, his body bent forward, both empty fists "
+                    "slammed down together onto the ground in front of him, his head upright looking ahead to the "
+                    "right, the cape flying up behind him, no motion lines",
+                ],
+            )
+        ],
+    ),
     # Герой з одноручним мечем у кадрі (BACKLOG 42, арт A3): клітинка 96x96 (меч виходить за 64x64), піксель — блок
     # 12, щоб картинка лишилась ~1,3 Мп; кадр художника 64x64 стоїть у ній з (16, 32), ступні на рядку 88 (= 56).
     # Бойові пози — з першого кадру (той самий меч), біг і стрибок — ON: з кадрів художника (модель лише додає меч).
@@ -2061,10 +2161,35 @@ CHARACTERS = {
             ),
             (
                 "Air",
-                [BOW_ON % (f, "the bow held upright beside his body, the string toward the viewer") for f in ("Jump/2", "Jump/3", "Fall/2")],
+                [
+                    BOW_ON
+                    % (
+                        f,
+                        "the bow held upright beside his body, the string toward the viewer",
+                    )
+                    for f in ("Jump/2", "Jump/3", "Fall/2")
+                ],
             ),
-            ("Block", [BOW_ON % ("Block/1", "the bow held low and upright beside him, out of the way of his guard")]),
-            ("Hurt", [BOW_ON % ("Hurt/1", "his bow arm flung back behind him still gripping the bow")]),
+            (
+                "Block",
+                [
+                    BOW_ON
+                    % (
+                        "Block/1",
+                        "the bow held low and upright beside him, out of the way of his guard",
+                    )
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    BOW_ON
+                    % (
+                        "Hurt/1",
+                        "his bow arm flung back behind him still gripping the bow",
+                    )
+                ],
+            ),
             # Run — не тут: ON: перемальовував тіла й лук стрибав довжиною (арт-директор); Scripts/Tools/bow_fixups.py
         ],
     ),
@@ -2138,7 +2263,10 @@ CHARACTERS = {
         colors=24,
         specks=12,  # пил моделі під ступнями ходи й смерті
         floor=107,  # лінія ніг старого листа: на ній стоять offset сцени, хітбокси й тіло (B128)
-        candidates=("design/shots/candidates/brass_collector_a7.png", [(41, False), (42, False), (43, False)]),
+        candidates=(
+            "design/shots/candidates/brass_collector_a7.png",
+            [(41, False), (42, False), (43, False)],
+        ),
         who="the same huge golem of pale cracked sandstone blocks bound with dark riveted brass plates, with the two "
         "glowing amber eye slits, the huge brass fists and the big boxy cage of thick dark iron bars on its back",
         base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
@@ -2795,8 +2923,24 @@ CHARACTERS = {
         ],
         colors=16,
         # палітра листів D595 (own_palette з idle + run + strike до A14): новий enter не перефарбовує інших
-        palette=[0x070305, 0x620B09, 0x8E060F, 0x313444, 0x3B4350, 0x4A5460, 0x9A590E, 0xE43B31,
-                 0xDB9F28, 0xF76249, 0xEBA970, 0xF5D663, 0xF4B686, 0xB1C6D2, 0xFBE7AE, 0xF9F5E2],
+        palette=[
+            0x070305,
+            0x620B09,
+            0x8E060F,
+            0x313444,
+            0x3B4350,
+            0x4A5460,
+            0x9A590E,
+            0xE43B31,
+            0xDB9F28,
+            0xF76249,
+            0xEBA970,
+            0xF5D663,
+            0xF4B686,
+            0xB1C6D2,
+            0xFBE7AE,
+            0xF9F5E2,
+        ],
         who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
         "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
         base="Replace the character in picture 1 with {the girl from picture 2, }a fierce barbarian woman: long fiery red "
@@ -3369,7 +3513,12 @@ def scale(img, f):
     out = Image.new(small.mode, (w, h), bg)
     out.paste(small, ((w - small.width) // 2, h - small.height))
     out = np.asarray(out).copy()
-    fg = np.linalg.norm(out[..., :3].astype(np.float32) - np.array(bg[:3], np.float32), axis=2) > 75
+    fg = (
+        np.linalg.norm(
+            out[..., :3].astype(np.float32) - np.array(bg[:3], np.float32), axis=2
+        )
+        > 75
+    )
     dist, (iy, ix) = ndimage.distance_transform_edt(~fg, return_indices=True)
     grow = (dist > 0) & (dist <= UP / 4)
     out[grow] = out[iy[grow], ix[grow]]
@@ -4115,7 +4264,10 @@ CHARACTERS["critter_bird"] = dict(
     ref="SampleProject/Sprites/Player/Walk/1.png",
     seed=111,
     colors=12,
-    crop=(48, 48),  # 32x32 не вміщає: птах завбільшки з голову героя, крила вгору — ще вище
+    crop=(
+        48,
+        48,
+    ),  # 32x32 не вміщає: птах завбільшки з голову героя, крила вгору — ще вище
     out="SampleProject/Assets/Characters/Critters/bird.png",
     who="the same small sandy-brown desert lark with the pale belly, the dark-streaked back, the small crest and the "
     "short pointed beak",
@@ -4127,7 +4279,10 @@ CHARACTERS["critter_bird"] = dict(
     + SIDE_VIEW % {"p": "its"}
     + "."
     + MAGENTA_BG,
-    rows=[("perch", [None, "BOB:52"]), ("fly", [BIRD_UP, BIRD_LEVEL, BIRD_DOWN, BIRD_LEVEL])],
+    rows=[
+        ("perch", [None, "BOB:52"]),
+        ("fly", [BIRD_UP, BIRD_LEVEL, BIRD_DOWN, BIRD_LEVEL]),
+    ],
 )
 # Голуб для Міста — той самий розмір і пози, свій опис і зерно
 CHARACTERS["critter_pigeon"] = dict(
@@ -4212,7 +4367,10 @@ CHARACTERS["critter_mouse"] = dict(
     + SIDE_VIEW % {"p": "its"}
     + "."
     + MAGENTA_BG,
-    rows=[("idle", [None, "BOB:56"]), ("run", [MOUSE_RUN, MOUSE_MID, MOUSE_GATHER, MOUSE_MID])],
+    rows=[
+        ("idle", [None, "BOB:56"]),
+        ("run", [MOUSE_RUN, MOUSE_MID, MOUSE_GATHER, MOUSE_MID]),
+    ],
 )
 
 if __name__ == "__main__":
@@ -4297,7 +4455,9 @@ if __name__ == "__main__":
         # world_scale_plan: точна висота першого кадру в арт-px; розмір у підказці модель не тримає (метелик вийшов
         # 19 px замість 12) — усі згенеровані кадри зменшуються одним множником, рух між ними лишається
         f = fit_height(base, cell, char["height"])
-        frames = {k: v if isinstance(v, str) else scale(v, f) for k, v in frames.items()}
+        frames = {
+            k: v if isinstance(v, str) else scale(v, f) for k, v in frames.items()
+        }
         base = scale(base, f)
         print("height", char["height"], "scale", round(f, 3))
     small = {k: shrink(v, cell) for k, v in frames.items() if not isinstance(v, str)}
@@ -4345,7 +4505,9 @@ if __name__ == "__main__":
                 char.get("palette") != "hero"
             ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
-                if char.get("specks"):  # specks=N — відірвані клапті < N px (пил і тінь моделі біля ступнів) геть
+                if char.get(
+                    "specks"
+                ):  # specks=N — відірвані клапті < N px (пил і тінь моделі біля ступнів) геть
                     op = drop_specks(op, char["specks"])
             else:  # лише поодинокі пікселі (жодного з 8 сусідів) — сміття ключування (арт-директор, Hurt кинджала)
                 p = np.pad(op, 1)
@@ -4360,6 +4522,8 @@ if __name__ == "__main__":
                     )
                     > 0
                 )
+                if char.get("specks"):  # H3: риски руху, які модель малює попри «no motion lines»
+                    op = drop_specks(op, char["specks"])
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floors.get((anim, i), floor) - feet_row(op)
             frame = np.roll(frame, shift, axis=0)
@@ -4391,7 +4555,9 @@ if __name__ == "__main__":
     if "crop" in char:
         # малий критер: лист у меншій клітинці, одне вікно для всіх кадрів (рух між ними лишається), низ — ступні
         nw, nh = char["crop"]
-        cells = sheet.reshape(len(char["rows"]), ch, cols, cw, 4).transpose(0, 2, 1, 3, 4)
+        cells = sheet.reshape(len(char["rows"]), ch, cols, cw, 4).transpose(
+            0, 2, 1, 3, 4
+        )
         xs = np.nonzero(cells[..., 3].any(axis=(0, 1, 2)))[0]
         ys = np.nonzero(cells[..., 3].any(axis=(0, 1, 3)))[0]
         x0, y0 = (xs[0] + xs[-1] + 1 - nw) // 2, floor + 1 - nh
@@ -4399,7 +4565,9 @@ if __name__ == "__main__":
             f"frames do not fit {nw}x{nh}: x {xs[0]}..{xs[-1]}, y {ys[0]}..{ys[-1]}"
         )
         sheet = cells[:, :, y0 : y0 + nh, x0 : x0 + nw].transpose(0, 2, 1, 3, 4)
-        sheet = np.ascontiguousarray(sheet).reshape(len(char["rows"]) * nh, cols * nw, 4)
+        sheet = np.ascontiguousarray(sheet).reshape(
+            len(char["rows"]) * nh, cols * nw, 4
+        )
     if (
         "out" in char
     ):  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере

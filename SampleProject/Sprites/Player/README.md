@@ -27,3 +27,30 @@ The rest are **new frames made from the artist's own frame** `Walk/1.png` by `Sc
 | `CastStorm/1–2.png` | CastStormWindup / CastStormRelease (Electric Strike, D271) | generated: one fist raised to the sky; an arm thrust forward (`hero_cast`) |
 | `Raise/1–3.png` | `Raise` (chest pose D404, potion drink D504): 1 → 2 → 3, 3 held | generated (`hero_raise`): `Raise/1` bending to reach down; `Raise/2` (H4) the in-between, made from `Raise/1` (`ON:`) — rising, both hands going up in front of him at snout height; `Raise/3` the overhead hold — both arms raised behind his head, the open hands meeting above it, face visible, feet on row 56, cape hanging (its own frame, no longer `Heavy/1`). The first `Raise/2` idea (the item held low in cupped palms) failed three times: hands right under the snout or a front view (art director, artA1A2). Item anchor in the cell: hands (47, 42) → overhead, resting on the fingertips (34, 2); the palms are x 26–42, rows 3–9 |
 | `Death/1–4.png` | not wired yet (MASTER_PLAN A7, D138) | generated (`hero_death`): 1 staggering backwards off balance, front foot up, head upright; 2 collapsed onto both knees, head hanging; 3 falling over backwards at 45°, legs up on the right; 4 lying flat on his back, still (head on the left, snout up). 1 and 3 redone (Sapega: «дивне обличчя» — a swirl and a red slit for the eye): his face named in the pose (`HERO_FACE`), seed 24, picked from 5 and 6 candidates. Feet (lowest pixel) on row 56; play once and hold frame 4 |
+| `LungeCut/1–3` | not wired yet (H3, D812): Dash Strike, Blood Rush, Wind Step — 1 wind-up, 2 the dash (held), 3 the strike | generated (`hero_lunge`, seed 25, `specks=8` drops a 4-px motion line the model drew anyway): 1 crouched low and leaning forward, the front fist at the rear hip; 2 the low dash, both feet off the ground, cape and tail streaming back; 3 a deep lunge, the front arm swept forward at chest height. The first 1 drew a big blade («ready for a wide horizontal cut») — the hands are named empty |
+| `ShieldCharge/1–3` | not wired yet (H3): Shield Charge — 1 wind-up, 2 the run (held), 3 the bash | generated (`hero_charge`, seed 25): 1 braced, the front forearm raised, fist at chin height; 2 charging at a run, the forearm raised like a shield, the rear arm back; 3 a shoulder bash, the front arm thrust forward. No shield in the frame: the sky shield (H2, `Assets/FX/Shield/magic`) is drawn over the forearm |
+| `LeapSlam/1–3` | not wired yet (H3): Heaven's Anvil, Dune Quake — 1 wind-up, 2 in the air (held up and down), 3 the slam | generated (`hero_leap`, seed 25): 1 crouched deep to spring, fists low in front; 2 at the top of the jump, knees tucked, both fists overhead — made from `Heavy/1` (`ON:`), so his head is as small as in `Heavy/1` (from `Walk/1` the model drew a hammer, then a half-turn with a small head); 3 the slam, one knee down, both fists on the ground in front. Feet on row 56 in all three, including the airborne frame (as `Jump/*`) |
+
+**H3 wiring** (all three folders, 64×64, the artist's 28 colours, feet on row 56, empty hands; faces right, `flip_h` for the
+left). Suggested `Player.tscn` animations: `<Pose>Windup` = frame 1, `<Pose>Move` = frame 2, `<Pose>Strike` = frame 3, each
+one held frame like `CastFire*`; in `skills.json` → `cast.windup_pose` / `move_pose` / `release_pose`. The weapon is
+`WeaponView`'s overlay (no per-weapon frames yet: a sword / dagger / mace / halberd / dual library falls back to these base
+frames, `Player.body_animation`). Hand points for `CAST_POSES`-style entries, measured on the front fist — texture px → world
+px from `WeaponMount` = ((x − 32) × 1.5, (y − 32) × 1.5); the angle is a suggestion (0 up, + forward):
+
+| Frame | Fist (texture) | World | Angle |
+|---|---|---|---|
+| `LungeCut/1` | (52, 39) | (30, 10.5) | 230 (blade low behind) |
+| `LungeCut/2` | (53, 35) | (31.5, 4.5) | 230 |
+| `LungeCut/3` | (54, 33) | (33, 1.5) | 90 (forward) |
+| `ShieldCharge/1` | (52, 31) | (30, −1.5) | 20 (`guard_angle`) |
+| `ShieldCharge/2` | (54, 34) | (33, 3) | 20 |
+| `ShieldCharge/3` | (54, 31) | (33, −1.5) | 60 |
+| `LeapSlam/1` | (44, 41) | (18, 13.5) | 230 |
+| `LeapSlam/2` | (40, 13), between the two fists | (12, −28.5) | −20 (`smash_from`) |
+| `LeapSlam/3` | (52, 52) | (30, 30) | 165 (`smash_to`) |
+
+The sky shield over `ShieldCharge/*`: its `Block/1` placement (FX README, H2) moved by the fist's offset from `Block/1`'s
+guard fist (≈ (47, 32), `HAND_GUARD`): +5 / +7 / +7 texture px right and 0 / +2 / 0 down (×1.5 in world px). Left for later:
+the per-weapon variants of the three poses (`Weapons/<weapon>/LungeCut|ShieldCharge|LeapSlam`, by `hero_weapon_*` as their
+`Heavy/1–3` were made).
