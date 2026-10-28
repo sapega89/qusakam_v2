@@ -367,6 +367,7 @@ lane himself. Size/shape fixes are not here: they are scaling in the cloud (P10,
   alcove still on placeholder planes (`Lab/gen_far`, slab steps).
 - **Art-lane B rows that need new art**: B173 (DragonMural/MesaClimb floor baked into one backdrop), B174 (GatehouseCellar
   two speeds), B148 (comfy_sprite mixes facings on the armoured scorpion). B184 Death frames are drawn, wait on his look.
+- **D915 the gap above the locked gates**: a palisade wall over BanditCamp's `Gate_Stockade`, a rock lintel over LizardCave's `Gate_Shrine` (the collision stays 416 px).
 - **B168 the prisoner's sacrifice** (D459): fire burst and the body burning away, frames from comfy-sprite with his
   sheet; the djinn rises from the fire (`LabCells.gd:134` still plays `collapse` + fade-in).
 - **Effects polish (A9)** if his notes need new cards (entry below).
