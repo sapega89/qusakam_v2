@@ -878,7 +878,7 @@ func cast_skill(skill_id: String) -> Result:
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
 	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул
 	if definition.damage > 0 and not definition.moves() and not definition.throws() and not definition.leaves_zone() \
-			and SkillTargeting.enemies_in_front(player).is_empty():
+			and SkillTargeting.skill_targets(definition, player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
 		return _fail(skill_id, Result.BUSY)
@@ -929,6 +929,7 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
 				combat_executor.apply_move_riders(definition, effect_source, each, amount)
+				combat_executor.apply_control(definition, effect_source, each)
 		if not hit:
 			_skill_effect_running = false
 			return _fail(skill_id, Result.EFFECT_FAILED)

@@ -148,6 +148,17 @@ var hit_bonus: float = 0.0
 ## Rally: наступний асист компаньйона — +assist_damage шкоди, оглушення й час на полі довші на assist_duration.
 var assist_damage: float = 0.0
 var assist_duration: float = 0.0
+## Контроль і добивання (v2 зріз 6a, D-sv2ca1): блок control у skills.json.
+## control_hits: "" — усі в зоні удару (D142); "first" — найближчий перед героєм; "front" з control_reach — усі перед
+## героєм до control_reach px від тіла; "around" — усі в control_reach px по обидва боки.
+var control_hits: String = ""
+var control_reach: float = 0.0
+## Підкидання легкого ворога (не великого, не боса, не летючого, не в броні), с у повітрі; замах зірвано.
+var control_launch: float = 0.0
+## Збиває з ніг: ворог лежить (поза збою), замах зірвано, с.
+var control_knockdown: float = 0.0
+## Шкода стійкості (guard, D495 / D777) кожній цілі — у важких ударах героя (PlayerCombat.POISE_HEAVY).
+var control_poise_x: float = 0.0
 
 
 static func type_from_string(value: String) -> Type:
@@ -247,6 +258,12 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.zone_dps = maxi(0, int(zone.get("dps", 0)))
 	definition.zone_heal = maxi(0, int(zone.get("heal", 0)))
 	_read_buff(definition, data.get("buff", {}))
+	var control: Dictionary = data.get("control", {})
+	definition.control_hits = String(control.get("hits", ""))
+	definition.control_reach = maxf(0.0, float(control.get("reach", 0.0)))
+	definition.control_launch = maxf(0.0, float(control.get("launch", 0.0)))
+	definition.control_knockdown = maxf(0.0, float(control.get("knockdown", 0.0)))
+	definition.control_poise_x = maxf(0.0, float(control.get("poise_x", 0.0)))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:
@@ -373,4 +390,6 @@ func to_dict() -> Dictionary:
 				"flinch_radius": flinch_radius, "flinch": flinch_time, "absorb": absorb, "absorb_elem": absorb_elem,
 				"hp_cost": hp_cost, "hits": buff_hits, "damage": hit_bonus, "assist_damage": assist_damage,
 				"assist_duration": assist_duration},
+		"control": {"hits": control_hits, "reach": control_reach, "launch": control_launch,
+				"knockdown": control_knockdown, "poise_x": control_poise_x},
 	}

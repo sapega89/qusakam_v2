@@ -40,7 +40,8 @@
       "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move",
       "projectile": "{range: px, speed: px/s, pierce: bool} - a thrown skill (v2 slice 4, D-sv2r1): on release a spear flies from the hand along the facing like the bow's arrow (D380, D381), through the hero and NPCs, sticks in a wall, and fades after range px; it hits the first enemy, or with pierce every enemy on its line once. Starts without an enemy in front; SP is paid on the throw, hit or miss",
       "zone": "{radius: px, time: s, dps: int, heal: int} - a ground zone (v2 slice 4, D-sv2r2): on release it lies at the hero's feet, radius px both ways and 96 px up, for time s; every second enemies in it take dps and the hero and allies in it heal heal (both with rank and synergies). With damage, the release also hits every enemy in the zone. From the ground only; starts without an enemy in front; SP is paid on release",
-      "buff": "{kind: counter | mirror | breath | battle_cry | aegis | blood_price | rally, time?: s, ...} - stances and buffs (v2 slice 5, D-sv2s1), run by SkillStances; the numbers below scale with rank, Wisdom and synergies like heal (times do not). counter: a stance for time s (it is the cast's release; cast.release follows time): the first blow of an enemy in it, from either side, is blocked and answered with the skill's damage; an arrow is blocked; a red (dodge) attack still hits and breaks the stance. mirror: a stance for time s: every arrow that reaches the hero flies back at reflect x its damage (red arrows and the boss's fireball still hit); melee blows land as usual. breath: in battle only; the wind-up is the channel (a wounding blow breaks it, D259); on release heals the hero by heal and restores sp SP. battle_cry: the hero's hits (melee and arrows) deal +attack for time s; ordinary enemies (not elite, not a boss) within flinch_radius px are staggered for flinch s. aegis: for time s a barrier soaks absorb + absorb_elem x Elem. Atk. of damage after defence; a blow it soaks whole does not stagger. blood_price: pays hp_cost x Max HP (refused if that would leave 0 HP); the next hits landed hits deal +damage. rally: the next companion assist deals +assist_damage and its stun and stay last +assist_duration; refused with no companion in the party; kept until that assist. Each lasting buff shows its skill icon in the hero's status row (HUD)"
+      "buff": "{kind: counter | mirror | breath | battle_cry | aegis | blood_price | rally, time?: s, ...} - stances and buffs (v2 slice 5, D-sv2s1), run by SkillStances; the numbers below scale with rank, Wisdom and synergies like heal (times do not). counter: a stance for time s (it is the cast's release; cast.release follows time): the first blow of an enemy in it, from either side, is blocked and answered with the skill's damage; an arrow is blocked; a red (dodge) attack still hits and breaks the stance. mirror: a stance for time s: every arrow that reaches the hero flies back at reflect x its damage (red arrows and the boss's fireball still hit); melee blows land as usual. breath: in battle only; the wind-up is the channel (a wounding blow breaks it, D259); on release heals the hero by heal and restores sp SP. battle_cry: the hero's hits (melee and arrows) deal +attack for time s; ordinary enemies (not elite, not a boss) within flinch_radius px are staggered for flinch s. aegis: for time s a barrier soaks absorb + absorb_elem x Elem. Atk. of damage after defence; a blow it soaks whole does not stagger. blood_price: pays hp_cost x Max HP (refused if that would leave 0 HP); the next hits landed hits deal +damage. rally: the next companion assist deals +assist_damage and its stun and stay last +assist_duration; refused with no companion in the party; kept until that assist. Each lasting buff shows its skill icon in the hero's status row (HUD)",
+      "control": "{hits?: first | front | around, reach?: px, launch?: s, knockdown?: s, poise_x?: float} - control and finishers (v2 slice 6a, D-sv2ca1). hits picks the targets: none = all in the strike zone (D142), first = the nearest in front, front = all in front up to reach px from the hero's body, around = all within reach px on both sides. launch throws each light enemy (not large, armoured, flying or a boss) into the air for that many s, its wind-up broken. knockdown puts each hit enemy down for that many s (the stagger pose), its wind-up broken; a boss is only stunned. poise_x is guard damage to each target in the hero's heavy attacks (PlayerCombat.POISE_HEAVY, with the poise passives, D284); a full bar staggers (D777), the shield-bearer's shield takes any skill hit (D616)"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -1614,7 +1615,6 @@
       },
       "required_level": 3,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 6,
       "cooldown": 0.0,
       "damage": 52,
@@ -1622,9 +1622,27 @@
         "phys": 3.6,
         "elem": 0.0
       },
-      "draft": {
-        "launch_s": 0.8
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "HeavyStrike"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "launch": 0.8
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "keen_edge",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         1
@@ -1646,7 +1664,6 @@
       },
       "required_level": 4,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 5,
       "cooldown": 0.0,
       "damage": 28,
@@ -1655,9 +1672,28 @@
         "elem": 0.0
       },
       "stun": 0.4,
-      "draft": {
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.2,
+        "release": 0.3,
+        "windup_pose": "ShieldChargeWindup",
+        "release_pose": "ShieldChargeStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "first",
         "poise_x": 2.5
       },
+      "synergies": [
+        {
+          "skill": "heavy_hand",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "shield_block",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         1
@@ -1681,7 +1717,6 @@
       "prerequisites": [
         "rising_slash"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 68,
@@ -1689,10 +1724,29 @@
         "phys": 4.4,
         "elem": 0.0
       },
-      "draft": {
-        "radius_px": 140,
-        "knockdown_s": 1.2
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.4,
+        "windup_pose": "LeapSlamWindup",
+        "release_pose": "LeapSlamStrike"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "around",
+        "reach": 140,
+        "knockdown": 1.2
+      },
+      "synergies": [
+        {
+          "skill": "heavy_hand",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "fortitude",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         2
@@ -2690,7 +2744,6 @@
       "prerequisites": [
         "balanced_strike"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 32,
@@ -2699,10 +2752,28 @@
         "elem": 0.0
       },
       "stun": 0.3,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "first",
         "poise_x": 3.0
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "rooted_resolve",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         1
@@ -2724,7 +2795,6 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 72,
@@ -2732,11 +2802,30 @@
         "phys": 4.4,
         "elem": 0.0
       },
-      "draft": {
-        "range_px": 160,
-        "knockdown_s": 1.0
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "front",
+        "reach": 160,
+        "knockdown": 1.0
+      },
+      "synergies": [
+        {
+          "skill": "perfect_balance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dervish_rhythm",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3

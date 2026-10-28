@@ -59,6 +59,11 @@ func _initialize() -> void:
 			# D-sv2s1: стійки й баффи — заглушка StanceSkill.tscn (частинки, без кадрів); свої кадри — з арт-лейном
 			ck(skill.vfx.get_file() == "StanceSkill.tscn", "%s: the stances' placeholder effect (StanceSkill.tscn)" % skill.id)
 			continue
+		# v2 зріз 6a (D-sv2ca1): навички контролю поки позичають шлейф удару героя й кільце удару стрибків — свої кадри
+		# (і перевірка «жодних спільних кадрів», D279) прийдуть з артом (ComfyUI, звіт skills-v2-control-a)
+		if skill.has("control"):
+			ck(skill.vfx.get_file() == "ControlSkill.tscn", "%s: the control skills' borrowed effect (ControlSkill.tscn)" % skill.id)
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

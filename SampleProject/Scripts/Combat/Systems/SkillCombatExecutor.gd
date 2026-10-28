@@ -53,6 +53,19 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 		EventBus.skill_drained.emit(source, target, drained)
 
 
+## Контроль (D-sv2ca1) після влучання: шкода стійкості — control_poise_x важких ударів героя з пасивкою poise (D284,
+## як PlayerCombat._hit_effects; повна шкала — збій, D777), підкидання, збиття з ніг. POISE_HEAVY — з героя: class_name
+## PlayerCombat тут дав би цикл компіляції (PlayerCombat кличе цей клас).
+func apply_control(definition: SkillDefinition, source: Node2D, target: Node2D) -> void:
+	if definition.control_poise_x > 0.0:
+		var poise: float = source.combat.POISE_HEAVY * definition.control_poise_x * (1.0 + ServiceLocator.get_skill_manager().passive_value("poise"))
+		target.take_poise(poise, source.global_position.x, &"skill")
+	if definition.control_launch > 0.0:
+		target.launch(definition.control_launch)
+	if definition.control_knockdown > 0.0:
+		target.knock_down(definition.control_knockdown)
+
+
 # ── Рух (D812) ─────────────────────────────────────────────────────────────
 ## Герой рухається тілом (PlayerMover.push і гравітація), тож тіла ворогів зупиняють його самі (D443): ривок
 ## спиняється, щойно перший ворог у досяжності удару; стрибок не летить далі за першого ворога попереду — за спину
