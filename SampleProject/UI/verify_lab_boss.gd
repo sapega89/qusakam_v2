@@ -258,8 +258,8 @@ func _moves(boss: Node2D) -> void:
 
 ## D642 на рівні, де герой зустрічає боса (16: прямий шлях через лабораторію, xp_curve.json), зі спорядженням тієї миті
 ## (срібний меч з Мерії, залізні обладунок, шолом і щит): ні блоку, ні ухилу — 3–4 удари найманця (серія булава,
-## булава, палиця) кладуть героя; йому треба близько 40 легких ударів героя (серія 1.0, 1.0, 1.4) з очками
-## атрибутів порівну. Герой «лише сила» (усі очки в Strength) б'є сильніше, але й гине так само швидко — без навичок
+## булава, палиця) кладуть героя; йому треба 35–65 легких ударів героя (серія 1.0, 1.0, 1.4) на збірці 2/2/1 (D912;
+## герой з очками порівну слабший за задумом — гине швидше й б'є довше). Герой «лише сила» (усі очки в Strength) б'є сильніше, але й гине так само швидко — без навичок
 ## (лікування, блок, збій) бій на межі; це числа для симуляції D642, не її заміна.
 func _numbers() -> void:
 	print("[11] D642 numbers at the expected level (16), no block, no dodge")
@@ -273,8 +273,27 @@ func _numbers() -> void:
 	for pair: Array in [["sword", "silver_sword"], ["armor", "iron_armor"], ["helmet", "iron_helmet"], ["shield", "iron_shield"]]:
 		sl.get_equipment_manager().equip_item(who, pair[0], pair[1], sl.get_item_database().get_item(pair[1]))
 	for i in 5: await process_frame
+	var points: int = sl.get_attribute_manager().get_unspent()
+	# D912: смугу D676 судять на збірці 2/2/1 (як SKILLS у verify_difficulty); герой «порівну» слабший за задумом.
+	var main := await _build({"strength": points * 2 / 5, "vitality": points * 2 / 5, "wisdom": points - 2 * (points * 2 / 5)})
+	var even := await _build({"strength": points / 4, "agility": points / 4, "vitality": points / 4, "wisdom": points - 3 * (points / 4)})
+	var strong := await _build({"strength": points})
+	# D676: Sapega прийняв 2,6 удару й 60 ударів для боса лабораторії («так, це норм»)
+	ck(main.die >= 2.5 and main.die <= 4.0, "2/2/1 build: he dies in %.1f of the mercenary's blows (%d HP; mace %d, club %d)" % [main.die, main.hp, main.mace, main.club])
+	ck(main.kill >= 35.0 and main.kill <= 65.0, "2/2/1 build: the mercenary takes %.0f light hits (%d HP, Phys. Atk. %d)" % [main.kill, main.boss_hp, main.atk])
+	ck(even.die < main.die and even.kill > main.kill, "D912: the evenly spread hero is weaker by design: dies in %.1f blows (2/2/1 %.1f), needs %.0f light hits (2/2/1 %.0f)"
+			% [even.die, main.die, even.kill, main.kill])
+	ck(strong.die <= main.die and strong.kill > 25.0, "strength only: dies in %.1f blows, needs %.0f light hits — still a long fight without skills" % [strong.die, strong.kill])
+
+
+## Герой рівня 16 з очками [param allocation]: за скільки ударів найманця гине (die) і скільки легких ударів серії
+## (1.0, 1.0, 1.4) треба на найманця (kill).
+func _build(allocation: Dictionary) -> Dictionary:
+	var gm: Node = sl.get_game_manager()
 	var attrs: Node = sl.get_attribute_manager()
-	attrs.spend({"strength": 19, "agility": 19, "vitality": 19, "wisdom": attrs.get_unspent() - 57})
+	attrs.reset()
+	for i in 5: await process_frame
+	attrs.spend(allocation)
 	for i in 5: await process_frame
 	var hero: Node = game.player
 	hero.refresh_max_health()
@@ -284,21 +303,9 @@ func _numbers() -> void:
 	scene.free()
 	var series: Array[int] = [hero.mitigated_damage(roundi(stats.base_damage)), hero.mitigated_damage(roundi(stats.base_damage)),
 			hero.mitigated_damage(roundi(stats.base_damage * club_mult))]
-	var per_hit := (series[0] + series[1] + series[2]) / 3.0
-	var to_die := float(hero.Max_Health) / per_hit
-	# D676: Sapega прийняв 2,6 удару й 60 ударів для боса лабораторії («так, це норм»)
-	ck(to_die >= 2.5 and to_die <= 4.0, "balanced build: he dies in %.1f of the mercenary's blows (%d HP; mace %d, club %d)" % [to_die, hero.Max_Health, series[0], series[2]])
-	var swing: float = gm.calculate_physical_damage() * 3.4 / 3.0
-	var to_kill: float = stats.max_health / swing
-	ck(to_kill >= 35.0 and to_kill <= 65.0, "balanced build: the mercenary takes %.0f light hits (%d HP, Phys. Atk. %d)" % [to_kill, stats.max_health, gm.calculate_physical_damage()])
-	attrs.reset()
-	for i in 5: await process_frame
-	attrs.spend({"strength": attrs.get_unspent()})
-	for i in 5: await process_frame
-	hero.refresh_max_health()
-	var strong_die: float = float(hero.Max_Health) / ((hero.mitigated_damage(roundi(stats.base_damage)) * 2 + hero.mitigated_damage(roundi(stats.base_damage * club_mult))) / 3.0)
-	var strong_kill: float = stats.max_health / (gm.calculate_physical_damage() * 3.4 / 3.0)
-	ck(strong_die <= to_die and strong_kill > 25.0, "strength only: dies in %.1f blows, needs %.0f light hits — still a long fight without skills" % [strong_die, strong_kill])
+	return {"hp": hero.Max_Health, "atk": gm.calculate_physical_damage(), "mace": series[0], "club": series[2], "boss_hp": stats.max_health,
+			"die": float(hero.Max_Health) / ((series[0] + series[1] + series[2]) / 3.0),
+			"kill": stats.max_health / (gm.calculate_physical_damage() * 3.4 / 3.0)}
 
 func _initialize() -> void:
 	await process_frame

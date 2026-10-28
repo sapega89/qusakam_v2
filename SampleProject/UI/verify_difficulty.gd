@@ -13,7 +13,8 @@ extends SceneTree
 ##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів і валить ворога за 4–6 своїх;
 ##   [2] бос: валить героя за 3–4 удари, падає приблизно за 40 (34–46) ударів SKILLS-героя;
 ##   [3] еліта (вид-еліта й заплановані великі види в точках BigSlot_*, D652) і бос: SKILLS-герой перемагає, STRENGTH — ні;
-##   [4] найважчий хід боса не вбиває героя з повним HP одним ударом; [5] Strength дає спадну віддачу.
+##   [3a] D911: зсуви рівнів як збудовано, і шість боїв з елітою (D911_MAY_LOSE) симуляція може програти;
+##   [4] найважчий хід боса не вбиває SKILLS-героя з повним HP одним ударом (D913: STRENGTH — скляна гармата); [5] Strength дає спадну віддачу.
 ## Уроки навчання (D-28c) лишаються прохідними — це перевіряє verify_onboarding.
 ## Удар героя — легка серія (COMBO_DAMAGE) без криту, зі спини (панцир tank, щит shield-bearer); удар ворога —
 ## звичайний удар (у боса — удар комбо), герой не блокує й не ухиляється. «Перемагає»: за бій у N ударів герой
@@ -49,6 +50,12 @@ const OATH := "paladin"
 ## Клятва й дерево професії відкриваються на 5-му рівні (D280).
 const OATH_LEVEL := 5
 const OPENINGS := {"ordinary": 2, "elite": 4, "boss": 10}
+## D911: зсуви рівня лишаються як збудовано (D857) — і числа еліт теж; ці бої з елітою симуляція може програти
+## (вона нічого не блокує, гравець — блокує й ухиляється), тож [3] їх не судить.
+const D911_OFFSETS := {"ordinary": 0, "elite": 1, "boss": 2}
+const D911_ZONES := {"Laboratory": 1, "BanditCamp": 1}
+const D911_MAY_LOSE := ["elite armoured scorpion L3", "elite old vulture L4", "heavy archer (BanditCamp) L4", "elite bandit brute L8",
+		"elite tower shield guard L9", "elite armoured scorpion L11"]
 
 const ORDINARY_TAKEN := [5, 6]
 const ORDINARY_DEALT := [4, 6]
@@ -139,10 +146,25 @@ func _initialize() -> void:
 			ck(_in(row.taken, BOSS_TAKEN) and _in(row.dealt, BOSS_DEALT), "%s at level %d: %d hits kill the hero (%s), %d hits kill it (%s)"
 					% [row.name, row.level, row.taken, BOSS_TAKEN, row.dealt, BOSS_DEALT])
 
+	print("[3a] D911: the level offsets stay as built (D857), so these elite fights are ones the sim may lose")
+	ck(offsets.size() == D911_OFFSETS.size() and D911_OFFSETS.keys().all(func(k: String) -> bool: return int(offsets.get(k, -1)) == D911_OFFSETS[k]),
+			"kind offsets as built: %s (D911: %s)" % [offsets, D911_OFFSETS])
+	var zones: Dictionary = Variety.data().scaling.zone_offsets
+	for zone: String in D911_ZONES:
+		ck(int(zones.get(zone, 0)) == D911_ZONES[zone], "%s zone +%d (D911: +%d)" % [zone, int(zones.get(zone, 0)), D911_ZONES[zone]])
+	for name: String in D911_MAY_LOSE:
+		var at: Array = rows.filter(func(r: Dictionary) -> bool: return r.name == name)
+		ck(at.size() == 2 and at.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.scaled > r.level),
+				"%s: an elite fight on the route, above the hero's level (%s)" % [name, at.map(func(r: Dictionary) -> String: return "%s e.lv %d %s" % [r.build, r.scaled, "wins" if r.wins else "loses"])])
+
 	print("[3] skills make the difference: from the oath on, elites and bosses fall to the SKILLS hero, not to the STRENGTH one")
-	print("    (before the oath both builds hold ≤ 4 JP and no active skill, so the road's lone elite must fall to either)")
+	print("    (before the oath both builds hold ≤ 4 JP and no active skill, so the road's lone elite must fall to either;")
+	print("    D911's fights may be lost by either build, but from the oath on the STRENGTH hero still loses them)")
 	for row in rows:
-		if row.cls in ["elite", "boss"]:
+		if row.name in D911_MAY_LOSE:
+			if row.build == "STRENGTH" and row.level >= OATH_LEVEL:
+				ck(not row.wins, "%s at level %d, STRENGTH: loses (D911, %d hits needed)" % [row.name, row.level, row.dealt])
+		elif row.cls in ["elite", "boss"]:
 			ck(row.wins == (row.build == "SKILLS" or row.level < OATH_LEVEL), "%s at level %d, %s: %s (%d hits needed, %d blows taken, survives %d)"
 					% [row.name, row.level, row.build, "wins" if row.wins else "loses", row.dealt,
 					ceili(float(row.dealt) / OPENINGS[row.cls]), row.taken_flask - 1])
@@ -156,15 +178,16 @@ func _initialize() -> void:
 	ck(leader.size() >= 2 and rows.all(func(r: Dictionary) -> bool: return not String(r.name).begins_with("planned jackal_pack_leader"))
 			and leader.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL)),
 			"pack leader rows: %s" % [leader.map(func(r: Dictionary) -> String: return "%s at level %d %s %s, HP %d, hit %d" % [r.name, r.level, r.build, "wins" if r.wins else "loses", r.enemy_hp, r.enemy_hit])])
-	print("[3d] the bandit brute (D652, D693) is a live elite of its own, on the road and in the Laboratory, and meets [3]")
+	print("[3d] the bandit brute (D652, D693) is a live elite of its own, on the road and in the Laboratory, and meets [3] (L8: D911)")
 	var brutes := rows.filter(func(r: Dictionary) -> bool: return String(r.name).begins_with("elite bandit brute"))
 	ck(brutes.size() >= 4 and rows.all(func(r: Dictionary) -> bool: return not String(r.name).begins_with("planned bandit_brute"))
-			and brutes.all(func(r: Dictionary) -> bool: return r.cls == "elite" and r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL)),
+			and brutes.all(func(r: Dictionary) -> bool: return r.cls == "elite" and (r.name in D911_MAY_LOSE or r.wins == (r.build == "SKILLS" or r.level < OATH_LEVEL))),
 			"brute rows: %s" % [brutes.map(func(r: Dictionary) -> String: return "%s at level %d %s %s, HP %d, hit %d" % [r.name, r.level, r.build, "wins" if r.wins else "loses", r.enemy_hp, r.enemy_hit])])
 
-	print("[4] a boss's heaviest move takes a big bite but never kills a full-HP hero at once (a death reads as a missed roll)")
+	print("[4] a boss's heaviest move takes a big bite but never kills the full-HP SKILLS hero at once (a death reads as a missed roll);")
+	print("    D913: the all-Strength hero is a glass cannon, that move may kill him")
 	for row in rows:
-		if row.cls == "boss":
+		if row.cls == "boss" and row.build == "SKILLS":
 			ck(row.heavy_taken >= 2, "%s, %s: its heaviest move (%d) kills in %d hits" % [row.name, row.build, row.heavy, row.heavy_taken])
 
 	print("[5] Strength gives diminishing returns (D642)")
