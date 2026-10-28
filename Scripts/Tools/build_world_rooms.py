@@ -409,7 +409,8 @@ PAINTED = {
                        ("OccluderBeam", AC + "gen_front.png", "front", (888, -12), {})],
     # README ставить стовпи (340 арту) на y −66 — ступня 444, у кадрі (verify_room_entrances п. 4): на −10 верх над
     # кадром (−6), ступня 500 — під ним (480).
-    "MalikStash": [("Wall", "MalikStash/gen_wall.png", (0.85, 1), (0, 0), {"tile": 328}),
+    # Вузька плитка (492 світу): 6 повторів не доходять до східного краю (видно порожнечу біля шахти), 12 — доходять.
+    "MalikStash": [("Wall", "MalikStash/gen_wall.png", (0.85, 1), (0, 0), {"tile": 328, "times": 12}),
                    ("Hoard", "MalikStash/gen_hoard.png", (0.95, 1), (202.5, 300), {}),
                    ("Lamp", "MalikStash/gen_lamp.png", (0.95, 1), (358.5, 330), {}),
                    ("Shaft", "MalikStash/gen_slab.png", "room", (1345.5, 0), {"z": -2}),
@@ -657,7 +658,7 @@ class Room(Scene):
             if "tile" in ex:
                 rw = ex.get("repeat", ex["tile"] * 1.5)
                 x = x % rw - rw
-                body += '\nrepeat_size = Vector2(%g, 0)\nrepeat_times = %d' % (rw, int(self.w / rw) + 3)
+                body += '\nrepeat_size = Vector2(%g, 0)\nrepeat_times = %d' % (rw, ex.get("times", int(self.w / rw) + 3))
             self.node(body)
             self.node(self._sprite("Sprite", "Back/" + name, tex, (x, pos[1]), ex))
         self.node('[node name="Ground" type="Node2D" parent="."]\nz_index = -9')

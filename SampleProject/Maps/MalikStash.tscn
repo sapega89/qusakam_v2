@@ -25,7 +25,7 @@ polygon = PackedVector2Array(0, 0, 1728, 0, 1728, 960, 0, 960)
 [node name="Wall" type="Parallax2D" parent="Back"]
 scroll_scale = Vector2(0.85, 1)
 repeat_size = Vector2(492, 0)
-repeat_times = 6
+repeat_times = 12
 
 [node name="Sprite" type="Sprite2D" parent="Back/Wall"]
 texture_filter = 1
