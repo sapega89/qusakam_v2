@@ -113,7 +113,7 @@ func _initialize() -> void:
 	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
 	await Kit.frames(self, 20)
 	var upper: Node = game.map.get_node("Fight_Upper")
-	ck(upper.respawns and not game.map.get_node("Fight_Lower").fight_in_progress(), "Fight_Upper is an ordinary fight")
+	ck(upper.respawns and not game.map.get_node("Fight_Fly").fight_in_progress(), "Fight_Upper is an ordinary fight")
 	upper.spawn_all_enemies()
 	await create_timer(4.0).timeout
 	for enemy in _alive(upper):

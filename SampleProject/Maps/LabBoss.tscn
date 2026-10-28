@@ -166,7 +166,7 @@ offset = Vector2(-36, -88)
 
 [node name="CorridorDoor" parent="." instance=ExtResource("x1")]
 position = Vector2(64, 309.75)
-target_room = "res://SampleProject/Maps/Laboratory.tscn"
+target_room = "res://SampleProject/Maps/LabTopFloor.tscn"
 arrival = NodePath("BossDoor")
 
 [node name="Interactable" parent="CorridorDoor" index="1"]

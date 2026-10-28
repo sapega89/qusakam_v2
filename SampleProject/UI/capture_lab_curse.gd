@@ -5,7 +5,7 @@ extends SceneTree
 ## Два кадри в одному design/shots/lab_curse/cursed_jackal_corridor.png. Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_lab_curse.gd
 
-const LAB := "res://SampleProject/Maps/Laboratory.tscn"
+const LAB := "res://SampleProject/Maps/LabMiddleFloor.tscn"
 const PANEL := Vector2i(900, 360)
 
 var game: Node
@@ -25,7 +25,7 @@ func _initialize() -> void:
 	current_scene = game
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
-	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	await game.teleport_to_room(LAB, ^"StairsDoor")
 	for i in 400:
 		if not dm.is_dialogue_active():
 			break
@@ -36,20 +36,20 @@ func _initialize() -> void:
 	hero = game.player
 	hero.Max_Health = 9999
 	hero.current_health = 9999
-	# Під драбиною: на блоці середнього поверху, зона бою — трохи на захід.
-	hero.global_position = Vector2(1480, 800 - 32)
+	# Біля дверей зі сходів (лабораторія v3, D865): зона бою — трохи на захід.
+	hero.global_position = Vector2(3600, 384 - 32)
 	hero.velocity = Vector2.ZERO
 	await create_timer(0.6).timeout
 	var fight: Node = game.map.get_node(^"Fight_Cursed")
 	Input.action_press(&"move_left")
-	await _until(func() -> bool: return hero.global_position.x < 1290.0)
+	await _until(func() -> bool: return hero.global_position.x < 3360.0)
 	Input.action_release(&"move_left")
 	await _until(func() -> bool: return not fight.get_children().filter(func(n: Node) -> bool: return n.is_in_group(&"enemies")).is_empty())
 	var jackal: Node = fight.get_children().filter(func(n: Node) -> bool: return n.is_in_group(&"enemies"))[0]
 	print("spawned %s elite=%s HP %d damage %.0f" % [jackal.enemy_stats.enemy_type, jackal.elite, jackal.Max_Health, jackal.damage])
 	hero.set_invulnerable(true, 30.0)
 	var centre := func() -> Vector2: return (hero.global_position + jackal.global_position) / 2.0 + Vector2(0, -10)
-	await _until(func() -> bool: return jackal.anim_player.current_animation == &"walk" and jackal.global_position.x > 1150.0)
+	await _until(func() -> bool: return jackal.anim_player.current_animation == &"walk" and jackal.global_position.x > 3180.0)
 	await create_timer(0.1).timeout
 	await _grab(centre.call())
 	await _until(func() -> bool: return jackal.anim_player.current_animation == &"attack" and jackal.anim_player.current_animation_position > 0.3)

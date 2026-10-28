@@ -64,14 +64,14 @@ tile_map_data = PackedByteArray("AAD//wAAAQAIAAcAAAA2AAAAAQAIAAcAAAD//wEAAQAIAAc
 tile_set = ExtResource("w4")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(150, 360)
+position = Vector2(1550, 360)
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("w5")]
-position = Vector2(150, 384)
+position = Vector2(1550, 384)
 texture = ExtResource("w6")
 
 [node name="ExitDoor" parent="." instance=ExtResource("w7")]
-position = Vector2(141.75, 309.75)
+position = Vector2(1541.75, 309.75)
 target_room = "res://SampleProject/Maps/AlchemistCorridor.tscn"
 arrival = NodePath("StoreDoor")
 

@@ -65,28 +65,28 @@ tile_map_data = PackedByteArray("AAD//wAAAQAIAAcAAAC9AAAAAQAIAAcAAAD//wEAAQAIAAc
 tile_set = ExtResource("w4")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(900, 360)
+position = Vector2(3000, 360)
 
 [node name="HatchDoorEntrance" parent="." instance=ExtResource("w5")]
-position = Vector2(900, 384)
+position = Vector2(150, 384)
 texture = ExtResource("w6")
 
 [node name="HatchDoor" parent="." instance=ExtResource("w7")]
-position = Vector2(891.75, 309.75)
+position = Vector2(141.75, 309.75)
 target_room = "res://SampleProject/Maps/LabCells.tscn"
 arrival = NodePath("DrainDoor")
 
 [node name="GrateDoorEntrance" parent="." instance=ExtResource("w5")]
-position = Vector2(5750, 384)
+position = Vector2(3000, 384)
 texture = ExtResource("w6")
 
 [node name="GrateDoor" parent="." instance=ExtResource("w7")]
-position = Vector2(5741.75, 309.75)
+position = Vector2(2991.75, 309.75)
 target_room = "res://SampleProject/Maps/Laboratory.tscn"
 arrival = NodePath("DrainDoor")
 
 [node name="Chest_Drain" parent="." instance=ExtResource("w8")]
-position = Vector2(3000, 384)
+position = Vector2(5400, 384)
 contents = Dictionary[String, int]({
 "potion_lesser": 1,
 "herb": 2

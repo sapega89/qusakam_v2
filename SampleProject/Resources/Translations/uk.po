@@ -2316,8 +2316,8 @@ msgstr "Він опритомнів у клітці лабораторії й п
 msgid "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
 msgstr "Клітки стояли відчинені. Він познайомився з іншими з черги до мера — і з Маліком, який обіцяв золото кожному, хто його виведе."
 
-msgid "He fought his way down through three storeys of the laboratory's guards."
-msgstr "Він пробився вниз крізь три поверхи лабораторної варти."
+msgid "He fought his way up through three storeys of the laboratory's guards."
+msgstr "Він пробився вгору крізь три поверхи лабораторної варти."
 
 msgid "The master of the laboratory declared it the end of his road."
 msgstr "Господар лабораторії оголосив, що тут його дорога й скінчиться."
@@ -3786,3 +3786,22 @@ msgstr "Ключ алхіміка"
 
 msgid "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."
 msgstr "Ключ зі скляною намистиною на кільці, забутий на столі алхіміка. Ним відмикають його комору."
+
+# [DRAFT] Laboratory v3 (D863, D865): the climb up — floors, great stairs, the guard's alcove (LocationMap.room_title).
+msgid "Climb up out of the laboratory"
+msgstr "Підійміться з лабораторії нагору"
+
+msgid "Lab Middle Floor"
+msgstr "Лабораторія — середній поверх"
+
+msgid "Lab Top Floor"
+msgstr "Лабораторія — верхній поверх"
+
+msgid "Lab Stairs East"
+msgstr "Великі сходи"
+
+msgid "Lab Stairs West"
+msgstr "Великі сходи"
+
+msgid "Lab Guard Pocket"
+msgstr "Кишеня вартового"

@@ -25,7 +25,8 @@ extends SceneTree
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Маршрут у порядку історії (verify_xp_curve: ROUTE + LAB_ROUTE).
-const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
+const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabStairsEast", "LabGuardPocket", "LabMiddleFloor", "LabStairsWest", "LabTopFloor",
+		"LabBoss"]
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "bandit_brute": "bandit brute", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",
@@ -88,7 +89,7 @@ func _initialize() -> void:
 	var meetings := _meetings()
 	meetings.append(_side_room("heavy_archer", "BanditCamp", ^"Fight_Camp"))
 	print("[0a] D722, D724: the old vulture and the tower shield guard first stand alone in optional fights guarding a chest")
-	for fight: String in ["DesertRoad/Fight_OldVulture", "Laboratory/Fight_TowerGuard"]:
+	for fight: String in ["DesertRoad/Fight_OldVulture", "LabGuardPocket/Fight_TowerGuard"]:
 		var at: Array = fights.filter(func(f: Dictionary) -> bool: return f.fight == fight)
 		ck(at.size() == 1 and at[0].optional and at[0].big.size() == 1, "%s: optional, one elite (%s)" % [fight, at[0].big if at.size() == 1 else []])
 	print("[0] each fight's enemy_level is the hero's level when he gets there (XP curve, room order)")

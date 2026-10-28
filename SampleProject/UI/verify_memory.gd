@@ -6,7 +6,7 @@ extends SceneTree
 ##   godot --headless --path . --script res://SampleProject/UI/verify_memory.gd
 
 const ROOMS := [["Canyon", "Arrival"], ["Village", "Arrival"], ["DesertRoad", "Arrival_Start"], ["CityGates", "Arrival"],
-	["City", "SavePoint"], ["MayorHall", "Arrival"], ["Laboratory", "SavePoint_PreBoss"]]
+	["City", "SavePoint"], ["MayorHall", "Arrival"], ["Laboratory", "SavePoint_Entrance"], ["LabTopFloor", "SavePoint_PreBoss"]]
 const LAPS := 4
 ## Скільки кіл — прогрів кешів. M7: у кожної кімнати кола тепер більше сусідів (стежка, вихід з печери, привал, квартал),
 ## RoomPreloader тримає їх, і друге коло ще догріває спільні ресурси (+5 МБ); третє й четверте — рівні.
