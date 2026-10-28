@@ -5,7 +5,8 @@ extends Node2D
 ## return_delay секунд І місце, де вона сиділа, поза кадром — не тієї миті, як герой відвернувся.
 ## Час відльоту — у статичному словнику за кімнатою й шляхом вузла: переживає вихід з кімнати й повернення,
 ## не зберігається. Нікого не чіпає й ні з чим не стикається. Розмітка — critter_bat.tscn (висить), critter_bird,
-## critter_pigeon, critter_butterfly(_blue), critter_moth (сидять, грають perch).
+## critter_pigeon, critter_butterfly(_blue), critter_moth (сидять, грають perch), critter_mouse (наземна: замість польоту
+## біжить підлогою до своєї нори, [member hole], і зникає в ній — ambient_critters_plan, D803).
 ## Вузол живе або під Parallax2D (FrontDark), що сам його зсуває, або в кімнаті; global_position — там, де його видно.
 
 ## Ключ «кімната::шлях» → Time.get_ticks_msec() миті відльоту.
@@ -26,6 +27,10 @@ static var left_at: Dictionary[String, int] = {}
 @export var perch_flip := false
 ## Звук злету (sound_events.json); порожнє — летить безшумно (метелик, міль).
 @export var flap_sound: StringName = &"critter_flap"
+## Нора наземної дрібноти (миша): вузол сцени (Marker2D з темним овалом) на підлозі; задано — біжить туди, а не летить.
+@export var hole: Node2D
+## Біг до нори, px/с світу.
+@export var run_speed := 220.0
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 ## Прямокутник місця, де вона сидить; лишається на місці, коли спрайт летить.
@@ -86,6 +91,9 @@ func _sit() -> void:
 
 
 func _fly_off(dir: float) -> void:
+	if hole != null:
+		_run_to_hole()
+		return
 	sprite.flip_v = false
 	sprite.flip_h = dir < 0.0
 	sprite.play(&"fly")
@@ -94,6 +102,16 @@ func _fly_off(dir: float) -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "position", Vector2(flight.x * dir, flight.y), flight_time) \
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_callback(_gone)
+
+
+## Миша (D803): тікає не від героя, а в нору — біжить підлогою (run) до [member hole] і зникає в ній.
+func _run_to_hole() -> void:
+	sprite.flip_v = false
+	sprite.flip_h = hole.position.x < 0.0
+	sprite.play(&"run")
+	var tween := create_tween()
+	tween.tween_property(sprite, "position", hole.position, absf(hole.position.x) / run_speed)
 	tween.tween_callback(_gone)
 
 

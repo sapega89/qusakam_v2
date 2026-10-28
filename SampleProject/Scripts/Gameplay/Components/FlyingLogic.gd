@@ -150,7 +150,7 @@ func _chase(delta: float) -> void:
 			return
 	else:
 		lost_player_timer = 0.0
-	var can_strike := attack_ready_in <= 0.0 and token_free()
+	var can_strike: bool = attack_ready_in <= 0.0 and token_free() and enemy.stamina.can_afford(&"swing")  # D824
 	var station := _station(can_strike)
 	_fly_to(station, speed, false)
 	_face_player()
@@ -251,6 +251,7 @@ func perform_attack() -> void:
 		var direction := 1 if _lunge_dir.x >= 0.0 else -1
 		_face(direction)
 		enemy.start_attack(direction)
+		enemy.stamina.spend(&"swing")  # D824: піке чи укус
 		if style == DIVE:
 			await _dive()
 		else:
@@ -264,6 +265,7 @@ func perform_attack() -> void:
 		await _recover(_recovery_time())
 	phase = Phase.NONE
 	is_attacking = false
+	enemy.stamina.take_winded()  # D824: вичерпав — зависає, видихнувшись
 	attack_ended.emit()
 	if style == BITE and not enemy.is_dead:
 		var toward := 1.0 if player.global_position.x > enemy.global_position.x else -1.0

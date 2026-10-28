@@ -14,4 +14,3 @@ the pack's ground strip.
 | `gen_tower.png` | DesertRoad cell 2: a ruined watchtower behind the dunes fight, x 2280 (BACKLOG 23, D299) |
 | `gen_wreck.png` | DesertRoad cell 4: the bandits' broken caravan wagon behind the ambush, x 3540 (D299) |
 | `gen_shrine.png` | DesertRoad cell 5: a wayside shrine before the City Gates, x 4600, by the save point (D299) |
-| `gen_front.png` | DesertRoad: foreground plane (BACKLOG 7, A5a; not wired yet) — half-buried rocks, grass tufts, a crate, a leaning road post, a broken cart wheel; 576×324, transparent above row ~225, a dark ground strip from row 304 to the bottom; made like `Village/gen_front`: Parallax2D ×1.25, z 20, darkened (shade 0.6), `depth_blur_front` |

@@ -9,8 +9,14 @@
 		"health": [1.0, 1.1, 1.2, 1.35, 1.9, 2.1, 2.35, 2.6, 2.75, 2.9, 3.05, 3.2, 3.35, 3.5, 3.65, 3.8, 3.95, 4.1, 4.25, 4.4],
 		"damage": [1.0, 1.2, 1.4, 1.6, 2.2, 2.8, 3.4, 3.9, 4.3, 4.6, 4.9, 5.2, 5.5, 5.8, 6.1, 6.4, 6.7, 7.0, 7.3, 7.6]
 	},
+	"scaling": {
+		"_note": "D840 (partial, Sapega: «скейл мобів не великий, але має бути»): effective level = room level + zone_offsets[room scene] + offsets[kind] + floor(max(0, hero level - room level) x EnemyScaling.HERO_LEAD_SHARE 0.5), at most XPManager.MAX_LEVEL (EnemyScaling.scaled_level). The room level of an ordinary enemy or an elite is its fight's enemy_level (D670); a boss's is boss_levels, the level its numbers were made for (Brass Collector and Scorpicore 5, D671/D678; Fire Djinn 12, D671; Mercenary 16, D661), and a boss has no zone offset (its own level is its edge). zone_offsets (Sapega: «є зони, які з самого початку складніші для рівня героя»), by room scene name (as in locations.json), every other room 0: the Laboratory +1 (the late zone Sapega named), the Bandit Camp +1 (an optional side path with a hard group fight and its elite heavy archer, D582/D719); the old ruins get +2 when they are built (world_structure_plan, an optional loop behind the bandit leader's key). HP and damage follow the effective level through levels.health / levels.damage (a boss: their ratio to its floor). XP does not follow the level (D670), so the route levels up as before (verify_xp_curve). Recomputed on every spawn, so a D492 respawn rescales.",
+		"offsets": {"ordinary": 0, "elite": 1, "boss": 2},
+		"boss_levels": {"brass_collector": 5, "scorpicore_warrior": 5, "fire_djinn": 12, "lab_boss": 16},
+		"zone_offsets": {"Laboratory": 1, "BanditCamp": 1}
+	},
 	"pressure": {"_note": "D642: how many enemies may wind up at once (EnemyLogic attack token, D576 had 2, D642 3). D770: 2 again, and all from one side of the hero: enemies now arrive fast and stand on both sides.", "max_attackers": 2},
-	"elite": {"_note": "D560's multipliers, only for kinds with \"elite\": true (D652). D754, D777: poise multiplies the kind's poise (x2.0: elites have a big poise bar), and an elite is not pushed by the hero's hits, like a boss (B134). D829: scale grows every elite from its feet on top of its scene size (D766), so it reads apart from its ordinary kind.", "scale": 1.25, "health": 2.5, "damage": 2.3, "xp": 1.0, "poise": 2.0, "knockback_immune": true},
+	"elite": {"_note": "D560's multipliers, only for kinds with \"elite\": true (D652). D754, D777: poise multiplies the kind's poise (x2.0: elites have a big poise bar), and an elite is not pushed by the hero's hits, like a boss (B134). D829: scale grows every elite from its feet on top of its scene size (D766), so it reads apart from its ordinary kind; D842: x1.5, x1.25 did not read in the playtest.", "scale": 1.5, "health": 2.5, "damage": 2.3, "xp": 1.0, "poise": 2.0, "knockback_immune": true},
 	"kinds": {
 		"_note": "A kind spawns once its sheet exists (EnemyVariety.available). sizes: weights of the seeded roll in ordinary fights (RoomEnemySpawner.respawns); story fights take medium. A big kind (base = the ordinary kind it stands in for) has no art yet: its spawn point (EnemySpawnPoint.big_kind, a node named BigSlot_*) spawns the base kind until the sheet lands; then the kind needs its scene and Resources/Enemies/enemy_stats_<kind>.tres (verify_enemy_variety checks). foam: the cursed foam effect at the mouth (D653), frame pixels from the frame centre, facing right (jackal_cursed: its own 96x72 frames, the jaws of idle, walk and the bite).",
 		"melee": {"sheet": "res://SampleProject/Assets/Characters/Enemies/bandit/sheet.png", "elite": false, "sizes": {"small": 1, "medium": 2}},
@@ -28,6 +34,25 @@
 		"tower_shield_guard": {"sheet": "res://SampleProject/Assets/Characters/Enemies/shield_tower/sheet.png", "elite": true, "sizes": {"medium": 1}, "base": "shield", "scene": "res://SampleProject/Scenes/Characters/Enemies/enemy_tower_shield_guard.tscn"},
 		"old_vulture": {"sheet": "res://SampleProject/Assets/Characters/Enemies/vulture_old/sheet.png", "elite": true, "sizes": {"medium": 1}, "base": "vulture", "scene": "res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn"},
 		"jackal_cursed": {"sheet": "res://SampleProject/Assets/Characters/Enemies/jackal_cursed/sheet.png", "elite": true, "sizes": {"medium": 1}, "base": "fast", "scene": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn", "foam": [31, 0]}
+	},
+	"stamina": {
+		"_note": "D824 (design/enemy_stamina_plan.md): an enemy's stamina, read by Scripts/Gameplay/Components/EnemyStamina.gd. Costs are paid at the strike: swing (each blow of a series, an archer's shot, a flier's dive or bite), lunge (D768), pounce (the jackal's leap and latch, D769). It refills at regen/s once delay s pass without an attack. An enemy that cannot pay its next opener keeps its distance; the blow that empties the bar ends the series and leaves it winded (stands, stun tint, its stagger pose) for winded s; it opens again at recover_at of max. A kind without a row takes its base kind's (elites) and then default. Elites: max x elite.max. Bosses: their own pool, costs per move kind (combo per blow), no refill while fighting: once empty, after the move's own recovery (D316) the boss is winded and then full again, so the pattern (D577) is never skipped or reordered; drink (D564) refills.",
+		"default": {"max": 100, "swing": 25, "lunge": 35, "pounce": 45, "regen": 45, "delay": 0.6, "winded": 0.9, "recover_at": 0.4},
+		"kinds": {
+			"melee": {"swing": 20},
+			"fast": {"max": 90, "swing": 20, "regen": 50},
+			"tank": {"swing": 40, "regen": 40, "winded": 1.1},
+			"archer": {"swing": 25, "regen": 40},
+			"shield": {"swing": 30},
+			"vulture": {"swing": 40},
+			"bat": {"swing": 25, "regen": 50},
+			"fly": {"swing": 30},
+			"bandit_brute": {"swing": 40, "lunge": 45},
+			"tower_shield_guard": {"swing": 35},
+			"heavy_archer": {"swing": 35}
+		},
+		"elite": {"max": 1.5},
+		"boss": {"max": 150, "combo": 12, "charge": 30, "slam": 25, "fireball": 20, "pillar": 25, "drink": 0, "winded": 1.2}
 	},
 	"shield": {"guard_break_stagger": 1.2}
 }

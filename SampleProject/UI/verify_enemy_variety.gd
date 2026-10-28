@@ -194,11 +194,11 @@ func _pack_art() -> void:
 ## [2] Еліта — властивість виду (D652): лише види з "elite": true мають множники D560 (HP ×2.5; шкода ×2.3 і стійкість ×1.6,
 ## удари героя її не відкидають — D754); без контуру; D829: росте на elite.scale понад свою сцену. Великі види (base) — еліта, кожен зі своїм аркушем; без аркуша вид не зʼявляється.
 func _elites() -> void:
-	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x2.0 and no knockback (D754, D777); no outline, grown x1.25 (D829); big kinds wait for their art")
+	print("[2] Elites are kinds (D652): only elite kinds get HP x2.5, damage x2.3, poise x2.0 and no knockback (D754, D777); no outline, grown x1.5 (D829, D842); big kinds wait for their art")
 	var marks: Dictionary = variety.elite()
 	ck(is_equal_approx(marks.health, 2.5) and is_equal_approx(marks.damage, 2.3) and is_equal_approx(marks.poise, 2.0) and marks.knockback_immune
-			and not marks.has("chance") and is_equal_approx(marks.scale, 1.25) and not marks.has("outline_color"),
-			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x2.0, not pushed, grown x1.25 (D829); no roll, no outline")
+			and not marks.has("chance") and is_equal_approx(marks.scale, 1.5) and not marks.has("outline_color"),
+			"enemy_variety.json elite: HP x2.5, damage x2.3, poise x2.0, not pushed, grown x1.5 (D829, D842); no roll, no outline")
 	var elite_kinds: Array = variety.kind_ids().filter(func(id: String) -> bool: return variety.is_elite(id))
 	print("  info elite kinds: %s" % [elite_kinds])
 	const PLANNED := ["bandit_brute", "jackal_pack_leader", "armoured_scorpion", "heavy_archer", "tower_shield_guard",
@@ -232,9 +232,12 @@ func _elites() -> void:
 	await process_frame
 	ck(not plain.elite and plain.Max_Health == stats.max_health and is_equal_approx(plain.base_damage, stats.base_damage),
 			"a bandit is not an elite: HP %d, damage %.1f" % [plain.Max_Health, plain.base_damage])
-	ck(fly.elite and fly.Max_Health == roundi(fly_stats.max_health * 2.5) and is_equal_approx(fly.base_damage, fly_stats.base_damage * marks.damage)
+	# D840: еліта стоїть на рівень вище героя (рівень 1 тут) — множники рівня 2 понад еліту
+	var fly_grown: Dictionary = variety.level(fly.scaled_level)
+	ck(fly.elite and fly.scaled_level == 2 and fly.Max_Health == roundi(fly_stats.max_health * fly_grown.health * 2.5)
+			and is_equal_approx(fly.base_damage, fly_stats.base_damage * fly_grown.damage * marks.damage)
 			and fly.xp_reward == roundi(fly_stats.xp_reward * marks.xp),
-			"the Cthulhu fly is an elite: HP %d, damage %.1f, XP %d" % [fly.Max_Health, fly.base_damage, fly.xp_reward])
+			"the Cthulhu fly is an elite (level %d, D840): HP %d, damage %.1f, XP %d" % [fly.scaled_level, fly.Max_Health, fly.base_damage, fly.xp_reward])
 	var fly_scene: Node = load("res://SampleProject/Scenes/Characters/Enemies/enemy_fly.tscn").instantiate()
 	ck(_near(fly.get_node(^"Sprite2D").scale, fly_scene.get_node(^"Sprite2D").scale * marks.scale) and fly.get_node(^"Sprite2D").material == null
 			and plain.get_node(^"Sprite2D").material == null, "an elite is its own art: no outline glow, grown x%.2f over its scene (D829)" % marks.scale)
@@ -259,9 +262,10 @@ func _heavy_archer() -> void:
 	await process_frame
 	ck(heavy.get_script().resource_path.ends_with("ArcherEnemy.gd") and stats.enemy_type == "heavy_archer",
 			"the heavy archer runs on the archer's behaviour (ArcherEnemy)")
-	ck(heavy.elite and heavy.Max_Health == roundi(stats.max_health * marks.health)
-			and is_equal_approx(heavy.base_damage, stats.base_damage * marks.damage),
-			"the heavy archer is an elite: HP %d, damage %.1f" % [heavy.Max_Health, heavy.base_damage])
+	var grown: Dictionary = variety.level(heavy.scaled_level)  # D840: еліта — рівень героя + 1
+	ck(heavy.elite and heavy.scaled_level == 2 and heavy.Max_Health == roundi(stats.max_health * grown.health * marks.health)
+			and is_equal_approx(heavy.base_damage, stats.base_damage * grown.damage * marks.damage),
+			"the heavy archer is an elite (level %d, D840): HP %d, damage %.1f" % [heavy.scaled_level, heavy.Max_Health, heavy.base_damage])
 	var big: Vector2 = _rect_size(heavy.get_node(^"Hurtbox/CollisionShape2D"))
 	var small: Vector2 = _rect_size(archer.get_node(^"Hurtbox/CollisionShape2D"))
 	var big_feet: float = heavy.get_node(^"Hurtbox/CollisionShape2D").position.y + big.y / 2.0
@@ -443,8 +447,9 @@ func _foam() -> void:
 	var core: Color = drops.color_ramp.get_color(0)
 	var tint: Color = drops.color_ramp.get_color(1)
 	ck(core.get_luminance() > 0.85 and tint.b > tint.r + 0.3 and tint.b > tint.g, "the foam glows: a near-white core fading to blue (%s → %s)" % [core, tint])
-	ck(jackal.elite and jackal.Max_Health == roundi(load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").max_health * 2.5),
-			"the horror jackal is an elite (HP %d)" % jackal.Max_Health)
+	ck(jackal.elite and jackal.Max_Health == roundi(load("res://SampleProject/Resources/Enemies/enemy_stats_fast.tres").max_health
+			* variety.level(jackal.scaled_level).health * 2.5),
+			"the horror jackal is an elite (level %d, D840: hero + 1; HP %d)" % [jackal.scaled_level, jackal.Max_Health])
 	jackal.set_physics_process(false)  # стоїть: погляд задає тест
 	jackal.enemy_logic.set_physics_process(false)
 	jackal.enemy_view._offset_to(0.0, 0.01)  # нахил замаху (більший шакал D766 дістає героя з точки тесту) — геть
@@ -590,12 +595,12 @@ func _pack_leader() -> void:
 	dunes.spawn_all_enemies()
 	await create_timer(dunes.wave_delay + 0.5).timeout
 	var leader: Node = dunes.get_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4")
-	var grown: Dictionary = variety.level(dunes.enemy_level)
+	var grown: Dictionary = variety.level(leader.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня)
 	var marks: Dictionary = variety.elite()
-	ck(leader.scene_file_path == SCENES.jackal_pack_leader and leader.elite and leader.level == 2
+	ck(leader.scene_file_path == SCENES.jackal_pack_leader and leader.elite and leader.level == 2 and leader.scaled_level == 3
 			and leader.Max_Health == roundi(stats.max_health * grown.health * marks.health)
 			and is_equal_approx(leader.base_damage, stats.base_damage * grown.damage * marks.damage),
-			"in the game it is the pack leader, an elite at the fight's level 2: HP %d, damage %.1f" % [leader.Max_Health, leader.base_damage])
+			"in the game it is the pack leader, an elite of a level-2 fight at level 3 (D840): HP %d, damage %.1f" % [leader.Max_Health, leader.base_damage])
 	var jackal: Node = load(SCENES.fast).instantiate()
 	var paws := [HitAreas.frame_rect(leader.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(jackal.get_node(^"Sprite2D"), 0).end.y]
 	jackal.free()
@@ -629,8 +634,8 @@ func _armoured_scorpion() -> void:
 		enemy.position = ARENA
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"%s, level %d: an elite, HP %d, damage %.1f, XP %d" % [slot[1], level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()
@@ -681,8 +686,8 @@ func _old_vulture() -> void:
 		enemy.position = ARENA + Vector2(0, -150)
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.flying and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.flying and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"level %d: a flying elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()
@@ -764,12 +769,12 @@ func _brute() -> void:
 	lone.spawn_all_enemies()
 	await create_timer(0.5).timeout
 	var brute: Node = lone.get_node(^"Enemy_Fight_LoneElite_EnemySpawnPoint1")
-	var grown: Dictionary = variety.level(lone.enemy_level)
+	var grown: Dictionary = variety.level(brute.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня)
 	var marks: Dictionary = variety.elite()
-	ck(brute.scene_file_path == SCENES.bandit_brute and brute.elite and brute.level == 2
+	ck(brute.scene_file_path == SCENES.bandit_brute and brute.elite and brute.level == 2 and brute.scaled_level == 3
 			and brute.Max_Health == roundi(stats.max_health * grown.health * marks.health)
 			and is_equal_approx(brute.base_damage, stats.base_damage * grown.damage * marks.damage),
-			"in the game it is the bandit brute, an elite at the fight's level 2: HP %d, damage %.1f" % [brute.Max_Health, brute.base_damage])
+			"in the game it is the bandit brute, an elite of a level-2 fight at level 3 (D840): HP %d, damage %.1f" % [brute.Max_Health, brute.base_damage])
 	var bandit: Node = load(SCENES.melee).instantiate()
 	var feet := [HitAreas.frame_rect(brute.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(bandit.get_node(^"Sprite2D"), 0).end.y]
 	bandit.free()
@@ -778,11 +783,31 @@ func _brute() -> void:
 	await process_frame
 
 
+## Розбитий вартовий: зона-ціль, хітбокс і тіло — з малюнка без щита (B128, як міряє verify_hit_areas), attack_range
+## меншає на стільки, на скільки коротшав удар. Вартовий дивиться ліворуч — зони дзеркальні.
+func _check_broken_areas(guard: Node, range_before: float, reach_before: float) -> void:
+	var sprite: Sprite2D = guard.enemy_view.rest_sprite()
+	var mirror := func(r: Rect2) -> Rect2: return Rect2(-r.end.x, r.position.y, r.size.x, r.size.y)
+	var body: Rect2 = mirror.call(HitAreas.body_rect(sprite, guard.anim_player))
+	var strike := HitAreas.strike_rect(sprite, guard.anim_player, guard.attack_active_time)
+	var reach: Rect2 = mirror.call(Rect2(0.0, strike.position.y, strike.end.x, strike.size.y))
+	var hurt := HitAreas.shape_rect(guard.get_node(^"Hurtbox/CollisionShape2D"))
+	var hit := HitAreas.shape_rect(guard.get_node(^"hitbox/CollisionShape2D"))
+	ck(hurt.is_equal_approx(body) and hit.is_equal_approx(reach), "broken: hurtbox %s = the shieldless body, hitbox %s = its strike" % [hurt, hit])
+	var body_half: float = guard.get_node(^"CollisionShape2D").shape.get_rect().end.x
+	ck(is_equal_approx(body_half, -body.position.x), "broken: the blocking body's front is his own front, %.1f px" % body_half)
+	const HERO_HALF := 12.0  # verify_hit_areas
+	ck(guard.attack_range > body_half + HERO_HALF and is_equal_approx(guard.attack_range - strike.end.x, range_before - reach_before)
+			and is_equal_approx(guard.enemy_logic.attack_range, guard.attack_range),
+			"broken: attack_range %.1f → %.1f, as much closer as his strike got shorter (%.1f → %.1f); past body contact %.1f"
+			% [range_before, guard.attack_range, reach_before, strike.end.x, body_half + HERO_HALF])
+	sprite.free()
+
+
 ## [8] Вартовий з баштовим щитом (D652, D693): живий великий вид — свій аркуш і сцена, поведінка щитоносця (спереду
-## щит, у спину тіло, важкий удар розбиває варту), але щит намальовано в кадрах: він не відлітає, а після збою знову
-## попереду. Числа еліти на рівнях, де стоять щитоносці (D642). Точок BigSlot_TowerShieldGuard_* немає (D682).
+## щит, у спину тіло, важкий удар розбиває щит): щит розлітається скалками, і вартовий далі без щита (D843). Числа еліти на рівнях, де стоять щитоносці (D642). Точок BigSlot_TowerShieldGuard_* немає (D682).
 func _tower_guard() -> void:
-	print("[8] The tower shield guard is live: its own art, the shield-bearer's behaviour, the guard comes back, elite numbers")
+	print("[8] The tower shield guard is live: its own art, the shield-bearer's behaviour, a broken shield stays broken, elite numbers")
 	const ID := "tower_shield_guard"
 	ck(variety.available(ID) and variety.kind(ID).sheet.ends_with("shield_tower/sheet.png")
 			and spawn_script.scene_path(ID) == "res://SampleProject/Scenes/Characters/Enemies/enemy_tower_shield_guard.tscn", "its sheet, scene and stats exist")
@@ -829,6 +854,17 @@ func _tower_guard() -> void:
 
 	await create_timer(1.0).timeout
 	guard.set_physics_process(true)  # збій спливає в _physics_process
+	var range_before: float = guard.attack_range
+	var reach_before := HitAreas.shape_rect(guard.get_node(^"hitbox/CollisionShape2D")).size.x
+	var bursts: Array[Dictionary] = []
+	game.map.child_entered_tree.connect(func(n: Node) -> void:
+		if n is AnimatedSprite2D and (n as AnimatedSprite2D).animation == &"break":
+			var seen := func() -> void:
+				var still: Sprite2D = guard.enemy_view.rest_sprite()
+				bursts.append({transform = n.global_transform, offset = n.offset, flip_h = n.flip_h, cell = guard.global_transform * Transform2D(0.0, still.scale, 0.0, still.position),
+						frames = n.sprite_frames.get_frame_count(&"break"), texture = n.sprite_frames.get_frame_texture(&"break", 0).resource_path})
+				still.free()
+			seen.call_deferred())
 	await _place_hero(guard, -45)
 	await _tap(&"heavy_attack")
 	await create_timer(0.6).timeout
@@ -838,21 +874,43 @@ func _tower_guard() -> void:
 	ck(staggered.any(func(s: Array) -> bool: return s[0] == guard and is_equal_approx(s[1], guard_break))
 			and guard.enemy_view.staggered and guard.get_node(^"Sprite2D").frame == 12,
 			"guard break: staggered %.1f s on the hurt frame, the shield knocked aside (frame %d)" % [guard_break, guard.get_node(^"Sprite2D").frame])
-	ck(guard.has_node(^"Sprite2D/Shield"), "the tower shield stays in his hands (drawn in the frames)")
+	var sprite: Sprite2D = guard.get_node(^"Sprite2D")
+	ck(sprite.texture == guard.noshield_sheet and guard.noshield_sheet.resource_path.ends_with("shield_tower/sheet_noshield.png"),
+			"the shield is gone from his frames: the shieldless sheet (D843)")
+	ck(bursts.size() == 1 and bursts[0].frames == 4 and bursts[0].texture.ends_with("shield_break_1.png"),
+			"the shield bursts into shards (shield_break_1-4): %d burst" % bursts.size())
+	if bursts.size() == 1:
+		var burst: Dictionary = bursts[0]
+		ck(burst.transform.is_equal_approx(burst.cell) and burst.offset == Vector2(0, -13) and burst.flip_h and sprite.flip_h,
+				"the shards stand on his cell at rest (scale %.2f), mirrored to his facing (left)" % burst.transform.get_scale().x)
+	var tracks: Array[String] = []
+	for anim_name in guard.anim_player.get_animation_list():
+		var anim: Animation = guard.anim_player.get_animation(anim_name)
+		for t in anim.get_track_count():
+			if String(anim.track_get_path(t)).ends_with(":texture"):
+				tracks.append("%s/%d" % [anim_name, t])
+	ck(tracks.is_empty(), "no animation of his keys Sprite2D:texture, so nothing puts the shield back %s" % [tracks])
+	_check_broken_areas(guard, range_before, reach_before)
 	await _place_hero(guard, -45)
 	guard.take_damage(20, hero)  # удар спереду, поки герой ще виходить із важкого
 	ck(guard.current_health < hp and blocked.size() == 1, "guard broken: a light hit from the front lands (HP %d → %d)" % [hp, guard.current_health])
 	hp = guard.current_health
 
-	await create_timer(guard_break).timeout
+	await create_timer(guard_break + 0.5).timeout
 	guard.set_physics_process(false)
 	guard.enemy_logic.last_direction = -1
 	guard._on_logic_direction_changed(-1)
-	ck(guard.shield_up, "after the stagger he raises the shield again")
+	ck(not guard.shield_up and sprite.texture == guard.noshield_sheet, "after the stagger the shield does not come back (D843)")
+	ck(game.map.get_children().all(func(n: Node) -> bool: return not (n is AnimatedSprite2D and n.animation == &"break")),
+			"the shards are gone once they have played")
 	await _place_hero(guard, -45)
 	await _tap(&"attack")
 	await create_timer(0.5).timeout
-	ck(guard.current_health == hp and blocked.size() == 2, "a light hit from the front is blocked again (HP %d, blocks %d)" % [guard.current_health, blocked.size()])
+	ck(guard.current_health < hp and blocked.size() == 1, "a light hit from the front still lands (HP %d → %d, blocks %d)" % [hp, guard.current_health, blocked.size()])
+	for anim_name in [&"walk", &"attack", &"stagger", &"idle"]:
+		guard.anim_player.play(anim_name)
+		guard.anim_player.advance(0.3)
+	ck(sprite.texture == guard.noshield_sheet, "playing his animations keeps the shieldless sheet")
 	guard.queue_free()
 
 	var placed: Array = []
@@ -876,8 +934,8 @@ func _tower_guard() -> void:
 		enemy.position = ARENA + Vector2(0, 0)
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"level %d: an elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()

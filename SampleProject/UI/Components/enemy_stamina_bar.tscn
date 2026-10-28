@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/enemy_stamina_bar.gd" id="1_bar"]
+[ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
+
+[node name="EnemyStaminaBar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_bar")
+
+[node name="Bar" type="ProgressBar" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"EnemyStaminaBar"
+max_value = 1.0
+step = 0.0
+show_percentage = false

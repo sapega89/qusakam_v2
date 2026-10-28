@@ -194,7 +194,7 @@ func _initialize() -> void:
 		Input.action_release(&"move_left")
 	var before_descent := _snap([])
 	await _play_and_skip("descent", descent_start,
-			func() -> bool: return game.map.scene_file_path.ends_with("DesertRoad.tscn") and not game.player.event,
+			func() -> bool: return game.map.scene_file_path.ends_with("CaveUnderBridge.tscn") and not game.player.event,
 			[], _pad_y(true), _pad_y(false), "Y")
 
 	print("[3] Quit to the main menu mid-cutscene, then a new game (B92)")

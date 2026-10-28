@@ -65,7 +65,7 @@ tile_map_data = PackedByteArray("AAD//wwAAQAIAAcAAAAAAAwAAQAIAAcAAAABAAwAAQAIAAc
 tile_set = ExtResource("w4")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(200, 344)
+position = Vector2(200, 360)
 
 [node name="RoomInstance" parent="." instance=ExtResource("w5")]
 

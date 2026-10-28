@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/UI/Components/status_row.gd" id="1_row"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/skills/state_bleeding.png" id="2_bleeding"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/skills/state_burning.png" id="3_burning"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/skills/state_cursed.png" id="4_cursed"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/UI/Icons/skills/state_stunned.png" id="5_stunned"]
+
+[node name="StatusRow" type="HBoxContainer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 43.0
+offset_bottom = 10.0
+texture_filter = 4
+mouse_filter = 2
+theme_override_constants/separation = 1
+alignment = 1
+script = ExtResource("1_row")
+
+[node name="Bleeding" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_bleeding")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Burning" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_burning")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Cursed" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("4_cursed")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Stunned" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("5_stunned")
+expand_mode = 1
+stretch_mode = 5

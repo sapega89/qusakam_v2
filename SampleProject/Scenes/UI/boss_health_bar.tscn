@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://SampleProject/Scripts/UI/boss_health_bar.gd" id="1_bar"]
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://SampleProject/UI/Components/poise_bar.tscn" id="3_poise"]
+[ext_resource type="PackedScene" path="res://SampleProject/UI/Components/enemy_stamina_bar.tscn" id="4_stamina"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_surface"]
 content_margin_left = 16.0
@@ -61,6 +62,11 @@ value = 100.0
 show_percentage = false
 
 [node name="BossPoise" parent="Panel/Column" instance=ExtResource("3_poise")]
+unique_name_in_owner = true
+layout_mode = 2
+floating = false
+
+[node name="BossStamina" parent="Panel/Column" instance=ExtResource("4_stamina")]
 unique_name_in_owner = true
 layout_mode = 2
 floating = false

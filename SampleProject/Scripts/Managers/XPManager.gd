@@ -2,7 +2,8 @@ extends ManagerBase
 class_name XPManager
 
 ## XP and Level Progression Manager
-## Manages player experience points, levels, and stat bonuses
+## Manages player experience points and levels.
+## D841: рівень сам не дає статів — лише очки атрибутів (AttributeManager, D335) і JP (SkillManager, D497), що їх витрачає гравець.
 
 ## D488: найвищий рівень демо (було 99, D285); на ньому досвід більше не рахується, смуга показує MAX.
 const MAX_LEVEL := 20
@@ -15,9 +16,6 @@ var current_level: int = 1
 var xp_for_next_level: int = 0
 var _curve: Dictionary
 
-## Що дає кожен рівень понад перший (D642): hp_per_level, damage_per_level — з xp_curve.json.
-var stat_bonuses: Dictionary = {}
-
 # Signals
 signal xp_gained(amount: int, new_total: int)
 signal level_up(new_level: int, old_level: int)
@@ -26,7 +24,6 @@ func _initialize():
 	"""Initialize XPManager"""
 	_curve = JSON.parse_string(FileAccess.get_file_as_string(CURVE_PATH))
 	assert(_curve.to_next.size() == MAX_LEVEL - 1, "XPManager: xp_curve.json needs %d steps" % (MAX_LEVEL - 1))
-	stat_bonuses = {"hp_per_level": int(_curve.hp_per_level), "damage_per_level": int(_curve.damage_per_level)}
 	xp_for_next_level = _calculate_xp_requirement(current_level)
 	DebugLogger.info("XPManager: Initialized", "XPManager")
 
@@ -75,14 +72,6 @@ func get_xp_percentage() -> float:
 	if xp_for_next_level <= 0:
 		return 0.0
 	return float(current_xp) / float(xp_for_next_level)
-
-## Get HP bonus for current level
-func get_hp_bonus() -> int:
-	return (current_level - 1) * stat_bonuses["hp_per_level"]
-
-## Get damage bonus for current level
-func get_damage_bonus() -> int:
-	return (current_level - 1) * stat_bonuses["damage_per_level"]
 
 ## Get current level
 func get_level() -> int:

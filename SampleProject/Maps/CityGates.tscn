@@ -31,6 +31,11 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_2"]
+[ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="i31_save"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="i31_meditation"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_i31_save"]
+radius = 32.0
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundary_sky"]
 normal = Vector2(0, 1)
@@ -178,6 +183,23 @@ centered = false
 
 [node name="Arrival" type="Marker2D" parent="." unique_id=1219034176]
 position = Vector2(900, 344)
+
+[node name="SavePoint_Gate" type="Area2D" parent="."]
+position = Vector2(432, 344)
+script = ExtResource("i31_save")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SavePoint_Gate"]
+shape = SubResource("CircleShape2D_i31_save")
+
+[node name="Spot" type="Sprite2D" parent="SavePoint_Gate"]
+texture_filter = 1
+position = Vector2(-66, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("i31_meditation")
+centered = false
+
+[node name="Seat" type="Marker2D" parent="SavePoint_Gate"]
+position = Vector2(0, 22)
 
 [node name="SkyCeiling" type="StaticBody2D" parent="." unique_id=1846200202]
 
@@ -476,11 +498,11 @@ texture = ExtResource("x2")
 offset = Vector2(-78, -114)
 
 [node name="RooftopsDoorEntrance" parent="." instance=ExtResource("m7_1")]
-position = Vector2(300, 384)
+position = Vector2(638, 384)
 texture = ExtResource("m7_2")
 
 [node name="RooftopsDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(298.5, 322.5)
+position = Vector2(636.5, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("SlideDoor")
 gate_id = "city_rooftops"

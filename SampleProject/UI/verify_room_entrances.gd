@@ -12,6 +12,8 @@ extends SceneTree
 ##   4. Передній план (Parallax2D зі scroll > 1): ніщо не дістає лінії ходу, крім вибраних заслонів (Occluder*, Pillar*);
 ##      заслони не закривають двері, NPC і скрині, коли камера на них, а колони — середину бою; у печерах і льоху —
 ##      темний передній шар і темрява згори екрана (TopShade біля верху кадру).
+##      B199: поки йде бій, жоден заслон не закриває героя чи точку спавну на повній непрозорості
+##      (FightOccluderFade), а після бою заслони вертаються.
 ##   5. Драбини в матеріалі кімнати; кожен уступ має опору (A15).
 ##   6. Справжнім E крізь кожні двері в обидва боки: герой у цільовій кімнаті біля дверей, якими вийде назад.
 ## Пише лише в user://verify_room_entrances/.
@@ -72,6 +74,9 @@ func _initialize() -> void:
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(1)
 	game = await Kit.boot(self)
+	# Тест картинки й дверей, не бою: з D840/D841 герой 20-го рівня без вкладених очок (100 HP) гине від
+	# підлаштованих під нього ворогів на дорозі, і пауза смерті зупиняє решту перевірок.
+	game.player.set_invulnerable(true)
 	_open_everything()
 
 	print("[1] Every door: its entrance, the floor under it, the opening, the light, the way back")
@@ -81,6 +86,7 @@ func _initialize() -> void:
 		_check_front(room)
 		await _check_cover(room)
 		await _check_limits(room)
+		await _check_fight_fade(room)
 		_check_ladders(room)
 		_check_supports(room)
 
@@ -342,6 +348,49 @@ func _check_cover(room: String) -> void:
 		for o: CanvasItem in occluders:
 			var r: Rect2 = o.get_global_transform_with_canvas() * _local_rect(o)
 			ck(not r.intersects(target), "%s: %s does not cover %s%s (%s vs %s, hero x %.0f)" % [room, o.name, "the fight's middle at " if s in fights else "", s.name, r, target, game.player.global_position.x])
+
+
+## B199: кожен бій кімнати запущено, герой на кожній точці з живим ворогом — заслон над героєм чи точкою
+## тьмяний (≤ FADED_ALPHA + 0.05); бій знято — усі заслони знову повні.
+func _check_fight_fade(room: String) -> void:
+	var occluders := _front_items(game.map).filter(_is_occluder)
+	var spawners: Array[Node] = game.map.find_children("*", "RoomEnemySpawner", true, false)
+	if occluders.is_empty() or spawners.is_empty():
+		return
+	# Вузол гри, не preload: скрипт тягне Game і автолоади, яких ще немає, коли компілюється цей SceneTree.
+	var fade: Node = game.get_node(^"FightOccluderFade")
+	var limit: float = fade.FADED_ALPHA + 0.05
+	var body: Rect2 = fade.BODY
+	var checked := 0
+	for spawner: Node in spawners:
+		if spawner.get_alive_enemies_count() == 0:
+			spawner.spawn_all_enemies()
+		for i in 10: await physics_frame
+		for sp: Node2D in spawner.spawn_points:
+			if not sp.is_enemy_alive():
+				continue
+			game.place_player(sp.global_position + Vector2(0.0, -40.0))
+			game.player.velocity = Vector2.ZERO
+			for i in 4: await physics_frame
+			(game.player.get_node(^"Camera2D") as Camera2D).reset_smoothing()
+			for i in 20: await process_frame
+			game.player.current_health = game.player.Max_Health
+			var canvas := game.get_viewport().get_canvas_transform()
+			var view: Rect2 = game.get_viewport().get_visible_rect()
+			var hero: Rect2 = canvas * Rect2(game.player.global_position + body.position, body.size)
+			var point: Rect2 = canvas * Rect2(sp.global_position + body.position, body.size)
+			for o: CanvasItem in occluders:
+				var r: Rect2 = fade.screen_rect(o).intersection(view)
+				if r.has_area() and (r.intersects(hero) or r.intersects(point)):
+					checked += 1
+					ck(o.modulate.a <= limit, "%s: %s fades over the fight at %s/%s (alpha %.2f)" % [room, o.name, spawner.name, sp.name, o.modulate.a])
+		spawner.despawn_all_enemies()
+	for i in 20: await process_frame
+	game.player.current_health = game.player.Max_Health
+	var others: Array = get_nodes_in_group(GameGroups.ENEMIES).filter(func(e: Node) -> bool: return e.is_alive() and game.map.is_ancestor_of(e))
+	if others.is_empty():
+		ck(occluders.all(func(o: CanvasItem) -> bool: return o.modulate.a >= 0.99), "%s: the occluders come back after the fight" % room)
+	print("  ..  %s: %d occluder-over-fight cases" % [room, checked])
 
 
 ## B177: камера на межі кімнати стоїть — заслон ×1.3 тоді теж стоїть. Біля обох меж він поза кадром або лише

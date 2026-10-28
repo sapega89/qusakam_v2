@@ -99,7 +99,7 @@
 			"id": "first_kill",
 			"hint_topic": true,
 			"title": "Experience and Coins",
-			"text": "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point.",
+			"text": "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up and get attribute points and a skill point to spend.",
 			"key": "",
 			"hint": ""
 		},
@@ -107,7 +107,7 @@
 			"id": "level_up",
 			"hint_topic": true,
 			"title": "Levelling Up",
-			"text": "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills.",
+			"text": "A level does not make you stronger by itself: it gives attribute points and a skill point. Spend them in the game menu, under Status and Skills.",
 			"key": "{game_menu}",
 			"hint": "Button to open the game menu, then choose Skills."
 		},

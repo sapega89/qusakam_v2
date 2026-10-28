@@ -44,6 +44,8 @@ var death_left: float = 0.0
 @onready var weapon_view: Node2D = $WeaponMount
 ## Витривалість (D776, PlayerStamina.gd).
 @onready var stamina: Node = $PlayerStamina
+## Щит-закляття над позою Block (H2, ShieldSpell.gd): магічний чи скляний; скляний тріскає від прийнятих ударів.
+@onready var shield_spell: Node2D = $ShieldSpell
 ## Де стоїть малюнок героя відносно тіла (Player.tscn: Sprite2D і WeaponMount): ноги кадру (рядок 56) — на низу
 ## колізії (D787 hero-feet, verify_hero_feet). Ефекти, прив'язані до намальованого героя, зсуваються на нього ж.
 @onready var visual_base: Vector2 = $Sprite2D.position
@@ -559,7 +561,9 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 		# D776: прийнятий удар коштує витривалості; з порожньою блок слабкий — пів шкоди і збій
 		var weak: bool = stamina.is_empty()
 		stamina.spend(stamina.COST_BLOCK)
-		if source.hit_stagger_time() < PlayerCombat.GUARD_BREAK:
+		var breaks: bool = source.hit_stagger_time() >= PlayerCombat.GUARD_BREAK
+		shield_spell.take_blow(source, damage, breaks or weak)  # H2: скляний щит тріскає, розбитий ранить нападника
+		if not breaks:
 			if not weak:
 				_heal_on_block(damage)
 				return

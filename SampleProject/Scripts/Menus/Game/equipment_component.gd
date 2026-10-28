@@ -335,10 +335,10 @@ func _stat_without_equipment(method: String, is_ratio: bool, attributes: Charact
 	match method:
 		"calculate_max_health":
 			# Рівень і пасивки — як у GameManager.calculate_max_health(), інакше рахувались би внеском речей
-			value = StatCalculator.calculate_max_health(attributes, bare) + game_manager.level_and_passive_health()
+			value = StatCalculator.calculate_max_health(attributes, bare) + game_manager.passive_and_attribute_health()
 		"calculate_physical_damage":
 			# Рівень, пасивки, Strength — як у GameManager.calculate_physical_damage(), інакше рахувались би внеском речей
-			value = StatCalculator.calculate_physical_damage(attributes, bare) + game_manager.level_and_passive_attack()
+			value = StatCalculator.calculate_physical_damage(attributes, bare) + game_manager.passive_and_attribute_attack()
 		"calculate_magic_damage":
 			value = StatCalculator.calculate_magic_damage(attributes, bare)
 		"calculate_physical_defense":

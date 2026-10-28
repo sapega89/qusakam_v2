@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/top_shade.tscn" id="x5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="secret_area"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_moth.tscn" id="rd_moth"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_mouse.tscn" id="rd_mouse"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="rd_shaft"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hatch_ledge"]
@@ -104,6 +105,11 @@ region_rect = Rect2(80, 0, 320, 72)
 tile_map_data = PackedByteArray("AAAGAA4AAQAIAAYAAAAHAA4AAQAIAAYAAAAIAA4AAQAIAAYAAAAJAA4AAQAIAAYAAAAOAA4AAQAIAAYAAAAPAA4AAQAIAAYAAAAQAA4AAQAIAAYAAAARAA4AAQAIAAYAAAASAA4AAQAIAAYAAAATAA4AAQAIAAYAAAAUAA4AAQAIAAYAAAA=")
 tile_set = ExtResource("1_tileset")
 
+[node name="FloorOverHatch" type="TileMapLayer" parent="Attic"]
+collision_enabled = false
+tile_map_data = PackedByteArray("AAAKAA4AAQAIAAYAAAALAA4AAQAIAAYAAAAMAA4AAQAIAAYAAAANAA4AAQAIAAYAAAA=")
+tile_set = ExtResource("1_tileset")
+
 [node name="Walls" type="TileMapLayer" parent="Attic"]
 visible = false
 tile_map_data = PackedByteArray("AAAFAP//AQAIAAcAAAAFAAAAAQAIAAcAAAAFAAEAAQAIAAcAAAAFAAIAAQAIAAcAAAAFAAMAAQAIAAcAAAAFAAQAAQAIAAcAAAAFAAUAAQAIAAcAAAAFAAYAAQAIAAcAAAAFAAcAAQAIAAcAAAAFAAgAAQAIAAcAAAAFAAkAAQAIAAcAAAAFAAoAAQAIAAcAAAAFAAsAAQAIAAcAAAAFAAwAAQAIAAcAAAAFAA0AAQAIAAcAAAAVAP//AQAIAAcAAAAVAAAAAQAIAAcAAAAVAAEAAQAIAAcAAAAVAAIAAQAIAAcAAAAVAAMAAQAIAAcAAAAVAAQAAQAIAAcAAAAVAAUAAQAIAAcAAAAVAAYAAQAIAAcAAAAVAAcAAQAIAAcAAAAVAAgAAQAIAAcAAAAVAAkAAQAIAAcAAAAVAAoAAQAIAAcAAAAVAAsAAQAIAAcAAAAVAAwAAQAIAAcAAAAVAA0AAQAIAAcAAAA=")
@@ -134,6 +140,7 @@ position = Vector2(384, 448)
 gate_id = "elder_attic"
 
 [node name="Sprite" parent="Attic/Hatch_Attic" index="0"]
+visible = false
 z_index = 1
 position = Vector2(0, 16)
 rotation = 1.5707964
@@ -179,6 +186,12 @@ position = Vector2(690, 600)
 
 [node name="Moth1" parent="Critters" instance=ExtResource("rd_moth")]
 position = Vector2(600, 448)
+
+[node name="Mouse1" parent="Critters" instance=ExtResource("rd_mouse")]
+position = Vector2(740, 864)
+
+[node name="Hole" parent="Critters/Mouse1" index="0"]
+position = Vector2(84, 0)
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("x1")]
 position = Vector2(97.5, 864)

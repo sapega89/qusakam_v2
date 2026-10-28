@@ -6,7 +6,7 @@ extends SceneTree
 ##   2. A finished section fight stays finished when the hero comes back (its own room-state key, D152).
 ##   3. No gift lies on the road (D583): the pickups and the chest are up in branches (verify_road_secrets walks them);
 ##      the one chest on the road is guarded by an optional fight (the old vulture, D722).
-##   4. The road ends at CityGates: walking off the east edge loads CityGates.
+##   4. The road goes on east: walking off the east edge loads Zahra's Rest (M7; the City Gates are further on).
 ##   1b. D817: every group fight on the road is a bandit and a jackal or two bandits and a jackal (lone fights stay
 ##      lone), and winning a group pays its win_xp on top of its enemies' XP.
 ##   5. D830 «на дорозі не має бути сходинок»: the floor is flat — no tile above the floor row, and a ray down at every
@@ -141,15 +141,15 @@ func _initialize() -> void:
 			bumps.append("x %d → %s" % [x, "nothing" if hit.is_empty() else str((hit.position as Vector2).y)])
 	ck(bumps.is_empty(), "the floor under the whole road is at y 384 (%s)" % [bumps])
 
-	print("[4] The east edge leads to CityGates")
+	print("[4] The east edge leads to Zahra's Rest")
 	player.global_position = Vector2(5100.0, 340.0)
 	Input.action_press(&"move_right")
 	for i in 240:
 		await physics_frame
-		if game.map.scene_file_path.ends_with("CityGates.tscn"):
+		if game.map.scene_file_path.ends_with("ZahraRest.tscn"):
 			break
 	Input.action_release(&"move_right")
-	ck(game.map.scene_file_path.ends_with("CityGates.tscn"), "walking east loads CityGates (%s)" % game.map.scene_file_path)
+	ck(game.map.scene_file_path.ends_with("ZahraRest.tscn"), "walking east loads ZahraRest (%s)" % game.map.scene_file_path)
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()

@@ -107,7 +107,7 @@ width = 14.0
 default_color = Color(0.62, 0.45, 0.3, 1)
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(60, 344)
+position = Vector2(60, 360)
 
 [node name="ObjectiveTargets" type="Node2D" parent="."]
 

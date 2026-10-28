@@ -9,6 +9,7 @@ const SceneWarmer := preload("res://SampleProject/Scripts/Gameplay/SceneWarmer.g
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const TutorialTopics := preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
+const FightOccluderFade := preload("res://SampleProject/Scripts/Gameplay/FightOccluderFade.gd")
 ## D492: у room_state кімнати — {ключ бою: регіон} її звичайних боїв, тих, що повертаються.
 const ORDINARY_FIGHTS_KEY := "ordinary_fights"
 
@@ -88,6 +89,10 @@ func _ready() -> void:
 
 	# D417: курсор схований у грі, Alt показує його; меню й модалки — завжди з курсором.
 	add_child(MouseCursorScene.instantiate())
+	# B199: заслони переднього плану тьмяніють над боєм.
+	var occluder_fade: Node = FightOccluderFade.new()
+	occluder_fade.name = "FightOccluderFade"
+	add_child(occluder_fade)
 
 	# Make sure MetSys is in initial state (ТОЛЬКО НА НОВЫЙ ЗАПУСК ИЗ МЕНЮ)
 	MetSys.reset_state()

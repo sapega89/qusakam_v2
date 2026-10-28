@@ -52,7 +52,8 @@ func handle_attack_state(_delta: float) -> void:
 		return
 	# Темп — EnemyStats.attack_cooldown, як у всіх ворогів (D394, D494), зі змінним ритмом (D775); натягують разом не більше
 	# двох (жетон, D504). Герой п'є флягу чи замахується важким на виду (D754) — стріляє, не чекаючи кінця перерви.
-	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free():
+	# D824: на постріл не вистачає витривалості — стоїть і переводить подих
+	if (attack_ready_in <= 0.0 or _hero_opened(absf(dx))) and token_free() and enemy.stamina.can_afford(&"swing"):
 		_rest_after_swing()
 		if not player.is_on_floor() or absf(player.velocity.x) > AWAY_SPEED:
 			tactic.emit(&"lead")  # стріляє туди, де герой буде (ArcherEnemy._tilt_to, висота — _hero_y_at)

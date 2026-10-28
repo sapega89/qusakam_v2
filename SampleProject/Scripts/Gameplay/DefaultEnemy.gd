@@ -2,9 +2,12 @@ extends CombatBody2D
 class_name DefaultEnemy
 const JournalRecords = preload("res://SampleProject/Scripts/Systems/journal_records.gd")
 const EnemyVariety = preload("res://SampleProject/Scripts/Gameplay/EnemyVariety.gd")
+const EnemyScaling = preload("res://SampleProject/Scripts/Gameplay/EnemyScaling.gd")
 const CURSED_FOAM = preload("res://SampleProject/Scenes/FX/CursedFoam.tscn")
 const FLYING_LOGIC = preload("res://SampleProject/Scripts/Gameplay/Components/FlyingLogic.gd")
 const POISE_BAR = preload("res://SampleProject/UI/Components/poise_bar.tscn")
+const STAMINA_BAR = preload("res://SampleProject/UI/Components/enemy_stamina_bar.tscn")
+const ENEMY_STAMINA = preload("res://SampleProject/Scripts/Gameplay/Components/EnemyStamina.gd")
 # signal hp_changed вже визначений в CombatBody2D
 
 # === PRELOADED SCENES ===
@@ -31,8 +34,13 @@ var _burn_tick := 0.0
 var size_kind := "medium"
 ## Еліта — властивість виду (D652: enemy_variety.json kinds.<enemy_type>.elite), ставить _apply_variety.
 var elite := false
-## Рівень бою (D642): рівень, на якому герой його зустрічає; HP і шкода ростуть за enemy_variety.json "levels".
+## Рівень бою (D642): рівень, на якому герой його зустрічає (RoomEnemySpawner.enemy_level) — підлога рівня ворога (D840).
 var level := 1
+## D840: рівень ворога за рівнем героя на момент появи (EnemyScaling.scaled_level, не нижче level); HP і шкода ростуть
+## за ним, за enemy_variety.json "levels". Ставить _apply_variety — і заново при кожному поверненні ворогів (D492).
+var scaled_level := 1
+## D840: зсув зони кімнати бою (EnemyScaling.zone_offset; ставить RoomEnemySpawner) — важка зона стоїть вище свого рівня.
+var zone_offset := 0
 ## Досвід за вбивство: EnemyStats.xp_reward × розмір × еліта.
 var xp_reward := 0
 
@@ -108,6 +116,8 @@ const POISE_BREAK_STAGGER := 0.6
 const PARRY_STAGGER := 1.0
 const STAGGER_PUSH := 30.0
 var _poise_drain_in := 0.0
+## Витривалість (D824, EnemyStamina): кожен удар її коштує; вичерпав — видихається.
+var stamina: Node
 
 # === ПОКРАЩЕНИЙ AI (deprecated - використовуйте EnemyLogic) ===
 enum AIState {
@@ -220,7 +230,7 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 	DebugLogger.info("DefaultEnemy: Applied stats from EnemyStats resource (type: %s)" % stats.enemy_type, "Enemy")
 
-## Розмір, еліта (D560, D652) і рівень бою (D642): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
+## Розмір, еліта (D560, D652) і рівень (D642, D840: за героєм): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
 ## і форми (B128: що видно, те й б'є) ростуть від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом
 ## із хітбоксом. Еліта — це вид зі своїм артом (D652), без контуру; D829: ще й росте на elite.scale понад розмір своєї сцени,
 ## щоб її було видно серед звичайних.
@@ -232,7 +242,8 @@ func _apply_variety() -> void:
 	var health: float = mult.health
 	var hit: float = mult.damage
 	var xp: float = mult.xp
-	var grown: Dictionary = EnemyVariety.level(level)
+	scaled_level = EnemyScaling.scaled_level(level, zone_offset, EnemyScaling.hero_level(), "elite" if elite else "ordinary")
+	var grown: Dictionary = EnemyVariety.level(scaled_level)
 	health *= grown.health
 	hit *= grown.damage
 	if elite:
@@ -280,6 +291,13 @@ func _add_foam(mouth: Vector2) -> void:
 
 func _initialize_components():
 	"""Ініціалізує EnemyLogic та EnemyView"""
+	# D824: витривалість — до логіки, та платить нею за кожен удар
+	stamina = ENEMY_STAMINA.new()
+	stamina.name = "EnemyStamina"
+	add_child(stamina)
+	stamina.setup(enemy_stats.enemy_type, is_in_group(GameGroups.BOSS))
+	stamina.winded.connect(_on_winded)
+
 	# Створюємо EnemyLogic
 	enemy_logic = _make_logic()
 	enemy_logic.name = "EnemyLogic"
@@ -307,11 +325,24 @@ func _initialize_components():
 	# Перевіряємо, чи гравець вже знаходиться в зоні виявлення
 	call_deferred("_check_existing_player_in_detection_area")
 
-## Шкала стійкості над головою (D777): над верхнім краєм тіла, видно, поки ворог у бою чи шкала не спала.
+## Шкала стійкості над головою (D777): над верхнім краєм тіла, видно, поки ворог у бою чи шкала не спала. Під нею —
+## тонка смужка витривалості (D824), лише поки ворог у бою.
 func _add_poise_bar() -> void:
 	var bar: Control = POISE_BAR.instantiate()
 	add_child(bar)
 	bar.track(self)
+	var strip: Control = STAMINA_BAR.instantiate()
+	bar.add_child(strip)
+	strip.track(self)
+
+## Видихнувся (D824): стоїть [param time] с — тінь оглушення й поза збою, без удару, ухилу й щита; звук — SoundHooks.
+func _on_winded(time: float) -> void:
+	if is_dead:
+		return
+	enemy_logic.stun_left = maxf(enemy_logic.stun_left, time)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_winded.emit(self, time)
 
 ## Ворог у бою (женеться, б'є чи стоїть збитий) — тоді над ним шкала стійкості, як смужка боса.
 func is_engaged() -> bool:
@@ -527,7 +558,7 @@ func get_base_damage() -> int:
 
 ## Реалізація IDamageDealer.get_current_damage()
 func get_current_damage() -> int:
-	return int(damage)
+	return roundi(damage)  # B202: як EnemyLogic і BossLogic._damage — округлення, не відкидання дробу
 
 # === ПЕРЕВИЗНАЧЕНІ ФУНКЦІЇ ===
 

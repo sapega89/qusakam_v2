@@ -7,7 +7,9 @@ extends SceneTree
 ##   [3] витривалість (D776): ціни ударів і перекату, порожня шкала — ні удару, ні перекату, спалах; відновлення; блок;
 ##   [4] зілля зі швидкого слота: одна кнопка, у реальному часі, герой стоїть; удар до ковтка — зілля пропало;
 ##   [5] над звичайним ворогом смужки HP немає (D502);
-##   [6] шкала стійкості над ворогом (D777): набирається, спадає, повна — збій; три удари серії не збивають.
+##   [6] шкала стійкості над ворогом (D777): набирається, спадає, повна — збій; три удари серії не збивають;
+##   [7] значки стану (D599): підпал і оглушення над ворогом, оглушення героя в панелі героя;
+##   [8] щит-закляття над Block (H2): магічний падає, тримається й гасне; скляний тріскає й розбивається, уламки ранять.
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_combat_player.gd
 
@@ -94,6 +96,7 @@ func _initialize() -> void:
 	await _stamina()
 	await _potion(sl)
 	await _no_enemy_bar()
+	await _shield_spells()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()
@@ -450,6 +453,7 @@ func _no_enemy_bar() -> void:
 	ck(bars.call() == before, "no HealthBar appears for a bandit, even hurt (%d → %d)" % [before, bars.call()])
 	ck(not "health_bar" in extra, "the enemy has no health_bar at all")
 	await _poise_bar(extra)
+	await _status_icons(extra)
 	extra.queue_free()
 
 
@@ -482,3 +486,90 @@ func _poise_bar(enemy: Node) -> void:
 	ck(staggered[0] == 1 and enemy.last_stagger_source == &"" and is_zero_approx(fill.value) and enemy.is_staggered(),
 			"a full bar staggers the enemy and empties (%.1f)" % fill.value)
 	bus.enemy_staggered.disconnect(on_stagger)
+
+
+## [7] Значки стану (D599, status_row.tscn): над ворогом — у його шкалі стійкості; у героя — у панелі героя.
+func _status_icons(enemy: Node) -> void:
+	print("[7] Status icons: burning and stunned over an enemy, stunned in the hero panel (D599)")
+	var row: Control = enemy.get_children().filter(func(n: Node) -> bool: return n.name == "PoiseBar").front().get_node(^"%StatusRow")
+	await process_frame
+	ck(not row.get_node(^"Burning").visible and not row.get_node(^"Cursed").visible, "a plain bandit shows no burning and no curse")
+	enemy.apply_burn(4, 3.0)
+	enemy.enemy_logic.stun_left = 0.5
+	await process_frame
+	ck(row.get_node(^"Burning").visible and row.get_node(^"Stunned").visible and row.is_visible_in_tree(),
+			"a burning, stunned enemy shows both icons over its poise bar")
+	enemy.burn_left = 0.0
+	enemy.enemy_logic.stun_left = 0.0
+	await process_frame
+	ck(not row.get_node(^"Burning").visible and not row.get_node(^"Stunned").visible, "the icons go when the states end")
+	var panel: Node = get_first_node_in_group(&"player_vitals_panel")
+	var hero_row: Control = panel.get_node(^"%HeroStatusRow")
+	root.get_node("EventBus").player_staggered.emit(0.3)
+	ck(hero_row.get_node(^"Stunned").visible, "a staggered hero shows the stunned icon in the hero panel")
+	await create_timer(0.5).timeout
+	ck(not hero_row.get_node(^"Stunned").visible, "the hero's stunned icon goes when the stagger ends")
+
+
+## [8] Щит-закляття (H2): Shield Block (стартова навичка, D819) — магічний щит над Block; скляний — тріскає від
+## прийнятих ударів і на третьому розбивається, уламки ранять нападника на половину удару.
+func _shield_spells() -> void:
+	print("[8] Shield spells over Block: the magic shield drops, holds and fades; the glass one cracks and shatters (H2)")
+	await _until_ready()
+	var spell: Node2D = hero.shield_spell
+	var magic: AnimatedSprite2D = spell.get_node(^"Magic")
+	var glass: AnimatedSprite2D = spell.get_node(^"Glass")
+	var st: Node = hero.stamina
+	await _hero_at_bandit()
+	st.refill()
+	_press(&"block")
+	# Блок піднімається у фізичному кадрі, щит — у наступному _process ShieldSpell: чекаємо блоку, тоді кадр.
+	for f in 10:
+		if combat.is_blocking():
+			break
+		await physics_frame
+	await process_frame
+	await process_frame
+	ck(spell.spell == &"magic" and magic.visible and magic.animation == &"drop" and not glass.visible,
+			"Shield Block raises the magic shield: it drops in (%s, %s)" % [spell.spell, magic.animation])
+	ck(is_equal_approx(spell.scale.x, 1.0), "facing right, the shield stands in front of him")
+	await create_timer(0.5).timeout
+	ck(magic.animation == &"hold" and magic.is_playing(), "then it holds with a shimmer (%s)" % magic.animation)
+	spell.raise(&"glass")
+	ck(glass.visible and not magic.visible and glass.animation == &"appear", "the glass shield appears")
+	var enemy_hp: int = bandit.current_health
+	for i in 2:
+		st.refill()
+		hero.take_damage(20, bandit)
+	ck(glass.animation == &"crack_2" and not spell.is_shattered(), "two blocked blows crack it twice (%s)" % glass.animation)
+	st.refill()
+	hero.take_damage(20, bandit)
+	ck(spell.is_shattered() and glass.animation == &"shatter", "the third blocked blow shatters it")
+	ck(enemy_hp - bandit.current_health == spell.shard_damage(20) and spell.shard_damage(20) == 10,
+			"the shards hurt the attacker for half the blow (%d)" % (enemy_hp - bandit.current_health))
+	await create_timer(0.5).timeout
+	ck(not glass.visible, "the shards fly off and the glass is gone")
+	_press(&"block", false)
+	await create_timer(0.1).timeout
+	_press(&"block")
+	await create_timer(combat.PARRY_WINDOW + 0.1).timeout  # past the parry window: a plain block
+	st.refill()
+	spell.raise(&"glass")
+	hero.take_damage(20, bandit)
+	ck(glass.animation == &"crack_1", "a new block raises a whole glass shield")
+	st.spend(st.MAX)
+	hero.take_damage(20, bandit)
+	ck(spell.is_shattered(), "a block on an empty bar (D776) shatters the glass at once")
+	_press(&"block", false)
+	hero.current_health = hero.Max_Health
+	await _until_ready()
+	_press(&"block")
+	for f in 2: await process_frame
+	_press(&"block", false)
+	for f in 2: await process_frame
+	ck(magic.animation == &"fade", "released, the magic shield fades (%s)" % magic.animation)
+	await create_timer(0.5).timeout
+	ck(not magic.visible and not glass.visible, "and is gone")
+	hero.current_health = hero.Max_Health
+	st.refill()
+	await _until_ready()

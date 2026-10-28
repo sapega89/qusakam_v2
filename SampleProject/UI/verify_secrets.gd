@@ -147,7 +147,9 @@ func _initialize() -> void:
 	stash_rect.position += stash.position
 	ck(rubble_rect.encloses(stash_rect), "the shop-roof secret %s lies inside the rubble %s" % [stash_rect, rubble_rect])
 	road.free()
-	ck(per_location["canyon_of_whispers"] == 6 and per_location["city"] == 1, "secrets per location %s" % per_location)
+	# M7: + схованка контрабандистів; + голубник і схованка в цистерні; + схованка Маліка.
+	ck(per_location["canyon_of_whispers"] == 7 and per_location["city"] == 3 and per_location["laboratory"] == 1,
+			"secrets per location %s" % per_location)
 
 	print("[2] the card's total comes from the nodes, none found in a new game")
 	for id: String in per_location:
