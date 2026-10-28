@@ -8,21 +8,19 @@
 [ext_resource type="Script" uid="uid://ml4vpmew7o42" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="8_spawn_point"]
 [ext_resource type="AudioStream" uid="uid://bysew0n0ygvjp" path="res://SampleProject/Resources/Audio/Music/ash_and_oasis.ogg" id="music_track"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/desert_backdrop_canyon.tscn" id="backdrop"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_houses.png" id="houses"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_back.png" id="back"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_houses_burnt.png" id="houses"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_back_burnt.png" id="back"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_near.tres" id="blur_near"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/Village_Terrain.png" id="terrain_terrain"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_grandpa_house.png" id="grandpa_house_art"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_elder_house.png" id="elder_house_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_grandpa_house_burnt.png" id="grandpa_house_art"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Village/gen_elder_house_burnt.png" id="elder_house_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="room_door"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/banner.tscn" id="decor_banner"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/palm.tscn" id="decor_palm"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x2"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="rd_butterfly"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_embers.tscn" id="rd_embers"]
 
 [sub_resource type="Gradient" id="Gradient_veil"]
 colors = PackedColorArray(0.839, 0.839, 0.878, 0, 0.839, 0.839, 0.878, 0.4)
@@ -41,6 +39,7 @@ script = ExtResource("1_village")
 metadata/camera_floor_y = 384
 
 [node name="Backdrop" parent="." instance=ExtResource("backdrop")]
+modulate = Color(0.72, 0.66, 0.68, 1)
 position = Vector2(0, -100)
 
 [node name="Veil" type="Sprite2D" parent="."]
@@ -63,9 +62,8 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("back")
 centered = false
-offset = Vector2(0, 80)
 region_enabled = true
-region_rect = Rect2(0, 80, 576, 244)
+region_rect = Rect2(0, 0, 576, 324)
 
 [node name="Houses" type="Parallax2D" parent="."]
 z_index = -9
@@ -80,9 +78,8 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("houses")
 centered = false
-offset = Vector2(0, 112)
 region_enabled = true
-region_rect = Rect2(0, 112, 576, 164)
+region_rect = Rect2(0, 0, 576, 276)
 
 [node name="TileMap" type="Node2D" parent="."]
 
@@ -160,25 +157,10 @@ shape = SubResource("CircleShape2D_save")
 
 [node name="Ambience" type="Node2D" parent="."]
 
-[node name="Pollen1" parent="Ambience" instance=ExtResource("rd_pollen")]
+[node name="Embers1" parent="Ambience" instance=ExtResource("rd_embers")]
 position = Vector2(1296, 250)
 emission_rect_extents = Vector2(1296, 140)
 amount = 24
-
-[node name="Critters" type="Node2D" parent="."]
-
-[node name="Lark1" parent="Critters" instance=ExtResource("rd_bird")]
-position = Vector2(820, 384)
-
-[node name="Lark2" parent="Critters" instance=ExtResource("rd_bird")]
-position = Vector2(1700, 384)
-perch_flip = true
-
-[node name="Butterfly1" parent="Critters" instance=ExtResource("rd_butterfly")]
-position = Vector2(1150, 364)
-
-[node name="Butterfly2" parent="Critters" instance=ExtResource("rd_butterfly")]
-position = Vector2(2400, 364)
 
 [node name="Grass" type="Node2D" parent="."]
 

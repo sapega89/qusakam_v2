@@ -183,7 +183,7 @@ func _initialize() -> void:
 	for i in 20: await physics_frame
 	var hatch: Node = game.map.get_node("Attic/Hatch_Attic")
 	ck(not hatch.is_open, "before the talk the hatch is shut")
-	await _stand(game, Vector2(384.0, 840.0))
+	await _stand(game, Vector2(hatch.global_position.x, 840.0))
 	await _hold(&"move_up", 3.5)
 	for i in 10: await physics_frame
 	ck(game.player.global_position.y > 480.0, "the hero climbs and bumps the hatch (y %.0f)" % game.player.global_position.y)
@@ -196,7 +196,7 @@ func _initialize() -> void:
 	game.set_quest_flag("village_oldman_complete", true)  # те, що ставить кінець OldMan_Decision (ElderHouse.gd)
 	await Kit.frames(self, 30)
 	ck(hatch.is_open and hatch.get_node("Body/CollisionShape2D").disabled, "the flag opens the hatch at once")
-	await _stand(game, Vector2(384.0, 600.0))
+	await _stand(game, Vector2(hatch.global_position.x, 600.0))
 	await _hold(&"move_up", 3.0)
 	for i in 30: await physics_frame
 	ck(game.player.global_position.y < 448.0 and game.player.is_on_floor(), "the hero climbs into the attic (y %.0f)" % game.player.global_position.y)
