@@ -10,7 +10,7 @@ date: 2026-10-28
 - **Not done:** the room atmosphere each README lists (dust, sand trickles, bats, the lantern flicker). The Dunes `CampDoor`: the trailhead is painted, but the camp still opens off the Desert Road (world-rooms Q-a).
 - **D-IDs:** D868–D870 below. The register ends at D863 and wire-backdrops used D864–D867, so the orchestrator may need to renumber.
 - **B rows fixed:** none.
-- **Full suite:** SUITE_LINE
+- **Full suite:** `SUITE: 3 FAIL in 20 min 43 s, J=4` (142 scripts, 139 PASS). verify_difficulty (17) and verify_lab_boss (2) are integrate-31's known balance reds (Q114, Q116–Q118). verify_camera_transitions (1, BanditCamp, a room this branch does not touch) fails intermittently: 2 of 4 runs here, 0 of 3 on the parents (details below).
 
 This branch is `origin/cloud/integrate-31` with `origin/cloud/wire-backdrops` merged in. It keeps integrate-31's text in `design/HANDOFF.md` and `MASTER_PLAN.md`. Godot 4.6.2 was downloaded and ran here. The `room-content` skill is not in this checkout (`.claude/` is gitignored), so I worked from the nine READMEs and D747/D750/D814/D830/D834.
 
@@ -29,14 +29,20 @@ This branch is `origin/cloud/integrate-31` with `origin/cloud/wire-backdrops` me
 | verify_world_rooms | PASS (falls into the riverbed with no bridge, crossing on the lowered bridge, the cellar gate and its lever) |
 | verify_room_entrances | PASS (first run: 2 FAIL, `SmugglersStash: OccluderStalactites rests off the middle at the left/right camera limit`. Fixed by D870) |
 | verify_map_geometry | PASS |
-| verify_camera_transitions | PASS |
+| verify_camera_transitions | **Intermittent**: PASS, FAIL (suite), FAIL (alone), PASS (alone, with the steps printed). The fail is `reaching the right limit it slows down, no hard stop (biggest one-frame drop 6.75 px)` in **BanditCamp**. The same test passed once each on `integrate-31`, on `wire-backdrops` and on this branch's merge commit `5c38a28b` (clean worktrees). This branch changes nothing in BanditCamp, the camera or the player. The printed steps carry ±2.25 px (1 px × zoom) of frame jitter, and the limit is 4.5 px, so one extra jitter step fails it. A likely trigger is load and memory timing from the larger textures of the rooms visited earlier in the test, but that is not proven. The orchestrator should watch it in its next suite. |
 | verify_camera_rooms | PASS when run alone. In the first run it shared 4 cores with 6 other tests and gave 1 FAIL: `CanyonFloor inside: the camera moves at most 13.2 px more than the hero in a frame (≤ 12)`, a frame hitch under load. |
 | verify_secrets | PASS |
 | verify_scripts_compile | PASS (includes the new `FlagGrate.gd`) |
 
 Full suite (`run_verify.sh`, J=4, nproc = 4):
 
-SUITE_DETAIL
+```
+FAIL  verify_difficulty  8 s — RESULT: 17 FAIL, 0 SCRIPT ERROR
+FAIL  verify_camera_transitions  387 s — RESULT: 1 FAIL, 0 SCRIPT ERROR
+FAIL  verify_lab_boss  58 s — RESULT: 2 FAIL: balanced build: he dies in 2.3 of the mercenary's blows (351 HP; mace 129, club 206), balanced build: the mercenary takes 67 light hits (6800 HP, Phys. Atk. 89), 0 SCRIPT ERROR
+SUITE: 3 FAIL in 20 min 43 s, J=4
+```
+verify_scripts_compile: PASS.
 
 ## Shots
 Contact sheet `design/shots/wire_backdrops_2.png` (20 frames). Full frames are in `design/shots/wire_backdrops_2/`: `dunes_1/2/trail`, `chasm_raised/lowered`, `riverbed`, `aqueduct_breach/2/doors/open` (the grate before and after the flag), `ruins_well/2/arch`, `approach_lever/well`, `floor_crack/2/hole`, `cave_exit`, `stash`. To recapture: `capture_wire_backdrops.gd -- design/shots/wire_backdrops_2 design/shots/wire_backdrops_2.png 2` (new `SHOTS_2`; a fourth entry in a shot sets that flag first).
