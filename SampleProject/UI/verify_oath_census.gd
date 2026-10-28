@@ -167,8 +167,9 @@ func _bot_fight(style: StringName) -> void:
 					_press(&"dodge")
 					await physics_frame
 					_press(&"dodge", false)
+		# б'є, коли до краю намальованого тіла бандита < 45 px (так було й до B187: 80 px до центру тіла завширшки 70)
 		var free_now: bool = not danger and not blocking and not hero.mover.is_rolling() and not hero.combat.owns_animation()
-		if free_now and counters[0] > 0 and Time.get_ticks_msec() / 1000.0 > hurt_until[0] and absf(bandit.global_position.x - hero.global_position.x) < 80.0:
+		if free_now and counters[0] > 0 and Time.get_ticks_msec() / 1000.0 > hurt_until[0] and absf(bandit.global_position.x - hero.global_position.x) - bandit.hurt_rect().size.x / 2.0 < 45.0:
 			counters[0] -= 1
 			_press(&"attack")
 			await physics_frame

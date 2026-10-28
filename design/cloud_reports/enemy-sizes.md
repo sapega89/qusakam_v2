@@ -10,7 +10,7 @@ tags: [cloud, routines, enemies, scale]
 - **B rows fixed:** **B187** (sizes; the art regeneration is no longer needed). **B203**: a grown enemy's `attack_range` no longer outruns its strike. It is needed here because the brute at ×1.46×1.5 would start a swing 0.6 px out of reach; the tower guard was already 4 px out of reach before this change. Now checked for every grown kind (`verify_hit_areas` [1b]).
 - **Not done / for Sapega:** the chart (`world_scale.json`) has no elite row. D814 says 120 art (×1.25), but D859 made it ×1.5, so the probe flags the three human elites as `too big ×1.5`. They are right by D859. **Proposed:** an `elite_human` row at 144 art = 216 world px. I did not edit the chart (that is a design call).
 - **Tests:** verify_hit_areas, verify_enemy_variety, verify_combat_enemies, verify_enemy_scaling, verify_enemy_stamina, verify_scripts_compile: ALL PASS. verify_archer: 5 FAIL, the same 5 on feature/backlog (pre-existing). verify_difficulty: 17 FAIL, identical row for row before and after (it adds up hits and blows, not body size).
-- **Full suite:** running (this line is updated when it ends).
+- **Full suite:** `SUITE: 9 FAIL in 20 min 16 s, J=4`. Four were mine (fixed and re-run): verify_combat_flow, verify_kusakam_skills, verify_souls_combat, verify_oath_census, which placed enemies at fixed offsets sized for the old bandit; all PASS now. Three are pre-existing and fail the same way on feature/backlog: verify_archer 5, verify_difficulty 17, verify_lab_boss 2. Two passed when re-run alone: verify_enemy_variety and verify_repeat_load (load under J=4).
 
 ## Details
 
@@ -24,6 +24,14 @@ tags: [cloud, routines, enemies, scale]
 - `verify_hit_areas.gd:148` `[1b]`: every melee kind, small and medium, spawned and grown: `attack_range` is between body contact and hitbox front + lunge + 12. All 16 OK.
 - `verify_enemy_variety.gd:141`: the medium base's reach grows with the kind (no longer the `.tres` value). The small size is checked as shorter than medium; the reach rule itself lives in verify_hit_areas.
 - `verify_enemy_variety.gd:785`: the brute's drawn feet vs the bandit's line: tolerance 1.0 → 1.5 world px (the chart's ±1 art px). Both grow from the body's feet, and half an art pixel of the brute's sheet (now 2.5 world px per art px) stays: 14.9 vs 16.0.
+
+### Tests whose placements assumed the old bandit (fixed)
+The bandit's body is now 63 px wide (was 32) and its drawn hurt area 138 px (was 70). Tests that put the hero 30–40 px from a bandit had the bodies overlapping, so physics pushed them apart before the strike. Tests whose "miss" stood the hero inside the drawn body got a hit (B128: what is drawn is hit).
+- `verify_kusakam_skills.gd`: `_at_contact()`. The "front" enemy stands at body contact, not at +30.
+- `verify_combat_flow.gd`: `_at_contact()` for the hits. [1b] "facing away misses": the hero stands just past the drawn body. [2e] tank stand-in: see the note below.
+- `verify_souls_combat.gd:387` `_place_hero`: never closer than body contact. The "miss" stands past the drawn body.
+- `verify_oath_census.gd`: the bot counter-attacks within 45 px of the bandit's drawn edge (was 80 px from the centre, the same 45 at the old width).
+- **Proposed B row:** verify_combat_flow [2e] «a heavy hit (knockback) breaks the tank's swing» is empty. Under D754 a swing holds its ground (`holds_ground`), so the push moves nothing; on feature/backlog it passed only because the stand-in already stood 14.5 px outside its reach. I kept that geometry (reach + 14.5) and left a comment. The check should either be dropped or test that D754 holds.
 
 ### Measured heights (idle frames, world px; `capture_enemy_sizes.gd` prints them)
 | kind | before | scale | after (medium) |

@@ -109,7 +109,7 @@ func _initialize() -> void:
 	target.damage_token.connect(func(d: int) -> void: hits.append(d))
 	var hp_before: int = target.current_health
 	var dmg: int = game.player.combat.hit_damage()
-	game.player.global_position = target.global_position + Vector2(-30, 0)
+	game.player.global_position = target.global_position - _at_contact(target)
 	game.player.velocity = Vector2.ZERO
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(1)
@@ -121,7 +121,8 @@ func _initialize() -> void:
 	print("[1b] An attack facing away misses")
 	hits.clear()
 	hp_before = target.current_health
-	game.player.global_position = target.global_position + Vector2(-30, 0)
+	# спиною до ворога, чиє намальоване тіло (зона-ціль, B128) не заходить за героя: широкий бандит (B187) — ширший за дотик тіл
+	game.player.global_position = Vector2(target.hurt_rect().position.x - 4.0, target.global_position.y)
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(-1)
 	await create_timer(0.6).timeout
@@ -149,7 +150,7 @@ func _initialize() -> void:
 	ck(armed == dmg + int(sword.stats.attack), "iron_sword adds its attack %d (%d → %d)" % [int(sword.stats.attack), dmg, armed])
 	hits.clear()
 	hp_before = target.current_health
-	game.player.global_position = target.global_position + Vector2(-30, 0)
+	game.player.global_position = target.global_position - _at_contact(target)
 	await create_timer(0.05).timeout
 	game.player.combat.perform_attack(1)
 	await create_timer(0.6).timeout
@@ -181,7 +182,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(gm.player_state.weapon_in_hand == "mace", "equipping the mace draws it (D475) (%s)" % gm.player_state.weapon_in_hand)
 	ck(not InputMap.has_action(&"weapon_next") and not InputMap.has_action(&"weapon_prev"), "D475: no weapon-switch action")
-	game.player.global_position = target.global_position + Vector2(-30, 0)
+	game.player.global_position = target.global_position - _at_contact(target)
 	await create_timer(0.1).timeout
 	target.current_health = target.Max_Health  # удар булави (65) інакше вбив би ціль — мертвий не відлітає
 	var x_before_hit: float = target.global_position.x
@@ -381,7 +382,7 @@ func _initialize() -> void:
 	tank.current_health = tank.Max_Health
 	await create_timer(0.6).timeout
 	# Ставимо вже після очікування: живий AI ходить швидко (D767) і за 0.6 с відійшов би (B128: удар бандита-сцени сягає 34.5 px)
-	tank.global_position = Vector2(pl.global_position.x + 40, tank.global_position.y)
+	tank.global_position = Vector2(pl.global_position.x + _at_contact(tank).x, tank.global_position.y)
 	tank.enemy_logic.last_direction = -1
 	tank.enemy_logic.perform_attack()
 	await create_timer(0.5).timeout
@@ -392,6 +393,10 @@ func _initialize() -> void:
 	ck(type_hits.size() == 1, "the tank's swing lands after its %.1f s wind-up (%s)" % [tank.attack_windup, type_hits])
 	await create_timer(1.0).timeout
 	type_hits.clear()
+	# Як було до B187: після першого удару бандит-сцена стояв на 14.5 px за своєю досяжністю (61 px, удар 34.5 + 12).
+	# Виросле тіло (B187) сягає 67.6 + 12, тож ставимо ту саму відстань від досяжності. Перевірка, по суті, порожня:
+	# замах тримає місце (D754, holds_ground), поштовх його не зсуває — див. design/cloud_reports/enemy-sizes.md.
+	tank.global_position.x = pl.global_position.x + tank.strike_reach() + 12.0 + 14.5
 	tank.enemy_logic.perform_attack()
 	await create_timer(0.2).timeout
 	tank.knockback(60.0)  # як удар булавою посеред замаху
@@ -461,3 +466,8 @@ func _initialize() -> void:
 	ck(rolls.rolls <= rolls.CALM_ROLLS, "the fight stayed inside the calm rolls (%d of %d)" % [rolls.rolls, rolls.CALM_ROLLS])
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
+
+## Впритул: тіла торкаються (пів тіла ворога + пів героя + 2 px), а не налазять — інакше фізика розштовхує їх (D443).
+## B187: тіло бандита виросло (x1.96), тож стала відстань 30–40 px уже налазила.
+func _at_contact(enemy: Node2D) -> Vector2:
+	return Vector2((enemy.get_node(^"CollisionShape2D") as CollisionShape2D).shape.get_rect().end.x + 14.0, 0.0)
