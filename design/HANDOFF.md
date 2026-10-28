@@ -7,7 +7,7 @@ tags: [handoff, orchestrator]
 
 The plan with statuses is [[MASTER_PLAN]]. Deferred items are in [[BACKLOG]]. Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D922**, **B214**, **Q128** — do not file IDs on `feature/backlog` while an integrator runs.
+**Registers:** next free **D924**, **B214**, **Q128** — do not file IDs on `feature/backlog` while an integrator runs.
 The room chain's IDs are renumbered (D886–D906; local fixes D907–D909).
 **Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 19:27 from `71edcb83` = `main` (PR #106). Rebuild after each merge (X1).
 
@@ -34,7 +34,7 @@ lab-v3-now's) → **`wire-backdrops-3-r`** 🔄 running (`trig_01TGj1QNGEtXZNTtS
 `trig_01UrXytkDsfE7YLbMquXK5r4`). The originals of prop-sizes/wire-props give up at 15:15/15:31 UTC, the `-r`
 replacements take over with their own 8 h. If a replacement dies too, re-run it with RemoteTrigger `run`.
 - After `wire-props`: **`integrate-34`** merges the chain's last branch (contains lab-v3-now) and renumbers its IDs.
-- rooms-finish's Q-a (redraw the Lab M4 graph, D863) is covered by lab-v3-now (built from Figma 564:6590); Q-b East Gate
+- rooms-finish's Q-a (redraw the Lab M4 graph, D863) is covered by lab-v3-now (built from Figma 564:6590); Q-b East Gate → Q126 (D917: the Laboratory exit leads into the world, not to the City).
   is non-blocking (default: with the location after the demo, D861).
 - lab-v3-now left: the hall's cave look at ground level (D865) has no art; LabBoss stays 2×1 (the graph draws 3×2).
 - Never merge `cloud/lab-v3`, `cloud/lab-main-path`, `cloud/rooms-city`, `cloud/rooms-lab`.
