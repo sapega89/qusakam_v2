@@ -66,8 +66,8 @@ doors and painted objects follow the size chart of [[world_scale_plan]] — the 
 | Cave under the bridge | underground | 1×3 | the cave mouth; the way down | 🔄 art M6b-1 (`Backgrounds/BridgeCave/`: far ×0.5, wall ×1.0 with the mouth in the ceiling, three shelves and the pit down — collision table in the README —, the shaman family's waymark ×0.9, end-game rope ladder ×2, stalactite front ×1.3), waiting for Sapega’s look at `shots/m6b1_cave_attic.png` |
 | Grandfather's attic | interior | 1 | the hatch with its ladder | 🔄 art M6b-1 (`Backgrounds/GrandfatherAttic/`: roof-and-gable wall, the house's floor with the hatch cut in, the ladder top, his belongings, the Maiden statuette corner with his notes, herbs front ×1.3), same review |
 | Smugglers' stash | secret | 1 | a cracked wall | ⬜ |
-| Mesa top | side | 4 | — | ⬜ |
-| Zahra's Rest (oasis) | main | 2 | — (`Backgrounds/DesertOasis/` is empty) | ⬜ |
+| Mesa top | side | 4 (scene: 2) | — | 🔄 art M6b-2 (`Backgrounds/MesaTop/`: shared sky, the desert plain far below with a caravan ×0.2, neighbouring buttes ×0.5 below this mesa, the bandits' lookout tower ×0.9 (144 art), the climb's floor and rock front reused; tiles, so a 4-screen room needs no new art; wiring table in the README), waiting for Sapega's look at `shots/m6b2_mesa_oasis.png` |
+| Zahra's Rest (oasis) | main | 2 | the well down to the Old Ruins | 🔄 art M6b-2 (`Backgrounds/ZahraRest/`: the road's sky and far mesas world-anchored (Plan3 offset 172.8), oasis pool + palms + half-buried ruins ×0.6 (palm 154 art), nomads' awning ×0.85, date palm ×0.9, the well with a padlocked iron grate ×1.0 at x 900 (a painted opening), sand ground in the road terrain's look, reeds front ×1.3; wiring table in the README), same review |
 | Dunes | main | 4 | the camp path | ⬜ |
 | Old ruins | underground | 4 | the leader's key gate | ⬜ |
 | Chasm | main | 1 | the bridge dropped from the far side | ⬜ |
