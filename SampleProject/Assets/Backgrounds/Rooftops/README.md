@@ -60,8 +60,8 @@ behind goes under `Back` (z −10), so the roof strip covers the feet sunk below
 (the three doors' art becomes `None`), or take `Rooftops` out of its list once the scene is wired by hand. `python -B
 design/shots/candidates/m6c2/m6c2.py wiring` prints these positions again.
 
-Not in this slice: the other ends of the two ladders and the rope are in the market and at the gate (`City/RooftopsDoor`
-x 880 and `City/TavernAtticDoor` x 2450 still show `door_elder`; `CityGates/RooftopsDoor` x 300 too) — City art.
+The other ends of the two ladders and the rope (`City/RooftopsDoor` x 880, `City/TavernAtticDoor` x 2450,
+`CityGates/RooftopsDoor` x 638 — not 300) are painted in M6c-3: `../City/README.md`, `../Gates/README.md`.
 
 Atmosphere for the room routine: pigeons on the roof edge and the dovecote's perches that fly off when the hero comes
 near (`critter_pigeon`, [[ambient_critters_plan]]), the laundry and the rugs swaying in the wind, dust and a few
