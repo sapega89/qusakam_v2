@@ -170,7 +170,7 @@ region_rect = Rect2(0, 240, 1728, 59)
 position = Vector2(380, 384)
 
 [node name="Pigeon2" parent="Critters" instance=ExtResource("rd_pigeon")]
-position = Vector2(560, 384)
+position = Vector2(1060, 384)
 perch_flip = true
 
 [node name="Pigeon3" parent="Critters" instance=ExtResource("rd_pigeon")]
