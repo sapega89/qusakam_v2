@@ -408,7 +408,7 @@ vframes = 4
 [node name="Bandit3" type="Sprite2D" parent="Raid/Bandits" unique_id=1846200312]
 texture_filter = 1
 position = Vector2(780, 368)
-offset = Vector2(0, -31)
+offset = Vector2(0, -6)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("archer_sheet")
 hframes = 4
