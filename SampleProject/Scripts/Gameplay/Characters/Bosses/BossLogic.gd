@@ -67,6 +67,16 @@ func _abandons() -> bool:
 	return false
 
 
+## Удар серії боса платить за його хід combo (D824).
+func _swing_kind() -> StringName:
+	return &"combo"
+
+
+## Серію свого ходу бос б'є до кінця й без витривалості (D824): візерунок (D577) не ламається, бос видихнеться після неї.
+func _breath_ends_series() -> bool:
+	return false
+
+
 ## Бос карає лише великі вікна (D775): відновлення важкого й приземлення; флягу, каст і кінець серії — ні (його
 ## візерунок і так тисне, а вікно для ковтка біля боса герой має вибороти відходом).
 func _hero_opened(adx: float) -> bool:
@@ -136,6 +146,7 @@ func perform_attack() -> void:
 	await wind_up(swing_windup)
 	if not _interrupted():
 		enemy.strike(move)
+		enemy.stamina.spend(StringName(move.kind))  # D824: хід коштує витривалості з пулу боса
 		match move.kind:
 			"charge": await _charge(move)
 			"slam": _slam(move)
@@ -149,6 +160,7 @@ func perform_attack() -> void:
 		recovering = false
 	committed = false
 	is_attacking = false
+	enemy.stamina.take_winded()  # D824: пул вичерпано — після відновлення ходу (D316) бос видихається, тоді знову повний
 	_rest()
 	attack_ended.emit()
 	_decide_after_attack()
@@ -159,6 +171,7 @@ func _drink(move: Dictionary) -> void:
 	is_attacking = true
 	attack_broken = false
 	enemy.drink(move)
+	enemy.stamina.refill()  # D824: ковток — і подих
 	recovering = true
 	await get_tree().create_timer(float(move.time), false).timeout
 	recovering = false

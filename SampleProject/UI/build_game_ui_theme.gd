@@ -731,6 +731,15 @@ func _setup_panels(theme: Theme) -> void:
 	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
 		poise_fill.set_expand_margin(side, -UITokens.BORDER_WIDTH)
 	theme.set_stylebox("fill", "PoiseBar", poise_fill)
+	# D824: смужка витривалості ворога під нею — те саме тло; заливка кольору ST героя. Вичерпана — червона заливка й
+	# червона рамка: порожня смужка видихнутого ворога теж читається.
+	for spec in [["EnemyStaminaBar", UITokens.ENEMY_STAMINA_FILL, UITokens.HUD_RIM], ["EnemyStaminaBarSpent", UITokens.ENEMY_STAMINA_SPENT, UITokens.ENEMY_STAMINA_SPENT]]:
+		theme.set_type_variation(spec[0], "ProgressBar")
+		theme.set_stylebox("background", spec[0], _box(UITokens.HUD_BAR_BG, spec[2], UITokens.BORDER_WIDTH, 0, 0))
+		var stamina_fill := _box(spec[1], spec[1], 0, 0, 0)
+		for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+			stamina_fill.set_expand_margin(side, -UITokens.BORDER_WIDTH)
+		theme.set_stylebox("fill", spec[0], stamina_fill)
 	# Невидима кнопка поверх картки: вибір цілі (D127). Видно лише фокус / наведення.
 	theme.set_type_variation("CardSelect", "Button")
 	var none := _box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 0, 0)

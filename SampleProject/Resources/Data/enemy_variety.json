@@ -29,5 +29,24 @@
 		"old_vulture": {"sheet": "res://SampleProject/Assets/Characters/Enemies/vulture_old/sheet.png", "elite": true, "sizes": {"medium": 1}, "base": "vulture", "scene": "res://SampleProject/Scenes/Characters/Enemies/enemy_old_vulture.tscn"},
 		"jackal_cursed": {"sheet": "res://SampleProject/Assets/Characters/Enemies/jackal_cursed/sheet.png", "elite": true, "sizes": {"medium": 1}, "base": "fast", "scene": "res://SampleProject/Scenes/Characters/Enemies/enemy_jackal_cursed.tscn", "foam": [31, 0]}
 	},
+	"stamina": {
+		"_note": "D824 (design/enemy_stamina_plan.md): an enemy's stamina, read by Scripts/Gameplay/Components/EnemyStamina.gd. Costs are paid at the strike: swing (each blow of a series, an archer's shot, a flier's dive or bite), lunge (D768), pounce (the jackal's leap and latch, D769). It refills at regen/s once delay s pass without an attack. An enemy that cannot pay its next opener keeps its distance; the blow that empties the bar ends the series and leaves it winded (stands, stun tint, its stagger pose) for winded s; it opens again at recover_at of max. A kind without a row takes its base kind's (elites) and then default. Elites: max x elite.max. Bosses: their own pool, costs per move kind (combo per blow), no refill while fighting: once empty, after the move's own recovery (D316) the boss is winded and then full again, so the pattern (D577) is never skipped or reordered; drink (D564) refills.",
+		"default": {"max": 100, "swing": 25, "lunge": 35, "pounce": 45, "regen": 45, "delay": 0.6, "winded": 0.9, "recover_at": 0.4},
+		"kinds": {
+			"melee": {"swing": 20},
+			"fast": {"max": 90, "swing": 20, "regen": 50},
+			"tank": {"swing": 40, "regen": 40, "winded": 1.1},
+			"archer": {"swing": 25, "regen": 40},
+			"shield": {"swing": 30},
+			"vulture": {"swing": 40},
+			"bat": {"swing": 25, "regen": 50},
+			"fly": {"swing": 30},
+			"bandit_brute": {"swing": 40, "lunge": 45},
+			"tower_shield_guard": {"swing": 35},
+			"heavy_archer": {"swing": 35}
+		},
+		"elite": {"max": 1.5},
+		"boss": {"max": 150, "combo": 12, "charge": 30, "slam": 25, "fireball": 20, "pillar": 25, "drink": 0, "winded": 1.2}
+	},
 	"shield": {"guard_break_stagger": 1.2}
 }

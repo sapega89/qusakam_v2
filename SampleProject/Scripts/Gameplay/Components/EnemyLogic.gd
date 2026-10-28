@@ -225,6 +225,8 @@ var _track_left := 0.0
 ## Замах обривається, лише коли герой іде геть і буде далі за досяжність щонайменше на ABANDON_SLACK px.
 const ABANDON_SLACK := 16.0
 var _waiting_block := false
+## Не вистачає витривалості на удар (D824) — тримає відстань і переводить подих.
+var _breathless := false
 ## Скільки с ворог чекає, поки герой опустить блок; довше за BLOCK_PATIENCE — б'є в блок.
 var _block_wait := 0.0
 const BLOCK_PATIENCE := 1.2
@@ -298,6 +300,7 @@ func process_physics(delta: float) -> Vector2:
 	if _flank_rest < 0.0:
 		_flank_rest = randf() * FLANK_REST
 	_flank_rest = maxf(_flank_rest - delta, 0.0)
+	enemy.stamina.tick(delta, is_attacking)  # D824: набирається, лише поки не б'є
 
 	process_ai(delta)
 	return velocity
@@ -476,6 +479,16 @@ func handle_attack_state(delta: float):
 		return
 	var dx: float = player.global_position.x - enemy.global_position.x
 	var adx := absf(dx)
+	# D824: на удар не вистачає витривалості — не б'є й не карає вікна, а відходить з досяжності героя й переводить подих
+	if not enemy.stamina.can_afford(&"swing") and adx <= _breath_gap() * 1.5 and can_notice(player):
+		if not _breathless:
+			_breathless = true
+			tactic.emit(&"catch_breath")
+		_face_player()
+		pace = 1.0
+		_keep_at(dx, delta, _breath_gap())
+		return
+	_breathless = false
 	if adx > engage_range() * 1.2 or not can_notice(player):
 		tactic.emit(&"follow")  # герой відійшов чи перекотився геть — одразу за ним (D775)
 		change_state(AIState.CHASE)
@@ -603,8 +616,16 @@ func _release_hero_pass() -> void:
 ## Тримається на engage_range від героя, переступаючи на ±SHUFFLE px: ближче — задкує, далі — підходить (повільно);
 ## у досяжності удару героя чи далеко від своєї відстані — повним кроком (D775: не стоїть під клинком, тисне того, хто відходить).
 func _hold_spacing(dx: float, delta: float) -> void:
+	_keep_at(dx, delta, engage_range())
+
+## Де ворог переводить подих (D824): на своїй відстані бою, але не ближче, ніж за досяжністю серії героя.
+func _breath_gap() -> float:
+	return maxf(engage_range(), _hero_reach() + WAIT_GAP * 0.5)
+
+## Тримається на [param gap] px від героя (див. _hold_spacing).
+func _keep_at(dx: float, delta: float, gap: float) -> void:
 	_shuffle_t += delta
-	var err: float = absf(dx) - engage_range() - sin(_shuffle_t * 2.0) * SHUFFLE
+	var err: float = absf(dx) - gap - sin(_shuffle_t * 2.0) * SHUFFLE
 	var toward := 1 if dx > 0.0 else -1
 	var pace_now := SPACING_SPEED if absf(err) < WAIT_GAP * 0.5 and absf(dx) > strike_reach() else 1.0
 	if err < -4.0:
@@ -887,6 +908,8 @@ func perform_attack():
 		var windup: float = enemy.attack_windup if i == 0 else COMBO_WINDUP
 		if i > 0 and not _series_fits(windup):
 			break  # герой поза досяжністю наступного удару серії — не б'є в повітря (D775)
+		if i > 0 and _breath_ends_series():
+			break  # D824: попередній удар вичерпав витривалість — серія скінчилась, далі ворог видихнеться
 		finisher = tells.size() > 1 and i == tells.size() - 1
 		tell_kind = tells[i]
 		swing_windup = windup
@@ -899,6 +922,7 @@ func perform_attack():
 		# Б'є туди, куди дивився в мить підказки
 		var direction := last_direction if last_direction != 0 else 1
 		enemy.start_attack(direction)
+		enemy.stamina.spend(_swing_kind())  # D824: кожен удар серії коштує витривалості
 		if enemy.lunge > 0.0:
 			start_knockback(direction * enemy.lunge, false)  # ривок разом з ударом (fast)
 		else:
@@ -913,8 +937,17 @@ func perform_attack():
 	if not _interrupted():
 		await _recover(_recovery_time())
 	is_attacking = false
+	enemy.stamina.take_winded()  # D824: вичерпав шкалу — після відновлення видихається
 	attack_ended.emit()
 	_decide_after_attack()
+
+## За що платить удар серії (D824): звичайний ворог — swing; бос — свій хід combo.
+func _swing_kind() -> StringName:
+	return &"swing"
+
+## Серія кінчається, щойно витривалість вичерпано (D824). Бос б'є серію свого ходу до кінця (візерунок D577).
+func _breath_ends_series() -> bool:
+	return enemy.stamina.exhausted
 
 ## Чи вид фінтує (D775): еліти.
 func _can_feint() -> bool:
@@ -938,6 +971,8 @@ func _lunge_due(adx: float) -> bool:
 	var stats: EnemyStats = enemy.enemy_stats
 	if stats.lunge_chance <= 0.0 or _lunge_rest > 0.0 or not token_free():
 		return false
+	if not enemy.stamina.can_afford(&"pounce" if stats.pounce else &"lunge"):
+		return false  # D824: на випад не вистачає витривалості
 	if attack_ready_in > 0.0 and not _hero_opened(adx) and not _hero_moving_away():
 		return false  # перерва; але відкритого чи того, хто відходить, наздоганяє випадом (D775)
 	if StringName(stats.lunge_tell) != TELL_DODGE and _blocked_out() and _block_wait <= BLOCK_PATIENCE:
@@ -973,6 +1008,7 @@ func perform_lunge() -> void:
 		var direction := last_direction if last_direction != 0 else 1
 		var gap: float = absf(player.global_position.x - enemy.global_position.x) - LUNGE_SHORT
 		enemy.start_attack(direction)
+		enemy.stamina.spend(&"pounce" if stats.pounce else &"lunge")  # D824
 		start_knockback(direction * maxf(gap, 0.0), false, LUNGE_TIME)
 		if stats.pounce:
 			enemy.hitbox_damage.disable_damage()  # стрибок не кусає з льоту: учепився — кусає (_latch)
@@ -990,6 +1026,7 @@ func perform_lunge() -> void:
 		await _recover(_recovery_time())
 	lunging = false
 	is_attacking = false
+	enemy.stamina.take_winded()  # D824
 	attack_ended.emit()
 	_decide_after_attack()
 
