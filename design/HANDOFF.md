@@ -9,14 +9,13 @@ The plan with statuses is [[MASTER_PLAN]]. Deferred items are in [[BACKLOG]]. Re
 
 **Registers:** next free **D924**, **B214**, **Q128** — do not file IDs on `feature/backlog` while an integrator runs.
 The room chain's IDs are renumbered (D886–D906; local fixes D907–D909).
-**Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 19:27 from `71edcb83` = `main` (PR #106). Rebuild after each merge (X1).
+**Exe:** `build/windows/Qusakam.exe` rebuilt 29.10 00:13 from `88056d96` = `main`. Rebuild after each merge (X1).
 
-## Next session starts here (28.10 21:15)
-`integrate-34` ✅ (cloud) merged the balance branch `worktree-agent-ad042771da03c68fd` (D910–D913, D922, D923)
-into `feature/backlog` and fast-forwarded `main`; suite 2 FAIL under J=4, both load flakes that pass alone
-(`verify_repeat_load`, `verify_camera_rooms`), see `design/cloud_reports/integrate-34.md`. Next: pull, rebuild
-`build/windows/Qusakam.exe`, then delete the remote branch `worktree-agent-ad042771da03c68fd` and the local worktree.
-The plan is done except M10 (Sapega's playtest); R5 dropped. Open questions: Q110, Q115 (tree), Q120/Q125, Q124, Q126.
+## State 29.10 00:15
+`integrate-34` ✅: balance merged, full suite green except 2 load flakes (verify_repeat_load, verify_camera_rooms — pass
+alone, B186), `main` = `feature/backlog` `88056d96`. Exe rebuilt from it. The plan is done except M10 (Sapega's
+playtest); R5 dropped. Open questions: Q110, Q115 (tree), Q120/Q125, Q124, Q126. Remote branches to delete: the list
+of 169 (merged or superseded) — the auto-mode classifier blocks a mass delete, Sapega runs it himself.
 
 ## 0. Local from now on
 Sapega 28.10 ~15:00: «хмара нам не потрібна, запускай на моїй машині». No new cloud routines. The ones already running
