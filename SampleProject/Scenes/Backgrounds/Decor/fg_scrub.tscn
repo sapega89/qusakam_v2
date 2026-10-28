@@ -4,19 +4,19 @@
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0"]
 atlas = ExtResource("sheet")
-region = Rect2(0, 0, 150, 61)
+region = Rect2(0, 0, 75, 31)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1"]
 atlas = ExtResource("sheet")
-region = Rect2(150, 0, 150, 61)
+region = Rect2(75, 0, 75, 31)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2"]
 atlas = ExtResource("sheet")
-region = Rect2(300, 0, 150, 61)
+region = Rect2(150, 0, 75, 31)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3"]
 atlas = ExtResource("sheet")
-region = Rect2(450, 0, 150, 61)
+region = Rect2(225, 0, 75, 31)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_idle"]
 animations = [{
@@ -45,4 +45,4 @@ sprite_frames = SubResource("SpriteFrames_idle")
 animation = &"idle"
 autoplay = "idle"
 centered = false
-offset = Vector2(-75, -61)
+offset = Vector2(-37.5, -31)

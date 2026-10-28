@@ -415,6 +415,9 @@ FX["second_wind_release"]["crop"] = 0.9
 # Стовп Благословення модель теж поставила на землю (низ відрізано) і довела до краю кадру — верх загострено.
 FX["skyfall_blessing_release"]["crop"] = 0.86
 FX["skyfall_blessing_release"]["taper"] = 0.25
+# Q124 (A13): заряд «Пекучого прокляття» модель малює зіркою — п'ятикутною в колі (пентаграма) за «six-pointed star»,
+# шестикутною за «hexagon» — тож знак без зірки малює скрипт (draw_hex_sigil), генерації заряду більше немає.
+del FX["searing_hex_charge"]
 
 
 def generate(name, fx):
@@ -639,6 +642,50 @@ def draw_punch(size=28):
     ]
 
 
+def draw_hex_sigil(size=32):
+    """Q124: знак прокляття без зірки — кільце, у ньому шестикутник (лише контур), між ними шість рисок-рун навпроти
+    його сторін (не вершин — зірки не складають), світла цятка в центрі, фіолетовий вогник згори; кольори й контур
+    A9. Кадри як у заряду з моделі: росте з центру (1–2) → повний (3) → тонший пульс (4)."""
+    deep, violet, lilac, white = (110, 40, 190), (160, 90, 240), (210, 170, 255), (245, 230, 255)
+    q = np.zeros((size, size, 4), np.uint8)
+    cx, cy = 15.5, 17.5
+    yy, xx = np.mgrid[:size, :size].astype(np.float32)
+    d = np.hypot(xx - cx, yy - cy)
+
+    def put(mask, colour):
+        q[mask] = colour + (255,)
+
+    put((d >= 10.6) & (d < 11.6), deep)  # сяйво з внутрішнього боку кільця
+    put((d >= 11.6) & (d < 13.0), lilac)
+    put((d >= 12.4) & (d < 13.0) & (yy < cy), white)  # світло згори
+
+    def line(a, b, colour):
+        n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1])) * 2) + 1
+        for t in np.linspace(0, 1, n):
+            q[int(round(a[1] + (b[1] - a[1]) * t)), int(round(a[0] + (b[0] - a[0]) * t))] = colour + (255,)
+
+    hexagon = [(cx + 7.5 * np.cos(np.radians(60 * k)), cy + 7.5 * np.sin(np.radians(60 * k))) for k in range(6)]
+    for k in range(6):
+        line(hexagon[k], hexagon[(k + 1) % 6], white)
+        a = np.radians(60 * k + 30)  # навпроти середини сторони
+        line((cx + 8.6 * np.cos(a), cy + 8.6 * np.sin(a)), (cx + 10.2 * np.cos(a), cy + 10.2 * np.sin(a)), violet)
+    put((np.abs(xx - cx) < 1) & (np.abs(yy - cy) < 1), white)
+    put(((np.abs(xx - cx) < 2) & (np.abs(yy - cy) < 2)) & (q[..., 3] == 0), violet)
+    # вогник над кільцем: ширина рядка від вершини вниз, зміщення язика ліворуч / праворуч
+    for y, (x0, x1) in enumerate([(16, 16), (15, 16), (15, 17), (14, 17), (14, 18), (13, 18)]):
+        for x in range(x0, x1 + 1):
+            inner = x0 < x < x1 and y >= 2
+            q[y, x] = (white if inner and x == 16 else lilac if inner else violet) + (255,)
+    q[3, 19] = q[2, 12] = violet + (255,)
+    pulse = q.copy()  # пульс — кільце на піксель тонше (ерозія з'їла б однопіксельний шестикутник)
+    pulse[(d >= 12.4) & (d < 13.0), 3] = 0
+    outs = [grow(q, 0.45), grow(q, 0.75), q, pulse]
+    for out in outs:
+        mask = out[..., 3] > 0
+        out[ndimage.binary_dilation(mask) & ~mask] = A9_OUTLINE["searing_hex"] + (255,)
+    return outs
+
+
 def frames(kind, opaque):
     """Кадри з однієї картинки: поява (частина, що вже промайнула) → повний → тоншає."""
     h, w = opaque.shape
@@ -667,7 +714,8 @@ def frames(kind, opaque):
 
 if __name__ == "__main__":
     drawn = {"hit_cut": ("Hit/cut_%d", draw_cut), "thrust": ("Smear/thrust_%d", draw_thrust),
-             "punch": ("Smear/punch_%d", draw_punch)}  # малює скрипт, без моделі
+             "punch": ("Smear/punch_%d", draw_punch),
+             "searing_hex_charge": ("Skills/searing_hex/charge_%d", draw_hex_sigil)}  # малює скрипт, без моделі
     names = sys.argv[1:] or [*FX, *drawn]
     for name in names:
         if name in drawn:

@@ -15,6 +15,7 @@ AI-generated: drawn by the local ComfyUI with **Qwen-Image** (Alibaba Qwen, Apac
 | `lamp/` | 3 | 28×20 | flame flicker 1.0/0.72/1.18 | stands on the last row |
 | `crystal/` | 3 | 24×26 | glow flicker | stands on the last row |
 | `dust/` | 6 | 64×64 | motes drift on closed loops | none — tileable overlay; **procedural** (no model) |
+| `fg_scrub/` | 4 | 75×31 | sway 0,+,0,− | foot: last row; `fg_scrub.tscn` offset (−37.5, −31). **A13 (B191)**: was 150×61 (61 art = 91.5 px on the FrontDark ×1.3 plane against the chart's 31 art); now a 2:1 downsample of the same frames (`Scripts/Tools/unbake_props.py scrub`: per 2×2 block the most frequent opaque colour, opaque from 2 of 4), drawn 30 art = 45 px |
 
 ## Foreground pieces (D774, Batch 0)
 

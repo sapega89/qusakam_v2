@@ -30,3 +30,31 @@ Placed in `SampleProject/Maps/BanditCamp.tscn` → `Back` (z −10), back to fro
 brass lock, floor to ceiling. Candidate `gate_c` of `design/shots/candidates/cave_gate/cave_gate.py` (Qwen-Image,
 Apache 2.0, AI-generated), picked by Sapega 2026-10-27. Its body spans the poles (184 px) so the hero stops at their
 near face; the whole gate fades when it opens.
+
+## A13 (B189, D814), 2026-10-28 — props out of the planes, at chart size
+
+`gen_mid.png` had a barrel, a stack of crates and a sack painted in at 1.3–2× the chart; `gen_sacks.png` is a sack, a
+barrel and a sack at 2.5–3.9× (its barrel 80 art px). `Scripts/Tools/unbake_props.py` (Qwen-Image-Edit-2511, Apache
+2.0, AI-generated) repainted `gen_mid.png` without them — only the pixels the props covered change (the sand, the
+palisade and the striped tent's foot continue; a second pass took the sack the first left), in the plane's own colours;
+the original is `design/shots/candidates/a13/camp_orig.png`. `gen_sacks.png` is untouched until the wiring swaps it
+for the sprites below (D813: the old file goes once the new one is wired).
+
+The props are separate sprites from `Scripts/Tools/comfy_backdrop.py` (layers `BanditCamp/prop_*`, **Qwen-Image**,
+Apache 2.0, AI-generated), exactly `round(chart art px × the plane's scroll_scale)` tall (barrel 32, crate 32, sack 24
+art; world px = art × 1.5), trimmed, in the camp's 16-colour palette (`unbake_props.py props`). To wire: a `Sprite2D`
+child of the named plane, `texture_filter = 1`, `scale = (1.5, 1.5)`, `centered = false`,
+`offset = (−width / 2, −height)` — so `position` is the prop's feet (bottom centre) in that plane's local coordinates:
+
+| File | Size (art) | Plane | Feet `position` | Was |
+|---|---|---|---|---|
+| `prop_barrel.png` | 21×26 | `Back/Mid` (×0.8) | (114, 297) | the barrel by the palisade |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (499.5, 315) | crate stack, front left |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (609, 331.5) | crate stack, front right |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (570, 283.5) | crate stack, on top of the two |
+| `prop_sack.png` | 14×19 | `Back/Mid` | (678, 324) | the sack at the tent's foot |
+| `prop_sack_near.png` | 17×21 | `Back/Props` (×0.9) | (340.5, 420.5) | `gen_sacks` left sack |
+| `prop_barrel_near.png` | 24×29 | `Back/Props` | (427.5, 420.5) | `gen_sacks` barrel |
+| `prop_sack_near.png` | 17×21 | `Back/Props` | (511.5, 420.5) | `gen_sacks` right sack (flip_h for variety) |
+
+After wiring, `Back/Props/Sprite` (`gen_sacks.png`) goes. `Back/Mid` repeats every 864 px, so its props repeat with it.

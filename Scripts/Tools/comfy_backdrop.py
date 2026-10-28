@@ -1224,6 +1224,50 @@ LAYERS["StreamGorge/gen_plume"] = {
 }
 
 
+# A13 (B189, D814): реквізит, вмальований у плани (бочки, мішки, ящики, глеки — у 2,5–3,9 раза більші за таблицю),
+# тепер окремими спрайтами точного розміру: height = round(art_px таблиці × scroll_scale плану), як waymarker.
+# Одна генерація на предмет (кеш за підказкою й зерном), розміри — окремі шари; кольори плану —
+# Scripts/Tools/unbake_props.py props (палітра кімнати).
+def _prop(seed, height, what):
+    return dict(
+        seed=seed,
+        rows=220,
+        top=0,
+        height=height,
+        seam="none",
+        trim=True,
+        blob=True,
+        key="green",
+        shade=0,
+        fill=False,
+        haze=0,
+        colors=12,
+        quant="octree",
+        prompt=f"one single {what}, seen exactly from the side, the object alone standing in the middle of the frame "
+        "and filling a sixth of its width, the whole object visible with its flat bottom edge, no ground, no grass, no "
+        f"shadow, empty space all around it, warm light on the top, cool violet shadows in the recesses, {CHROMA}",
+    )
+
+
+BARREL = "small old wooden barrel of dark brown staves bound with three dark iron hoops, standing upright"
+CRATE = "small square wooden crate of light brown planks with a diagonal brace plank and dark iron corner plates"
+SACK = "small plump burlap grain sack of pale brown cloth tied shut at the top with a cord, sitting upright"
+AMPHORA = "tall slender terracotta clay amphora with two small handles at its neck and a narrow base, standing upright"
+POT = "small round terracotta clay pot with a wide mouth and a thin painted dark red band around its belly"
+for _name, _seed, _height, _what in (
+    ("BanditCamp/prop_barrel", 1301, 26, BARREL),  # Mid ×0.8: бочка 32 арту
+    ("BanditCamp/prop_crate", 1302, 26, CRATE),  # Mid ×0.8: ящик 32
+    ("BanditCamp/prop_sack", 1303, 19, SACK),  # Mid ×0.8: мішок 24
+    ("BanditCamp/prop_barrel_near", 1301, 29, BARREL),  # Props ×0.9 (замість gen_sacks)
+    ("BanditCamp/prop_sack_near", 1303, 22, SACK),  # Props ×0.9
+    ("Cellar/prop_barrel", 1301, 26, BARREL),  # Mid ×0.8
+    ("Cellar/prop_crate", 1302, 26, CRATE),  # Mid ×0.8
+    ("ElderHouse/prop_amphora", 1304, 24, AMPHORA),  # Wall ×1.0: глек 24
+    ("ElderHouse/prop_pot", 1305, 24, POT),  # Wall ×1.0
+):
+    LAYERS[_name] = _prop(_seed, _height, _what)
+
+
 def graph(text, seed, height, image=None, denoise=1.0, width=GW):
     """Граф API ComfyUI; з image — перемальовує лише прозору смугу цієї картинки."""
     g = {
