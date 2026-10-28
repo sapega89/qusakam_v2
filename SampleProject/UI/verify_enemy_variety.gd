@@ -873,11 +873,13 @@ func _tower_guard() -> void:
 	var bursts: Array[Dictionary] = []
 	var on_burst := func(n: Node) -> void:
 		if n is AnimatedSprite2D and (n as AnimatedSprite2D).animation == &"break":
+			# Клітинку беремо в мить розбиття: вартовий у збої рушає ще в цьому ж кадрі, а скалки стоять, де були.
+			var still: Sprite2D = guard.enemy_view.rest_sprite()
+			var cell: Transform2D = guard.global_transform * Transform2D(0.0, still.scale, 0.0, still.position)
+			still.free()
 			var seen := func() -> void:
-				var still: Sprite2D = guard.enemy_view.rest_sprite()
-				bursts.append({transform = n.global_transform, offset = n.offset, flip_h = n.flip_h, cell = guard.global_transform * Transform2D(0.0, still.scale, 0.0, still.position),
+				bursts.append({transform = n.global_transform, offset = n.offset, flip_h = n.flip_h, cell = cell,
 						frames = n.sprite_frames.get_frame_count(&"break"), texture = n.sprite_frames.get_frame_texture(&"break", 0).resource_path})
-				still.free()
 			seen.call_deferred()
 	game.map.child_entered_tree.connect(on_burst)
 	await _place_hero(guard, -45)
