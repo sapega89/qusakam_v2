@@ -230,8 +230,8 @@ ROOMS = {
 #   (вузол, x, підлога, арт, кімната, двері там, дод.)
 EXISTING_DOORS = {
     "LizardCave": [("DeepCavesDoor", 150, 416, "cave_mouth", "LizardCaves", "ShrineDoor", {})],
-    # Дорога: рівна підлога, клір від трави (verify_ambient_critters), поза кадром заслонів переднього плану (OccluderRock2 при камері на 3458–4128).
-    "DesertRoad": [("LizardCavesDoor", 4690, 384, "cave_mouth", "LizardCaves", "RoadDoor", {"gate": "lizard_caves_shortcut"})],
+    # Дорога: рівна підлога, клір від трави (verify_ambient_critters) і від скрині грифа (4680), поза кадром заслонів переднього плану (OccluderRock2 при камері на 3458–4128).
+    "DesertRoad": [("LizardCavesDoor", 3340, 384, "cave_mouth", "LizardCaves", "RoadDoor", {"gate": "lizard_caves_shortcut"})],
     "MesaClimb": [("MesaTopDoor", 480, 180, "mesa_cleft", "MesaTop", "ClimbDoor", {})],
     "GatehouseCellar": [("AqueductDoor", 300, 416, "cave_mouth", "Aqueduct", "CellarDoor", {"gate": "aqueduct_cellar"}),
                         ("CisternDoor", 1450, 416, "cave_mouth", "Cistern", "CellarDoor", {"gate": "cistern_cellar"})],
