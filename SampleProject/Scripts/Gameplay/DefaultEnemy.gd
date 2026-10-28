@@ -835,7 +835,8 @@ func take_damage(amount: int, source: Node = null, critical: bool = false) -> vo
 func start_attack(direction: int) -> void:
 	_face_shapes(direction)
 	hitbox_damage.update_damage()
-	hitbox_damage.enable_damage()
+	if not enemy_logic.blind_misses():  # D-sv2cb1: пісок в очах — удар мимо
+		hitbox_damage.enable_damage()
 	hitbox.monitoring = true
 	enemy_view.on_strike()
 	EventBus.enemy_struck.emit(self, strike_move(), Vector2(direction, 0))
@@ -902,6 +903,11 @@ func stagger(duration: float, from_x: float) -> void:
 		enemy_logic.start_knockback(signf(global_position.x - from_x) * STAGGER_PUSH)
 	EventBus.enemy_staggered.emit(self, duration)
 	last_stagger_source = &""  # наступний збій без джерела (щит розбито, навичка) — «інше»
+
+## Захист розбито (D495): щит чи броня злетіли, і ворог ще в збої від цього — Soul Harvest його добиває (D-sv2cb1).
+## У звичайного ворога захисту немає.
+func guard_broken() -> bool:
+	return false
 
 ## Ворог збитий чи оглушений (стагер, парирування, стійкість, оглушення навички) — для Breaker's Ring (D592).
 func is_staggered() -> bool:

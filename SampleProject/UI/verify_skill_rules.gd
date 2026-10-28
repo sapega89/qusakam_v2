@@ -315,10 +315,11 @@ func _initialize() -> void:
 	ck(not sm.has_method("reset_free"), "the free reset is gone (D592 reverses D490's free respec)")
 	spot.queue_free()
 
-	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
+	print("[11] v2 draft actives: all built; a planned row is not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	# v2 зріз 3 (D812) — 6 навичок руху, зріз 4 (D-sv2r1, D-sv2r2) — 4 кидки й зони, зріз 5 (D-sv2s1) — 7 стійок і баффів, зріз 6a (D-sv2ca1) — 5 навичок контролю: запланованих лишилось 6
-	ck(planned.size() == 6 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "6 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D812) — 6 навичок руху, зріз 4 — 4 кидки й зони, зріз 5 — 7 стійок і баффів, зріз 6a — 5 навичок контролю,
+	# зріз 6б — 6 навичок контролю й добивання: запланованих не лишилось (integrate-33)
+	ck(planned.is_empty(), "no planned actives left: all 28 v2 drafts are built (%s)" % [planned.map(func(d) -> String: return d.id)])
 	var ranged: Array = db.get_all_skills().filter(func(d) -> bool: return d.throws() or d.leaves_zone())
 	ck(ranged.map(func(d) -> String: return d.id) == ["holy_javelin", "lightspear", "hallowed_circle", "hellfire_stomp"]
 			and ranged.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.release_pose != "" and d.synergies.size() in [1, 2]),
@@ -328,6 +329,14 @@ func _initialize() -> void:
 		if (d.projectile_speed > 0.0) != d.throws() or (d.zone_radius > 0.0) != d.leaves_zone() or (d.leaves_zone() and d.zone_dps + d.zone_heal <= 0):
 			shaped = false
 	ck(shaped, "each throw has a speed, each zone a radius and a dps or heal")
+	var control_b_built := true
+	for id in ["chain_of_night", "sand_veil", "dread_howl", "radiant_flare", "night_reaper", "soul_harvest"]:
+		var cb = db.get_skill(id)
+		if cb.planned or cb.vfx.get_file() != "AreaSkill.tscn" or not cb.synergies.size() in [1, 2] \
+				or not (cb.controls() or cb.area_hits != "" or cb.execute_below > 0.0):
+			control_b_built = false
+			print("    not built: ", id)
+	ck(control_b_built, "the 6 control and finisher skills of slice 6b are built: learnable, a cast, an effect, synergies and their keys")
 	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
 	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
 			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),
@@ -345,17 +354,17 @@ func _initialize() -> void:
 		controls_built = controls_built and c.synergies.size() in [1, 2] and (c.control_launch > 0.0 or c.control_knockdown > 0.0 or c.control_poise_x > 0.0)
 	ck(controls_built, "the 5 control skills are built (D-sv2ca1): learnable, with a cast, an effect, synergies and a control block")
 	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
-	ck(raw.filter(func(e: Dictionary) -> bool: return e.has("buff") and (e.has("draft") or e.has("planned"))).is_empty(),
-			"no built stance or buff keeps `draft` or `planned`")
+	ck(raw.filter(func(e: Dictionary) -> bool: return e.has("draft") or e.has("planned")).is_empty(),
+			"no row keeps `draft` or `planned`: every draft became real keys")
 	var unnumbered: Array = raw.filter(func(e: Dictionary) -> bool:
 			return e.get("planned", false) and (not e.has("sp_cost") or e.get("draft", {}).is_empty() or not ResourceLoader.exists(e.icon)))
 	ck(unnumbered.is_empty(), "every planned active has provisional SP, `draft` numbers and its icon %s" % [unnumbered.map(func(e): return e.id)])
-	var refused := true
-	for d in planned:
-		if sm.can_unlock(d.id) != R.PLANNED or sm.unlock_skill(d.id) != R.PLANNED:
-			refused = false
-			print("    learnable: ", d.id)
-	ck(refused and sm.get_unlocked_skills().is_empty(), "level 20, %d JP, sworn: every planned skill → PLANNED, nothing learned" % sm.get_job_points())
+	# Запланованих рядків у даних більше немає, а ворота D535 лишаються для наступних чернеток: перевіряємо їх на
+	# Soul Harvest, на час перевірки позначеному planned (як рядок із "planned": true)
+	var stand_in: SkillDefinition = db.get_skill("soul_harvest")
+	stand_in.planned = true
+	ck(sm.can_unlock("soul_harvest") == R.PLANNED and sm.unlock_skill("soul_harvest") == R.PLANNED and sm.get_unlocked_skills().is_empty(),
+			"level 20, %d JP, sworn: a planned skill → PLANNED, nothing learned" % sm.get_job_points())
 	gm.player_state.unlocked_skills.append("soul_harvest")  # навіть якщо потрапила в стан (старий сейв) — не б'є
 	sm.restore_sp(100)
 	ck(sm.can_use_skill("soul_harvest") == R.PLANNED and sm.cast_skill("soul_harvest") == R.PLANNED and sm.use_skill("soul_harvest", enemy) == R.PLANNED,
@@ -364,6 +373,7 @@ func _initialize() -> void:
 	gm.player_state.unlocked_skills.erase("soul_harvest")
 	var plan_v2 = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
 	ck(plan_v2.can_pick("soul_harvest") == R.PLANNED, "the skill screen's plan refuses it too")
+	stand_in.planned = false
 
 	print("[12] The 5 new v2 passives work (D535)")
 	ck(sm.unlock_skill("weapon_training") == R.OK, "Weapon Training learned (Keen Edge and Heavy Hand need it)")

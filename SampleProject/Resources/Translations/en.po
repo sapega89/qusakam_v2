@@ -2917,8 +2917,8 @@ msgstr "Leap and slam down; pillars of light rise on both sides. [DRAFT]"
 msgid "Radiant Flare [DRAFT]"
 msgstr "Radiant Flare [DRAFT]"
 
-msgid "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
-msgstr "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
+msgid "A flash that dazes every enemy around you. [DRAFT]"
+msgstr "A flash that dazes every enemy around you. [DRAFT]"
 
 msgid "Shield of Faith [DRAFT]"
 msgstr "Shield of Faith [DRAFT]"
@@ -2935,8 +2935,8 @@ msgstr "Dash to the enemy; the hit drinks HP. [DRAFT]"
 msgid "Chain of Night [DRAFT]"
 msgstr "Chain of Night [DRAFT]"
 
-msgid "A dark chain pulls one enemy to you. [DRAFT]"
-msgstr "A dark chain pulls one enemy to you. [DRAFT]"
+msgid "A dark chain pulls the nearest enemy ahead to you and holds it. [DRAFT]"
+msgstr "A dark chain pulls the nearest enemy ahead to you and holds it. [DRAFT]"
 
 msgid "Blood Price [DRAFT]"
 msgstr "Blood Price [DRAFT]"
@@ -2983,8 +2983,8 @@ msgstr "A quick step forward with a cut and a moment of invulnerability. [DRAFT]
 msgid "Sand Veil [DRAFT]"
 msgstr "Sand Veil [DRAFT]"
 
-msgid "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
-msgstr "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
+msgid "Sand in the eyes: enemies in front of you lose you and often miss for a few seconds. [DRAFT]"
+msgstr "Sand in the eyes: enemies in front of you lose you and often miss for a few seconds. [DRAFT]"
 
 msgid "Stone Palm [DRAFT]"
 msgstr "Stone Palm [DRAFT]"

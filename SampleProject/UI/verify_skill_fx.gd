@@ -64,6 +64,12 @@ func _initialize() -> void:
 		if skill.has("control"):
 			ck(skill.vfx.get_file() == "ControlSkill.tscn", "%s: the control skills' borrowed effect (ControlSkill.tscn)" % skill.id)
 			continue
+		# v2 зріз 6б (D-sv2cb1): навички контролю й добивання позичають кадри навичок клятв (AreaSkillFX.BORROW), доки
+		# арт-лінія не намалює їхні; перевірка «свої кадри» (D279) для них прийде з артом
+		if skill.vfx.get_file() == "AreaSkill.tscn":
+			var lender: String = load("res://SampleProject/Scripts/FX/AreaSkillFX.gd").BORROW[skill.id][0]
+			ck(lender in OATH_ACTIVES, "%s: borrows %s's frames until its art lands" % [skill.id, lender])
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

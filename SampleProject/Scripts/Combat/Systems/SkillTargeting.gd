@@ -52,6 +52,8 @@ static func enemies_around(player: Node2D, reach: float) -> Array[Node]:
 static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
 	if definition.control_hits != "":
 		return control_targets(definition, player)
+	if definition.area_hits != "":
+		return area_targets(definition, player)
 	match definition.move_hits:
 		"first":
 			return first_in_front(player)
@@ -89,6 +91,17 @@ static func enemies_ahead(player: Node2D, reach: float) -> Array[Node]:
 	return out
 
 
+## Зона навички без руху (D-sv2cb1): area_hits у area_reach px від тіла героя — найближчий перед ним (ланцюг),
+## усі перед ним (пісок, серп) або всі навколо (спалах, виття).
+static func area_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	match definition.area_hits:
+		"first":
+			return _nearest(player, enemies_ahead(player, definition.area_reach))
+		"front":
+			return enemies_ahead(player, definition.area_reach)
+	return enemies_around(player, definition.area_reach)
+
+
 ## Живі вороги, чия зона-ціль перетинає [param area] (зона навички на землі, v2 зріз 4).
 static func enemies_in(area: Rect2) -> Array[Node]:
 	var out: Array[Node] = []
@@ -106,6 +119,16 @@ static func allies_in(player: Node2D, area: Rect2) -> Array[Node]:
 	for ally in player.get_tree().get_nodes_in_group(ALLIES_GROUP):
 		if area.intersects(_ally_rect(ally)):
 			out.append(ally)
+	return out
+
+
+## Найближчий до героя з [param enemies], або порожньо.
+static func _nearest(player: Node2D, enemies: Array[Node]) -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in enemies:
+		if out.is_empty() or absf(enemy.global_position.x - player.global_position.x) < absf(out[0].global_position.x - player.global_position.x):
+			out.clear()
+			out.append(enemy)
 	return out
 
 

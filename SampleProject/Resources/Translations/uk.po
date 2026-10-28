@@ -2921,8 +2921,8 @@ msgstr "Стрибок і удар об землю; з обох боків зд�
 msgid "Radiant Flare [DRAFT]"
 msgstr "Сяйний спалах [ЧЕРНЕТКА]"
 
-msgid "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]"
-msgstr "Спалах, що приголомшує всіх ворогів навколо й знімає з вас підпал і прокляття. [ЧЕРНЕТКА]"
+msgid "A flash that dazes every enemy around you. [DRAFT]"
+msgstr "Спалах, що приголомшує всіх ворогів навколо. [ЧЕРНЕТКА]"
 
 msgid "Shield of Faith [DRAFT]"
 msgstr "Щит віри [ЧЕРНЕТКА]"
@@ -2939,8 +2939,8 @@ msgstr "Ривок до ворога; удар п'є його HP. [ЧЕРНЕТ�
 msgid "Chain of Night [DRAFT]"
 msgstr "Ланцюг ночі [ЧЕРНЕТКА]"
 
-msgid "A dark chain pulls one enemy to you. [DRAFT]"
-msgstr "Темний ланцюг притягує до вас одного ворога. [ЧЕРНЕТКА]"
+msgid "A dark chain pulls the nearest enemy ahead to you and holds it. [DRAFT]"
+msgstr "Темний ланцюг притягує до вас найближчого ворога попереду й тримає його. [ЧЕРНЕТКА]"
 
 msgid "Blood Price [DRAFT]"
 msgstr "Ціна крові [ЧЕРНЕТКА]"
@@ -2987,8 +2987,8 @@ msgstr "Швидкий крок уперед з ударом і миттю не�
 msgid "Sand Veil [DRAFT]"
 msgstr "Піщана завіса [ЧЕРНЕТКА]"
 
-msgid "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]"
-msgstr "Пісок в очі: вороги перед вами кілька секунд промахуються. [ЧЕРНЕТКА]"
+msgid "Sand in the eyes: enemies in front of you lose you and often miss for a few seconds. [DRAFT]"
+msgstr "Пісок в очі: вороги перед вами на кілька секунд гублять вас і часто промахуються. [ЧЕРНЕТКА]"
 
 msgid "Stone Palm [DRAFT]"
 msgstr "Кам'яна долоня [ЧЕРНЕТКА]"

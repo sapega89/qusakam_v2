@@ -151,7 +151,12 @@ func _initialize() -> void:
 	ck(ui._rows["toughness"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_PASSIVE and ui._rows["fire_strike"].get_node(^"Art").self_modulate == UITokens.SKILL_ICON_ACTIVE,
 			"icon tints by kind (D605)")
 	ck(ui.node_state("radiant_smite") == S.LOCKED and _badge(ui, "radiant_smite").theme_type_variation == &"SkillLevelBadgeLabel", "Radiant Smite before 3 JP in the base tree: locked, Lv 5 not red")
+	# Запланованих рядків у даних більше немає (integrate-33: усі чернетки v2 збудовано) — «coming later» перевіряємо на
+	# Radiant Flare, на час перевірки позначеному planned
+	var stand_in: SkillDefinition = ui._skill_database.get_skill("radiant_flare")
+	stand_in.planned = true
 	ck(ui.node_state("radiant_flare") == S.LOCKED and ui._reason_text("radiant_flare") == "Coming later: this skill is not built yet.", "a planned v2 active (D535): coming later")
+	stand_in.planned = false
 
 	print("[3] Detail panel: rank, effect now → next, costs (D334, D674)")
 	await _mouse(ui._rows["fire_strike"])

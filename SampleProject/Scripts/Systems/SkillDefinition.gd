@@ -159,6 +159,23 @@ var control_launch: float = 0.0
 var control_knockdown: float = 0.0
 ## Шкода стійкості (guard, D495 / D777) кожній цілі — у важких ударах героя (PlayerCombat.POISE_HEAVY).
 var control_poise_x: float = 0.0
+## Контроль і добивання (v2 зріз 6б, D-sv2cb1). Зона без руху: area_hits "first" — найближчий ворог перед героєм
+## у area_reach px; "front" — усі перед героєм у area_reach px; "around" — усі в area_reach px по обидва боки.
+## "" — звичайна зона удару (D142). Часи контролю ростуть з рангом і синергіями, як ушкодження (SkillManager.control_factor).
+var area_hits: String = ""
+var area_reach: float = 0.0
+## Ланцюг (Chain of Night): тягне ціль упритул до героя й тримає її pull_hold с (збій, D264). Боса не тягне й не тримає.
+var pull_hold: float = 0.0
+## Пісок в очі (Sand Veil): ворог губить героя далі за свій удар на blind_time с, його удар у цей час мимо з шансом blind_miss.
+var blind_time: float = 0.0
+var blind_miss: float = 0.0
+## Виття (Dread Howl): кожен у зоні — збій fear_flinch с; слабкий (не еліта, не бос) потім тікає від героя fear_time с.
+var fear_time: float = 0.0
+var fear_flinch: float = 0.0
+## Добивання (Soul Harvest): ціль з HP не вище execute_below частки або з розбитим щитом у збої (D495) гине від удару,
+## і герой отримує назад execute_refund SP. Боса не добиває.
+var execute_below: float = 0.0
+var execute_refund: int = 0
 
 
 static func type_from_string(value: String) -> Type:
@@ -264,6 +281,19 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.control_launch = maxf(0.0, float(control.get("launch", 0.0)))
 	definition.control_knockdown = maxf(0.0, float(control.get("knockdown", 0.0)))
 	definition.control_poise_x = maxf(0.0, float(control.get("poise_x", 0.0)))
+	var area: Dictionary = data.get("area", {})
+	definition.area_hits = String(area.get("hits", ""))
+	definition.area_reach = maxf(0.0, float(area.get("reach", 0.0)))
+	definition.pull_hold = maxf(0.0, float(data.get("pull", {}).get("hold", 0.0)))
+	var blind: Dictionary = data.get("blind", {})
+	definition.blind_time = maxf(0.0, float(blind.get("time", 0.0)))
+	definition.blind_miss = clampf(float(blind.get("miss", 0.0)), 0.0, 1.0)
+	var fear: Dictionary = data.get("fear", {})
+	definition.fear_time = maxf(0.0, float(fear.get("time", 0.0)))
+	definition.fear_flinch = maxf(0.0, float(fear.get("flinch", 0.0)))
+	var execute: Dictionary = data.get("execute", {})
+	definition.execute_below = clampf(float(execute.get("below", 0.0)), 0.0, 1.0)
+	definition.execute_refund = maxi(0, int(execute.get("sp_refund", 0)))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:
@@ -335,6 +365,11 @@ func leaves_zone() -> bool:
 	return zone_time > 0.0
 
 
+## Навичка контролю (D-sv2cb1): накладає ланцюг, пісок чи страх на кожну ціль своєї зони.
+func controls() -> bool:
+	return pull_hold > 0.0 or blind_time > 0.0 or fear_flinch > 0.0
+
+
 func is_active() -> bool:
 	return skill_type == Type.ACTIVE
 
@@ -392,4 +427,9 @@ func to_dict() -> Dictionary:
 				"assist_duration": assist_duration},
 		"control": {"hits": control_hits, "reach": control_reach, "launch": control_launch,
 				"knockdown": control_knockdown, "poise_x": control_poise_x},
+		"area": {"hits": area_hits, "reach": area_reach},
+		"pull": {"hold": pull_hold},
+		"blind": {"time": blind_time, "miss": blind_miss},
+		"fear": {"time": fear_time, "flinch": fear_flinch},
+		"execute": {"below": execute_below, "sp_refund": execute_refund},
 	}
