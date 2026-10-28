@@ -51,6 +51,10 @@ func _initialize() -> void:
 	# спільний за Assets/FX/README.md; решта кадрів навички руху — її власні, як у всіх (D279)
 	var move_layer: Dictionary = {}
 	for skill in actives:
+		if skill.vfx.get_file() == "RangedSkill.tscn":
+			# v2 зріз 4 (D-sv2r1, D-sv2r2): кидки й зони світять позиченим світлом, доки арт (зріз 7) не намалює їхнє своє
+			ck(skill.has("projectile") or skill.has("zone"), "%s: a ranged / zone skill borrows RangedSkill.tscn until its art lands" % skill.id)
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

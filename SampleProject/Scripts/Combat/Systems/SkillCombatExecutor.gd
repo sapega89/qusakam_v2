@@ -95,6 +95,48 @@ static func _gravity() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 
 
+# ── Кидок і зона (v2 зріз 4, D-sv2r1, D-sv2r2) ────────────────────────────
+## Не preload: снаряд успадковує Arrow, а Arrow бере PlayerCombat, який тягне цей скрипт, — коло компіляції.
+const PROJECTILE_SCENE := "res://SampleProject/Scenes/Combat/skill_projectile.tscn"
+const ZONE_SCENE := "res://SampleProject/Scenes/Combat/skill_zone.tscn"
+
+
+## Пускає снаряд навички від руки героя [param source] уздовж його погляду, як стрілу лука (SkillProjectile.place_at_hand);
+## [param amount] — шкода кожного влучання (уже з рангом).
+func throw(definition: SkillDefinition, source: Node2D, amount: int) -> Area2D:
+	var spear: Area2D = load(PROJECTILE_SCENE).instantiate()
+	spear.skill = definition
+	spear.direction = source.last_direction
+	spear.shooter = source
+	spear.damage = amount
+	spear.speed = definition.projectile_speed
+	spear.range_px = definition.projectile_range
+	spear.pierce = definition.projectile_pierce
+	Game.get_singleton().map.add_child(spear)
+	spear.place_at_hand()
+	return spear
+
+
+## Кладе зону навички під ноги героя [param source] (низ його тіла); [param dps] / [param heal] — уже з рангом.
+func place_zone(definition: SkillDefinition, source: Node2D, dps: int, heal_per_s: int) -> Node2D:
+	var zone: Node2D = load(ZONE_SCENE).instantiate()
+	zone.skill = definition
+	zone.source = source
+	zone.dps = dps
+	zone.heal = heal_per_s
+	var body: Rect2 = source.body_rect()
+	Game.get_singleton().map.add_child(zone)
+	zone.global_position = Vector2(body.get_center().x, body.end.y)
+	return zone
+
+
+## Удар зони на [param amount] без SkillDefinition.damage (Hallowed Circle б'є лише зоною): той самий HealthComponent.
+func hurt(source: Node, target: Node, amount: int) -> void:
+	var health := find_health_component(target)
+	if health.is_alive():
+		health.apply_damage(amount, source)
+
+
 ## Лікує ціль на SkillDefinition.heal. Ціль — гравець (CombatBody2D) або союзник з heal_damage().
 func heal(definition: SkillDefinition, target: Node, amount: int = -1) -> bool:
 	if not target.has_method(&"heal_damage"):  # тип цілі справді різний: герой або NPC-союзник

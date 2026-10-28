@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/Combat/Skills/SkillZone.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_2.png" id="2_ring"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/fire_arc.png" id="3_fire"]
+
+[node name="SkillZone" type="Node2D"]
+z_index = 5
+script = ExtResource("1_script")
+metadata/_doc = "A skill's ground zone (v2 slice 4); the origin is on the ground. Borrowed frames until slice 7 draws their own; each sprite's width is stretched to 2 x zone radius"
+
+[node name="hallowed_circle" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 0.9, 0.55, 0.7)
+texture_filter = 1
+position = Vector2(0, -8)
+texture = ExtResource("2_ring")
+
+[node name="hellfire_stomp" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(0.75, 0.2, 0.35, 0.8)
+texture_filter = 1
+position = Vector2(0, -9)
+scale = Vector2(1, 0.25)
+texture = ExtResource("3_fire")

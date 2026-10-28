@@ -58,6 +58,26 @@ static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[
 	return enemies_in_front(player)
 
 
+## Живі вороги, чия зона-ціль перетинає [param area] (зона навички на землі, v2 зріз 4).
+static func enemies_in(area: Rect2) -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy.is_alive() and area.intersects(enemy.hurt_rect()):
+			out.append(enemy)
+	return out
+
+
+## Свої в [param area]: герой [param player] (його тіло) і союзники поруч (група allies, як heal_target).
+static func allies_in(player: Node2D, area: Rect2) -> Array[Node]:
+	var out: Array[Node] = []
+	if area.intersects(player.body_rect()):
+		out.append(player)
+	for ally in player.get_tree().get_nodes_in_group(ALLIES_GROUP):
+		if area.intersects(_ally_rect(ally)):
+			out.append(ally)
+	return out
+
+
 ## Ланцюг (D207): найближчий живий ворог у [param radius] від [param from], крім уже вражених.
 static func chain_target(from: Node2D, exclude: Array[Node], radius: float) -> Node:
 	var best: Node = null
