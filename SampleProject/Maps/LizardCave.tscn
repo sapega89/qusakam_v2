@@ -221,17 +221,17 @@ flip_h = true
 position = Vector2(1850, 0)
 
 [node name="Scrub1" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(300, 530)
+position = Vector2(300, 485)
 
 [node name="Scrub2" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(760, 530)
+position = Vector2(760, 485)
 flip_h = true
 
 [node name="Scrub3" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1250, 530)
+position = Vector2(1250, 485)
 
 [node name="Scrub4" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1700, 530)
+position = Vector2(1700, 485)
 flip_h = true
 
 [node name="Bat1" parent="FrontDark" instance=ExtResource("x5")]

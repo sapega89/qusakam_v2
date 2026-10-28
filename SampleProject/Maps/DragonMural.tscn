@@ -114,10 +114,10 @@ flip_h = true
 position = Vector2(780, 0)
 
 [node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(250, 530)
+position = Vector2(250, 485)
 
 [node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(620, 530)
+position = Vector2(620, 485)
 flip_h = true
 
 [node name="TopShade" parent="." instance=ExtResource("x6")]

@@ -362,14 +362,14 @@ bus = &"Music"
 position = Vector2(90, 0)
 
 [node name="Scrub1" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(200, 1010)
+position = Vector2(200, 965)
 
 [node name="Scrub2" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(520, 1010)
+position = Vector2(520, 965)
 flip_h = true
 
 [node name="Scrub3" parent="FrontDark" instance=ExtResource("x5")]
-position = Vector2(800, 1010)
+position = Vector2(800, 965)
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
