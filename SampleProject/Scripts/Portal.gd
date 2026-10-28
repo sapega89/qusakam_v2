@@ -37,9 +37,6 @@ func _on_body_entered(body: Node2D) -> void:
 		if body and is_instance_valid(body):
 			body.event = false
 
-		# Delta vector feature again.
-		Game.get_singleton().reset_map_starting_coords()
-
 		# Re-enable monitoring after 3 seconds to prevent immediate re-entry
 		await get_tree().create_timer(3.0).timeout
 		set_deferred("monitoring", true)

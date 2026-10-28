@@ -49,9 +49,6 @@ func _on_interacted() -> void:
 		MetSys.set_player_position(player.global_position)
 
 	var game := Game.get_singleton()
-	# Starting coords for the delta vector feature.
-	game.reset_map_starting_coords()
-
 	await _meditate(player, game)
 
 

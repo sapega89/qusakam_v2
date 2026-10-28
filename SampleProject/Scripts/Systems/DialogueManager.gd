@@ -380,12 +380,14 @@ var _stage_tag := RegEx.create_from_string("^\\[[^\\]]*\\]\\s*")
 func _on_bubble_gone(bubble: Node2D) -> void:
 	if bubble != _bubble:
 		return  # монолог закінчився штатно, вузол просто прибирається
-	# Сцена пішла посеред монологу; хто чекав його кінця й діалогів у черзі — пішли з нею.
+	# Сцена чи кімната пішла посеред монологу; хто чекав його кінця й діалогів у черзі — пішли з нею.
 	_bubble = null
 	_bubble_playing = false
 	_cloud_talk = false
 	_queue.clear()
 	_pending_triggers.clear()
+	# Після зміни кімнати герой лишається в грі — монолог, що його тримав (D737), більше не тримає.
+	_unpause_player_after_dialogue()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _bubble_playing and not get_tree().paused and event.is_action_pressed(&"dq_accept"):
@@ -431,6 +433,10 @@ func _play_bubbles(path: String, talk: bool = false) -> void:
 	bubble.tree_exiting.connect(_on_bubble_gone.bind(bubble))
 	Game.get_singleton().player.add_child(bubble)
 	bubble.position.y = UITokens.BUBBLE_OFFSET_Y
+	# B206: облачко дочірнє гравцеві, а гравець переживає зміну кімнати — репліка кімнати («Hey, wind…» з Canyon)
+	# їхала за ним у наступну. Кімната, що почала монолог, іде — облачко йде з нею (далі _on_bubble_gone).
+	# Звільнене облачко саме розриває це зʼєднання, тож монолог, що догорів штатно, наступну зміну не чіпає.
+	Game.get_singleton().room_swapping.connect(bubble.queue_free, CONNECT_ONE_SHOT)
 	# D425: Text Speed — і набір, і час репліки (читається щоразу: зміна в меню паузи діє з наступної репліки).
 	var letters_per_second: float = current_dialogue_box.settings.letters_per_second
 	var speaker := [""]  # мовець поточної репліки для бурмотіння (лямбда бачить масив, не локальну змінну)

@@ -254,10 +254,7 @@ func _initialize_save_and_room() -> void:
 	# Перехід пішки крізь край кімнати — через затемнення (D434), як двері й телепорти: усі йдуть через load_room().
 	add_module(FADE_ROOM_TRANSITIONS)
 
-	# Reset position tracking (feature specific to this project).
 	await get_tree().physics_frame
-	reset_map_starting_coords.call_deferred()
-
 	# Make sure minimap is at correct position (required for themes to work correctly).
 	%Minimap.set_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 8)
 
@@ -427,9 +424,6 @@ func _lift_fade() -> void:
 ## Кат-сцена, що закінчиться телепортом, просить цільову кімнату заздалегідь (performance_plan, slice 3).
 func preload_room(room_path: String) -> void:
 	room_preloader.request(RoomPreloader.scene_path(room_path))
-
-func reset_map_starting_coords():
-	$UI/MapWindow.reset_starting_coords()
 
 ## Телепорт у кімнату, не повʼязану з поточною (двері, кат-сцена, а не прохід по мапі): затемнення, заміна кімнати,
 ## герой на вузлі [param arrival], поява (D434). Повертається, коли екран знову світлий.
