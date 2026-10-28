@@ -12,6 +12,8 @@ generator `Scripts/Tools/asset_catalog.py`): **347 ok, 48 fix, 29 remove**. His 
 goes only once the new one is wired; a fix without a note is the art lane's own call, shown as a before | after sheet.
 Unused leftovers were deleted at once (`fdb739c9`).
 
+**Sizes by scaling, not redraw** (Sapega 28.10: «ти ж сам можеш підправити розміри», «не сам, а у хмарі»): A10 → cloud `enemy-sizes` (per-kind scale in enemy_variety.json), A11 + A12 → cloud `prop-sizes` (palm, doors, gates, forge scaled in scenes). The artist only gets real art problems (A13 baked props, the Searing Hex sigil, the tilesets).
+
 **Like Skul (D816): only Kusakam and his companions are chibi**; NPCs and enemies keep normal proportions and are not redrawn into chibi; the «чібі» notes on NPC cards are void.
 
 Each batch is one ComfyUI run (< 1 h, own sheet), in this order. Mark ✅ with the commit.
