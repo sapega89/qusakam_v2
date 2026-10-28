@@ -12,7 +12,7 @@ Every other spot on the list is already whole and needed no change: TavernAttic,
 All ladders now show a few rungs above their top, so the rails are no longer cut flush with the floor. This only changes how they are drawn.
 **D-ID text** (number to assign): «B201 / Sapega 2026-10-28 «обрізаної підлоги не має бути»: where a ladder or hatch passes through a floor, the floor art stays whole. No hole, no black slot, no lid sprite. The ladder is drawn behind the floor and shows a few rungs above its top (wood 3, iron 1). Climbing through still uses the one-way ledge, the gate Body and the ladder strip, unchanged. A locked hatch has no art; it is read through its «Open» prompt and the locked line.»
 **B rows fixed:** B201.
-**Tests:** verify_ladders, room_entrances, map_geometry, laboratory, lab_route, village_house, scripts_compile, gates: all `RESULT: ALL PASS`. Full suite: see below.
+**Tests:** verify_ladders, room_entrances, map_geometry, laboratory, lab_route, village_house, scripts_compile, gates: all `RESULT: ALL PASS`. Full suite: `SUITE: 14 FAIL in 15 min 48 s, J=4`. 13 of them fail the same way on the base commit (`feature/backlog` before this branch). The 14th, verify_repeat_load, failed once by one node (635 → 636) and then passed 2 of 2 re-runs. None of the 14 comes from this change.
 The `room-content` skill named in the prompt (`.claude/skills/room-content/SKILL.md`) does not exist on `feature/backlog`; there is no `.claude/skills/` folder at all, so I worked without it.
 
 ## What changed
@@ -35,4 +35,6 @@ Shots: `design/shots/ladder_holes.png` (before | after, all 13 spots, 960×540 c
 Seen on the way, not changed: in my Laboratory crops neither iron ladder can be seen, before or after. Ladder1/Ladder2 are drawn at z −1 inside the room's art. That belongs to Q113 (the Laboratory ladders), so I left it alone. Maps/MapData.txt was not touched.
 
 ## Full suite
-Running at commit time; the result follows in the next commit.
+`SUITE: 14 FAIL in 15 min 48 s, J=4`. To check, I re-ran each failing test on the base commit `0fbb86a4^` in a separate worktree:
+- **The same failure on the base (13), so not from this branch:** ambient_critters (2 FAIL), camera_rooms (HUNG 180 s), combat_player (1 FAIL: refusal flash), difficulty (5 FAIL), cutscene (2 FAIL: descent), flying_enemies (ALL PASS + 2 SCRIPT ERROR, `spawn_points` on null at verify_flying_enemies.gd:398), camera_transitions (1 FAIL), memory (no RESULT), progression (no RESULT), quiet_transitions (1 FAIL), room_preload (3 FAIL), road_sections (1 FAIL), secrets (1 FAIL: laboratory 1).
+- **Flaky:** verify_repeat_load, `node count does not grow (635 → 636)` once in the J=4 run; then `PASS` 2 of 2 on this branch alone.
