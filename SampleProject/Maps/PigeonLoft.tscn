@@ -52,7 +52,7 @@ tile_map_data = PackedByteArray("AAD//wAAAQAIAAcAAAAbAAAAAQAIAAcAAAD//wEAAQAIAAc
 tile_set = ExtResource("w3")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(432, 344)
+position = Vector2(432, 360)
 
 [node name="ExitDoorEntrance" parent="." instance=ExtResource("w4")]
 position = Vector2(432, 384)

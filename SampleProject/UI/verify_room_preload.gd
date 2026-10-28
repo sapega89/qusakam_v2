@@ -21,8 +21,9 @@ func _initialize() -> void:
 	metsys = root.get_node("MetSys")
 	game.player.set_invulnerable(true)
 
-	print("[1] In Canyon the neighbour (Village) loads in the background, a far room does not")
-	ck(await _held_within(MAPS % "Village", 3.0), "Village is held within 3 s of Canyon")
+	# M7: на схід від Каньйону тепер гірська стежка (до села — ще осипище, ущелина й уступи).
+	print("[1] In Canyon the neighbour (MountainPath) loads in the background, a far room does not")
+	ck(await _held_within(MAPS % "MountainPath", 3.0), "MountainPath is held within 3 s of Canyon")
 	ck(game.room_preloader.is_held(MAPS % "Canyon"), "the current room (Canyon) is held")
 	ck(not ResourceLoader.has_cached(MAPS % "LabBoss"), "a non-neighbour (LabBoss) is not loaded")
 
@@ -38,16 +39,17 @@ func _initialize() -> void:
 
 	print("[2] Walking east with a real D hold: fade to black, swap under black, light again (D434)")
 	var walk: Dictionary = await _walk_east()
-	ck(_in("Village"), "the room is Village (%s, %s)" % [game.map.scene_file_path.get_file(), walk["how"]])
+	ck(_in("MountainPath"), "the room is MountainPath (%s, %s)" % [game.map.scene_file_path.get_file(), walk["how"]])
 	ck(walk["black_at_swap"], "the screen is black when the rooms swap")
 	ck(walk["longest_ms"] < 100.0, "no frame freezes during the change (longest %.0f ms)" % walk["longest_ms"])
 	ck(walk["change_ms"] < 900.0, "fade out + swap + fade in take %.0f ms (preloaded: about 0.5 s)" % walk["change_ms"])
 	ck(not root.has_node(^"ScreenFade") and not paused, "light again and the game runs")
-	ck(game.room_preloader.is_held(MAPS % "Canyon"), "Canyon is still held (neighbour of Village)")
+	ck(game.room_preloader.is_held(MAPS % "Canyon"), "Canyon is still held (neighbour of MountainPath)")
 	ck(not ResourceLoader.has_cached(MAPS % "LabBoss"), "LabBoss is still not loaded")
 	ck(game.room_preloader.is_held("res://SampleProject/Scenes/Characters/Enemies/enemy_tank.tscn"), "a room change keeps the warmed scenes held")
 
 	print("[3] Slice 3: a door's target is held; the door fades like a walk")
+	await game.teleport_to_room(MAPS % "Village", ^"Arrival")
 	ck(await _held_within(MAPS % "ElderHouse", 3.0), "ElderHouse (the Village door's target) is held")
 	var t0: int = Time.get_ticks_msec()
 	await game.teleport_to_room(MAPS % "ElderHouse", ^"Arrival")

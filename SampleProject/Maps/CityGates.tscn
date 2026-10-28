@@ -476,11 +476,11 @@ texture = ExtResource("x2")
 offset = Vector2(-78, -114)
 
 [node name="RooftopsDoorEntrance" parent="." instance=ExtResource("m7_1")]
-position = Vector2(300, 384)
+position = Vector2(638, 384)
 texture = ExtResource("m7_2")
 
 [node name="RooftopsDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(298.5, 322.5)
+position = Vector2(636.5, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("SlideDoor")
 gate_id = "city_rooftops"

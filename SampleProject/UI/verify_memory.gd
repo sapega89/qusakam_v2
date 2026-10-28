@@ -7,7 +7,10 @@ extends SceneTree
 
 const ROOMS := [["Canyon", "Arrival"], ["Village", "Arrival"], ["DesertRoad", "Arrival_Start"], ["CityGates", "Arrival"],
 	["City", "SavePoint"], ["MayorHall", "Arrival"], ["Laboratory", "SavePoint_PreBoss"]]
-const LAPS := 3
+const LAPS := 4
+## Скільки кіл — прогрів кешів. M7: у кожної кімнати кола тепер більше сусідів (стежка, вихід з печери, привал, квартал),
+## RoomPreloader тримає їх, і друге коло ще догріває спільні ресурси (+5 МБ); третє й четверте — рівні.
+const WARM_LAPS := 2
 const STATIC_GROWTH_MB := 1.0
 
 var fails: Array[String] = []
@@ -52,12 +55,12 @@ func _initialize() -> void:
 		var orphans := int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
 		var static_mb := Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0
 		print("  lap %d: orphans %d, static %.1f MB" % [lap + 1, orphans, static_mb])
-		if lap == 0:
+		if lap == WARM_LAPS - 1:
 			warm_static = static_mb
 			warm_orphans = orphans
 	var end_static := Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0
 	var end_orphans := int(Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT))
-	ck(end_orphans <= warm_orphans, "no orphan nodes pile up after lap 1 (%d → %d)" % [warm_orphans, end_orphans])
-	ck(end_static - warm_static < STATIC_GROWTH_MB, "static memory flat after lap 1 (%+.1f MB)" % (end_static - warm_static))
+	ck(end_orphans <= warm_orphans, "no orphan nodes pile up after the warm-up laps (%d → %d)" % [warm_orphans, end_orphans])
+	ck(end_static - warm_static < STATIC_GROWTH_MB, "static memory flat after the warm-up laps (%+.1f MB)" % (end_static - warm_static))
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit()

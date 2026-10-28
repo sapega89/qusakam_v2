@@ -48,9 +48,9 @@ func _initialize() -> void:
 	ck(lines.size() <= MAX_LINES, "the teleport printed %d lines (≤ %d)%s" % [lines.size(), MAX_LINES, _show(lines)])
 	await Kit.drain(self)
 
-	print("[2] Walk back west into Canyon")
+	print("[2] Walk back west into RockLedges (M7: the road to the canyon)")
 	lines = await _count(_walk_west)
-	ck(game.map.scene_file_path == MAPS % "Canyon", "in Canyon (%s)" % game.map.scene_file_path.get_file())
+	ck(game.map.scene_file_path == MAPS % "RockLedges", "in RockLedges (%s)" % game.map.scene_file_path.get_file())
 	ck(lines.size() <= MAX_LINES, "the walk printed %d lines (≤ %d)%s" % [lines.size(), MAX_LINES, _show(lines)])
 
 	OS.remove_logger(counter)
