@@ -24,7 +24,7 @@ still waiting until 15:15/15:31 UTC, take the step first — check `origin/cloud
 
 | Routine | Trigger | Task | On report |
 |---|---|---|---|
-| `integrate-33` | `trig_01XtXrAxaVP6qYhFE1gsSJrt` (12:50 UTC) | merge the 4 skills branches one at a time, small-fixes, wire-leftovers; fix verify_camera_transitions (BanditCamp) | merge into `feature/backlog`, rebuild exe |
+| `integrate-33` | `trig_01XtXrAxaVP6qYhFE1gsSJrt` (12:50 UTC) | merge the 4 skills branches one at a time, small-fixes, wire-leftovers; fix verify_camera_transitions (BanditCamp) | ✅ reported (`cloud/integrate-33`, D874–D885): merge into `feature/backlog`, rebuild exe |
 
 **Room chain** (one room routine at a time): `wire-backdrops` ✅ → `wire-backdrops-2` ✅ → `rooms-finish` ✅ (done by
 the original or `-r`; fights + life in the new rooms, camp off the Dunes; built nothing in the Laboratory — that is
