@@ -83,8 +83,8 @@ doors and painted objects follow the size chart of [[world_scale_plan]] — the 
 
 | Room | Kind | Screens | Passages to paint | Status |
 |---|---|---|---|---|
-| Craft quarter | main | 3 | the forge and chapel fronts stand there (props exist) | ⬜ |
-| Palace square | main | 2 | the palace doors, the alley down | ⬜ |
+| Craft quarter | main | 3 | the forge and chapel fronts stand there (props exist) | 🔄 art M6c-1 (`Backgrounds/CraftQuarter/`: the market's sky, mesas and skyline ×0.4 world-anchored (offsets 86.4 / 691.2), the dyers' and tanners' row ×0.5 (cloth and hides drying on the roofs; its doors 50 art, so ×0.5), the City's crafts from what the game trades — a potter with a kiln, a carpet weaver with a loom, a coppersmith — each its own ×0.9 plane (open front / door 101 = 112 × 0.9), the forge and the chapel moved here at ×1.0 with the Blacksmith and the oath priest (D773; positions in the README, `ForgeDoor` is a test teleport target), the market's cobbles, a dyed-cloth pole front ×1.3 twice; wiring table in the README), waiting for Sapega's look at `shots/m6c1_craft_palace.png` |
+| Palace square | main | 2 | the palace doors, the alley down | 🔄 art M6c-1 (`Backgrounds/PalaceSquare/`: the market's sky, mesas and skyline world-anchored (172.8 / 518.4), the palace's outer wing with an arcade and red banners (plain golden disc, Q57) ×0.6, the dragon fountain ×0.9 (176 art × 0.9, the aqueduct's dragon spout), the **palace front** ×1.0 with its studded double door painted at x 1560 world (112 art, threshold on the walk line, steps cut off) between the guards — replaces `MayorHallDoorEntrance`, the market's palm front ×1.3; the alley down to the East Gate is not on the map yet, no art; wiring table in the README), same review |
 | Rooftops | side | 3 | a ladder up a house wall; the drop to the gate | ⬜ |
 | Pigeon loft | secret | 1 | loose boards | ⬜ |
 | Tavern attic | interior | 2 | the hatch with its ladder behind the stall | ⬜ |
