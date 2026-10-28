@@ -28,8 +28,14 @@ while an integrator runs.
 `wire-backdrops-3` (`trig_018LGBuN2bP4eH27wHj7bB4A`) → `wire-backdrops-4` (`trig_01Rw2B9remFva5UTZGTx8SzC`) →
 `prop-sizes` (`trig_015U2tbMG9yLHwpLrRMGBCSg`) → `wire-props` (`trig_01B4nHuyADwieMains6tHt2J`).
 - **Waits run out 8 h after each trigger's creation** (UTC): rooms-finish 11:11, wire-backdrops-3 11:38,
-  wire-backdrops-4 12:03, prop-sizes 15:15, wire-props 15:31. When one dies, re-run it with RemoteTrigger `run` — only
-  after it died (`list_runs`), or two sessions build the same thing.
+  wire-backdrops-4 12:03, prop-sizes 15:15, wire-props 15:31. **Replacements are scheduled in the cloud** (Sapega:
+  «в хмарі заплануй рішення»), each 3 min after its original gives up, same branch and report, own 8 h wait:
+  `rooms-finish-r` (`trig_01E5915FoCmY2uY2NipRAvxV`, 11:14), `wire-backdrops-3-r` (`trig_01TGj1QNGEtXZNTtShBMyvtf`, 11:41),
+  `wire-backdrops-4-r` (`trig_019qjvbMDSdG2DBeyjYqRk6A`, 12:06; also waits for and merges `lab-v3-now`),
+  `prop-sizes-r` (`trig_01GUwKqL7gmdvPmyoVwmg45Z`, 15:18), `wire-props-r` (`trig_01UrXytkDsfE7YLbMquXK5r4`, 15:34).
+  Each stops by itself if the predecessor's report became final before its original gave up (the original took the
+  step) or its branch already has newer commits. Check with `list_runs` which one did the work; if a replacement
+  also dies (8 h), re-run it with RemoteTrigger `run`.
 - The chain's own `lab-v3` (`trig_013ZcTiT1GvzqNabezNjssda`) is **superseded by `lab-v3-now`**: merge nothing from it
   unless lab-v3-now missed something.
 - `rooms-finish` may build the old D849 Laboratory floors from Q113's struck answer: drop its Laboratory part on merge.
