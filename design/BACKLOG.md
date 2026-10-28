@@ -351,6 +351,9 @@ Slice 1 built (`cloud/enemy-stamina`, merged by integrate-31); later slices in t
 - **Waits on:** nothing for slice 1 (defaults in the plan: 30 s return, 160 px scare distance).
 - **Resume:** slice 1 — `AmbientCritter.gd` + `critter_bat.tscn`, two bats in `LizardCave/FrontDark`, `verify_ambient_critters.gd`.
 
+### Dropped from the plan 2026-10-28
+- **R5 — re-shoot the fixed rooms, depth critics again, an MP4 for Sapega, `verify_depth`** (Sapega 28.10: «R5 не роби взагалі»). Not to be started unless he brings it back.
+
 ### ComfyUI art — stopped 2026-10-28
 Sapega 28.10: «комфі більше не запускай, в беклог все що стосується комфі». Nothing here runs until he restarts the art
 lane himself. Size/shape fixes are not here: they are scaling in the cloud (P10, `prop-sizes`).
