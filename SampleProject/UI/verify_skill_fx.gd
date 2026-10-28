@@ -8,6 +8,9 @@ extends SceneTree
 
 const SkillCastFX := preload("res://SampleProject/Scripts/FX/SkillCastFX.gd")
 const OathSkillFX := preload("res://SampleProject/Scripts/FX/OathSkillFX.gd")
+## Не preload: MoveSkillFX бере EventBus, а автозавантаження ще немає, коли компілюється цей скрипт.
+const MOVE_SKILL_FX := "res://SampleProject/Scripts/FX/MoveSkillFX.gd"
+const SLASH_TRAIL := preload("res://SampleProject/Scenes/FX/SlashTrail.tscn")
 const OATH_ACTIVES := ["radiant_smite", "skyfall_blessing", "judgement_of_the_sky", "searing_hex", "withering_grasp",
 		"eclipse_cleave", "balanced_strike", "dervish_whirl", "second_wind"]
 
@@ -44,17 +47,26 @@ func _initialize() -> void:
 
 	print("[1] Every active skill has an effect with its own frames")
 	var owner_of: Dictionary = {}
+	# H3 (D812, D828): шар руху — шлейф ривка (Smear/dash) усіх ривків і кільце удару (Smear/slam_ring) обох стрибків —
+	# спільний за Assets/FX/README.md; решта кадрів навички руху — її власні, як у всіх (D279)
+	var move_layer: Dictionary = {}
 	for skill in actives:
-		if skill.has("move"):
-			# D812: навички руху (v2 зріз 3) позичають наявні ефекти, поки арт-лінія не намалює їхні кадри
-			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: borrowed effect until its art (MoveSkill.tscn)" % skill.id)
-			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
+		if skill.has("move"):
+			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)
+			var layer: Array = _move_layer(skill.id)
+			ck(not layer.is_empty() and layer.all(func(path: String) -> bool: return path in frames),
+					"%s: plays its move layer %s" % [skill.id, layer.map(func(p: String) -> String: return p.get_file())])
+			for path in layer:
+				move_layer[path] = skill.move.kind
+			frames = frames.filter(func(path: String) -> bool: return path not in layer)
 		ck(not frames.is_empty(), "%s: %s, %d frames" % [skill.id, skill.vfx.get_file(), frames.size()])
 		var shared: Array = frames.filter(func(path: String) -> bool: return owner_of.has(path))
 		ck(shared.is_empty(), "%s: no frame shared with another skill %s" % [skill.id, shared.map(func(p: String) -> String: return "%s (%s)" % [p.get_file(), owner_of[p]])])
 		for path in frames:
 			owner_of[path] = skill.id
+	var layer_shared: Array = move_layer.keys().filter(func(path: String) -> bool: return owner_of.has(path))
+	ck(move_layer.size() == 6 and layer_shared.is_empty(), "the move layer (%d frames) is no skill's own frame %s" % [move_layer.size(), layer_shared])
 	ck(actives.map(func(s: Dictionary) -> String: return s.id).filter(func(id: String) -> bool: return id in OATH_ACTIVES).size() == OATH_ACTIVES.size(),
 			"all 9 oath actives are active skills in skills.json")
 
@@ -121,7 +133,17 @@ func _instance(id: String) -> Node2D:
 func _frame_paths(id: String, vfx: String) -> Array:
 	var fx: Node2D = _instance(id)
 	var paths: Array = []
-	if fx.get_script() == OathSkillFX:
+	if fx.get_script().resource_path == MOVE_SKILL_FX:
+		for sprite: AnimatedSprite2D in fx.sprites():
+			paths.append_array(_animation_paths(sprite.sprite_frames))
+		var kind: StringName = fx.get_script().get_script_constant_map().RELEASE[id][0]
+		var trail_node: Node2D = SLASH_TRAIL.instantiate()
+		var trail: SpriteFrames = trail_node.get_node("Sprite").sprite_frames
+		if trail.has_animation(kind):
+			for i in trail.get_frame_count(kind):
+				paths.append(trail.get_frame_texture(kind, i).resource_path)
+		trail_node.free()
+	elif fx.get_script() == OathSkillFX:
 		var frames: SpriteFrames = fx.get_node("Sprite").sprite_frames
 		for animation in frames.get_animation_names():
 			for i in frames.get_frame_count(animation):
@@ -130,6 +152,21 @@ func _frame_paths(id: String, vfx: String) -> Array:
 		for sprite in fx.find_children("*", "Sprite2D", true, false):
 			paths.append(sprite.texture.resource_path)
 	fx.free()
+	return paths
+
+## Кадри шару руху навички [param id]: шлейф ривка або кільце удару стрибка (MoveSkill.tscn).
+func _move_layer(id: String) -> Array:
+	var fx: Node2D = _instance(id)
+	var node: AnimatedSprite2D = fx.get_node("DashTrail" if fx.skill.move_kind == "dash" else "SlamRing")
+	var paths: Array = _animation_paths(node.sprite_frames)
+	fx.free()
+	return paths
+
+func _animation_paths(frames: SpriteFrames) -> Array:
+	var paths: Array = []
+	for animation in frames.get_animation_names():
+		for i in frames.get_frame_count(animation):
+			paths.append(frames.get_frame_texture(animation, i).resource_path)
 	return paths
 
 func _fx() -> Node:

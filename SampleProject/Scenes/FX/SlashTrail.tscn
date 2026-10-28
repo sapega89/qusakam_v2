@@ -10,9 +10,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/punch_1.png" id="punch1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/punch_2.png" id="punch2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/punch_3.png" id="punch3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/arc_1.png" id="blood1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/arc_2.png" id="blood2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/arc_3.png" id="blood3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/wind_step/streak_1.png" id="wind1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/wind_step/streak_2.png" id="wind2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/wind_step/streak_3.png" id="wind3"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_fx"]
-animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("arc1")}, {"duration": 1.0, "texture": ExtResource("arc2")}, {"duration": 1.0, "texture": ExtResource("arc3")}], "loop": false, "name": &"arc", "speed": 30.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("thrust1")}, {"duration": 1.0, "texture": ExtResource("thrust2")}, {"duration": 1.0, "texture": ExtResource("thrust3")}], "loop": false, "name": &"thrust", "speed": 30.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("punch1")}, {"duration": 1.0, "texture": ExtResource("punch2")}, {"duration": 1.0, "texture": ExtResource("punch3")}], "loop": false, "name": &"punch", "speed": 24.0}]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("arc1")}, {"duration": 1.0, "texture": ExtResource("arc2")}, {"duration": 1.0, "texture": ExtResource("arc3")}], "loop": false, "name": &"arc", "speed": 30.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("thrust1")}, {"duration": 1.0, "texture": ExtResource("thrust2")}, {"duration": 1.0, "texture": ExtResource("thrust3")}], "loop": false, "name": &"thrust", "speed": 30.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("punch1")}, {"duration": 1.0, "texture": ExtResource("punch2")}, {"duration": 1.0, "texture": ExtResource("punch3")}], "loop": false, "name": &"punch", "speed": 24.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("blood1")}, {"duration": 1.0, "texture": ExtResource("blood2")}, {"duration": 1.0, "texture": ExtResource("blood3")}], "loop": false, "name": &"blood_rush", "speed": 20.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("wind1")}, {"duration": 1.0, "texture": ExtResource("wind2")}, {"duration": 1.0, "texture": ExtResource("wind3")}], "loop": false, "name": &"wind_step", "speed": 20.0}]
 
 [node name="SlashTrail" type="Node2D"]
 z_index = 250

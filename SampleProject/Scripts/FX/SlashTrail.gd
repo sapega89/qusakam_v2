@@ -6,6 +6,11 @@ class_name SlashTrail
 ## Assets/FX/Smear (Scripts/Tools/draw_hero_attack.py). Зникає з останнім кадром. Ставить і масштабує
 ## WeaponView — він знає зброю, вид удару й напрямок.
 
+## Смуги, що ростуть від точки хвату вперед (вістря на x 70 текстури).
+const FROM_GRIP: Array[StringName] = [&"thrust", &"wind_step"]
+## Дуги, що стоять правим краєм на краю arc.
+const RIGHT_ANCHORED: Array[StringName] = [&"blood_rush"]
+
 ## Вузол із пулу ударів ворогів (EnemyStrikeFX, A17): з останнім кадром ховається, а не зникає.
 var pooled := false
 
@@ -23,10 +28,19 @@ func _on_finished() -> void:
 		queue_free()
 
 
-## [param kind] — &"arc", &"thrust" чи &"punch"; [param upward] — другий удар серії, дуга знизу вгору.
+## [param kind] — &"arc", &"thrust" чи &"punch"; власні удари навичок руху (H3, D812): &"blood_rush" (дуга крові,
+## замість arc) і &"wind_step" (вітер, замість thrust). [param upward] — другий удар серії, дуга знизу вгору.
 func play(kind: StringName, upward: bool) -> void:
-	sprite.centered = kind != &"thrust"  # укол росте від точки хвату вперед, решта — навколо центру
-	sprite.offset = Vector2.ZERO if kind != &"thrust" else Vector2(0, -sprite.sprite_frames.get_frame_texture(kind, 0).get_height() / 2.0)
+	var size: Vector2 = sprite.sprite_frames.get_frame_texture(kind, 0).get_size()
+	var from_grip: bool = kind in FROM_GRIP
+	sprite.centered = not from_grip  # укол росте від точки хвату вперед, решта — навколо центру
+	if from_grip:
+		sprite.offset = Vector2(0, -size.y / 2.0)
+	elif kind in RIGHT_ANCHORED:
+		# вужча за arc дуга — правим краєм там, де край arc (Assets/FX/README.md, H3)
+		sprite.offset = Vector2((sprite.sprite_frames.get_frame_texture(&"arc", 0).get_width() - size.x) / 2.0, 0)
+	else:
+		sprite.offset = Vector2.ZERO
 	sprite.flip_v = upward
 	show()
 	sprite.play(kind)
