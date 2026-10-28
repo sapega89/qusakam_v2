@@ -3,6 +3,7 @@
 домальовує пісок за бочкою й мішками; пікселі планів — з оригіналу gen_back.png, у його 16 кольорах.
   python -B design/shots/candidates/camp_planes/camp_planes.py gen    — правки моделі (сирі PNG поруч зі скриптом)
   python -B design/shots/candidates/camp_planes/camp_planes.py build  — (scipy) плани в SampleProject/Assets/Backgrounds/BanditCamp/
+  python -B design/shots/candidates/camp_planes/camp_planes.py fix    — (scipy) A8: латки на готових gen_mid і gen_floor
 Плани: gen_far (×0.4, небо й дюни, дзеркально), gen_mid (×0.8, частокіл, намети, ящики, котли, пісок до лінії ходьби),
 gen_sacks (×0.9, мішки й бочка — окремий реквізит за героєм), gen_floor (×1.0, рядок 0 — лінія ходьби y 416).
 """
@@ -176,5 +177,52 @@ def build():
     print("floor rows", len(floor), flush=True)
 
 
+# A8 (2026-10-28, «поправити» без примітки). Підлога: зрізаний посередині камінь і кущик на лінії ходьби, пряма
+# вертикальна межа на x 397 (край латки з правки «wall» під мішками, CLIP) і половина смуги — суцільна фіолетова тінь
+# мішків; цю смугу повторюють сім кімнат пустелі (build_world_rooms «desert»). Тепер — пісок «згори під кутом» із
+# текстури землі (paint_terrain sand_floor, Qwen-Image), у кольорах табору: світлий пісок угорі, плями фіолетової тіні,
+# що густішають до ближнього краю, камінці; безшовна (2 періоди текстури, плями — цілі частоти на ширину).
+# Mid: рожеві клапті обрію, що лишились на вістрях частоколу й хмаркою на його правому кінці, — прозорі.
+RAMP = [(87, 51, 84), (111, 72, 108), (148, 98, 144), (228, 140, 118), (241, 168, 151), (253, 195, 162)]  # темне → світле
+HORIZON = [(249, 205, 224), (230, 165, 221), (253, 195, 162), (241, 168, 151)]  # кольори рожевого обрію
+SKY_SCRAPS = [(140, 192, 110, 180), (0, 70, 118, 142)]  # x0, x1, y0, y1: хмарка за частоколом і клапті на вістрях
+
+
+def fix():
+    from scipy import ndimage
+    from PIL import ImageFilter
+
+    import paint_terrain as pt
+
+    mid = np.asarray(Image.open(OUT + "gen_mid.png").convert("RGBA")).copy()
+    horizon = np.isin(mid[..., :3], HORIZON).all(-1) & (mid[..., 3] > 0)
+    box = np.zeros(horizon.shape, bool)
+    for x0, x1, y0, y1 in SKY_SCRAPS:
+        box[y0:y1, x0:x1] = True
+    lab, _ = ndimage.label(horizon & box)  # лише клапті, що торкаються неба
+    sky = mid[..., 3] == 0
+    mid[np.isin(lab, np.unique(lab[ndimage.binary_dilation(sky) & (lab > 0)])), 3] = 0
+    Image.fromarray(mid).save(OUT + "gen_mid.png")
+
+    tex, _ = pt.material("sand_floor")
+    lum = tex @ np.array([0.3, 0.55, 0.15], np.float32)
+    blur = np.asarray(Image.fromarray(lum.astype(np.uint8)).filter(ImageFilter.GaussianBlur(pt.FLOOR_BLOB)), np.float32)
+    detail = (lum - blur) / (lum - blur).std()  # лише дрібне: камінці, брижі
+    n = 45 - 2
+    rows = [int((0.1 + 0.8 * i / (n - 1)) * (len(tex) - 1)) for i in range(n)]  # угорі дальнє, внизу ближнє
+    d = np.tile(detail[rows], (1, W // tex.shape[1]))
+    t = np.arange(W) / W * 2 * np.pi
+    patch = sum(np.sin(t * f + p) / f for f, p in ((2, 0.4), (3, 2.2), (5, 4.1), (9, 1.7)))
+    patch = (patch - patch.min()) / np.ptp(patch)
+    depth = np.arange(n)[:, None] / (n - 1)
+    v = 4.4 - 1.0 * depth - 2.6 * patch[None, :] * (0.4 + 0.6 * depth) + 0.6 * d
+    floor = np.full((45, W, 4), 255, np.uint8)
+    floor[0, :, :3] = LIP
+    floor[1, :, :3] = SHADOW
+    floor[2:, :, :3] = np.array(RAMP, np.uint8)[np.clip(np.round(v), 0, len(RAMP) - 1).astype(int)]
+    Image.fromarray(floor).save(OUT + "gen_floor.png")
+    print("fixed gen_mid, gen_floor", flush=True)
+
+
 if __name__ == "__main__":
-    {"gen": gen, "build": build}[sys.argv[1]]()
+    {"gen": gen, "build": build, "fix": fix}[sys.argv[1]]()

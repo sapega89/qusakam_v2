@@ -18,33 +18,56 @@ BRASS = [(236, 196, 110), (196, 148, 70), (140, 98, 46)]
 FLAME = [(255, 246, 200), (255, 206, 110), (240, 140, 60)]
 
 
-def rect(px, x0, y0, x1, y1, c):
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            px[x, y] = c if len(c) == 4 else c + (255,)
+# A8 (2026-10-28, «поправити» без примітки): був набір прямокутників — плоске сіре скло, полум'я-брусок, кронштейн
+# смужкою. Тепер ліхтар: гачок, шапка-дашок, рамка з бурштиновим склом, що світиться від полум'я-краплі, піддон і
+# кронштейн зі стінною пластиною. Розмір 14 × 20 і полум'я там само (x 7–10, рядки 7–12) — світло лампи з
+# build_laboratory.gd стоїть на ньому.
+LAMP = [
+    "........oo....",
+    ".......oBro...",
+    "......oBbbro..",
+    ".....oBbbbbro.",
+    "o...oBbbbbbbro",
+    "oI..oorrrrrroo",
+    "oI...ogGGGGgo.",
+    "oIoooogGWWGgo.",
+    "oIiiiogGWWGgo.",
+    "oIdddogGWWGgo.",
+    "oIoooogFWWFgo.",
+    "o....ogFFFFgo.",
+    ".....ogGffGgo.",
+    ".....oggGGggo.",
+    ".....oggggggo.",
+    "....oBbbbbbbro",
+    ".....orrrrrro.",
+    ".......obbo...",
+    "........oo....",
+    "..............",
+]
+LAMP_COLORS = {
+    "o": OUTLINE,
+    "I": IRON[1],
+    "i": IRON[0],
+    "d": IRON[2],
+    "B": BRASS[0],
+    "b": BRASS[1],
+    "r": BRASS[2],
+    "g": (214, 150, 80),  # скло біля рамки
+    "G": (255, 214, 140),  # скло, що світиться
+    "W": FLAME[0],
+    "F": FLAME[1],
+    "f": FLAME[2],
+}
 
 
 def lamp():
-    """Ліхтар на кронштейні: кронштейн ліворуч у стіну, скло з полум'ям, латунна шапка."""
+    """Ліхтар на кронштейні: кронштейн ліворуч у стіну, скло з полум'ям, латунна шапка (карта LAMP)."""
+    assert len(LAMP) == 20 and all(len(row) == 14 for row in LAMP)
     im = Image.new("RGBA", (14, 20))
-    px = im.load()
-    rect(px, 0, 3, 5, 5, IRON[1])  # кронштейн
-    rect(px, 0, 2, 5, 3, OUTLINE)
-    rect(px, 0, 5, 5, 6, OUTLINE)
-    rect(px, 4, 1, 13, 4, BRASS[1])  # шапка
-    rect(px, 5, 1, 12, 2, BRASS[0])
-    rect(px, 5, 4, 12, 15, (255, 232, 170, 150))  # скло
-    rect(px, 7, 7, 10, 13, FLAME[1] + (255,))
-    rect(px, 8, 6, 9, 12, FLAME[0] + (255,))
-    rect(px, 7, 12, 10, 13, FLAME[2] + (255,))
-    rect(px, 4, 15, 13, 17, BRASS[2])  # низ
-    for y in range(1, 17):  # контур
-        px[4, y] = OUTLINE
-        px[12, y] = OUTLINE
-    rect(px, 4, 0, 13, 1, OUTLINE)
-    rect(px, 4, 17, 13, 18, OUTLINE)
-    px[8, 18] = OUTLINE
-    px[8, 19] = OUTLINE
+    for y, row in enumerate(LAMP):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                im.putpixel((x, y), tuple(LAMP_COLORS[ch][:3]) + (255,))
     return im
 
 

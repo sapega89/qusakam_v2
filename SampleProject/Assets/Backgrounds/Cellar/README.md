@@ -7,7 +7,7 @@ colours at the game's pixel (×1.5). A Steam release has to disclose AI-generate
 
 | File | Use (`Maps/GatehouseCellar.tscn`) |
 |---|---|
-| `gen_back.png` | the source picture (was the whole room, tiled twice); not in the scene |
+| `gen_back.png` | the source picture (was the whole room, tiled twice); not in the cellar scene. `CityGates.tscn` → `CellarArch` shows its region (300, 40, 150 × 170) as the cellar entrance. **A8** (2026-10-28, `cellar_planes.py arch`): that arch held a cobweb, a bat nest and bottles on a crate cut off by the frame — a storeroom, not a way in; now the vault is empty and dark with warm lamp light rising from the stairs below. The planes were cut before A8 (a `build` now would cut this arch empty) |
 | `gen_far.png` | Back/Far ×0.5: the dark brick back wall seen through the arches, mirrored seamless (1152 px) |
 | `gen_mid.png` | Back/Mid ×0.8: arches, columns, barrels, crates and bottles; stairs, lantern and bat repainted out, arch openings transparent |
 | `gen_stairs.png` | Back/Props ×0.9: the stone stairs, once, by the exit |

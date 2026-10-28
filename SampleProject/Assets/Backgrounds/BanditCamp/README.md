@@ -13,8 +13,16 @@ Placed in `SampleProject/Maps/BanditCamp.tscn` → `Back` (z −10), back to fro
   sky and the dune are transparent. `Back/Mid`, ×0.8.
 - `gen_sacks.png` — the two sacks and the barrel that stood on the walk line, cut out as one prop. `Back/Props`, ×0.9,
   feet 4 px under the floor's edge.
-- `gen_floor.png` — the camp's own sand below the walk line (45 rows, to the bottom of the frame); row 0 is the walk
-  line y 416, a drawn light edge with a shadow row under it. `Back/Floor`, ×1.0, repeats.
+- `gen_floor.png` — the sand below the walk line (45 rows, to the bottom of the frame); row 0 is the walk line y 416, a
+  drawn light edge with a shadow row under it. `Back/Floor`, ×1.0, repeats; also the floor of the other desert rooms
+  (`build_world_rooms.py` «desert»: CanyonFloor, Chasm, Dunes, GateApproach, MesaTop, ZahraRest).
+  **A8** (2026-10-28, `camp_planes.py fix`): it was the camp picture's own rows under the walk line — a rock and a bush
+  sliced flat by the walk line, a straight vertical cut at x 397 (the edge of the patch under the removed sacks) and half
+  the strip one violet slab. Now sand seen from above at a low angle, from the terrain painter's AI-generated
+  `sand_floor` texture (Qwen-Image), in the camp's 16 colours: light sand at the far edge, violet shadow patches that
+  thicken toward the near edge, pebbles; seamless.
+- `gen_mid.png` A8: the pink horizon scraps left on the stake tips and the pink cloud at the palisade's right end
+  (sky remnants of the cut) are transparent now.
 
 `gen_back.png` is no longer in the scene; it is the source the planes are cut from.
 

@@ -78,6 +78,7 @@ MATERIALS = {
         h=192,
         f=4,
         key="magenta",
+        surface=10,  # колір поверхні — з верхніх 10 px смуги (трава); нижче модель малює фіолетовий мокрий пісок
         prompt="the top edge of oasis ground seen from the side, spanning the full width: a band of short lush green "
         "grass with small reeds, tiny white flowers and clumps of moss along the top, damp dark sand below, filling "
         f"the lower part down to the bottom edge, the empty space above {cb.MAGENTA}",
@@ -87,6 +88,7 @@ MATERIALS = {
         h=192,
         f=4,
         key=None,
+        ragged=0,  # підлога зали: дальній край рівний, без кущиків
         prompt="a side cross-section of a palace floor spanning the full width and filling the frame from top to "
         "bottom: along the top a row of polished cream marble floor tiles with a thin golden inlay line, below them "
         "a band of carved sandstone blocks with a repeating geometric frieze, seen straight on",
@@ -119,13 +121,17 @@ MATERIALS = {
         prompt="a seamless texture of oasis ground seen from above at a low angle, short lush green grass with small "
         "patches of damp sand and tiny white flowers, evenly detailed, it fills the entire image edge to edge",
     ),
+    # A8: «згори під кутом» модель малювала залу з колонами й смугами світла — у смузі підлоги вони ставали блідими
+    # завитками; тепер — сама підлога, сітка плит (смуги світла лишаються, але широкі — їх знімає FLOOR_BLOB). Підказка
+    # «orthographically from directly overhead … uniform diffuse light» дала те саме плюс колону — не краще
     "marble_floor": dict(
-        seed=367,
+        seed=369,
         h=512,
         f=6,
         key=None,
-        prompt="a seamless texture of a palace floor seen from above at a low angle, polished cream marble tiles with "
-        "thin golden inlay lines between them, soft reflections, evenly detailed, it fills the entire image edge to edge",
+        prompt="a seamless texture of a polished marble floor seen straight from above, a regular grid of large square "
+        "cream marble tiles with soft grey veins and thin golden inlay lines between them, flat and evenly lit, evenly "
+        "detailed, the floor fills the entire image edge to edge",
     ),
 }
 # Верх кромки → поверхня над нею.
@@ -152,6 +158,7 @@ NEAR = 12
 FAR_RAGGED = 4  # дальній край нерівний на стільки px
 FLOOR_BLOB = 6  # px: плями поверхні, ширші за це, вирівнюються до середнього кольору
 UNDER, UNDER_DARK = 28, 0.55  # тінь низу уступу: висота (px до повітря знизу) і сила біля самого низу
+CELL, SEAM_BAND, TRIES = 144, 24, 32  # клаптики тіла (quilt): ширина, смуга шва, скільки місць текстури пробувати
 
 
 def generate(layer):
@@ -212,6 +219,43 @@ def run_lengths(solid, axis, reverse, outside):
     return np.moveaxis(out, 0, axis)
 
 
+def quilt(body, ty, solid, rng, f):
+    """A8 (2026-10-28): x-зсув у текстуру тіла для кожного px (колір = body[ty, (x + зсув) % ширина]). Кожні CELL px —
+    клаптик із випадкового місця текстури, шитий із сусіднім по лінії найменшої різниці в смузі SEAM_BAND (image
+    quilting): шари породи тягнуться далі без шва, а повтор через кожні 288 px (пів екрана) зникає. Клаптики беруться
+    лише поза смугою, яку модель перемальовувала на шві матеріалу (comfy_backdrop.seam_pass): там лишався блідий
+    «привид» і розірвані шари на тому самому x кожного періоду."""
+    h, w = solid.shape
+    tw = body.shape[1]
+    lo, hi = -(-(cb.GW // 2 + cb.SEAM) // f), (cb.GW // 2 - cb.SEAM) // f + tw  # чисте вікно, по колу
+    xx = np.arange(w)
+
+    def pick(n):  # початок клаптика в текстурі: клаптик разом зі смугами шва — у чистому вікні
+        return rng.integers(lo + SEAM_BAND // 2, hi - CELL - SEAM_BAND // 2, n)
+
+    left = int(pick(1)[0])
+    off = np.full((h, w), left, np.int32)
+    weight = solid.astype(np.float32)  # у повітрі шов будь-де
+    for xb in range(CELL, w, CELL):
+        x0, x1 = xb - SEAM_BAND // 2, min(xb + SEAM_BAND // 2, w)
+        a = body[ty[:, x0:x1], (xx[x0:x1] + left) % tw]
+        tries = [o - xb for o in pick(TRIES)]
+        errs = [((a - body[ty[:, x0:x1], (xx[x0:x1] + o) % tw]) ** 2).sum(-1) * weight[:, x0:x1] for o in tries]
+        best = int(np.argmin([e.sum() for e in errs]))
+        cost, right = errs[best].copy(), tries[best]
+        for y in range(1, h):  # найдешевша лінія згори донизу через смугу, крок ±1 px на рядок
+            c = cost[y - 1]
+            cost[y] += np.minimum(c, np.minimum(np.r_[np.inf, c[:-1]], np.r_[c[1:], np.inf]))
+        cut = np.empty(h, np.int32)
+        cut[-1] = cost[-1].argmin()
+        for y in range(h - 2, -1, -1):
+            j0 = max(cut[y + 1] - 1, 0)
+            cut[y] = j0 + cost[y, j0 : cut[y + 1] + 2].argmin()
+        off[xx[None, :] >= (x0 + cut)[:, None]] = right
+        left = right
+    return off
+
+
 def flatten(top, opaque):
     """Модель малює землю горбами; кромка ж рівна. Кожен стовпець смуги зсувається так, щоб згладжена (медіана ±12 px —
     без кущиків трави) поверхня стала на одну лінію; кущики лишаються стирчати над нею."""
@@ -258,14 +302,15 @@ def paint(name, body_name, top_name, colors):
 
     body, _ = material(body_name)
     body = np.concatenate(
-        [body, body[::-1]]
-    )  # по вертикалі — дзеркально, шари сходяться
+        [body, body[::-1, ::-1]]
+    )  # по вертикалі — повернуто на 180°: шари сходяться, а косі жили йдуть далі навскіс, не складаються в «ялинку» (A8)
     ox = rng.integers(0, body.shape[1])
     yy, xx = np.mgrid[0:h, 0:w]
-    # повтор текстури ламають хвиля шарів уздовж x і свій зсув для кожного періоду по y
+    # повтор текстури ламають хвиля шарів уздовж x і клаптики зі свого місця текстури (quilt). Зсуву для кожного періоду
+    # по y більше немає: він різав тіло горизонтальним швом, а поворот другого періоду й так не дає повтору рядами
     wave = np.round(noise1d(w, seed + 2, 40.0) * 24).astype(np.int32)[None, :]
-    shift = rng.integers(0, body.shape[1], 64)[(yy + wave) // len(body) % 64]
-    rgb = body[(yy + wave) % len(body), (xx + ox + shift) % body.shape[1]].astype(np.float32)
+    ty = (yy + wave) % len(body)
+    rgb = body[ty, (xx + quilt(body, ty, solid, rng, MATERIALS[body_name]["f"])) % body.shape[1]].astype(np.float32)
 
     # Темнішає з глибиною; під навісами й біля бічних країв — тінь, по краю — контур.
     # глибина розмита вздовж x: інакше під кожною терасою тінь починалась би заново прямокутником
@@ -294,7 +339,10 @@ def paint(name, body_name, top_name, colors):
         floor[green] = floor[green].mean(axis=-1, keepdims=True) * np.array([1.12, 1.0, 0.78])
     # Колір поверхні — у палітрі верху кімнати (модель малює поверхню «згори» холоднішою): середнє й розкид кольору
     # переносяться з непрозорих px смуги верху.
-    tm, ts = top[top_opaque].mean(axis=0), top[top_opaque].std(axis=0)
+    surf = top_opaque
+    if "surface" in MATERIALS[top_name]:  # A8: оаза — колір трави, а не мокрого піску під нею (смуга була сіро-фіолетова)
+        surf = top_opaque & (np.arange(len(top))[:, None] < top_opaque.argmax(axis=0) + MATERIALS[top_name]["surface"])
+    tm, ts = top[surf].mean(axis=0), top[surf].std(axis=0)
     fm, fs = floor.reshape(-1, 3).mean(axis=0), floor.reshape(-1, 3).std(axis=0)
     # один множник на всі канали: окремий на канал зсуває відтінок темних px (червоний у нуль — бірюза)
     floor = np.clip((floor - fm) * (ts.mean() / max(fs.mean(), 1e-3)) * 0.8 + tm, 0, 255)
@@ -307,7 +355,7 @@ def paint(name, body_name, top_name, colors):
     floor = np.clip(floor - blur + floor.reshape(-1, 3).mean(axis=0), 0, 255)
     fh = len(floor)
     edge_y, edge_x = np.nonzero(solid & (down == 1))
-    reach = FAR - np.round(noise1d(w, seed + 3, 6.0) * FAR_RAGGED).astype(np.int32)
+    reach = FAR - np.round(noise1d(w, seed + 3, 6.0) * MATERIALS[top_name].get("ragged", FAR_RAGGED)).astype(np.int32)
     # свій зсув текстури на кожен рядок кромки: уступи один над одним не повторюють ту саму пляму (A7: помаранчева
     # «зірка» поверхні стояла в ущелині на кожному уступі в тому самому x)
     fx = (edge_x + ox + 173 * edge_y) % floor.shape[1]
@@ -332,6 +380,9 @@ def paint(name, body_name, top_name, colors):
     top, top_opaque, ground = flatten(top, top_opaque)
     if MATERIALS[top_name]["key"] == "green":  # облямівка ключа: зеленуваті px — це фон, не трава
         top_opaque = top_opaque & ~(top[..., 1] > top[..., 0] + 20)
+    for r in range(ground - 1, -1, -1):  # A8: лише те, що росте з землі; цятки, що висять у небі над смугою, — геть
+        below = top_opaque[r + 1]
+        top_opaque[r] &= below | np.roll(below, 1) | np.roll(below, -1)
     sx = (edge_x + 37 * edge_y + ox) % top.shape[1]
     for r in range(ground + 1):
         y = edge_y - reach[edge_x] - ground + r

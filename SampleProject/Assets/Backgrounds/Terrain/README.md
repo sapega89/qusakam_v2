@@ -27,5 +27,23 @@ underside of every ledge darkens over its last 28 px (`UNDER`, `UNDER_DARK`), so
 volume and the lower, narrower collision step reads as its shaded underside, not a lighter second plate. The other
 rooms keep their pictures until they are repainted (A8).
 
+**A8 repaint of the seven `*_Terrain.png`** (2026-10-28, D813 «поправити» without a note; before | after
+`design/shots/a8_places.png`): the same masks (`build_terrain.gd -- mask` re-run, byte-identical; DesertRoad's is the D830
+flat road), so every walk line, ledge and one-way edge is painted exactly where it was. All seven get A7's painter, plus:
+
+- **Body quilting** (`quilt()`): the rock/earth texture is 288 px wide — half a screen — and the model's seam repaint left a
+  pale ghost and broken strata at the same x in every period. The body is now stitched from 144-px patches taken from
+  random places outside that seam band, each joined to its neighbour along the least-different line (image quilting), so
+  the strata run on and the repeat is gone. The second vertical period is the texture turned 180° instead of mirrored —
+  a mirror folded the diagonal veins into chevrons — and the per-period x-shift (a horizontal seam) is gone.
+- **LaboratoryOutside**: the oasis floor took its colour from the whole top band, mostly the violet damp sand under the
+  grass, and came out grey-violet; it now takes it from the grass rows (`surface`), and is green.
+- **MayorHall**: the `marble_floor` texture was a hall with columns and light shafts (pale swirls in the floor band); it is
+  regenerated as a plain tile grid (seed 369), and the hall's far edge is straight (`ragged=0`).
+- Specks the model left floating above the top band (tufts not attached to the ground) are dropped.
+
+`Canyon_Gorge.png` is painted by the same run (`paint_terrain.py Canyon`), so its body is quilted too; its ledges and
+surface are A7's. `canyon_depths.png` was left as committed.
+
 `SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png` (the gorge's back wall) is made by the same script from
 the sandstone material.

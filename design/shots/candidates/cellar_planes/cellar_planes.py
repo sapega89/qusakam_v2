@@ -3,6 +3,8 @@
 (comfy_sprite.edit) прибирає й маскує; пікселі планів — з оригіналу gen_back.png, у його 16 кольорах.
   python -B design/shots/candidates/cellar_planes/cellar_planes.py gen    — правки моделі (сирі PNG поруч зі скриптом)
   python -B design/shots/candidates/cellar_planes/cellar_planes.py build  — (scipy) плани в SampleProject/Assets/Backgrounds/Cellar/
+  python -B design/shots/candidates/cellar_planes/cellar_planes.py arch   — A8: вхід у підвал (CityGates/CellarArch) у gen_back.png;
+    після нього build різав би арку вже порожньою — плани різано до A8
 Плани: gen_far (×0.5, глуха цегляна стіна за арками, дзеркально), gen_mid (×0.8, арки, колони, бочки, ящики; отвори
 арок прозорі), gen_stairs і gen_lantern (×0.9, по одному на кімнату), gen_floor (×1.0, рядок 0 — лінія ходьби y 416),
 gen_column (передній план ×1.3 замість чорної смуги fg_pillar: колона з капітеллю з цього ж фону).
@@ -237,5 +239,40 @@ def build():
     print("column", col.shape[1], col.shape[0], flush=True)
 
 
+# A8 (2026-10-28, «поправити» без примітки): CityGates/CellarArch показує шматок gen_back.png (region 300, 40, 150 × 170)
+# як вхід у підвал — а в тій арці висіли павутина й гніздо кажанів і стояли пляшки на ящику, зрізаному низом кадру:
+# не вхід, а вирізка з комори. Тепер отвір арки порожній і темний, знизу — тепле світло ліхтаря зі сходів униз.
+ARCH = (385, 108, 55, 61)  # центр отвору x, рядок п'ят арки, пів ширини отвору, висота склепіння над п'ятами
+GLOW = [(54, 33, 78), (85, 39, 57), (145, 75, 60), (209, 108, 86)]  # кольори фону, від краю світла до серця
+DARK = (26, 11, 42)
+WEB = [(180, 171, 201), (154, 132, 166)]  # павутина
+NEST = [(209, 108, 86), (223, 146, 111), (231, 166, 136), (145, 75, 60)]  # гніздо (праворуч; ліворуч цим світиться цегла)
+
+
+def arch():
+    from scipy import ndimage
+
+    o = np.asarray(Image.open(SRC).convert("RGBA")).copy()
+    cx, y0, a, b = ARCH
+    ys, xs = np.mgrid[:H, :W]
+    u = (xs - cx) / a
+    vault = (np.abs(u) < 1) & (ys >= y0 - b * np.sqrt(np.clip(1 - u**2, 0, 1))) & (ys < 215)
+    # кінці павутини й гнізда, що лягли на цеглу по краю отвору, — кольором цегли навколо
+    rgb = o[..., :3]
+    stray = ndimage.binary_dilation(vault, iterations=8) & ~vault
+    stray &= np.isin(rgb, WEB).all(-1) | (np.isin(rgb, NEST).all(-1) & (xs > cx))
+    for y, x in zip(*np.nonzero(stray)):
+        win = rgb[y - 3 : y + 4, x - 3 : x + 4].reshape(-1, 3)
+        ok = win[~stray[y - 3 : y + 4, x - 3 : x + 4].reshape(-1) & ~vault[y - 3 : y + 4, x - 3 : x + 4].reshape(-1)]
+        cols, n = np.unique(ok, axis=0, return_counts=True)
+        rgb[y, x] = cols[n.argmax()]
+    rgb[vault] = DARK
+    for i, c in enumerate(GLOW):  # світло знизу, з-під підлоги, смугами, як ліхтар у фоні; видно лише верхні смуги —
+        r = 1 - i / len(GLOW)  # нижче рядка 173 арку закриває смуга підлоги кімнати
+        rgb[vault & (((xs - cx) / (a * r)) ** 2 + ((ys - 214) / (90 * r)) ** 2 < 1)] = c
+    Image.fromarray(o).save(SRC)
+    print("arch cleared", flush=True)
+
+
 if __name__ == "__main__":
-    {"gen": gen, "build": build}[sys.argv[1]]()
+    {"gen": gen, "build": build, "arch": arch}[sys.argv[1]]()
