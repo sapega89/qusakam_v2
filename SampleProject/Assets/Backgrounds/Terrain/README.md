@@ -47,3 +47,7 @@ surface are A7's. `canyon_depths.png` was left as committed.
 
 `SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png` (the gorge's back wall) is made by the same script from
 the sandstone material.
+
+**Tilesets (A7 item 7, 2026-10-28):** `Sprites/DesertTiles.png` and `Sprites/DarkTiles.png` are repainted from
+`Canyon_Terrain.png` (body, sand surface) and `MayorHall_Terrain.png` (cut blocks) by `Scripts/Tools/repaint_tiles.py`
+— they inherit these pictures' AI-generated materials. Details: `Assets/Backgrounds/DesertOasis/README.md` → «Desert floor tiles».
