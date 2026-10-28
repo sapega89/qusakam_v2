@@ -4,7 +4,8 @@ extends SceneTree
 ## окремо в <тека> і одна сітка 4 × N (кожен кадр — екран, зменшений учетверо). Потрібне вікно:
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_prop_sizes.gd -- design/shots/prop_sizes design/shots/prop_sizes_after.png
 ## Третій аргумент wire_props — кадри A13 (реквізит табору, льоху й дому старійшини окремими спрайтами), fg_scrub
-## 2:1 (B191) і спори CollapsedDrain поза гратами.
+## 2:1 (B191) і спори CollapsedDrain поза гратами. Четвертий (необов'язковий) — назви кадрів через кому, лише вони:
+##   ... -- design/shots/d916 design/shots/d916.png wire_props camp_west,elder_house
 
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## [кімната, де стоїть герой, назва кадру]
@@ -50,6 +51,9 @@ func _initialize() -> void:
 	game.player.set_invulnerable(true)
 	var args := OS.get_cmdline_user_args()
 	var shots: Array = WIRE_PROPS if args.size() > 2 and args[2] == "wire_props" else SHOTS
+	if args.size() > 3:
+		var only: PackedStringArray = args[3].split(",")
+		shots = shots.filter(func(s: Array) -> bool: return only.has(s[2]))
 	var rows := (shots.size() + 3) / 4
 	var sheet := Image.create(CELL.x * 4, CELL.y * rows, false, Image.FORMAT_RGBA8)
 	for i in shots.size():

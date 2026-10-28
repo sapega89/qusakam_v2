@@ -77,7 +77,7 @@ offset = Vector2(-10.5, -26)
 
 [node name="CrateL" type="Sprite2D" parent="Back/Mid"]
 texture_filter = 1
-position = Vector2(499.5, 315)
+position = Vector2(520.25, 324)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("a2")
 centered = false
@@ -85,7 +85,7 @@ offset = Vector2(-13.5, -26)
 
 [node name="CrateR" type="Sprite2D" parent="Back/Mid"]
 texture_filter = 1
-position = Vector2(609, 331.5)
+position = Vector2(560.75, 324)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("a2")
 centered = false
@@ -93,7 +93,7 @@ offset = Vector2(-13.5, -26)
 
 [node name="CrateTop" type="Sprite2D" parent="Back/Mid"]
 texture_filter = 1
-position = Vector2(570, 283.5)
+position = Vector2(540.5, 285)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("a2")
 centered = false

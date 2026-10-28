@@ -25,7 +25,7 @@ chart's sack–pot row, on the ×1.0 wall). Wire as `Sprite2D` children of the r
 
 | File | Size (art) | Feet `position` | Was |
 |---|---|---|---|
-| `prop_amphora.png` | 13×24 | (291, 870.5) | the tall jar beside the hearth |
+| `prop_amphora.png` | 13×24 | (291, 864) | the tall jar beside the hearth; feet on the floor line (D916, B211; was 870.5, its bottom 6.5 px under `Floor`) |
 | `prop_pot.png` | 25×24 | (580.5, 822.5) | the big pot on the right bench |
 | `prop_pot.png` | 25×24 | (634.5, 822.5) | the small pot beside it (flip_h) |
 

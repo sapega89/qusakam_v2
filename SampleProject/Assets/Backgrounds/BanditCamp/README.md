@@ -49,9 +49,9 @@ child of the named plane, `texture_filter = 1`, `scale = (1.5, 1.5)`, `centered 
 | File | Size (art) | Plane | Feet `position` | Was |
 |---|---|---|---|---|
 | `prop_barrel.png` | 21×26 | `Back/Mid` (×0.8) | (114, 297) | the barrel by the palisade |
-| `prop_crate.png` | 27×26 | `Back/Mid` | (499.5, 315) | crate stack, front left |
-| `prop_crate.png` | 27×26 | `Back/Mid` | (609, 331.5) | crate stack, front right |
-| `prop_crate.png` | 27×26 | `Back/Mid` | (570, 283.5) | crate stack, on top of the two |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (520.25, 324) | crate stack, bottom left (D916) |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (560.75, 324) | crate stack, bottom right, touching the left one (D916) |
+| `prop_crate.png` | 27×26 | `Back/Mid` | (540.5, 285) | crate stack, on top of the two, 39 px higher (D916) |
 | `prop_sack.png` | 14×19 | `Back/Mid` | (678, 324) | the sack at the tent's foot |
 | `prop_sack_near.png` | 17×21 | `Back/Props` (×0.9) | (340.5, 420.5) | `gen_sacks` left sack |
 | `prop_barrel_near.png` | 24×29 | `Back/Props` | (427.5, 420.5) | `gen_sacks` barrel |
@@ -59,3 +59,7 @@ child of the named plane, `texture_filter = 1`, `scale = (1.5, 1.5)`, `centered 
 
 **Wired 2026-10-28** (B189): the eight sprites above are `Back/Mid/{Barrel,CrateL,CrateR,CrateTop,Sack}` and
 `Back/Props/{SackL,Barrel,SackR}`; `Back/Props/Sprite` and `gen_sacks.png` are gone. `Back/Mid` repeats every 864 px, so its props repeat with it.
+
+**D916 (B210), 2026-10-28:** the crates kept the feet of the old ~2× stack and stood apart at chart size (the top
+one hung on the tent). Now a stack: two crates touching side by side (x 500–581), the third on top, all on the
+sand in front of the striped tent (feet y 324, the sack's line).

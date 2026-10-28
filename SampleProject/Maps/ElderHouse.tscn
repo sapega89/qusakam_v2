@@ -64,7 +64,7 @@ centered = false
 [node name="Amphora" type="Sprite2D" parent="."]
 z_index = -9
 texture_filter = 1
-position = Vector2(291, 870.5)
+position = Vector2(291, 864)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("3_amphora")
 centered = false
