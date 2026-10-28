@@ -1540,9 +1540,6 @@ msgstr "Tutorial hint goes here..."
 msgid "Combat Zone"
 msgstr "Combat Zone"
 
-msgid "Press D to toggle delta vector"
-msgstr "Press D to toggle delta vector"
-
 msgid "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
 msgstr "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
 

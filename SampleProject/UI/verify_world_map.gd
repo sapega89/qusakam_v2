@@ -286,6 +286,24 @@ func _initialize() -> void:
 	ck(map2.get_node("%Pins").get_child_count() == LocationDB.all().size() and map2.level == WORLD, "map rebuilds on reopen")
 	ui.close_game_menu()
 	for i in 5: await process_frame
+
+	print("[19] the M map (Game UI/MapWindow) has no MetSys sample debug UI (B205)")
+	var map_window: Control = current_scene.get_node(^"UI/MapWindow")
+	ck(map_window.find_children("*", "Label", true, false).is_empty(), "no label: neither «Press D to toggle delta vector» nor the «0%» counter")
+	ck(map_window.get_node_or_null(^"TopDraw") == null and map_window.get_node_or_null(^"Percent") == null, "no TopDraw / Percent nodes")
+	ck(not ("show_delta" in map_window) and not map_window.has_method(&"reset_starting_coords"), "no delta-vector state or reset hook")
+	_key(KEY_M, true)
+	_key(KEY_M, false)
+	for i in 3: await process_frame
+	ck(map_window.visible and map_window.map_view != null, "M still opens the map with its MetSys grid")
+	_key(KEY_D, true)
+	_key(KEY_D, false)
+	for i in 3: await process_frame
+	ck(map_window.visible and map_window.find_children("*", "Label", true, false).is_empty(), "D does nothing on the open map")
+	_key(KEY_M, true)
+	_key(KEY_M, false)
+	for i in 3: await process_frame
+	ck(not map_window.visible and current_scene.get_node(^"%Player").process_mode == Node.PROCESS_MODE_INHERIT, "M closes it and frees the hero")
 	_done()
 
 

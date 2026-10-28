@@ -278,5 +278,28 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 	ck(not dm.is_dialogue_active(), "a picked choice ends the test dialogue")
 
-	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
+	print("[5] A monologue line does not survive a room change (B206: «Hey, wind…» rode into DesertRoad)")
+	await _drain(dm)
+	var bubbles := func() -> int:
+		return player.get_children().filter(func(n: Node) -> bool:
+			return n.get_script() != null and n.get_script().resource_path.ends_with("speech_bubble.gd")).size()
+	dm.bubble_time_scale = 1.0  # репліка висить справжні секунди
+	dm.start_dialogue("res://dialogue_quest/Canyon_Intro.dqd")
+	for i in 3: await process_frame
+	ck(dm.is_bubble_playing() and bubbles.call() == 1 and player.event, "the Canyon intro plays in a bubble over the hero")
+	await game.load_room("res://SampleProject/Maps/DesertRoad.tscn")
+	for i in 5: await process_frame
+	ck(game.map.scene_file_path.ends_with("DesertRoad.tscn"), "the room changed to DesertRoad")
+	ck(bubbles.call() == 0, "no bubble over the hero in the new room")
+	ck(not dm.is_bubble_playing() and not dm.is_story_busy(), "the monologue is over for the dialogue manager")
+	ck(not player.event, "the hero is free in the new room")
+	dm.start_dialogue("res://dialogue_quest/LeavingVillage.dqd")
+	for i in 3: await process_frame
+	ck(dm.is_bubble_playing() and bubbles.call() == 1, "the next monologue plays in the new room")
+	dm.bubble_time_scale = 0.0
+	await _until(func() -> bool: return not dm.is_bubble_playing(), 30.0)
+	for i in 3: await process_frame
+	ck(not dm.is_bubble_playing() and bubbles.call() == 0, "and ends normally")
+
+	print("RESULT:" + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit(0 if fails.is_empty() else 1)
