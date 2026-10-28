@@ -87,6 +87,15 @@ func _cast(skill_id: String) -> int:
 		await physics_frame
 	return result
 
+## Струмінь крові Blood Rush (MoveSkill.tscn → Drain): видно — відстань його правого кінця від [param target], px; ні — INF.
+func _drain_gap(target: Node) -> float:
+	for child in player.get_children():
+		if child.get_script() != null and child.get_script().resource_path.ends_with("MoveSkillFX.gd"):
+			var drain: AnimatedSprite2D = child.get_node("Drain")
+			if drain.visible:
+				return drain.to_global(Vector2(drain.sprite_frames.get_frame_texture(&"default", 0).get_width(), 0)).distance_to(target.global_position)
+	return INF
+
 func _hurt(enemy: Node) -> int:
 	return enemy.Max_Health - enemy.current_health
 
@@ -176,7 +185,13 @@ func _initialize() -> void:
 	var deficit: int = player.Max_Health / 2
 	player.current_health = player.Max_Health - deficit
 	var damage: int = sm.skill_damage("blood_rush")
+	var drains: Array = []
+	var on_drain := func(_source: Node, target: Node, _amount: int) -> void:
+		(func() -> void: drains.append(_drain_gap(target))).call_deferred()
+	root.get_node("EventBus").skill_drained.connect(on_drain)
 	ck(await _cast("blood_rush") == R.OK and _hurt(first) > 0, "cast and hit (%d)" % _hurt(first))
+	root.get_node("EventBus").skill_drained.disconnect(on_drain)
+	ck(drains.size() == 1 and drains[0] <= 2.0, "the drain wisp (H3) runs from the target to the hero, its far end %s px from the target" % [drains])
 	ck(player.current_health == player.Max_Health - deficit + roundi(damage * 0.3), "healed %d of %d damage" % [player.current_health - (player.Max_Health - deficit), damage])
 	player.current_health = player.Max_Health
 	await _clear([first])
