@@ -20,5 +20,7 @@ say|ALISIA|I will.
 branch|end
 say|KUSAKAM|Kusakam. I'm looking for my family's relic — and the ones who stole it.
 say|MALIK|Malik, a humble merchant. Get me out of here, and at my humble place every one of you gets gold. Lots of gold.
+// [DRAFT] D772 — a hint at Malik's stash (MalikStash, the slab in his cell).
+say|MALIK|And if they cut my throat in here — there's something under the loose slab in my cell. Shame to let it go to waste.
 say|MALIK|Alright — come with me!
 exit|
