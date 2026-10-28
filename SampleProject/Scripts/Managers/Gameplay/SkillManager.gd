@@ -223,6 +223,11 @@ func _skill_factor(skill_id: String, rank: int) -> float:
 	return skill_database.get_skill(skill_id).rank_factor(at_rank) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
 
 
+## D-sv2cb1: множник часів контролю (ланцюг, пісок, страх) — ранг × Wisdom × синергії, як у ушкодження.
+func control_factor(skill_id: String) -> float:
+	return _skill_factor(skill_id, -1)
+
+
 ## D496: синергії — сума per_rank × ранг кожної пасивки-джерела (не вивчена — 0).
 func synergy_bonus(skill_id: String) -> float:
 	var total := 0.0
@@ -868,7 +873,8 @@ func cast_skill(skill_id: String) -> Result:
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
 	var player: Node = _default_source()
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
-	if definition.damage > 0 and not definition.moves() and SkillTargeting.enemies_in_front(player).is_empty():
+	# Навичка зони (D-sv2cb1) — ціль у своїй зоні: спалах і виття — навколо, ланцюг — далі за удар
+	if (definition.damage > 0 or definition.controls()) and not definition.moves() and SkillTargeting.skill_targets(definition, player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
 		return _fail(skill_id, Result.BUSY)
@@ -894,8 +900,18 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 
 	var effect_source: Node = source if source != null else _default_source()
 
+	# D-sv2cb1: контроль без ушкодження (Sand Veil, Dread Howl) — лише стан на кожного в зоні; нікого — нічого не коштує
+	if definition.damage <= 0 and definition.controls():
+		var held: Array[Node] = SkillTargeting.skill_targets(definition, effect_source)
+		if target != null:
+			held = [target]
+		if held.is_empty():
+			return _fail(skill_id, Result.NO_TARGET)
+		for each in held:
+			combat_executor.apply_control(definition, effect_source, each, control_factor(skill_id))
 	# Ефект виконуємо до списання SP, щоб невдале застосування нічого не коштувало.
 	# Без явної цілі (хотбар) — ціль за D142: усе перед героєм / союзник поруч або сам герой.
+	var sp_back := 0
 	if definition.damage > 0:
 		var targets: Array[Node] = []
 		if target != null:
@@ -911,10 +927,16 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		var amount := skill_damage(skill_id)
 		_skill_effect_running = true
 		for each in targets:
+			var reaped := combat_executor.reaps(definition, each)  # D-sv2cb1: до удару — поріг HP на момент удару
 			if combat_executor.execute(definition, effect_source, each, amount):
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
 				combat_executor.apply_move_riders(definition, effect_source, each, amount)
+				if definition.controls():
+					combat_executor.apply_control(definition, effect_source, each, control_factor(skill_id))
+				if reaped:
+					combat_executor.reap(each)
+					sp_back += definition.execute_refund
 		if not hit:
 			_skill_effect_running = false
 			return _fail(skill_id, Result.EFFECT_FAILED)
@@ -930,6 +952,7 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 			return _fail(skill_id, Result.EFFECT_FAILED)
 
 	_pay(definition)
+	restore_sp(sp_back)  # D-sv2cb1: Soul Harvest повертає SP за кожного добитого — після ціни, щоб не впертися в максимум
 	_since["after_skill"] = 0.0
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK

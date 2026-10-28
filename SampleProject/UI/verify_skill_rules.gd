@@ -309,8 +309,16 @@ func _initialize() -> void:
 
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	# v2 зріз 3 (D812) збудував 6 навичок руху — запланованих лишилось 22
-	ck(planned.size() == 22 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "22 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D812) збудував 6 навичок руху, зріз 6б (D-sv2cb1) — 6 навичок контролю й добивання: запланованих лишилось 16
+	ck(planned.size() == 16 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "16 planned actives, all [DRAFT] (%d)" % planned.size())
+	var control_b_built := true
+	for id in ["chain_of_night", "sand_veil", "dread_howl", "radiant_flare", "night_reaper", "soul_harvest"]:
+		var cb = db.get_skill(id)
+		if cb.planned or cb.vfx.get_file() != "ControlSkill.tscn" or not cb.synergies.size() in [1, 2] \
+				or not (cb.controls() or cb.area_hits != "" or cb.execute_below > 0.0):
+			control_b_built = false
+			print("    not built: ", id)
+	ck(control_b_built, "the 6 control and finisher skills of slice 6b are built: learnable, a cast, an effect, synergies and their keys")
 	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
 	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
 			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),

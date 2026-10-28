@@ -51,6 +51,12 @@ func _initialize() -> void:
 	# спільний за Assets/FX/README.md; решта кадрів навички руху — її власні, як у всіх (D279)
 	var move_layer: Dictionary = {}
 	for skill in actives:
+		# v2 зріз 6б (D-sv2cb1): навички контролю й добивання позичають кадри навичок клятв (ControlSkillFX.BORROW), доки
+		# арт-лінія не намалює їхні; перевірка «свої кадри» (D279) для них прийде з артом
+		if skill.vfx.get_file() == "ControlSkill.tscn":
+			var lender: String = load("res://SampleProject/Scripts/FX/ControlSkillFX.gd").BORROW[skill.id][0]
+			ck(lender in OATH_ACTIVES, "%s: borrows %s's frames until its art lands" % [skill.id, lender])
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

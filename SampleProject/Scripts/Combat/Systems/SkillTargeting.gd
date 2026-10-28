@@ -50,12 +50,47 @@ static func enemies_around(player: Node2D, reach: float) -> Array[Node]:
 
 ## Кого б'є навичка без явної цілі: навичка руху — за move_hits, решта — усі перед героєм (D142).
 static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	if definition.area_hits != "":
+		return area_targets(definition, player)
 	match definition.move_hits:
 		"first":
 			return first_in_front(player)
 		"around":
 			return enemies_around(player, definition.move_reach)
 	return enemies_in_front(player)
+
+
+## Зона навички без руху (D-sv2cb1): area_hits у area_reach px від тіла героя — найближчий перед ним (ланцюг),
+## усі перед ним (пісок, серп) або всі навколо (спалах, виття).
+static func area_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	match definition.area_hits:
+		"first":
+			return _nearest(player, enemies_ahead(player, definition.area_reach))
+		"front":
+			return enemies_ahead(player, definition.area_reach)
+	return enemies_around(player, definition.area_reach)
+
+
+## Живі вороги, чия зона-ціль у [param reach] px перед тілом героя (у бік погляду), на висоті його тіла.
+static func enemies_ahead(player: Node2D, reach: float) -> Array[Node]:
+	var body: Rect2 = player.body_rect()
+	var ahead: int = player.last_direction
+	var area := body.grow_individual(reach if ahead < 0 else 0.0, 0.0, reach if ahead > 0 else 0.0, 0.0)
+	var out: Array[Node] = []
+	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy.is_alive() and area.intersects(enemy.hurt_rect()):
+			out.append(enemy)
+	return out
+
+
+## Найближчий до героя з [param enemies], або порожньо.
+static func _nearest(player: Node2D, enemies: Array[Node]) -> Array[Node]:
+	var out: Array[Node] = []
+	for enemy in enemies:
+		if out.is_empty() or absf(enemy.global_position.x - player.global_position.x) < absf(out[0].global_position.x - player.global_position.x):
+			out.clear()
+			out.append(enemy)
+	return out
 
 
 ## Ланцюг (D207): найближчий живий ворог у [param radius] від [param from], крім уже вражених.

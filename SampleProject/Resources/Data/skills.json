@@ -37,7 +37,12 @@
       "move": "{kind: dash | leap, distance: px, time: s (dash), height: px (leap), hits: first | front | around, reach: px (around)} - the hero moves between wind-up and strike (v2 slice 3, D812): a dash pushes forward (bodies block, D443) and, with hits first, strikes as soon as an enemy is in strike reach; with hits front it runs its whole time into the body; a leap lands before the first enemy ahead, never behind it, and strikes on landing; first = the nearest enemy in front, front = all in front (D142), around = all within reach px on both sides. Starts without an enemy in front, from the ground only; a whiff costs its SP",
       "knockback": "px >= 0 - pushes each hit enemy away from the hero (like a mace, D203)",
       "lifesteal": "0..1 - that share of the skill's damage heals the hero",
-      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move"
+      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move",
+      "area": "{hits: first | front | around, reach: px} - a skill's zone without moving (v2 slice 6b, D-sv2cb1): first = the nearest enemy ahead within reach px of the hero's body (Chain of Night), front = every enemy ahead within reach (Sand Veil, Night Reaper), around = every enemy within reach on both sides (Dread Howl, Radiant Flare); no area = the strike zone (D142). The cast needs someone in the zone; control times (pull, blind, fear) grow with rank and synergies like damage",
+      "pull": "{hold: s} - Chain of Night: pulls the target to the hero's body and holds it in a stagger (D264) for hold s; a boss is neither pulled nor held",
+      "blind": "{time: s, miss: 0..1} - Sand Veil: for time s the enemy loses the hero beyond its own strike reach (no chase, no going to where it saw him, a wind-up on him breaks), and each of its swings misses with chance miss",
+      "fear": "{time: s, flinch: s} - Dread Howl: everyone in the zone staggers for flinch s; the weak (not elite, not a boss) then flee from the hero for time s",
+      "execute": "{below: 0..1, sp_refund: int} - Soul Harvest: a target at or below that HP share, or whose shield just broke and still staggers (D495), dies from the blow and gives sp_refund SP back; a boss is not executed, and above the threshold it is a plain hit"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -2086,7 +2091,7 @@
       "id": "radiant_flare",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/radiant_flare.png",
       "name": "Radiant Flare [DRAFT]",
-      "description": "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]",
+      "description": "A flash that dazes every enemy around you. [DRAFT]",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",
@@ -2100,7 +2105,6 @@
       "prerequisites": [
         "lightspear"
       ],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
       "damage": 40,
@@ -2109,9 +2113,27 @@
         "elem": 2.0
       },
       "stun": 1.2,
-      "draft": {
-        "radius_px": 200
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.3,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "area": {
+        "hits": "around",
+        "reach": 200
+      },
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "consecrated_ground",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         1,
@@ -2205,7 +2227,7 @@
       "id": "chain_of_night",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/chain_of_night.png",
       "name": "Chain of Night [DRAFT]",
-      "description": "A dark chain pulls one enemy to you. [DRAFT]",
+      "description": "A dark chain pulls the nearest enemy ahead to you and holds it. [DRAFT]",
       "class_id": "",
       "oath": "dark_knight",
       "skill_type": "active",
@@ -2217,7 +2239,6 @@
       },
       "required_level": 8,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
       "damage": 36,
@@ -2225,9 +2246,30 @@
         "phys": 2.4,
         "elem": 0.8
       },
-      "draft": {
-        "range_px": 420
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "area": {
+        "hits": "first",
+        "reach": 420
+      },
+      "pull": {
+        "hold": 1.5
+      },
+      "synergies": [
+        {
+          "skill": "relentless",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dark_riposte",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         3,
@@ -2284,7 +2326,6 @@
       "prerequisites": [
         "searing_hex"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
       "damage": 88,
@@ -2296,9 +2337,27 @@
         "dps": 4,
         "duration": 2.0
       },
-      "draft": {
-        "width_px": 260
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "area": {
+        "hits": "front",
+        "reach": 260
+      },
+      "synergies": [
+        {
+          "skill": "embers_within",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "cruel_momentum",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         0,
@@ -2321,14 +2380,29 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "radius_px": 220,
-        "fear_s": 2.0,
-        "flinch_s": 0.4
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.35,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "area": {
+        "hits": "around",
+        "reach": 220
+      },
+      "fear": {
+        "time": 2.0,
+        "flinch": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.06
+        }
+      ],
       "base_jp": 6,
       "slot": [
         2,
@@ -2390,7 +2464,6 @@
       "prerequisites": [
         "blood_rush"
       ],
-      "planned": true,
       "sp_cost": 14,
       "cooldown": 0.0,
       "damage": 140,
@@ -2398,10 +2471,27 @@
         "phys": 7.0,
         "elem": 1.2
       },
-      "draft": {
-        "hp_threshold": 0.2,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.45,
+        "release": 0.3,
+        "pose": "CastFire"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "execute": {
+        "below": 0.2,
         "sp_refund": 10
       },
+      "synergies": [
+        {
+          "skill": "desperate_hunger",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "crimson_thirst",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         3,
@@ -2495,7 +2585,7 @@
       "id": "sand_veil",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/sand_veil.png",
       "name": "Sand Veil [DRAFT]",
-      "description": "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]",
+      "description": "Sand in the eyes: enemies in front of you lose you and often miss for a few seconds. [DRAFT]",
       "class_id": "",
       "oath": "warden",
       "skill_type": "active",
@@ -2507,14 +2597,33 @@
       },
       "required_level": 8,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
-      "draft": {
-        "cone_px": 180,
-        "blind_s": 3.0,
-        "miss_chance": 0.6
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "area": {
+        "hits": "front",
+        "reach": 180
+      },
+      "blind": {
+        "time": 3.0,
+        "miss": 0.6
+      },
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "light_feet",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         2,

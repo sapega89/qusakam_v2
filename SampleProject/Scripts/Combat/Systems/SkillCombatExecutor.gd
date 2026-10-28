@@ -53,6 +53,56 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 		EventBus.skill_drained.emit(source, target, drained)
 
 
+# ── Контроль і добивання (D-sv2cb1) ───────────────────────────────────────
+
+## Ланцюг тягне ціль за стільки с.
+const PULL_TIME := 0.2
+## Ціль ланцюга стає за стільки px від тіла героя.
+const PULL_GAP := 8.0
+
+
+## Ланцюг, пісок чи страх на ціль [param target] від героя [param source]; часи — × [param factor] (ранг, синергії).
+func apply_control(definition: SkillDefinition, source: Node2D, target: Node2D, factor: float) -> void:
+	if definition.pull_hold > 0.0:
+		pull(target, source, definition.pull_hold * factor)
+	if definition.blind_time > 0.0:
+		target.enemy_logic.blind(definition.blind_time * factor, definition.blind_miss)
+	if definition.fear_flinch > 0.0:
+		target.stagger(definition.fear_flinch, source.global_position.x)
+		if definition.fear_time > 0.0 and not strong(target):
+			target.enemy_logic.fear(definition.fear_time * factor)
+
+
+## Ланцюг (Chain of Night): ціль летить до героя за PULL_TIME і стоїть у збої [param hold] с. Бос (його не відкидає, B134) — ні.
+func pull(target: Node2D, source: Node2D, hold: float) -> void:
+	if target.knockback_immune:
+		return
+	var body: Rect2 = source.body_rect()
+	var other: Rect2 = target.body_rect()
+	var gap := other.position.x - body.end.x if other.position.x >= body.end.x else body.position.x - other.end.x
+	var toward := signf(source.global_position.x - target.global_position.x)
+	target.enemy_logic.start_knockback(toward * maxf(0.0, gap - PULL_GAP), true, PULL_TIME)
+	target.enemy_logic.stagger(hold)  # тикає після ривка ланцюга (EnemyLogic.process_ai: спершу відкидання)
+
+
+## Еліта й бос не тікають від виття — лише здригаються.
+static func strong(target: Node2D) -> bool:
+	return target.elite or target.knockback_immune
+
+
+## Soul Harvest: чи добиває цю ціль — HP не вище execute_below або щит розбито й ворог ще в збої (D495). Бос — ні.
+func reaps(definition: SkillDefinition, target: Node2D) -> bool:
+	if definition.execute_below <= 0.0 or target.knockback_immune:
+		return false
+	return target.get_health_percentage() <= definition.execute_below or target.guard_broken()
+
+
+## Добиває ціль, що пережила удар: решта HP — повз броню й щит, тим самим джерелом (досвід, D297).
+func reap(target: Node2D) -> void:
+	if target.is_alive():
+		target.register_damage(target.get_current_health())
+
+
 # ── Рух (D812) ─────────────────────────────────────────────────────────────
 ## Герой рухається тілом (PlayerMover.push і гравітація), тож тіла ворогів зупиняють його самі (D443): ривок
 ## спиняється, щойно перший ворог у досяжності удару; стрибок не летить далі за першого ворога попереду — за спину
