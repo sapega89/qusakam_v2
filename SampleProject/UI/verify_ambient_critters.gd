@@ -30,7 +30,8 @@ const GRASS_ART := 16
 ## Хто де живе (R2, Sapega 2026-10-27): кімната → {сцена: скільки}.
 const LIVES := {
 	"Canyon": {"critter_bird": 2, "critter_butterfly": 1},
-	"Village": {"critter_bird": 2, "critter_butterfly": 2},
+	# Village: село згоріло (D796) — ні жайворонків, ні метеликів, у повітрі жар.
+	"Village": {},
 	"DesertRoad": {"critter_bird": 3, "critter_butterfly": 2},
 	"CityGates": {"critter_bird": 2},
 	"City": {"critter_pigeon": 3},
@@ -43,7 +44,7 @@ const LIVES := {
 }
 ## Атмосфера кожної кімнати (m6_backdrops «Every room has atmosphere»); Canyon — еталонні вихори пилу Decor/Dust*.
 const AIR := {
-	"Canyon": ["dust"], "Village": ["atmo_pollen"], "DesertRoad": ["atmo_pollen", "dust"], "CityGates": ["atmo_pollen"],
+	"Canyon": ["dust"], "Village": ["atmo_embers"], "DesertRoad": ["atmo_pollen", "dust"], "CityGates": ["atmo_pollen"],
 	"City": ["atmo_pollen"], "LaboratoryOutside": ["atmo_pollen"], "BanditCamp": ["atmo_pollen"], "MesaClimb": ["atmo_pollen"],
 	"LizardCave": ["atmo_fireflies"], "DragonMural": ["atmo_spores"], "GatehouseCellar": ["atmo_spores"],
 	"ElderHouse": ["atmo_light_shaft"], "MayorHall": ["atmo_light_shaft"], "LabCells": ["atmo_steam"],

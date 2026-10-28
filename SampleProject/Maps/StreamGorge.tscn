@@ -1,68 +1,111 @@
 [gd_scene format=3 uid="uid://csno4kkf1ix4n"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_far.png" id="w1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_mid.png" id="w2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_ground.png" id="w3"]
-[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w4"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w5"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/DesertOasis/bg4/plan5.png" id="w1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_barrier.png" id="w2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/drifting_clouds.tscn" id="w3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_far.png" id="w4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_plume.png" id="w5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_mid.png" id="w6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_ground.png" id="w7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w8"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_front.png" id="w9"]
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w10"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w11"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w12"]
 
 [node name="StreamGorge" type="Node2D"]
 
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Sky" type="Polygon2D" parent="Back"]
-color = Color(0.56, 0.74, 0.9, 1)
-polygon = PackedVector2Array(-864, -480, 3456, -480, 3456, 480, -864, 480)
+[node name="Sky" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0, 0)
 
-[node name="Far" type="Parallax2D" parent="Back"]
-scroll_scale = Vector2(0.3, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 5
-
-[node name="Sprite1" type="Sprite2D" parent="Back/Far"]
+[node name="Sprite" type="Sprite2D" parent="Back/Sky"]
 texture_filter = 1
-position = Vector2(0, -3)
+position = Vector2(528, 297)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w1")
 centered = false
 
-[node name="Mid" type="Parallax2D" parent="Back"]
-scroll_scale = Vector2(0.75, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 5
+[node name="Barrier" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0.1, 0.1)
 
-[node name="Sprite1" type="Sprite2D" parent="Back/Mid"]
+[node name="Sprite" type="Sprite2D" parent="Back/Barrier"]
 texture_filter = 1
-position = Vector2(0, -3)
+position = Vector2(388.5, 193.3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w2")
+centered = false
+
+[node name="DriftingClouds" parent="Back" instance=ExtResource("w3")]
+
+[node name="Far" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0.3, 0.3)
+repeat_size = Vector2(864, 0)
+repeat_times = 6
+
+[node name="Sprite" type="Sprite2D" parent="Back/Far"]
+texture_filter = 1
+position = Vector2(-408, 31.9)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w4")
+centered = false
+
+[node name="Plume" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0.35, 0.35)
+
+[node name="Sprite" type="Sprite2D" parent="Back/Plume"]
+texture_filter = 1
+position = Vector2(903, 128.1)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w5")
+centered = false
+
+[node name="Mid" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0.75, 0.75)
+
+[node name="Sprite" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(132, 30.2)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w6")
 centered = false
 
 [node name="Ground" type="Node2D" parent="."]
 z_index = -9
 
-[node name="Fill1" type="Polygon2D" parent="Ground"]
-color = Color(0.29, 0.2, 0.16, 1)
-polygon = PackedVector2Array(0, 408, 2592, 408, 2592, 480, 0, 480)
-
-[node name="Floor1" type="Sprite2D" parent="Ground"]
+[node name="Ground" type="Sprite2D" parent="Ground"]
 texture_filter = 1
-texture_repeat = 2
-position = Vector2(0, 384)
+position = Vector2(0, 343)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("w3")
+texture = ExtResource("w7")
+centered = false
+
+[node name="GroundUnder" type="Sprite2D" parent="Ground"]
+texture_filter = 1
+position = Vector2(0, 463)
+scale = Vector2(1.5, 18)
+texture = ExtResource("w7")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 1728, 49)
+region_rect = Rect2(0, 79, 1728, 1)
+
+[node name="FrontDark" parent="." instance=ExtResource("w8")]
+
+[node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(1024.5, 250.3)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w9")
+centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
 
 [node name="Foreground" type="TileMapLayer" parent="TileMap"]
 visible = false
 tile_map_data = PackedByteArray("AAD//wwAAQAIAAcAAAAAAAwAAQAIAAcAAAABAAwAAQAIAAcAAAACAAwAAQAIAAcAAAADAAwAAQAIAAcAAAAEAAwAAQAIAAcAAAAFAAwAAQAIAAcAAAAGAAwAAQAIAAcAAAAHAAwAAQAIAAcAAAAIAAwAAQAIAAcAAAAJAAwAAQAIAAcAAAAKAAwAAQAIAAcAAAALAAwAAQAIAAcAAAAMAAwAAQAIAAcAAAANAAwAAQAIAAcAAAAOAAwAAQAIAAcAAAAPAAwAAQAIAAcAAAAQAAwAAQAIAAcAAAARAAwAAQAIAAcAAAASAAwAAQAIAAcAAAATAAwAAQAIAAcAAAAUAAwAAQAIAAcAAAAVAAwAAQAIAAcAAAAWAAwAAQAIAAcAAAAXAAwAAQAIAAcAAAAYAAwAAQAIAAcAAAAZAAwAAQAIAAcAAAAaAAwAAQAIAAcAAAAbAAwAAQAIAAcAAAAcAAwAAQAIAAcAAAAdAAwAAQAIAAcAAAAeAAwAAQAIAAcAAAAfAAwAAQAIAAcAAAAgAAwAAQAIAAcAAAAhAAwAAQAIAAcAAAAiAAwAAQAIAAcAAAAjAAwAAQAIAAcAAAAkAAwAAQAIAAcAAAAlAAwAAQAIAAcAAAAmAAwAAQAIAAcAAAAnAAwAAQAIAAcAAAAoAAwAAQAIAAcAAAApAAwAAQAIAAcAAAAqAAwAAQAIAAcAAAArAAwAAQAIAAcAAAAsAAwAAQAIAAcAAAAtAAwAAQAIAAcAAAAuAAwAAQAIAAcAAAAvAAwAAQAIAAcAAAAwAAwAAQAIAAcAAAAxAAwAAQAIAAcAAAAyAAwAAQAIAAcAAAAzAAwAAQAIAAcAAAA0AAwAAQAIAAcAAAA1AAwAAQAIAAcAAAA2AAwAAQAIAAcAAAA3AAwAAQAIAAcAAAA4AAwAAQAIAAcAAAA5AAwAAQAIAAcAAAA6AAwAAQAIAAcAAAA7AAwAAQAIAAcAAAA8AAwAAQAIAAcAAAA9AAwAAQAIAAcAAAA+AAwAAQAIAAcAAAA/AAwAAQAIAAcAAABAAAwAAQAIAAcAAABBAAwAAQAIAAcAAABCAAwAAQAIAAcAAABDAAwAAQAIAAcAAABEAAwAAQAIAAcAAABFAAwAAQAIAAcAAABGAAwAAQAIAAcAAABHAAwAAQAIAAcAAABIAAwAAQAIAAcAAABJAAwAAQAIAAcAAABKAAwAAQAIAAcAAABLAAwAAQAIAAcAAABMAAwAAQAIAAcAAABNAAwAAQAIAAcAAABOAAwAAQAIAAcAAABPAAwAAQAIAAcAAABQAAwAAQAIAAcAAABRAAwAAQAIAAcAAAD//w0AAQAIAAcAAAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAcAAAADAA0AAQAIAAcAAAAEAA0AAQAIAAcAAAAFAA0AAQAIAAcAAAAGAA0AAQAIAAcAAAAHAA0AAQAIAAcAAAAIAA0AAQAIAAcAAAAJAA0AAQAIAAcAAAAKAA0AAQAIAAcAAAALAA0AAQAIAAcAAAAMAA0AAQAIAAcAAAANAA0AAQAIAAcAAAAOAA0AAQAIAAcAAAAPAA0AAQAIAAcAAAAQAA0AAQAIAAcAAAARAA0AAQAIAAcAAAASAA0AAQAIAAcAAAATAA0AAQAIAAcAAAAUAA0AAQAIAAcAAAAVAA0AAQAIAAcAAAAWAA0AAQAIAAcAAAAXAA0AAQAIAAcAAAAYAA0AAQAIAAcAAAAZAA0AAQAIAAcAAAAaAA0AAQAIAAcAAAAbAA0AAQAIAAcAAAAcAA0AAQAIAAcAAAAdAA0AAQAIAAcAAAAeAA0AAQAIAAcAAAAfAA0AAQAIAAcAAAAgAA0AAQAIAAcAAAAhAA0AAQAIAAcAAAAiAA0AAQAIAAcAAAAjAA0AAQAIAAcAAAAkAA0AAQAIAAcAAAAlAA0AAQAIAAcAAAAmAA0AAQAIAAcAAAAnAA0AAQAIAAcAAAAoAA0AAQAIAAcAAAApAA0AAQAIAAcAAAAqAA0AAQAIAAcAAAArAA0AAQAIAAcAAAAsAA0AAQAIAAcAAAAtAA0AAQAIAAcAAAAuAA0AAQAIAAcAAAAvAA0AAQAIAAcAAAAwAA0AAQAIAAcAAAAxAA0AAQAIAAcAAAAyAA0AAQAIAAcAAAAzAA0AAQAIAAcAAAA0AA0AAQAIAAcAAAA1AA0AAQAIAAcAAAA2AA0AAQAIAAcAAAA3AA0AAQAIAAcAAAA4AA0AAQAIAAcAAAA5AA0AAQAIAAcAAAA6AA0AAQAIAAcAAAA7AA0AAQAIAAcAAAA8AA0AAQAIAAcAAAA9AA0AAQAIAAcAAAA+AA0AAQAIAAcAAAA/AA0AAQAIAAcAAABAAA0AAQAIAAcAAABBAA0AAQAIAAcAAABCAA0AAQAIAAcAAABDAA0AAQAIAAcAAABEAA0AAQAIAAcAAABFAA0AAQAIAAcAAABGAA0AAQAIAAcAAABHAA0AAQAIAAcAAABIAA0AAQAIAAcAAABJAA0AAQAIAAcAAABKAA0AAQAIAAcAAABLAA0AAQAIAAcAAABMAA0AAQAIAAcAAABNAA0AAQAIAAcAAABOAA0AAQAIAAcAAABPAA0AAQAIAAcAAABQAA0AAQAIAAcAAABRAA0AAQAIAAcAAAD//w4AAQAIAAcAAAAAAA4AAQAIAAcAAAABAA4AAQAIAAcAAAACAA4AAQAIAAcAAAADAA4AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAA4AAQAIAAcAAAALAA4AAQAIAAcAAAAMAA4AAQAIAAcAAAANAA4AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAA4AAQAIAAcAAAARAA4AAQAIAAcAAAASAA4AAQAIAAcAAAATAA4AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAA4AAQAIAAcAAAAcAA4AAQAIAAcAAAAdAA4AAQAIAAcAAAAeAA4AAQAIAAcAAAAfAA4AAQAIAAcAAAAgAA4AAQAIAAcAAAAhAA4AAQAIAAcAAAAiAA4AAQAIAAcAAAAjAA4AAQAIAAcAAAAkAA4AAQAIAAcAAAAlAA4AAQAIAAcAAAAmAA4AAQAIAAcAAAAnAA4AAQAIAAcAAAAoAA4AAQAIAAcAAAApAA4AAQAIAAcAAAAqAA4AAQAIAAcAAAArAA4AAQAIAAcAAAAsAA4AAQAIAAcAAAAtAA4AAQAIAAcAAAAuAA4AAQAIAAcAAAAvAA4AAQAIAAcAAAAwAA4AAQAIAAcAAAAxAA4AAQAIAAcAAAAyAA4AAQAIAAcAAAAzAA4AAQAIAAcAAAA0AA4AAQAIAAcAAAA1AA4AAQAIAAcAAAA2AA4AAQAIAAcAAAA3AA4AAQAIAAcAAAA4AA4AAQAIAAcAAAA5AA4AAQAIAAcAAAA6AA4AAQAIAAcAAAA7AA4AAQAIAAcAAAA8AA4AAQAIAAcAAAA9AA4AAQAIAAcAAAA+AA4AAQAIAAcAAAA/AA4AAQAIAAcAAABAAA4AAQAIAAcAAABBAA4AAQAIAAcAAABCAA4AAQAIAAcAAABDAA4AAQAIAAcAAABEAA4AAQAIAAcAAABFAA4AAQAIAAcAAABGAA4AAQAIAAcAAABHAA4AAQAIAAcAAABIAA4AAQAIAAcAAABJAA4AAQAIAAcAAABKAA4AAQAIAAcAAABLAA4AAQAIAAcAAABMAA4AAQAIAAcAAABNAA4AAQAIAAcAAABOAA4AAQAIAAcAAABPAA4AAQAIAAcAAABQAA4AAQAIAAcAAABRAA4AAQAIAAcAAAA=")
-tile_set = ExtResource("w4")
+tile_set = ExtResource("w10")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(150, 360)
@@ -75,10 +118,10 @@ position = Vector2(2540, 340)
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(60, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w5")]
+[node name="RoomInstance" parent="." instance=ExtResource("w11")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w6")
+stream = ExtResource("w12")
 autoplay = true
 bus = &"Music"

@@ -1,0 +1,79 @@
+extends SceneTree
+
+## wire-backdrops: кімнати з підключеними намальованими планами під камерою гри — кожен кадр окремо в <тека> і одна
+## сітка 4 × N (кожен кадр — екран, зменшений учетверо). Потрібне вікно:
+##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_wire_backdrops.gd -- design/shots/wire_backdrops design/shots/wire_backdrops.png
+
+const MAPS := "res://SampleProject/Maps/%s.tscn"
+## [кімната, де стоїть герой, назва кадру]
+const SHOTS := [
+	["MountainPath", Vector2(300, 340), "path_1"], ["MountainPath", Vector2(1300, 340), "path_2"],
+	["MountainPath", Vector2(2450, 340), "path_3"], ["ScreeSlide", Vector2(60, 340), "scree_top"],
+	["ScreeSlide", Vector2(800, 820), "scree_bottom"], ["StreamGorge", Vector2(200, 340), "gorge_1"],
+	["StreamGorge", Vector2(1300, 340), "gorge_2"], ["StreamGorge", Vector2(2450, 340), "gorge_3"],
+	["RockLedges", Vector2(60, 820), "ledges_bottom"], ["RockLedges", Vector2(800, 340), "ledges_top"],
+	["Village", Vector2(300, 340), "village_1"], ["Village", Vector2(1300, 340), "village_2"],
+	["Village", Vector2(2300, 340), "village_3"], ["ElderHouse", Vector2(300, 400), "attic"],
+	["CaveUnderBridge", Vector2(200, 340), "cave_top"], ["CaveUnderBridge", Vector2(600, 820), "cave_middle"],
+	["CaveUnderBridge", Vector2(500, 1300), "cave_floor"], ["MesaTop", Vector2(300, 340), "mesa_1"],
+	["MesaTop", Vector2(1500, 340), "mesa_2"], ["ZahraRest", Vector2(200, 340), "zahra_1"],
+	["ZahraRest", Vector2(900, 340), "zahra_well"], ["ZahraRest", Vector2(1650, 340), "zahra_3"],
+]
+const CELL := Vector2i(480, 270)
+
+var game: Node
+var dm: Node
+
+
+func _initialize() -> void:
+	var out_dir: String = OS.get_cmdline_user_args()[0]
+	var out_sheet: String = OS.get_cmdline_user_args()[1]
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://" + out_dir))
+	root.size = Vector2i(1920, 1080)
+	await process_frame
+	root.get_node("SaveSystem").settings_module.settings.hints = false
+	await process_frame
+	set_meta("start_new_game", true)
+	dm = root.get_node("ServiceLocator").get_dialogue_manager()
+	dm.bubble_time_scale = 0.0
+	game = load("res://SampleProject/Game.tscn").instantiate()
+	root.add_child(game)
+	current_scene = game
+	for i in 40: await process_frame
+	await _drain()
+	game.player.set_invulnerable(true)
+	var rows := (SHOTS.size() + 3) / 4
+	var sheet := Image.create(CELL.x * 4, CELL.y * rows, false, Image.FORMAT_RGBA8)
+	for i in SHOTS.size():
+		if not game.map.scene_file_path.ends_with(SHOTS[i][0] + ".tscn"):
+			await game.teleport_to_room(MAPS % SHOTS[i][0], ^"Arrival")
+		game.place_player(SHOTS[i][1])
+		game.player.velocity = Vector2.ZERO
+		for f in 45: await physics_frame
+		await _drain()
+		var cam: Camera2D = game.player.get_node(^"Camera2D")
+		cam.reset_smoothing()
+		for f in 5: await process_frame
+		await RenderingServer.frame_post_draw
+		var image := root.get_texture().get_image()
+		image.convert(Image.FORMAT_RGBA8)
+		var half := image.duplicate() as Image
+		half.resize(960, 540, Image.INTERPOLATE_NEAREST)
+		half.save_png("res://%s/%s.png" % [out_dir, SHOTS[i][2]])
+		image.resize(CELL.x, CELL.y, Image.INTERPOLATE_BILINEAR)
+		sheet.blit_rect(image, Rect2i(Vector2i.ZERO, CELL), Vector2i(i % 4 * CELL.x, i / 4 * CELL.y))
+		print("shot %s hero %s" % [SHOTS[i][2], game.player.global_position])
+	sheet.save_png("res://" + out_sheet)
+	quit()
+
+
+func _drain() -> void:
+	for i in 400:
+		if not dm.is_dialogue_active():
+			for f in 10: await process_frame
+			if not dm.is_dialogue_active():
+				return
+		else:
+			dm.current_dialogue_box.finish()
+			dm.current_dialogue_player.accept()
+		await process_frame

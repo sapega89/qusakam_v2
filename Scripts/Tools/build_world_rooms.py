@@ -111,6 +111,7 @@ ROOMS = {
                          title=("Mountain Path", "Гірська стежка"), arrival=(0, 150),
                          targets={"village": (0, 2540), "canyon_bridge": (0, 60)}),
     "ScreeSlide": dict(loc="canyon_of_whispers", kit="path", cells=(6, 1, 1, 2), open=[(0, "L"), (1, "R")], slope="down",
+                       slope_line=((96, 384), (720, 864)),  # поверхня gen_scree.png (ScreeSlide/README), −32
                        title=("Scree Slide", "Осипище"), arrival=(0, 60),
                        targets={"village": (1, 820), "canyon_bridge": (0, 40)}),
     "StreamGorge": dict(loc="canyon_of_whispers", kit="path", cells=(7, 2, 3, 1), open=[(0, "L"), (0, "R")],
@@ -120,7 +121,7 @@ ROOMS = {
                        title=("Rock Ledges", "Скельні уступи"), arrival=(1, 60),
                        targets={"village": (0, 820), "canyon_bridge": (1, 40)}),
     "CaveUnderBridge": dict(loc="canyon_of_whispers", kit="cave", cells=(3, 2, 1, 3),
-                            holes=[(0, 608, 800), (1, 64, 256), (2, 320, 544)],
+                            holes=[(0, 480, 864), (1, 0, 384), (2, 96, 224)], walls_in=True,
                             title=("Cave Under The Bridge", "Печера під мостом"), arrival=(0, 200),
                             targets={"city_gates": (2, 445)}),
     "CaveExit": dict(loc="canyon_of_whispers", kit="cave", cells=(3, 5, 1, 1), open=[(0, "L"), (0, "R")],
@@ -146,7 +147,7 @@ ROOMS = {
                     doors=[("ClimbDoor", 0, 1560, "mesa_cleft", "MesaClimb", "MesaTopDoor", {})]),
     "ZahraRest": dict(loc="canyon_of_whispers", kit="desert", cells=(10, 5, 2, 1), open=[(0, "L"), (0, "R")],
                       title=("Zahra's Rest", "Зарин привал"), arrival=(0, 200),
-                      doors=[("WellDoor", 0, 900, "cave_mouth", "OldRuins", "WellDoor", {"gate": "ruins_well"})],
+                      doors=[("WellDoor", 0, 900, None, "OldRuins", "WellDoor", {"gate": "ruins_well"})],
                       targets={"city_gates": (0, 1700)}),
     "Dunes": dict(loc="canyon_of_whispers", kit="desert", cells=(12, 5, 4, 1), open=[(0, "L"), (0, "R")],
                   title=("Dunes", "Дюни"), arrival=(0, 200), targets={"city_gates": (0, 3420)}),
@@ -267,6 +268,119 @@ EXISTING_BORDERS = [
 SIDES = {"R": 0, "D": 1, "L": 2, "U": 3}
 
 
+# ── Намальовані плани (wire-backdrops, Sapega 2026-10-28: «чому не всі арти підключені?») ───────────────────────
+# Кімнати з готовим артом малюють його замість тимчасового комплекту KITS — механічно з таблиць README тек
+# Backgrounds/<кімната>/. Площина: (вузол, текстура, (множник x, y), позиція у світі кімнати, дод.), дод.:
+#   tile — ширина плитки в арті (Parallax2D повторює її), region — Rect2 арту, material, z, modulate, flip.
+# Множник 1.0 — звичайний Sprite2D у Ground (намальована підлога, verify_map_geometry правило 6); front — заслін
+# у FrontDark (foreground_dark.tscn, ×1.3 по x, ×1 по y; назва Occluder*, D750).
+#
+# Дорога каньйону (MountainPath/README «Seamless road»): плани прив'язані до світу стежки, у README якорі — арт стежки
+# при камері 0, і площина з множником f стоїть на якорі − f × камера. Стежка тут на клітинку ширша, ніж у README
+# (3 клітинки, не 2): зайва клітинка — на заході, тож (x, y) лівого верхнього кута кожної кімнати у світі README, арт px:
+ROAD = {"MountainPath": (-576, 0), "ScreeSlide": (1152, 0), "StreamGorge": (1728, 320), "RockLedges": (3456, 0)}
+# Лінія ходу арту доріг і печери — 416 світу, підлога кімнат world-rooms — 384: усі плани на 32 px вище.
+DY = -32
+# Parallax2D рахує камеру як центр − половина вікна 1920×1080 і не зважає на zoom камери (кадр — 864×486 світу):
+# вузол стоїть на (1 − f) × (центр − (960, 540)), а не на (1 − f) × лівий верхній кут кадру. Тож площина, що в README
+# стоїть на якорі − f × камера, отримує позицію + (1 − f) × (960 − 432, 540 − 243). Виміряно в Godot 4.6.2.
+VIEW_FIX = (528, 297)
+MP = "MountainPath/"
+
+
+def at(anchor: tuple[float, float], f: tuple[float, float], off: tuple[float, float],
+       cam: tuple[float, float] = (0, 0), f_node: tuple[float, float] | None = None) -> tuple[float, float]:
+    """Позиція площини у світі кімнати: README малює її на якорі − f × камера (арт; камера у світі README = камера
+    кімнати / 1.5 + off). Вузол прокручується з f_node (за замовчуванням f); якщо f_node ≠ f, кадр README
+    відтворюється точно при камері кімнати cam (світ)."""
+    fn = f_node or f
+    return tuple(1.5 * (anchor[i] - f[i] * (cam[i] / 1.5 + off[i])) + fn[i] * cam[i] + (DY if i else 0) for i in (0, 1))
+
+
+def road(room: str) -> list:
+    off = ROAD[room]
+    sky = ("Sky", "DesertOasis/bg4/plan5.png", (0, 0), (0, 0), {})
+    barrier = ("Barrier", MP + "gen_barrier.png", (0.1, 0.1), at((115, 4), (0.1, 0.1), off), {})
+    far = ("Far", MP + "gen_far.png", (0.3, 0.3), at((0, 0), (0.3, 0.3), off), {"tile": 576})
+    plume = ("Plume", MP + "gen_plume.png", (0.4, 0.4), at((572, -12), (0.4, 0.4), off), {})
+    planes = [sky, barrier, "clouds", far]
+    if room == "MountainPath":
+        planes += [plume,
+                   ("Mid", MP + "gen_mid.png", (0.75, 0.75), at((0, 0), (0.75, 0.75), off), {"tile": 576}),
+                   ("Waymarker", MP + "gen_waymarker.png", (0.9, 0.9), at((380 + 0.9 * 576, 279 - 57), (0.9, 0.9), off), {}),
+                   ("Ground", MP + "gen_ground.png", (1, 1), at((0, 277), (1, 1), off), {"tile": 576}),
+                   ("OccluderRock1", MP + "gen_front.png", "front", at((420, 152), (1.3, 1.3), off, (864, 0), (1.3, 1)), {})]
+    elif room == "ScreeSlide":
+        planes += [plume,
+                   ("Mid", "ScreeSlide/gen_mid.png", (0.75, 0.75), at((0.75 * 1152, 0), (0.75, 0.75), off), {}),
+                   ("Ground", "ScreeSlide/gen_scree.png", (1, 1), at((1152, 0), (1, 1), off), {}),
+                   ("OccluderRock1", MP + "gen_front.png", "front",
+                    at((-40 + 1.3 * 1152, 152 + 1.3 * 316), (1.3, 1.3), off, (0, 474), (1.3, 1)), {})]
+    elif room == "StreamGorge":
+        planes += [("Plume", "StreamGorge/gen_plume.png", (0.35, 0.35), at((978, 90), (0.35, 0.35), off), {}),
+                   ("Mid", "StreamGorge/gen_mid.png", (0.75, 0.75), at((1296, 232), (0.75, 0.75), off), {}),
+                   ("Ground", "StreamGorge/gen_ground.png", (1, 1), at((1728, 570), (1, 1), off), {}),
+                   ("OccluderRock1", "StreamGorge/gen_front.png", "front",
+                    at((3035, 603), (1.3, 1.3), off, (0, -6), (1.3, 1)), {})]
+    else:  # RockLedges: уступи зігнуті під пандус world-rooms (ledges_ramp.py, D830)
+        planes += [("Mid", "RockLedges/gen_mid.png", (0.75, 0.75), at((2592, 232), (0.75, 0.75), off), {}),
+                   ("BurntHouses", "RockLedges/gen_burnt_houses.png", (0.6, 0.6), at((2296, 27), (0.6, 0.6), off), {}),
+                   ("VillageWall", "RockLedges/gen_village_wall.png", (0.9, 0.9), at((3302, 185), (0.9, 0.9), off), {}),
+                   ("Ground", "RockLedges/gen_ledges_ramp.png", (1, 1), at((3456, 0), (1, 1), off), {}),
+                   ("OccluderRock1", "StreamGorge/gen_front.png", "front",
+                    at((4453, 603), (1.3, 1.3), off, (0, 474), (1.3, 1)), {})]
+    return planes
+
+
+def cave() -> list:
+    """Печера під мостом (BridgeCave/README): один екран завширшки, камера ходить лише вниз; множник — по y."""
+    off = (0, 0)
+    return [("Far", "BridgeCave/gen_far.png", (1, 0.5), at((0, 0), (1, 0.5), off), {}),
+            ("Waymark", "BridgeCave/gen_waymark.png", (1, 0.9), at((236, 223), (1, 0.9), off), {}),
+            ("Ground", "BridgeCave/gen_wall.png", (1, 1), at((0, 0), (1, 1), off), {}),
+            ("OccluderStalactites", "BridgeCave/gen_front.png", "front", at((400, 0), (1.3, 1.3), off, (0, 0), (1.3, 1)), {})]
+
+
+# Меза й Зарин привал (MesaTop/README, ZahraRest/README): позиції вже у світі кімнати (підлога 384).
+OPEN_BACKDROP = "res://SampleProject/Scenes/Backgrounds/desert_backdrop_open.tscn"
+PAINTED = {
+    "MountainPath": road("MountainPath"), "ScreeSlide": road("ScreeSlide"), "StreamGorge": road("StreamGorge"),
+    "RockLedges": road("RockLedges"), "CaveUnderBridge": cave(),
+    "MesaTop": [("backdrop", {"Plan3": "visible = false", "Plan1": "visible = false"}),
+                ("Far", "MesaTop/gen_far.png", (0.2, 1), (0, -3), {"tile": 576}),
+                ("Buttes", "MesaTop/gen_buttes.png", (0.5, 1), (0, 132), {"tile": 576}),
+                ("Lookout", "MesaTop/gen_lookout.png", (0.9, 1), (588, 171), {}),
+                # Рядки 0–1 смуги — рвана кромка (36–71 % непрозорих): лінія ходу — рядок 2 (verify_map_geometry правило 6).
+                ("Ground", "MesaClimb/gen_floor.png", (1, 1), (0, 381), {"tile": 876, "region": (0, 0, 1152, 44)}),
+                ("OccluderRock1", "Canyon/gen_rock.png", "front", (1100, 520), {"scale": 2.2, "centered": True})],
+    "ZahraRest": [("backdrop", {"Plan3": "scroll_offset = Vector2(172.8, 0)", "Plan1": "scroll_offset = Vector2(432, 0)"}),
+                  ("Mid", "ZahraRest/gen_mid.png", (0.6, 1), (0, 25.5),
+                   {"tile": 507, "repeat": 760.5, "material": "res://SampleProject/Resources/Materials/depth_blur_near.tres"}),
+                  ("Camp", "ZahraRest/gen_camp.png", (0.85, 1), (183, 189), {}),
+                  ("Palm", "ZahraRest/gen_palm.png", (0.9, 1), (930, 43.5), {}),
+                  ("Well", "ZahraRest/gen_well.png", "room", (828, 219), {"z": -2}),
+                  ("Ground", "ZahraRest/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 1152, 67)}),
+                  ("OccluderReeds", "ZahraRest/gen_front.png", "front", (1684.5, 219), {})],
+}
+# Розміри арту, px (для повторів і низу кімнати).
+PAINTED_SIZE = {
+    "DesertOasis/bg4/plan5.png": (576, 324), MP + "gen_barrier.png": (576, 259), MP + "gen_far.png": (576, 324),
+    MP + "gen_plume.png": (491, 132), MP + "gen_mid.png": (576, 324), MP + "gen_waymarker.png": (73, 57),
+    MP + "gen_ground.png": (576, 49), MP + "gen_front.png": (193, 212),
+    "ScreeSlide/gen_mid.png": (576, 640), "ScreeSlide/gen_scree.png": (576, 640),
+    "StreamGorge/gen_plume.png": (655, 176), "StreamGorge/gen_mid.png": (1440, 340), "StreamGorge/gen_ground.png": (1728, 80),
+    "StreamGorge/gen_front.png": (188, 172),
+    "RockLedges/gen_mid.png": (576, 340), "RockLedges/gen_burnt_houses.png": (380, 278),
+    "RockLedges/gen_village_wall.png": (384, 432), "RockLedges/gen_ledges_ramp.png": (576, 640),
+    "BridgeCave/gen_far.png": (576, 648), "BridgeCave/gen_waymark.png": (58, 56), "BridgeCave/gen_wall.png": (576, 960),
+    "BridgeCave/gen_front.png": (245, 91),
+    "MesaTop/gen_far.png": (576, 324), "MesaTop/gen_buttes.png": (576, 300), "MesaTop/gen_lookout.png": (83, 144),
+    "MesaClimb/gen_floor.png": (876, 44), "Canyon/gen_rock.png": (156, 114),
+    "ZahraRest/gen_mid.png": (507, 250), "ZahraRest/gen_camp.png": (175, 136), "ZahraRest/gen_palm.png": (161, 230),
+    "ZahraRest/gen_well.png": (97, 112), "ZahraRest/gen_ground.png": (576, 67), "ZahraRest/gen_front.png": (192, 150),
+}
+
+
 class Scene:
     def __init__(self, name: str, prefix: str = "w"):
         self.name = name
@@ -366,6 +480,10 @@ class Room(Scene):
                 for cx in range(a // TILE, -(-b // TILE)):
                     for cy in range(row * ROWS + FLOOR_ROW, bottom):
                         self.solid.add((cx, cy))
+        if self.spec.get("walls_in"):
+            # Намальовані бічні стіни (печера під мостом, ~39 px): крайні стовпці тайлів — уся висота кімнати.
+            for cy in range(ROWS * self.ch):
+                self.solid.update({(0, cy), (self.w // TILE - 1, cy)})
         # Стіни за межами кімнати там, де немає проходу.
         opened = {(r, side) for r, side in self.spec.get("open", [])}
         for row in range(self.ch):
@@ -425,12 +543,103 @@ class Room(Scene):
                       'region_enabled = true\nregion_rect = Rect2(0, %d, %g, %d)'
                       % (i, a, top, tex, region_y, (b - a) / 1.5, th))
 
+    def painted(self, planes: list) -> None:
+        """Плани з README теки арту замість тимчасового комплекту (див. PAINTED)."""
+        for e in planes:
+            if e[0] == "backdrop":
+                self.node('[node name="Backdrop" parent="." instance=%s]\nposition = Vector2(0, -3)' % self.res("PackedScene", OPEN_BACKDROP))
+                for child, prop in e[1].items():
+                    self.node('[node name="%s" parent="Backdrop" index="%d"]\n%s' % (child, (3 if child == "Plan3" else 4), prop))
+        self.node('[node name="Back" type="Node2D" parent="."]\nz_index = -10')
+        if self.kit["interior"]:
+            # Під печерою — темна порода комплекту: крізь провал униз видно її, а не порожнечу.
+            self.node('[node name="Backstop" type="Polygon2D" parent="Back"]\ncolor = %s\npolygon = PackedVector2Array(0, 0, %g, 0, %g, %g, 0, %g)'
+                      % (self.kit["fill"], self.w, self.w, self.h + CELL_H, self.h + CELL_H))
+        grounds, fronts, props = [], [], []
+        for e in planes:
+            if e[0] == "backdrop":
+                continue
+            if e == "clouds":
+                self.node('[node name="DriftingClouds" parent="Back" instance=%s]'
+                          % self.res("PackedScene", "res://SampleProject/Scenes/Backgrounds/drifting_clouds.tscn"))
+                continue
+            name, tex, f, pos, ex = e
+            if f == "front":
+                fronts.append(e)
+                continue
+            if f == "room":
+                props.append(e)
+                continue
+            if f == (1, 1):
+                grounds.append(e)
+                continue
+            tw, th = PAINTED_SIZE[tex]
+            body = '[node name="%s" type="Parallax2D" parent="Back"]\nscroll_scale = Vector2(%g, %g)' % (name, f[0], f[1])
+            pos = self._fix(pos, f)
+            x = pos[0]
+            if "tile" in ex:
+                rw = ex.get("repeat", ex["tile"] * 1.5)
+                x = x % rw - rw
+                body += '\nrepeat_size = Vector2(%g, 0)\nrepeat_times = %d' % (rw, int(self.w / rw) + 3)
+            self.node(body)
+            self.node(self._sprite("Sprite", "Back/" + name, tex, (x, pos[1]), ex))
+        self.node('[node name="Ground" type="Node2D" parent="."]\nz_index = -9')
+        for name, tex, f, pos, ex in grounds:
+            tw, th = PAINTED_SIZE[tex]
+            if "tile" in ex:
+                # Плитка ×1: одна смуга на всю кімнату, фаза — як у світі README.
+                rx, ry, _, rh = ex.get("region", (0, 0, 0, th))
+                region = ((-pos[0] / 1.5) % ex["tile"] + rx, ry, self.w / 1.5, rh)
+                self.node(self._sprite(name, "Ground", tex, (0, pos[1]), {"region": region, "repeat": True}))
+                x0, w_art, bottom = 0, self.w / 1.5, pos[1] + rh * 1.5
+            else:
+                self.node(self._sprite(name, "Ground", tex, pos, ex))
+                x0, w_art, bottom = pos[0], tw, pos[1] + th * 1.5
+                region = (0, 0, tw, th)
+            if bottom < self.h:
+                # Низ кімнати під артом: його ж нижній рядок, розтягнутий донизу.
+                self.node(self._sprite(name + "Under", "Ground", tex, (x0, bottom),
+                                       {"region": (region[0], region[1] + region[3] - 1, w_art, 1), "repeat": "tile" in ex,
+                                        "scale_y": (self.h - bottom) + 1}))
+        for name, tex, f, pos, ex in props:
+            self.node(self._sprite(name, ".", tex, pos, ex))
+        if fronts:
+            self.node('[node name="FrontDark" parent="." instance=%s]' % self.res("PackedScene", "res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn"))
+            for name, tex, f, pos, ex in fronts:
+                self.node(self._sprite(name, "FrontDark", tex, self._fix(pos, (1.3, 1)), ex))
+
+    @staticmethod
+    def _fix(pos: tuple[float, float], f: tuple[float, float]) -> tuple[float, float]:
+        return pos[0] + (1 - f[0]) * VIEW_FIX[0], pos[1] + (1 - f[1]) * VIEW_FIX[1]
+
+    def _sprite(self, name: str, parent: str, tex: str, pos: tuple[float, float], ex: dict) -> str:
+        s = ex.get("scale", 1.5)
+        body = '[node name="%s" type="Sprite2D" parent="%s"]' % (name, parent)
+        if "z" in ex:
+            body += '\nz_index = %d' % ex["z"]
+        if "material" in ex:
+            body += '\nmaterial = %s' % self.res("Material", ex["material"])
+        body += '\ntexture_filter = 1'
+        if ex.get("repeat"):
+            body += '\ntexture_repeat = 2'
+        body += '\nposition = Vector2(%g, %g)\nscale = Vector2(%g, %g)\ntexture = %s' % (
+            round(pos[0], 1), round(pos[1], 1), s, ex.get("scale_y", s), self.res("Texture2D", BG + tex))
+        if not ex.get("centered"):
+            body += '\ncentered = false'
+        if "region" in ex:
+            body += '\nregion_enabled = true\nregion_rect = Rect2(%g, %g, %g, %g)' % tuple(round(v, 1) for v in ex["region"])
+        return body
+
     def slope(self) -> None:
         kind = self.spec.get("slope")
         if not kind:
             return
         hi, lo = FLOOR, CELL_H + FLOOR
-        if kind == "down":
+        if self.spec.get("slope_line"):
+            (ax, ay), (bx, by) = self.spec["slope_line"]
+            pts = [(0, ay), (ax, ay), (bx, by), (self.w, by), (self.w, self.h), (0, self.h)]
+            line = [(ax, ay), (bx, by)]
+        elif kind == "down":
             pts = [(0, hi), (96, hi), (self.w - 96, lo), (self.w, lo), (self.w, self.h), (0, self.h)]
             line = [(96, hi), (self.w - 96, lo)]
         else:
@@ -439,6 +648,8 @@ class Room(Scene):
         flat = ", ".join("%g, %g" % p for p in pts)
         self.node('[node name="Slope" type="StaticBody2D" parent="."]')
         self.node('[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Slope"]\npolygon = PackedVector2Array(%s)' % flat)
+        if self.name in PAINTED:
+            return  # схил намальований у самому арті
         self.node('[node name="Rock" type="Polygon2D" parent="Ground"]\ncolor = %s\npolygon = PackedVector2Array(%s)' % (self.kit["fill"], flat))
         self.node('[node name="Crust" type="Line2D" parent="Ground"]\npoints = PackedVector2Array(%s)\nwidth = 14.0\n'
                   'default_color = Color(0.62, 0.45, 0.3, 1)' % ", ".join("%g, %g" % (x, y + 6) for x, y in line))
@@ -493,9 +704,14 @@ class Room(Scene):
                 self.node('[node name="%s" type="Marker2D" parent="ObjectiveTargets"]\nposition = Vector2(%g, %g)' % (target, x, self.floor_y(row) - 44))
 
     def write(self) -> None:
-        self.backdrop()
+        painted = PAINTED.get(self.name)
+        if painted:
+            self.painted(painted)
+        else:
+            self.backdrop()
         runs = self.build_ground()
-        self.ground_art(runs)
+        if not painted:
+            self.ground_art(runs)
         self.tilemap()
         self.slope()
         self.bridge()
