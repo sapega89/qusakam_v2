@@ -11,20 +11,25 @@ date: 2026-10-28
 - **Not done:** dual and bow H3 variants (no art yet, per the prompt). Room backdrops and props: left to the room chain (list below).
 - **D-IDs:** D-wl1, D-wl2, D-wl3 below (placeholders, the orchestrator numbers them).
 - **B rows fixed:** none.
-- **Full suite:** FULL_SUITE_LINE
+- **Full suite:** `SUITE: 3 FAIL in 20 min 4 s` → after the fix only `verify_difficulty` (17 FAIL) and `verify_lab_boss` (2 FAIL) are left. Both fail the same way at the merge base `b9dd81d3`, before this branch's commits (balance numbers, not this branch's work).
 
 ## Decisions (D-ID text)
 | ID | Kind | Text |
 |---|---|---|
-| D-wl1 | ROUTINE CALL (`cloud/wire-leftovers`) | **Movement-skill poses from the weapon sets** (H3, D812). `<weapon>/LungeCut\|ShieldCharge\|LeapSlam{Windup,Move,Strike}` play `Sprites/Player/Weapons/<set>/<Skill>/1–3` in the libraries `sword` (inside `Player.tscn`), `dagger`, `mace`, `polearm` (set `halberd`). Same timing as the base poses (one frame, 0.3 s each), offset (0, −16) like the rest of each 96×96 library; the feet of every frame sit on row 88 (= base row 56 + 32), so no per-frame foot offset is needed. The WeaponView overlay hides itself over them through `_drawn_in_frame()` (the weapon is drawn in the frame), so the base fist points stay only for weapons without the set (dual, bow, or a hidden weapon). Added by `Scripts/Tools/weapon_skill_poses.py`, which only inserts and is idempotent: re-running `weapon_libraries.py` would wipe the hand-set per-frame foot offsets already in the four .tres files (it no longer reproduces them), so the new poses are not added through it. |
+| D-wl1 | ROUTINE CALL (`cloud/wire-leftovers`) | **Movement-skill poses from the weapon sets** (H3, D812). `<weapon>/LungeCut\|ShieldCharge\|LeapSlam{Windup,Move,Strike}` play `Sprites/Player/Weapons/<set>/<Skill>/1–3` in the libraries `sword` (inside `Player.tscn`), `dagger`, `mace`, `polearm` (set `halberd`). Same timing as the base poses (one frame, 0.3 s each), offset (0, −16) like the rest of each 96×96 library; plus a per-frame foot fix (`FEET` in the tool, +1 to +4 px down) for the crouch and kneel frames whose feet sit above row 88. verify_hero_feet caught these: sword LungeCut/1 and LeapSlam/3, dagger and mace LeapSlam/3, halberd LungeCut/1, ShieldCharge/1, LeapSlam/1 and /3. The WeaponView overlay hides itself over them through `_drawn_in_frame()` (the weapon is drawn in the frame), so the base fist points stay only for weapons without the set (dual, bow, or a hidden weapon). Added by `Scripts/Tools/weapon_skill_poses.py`, which only inserts and is idempotent: re-running `weapon_libraries.py` would wipe the hand-set per-frame foot offsets already in the four .tres files (it no longer reproduces them), so the new poses are not added through it. |
 | D-wl2 | ROUTINE CALL | **Smear cards: nothing left.** The prompt's "2 unused Smear cards" were wired before this branch (catalog after the merge: arc → SlashTrail/wind_arc, dash and slam_ring → MoveSkill, punch → SlashTrail, thrust → SlashTrail/arrow). Nothing deleted. |
 | D-wl3 | ROUTINE CALL, follows D813 | **Unused leftovers deleted:** `Assets/UI/Icons/kit/hand_palm.png`, `kit/shield.png` (no scene, script or tool reads them; D603 redoes them as silhouettes anyway; the rows in `skill_icons_brief.md` point to git `e06dd5b2`) and `Sprites/Player/Roll/1–6` (the old roll; Roll plays the `Dash/` frames since round 14, Sapega: no rolling; README row removed). This reverses the "kept" part of D854 under D813. |
+
+## Full suite
+- First run: `SUITE: 3 FAIL in 20 min 4 s`: `verify_hero_feet` (8 FAIL, the new frames' feet, fixed by `FEET`), `verify_difficulty` (17 FAIL), `verify_lab_boss` (2 FAIL: "balanced build: he dies in 2.3 of the mercenary's blows", "the mercenary takes 67 light hits").
+- After the fix: `verify_hero_feet`, `verify_weapon_animations`, `verify_skill_moves`, `verify_scripts_compile` all PASS.
+- `verify_difficulty` and `verify_lab_boss` give the same RESULT in a worktree at `b9dd81d3` (skill-art-wire + feature/backlog, none of this branch's commits). They are pre-existing balance failures and are left for the orchestrator.
 
 ## Details
 - `Scripts/Tools/weapon_skill_poses.py`: new; inserts textures, animations and `_data` keys.
 - `SampleProject/Player.tscn`: 9 textures `sw_*`, 9 animations `Animation_sword_<Pose>`, keys in `AnimationLibrary_sword`.
 - `SampleProject/Resources/Player/WeaponAnimations/{dagger,mace,polearm}.tres`: 9 animations each.
-- Test: `verify_weapon_animations.gd` → `_skill_poses(library)`, run for each library in combat: `body_animation(<Pose>)` == `<library>/<Pose>`, its texture is `<set>/<Skill>/<n>`, length == base pose, offset (0, −16), and while it plays the overlay (`pivot`, `off_pivot`) is hidden and the sprite shows the weapon frame; for dual it resolves to the base pose. Section [0] also checks that each new animation has key-colour metal (palette swap).
+- Test: `verify_weapon_animations.gd` → `_skill_poses(library)`, run for each library in combat: `body_animation(<Pose>)` == `<library>/<Pose>`, its texture is `<set>/<Skill>/<n>`, length == base pose, offset (0, −16) plus the frame's foot fix, and while it plays the overlay (`pivot`, `off_pivot`) is hidden and the sprite shows the weapon frame; for dual it resolves to the base pose. Section [0] also checks that each new animation has key-colour metal (palette swap).
 
 ```
 verify_scripts_compile   RESULT: ALL PASS

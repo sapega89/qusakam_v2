@@ -235,7 +235,7 @@ func _weapon_type(library: String, slots: Array, ids: Array, swings: int) -> voi
 			"the fight is over: base frames, offset back, palette off (%s)" % anim.current_animation)
 
 ## Пози навичок руху (H3, D812, D-wl1): у бою з цією зброєю `body_animation` дає кадри набору
-## `Weapons/<набір>/<Skill>/1–3` з таймингом базової пози й зсувом клітинки 96, накладка WeaponView схована (зброя вже
+## `Weapons/<набір>/<Skill>/1–3` з таймингом базової пози й зсувом клітинки 96 (ноги на підлозі — до 6 рядків, verify_hero_feet), накладка WeaponView схована (зброя вже
 ## в кадрі); у наборів без цих тек (dual) — базова поза.
 func _skill_poses(library: String) -> void:
 	var folder: String = {"polearm": "halberd", "dual_sword_dagger": ""}.get(library, library)
@@ -252,7 +252,8 @@ func _skill_poses(library: String) -> void:
 			var a: Animation = anim.get_animation(resolved)
 			var frame: String = (a.track_get_key_value(0, 0) as Texture2D).resource_path.trim_prefix(WEAPON_FRAMES).trim_suffix(".png")
 			if resolved != StringName(library + "/" + base) or frame != "%s/%s/%d" % [folder, skill, i + 1] \
-					or not is_equal_approx(a.length, anim.get_animation(base).length) or a.track_get_key_value(1, 0) != Vector2(0, -16):
+					or not is_equal_approx(a.length, anim.get_animation(base).length) \
+					or (a.track_get_key_value(1, 0) as Vector2).x != 0.0 or absf((a.track_get_key_value(1, 0) as Vector2).y + 16.0) > 6.0:
 				wrong.append("%s → %s (%s, %.2f s)" % [base, resolved, frame, a.length])
 				continue
 			anim.play(resolved)
