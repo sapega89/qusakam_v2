@@ -45,6 +45,16 @@ const CAST_POSES := {
 	"CastFireRelease": [Vector2(36, -3), 60.0],  # кінець висхідного розтину
 	"CastStormWindup": [Vector2(-7, -33), 0.0],  # вістрям у небо
 	"CastStormRelease": [Vector2(35, 1), 90.0],  # уперед, куди б'є блискавка
+	# навички руху (H3, D812): кулак кадрів LungeCut / ShieldCharge / LeapSlam 1–3, Sprites/Player/README.md
+	"LungeCutWindup": [Vector2(30, 10.5), 230.0],  # лезо низько позаду
+	"LungeCutMove": [Vector2(31.5, 4.5), 230.0],
+	"LungeCutStrike": [Vector2(33, 1.5), 90.0],  # розтин уперед
+	"ShieldChargeWindup": [Vector2(30, -1.5), 20.0],  # як guard_angle
+	"ShieldChargeMove": [Vector2(33, 3), 20.0],
+	"ShieldChargeStrike": [Vector2(33, -1.5), 60.0],
+	"LeapSlamWindup": [Vector2(18, 13.5), 230.0],
+	"LeapSlamMove": [Vector2(12, -28.5), -20.0],  # між кулаками над головою, як smash_from
+	"LeapSlamStrike": [Vector2(30, 30), 165.0],  # у землю, як smash_to
 }
 ## Друга рука (дві зброї) — дальня, трохи позаду.
 const OFF_REST := Vector2(7, 21)
@@ -211,7 +221,7 @@ func _hold_pose() -> void:
 			_pose(pivot, HAND_HURT, hurt_angle)
 		PlayerCombat.State.HEAVY_WINDUP:
 			_pose(pivot, HAND_OVERHEAD, smash_from)
-		PlayerCombat.State.CAST_WINDUP, PlayerCombat.State.CAST_RELEASE:
+		PlayerCombat.State.CAST_WINDUP, PlayerCombat.State.CAST_MOVE, PlayerCombat.State.CAST_RELEASE:
 			var cast: Array = CAST_POSES.get(player.animation, [HAND_REST, _rest_angle()])
 			_pose(pivot, cast[0], cast[1])
 		_:

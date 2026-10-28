@@ -69,11 +69,11 @@ perch_animation = &"perch"
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.8182, 0.8182)
+scale = Vector2(0.5455, 0.5455)
 sprite_frames = SubResource("SpriteFrames_critter")
 animation = &"perch"
 centered = false
 offset = Vector2(-28, -56)
 
 [node name="Perch" type="VisibleOnScreenNotifier2D" parent="."]
-rect = Rect2(-22.9096, -45.8192, 45.8192, 45.8192)
+rect = Rect2(-15.274, -30.548, 30.548, 30.548)

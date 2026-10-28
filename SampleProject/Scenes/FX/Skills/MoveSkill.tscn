@@ -1,21 +1,164 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://SampleProject/Scripts/FX/MoveSkillFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/dash_1.png" id="dash1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/dash_2.png" id="dash2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/dash_3.png" id="dash3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_1.png" id="ring1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_2.png" id="ring2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_3.png" id="ring3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/heavens_anvil/pillar_1.png" id="pillar1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/heavens_anvil/pillar_2.png" id="pillar2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/heavens_anvil/pillar_3.png" id="pillar3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/dune_quake/wave_1.png" id="wave1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/dune_quake/wave_2.png" id="wave2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/dune_quake/wave_3.png" id="wave3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/drain_1.png" id="drain1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/drain_2.png" id="drain2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/blood_rush/drain_3.png" id="drain3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_1.png" id="shield_drop1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_2.png" id="shield_drop2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/drop_3.png" id="shield_drop3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/hold_1.png" id="shield_hold1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/hold_2.png" id="shield_hold2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/fade_1.png" id="shield_fade1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Shield/magic/fade_2.png" id="shield_fade2"]
+
+[sub_resource type="CanvasItemMaterial" id="Glow"]
+light_mode = 1
+
+[sub_resource type="SpriteFrames" id="DashFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("dash1")}, {"duration": 1.0, "texture": ExtResource("dash2")}], "loop": true, "name": &"move", "speed": 12.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("dash3")}], "loop": false, "name": &"stop", "speed": 10.0}]
+
+[sub_resource type="SpriteFrames" id="ShieldFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("shield_drop1")}, {"duration": 1.0, "texture": ExtResource("shield_drop2")}, {"duration": 1.0, "texture": ExtResource("shield_drop3")}], "loop": false, "name": &"drop", "speed": 12.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("shield_hold1")}, {"duration": 1.0, "texture": ExtResource("shield_hold2")}], "loop": true, "name": &"hold", "speed": 6.0}, {"frames": [{"duration": 1.0, "texture": ExtResource("shield_fade1")}, {"duration": 1.0, "texture": ExtResource("shield_fade2")}], "loop": false, "name": &"fade", "speed": 10.0}]
+
+[sub_resource type="SpriteFrames" id="DrainFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("drain1")}, {"duration": 1.0, "texture": ExtResource("drain2")}, {"duration": 1.0, "texture": ExtResource("drain3")}], "loop": false, "name": &"default", "speed": 12.0}]
+
+[sub_resource type="SpriteFrames" id="PillarFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("pillar1")}, {"duration": 1.0, "texture": ExtResource("pillar2")}, {"duration": 1.0, "texture": ExtResource("pillar3")}], "loop": false, "name": &"default", "speed": 10.0}]
+
+[sub_resource type="SpriteFrames" id="WaveFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("wave1")}, {"duration": 2.0, "texture": ExtResource("wave2")}, {"duration": 1.0, "texture": ExtResource("wave3")}], "loop": false, "name": &"default", "speed": 10.0}]
+
+[sub_resource type="SpriteFrames" id="RingFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("ring1")}, {"duration": 1.0, "texture": ExtResource("ring2")}, {"duration": 1.0, "texture": ExtResource("ring3")}], "loop": false, "name": &"default", "speed": 15.0}]
 
 [node name="MoveSkill" type="Node2D"]
 z_index = 250
 script = ExtResource("fx")
-metadata/_doc = "Effect of the movement skills (v2 slice 3): existing frames until the art lane draws their own"
+metadata/_doc = "Effects of the movement skills (H3, D812, D828): Assets/FX/README.md, Movement skills"
 
 [node name="Hand" type="Marker2D" parent="."]
 position = Vector2(36, -2)
 scale = Vector2(1.3, 1.3)
-metadata/_doc = "release: the strike smear (SlashTrail) at the hand, WeaponView.SMEAR_SCALE"
+metadata/_doc = "release: the hero swing smear (SlashTrail arc / punch) at the hand, WeaponView.SMEAR_SCALE"
+
+[node name="Art" type="Marker2D" parent="."]
+position = Vector2(36, -2)
+scale = Vector2(1.5, 1.5)
+metadata/_doc = "release: the skills own strike art (blood arc, wind streak) in the SlashTrail at the hand, at the hero scale"
 
 [node name="Feet" type="Marker2D" parent="."]
 position = Vector2(0, 24)
 metadata/_doc = "release: the ground under the hero (body collision bottom)"
 
-[node name="Pillar" type="Marker2D" parent="."]
+[node name="Chest" type="Marker2D" parent="."]
+position = Vector2(6, -10.5)
+metadata/_doc = "the drain wisp left end: texture (36, 34) of the hero frame, world ((x - 32) x 1.5, (y - 32) x 1.5 - 13.5)"
+
+[node name="ShieldWindup" type="Marker2D" parent="."]
+position = Vector2(19.5, -109.5)
+metadata/_doc = "the sky shield over ShieldCharge/1: ShieldSpell Magic (12, -96) under Player (0, -13.5), +5 texture px right"
+
+[node name="ShieldMove" type="Marker2D" parent="."]
+position = Vector2(22.5, -106.5)
+metadata/_doc = "over ShieldCharge/2: +7 right, +2 down"
+
+[node name="ShieldStrike" type="Marker2D" parent="."]
+position = Vector2(22.5, -109.5)
+metadata/_doc = "over ShieldCharge/3: +7 right"
+
+[node name="DashTrail" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(-57, -7.5)
 scale = Vector2(1.5, 1.5)
-metadata/_doc = "release: scale of a light pillar (Skyfall Blessing beam, as OathSkill.tscn)"
+sprite_frames = SubResource("DashFrames")
+animation = &"move"
+z_index = -251
+metadata/_doc = "the dash trail (Smear/dash): right edge on his back, centred on body rows 16-56, behind the hero"
+
+[node name="SkyShield" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(19.5, -109.5)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("ShieldFrames")
+animation = &"drop"
+material = SubResource("Glow")
+centered = false
+metadata/_doc = "Shield Charge: the magic shield spell of Shield Block (H2, Assets/FX/Shield/magic) over the ShieldCharge poses"
+
+[node name="Drain" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(6, -10.5)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("DrainFrames")
+animation = &"default"
+centered = false
+offset = Vector2(0, -10)
+metadata/_doc = "Blood Rush: the drain wisp, left end at Chest, stretched to the drained target (64 texture px = 96 world px)"
+
+[node name="PillarBack" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("PillarFrames")
+animation = &"default"
+offset = Vector2(0, -48)
+metadata/_doc = "Heavens Anvil: the light pillar behind the hero, bottom on Feet, x = -PILLAR_AT x reach"
+
+[node name="PillarFront" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("PillarFrames")
+animation = &"default"
+offset = Vector2(0, -48)
+metadata/_doc = "the pillar in front, x = PILLAR_AT x reach"
+
+[node name="WaveBack" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("WaveFrames")
+animation = &"default"
+flip_h = true
+offset = Vector2(0, -14)
+metadata/_doc = "Dune Quake: the sand wave running back from Feet to -reach"
+
+[node name="WaveFront" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("WaveFrames")
+animation = &"default"
+offset = Vector2(0, -14)
+metadata/_doc = "the sand wave running forward to +reach"
+
+[node name="SlamRing" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("RingFrames")
+animation = &"default"
+offset = Vector2(0.5, -2)
+metadata/_doc = "both slams: the impact ring, centre (47.5, 14) on Feet"

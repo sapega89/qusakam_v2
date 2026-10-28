@@ -133,7 +133,7 @@ func _hit_feel() -> void:
 	await create_timer(0.8).timeout
 	# Промах: спиною до ворога, чиє намальоване тіло (зона-ціль, B128) не заходить за героя
 	Input.stop_joy_vibration(0)
-	await _place_hero(target, -40)
+	await _place_hero(target, target.hurt_rect().position.x - target.global_position.x - 4.0)  # B187: бандит ширший за дотик тіл
 	hero.combat.perform_attack(-1)
 	var miss_ms: int = await _hitstop_ms(400)
 	ck(miss_ms == 0 and Input.get_joy_vibration_strength(0) == Vector2.ZERO, "a miss: no hitstop, no rumble (%d ms)" % miss_ms)
@@ -384,8 +384,10 @@ func _dummy() -> Node:
 	target.enemy_logic.stun_left = 0.0
 	return target
 
+## Не ближче, ніж тіла торкаються (пів тіла ворога + пів героя + 2 px): тіла не налазять (D443), а B187 виростив бандита.
 func _place_hero(target: Node, dx: float) -> void:
-	hero.global_position = target.global_position + Vector2(dx, 0)
+	var contact: float = (target.get_node(^"CollisionShape2D") as CollisionShape2D).shape.get_rect().end.x + 14.0
+	hero.global_position = target.global_position + Vector2(signf(dx) * maxf(absf(dx), contact), 0)
 	hero.velocity = Vector2.ZERO
 	hero.mover.last_direction = 1 if dx < 0 else -1
 	await physics_frame

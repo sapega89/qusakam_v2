@@ -23,7 +23,7 @@
       "chain": "{radius: px, ratio: 0..1} - also hits the nearest other enemy within radius of the first target (D207)",
       "stun": "float seconds - stuns the first target; cancels a wind-up in progress (D207)",
       "passive": "{stat: max_health | shield_block | max_sp | attack | damage_reduction | heal_power | sp_per_hit | lifesteal | poise | skill_damage | crit_chance | heavy_poise | block_heal | burning_damage | roll_length, value, condition?: {type: below_hp (value = HP fraction) | after_parry | after_skill (value = seconds)}} - passive only (D207, D284, D496); a conditional passive counts only while its condition holds",
-      "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release), windup_pose?, release_pose?, move_pose?: whole Player.tscn animation names (move_pose only with move)} - active only, required; a stagger during the wind-up interrupts (D259, D271)",
+      "cast": "{windup: s, release: s, pose: Player.tscn animation prefix (<pose>Windup / <pose>Release), windup_pose?, release_pose?, move_pose?: whole Player.tscn animation names (move_pose required with move: held through the dash or the whole leap)} - active only, required; a stagger during the wind-up interrupts (D259, D271)",
       "oath": "String - the tree: \"\" = Holy Warrior trunk (everyone), else an id in oaths; such a skill needs that oath sworn (D280)",
       "damage_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to damage (B137)",
       "heal_scaling": "{phys: float, elem: float} - adds that share of the hero's Phys. Atk. / Elem. Atk. to heal (B137)",
@@ -1573,9 +1573,9 @@
       "cast": {
         "windup": 0.15,
         "release": 0.3,
-        "windup_pose": "HeavyWindup",
-        "move_pose": "Roll",
-        "release_pose": "HeavyStrike"
+        "windup_pose": "LungeCutWindup",
+        "move_pose": "LungeCutMove",
+        "release_pose": "LungeCutStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {
@@ -1873,9 +1873,9 @@
       "cast": {
         "windup": 0.2,
         "release": 0.35,
-        "windup_pose": "HeavyWindup",
-        "move_pose": "Run",
-        "release_pose": "HeavyStrike"
+        "windup_pose": "ShieldChargeWindup",
+        "move_pose": "ShieldChargeMove",
+        "release_pose": "ShieldChargeStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {
@@ -2055,8 +2055,9 @@
       "cast": {
         "windup": 0.3,
         "release": 0.35,
-        "windup_pose": "HeavyWindup",
-        "release_pose": "HeavyStrike"
+        "windup_pose": "LeapSlamWindup",
+        "move_pose": "LeapSlamMove",
+        "release_pose": "LeapSlamStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {
@@ -2173,9 +2174,9 @@
       "cast": {
         "windup": 0.15,
         "release": 0.3,
-        "windup_pose": "HeavyWindup",
-        "move_pose": "Roll",
-        "release_pose": "HeavyStrike"
+        "windup_pose": "LungeCutWindup",
+        "move_pose": "LungeCutMove",
+        "release_pose": "LungeCutStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {
@@ -2463,9 +2464,9 @@
       "cast": {
         "windup": 0.08,
         "release": 0.25,
-        "windup_pose": "HeavyWindup",
-        "move_pose": "Roll",
-        "release_pose": "HeavyStrike"
+        "windup_pose": "LungeCutWindup",
+        "move_pose": "LungeCutMove",
+        "release_pose": "LungeCutStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {
@@ -2685,8 +2686,9 @@
       "cast": {
         "windup": 0.3,
         "release": 0.4,
-        "windup_pose": "HeavyWindup",
-        "release_pose": "Land"
+        "windup_pose": "LeapSlamWindup",
+        "move_pose": "LeapSlamMove",
+        "release_pose": "LeapSlamStrike"
       },
       "vfx": "res://SampleProject/Scenes/FX/Skills/MoveSkill.tscn",
       "move": {

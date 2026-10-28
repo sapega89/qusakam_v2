@@ -232,13 +232,14 @@ func _apply_stats(stats: EnemyStats) -> void:
 
 ## Розмір, еліта (D560, D652) і рівень (D642, D840: за героєм): HP, шкода, швидкість і досвід множаться (рівень — лише HP і шкода); спрайт
 ## і форми (B128: що видно, те й б'є) ростуть від ніг, тож ворог стоїть на тій самій підлозі. Дальність удару росте разом
-## із хітбоксом. Еліта — це вид зі своїм артом (D652), без контуру; D829: ще й росте на elite.scale понад розмір своєї сцени,
-## щоб її було видно серед звичайних.
+## із хітбоксом (B203: від його краю). Еліта — це вид зі своїм артом (D652), без контуру; D829: ще й росте на elite.scale понад розмір своєї сцени,
+## щоб її було видно серед звичайних. B187: спершу вид росте на kinds.<вид>.scale до свого зросту з таблиці масштабу.
 func _apply_variety() -> void:
 	var kind: Dictionary = EnemyVariety.kind(enemy_stats.enemy_type)
 	elite = kind.elite
 	var mult: Dictionary = EnemyVariety.size(size_kind)
-	var grow: float = mult.scale
+	# B187: kinds.<вид>.scale — до розміру з таблиці (дорослий — 144 px світу), розмір і еліта — понад нього
+	var grow: float = kind.scale * mult.scale
 	var health: float = mult.health
 	var hit: float = mult.damage
 	var xp: float = mult.xp
@@ -271,6 +272,7 @@ func _apply_variety() -> void:
 ## Масштаб [param factor] від лінії ніг: спрайт, тіло, хітбокс, зона-ціль. Тіло — спільний ресурс сцени, тож копія.
 func _grow(factor: float) -> void:
 	var feet: float = body_collision.position.y + body_collision.shape.get_rect().end.y
+	var front: float = _strike_front()
 	body_collision.shape = body_collision.shape.duplicate()
 	for shape: CollisionShape2D in [body_collision, hitbox_collision, hurt_collision]:
 		(shape.shape as RectangleShape2D).size *= factor
@@ -279,8 +281,22 @@ func _grow(factor: float) -> void:
 		shape.position = Vector2(shape.position.x * factor, feet + (area_y + shape.position.y - feet) * factor - area_y)
 	sprite.scale *= factor
 	sprite.position = Vector2(sprite.position.x * factor, feet + (sprite.position.y - feet) * factor)
-	attack_range *= factor
+	attack_range = _grown_range(factor, front)
 	lunge *= factor
+
+## Дальній край хітбокса зі сцени, px від центру ворога, обличчям праворуч (B128).
+func _strike_front() -> float:
+	return (hitbox_collision.get_parent() as Node2D).position.x + hitbox_collision.position.x + hitbox_collision.shape.get_rect().end.x
+
+## Дальність удару ворога, що виріс у [param factor] раз (хітбокс сягав [param front], ривок — lunge до росту).
+## Росте разом із ним, але B203: пів ширини героя, до якої удар дістає, не росте, тож у вирослого дальність — не далі,
+## ніж на стільки ж, на скільки виросли хітбокс і ривок: удар, що дістає в сцені, дістає й у нього. Летючий пікірує з
+## відстані, а не б'є краєм хітбокса: його дальність просто росте.
+func _grown_range(factor: float, front: float) -> float:
+	var scaled: float = attack_range * factor
+	if flying or factor <= 1.0:
+		return scaled
+	return minf(scaled, attack_range + (front + lunge) * (factor - 1.0))
 
 ## Проклята піна (D653): сяйні сині краплі з пащі [param mouth] (пікселі спрайта від центру кадру, погляд праворуч) —
 ## ефект, а не арт, тож його може мати будь-який проклятий вид (kinds.<id>.foam).

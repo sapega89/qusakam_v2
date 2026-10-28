@@ -136,7 +136,7 @@ func _initialize() -> void:
 	await _hold(&"move_up", 3.5)
 	for i in 20: await physics_frame
 	ck(player.is_on_floor() and player.global_position.y < 448.0, "up the ladder behind the rug, into the attic (y %.0f)" % player.global_position.y)
-	await _hold(&"move_right", 0.9)
+	await _hold(&"move_right", 0.65)  # люк x 480 → нотатки на вівтарику x 702 (wire-backdrops)
 	for i in 20: await physics_frame
 	var notes: Node = game.map.get_node("Attic/GrandfatherNotes")
 	ck(notes.get_node("Interactable").player_nearby and notes.get_node("Interactable").get_prompt().action_text == "Read",
@@ -147,7 +147,7 @@ func _initialize() -> void:
 	ck(text.contains("Grandfather's notes") and text.contains("The barrier is growing quiet"), "the modal shows the notes (%s…)" % text.left(60))
 	ck(JournalRecords.stories().map(func(s: Dictionary) -> String: return s.id) == ["grandfather_notes"], "the journal keeps them")
 	await _close_modal()
-	await _hold(&"move_left", 2.0)
+	await _hold(&"move_left", 1.35)  # → зілля серед дідових речей x 248
 	for i in 20: await physics_frame
 	var potion: Node = game.map.get_node("Attic/Pickup_AtticPotion")
 	ck(potion.get_node("Interactable").player_nearby, "the potion offers \"Pick up\" (x %.0f)" % player.global_position.x)

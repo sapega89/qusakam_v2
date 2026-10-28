@@ -7,6 +7,7 @@ extends SceneTree
 ## Також B51: телепорт у залу вантажить кімнату один раз (був verify_mayor_hall_teleport.gd).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_mayor_hall.gd
 
+const Kit := preload("res://SampleProject/UI/input_kit.gd")
 const HALL := "res://SampleProject/Maps/MayorHall.tscn"
 const TEST_DIR := "user://verify_mayor_hall/"
 const TEST_SLOT := 1
@@ -22,9 +23,7 @@ func ck(ok: bool, label: String) -> void:
 	if not ok: fails.append(label)
 
 func _until(cond: Callable, max_s: float) -> void:
-	var deadline := Time.get_ticks_msec() + int(max_s * 1000)
-	while not cond.call() and Time.get_ticks_msec() < deadline:
-		await process_frame
+	await Kit.until(self, cond, max_s)  # B186: секунди гри, не годинника
 
 func _drain() -> void:
 	for round in 10:
@@ -142,7 +141,7 @@ func _in_lab(label: String) -> void:
 	await create_timer(1.2, true, false, true).timeout
 	_tab(false)
 	await _until(func() -> bool: return game.map.get_current_state_name() == "AWAKE" and not game.player.event, 20.0)
-	await create_timer(0.5).timeout
+	await Kit.wait(self, 0.5)
 	ck(not game.player.event and _hud_visible(), "%s: control and HUD back in the lab" % label)
 	ck(root.get_node_or_null(^"ScreenFade") == null, "%s: the black is lifted" % label)
 
@@ -185,12 +184,13 @@ func _initialize() -> void:
 	ck(absf(game.player.global_position.x - spot.global_position.x) < 2.0, "the hero stands at the end of the queue (%.0f vs %.0f)" % [game.player.global_position.x, spot.global_position.x])
 	ck(not (game.player.get_node(^"Sprite2D") as Sprite2D).flip_h, "facing the mayor's door")
 	ck(not _hud_visible() and root.get_node_or_null(^"CutsceneSkipPrompt") != null, "HUD hidden, skip prompt shown")
-	var deadline := Time.get_ticks_msec() + 30000
-	while _state() != "FIGHT" and Time.get_ticks_msec() < deadline:
+	for i in 30 * Engine.physics_ticks_per_second:  # B186: до 30 с гри
+		if _state() == "FIGHT":
+			break
 		if dm.is_dialogue_active():
 			dm.current_dialogue_box.finish()
 			dm.current_dialogue_player.accept()
-		await process_frame
+		await physics_frame
 	for i in 30: await physics_frame
 	ck(started == ["City_MayorHall", "MayorHall_WallBurst"], "then the wall-burst talk (%s)" % [started])
 	var played := _snap()
@@ -198,11 +198,11 @@ func _initialize() -> void:
 
 	print("[3] The way back is barred; the queue never replays")
 	_press(&"move_left")
-	await create_timer(2.5).timeout
+	await Kit.wait(self, 2.5)
 	_press(&"move_left", false)
 	ck(game.player.global_position.x > 0.0 and _hall() != null, "move_left stops at the west barrier (x %.0f)" % game.player.global_position.x)
 	_press(&"move_right")
-	await create_timer(1.0).timeout
+	await Kit.wait(self, 1.0)
 	_press(&"move_right", false)
 	ck(started.count("City_MayorHall") == 1, "the queue played once (%s)" % [started])
 
@@ -256,7 +256,7 @@ func _initialize() -> void:
 		await physics_frame
 		await physics_frame
 		_press(&"attack", false)
-		await create_timer(0.3).timeout
+		await Kit.wait(self, 0.3)
 	ck(boss.is_dead, "the axe-warrior falls to a real attack")
 	await _until(func() -> bool: return started.has("MayorHall_Victory"), 6.0)
 	ck(started.has("MayorHall_Victory"), "the victory talk (%s)" % [started])

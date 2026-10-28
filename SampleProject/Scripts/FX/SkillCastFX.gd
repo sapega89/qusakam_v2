@@ -17,6 +17,11 @@ func release() -> void:
 	_animation().animation_finished.connect(func(_name: StringName) -> void: queue_free())
 
 
+## Навичка руху (D812) почала рух (PlayerCombat._start_move): у звичайних кастів руху немає, свій ефект — у MoveSkillFX.
+func move() -> void:
+	pass
+
+
 func cancel() -> void:
 	queue_free()
 

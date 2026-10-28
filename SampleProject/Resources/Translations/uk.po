@@ -1541,9 +1541,6 @@ msgstr "Тут буде підказка..."
 msgid "Combat Zone"
 msgstr "Зона бою"
 
-msgid "Press D to toggle delta vector"
-msgstr "Натисніть D, щоб показати вектор руху"
-
 msgid "The corruption spreads through these halls. Defeat the corrupted to weaken its grip."
 msgstr "Скверна шириться цими залами. Здолайте осквернених, щоб послабити її."
 

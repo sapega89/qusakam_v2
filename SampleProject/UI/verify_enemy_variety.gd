@@ -99,6 +99,7 @@ func _initialize() -> void:
 	await _old_vulture()
 	await _brute()
 	await _tower_guard()
+	await _grown_reach()
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()
@@ -138,8 +139,11 @@ func _sizes() -> void:
 		var strike: Vector2 = _rect_size(base.get_node(^"hitbox/CollisionShape2D"))
 		var body: Vector2 = _rect_size(base.get_node(^"CollisionShape2D"))
 		var feet: float = _feet(base)
-		ck(base.Max_Health == stats.max_health and is_equal_approx(base.attack_range, stats.attack_range),
-				"%s medium: stats as in the .tres (HP %d)" % [kind, base.Max_Health])
+		var kind_scale: float = variety.kind(kind).scale  # B187: вид спершу росте до свого зросту з таблиці масштабу
+		# дальність росте з видом, не далі за хітбокс із ривком (B203, перевіряє verify_hit_areas [1b])
+		ck(base.Max_Health == stats.max_health and base.attack_range <= stats.attack_range * kind_scale + 0.01
+				and (kind_scale > 1.0 or is_equal_approx(base.attack_range, stats.attack_range)),
+				"%s medium: stats as in the .tres, reach %.1f grown with the kind x%.2f (HP %d)" % [kind, base.attack_range, kind_scale, base.Max_Health])
 		var m: Dictionary = sizes.small
 		var s: float = m.scale
 		var e: Node = _spawn(kind, "small", 200)
@@ -151,7 +155,7 @@ func _sizes() -> void:
 				"%s small: hurtbox, hitbox and body x%.1f (%s)" % [kind, s, _rect_size(e.get_node(^"Hurtbox/CollisionShape2D"))])
 		ck(is_equal_approx(_feet(e), feet), "%s small: feet stay on the floor line (%.1f)" % [kind, _feet(e)])
 		ck(e.Max_Health == roundi(stats.max_health * m.health) and is_equal_approx(e.base_damage, stats.base_damage * m.damage)
-				and is_equal_approx(e.speed, stats.speed * m.speed) and is_equal_approx(e.attack_range, stats.attack_range * s)
+				and is_equal_approx(e.speed, stats.speed * m.speed) and e.attack_range < base.attack_range
 				and e.xp_reward == roundi(stats.xp_reward * m.xp),
 				"%s small: HP %d, damage %.1f, speed %.1f, reach %.1f, XP %d" % [kind, e.Max_Health, e.base_damage, e.speed, e.attack_range, e.xp_reward])
 		e.queue_free()
@@ -778,7 +782,8 @@ func _brute() -> void:
 	var bandit: Node = load(SCENES.melee).instantiate()
 	var feet := [HitAreas.frame_rect(brute.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(bandit.get_node(^"Sprite2D"), 0).end.y]
 	bandit.free()
-	ck(absf(feet[0] - feet[1]) <= 1.0, "his drawn feet stand on a medium bandit's line (%.1f vs %.1f px below his centre)" % feet)
+	# B187: обидва ростуть від ніг тіла, тож пів пікселя арту між ними (±1.5 px світу, допуск таблиці масштабу) лишається
+	ck(absf(feet[0] - feet[1]) <= 1.5, "his drawn feet stand on a medium bandit's line (%.1f vs %.1f px below his centre)" % feet)
 	lone.despawn_all_enemies()
 	await process_frame
 
@@ -857,14 +862,15 @@ func _tower_guard() -> void:
 	var range_before: float = guard.attack_range
 	var reach_before := HitAreas.shape_rect(guard.get_node(^"hitbox/CollisionShape2D")).size.x
 	var bursts: Array[Dictionary] = []
-	game.map.child_entered_tree.connect(func(n: Node) -> void:
+	var on_burst := func(n: Node) -> void:
 		if n is AnimatedSprite2D and (n as AnimatedSprite2D).animation == &"break":
 			var seen := func() -> void:
 				var still: Sprite2D = guard.enemy_view.rest_sprite()
 				bursts.append({transform = n.global_transform, offset = n.offset, flip_h = n.flip_h, cell = guard.global_transform * Transform2D(0.0, still.scale, 0.0, still.position),
 						frames = n.sprite_frames.get_frame_count(&"break"), texture = n.sprite_frames.get_frame_texture(&"break", 0).resource_path})
 				still.free()
-			seen.call_deferred())
+			seen.call_deferred()
+	game.map.child_entered_tree.connect(on_burst)
 	await _place_hero(guard, -45)
 	await _tap(&"heavy_attack")
 	await create_timer(0.6).timeout
@@ -911,6 +917,7 @@ func _tower_guard() -> void:
 		guard.anim_player.play(anim_name)
 		guard.anim_player.advance(0.3)
 	ck(sprite.texture == guard.noshield_sheet, "playing his animations keeps the shieldless sheet")
+	game.map.child_entered_tree.disconnect(on_burst)
 	guard.queue_free()
 
 	var placed: Array = []
@@ -948,6 +955,69 @@ func _tower_guard() -> void:
 			and String(uk.get_message(entry[0].name)) == "Вартовий з баштовим щитом" and uk.get_message(entry[0].text) != StringName(),
 			"bestiary: Tower Shield Guard, in English and Ukrainian")
 	await process_frame
+
+
+## [10] B203: еліта росте на elite.scale (D829, D842) — attack_range росте від переднього краю її удару, бо половина героя
+## не росте: удар починається, лише звідки виросла зона удару дістає героя (ближній і укус; піке летить до героя саме),
+## і почате влучає. Кожен живий вид-еліта, крім лучника (стріляє стрілами).
+func _grown_reach() -> void:
+	print("[10] Each elite at its grown scale starts a strike only within its real reach, and a strike that starts lands (B203)")
+	var hero_half: float = hero.body_rect().size.x / 2.0
+	var hero_body: CollisionShape2D = hero.get_node(^"CollisionShape2D")
+	ck(is_equal_approx(hero_half, (hero_body.shape as RectangleShape2D).size.x / 2.0), "the hero's half-width %.1f px" % hero_half)
+	var ids: Array = variety.kind_ids().filter(func(id: String) -> bool:
+		return variety.is_elite(id) and variety.available(id) and variety.kind(id).get("base", "") != "archer")
+	ck(ids.size() >= 7, "every live melee elite is checked (%s)" % [ids])
+	for id: String in ids:
+		var stats: EnemyStats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id)
+		var enemy: Node = load(spawn_script.scene_path(id)).instantiate()
+		enemy.enemy_stats = stats
+		enemy.combo_chance = 0.0
+		enemy.position = ARENA + Vector2(120, -120 if stats.flying else 0)
+		game.map.add_child(enemy)
+		await process_frame
+		var grow: float = variety.kind(id).scale * variety.elite().scale
+		var reach: float = enemy.strike_reach() + hero_half
+		var body_half: float = enemy.get_node(^"CollisionShape2D").shape.get_rect().end.x
+		var logic: Node = enemy.enemy_logic
+		var scene: Node = load(spawn_script.scene_path(id)).instantiate()
+		ck(is_equal_approx(enemy.get_node(^"Sprite2D").scale.x, scene.get_node(^"Sprite2D").scale.x * grow)
+				and is_equal_approx(logic.attack_range, enemy.attack_range), "%s: grown x%.2f, its logic starts at %.1f" % [id, grow, logic.attack_range])
+		scene.free()
+		if not (stats.flying and stats.flight_attack == "dive"):
+			ck(enemy.attack_range <= reach + 0.01 and (stats.flying or enemy.attack_range > body_half + hero_half),
+					"%s: attack_range %.1f starts a strike its grown hitbox reaches (%.1f; body contact %.1f)"
+					% [id, enemy.attack_range, reach, body_half + hero_half])
+		# Почате з самого attack_range влучає: герой стоїть там, ворог б'є раз
+		if stats.flying:
+			var start_x: float = enemy.global_position.x - enemy.attack_range
+			hero.global_position = Vector2(start_x, ARENA.y)
+			for i in 8: await physics_frame
+			enemy.global_position = Vector2(start_x + enemy.attack_range, logic._feet_y(hero) - logic.hover_height - logic._lift)
+		else:
+			for i in 8: await physics_frame  # стати на підлогу
+			enemy.set_physics_process(false)  # ШІ не підходить, поки герой стає на місце
+			hero.global_position = Vector2(enemy.global_position.x - enemy.attack_range, enemy.global_position.y)
+			for i in 8: await physics_frame
+			enemy.set_physics_process(true)
+			hero.global_position.x = enemy.global_position.x - enemy.attack_range
+		hero.velocity = Vector2.ZERO
+		hero.current_health = hero.Max_Health
+		var dx: float = absf(hero.global_position.x - enemy.global_position.x)
+		if not stats.flying:
+			var creep: float = logic.speed * logic.WINDUP_CREEP * maxf(enemy.attack_windup - logic.TELL_LEAD, 0.0)
+			hero.global_position.x = enemy.global_position.x - (logic.strike_reach() - logic.REACH_MARGIN + creep + 2.0)
+			ck(not logic.swing_fits(enemy.attack_windup), "%s: past its grown reach (%.1f px) no strike starts" % [id, logic.strike_reach()])
+			hero.global_position.x = enemy.global_position.x - dx
+		logic.last_direction = -1
+		enemy.stamina.refill()
+		logic.perform_attack()
+		while logic.is_attacking:
+			await physics_frame
+		ck(hero.current_health < hero.Max_Health, "%s: a strike started %.1f px from the hero lands (HP %d)" % [id, dx, hero.current_health])
+		enemy.queue_free()
+		await process_frame
+	hero.current_health = hero.Max_Health
 
 
 func _translated(text: String) -> bool:

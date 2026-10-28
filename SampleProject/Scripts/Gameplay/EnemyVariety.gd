@@ -55,7 +55,7 @@ static func stamina(id: String, boss: bool) -> Dictionary:
 	return out
 
 
-## Вид [param id] з kinds: sheet, elite, sizes; великий вид ще base і scene, проклятий — foam.
+## Вид [param id] з kinds: sheet, elite, scale (B187), sizes; великий вид ще base і scene, проклятий — foam.
 static func kind(id: String) -> Dictionary:
 	return data().kinds[id]
 
