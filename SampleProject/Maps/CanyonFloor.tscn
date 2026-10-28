@@ -12,8 +12,18 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/BreakableWall.tscn" id="w10"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/CanyonFloor/gen_cracked.png" id="w11"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w12"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w13"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w14"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w13"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="w16"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="w17"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w18"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w19"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w20"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w21"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="CanyonFloor" type="Node2D"]
 
@@ -127,10 +137,57 @@ cover = NodePath("../Wall_Stash")
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(3420, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w13")]
+[node name="Fight_CanyonFloor" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w13")
+enemy_level = 3
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_CanyonFloorTrigger")
+state_key = "enemies_canyonfloor"
+respawns = true
+
+[node name="Fight_CanyonFloorTrigger" type="Area2D" parent="Fight_CanyonFloor"]
+position = Vector2(1500, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_CanyonFloor/Fight_CanyonFloorTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_CanyonFloor"]
+position = Vector2(1660, 368)
+script = ExtResource("w14")
+enemy_type = "fast"
+spawn_id = "Fight_CanyonFloor_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_CanyonFloor"]
+position = Vector2(1780, 210)
+script = ExtResource("w14")
+enemy_type = "vulture"
+spawn_id = "Fight_CanyonFloor_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w15")]
+position = Vector2(1728, 250)
+emission_rect_extents = Vector2(1728, 140)
+amount = 32
+
+[node name="Dust2" parent="Ambience" instance=ExtResource("w16")]
+position = Vector2(2500, 336)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("w17")]
+position = Vector2(800, 364)
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w18")]
+position = Vector2(2200, 384)
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w19")]
+position = Vector2(3260, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w20")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w14")
+stream = ExtResource("w21")
 autoplay = true
 bus = &"Music"

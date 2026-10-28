@@ -11,8 +11,12 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w9"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_front.png" id="w10"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w11"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w16"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w17"]
 
 [node name="MountainPath" type="Node2D"]
 
@@ -135,10 +139,32 @@ position = Vector2(2540, 340)
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(60, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w12")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w12")]
+position = Vector2(1296, 250)
+emission_rect_extents = Vector2(1296, 140)
+amount = 24
+
+[node name="Dust2" parent="Ambience" instance=ExtResource("w13")]
+position = Vector2(1600, 336)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w14")]
+position = Vector2(700, 384)
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("w15")]
+position = Vector2(1300, 364)
+
+[node name="Lark2" parent="Critters" instance=ExtResource("w14")]
+position = Vector2(1900, 384)
+perch_flip = true
+
+[node name="RoomInstance" parent="." instance=ExtResource("w16")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w13")
+stream = ExtResource("w17")
 autoplay = true
 bus = &"Music"

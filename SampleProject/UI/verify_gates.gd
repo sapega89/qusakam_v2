@@ -24,6 +24,7 @@ const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
 const ELDER := "res://SampleProject/Maps/ElderHouse.tscn"
 const LAB := "res://SampleProject/Maps/Laboratory.tscn"
 const CAMP := "res://SampleProject/Maps/BanditCamp.tscn"
+const DUNES := "res://SampleProject/Maps/Dunes.tscn"
 const GATES := "res://SampleProject/Resources/Data/gates.json"
 const ITEMS := "res://SampleProject/Resources/Data/items.json"
 const LOCKED_DOOR := "res://SampleProject/Objects/LockedDoor.tscn"
@@ -252,10 +253,10 @@ func _initialize() -> void:
 	ck(guard_fight.fight_in_progress() and guard_fight.get_alive_enemies_count() == 1, "stepping east wakes the guard, alone")
 	await _guarded_chest(game, guard_chest, guard_fight, "enemy_tower_shield_guard.tscn", {"hi_potion": 1, "silver_ingot": 2})
 
-	print("[7] D723: the camp door, and old saves made in the camp")
-	await game.teleport_to_room(ROAD, ^"Arrival_Start")
+	print("[7] D723: the camp door (on the Dunes since Q119), and old saves made in the camp")
+	await game.teleport_to_room(DUNES, ^"Arrival")
 	for i in 20: await physics_frame
-	ck(game.map.get_node("BanditCampDoor").gate_id == "camp_door" and not game.map.get_node("BanditCampDoor").is_open(),
+	ck(game.map.get_node("CampDoor").gate_id == "camp_door" and not game.map.get_node("CampDoor").is_open(),
 			"a save that never entered the camp: its door is locked")
 	await game.teleport_to_room(CAMP, ^"ExitDoor")  # сейв, зроблений у таборі до D723
 	for i in 20: await physics_frame
@@ -264,10 +265,12 @@ func _initialize() -> void:
 	for i in 4: await process_frame
 	game = await _boot()
 	ck(game.map.scene_file_path == CAMP, "loaded in the camp")
+	await game.teleport_to_room(DUNES, ^"Arrival")
+	for i in 20: await physics_frame
+	ck(game.map.get_node("CampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
+			"the old save keeps the camp door open, without a key")
 	await game.teleport_to_room(ROAD, ^"Arrival_Start")
 	for i in 20: await physics_frame
-	ck(game.map.get_node("BanditCampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
-			"the old save keeps the camp door open, without a key")
 	ck(game.map.get_node("Chest_OldVulture").is_open, "the vulture's chest stays open")
 	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
 	for i in 20: await physics_frame

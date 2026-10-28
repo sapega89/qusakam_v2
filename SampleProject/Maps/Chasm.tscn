@@ -11,8 +11,11 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w9"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/FlagBridge.gd" id="w10"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Chasm/gen_bridge.png" id="w11"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w14"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w15"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w16"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
 size = Vector2(576, 16)
@@ -121,10 +124,26 @@ position = Vector2(80, 360)
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(820, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w12")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w12")]
+position = Vector2(432, 250)
+emission_rect_extents = Vector2(432, 140)
+amount = 12
+
+[node name="Dust2" parent="Ambience" instance=ExtResource("w13")]
+position = Vector2(432, 304)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w14")]
+position = Vector2(790, 384)
+perch_flip = true
+
+[node name="RoomInstance" parent="." instance=ExtResource("w15")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w13")
+stream = ExtResource("w16")
 autoplay = true
 bus = &"Music"

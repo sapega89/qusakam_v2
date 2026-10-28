@@ -9,8 +9,16 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="w7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/lever.tscn" id="w9"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w10"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w11"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w10"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w14"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w15"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w16"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="Cistern" type="Node2D"]
 
@@ -110,10 +118,46 @@ cover = NodePath("../Wall_Stash")
 position = Vector2(290, 384)
 sets_flag = "cistern_cellar_open"
 
-[node name="RoomInstance" parent="." instance=ExtResource("w10")]
+[node name="Fight_Bats" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w10")
+enemy_level = 5
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_BatsTrigger")
+state_key = "enemies_bats"
+respawns = true
+
+[node name="Fight_BatsTrigger" type="Area2D" parent="Fight_Bats"]
+position = Vector2(1200, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Bats/Fight_BatsTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Bats"]
+position = Vector2(1000, 234)
+script = ExtResource("w11")
+enemy_type = "bat"
+spawn_id = "Fight_Bats_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Bats"]
+position = Vector2(880, 234)
+script = ExtResource("w11")
+enemy_type = "bat"
+spawn_id = "Fight_Bats_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("w12")]
+position = Vector2(1700, 40)
+
+[node name="FrontDark" parent="." instance=ExtResource("w13")]
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w14")]
+position = Vector2(2000, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w15")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w11")
+stream = ExtResource("w16")
 autoplay = true
 bus = &"Music"

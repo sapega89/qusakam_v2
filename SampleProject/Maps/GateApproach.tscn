@@ -13,8 +13,11 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w11"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w12"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/lever.tscn" id="w13"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w14"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w16"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w17"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w18"]
 
 [node name="GateApproach" type="Node2D"]
 
@@ -139,10 +142,25 @@ position = Vector2(0, -16)
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(1700, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w14")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w14")]
+position = Vector2(864, 250)
+emission_rect_extents = Vector2(864, 140)
+amount = 16
+
+[node name="Dust2" parent="Ambience" instance=ExtResource("w15")]
+position = Vector2(1500, 336)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w16")]
+position = Vector2(600, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w17")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w15")
+stream = ExtResource("w18")
 autoplay = true
 bus = &"Music"

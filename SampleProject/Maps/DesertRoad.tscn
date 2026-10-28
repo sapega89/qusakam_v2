@@ -27,9 +27,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/LockedDoor.tscn" id="locked_door"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_bars.png" id="bars_art"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="b1_door"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="b1_tent"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="x1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palisade_gate/palisade_gate_sheet.png" id="x2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/mesa_cleft/mesa_cleft_sheet.png" id="x3"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="x4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Canyon/gen_rock.png" id="x5"]
@@ -449,7 +447,7 @@ speed_scale = 0.84
 [node name="EnemySpawner" type="Node2D" parent="." unique_id=1070670507]
 script = ExtResource("7_spawner")
 auto_spawn_on_ready = false
-win_xp = 25
+win_xp = 10
 
 [node name="EnemySpawnPoint1" type="Node2D" parent="EnemySpawner" unique_id=796924420]
 position = Vector2(800, 368)
@@ -548,7 +546,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_DunesTrigger")
 state_key = "enemies_dunes"
 respawns = true
-win_xp = 25
+win_xp = 10
 
 [node name="Fight_DunesTrigger" type="Area2D" parent="Fight_Dunes" unique_id=722591254]
 position = Vector2(2170, 240)
@@ -579,7 +577,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_MesaTrigger")
 state_key = "enemies_mesa"
 respawns = true
-win_xp = 70
+win_xp = 22
 
 [node name="Fight_MesaTrigger" type="Area2D" parent="Fight_Mesa" unique_id=914293600]
 position = Vector2(2700, 240)
@@ -613,7 +611,7 @@ wave_delay = 1.5
 trigger_area = NodePath("Fight_CaravanTrigger")
 state_key = "enemies_caravan"
 respawns = true
-win_xp = 72
+win_xp = 20
 reward = Dictionary[String, int]({
 "bandit_key": 1
 })
@@ -732,28 +730,6 @@ bus = &"Music"
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(5160, 344)
 
-[node name="BanditCampTent" type="Sprite2D" parent="."]
-z_index = -1
-texture_filter = 1
-position = Vector2(2050, 390)
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("b1_tent")
-offset = Vector2(0, -100)
-
-[node name="BanditCampDoorEntrance" parent="." instance=ExtResource("x1")]
-position = Vector2(2044, 384)
-texture = ExtResource("x2")
-offset = Vector2(-75, -87)
-
-[node name="BanditCampDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(2050, 334.5)
-target_room = "res://SampleProject/Maps/BanditCamp.tscn"
-arrival = NodePath("ExitDoor")
-gate_id = "camp_door"
-
-[node name="Interactable" parent="BanditCampDoor" index="1"]
-action_text = "Enter"
-
 [node name="MesaClimbDoorEntrance" parent="." instance=ExtResource("x1")]
 position = Vector2(2806.75, 384)
 texture = ExtResource("x3")
@@ -765,29 +741,6 @@ target_room = "res://SampleProject/Maps/MesaClimb.tscn"
 arrival = NodePath("ExitDoor")
 
 [node name="Interactable" parent="MesaClimbDoor" index="1"]
-action_text = "Enter"
-
-[node name="CampShortcutTent" type="Sprite2D" parent="."]
-z_index = -1
-texture_filter = 1
-position = Vector2(4820, 392)
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("b1_tent")
-flip_h = true
-offset = Vector2(0, -100)
-
-[node name="CampShortcutDoorEntrance" parent="." instance=ExtResource("x1")]
-position = Vector2(4814, 384)
-texture = ExtResource("x2")
-offset = Vector2(-75, -87)
-
-[node name="CampShortcutDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(4820, 334.5)
-target_room = "res://SampleProject/Maps/BanditCamp.tscn"
-arrival = NodePath("ShortcutDoor")
-gate_id = "camp_shortcut"
-
-[node name="Interactable" parent="CampShortcutDoor" index="1"]
 action_text = "Enter"
 
 [node name="FrontDark" parent="." instance=ExtResource("x4")]

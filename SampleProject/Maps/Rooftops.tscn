@@ -9,8 +9,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="w7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w8"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="w9"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w10"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="w11"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w13"]
 
 [node name="Rooftops" type="Node2D"]
 
@@ -110,10 +112,25 @@ target_room = "res://SampleProject/Maps/PigeonLoft.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Loft")
 
-[node name="RoomInstance" parent="." instance=ExtResource("w10")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w10")]
+position = Vector2(1296, 250)
+emission_rect_extents = Vector2(1296, 140)
+amount = 24
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Pigeon1" parent="Critters" instance=ExtResource("w11")]
+position = Vector2(700, 384)
+
+[node name="Pigeon2" parent="Critters" instance=ExtResource("w11")]
+position = Vector2(1900, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w12")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w11")
+stream = ExtResource("w13")
 autoplay = true
 bus = &"Music"

@@ -8,8 +8,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/palace_door/palace_door_sheet.png" id="w6"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/gate_guard.tscn" id="w8"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w9"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="w10"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w11"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w12"]
 
 [node name="PalaceSquare" type="Node2D"]
 
@@ -92,10 +94,25 @@ position = Vector2(1620, 396)
 [node name="Sprite2D" parent="GuardRight" index="0"]
 flip_h = true
 
-[node name="RoomInstance" parent="." instance=ExtResource("w9")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w9")]
+position = Vector2(864, 250)
+emission_rect_extents = Vector2(864, 140)
+amount = 16
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Pigeon1" parent="Critters" instance=ExtResource("w10")]
+position = Vector2(500, 384)
+
+[node name="Pigeon2" parent="Critters" instance=ExtResource("w10")]
+position = Vector2(900, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w11")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w10")
+stream = ExtResource("w12")
 autoplay = true
 bus = &"Music"

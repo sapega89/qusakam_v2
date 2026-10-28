@@ -12,8 +12,16 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/OldRuins/gen_front.png" id="w10"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w11"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w12"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w13"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w14"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w13"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="w16"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w17"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w18"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w19"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="OldRuins" type="Node2D"]
 
@@ -139,10 +147,55 @@ position = Vector2(151, 330)
 target_room = "res://SampleProject/Maps/ZahraRest.tscn"
 arrival = NodePath("WellDoor")
 
-[node name="RoomInstance" parent="." instance=ExtResource("w13")]
+[node name="Fight_Ruins" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w13")
+enemy_level = 4
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_RuinsTrigger")
+state_key = "enemies_ruins"
+respawns = true
+
+[node name="Fight_RuinsTrigger" type="Area2D" parent="Fight_Ruins"]
+position = Vector2(2000, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Ruins/Fight_RuinsTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Ruins"]
+position = Vector2(2160, 368)
+script = ExtResource("w14")
+enemy_type = "melee"
+spawn_id = "Fight_Ruins_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Ruins"]
+position = Vector2(2260, 368)
+script = ExtResource("w14")
+enemy_type = "shield"
+spawn_id = "Fight_Ruins_EnemySpawnPoint2"
+
+[node name="EnemySpawnPoint3" type="Node2D" parent="Fight_Ruins"]
+position = Vector2(2380, 368)
+script = ExtResource("w14")
+enemy_type = "fast"
+spawn_id = "Fight_Ruins_EnemySpawnPoint3"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("w15")]
+position = Vector2(1200, 40)
+
+[node name="Spores2" parent="Ambience" instance=ExtResource("w16")]
+position = Vector2(2160, 250)
+emission_rect_extents = Vector2(2000, 110)
+amount = 24
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w17")]
+position = Vector2(3200, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w18")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w14")
+stream = ExtResource("w19")
 autoplay = true
 bus = &"Music"

@@ -34,6 +34,7 @@ const PAINTED := {
 	"LizardCave/ExitDoor": "the lit cave opening (D729)",
 	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D729)",
 	"ZahraRest/WellDoor": "the stone well with its iron grate",
+	"Dunes/CampDoor": "the bandits' trailhead",
 	"OldRuins/WellDoor": "the well shaft with its rope",
 	"Aqueduct/ApproachDoor": "the side doorway with the stair up",
 	"Aqueduct/CellarDoor": "the barred cellar arch",

@@ -6,8 +6,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="w4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="w5"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w6"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w7"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w8"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="w7"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_moth.tscn" id="w8"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w9"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w10"]
 
 [node name="MayorArchive" type="Node2D"]
 
@@ -62,10 +64,20 @@ position = Vector2(198.5, 322.5)
 target_room = "res://SampleProject/Maps/MayorHall.tscn"
 arrival = NodePath("ArchiveDoor")
 
-[node name="RoomInstance" parent="." instance=ExtResource("w7")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("w7")]
+position = Vector2(480, 40)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Moth1" parent="Critters" instance=ExtResource("w8")]
+position = Vector2(600, 184)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w9")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w8")
+stream = ExtResource("w10")
 autoplay = true
 bus = &"Music"

@@ -9,8 +9,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="w7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="w9"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w10"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w11"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w10"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_steam.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_moth.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w14"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w15"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="AlchemistCorridor" type="Node2D"]
 
@@ -99,10 +106,46 @@ gate_id = "alchemist_store"
 position = Vector2(1300, 352)
 item_id = "alchemist_key"
 
-[node name="RoomInstance" parent="." instance=ExtResource("w10")]
+[node name="Fight_Corridor" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w10")
+enemy_level = 8
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_CorridorTrigger")
+state_key = "enemies_corridor"
+respawns = true
+
+[node name="Fight_CorridorTrigger" type="Area2D" parent="Fight_Corridor"]
+position = Vector2(700, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Corridor/Fight_CorridorTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Corridor"]
+position = Vector2(860, 368)
+script = ExtResource("w11")
+enemy_type = "shield"
+spawn_id = "Fight_Corridor_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Corridor"]
+position = Vector2(960, 368)
+script = ExtResource("w11")
+enemy_type = "fast"
+spawn_id = "Fight_Corridor_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Steam1" parent="Ambience" instance=ExtResource("w12")]
+position = Vector2(1300, 300)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Moth1" parent="Critters" instance=ExtResource("w13")]
+position = Vector2(1900, 184)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w14")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w11")
+stream = ExtResource("w15")
 autoplay = true
 bus = &"Music"

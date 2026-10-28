@@ -13,11 +13,14 @@ extends SceneTree
 ##   7. A New Game in the same session starts again at level 1, with an empty bag and a fresh hero (B79).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_xp_curve.gd
 
-## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates).
-const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates"]
+## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates), with the
+## M7 road rooms between them (D844): the path to the village, the drop through the cave, and the road on from Zahra's
+## Rest past the chasm, the first time round through the dry riverbed and the aqueduct (D846: the bridge is still up).
+const ROUTE := ["Canyon", "MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "Village", "CaveUnderBridge", "CaveExit",
+		"DesertRoad", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "GateApproach", "CityGates"]
 const OATH_LEVEL := 5
 ## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → corridors → the mercenary (D466) → outside.
-const LAB_ROUTE := ["City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
+const LAB_ROUTE := ["City", "CraftQuarter", "PalaceSquare", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
 const LAB_END_LEVELS := [16, 17]
 ## "A little farming" (D492): rounds of the respawning Laboratory corridors after the mercenary.
 const FARM_ROUNDS := 2
@@ -71,7 +74,7 @@ func _initialize() -> void:
 				total += spawner.win_xp
 				kills.append("%s win +%d" % [spawner.name, spawner.win_xp])
 		room.free()
-		print("    %-10s %2d kills %s → %d XP, level %d → %d" % [room_name, kills.size(), kills, total, level_before, xp.current_level])
+		print("    %-15s %2d kills %s → %d XP, level %d → %d" % [room_name, kills.size(), kills, total, level_before, xp.current_level])
 		if room_name == "DesertRoad":
 			ck(xp.current_level >= 2 and xp.current_level < OATH_LEVEL,
 					"after the Desert Road: level %d (≥ 2 for Healing Palm, < %d before the City Gates)" % [xp.current_level, OATH_LEVEL])

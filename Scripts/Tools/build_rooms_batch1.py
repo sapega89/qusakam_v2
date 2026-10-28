@@ -197,7 +197,7 @@ def bandit_camp() -> None:
     r.backdrop()
     r.bounds(FLOOR // 32)
     r.marker("Arrival", 96, STAND)
-    r.door("ExitDoor", 96, STAND, "DesertRoad", "BanditCampDoor")
+    r.door("ExitDoor", 96, STAND, "Dunes", "CampDoor")  # Q119: табір — з дюн
     r.fight("Fight_Camp", 420, 160, 4, [
         ("EnemySpawnPoint1", 700, FLOOR - 16, "fast", ""),
         ("EnemySpawnPoint2", 820, FLOOR - 16, "melee", ""),
@@ -208,7 +208,7 @@ def bandit_camp() -> None:
     ], waves=3, reward={"camp_key": 1})
     r.gate("Gate_Stockade", 1300, "camp_stockade")
     r.chest("Chest_Loot", 1450, FLOOR, contents={"potion_lesser": 2, "herb": 3, "leather": 2}, charm="breaker_ring")
-    r.door("ShortcutDoor", 1640, STAND, "DesertRoad", "CampShortcutDoor", "Open the gate", '\nsets_flag = "bandit_camp_shortcut"')
+    r.door("ShortcutDoor", 1640, STAND, "ZahraRest", "CampGateDoor", "Open the gate", '\nsets_flag = "bandit_camp_shortcut"')
     r.write()
 
 

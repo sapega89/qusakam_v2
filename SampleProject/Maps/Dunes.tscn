@@ -11,8 +11,18 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w9"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Dunes/gen_front.png" id="w10"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w11"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w12"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w13"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/dust.tscn" id="w16"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly.tscn" id="w17"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w18"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w19"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/whispers_in_the_sand.ogg" id="w20"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="Dunes" type="Node2D"]
 
@@ -126,15 +136,66 @@ tile_set = ExtResource("w11")
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(200, 360)
 
+[node name="CampDoor" parent="." instance=ExtResource("w12")]
+position = Vector2(2700, 334.5)
+target_room = "res://SampleProject/Maps/BanditCamp.tscn"
+arrival = NodePath("ExitDoor")
+gate_id = "camp_door"
+
 [node name="ObjectiveTargets" type="Node2D" parent="."]
 
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(3420, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w12")]
+[node name="Fight_Dunes" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w13")
+enemy_level = 4
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_DunesTrigger")
+state_key = "enemies_dunes"
+respawns = true
+win_xp = 10
+
+[node name="Fight_DunesTrigger" type="Area2D" parent="Fight_Dunes"]
+position = Vector2(1500, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Dunes/Fight_DunesTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Dunes"]
+position = Vector2(1660, 368)
+script = ExtResource("w14")
+enemy_type = "melee"
+spawn_id = "Fight_Dunes_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Dunes"]
+position = Vector2(1780, 368)
+script = ExtResource("w14")
+enemy_type = "fast"
+spawn_id = "Fight_Dunes_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w15")]
+position = Vector2(1728, 250)
+emission_rect_extents = Vector2(1728, 140)
+amount = 32
+
+[node name="Dust2" parent="Ambience" instance=ExtResource("w16")]
+position = Vector2(3000, 336)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("w17")]
+position = Vector2(600, 364)
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w18")]
+position = Vector2(2300, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w19")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w13")
+stream = ExtResource("w20")
 autoplay = true
 bus = &"Music"

@@ -7,8 +7,10 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w5"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BridgeCave/gen_front.png" id="w6"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w7"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w8"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="w8"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w9"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w10"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w11"]
 
 [node name="CaveExit" type="Node2D"]
 
@@ -88,10 +90,18 @@ position = Vector2(432, 360)
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(820, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w8")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("w8")]
+position = Vector2(432, 40)
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w9")]
+position = Vector2(680, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w10")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w9")
+stream = ExtResource("w11")
 autoplay = true
 bus = &"Music"

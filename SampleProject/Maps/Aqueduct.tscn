@@ -16,8 +16,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Aqueduct/gen_front.png" id="w14"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w15"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w16"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w17"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w18"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w17"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w18"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="w19"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w20"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w21"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w22"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="Aqueduct" type="Node2D"]
 
@@ -178,10 +185,45 @@ gate_id = "aqueduct_cellar"
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(2900, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w17")]
+[node name="Fight_Aqueduct" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w17")
+enemy_level = 4
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_AqueductTrigger")
+state_key = "enemies_aqueduct"
+respawns = true
+win_xp = 10
+
+[node name="Fight_AqueductTrigger" type="Area2D" parent="Fight_Aqueduct"]
+position = Vector2(1500, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Aqueduct/Fight_AqueductTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Aqueduct"]
+position = Vector2(1820, 368)
+script = ExtResource("w18")
+enemy_type = "archer"
+spawn_id = "Fight_Aqueduct_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Aqueduct"]
+position = Vector2(1660, 368)
+script = ExtResource("w18")
+enemy_type = "fast"
+spawn_id = "Fight_Aqueduct_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="LightShaft1" parent="Ambience" instance=ExtResource("w19")]
+position = Vector2(900, 40)
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w20")]
+position = Vector2(2300, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w21")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w18")
+stream = ExtResource("w22")
 autoplay = true
 bus = &"Music"

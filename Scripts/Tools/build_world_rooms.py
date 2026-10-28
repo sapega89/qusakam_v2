@@ -149,10 +149,14 @@ ROOMS = {
                     doors=[("ClimbDoor", 0, 1560, "mesa_cleft", "MesaClimb", "MesaTopDoor", {})]),
     "ZahraRest": dict(loc="canyon_of_whispers", kit="desert", cells=(10, 5, 2, 1), open=[(0, "L"), (0, "R")],
                       title=("Zahra's Rest", "Зарин привал"), arrival=(0, 200),
-                      doors=[("WellDoor", 0, 900, None, "OldRuins", "WellDoor", {"gate": "ruins_well"})],
+                      doors=[("WellDoor", 0, 900, None, "OldRuins", "WellDoor", {"gate": "ruins_well"}),
+                             # Задня брама табору (Q119, граф: «ворота зсередини — скорочення до Зариного привалу»).
+                             ("CampGateDoor", 0, 1500, "palisade_gate", "BanditCamp", "ShortcutDoor", {"gate": "camp_shortcut"})],
                       targets={"city_gates": (0, 1700)}),
     "Dunes": dict(loc="canyon_of_whispers", kit="desert", cells=(12, 5, 4, 1), open=[(0, "L"), (0, "R")],
-                  title=("Dunes", "Дюни"), arrival=(0, 200), targets={"city_gates": (0, 3420)}),
+                  title=("Dunes", "Дюни"), arrival=(0, 200), targets={"city_gates": (0, 3420)},
+                  # Табір бандитів — стежкою з дюн (Q119, Dunes/README): намальований вхід до стежки на x 2700.
+                  doors=[("CampDoor", 0, 2700, None, "BanditCamp", "ExitDoor", {"gate": "camp_door", "y": 334.5})]),
     "Chasm": dict(loc="canyon_of_whispers", kit="desert", cells=(16, 5, 1, 1), open=[(0, "L"), (0, "R")],
                   holes=[(0, 160, 704)], bridge=(144, 720, "chasm_bridge_down"),
                   title=("Chasm", "Провалля"), arrival=(0, 80), targets={"city_gates": (0, 820)}),
@@ -273,6 +277,85 @@ EXISTING_BORDERS = [
 SIDES = {"R": 0, "D": 1, "L": 2, "U": 3}
 
 
+# ── Бої й життя в нових кімнатах (rooms-finish) ─────────────────────────────────────────────────────────────────
+# fights: (вузол, рядок, x тригера, рівень, win_xp, [(тип, x[, висота над підлогою])]) — звичайні гурти (D817/D831:
+#   щонайбільше бандит + шакал або два бандити + шакал; D840/D857 скейлить рівень від героя). На дорозі від мосту до села
+#   й на вулицях міста боїв немає (world_structure_plan, D773). Нагорода за перемогу — win_xp, щоб рівні маршруту
+#   трималися (verify_xp_curve).
+# critters: (сцена, рядок, x[, дод.]) — D803: жайворонки й метелики надворі, голуби в місті, кажани в печерах і льохах
+#   (на FrontDark, висять під склепінням), міль біля ламп і свічок; ≥ 96 px від дверей/NPC/скрині/підбирання,
+#   ≥ 200 px від тригера бою. air: (сцена, рядок, x, y від верху рядка[, дод.]) — D804, одна-дві тихі речі з README.
+DECOR = "res://SampleProject/Scenes/Backgrounds/Decor/%s.tscn"
+SPAWNER = "res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd"
+SPAWN_POINT = "res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd"
+FLY_HEIGHT = {"vulture": 174, "bat": 150}   # висота спавну над підлогою, як у DesertRoad / льоху / лабораторії
+
+
+def pollen(w: int, amount: int = 0) -> tuple:
+    """Пилок / пісок на всю ширину кімнати (як на дорозі: 48 частинок на 5184 px)."""
+    return ("atmo_pollen", 0, w / 2, 250, {"emission_rect_extents": "Vector2(%g, 140)" % (w / 2),
+                                           "amount": amount or max(12, min(48, int(w / 108)))})
+
+
+def spores(x: float, half: float, amount: int = 16) -> tuple:
+    return ("atmo_spores", 0, x, 250, {"emission_rect_extents": "Vector2(%g, 110)" % half, "amount": amount})
+
+
+LIVING = {
+    # ── M1: Каньйон шепотів ──
+    "MountainPath": dict(critters=[("critter_bird", 0, 700), ("critter_butterfly", 0, 1300), ("critter_bird", 0, 1900, {"perch_flip": True})],
+                         air=[pollen(2592), ("dust", 0, 1600, 336)]),
+    "ScreeSlide": dict(critters=[("critter_bird", 1, 820)], air=[("atmo_pollen", 0, 432, 480, {"emission_rect_extents": "Vector2(432, 300)", "amount": 12})]),
+    "StreamGorge": dict(critters=[("critter_butterfly_blue", 0, 900), ("critter_butterfly_blue", 0, 1700), ("critter_bird", 0, 2300)],
+                        air=[pollen(2592)]),
+    "RockLedges": dict(critters=[("critter_bird", 0, 820, {"perch_flip": True})],
+                       air=[("atmo_pollen", 0, 432, 480, {"emission_rect_extents": "Vector2(432, 300)", "amount": 12})]),
+    "CaveUnderBridge": dict(critters=[("critter_bat", 1, 640)], air=[("atmo_light_shaft", 0, 640, 40)]),
+    "CaveExit": dict(critters=[("critter_bat", 0, 680)], air=[("atmo_light_shaft", 0, 432, 40)]),
+    "CanyonFloor": dict(fights=[("Fight_CanyonFloor", 0, 1500, 3, 0, [("fast", 1660), ("vulture", 1780)])],
+                        critters=[("critter_butterfly", 0, 800), ("critter_bird", 0, 2200), ("critter_bat", 0, 3260)],
+                        air=[pollen(3456), ("dust", 0, 2500, 336)]),
+    "SmugglersStash": dict(critters=[("critter_bat", 0, 420)], air=[("atmo_motes", 0, 600, 250)]),
+    "LizardCaves": dict(fights=[("Fight_Bats", 0, 1800, 3, 0, [("bat", 1980), ("bat", 2120)]),
+                                ("Fight_Scorpion", 0, 3600, 3, 0, [("tank", 3780)])],
+                        critters=[("critter_bat", 0, 1100), ("critter_bat", 0, 2700)],
+                        air=[("atmo_fireflies", 0, 2600, 250, {"emission_rect_extents": "Vector2(2400, 110)", "amount": 32})]),
+    "MesaTop": dict(fights=[("Fight_Lookout", 0, 900, 3, 0, [("archer", 560), ("melee", 700)])],
+                    critters=[("critter_bird", 0, 1250)], air=[pollen(1728), ("dust", 0, 300, 336)]),
+    "ZahraRest": dict(critters=[("critter_butterfly_blue", 0, 450), ("critter_butterfly_blue", 0, 620), ("critter_bird", 0, 1250)],
+                      air=[pollen(1728)]),
+    "Dunes": dict(fights=[("Fight_Dunes", 0, 1500, 4, 10, [("melee", 1660), ("fast", 1780)])],
+                  critters=[("critter_butterfly", 0, 600), ("critter_bird", 0, 2300)],
+                  air=[pollen(3456), ("dust", 0, 3000, 336)]),
+    "Chasm": dict(critters=[("critter_bird", 0, 790, {"perch_flip": True})], air=[pollen(864), ("dust", 0, 432, 304)]),
+    "DryRiverbed": dict(critters=[("critter_bat", 0, 200)], air=[("atmo_light_shaft", 0, 300, 40)]),
+    "Aqueduct": dict(fights=[("Fight_Aqueduct", 0, 1500, 4, 10, [("archer", 1820), ("fast", 1660)])],
+                     critters=[("critter_bat", 0, 2300)], air=[("atmo_light_shaft", 0, 900, 40)]),
+    "OldRuins": dict(fights=[("Fight_Ruins", 0, 2000, 4, 0, [("melee", 2160), ("shield", 2260), ("fast", 2380)])],
+                     critters=[("critter_bat", 0, 3200)], air=[("atmo_light_shaft", 0, 1200, 40), spores(2160, 2000, 24)]),
+    "GateApproach": dict(critters=[("critter_bird", 0, 600)], air=[pollen(1728), ("dust", 0, 1500, 336)]),
+    # ── M3: Місто ──
+    "CraftQuarter": dict(critters=[("critter_pigeon", 0, 700), ("critter_pigeon", 0, 1800)], air=[pollen(2592)]),
+    "PalaceSquare": dict(critters=[("critter_pigeon", 0, 500), ("critter_pigeon", 0, 900)], air=[pollen(1728)]),
+    "Rooftops": dict(critters=[("critter_pigeon", 0, 700), ("critter_pigeon", 0, 1900)], air=[pollen(2592)]),
+    "PigeonLoft": dict(critters=[("critter_pigeon", 0, 200), ("critter_pigeon", 0, 760, {"perch_flip": True})],
+                       air=[("atmo_light_shaft", 0, 600, 40)]),
+    "TavernAttic": dict(critters=[("critter_moth", 0, 900, {"hover": 200}), ("critter_mouse", 0, 1300, {"hole": 84})],
+                        air=[("atmo_light_shaft", 0, 700, 40)]),
+    "MayorArchive": dict(critters=[("critter_moth", 0, 600, {"hover": 200})], air=[("atmo_light_shaft", 0, 480, 40)]),
+    "Cistern": dict(fights=[("Fight_Bats", 0, 1200, 5, 0, [("bat", 1000), ("bat", 880)])],
+                    critters=[("critter_bat", 0, 2000)], air=[("atmo_light_shaft", 0, 1700, 40)]),
+    "CisternStash": dict(critters=[("critter_bat", 0, 800)], air=[("atmo_motes", 0, 1000, 250)]),
+    # ── M4: Лабораторія ──
+    "AlchemistCorridor": dict(fights=[("Fight_Corridor", 0, 700, 8, 0, [("shield", 860), ("fast", 960)])],
+                              critters=[("critter_moth", 0, 1900, {"hover": 200})], air=[("atmo_steam", 0, 1300, 300)]),
+    "AlchemistStore": dict(critters=[("critter_moth", 0, 900, {"hover": 200})], air=[("atmo_motes", 0, 900, 250)]),
+    "MalikStash": dict(critters=[("critter_moth", 0, 400, {"hover": 200})], air=[("atmo_motes", 0, 700, 250)]),
+    "CollapsedDrain": dict(fights=[("Fight_Drain", 0, 2000, 9, 0, [("tank", 2160), ("fast", 2260)])],
+                           critters=[("critter_bat", 0, 4200)], air=[spores(3000, 2800, 32)]),
+}
+
+
 # ── Намальовані плани (wire-backdrops, Sapega 2026-10-28: «чому не всі арти підключені?») ───────────────────────
 # Кімнати з готовим артом малюють його замість тимчасового комплекту KITS — механічно з таблиць README тек
 # Backgrounds/<кімната>/. Площина: (вузол, текстура, (множник x, y), позиція у світі кімнати, дод.), дод.:
@@ -375,7 +458,7 @@ PAINTED = {
               ("Near", "Dunes/gen_near.png", (0.8, 1), (0, 225), {"tile": 576}),
               ("Slope", "Dunes/gen_slope.png", (0.85, 1), (1498.5, 45), {}),
               ("Stake", "Dunes/gen_stake.png", (0.9, 1), (603, 216), {}),
-              # Стежка до табору — лише картинка: табір досі відчиняється з дороги (Dunes/README, CampDoor — пізніше).
+              # Стежка до табору — намальований прохід (Dunes/README): CampDoor стоїть на ній (Q119).
               ("CampTrail", "Dunes/gen_trailhead.png", "room", (2619, 219), {"z": -2}),
               ("Ground", "Dunes/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 2304, 64)}),
               ("OccluderThorn1", "Dunes/gen_front.png", "front", (1131, 279), {}),
@@ -521,7 +604,7 @@ def add_door(s: Scene, name: str, x: float, floor: float, art: str | None, targe
              parent: str = ".") -> None:
     if art is None:
         # Отвір уже намальований у кімнаті (криниця на ринку): двері стоять на висоті героя над підлогою.
-        dx, dy = x, floor - 54
+        dx, dy = x, extra.get("y", floor - 54)
     else:
         dx, dy = door_pos(art, x, floor)
         s.node('[node name="%sEntrance" parent="%s" instance=%s]\nposition = Vector2(%g, %g)\ntexture = %s' % (
@@ -556,6 +639,7 @@ class Room(Scene):
         self.h = self.ch * CELL_H
         self.kit = KITS[spec["kit"]]
         self.solid: set[tuple[int, int]] = set()
+        self.has_front = False
 
     def floor_y(self, row: int) -> int:
         return row * CELL_H + FLOOR
@@ -713,6 +797,7 @@ class Room(Scene):
             self.node(self._sprite(name, ".", tex, pos, ex))
         if fronts:
             self.node('[node name="FrontDark" parent="." instance=%s]' % self.res("PackedScene", "res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn"))
+            self.has_front = True
             for name, tex, f, pos, ex in fronts:
                 self.node(self._sprite(name, "FrontDark", tex, self._fix(pos, (1.3, 1)), ex))
 
@@ -824,6 +909,64 @@ class Room(Scene):
             for target, (row, x) in sp["targets"].items():
                 self.node('[node name="%s" type="Marker2D" parent="ObjectiveTargets"]\nposition = Vector2(%g, %g)' % (target, x, self.floor_y(row) - 44))
 
+    def fights(self) -> None:
+        for name, row, tx, level, win_xp, enemies in LIVING.get(self.name, {}).get("fights", []):
+            floor = self.floor_y(row)
+            body = ('[node name="%s" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]\nscript = %s\n'
+                    'enemy_level = %d\nauto_spawn_on_ready = false\ntrigger_area = NodePath("%sTrigger")\nstate_key = "enemies_%s"\n'
+                    'respawns = true' % (name, self.res("Script", SPAWNER), level, name, name[len("Fight_"):].lower()))
+            if win_xp:
+                body += "\nwin_xp = %d" % win_xp
+            self.node(body)
+            self.node('[node name="%sTrigger" type="Area2D" parent="%s"]\nposition = Vector2(%g, %g)' % (name, name, tx, floor - 144))
+            self.node('[node name="CollisionShape2D" type="CollisionShape2D" parent="%s/%sTrigger"]\nshape = %s'
+                      % (name, name, self.rect(64, 480)))
+            for i, (kind, x, *h) in enumerate(enemies, 1):
+                y = floor - (h[0] if h else FLY_HEIGHT.get(kind, 16))
+                self.node('[node name="EnemySpawnPoint%d" type="Node2D" parent="%s"]\nposition = Vector2(%g, %g)\nscript = %s\n'
+                          'enemy_type = "%s"\nspawn_id = "%s_EnemySpawnPoint%d"' % (i, name, x, y, self.res("Script", SPAWN_POINT), kind, name, i))
+
+    def life(self) -> None:
+        spec = LIVING.get(self.name, {})
+        air = spec.get("air", [])
+        if air:
+            self.node('[node name="Ambience" type="Node2D" parent="."]')
+            for i, (kind, row, x, y, *extra) in enumerate(air, 1):
+                label = "".join(w.capitalize() for w in kind.replace("atmo_", "").split("_")) + str(i)
+                body = '[node name="%s" parent="Ambience" instance=%s]\nposition = Vector2(%g, %g)' % (
+                    label, self.res("PackedScene", DECOR % kind), x, row * CELL_H + y)
+                for prop, value in (extra[0] if extra else {}).items():
+                    body += "\n%s = %s" % (prop, value)
+                self.node(body)
+        critters = spec.get("critters", [])
+        if not critters:
+            return
+        if any(c[0] == "critter_bat" for c in critters) and not self.has_front:
+            self.node('[node name="FrontDark" parent="." instance=%s]' % self.res("PackedScene", "res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn"))
+            self.has_front = True
+        if any(c[0] != "critter_bat" for c in critters):
+            self.node('[node name="Critters" type="Node2D" parent="."]')
+        counts: dict[str, int] = {}
+        for kind, row, x, *extra in critters:
+            ex = extra[0] if extra else {}
+            label = {"critter_bird": "Lark", "critter_butterfly": "Butterfly", "critter_butterfly_blue": "Butterfly",
+                     "critter_pigeon": "Pigeon", "critter_bat": "Bat", "critter_moth": "Moth", "critter_mouse": "Mouse"}[kind]
+            counts[label] = counts.get(label, 0) + 1
+            floor = self.floor_y(row)
+            if kind == "critter_bat":
+                parent, y = "FrontDark", row * CELL_H + 130   # висить під склепінням (як у печері ящурів)
+            elif kind.startswith("critter_butterfly"):
+                parent, y = "Critters", floor - 20
+            else:
+                parent, y = "Critters", floor - ex.get("hover", 0)
+            body = '[node name="%s%d" parent="%s" instance=%s]\nposition = Vector2(%g, %g)' % (
+                label, counts[label], parent, self.res("PackedScene", DECOR % kind), x, y)
+            if ex.get("perch_flip"):
+                body += "\nperch_flip = true"
+            self.node(body)
+            if "hole" in ex:
+                self.node('[node name="Hole" parent="%s/%s%d" index="0"]\nposition = Vector2(%g, 0)' % (parent, label, counts[label], ex["hole"]))
+
     def write(self) -> None:
         painted = PAINTED.get(self.name)
         if painted:
@@ -837,6 +980,8 @@ class Room(Scene):
         self.slope()
         self.bridge()
         self.content()
+        self.fights()
+        self.life()
         self.node('[node name="RoomInstance" parent="." instance=%s]' % self.res("PackedScene", "res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn"))
         music = self.res("AudioStream", "res://SampleProject/Resources/Audio/Music/%s.ogg" % self.kit["music"])
         self.node('[node name="Music" type="AudioStreamPlayer" parent="."]\nprocess_mode = 3\nstream = %s\nautoplay = true\nbus = &"Music"' % music)

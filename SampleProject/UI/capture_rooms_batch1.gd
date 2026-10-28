@@ -37,7 +37,7 @@ func _initialize() -> void:
 	await create_timer(1.0).timeout
 	await _stand(Vector2(1420, 180))
 	await _shot("canyon_mural_crack")
-	await _room("DesertRoad", ^"BanditCampDoor")
+	await _room("DesertRoad", ^"MesaClimbDoor")
 	await _stand(Vector2(1990, 200))
 	await _shot("road_camp_path")
 	await _stand(Vector2(2740, 280))

@@ -252,31 +252,34 @@ func _initialize() -> void:
 
 	print("[4] Bandit Camp: the fight, the stockade key, the loot, the shortcut")
 	game.set_quest_flag("desert_road_fight_complete", true)
-	await _room("DesertRoad", ^"Arrival_Start")
-	var shortcut: Node = game.map.get_node("CampShortcutDoor")
+	await _room("ZahraRest", ^"Arrival")  # Q119: задня брама табору — на Зариному привалі
+	var shortcut: Node = game.map.get_node("CampGateDoor")
 	await _stand(shortcut.global_position)
 	started.clear()
 	await Kit.key(self, KEY_E)
 	await Kit.frames(self, 20)
-	ck(started.has("Gate_CampShortcut_Locked") and game.map.scene_file_path == MAPS % "DesertRoad",
-			"the camp gate by the meditation spot is barred from inside (%s)" % [started])
+	ck(started.has("Gate_CampShortcut_Locked") and game.map.scene_file_path == MAPS % "ZahraRest",
+			"the camp gate at Zahra's Rest is barred from inside (%s)" % [started])
 	await Kit.drain(self)
-	var camp_door: Node = game.map.get_node("BanditCampDoor")
+	await _room("Dunes", ^"Arrival")  # Q119: табір — стежкою з дюн
+	var camp_door: Node = game.map.get_node("CampDoor")
 	ck(camp_door.gate_id == "camp_door" and not camp_door.is_open(), "D723: the camp door is shut before the lone brute")
 	await _stand(camp_door.global_position)
 	started.clear()
 	await Kit.key(self, KEY_E)
 	await Kit.frames(self, 20)
-	ck(started.has("Gate_CampDoor_Locked") and game.map.scene_file_path == MAPS % "DesertRoad",
-			"no key: Kusakam says the door needs a key, the hero stays on the road (%s)" % [started])
+	ck(started.has("Gate_CampDoor_Locked") and game.map.scene_file_path == MAPS % "Dunes",
+			"no key: Kusakam says the door needs a key, the hero stays on the dunes (%s)" % [started])
 	await Kit.drain(self)
+	await _room("DesertRoad", ^"Arrival_Start")
 	var lone: Node = game.map.get_node("Fight_LoneElite")
 	ck(lone.reward == {"bandit_camp_key": 1}, "the lone brute's fight carries the camp key")
 	player.Max_Health = 99999  # тест дверей, не бою
 	player.current_health = player.Max_Health
 	await _win("Fight_LoneElite")
 	ck(inventory.get_item_count("bandit_camp_key") == 1, "the brute drops the camp key (%d)" % inventory.get_item_count("bandit_camp_key"))
-	await _enter("BanditCampDoor", "BanditCamp")
+	await _room("Dunes", ^"Arrival")
+	await _enter("CampDoor", "BanditCamp")
 	ck(inventory.get_item_count("bandit_camp_key") == 0, "the key opens the camp door and is used up")
 	var kinds := _kinds("Fight_Camp")
 	ck(kinds.size() >= 5 and game.map.get_node("Fight_Camp/BigSlot_BanditBrute_1").big_kind == "bandit_brute",
@@ -298,12 +301,13 @@ func _initialize() -> void:
 	await create_timer(0.6).timeout
 	ck(stockade.is_open and inventory.get_item_count("camp_key") == 0, "the key unlocks the stockade and is used up")
 	await _open_chest("Chest_Loot", {"potion_lesser": 2, "herb": 3, "leather": 2}, "breaker_ring")
-	await _enter("ShortcutDoor", "DesertRoad")
-	ck(game.get_quest_flag("bandit_camp_shortcut") and player.global_position.distance_to(game.map.get_node("CampShortcutDoor").global_position) < 60.0,
-			"the back gate opens the shortcut: out by the meditation spot (%s)" % player.global_position)
-	await _enter("CampShortcutDoor", "BanditCamp")
-	ck(player.global_position.x > 1500.0, "from the road the gate now leads into the camp, behind the stockade (x %.0f)" % player.global_position.x)
-	await _enter("ExitDoor", "DesertRoad")
+	await _enter("ShortcutDoor", "ZahraRest")
+	ck(game.get_quest_flag("bandit_camp_shortcut") and player.global_position.distance_to(game.map.get_node("CampGateDoor").global_position) < 60.0,
+			"the back gate opens the shortcut: out at Zahra's Rest (%s)" % player.global_position)
+	await _enter("CampGateDoor", "BanditCamp")
+	ck(player.global_position.x > 1500.0, "from Zahra's Rest the gate now leads into the camp, behind the stockade (x %.0f)" % player.global_position.x)
+	await _enter("ExitDoor", "Dunes")
+	await _room("DesertRoad", ^"MesaClimbDoor")
 
 	print("[5] Mesa Climb: up the ledges to the chest; vultures overhead")
 	await _enter("MesaClimbDoor", "MesaClimb")
@@ -394,10 +398,11 @@ func _initialize() -> void:
 	ck(game.map.get_node_or_null("Wall_Mural") == null and game.map.get_node("DragonMuralDoor/Interactable").enabled, "the boulder stays broken")
 	await _room("DragonMural", ^"ExitDoor")
 	ck(game.map.get_node("Chest_Mural").is_open, "the mural chest stays open")
-	await _room("DesertRoad", ^"Arrival_Start")
-	ck(game.map.get_node("BanditCampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
+	await _room("Dunes", ^"Arrival")
+	ck(game.map.get_node("CampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
 			"the camp door stays open, its key gone")
-	ck(game.map.get_node("CampShortcutDoor").is_open(), "the camp shortcut stays open")
+	await _room("ZahraRest", ^"Arrival")
+	ck(game.map.get_node("CampGateDoor").is_open(), "the camp shortcut stays open")
 	await _room("CityGates", ^"Arrival")
 	ck(game.map.get_node("CellarDoor").is_open(), "the cellar stays open")
 	_finish()
