@@ -355,6 +355,7 @@ Slice 1 built (`cloud/enemy-stamina`, merged by integrate-31); later slices in t
 Sapega: «те, що не закрито, винесемо з плану». The old plan: [[archive/MASTER_PLAN_2026-10-24]].
 - **Effects polish (A9, item 30)** — waits on his notes; `fx-film` films every effect (GIFs + sheets in
   `design/shots/fx/`). Resume: send him the GIFs, collect «ok / change» per effect, one art batch.
+- **The merchant becomes an older, cunning rat-folk** (Sapega's asset-catalog note on `NPCs/merchant/sheet.png`; 28.10: «це потім в беклог запиши, і все»): a new character look, normal proportions (D816), size by the chart (D814). Not started.
 - **The bandit's look** (Sapega 27.10: «в нас все гуд, окрім бандита, але його просто запиши в беклог») — every other
   character stays as it is (D816 replaced the chibi redraw of D597/D598: only Kusakam and his companions are chibi). Ask
   Sapega what is wrong with the bandit when this starts; its size fix (B187, 96 art) goes with it.
@@ -364,7 +365,7 @@ Sapega: «те, що не закрито, винесемо з плану». The 
 - **Plugins slices 2–3 (S4, D242)** — own ModalDialog; own menus instead of Maaack.
 - **The weak PC (S14)** — i5-6600, 16 GB, Intel HD 530: D611 gives it Quality High; does it lag? If yes, move HD 5xx/6xx
   to Low on first run (amend D611).
-- **Critter tweaks** — a smaller pigeon, a moth of its own shape: Sapega «зроби, як задумав, я потім виправлю».
+- **Critter tweaks** — a smaller pigeon, a moth of its own shape: by scaling/stretching, no new art (Sapega 28.10) — cloud `critter-tweaks`.
 
 ### World scale: one size chart for everything next to the hero — [[world_scale_plan]]
 - **Exists:** the hero ≈70 world px (the unit H), adults ×1.5 (D172), chibi (D598); props sized by eye.
