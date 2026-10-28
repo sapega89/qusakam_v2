@@ -7,8 +7,12 @@ extends "res://addons/MetroidvaniaSystem/Template/Scripts/MetSysModule.gd"
 
 ## Шлях res:// → готова PackedScene.
 var held: Dictionary = {}
-## Шляхи, чиє фонове завантаження ще йде.
+## Шляхи, чиє фонове завантаження ще йде або чекає черги.
 var _pending: Dictionary = {}
+## Черга кімнат: вантажиться одна за раз (_loading). M7: дві нові кімнати, що вперше разом компілювали ті самі сцени
+## (двері лабораторії → коридор алхіміка й дренаж), роняли гру (signal 11 у verify_memory) — як закріплені нижче.
+var _queue: Array[String] = []
+var _loading: String = ""
 ## Шляхи, які тримаються до кінця гри, а не до зміни кімнати (SceneWarmer.gd, slice 5).
 var pinned: Dictionary = {}
 ## Закріплені шляхи, що ще чекають своєї черги. Вони йдуть по одному й лише коли кімнати не вантажаться:
@@ -40,13 +44,24 @@ func request(path: String) -> void:
 	if ResourceLoader.has_cached(path):
 		held[path] = load(path)
 		return
-	var err := ResourceLoader.load_threaded_request(path)
-	assert(err == OK, "RoomPreloader: load_threaded_request %s → %s" % [path, error_string(err)])
 	_pending[path] = true
+	_queue.append(path)
+	_start_next()
 
 
-## Дочекатися кімнати, попрошеної через request(): кадри йдуть далі, гра не стоїть.
+func _start_next() -> void:
+	if _loading != "" or _queue.is_empty():
+		return
+	_loading = _queue.pop_front()
+	var err := ResourceLoader.load_threaded_request(_loading)
+	assert(err == OK, "RoomPreloader: load_threaded_request %s → %s" % [_loading, error_string(err)])
+
+
+## Дочекатися кімнати, попрошеної через request(): кадри йдуть далі, гра не стоїть. Її черга — перша.
 func wait(path: String) -> PackedScene:
+	if _queue.has(path):
+		_queue.erase(path)
+		_queue.push_front(path)
 	while _pending.has(path):
 		await game.get_tree().process_frame
 		_collect()
@@ -72,13 +87,15 @@ func is_held(path: String) -> bool:
 
 ## Готові фонові завантаження переходять у held.
 func _collect() -> void:
-	for path: String in _pending.keys():
-		var status := ResourceLoader.load_threaded_get_status(path)
+	if _loading != "":
+		var status := ResourceLoader.load_threaded_get_status(_loading)
 		if status == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
-			continue
-		_pending.erase(path)
-		assert(status == ResourceLoader.THREAD_LOAD_LOADED, "RoomPreloader: failed to load %s (%d)" % [path, status])
-		held[path] = ResourceLoader.load_threaded_get(path)
+			return
+		assert(status == ResourceLoader.THREAD_LOAD_LOADED, "RoomPreloader: failed to load %s (%d)" % [_loading, status])
+		held[_loading] = ResourceLoader.load_threaded_get(_loading)
+		_pending.erase(_loading)
+		_loading = ""
+		_start_next()
 	if _pending.is_empty() and not _pin_queue.is_empty():
 		request(_pin_queue.pop_front())
 

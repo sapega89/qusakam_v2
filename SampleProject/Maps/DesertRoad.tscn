@@ -834,11 +834,11 @@ position = Vector2(2372, 140)
 shape = SubResource("RectangleShape2D_SecretArea_TowerStash")
 
 [node name="LizardCavesDoorEntrance" parent="." instance=ExtResource("x1")]
-position = Vector2(4400, 384)
+position = Vector2(4690, 384)
 texture = ExtResource("m7_1")
 
 [node name="LizardCavesDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(4391, 330)
+position = Vector2(4681, 330)
 target_room = "res://SampleProject/Maps/LizardCaves.tscn"
 arrival = NodePath("RoadDoor")
 gate_id = "lizard_caves_shortcut"

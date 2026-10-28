@@ -98,7 +98,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 576, 46)
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(80, 344)
+position = Vector2(80, 360)
 
 [node name="ObjectiveTargets" type="Node2D" parent="."]
 

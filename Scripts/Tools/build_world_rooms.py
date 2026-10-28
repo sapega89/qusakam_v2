@@ -230,8 +230,8 @@ ROOMS = {
 #   (вузол, x, підлога, арт, кімната, двері там, дод.)
 EXISTING_DOORS = {
     "LizardCave": [("DeepCavesDoor", 150, 416, "cave_mouth", "LizardCaves", "ShrineDoor", {})],
-    # Дорога: рівна підлога, поза кадром заслонів переднього плану (OccluderRock2 при камері на 3458–4128).
-    "DesertRoad": [("LizardCavesDoor", 4400, 384, "cave_mouth", "LizardCaves", "RoadDoor", {"gate": "lizard_caves_shortcut"})],
+    # Дорога: рівна підлога, клір від трави (verify_ambient_critters), поза кадром заслонів переднього плану (OccluderRock2 при камері на 3458–4128).
+    "DesertRoad": [("LizardCavesDoor", 4690, 384, "cave_mouth", "LizardCaves", "RoadDoor", {"gate": "lizard_caves_shortcut"})],
     "MesaClimb": [("MesaTopDoor", 480, 180, "mesa_cleft", "MesaTop", "ClimbDoor", {})],
     "GatehouseCellar": [("AqueductDoor", 300, 416, "cave_mouth", "Aqueduct", "CellarDoor", {"gate": "aqueduct_cellar"}),
                         ("CisternDoor", 1450, 416, "cave_mouth", "Cistern", "CellarDoor", {"gate": "cistern_cellar"})],
@@ -240,7 +240,8 @@ EXISTING_DOORS = {
              ("TavernAtticDoor", 2450, 384, "door_elder", "TavernAttic", "LadderDoor", {}),
              # Криниця на ринку — сама інтерактивна (ковток води), тож спуск у цистерну — окремий люк у кінці ринку.
              ("CisternDoor", 2540, 384, "door_elder", "Cistern", "WellDoor", {})],
-    "CityGates": [("RooftopsDoor", 300, 384, "door_elder", "Rooftops", "SlideDoor", {"gate": "city_rooftops"})],
+    # Брама: між кущиками трави й далі від жайворонка (verify_ambient_critters).
+    "CityGates": [("RooftopsDoor", 638, 384, "door_elder", "Rooftops", "SlideDoor", {"gate": "city_rooftops"})],
     "MayorHall": [("ArchiveDoor", 250, 384, "door_elder", "MayorArchive", "BookshelfDoor", {"gate": "mayor_archive"})],
     "LabCells": [("StashDoor", 1450, 384, "lab_door", "MalikStash", "SlabDoor", {"gate": "malik_stash"}),
                  ("DrainDoor", 900, 384, "lab_door", "CollapsedDrain", "HatchDoor", {})],
@@ -461,7 +462,7 @@ class Room(Scene):
     def content(self) -> None:
         sp = self.spec
         row, x = sp["arrival"]
-        self.node('[node name="Arrival" type="Marker2D" parent="."]\nposition = Vector2(%g, %g)' % (x, self.floor_y(row) - 40))
+        self.node('[node name="Arrival" type="Marker2D" parent="."]\nposition = Vector2(%g, %g)' % (x, self.floor_y(row) - 24))
         for name, row, x in sp.get("covers", []):
             self.node('[node name="%s" parent="." instance=%s]\nposition = Vector2(%g, %g)\ncollision_layer = 0'
                       % (name, self.res("PackedScene", WALL), x, self.floor_y(row)))
