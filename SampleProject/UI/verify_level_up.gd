@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Сповіщення про рівень (D436): кожен рівень — панель угорі по центру з нагородами одного рівня
-## (XPManager.stat_bonuses, attributes.json, SkillManager.JP_PER_LEVEL); з'являється й гасне;
+## (attributes.json, SkillManager.JP_PER_LEVEL; HP і шкоди рівень сам не дає, D841); з'являється й гасне;
 ## кілька рівнів — у черзі; на кепі (D541) сповіщення немає.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_level_up.gd
 
@@ -37,8 +37,8 @@ func _initialize() -> void:
 	ck(note.visible and note.pending() == 1, "shown on level-up")
 	ck(note.modulate.a < 1.0, "starts transparent (fade in)")
 	ck(note.get_node("%LevelLabel").text == "Level 2", "Level 2 (%s)" % note.get_node("%LevelLabel").text)
-	ck(rows.get_node("MaxHp/Value").text == "+%d" % int(xp.stat_bonuses["hp_per_level"]), "Max HP from XPManager (%s)" % rows.get_node("MaxHp/Value").text)
-	ck(rows.get_node("Damage/Value").text == "+%d" % int(xp.stat_bonuses["damage_per_level"]), "Damage from XPManager (%s)" % rows.get_node("Damage/Value").text)
+	ck(rows.get_children().map(func(r: Node) -> String: return r.name) == ["AttributePoints", "JobPoints"],
+			"only the points the player spends, no automatic Max HP or Damage (D841: %s)" % [rows.get_children().map(func(r: Node) -> String: return r.name)])
 	ck(rows.get_node("AttributePoints/Value").text == "+%d" % int(attr_data.points_per_level), "Attribute Points from attributes.json (%s)" % rows.get_node("AttributePoints/Value").text)
 	ck(rows.get_node("JobPoints/Value").text == "+%d" % sl.get_skill_manager().JP_PER_LEVEL, "Job Points from SkillManager (%s)" % rows.get_node("JobPoints/Value").text)
 	await _wait(Note.FADE_IN + 0.2)
@@ -77,8 +77,8 @@ func _initialize() -> void:
 	var src := FileAccess.get_file_as_string("res://SampleProject/Scenes/UI/level_up_notification.tscn")
 	ck(not src.contains("theme_override_colors") and not src.contains("theme_override_font_sizes") and not src.contains("notification_panel.tres"), "no overrides in the scene")
 	ck(note.get_node("Panel/Column/Title").get_theme_color("font_color") == UITokens.ACCENT, "title in accent")
-	ck(rows.get_node("MaxHp/Value").get_theme_color("font_color") == UITokens.STATUS_INCREASE, "values in status/increase")
-	ck(rows.get_node("MaxHp/Label").get_theme_color("font_color") == UITokens.TEXT_SECONDARY, "labels in text-secondary")
+	ck(rows.get_node("AttributePoints/Value").get_theme_color("font_color") == UITokens.STATUS_INCREASE, "values in status/increase")
+	ck(rows.get_node("AttributePoints/Label").get_theme_color("font_color") == UITokens.TEXT_SECONDARY, "labels in text-secondary")
 
 	xp.reset()
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))

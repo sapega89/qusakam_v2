@@ -240,7 +240,7 @@ func _hit_effects(target: Node, damage: int, poise: int, push: float, from_x: fl
 		# Легкий удар теж штовхає (4b «мало відчуття удару»), але замаху не зриває — це робить стійкість (D265)
 		target.nudge(away * HIT_PUSH)
 
-## Сила удару = Phys. Atk. з меню (D199): сила, зброя, бонус рівня. Береться на кожен удар,
+## Сила удару = Phys. Atk. з меню (D199): сила, зброя, пасивки й Strength (без бонусу рівня, D841). Береться на кожен удар,
 ## тож зміна спорядження чи рівня діє одразу, без підписок. Крит (D393) — кидок на кожен удар, ×CRIT_DAMAGE.
 func hit_damage() -> int:
 	var gm := ServiceLocator.get_game_manager()

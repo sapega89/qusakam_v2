@@ -173,8 +173,9 @@ func _initialize() -> void:
 		var before: int = gm.calculate_physical_damage()
 		attrs.spend({"strength": 10})
 		steps.append(gm.calculate_physical_damage() - before)
-	ck(steps[0] == 10 and steps[1] < steps[0] and steps[2] < steps[1] and steps[3] < steps[2],
-			"each 10 points of Strength add less Phys. Atk. (%s)" % [steps])
+	var per_point: int = int(attrs.get_definition("strength").per_point.attack)
+	ck(steps[0] == 10 * per_point and steps[1] < steps[0] and steps[2] < steps[1] and steps[3] < steps[2],
+			"the first 10 points of Strength give their full %d each, every next 10 less (%s)" % [per_point, steps])
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL" % fails.size()))
 	quit()

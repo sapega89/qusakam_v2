@@ -2506,11 +2506,11 @@ msgstr "Press {heavy_attack} for a heavy attack: a slow wind-up, then a blow tha
 msgid "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
 msgstr "Hold {block} to block: a hit from the front does no damage (a heavy blow or the last hit of a combo breaks the guard). When an enemy's weapon glints yellow, tap {block} just as the blow lands — that is a parry: no damage, and the attacker is staggered and open to a counter. A red glint cannot be blocked or parried: roll out of the way."
 
-msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
-msgstr "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up, gaining HP, damage and a skill point."
+msgid "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up and get attribute points and a skill point to spend."
+msgstr "Defeated enemies leave XP and coins. The XP bar fills with each kill; when it is full you level up and get attribute points and a skill point to spend."
 
-msgid "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
-msgstr "Each level raises your HP and damage and gives a skill point. Spend points in the game menu under Skills."
+msgid "A level does not make you stronger by itself: it gives attribute points and a skill point. Spend them in the game menu, under Status and Skills."
+msgstr "A level does not make you stronger by itself: it gives attribute points and a skill point. Spend them in the game menu, under Status and Skills."
 
 msgid "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."
 msgstr "Level up! You can learn Healing Palm — press {game_menu}, open Skills, select it and confirm. It goes to your skill bar; press {skill_slot_1} to heal."

@@ -97,10 +97,10 @@ func _initialize() -> void:
 	var speed: float = gm.calculate_attack_speed()
 	var max_sp: int = sm.get_max_sp()
 	ck(attrs.spend({"strength": 3}) == AR.OK, "spend 3 on Strength")
-	ck(gm.calculate_physical_damage() == atk + 3 and player.combat.hit_damage() == atk + 3, "Strength: +1 Phys. Atk. per point, the hit too (%d → %d)" % [atk, gm.calculate_physical_damage()])
+	ck(gm.calculate_physical_damage() == atk + 6 and player.combat.hit_damage() == atk + 6, "Strength: +2 Phys. Atk. per point (D841), the hit too (%d → %d)" % [atk, gm.calculate_physical_damage()])
 	ck(attrs.spend({"vitality": 5}) == AR.OK, "spend 5 on Vitality")
 	await process_frame
-	ck(gm.calculate_max_health() == hp + 20 and player.Max_Health == hp + 20, "Vitality: +4 Max HP per point, the hero's bar too (%d → %d)" % [hp, player.Max_Health])
+	ck(gm.calculate_max_health() == hp + 45 and player.Max_Health == hp + 45, "Vitality: +9 Max HP per point (D841), the hero's bar too (%d → %d)" % [hp, player.Max_Health])
 	ck(attrs.spend({"agility": 2, "wisdom": 5}) == AR.OK, "spend 2 on Agility and 5 on Wisdom at once")
 	ck(is_equal_approx(gm.calculate_critical_chance(), crit + 0.008), "Agility: +0.4 %% crit per point (%.3f)" % gm.calculate_critical_chance())
 	ck(is_equal_approx(gm.calculate_dodge_chance(), dodge + 0.006), "Agility: +0.3 % evasion per point")
@@ -121,7 +121,7 @@ func _initialize() -> void:
 	ck(attrs.spent_total() == 0 and attrs.get_unspent() == 15, "reset returns all 15")
 	pdm.load_data(snap)
 	ck(attrs.get_points("strength") == 3 and attrs.get_points("vitality") == 5 and attrs.get_points("agility") == 2 and attrs.get_points("wisdom") == 5 and attrs.get_unspent() == 0, "loaded back: 3 / 2 / 5 / 5, none unspent")
-	ck(gm.calculate_physical_damage() == atk + 3, "the bonus is back after the load")
+	ck(gm.calculate_physical_damage() == atk + 6, "the bonus is back after the load")
 	var old: Dictionary = snap.duplicate(true)
 	old.erase("attributes")
 	old.erase("attribute_points")
@@ -188,7 +188,7 @@ func _screen(sl: Node, gm: Node, sm: Node, attrs: Node) -> void:
 	await _mouse(rows["vitality"].get_node(^"Plus"))
 	await _mouse(ui._accept_button)
 	for i in 2: await process_frame
-	ck(attrs.get_points("vitality") == 1 and gm.calculate_max_health() == hp_before + 4, "the Accept button spends with the mouse (+4 HP)")
+	ck(attrs.get_points("vitality") == 1 and gm.calculate_max_health() == hp_before + 9, "the Accept button spends with the mouse (+9 HP)")
 	await _mouse(rows["strength"].get_node(^"Plus"))
 	await _key(KEY_F)
 	for i in 2: await process_frame

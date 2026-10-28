@@ -76,8 +76,8 @@ func _initialize() -> void:
 		"attribute rows, action cards and weapon boxes are template copies styled by the theme (D117)")
 	var hp_txt: String = st._hp_meter.get_node("Head/Value").text
 	ck(hp_txt != st.PLACEHOLDER, "Max HP has a real value (%s)" % hp_txt)
-	# D199: Phys. Atk. — сила й спорядження плюс бонус рівня, те саме число, що й удар гравця.
-	var expected: int = StatCalculator.calculate_physical_damage(ch.attributes, ch.get_equipment_stats()) + sl.get_xp_manager().get_damage_bonus()
+	# D199: Phys. Atk. — сила й спорядження плюс пасивки й Strength, те саме число, що й удар гравця (рівень сам — ні, D841).
+	var expected: int = StatCalculator.calculate_physical_damage(ch.attributes, ch.get_equipment_stats()) + sl.get_game_manager().passive_and_attribute_attack()
 	var shown: String = st._left_attrs.get_child(0).get_child(0).get_child(2).text
 	ck(shown == str(expected), "Phys. Atk. matches StatCalculator (%s == %d)" % [shown, expected])
 
@@ -99,7 +99,7 @@ func _initialize() -> void:
 	ck(attrs.spend({"strength": 2, "wisdom": 1}) == 0, "spent 2 Strength, 1 Wisdom")
 	for i in 2: await process_frame
 	ck(st._attr_rows_box.get_node(^"strength/Value").text == "2" and st._attr_rows_box.get_node(^"wisdom/Value").text == "1", "the spent points show per attribute")
-	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == int(atk_before) + 2, "Phys. Atk. +2 from Strength (%s → %s)" % [atk_before, st._left_attrs.get_child(0).get_child(0).get_child(2).text])
+	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == int(atk_before) + 4, "Phys. Atk. +4 from 2 Strength (D841) (%s → %s)" % [atk_before, st._left_attrs.get_child(0).get_child(0).get_child(2).text])
 
 	print("[4b] spending in Status changes the stat shown there (D741)")
 	var vit_row: Control = st._attr_rows_box.get_node(^"vitality")
@@ -117,7 +117,7 @@ func _initialize() -> void:
 	await _mouse(st._attr_rows_box.get_node(^"strength/Plus"))
 	await _key(KEY_F)
 	for i in 2: await process_frame
-	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == atk_now + 1, "key F accepts a Strength point: Phys. Atk. +1")
+	ck(int(st._left_attrs.get_child(0).get_child(0).get_child(2).text) == atk_now + 2, "key F accepts a Strength point: Phys. Atk. +2 (D841)")
 	await _mouse(st._attr_rows_box.get_node(^"agility/Plus"))
 	await _key(KEY_ESCAPE)
 	await process_frame

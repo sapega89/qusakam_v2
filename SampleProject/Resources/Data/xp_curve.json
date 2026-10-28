@@ -1,7 +1,5 @@
 {
 	"_comment": "D297, D492: to_next[level - 1] = XP from that level to the next, levels 1..19 (cap 20, D488). Levels 1-4 stay D297's 100, 150, 200, 250 (level 5 at 700, on the City Gates raid). Straight through the Laboratory (2040 XP) ends at level 16; two more rounds of the Laboratory corridors (430 each) reach 20. verify_xp_curve.gd replays it.",
-	"_growth": "D642: what each level above the first gives the hero (XPManager.stat_bonuses): Max HP and Phys. Atk. Were 20 and 5 in code; a level is worth less so that skills, not levels, carry the fights.",
-	"hp_per_level": 10,
-	"damage_per_level": 2,
+	"_growth": "D841 (overrides D642): a level gives the hero no stats of its own, only the attribute points (attributes.json) and JP he spends.",
 	"to_next": [100, 150, 200, 250, 105, 110, 110, 115, 115, 120, 120, 125, 125, 130, 130, 190, 210, 230, 250]
 }
