@@ -138,8 +138,11 @@ func _sizes() -> void:
 		var strike: Vector2 = _rect_size(base.get_node(^"hitbox/CollisionShape2D"))
 		var body: Vector2 = _rect_size(base.get_node(^"CollisionShape2D"))
 		var feet: float = _feet(base)
-		ck(base.Max_Health == stats.max_health and is_equal_approx(base.attack_range, stats.attack_range),
-				"%s medium: stats as in the .tres (HP %d)" % [kind, base.Max_Health])
+		var kind_scale: float = variety.kind(kind).scale  # B187: вид спершу росте до свого зросту з таблиці масштабу
+		# дальність росте з видом, не далі за хітбокс із ривком (B203, перевіряє verify_hit_areas [1b])
+		ck(base.Max_Health == stats.max_health and base.attack_range <= stats.attack_range * kind_scale + 0.01
+				and (kind_scale > 1.0 or is_equal_approx(base.attack_range, stats.attack_range)),
+				"%s medium: stats as in the .tres, reach %.1f grown with the kind x%.2f (HP %d)" % [kind, base.attack_range, kind_scale, base.Max_Health])
 		var m: Dictionary = sizes.small
 		var s: float = m.scale
 		var e: Node = _spawn(kind, "small", 200)
@@ -151,7 +154,7 @@ func _sizes() -> void:
 				"%s small: hurtbox, hitbox and body x%.1f (%s)" % [kind, s, _rect_size(e.get_node(^"Hurtbox/CollisionShape2D"))])
 		ck(is_equal_approx(_feet(e), feet), "%s small: feet stay on the floor line (%.1f)" % [kind, _feet(e)])
 		ck(e.Max_Health == roundi(stats.max_health * m.health) and is_equal_approx(e.base_damage, stats.base_damage * m.damage)
-				and is_equal_approx(e.speed, stats.speed * m.speed) and is_equal_approx(e.attack_range, stats.attack_range * s)
+				and is_equal_approx(e.speed, stats.speed * m.speed) and e.attack_range < base.attack_range
 				and e.xp_reward == roundi(stats.xp_reward * m.xp),
 				"%s small: HP %d, damage %.1f, speed %.1f, reach %.1f, XP %d" % [kind, e.Max_Health, e.base_damage, e.speed, e.attack_range, e.xp_reward])
 		e.queue_free()
@@ -778,7 +781,8 @@ func _brute() -> void:
 	var bandit: Node = load(SCENES.melee).instantiate()
 	var feet := [HitAreas.frame_rect(brute.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(bandit.get_node(^"Sprite2D"), 0).end.y]
 	bandit.free()
-	ck(absf(feet[0] - feet[1]) <= 1.0, "his drawn feet stand on a medium bandit's line (%.1f vs %.1f px below his centre)" % feet)
+	# B187: обидва ростуть від ніг тіла, тож пів пікселя арту між ними (±1.5 px світу, допуск таблиці масштабу) лишається
+	ck(absf(feet[0] - feet[1]) <= 1.5, "his drawn feet stand on a medium bandit's line (%.1f vs %.1f px below his centre)" % feet)
 	lone.despawn_all_enemies()
 	await process_frame
 

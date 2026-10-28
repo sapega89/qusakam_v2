@@ -1,17 +1,19 @@
 extends SceneTree
 
 ## Знімок D766: розміри видів поруч із Кусакамом — три ряди (бандити, звірі, летючі), кожен вид у позі idle на
-## підлозі DesertRoad (летючі — над нею). design/shots/enemy_sizes/<OUT або lineup>.png. Потрібне вікно, не --headless:
+## підлозі DesertRoad (летючі — над нею). design/shots/enemy_sizes/<OUT або lineup>.png. Друкує намальовану висоту кожного
+## виду (непрозорий кадр idle, px світу; B187: дорослий бандит — 144). Потрібне вікно, не --headless:
 ##   xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --resolution 1920x1080 --rendering-driver opengl3 --script res://SampleProject/UI/capture_enemy_sizes.gd
 
+const HitAreas = preload("res://SampleProject/Scripts/Combat/HitAreas.gd")
 const DIR := "res://SampleProject/Scenes/Characters/Enemies/"
 const ROWS := [
 	[["default_enemy", "melee"], ["enemy_shield", "shield"], ["enemy_bandit_brute", "bandit_brute"], ["enemy_tower_shield_guard", "tower_shield_guard"], ["enemy_archer", "archer"], ["enemy_heavy_archer", "heavy_archer"]],
 	[["enemy_fast", "fast"], ["enemy_jackal_pack_leader", "jackal_pack_leader"], ["enemy_jackal_cursed", "jackal_cursed"], ["enemy_tank", "tank"], ["enemy_armoured_scorpion", "armoured_scorpion"]],
 	[["enemy_vulture", "vulture"], ["enemy_old_vulture", "old_vulture"], ["enemy_bat", "bat"], ["enemy_fly", "fly"]],
 ]
-const GAP := 135.0
-const PANEL := Vector2i(1000, 260)
+const GAP := 220.0
+const PANEL := Vector2i(1560, 400)
 
 var game: Node
 var hero: Node
@@ -44,6 +46,7 @@ func _initialize() -> void:
 		if node.is_in_group(&"enemies"):
 			node.queue_free()
 	await create_timer(0.6).timeout
+	root.get_viewport().get_camera_2d().zoom = Vector2.ONE  # 1 px кадру = 1 px світу: видно і героя, і найвищу еліту
 	var floor_y: float = hero.global_position.y
 	var start_x: float = hero.global_position.x
 	for row: Array in ROWS:
@@ -63,10 +66,14 @@ func _initialize() -> void:
 			e.anim_player.play(&"idle")
 			if e.flying:
 				e.global_position.y = floor_y - 90.0
+		await process_frame
+		for e: Node in lineup:
+			var idle: Array[int] = HitAreas.anim_frames(e.anim_player, &"idle", 0.0, INF)
+			print("drawn %s %.1f" % [e.enemy_stats.enemy_type, HitAreas.frames_rect(e.sprite, idle).size.y])
 		hero.global_position.x = start_x
 		hero.velocity = Vector2.ZERO
 		await create_timer(0.4).timeout
-		await _grab(Vector2(start_x + (row.size() - 1) * GAP * 0.5 + 40.0, floor_y - 20.0))
+		await _grab(Vector2(start_x + (row.size() - 1) * GAP * 0.5 + 60.0, floor_y - 110.0))
 		for e: Node in lineup:
 			e.queue_free()
 		await create_timer(0.3).timeout

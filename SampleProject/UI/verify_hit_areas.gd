@@ -82,6 +82,7 @@ func _initialize() -> void:
 	hero.current_health = hero.Max_Health
 	hero.global_position.x += 700.0
 	await create_timer(0.8).timeout
+	await _grown()
 	await _hero_swings(sl)
 	await _enemy_strikes()
 
@@ -140,6 +141,29 @@ func _scenes() -> void:
 			ck(shape.resource_local_to_scene and shape != twin.get_node(node_path).shape, "%s: %s is its own, not shared" % [name, node_path])
 		enemy.free()
 		twin.free()
+
+
+## [1b] Вирослі види (B187 kinds.<вид>.scale, розмір, еліта): удар, з якого ворог починає, досі дістає героя (B203) —
+## attack_range за дотиком тіл і не далі за край хітбокса з ривком плюс пів героя. Летючі пікірують з відстані.
+func _grown() -> void:
+	print("[1b] Grown kinds, small and medium: attack_range still starts a strike that reaches (B203)")
+	for path: String in KINDS:
+		if KINDS[path] in ["", "archer", "heavy_archer"]:
+			continue
+		for size_kind: String in ["small", "medium"]:
+			var enemy: Node = load(path).instantiate()
+			enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % KINDS[path])
+			enemy.size_kind = size_kind
+			enemy.position = hero.global_position + Vector2(400.0, -40.0)
+			game.map.add_child(enemy)
+			await process_frame
+			var hit := HitAreas.shape_rect(enemy.get_node("hitbox/CollisionShape2D"))
+			var contact: float = enemy.get_node("CollisionShape2D").shape.get_rect().end.x + HERO_HALF
+			var reach: float = hit.end.x + enemy.lunge + HERO_HALF
+			ck(enemy.attack_range > contact and enemy.attack_range <= reach + 0.01,
+					"%s %s: attack_range %.1f between body contact %.1f and reach %.1f" % [path.get_file().get_basename(), size_kind, enemy.attack_range, contact, reach])
+			enemy.queue_free()
+	await process_frame
 
 
 ## Шлейф, що зараз на героєві: межі кадрів його анімації, як він стоїть у світі (обличчям праворуч).
