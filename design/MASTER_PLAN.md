@@ -26,7 +26,7 @@ MASTER_PLAN 2026-10-27»). Оркестратор оновлює статус т
 |---|---|---|---|
 | I29 | `integrate-29`: side-stories, hero-feet + hero-shadow (A24), perf-check (S14), depth-film + depth-critics (A22), арт з ПК; номери D787+ | ☁ | ✅ злито в `feature/backlog` (D787–D793, B171–B184, Q102–Q106; набір: 6 FAIL → лишились B170 `combat_flow` [2c] і `masher` HUNG) |
 | I30 | Наступне злиття: `fx-film`, `scale-probe`, `skills-v2-*` у міру звітів | ☁ | ✅ злито (`integrate-30`: hero-death, skills-v2 ×3, scale-exact, fx-film; D807–D812; набір 13 хв 26 с) |
-| I31 | `integrate-31`: world-rooms (хвіст), wire-art, fight-occluders, enemy-stamina, enemy-scaling → scaling-partial → hero-points-only, elites-bigger, shield-break-wire, ladder-holes | ☁ | ✅ `cloud/integrate-31` (D844–D861, B202–B204, Q115–Q122; набір SUITE_TBD) |
+| I31 | `integrate-31`: world-rooms (хвіст), wire-art, fight-occluders, enemy-stamina, enemy-scaling → scaling-partial → hero-points-only, elites-bigger, shield-break-wire, ladder-holes | ☁ | ✅ `cloud/integrate-31` (D844–D861, B202–B204, Q115–Q122; набір 3 FAIL за 20 хв 6 с, J=4: verify_difficulty 17 і verify_lab_boss 2 — баланс, Q114/Q116–Q118; combat_player — флейк B186) |
 
 ## 2. Наявні кімнати — доробити (одна room routine, після I29)
 | ID | Що | Хто | Статус |

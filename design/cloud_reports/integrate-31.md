@@ -10,9 +10,9 @@ tags: [cloud, integration]
 **Summary**
 - **Merged** into `cloud/integrate-31` (from `origin/feature/backlog` `bf9e88a5`), one at a time: world-rooms (its last 3 commits), wire-art, fight-occluders, enemy-stamina, enemy-scaling, scaling-partial, hero-points-only, elites-bigger, shield-break-wire, ladder-holes. **No merge conflicts** (hero-points-only's `verify_difficulty` merged cleanly and was re-run). **Not merged:** rooms-city and rooms-lab (they duplicate world-rooms). Two small pieces were ported (D861).
 - **IDs:** D844–D861 (the routines' D833–D839, D-wa1–4, D835, D844 renumbered; D840–D843 as built get their own rows D857–D859, and D843 gets **Built**). B199, B200 and B201 are marked fixed. New: B202 (fixed), B203 (open), B204 (fixed). Q115–Q122 are new; Q114 is updated with the final numbers.
-- **Reds fixed at the root:** room_entrances (147 FAIL, the hero died), enemy_stamina (crash), combat_player [8], city_gates_raid [7], lab_boss mace (B202). Of the ~13 tests the routines reported red after the world-rooms map merge, all pass here except camera_transitions, a load flake (below).
+- **Reds fixed at the root:** room_entrances (147 FAIL, the hero died), enemy_stamina (crash), combat_player [8], city_gates_raid [7], lab_boss mace (B202). All ~13 tests the routines reported red after the world-rooms map merge pass in the full suite.
 - **Still red (balance, Sapega's call):** verify_difficulty 17 FAIL (Q114, Q116–Q118), and verify_lab_boss 2 FAIL (Q117, the evenly spread hero under D841).
-- **Full suite:** SUITE_LINE_FINAL
+- **Full suite:** `SUITE: 3 FAIL in 20 min 6 s, J=4` (143 scripts, nproc 4). verify_difficulty (17) and verify_lab_boss (2) are the balance reds above. verify_combat_player [2] (1) was a load flake (B186) and PASSES alone. verify_scripts_compile: PASS.
 - **Left:** see the end.
 
 ## Per branch
@@ -45,14 +45,77 @@ tags: [cloud, integration]
 ## verify_difficulty (17 FAIL), final table
 
 ```
-DIFF_TABLE
+    enemy                      lvl e.lv build       HP  hit  got   H  H+F  e.HP  atk    N wins
+    bandit L1                    1    1 STRENGTH   120   24   22   6   13   190   40    5 yes
+    bandit L1                    1    1 SKILLS     120   24   22   6   13   190   40    5 yes
+    jackal L1                    1    1 STRENGTH   120   23   21   6   13   165   40    4 yes
+    jackal L1                    1    1 SKILLS     120   23   21   6   13   165   40    4 yes
+    shield-bearer L2             2    2 STRENGTH   120   31   28   5   10   220   50    4 yes
+    shield-bearer L2             2    2 SKILLS     148   31   28   6   11   220   44    5 yes
+    vulture L2                   2    2 STRENGTH   120   28   25   5   11   182   50    4 yes
+    vulture L2                   2    2 SKILLS     148   28   25   6   13   182   44    4 yes
+    elite bandit brute L2        2    3 STRENGTH   120   77   70   2    4   570   50   11 yes
+    elite bandit brute L2        2    3 SKILLS     148   77   70   3    5   570   44   12 yes
+    bandit L2                    2    2 STRENGTH   120   29   26   5   11   209   50    4 yes
+    bandit L2                    2    2 SKILLS     148   29   26   6   12   209   44    5 yes
+    elite jackal pack leader L2   2    3 STRENGTH   120   74   67   2    5   495   50    9 yes
+    elite jackal pack leader L2   2    3 SKILLS     148   74   67   3    5   495   44   11 yes
+    shield-bearer L3             3    3 STRENGTH   120   36   33   4    9   240   60    4 yes
+    shield-bearer L3             3    3 SKILLS     166   36   33   6   10   240   48    5 yes
+    archer L3                    3    3 STRENGTH   120   34   31   4    9   180   60    3 yes
+    archer L3                    3    3 SKILLS     166   34   31   6   11   180   48    4 yes
+    jackal L3                    3    3 STRENGTH   120   32   29   5   10   198   60    3 yes
+    jackal L3                    3    3 SKILLS     166   32   29   6   12   198   48    4 yes
+    elite armoured scorpion L3   3    4 STRENGTH   120  103   94   2    3   726   60   11 no
+    elite armoured scorpion L3   3    4 SKILLS     166  103   94   2    4   726   48   14 no
+    bandit L3                    3    3 STRENGTH   120   34   31   4    9   228   60    4 yes
+    bandit L3                    3    3 SKILLS     166   34   31   6   11   228   48    5 yes
+    elite old vulture L4         4    5 STRENGTH   120  116  105   2    3   784   68   11 no
+    elite old vulture L4         4    5 SKILLS     184  116  105   2    4   784   55   13 no
+    bandit L4                    4    4 STRENGTH   120   38   35   4    8   257   68    4 yes
+    bandit L4                    4    4 SKILLS     184   38   35   6   10   257   55    5 yes
+    archer L4                    4    4 STRENGTH   120   38   35   4    8   203   68    3 yes
+    archer L4                    4    4 SKILLS     184   38   35   6   10   203   55    4 yes
+    Scorpicore Axe-Warrior       5    7 STRENGTH   168  185  138   2    3  4824   80   54 no
+    Scorpicore Axe-Warrior       5    7 SKILLS     250  185  138   2    4  4824   64   34 no
+    elite Cthulhu fly L8         8   10 STRENGTH   168  243  181   1    2  1196   95   12 no
+    elite Cthulhu fly L8         8   10 SKILLS     304  243  167   2    3  1196   74    8 yes
+    elite bandit brute L8        8   10 STRENGTH   168  254  190   1    2  1378   95   13 no
+    elite bandit brute L8        8   10 SKILLS     304  254  174   2    3  1378   74    9 no
+    jackal L8                    8    9 STRENGTH   168   99   74   3    5   454   95    5 yes
+    jackal L8                    8    9 SKILLS     304   99   68   5    7   454   74    4 yes
+    elite tower shield guard L9   9   11 STRENGTH   168  293  219   1    2  1525  100   14 no
+    elite tower shield guard L9   9   11 SKILLS     322  293  201   2    3  1525   77   10 no
+    elite cursed jackal L9       9   11 STRENGTH   168  259  193   1    2  1258  100   12 no
+    elite cursed jackal L9       9   11 SKILLS     322  259  178   2    4  1258   77    7 yes
+    bandit L9                    9   10 STRENGTH   168  110   82   3    4   551  100    6 yes
+    bandit L9                    9   10 SKILLS     322  110   76   5    8   551   77    4 yes
+    jackal L9                    9   10 STRENGTH   168  106   79   3    5   479  100    5 yes
+    jackal L9                    9   10 SKILLS     322  106   73   5    8   479   77    4 yes
+    scorpion L9                  9   10 STRENGTH   168  129   96   2    4   624  100    6 yes
+    scorpion L9                  9   10 SKILLS     322  129   89   4    7   624   77    4 yes
+    elite armoured scorpion L11  11   13 STRENGTH   168  354  264   1    2  1801  106   16 no
+    elite armoured scorpion L11  11   13 SKILLS     358  354  243   2    3  1801   83    9 no
+    shield-bearer L11           11   12 STRENGTH   168  135  101   2    4   640  106    6 yes
+    shield-bearer L11           11   12 SKILLS     358  135   93   5    7   640   83    3 yes
+    elite cursed jackal L11     11   13 STRENGTH   168  291  217   1    2  1382  106   12 no
+    elite cursed jackal L11     11   13 SKILLS     358  291  200   2    3  1382   83    6 yes
+    Mercenary [DRAFT]           12   18 STRENGTH   168  197  147   2    3  7337  108   60 no
+    Mercenary [DRAFT]           12   18 SKILLS     376  197  135   3    5  7337   85   32 yes
+    heavy archer (BanditCamp) L4   4    6 STRENGTH   120  155  141   1    2   788   68   11 no
+    heavy archer (BanditCamp) L4   4    6 SKILLS     184  155  141   2    3   788   55   13 no
 ```
 
 Reds: [1] scorpion L9, shield-bearer L11; [2] Scorpicore L5 (2 hits kill the SKILLS hero), Mercenary (32 hits); [3] armoured scorpion L3, old vulture L4, BanditCamp heavy archer (both builds), Scorpicore, brute L8, tower guard L9, armoured scorpion L11 (SKILLS); [3d] brute rows; [4] STRENGTH one-shot by Scorpicore's and the Mercenary's heaviest move. The open calls are **Q116** (D840 offsets and zones vs D642's bands), **Q117/Q118** (D841's even and all-Strength builds) and **Q114** (D838 skills ×2 vs boss length, updated).
 
 ## Full suite
 
-SUITE_DETAIL
+`Scripts/Tools/run_verify.sh`, J=4 (nproc is 4, so not raised): **`SUITE: 3 FAIL in 20 min 6 s, J=4`**.
+- `verify_combat_player`: 1 FAIL «each refusal flashes the ST row and sounds (1 refusals)». Re-run alone: **PASS** (47 s). This is the B186 load family (note added to B186): the dodge is buffered while `can_roll()` is false, so its refusal can land after the check. The same row was red in the enemy-scaling, scaling-partial and hero-points-only suites.
+- `verify_difficulty`: 17 FAIL (re-run alone: 17). Balance, above.
+- `verify_lab_boss`: 2 FAIL (re-run alone: 2), the D841 evenly spread hero (Q117).
+- Slowest: camera_transitions 386 s, camera_rooms 291 s, room_entrances 287 s, enemy_stamina 210 s, combat_enemies 150 s.
+- verify_camera_transitions (1 smoothing FAIL in the first batch, 6.75 px) and verify_skill_casts (1 FAIL in the first batch) both **PASS** in the full suite. They were load flakes.
 
 ## What is left
 - Balance: Q114, Q116, Q117, Q118 (verify_difficulty 17, verify_lab_boss 2).
