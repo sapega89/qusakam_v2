@@ -44,7 +44,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"fly",
-"speed": 10.0
+"speed": 6.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -55,7 +55,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"perch",
-"speed": 1.5
+"speed": 1.0
 }]
 
 [node name="CritterMoth" type="Node2D"]
@@ -70,11 +70,11 @@ flap_sound = &""
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.9474, 0.9474)
+scale = Vector2(1.3264, 0.9474)
 sprite_frames = SubResource("SpriteFrames_critter")
 animation = &"perch"
 centered = false
 offset = Vector2(-20, -40)
 
 [node name="Perch" type="VisibleOnScreenNotifier2D" parent="."]
-rect = Rect2(-18.948, -37.896, 37.896, 37.896)
+rect = Rect2(-26.528, -37.896, 53.056, 37.896)
