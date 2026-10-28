@@ -512,6 +512,23 @@ func _fit_camera_to_room() -> void:
 	var camera: Camera2D = $Player/Camera2D
 	MetSys.get_current_room_instance().adjust_camera_limits(camera)
 	_raise_camera_bottom(camera)
+	_lock_narrow_room(camera)
+
+
+## B179 (Q102): кімната в одну клітинку (864) ширша за кадр (1920 / 2.25 = 853.33) лише на 10.67 пікселя світу —
+## камера проїжджала їх, поки герой перетинав середину: уся кімната зсувалась на 24 px екрана кроками по 2.25
+## (B180), що видно як посмикування, а не панораму. Коли запасу менше за CAMERA_LOCK_SLACK, кадр стоїть на
+## центрі кімнати: межі вужчі за кадр, Camera2D тоді тримає лівий край кадру на limit_left (цілий піксель світу).
+const CAMERA_LOCK_SLACK := 32.0
+
+
+func _lock_narrow_room(camera: Camera2D) -> void:
+	var view_width: float = get_viewport().get_visible_rect().size.x / camera.zoom.x
+	var room_width: float = camera.limit_right - camera.limit_left
+	if room_width - view_width >= CAMERA_LOCK_SLACK:
+		return
+	camera.limit_left += floori((room_width - view_width) / 2.0)
+	camera.limit_right = camera.limit_left + floori(view_width)
 
 
 ## B153: камера миттєво на герої — згладжування (position_smoothing) не тягне її через кімнату на очах у гравця.

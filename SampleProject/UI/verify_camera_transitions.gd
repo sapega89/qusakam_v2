@@ -580,6 +580,17 @@ func _grid_and_limits() -> void:
 		biggest_drop = maxf(biggest_drop, absf(steps[i - 1]) - absf(steps[i]))
 	ck(steps[-1] == 0.0 and biggest_drop <= 2.0 * camera.zoom.x + 0.01,
 			"reaching the right limit it slows down, no hard stop (biggest one-frame drop %.2f px)" % biggest_drop)
+	# B179: кімнати в одну клітинку ширші за кадр на 10.67 px світу — герой біжить через середину, кадр стоїть.
+	for room: String in ["DragonMural.tscn", "ElderHouse.tscn", "MayorHall.tscn"]:
+		await _go(room, Vector2.ZERO, false)
+		var size: Vector2 = metsys.get_current_room_instance().get_size()
+		var f: Variant = await _floor_at(size.x / 2.0 - 120.0, 8.0, size.y - 8.0)
+		await _go(room, f)
+		var hero_from: float = game.player.global_position.x
+		var travel: Array[float] = await _run_steps(50)
+		var shift: float = travel.reduce(func(a: float, b: float) -> float: return a + absf(b), 0.0)
+		ck(game.player.global_position.x - hero_from > 200.0 and shift == 0.0,
+				"%s: the hero runs across the middle (%.0f → %.0f) and the frame stays still (canvas moved %.2f px)" % [_short(room), hero_from, game.player.global_position.x, shift])
 	game.set_quest_flags(flags)
 
 
