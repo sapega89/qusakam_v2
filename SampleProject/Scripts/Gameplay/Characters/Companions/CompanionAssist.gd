@@ -78,6 +78,9 @@ signal phase_changed(phase: StringName)
 @export_group("Sequence (D515)")
 @export var entrance: Entrance = Entrance.RUN
 @export var entrance_time := 0.7
+## Падіння (Entrance.DROP) грає анімацію enter: в Астрит це її стрибок згори (A14, 12 кадрів). Без нього падає,
+## застигши на першому кадрі enter (Уризен: його enter — не стрибок).
+@export var animate_drop := false
 ## Замах перед дією: перший кадр strike стоїть, компаньйон світиться своїм кольором.
 @export var windup_time := 0.35
 ## Швидкість анімації strike (< 1 — повільніший, вагоміший удар).
@@ -166,7 +169,8 @@ func _enter(stand: Vector2) -> void:
 		move.tween_property(self, ^"global_position:x", stand.x, entrance_time).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	else:
 		global_position = stand - Vector2(0.0, DROP_HEIGHT)
-		sprite.pause()
+		if not animate_drop:
+			sprite.pause()
 		modulate.a = 0.0
 		move.set_parallel()
 		move.tween_property(self, ^"global_position:y", stand.y, entrance_time).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
