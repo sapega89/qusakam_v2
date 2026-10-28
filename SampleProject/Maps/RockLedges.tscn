@@ -4,17 +4,18 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_barrier.png" id="w2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/drifting_clouds.tscn" id="w3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/MountainPath/gen_far.png" id="w4"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_mid.png" id="w5"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_burnt_houses.png" id="w6"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_village_wall.png" id="w7"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_ledges_ramp.png" id="w8"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w9"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_front.png" id="w10"]
-[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w11"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w12"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w13"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w14"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w15"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_plume.png" id="w5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_mid.png" id="w6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_burnt_houses.png" id="w7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_village_wall.png" id="w8"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/RockLedges/gen_ledges_ramp.png" id="w9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w10"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_front.png" id="w11"]
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w14"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w15"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w16"]
 
 [node name="RockLedges" type="Node2D"]
 
@@ -55,6 +56,16 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("w4")
 centered = false
 
+[node name="Plume" type="Parallax2D" parent="Back"]
+scroll_scale = Vector2(0.35, 0.35)
+
+[node name="Sprite" type="Sprite2D" parent="Back/Plume"]
+texture_filter = 1
+position = Vector2(-143.7, 182.1)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w5")
+centered = false
+
 [node name="Mid" type="Parallax2D" parent="Back"]
 scroll_scale = Vector2(0.75, 0.75)
 
@@ -62,7 +73,7 @@ scroll_scale = Vector2(0.75, 0.75)
 texture_filter = 1
 position = Vector2(132, 390.2)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("w5")
+texture = ExtResource("w6")
 centered = false
 
 [node name="BurntHouses" type="Parallax2D" parent="Back"]
@@ -72,7 +83,7 @@ scroll_scale = Vector2(0.85, 0.85)
 texture_filter = 1
 position = Vector2(412.2, -87.7)
 scale = Vector2(2.125, 2.125)
-texture = ExtResource("w6")
+texture = ExtResource("w7")
 centered = false
 
 [node name="VillageWall" type="Parallax2D" parent="Back"]
@@ -82,7 +93,7 @@ scroll_scale = Vector2(0.9, 0.9)
 texture_filter = 1
 position = Vector2(340.2, 275.2)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("w7")
+texture = ExtResource("w8")
 centered = false
 
 [node name="Ground" type="Node2D" parent="."]
@@ -92,25 +103,25 @@ z_index = -9
 texture_filter = 1
 position = Vector2(0, -32)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("w8")
+texture = ExtResource("w9")
 centered = false
 
 [node name="GroundUnder" type="Sprite2D" parent="Ground"]
 texture_filter = 1
 position = Vector2(0, 928)
 scale = Vector2(1.5, 33)
-texture = ExtResource("w8")
+texture = ExtResource("w9")
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 639, 576, 1)
 
-[node name="FrontDark" parent="." instance=ExtResource("w9")]
+[node name="FrontDark" parent="." instance=ExtResource("w10")]
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
 position = Vector2(-218.1, 730.3)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("w10")
+texture = ExtResource("w11")
 centered = false
 
 [node name="TileMap" type="Node2D" parent="."]
@@ -118,7 +129,7 @@ centered = false
 [node name="Foreground" type="TileMapLayer" parent="TileMap"]
 visible = false
 tile_map_data = PackedByteArray("AAD//wAAAQAIAAcAAAD//wEAAQAIAAcAAAD//wIAAQAIAAcAAAD//wMAAQAIAAcAAAD//wQAAQAIAAcAAAD//wUAAQAIAAcAAAD//wYAAQAIAAcAAAD//wcAAQAIAAcAAAD//wgAAQAIAAcAAAD//wkAAQAIAAcAAAD//woAAQAIAAcAAAD//wsAAQAIAAcAAAD//wwAAQAIAAcAAAAYAAwAAQAIAAcAAAAZAAwAAQAIAAcAAAAaAAwAAQAIAAcAAAAbAAwAAQAIAAcAAAD//w0AAQAIAAcAAAAYAA0AAQAIAAcAAAAZAA0AAQAIAAcAAAAaAA0AAQAIAAcAAAAbAA0AAQAIAAcAAAD//w4AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAA4AAQAIAAcAAAAYAA8AAQAIAAcAAAAZAA8AAQAIAAcAAAAaAA8AAQAIAAcAAAAbAA8AAQAIAAcAAAAYABAAAQAIAAcAAAAZABAAAQAIAAcAAAAaABAAAQAIAAcAAAAbABAAAQAIAAcAAAAYABEAAQAIAAcAAAAZABEAAQAIAAcAAAAaABEAAQAIAAcAAAAbABEAAQAIAAcAAAAYABIAAQAIAAcAAAAZABIAAQAIAAcAAAAaABIAAQAIAAcAAAAbABIAAQAIAAcAAAAYABMAAQAIAAcAAAAZABMAAQAIAAcAAAAaABMAAQAIAAcAAAAbABMAAQAIAAcAAAAYABQAAQAIAAcAAAAZABQAAQAIAAcAAAAaABQAAQAIAAcAAAAbABQAAQAIAAcAAAAYABUAAQAIAAcAAAAZABUAAQAIAAcAAAAaABUAAQAIAAcAAAAbABUAAQAIAAcAAAAYABYAAQAIAAcAAAAZABYAAQAIAAcAAAAaABYAAQAIAAcAAAAbABYAAQAIAAcAAAAYABcAAQAIAAcAAAAZABcAAQAIAAcAAAAaABcAAQAIAAcAAAAbABcAAQAIAAcAAAAYABgAAQAIAAcAAAAZABgAAQAIAAcAAAAaABgAAQAIAAcAAAAbABgAAQAIAAcAAAAYABkAAQAIAAcAAAAZABkAAQAIAAcAAAAaABkAAQAIAAcAAAAbABkAAQAIAAcAAAAYABoAAQAIAAcAAAAZABoAAQAIAAcAAAAaABoAAQAIAAcAAAAbABoAAQAIAAcAAAD//xsAAQAIAAcAAAAAABsAAQAIAAcAAAABABsAAQAIAAcAAAACABsAAQAIAAcAAAAYABsAAQAIAAcAAAAZABsAAQAIAAcAAAAaABsAAQAIAAcAAAAbABsAAQAIAAcAAAD//xwAAQAIAAcAAAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAcAAAAYABwAAQAIAAcAAAAZABwAAQAIAAcAAAAaABwAAQAIAAcAAAAbABwAAQAIAAcAAAD//x0AAQAIAAcAAAAAAB0AAQAIAAcAAAABAB0AAQAIAAcAAAACAB0AAQAIAAcAAAAYAB0AAQAIAAcAAAAZAB0AAQAIAAcAAAAaAB0AAQAIAAcAAAAbAB0AAQAIAAcAAAA=")
-tile_set = ExtResource("w11")
+tile_set = ExtResource("w12")
 
 [node name="Slope" type="StaticBody2D" parent="."]
 
@@ -138,21 +149,21 @@ position = Vector2(40, 820)
 
 [node name="Ambience" type="Node2D" parent="."]
 
-[node name="Pollen1" parent="Ambience" instance=ExtResource("w12")]
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w13")]
 position = Vector2(432, 480)
 emission_rect_extents = Vector2(432, 300)
 amount = 12
 
 [node name="Critters" type="Node2D" parent="."]
 
-[node name="Lark1" parent="Critters" instance=ExtResource("w13")]
+[node name="Lark1" parent="Critters" instance=ExtResource("w14")]
 position = Vector2(820, 384)
 perch_flip = true
 
-[node name="RoomInstance" parent="." instance=ExtResource("w14")]
+[node name="RoomInstance" parent="." instance=ExtResource("w15")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w15")
+stream = ExtResource("w16")
 autoplay = true
 bus = &"Music"

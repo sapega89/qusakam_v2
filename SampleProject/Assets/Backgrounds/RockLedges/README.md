@@ -51,8 +51,8 @@ at anchor − f × camera).
   (bottom-left at frame (222, 305) in the top frame). The Village's own houses (the blue-awning, the red-awning and the
   next one, set a little apart) repainted after the fire (Sapega: «все село спалене … з цегли, то не розбиті, але
   спалені»): walls whole, soot over doors and windows, awnings burnt to frames, roof beams charred, a glow in a window,
-  and a short column of grey smoke from each roof leaning west — the room's only smoke (A5: the big plume that filled
-  the top half is gone; the road's plume ends in the gorge, its stem going down right here). At the Village row's
+  and a short column of grey smoke from each roof leaning west — the room's only smoke until D919 brought the
+  gorge's plume back overhead (below). At the Village row's
   size: a wall ~83 art = a 144 storey × 0.6 (D814). M6a-3: rebuilt by `village_burnt.py` from the
   Village's `gen_houses_burnt.png` (the same three houses, so the ledges and the village match); its silhouette is
   the original row's, so no house is a hollow shell any more. The ground under them goes 45 rows further down so the breach
@@ -62,6 +62,11 @@ at anchor − f × camera).
   (222 + 0.85 × 3456, 327 − 278 × 0.85/0.6): the bottom-left stays at frame x 222, the thresholds at frame row 252 as
   before (bottom row 327). Against the ×0.9 wall the houses now sink only 0.05 × camera y, so their base stays hidden.
   `build_world_rooms.py` sets this; `ledges_planes.py` (the review sheet and its assert) still models ×0.6.
+- **D919 (Q108), in the game:** the big smoke plume is back overhead, besides the roof smoke — the gorge's own
+  `StreamGorge/gen_plume.png` (no new art), ×0.35, in `Back/Plume` behind `Mid` and the houses, anchor (885, 14): its
+  puff hangs over the top frame's upper left, the tail runs west across the sky and the stem (plume columns ~600–650)
+  goes down behind the first house at frame x ~300; the cut bottom row stays behind that house and the wall at every
+  camera y (the plume sinks against both as the camera goes down). `build_world_rooms.py` sets it.
 - `gen_village_wall.png` (384×432) — the village's outer wall of clay bricks on the cliff top behind the plateau, ×0.9,
   anchor (3302, 185) (top-left at frame (192, 185) in the top frame): a broken west end, a breach near the east end
   (frame x ~447–502) — the passage into the village — and the sandstone terrace face under it, filled down, with a
