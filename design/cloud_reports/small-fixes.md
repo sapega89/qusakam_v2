@@ -11,7 +11,7 @@ tags: [cloud, routines]
 - **Q123 done** (D-sf3): the MetSys orb is removed with its hidden HUD counter, `Objects/Collectible.tscn` and `EnemyWithCollectibleDrop.gd`.
 - **B124 still open (needs art)**: the sword is baked into the hero's frames, so code can't fix it. The ComfyUI frame list is below.
 - **B110 partly fixed, row still open**: air/block/hurt are drawn, wired and tested (`81c0a3d9`, `verify_bow` [1]). Roll and the fire/storm casts still need frames (list below).
-- Full suite: SUITE_LINE
+- Full suite: `SUITE: 3 FAIL in 19 min 55 s, J=4`. All 3 (`verify_difficulty`, `verify_lab_boss`, `verify_camera_transitions`) fail identically on the base `origin/cloud/ui-bugs-205-206`, so none comes from this branch.
 
 ## D-IDs (placeholders, for the orchestrator)
 - **D-sf1** — The modal layer (`Scenes/UI/modal_layer.tscn`) is CanvasLayer **96**, not 20. A window the game pauses for sits above every in-world overlay (hurt vignette 90, `ScreenFade` 90, cutscene skip prompt 95). It stays below dialogue and scene transitions (100), brightness (127) and the cursor (128). B196 was a layer-order bug, not a corner offset: both the prompt and the window footer belong in the bottom-right, and the window is the one the player has to answer.
@@ -59,4 +59,8 @@ tags: [cloud, routines]
 
 ## Tests
 - `verify_starting_skills`, `verify_companions`, `verify_scripts_compile`, `verify_save_load_room`, `verify_bow`: all `RESULT: ALL PASS`.
-- Full suite: SUITE_DETAIL
+- Full suite: `SUITE: 3 FAIL in 19 min 55 s, J=4`. Each failure was re-run on a worktree of the base `origin/cloud/ui-bugs-205-206` and failed the same way there:
+  - `verify_difficulty` (17 FAIL): balance bands, e.g. «scorpion L9 at level 9: 4 hits kill the hero ([5, 6])», «Mercenary [DRAFT] at level 12: 3 hits kill the hero ([3, 4]), 32 hits kill it ([34, 46])», elites at levels 3–4 «loses».
+  - `verify_lab_boss` (2 FAIL): «balanced build: he dies in 2.3 of the mercenary's blows», «the mercenary takes 67 light hits».
+  - `verify_camera_transitions` (1 FAIL): «reaching the right limit it slows down, no hard stop (biggest one-frame drop 6.75 px)».
+  - These are balance and camera numbers from earlier branches, not touched here.
