@@ -13,6 +13,8 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 
 **STOP lab-main-path:** `cloud/lab-main-path` (`trig_016p6nP4vDDN4ef4kGP91rKz`) was briefed to build the M4 zigzag DOWN — Sapega rejected that graph («лабораторія під землею, тому ми піднімаємось»); do NOT merge its branch. The M4 graph is redrawn in Figma first (memory: Claude draws Figma), shown to him, then built.
 
+**Cloud, 28.10 morning:** room chain (each waits for the previous report, max 8 h): `wire-backdrops` (re-run 08:38 after a 5-hour limit) → `wire-backdrops-2` → `rooms-finish` → `wire-backdrops-3` → `wire-backdrops-4` → `prop-sizes` → `wire-props` → `lab-v3` (`trig_013ZcTiT1GvzqNabezNjssda`, D863/D865, the approved Lab v3 graph). If one dies (limit, timeout), re-run it with RemoteTrigger `run` and check the next ones are still waiting. Independent: `enemy-sizes`, `skill-art-wire`, `critter-tweaks`, `yellow-sky` (D864), reported and waiting to merge: `elite-reach` (B203), `ui-bugs-205-206`. Art lane: H3 weapon variants mace + halberd, then dual + bow, then A15 the bandit (normal proportions). Lore 28.10 in [[lore]] (yellow sky, flying city, god of greed).
+
 ## 1. Running now
 | What | Where | Task | When it reports |
 |---|---|---|---|
