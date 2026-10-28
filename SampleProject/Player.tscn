@@ -113,6 +113,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/LeapSlam/1.png" id="leap1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/LeapSlam/2.png" id="leap2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/LeapSlam/3.png" id="leap3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LungeCut/1.png" id="sw_lungecut_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LungeCut/2.png" id="sw_lungecut_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LungeCut/3.png" id="sw_lungecut_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/ShieldCharge/1.png" id="sw_shieldcharge_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/ShieldCharge/2.png" id="sw_shieldcharge_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/ShieldCharge/3.png" id="sw_shieldcharge_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LeapSlam/1.png" id="sw_leapslam_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LeapSlam/2.png" id="sw_leapslam_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/sword/LeapSlam/3.png" id="sw_leapslam_3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_weapon_palette"]
 resource_local_to_scene = true
@@ -1602,6 +1611,267 @@ _data = {
 &"Release": SubResource("Animation_bow_release")
 }
 
+[sub_resource type="Animation" id="Animation_sword_LungeCutWindup"]
+resource_name = "LungeCutWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_lungecut_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -15)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_LungeCutMove"]
+resource_name = "LungeCutMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_lungecut_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_LungeCutStrike"]
+resource_name = "LungeCutStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_lungecut_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_ShieldChargeWindup"]
+resource_name = "ShieldChargeWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_shieldcharge_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_ShieldChargeMove"]
+resource_name = "ShieldChargeMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_shieldcharge_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_ShieldChargeStrike"]
+resource_name = "ShieldChargeStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_shieldcharge_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_LeapSlamWindup"]
+resource_name = "LeapSlamWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_leapslam_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_LeapSlamMove"]
+resource_name = "LeapSlamMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_leapslam_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_sword_LeapSlamStrike"]
+resource_name = "LeapSlamStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("sw_leapslam_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -12)]
+}
+
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sword"]
 _data = {
 &"Idle": SubResource("Animation_sword_idle"),
@@ -1616,7 +1886,16 @@ _data = {
 &"HeavyWindup": SubResource("Animation_sword_heavy_windup"),
 &"HeavyStrike": SubResource("Animation_sword_heavy_strike"),
 &"Block": SubResource("Animation_sword_block"),
-&"Hurt": SubResource("Animation_sword_hurt")
+&"Hurt": SubResource("Animation_sword_hurt"),
+&"LungeCutWindup": SubResource("Animation_sword_LungeCutWindup"),
+&"LungeCutMove": SubResource("Animation_sword_LungeCutMove"),
+&"LungeCutStrike": SubResource("Animation_sword_LungeCutStrike"),
+&"ShieldChargeWindup": SubResource("Animation_sword_ShieldChargeWindup"),
+&"ShieldChargeMove": SubResource("Animation_sword_ShieldChargeMove"),
+&"ShieldChargeStrike": SubResource("Animation_sword_ShieldChargeStrike"),
+&"LeapSlamWindup": SubResource("Animation_sword_LeapSlamWindup"),
+&"LeapSlamMove": SubResource("Animation_sword_LeapSlamMove"),
+&"LeapSlamStrike": SubResource("Animation_sword_LeapSlamStrike")
 }
 
 [sub_resource type="Animation" id="Animation_lunge_windup"]
