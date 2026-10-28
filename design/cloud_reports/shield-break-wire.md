@@ -11,7 +11,7 @@ the shield never comes back (`_raise_shield` is gone). His hurtbox, hitbox and b
 shieldless frames (B128) and his `attack_range` drops by as much as his strike got shorter. The ordinary
 shield-bearer is unchanged (its Polygon2D shield still flies off, `verify_enemy_variety` [4]). Not done: nothing.
 **B rows fixed:** B200 (the tower guard half; the shield-bearer half was already working). **D843** as in the register
-(text below), now built. **Full suite:** SUITE_LINE
+(text below), now built. **Full suite:** `SUITE: 13 FAIL in 16 min 3 s, J=4`, all 13 fail the same way on the base `dfe3a2b9` (none from this change).
 
 ## D-ID text (for the register; D843 is already there, append "Built")
 | D843 | OVERRIDE (Sapega 28.10 via B200, amends D711) | **A broken tower shield stays broken.** «бо не малювали без щита? але ми ж розбиваємо щит»: when the hero breaks the tower-shield guard's shield, it bursts into shards (`FX/Hit/shield_break_1–4`) and the guard fights on with the shieldless sheet (`shield_tower/sheet_noshield.png`, `f393435d`); `_raise_shield` no longer restores it (D711 had him raise it again). The ordinary shield-bearer already loses its Polygon2D shield (`break_shield`). **Built** in `cloud/shield-break-wire` (report `design/cloud_reports/shield-break-wire.md`): the shards are `Scenes/FX/ShieldBreak.tscn` (12 fps, z 250), placed on the guard's cell at rest and mirrored with his facing; after the break his hurtbox, hitbox and blocking body are measured from the shieldless frames (B128), and `attack_range` drops by as much as his strike got shorter (scene numbers: 48 → 45.6; the body's front edge 33.6 → 22.8 px). |
@@ -62,7 +62,14 @@ shield-bearer is unchanged (its Polygon2D shield still flies off, `verify_enemy_
 - `verify_hit_areas` PASS, `verify_combat_enemies` PASS, `verify_scripts_compile` PASS.
 - `ERROR: Parent node is busy setting up children` at the end of `verify_enemy_variety` is pre-existing (same on
   `origin/feature/backlog` without this change).
-- Full suite: SUITE_DETAIL
+- Full suite (J=4, `nproc` = 4): `SUITE: 13 FAIL in 16 min 3 s`. Each failing test was re-run on the base commit
+  `dfe3a2b9` (a worktree, same Godot) and fails there the same way: ambient_critters (2), combat_flow (2: the swing
+  hits the player in front / behind, got []), combat_player (1: ST refusal flash), difficulty (5), cutscene (2:
+  descent), memory (1: +5.3 MB), quiet_transitions (1), room_preload (3), road_sections (1), secrets (1:
+  canyon 7 / city 3 / laboratory 1), camera_rooms (HUNG at 180 s on both), camera_transitions (2; slow, 385 s, not
+  re-run). verify_progression has no RESULT line: it crashes (signal 11) in `RoomPreloader._collect`
+  (`RoomPreloader.gd:81`, threaded load) — 2 of 3 runs on the base crash too; verify_full_regression's missing RESULT
+  in the suite run was load-related (PASS when re-run alone on both).
 
 ## Shot
 `design/shots/shield_break.png` (xvfb, level-2 elite on DesertRoad where the lone shield-bearer stands): top — he
