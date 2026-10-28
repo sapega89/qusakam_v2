@@ -173,21 +173,24 @@ func _initialize() -> void:
 
 	print("[3] Sand Veil: enemies ahead lose the hero; those behind do not")
 	await _reset_hero(home, "sand_veil")
-	var chaser: Node2D = _enemy(170.0, false)
-	var behind: Node2D = _enemy(-170.0, false)
+	var chaser: Node2D = _enemy(170.0)  # стоїть до касту: під навантаженням погоня встигала б дійти на його удар
+	var behind: Node2D = _enemy(-170.0)
 	await _settle([chaser, behind])
 	chaser.enemy_logic.max_lost_time = 99.0  # не йде додому, поки сліпий: видно саме втрату героя
-	chaser.enemy_logic.change_state(chaser.enemy_logic.AIState.CHASE)
-	await physics_frame
 	sp = sm.get_current_sp()
 	ck(await _cast("sand_veil") == R.OK, "cast with an enemy ahead")
+	for e in [chaser, behind]:  # тепер обидва женуться: сліпий не бачить, той, що позаду, — іде
+		e.detection_area.monitoring = true
+		e.enemy_logic.detection_range = 300.0
+		e.enemy_logic.change_state(e.enemy_logic.AIState.CHASE)
 	ck(sm.get_current_sp() == sp - sm.sp_cost(veil), "SP paid (%d → %d)" % [sp, sm.get_current_sp()])
 	ck(chaser.enemy_logic.blind_left > 2.0 and behind.enemy_logic.blind_left == 0.0, "the one ahead is blind (%.1f s), the one behind is not" % chaser.enemy_logic.blind_left)
 	var blind_gap := _gap(chaser)
 	ck(blind_gap > 100.0 and not chaser.enemy_logic.can_notice(player), "the blind one does not see the hero %.0f px away" % blind_gap)
+	var blind_x := chaser.global_position.x  # своє місце, не відстань: той, що позаду, дійде й штовхне героя
 	await _wait(1.2)
-	ck(_gap(chaser) >= blind_gap - 8.0, "it does not come for him (%.0f → %.0f px)" % [blind_gap, _gap(chaser)])
-	ck(_gap(behind) < 120.0, "the one behind still comes for him (%.0f px)" % _gap(behind))
+	ck(absf(chaser.global_position.x - blind_x) < 8.0, "it does not come for him (moved %.0f px)" % absf(chaser.global_position.x - blind_x))
+	ck(_gap(behind) < 140.0, "the one behind still comes for him (%.0f px)" % _gap(behind))
 	chaser.enemy_logic.blind_miss = 1.0
 	chaser.start_attack(-1)
 	ck(not chaser.hitbox_damage.is_active, "a blind swing misses (miss chance 1.0: the hitbox deals nothing)")

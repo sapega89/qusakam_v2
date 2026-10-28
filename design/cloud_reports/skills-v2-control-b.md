@@ -12,7 +12,7 @@ branch: cloud/skills-v2-control-b
 - **No new art.** The skills use oath cast poses (CastFire / CastStorm). The effect `ControlSkill.tscn` borrows the frames of an oath skill per skill (`ControlSkillFX.BORROW`). The list of missing art is below.
 - **Radiant Flare no longer "clears burning and curses from you".** The hero has neither state (`grep` finds no burn or curse on the hero), so the text says only what it does (en/uk). Cleansing waits for hero statuses.
 - **Tests:** a new `verify_skills_control_b` (7 sections, ALL PASS). Also ALL PASS: `verify_skill_rules` ([11] 16 planned; the 6 are built), `verify_skill_fx` (the 6 may borrow frames), `verify_scripts_compile`.
-- **Full suite:** running (this line is updated when it ends).
+- **Full suite:** `SUITE: 4 FAIL` (J=4, 19 min 50 s). `verify_difficulty` is the known failure the skills-v2-move report lists. `verify_lab_boss` fails the same 2 balance checks on the base `cloud/skill-art-wire` (checked in a worktree). `verify_camera_transitions` passed on one re-run (a one-frame camera drop under load). `verify_skills_control_b` was this branch's: under 4 parallel runs, the veil test raced its own setup. Its enemies now start chasing only after the cast, and it measures the blind enemy's own position. Now ALL PASS on two re-runs.
 - No B rows fixed. The D-ID text is below (placeholder D-sv2cb1).
 
 ## D-ID text (for the orchestrator; placeholder D-sv2cb1)
