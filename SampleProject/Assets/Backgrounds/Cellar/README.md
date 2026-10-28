@@ -36,3 +36,5 @@ Props (`comfy_backdrop.py` layers `Cellar/prop_*`, **Qwen-Image**, Apache 2.0, A
 | `prop_crate.png` | 27×26 | (789, 414) and (789, 375) on top | crates with a bottle, right arch |
 
 The bottles are not redrawn (each under the chart's smallest row); the crates stand without them.
+
+**Wired 2026-10-28** (B189): `Maps/GatehouseCellar.tscn` → `Back/Mid/{Barrel1,Crate1,Crate1Top,Barrel2,Crate2,Crate2Top,Crate3,Crate3Top}`.

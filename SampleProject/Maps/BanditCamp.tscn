@@ -2,7 +2,11 @@
 
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_far.png" id="p1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_mid.png" id="p2"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_sacks.png" id="p3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/prop_barrel.png" id="a1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/prop_crate.png" id="a2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/prop_sack.png" id="a3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/prop_barrel_near.png" id="a4"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/prop_sack_near.png" id="a5"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BanditCamp/gen_floor.png" id="p4"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
@@ -63,16 +67,74 @@ scale = Vector2(1.5, 1.5)
 texture = ExtResource("p2")
 centered = false
 
+[node name="Barrel" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(114, 297)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a1")
+centered = false
+offset = Vector2(-10.5, -26)
+
+[node name="CrateL" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(499.5, 315)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="CrateR" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(609, 331.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="CrateTop" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(570, 283.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Sack" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(678, 324)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a3")
+centered = false
+offset = Vector2(-7, -19)
+
 [node name="Props" type="Parallax2D" parent="Back"]
 scroll_offset = Vector2(53.3333, 0)
 scroll_scale = Vector2(0.9, 1)
 
-[node name="Sprite" type="Sprite2D" parent="Back/Props"]
+[node name="SackL" type="Sprite2D" parent="Back/Props"]
 texture_filter = 1
-position = Vector2(300, 293)
+position = Vector2(340.5, 420.5)
 scale = Vector2(1.5, 1.5)
-texture = ExtResource("p3")
+texture = ExtResource("a5")
 centered = false
+offset = Vector2(-8.5, -21)
+
+[node name="Barrel" type="Sprite2D" parent="Back/Props"]
+texture_filter = 1
+position = Vector2(427.5, 420.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a4")
+centered = false
+offset = Vector2(-12, -29)
+
+[node name="SackR" type="Sprite2D" parent="Back/Props"]
+texture_filter = 1
+position = Vector2(511.5, 420.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a5")
+centered = false
+offset = Vector2(-8.5, -21)
+flip_h = true
 
 [node name="Floor" type="Parallax2D" parent="Back"]
 repeat_size = Vector2(864, 0)

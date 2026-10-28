@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_lantern.png" id="p4"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_floor.png" id="p5"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/gen_column.png" id="p6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/prop_barrel.png" id="a1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Cellar/prop_crate.png" id="a2"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="r2"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="r3"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="r4"]
@@ -63,6 +65,70 @@ position = Vector2(0, -3)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("p2")
 centered = false
+
+[node name="Barrel1" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(319.5, 433.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a1")
+centered = false
+offset = Vector2(-10.5, -26)
+
+[node name="Crate1" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(388.5, 436.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Crate1Top" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(388.5, 397.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Barrel2" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(499.5, 426)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a1")
+centered = false
+offset = Vector2(-10.5, -26)
+
+[node name="Crate2" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(595.5, 418.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Crate2Top" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(595.5, 379.5)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Crate3" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(789, 414)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
+
+[node name="Crate3Top" type="Sprite2D" parent="Back/Mid"]
+texture_filter = 1
+position = Vector2(789, 375)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("a2")
+centered = false
+offset = Vector2(-13.5, -26)
 
 [node name="Props" type="Parallax2D" parent="Back"]
 scroll_offset = Vector2(53.3333, 0)

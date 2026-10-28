@@ -28,3 +28,5 @@ chart's sack–pot row, on the ×1.0 wall). Wire as `Sprite2D` children of the r
 | `prop_amphora.png` | 13×24 | (291, 870.5) | the tall jar beside the hearth |
 | `prop_pot.png` | 25×24 | (580.5, 822.5) | the big pot on the right bench |
 | `prop_pot.png` | 25×24 | (634.5, 822.5) | the small pot beside it (flip_h) |
+
+**Wired 2026-10-28** (B189): `Maps/ElderHouse.tscn` → `Amphora`, `PotBig`, `PotSmall` (z −9, in front of `Wall`).

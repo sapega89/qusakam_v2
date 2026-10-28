@@ -11,8 +11,8 @@ Placed in `SampleProject/Maps/BanditCamp.tscn` → `Back` (z −10), back to fro
 - `gen_far.png` — the sky and the big dunes with the camp removed; mirrored twice (1152 px, seamless). `Back/Far`, ×0.4.
 - `gen_mid.png` — the palisade, the weapon racks, the tents, the crates, the pots and the sand up to the walk line; the
   sky and the dune are transparent. `Back/Mid`, ×0.8.
-- `gen_sacks.png` — the two sacks and the barrel that stood on the walk line, cut out as one prop. `Back/Props`, ×0.9,
-  feet 4 px under the floor's edge.
+- `Back/Props`, ×0.9: the two sacks and the barrel on the walk line — `prop_sack_near.png` / `prop_barrel_near.png`
+  since A13 (the old one-piece `gen_sacks.png` is deleted).
 - `gen_floor.png` — the sand below the walk line (45 rows, to the bottom of the frame); row 0 is the walk line y 416, a
   drawn light edge with a shadow row under it. `Back/Floor`, ×1.0, repeats; also the floor of the other desert rooms
   (`build_world_rooms.py` «desert»: CanyonFloor, Chasm, Dunes, GateApproach, MesaTop, ZahraRest).
@@ -37,8 +37,8 @@ near face; the whole gate fades when it opens.
 barrel and a sack at 2.5–3.9× (its barrel 80 art px). `Scripts/Tools/unbake_props.py` (Qwen-Image-Edit-2511, Apache
 2.0, AI-generated) repainted `gen_mid.png` without them — only the pixels the props covered change (the sand, the
 palisade and the striped tent's foot continue; a second pass took the sack the first left), in the plane's own colours;
-the original is `design/shots/candidates/a13/camp_orig.png`. `gen_sacks.png` is untouched until the wiring swaps it
-for the sprites below (D813: the old file goes once the new one is wired).
+the original is `design/shots/candidates/a13/camp_orig.png`. `gen_sacks.png` was swapped for the sprites below
+when they were wired (D813).
 
 The props are separate sprites from `Scripts/Tools/comfy_backdrop.py` (layers `BanditCamp/prop_*`, **Qwen-Image**,
 Apache 2.0, AI-generated), exactly `round(chart art px × the plane's scroll_scale)` tall (barrel 32, crate 32, sack 24
@@ -57,4 +57,5 @@ child of the named plane, `texture_filter = 1`, `scale = (1.5, 1.5)`, `centered 
 | `prop_barrel_near.png` | 24×29 | `Back/Props` | (427.5, 420.5) | `gen_sacks` barrel |
 | `prop_sack_near.png` | 17×21 | `Back/Props` | (511.5, 420.5) | `gen_sacks` right sack (flip_h for variety) |
 
-After wiring, `Back/Props/Sprite` (`gen_sacks.png`) goes. `Back/Mid` repeats every 864 px, so its props repeat with it.
+**Wired 2026-10-28** (B189): the eight sprites above are `Back/Mid/{Barrel,CrateL,CrateR,CrateTop,Sack}` and
+`Back/Props/{SackL,Barrel,SackR}`; `Back/Props/Sprite` and `gen_sacks.png` are gone. `Back/Mid` repeats every 864 px, so its props repeat with it.
