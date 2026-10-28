@@ -8,7 +8,7 @@ tags: [cloud, routines, living-world]
 **Done:** the pigeon 16 art px perched (24 world, was 24 art / 36 world), the moth stretched ×1.4 wide at the same 18 world px height and flapping slower — both in the critter scenes only. Chart row `critter_small` (pigeon) in `design/world_scale.json`. `verify_ambient_critters` and `verify_scripts_compile` ALL PASS; capture `design/shots/critter_tweaks.png`.
 **Not done / found:** the smaller pigeon is **invisible in the City** — all three City pigeons perch at y 384, 24 px inside the street's `Terrain` strip (top at y 360, drawn after `Critters`), so before only the top third showed, now nothing does. Fix is in `Maps/City.tscn` (out of scope here) — new B row below.
 **D-ID (next free, as built):** D-ct1, text below. **B rows fixed:** none. **New B row:** B-ct1 below.
-**Full suite:** SUITE_LINE
+**Full suite:** `SUITE: 3 FAIL` (139 PASS), none from this branch: `verify_difficulty` (17 FAIL) and `verify_lab_boss` (2 FAIL, balance numbers) fail identically on `origin/feature/backlog` with the critter changes reverted; `verify_camera_rooms` (1 FAIL, AlchemistStore camera step 41.7 px, a room without critters) passed on its one re-run on this branch and on the base — timing under J=4 load.
 
 ## D-ct1 (ROUTINE CALL, `cloud/critter-tweaks`, BACKLOG «Critter tweaks», Sapega 28.10 «можна виправити розтягуючи»; amends D803 / D814)
 
@@ -44,7 +44,9 @@ in the critter scenes, so every room that places them follows; scare / return / 
 
 - `verify_ambient_critters` — `RESULT: ALL PASS`
 - `verify_scripts_compile` — `RESULT: ALL PASS`
-- Full suite (`Scripts/Tools/run_verify.sh`, J=4, nproc 4): SUITE_LINE
+- Full suite (`Scripts/Tools/run_verify.sh`, J=4, nproc 4): 139 PASS, 3 FAIL as in the summary. The run was cut at my
+  10-min tool limit after 73 tests; the other 69 ran with the same script on the rest of the list (`SUITE: ALL PASS`).
+  The base check: the four changed files checked out from `origin/feature/backlog`, then `run_verify.sh` on the three.
 
 ### Shot
 
