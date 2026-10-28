@@ -22,7 +22,8 @@ extends SceneTree
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 const ROAD := "res://SampleProject/Maps/DesertRoad.tscn"
 const ELDER := "res://SampleProject/Maps/ElderHouse.tscn"
-const LAB := "res://SampleProject/Maps/Laboratory.tscn"
+const LAB_MIDDLE := "res://SampleProject/Maps/LabMiddleFloor.tscn"
+const LAB_POCKET := "res://SampleProject/Maps/LabGuardPocket.tscn"
 const CAMP := "res://SampleProject/Maps/BanditCamp.tscn"
 const GATES := "res://SampleProject/Resources/Data/gates.json"
 const ITEMS := "res://SampleProject/Resources/Data/items.json"
@@ -232,22 +233,33 @@ func _initialize() -> void:
 			"walking by the chest does not wake the vulture (x %.0f)" % game.player.global_position.x)
 	await _guarded_chest(game, vulture_chest, vulture_fight, "enemy_old_vulture.tscn", {"potion_lesser": 2, "mana_crystal": 2})
 
-	print("[6] D724: the tower shield guard's chest in the Laboratory")
-	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	print("[6] D724: the tower shield guard's chest in the Laboratory — his alcove east of the middle floor (v3, D865)")
+	await game.teleport_to_room(LAB_MIDDLE, ^"StairsDoor")
 	for i in 20: await physics_frame
+	var stairs_door: Node2D = game.map.get_node("StairsDoor")
+	ck(game.map.get_node("Fight_Cursed/Trigger").global_position.x < stairs_door.global_position.x,
+			"off the way up: from the stairs' door the way on goes west")
+	Input.action_press(&"move_right")
+	for i in 600:
+		await physics_frame
+		if game.map.scene_file_path == LAB_POCKET:
+			break
+	Input.action_release(&"move_right")
+	for i in 10: await physics_frame
+	ck(game.map.scene_file_path == LAB_POCKET, "east of the stairs' door, through the room's edge: the guard's alcove")
 	var guard_fight: Node = game.map.get_node("Fight_TowerGuard")
 	var guard_chest: Node = game.map.get_node("Chest_TowerGuard")
-	var ladder: Node2D = game.map.get_node("Ladder1")
 	ck(guard_fight.respawns and guard_fight.enemy_level == 9 and guard_fight.spawn_points.size() == 1
 			and guard_fight.spawn_points[0].kind() == "tower_shield_guard", "an ordinary level-9 fight, one tower shield guard")
-	ck(guard_fight.trigger_area.global_position.x - 32.0 > ladder.global_position.x + 32.0
-			and guard_chest.global_position.x > guard_fight.trigger_area.global_position.x
-			and game.map.get_node("Fight_Cursed/Trigger").global_position.x < ladder.global_position.x,
-			"the pocket east of the ladder's foot: the way on goes west, this is off it")
+	ck(guard_chest.global_position.x > guard_fight.trigger_area.global_position.x, "the chest lies behind the guard's zone")
 	ck(guard_chest.get_node(guard_chest.guard) == guard_fight, "the chest is guarded by that fight")
-	await _stand(game, Vector2(ladder.global_position.x, 840.0))
-	ck(not guard_fight.fight_in_progress(), "down the ladder: no fight yet")
-	await _hold(&"move_right", 0.5)
+	ck(not guard_fight.fight_in_progress(), "in the alcove's mouth: no fight yet")
+	Input.action_press(&"move_right")
+	for i in 300:
+		await physics_frame
+		if game.player.global_position.x > guard_fight.trigger_area.global_position.x + 40.0:
+			break
+	Input.action_release(&"move_right")
 	for i in 30: await physics_frame
 	ck(guard_fight.fight_in_progress() and guard_fight.get_alive_enemies_count() == 1, "stepping east wakes the guard, alone")
 	await _guarded_chest(game, guard_chest, guard_fight, "enemy_tower_shield_guard.tscn", {"hi_potion": 1, "silver_ingot": 2})
@@ -269,7 +281,7 @@ func _initialize() -> void:
 	ck(game.map.get_node("BanditCampDoor").is_open() and inventory.get_item_count("bandit_camp_key") == 0,
 			"the old save keeps the camp door open, without a key")
 	ck(game.map.get_node("Chest_OldVulture").is_open, "the vulture's chest stays open")
-	await game.teleport_to_room(LAB, ^"SavePoint_Entrance")
+	await game.teleport_to_room(LAB_POCKET, ^"Chest_TowerGuard")
 	for i in 20: await physics_frame
 	ck(game.map.get_node("Chest_TowerGuard").is_open, "the guard's chest stays open")
 	_finish()

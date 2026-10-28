@@ -120,18 +120,19 @@ func _initialize() -> void:
 	ck(shadow.visible and shadow.global_position.is_equal_approx(at), "the shadow stays on the floor (%s)" % shadow.global_position)
 	p.set_visual_offset(Vector2.ZERO)
 
-	print("[5] Ladder: hidden while climbing")
-	await game.teleport_to_room("res://SampleProject/Maps/Laboratory.tscn", ^"SavePoint_Entrance")
+	print("[5] Ladder: hidden while climbing (the road's shop ladder — the Laboratory has none since v3, D863)")
+	game.set_quest_flag("desert_road_fight_complete", true)
+	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 20: await physics_frame
 	await _drain(dm)
-	var ladder: Node2D = game.map.get_node(^"Ladder1")
-	p.global_position = Vector2(ladder.global_position.x, ladder.global_position.y - 30)
+	var ladder: Node2D = game.map.get_node(^"Ladder_Shop")
+	p.global_position = Vector2(ladder.global_position.x, ladder.global_position.y + ladder.height - 30)
 	for i in 30: await physics_frame
-	ck(p.is_on_floor() and shadow.visible, "on the bridge over the ladder, the shadow is drawn")
-	Input.action_press(&"move_down")
+	ck(p.is_on_floor() and shadow.visible, "at the foot of the ladder, the shadow is drawn")
+	Input.action_press(&"move_up")
 	for i in 30: await physics_frame
 	ck(p.mover.is_climbing() and not shadow.visible, "on the ladder, the shadow is hidden")
-	Input.action_release(&"move_down")
+	Input.action_release(&"move_up")
 
 	print("RESULT: ALL PASS" if fails.is_empty() else "RESULT: %d FAIL" % fails.size())
 	quit()

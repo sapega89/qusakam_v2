@@ -333,11 +333,11 @@ func _placements() -> void:
 		for p in spawner.spawn_points:
 			rolled.append("%s %s %s" % [p.spawn_id, p.kind(), spawner.variant_size(p)])
 	print("  info DesertRoad sizes: %s" % ", ".join(rolled))
-	var lab: Node = load("res://SampleProject/Maps/Laboratory.tscn").instantiate()
+	var lab: Node = load("res://SampleProject/Maps/LabTopFloor.tscn").instantiate()
 	var lab_shield := false
 	for p: Node in lab.get_node(^"Fight_Lower").get_children():
 		lab_shield = lab_shield or (p.get_script() == spawn_script and p.enemy_type == "shield")
-	ck(lab_shield, "Laboratory Fight_Lower (before the boss): a shield-bearer in the big group")
+	ck(lab_shield, "LabTopFloor Fight_Lower (before the boss): a shield-bearer in the big group")
 	lab.free()
 	# Усі кімнати: нічого великого чи елітного без свого виду; BigSlot_* названі за видом і стоять на його base.
 	var slots: Array = []
@@ -500,12 +500,16 @@ func _cursed_jackal() -> void:
 	var entry: Array = bestiary.enemies.filter(func(e: Dictionary) -> bool: return e.kind == "jackal_cursed")
 	ck(entry.size() == 1 and _translated(entry[0].name) and _translated(entry[0].text), "bestiary entry, en and uk")
 
-	var lab: Node = load("res://SampleProject/Maps/Laboratory.tscn").instantiate()
+	# Лабораторія v3 (D865): бої в кімнатах поверхів, у порядку шляху вгору.
+	var lab_rooms: Array[Node] = []
+	for room_name in ["Laboratory", "LabGuardPocket", "LabMiddleFloor", "LabTopFloor"]:
+		lab_rooms.append(load("res://SampleProject/Maps/%s.tscn" % room_name).instantiate())
+	var lab_fights: Array[Node] = []
+	for room: Node in lab_rooms:
+		lab_fights.append_array(room.get_children().filter(func(n: Node) -> bool: return n.has_node(^"Trigger")))
 	var placed: Array[String] = []
 	var first := ""
-	for spawner: Node in lab.get_children():
-		if not spawner.has_node(^"Trigger"):
-			continue
+	for spawner: Node in lab_fights:
 		var kinds: Array = []
 		for p: Node in spawner.find_children("*", "Node2D", true, false):
 			if p.get_script() == spawn_script:
@@ -516,24 +520,29 @@ func _cursed_jackal() -> void:
 				first = spawner.name
 				ck(kinds == ["jackal_cursed"] and spawner.enemy_level == 9, "%s: the first cursed jackal comes alone, nothing cursed beside it (%s)" % [spawner.name, kinds])
 	print("  info cursed jackals: %s" % ", ".join(placed))
-	ck(first == "Fight_Cursed", "the first one stands in the middle storey's corridor, under the ladder (%s)" % first)
-	var lone: Node2D = lab.get_node(^"Fight_Cursed")
-	var middle: Node2D = lab.get_node(^"Fight_Middle")
-	ck(lone.get_node(^"Trigger").position.x - middle.get_node(^"Trigger").position.x >= 400.0 and lone.get_node(^"BigSlot_JackalCursed_1").position.y == 848.0,
+	ck(first == "Fight_Cursed", "the first one stands on the middle floor, just off the great stairs (%s)" % first)
+	var middle_floor: Node = lab_rooms[2]
+	var lone: Node2D = middle_floor.get_node(^"Fight_Cursed")
+	var middle: Node2D = middle_floor.get_node(^"Fight_Middle")
+	ck(lone.get_node(^"Trigger").position.x - middle.get_node(^"Trigger").position.x >= 400.0 and lone.get_node(^"BigSlot_JackalCursed_1").position.y == 368.0,
 			"room to learn it: the next fight's zone is 400+ px further west, the jackal on the floor")
 	var lower: Array = []
-	for p: Node in lab.get_node(^"Fight_Lower").get_children():
+	var top_floor: Node = lab_rooms[3]
+	for p: Node in top_floor.get_node(^"Fight_Lower").get_children():
 		if p.get_script() == spawn_script:
 			lower.append(p.kind())
-	ck(lower.slice(2) == ["jackal_cursed", "jackal_cursed"] and lab.get_node(^"Fight_Lower").wave_size == 2,
+	ck(lower.slice(2) == ["jackal_cursed", "jackal_cursed"] and top_floor.get_node(^"Fight_Lower").wave_size == 2,
 			"later: a pair, the second wave of the fight before the boss (%s)" % [lower])
 	ck(placed.size() == 2, "nowhere else: the lone one and the pair (%d fights)" % placed.size())
 	var fly: Array = []
-	for p: Node in lab.find_children("*", "Node2D", true, false):
-		if p.get_script() == spawn_script and p.kind() == "fly":
-			fly.append(String(p.get_parent().name))
-	ck(fly == ["Fight_Fly"] and lab.get_node(^"Fight_Fly").get_index() < lone.get_index(), "the fly stays one, alone, before the jackal (%s)" % [fly])
-	lab.free()
+	for room: Node in lab_rooms:
+		for p: Node in room.find_children("*", "Node2D", true, false):
+			if p.get_script() == spawn_script and p.kind() == "fly":
+				fly.append(String(p.get_parent().name))
+	ck(fly == ["Fight_Fly"] and lab_fights.find(lab_rooms[0].get_node(^"Fight_Fly")) < lab_fights.find(lone),
+			"the fly stays one, alone, before the jackal (%s)" % [fly])
+	for room: Node in lab_rooms:
+		room.free()
 
 ## [6b] Ватажок зграї шакалів (D652, D692): живий вид-еліта з власним аркушем, поведінка шакала (enemy_fast), числа шакала
 ## з множниками еліти й рівня бою (D642 — бій перевіряє verify_difficulty). Розстановка (D582, D682): кожна точка
@@ -622,7 +631,7 @@ func _armoured_scorpion() -> void:
 			and is_equal_approx(stats.base_damage, tank.base_damage) and is_equal_approx(stats.attack_windup, tank.attack_windup),
 			"the scorpion's behaviour: armoured front x%.1f, super armour, %s tell, base HP %d / damage %.0f as the scorpion"
 			% [stats.front_damage, stats.tell, stats.max_health, stats.base_damage])
-	for slot: Array in [["DesertRoad", "Fight_Caravan"], ["Laboratory", "Fight_Lower"]]:
+	for slot: Array in [["DesertRoad", "Fight_Caravan"], ["LabTopFloor", "Fight_Lower"]]:
 		var room: Node = load("res://SampleProject/Maps/%s.tscn" % slot[0]).instantiate()
 		var point: Node = room.get_node(NodePath("%s/BigSlot_ArmouredScorpion_1" % slot[1]))
 		var level: int = point.get_parent().enemy_level
@@ -922,7 +931,7 @@ func _tower_guard() -> void:
 			if p.get_script() == spawn_script and p.big_kind == ID:
 				placed.append("%s/%s/%s" % [file.get_basename(), p.get_parent().name, p.name])
 		room.free()
-	ck(placed == ["Laboratory/Fight_TowerGuard/BigSlot_TowerShieldGuard_1"], "D724: its one place is Laboratory Fight_TowerGuard, alone over a chest (%s)" % [placed])
+	ck(placed == ["LabGuardPocket/Fight_TowerGuard/BigSlot_TowerShieldGuard_1"], "D724: its one place is the Laboratory guard's alcove (LabGuardPocket) Fight_TowerGuard, alone over a chest (%s)" % [placed])
 	for level in [3, 10]:
 		var point: Node = spawn_script.new()
 		point.enemy_type = "shield"

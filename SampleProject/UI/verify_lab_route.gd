@@ -5,8 +5,10 @@ extends SceneTree
 ##   1. Зала мера: перемога (справжня attack) → камери; той самий сейв, програш → камери. Обидва — той самий біт.
 ##   2. Камери: кат-сцена пропущена утриманням геймпада Y (підказка показує Y); сейв → завантаження — AWAKE, без
 ##      повтору кат-сцени; вихід із камери лівим стіком, знайомство гортається кнопкою A → FREE; стіком на схід.
-##   3. Коридори: підказка точки збереження показує кнопку геймпада; три бої; сейв на SavePoint_PreBoss кнопкою Y,
-##      слот — кнопкою A; завантаження → той самий поверх, добиті бої не повертаються.
+##   3. Поверхи вгору (лабораторія v3, D863, D865): підказка точки збереження показує кнопку геймпада; нижній поверх на
+##      схід, суцільним бігом на великі сходи, маршем угору, двері (Y) — на середній поверх, на захід, другі сходи,
+##      двері — на верхній, на схід крізь третій бій; сейв на SavePoint_PreBoss (медитація перед залою) кнопкою Y,
+##      слот — кнопкою A; завантаження → той самий поверх, бої лічаться виграними, медитація повернула ворогів (D492).
 ##   4. Зала джина: розмова пропущена геймпадом Y; програш → плащ → Game Over; «Resume» кнопкою A → останній сейв
 ##      (коридори перед залою, бос не почався).
 ##   5. Знову в залу: розмова (Tab) → бій → перемога справжньою attack → брама → на схід у LaboratoryOutside;
@@ -19,14 +21,18 @@ extends SceneTree
 const MAYOR := "res://SampleProject/Maps/MayorHall.tscn"
 const CELLS := "res://SampleProject/Maps/LabCells.tscn"
 const LAB := "res://SampleProject/Maps/Laboratory.tscn"
+const STAIRS_EAST := "res://SampleProject/Maps/LabStairsEast.tscn"
+const MIDDLE := "res://SampleProject/Maps/LabMiddleFloor.tscn"
+const STAIRS_WEST := "res://SampleProject/Maps/LabStairsWest.tscn"
+const TOP := "res://SampleProject/Maps/LabTopFloor.tscn"
 const BOSS := "res://SampleProject/Maps/LabBoss.tscn"
 const OUTSIDE := "res://SampleProject/Maps/LaboratoryOutside.tscn"
 const TEST_DIR := "user://verify_lab_route/"
 const TEST_SLOT := 1
 const CELLS_TALKS: Array[String] = ["Lab_Cells_Arrival", "Lab_Cells_Injection", "Lab_Cells_Prisoner",
 		"Lab_Cells_Djinn", "Lab_Cells_Faint", "Lab_Cells_Awake"]
-## Бій коридорів → підлога його поверху (y).
-const FIGHTS := {"Fight_Upper": 384.0, "Fight_Cursed": 864.0, "Fight_Middle": 864.0, "Fight_Lower": 1344.0}
+## Бій поверху → його кімната.
+const FIGHTS := {"Fight_Upper": LAB, "Fight_Cursed": MIDDLE, "Fight_Middle": MIDDLE, "Fight_Lower": TOP}
 const FEET := 24.0
 
 var fails: Array[String] = []
@@ -177,10 +183,11 @@ func _hold_until(action: StringName, cond: Callable, max_s: float) -> void:
 	for i in 10: await physics_frame
 
 ## Лівий стік, доки [param cond].
-## Кімнати лабораторії з'єднані дверима (room_art_audit): стіком на схід до [param door], Y (interact) — у [param room].
+## Двері лабораторії (room_art_audit): стіком до [param door] (у його бік), Y (interact) — у [param room].
 func _door_by_stick(door: NodePath, room: String) -> void:
 	var node: Node2D = game.map.get_node(door)
-	await _stick_until(1.0, func() -> bool: return game.player.global_position.x >= node.global_position.x - 8.0, 12.0)
+	var dir := signf(node.global_position.x - game.player.global_position.x)
+	await _stick_until(dir, func() -> bool: return dir * (game.player.global_position.x - node.global_position.x) >= -8.0, 12.0)
 	await _pad_tap(JOY_BUTTON_Y)
 	await _until(func() -> bool: return _room() == room, 15.0)
 	for i in 10: await physics_frame
@@ -214,9 +221,9 @@ func _alive(spawner: Node) -> Array:
 
 ## Ворог, що став на підлогу, добивається (бої коридорів перевіряє verify_laboratory).
 func _fight_frame() -> void:
-	if _room() != LAB:
-		return
 	for fight: String in FIGHTS:
+		if FIGHTS[fight] != _room():
+			continue
 		for enemy: Node in _alive(game.map.get_node(fight)):
 			if enemy.is_on_floor():
 				enemy.die()
@@ -247,20 +254,17 @@ func _go(target: float, max_frames := 1200) -> bool:
 	_release_all()
 	return false
 
-## Хрестовина вниз над драбиною — до підлоги поверху під нею.
-func _climb_down(label: String) -> void:
-	var y0: float = game.player.global_position.y
-	_pad(JOY_BUTTON_DPAD_DOWN, true)
-	var grabbed := false
-	for i in 400:
+## Стіком у бік [param dir] крізь край кімнати — суцільним бігом у [param room] (вхід на великі сходи, D865).
+func _cross_by_stick(dir: float, room: String) -> void:
+	_stick(dir)
+	for i in 900:
 		await physics_frame
 		_fight_frame()
-		grabbed = grabbed or game.player.mover.is_climbing()
-		if grabbed and not game.player.mover.is_climbing():
+		if _room() == room:
 			break
-	_pad(JOY_BUTTON_DPAD_DOWN, false)
+	_release_all()
 	for i in 20: await physics_frame
-	ck(grabbed and game.player.global_position.y > y0 + 350.0, "%s: down the ladder (y %.0f → %.0f)" % [label, y0, game.player.global_position.y])
+	ck(_room() == room, "stick on through the room's edge onto the great stairs (%s)" % _room())
 
 ## Точка збереження: підказка з кнопкою геймпада; Y — меню збереження; A — слот (і підтвердження, якщо питає).
 ## Старий файл слота прибрано заздалегідь (лише тестова тека): тоді видно, що записав саме цей вибір.
@@ -370,36 +374,38 @@ func _initialize() -> void:
 	for id in ["alisia", "astrit", "urizen"]:  # як гравець у Status
 		sl.get_companion_manager().toggle_party(id)
 	await _door_by_stick(^"CorridorDoor", LAB)
-	ck(_room() == LAB, "stick east to the iron door, Y → the corridors (%s)" % _room())
+	ck(_room() == LAB, "stick east to the iron door, Y → the lowest floor (%s)" % _room())
 
-	print("[3] The corridors: the save prompt speaks pad; three fights; save at PreBoss with the pad; load")
+	print("[3] The floors up: the save prompt speaks pad; great stairs and doors; three fights; save at PreBoss with the pad; load")
 	_tough()
 	ck(await _go(200.0), "to SavePoint_Entrance (%s)" % game.player.global_position)
 	var entrance: Node2D = game.map.get_node(^"SavePoint_Entrance")
 	var entrance_prompt: Control = entrance.interactable.get_prompt()
 	await _until(func() -> bool: return entrance_prompt.visible, 3.0)
 	ck(entrance_prompt.visible and entrance_prompt.is_using_gamepad(), "SavePoint_Entrance: the Save prompt shows the pad button")
-	ck(await _go(1504.0), "top storey east (%s)" % game.player.global_position)
-	await _climb_down("top → middle")
-	ck(await _go(224.0), "middle storey west (%s)" % game.player.global_position)
-	await _climb_down("middle → bottom")
-	ck(game.map.is_fight_cleared(^"Fight_Upper") and game.map.is_fight_cleared(^"Fight_Middle"), "two storeys fought")
-	ck(await _go(400.0), "to SavePoint_PreBoss (%s)" % game.player.global_position)
+	ck(await _go(3600.0), "lowest floor east (%s)" % game.player.global_position)
+	await _cross_by_stick(1.0, STAIRS_EAST)
+	var foot: float = game.player.global_position.y
+	ck(await _go(1590.0) and game.player.global_position.y < foot - 150.0, "up the great stairs east (%s)" % game.player.global_position)
+	await _door_by_stick(^"FloorDoor", MIDDLE)
+	ck(_room() == MIDDLE, "Y at «вихід на поверх» → the middle floor (%s)" % _room())
+	ck(await _go(1000.0), "middle floor west (%s)" % game.player.global_position)
+	await _cross_by_stick(-1.0, STAIRS_WEST)
+	foot = game.player.global_position.y
+	ck(await _go(138.0) and game.player.global_position.y < foot - 150.0, "up the great stairs west (%s)" % game.player.global_position)
+	await _door_by_stick(^"FloorDoor", TOP)
+	ck(_room() == TOP, "Y at «вихід на поверх» → the top floor (%s)" % _room())
+	ck(game.map.cleared_count() == 2, "two floors fought (%d)" % game.map.cleared_count())
+	ck(await _go(3700.0), "top floor east through its fight to SavePoint_PreBoss (%s)" % game.player.global_position)
+	ck(game.get_quest_flag("lab_corridors_complete"), "lab_corridors_complete")
 	await _save_at("SavePoint_PreBoss")
 	var saved_at: Vector2 = game.player.global_position
 	await _load(slot_path)
-	ck(_room() == LAB and game.player.global_position.distance_to(saved_at) < 16.0, "the load resumes at PreBoss (%s, %s)" % [_room(), game.player.global_position])
-	ck(game.map.is_fight_cleared(^"Fight_Upper") and game.map.is_fight_cleared(^"Fight_Middle") and not game.map.is_fight_cleared(^"Fight_Lower"),
-			"the two won fights count as won, the lower one waits")
-	ck(not game.map.get_node(^"Fight_Upper").fight_in_progress() and not game.map.get_node(^"Fight_Middle").fight_in_progress(),
-			"the meditation at PreBoss brought their enemies back (D492)")
-	_tough()
-	ck(await _go(1600.0), "bottom storey east through the last fight (%s)" % game.player.global_position)
-	ck(game.get_quest_flag("lab_corridors_complete"), "lab_corridors_complete")
-	ck(await _go(400.0), "back to SavePoint_PreBoss")
-	await _save_at("SavePoint_PreBoss")
+	ck(_room() == TOP and game.player.global_position.distance_to(saved_at) < 16.0, "the load resumes at PreBoss (%s, %s)" % [_room(), game.player.global_position])
+	ck(game.map.cleared_count() == 3 and game.get_quest_flag("lab_corridors_complete"), "the three won fights count as won")
+	ck(not game.map.get_node(^"Fight_Lower").fight_in_progress(), "the meditation at PreBoss brought the top floor's enemies back (D492)")
 	await _door_by_stick(^"BossDoor", BOSS)
-	ck(_room() == BOSS, "stick east to the iron door, Y → the boss hall (%s)" % _room())
+	ck(_room() == BOSS, "stick east to the iron door, Y → up into the boss hall (%s)" % _room())
 
 	print("[4] The mercenary: pad Y skips the talk; losing → the cloak → Game Over; pad A Resume → the last save")
 	started.clear()
@@ -423,15 +429,13 @@ func _initialize() -> void:
 	game = current_scene
 	started.clear()
 	for i in 60: await physics_frame
-	ck(not paused and _room() == LAB, "pad A Resume → the last save, in the corridors (%s)" % _room())
+	ck(not paused and _room() == TOP, "pad A Resume → the last save, on the top floor before the hall (%s)" % _room())
 	ck(game.get_quest_flag("lab_corridors_complete") and not game.get_quest_flag("lab_boss_talk_complete") and not game.get_quest_flag("lab_boss_fight_complete"),
 			"the save is before the hall: corridors done, the mercenary not met")
 
 	print("[5] Again: the talk (Tab), the win, the gates, out to the demo end")
-	# D492: сейв на PreBoss — медитація, тож нижній бій повернувся; герой знову пробивається крізь нього.
-	ck(not game.map.get_node(^"Fight_Lower").fight_in_progress(), "the lower fight is back after the meditation (D492)")
-	_tough()
-	ck(await _go(1600.0), "through the lower fight again (%s)" % game.player.global_position)
+	# D492: сейв на PreBoss — медитація, тож бій верхнього поверху повернувся, але він позаду: медитація — перед залою.
+	ck(not game.map.get_node(^"Fight_Lower").fight_in_progress(), "the top floor's fight is back after the meditation (D492), behind the hero")
 	await _door_by_stick(^"BossDoor", BOSS)
 	await _stick_until(1.0, func() -> bool: return _state() != "WAIT", 8.0)
 	ck(_state() == "TALK", "the talk again — it was not in the save (%s)" % _state())
