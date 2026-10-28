@@ -9,7 +9,7 @@ The plan with statuses is [[MASTER_PLAN]]. Deferred items are in [[BACKLOG]]. Re
 
 **Registers:** next free **D910**, **B213**, **Q128** — do not file IDs on `feature/backlog` while an integrator runs.
 The room chain's IDs are renumbered (D886–D906; local fixes D907–D909).
-**Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 ~14:45 after `integrate-32` was merged (`768d25ca`). Rebuild after each merge (X1).
+**Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 19:27 from `71edcb83` = `main` (PR #106). Rebuild after each merge (X1).
 
 ## 0. Local from now on
 Sapega 28.10 ~15:00: «хмара нам не потрібна, запускай на моїй машині». No new cloud routines. The ones already running
