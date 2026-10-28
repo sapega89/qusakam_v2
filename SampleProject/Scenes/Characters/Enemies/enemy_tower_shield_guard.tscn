@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn" id="1_base"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/shield_tower/sheet.png" id="2_sheet"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Characters/Enemies/TowerShieldGuard.gd" id="3_guard"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/Enemies/shield_tower/sheet_noshield.png" id="4_noshield"]
 
 [sub_resource type="Animation" id="Animation_idle"]
 resource_name = "idle"
@@ -109,6 +110,7 @@ _data = {
 
 [node name="EnemyTowerShieldGuard" instance=ExtResource("1_base")]
 script = ExtResource("3_guard")
+noshield_sheet = ExtResource("4_noshield")
 
 [node name="CollisionShape2D" parent="." index="1"]
 position = Vector2(0, -3.2)

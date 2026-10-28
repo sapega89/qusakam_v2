@@ -11,7 +11,7 @@ the animation frames are cut from that one picture (appear → full → thinning
 | `Smear/thrust_1–3.png` | thrust streak (dagger, halberd) | `thrust` |
 | `Smear/punch_1–3.png` | bare-hand punch streak | `thrust` |
 | `Hit/cut_1–4.png` | hit cut across the target, `HitImpact.tscn` | `thrust`, turned 35° |
-| `Hit/shield_break_1–4.png` | B200: a broken shield bursting into shards, 96×96 (the guard's cell; shield centre at (48, 40) of the canvas): 1 cracked apart in place, 2–4 shards fly out, fall and thin out. **Not generated**: the shards are cut from the tower guard's own (AI-generated, see `Characters/Enemies/shield_tower/README.md`) shield pixels in idle 0, so only the shield's colours. Not wired yet | `Scripts/Tools/shield_break_fx.py` (seed 200) |
+| `Hit/shield_break_1–4.png` | B200: a broken shield bursting into shards, 96×96 (the guard's cell; shield centre at (48, 40) of the canvas): 1 cracked apart in place, 2–4 shards fly out, fall and thin out. **Not generated**: the shards are cut from the tower guard's own (AI-generated, see `Characters/Enemies/shield_tower/README.md`) shield pixels in idle 0, so only the shield's colours. Wired (D843): `Scenes/FX/ShieldBreak.tscn`, 12 fps, spawned by `TowerShieldGuard.break_shield` on the guard's cell, mirrored with his facing | `Scripts/Tools/shield_break_fx.py` (seed 200) |
 | `Skills/fire_arc.png` | Fire Strike crescent | `fire_arc` |
 | `Skills/bolt.png` | Electric Strike bolt (forward and from the sky) | `bolt` |
 | `Skills/heal_aura.png` | Healing Palm ring | `heal_aura` |

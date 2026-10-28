@@ -184,5 +184,23 @@ func end_stagger() -> void:
 	anim_player.play(&"idle" if current_animation == "attack" else StringName(current_animation))
 	anim_player.advance(0.0)
 
+## Інший аркуш тих самих кадрів (вартовий без щита, D843): кінець збою (end_stagger) повертає вже його.
+func swap_sheet(sheet: Texture2D) -> void:
+	if sprite2d.texture == _sheet:
+		sprite2d.texture = sheet
+	_sheet = sheet
+
+## Копія спрайта в спокої — без нахилу, стиску від удару й підскоку, як його ставить сцена (з неї HitAreas міряє
+## зони, поки сам спрайт хитається). Звільняє той, хто взяв.
+func rest_sprite() -> Sprite2D:
+	var still := Sprite2D.new()
+	still.texture = _sheet
+	still.hframes = _hframes
+	still.vframes = _vframes
+	still.position = sprite2d.position
+	still.scale = _base_scale
+	still.offset = Vector2(0.0, _base_offset_y)
+	return still
+
 func get_facing_direction() -> int:
 	return facing_direction
