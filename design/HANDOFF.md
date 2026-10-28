@@ -11,6 +11,8 @@ The plan with statuses is [[MASTER_PLAN]] (§5 playtest P1–P9, §6 the art que
 **Registers:** next free **D862**, **B205**, **Q123** (after `integrate-31`). Do not file IDs on `feature/backlog` while an integrator runs.
 **Exe:** `build/windows/Qusakam.exe` 2026-10-27 23:35 (menu effects, B195 fix, starting skills). Rebuild after each merge.
 
+**STOP lab-main-path:** `cloud/lab-main-path` (`trig_016p6nP4vDDN4ef4kGP91rKz`) was briefed to build the M4 zigzag DOWN — Sapega rejected that graph («лабораторія під землею, тому ми піднімаємось»); do NOT merge its branch. The M4 graph is redrawn in Figma first (memory: Claude draws Figma), shown to him, then built.
+
 ## 1. Running now
 | What | Where | Task | When it reports |
 |---|---|---|---|
