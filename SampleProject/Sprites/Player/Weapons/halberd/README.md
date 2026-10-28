@@ -41,3 +41,21 @@ recolours only the weapon metal.
 | `Heavy/1–3` | 3 | overhead arc: wind-up (head high behind his head), chop (head in front at head height), head on the ground in front |
 | `Block/1` | 1 | pole upright before the chest, head above his head |
 | `Hurt/1` | 1 | recoil, head tipped back, halberd tilted over the shoulder |
+| `LungeCut/1–3` | 3 | H3 (below): crouched, head low forward-down by the front foot; the dash, pole level at hip height; the cut, pole level at chest height, spear point at x 89 |
+| `ShieldCharge/1–3` | 3 | H3: braced, pole steep forward-up, head above the snout; the run, pole level at chest height like a pike; the bash, pole forward-up |
+| `LeapSlam/1–3` | 3 | H3: crouched, head low forward-down; in the air, head high behind his head (from `Heavy/1`); the slam, head on the ground in front |
+
+**H3 movement-skill poses (D812, not wired)** — `Scripts/Tools/comfy_sprite.py hero_weapon_halberd_h3` (same model, seed
+52), each frame `ON:` the hero's bare-handed pose (`SampleProject/Sprites/Player/LungeCut|ShieldCharge|LeapSlam/N`, the
+64×64 frame at (16, 32) of the 96×96 cell) with only the halberd added; `LeapSlam/2` `ON:` this set's `Heavy/1`. Then
+`weapon_key_fixups.py` (`MANUAL`: the `ShieldCharge/1` chest and belt off the key). Feet on row 88, the artist's colours.
+Contact sheet: `design/shots/h3_weapon_variants_2.png`.
+
+- **Not done: one halberd head.** `LungeCut/2`, `ShieldCharge/1`, `ShieldCharge/3`, `LeapSlam/2`, `LeapSlam/3` still have
+  the model's double axe. The fix is `halberd_fixups.py` `HEADS` entries for them (socket, pole angle, box), as for the
+  attacks — left for the next art run.
+- Rejected: «steel head» in the prompt put a steel helmet on him (`LungeCut/2–3`) — now «axe blade» and «his bare round
+  lizard head, no helmet»; `ShieldCharge/3` «forward and up at an angle» drew two crossed poles — now a shallow thrust
+  with «one single pole»; `LeapSlam/1` «back and down behind him» drew two crossed halberds and turned his head away —
+  now the `LungeCut/1` wording.
+- The pole reaches the cell edges (x 5–89) in the level poses.

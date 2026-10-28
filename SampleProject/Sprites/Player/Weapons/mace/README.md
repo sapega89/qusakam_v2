@@ -34,3 +34,19 @@ recolours only the weapon metal.
 | `Heavy/1–3` | 3 | two-handed overhead wind-up, swing, head slammed on the ground |
 | `Block/1` | 1 | mace upright before the face |
 | `Hurt/1` | 1 | recoil, head thrown back, mace flung back |
+| `LungeCut/1–3` | 3 | H3 (below): crouched, mace low forward-down, the ball by the front foot; the dash, the same; the cut, mace level straight forward at chest height |
+| `ShieldCharge/1–3` | 3 | H3: braced, mace level forward at chin height; the run, the same; the bash, mace forward-up, the ball above the snout |
+| `LeapSlam/1–3` | 3 | H3: crouched to spring, mace low forward-down; in the air, mace overhead in both hands (from `Heavy/1`); the slam, kneeling, the ball on the ground in front |
+
+**H3 movement-skill poses (D812, not wired)** — `Scripts/Tools/comfy_sprite.py hero_weapon_mace_h3` (same model, seed 52),
+each frame `ON:` the hero's bare-handed pose (`SampleProject/Sprites/Player/LungeCut|ShieldCharge|LeapSlam/N`, the 64×64
+frame at (16, 32) of the 96×96 cell) with only the mace added; `LeapSlam/2` `ON:` this set's `Heavy/1`. The smooth ball of
+`MACE_BALL` (the flanged wording drew spikes and hammers), `MACE_SHORT` for the size, the empty front hand named in
+`LungeCut/1`, the hero's face named in `ShieldCharge/1–2`. Then `python Scripts/Tools/h3_eye_fixups.py` (the
+`ShieldCharge/2` eye came out a target — copied from the hero's own frame, one row lower), then `weapon_key_fixups.py`
+(`MANUAL`: the `LungeCut/1–2` ball, which touches the body, back to the key; eye glint, chest plates, belts and boots off
+the key). Feet on row 88, the artist's colours. Contact sheet: `design/shots/h3_weapon_variants_2.png`.
+
+- Rejected: `ShieldCharge/1` «forward and up at a steep angle … clear of his face» — the ball covered the snout; kept the
+  level wording of `ShieldCharge/2` (as the dagger).
+- The handle runs back past the fist in `LungeCut/1–2` and `ShieldCharge/1` (held mid-handle); the ball is 10–12 px.
