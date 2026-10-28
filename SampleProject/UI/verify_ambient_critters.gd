@@ -23,8 +23,9 @@ const CANYON := "res://SampleProject/Maps/Canyon.tscn"
 const TEST_DIR := "user://verify_ambient_critters/"
 const DECOR := "res://SampleProject/Scenes/Backgrounds/Decor/"
 const MAPS := "res://SampleProject/Maps/%s.tscn"
-## Висота в пікселях арту (world_scale_plan: «bat, pigeon, lark» 24, «butterfly, moth, mouse» 12); світ = арт × 1.5.
-const ART_HEIGHT := {"critter_bat": 24, "critter_bird": 24, "critter_pigeon": 24, "critter_butterfly": 12,
+## Висота в пікселях арту (world_scale_plan: «bat, lark» 24, «butterfly, moth, mouse» 12); світ = арт × 1.5.
+## Голуб 16 (BACKLOG «Critter tweaks», Sapega 28.10: «менший голуб», рядок `critter_small` у world_scale.json).
+const ART_HEIGHT := {"critter_bat": 24, "critter_bird": 24, "critter_pigeon": 16, "critter_butterfly": 12,
 		"critter_butterfly_blue": 12, "critter_moth": 12, "critter_mouse": 12}
 const GRASS_ART := 16
 ## Хто де живе (R2, Sapega 2026-10-27): кімната → {сцена: скільки}.
@@ -221,6 +222,9 @@ func _check_size(room: String, c: Node2D) -> void:
 	var want: float = roundf(ART_HEIGHT[kind] * factor) * 1.5
 	var drawn: float = image.get_used_rect().size.y * sprite.scale.y
 	ck(absf(drawn - want) <= 1.5, "%s: %s perched is %.1f world px, the chart says %.1f" % [room, c.name, drawn, want])
+	if kind == "critter_moth":
+		# Міль — не метелик: та сама висота, крила розтягнуті вшир ×1.4 (Critter tweaks).
+		ck(is_equal_approx(snappedf(sprite.scale.x / sprite.scale.y, 0.01), 1.4), "%s: %s is stretched ×1.4 wide (%.2f)" % [room, c.name, sprite.scale.x / sprite.scale.y])
 
 
 ## Не біля дверей, NPC, скрині чи підбирання (96 px), не посеред бою (200 px від тригера), на кімнатному плані.
