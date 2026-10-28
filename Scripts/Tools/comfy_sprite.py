@@ -4373,6 +4373,90 @@ CHARACTERS["critter_mouse"] = dict(
     ],
 )
 
+# H3 зі зброєю (D812): пози навичок руху з голими кулаками (hero_lunge / hero_charge / hero_leap) — ON:, модель лише
+# додає зброю в ту саму позу, як біг і стрибок наборів; кадр 64x64 стоїть у клітинці 96x96 з (16, 32), ступні 88.
+# Напрями — кути з README героя (H3 wiring); де кулак попереду (LungeCut/1–2, LeapSlam/1), модель тримає лезо низько
+# вперед-униз, а не позаду.
+H3_DIRS = {
+    "LungeCut": [
+        "back and down behind him at a low angle, his near arm pulled back low beside his rear hip",
+        "back and down behind him at a low angle, his near arm held back low beside his rear hip",
+        # «straight forward at chest height» — меч сторч у кулаці: рівень названо
+        "straight forward to the right, level and horizontal at chest height like a thrust, the tip far ahead of "
+        "his fist, never upright, his near arm stretched forward",
+    ],
+    "ShieldCharge": [
+        # «straight up … the grip at his chin» — клинок сторч закрив око: уперед-угору, перед мордою
+        "forward and up at a steep angle, held out in front of his snout, the whole blade in front of his face and "
+        "clear of it, his eye fully visible",
+        # на бігу «forward and up» лишало меч сторч перед оком — лезо рівно вперед, як у LungeCut/3
+        "straight forward to the right, level at the height of his chin, the tip far ahead of his snout, never "
+        "upright, his eye fully visible",
+        "forward and up at an angle in front of him",
+    ],
+    "LeapSlam": [
+        "back and down behind him at a low angle, his near hand low at his rear hip",
+        None,  # LEAP_AIR
+        "straight down in front of him, both fists gripping the hilt, the tip of the blade touching the ground",
+    ],
+}
+# LeapSlam/2: кулаки над головою голого кадру модель читала вухами й дорисовувала третю руку з мечем біля грудей —
+# як сам LeapSlam/2 (ON: Heavy/1), з Heavy/1 цієї зброї: зброя вже над головою, модель лише підбирає ноги в стрибок
+LEAP_AIR = (
+    "ON:SampleProject/Sprites/Player/Weapons/%s/Heavy/1.png:in the same side view facing right, the same size: keeping "
+    "his arms and the %s raised exactly as in the picture, but now in the air at the top of a high jump, both knees "
+    "bent and tucked up under him, his feet off the ground, his big round head the same size, looking ahead to the "
+    "right, the cape flying up behind him, only two hands, no motion lines"
+)
+# LeapSlam/2 кинджала: біля відкритої руки модель малювала сірий завиток
+DAGGER_LEAP = DAGGER_KEEP + "; his front hand open and empty, holding nothing, nothing in the air beside it"
+# LungeCut/1: друга відкрита рука спереду отримувала другий кинджал. ShieldCharge/1: кулак біля морди — з ON: сторч,
+# «thin» і навскіс модель малювала меч 24–28 px і ховала морду, FROM: ShieldCharge/3 — героя на ~20 % більшим;
+# рівно вперед, як ShieldCharge/2. ShieldCharge/2: хрестик в оці — обличчя назване (як Death)
+H3_FACE = "; " + HERO_FACE + ", his eye and snout fully visible"
+DAGGER_H3_EXTRA = {
+    "LungeCut/1": "; his other hand, low in front of him, open and empty, holding nothing",
+    "ShieldCharge/1": H3_FACE,
+    "ShieldCharge/2": H3_FACE,
+}
+DAGGER_H3_DIR = {"ShieldCharge/1": H3_DIRS["ShieldCharge"][1]}
+for _weapon, _on in (
+    ("sword", lambda pose, d: SWORD_ON_NEAR % (pose, d) + SWORD_COLOURS),
+    # кинджал у високих позах ріс до меча (comfy_art_fixes TINY) — довжину названо головою
+    (
+        "dagger",
+        lambda pose, d: (
+            DAGGER_ON % (pose, DAGGER_H3_DIR.get(pose, d))
+            + "; the dagger blade no longer than his head is wide, only one dagger"
+            + DAGGER_H3_EXTRA.get(pose, "")
+        ),
+    ),
+):
+    CHARACTERS["hero_weapon_%s_h3" % _weapon] = dict(
+        frames_out="SampleProject/Sprites/Player/Weapons/" + _weapon,
+        ref="SampleProject/Sprites/Player/Weapons/%s/CombatIdle/1.png" % _weapon,
+        cell=(96, 96),
+        up=12,
+        seed=52,
+        floor=88,
+        specks=8,  # риски руху біля хвоста в стрибку (LeapSlam/2), як у hero_lunge
+        palette="hero",
+        base=None,
+        who=CHARACTERS["hero_weapon_" + _weapon]["who"],
+        rows=[
+            (
+                anim,
+                [
+                    _on("%s/%d" % (anim, i + 1), d)
+                    if d
+                    else LEAP_AIR % (_weapon, _weapon) + (DAGGER_LEAP if _weapon == "dagger" else "")
+                    for i, d in enumerate(dirs)
+                ],
+            )
+            for anim, dirs in H3_DIRS.items()
+        ],
+    )
+
 if __name__ == "__main__":
     if sys.argv[1] == "_all":
         sys.exit(overview())

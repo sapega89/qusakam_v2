@@ -27,3 +27,18 @@ recolours only the weapon metal.
 | `Heavy/1–3` | 3 | two-handed overhead wind-up, swing, blade tip on the ground |
 | `Block/1` | 1 | sword upright before the face |
 | `Hurt/1` | 1 | recoil, head thrown back, sword low |
+| `LungeCut/1–3` | 3 | H3 (below): crouched, sword low and forward-down at the hip; the dash, sword held low forward-down; the cut, sword level straight forward at chest height |
+| `ShieldCharge/1–3` | 3 | H3: braced, sword forward-up before the snout; the run, sword level forward at chin height; the bash, sword forward-up |
+| `LeapSlam/1–3` | 3 | H3: crouched to spring, sword low forward-down; in the air, sword overhead in both hands (from `Heavy/1`); the slam, both hands on the hilt, blade down-forward to the ground |
+
+**H3 movement-skill poses (D812, not wired)** — `Scripts/Tools/comfy_sprite.py hero_weapon_sword_h3` (same model, seed
+52), each frame `ON:` the hero's bare-handed pose (`SampleProject/Sprites/Player/LungeCut|ShieldCharge|LeapSlam/N`, the
+64×64 frame at (16, 32) of the 96×96 cell) with only the sword added, so the body is exactly the base pose; `LeapSlam/2` is
+`ON:` this set's `Heavy/1` instead (from the base frame the raised fists read as ears and the model grew a third hand
+holding the sword). `specks=8` drops the motion strokes the model drew by the tail. Then `weapon_key_fixups.py`
+(its `MANUAL` rectangles for these frames: the `LungeCut/1` blade, which crosses the leg and was taken for body, back to the key; eye glints, chest plates and a boot off the key). Feet on row 88, the artist's colours. Contact sheet:
+`design/shots/h3_weapon_variants_1.png`.
+
+- First tries: `LungeCut/3` «straight forward at chest height» held the sword upright; `ShieldCharge/1–2` «straight
+  up … the grip at his chin» put the blade over his eye — the level / steep-angle wordings in `H3_DIRS` replaced them.
+- The blade is 21–31 px (as `Attack3/2` … `Heavy/3`), not one fixed sprite.
