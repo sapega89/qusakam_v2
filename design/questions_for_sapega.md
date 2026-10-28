@@ -206,3 +206,4 @@ None blocks work. Each default holds until Sapega answers.
 | Q120 | Rock ledges (D845) | Steps (the painted `RockLedges/` art) or a ramp (built, D830)? | The ramp; the art is redrawn. |
 | Q121 | The mayor's key (D848) | Where should the Mayor's Desk Key lie? The archive is effectively after the demo, since the hall fight takes the hero to the Laboratory. | On the hall floor before the queue (built). |
 | Q122 | The cistern entrance (D847) | The well in the market is a drink, so the cistern is entered by a hatch at the market's east end. Keep, or move the drink and enter by the well? | The hatch, as built. |
+| Q123 | Collectible (A7 item 6) | `Sprites/Collectible.png` is the MetSys sample orb; nothing in the game shows it (its HUD counter in Game.tscn is hidden, its drop script unused). Delete it with its leftovers (D813's rule for unused art), or redraw it for a real collectible? | Delete with its leftovers. |
