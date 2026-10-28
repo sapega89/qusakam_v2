@@ -299,9 +299,7 @@ BOW_DRAW = (
 # B110: лук у позах, де його не було (стрибок, блок, удар) — кадр героя той самий, лук у дальній руці
 BOW_ON = (
     "ON:SampleProject/Sprites/Player/%s.png:keeping exactly the same pose, legs, arms, cape, size and position as in "
-    "the picture, only now holding "
-    + BOW
-    + " in his far hand, %s, no arrow, no sword"
+    "the picture, only now holding " + BOW + " in his far hand, %s, no arrow, no sword"
 )
 BOW_GLOW = (
     ", the arrowhead and the arrow shaft glowing with a bright pale yellow light, a small yellow glow around the "
@@ -679,8 +677,10 @@ CHARACTERS = {
                 [
                     "holding the black ledger open in front of him and reading a contract in it, his head bent over it"
                     + SAME,
-                    "FROM:work:0:pressing a gold seal ring onto the open page of the ledger, sealing a contract" + SAME,
-                    "FROM:work:0:closing the ledger with a satisfied look, the gold clasps shut" + SAME,
+                    "FROM:work:0:pressing a gold seal ring onto the open page of the ledger, sealing a contract"
+                    + SAME,
+                    "FROM:work:0:closing the ledger with a satisfied look, the gold clasps shut"
+                    + SAME,
                 ],
             ),
         ],
@@ -712,10 +712,12 @@ CHARACTERS = {
             (
                 "work",
                 [
-                    "writing in the open ledger on his writing board with the long quill, his head bent over it" + SAME,
+                    "writing in the open ledger on his writing board with the long quill, his head bent over it"
+                    + SAME,
                     "FROM:work:0:leaning forward and peering closely ahead through a small round brass lens held up to his "
                     "eye, checking someone's eyes" + SAME,
-                    "FROM:work:0:dipping the quill in a small ink pot clipped to the writing board" + SAME,
+                    "FROM:work:0:dipping the quill in a small ink pot clipped to the writing board"
+                    + SAME,
                 ],
             ),
         ],
@@ -2061,10 +2063,35 @@ CHARACTERS = {
             ),
             (
                 "Air",
-                [BOW_ON % (f, "the bow held upright beside his body, the string toward the viewer") for f in ("Jump/2", "Jump/3", "Fall/2")],
+                [
+                    BOW_ON
+                    % (
+                        f,
+                        "the bow held upright beside his body, the string toward the viewer",
+                    )
+                    for f in ("Jump/2", "Jump/3", "Fall/2")
+                ],
             ),
-            ("Block", [BOW_ON % ("Block/1", "the bow held low and upright beside him, out of the way of his guard")]),
-            ("Hurt", [BOW_ON % ("Hurt/1", "his bow arm flung back behind him still gripping the bow")]),
+            (
+                "Block",
+                [
+                    BOW_ON
+                    % (
+                        "Block/1",
+                        "the bow held low and upright beside him, out of the way of his guard",
+                    )
+                ],
+            ),
+            (
+                "Hurt",
+                [
+                    BOW_ON
+                    % (
+                        "Hurt/1",
+                        "his bow arm flung back behind him still gripping the bow",
+                    )
+                ],
+            ),
             # Run — не тут: ON: перемальовував тіла й лук стрибав довжиною (арт-директор); Scripts/Tools/bow_fixups.py
         ],
     ),
@@ -2138,7 +2165,10 @@ CHARACTERS = {
         colors=24,
         specks=12,  # пил моделі під ступнями ходи й смерті
         floor=107,  # лінія ніг старого листа: на ній стоять offset сцени, хітбокси й тіло (B128)
-        candidates=("design/shots/candidates/brass_collector_a7.png", [(41, False), (42, False), (43, False)]),
+        candidates=(
+            "design/shots/candidates/brass_collector_a7.png",
+            [(41, False), (42, False), (43, False)],
+        ),
         who="the same huge golem of pale cracked sandstone blocks bound with dark riveted brass plates, with the two "
         "glowing amber eye slits, the huge brass fists and the big boxy cage of thick dark iron bars on its back",
         base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
@@ -2795,8 +2825,24 @@ CHARACTERS = {
         ],
         colors=16,
         # палітра листів D595 (own_palette з idle + run + strike до A14): новий enter не перефарбовує інших
-        palette=[0x070305, 0x620B09, 0x8E060F, 0x313444, 0x3B4350, 0x4A5460, 0x9A590E, 0xE43B31,
-                 0xDB9F28, 0xF76249, 0xEBA970, 0xF5D663, 0xF4B686, 0xB1C6D2, 0xFBE7AE, 0xF9F5E2],
+        palette=[
+            0x070305,
+            0x620B09,
+            0x8E060F,
+            0x313444,
+            0x3B4350,
+            0x4A5460,
+            0x9A590E,
+            0xE43B31,
+            0xDB9F28,
+            0xF76249,
+            0xEBA970,
+            0xF5D663,
+            0xF4B686,
+            0xB1C6D2,
+            0xFBE7AE,
+            0xF9F5E2,
+        ],
         who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
         "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
         base="Replace the character in picture 1 with {the girl from picture 2, }a fierce barbarian woman: long fiery red "
@@ -3369,7 +3415,12 @@ def scale(img, f):
     out = Image.new(small.mode, (w, h), bg)
     out.paste(small, ((w - small.width) // 2, h - small.height))
     out = np.asarray(out).copy()
-    fg = np.linalg.norm(out[..., :3].astype(np.float32) - np.array(bg[:3], np.float32), axis=2) > 75
+    fg = (
+        np.linalg.norm(
+            out[..., :3].astype(np.float32) - np.array(bg[:3], np.float32), axis=2
+        )
+        > 75
+    )
     dist, (iy, ix) = ndimage.distance_transform_edt(~fg, return_indices=True)
     grow = (dist > 0) & (dist <= UP / 4)
     out[grow] = out[iy[grow], ix[grow]]
@@ -4115,7 +4166,10 @@ CHARACTERS["critter_bird"] = dict(
     ref="SampleProject/Sprites/Player/Walk/1.png",
     seed=111,
     colors=12,
-    crop=(48, 48),  # 32x32 не вміщає: птах завбільшки з голову героя, крила вгору — ще вище
+    crop=(
+        48,
+        48,
+    ),  # 32x32 не вміщає: птах завбільшки з голову героя, крила вгору — ще вище
     out="SampleProject/Assets/Characters/Critters/bird.png",
     who="the same small sandy-brown desert lark with the pale belly, the dark-streaked back, the small crest and the "
     "short pointed beak",
@@ -4127,7 +4181,10 @@ CHARACTERS["critter_bird"] = dict(
     + SIDE_VIEW % {"p": "its"}
     + "."
     + MAGENTA_BG,
-    rows=[("perch", [None, "BOB:52"]), ("fly", [BIRD_UP, BIRD_LEVEL, BIRD_DOWN, BIRD_LEVEL])],
+    rows=[
+        ("perch", [None, "BOB:52"]),
+        ("fly", [BIRD_UP, BIRD_LEVEL, BIRD_DOWN, BIRD_LEVEL]),
+    ],
 )
 # Голуб для Міста — той самий розмір і пози, свій опис і зерно
 CHARACTERS["critter_pigeon"] = dict(
@@ -4212,7 +4269,113 @@ CHARACTERS["critter_mouse"] = dict(
     + SIDE_VIEW % {"p": "its"}
     + "."
     + MAGENTA_BG,
-    rows=[("idle", [None, "BOB:56"]), ("run", [MOUSE_RUN, MOUSE_MID, MOUSE_GATHER, MOUSE_MID])],
+    rows=[
+        ("idle", [None, "BOB:56"]),
+        ("run", [MOUSE_RUN, MOUSE_MID, MOUSE_GATHER, MOUSE_MID]),
+    ],
+)
+
+
+# A10 (B187, D814, D816): людські вороги — 96 арт-px заввишки (дорослий за таблицею), звичайні пропорції. Перший кадр —
+# старий кадр idle того ж ворога (копія в design/shots/candidates/a10/*_old.png) у більшій клітинці 128x112, модель
+# малює його вищим (той самий вигляд, свіжі пікселі); height=96 зводить перший кадр рівно до 96, решта кадрів — з
+# нього тими ж підказками пози. Еліту гра й далі росте на elite.scale (D859) — у лист її розмір не закладено.
+A10_CELL = (128, 112)
+A10_OLD = "design/shots/candidates/a10/%s_old.png#0,0,%d,%d"
+
+
+def _a10_bigger(desc, view, top):
+    return (
+        "Redraw this exact character bigger and taller: "
+        + desc
+        + ". The same pixel art style with the same big square "
+        "pixels, thick dark outline, flat shading and colours, the same "
+        + view
+        + " facing right and the same idle "
+        "stance, but a tall adult man with normal proportions who fills the whole height of the picture, his "
+        + top
+        + " near the top edge and his feet on the bottom edge."
+        + MAGENTA_BG
+    )
+
+
+for _n, _old, _desc, _view in (
+    (
+        "big_crossbowman",
+        "archer_heavy",
+        "a stocky heavy bandit archer in a dented steel cuirass and a round iron helmet over a sand-yellow tunic, a red "
+        "face scarf over his nose and mouth, a big wooden longbow in his front hand, a quiver at his hip",
+        "three-quarter view",
+    ),
+    (
+        "big_bandit_brute",
+        "bandit_brute",
+        "a hulking desert bandit brute: a huge broad-shouldered heavy man, a red face scarf over his nose and mouth, a "
+        "ragged sand-coloured cloak over bare scarred arms, leather bracers, dragging a huge heavy two-handed spiked "
+        "club behind him with one hand",
+        "side view",
+    ),
+    (
+        "big_tower_guard",
+        "shield_tower",
+        "a big armoured bandit guard in grey plate armour with a spiked steel helmet and a red face scarf, holding a "
+        "tall rectangular wooden tower shield bound with iron firmly in front of his body, a short curved sword in his "
+        "other hand",
+        "three-quarter view",
+    ),
+):
+    CHARACTERS[_n].pop("pick", None)
+    CHARACTERS[_n].update(
+        ref=A10_OLD % (_old, 96, 96),
+        cell=A10_CELL,
+        up=12,
+        seed=210,
+        height=96,
+        base=_a10_bigger(
+            _desc, _view, "head" if _n == "big_bandit_brute" else "helmet"
+        ),
+    )
+
+# дихання (BOB) — рядок одразу під поясом нового кадру
+CHARACTERS["big_crossbowman"]["rows"][0] = ("idle", [None, "BOB:77"])  # пояс — рядки 73-75
+
+# Лучник був чібі з кадрів бандита (64x64, 49 px): тепер дорослий із його ж кадру (кандидат «text» з кадром героя й
+# лучником як дизайном вийшов знову чібі — велика голова); хода й удар — підказками з першого кадру, як у еліти.
+_A10_ARCHER = (
+    "a desert bandit archer with a red head wrap and a red face scarf over his nose and mouth, a ragged sand-coloured "
+    "hooded cloak over a brown tunic, leather boots, a short curved wooden bow held upright in his front hand and a "
+    "brown leather quiver of arrows on his back"
+)
+_A10_ARCHER_HURT = (
+    "still facing right in the same view: flinching back from a hit, leaning backwards, head tilted back, the bow "
+    "lowered in his hand; no blood, no effects, nothing else in the picture"
+    + ARCHER_SCARF
+)
+_archer_rows = CHARACTERS["bandit_archer"]["rows"]
+CHARACTERS["bandit_archer"].update(
+    ref=A10_OLD % ("bandit_archer", 64, 64),
+    cell=A10_CELL,
+    up=12,
+    seed=210,
+    height=96,
+    who="the same tall lean desert bandit archer with the red head wrap, the red face scarf, the ragged sand-coloured "
+    "hooded cloak, the brown quiver of arrows on his back and the short curved wooden bow",
+    base="Redraw this exact character as a grown man: "
+    + _A10_ARCHER
+    + ". The same pixel art style with the same big "
+    "square pixels, thick dark outline, flat shading and colours, the same side view facing right and the same idle "
+    "stance, but not chibi: a tall lean adult man with normal human proportions, a small head, long legs, who fills "
+    "the whole height of the picture, his head near the top edge and his feet on the bottom edge."
+    + MAGENTA_BG,
+    rows=[
+        ("idle", [None, "BOB:67"]),  # пояс — рядки 64-65
+        ("walk", [p + ARCHER_SCARF for p in _humanoid_rows("", "")[1][1]]),
+        _archer_rows[
+            2
+        ],  # FROM:idle:0 / attack:0 / attack:1 — ті самі пози натягу й пострілу
+        ("hurt", [_A10_ARCHER_HURT]),
+        ("death", [_A10_ARCHER_HURT] + _archer_rows[4][1][1:]),
+    ],
 )
 
 if __name__ == "__main__":
@@ -4297,7 +4460,9 @@ if __name__ == "__main__":
         # world_scale_plan: точна висота першого кадру в арт-px; розмір у підказці модель не тримає (метелик вийшов
         # 19 px замість 12) — усі згенеровані кадри зменшуються одним множником, рух між ними лишається
         f = fit_height(base, cell, char["height"])
-        frames = {k: v if isinstance(v, str) else scale(v, f) for k, v in frames.items()}
+        frames = {
+            k: v if isinstance(v, str) else scale(v, f) for k, v in frames.items()
+        }
         base = scale(base, f)
         print("height", char["height"], "scale", round(f, 3))
     small = {k: shrink(v, cell) for k, v in frames.items() if not isinstance(v, str)}
@@ -4345,7 +4510,9 @@ if __name__ == "__main__":
                 char.get("palette") != "hero"
             ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
-                if char.get("specks"):  # specks=N — відірвані клапті < N px (пил і тінь моделі біля ступнів) геть
+                if char.get(
+                    "specks"
+                ):  # specks=N — відірвані клапті < N px (пил і тінь моделі біля ступнів) геть
                     op = drop_specks(op, char["specks"])
             else:  # лише поодинокі пікселі (жодного з 8 сусідів) — сміття ключування (арт-директор, Hurt кинджала)
                 p = np.pad(op, 1)
@@ -4391,7 +4558,9 @@ if __name__ == "__main__":
     if "crop" in char:
         # малий критер: лист у меншій клітинці, одне вікно для всіх кадрів (рух між ними лишається), низ — ступні
         nw, nh = char["crop"]
-        cells = sheet.reshape(len(char["rows"]), ch, cols, cw, 4).transpose(0, 2, 1, 3, 4)
+        cells = sheet.reshape(len(char["rows"]), ch, cols, cw, 4).transpose(
+            0, 2, 1, 3, 4
+        )
         xs = np.nonzero(cells[..., 3].any(axis=(0, 1, 2)))[0]
         ys = np.nonzero(cells[..., 3].any(axis=(0, 1, 3)))[0]
         x0, y0 = (xs[0] + xs[-1] + 1 - nw) // 2, floor + 1 - nh
@@ -4399,7 +4568,9 @@ if __name__ == "__main__":
             f"frames do not fit {nw}x{nh}: x {xs[0]}..{xs[-1]}, y {ys[0]}..{ys[-1]}"
         )
         sheet = cells[:, :, y0 : y0 + nh, x0 : x0 + nw].transpose(0, 2, 1, 3, 4)
-        sheet = np.ascontiguousarray(sheet).reshape(len(char["rows"]) * nh, cols * nw, 4)
+        sheet = np.ascontiguousarray(sheet).reshape(
+            len(char["rows"]) * nh, cols * nw, 4
+        )
     if (
         "out" in char
     ):  # кадри героя — лише окремими текстурами (frames_out), листа гра не бере

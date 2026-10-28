@@ -76,7 +76,7 @@ size = Vector2(34.5, 73.5)
 
 [sub_resource type="RectangleShape2D" id="Shape_hurt"]
 resource_local_to_scene = true
-size = Vector2(66, 75)
+size = Vector2(78, 144)
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_archer"]
 _data = {
@@ -91,9 +91,11 @@ radius = 420.0
 
 [node name="EnemyArcher" instance=ExtResource("1_base")]
 script = ExtResource("2_archer")
+max_tilt = 0.65
 
 [node name="Sprite2D" parent="." index="2"]
-metadata/tell_at = Vector2(24, -2)
+metadata/tell_at = Vector2(35, -13)
+offset = Vector2(0, -31)
 texture = ExtResource("3_sheet")
 hframes = 4
 vframes = 5
@@ -110,5 +112,5 @@ position = Vector2(17.25, -8.25)
 shape = SubResource("Shape_strike")
 
 [node name="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(-1.5, -9)
+position = Vector2(-1.5, -43.5)
 shape = SubResource("Shape_hurt")
