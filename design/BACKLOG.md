@@ -333,6 +333,9 @@ Left: MayorHall (interior, `hall_body` / `hall_floor` materials not generated ye
 - **Waits on:** Q75–Q78 (the defaults are in the plan); the fade and background loading ([[performance_plan]]) before the pilot location.
 - **Resume:** slice 1 — write `Resources/Data/locations.json` grouping the 11 rooms into the five locations, plus `verify_locations.gd`.
 
+### Enemy stamina — [[enemy_stamina_plan]] (D824, D856)
+Slice 1 built (`cloud/enemy-stamina`, merged by integrate-31); later slices in the plan.
+
 ### Enemy variety — [[enemy_variety_plan]] (D495)
 - **Exists:** four kinds, one size each; enemies never block.
 - **Waits on:** Q85 (defaults are in the plan); after `cloud/combat-feel` and D494.
