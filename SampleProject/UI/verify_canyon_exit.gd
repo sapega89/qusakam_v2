@@ -2,10 +2,9 @@ extends SceneTree
 
 ## Медитація на вершині скелі (feedback 8): викрадення — лише після підйому й медитації.
 ## Спуск з каньйону (D256): після села край плато біля містка запускає кат-сцену — місток падає, Canyon_ExitCutscene,
-## Кусакам злазить за камінь переднього плану, камера пливе до синього неба, і він уже в печері під мостом (M7), звідки
+## Кусакам злазить за камінь переднього плану, камера пливе до неба (жовтого, D864), і він уже в печері під мостом (M7), звідки
 ## провалами вниз виходить на дорогу. До села — просто край.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_canyon_exit.gd
-
 
 var fails: Array[String] = []
 
@@ -247,8 +246,9 @@ func _initialize() -> void:
 	var half_h: float = camera.get_viewport_rect().size.y / camera.zoom.y / 2.0
 	await _until(func() -> bool: return camera.get_screen_center_position().y - half_h < sky_top + 1.0, 8.0)
 	ck(camera.get_screen_center_position().y < 0.0, "the camera has floated up above the room into the sky (y=%.0f)" % camera.get_screen_center_position().y)
-	var sky_color: Color = game.map.get_node(^"HighSky").texture.gradient.sample(0.0)
-	ck(sky_color.b > sky_color.r + 0.3, "the sky up there is blue (%s)" % sky_color)
+	var SkyTint: GDScript = load("res://SampleProject/Scripts/Gameplay/SkyTint.gd")
+	# D864: до виходу з Лабораторії небо жовте — HighSky під спільним матеріалом неба, і той жовтий.
+	ck(game.map.get_node(^"HighSky").material == SkyTint.SKY and SkyTint.is_yellow(), "the sky up there is the dusty yellow (D864)")
 	process_frame.disconnect(watch)
 	ck(falls.is_empty(), "no Fall animation: Kusakam climbs, he does not fall")
 	ck(player.current_health == hp, "no damage (%d → %d)" % [hp, player.current_health])
