@@ -185,3 +185,24 @@ point here.
 - Who the gods are, and what the "three dark priests" (`Три_темніх_жреца`) serve.
 - What the ancient civilisation was, and whether the Laboratory is built on it.
 - Суан, Гном-механік — who they are (also Q51, Q53); Kusakam's god/oath as a paladin.
+
+## The yellow sky, the flying city and the god of greed (Sapega, 2026-10-28)
+
+> небо завжди жовте, тому що старші боги втекли через якийсь катаклізм. після виходу з лабораторії синіє небо, тому що є
+> летюче місто, де роблять свої експерименти вищі маги для того, щоби повернути сонце. одного з магів зсовратив бог
+> жадібності, бо він хоче з'їсти всіх людей, і якщо боги побачать, що всі люди його послідовники, тоді вони закриють на
+> це очі. тому оце синє небо — це проба зробити небо таким, як раніше, і в цей момент хто дивиться на небо, може отримати
+> прокляття, і це буде вважатись, що він послідовник бога жадібності. і він тоді зможе його з'їсти.
+
+- **The sky is always yellow**, because **the elder gods fled in some cataclysm** (that is also why there is no sun — the
+  section above). This answers the open question «What colour is the bright sky?».
+- **A flying city** exists, where **high mages** run experiments **to bring the sun back**.
+- **The blue sky** is one of those experiments: **an attempt to make the sky as it was before**. It turns blue **after
+  Kusakam leaves the Laboratory**.
+- **The god of greed** corrupted one of the mages. He wants **to eat all people**; if the gods see that all people are
+  his followers, **they will turn a blind eye**.
+- So while the sky is blue, **whoever looks at it may be cursed**, and the curse **counts him as a follower of the god of
+  greed — who can then eat him**. This names the «unknown power» of the blue-sky curse above (2026-10-23): the god of
+  greed, through the corrupted mage. The Maiden's barrier shielding her followers from the curse still holds.
+- Open, for later: the flying city's name and where it hangs; the corrupted mage's name; the god of greed's name and how
+  he «eats»; whether the curse needs one look or a long gaze (the 2026-10-23 text: the eyes turn blue).
