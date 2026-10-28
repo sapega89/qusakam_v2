@@ -594,9 +594,9 @@ func _loose(charged: bool) -> void:
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
 ## вивільнення: SkillManager.use_skill застосовує ефект. Навичка руху (D812) між ними рухає героя (_start_move) і
-## починається лише з землі. false — герой зайнятий.
+## починається лише з землі, як і зона (v2 зріз 4: її кладуть на землю). false — герой зайнятий.
 func begin_cast(definition: SkillDefinition) -> bool:
-	if state != State.READY or (definition.moves() and not player.is_on_floor()):
+	if state != State.READY or ((definition.moves() or definition.leaves_zone()) and not player.is_on_floor()):
 		return false
 	state = State.CAST_WINDUP
 	_state_left = definition.cast_windup

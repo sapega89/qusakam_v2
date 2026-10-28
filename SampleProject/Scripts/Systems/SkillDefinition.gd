@@ -113,6 +113,19 @@ var lifesteal: float = 0.0
 ## Невразливість героя від початку руху, с.
 var invulnerable: float = 0.0
 
+## Навички дальнього бою й зон (v2 зріз 4, D-sv2r1): кидок — снаряд летить від руки вздовж погляду (як стріла лука,
+## D380–D381) до projectile_range px зі швидкістю projectile_speed px/с; projectile_pierce — прошиває всіх на лінії
+## (кожного раз), інакше зупиняється на першому. 0 — не кидок.
+var projectile_range: float = 0.0
+var projectile_speed: float = 0.0
+var projectile_pierce: bool = false
+## Зона на землі під ногами героя (D-sv2r2): zone_radius px в обидва боки, zone_time с; щосекунди ворогам у ній —
+## zone_dps, героєві й союзникам у ній — zone_heal (обидва з рангом і синергіями). 0 — без зони.
+var zone_radius: float = 0.0
+var zone_time: float = 0.0
+var zone_dps: int = 0
+var zone_heal: int = 0
+
 
 static func type_from_string(value: String) -> Type:
 	return Type.PASSIVE if value.strip_edges().to_lower() == "passive" else Type.ACTIVE
@@ -201,6 +214,15 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.knockback = maxf(0.0, float(data.get("knockback", 0.0)))
 	definition.lifesteal = clampf(float(data.get("lifesteal", 0.0)), 0.0, 1.0)
 	definition.invulnerable = maxf(0.0, float(data.get("invulnerable", 0.0)))
+	var projectile: Dictionary = data.get("projectile", {})
+	definition.projectile_range = maxf(0.0, float(projectile.get("range", 0.0)))
+	definition.projectile_speed = maxf(0.0, float(projectile.get("speed", 0.0)))
+	definition.projectile_pierce = bool(projectile.get("pierce", false))
+	var zone: Dictionary = data.get("zone", {})
+	definition.zone_radius = maxf(0.0, float(zone.get("radius", 0.0)))
+	definition.zone_time = maxf(0.0, float(zone.get("time", 0.0)))
+	definition.zone_dps = maxi(0, int(zone.get("dps", 0)))
+	definition.zone_heal = maxi(0, int(zone.get("heal", 0)))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:
@@ -230,6 +252,16 @@ func rank_factor(rank: int) -> float:
 ## Навичка руху (D812): герой рухається між замахом і ударом.
 func moves() -> bool:
 	return move_kind != ""
+
+
+## Кидок (D-sv2r1): навичка пускає снаряд.
+func throws() -> bool:
+	return projectile_range > 0.0
+
+
+## Зона (D-sv2r2): навичка лишає на землі коло чи калюжу.
+func leaves_zone() -> bool:
+	return zone_time > 0.0
 
 
 func is_active() -> bool:
@@ -281,4 +313,6 @@ func to_dict() -> Dictionary:
 		"knockback": knockback,
 		"lifesteal": lifesteal,
 		"invulnerable": invulnerable,
+		"projectile": {"range": projectile_range, "speed": projectile_speed, "pierce": projectile_pierce},
+		"zone": {"radius": zone_radius, "time": zone_time, "dps": zone_dps, "heal": zone_heal},
 	}

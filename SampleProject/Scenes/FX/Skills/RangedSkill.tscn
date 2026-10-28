@@ -1,0 +1,27 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/RangedSkillFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Skills/heal_aura.png" id="glow"]
+
+[node name="RangedSkill" type="Node2D"]
+z_index = 250
+script = ExtResource("fx")
+metadata/_doc = "Cast effect of the ranged and zone skills (v2 slice 4): a borrowed glow in the casting hand until slice 7 draws their own"
+
+[node name="Glow" type="Sprite2D" parent="."]
+modulate = Color(1, 0.92, 0.6, 0.85)
+texture_filter = 1
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("glow")
+
+[node name="CastStormWindup" type="Marker2D" parent="."]
+position = Vector2(-7, -46.5)
+metadata/_doc = "the hand raised to throw (Holy Javelin, Lightspear)"
+
+[node name="CastPalmWindup" type="Marker2D" parent="."]
+position = Vector2(9, -13.5)
+metadata/_doc = "palms pressed together at the chest (Hallowed Circle)"
+
+[node name="HeavyWindup" type="Marker2D" parent="."]
+position = Vector2(0, 24)
+metadata/_doc = "the hero's feet before the stomp (Hellfire Stomp)"

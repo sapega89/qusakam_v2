@@ -309,8 +309,17 @@ func _initialize() -> void:
 
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	# v2 зріз 3 (D812) збудував 6 навичок руху — запланованих лишилось 22
-	ck(planned.size() == 22 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "22 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D812) збудував 6 навичок руху, зріз 4 (D-sv2r1, D-sv2r2) — 4 кидки й зони: запланованих лишилось 18
+	ck(planned.size() == 18 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "18 planned actives, all [DRAFT] (%d)" % planned.size())
+	var ranged: Array = db.get_all_skills().filter(func(d) -> bool: return d.throws() or d.leaves_zone())
+	ck(ranged.map(func(d) -> String: return d.id) == ["holy_javelin", "lightspear", "hallowed_circle", "hellfire_stomp"]
+			and ranged.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.release_pose != "" and d.synergies.size() in [1, 2]),
+			"the 4 ranged and zone skills are built: learnable, with a cast, an effect and synergies (%s)" % [ranged.map(func(d) -> String: return d.id)])
+	var shaped := true
+	for d in ranged:
+		if (d.projectile_speed > 0.0) != d.throws() or (d.zone_radius > 0.0) != d.leaves_zone() or (d.leaves_zone() and d.zone_dps + d.zone_heal <= 0):
+			shaped = false
+	ck(shaped, "each throw has a speed, each zone a radius and a dps or heal")
 	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
 	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
 			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),
@@ -332,7 +341,7 @@ func _initialize() -> void:
 	ck(sm.can_upgrade("rising_slash") == R.PLANNED, "nor ranked up")
 	gm.player_state.unlocked_skills.erase("rising_slash")
 	var plan_v2 = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
-	ck(plan_v2.can_pick("lightspear") == R.PLANNED, "the skill screen's plan refuses it too")
+	ck(plan_v2.can_pick("rising_slash") == R.PLANNED, "the skill screen's plan refuses it too")
 
 	print("[12] The 5 new v2 passives work (D535)")
 	ck(sm.unlock_skill("weapon_training") == R.OK, "Weapon Training learned (Keen Edge and Heavy Hand need it)")

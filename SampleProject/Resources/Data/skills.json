@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned`, with provisional SP, damage and `draft` numbers (v2 slice 1); the shield skills need no shield item, the shield is a block spell (skills audit, Sapega 2026-10-27). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned`, with provisional SP, damage and `draft` numbers (v2 slice 1); the shield skills need no shield item, the shield is a block spell (skills audit, Sapega 2026-10-27). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1). Ranged and zone skills: `projectile` and `zone` (v2 slice 4).",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -37,7 +37,9 @@
       "move": "{kind: dash | leap, distance: px, time: s (dash), height: px (leap), hits: first | front | around, reach: px (around)} - the hero moves between wind-up and strike (v2 slice 3, D812): a dash pushes forward (bodies block, D443) and, with hits first, strikes as soon as an enemy is in strike reach; with hits front it runs its whole time into the body; a leap lands before the first enemy ahead, never behind it, and strikes on landing; first = the nearest enemy in front, front = all in front (D142), around = all within reach px on both sides. Starts without an enemy in front, from the ground only; a whiff costs its SP",
       "knockback": "px >= 0 - pushes each hit enemy away from the hero (like a mace, D203)",
       "lifesteal": "0..1 - that share of the skill's damage heals the hero",
-      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move"
+      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move",
+      "projectile": "{range: px, speed: px/s, pierce: bool} - a thrown skill (v2 slice 4, D-sv2r1): on release a spear flies from the hand along the facing like the bow's arrow (D380, D381), through the hero and NPCs, sticks in a wall, and fades after range px; it hits the first enemy, or with pierce every enemy on its line once. Starts without an enemy in front; SP is paid on the throw, hit or miss",
+      "zone": "{radius: px, time: s, dps: int, heal: int} - a ground zone (v2 slice 4, D-sv2r2): on release it lies at the hero's feet, radius px both ways and 96 px up, for time s; every second enemies in it take dps and the hero and allies in it heal heal (both with rank and synergies). With damage, the release also hits every enemy in the zone. From the ground only; starts without an enemy in front; SP is paid on release"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -1711,7 +1713,6 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 80,
@@ -1719,10 +1720,29 @@
         "phys": 4.6,
         "elem": 0.8
       },
-      "draft": {
-        "range_px": 520,
-        "speed_px_s": 900
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "windup_pose": "CastStormWindup",
+        "release_pose": "CastFireRelease"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "projectile": {
+        "range": 520,
+        "speed": 900,
+        "pierce": false
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "keen_edge",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         4
@@ -1918,7 +1938,6 @@
       "prerequisites": [
         "radiant_smite"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 80,
@@ -1926,10 +1945,29 @@
         "phys": 4.4,
         "elem": 1.2
       },
-      "draft": {
-        "range_px": 600
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.3,
+        "pose": "CastStorm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "projectile": {
+        "range": 600,
+        "speed": 1200,
+        "pierce": true
+      },
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "zealous_answer",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         1,
         1
@@ -1981,16 +2019,32 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
-      "draft": {
-        "radius_px": 150,
-        "duration_s": 6.0,
-        "enemy_dps": 6,
-        "heal_per_s": 3
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.4,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "zone": {
+        "radius": 150,
+        "time": 6.0,
+        "dps": 6,
+        "heal": 3
+      },
+      "synergies": [
+        {
+          "skill": "mending_hands",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "consecrated_ground",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         3
@@ -2353,7 +2407,6 @@
       "prerequisites": [
         "night_reaper"
       ],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
       "damage": 60,
@@ -2361,12 +2414,30 @@
         "phys": 3.6,
         "elem": 1.2
       },
-      "draft": {
-        "pool_px": 160,
-        "duration_s": 5.0,
-        "pool_dps": 7
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.4,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "LeapSlamStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "zone": {
+        "radius": 80,
+        "time": 5.0,
+        "dps": 7
+      },
+      "synergies": [
+        {
+          "skill": "embers_within",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         2

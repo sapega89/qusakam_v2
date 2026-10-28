@@ -868,7 +868,9 @@ func cast_skill(skill_id: String) -> Result:
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
 	var player: Node = _default_source()
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
-	if definition.damage > 0 and not definition.moves() and SkillTargeting.enemies_in_front(player).is_empty():
+	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул
+	if definition.damage > 0 and not definition.moves() and not definition.throws() and not definition.leaves_zone() \
+			and SkillTargeting.enemies_in_front(player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
 		return _fail(skill_id, Result.BUSY)
@@ -893,6 +895,8 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 
 	var effect_source: Node = source if source != null else _default_source()
+	if definition.throws() or definition.leaves_zone():
+		return _use_ranged(skill_id, definition, effect_source)
 
 	# Ефект виконуємо до списання SP, щоб невдале застосування нічого не коштувало.
 	# Без явної цілі (хотбар) — ціль за D142: усе перед героєм / союзник поруч або сам герой.
@@ -933,6 +937,54 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	_since["after_skill"] = 0.0
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK
+
+
+## Кидок і зона (v2 зріз 4, D-sv2r1, D-sv2r2): снаряд чи зона з'являються на вивільненні й б'ють потім, тож навичка
+## коштує SP одразу, влучить вона чи ні (як промах навички руху, D812). Удар Hellfire Stomp (damage) — по всіх у калюжі.
+func _use_ranged(skill_id: String, definition: SkillDefinition, source: Node2D) -> Result:
+	var amount := skill_damage(skill_id)
+	if definition.throws():
+		combat_executor.throw(definition, source, amount)
+	if definition.leaves_zone():
+		var zone := combat_executor.place_zone(definition, source, zone_power(skill_id, definition.zone_dps),
+				zone_power(skill_id, definition.zone_heal))
+		if amount > 0:
+			_skill_effect_running = true
+			for enemy in SkillTargeting.enemies_in(zone.area()):
+				if combat_executor.execute(definition, source, enemy, amount):
+					combat_executor.apply_status(definition, enemy, scaled(skill_id, definition.burn_dps))
+			_skill_effect_running = false
+	_pay(definition)
+	_since["after_skill"] = 0.0
+	EventBus.skill_used.emit(skill_id)
+	return Result.OK
+
+
+## Снаряд навички влучив (SkillProjectile): удар навички — без SP за влучання, зі станом D207; ціль повертається до героя.
+func projectile_hit(definition: SkillDefinition, source: Node2D, target: Node, amount: int) -> void:
+	_skill_effect_running = true
+	if combat_executor.execute(definition, source, target, amount):
+		combat_executor.apply_status(definition, target, scaled(definition.id, definition.burn_dps))
+	_skill_effect_running = false
+	target.enemy_logic.on_player_detected(source)
+
+
+## Секунда зони (SkillZone): ворогам у ній — її dps, героєві й союзникам у ній — її heal.
+func zone_tick(zone: Node2D) -> void:
+	var area: Rect2 = zone.area()
+	if zone.dps > 0:
+		_skill_effect_running = true
+		for enemy in SkillTargeting.enemies_in(area):
+			combat_executor.hurt(zone.source, enemy, zone.dps)
+		_skill_effect_running = false
+	if zone.heal > 0:
+		for patient in SkillTargeting.allies_in(zone.source, area):
+			combat_executor.heal(zone.skill, patient, zone.heal)
+
+
+## Сила зони за секунду (D-sv2r2): [param base] × ранг × Wisdom × синергії, як у skill_damage без частки атаки.
+func zone_power(skill_id: String, base: int) -> int:
+	return roundi(base * _skill_factor(skill_id, -1))
 
 
 ## D259: каст зірвано ударом — ефекту немає, але SP списано й кулдаун пішов. Кличе PlayerCombat.stagger
