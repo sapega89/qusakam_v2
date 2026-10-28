@@ -89,7 +89,7 @@ var _since: Dictionary = {"after_parry": INF, "after_skill": INF}
 var _skill_effect_running := false
 ## Приховані нахили до шляхів (D725): стиль бою і вчинки → порада писаря на переписі.
 var leanings: OathLeanings = null
-## Стійки й баффи героя (v2 зріз 5, D-sv2s1).
+## Стійки й баффи героя (v2 зріз 5, D876).
 var stances: Node = null
 
 
@@ -229,7 +229,7 @@ func _skill_factor(skill_id: String, rank: int) -> float:
 	return skill_database.get_skill(skill_id).rank_factor(at_rank) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
 
 
-## D-sv2cb1: множник часів контролю (ланцюг, пісок, страх) — ранг × Wisdom × синергії, як у ушкодження.
+## D878: множник часів контролю (ланцюг, пісок, страх) — ранг × Wisdom × синергії, як у ушкодження.
 func control_factor(skill_id: String) -> float:
 	return _skill_factor(skill_id, -1)
 
@@ -878,10 +878,10 @@ func cast_skill(skill_id: String) -> Result:
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
 	if definition.is_buff():
-		return stances.begin(definition)  # стійка чи бафф (D-sv2s1) — ворог перед героєм не потрібен
+		return stances.begin(definition)  # стійка чи бафф (D876) — ворог перед героєм не потрібен
 	var player: Node = _default_source()
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
-	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул; навичка зони (D-sv2cb1) — ціль
+	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул; навичка зони (D878) — ціль
 	# у своїй зоні: спалах і виття — навколо, ланцюг — далі за удар
 	if (definition.damage > 0 or definition.controls()) and not definition.moves() and not definition.throws() \
 			and not definition.leaves_zone() and SkillTargeting.skill_targets(definition, player).is_empty():
@@ -912,9 +912,9 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	if definition.throws() or definition.leaves_zone():
 		return _use_ranged(skill_id, definition, effect_source)
 	if definition.is_buff():
-		return stances.use(definition, effect_source)  # D-sv2s1: стійка чи бафф, без удару по цілі
+		return stances.use(definition, effect_source)  # D876: стійка чи бафф, без удару по цілі
 
-	# D-sv2cb1: контроль без ушкодження (Sand Veil, Dread Howl) — лише стан на кожного в зоні; нікого — нічого не коштує
+	# D878: контроль без ушкодження (Sand Veil, Dread Howl) — лише стан на кожного в зоні; нікого — нічого не коштує
 	if definition.damage <= 0 and definition.controls():
 		var held: Array[Node] = SkillTargeting.skill_targets(definition, effect_source)
 		if target != null:
@@ -941,7 +941,7 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		var amount := skill_damage(skill_id)
 		_skill_effect_running = true
 		for each in targets:
-			var reaped := combat_executor.reaps(definition, each)  # D-sv2cb1: до удару — поріг HP на момент удару
+			var reaped := combat_executor.reaps(definition, each)  # D878: до удару — поріг HP на момент удару
 			if combat_executor.execute(definition, effect_source, each, amount):
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
@@ -967,13 +967,13 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 			return _fail(skill_id, Result.EFFECT_FAILED)
 
 	_pay(definition)
-	restore_sp(sp_back)  # D-sv2cb1: Soul Harvest повертає SP за кожного добитого — після ціни, щоб не впертися в максимум
+	restore_sp(sp_back)  # D878: Soul Harvest повертає SP за кожного добитого — після ціни, щоб не впертися в максимум
 	_since["after_skill"] = 0.0
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK
 
 
-## Кидок і зона (v2 зріз 4, D-sv2r1, D-sv2r2): снаряд чи зона з'являються на вивільненні й б'ють потім, тож навичка
+## Кидок і зона (v2 зріз 4, D874, D875): снаряд чи зона з'являються на вивільненні й б'ють потім, тож навичка
 ## коштує SP одразу, влучить вона чи ні (як промах навички руху, D812). Удар Hellfire Stomp (damage) — по всіх у калюжі.
 func _use_ranged(skill_id: String, definition: SkillDefinition, source: Node2D) -> Result:
 	var amount := skill_damage(skill_id)
@@ -1016,7 +1016,7 @@ func zone_tick(zone: Node2D) -> void:
 			combat_executor.heal(zone.skill, patient, zone.heal)
 
 
-## Сила зони за секунду (D-sv2r2): [param base] × ранг × Wisdom × синергії, як у skill_damage без частки атаки.
+## Сила зони за секунду (D875): [param base] × ранг × Wisdom × синергії, як у skill_damage без частки атаки.
 func zone_power(skill_id: String, base: int) -> int:
 	return roundi(base * _skill_factor(skill_id, -1))
 
@@ -1053,7 +1053,7 @@ func _player_level() -> int:
 	return ServiceLocator.get_xp_manager().get_level()
 
 
-## Стійка чи бафф застосовані (SkillStances.use, D-sv2s1): ціна й події — як у use_skill.
+## Стійка чи бафф застосовані (SkillStances.use, D876): ціна й події — як у use_skill.
 func _buff_used(definition: SkillDefinition) -> Result:
 	_pay(definition)
 	_since["after_skill"] = 0.0

@@ -62,7 +62,7 @@ static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[
 	return enemies_in_front(player)
 
 
-## Ціль навички контролю (D-sv2ca1) за control_hits: first — найближчий перед героєм, front — усі перед ним до
+## Ціль навички контролю (D877) за control_hits: first — найближчий перед героєм, front — усі перед ним до
 ## control_reach px від тіла, around — усі в control_reach px по обидва боки.
 static func control_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
 	match definition.control_hits:
@@ -91,7 +91,7 @@ static func enemies_ahead(player: Node2D, reach: float) -> Array[Node]:
 	return out
 
 
-## Зона навички без руху (D-sv2cb1): area_hits у area_reach px від тіла героя — найближчий перед ним (ланцюг),
+## Зона навички без руху (D878): area_hits у area_reach px від тіла героя — найближчий перед ним (ланцюг),
 ## усі перед ним (пісок, серп) або всі навколо (спалах, виття).
 static func area_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
 	match definition.area_hits:

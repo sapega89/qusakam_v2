@@ -183,5 +183,5 @@ Sapega on 2026-10-23: «і таких у нас 4 класи; всі треба 
 
 | Asset | Pick | File | Note |
 |---|---|---|---|
-| hand_palm | candidate 3 | ~~`SampleProject/Assets/UI/Icons/kit/hand_palm.png`~~ deleted (D-wl3: no tool or scene reads it, D603 redoes it as a silhouette); in git at `e06dd5b2` | Sapega 2026-10-23: «окей, давай поки таку іконку залишимо». A gold glove with ivory fingers. It has five fingers, not the three-fingered lizard hand of D601; Sapega took it as it is for now |
-| shield | candidate 3 | ~~`SampleProject/Assets/UI/Icons/kit/shield.png`~~ deleted (D-wl3: no tool or scene reads it, D603 redoes it as a silhouette); in git at `e06dd5b2` | Sapega 2026-10-23: «окей». A heater shield, ivory with a gold rim and a gold boss |
+| hand_palm | candidate 3 | ~~`SampleProject/Assets/UI/Icons/kit/hand_palm.png`~~ deleted (D884: no tool or scene reads it, D603 redoes it as a silhouette); in git at `e06dd5b2` | Sapega 2026-10-23: «окей, давай поки таку іконку залишимо». A gold glove with ivory fingers. It has five fingers, not the three-fingered lizard hand of D601; Sapega took it as it is for now |
+| shield | candidate 3 | ~~`SampleProject/Assets/UI/Icons/kit/shield.png`~~ deleted (D884: no tool or scene reads it, D603 redoes it as a silhouette); in git at `e06dd5b2` | Sapega 2026-10-23: «окей». A heater shield, ivory with a gold rim and a gold boss |

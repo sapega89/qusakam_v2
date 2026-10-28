@@ -88,7 +88,7 @@ grants an inventory item" (Q2 / D88), and it is broader than that row states.
 | Level-up flash | `Scenes/FX/LevelUpFlash.tscn` | ✅ | `Scripts/Player.gd:6` | — |
 | Level-up particles | `Scenes/FX/LevelUpParticles.tscn` | ✅ | `Scripts/Player.gd:7` | — |
 | Item pickup | `Objects/ItemPickup.tscn` | ⚠️ | only `UI/verify_interaction.gd:10`. No map places it | **D71, D88, D86** — built in slice 1a, never placed. [[BACKLOG]] *Agreed but never built* |
-| Collectible (orb) | ~~`Objects/Collectible.tscn`~~ | 🗑️ | removed with `Sprites/Collectible.png`, its hidden HUD counter and `EnemyWithCollectibleDrop.gd` (Q123, D-sf3) | — |
+| Collectible (orb) | ~~`Objects/Collectible.tscn`~~ | 🗑️ | removed with `Sprites/Collectible.png`, its hidden HUD counter and `EnemyWithCollectibleDrop.gd` (Q123, D881) | — |
 | Portal | `Objects/Portal.tscn` | ⚠️ | 4 Legacy maps only, e.g. `Maps/Legacy/PortalRoom.tscn:5` | Legacy demo; production maps use MetSys `RoomInstance` borders |
 | Mini portal | `Objects/MiniPortal.tscn` | ⚠️ | `Maps/Legacy/DarkStaircase.tscn:5`, `Maps/Legacy/SecretChamber.tscn:6` | Legacy demo |
 | Pipe | `Objects/Pipe.tscn` | ⚠️ | 4 Legacy maps only, e.g. `Maps/Legacy/ElevatorRoom.tscn:5` | Legacy demo |

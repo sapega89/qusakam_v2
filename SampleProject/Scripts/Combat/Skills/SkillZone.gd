@@ -1,6 +1,6 @@
 extends Node2D
 
-## Зона навички на землі (v2 зріз 4, D-sv2r2): Hallowed Circle, Hellfire Stomp. Лежить там, де герой її поклав
+## Зона навички на землі (v2 зріз 4, D875): Hallowed Circle, Hellfire Stomp. Лежить там, де герой її поклав
 ## (вузол — дитина мапи, позиція — ступні героя), zone_radius px в обидва боки й HEIGHT px угору. Щосекунди (TICK)
 ## SkillManager.zone_tick б'є ворогів у ній на [member dps] і лікує героя й союзників у ній на [member heal]; після
 ## zone_time с (стільки ж ударів) гасне. Кадри-заглушки — дочірні Sprite2D з ім'ям id навички (skill_zone.tscn).

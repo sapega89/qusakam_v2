@@ -44,7 +44,7 @@ func _pick_spell() -> StringName:
 	if uses_glass_shield():
 		return &"glass"
 	if ServiceLocator.get_skill_manager().stances.shows_shield():
-		return &"magic"  # Counter Stance, Aegis (D-sv2s1) — магічний щит і без Shield Block
+		return &"magic"  # Counter Stance, Aegis (D876) — магічний щит і без Shield Block
 	return &"magic" if ServiceLocator.get_skill_manager().is_unlocked("shield_block") else &""
 
 

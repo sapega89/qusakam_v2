@@ -11,7 +11,7 @@ animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("ring1")}, {"
 [node name="ControlSkill" type="Node2D"]
 z_index = 250
 script = ExtResource("fx")
-metadata/_doc = "Effects of the control skills (v2 slice 6a, D-sv2ca1): borrowed placeholders until the ComfyUI lane draws their own"
+metadata/_doc = "Effects of the control skills (v2 slice 6a, D877): borrowed placeholders until the ComfyUI lane draws their own"
 
 [node name="Hand" type="Marker2D" parent="."]
 position = Vector2(36, -2)

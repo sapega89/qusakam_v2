@@ -24,7 +24,7 @@ const EnemyTell := preload("res://SampleProject/Scripts/FX/EnemyTell.gd")
 @export var strength: int = 0
 
 var direction: int = 1
-## Як далеко летить, px: стріли — RANGE, снаряд навички — свій projectile_range (SkillProjectile, D-sv2r1).
+## Як далеко летить, px: стріли — RANGE, снаряд навички — свій projectile_range (SkillProjectile, D874).
 var range_px: float = RANGE
 ## Нахил польоту: px униз на px уздовж direction (0 — рівно; великий лучник цілить униз, ArcherEnemy.max_tilt).
 var fall: float = 0.0

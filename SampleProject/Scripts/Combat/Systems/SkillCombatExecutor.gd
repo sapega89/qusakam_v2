@@ -53,7 +53,7 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 		EventBus.skill_drained.emit(source, target, drained)
 
 
-## Контроль (D-sv2ca1) після влучання: шкода стійкості — control_poise_x важких ударів героя з пасивкою poise (D284,
+## Контроль (D877) після влучання: шкода стійкості — control_poise_x важких ударів героя з пасивкою poise (D284,
 ## як PlayerCombat._hit_effects; повна шкала — збій, D777), підкидання, збиття з ніг. POISE_HEAVY — з героя: class_name
 ## PlayerCombat тут дав би цикл компіляції (PlayerCombat кличе цей клас).
 func apply_control(definition: SkillDefinition, source: Node2D, target: Node2D) -> void:
@@ -66,7 +66,7 @@ func apply_control(definition: SkillDefinition, source: Node2D, target: Node2D) 
 		target.knock_down(definition.control_knockdown)
 
 
-# ── Контроль і добивання (D-sv2cb1) ───────────────────────────────────────
+# ── Контроль і добивання (D878) ───────────────────────────────────────
 
 ## Ланцюг тягне ціль за стільки с.
 const PULL_TIME := 0.2
@@ -158,7 +158,7 @@ static func _gravity() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 
 
-# ── Кидок і зона (v2 зріз 4, D-sv2r1, D-sv2r2) ────────────────────────────
+# ── Кидок і зона (v2 зріз 4, D874, D875) ────────────────────────────
 ## Не preload: снаряд успадковує Arrow, а Arrow бере PlayerCombat, який тягне цей скрипт, — коло компіляції.
 const PROJECTILE_SCENE := "res://SampleProject/Scenes/Combat/skill_projectile.tscn"
 const ZONE_SCENE := "res://SampleProject/Scenes/Combat/skill_zone.tscn"

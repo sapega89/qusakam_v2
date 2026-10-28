@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Навички контролю й добивання (v2 зріз 6б, D-sv2cb1) у справжній грі, на DesertRoad, по справжніх ворогах:
+## Навички контролю й добивання (v2 зріз 6б, D878) у справжній грі, на DesertRoad, по справжніх ворогах:
 ##   Chain of Night тягне й тримає, Sand Veil засліплює, Dread Howl збиває й лякає, Radiant Flare оглушає навколо,
 ##   Night Reaper б'є довгим серпом, Soul Harvest добиває лише під порогом чи з розбитим щитом (D495) і повертає SP.
 ##   godot --headless --path . --script res://SampleProject/UI/verify_skills_control_b.gd

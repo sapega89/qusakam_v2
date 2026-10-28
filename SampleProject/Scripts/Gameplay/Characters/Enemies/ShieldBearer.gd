@@ -40,7 +40,7 @@ func _from_front(source: Node) -> bool:
 	return source is Node2D and facing != 0 and signf(source.global_position.x - global_position.x) == facing
 
 
-## Щит розбито, і бандит ще в збої (D495) — Soul Harvest добиває (D-sv2cb1).
+## Щит розбито, і бандит ще в збої (D495) — Soul Harvest добиває (D878).
 func guard_broken() -> bool:
 	return not shield_up and is_staggered()
 

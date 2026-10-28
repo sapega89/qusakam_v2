@@ -28,7 +28,7 @@ func clear() -> void:
 		buff.queue_free()
 
 
-## Стійки й баффи героя (v2 зріз 5, D-sv2s1): значок навички [param skill_id] ([param icon]) після станів, поки бафф діє.
+## Стійки й баффи героя (v2 зріз 5, D876): значок навички [param skill_id] ([param icon]) після станів, поки бафф діє.
 ## Значок — копія вузла BuffTemplate з status_row.tscn.
 func set_buff(skill_id: String, icon: Texture2D, on: bool) -> void:
 	var node := get_node_or_null(NodePath("Buff_" + skill_id))

@@ -139,7 +139,7 @@ func _initialize() -> void:
 	var combo: float = 0.0
 	for share: float in load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").COMBO_DAMAGE:
 		combo += share * phys
-	# D-sv2ca1: навичка по гарді (Shield Bash, Stone Palm — «мало шкоди HP») вагома стійкістю: збиває більше за всю легку серію
+	# D877: навичка по гарді (Shield Bash, Stone Palm — «мало шкоди HP») вагома стійкістю: збиває більше за всю легку серію
 	var combat_script: GDScript = load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd")
 	var combo_poise: float = combat_script.COMBO_DAMAGE.size() * combat_script.POISE_LIGHT
 	var weak: Array[String] = []
@@ -352,7 +352,7 @@ func _initialize() -> void:
 		var c = db.get_skill(id)
 		controls_built = controls_built and not c.planned and c.vfx.ends_with("ControlSkill.tscn") and c.release_pose != ""
 		controls_built = controls_built and c.synergies.size() in [1, 2] and (c.control_launch > 0.0 or c.control_knockdown > 0.0 or c.control_poise_x > 0.0)
-	ck(controls_built, "the 5 control skills are built (D-sv2ca1): learnable, with a cast, an effect, synergies and a control block")
+	ck(controls_built, "the 5 control skills are built (D877): learnable, with a cast, an effect, synergies and a control block")
 	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
 	ck(raw.filter(func(e: Dictionary) -> bool: return e.has("draft") or e.has("planned")).is_empty(),
 			"no row keeps `draft` or `planned`: every draft became real keys")

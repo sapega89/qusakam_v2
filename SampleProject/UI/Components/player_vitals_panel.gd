@@ -8,7 +8,7 @@ class_name UIPlayerVitalsPanel
 ## D549, плитка 470 × 144). Виснажений герой пробує діяти — рядок ST блимає (UITokens.STAMINA_EMPTY_FLASH). XP — смуга на всю
 ## ширину внизу (D552, hud_xp_bar). Під плиткою — чипи F (асист, hud_assist_chip.gd) і Q (зілля з лічильником, D538).
 ## Праворуч від чипів — значки стану героя (D599, status_row.tscn): оглушення, поки триває збій (EventBus.player_staggered),
-## і значки стійок та баффів, поки діють (SkillStances.changed, D-sv2s1).
+## і значки стійок та баффів, поки діють (SkillStances.changed, D876).
 ## Значення беруться з наявних власників — вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
@@ -128,7 +128,7 @@ func _on_player_respawned() -> void:
 	refresh()
 
 
-## Стійка чи бафф героя (D-sv2s1) — значок його навички в рядку стану, поки діє.
+## Стійка чи бафф героя (D876) — значок його навички в рядку стану, поки діє.
 func _on_buff_changed(skill_id: String, on: bool) -> void:
 	_states.set_buff(skill_id, load(SkillDatabase.get_skill(skill_id).icon), on)
 

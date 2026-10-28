@@ -222,7 +222,7 @@ func _initialize() -> void:
 	await process_frame
 	ck(actor.global_position.y < hero.global_position.y + actor.HERO_FEET - 100.0, "she drops in from above (%.0f above the feet)" % (hero.global_position.y + actor.HERO_FEET - actor.global_position.y))
 	var drop: Array = await _enter_frames(actor)
-	ck(drop[0] == [&"enter"] and drop[2] and drop[1].size() >= 8, "her drop plays her enter animation (A14, D-sf2): %s, frames %s" % [drop[0], drop[1]])
+	ck(drop[0] == [&"enter"] and drop[2] and drop[1].size() >= 8, "her drop plays her enter animation (A14, D880): %s, frames %s" % [drop[0], drop[1]])
 	await _until_phase(actor, &"hold")
 	ck(near.current_health == hp - 40, "Астрит hit for 40 (%d → %d)" % [hp, near.current_health])
 	ck(near.enemy_logic.stun_left > 0.0 and _stars(near), "and stunned it, with stars over its head (%.2f s)" % near.enemy_logic.stun_left)

@@ -1,6 +1,6 @@
 extends "res://SampleProject/Scripts/FX/OathSkillFX.gd"
 
-## Ефект навичок контролю й добивання (v2 зріз 6б, D-sv2cb1): поки арт-лінія (зріз 7) не намалювала їхні кадри, кожна
+## Ефект навичок контролю й добивання (v2 зріз 6б, D878): поки арт-лінія (зріз 7) не намалювала їхні кадри, кожна
 ## позичає charge / release наявної навички клятви — та сама розкладка й маркери, що в OathSkill.tscn. Що бракує — у
 ## design/cloud_reports/skills-v2-control-b.md («For the art lane»).
 

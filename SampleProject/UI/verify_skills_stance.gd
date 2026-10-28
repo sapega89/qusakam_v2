@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Стійки й баффи (skills v2 зріз 5, D-sv2s1) у справжній грі, на DesertRoad, по справжніх ворогах:
+## Стійки й баффи (skills v2 зріз 5, D876) у справжній грі, на DesertRoad, по справжніх ворогах:
 ##   Counter Stance (удар у стійці заблоковано й відповідено, червоний влучає), Mirror Stance (стріла летить назад),
 ##   Centered Breath (канал у бою, удар зриває), Battle Cry (сила ударів на час, звичайні вороги здригаються), Aegis
 ##   (бар'єр поглинає), Blood Price (ціна в HP, три посилені влучання), Rally (наступний асист сильніший і довший).
@@ -124,7 +124,7 @@ func _initialize() -> void:
 		await physics_frame
 	ck(player.is_on_floor() and sm.stances != null, "the hero stands on the DesertRoad floor; SkillManager has its stances")
 
-	print("[1] Counter Stance: a blow taken in it is blocked and answered hard (D-sv2s1)")
+	print("[1] Counter Stance: a blow taken in it is blocked and answered hard (D876)")
 	var front := _enemy(40)
 	var back := _enemy(-40)
 	await _settle([front, back])
@@ -179,7 +179,7 @@ func _initialize() -> void:
 		e.queue_free()
 	await _reset_hero()
 
-	print("[4] Mirror Stance: an archer's arrow flies back (D-sv2s1, D384)")
+	print("[4] Mirror Stance: an archer's arrow flies back (D876, D384)")
 	var archer := _enemy(220)
 	await _settle([archer])
 	sp = sm.get_current_sp()

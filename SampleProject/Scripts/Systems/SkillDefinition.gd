@@ -113,19 +113,19 @@ var lifesteal: float = 0.0
 ## Невразливість героя від початку руху, с.
 var invulnerable: float = 0.0
 
-## Навички дальнього бою й зон (v2 зріз 4, D-sv2r1): кидок — снаряд летить від руки вздовж погляду (як стріла лука,
+## Навички дальнього бою й зон (v2 зріз 4, D874): кидок — снаряд летить від руки вздовж погляду (як стріла лука,
 ## D380–D381) до projectile_range px зі швидкістю projectile_speed px/с; projectile_pierce — прошиває всіх на лінії
 ## (кожного раз), інакше зупиняється на першому. 0 — не кидок.
 var projectile_range: float = 0.0
 var projectile_speed: float = 0.0
 var projectile_pierce: bool = false
-## Зона на землі під ногами героя (D-sv2r2): zone_radius px в обидва боки, zone_time с; щосекунди ворогам у ній —
+## Зона на землі під ногами героя (D875): zone_radius px в обидва боки, zone_time с; щосекунди ворогам у ній —
 ## zone_dps, героєві й союзникам у ній — zone_heal (обидва з рангом і синергіями). 0 — без зони.
 var zone_radius: float = 0.0
 var zone_time: float = 0.0
 var zone_dps: int = 0
 var zone_heal: int = 0
-## Стійки й баффи (v2 зріз 5, D-sv2s1) — їх веде SkillStances. buff_kind: "" — не бафф; "counter" / "mirror" — стійка
+## Стійки й баффи (v2 зріз 5, D876) — їх веде SkillStances. buff_kind: "" — не бафф; "counter" / "mirror" — стійка
 ## на buff_time с (це вивільнення касту); "breath" — зосередження (замах — це канал); "battle_cry", "aegis",
 ## "blood_price", "rally" — бафф після вивільнення.
 var buff_kind: String = ""
@@ -148,7 +148,7 @@ var hit_bonus: float = 0.0
 ## Rally: наступний асист компаньйона — +assist_damage шкоди, оглушення й час на полі довші на assist_duration.
 var assist_damage: float = 0.0
 var assist_duration: float = 0.0
-## Контроль і добивання (v2 зріз 6a, D-sv2ca1): блок control у skills.json.
+## Контроль і добивання (v2 зріз 6a, D877): блок control у skills.json.
 ## control_hits: "" — усі в зоні удару (D142); "first" — найближчий перед героєм; "front" з control_reach — усі перед
 ## героєм до control_reach px від тіла; "around" — усі в control_reach px по обидва боки.
 var control_hits: String = ""
@@ -159,7 +159,7 @@ var control_launch: float = 0.0
 var control_knockdown: float = 0.0
 ## Шкода стійкості (guard, D495 / D777) кожній цілі — у важких ударах героя (PlayerCombat.POISE_HEAVY).
 var control_poise_x: float = 0.0
-## Контроль і добивання (v2 зріз 6б, D-sv2cb1). Зона без руху: area_hits "first" — найближчий ворог перед героєм
+## Контроль і добивання (v2 зріз 6б, D878). Зона без руху: area_hits "first" — найближчий ворог перед героєм
 ## у area_reach px; "front" — усі перед героєм у area_reach px; "around" — усі в area_reach px по обидва боки.
 ## "" — звичайна зона удару (D142). Часи контролю ростуть з рангом і синергіями, як ушкодження (SkillManager.control_factor).
 var area_hits: String = ""
@@ -315,7 +315,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	return definition
 
 
-## Блок buff (v2 зріз 5, D-sv2s1). Стійка триває, поки йде вивільнення касту, тож cast.release — її час.
+## Блок buff (v2 зріз 5, D876). Стійка триває, поки йде вивільнення касту, тож cast.release — її час.
 static func _read_buff(definition: SkillDefinition, buff: Dictionary) -> void:
 	definition.buff_kind = String(buff.get("kind", ""))
 	definition.buff_time = maxf(0.0, float(buff.get("time", 0.0)))
@@ -335,7 +335,7 @@ static func _read_buff(definition: SkillDefinition, buff: Dictionary) -> void:
 		definition.cast_release = definition.buff_time
 
 
-## Стійка чи бафф (D-sv2s1): їх застосовує SkillStances, а не удар по цілі.
+## Стійка чи бафф (D876): їх застосовує SkillStances, а не удар по цілі.
 func is_buff() -> bool:
 	return buff_kind != ""
 
@@ -355,17 +355,17 @@ func moves() -> bool:
 	return move_kind != ""
 
 
-## Кидок (D-sv2r1): навичка пускає снаряд.
+## Кидок (D874): навичка пускає снаряд.
 func throws() -> bool:
 	return projectile_range > 0.0
 
 
-## Зона (D-sv2r2): навичка лишає на землі коло чи калюжу.
+## Зона (D875): навичка лишає на землі коло чи калюжу.
 func leaves_zone() -> bool:
 	return zone_time > 0.0
 
 
-## Навичка контролю (D-sv2cb1): накладає ланцюг, пісок чи страх на кожну ціль своєї зони.
+## Навичка контролю (D878): накладає ланцюг, пісок чи страх на кожну ціль своєї зони.
 func controls() -> bool:
 	return pull_hold > 0.0 or blind_time > 0.0 or fear_flinch > 0.0
 

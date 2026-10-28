@@ -569,12 +569,12 @@ func take_damage(damage: int, source: Node = null, critical: bool = false) -> vo
 				return
 			damage = roundi(damage * WEAK_BLOCK_DAMAGE)
 	if ServiceLocator.get_skill_manager().stances.answer_blow(source):
-		return  # Counter / Mirror Stance (D-sv2s1)
+		return  # Counter / Mirror Stance (D876)
 	var dealt := mitigated_damage(damage, guard == &"block")
 	if dealt == 0:
 		EventBus.player_evaded.emit(source)
 		return
-	dealt = ServiceLocator.get_skill_manager().stances.soak(dealt)  # Aegis (D-sv2s1): поглинутий цілим — без збою
+	dealt = ServiceLocator.get_skill_manager().stances.soak(dealt)  # Aegis (D876): поглинутий цілим — без збою
 	if dealt == 0:
 		return
 	var before := current_health

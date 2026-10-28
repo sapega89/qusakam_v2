@@ -6,20 +6,20 @@ tags: [cloud, routines]
 # cloud/small-fixes
 
 **Summary.** Branched from `origin/cloud/ui-bugs-205-206`.
-- **B196 fixed** (D-sf1): `modal_layer.tscn` layer 20 → 96, so the «Your Skills» window covers «Hold Tab to skip» (95). `verify_starting_skills` [3] fails without it.
-- **A14 wired** (D-sf2): Astrit's drop plays her 12-frame `enter` (`CompanionAssist.animate_drop`); Urizen's drop still holds frame 0. Covered by `verify_companions` [5]/[6].
-- **Q123 done** (D-sf3): the MetSys orb is removed with its hidden HUD counter, `Objects/Collectible.tscn` and `EnemyWithCollectibleDrop.gd`.
+- **B196 fixed** (D879): `modal_layer.tscn` layer 20 → 96, so the «Your Skills» window covers «Hold Tab to skip» (95). `verify_starting_skills` [3] fails without it.
+- **A14 wired** (D880): Astrit's drop plays her 12-frame `enter` (`CompanionAssist.animate_drop`); Urizen's drop still holds frame 0. Covered by `verify_companions` [5]/[6].
+- **Q123 done** (D881): the MetSys orb is removed with its hidden HUD counter, `Objects/Collectible.tscn` and `EnemyWithCollectibleDrop.gd`.
 - **B124 still open (needs art)**: the sword is baked into the hero's frames, so code can't fix it. The ComfyUI frame list is below.
 - **B110 partly fixed, row still open**: air/block/hurt are drawn, wired and tested (`81c0a3d9`, `verify_bow` [1]). Roll and the fire/storm casts still need frames (list below).
 - Full suite: `SUITE: 3 FAIL in 19 min 55 s, J=4`. All 3 (`verify_difficulty`, `verify_lab_boss`, `verify_camera_transitions`) fail identically on the base `origin/cloud/ui-bugs-205-206`, so none comes from this branch.
 
 ## D-IDs (placeholders, for the orchestrator)
-- **D-sf1** — The modal layer (`Scenes/UI/modal_layer.tscn`) is CanvasLayer **96**, not 20. A window the game pauses for sits above every in-world overlay (hurt vignette 90, `ScreenFade` 90, cutscene skip prompt 95). It stays below dialogue and scene transitions (100), brightness (127) and the cursor (128). B196 was a layer-order bug, not a corner offset: both the prompt and the window footer belong in the bottom-right, and the window is the one the player has to answer.
-- **D-sf2** — `CompanionAssist.animate_drop` (an export, set in the companion's scene): a DROP entrance plays `enter` while falling. Astrit has it on, because her `enter` is her drop from the sky (A14, 12 frames at 24 fps = 0.5 s over a 0.6 s fall). Urizen keeps it off: he falls frozen on `enter` frame 0, as before.
-- **D-sf3** — Q123 «Delete with its leftovers» applied: `Sprites/Collectible.png(.import)`, `Objects/Collectible.tscn`, `Scripts/Gameplay/EnemyWithCollectibleDrop.gd(.uid)` (no scene used it), the hidden `UI/HBoxContainer` (TextureRect + `CollectibleCount`) in `Game.tscn`, and `Game.gd`'s `collectibles` counter with its `collectible_count` key in the MetSys save. Old saves still carry that key; it is simply not read. `Extensions/ModernMap/` (a MetSys extension overlay, excluded from both export presets) still refers to the png and is left as is.
+- **D879** — The modal layer (`Scenes/UI/modal_layer.tscn`) is CanvasLayer **96**, not 20. A window the game pauses for sits above every in-world overlay (hurt vignette 90, `ScreenFade` 90, cutscene skip prompt 95). It stays below dialogue and scene transitions (100), brightness (127) and the cursor (128). B196 was a layer-order bug, not a corner offset: both the prompt and the window footer belong in the bottom-right, and the window is the one the player has to answer.
+- **D880** — `CompanionAssist.animate_drop` (an export, set in the companion's scene): a DROP entrance plays `enter` while falling. Astrit has it on, because her `enter` is her drop from the sky (A14, 12 frames at 24 fps = 0.5 s over a 0.6 s fall). Urizen keeps it off: he falls frozen on `enter` frame 0, as before.
+- **D881** — Q123 «Delete with its leftovers» applied: `Sprites/Collectible.png(.import)`, `Objects/Collectible.tscn`, `Scripts/Gameplay/EnemyWithCollectibleDrop.gd(.uid)` (no scene used it), the hidden `UI/HBoxContainer` (TextureRect + `CollectibleCount`) in `Game.tscn`, and `Game.gd`'s `collectibles` counter with its `collectible_count` key in the MetSys save. Old saves still carry that key; it is simply not read. `Extensions/ModernMap/` (a MetSys extension overlay, excluded from both export presets) still refers to the png and is left as is.
 
 ## B rows
-- **B196** — fixed (D-sf1). Remove the row.
+- **B196** — fixed (D879). Remove the row.
 - **B124** — stays open; the cause is confirmed (below).
 - **B110** — stays open; narrow it to the poses below.
 

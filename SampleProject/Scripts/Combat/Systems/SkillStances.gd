@@ -1,6 +1,6 @@
 extends Node
 
-## Стійки й баффи героя (skills v2 зріз 5, D-sv2s1): Counter Stance, Mirror Stance, Centered Breath, Battle Cry, Aegis,
+## Стійки й баффи героя (skills v2 зріз 5, D876): Counter Stance, Mirror Stance, Centered Breath, Battle Cry, Aegis,
 ## Blood Price, Rally. Дитина SkillManager: він кличе begin() з cast_skill і use() з use_skill; герой питає answer_blow()
 ## і soak() у Player.take_damage, а hit_factor() — у PlayerCombat.hit_damage; асист — rally() у CompanionManager._send.
 ## Числа — skills.json → buff (SkillDefinition), сила росте з рангом, Wisdom і синергіями, як лікування (час — ні).

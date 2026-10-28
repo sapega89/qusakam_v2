@@ -1,6 +1,6 @@
 extends "res://SampleProject/Scripts/FX/SkillCastFX.gd"
 
-## Ефекти навичок контролю (v2 зріз 6a, D-sv2ca1). Свого арту ще немає (ComfyUI, звіт skills-v2-control-a): удар —
+## Ефекти навичок контролю (v2 зріз 6a, D877). Свого арту ще немає (ComfyUI, звіт skills-v2-control-a): удар —
 ## позичений шлейф героя SlashTrail біля руки, у Ground Slam — кільце удару стрибків (Smear/slam_ring). Розкладка —
 ## ControlSkill.tscn. Замах нічого не показує.
 

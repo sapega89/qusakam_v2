@@ -59,7 +59,7 @@ _data = {
 [node name="StanceSkill" type="Node2D"]
 z_index = 250
 script = ExtResource("fx")
-metadata/_doc = "Placeholder cast of the stances and buffs (skills v2 slice 5, D-sv2s1): motes gather, then rise. Their own frames come with the art lane."
+metadata/_doc = "Placeholder cast of the stances and buffs (skills v2 slice 5, D876): motes gather, then rise. Their own frames come with the art lane."
 
 [node name="Gather" type="CPUParticles2D" parent="."]
 position = Vector2(0, -13.5)

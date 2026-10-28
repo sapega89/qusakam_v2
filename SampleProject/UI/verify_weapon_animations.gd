@@ -234,7 +234,7 @@ func _weapon_type(library: String, slots: Array, ids: Array, swings: int) -> voi
 			and not material.get_shader_parameter(&"active"),
 			"the fight is over: base frames, offset back, palette off (%s)" % anim.current_animation)
 
-## Пози навичок руху (H3, D812, D-wl1): у бою з цією зброєю `body_animation` дає кадри набору
+## Пози навичок руху (H3, D812, D882): у бою з цією зброєю `body_animation` дає кадри набору
 ## `Weapons/<набір>/<Skill>/1–3` з таймингом базової пози й зсувом клітинки 96 (ноги на підлозі — до 6 рядків, verify_hero_feet), накладка WeaponView схована (зброя вже
 ## в кадрі); у наборів без цих тек (dual) — базова поза.
 func _skill_poses(library: String) -> void:

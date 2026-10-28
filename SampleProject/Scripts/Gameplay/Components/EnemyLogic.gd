@@ -77,10 +77,10 @@ var knockback_left: float = 0.0
 var knockback_speed: float = 0.0
 ## Оглушення (D207): ворог стоїть, а замах, що вже йде, не закінчиться ударом.
 var stun_left: float = 0.0
-## Пісок в очах (Sand Veil, D-sv2cb1): с, поки ворог не бачить героя далі за свій удар; шанс, що його удар мимо.
+## Пісок в очах (Sand Veil, D878): с, поки ворог не бачить героя далі за свій удар; шанс, що його удар мимо.
 var blind_left: float = 0.0
 var blind_miss: float = 0.0
-## Страх (Dread Howl, D-sv2cb1): с, поки ворог тікає від героя.
+## Страх (Dread Howl, D878): с, поки ворог тікає від героя.
 var fear_left: float = 0.0
 ## Замах зірвано (збій, або відкидання до підказки) — удару не буде.
 var attack_broken: bool = false
@@ -872,7 +872,7 @@ func stagger(duration: float) -> void:
 		attack_broken = true
 		enemy.end_attack()
 
-## Пісок в очі (Sand Veil, D-sv2cb1): [param time] с ворог губить героя далі за свій удар — не женеться, не йде туди, де
+## Пісок в очі (Sand Veil, D878): [param time] с ворог губить героя далі за свій удар — не женеться, не йде туди, де
 ## бачив його, замах на нього зірвано; удар у цей час мимо з шансом [param miss] (DefaultEnemy.start_attack).
 func blind(time: float, miss: float) -> void:
 	blind_left = maxf(blind_left, time)
@@ -886,7 +886,7 @@ func blind(time: float, miss: float) -> void:
 func blind_misses() -> bool:
 	return blind_left > 0.0 and randf() < blind_miss
 
-## Страх (Dread Howl, D-sv2cb1): [param time] с ворог тікає від героя, замах зірвано.
+## Страх (Dread Howl, D878): [param time] с ворог тікає від героя, замах зірвано.
 func fear(time: float) -> void:
 	fear_left = maxf(fear_left, time)
 	if is_attacking:
@@ -1212,7 +1212,7 @@ func _release_token() -> void:
 ## Герой помітний (B139): на тому ж поверсі (ноги на ±NOTICE_DY px) або на виду — промінь від ворога до героя без стін.
 func can_notice(hero: Node2D) -> bool:
 	if blind_left > 0.0 and absf(hero.global_position.x - enemy.global_position.x) > enemy.strike_reach() + hero.body_rect().size.x / 2.0:
-		return false  # D-sv2cb1: пісок в очах — чує героя лише впритул
+		return false  # D878: пісок в очах — чує героя лише впритул
 	if absf(_feet_y(hero) - _feet_y(enemy)) <= NOTICE_DY:
 		return true
 	var ray := PhysicsRayQueryParameters2D.create(enemy.global_position, hero.global_position)
