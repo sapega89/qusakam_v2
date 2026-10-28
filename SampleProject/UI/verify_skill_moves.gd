@@ -130,7 +130,7 @@ func _initialize() -> void:
 	ck(await _cast("dash_strike") == R.OK, "cast starts without an enemy in front (a gap closer)")
 	var moved: float = player.global_position.x - home
 	ck(absf(moved - 180.0) <= 12.0, "dashed 180 px forward (%.1f)" % moved)
-	ck(poses.slice(0, 3) == ["HeavyWindup", "Roll", "HeavyStrike"], "poses: HeavyWindup → Roll → HeavyStrike %s" % [poses])
+	ck(poses.slice(0, 3) == ["LungeCutWindup", "LungeCutMove", "LungeCutStrike"], "poses: LungeCutWindup → LungeCutMove → LungeCutStrike (H3) %s" % [poses])
 	ck(sm.get_current_sp() == sp - 5 and failed == [["dash_strike", R.NO_TARGET]], "whiff: 5 SP paid, NO_TARGET (%d → %d, %s)" % [sp, sm.get_current_sp(), failed])
 	bus.skill_failed.disconnect(on_fail)
 
@@ -162,7 +162,7 @@ func _initialize() -> void:
 	second = _enemy(182.0)  # вороги проходять одне крізь одного — обидва в досяжності удару
 	await _settle([first, second])
 	ck(await _cast("shield_charge") == R.OK, "cast")
-	ck("Run" in poses and poses[0] == "HeavyWindup" and poses.has("HeavyStrike"), "poses: HeavyWindup → Run → HeavyStrike %s" % [poses])
+	ck(poses.slice(0, 3) == ["ShieldChargeWindup", "ShieldChargeMove", "ShieldChargeStrike"], "poses: ShieldChargeWindup → ShieldChargeMove → ShieldChargeStrike (H3) %s" % [poses])
 	ck(_hurt(first) > 0 and _hurt(second) > 0, "both enemies in front are hit (%d, %d; hero %.0f, enemies %.0f, %.0f)"
 			% [_hurt(first), _hurt(second), player.global_position.x, first.global_position.x, second.global_position.x])
 	ck(first.enemy_logic.knockback_left > 0.0 and first.enemy_logic.knockback_speed > 0.0, "and knocked back, away from the hero (%.0f px/s)" % first.enemy_logic.knockback_speed)
@@ -195,7 +195,7 @@ func _initialize() -> void:
 	await _settle([first, behind])
 	start = player.global_position.x
 	ck(await _cast("heavens_anvil") == R.OK, "cast")
-	ck(flew and "Jump" in poses and "Fall" in poses and poses[-1] == "HeavyStrike", "flies: Jump → Fall → HeavyStrike %s" % [poses])
+	ck(flew and poses == ["LeapSlamWindup", "LeapSlamMove", "LeapSlamStrike"], "flies: LeapSlamWindup → LeapSlamMove (held up and down) → LeapSlamStrike (H3) %s" % [poses])
 	ck(player.body_rect().end.x <= first.body_rect().position.x + 1.0 and player.global_position.x > start + 20.0,
 			"landed in front of the enemy ahead (%.1f → %.1f, enemy left %.1f)" % [start, player.global_position.x, first.body_rect().position.x])
 	ck(_hurt(first) > 0 and _hurt(behind) > 0, "pillars on both sides hit both (%d, %d; hero %.0f, enemies %.0f, %.0f)"
@@ -214,7 +214,7 @@ func _initialize() -> void:
 	var far := _enemy(-420.0)
 	await _settle([first, behind, far])
 	ck(await _cast("dune_quake") == R.OK, "cast")
-	ck(poses[-1] == "Land", "the slam reuses the Land pose %s" % [poses])
+	ck(poses == ["LeapSlamWindup", "LeapSlamMove", "LeapSlamStrike"], "the leap-slam poses (H3) %s" % [poses])
 	ck(_hurt(first) > 0 and _hurt(behind) > 0 and _hurt(far) == 0, "both near enemies hit, the far one not (%d, %d, %d; hero %.0f, enemies %.0f, %.0f, %.0f)"
 			% [_hurt(first), _hurt(behind), _hurt(far), player.global_position.x, first.global_position.x, behind.global_position.x, far.global_position.x])
 	ck(first.enemy_logic.stun_left > 0.5 and behind.enemy_logic.stun_left > 0.5, "knocked down for 1.2 s (%.2f)" % first.enemy_logic.stun_left)

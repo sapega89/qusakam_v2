@@ -50,6 +50,7 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 	var drained := roundi(amount * definition.lifesteal)
 	if drained > 0:
 		source.heal_damage(drained)
+		EventBus.skill_drained.emit(source, target, drained)
 
 
 # ── Рух (D812) ─────────────────────────────────────────────────────────────
