@@ -41,10 +41,13 @@ BG = "res://SampleProject/Assets/Backgrounds/"
 ART = {name: BG + "Decor/%s/%s_sheet.png" % (name, name) for name in
        ("door_elder", "cave_mouth", "palisade_gate", "mesa_cleft", "palace_door", "lab_door")}
 # Розмір кадру й отвір (RoomEntrance.OPENINGS) кожного арту входу, px кадру.
-ART_SIZE = {"door_elder": (52, 76), "cave_mouth": (110, 100), "palisade_gate": (150, 87), "mesa_cleft": (110, 110),
+ART_SIZE = {"door_elder": (52, 76), "cave_mouth": (110, 100), "palisade_gate": (150, 87), "mesa_cleft": (110, 112),
             "palace_door": (100, 104), "lab_door": (72, 88)}
 OPENING = {"door_elder": (14, 7, 22, 56), "cave_mouth": (34, 38, 30, 52), "palisade_gate": (69, 26, 20, 56),
-           "mesa_cleft": (39, 30, 23, 47), "palace_door": (32, 11, 36, 74), "lab_door": (14, 6, 33, 65)}
+           "mesa_cleft": (39, 30, 23, 49), "palace_door": (32, 11, 36, 74), "lab_door": (14, 6, 33, 65)}
+# Масштаб арту входу (RoomEntrance.SCALES): двері 112 px арту = 168 px світу (D814, B192).
+ART_SCALE = {"door_elder": 2.21, "cave_mouth": 1.68, "palisade_gate": 1.93, "mesa_cleft": 1.5, "palace_door": 1.615,
+             "lab_door": 1.91}
 
 # Тимчасові фони за родом кімнати: далекий план, середній план, смуга підлоги (усе з наявних кімнат).
 #   far/mid: (текстура, scroll), floor: (текстура, region y), fill: колір землі під смугою.
@@ -91,11 +94,17 @@ def uid_for(name: str) -> str:
     return "bcd"[h[0] % 3] + "".join(UID_CHARS[b % len(UID_CHARS)] for b in h[1:13])
 
 
-def door_pos(art: str, x: float, floor: float) -> tuple[float, float]:
-    """Центр отвору арту, що стоїть низом посередині на (x, floor): там стоять двері (RoomDoor)."""
+def door_pos(art: str, x: float, floor: float, scale: float = 0.0) -> tuple[float, float]:
+    """Двері (RoomDoor) в отворі арту, що стоїть низом посередині на (x, floor): посередині отвору впоперек, а по висоті —
+    там, де центр отвору був у масштабі 1.5 (усередині більшого отвору D814): герой на підлозі дістає до дверей
+    (verify_room_entrances: < 64 px)."""
     w, h = ART_SIZE[art]
     ox, oy, ow, oh = OPENING[art]
-    return x + (ox + ow / 2 - w / 2) * 1.5, floor + (oy + oh / 2 - h) * 1.5
+    return x + (ox + ow / 2 - w / 2) * (scale or ART_SCALE[art]), floor + (oy + oh / 2 - h) * 1.5
+
+
+# Намальовані шахти бічних кімнат Лабораторії: двері лишаються там, де стояли в отворі lab_door (у старому масштабі 1.5).
+LAB_DOOR_Y = door_pos("lab_door", 0, FLOOR, 1.5)[1]
 
 
 # ── Нові кімнати ───────────────────────────────────────────────────────────────────────────────────────────────
@@ -206,25 +215,28 @@ ROOMS = {
                          title=("Cistern Stash", "Схованка в цистерні"), arrival=(0, 200),
                          doors=[("ExitDoor", 0, 200, "cave_mouth", "Cistern", "StashDoor", {})],
                          secrets=[("SecretArea_Stash", 0, 1100)]),
-    # ── M4: Лабораторія (шар 2) ──
-    "AlchemistCorridor": dict(loc="laboratory", kit="lab", cells=(15, 2, 3, 1), layer=2,
-                              title=("Alchemist's Corridor", "Коридор алхіміка"), arrival=(0, 150),
-                              doors=[("StairsDoor", 0, 150, "lab_door", "Laboratory", "StairsDoor", {}),
-                                     ("StoreDoor", 0, 2450, "lab_door", "AlchemistStore", "ExitDoor",
-                                      {"gate": "alchemist_store"})],
-                              table=(0, 1300), pickups=[("Pickup_AlchemistKey", 0, 1300, "alchemist_key")]),
-    "AlchemistStore": dict(loc="laboratory", kit="lab", cells=(18, 2, 2, 1), layer=2,
-                           title=("Alchemist's Storeroom", "Комора алхіміка"), arrival=(0, 150),
-                           doors=[("ExitDoor", 0, 150, "lab_door", "AlchemistCorridor", "StoreDoor", {})]),
-    "MalikStash": dict(loc="laboratory", kit="lab", cells=(12, 4, 2, 1), layer=2,
+    # ── M4: Лабораторія (шар 2), граф v3 (D863, D865, design/refs/room_graph_M4_lab_v3.png): бічні місця ──
+    # Коридор алхіміка — на захід від верхнього поверху (двері праворуч), комора — ще західніше.
+    "AlchemistCorridor": dict(loc="laboratory", kit="lab", cells=(11, 3, 3, 1), layer=2,
+                              title=("Alchemist's Corridor", "Коридор алхіміка"), arrival=(0, 2450),
+                              doors=[("FloorDoor", 0, 2450, None, "LabTopFloor", "CorridorDoor", {"y": 300}),
+                                     ("StoreDoor", 0, 150, None, "AlchemistStore", "ExitDoor",
+                                      {"gate": "alchemist_store", "y": 300})],
+                              # Ключ — посередині стільниці намальованого столу (AlchemistCorridor/README).
+                              pickups=[("Pickup_AlchemistKey", 0, 1300, "alchemist_key", 311)]),
+    "AlchemistStore": dict(loc="laboratory", kit="lab", cells=(9, 3, 2, 1), layer=2,
+                           title=("Alchemist's Storeroom", "Комора алхіміка"), arrival=(0, 1550),
+                           doors=[("ExitDoor", 0, 1550, None, "AlchemistCorridor", "StoreDoor", {"y": 300})]),
+    "MalikStash": dict(loc="laboratory", kit="lab", cells=(12, 6, 2, 1), layer=2,
                        title=("Malik's Stash", "Схованка Маліка"), arrival=(0, 1450),
-                       doors=[("SlabDoor", 0, 1450, "lab_door", "LabCells", "StashDoor", {})],
+                       doors=[("SlabDoor", 0, 1450, None, "LabCells", "StashDoor", {"y": LAB_DOOR_Y})],
                        secrets=[("SecretArea_Stash", 0, 700)]),
-    "CollapsedDrain": dict(loc="laboratory", kit="cellar", cells=(12, 8, 7, 1), layer=2,
-                           title=("Collapsed Drain", "Обвалений дренаж"), arrival=(0, 900),
-                           doors=[("HatchDoor", 0, 900, "lab_door", "LabCells", "DrainDoor", {}),
-                                  ("GrateDoor", 0, 5750, "lab_door", "Laboratory", "DrainDoor", {})],
-                           chests=[("Chest_Drain", 0, 3000, {"potion_lesser": 1, "herb": 2})]),
+    # Обвалений дренаж — під нижнім поверхом: бічні сходи (GrateDoor) — під люком нижнього поверху, скриня — у глибині.
+    "CollapsedDrain": dict(loc="laboratory", kit="cellar", cells=(14, 6, 7, 1), layer=2,
+                           title=("Collapsed Drain", "Обвалений дренаж"), arrival=(0, 3000),
+                           doors=[("HatchDoor", 0, 150, None, "LabCells", "DrainDoor", {"y": LAB_DOOR_Y}),
+                                  ("GrateDoor", 0, 3000, None, "Laboratory", "DrainDoor", {"y": LAB_DOOR_Y})],
+                           chests=[("Chest_Drain", 0, 5400, {"potion_lesser": 1, "herb": 2})]),
 }
 
 # Двері, важелі й підбирання, що дописуються в наявні кімнати (лише вузли; підлогу не чіпаємо).
@@ -246,8 +258,13 @@ EXISTING_DOORS = {
     "MayorHall": [("ArchiveDoor", 250, 384, "door_elder", "MayorArchive", "BookshelfDoor", {"gate": "mayor_archive"})],
     "LabCells": [("StashDoor", 1450, 384, "lab_door", "MalikStash", "SlabDoor", {"gate": "malik_stash"}),
                  ("DrainDoor", 900, 384, "lab_door", "CollapsedDrain", "HatchDoor", {})],
-    "Laboratory": [("StairsDoor", 330, 384, "lab_door", "AlchemistCorridor", "StairsDoor", {}),
-                   ("DrainDoor", 1200, 1344, "lab_door", "CollapsedDrain", "GrateDoor", {})],
+    # Лабораторія v3: двері сходів нагору (вхід на сходи — суцільний біг крізь межу), люк у дренаж, коридор алхіміка.
+    "Laboratory": [("DrainDoor", 3000, 384, "lab_door", "CollapsedDrain", "GrateDoor", {})],
+    "LabStairsEast": [("FloorDoor", 1590, 208, "lab_door", "LabMiddleFloor", "StairsDoor", {})],
+    "LabMiddleFloor": [("StairsDoor", 4000, 384, "lab_door", "LabStairsEast", "FloorDoor", {})],
+    "LabStairsWest": [("FloorDoor", 138, 208, "lab_door", "LabTopFloor", "StairsDoor", {})],
+    "LabTopFloor": [("CorridorDoor", 120, 384, "lab_door", "AlchemistCorridor", "FloorDoor", {}),
+                    ("StairsDoor", 330, 384, "lab_door", "LabStairsWest", "FloorDoor", {})],
 }
 EXISTING_LEVERS = {"GatehouseCellar": [("AqueductLever", 420, 416, "aqueduct_cellar_open")]}
 EXISTING_PICKUPS = {"MayorHall": [("Pickup_MayorKey", 380, 384, "mayor_key")]}
@@ -257,7 +274,19 @@ PLACE = {
     "Canyon": (0, 1), "DragonMural": (1, 0), "Village": (11, 1), "ElderHouse": (13, -1),
     "LizardCave": (0, 6), "DesertRoad": (4, 5), "BanditCamp": (12, 3), "MesaClimb": (6, 3),
     "CityGates": (19, 5), "GatehouseCellar": (20, 7), "City": (21, 5), "MayorHall": (29, 5),
-    "LabCells": (12, 3), "Laboratory": (14, 3), "LabBoss": (16, 5), "LaboratoryOutside": (18, 5),
+    "LabCells": (12, 5), "LabBoss": (18, 2), "LaboratoryOutside": (20, 2),
+}
+# Лабораторія v3 (D863, D865): поверхи й сходи будує build_laboratory.gd (сцени — його), тут — лише їхні клітинки карти
+# (шар 2) і проходи суцільним бігом (open, як у ROOMS). Лабораторія під землею, герой підіймається: нижній поверх
+# праворуч → сходи схід → середній ліворуч (на схід — кишеня вартового) → сходи захід → верхній праворуч → двері
+# вгору в залу джина (LabBoss, рівень поверхні) → подвір'я (LaboratoryOutside).
+LAB_V3 = {
+    "Laboratory": dict(cells=(14, 5, 5, 1), open=[(0, "R")]),
+    "LabStairsEast": dict(cells=(19, 5, 2, 1), open=[(0, "L")]),
+    "LabMiddleFloor": dict(cells=(16, 4, 5, 1), open=[(0, "L"), (0, "R")]),
+    "LabGuardPocket": dict(cells=(21, 4, 2, 1), open=[(0, "L")]),
+    "LabStairsWest": dict(cells=(14, 4, 2, 1), open=[(0, "R")]),
+    "LabTopFloor": dict(cells=(14, 3, 5, 1)),
 }
 # Межі наявних кімнат, що міняються: (кімната, клітинка відносно її найменшої, сторона R/D/L/U, значення).
 EXISTING_BORDERS = [
@@ -286,6 +315,8 @@ DY = -32
 # стоїть на якорі − f × камера, отримує позицію + (1 − f) × (960 − 432, 540 − 243). Виміряно в Godot 4.6.2.
 VIEW_FIX = (528, 297)
 MP = "MountainPath/"
+AC = "AlchemistCorridor/"
+PILLAR_Y = -10
 
 
 def at(anchor: tuple[float, float], f: tuple[float, float], off: tuple[float, float],
@@ -362,6 +393,45 @@ PAINTED = {
                   ("Ground", "ZahraRest/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 1152, 67)}),
                   # README ставить y 219 — ступня 444, у кадрі; заслін D750 має ступню нижче кадру (verify_room_entrances п. 4).
                   ("OccluderReeds", "ZahraRest/gen_front.png", "front", (1684.5, 275), {})],
+    # Бічні кімнати Лабораторії (M6d-1, README тек AlchemistCorridor, AlchemistStore, MalikStash, CollapsedDrain).
+    # Граф v3 (D863, D865) переставив їхні двері: двері коридору на верхній поверх — на сході (намальований
+    # прохід зі сходами), двері комори — на заході; у коморі вихід — на сході; у дренажі люк камер на 150, грати
+    # нижнього поверху на 3000. Двері-арти стоять на своїх дверях: x README зсунуто на нові місця дверей.
+    "AlchemistCorridor": [("Wall", AC + "gen_wall.png", (0.85, 1), (0, 0), {"tile": 576}),
+                          ("Vessel", AC + "gen_vessel.png", (0.95, 1), (640.5, 231), {}),
+                          ("Cages", AC + "gen_cages.png", (0.95, 1), (1729.5, 267), {}),
+                          ("Stairs", AC + "gen_stairs.png", "room", (2450 - 55.5, 196.5), {"z": -2}),
+                          ("Table", AC + "gen_desk.png", "room", (1195.5, 238.5), {"z": -3}),
+                          ("StoreDoorArt", AC + "gen_door.png", "room", (150 - 69.5, 171), {"z": -2}),
+                          ("floor", "Lab/gen_slab.png"),
+                          ("OccluderBeam1", AC + "gen_front.png", "front", (966, -12), {}),
+                          ("OccluderBeam2", AC + "gen_front.png", "front", (1824, -12), {})],
+    "AlchemistStore": [("Wall", "AlchemistStore/gen_wall.png", (0.85, 1), (0, 0), {"tile": 472}),
+                       ("Barrels", "AlchemistStore/gen_barrels.png", (0.95, 1), (475.5, 328.5), {}),
+                       ("Vessel", "AlchemistStore/gen_parts.png", (0.95, 1), (1212, 291), {}),
+                       ("DoorArt", AC + "gen_door.png", "room", (1550 - 69, 171), {"z": -2}),
+                       ("floor", "Lab/gen_slab.png"),
+                       ("OccluderBeam", AC + "gen_front.png", "front", (888, -12), {})],
+    # README ставить стовпи (340 арту) на y −66 — ступня 444, у кадрі (verify_room_entrances п. 4): на −10 верх над
+    # кадром (−6), ступня 500 — під ним (480).
+    # Вузька плитка (492 світу): 6 повторів не доходять до східного краю (видно порожнечу біля шахти), 12 — доходять.
+    "MalikStash": [("Wall", "MalikStash/gen_wall.png", (0.85, 1), (0, 0), {"tile": 328, "times": 12}),
+                   ("Hoard", "MalikStash/gen_hoard.png", (0.95, 1), (202.5, 300), {}),
+                   ("Lamp", "MalikStash/gen_lamp.png", (0.95, 1), (358.5, 330), {}),
+                   ("Shaft", "MalikStash/gen_slab.png", "room", (1345.5, 0), {"z": -2}),
+                   ("floor", "Cellar/gen_floor.png"),
+                   ("OccluderPost", "MalikStash/gen_post.png", "front", (883.5, PILLAR_Y), {})],
+    "CollapsedDrain": [("Far", "CollapsedDrain/gen_far.png", (0.45, 1), (0, 0), {"tile": 576}),
+                       ("Mid", "CollapsedDrain/gen_mid.png", (0.75, 1), (0, 3), {"tile": 576}),
+                       ("Pipe", "CollapsedDrain/gen_pipe.png", (0.9, 1), (3444, 222), {}),
+                       ("Collapse1", "CollapsedDrain/gen_collapse.png", "room", (1999.5, 243), {"z": -3}),
+                       ("Collapse2", "CollapsedDrain/gen_collapse.png", "room", (4594.5, 243), {"z": -3, "flip": True}),
+                       ("Hatch", "CollapsedDrain/gen_hatch.png", "room", (150 - 64.5, 0), {"z": -2}),
+                       ("Grate", "CollapsedDrain/gen_grate.png", "room", (3000 - 69.5, 0), {"z": -2}),
+                       ("floor", "Cellar/gen_floor.png"),
+                       ("OccluderPier1", "Aqueduct/gen_front.png", "front", (1794, PILLAR_Y), {}),
+                       ("OccluderPier2", "Aqueduct/gen_front.png", "front", (3939, PILLAR_Y), {}),
+                       ("OccluderPier3", "Aqueduct/gen_front.png", "front", (6180, PILLAR_Y), {})],
 }
 # Розміри арту, px (для повторів і низу кімнати).
 PAINTED_SIZE = {
@@ -379,6 +449,15 @@ PAINTED_SIZE = {
     "MesaClimb/gen_floor.png": (876, 44), "Canyon/gen_rock.png": (156, 114),
     "ZahraRest/gen_mid.png": (507, 250), "ZahraRest/gen_camp.png": (175, 136), "ZahraRest/gen_palm.png": (161, 230),
     "ZahraRest/gen_well.png": (97, 112), "ZahraRest/gen_ground.png": (576, 67), "ZahraRest/gen_front.png": (192, 150),
+    AC + "gen_wall.png": (576, 324), AC + "gen_vessel.png": (68, 104), AC + "gen_cages.png": (116, 80),
+    AC + "gen_stairs.png": (75, 126), AC + "gen_desk.png": (139, 99), AC + "gen_door.png": (92, 143),
+    AC + "gen_front.png": (204, 90),
+    "AlchemistStore/gen_wall.png": (472, 324), "AlchemistStore/gen_barrels.png": (79, 39), "AlchemistStore/gen_parts.png": (46, 64),
+    "MalikStash/gen_wall.png": (328, 324), "MalikStash/gen_hoard.png": (44, 58), "MalikStash/gen_lamp.png": (25, 38),
+    "MalikStash/gen_slab.png": (138, 258), "MalikStash/gen_post.png": (152, 340),
+    "CollapsedDrain/gen_far.png": (576, 324), "CollapsedDrain/gen_mid.png": (576, 256), "CollapsedDrain/gen_pipe.png": (73, 110),
+    "CollapsedDrain/gen_collapse.png": (174, 96), "CollapsedDrain/gen_hatch.png": (84, 258), "CollapsedDrain/gen_grate.png": (92, 258),
+    "Aqueduct/gen_front.png": (135, 340),
 }
 
 
@@ -413,8 +492,9 @@ class Scene:
 def add_door(s: Scene, name: str, x: float, floor: float, art: str | None, target: str, arrival: str, extra: dict,
              parent: str = ".") -> None:
     if art is None:
-        # Отвір уже намальований у кімнаті (криниця на ринку): двері стоять на висоті героя над підлогою.
-        dx, dy = x, floor - 54
+        # Отвір уже намальований у кімнаті (криниця на ринку): двері стоять на висоті героя над підлогою
+        # або в центрі намальованого отвору (extra y — від верху рядка кімнати).
+        dx, dy = x, floor - 54 if "y" not in extra else floor - FLOOR + extra["y"]
     else:
         dx, dy = door_pos(art, x, floor)
         s.node('[node name="%sEntrance" parent="%s" instance=%s]\nposition = Vector2(%g, %g)\ntexture = %s' % (
@@ -435,9 +515,10 @@ def add_lever(s: Scene, name: str, x: float, floor: float, flag: str) -> None:
         name, s.res("PackedScene", LEVER), x, floor, flag))
 
 
-def add_pickup(s: Scene, name: str, x: float, floor: float, item: str) -> None:
+def add_pickup(s: Scene, name: str, x: float, floor: float, item: str, y: float | None = None) -> None:
+    """y — висота підбирання, коли воно лежить на намальованому (стіл), а не на підлозі."""
     s.node('[node name="%s" parent="." instance=%s]\nposition = Vector2(%g, %g)\nitem_id = "%s"' % (
-        name, s.res("PackedScene", PICKUP), x, floor - 32, item))
+        name, s.res("PackedScene", PICKUP), x, floor - 32 if y is None else y, item))
 
 
 class Room(Scene):
@@ -527,12 +608,13 @@ class Room(Scene):
                           'position = Vector2(0, %g)\nscale = Vector2(1.5, 1.5)\ntexture = %s\ncentered = false'
                           % (row + 1, label, row * CELL_H - 3, tex))
 
-    def ground_art(self, runs: list[tuple[int, float, float]]) -> None:
+    def ground_art(self, runs: list[tuple[int, float, float]], tex_path: str | None = None, node: bool = True) -> None:
         """Смуга підлоги на кожному відрізку (верх тайлів намальований, verify_map_geometry правило 6) і темна земля під нею."""
-        tex_path, region_y = self.kit["floor"]
+        tex_path, region_y = (tex_path, 0) if tex_path else self.kit["floor"]
         tw, th = TEX_SIZE[tex_path]
         tex = self.res("Texture2D", BG + tex_path)
-        self.node('[node name="Ground" type="Node2D" parent="."]\nz_index = -9')
+        if node:
+            self.node('[node name="Ground" type="Node2D" parent="."]\nz_index = -9')
         for i, (row, a, b) in enumerate(runs, 1):
             top = self.floor_y(row)
             bottom = (row + 1) * CELL_H if not self.spec.get("slope") or row == self.ch - 1 else self.h
@@ -558,7 +640,7 @@ class Room(Scene):
                       % (self.kit["fill"], self.w, self.w, self.h + CELL_H, self.h + CELL_H))
         grounds, fronts, props = [], [], []
         for e in planes:
-            if e[0] == "backdrop":
+            if e[0] in ("backdrop", "floor"):
                 continue
             if e == "clouds":
                 self.node('[node name="DriftingClouds" parent="Back" instance=%s]'
@@ -581,7 +663,7 @@ class Room(Scene):
             if "tile" in ex:
                 rw = ex.get("repeat", ex["tile"] * 1.5)
                 x = x % rw - rw
-                body += '\nrepeat_size = Vector2(%g, 0)\nrepeat_times = %d' % (rw, int(self.w / rw) + 3)
+                body += '\nrepeat_size = Vector2(%g, 0)\nrepeat_times = %d' % (rw, ex.get("times", int(self.w / rw) + 3))
             self.node(body)
             self.node(self._sprite("Sprite", "Back/" + name, tex, (x, pos[1]), ex))
         self.node('[node name="Ground" type="Node2D" parent="."]\nz_index = -9')
@@ -627,6 +709,8 @@ class Room(Scene):
             round(pos[0], 1), round(pos[1], 1), s, ex.get("scale_y", s), self.res("Texture2D", BG + tex))
         if not ex.get("centered"):
             body += '\ncentered = false'
+        if ex.get("flip"):
+            body += '\nflip_h = true'
         if "region" in ex:
             body += '\nregion_enabled = true\nregion_rect = Rect2(%g, %g, %g, %g)' % tuple(round(v, 1) for v in ex["region"])
         return body
@@ -679,17 +763,12 @@ class Room(Scene):
             self.node('[node name="%s" parent="." instance=%s]\nposition = Vector2(%g, %g)\ncollision_layer = 0'
                       % (name, self.res("PackedScene", WALL), x, self.floor_y(row)))
             self.node('[node name="Sprite" parent="%s" index="0"]\nz_index = -1\nscale = Vector2(1, 1)\noffset = Vector2(0, -50)' % name)
-        if "table" in sp:
-            row, x = sp["table"]
-            self.node('[node name="Table" type="Sprite2D" parent="."]\nz_index = -3\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
-                      'scale = Vector2(1.5, 1.5)\ntexture = %s\noffset = Vector2(0, -36)'
-                      % (x, self.floor_y(row), self.res("Texture2D", BG + "Lab/gen_table.png")))
         for name, row, x, art, target, arrival, extra in sp.get("doors", []):
             add_door(self, name, x, self.floor_y(row), art, target, arrival, extra)
         for name, row, x, flag in sp.get("levers", []):
             add_lever(self, name, x, self.floor_y(row), flag)
-        for name, row, x, item in sp.get("pickups", []):
-            add_pickup(self, name, x, self.floor_y(row), item)
+        for name, row, x, item, y in sp.get("pickups", []):
+            add_pickup(self, name, x, self.floor_y(row), item, row * CELL_H + y)
         for name, row, x, contents in sp.get("chests", []):
             self.node('[node name="%s" parent="." instance=%s]\nposition = Vector2(%g, %g)\ncontents = Dictionary[String, int]({\n%s\n})'
                       % (name, self.res("PackedScene", CHEST), x, self.floor_y(row),
@@ -711,8 +790,12 @@ class Room(Scene):
         else:
             self.backdrop()
         runs = self.build_ground()
+        floor = [e for e in painted or [] if e[0] == "floor"]
         if not painted:
             self.ground_art(runs)
+        elif floor:
+            # Намальовані стіни без своєї підлоги: смуга підлоги (за замовчуванням — комплекту) у вже наявному Ground.
+            self.ground_art(runs, floor[0][1], node=False)
         self.tilemap()
         self.slope()
         self.bridge()
@@ -766,7 +849,8 @@ def write_map() -> None:
     lines = path.read_text(encoding="utf-8").split("\n")
     uid_room = {scene_uid(r): r for r in PLACE}
     scenes = {f.stem for f in MAPS.glob("*.tscn")}
-    assert scenes == set(PLACE) | set(ROOMS), "every room scene is placed: %s" % (scenes ^ (set(PLACE) | set(ROOMS)))
+    placed = set(PLACE) | set(ROOMS) | set(LAB_V3)
+    assert scenes == placed, "every room scene is placed: %s" % (scenes ^ placed)
     cells: dict[tuple[int, int, int], list] = {}
     order: list[tuple[int, int, int]] = []
     stubs: list[str] = []
@@ -796,11 +880,11 @@ def write_map() -> None:
         mx, my = min(c[0] for c in mine), min(c[1] for c in mine)
         z = mine[0][2]
         cells[(mx + rx, my + ry, z)][0][side] = value
-    for name, spec in ROOMS.items():
+    for name, spec in list(ROOMS.items()) + [(n, dict(sp, layer=2)) for n, sp in LAB_V3.items()]:
         x0, y0, w, h = spec["cells"]
         z = spec.get("layer", 0)
         opened = {(r, s) for r, s in spec.get("open", [])}
-        uid = uid_for(name)
+        uid = scene_uid(name) if name in LAB_V3 else uid_for(name)
         for cy in range(h):
             for cx in range(w):
                 b = [-1, -1, -1, -1]

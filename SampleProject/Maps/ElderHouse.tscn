@@ -214,7 +214,7 @@ texture = ExtResource("x2")
 offset = Vector2(-26, -76)
 
 [node name="ExitDoor" parent="." instance=ExtResource("4_door")]
-position = Vector2(96, 802.5)
+position = Vector2(95.29, 802.5)
 target_room = "res://SampleProject/Maps/Village.tscn"
 arrival = NodePath("ElderDoor")
 

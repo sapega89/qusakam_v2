@@ -171,7 +171,11 @@ func _sort(node: Node, parts: Array, map: Node, objects: Array, backdrops: Array
 		backdrops.append({"path": entry.path, "plane": entry.plane, "width_world": entry.width_world,
 				"height_world": entry.height_world, "textures": entry.textures})
 		return
-	entry.category = _category(_haystacks(node, parts))
+	# Замкнені ворота кімнати (LockedDoor: Gate_Stockade, Gate_Shrine) — locked gate 128 art, не брама міста (D814).
+	var first: Array[String] = []
+	if node.scene_file_path.get_file() == "LockedDoor.tscn":
+		first.append("locked_door")
+	entry.category = _category(_haystacks(node, parts, first))
 	if (entry.textures as Array).all(func(t: String) -> bool: return t.ends_with(".svg")):
 		entry.category = {"id": "marker", "keyword": "svg", "art_px": null, "h": null}  # іскра підбирання / місце дії
 	_verdict(entry)

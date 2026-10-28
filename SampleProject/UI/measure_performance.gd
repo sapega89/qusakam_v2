@@ -24,7 +24,7 @@ const ROUTE: Array = [
 ## Переходи пішки через східний край (Maps/MapData.txt): [звідки, куди, рядок клітинок від верху кімнати].
 const WALKS: Array = [
 	["Canyon", "Village", 0], ["DesertRoad", "CityGates", 0], ["CityGates", "City", 0],
-	["City", "MayorHall", 0], ["LabCells", "Laboratory", 0], ["Laboratory", "LabBoss", 2],
+	["City", "MayorHall", 0], ["Laboratory", "LabStairsEast", 0],  # лабораторія v3 (D865): решта — двері
 	["LabBoss", "LaboratoryOutside", 0],
 ]
 

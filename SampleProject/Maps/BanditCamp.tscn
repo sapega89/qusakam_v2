@@ -27,7 +27,7 @@
 size = Vector2(160, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(184, 416)
+size = Vector2(108, 416)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
 size = Vector2(112, 112)
@@ -183,7 +183,7 @@ texture = ExtResource("x2")
 offset = Vector2(-75, -87)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(136, 366.5)
+position = Vector2(137.72, 366.5)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("BanditCampDoor")
 
@@ -251,15 +251,16 @@ gate_id = "camp_stockade"
 
 [node name="Sprite" parent="Gate_Stockade" index="0"]
 z_index = 1
-position = Vector2(0, -207.75)
+position = Vector2(0, -96)
+scale = Vector2(0.693, 0.693)
 texture = ExtResource("r7")
 
 [node name="CollisionShape2D" parent="Gate_Stockade/Body" index="0"]
-position = Vector2(10, -208)
+position = Vector2(0, -208)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="CollisionShape2D" parent="Gate_Stockade/Area" index="0"]
-position = Vector2(-105, -56)
+position = Vector2(-77, -56)
 shape = SubResource("RectangleShape2D_3")
 
 [node name="Chest_Loot" parent="." instance=ExtResource("r8")]
@@ -277,7 +278,7 @@ texture = ExtResource("x2")
 offset = Vector2(-75, -87)
 
 [node name="ShortcutDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(1640, 366.5)
+position = Vector2(1641.72, 366.5)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("CampShortcutDoor")
 sets_flag = "bandit_camp_shortcut"

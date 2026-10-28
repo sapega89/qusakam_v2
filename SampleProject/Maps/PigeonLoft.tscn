@@ -59,7 +59,7 @@ position = Vector2(432, 384)
 texture = ExtResource("w5")
 
 [node name="ExitDoor" parent="." instance=ExtResource("w6")]
-position = Vector2(423, 330)
+position = Vector2(421.92, 330)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("LoftDoor")
 

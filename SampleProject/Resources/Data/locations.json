@@ -18,7 +18,7 @@
 		{
 			"id": "laboratory",
 			"name": "The Laboratory",
-			"rooms": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash", "CollapsedDrain"],
+			"rooms": ["LaboratoryOutside", "Laboratory", "LabStairsEast", "LabMiddleFloor", "LabGuardPocket", "LabStairsWest", "LabTopFloor", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash", "CollapsedDrain"],
 			"entries": ["LabCells"],
 			"map_pos": [1580, 120]
 		}

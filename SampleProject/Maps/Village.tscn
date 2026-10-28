@@ -388,8 +388,8 @@ position = Vector2(24, 344)
 [node name="FrontDark" parent="." instance=ExtResource("x1")]
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("decor_palm")]
-position = Vector2(669, 520)
-scale = Vector2(3, 3)
+position = Vector2(800, 520)
+scale = Vector2(7.15, 7.15)
 
 [node name="OccluderRock1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
@@ -400,6 +400,6 @@ centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm2" parent="FrontDark" instance=ExtResource("decor_palm")]
-position = Vector2(3000, 520)
-scale = Vector2(3, 3)
+position = Vector2(3040, 520)
+scale = Vector2(7.15, 7.15)
 flip_h = true

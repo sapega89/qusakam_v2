@@ -755,8 +755,8 @@ centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x4")]
-position = Vector2(2112, 520)
-scale = Vector2(3, 3)
+position = Vector2(1900, 520)
+scale = Vector2(7.15, 7.15)
 
 [connection signal="body_entered" from="END" to="END" method="_on_body_entered"]
 
@@ -777,7 +777,7 @@ texture = ExtResource("x2")
 offset = Vector2(-55, -100)
 
 [node name="LizardCaveDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(2150, 330)
+position = Vector2(2148.92, 330)
 target_room = "res://SampleProject/Maps/LizardCave.tscn"
 arrival = NodePath("ExitDoor")
 
@@ -799,7 +799,7 @@ texture = ExtResource("x2")
 offset = Vector2(-55, -100)
 
 [node name="DragonMuralDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(1450, 162)
+position = Vector2(1448.92, 162)
 target_room = "res://SampleProject/Maps/DragonMural.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Mural")

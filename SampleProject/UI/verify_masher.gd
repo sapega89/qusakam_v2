@@ -30,7 +30,9 @@ const FLANK_NEAR := 320.0
 const SPEED := 4.0
 ## Бій довше за CAP с ігрового часу — нічия (рахується як «не переміг»).
 const CAP := 150.0
-const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
+## Лабораторія v3 (D865): поверхи й сходи вгору, кишеня вартового біля дверей сходів (як verify_difficulty).
+const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabStairsEast",
+		"LabGuardPocket", "LabMiddleFloor", "LabStairsWest", "LabTopFloor", "LabBoss"]
 const CITY_INDEX := 4
 const GEAR_ROAD := {"sword": "copper_sword", "body": "leather_armor"}
 const GEAR_CITY := {"sword": "iron_sword", "body": "iron_armor", "shield": "iron_shield"}
@@ -46,10 +48,10 @@ const FIGHTS := [
 	{"name": "road's first fight: 2 bandits, a jackal", "room": "DesertRoad", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "City Gates: 2 bandits, archer", "room": "CityGates", "fight": "EnemySpawner", "cls": "group"},
 	{"name": "lone bandit brute", "room": "DesertRoad", "fight": "Fight_LoneElite", "cls": "elite"},
-	{"name": "Lab middle: bandit, 2 jackals, scorpion", "room": "Laboratory", "fight": "Fight_Middle", "cls": "group"},
+	{"name": "Lab middle: bandit, 2 jackals, scorpion", "room": "LabMiddleFloor", "fight": "Fight_Middle", "cls": "group"},
 	{"name": "Mayor Hall boss", "room": "MayorHall", "boss": "ScorpicoreWarrior", "cls": "boss"},
 	{"name": "Caravan: armoured scorpion and 2", "room": "DesertRoad", "fight": "Fight_Caravan", "cls": "group"},
-	{"name": "cursed jackal", "room": "Laboratory", "fight": "Fight_Cursed", "cls": "elite"},
+	{"name": "cursed jackal", "room": "LabMiddleFloor", "fight": "Fight_Cursed", "cls": "elite"},
 	{"name": "Laboratory boss", "room": "LabBoss", "boss": "Mercenary", "cls": "boss"},
 ]
 ## Сюжетні прапорці перед кожним боєм: кімната одразу в стані свого бою.

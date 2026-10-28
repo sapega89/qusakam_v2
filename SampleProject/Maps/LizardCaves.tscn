@@ -72,7 +72,7 @@ position = Vector2(140, 384)
 texture = ExtResource("w6")
 
 [node name="ShrineDoor" parent="." instance=ExtResource("w7")]
-position = Vector2(131, 330)
+position = Vector2(129.92, 330)
 target_room = "res://SampleProject/Maps/LizardCave.tscn"
 arrival = NodePath("DeepCavesDoor")
 
@@ -81,7 +81,7 @@ position = Vector2(4980, 384)
 texture = ExtResource("w6")
 
 [node name="RoadDoor" parent="." instance=ExtResource("w7")]
-position = Vector2(4971, 330)
+position = Vector2(4969.92, 330)
 target_room = "res://SampleProject/Maps/DesertRoad.tscn"
 arrival = NodePath("LizardCavesDoor")
 gate_id = "lizard_caves_shortcut"

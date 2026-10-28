@@ -23,6 +23,8 @@ const MAPS := "res://SampleProject/Maps/%s.tscn"
 const TEST_DIR := "user://verify_room_entrances/"
 const ROOMS := ["Canyon", "Village", "ElderHouse", "DesertRoad", "LizardCave", "DragonMural", "BanditCamp", "MesaClimb",
 		"CityGates", "GatehouseCellar", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside",
+		# Лабораторія v3 (D865): поверхи й великі сходи
+		"LabStairsEast", "LabMiddleFloor", "LabGuardPocket", "LabStairsWest", "LabTopFloor",
 		# M7: кімнати графів регіонів
 		"CanyonFloor", "SmugglersStash", "LizardCaves", "MesaTop", "ZahraRest", "OldRuins", "Aqueduct", "GateApproach",
 		"PalaceSquare", "Rooftops", "PigeonLoft", "TavernAttic", "MayorArchive", "Cistern", "CisternStash",
@@ -34,13 +36,20 @@ const PAINTED := {
 	"LizardCave/ExitDoor": "the lit cave opening (D729)",
 	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D729)",
 	"ZahraRest/WellDoor": "the stone well with its iron grate",
+	"AlchemistCorridor/FloorDoor": "the arched stairwell",
+	"AlchemistCorridor/StoreDoor": "the storeroom's iron-bound door",
+	"AlchemistStore/ExitDoor": "the storeroom door from inside",
+	"MalikStash/SlabDoor": "the rope up through the slab's hole",
+	"CollapsedDrain/HatchDoor": "the shaft up to the cells' hatch",
+	"CollapsedDrain/GrateDoor": "the shaft up to floor 3's grate",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.
 const HERO_HEIGHT := 70.0
-## Колишні проходи крізь край: [клітинка, сторона (0 праворуч, 2 ліворуч)] — тепер стіна.
-const CLOSED_BORDERS := [[Vector3i(28, 5, 0), 0], [Vector3i(29, 5, 0), 2], [Vector3i(13, 3, 2), 0],
-		[Vector3i(14, 3, 2), 2], [Vector3i(15, 5, 2), 0], [Vector3i(16, 5, 2), 2]]
+## Колишні проходи крізь край: [клітинка, сторона (0 праворуч, 2 ліворуч)] — тепер стіна. Лабораторія — на клітинках
+## графа v3 (D865): камери | нижній поверх, зала джина — ліворуч стіна (у неї ведуть двері з верхнього поверху знизу).
+const CLOSED_BORDERS := [[Vector3i(28, 5, 0), 0], [Vector3i(29, 5, 0), 2], [Vector3i(13, 5, 2), 0],
+		[Vector3i(14, 5, 2), 2], [Vector3i(18, 2, 2), 2]]
 const EDGE_DOORS := {"PalaceSquare": "MayorHallDoor", "MayorHall": "CityDoor", "LabCells": "CorridorDoor",
 		"Laboratory": "CellsDoor", "LabBoss": "CorridorDoor"}
 ## Темний передній шар і темрява згори (Sapega: печера «темніше зверху, листя… передній фон закриває вид»).
@@ -56,7 +65,7 @@ const BUILT_IN := {
 const LEDGES := {
 	"Canyon": [[48, 288, 576], [512, 568, 480], [584, 792, 512], [416, 800, 672], [48, 248, 768]],
 }
-const IRON_LADDER_ROOMS := ["Laboratory", "GatehouseCellar"]
+const IRON_LADDER_ROOMS := ["GatehouseCellar"]  # у лабораторії драбин більше немає (D863, B201)
 
 var fails: Array[String] = []
 var game: Node

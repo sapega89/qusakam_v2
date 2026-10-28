@@ -1,0 +1,249 @@
+[gd_scene format=4 uid="uid://bnvt440fngugo"]
+
+[ext_resource type="TileSet" path="res://SampleProject/Resources/Tileset.tres" id="1_i1xd7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_slab.png" id="2_w4cp6"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_xsyxk"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="3_awaek"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Laboratory/lamp.png" id="5_nbnmv"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_far.tres" id="6_woaqk"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_far.png" id="7_n2y17"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/lab_door/lab_door_sheet.png" id="m7_2"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="m7_3"]
+
+[sub_resource type="Gradient" id="Gradient_nbnmv"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_woaqk"]
+gradient = SubResource("Gradient_nbnmv")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="LabStairsEast" type="Node2D" unique_id=856029425]
+
+[node name="TileMap" type="Node2D" parent="." unique_id=2091252333]
+
+[node name="Foreground" type="TileMapLayer" parent="TileMap" unique_id=816986435]
+visible = false
+use_parent_material = true
+tile_map_data = PackedByteArray("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AAAcAAwAAQAIAAYAAAAdAAwAAQAIAAYAAAAeAAwAAQAIAAYAAAAfAAwAAQAIAAYAAAAgAAwAAQAIAAYAAAAhAAwAAQAIAAYAAAAiAAwAAQAIAAYAAAAjAAwAAQAIAAYAAAAkAAwAAQAIAAYAAAAlAAwAAQAIAAYAAAAmAAwAAQAIAAYAAAAnAAwAAQAIAAYAAAAoAAwAAQAIAAYAAAApAAwAAQAIAAYAAAAqAAwAAQAIAAYAAAArAAwAAQAIAAYAAAAsAAwAAQAIAAYAAAAtAAwAAQAIAAYAAAAuAAwAAQAIAAYAAAAvAAwAAQAIAAYAAAAwAAwAAQAIAAYAAAAxAAwAAQAIAAYAAAAyAAwAAQAIAAYAAAAzAAwAAQAIAAYAAAA0AAwAAQAIAAYAAAA1AAwAAQAIAAcAAAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAcAAAADAA0AAQAIAAcAAAAEAA0AAQAIAAcAAAAFAA0AAQAIAAcAAAAGAA0AAQAIAAcAAAAHAA0AAQAIAAcAAAAIAA0AAQAIAAcAAAAJAA0AAQAIAAcAAAAKAA0AAQAIAAcAAAALAA0AAQAIAAcAAAAMAA0AAQAIAAcAAAANAA0AAQAIAAcAAAAOAA0AAQAIAAcAAAAPAA0AAQAIAAcAAAAQAA0AAQAIAAcAAAARAA0AAQAIAAcAAAASAA0AAQAIAAcAAAATAA0AAQAIAAcAAAAUAA0AAQAIAAcAAAAVAA0AAQAIAAcAAAAWAA0AAQAIAAcAAAAXAA0AAQAIAAcAAAAYAA0AAQAIAAcAAAAZAA0AAQAIAAcAAAAaAA0AAQAIAAcAAAAbAA0AAQAIAAcAAAAcAA0AAQAIAAcAAAAdAA0AAQAIAAcAAAAeAA0AAQAIAAcAAAAfAA0AAQAIAAcAAAAgAA0AAQAIAAcAAAAhAA0AAQAIAAcAAAAiAA0AAQAIAAcAAAAjAA0AAQAIAAcAAAAkAA0AAQAIAAcAAAAlAA0AAQAIAAcAAAAmAA0AAQAIAAcAAAAnAA0AAQAIAAcAAAAoAA0AAQAIAAcAAAApAA0AAQAIAAcAAAAqAA0AAQAIAAcAAAArAA0AAQAIAAcAAAAsAA0AAQAIAAcAAAAtAA0AAQAIAAcAAAAuAA0AAQAIAAcAAAAvAA0AAQAIAAcAAAAwAA0AAQAIAAcAAAAxAA0AAQAIAAcAAAAyAA0AAQAIAAcAAAAzAA0AAQAIAAcAAAA0AA0AAQAIAAcAAAA1AA0AAQAIAAcAAAAAAA4AAQAIAAcAAAABAA4AAQAIAAcAAAACAA4AAQAIAAcAAAADAA4AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAA4AAQAIAAcAAAALAA4AAQAIAAcAAAAMAA4AAQAIAAcAAAANAA4AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAA4AAQAIAAcAAAARAA4AAQAIAAcAAAASAA4AAQAIAAcAAAATAA4AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAA4AAQAIAAcAAAAcAA4AAQAIAAcAAAAdAA4AAQAIAAcAAAAeAA4AAQAIAAcAAAAfAA4AAQAIAAcAAAAgAA4AAQAIAAcAAAAhAA4AAQAIAAcAAAAiAA4AAQAIAAcAAAAjAA4AAQAIAAcAAAAkAA4AAQAIAAcAAAAlAA4AAQAIAAcAAAAmAA4AAQAIAAcAAAAnAA4AAQAIAAcAAAAoAA4AAQAIAAcAAAApAA4AAQAIAAcAAAAqAA4AAQAIAAcAAAArAA4AAQAIAAcAAAAsAA4AAQAIAAcAAAAtAA4AAQAIAAcAAAAuAA4AAQAIAAcAAAAvAA4AAQAIAAcAAAAwAA4AAQAIAAcAAAAxAA4AAQAIAAcAAAAyAA4AAQAIAAcAAAAzAA4AAQAIAAcAAAA0AA4AAQAIAAcAAAA1AA4AAQAIAAcAAAA=")
+tile_set = ExtResource("1_i1xd7")
+
+[node name="Surfaces" type="Node2D" parent="." unique_id=494960810]
+
+[node name="@Sprite2D@17" type="Sprite2D" parent="Surfaces" unique_id=115089227]
+texture_filter = 1
+texture_repeat = 2
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 26, 1152, 42.666668)
+
+[node name="@Sprite2D@18" type="Sprite2D" parent="Surfaces" unique_id=1410838577]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(32, 64)
+rotation = 1.5707964
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(42.666668, 42.666664, 85.333336, 21.333334)
+
+[node name="@Sprite2D@19" type="Sprite2D" parent="Surfaces" unique_id=212339291]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1728, 64)
+rotation = 1.5707964
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(42.666668, 42.666664, 213.33333, 21.333334)
+
+[node name="@Sprite2D@20" type="Sprite2D" parent="Surfaces" unique_id=1918287152]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0, 384)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1152, 64)
+
+[node name="Stairs" type="StaticBody2D" parent="." unique_id=2035635801]
+
+[node name="Ramp" type="CollisionPolygon2D" parent="Stairs" unique_id=1629675606]
+polygon = PackedVector2Array(230, 384, 1350, 208, 1728, 208, 1728, 384)
+
+[node name="Step1" type="Sprite2D" parent="Stairs" unique_id=2135516086]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(300, 362)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(200, 0, 952, 14.666667)
+
+[node name="Step2" type="Sprite2D" parent="Stairs" unique_id=883672042]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(440, 340)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(293.33334, 0, 858.6667, 29.333334)
+
+[node name="Step3" type="Sprite2D" parent="Stairs" unique_id=404209979]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(580, 318)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(386.66666, 0, 765.3333, 44)
+
+[node name="Step4" type="Sprite2D" parent="Stairs" unique_id=1458374861]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(720, 296)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(480, 0, 672, 58.666668)
+
+[node name="Step5" type="Sprite2D" parent="Stairs" unique_id=937511069]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(860, 274)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(573.3333, 0, 578.6667, 73.333336)
+
+[node name="Step6" type="Sprite2D" parent="Stairs" unique_id=1534374983]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1000, 252)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(666.6667, 0, 485.33334, 88)
+
+[node name="Step7" type="Sprite2D" parent="Stairs" unique_id=1431343896]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1140, 230)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(760, 0, 392, 102.666664)
+
+[node name="Step8" type="Sprite2D" parent="Stairs" unique_id=1912115640]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1280, 208)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_w4cp6")
+centered = false
+region_enabled = true
+region_rect = Rect2(853.3333, 0, 298.66666, 117.333336)
+
+[node name="RoomInstance" parent="." unique_id=1816424888 instance=ExtResource("2_xsyxk")]
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=418627622]
+process_mode = 3
+stream = ExtResource("3_awaek")
+autoplay = true
+bus = &"Music"
+
+[node name="FloorDoorEntrance" parent="." unique_id=568275432 instance=ExtResource("m7_1")]
+position = Vector2(1590, 208)
+texture = ExtResource("m7_2")
+
+[node name="FloorDoor" parent="." unique_id=1376448671 instance=ExtResource("m7_3")]
+position = Vector2(1579.49, 133.75)
+target_room = "res://SampleProject/Maps/LabMiddleFloor.tscn"
+arrival = NodePath("StairsDoor")
+
+[node name="Arrival" type="Marker2D" parent="." unique_id=627940087]
+position = Vector2(150, 360)
+
+[node name="Atmosphere" type="Node2D" parent="." unique_id=1846145000]
+
+[node name="Darkness" type="CanvasModulate" parent="Atmosphere" unique_id=1361659940]
+color = Color(0.36, 0.36, 0.44, 1)
+
+[node name="Lamp1" type="Sprite2D" parent="Atmosphere" unique_id=1956555139]
+z_index = -1
+texture_filter = 1
+position = Vector2(200, 214)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_nbnmv")
+centered = false
+offset = Vector2(0, -10)
+
+[node name="@PointLight2D@21" type="PointLight2D" parent="Atmosphere/Lamp1" unique_id=434329777]
+position = Vector2(4, 0)
+color = Color(1, 0.82, 0.55, 1)
+energy = 1.25
+texture = SubResource("GradientTexture2D_woaqk")
+texture_scale = 1.6
+
+[node name="Lamp2" type="Sprite2D" parent="Atmosphere" unique_id=204323404]
+z_index = -1
+texture_filter = 1
+position = Vector2(900, 150)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_nbnmv")
+centered = false
+offset = Vector2(0, -10)
+
+[node name="@PointLight2D@22" type="PointLight2D" parent="Atmosphere/Lamp2" unique_id=739083861]
+position = Vector2(4, 0)
+color = Color(1, 0.82, 0.55, 1)
+energy = 1.25
+texture = SubResource("GradientTexture2D_woaqk")
+texture_scale = 1.6
+
+[node name="Lamp3" type="Sprite2D" parent="Atmosphere" unique_id=1206633380]
+z_index = -1
+texture_filter = 1
+position = Vector2(1550, 110)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_nbnmv")
+centered = false
+offset = Vector2(0, -10)
+
+[node name="@PointLight2D@23" type="PointLight2D" parent="Atmosphere/Lamp3" unique_id=958389879]
+position = Vector2(4, 0)
+color = Color(1, 0.82, 0.55, 1)
+energy = 1.25
+texture = SubResource("GradientTexture2D_woaqk")
+texture_scale = 1.6
+
+[node name="Far1" type="Parallax2D" parent="Atmosphere" unique_id=1060663818]
+modulate = Color(0.6, 0.58, 0.72, 1)
+z_index = -10
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Atmosphere/Far1" unique_id=1722254676]
+texture_filter = 1
+material = ExtResource("6_woaqk")
+position = Vector2(288, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("7_n2y17")
+centered = false

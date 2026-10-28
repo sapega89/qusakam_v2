@@ -1,0 +1,191 @@
+[gd_scene format=4 uid="uid://b4uu8bllb1c80"]
+
+[ext_resource type="TileSet" path="res://SampleProject/Resources/Tileset.tres" id="1_ncxwa"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_symd8"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_slab.png" id="2_u11lm"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="3_dulrv"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="4_8tnoo"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="5_el4m6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="6_av01y"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Laboratory/lamp.png" id="8_stujg"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_far.tres" id="9_55gd7"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_far.png" id="10_cr0ah"]
+[ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_front.tres" id="11_5irdh"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_front.png" id="12_0nhwq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fight"]
+size = Vector2(64, 352)
+
+[sub_resource type="Gradient" id="Gradient_u11lm"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_stujg"]
+gradient = SubResource("Gradient_u11lm")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="LabGuardPocket" type="Node2D" unique_id=514545316]
+
+[node name="TileMap" type="Node2D" parent="." unique_id=1247545441]
+
+[node name="Foreground" type="TileMapLayer" parent="TileMap" unique_id=941637070]
+visible = false
+use_parent_material = true
+tile_map_data = PackedByteArray("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AAAcAAwAAQAIAAYAAAAdAAwAAQAIAAYAAAAeAAwAAQAIAAYAAAAfAAwAAQAIAAYAAAAgAAwAAQAIAAYAAAAhAAwAAQAIAAYAAAAiAAwAAQAIAAYAAAAjAAwAAQAIAAYAAAAkAAwAAQAIAAYAAAAlAAwAAQAIAAYAAAAmAAwAAQAIAAYAAAAnAAwAAQAIAAYAAAAoAAwAAQAIAAYAAAApAAwAAQAIAAYAAAAqAAwAAQAIAAYAAAArAAwAAQAIAAYAAAAsAAwAAQAIAAYAAAAtAAwAAQAIAAYAAAAuAAwAAQAIAAYAAAAvAAwAAQAIAAYAAAAwAAwAAQAIAAYAAAAxAAwAAQAIAAYAAAAyAAwAAQAIAAYAAAAzAAwAAQAIAAYAAAA0AAwAAQAIAAYAAAA1AAwAAQAIAAcAAAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAcAAAADAA0AAQAIAAcAAAAEAA0AAQAIAAcAAAAFAA0AAQAIAAcAAAAGAA0AAQAIAAcAAAAHAA0AAQAIAAcAAAAIAA0AAQAIAAcAAAAJAA0AAQAIAAcAAAAKAA0AAQAIAAcAAAALAA0AAQAIAAcAAAAMAA0AAQAIAAcAAAANAA0AAQAIAAcAAAAOAA0AAQAIAAcAAAAPAA0AAQAIAAcAAAAQAA0AAQAIAAcAAAARAA0AAQAIAAcAAAASAA0AAQAIAAcAAAATAA0AAQAIAAcAAAAUAA0AAQAIAAcAAAAVAA0AAQAIAAcAAAAWAA0AAQAIAAcAAAAXAA0AAQAIAAcAAAAYAA0AAQAIAAcAAAAZAA0AAQAIAAcAAAAaAA0AAQAIAAcAAAAbAA0AAQAIAAcAAAAcAA0AAQAIAAcAAAAdAA0AAQAIAAcAAAAeAA0AAQAIAAcAAAAfAA0AAQAIAAcAAAAgAA0AAQAIAAcAAAAhAA0AAQAIAAcAAAAiAA0AAQAIAAcAAAAjAA0AAQAIAAcAAAAkAA0AAQAIAAcAAAAlAA0AAQAIAAcAAAAmAA0AAQAIAAcAAAAnAA0AAQAIAAcAAAAoAA0AAQAIAAcAAAApAA0AAQAIAAcAAAAqAA0AAQAIAAcAAAArAA0AAQAIAAcAAAAsAA0AAQAIAAcAAAAtAA0AAQAIAAcAAAAuAA0AAQAIAAcAAAAvAA0AAQAIAAcAAAAwAA0AAQAIAAcAAAAxAA0AAQAIAAcAAAAyAA0AAQAIAAcAAAAzAA0AAQAIAAcAAAA0AA0AAQAIAAcAAAA1AA0AAQAIAAcAAAAAAA4AAQAIAAcAAAABAA4AAQAIAAcAAAACAA4AAQAIAAcAAAADAA4AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAA4AAQAIAAcAAAALAA4AAQAIAAcAAAAMAA4AAQAIAAcAAAANAA4AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAA4AAQAIAAcAAAARAA4AAQAIAAcAAAASAA4AAQAIAAcAAAATAA4AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAA4AAQAIAAcAAAAcAA4AAQAIAAcAAAAdAA4AAQAIAAcAAAAeAA4AAQAIAAcAAAAfAA4AAQAIAAcAAAAgAA4AAQAIAAcAAAAhAA4AAQAIAAcAAAAiAA4AAQAIAAcAAAAjAA4AAQAIAAcAAAAkAA4AAQAIAAcAAAAlAA4AAQAIAAcAAAAmAA4AAQAIAAcAAAAnAA4AAQAIAAcAAAAoAA4AAQAIAAcAAAApAA4AAQAIAAcAAAAqAA4AAQAIAAcAAAArAA4AAQAIAAcAAAAsAA4AAQAIAAcAAAAtAA4AAQAIAAcAAAAuAA4AAQAIAAcAAAAvAA4AAQAIAAcAAAAwAA4AAQAIAAcAAAAxAA4AAQAIAAcAAAAyAA4AAQAIAAcAAAAzAA4AAQAIAAcAAAA0AA4AAQAIAAcAAAA1AA4AAQAIAAcAAAA=")
+tile_set = ExtResource("1_ncxwa")
+
+[node name="Surfaces" type="Node2D" parent="." unique_id=911719928]
+
+[node name="@Sprite2D@35" type="Sprite2D" parent="Surfaces" unique_id=1497284533]
+texture_filter = 1
+texture_repeat = 2
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_u11lm")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 26, 1152, 42.666668)
+
+[node name="@Sprite2D@36" type="Sprite2D" parent="Surfaces" unique_id=1912138264]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(32, 64)
+rotation = 1.5707964
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_u11lm")
+centered = false
+region_enabled = true
+region_rect = Rect2(42.666668, 42.666664, 85.333336, 21.333334)
+
+[node name="@Sprite2D@37" type="Sprite2D" parent="Surfaces" unique_id=1544752423]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1728, 64)
+rotation = 1.5707964
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_u11lm")
+centered = false
+region_enabled = true
+region_rect = Rect2(42.666668, 42.666664, 213.33333, 21.333334)
+
+[node name="@Sprite2D@38" type="Sprite2D" parent="Surfaces" unique_id=1278141950]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0, 384)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_u11lm")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 1152, 64)
+
+[node name="RoomInstance" parent="." unique_id=1904584457 instance=ExtResource("2_symd8")]
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=782159028]
+process_mode = 3
+stream = ExtResource("3_dulrv")
+autoplay = true
+bus = &"Music"
+
+[node name="Fight_TowerGuard" type="Node2D" parent="." unique_id=971148443 node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("4_8tnoo")
+auto_spawn_on_ready = false
+trigger_area = NodePath("Trigger")
+state_key = "enemies_towerguard"
+respawns = true
+enemy_level = 9
+
+[node name="Trigger" type="Area2D" parent="Fight_TowerGuard" unique_id=1632246142]
+position = Vector2(500, 208)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_TowerGuard/Trigger" unique_id=1310524701]
+shape = SubResource("RectangleShape2D_fight")
+
+[node name="BigSlot_TowerShieldGuard_1" type="Node2D" parent="Fight_TowerGuard" unique_id=1592299440]
+position = Vector2(1100, 368)
+script = ExtResource("5_el4m6")
+enemy_type = "shield"
+size = "medium"
+big_kind = "tower_shield_guard"
+spawn_id = "Fight_TowerGuard_EnemySpawnPoint1"
+
+[node name="Chest_TowerGuard" parent="." unique_id=1142538022 instance=ExtResource("6_av01y")]
+position = Vector2(1450, 384)
+contents = Dictionary[String, int]({
+"hi_potion": 1,
+"silver_ingot": 2
+})
+guard = NodePath("../Fight_TowerGuard")
+
+[node name="Atmosphere" type="Node2D" parent="." unique_id=1504128444]
+
+[node name="Darkness" type="CanvasModulate" parent="Atmosphere" unique_id=1506762606]
+color = Color(0.36, 0.36, 0.44, 1)
+
+[node name="Lamp1" type="Sprite2D" parent="Atmosphere" unique_id=198796810]
+z_index = -1
+texture_filter = 1
+position = Vector2(400, 214)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("8_stujg")
+centered = false
+offset = Vector2(0, -10)
+
+[node name="@PointLight2D@39" type="PointLight2D" parent="Atmosphere/Lamp1" unique_id=1721251175]
+position = Vector2(4, 0)
+color = Color(1, 0.82, 0.55, 1)
+energy = 1.25
+texture = SubResource("GradientTexture2D_stujg")
+texture_scale = 1.6
+
+[node name="Lamp2" type="Sprite2D" parent="Atmosphere" unique_id=1683882446]
+z_index = -1
+texture_filter = 1
+position = Vector2(1300, 214)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("8_stujg")
+centered = false
+offset = Vector2(0, -10)
+
+[node name="@PointLight2D@40" type="PointLight2D" parent="Atmosphere/Lamp2" unique_id=301447377]
+position = Vector2(4, 0)
+color = Color(1, 0.82, 0.55, 1)
+energy = 1.25
+texture = SubResource("GradientTexture2D_stujg")
+texture_scale = 1.6
+
+[node name="Far1" type="Parallax2D" parent="Atmosphere" unique_id=1313877344]
+modulate = Color(0.6, 0.58, 0.72, 1)
+z_index = -10
+scroll_scale = Vector2(0.4, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Atmosphere/Far1" unique_id=1600738083]
+texture_filter = 1
+material = ExtResource("9_55gd7")
+position = Vector2(576, -42)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("10_cr0ah")
+centered = false
+
+[node name="Front1" type="Parallax2D" parent="Atmosphere" unique_id=55689008]
+modulate = Color(0.86, 0.8, 1, 0.94)
+z_index = 20
+scroll_scale = Vector2(1.25, 1)
+repeat_size = Vector2(864, 0)
+repeat_times = 4
+
+[node name="Sprite" type="Sprite2D" parent="Atmosphere/Front1" unique_id=135726751]
+texture_filter = 1
+material = ExtResource("11_5irdh")
+position = Vector2(576, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("12_0nhwq")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 576, 116)
+
+[node name="Arrival" type="Marker2D" parent="." unique_id=153584454]
+position = Vector2(150, 360)

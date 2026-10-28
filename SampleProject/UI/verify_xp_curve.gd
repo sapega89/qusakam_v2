@@ -16,8 +16,12 @@ extends SceneTree
 ## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates).
 const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates"]
 const OATH_LEVEL := 5
-## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → corridors → the mercenary (D466) → outside.
-const LAB_ROUTE := ["City", "MayorHall", "LabCells", "Laboratory", "LabBoss", "LaboratoryOutside"]
+## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → the floors up (v3, D865: the lowest,
+## the great stairs, the guard's alcove by the stairs' door, the middle, the second stairs, the top) → the mercenary
+## (D466) → outside.
+const LAB_ROUTE := ["City", "MayorHall", "LabCells", "Laboratory", "LabStairsEast", "LabGuardPocket", "LabMiddleFloor", "LabStairsWest", "LabTopFloor", "LabBoss", "LaboratoryOutside"]
+## The respawning Laboratory fights (D492): the three floors and the guard's alcove.
+const LAB_FARM := ["Laboratory", "LabGuardPocket", "LabMiddleFloor", "LabTopFloor"]
 const LAB_END_LEVELS := [16, 17]
 ## "A little farming" (D492): rounds of the respawning Laboratory corridors after the mercenary.
 const FARM_ROUNDS := 2
@@ -89,7 +93,9 @@ func _initialize() -> void:
 	ck(xp.current_level in LAB_END_LEVELS, "the Laboratory ends at level %d (%d XP, expected %s)" % [xp.current_level, total, LAB_END_LEVELS])
 
 	print("[5] a little farming reaches the cap (D488, D492)")
-	var corridors := _room_xp("Laboratory", spawn_point_script)
+	var corridors := 0
+	for room_name: String in LAB_FARM:
+		corridors += _room_xp(room_name, spawn_point_script)
 	var rounds := 0
 	while xp.current_level < xp.MAX_LEVEL and rounds < FARM_ROUNDS:
 		xp.add_xp(corridors)

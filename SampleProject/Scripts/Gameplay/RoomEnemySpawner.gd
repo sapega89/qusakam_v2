@@ -181,7 +181,14 @@ const WON_SUFFIX := "_won"
 
 ## Бій добито зараз або колись до повернення ворогів (D492) — для сюжету, що чекає перемоги.
 func fight_won() -> bool:
-	return fight_cleared() or Game.get_singleton().get_room_state(_room, state_key + WON_SUFFIX, false)
+	return won_in(_room, state_key)
+
+## [method fight_won] без сцени: бій [param key] кімнати [param room] (кімната MetSys) добито зараз або колись —
+## сюжет, що чекає боїв інших кімнат (поверхи лабораторії, D865), питає це там, де спавнера немає.
+static func won_in(room: String, key: String) -> bool:
+	var game := Game.get_singleton()
+	var saved = game.get_room_state(room, key)
+	return (saved != null and (saved as Dictionary).is_empty()) or game.get_room_state(room, key + WON_SUFFIX, false)
 
 func _should_spawn(spawn_point: EnemySpawnPoint) -> bool:
 	return spawn_point.get_meta(&"spawn_now")  # вбитих у збереженому стані вже немає

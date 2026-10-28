@@ -17,7 +17,8 @@ const DEMO := {
 			"LizardCaves", "MesaTop", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "OldRuins", "GateApproach"],
 	"city": ["CityGates", "City", "MayorHall", "GatehouseCellar", "CraftQuarter", "PalaceSquare", "Rooftops", "PigeonLoft",
 			"TavernAttic", "MayorArchive", "Cistern", "CisternStash"],
-	"laboratory": ["LaboratoryOutside", "Laboratory", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash",
+	"laboratory": ["LaboratoryOutside", "Laboratory", "LabStairsEast", "LabMiddleFloor", "LabGuardPocket", "LabStairsWest",
+			"LabTopFloor", "LabCells", "LabBoss", "AlchemistCorridor", "AlchemistStore", "MalikStash",
 			"CollapsedDrain"],
 }
 
