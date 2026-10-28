@@ -6,6 +6,8 @@ shader_type canvas_item;
 // COLOR у fragment() уже помножений на текстуру, тож розмита текстура множиться лише на колір вершини
 // (modulate шару): множення на COLOR підносило колір до квадрата — шари темніші й насиченіші (B67).
 uniform float radius : hint_range(0.0, 4.0) = 1.0;
+#include "res://SampleProject/Shaders/depth_blur.gdshaderinc"
+
 varying vec4 modulate;
 
 void vertex() {
@@ -13,16 +15,5 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 step = TEXTURE_PIXEL_SIZE * radius;
-	vec4 sum = vec4(0.0);
-	for (int x = -1; x <= 1; x++) {
-		for (int y = -1; y <= 1; y++) {
-			float w = (x == 0 && y == 0) ? 4.0 : ((x == 0 || y == 0) ? 2.0 : 1.0);
-			vec4 t = texture(TEXTURE, UV + vec2(float(x), float(y)) * step);
-			sum += vec4(t.rgb * t.a, t.a) * w;
-		}
-	}
-	// Колір — з premultiplied суми: під прозорими пікселями PNG лежить колір квантизатора, і звичайне усереднення
-	// RGBA давало фіолетову облямівку на краях хмар, мез і скель (B68).
-	COLOR = vec4(sum.rgb / max(sum.a, 1e-4), sum.a / 16.0) * modulate;
+	COLOR = depth_blur_sample(TEXTURE, UV, TEXTURE_PIXEL_SIZE * radius) * modulate;
 }

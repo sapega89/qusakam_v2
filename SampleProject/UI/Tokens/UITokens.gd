@@ -700,4 +700,5 @@ const ENEMY_SMEAR_ALPHA := 0.9
 # До виходу з Лабораторії небо скрізь жовте й пилове, сонця немає (лор 2026-10-28); SkyTint.gd + sky_tint.gdshader.
 const SKY_DUST_DEEP := Color("c9a55e")    # верх неба, вохра
 const SKY_DUST_PALE := Color("f3e2ad")    # обрій, блідо-жовтий
-const SKY_CLOUD_CREAM := Color("fff0cc")  # хмари на жовтому небі (self_modulate)
+const SKY_CLOUD_CREAM := Color("fff0cc")  # хмари на жовтому небі (sky_clouds.gdshader)
+const SKY_CLOUD_SHADE := Color("d8bc8c")  # тіні тих хмар

@@ -12,6 +12,7 @@ const ROOMS: Array[Array] = [
 	["Canyon", ^"Arrival"],
 	["DesertRoad", ^"Arrival_Start"],
 	["City", ^"ForgeDoor"],
+	["MountainPath", ^"Arrival"],
 	["CaveUnderBridge", ^"Arrival"],
 	["LaboratoryOutside", ^"Arrival"],
 ]
@@ -32,7 +33,8 @@ func _initialize() -> void:
 	for row: int in ROOMS.size():
 		var room: String = ROOMS[row][0]
 		await game.teleport_to_room("res://SampleProject/Maps/%s.tscn" % room, ROOMS[row][1])
-		for i in 45: await process_frame
+		# Двір одразу веде до фіналу демо — знімок, поки герой ще стоїть у дворі.
+		for i in (6 if room == "LaboratoryOutside" else 45): await process_frame
 		for col: int in 2:
 			# Двір сам ставить прапорець виходу — там обидва кадри вже сині (так і в грі).
 			if room != "LaboratoryOutside":

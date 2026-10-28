@@ -248,7 +248,7 @@ func _initialize() -> void:
 	ck(camera.get_screen_center_position().y < 0.0, "the camera has floated up above the room into the sky (y=%.0f)" % camera.get_screen_center_position().y)
 	var SkyTint: GDScript = load("res://SampleProject/Scripts/Gameplay/SkyTint.gd")
 	# D864: до виходу з Лабораторії небо жовте — HighSky під спільним матеріалом неба, і той жовтий.
-	ck(game.map.get_node(^"HighSky").material == SkyTint.MATERIAL and SkyTint.is_yellow(), "the sky up there is the dusty yellow (D864)")
+	ck(game.map.get_node(^"HighSky").material == SkyTint.SKY and SkyTint.is_yellow(), "the sky up there is the dusty yellow (D864)")
 	process_frame.disconnect(watch)
 	ck(falls.is_empty(), "no Fall animation: Kusakam climbs, he does not fall")
 	ck(player.current_health == hp, "no damage (%d → %d)" % [hp, player.current_health])
