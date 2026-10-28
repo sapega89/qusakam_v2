@@ -25,6 +25,7 @@ const CLOUD_BANK := "res://SampleProject/Assets/Backgrounds/Canyon/gen_clouds.pn
 const BAKED_SKY: Array[String] = [
 	"res://SampleProject/Assets/Backgrounds/LizardCave/gen_far.png",
 	"res://SampleProject/Assets/Backgrounds/BanditCamp/gen_far.png",
+	"res://SampleProject/Assets/Backgrounds/BridgeCave/gen_wall.png",  # D872: печера під мостом, небо в пащі вгорі ліворуч
 ]
 
 
