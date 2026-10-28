@@ -269,7 +269,10 @@ func _apply_variety() -> void:
 		_grow(grow)
 
 ## Масштаб [param factor] від лінії ніг: спрайт, тіло, хітбокс, зона-ціль. Тіло — спільний ресурс сцени, тож копія.
+## attack_range росте на стільки, на скільки виріс передній край удару (B203): половина героя в ній не росте, тож удар
+## і далі починається лише звідки дістає.
 func _grow(factor: float) -> void:
+	var reach := strike_reach()
 	var feet: float = body_collision.position.y + body_collision.shape.get_rect().end.y
 	body_collision.shape = body_collision.shape.duplicate()
 	for shape: CollisionShape2D in [body_collision, hitbox_collision, hurt_collision]:
@@ -279,8 +282,8 @@ func _grow(factor: float) -> void:
 		shape.position = Vector2(shape.position.x * factor, feet + (area_y + shape.position.y - feet) * factor - area_y)
 	sprite.scale *= factor
 	sprite.position = Vector2(sprite.position.x * factor, feet + (sprite.position.y - feet) * factor)
-	attack_range *= factor
 	lunge *= factor
+	attack_range += strike_reach() - reach
 
 ## Проклята піна (D653): сяйні сині краплі з пащі [param mouth] (пікселі спрайта від центру кадру, погляд праворуч) —
 ## ефект, а не арт, тож його може мати будь-який проклятий вид (kinds.<id>.foam).
