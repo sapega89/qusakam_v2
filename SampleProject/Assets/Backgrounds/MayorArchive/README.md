@@ -13,7 +13,7 @@ banners as in the hall, a lattice window, wall candles. Story props: a **map of 
 island ringed by mountains and sea (Khalahas, «closed in by mountains or seas», lore) with **four pale-blue domes over
 villages** (the barriers), no writing; a **lectern** with an open ledger and a candle, scrolls tied with red cord at
 its foot. The way back is the **back of the secret bookcase door**: rough planks, two iron strap hinges, an iron ring,
-in a carved stone frame — the hall's side is the bookcase (`MayorHall/ArchiveDoor`, key `mayor_key`, gate
+in a carved stone frame — the hall's side is the bookcase (`MayorHall/ArchiveDoor`, key `mayor_key`, which is not in the demo (D921), gate
 `mayor_archive`).
 
 ## Planes, back to front (art px, room-local; scale 1.5)

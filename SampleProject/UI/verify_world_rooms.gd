@@ -34,6 +34,8 @@ const START := "Canyon"
 const STORY_EDGES := [["Canyon", "CaveUnderBridge"], ["MayorHall", "LabCells"]]
 ## Прапорці, що ставить сюжет (не важіль чи двері): розмова з Маліком.
 const STORY_FLAGS := ["lab_acquaintance_complete"]
+## Брами, замкнені на все демо: їхнього ключа ніде не має бути (D921 — архів мера, ключ після демо).
+const DEMO_LOCKED := {"mayor_archive": "D921"}
 const NEW_ROOMS := ["MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "CaveUnderBridge", "CaveExit", "CanyonFloor",
 		"SmugglersStash", "LizardCaves", "MesaTop", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "OldRuins",
 		"GateApproach", "CraftQuarter", "PalaceSquare", "Rooftops", "PigeonLoft", "TavernAttic", "MayorArchive", "Cistern",
@@ -98,7 +100,10 @@ func _initialize() -> void:
 				continue
 			ck(gates.has(door.gate_id), "%s: gate %s is in gates.json" % [key, door.gate_id])
 			var gate: Dictionary = gates.get(door.gate_id, {})
-			if gate.has("key"):
+			if DEMO_LOCKED.has(door.gate_id):
+				ck(not keys.has(gate.key), "%s: locked for the demo (%s), its key %s lies nowhere (%s)"
+						% [key, DEMO_LOCKED[door.gate_id], gate.key, keys.get(gate.key, "nowhere")])
+			elif gate.has("key"):
 				ck(keys.has(gate.key), "%s: the key %s is found at %s" % [key, gate.key, keys.get(gate.key, "nowhere")])
 			elif gate.has("flag"):
 				ck(flags.has(gate.flag), "%s: the flag %s is set by %s" % [key, gate.flag, flags.get(gate.flag, "nothing")])

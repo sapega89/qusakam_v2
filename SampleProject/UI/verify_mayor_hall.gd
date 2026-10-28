@@ -172,6 +172,11 @@ func _initialize() -> void:
 	ck(_state() == "QUEUE" and started.is_empty(), "QUEUE, no dialogue (%s, %s)" % [_state(), started])
 	ck(not hall.get_node(^"ScorpicoreWarrior").visible and hall.get_node(^"ScorpicoreWarrior").process_mode == Node.PROCESS_MODE_DISABLED, "the boss is not there yet")
 	ck(not hall.get_node(^"WallHole").visible and hall.get_node(^"BarrierWest/Collision").disabled, "wall whole, way west open")
+	# D921: ключа зі столу мера в демо немає — на підлозі зали нічого з mayor_key, двері архіву під замком.
+	var key_pickups: Array = hall.find_children("*", "", true, false).filter(
+			func(n: Node) -> bool: return n.get(&"item_id") == "mayor_key")
+	ck(key_pickups.is_empty(), "no Mayor's Desk Key in the hall (D921, %s)" % [key_pickups])
+	ck(hall.get_node(^"ArchiveDoor").get(&"gate_id") == "mayor_archive", "the archive door keeps its lock (D921)")
 	for id in ["astrit", "urizen", "alisia"]:
 		ck(hall.get_node("Queue/CompanionNPC_" + id).visible, "%s stands in the queue" % id)
 

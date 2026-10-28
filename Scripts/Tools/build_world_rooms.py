@@ -285,7 +285,8 @@ EXISTING_DOORS = {
                     ("StairsDoor", 330, 384, "lab_door", "LabStairsWest", "FloorDoor", {})],
 }
 EXISTING_LEVERS = {"GatehouseCellar": [("AqueductLever", 420, 416, "aqueduct_cellar_open")]}
-EXISTING_PICKUPS = {"MayorHall": [("Pickup_MayorKey", 380, 384, "mayor_key")]}
+# D921: ключа зі столу мера (mayor_key) у демо немає — архів замкнений, місце ключа вирішать з архівом після демо.
+EXISTING_PICKUPS: dict[str, list] = {}
 
 # Наявні кімнати на карті: найменша клітинка (x, y) — там, де їх ставить граф (форма кімнати лишається своя).
 PLACE = {

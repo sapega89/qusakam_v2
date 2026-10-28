@@ -27,7 +27,6 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/fg_hall/banner.png" id="fg4"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_light_shaft.tscn" id="rd_shaft"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_1"]
-[ext_resource type="PackedScene" path="res://SampleProject/Objects/ItemPickup.tscn" id="m7_2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_syofx"]
 atlas = ExtResource("6_1wkxm")
@@ -759,7 +758,3 @@ position = Vector2(247.79, 322.5)
 target_room = "res://SampleProject/Maps/MayorArchive.tscn"
 arrival = NodePath("BookshelfDoor")
 gate_id = "mayor_archive"
-
-[node name="Pickup_MayorKey" parent="." instance=ExtResource("m7_2")]
-position = Vector2(380, 352)
-item_id = "mayor_key"
