@@ -26,13 +26,22 @@ func _until(cond: Callable, max_s: float) -> void:
 func _room() -> String:
 	return game.map.scene_file_path.get_file().get_basename() if game.map else ""
 
-## Межі камери збігаються з розміром кімнати, а центр кадру — в її межах.
+## Межі камери збігаються з розміром кімнати, а центр кадру — в її межах. Кімната, ширша за кадр менше ніж на
+## CAMERA_LOCK_SLACK (одна клітинка, як ElderHouse), має межі, звужені до кадру на її центрі (B179, D908).
 func _check_camera(label: String) -> void:
 	var cam: Camera2D = game.player.get_node(^"Camera2D")
 	var size: Vector2 = game.map.get_node(^"RoomInstance").get_size()
 	var origin: Vector2 = game.map.global_position
-	ck(cam.limit_left == int(origin.x) and cam.limit_right == int(origin.x + size.x),
-			"%s: camera limits x %d..%d = the room %.0f..%.0f" % [label, cam.limit_left, cam.limit_right, origin.x, origin.x + size.x])
+	var view_width: float = game.get_viewport().get_visible_rect().size.x / cam.zoom.x
+	var left: int = int(origin.x)
+	var right: int = int(origin.x + size.x)
+	var rule := "= the room"
+	if size.x - view_width < game.CAMERA_LOCK_SLACK:
+		left += floori((size.x - view_width) / 2.0)
+		right = left + floori(view_width)
+		rule = "= the view centred on the room (D908)"
+	ck(cam.limit_left == left and cam.limit_right == right,
+			"%s: camera limits x %d..%d %s %d..%d (room %.0f..%.0f)" % [label, cam.limit_left, cam.limit_right, rule, left, right, origin.x, origin.x + size.x])
 	var centre := cam.get_screen_center_position()
 	ck(centre.x >= origin.x and centre.x <= origin.x + size.x, "%s: the camera looks inside the room (x %.0f)" % [label, centre.x])
 
