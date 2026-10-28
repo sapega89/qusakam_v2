@@ -27,6 +27,7 @@ MASTER_PLAN 2026-10-27»). Оркестратор оновлює статус т
 | I29 | `integrate-29`: side-stories, hero-feet + hero-shadow (A24), perf-check (S14), depth-film + depth-critics (A22), арт з ПК; номери D787+ | ☁ | ✅ злито в `feature/backlog` (D787–D793, B171–B184, Q102–Q106; набір: 6 FAIL → лишились B170 `combat_flow` [2c] і `masher` HUNG) |
 | I30 | Наступне злиття: `fx-film`, `scale-probe`, `skills-v2-*` у міру звітів | ☁ | ✅ злито (`integrate-30`: hero-death, skills-v2 ×3, scale-exact, fx-film; D807–D812; набір 13 хв 26 с) |
 | I32 | `integrate-32`: wire-backdrops, enemy-sizes, elite-reach, skill-art-wire, critter-tweaks, yellow-sky, ui-bugs-205-206; червоні `verify_archer`, `camera_rooms` | ☁ | 🔄 запущено 28.10 |
+| I33 | `integrate-33`: skills-v2-ranged, -stance, -control-a, -control-b, small-fixes, wire-leftovers; червоний `verify_camera_transitions` | ☁ | ✅ `cloud/integrate-33` (D874–D885; набір 2 FAIL за 28 хв 48 с, J=4: лише баланс Q114/Q116–Q118) |
 | I31 | `integrate-31`: world-rooms (хвіст), wire-art, fight-occluders, enemy-stamina, enemy-scaling → scaling-partial → hero-points-only, elites-bigger, shield-break-wire, ladder-holes | ☁ | ✅ `cloud/integrate-31` (D844–D861, B202–B204, Q115–Q122; набір 3 FAIL за 20 хв 6 с, J=4: verify_difficulty 17 і verify_lab_boss 2 — баланс, Q114/Q116–Q118; combat_player — флейк B186) |
 
 ## 2. Наявні кімнати — доробити (одна room routine, після I29)
@@ -56,7 +57,7 @@ MASTER_PLAN 2026-10-27»). Оркестратор оновлює статус т
 |---|---|---|---|
 | H1 | Смерть героя: підключити кадри Death 1–4 | ☁ | ✅ злито (integrate-30) |
 | H2 | Щит-магія (як у Pathfinder): падає з неба поверх пози блоку; блок щитом і блок **скляним щитом**, що, розбиваючись, ранить нападника — арт 🖥, код ☁ | 🖥→☁ | ✅ арт, фази A6, підключення (D851); ⏳ скляний щит вимкнено до Q115 |
-| H3 | Навички v2 (33 нові, прийнято як є): `skills-v2-data` → `-screen` → `-move` → ranged → stance (+ щити H2) → control; пози й ефекти — 🖥 | ☁/🖥 | `-data`, `-screen`, `-move` ✅; арт `-move` злито I32 (D869); варіанти пози: меч, кинджал, булава, алебарда ✅ 🖥 (усі чотири підключено — звіт `wire-leftovers` → I33), парні й лук → BACKLOG (ComfyUI); зрізи 4 ranged, 5 stance, 6a/6b control ✅ звіти → `integrate-33` |
+| H3 | Навички v2 (33 нові, прийнято як є): `skills-v2-data` → `-screen` → `-move` → ranged → stance (+ щити H2) → control; пози й ефекти — 🖥 | ☁/🖥 | ✅ зрізи 1–6b злито (`integrate-33`, D874–D878, D885: усі 28 чернеток збудовано, запланованих 0); пози меч/кинджал/булава/алебарда ✅ (D882); парні й лук → BACKLOG (ComfyUI) |
 | H4 | Дрібне: кадр Raise 2, мітка під колоною (A8) | 🖥 | ✅ `1a204139`, `59b73e2c` |
 
 ## 5. Плейтест 27–28.10 (баги першими)
@@ -69,7 +70,7 @@ MASTER_PLAN 2026-10-27»). Оркестратор оновлює статус т
 | P5 | D830 прибрати сходинки там, де бився Sapega | ☁ | ✅ дорога рівна (D833), уступи — пандус (D845) |
 | P6 | D824 стаміна ворогів — нова система, план → збірка | 🖥 | ✅ злито (`integrate-31`, D856) |
 | P7 | D818 живі ефекти головного меню | 🖥 | ✅ злито (D823) |
-| P8 | B196 «Hold Tab to skip» налазить на вікно навичок | ☁ | 🔄 `small-fixes` |
+| P8 | B196 «Hold Tab to skip» налазить на вікно навичок | ☁ | ✅ `small-fixes` (D879) → I33 |
 | P9 | Баланс: 3 бої SKILLS у `verify_difficulty` (щитоносець L9, бронескорпіон L11, скорпіон L9) | 👤 | ⏳ `verify_difficulty` 17 FAIL, `verify_lab_boss` 2 FAIL — чекає Q114, Q116–Q118 |
 | P10 | Масштаб без перемальовування: вороги (`enemy-sizes`), голуб і міль (`critter-tweaks`) ✅ звіти → I32; пальми, двері, брами (`prop-sizes`) — ланцюг | ☁ | 🔄 |
 
