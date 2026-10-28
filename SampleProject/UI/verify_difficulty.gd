@@ -10,8 +10,8 @@ extends SceneTree
 ## Дві збірки: STRENGTH — усі очки атрибутів у Strength, JP не витрачені; SKILLS — очки 2 Strength / 2 Vitality /
 ## 1 Wisdom за рівень, JP на активні й пасивні навички дерева (Paladin після клятви).
 ##   [0c] рівень кожного ворога — підлога + зона + вид + ⌊max(0, герой − підлога) × 0.5⌋ (D840);
-##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів і валить ворога за 4–6 своїх;
-##   [2] бос: валить героя за 3–4 удари, падає приблизно за 40 (34–46) ударів SKILLS-героя;
+##   [1] звичайний ворог: SKILLS-герой падає за 5–6 ударів (D923: у зоні Лабораторії — за 4–6) і валить ворога за 4–6 своїх;
+##   [2] бос: валить героя за 3–4 удари (D922: Скорпікор — за 2–4, і цей бій симуляція може програти), падає приблизно за 40 (34–46) ударів SKILLS-героя;
 ##   [3] еліта (вид-еліта й заплановані великі види в точках BigSlot_*, D652) і бос: SKILLS-герой перемагає, STRENGTH — ні;
 ##   [3a] D911: зсуви рівнів як збудовано, і шість боїв з елітою (D911_MAY_LOSE) симуляція може програти;
 ##   [4] найважчий хід боса не вбиває SKILLS-героя з повним HP одним ударом (D913: STRENGTH — скляна гармата); [5] Strength дає спадну віддачу.
@@ -58,6 +58,12 @@ const D911_MAY_LOSE := ["elite armoured scorpion L3", "elite old vulture L4", "h
 		"elite tower shield guard L9", "elite armoured scorpion L11"]
 
 const ORDINARY_TAKEN := [5, 6]
+## D923: у зоні Лабораторії (її зсув +1, D911) звичайного ворога SKILLS-герой витримує від 4 ударів, не від 5.
+const LAB_ZONE := ["Laboratory", "LabMiddleFloor", "LabTopFloor", "LabGuardPocket", "AlchemistCorridor", "CollapsedDrain"]
+const LAB_TAKEN := [4, 6]
+## D922: Скорпікор (бос +2, D911) вбиває SKILLS-героя за 2 удари — прийнято; цей бій симуляція може програти.
+const D922_MAY_LOSE := ["Scorpicore Axe-Warrior"]
+const D922_TAKEN := [2, 4]
 const ORDINARY_DEALT := [4, 6]
 const BOSS_TAKEN := [3, 4]
 const BOSS_DEALT := [34, 46]
@@ -133,18 +139,23 @@ func _initialize() -> void:
 		ck(row.scaled == want, "%s, hero %d: level %d (floor %d, zone +%d, %s +%d)"
 				% [row.name, row.level, row.scaled, floor_level, row.zone, row.offset_kind, offsets[row.offset_kind]])
 
-	print("[1] an ordinary enemy: 5–6 hits kill the SKILLS hero, 4–6 of his kill it")
+	print("[1] an ordinary enemy: 5–6 hits kill the SKILLS hero (D923: 4–6 in the Laboratory zone), 4–6 of his kill it")
+	ck(rows.any(func(r: Dictionary) -> bool: return r.cls == "ordinary" and r.room in LAB_ZONE), "the route meets ordinary enemies in the Laboratory zone")
 	for row in rows:
 		if row.cls == "ordinary" and row.build == "SKILLS":
-			ck(_in(row.taken, ORDINARY_TAKEN) and _in(row.dealt, ORDINARY_DEALT),
-					"%s at level %d: %d hits kill the hero (%s), %d hits kill it (%s)" % [row.name, row.level, row.taken,
-					ORDINARY_TAKEN, row.dealt, ORDINARY_DEALT])
+			var taken_band: Array = LAB_TAKEN if row.room in LAB_ZONE else ORDINARY_TAKEN
+			ck(_in(row.taken, taken_band) and _in(row.dealt, ORDINARY_DEALT),
+					"%s at level %d (%s): %d hits kill the hero (%s), %d hits kill it (%s)" % [row.name, row.level, row.room, row.taken,
+					taken_band, row.dealt, ORDINARY_DEALT])
 
-	print("[2] a boss: 3–4 hits kill the SKILLS hero, about 40 of his kill it")
+	print("[2] a boss: 3–4 hits kill the SKILLS hero (D922: Scorpicore 2–4), about 40 of his kill it")
+	for name: String in D922_MAY_LOSE:
+		ck(rows.any(func(r: Dictionary) -> bool: return r.cls == "boss" and r.name == name), "%s is a boss on the route (D922)" % name)
 	for row in rows:
 		if row.cls == "boss" and row.build == "SKILLS":
-			ck(_in(row.taken, BOSS_TAKEN) and _in(row.dealt, BOSS_DEALT), "%s at level %d: %d hits kill the hero (%s), %d hits kill it (%s)"
-					% [row.name, row.level, row.taken, BOSS_TAKEN, row.dealt, BOSS_DEALT])
+			var boss_band: Array = D922_TAKEN if row.name in D922_MAY_LOSE else BOSS_TAKEN
+			ck(_in(row.taken, boss_band) and _in(row.dealt, BOSS_DEALT), "%s at level %d: %d hits kill the hero (%s), %d hits kill it (%s)"
+					% [row.name, row.level, row.taken, boss_band, row.dealt, BOSS_DEALT])
 
 	print("[3a] D911: the level offsets stay as built (D857), so these elite fights are ones the sim may lose")
 	ck(offsets.size() == D911_OFFSETS.size() and D911_OFFSETS.keys().all(func(k: String) -> bool: return int(offsets.get(k, -1)) == D911_OFFSETS[k]),
@@ -159,11 +170,12 @@ func _initialize() -> void:
 
 	print("[3] skills make the difference: from the oath on, elites and bosses fall to the SKILLS hero, not to the STRENGTH one")
 	print("    (before the oath both builds hold ≤ 4 JP and no active skill, so the road's lone elite must fall to either;")
-	print("    D911's fights may be lost by either build, but from the oath on the STRENGTH hero still loses them)")
+	print("    D911's and D922's fights may be lost by either build, but from the oath on the STRENGTH hero still loses them)")
 	for row in rows:
-		if row.name in D911_MAY_LOSE:
+		if row.name in D911_MAY_LOSE or row.name in D922_MAY_LOSE:
 			if row.build == "STRENGTH" and row.level >= OATH_LEVEL:
-				ck(not row.wins, "%s at level %d, STRENGTH: loses (D911, %d hits needed)" % [row.name, row.level, row.dealt])
+				ck(not row.wins, "%s at level %d, STRENGTH: loses (%s, %d hits needed)" % [row.name, row.level,
+						"D922" if row.name in D922_MAY_LOSE else "D911", row.dealt])
 		elif row.cls in ["elite", "boss"]:
 			ck(row.wins == (row.build == "SKILLS" or row.level < OATH_LEVEL), "%s at level %d, %s: %s (%d hits needed, %d blows taken, survives %d)"
 					% [row.name, row.level, row.build, "wins" if row.wins else "loses", row.dealt,
@@ -255,7 +267,7 @@ func _meetings() -> Array[Dictionary]:
 					var label: String = ("planned %s as %s" % [node.big_kind, KIND_NAMES[kind]]) if planned \
 							else "%s%s" % ["elite " if elite else "", KIND_NAMES[kind]]
 					out.append({"cls": "elite" if elite else "ordinary", "kind": kind, "level": starts[fight],
-							"enemy_level": enemy_level, "zone": Scaling.zone_offset(room_name), "city": city, "stats": node.enemy_stats(), "planned": planned,
+							"enemy_level": enemy_level, "zone": Scaling.zone_offset(room_name), "room": room_name, "city": city, "stats": node.enemy_stats(), "planned": planned,
 							"name": "%s L%d" % [label, enemy_level]})
 				if not optional.has(spawner):
 					xp.add_xp(node.enemy_stats().xp_reward)
@@ -264,7 +276,7 @@ func _meetings() -> Array[Dictionary]:
 							func(n: Node) -> bool: return n.get_script() == SpawnPoint).back():
 						xp.add_xp(spawner.win_xp)
 			elif node.get_script() == Boss:
-				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city, "zone": 0,
+				out.append({"cls": "boss", "kind": "boss", "name": String(node.display_name).trim_prefix("The "), "level": xp.current_level, "city": city, "zone": 0, "room": room_name,
 						"scene": node.scene_file_path})
 				room_xp += node.enemy_stats.xp_reward
 		xp.add_xp(room_xp)
@@ -281,7 +293,7 @@ func _side_room(id: String, room_name: String, fight: NodePath) -> Dictionary:
 	ck(slots.size() == 1 and slots[0].kind() == id, "%s first stands in %s/%s (D719)" % [id, room_name, fight])
 	var level: int = spawner.enemy_level
 	room.free()
-	return {"cls": "elite", "kind": id, "level": level, "enemy_level": level, "zone": Scaling.zone_offset(room_name), "city": false,
+	return {"cls": "elite", "kind": id, "level": level, "enemy_level": level, "zone": Scaling.zone_offset(room_name), "room": room_name, "city": false,
 			"stats": load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % id), "planned": false,
 			"name": "%s (%s) L%d" % [KIND_NAMES[id], room_name, level]}
 
@@ -293,7 +305,7 @@ func _fight(meeting: Dictionary, build: String) -> Dictionary:
 	add_child_enemy(enemy)
 	await process_frame
 	var hit: int = roundi(enemy.damage)
-	var row := {"cls": meeting.cls, "name": meeting.name, "level": meeting.level, "build": build, "hero_hp": hero.Max_Health,
+	var row := {"cls": meeting.cls, "name": meeting.name, "room": meeting.room, "level": meeting.level, "build": build, "hero_hp": hero.Max_Health,
 			"enemy_hit": hit, "enemy_hp": enemy.Max_Health, "scaled": enemy.scaled_level, "floor": enemy.level, "zone": meeting.zone,
 			"offset_kind": "boss" if meeting.cls == "boss" else ("elite" if enemy.elite else "ordinary")}
 	row.taken = _hits_to_kill_hero(hit, 0)
