@@ -55,7 +55,7 @@ func _initialize() -> void:
 	await Kit.frames(self, 10)
 
 	# 4. Меню коваля, взяте клавішею S.
-	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"ForgeDoor")  # кузня — у ремісничому кварталі (D773)
 	for i in 60: await physics_frame
 	await Kit.drain(self)
 	var smith: NpcBase = game.map.get_node(^"Blacksmith")

@@ -54,7 +54,7 @@ func _initialize() -> void:
 	ck(b is NpcBase, "shares NpcBase with the Merchant")
 	ck((b.get_node("Sprite2D") as Sprite2D).texture.resource_path.ends_with("NPCs/blacksmith/sheet.png"), "sprite generated in the hero's style (D239, was Figma npc/blacksmith — D107)")
 	var shop_src := FileAccess.open("res://SampleProject/Scripts/Shop/shop_ui.gd", FileAccess.READ).get_as_text()
-	for map in [["City", "D154"]]:
+	for map in [["CraftQuarter", "D154, D773"]]:
 		var state: SceneState = (load("res://SampleProject/Maps/%s.tscn" % map[0]) as PackedScene).get_state()
 		ck(range(state.get_node_count()).any(func(i: int) -> bool: return state.get_node_instance(i) != null and state.get_node_instance(i).resource_path == SCENE),
 				"Blacksmith stands in the %s (%s)" % map)

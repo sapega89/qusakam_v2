@@ -9,6 +9,15 @@ const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 var fails: Array[String] = []
 
+
+## Хранитель шляху: шлях, згенерований аркуш (профіль + фронт + дія), спочиває обличчям до героя.
+func _check_keeper(keeper: Node2D, oath: String) -> void:
+	ck(keeper.oath_id == oath, "%s → %s" % [keeper.name, oath])
+	var sprite: Sprite2D = keeper.get_node("Sprite2D")
+	ck(sprite.vframes == 3 and sprite.texture.get_size() == Vector2(64 * sprite.hframes, 288), "%s: generated sheet, profile + front + activity (D243, D295)" % keeper.name)
+	var idle: Animation = keeper.get_node("AnimationPlayer").get_animation(&"idle")
+	ck(range(idle.track_get_key_count(0)).all(func(k: int) -> bool: return int(idle.track_get_key_value(0, k)) / sprite.hframes == 1), "%s rests in the front view" % keeper.name)
+
 func ck(ok: bool, label: String) -> void:
 	print(("  OK  " if ok else "  FAIL ") + label)
 	if not ok: fails.append(label)
@@ -72,7 +81,7 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	var dm: Node = sl.get_dialogue_manager()
 	await _drain(dm)
-	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"Arrival")
 	for i in 20: await physics_frame
 	await _drain(dm)
 	var sm: Node = sl.get_skill_manager()
@@ -80,18 +89,10 @@ func _initialize() -> void:
 	var player: Node2D = game.player
 
 	print("[1] Three path priests stand in the City (D726)")
+	# Жриця — біля каплиці в ремісничому кварталі (D773), жрець контрактів і дервіш — на ринку.
 	var priest: Node2D = game.map.get_node("OathPriest")
-	var witch: Node2D = game.map.get_node("OathWitch")
-	var dervish: Node2D = game.map.get_node("OathDervish")
-	ck([priest.oath_id, witch.oath_id, dervish.oath_id] == ["paladin", "dark_knight", "warden"], "priestess of Samal → Paladin, priest of contracts → Dark Knight, dervish → Warden")
-	for keeper in [priest, witch, dervish]:
-		var sprite: Sprite2D = keeper.get_node("Sprite2D")
-		ck(sprite.vframes == 3 and sprite.texture.get_size() == Vector2(64 * sprite.hframes, 288), "%s: generated sheet, profile + front + activity (D243, D295)" % keeper.name)
-		var idle: Animation = keeper.get_node("AnimationPlayer").get_animation(&"idle")
-		ck(range(idle.track_get_key_count(0)).all(func(k: int) -> bool: return int(idle.track_get_key_value(0, k)) / sprite.hframes == 1), "%s rests in the front view" % keeper.name)
-	ck((witch.get_node("Sprite2D") as Sprite2D).texture.resource_path.ends_with("contract_priest/sheet.png"), "the witch's place: the priest of contracts in black and gold")
-	ck(root.get_node("DialogueQuest").CharacterDB.get_character_from_id("OATH_WITCH").character_name == "Priest of contracts", "and his name")
 	ck(priest.global_position.x > game.map.get_node("Blacksmith").global_position.x, "east of the Blacksmith")
+	_check_keeper(priest, "paladin")
 
 	print("[2] No oath menu: they only talk about their path (pad)")
 	await _approach(player, priest)
@@ -101,13 +102,23 @@ func _initialize() -> void:
 	await _choose(priest, 0)
 	ck(dm.is_dialogue_active() and sm.get_oath() == "", "Talk: she speaks of Samal; no oath comes of it")
 	await _drain(dm)
+	player.global_position = priest.global_position + Vector2(-400, -10)
+	for i in 10: await physics_frame
+	ck(not priest.npc_menu.visible and priest.get_node("AnimationPlayer").current_animation == "work", "the hero walks off: menu closed, back to her prayer (D295)")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	for i in 20: await physics_frame
+	await _drain(dm)
+	player = game.player
+	var witch: Node2D = game.map.get_node("OathWitch")
+	var dervish: Node2D = game.map.get_node("OathDervish")
+	_check_keeper(witch, "dark_knight")
+	_check_keeper(dervish, "warden")
+	ck((witch.get_node("Sprite2D") as Sprite2D).texture.resource_path.ends_with("contract_priest/sheet.png"), "the witch's place: the priest of contracts in black and gold")
+	ck(root.get_node("DialogueQuest").CharacterDB.get_character_from_id("OATH_WITCH").character_name == "Priest of contracts", "and his name")
 	for keeper in [witch, dervish]:
 		await _approach(player, keeper)
 		ck(_labels(keeper) == ["Talk"], "%s: Talk only (%s)" % [keeper.name, _labels(keeper)])
 	ck(FileAccess.get_file_as_string("res://SampleProject/Scripts/Gameplay/NPCs/OathKeeper.gd").find("swear_oath") == -1, "OathKeeper.gd swears nothing")
-	player.global_position = priest.global_position + Vector2(-400, -10)
-	for i in 10: await physics_frame
-	ck(not priest.npc_menu.visible and priest.get_node("AnimationPlayer").current_animation == "work", "the hero walks off: menu closed, back to her prayer (D295)")
 
 	print("[3] The oath at any level (the census); the tree opens at level 5")
 	ck(xp.get_level() < 5, "hero below level 5 (%d)" % xp.get_level())
@@ -120,7 +131,11 @@ func _initialize() -> void:
 	for id in ["toughness", "shield_block", "devotion"]:  # D497: навичка клятви — від 3 JP у стовбурі
 		sm.unlock_skill(id)
 	ck(sm.can_unlock("radiant_smite") == 0, "at level 5 the Paladin tree opens")
-	ck(priest.talk_dialogue.ends_with("City_Oath_Priest_Sworn.dqd") and witch.talk_dialogue.ends_with("City_Oath_Witch_Talk.dqd"), "the priestess now speaks to one of her path; the others as before")
+	ck(witch.talk_dialogue.ends_with("City_Oath_Witch_Talk.dqd"), "the priest of contracts speaks as before")
+	await game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"Arrival")
+	for i in 20: await physics_frame
+	await _drain(dm)
+	ck((game.map.get_node("OathPriest") as NpcBase).talk_dialogue.ends_with("City_Oath_Priest_Sworn.dqd"), "the priestess now speaks to one of her path")
 
 	print("[4] The oath is permanent; respec is at a meditation spot (D592)")
 	ck(sm.swear_oath("warden") == load("res://SampleProject/Scripts/Managers/Gameplay/SkillManager.gd").Result.OATH_SWORN and sm.get_oath() == "paladin", "a second oath is refused")

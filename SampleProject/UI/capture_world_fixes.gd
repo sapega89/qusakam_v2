@@ -12,7 +12,7 @@ const ROOMS := [
 	["Canyon", ^"Descent/Edge"],
 	["DesertRoad", ^"Arrival_Start"],
 	["CityGates", ^"Arrival"],
-	["City", ^"ForgeDoor"],
+	["CraftQuarter", ^"ForgeDoor"],
 	["LaboratoryOutside", ^"Arrival"],
 ]
 

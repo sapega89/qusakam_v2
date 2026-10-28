@@ -33,7 +33,7 @@ func _initialize() -> void:
 	for spot: Array in [
 		["LabCells", ^"Arrival", ^"Malik", "malik", ""],
 		["LabCells", ^"Arrival", ^"Scientist", "alchemist", ""],
-		["City", ^"OathPriest", ^"OathPriest", "priestess", "work"],
+		["CraftQuarter", ^"OathPriest", ^"OathPriest", "priestess", "work"],
 		["ElderHouse", ^"Arrival", ^"OldManQuest", "grandfather", "idle"],
 	]:
 		await _room(spot[0], spot[1])

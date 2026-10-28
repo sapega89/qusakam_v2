@@ -200,8 +200,8 @@ func _initialize() -> void:
 			"Merchant_Caravan_Give", "Merchant_Bark", 700.0)
 
 	print("[3b] City: the blacksmith stands at his forge with a blue \"!\"")
-	await _meet(game, sl, "res://SampleProject/Maps/City.tscn", ^"SavePoint", "Blacksmith", "smith_helmet",
-			"Smith_Helmet_Give", "Smith_Bark", 840.0)
+	await _meet(game, sl, "res://SampleProject/Maps/CraftQuarter.tscn", ^"Arrival", "Blacksmith", "smith_helmet",
+			"Smith_Helmet_Give", "Smith_Bark", 719.0)
 
 	print("[4] Both tasks show in the Journal")
 	sl.get_ui_manager().open_game_menu()

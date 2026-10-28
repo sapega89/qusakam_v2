@@ -6,18 +6,13 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_near.png" id="city_near"]
 [ext_resource type="PackedScene" uid="uid://bsg0351mx3b4u" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="2_room"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="4_save"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/blacksmith.tscn" id="6_blacksmith"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_priest.tscn" id="7_oath_priest"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_witch.tscn" id="8_oath_witch"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/oath_dervish.tscn" id="9_oath_dervish"]
 [ext_resource type="AudioStream" uid="uid://cgp3gqjbkxc7a" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="music_track"]
 [ext_resource type="Material" path="res://SampleProject/Resources/Materials/depth_blur_mid.tres" id="blur_mid"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/City_Terrain.png" id="terrain_terrain"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_forge.png" id="forge_art"]
 [ext_resource type="PackedScene" uid="uid://bf8gy32t7bmy8" path="res://SampleProject/Scenes/Gameplay/Objects/NPCs/merchant.tscn" id="10_merchant"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Characters/NPCs/blacksmith/anvil.png" id="anvil"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_chapel.png" id="chapel_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_witch_hut.png" id="hut_art"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_dervish_tent.png" id="tent_art"]
 [ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/Scenes/City.gd" id="city_script"]
@@ -37,6 +32,8 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="rd_pigeon"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_rooftops_ladder.png" id="wb3_ladder"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_attic_stall.png" id="wb3_stall"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_save"]
 radius = 32.0
@@ -90,23 +87,6 @@ use_parent_material = true
 tile_map_data = PackedByteArray("AAD//xEAAQAIAAYAAAD//xIAAQAIAAcAAAAAABEAAQAIAAYAAAAAABIAAQAIAAcAAAABABEAAQAIAAYAAAABABIAAQAIAAcAAAACABEAAQAIAAYAAAACABIAAQAIAAcAAAADABEAAQAIAAYAAAADABIAAQAIAAcAAAAEABEAAQAIAAYAAAAEABIAAQAIAAcAAAAFABEAAQAIAAYAAAAFABIAAQAIAAcAAAAGABEAAQAIAAYAAAAGABIAAQAIAAcAAAAHABEAAQAIAAYAAAAHABIAAQAIAAcAAAAIABEAAQAIAAYAAAAIABIAAQAIAAcAAAAJABEAAQAIAAYAAAAJABIAAQAIAAcAAAAKABEAAQAIAAYAAAAKABIAAQAIAAcAAAALABEAAQAIAAYAAAALABIAAQAIAAcAAAAMABEAAQAIAAYAAAAMABIAAQAIAAcAAAANABEAAQAIAAYAAAANABIAAQAIAAcAAAAOABEAAQAIAAYAAAAOABIAAQAIAAcAAAAPABEAAQAIAAYAAAAPABIAAQAIAAcAAAAQABEAAQAIAAYAAAAQABIAAQAIAAcAAAARABEAAQAIAAYAAAARABIAAQAIAAcAAAASABEAAQAIAAYAAAASABIAAQAIAAcAAAATABEAAQAIAAYAAAATABIAAQAIAAcAAAAUABEAAQAIAAYAAAAUABIAAQAIAAcAAAAVABEAAQAIAAYAAAAVABIAAQAIAAcAAAAWABEAAQAIAAYAAAAWABIAAQAIAAcAAAAXABEAAQAIAAYAAAAXABIAAQAIAAcAAAAYABEAAQAIAAYAAAAYABIAAQAIAAcAAAAZABEAAQAIAAYAAAAZABIAAQAIAAcAAAAaABEAAQAIAAYAAAAaABIAAQAIAAcAAAAbABEAAQAIAAYAAAAbABIAAQAIAAcAAAAcABEAAQAIAAYAAAAcABIAAQAIAAcAAAAdABEAAQAIAAYAAAAdABIAAQAIAAcAAAAeABEAAQAIAAYAAAAeABIAAQAIAAcAAAAfABEAAQAIAAYAAAAfABIAAQAIAAcAAAAgABEAAQAIAAYAAAAgABIAAQAIAAcAAAAhABEAAQAIAAYAAAAhABIAAQAIAAcAAAAiABEAAQAIAAYAAAAiABIAAQAIAAcAAAAjABEAAQAIAAYAAAAjABIAAQAIAAcAAAAkABEAAQAIAAYAAAAkABIAAQAIAAcAAAAlABEAAQAIAAYAAAAlABIAAQAIAAcAAAAmABEAAQAIAAYAAAAmABIAAQAIAAcAAAAnABEAAQAIAAYAAAAnABIAAQAIAAcAAAAoABEAAQAIAAYAAAAoABIAAQAIAAcAAAApABEAAQAIAAYAAAApABIAAQAIAAcAAAAqABEAAQAIAAYAAAAqABIAAQAIAAcAAAArABEAAQAIAAYAAAArABIAAQAIAAcAAAAsABEAAQAIAAYAAAAsABIAAQAIAAcAAAAtABEAAQAIAAYAAAAtABIAAQAIAAcAAAAuABEAAQAIAAYAAAAuABIAAQAIAAcAAAAvABEAAQAIAAYAAAAvABIAAQAIAAcAAAAwABEAAQAIAAYAAAAwABIAAQAIAAcAAAAxABEAAQAIAAYAAAAxABIAAQAIAAcAAAAyABEAAQAIAAYAAAAyABIAAQAIAAcAAAAzABEAAQAIAAYAAAAzABIAAQAIAAcAAAA0ABEAAQAIAAYAAAA0ABIAAQAIAAcAAAA1ABEAAQAIAAYAAAA1ABIAAQAIAAcAAAA2ABEAAQAIAAYAAAA2ABIAAQAIAAcAAAA3ABEAAQAIAAYAAAA3ABIAAQAIAAcAAAA4ABEAAQAIAAYAAAA4ABIAAQAIAAcAAAA5ABEAAQAIAAYAAAA5ABIAAQAIAAcAAAA6ABEAAQAIAAYAAAA6ABIAAQAIAAcAAAA7ABEAAQAIAAYAAAA7ABIAAQAIAAcAAAA8ABEAAQAIAAYAAAA8ABIAAQAIAAcAAAA9ABEAAQAIAAYAAAA9ABIAAQAIAAcAAAA+ABEAAQAIAAYAAAA+ABIAAQAIAAcAAAA/ABEAAQAIAAYAAAA/ABIAAQAIAAcAAABAABEAAQAIAAYAAABAABIAAQAIAAcAAABBABEAAQAIAAYAAABBABIAAQAIAAcAAABCABEAAQAIAAYAAABCABIAAQAIAAcAAABDABEAAQAIAAYAAABDABIAAQAIAAcAAABEABEAAQAIAAYAAABEABIAAQAIAAcAAABFABEAAQAIAAYAAABFABIAAQAIAAcAAABGABEAAQAIAAYAAABGABIAAQAIAAcAAABHABEAAQAIAAYAAABHABIAAQAIAAcAAABIABEAAQAIAAYAAABIABIAAQAIAAcAAABJABEAAQAIAAYAAABJABIAAQAIAAcAAABKABEAAQAIAAYAAABKABIAAQAIAAcAAABLABEAAQAIAAYAAABLABIAAQAIAAcAAABMABEAAQAIAAYAAABMABIAAQAIAAcAAABNABEAAQAIAAYAAABNABIAAQAIAAcAAABOABEAAQAIAAYAAABOABIAAQAIAAcAAABPABEAAQAIAAYAAABPABIAAQAIAAcAAABQABEAAQAIAAYAAABQABIAAQAIAAcAAAA=")
 tile_set = ExtResource("1_tileset")
 
-[node name="Forge" type="Sprite2D" parent="." unique_id=1402914101]
-texture_filter = 1
-position = Vector2(934, 137)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("forge_art")
-centered = false
-
-[node name="ForgeDoor" type="Marker2D" parent="." unique_id=1402914102]
-position = Vector2(1230, 396)
-
-[node name="Chapel" type="Sprite2D" parent="."]
-texture_filter = 1
-position = Vector2(1450, 136)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("chapel_art")
-centered = false
-
 [node name="WitchHut" type="Sprite2D" parent="."]
 texture_filter = 1
 position = Vector2(1765, 110)
@@ -116,7 +96,7 @@ centered = false
 
 [node name="DervishTent" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(2076, 131)
+position = Vector2(1000, 131)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("tent_art")
 centered = false
@@ -127,18 +107,6 @@ centered = false
 position = Vector2(1296, 250)
 emission_rect_extents = Vector2(1296, 140)
 amount = 24
-
-[node name="Critters" type="Node2D" parent="."]
-
-[node name="Pigeon1" parent="Critters" instance=ExtResource("rd_pigeon")]
-position = Vector2(380, 384)
-
-[node name="Pigeon2" parent="Critters" instance=ExtResource("rd_pigeon")]
-position = Vector2(560, 384)
-perch_flip = true
-
-[node name="Pigeon3" parent="Critters" instance=ExtResource("rd_pigeon")]
-position = Vector2(1360, 384)
 
 [node name="Grass" type="Node2D" parent="."]
 
@@ -173,6 +141,20 @@ position = Vector2(1560, 230)
 frame = 2
 speed_scale = 0.85
 
+[node name="RooftopsLadder" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(733.5, -24)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("wb3_ladder")
+centered = false
+
+[node name="AtticStall" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(2136, -24)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("wb3_stall")
+centered = false
+
 [node name="Terrain" type="Sprite2D" parent="."]
 texture_filter = 1
 scale = Vector2(1.5, 1.5)
@@ -181,6 +163,18 @@ centered = false
 offset = Vector2(0, 240)
 region_enabled = true
 region_rect = Rect2(0, 240, 1728, 59)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Pigeon1" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(380, 384)
+
+[node name="Pigeon2" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(560, 384)
+perch_flip = true
+
+[node name="Pigeon3" parent="Critters" instance=ExtResource("rd_pigeon")]
+position = Vector2(1360, 384)
 
 [node name="RoomInstance" parent="." unique_id=1633453511 instance=ExtResource("2_room")]
 
@@ -197,7 +191,7 @@ speed = 40
 [node name="Porter1" parent="Crowd" instance=ExtResource("tf_porter")]
 position = Vector2(180, 396)
 stops = PackedFloat32Array(180, 1407, 2000)
-doorways = PackedFloat32Array(1407)
+doorways = PackedFloat32Array()
 speed = 52
 
 [node name="OldMan1" parent="Crowd" instance=ExtResource("tf_old")]
@@ -221,7 +215,7 @@ speed = 36
 [node name="Porter2" parent="Crowd" instance=ExtResource("tf_porter")]
 position = Vector2(1407, 396)
 stops = PackedFloat32Array(1407, 2240, 540)
-doorways = PackedFloat32Array(1407)
+doorways = PackedFloat32Array()
 speed = 56
 
 [node name="OldMan2" parent="Crowd" instance=ExtResource("tf_old")]
@@ -315,24 +309,11 @@ task_giver = "merchant"
 shown_with_flag = "city_gates_fight_complete"
 merchant_id = "city_merchant"
 
-[node name="Anvil" type="Sprite2D" parent="." unique_id=1402914105]
-texture_filter = 1
-position = Vector2(1100, 396)
-offset = Vector2(0, -44)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("anvil")
-
-[node name="Blacksmith" parent="." instance=ExtResource("6_blacksmith")]
-position = Vector2(1100, 396)
-
-[node name="OathPriest" parent="." instance=ExtResource("7_oath_priest")]
-position = Vector2(1610, 396)
-
 [node name="OathWitch" parent="." instance=ExtResource("8_oath_witch")]
 position = Vector2(1915, 396)
 
 [node name="OathDervish" parent="." instance=ExtResource("9_oath_dervish")]
-position = Vector2(2330, 396)
+position = Vector2(1254, 396)
 
 [node name="ObjectiveTargets" type="Node2D" parent="."]
 
@@ -348,21 +329,13 @@ bus = &"Music"
 position = Vector2(1910, 520)
 scale = Vector2(3, 3)
 
-[node name="RooftopsDoorEntrance" parent="." instance=ExtResource("x2")]
-position = Vector2(880, 384)
-texture = ExtResource("m7_1")
-
 [node name="RooftopsDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(878.5, 322.5)
+position = Vector2(880, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("LadderDoor")
 
-[node name="TavernAtticDoorEntrance" parent="." instance=ExtResource("x2")]
-position = Vector2(2450, 384)
-texture = ExtResource("m7_1")
-
 [node name="TavernAtticDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(2448.5, 322.5)
+position = Vector2(2450, 322.5)
 target_room = "res://SampleProject/Maps/TavernAttic.tscn"
 arrival = NodePath("LadderDoor")
 

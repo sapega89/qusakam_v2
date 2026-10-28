@@ -68,7 +68,7 @@ func _journal(suffix: String) -> void:
 
 
 func _level_up() -> void:
-	await _game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"ForgeDoor")
+	await _game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"ForgeDoor")
 	for i in 30: await process_frame
 	_close_modals()
 	var xp: Node = _sl.get_xp_manager()
