@@ -95,7 +95,7 @@ tile_map_data = PackedByteArray("AAAAABwAAQAIAAcAAAABABwAAQAIAAcAAAACABwAAQAIAAc
 tile_set = ExtResource("r2")
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(120, 811.25)
+position = Vector2(120, 809.75)
 
 [node name="Ambience" type="Node2D" parent="."]
 
