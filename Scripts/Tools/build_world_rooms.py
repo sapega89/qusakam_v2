@@ -41,10 +41,13 @@ BG = "res://SampleProject/Assets/Backgrounds/"
 ART = {name: BG + "Decor/%s/%s_sheet.png" % (name, name) for name in
        ("door_elder", "cave_mouth", "palisade_gate", "mesa_cleft", "palace_door", "lab_door")}
 # Розмір кадру й отвір (RoomEntrance.OPENINGS) кожного арту входу, px кадру.
-ART_SIZE = {"door_elder": (52, 76), "cave_mouth": (110, 100), "palisade_gate": (150, 87), "mesa_cleft": (110, 110),
+ART_SIZE = {"door_elder": (52, 76), "cave_mouth": (110, 100), "palisade_gate": (150, 87), "mesa_cleft": (110, 112),
             "palace_door": (100, 104), "lab_door": (72, 88)}
 OPENING = {"door_elder": (14, 7, 22, 56), "cave_mouth": (34, 38, 30, 52), "palisade_gate": (69, 26, 20, 56),
-           "mesa_cleft": (39, 30, 23, 47), "palace_door": (32, 11, 36, 74), "lab_door": (14, 6, 33, 65)}
+           "mesa_cleft": (39, 30, 23, 49), "palace_door": (32, 11, 36, 74), "lab_door": (14, 6, 33, 65)}
+# Масштаб арту входу (RoomEntrance.SCALES): двері 112 px арту = 168 px світу (D814, B192).
+ART_SCALE = {"door_elder": 2.21, "cave_mouth": 1.68, "palisade_gate": 1.93, "mesa_cleft": 1.5, "palace_door": 1.615,
+             "lab_door": 1.91}
 
 # Тимчасові фони за родом кімнати: далекий план, середній план, смуга підлоги (усе з наявних кімнат).
 #   far/mid: (текстура, scroll), floor: (текстура, region y), fill: колір землі під смугою.
@@ -91,15 +94,17 @@ def uid_for(name: str) -> str:
     return "bcd"[h[0] % 3] + "".join(UID_CHARS[b % len(UID_CHARS)] for b in h[1:13])
 
 
-def door_pos(art: str, x: float, floor: float) -> tuple[float, float]:
-    """Центр отвору арту, що стоїть низом посередині на (x, floor): там стоять двері (RoomDoor)."""
+def door_pos(art: str, x: float, floor: float, scale: float = 0.0) -> tuple[float, float]:
+    """Двері (RoomDoor) в отворі арту, що стоїть низом посередині на (x, floor): посередині отвору впоперек, а по висоті —
+    там, де центр отвору був у масштабі 1.5 (усередині більшого отвору D814): герой на підлозі дістає до дверей
+    (verify_room_entrances: < 64 px)."""
     w, h = ART_SIZE[art]
     ox, oy, ow, oh = OPENING[art]
-    return x + (ox + ow / 2 - w / 2) * 1.5, floor + (oy + oh / 2 - h) * 1.5
+    return x + (ox + ow / 2 - w / 2) * (scale or ART_SCALE[art]), floor + (oy + oh / 2 - h) * 1.5
 
 
-# Намальовані шахти бічних кімнат Лабораторії: двері лишаються там, де стояли в отворі lab_door.
-LAB_DOOR_Y = door_pos("lab_door", 0, FLOOR)[1]
+# Намальовані шахти бічних кімнат Лабораторії: двері лишаються там, де стояли в отворі lab_door (у старому масштабі 1.5).
+LAB_DOOR_Y = door_pos("lab_door", 0, FLOOR, 1.5)[1]
 
 
 # ── Нові кімнати ───────────────────────────────────────────────────────────────────────────────────────────────

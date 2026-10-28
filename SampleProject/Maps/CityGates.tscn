@@ -487,8 +487,8 @@ centered = false
 offset = Vector2(-78, -114)
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x3")]
-position = Vector2(1808, 520)
-scale = Vector2(3, 3)
+position = Vector2(820, 520)
+scale = Vector2(7.15, 7.15)
 
 [node name="Rubble1" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
@@ -502,7 +502,7 @@ position = Vector2(638, 384)
 texture = ExtResource("m7_2")
 
 [node name="RooftopsDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(636.5, 322.5)
+position = Vector2(635.79, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("SlideDoor")
 gate_id = "city_rooftops"

@@ -174,7 +174,7 @@ texture = ExtResource("12_qvqfd")
 offset = Vector2(-36, -88)
 
 [node name="BossDoor" parent="." unique_id=423758818 instance=ExtResource("13_h81yg")]
-position = Vector2(4192, 309.75)
+position = Vector2(4189.74, 309.75)
 target_room = "res://SampleProject/Maps/LabBoss.tscn"
 arrival = NodePath("CorridorDoor")
 
@@ -191,7 +191,7 @@ position = Vector2(120, 384)
 texture = ExtResource("12_qvqfd")
 
 [node name="CorridorDoor" parent="." unique_id=1449259603 instance=ExtResource("13_h81yg")]
-position = Vector2(111.75, 309.75)
+position = Vector2(109.5, 309.75)
 target_room = "res://SampleProject/Maps/AlchemistCorridor.tscn"
 arrival = NodePath("FloorDoor")
 
@@ -200,7 +200,7 @@ position = Vector2(330, 384)
 texture = ExtResource("12_qvqfd")
 
 [node name="StairsDoor" parent="." unique_id=1449119727 instance=ExtResource("13_h81yg")]
-position = Vector2(321.75, 309.75)
+position = Vector2(319.5, 309.75)
 target_room = "res://SampleProject/Maps/LabStairsWest.tscn"
 arrival = NodePath("FloorDoor")
 

@@ -29,7 +29,7 @@
 size = Vector2(120, 480)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(210, 416)
+size = Vector2(111, 416)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
 size = Vector2(112, 112)
@@ -173,15 +173,16 @@ gate_id = "lizard_shrine"
 
 [node name="Sprite" parent="Gate_Shrine" index="0"]
 z_index = 1
-position = Vector2(0, -207.75)
+position = Vector2(0, -96)
+scale = Vector2(0.693, 0.693)
 texture = ExtResource("r7")
 
 [node name="CollisionShape2D" parent="Gate_Shrine/Body" index="0"]
-position = Vector2(-6, -208)
+position = Vector2(0, -208)
 shape = SubResource("RectangleShape2D_2")
 
 [node name="CollisionShape2D" parent="Gate_Shrine/Area" index="0"]
-position = Vector2(-135, -56)
+position = Vector2(-79.5, -56)
 shape = SubResource("RectangleShape2D_3")
 
 [node name="ShamanMural" parent="." instance=ExtResource("r8")]
@@ -252,6 +253,6 @@ position = Vector2(150, 416)
 texture = ExtResource("m7_2")
 
 [node name="DeepCavesDoor" parent="." instance=ExtResource("r3")]
-position = Vector2(141, 362)
+position = Vector2(139.92, 362)
 target_room = "res://SampleProject/Maps/LizardCaves.tscn"
 arrival = NodePath("ShrineDoor")

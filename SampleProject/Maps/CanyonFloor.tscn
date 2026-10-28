@@ -95,7 +95,7 @@ position = Vector2(300, 384)
 texture = ExtResource("w7")
 
 [node name="StashDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(291, 330)
+position = Vector2(289.92, 330)
 target_room = "res://SampleProject/Maps/SmugglersStash.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Stash")

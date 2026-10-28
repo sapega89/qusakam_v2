@@ -86,7 +86,7 @@ position = Vector2(2400, 384)
 texture = ExtResource("w7")
 
 [node name="LadderDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(2398.5, 322.5)
+position = Vector2(2397.79, 322.5)
 target_room = "res://SampleProject/Maps/City.tscn"
 arrival = NodePath("RooftopsDoor")
 
@@ -95,7 +95,7 @@ position = Vector2(150, 384)
 texture = ExtResource("w7")
 
 [node name="SlideDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(148.5, 322.5)
+position = Vector2(147.79, 322.5)
 target_room = "res://SampleProject/Maps/CityGates.tscn"
 arrival = NodePath("RooftopsDoor")
 sets_flag = "city_rooftops_slide"
@@ -105,7 +105,7 @@ position = Vector2(1300, 384)
 texture = ExtResource("w9")
 
 [node name="LoftDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(1291, 330)
+position = Vector2(1289.92, 330)
 target_room = "res://SampleProject/Maps/PigeonLoft.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Loft")

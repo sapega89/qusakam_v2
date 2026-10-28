@@ -82,7 +82,7 @@ position = Vector2(1700, 384)
 texture = ExtResource("w7")
 
 [node name="WellDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(1691, 330)
+position = Vector2(1689.92, 330)
 target_room = "res://SampleProject/Maps/City.tscn"
 arrival = NodePath("CisternDoor")
 
@@ -91,7 +91,7 @@ position = Vector2(140, 384)
 texture = ExtResource("w7")
 
 [node name="CellarDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(131, 330)
+position = Vector2(129.92, 330)
 target_room = "res://SampleProject/Maps/GatehouseCellar.tscn"
 arrival = NodePath("CisternDoor")
 gate_id = "cistern_cellar"
@@ -101,7 +101,7 @@ position = Vector2(2300, 384)
 texture = ExtResource("w7")
 
 [node name="StashDoor" parent="." instance=ExtResource("w8")]
-position = Vector2(2291, 330)
+position = Vector2(2289.92, 330)
 target_room = "res://SampleProject/Maps/CisternStash.tscn"
 arrival = NodePath("ExitDoor")
 cover = NodePath("../Wall_Stash")

@@ -92,13 +92,13 @@ tile_set = ExtResource("1_tileset")
 
 [node name="Forge" type="Sprite2D" parent="." unique_id=1402914101]
 texture_filter = 1
-position = Vector2(934, 137)
-scale = Vector2(1.5, 1.5)
+position = Vector2(1019.5, 220.25)
+scale = Vector2(1.05, 1.05)
 texture = ExtResource("forge_art")
 centered = false
 
 [node name="ForgeDoor" type="Marker2D" parent="." unique_id=1402914102]
-position = Vector2(1230, 396)
+position = Vector2(1227, 396)
 
 [node name="Chapel" type="Sprite2D" parent="."]
 texture_filter = 1
@@ -345,15 +345,15 @@ bus = &"Music"
 [node name="FrontDark" parent="." instance=ExtResource("x4")]
 
 [node name="OccluderPalm1" parent="FrontDark" instance=ExtResource("x6")]
-position = Vector2(1910, 520)
-scale = Vector2(3, 3)
+position = Vector2(1460, 520)
+scale = Vector2(7.15, 7.15)
 
 [node name="RooftopsDoorEntrance" parent="." instance=ExtResource("x2")]
 position = Vector2(880, 384)
 texture = ExtResource("m7_1")
 
 [node name="RooftopsDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(878.5, 322.5)
+position = Vector2(877.79, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("LadderDoor")
 
@@ -362,7 +362,7 @@ position = Vector2(2450, 384)
 texture = ExtResource("m7_1")
 
 [node name="TavernAtticDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(2448.5, 322.5)
+position = Vector2(2447.79, 322.5)
 target_room = "res://SampleProject/Maps/TavernAttic.tscn"
 arrival = NodePath("LadderDoor")
 
@@ -371,6 +371,6 @@ position = Vector2(2540, 384)
 texture = ExtResource("m7_1")
 
 [node name="CisternDoor" parent="." instance=ExtResource("x1")]
-position = Vector2(2538.5, 322.5)
+position = Vector2(2537.79, 322.5)
 target_room = "res://SampleProject/Maps/Cistern.tscn"
 arrival = NodePath("WellDoor")
