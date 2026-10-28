@@ -75,6 +75,17 @@ ASTRIT_SLAM = (
     "in the same side view facing right: slamming her huge spiked shield forward with all her weight, leaning into the "
     "blow, the flame emblem on the shield blazing"  # «полум'я рветься зі щита» різала межа кадру
 )
+# A14: вихід Астрит — стрибок згори (entrance = DROP): падає, підібгавши ноги, щит під собою; хвіст і плащ угору.
+# Окремий enter — не копія run (той лишається для кат-сцен і відходу)
+ASTRIT_FALL = (
+    "in the same side view facing right: dropping straight down through the air from high above, her knees pulled up "
+    "under her, both hands gripping her round spiked shield held down below her feet, ready to slam onto the ground, "
+    "her ponytail and red cape blown straight up above her head"
+)
+ASTRIT_FLUTTER = (
+    "FROM:enter:0:the same falling pose with the shield held down below her feet, only her ponytail and red cape "
+    "whipped up by the wind into a different wavy shape"
+)
 ALISIA_LOOK = (
     "a cheerful young huntress with long silver-grey hair in a high ponytail, a soft smile, brown leather armour with gold "
     "trim and a fur collar, a dark tattered cape and a wooden longbow in her hand"
@@ -2751,11 +2762,7 @@ CHARACTERS = {
         # сітка старої Астрит (6 + 12 + 12 + 12): фас стоїть і дає портрет, наскок щитом влучає на кадрі 5
         rows=[
             ("idle", [ASTRIT2_FRONT] * 3 + ["BOB:44:idle:0"] * 3),
-            (
-                "enter",
-                ([ASTRIT_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
-                * 2,
-            ),
+            ("enter", ([ASTRIT_FALL] * 2 + [ASTRIT_FLUTTER] * 2) * 3),
             (
                 "run",
                 ([ASTRIT_STEP % ("left", "right")] * 2 + [None] + [STEP_B] * 2 + [None])
@@ -2771,6 +2778,9 @@ CHARACTERS = {
             ),
         ],
         colors=16,
+        # палітра листів D595 (own_palette з idle + run + strike до A14): новий enter не перефарбовує інших
+        palette=[0x070305, 0x620B09, 0x8E060F, 0x313444, 0x3B4350, 0x4A5460, 0x9A590E, 0xE43B31,
+                 0xDB9F28, 0xF76249, 0xEBA970, 0xF5D663, 0xF4B686, 0xB1C6D2, 0xFBE7AE, 0xF9F5E2],
         who="the same fierce red-haired barbarian woman with the high ponytail and the red ribbon bow, the scowl, the dark "
         "steel plate armour with bronze trim, the red plaid skirt, the red cape and the round spiked shield",
         base="Replace the character in picture 1 with {the girl from picture 2, }a fierce barbarian woman: long fiery red "
@@ -4270,6 +4280,11 @@ if __name__ == "__main__":
     rgb0, op0 = shrink(base, cell)
     if char.get("palette") == "hero":
         pal_rgb = hero_palette()
+    elif "palette" in char:
+        # 0xRRGGBB затверджених листів: новий рядок (enter Астрит, A14) не зсуває кольорів уже прийнятих
+        pal_rgb = np.array(
+            [(c >> 16, c >> 8 & 255, c & 255) for c in char["palette"]], np.float32
+        )
     else:
         # палітра з усіх кадрів: фас Алісиї має синє око, якого в профілі (першому кадрі) немає — ставало сірим
         pal_rgb = own_palette(small.values(), char["colors"])

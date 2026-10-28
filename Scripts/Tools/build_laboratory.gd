@@ -37,10 +37,10 @@ const SLAB_PLATES := 26
 const NPC_SCRIPT := "res://SampleProject/Scripts/Gameplay/Characters/Companions/CompanionNPC.gd"
 const COMPANIONS := "res://SampleProject/Assets/Characters/Companions/%s/%s.png"
 const NPC_LOOK := {
-	"alisia": [64, Vector2(-32, -58), 1.5],
-	"astrit": [64, Vector2(-32, -58), 1.5],
-	"urizen": [64, Vector2(-32, -58), 1.5],
-	"cat": [64, Vector2(-32, -58), 1.5],
+	"alisia": [64, Vector2(-32, -58), 1.5, "enter"],
+	"astrit": [64, Vector2(-32, -58), 1.5, "run"],
+	"urizen": [64, Vector2(-32, -58), 1.5, "enter"],
+	"cat": [64, Vector2(-32, -58), 1.5, "run"],
 }
 const CAT_AT := Vector2(-64, 0)
 const NPC_SCENES := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/lab_%s.tscn"
@@ -408,23 +408,23 @@ func _add_companions(room: Node, npcs: Array) -> void:
 		node.position = npc[1]
 		room.add_child(node)
 		node.owner = room
-		var sprite := _npc_sprite(npc[0], "enter", npc[2])
+		var sprite := _npc_sprite(npc[0], npc[2])
 		sprite.name = "Sprite"
 		node.add_child(sprite)
 		sprite.owner = room
 		if npc[0] == "alisia":
-			var cat := _npc_sprite("cat", "run", npc[2])
+			var cat := _npc_sprite("cat", npc[2])
 			cat.name = "Cat"
 			cat.position = CAT_AT * (-1.0 if npc[2] else 1.0)
 			node.add_child(cat)
 			cat.owner = room
 
 
-func _npc_sprite(who: String, run_sheet: String, face_left: bool) -> AnimatedSprite2D:
+func _npc_sprite(who: String, face_left: bool) -> AnimatedSprite2D:
 	var look: Array = NPC_LOOK[who]
 	var frames := SpriteFrames.new()
 	frames.remove_animation(&"default")
-	for anim in [["idle", "idle", 4.0, true], ["run", run_sheet, 16.0, true]]:
+	for anim in [["idle", "idle", 4.0, true], ["run", look[3], 16.0, true]]:
 		var texture: Texture2D = load(COMPANIONS % [who, anim[1]])
 		frames.add_animation(anim[0])
 		frames.set_animation_speed(anim[0], anim[2])
