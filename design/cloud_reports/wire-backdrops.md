@@ -10,7 +10,7 @@ date: 2026-10-28
 - **Not done:** palms (`Decor/Palm1–3`, `FrontDark/OccluderPalm1–2`), banners (`Banner1–2`) and the 35 grass tufts in the Village stay green, because there is no charred asset yet (art queue). The end-game rope ladders of the cave (`gen_ladder.png`) are not placed, because no end-game flag exists. Room atmosphere (dragonflies, glints, dust, spores, sparks) is not added.
 - **D-IDs:** D864–D867 below (the register ends at D863; the orchestrator renumbers).
 - **B rows fixed:** none.
-- **Full suite:** SUITE_RESULT
+- **Full suite:** `run_verify.sh` (J=4): **5 FAIL**. Three passed when re-run alone: `camera_transitions`, `weapon_animations` and `repeat_load` (load timing under J=4). Two are not this branch's: `verify_difficulty` (17 FAIL; D822's open rows, also red on feature/backlog per world-rooms) and `verify_lab_boss` (2 FAIL, mercenary balance; no lab or combat file touched here).
 
 Godot 4.6.2 downloaded and ran here. Every test named in the prompt was run (RESULT lines below), plus `verify_branches`, `verify_gates`, `verify_journal_notes` and `verify_charms`, which go through the attic. The `room-content` skill is not in this checkout (`.claude/` is gitignored), so I worked from the READMEs and D750/D814/D830/D834.
 
@@ -49,7 +49,14 @@ Also applied, without a new D (the briefs already decided them):
 
 Full suite (`run_verify.sh`, J=4, nproc = 4):
 
-SUITE_DETAIL
+```
+FAIL  verify_difficulty  6 s — RESULT: 17 FAIL
+FAIL  verify_camera_transitions  385 s — RESULT: 1 FAIL (biggest one-frame drop 6.75 px) → alone: PASS 386 s
+FAIL  verify_lab_boss  56 s — RESULT: 2 FAIL (balanced build vs the mercenary)
+FAIL  verify_repeat_load  9 s — RESULT: 1 FAIL (node count 636 → 637) → alone: PASS
+FAIL  verify_weapon_animations  57 s — RESULT: 1 FAIL ([false, true, true]) → alone: PASS
+SUITE: 5 FAIL in 19 min 32 s, J=4
+```
 
 ## Shots
 `design/shots/wire_backdrops.png` (contact sheet, 22 frames) and full frames in `design/shots/wire_backdrops/`: `path_1–3`, `scree_top/bottom`, `gorge_1–3`, `ledges_bottom/top`, `village_1–3`, `attic`, `cave_top/middle/floor`, `mesa_1–2`, `zahra_1/well/3`. Capture: `SampleProject/UI/capture_wire_backdrops.gd`.
