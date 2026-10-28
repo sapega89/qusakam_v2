@@ -22,6 +22,11 @@ func _make_logic() -> EnemyLogic:
 	return ARCHER_LOGIC.new()
 
 
+## Дальність пострілу, а не край хітбокса (B203 — для ближнього бою): росте разом із лучником.
+func _grown_range(factor: float, _front: float) -> float:
+	return attack_range * factor
+
+
 ## Між пострілами — спокій (кадри idle), а не поза натягу: натяг грає лише справжній замах.
 func _on_logic_state_changed(new_state: EnemyLogic.AIState) -> void:
 	super._on_logic_state_changed(new_state)
