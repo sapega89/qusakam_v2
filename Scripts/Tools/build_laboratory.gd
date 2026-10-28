@@ -27,12 +27,14 @@ const LAMP_LIGHT := Color(1.0, 0.82, 0.55)
 const BG := "res://SampleProject/Assets/Backgrounds/Lab/%s.png"
 const MATERIALS := "res://SampleProject/Resources/Materials/depth_blur_%s.tres"
 const LAYER_SIZE := Vector2(864, 486)
-## [назва, текстура, scroll x, z, низ шару відносно підлоги (px), modulate, розмиття]; %s — варіант поверху (mid).
-const FAR := ["Far", "gen_far", 0.4, -10, 60.0, Color(0.6, 0.58, 0.72), "far"]
-const MID := ["Mid", "gen_mid%s", 0.75, -9, 40.0, Color(0.7, 0.66, 0.8), "near"]
-const FRONT := ["Front", "gen_front", 1.25, 20, -384.0 + LAYER_SIZE.y, Color(0.86, 0.8, 1, 0.94), "front"]
+## [назва, текстура, scroll x, z, низ шару відносно підлоги (px), modulate, розмиття, видима смуга текстури (Rect2()
+## — уся)]; %s — варіант поверху (mid). Смуги — як підрізали в кімнатах вручну (R3, B181): передній план — лише те, що
+## звисає зі стелі (116 px текстури), ряд обладнання — без верхніх 128 px.
+const FAR := ["Far", "gen_far", 0.4, -10, 60.0, Color(0.6, 0.58, 0.72), "far", Rect2()]
+const MID := ["Mid", "gen_mid%s", 0.75, -9, 40.0, Color(0.7, 0.66, 0.8), "near", Rect2(0, 128, 576, 196)]
+const FRONT := ["Front", "gen_front", 1.25, 20, -384.0 + LAYER_SIZE.y, Color(0.86, 0.8, 1, 0.94), "front", Rect2(0, 0, 576, 116)]
 ## Зала джина: дальня стіна з печами, світліша — вогонь.
-const BOSS_FAR := ["Far", "gen_boss_far", 0.4, -10, 60.0, Color(0.72, 0.62, 0.66), "far"]
+const BOSS_FAR := ["Far", "gen_boss_far", 0.4, -10, 60.0, Color(0.72, 0.62, 0.66), "far", Rect2()]
 ## Поверхні, по яких ходить герой: текстура перерізу плити (Lab/gen_slab, 576×64): нагорі ґратчастий
 ## настил із латунним краєм (до рядка SLAB_PLATES), нижче — клепані плити. Колізія — у прихованому Foreground.
 const SLAB_PLATES := 26
@@ -54,6 +56,7 @@ const NPC_SCENES := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/lab_%s.tsc
 ##   layout — рядки тайлів; floors — [верх, низ інтер'єру] поверхів (рядки); planes — плани глибини;
 ##   mid_variant / plane_shift — варіант ряду обладнання й зсув шарів по x на поверх (щоб не повторювались);
 ##   places — наявні вузли сцени → позиція; trigger_height — висота тригера (решта — на всю висоту поверху);
+##   arrival — мітка Arrival (куди ставлять героя тести й переходи без дверей), якщо кімната ще її не має;
 ##   storey — [ширина в тайлах, прохід ліворуч, прохід праворуч] замість layout: рівний поверх від стіни до стіни;
 ##   stairs — великі сходи (_stairs); lamps — центри ламп; npcs — компаньйони [id, ступні, дивиться ліворуч];
 ##   props — [вузол, текстура Lab/*, [низ-центр, ...], z, масштаб]: вузол перебудовується, спрайти стоять на точках;
@@ -119,6 +122,8 @@ const ROOMS := {
 			"Fight_Upper/BigSlot_BanditBrute_1": Vector2(1950, 368),
 			"Fight_Upper/EnemySpawnPoint2": Vector2(2250, 368),
 			"Fight_Upper/BigSlot_BanditBrute_3": Vector2(2450, 368),
+			# Колона переднього плану (×1.3) — поза боями й дверима (verify_room_entrances: не закриває середини бою).
+			"FrontDark/Pillar1": Vector2(4150, 480),
 		},
 		"lamps": [Vector2(140, 214), Vector2(620, 214), Vector2(1150, 214), Vector2(1650, 214), Vector2(2150, 214),
 				Vector2(2650, 214), Vector2(3150, 214), Vector2(3650, 214), Vector2(4150, 214)],
@@ -127,10 +132,12 @@ const ROOMS := {
 	"res://SampleProject/Maps/LabStairsEast.tscn": {
 		"storey": [54, true, false],
 		"floors": [[2, 11]],
-		"planes": [FAR, FRONT],
+		# Без переднього плану зі стелі: майданчик угорі маршу — під самою стелею, звислі речі лягли б героєві на голову.
+		"planes": [FAR],
 		"mid_variant": [""],
 		"plane_shift": [288.0],
 		"stairs": {"rise": "right", "from": 300.0, "count": 8, "tread": 140.0, "riser": 22.0},
+		"arrival": Vector2(150, 360),
 		"places": {},
 		"lamps": [Vector2(200, 214), Vector2(900, 150), Vector2(1550, 110)],
 	},
@@ -141,6 +148,7 @@ const ROOMS := {
 		"planes": [FAR, MID, FRONT],
 		"mid_variant": ["2"],
 		"plane_shift": [288.0],
+		"arrival": Vector2(4000, 360),
 		"places": {
 			# Проклятий шакал уперше — сам (D582): щойно герой зійде зі сходів.
 			"Fight_Cursed/Trigger": Vector2(3400, 208),
@@ -150,6 +158,7 @@ const ROOMS := {
 			"Fight_Middle/EnemySpawnPoint2": Vector2(1820, 368),
 			"Fight_Middle/EnemySpawnPoint3": Vector2(1740, 368),
 			"Fight_Middle/EnemySpawnPoint4": Vector2(1660, 368),
+			"FrontDark/Pillar2": Vector2(700, 480),
 		},
 		"lamps": [Vector2(330, 214), Vector2(980, 214), Vector2(1560, 214), Vector2(2140, 214), Vector2(2720, 214),
 				Vector2(3300, 214), Vector2(3880, 214)],
@@ -161,6 +170,7 @@ const ROOMS := {
 		"planes": [FAR, FRONT],
 		"mid_variant": [""],
 		"plane_shift": [576.0],
+		"arrival": Vector2(150, 360),
 		"places": {
 			"Fight_TowerGuard/Trigger": Vector2(500, 208),
 			"Fight_TowerGuard/BigSlot_TowerShieldGuard_1": Vector2(1100, 368),
@@ -172,10 +182,11 @@ const ROOMS := {
 	"res://SampleProject/Maps/LabStairsWest.tscn": {
 		"storey": [54, false, true],
 		"floors": [[2, 11]],
-		"planes": [FAR, FRONT],
+		"planes": [FAR],
 		"mid_variant": [""],
 		"plane_shift": [0.0],
 		"stairs": {"rise": "left", "from": 300.0, "count": 8, "tread": 140.0, "riser": 22.0},
+		"arrival": Vector2(1578, 360),
 		"places": {},
 		"lamps": [Vector2(1528, 214), Vector2(828, 150), Vector2(178, 110)],
 	},
@@ -187,6 +198,7 @@ const ROOMS := {
 		"planes": [FAR, MID, FRONT],
 		"mid_variant": [""],
 		"plane_shift": [576.0],
+		"arrival": Vector2(330, 360),
 		"places": {
 			"Fight_Lower/Trigger": Vector2(1500, 208),
 			"Fight_Lower/BigSlot_ArmouredScorpion_1": Vector2(2000, 368),
@@ -196,6 +208,7 @@ const ROOMS := {
 			"SavePoint_PreBoss": Vector2(3700, 344),
 			"BossDoorEntrance": Vector2(4200.25, 384),
 			"BossDoor": Vector2(4192, 309.75),
+			"FrontDark/Pillar3": Vector2(2950, 480),
 		},
 		"lamps": [Vector2(600, 214), Vector2(1150, 214), Vector2(1650, 214), Vector2(2150, 214), Vector2(2650, 214),
 				Vector2(3150, 214), Vector2(3650, 214), Vector2(4150, 214)],
@@ -254,6 +267,14 @@ func _build(path: String, spec: Dictionary) -> void:
 	_add_props(room, spec.get("props", []))
 	_add_actors(room, spec.get("actors", []))
 	_add_companions(room, spec.get("npcs", []))
+	if spec.has("arrival"):
+		var arrival: Node2D = room.get_node_or_null(^"Arrival")
+		if arrival == null:
+			arrival = Marker2D.new()
+			arrival.name = "Arrival"
+			room.add_child(arrival)
+			arrival.owner = room
+		arrival.position = spec.arrival
 	var places: Dictionary = spec.places
 	var heights: Dictionary = spec.get("trigger_height", {})
 	var floor_height: float = (spec.floors[0][1] - spec.floors[0][0] + 2) * TILE
@@ -560,6 +581,11 @@ func _decorate(room: Node, spec: Dictionary) -> void:
 			sprite.centered = false
 			sprite.scale = Vector2(1.5, 1.5)
 			sprite.position = Vector2(spec.plane_shift[storey], floor_y + plane[4] - LAYER_SIZE.y)
+			var band: Rect2 = plane[7]
+			if band.has_area():
+				sprite.region_enabled = true
+				sprite.region_rect = band
+				sprite.offset = Vector2(0, band.position.y)
 			layer.add_child(sprite)
 	for node in root.find_children("*", "", true, false):
 		node.owner = room
