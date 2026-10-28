@@ -33,13 +33,9 @@ replacements take over with their own 8 h. If a replacement dies too, re-run it 
 - lab-v3-now left: the hall's cave look at ground level (D865) has no art; LabBoss stays 2×1 (the graph draws 3×2).
 - Never merge `cloud/lab-v3`, `cloud/lab-main-path`, `cloud/rooms-city`, `cloud/rooms-lab`.
 
-## 2. Art lane (PC, one ComfyUI agent at a time)
-H3 weapon variants: sword, dagger ✅ `d6279b38`; mace and halberd ✅ `e9bf23f3` (sheet
-`design/shots/h3_weapon_variants_2.png`, not seen by Sapega); left on them: the halberd's double-axe head in 5 frames
-(`HEADS` in `halberd_fixups.py`, listed in its README), the mace handle past the fist in 3 frames. Next: dual + bow → A15 the bandit in normal proportions (then
-re-measure its `enemy_variety.json` scale) → A4 alchemist → burnt village charred palms, banners, grass (wire-backdrops
-left them green) → craft quarter forge and chapel fronts. Sizes are fixed by scaling in the cloud, not redrawn
-(memory: scale-before-redraw).
+## 2. Art lane — stopped
+Sapega 28.10: «комфі більше не запускай». Do not start any ComfyUI agent or offer one. Everything that needed it is in
+[[BACKLOG]] → «ComfyUI art — stopped 2026-10-28». The PC only builds the exe.
 
 ## 3. Rules learned
 - **Code and tests in the cloud**, the PC only for ComfyUI (memory: tests-in-cloud). The cloud sometimes cannot

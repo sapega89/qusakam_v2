@@ -351,6 +351,24 @@ Slice 1 built (`cloud/enemy-stamina`, merged by integrate-31); later slices in t
 - **Waits on:** nothing for slice 1 (defaults in the plan: 30 s return, 160 px scare distance).
 - **Resume:** slice 1 — `AmbientCritter.gd` + `critter_bat.tscn`, two bats in `LizardCave/FrontDark`, `verify_ambient_critters.gd`.
 
+### ComfyUI art — stopped 2026-10-28
+Sapega 28.10: «комфі більше не запускай, в беклог все що стосується комфі». Nothing here runs until he restarts the art
+lane himself. Size/shape fixes are not here: they are scaling in the cloud (P10, `prop-sizes`).
+- **H3 weapon variants, dual and bow** (LungeCut, ShieldCharge, LeapSlam; D812). Sword, dagger, mace, halberd are drawn
+  and wired (`wire-leftovers`). Fix-ups left on the drawn ones: the halberd's double-axe head in 5 frames (`HEADS` in
+  `halberd_fixups.py`, its README), the mace handle past the fist in 3 frames. Sheet `design/shots/h3_weapon_variants_2.png`
+  not yet seen by Sapega.
+- **A15 the bandit in normal proportions** (not chibi, D816); then re-measure its `enemy_variety.json` scale.
+- **A4 the alchemist** ([[asset_verdicts_2026-10-27]]).
+- **The merchant as an older, cunning rat-folk** (entry below).
+- **Burnt village**: charred palms, banners, grass (wire-backdrops left them green).
+- **City**: craft quarter forge and chapel fronts (M6c).
+- **Laboratory v3**: the djinn hall's cave look at ground level (D865; lab-v3-now had no art), the stairs and the guard's
+  alcove still on placeholder planes (`Lab/gen_far`, slab steps).
+- **Art-lane B rows that need new art**: B173 (DragonMural/MesaClimb floor baked into one backdrop), B174 (GatehouseCellar
+  two speeds), B148 (comfy_sprite mixes facings on the armoured scorpion). B184 Death frames are drawn, wait on his look.
+- **Effects polish (A9)** if his notes need new cards (entry below).
+
 ### Moved out of MASTER_PLAN 2026-10-27 (waiting on Sapega or deferred)
 Sapega: «те, що не закрито, винесемо з плану». The old plan: [[archive/MASTER_PLAN_2026-10-24]].
 - **Effects polish (A9, item 30)** — waits on his notes; `fx-film` films every effect (GIFs + sheets in
