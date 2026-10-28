@@ -78,14 +78,22 @@ func _initialize() -> void:
 
 
 ## Ворог [param path] стоїть на підлозі на [param dx] px від арени; AI вимкнено ([param frozen]).
+## Замороженого поки він падає на підлогу тримає оглушення: інакше AI встигав побачити героя й почати серію ударів —
+## корутина perform_attack іде на таймерах і без _physics_process тіла, тож «заморожений» бандит бив героя, і
+## випадковий другий удар серії збивав його саме в мить переката (verify_combat_feel [1] через раз червоний).
 func _spawn(path: String, dx: float, frozen: bool = true) -> Node:
 	var enemy: Node = load(path).instantiate()
 	if enemy.enemy_stats == null:
 		enemy.enemy_stats = load("res://SampleProject/Resources/Enemies/enemy_stats_%s.tres" % ("fast" if path == JACKAL else "melee"))
 	enemy.position = game.map.to_local(Vector2(arena_x + dx, floor_y - 40.0))
 	game.map.add_child(enemy)
+	if frozen:
+		enemy.enemy_logic.stun_left = INF
 	for i in 40: await physics_frame
 	enemy.set_physics_process(not frozen)
+	enemy.enemy_logic.stun_left = 0.0
+	if frozen:
+		ck(not enemy.enemy_logic.is_attacking, "%s settles on the floor without attacking" % path.get_file())
 	return enemy
 
 
