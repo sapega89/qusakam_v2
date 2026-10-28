@@ -10,8 +10,8 @@ branch: cloud/skills-v2-stance
 - **Done:** Counter Stance, Mirror Stance, Centered Breath, Battle Cry, Aegis, Blood Price and Rally can be learned and cast. A new component, `SkillStances` (a child of SkillManager), runs all seven. 15 planned actives are left. Branched from `cloud/skill-art-wire`.
 - **Numbers are provisional** (routine call, D-sv2s1). They are the D808 drafts, now in a `buff` block in `skills.json` that the code reads. The `draft` and `planned` keys of these 7 rows are gone, and `_schema.entry.buff` documents the block.
 - **Reuse:** the counter goes through the normal take-damage path; the mirror sends arrows back with `Arrow.parried` (D384); Counter Stance and Aegis show the **magic** shield (H2/D851) over the hero. The glass shield stays **off** (Q115 not answered). Rally boosts the next `CompanionAssist`. Buffs show their skill icon in the hero's status row on the HUD (`status_row`, D599). No new art: the poses are Block / Meditate / Cast*, and the effect is a placeholder made of particles.
-- **Tests:** a new `verify_skills_stance` (10 sections, ALL PASS) and `verify_skill_rules` [11] extended (ALL PASS). `verify_scripts_compile` ALL PASS. NEIGHBOURS_LINE
-- **Full suite:** SUITE_LINE
+- **Tests:** a new `verify_skills_stance` (10 sections, ALL PASS) and `verify_skill_rules` [11] extended (ALL PASS). `verify_scripts_compile` ALL PASS. Also ALL PASS: `verify_skill_fx` (it gives the 7 a placeholder exemption), `verify_skills_combat`, `verify_skill_moves`, `verify_skill_screen`, `verify_skill_trees*`, `verify_skill_ranks`, `verify_combat_player`, `verify_combat_hud`, `verify_combat_flow`, `verify_companions`.
+- **Full suite:** `SUITE: 2 FAIL in 20 min 3 s`. Neither is this branch's. `verify_difficulty` (17 FAIL) is a known failure from the skills-v2 reports. `verify_lab_boss` (2 FAIL, the balanced-build numbers) fails identically on the base `origin/cloud/skill-art-wire`.
 - No B rows fixed. The D-ID text is below (placeholder D-sv2s1).
 
 ## D-ID text (for the orchestrator; placeholder D-sv2s1)
