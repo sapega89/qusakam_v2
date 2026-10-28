@@ -249,6 +249,7 @@ the history, this note keeps only what is open.
 > **feature/backlog, 2026-10-28 evening (wire-props leftovers):**
 > - **B210** (open, rooms) — BanditCamp: the crate stack falls apart at chart size. The README feet reproduce the places of the old ~2× crates, so the chart-size crates stand apart: `CrateL` x 479–520, `CrateR` 589–629, and `CrateTop` 550–590 at feet 283.5 hangs on the tent. Suggested: two crates touching side by side, one on top 39 px higher, around x 500–580.
 > - **B211** (open, rooms) — ElderHouse: the amphora is nearly invisible. It has the same palette as the adobe wall, and its bottom 6.5 px (feet 870.5) are under the `Floor` sprite at y 864. Options: feet at 864, or a darker / outlined amphora.
+> - **B212** (fixed on `feature/backlog`, `7a560fcb`; found by `verify_city_gates_raid` after the 28.10 merges) — a room swap left the old map in physics until the end of the frame; `_place_on_floor()` collided with its floor and enemies and pushed the hero off the arrival marker (CityGates [7]: 17–23 px sideways; [6]: 35 px up off a DesertRoad enemy). Intermittent (4 of 5 runs). Fix: `Game.load_room()` removes the whole old map from the tree before the swap, then `queue_free()`.
 
 ### B148 — the comfy_sprite generator mixes facings on the armoured scorpion
 - **Where:** comfy_sprite `_pick("big_armoured_scorpion", …)`; `Enemies/scorpion_armoured/sheet.png` (`cloud/big-scorpion`, D704)
