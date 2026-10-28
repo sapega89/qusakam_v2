@@ -13,13 +13,16 @@ extends SceneTree
 ##   7. A New Game in the same session starts again at level 1, with an empty bag and a fresh hero (B79).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_xp_curve.gd
 
-## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates).
-const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates"]
+## Rooms before the City in story order (story.json: Canyon I → Village → Canyon II → Desert Road → City Gates), with the
+## M7 road rooms between them (D844): the path to the village, the drop through the cave, and the road on from Zahra's
+## Rest past the chasm, the first time round through the dry riverbed and the aqueduct (D846: the bridge is still up).
+const ROUTE := ["Canyon", "MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "Village", "CaveUnderBridge", "CaveExit",
+		"DesertRoad", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "GateApproach", "CityGates"]
 const OATH_LEVEL := 5
 ## After the City, story order: Mayor Hall (the Brass Collector) → Laboratory cells → the floors up (v3, D865: the lowest,
 ## the great stairs, the guard's alcove by the stairs' door, the middle, the second stairs, the top) → the mercenary
 ## (D466) → outside.
-const LAB_ROUTE := ["City", "MayorHall", "LabCells", "Laboratory", "LabStairsEast", "LabGuardPocket", "LabMiddleFloor", "LabStairsWest", "LabTopFloor", "LabBoss", "LaboratoryOutside"]
+const LAB_ROUTE := ["City", "CraftQuarter", "PalaceSquare", "MayorHall", "LabCells", "Laboratory", "LabStairsEast", "LabGuardPocket", "LabMiddleFloor", "LabStairsWest", "LabTopFloor", "LabBoss", "LaboratoryOutside"]
 ## The respawning Laboratory fights (D492): the three floors and the guard's alcove.
 const LAB_FARM := ["Laboratory", "LabGuardPocket", "LabMiddleFloor", "LabTopFloor"]
 const LAB_END_LEVELS := [16, 17]
@@ -75,7 +78,7 @@ func _initialize() -> void:
 				total += spawner.win_xp
 				kills.append("%s win +%d" % [spawner.name, spawner.win_xp])
 		room.free()
-		print("    %-10s %2d kills %s → %d XP, level %d → %d" % [room_name, kills.size(), kills, total, level_before, xp.current_level])
+		print("    %-15s %2d kills %s → %d XP, level %d → %d" % [room_name, kills.size(), kills, total, level_before, xp.current_level])
 		if room_name == "DesertRoad":
 			ck(xp.current_level >= 2 and xp.current_level < OATH_LEVEL,
 					"after the Desert Road: level %d (≥ 2 for Healing Palm, < %d before the City Gates)" % [xp.current_level, OATH_LEVEL])

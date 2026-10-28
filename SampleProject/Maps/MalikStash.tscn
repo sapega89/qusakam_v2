@@ -10,8 +10,10 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w9"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="w10"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w11"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_motes.tscn" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_moth.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w13"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w14"]
 
 [node name="MalikStash" type="Node2D"]
 
@@ -106,10 +108,20 @@ arrival = NodePath("StashDoor")
 [node name="SecretArea_Stash" parent="." instance=ExtResource("w10")]
 position = Vector2(700, 336)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w11")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Motes1" parent="Ambience" instance=ExtResource("w11")]
+position = Vector2(700, 250)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Moth1" parent="Critters" instance=ExtResource("w12")]
+position = Vector2(400, 184)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w13")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w12")
+stream = ExtResource("w14")
 autoplay = true
 bus = &"Music"

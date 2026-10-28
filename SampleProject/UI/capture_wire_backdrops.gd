@@ -3,6 +3,8 @@ extends SceneTree
 ## wire-backdrops: кімнати з підключеними намальованими планами під камерою гри — кожен кадр окремо в <тека> і одна
 ## сітка 4 × N (кожен кадр — екран, зменшений учетверо). Потрібне вікно:
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_wire_backdrops.gd -- design/shots/wire_backdrops design/shots/wire_backdrops.png
+## Третій аргумент «2» — кімнати wire-backdrops-2 (SHOTS_2):
+##   ... -- design/shots/wire_backdrops_2 design/shots/wire_backdrops_2.png 2
 
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## [кімната, де стоїть герой, назва кадру]
@@ -18,6 +20,19 @@ const SHOTS := [
 	["CaveUnderBridge", Vector2(500, 1300), "cave_floor"], ["MesaTop", Vector2(300, 340), "mesa_1"],
 	["MesaTop", Vector2(1500, 340), "mesa_2"], ["ZahraRest", Vector2(200, 340), "zahra_1"],
 	["ZahraRest", Vector2(900, 340), "zahra_well"], ["ZahraRest", Vector2(1650, 340), "zahra_3"],
+]
+## wire-backdrops-2: решта каньйону. Міст провалля й ґрата льоху — у обох станах (прапорець ставить сам кадр).
+const SHOTS_2 := [
+	["Dunes", Vector2(200, 340), "dunes_1"], ["Dunes", Vector2(1100, 340), "dunes_2"],
+	["Dunes", Vector2(2700, 340), "dunes_trail"], ["Chasm", Vector2(80, 340), "chasm_raised"],
+	["Chasm", Vector2(780, 340), "chasm_lowered", "chasm_bridge_down"], ["DryRiverbed", Vector2(300, 340), "riverbed"],
+	["Aqueduct", Vector2(600, 340), "aqueduct_breach"], ["Aqueduct", Vector2(1900, 340), "aqueduct_2"],
+	["Aqueduct", Vector2(3100, 340), "aqueduct_doors"], ["Aqueduct", Vector2(3100, 340), "aqueduct_open", "aqueduct_cellar_open"],
+	["OldRuins", Vector2(200, 340), "ruins_well"], ["OldRuins", Vector2(1900, 340), "ruins_2"],
+	["OldRuins", Vector2(4100, 340), "ruins_arch"], ["GateApproach", Vector2(150, 340), "approach_lever"],
+	["GateApproach", Vector2(1300, 340), "approach_well"], ["CanyonFloor", Vector2(400, 340), "floor_crack"],
+	["CanyonFloor", Vector2(1500, 340), "floor_2"], ["CanyonFloor", Vector2(2780, 340), "floor_hole"],
+	["CaveExit", Vector2(400, 340), "cave_exit"], ["SmugglersStash", Vector2(300, 340), "stash"],
 ]
 const CELL := Vector2i(480, 270)
 
@@ -42,12 +57,16 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _drain()
 	game.player.set_invulnerable(true)
-	var rows := (SHOTS.size() + 3) / 4
+	var shots: Array = SHOTS_2 if OS.get_cmdline_user_args().size() > 2 and OS.get_cmdline_user_args()[2] == "2" else SHOTS
+	var rows := (shots.size() + 3) / 4
 	var sheet := Image.create(CELL.x * 4, CELL.y * rows, false, Image.FORMAT_RGBA8)
-	for i in SHOTS.size():
-		if not game.map.scene_file_path.ends_with(SHOTS[i][0] + ".tscn"):
-			await game.teleport_to_room(MAPS % SHOTS[i][0], ^"Arrival")
-		game.place_player(SHOTS[i][1])
+	for i in shots.size():
+		if shots[i].size() > 3:
+			game.set_quest_flag(shots[i][3], true)
+			await game.teleport_to_room(MAPS % shots[i][0], ^"Arrival")
+		elif not game.map.scene_file_path.ends_with(shots[i][0] + ".tscn"):
+			await game.teleport_to_room(MAPS % shots[i][0], ^"Arrival")
+		game.place_player(shots[i][1])
 		game.player.velocity = Vector2.ZERO
 		for f in 45: await physics_frame
 		await _drain()
@@ -59,10 +78,10 @@ func _initialize() -> void:
 		image.convert(Image.FORMAT_RGBA8)
 		var half := image.duplicate() as Image
 		half.resize(960, 540, Image.INTERPOLATE_NEAREST)
-		half.save_png("res://%s/%s.png" % [out_dir, SHOTS[i][2]])
+		half.save_png("res://%s/%s.png" % [out_dir, shots[i][2]])
 		image.resize(CELL.x, CELL.y, Image.INTERPOLATE_BILINEAR)
 		sheet.blit_rect(image, Rect2i(Vector2i.ZERO, CELL), Vector2i(i % 4 * CELL.x, i / 4 * CELL.y))
-		print("shot %s hero %s" % [SHOTS[i][2], game.player.global_position])
+		print("shot %s hero %s" % [shots[i][2], game.player.global_position])
 	sheet.save_png("res://" + out_sheet)
 	quit()
 

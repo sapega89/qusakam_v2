@@ -4,8 +4,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/City/gen_near.png" id="w2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Terrain/City_Terrain.png" id="w3"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w4"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w5"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w6"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w5"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_pigeon.tscn" id="w6"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w7"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/scorchlight_mirage.ogg" id="w8"]
 
 [node name="CraftQuarter" type="Node2D"]
 
@@ -67,10 +69,25 @@ tile_set = ExtResource("w4")
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(200, 360)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w5")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w5")]
+position = Vector2(1296, 250)
+emission_rect_extents = Vector2(1296, 140)
+amount = 24
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Pigeon1" parent="Critters" instance=ExtResource("w6")]
+position = Vector2(700, 384)
+
+[node name="Pigeon2" parent="Critters" instance=ExtResource("w6")]
+position = Vector2(1800, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w7")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w6")
+stream = ExtResource("w8")
 autoplay = true
 bus = &"Music"

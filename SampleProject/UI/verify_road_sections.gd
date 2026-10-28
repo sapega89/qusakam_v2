@@ -9,6 +9,7 @@ extends SceneTree
 ##   4. The road goes on east: walking off the east edge loads Zahra's Rest (M7; the City Gates are further on).
 ##   1b. D817: every group fight on the road is a bandit and a jackal or two bandits and a jackal (lone fights stay
 ##      lone), and winning a group pays its win_xp on top of its enemies' XP.
+##   1c. The M7 road rooms: the dunes and the aqueduct each have one D817 group; the path to the village has no fight.
 ##   5. D830 «на дорозі не має бути сходинок»: the floor is flat — no tile above the floor row, and a ray down at every
 ##      32 px of the road meets the floor at y 384 (the dune, mesa and caravan steps of D296 are gone).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_road_sections.gd
@@ -18,6 +19,11 @@ const FIGHTS := {"Fight_Dunes": 2, "Fight_Mesa": 3, "Fight_Caravan": 3}  # D817:
 ## D817: in a road group the "bandits" are the bandit gang (bandit, shield-bearer, archer), the "jackal" its one beast
 ## (jackal, scorpion, vulture; their big kinds stand on the same base).
 const GANG := ["melee", "shield", "archer"]
+const MAPS := "res://SampleProject/Maps/%s.tscn"
+## M7 road rooms (D844, rooms-finish) → how many fights: the path to the village has none (world_structure_plan), the
+## road on from Zahra's Rest has one group on the dunes and one in the aqueduct (the way round before the bridge).
+const ROAD_ROOMS := {"MountainPath": 0, "ScreeSlide": 0, "StreamGorge": 0, "RockLedges": 0, "CaveUnderBridge": 0, "CaveExit": 0,
+		"ZahraRest": 0, "Dunes": 1, "Chasm": 0, "DryRiverbed": 0, "Aqueduct": 1, "GateApproach": 0}
 const BEASTS := ["fast", "tank", "vulture"]
 
 var fails: Array[String] = []
@@ -100,6 +106,21 @@ func _initialize() -> void:
 		var beasts: int = types.filter(func(t: String) -> bool: return t in BEASTS).size()
 		ck(beasts == 1 and gang in [1, 2] and gang + beasts == types.size(),
 				"%s: %d bandit(s) and one beast (%s)" % [spawner.name, gang, types])
+
+	print("[1c] M7 road rooms (D844): the road's groups on the dunes and in the aqueduct keep D817; no fight on the way to the village")
+	var spawner_script: Script = road.get_node("EnemySpawner").get_script()
+	for room_name: String in ROAD_ROOMS:
+		var room: Node = (load(MAPS % room_name) as PackedScene).instantiate()
+		var groups: Array = room.get_children().filter(func(n: Node) -> bool: return n.get_script() == spawner_script)
+		ck(groups.size() == ROAD_ROOMS[room_name], "%s: %d fight(s) (%d)" % [room_name, ROAD_ROOMS[room_name], groups.size()])
+		for spawner: Node in groups:
+			var types: Array = spawner.get_children().filter(func(n: Node) -> bool: return "enemy_type" in n).map(
+					func(p: Node) -> String: return p.enemy_type)
+			var gang: int = types.filter(func(t: String) -> bool: return t in GANG).size()
+			var beasts: int = types.filter(func(t: String) -> bool: return t in BEASTS).size()
+			ck(beasts == 1 and gang in [1, 2] and gang + beasts == types.size() and spawner.win_xp > 0 and spawner.respawns,
+					"%s/%s: %d bandit(s) and one beast (%s), win_xp %d, respawns" % [room_name, spawner.name, gang, types, spawner.win_xp])
+		room.free()
 
 	print("[2] A won section stays won")
 	await game.teleport_to_room(ROAD, ^"Arrival_Start")

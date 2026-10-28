@@ -9,8 +9,10 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Lab/gen_slab.png" id="w7"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w8"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w9"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w10"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_motes.tscn" id="w10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_moth.tscn" id="w11"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w13"]
 
 [node name="AlchemistStore" type="Node2D"]
 
@@ -102,10 +104,20 @@ position = Vector2(1550, 300)
 target_room = "res://SampleProject/Maps/AlchemistCorridor.tscn"
 arrival = NodePath("StoreDoor")
 
-[node name="RoomInstance" parent="." instance=ExtResource("w10")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Motes1" parent="Ambience" instance=ExtResource("w10")]
+position = Vector2(900, 250)
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Moth1" parent="Critters" instance=ExtResource("w11")]
+position = Vector2(900, 184)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w12")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w11")
+stream = ExtResource("w13")
 autoplay = true
 bus = &"Music"

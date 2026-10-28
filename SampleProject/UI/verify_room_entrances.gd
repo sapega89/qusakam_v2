@@ -42,6 +42,13 @@ const PAINTED := {
 	"MalikStash/SlabDoor": "the rope up through the slab's hole",
 	"CollapsedDrain/HatchDoor": "the shaft up to the cells' hatch",
 	"CollapsedDrain/GrateDoor": "the shaft up to floor 3's grate",
+	"Dunes/CampDoor": "the bandits' trailhead",
+	"OldRuins/WellDoor": "the well shaft with its rope",
+	"Aqueduct/ApproachDoor": "the side doorway with the stair up",
+	"Aqueduct/CellarDoor": "the barred cellar arch",
+	"GateApproach/AqueductDoor": "the well house's doorway with the stair down",
+	"CanyonFloor/StashDoor": "the smugglers' crack in the dead-end cliff",
+	"SmugglersStash/ExitDoor": "the dark tunnel back to the broken wall",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.

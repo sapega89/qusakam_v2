@@ -10,8 +10,11 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w8"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/StreamGorge/gen_front.png" id="w9"]
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w10"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w11"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="w11"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_butterfly_blue.tscn" id="w12"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="w13"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w14"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w15"]
 
 [node name="StreamGorge" type="Node2D"]
 
@@ -118,10 +121,28 @@ position = Vector2(2540, 340)
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(60, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w11")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Pollen1" parent="Ambience" instance=ExtResource("w11")]
+position = Vector2(1296, 250)
+emission_rect_extents = Vector2(1296, 140)
+amount = 24
+
+[node name="Critters" type="Node2D" parent="."]
+
+[node name="Butterfly1" parent="Critters" instance=ExtResource("w12")]
+position = Vector2(900, 364)
+
+[node name="Butterfly2" parent="Critters" instance=ExtResource("w12")]
+position = Vector2(1700, 364)
+
+[node name="Lark1" parent="Critters" instance=ExtResource("w13")]
+position = Vector2(2300, 384)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w14")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w12")
+stream = ExtResource("w15")
 autoplay = true
 bus = &"Music"

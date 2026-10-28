@@ -8,8 +8,11 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/cave_mouth/cave_mouth_sheet.png" id="w6"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w7"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/secret_area.tscn" id="w8"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w9"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_motes.tscn" id="w9"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w10"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w11"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w12"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w13"]
 
 [node name="CisternStash" type="Node2D"]
 
@@ -79,10 +82,20 @@ arrival = NodePath("StashDoor")
 [node name="SecretArea_Stash" parent="." instance=ExtResource("w8")]
 position = Vector2(1100, 336)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w9")]
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Motes1" parent="Ambience" instance=ExtResource("w9")]
+position = Vector2(1000, 250)
+
+[node name="FrontDark" parent="." instance=ExtResource("w10")]
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w11")]
+position = Vector2(800, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w12")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w10")
+stream = ExtResource("w13")
 autoplay = true
 bus = &"Music"

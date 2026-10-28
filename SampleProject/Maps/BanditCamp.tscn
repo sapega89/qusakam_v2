@@ -184,8 +184,8 @@ offset = Vector2(-75, -87)
 
 [node name="ExitDoor" parent="." instance=ExtResource("r3")]
 position = Vector2(137.72, 366.5)
-target_room = "res://SampleProject/Maps/DesertRoad.tscn"
-arrival = NodePath("BanditCampDoor")
+target_room = "res://SampleProject/Maps/Dunes.tscn"
+arrival = NodePath("CampDoor")
 
 [node name="Interactable" parent="ExitDoor" index="1"]
 action_text = "Leave"
@@ -279,8 +279,8 @@ offset = Vector2(-75, -87)
 
 [node name="ShortcutDoor" parent="." instance=ExtResource("r3")]
 position = Vector2(1641.72, 366.5)
-target_room = "res://SampleProject/Maps/DesertRoad.tscn"
-arrival = NodePath("CampShortcutDoor")
+target_room = "res://SampleProject/Maps/ZahraRest.tscn"
+arrival = NodePath("CampGateDoor")
 sets_flag = "bandit_camp_shortcut"
 
 [node name="Interactable" parent="ShortcutDoor" index="1"]

@@ -12,8 +12,15 @@
 [ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w10"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_door.tscn" id="w11"]
 [ext_resource type="PackedScene" path="res://SampleProject/Objects/Chest.tscn" id="w12"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w13"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w14"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd" id="w13"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd" id="w14"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_spores.tscn" id="w15"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bat.tscn" id="w16"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w17"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/dunes_of_silence.ogg" id="w18"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w1"]
+size = Vector2(64, 480)
 
 [node name="CollapsedDrain" type="Node2D"]
 
@@ -158,10 +165,46 @@ contents = Dictionary[String, int]({
 "herb": 2
 })
 
-[node name="RoomInstance" parent="." instance=ExtResource("w13")]
+[node name="Fight_Drain" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+script = ExtResource("w13")
+enemy_level = 9
+auto_spawn_on_ready = false
+trigger_area = NodePath("Fight_DrainTrigger")
+state_key = "enemies_drain"
+respawns = true
+
+[node name="Fight_DrainTrigger" type="Area2D" parent="Fight_Drain"]
+position = Vector2(2000, 240)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Drain/Fight_DrainTrigger"]
+shape = SubResource("RectangleShape2D_w1")
+
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Drain"]
+position = Vector2(2160, 368)
+script = ExtResource("w14")
+enemy_type = "tank"
+spawn_id = "Fight_Drain_EnemySpawnPoint1"
+
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Drain"]
+position = Vector2(2260, 368)
+script = ExtResource("w14")
+enemy_type = "fast"
+spawn_id = "Fight_Drain_EnemySpawnPoint2"
+
+[node name="Ambience" type="Node2D" parent="."]
+
+[node name="Spores1" parent="Ambience" instance=ExtResource("w15")]
+position = Vector2(3000, 250)
+emission_rect_extents = Vector2(2800, 110)
+amount = 32
+
+[node name="Bat1" parent="FrontDark" instance=ExtResource("w16")]
+position = Vector2(4200, 130)
+
+[node name="RoomInstance" parent="." instance=ExtResource("w17")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w14")
+stream = ExtResource("w18")
 autoplay = true
 bus = &"Music"

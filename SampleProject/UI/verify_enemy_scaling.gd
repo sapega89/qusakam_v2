@@ -3,7 +3,7 @@ extends SceneTree
 ## Рівень ворогів за героєм (D840; EnemyScaling), часткове: рівень ворога = підлога + зсув зони + зсув виду
 ## + ⌊max(0, герой − підлога) × 0.5⌋, не вище XPManager.MAX_LEVEL. Підлога звичайного й еліти — enemy_level бою (D670),
 ## боса — рівень, під який зроблено його числа (enemy_variety.json scaling.boss_levels). Зсув виду: звичайний 0, еліта +1,
-## бос +2; зсув зони — scaling.zone_offsets за кімнатою (Laboratory +1, BanditCamp +1, решта 0; у боса зони немає).
+## бос +2; зсув зони — scaling.zone_offsets за кімнатою (Laboratory і її бічні кімнати з боєм +1, BanditCamp +1, OldRuins +2, решта 0; у боса зони немає).
 ##   [1] формула на рівнях героя 1, 5, 10, 20 — підлоги 1, 4, 9, 19 і зони 0, +1 — і дані зон;
 ##   [2] звичайний бандит: рівень, HP і шкода за таблицями levels, досвід не росте (D670, verify_xp_curve);
 ##   [3] еліта (бандит-громило): рівень +1, HP і шкода з множниками еліти, досвід — свій;
@@ -66,9 +66,11 @@ func _formula() -> void:
 	ck(int(offsets.ordinary) == 0 and int(offsets.elite) == 1 and int(offsets.boss) == 2, "offsets %s" % [offsets])
 	ck(Scaling.HERO_LEAD_SHARE == 0.5, "an enemy gains half the hero's lead over its floor (%s)" % Scaling.HERO_LEAD_SHARE)
 	ck(Scaling.zone_offset("Laboratory") == 1 and Scaling.zone_offset("BanditCamp") == 1 and Scaling.zone_offset("DesertRoad") == 0
-			and Scaling.zone_offset("LabBoss") == 0 and scaling.zone_offsets.size() == 5
+			and Scaling.zone_offset("LabBoss") == 0 and Scaling.zone_offset("OldRuins") == 2
+			and Scaling.zone_offset("AlchemistCorridor") == 1 and Scaling.zone_offset("CollapsedDrain") == 1
+			and Scaling.zone_offset("Dunes") == 0 and scaling.zone_offsets.size() == 8
 			and ["LabMiddleFloor", "LabTopFloor", "LabGuardPocket"].all(func(r: String) -> bool: return Scaling.zone_offset(r) == 1),
-			"zones: the Laboratory's fight rooms +1 (its three floors and the guard's alcove, v3), Bandit Camp +1, every other room 0 (%s)" % [scaling.zone_offsets])
+			"zones: the Laboratory's fight rooms +1 (its three floors and the guard's alcove, v3) and its fighting side rooms +1, Bandit Camp +1, Old Ruins +2, every other room 0 (%s)" % [scaling.zone_offsets])
 	# [підлога, зона] → герой → [звичайний, еліта, бос]
 	var expect := {
 		[1, 0]: {1: [1, 2, 3], 5: [3, 4, 5], 10: [5, 6, 7], 20: [10, 11, 12]},
