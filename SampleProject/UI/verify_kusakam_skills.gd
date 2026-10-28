@@ -190,7 +190,7 @@ func _initialize() -> void:
 	var front: Node2D = enemies[0]
 	var behind: Node2D = enemies[1]
 	player.global_position = Vector2(1000, 344)
-	front.global_position = player.global_position + Vector2(30, 0)
+	front.global_position = player.global_position + _at_contact(front)
 	behind.global_position = player.global_position + Vector2(-40, 0)
 	for e in enemies:  # B137: навички б'ють від атаки героя — щоб ніхто не загинув за тест
 		e.Max_Health = 10000
@@ -216,7 +216,7 @@ func _initialize() -> void:
 	ck(sm.scaled("fire_strike", 20) == 23, "rank 2 deals 23")
 	ck(sm.upgrade_skill("healing_palm") == R.OK and sm.scaled("healing_palm", 40) == 46, "Healing Palm upgrades too: 40 → 46")
 	sm.clear_cooldowns()
-	front.global_position = player.global_position + Vector2(30, 0)
+	front.global_position = player.global_position + _at_contact(front)
 	hp_front = front.current_health
 	sm.use_skill("fire_strike")
 	ck(front.current_health == hp_front - sm.skill_damage("fire_strike") and sm.skill_damage("fire_strike") > fire_damage,
@@ -231,7 +231,7 @@ func _initialize() -> void:
 	sm.restore_sp(100)
 	for e in enemies:
 		e.global_position = player.global_position + Vector2(-400, 0)
-	front.global_position = player.global_position + Vector2(30, 0)
+	front.global_position = player.global_position + _at_contact(front)
 	front.set_physics_process(true)  # тики підпалу йдуть у його фізиці
 	front.stun(10.0)  # стоїть на місці, поки горить
 	var hp_burn: int = front.current_health
@@ -248,7 +248,7 @@ func _initialize() -> void:
 	var second: Node2D = enemies[1]
 	var far: Node2D = enemies[2]
 	front.enemy_logic.stun_left = 0.0
-	front.global_position = player.global_position + Vector2(30, 0)
+	front.global_position = player.global_position + _at_contact(front)
 	second.global_position = front.global_position + Vector2(90, 0)  # поза зоною удару, у 120 px ланцюга
 	far.global_position = front.global_position + Vector2(300, 0)
 	var player_hits: Array = []
@@ -288,3 +288,9 @@ func _initialize() -> void:
 
 	print("RESULT: " + ("ALL PASS" if fails.is_empty() else "%d FAIL: %s" % [fails.size(), ", ".join(fails)]))
 	quit(0 if fails.is_empty() else 1)
+
+
+## Впритул перед героєм: тіла торкаються (пів тіла ворога + пів героя + 2 px), а не налазять — інакше фізика розштовхує їх
+## до удару. B187: тіло бандита виросло (x1.96), тож стала відстань 30 px вже налазила.
+func _at_contact(enemy: Node2D) -> Vector2:
+	return Vector2((enemy.get_node(^"CollisionShape2D") as CollisionShape2D).shape.get_rect().end.x + 14.0, 0.0)

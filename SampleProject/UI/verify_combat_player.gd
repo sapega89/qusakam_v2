@@ -13,6 +13,7 @@ extends SceneTree
 ## Дії героя — через Input.parse_input_event (той самий шлях, що клавіша / кнопка геймпада).
 ##   godot --headless --path . --script res://SampleProject/UI/verify_combat_player.gd
 
+const Kit := preload("res://SampleProject/UI/input_kit.gd")
 const BANDIT := "res://SampleProject/Scenes/Characters/Enemies/default_enemy.tscn"
 const BANDIT_STATS := "res://SampleProject/Resources/Enemies/enemy_stats_melee.tres"
 
@@ -69,7 +70,7 @@ func _initialize() -> void:
 	await game.teleport_to_room("res://SampleProject/Maps/DesertRoad.tscn", ^"Arrival_Start")
 	for i in 16: await process_frame
 	await _finish_dialogue(sl.get_dialogue_manager())
-	await create_timer(1.5).timeout
+	await Kit.wait(self, 1.5)
 	hero = game.player
 	combat = hero.combat
 	for node in game.map.find_children("*", "CharacterBody2D", true, false):
@@ -78,7 +79,7 @@ func _initialize() -> void:
 	hero.Max_Health = 99999
 	hero.current_health = hero.Max_Health
 	hero.global_position.x += 700.0
-	await create_timer(0.8).timeout
+	await Kit.wait(self, 0.8)
 	floor_y = hero.global_position.y
 	arena_x = hero.global_position.x
 	bandit = load(BANDIT).instantiate()
@@ -121,7 +122,7 @@ func _until_ready() -> void:
 		if combat.state == combat.State.READY and not hero.mover.is_rolling() and hero.is_on_floor():
 			break
 		await physics_frame
-	await create_timer(0.7).timeout  # ривки повернулись
+	await Kit.wait(self, 0.7)  # ривки повернулись
 
 
 ## [1] Удар саджає героя з кроком уперед; у повітрі погляд не змінюється, доки удар не вийшов (B136).
@@ -197,12 +198,13 @@ func _cancel_rules() -> void:
 	combat.heavy_attack(1)
 	await _tap(&"dodge")
 	_press(&"block")
-	var t0 := Time.get_ticks_msec()
+	var steps := 0  # B186: час гри — кроки фізики, а не годинник
 	var rolled := false
-	while not combat.is_blocking() and Time.get_ticks_msec() - t0 < 3000:
+	while not combat.is_blocking() and steps < 3 * Engine.physics_ticks_per_second:
 		rolled = rolled or hero.mover.is_rolling()
 		await physics_frame
-	var waited := (Time.get_ticks_msec() - t0) / 1000.0
+		steps += 1
+	var waited := float(steps) / Engine.physics_ticks_per_second
 	var earliest: float = combat.heavy_windup + combat.heavy_strike_time + combat.heavy_recovery - combat.HEAVY_CANCEL_LAST
 	ck(not rolled, "a roll pressed in the heavy's wind-up never comes")
 	ck(combat.is_blocking() and waited >= earliest - 0.05, "a held block guards only late in the heavy's recovery (%.2f s, from %.2f)" % [waited, earliest])
@@ -359,13 +361,13 @@ func _stamina() -> void:
 	await _hero_at_bandit()
 	st.refill()
 	st.spend(50.0)
-	await create_timer(st.REGEN_DELAY + 0.1).timeout
+	await Kit.wait(self, st.REGEN_DELAY + 0.1)
 	var before_raise: float = st.current
 	_press(&"block")
 	for f in 2: await physics_frame
 	ck(st.current < before_raise - st.BLOCK_RAISE + 2.0, "raising the block costs %d (%.0f → %.0f)" % [st.BLOCK_RAISE, before_raise, st.current])
 	var held: float = st.current
-	await create_timer(1.0).timeout
+	await Kit.wait(self, 1.0)
 	ck(st.current > held and st.current - held < st.REGEN * st.BLOCK_REGEN * 1.0 + 3.0,
 			"held, the bar refills at half the pace (+%.0f in 1 s)" % (st.current - held))
 	st.refill()
@@ -378,7 +380,7 @@ func _stamina() -> void:
 	hero.take_damage(20, bandit)
 	ck(hero.current_health < hp and combat.is_staggered(), "a blocked hit on an empty bar: a weak block, HP lost and staggered (−%d)" % (hp - hero.current_health))
 	_press(&"block", false)
-	await create_timer(0.3).timeout
+	await Kit.wait(self, 0.3)
 	hero.current_health = hero.Max_Health
 	st.refill()
 	await _until_ready()
@@ -410,9 +412,9 @@ func _potion(sl: Node) -> void:
 	var label: Label = get_first_node_in_group(&"player_vitals_panel").get_node(^"%PotionChip/Pill/Count")
 	ck(label.text == "×2", "the Q chip counts the potions left (%s)" % label.text)
 	ck(hero.current_health == 440, "no heal before the sip")
-	await create_timer(combat.DRINK_HEAL_AT + 0.05).timeout
+	await Kit.wait(self, combat.DRINK_HEAL_AT + 0.05)
 	ck(hero.current_health == 500, "healed in real time (%d)" % hero.current_health)
-	await create_timer(combat.DRINK_TIME - combat.DRINK_HEAL_AT).timeout
+	await Kit.wait(self, combat.DRINK_TIME - combat.DRINK_HEAL_AT)
 	ck(combat.state == combat.State.READY, "the lock ends")
 	await _tap(&"quick_potion")
 	ck(not combat.is_drinking(), "at full HP the slot keeps its potions")
@@ -420,9 +422,9 @@ func _potion(sl: Node) -> void:
 	hero.current_health = 300
 	await _tap(&"quick_potion")
 	ck(inventory.get_item_count("hi_potion") == 0, "200 missing: the Hi-Potion")
-	await create_timer(0.2).timeout
+	await Kit.wait(self, 0.2)
 	combat.stagger(0.2, hero.global_position.x - 10.0)
-	await create_timer(0.8).timeout
+	await Kit.wait(self, 0.8)
 	ck(hero.current_health == 300, "a hit before the sip: no heal, the potion is lost (%d)" % hero.current_health)
 	# У повітрі — ні
 	await _hero_at(arena_x, floor_y - 200.0)
@@ -476,7 +478,7 @@ func _poise_bar(enemy: Node) -> void:
 			"a three-hit combo fills 3 of %d and does not stagger (D777: no stagger from the third hit)" % enemy.poise_max)
 	var held: float = fill.value
 	enemy.set_physics_process(true)  # спадає на кроках фізики ворога
-	await create_timer(enemy.POISE_DRAIN_DELAY + 1.0).timeout
+	await Kit.wait(self, enemy.POISE_DRAIN_DELAY + 1.0)
 	enemy.set_physics_process(false)
 	ck(fill.value < held, "without hits the bar drains (%.1f → %.1f)" % [held, fill.value])
 	enemy.take_poise(combat.POISE_HEAVY, hero.global_position.x, &"heavy")
@@ -507,7 +509,7 @@ func _status_icons(enemy: Node) -> void:
 	var hero_row: Control = panel.get_node(^"%HeroStatusRow")
 	root.get_node("EventBus").player_staggered.emit(0.3)
 	ck(hero_row.get_node(^"Stunned").visible, "a staggered hero shows the stunned icon in the hero panel")
-	await create_timer(0.5).timeout
+	await Kit.wait(self, 0.5)
 	ck(not hero_row.get_node(^"Stunned").visible, "the hero's stunned icon goes when the stagger ends")
 
 
@@ -533,7 +535,7 @@ func _shield_spells() -> void:
 	ck(spell.spell == &"magic" and magic.visible and magic.animation == &"drop" and not glass.visible,
 			"Shield Block raises the magic shield: it drops in (%s, %s)" % [spell.spell, magic.animation])
 	ck(is_equal_approx(spell.scale.x, 1.0), "facing right, the shield stands in front of him")
-	await create_timer(0.5).timeout
+	await Kit.wait(self, 0.5)
 	ck(magic.animation == &"hold" and magic.is_playing(), "then it holds with a shimmer (%s)" % magic.animation)
 	spell.raise(&"glass")
 	ck(glass.visible and not magic.visible and glass.animation == &"appear", "the glass shield appears")
@@ -547,12 +549,12 @@ func _shield_spells() -> void:
 	ck(spell.is_shattered() and glass.animation == &"shatter", "the third blocked blow shatters it")
 	ck(enemy_hp - bandit.current_health == spell.shard_damage(20) and spell.shard_damage(20) == 10,
 			"the shards hurt the attacker for half the blow (%d)" % (enemy_hp - bandit.current_health))
-	await create_timer(0.5).timeout
+	await Kit.wait(self, 0.5)
 	ck(not glass.visible, "the shards fly off and the glass is gone")
 	_press(&"block", false)
-	await create_timer(0.1).timeout
+	await Kit.wait(self, 0.1)
 	_press(&"block")
-	await create_timer(combat.PARRY_WINDOW + 0.1).timeout  # past the parry window: a plain block
+	await Kit.wait(self, combat.PARRY_WINDOW + 0.1)  # past the parry window: a plain block
 	st.refill()
 	spell.raise(&"glass")
 	hero.take_damage(20, bandit)
@@ -568,7 +570,7 @@ func _shield_spells() -> void:
 	_press(&"block", false)
 	for f in 2: await process_frame
 	ck(magic.animation == &"fade", "released, the magic shield fades (%s)" % magic.animation)
-	await create_timer(0.5).timeout
+	await Kit.wait(self, 0.5)
 	ck(not magic.visible and not glass.visible, "and is gone")
 	hero.current_health = hero.Max_Health
 	st.refill()

@@ -87,6 +87,15 @@ func _cast(skill_id: String) -> int:
 		await physics_frame
 	return result
 
+## Струмінь крові Blood Rush (MoveSkill.tscn → Drain): видно — відстань його правого кінця від [param target], px; ні — INF.
+func _drain_gap(target: Node) -> float:
+	for child in player.get_children():
+		if child.get_script() != null and child.get_script().resource_path.ends_with("MoveSkillFX.gd"):
+			var drain: AnimatedSprite2D = child.get_node("Drain")
+			if drain.visible:
+				return drain.to_global(Vector2(drain.sprite_frames.get_frame_texture(&"default", 0).get_width(), 0)).distance_to(target.global_position)
+	return INF
+
 func _hurt(enemy: Node) -> int:
 	return enemy.Max_Health - enemy.current_health
 
@@ -130,7 +139,7 @@ func _initialize() -> void:
 	ck(await _cast("dash_strike") == R.OK, "cast starts without an enemy in front (a gap closer)")
 	var moved: float = player.global_position.x - home
 	ck(absf(moved - 180.0) <= 12.0, "dashed 180 px forward (%.1f)" % moved)
-	ck(poses.slice(0, 3) == ["HeavyWindup", "Roll", "HeavyStrike"], "poses: HeavyWindup → Roll → HeavyStrike %s" % [poses])
+	ck(poses.slice(0, 3) == ["LungeCutWindup", "LungeCutMove", "LungeCutStrike"], "poses: LungeCutWindup → LungeCutMove → LungeCutStrike (H3) %s" % [poses])
 	ck(sm.get_current_sp() == sp - 5 and failed == [["dash_strike", R.NO_TARGET]], "whiff: 5 SP paid, NO_TARGET (%d → %d, %s)" % [sp, sm.get_current_sp(), failed])
 	bus.skill_failed.disconnect(on_fail)
 
@@ -162,7 +171,7 @@ func _initialize() -> void:
 	second = _enemy(182.0)  # вороги проходять одне крізь одного — обидва в досяжності удару
 	await _settle([first, second])
 	ck(await _cast("shield_charge") == R.OK, "cast")
-	ck("Run" in poses and poses[0] == "HeavyWindup" and poses.has("HeavyStrike"), "poses: HeavyWindup → Run → HeavyStrike %s" % [poses])
+	ck(poses.slice(0, 3) == ["ShieldChargeWindup", "ShieldChargeMove", "ShieldChargeStrike"], "poses: ShieldChargeWindup → ShieldChargeMove → ShieldChargeStrike (H3) %s" % [poses])
 	ck(_hurt(first) > 0 and _hurt(second) > 0, "both enemies in front are hit (%d, %d; hero %.0f, enemies %.0f, %.0f)"
 			% [_hurt(first), _hurt(second), player.global_position.x, first.global_position.x, second.global_position.x])
 	ck(first.enemy_logic.knockback_left > 0.0 and first.enemy_logic.knockback_speed > 0.0, "and knocked back, away from the hero (%.0f px/s)" % first.enemy_logic.knockback_speed)
@@ -176,7 +185,13 @@ func _initialize() -> void:
 	var deficit: int = player.Max_Health / 2
 	player.current_health = player.Max_Health - deficit
 	var damage: int = sm.skill_damage("blood_rush")
+	var drains: Array = []
+	var on_drain := func(_source: Node, target: Node, _amount: int) -> void:
+		(func() -> void: drains.append(_drain_gap(target))).call_deferred()
+	root.get_node("EventBus").skill_drained.connect(on_drain)
 	ck(await _cast("blood_rush") == R.OK and _hurt(first) > 0, "cast and hit (%d)" % _hurt(first))
+	root.get_node("EventBus").skill_drained.disconnect(on_drain)
+	ck(drains.size() == 1 and drains[0] <= 2.0, "the drain wisp (H3) runs from the target to the hero, its far end %s px from the target" % [drains])
 	ck(player.current_health == player.Max_Health - deficit + roundi(damage * 0.3), "healed %d of %d damage" % [player.current_health - (player.Max_Health - deficit), damage])
 	player.current_health = player.Max_Health
 	await _clear([first])
@@ -195,7 +210,7 @@ func _initialize() -> void:
 	await _settle([first, behind])
 	start = player.global_position.x
 	ck(await _cast("heavens_anvil") == R.OK, "cast")
-	ck(flew and "Jump" in poses and "Fall" in poses and poses[-1] == "HeavyStrike", "flies: Jump → Fall → HeavyStrike %s" % [poses])
+	ck(flew and poses == ["LeapSlamWindup", "LeapSlamMove", "LeapSlamStrike"], "flies: LeapSlamWindup → LeapSlamMove (held up and down) → LeapSlamStrike (H3) %s" % [poses])
 	ck(player.body_rect().end.x <= first.body_rect().position.x + 1.0 and player.global_position.x > start + 20.0,
 			"landed in front of the enemy ahead (%.1f → %.1f, enemy left %.1f)" % [start, player.global_position.x, first.body_rect().position.x])
 	ck(_hurt(first) > 0 and _hurt(behind) > 0, "pillars on both sides hit both (%d, %d; hero %.0f, enemies %.0f, %.0f)"
@@ -214,7 +229,7 @@ func _initialize() -> void:
 	var far := _enemy(-420.0)
 	await _settle([first, behind, far])
 	ck(await _cast("dune_quake") == R.OK, "cast")
-	ck(poses[-1] == "Land", "the slam reuses the Land pose %s" % [poses])
+	ck(poses == ["LeapSlamWindup", "LeapSlamMove", "LeapSlamStrike"], "the leap-slam poses (H3) %s" % [poses])
 	ck(_hurt(first) > 0 and _hurt(behind) > 0 and _hurt(far) == 0, "both near enemies hit, the far one not (%d, %d, %d; hero %.0f, enemies %.0f, %.0f, %.0f)"
 			% [_hurt(first), _hurt(behind), _hurt(far), player.global_position.x, first.global_position.x, behind.global_position.x, far.global_position.x])
 	ck(first.enemy_logic.stun_left > 0.5 and behind.enemy_logic.stun_left > 0.5, "knocked down for 1.2 s (%.2f)" % first.enemy_logic.stun_left)

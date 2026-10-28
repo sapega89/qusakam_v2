@@ -222,6 +222,10 @@ signal skill_interrupted(skill_id: String)
 ## Почався замах касту навички (D271) — звук замаху (D276).
 @warning_ignore("unused_signal")
 signal skill_cast_started(skill_id: String)
+## Навичка з вампіризмом (Blood Rush, D812) забрала [param amount] HP у [param target] для [param source] — струмінь
+## крові від цілі до героя (MoveSkillFX, H3).
+@warning_ignore("unused_signal")
+signal skill_drained(source: Node, target: Node, amount: int)
 
 ## Емітується при завершенні атаки.
 ##

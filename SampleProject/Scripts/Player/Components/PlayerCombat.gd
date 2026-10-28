@@ -625,11 +625,11 @@ func _start_move() -> void:
 		_leap_airborne = false
 		player.velocity.y = -SkillCombatExecutor.leap_speed(_cast.move_height)
 		player.mover.push(_direction * SkillCombatExecutor.leap_distance(_cast, player, _direction), time)
-		_play(&"Jump")
-		return
-	_state_left = _cast.move_time
-	player.mover.push(_direction * _cast.move_distance, _cast.move_time)
+	else:
+		_state_left = _cast.move_time
+		player.mover.push(_direction * _cast.move_distance, _cast.move_time)
 	_play(StringName(_cast.move_pose))
+	_cast_fx.move()
 	_move_phase()
 
 ## Кадр руху: ривок, що ріже першого (move_hits "first"), б'є, щойно ворог у досяжності удару перед героєм; натиск
@@ -638,10 +638,7 @@ func _start_move() -> void:
 func _move_phase() -> void:
 	if _cast.move_kind == "leap":
 		if not player.is_on_floor():
-			_leap_airborne = true
-			var pose := &"Jump" if player.velocity.y < 0.0 else &"Fall"
-			if player.animation != pose:
-				_play(pose)
+			_leap_airborne = true  # у повітрі тримає move_pose (LeapSlam/2, H3) і вгору, і вниз
 		elif _leap_airborne:
 			_release_cast()
 	elif _cast.move_hits == "first" and not SkillTargeting.enemies_in_front(player).is_empty():

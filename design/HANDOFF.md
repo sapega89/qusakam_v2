@@ -3,56 +3,39 @@ type: reference
 tags: [handoff, orchestrator]
 ---
 
-# Handoff — 2026-10-28, 12:00
+# Handoff — 2026-10-28, 14:45
 
 The plan with statuses is [[MASTER_PLAN]]. Deferred items are in [[BACKLOG]]. Reply to Sapega in Ukrainian.
 
-**Registers:** next free **D866**, **B207**, **Q125** — `integrate-32` takes them first; do not file IDs on `feature/backlog`
-while an integrator runs.
-**Exe:** `build/windows/Qusakam.exe` 2026-10-28 05:07 (after `integrate-31`). Rebuild after each merge (X1).
+**Registers:** next free **D874**, **B210**, **Q126** — `integrate-33` takes them first; do not file IDs on `feature/backlog`
+while an integrator runs. The room chain's reports use placeholder/colliding numbers (rooms-finish D871–D875): the
+integrator after the chain renumbers them.
+**Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 ~14:45 after `integrate-32` was merged (`768d25ca`). Rebuild after each merge (X1).
 
 ## 1. Cloud now
+`integrate-32` ✅ merged into `feature/backlog`. All parallel branch routines reported: skills-v2-ranged, -stance,
+-control-a, -control-b, small-fixes, wire-leftovers (all four weapon variants wired), lab-v3-now.
+
 | Routine | Trigger | Task | On report |
 |---|---|---|---|
-| `integrate-32` | `trig_012dR1aKqF5HsvAvP12BqXW9` | merge elite-reach, enemy-sizes, ui-bugs-205-206, critter-tweaks, yellow-sky, skill-art-wire, wire-backdrops (to its report); fix the non-balance reds | fast-forward `feature/backlog`, rebuild exe |
-| `lab-v3-now` | `trig_01YLoaxrR4LBAD3mUjVYZ4EP` | M8: the Laboratory as the v3 graph (D863, D865), Laboratory rooms only, parallel to the chain | → `integrate-33` |
-| `skills-v2-ranged` | `trig_013tDiEHQH16UsNpuHLBppDF` | H3 slice 4: Holy Javelin, Lightspear, Hallowed Circle, Hellfire Stomp | → `integrate-33` |
-| `skills-v2-stance` | `trig_013UG7eTWMee9h8n1e3w5iLe` | H3 slice 5: stances and buffs (glass shield stays off, Q115) | → `integrate-33` |
-| `skills-v2-control-a` | `trig_01KRKfp56CqeWNcQQQ8YCypJ` | H3 slice 6a: Rising Slash, Ground Slam, Sweeping Arc, Shield Bash, Stone Palm | → `integrate-33` |
-| `skills-v2-control-b` | `trig_01Wdp3pWEDHSmZg5VxkKB8Qy` | H3 slice 6b: Chain of Night, Sand Veil, Dread Howl, Radiant Flare, Night Reaper, Soul Harvest | → `integrate-33` |
-| `small-fixes` | `trig_01RpuQict9Jgtg4GDWSThuRN` | B196, Astrit's `enter` in her drop, Q123 delete Collectible, B124/B110 | → `integrate-33` |
-| `wire-leftovers` | `trig_01Us7XmYn2uaWEDPon76C3d6` | weapon variants of the skill poses (sword, dagger, mace, halberd), FX/Smear, kit icons, old Roll; lists room art still loose | → `integrate-33` |
+| `integrate-33` | `trig_01XtXrAxaVP6qYhFE1gsSJrt` (12:50 UTC) | merge the 4 skills branches one at a time, small-fixes, wire-leftovers; fix verify_camera_transitions (BanditCamp) | merge into `feature/backlog`, rebuild exe |
 
-**Room chain** (one room routine at a time, each waits for the previous report): `wire-backdrops` ✅ report →
-`wire-backdrops-2` (`trig_011KdRNJ3WJNiU8AWzT9DHkL`, running) → `rooms-finish` (`trig_01KB4iH1vjuKHe3kmpnykZ1L`) →
-`wire-backdrops-3` (`trig_018LGBuN2bP4eH27wHj7bB4A`) → `wire-backdrops-4` (`trig_01Rw2B9remFva5UTZGTx8SzC`) →
-`prop-sizes` (`trig_015U2tbMG9yLHwpLrRMGBCSg`) → `wire-props` (`trig_01B4nHuyADwieMains6tHt2J`).
-- **Waits run out 8 h after each trigger's creation** (UTC): rooms-finish 11:11, wire-backdrops-3 11:38,
-  wire-backdrops-4 12:03, prop-sizes 15:15, wire-props 15:31. **Replacements are scheduled in the cloud** (Sapega:
-  «в хмарі заплануй рішення»), each 3 min after its original gives up, same branch and report, own 8 h wait:
-  `rooms-finish-r` (`trig_01E5915FoCmY2uY2NipRAvxV`, 11:14), `wire-backdrops-3-r` (`trig_01TGj1QNGEtXZNTtShBMyvtf`, 11:41),
-  `wire-backdrops-4-r` (`trig_019qjvbMDSdG2DBeyjYqRk6A`, 12:06; also waits for and merges `lab-v3-now`),
-  `prop-sizes-r` (`trig_01GUwKqL7gmdvPmyoVwmg45Z`, 15:18), `wire-props-r` (`trig_01UrXytkDsfE7YLbMquXK5r4`, 15:34).
-  Each stops by itself if the predecessor's report became final before its original gave up (the original took the
-  step) or its branch already has newer commits. Check with `list_runs` which one did the work; if a replacement
-  also dies (8 h), re-run it with RemoteTrigger `run`.
-- The chain's own `lab-v3` (`trig_013ZcTiT1GvzqNabezNjssda`) is **superseded by `lab-v3-now`**: merge nothing from it
-  unless lab-v3-now missed something.
-- `rooms-finish` may build the old D849 Laboratory floors from Q113's struck answer: drop its Laboratory part on merge.
-- B-ct1 (City pigeons sunk in the street, filed by integrate-32) goes to the next room routine.
-- Never merge `cloud/lab-main-path`, `cloud/rooms-city`, `cloud/rooms-lab`.
+**Room chain** (one room routine at a time): `wire-backdrops` ✅ → `wire-backdrops-2` ✅ → `rooms-finish` ✅ (done by
+the original or `-r`; fights + life in the new rooms, camp off the Dunes; built nothing in the Laboratory — that is
+lab-v3-now's) → **`wire-backdrops-3-r`** 🔄 running (`trig_01TGj1QNGEtXZNTtShBMyvtf`; the original gave up at 10:47) →
+`wire-backdrops-4-r` (`trig_019qjvbMDSdG2DBeyjYqRk6A`, waiting; also merges `lab-v3-now`) → `prop-sizes` / `-r`
+(`trig_015U2tbMG9yLHwpLrRMGBCSg` / `trig_01GUwKqL7gmdvPmyoVwmg45Z`) → `wire-props` / `-r` (`trig_01B4nHuyADwieMains6tHt2J` /
+`trig_01UrXytkDsfE7YLbMquXK5r4`). The originals of prop-sizes/wire-props give up at 15:15/15:31 UTC, the `-r`
+replacements take over with their own 8 h. If a replacement dies too, re-run it with RemoteTrigger `run`.
+- After `wire-props`: **`integrate-34`** merges the chain's last branch (contains lab-v3-now) and renumbers its IDs.
+- rooms-finish's Q-a (redraw the Lab M4 graph, D863) is covered by lab-v3-now (built from Figma 564:6590); Q-b East Gate
+  is non-blocking (default: with the location after the demo, D861).
+- lab-v3-now left: the hall's cave look at ground level (D865) has no art; LabBoss stays 2×1 (the graph draws 3×2).
+- Never merge `cloud/lab-v3`, `cloud/lab-main-path`, `cloud/rooms-city`, `cloud/rooms-lab`.
 
-**Next integrator `integrate-33`:** the four skills branches + small-fixes + wire-leftovers + lab-v3-now, then the
-chain's last branch (`wire-props`). The skills branches all start from `cloud/skill-art-wire` and share PlayerCombat.gd /
-skills.json — merge one at a time, re-run their tests after each.
-
-## 2. Art lane (PC, one ComfyUI agent at a time)
-H3 weapon variants: sword, dagger ✅ `d6279b38`; mace and halberd ✅ `e9bf23f3` (sheet
-`design/shots/h3_weapon_variants_2.png`, not seen by Sapega); left on them: the halberd's double-axe head in 5 frames
-(`HEADS` in `halberd_fixups.py`, listed in its README), the mace handle past the fist in 3 frames. Next: dual + bow → A15 the bandit in normal proportions (then
-re-measure its `enemy_variety.json` scale) → A4 alchemist → burnt village charred palms, banners, grass (wire-backdrops
-left them green) → craft quarter forge and chapel fronts. Sizes are fixed by scaling in the cloud, not redrawn
-(memory: scale-before-redraw).
+## 2. Art lane — stopped
+Sapega 28.10: «комфі більше не запускай». Do not start any ComfyUI agent or offer one. Everything that needed it is in
+[[BACKLOG]] → «ComfyUI art — stopped 2026-10-28». The PC only builds the exe.
 
 ## 3. Rules learned
 - **Code and tests in the cloud**, the PC only for ComfyUI (memory: tests-in-cloud). The cloud sometimes cannot
