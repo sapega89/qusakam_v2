@@ -152,6 +152,19 @@ MANUAL = {
     "dagger/ShieldCharge/2": [((49, 62, 55, 66), BODY_TWIN)],
     "dagger/ShieldCharge/3": [((40, 81, 42, 83), BODY_TWIN)],
     "dagger/LeapSlam/2": [((41, 57, 42, 59), BODY_TWIN), ((56, 75, 60, 81), BODY_TWIN)],
+    # булава: куля LungeCut/1–2 торкається тіла — евристика взяла її тілом
+    "mace/LungeCut/1": [
+        ((61, 72, 71, 83), WEAPON),
+        ((39, 63, 41, 66), BODY_TWIN),
+        ((39, 81, 42, 83), BODY_TWIN),
+    ],
+    "mace/LungeCut/2": [((66, 73, 75, 83), WEAPON)],
+    "mace/ShieldCharge/1": [((55, 51, 55, 52), BODY_TWIN), ((46, 71, 53, 74), BODY_TWIN)],
+    "mace/ShieldCharge/2": [((49, 62, 55, 65), BODY_TWIN)],
+    "mace/ShieldCharge/3": [((55, 61, 63, 63), BODY_TWIN), ((40, 81, 42, 83), BODY_TWIN)],
+    "mace/LeapSlam/2": [((38, 45, 40, 47), BODY_TWIN), ((46, 67, 53, 70), BODY_TWIN)],
+    "mace/LeapSlam/3": [((53, 65, 56, 71), BODY_TWIN)],
+    "halberd/ShieldCharge/1": [((44, 59, 51, 62), BODY_TWIN), ((44, 69, 51, 72), BODY_TWIN)],
 }
 
 

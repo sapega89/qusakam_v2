@@ -59,7 +59,7 @@ Isolated single pixels (no 8-neighbour, keying dirt) are dropped from every fram
 52), each frame `ON:` the hero's bare-handed pose (`SampleProject/Sprites/Player/LungeCut|ShieldCharge|LeapSlam/N`, the
 64×64 frame at (16, 32) of the 96×96 cell) with only the dagger added, so the body is exactly the base pose; `LeapSlam/2` is
 `ON:` this set's `Heavy/1` instead (from the base frame the raised fists read as ears and the model grew a third hand
-holding the dagger). `specks=8` drops the motion strokes the model drew by the tail. Then `python Scripts/Tools/dagger_fixups.py`, then `weapon_key_fixups.py`
+holding the dagger). `specks=8` drops the motion strokes the model drew by the tail. Then `python Scripts/Tools/h3_eye_fixups.py`, then `weapon_key_fixups.py`
 (its `MANUAL` rectangles for these frames: the `LungeCut/1` blade back to the key, the `ShieldCharge/1` guard; eye glints, chest plates, a vambrace and boots off the key). Feet on row 88, the artist's colours. Contact sheet:
 `design/shots/h3_weapon_variants_1.png`.
 
@@ -69,5 +69,5 @@ holding the dagger). `specks=8` drops the motion strokes the model drew by the t
   `ON:` with the blade up or slanted (a 24–28 px sword over the snout) and once `FROM:ShieldCharge:2` (the hero ~20 %
   bigger) — kept: `ON:` with the level wording of `ShieldCharge/2`; `LeapSlam/2` with a grey wisp beside the open hand
   (the hand now named empty).
-- `ShieldCharge/2`: twice the model drew the eye as a target (a red ring with a dark cross) — `Scripts/Tools/dagger_fixups.py`
+- `ShieldCharge/2`: twice the model drew the eye as a target (a red ring with a dark cross) — `Scripts/Tools/h3_eye_fixups.py`
   copies the eye (x 54–64, rows 48–56) from the hero's own `ShieldCharge/2`; the head lies on it pixel for pixel.

@@ -53,9 +53,15 @@ px from `WeaponMount` = ((x − 32) × 1.5, (y − 32) × 1.5); the angle is a s
 The sky shield over `ShieldCharge/*`: its `Block/1` placement (FX README, H2) moved by the fist's offset from `Block/1`'s
 guard fist (≈ (47, 32), `HAND_GUARD`): +5 / +7 / +7 texture px right and 0 / +2 / 0 down (×1.5 in world px). Per-weapon
 variants (`Weapons/<weapon>/LungeCut|ShieldCharge|LeapSlam/1–3`, 96×96, by `hero_weapon_<weapon>_h3`): sword and dagger
-done (their READMEs); mace, halberd, dual and bow left. Wiring: `<Pose>Windup` / `Move` / `Strike` = frames 1 / 2 / 3 in the
+done, then mace and halberd (their READMEs; the halberd's double-axe heads in five frames still to be swapped); dual and
+bow left. Wiring: `<Pose>Windup` / `Move` / `Strike` = frames 1 / 2 / 3 in the
 `sword` library (`Player.tscn`) and the `dagger` library (`weapon_libraries.py`), `Sprite2D:offset` (0, −16) as the
 rest of each library — `Player.body_animation` then plays them and `WeaponView` hides its overlay. The body is the base
 frame (`ON:` it, at (16, 32)) except `LeapSlam/2` (the set's `Heavy/1` lifted into the jump). The weapon fist (blade
 base, texture px of the 64×64 frame) moves off the base fist in `ShieldCharge/*` — sword ≈ (45, 29) / (47, 35) /
 (48, 32), dagger ≈ (56, 31) / (51, 34) / (56, 26) — so the sky shield placed by the base fist sits up to 7 px off there.
+The `mace` and `polearm` libraries take the mace and halberd frames the same way. Mace `ShieldCharge/3` fist ≈ (51, 31) (3 px
+behind the base); `/1–2` the fist is the brown grip at the base fist. Halberd: the front fist sits back on the pole —
+`ShieldCharge/1` ≈ (43, 30), `/3` ≈ (41, 32) (8–13 px behind the base fist, the rear fist at (28, 40)), `/2` the grip at
+the base fist — so a sky shield over the halberd frames needs those offsets or no shield (D267: a two-handed weapon gives
+no Shield Block).

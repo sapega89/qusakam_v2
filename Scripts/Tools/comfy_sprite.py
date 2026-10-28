@@ -4409,7 +4409,10 @@ LEAP_AIR = (
     "right, the cape flying up behind him, only two hands, no motion lines"
 )
 # LeapSlam/2 кинджала: біля відкритої руки модель малювала сірий завиток
-DAGGER_LEAP = DAGGER_KEEP + "; his front hand open and empty, holding nothing, nothing in the air beside it"
+DAGGER_LEAP = (
+    DAGGER_KEEP
+    + "; his front hand open and empty, holding nothing, nothing in the air beside it"
+)
 # LungeCut/1: друга відкрита рука спереду отримувала другий кинджал. ShieldCharge/1: кулак біля морди — з ON: сторч,
 # «thin» і навскіс модель малювала меч 24–28 px і ховала морду, FROM: ShieldCharge/3 — героя на ~20 % більшим;
 # рівно вперед, як ShieldCharge/2. ShieldCharge/2: хрестик в оці — обличчя назване (як Death)
@@ -4420,8 +4423,68 @@ DAGGER_H3_EXTRA = {
     "ShieldCharge/2": H3_FACE,
 }
 DAGGER_H3_DIR = {"ShieldCharge/1": H3_DIRS["ShieldCharge"][1]}
-for _weapon, _on in (
-    ("sword", lambda pose, d: SWORD_ON_NEAR % (pose, d) + SWORD_COLOURS),
+# булава й алебарда (друга пара): «лезо» меча названо їхніми частинами. Підказки ON: — кадр голого героя, тож «as in the
+# picture» (MACE_KEEP, HALBERD_THRUST) про зброю не працює: розмір і одна голова названі словами
+MACE_LEVEL = (
+    "straight forward to the right, level at the height of his chin, the round head far ahead of his snout, never "
+    "upright, his eye fully visible"
+)
+MACE_H3_DIRS = {
+    "LungeCut": [
+        "back and down behind him at a low angle, his near arm pulled back low beside his rear hip",
+        "back and down behind him at a low angle, his near arm held back low beside his rear hip",
+        "straight forward to the right, level and horizontal at chest height, the round head far ahead of his fist, "
+        "never upright, his near arm stretched forward",
+    ],
+    # ShieldCharge/1: «forward and up … clear of his face» — куля закрила морду; рівно вперед, як у кинджала
+    "ShieldCharge": [
+        MACE_LEVEL,
+        MACE_LEVEL,
+        "forward and up at an angle in front of him",
+    ],
+    "LeapSlam": [
+        "back and down behind him at a low angle, his near hand low at his rear hip",
+        None,  # LEAP_AIR
+        "straight down in front of him, both fists gripping the handle, the round head on the ground in front of him",
+    ],
+}
+MACE_H3 = MACE_SHORT + ", only one mace"
+# «steel head» алебарди модель читала шоломом (LungeCut/2–3 у шоломі) — лезо названо лезом, голова героя — голою
+HALBERD_H3_DIRS = {
+    "LungeCut": [
+        "forward and down, its axe blade low on the right just above the ground in front of him",
+        "forward at hip height, nearly level, the spear point far ahead on the right, never upright",
+        "straight forward to the right, level at chest height like a thrust, the spear point far ahead near the right "
+        "edge of the picture, never upright",
+    ],
+    "ShieldCharge": [
+        "forward and up at a steep angle, held out in front of him, the axe blade high up on the right above and "
+        "ahead of his snout, the pole clear of his face, his eye fully visible",
+        "straight forward to the right, level at chest height like a charging pike, the spear point far ahead on the "
+        "right, never upright, his eye fully visible",
+        # «forward and up at an angle» — два древка навхрест: пологий укол угору, одне древко названо
+        "forward and a little up, sloping up at a shallow angle like a thrust, the spear point far ahead on the right "
+        "at the height of his head, one single pole in his front fist, never upright",
+    ],
+    "LeapSlam": [
+        # «back and down behind him» — дві алебарди навхрест і голова потилицею до нас: як LungeCut/1
+        "forward and down, its axe blade low on the right just above the ground in front of him",
+        None,  # LEAP_AIR
+        "forward and down, both fists gripping the pole, its axe blade resting on the ground in front of him",
+    ],
+}
+HALBERD_H3 = (
+    "; the halberd blade small: one single axe blade, a small spike and a short spear tip, not a double axe, only one "
+    "halberd; his bare round lizard head exactly as in the picture, no helmet, the hero the same size, facing right"
+)
+# порожня друга рука названа (кинджал: друга відкрита рука отримувала другу зброю), обличчя — біля кулака
+H3_EXTRA = {
+    "LungeCut/1": "; his other hand, low in front of him, open and empty, holding nothing",
+    "ShieldCharge/1": H3_FACE,
+    "ShieldCharge/2": H3_FACE,
+}
+for _weapon, _on, _dirs, _leap in (
+    ("sword", lambda pose, d: SWORD_ON_NEAR % (pose, d) + SWORD_COLOURS, H3_DIRS, ""),
     # кинджал у високих позах ріс до меча (comfy_art_fixes TINY) — довжину названо головою
     (
         "dagger",
@@ -4430,6 +4493,21 @@ for _weapon, _on in (
             + "; the dagger blade no longer than his head is wide, only one dagger"
             + DAGGER_H3_EXTRA.get(pose, "")
         ),
+        H3_DIRS,
+        DAGGER_LEAP,
+    ),
+    # гладка куля (MACE_BALL_ON: «flanged» малювало шипи й молот), руків'я з передпліччя
+    (
+        "mace",
+        lambda pose, d: MACE_BALL_ON % (pose, d) + MACE_H3 + H3_EXTRA.get(pose, ""),
+        MACE_H3_DIRS,
+        MACE_KEEP,
+    ),
+    (
+        "halberd",
+        lambda pose, d: HALBERD_ON % (pose, d) + HALBERD_H3 + H3_EXTRA.get(pose, ""),
+        HALBERD_H3_DIRS,
+        HALBERD_ONE,
     ),
 ):
     CHARACTERS["hero_weapon_%s_h3" % _weapon] = dict(
@@ -4442,18 +4520,18 @@ for _weapon, _on in (
         specks=8,  # риски руху біля хвоста в стрибку (LeapSlam/2), як у hero_lunge
         palette="hero",
         base=None,
-        who=CHARACTERS["hero_weapon_" + _weapon]["who"],
+        who=CHARACTERS["hero_weapon_" + _weapon]["who"].replace(MACE, MACE_BALL),
         rows=[
             (
                 anim,
                 [
                     _on("%s/%d" % (anim, i + 1), d)
                     if d
-                    else LEAP_AIR % (_weapon, _weapon) + (DAGGER_LEAP if _weapon == "dagger" else "")
+                    else LEAP_AIR % (_weapon, _weapon) + _leap
                     for i, d in enumerate(dirs)
                 ],
             )
-            for anim, dirs in H3_DIRS.items()
+            for anim, dirs in _dirs.items()
         ],
     )
 
@@ -4606,7 +4684,9 @@ if __name__ == "__main__":
                     )
                     > 0
                 )
-                if char.get("specks"):  # H3: риски руху, які модель малює попри «no motion lines»
+                if char.get(
+                    "specks"
+                ):  # H3: риски руху, які модель малює попри «no motion lines»
                     op = drop_specks(op, char["specks"])
             frame = np.dstack([q, op * 255.0]).astype(np.uint8)
             shift = floors.get((anim, i), floor) - feet_row(op)
