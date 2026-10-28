@@ -57,11 +57,12 @@ func _add_poise_bar() -> void:
 
 
 ## Бос — не вид з enemy_variety.json (D652): без розміру й еліти, його числа — свої (D671). D840: вони зроблені під рівень
-## scaling.boss_levels (підлога), а бос стає на рівень героя + 2 і росте від своєї підлоги за тими ж таблицями levels.
+## scaling.boss_levels (підлога), а бос стає на підлогу + 2 + половину відриву героя над нею (EnemyScaling) і росте від
+## своєї підлоги за тими ж таблицями levels. Зсуву зони бос не має: його підлога — і є його край.
 ## Ходи, візерунок і замахи не міняються; досвід — теж (D670).
 func _apply_variety() -> void:
 	level = EnemyScaling.boss_level(enemy_stats.enemy_type)
-	scaled_level = EnemyScaling.scaled_level(level, EnemyScaling.hero_level(), "boss")
+	scaled_level = EnemyScaling.scaled_level(level, 0, EnemyScaling.hero_level(), "boss")
 	var grown: Dictionary = EnemyScaling.boss_growth(level, scaled_level)
 	Max_Health = roundi(Max_Health * grown.health)
 	current_health = Max_Health

@@ -39,6 +39,8 @@ var level := 1
 ## D840: рівень ворога за рівнем героя на момент появи (EnemyScaling.scaled_level, не нижче level); HP і шкода ростуть
 ## за ним, за enemy_variety.json "levels". Ставить _apply_variety — і заново при кожному поверненні ворогів (D492).
 var scaled_level := 1
+## D840: зсув зони кімнати бою (EnemyScaling.zone_offset; ставить RoomEnemySpawner) — важка зона стоїть вище свого рівня.
+var zone_offset := 0
 ## Досвід за вбивство: EnemyStats.xp_reward × розмір × еліта.
 var xp_reward := 0
 
@@ -240,7 +242,7 @@ func _apply_variety() -> void:
 	var health: float = mult.health
 	var hit: float = mult.damage
 	var xp: float = mult.xp
-	scaled_level = EnemyScaling.scaled_level(level, EnemyScaling.hero_level(), "elite" if elite else "ordinary")
+	scaled_level = EnemyScaling.scaled_level(level, zone_offset, EnemyScaling.hero_level(), "elite" if elite else "ordinary")
 	var grown: Dictionary = EnemyVariety.level(scaled_level)
 	health *= grown.health
 	hit *= grown.damage

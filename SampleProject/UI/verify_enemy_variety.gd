@@ -595,12 +595,12 @@ func _pack_leader() -> void:
 	dunes.spawn_all_enemies()
 	await create_timer(dunes.wave_delay + 0.5).timeout
 	var leader: Node = dunes.get_node(^"Enemy_Fight_Dunes_EnemySpawnPoint4")
-	var grown: Dictionary = variety.level(dunes.enemy_level)
+	var grown: Dictionary = variety.level(leader.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня)
 	var marks: Dictionary = variety.elite()
-	ck(leader.scene_file_path == SCENES.jackal_pack_leader and leader.elite and leader.level == 2
+	ck(leader.scene_file_path == SCENES.jackal_pack_leader and leader.elite and leader.level == 2 and leader.scaled_level == 3
 			and leader.Max_Health == roundi(stats.max_health * grown.health * marks.health)
 			and is_equal_approx(leader.base_damage, stats.base_damage * grown.damage * marks.damage),
-			"in the game it is the pack leader, an elite at the fight's level 2: HP %d, damage %.1f" % [leader.Max_Health, leader.base_damage])
+			"in the game it is the pack leader, an elite of a level-2 fight at level 3 (D840): HP %d, damage %.1f" % [leader.Max_Health, leader.base_damage])
 	var jackal: Node = load(SCENES.fast).instantiate()
 	var paws := [HitAreas.frame_rect(leader.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(jackal.get_node(^"Sprite2D"), 0).end.y]
 	jackal.free()
@@ -634,8 +634,8 @@ func _armoured_scorpion() -> void:
 		enemy.position = ARENA
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"%s, level %d: an elite, HP %d, damage %.1f, XP %d" % [slot[1], level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()
@@ -686,8 +686,8 @@ func _old_vulture() -> void:
 		enemy.position = ARENA + Vector2(0, -150)
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.flying and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.flying and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"level %d: a flying elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()
@@ -769,12 +769,12 @@ func _brute() -> void:
 	lone.spawn_all_enemies()
 	await create_timer(0.5).timeout
 	var brute: Node = lone.get_node(^"Enemy_Fight_LoneElite_EnemySpawnPoint1")
-	var grown: Dictionary = variety.level(lone.enemy_level)
+	var grown: Dictionary = variety.level(brute.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня)
 	var marks: Dictionary = variety.elite()
-	ck(brute.scene_file_path == SCENES.bandit_brute and brute.elite and brute.level == 2
+	ck(brute.scene_file_path == SCENES.bandit_brute and brute.elite and brute.level == 2 and brute.scaled_level == 3
 			and brute.Max_Health == roundi(stats.max_health * grown.health * marks.health)
 			and is_equal_approx(brute.base_damage, stats.base_damage * grown.damage * marks.damage),
-			"in the game it is the bandit brute, an elite at the fight's level 2: HP %d, damage %.1f" % [brute.Max_Health, brute.base_damage])
+			"in the game it is the bandit brute, an elite of a level-2 fight at level 3 (D840): HP %d, damage %.1f" % [brute.Max_Health, brute.base_damage])
 	var bandit: Node = load(SCENES.melee).instantiate()
 	var feet := [HitAreas.frame_rect(brute.get_node(^"Sprite2D"), 0).end.y, HitAreas.frame_rect(bandit.get_node(^"Sprite2D"), 0).end.y]
 	bandit.free()
@@ -881,8 +881,8 @@ func _tower_guard() -> void:
 		enemy.position = ARENA + Vector2(0, 0)
 		game.map.add_child(enemy)
 		await process_frame
-		var grown: Dictionary = variety.level(level)
-		ck(enemy.elite and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
+		var grown: Dictionary = variety.level(enemy.scaled_level)  # D840: еліта — рівень бою + 1 (герой 1-го рівня, без зони)
+		ck(enemy.elite and enemy.scaled_level == level + 1 and enemy.size_kind == "medium" and enemy.Max_Health == roundi(stats.max_health * grown.health * 2.5)
 				and is_equal_approx(enemy.base_damage, stats.base_damage * grown.damage * variety.elite().damage) and enemy.xp_reward == stats.xp_reward,
 				"level %d: an elite, HP %d, damage %.1f, XP %d" % [level, enemy.Max_Health, enemy.base_damage, enemy.xp_reward])
 		enemy.queue_free()
