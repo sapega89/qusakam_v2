@@ -45,8 +45,9 @@ undersized door), add `Back/Palace`, keep `MayorHallDoor` (1560, 300) — the pa
 and the guards where they stand (their 96-art frames flank the 112-art door, in the sheet's frame 7). Add
 `"PalaceSquare/MayorHallDoor": "the palace's painted double door"` to `PAINTED` in `verify_room_entrances.gd`.
 
-**The alley down** (graph: «провулок ↓» to the East Gate, closed until after the Laboratory) is not in the map yet
-(world-rooms: the East Gate is not built); no art for it here. When it comes, it is a door art of its own west of the
+**The alley down** (graph: «провулок ↓» to the East Gate) is not in the map yet (world-rooms: the East Gate is not
+built); no art for it here. The gate is not tied to the Laboratory (D917: the Laboratory's exit leads into the world,
+not back to the City); what lies behind it is Q126. When it comes, it is a door art of its own west of the
 fountain.
 
 **The scene is generated.** `Scripts/Tools/build_world_rooms.py` rewrites the new rooms (D833): wire these planes in the
