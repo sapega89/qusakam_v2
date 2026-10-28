@@ -132,7 +132,7 @@ func _spend_and_regen() -> void:
 	while bandit.enemy_logic.is_attacking:
 		await physics_frame
 	var after: float = st.current
-	await _place_hero(bandit, -900.0)  # герой далеко — ворог не б'є
+	await _place_hero(bandit, 900.0)  # герой далеко — ворог не б'є (на схід: захід дороги з M7 — прохід у CaveExit, D845)
 	bandit.enemy_logic.change_state(bandit.enemy_logic.AIState.IDLE)
 	await create_timer(st.delay * 0.5).timeout
 	ck(is_equal_approx(st.current, after) or st.current < after + 2.0, "no refill during the %.1f s delay (%.0f)" % [st.delay, st.current])
@@ -213,7 +213,7 @@ func _bar_when_engaged() -> void:
 	var bandit := await _spawn(BANDIT, 0.0)
 	while bandit.enemy_logic.is_attacking:
 		await physics_frame
-	await _place_hero(bandit, -1200.0)
+	await _place_hero(bandit, 1200.0)  # на схід: на заході за краєм дороги вже CaveExit (D845)
 	bandit.enemy_logic.change_state(bandit.enemy_logic.AIState.IDLE)
 	await create_timer(0.2).timeout
 	var poise: Control = bandit.find_children("PoiseBar", "", true, false)[0]

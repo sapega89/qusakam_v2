@@ -179,7 +179,11 @@ func _initialize() -> void:
 	for i in 30: await physics_frame
 	ck(game.map.get_current_state_name() == "APPROACH", "the raid does not re-fire 200 px away (%s)" % game.map.get_current_state_name())
 	ck(started.is_empty() and not player.event, "no raid lines, control kept (%s)" % [started])
-	ck(player.global_position.y > y0, "the hero falls after the teleport (y %.1f -> %.1f)" % [y0, player.global_position.y])
+	# B153: teleport_to_room сам ставить героя на підлогу під Arrival, тож «падає» він лише коли y0 узято раніше за ту
+	# постановку (гонка корутин; з merge integrate-31 вона частіше йде навпаки). Стала перевірка — він стоїть під міткою.
+	var mark: Node2D = game.map.get_node(^"Arrival")
+	ck(player.is_on_floor() and player.global_position.y >= y0 and absf(player.global_position.x - mark.global_position.x) < 16.0,
+			"the hero stands on the floor under the arrival (y %.1f -> %.1f, x %.1f)" % [y0, player.global_position.y, player.global_position.x])
 
 	print("[8] 8c/8d: the gatehouse is a passage the hero walks through, every gate layer behind him (D314), the road over its feet (D451); walking east loads the City")
 	for flag in ["city_gates_intro_complete", "city_gates_fight_complete", "city_gates_after_fight_complete"]:

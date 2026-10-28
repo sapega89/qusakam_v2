@@ -523,7 +523,13 @@ func _shield_spells() -> void:
 	await _hero_at_bandit()
 	st.refill()
 	_press(&"block")
-	for f in 2: await process_frame
+	# Блок піднімається у фізичному кадрі, щит — у наступному _process ShieldSpell: чекаємо блоку, тоді кадр.
+	for f in 10:
+		if combat.is_blocking():
+			break
+		await physics_frame
+	await process_frame
+	await process_frame
 	ck(spell.spell == &"magic" and magic.visible and magic.animation == &"drop" and not glass.visible,
 			"Shield Block raises the magic shield: it drops in (%s, %s)" % [spell.spell, magic.animation])
 	ck(is_equal_approx(spell.scale.x, 1.0), "facing right, the shield stands in front of him")

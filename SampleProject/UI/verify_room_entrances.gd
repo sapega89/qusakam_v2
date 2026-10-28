@@ -74,6 +74,9 @@ func _initialize() -> void:
 	save_system.set_save_dir(TEST_DIR)
 	save_system.set_current_slot(1)
 	game = await Kit.boot(self)
+	# Тест картинки й дверей, не бою: з D840/D841 герой 20-го рівня без вкладених очок (100 HP) гине від
+	# підлаштованих під нього ворогів на дорозі, і пауза смерті зупиняє решту перевірок.
+	game.player.set_invulnerable(true)
 	_open_everything()
 
 	print("[1] Every door: its entrance, the floor under it, the opening, the light, the way back")

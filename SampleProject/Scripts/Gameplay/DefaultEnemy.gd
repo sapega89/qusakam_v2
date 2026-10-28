@@ -558,7 +558,7 @@ func get_base_damage() -> int:
 
 ## Реалізація IDamageDealer.get_current_damage()
 func get_current_damage() -> int:
-	return int(damage)
+	return roundi(damage)  # B202: як EnemyLogic і BossLogic._damage — округлення, не відкидання дробу
 
 # === ПЕРЕВИЗНАЧЕНІ ФУНКЦІЇ ===
 
