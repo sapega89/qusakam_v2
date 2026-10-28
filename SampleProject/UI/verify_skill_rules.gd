@@ -139,11 +139,19 @@ func _initialize() -> void:
 	var combo: float = 0.0
 	for share: float in load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd").COMBO_DAMAGE:
 		combo += share * phys
+	# D-sv2ca1: навичка по гарді (Shield Bash, Stone Palm — «мало шкоди HP») вагома стійкістю: збиває більше за всю легку серію
+	var combat_script: GDScript = load("res://SampleProject/Scripts/Player/Components/PlayerCombat.gd")
+	var combo_poise: float = combat_script.COMBO_DAMAGE.size() * combat_script.POISE_LIGHT
 	var weak: Array[String] = []
 	for definition in db.get_all_skills():
-		if definition.is_active() and not definition.planned and definition.damage > 0 and sm.skill_damage(definition.id, 1) <= combo:
+		if not definition.is_active() or definition.planned or definition.damage <= 0:
+			continue
+		if definition.control_poise_x > 0.0:
+			if definition.control_poise_x * combat_script.POISE_HEAVY <= combo_poise:
+				weak.append("%s guard %.1f" % [definition.id, definition.control_poise_x * combat_script.POISE_HEAVY])
+		elif sm.skill_damage(definition.id, 1) <= combo:
 			weak.append("%s %d" % [definition.id, sm.skill_damage(definition.id, 1)])
-	ck(weak.is_empty(), "every built attack skill outhits a whole light combo (combo %.0f; not above it: %s)" % [combo, weak])
+	ck(weak.is_empty(), "every built attack skill outhits a whole light combo, a guard skill in poise (combo %.0f HP, %.0f poise; not above it: %s)" % [combo, combo_poise, weak])
 	var strength_before: int = sm.skill_damage("fire_strike")
 	sl.get_attribute_manager().spend({"strength": 5})
 	ck(sm.skill_damage("fire_strike") > strength_before, "more Phys. Atk. → more skill damage (%d → %d)" % [strength_before, sm.skill_damage("fire_strike")])
@@ -309,12 +317,18 @@ func _initialize() -> void:
 
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	# v2 зріз 3 (D812) збудував 6 навичок руху — запланованих лишилось 22
-	ck(planned.size() == 22 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "22 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D812) збудував 6 навичок руху, зріз 6a (D-sv2ca1) — 5 навичок контролю: запланованих лишилось 17
+	ck(planned.size() == 17 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "17 planned actives, all [DRAFT] (%d)" % planned.size())
 	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
 	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
 			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),
 			"the 6 movement skills are built: learnable, with a cast, an effect and synergies (%s)" % [moves.map(func(d) -> String: return d.id)])
+	var controls_built := true
+	for id in ["rising_slash", "ground_slam", "sweeping_arc", "shield_bash", "stone_palm"]:
+		var c = db.get_skill(id)
+		controls_built = controls_built and not c.planned and c.vfx.ends_with("ControlSkill.tscn") and c.release_pose != ""
+		controls_built = controls_built and c.synergies.size() in [1, 2] and (c.control_launch > 0.0 or c.control_knockdown > 0.0 or c.control_poise_x > 0.0)
+	ck(controls_built, "the 5 control skills are built (D-sv2ca1): learnable, with a cast, an effect, synergies and a control block")
 	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
 	var unnumbered: Array = raw.filter(func(e: Dictionary) -> bool:
 			return e.get("planned", false) and (not e.has("sp_cost") or e.get("draft", {}).is_empty() or not ResourceLoader.exists(e.icon)))
@@ -325,12 +339,12 @@ func _initialize() -> void:
 			refused = false
 			print("    learnable: ", d.id)
 	ck(refused and sm.get_unlocked_skills().is_empty(), "level 20, %d JP, sworn: every planned skill → PLANNED, nothing learned" % sm.get_job_points())
-	gm.player_state.unlocked_skills.append("rising_slash")  # навіть якщо потрапила в стан (старий сейв) — не б'є
+	gm.player_state.unlocked_skills.append("soul_harvest")  # навіть якщо потрапила в стан (старий сейв) — не б'є
 	sm.restore_sp(100)
-	ck(sm.can_use_skill("rising_slash") == R.PLANNED and sm.cast_skill("rising_slash") == R.PLANNED and sm.use_skill("rising_slash", enemy) == R.PLANNED,
+	ck(sm.can_use_skill("soul_harvest") == R.PLANNED and sm.cast_skill("soul_harvest") == R.PLANNED and sm.use_skill("soul_harvest", enemy) == R.PLANNED,
 			"a planned skill in the state still cannot be cast or used")
-	ck(sm.can_upgrade("rising_slash") == R.PLANNED, "nor ranked up")
-	gm.player_state.unlocked_skills.erase("rising_slash")
+	ck(sm.can_upgrade("soul_harvest") == R.PLANNED, "nor ranked up")
+	gm.player_state.unlocked_skills.erase("soul_harvest")
 	var plan_v2 = load("res://SampleProject/Scripts/Systems/SkillPlan.gd").new(sm, sl.get_attribute_manager())
 	ck(plan_v2.can_pick("lightspear") == R.PLANNED, "the skill screen's plan refuses it too")
 

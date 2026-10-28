@@ -911,6 +911,32 @@ func knockback(push: float) -> void:
 	if not knockback_immune and not holds_ground():
 		enemy_logic.start_knockback(push)
 
+## Підкидання (Rising Slash, D-sv2ca1): легкий ворог злітає на [param time] с (угору й униз на ту саму висоту), замах
+## зірвано, поза збою. Важкий (великий, у броні, бос) і летючий — ні: удар лише ранить.
+func launch(time: float) -> void:
+	if not can_be_thrown():
+		return
+	enemy_logic.stagger(time)
+	enemy_logic.jump_speed = float(ProjectSettings.get_setting("physics/2d/default_gravity")) * time / 2.0
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_staggered.emit(self, time)
+
+## Чи можна ворога підкинути (D-sv2ca1): не великий, не в броні (tank, D208), не бос, не летючий.
+func can_be_thrown() -> bool:
+	return not (knockback_immune or super_armor or flying or size_kind == "large")
+
+## Збиття з ніг (Ground Slam, Sweeping Arc, D-sv2ca1): ворог лежить [param time] с у позі збою, замах зірвано — і в броні,
+## і після підказки. Бос не падає (B134): лише оглушення, яке його броня й замах після підказки не пускають.
+func knock_down(time: float) -> void:
+	if knockback_immune:
+		stun(time)
+		return
+	enemy_logic.stagger(time)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_staggered.emit(self, time)
+
 ## Замах і удар стоять на місці (D754): поштовх їх не зсуває й не зриває — серію ламає лише збій (стійкість, парирування).
 ## Інакше кожен фінішер героя відкидав ворога з його дальності посеред замаху, і той не бив зовсім.
 func holds_ground() -> bool:

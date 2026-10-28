@@ -1,0 +1,43 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/ControlSkillFX.gd" id="fx"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_1.png" id="ring1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_2.png" id="ring2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/FX/Smear/slam_ring_3.png" id="ring3"]
+
+[sub_resource type="SpriteFrames" id="RingFrames"]
+animations = [{"frames": [{"duration": 1.0, "texture": ExtResource("ring1")}, {"duration": 1.0, "texture": ExtResource("ring2")}, {"duration": 1.0, "texture": ExtResource("ring3")}], "loop": false, "name": &"default", "speed": 15.0}]
+
+[node name="ControlSkill" type="Node2D"]
+z_index = 250
+script = ExtResource("fx")
+metadata/_doc = "Effects of the control skills (v2 slice 6a, D-sv2ca1): borrowed placeholders until the ComfyUI lane draws their own"
+
+[node name="Hand" type="Marker2D" parent="."]
+position = Vector2(36, -2)
+scale = Vector2(1.3, 1.3)
+metadata/_doc = "release: the hero swing smear at the hand (as MoveSkill.tscn Hand, WeaponView.SMEAR_SCALE)"
+
+[node name="Low" type="Marker2D" parent="."]
+position = Vector2(48, 14)
+scale = Vector2(1.8, 0.9)
+metadata/_doc = "release: Sweeping Arc, a wide flat arc low over the ground in front"
+
+[node name="Palm" type="Marker2D" parent="."]
+position = Vector2(30, -6)
+scale = Vector2(1.6, 1.6)
+metadata/_doc = "release: Stone Palm, a bigger punch burst at the open palm"
+
+[node name="Feet" type="Marker2D" parent="."]
+position = Vector2(0, 24)
+metadata/_doc = "release: the ground under the hero (body collision bottom)"
+
+[node name="SlamRing" type="AnimatedSprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(0, 24)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("RingFrames")
+animation = &"default"
+offset = Vector2(0.5, -2)
+metadata/_doc = "Ground Slam: the leap slams' impact ring (borrowed), centre (47.5, 14) on Feet"

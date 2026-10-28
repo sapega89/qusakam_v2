@@ -50,12 +50,39 @@ static func enemies_around(player: Node2D, reach: float) -> Array[Node]:
 
 ## Кого б'є навичка без явної цілі: навичка руху — за move_hits, решта — усі перед героєм (D142).
 static func skill_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	if definition.control_hits != "":
+		return control_targets(definition, player)
 	match definition.move_hits:
 		"first":
 			return first_in_front(player)
 		"around":
 			return enemies_around(player, definition.move_reach)
 	return enemies_in_front(player)
+
+
+## Ціль навички контролю (D-sv2ca1) за control_hits: first — найближчий перед героєм, front — усі перед ним до
+## control_reach px від тіла, around — усі в control_reach px по обидва боки.
+static func control_targets(definition: SkillDefinition, player: Node2D) -> Array[Node]:
+	match definition.control_hits:
+		"first":
+			return first_in_front(player)
+		"front":
+			return enemies_ahead(player, definition.control_reach)
+		"around":
+			return enemies_around(player, definition.control_reach)
+	assert(false, "SkillTargeting.control_targets: %s has control.hits %s" % [definition.id, definition.control_hits])
+	return []
+
+
+## Живі вороги, чия зона-ціль перед героєм не далі [param reach] px від передньої межі його тіла (низький розмах дуги).
+static func enemies_ahead(player: Node2D, reach: float) -> Array[Node]:
+	var body: Rect2 = player.body_rect()
+	var area := body.grow_individual(0.0, 0.0, reach, 0.0) if player.last_direction > 0 else body.grow_individual(reach, 0.0, 0.0, 0.0)
+	var out: Array[Node] = []
+	for enemy in GameGroups.get_nodes_in_group(GameGroups.ENEMIES):
+		if enemy.is_alive() and area.intersects(enemy.hurt_rect()):
+			out.append(enemy)
+	return out
 
 
 ## Ланцюг (D207): найближчий живий ворог у [param radius] від [param from], крім уже вражених.
