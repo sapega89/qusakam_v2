@@ -1,49 +1,42 @@
 [gd_scene format=3 uid="uid://c3i83tta1lwd3"]
 
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_far.png" id="w1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_wall.png" id="w2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/CaveExit/gen_far.png" id="w1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/CaveExit/gen_wall.png" id="w2"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/LizardCave/gen_floor.png" id="w3"]
-[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w4"]
-[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w5"]
-[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w6"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/CaveExit/gen_rubble.png" id="w4"]
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/foreground_dark.tscn" id="w5"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/BridgeCave/gen_front.png" id="w6"]
+[ext_resource type="TileSet" path="res://SampleProject/Resources/DesertTileset.tres" id="w7"]
+[ext_resource type="PackedScene" path="res://addons/MetroidvaniaSystem/Nodes/RoomInstance.tscn" id="w8"]
+[ext_resource type="AudioStream" path="res://SampleProject/Resources/Audio/Music/canyon_echoes.ogg" id="w9"]
 
 [node name="CaveExit" type="Node2D"]
 
 [node name="Back" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Far" type="Parallax2D" parent="Back"]
-scroll_scale = Vector2(0.4, 1)
-repeat_size = Vector2(1728, 0)
-repeat_times = 2
-
-[node name="Sprite1" type="Sprite2D" parent="Back/Far"]
-texture_filter = 1
-position = Vector2(0, -3)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("w1")
-centered = false
-
-[node name="Mid" type="Parallax2D" parent="Back"]
-scroll_scale = Vector2(0.8, 1)
-repeat_size = Vector2(864, 0)
-repeat_times = 3
-
-[node name="Sprite1" type="Sprite2D" parent="Back/Mid"]
-texture_filter = 1
-position = Vector2(0, -3)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("w2")
-centered = false
+[node name="Backstop" type="Polygon2D" parent="Back"]
+color = Color(0.13, 0.1, 0.1, 1)
+polygon = PackedVector2Array(0, 0, 864, 0, 864, 960, 0, 960)
 
 [node name="Ground" type="Node2D" parent="."]
 z_index = -9
 
-[node name="Fill1" type="Polygon2D" parent="Ground"]
-color = Color(0.13, 0.1, 0.1, 1)
-polygon = PackedVector2Array(0, 408, 864, 408, 864, 480, 0, 480)
+[node name="Far" type="Sprite2D" parent="Ground"]
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w1")
+centered = false
 
-[node name="Floor1" type="Sprite2D" parent="Ground"]
+[node name="Wall" type="Sprite2D" parent="Ground"]
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w2")
+centered = false
+
+[node name="Floor" type="Sprite2D" parent="Ground"]
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(0, 384)
@@ -53,12 +46,39 @@ centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 576, 49)
 
+[node name="FloorUnder" type="Sprite2D" parent="Ground"]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0, 457.5)
+scale = Vector2(1.5, 23.5)
+texture = ExtResource("w3")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 48, 576, 1)
+
+[node name="Rubble" type="Sprite2D" parent="."]
+z_index = -2
+texture_filter = 1
+position = Vector2(87, 348)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w4")
+centered = false
+
+[node name="FrontDark" parent="." instance=ExtResource("w5")]
+
+[node name="OccluderStalactites" type="Sprite2D" parent="FrontDark"]
+texture_filter = 1
+position = Vector2(338.1, 0)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("w6")
+centered = false
+
 [node name="TileMap" type="Node2D" parent="."]
 
 [node name="Foreground" type="TileMapLayer" parent="TileMap"]
 visible = false
 tile_map_data = PackedByteArray("AAD//wwAAQAIAAcAAAAAAAwAAQAIAAcAAAABAAwAAQAIAAcAAAACAAwAAQAIAAcAAAADAAwAAQAIAAcAAAAEAAwAAQAIAAcAAAAFAAwAAQAIAAcAAAAGAAwAAQAIAAcAAAAHAAwAAQAIAAcAAAAIAAwAAQAIAAcAAAAJAAwAAQAIAAcAAAAKAAwAAQAIAAcAAAALAAwAAQAIAAcAAAAMAAwAAQAIAAcAAAANAAwAAQAIAAcAAAAOAAwAAQAIAAcAAAAPAAwAAQAIAAcAAAAQAAwAAQAIAAcAAAARAAwAAQAIAAcAAAASAAwAAQAIAAcAAAATAAwAAQAIAAcAAAAUAAwAAQAIAAcAAAAVAAwAAQAIAAcAAAAWAAwAAQAIAAcAAAAXAAwAAQAIAAcAAAAYAAwAAQAIAAcAAAAZAAwAAQAIAAcAAAAaAAwAAQAIAAcAAAAbAAwAAQAIAAcAAAD//w0AAQAIAAcAAAAAAA0AAQAIAAcAAAABAA0AAQAIAAcAAAACAA0AAQAIAAcAAAADAA0AAQAIAAcAAAAEAA0AAQAIAAcAAAAFAA0AAQAIAAcAAAAGAA0AAQAIAAcAAAAHAA0AAQAIAAcAAAAIAA0AAQAIAAcAAAAJAA0AAQAIAAcAAAAKAA0AAQAIAAcAAAALAA0AAQAIAAcAAAAMAA0AAQAIAAcAAAANAA0AAQAIAAcAAAAOAA0AAQAIAAcAAAAPAA0AAQAIAAcAAAAQAA0AAQAIAAcAAAARAA0AAQAIAAcAAAASAA0AAQAIAAcAAAATAA0AAQAIAAcAAAAUAA0AAQAIAAcAAAAVAA0AAQAIAAcAAAAWAA0AAQAIAAcAAAAXAA0AAQAIAAcAAAAYAA0AAQAIAAcAAAAZAA0AAQAIAAcAAAAaAA0AAQAIAAcAAAAbAA0AAQAIAAcAAAD//w4AAQAIAAcAAAAAAA4AAQAIAAcAAAABAA4AAQAIAAcAAAACAA4AAQAIAAcAAAADAA4AAQAIAAcAAAAEAA4AAQAIAAcAAAAFAA4AAQAIAAcAAAAGAA4AAQAIAAcAAAAHAA4AAQAIAAcAAAAIAA4AAQAIAAcAAAAJAA4AAQAIAAcAAAAKAA4AAQAIAAcAAAALAA4AAQAIAAcAAAAMAA4AAQAIAAcAAAANAA4AAQAIAAcAAAAOAA4AAQAIAAcAAAAPAA4AAQAIAAcAAAAQAA4AAQAIAAcAAAARAA4AAQAIAAcAAAASAA4AAQAIAAcAAAATAA4AAQAIAAcAAAAUAA4AAQAIAAcAAAAVAA4AAQAIAAcAAAAWAA4AAQAIAAcAAAAXAA4AAQAIAAcAAAAYAA4AAQAIAAcAAAAZAA4AAQAIAAcAAAAaAA4AAQAIAAcAAAAbAA4AAQAIAAcAAAA=")
-tile_set = ExtResource("w4")
+tile_set = ExtResource("w7")
 
 [node name="Arrival" type="Marker2D" parent="."]
 position = Vector2(432, 360)
@@ -68,10 +88,10 @@ position = Vector2(432, 360)
 [node name="city_gates" type="Marker2D" parent="ObjectiveTargets"]
 position = Vector2(820, 340)
 
-[node name="RoomInstance" parent="." instance=ExtResource("w5")]
+[node name="RoomInstance" parent="." instance=ExtResource("w8")]
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
-stream = ExtResource("w6")
+stream = ExtResource("w9")
 autoplay = true
 bus = &"Music"

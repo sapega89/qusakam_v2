@@ -129,12 +129,14 @@ ROOMS = {
     "CanyonFloor": dict(loc="canyon_of_whispers", kit="desert", cells=(-1, 5, 4, 1), open=[(0, "R")],
                         holes=[(0, 2912, 3104)],
                         title=("Canyon Floor", "Дно каньйону"), arrival=(0, 2600),
-                        doors=[("StashDoor", 0, 300, "cave_mouth", "SmugglersStash", "ExitDoor", {"cover": "Wall_Stash"})],
-                        covers=[("Wall_Stash", 0, 300)],
+                        # Тріщина в мертвій скелі (CanyonFloor/README): намальований отвір, брила — замурована тріщина.
+                        doors=[("StashDoor", 0, 300, None, "SmugglersStash", "ExitDoor", {"cover": "Wall_Stash"})],
+                        covers=[("Wall_Stash", 0, 300, "CanyonFloor/gen_cracked.png")],
                         targets={"city_gates": (0, 3420)}),
     "SmugglersStash": dict(loc="canyon_of_whispers", kit="cave", cells=(-1, 6, 1, 1),
-                           title=("Smugglers' Stash", "Схованка контрабандистів"), arrival=(0, 432),
-                           doors=[("ExitDoor", 0, 432, "cave_mouth", "CanyonFloor", "StashDoor", {})],
+                           # Вихід — намальований тунель до розбитої стіни (SmugglersStash/README): x 192.
+                           title=("Smugglers' Stash", "Схованка контрабандистів"), arrival=(0, 192),
+                           doors=[("ExitDoor", 0, 192, None, "CanyonFloor", "StashDoor", {})],
                            secrets=[("SecretArea_Stash", 0, 640)]),
     "LizardCaves": dict(loc="canyon_of_whispers", kit="cave", cells=(2, 6, 6, 1),
                         title=("Lizard Caves", "Печери ящерів"), arrival=(0, 600),
@@ -158,17 +160,20 @@ ROOMS = {
                         title=("Dry Riverbed", "Сухе русло"), arrival=(0, 300), targets={"city_gates": (0, 690)}),
     "Aqueduct": dict(loc="canyon_of_whispers", kit="cellar", cells=(16, 7, 4, 1), open=[(0, "L")],
                      title=("Aqueduct", "Акведук"), arrival=(0, 600),
-                     doors=[("ApproachDoor", 0, 2900, "cave_mouth", "GateApproach", "AqueductDoor", {}),
-                            ("CellarDoor", 0, 3300, "cave_mouth", "GatehouseCellar", "AqueductDoor",
+                     # Обидва проходи намальовані (Aqueduct/README): бічні двері зі сходами й арка льоху з ґратою.
+                     doors=[("ApproachDoor", 0, 2891, None, "GateApproach", "AqueductDoor", {}),
+                            ("CellarDoor", 0, 3291, None, "GatehouseCellar", "AqueductDoor",
                              {"gate": "aqueduct_cellar"})],
                      targets={"city_gates": (0, 2900)}),
     "OldRuins": dict(loc="canyon_of_whispers", kit="cellar", cells=(11, 7, 5, 1), open=[(0, "R")],
                      title=("Old Ruins", "Старі руїни"), arrival=(0, 300),
-                     doors=[("WellDoor", 0, 160, "cave_mouth", "ZahraRest", "WellDoor", {})]),
+                     doors=[("WellDoor", 0, 151, None, "ZahraRest", "WellDoor", {})]),  # шахта криниці (OldRuins/README)
     "GateApproach": dict(loc="canyon_of_whispers", kit="desert", cells=(17, 5, 2, 1), open=[(0, "L"), (0, "R")],
                          title=("Gate Approach", "Підхід до брами"), arrival=(0, 900),
-                         doors=[("AqueductDoor", 0, 1300, "cave_mouth", "Aqueduct", "ApproachDoor", {})],
-                         levers=[("BridgeLever", 0, 110, "chasm_bridge_down")],
+                         # Криничний будиночок (GateApproach/README): намальований отвір; важіль — у кам'яному корпусі
+                         # з храповиком (його Base ховається, ручка — на осі колеса, 16 px над підлогою).
+                         doors=[("AqueductDoor", 0, 1291, None, "Aqueduct", "ApproachDoor", {})],
+                         levers=[("BridgeLever", 0, 110, "chasm_bridge_down", {"base": False, "handle_y": -16})],
                          targets={"city_gates": (0, 1700)}),
     # ── M3: Місто ──
     "CraftQuarter": dict(loc="city", kit="city", cells=(24, 5, 3, 1), open=[(0, "L"), (0, "R")],
@@ -362,6 +367,87 @@ PAINTED = {
                   ("Ground", "ZahraRest/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 1152, 67)}),
                   # README ставить y 219 — ступня 444, у кадрі; заслін D750 має ступню нижче кадру (verify_room_entrances п. 4).
                   ("OccluderReeds", "ZahraRest/gen_front.png", "front", (1684.5, 275), {})],
+    # ── wire-backdrops-2: решта каньйону (README кожної теки; позиції — світ кімнати, підлога 384, камера x 0) ──
+    # Дорога пустелею: спільні плани продовжують Зарин привал (scroll_offset Plan3 і зсув дюн — −f × відстань до дюн).
+    "Dunes": [("backdrop", {"Plan3": "scroll_offset = Vector2(518.4, 0)"}),
+              ("Dunes", "Dunes/gen_dunes.png", (0.5, 1), (0, 105), {"tile": 576}),
+              ("Colossus", "Dunes/gen_colossus.png", (0.6, 1), (991.5, 132), {}),
+              ("Near", "Dunes/gen_near.png", (0.8, 1), (0, 225), {"tile": 576}),
+              ("Slope", "Dunes/gen_slope.png", (0.85, 1), (1498.5, 45), {}),
+              ("Stake", "Dunes/gen_stake.png", (0.9, 1), (603, 216), {}),
+              # Стежка до табору — лише картинка: табір досі відчиняється з дороги (Dunes/README, CampDoor — пізніше).
+              ("CampTrail", "Dunes/gen_trailhead.png", "room", (2619, 219), {"z": -2}),
+              ("Ground", "Dunes/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 2304, 64)}),
+              ("OccluderThorn1", "Dunes/gen_front.png", "front", (1131, 279), {}),
+              ("OccluderThorn2", "Dunes/gen_front.png", "front", (2554.5, 279), {})],
+    "Chasm": [("backdrop", {"Plan3": "scroll_offset = Vector2(345.6, 0)"}),
+              ("City", "Chasm/gen_city.png", (0.4, 1), (433.5, 69), {}),
+              ("Dunes", "Dunes/gen_dunes.png", (0.5, 1), (0, 105), {"tile": 576}),
+              ("Near", "Dunes/gen_near.png", (0.8, 1), (691.2, 225), {"tile": 576}),
+              ("Winch", "Chasm/gen_winch.png", "room", (714, 243), {"z": -2}),
+              # Обидва краї й провалля між ними — одна смуга (без лінії підлоги над проваллям).
+              ("Chasm", "Chasm/gen_ground.png", (1, 1), (0, 384), {}),
+              ("OccluderSpur", "Chasm/gen_front.png", "front", (315, 393), {})],
+    "GateApproach": [("backdrop", {"Plan3": "scroll_offset = Vector2(86.4, 0)"}),
+                     ("Dunes", "Dunes/gen_dunes.png", (0.5, 1), (432, 105), {"tile": 576}),
+                     ("City", "GateApproach/gen_city.png", (0.55, 1), (805.5, 57), {}),
+                     ("Ruins", "GateApproach/gen_ruins.png", (0.75, 1), (325.5, 121.5), {}),
+                     ("Near", "Dunes/gen_near.png", (0.8, 1), (0, 225), {"tile": 576}),
+                     ("WellHouse", "GateApproach/gen_pump.png", "room", (1102.5, 70.5), {"z": -2}),
+                     # Корпус важеля з ланцюгом від лебідки провалля — перед BridgeLever у дереві.
+                     ("LeverHousing", "GateApproach/gen_lever.png", "room", (-4.5, 351), {"z": -2}),
+                     ("Ground", "GateApproach/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 1152, 64)}),
+                     ("OccluderPillar", "GateApproach/gen_front.png", "front", (835.5, 174), {})],
+    # Дно каньйону: мертва скеля з тріщиною схованки на заході, провал у печери ящерів, гирло печери на сході.
+    "CanyonFloor": [("Far", "CanyonFloor/gen_far.png", (0.45, 1), (0, 0), {"tile": 576}),
+                    ("Mid", "CanyonFloor/gen_mid.png", (0.75, 1), (0, 204), {"tile": 576}),
+                    ("Cart", "CanyonFloor/gen_cart.png", (0.9, 1), (1314, 301.5), {}),
+                    ("Cliff", "CanyonFloor/gen_cliff.png", "room", (0, 0), {"z": -2}),
+                    ("Mouth", "CanyonFloor/gen_mouth.png", "room", (2592, 0), {"z": -2}),
+                    ("Floor", "CanyonFloor/gen_ground.png", (1, 1), (0, 384), {}),
+                    ("OccluderRock1", MP + "gen_front.png", "front", (1281, 228), {}),
+                    ("OccluderRock2", MP + "gen_front.png", "front", (2646, 228), {"flip": True})],
+    # Під землею: один екран (русло, вихід з печери, схованка) — камера стоїть; руїни й акведук — 5 і 4 клітинки.
+    "DryRiverbed": [("Far", "DryRiverbed/gen_far.png", (0.45, 1), (0, 0), {}),
+                    ("Banks", "DryRiverbed/gen_banks.png", (0.75, 1), (0, 237), {}),
+                    ("Boat", "DryRiverbed/gen_boat.png", (0.85, 1), (162, 307.5), {}),
+                    ("Riverbed", "DryRiverbed/gen_ground.png", (1, 1), (0, 384), {}),
+                    ("OccluderBoulders", "DryRiverbed/gen_front.png", "front", (-97.5, 375), {})],
+    "CaveExit": [("Far", "CaveExit/gen_far.png", (1, 1), (0, 0), {"under": False}),
+                 ("Wall", "CaveExit/gen_wall.png", (1, 1), (0, 0), {"under": False}),
+                 ("Floor", "LizardCave/gen_floor.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 576, 49)}),
+                 ("Rubble", "CaveExit/gen_rubble.png", "room", (87, 348), {"z": -2}),
+                 ("OccluderStalactites", "BridgeCave/gen_front.png", "front", (496.5, 0), {})],
+    "SmugglersStash": [("Far", "SmugglersStash/gen_wall.png", (1, 1), (0, 0), {"under": False}),  # з піщаною підлогою
+                       ("Goods", "SmugglersStash/gen_goods.png", "room", (405, 267), {"z": -2}),
+                       # README ставить x 496.5 — посеред кадру, а камера тут завжди на межі кімнати: заслін ×1.3
+                       # лише краєм кадру (B177, verify_room_entrances _check_limits) — у правому куті над кілками.
+                       ("OccluderStalactites", "BridgeCave/gen_front.png", "front", (775, 0), {})],
+    "OldRuins": [("Far", "OldRuins/gen_far.png", (0.45, 1), (0, 0), {"tile": 576}),
+                 ("Arcade", "OldRuins/gen_arcade.png", (0.75, 1), (0, 24), {"tile": 576}),
+                 ("Statue", "OldRuins/gen_statue.png", (0.85, 1), (1326, 183), {}),
+                 ("Relief", "OldRuins/gen_relief.png", (0.9, 1), (1867.5, 192), {}),
+                 # Шахта криниці — перед стелею: її верх ховає стеля.
+                 ("Well", "OldRuins/gen_well.png", "room", (72, -6), {"z": -2}),
+                 ("Ceiling", "OldRuins/gen_ceiling.png", "room", (0, 0), {"z": -2, "region": (0, 0, 2880, 110), "repeat": True}),
+                 ("Arch", "OldRuins/gen_arch.png", "room", (4095, 171), {"z": -2}),
+                 ("Ground", "OldRuins/gen_floor.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 2880, 64)}),
+                 ("OccluderColumn1", "OldRuins/gen_front.png", "front", (1213.5, -21), {}),
+                 ("OccluderColumn2", "OldRuins/gen_front.png", "front", (4138.5, -21), {})],
+    "Aqueduct": [("Far", "Aqueduct/gen_far.png", (0.45, 1), (0, 0), {"tile": 576}),
+                 ("Piers", "Aqueduct/gen_arcade.png", (0.75, 1), (0, 36), {"tile": 576}),
+                 ("Wheel", "Aqueduct/gen_wheel.png", (0.85, 1), (1302, 207), {}),
+                 ("Spout", "Aqueduct/gen_spout.png", (0.9, 1), (2085, 195), {}),
+                 ("Rubble", "Aqueduct/gen_rubble.png", "room", (3348, 0), {"z": -2}),
+                 ("Ceiling", "Aqueduct/gen_ceiling.png", "room", (0, 0), {"z": -2}),  # з проломом під руслом (567…809)
+                 ("RuinsArch", "OldRuins/gen_arch.png", "room", (-99, 171), {"z": -2, "flip": True}),
+                 ("Stair", "Aqueduct/gen_stair.png", "room", (2833.5, 198), {"z": -2}),
+                 ("CellarArch", "Aqueduct/gen_cellar.png", "room", (3156, 142.5), {"z": -2}),
+                 # Ґрата льоху — доки важіль у льоху не поставив прапорець брами aqueduct_cellar (FlagGrate.gd).
+                 ("CellarGrate", "Aqueduct/gen_grate.png", "room", (3156, 142.5), {"z": -2, "flag": "aqueduct_cellar_open"}),
+                 ("Ground", "Aqueduct/gen_floor.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 2304, 64)}),
+                 ("OccluderPier1", "Aqueduct/gen_front.png", "front", (2085, -21), {}),
+                 ("OccluderPier2", "Aqueduct/gen_front.png", "front", (3060, -21), {})],
 }
 # Розміри арту, px (для повторів і низу кімнати).
 PAINTED_SIZE = {
@@ -379,6 +465,27 @@ PAINTED_SIZE = {
     "MesaClimb/gen_floor.png": (876, 44), "Canyon/gen_rock.png": (156, 114),
     "ZahraRest/gen_mid.png": (507, 250), "ZahraRest/gen_camp.png": (175, 136), "ZahraRest/gen_palm.png": (161, 230),
     "ZahraRest/gen_well.png": (97, 112), "ZahraRest/gen_ground.png": (576, 67), "ZahraRest/gen_front.png": (192, 150),
+    "Dunes/gen_colossus.png": (178, 154), "Dunes/gen_dunes.png": (576, 240), "Dunes/gen_front.png": (160, 150),
+    "Dunes/gen_ground.png": (576, 64), "Dunes/gen_near.png": (576, 120), "Dunes/gen_slope.png": (614, 236),
+    "Dunes/gen_stake.png": (77, 115), "Dunes/gen_trailhead.png": (109, 112),
+    "Chasm/gen_city.png": (262, 115), "Chasm/gen_front.png": (181, 150), "Chasm/gen_ground.png": (576, 64),
+    "Chasm/gen_winch.png": (105, 96),
+    "GateApproach/gen_city.png": (359, 158), "GateApproach/gen_front.png": (242, 220), "GateApproach/gen_ground.png": (576, 64),
+    "GateApproach/gen_lever.png": (88, 24), "GateApproach/gen_pump.png": (251, 211), "GateApproach/gen_ruins.png": (346, 135),
+    "CanyonFloor/gen_cart.png": (107, 58), "CanyonFloor/gen_cliff.png": (576, 264), "CanyonFloor/gen_far.png": (576, 324),
+    "CanyonFloor/gen_ground.png": (2304, 64), "CanyonFloor/gen_mid.png": (576, 200), "CanyonFloor/gen_mouth.png": (576, 264),
+    "DryRiverbed/gen_banks.png": (576, 120), "DryRiverbed/gen_boat.png": (84, 54), "DryRiverbed/gen_far.png": (576, 324),
+    "DryRiverbed/gen_front.png": (210, 150), "DryRiverbed/gen_ground.png": (576, 64),
+    "CaveExit/gen_far.png": (576, 324), "CaveExit/gen_rubble.png": (95, 26), "CaveExit/gen_wall.png": (576, 264),
+    "LizardCave/gen_floor.png": (576, 49),
+    "SmugglersStash/gen_goods.png": (120, 80), "SmugglersStash/gen_wall.png": (576, 324),
+    "OldRuins/gen_arcade.png": (576, 240), "OldRuins/gen_arch.png": (215, 144), "OldRuins/gen_ceiling.png": (576, 110),
+    "OldRuins/gen_far.png": (576, 324), "OldRuins/gen_floor.png": (576, 64), "OldRuins/gen_front.png": (128, 340),
+    "OldRuins/gen_relief.png": (160, 130), "OldRuins/gen_statue.png": (81, 136), "OldRuins/gen_well.png": (105, 262),
+    "Aqueduct/gen_arcade.png": (576, 240), "Aqueduct/gen_ceiling.png": (2304, 110), "Aqueduct/gen_cellar.png": (181, 163),
+    "Aqueduct/gen_far.png": (576, 324), "Aqueduct/gen_floor.png": (576, 64), "Aqueduct/gen_front.png": (135, 340),
+    "Aqueduct/gen_grate.png": (181, 163), "Aqueduct/gen_rubble.png": (102, 258), "Aqueduct/gen_spout.png": (70, 86),
+    "Aqueduct/gen_stair.png": (77, 126), "Aqueduct/gen_wheel.png": (113, 122),
 }
 
 
@@ -597,7 +704,7 @@ class Room(Scene):
                 self.node(self._sprite(name, "Ground", tex, pos, ex))
                 x0, w_art, bottom = pos[0], tw, pos[1] + th * 1.5
                 region = (0, 0, tw, th)
-            if bottom < self.h:
+            if bottom < self.h and ex.get("under", True):
                 # Низ кімнати під артом: його ж нижній рядок, розтягнутий донизу.
                 self.node(self._sprite(name + "Under", "Ground", tex, (x0, bottom),
                                        {"region": (region[0], region[1] + region[3] - 1, w_art, 1), "repeat": "tile" in ex,
@@ -620,6 +727,8 @@ class Room(Scene):
             body += '\nz_index = %d' % ex["z"]
         if "material" in ex:
             body += '\nmaterial = %s' % self.res("Material", ex["material"])
+        if "flag" in ex:
+            body += '\nscript = %s\nflag = "%s"' % (self.res("Script", "res://SampleProject/Scripts/Gameplay/FlagGrate.gd"), ex["flag"])
         body += '\ntexture_filter = 1'
         if ex.get("repeat"):
             body += '\ntexture_repeat = 2'
@@ -627,6 +736,8 @@ class Room(Scene):
             round(pos[0], 1), round(pos[1], 1), s, ex.get("scale_y", s), self.res("Texture2D", BG + tex))
         if not ex.get("centered"):
             body += '\ncentered = false'
+        if ex.get("flip"):
+            body += '\nflip_h = true'
         if "region" in ex:
             body += '\nregion_enabled = true\nregion_rect = Rect2(%g, %g, %g, %g)' % tuple(round(v, 1) for v in ex["region"])
         return body
@@ -661,24 +772,29 @@ class Room(Scene):
             return
         a, b, flag = spec
         script = self.res("Script", "res://SampleProject/Scripts/Gameplay/FlagBridge.gd")
-        tex = self.res("Texture2D", BG + "Canyon/gen_bridge.png")
+        tex = self.res("Texture2D", BG + "Chasm/gen_bridge.png")
         # Опора — на східному краю провалля: звідти міст опускають (важіль на підході до брами).
         self.node('[node name="Bridge" type="StaticBody2D" parent="."]\nposition = Vector2(%g, %g)\nscript = %s\nflag = "%s"'
                   % (b, FLOOR, script, flag))
         self.node('[node name="CollisionShape2D" type="CollisionShape2D" parent="Bridge"]\nposition = Vector2(%g, 8)\nshape = %s'
                   % (-(b - a) / 2, self.rect(b - a, 16)))
-        self.node('[node name="Plank" type="Sprite2D" parent="Bridge"]\nz_index = -8\ntexture_filter = 1\ntexture = %s\n'
-                  'centered = false\noffset = Vector2(%g, -8)\nregion_enabled = true\nregion_rect = Rect2(0, 0, %g, 46)'
-                  % (tex, -(b - a), b - a))
+        # Підйомний міст провалля (Chasm/README): рядок 0 — верх настилу, опущений лежить точно на колізії.
+        self.node('[node name="Plank" type="Sprite2D" parent="Bridge"]\nz_index = -8\ntexture_filter = 1\nscale = Vector2(1.5, 1.5)\n'
+                  'texture = %s\ncentered = false\noffset = Vector2(%g, 0)' % (tex, -(b - a) / 1.5))
 
     def content(self) -> None:
         sp = self.spec
         row, x = sp["arrival"]
         self.node('[node name="Arrival" type="Marker2D" parent="."]\nposition = Vector2(%g, %g)' % (x, self.floor_y(row) - 24))
-        for name, row, x in sp.get("covers", []):
+        for name, row, x, *art in sp.get("covers", []):
             self.node('[node name="%s" parent="." instance=%s]\nposition = Vector2(%g, %g)\ncollision_layer = 0'
                       % (name, self.res("PackedScene", WALL), x, self.floor_y(row)))
-            self.node('[node name="Sprite" parent="%s" index="0"]\nz_index = -1\nscale = Vector2(1, 1)\noffset = Vector2(0, -50)' % name)
+            if art:
+                # Намальована замурована тріщина (CanyonFloor/README): низ на 2 px арту під лінією ходу.
+                self.node('[node name="Sprite" parent="%s" index="0"]\nz_index = -1\ntexture = %s\noffset = Vector2(0, -60)'
+                          % (name, self.res("Texture2D", BG + art[0])))
+            else:
+                self.node('[node name="Sprite" parent="%s" index="0"]\nz_index = -1\nscale = Vector2(1, 1)\noffset = Vector2(0, -50)' % name)
         if "table" in sp:
             row, x = sp["table"]
             self.node('[node name="Table" type="Sprite2D" parent="."]\nz_index = -3\ntexture_filter = 1\nposition = Vector2(%g, %g)\n'
@@ -686,8 +802,12 @@ class Room(Scene):
                       % (x, self.floor_y(row), self.res("Texture2D", BG + "Lab/gen_table.png")))
         for name, row, x, art, target, arrival, extra in sp.get("doors", []):
             add_door(self, name, x, self.floor_y(row), art, target, arrival, extra)
-        for name, row, x, flag in sp.get("levers", []):
+        for name, row, x, flag, *extra in sp.get("levers", []):
             add_lever(self, name, x, self.floor_y(row), flag)
+            if extra:
+                # Намальований корпус важеля (LeverHousing) замість трапеції Base; ручка — на осі його колеса.
+                self.node('[node name="Base" parent="%s" index="1"]\nvisible = %s' % (name, str(extra[0]["base"]).lower()))
+                self.node('[node name="Handle" parent="%s" index="2"]\nposition = Vector2(0, %g)' % (name, extra[0]["handle_y"]))
         for name, row, x, item in sp.get("pickups", []):
             add_pickup(self, name, x, self.floor_y(row), item)
         for name, row, x, contents in sp.get("chests", []):

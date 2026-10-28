@@ -34,6 +34,12 @@ const PAINTED := {
 	"LizardCave/ExitDoor": "the lit cave opening (D729)",
 	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D729)",
 	"ZahraRest/WellDoor": "the stone well with its iron grate",
+	"OldRuins/WellDoor": "the well shaft with its rope",
+	"Aqueduct/ApproachDoor": "the side doorway with the stair up",
+	"Aqueduct/CellarDoor": "the barred cellar arch",
+	"GateApproach/AqueductDoor": "the well house's doorway with the stair down",
+	"CanyonFloor/StashDoor": "the smugglers' crack in the dead-end cliff",
+	"SmugglersStash/ExitDoor": "the dark tunnel back to the broken wall",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.
