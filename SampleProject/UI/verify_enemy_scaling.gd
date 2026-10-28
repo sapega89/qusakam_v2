@@ -66,8 +66,9 @@ func _formula() -> void:
 	ck(int(offsets.ordinary) == 0 and int(offsets.elite) == 1 and int(offsets.boss) == 2, "offsets %s" % [offsets])
 	ck(Scaling.HERO_LEAD_SHARE == 0.5, "an enemy gains half the hero's lead over its floor (%s)" % Scaling.HERO_LEAD_SHARE)
 	ck(Scaling.zone_offset("Laboratory") == 1 and Scaling.zone_offset("BanditCamp") == 1 and Scaling.zone_offset("DesertRoad") == 0
-			and Scaling.zone_offset("LabBoss") == 0 and scaling.zone_offsets.size() == 2,
-			"zones: Laboratory +1, Bandit Camp +1, every other room 0 (%s)" % [scaling.zone_offsets])
+			and Scaling.zone_offset("LabBoss") == 0 and scaling.zone_offsets.size() == 5
+			and ["LabMiddleFloor", "LabTopFloor", "LabGuardPocket"].all(func(r: String) -> bool: return Scaling.zone_offset(r) == 1),
+			"zones: the Laboratory's fight rooms +1 (its three floors and the guard's alcove, v3), Bandit Camp +1, every other room 0 (%s)" % [scaling.zone_offsets])
 	# [підлога, зона] → герой → [звичайний, еліта, бос]
 	var expect := {
 		[1, 0]: {1: [1, 2, 3], 5: [3, 4, 5], 10: [5, 6, 7], 20: [10, 11, 12]},
