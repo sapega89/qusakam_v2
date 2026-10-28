@@ -66,12 +66,12 @@ texture = ExtResource("w5")
 centered = false
 
 [node name="BurntHouses" type="Parallax2D" parent="Back"]
-scroll_scale = Vector2(0.6, 0.6)
+scroll_scale = Vector2(0.85, 0.85)
 
 [node name="Sprite" type="Sprite2D" parent="Back/BurntHouses"]
 texture_filter = 1
-position = Vector2(544.8, 127.3)
-scale = Vector2(1.5, 1.5)
+position = Vector2(412.2, -87.7)
+scale = Vector2(2.125, 2.125)
 texture = ExtResource("w6")
 centered = false
 

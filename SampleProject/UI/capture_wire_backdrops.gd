@@ -5,7 +5,8 @@ extends SceneTree
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_wire_backdrops.gd -- design/shots/wire_backdrops design/shots/wire_backdrops.png
 ## Третій аргумент «2» — кімнати wire-backdrops-2 (SHOTS_2):
 ##   ... -- design/shots/wire_backdrops_2 design/shots/wire_backdrops_2.png 2
-## «3» — місто wire-backdrops-3 (SHOTS_3).
+## «3» — місто wire-backdrops-3 (SHOTS_3). Четвертий (необов'язковий) — назви кадрів через кому, лише вони:
+##   ... -- design/shots/d918 design/shots/d918.png 1 ledges_bottom,ledges_top
 
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## [кімната, де стоїть герой, назва кадру]
@@ -75,6 +76,9 @@ func _initialize() -> void:
 	game.player.set_invulnerable(true)
 	var set_name: String = OS.get_cmdline_user_args()[2] if OS.get_cmdline_user_args().size() > 2 else "1"
 	var shots: Array = {"1": SHOTS, "2": SHOTS_2, "3": SHOTS_3}[set_name]
+	if OS.get_cmdline_user_args().size() > 3:
+		var only: PackedStringArray = OS.get_cmdline_user_args()[3].split(",")
+		shots = shots.filter(func(s: Array) -> bool: return only.has(s[2]))
 	var rows := (shots.size() + 3) / 4
 	var sheet := Image.create(CELL.x * 4, CELL.y * rows, false, Image.FORMAT_RGBA8)
 	for i in shots.size():

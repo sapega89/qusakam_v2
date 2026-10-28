@@ -57,6 +57,11 @@ at anchor − f × camera).
   Village's `gen_houses_burnt.png` (the same three houses, so the ledges and the village match); its silhouette is
   the original row's, so no house is a hollow shell any more. The ground under them goes 45 rows further down so the breach
   shows a yard; their base is behind the wall at every camera y (`build` asserts it).
+  **D918 (Q107), in the game:** the houses stand on a **×0.85** plane, not ×0.6 — drawn ×0.85/0.6 bigger (Sprite2D
+  scale 2.125, the row's size for that plane, D814), so one and a half houses show over the plateau. Anchor
+  (222 + 0.85 × 3456, 327 − 278 × 0.85/0.6): the bottom-left stays at frame x 222, the thresholds at frame row 252 as
+  before (bottom row 327). Against the ×0.9 wall the houses now sink only 0.05 × camera y, so their base stays hidden.
+  `build_world_rooms.py` sets this; `ledges_planes.py` (the review sheet and its assert) still models ×0.6.
 - `gen_village_wall.png` (384×432) — the village's outer wall of clay bricks on the cliff top behind the plateau, ×0.9,
   anchor (3302, 185) (top-left at frame (192, 185) in the top frame): a broken west end, a breach near the east end
   (frame x ~447–502) — the passage into the village — and the sandstone terrace face under it, filled down, with a

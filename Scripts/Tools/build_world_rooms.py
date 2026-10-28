@@ -451,8 +451,11 @@ def road(room: str) -> list:
                    ("OccluderRock1", "StreamGorge/gen_front.png", "front",
                     at((3035, 603), (1.3, 1.3), off, (0, -6), (1.3, 1)), {})]
     else:  # RockLedges: уступи зігнуті під пандус world-rooms (ledges_ramp.py, D830)
+        # D918: спалені будинки на плані ×0.85, не ×0.6 — арт ×0.85/0.6 (розмір ряду, D814), над плато півтора будинки;
+        # лівий нижній кут — x 222 кадру верху, як був, пороги — на тому ж рядку 252 (низ 252 + 53 × 0.85/0.6 = 327).
         planes += [("Mid", "RockLedges/gen_mid.png", (0.75, 0.75), at((2592, 232), (0.75, 0.75), off), {}),
-                   ("BurntHouses", "RockLedges/gen_burnt_houses.png", (0.6, 0.6), at((2296, 27), (0.6, 0.6), off), {}),
+                   ("BurntHouses", "RockLedges/gen_burnt_houses.png", (0.85, 0.85),
+                    at((222 + 0.85 * 3456, 327 - 278 * 0.85 / 0.6), (0.85, 0.85), off), {"scale": 1.5 * 0.85 / 0.6}),
                    ("VillageWall", "RockLedges/gen_village_wall.png", (0.9, 0.9), at((3302, 185), (0.9, 0.9), off), {}),
                    ("Ground", "RockLedges/gen_ledges_ramp.png", (1, 1), at((3456, 0), (1, 1), off), {}),
                    ("OccluderRock1", "StreamGorge/gen_front.png", "front",
