@@ -139,36 +139,129 @@ def place(size, sprite, x, y):
 MAGIC, MAGIC_AT = (32, 96), (40, -32)
 
 
+def put(f, x, y, rgb, a=255):
+    """Піксель на полотні f (у межах), якщо він непрозоріший за наявний."""
+    if 0 <= y < f.shape[0] and 0 <= x < f.shape[1] and a > f[y, x, 3]:
+        f[y, x] = tuple(int(c) for c in rgb) + (a,)
+
+
+def ray(f, x, y, dx, dy, n, rgb, a=255):
+    for k in range(n):
+        put(f, x + dx * k, y + dy * k, rgb, a)
+
+
+def sparkle(f, x, y, core, arm):
+    """Іскра-хрестик 3×3: біле серце, руки — колір краю (читається і на темному, і на піску)."""
+    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        put(f, x + dx, y + dy, arm)
+    put(f, x, y, core)
+
+
+def beam(f, x0, x1, y1, core, glow, side):
+    """Стовп світла з неба: від верху полотна до y1 (верх щита); ядро 2 px посередині, сяйво на ширину x0..x1, краї
+    стовпа — 1 px кольору краю щита (біле й золоте на піску зникали). Угорі рідшає (через піксель) — тане в небі,
+    а не обрізаний краєм полотна."""
+    cx = (x0 + x1) // 2
+    for y in range(y1):
+        t = y / y1
+        for x in range(x0, x1):
+            if t < 0.4 and (x + y) % 2:
+                continue
+            if cx - 1 <= x <= cx:
+                put(f, x, y, core, 230 if t > 0.4 else 160)
+            elif x in (x0, x1 - 1):
+                put(f, x, y, side, 220 if t > 0.4 else 140)
+            elif t > 0.25:
+                put(f, x, y, glow, 130 if t > 0.6 else 90)
+
+
 def magic_frames(q):
+    """A6 (D813, «прибрати» = перемалювати): падіння — щит їде вниз у стовпі світла з неба (замість блідих копій
+    над ним, що читались падаючою паличкою), приземлення — спалах променями; згасання — щит розсипається на іскри,
+    що злітають (замість ледь видного прозорого щита). hold_* — як були."""
     sx, sy = SHIELD_BOX[0] - MAGIC_AT[0], SHIELD_BOX[1] - MAGIC_AT[1]
     op = q[..., 3] > 0
+    h, w = op.shape
     held = body_alpha(q, 210)
+    pal = palette(q)
+    white, gold = pal[-1], pal[-2]
+    edge = q[rim(op)][:, :3]
+    blue = edge[np.argmax(edge[:, 2].astype(int) - edge[:, 0])]
+    bright = body_alpha(lighter(q, op), 235)
     out = {}
-    # падіння: щит вище, над ним слід — той самий силует, блідший, через кожні 4–5 px
-    for i, (dy, step) in enumerate([(-40, 4), (-18, 5)], 1):
-        f = place(MAGIC, held, sx, sy + dy)
-        for k, a in enumerate((0.45, 0.25, 0.12), 1):
-            over(f, fade(held, a), sx, sy + dy - k * step)
-        out[f"drop_{i}"] = f
-    # приземлення: щит на крок світліший і тонке сяйво довкола (силует, розширений на 1 px, кольором краю)
+    # падіння: світліший щит у стовпі світла з неба трохи вужчому за щит
+    for i, dy in enumerate([-30, -10], 1):
+        top = sy + dy
+        f = np.zeros((MAGIC[1], MAGIC[0], 4), np.uint8)
+        beam(f, sx + 2, sx + w - 2, top, white, gold, blue)
+        out[f"drop_{i}"] = over(f, bright, sx, top)
+    # приземлення: щит світліший, сяйво довкола (силует + 1 px кольором краю), промені спалаху від країв
     p = np.pad(op, 1)
     ring = (p[:-2, 1:-1] | p[2:, 1:-1] | p[1:-1, :-2] | p[1:-1, 2:]) & ~op
-    edge = q[rim(op)][:, :3]
     halo = np.zeros_like(q)
-    halo[ring] = list(edge[np.argmax(edge[:, 2].astype(int) - edge[:, 0])]) + [150]
-    out["drop_3"] = over(
-        place(MAGIC, halo, sx, sy), body_alpha(lighter(q, op), 230), sx, sy
-    )
+    halo[ring] = list(blue) + [190]
+    f = place(MAGIC, halo, sx, sy)
+    mx, my = sx + w // 2, sy + h // 2
+    for dx, dy, x, y, n in (
+        (-1, 0, sx - 2, my, 5),  # убік від середини
+        (1, 0, sx + w + 1, my, 5),
+        (0, -1, mx, sy - 2, 5),  # угору від верху
+        (0, -1, mx - 1, sy - 2, 3),
+        (-1, -1, sx - 1, sy - 1, 4),  # навскіс від верхніх кутів
+        (1, -1, sx + w, sy - 1, 4),
+        (-1, 1, sx + 1, sy + h - 6, 3),  # навскіс від низу
+        (1, 1, sx + w - 2, sy + h - 6, 3),
+    ):
+        ray(
+            f, x, y, dx, dy, 2, white
+        )  # біле серце променя, далі — колір краю (читається на піску)
+        ray(f, x + 2 * dx, y + 2 * dy, dx, dy, n - 2, blue)
+    out["drop_3"] = over(f, bright, sx, sy)
     # утримання: рівний щит ↔ світла діагональна смуга мерехтіння
     yy, xx = np.mgrid[: q.shape[0], : q.shape[1]]
     band = np.abs((xx * 2 + yy) - q.shape[0] * 0.75) < 4
     out["hold_1"] = place(MAGIC, held, sx, sy)
     out["hold_2"] = place(MAGIC, body_alpha(lighter(q, band), 210), sx, sy)
-    # згасання: прозоріше, потім тоншає
-    out["fade_1"] = place(MAGIC, fade(held, 0.55), sx, sy)
-    thin = fade(held, 0.25)
-    thin[~fx.erode(op, 1), 3] = 0
-    out["fade_2"] = place(MAGIC, thin, sx, sy)
+    # згасання 1: верх ще цілий і світлий, низ розсипається на окремі пікселі (чим нижче, тим рідше; шахівниця
+    # читалась візерунком), іскри злітають з боків
+    rng = np.random.default_rng(61)
+    melt = bright.copy()
+    keep = np.clip(1 - (np.arange(h)[:, None] / h - 0.4) / 0.6, 0.12, 1)
+    melt[rng.random((h, w)) > keep, 3] = 0
+    melt[melt[..., 3] > 0, 3] = (
+        255  # що лишилось — суцільне: розсипання, а не прозорість
+    )
+    f = place(MAGIC, melt, sx, sy)
+    for x, y in (
+        (sx - 2, sy + 10),
+        (sx + w + 1, sy + 6),
+        (sx + 2, sy - 3),
+        (sx + w - 3, sy - 5),
+    ):
+        sparkle(f, x, y, white, blue)
+    for _ in range(8):
+        put(
+            f,
+            sx + int(rng.integers(-3, w + 3)),
+            sy + int(rng.integers(-8, h // 2)),
+            gold,
+        )
+    out["fade_1"] = f
+    # згасання 2: щита немає — рій іскор, що летять угору там, де він стояв (повні кольори, без прозорості)
+    f = np.zeros((MAGIC[1], MAGIC[0], 4), np.uint8)
+    for x, y in (
+        (sx + 3, sy - 6),
+        (sx + w - 2, sy - 12),
+        (sx + w // 2, sy + 4),
+        (sx - 1, sy - 15),
+    ):
+        sparkle(f, x, y, white, blue)
+    for _ in range(18):
+        x, y = sx + int(rng.integers(-2, w + 2)), sy + int(rng.integers(-20, h - 6))
+        put(f, x, y, white if rng.random() < 0.4 else gold)
+        if rng.random() < 0.5:
+            put(f, x, y + 1, blue)  # хвостик униз — іскра летить угору
+    out["fade_2"] = f
     return out
 
 
@@ -214,29 +307,84 @@ def cracks(q, stage, seed=7):
 
 
 def shatter_frames(q, seed=9):
-    """Осколки: тріщини другої стадії ділять щит на шматки; шматки летять праворуч (у того, хто бив), розходяться
-    вгору-вниз, падають і меншають."""
+    """A6 (D813): осколки — шматки щита між тріщинами другої стадії, великі ще порізані на скалки ~5 px (Вороной).
+    1 — спалах у точці удару, скалки трохи розійшлися; 2–3 — летять праворуч (у того, хто бив), розходячись угору-вниз
+    і падаючи, кожна з темним контуром CRACK (читається й на піску) і рискою руху позаду; на 3 — менші.
+    Раніше на 2–3 від шматків лишались крапки (3 і 1,6 px довкола центру) — читалось як випадкові точки."""
     cracked, lines = cracks(q, 2)
     op = cracked[..., 3] > 0
+    h, w = op.shape
     labels, n = ndimage.label(op & ~lines)
-    cy0 = op.shape[0] / 2
+    rng = np.random.default_rng(seed)
+    gy, gx = np.mgrid[2:h:6, 2:w:6]
+    seeds = np.stack([gy.ravel(), gx.ravel()], 1) + rng.uniform(-1.5, 1.5, (gy.size, 2))
+    yy, xx = np.mgrid[:h, :w]
+    near = (
+        (yy[..., None] - seeds[:, 0]) ** 2 + (xx[..., None] - seeds[:, 1]) ** 2
+    ).argmin(axis=2)
+    shard = np.where(labels > 0, labels * len(seeds) + near, 0)
+    pal = palette(q)
+    white, cyan, pale = pal[-1], pal[-3], pal[-2]
+    cx, cy = w * 0.62, h * 0.42  # точка удару, як у cracks()
+    ox, oy = SHIELD_BOX[0] - GLASS_AT[0], SHIELD_BOX[1] - GLASS_AT[1]
     frames = []
-    for t, (dist, keep) in enumerate([(6, 99), (18, 3.0), (34, 1.6)]):
+    for t, (dist, spread, fall, shrink) in enumerate(
+        [(4, 0.3, 0, False), (13, 0.75, 1, False), (27, 1.1, 2, True)]
+    ):
         f = np.zeros((GLASS[1], GLASS[0], 4), np.uint8)
-        for lab in range(1, n + 1):
-            ys, xs = np.nonzero(labels == lab)
-            if len(ys) < 2:
+        body = np.zeros((GLASS[1], GLASS[0]), bool)
+        for sid in np.unique(shard[shard > 0]):
+            m = shard == sid
+            if m.sum() < 3:
                 continue
+            ys, xs = np.nonzero(m)
             py, px = ys.mean(), xs.mean()
-            r = np.random.default_rng(seed * 100 + lab)
-            dx = dist * r.uniform(0.75, 1.2)
-            dy = (py - cy0) * 0.25 * (t + 1) + 2 * t * t + r.uniform(-1, 1) * t
-            near = (ys - py) ** 2 + (xs - px) ** 2 <= keep**2
-            X = np.round(xs[near] + dx).astype(int) + SHIELD_BOX[0] - GLASS_AT[0]
-            Y = np.round(ys[near] + dy).astype(int) + SHIELD_BOX[1] - GLASS_AT[1]
-            inside = (X >= 0) & (X < GLASS[0]) & (Y >= 0) & (Y < GLASS[1])
-            f[Y[inside], X[inside]] = cracked[ys[near][inside], xs[near][inside]]
-            f[Y[inside], X[inside], 3] = 230
+            r = np.random.default_rng(seed * 1000 + int(sid))
+            dx = dist * r.uniform(0.6, 1.3) + (px - cx) * spread * 0.6
+            # віялом від точки удару; униз удвічі менше — під щитом до краю полотна лише 12 px
+            dy = (
+                (py - cy) * spread * (1 if py < cy else 0.5)
+                + fall
+                + r.uniform(-1, 1) * t
+            )
+            col = cracked[ys, xs]  # своє скло, не світліше: на світлому білий спалах губився
+            if shrink:
+                keep = (ys - py) ** 2 + (xs - px) ** 2 <= 2.3**2
+                ys, xs, col = ys[keep], xs[keep], col[keep]
+            X = np.round(xs + dx).astype(int) + ox
+            Y = np.round(ys + dy).astype(int) + oy
+            # не за край полотна (там скалку різало б прямою), а впритул до нього
+            X -= max(0, X.max() - (GLASS[0] - 2))
+            Y -= max(0, Y.max() - (GLASS[1] - 2))
+            Y += max(0, 1 - Y.min())
+            f[Y, X] = col
+            f[Y, X, 3] = 255
+            body[Y, X] = True
+            if t:
+                ray(
+                    f, int(X.min()) - 1, int(round(Y.mean())), -1, 0, 2 + t, pale, 150
+                )  # риска руху позаду
+        # темний контур скалок — 1 px зовні
+        pb = np.pad(body, 1)
+        outline = (pb[:-2, 1:-1] | pb[2:, 1:-1] | pb[1:-1, :-2] | pb[1:-1, 2:]) & ~body
+        f[outline] = CRACK + (255,)
+        if t == 0:
+            # спалах у точці удару — поверх скалок: біле серце, промені білі, кінці (за щитом) — блакитні
+            hx, hy = int(round(cx)) + ox, int(round(cy)) + oy
+            for dx, dy, k in (
+                (1, 0, 15),
+                (-1, 0, 5),
+                (0, 1, 10),
+                (0, -1, 10),
+                (1, 1, 8),
+                (1, -1, 8),
+                (-1, 1, 3),
+                (-1, -1, 3),
+            ):
+                for j in range(1, k + 1):
+                    c = white if j <= k - 3 else cyan
+                    f[hy + dy * j, hx + dx * j] = tuple(int(v) for v in c) + (255,)
+            f[hy - 1 : hy + 2, hx - 1 : hx + 2] = tuple(int(c) for c in white) + (255,)
         frames.append(f)
     return frames
 
