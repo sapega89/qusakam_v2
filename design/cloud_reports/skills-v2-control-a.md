@@ -10,7 +10,7 @@ branch: cloud/skills-v2-control-a
 - **Done:** Rising Slash, Ground Slam, Sweeping Arc, Shield Bash and Stone Palm are built and can be learned. Each row lost `planned` and `draft`. A new `control` block in `skills.json` holds the numbers, code reads it, and `_schema` documents it. 17 planned actives are left.
 - **New enemy states, built on what exists:** `DefaultEnemy.launch` (a stagger plus an upward jump of the existing `jump_speed`) and `DefaultEnemy.knock_down` (a stagger in the stagger pose; a boss is only stunned). Guard damage goes through the existing poise bar (`take_poise`, D777). Knockback, stun and enemy stamina are left as they are.
 - **No new art.** All five use a new `ControlSkill.tscn` that borrows the hero's swing smears and the slams' impact ring. The poses are existing frames. The art list per skill is below.
-- **Tests:** a new `verify_skills_control_a` (7 sections, **ALL PASS**). It fails on the base branch, where the 5 skills are planned and refuse to cast. Updated: `verify_skill_rules` [11] (17 planned; the 5 built; the planned example is now Soul Harvest), `verify_skill_fx` [1] (control skills use the borrowed effect), `verify_skill_screen` [2] (the coming-later example is now Radiant Flare). The full-suite line is in **Tests**.
+- **Tests:** a new `verify_skills_control_a` (7 sections, **ALL PASS**). It fails on the base branch, where the 5 skills are planned and refuse to cast. Updated: `verify_skill_rules` [11] (17 planned; the 5 built; the planned example is now Soul Harvest), `verify_skill_fx` [1] (control skills use the borrowed effect), `verify_skill_screen` [2] (the coming-later example is now Radiant Flare). **Full suite: `SUITE: 2 FAIL` (19 min 55 s)**: `verify_difficulty` (a known failure) and `verify_lab_boss`, which fails identically on `origin/cloud/skill-art-wire` without this branch.
 - No B rows fixed. The D-ID text is below (placeholder D-sv2ca1).
 - **For the integrator:** slices 4, 5 and control-b change the same planned count (`verify_skill_rules` [11]) and the coming-later examples. After all four merge, set the count to the number that is really left, and pick an example that is still planned.
 
@@ -52,7 +52,9 @@ branch: cloud/skills-v2-control-a
   - [5] Shield Bash: 12.5 guard damage (14 → 1.5) to the first enemy only; 5 SP paid. On a worn guard with a committed wind-up: the wind-up is broken, the enemy is staggered 0.6 s and the bar refills.
   - [6] Stone Palm: 15 guard damage, 92 HP damage; 9 SP paid.
   - [7] data.
-- Also: TESTS_PLACEHOLDER
+- Also ALL PASS: `verify_scripts_compile`, `verify_skill_rules`, `verify_skill_fx`, `verify_skill_screen`, `verify_skill_moves`, `verify_skills_combat`, `verify_skill_trees`, `verify_skill_trees_ui`, `verify_skill_ranks`, `verify_combat_flow`, `verify_oath`.
+- `verify_skill_rules` [2], D828 "every built attack skill outhits a whole light combo": Shield Bash (118) and Stone Palm (122) are under the combo's 153 HP on purpose ("little HP damage"). A guard skill is now held to the rule by its guard damage instead: 12.5 and 15 poise against a light combo's 4. This is part of the routine call D-sv2ca1. The other choice was raising their damage, and that would erase what sets them apart.
+- Full suite: `SUITE: 2 FAIL in 19 min 55 s`. `verify_difficulty` gives 17 FAIL and is on the known list (the skills-v2-move report). `verify_lab_boss` gives 2 FAIL ("balanced build: he dies in 2.3 of the mercenary's blows", "the mercenary takes 67 light hits"). It was run on a worktree of the base `origin/cloud/skill-art-wire` and failed identically there, so it is not this branch's.
 
 ## For the art lane (ComfyUI, slice 7)
 - **Rising Slash:** a hero rising-cut pose (wind-up low, strike high; it borrows HeavyWindup/HeavyStrike now), an upward crescent smear (it borrows the flipped hero `arc`), and a launch puff under the enemy.
