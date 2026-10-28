@@ -49,7 +49,10 @@ func _initialize() -> void:
 	await _shot("the_map")
 	await _key(KEY_M)
 
-	# Гравця — до першої точки збереження поточної кімнати, щоб з'явилась підказка Save.
+	# Гравця — до точки збереження, щоб з'явилась підказка Save. У першій кімнаті (Canyon) її нема — найближча
+	# з нею DesertRoad (SavePoint_BeforeCity).
+	await game.load_room("res://SampleProject/Maps/DesertRoad.tscn")
+	for i in 60: await process_frame
 	var player: Node2D = get_first_node_in_group(&"player")
 	var save_point: Node2D = null
 	for node in root.find_children("*", "Area2D", true, false):

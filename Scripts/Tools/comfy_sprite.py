@@ -1213,8 +1213,14 @@ CHARACTERS = {
             (
                 "Block",
                 [
-                    "in the same side view facing right: guarding, both empty fists raised together in front of his face, "
-                    "forearms up, crouched slightly and braced on bent knees, the cape hanging behind him",
+                    # A9 (2026-10-28, D813 «поправити»): був кулаки разом перед грудьми, сірі руки без силуету, плащ
+                    # крилом убік — під щитом H2 кулаки зникали. Тепер упор уперед: передня нога, передній кулак біля
+                    # підборіддя, задній біля грудей, плащ за спиною. Другий кандидат (обидва кулаки біля морди)
+                    # змінив око героя — не взято. HAND_GUARD у WeaponView.gd — по новому кулаку.
+                    "in the same side view facing right: guarding, braced in a low wide stance with the front foot forward "
+                    "and leaning into the guard, the front forearm raised in front of his chest with the empty fist "
+                    "clenched at chin height, the elbow tucked in, the rear fist held at his chest, his head ducked "
+                    "slightly, the cape hanging down close behind his back",
                 ],
             ),
         ],

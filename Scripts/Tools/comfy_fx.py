@@ -49,32 +49,9 @@ FX = {
         "with a pale icy blue edge, a few thin straight speed lines along the curve, centered, "
         + GREEN,
     ),
-    "thrust": dict(
-        seed=12,
-        size=(1024, 512),
-        key="green",
-        colors=6,
-        kind="thrust",
-        canvas=(72, 24),
-        box=(0, 6, 72, 18),
-        frames=["Smear/thrust_1", "Smear/thrust_2", "Smear/thrust_3"],
-        prompt="a single horizontal white light streak like a long thin flat comet tail, brightest and widest at "
-        "its right end with a blunt rounded tip, fading to a thin line toward the left, a pale icy blue rim, "
-        + GREEN,
-    ),
-    # Розтин влучання (HitImpact.tscn) малює скрипт — draw_cut(), див. нижче. Тричі модель на «розтин» малювала меч,
-    # тож першим був повернутий на 35° смуга уколу (кадри Smear/thrust): комета з круглою головою, що читалась як
-    # летючий снаряд, а не розріз (A7, D813 «прибрати»).
-    # Удар кулаком — коротка смуга уколу по центру полотна (раніше — кругле «вибух»-коло, Sapega: не про хак-енд-слеш).
-    "punch": dict(
-        src="thrust",
-        key="green",
-        colors=6,
-        kind="thrust",
-        canvas=(28, 28),
-        box=(0, 10, 28, 18),
-        frames=["Smear/punch_1", "Smear/punch_2", "Smear/punch_3"],
-    ),
+    # Розтин влучання (HitImpact.tscn) і смуги уколу / удару кулаком (Smear/thrust, punch) малює скрипт — draw_cut(),
+    # draw_thrust(), draw_punch(), див. нижче. Тричі модель на «розтин» малювала меч; згенерована смуга уколу була
+    # кометою з круглою головою, що читалась як летючий снаряд (A7, A9, D813).
     "fire_arc": dict(
         seed=3,
         size=(1024, 1024),
@@ -253,15 +230,16 @@ SKILL_FX = [
         "radiant_smite",
         41,
         "green",
-        "a small cluster of golden light gathering into a bright white four-pointed star glint with short sharp gold "
-        "rays, a few tiny gold sparkles, centered",
+        "a small burst of saturated golden holy light, a bright white four-pointed star glint in the middle with long "
+        "sharp golden rays and four shorter diagonal rays, deep amber edges, centered",
         (
             "arc",
             (1024, 1024),
             (56, 72),
-            "a single radiant holy sword slash crescent of golden light, a thick curved arc bulging to the right like the "
-            "right half of a ring, bright white core, warm gold edge with small sharp gold rays along the outer edge, "
-            "tapering points at the top and the bottom, centered",
+            "a single massive crescent shaped slash wave of blazing golden holy light, no sword, a very thick curved arc bulging to the "
+            "right like the right half of a ring, white hot core, saturated golden yellow body, deep amber orange outer "
+            "rim, long sharp straight light rays bursting outward from its outer edge like a sunburst, tapering points "
+            "at the top and the bottom, centered",
         ),
     ),
     (
@@ -274,9 +252,10 @@ SKILL_FX = [
             "down",
             (512, 1024),
             (40, 104),
-            "a single tall vertical beam of golden holy light, a long straight ray of light, white hot core, soft "
-            "warm gold glow edges, tapering to thin points at the top and the bottom, floating, small four-pointed "
-            "golden sparkles along it, front view",
+            "a single thick vertical pillar of golden holy light slamming straight down from the sky into the ground, "
+            "white hot core, saturated golden yellow glow, deep amber edges, widening at the bottom into a wide burst "
+            "of light rays and splashes spreading sideways along the ground, small golden four-pointed sparkles, "
+            "front view",
         ),
     ),
     (
@@ -297,27 +276,30 @@ SKILL_FX = [
         "searing_hex",
         44,
         "green",
-        "a small violet hex sigil, a ring of crimson runes around a dark violet core with crimson flames licking "
-        "off it, centered",
+        "a small glowing violet hex sigil, a thin bright violet circle with a six-pointed star rune inside, glowing "
+        "lilac white lines, small bright violet flames licking up off its top, centered",
         (
             "thrust",
             (1024, 512),
             (72, 24),
-            "a single horizontal streak of cursed dark violet fire flying to the right, widest at its right end with a "
-            "blunt flaming crimson tip, a hot magenta-white core, fading to a thin violet line toward the left",
+            "a single horizontal blast of cursed violet hexfire flying to the right, a thick bolt of bright violet "
+            "flames widest at its right end with a sharp flaming tip, a hot lilac white core, deep indigo flame edges, "
+            "small violet rune sparks along it, fading to a thin violet trail toward the left",
         ),
     ),
     (
         "withering_grasp",
         45,
         "green",
-        "a small knot of curling dark violet shadow tendrils with crimson glowing tips, centered",
+        "a small knot of curling black violet shadow tendrils with glowing sickly yellow green tips and a pale green "
+        "glowing rim, centered",
         (
             "right",
             (1024, 512),
             (64, 40),
-            "a single spectral clawed hand made of dark violet shadow reaching to the right, long sharp crimson glowing "
-            "claws spread open at the right end, a wispy smoky violet arm trailing back to the left edge, side view",
+            "a single huge spectral clawed hand made of black violet shadow reaching to the right, five long sharp "
+            "claws spread open at the right end glowing sickly yellow green, a bright pale green glowing rim along its "
+            "edges, a wispy smoky arm trailing back to the left edge, side view",
         ),
     ),
     (
@@ -366,14 +348,15 @@ SKILL_FX = [
         "second_wind",
         49,
         "magenta",
-        "a small spiral of pale wind lines with sand grains and two small green leaves, centered",
+        "a small spiral of pale mint green wind lines around a white glowing core, two small bright green leaves, "
+        "teal edges, centered",
         (
             "up",
             (512, 1024),
             (48, 80),
-            "a single thick upward gust of pale cream wind, two broad curling wind ribbons rising and twisting "
-            "around each other into a tall flame-like swirl, tapering to a point at the top, golden sand grains and "
-            "two small green leaves carried along, no ground, centered, front view",
+            "a single tall upward whirlwind of pale mint green healing wind, two broad curling wind ribbons rising and "
+            "twisting around each other, white glowing core, teal edges, small bright green leaves and white sparkles "
+            "carried up, tapering to a point at the top, no ground, centered, front view",
         ),
     ),
 ]
@@ -409,6 +392,29 @@ FX["eclipse_cleave_release"]["colors"] = 10
 # під контур, зовнішній край контуру — на правому краю полотна.
 FX["eclipse_cleave_release"]["outline"] = (118, 154, 166)
 FX["eclipse_cleave_release"]["box"] = (1, 1, 63, 79)
+# A9 (2026-10-28, D813 «поправити» без нотаток, D828 «скіли мають вагу»): світлі ефекти зливались із піском, темні —
+# з темними кімнатами, «Пекуче прокляття» читалось червоним вогнем, як Fire Strike, перший кадр удару був рубаним
+# шматком. Тепер у кожного свій колір і 1-px контур (заряд і удар — одним кольором), удар — важкий: 1 — повна форма,
+# розпечена до білого, 2 — повна в кольорі, 3 — тоншає.
+A9_OUTLINE = {
+    "radiant_smite": (92, 52, 12),  # золото, темно-бурштиновий контур
+    "skyfall_blessing": (92, 52, 12),  # лише удар (заряд-перо не мінявся)
+    "searing_hex": (44, 14, 78),  # фіолетовий вогонь, індиго, без червоного
+    "withering_grasp": (150, 214, 92),  # чорно-фіолетова тінь, хворобливо-зелене світло по краю
+    "second_wind": (18, 96, 96),  # м'ятний вітер зцілення, бірюзовий контур
+}
+for _id, _outline in A9_OUTLINE.items():
+    for _fx in [FX[_id + "_release"]] + ([] if _id == "skyfall_blessing" else [FX[_id + "_charge"]]):
+        _fx["outline"] = _outline
+        _fx["box"] = (1, 1, _fx["canvas"][0] - 1, _fx["canvas"][1] - 1)
+    FX[_id + "_release"]["heavy"] = True
+# Чорна рука в білому спалаху ставала сірою — спалахує фіолетовим; вихор Другого подиху модель поставила на темну
+# смугу землі (ключ брав її за фон) — низ генерації відрізано.
+FX["withering_grasp_release"]["flash"] = (210, 170, 255)
+FX["second_wind_release"]["crop"] = 0.9
+# Стовп Благословення модель теж поставила на землю (низ відрізано) і довела до краю кадру — верх загострено.
+FX["skyfall_blessing_release"]["crop"] = 0.86
+FX["skyfall_blessing_release"]["taper"] = 0.25
 
 
 def generate(name, fx):
@@ -483,10 +489,25 @@ def fit(img, a, fx):
     opaque = np.zeros((ch, cw), bool)
     # arc і thrust — притиснуті до правого краю box (вістря / зовнішній край дуги), решта — по центру box
     ox = x1 - w if fx["kind"] in ("arc", "thrust") else x0 + (x1 - x0 - w) // 2
-    oy = y0 + (y1 - y0 - h) // 2
+    # up / down — нижній край на дні box (кадр прикріплено низом до ніг / землі), решта — по центру
+    oy = y1 - h if fx["kind"] in ("up", "down") else y0 + (y1 - y0 - h) // 2
     canvas[oy : oy + h, ox : ox + w] = rgb
     opaque[oy : oy + h, ox : ox + w] = asum > 0.45
     return canvas, opaque
+
+
+def taper(m, part):
+    """Верхня частка part плями звужується до вістря: у кожному рядку — довкола його ж середини."""
+    ys = np.nonzero(m.any(axis=1))[0]
+    n = max(1, round((ys[-1] - ys[0]) * part))
+    m = m.copy()
+    for y in range(ys[0], ys[0] + n):
+        xs = np.nonzero(m[y])[0]
+        if len(xs):
+            mid, half = (xs[0] + xs[-1]) / 2, (xs[-1] - xs[0] + 1) / 2 * (y - ys[0] + 1) / n
+            m[y, : int(np.ceil(mid - half))] = False
+            m[y, int(mid + half) + 1 :] = False
+    return m
 
 
 def erode(m, n):
@@ -542,16 +563,7 @@ def draw_cut(size=64, half=31.0, width=4.2):
         return inside, level
 
     def paint(parts):
-        rgba = np.zeros((size, size, 4), np.uint8)
-        body = np.zeros((size, size), bool)
-        for inside, level in parts:
-            for lv in (2, 1, 0):  # світліше поверх
-                m = inside & (level == lv)
-                rgba[m] = (*CUT_COLORS[lv], 255)
-            body |= inside
-        ring = ndimage.binary_dilation(body) & ~body
-        rgba[ring] = (*CUT_COLORS[3], 255)
-        return rgba
+        return paint_cut(parts, (size, size))
 
     cross = (np.abs(u) <= 0.9) & (np.abs(v) <= 12) | (np.abs(u) <= 1.6) & (np.abs(v) <= 5)
     cross_level = np.where(np.abs(v) <= 5, 0, 1)
@@ -560,6 +572,70 @@ def draw_cut(size=64, half=31.0, width=4.2):
         paint([lens(-half, half, width), (cross, cross_level)]),
         paint([lens(-half * 0.9, half * 0.95, width * 0.55, 2.0, 1), lens(-half * 0.95, half * 0.9, width * 0.55, -2.0, -1)]),
         paint([lens(-half * 0.7, half * 0.75, 0.6, 3.0), lens(-half * 0.75, half * 0.7, 0.6, -3.0)]),
+    ]
+
+
+def paint_cut(parts, shape):
+    """Частини (маска, рівень 0 ядро / 1 світло / 2 лід) → RGBA кольорами CUT_COLORS, синя 1-px обвідка навколо."""
+    rgba = np.zeros(shape + (4,), np.uint8)
+    body = np.zeros(shape, bool)
+    for inside, level in parts:
+        for lv in (2, 1, 0):  # світліше поверх
+            m = inside & (level == lv)
+            rgba[m] = (*CUT_COLORS[lv], 255)
+        body |= inside
+    ring = ndimage.binary_dilation(body) & ~body
+    rgba[ring] = (*CUT_COLORS[3], 255)
+    return rgba
+
+
+def band(d, hw):
+    """Смуга завширшки 2·hw навколо осі (d — відстань від осі), рівні як у розтину: ядро, світло, лід."""
+    inside = (np.abs(d) <= hw + 0.35) & (hw > 0.15)
+    level = np.where(np.abs(d) <= hw * 0.35, 0, np.where(np.abs(d) <= hw * 0.75, 1, 2))
+    return inside, level
+
+
+def draw_thrust(w=72, h=24, tip=70):
+    """A9 (2026-10-28, D813): смуга уколу — голка від хвату (лівий край) до гострого вістря на x = tip (було: комета з
+    круглою головою), кольори й обвідка розтину, дві лінії швидкості. 1 — повна, 2 — тонша, хвіст коротший, лінії
+    попереду, 3 — лише голова (її ж бере шлейф стріли, arrow.tscn)."""
+    yy, xx = np.mgrid[:h, :w].astype(np.float32)
+    v, t = yy - (h - 1) / 2, xx / tip
+
+    def needle(width, start):
+        hw = np.where(t <= 0.84, width * np.clip((t - start) / (0.84 - start), 0, 1) ** 1.6, width * (1 - t) / 0.16)
+        return band(v, hw)
+
+    outs = []
+    for width, start, lines in ((3.6, 0.0, (16, 50)), (2.6, 0.25, (36, 60)), (1.7, 0.55, None)):
+        out = paint_cut([needle(width, start)], (h, w))
+        if lines:
+            out[[5, h - 6], lines[0] : lines[1]] = (*CUT_COLORS[2], 255)
+        outs.append(out)
+    return outs
+
+
+def draw_punch(size=28):
+    """A9: удар кулаком — 1 коротка смуга (кулак летить), 2 смуга тоншає, попереду дуга удару «)», 3 дуга ширшає,
+    тоншає й розходиться навпіл (не кругле коло — D204)."""
+    c = (size - 1) / 2
+    yy, xx = np.mgrid[:size, :size].astype(np.float32)
+
+    def streak(x0, x1, width):  # лінза, найширша на 0.7 довжини
+        t = (xx - x0) / (x1 - x0)
+        k = np.where(t < 0.7, (t - 0.7) / 0.7, (t - 0.7) / 0.3)
+        return band(yy - c, np.where((t >= 0) & (t <= 1), width * np.clip(1 - k**2, 0, 1), 0))
+
+    def shock(cx, r, width, span, gap=0.0):  # дуга кола радіуса r праворуч від cx, гостра на кінцях
+        ang = np.degrees(np.abs(np.arctan2(yy - c, xx - cx)))
+        k = np.where(ang < gap, 0, np.clip(1 - (ang / span) ** 2, 0, 1))
+        return band(np.hypot(xx - cx, yy - c) - r, width * k)
+
+    return [
+        paint_cut([streak(1, 19, 2.8)], (size, size)),
+        paint_cut([streak(4, 17, 1.8), shock(11, 10.5, 1.8, 62)], (size, size)),
+        paint_cut([shock(11, 12, 1.0, 66, gap=14)], (size, size)),
     ]
 
 
@@ -590,15 +666,19 @@ def frames(kind, opaque):
 
 
 if __name__ == "__main__":
-    names = sys.argv[1:] or [*FX, "hit_cut"]
+    drawn = {"hit_cut": ("Hit/cut_%d", draw_cut), "thrust": ("Smear/thrust_%d", draw_thrust),
+             "punch": ("Smear/punch_%d", draw_punch)}  # малює скрипт, без моделі
+    names = sys.argv[1:] or [*FX, *drawn]
     for name in names:
-        if name == "hit_cut":  # малює скрипт, без моделі
-            for i, out in enumerate(draw_cut(), 1):
-                Image.fromarray(out).save(OUT + "Hit/cut_%d.png" % i)
-                print("wrote", OUT + "Hit/cut_%d.png" % i)
+        if name in drawn:
+            for i, out in enumerate(drawn[name][1](), 1):
+                Image.fromarray(out).save(OUT + drawn[name][0] % i + ".png")
+                print("wrote", OUT + drawn[name][0] % i + ".png")
             continue
         fx = FX[name]
-        img = generate(name, FX[fx["src"]]) if "src" in fx else generate(name, fx)
+        img = generate(name, fx)
+        if "crop" in fx:  # лишити верхню частку генерації
+            img = img[: int(img.shape[0] * fx["crop"])]
         a = key(img, fx["key"])
         if "rotate" in fx:  # проти годинникової, полотно розширюється
             img = np.asarray(
@@ -621,6 +701,8 @@ if __name__ == "__main__":
         if fx.get("main", True):
             a = main_shape(a)
         canvas, opaque = fit(img, a, fx)
+        if "taper" in fx:
+            opaque = taper(opaque, fx["taper"])
         q = cb.quantize(canvas, opaque, fx["colors"], "octree")
         if (
             fx["kind"] == "charge"
@@ -628,11 +710,19 @@ if __name__ == "__main__":
             pulse = q.copy()
             pulse[..., 3] *= erode(opaque, 1)
             outs = [grow(q, 0.45), grow(q, 0.75), q, pulse]
+            if "outline" in fx:
+                for out in outs:
+                    mask = out[..., 3] > 0
+                    out[ndimage.binary_dilation(mask) & ~mask] = fx["outline"] + (255,)
         else:
             outs = []
-            for mask in frames(fx["kind"], opaque):
+            masks = [opaque, opaque, erode(opaque, 1)] if fx.get("heavy") else frames(fx["kind"], opaque)
+            for i, mask in enumerate(masks):
                 outs.append(q.copy())
                 outs[-1][..., 3] = mask.astype(np.uint8) * 255
+                if fx.get("heavy") and i == 0:  # спалах удару: кольори розпечені до білого (чи до кольору flash)
+                    hot = np.array(fx.get("flash", (255, 255, 255)), np.float32)
+                    outs[-1][..., :3] = hot - (hot - outs[-1][..., :3]) * 0.3
                 if "outline" in fx:
                     ring = ndimage.binary_dilation(mask) & ~mask
                     outs[-1][ring] = fx["outline"] + (255,)

@@ -31,13 +31,13 @@ const THRUST := ["polearm", "dagger"]
 const DRAWN_ONLY := ["bow"]
 ## Де кулак героя в кадрах (px світу від центру героя, обличчям праворуч), виміряно по кулаку:
 ## хода 1 — стійка, біг 4 — замах, біг 2 — удар; Heavy/1 — кулаки над головою, Heavy/2 — внизу перед собою,
-## Block/1 — перед обличчям, Hurt/1 — рука відкинута.
+## Block/1 — передній кулак біля підборіддя (A9), Hurt/1 — рука відкинута.
 const HAND_REST := Vector2(13, 21)
 const HAND_WINDUP := Vector2(20, 14)
 const HAND_STRIKE := Vector2(30, 6)
 const HAND_OVERHEAD := Vector2(16, -32)
 const HAND_LOW := Vector2(24, 27)
-const HAND_GUARD := Vector2(25, 3)
+const HAND_GUARD := Vector2(23, 0)
 const HAND_HURT := Vector2(28, -10)
 ## Каст навички (D271): кулак і кут зброї в кадрах Cast*/1–2; Cast-анімації без запису (долоня) — зброї не видно.
 const CAST_POSES := {
