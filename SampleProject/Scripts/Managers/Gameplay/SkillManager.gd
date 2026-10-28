@@ -3,6 +3,8 @@ class_name SkillManager
 
 const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
 const OathLeanings = preload("res://SampleProject/Scripts/Systems/OathLeanings.gd")
+## Не preload: SkillStances бере DefaultEnemy і Arrow, а ті через PlayerCombat — GameManager, що вантажить цей скрипт (цикл).
+const SKILL_STANCES := "res://SampleProject/Scripts/Combat/Systems/SkillStances.gd"
 
 ## 🎓 SkillManager — бойові/класові навички, Job Points і SP.
 ##
@@ -87,6 +89,8 @@ var _since: Dictionary = {"after_parry": INF, "after_skill": INF}
 var _skill_effect_running := false
 ## Приховані нахили до шляхів (D725): стиль бою і вчинки → порада писаря на переписі.
 var leanings: OathLeanings = null
+## Стійки й баффи героя (v2 зріз 5, D-sv2s1).
+var stances: Node = null
 
 
 func _initialize() -> void:
@@ -101,6 +105,8 @@ func _initialize() -> void:
 	EventBus.charms_changed.connect(_on_charms_changed)
 	leanings = OathLeanings.new(_state)
 	add_child(leanings)
+	stances = load(SKILL_STANCES).new(self)
+	add_child(stances)
 
 
 ## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
@@ -866,6 +872,8 @@ func cast_skill(skill_id: String) -> Result:
 		return _fail(skill_id, verdict)
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
+	if definition.is_buff():
+		return stances.begin(definition)  # стійка чи бафф (D-sv2s1) — ворог перед героєм не потрібен
 	var player: Node = _default_source()
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
 	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул
@@ -897,6 +905,8 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	var effect_source: Node = source if source != null else _default_source()
 	if definition.throws() or definition.leaves_zone():
 		return _use_ranged(skill_id, definition, effect_source)
+	if definition.is_buff():
+		return stances.use(definition, effect_source)  # D-sv2s1: стійка чи бафф, без удару по цілі
 
 	# Ефект виконуємо до списання SP, щоб невдале застосування нічого не коштувало.
 	# Без явної цілі (хотбар) — ціль за D142: усе перед героєм / союзник поруч або сам герой.
@@ -1017,3 +1027,11 @@ func _default_source() -> Node:
 
 func _player_level() -> int:
 	return ServiceLocator.get_xp_manager().get_level()
+
+
+## Стійка чи бафф застосовані (SkillStances.use, D-sv2s1): ціна й події — як у use_skill.
+func _buff_used(definition: SkillDefinition) -> Result:
+	_pay(definition)
+	_since["after_skill"] = 0.0
+	EventBus.skill_used.emit(definition.id)
+	return Result.OK

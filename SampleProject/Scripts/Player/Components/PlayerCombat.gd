@@ -246,6 +246,7 @@ func hit_damage() -> int:
 	var gm := ServiceLocator.get_game_manager()
 	critical = CombatRolls.roll(gm.calculate_critical_chance())
 	var damage: int = gm.calculate_physical_damage()
+	damage = roundi(damage * ServiceLocator.get_skill_manager().stances.hit_factor())  # Battle Cry, Blood Price (D-sv2s1)
 	return roundi(damage * CRIT_DAMAGE) if critical else damage
 
 ## Удар, що зараз вийде: сила, крит, бонус по збитому ворогу (D592, Breaker's Ring) і скільки ворогів він бере
@@ -801,3 +802,8 @@ func _set_hitbox_active(active: bool, last_direction: int) -> void:
 		damage_applier.enable_damage()
 	else:
 		damage_applier.disable_damage()
+
+## Counter Stance відповіла на удар (SkillStances, D-sv2s1): лишок вивільнення — поза удару [param pose] на [param time] с.
+func answer_stance(pose: StringName, time: float) -> void:
+	_state_left = time
+	_play(pose)

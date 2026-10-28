@@ -55,6 +55,10 @@ func _initialize() -> void:
 			# v2 зріз 4 (D-sv2r1, D-sv2r2): кидки й зони світять позиченим світлом, доки арт (зріз 7) не намалює їхнє своє
 			ck(skill.has("projectile") or skill.has("zone"), "%s: a ranged / zone skill borrows RangedSkill.tscn until its art lands" % skill.id)
 			continue
+		if skill.has("buff"):
+			# D-sv2s1: стійки й баффи — заглушка StanceSkill.tscn (частинки, без кадрів); свої кадри — з арт-лейном
+			ck(skill.vfx.get_file() == "StanceSkill.tscn", "%s: the stances' placeholder effect (StanceSkill.tscn)" % skill.id)
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

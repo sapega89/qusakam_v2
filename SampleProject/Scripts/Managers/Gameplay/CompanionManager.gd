@@ -180,6 +180,7 @@ func reset() -> void:
 func _send(companion_id: String) -> void:
 	var hero: Node2D = ServiceLocator.get_game_manager().get_current_player()
 	var actor: Node2D = SCENES[companion_id].instantiate()
+	ServiceLocator.get_skill_manager().stances.rally(actor)  # Rally (D-sv2s1): цей асист сильніший і довший
 	# У кімнату, а не до героя (він дитина Game): при переході актор, монети й кішка зникають разом із кімнатою.
 	Game.get_singleton().map.add_child(actor)
 	_active = companion_id
