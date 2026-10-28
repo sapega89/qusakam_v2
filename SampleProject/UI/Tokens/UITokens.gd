@@ -695,3 +695,9 @@ const ENEMY_SMEAR_MERC := Color("5fd6a8")          # булава й кийок 
 const ENEMY_SMEAR_BRASS := Color("c0845a")         # мідь Brass Collector
 const ENEMY_SMEAR_DJINN := Color("7aa8ff")         # джин
 const ENEMY_SMEAR_ALPHA := 0.9
+
+# ── Небо (D864) ─────────────────────────────────────────────────────────────
+# До виходу з Лабораторії небо скрізь жовте й пилове, сонця немає (лор 2026-10-28); SkyTint.gd + sky_tint.gdshader.
+const SKY_DUST_DEEP := Color("c9a55e")    # верх неба, вохра
+const SKY_DUST_PALE := Color("f3e2ad")    # обрій, блідо-жовтий
+const SKY_CLOUD_CREAM := Color("fff0cc")  # хмари на жовтому небі (self_modulate)

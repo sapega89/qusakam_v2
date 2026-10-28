@@ -6,6 +6,7 @@ const SaveManager = preload("res://addons/MetroidvaniaSystem/Template/Scripts/Sa
 const MouseCursorScene = preload("res://SampleProject/Scenes/UI/mouse_cursor.tscn")
 const RoomPreloader := preload("res://SampleProject/Scripts/Gameplay/RoomPreloader.gd")
 const SceneWarmer := preload("res://SampleProject/Scripts/Gameplay/SceneWarmer.gd")
+const SkyTint := preload("res://SampleProject/Scripts/Gameplay/SkyTint.gd")
 const FADE_ROOM_TRANSITIONS := "res://SampleProject/Scripts/Gameplay/FadeRoomTransitions.gd"
 const LocationDB := preload("res://SampleProject/Scripts/Systems/LocationDB.gd")
 const TutorialTopics := preload("res://SampleProject/Scripts/UI/tutorial_topics.gd")
@@ -236,6 +237,7 @@ func _initialize_save_and_room() -> void:
 	modules.append(room_preloader)
 	scene_warmer = SceneWarmer.new(self, room_preloader)
 	modules.append(scene_warmer)
+	modules.append(SkyTint.new(self))  # D864: жовте небо до виходу з Лабораторії
 	# Без старої мапи load_room() синхронний (перша кімната; з меню — під чорним екраном, D434).
 	load_room(scene_path)
 
