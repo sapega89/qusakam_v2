@@ -87,7 +87,7 @@ centered = false
 
 [node name="OccluderReeds" type="Sprite2D" parent="FrontDark"]
 texture_filter = 1
-position = Vector2(1526.1, 219)
+position = Vector2(1526.1, 275)
 scale = Vector2(1.5, 1.5)
 texture = ExtResource("w9")
 centered = false

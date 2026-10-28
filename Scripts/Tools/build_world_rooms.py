@@ -360,7 +360,8 @@ PAINTED = {
                   ("Palm", "ZahraRest/gen_palm.png", (0.9, 1), (930, 43.5), {}),
                   ("Well", "ZahraRest/gen_well.png", "room", (828, 219), {"z": -2}),
                   ("Ground", "ZahraRest/gen_ground.png", (1, 1), (0, 384), {"tile": 576, "region": (0, 0, 1152, 67)}),
-                  ("OccluderReeds", "ZahraRest/gen_front.png", "front", (1684.5, 219), {})],
+                  # README ставить y 219 — ступня 444, у кадрі; заслін D750 має ступню нижче кадру (verify_room_entrances п. 4).
+                  ("OccluderReeds", "ZahraRest/gen_front.png", "front", (1684.5, 275), {})],
 }
 # Розміри арту, px (для повторів і низу кімнати).
 PAINTED_SIZE = {
