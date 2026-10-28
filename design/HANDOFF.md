@@ -41,8 +41,9 @@ chain's last branch (`wire-props`). The skills branches all start from `cloud/sk
 skills.json — merge one at a time, re-run their tests after each.
 
 ## 2. Art lane (PC, one ComfyUI agent at a time)
-H3 weapon variants: sword, dagger ✅ `d6279b38`; mace and halberd drawn 28.10 noon (sheet
-`design/shots/h3_weapon_variants_2.png`), PC off after. Next: dual + bow → A15 the bandit in normal proportions (then
+H3 weapon variants: sword, dagger ✅ `d6279b38`; mace and halberd ✅ `e9bf23f3` (sheet
+`design/shots/h3_weapon_variants_2.png`, not seen by Sapega); left on them: the halberd's double-axe head in 5 frames
+(`HEADS` in `halberd_fixups.py`, listed in its README), the mace handle past the fist in 3 frames. Next: dual + bow → A15 the bandit in normal proportions (then
 re-measure its `enemy_variety.json` scale) → A4 alchemist → burnt village charred palms, banners, grass (wire-backdrops
 left them green) → craft quarter forge and chapel fronts. Sizes are fixed by scaling in the cloud, not redrawn
 (memory: scale-before-redraw).
