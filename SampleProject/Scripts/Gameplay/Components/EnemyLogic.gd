@@ -77,6 +77,11 @@ var knockback_left: float = 0.0
 var knockback_speed: float = 0.0
 ## Оглушення (D207): ворог стоїть, а замах, що вже йде, не закінчиться ударом.
 var stun_left: float = 0.0
+## Пісок в очах (Sand Veil, D878): с, поки ворог не бачить героя далі за свій удар; шанс, що його удар мимо.
+var blind_left: float = 0.0
+var blind_miss: float = 0.0
+## Страх (Dread Howl, D878): с, поки ворог тікає від героя.
+var fear_left: float = 0.0
 ## Замах зірвано (збій, або відкидання до підказки) — удару не буде.
 var attack_broken: bool = false
 ## Комбо (D265): наступні удари серії — з коротшим замахом (але не коротшим за підказку, D494); останній удар серії —
@@ -301,6 +306,7 @@ func process_physics(delta: float) -> Vector2:
 		_flank_rest = randf() * FLANK_REST
 	_flank_rest = maxf(_flank_rest - delta, 0.0)
 	enemy.stamina.tick(delta, is_attacking)  # D824: набирається, лише поки не б'є
+	blind_left = maxf(blind_left - delta, 0.0)
 
 	process_ai(delta)
 	return velocity
@@ -324,6 +330,11 @@ func process_ai(delta: float):
 	if not player or not is_instance_valid(player):
 		player = GameGroups.get_player()
 	_read_hero(delta)
+
+	if fear_left > 0.0:
+		fear_left -= delta
+		_flee()
+		return
 
 	if _dash_left > 0.0:
 		_dash_left -= delta
@@ -861,6 +872,35 @@ func stagger(duration: float) -> void:
 		attack_broken = true
 		enemy.end_attack()
 
+## Пісок в очі (Sand Veil, D878): [param time] с ворог губить героя далі за свій удар — не женеться, не йде туди, де
+## бачив його, замах на нього зірвано; удар у цей час мимо з шансом [param miss] (DefaultEnemy.start_attack).
+func blind(time: float, miss: float) -> void:
+	blind_left = maxf(blind_left, time)
+	blind_miss = miss
+	_has_seen = false
+	lost_player_timer = 0.0
+	if is_attacking and not committed:
+		attack_broken = true
+
+## Удар засліпленого ворога мимо (кидок на blind_miss).
+func blind_misses() -> bool:
+	return blind_left > 0.0 and randf() < blind_miss
+
+## Страх (Dread Howl, D878): [param time] с ворог тікає від героя, замах зірвано.
+func fear(time: float) -> void:
+	fear_left = maxf(fear_left, time)
+	if is_attacking:
+		attack_broken = true
+
+## Тікає від героя бігом; стіна чи край уступу — стоїть.
+func _flee() -> void:
+	if not player or not is_instance_valid(player):
+		velocity.x = 0
+		return
+	var away := -1 if player.global_position.x > enemy.global_position.x else 1
+	pace = RUN_PACE
+	_walk(away, speed * pace)
+
 ## Відкидання на [param push] px за [param time] с. Удар героя ([param breaks_attack]) зриває замах лише до підказки
 ## (B134); власний ривок ворога — ні. Ривок боса (charge) — довший за звичайне відкидання.
 func start_knockback(push: float, breaks_attack: bool = true, time: float = KNOCKBACK_TIME) -> void:
@@ -1171,6 +1211,8 @@ func _release_token() -> void:
 
 ## Герой помітний (B139): на тому ж поверсі (ноги на ±NOTICE_DY px) або на виду — промінь від ворога до героя без стін.
 func can_notice(hero: Node2D) -> bool:
+	if blind_left > 0.0 and absf(hero.global_position.x - enemy.global_position.x) > enemy.strike_reach() + hero.body_rect().size.x / 2.0:
+		return false  # D878: пісок в очах — чує героя лише впритул
 	if absf(_feet_y(hero) - _feet_y(enemy)) <= NOTICE_DY:
 		return true
 	var ray := PhysicsRayQueryParameters2D.create(enemy.global_position, hero.global_position)

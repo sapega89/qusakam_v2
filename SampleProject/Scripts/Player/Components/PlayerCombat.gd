@@ -246,6 +246,7 @@ func hit_damage() -> int:
 	var gm := ServiceLocator.get_game_manager()
 	critical = CombatRolls.roll(gm.calculate_critical_chance())
 	var damage: int = gm.calculate_physical_damage()
+	damage = roundi(damage * ServiceLocator.get_skill_manager().stances.hit_factor())  # Battle Cry, Blood Price (D876)
 	return roundi(damage * CRIT_DAMAGE) if critical else damage
 
 ## Удар, що зараз вийде: сила, крит, бонус по збитому ворогу (D592, Breaker's Ring) і скільки ворогів він бере
@@ -594,9 +595,9 @@ func _loose(charged: bool) -> void:
 
 ## Каст навички (D271): замах definition.cast_windup с — тут удар по героєві зриває каст (stagger), — потім
 ## вивільнення: SkillManager.use_skill застосовує ефект. Навичка руху (D812) між ними рухає героя (_start_move) і
-## починається лише з землі. false — герой зайнятий.
+## починається лише з землі, як і зона (v2 зріз 4: її кладуть на землю). false — герой зайнятий.
 func begin_cast(definition: SkillDefinition) -> bool:
-	if state != State.READY or (definition.moves() and not player.is_on_floor()):
+	if state != State.READY or ((definition.moves() or definition.leaves_zone()) and not player.is_on_floor()):
 		return false
 	state = State.CAST_WINDUP
 	_state_left = definition.cast_windup
@@ -801,3 +802,8 @@ func _set_hitbox_active(active: bool, last_direction: int) -> void:
 		damage_applier.enable_damage()
 	else:
 		damage_applier.disable_damage()
+
+## Counter Stance відповіла на удар (SkillStances, D876): лишок вивільнення — поза удару [param pose] на [param time] с.
+func answer_stance(pose: StringName, time: float) -> void:
+	_state_left = time
+	_play(pose)

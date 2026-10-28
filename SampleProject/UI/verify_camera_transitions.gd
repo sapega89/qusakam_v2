@@ -595,14 +595,22 @@ func _still_fighters() -> void:
 			body.visible = false
 
 
+## Крок полотна за кожен кадр біжучого героя, у px на кадр 1/60 с. Під навантаженням (набір тестів, J=4) кадр буває
+## довшим: 2–3 тіки фізики й delta 0.03–0.07 с, і згладжена камера за нього проходить удвічі-втричі більше — у px на
+## кадр це сплеск і «різка зупинка» наступного кадру (6.75 px), хоч швидкість камери не стрибала. Тож крок ділимо на
+## довжину свого кадру; на рівних кадрах 1/60 с числа ті самі. Полотно на початку кадру — це камера, оновлена в
+## попередньому кадрі, тож крок ділимо на delta попереднього кадру.
 func _run_steps(frames: int) -> Array[float]:
 	var out: Array[float] = []
 	var last: float = root.get_canvas_transform().origin.x
+	var tick: float = 1.0 / Engine.physics_ticks_per_second
+	var delta: float = root.get_process_delta_time()
 	Input.action_press(&"move_right")
 	for f in frames:
 		await process_frame
 		var cx: float = root.get_canvas_transform().origin.x
-		out.append(cx - last)
+		out.append((cx - last) * tick / delta)
 		last = cx
+		delta = root.get_process_delta_time()
 	Input.action_release(&"move_right")
 	return out

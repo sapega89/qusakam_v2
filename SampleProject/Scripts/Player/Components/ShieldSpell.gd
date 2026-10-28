@@ -31,7 +31,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	var blocking: bool = _player.combat.is_blocking()
+	var blocking: bool = _player.combat.is_blocking() or ServiceLocator.get_skill_manager().stances.shows_shield()
 	if blocking and not _raised:
 		raise(_pick_spell())
 	elif _raised and not blocking:
@@ -43,6 +43,8 @@ func _process(_delta: float) -> void:
 func _pick_spell() -> StringName:
 	if uses_glass_shield():
 		return &"glass"
+	if ServiceLocator.get_skill_manager().stances.shows_shield():
+		return &"magic"  # Counter Stance, Aegis (D876) — магічний щит і без Shield Block
 	return &"magic" if ServiceLocator.get_skill_manager().is_unlocked("shield_block") else &""
 
 

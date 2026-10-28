@@ -835,7 +835,8 @@ func take_damage(amount: int, source: Node = null, critical: bool = false) -> vo
 func start_attack(direction: int) -> void:
 	_face_shapes(direction)
 	hitbox_damage.update_damage()
-	hitbox_damage.enable_damage()
+	if not enemy_logic.blind_misses():  # D878: пісок в очах — удар мимо
+		hitbox_damage.enable_damage()
 	hitbox.monitoring = true
 	enemy_view.on_strike()
 	EventBus.enemy_struck.emit(self, strike_move(), Vector2(direction, 0))
@@ -903,6 +904,11 @@ func stagger(duration: float, from_x: float) -> void:
 	EventBus.enemy_staggered.emit(self, duration)
 	last_stagger_source = &""  # наступний збій без джерела (щит розбито, навичка) — «інше»
 
+## Захист розбито (D495): щит чи броня злетіли, і ворог ще в збої від цього — Soul Harvest його добиває (D878).
+## У звичайного ворога захисту немає.
+func guard_broken() -> bool:
+	return false
+
 ## Ворог збитий чи оглушений (стагер, парирування, стійкість, оглушення навички) — для Breaker's Ring (D592).
 func is_staggered() -> bool:
 	return enemy_logic.stun_left > 0.0
@@ -926,6 +932,32 @@ func nudge(push: float) -> void:
 func knockback(push: float) -> void:
 	if not knockback_immune and not holds_ground():
 		enemy_logic.start_knockback(push)
+
+## Підкидання (Rising Slash, D877): легкий ворог злітає на [param time] с (угору й униз на ту саму висоту), замах
+## зірвано, поза збою. Важкий (великий, у броні, бос) і летючий — ні: удар лише ранить.
+func launch(time: float) -> void:
+	if not can_be_thrown():
+		return
+	enemy_logic.stagger(time)
+	enemy_logic.jump_speed = float(ProjectSettings.get_setting("physics/2d/default_gravity")) * time / 2.0
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_staggered.emit(self, time)
+
+## Чи можна ворога підкинути (D877): не великий, не в броні (tank, D208), не бос, не летючий.
+func can_be_thrown() -> bool:
+	return not (knockback_immune or super_armor or flying or size_kind == "large")
+
+## Збиття з ніг (Ground Slam, Sweeping Arc, D877): ворог лежить [param time] с у позі збою, замах зірвано — і в броні,
+## і після підказки. Бос не падає (B134): лише оглушення, яке його броня й замах після підказки не пускають.
+func knock_down(time: float) -> void:
+	if knockback_immune:
+		stun(time)
+		return
+	enemy_logic.stagger(time)
+	if enemy_view.has_stagger_pose():
+		enemy_view.play_stagger(enemy_logic.stun_left)
+	EventBus.enemy_staggered.emit(self, time)
 
 ## Замах і удар стоять на місці (D754): поштовх їх не зсуває й не зриває — серію ламає лише збій (стійкість, парирування).
 ## Інакше кожен фінішер героя відкидав ворога з його дальності посеред замаху, і той не бив зовсім.

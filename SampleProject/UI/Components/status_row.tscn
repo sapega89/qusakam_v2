@@ -52,3 +52,11 @@ mouse_filter = 2
 texture = ExtResource("5_stunned")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="BuffTemplate" type="TextureRect" parent="."]
+visible = false
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

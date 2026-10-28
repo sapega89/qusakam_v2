@@ -51,6 +51,25 @@ func _initialize() -> void:
 	# спільний за Assets/FX/README.md; решта кадрів навички руху — її власні, як у всіх (D279)
 	var move_layer: Dictionary = {}
 	for skill in actives:
+		if skill.vfx.get_file() == "RangedSkill.tscn":
+			# v2 зріз 4 (D874, D875): кидки й зони світять позиченим світлом, доки арт (зріз 7) не намалює їхнє своє
+			ck(skill.has("projectile") or skill.has("zone"), "%s: a ranged / zone skill borrows RangedSkill.tscn until its art lands" % skill.id)
+			continue
+		if skill.has("buff"):
+			# D876: стійки й баффи — заглушка StanceSkill.tscn (частинки, без кадрів); свої кадри — з арт-лейном
+			ck(skill.vfx.get_file() == "StanceSkill.tscn", "%s: the stances' placeholder effect (StanceSkill.tscn)" % skill.id)
+			continue
+		# v2 зріз 6a (D877): навички контролю поки позичають шлейф удару героя й кільце удару стрибків — свої кадри
+		# (і перевірка «жодних спільних кадрів», D279) прийдуть з артом (ComfyUI, звіт skills-v2-control-a)
+		if skill.has("control"):
+			ck(skill.vfx.get_file() == "ControlSkill.tscn", "%s: the control skills' borrowed effect (ControlSkill.tscn)" % skill.id)
+			continue
+		# v2 зріз 6б (D878): навички контролю й добивання позичають кадри навичок клятв (AreaSkillFX.BORROW), доки
+		# арт-лінія не намалює їхні; перевірка «свої кадри» (D279) для них прийде з артом
+		if skill.vfx.get_file() == "AreaSkill.tscn":
+			var lender: String = load("res://SampleProject/Scripts/FX/AreaSkillFX.gd").BORROW[skill.id][0]
+			ck(lender in OATH_ACTIVES, "%s: borrows %s's frames until its art lands" % [skill.id, lender])
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

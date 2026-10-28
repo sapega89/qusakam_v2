@@ -6,7 +6,8 @@ extends SceneTree
 ##      до першої медитації не діють: Длань — NOT_AWAKENED, слот тьмяний, Shield Block — 0.
 ##   2. Сейв до медитації й завантаження: усе так само (вивчені, сплять).
 ##   3. Медитація на вершині каньйону (справжній MeditationTrigger): навички діють, слот яскравий, Shield Block 0.2;
-##      вікно туторіалу «Your Skills» — на паузі, з кнопками з InputMap (блок, перший слот, меню гри).
+##      вікно туторіалу «Your Skills» — на паузі, з кнопками з InputMap (блок, перший слот, меню гри); вікно над
+##      підказкою «Hold Tab to skip» кат-сцени (B196, D879).
 ##   4. Раз за проходження: ще одна спроба нічого не показує.
 ##   5. Сейв після медитації й завантаження: діють.
 ##   6. Скидання (D592) стартові навички не забирає й JP за них не повертає.
@@ -123,6 +124,13 @@ func _initialize() -> void:
 	var window: Node = layer.active_modal
 	ck(window != null and window.topics[window.index].id == "starting_skills", "on the Your Skills topic")
 	ck(paused, "the game waits while it is open")
+	var skip: CanvasLayer = null
+	for n: Node in root.find_children("*", "CanvasLayer", true, false):
+		if n.scene_file_path.ends_with("cutscene_skip_prompt.tscn"):
+			skip = n
+	ck(skip != null and skip.visible, "the cutscene's skip prompt is up behind the window")
+	ck(skip != null and layer.layer > skip.layer,
+			"B196: the window covers the skip prompt (modal layer %d, skip %d)" % [layer.layer, skip.layer if skip else -1])
 	ck(sm.skills_awakened() and sm.can_use_skill("healing_palm") == R.OK, "Healing Palm usable now (%d)" % sm.can_use_skill("healing_palm"))
 	ck(is_equal_approx(sm.passive_value("shield_block"), 0.2), "Shield Block cuts a blow through a block by 20 %% (%.2f)" % sm.passive_value("shield_block"))
 	await process_frame

@@ -66,6 +66,23 @@ func _until_phase(actor: Node2D, phase: StringName) -> void:
 			return
 		await process_frame
 
+## Кадри анімації, показані за фазу enter (падіння): [анімація, різні кадри, чи грала].
+func _enter_frames(actor: Node2D) -> Array:
+	var sprite: AnimatedSprite2D = actor.sprite
+	var frames: Array[int] = []
+	var playing := false
+	var anims: Array[StringName] = []
+	for i in 600:
+		if not is_instance_valid(actor) or actor.phase != &"enter":
+			break
+		if not sprite.frame in frames:
+			frames.append(sprite.frame)
+		if not sprite.animation in anims:
+			anims.append(sprite.animation)
+		playing = playing or sprite.is_playing()
+		await process_frame
+	return [anims, frames, playing]
+
 func _gone(actor: Node2D) -> void:
 	for i in 900:
 		if not is_instance_valid(actor):
@@ -204,6 +221,8 @@ func _initialize() -> void:
 	actor = await _call(cm, "astrit")
 	await process_frame
 	ck(actor.global_position.y < hero.global_position.y + actor.HERO_FEET - 100.0, "she drops in from above (%.0f above the feet)" % (hero.global_position.y + actor.HERO_FEET - actor.global_position.y))
+	var drop: Array = await _enter_frames(actor)
+	ck(drop[0] == [&"enter"] and drop[2] and drop[1].size() >= 8, "her drop plays her enter animation (A14, D880): %s, frames %s" % [drop[0], drop[1]])
 	await _until_phase(actor, &"hold")
 	ck(near.current_health == hp - 40, "Астрит hit for 40 (%d → %d)" % [hp, near.current_health])
 	ck(near.enemy_logic.stun_left > 0.0 and _stars(near), "and stunned it, with stars over its head (%.2f s)" % near.enemy_logic.stun_left)
@@ -220,6 +239,8 @@ func _initialize() -> void:
 	before = enemies.map(func(e: Node) -> int: return e.current_health)
 	_fx.clear()
 	actor = await _call(cm, "urizen")
+	drop = await _enter_frames(actor)
+	ck(drop[0] == [&"enter"] and not drop[2] and drop[1] == [0], "his drop stays on the first enter frame (%s, frames %s)" % [drop[0], drop[1]])
 	await _until_phase(actor, &"hold")
 	var hurt: Array = range(enemies.size()).filter(func(i: int) -> bool: return enemies[i].current_health == before[i] - 30)
 	ck(hurt == [0, 1, 2], "the coin struck the three nearest for 30 each, the fourth is spared (%s of %d)" % [hurt, enemies.size()])

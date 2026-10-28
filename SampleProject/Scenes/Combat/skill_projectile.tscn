@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Combat/arrow_charged.tscn" id="1_arrow"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/Combat/Skills/SkillProjectile.gd" id="2_script"]
+
+[node name="SkillProjectile" instance=ExtResource("1_arrow")]
+script = ExtResource("2_script")
+strength = 2
+metadata/_doc = "Holy Javelin / Lightspear (v2 slice 4): the charged arrow's sprite, tinted, until slice 7 draws a spear of light"
+
+[node name="Sprite2D" parent="." index="1"]
+modulate = Color(1, 0.95, 0.7, 1)
+scale = Vector2(1.5, 1.5)

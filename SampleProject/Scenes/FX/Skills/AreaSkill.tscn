@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://SampleProject/Scenes/FX/Skills/OathSkill.tscn" id="base"]
+[ext_resource type="Script" path="res://SampleProject/Scripts/FX/AreaSkillFX.gd" id="fx"]
+
+[node name="AreaSkill" instance=ExtResource("base")]
+script = ExtResource("fx")
+metadata/_doc = "Cast effect of the control and finisher actives (v2 slice 6b): borrowed oath frames until the art lane draws their own"

@@ -3,6 +3,8 @@ class_name SkillManager
 
 const Charms = preload("res://SampleProject/Scripts/Systems/Charms.gd")
 const OathLeanings = preload("res://SampleProject/Scripts/Systems/OathLeanings.gd")
+## Не preload: SkillStances бере DefaultEnemy і Arrow, а ті через PlayerCombat — GameManager, що вантажить цей скрипт (цикл).
+const SKILL_STANCES := "res://SampleProject/Scripts/Combat/Systems/SkillStances.gd"
 
 ## 🎓 SkillManager — бойові/класові навички, Job Points і SP.
 ##
@@ -87,6 +89,8 @@ var _since: Dictionary = {"after_parry": INF, "after_skill": INF}
 var _skill_effect_running := false
 ## Приховані нахили до шляхів (D725): стиль бою і вчинки → порада писаря на переписі.
 var leanings: OathLeanings = null
+## Стійки й баффи героя (v2 зріз 5, D876).
+var stances: Node = null
 
 
 func _initialize() -> void:
@@ -101,6 +105,8 @@ func _initialize() -> void:
 	EventBus.charms_changed.connect(_on_charms_changed)
 	leanings = OathLeanings.new(_state)
 	add_child(leanings)
+	stances = load(SKILL_STANCES).new(self)
+	add_child(stances)
 
 
 ## Wisdom змінює межу SP (D335) — поточне підтягується, HUD дізнається через sp_changed.
@@ -221,6 +227,11 @@ func _scaled_power(base: int, phys: float, elem: float) -> float:
 func _skill_factor(skill_id: String, rank: int) -> float:
 	var at_rank := get_rank(skill_id) if rank < 0 else rank
 	return skill_database.get_skill(skill_id).rank_factor(at_rank) * (1.0 + _attributes().bonus("skill_power")) * (1.0 + synergy_bonus(skill_id))
+
+
+## D878: множник часів контролю (ланцюг, пісок, страх) — ранг × Wisdom × синергії, як у ушкодження.
+func control_factor(skill_id: String) -> float:
+	return _skill_factor(skill_id, -1)
 
 
 ## D496: синергії — сума per_rank × ранг кожної пасивки-джерела (не вивчена — 0).
@@ -866,9 +877,14 @@ func cast_skill(skill_id: String) -> Result:
 		return _fail(skill_id, verdict)
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 	assert(definition.release_pose != "" and definition.vfx != "", "SkillManager.cast_skill: %s has no cast in skills.json" % skill_id)
+	if definition.is_buff():
+		return stances.begin(definition)  # стійка чи бафф (D876) — ворог перед героєм не потрібен
 	var player: Node = _default_source()
 	# Навичка руху (D812) — сама шлях до ворога: починається й без ворога перед героєм
-	if definition.damage > 0 and not definition.moves() and SkillTargeting.enemies_in_front(player).is_empty():
+	# Кидок і зона (v2 зріз 4) б'ють далі за удар перед героєм — теж без ворога впритул; навичка зони (D878) — ціль
+	# у своїй зоні: спалах і виття — навколо, ланцюг — далі за удар
+	if (definition.damage > 0 or definition.controls()) and not definition.moves() and not definition.throws() \
+			and not definition.leaves_zone() and SkillTargeting.skill_targets(definition, player).is_empty():
 		return _fail(skill_id, Result.NO_TARGET)
 	if not player.combat.begin_cast(definition):
 		return _fail(skill_id, Result.BUSY)
@@ -893,9 +909,23 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 	var definition: SkillDefinition = skill_database.get_skill(skill_id)
 
 	var effect_source: Node = source if source != null else _default_source()
+	if definition.throws() or definition.leaves_zone():
+		return _use_ranged(skill_id, definition, effect_source)
+	if definition.is_buff():
+		return stances.use(definition, effect_source)  # D876: стійка чи бафф, без удару по цілі
 
+	# D878: контроль без ушкодження (Sand Veil, Dread Howl) — лише стан на кожного в зоні; нікого — нічого не коштує
+	if definition.damage <= 0 and definition.controls():
+		var held: Array[Node] = SkillTargeting.skill_targets(definition, effect_source)
+		if target != null:
+			held = [target]
+		if held.is_empty():
+			return _fail(skill_id, Result.NO_TARGET)
+		for each in held:
+			combat_executor.apply_area_control(definition, effect_source, each, control_factor(skill_id))
 	# Ефект виконуємо до списання SP, щоб невдале застосування нічого не коштувало.
 	# Без явної цілі (хотбар) — ціль за D142: усе перед героєм / союзник поруч або сам герой.
+	var sp_back := 0
 	if definition.damage > 0:
 		var targets: Array[Node] = []
 		if target != null:
@@ -911,10 +941,17 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 		var amount := skill_damage(skill_id)
 		_skill_effect_running = true
 		for each in targets:
+			var reaped := combat_executor.reaps(definition, each)  # D878: до удару — поріг HP на момент удару
 			if combat_executor.execute(definition, effect_source, each, amount):
 				hit = true
 				combat_executor.apply_status(definition, each, scaled(skill_id, definition.burn_dps))
 				combat_executor.apply_move_riders(definition, effect_source, each, amount)
+				combat_executor.apply_control(definition, effect_source, each)
+				if definition.controls():
+					combat_executor.apply_area_control(definition, effect_source, each, control_factor(skill_id))
+				if reaped:
+					combat_executor.reap(each)
+					sp_back += definition.execute_refund
 		if not hit:
 			_skill_effect_running = false
 			return _fail(skill_id, Result.EFFECT_FAILED)
@@ -930,9 +967,58 @@ func use_skill(skill_id: String, target: Node = null, source: Node = null) -> Re
 			return _fail(skill_id, Result.EFFECT_FAILED)
 
 	_pay(definition)
+	restore_sp(sp_back)  # D878: Soul Harvest повертає SP за кожного добитого — після ціни, щоб не впертися в максимум
 	_since["after_skill"] = 0.0
 	EventBus.skill_used.emit(skill_id)
 	return Result.OK
+
+
+## Кидок і зона (v2 зріз 4, D874, D875): снаряд чи зона з'являються на вивільненні й б'ють потім, тож навичка
+## коштує SP одразу, влучить вона чи ні (як промах навички руху, D812). Удар Hellfire Stomp (damage) — по всіх у калюжі.
+func _use_ranged(skill_id: String, definition: SkillDefinition, source: Node2D) -> Result:
+	var amount := skill_damage(skill_id)
+	if definition.throws():
+		combat_executor.throw(definition, source, amount)
+	if definition.leaves_zone():
+		var zone := combat_executor.place_zone(definition, source, zone_power(skill_id, definition.zone_dps),
+				zone_power(skill_id, definition.zone_heal))
+		if amount > 0:
+			_skill_effect_running = true
+			for enemy in SkillTargeting.enemies_in(zone.area()):
+				if combat_executor.execute(definition, source, enemy, amount):
+					combat_executor.apply_status(definition, enemy, scaled(skill_id, definition.burn_dps))
+			_skill_effect_running = false
+	_pay(definition)
+	_since["after_skill"] = 0.0
+	EventBus.skill_used.emit(skill_id)
+	return Result.OK
+
+
+## Снаряд навички влучив (SkillProjectile): удар навички — без SP за влучання, зі станом D207; ціль повертається до героя.
+func projectile_hit(definition: SkillDefinition, source: Node2D, target: Node, amount: int) -> void:
+	_skill_effect_running = true
+	if combat_executor.execute(definition, source, target, amount):
+		combat_executor.apply_status(definition, target, scaled(definition.id, definition.burn_dps))
+	_skill_effect_running = false
+	target.enemy_logic.on_player_detected(source)
+
+
+## Секунда зони (SkillZone): ворогам у ній — її dps, героєві й союзникам у ній — її heal.
+func zone_tick(zone: Node2D) -> void:
+	var area: Rect2 = zone.area()
+	if zone.dps > 0:
+		_skill_effect_running = true
+		for enemy in SkillTargeting.enemies_in(area):
+			combat_executor.hurt(zone.source, enemy, zone.dps)
+		_skill_effect_running = false
+	if zone.heal > 0:
+		for patient in SkillTargeting.allies_in(zone.source, area):
+			combat_executor.heal(zone.skill, patient, zone.heal)
+
+
+## Сила зони за секунду (D875): [param base] × ранг × Wisdom × синергії, як у skill_damage без частки атаки.
+func zone_power(skill_id: String, base: int) -> int:
+	return roundi(base * _skill_factor(skill_id, -1))
 
 
 ## D259: каст зірвано ударом — ефекту немає, але SP списано й кулдаун пішов. Кличе PlayerCombat.stagger
@@ -965,3 +1051,11 @@ func _default_source() -> Node:
 
 func _player_level() -> int:
 	return ServiceLocator.get_xp_manager().get_level()
+
+
+## Стійка чи бафф застосовані (SkillStances.use, D876): ціна й події — як у use_skill.
+func _buff_used(definition: SkillDefinition) -> Result:
+	_pay(definition)
+	_since["after_skill"] = 0.0
+	EventBus.skill_used.emit(definition.id)
+	return Result.OK

@@ -53,6 +53,69 @@ func apply_move_riders(definition: SkillDefinition, source: Node2D, target: Node
 		EventBus.skill_drained.emit(source, target, drained)
 
 
+## Контроль (D877) після влучання: шкода стійкості — control_poise_x важких ударів героя з пасивкою poise (D284,
+## як PlayerCombat._hit_effects; повна шкала — збій, D777), підкидання, збиття з ніг. POISE_HEAVY — з героя: class_name
+## PlayerCombat тут дав би цикл компіляції (PlayerCombat кличе цей клас).
+func apply_control(definition: SkillDefinition, source: Node2D, target: Node2D) -> void:
+	if definition.control_poise_x > 0.0:
+		var poise: float = source.combat.POISE_HEAVY * definition.control_poise_x * (1.0 + ServiceLocator.get_skill_manager().passive_value("poise"))
+		target.take_poise(poise, source.global_position.x, &"skill")
+	if definition.control_launch > 0.0:
+		target.launch(definition.control_launch)
+	if definition.control_knockdown > 0.0:
+		target.knock_down(definition.control_knockdown)
+
+
+# ── Контроль і добивання (D878) ───────────────────────────────────────
+
+## Ланцюг тягне ціль за стільки с.
+const PULL_TIME := 0.2
+## Ціль ланцюга стає за стільки px від тіла героя.
+const PULL_GAP := 8.0
+
+
+## Ланцюг, пісок чи страх на ціль [param target] від героя [param source]; часи — × [param factor] (ранг, синергії).
+func apply_area_control(definition: SkillDefinition, source: Node2D, target: Node2D, factor: float) -> void:
+	if definition.pull_hold > 0.0:
+		pull(target, source, definition.pull_hold * factor)
+	if definition.blind_time > 0.0:
+		target.enemy_logic.blind(definition.blind_time * factor, definition.blind_miss)
+	if definition.fear_flinch > 0.0:
+		target.stagger(definition.fear_flinch, source.global_position.x)
+		if definition.fear_time > 0.0 and not strong(target):
+			target.enemy_logic.fear(definition.fear_time * factor)
+
+
+## Ланцюг (Chain of Night): ціль летить до героя за PULL_TIME і стоїть у збої [param hold] с. Бос (його не відкидає, B134) — ні.
+func pull(target: Node2D, source: Node2D, hold: float) -> void:
+	if target.knockback_immune:
+		return
+	var body: Rect2 = source.body_rect()
+	var other: Rect2 = target.body_rect()
+	var gap := other.position.x - body.end.x if other.position.x >= body.end.x else body.position.x - other.end.x
+	var toward := signf(source.global_position.x - target.global_position.x)
+	target.enemy_logic.start_knockback(toward * maxf(0.0, gap - PULL_GAP), true, PULL_TIME)
+	target.enemy_logic.stagger(hold)  # тикає після ривка ланцюга (EnemyLogic.process_ai: спершу відкидання)
+
+
+## Еліта й бос не тікають від виття — лише здригаються.
+static func strong(target: Node2D) -> bool:
+	return target.elite or target.knockback_immune
+
+
+## Soul Harvest: чи добиває цю ціль — HP не вище execute_below або щит розбито й ворог ще в збої (D495). Бос — ні.
+func reaps(definition: SkillDefinition, target: Node2D) -> bool:
+	if definition.execute_below <= 0.0 or target.knockback_immune:
+		return false
+	return target.get_health_percentage() <= definition.execute_below or target.guard_broken()
+
+
+## Добиває ціль, що пережила удар: решта HP — повз броню й щит, тим самим джерелом (досвід, D297).
+func reap(target: Node2D) -> void:
+	if target.is_alive():
+		target.register_damage(target.get_current_health())
+
+
 # ── Рух (D812) ─────────────────────────────────────────────────────────────
 ## Герой рухається тілом (PlayerMover.push і гравітація), тож тіла ворогів зупиняють його самі (D443): ривок
 ## спиняється, щойно перший ворог у досяжності удару; стрибок не летить далі за першого ворога попереду — за спину
@@ -93,6 +156,48 @@ static func leap_distance(definition: SkillDefinition, player: Node2D, direction
 
 static func _gravity() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+
+
+# ── Кидок і зона (v2 зріз 4, D874, D875) ────────────────────────────
+## Не preload: снаряд успадковує Arrow, а Arrow бере PlayerCombat, який тягне цей скрипт, — коло компіляції.
+const PROJECTILE_SCENE := "res://SampleProject/Scenes/Combat/skill_projectile.tscn"
+const ZONE_SCENE := "res://SampleProject/Scenes/Combat/skill_zone.tscn"
+
+
+## Пускає снаряд навички від руки героя [param source] уздовж його погляду, як стрілу лука (SkillProjectile.place_at_hand);
+## [param amount] — шкода кожного влучання (уже з рангом).
+func throw(definition: SkillDefinition, source: Node2D, amount: int) -> Area2D:
+	var spear: Area2D = load(PROJECTILE_SCENE).instantiate()
+	spear.skill = definition
+	spear.direction = source.last_direction
+	spear.shooter = source
+	spear.damage = amount
+	spear.speed = definition.projectile_speed
+	spear.range_px = definition.projectile_range
+	spear.pierce = definition.projectile_pierce
+	Game.get_singleton().map.add_child(spear)
+	spear.place_at_hand()
+	return spear
+
+
+## Кладе зону навички під ноги героя [param source] (низ його тіла); [param dps] / [param heal] — уже з рангом.
+func place_zone(definition: SkillDefinition, source: Node2D, dps: int, heal_per_s: int) -> Node2D:
+	var zone: Node2D = load(ZONE_SCENE).instantiate()
+	zone.skill = definition
+	zone.source = source
+	zone.dps = dps
+	zone.heal = heal_per_s
+	var body: Rect2 = source.body_rect()
+	Game.get_singleton().map.add_child(zone)
+	zone.global_position = Vector2(body.get_center().x, body.end.y)
+	return zone
+
+
+## Удар зони на [param amount] без SkillDefinition.damage (Hallowed Circle б'є лише зоною): той самий HealthComponent.
+func hurt(source: Node, target: Node, amount: int) -> void:
+	var health := find_health_component(target)
+	if health.is_alive():
+		health.apply_damage(amount, source)
 
 
 ## Лікує ціль на SkillDefinition.heal. Ціль — гравець (CombatBody2D) або союзник з heal_damage().

@@ -113,6 +113,70 @@ var lifesteal: float = 0.0
 ## Невразливість героя від початку руху, с.
 var invulnerable: float = 0.0
 
+## Навички дальнього бою й зон (v2 зріз 4, D874): кидок — снаряд летить від руки вздовж погляду (як стріла лука,
+## D380–D381) до projectile_range px зі швидкістю projectile_speed px/с; projectile_pierce — прошиває всіх на лінії
+## (кожного раз), інакше зупиняється на першому. 0 — не кидок.
+var projectile_range: float = 0.0
+var projectile_speed: float = 0.0
+var projectile_pierce: bool = false
+## Зона на землі під ногами героя (D875): zone_radius px в обидва боки, zone_time с; щосекунди ворогам у ній —
+## zone_dps, героєві й союзникам у ній — zone_heal (обидва з рангом і синергіями). 0 — без зони.
+var zone_radius: float = 0.0
+var zone_time: float = 0.0
+var zone_dps: int = 0
+var zone_heal: int = 0
+## Стійки й баффи (v2 зріз 5, D876) — їх веде SkillStances. buff_kind: "" — не бафф; "counter" / "mirror" — стійка
+## на buff_time с (це вивільнення касту); "breath" — зосередження (замах — це канал); "battle_cry", "aegis",
+## "blood_price", "rally" — бафф після вивільнення.
+var buff_kind: String = ""
+var buff_time: float = 0.0
+## Mirror Stance: частка шкоди стріли, з якою вона летить назад.
+var reflect_ratio: float = 0.0
+## Centered Breath: SP, що повертає зосередження.
+var sp_restore: int = 0
+## Battle Cry: +частка сили ударів героя; звичайних ворогів у flinch_radius px збиває на flinch_time с.
+var attack_bonus: float = 0.0
+var flinch_radius: float = 0.0
+var flinch_time: float = 0.0
+## Aegis: бар'єр поглинає absorb + absorb_elem × Elem. Atk. шкоди.
+var absorb: int = 0
+var absorb_elem: float = 0.0
+## Blood Price: ціна — частка Max HP; наступні buff_hits влучань сильніші на hit_bonus.
+var hp_cost: float = 0.0
+var buff_hits: int = 0
+var hit_bonus: float = 0.0
+## Rally: наступний асист компаньйона — +assist_damage шкоди, оглушення й час на полі довші на assist_duration.
+var assist_damage: float = 0.0
+var assist_duration: float = 0.0
+## Контроль і добивання (v2 зріз 6a, D877): блок control у skills.json.
+## control_hits: "" — усі в зоні удару (D142); "first" — найближчий перед героєм; "front" з control_reach — усі перед
+## героєм до control_reach px від тіла; "around" — усі в control_reach px по обидва боки.
+var control_hits: String = ""
+var control_reach: float = 0.0
+## Підкидання легкого ворога (не великого, не боса, не летючого, не в броні), с у повітрі; замах зірвано.
+var control_launch: float = 0.0
+## Збиває з ніг: ворог лежить (поза збою), замах зірвано, с.
+var control_knockdown: float = 0.0
+## Шкода стійкості (guard, D495 / D777) кожній цілі — у важких ударах героя (PlayerCombat.POISE_HEAVY).
+var control_poise_x: float = 0.0
+## Контроль і добивання (v2 зріз 6б, D878). Зона без руху: area_hits "first" — найближчий ворог перед героєм
+## у area_reach px; "front" — усі перед героєм у area_reach px; "around" — усі в area_reach px по обидва боки.
+## "" — звичайна зона удару (D142). Часи контролю ростуть з рангом і синергіями, як ушкодження (SkillManager.control_factor).
+var area_hits: String = ""
+var area_reach: float = 0.0
+## Ланцюг (Chain of Night): тягне ціль упритул до героя й тримає її pull_hold с (збій, D264). Боса не тягне й не тримає.
+var pull_hold: float = 0.0
+## Пісок в очі (Sand Veil): ворог губить героя далі за свій удар на blind_time с, його удар у цей час мимо з шансом blind_miss.
+var blind_time: float = 0.0
+var blind_miss: float = 0.0
+## Виття (Dread Howl): кожен у зоні — збій fear_flinch с; слабкий (не еліта, не бос) потім тікає від героя fear_time с.
+var fear_time: float = 0.0
+var fear_flinch: float = 0.0
+## Добивання (Soul Harvest): ціль з HP не вище execute_below частки або з розбитим щитом у збої (D495) гине від удару,
+## і герой отримує назад execute_refund SP. Боса не добиває.
+var execute_below: float = 0.0
+var execute_refund: int = 0
+
 
 static func type_from_string(value: String) -> Type:
 	return Type.PASSIVE if value.strip_edges().to_lower() == "passive" else Type.ACTIVE
@@ -201,6 +265,35 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.knockback = maxf(0.0, float(data.get("knockback", 0.0)))
 	definition.lifesteal = clampf(float(data.get("lifesteal", 0.0)), 0.0, 1.0)
 	definition.invulnerable = maxf(0.0, float(data.get("invulnerable", 0.0)))
+	var projectile: Dictionary = data.get("projectile", {})
+	definition.projectile_range = maxf(0.0, float(projectile.get("range", 0.0)))
+	definition.projectile_speed = maxf(0.0, float(projectile.get("speed", 0.0)))
+	definition.projectile_pierce = bool(projectile.get("pierce", false))
+	var zone: Dictionary = data.get("zone", {})
+	definition.zone_radius = maxf(0.0, float(zone.get("radius", 0.0)))
+	definition.zone_time = maxf(0.0, float(zone.get("time", 0.0)))
+	definition.zone_dps = maxi(0, int(zone.get("dps", 0)))
+	definition.zone_heal = maxi(0, int(zone.get("heal", 0)))
+	_read_buff(definition, data.get("buff", {}))
+	var control: Dictionary = data.get("control", {})
+	definition.control_hits = String(control.get("hits", ""))
+	definition.control_reach = maxf(0.0, float(control.get("reach", 0.0)))
+	definition.control_launch = maxf(0.0, float(control.get("launch", 0.0)))
+	definition.control_knockdown = maxf(0.0, float(control.get("knockdown", 0.0)))
+	definition.control_poise_x = maxf(0.0, float(control.get("poise_x", 0.0)))
+	var area: Dictionary = data.get("area", {})
+	definition.area_hits = String(area.get("hits", ""))
+	definition.area_reach = maxf(0.0, float(area.get("reach", 0.0)))
+	definition.pull_hold = maxf(0.0, float(data.get("pull", {}).get("hold", 0.0)))
+	var blind: Dictionary = data.get("blind", {})
+	definition.blind_time = maxf(0.0, float(blind.get("time", 0.0)))
+	definition.blind_miss = clampf(float(blind.get("miss", 0.0)), 0.0, 1.0)
+	var fear: Dictionary = data.get("fear", {})
+	definition.fear_time = maxf(0.0, float(fear.get("time", 0.0)))
+	definition.fear_flinch = maxf(0.0, float(fear.get("flinch", 0.0)))
+	var execute: Dictionary = data.get("execute", {})
+	definition.execute_below = clampf(float(execute.get("below", 0.0)), 0.0, 1.0)
+	definition.execute_refund = maxi(0, int(execute.get("sp_refund", 0)))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:
@@ -222,6 +315,36 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	return definition
 
 
+## Блок buff (v2 зріз 5, D876). Стійка триває, поки йде вивільнення касту, тож cast.release — її час.
+static func _read_buff(definition: SkillDefinition, buff: Dictionary) -> void:
+	definition.buff_kind = String(buff.get("kind", ""))
+	definition.buff_time = maxf(0.0, float(buff.get("time", 0.0)))
+	definition.reflect_ratio = maxf(0.0, float(buff.get("reflect", 0.0)))
+	definition.sp_restore = maxi(0, int(buff.get("sp", 0)))
+	definition.attack_bonus = maxf(0.0, float(buff.get("attack", 0.0)))
+	definition.flinch_radius = maxf(0.0, float(buff.get("flinch_radius", 0.0)))
+	definition.flinch_time = maxf(0.0, float(buff.get("flinch", 0.0)))
+	definition.absorb = maxi(0, int(buff.get("absorb", 0)))
+	definition.absorb_elem = maxf(0.0, float(buff.get("absorb_elem", 0.0)))
+	definition.hp_cost = clampf(float(buff.get("hp_cost", 0.0)), 0.0, 1.0)
+	definition.buff_hits = maxi(0, int(buff.get("hits", 0)))
+	definition.hit_bonus = maxf(0.0, float(buff.get("damage", 0.0)))
+	definition.assist_damage = maxf(0.0, float(buff.get("assist_damage", 0.0)))
+	definition.assist_duration = maxf(0.0, float(buff.get("assist_duration", 0.0)))
+	if definition.is_stance():
+		definition.cast_release = definition.buff_time
+
+
+## Стійка чи бафф (D876): їх застосовує SkillStances, а не удар по цілі.
+func is_buff() -> bool:
+	return buff_kind != ""
+
+
+## Стійка (Counter, Mirror): відповідає на удари, поки триває вивільнення касту.
+func is_stance() -> bool:
+	return buff_kind in ["counter", "mirror"]
+
+
 ## D674: множник ефекту на ранзі [param rank] (0 — як на першому): 1 + bonus за кожен ранг понад перший.
 func rank_factor(rank: int) -> float:
 	return 1.0 + rank_bonus * (maxi(1, rank) - 1)
@@ -230,6 +353,21 @@ func rank_factor(rank: int) -> float:
 ## Навичка руху (D812): герой рухається між замахом і ударом.
 func moves() -> bool:
 	return move_kind != ""
+
+
+## Кидок (D874): навичка пускає снаряд.
+func throws() -> bool:
+	return projectile_range > 0.0
+
+
+## Зона (D875): навичка лишає на землі коло чи калюжу.
+func leaves_zone() -> bool:
+	return zone_time > 0.0
+
+
+## Навичка контролю (D878): накладає ланцюг, пісок чи страх на кожну ціль своєї зони.
+func controls() -> bool:
+	return pull_hold > 0.0 or blind_time > 0.0 or fear_flinch > 0.0
 
 
 func is_active() -> bool:
@@ -281,4 +419,17 @@ func to_dict() -> Dictionary:
 		"knockback": knockback,
 		"lifesteal": lifesteal,
 		"invulnerable": invulnerable,
+		"projectile": {"range": projectile_range, "speed": projectile_speed, "pierce": projectile_pierce},
+		"zone": {"radius": zone_radius, "time": zone_time, "dps": zone_dps, "heal": zone_heal},
+		"buff": {"kind": buff_kind, "time": buff_time, "reflect": reflect_ratio, "sp": sp_restore, "attack": attack_bonus,
+				"flinch_radius": flinch_radius, "flinch": flinch_time, "absorb": absorb, "absorb_elem": absorb_elem,
+				"hp_cost": hp_cost, "hits": buff_hits, "damage": hit_bonus, "assist_damage": assist_damage,
+				"assist_duration": assist_duration},
+		"control": {"hits": control_hits, "reach": control_reach, "launch": control_launch,
+				"knockdown": control_knockdown, "poise_x": control_poise_x},
+		"area": {"hits": area_hits, "reach": area_reach},
+		"pull": {"hold": pull_hold},
+		"blind": {"time": blind_time, "miss": blind_miss},
+		"fear": {"time": fear_time, "flinch": fear_flinch},
+		"execute": {"below": execute_below, "sp_refund": execute_refund},
 	}

@@ -228,10 +228,41 @@ func _weapon_type(library: String, slots: Array, ids: Array, swings: int) -> voi
 			and material.get_shader_parameter(&"active"), "block: %s, overlay hidden, palette on" % [played])
 	_press(&"block", false)
 	anim.animation_started.disconnect(log_anim)
+	await _skill_poses(library)
 	await _fight(false)
 	ck(not String(anim.current_animation).begins_with(library + "/") and sprite.offset == Vector2.ZERO
 			and not material.get_shader_parameter(&"active"),
 			"the fight is over: base frames, offset back, palette off (%s)" % anim.current_animation)
+
+## Пози навичок руху (H3, D812, D882): у бою з цією зброєю `body_animation` дає кадри набору
+## `Weapons/<набір>/<Skill>/1–3` з таймингом базової пози й зсувом клітинки 96 (ноги на підлозі — до 6 рядків, verify_hero_feet), накладка WeaponView схована (зброя вже
+## в кадрі); у наборів без цих тек (dual) — базова поза.
+func _skill_poses(library: String) -> void:
+	var folder: String = {"polearm": "halberd", "dual_sword_dagger": ""}.get(library, library)
+	var sprite: Sprite2D = hero.get_node("Sprite2D")
+	var wrong: Array[String] = []
+	for skill in ["LungeCut", "ShieldCharge", "LeapSlam"]:
+		for i in 3:
+			var base := StringName(skill + ["Windup", "Move", "Strike"][i])
+			var resolved: StringName = hero.body_animation(base)
+			if folder == "":
+				if resolved != base:
+					wrong.append("%s → %s" % [base, resolved])
+				continue
+			var a: Animation = anim.get_animation(resolved)
+			var frame: String = (a.track_get_key_value(0, 0) as Texture2D).resource_path.trim_prefix(WEAPON_FRAMES).trim_suffix(".png")
+			if resolved != StringName(library + "/" + base) or frame != "%s/%s/%d" % [folder, skill, i + 1] \
+					or not is_equal_approx(a.length, anim.get_animation(base).length) \
+					or (a.track_get_key_value(1, 0) as Vector2).x != 0.0 or absf((a.track_get_key_value(1, 0) as Vector2).y + 16.0) > 6.0:
+				wrong.append("%s → %s (%s, %.2f s)" % [base, resolved, frame, a.length])
+				continue
+			anim.play(resolved)
+			anim.advance(0.0)
+			await process_frame
+			if wv.pivot.visible or wv.off_pivot.visible or sprite.texture != a.track_get_key_value(0, 0):
+				wrong.append("%s: overlay over a frame that draws the weapon" % resolved)
+	hero.play_body(hero.animation)
+	ck(wrong.is_empty(), "skill poses: %s (%s)" % ["the base poses, no H3 frames" if folder == "" else "own %s frames, base timing, overlay hidden" % folder, wrong])
 
 ## Палітра: предмети одного типу — однакові кадри, різний метал (items.json → palette).
 func _palettes() -> void:

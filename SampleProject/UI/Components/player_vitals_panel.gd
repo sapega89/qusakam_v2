@@ -7,7 +7,8 @@ class_name UIPlayerVitalsPanel
 ## Портрет у шестикутнику, ромб рівня, ім'я й клас, рядки HP, SP і ST (витривалість, D776: рядок з Figma 501:6611 ревізії
 ## D549, плитка 470 × 144). Виснажений герой пробує діяти — рядок ST блимає (UITokens.STAMINA_EMPTY_FLASH). XP — смуга на всю
 ## ширину внизу (D552, hud_xp_bar). Під плиткою — чипи F (асист, hud_assist_chip.gd) і Q (зілля з лічильником, D538).
-## Праворуч від чипів — значки стану героя (D599, status_row.tscn): оглушення, поки триває збій (EventBus.player_staggered).
+## Праворуч від чипів — значки стану героя (D599, status_row.tscn): оглушення, поки триває збій (EventBus.player_staggered),
+## і значки стійок та баффів, поки діють (SkillStances.changed, D876).
 ## Значення беруться з наявних власників — вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
@@ -53,6 +54,7 @@ func _ready() -> void:
 		EventBus.damage_received.connect(_on_damage_received)
 	EventBus.player_stamina_changed.connect(_on_stamina_changed)
 	EventBus.player_staggered.connect(_on_player_staggered)
+	_skill_manager.stances.changed.connect(_on_buff_changed)
 	EventBus.player_stamina_refused.connect(_on_stamina_refused)
 	EventBus.inventory_updated.connect(_refresh_potion)
 	EventBus.input_device_changed.connect(func(_pad: bool) -> void: _refresh_potion())
@@ -124,6 +126,11 @@ func _on_player_respawned() -> void:
 		_stun.kill()
 	_states.clear()
 	refresh()
+
+
+## Стійка чи бафф героя (D876) — значок його навички в рядку стану, поки діє.
+func _on_buff_changed(skill_id: String, on: bool) -> void:
+	_states.set_buff(skill_id, load(SkillDatabase.get_skill(skill_id).icon), on)
 
 
 ## Збій героя (D264) — значок оглушення на [param duration] с; новий збій продовжує його.

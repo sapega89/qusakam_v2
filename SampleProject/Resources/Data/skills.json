@@ -1,6 +1,6 @@
 {
   "_schema": {
-    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned`, with provisional SP, damage and `draft` numbers (v2 slice 1); the shield skills need no shield item, the shield is a block spell (skills audit, Sapega 2026-10-27). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1).",
+    "description": "Skill definitions read by SkillDatabase. Kusakam's skills (D141, D148); learn with skill points (D149, one per level D279), ranks up to 5 for actives and 3 for passives, priced and scaled per skill (D674). Effects D207. Trees and the class path D260, D279-D285 (design/skill_trees_plan.md). Numbers are mock. Skill power scales with the hero's attack (B137), SP comes from hits and parries and cooldowns stay only on ultimates (D504), Healing Palm is a flask (D504), each oath ends on an active ultimate (D491), synergies and conditional passives (D496), a JP cap per tree and base-tree gates for profession skills (D497). v2: 19 skills per tab, 10 active and 9 passive (D535); actives not built yet are `planned`, with provisional SP, damage and `draft` numbers (v2 slice 1); the shield skills need no shield item, the shield is a block spell (skills audit, Sapega 2026-10-27). Caps re-tuned for 19 skills a tab: base 14 JP, profession 12 JP (v2 slice 1). Ranged and zone skills: `projectile` and `zone` (v2 slice 4).",
     "entry": {
       "id": "String, required, unique",
       "name": "String",
@@ -37,7 +37,16 @@
       "move": "{kind: dash | leap, distance: px, time: s (dash), height: px (leap), hits: first | front | around, reach: px (around)} - the hero moves between wind-up and strike (v2 slice 3, D812): a dash pushes forward (bodies block, D443) and, with hits first, strikes as soon as an enemy is in strike reach; with hits front it runs its whole time into the body; a leap lands before the first enemy ahead, never behind it, and strikes on landing; first = the nearest enemy in front, front = all in front (D142), around = all within reach px on both sides. Starts without an enemy in front, from the ground only; a whiff costs its SP",
       "knockback": "px >= 0 - pushes each hit enemy away from the hero (like a mace, D203)",
       "lifesteal": "0..1 - that share of the skill's damage heals the hero",
-      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move"
+      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move",
+      "projectile": "{range: px, speed: px/s, pierce: bool} - a thrown skill (v2 slice 4, D874): on release a spear flies from the hand along the facing like the bow's arrow (D380, D381), through the hero and NPCs, sticks in a wall, and fades after range px; it hits the first enemy, or with pierce every enemy on its line once. Starts without an enemy in front; SP is paid on the throw, hit or miss",
+      "zone": "{radius: px, time: s, dps: int, heal: int} - a ground zone (v2 slice 4, D875): on release it lies at the hero's feet, radius px both ways and 96 px up, for time s; every second enemies in it take dps and the hero and allies in it heal heal (both with rank and synergies). With damage, the release also hits every enemy in the zone. From the ground only; starts without an enemy in front; SP is paid on release",
+      "buff": "{kind: counter | mirror | breath | battle_cry | aegis | blood_price | rally, time?: s, ...} - stances and buffs (v2 slice 5, D876), run by SkillStances; the numbers below scale with rank, Wisdom and synergies like heal (times do not). counter: a stance for time s (it is the cast's release; cast.release follows time): the first blow of an enemy in it, from either side, is blocked and answered with the skill's damage; an arrow is blocked; a red (dodge) attack still hits and breaks the stance. mirror: a stance for time s: every arrow that reaches the hero flies back at reflect x its damage (red arrows and the boss's fireball still hit); melee blows land as usual. breath: in battle only; the wind-up is the channel (a wounding blow breaks it, D259); on release heals the hero by heal and restores sp SP. battle_cry: the hero's hits (melee and arrows) deal +attack for time s; ordinary enemies (not elite, not a boss) within flinch_radius px are staggered for flinch s. aegis: for time s a barrier soaks absorb + absorb_elem x Elem. Atk. of damage after defence; a blow it soaks whole does not stagger. blood_price: pays hp_cost x Max HP (refused if that would leave 0 HP); the next hits landed hits deal +damage. rally: the next companion assist deals +assist_damage and its stun and stay last +assist_duration; refused with no companion in the party; kept until that assist. Each lasting buff shows its skill icon in the hero's status row (HUD)",
+      "control": "{hits?: first | front | around, reach?: px, launch?: s, knockdown?: s, poise_x?: float} - control and finishers (v2 slice 6a, D877). hits picks the targets: none = all in the strike zone (D142), first = the nearest in front, front = all in front up to reach px from the hero's body, around = all within reach px on both sides. launch throws each light enemy (not large, armoured, flying or a boss) into the air for that many s, its wind-up broken. knockdown puts each hit enemy down for that many s (the stagger pose), its wind-up broken; a boss is only stunned. poise_x is guard damage to each target in the hero's heavy attacks (PlayerCombat.POISE_HEAVY, with the poise passives, D284); a full bar staggers (D777), the shield-bearer's shield takes any skill hit (D616)",
+      "area": "{hits: first | front | around, reach: px} - a skill's zone without moving (v2 slice 6b, D878): first = the nearest enemy ahead within reach px of the hero's body (Chain of Night), front = every enemy ahead within reach (Sand Veil, Night Reaper), around = every enemy within reach on both sides (Dread Howl, Radiant Flare); no area = the strike zone (D142). The cast needs someone in the zone; control times (pull, blind, fear) grow with rank and synergies like damage",
+      "pull": "{hold: s} - Chain of Night: pulls the target to the hero's body and holds it in a stagger (D264) for hold s; a boss is neither pulled nor held",
+      "blind": "{time: s, miss: 0..1} - Sand Veil: for time s the enemy loses the hero beyond its own strike reach (no chase, no going to where it saw him, a wind-up on him breaks), and each of its swings misses with chance miss",
+      "fear": "{time: s, flinch: s} - Dread Howl: everyone in the zone staggers for flinch s; the weak (not elite, not a boss) then flee from the hero for time s",
+      "execute": "{below: 0..1, sp_refund: int} - Soul Harvest: a target at or below that HP share, or whose shield just broke and still staggers (D495), dies from the blow and gives sp_refund SP back; a boss is not executed, and above the threshold it is a plain hit"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -1611,7 +1620,6 @@
       },
       "required_level": 3,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 6,
       "cooldown": 0.0,
       "damage": 52,
@@ -1619,9 +1627,27 @@
         "phys": 3.6,
         "elem": 0.0
       },
-      "draft": {
-        "launch_s": 0.8
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "HeavyStrike"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "launch": 0.8
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "keen_edge",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         1
@@ -1643,7 +1669,6 @@
       },
       "required_level": 4,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 5,
       "cooldown": 0.0,
       "damage": 28,
@@ -1652,9 +1677,28 @@
         "elem": 0.0
       },
       "stun": 0.4,
-      "draft": {
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.2,
+        "release": 0.3,
+        "windup_pose": "ShieldChargeWindup",
+        "release_pose": "ShieldChargeStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "first",
         "poise_x": 2.5
       },
+      "synergies": [
+        {
+          "skill": "heavy_hand",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "shield_block",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         1
@@ -1678,7 +1722,6 @@
       "prerequisites": [
         "rising_slash"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 68,
@@ -1686,10 +1729,29 @@
         "phys": 4.4,
         "elem": 0.0
       },
-      "draft": {
-        "radius_px": 140,
-        "knockdown_s": 1.2
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.4,
+        "windup_pose": "LeapSlamWindup",
+        "release_pose": "LeapSlamStrike"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "around",
+        "reach": 140,
+        "knockdown": 1.2
+      },
+      "synergies": [
+        {
+          "skill": "heavy_hand",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "fortitude",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         2
@@ -1711,7 +1773,6 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 80,
@@ -1719,10 +1780,29 @@
         "phys": 4.6,
         "elem": 0.8
       },
-      "draft": {
-        "range_px": 520,
-        "speed_px_s": 900
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "windup_pose": "CastStormWindup",
+        "release_pose": "CastFireRelease"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "projectile": {
+        "range": 520,
+        "speed": 900,
+        "pierce": false
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "keen_edge",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         4
@@ -1744,14 +1824,28 @@
       },
       "required_level": 12,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "attack_bonus": 0.15,
-        "duration_s": 8.0,
-        "flinch_radius_px": 160
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "battle_cry",
+        "attack": 0.15,
+        "time": 8.0,
+        "flinch_radius": 160,
+        "flinch": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         4
@@ -1775,7 +1869,6 @@
       "prerequisites": [
         "shield_bash"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
       "damage": 110,
@@ -1783,9 +1876,28 @@
         "phys": 6.0,
         "elem": 0.0
       },
-      "draft": {
-        "stance_s": 0.8
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.1,
+        "release": 0.8,
+        "windup_pose": "Block",
+        "release_pose": "Block"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "counter",
+        "time": 0.8
+      },
+      "synergies": [
+        {
+          "skill": "riposte_instinct",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "fortitude",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         2
@@ -1918,7 +2030,6 @@
       "prerequisites": [
         "radiant_smite"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 80,
@@ -1926,10 +2037,29 @@
         "phys": 4.4,
         "elem": 1.2
       },
-      "draft": {
-        "range_px": 600
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.3,
+        "pose": "CastStorm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "projectile": {
+        "range": 600,
+        "speed": 1200,
+        "pierce": true
+      },
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "zealous_answer",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         1,
         1
@@ -1951,15 +2081,32 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.3,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "aegis",
         "absorb": 60,
         "absorb_elem": 1.0,
-        "duration_s": 5.0
+        "time": 5.0
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "unbroken_vow",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "aura_of_resolve",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3
@@ -1981,16 +2128,32 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
-      "draft": {
-        "radius_px": 150,
-        "duration_s": 6.0,
-        "enemy_dps": 6,
-        "heal_per_s": 3
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.4,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "zone": {
+        "radius": 150,
+        "time": 6.0,
+        "dps": 6,
+        "heal": 3
+      },
+      "synergies": [
+        {
+          "skill": "mending_hands",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "consecrated_ground",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         3
@@ -2012,14 +2175,27 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "pose": "CastStorm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "rally",
         "assist_damage": 0.4,
         "assist_duration": 0.5
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         4
@@ -2086,7 +2262,7 @@
       "id": "radiant_flare",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/radiant_flare.png",
       "name": "Radiant Flare [DRAFT]",
-      "description": "A flash that dazes every enemy around you and clears burning and curses from you. [DRAFT]",
+      "description": "A flash that dazes every enemy around you. [DRAFT]",
       "class_id": "",
       "oath": "paladin",
       "skill_type": "active",
@@ -2100,7 +2276,6 @@
       "prerequisites": [
         "lightspear"
       ],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
       "damage": 40,
@@ -2109,9 +2284,27 @@
         "elem": 2.0
       },
       "stun": 1.2,
-      "draft": {
-        "radius_px": 200
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.3,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "area": {
+        "hits": "around",
+        "reach": 200
+      },
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "consecrated_ground",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         1,
@@ -2205,7 +2398,7 @@
       "id": "chain_of_night",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/chain_of_night.png",
       "name": "Chain of Night [DRAFT]",
-      "description": "A dark chain pulls one enemy to you. [DRAFT]",
+      "description": "A dark chain pulls the nearest enemy ahead to you and holds it. [DRAFT]",
       "class_id": "",
       "oath": "dark_knight",
       "skill_type": "active",
@@ -2217,7 +2410,6 @@
       },
       "required_level": 8,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
       "damage": 36,
@@ -2225,9 +2417,30 @@
         "phys": 2.4,
         "elem": 0.8
       },
-      "draft": {
-        "range_px": 420
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "area": {
+        "hits": "first",
+        "reach": 420
+      },
+      "pull": {
+        "hold": 1.5
+      },
+      "synergies": [
+        {
+          "skill": "relentless",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dark_riposte",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         3,
@@ -2252,15 +2465,32 @@
       "prerequisites": [
         "blood_pact"
       ],
-      "planned": true,
       "sp_cost": 4,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastFire"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "blood_price",
         "hp_cost": 0.1,
         "hits": 3,
-        "damage_bonus": 0.5
+        "damage": 0.5
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "crimson_thirst",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3
@@ -2284,7 +2514,6 @@
       "prerequisites": [
         "searing_hex"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
       "damage": 88,
@@ -2296,9 +2525,27 @@
         "dps": 4,
         "duration": 2.0
       },
-      "draft": {
-        "width_px": 260
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.4,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "area": {
+        "hits": "front",
+        "reach": 260
+      },
+      "synergies": [
+        {
+          "skill": "embers_within",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "cruel_momentum",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         0,
@@ -2321,14 +2568,29 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "radius_px": 220,
-        "fear_s": 2.0,
-        "flinch_s": 0.4
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.5,
+        "release": 0.35,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "area": {
+        "hits": "around",
+        "reach": 220
+      },
+      "fear": {
+        "time": 2.0,
+        "flinch": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.06
+        }
+      ],
       "base_jp": 6,
       "slot": [
         2,
@@ -2353,7 +2615,6 @@
       "prerequisites": [
         "night_reaper"
       ],
-      "planned": true,
       "sp_cost": 12,
       "cooldown": 0.0,
       "damage": 60,
@@ -2361,12 +2622,30 @@
         "phys": 3.6,
         "elem": 1.2
       },
-      "draft": {
-        "pool_px": 160,
-        "duration_s": 5.0,
-        "pool_dps": 7
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.4,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "LeapSlamStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/RangedSkill.tscn",
+      "zone": {
+        "radius": 80,
+        "time": 5.0,
+        "dps": 7
+      },
+      "synergies": [
+        {
+          "skill": "embers_within",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         2
@@ -2390,7 +2669,6 @@
       "prerequisites": [
         "blood_rush"
       ],
-      "planned": true,
       "sp_cost": 14,
       "cooldown": 0.0,
       "damage": 140,
@@ -2398,10 +2676,27 @@
         "phys": 7.0,
         "elem": 1.2
       },
-      "draft": {
-        "hp_threshold": 0.2,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.45,
+        "release": 0.3,
+        "pose": "CastFire"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "execute": {
+        "below": 0.2,
         "sp_refund": 10
       },
+      "synergies": [
+        {
+          "skill": "desperate_hunger",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "crimson_thirst",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         3,
@@ -2495,7 +2790,7 @@
       "id": "sand_veil",
       "icon": "res://SampleProject/Assets/UI/Icons/skills/sand_veil.png",
       "name": "Sand Veil [DRAFT]",
-      "description": "Sand in the eyes: enemies in front of you miss for a few seconds. [DRAFT]",
+      "description": "Sand in the eyes: enemies in front of you lose you and often miss for a few seconds. [DRAFT]",
       "class_id": "",
       "oath": "warden",
       "skill_type": "active",
@@ -2507,14 +2802,33 @@
       },
       "required_level": 8,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
-      "draft": {
-        "cone_px": 180,
-        "blind_s": 3.0,
-        "miss_chance": 0.6
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastFire"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/AreaSkill.tscn",
+      "area": {
+        "hits": "front",
+        "reach": 180
+      },
+      "blind": {
+        "time": 3.0,
+        "miss": 0.6
+      },
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "light_feet",
+          "per_rank": 0.04
+        }
+      ],
       "base_jp": 6,
       "slot": [
         2,
@@ -2539,7 +2853,6 @@
       "prerequisites": [
         "balanced_strike"
       ],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 32,
@@ -2548,10 +2861,28 @@
         "elem": 0.0
       },
       "stun": 0.3,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "first",
         "poise_x": 3.0
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "sand_stance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "rooted_resolve",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         0,
         1
@@ -2573,7 +2904,6 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 9,
       "cooldown": 0.0,
       "damage": 72,
@@ -2581,11 +2911,30 @@
         "phys": 4.4,
         "elem": 0.0
       },
-      "draft": {
-        "range_px": 160,
-        "knockdown_s": 1.0
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.35,
+        "windup_pose": "HeavyWindup",
+        "release_pose": "HeavyStrike"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/ControlSkill.tscn",
+      "control": {
+        "hits": "front",
+        "reach": 160,
+        "knockdown": 1.0
+      },
+      "synergies": [
+        {
+          "skill": "perfect_balance",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dervish_rhythm",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3
@@ -2609,14 +2958,28 @@
       "prerequisites": [
         "sand_veil"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "stance_s": 1.0,
-        "reflect_ratio": 1.0
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.1,
+        "release": 1.0,
+        "windup_pose": "Block",
+        "release_pose": "Block"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "mirror",
+        "time": 1.0,
+        "reflect": 1.0
+      },
+      "synergies": [
+        {
+          "skill": "still_water",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         1
@@ -2638,7 +3001,6 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 0,
       "cooldown": 0.0,
       "heal": 30,
@@ -2646,11 +3008,29 @@
         "phys": 0.0,
         "elem": 1.0
       },
-      "draft": {
-        "channel_s": 1.5,
-        "sp_restore": 8
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 1.5,
+        "release": 0.35,
+        "windup_pose": "Meditate",
+        "release_pose": "CastPalmRelease"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "breath",
+        "sp": 8
+      },
+      "synergies": [
+        {
+          "skill": "iron_body",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "still_water",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         1,
         4
