@@ -28,12 +28,6 @@ var room_changing: bool = false
 # The game starts in this map. Note that it's scene name only, just like MetSys refers to rooms.
 @export var starting_map: String = "Canyon.tscn"
 
-# Number of collected collectibles. Setting it also updates the counter.
-var collectibles: int:
-	set(count):
-		collectibles = count
-		%CollectibleCount.text = "%d/6" % count
-
 # The coordinates of generated rooms. MetSys does not keep this list, so it needs to be done manually.
 var generated_rooms: Array[Vector3i]
 # The typical array of game events. It's supplementary to the storable objects.
@@ -190,7 +184,6 @@ func _initialize_save_and_room() -> void:
 		save_manager.load_from_text(save_file_path)
 
 		# Metadata mapping
-		collectibles = save_manager.get_value("collectible_count", 0)
 		_assign_array(generated_rooms, save_manager.get_value("generated_rooms", []))
 		_assign_array(events, save_manager.get_value("events", []))
 		_assign_array(player.abilities, save_manager.get_value("abilities", []))
@@ -211,8 +204,6 @@ func _initialize_save_and_room() -> void:
 	else:
 		# If no data exists, set empty one and initialize default values for new game.
 		MetSys.set_save_data()
-		# Initialize collectibles counter to 0 for new game
-		collectibles = 0
 		generated_rooms.clear()
 		events.clear()
 		quest_flags.clear()
@@ -277,7 +268,6 @@ func save_game() -> bool:
 	
 	# 1. MetSys Save (Map, Rooms, Basic Player Props)
 	var save_manager := SaveManager.new()
-	save_manager.set_value("collectible_count", collectibles)
 	save_manager.set_value("generated_rooms", generated_rooms)
 	save_manager.set_value("events", events)
 	var room_name: String = MetSys.get_current_room_name()
