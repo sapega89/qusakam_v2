@@ -15,5 +15,7 @@ void vertex() {
 }
 
 void fragment() {
-	COLOR = depth_blur_sample(TEXTURE, UV, TEXTURE_PIXEL_SIZE * radius) * modulate;
+	vec4 blurred;
+	DEPTH_BLUR_SAMPLE(blurred, TEXTURE_PIXEL_SIZE * radius);
+	COLOR = blurred * modulate;
 }

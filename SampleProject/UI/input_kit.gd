@@ -56,6 +56,20 @@ static func frames(tree: SceneTree, n: int) -> void:
 		await tree.process_frame
 
 
+## B186: чекає [param cond] не довше [param max_s] секунд гри — кроками фізики, а не годинником: на зайнятій машині
+## (J=4) годинник біжить, а гра відстає, і дедлайн за Time обривав очікування раніше, ніж гра встигала.
+static func until(tree: SceneTree, cond: Callable, max_s: float) -> void:
+	for i in ceili(max_s * Engine.physics_ticks_per_second):
+		if cond.call():
+			return
+		await tree.physics_frame
+
+
+## B186: пауза в [param s] секунд гри — таймер у кроках фізики (як і сама гра), а не в кадрах процесу.
+static func wait(tree: SceneTree, s: float) -> void:
+	await tree.create_timer(s, true, true).timeout
+
+
 static func mouse(tree: SceneTree, node: Control, double: bool = false) -> void:
 	var vp: Viewport = node.get_viewport()
 	var pos: Vector2 = node.get_global_rect().get_center()

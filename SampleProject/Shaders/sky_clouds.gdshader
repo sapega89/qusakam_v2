@@ -17,7 +17,8 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 c = depth_blur_sample(TEXTURE, UV, TEXTURE_PIXEL_SIZE * radius);
+	vec4 c;
+	DEPTH_BLUR_SAMPLE(c, TEXTURE_PIXEL_SIZE * radius);
 	float lum = dot(c.rgb, vec3(0.299, 0.587, 0.114));
 	vec3 tinted = mix(cream_shade.rgb, cream_light.rgb, smoothstep(0.45, 0.9, lum));
 	COLOR = vec4(mix(c.rgb, tinted, cream), c.a) * modulate;

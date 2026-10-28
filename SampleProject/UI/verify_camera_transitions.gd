@@ -1,6 +1,9 @@
 extends SceneTree
 
 ## TIMEOUT: 900
+## SERIAL
+## Камера згладжується в кадрах процесу (реальний delta), а герой рухається кроками фізики: рух камери за кадр
+## міряється лише без сусідніх тестів (B186).
 
 ## Камера на переходах між кімнатами (B153, Sapega 2026-10-26: «камера скаче багато де, передивись переходи між
 ## кімнатами»). Герой справжнім вводом проходить КОЖЕН прохід крізь край (MetSys borders ≥ 1) і КОЖНІ двері
@@ -513,6 +516,10 @@ func _done() -> void:
 ## B180: полотно й кожен шар паралаксу — на одній сітці пікселів світу (крок = zoom), небо ×0 нерухоме, шар з ×k
 ## щокадру рухається рівно на k кроків камери. B176: межа кімнати — камера сповільнюється й рушає плавно.
 func _grid_and_limits() -> void:
+	# Каньйон нової гри: після [4]/[5] він у RELIC_PICKUP, і біг праворуч заходить у кат-сцену спуску з мосту,
+	# яка забирає камеру (D256) — тоді «камера не йде за бігом» міряє кат-сцену, а не камеру.
+	var flags: Dictionary = game.get_quest_flags().duplicate()
+	game.set_quest_flags({})
 	await _go("Canyon.tscn", Vector2(500.0, 340.0))
 	var planes: Array[Node] = game.map.find_children("*", "Parallax2D", true, false)
 	# Округлення зсуває шар не більше ніж на піксель світу від того, куди його ставить сама Camera2D.
@@ -558,6 +565,7 @@ func _grid_and_limits() -> void:
 	ck(off_ratio == 0, "every still plane moves exactly its factor × the camera's step (%d plane-frames off)" % off_ratio)
 
 	await _go("BanditCamp.tscn", Vector2(60.0, 380.0))
+	_still_fighters()  # бій табору тіснить героя тілами, і він не добігає до правої межі
 	var steps := await _run_steps(110)
 	var biggest_rise := 0.0
 	for i in range(1, steps.size()):
@@ -572,6 +580,19 @@ func _grid_and_limits() -> void:
 		biggest_drop = maxf(biggest_drop, absf(steps[i - 1]) - absf(steps[i]))
 	ck(steps[-1] == 0.0 and biggest_drop <= 2.0 * camera.zoom.x + 0.01,
 			"reaching the right limit it slows down, no hard stop (biggest one-frame drop %.2f px)" % biggest_drop)
+	game.set_quest_flags(flags)
+
+
+## Бій табору не починається, а ті, хто вже вийшов, стоять невидимі й без тіл: тут міряємо камеру на бігу, а не бій.
+func _still_fighters() -> void:
+	(game.map.get_node(^"Fight_Camp/Fight_CampTrigger") as Area2D).monitoring = false
+	for node: Node in game.map.find_children("*", "CharacterBody2D", true, false):
+		if node.is_in_group(&"enemies"):
+			var body: CharacterBody2D = node
+			body.set_physics_process(false)
+			body.collision_layer = 0  # без шару герой крізь нього біжить (вимкнені форми DefaultEnemy вмикає назад)
+			body.collision_mask = 0
+			body.visible = false
 
 
 func _run_steps(frames: int) -> Array[float]:
