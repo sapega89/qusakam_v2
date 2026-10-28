@@ -393,15 +393,29 @@ func _initialize() -> void:
 	ck(type_hits.size() == 1, "the tank's swing lands after its %.1f s wind-up (%s)" % [tank.attack_windup, type_hits])
 	await create_timer(1.0).timeout
 	type_hits.clear()
-	# Як було до B187: після першого удару бандит-сцена стояв на 14.5 px за своєю досяжністю (61 px, удар 34.5 + 12).
-	# Виросле тіло (B187) сягає 67.6 + 12, тож ставимо ту саму відстань від досяжності. Перевірка, по суті, порожня:
-	# замах тримає місце (D754, holds_ground), поштовх його не зсуває — див. design/cloud_reports/enemy-sizes.md.
-	tank.global_position.x = pl.global_position.x + tank.strike_reach() + 12.0 + 14.5
+	# B208, D754: замах тримає місце (holds_ground) — удар булавою посеред замаху не відкидає танка і не зриває удару.
+	# Танк у досяжності героя; поштовх +x — від героя, тож підкрадання замаху (до героя, −x) йому не заважає.
+	tank.set_physics_process(true)  # поштовх рухає тіло; інакше «не зсунувся» вийшло б і без D754
+	tank.global_position.x = pl.global_position.x + _at_contact(tank).x
 	tank.enemy_logic.perform_attack()
 	await create_timer(0.2).timeout
+	ck(tank.holds_ground(), "the tank is mid-swing at 0.2 s")
+	var swing_x: float = tank.global_position.x
 	tank.knockback(60.0)  # як удар булавою посеред замаху
-	await create_timer(0.9).timeout
-	ck(type_hits.is_empty(), "a heavy hit (knockback) breaks the tank's swing (%s)" % [type_hits])
+	await create_timer(tank.enemy_logic.KNOCKBACK_TIME + 0.1).timeout
+	ck(tank.global_position.x - swing_x < 1.0, "D754: a heavy hit does not push the swinging tank (%+.1f px)" % (tank.global_position.x - swing_x))
+	await create_timer(tank.attack_windup).timeout
+	ck(type_hits.size() == 1, "D754: the swing is not broken and lands (%s)" % [type_hits])
+	type_hits.clear()
+	# Не в замаху — та сама булава відкидає. Герой далеко, щоб живий AI не почав нового замаху.
+	tank.global_position.x = pl.global_position.x + 300.0
+	await create_timer(1.0).timeout
+	ck(not tank.holds_ground(), "the tank is not swinging")
+	var idle_x: float = tank.global_position.x
+	tank.knockback(60.0)
+	await create_timer(tank.enemy_logic.KNOCKBACK_TIME + 0.05).timeout
+	ck(tank.global_position.x - idle_x > 40.0, "out of a swing the heavy hit pushes the tank (%+.1f px)" % (tank.global_position.x - idle_x))
+	tank.set_physics_process(false)
 	var tank_hp: int = tank.current_health
 	tank.enemy_logic.last_direction = 1 if pl.global_position.x > tank.global_position.x else -1
 	tank.take_damage(20, pl)
