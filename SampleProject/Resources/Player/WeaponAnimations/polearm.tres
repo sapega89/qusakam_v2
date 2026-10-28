@@ -28,6 +28,15 @@
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/Heavy/3.png" id="t_halberd_heavy_3"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/Block/1.png" id="t_halberd_block_1"]
 [ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/Hurt/1.png" id="t_halberd_hurt_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LungeCut/1.png" id="t_halberd_lungecut_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LungeCut/2.png" id="t_halberd_lungecut_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LungeCut/3.png" id="t_halberd_lungecut_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/ShieldCharge/1.png" id="t_halberd_shieldcharge_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/ShieldCharge/2.png" id="t_halberd_shieldcharge_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/ShieldCharge/3.png" id="t_halberd_shieldcharge_3"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LeapSlam/1.png" id="t_halberd_leapslam_1"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LeapSlam/2.png" id="t_halberd_leapslam_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Sprites/Player/Weapons/halberd/LeapSlam/3.png" id="t_halberd_leapslam_3"]
 
 [sub_resource type="Animation" id="Animation_Idle"]
 resource_name = "Idle"
@@ -396,6 +405,267 @@ tracks/1/keys = {
 "values": [Vector2(0, -16)]
 }
 
+[sub_resource type="Animation" id="Animation_LungeCutWindup"]
+resource_name = "LungeCutWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_lungecut_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_LungeCutMove"]
+resource_name = "LungeCutMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_lungecut_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_LungeCutStrike"]
+resource_name = "LungeCutStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_lungecut_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_ShieldChargeWindup"]
+resource_name = "ShieldChargeWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_shieldcharge_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_ShieldChargeMove"]
+resource_name = "ShieldChargeMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_shieldcharge_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_ShieldChargeStrike"]
+resource_name = "ShieldChargeStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_shieldcharge_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_LeapSlamWindup"]
+resource_name = "LeapSlamWindup"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_leapslam_1")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_LeapSlamMove"]
+resource_name = "LeapSlamMove"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_leapslam_2")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
+[sub_resource type="Animation" id="Animation_LeapSlamStrike"]
+resource_name = "LeapSlamStrike"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("t_halberd_leapslam_3")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2(0, -16)]
+}
+
+
 [resource]
 _data = {
 &"Idle": SubResource("Animation_Idle"),
@@ -410,5 +680,14 @@ _data = {
 &"HeavyWindup": SubResource("Animation_HeavyWindup"),
 &"HeavyStrike": SubResource("Animation_HeavyStrike"),
 &"Block": SubResource("Animation_Block"),
-&"Hurt": SubResource("Animation_Hurt")
+&"Hurt": SubResource("Animation_Hurt"),
+&"LungeCutWindup": SubResource("Animation_LungeCutWindup"),
+&"LungeCutMove": SubResource("Animation_LungeCutMove"),
+&"LungeCutStrike": SubResource("Animation_LungeCutStrike"),
+&"ShieldChargeWindup": SubResource("Animation_ShieldChargeWindup"),
+&"ShieldChargeMove": SubResource("Animation_ShieldChargeMove"),
+&"ShieldChargeStrike": SubResource("Animation_ShieldChargeStrike"),
+&"LeapSlamWindup": SubResource("Animation_LeapSlamWindup"),
+&"LeapSlamMove": SubResource("Animation_LeapSlamMove"),
+&"LeapSlamStrike": SubResource("Animation_LeapSlamStrike")
 }
