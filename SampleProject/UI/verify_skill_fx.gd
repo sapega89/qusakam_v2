@@ -51,6 +51,10 @@ func _initialize() -> void:
 	# спільний за Assets/FX/README.md; решта кадрів навички руху — її власні, як у всіх (D279)
 	var move_layer: Dictionary = {}
 	for skill in actives:
+		if skill.has("buff"):
+			# D-sv2s1: стійки й баффи — заглушка StanceSkill.tscn (частинки, без кадрів); свої кадри — з арт-лейном
+			ck(skill.vfx.get_file() == "StanceSkill.tscn", "%s: the stances' placeholder effect (StanceSkill.tscn)" % skill.id)
+			continue
 		var frames: Array = _frame_paths(skill.id, skill.vfx)
 		if skill.has("move"):
 			ck(skill.vfx.get_file() == "MoveSkill.tscn", "%s: the movement skills' effect (MoveSkill.tscn)" % skill.id)

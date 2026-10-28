@@ -309,13 +309,21 @@ func _initialize() -> void:
 
 	print("[11] v2 draft actives are planned: in the data, not learnable, not castable (D535)")
 	var planned: Array = db.get_all_skills().filter(func(d) -> bool: return d.planned)
-	# v2 зріз 3 (D812) збудував 6 навичок руху — запланованих лишилось 22
-	ck(planned.size() == 22 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "22 planned actives, all [DRAFT] (%d)" % planned.size())
+	# v2 зріз 3 (D812) збудував 6 навичок руху, зріз 5 (D-sv2s1) — 7 стійок і баффів: запланованих лишилось 15
+	ck(planned.size() == 15 and planned.all(func(d) -> bool: return d.is_active() and d.name.ends_with("[DRAFT]")), "15 planned actives, all [DRAFT] (%d)" % planned.size())
 	var moves: Array = db.get_all_skills().filter(func(d) -> bool: return d.moves())
 	ck(moves.map(func(d) -> String: return d.id) == ["dash_strike", "shield_charge", "heavens_anvil", "blood_rush", "wind_step", "dune_quake"]
 			and moves.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.synergies.size() in [1, 2]),
 			"the 6 movement skills are built: learnable, with a cast, an effect and synergies (%s)" % [moves.map(func(d) -> String: return d.id)])
+	var buffs: Array = db.get_all_skills().filter(func(d) -> bool: return d.is_buff())
+	ck(buffs.map(func(d) -> String: return d.id) == ["battle_cry", "counter_stance", "aegis", "rally", "blood_price", "mirror_stance", "centered_breath"]
+			and buffs.all(func(d) -> bool: return not d.planned and d.vfx != "" and d.release_pose != "" and d.synergies.size() in [1, 2]),
+			"the 7 stances and buffs are built: learnable, with a cast, an effect and synergies (%s)" % [buffs.map(func(d) -> String: return d.id)])
+	ck(buffs.filter(func(d) -> bool: return d.is_stance()).all(func(d) -> bool: return d.cast_release == d.buff_time and d.buff_time > 0.0),
+			"a stance lasts its cast's release (Counter %.1f s, Mirror %.1f s)" % [db.get_skill("counter_stance").buff_time, db.get_skill("mirror_stance").buff_time])
 	var raw: Array = JSON.parse_string(FileAccess.get_file_as_string("res://SampleProject/Resources/Data/skills.json")).skills
+	ck(raw.filter(func(e: Dictionary) -> bool: return e.has("buff") and (e.has("draft") or e.has("planned"))).is_empty(),
+			"no built stance or buff keeps `draft` or `planned`")
 	var unnumbered: Array = raw.filter(func(e: Dictionary) -> bool:
 			return e.get("planned", false) and (not e.has("sp_cost") or e.get("draft", {}).is_empty() or not ResourceLoader.exists(e.icon)))
 	ck(unnumbered.is_empty(), "every planned active has provisional SP, `draft` numbers and its icon %s" % [unnumbered.map(func(e): return e.id)])

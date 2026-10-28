@@ -113,6 +113,30 @@ var lifesteal: float = 0.0
 ## Невразливість героя від початку руху, с.
 var invulnerable: float = 0.0
 
+## Стійки й баффи (v2 зріз 5, D-sv2s1) — їх веде SkillStances. buff_kind: "" — не бафф; "counter" / "mirror" — стійка
+## на buff_time с (це вивільнення касту); "breath" — зосередження (замах — це канал); "battle_cry", "aegis",
+## "blood_price", "rally" — бафф після вивільнення.
+var buff_kind: String = ""
+var buff_time: float = 0.0
+## Mirror Stance: частка шкоди стріли, з якою вона летить назад.
+var reflect_ratio: float = 0.0
+## Centered Breath: SP, що повертає зосередження.
+var sp_restore: int = 0
+## Battle Cry: +частка сили ударів героя; звичайних ворогів у flinch_radius px збиває на flinch_time с.
+var attack_bonus: float = 0.0
+var flinch_radius: float = 0.0
+var flinch_time: float = 0.0
+## Aegis: бар'єр поглинає absorb + absorb_elem × Elem. Atk. шкоди.
+var absorb: int = 0
+var absorb_elem: float = 0.0
+## Blood Price: ціна — частка Max HP; наступні buff_hits влучань сильніші на hit_bonus.
+var hp_cost: float = 0.0
+var buff_hits: int = 0
+var hit_bonus: float = 0.0
+## Rally: наступний асист компаньйона — +assist_damage шкоди, оглушення й час на полі довші на assist_duration.
+var assist_damage: float = 0.0
+var assist_duration: float = 0.0
+
 
 static func type_from_string(value: String) -> Type:
 	return Type.PASSIVE if value.strip_edges().to_lower() == "passive" else Type.ACTIVE
@@ -201,6 +225,7 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 	definition.knockback = maxf(0.0, float(data.get("knockback", 0.0)))
 	definition.lifesteal = clampf(float(data.get("lifesteal", 0.0)), 0.0, 1.0)
 	definition.invulnerable = maxf(0.0, float(data.get("invulnerable", 0.0)))
+	_read_buff(definition, data.get("buff", {}))
 
 	# Пасивна навичка не активується, тому SP і перезарядка для неї не мають сенсу.
 	if definition.skill_type == Type.PASSIVE:
@@ -220,6 +245,36 @@ static func from_dict(data: Dictionary) -> SkillDefinition:
 		definition.synergies.clear()
 
 	return definition
+
+
+## Блок buff (v2 зріз 5, D-sv2s1). Стійка триває, поки йде вивільнення касту, тож cast.release — її час.
+static func _read_buff(definition: SkillDefinition, buff: Dictionary) -> void:
+	definition.buff_kind = String(buff.get("kind", ""))
+	definition.buff_time = maxf(0.0, float(buff.get("time", 0.0)))
+	definition.reflect_ratio = maxf(0.0, float(buff.get("reflect", 0.0)))
+	definition.sp_restore = maxi(0, int(buff.get("sp", 0)))
+	definition.attack_bonus = maxf(0.0, float(buff.get("attack", 0.0)))
+	definition.flinch_radius = maxf(0.0, float(buff.get("flinch_radius", 0.0)))
+	definition.flinch_time = maxf(0.0, float(buff.get("flinch", 0.0)))
+	definition.absorb = maxi(0, int(buff.get("absorb", 0)))
+	definition.absorb_elem = maxf(0.0, float(buff.get("absorb_elem", 0.0)))
+	definition.hp_cost = clampf(float(buff.get("hp_cost", 0.0)), 0.0, 1.0)
+	definition.buff_hits = maxi(0, int(buff.get("hits", 0)))
+	definition.hit_bonus = maxf(0.0, float(buff.get("damage", 0.0)))
+	definition.assist_damage = maxf(0.0, float(buff.get("assist_damage", 0.0)))
+	definition.assist_duration = maxf(0.0, float(buff.get("assist_duration", 0.0)))
+	if definition.is_stance():
+		definition.cast_release = definition.buff_time
+
+
+## Стійка чи бафф (D-sv2s1): їх застосовує SkillStances, а не удар по цілі.
+func is_buff() -> bool:
+	return buff_kind != ""
+
+
+## Стійка (Counter, Mirror): відповідає на удари, поки триває вивільнення касту.
+func is_stance() -> bool:
+	return buff_kind in ["counter", "mirror"]
 
 
 ## D674: множник ефекту на ранзі [param rank] (0 — як на першому): 1 + bonus за кожен ранг понад перший.
@@ -281,4 +336,8 @@ func to_dict() -> Dictionary:
 		"knockback": knockback,
 		"lifesteal": lifesteal,
 		"invulnerable": invulnerable,
+		"buff": {"kind": buff_kind, "time": buff_time, "reflect": reflect_ratio, "sp": sp_restore, "attack": attack_bonus,
+				"flinch_radius": flinch_radius, "flinch": flinch_time, "absorb": absorb, "absorb_elem": absorb_elem,
+				"hp_cost": hp_cost, "hits": buff_hits, "damage": hit_bonus, "assist_damage": assist_damage,
+				"assist_duration": assist_duration},
 	}

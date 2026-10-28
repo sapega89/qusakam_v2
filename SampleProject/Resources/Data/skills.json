@@ -37,7 +37,8 @@
       "move": "{kind: dash | leap, distance: px, time: s (dash), height: px (leap), hits: first | front | around, reach: px (around)} - the hero moves between wind-up and strike (v2 slice 3, D812): a dash pushes forward (bodies block, D443) and, with hits first, strikes as soon as an enemy is in strike reach; with hits front it runs its whole time into the body; a leap lands before the first enemy ahead, never behind it, and strikes on landing; first = the nearest enemy in front, front = all in front (D142), around = all within reach px on both sides. Starts without an enemy in front, from the ground only; a whiff costs its SP",
       "knockback": "px >= 0 - pushes each hit enemy away from the hero (like a mace, D203)",
       "lifesteal": "0..1 - that share of the skill's damage heals the hero",
-      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move"
+      "invulnerable": "s >= 0 - the hero is invulnerable for that long from the start of the move",
+      "buff": "{kind: counter | mirror | breath | battle_cry | aegis | blood_price | rally, time?: s, ...} - stances and buffs (v2 slice 5, D-sv2s1), run by SkillStances; the numbers below scale with rank, Wisdom and synergies like heal (times do not). counter: a stance for time s (it is the cast's release; cast.release follows time): the first blow of an enemy in it, from either side, is blocked and answered with the skill's damage; an arrow is blocked; a red (dodge) attack still hits and breaks the stance. mirror: a stance for time s: every arrow that reaches the hero flies back at reflect x its damage (red arrows and the boss's fireball still hit); melee blows land as usual. breath: in battle only; the wind-up is the channel (a wounding blow breaks it, D259); on release heals the hero by heal and restores sp SP. battle_cry: the hero's hits (melee and arrows) deal +attack for time s; ordinary enemies (not elite, not a boss) within flinch_radius px are staggered for flinch s. aegis: for time s a barrier soaks absorb + absorb_elem x Elem. Atk. of damage after defence; a blow it soaks whole does not stagger. blood_price: pays hp_cost x Max HP (refused if that would leave 0 HP); the next hits landed hits deal +damage. rally: the next companion assist deals +assist_damage and its stun and stay last +assist_duration; refused with no companion in the party; kept until that assist. Each lasting buff shows its skill icon in the hero's status row (HUD)"
     },
     "class": "{name, jp_cap} - the trunk's class title before an oath (D260); jp_cap = JP that can be spent in the trunk (D497)",
     "oaths": "{<oath_id>: {name, tree: Light | Dark | Neutral, level: int, jp_cap: int, keeper, subclasses: [String], prestige: String}} - sworn once at the keeper NPC (D280, D281); jp_cap = JP that can be spent in this tree (D497); subclasses (level 40) and prestige (level 70) are names only, not built"
@@ -1744,14 +1745,28 @@
       },
       "required_level": 12,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "attack_bonus": 0.15,
-        "duration_s": 8.0,
-        "flinch_radius_px": 160
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "pose": "CastStorm"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "battle_cry",
+        "attack": 0.15,
+        "time": 8.0,
+        "flinch_radius": 160,
+        "flinch": 0.4
+      },
+      "synergies": [
+        {
+          "skill": "weapon_training",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         4
@@ -1775,7 +1790,6 @@
       "prerequisites": [
         "shield_bash"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
       "damage": 110,
@@ -1783,9 +1797,28 @@
         "phys": 6.0,
         "elem": 0.0
       },
-      "draft": {
-        "stance_s": 0.8
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.1,
+        "release": 0.8,
+        "windup_pose": "Block",
+        "release_pose": "Block"
       },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "counter",
+        "time": 0.8
+      },
+      "synergies": [
+        {
+          "skill": "riposte_instinct",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "fortitude",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         3,
         2
@@ -1951,15 +1984,32 @@
       },
       "required_level": 10,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.35,
+        "release": 0.3,
+        "pose": "CastPalm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "aegis",
         "absorb": 60,
         "absorb_elem": 1.0,
-        "duration_s": 5.0
+        "time": 5.0
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "unbroken_vow",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "aura_of_resolve",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3
@@ -2012,14 +2062,27 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 8,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.35,
+        "pose": "CastStorm"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "rally",
         "assist_damage": 0.4,
         "assist_duration": 0.5
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "skys_grace",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         4
@@ -2252,15 +2315,32 @@
       "prerequisites": [
         "blood_pact"
       ],
-      "planned": true,
       "sp_cost": 4,
       "cooldown": 0.0,
-      "draft": {
+      "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.3,
+        "release": 0.3,
+        "pose": "CastFire"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "blood_price",
         "hp_cost": 0.1,
         "hits": 3,
-        "damage_bonus": 0.5
+        "damage": 0.5
       },
-      "base_jp": 6,
+      "synergies": [
+        {
+          "skill": "crimson_thirst",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "dread_aura",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         2,
         3
@@ -2609,14 +2689,28 @@
       "prerequisites": [
         "sand_veil"
       ],
-      "planned": true,
       "sp_cost": 10,
       "cooldown": 0.0,
-      "draft": {
-        "stance_s": 1.0,
-        "reflect_ratio": 1.0
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 0.1,
+        "release": 1.0,
+        "windup_pose": "Block",
+        "release_pose": "Block"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "mirror",
+        "time": 1.0,
+        "reflect": 1.0
+      },
+      "synergies": [
+        {
+          "skill": "still_water",
+          "per_rank": 0.06
+        }
+      ],
       "slot": [
         2,
         1
@@ -2638,7 +2732,6 @@
       },
       "required_level": 15,
       "prerequisites": [],
-      "planned": true,
       "sp_cost": 0,
       "cooldown": 0.0,
       "heal": 30,
@@ -2646,11 +2739,29 @@
         "phys": 0.0,
         "elem": 1.0
       },
-      "draft": {
-        "channel_s": 1.5,
-        "sp_restore": 8
-      },
       "base_jp": 6,
+      "required_weapons": [],
+      "cast": {
+        "windup": 1.5,
+        "release": 0.35,
+        "windup_pose": "Meditate",
+        "release_pose": "CastPalmRelease"
+      },
+      "vfx": "res://SampleProject/Scenes/FX/Skills/StanceSkill.tscn",
+      "buff": {
+        "kind": "breath",
+        "sp": 8
+      },
+      "synergies": [
+        {
+          "skill": "iron_body",
+          "per_rank": 0.06
+        },
+        {
+          "skill": "still_water",
+          "per_rank": 0.04
+        }
+      ],
       "slot": [
         1,
         4
