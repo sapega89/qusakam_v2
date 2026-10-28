@@ -7,6 +7,7 @@ class_name UIPlayerVitalsPanel
 ## Портрет у шестикутнику, ромб рівня, ім'я й клас, рядки HP, SP і ST (витривалість, D776: рядок з Figma 501:6611 ревізії
 ## D549, плитка 470 × 144). Виснажений герой пробує діяти — рядок ST блимає (UITokens.STAMINA_EMPTY_FLASH). XP — смуга на всю
 ## ширину внизу (D552, hud_xp_bar). Під плиткою — чипи F (асист, hud_assist_chip.gd) і Q (зілля з лічильником, D538).
+## Праворуч від чипів — значки стану героя (D599, status_row.tscn): оглушення, поки триває збій (EventBus.player_staggered).
 ## Значення беруться з наявних власників — вузол гравця (CombatBody2D), SkillManager і XPManager. Формул тут немає.
 
 const InputGlyphs = preload("res://SampleProject/Scripts/UI/input_glyphs.gd")
@@ -17,12 +18,14 @@ const HURT_SHAKE := 4.0
 const HURT_TIME := 0.3
 var _hurt: Tween
 var _st_flash: Tween
+var _stun: Tween
 
 @onready var _name_label: Label = %VitalsName
 @onready var _level_label: Label = %LevelValue
 @onready var _class_label: Label = %HeroClass
 @onready var _rows: Control = %VitalsBars
 @onready var _potion_chip: Control = %PotionChip
+@onready var _states: HBoxContainer = %HeroStatusRow
 
 var _skill_manager: Node = null
 var _xp_manager: Node = null
@@ -49,6 +52,7 @@ func _ready() -> void:
 	if not EventBus.damage_received.is_connected(_on_damage_received):
 		EventBus.damage_received.connect(_on_damage_received)
 	EventBus.player_stamina_changed.connect(_on_stamina_changed)
+	EventBus.player_staggered.connect(_on_player_staggered)
 	EventBus.player_stamina_refused.connect(_on_stamina_refused)
 	EventBus.inventory_updated.connect(_refresh_potion)
 	EventBus.input_device_changed.connect(func(_pad: bool) -> void: _refresh_potion())
@@ -116,7 +120,19 @@ func _on_damage_received(target: Node, source: Node, _amount: int, _critical: bo
 
 func _on_player_respawned() -> void:
 	_player = null
+	if _stun:
+		_stun.kill()
+	_states.clear()
 	refresh()
+
+
+## Збій героя (D264) — значок оглушення на [param duration] с; новий збій продовжує його.
+func _on_player_staggered(duration: float) -> void:
+	if _stun:
+		_stun.kill()
+	_states.set_state(&"Stunned", true)
+	_stun = create_tween()
+	_stun.tween_callback(Callable(_states, &"set_state").bind(&"Stunned", false)).set_delay(duration)
 
 
 ## Єдине джерело правди — вузол гравця: саме його current_health/Max_Health
