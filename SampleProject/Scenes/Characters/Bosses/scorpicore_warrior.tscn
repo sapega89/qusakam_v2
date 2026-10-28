@@ -21,7 +21,7 @@ combo_chance = 1.0
 detection_range = 600.0
 attack_range = 460.0
 chase_range = 900.0
-max_health = 3900
+max_health = 4600
 xp_reward = 400
 
 [sub_resource type="RectangleShape2D" id="Shape_body"]
