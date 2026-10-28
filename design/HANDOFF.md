@@ -11,6 +11,13 @@ The plan with statuses is [[MASTER_PLAN]]. Deferred items are in [[BACKLOG]]. Re
 The room chain's IDs are renumbered (D886–D906; local fixes D907–D909).
 **Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 19:27 from `71edcb83` = `main` (PR #106). Rebuild after each merge (X1).
 
+## Next session starts here (28.10 21:15)
+`integrate-34` (`trig_01SirY4B8gpbtuyUUHpRkR5U`, cloud) merges the balance branch `worktree-agent-ad042771da03c68fd`
+(D910–D913, D922, D923; `verify_difficulty` / `verify_lab_boss` green locally), runs the full suite and fast-forwards
+`main` itself if green. Next: read `design/cloud_reports/integrate-34.md` on `origin/feature/backlog`, pull, rebuild
+`build/windows/Qusakam.exe`, then delete the remote branch `worktree-agent-ad042771da03c68fd` and the local worktree.
+The plan is done except M10 (Sapega's playtest); R5 dropped. Open questions: Q110, Q115 (tree), Q120/Q125, Q124, Q126.
+
 ## 0. Local from now on
 Sapega 28.10 ~15:00: «хмара нам не потрібна, запускай на моїй машині». No new cloud routines. The ones already running
 finish (integrate-33, wire-backdrops-3-r, wire-backdrops-4-r) and get merged locally. `prop-sizes-r` and `wire-props-r`
