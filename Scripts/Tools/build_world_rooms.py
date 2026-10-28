@@ -206,25 +206,27 @@ ROOMS = {
                          title=("Cistern Stash", "Схованка в цистерні"), arrival=(0, 200),
                          doors=[("ExitDoor", 0, 200, "cave_mouth", "Cistern", "StashDoor", {})],
                          secrets=[("SecretArea_Stash", 0, 1100)]),
-    # ── M4: Лабораторія (шар 2) ──
-    "AlchemistCorridor": dict(loc="laboratory", kit="lab", cells=(15, 2, 3, 1), layer=2,
-                              title=("Alchemist's Corridor", "Коридор алхіміка"), arrival=(0, 150),
-                              doors=[("StairsDoor", 0, 150, "lab_door", "Laboratory", "StairsDoor", {}),
-                                     ("StoreDoor", 0, 2450, "lab_door", "AlchemistStore", "ExitDoor",
+    # ── M4: Лабораторія (шар 2), граф v3 (D863, D865, design/refs/room_graph_M4_lab_v3.png): бічні місця ──
+    # Коридор алхіміка — на захід від верхнього поверху (двері праворуч), комора — ще західніше.
+    "AlchemistCorridor": dict(loc="laboratory", kit="lab", cells=(11, 3, 3, 1), layer=2,
+                              title=("Alchemist's Corridor", "Коридор алхіміка"), arrival=(0, 2450),
+                              doors=[("FloorDoor", 0, 2450, "lab_door", "LabTopFloor", "CorridorDoor", {}),
+                                     ("StoreDoor", 0, 150, "lab_door", "AlchemistStore", "ExitDoor",
                                       {"gate": "alchemist_store"})],
                               table=(0, 1300), pickups=[("Pickup_AlchemistKey", 0, 1300, "alchemist_key")]),
-    "AlchemistStore": dict(loc="laboratory", kit="lab", cells=(18, 2, 2, 1), layer=2,
-                           title=("Alchemist's Storeroom", "Комора алхіміка"), arrival=(0, 150),
-                           doors=[("ExitDoor", 0, 150, "lab_door", "AlchemistCorridor", "StoreDoor", {})]),
-    "MalikStash": dict(loc="laboratory", kit="lab", cells=(12, 4, 2, 1), layer=2,
+    "AlchemistStore": dict(loc="laboratory", kit="lab", cells=(9, 3, 2, 1), layer=2,
+                           title=("Alchemist's Storeroom", "Комора алхіміка"), arrival=(0, 1550),
+                           doors=[("ExitDoor", 0, 1550, "lab_door", "AlchemistCorridor", "StoreDoor", {})]),
+    "MalikStash": dict(loc="laboratory", kit="lab", cells=(12, 6, 2, 1), layer=2,
                        title=("Malik's Stash", "Схованка Маліка"), arrival=(0, 1450),
                        doors=[("SlabDoor", 0, 1450, "lab_door", "LabCells", "StashDoor", {})],
                        secrets=[("SecretArea_Stash", 0, 700)]),
-    "CollapsedDrain": dict(loc="laboratory", kit="cellar", cells=(12, 8, 7, 1), layer=2,
-                           title=("Collapsed Drain", "Обвалений дренаж"), arrival=(0, 900),
-                           doors=[("HatchDoor", 0, 900, "lab_door", "LabCells", "DrainDoor", {}),
-                                  ("GrateDoor", 0, 5750, "lab_door", "Laboratory", "DrainDoor", {})],
-                           chests=[("Chest_Drain", 0, 3000, {"potion_lesser": 1, "herb": 2})]),
+    # Обвалений дренаж — під нижнім поверхом: бічні сходи (GrateDoor) — під люком нижнього поверху, скриня — у глибині.
+    "CollapsedDrain": dict(loc="laboratory", kit="cellar", cells=(14, 6, 7, 1), layer=2,
+                           title=("Collapsed Drain", "Обвалений дренаж"), arrival=(0, 3000),
+                           doors=[("HatchDoor", 0, 150, "lab_door", "LabCells", "DrainDoor", {}),
+                                  ("GrateDoor", 0, 3000, "lab_door", "Laboratory", "DrainDoor", {})],
+                           chests=[("Chest_Drain", 0, 5400, {"potion_lesser": 1, "herb": 2})]),
 }
 
 # Двері, важелі й підбирання, що дописуються в наявні кімнати (лише вузли; підлогу не чіпаємо).
@@ -246,8 +248,13 @@ EXISTING_DOORS = {
     "MayorHall": [("ArchiveDoor", 250, 384, "door_elder", "MayorArchive", "BookshelfDoor", {"gate": "mayor_archive"})],
     "LabCells": [("StashDoor", 1450, 384, "lab_door", "MalikStash", "SlabDoor", {"gate": "malik_stash"}),
                  ("DrainDoor", 900, 384, "lab_door", "CollapsedDrain", "HatchDoor", {})],
-    "Laboratory": [("StairsDoor", 330, 384, "lab_door", "AlchemistCorridor", "StairsDoor", {}),
-                   ("DrainDoor", 1200, 1344, "lab_door", "CollapsedDrain", "GrateDoor", {})],
+    # Лабораторія v3: двері сходів нагору (вхід на сходи — суцільний біг крізь межу), люк у дренаж, коридор алхіміка.
+    "Laboratory": [("DrainDoor", 3000, 384, "lab_door", "CollapsedDrain", "GrateDoor", {})],
+    "LabStairsEast": [("FloorDoor", 1590, 208, "lab_door", "LabMiddleFloor", "StairsDoor", {})],
+    "LabMiddleFloor": [("StairsDoor", 4000, 384, "lab_door", "LabStairsEast", "FloorDoor", {})],
+    "LabStairsWest": [("FloorDoor", 138, 208, "lab_door", "LabTopFloor", "StairsDoor", {})],
+    "LabTopFloor": [("CorridorDoor", 120, 384, "lab_door", "AlchemistCorridor", "FloorDoor", {}),
+                    ("StairsDoor", 330, 384, "lab_door", "LabStairsWest", "FloorDoor", {})],
 }
 EXISTING_LEVERS = {"GatehouseCellar": [("AqueductLever", 420, 416, "aqueduct_cellar_open")]}
 EXISTING_PICKUPS = {"MayorHall": [("Pickup_MayorKey", 380, 384, "mayor_key")]}
@@ -257,7 +264,19 @@ PLACE = {
     "Canyon": (0, 1), "DragonMural": (1, 0), "Village": (11, 1), "ElderHouse": (13, -1),
     "LizardCave": (0, 6), "DesertRoad": (4, 5), "BanditCamp": (12, 3), "MesaClimb": (6, 3),
     "CityGates": (19, 5), "GatehouseCellar": (20, 7), "City": (21, 5), "MayorHall": (29, 5),
-    "LabCells": (12, 3), "Laboratory": (14, 3), "LabBoss": (16, 5), "LaboratoryOutside": (18, 5),
+    "LabCells": (12, 5), "LabBoss": (18, 2), "LaboratoryOutside": (20, 2),
+}
+# Лабораторія v3 (D863, D865): поверхи й сходи будує build_laboratory.gd (сцени — його), тут — лише їхні клітинки карти
+# (шар 2) і проходи суцільним бігом (open, як у ROOMS). Лабораторія під землею, герой підіймається: нижній поверх
+# праворуч → сходи схід → середній ліворуч (на схід — кишеня вартового) → сходи захід → верхній праворуч → двері
+# вгору в залу джина (LabBoss, рівень поверхні) → подвір'я (LaboratoryOutside).
+LAB_V3 = {
+    "Laboratory": dict(cells=(14, 5, 5, 1), open=[(0, "R")]),
+    "LabStairsEast": dict(cells=(19, 5, 2, 1), open=[(0, "L")]),
+    "LabMiddleFloor": dict(cells=(16, 4, 5, 1), open=[(0, "L"), (0, "R")]),
+    "LabGuardPocket": dict(cells=(21, 4, 2, 1), open=[(0, "L")]),
+    "LabStairsWest": dict(cells=(14, 4, 2, 1), open=[(0, "R")]),
+    "LabTopFloor": dict(cells=(14, 3, 5, 1)),
 }
 # Межі наявних кімнат, що міняються: (кімната, клітинка відносно її найменшої, сторона R/D/L/U, значення).
 EXISTING_BORDERS = [
@@ -766,7 +785,8 @@ def write_map() -> None:
     lines = path.read_text(encoding="utf-8").split("\n")
     uid_room = {scene_uid(r): r for r in PLACE}
     scenes = {f.stem for f in MAPS.glob("*.tscn")}
-    assert scenes == set(PLACE) | set(ROOMS), "every room scene is placed: %s" % (scenes ^ (set(PLACE) | set(ROOMS)))
+    placed = set(PLACE) | set(ROOMS) | set(LAB_V3)
+    assert scenes == placed, "every room scene is placed: %s" % (scenes ^ placed)
     cells: dict[tuple[int, int, int], list] = {}
     order: list[tuple[int, int, int]] = []
     stubs: list[str] = []
@@ -796,11 +816,11 @@ def write_map() -> None:
         mx, my = min(c[0] for c in mine), min(c[1] for c in mine)
         z = mine[0][2]
         cells[(mx + rx, my + ry, z)][0][side] = value
-    for name, spec in ROOMS.items():
+    for name, spec in list(ROOMS.items()) + [(n, dict(sp, layer=2)) for n, sp in LAB_V3.items()]:
         x0, y0, w, h = spec["cells"]
         z = spec.get("layer", 0)
         opened = {(r, s) for r, s in spec.get("open", [])}
-        uid = uid_for(name)
+        uid = scene_uid(name) if name in LAB_V3 else uid_for(name)
         for cy in range(h):
             for cx in range(w):
                 b = [-1, -1, -1, -1]

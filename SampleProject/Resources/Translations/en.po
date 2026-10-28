@@ -2314,8 +2314,8 @@ msgstr "He came to in a laboratory cell and watched a fire djinn tear its way ou
 msgid "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
 msgstr "The cells stood open. He met the others from the mayor's queue — and Malik, who swore gold to anyone who led him out."
 
-msgid "He fought his way down through three storeys of the laboratory's guards."
-msgstr "He fought his way down through three storeys of the laboratory's guards."
+msgid "He fought his way up through three storeys of the laboratory's guards."
+msgstr "He fought his way up through three storeys of the laboratory's guards."
 
 msgid "The master of the laboratory declared it the end of his road."
 msgstr "The master of the laboratory declared it the end of his road."
@@ -3765,3 +3765,22 @@ msgstr "Alchemist's Key"
 
 msgid "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."
 msgstr "A key with a glass bead on its ring, left on the alchemist's table. It opens his storeroom."
+
+# [DRAFT] Laboratory v3 (D863, D865): the climb up — floors, great stairs, the guard's alcove (LocationMap.room_title).
+msgid "Climb up out of the laboratory"
+msgstr "Climb up out of the laboratory"
+
+msgid "Lab Middle Floor"
+msgstr "Laboratory — Middle Floor"
+
+msgid "Lab Top Floor"
+msgstr "Laboratory — Top Floor"
+
+msgid "Lab Stairs East"
+msgstr "Great Stairs"
+
+msgid "Lab Stairs West"
+msgstr "Great Stairs"
+
+msgid "Lab Guard Pocket"
+msgstr "Guard's Alcove"

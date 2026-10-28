@@ -100,7 +100,7 @@
 						 "hint": "The mercenary is down and the gates are open. Out, to freedom.", "from": "KUSAKAM"}
 					],
 					"chronicle": [
-						{"flag": "lab_corridors_complete", "text": "He fought his way down through three storeys of the laboratory's guards."},
+						{"flag": "lab_corridors_complete", "text": "He fought his way up through three storeys of the laboratory's guards."},
 						{"flag": "lab_boss_fight_complete", "text": "The master of the laboratory declared it the end of his road."},
 						{"flag": "lab_after_boss_complete", "text": "Kusakam defeated the boss, and the way out lay open."}
 					]
