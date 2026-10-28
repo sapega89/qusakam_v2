@@ -10,7 +10,7 @@ date: 2026-10-28
 - **Not done:** the room atmosphere each README lists (lamp flicker, steam, glow, drips, dust).
 - **D-IDs:** D-new-1…D-new-2 below. The orchestrator numbers them.
 - **B rows fixed:** none.
-- **Full suite:** SUITE_LINE
+- **Full suite:** `SUITE: 3 FAIL in 21 min 25 s, J=4`. verify_difficulty (17) and verify_lab_boss (2) are the known balance reds; lab_boss fails the same without this diff. verify_camera_transitions (1, BanditCamp «reaching the right limit… no hard stop», a room this branch does not touch) is the intermittent one from wire-backdrops-2: it passed in this branch's first run and failed in the suite and in the one re-run.
 - **Replacement run:** this is the replacement for routine trig_01Rw2B9remFva5UTZGTx8SzC (decision under «Go / no-go» below).
 
 ## D-ID text (for the orchestrator)
@@ -53,7 +53,7 @@ The corridor's east doorway is painted as a stairwell (an arch with steps inside
 | verify_laboratory | ALL PASS |
 | verify_lab_cells | ALL PASS |
 | verify_lab_boss | 2 FAIL (balanced build: dies in 2.3 blows, 67 light hits). The same 2 FAIL without this branch's diff (`git stash`), and it is the known balance red (lab-v3-now, wire-backdrops-2 reports) |
-| verify_camera_transitions | ALL PASS |
+| verify_camera_transitions | ALL PASS in the first run; 1 FAIL in the suite and in the one re-run (BanditCamp right limit, 6.75 px drop: known intermittent, untouched room) |
 | verify_scripts_compile | ALL PASS |
 
 ## Shots
