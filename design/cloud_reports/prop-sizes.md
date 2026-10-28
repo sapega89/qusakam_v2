@@ -10,7 +10,7 @@ date: 2026-10-28
 - **Not done:** the painted doors on the City `CityNear` and Village `Houses` planes (A12 lists them, the prompt does not). Scaling them means scaling a whole backdrop plane, so they stay for the art lane.
 - **D-IDs:** D903–D906 below (numbered on `feature/backlog` 28.10 from the placeholders D903…D906).
 - **B rows fixed:** B192 (door sheets; the painted plane doors stay open, see above) and B190 (locked gates). This also does A11.
-- **Full suite:** FULLSUITE_PENDING
+- **Full suite:** `SUITE: 6 FAIL in 30 min 45 s, J=4`. Two are the known balance reds, verify_difficulty (17) and verify_lab_boss (2). verify_village_fight was mine: an `Arrival` marker had been left off its moved door. It is fixed, and its re-run passes. verify_enemy_variety (1) and verify_souls_combat (2) pass on re-run, so they are load flakes. verify_city_gates_raid (1, «the hero stands on the floor under the arrival») is a pre-existing flake: on the merged base commit it fails 2 runs in 4.
 - No `.claude/skills/room-content/SKILL.md` exists on this branch, `feature/backlog` or `main`. I followed `ROUTINE_RULES.md` and the root `CLAUDE.md` instead.
 
 ## D-ID text (for the orchestrator)
@@ -40,6 +40,7 @@ I chose to keep the lock and flag the look. The capture shows it (`camp_locked_g
 - `Scripts/Tools/build_world_rooms.py`: `ART_SCALE`, `door_pos` (x from the art scale, y at the 1.5 height), `ART_SIZE`/`OPENING` for the re-cut cleft.
 - `SampleProject/Maps/BanditCamp.tscn`, `LizardCave.tscn`: the gate sprite, Body and Area (D905).
 - `SampleProject/Maps/City.tscn`: `Forge`, `ForgeDoor`.
+- The `Arrival` markers that sat exactly on a moved door now follow it: BanditCamp, DragonMural, ElderHouse (plus `ObjectiveTargets/canyon_bridge`, which verify_village_fight checks for equality) and MesaClimb.
 - `SampleProject/UI/probe_world_scale.gd`: a `LockedDoor.tscn` instance is `door_locked`.
 - `SampleProject/UI/capture_prop_sizes.gd`: new, the before/after frames.
 
@@ -53,6 +54,8 @@ I chose to keep the lock and flag the look. The capture shows it (`camp_locked_g
 - verify_room_entrances: `RESULT: ALL PASS`. The first run gave 89 FAIL: the doors had been lifted to the bigger openings' centres, out of the hero's reach. They were put back at the old height. Then 11 FAIL on the D800 occluder rules, fixed by moving the palms.
 - verify_map_geometry, verify_living_world, verify_ambient_critters, verify_world_rooms, verify_scripts_compile: `RESULT: ALL PASS`.
 - verify_camera_transitions: `RESULT: ALL PASS` on the final doors. The run with the lifted doors gave 9 FAIL, «the transition never finished».
+
+- Full suite: listed in the summary. Re-runs: verify_village_fight `PASS` after the Arrival fix, verify_enemy_variety `PASS`, and verify_souls_combat `PASS` twice. verify_city_gates_raid on the base worktree (c89ee440~1) gave FAIL, FAIL, PASS, PASS. On this branch, hero x is 880–883 against the arrival's 900 (tolerance 16).
 
 ### Capture
 `design/shots/prop_sizes.png`: 12 spots, each shown as before | after. The before half is the merged base commit, captured in a worktree. The spots are:

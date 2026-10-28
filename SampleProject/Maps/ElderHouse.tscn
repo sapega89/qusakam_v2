@@ -220,7 +220,7 @@ charm = "grandfathers_ring"
 [node name="RoomInstance" parent="." instance=ExtResource("2_room")]
 
 [node name="Arrival" type="Marker2D" parent="."]
-position = Vector2(96, 802.5)
+position = Vector2(95.29, 802.5)
 
 [node name="Ambience" type="Node2D" parent="."]
 
@@ -271,7 +271,7 @@ quest_dialogue = "OldMan_Decision"
 position = Vector2(560, 876)
 
 [node name="canyon_bridge" type="Marker2D" parent="ObjectiveTargets"]
-position = Vector2(96, 802.5)
+position = Vector2(95.29, 802.5)
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 process_mode = 3
