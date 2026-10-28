@@ -23,7 +23,7 @@ const STATS := "res://SampleProject/Resources/Enemies/enemy_stats_%s.tres"
 ## x 0 тепер вихід з печери, і герой пішов би з кімнати.
 const ARENA := Vector2(760, 368)
 const FLOOR_Y := 384.0
-const OUTDOORS := ["Canyon", "DesertRoad", "CityGates", "MesaClimb"]
+const OUTDOORS := ["Canyon", "DesertRoad", "CityGates", "MesaClimb", "CanyonFloor"]  # CanyonFloor: open sky (M7, rooms-finish)
 ## D558/D643: кажани живуть лише в льоху під брамою.
 const BAT_ROOMS := ["GatehouseCellar"]
 

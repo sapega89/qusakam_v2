@@ -118,31 +118,31 @@ cover = NodePath("../Wall_Stash")
 position = Vector2(290, 384)
 sets_flag = "cistern_cellar_open"
 
-[node name="Fight_Bats" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+[node name="Fight_Smugglers" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("w10")
 enemy_level = 5
 auto_spawn_on_ready = false
-trigger_area = NodePath("Fight_BatsTrigger")
-state_key = "enemies_bats"
+trigger_area = NodePath("Fight_SmugglersTrigger")
+state_key = "enemies_smugglers"
 respawns = true
 
-[node name="Fight_BatsTrigger" type="Area2D" parent="Fight_Bats"]
+[node name="Fight_SmugglersTrigger" type="Area2D" parent="Fight_Smugglers"]
 position = Vector2(1200, 240)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Bats/Fight_BatsTrigger"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Smugglers/Fight_SmugglersTrigger"]
 shape = SubResource("RectangleShape2D_w1")
 
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Bats"]
-position = Vector2(1000, 234)
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Smugglers"]
+position = Vector2(1000, 368)
 script = ExtResource("w11")
-enemy_type = "bat"
-spawn_id = "Fight_Bats_EnemySpawnPoint1"
+enemy_type = "melee"
+spawn_id = "Fight_Smugglers_EnemySpawnPoint1"
 
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Bats"]
-position = Vector2(880, 234)
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Smugglers"]
+position = Vector2(880, 368)
 script = ExtResource("w11")
-enemy_type = "bat"
-spawn_id = "Fight_Bats_EnemySpawnPoint2"
+enemy_type = "archer"
+spawn_id = "Fight_Smugglers_EnemySpawnPoint2"
 
 [node name="Ambience" type="Node2D" parent="."]
 

@@ -25,7 +25,9 @@ extends SceneTree
 const Kit = preload("res://SampleProject/UI/input_kit.gd")
 
 ## Маршрут у порядку історії (verify_xp_curve: ROUTE + LAB_ROUTE).
-const ROUTE := ["Canyon", "Village", "DesertRoad", "CityGates", "City", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
+const ROUTE := ["Canyon", "MountainPath", "ScreeSlide", "StreamGorge", "RockLedges", "Village", "CaveUnderBridge", "CaveExit",
+		"DesertRoad", "ZahraRest", "Dunes", "Chasm", "DryRiverbed", "Aqueduct", "GateApproach", "CityGates",
+		"City", "CraftQuarter", "PalaceSquare", "MayorHall", "LabCells", "Laboratory", "LabBoss"]
 const CITY := "City"
 const KIND_NAMES := {"melee": "bandit", "bandit_brute": "bandit brute", "fast": "jackal", "tank": "scorpion", "archer": "archer", "shield": "shield-bearer",
 		"vulture": "vulture", "bat": "bat", "fly": "Cthulhu fly",

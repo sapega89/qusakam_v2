@@ -288,7 +288,7 @@ SIDES = {"R": 0, "D": 1, "L": 2, "U": 3}
 DECOR = "res://SampleProject/Scenes/Backgrounds/Decor/%s.tscn"
 SPAWNER = "res://SampleProject/Scripts/Gameplay/RoomEnemySpawner.gd"
 SPAWN_POINT = "res://SampleProject/Scripts/Gameplay/EnemySpawnPoint.gd"
-FLY_HEIGHT = {"vulture": 174, "bat": 150}   # висота спавну над підлогою, як у DesertRoad / льоху / лабораторії
+FLY_HEIGHT = {"vulture": 174}   # висота спавну грифа над підлогою, як на DesertRoad (кажани-вороги — лише в льоху, D643)
 
 
 def pollen(w: int, amount: int = 0) -> tuple:
@@ -316,7 +316,7 @@ LIVING = {
                         critters=[("critter_butterfly", 0, 800), ("critter_bird", 0, 2200), ("critter_bat", 0, 3260)],
                         air=[pollen(3456), ("dust", 0, 2500, 336)]),
     "SmugglersStash": dict(critters=[("critter_bat", 0, 420)], air=[("atmo_motes", 0, 600, 250)]),
-    "LizardCaves": dict(fights=[("Fight_Bats", 0, 1800, 3, 0, [("bat", 1980), ("bat", 2120)]),
+    "LizardCaves": dict(fights=[("Fight_Lizards", 0, 1800, 3, 0, [("fast", 1980), ("fast", 2120)]),
                                 ("Fight_Scorpion", 0, 3600, 3, 0, [("tank", 3780)])],
                         critters=[("critter_bat", 0, 1100), ("critter_bat", 0, 2700)],
                         air=[("atmo_fireflies", 0, 2600, 250, {"emission_rect_extents": "Vector2(2400, 110)", "amount": 32})]),
@@ -343,7 +343,7 @@ LIVING = {
     "TavernAttic": dict(critters=[("critter_moth", 0, 900, {"hover": 200}), ("critter_mouse", 0, 1300, {"hole": 84})],
                         air=[("atmo_light_shaft", 0, 700, 40)]),
     "MayorArchive": dict(critters=[("critter_moth", 0, 600, {"hover": 200})], air=[("atmo_light_shaft", 0, 480, 40)]),
-    "Cistern": dict(fights=[("Fight_Bats", 0, 1200, 5, 0, [("bat", 1000), ("bat", 880)])],
+    "Cistern": dict(fights=[("Fight_Smugglers", 0, 1200, 5, 0, [("melee", 1000), ("archer", 880)])],
                     critters=[("critter_bat", 0, 2000)], air=[("atmo_light_shaft", 0, 1700, 40)]),
     "CisternStash": dict(critters=[("critter_bat", 0, 800)], air=[("atmo_motes", 0, 1000, 250)]),
     # ── M4: Лабораторія ──

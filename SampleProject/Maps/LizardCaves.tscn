@@ -101,31 +101,31 @@ gate_id = "lizard_caves_shortcut"
 position = Vector2(4840, 384)
 sets_flag = "lizard_caves_shortcut_open"
 
-[node name="Fight_Bats" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
+[node name="Fight_Lizards" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("w9")
 enemy_level = 3
 auto_spawn_on_ready = false
-trigger_area = NodePath("Fight_BatsTrigger")
-state_key = "enemies_bats"
+trigger_area = NodePath("Fight_LizardsTrigger")
+state_key = "enemies_lizards"
 respawns = true
 
-[node name="Fight_BatsTrigger" type="Area2D" parent="Fight_Bats"]
+[node name="Fight_LizardsTrigger" type="Area2D" parent="Fight_Lizards"]
 position = Vector2(1800, 240)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Bats/Fight_BatsTrigger"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fight_Lizards/Fight_LizardsTrigger"]
 shape = SubResource("RectangleShape2D_w1")
 
-[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Bats"]
-position = Vector2(1980, 234)
+[node name="EnemySpawnPoint1" type="Node2D" parent="Fight_Lizards"]
+position = Vector2(1980, 368)
 script = ExtResource("w10")
-enemy_type = "bat"
-spawn_id = "Fight_Bats_EnemySpawnPoint1"
+enemy_type = "fast"
+spawn_id = "Fight_Lizards_EnemySpawnPoint1"
 
-[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Bats"]
-position = Vector2(2120, 234)
+[node name="EnemySpawnPoint2" type="Node2D" parent="Fight_Lizards"]
+position = Vector2(2120, 368)
 script = ExtResource("w10")
-enemy_type = "bat"
-spawn_id = "Fight_Bats_EnemySpawnPoint2"
+enemy_type = "fast"
+spawn_id = "Fight_Lizards_EnemySpawnPoint2"
 
 [node name="Fight_Scorpion" type="Node2D" parent="." node_paths=PackedStringArray("trigger_area")]
 script = ExtResource("w9")
