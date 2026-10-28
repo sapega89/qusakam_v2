@@ -410,6 +410,34 @@ job(
     35,
     (96, 112),
 )
+# A7 (D813, 2026-10-28): збирача перемальовано (comfy_sprite.py brass_collector, зерно 43) — обидва кадри стагеру
+# з нового idle 0 робочого дерева, кольори — нового листа (pose 0 — та сама поза, що вдалась у спробі 3)
+BC = BOSS + "brass_collector/sheet.png"
+BC_LOOK = (
+    "; the same bulky body as in the picture, the shoulders as wide, the same big boxy cage of thick dark iron bars "
+    "on its back fully visible, the same pale cracked sandstone blocks and dark riveted brass bands"
+)
+for k, pose in enumerate(
+    [
+        "in the same side view facing right: knocked backwards off balance by a heavy blow, rocking back on its heels, "
+        "its upper body tilted back about 20 degrees, its head thrown back, both long arms flung forward and up for "
+        "balance, both feet on the ground close together under its hips, only the toes of its front foot lifted, not "
+        "walking, not a stride",
+        "in the same side view facing right: still staggered and dazed, hunched forward with its head hanging down, "
+        "its arms hanging low and limp, its knees buckling",
+    ]
+):
+    job(
+        "stagger_brass_collector%d" % k,
+        cell(BC, 0, 0, 96, 112),
+        (BOSS + "brass_collector/stagger.png", (k * 96, 0, 96, 112)),
+        pose + BC_LOOK,
+        C["brass_collector"]["who"],
+        43,
+        (96, 112),
+        palette=BC,
+        src_wt=True,
+    )
 # шакал: стагер-кадри Crusenho-гієни прибрано — звичайний шакал тепер шакал зграї (D692/D693, comfy_sprite.py
 # jackal_pack), його поза збою — кадр hurt власного листа
 # скорпіон: дві спроби моделі (зерна 41, 42) — поза моделлю пака: друга клешня кільцем, око на клешні, видовжене
@@ -597,31 +625,7 @@ def palette(j):
     return np.array(sorted({tuple(c[:3]) for c in px if c[3] > 128}), np.float32)
 
 
-def drop_specks(op, least):
-    """Лишає 8-зв'язні шматки силуету з least пікселів і більше."""
-    keep, seen = op.copy(), np.zeros_like(op)
-    for y, x in zip(*np.nonzero(op)):
-        if seen[y, x]:
-            continue
-        part, stack = [], [(y, x)]
-        seen[y, x] = True
-        while stack:
-            cy, cx = stack.pop()
-            part.append((cy, cx))
-            for ny in (cy - 1, cy, cy + 1):
-                for nx in (cx - 1, cx, cx + 1):
-                    if (
-                        0 <= ny < op.shape[0]
-                        and 0 <= nx < op.shape[1]
-                        and op[ny, nx]
-                        and not seen[ny, nx]
-                    ):
-                        seen[ny, nx] = True
-                        stack.append((ny, nx))
-        if len(part) < least:
-            for cy, cx in part:
-                keep[cy, cx] = False
-    return keep
+drop_specks = cs.drop_specks  # перенесено в comfy_sprite.py (specks= персонажа)
 
 
 def run_job(name):

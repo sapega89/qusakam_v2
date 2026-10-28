@@ -62,18 +62,9 @@ FX = {
         "its right end with a blunt rounded tip, fading to a thin line toward the left, a pale icy blue rim, "
         + GREEN,
     ),
-    # Тричі модель на «розтин» малювала меч — розтин зроблено зі смуги уколу, повернутої навскіс;
-    # іскри-осколки — частинки HitImpact.tscn.
-    "hit_cut": dict(
-        src="thrust",
-        rotate=35,
-        key="green",
-        colors=6,
-        kind="cut",
-        canvas=(64, 64),
-        box=(4, 8, 60, 56),
-        frames=["Hit/cut_1", "Hit/cut_2", "Hit/cut_3", "Hit/cut_4"],
-    ),
+    # Розтин влучання (HitImpact.tscn) малює скрипт — draw_cut(), див. нижче. Тричі модель на «розтин» малювала меч,
+    # тож першим був повернутий на 35° смуга уколу (кадри Smear/thrust): комета з круглою головою, що читалась як
+    # летючий снаряд, а не розріз (A7, D813 «прибрати»).
     # Удар кулаком — коротка смуга уколу по центру полотна (раніше — кругле «вибух»-коло, Sapega: не про хак-енд-слеш).
     "punch": dict(
         src="thrust",
@@ -523,6 +514,55 @@ def grow(q, k):
     return out
 
 
+CUT_ANGLE = 35  # градусів угору-праворуч (знизу зліва вгору направо), як було; ліворуч — flip_h сцени
+CUT_COLORS = ((255, 255, 255), (206, 240, 255), (128, 200, 246), (58, 110, 196))  # ядро, світло, лід, обвідка
+
+
+def draw_cut(size=64, half=31.0, width=4.2):
+    """A7 (2026-10-28): розтин навскіс — тонка лінза, гостра з обох кінців (аніме-розріз, не комета): біле ядро,
+    крижаний край, синя 1-px обвідка (читається і на піску, і в темній залі). 1 — розріз пробігає знизу зліва вгору
+    направо, тонкий; 2 — повний, поперек нього коротка іскра-штрих (не кругла — D204: без круглих спалахів);
+    3 — розріз розходиться навпіл (дві половини відсунуто на 2 px від осі), тоншає; 4 — дві тонкі нитки, коротші.
+    Без моделі: не AI."""
+    c = (size - 1) / 2
+    yy, xx = np.mgrid[:size, :size].astype(np.float32)
+    t = np.radians(CUT_ANGLE)
+    u = (xx - c) * np.cos(t) - (yy - c) * np.sin(t)  # уздовж розрізу, + — угору праворуч
+    v = (xx - c) * np.sin(t) + (yy - c) * np.cos(t)  # поперек
+
+    def lens(u0, u1, w, dv=0.0, side=0):
+        """Лінза між u0 і u1 (гостра на кінцях), півширина w, зсув dv поперек; side — лише одна половина."""
+        m, hl = (u0 + u1) / 2, (u1 - u0) / 2
+        k = np.clip(1 - ((u - m) / hl) ** 2, 0, 1) ** 1.3
+        vv = v - dv
+        inside = (np.abs(vv) <= w * k + 0.35) & (k > 0)
+        if side:
+            inside &= vv * side >= -0.5
+        level = np.where(np.abs(vv) <= w * k * 0.35, 0, np.where(np.abs(vv) <= w * k * 0.75, 1, 2))
+        return inside, level
+
+    def paint(parts):
+        rgba = np.zeros((size, size, 4), np.uint8)
+        body = np.zeros((size, size), bool)
+        for inside, level in parts:
+            for lv in (2, 1, 0):  # світліше поверх
+                m = inside & (level == lv)
+                rgba[m] = (*CUT_COLORS[lv], 255)
+            body |= inside
+        ring = ndimage.binary_dilation(body) & ~body
+        rgba[ring] = (*CUT_COLORS[3], 255)
+        return rgba
+
+    cross = (np.abs(u) <= 0.9) & (np.abs(v) <= 12) | (np.abs(u) <= 1.6) & (np.abs(v) <= 5)
+    cross_level = np.where(np.abs(v) <= 5, 0, 1)
+    return [
+        paint([lens(-half, half * 0.35, width * 0.45)]),
+        paint([lens(-half, half, width), (cross, cross_level)]),
+        paint([lens(-half * 0.9, half * 0.95, width * 0.55, 2.0, 1), lens(-half * 0.95, half * 0.9, width * 0.55, -2.0, -1)]),
+        paint([lens(-half * 0.7, half * 0.75, 0.6, 3.0), lens(-half * 0.75, half * 0.7, 0.6, -3.0)]),
+    ]
+
+
 def frames(kind, opaque):
     """Кадри з однієї картинки: поява (частина, що вже промайнула) → повний → тоншає."""
     h, w = opaque.shape
@@ -550,8 +590,13 @@ def frames(kind, opaque):
 
 
 if __name__ == "__main__":
-    names = sys.argv[1:] or list(FX)
+    names = sys.argv[1:] or [*FX, "hit_cut"]
     for name in names:
+        if name == "hit_cut":  # малює скрипт, без моделі
+            for i, out in enumerate(draw_cut(), 1):
+                Image.fromarray(out).save(OUT + "Hit/cut_%d.png" % i)
+                print("wrote", OUT + "Hit/cut_%d.png" % i)
+            continue
         fx = FX[name]
         img = generate(name, FX[fx["src"]]) if "src" in fx else generate(name, fx)
         a = key(img, fx["key"])

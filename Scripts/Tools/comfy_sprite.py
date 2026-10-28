@@ -2121,21 +2121,31 @@ CHARACTERS = {
     ),
     # Зала мера й лабораторія (BACKLOG 16 + 17, D301-D305, D309): боси вищі за героя (клітинка 96x112), профіль
     # (вони б'ються); Малік - профіль у ході й фас у розмові (D243); в'язень і алхімік - лише профіль.
+    # A7 (D813, перемальовано 2026-10-28): старий лист — суцільна жовта латунь без пісковику, очей не видно, клітка —
+    # сіра драбинка дрібніша за блок 16 px (у кадрах розсипалась на шум або зникала), тулуб вузький. Тепер два
+    # матеріали (блідий тріснутий пісковик у темних латунних бандажах), бурштинові щілини очей, товсті ґрати клітки.
     "brass_collector": dict(
         out="SampleProject/Assets/Characters/Bosses/brass_collector/sheet.png",
         ref="SampleProject/Sprites/Player/Walk/1.png",
         cell=(96, 112),
-        seed=31,
-        colors=16,
-        who="the same huge brass and sandstone golem with the glowing amber eye slits, the long heavy brass arms and "
-        "the barred iron cage on its back",
+        seed=43,
+        colors=24,
+        specks=12,  # пил моделі під ступнями ходи й смерті
+        floor=107,  # лінія ніг старого листа: на ній стоять offset сцени, хітбокси й тіло (B128)
+        candidates=("design/shots/candidates/brass_collector_a7.png", [(41, False), (42, False), (43, False)]),
+        who="the same huge golem of pale cracked sandstone blocks bound with dark riveted brass plates, with the two "
+        "glowing amber eye slits, the huge brass fists and the big boxy cage of thick dark iron bars on its back",
         base="Replace this character with a new one drawn in exactly the same pixel art style, thick dark outline and flat "
-        "shading: a huge hulking golem built of riveted brass plates and cracked sandstone blocks, much taller than the "
-        "reference character and filling the whole height of the picture, broad shoulders, long heavy arms with big brass "
-        "fists hanging to its knees, a small head with two glowing amber eye slits, a barred iron cage strapped to its back. "
-        "Strict side view: its head and body in profile facing right, standing idle. Keep the plain flat magenta background.",
+        "shading, but not chibi: a huge hulking golem with normal heavy proportions, much taller and wider than the "
+        "reference character and filling the whole height of the picture. Its body is built of big rough blocks of pale "
+        "cream sandstone with dark cracks, bound and armoured with dark riveted brass plates and wide brass bands on the "
+        "shoulders, chest, forearms and shins; broad shoulders, long heavy arms with huge brass fists hanging to its "
+        "knees, short thick legs; a small sandstone head sunk low between the shoulders with two narrow glowing amber "
+        "eye slits; a big boxy cage of thick dark iron bars with wide gaps strapped to its back, rising above and behind "
+        "its shoulders. Strict side view: its head and body in profile facing right, standing idle. Keep the plain flat "
+        "magenta background.",
         rows=[
-            ("idle", [None, "BOB:62"]),
+            ("idle", [None, "BOB:70"]),  # A7: пояс нового тулуба — рядки 62-69
             (
                 "walk",
                 [
@@ -3398,6 +3408,33 @@ def clamp_chroma(pal):
     return hi - (hi - pal) * k
 
 
+def drop_specks(op, least):
+    """Лишає 8-зв'язні шматки силуету з least пікселів і більше."""
+    keep, seen = op.copy(), np.zeros_like(op)
+    for y, x in zip(*np.nonzero(op)):
+        if seen[y, x]:
+            continue
+        part, stack = [], [(y, x)]
+        seen[y, x] = True
+        while stack:
+            cy, cx = stack.pop()
+            part.append((cy, cx))
+            for ny in (cy - 1, cy, cy + 1):
+                for nx in (cx - 1, cx, cx + 1):
+                    if (
+                        0 <= ny < op.shape[0]
+                        and 0 <= nx < op.shape[1]
+                        and op[ny, nx]
+                        and not seen[ny, nx]
+                    ):
+                        seen[ny, nx] = True
+                        stack.append((ny, nx))
+        if len(part) < least:
+            for cy, cx in part:
+                keep[cy, cx] = False
+    return keep
+
+
 def polish(rgb, op):
     """Після палітри (не для героя): прибрати поодинокі пікселі (≤1 непрозорий сусід з 8), майже чорний край
     силуету — у контур героя, і замкнути контур — 1 px OUTLINE зовні там, де край не темний."""
@@ -4302,6 +4339,8 @@ if __name__ == "__main__":
                 char.get("palette") != "hero"
             ):  # кадри героя — тільки кольори художника, без змін
                 q, op = polish(q, op)
+                if char.get("specks"):  # specks=N — відірвані клапті < N px (пил і тінь моделі біля ступнів) геть
+                    op = drop_specks(op, char["specks"])
             else:  # лише поодинокі пікселі (жодного з 8 сусідів) — сміття ключування (арт-директор, Hurt кинджала)
                 p = np.pad(op, 1)
                 op = op & (

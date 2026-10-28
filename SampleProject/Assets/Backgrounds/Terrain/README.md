@@ -19,5 +19,13 @@ palette. A Steam release has to disclose AI-generated content.
 | DesertRoad, CityGates, City | earth | cobble_top |
 | LaboratoryOutside | sandstone | oasis_top |
 
+**A7 redraw of `Canyon_Gorge.png`** (2026-10-28, D813 «прибрати»; before | after `design/shots/a7_ingame_redraw.png`):
+the same collision mask and materials, painted again by `paint_terrain.py` with three changes in the painter — the walk
+surface is high-passed (`FLOOR_BLOB`: blotches wider than 6 px go to the mean colour, pebbles and cracks stay), so the
+orange sand «star» no longer sits on every ledge; each edge row takes its own offset into the surface texture; the
+underside of every ledge darkens over its last 28 px (`UNDER`, `UNDER_DARK`), so a thin ledge reads as a slab with
+volume and the lower, narrower collision step reads as its shaded underside, not a lighter second plate. The other
+rooms keep their pictures until they are repainted (A8).
+
 `SampleProject/Assets/Backgrounds/Canyon/canyon_depths.png` (the gorge's back wall) is made by the same script from
 the sandstone material.

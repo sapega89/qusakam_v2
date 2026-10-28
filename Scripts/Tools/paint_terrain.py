@@ -11,7 +11,7 @@ import sys
 import tempfile
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import comfy_backdrop as cb  # noqa: E402
@@ -150,6 +150,8 @@ FLAT = 6  # верхні px під кромкою не стираються: с�
 FAR = 18
 NEAR = 12
 FAR_RAGGED = 4  # дальній край нерівний на стільки px
+FLOOR_BLOB = 6  # px: плями поверхні, ширші за це, вирівнюються до середнього кольору
+UNDER, UNDER_DARK = 28, 0.55  # тінь низу уступу: висота (px до повітря знизу) і сила біля самого низу
 
 
 def generate(layer):
@@ -275,6 +277,9 @@ def paint(name, body_name, top_name, colors):
     rgb *= (1 - 0.6 * depth)[..., None]
     rgb *= np.where((side >= 2) & (side <= 4), 0.84, 1.0)[..., None]
     rgb *= np.where((up >= 2) & (up <= 6), 0.72, 1.0)[..., None]
+    # A7 (2026-10-28): низ уступу в тіні — темнішає на UNDER px до повітря знизу; тонкий уступ читається брилою з
+    # об'ємом, а нижня сходинка колізії (вужчий блок під ширшим) — затіненим низом, а не світлішою окремою плитою
+    rgb *= (1 - UNDER_DARK * np.clip(1 - up / UNDER, 0, 1) ** 1.5)[..., None]
     outline_color = np.percentile(body.reshape(-1, 3), 3, axis=0) * 0.55
     outline = solid & ((side == 1) | (up == 1)) & (down > 1)
     rgb[outline] = outline_color
@@ -293,10 +298,19 @@ def paint(name, body_name, top_name, colors):
     fm, fs = floor.reshape(-1, 3).mean(axis=0), floor.reshape(-1, 3).std(axis=0)
     # один множник на всі канали: окремий на канал зсуває відтінок темних px (червоний у нуль — бірюза)
     floor = np.clip((floor - fm) * (ts.mean() / max(fs.mean(), 1e-3)) * 0.8 + tm, 0, 255)
+    # A7 (2026-10-28): великі плями текстури поверхні (помаранчева «зірка» піску) геть — лишається дрібне (камінці,
+    # тріщини), без нього кожен уступ ущелини мав ту саму пляму, і повтор текстури було видно
+    blur = np.dstack(
+        [np.asarray(Image.fromarray(floor[..., c].astype(np.uint8)).filter(ImageFilter.GaussianBlur(FLOOR_BLOB)), np.float32)
+         for c in range(3)]
+    )
+    floor = np.clip(floor - blur + floor.reshape(-1, 3).mean(axis=0), 0, 255)
     fh = len(floor)
     edge_y, edge_x = np.nonzero(solid & (down == 1))
     reach = FAR - np.round(noise1d(w, seed + 3, 6.0) * FAR_RAGGED).astype(np.int32)
-    fx = (edge_x + ox) % floor.shape[1]
+    # свій зсув текстури на кожен рядок кромки: уступи один над одним не повторюють ту саму пляму (A7: помаранчева
+    # «зірка» поверхні стояла в ущелині на кожному уступі в тому самому x)
+    fx = (edge_x + ox + 173 * edge_y) % floor.shape[1]
     for r in range(-NEAR + 1, FAR + 1):
         y = edge_y - r
         ok = (y >= 0) & (y < h)

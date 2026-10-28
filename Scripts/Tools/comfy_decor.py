@@ -375,35 +375,54 @@ def shift_sheet(img, a, d):
     return sheet
 
 
-def dust(seed=3, n=14, size=(64, 64), frames=6):
-    """Аркуш порошинок: n цяток, кожна дрейфує по колу (безшовна петля кадрів), кольори — світлий пісок фонів."""
+def dust(seed=3, size=(64, 64), frames=6):
+    """Аркуш порошинок, безшовна петля кадрів. A7 (D813, 2026-10-28): була рівна сипка однакових 1-2-px цяток, що
+    кружляли кожна сама по собі, — читалась шумом або зорями, а не пилом у вітрі. Тепер три розміри (крихта 1 px,
+    кругла порошинка 2×2 з прозорішими кутами, пасмо — хвіст із 5 px уздовж свого кола), усі кружляють в один бік
+    (вихор, а не рій), і кожна мерехтить зі своєю фазою — ловить світло. Кольори ті самі: пісок, тінь піску, серпанок."""
     rng = np.random.default_rng(seed)
     pal = np.array(
         [[248, 232, 200], [236, 210, 170], [214, 214, 224]], np.uint8
     )  # пісок, тінь піску, серпанок
     w, h = size
-    sheet = np.zeros((h, w * frames, 4), np.uint8)
-    p0 = rng.uniform(0, 1, (n, 2)) * (w, h)
-    drift = rng.uniform(
-        4, 9, n
-    )  # px за петлю — вгору й убік, по колу (петля без стрибка)
-    ang = rng.uniform(0, 2 * np.pi, n)
-    big = rng.uniform(0, 1, n) < 0.3
-    col = rng.integers(0, len(pal), n)
-    alpha = rng.choice([200, 255], n)
-    for f in range(frames):
-        t = 2 * np.pi * f / frames
-        for i in range(n):
-            x = int(p0[i, 0] + drift[i] * np.cos(t + ang[i])) % w
-            y = int(p0[i, 1] + drift[i] * 0.6 * np.sin(t + ang[i])) % h
-            cells = [(x, y)] + (
-                [((x + 1) % w, y), (x, (y + 1) % h), ((x + 1) % w, (y + 1) % h)]
-                if big[i]
-                else []
-            )
-            for cx, cy in cells:
-                sheet[cy, f * w + cx] = (*pal[col[i]], alpha[i])
-    return sheet
+    sheet = np.zeros((h, w * frames, 4), np.float32)
+
+    def put(f, x, y, rgb, a):
+        x, y = int(round(x)) % w, int(round(y)) % h
+        px = sheet[y, f * w + x]
+        if a > px[3]:  # світліша цятка перекриває, прозорість не складається в пляму
+            px[:] = (*rgb, a)
+
+    kinds = [("speck", 18), ("mote", 7), ("wisp", 3)]
+    for kind, n in kinds:
+        p0 = rng.uniform(0, 1, (n, 2)) * (w, h)
+        r = rng.uniform(*{"speck": (3, 7), "mote": (4, 8), "wisp": (8, 12)}[kind], n)
+        ang = rng.uniform(0, 2 * np.pi, n)
+        blink = rng.uniform(0, 2 * np.pi, n)
+        col = rng.integers(0, len(pal), n)
+        for f in range(frames):
+            t = 2 * np.pi * f / frames
+            for i in range(n):
+                glow = 0.75 + 0.25 * np.cos(t + blink[i])  # мерехтить
+                if kind == "wisp":
+                    # хвіст позаду голови на тому ж колі: вихор видно, а не лише цятку
+                    for k in range(7):  # крок ~1 px уздовж кола: суцільний хвіст, не пунктир
+                        th = t + ang[i] - k / r[i]
+                        put(f, p0[i, 0] + r[i] * np.cos(th), p0[i, 1] + 0.55 * r[i] * np.sin(th), pal[0],
+                            255 * glow * (1 - k / 7))
+                    continue
+                x = p0[i, 0] + r[i] * np.cos(t + ang[i])
+                y = p0[i, 1] + 0.55 * r[i] * np.sin(t + ang[i])
+                a = 255 * glow
+                put(f, x, y, pal[col[i]], a)
+                if kind == "mote":
+                    for dx, dy, k in ((1, 0, 1.0), (0, 1, 1.0), (1, 1, 1.0), (-1, 0, 0.4), (-1, 1, 0.4), (2, 0, 0.4),
+                                      (2, 1, 0.4), (0, -1, 0.4), (1, -1, 0.4), (0, 2, 0.4), (1, 2, 0.4)):
+                        put(f, x + dx, y + dy, pal[col[i]], a * k)
+    # альфа — чотири рівні: піксель-арт без плавних градієнтів
+    a = sheet[..., 3]
+    sheet[..., 3] = np.select([a < 40, a < 110, a < 170, a < 225], [0, 90, 150, 210], 255)
+    return sheet.astype(np.uint8)
 
 
 def save(name, out):
