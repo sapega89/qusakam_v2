@@ -29,8 +29,7 @@
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/critter_bird.tscn" id="rd_bird"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/grass_tuft.tscn" id="rd_grass"]
 [ext_resource type="PackedScene" path="res://SampleProject/Scenes/Backgrounds/Decor/atmo_pollen.tscn" id="rd_pollen"]
-[ext_resource type="PackedScene" path="res://SampleProject/Scenes/Gameplay/Objects/room_entrance.tscn" id="m7_1"]
-[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/door_elder/door_elder_sheet.png" id="m7_2"]
+[ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Gates/gen_rooftops_rope.png" id="wb3_rope"]
 [ext_resource type="Script" uid="uid://0u1nlyd1ld6o" path="res://SampleProject/Scripts/SavePoint.gd" id="i31_save"]
 [ext_resource type="Texture2D" path="res://SampleProject/Assets/Backgrounds/Decor/meditation/meditation_spot.png" id="i31_meditation"]
 
@@ -172,6 +171,13 @@ tile_set = ExtResource("2_errh4")
 
 [node name="GatePassage" parent="." unique_id=1846200201 instance=ExtResource("gate_passage")]
 position = Vector2(1321, 115)
+
+[node name="RooftopsRope" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(547.5, 18)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("wb3_rope")
+centered = false
 
 [node name="Terrain" type="Sprite2D" parent="."]
 texture_filter = 1
@@ -497,12 +503,8 @@ scale = Vector2(0.9, 0.9)
 texture = ExtResource("x2")
 offset = Vector2(-78, -114)
 
-[node name="RooftopsDoorEntrance" parent="." instance=ExtResource("m7_1")]
-position = Vector2(638, 384)
-texture = ExtResource("m7_2")
-
 [node name="RooftopsDoor" parent="." instance=ExtResource("b1_door")]
-position = Vector2(635.79, 322.5)
+position = Vector2(638, 322.5)
 target_room = "res://SampleProject/Maps/Rooftops.tscn"
 arrival = NodePath("SlideDoor")
 gate_id = "city_rooftops"

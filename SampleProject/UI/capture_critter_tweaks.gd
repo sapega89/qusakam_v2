@@ -12,7 +12,7 @@ const CROP := Vector2i(480, 270)
 const ZOOM := 2
 ## Кімната, двері прибуття, вузол створіння, де стає герой (зсув від створіння; на горищі підлога лише x 448..671).
 const SHOTS := [
-	["res://SampleProject/Maps/City.tscn", ^"ForgeDoor", ^"Critters/Pigeon3", "city", Vector2(90.0, -48.0)],
+	["res://SampleProject/Maps/City.tscn", ^"SavePoint", ^"Critters/Pigeon3", "city", Vector2(90.0, -48.0)],
 	["res://SampleProject/Maps/ElderHouse.tscn", ^"Arrival", ^"Critters/Moth1", "attic", Vector2(-90.0, -48.0)],
 ]
 

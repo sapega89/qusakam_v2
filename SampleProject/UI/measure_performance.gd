@@ -17,7 +17,7 @@ const BLUR_SHADER := "res://SampleProject/Shaders/depth_blur.gdshader"
 ## Сюжетний маршрут демо; маркер — куди Game.teleport_to_room() ставить героя.
 const ROUTE: Array = [
 	["Canyon", ^"Arrival"], ["Village", ^"Arrival"], ["ElderHouse", ^"Arrival"],
-	["DesertRoad", ^"Arrival_Start"], ["CityGates", ^"Arrival"], ["City", ^"ForgeDoor"],
+	["DesertRoad", ^"Arrival_Start"], ["CityGates", ^"Arrival"], ["City", ^"SavePoint"],
 	["MayorHall", ^"Arrival"], ["LabCells", ^"Arrival"], ["Laboratory", ^"SavePoint_Entrance"],
 	["LabBoss", ^"Arrival"], ["LaboratoryOutside", ^"Arrival"],
 ]

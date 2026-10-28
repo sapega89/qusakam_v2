@@ -11,7 +11,7 @@ const OUT := "res://design/shots/yellow_sky.png"
 const ROOMS: Array[Array] = [
 	["Canyon", ^"Arrival"],
 	["DesertRoad", ^"Arrival_Start"],
-	["City", ^"ForgeDoor"],
+	["City", ^"SavePoint"],  # кузня пішла в ремісничий квартал (D773)
 	["MountainPath", ^"Arrival"],
 	["CaveUnderBridge", ^"Arrival"],
 	["LaboratoryOutside", ^"Arrival"],

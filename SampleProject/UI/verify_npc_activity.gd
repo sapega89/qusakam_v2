@@ -7,10 +7,10 @@ extends SceneTree
 const NPC_DIR := "res://SampleProject/Scenes/Gameplay/Objects/NPCs/"
 ## Сцена NPC → мапа, де він стоїть, і чи з ним говорять.
 const NPCS := [
-	["blacksmith", "City", true],
+	["blacksmith", "CraftQuarter", true],  # кузня — у ремісничому кварталі (D773)
 	["merchant", "DesertRoad", true],
 	["grandfather", "ElderHouse", true],  # дід у своєму домі (D438)
-	["oath_priest", "City", true],
+	["oath_priest", "CraftQuarter", true],  # біля каплиці (D773)
 	["oath_witch", "City", true],
 	["oath_dervish", "City", true],
 	["gate_guard", "CityGates", false],
@@ -141,7 +141,7 @@ func _initialize() -> void:
 	ck(g_anim.current_animation == "work", "grandfather: back to his pipe once the hero leaves (%s)" % g_anim.current_animation)
 
 	print("[5] B81, D442: the smith stands at the anvil at his forge from the start — no walk-out cutscene")
-	await world.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await world.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"ForgeDoor")
 	for i in 30: await physics_frame
 	var city: Node = world.map
 	var smith: NpcBase = city.get_node(^"Blacksmith")

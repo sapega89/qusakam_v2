@@ -89,7 +89,7 @@ func _initialize() -> void:
 	ck(_clouds_shared(game.map) and _cream() == 0.0, "courtyard: the clouds are as painted again")
 
 	print("[4] After the flag the city is blue too")
-	await _enter(game, "City", ^"ForgeDoor")
+	await _enter(game, "City", ^"SavePoint")  # кузня пішла в ремісничий квартал (D773)
 	ck(not SkyTint.is_yellow(), "City: the sky is blue")
 	ck(_clouds_shared(game.map) and _cream() == 0.0, "City: clouds as painted")
 

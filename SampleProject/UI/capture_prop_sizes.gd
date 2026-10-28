@@ -9,13 +9,13 @@ const MAPS := "res://SampleProject/Maps/%s.tscn"
 const SHOTS := [
 	["DesertRoad", Vector2(1100, 330), "road_palms"], ["DesertRoad", Vector2(2100, 330), "road_palisade_gate"],
 	["DesertRoad", Vector2(2850, 330), "road_mesa_cleft"], ["DesertRoad", Vector2(3330, 330), "road_cave_mouth"],
-	["Village", Vector2(1100, 330), "village_palms"], ["City", Vector2(1150, 330), "city_forge"],
-	["City", Vector2(880, 330), "city_door_elder"], ["CityGates", Vector2(700, 330), "gates_occluder_palm"],
+	["Village", Vector2(1100, 330), "village_palms"], ["CraftQuarter", Vector2(1030, 330), "city_forge"],
+	["City", Vector2(2540, 330), "city_door_elder"], ["CityGates", Vector2(700, 330), "gates_occluder_palm"],
 	["BanditCamp", Vector2(1150, 360), "camp_locked_gate"], ["LizardCave", Vector2(1100, 360), "cave_locked_gate"],
 	["Laboratory", Vector2(2990, 330), "lab_door"], ["MayorHall", Vector2(200, 330), "palace_door"],
 ]
 ## Кімнати без вузла Arrival — куди телепортувати.
-const ARRIVE := {"DesertRoad": ^"Arrival_Start", "City": ^"ForgeDoor", "Laboratory": ^"DrainDoor"}
+const ARRIVE := {"DesertRoad": ^"Arrival_Start", "City": ^"SavePoint", "Laboratory": ^"DrainDoor"}
 const CELL := Vector2i(480, 270)
 
 var game: Node

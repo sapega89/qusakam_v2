@@ -5,7 +5,7 @@ extends SceneTree
 
 const SPOTS := [
 	["res://SampleProject/Maps/DesertRoad.tscn", ^"Merchant", "npc_world_merchant"],
-	["res://SampleProject/Maps/City.tscn", ^"Blacksmith", "npc_world_blacksmith"],
+	["res://SampleProject/Maps/CraftQuarter.tscn", ^"Blacksmith", "npc_world_blacksmith"],
 	["res://SampleProject/Maps/ElderHouse.tscn", ^"OldManQuest", "npc_world_oldman"],
 ]
 

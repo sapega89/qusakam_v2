@@ -49,6 +49,20 @@ const PAINTED := {
 	"GateApproach/AqueductDoor": "the well house's doorway with the stair down",
 	"CanyonFloor/StashDoor": "the smugglers' crack in the dead-end cliff",
 	"SmugglersStash/ExitDoor": "the dark tunnel back to the broken wall",
+	"PalaceSquare/MayorHallDoor": "the palace's painted double door",
+	"Rooftops/LadderDoor": "the ladder's top over the roof edge",
+	"Rooftops/SlideDoor": "the rope down the house wall",
+	"Rooftops/LoftDoor": "the dovecote's boarded door",
+	"PigeonLoft/ExitDoor": "the doorway with its broken boards",
+	"TavernAttic/LadderDoor": "the ladder up through the hatch",
+	"MayorArchive/BookshelfDoor": "the back of the bookcase door",
+	"Cistern/WellDoor": "the well shaft with iron rungs",
+	"Cistern/CellarDoor": "the barred cellar arch",
+	"Cistern/StashDoor": "the cracked breach in the end wall",
+	"CisternStash/ExitDoor": "the breach back into the cistern",
+	"City/RooftopsDoor": "the ladder up the house wall",
+	"City/TavernAtticDoor": "the ladder behind the stall",
+	"CityGates/RooftopsDoor": "the rope down the wall buttress",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.

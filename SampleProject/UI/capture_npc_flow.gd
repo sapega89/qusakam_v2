@@ -41,7 +41,7 @@ func _initialize() -> void:
 	await _drain(dm)
 
 	# 1. Місто: синій «!» над ковалем, герб над жрицею.
-	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
+	await game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"ForgeDoor")  # кузня — у ремісничому кварталі (D773)
 	for i in 60: await physics_frame
 	await _drain(dm)
 	var smith: NpcBase = game.map.get_node(^"Blacksmith")

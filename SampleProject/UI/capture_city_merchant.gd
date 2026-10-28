@@ -64,6 +64,8 @@ func _initialize() -> void:
 	for i in 10: await process_frame
 
 	# 3. Коваль видає «The Helmet»: третій рядок (де взяти злитки); герой біля кузні.
+	await game.teleport_to_room("res://SampleProject/Maps/CraftQuarter.tscn", ^"ForgeDoor")  # кузня — у ремісничому кварталі (D773)
+	for i in 30: await physics_frame
 	game.player.global_position.x = (game.map.get_node(^"Blacksmith") as Node2D).global_position.x - 120
 	for i in 30: await physics_frame
 	dm.start_dialogue("res://dialogue_quest/Smith_Helmet_Give.dqd")

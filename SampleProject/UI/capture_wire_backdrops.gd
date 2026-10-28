@@ -5,6 +5,7 @@ extends SceneTree
 ##   godot --path . --resolution 1920x1080 --script res://SampleProject/UI/capture_wire_backdrops.gd -- design/shots/wire_backdrops design/shots/wire_backdrops.png
 ## Третій аргумент «2» — кімнати wire-backdrops-2 (SHOTS_2):
 ##   ... -- design/shots/wire_backdrops_2 design/shots/wire_backdrops_2.png 2
+## «3» — місто wire-backdrops-3 (SHOTS_3).
 
 const MAPS := "res://SampleProject/Maps/%s.tscn"
 ## [кімната, де стоїть герой, назва кадру]
@@ -34,6 +35,21 @@ const SHOTS_2 := [
 	["CanyonFloor", Vector2(1500, 340), "floor_2"], ["CanyonFloor", Vector2(2780, 340), "floor_hole"],
 	["CaveExit", Vector2(400, 340), "cave_exit"], ["SmugglersStash", Vector2(300, 340), "stash"],
 ]
+## wire-backdrops-3: місто — нові кімнати, кінці драбин і мотузки на ринку й біля брами; ґрата цистерни в обох станах.
+const SHOTS_3 := [
+	["City", Vector2(800, 340), "city_pigeons"], ["City", Vector2(880, 340), "city_ladder"],
+	["City", Vector2(1250, 340), "city_tent"], ["City", Vector2(2420, 340), "city_stall"],
+	["CityGates", Vector2(640, 340), "gates_rope"], ["CraftQuarter", Vector2(300, 340), "craft_1"],
+	["CraftQuarter", Vector2(1100, 340), "craft_forge"], ["CraftQuarter", Vector2(2300, 340), "craft_chapel"],
+	["PalaceSquare", Vector2(400, 340), "palace_fountain"], ["PalaceSquare", Vector2(1500, 340), "palace_door"],
+	["Rooftops", Vector2(150, 340), "roofs_rope"], ["Rooftops", Vector2(1300, 340), "roofs_loft"],
+	["Rooftops", Vector2(2400, 340), "roofs_ladder"], ["PigeonLoft", Vector2(432, 340), "loft"],
+	["TavernAttic", Vector2(200, 340), "attic_hatch"], ["TavernAttic", Vector2(1300, 340), "attic_2"],
+	["MayorArchive", Vector2(300, 340), "archive"], ["Cistern", Vector2(160, 340), "cistern_grate"],
+	["Cistern", Vector2(160, 340), "cistern_open", "cistern_cellar_open"], ["Cistern", Vector2(900, 340), "cistern_dragon"],
+	["Cistern", Vector2(1700, 340), "cistern_well"], ["Cistern", Vector2(2300, 340), "cistern_breach"],
+	["CisternStash", Vector2(200, 340), "stash_breach"], ["CisternStash", Vector2(1100, 340), "stash_2"],
+]
 const CELL := Vector2i(480, 270)
 
 var game: Node
@@ -57,15 +73,18 @@ func _initialize() -> void:
 	for i in 40: await process_frame
 	await _drain()
 	game.player.set_invulnerable(true)
-	var shots: Array = SHOTS_2 if OS.get_cmdline_user_args().size() > 2 and OS.get_cmdline_user_args()[2] == "2" else SHOTS
+	var set_name: String = OS.get_cmdline_user_args()[2] if OS.get_cmdline_user_args().size() > 2 else "1"
+	var shots: Array = {"1": SHOTS, "2": SHOTS_2, "3": SHOTS_3}[set_name]
 	var rows := (shots.size() + 3) / 4
 	var sheet := Image.create(CELL.x * 4, CELL.y * rows, false, Image.FORMAT_RGBA8)
 	for i in shots.size():
+		# На ринку немає Arrival: герой стає біля драбини на дахи, далеко від голубів (вони злітають за 160 px).
+		var mark: NodePath = ^"RooftopsDoor" if shots[i][0] == "City" else ^"Arrival"
 		if shots[i].size() > 3:
 			game.set_quest_flag(shots[i][3], true)
-			await game.teleport_to_room(MAPS % shots[i][0], ^"Arrival")
+			await game.teleport_to_room(MAPS % shots[i][0], mark)
 		elif not game.map.scene_file_path.ends_with(shots[i][0] + ".tscn"):
-			await game.teleport_to_room(MAPS % shots[i][0], ^"Arrival")
+			await game.teleport_to_room(MAPS % shots[i][0], mark)
 		game.place_player(shots[i][1])
 		game.player.velocity = Vector2.ZERO
 		for f in 45: await physics_frame

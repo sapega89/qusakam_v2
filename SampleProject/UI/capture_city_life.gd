@@ -6,10 +6,10 @@ extends SceneTree
 
 ## [кімната, мітка входу, x героя, y героя, кадр].
 const SHOTS := [
-	["City", ^"ForgeDoor", 420.0, 380.0, "a"],
-	["City", ^"ForgeDoor", 1100.0, 380.0, "b"],
-	["City", ^"ForgeDoor", 1750.0, 380.0, "c"],
-	["City", ^"ForgeDoor", 2250.0, 380.0, "d"],
+	["City", ^"SavePoint", 420.0, 380.0, "a"],
+	["City", ^"SavePoint", 1100.0, 380.0, "b"],
+	["City", ^"SavePoint", 1750.0, 380.0, "c"],
+	["City", ^"SavePoint", 2250.0, 380.0, "d"],
 	["CityGates", ^"Arrival", 1300.0, 340.0, "gates"],
 ]
 

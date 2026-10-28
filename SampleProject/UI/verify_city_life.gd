@@ -95,7 +95,7 @@ func _initialize() -> void:
 		var sheet := "res://SampleProject/Assets/Characters/NPCs/%s/sheet.png" % kind
 		print("  INFO %s: %s" % [kind, "committed" if ResourceLoader.exists(sheet) else "MISSING (stand-in sheet in its scene)"])
 
-	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"ForgeDoor")
+	await game.teleport_to_room("res://SampleProject/Maps/City.tscn", ^"SavePoint")
 	for i in 30: await physics_frame
 	await _drain()
 	var city: Node = game.map
@@ -115,10 +115,11 @@ func _initialize() -> void:
 	var blockers := {}
 	for npc: Node in city.find_children("*", "NpcBase", true, false):
 		blockers[npc.name] = (npc as Node2D).global_position.x
-	# Вартові й двері палацу тепер на площі палацу (M7); на ринку — двері на дахи, на горище й люк у цистерну.
-	for node_name: String in ["SavePoint", "ForgeDoor", "Anvil", "RooftopsDoor", "TavernAtticDoor", "CisternDoor"]:
+	# Вартові й двері палацу тепер на площі палацу (M7), кузня й каплиця — у ремісничому кварталі (D773); на ринку —
+	# двері на дахи, на горище й люк у цистерну.
+	for node_name: String in ["SavePoint", "RooftopsDoor", "TavernAtticDoor", "CisternDoor"]:
 		blockers[node_name] = (city.get_node(node_name) as Node2D).global_position.x
-	ck(blockers.size() >= 9, "%d doors / NPCs to keep clear of" % blockers.size())
+	ck(blockers.size() >= 6, "%d doors / NPCs to keep clear of" % blockers.size())
 	var props: Array[Node] = city.get_node(^"Props").get_children()
 	for w: Node2D in walkers:
 		var stops: PackedFloat32Array = w.get(&"stops")
