@@ -12,6 +12,13 @@ while an integrator runs. The room chain's reports use placeholder/colliding num
 integrator after the chain renumbers them.
 **Exe:** `build/windows/Qusakam.exe` rebuilt 28.10 ~14:45 after `integrate-32` was merged (`768d25ca`). Rebuild after each merge (X1).
 
+## 0. Local from now on
+Sapega 28.10 ~15:00: «хмара нам не потрібна, запускай на моїй машині». No new cloud routines. The ones already running
+finish (integrate-33, wire-backdrops-3-r, wire-backdrops-4-r) and get merged locally. `prop-sizes-r` and `wire-props-r`
+are disabled; prop-sizes and wire-props run locally after wire-backdrops-4 reports (unless their original sessions,
+still waiting until 15:15/15:31 UTC, take the step first — check `origin/cloud/prop-sizes`). Local now: B171 + B208
+(godot-dev agent), then the full suite on the PC. B168 needs ComfyUI frames → BACKLOG.
+
 ## 1. Cloud now
 `integrate-32` ✅ merged into `feature/backlog`. All parallel branch routines reported: skills-v2-ranged, -stance,
 -control-a, -control-b, small-fixes, wire-leftovers (all four weapon variants wired), lab-v3-now.
