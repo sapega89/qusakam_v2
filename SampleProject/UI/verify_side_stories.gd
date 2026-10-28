@@ -6,6 +6,7 @@ extends SceneTree
 ##   2. Узяте в коваля «Шолом» → рядок «◆» під «THE CITY»; картка: замовник, мітки стану й локації, його слова, ціль,
 ##      нагорода; кінця ще немає. На сторінці Quests завдання немає.
 ##   3. Зданий шолом → «✓», мітка «Completed», кінець історії.
+##   3b. B171: → з рядка — на картку, D-pad ↓ гортає до нагород, ↑ назад угору, ← — знову рядок.
 ##   4. Вкладки локацій: ↓ з останнього рядка — на вкладку, →/Enter — Лабораторія (порожньо), мишею — знову All.
 ##   5. Українською: мітки, лапки «», чернетки слів і кінця перекладені.
 
@@ -117,6 +118,26 @@ func _initialize() -> void:
 	ck(journal._outcome.visible and journal._outcome_caption.visible and journal._outcome.text.begins_with("The rivets came out crooked"),
 			"the outcome (%s)" % journal._outcome.text)
 	ck(not journal._objectives_caption.visible, "no goal once it is done")
+
+	print("[3b] B171: the whole card is reachable by keyboard and pad")
+	var scroll: ScrollContainer = journal.get_node("%DetailScroll")
+	var helmet_row: Button = journal._entry_list.get_children().filter(func(r: Button) -> bool: return r.get_meta(&"entry_id") == "side/smith_helmet")[0]
+	helmet_row.grab_focus()
+	await process_frame
+	var rewards_seen := func() -> bool: return scroll.get_global_rect().encloses(journal._reward_list.get_global_rect())
+	ck(not rewards_seen.call(), "at 1080p the done card is taller than its column: REWARDS below the fold")
+	await Kit.key(self, KEY_RIGHT)
+	ck(root.gui_get_focus_owner() == scroll, "→ from the row → the card (%s)" % root.gui_get_focus_owner())
+	for i in 20:
+		if rewards_seen.call():
+			break
+		await Kit.pad(self, JOY_BUTTON_DPAD_DOWN)
+	ck(rewards_seen.call() and root.gui_get_focus_owner() == scroll, "D-pad ↓ scrolls the card to REWARDS (scroll %d)" % scroll.scroll_vertical)
+	for i in 20:
+		await Kit.key(self, KEY_UP)
+	ck(scroll.scroll_vertical == 0 and root.gui_get_focus_owner() == scroll, "↑ scrolls back to the top (scroll %d)" % scroll.scroll_vertical)
+	await Kit.key(self, KEY_LEFT)
+	ck(root.gui_get_focus_owner() == helmet_row, "← back to the row (%s)" % root.gui_get_focus_owner())
 
 	print("[4] Region tabs: keyboard / pad and mouse")
 	var last_row: Button = journal._entry_list.get_children().filter(func(r: Control) -> bool: return r.visible and r.focus_mode == Control.FOCUS_ALL)[-1]

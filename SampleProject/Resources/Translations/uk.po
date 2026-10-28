@@ -2828,6 +2828,9 @@ msgstr "Місто"
 msgid "Left / Right: another person. Confirm: read about them."
 msgstr "Вліво / вправо — інша людина. Підтвердити — прочитати про неї."
 
+msgid "Up / Down: scroll the page. Left: back to the list."
+msgstr "Вгору / вниз — гортати сторінку. Вліво — назад до списку."
+
 msgid "Dash Strike [DRAFT]"
 msgstr "Ривок-удар [ЧЕРНЕТКА]"
 

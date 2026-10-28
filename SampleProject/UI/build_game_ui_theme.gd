@@ -1520,6 +1520,8 @@ func _setup_scrollbars(theme: Theme) -> void:
 		theme.set_stylebox("grabber", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 		theme.set_stylebox("grabber_highlight", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
 		theme.set_stylebox("grabber_pressed", t, _box(UITokens.ACCENT, Color(0, 0, 0, 0), 0, pad_h, pad_v))
+	# B171: прокрутка, що сама бере фокус (draw_focus_border, картка Журналу), — те саме кільце, що й у кнопок.
+	theme.set_stylebox("focus", "ScrollContainer", _focus_ring(0, 0))
 
 
 # ── LineEdit / HSlider (потрібні для екрана налаштувань) ────────────────────

@@ -2824,6 +2824,9 @@ msgstr "City"
 msgid "Left / Right: another person. Confirm: read about them."
 msgstr "Left / Right: another person. Confirm: read about them."
 
+msgid "Up / Down: scroll the page. Left: back to the list."
+msgstr "Up / Down: scroll the page. Left: back to the list."
+
 msgid "Dash Strike [DRAFT]"
 msgstr "Dash Strike [DRAFT]"
 

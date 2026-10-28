@@ -55,6 +55,8 @@ const STORY_STATES := {"done": "Completed", "active": "In progress"}
 @onready var _columns: HBoxContainer = %Columns
 @onready var _list_scroll: ScrollContainer = %ListScroll
 @onready var _entry_list: VBoxContainer = %EntryList
+## B171: картка справа — → зі списку бере фокус, ↑/↓ гортають її, ← назад на обраний рядок.
+@onready var _detail_scroll: ScrollContainer = %DetailScroll
 @onready var _detail: VBoxContainer = %Detail
 @onready var _detail_title: Label = %DetailTitle
 ## Портрет зустрінутої людини (D321 — ті самі портрети, що у вікні діалогу); у кого портрета нема — без рамки.
@@ -123,6 +125,9 @@ func _initialize_component() -> void:
 	%PrevButton.pressed.connect(show_next_person.bind(-1))
 	%NextButton.pressed.connect(show_next_person.bind(1))
 	_card.gui_input.connect(_on_card_input)
+	_detail_scroll.gui_input.connect(_on_detail_input)
+	_detail_scroll.focus_entered.connect(_set_hint)
+	_detail_scroll.focus_exited.connect(_set_hint)
 	_map_view.resized.connect(_place_parchment)
 	for node_name: String in PATH_EMBLEMS:
 		var icon: TextureRect = _path_emblems.get_node(node_name + "/Icon")
@@ -403,6 +408,7 @@ func _link_tab_and_list(rows: Array) -> void:
 	var focusable: Array = rows.filter(func(r: Button) -> bool: return r.focus_mode == Control.FOCUS_ALL)
 	for row: Button in rows:
 		row.focus_neighbor_top = NodePath()
+		row.focus_neighbor_right = row.get_path_to(_detail_scroll)
 	for id: String in _tabs:
 		if id != "characters":
 			(_tabs[id] as Button).focus_neighbor_bottom = NodePath()
@@ -452,6 +458,7 @@ func _show_detail(id: String) -> void:
 		_detail.visible = false
 		return
 	_detail.visible = true
+	_detail_scroll.scroll_vertical = 0
 	_portrait.texture = entry.portrait
 	_portrait_frame.visible = entry.portrait != null
 	_detail_title.text = entry.title
@@ -605,6 +612,23 @@ func _on_card_input(event: InputEvent) -> void:
 	_card.accept_event()
 
 
+## B171: картка у фокусі — ↑/↓ гортають її на JOURNAL_DETAIL_SCROLL_STEP (утримання — повтор), ← — назад на обраний рядок.
+func _on_detail_input(event: InputEvent) -> void:
+	if event.is_action_pressed(&"ui_up", true):
+		_detail_scroll.scroll_vertical -= UITokens.JOURNAL_DETAIL_SCROLL_STEP
+	elif event.is_action_pressed(&"ui_down", true):
+		_detail_scroll.scroll_vertical += UITokens.JOURNAL_DETAIL_SCROLL_STEP
+	elif event.is_action_pressed(&"ui_left"):
+		# Порожній розділ (картку клацнули мишею) — обраного рядка нема, ← іде звичайною навігацією фокуса.
+		var selected: Array = _entry_list.get_children().filter(func(r: Button) -> bool: return r.visible and r.button_pressed)
+		if selected.is_empty():
+			return
+		selected[0].grab_focus()
+	else:
+		return
+	_detail_scroll.accept_event()
+
+
 ## Меню ставить свою типову підказку вже після перемикання вкладки,
 ## тож нашу виставляємо відкладено, інакше її перетирають.
 func _set_hint() -> void:
@@ -621,6 +645,8 @@ func _apply_hint() -> void:
 		bar.set_context_hint("Journal entries appear here as you progress.")
 	elif section == "characters":
 		bar.set_context_hint("Left / Right: another person. Confirm: read about them.")
+	elif _detail_scroll.has_focus():
+		bar.set_context_hint("Up / Down: scroll the page. Left: back to the list.")
 	else:
 		var entry: Dictionary = _entry(selected_id)
 		bar.set_context_hint(String(entry.get("title", "Select an entry to read it.")))

@@ -521,6 +521,8 @@ const CARD_DESCRIPTION_WIDTH := 560
 const QUOTE_SLANT := 0.2               # зсув x на одиницю висоти гліфа
 const STORY_TAG_PADDING_H := SPACE_SM  # мітки стану й локації в картці історії
 const STORY_TAG_PADDING_V := SPACE_2XS
+## B171: крок прокрутки картки Журналу з клавіатури / геймпада (↑/↓, коли картка у фокусі) — близько трьох рядків тексту.
+const JOURNAL_DETAIL_SCROLL_STEP := 64
 
 
 # ── HUD v2 (D453, D476, D485, D549, D552; Figma 501:6611 панель героя, 497:6587 хотбар, 515:6662 XP) ─
