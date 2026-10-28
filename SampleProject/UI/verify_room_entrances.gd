@@ -36,6 +36,12 @@ const PAINTED := {
 	"LizardCave/ExitDoor": "the lit cave opening (D729)",
 	"GatehouseCellar/ExitDoor": "the foot of the painted stairs (D729)",
 	"ZahraRest/WellDoor": "the stone well with its iron grate",
+	"AlchemistCorridor/FloorDoor": "the arched stairwell",
+	"AlchemistCorridor/StoreDoor": "the storeroom's iron-bound door",
+	"AlchemistStore/ExitDoor": "the storeroom door from inside",
+	"MalikStash/SlabDoor": "the rope up through the slab's hole",
+	"CollapsedDrain/HatchDoor": "the shaft up to the cells' hatch",
+	"CollapsedDrain/GrateDoor": "the shaft up to floor 3's grate",
 }
 const EXIT_LIGHT := "res://SampleProject/Resources/Lighting/exit_light.tres"
 ## Герой у масштабі гри 1.5: 47 px кадру → 70 px.
