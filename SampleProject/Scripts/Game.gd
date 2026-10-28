@@ -387,19 +387,19 @@ func load_room(room_ref: String) -> void:
 	if region != LocationDB.of_scene(map.scene_file_path):
 		reset_ordinary_fights(region)
 	# Стару кімнату відʼєднуємо до заміни: тоді базовий load_room() не чекає її tree_exited і відпрацьовує
-	# синхронно, а MetSys.current_room одразу стає новою.
+	# синхронно, а MetSys.current_room одразу стає новою. Відʼєднуємо всю мапу, не лише RoomInstance: інакше її
+	# підлога і вороги до кінця кадру лишаються у фізиці, і _place_on_floor() збиває героя об ворога старої кімнати
+	# з мітки появи.
 	var old_map := map
 	# B145: падіння зібраної гри на зміні кімнати лишає в godot.log лише print (flush_stdout_on_print) —
 	# ці два рядки кажуть, яка заміна йшла і чи дійшла до кінця.
 	print("🚪 Game: room swap %s → %s" % [old_map.scene_file_path.get_file(), path.get_file()])
-	var old_room: Node = MetSys.get_current_room_instance()
-	old_room.get_parent().remove_child(old_room)
-	old_room.queue_free()
+	remove_child(old_map)
+	old_map.queue_free()
 	map = null
 	super.load_room(path)
 	_fit_camera_to_room()
 	print("🚪 Game: room swap done, %s in" % path.get_file())
-	old_map.queue_free()
 	tree.paused = was_paused
 	_lift_fade.call_deferred()
 
