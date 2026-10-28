@@ -5,7 +5,7 @@
 [ext_resource type="Theme" path="res://SampleProject/UI/Themes/GameUITheme.tres" id="3_game_ui_theme"]
 
 [node name="ModalLayer" type="CanvasLayer"]
-layer = 20
+layer = 96
 script = ExtResource("1_modal_layer")
 modal_scene = ExtResource("2_modal_dialog")
 
